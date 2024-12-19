@@ -7,24 +7,18 @@
 
 .app-header {
   display: flex;
-  flex-direction: column;
-  padding-top: 0.5rem;
+  justify-content: space-between;
+  padding-top: 0.4rem;
   padding-right: 1rem;
   padding-left: 1rem;
   /* border: solid 1px orange; */
-}
-
-.app-header-up {
-  display: flex;
-  justify-content: space-between;
-  /* border: solid 1px blue; */
 }
 
 .app-main {
   display: flex;
   height: 100%;
   padding-right: 1rem;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
   padding-left: 1rem;
   /* border: solid 1px brown; */
 }

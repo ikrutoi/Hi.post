@@ -1,4 +1,6 @@
 .logo {
   display: flex;
-  border: solid 1px orange;
+  font-size: 1.4rem;
+  font-style: italic;
+  /* border: solid 1px orange; */
 }

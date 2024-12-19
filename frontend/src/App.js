@@ -9,12 +9,10 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <div className="app-header-up">
-          <Logo />
-          <Status />
-        </div>
-        <Nav />
+        <Logo />
+        <Status />
       </header>
+      <Nav />
       <main className="app-main">
         <CardNav />
         <Form />

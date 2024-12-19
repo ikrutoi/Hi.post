@@ -1,11 +1,7 @@
 import './Logo.css'
 
 const Logo = () => {
-  return (
-    <div className="logo">
-      <h1>Hidragonfly</h1>
-    </div>
-  )
+  return <div className="logo">Hidragonfly</div>
 }
 
 export default Logo

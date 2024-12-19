@@ -3,7 +3,13 @@
   padding: 2px 8px;
   border-radius: 6px;
   font-size: 0.9em;
+  cursor: pointer;
   border: solid 1px brown;
+}
+
+.btn-nav:hover {
+  border-bottom-width: 2px;
+  margin-bottom: 7px;
 }
 
 .nav .btn-nav:first-child {

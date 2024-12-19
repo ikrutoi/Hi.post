@@ -3,5 +3,10 @@
   padding: 2px 8px;
   border-radius: 6px;
   font-size: 0.9em;
+  cursor: pointer;
   border: solid 1px blue;
+}
+
+.card-nav .btn-card-nav:first-child {
+  margin-top: 0;
 }
