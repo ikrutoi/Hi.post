@@ -1,0 +1,6 @@
+.card-nav {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  /* border: solid 1px green; */
+}
