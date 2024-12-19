@@ -1,9 +1,10 @@
 import BtnCardNav from '../BtnCardNav/BtnCardNav'
 import './CardNav.css'
 
-const CardNav = () => {
+const CardNav = ({ name }) => {
   return (
     <d className="card-nav">
+      {name}
       <BtnCardNav />
     </d>
   )

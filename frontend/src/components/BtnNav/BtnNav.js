@@ -1,12 +1,9 @@
 import './BtnNav.css'
 
-const BtnNav = (props) => {
-  const handleBtnNav = () => {
-    console.log(props.nameNav)
-  }
+const BtnNav = ({ nameNav, onClick }) => {
   return (
-    <button type="button" className="btn-nav" onClick={handleBtnNav}>
-      {props.nameNav}
+    <button type="button" className="btn-nav" onClick={() => onClick(nameNav)}>
+      {nameNav}
     </button>
   )
 }

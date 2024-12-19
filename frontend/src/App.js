@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import './App.css'
 import CardNav from './components/CardNav/CardNav'
 import Form from './components/Form/Form'
@@ -6,15 +7,16 @@ import Nav from './components/Nav/Nav'
 import Status from './components/Status/Status'
 
 function App() {
+  const [nameNav, setNameNav] = useState('1')
   return (
     <div className="app">
       <header className="app-header">
         <Logo />
         <Status />
       </header>
-      <Nav />
+      <Nav onClick={setNameNav} />
       <main className="app-main">
-        <CardNav />
+        <CardNav name={nameNav} />
         <Form />
       </main>
     </div>
