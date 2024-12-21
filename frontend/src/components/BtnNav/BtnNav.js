@@ -1,4 +1,4 @@
-import './BtnNav.css'
+import './BtnNav.scss'
 
 const BtnNav = ({ nameNav, onClick }) => {
   return (

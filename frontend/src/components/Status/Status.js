@@ -1,4 +1,4 @@
-import './Status.css'
+import './Status.scss'
 
 const Status = () => {
   return <div className="status">Status</div>

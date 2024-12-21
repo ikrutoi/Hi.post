@@ -1,4 +1,4 @@
-import './BtnCardNav.css'
+import './BtnCardNav.scss'
 
 const BtnCardNav = () => {
   return (

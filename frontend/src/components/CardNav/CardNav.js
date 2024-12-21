@@ -1,5 +1,5 @@
-import BtnCardNav from '../BtnCardNav/BtnCardNav'
-import './CardNav.css'
+import BtnCardNav from './BtnCardNav/BtnCardNav'
+import './CardNav.scss'
 
 const CardNav = ({ name }) => {
   return (

@@ -1,6 +1,6 @@
 import BtnNav from '../BtnNav/BtnNav'
 import navList from '../../data/navList.json'
-import './Nav.css'
+import './Nav.scss'
 
 const Nav = ({ onClick }) => {
   return (

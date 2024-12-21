@@ -1,0 +1,19 @@
+.btn-nav {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: lightgrey;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  // border: solid 1px orange;
+}
+
+.btn-nav:hover {
+  background-color: rgb(192, 191, 191);
+  // border-color: red;
+}
+
+.nav .btn-nav:first-child {
+  margin-top: 0;
+}

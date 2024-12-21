@@ -1,9 +1,0 @@
-.form {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  border-radius: 1rem;
-  background-color: lightgrey;
-  /* border: solid 1px red; */
-}

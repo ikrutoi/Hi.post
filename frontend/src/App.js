@@ -1,23 +1,21 @@
 import { useState } from 'react'
-import './App.css'
-import CardNav from './components/CardNav/CardNav'
+import './App.scss'
 import Form from './components/Form/Form'
 import Logo from './components/Logo/Logo'
 import Nav from './components/Nav/Nav'
 import Status from './components/Status/Status'
 
 function App() {
-  const [nameNav, setNameNav] = useState('1')
+  const [nameNav, setNameNav] = useState('')
   return (
     <div className="app">
       <header className="app-header">
         <Logo />
         <Status />
       </header>
-      <Nav onClick={setNameNav} />
       <main className="app-main">
-        <CardNav name={nameNav} />
-        <Form />
+        <Nav onClick={setNameNav} />
+        <Form name={nameNav} />
       </main>
     </div>
   )
