@@ -1,0 +1,22 @@
+.card-mini-circles {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 100%;
+  padding: 4px;
+  box-sizing: border-box;
+  // border: solid 1px green;
+}
+
+.card-mini-circle {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 5px;
+  border: solid 1px grey;
+}
+
+.card-mini-circle.hover {
+  border: solid 1px #007aac;
+  background-color: #007aac;
+}
