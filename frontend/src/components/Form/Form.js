@@ -1,60 +1,43 @@
-import { useRef, useEffect, useState } from 'react'
+import useResizeObserver from '@react-hook/resize-observer'
+import { useRef, useState, useLayoutEffect } from 'react'
 import './Form.scss'
 import CardPuzzle from './CardPuzzle/CardPuzzle'
 import CardMiniPuzzle from './CardMiniPuzzle/CardMiniPuzzle'
 
+const useSize = (target) => {
+  const [size, setSize] = useState()
+
+  useLayoutEffect(() => {
+    setSize(target.current.getBoundingClientRect())
+  }, [target])
+
+  useResizeObserver(target, (entry) => setSize(entry.contentRect))
+  return size
+}
+
 const Form = ({ name, hover }) => {
-  const componentRef = useRef(null)
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
-  useEffect(() => {
-    // const handleResize = () => {
-    //   if (componentRef.current) {
-    //     setDimensions({
-    //       width: componentRef.current.offsetWidth,
-    //       height: componentRef.current.offsetHeight,
-    //     })
-    //   }
-    // }
-
-    const handleResize = () => {
-      if (componentRef.current) {
-        const { offsetWidth, offsetHeight } = componentRef.current
-        setDimensions((prevDimensions) => {
-          if (
-            prevDimensions.width !== offsetWidth ||
-            prevDimensions.height !== offsetHeight
-          ) {
-            return { width: offsetWidth, height: offsetHeight }
-          }
-          return prevDimensions
-        })
-      }
-    }
-
-    const resizeObserver = new ResizeObserver(handleResize)
-    if (componentRef.current) {
-      resizeObserver.observe(componentRef.current)
-    }
-
-    handleResize()
-
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [])
-
-  console.log(componentRef.current)
+  const target = useRef(null)
+  const size = useSize(target)
 
   return (
     <div className="form">
-      <div className="form-list">
-        <CardMiniPuzzle hover={hover} dimensionHeight={dimensions.height} />
-      </div>
-      <div className="form-down" ref={componentRef}>
-        <CardPuzzle
-          name={name}
-          dimensionHeight={dimensions.height}
-        ></CardPuzzle>
+      {size && (
+        <div className="form-list">
+          <CardMiniPuzzle
+            hover={hover}
+            dimensionHeight={size.height}
+            dimensionWidth={size.width}
+          />
+        </div>
+      )}
+      <div className="form-down" ref={target}>
+        {size && (
+          <CardPuzzle
+            name={name}
+            dimensionHeight={size.height}
+            dimensionWidth={size.width}
+          ></CardPuzzle>
+        )}
       </div>
     </div>
   )

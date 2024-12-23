@@ -1,9 +1,10 @@
 import './CardMiniPuzzle.scss'
 import cardMiniList from '../../../data/cardMiniList.json'
 import SpanCircle from './SpanCircle/SpanCircle'
+import sizeCardMini from '../../../data/ratioCardCardMini.json'
 
 const CardMiniPuzzle = ({ hover, dimensionHeight }) => {
-  const heightCardMini = dimensionHeight * 0.12
+  const heightCardMini = dimensionHeight * sizeCardMini.cardmini
   const widthCardMini = heightCardMini * 1.42
 
   return (

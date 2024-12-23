@@ -1,7 +1,8 @@
 import './CardPuzzle.scss'
+import sizeCard from '../../../data/ratioCardCardMini.json'
 
-const CardPuzzle = ({ name, dimensionHeight }) => {
-  const heightCard = dimensionHeight * 0.9
+const CardPuzzle = ({ name, dimensionHeight, dimensionWidth }) => {
+  const heightCard = dimensionHeight * sizeCard.card
   const widthCard = heightCard * 1.42
   return (
     <div

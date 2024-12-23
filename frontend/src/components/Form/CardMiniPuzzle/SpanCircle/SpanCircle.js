@@ -6,8 +6,6 @@ const SpanCircle = ({ name, hover }) => {
     if (el.classList.contains('hover')) el.classList.remove('hover')
   })
 
-  // console.log(hover)
-
   return !!hover && name === hover ? (
     <span className={`card-mini-circle circle-${name.toLowerCase()} hover`} />
   ) : (
