@@ -1,9 +1,12 @@
-import { useState } from 'react'
+// import { useState } from 'react'
+import useResizeObserver from '@react-hook/resize-observer'
+import { useRef, useState, useLayoutEffect } from 'react'
 import './App.scss'
-import Form from './components/Form/Form'
 import Logo from './components/Logo/Logo'
-import Nav from './components/Nav/Nav'
 import Status from './components/Status/Status'
+import CardsNav from './components/CardsNav/CardsNav'
+import CardForm from './components/CardForm/CardForm'
+import CardsList from './components/CardsList/CardsList'
 
 function App() {
   const [nameNav, setNameNav] = useState('')
@@ -17,6 +20,20 @@ function App() {
     setBtnNavHover('')
   }
 
+  const useSize = (target) => {
+    const [size, setSize] = useState()
+
+    useLayoutEffect(() => {
+      setSize(target.current.getBoundingClientRect())
+    }, [target])
+
+    useResizeObserver(target, (entry) => setSize(entry.contentRect))
+    return size
+  }
+
+  const target = useRef(null)
+  const size = useSize(target)
+
   return (
     <div className="app">
       <header className="app-header">
@@ -24,12 +41,29 @@ function App() {
         <Status />
       </header>
       <main className="app-main">
-        <Nav
+        <CardsNav
           onClick={setNameNav}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         />
-        <Form name={nameNav} hover={btnNavHover} />
+        <div className="form" ref={target}>
+          {size && (
+            <CardsList
+              name={nameNav}
+              hover={btnNavHover}
+              dimensionHeight={size.height}
+              dimensionWidth={size.width}
+            />
+          )}
+          {size && (
+            <CardForm
+              name={nameNav}
+              hover={btnNavHover}
+              dimensionHeight={size.height}
+              dimensionWidth={size.width}
+            />
+          )}
+        </div>
       </main>
     </div>
   )

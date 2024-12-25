@@ -1,6 +1,6 @@
-import './BtnNav.scss'
+import './BtnCardsNav.scss'
 
-const BtnNav = ({ nameNav, onClick, onMouseEnter, onMouseLeave }) => {
+const BtnCardsNav = ({ nameNav, onClick, onMouseEnter, onMouseLeave }) => {
   return (
     <button
       type="button"
@@ -15,4 +15,4 @@ const BtnNav = ({ nameNav, onClick, onMouseEnter, onMouseLeave }) => {
   )
 }
 
-export default BtnNav
+export default BtnCardsNav

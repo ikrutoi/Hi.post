@@ -1,12 +1,12 @@
-import BtnNav from '../BtnNav/BtnNav'
+import BtnCardsNav from './BtnCardNav/BtnCardsNav'
 import navList from '../../data/navList.json'
-import './Nav.scss'
+import './CardsNav.scss'
 
-const Nav = ({ onClick, onMouseEnter, onMouseLeave }) => {
+const CardsNav = ({ onClick, onMouseEnter, onMouseLeave }) => {
   return (
-    <div className="nav">
+    <div className="cards-nav">
       {navList.map((name, i) => (
-        <BtnNav
+        <BtnCardsNav
           nameNav={name}
           key={i}
           onClick={onClick}
@@ -19,4 +19,4 @@ const Nav = ({ onClick, onMouseEnter, onMouseLeave }) => {
   )
 }
 
-export default Nav
+export default CardsNav

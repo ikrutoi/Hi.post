@@ -1,5 +1,6 @@
 import './CardPuzzle.scss'
 import sizeCard from '../../../data/ratioCardCardMini.json'
+import ImgBkg from './ImgBkg/ImgBkg'
 
 const CardPuzzle = ({ name, dimensionHeight, dimensionWidth }) => {
   const heightCard = dimensionHeight * sizeCard.card
@@ -9,7 +10,7 @@ const CardPuzzle = ({ name, dimensionHeight, dimensionWidth }) => {
       className="card-puzzle"
       style={{ width: `${widthCard}px`, height: `${heightCard}px` }}
     >
-      {name}
+      <ImgBkg />
     </div>
   )
 }
