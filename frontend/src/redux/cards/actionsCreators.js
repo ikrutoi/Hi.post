@@ -1,8 +1,8 @@
 import * as a from './actionTypes'
 
-export const addAroma = (newCard) => {
+export const addCard = (newCard) => {
   return {
-    type: a.ADD_AROMA,
+    type: a.ADD_CARD,
     payload: newCard,
   }
 }
