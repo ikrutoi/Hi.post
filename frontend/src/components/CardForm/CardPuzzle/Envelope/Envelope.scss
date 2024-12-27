@@ -6,7 +6,7 @@
   padding: 1rem;
 }
 
-.envelope-my-adrdess {
+.envelope-my-address {
   grid-row: 1/2;
   grid-column: 1/2;
   display: flex;
@@ -36,6 +36,7 @@
   padding-bottom: 0.5rem;
   padding-left: 0.5rem;
   border-radius: 1rem;
+  border: solid 1px lightgray;
 }
 
 .envelope-legend {

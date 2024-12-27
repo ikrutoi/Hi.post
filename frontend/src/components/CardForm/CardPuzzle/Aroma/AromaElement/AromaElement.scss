@@ -1,0 +1,17 @@
+.aroma-element {
+  margin-top: 0.5rem;
+  height: 1.6rem;
+  background-color: lightgray;
+  border-radius: 4px;
+  cursor: pointer;
+  // border: solid 1px green;
+}
+
+.aroma-element span {
+  margin-left: 1rem;
+  background-color: lightgray;
+}
+
+.aroma-element:first-child {
+  margin-top: 0;
+}
