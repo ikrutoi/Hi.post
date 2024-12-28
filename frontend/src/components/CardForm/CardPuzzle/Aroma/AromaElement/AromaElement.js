@@ -1,11 +1,22 @@
 import './AromaElement.scss'
 
-const AromaElement = ({ make, name }) => {
+const AromaElement = ({ makeAroma, nameAroma, handleFormAroma }) => {
   return (
-    <div className="aroma-element">
-      <span>{make}</span>
-      <span>{name}</span>
-    </div>
+    <button
+      className="aroma-element"
+      type="submit"
+      onClick={() => handleFormAroma(makeAroma, nameAroma)}
+    >
+      {makeAroma ? (
+        <>
+          <span>{makeAroma}</span>
+          <span>&bull;</span>
+          <span>{nameAroma}</span>
+        </>
+      ) : (
+        <span>{nameAroma}</span>
+      )}
+    </button>
   )
 }
 

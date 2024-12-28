@@ -27,8 +27,6 @@ const CardPuzzle = ({ name, dimensionHeight, dimensionWidth }) => {
     }
   }
 
-  console.log(name)
-
   return (
     <div
       className="card-puzzle"

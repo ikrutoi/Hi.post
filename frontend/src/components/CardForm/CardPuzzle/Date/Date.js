@@ -1,7 +1,7 @@
 import './Date.scss'
 
 const Date = () => {
-  return <div className="date">Date</div>
+  return <div className="date"></div>
 }
 
 export default Date
