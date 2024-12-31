@@ -13,7 +13,11 @@ const Aroma = () => {
   })
   const dispatch = useDispatch()
   const handleFormAroma = (newMake, newName) => {
-    setFormAroma((state) => ({ ...state, make: newMake, name: newName }))
+    setFormAroma((state) => ({
+      ...state,
+      make: newMake,
+      name: newName,
+    }))
   }
 
   const handleSubmit = (e) => {
