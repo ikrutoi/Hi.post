@@ -2,7 +2,9 @@ import { useState } from 'react'
 import './Calendar.scss'
 import daysOfWeekStartFromMon from '../../../../../data/date/daysOfWeekStartFromMon.json'
 import daysOfWeekStartFromSun from '../../../../../data/date/daysOfWeekStartFromSun.json'
-import Week from '../Week/Week'
+import Week from '../CalendarWeekTitle/CalendarWeekTitle'
+import Cell from './Cell/Cell'
+import CalendarWeekTitle from '../CalendarWeekTitle/CalendarWeekTitle'
 
 const Calendar = () => {
   const [firstDayOfWeek, setFirstDayOfWeek] = useState('Sun')
@@ -43,27 +45,33 @@ const Calendar = () => {
       : new Date(currentYear, currentMonth, 1).getDay() - 1
 
   const constructionMonth = () => {
-    // const lengthFirstWeek = 7 - firstDayOfMonth
-    // const numberWeeksInMonth =
-    //   Math.ceil((daysInCurrentMonth - lengthFirstWeek) / 7) + 1
-    // console.log(numberWeeksInMonth)
-    // console.log(firstDayOfMonth)
-    // const currentDaysOfMonth =
     let month = []
-    for (let week = 0; week < 7; week++) {
-      month.push(
-        <Week
-          key={`week-${week}`}
-          firstDayOfMonth={firstDayOfMonth}
-          weekInMonth={week}
-          daysOfWeek={daysOfWeek}
-        />
-      )
+    for (let day = 1; day <= 30; day++) {
+      month.push(<Cell key={`day-${day}`} />)
     }
+    // const currentDaysOfMonth =
+    // let month = []
+    // for (let week = 0; week < 7; week++) {
+    //   month.push(
+    //     <Cell
+    //       key={`week-${week}`}
+    //       firstDayOfMonth={firstDayOfMonth}
+    //       weekInMonth={week}
+    //       daysOfWeek={daysOfWeek}
+    //     />
+    //   )
+    // }
     return month
   }
 
-  return <div className="calendar">{constructionMonth()}</div>
+  return (
+    <div className="calendar">
+      <CalendarWeekTitle daysOfWeek={daysOfWeek} />
+      <div className="calendar-month">
+        <div className="month-days">{constructionMonth()}</div>
+      </div>
+    </div>
+  )
 }
 
 export default Calendar
