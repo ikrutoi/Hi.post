@@ -50,6 +50,11 @@
   // border: solid 1px orangered;
 }
 
+.header-sign:hover {
+  cursor: pointer;
+  color: #007aac;
+}
+
 .header-date {
   display: flex;
   align-items: center;
