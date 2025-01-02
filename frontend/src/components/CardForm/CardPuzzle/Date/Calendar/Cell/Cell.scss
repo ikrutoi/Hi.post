@@ -7,7 +7,7 @@
   width: 1rem;
   height: 1rem;
   cursor: pointer;
-  border: solid 1px lightgray;
+  // border: solid 1px lightgray;
 }
 
 .cell-title {
@@ -15,5 +15,14 @@
 }
 
 .cell-day:hover {
-  color: blueviolet;
+  color: #007aac;
+}
+
+.day-before,
+.day-after {
+  color: rgb(165, 165, 165);
+}
+
+.today {
+  background-color: lightgray;
 }

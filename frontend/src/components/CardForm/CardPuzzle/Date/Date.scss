@@ -42,14 +42,17 @@
 }
 
 .header-sign {
-  width: 1.5rem;
+  // width: 1.5rem;
   height: 1.5rem;
+  padding: 0.5rem;
   border-radius: 4px;
   background-color: lightgray;
   // border: solid 1px orangered;
 }
 
 .header-date {
+  display: flex;
+  align-items: center;
   border-radius: 4px;
   margin-left: 2rem;
   margin-right: 2rem;
@@ -58,7 +61,7 @@
 }
 
 .header-date span {
-  margin: 1rem;
+  margin: 0.5rem 1rem;
   background-color: lightgray;
   // border: solid 1px green;
 }

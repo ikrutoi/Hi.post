@@ -1,14 +1,41 @@
 import './Cell.scss'
 
-const Cell = ({ dayCounter, title, dayBefore, counter, daysOfWeek }) => {
+const Cell = ({
+  title,
+  dayBefore,
+  dayCurrent,
+  dayAfter,
+  currentDate,
+  today,
+}) => {
   return title ? (
     <div className="cell cell-title">{title}</div>
-  ) : dayCounter ? (
-    <div className={`cell cell-day day-${counter}`}>{counter}</div>
+  ) : dayCurrent ? (
+    today ? (
+      <div className={`cell cell-day day-current today day-${dayCurrent}`}>
+        {dayCurrent}
+      </div>
+    ) : (
+      <div className={`cell cell-day day-current day-${dayCurrent}`}>
+        {dayCurrent}
+      </div>
+    )
   ) : dayBefore ? (
-    <div className="cell cell-day day-before">Before</div>
+    today ? (
+      <div className={`cell cell-day today day-before day-${dayBefore}`}>
+        {dayBefore}
+      </div>
+    ) : (
+      <div className={`cell cell-day day-before day-${dayBefore}`}>
+        {dayBefore}
+      </div>
+    )
+  ) : today ? (
+    <div className={`cell cell-day today day-after day-${dayAfter}`}>
+      {dayAfter}
+    </div>
   ) : (
-    <div className="cell cell-day day-after">After</div>
+    <div className={`cell cell-day day-after day-${dayAfter}`}>{dayAfter}</div>
   )
 }
 
