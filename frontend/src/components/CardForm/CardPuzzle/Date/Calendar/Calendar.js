@@ -7,32 +7,35 @@ import CalendarWeekTitle from '../CalendarWeekTitle/CalendarWeekTitle'
 import {
   currentDate,
   numberDaysInPreviousMonth,
-  daysInCurrentMonth,
+  numberDaysInCurrentMonth,
+  firstDayOfWeek,
 } from '../../../../../utils/date/date'
 
 const Calendar = ({ selectedDate }) => {
-  const [firstDayOfWeek, setFirstDayOfWeek] = useState('Sun')
+  const [firstDayOfWeekTitle, setFirstDayOfWeek] = useState('Sun')
   const daysOfWeek =
-    firstDayOfWeek === 'Sun' ? daysOfWeekStartFromSun : daysOfWeekStartFromMon
-  const firstDayOfMonth =
-    firstDayOfWeek === 'Sun'
-      ? new Date(currentDate.currentYear, currentDate.currentMonth, 1).getDay()
-      : new Date(
-          currentDate.currentYear,
-          currentDate.currentMonth,
-          1
-        ).getDay() === 0
-      ? 6
-      : new Date(
-          currentDate.currentYear,
-          currentDate.currentMonth,
-          1
-        ).getDay() - 1
+    firstDayOfWeekTitle === 'Sun'
+      ? daysOfWeekStartFromSun
+      : daysOfWeekStartFromMon
+
+  const daysInPreviousMonth = numberDaysInPreviousMonth(
+    selectedDate.year,
+    selectedDate.month,
+    0
+  )
+  const daysInCurrentMonth = numberDaysInCurrentMonth(
+    selectedDate.year,
+    selectedDate.month
+  )
 
   const constructionMonth = () => {
     let previousMonth = []
-    for (let day = 0; day < firstDayOfMonth; day++) {
-      const currentDayInPreviousMonth = numberDaysInPreviousMonth - day
+    for (
+      let day = 0;
+      day < firstDayOfWeek(firstDayOfWeekTitle, selectedDate);
+      day++
+    ) {
+      const currentDayInPreviousMonth = daysInPreviousMonth - day
       previousMonth.unshift(currentDayInPreviousMonth)
     }
     const dateTodayBefore = () => {
