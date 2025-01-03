@@ -3,6 +3,7 @@ import './Date.scss'
 import Calendar from './Calendar/Calendar'
 import CurrentDateTime from './CurrentDateTime/CurrentDateTime'
 import { currentDate } from '../../../../utils/date/date'
+import Slider from './Slider/Slider'
 
 const Date = () => {
   const [selectedDate, setSelectedDate] = useState({
@@ -10,6 +11,28 @@ const Date = () => {
     month: currentDate.currentMonth,
     day: currentDate.currentDay,
   })
+
+  const [changeYear, setChangeYear] = useState(false)
+  const handlerChangeYear = () => {
+    if (changeMonth) {
+      setChangeMonth(false)
+      setChangeYear(true)
+    }
+    if (!changeMonth) {
+      setChangeYear(true)
+    }
+  }
+
+  const [changeMonth, setChangeMonth] = useState(false)
+  const handlerChangeMonth = () => {
+    if (changeYear) {
+      setChangeYear(false)
+      setChangeMonth(true)
+    }
+    if (!changeYear) {
+      setChangeYear(true)
+    }
+  }
 
   const scrollMonthMinus = () => {
     if (selectedDate.month > 0) {
@@ -44,14 +67,18 @@ const Date = () => {
             Left
           </div>
           <div className="header-date">
-            <CurrentDateTime selectedDate={selectedDate} />
+            <CurrentDateTime
+              selectedDate={selectedDate}
+              handlerChangeYear={handlerChangeYear}
+              handlerChangeMonth={handlerChangeMonth}
+            />
           </div>
           <div className="header-sign" onClick={scrollMonthPlus}>
             Right
           </div>
         </div>
         <div className="date-slider">
-          <span className="slider-line"></span>
+          <Slider changeYear={changeYear} changeMonth={changeMonth} />
         </div>
         <div className="date-calendar">
           <Calendar selectedDate={selectedDate} />
