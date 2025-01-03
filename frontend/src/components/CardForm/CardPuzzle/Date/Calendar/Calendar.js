@@ -51,6 +51,19 @@ const Calendar = ({ selectedDate }) => {
         return date
       }
     }
+    const dateTodayAfter = () => {
+      let date = {}
+      if (currentDate.currentMonth > 0) {
+        date.year = currentDate.currentYear
+        date.month = currentDate.currentMonth - 1
+        return date
+      }
+      if (currentDate.currentMonth === 0) {
+        date.year = currentDate.currentYear - 1
+        date.month = 11
+        return date
+      }
+    }
     const month = previousMonth.map((day) => {
       return day === currentDate.currentDay &&
         selectedDate.month === dateTodayBefore().month &&
@@ -83,7 +96,15 @@ const Calendar = ({ selectedDate }) => {
     }
     const numberOfDaysRemaining = 42 - month.length
     for (let day = 1; day <= numberOfDaysRemaining; day++) {
-      month.push(<Cell key={`day-after-${day}`} dayAfter={day} />)
+      day === currentDate.currentDay &&
+      selectedDate.month === dateTodayAfter().month &&
+      selectedDate.year === dateTodayAfter().year
+        ? month.push(
+            <Cell key={`day-after-${day}`} today={true} dayAfter={day} />
+          )
+        : month.push(
+            <Cell key={`day-after-${day}`} today={false} dayAfter={day} />
+          )
     }
 
     return month
@@ -91,7 +112,11 @@ const Calendar = ({ selectedDate }) => {
 
   return (
     <div className="calendar">
-      <CalendarWeekTitle daysOfWeek={daysOfWeek} />
+      <CalendarWeekTitle
+        daysOfWeek={daysOfWeek}
+        firstDayTitle={firstDayOfWeekTitle}
+        setFirstDayOfWeek={setFirstDayOfWeek}
+      />
       <div className="calendar-month">
         <div className="month-days">{constructionMonth()}</div>
       </div>

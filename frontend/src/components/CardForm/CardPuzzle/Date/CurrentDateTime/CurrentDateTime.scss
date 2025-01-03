@@ -1,1 +1,28 @@
+.header-date span {
+  margin: 0.5rem 1rem;
+  background-color: lightgray;
+  // border: solid 1px green;
+}
 
+.date-title-year {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.date-title-month {
+  display: flex;
+  justify-content: center;
+  width: 5.5rem;
+  // border: solid 1px orange;
+}
+
+.date-title-year:hover,
+.date-title-month:hover {
+  cursor: pointer;
+  color: #007aac;
+}
+
+.date-title-day {
+  display: flex;
+  justify-content: flex-end;
+}
