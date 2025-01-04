@@ -3,15 +3,26 @@ import nameMonths from '../../../../../data/date/monthOfYear.json'
 
 const CurrentDateTime = ({
   selectedDate,
-  handlerChangeYear,
-  handlerChangeMonth,
+  handleChangeYear,
+  handleChangeMonth,
+  isActiveDateTitle,
 }) => {
   return (
     <>
-      <span className="date-title-year" onClick={handlerChangeYear}>
+      <span
+        className={`date-title-year ${
+          isActiveDateTitle === 'year' ? 'active' : ''
+        }`}
+        onClick={handleChangeYear}
+      >
         {selectedDate.year}
       </span>
-      <span className="date-title-month" onClick={handlerChangeMonth}>
+      <span
+        className={`date-title-month ${
+          isActiveDateTitle === 'month' ? 'active' : ''
+        }`}
+        onClick={handleChangeMonth}
+      >
         {nameMonths[selectedDate.month]}
       </span>
       <span className="date-title-day">{selectedDate.day}</span>

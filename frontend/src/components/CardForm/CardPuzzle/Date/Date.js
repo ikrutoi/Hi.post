@@ -13,25 +13,43 @@ const Date = () => {
   })
 
   const [changeYear, setChangeYear] = useState(false)
-  const handlerChangeYear = () => {
+  const [changeMonth, setChangeMonth] = useState(false)
+  const [isActiveDateTitle, setIsActiveDateTitle] = useState(false)
+
+  // useEffect(() => {
+  //   let intervalSliderYear
+  //   if (changeYear) {
+  //     intervalSliderYear = setInterval(() => {
+  //       setChangeYear(false)
+  //     }, 8000)
+  //   }
+  //   return () => clearInterval(intervalSliderYear)
+  // }, [changeYear])
+
+  // useEffect(() => {
+  //   let intervalSliderMonth
+  //   if (changeMonth) {
+  //     intervalSliderMonth = setInterval(() => {
+  //       setChangeMonth(false)
+  //     }, 8000)
+  //   }
+  //   return () => clearInterval(intervalSliderMonth)
+  // }, [changeMonth])
+
+  const handleChangeYear = () => {
     if (changeMonth) {
       setChangeMonth(false)
-      setChangeYear(true)
     }
-    if (!changeMonth) {
-      setChangeYear(true)
-    }
+    setChangeYear(true)
+    setIsActiveDateTitle('year')
   }
 
-  const [changeMonth, setChangeMonth] = useState(false)
-  const handlerChangeMonth = () => {
+  const handleChangeMonth = () => {
     if (changeYear) {
       setChangeYear(false)
-      setChangeMonth(true)
     }
-    if (!changeYear) {
-      setChangeYear(true)
-    }
+    setChangeMonth(true)
+    setIsActiveDateTitle('month')
   }
 
   const scrollMonthMinus = () => {
@@ -69,8 +87,9 @@ const Date = () => {
           <div className="header-date">
             <CurrentDateTime
               selectedDate={selectedDate}
-              handlerChangeYear={handlerChangeYear}
-              handlerChangeMonth={handlerChangeMonth}
+              isActiveDateTitle={isActiveDateTitle}
+              handleChangeYear={handleChangeYear}
+              handleChangeMonth={handleChangeMonth}
             />
           </div>
           <div className="header-sign" onClick={scrollMonthPlus}>
@@ -78,7 +97,11 @@ const Date = () => {
           </div>
         </div>
         <div className="date-slider">
-          <Slider changeYear={changeYear} changeMonth={changeMonth} />
+          <Slider
+            selectedDate={selectedDate}
+            changeYear={changeYear}
+            changeMonth={changeMonth}
+          />
         </div>
         <div className="date-calendar">
           <Calendar selectedDate={selectedDate} />

@@ -1,5 +1,9 @@
 .header-date span {
-  margin: 0.5rem 1rem;
+  // margin: 0.5rem 1rem;
+  // background-color: lightgray;
+  height: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
   background-color: lightgray;
   // border: solid 1px green;
 }
@@ -7,6 +11,12 @@
 .date-title-year {
   display: flex;
   justify-content: flex-start;
+}
+
+.date-title-year.active,
+.date-title-month.active {
+  color: white;
+  background-color: #007aac;
 }
 
 .date-title-month {
@@ -19,10 +29,11 @@
 .date-title-year:hover,
 .date-title-month:hover {
   cursor: pointer;
-  color: #007aac;
+  // color: #007aac;
 }
 
 .date-title-day {
   display: flex;
   justify-content: flex-end;
+  width: 1.2rem;
 }
