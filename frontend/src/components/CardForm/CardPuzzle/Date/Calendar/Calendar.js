@@ -15,9 +15,8 @@ const Calendar = ({
   selectedDateTitle,
   handleSelectedDate,
   selectedDate,
-  handleScrollPlus,
-  handleScrollMinus,
-  scrollFromCalendar,
+  changeMonthTitlePlus,
+  changeMonthTitleMinus,
 }) => {
   const [firstDayOfWeekTitle, setFirstDayOfWeek] = useState('Sun')
   const daysOfWeek =
@@ -123,8 +122,7 @@ const Calendar = ({
               : false
           }
           selectedDateTitle={selectedDateTitle}
-          handleScrollMinus={handleScrollMinus}
-          scrollFromCalendar={scrollFromCalendar}
+          changeMonthTitleMinus={changeMonthTitleMinus}
         />
       )
     })
@@ -176,8 +174,7 @@ const Calendar = ({
               : false
           }
           selectedDateTitle={selectedDateTitle}
-          handleScrollPlus={handleScrollPlus}
-          scrollFromCalendar={scrollFromCalendar}
+          changeMonthTitlePlus={changeMonthTitlePlus}
         />
       )
     }

@@ -16,27 +16,8 @@ const Date = () => {
   const [isActiveChangeYear, setIsActiveChangeYear] = useState(false)
   const [isActiveChangeMonth, setIsActiveChangeMonth] = useState(false)
   const [isActiveDateTitle, setIsActiveDateTitle] = useState(false)
-  const [scrollFromCalendar, setScrollFromCalendar] = useState(false)
+  // const [scrollFromCalendar, setScrollFromCalendar] = useState(false)
 
-  // useEffect(() => {
-  //   let intervalSliderYear
-  //   if (changeYear) {
-  //     intervalSliderYear = setInterval(() => {
-  //       setChangeYear(false)
-  //     }, 8000)
-  //   }
-  //   return () => clearInterval(intervalSliderYear)
-  // }, [changeYear])
-
-  // useEffect(() => {
-  //   let intervalSliderMonth
-  //   if (changeMonth) {
-  //     intervalSliderMonth = setInterval(() => {
-  //       setChangeMonth(false)
-  //     }, 8000)
-  //   }
-  //   return () => clearInterval(intervalSliderMonth)
-  // }, [changeMonth])
   const handleSelectedDate = (selectedYear, selectedMonth, selectedDay) => {
     setSelectedDate({
       year: selectedYear,
@@ -67,85 +48,53 @@ const Date = () => {
     setIsActiveDateTitle('month')
   }
 
-  const handleScrollMinus = (scrollFromCalendar) => {
+  const changeMonthTitleMinus = () => {
+    if (selectedDateTitle.month > 0) {
+      setSelectedDateTitle((state) => {
+        return { ...state, month: selectedDateTitle.month - 1 }
+      })
+    }
+    if (selectedDateTitle.month === 0) {
+      setSelectedDateTitle((state) => {
+        return { ...state, month: 11, year: selectedDateTitle.year - 1 }
+      })
+    }
+  }
+
+  const handleScrollMinus = () => {
     if (isActiveChangeYear) {
       setSelectedDateTitle((state) => {
         return { ...state, year: selectedDateTitle.year - 1 }
       })
     }
-    if (isActiveChangeMonth || scrollFromCalendar) {
-      if (selectedDateTitle.month > 0) {
-        setSelectedDateTitle((state) => {
-          return { ...state, month: selectedDateTitle.month - 1 }
-        })
-      }
-      if (selectedDateTitle.month === 0) {
-        setSelectedDateTitle((state) => {
-          return { ...state, month: 11, year: selectedDateTitle.year - 1 }
-        })
-      }
+    if (isActiveChangeMonth) {
+      changeMonthTitleMinus()
     }
   }
 
-  const handleScrollPlus = (scrollFromCalendar) => {
+  const changeMonthTitlePlus = () => {
+    if (selectedDateTitle.month < 11) {
+      setSelectedDateTitle((state) => {
+        return { ...state, month: selectedDateTitle.month + 1 }
+      })
+    }
+    if (selectedDateTitle.month === 11) {
+      setSelectedDateTitle((state) => {
+        return { ...state, month: 0, year: selectedDateTitle.year + 1 }
+      })
+    }
+  }
+
+  const handleScrollPlus = () => {
     if (isActiveChangeYear) {
       setSelectedDateTitle((state) => {
         return { ...state, year: selectedDateTitle.year + 1 }
       })
     }
-    if (isActiveChangeMonth || scrollFromCalendar) {
-      if (selectedDateTitle.month < 11) {
-        setSelectedDateTitle((state) => {
-          return { ...state, month: selectedDateTitle.month + 1 }
-        })
-      }
-      if (selectedDateTitle.month === 11) {
-        setSelectedDateTitle((state) => {
-          return { ...state, month: 0, year: selectedDateTitle.year + 1 }
-        })
-      }
+    if (isActiveChangeMonth) {
+      changeMonthTitlePlus()
     }
   }
-
-  // const scrollMonthMinus = () => {
-  //   if (selectedDateTitle.month > 0) {
-  //     setSelectedDateTitle((state) => {
-  //       return { ...state, month: selectedDateTitle.month - 1 }
-  //     })
-  //   }
-  //   if (selectedDateTitle.month === 0) {
-  //     setSelectedDateTitle((state) => {
-  //       return { ...state, month: 11, year: selectedDateTitle.year - 1 }
-  //     })
-  //   }
-  // }
-
-  // const scrollMonthPlus = () => {
-  //   if (selectedDateTitle.month < 11) {
-  //     setSelectedDateTitle((state) => {
-  //       return { ...state, month: selectedDateTitle.month + 1 }
-  //     })
-  //   }
-  //   if (selectedDateTitle.month === 11) {
-  //     setSelectedDateTitle((state) => {
-  //       return { ...state, month: 0, year: selectedDateTitle.year + 1 }
-  //     })
-  //   }
-  // }
-
-  // const scrollYearPlus = () => {
-  //   setSelectedDateTitle((state) => {
-  //     return { ...state, year: selectedDateTitle.year + 1 }
-  //   })
-  // }
-
-  // const scrollYearMinus = () => {
-  //   setSelectedDateTitle((state) => {
-  //     return { ...state, year: selectedDateTitle.year - 1 }
-  //   })
-  // }
-
-  // const handleChangeMonthWithSlider = () => {}
 
   return (
     <div className="date">
@@ -179,9 +128,10 @@ const Date = () => {
             selectedDate={selectedDate}
             selectedDateTitle={selectedDateTitle}
             handleSelectedDate={handleSelectedDate}
-            handleScrollPlus={handleScrollPlus}
-            handleScrollMinus={handleScrollMinus}
-            scrollFromCalendar={scrollFromCalendar}
+            // handleScrollPlus={handleScrollPlus}
+            // handleScrollMinus={handleScrollMinus}
+            changeMonthTitlePlus={changeMonthTitlePlus}
+            changeMonthTitleMinus={changeMonthTitleMinus}
           />
         </div>
       </form>
