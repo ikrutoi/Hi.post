@@ -10,8 +10,9 @@ const Cell = ({
   handleSelectedDate,
   selectedDate,
   selectedDateTitle,
-  scrollMonthPlus,
-  scrollMonthMinus,
+  handleScrollPlus,
+  handleScrollMinus,
+  scrollFromCalendar,
 }) => {
   return title ? (
     <div className="cell cell-title">{title}</div>
@@ -35,7 +36,7 @@ const Cell = ({
       className={`cell cell-day ${
         today ? 'today' : ''
       } day-before day-${dayBefore} ${selectedDate ? 'selected' : ''}`}
-      onClick={scrollMonthMinus}
+      onClick={() => handleScrollMinus(true)}
     >
       {dayBefore}
     </div>
@@ -44,7 +45,7 @@ const Cell = ({
       className={`cell cell-day ${
         today ? 'today' : ''
       } day-after day-${dayAfter} ${selectedDate ? 'selected' : ''}`}
-      onClick={scrollMonthPlus}
+      onClick={() => handleScrollPlus(true)}
     >
       {dayAfter}
     </div>

@@ -16,6 +16,7 @@ const Date = () => {
   const [isActiveChangeYear, setIsActiveChangeYear] = useState(false)
   const [isActiveChangeMonth, setIsActiveChangeMonth] = useState(false)
   const [isActiveDateTitle, setIsActiveDateTitle] = useState(false)
+  const [scrollFromCalendar, setScrollFromCalendar] = useState(false)
 
   // useEffect(() => {
   //   let intervalSliderYear
@@ -66,31 +67,83 @@ const Date = () => {
     setIsActiveDateTitle('month')
   }
 
-  const scrollMonthMinus = () => {
-    if (selectedDateTitle.month > 0) {
+  const handleScrollMinus = (scrollFromCalendar) => {
+    if (isActiveChangeYear) {
       setSelectedDateTitle((state) => {
-        return { ...state, month: selectedDateTitle.month - 1 }
+        return { ...state, year: selectedDateTitle.year - 1 }
       })
     }
-    if (selectedDateTitle.month === 0) {
-      setSelectedDateTitle((state) => {
-        return { ...state, month: 11, year: selectedDateTitle.year - 1 }
-      })
+    if (isActiveChangeMonth || scrollFromCalendar) {
+      if (selectedDateTitle.month > 0) {
+        setSelectedDateTitle((state) => {
+          return { ...state, month: selectedDateTitle.month - 1 }
+        })
+      }
+      if (selectedDateTitle.month === 0) {
+        setSelectedDateTitle((state) => {
+          return { ...state, month: 11, year: selectedDateTitle.year - 1 }
+        })
+      }
     }
   }
 
-  const scrollMonthPlus = () => {
-    if (selectedDateTitle.month < 11) {
+  const handleScrollPlus = (scrollFromCalendar) => {
+    if (isActiveChangeYear) {
       setSelectedDateTitle((state) => {
-        return { ...state, month: selectedDateTitle.month + 1 }
+        return { ...state, year: selectedDateTitle.year + 1 }
       })
     }
-    if (selectedDateTitle.month === 11) {
-      setSelectedDateTitle((state) => {
-        return { ...state, month: 0, year: selectedDateTitle.year + 1 }
-      })
+    if (isActiveChangeMonth || scrollFromCalendar) {
+      if (selectedDateTitle.month < 11) {
+        setSelectedDateTitle((state) => {
+          return { ...state, month: selectedDateTitle.month + 1 }
+        })
+      }
+      if (selectedDateTitle.month === 11) {
+        setSelectedDateTitle((state) => {
+          return { ...state, month: 0, year: selectedDateTitle.year + 1 }
+        })
+      }
     }
   }
+
+  // const scrollMonthMinus = () => {
+  //   if (selectedDateTitle.month > 0) {
+  //     setSelectedDateTitle((state) => {
+  //       return { ...state, month: selectedDateTitle.month - 1 }
+  //     })
+  //   }
+  //   if (selectedDateTitle.month === 0) {
+  //     setSelectedDateTitle((state) => {
+  //       return { ...state, month: 11, year: selectedDateTitle.year - 1 }
+  //     })
+  //   }
+  // }
+
+  // const scrollMonthPlus = () => {
+  //   if (selectedDateTitle.month < 11) {
+  //     setSelectedDateTitle((state) => {
+  //       return { ...state, month: selectedDateTitle.month + 1 }
+  //     })
+  //   }
+  //   if (selectedDateTitle.month === 11) {
+  //     setSelectedDateTitle((state) => {
+  //       return { ...state, month: 0, year: selectedDateTitle.year + 1 }
+  //     })
+  //   }
+  // }
+
+  // const scrollYearPlus = () => {
+  //   setSelectedDateTitle((state) => {
+  //     return { ...state, year: selectedDateTitle.year + 1 }
+  //   })
+  // }
+
+  // const scrollYearMinus = () => {
+  //   setSelectedDateTitle((state) => {
+  //     return { ...state, year: selectedDateTitle.year - 1 }
+  //   })
+  // }
 
   // const handleChangeMonthWithSlider = () => {}
 
@@ -98,7 +151,7 @@ const Date = () => {
     <div className="date">
       <form className="date-form">
         <div className="date-header">
-          <div className="header-sign" onClick={scrollMonthMinus}>
+          <div className="header-sign" onClick={handleScrollMinus}>
             Left
           </div>
           <div className="header-date">
@@ -109,7 +162,7 @@ const Date = () => {
               handleChangeMonth={handleChangeMonth}
             />
           </div>
-          <div className="header-sign" onClick={scrollMonthPlus}>
+          <div className="header-sign" onClick={handleScrollPlus}>
             Right
           </div>
         </div>
@@ -126,8 +179,9 @@ const Date = () => {
             selectedDate={selectedDate}
             selectedDateTitle={selectedDateTitle}
             handleSelectedDate={handleSelectedDate}
-            scrollMonthMinus={scrollMonthMinus}
-            scrollMonthPlus={scrollMonthPlus}
+            handleScrollPlus={handleScrollPlus}
+            handleScrollMinus={handleScrollMinus}
+            scrollFromCalendar={scrollFromCalendar}
           />
         </div>
       </form>

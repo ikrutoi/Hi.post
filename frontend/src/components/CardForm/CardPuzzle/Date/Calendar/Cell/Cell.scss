@@ -32,6 +32,10 @@
   background-color: #007aac;
 }
 
+.cell.selected:hover {
+  color: white;
+}
+
 .day-before.selected,
 .day-after.selected {
   color: white;
