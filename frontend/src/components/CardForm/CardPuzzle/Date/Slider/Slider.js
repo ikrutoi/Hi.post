@@ -1,15 +1,24 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 import './Slider.scss'
 import { currentDate } from '../../../../../utils/date/date'
 
-const Slider = ({ changeYear, changeMonth, selectedDateTitle }) => {
-  const [valueYear, setValueYear] = useState(selectedDateTitle.year)
-  const [valueMonth, setValueMonth] = useState(selectedDateTitle.month)
+const Slider = ({
+  isActiveChangeYear,
+  isActiveChangeMonth,
+  selectedDateTitle,
+  setSelectedDateTitle,
+}) => {
+  const handleChangeYear = (event) =>
+    setSelectedDateTitle((state) => {
+      return { ...state, year: event.target.value }
+    })
 
-  const handleChangeYear = (event) => setValueYear(event.target.value)
-  const handleChangeMonth = (event) => setValueMonth(event.target.value)
+  const handleChangeMonth = (event) =>
+    setSelectedDateTitle((state) => {
+      return { ...state, month: event.target.value }
+    })
 
-  if (changeYear) {
+  if (isActiveChangeYear) {
     return (
       <>
         <input
@@ -17,13 +26,13 @@ const Slider = ({ changeYear, changeMonth, selectedDateTitle }) => {
           className="slider-line slider-line-year"
           min={currentDate.currentYear}
           max={currentDate.currentYear + 100}
-          value={valueYear}
+          value={selectedDateTitle.year}
           onChange={handleChangeYear}
         ></input>
       </>
     )
   }
-  if (changeMonth) {
+  if (isActiveChangeMonth) {
     return (
       <>
         <input
@@ -31,13 +40,13 @@ const Slider = ({ changeYear, changeMonth, selectedDateTitle }) => {
           className="slider-line slider-line-month"
           min="0"
           max="11"
-          value={valueMonth}
+          value={selectedDateTitle.month}
           onChange={handleChangeMonth}
         ></input>
       </>
     )
   }
-  if (!changeYear && !changeMonth) {
+  if (!isActiveChangeYear && !isActiveChangeMonth) {
     return <span className="slider-default"></span>
   }
 }

@@ -11,7 +11,13 @@ import {
   firstDayOfWeek,
 } from '../../../../../utils/date/date'
 
-const Calendar = ({ selectedDateTitle, handleSelectedDate, selectedDate }) => {
+const Calendar = ({
+  selectedDateTitle,
+  handleSelectedDate,
+  selectedDate,
+  scrollMonthPlus,
+  scrollMonthMinus,
+}) => {
   const [firstDayOfWeekTitle, setFirstDayOfWeek] = useState('Sun')
   const daysOfWeek =
     firstDayOfWeekTitle === 'Sun'
@@ -116,6 +122,7 @@ const Calendar = ({ selectedDateTitle, handleSelectedDate, selectedDate }) => {
               : false
           }
           selectedDateTitle={selectedDateTitle}
+          scrollMonthMinus={scrollMonthMinus}
         />
       )
     })
@@ -167,6 +174,7 @@ const Calendar = ({ selectedDateTitle, handleSelectedDate, selectedDate }) => {
               : false
           }
           selectedDateTitle={selectedDateTitle}
+          scrollMonthPlus={scrollMonthPlus}
         />
       )
     }

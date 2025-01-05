@@ -12,8 +12,9 @@ const Date = () => {
     day: currentDate.currentDay,
   })
   const [selectedDate, setSelectedDate] = useState(false)
-  const [changeYear, setChangeYear] = useState(false)
-  const [changeMonth, setChangeMonth] = useState(false)
+
+  const [isActiveChangeYear, setIsActiveChangeYear] = useState(false)
+  const [isActiveChangeMonth, setIsActiveChangeMonth] = useState(false)
   const [isActiveDateTitle, setIsActiveDateTitle] = useState(false)
 
   // useEffect(() => {
@@ -41,7 +42,6 @@ const Date = () => {
       month: selectedMonth,
       day: selectedDay,
     })
-    console.log('selectedDate:', selectedYear, selectedMonth, selectedDay)
     setSelectedDateTitle((state) => {
       return {
         ...state,
@@ -51,18 +51,18 @@ const Date = () => {
   }
 
   const handleChangeYear = () => {
-    if (changeMonth) {
-      setChangeMonth(false)
+    if (isActiveChangeMonth) {
+      setIsActiveChangeMonth(false)
     }
-    setChangeYear(true)
+    setIsActiveChangeYear(true)
     setIsActiveDateTitle('year')
   }
 
   const handleChangeMonth = () => {
-    if (changeYear) {
-      setChangeYear(false)
+    if (isActiveChangeYear) {
+      setIsActiveChangeYear(false)
     }
-    setChangeMonth(true)
+    setIsActiveChangeMonth(true)
     setIsActiveDateTitle('month')
   }
 
@@ -78,6 +78,7 @@ const Date = () => {
       })
     }
   }
+
   const scrollMonthPlus = () => {
     if (selectedDateTitle.month < 11) {
       setSelectedDateTitle((state) => {
@@ -90,6 +91,8 @@ const Date = () => {
       })
     }
   }
+
+  // const handleChangeMonthWithSlider = () => {}
 
   return (
     <div className="date">
@@ -113,8 +116,9 @@ const Date = () => {
         <div className="date-slider">
           <Slider
             selectedDateTitle={selectedDateTitle}
-            changeYear={changeYear}
-            changeMonth={changeMonth}
+            isActiveChangeYear={isActiveChangeYear}
+            isActiveChangeMonth={isActiveChangeMonth}
+            setSelectedDateTitle={setSelectedDateTitle}
           />
         </div>
         <div className="date-calendar">
@@ -122,6 +126,8 @@ const Date = () => {
             selectedDate={selectedDate}
             selectedDateTitle={selectedDateTitle}
             handleSelectedDate={handleSelectedDate}
+            scrollMonthMinus={scrollMonthMinus}
+            scrollMonthPlus={scrollMonthPlus}
           />
         </div>
       </form>
