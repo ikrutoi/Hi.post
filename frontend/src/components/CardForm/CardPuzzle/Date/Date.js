@@ -6,12 +6,12 @@ import { currentDate } from '../../../../utils/date/date'
 import Slider from './Slider/Slider'
 
 const Date = () => {
-  const [selectedDate, setSelectedDate] = useState({
+  const [selectedDateTitle, setSelectedDateTitle] = useState({
     year: currentDate.currentYear,
     month: currentDate.currentMonth,
     day: currentDate.currentDay,
   })
-
+  const [selectedDate, setSelectedDate] = useState(false)
   const [changeYear, setChangeYear] = useState(false)
   const [changeMonth, setChangeMonth] = useState(false)
   const [isActiveDateTitle, setIsActiveDateTitle] = useState(false)
@@ -35,6 +35,20 @@ const Date = () => {
   //   }
   //   return () => clearInterval(intervalSliderMonth)
   // }, [changeMonth])
+  const handleSelectedDate = (selectedYear, selectedMonth, selectedDay) => {
+    setSelectedDate({
+      year: selectedYear,
+      month: selectedMonth,
+      day: selectedDay,
+    })
+    console.log('selectedDate:', selectedYear, selectedMonth, selectedDay)
+    setSelectedDateTitle((state) => {
+      return {
+        ...state,
+        day: selectedDay,
+      }
+    })
+  }
 
   const handleChangeYear = () => {
     if (changeMonth) {
@@ -53,26 +67,26 @@ const Date = () => {
   }
 
   const scrollMonthMinus = () => {
-    if (selectedDate.month > 0) {
-      setSelectedDate((state) => {
-        return { ...state, month: selectedDate.month - 1 }
+    if (selectedDateTitle.month > 0) {
+      setSelectedDateTitle((state) => {
+        return { ...state, month: selectedDateTitle.month - 1 }
       })
     }
-    if (selectedDate.month === 0) {
-      setSelectedDate((state) => {
-        return { ...state, month: 11, year: selectedDate.year - 1 }
+    if (selectedDateTitle.month === 0) {
+      setSelectedDateTitle((state) => {
+        return { ...state, month: 11, year: selectedDateTitle.year - 1 }
       })
     }
   }
   const scrollMonthPlus = () => {
-    if (selectedDate.month < 11) {
-      setSelectedDate((state) => {
-        return { ...state, month: selectedDate.month + 1 }
+    if (selectedDateTitle.month < 11) {
+      setSelectedDateTitle((state) => {
+        return { ...state, month: selectedDateTitle.month + 1 }
       })
     }
-    if (selectedDate.month === 11) {
-      setSelectedDate((state) => {
-        return { ...state, month: 0, year: selectedDate.year + 1 }
+    if (selectedDateTitle.month === 11) {
+      setSelectedDateTitle((state) => {
+        return { ...state, month: 0, year: selectedDateTitle.year + 1 }
       })
     }
   }
@@ -86,7 +100,7 @@ const Date = () => {
           </div>
           <div className="header-date">
             <CurrentDateTime
-              selectedDate={selectedDate}
+              selectedDateTitle={selectedDateTitle}
               isActiveDateTitle={isActiveDateTitle}
               handleChangeYear={handleChangeYear}
               handleChangeMonth={handleChangeMonth}
@@ -98,13 +112,17 @@ const Date = () => {
         </div>
         <div className="date-slider">
           <Slider
-            selectedDate={selectedDate}
+            selectedDateTitle={selectedDateTitle}
             changeYear={changeYear}
             changeMonth={changeMonth}
           />
         </div>
         <div className="date-calendar">
-          <Calendar selectedDate={selectedDate} />
+          <Calendar
+            selectedDate={selectedDate}
+            selectedDateTitle={selectedDateTitle}
+            handleSelectedDate={handleSelectedDate}
+          />
         </div>
       </form>
     </div>

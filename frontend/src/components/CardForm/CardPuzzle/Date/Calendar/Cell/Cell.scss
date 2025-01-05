@@ -23,6 +23,17 @@
   color: rgb(165, 165, 165);
 }
 
-.today {
+.cell.today {
   background-color: lightgray;
+}
+
+.cell.selected {
+  color: white;
+  background-color: #007aac;
+}
+
+.day-before.selected,
+.day-after.selected {
+  color: white;
+  background-color: #b6dae9;
 }

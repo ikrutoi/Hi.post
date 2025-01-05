@@ -3,7 +3,6 @@ import * as a from './actionTypes'
 const initialState = []
 
 const cardSectionsReducer = (state = initialState, action) => {
-  console.log(action)
   switch (action.type) {
     case a.ADD_CARDPHOTO:
       return [action.payload]

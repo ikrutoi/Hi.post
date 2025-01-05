@@ -2,7 +2,7 @@ import './CurrentDateTime.scss'
 import nameMonths from '../../../../../data/date/monthOfYear.json'
 
 const CurrentDateTime = ({
-  selectedDate,
+  selectedDateTitle,
   handleChangeYear,
   handleChangeMonth,
   isActiveDateTitle,
@@ -15,7 +15,7 @@ const CurrentDateTime = ({
         }`}
         onClick={handleChangeYear}
       >
-        {selectedDate.year}
+        {selectedDateTitle.year}
       </span>
       <span
         className={`date-title-month ${
@@ -23,9 +23,9 @@ const CurrentDateTime = ({
         }`}
         onClick={handleChangeMonth}
       >
-        {nameMonths[selectedDate.month]}
+        {nameMonths[selectedDateTitle.month]}
       </span>
-      <span className="date-title-day">{selectedDate.day}</span>
+      <span className="date-title-day">{selectedDateTitle.day}</span>
     </>
   )
 }

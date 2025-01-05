@@ -2,9 +2,9 @@ import { useState } from 'react'
 import './Slider.scss'
 import { currentDate } from '../../../../../utils/date/date'
 
-const Slider = ({ changeYear, changeMonth, selectedDate }) => {
-  const [valueYear, setValueYear] = useState(selectedDate.year)
-  const [valueMonth, setValueMonth] = useState(selectedDate.month)
+const Slider = ({ changeYear, changeMonth, selectedDateTitle }) => {
+  const [valueYear, setValueYear] = useState(selectedDateTitle.year)
+  const [valueMonth, setValueMonth] = useState(selectedDateTitle.month)
 
   const handleChangeYear = (event) => setValueYear(event.target.value)
   const handleChangeMonth = (event) => setValueMonth(event.target.value)
