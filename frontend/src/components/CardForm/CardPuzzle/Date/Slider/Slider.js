@@ -3,20 +3,15 @@ import './Slider.scss'
 import { currentDate } from '../../../../../utils/date/date'
 
 const Slider = ({
+  selectedDateTitle,
+  handleChangeDateFromSlider,
   isActiveChangeYear,
   isActiveChangeMonth,
-  selectedDateTitle,
-  setSelectedDateTitle,
 }) => {
-  const handleChangeYear = (event) =>
-    setSelectedDateTitle((state) => {
-      return { ...state, year: event.target.value }
-    })
-
-  const handleChangeMonth = (event) =>
-    setSelectedDateTitle((state) => {
-      return { ...state, month: event.target.value }
-    })
+  // const handleChangeYear = (event) =>
+  //   setSelectedDateTitle((state) => {
+  //     return { ...state, year: event.target.value }
+  //   })
 
   if (isActiveChangeYear) {
     return (
@@ -27,7 +22,9 @@ const Slider = ({
           min={currentDate.currentYear}
           max={currentDate.currentYear + 100}
           value={selectedDateTitle.year}
-          onChange={handleChangeYear}
+          onChange={(event) =>
+            handleChangeDateFromSlider('year', event.target.value)
+          }
         ></input>
       </>
     )
@@ -41,7 +38,9 @@ const Slider = ({
           min="0"
           max="11"
           value={selectedDateTitle.month}
-          onChange={handleChangeMonth}
+          onChange={(event) =>
+            handleChangeDateFromSlider('month', event.target.value)
+          }
         ></input>
       </>
     )
