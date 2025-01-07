@@ -1,25 +1,31 @@
-// import { useSelector } from 'react-redux'
 import { useSelector } from 'react-redux'
 import CardMiniPuzzle from './CardMiniPuzzle/CardMiniPuzzle'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import './CardsList.scss'
 
 const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
-  const sections = useSelector((state) => state.cardSections)
-  const selectedSectors = sections.map((section) => section.section)
+  const sections = useSelector((state) => state.cardEdit)
+  const listSelectedSections = []
+  for (let section in sections) {
+    if (!!sections[section]) {
+      listSelectedSections.push(section)
+    }
+  }
+
   return (
     <div className="cards-list">
       <CardMiniPuzzle
         hover={hover}
-        selectedSectors={selectedSectors}
+        listSelectedSections={listSelectedSections}
         dimensionHeight={dimensionHeight}
         dimensionWidth={dimensionWidth}
       />
-      {sections.length !== 0 ? (
-        sections.map((section, i) => (
+      {listSelectedSections.length !== 0 ? (
+        listSelectedSections.map((selectedSection, i) => (
           <CardMiniSection
-            key={i}
-            section={section}
+            key={`${selectedSection}-${i}`}
+            section={selectedSection}
+            valueSection={sections[selectedSection]}
             dimensionHeight={dimensionHeight}
             dimensionWidth={dimensionWidth}
           />

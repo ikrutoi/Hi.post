@@ -11,10 +11,12 @@
   // border: solid 1px green;
 }
 
-.aroma-element button {
-  // user-select: none;
-  background-color: lightgray;
-  border: none;
+.aroma-element:hover {
+  color: #007aac;
+}
+
+.aroma-element.selected {
+  color: #007aac;
 }
 
 .aroma-element span {

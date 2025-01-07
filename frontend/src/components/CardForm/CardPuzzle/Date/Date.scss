@@ -45,13 +45,13 @@
 .header-left-right {
   display: flex;
   align-items: center;
+  font-size: 1rem;
   // border: solid 1px red;
 }
 
 .header-today-selected {
   display: flex;
   width: 8rem;
-  font-size: 0.9rem;
   cursor: pointer;
   // border: solid 1px green;
 }

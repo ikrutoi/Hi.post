@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { addDate } from '../../../../redux/cardEdit/actionCreators'
 import './Date.scss'
 import Calendar from './Calendar/Calendar'
 import CurrentDateTime from './CurrentDateTime/CurrentDateTime'
@@ -7,12 +10,21 @@ import Slider from './Slider/Slider'
 import nameMonths from '../../../../data/date/monthOfYear.json'
 
 const Date = () => {
-  const [selectedDateTitle, setSelectedDateTitle] = useState({
-    year: currentDate.currentYear,
-    month: currentDate.currentMonth,
-    day: currentDate.currentDay,
-  })
-  const [selectedDate, setSelectedDate] = useState(false)
+  const selectors = useSelector((state) => state.cardEdit)
+  const inputValueSelectedDate = selectors.date
+    ? selectors.date
+    : {
+        year: currentDate.currentYear,
+        month: currentDate.currentMonth,
+        day: currentDate.currentDay,
+      }
+  const dispatch = useDispatch()
+  const [selectedDateTitle, setSelectedDateTitle] = useState(
+    inputValueSelectedDate
+  )
+  const [selectedDate, setSelectedDate] = useState(
+    selectors.date ? selectors.date : null
+  )
 
   const [isActiveChangeYear, setIsActiveChangeYear] = useState(false)
   const [isActiveChangeMonth, setIsActiveChangeMonth] = useState(false)
@@ -43,6 +55,13 @@ const Date = () => {
         day: selectedDay,
       }
     })
+    dispatch(
+      addDate({
+        year: selectedYear,
+        month: selectedMonth,
+        day: selectedDay,
+      })
+    )
   }
 
   const handleChangeYear = () => {

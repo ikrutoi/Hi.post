@@ -1,11 +1,22 @@
 import './AromaElement.scss'
 
-const AromaElement = ({ makeAroma, nameAroma, handleFormAroma }) => {
+const AromaElement = ({
+  selectedAroma,
+  makeAroma,
+  nameAroma,
+  setSelectedAroma,
+}) => {
   return (
     <button
-      className="aroma-element"
+      className={`aroma-element ${
+        !!selectedAroma &&
+        selectedAroma.make === makeAroma &&
+        selectedAroma.name === nameAroma
+          ? 'selected'
+          : ''
+      }`}
       type="submit"
-      onClick={() => handleFormAroma(makeAroma, nameAroma)}
+      onClick={() => setSelectedAroma({ make: makeAroma, name: nameAroma })}
     >
       {makeAroma ? (
         <>

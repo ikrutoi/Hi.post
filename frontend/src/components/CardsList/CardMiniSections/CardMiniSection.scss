@@ -1,4 +1,25 @@
 .card-mini-section {
+  display: flex;
+  flex-direction: column;
   margin-left: 1rem;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+  box-sizing: border-box;
   // border: solid 1px blue;
+}
+
+.mini-section-title {
+  // margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  // border: solid 1px red;
+}
+
+.mini-section-value {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  font-size: 0.85rem;
+  color: #007aac;
+  // border: solid 1px green;
 }

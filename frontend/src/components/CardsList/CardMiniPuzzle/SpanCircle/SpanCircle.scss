@@ -22,3 +22,8 @@
   border: solid 1px #007aac;
   background-color: #007aac;
 }
+
+.card-mini-circle.selected {
+  background-color: rgba(255, 255, 255, 0);
+  border-color: rgba(255, 255, 255, 0);
+}
