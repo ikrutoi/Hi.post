@@ -15,8 +15,8 @@ const cardEditReducer = (state = initialState, action) => {
     //   return [action.payload]
     // case a.ADD_CARDTEXT:
     //   return [action.payload]
-    // case a.ADD_ENVELOPE:
-    //   return [action.payload]
+    case a.ADD_ENVELOPE:
+      return { ...state, date: action.payload }
     case a.ADD_DATE:
       return { ...state, date: action.payload }
     case a.ADD_AROMA:

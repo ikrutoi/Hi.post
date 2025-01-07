@@ -8,9 +8,28 @@ const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
   const listSelectedSections = []
   for (let section in sections) {
     if (!!sections[section]) {
-      listSelectedSections.push(section)
+      switch (section) {
+        case 'cardphoto':
+          listSelectedSections.push(`1-${section}`)
+          break
+        case 'cardtext':
+          listSelectedSections.push(`2-${section}`)
+          break
+        case 'envelope':
+          listSelectedSections.push(`3-${section}`)
+          break
+        case 'date':
+          listSelectedSections.push(`4-${section}`)
+          break
+        case 'aroma':
+          listSelectedSections.push(`5-${section}`)
+          break
+        default:
+          break
+      }
     }
   }
+  const listSortSelectedSections = listSelectedSections.sort()
 
   return (
     <div className="cards-list">
@@ -20,12 +39,12 @@ const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
         dimensionHeight={dimensionHeight}
         dimensionWidth={dimensionWidth}
       />
-      {listSelectedSections.length !== 0 ? (
-        listSelectedSections.map((selectedSection, i) => (
+      {listSortSelectedSections.length !== 0 ? (
+        listSortSelectedSections.map((selectedSection, i) => (
           <CardMiniSection
-            key={`${selectedSection}-${i}`}
-            section={selectedSection}
-            valueSection={sections[selectedSection]}
+            key={`${selectedSection.split('-')[1]}-${i}`}
+            section={selectedSection.split('-')[1]}
+            valueSection={sections[selectedSection.split('-')[1]]}
             dimensionHeight={dimensionHeight}
             dimensionWidth={dimensionWidth}
           />

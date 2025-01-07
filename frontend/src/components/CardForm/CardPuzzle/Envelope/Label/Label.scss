@@ -1,8 +1,28 @@
+.envelope-label {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 1rem;
+}
+
 .envelope-input {
   width: 100%;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  box-sizing: border-box;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: #007aac;
   background-color: lightgray;
   border: none;
   height: 1.6rem;
   border-radius: 4px;
+  outline: none;
+  letter-spacing: 1px;
   // user-select: none;
+}
+
+.form-to-address .envelope-legend,
+.form-to-address .envelope-label,
+.form-to-address .envelope-input {
+  text-align: right;
 }
