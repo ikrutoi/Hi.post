@@ -31,6 +31,8 @@ const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
   }
   const listSortSelectedSections = listSelectedSections.sort()
 
+  console.log(listSortSelectedSections)
+
   return (
     <div className="cards-list">
       <CardMiniPuzzle

@@ -1,1 +1,12 @@
+.input-two-elements {
+  display: flex;
+}
 
+.input-two-elements label:first-child {
+  width: 30%;
+  margin-right: 0.5rem;
+}
+
+.input-two-elements label:last-child {
+  width: 70%;
+}

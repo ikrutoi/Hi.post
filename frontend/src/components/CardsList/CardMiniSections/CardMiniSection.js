@@ -8,11 +8,19 @@ const CardMiniSection = ({ section, valueSection, dimensionHeight }) => {
 
   const renderSection = (section, valueSection) => {
     switch (section) {
-      case 'aroma':
+      case 'cardphoto':
+        return <span className="mini-section-value"></span>
+      case 'cardtext':
+        return <span className="mini-section-value"></span>
+      case 'envelope':
         return (
           <span className="mini-section-value">
-            <span>{valueSection.make}</span>
-            <span>{valueSection.name}</span>
+            <span className="mini-envelope"></span>
+            {/* <img
+              className="mini-envelope"
+              src="../../../data/envelope-mini-notactive.png"
+              alt="Description"
+            /> */}
           </span>
         )
       case 'date':
@@ -23,6 +31,13 @@ const CardMiniSection = ({ section, valueSection, dimensionHeight }) => {
             <span>{valueSection.day}</span>
           </span>
         )
+      case 'aroma':
+        return (
+          <span className="mini-section-value">
+            <span>{valueSection.make}</span>
+            <span>{valueSection.name}</span>
+          </span>
+        )
       default:
         break
     }
@@ -30,10 +45,10 @@ const CardMiniSection = ({ section, valueSection, dimensionHeight }) => {
 
   return (
     <div
-      className="card-mini-section"
+      className={`card-mini-section card-mini-${section}`}
       style={{ width: `${widthCardMini}px`, height: `${heightCardMini}px` }}
     >
-      <span className="mini-section-title">{section}</span>
+      {/* <span className="mini-section-title">{section}</span> */}
       {renderSection(section, valueSection)}
     </div>
   )

@@ -1,4 +1,4 @@
-import listLabels from '../../../../../data/myAddressLabels.json'
+import listLabels from '../../../../../data/envelope/my-address-labels.json'
 import Label from '../Label/Label'
 import './FormMyAddress.scss'
 
@@ -9,9 +9,9 @@ const FormMyAddress = ({ valueMyAddress, handleValueMyAddress }) => {
         <legend className="envelope-legend">My address</legend>
         {listLabels.map((name, i) => (
           <Label
-            handleValueMyAddress={handleValueMyAddress}
-            valueMyAddress={valueMyAddress}
             name={name}
+            valueMyAddress={valueMyAddress}
+            handleValueMyAddress={handleValueMyAddress}
             key={i}
           />
         ))}

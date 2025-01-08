@@ -2,10 +2,10 @@ import './Label.scss'
 
 const Label = ({
   name,
-  valueToAddress,
-  handleValueToAddress,
   valueMyAddress,
   handleValueMyAddress,
+  valueToAddress,
+  handleValueToAddress,
 }) => {
   const shortName = name.split(' / ')[0].toLowerCase()
   const validationHandleValueAddress = (e) => {
@@ -27,7 +27,13 @@ const Label = ({
   }
   return (
     <label className="envelope-label">
-      {name}
+      {
+        <>
+          <span className="label-element-space"></span>
+          <span>{name}</span>
+          <span className="label-element-space"></span>
+        </>
+      }
       <input
         className={`envelope-input ${
           valueMyAddress ? `my-address-${shortName}` : ''

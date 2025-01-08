@@ -9,38 +9,59 @@ import Mark from './Mark/Mark'
 
 const Envelope = () => {
   const selectors = useSelector((state) => state.cardEdit)
-  const inputValueSelectedEnvelope = selectors.envelope ? selectors.aroma : null
-  const [valueMyAddress, setValueMyAddress] = useState({
-    street: '',
-    index: '',
-    country: '',
-    name: '',
+  const inputValueMyAddress = selectors.envelope.myaddress
+    ? selectors.envelope.myaddress
+    : null
+  const inputValueToAddress = selectors.envelope.toaddress
+    ? selectors.envelope.toaddress
+    : null
+
+  const [valueMyAddress, setValueMyAddress] = useState(
+    inputValueMyAddress
+      ? inputValueMyAddress
+      : { street: '', index: '', country: '', name: '' }
+  )
+  const [valueToAddress, setValueToAddress] = useState(
+    inputValueToAddress
+      ? inputValueToAddress
+      : { street: '', index: '', country: '', name: '' }
+  )
+
+  const [valueEnvelope, setValueEnvelope] = useState({
+    myaddress: valueMyAddress,
+    toaddress: valueToAddress,
   })
-  const [valueToAddress, setValueToAddress] = useState({
-    street: '',
-    index: '',
-    country: '',
-    name: '',
-  })
-  const [allFilledValueToAddress, setAllFilledValueToAddress] = useState(false)
+
   const dispatch = useDispatch()
+
+  useEffect(
+    () =>
+      setValueEnvelope((state) => {
+        return {
+          ...state,
+          myaddress: valueMyAddress,
+          toaddress: valueToAddress,
+        }
+      }),
+    [valueMyAddress, valueToAddress]
+  )
 
   useEffect(() => {
     if (
-      valueToAddress.street !== '' &&
-      valueToAddress.index !== '' &&
-      valueToAddress.country !== '' &&
-      valueToAddress.name !== ''
+      valueEnvelope.toaddress.street !== '' &&
+      valueEnvelope.toaddress.index !== '' &&
+      valueEnvelope.toaddress.country !== '' &&
+      valueEnvelope.toaddress.name !== ''
     ) {
-      setAllFilledValueToAddress(true)
-    } else {
-      setAllFilledValueToAddress(false)
+      dispatch(addEnvelope(valueEnvelope))
     }
   }, [
-    valueToAddress.street,
-    valueToAddress.index,
-    valueToAddress.country,
-    valueToAddress.name,
+    valueEnvelope.toaddress.street,
+    valueEnvelope.toaddress.index,
+    valueEnvelope.toaddress.country,
+    valueEnvelope.toaddress.name,
+    dispatch,
+    valueEnvelope,
   ])
 
   const handleValueMyAddress = (nameAddress, value) => {
