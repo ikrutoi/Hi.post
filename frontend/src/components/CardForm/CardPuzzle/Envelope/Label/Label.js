@@ -26,7 +26,7 @@ const Label = ({
     }
   }
   return (
-    <label className="envelope-label">
+    <label className={`envelope-label envelope-label-${name.toLowerCase()}`}>
       {
         <>
           <span className="label-element-space"></span>

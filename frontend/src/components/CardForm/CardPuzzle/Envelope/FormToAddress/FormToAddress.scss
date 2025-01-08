@@ -2,11 +2,18 @@
   display: flex;
 }
 
-.input-two-elements label:first-child {
+.envelope-label-index {
   width: 30%;
-  margin-right: 0.5rem;
 }
 
-.input-two-elements label:last-child {
+.envelope-label-city {
   width: 70%;
+}
+
+.envelope-my-address .envelope-label-index {
+  margin-left: 0.5rem;
+}
+
+.envelope-to-address .envelope-label-index {
+  margin-right: 0.5rem;
 }
