@@ -16,7 +16,9 @@ const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
           listSelectedSections.push(`2-${section}`)
           break
         case 'envelope':
-          listSelectedSections.push(`3-${section}`)
+          if (sections[section].myaddress || sections[section].toaddress) {
+            listSelectedSections.push(`3-${section}`)
+          }
           break
         case 'date':
           listSelectedSections.push(`4-${section}`)
@@ -30,8 +32,6 @@ const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
     }
   }
   const listSortSelectedSections = listSelectedSections.sort()
-
-  console.log(listSortSelectedSections)
 
   return (
     <div className="cards-list">

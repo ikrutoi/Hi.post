@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import './Envelope.scss'
@@ -19,18 +19,23 @@ const Envelope = () => {
   const [valueMyAddress, setValueMyAddress] = useState(
     inputValueMyAddress
       ? inputValueMyAddress
-      : { street: '', index: '', country: '', name: '' }
+      : { street: '', index: '', city: '', country: '', name: '' }
   )
   const [valueToAddress, setValueToAddress] = useState(
     inputValueToAddress
       ? inputValueToAddress
-      : { street: '', index: '', country: '', name: '' }
+      : { street: '', index: '', city: '', country: '', name: '' }
   )
 
   const [valueEnvelope, setValueEnvelope] = useState({
     myaddress: valueMyAddress,
     toaddress: valueToAddress,
   })
+
+  const inputRefs = useRef({})
+  const setRef = (id) => (element) => {
+    inputRefs.current[id] = element
+  }
 
   const dispatch = useDispatch()
 
@@ -50,6 +55,7 @@ const Envelope = () => {
     if (
       valueEnvelope.toaddress.street !== '' &&
       valueEnvelope.toaddress.index !== '' &&
+      valueEnvelope.toaddress.city !== '' &&
       valueEnvelope.toaddress.country !== '' &&
       valueEnvelope.toaddress.name !== ''
     ) {
@@ -58,63 +64,36 @@ const Envelope = () => {
   }, [
     valueEnvelope.toaddress.street,
     valueEnvelope.toaddress.index,
+    valueEnvelope.toaddress.city,
     valueEnvelope.toaddress.country,
     valueEnvelope.toaddress.name,
     dispatch,
     valueEnvelope,
   ])
 
-  const handleValueMyAddress = (nameAddress, value) => {
-    switch (nameAddress) {
-      case 'street':
-        setValueMyAddress((state) => {
-          return { ...state, street: value }
-        })
-        break
-      case 'index':
-        setValueMyAddress((state) => {
-          return { ...state, index: value }
-        })
-        break
-      case 'country':
-        setValueMyAddress((state) => {
-          return { ...state, country: value }
-        })
-        break
-      case 'name':
-        setValueMyAddress((state) => {
-          return { ...state, name: value }
-        })
-        break
-      default:
-        break
+  const handleValueAddress = (field, nameAddress, value) => {
+    if (field === 'to-address') {
+      setValueToAddress((state) => {
+        return { ...state, [`${nameAddress}`]: value }
+      })
+    }
+    if (field === 'my-address') {
+      setValueMyAddress((state) => {
+        return { ...state, [`${nameAddress}`]: value }
+      })
     }
   }
 
-  const handleValueToAddress = (nameAddress, value) => {
-    switch (nameAddress) {
-      case 'street':
-        setValueToAddress((state) => {
-          return { ...state, street: value }
-        })
-        break
-      case 'index':
-        setValueToAddress((state) => {
-          return { ...state, index: value }
-        })
-        break
-      case 'country':
-        setValueToAddress((state) => {
-          return { ...state, country: value }
-        })
-        break
-      case 'name':
-        setValueToAddress((state) => {
-          return { ...state, name: value }
-        })
-        break
-      default:
-        break
+  const handleKeyArrow = (el) => {
+    const indexInput = el.target.dataset.index
+    // const validationArrow = (field, el) => {
+    if (el.key === 'ArrowDown' || el.keyCode === 40) {
+      if (indexInput < 5) {
+        inputRefs.current['toaddress5'].focus()
+      }
+      // console.log('key down', el.target.dataset.index)
+    }
+    if (el.key === 'ArrowUp' || el.keyCode === 38) {
     }
   }
 
@@ -124,14 +103,18 @@ const Envelope = () => {
         <div className="envelope-logo">Hidragonfly.com</div>
         <FormMyAddress
           valueMyAddress={valueMyAddress}
-          handleValueMyAddress={handleValueMyAddress}
+          handleValueAddress={handleValueAddress}
+          handleKeyArrow={handleKeyArrow}
+          setRef={setRef}
         />
       </div>
       <Mark />
       <div className="envelope-to-address">
         <FormToAddress
           valueToAddress={valueToAddress}
-          handleValueToAddress={handleValueToAddress}
+          handleValueAddress={handleValueAddress}
+          handleKeyArrow={handleKeyArrow}
+          setRef={setRef}
         />
       </div>
     </div>
