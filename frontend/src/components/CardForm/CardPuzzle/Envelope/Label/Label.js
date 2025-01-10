@@ -1,48 +1,36 @@
 // import { useRef } from 'react'
+import { useState } from 'react'
 import './Label.scss'
 
 const Label = ({
   name,
-  valueMyAddress,
-  handleValueAddress,
-  valueToAddress,
+  field,
+  values,
+  handleValues,
   handleKeyArrow,
   setRef,
 }) => {
   const indexName = name.split('-')[0]
   const nameWithoutIndex = name.split('-')[1]
   const shortName = nameWithoutIndex.split(' / ')[0].toLowerCase()
-  // const validationInputRef = () => {
-  //   if (valueMyAddress) {
-  //     return allInputsRef.myaddress[indexName]
-  //   }
-  //   if (valueToAddress) {
-  //     return allInputsRef.toaddress[indexName]
-  //   }
-  // }
-  const validationHandleValueAddress = (e) => {
+  const [valueInput, setValueInput] = useState('')
+
+  const handleChange = (e) => {
     e.preventDefault()
+    const { value } = e.target
 
-    if (e.target.className.includes('to-address')) {
-      handleValueAddress('to-address', shortName, e.target.value)
-    }
-    if (e.target.className.includes('my-address')) {
-      handleValueAddress('my-address', shortName, e.target.value)
+    if (
+      e.target.className.includes('myaddress-index') ||
+      e.target.className.includes('toaddress-index')
+    ) {
+      const numericValue = value.replace(/\D/g, '')
+      setValueInput(numericValue)
+      handleValues(field, shortName, value)
+    } else {
+      setValueInput(value)
+      handleValues(field, shortName, value)
     }
   }
-
-  const validationValueAddress = () => {
-    if (valueMyAddress) {
-      return valueMyAddress[shortName]
-    }
-    if (valueToAddress) {
-      return valueToAddress[shortName]
-    }
-  }
-  // const inputRefs = useRef({})
-  // const setRef = (id) => (element) => {
-  //   inputRefs.current[id] = element
-  // }
 
   return (
     <label
@@ -56,18 +44,14 @@ const Label = ({
         </>
       }
       <input
-        className={`envelope-input ${
-          valueMyAddress ? `my-address my-address-${shortName}` : ''
-        } ${valueToAddress ? `to-address to-address-${shortName}` : ''}`}
-        ref={setRef(
-          `${
-            valueMyAddress ? `myaddress${indexName}` : `toaddress${indexName}`
-          }`
-        )}
+        className={`envelope-input ${field} ${field}-${shortName}`}
+        ref={setRef(`${field}${indexName}`)}
+        data-field={field}
         data-index={indexName}
-        type={`${shortName.toLowerCase() === 'index' ? 'number' : 'text'}`}
-        value={validationValueAddress()}
-        onChange={(e) => validationHandleValueAddress(e)}
+        data-name={shortName}
+        type="text"
+        value={values ? values[field][shortName] : valueInput}
+        onChange={handleChange}
         onKeyDown={handleKeyArrow}
       ></input>
     </label>

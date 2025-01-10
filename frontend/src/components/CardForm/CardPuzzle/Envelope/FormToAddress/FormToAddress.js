@@ -2,12 +2,7 @@ import labelsList from '../../../../../data/envelope/list-labels-to-address.json
 import Label from '../Label/Label'
 import './FormToAddress.scss'
 
-const FormToAddress = ({
-  valueToAddress,
-  handleValueAddress,
-  handleKeyArrow,
-  setRef,
-}) => {
+const FormToAddress = ({ values, handleValues, handleKeyArrow, setRef }) => {
   return (
     <form className="envelope-form form-to-address">
       <fieldset className="envelope-fieldset">
@@ -17,8 +12,9 @@ const FormToAddress = ({
             <Label
               key={`${nameFirst.split('-')[1]}-${i}`}
               name={nameFirst}
-              valueToAddress={valueToAddress}
-              handleValueAddress={handleValueAddress}
+              field="toaddress"
+              values={values}
+              handleValues={handleValues}
               handleKeyArrow={handleKeyArrow}
               setRef={setRef}
             />
@@ -30,8 +26,9 @@ const FormToAddress = ({
                     nameSecond.split('-')[0]
                   }`}
                   name={nameSecond}
-                  valueToAddress={valueToAddress}
-                  handleValueAddress={handleValueAddress}
+                  field="toaddress"
+                  values={values}
+                  handleValues={handleValues}
                   handleKeyArrow={handleKeyArrow}
                   setRef={setRef}
                 />

@@ -2,12 +2,7 @@ import listLabels from '../../../../../data/envelope/list-labels-my-address.json
 import Label from '../Label/Label'
 import './FormMyAddress.scss'
 
-const FormMyAddress = ({
-  valueMyAddress,
-  handleValueAddress,
-  handleKeyArrow,
-  setRef,
-}) => {
+const FormMyAddress = ({ values, handleValues, handleKeyArrow, setRef }) => {
   return (
     <form className="envelope-form form-my-address">
       <fieldset className="envelope-fieldset">
@@ -15,10 +10,11 @@ const FormMyAddress = ({
         {listLabels.map((nameFirst, i) => {
           return typeof nameFirst === 'string' ? (
             <Label
-              key={`${nameFirst.split('-')[1]}-${i}`}
+              key={`${nameFirst.split('-')[1]}-${nameFirst.split('-')[0]}`}
               name={nameFirst}
-              valueMyAddress={valueMyAddress}
-              handleValueAddress={handleValueAddress}
+              field="myaddress"
+              values={values}
+              handleValues={handleValues}
               handleKeyArrow={handleKeyArrow}
               setRef={setRef}
             />
@@ -30,8 +26,9 @@ const FormMyAddress = ({
                     nameSecond.split('-')[0]
                   }`}
                   name={nameSecond}
-                  valueMyAddress={valueMyAddress}
-                  handleValueAddress={handleValueAddress}
+                  field="myaddress"
+                  values={values}
+                  handleValues={handleValues}
                   handleKeyArrow={handleKeyArrow}
                   setRef={setRef}
                 />
