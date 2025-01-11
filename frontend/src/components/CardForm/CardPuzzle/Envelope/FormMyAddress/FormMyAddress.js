@@ -15,7 +15,7 @@ const FormMyAddress = ({
         {listLabels.map((nameFirst, i) => {
           return typeof nameFirst === 'string' ? (
             <Label
-              key={`${nameFirst}-${i}`}
+              key={`${nameFirst}-${i}-${nameFirst.split('-')[0]}`}
               name={nameFirst}
               field="myaddress"
               values={values}
@@ -27,7 +27,7 @@ const FormMyAddress = ({
             <div className="input-two-elements">
               {nameFirst.map((nameSecond, i) => (
                 <Label
-                  key={`${nameSecond}-${i}`}
+                  key={`${nameSecond}-${i}-${nameSecond.split('-')[0]}`}
                   name={nameSecond}
                   field="myaddress"
                   values={values}

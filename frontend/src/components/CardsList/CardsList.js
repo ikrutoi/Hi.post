@@ -17,7 +17,7 @@ const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
           break
         case 'envelope':
           if (
-            sections[section] &&
+            sections[section].toaddress &&
             sections[section].toaddress.street !== '' &&
             sections[section].toaddress.index !== '' &&
             sections[section].toaddress.city !== '' &&

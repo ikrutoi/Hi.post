@@ -48,8 +48,12 @@ const CardMiniSection = ({ section, valueSection, dimensionHeight }) => {
       className={`card-mini-section card-mini-${section}`}
       style={{ width: `${widthCardMini}px`, height: `${heightCardMini}px` }}
     >
-      {/* <span className="mini-section-title">{section}</span> */}
       {renderSection(section, valueSection)}
+      <div className="card-mini-kebab">
+        <span className="mini-kebab-dots">
+          <span className="mini-kebab-icon"></span>
+        </span>
+      </div>
     </div>
   )
 }
