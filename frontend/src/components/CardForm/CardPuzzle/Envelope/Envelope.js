@@ -9,12 +9,14 @@ import Mark from './Mark/Mark'
 
 const Envelope = () => {
   const selectors = useSelector((state) => state.cardEdit)
-  const valuesEnvelope = selectors.envelope
-    ? selectors.envelope
-    : {
-        toaddress: { street: '', index: '', city: '', country: '', name: '' },
-        myaddress: { street: '', index: '', city: '', country: '', name: '' },
-      }
+  const valuesEnvelope =
+    selectors.envelope.myaddress === null &&
+    selectors.envelope.toaddress === null
+      ? {
+          toaddress: { street: '', index: '', city: '', country: '', name: '' },
+          myaddress: { street: '', index: '', city: '', country: '', name: '' },
+        }
+      : selectors.envelope
 
   const [values, setValues] = useState(valuesEnvelope)
 
@@ -35,20 +37,26 @@ const Envelope = () => {
     dispatch(addEnvelope(values))
   }, [dispatch, values])
 
-  const handleKeyArrow = (e) => {
+  const handleMovingBetweenInputs = (e) => {
     const indexInput = Number(e.target.dataset.index)
-    if (e.key === 'ArrowDown' || e.keyCode === 40) {
+    const field = e.target.dataset.field
+    if (
+      e.key === 'ArrowDown' ||
+      e.keyCode === 40 ||
+      e.key === 'Enter' ||
+      e.keyCode === 13
+    ) {
       if (indexInput < 5) {
-        inputRefs.current[`toaddress${indexInput + 1}`].focus()
+        inputRefs.current[`${field}${indexInput + 1}`].focus()
       } else {
-        inputRefs.current[`toaddress${indexInput}`].focus()
+        inputRefs.current[`${field}${indexInput}`].focus()
       }
     }
     if (e.key === 'ArrowUp' || e.keyCode === 38) {
       if (indexInput > 1) {
-        inputRefs.current[`toaddress${indexInput - 1}`].focus()
+        inputRefs.current[`${field}${indexInput - 1}`].focus()
       } else {
-        inputRefs.current[`toaddress${indexInput}`].focus()
+        inputRefs.current[`${field}${indexInput}`].focus()
       }
     }
   }
@@ -60,7 +68,7 @@ const Envelope = () => {
         <FormMyAddress
           values={values}
           handleValues={handleValues}
-          handleKeyArrow={handleKeyArrow}
+          handleMovingBetweenInputs={handleMovingBetweenInputs}
           setRef={setRef}
         />
       </div>
@@ -69,7 +77,7 @@ const Envelope = () => {
         <FormToAddress
           values={values}
           handleValues={handleValues}
-          handleKeyArrow={handleKeyArrow}
+          handleMovingBetweenInputs={handleMovingBetweenInputs}
           setRef={setRef}
         />
       </div>

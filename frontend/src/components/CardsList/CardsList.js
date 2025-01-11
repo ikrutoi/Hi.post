@@ -16,15 +16,26 @@ const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
           listSelectedSections.push(`2-${section}`)
           break
         case 'envelope':
-          if (sections[section].myaddress || sections[section].toaddress) {
+          if (
+            sections[section] &&
+            sections[section].toaddress.street !== '' &&
+            sections[section].toaddress.index !== '' &&
+            sections[section].toaddress.city !== '' &&
+            sections[section].toaddress.country !== '' &&
+            sections[section].toaddress.name !== ''
+          ) {
             listSelectedSections.push(`3-${section}`)
           }
           break
         case 'date':
-          listSelectedSections.push(`4-${section}`)
+          if (sections[section]) {
+            listSelectedSections.push(`4-${section}`)
+          }
           break
         case 'aroma':
-          listSelectedSections.push(`5-${section}`)
+          if (sections[section]) {
+            listSelectedSections.push(`5-${section}`)
+          }
           break
         default:
           break

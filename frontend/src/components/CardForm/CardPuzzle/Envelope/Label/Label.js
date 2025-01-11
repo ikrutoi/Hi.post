@@ -1,5 +1,4 @@
 // import { useRef } from 'react'
-import { useState } from 'react'
 import './Label.scss'
 
 const Label = ({
@@ -7,13 +6,12 @@ const Label = ({
   field,
   values,
   handleValues,
-  handleKeyArrow,
+  handleMovingBetweenInputs,
   setRef,
 }) => {
   const indexName = name.split('-')[0]
   const nameWithoutIndex = name.split('-')[1]
   const shortName = nameWithoutIndex.split(' / ')[0].toLowerCase()
-  const [valueInput, setValueInput] = useState('')
 
   const handleChange = (e) => {
     e.preventDefault()
@@ -24,18 +22,14 @@ const Label = ({
       e.target.className.includes('toaddress-index')
     ) {
       const numericValue = value.replace(/\D/g, '')
-      setValueInput(numericValue)
-      handleValues(field, shortName, value)
+      handleValues(field, shortName, numericValue)
     } else {
-      setValueInput(value)
       handleValues(field, shortName, value)
     }
   }
 
   return (
-    <label
-      className={`envelope-label envelope-label-${shortName.toLowerCase()}`}
-    >
+    <label className={`envelope-label envelope-label-${shortName}`}>
       {
         <>
           <span className="label-element-space"></span>
@@ -50,9 +44,9 @@ const Label = ({
         data-index={indexName}
         data-name={shortName}
         type="text"
-        value={values ? values[field][shortName] : valueInput}
+        value={values[field][shortName]}
         onChange={handleChange}
-        onKeyDown={handleKeyArrow}
+        onKeyDown={handleMovingBetweenInputs}
       ></input>
     </label>
   )
