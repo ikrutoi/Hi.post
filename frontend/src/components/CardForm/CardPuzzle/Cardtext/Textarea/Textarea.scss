@@ -1,7 +1,65 @@
 .textarea {
+  // position: relative;
   height: 100%;
-  padding: 1rem;
-  box-sizing: border-box;
   border-radius: 1rem;
+  padding-top: 2rem;
+  box-sizing: border-box;
   border: solid 1px lightgray;
+}
+
+.cardtext-textarea {
+  width: 100%;
+  border: solid 1px blue;
+}
+
+.textarea-nav {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  margin-left: 4rem;
+  margin-right: 4rem;
+  box-sizing: border-box;
+  background-color: rgba($color: #ffffff, $alpha: 0);
+  // border: solid 1px blue;
+}
+
+.textarea-settings,
+.textarea-chars {
+  display: flex;
+  align-items: center;
+}
+
+.textarea-nav-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.textarea-nav-btn-set {
+  width: 1.6rem;
+  height: 1.6rem;
+  margin: 0.2rem 0.5rem;
+  cursor: pointer;
+  background-color: lightgray;
+  // border: solid 1px orange;
+}
+
+.textarea-nav-btn-chars {
+  width: 3rem;
+  height: 2rem;
+  margin-top: -0.1rem;
+  background-color: rgba($color: #ffffff, $alpha: 0);
+  // border: solid 1px red;
+}
+
+.textarea-chars span:nth-child(1) {
+  color: #007aac;
+}
+
+.textarea-chars span:nth-child(2) {
+  height: 2rem;
+  margin-top: -0.1rem;
 }

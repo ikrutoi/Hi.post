@@ -4,14 +4,22 @@ const initialState = {
   aroma: null,
   date: null,
   photo: null,
-  text: null,
+  cardtext: {
+    text: { row1: 'ddd' },
+    maxchars: 300,
+    color: 'blue2',
+    fontsize: 3,
+    rows: 1,
+    focus: false,
+    focusrow: 1,
+  },
   envelope: { myaddress: null, toaddress: null },
 }
 
 const cardEditReducer = (state = initialState, action) => {
   switch (action.type) {
     case a.ADD_CARDPHOTO:
-      return { ...state, cardphoto: action.payload }
+      return { ...state, photo: action.payload }
     case a.ADD_CARDTEXT:
       return { ...state, cardtext: action.payload }
     case a.ADD_ENVELOPE:
