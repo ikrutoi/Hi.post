@@ -5,11 +5,13 @@ const initialState = {
   date: null,
   photo: null,
   cardtext: {
-    text: { row1: 'ddd' },
+    text: {
+      line1: 'Hi!!!',
+    },
     maxchars: 300,
     color: 'blue2',
     fontsize: 3,
-    rows: 1,
+    lines: 1,
     focus: false,
     focusrow: 1,
   },

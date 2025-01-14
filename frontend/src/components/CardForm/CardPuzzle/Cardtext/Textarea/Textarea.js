@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
+// import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 import './Textarea.scss'
 import listNavBtns from '../../../../../data/cardtext/list-textarea-nav-btns.json'
-import Row from './Row/Row'
+// import Line from './Line/Line'
+import DraftEditor from '../DraftEditor/DraftEditor'
 
 const Textarea = () => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
@@ -14,28 +15,28 @@ const Textarea = () => {
         maxchars: 300,
         color: 'blue1',
         fontsize: 3,
-        rows: 1,
+        lines: 1,
         focus: false,
         focusrow: 1,
       }
   const [cardtext, setCardtext] = useState(inputCardtext)
 
-  const rowRef = useRef({})
+  const lineRef = useRef({})
   const setRef = (id) => (element) => {
-    rowRef.current[id] = element
+    lineRef.current[id] = element
   }
-  const handleClickTextarea = () => {
-    const range = document.createRange()
-    const sel = window.getSelection()
-    range.setStart(
-      rowRef.current[`row-${cardtext.focusrow}`].firstChild,
-      rowRef.current[`row-${cardtext.rows}`].innerText.length
-    )
-    range.collapse(true)
-    sel.removeAllRanges()
-    sel.addRange(range)
-    rowRef.current[`row-${cardtext.focusrow}`].focus()
-  }
+  // const handleClickTextarea = () => {
+  //   const range = document.createRange()
+  //   const sel = window.getSelection()
+  //   range.setStart(
+  //     rowRef.current[`line-${cardtext.focusrow}`].firstChild,
+  //     rowRef.current[`line-${cardtext.rows}`].innerText.length
+  //   )
+  //   range.collapse(true)
+  //   sel.removeAllRanges()
+  //   sel.addRange(range)
+  //   rowRef.current[`-${cardtext.focusrow}`].focus()
+  // }
 
   const handleInput = (e) => {
     setCardtext((state) => {
@@ -43,28 +44,28 @@ const Textarea = () => {
         ...state,
         text: {
           ...state.text,
-          [`row${e.target.dataset.rows}`]: e.target.innerText,
+          [`line${e.target.dataset.rows}`]: e.target.innerText,
         },
         focusrow: e.target.dataset.row,
       }
     })
   }
 
-  useEffect(() => {
-    if (rowRef.current) {
-      rowRef.current[`row-${cardtext.rows}`].innerText =
-        cardtext.text[`row${cardtext.rows}`]
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (rowRef.current) {
+  //     rowRef.current[`row-${cardtext.rows}`].innerText =
+  //       cardtext.text[`row${cardtext.rows}`]
+  //   }
+  // }, [])
 
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
-  useEffect(() => {
-    dispatch(addCardtext(cardtext))
-  }, [dispatch, cardtext])
+  // useEffect(() => {
+  //   dispatch(addCardtext(cardtext))
+  // }, [dispatch, cardtext])
 
   return (
-    <div className="textarea" onClick={handleClickTextarea}>
+    <div className="textarea">
       <div className="textarea-nav">
         <div className="textarea-settings">
           {listNavBtns.map((btn, i) => (
@@ -85,7 +86,8 @@ const Textarea = () => {
         </div>
       </div>
       <div className="cardtext-textarea">
-        <Row handleInput={handleInput} setRef={setRef} cardtext={cardtext} />
+        <DraftEditor />
+        {/* <Line handleInput={handleInput} setRef={setRef} cardtext={cardtext} /> */}
       </div>
     </div>
   )
