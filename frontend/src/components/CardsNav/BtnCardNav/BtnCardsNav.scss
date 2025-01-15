@@ -1,16 +1,17 @@
 .btn-nav {
+  display: flex;
   margin-top: 1rem;
   padding: 0.5rem;
-  background-color: lightgrey;
+  background-color: white;
   border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
   border: none;
-  // border: solid 1px orange;
+  // border: solid 1px rgb(180, 180, 180);
 }
 
 .btn-nav:hover {
-  background-color: rgb(192, 191, 191);
+  background-color: rgb(238, 238, 238);
   // border-color: red;
 }
 

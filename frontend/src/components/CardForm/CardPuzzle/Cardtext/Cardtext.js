@@ -1,10 +1,12 @@
 import './Cardtext.scss'
-import Textarea from './Textarea/Textarea'
+import Toolbar from './Toolbar/Toolbar'
+import CardEditor from './CardEditor/CardEditor'
 
 const Cardtext = () => {
   return (
     <div className="cardtext">
-      <Textarea />
+      <Toolbar />
+      <CardEditor />
     </div>
   )
 }

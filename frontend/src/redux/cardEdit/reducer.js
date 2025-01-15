@@ -5,9 +5,7 @@ const initialState = {
   date: null,
   photo: null,
   cardtext: {
-    text: {
-      line1: 'Hi!!!',
-    },
+    text: 'Hi )))',
     maxchars: 300,
     color: 'blue2',
     fontsize: 3,

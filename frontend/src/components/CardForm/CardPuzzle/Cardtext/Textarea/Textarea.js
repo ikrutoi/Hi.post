@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useState } from 'react'
+import { useSelector } from 'react-redux'
 // import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 import './Textarea.scss'
-import listNavBtns from '../../../../../data/cardtext/list-textarea-nav-btns.json'
+// import listNavBtns from '../../../../../data/cardtext/list-textarea-nav-btns.json'
 // import Line from './Line/Line'
-import DraftEditor from '../DraftEditor/DraftEditor'
+// import DraftEditor from '../DraftEditor/DraftEditor'
 
 const Textarea = () => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
@@ -21,10 +21,10 @@ const Textarea = () => {
       }
   const [cardtext, setCardtext] = useState(inputCardtext)
 
-  const lineRef = useRef({})
-  const setRef = (id) => (element) => {
-    lineRef.current[id] = element
-  }
+  // const lineRef = useRef({})
+  // const setRef = (id) => (element) => {
+  //   lineRef.current[id] = element
+  // }
   // const handleClickTextarea = () => {
   //   const range = document.createRange()
   //   const sel = window.getSelection()
@@ -38,18 +38,18 @@ const Textarea = () => {
   //   rowRef.current[`-${cardtext.focusrow}`].focus()
   // }
 
-  const handleInput = (e) => {
-    setCardtext((state) => {
-      return {
-        ...state,
-        text: {
-          ...state.text,
-          [`line${e.target.dataset.rows}`]: e.target.innerText,
-        },
-        focusrow: e.target.dataset.row,
-      }
-    })
-  }
+  // const handleInput = (evt) => {
+  //   setCardtext((state) => {
+  //     return {
+  //       ...state,
+  //       text: {
+  //         ...state.text,
+  //         [`line${evt.target.dataset.rows}`]: evt.target.innerText,
+  //       },
+  //       focusrow: evt.target.dataset.row,
+  //     }
+  //   })
+  // }
 
   // useEffect(() => {
   //   if (rowRef.current) {
@@ -66,7 +66,7 @@ const Textarea = () => {
 
   return (
     <div className="textarea">
-      <div className="textarea-nav">
+      {/* <div className="textarea-nav">
         <div className="textarea-settings">
           {listNavBtns.map((btn, i) => (
             <span
@@ -84,11 +84,8 @@ const Textarea = () => {
             {cardtext.maxchars}
           </span>
         </div>
-      </div>
-      <div className="cardtext-textarea">
-        <DraftEditor />
-        {/* <Line handleInput={handleInput} setRef={setRef} cardtext={cardtext} /> */}
-      </div>
+      </div> */}
+      <div className="cardtext-textarea">{/* <DraftEditor /> */}</div>
     </div>
   )
 }

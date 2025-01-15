@@ -1,16 +1,14 @@
-// .draft-editor-container {
-//   border: 1px solid #ccc;
-//   padding: 10px;
-//   min-height: 100px;
-//   background-color: #f9f9f9;
-//   font-family: Arial, sans-serif;
-// }
+.DraftEditor-root {
+  border: solid 1px plum;
+}
 
-// .draft-editor-container .public-DraftEditor-content {
-//   min-height: 90px;
-// }
+.public-DraftStyleDefault-block {
+  font-size: 2.2rem;
+  font-style: italic;
+  color: #007aac;
+  background-color: antiquewhite;
+}
 
-.draft-editor {
-  height: 150px;
-  border: solid 1px orange;
+.public-DraftStyleDefault-block span {
+  background-color: antiquewhite;
 }
