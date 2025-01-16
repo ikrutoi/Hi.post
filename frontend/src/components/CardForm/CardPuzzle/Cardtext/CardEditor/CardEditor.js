@@ -1,9 +1,8 @@
 import { useSelector } from 'react-redux'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createEditor, Transforms, Editor } from 'slate'
-import { Slate, Editable, withReact } from 'slate-react'
+import { Slate, Editable, withReact, useSlateStatic } from 'slate-react'
 import './CardEditor.scss'
-// import TextEditor from './TextEditor/TextEditor'
 
 const CardEditor = () => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
@@ -27,65 +26,98 @@ const CardEditor = () => {
 
   const editorRef = useRef(null)
   const editableRef = useRef(null)
+  const markRef = useRef([])
 
-  const handleKeyDown = (evt) => {
-    const editorHeight = editorRef.current.offsetHeight
-    const editableHeight = editableRef.current.offsetHeight
-
-    const lineHeight = document.querySelector(
-      '[data-slate-node=element'
-    ).offsetHeight
-
-    const linesMax = Math.floor(editorHeight / lineHeight)
-    const linesEditable = editableHeight / lineHeight
-    console.log('linesEditable / linesMax', linesEditable, linesMax)
-    if (evt.key === 'Enter' && linesEditable <= linesMax) {
-      evt.preventDefault()
-      const [match] = Editor.nodes(editor, {
-        match: (n) => Editor.isBlock(editor, n),
-      })
-      if (match) {
-        Transforms.insertNodes(editor, {
-          type: 'paragraph',
-          children: [{ text: '' }],
-        })
-      }
+  const getSizeEditorAndEditable = () => {
+    if (editorRef.current && editableRef.current) {
+      const editorHeight = editorRef.current.offsetHeight
+      const editableHeight = editableRef.current.offsetHeight
+      const lineHeight = document.querySelector(
+        '[data-slate-node=element'
+      ).offsetHeight
+      const linesMax = Math.floor(editorHeight / lineHeight)
+      const linesEditable = editableHeight / lineHeight
+      return { linesEditable, linesMax }
     }
   }
 
-  // useEffect(() => {
-  //   const checkHeight = () => {
-  //     const editorHeight = editorRef.current.offsetHeight
-  //     const editableHeight = editableRef.current.offsetHeight
+  const getLastNestedElement = (element) => {
+    while (element && element.lastElementChild) {
+      element = element.lastElementChild
+    }
+    return element
+  }
 
-  //     const lineHeight = document.querySelector(
-  //       '[data-slate-node=element'
-  //     ).offsetHeight
+  const insertMark = (parentElement) => {
+    if (parentElement) {
+      const mark = document.createElement('span')
+      mark.classList.add('cardtext-mark')
+      parentElement.append(mark)
+      markRef.current = mark
+    }
+  }
 
-  //     const linesMax = Math.floor(editorHeight / lineHeight)
-  //     const linesEditable = editableHeight / lineHeight
+  const getLastElement = (e) => {
+    while (e.children.length > 0) {
+      if (e.children[e.children.length - 1] === markRef.current) {
+        e.children[e.children.length - 1].remove()
+      } else {
+        e = e.children[e.children.length - 1]
+      }
+    }
+    return e
+  }
 
-  //     if (linesEditable === linesMax) {
-  //       console.log('linesMax!!!', linesMax)
-  //     }
+  const removeLastMark = () => {
+    console.log('*')
+    const markEl = document.querySelector('.cardtext-mark')
+    if (markEl) {
+      markEl.remove()
+    }
+  }
 
-  //     // console.log('editable', window.getComputedStyle(editableRef.current))
+  const getEndOfText = () => {
+    const lastElement = getLastElement(editableRef.current)
+    insertMark(lastElement)
+  }
 
-  //     // console.log('lines', linesEditable)
+  useEffect(() => {
+    if (editableRef) {
+      getEndOfText()
+    }
+  }, [value])
 
-  //     // if (editableHeight >= editorHeight) {
-  //     //   // console.log('height^^^^^', Math.floor(editableHeight / editorHeight))
-  //     // }
-  //   }
+  const handleChangeSlate = (newValue) => {
+    const linesEditable = getSizeEditorAndEditable().linesEditable
+    const linesMax = getSizeEditorAndEditable().linesMax
 
-  //   checkHeight()
-  // }, [value])
+    if (linesEditable >= linesMax) {
+      // console.log('length', newValue[newValue.length - 1].children[0].text)
+    }
+    return setValue(newValue)
+  }
 
-  // useEffect(() => {
-  //   value.forEach((line, i) => {
-  //     console.log(i, '/', line.children[0].text)
-  //   })
-  // }, [value])
+  const handleKeyDown = (evt) => {
+    const linesEditable = getSizeEditorAndEditable().linesEditable
+    const linesMax = getSizeEditorAndEditable().linesMax
+    if (evt.key === 'Enter') {
+      removeLastMark()
+    }
+    if (evt.key === 'Enter' && linesEditable >= linesMax) {
+      console.log('Enter stop')
+      evt.preventDefault()
+      // if (evt.key === 'Enter' && linesEditable <= linesMax) {
+      //   const [match] = Editor.nodes(editor, {
+      //     match: (n) => Editor.isBlock(editor, n),
+      //   })
+      //   if (match) {
+      //     Transforms.insertNodes(editor, {
+      //       type: 'paragraph',
+      //       children: [{ text: '' }],
+      //     })
+      //   }
+    }
+  }
 
   return (
     <div className="cardeditor">
@@ -93,10 +125,24 @@ const CardEditor = () => {
         <Slate
           editor={editor}
           initialValue={value}
-          onChange={(newValue) => setValue(newValue)}
+          onChange={handleChangeSlate}
+          // onChange={(newValue) => setValue(newValue)}
         >
-          <Editable ref={editableRef} onKeyDown={handleKeyDown} />
-          {/* <TextEditor value={value} /> */}
+          <Editable
+            ref={editableRef}
+            onKeyDown={handleKeyDown}
+            // renderElement={(props) => {
+            //   if (props.element.type === 'mark') {
+            //     return (
+            //       <span {...props.attributes} ref={markRef}>
+            //         {props.children}
+            //       </span>
+            //     )
+            //   }
+            //   return <p {...props.attributes}>{props.children}</p>
+            // }}
+            // {/* <TextEditor value={value} /> */}
+          />
         </Slate>
       </div>
     </div>
