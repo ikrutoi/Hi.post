@@ -1,1 +1,11 @@
-["fontsize", "color", "style"]
+[
+  "bold",
+  "italic",
+  "underline",
+  "color",
+  "strikethrough",
+  "align-left",
+  "align-center",
+  "align-right",
+  "align-justify"
+]

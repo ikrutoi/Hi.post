@@ -1,11 +1,11 @@
 import './Cardtext.scss'
-import Toolbar from './Toolbar/Toolbar'
 import CardEditor from './CardEditor/CardEditor'
+// import Toolbar from './Toolbar/Toolbar'
 
 const Cardtext = () => {
   return (
     <div className="cardtext">
-      <Toolbar />
+      {/* <Toolbar editor={editor} /> */}
       <CardEditor />
     </div>
   )
