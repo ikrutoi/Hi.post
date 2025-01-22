@@ -7,8 +7,11 @@ const initialState = {
   cardtext: {
     text: 'Hi )))',
     maxchars: 300,
-    color: 'blue2',
-    fontsize: 3,
+    color: '#007aac',
+    font: '',
+    fontsize: 2.2,
+    fontstyle: 'italic',
+    fontweight: 500,
     lines: 1,
     focus: false,
     focusrow: 1,

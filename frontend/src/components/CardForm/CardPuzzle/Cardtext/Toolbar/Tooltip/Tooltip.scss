@@ -1,12 +1,13 @@
 .toolbar-tooltip {
   position: fixed;
+  z-index: 1;
   margin-top: 1rem;
-  padding: 10px 20px;
-  border: 1px solid #b3c9ce;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1dfe2;
   border-radius: 4px;
   text-align: center;
   font: 0.8rem sans-serif;
   color: #333;
   background: #fff;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
 }

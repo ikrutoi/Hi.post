@@ -2,13 +2,13 @@
   position: absolute;
   // z-index: 2;
   top: 0;
-  right: 0;
+  // right: 0;
   left: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-left: 4rem;
-  margin-right: 4rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
   box-sizing: border-box;
   background-color: rgba($color: #ffffff, $alpha: 0);
   // border: solid 1px blue;
@@ -18,6 +18,9 @@
 .toolbar-chars {
   display: flex;
   align-items: center;
+  margin-left: 2rem;
+  background-color: white;
+  // background-color: rgba($color: #ffffff, $alpha: 0);
 }
 
 .toolbar-btn {
@@ -29,11 +32,16 @@
 .toolbar-btn-set {
   width: 1.6rem;
   height: 1.6rem;
-  margin: 0.2rem 0.5rem;
+  margin: 0.2rem 0.7rem;
   cursor: pointer;
-  background-color: rgb(238, 238, 238);
+  background-color: lightgray;
+  border-radius: 3px;
   // border: solid 1px orange;
 }
+
+// .toolbar-btn-set:first-child {
+//   margin-left: 2rem;
+// }
 
 .toolbar-btn-chars {
   width: 3rem;

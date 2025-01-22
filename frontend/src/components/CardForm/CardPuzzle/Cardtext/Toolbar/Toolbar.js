@@ -56,7 +56,7 @@ const Toolbar = () => {
         ))}
         {tooltip && <Tooltip tooltip={tooltip} />}
       </div>
-      <div className="toolbar-chars">
+      {/* <div className="toolbar-chars">
         <span className="toolbar-btn toolbar-btn-chars toolbar-enteredchars">
           {cardtext.text.length}
         </span>
@@ -64,7 +64,7 @@ const Toolbar = () => {
         <span className="toolbar-btn toolbar-btn-chars toolbar-maxchars">
           {cardtext.maxchars}
         </span>
-      </div>
+      </div> */}
     </div>
   )
 }

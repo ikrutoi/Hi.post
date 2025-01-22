@@ -19,8 +19,11 @@ const CardEditor = () => {
     : {
         text: 'hello...',
         maxchars: 300,
-        color: 'blue1',
-        fontsize: 3,
+        color: '#007aac',
+        font: '',
+        fontsize: 2.2,
+        fontstyle: 'italic',
+        fontweight: 700,
         lines: 1,
         focus: false,
         focusrow: 1,
@@ -34,6 +37,20 @@ const CardEditor = () => {
       children: [{ text: `${cardtext.text}` }],
     },
   ])
+
+  const [remSize, setRemSize] = useState(0)
+
+  useEffect(() => {
+    const root = document.documentElement
+    const remSizeInPx = getComputedStyle(root).getPropertyValue('--rem-size')
+    const tempDiv = document.createElement('div')
+    tempDiv.style.width = remSizeInPx
+    tempDiv.style.visibility = 'hidden'
+    document.body.appendChild(tempDiv)
+    const computedRem = tempDiv.getBoundingClientRect().width
+    setRemSize(computedRem)
+    document.body.removeChild(tempDiv)
+  }, [])
 
   const [editable, setEditable] = useState(null)
   const editorRef = useRef(null)
@@ -90,6 +107,12 @@ const CardEditor = () => {
       setFocusedElement({ node: node, start: start })
     }
   }
+
+  useEffect(() => {
+    if (cardtext.color) {
+      console.log('color', cardtext.color)
+    }
+  }, [cardtext])
 
   useEffect(() => {
     calcLinesInEditable(linesCount)
@@ -153,6 +176,13 @@ const CardEditor = () => {
         >
           <Toolbar editor={editor} />
           <Editable
+            className="editable"
+            style={{
+              fontSize: cardtext.fontsize * remSize + 'px',
+              color: cardtext.color,
+              fontStyle: cardtext.fontstyle,
+              fontWeight: cardtext.fontweight,
+            }}
             ref={editableRef}
             onBlur={() => setFocusedElement(null)}
             onKeyDown={handleKeyDown}

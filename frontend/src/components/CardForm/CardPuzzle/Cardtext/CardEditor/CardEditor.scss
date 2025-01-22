@@ -1,18 +1,19 @@
 .cardeditor {
   height: 100%;
-  font-size: 2.2rem;
-  font-style: italic;
-  color: #007aac;
+  // font-size: 2.2rem;
+  // font-style: italic;
+  // color: #007aac;
   border-radius: 1rem;
-  padding-top: 1.8rem;
+  padding-top: 1rem;
   padding-bottom: 1rem;
   box-sizing: border-box;
+  // background-color: rgba($color: #e5f1f7, $alpha: 1);
   border: solid 1px lightgray;
 }
 
 .editor {
   height: 100%;
-  background-color: azure;
+  // background-color: rgba($color: #e5f1f7, $alpha: 1);
   // border: solid 1px blue;
 }
 
