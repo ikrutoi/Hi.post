@@ -21,20 +21,27 @@ const Toolbar = () => {
   const [tooltip, setTooltip] = useState(null)
 
   const handleMouseOver = (evt) => {
+    const toolbarElement = document.querySelector('.toolbar')
+    const toolbarBtnElement = document.querySelectorAll('.toolbar-btn')[0]
+    const widthToolbarBtn = toolbarBtnElement.getBoundingClientRect().width
+    const leftToolbar = toolbarElement.getBoundingClientRect().left
+    // const deltaWidth =
     const target = evt.target
     const coords = target.getBoundingClientRect()
-    // console.log('coords', coords)
-    const left = coords.left
-    const top = coords.top + target.offsetHeight + 10
+    const left = coords.left - leftToolbar
     const tooltipBtn = target.dataset.tooltip
     if (!tooltipBtn) {
       return
     }
+    const widthBtnTooltip = tooltipBtn
+    // console.log('btn', target.getBoundingClientRect().width)
     setTooltip({
       text: tooltipBtn,
-      element: target,
-      left: `${left}px`,
-      top: `${top}px`,
+      targetelement: target,
+      left: `${left}`,
+      widthbtn: widthToolbarBtn,
+      // top: `50px`,
+      // top: `${top}px`,
     })
   }
 
@@ -47,7 +54,7 @@ const Toolbar = () => {
       <div className="toolbar-settings">
         {listNavBtns.map((btn, i) => (
           <span
-            className={`toolbar-btn toolbar-btn-set toolbar--${btn}`}
+            className={`toolbar-btn toolbar--${btn}`}
             data-tooltip={btn}
             key={i}
             onMouseOver={handleMouseOver}

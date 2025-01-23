@@ -109,12 +109,6 @@ const CardEditor = () => {
   }
 
   useEffect(() => {
-    if (cardtext.color) {
-      console.log('color', cardtext.color)
-    }
-  }, [cardtext])
-
-  useEffect(() => {
     calcLinesInEditable(linesCount)
   }, [linesCount])
 
