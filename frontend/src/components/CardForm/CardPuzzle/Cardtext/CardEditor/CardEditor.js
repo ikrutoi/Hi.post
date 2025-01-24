@@ -1,6 +1,14 @@
 import { useSelector } from 'react-redux'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { createEditor, Transforms, Editor, Range, Path, start } from 'slate'
+import {
+  createEditor,
+  Transforms,
+  Editor,
+  Range,
+  Path,
+  start,
+  last,
+} from 'slate'
 import {
   Slate,
   Editable,
@@ -56,45 +64,134 @@ const CardEditor = () => {
   const editorRef = useRef(null)
   const editableRef = useRef(null)
   const [editableWidth, setEditableWidth] = useState(null)
-  useEffect(() => {
-    if (!editableWidth) {
-      setEditableWidth(editableRef.current.offsetWidth)
-    }
-  }, [editableWidth])
   const [linesCount, setLinesCount] = useState(1)
   const [focusedElement, setFocusedElement] = useState(null)
   const [maxLines, setMaxLines] = useState(null)
   const [isMaxLines, setIsMaxLines] = useState(false)
 
-  const [lastKey, setLastKey] = useState(null)
+  const [styleEditable, setStyleEditable] = useState({
+    fontsize: null,
+    fontstyle: null,
+    fontweight: null,
+    color: null,
+    lineheight: null,
+  })
 
-  //  !!!
+  const markRef = useRef(null)
+  const [markInfo, setMarkInfo] = useState({ path: null })
+
   const handleSlateChange = (newValue) => {
     // console.log('last key from Change', lastKey)
     setValue(newValue)
   }
 
-  const calcLinesInEditable = (linesCount) => {
-    if (editorRef.current && editableRef.current) {
-      const heightEditor = editorRef.current.offsetHeight
-      const heightEditable = editableRef.current.offsetHeight
-      const nodeElementLine = editorRef.current.querySelector(
-        '[data-slate-node="element"]'
-      )
-      const heightLine = nodeElementLine.offsetHeight
-      const maxNumberLinesFraction = heightEditor / heightLine
-      const maxNumberLines = Math.floor(maxNumberLinesFraction)
-      setMaxLines(maxNumberLines)
-      if (linesCount >= maxNumberLines) {
-        setIsMaxLines(true)
-      }
+  // const calcLinesInEditable = useCallback(() => {
+  //   // ;(linesCount) => {
+  //   console.log('**')
+  //   if (editorRef.current && editableRef.current) {
+  //     // const heightEditor = editorRef.current.offsetHeight
+  //     // const heightEditable = editableRef.current.offsetHeight
+  //     // const baseSize = (heightEditor / 12).toFixed(1)
+  //     // const baseSizeLineHeight = Math.floor(heightEditor / 12)
+  //     // setLineHeightCurrent(baseSizeLineHeight)
+  //     // const baseFontSize = baseSizeLineHeight / 1.33
+  //     // setFontSizeCurrent(baseFontSize)
+  //     // console.log('baseSize', baseSize, 'remSize', remSize)
+  //     // const nodeElementLine = editorRef.current.querySelector(
+  //     // '[data-slate-node="element"]'
+  //     // )
+  //     // const heightLine = nodeElementLine.offsetHeight
+  //     // console.log('lineHeight', heightLine, 'fontsize', remSize * 2.2)
+  //     // const maxNumberLinesFraction = heightEditor / heightLine
+  //     // console.log('maxLinesFraction', maxNumberLinesFraction)
+  //     // const maxNumberLines = Math.floor(maxNumberLinesFraction)
+  //     // setMaxLines(maxNumberLines)
+  //     // console.log('linesCount', linesCount, 'maxLines', maxLines)
+  //     // if (linesCount >= maxLines) {
+  //     //   const [lastLineNode, lastLinePath] = Editor.last(editor, [])
+  //     //   const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
+  //     //   const widthLastLine = domNodeLastLine.offsetWidth
+  //     //   // console.log('widthLine', widthLastLine, 'widthEditor', editableWidth)
+  //     //   // console.log('key', lastKey)
+  //     //   if (widthLastLine >= editableWidth) {
+  //     //     console.log('LIMIT!!!')
+  //     //   }
+  //     //   // setIsMaxLines(true)
+  //     // }
+  //     // }
+  //   }
+  // }, [editorRef, editableRef, linesCount, maxLines])
+
+  const calcStyleAndLinesEditable = (condition) => {
+    console.log('calc:', condition)
+    let lines
+    switch (condition) {
+      case 'startLines':
+        lines = 12
+        break
+      case 'decreaseLines':
+        lines = 12
+        break
+      case 'increaseLines':
+        lines = maxLines + 1
+        break
+
+      default:
+        break
     }
+
+    const heightEditor = editorRef.current.offsetHeight
+    const baseSizeLineHeight = Math.floor((heightEditor / lines) * 10) / 10
+    const baseFontSize = Math.floor((baseSizeLineHeight / 1.33) * 10) / 10
+    setStyleEditable((state) => {
+      return {
+        ...state,
+        lineheight: baseSizeLineHeight,
+        fontsize: baseFontSize,
+      }
+    })
+    setMaxLines(lines)
+    setEditableWidth(editableRef.current.offsetWidth)
   }
 
+  useEffect(() => {
+    if (editorRef.current) {
+      calcStyleAndLinesEditable('startLines')
+    }
+  }, [editorRef])
+
+  useEffect(() => {
+    if (editorRef.current) {
+      const [lastLineNode, lastLinePath] = Editor.last(editor, [])
+      if (!markInfo.path || markInfo.path !== lastLinePath) {
+        setMarkInfo((state) => {
+          return { ...state, path: lastLinePath }
+        })
+        if (markRef.current) {
+          markRef.current.remove()
+          markRef.current = null
+        }
+        // console.log('lastNode', lastLineNode, lastLinePath)
+        if (!markRef.current) {
+          const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
+          if (domLastNode) {
+            const spanElement = document.createElement('span')
+            spanElement.textContent = '*'
+            markRef.current = spanElement
+            domLastNode.parentNode.insertBefore(
+              spanElement,
+              domLastNode.nextSibling
+            )
+          }
+        }
+      }
+    }
+  }, [editor, value, markInfo.path])
+
   const handleKeyDown = (evt) => {
-    setLastKey(evt.key)
+    // setLastKey(evt.key)
     if (isMaxLines) {
-      console.log('STOP!!')
+      console.log('HandleKeyDown. Max Lines!')
       // evt.preventDefault()
     }
   }
@@ -108,57 +205,101 @@ const CardEditor = () => {
     }
   }
 
-  useEffect(() => {
-    calcLinesInEditable(linesCount)
-  }, [linesCount])
+  // useEffect(() => {
+  //   const numberLines = editor.children.length
+  //   setLinesCount(numberLines)
+  //   if (maxLines && numberLines >= maxLines) {
+  //     console.log('max lines')
+  //     const [lastLineNode, lastLinePath] = Editor.last(editor, [])
+  //     const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
+  //     const widthLastLine = domNodeLastLine.offsetWidth
+  //     console.log('lastLineWidth', widthLastLine, 0.9 * editableWidth)
+  //     if (widthLastLine >= 0.9 * editableWidth) {
+  //       console.log('limit!')
+  //     }
+  //   }
+  // }, [editor, editor.children.length, maxLines, editableWidth])
 
   useEffect(() => {
+    const numberLines = editor.children.length
+    if (numberLines !== linesCount) {
+      setLinesCount(numberLines)
+    }
+    if (numberLines < maxLines && isMaxLines) {
+      setIsMaxLines(false)
+    }
+    if (numberLines >= maxLines && maxLines) {
+      setIsMaxLines(true)
+    }
+  }, [editor.children.length, isMaxLines, linesCount, maxLines])
+
+  useEffect(() => {
+    const [lastLineNode, lastLinePath] = Editor.last(editor, [])
+    // const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
+    // if (domLastNode) {
+    //   const spanElement = document.createElement('span')
+    //   spanElement.textContent = '*'
+    //   domLastNode.parentNode.insertBefore(spanElement, domLastNode.nextSibling)
+    // }
+    // console.log('lastNode', lastLineNode, lastLinePath)
     if (isMaxLines) {
-      const [lastLineNode, lastLinePath] = Editor.last(editor, [])
       const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
       const widthLastLine = domNodeLastLine.offsetWidth
-      console.log('widthLine', widthLastLine, 'widthEditor', editableWidth)
-      // console.log('key', lastKey)
-      if (widthLastLine >= editableWidth) {
-        console.log('-------------')
-      }
-    }
-
-    const currentNumberLines = editor.children.length
-    if (linesCount !== currentNumberLines) {
-      if (currentNumberLines === maxLines) {
-        setIsMaxLines(true)
-      } else {
+      console.log(
+        'lastLineWidth',
+        widthLastLine,
+        Math.floor(0.95 * editableWidth)
+      )
+      if (widthLastLine >= 0.95 * editableWidth) {
+        calcStyleAndLinesEditable('increaseLines')
         setIsMaxLines(false)
       }
-      setLinesCount(editor.children.length)
     }
-    if (focusedElement) {
-      console.log(
-        'FOCUS',
-        focusedElement.start.path,
-        '/',
-        focusedElement.start.offset,
-        '/length:',
-        focusedElement.node.text.length
-      )
-    }
-    if (
-      focusedElement &&
-      focusedElement.start.path[0] + 1 === editor.children.length &&
-      focusedElement.start.offset === focusedElement.node.text.length
-    ) {
-      console.log('End of element on last line!')
-    }
-  }, [
-    focusedElement,
-    editor,
-    linesCount,
-    maxLines,
-    value,
-    isMaxLines,
-    editableWidth,
-  ])
+  }, [isMaxLines, editableWidth, editor, value])
+
+  // useEffect(() => {
+  //   const currentNumberLines = editor.children.length
+  //   if (linesCount !== currentNumberLines) {
+  //     if (currentNumberLines === maxLines) {
+  //       setIsMaxLines(true)
+  //     } else {
+  //       setIsMaxLines(false)
+  //     }
+  //     setLinesCount(editor.children.length)
+  //     // calcLinesInEditable(editor.children.length)
+  //   }
+  // }, [linesCount, maxLines, editor.children.length])
+
+  // useEffect(() => {
+  //   if (isMaxLines) {
+  //     console.log('max!!')
+  //     const [lastLineNode, lastLinePath] = Editor.last(editor, [])
+  //     const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
+  //     const widthLastLine = domNodeLastLine.offsetWidth
+  //     // console.log('widthLine', widthLastLine, 'widthEditor', editableWidth)
+  //     // console.log('key', lastKey)
+  //     if (widthLastLine >= editableWidth) {
+  //       console.log('LIMIT!!!')
+  //     }
+  //   }
+  // if (focusedElement) {
+  //   console.log(
+  //     'FOCUS',
+  //     focusedElement.start.path,
+  //     '/',
+  //     focusedElement.start.offset,
+  //     '/length:',
+  //     focusedElement.node.text.length
+  //   )
+  // }
+  // if (
+  //   focusedElement &&
+  //   focusedElement.start.path[0] + 1 === editor.children.length &&
+  //   focusedElement.start.offset === focusedElement.node.text.length
+  // ) {
+  //   console.log('End of element on last line!')
+  // }
+  // }, [focusedElement, editor, value, isMaxLines, editableWidth])
 
   return (
     <div className="cardeditor">
@@ -171,18 +312,26 @@ const CardEditor = () => {
           <Toolbar editor={editor} />
           <Editable
             className="editable"
-            style={{
-              fontSize: cardtext.fontsize * remSize + 'px',
-              color: cardtext.color,
-              fontStyle: cardtext.fontstyle,
-              fontWeight: cardtext.fontweight,
-            }}
+            style={
+              styleEditable.fontsize && {
+                fontSize: `${styleEditable.fontsize}px`,
+                lineHeight: `${styleEditable.lineheight}px`,
+                color: cardtext.color,
+                fontStyle: cardtext.fontstyle,
+                fontWeight: cardtext.fontweight,
+              }
+            }
             ref={editableRef}
             onBlur={() => setFocusedElement(null)}
             onKeyDown={handleKeyDown}
             onKeyUp={handleKeyUp}
           />
         </Slate>
+      </div>
+      <div className="editable-count">
+        <span>{linesCount}</span>
+        <span>/</span>
+        <span>{maxLines && maxLines}</span>
       </div>
     </div>
   )

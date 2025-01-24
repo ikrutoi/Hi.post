@@ -1,12 +1,12 @@
 .toolbar-tooltip {
   position: absolute;
   z-index: 1;
-  top: -2.3rem;
-  padding: 0.5rem 1rem;
+  top: -2.1rem;
+  padding: 0.4rem 0.8rem;
   display: flex;
-  flex-wrap: nowrap;
   align-items: center;
-  // visibility: hidden;
+  white-space: nowrap;
+  width: auto;
   border-radius: 4px;
   font: 0.8rem sans-serif;
   color: #333;

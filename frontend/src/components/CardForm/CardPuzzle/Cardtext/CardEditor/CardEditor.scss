@@ -1,8 +1,7 @@
 .cardeditor {
+  // display: flex;
+  // align-items: center;
   height: 100%;
-  // font-size: 2.2rem;
-  // font-style: italic;
-  // color: #007aac;
   border-radius: 1rem;
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -13,14 +12,41 @@
 
 .editor {
   height: 100%;
+  // width: 100%;
   // background-color: rgba($color: #e5f1f7, $alpha: 1);
-  // border: solid 1px blue;
+  border: solid 1px blue;
 }
 
-.cardtext-mark {
+// .cardtext-mark {
+//   display: inline-block;
+//   width: 10px;
+//   height: 10px;
+//   border-radius: 50%;
+//   background-color: orangered;
+// }
+
+.editable-count {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: 0.1rem;
+  right: 5rem;
+  background-color: white;
+  // border: solid 1px green;
+}
+
+.editable-count span {
+  font-size: 1.2rem;
+  margin: 0px 6px;
+  font-weight: 500;
+  color: gray;
+  background-color: white;
+}
+
+.editable-mark {
   display: inline-block;
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: orangered;
+  background-color: orange;
 }

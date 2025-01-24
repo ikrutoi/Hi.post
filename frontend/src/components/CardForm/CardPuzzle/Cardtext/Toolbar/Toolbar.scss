@@ -26,28 +26,23 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 1.6rem;
-  height: 1.6rem;
-  margin: 0.2rem 0.7rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin: 0.3rem 0.6rem;
   cursor: pointer;
   // background-color: lightgray;
-  border: solid 1px lightgray;
+  // border: solid 1px lightgray;
   border-radius: 3px;
 }
 
-// .toolbar-btn-chars {
-//   width: 3rem;
-//   height: 2rem;
-//   margin-top: -0.1rem;
-//   background-color: rgba($color: #ffffff, $alpha: 0);
-//   // border: solid 1px red;
-// }
+.toolbar-icon {
+  width: 0.8rem;
+  height: 0.8rem;
+  color: rgb(163, 163, 163);
+}
 
-// .toolbar-chars span:nth-child(1) {
-//   color: #007aac;
-// }
-
-// .toolbar-chars span:nth-child(2) {
-//   height: 2rem;
-//   margin-top: -0.1rem;
-// }
+.toolbar-btn:hover {
+  .toolbar-icon {
+    color: rgb(71, 71, 71);
+  }
+}

@@ -1,5 +1,15 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
+import {
+  FaBold,
+  FaItalic,
+  FaUnderline,
+  FaStrikethrough,
+  FaAlignLeft,
+  FaAlignCenter,
+  FaAlignRight,
+  FaAlignJustify,
+} from 'react-icons/fa'
 import './Toolbar.scss'
 import listNavBtns from '../../../../../data/cardtext/list-textarea-nav-btns.json'
 import Tooltip from './Tooltip/Tooltip'
@@ -19,13 +29,32 @@ const Toolbar = () => {
       }
   const [cardtext, setCardtext] = useState(inputCardtext)
   const [tooltip, setTooltip] = useState(null)
+  const [clickBtnToolbar, setClickBtnToolbar] = useState(null)
 
-  const handleMouseOver = (evt) => {
+  const handleOnClick = (evt) => {
+    let btn
+    if (evt.target.tagName === 'svg' || evt.target.tagName === 'path') {
+      if (evt.target.tagName === 'svg') {
+        btn = evt.target.parentElement
+      }
+      if (evt.target.tagName === 'path') {
+        btn = evt.target.parentElement.parentElement
+      }
+    } else {
+      btn = evt.target
+    }
+    setClickBtnToolbar(btn.dataset.tooltip)
+  }
+
+  useEffect(() => {
+    console.log('click:', clickBtnToolbar)
+  }, [clickBtnToolbar])
+
+  const handleMouseEnter = (evt) => {
     const toolbarElement = document.querySelector('.toolbar')
     const toolbarBtnElement = document.querySelectorAll('.toolbar-btn')[0]
     const widthToolbarBtn = toolbarBtnElement.getBoundingClientRect().width
     const leftToolbar = toolbarElement.getBoundingClientRect().left
-    // const deltaWidth =
     const target = evt.target
     const coords = target.getBoundingClientRect()
     const left = coords.left - leftToolbar
@@ -33,20 +62,41 @@ const Toolbar = () => {
     if (!tooltipBtn) {
       return
     }
-    const widthBtnTooltip = tooltipBtn
-    // console.log('btn', target.getBoundingClientRect().width)
     setTooltip({
       text: tooltipBtn,
       targetelement: target,
       left: `${left}`,
       widthbtn: widthToolbarBtn,
-      // top: `50px`,
-      // top: `${top}px`,
     })
   }
 
-  const handleMouseOut = () => {
+  const handleMouseLeave = () => {
     setTooltip(null)
+  }
+
+  const iconToolbar = (name) => {
+    switch (name) {
+      case 'bold':
+        return <FaBold className="toolbar-icon" />
+      case 'italic':
+        return <FaItalic className="toolbar-icon" />
+      case 'underline':
+        return <FaUnderline className="toolbar-icon" />
+      case 'color':
+        return <FaBold className="toolbar-icon" />
+      case 'strikethrough':
+        return <FaStrikethrough className="toolbar-icon" />
+      case 'align-left':
+        return <FaAlignLeft className="toolbar-icon" />
+      case 'align-center':
+        return <FaAlignCenter className="toolbar-icon" />
+      case 'align-right':
+        return <FaAlignRight className="toolbar-icon" />
+      case 'align-justify':
+        return <FaAlignJustify className="toolbar-icon" />
+      default:
+        break
+    }
   }
 
   return (
@@ -57,21 +107,15 @@ const Toolbar = () => {
             className={`toolbar-btn toolbar--${btn}`}
             data-tooltip={btn}
             key={i}
-            onMouseOver={handleMouseOver}
-            onMouseOut={handleMouseOut}
-          ></span>
+            onClick={handleOnClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {iconToolbar(btn)}
+          </span>
         ))}
         {tooltip && <Tooltip tooltip={tooltip} />}
       </div>
-      {/* <div className="toolbar-chars">
-        <span className="toolbar-btn toolbar-btn-chars toolbar-enteredchars">
-          {cardtext.text.length}
-        </span>
-        <span className="toolbar-btn">/</span>
-        <span className="toolbar-btn toolbar-btn-chars toolbar-maxchars">
-          {cardtext.maxchars}
-        </span>
-      </div> */}
     </div>
   )
 }
