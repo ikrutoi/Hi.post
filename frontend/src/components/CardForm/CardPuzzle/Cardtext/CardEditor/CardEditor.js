@@ -78,7 +78,7 @@ const CardEditor = () => {
   })
 
   const markRef = useRef(null)
-  const [markInfo, setMarkInfo] = useState({ path: null })
+  const [markPath, setMarkPath] = useState(null)
 
   const handleSlateChange = (newValue) => {
     // console.log('last key from Change', lastKey)
@@ -160,18 +160,31 @@ const CardEditor = () => {
     }
   }, [editorRef])
 
+  const arrayCompare = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) {
+      return false
+    }
+    if (arr1 === null || arr2 === null) {
+      return false
+    }
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) {
+        return false
+      }
+    }
+    return true
+  }
+
   useEffect(() => {
     if (editorRef.current) {
       const [lastLineNode, lastLinePath] = Editor.last(editor, [])
-      if (!markInfo.path || markInfo.path !== lastLinePath) {
-        setMarkInfo((state) => {
-          return { ...state, path: lastLinePath }
-        })
+      if (!markPath || !arrayCompare(markPath, lastLinePath)) {
+        setMarkPath(lastLinePath)
         if (markRef.current) {
           markRef.current.remove()
           markRef.current = null
         }
-        // console.log('lastNode', lastLineNode, lastLinePath)
+        console.log('lastNode', lastLineNode, lastLinePath)
         if (!markRef.current) {
           const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
           if (domLastNode) {
@@ -186,7 +199,7 @@ const CardEditor = () => {
         }
       }
     }
-  }, [editor, value, markInfo.path])
+  }, [editor, value, markPath])
 
   const handleKeyDown = (evt) => {
     // setLastKey(evt.key)
