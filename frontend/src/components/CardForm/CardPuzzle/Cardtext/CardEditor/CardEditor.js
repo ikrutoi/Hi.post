@@ -175,26 +175,76 @@ const CardEditor = () => {
     return true
   }
 
+  // const getDeepestChild = (element) => {
+  //   if (element.dataset && element.dataset['slateNode'] === 'text') {
+  //     return element
+  //   }
+  //   if (element.children.length === 0) {
+  //     return null
+  //   }
+  //   return getDeepestChild(element.children[element.children.length - 1])
+  // }
+
+  const getDeepestChild = (element) => {
+    if (element.children.length === 0) {
+      return element
+    }
+    return getDeepestChild(element.children[element.children.length - 1])
+  }
+
   useEffect(() => {
+    console.log('markRef.contains', document.contains(markRef.current))
     if (editorRef.current) {
       const [lastLineNode, lastLinePath] = Editor.last(editor, [])
-      if (!markPath || !arrayCompare(markPath, lastLinePath)) {
+      if (markRef.current && !document.contains(markRef.current)) {
+        markRef.current.remove()
+        markRef.current = null
+        const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
+        const deepestChild = getDeepestChild(domLastNode)
+        const spanElement = document.createElement('span')
+        spanElement.className = 'span-mark'
+        spanElement.textContent = '*'
+        spanElement.contentEditable = false
+        markRef.current = spanElement
+        deepestChild.insertAdjacentElement('afterEnd', spanElement)
+      }
+      // console.log('lastLineNode', lastLineNode)
+      if (
+        !markPath ||
+        !arrayCompare(
+          markPath,
+          lastLinePath
+          // || !document.contains(markRef.current)
+        )
+      ) {
         setMarkPath(lastLinePath)
         if (markRef.current) {
           markRef.current.remove()
           markRef.current = null
+          // console.log('**markRef.remove', markRef.current)
         }
-        console.log('lastNode', lastLineNode, lastLinePath)
+        // console.log('lastNode', lastLineNode, lastLinePath)
         if (!markRef.current) {
+          // console.log('**markRef', markRef.current)
           const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
-          if (domLastNode) {
+          const deepestChild = getDeepestChild(domLastNode)
+          if (deepestChild && deepestChild.tagName !== 'BR') {
+            // console.log('deepestChild !br', deepestChild)
             const spanElement = document.createElement('span')
+            spanElement.className = 'span-mark'
             spanElement.textContent = '*'
+            spanElement.contentEditable = false
             markRef.current = spanElement
-            domLastNode.parentNode.insertBefore(
-              spanElement,
-              domLastNode.nextSibling
-            )
+            deepestChild.insertAdjacentElement('afterEnd', spanElement)
+          }
+          if (deepestChild && deepestChild.tagName === 'BR') {
+            // console.log('deepestChild br', deepestChild)
+            const spanElement = document.createElement('span')
+            spanElement.className = 'span-mark'
+            spanElement.textContent = '*'
+            spanElement.contentEditable = false
+            markRef.current = spanElement
+            deepestChild.insertAdjacentElement('beforeBegin', spanElement)
           }
         }
       }
