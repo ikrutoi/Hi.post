@@ -123,7 +123,7 @@ const CardEditor = () => {
   // }, [editorRef, editableRef, linesCount, maxLines])
 
   const calcStyleAndLinesEditable = (condition) => {
-    console.log('calc:', condition)
+    // console.log('calc:', condition)
     let lines
     switch (condition) {
       case 'startLines':
@@ -193,7 +193,27 @@ const CardEditor = () => {
   }
 
   useEffect(() => {
-    console.log('markRef.contains', document.contains(markRef.current))
+    console.log('heightEditor', editorRef.current.scrollHeight)
+    console.log('heightEditableScroll', editableRef.current.scrollHeight)
+    console.log('heightEditable1', editableRef.current.clientHeight)
+    if (editorRef.current && markRef.current) {
+      const markLineCurrent = Math.round(
+        editableRef.current.scrollHeight /
+          markRef.current.getBoundingClientRect().height
+      )
+      setLinesCount(markLineCurrent)
+      if (markLineCurrent > maxLines && maxLines) {
+        calcStyleAndLinesEditable('increaseLines')
+      }
+    }
+    const creationMark = () => {
+      const spanElement = document.createElement('span')
+      spanElement.className = 'span-mark'
+      spanElement.textContent = '*'
+      spanElement.contentEditable = false
+      markRef.current = spanElement
+      return spanElement
+    }
     if (editorRef.current) {
       const [lastLineNode, lastLinePath] = Editor.last(editor, [])
       if (markRef.current && !document.contains(markRef.current)) {
@@ -201,49 +221,24 @@ const CardEditor = () => {
         markRef.current = null
         const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
         const deepestChild = getDeepestChild(domLastNode)
-        const spanElement = document.createElement('span')
-        spanElement.className = 'span-mark'
-        spanElement.textContent = '*'
-        spanElement.contentEditable = false
-        markRef.current = spanElement
+        const spanElement = creationMark()
         deepestChild.insertAdjacentElement('afterEnd', spanElement)
       }
-      // console.log('lastLineNode', lastLineNode)
-      if (
-        !markPath ||
-        !arrayCompare(
-          markPath,
-          lastLinePath
-          // || !document.contains(markRef.current)
-        )
-      ) {
+      if (!markPath || !arrayCompare(markPath, lastLinePath)) {
         setMarkPath(lastLinePath)
         if (markRef.current) {
           markRef.current.remove()
           markRef.current = null
-          // console.log('**markRef.remove', markRef.current)
         }
-        // console.log('lastNode', lastLineNode, lastLinePath)
         if (!markRef.current) {
-          // console.log('**markRef', markRef.current)
           const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
           const deepestChild = getDeepestChild(domLastNode)
           if (deepestChild && deepestChild.tagName !== 'BR') {
-            // console.log('deepestChild !br', deepestChild)
-            const spanElement = document.createElement('span')
-            spanElement.className = 'span-mark'
-            spanElement.textContent = '*'
-            spanElement.contentEditable = false
-            markRef.current = spanElement
+            const spanElement = creationMark()
             deepestChild.insertAdjacentElement('afterEnd', spanElement)
           }
           if (deepestChild && deepestChild.tagName === 'BR') {
-            // console.log('deepestChild br', deepestChild)
-            const spanElement = document.createElement('span')
-            spanElement.className = 'span-mark'
-            spanElement.textContent = '*'
-            spanElement.contentEditable = false
-            markRef.current = spanElement
+            const spanElement = creationMark()
             deepestChild.insertAdjacentElement('beforeBegin', spanElement)
           }
         }
@@ -252,14 +247,32 @@ const CardEditor = () => {
   }, [editor, value, markPath])
 
   const handleKeyDown = (evt) => {
+    // console.log('key down0')
+    // if (editorRef.current && markRef.current) {
+    //   console.log('key down1')
+    //   const markLineCurrent = Math.round(
+    //     (markRef.current.getBoundingClientRect().top -
+    //       editorRef.current.getBoundingClientRect().top +
+    //       markRef.current.getBoundingClientRect().height) /
+    //       markRef.current.getBoundingClientRect().height
+    //   )
+    //   console.log('markLines, maxLines', markLineCurrent, maxLines)
+    //   if (markLineCurrent > maxLines && maxLines) {
+    //     // console.log('key down outside true!')
+    //     // setOutside(true)
+    //     // calcStyleAndLinesEditable('increaseLines')
+    //   }
+    // }
+    // console.log('outside', outside)
     // setLastKey(evt.key)
-    if (isMaxLines) {
-      console.log('HandleKeyDown. Max Lines!')
-      // evt.preventDefault()
-    }
+    // if (isMaxLines) {
+    //   console.log('HandleKeyDown. Max Lines!')
+    //   // evt.preventDefault()
+    // }
   }
 
   const handleKeyUp = (evt) => {
+    // console.log('keyUp')
     const { selection } = editor
     if (selection) {
       const [start] = Range.edges(selection)
@@ -283,42 +296,42 @@ const CardEditor = () => {
   //   }
   // }, [editor, editor.children.length, maxLines, editableWidth])
 
-  useEffect(() => {
-    const numberLines = editor.children.length
-    if (numberLines !== linesCount) {
-      setLinesCount(numberLines)
-    }
-    if (numberLines < maxLines && isMaxLines) {
-      setIsMaxLines(false)
-    }
-    if (numberLines >= maxLines && maxLines) {
-      setIsMaxLines(true)
-    }
-  }, [editor.children.length, isMaxLines, linesCount, maxLines])
+  // useEffect(() => {
+  //   const numberLines = editor.children.length
+  //   if (numberLines !== linesCount) {
+  //     setLinesCount(numberLines)
+  //   }
+  //   if (numberLines < maxLines && isMaxLines) {
+  //     setIsMaxLines(false)
+  //   }
+  //   if (numberLines >= maxLines && maxLines) {
+  //     setIsMaxLines(true)
+  //   }
+  // }, [editor.children.length, isMaxLines, linesCount, maxLines])
 
-  useEffect(() => {
-    const [lastLineNode, lastLinePath] = Editor.last(editor, [])
-    // const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
-    // if (domLastNode) {
-    //   const spanElement = document.createElement('span')
-    //   spanElement.textContent = '*'
-    //   domLastNode.parentNode.insertBefore(spanElement, domLastNode.nextSibling)
-    // }
-    // console.log('lastNode', lastLineNode, lastLinePath)
-    if (isMaxLines) {
-      const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
-      const widthLastLine = domNodeLastLine.offsetWidth
-      console.log(
-        'lastLineWidth',
-        widthLastLine,
-        Math.floor(0.95 * editableWidth)
-      )
-      if (widthLastLine >= 0.95 * editableWidth) {
-        calcStyleAndLinesEditable('increaseLines')
-        setIsMaxLines(false)
-      }
-    }
-  }, [isMaxLines, editableWidth, editor, value])
+  // useEffect(() => {
+  //   const [lastLineNode, lastLinePath] = Editor.last(editor, [])
+  //   // const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
+  //   // if (domLastNode) {
+  //   //   const spanElement = document.createElement('span')
+  //   //   spanElement.textContent = '*'
+  //   //   domLastNode.parentNode.insertBefore(spanElement, domLastNode.nextSibling)
+  //   // }
+  //   // console.log('lastNode', lastLineNode, lastLinePath)
+  //   if (isMaxLines) {
+  //     const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
+  //     const widthLastLine = domNodeLastLine.offsetWidth
+  //     console.log(
+  //       'lastLineWidth',
+  //       widthLastLine,
+  //       Math.floor(0.95 * editableWidth)
+  //     )
+  //     if (widthLastLine >= 0.95 * editableWidth) {
+  //       calcStyleAndLinesEditable('increaseLines')
+  //       setIsMaxLines(false)
+  //     }
+  //   }
+  // }, [isMaxLines, editableWidth, editor, value])
 
   // useEffect(() => {
   //   const currentNumberLines = editor.children.length

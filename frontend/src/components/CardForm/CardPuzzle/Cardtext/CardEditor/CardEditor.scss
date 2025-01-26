@@ -12,6 +12,7 @@
 
 .editor {
   height: 100%;
+  overflow: hidden;
   // width: 100%;
   // background-color: rgba($color: #e5f1f7, $alpha: 1);
   border: solid 1px blue;
@@ -22,7 +23,6 @@
 //   width: 10px;
 //   height: 10px;
 //   border-radius: 50%;
-//   background-color: orangered;
 // }
 
 .editable-count {
