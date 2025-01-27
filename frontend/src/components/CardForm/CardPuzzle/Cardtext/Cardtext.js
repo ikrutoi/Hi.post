@@ -2,11 +2,14 @@ import './Cardtext.scss'
 import CardEditor from './CardEditor/CardEditor'
 // import Toolbar from './Toolbar/Toolbar'
 
-const Cardtext = () => {
+const Cardtext = ({ toolbarColor, setToolbarColorActive }) => {
   return (
     <div className="cardtext">
       {/* <Toolbar editor={editor} /> */}
-      <CardEditor />
+      <CardEditor
+        toolbarColor={toolbarColor}
+        setToolbarColorActive={setToolbarColorActive}
+      />
     </div>
   )
 }

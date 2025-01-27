@@ -1,42 +1,20 @@
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import {
-  createEditor,
-  Transforms,
-  Editor,
-  Range,
-  Path,
-  start,
-  last,
-} from 'slate'
-import {
-  Slate,
-  Editable,
-  withReact,
-  useSlateStatic,
-  ReactEditor,
-} from 'slate-react'
+import { createEditor, Editor, Range } from 'slate'
+import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 import { v4 as uuidv4 } from 'uuid'
 import './CardEditor.scss'
 import Toolbar from '../Toolbar/Toolbar'
+import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 
-const CardEditor = () => {
+const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
-  const inputCardtext = selector.text
-    ? selector
-    : {
-        text: 'hello...',
-        maxchars: 300,
-        color: '#007aac',
-        font: '',
-        fontsize: 2.2,
-        fontstyle: 'italic',
-        fontweight: 700,
-        lines: 1,
-        focus: false,
-        focusrow: 1,
-      }
+  const inputCardtext = selector.text ? selector : null
   const [cardtext, setCardtext] = useState(inputCardtext)
+
+  useEffect(() => {
+    setCardtext(selector)
+  }, [selector])
 
   const editor = useMemo(() => withReact(createEditor()), [])
   const [value, setValue] = useState(() => [
@@ -46,19 +24,21 @@ const CardEditor = () => {
     },
   ])
 
-  const [remSize, setRemSize] = useState(0)
+  const dispatch = useDispatch()
 
-  useEffect(() => {
-    const root = document.documentElement
-    const remSizeInPx = getComputedStyle(root).getPropertyValue('--rem-size')
-    const tempDiv = document.createElement('div')
-    tempDiv.style.width = remSizeInPx
-    tempDiv.style.visibility = 'hidden'
-    document.body.appendChild(tempDiv)
-    const computedRem = tempDiv.getBoundingClientRect().width
-    setRemSize(computedRem)
-    document.body.removeChild(tempDiv)
-  }, [])
+  // const [remSize, setRemSize] = useState(0)
+
+  // useEffect(() => {
+  //   const root = document.documentElement
+  //   const remSizeInPx = getComputedStyle(root).getPropertyValue('--rem-size')
+  //   const tempDiv = document.createElement('div')
+  //   tempDiv.style.width = remSizeInPx
+  //   tempDiv.style.visibility = 'hidden'
+  //   document.body.appendChild(tempDiv)
+  //   const computedRem = tempDiv.getBoundingClientRect().width
+  //   setRemSize(computedRem)
+  //   document.body.removeChild(tempDiv)
+  // }, [])
 
   const [editable, setEditable] = useState(null)
   const editorRef = useRef(null)
@@ -68,22 +48,24 @@ const CardEditor = () => {
   const [focusedElement, setFocusedElement] = useState(null)
   const [maxLines, setMaxLines] = useState(null)
   const [isMaxLines, setIsMaxLines] = useState(false)
-
-  const [styleEditable, setStyleEditable] = useState({
-    fontsize: null,
-    fontstyle: null,
-    fontweight: null,
-    color: null,
-    lineheight: null,
-  })
+  // const [toolbarColor, setToolbarColor] = useState(null)
 
   const markRef = useRef(null)
   const [markPath, setMarkPath] = useState(null)
 
   const handleSlateChange = (newValue) => {
-    // console.log('last key from Change', lastKey)
     setValue(newValue)
   }
+
+  useEffect(() => {
+    if (editorRef.current) {
+      calcStyleAndLinesEditable('startLines')
+    }
+  }, [editorRef.current])
+
+  // useEffect(() => {
+  // }, [value])
+  // console.log('value', value)
 
   // const calcLinesInEditable = useCallback(() => {
   //   // ;(linesCount) => {
@@ -123,7 +105,6 @@ const CardEditor = () => {
   // }, [editorRef, editableRef, linesCount, maxLines])
 
   const calcStyleAndLinesEditable = (condition) => {
-    // console.log('calc:', condition)
     let lines
     switch (condition) {
       case 'startLines':
@@ -143,22 +124,15 @@ const CardEditor = () => {
     const heightEditor = editorRef.current.offsetHeight
     const baseSizeLineHeight = Math.floor((heightEditor / lines) * 10) / 10
     const baseFontSize = Math.floor((baseSizeLineHeight / 1.33) * 10) / 10
-    setStyleEditable((state) => {
-      return {
-        ...state,
-        lineheight: baseSizeLineHeight,
-        fontsize: baseFontSize,
-      }
-    })
+    dispatch(
+      addCardtext({
+        fontSize: baseFontSize,
+        lineHeight: baseSizeLineHeight,
+      })
+    )
     setMaxLines(lines)
     setEditableWidth(editableRef.current.offsetWidth)
   }
-
-  useEffect(() => {
-    if (editorRef.current) {
-      calcStyleAndLinesEditable('startLines')
-    }
-  }, [editorRef])
 
   const arrayCompare = (arr1, arr2) => {
     if (arr1.length !== arr2.length) {
@@ -193,9 +167,9 @@ const CardEditor = () => {
   }
 
   useEffect(() => {
-    console.log('heightEditor', editorRef.current.scrollHeight)
-    console.log('heightEditableScroll', editableRef.current.scrollHeight)
-    console.log('heightEditable1', editableRef.current.clientHeight)
+    // console.log('heightEditor', editorRef.current.scrollHeight)
+    // console.log('heightEditableScroll', editableRef.current.scrollHeight)
+    // console.log('heightEditable1', editableRef.current.clientHeight)
     if (editorRef.current && markRef.current) {
       const markLineCurrent = Math.round(
         editableRef.current.scrollHeight /
@@ -280,6 +254,40 @@ const CardEditor = () => {
       setFocusedElement({ node: node, start: start })
     }
   }
+
+  const btnRefs = useRef([])
+
+  const handleClickToolbar = (evt, i) => {
+    console.log('btnRef', btnRefs.current[i])
+    const searchParentBtn = (el) => {
+      if (el.classList.contains('toolbar-btn')) {
+        return el
+      } else if (el.parentElement) {
+        return searchParentBtn(el.parentElement)
+      }
+      return null
+    }
+
+    const btn = searchParentBtn(evt.target)
+    const btnTooltip = btn.dataset.tooltip
+    // console.log('btn', btn.dataset.tooltip)
+
+    if (btnTooltip === 'color') {
+      setToolbarColorActive(true)
+    }
+    if (
+      btnTooltip === 'left' ||
+      btnTooltip === 'center' ||
+      btnTooltip === 'right' ||
+      btnTooltip === 'justify'
+    ) {
+      dispatch(addCardtext({ textAlign: btn.dataset.tooltip }))
+    }
+  }
+
+  // useEffect(() => {
+  //   console.log('cardtext', cardtext)
+  // }, [cardtext])
 
   // useEffect(() => {
   //   const numberLines = editor.children.length
@@ -385,16 +393,24 @@ const CardEditor = () => {
           initialValue={value}
           onChange={handleSlateChange}
         >
-          <Toolbar editor={editor} />
+          <Toolbar
+            editor={editor}
+            btnRefs={btnRefs}
+            handleClickToolbar={handleClickToolbar}
+            cardtext={cardtext}
+            toolbarColor={toolbarColor}
+            // setToolbarColorActive={setToolbarColorActive}
+          />
           <Editable
             className="editable"
             style={
-              styleEditable.fontsize && {
-                fontSize: `${styleEditable.fontsize}px`,
-                lineHeight: `${styleEditable.lineheight}px`,
+              cardtext && {
+                fontSize: `${cardtext.fontSize}px`,
+                lineHeight: `${cardtext.lineHeight}px`,
                 color: cardtext.color,
-                fontStyle: cardtext.fontstyle,
-                fontWeight: cardtext.fontweight,
+                fontStyle: cardtext.fontStyle,
+                fontWeight: cardtext.fontWeight,
+                textAlign: cardtext.textAlign,
               }
             }
             ref={editableRef}
@@ -404,11 +420,11 @@ const CardEditor = () => {
           />
         </Slate>
       </div>
-      <div className="editable-count">
+      {/* <div className="editable-count">
         <span>{linesCount}</span>
         <span>/</span>
         <span>{maxLines && maxLines}</span>
-      </div>
+      </div> */}
     </div>
   )
 }

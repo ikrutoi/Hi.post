@@ -1,11 +1,1 @@
-[
-  "bold",
-  "italic",
-  "underline",
-  "color",
-  "strikethrough",
-  "align-left",
-  "align-center",
-  "align-right",
-  "align-justify"
-]
+["italic", "font-size", "color", "left", "center", "right", "justify"]

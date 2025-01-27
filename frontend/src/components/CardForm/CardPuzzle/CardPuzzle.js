@@ -6,7 +6,13 @@ import Envelope from './Envelope/Envelope'
 import Aroma from './Aroma/Aroma'
 import Date from './Date/Date'
 
-const CardPuzzle = ({ name, dimensionHeight, dimensionWidth }) => {
+const CardPuzzle = ({
+  name,
+  dimensionHeight,
+  dimensionWidth,
+  toolbarColor,
+  setToolbarColorActive,
+}) => {
   const heightCard = dimensionHeight * sizeCard.card
   const widthCard = heightCard * 1.42
 
@@ -15,7 +21,12 @@ const CardPuzzle = ({ name, dimensionHeight, dimensionWidth }) => {
       case 'Cardphoto':
         return <Cardphoto />
       case 'Cardtext':
-        return <Cardtext />
+        return (
+          <Cardtext
+            toolbarColor={toolbarColor}
+            setToolbarColorActive={setToolbarColorActive}
+          />
+        )
       case 'Envelope':
         return <Envelope />
       case 'Aroma':

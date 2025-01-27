@@ -15,6 +15,7 @@
 }
 
 .toolbar-settings {
+  // position: relative;
   display: flex;
   align-items: center;
   margin-left: 2rem;
@@ -28,10 +29,10 @@
   align-items: center;
   width: 1.4rem;
   height: 1.4rem;
-  margin: 0.3rem 0.6rem;
+  margin: 0.3rem 0.5rem;
   cursor: pointer;
   // background-color: lightgray;
-  // border: solid 1px lightgray;
+  // border: solid 1px red;
   border-radius: 3px;
 }
 
@@ -39,6 +40,35 @@
   width: 0.8rem;
   height: 0.8rem;
   color: rgb(163, 163, 163);
+  // border: solid 1px lightgray;
+}
+
+.toolbar--font-size,
+.toolbar--color {
+  width: auto;
+  // border: solid 1px orange;
+}
+
+.toolbar-font-size-full {
+  display: flex;
+  align-items: center;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
+  // border: solid 1px green;
+  .toolbar-icon {
+    width: 1rem;
+    // border: solid 1px orange;
+  }
+  .toolbar-icon-color {
+    height: 1.1rem;
+    width: 1.1rem;
+    // color: orange;
+  }
+  .toolbar-icon-font-size {
+    width: 1.1rem;
+    height: 1.1rem;
+    // margin-bottom: 1px;
+  }
 }
 
 .toolbar-btn:hover {

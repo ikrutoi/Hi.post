@@ -15,7 +15,7 @@
   overflow: hidden;
   // width: 100%;
   // background-color: rgba($color: #e5f1f7, $alpha: 1);
-  border: solid 1px blue;
+  // border: solid 1px blue;
 }
 
 // .cardtext-mark {
@@ -24,6 +24,11 @@
 //   height: 10px;
 //   border-radius: 50%;
 // }
+
+.editable {
+  outline: none;
+  // text-align: center;
+}
 
 .editable-count {
   position: absolute;

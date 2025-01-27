@@ -6,15 +6,12 @@ const initialState = {
   photo: null,
   cardtext: {
     text: 'Hi )))',
-    maxchars: 300,
     color: '#007aac',
     font: '',
-    fontsize: 2.2,
-    fontstyle: 'italic',
-    fontweight: 500,
-    lines: 1,
-    focus: false,
-    focusrow: 1,
+    fontSize: 10,
+    fontStyle: 'italic',
+    fontWeight: 500,
+    textAlign: 'left',
   },
   envelope: { myaddress: null, toaddress: null },
 }
@@ -24,7 +21,7 @@ const cardEditReducer = (state = initialState, action) => {
     case a.ADD_CARDPHOTO:
       return { ...state, photo: action.payload }
     case a.ADD_CARDTEXT:
-      return { ...state, cardtext: action.payload }
+      return { ...state, cardtext: { ...state.cardtext, ...action.payload } }
     case a.ADD_ENVELOPE:
       return { ...state, envelope: action.payload }
     case a.ADD_DATE:
