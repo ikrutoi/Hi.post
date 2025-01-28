@@ -1,6 +1,6 @@
 .toolbar {
   position: absolute;
-  // z-index: 2;
+  z-index: 1;
   top: 0;
   // right: 0;
   left: 0;
@@ -19,8 +19,16 @@
   display: flex;
   align-items: center;
   margin-left: 2rem;
-  background-color: white;
+  // background-color: white;
   // background-color: rgba($color: #ffffff, $alpha: 0);
+}
+
+.toolbar-more {
+  display: flex;
+  align-items: center;
+  margin-left: 2rem;
+  background-color: white;
+  // border: solid 1px blue;
 }
 
 .toolbar-btn {
@@ -32,7 +40,7 @@
   margin: 0.3rem 0.5rem;
   cursor: pointer;
   // background-color: lightgray;
-  // border: solid 1px red;
+  // border: solid 1px brown;
   border-radius: 3px;
 }
 
@@ -59,16 +67,26 @@
     width: 1rem;
     // border: solid 1px orange;
   }
-  .toolbar-icon-color {
-    height: 1.1rem;
-    width: 1.1rem;
-    // color: orange;
-  }
+
   .toolbar-icon-font-size {
     width: 1.1rem;
     height: 1.1rem;
     // margin-bottom: 1px;
   }
+}
+
+.toolbar-icon-color {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 1rem;
+}
+
+.toolbar-icon-dash {
+  display: flex;
+  border-radius: 2px;
+  width: 0.9rem;
+  height: 0.12rem;
 }
 
 .toolbar-btn:hover {

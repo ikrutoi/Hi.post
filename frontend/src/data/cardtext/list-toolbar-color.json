@@ -1,0 +1,10 @@
+[
+  { "name": "red", "code": "rgba(255, 0, 0, 0.8)" },
+  { "name": "orange", "code": "rgba(255, 165, 0, 0.8)" },
+  { "name": "brown", "code": "rgba(165, 42, 42, 0.8)" },
+  { "name": "green", "code": "rgba(0, 128, 0, 0.8)" },
+  { "name": "blue", "code": "rgba(0, 0, 255, 0.8)" },
+  { "name": "blueribbon", "code": "rgba(0, 122, 255, 0.8)" },
+  { "name": "violet", "code": "rgba(138, 43, 226, 0.8)" },
+  { "name": "black", "code": "rgba(0, 0, 0, 0.8)" }
+]

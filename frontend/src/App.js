@@ -38,12 +38,18 @@ function App() {
     if (toolbarColorActive) {
       setToolbarColor(true)
     }
-    console.log('toolbarColorActive', toolbarColorActive)
   }, [toolbarColorActive])
 
-  const handleAppClick = () => {
-    console.log('app')
-    // console.log('app2', toolbarColorActive)
+  const handleAppClick = (evt) => {
+    if (toolbarColor) {
+      if (
+        !evt.target.classList.contains('toolbar-color') &&
+        !evt.target.classList.contains('toolbar-more')
+      ) {
+        setToolbarColor(false)
+        setToolbarColorActive(false)
+      }
+    }
   }
 
   const target = useRef(null)

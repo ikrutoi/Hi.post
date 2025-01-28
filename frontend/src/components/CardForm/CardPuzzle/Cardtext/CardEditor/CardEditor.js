@@ -17,12 +17,7 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
   }, [selector])
 
   const editor = useMemo(() => withReact(createEditor()), [])
-  const [value, setValue] = useState(() => [
-    {
-      type: 'paragraph',
-      children: [{ text: `${cardtext.text}` }],
-    },
-  ])
+  const [value, setValue] = useState(cardtext.text)
 
   const dispatch = useDispatch()
 
@@ -47,8 +42,6 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
   const [linesCount, setLinesCount] = useState(1)
   const [focusedElement, setFocusedElement] = useState(null)
   const [maxLines, setMaxLines] = useState(null)
-  const [isMaxLines, setIsMaxLines] = useState(false)
-  // const [toolbarColor, setToolbarColor] = useState(null)
 
   const markRef = useRef(null)
   const [markPath, setMarkPath] = useState(null)
@@ -66,43 +59,6 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
   // useEffect(() => {
   // }, [value])
   // console.log('value', value)
-
-  // const calcLinesInEditable = useCallback(() => {
-  //   // ;(linesCount) => {
-  //   console.log('**')
-  //   if (editorRef.current && editableRef.current) {
-  //     // const heightEditor = editorRef.current.offsetHeight
-  //     // const heightEditable = editableRef.current.offsetHeight
-  //     // const baseSize = (heightEditor / 12).toFixed(1)
-  //     // const baseSizeLineHeight = Math.floor(heightEditor / 12)
-  //     // setLineHeightCurrent(baseSizeLineHeight)
-  //     // const baseFontSize = baseSizeLineHeight / 1.33
-  //     // setFontSizeCurrent(baseFontSize)
-  //     // console.log('baseSize', baseSize, 'remSize', remSize)
-  //     // const nodeElementLine = editorRef.current.querySelector(
-  //     // '[data-slate-node="element"]'
-  //     // )
-  //     // const heightLine = nodeElementLine.offsetHeight
-  //     // console.log('lineHeight', heightLine, 'fontsize', remSize * 2.2)
-  //     // const maxNumberLinesFraction = heightEditor / heightLine
-  //     // console.log('maxLinesFraction', maxNumberLinesFraction)
-  //     // const maxNumberLines = Math.floor(maxNumberLinesFraction)
-  //     // setMaxLines(maxNumberLines)
-  //     // console.log('linesCount', linesCount, 'maxLines', maxLines)
-  //     // if (linesCount >= maxLines) {
-  //     //   const [lastLineNode, lastLinePath] = Editor.last(editor, [])
-  //     //   const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
-  //     //   const widthLastLine = domNodeLastLine.offsetWidth
-  //     //   // console.log('widthLine', widthLastLine, 'widthEditor', editableWidth)
-  //     //   // console.log('key', lastKey)
-  //     //   if (widthLastLine >= editableWidth) {
-  //     //     console.log('LIMIT!!!')
-  //     //   }
-  //     //   // setIsMaxLines(true)
-  //     // }
-  //     // }
-  //   }
-  // }, [editorRef, editableRef, linesCount, maxLines])
 
   const calcStyleAndLinesEditable = (condition) => {
     let lines
@@ -149,16 +105,6 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
     return true
   }
 
-  // const getDeepestChild = (element) => {
-  //   if (element.dataset && element.dataset['slateNode'] === 'text') {
-  //     return element
-  //   }
-  //   if (element.children.length === 0) {
-  //     return null
-  //   }
-  //   return getDeepestChild(element.children[element.children.length - 1])
-  // }
-
   const getDeepestChild = (element) => {
     if (element.children.length === 0) {
       return element
@@ -167,9 +113,6 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
   }
 
   useEffect(() => {
-    // console.log('heightEditor', editorRef.current.scrollHeight)
-    // console.log('heightEditableScroll', editableRef.current.scrollHeight)
-    // console.log('heightEditable1', editableRef.current.clientHeight)
     if (editorRef.current && markRef.current) {
       const markLineCurrent = Math.round(
         editableRef.current.scrollHeight /
@@ -246,7 +189,6 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
   }
 
   const handleKeyUp = (evt) => {
-    // console.log('keyUp')
     const { selection } = editor
     if (selection) {
       const [start] = Range.edges(selection)
@@ -258,7 +200,7 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
   const btnRefs = useRef([])
 
   const handleClickToolbar = (evt, i) => {
-    console.log('btnRef', btnRefs.current[i])
+    // console.log('btnRef', btnRefs.current[i])
     const searchParentBtn = (el) => {
       if (el.classList.contains('toolbar-btn')) {
         return el
@@ -270,7 +212,6 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
 
     const btn = searchParentBtn(evt.target)
     const btnTooltip = btn.dataset.tooltip
-    // console.log('btn', btn.dataset.tooltip)
 
     if (btnTooltip === 'color') {
       setToolbarColorActive(true)
@@ -285,105 +226,27 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
     }
   }
 
-  // useEffect(() => {
-  //   console.log('cardtext', cardtext)
-  // }, [cardtext])
+  const handleClickColor = (evt) => {
+    dispatch(
+      addCardtext({
+        colorName: evt.target.dataset.colorName,
+        colorType: evt.target.dataset.colorType,
+      })
+    )
+  }
 
-  // useEffect(() => {
-  //   const numberLines = editor.children.length
-  //   setLinesCount(numberLines)
-  //   if (maxLines && numberLines >= maxLines) {
-  //     console.log('max lines')
-  //     const [lastLineNode, lastLinePath] = Editor.last(editor, [])
-  //     const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
-  //     const widthLastLine = domNodeLastLine.offsetWidth
-  //     console.log('lastLineWidth', widthLastLine, 0.9 * editableWidth)
-  //     if (widthLastLine >= 0.9 * editableWidth) {
-  //       console.log('limit!')
-  //     }
-  //   }
-  // }, [editor, editor.children.length, maxLines, editableWidth])
+  useEffect(() => {
+    dispatch(addCardtext({ text: value }))
+    // console.log('*', value)
+    // value.forEach((el) => {
+    //   console.log('**', el)
+    //   // console.log('value:', el.children[0].text)
+    // })
+  }, [value, dispatch])
 
-  // useEffect(() => {
-  //   const numberLines = editor.children.length
-  //   if (numberLines !== linesCount) {
-  //     setLinesCount(numberLines)
-  //   }
-  //   if (numberLines < maxLines && isMaxLines) {
-  //     setIsMaxLines(false)
-  //   }
-  //   if (numberLines >= maxLines && maxLines) {
-  //     setIsMaxLines(true)
-  //   }
-  // }, [editor.children.length, isMaxLines, linesCount, maxLines])
-
-  // useEffect(() => {
-  //   const [lastLineNode, lastLinePath] = Editor.last(editor, [])
-  //   // const domLastNode = ReactEditor.toDOMNode(editor, lastLineNode)
-  //   // if (domLastNode) {
-  //   //   const spanElement = document.createElement('span')
-  //   //   spanElement.textContent = '*'
-  //   //   domLastNode.parentNode.insertBefore(spanElement, domLastNode.nextSibling)
-  //   // }
-  //   // console.log('lastNode', lastLineNode, lastLinePath)
-  //   if (isMaxLines) {
-  //     const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
-  //     const widthLastLine = domNodeLastLine.offsetWidth
-  //     console.log(
-  //       'lastLineWidth',
-  //       widthLastLine,
-  //       Math.floor(0.95 * editableWidth)
-  //     )
-  //     if (widthLastLine >= 0.95 * editableWidth) {
-  //       calcStyleAndLinesEditable('increaseLines')
-  //       setIsMaxLines(false)
-  //     }
-  //   }
-  // }, [isMaxLines, editableWidth, editor, value])
-
-  // useEffect(() => {
-  //   const currentNumberLines = editor.children.length
-  //   if (linesCount !== currentNumberLines) {
-  //     if (currentNumberLines === maxLines) {
-  //       setIsMaxLines(true)
-  //     } else {
-  //       setIsMaxLines(false)
-  //     }
-  //     setLinesCount(editor.children.length)
-  //     // calcLinesInEditable(editor.children.length)
-  //   }
-  // }, [linesCount, maxLines, editor.children.length])
-
-  // useEffect(() => {
-  //   if (isMaxLines) {
-  //     console.log('max!!')
-  //     const [lastLineNode, lastLinePath] = Editor.last(editor, [])
-  //     const domNodeLastLine = ReactEditor.toDOMNode(editor, lastLineNode)
-  //     const widthLastLine = domNodeLastLine.offsetWidth
-  //     // console.log('widthLine', widthLastLine, 'widthEditor', editableWidth)
-  //     // console.log('key', lastKey)
-  //     if (widthLastLine >= editableWidth) {
-  //       console.log('LIMIT!!!')
-  //     }
-  //   }
-  // if (focusedElement) {
-  //   console.log(
-  //     'FOCUS',
-  //     focusedElement.start.path,
-  //     '/',
-  //     focusedElement.start.offset,
-  //     '/length:',
-  //     focusedElement.node.text.length
-  //   )
-  // }
-  // if (
-  //   focusedElement &&
-  //   focusedElement.start.path[0] + 1 === editor.children.length &&
-  //   focusedElement.start.offset === focusedElement.node.text.length
-  // ) {
-  //   console.log('End of element on last line!')
-  // }
-  // }, [focusedElement, editor, value, isMaxLines, editableWidth])
+  useEffect(() => {
+    console.log('cardtext:', cardtext.text)
+  }, [cardtext.text])
 
   return (
     <div className="cardeditor">
@@ -399,7 +262,8 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
             handleClickToolbar={handleClickToolbar}
             cardtext={cardtext}
             toolbarColor={toolbarColor}
-            // setToolbarColorActive={setToolbarColorActive}
+            toolbarIconColor={cardtext.colorType}
+            handleClickColor={handleClickColor}
           />
           <Editable
             className="editable"
@@ -407,7 +271,7 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
               cardtext && {
                 fontSize: `${cardtext.fontSize}px`,
                 lineHeight: `${cardtext.lineHeight}px`,
-                color: cardtext.color,
+                color: cardtext.colorType,
                 fontStyle: cardtext.fontStyle,
                 fontWeight: cardtext.fontWeight,
                 textAlign: cardtext.textAlign,
@@ -420,11 +284,6 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
           />
         </Slate>
       </div>
-      {/* <div className="editable-count">
-        <span>{linesCount}</span>
-        <span>/</span>
-        <span>{maxLines && maxLines}</span>
-      </div> */}
     </div>
   )
 }

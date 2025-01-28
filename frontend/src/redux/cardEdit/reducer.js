@@ -5,8 +5,14 @@ const initialState = {
   date: null,
   photo: null,
   cardtext: {
-    text: 'Hi )))',
-    color: '#007aac',
+    text: [
+      {
+        type: 'paragraph',
+        children: [{ text: 'Hi)))' }],
+      },
+    ],
+    colorName: 'blueribbon',
+    colorType: 'rgba(0, 122, 255, 0.8)',
     font: '',
     fontSize: 10,
     fontStyle: 'italic',

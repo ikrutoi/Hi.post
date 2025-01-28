@@ -13,6 +13,8 @@ import {
 } from 'react-icons/fa'
 import { ImFontSize, ImTextColor } from 'react-icons/im'
 import { BiFontColor } from 'react-icons/bi'
+import { BsDash } from 'react-icons/bs'
+import { GoDash } from 'react-icons/go'
 import {
   CgFormatBold,
   CgFormatItalic,
@@ -54,29 +56,10 @@ const Toolbar = ({
   cardtext,
   toolbarColor,
   btnRefs,
-  setToolbarColorActive,
+  handleClickColor,
+  toolbarIconColor,
 }) => {
-  // const selector = useSelector((state) => state.cardEdit.cardtext)
-  // const inputCardtext = selector.text
-  //   ? selector
-  //   : {
-  //       text: { row1: 'hello...' },
-  //       maxchars: 300,
-  //       color: 'blue1',
-  //       fontsize: 3,
-  //       lines: 1,
-  //       focus: false,
-  //       focusrow: 1,
-  //     }
-  // const [cardtext, setCardtext] = useState(inputCardtext)
   const [tooltip, setTooltip] = useState(null)
-  // const btnRefs = useRef([])
-  // const [toolbarColor, setToolbarColor] = useState(null)
-  // const [clickBtnToolbar, setClickBtnToolbar] = useState(null)
-
-  // useEffect(() => {
-  //   console.log('click:', clickBtnToolbar)
-  // }, [clickBtnToolbar])
 
   const handleMouseEnter = (evt) => {
     const toolbarElement = document.querySelector('.toolbar')
@@ -116,7 +99,7 @@ const Toolbar = ({
         return (
           <FaItalic
             className="toolbar-icon"
-            style={{ color: handleChoiceActive('left') }}
+            style={{ color: handleChoiceActive('italic') }}
           />
         )
       case 'font-size':
@@ -131,7 +114,13 @@ const Toolbar = ({
       case 'color':
         return (
           <span className="toolbar-font-size-full">
-            <BiFontColor className="toolbar-icon toolbar-icon-color" />
+            <span className="toolbar-icon toolbar-icon-color">
+              <ImTextColor className="toolbar-icon toolbar-icon-a" />
+              <span
+                className="toolbar-icon-dash"
+                style={{ backgroundColor: toolbarIconColor }}
+              ></span>
+            </span>
             <FaAngleDown className="toolbar-icon" />
           </span>
         )
@@ -176,10 +165,6 @@ const Toolbar = ({
     )
   }, [btnRefs])
 
-  // const handleShowToolbarColor = () => {
-  //   console.log('color')
-  // }
-
   return (
     <div className="toolbar">
       <div className="toolbar-settings">
@@ -192,18 +177,19 @@ const Toolbar = ({
             onClick={(event) => handleClickToolbar(event, i)}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            // handleShowToolbarColor={handleShowToolbarColor}
           >
             {iconToolbar(btn)}
           </span>
         ))}
+        {tooltip && <Tooltip tooltip={tooltip} />}
+      </div>
+      <div className="toolbar-more">
         {toolbarColor && (
           <ToolbarColor
             color={toolbarColor.color}
-            // setToolbarColorActive={setToolbarColorActive}
+            handleClickColor={handleClickColor}
           />
         )}
-        {tooltip && <Tooltip tooltip={tooltip} />}
       </div>
     </div>
   )

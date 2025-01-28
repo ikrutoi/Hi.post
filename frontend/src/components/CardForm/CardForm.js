@@ -7,7 +7,7 @@ const CardForm = ({
   dimensionHeight,
   dimensionWidth,
   toolbarColor,
-  setToolbarColor: setToolbarColorActive,
+  setToolbarColorActive,
 }) => {
   return (
     <div className="card-form">

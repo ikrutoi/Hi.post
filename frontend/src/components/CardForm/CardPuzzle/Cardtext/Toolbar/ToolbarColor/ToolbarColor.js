@@ -1,8 +1,10 @@
+import { useRef } from 'react'
 import './ToolbarColor.scss'
+import listColor from '../../../../../../data/cardtext/list-toolbar-color.json'
 
-const ToolbarColor = ({ color, setToolbarColorActive }) => {
-  const handleClick = () => {
-    setToolbarColorActive(true)
+const ToolbarColor = ({ color, handleClickColor }) => {
+  const handleClick = (evt) => {
+    handleClickColor(evt)
   }
   // console.log('**', tooltip)
   // useEffect(() => {
@@ -14,8 +16,19 @@ const ToolbarColor = ({ color, setToolbarColorActive }) => {
   //   // }
   // }, [tooltip])
   return (
-    <div className="toolbar-color" onClick={handleClick}>
-      ToolbarColor
+    <div className="toolbar-color">
+      {listColor.map((el, i) => {
+        return (
+          <span
+            key={`${el.name}-${i}`}
+            className="toolbar-more-btn"
+            style={{ backgroundColor: el.code }}
+            data-color-name={el.name}
+            data-color-type={el.code}
+            onClick={handleClick}
+          ></span>
+        )
+      })}
     </div>
   )
 }
