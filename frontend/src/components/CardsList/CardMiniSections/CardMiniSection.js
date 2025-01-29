@@ -1,6 +1,8 @@
 import './CardMiniSection.scss'
 import sizeCardMini from '../../../data/ratioCardCardMini.json'
 import listOfMonthOfYear from '../../../data/date/monthOfYear.json'
+import MiniCardtext from './MiniCardtext/MiniCardtext'
+import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
 
 const CardMiniSection = ({ section, valueSection, dimensionHeight }) => {
   const heightCardMini = dimensionHeight * sizeCardMini.cardmini
@@ -9,34 +11,35 @@ const CardMiniSection = ({ section, valueSection, dimensionHeight }) => {
   const renderSection = (section, valueSection) => {
     switch (section) {
       case 'cardphoto':
-        return <span className="mini-section-value"></span>
+        return (
+          <div className={`mini-section-value mini-section-${section}`}></div>
+        )
       case 'cardtext':
-        return <span className="mini-section-value"></span>
+        return (
+          <div className={`mini-section-value mini-section-${section}`}>
+            <MiniCardtext />
+          </div>
+        )
       case 'envelope':
         return (
-          <span className="mini-section-value">
-            <span className="mini-envelope"></span>
-            {/* <img
-              className="mini-envelope"
-              src="../../../data/envelope-mini-notactive.png"
-              alt="Description"
-            /> */}
-          </span>
+          <div className={`mini-section-value mini-section-${section}`}>
+            <MiniEnvelope />
+          </div>
         )
       case 'date':
         return (
-          <span className="mini-section-value">
+          <div className={`mini-section-value mini-section-${section}`}>
             <span>{valueSection.year}</span>
             <span>{listOfMonthOfYear[valueSection.month]}</span>
             <span>{valueSection.day}</span>
-          </span>
+          </div>
         )
       case 'aroma':
         return (
-          <span className="mini-section-value">
+          <div className={`mini-section-value mini-section-${section}`}>
             <span>{valueSection.make}</span>
             <span>{valueSection.name}</span>
-          </span>
+          </div>
         )
       default:
         break

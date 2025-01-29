@@ -70,6 +70,7 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
         lines = 12
         break
       case 'increaseLines':
+        console.log('+++')
         lines = maxLines + 1
         break
 
@@ -113,20 +114,25 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
   }
 
   useEffect(() => {
-    if (editorRef.current && markRef.current) {
+    if (
+      editorRef.current &&
+      markRef.current &&
+      markRef.current.getBoundingClientRect().height !== 0
+    ) {
       const markLineCurrent = Math.round(
         editableRef.current.scrollHeight /
           markRef.current.getBoundingClientRect().height
       )
       setLinesCount(markLineCurrent)
       if (markLineCurrent > maxLines && maxLines) {
+        console.log('calc+')
         calcStyleAndLinesEditable('increaseLines')
       }
     }
     const creationMark = () => {
       const spanElement = document.createElement('span')
       spanElement.className = 'span-mark'
-      spanElement.textContent = '*'
+      spanElement.textContent = ''
       spanElement.contentEditable = false
       markRef.current = spanElement
       return spanElement
@@ -244,9 +250,9 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
     // })
   }, [value, dispatch])
 
-  useEffect(() => {
-    console.log('cardtext:', cardtext.text)
-  }, [cardtext.text])
+  // useEffect(() => {
+  // console.log('cardtext:', cardtext.text)
+  // }, [cardtext.text])
 
   return (
     <div className="cardeditor">
@@ -266,6 +272,7 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
             handleClickColor={handleClickColor}
           />
           <Editable
+            placeholder="Hi))"
             className="editable"
             style={
               cardtext && {

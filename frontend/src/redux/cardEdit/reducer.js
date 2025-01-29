@@ -8,7 +8,7 @@ const initialState = {
     text: [
       {
         type: 'paragraph',
-        children: [{ text: 'Hi)))' }],
+        children: [{ text: '' }],
       },
     ],
     colorName: 'blueribbon',
@@ -19,7 +19,10 @@ const initialState = {
     fontWeight: 500,
     textAlign: 'left',
   },
-  envelope: { myaddress: null, toaddress: null },
+  envelope: {
+    myaddress: { street: '', index: '', city: '', country: '', name: '' },
+    toaddress: { street: '', index: '', city: '', country: '', name: '' },
+  },
 }
 
 const cardEditReducer = (state = initialState, action) => {

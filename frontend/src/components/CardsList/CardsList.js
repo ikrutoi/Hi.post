@@ -24,8 +24,8 @@ const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
             sections[section].toaddress.country !== '' &&
             sections[section].toaddress.name !== ''
           ) {
-            listSelectedSections.push(`3-${section}`)
           }
+          listSelectedSections.push(`3-${section}`)
           break
         case 'date':
           if (sections[section]) {

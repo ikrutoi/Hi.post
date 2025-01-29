@@ -1,0 +1,38 @@
+.mini-envelope-address {
+  display: flex;
+  flex-direction: column;
+  // border: solid 1px green;
+}
+
+.mini-envelope-myaddress {
+  grid-column: 1/2;
+  grid-row: 2/3;
+  // border: solid 1px green;
+}
+
+.mini-envelope-toaddress {
+  justify-content: end;
+  align-items: end;
+  grid-column: 2/3;
+  grid-row: 2/3;
+  // border: solid 1px green;
+}
+
+.mini-myaddress,
+.mini-toaddress {
+  width: 100%;
+  font-size: 0.35rem;
+  font-style: italic;
+  // border: solid 1px blue;
+}
+
+.mini-toaddress {
+  text-align: end;
+}
+
+.mini-address-two-elements {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  // border: solid 1px red;
+}
