@@ -1,8 +1,8 @@
+import { useSelector } from 'react-redux'
+import { useEffect, useRef, useState } from 'react'
 import './MiniEnvelope.scss'
 import listLabelsMyAddress from '../../../../data/envelope/list-labels-my-address.json'
 import listLabelsToAddress from '../../../../data/envelope/list-labels-to-address.json'
-import { useSelector } from 'react-redux'
-import { useEffect, useRef, useState } from 'react'
 import MiniAddress from './MiniAddress/MiniAddress'
 
 const MiniEnvelope = () => {
@@ -16,33 +16,31 @@ const MiniEnvelope = () => {
         }
       : selectors.envelope
 
-  const [values, setValues] = useState(valuesEnvelope)
-
-  const miniMyAddressRef = useRef()
-  const miniToAddressRef = useRef()
+  const [value, setValue] = useState(valuesEnvelope)
 
   useEffect(() => {
-    if (miniMyAddressRef.current && miniToAddressRef.current) {
-      setValues(selectors.envelope)
-      console.log('envelope:', selectors.envelope)
-    }
-  }, [selectors])
+    setValue(selectors.envelope)
+  }, [selectors.envelope])
 
   return (
     <>
-      <div className="mini-envelope-logo"></div>
+      <div className="mini-envelope-container-logo">
+        <span className="mini-envelope-logo"></span>
+      </div>
       <div className="mini-envelope-address mini-envelope-myaddress">
         <MiniAddress
-          ref={miniMyAddressRef}
+          // ref={miniMyAddressRef}
           listLabelsAddress={{ list: listLabelsMyAddress, name: 'myaddress' }}
-          values={values.myaddress}
+          values={value.myaddress}
+          // miniMyAddressRef={miniMyAddressRef.current}
         />
       </div>
       <div className="mini-envelope-address mini-envelope-toaddress">
         <MiniAddress
-          ref={miniToAddressRef}
+          // ref={miniToAddressRef}
           listLabelsAddress={{ list: listLabelsToAddress, name: 'toaddress' }}
-          values={values.toaddress}
+          values={value.toaddress}
+          // miniToAddressRef={miniToAddressRef.current}
         />
       </div>
       {/* <img

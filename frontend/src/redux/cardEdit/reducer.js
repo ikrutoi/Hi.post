@@ -32,7 +32,7 @@ const cardEditReducer = (state = initialState, action) => {
     case a.ADD_CARDTEXT:
       return { ...state, cardtext: { ...state.cardtext, ...action.payload } }
     case a.ADD_ENVELOPE:
-      return { ...state, envelope: action.payload }
+      return { ...state, envelope: { ...state.envelope, ...action.payload } }
     case a.ADD_DATE:
       return { ...state, date: action.payload }
     case a.ADD_AROMA:

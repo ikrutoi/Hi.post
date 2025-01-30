@@ -1,11 +1,11 @@
-// import { useRef } from 'react'
+import { useState } from 'react'
 import './Label.scss'
 
 const Label = ({
   name,
   field,
   values,
-  handleValues,
+  handleValue,
   handleMovingBetweenInputs,
   setRef,
 }) => {
@@ -16,15 +16,14 @@ const Label = ({
   const handleChange = (e) => {
     e.preventDefault()
     const { value } = e.target
-
     if (
       e.target.className.includes('myaddress-index') ||
       e.target.className.includes('toaddress-index')
     ) {
       const numericValue = value.replace(/\D/g, '')
-      handleValues(field, shortName, numericValue)
+      handleValue(field, shortName, numericValue)
     } else {
-      handleValues(field, shortName, value)
+      handleValue(field, shortName, value)
     }
   }
 
