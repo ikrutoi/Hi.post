@@ -85,6 +85,11 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
       addCardtext({
         fontSize: baseFontSize,
         lineHeight: baseSizeLineHeight,
+        miniCardtextStyle: {
+          maxLines: lines,
+          fontSize: (baseFontSize / 7.15).toFixed(2),
+          lineHeight: (baseSizeLineHeight / 7.15).toFixed(2),
+        },
       })
     )
     setMaxLines(lines)

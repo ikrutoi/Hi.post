@@ -18,6 +18,7 @@ const initialState = {
     fontStyle: 'italic',
     fontWeight: 500,
     textAlign: 'left',
+    miniCardtextStyle: { maxLines: null, fontSize: null, lineHeight: null },
   },
   envelope: {
     myaddress: { street: '', index: '', city: '', country: '', name: '' },

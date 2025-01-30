@@ -3,10 +3,12 @@ import sizeCardMini from '../../../data/ratioCardCardMini.json'
 import listOfMonthOfYear from '../../../data/date/monthOfYear.json'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
+import { useRef } from 'react'
 
 const CardMiniSection = ({ section, valueSection, dimensionHeight }) => {
   const heightCardMini = dimensionHeight * sizeCardMini.cardmini
   const widthCardMini = heightCardMini * 1.42
+  const cardminiRef = useRef(null)
 
   const renderSection = (section, valueSection) => {
     switch (section) {
@@ -17,7 +19,7 @@ const CardMiniSection = ({ section, valueSection, dimensionHeight }) => {
       case 'cardtext':
         return (
           <div className={`mini-section-value mini-section-${section}`}>
-            <MiniCardtext />
+            <MiniCardtext cardminiRef={cardminiRef.current} />
           </div>
         )
       case 'envelope':
@@ -48,6 +50,7 @@ const CardMiniSection = ({ section, valueSection, dimensionHeight }) => {
 
   return (
     <div
+      ref={cardminiRef}
       className={`card-mini-section card-mini-${section}`}
       style={{ width: `${widthCardMini}px`, height: `${heightCardMini}px` }}
     >

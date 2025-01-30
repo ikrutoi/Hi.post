@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './MiniCardtext.scss'
 import { Editable, Slate, withReact } from 'slate-react'
 import { createEditor } from 'slate'
 
-const MiniCardtext = () => {
+const MiniCardtext = ({ cardminiRef }) => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
   const inputCardtext = selector && selector.text ? selector : null
   const miniEditor = useMemo(() => withReact(createEditor()), [])
@@ -19,12 +19,32 @@ const MiniCardtext = () => {
         ]
   )
 
+  const [maxLines, setMaxLines] = useState(selector.miniCardtextStyle.maxLine)
+  const [lineHeight, setLineHeight] = useState(
+    selector.miniCardtextStyle.lineHeight
+  )
+  const [fontSize, setFontSize] = useState(selector.miniCardtextStyle.fontStyle)
+
   useEffect(() => {
     if (selector && JSON.stringify(selector.text) !== JSON.stringify(value)) {
       miniEditor.children = selector.text
       setValue(selector.text)
+      setMaxLines(selector.maxLines)
     }
   }, [selector, miniEditor, value])
+
+  useEffect(() => {
+    if (cardminiRef) {
+      const totalHeightCardmini = cardminiRef.clientHeight
+      const computedStyle = window.getComputedStyle(cardminiRef)
+      const paddingTop = parseFloat(computedStyle.paddingTop)
+      const paddingBottom = parseFloat(computedStyle.paddingBottom)
+      const heightCardMini = totalHeightCardmini - paddingTop - paddingBottom
+
+      setLineHeight(heightCardMini / maxLines)
+      setFontSize(heightCardMini / maxLines / 1.33)
+    }
+  }, [maxLines, cardminiRef])
 
   return (
     <div className="mini-editor">
@@ -33,8 +53,12 @@ const MiniCardtext = () => {
           readOnly={true}
           style={
             inputCardtext && {
-              fontSize: `${inputCardtext.fontSize * 0.1}px`,
-              lineHeight: `${inputCardtext.lineHeight * 0.1}px`,
+              fontSize: `${
+                fontSize ? fontSize : selector.miniCardtextStyle.fontSize
+              }px`,
+              lineHeight: `${
+                lineHeight ? lineHeight : selector.miniCardtextStyle.lineHeight
+              }px`,
               color: inputCardtext.colorType,
               fontStyle: inputCardtext.fontStyle,
               fontWeight: inputCardtext.fontWeight,
