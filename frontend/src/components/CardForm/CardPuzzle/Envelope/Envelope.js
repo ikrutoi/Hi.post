@@ -8,7 +8,7 @@ import { addEnvelope } from '../../../../redux/cardEdit/actionCreators'
 import Mark from './Mark/Mark'
 import FormAddress from './FormAddress/FormAddress'
 
-const Envelope = () => {
+const Envelope = ({ cardPuzzleRef }) => {
   const selectors = useSelector((state) => state.cardEdit)
   const valueEnvelope =
     selectors.envelope.myaddress === null &&
@@ -27,10 +27,19 @@ const Envelope = () => {
     })
   }
 
+  const [heightLogo, setHeightLogo] = useState(null)
+
+  useEffect(() => {
+    if (cardPuzzleRef) {
+      setHeightLogo(cardPuzzleRef.clientHeight / 14)
+    }
+  }, [cardPuzzleRef])
+
   const inputRefs = useRef({})
   const setRef = (id) => (element) => {
     inputRefs.current[id] = element
   }
+  const envelopeLogoRef = useRef(null)
 
   const dispatch = useDispatch()
 
@@ -67,7 +76,13 @@ const Envelope = () => {
   return (
     <div className="envelope">
       <div className="envelope-myaddress">
-        <div className="envelope-logo">Hidragonfly.com</div>
+        <div className="envelope-logo-container">
+          <span
+            className="envelope-logo"
+            ref={envelopeLogoRef}
+            style={{ height: heightLogo ? heightLogo : 0 }}
+          ></span>
+        </div>
         <FormAddress
           values={value}
           listLabelsAddress={{ list: listLabelsMyAddress, name: 'myaddress' }}

@@ -1,7 +1,11 @@
 import './Logo.scss'
 
 const Logo = () => {
-  return <div className="logo">Hidragonfly</div>
+  return (
+    <div className="header-logo-container">
+      <span className="header-logo"></span>
+    </div>
+  )
 }
 
 export default Logo

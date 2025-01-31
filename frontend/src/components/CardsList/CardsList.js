@@ -3,7 +3,13 @@ import CardMiniPuzzle from './CardMiniPuzzle/CardMiniPuzzle'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import './CardsList.scss'
 
-const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
+const CardsList = ({
+  name,
+  hover,
+  dimensionHeight,
+  dimensionWidth,
+  handleClick,
+}) => {
   const sections = useSelector((state) => state.cardEdit)
   const listSelectedSections = []
   for (let section in sections) {
@@ -61,6 +67,7 @@ const CardsList = ({ name, hover, dimensionHeight, dimensionWidth }) => {
             valueSection={sections[selectedSection.split('-')[1]]}
             dimensionHeight={dimensionHeight}
             dimensionWidth={dimensionWidth}
+            handleClick={handleClick}
           />
         ))
       ) : (

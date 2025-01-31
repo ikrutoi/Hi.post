@@ -4,7 +4,7 @@ import './MiniCardtext.scss'
 import { Editable, Slate, withReact } from 'slate-react'
 import { createEditor } from 'slate'
 
-const MiniCardtext = ({ cardminiRef }) => {
+const MiniCardtext = ({ cardminiRef: miniCardtextRef }) => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
   const inputCardtext = selector && selector.text ? selector : null
   const miniEditor = useMemo(() => withReact(createEditor()), [])
@@ -34,9 +34,9 @@ const MiniCardtext = ({ cardminiRef }) => {
   }, [selector, miniEditor, value])
 
   useEffect(() => {
-    if (cardminiRef) {
-      const totalHeightCardmini = cardminiRef.clientHeight
-      const computedStyle = window.getComputedStyle(cardminiRef)
+    if (miniCardtextRef) {
+      const totalHeightCardmini = miniCardtextRef.clientHeight
+      const computedStyle = window.getComputedStyle(miniCardtextRef)
       const paddingTop = parseFloat(computedStyle.paddingTop)
       const paddingBottom = parseFloat(computedStyle.paddingBottom)
       const heightCardMini = totalHeightCardmini - paddingTop - paddingBottom
@@ -44,7 +44,7 @@ const MiniCardtext = ({ cardminiRef }) => {
       setLineHeight(heightCardMini / maxLines)
       setFontSize(heightCardMini / maxLines / 1.33)
     }
-  }, [maxLines, cardminiRef])
+  }, [maxLines, miniCardtextRef])
 
   return (
     <div className="mini-editor">

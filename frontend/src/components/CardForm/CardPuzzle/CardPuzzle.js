@@ -5,6 +5,7 @@ import Cardtext from './Cardtext/Cardtext'
 import Envelope from './Envelope/Envelope'
 import Aroma from './Aroma/Aroma'
 import Date from './Date/Date'
+import { useRef } from 'react'
 
 const CardPuzzle = ({
   name,
@@ -15,6 +16,8 @@ const CardPuzzle = ({
 }) => {
   const heightCard = dimensionHeight * sizeCard.card
   const widthCard = heightCard * 1.42
+
+  const cardPuzzleRef = useRef(null)
 
   const section = (name) => {
     switch (name) {
@@ -28,7 +31,7 @@ const CardPuzzle = ({
           />
         )
       case 'Envelope':
-        return <Envelope />
+        return <Envelope cardPuzzleRef={cardPuzzleRef.current} />
       case 'Aroma':
         return <Aroma />
       case 'Date':
@@ -42,6 +45,7 @@ const CardPuzzle = ({
     <div
       className="card-puzzle"
       style={{ width: `${widthCard}px`, height: `${heightCard}px` }}
+      ref={cardPuzzleRef}
     >
       {section(name)}
     </div>

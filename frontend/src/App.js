@@ -63,7 +63,7 @@ function App() {
       </header>
       <main className="app-main">
         <CardsNav
-          onClick={setNameNav}
+          handleClick={setNameNav}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         />
@@ -71,6 +71,7 @@ function App() {
           {size && (
             <CardsList
               name={nameNav}
+              handleClick={setNameNav}
               hover={btnNavHover}
               dimensionHeight={size.height}
               dimensionWidth={size.width}

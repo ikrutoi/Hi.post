@@ -14,12 +14,16 @@
   // border: solid 1px blueviolet;
 }
 
-.envelope-logo {
-  color: #007aac;
-  font-style: italic;
-  font-size: 1.4rem;
+.envelope-logo-container {
+  display: flex;
   margin-bottom: 1rem;
-  // border: solid 1px brown;
+}
+
+.envelope-logo {
+  width: 100%;
+  background-image: url('../../../../data/logo-com.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .envelope-toaddress {

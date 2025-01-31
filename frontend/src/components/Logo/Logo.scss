@@ -1,7 +1,12 @@
-.logo {
+.header-logo-container {
   display: flex;
-  color: #007aac;
-  font-size: 1.6rem;
-  font-style: italic;
-  /* border: solid 1px orange; */
+  width: 20vw;
+}
+
+.header-logo {
+  width: 100%;
+  height: 30px;
+  background-image: url('../../data/logo.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
 }
