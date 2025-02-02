@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { addAroma } from '../../../../redux/cardEdit/actionCreators'
 import './Aroma.scss'
 import AromaElement from './AromaElement/AromaElement'
-import aromaList from '../../../../data/aromaList.json'
+import aromaList from '../../../../data/aroma/aromaList.json'
 
 const Aroma = () => {
   const selectors = useSelector((state) => state.cardEdit)
@@ -24,8 +24,7 @@ const Aroma = () => {
         .map((el, i) => (
           <AromaElement
             selectedAroma={selectedAroma}
-            makeAroma={el.make}
-            nameAroma={el.name}
+            elementAroma={el}
             key={i}
             setSelectedAroma={setSelectedAroma}
           />

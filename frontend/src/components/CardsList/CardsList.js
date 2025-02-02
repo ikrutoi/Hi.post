@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import CardMiniPuzzle from './CardMiniPuzzle/CardMiniPuzzle'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
@@ -11,6 +12,9 @@ const CardsList = ({
   handleClick,
 }) => {
   const sections = useSelector((state) => state.cardEdit)
+
+  const [heightMinicard, setHeightMinicard] = useState(null)
+
   const listSelectedSections = []
   for (let section in sections) {
     if (!!sections[section]) {
@@ -54,10 +58,12 @@ const CardsList = ({
   return (
     <div className="cards-list">
       <CardMiniPuzzle
+        // ref={cardMiniPuzzleRef}
         hover={hover}
         listSelectedSections={listSelectedSections}
         dimensionHeight={dimensionHeight}
         dimensionWidth={dimensionWidth}
+        calcHeightMinicard={setHeightMinicard}
       />
       {listSortSelectedSections.length !== 0 ? (
         listSortSelectedSections.map((selectedSection, i) => (
@@ -68,6 +74,7 @@ const CardsList = ({
             dimensionHeight={dimensionHeight}
             dimensionWidth={dimensionWidth}
             handleClick={handleClick}
+            heightMinicard={heightMinicard}
           />
         ))
       ) : (

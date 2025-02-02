@@ -24,6 +24,7 @@ const initialState = {
     myaddress: { street: '', index: '', city: '', country: '', name: '' },
     toaddress: { street: '', index: '', city: '', country: '', name: '' },
   },
+  data: { minicardHeight: null },
 }
 
 const cardEditReducer = (state = initialState, action) => {

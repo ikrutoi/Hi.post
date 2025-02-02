@@ -10,6 +10,7 @@ const CardMiniSection = ({
   valueSection,
   dimensionHeight,
   handleClick,
+  heightMinicard,
 }) => {
   const heightCardMini = dimensionHeight * sizeCardMini.cardmini
   const widthCardMini = heightCardMini * 1.42
@@ -40,13 +41,19 @@ const CardMiniSection = ({
       case 'date':
         return (
           <div className={`mini-section-value mini-section-${section}`}>
-            <MiniDate valueSection={valueSection} />
+            <MiniDate
+              valueSection={valueSection}
+              heightMinicard={heightMinicard}
+            />
           </div>
         )
       case 'aroma':
         return (
           <div className={`mini-section-value mini-section-${section}`}>
-            <MiniAroma valueSection={valueSection} />
+            <MiniAroma
+              valueSection={valueSection}
+              heightMinicard={heightMinicard}
+            />
           </div>
         )
       default:

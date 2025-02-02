@@ -1,32 +1,42 @@
+// import { TbGenderFemale, TbGenderMale } from 'react-icons/tb'
 import './AromaElement.scss'
 
-const AromaElement = ({
-  selectedAroma,
-  makeAroma,
-  nameAroma,
-  setSelectedAroma,
-}) => {
+const AromaElement = ({ selectedAroma, setSelectedAroma, elementAroma }) => {
   return (
     <button
       className={`aroma-element ${
         !!selectedAroma &&
-        selectedAroma.make === makeAroma &&
-        selectedAroma.name === nameAroma
+        selectedAroma.make === elementAroma.make &&
+        selectedAroma.name === elementAroma.name
           ? 'selected'
           : ''
       }`}
       type="submit"
-      onClick={() => setSelectedAroma({ make: makeAroma, name: nameAroma })}
+      onClick={() =>
+        setSelectedAroma({
+          make: elementAroma.make,
+          name: elementAroma.name,
+          index: elementAroma.index,
+          gender: elementAroma.gender,
+        })
+      }
     >
-      {makeAroma ? (
+      {elementAroma.make ? (
         <>
-          <span>{makeAroma}</span>
+          <span>{elementAroma.make}</span>
           <span>&bull;</span>
-          <span>{nameAroma}</span>
+          <span>{elementAroma.name}</span>
         </>
       ) : (
-        <span>{nameAroma}</span>
+        <span>{elementAroma.name}</span>
       )}
+      {/* <span className="icon-gender">
+        {elementAroma.gender === 'male' ? (
+          <TbGenderMale style={{ backgroundColor: 'rgb(211,211,211)' }} />
+        ) : (
+          <TbGenderFemale style={{ backgroundColor: 'rgb(211,211,211)' }} />
+        )} */}
+      {/* </span> */}
     </button>
   )
 }
