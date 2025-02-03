@@ -10,7 +10,7 @@ const AromaElement = ({ selectedAroma, setSelectedAroma, elementAroma }) => {
         selectedAroma.name === elementAroma.name
           ? 'selected'
           : ''
-      }`}
+      } ${elementAroma.make === '0' ? 'aroma-element-none' : ''}`}
       type="submit"
       onClick={() =>
         setSelectedAroma({
@@ -21,7 +21,7 @@ const AromaElement = ({ selectedAroma, setSelectedAroma, elementAroma }) => {
         })
       }
     >
-      {elementAroma.make ? (
+      {elementAroma.make !== '0' ? (
         <>
           <span>{elementAroma.make}</span>
           <span>&bull;</span>

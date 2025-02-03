@@ -1,5 +1,5 @@
 import './MiniAroma.scss'
-import img00 from '../../../../data/aroma/creed__aventus__15.png'
+import img00 from '../../../../data/aroma/no-parfum.png'
 import img10 from '../../../../data/aroma/nasomatto__black_afgano__10.png'
 import img11 from '../../../../data/aroma/giorgio_armani__acqua_di_gio_profondo__11.png'
 import img12 from '../../../../data/aroma/bvlgari__man_terrae_essence__12.png'
