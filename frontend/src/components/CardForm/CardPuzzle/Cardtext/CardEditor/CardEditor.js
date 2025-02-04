@@ -248,16 +248,7 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
 
   useEffect(() => {
     dispatch(addCardtext({ text: value }))
-    // console.log('*', value)
-    // value.forEach((el) => {
-    //   console.log('**', el)
-    //   // console.log('value:', el.children[0].text)
-    // })
   }, [value, dispatch])
-
-  // useEffect(() => {
-  // console.log('cardtext:', cardtext.text)
-  // }, [cardtext.text])
 
   return (
     <div className="cardeditor">

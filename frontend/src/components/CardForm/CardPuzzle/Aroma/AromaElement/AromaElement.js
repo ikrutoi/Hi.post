@@ -1,4 +1,4 @@
-// import { TbGenderFemale, TbGenderMale } from 'react-icons/tb'
+import { TbGenderFemale, TbGenderMale } from 'react-icons/tb'
 import './AromaElement.scss'
 
 const AromaElement = ({ selectedAroma, setSelectedAroma, elementAroma }) => {
@@ -30,13 +30,13 @@ const AromaElement = ({ selectedAroma, setSelectedAroma, elementAroma }) => {
       ) : (
         <span>{elementAroma.name}</span>
       )}
-      {/* <span className="icon-gender">
+      <span className="icon-gender">
         {elementAroma.gender === 'male' ? (
           <TbGenderMale style={{ backgroundColor: 'rgb(211,211,211)' }} />
         ) : (
           <TbGenderFemale style={{ backgroundColor: 'rgb(211,211,211)' }} />
-        )} */}
-      {/* </span> */}
+        )}
+      </span>
     </button>
   )
 }
