@@ -1,6 +1,6 @@
 import './CardFormNav.scss'
 import sizeCard from '../../../data/ratioCardCardMini.json'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import CardFormNavCardphoto from './CardFormNavCardphoto/CardFormNavCardphoto'
 import CardFormNavCardtext from './CardFormNavCardtext/CardFormNavCardtext'
 
@@ -9,11 +9,20 @@ const CardFormNav = ({
   dimensionHeight,
   toolbarColor,
   setToolbarColorActive,
+  handleClickBtnNav,
+  // handleClickColor,
+  setCardFormNav,
 }) => {
   const heightCard = dimensionHeight * sizeCard.card
   const widthCard = heightCard * 1.42
 
   const cardFormNavRef = useRef(null)
+
+  useEffect(() => {
+    if (cardFormNavRef.current) {
+      setCardFormNav(cardFormNavRef.current)
+    }
+  }, [cardFormNavRef, setCardFormNav])
 
   const section = (name) => {
     switch (name) {
@@ -24,6 +33,8 @@ const CardFormNav = ({
           <CardFormNavCardtext
             toolbarColor={toolbarColor}
             setToolbarColorActive={setToolbarColorActive}
+            handleClickBtnNav={handleClickBtnNav}
+            // handleClickColor={handleClickColor}
           />
         )
       // case 'Envelope':

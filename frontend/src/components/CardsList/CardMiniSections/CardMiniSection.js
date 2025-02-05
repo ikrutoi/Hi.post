@@ -4,6 +4,7 @@ import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
 import MiniDate from './MiniDate/MiniDate'
 import MiniAroma from './MiniAroma/MiniAroma'
+import { useRef } from 'react'
 
 const CardMiniSection = ({
   section,
@@ -11,9 +12,12 @@ const CardMiniSection = ({
   dimensionHeight,
   handleClick,
   heightMinicard,
+  // cardminiRef,
 }) => {
   const heightCardMini = dimensionHeight * sizeCardMini.cardmini
   const widthCardMini = heightCardMini * 1.42
+
+  const cardMiniSectionRef = useRef(null)
 
   const handleClickSection = (evt) => {
     const parentName = evt.target.closest('.card-mini-section').dataset.name
@@ -29,7 +33,10 @@ const CardMiniSection = ({
       case 'cardtext':
         return (
           <div className={`mini-section-value mini-section-${section}`}>
-            <MiniCardtext />
+            <MiniCardtext
+              heightMinicard={heightMinicard}
+              cardMiniSectionRef={cardMiniSectionRef.current}
+            />
           </div>
         )
       case 'envelope':
@@ -67,6 +74,7 @@ const CardMiniSection = ({
       style={{ width: `${widthCardMini}px`, height: `${heightCardMini}px` }}
       onClick={handleClickSection}
       data-name={section}
+      ref={cardMiniSectionRef}
     >
       {renderSection(section, valueSection)}
       <div className="card-mini-kebab">

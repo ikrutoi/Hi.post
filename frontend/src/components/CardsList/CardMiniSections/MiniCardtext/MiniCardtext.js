@@ -3,10 +3,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import './MiniCardtext.scss'
 import { Editable, Slate, withReact } from 'slate-react'
 import { createEditor } from 'slate'
+// import sizeBase from '../../../../data/ratioCardCardMini.json'
 
-const MiniCardtext = ({ cardminiRef: miniCardtextRef }) => {
+const MiniCardtext = ({ cardMiniSectionRef }) => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
-  const inputCardtext = selector && selector.text ? selector : null
+  const inputCardtext = selector && selector.lineHeight ? selector : null
   const miniEditor = useMemo(() => withReact(createEditor()), [])
   const [value, setValue] = useState(
     inputCardtext
@@ -19,32 +20,32 @@ const MiniCardtext = ({ cardminiRef: miniCardtextRef }) => {
         ]
   )
 
-  const [maxLines, setMaxLines] = useState(selector.miniCardtextStyle.maxLine)
+  const [maxLines, setMaxLines] = useState(selector.miniCardtextStyle.maxLines)
   const [lineHeight, setLineHeight] = useState(
     selector.miniCardtextStyle.lineHeight
   )
-  const [fontSize, setFontSize] = useState(selector.miniCardtextStyle.fontStyle)
+  const [fontSize, setFontSize] = useState(selector.miniCardtextStyle.fontSize)
 
   useEffect(() => {
     if (selector && JSON.stringify(selector.text) !== JSON.stringify(value)) {
       miniEditor.children = selector.text
       setValue(selector.text)
-      setMaxLines(selector.maxLines)
+      setMaxLines(selector.miniCardtextStyle.maxLines)
     }
   }, [selector, miniEditor, value])
 
   useEffect(() => {
-    if (miniCardtextRef) {
-      const totalHeightCardmini = miniCardtextRef.clientHeight
-      const computedStyle = window.getComputedStyle(miniCardtextRef)
+    if (cardMiniSectionRef) {
+      const totalHeightCardmini = cardMiniSectionRef.clientHeight
+      const computedStyle = window.getComputedStyle(cardMiniSectionRef)
       const paddingTop = parseFloat(computedStyle.paddingTop)
       const paddingBottom = parseFloat(computedStyle.paddingBottom)
       const heightCardMini = totalHeightCardmini - paddingTop - paddingBottom
 
-      setLineHeight(heightCardMini / maxLines)
-      setFontSize(heightCardMini / maxLines / 1.33)
+      setLineHeight((heightCardMini / maxLines).toFixed(2))
+      setFontSize((heightCardMini / maxLines / 1.35).toFixed(2))
     }
-  }, [maxLines, miniCardtextRef])
+  }, [maxLines, cardMiniSectionRef, selector.miniCardtextStyle.maxLines])
 
   return (
     <div className="mini-editor">

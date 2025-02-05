@@ -15,6 +15,8 @@ const CardsList = ({
 
   const [heightMinicard, setHeightMinicard] = useState(null)
 
+  // const cardMiniPuzzleRef = useRef(null)
+
   const listSelectedSections = []
   for (let section in sections) {
     if (!!sections[section]) {
@@ -75,6 +77,7 @@ const CardsList = ({
             dimensionWidth={dimensionWidth}
             handleClick={handleClick}
             heightMinicard={heightMinicard}
+            // cardminiRef={cardMiniPuzzleRef.current}
           />
         ))
       ) : (

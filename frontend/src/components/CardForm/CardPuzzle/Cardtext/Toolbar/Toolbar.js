@@ -55,7 +55,7 @@ const Toolbar = ({
   handleClickToolbar,
   cardtext,
   toolbarColor,
-  btnRefs,
+  // btnRefs,
   handleClickColor,
   toolbarIconColor,
 }) => {
@@ -159,11 +159,11 @@ const Toolbar = ({
     }
   }
 
-  useEffect(() => {
-    btnRefs.current = listNavBtns.map(
-      (_, i) => btnRefs.current[i] ?? createRef()
-    )
-  }, [btnRefs])
+  // useEffect(() => {
+  //   btnRefs.current = listNavBtns.map(
+  //     (_, i) => btnRefs.current[i] ?? createRef()
+  //   )
+  // }, [btnRefs])
 
   return (
     <div className="toolbar">
@@ -173,7 +173,7 @@ const Toolbar = ({
             className={`toolbar-btn toolbar--${btn}`}
             data-tooltip={btn}
             key={i}
-            ref={btnRefs.current[i]}
+            // ref={btnRefs.current[i]}
             onClick={(event) => handleClickToolbar(event, i)}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}

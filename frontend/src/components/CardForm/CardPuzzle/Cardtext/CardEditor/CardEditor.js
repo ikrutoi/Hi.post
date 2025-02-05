@@ -4,10 +4,10 @@ import { createEditor, Editor, Range } from 'slate'
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 import { v4 as uuidv4 } from 'uuid'
 import './CardEditor.scss'
-import Toolbar from '../Toolbar/Toolbar'
 import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
+import sizeBase from '../../../../../data/ratioCardCardMini.json'
 
-const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
+const CardEditor = ({ toolbarColor, choiceBtnNav }) => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
   const inputCardtext = selector.text ? selector : null
   const [cardtext, setCardtext] = useState(inputCardtext)
@@ -56,9 +56,7 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
     }
   }, [editorRef.current])
 
-  // useEffect(() => {
-  // }, [value])
-  // console.log('value', value)
+  useEffect(() => {}, [value])
 
   const calcStyleAndLinesEditable = (condition) => {
     let lines
@@ -70,7 +68,6 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
         lines = 12
         break
       case 'increaseLines':
-        console.log('+++')
         lines = maxLines + 1
         break
 
@@ -78,6 +75,7 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
         break
     }
 
+    const scale = (sizeBase.card / sizeBase.cardmini).toFixed(2)
     const heightEditor = editorRef.current.offsetHeight
     const baseSizeLineHeight = Math.floor((heightEditor / lines) * 10) / 10
     const baseFontSize = Math.floor((baseSizeLineHeight / 1.33) * 10) / 10
@@ -87,8 +85,8 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
         lineHeight: baseSizeLineHeight,
         miniCardtextStyle: {
           maxLines: lines,
-          fontSize: (baseFontSize / 7.15).toFixed(2),
-          lineHeight: (baseSizeLineHeight / 7.15).toFixed(2),
+          fontSize: (baseFontSize / scale).toFixed(2),
+          lineHeight: (baseSizeLineHeight / scale).toFixed(2),
         },
       })
     )
@@ -208,43 +206,41 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
     }
   }
 
-  const btnRefs = useRef([])
+  // const btnRefs = useRef([])
 
-  const handleClickToolbar = (evt, i) => {
-    // console.log('btnRef', btnRefs.current[i])
-    const searchParentBtn = (el) => {
-      if (el.classList.contains('toolbar-btn')) {
-        return el
-      } else if (el.parentElement) {
-        return searchParentBtn(el.parentElement)
-      }
-      return null
-    }
+  // const handleClickToolbar = useCallback(
+  //   (evt) => {
+  //     const btnTooltip = evt.dataset.tooltip
 
-    const btn = searchParentBtn(evt.target)
-    const btnTooltip = btn.dataset.tooltip
+  //     if (btnTooltip === 'color') {
+  //       setToolbarColorActive(true)
+  //     }
+  //     if (
+  //       btnTooltip === 'left' ||
+  //       btnTooltip === 'center' ||
+  //       btnTooltip === 'right' ||
+  //       btnTooltip === 'justify'
+  //     ) {
+  //       dispatch(addCardtext({ textAlign: evt.dataset.tooltip }))
+  //     }
+  //   },
+  //   [dispatch]
+  // )
 
-    if (btnTooltip === 'color') {
-      setToolbarColorActive(true)
-    }
-    if (
-      btnTooltip === 'left' ||
-      btnTooltip === 'center' ||
-      btnTooltip === 'right' ||
-      btnTooltip === 'justify'
-    ) {
-      dispatch(addCardtext({ textAlign: btn.dataset.tooltip }))
-    }
-  }
+  // useEffect(() => {
+  //   if (choiceBtnNav) {
+  //     handleClickToolbar(choiceBtnNav)
+  //   }
+  // }, [choiceBtnNav, handleClickToolbar])
 
-  const handleClickColor = (evt) => {
-    dispatch(
-      addCardtext({
-        colorName: evt.target.dataset.colorName,
-        colorType: evt.target.dataset.colorType,
-      })
-    )
-  }
+  // const handleClickColor = (evt) => {
+  //   dispatch(
+  //     addCardtext({
+  //       colorName: evt.target.dataset.colorName,
+  //       colorType: evt.target.dataset.colorType,
+  //     })
+  //   )
+  // }
 
   useEffect(() => {
     dispatch(addCardtext({ text: value }))
@@ -258,15 +254,6 @@ const CardEditor = ({ toolbarColor, setToolbarColorActive }) => {
           initialValue={value}
           onChange={handleSlateChange}
         >
-          <Toolbar
-            editor={editor}
-            btnRefs={btnRefs}
-            handleClickToolbar={handleClickToolbar}
-            cardtext={cardtext}
-            toolbarColor={toolbarColor}
-            toolbarIconColor={cardtext.colorType}
-            handleClickColor={handleClickColor}
-          />
           <Editable
             placeholder="Hi))"
             className="editable"

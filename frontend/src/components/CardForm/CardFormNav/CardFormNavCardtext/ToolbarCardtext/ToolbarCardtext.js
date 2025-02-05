@@ -1,5 +1,4 @@
-import { createRef, useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useRef, useState } from 'react'
 import {
   FaBold,
   FaItalic,
@@ -50,49 +49,71 @@ import './ToolbarCardtext.scss'
 import listNavBtns from '../../../../../data/cardtext/list-textarea-nav-btns.json'
 import Tooltip from './Tooltip/Tooltip'
 import ToolbarColor from './ToolbarColor/ToolbarColor'
-import { addCardtext } from '../../../../../redux/CardFormNav/actionCreators'
+import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
+import { useDispatch } from 'react-redux'
 
 const ToolbarCardtext = ({
+  handleClickBtnNav,
+  setToolbarColorActive,
   // handleClickToolbar,
-  cardtext,
+  // handleClickColor,
   toolbarColor,
-  // btnRefs,
-  handleClickColor,
-  toolbarIconColor,
 }) => {
-  const [tooltip, setTooltip] = useState(null)
-
+  // const [tooltip, setTooltip] = useState(null)
   const dispatch = useDispatch()
 
   const handleClickToolbar = (evt, i) => {
-    console.log('*', evt, i)
-    // dispatch(addCardtext({ italic: true }))
-    dispatch(addCardtext({ btn: evt.target }))
-  }
-
-  const handleMouseEnter = (evt) => {
-    const toolbarElement = document.querySelector('.toolbar')
-    const toolbarBtnElement = document.querySelectorAll('.toolbar-btn')[0]
-    const widthToolbarBtn = toolbarBtnElement.getBoundingClientRect().width
-    const leftToolbar = toolbarElement.getBoundingClientRect().left
-    const target = evt.target
-    const coords = target.getBoundingClientRect()
-    const left = coords.left - leftToolbar
-    const tooltipBtn = target.dataset.tooltip
-    if (!tooltipBtn) {
-      return
+    const searchParentBtnNav = (el) => {
+      if (el.classList.contains('toolbar-cardtext-btn')) {
+        return el
+      } else if (el.parentElement) {
+        return searchParentBtnNav(el.parentElement)
+      }
+      return null
     }
-    setTooltip({
-      text: tooltipBtn,
-      targetElement: target,
-      left: `${left}`,
-      widthbtn: widthToolbarBtn,
-    })
+
+    const parentBtnNav = searchParentBtnNav(evt.target)
+
+    handleClickBtnNav(parentBtnNav)
+    const btnTooltip = parentBtnNav.dataset.tooltip
+
+    if (btnTooltip === 'color') {
+      setToolbarColorActive(true)
+    }
+    if (
+      btnTooltip === 'left' ||
+      btnTooltip === 'center' ||
+      btnTooltip === 'right' ||
+      btnTooltip === 'justify'
+    ) {
+      dispatch(addCardtext({ textAlign: parentBtnNav.dataset.tooltip }))
+    }
+    // }
   }
 
-  const handleMouseLeave = () => {
-    setTooltip(null)
-  }
+  // const handleMouseEnter = (evt) => {
+  //   const toolbarElement = document.querySelector('.toolbar')
+  //   const toolbarBtnElement = document.querySelectorAll('.toolbar-btn')[0]
+  //   const widthToolbarBtn = toolbarBtnElement.getBoundingClientRect().width
+  //   const leftToolbar = toolbarElement.getBoundingClientRect().left
+  //   const target = evt.target
+  //   const coords = target.getBoundingClientRect()
+  //   const left = coords.left - leftToolbar
+  //   const tooltipBtn = target.dataset.tooltip
+  //   if (!tooltipBtn) {
+  //     return
+  //   }
+  //   setTooltip({
+  //     text: tooltipBtn,
+  //     targetElement: target,
+  //     left: `${left}`,
+  //     widthbtn: widthToolbarBtn,
+  //   })
+  // }
+
+  // const handleMouseLeave = () => {
+  //   setTooltip(null)
+  // }
 
   const iconItalicRef = useRef(null)
   // const handleChoiceActive = (icon) => {
@@ -132,7 +153,7 @@ const ToolbarCardtext = ({
                 // style={{ backgroundColor: toolbarIconColor }}
               ></span>
             </span>
-            <FaAngleDown className="cardformnav-toolbar-iconn" />
+            <FaAngleDown className="cardformnav-toolbar-icon" />
           </span>
         )
       case 'strikethrough':
@@ -186,8 +207,8 @@ const ToolbarCardtext = ({
             key={i}
             // ref={btnRefs.current[i]}
             onClick={(event) => handleClickToolbar(event, i)}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            // onMouseEnter={handleMouseEnter}
+            // onMouseLeave={handleMouseLeave}
           >
             {iconToolbar(btn)}
           </span>
@@ -195,12 +216,12 @@ const ToolbarCardtext = ({
         {/* {tooltip && <Tooltip tooltip={tooltip} />} */}
       </div>
       <div className="toolbar-cardtext-more">
-        {/* {toolbarColor && (
+        {toolbarColor && (
           <ToolbarColor
             color={toolbarColor.color}
-            handleClickColor={handleClickColor}
+            // handleClickColor={handleClickColor}
           />
-        )} */}
+        )}
       </div>
     </div>
   )

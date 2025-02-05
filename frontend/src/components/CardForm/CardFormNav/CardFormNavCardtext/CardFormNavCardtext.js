@@ -1,9 +1,18 @@
 // import { useRef } from 'react'
+// import { useDispatch } from 'react-redux'
 import './CardFormNavCardtext.scss'
 import ToolbarCardtext from './ToolbarCardtext/ToolbarCardtext'
+// import { addCardtext } from '../../../../redux/cardEdit/actionCreators'
 
-const CardFormNavCardtext = () => {
+const CardFormNavCardtext = ({
+  handleClickBtnNav,
+  setToolbarColorActive,
+  // handleClickColor,
+  toolbarColor,
+}) => {
   // const btnRefs = useRef([])
+
+  // const dispatch = useDispatch()
 
   // const handleClickToolbar = (evt, i) => {
   //   // console.log('btnRef', btnRefs.current[i])
@@ -43,12 +52,14 @@ const CardFormNavCardtext = () => {
   return (
     <div className="cardformnav-cardtext">
       <ToolbarCardtext
-      // btnRefs={btnRefs}
-      // handleClickToolbar={handleClickToolbar}
-      // cardtext={cardtext}
-      // toolbarColor={toolbarColor}
-      // toolbarIconColor={cardtext.colorType}
-      // handleClickColor={handleClickColor}
+        handleClickBtnNav={handleClickBtnNav}
+        setToolbarColorActive={setToolbarColorActive}
+        // btnRefs={btnRefs}
+        // handleClickToolbar={handleClickToolbar}
+        // cardtext={cardtext}
+        toolbarColor={toolbarColor}
+        // toolbarIconColor={cardtext.colorType}
+        // handleClickColor={handleClickColor}
       />
     </div>
   )

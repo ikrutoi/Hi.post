@@ -1,25 +1,16 @@
 .toolbar-cardtext {
-  // position: absolute;
-  // z-index: 1;
-  // top: 0;
-  // right: 0;
-  // left: 0;
   display: flex;
   justify-content: space-between;
-  // align-items: center;
-  // height: 1.5rem;
-  // margin-left: 1rem;
-  // margin-right: 1rem;
-  // box-sizing: border-box;
-  background-color: rgba($color: #ffffff, $alpha: 0);
+  background-color: rgba(255, 255, 255, 0);
+  // background-color: rgba($color: #ffffff, $alpha: 0);
   // border: solid 1px blue;
 }
 
 .toolbar-cardtext-settings {
-  // position: relative;
   display: flex;
   align-items: center;
   margin-left: 1rem;
+  margin-right: 1rem;
   // border: solid 1px green;
   // background-color: white;
   // background-color: rgba($color: #ffffff, $alpha: 0);
