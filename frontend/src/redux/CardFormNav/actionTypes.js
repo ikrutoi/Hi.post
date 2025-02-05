@@ -1,0 +1,2 @@
+export const ADD_CARDTEXT1 = 'ADD_CARDTEXT1'
+export const ADD_CARDPHOTO = 'ADD_CARDPHOTO'

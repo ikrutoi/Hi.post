@@ -10,7 +10,6 @@ import { useRef } from 'react'
 const CardPuzzle = ({
   name,
   dimensionHeight,
-  dimensionWidth,
   toolbarColor,
   setToolbarColorActive,
 }) => {
@@ -22,7 +21,7 @@ const CardPuzzle = ({
   const section = (name) => {
     switch (name) {
       case 'Cardphoto':
-        return <Cardphoto />
+        return <Cardphoto dimensionHeight={dimensionHeight} />
       case 'Cardtext':
         return (
           <Cardtext
