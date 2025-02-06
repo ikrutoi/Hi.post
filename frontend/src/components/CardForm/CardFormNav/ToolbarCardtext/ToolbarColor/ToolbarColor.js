@@ -1,10 +1,25 @@
-import { useRef } from 'react'
+// import { useRef } from 'react'
+import { useDispatch } from 'react-redux'
 import './ToolbarColor.scss'
-import listColor from '../../../../../../data/cardtext/list-toolbar-color.json'
+import listColor from '../../../../../data/cardtext/list-toolbar-color.json'
+// import listColor from '../../../../../../data/cardtext/list-toolbar-color.json'
+import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
+// import { addCardtext } from '../../../../../../redux/cardEdit/actionCreators'
 
-const ToolbarColor = ({ color, handleClickColor }) => {
+const ToolbarColor = ({ color }) => {
   const handleClick = (evt) => {
     handleClickColor(evt)
+  }
+
+  const dispatch = useDispatch()
+
+  const handleClickColor = (evt) => {
+    dispatch(
+      addCardtext({
+        colorName: evt.target.dataset.colorName,
+        colorType: evt.target.dataset.colorType,
+      })
+    )
   }
   // console.log('**', tooltip)
   // useEffect(() => {

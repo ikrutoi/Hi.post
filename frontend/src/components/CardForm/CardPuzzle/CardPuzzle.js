@@ -23,7 +23,12 @@ const CardPuzzle = ({
   const section = (name) => {
     switch (name) {
       case 'Cardphoto':
-        return <Cardphoto dimensionHeight={dimensionHeight} />
+        return (
+          <Cardphoto
+            dimensionHeight={dimensionHeight}
+            heightCardForm={heightCardForm}
+          />
+        )
       case 'Cardtext':
         return (
           <Cardtext

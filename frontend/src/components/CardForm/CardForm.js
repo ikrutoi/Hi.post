@@ -25,19 +25,20 @@ const CardForm = ({
     }
   }, [cardFormRef, cardFormNav])
 
-  useEffect(() => {
-    console.log('heightForm', heightCardForm)
-  }, [heightCardForm])
+  // useEffect(() => {
+  //   console.log('heightForm', heightCardForm)
+  // }, [heightCardForm])
 
   return (
     <div className="card-form" ref={cardFormRef}>
       <CardFormNav
         setCardFormNav={setCardFormNav}
         name={name}
-        dimensionHeight={dimensionHeight}
+        // dimensionHeight={dimensionHeight}
         toolbarColor={toolbarColor}
         setToolbarColorActive={setToolbarColorActive}
         handleClickBtnNav={setBtnNav}
+        heightCardForm={heightCardForm}
         // handleClickColor={handleClickColor}
       />
       <CardPuzzle

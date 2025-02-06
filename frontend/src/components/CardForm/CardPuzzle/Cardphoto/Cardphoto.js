@@ -3,12 +3,13 @@ import ImgBkg from './ImgBkg/ImgBkg'
 import ImgEditor from './ImgEditor/ImgEditor'
 import Toolbar from './Toolbar/Toolbar'
 
-const Cardphoto = ({ dimensionHeight }) => {
+const Cardphoto = ({ heightCardForm }) => {
+  const width = heightCardForm * 1.42
   return (
     <div className="cardphoto">
-      <ImgEditor dimensionHeight={dimensionHeight} />
+      <ImgEditor />
       <ImgBkg />
-      <Toolbar />
+      {/* <Toolbar /> */}
     </div>
   )
 }

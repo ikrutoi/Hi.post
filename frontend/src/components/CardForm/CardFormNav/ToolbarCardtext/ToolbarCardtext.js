@@ -45,12 +45,14 @@ import {
   MdFormatAlignCenter,
   MdFormatAlignJustify,
 } from 'react-icons/md'
-import './ToolbarCardtext.scss'
-import listNavBtns from '../../../../../data/cardtext/list-textarea-nav-btns.json'
-import Tooltip from './Tooltip/Tooltip'
-import ToolbarColor from './ToolbarColor/ToolbarColor'
-import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 import { useDispatch } from 'react-redux'
+import './ToolbarCardtext.scss'
+import listNavBtns from '../../../../data/cardtext/list-textarea-nav-btns.json'
+// import listNavBtns from '../../../../../data/cardtext/list-textarea-nav-btns.json'
+// import Tooltip from './Tooltip/Tooltip'
+import ToolbarColor from './ToolbarColor/ToolbarColor'
+import { addCardtext } from '../../../../redux/cardEdit/actionCreators'
+// import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 
 const ToolbarCardtext = ({
   handleClickBtnNav,

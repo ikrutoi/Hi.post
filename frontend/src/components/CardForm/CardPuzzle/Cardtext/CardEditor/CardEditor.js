@@ -255,7 +255,7 @@ const CardEditor = ({ toolbarColor, choiceBtnNav }) => {
           onChange={handleSlateChange}
         >
           <Editable
-            placeholder="Hi))"
+            placeholder="Hi)"
             className="editable"
             style={
               cardtext && {
