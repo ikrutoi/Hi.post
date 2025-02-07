@@ -1,15 +1,14 @@
 import './Cardphoto.scss'
 import ImgBkg from './ImgBkg/ImgBkg'
 import ImgEditor from './ImgEditor/ImgEditor'
-import Toolbar from './Toolbar/Toolbar'
 
-const Cardphoto = ({ heightCardForm }) => {
-  const width = heightCardForm * 1.42
+const Cardphoto = ({ heightCard, widthCard }) => {
   return (
     <div className="cardphoto">
-      <ImgEditor />
+      <ImgEditor
+        style={{ width: `${widthCard}px`, height: `${heightCard}px` }}
+      />
       <ImgBkg />
-      {/* <Toolbar /> */}
     </div>
   )
 }

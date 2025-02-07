@@ -1,11 +1,11 @@
 import './CardFormNav.scss'
-// import sizeCard from '../../../data/ratioCardCardMini.json'
 import { useEffect, useRef } from 'react'
-import ToolbarCardtext from './ToolbarCardtext/ToolbarCardtext'
+import Toolbar from './Toolbar/Toolbar'
+import ToolbarDate from './Toolbar/ToolbarDate/ToolbarDate'
 
 const CardFormNav = ({
   name,
-  heightCardForm,
+  sizeCard,
   toolbarColor,
   setToolbarColorActive,
   handleClickBtnNav,
@@ -13,7 +13,7 @@ const CardFormNav = ({
   setCardFormNav,
 }) => {
   // const heightCard = heightCardForm * sizeCard.card
-  const widthCard = heightCardForm * 1.42
+  // const widthCard = heightCard * 1.42
 
   const cardFormNavRef = useRef(null)
 
@@ -25,17 +25,19 @@ const CardFormNav = ({
 
   const section = (name) => {
     switch (name) {
-      // case 'Cardphoto':
-      // return <ToolbarCardphoto />
+      case 'Cardphoto':
+        return <Toolbar nameSection={name.toLowerCase()} />
       case 'Cardtext':
         return (
-          <ToolbarCardtext
+          <Toolbar
+            nameSection={name.toLowerCase()}
             toolbarColor={toolbarColor}
             setToolbarColorActive={setToolbarColorActive}
             handleClickBtnNav={handleClickBtnNav}
-            // handleClickColor={handleClickColor}
           />
         )
+      case 'Date':
+        return <ToolbarDate />
       default:
         break
     }
@@ -45,7 +47,7 @@ const CardFormNav = ({
     <div
       ref={cardFormNavRef}
       className="card-form-nav"
-      style={{ width: `${widthCard}px` }}
+      style={{ width: `${sizeCard.width}px` }}
     >
       {section(name)}
     </div>

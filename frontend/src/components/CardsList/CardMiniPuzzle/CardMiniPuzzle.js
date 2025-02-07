@@ -3,7 +3,8 @@ import './CardMiniPuzzle.scss'
 import SpanCircle from './SpanCircle/SpanCircle'
 import cardMiniList from '../../../data/cardMiniList.json'
 import sizeCardMini from '../../../data/ratioCardCardMini.json'
-import imgEmpty from '../../../data/cardMiniBkg-260x183.png'
+import imgEmpty from '../../../data/cardFormNav/miniPuzzle.png'
+// import imgEmpty from '../../../data/cardMiniBkg-260x183.png'
 
 const CardMiniPuzzle = ({
   hover,

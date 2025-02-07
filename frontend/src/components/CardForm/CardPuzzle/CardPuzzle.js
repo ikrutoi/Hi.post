@@ -13,10 +13,10 @@ const CardPuzzle = ({
   toolbarColor,
   // setToolbarColorActive,
   choiceBtnNav,
-  heightCardForm,
+  sizeCard,
 }) => {
   // const heightCard = dimensionHeight * sizeCard.card
-  const widthCard = heightCardForm * 1.42
+  // const widthCard = heightCard * 1.42
 
   const cardPuzzleRef = useRef(null)
 
@@ -24,10 +24,7 @@ const CardPuzzle = ({
     switch (name) {
       case 'Cardphoto':
         return (
-          <Cardphoto
-            dimensionHeight={dimensionHeight}
-            heightCardForm={heightCardForm}
-          />
+          <Cardphoto heightCard={sizeCard.height} widthCard={sizeCard.width} />
         )
       case 'Cardtext':
         return (
@@ -51,7 +48,7 @@ const CardPuzzle = ({
   return (
     <div
       className="card-puzzle"
-      style={{ width: `${widthCard}px`, height: `${heightCardForm}px` }}
+      style={{ width: `${sizeCard.width}px`, height: `${sizeCard.height}px` }}
       ref={cardPuzzleRef}
     >
       {section(name)}

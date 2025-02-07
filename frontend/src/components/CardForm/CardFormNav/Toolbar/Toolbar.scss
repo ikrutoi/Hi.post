@@ -6,12 +6,12 @@
   // border: solid 1px blue;
 }
 
-.toolbar-cardtext-settings {
+.toolbar-settings {
   display: flex;
   align-items: center;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  border-radius: 4px;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  border-radius: 0.4rem;
   // border: solid 1px green;
   // background-color: white;
   // background-color: rgba($color: #ffffff, $alpha: 0);
@@ -25,24 +25,24 @@
   // border: solid 1px blue;
 }
 
-.toolbar-cardtext-btn {
+.toolbar-btn {
   display: flex;
   justify-content: center;
   align-items: center;
-  // width: 1.2rem;
-  // height: 1.2rem;
-  margin: 0.3rem 0.5rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  padding: 0.3rem;
   cursor: pointer;
+  border-radius: 0.4rem;
   // background-color: lightgray;
   // border: solid 1px brown;
-  border-radius: 3px;
 }
 
 .cardformnav-toolbar-icon {
-  width: 0.8rem;
-  height: 0.8rem;
-  // color: orange;
+  width: 1.1rem;
+  height: 1.1rem;
   color: rgb(163, 163, 163);
+  // border: solid 1px red;
   // border: solid 1px lightgray;
 }
 
@@ -84,8 +84,10 @@
   height: 0.12rem;
 }
 
-.toolbar-cardtext-btn:hover {
+.toolbar-btn:hover {
+  // background-color: rgb(241, 241, 241);
   .cardformnav-toolbar-icon {
+    // background-color: rgb(241, 241, 241);
     color: rgb(71, 71, 71);
   }
 }

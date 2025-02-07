@@ -13,32 +13,26 @@ const CardForm = ({
 }) => {
   const [btnNav, setBtnNav] = useState(null)
   const [cardFormNav, setCardFormNav] = useState(null)
-  const [heightCardForm, setHeightCardForm] = useState(null)
+  const [sizeCard, setSizeCard] = useState(null)
   const cardFormRef = useRef(null)
-  // const cardFormNavRef = useRef(null)
 
   useEffect(() => {
     if (cardFormNav) {
-      setHeightCardForm(
-        cardFormRef.current.clientHeight - cardFormNav.clientHeight
-      )
+      const height = cardFormRef.current.clientHeight - cardFormNav.clientHeight
+      const width = +(height * 1.42).toFixed(2)
+      setSizeCard({ height, width })
     }
   }, [cardFormRef, cardFormNav])
-
-  // useEffect(() => {
-  //   console.log('heightForm', heightCardForm)
-  // }, [heightCardForm])
 
   return (
     <div className="card-form" ref={cardFormRef}>
       <CardFormNav
         setCardFormNav={setCardFormNav}
         name={name}
-        // dimensionHeight={dimensionHeight}
         toolbarColor={toolbarColor}
         setToolbarColorActive={setToolbarColorActive}
         handleClickBtnNav={setBtnNav}
-        heightCardForm={heightCardForm}
+        sizeCard={sizeCard}
         // handleClickColor={handleClickColor}
       />
       <CardPuzzle
@@ -46,7 +40,7 @@ const CardForm = ({
         dimensionHeight={dimensionHeight}
         dimensionWidth={dimensionWidth}
         toolbarColor={toolbarColor}
-        heightCardForm={heightCardForm}
+        sizeCard={sizeCard}
         // setToolbarColorActive={setToolbarColorActive}
         choiceBtnNav={btnNav}
       />
