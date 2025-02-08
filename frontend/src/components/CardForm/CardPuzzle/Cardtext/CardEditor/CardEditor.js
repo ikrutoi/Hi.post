@@ -7,7 +7,10 @@ import './CardEditor.scss'
 import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 import sizeBase from '../../../../../data/ratioCardCardMini.json'
 
-const CardEditor = ({ toolbarColor, choiceBtnNav }) => {
+const CardEditor = ({
+  toolbarColor,
+  //  choiceBtnNav
+}) => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
   const inputCardtext = selector.text ? selector : null
   const [cardtext, setCardtext] = useState(inputCardtext)

@@ -11,7 +11,7 @@ const CardForm = ({
   toolbarColor,
   setToolbarColorActive,
 }) => {
-  const [btnNav, setBtnNav] = useState(null)
+  // const [btnNav, setBtnNav] = useState(null)
   const [cardFormNav, setCardFormNav] = useState(null)
   const [sizeCard, setSizeCard] = useState(null)
   const cardFormRef = useRef(null)
@@ -31,7 +31,7 @@ const CardForm = ({
         name={name}
         toolbarColor={toolbarColor}
         setToolbarColorActive={setToolbarColorActive}
-        handleClickBtnNav={setBtnNav}
+        // handleClickBtnNav={setBtnNav}
         sizeCard={sizeCard}
         // handleClickColor={handleClickColor}
       />
@@ -42,7 +42,7 @@ const CardForm = ({
         toolbarColor={toolbarColor}
         sizeCard={sizeCard}
         // setToolbarColorActive={setToolbarColorActive}
-        choiceBtnNav={btnNav}
+        // choiceBtnNav={btnNav}
       />
     </div>
   )

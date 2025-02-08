@@ -1,19 +1,20 @@
-import './CardFormNav.scss'
 import { useEffect, useRef } from 'react'
+import { useSelector } from 'react-redux'
 import Toolbar from './Toolbar/Toolbar'
 import ToolbarDate from './Toolbar/ToolbarDate/ToolbarDate'
+import './CardFormNav.scss'
 
 const CardFormNav = ({
   name,
   sizeCard,
   toolbarColor,
   setToolbarColorActive,
-  handleClickBtnNav,
+  // handleClickBtnNav,
   // handleClickColor,
   setCardFormNav,
 }) => {
-  // const heightCard = heightCardForm * sizeCard.card
-  // const widthCard = heightCard * 1.42
+  const sections = useSelector((state) => state.cardEdit)
+  const sectionDate = sections.date
 
   const cardFormNavRef = useRef(null)
 
@@ -33,11 +34,16 @@ const CardFormNav = ({
             nameSection={name.toLowerCase()}
             toolbarColor={toolbarColor}
             setToolbarColorActive={setToolbarColorActive}
-            handleClickBtnNav={handleClickBtnNav}
+            // handleClickBtnNav={handleClickBtnNav}
           />
         )
       case 'Date':
-        return <ToolbarDate />
+        if (sectionDate) {
+          return
+        } else {
+          return <ToolbarDate />
+        }
+
       default:
         break
     }
@@ -47,7 +53,7 @@ const CardFormNav = ({
     <div
       ref={cardFormNavRef}
       className="card-form-nav"
-      style={{ width: `${sizeCard.width}px` }}
+      style={{ width: `${sizeCard && sizeCard.width}px` }}
     >
       {section(name)}
     </div>

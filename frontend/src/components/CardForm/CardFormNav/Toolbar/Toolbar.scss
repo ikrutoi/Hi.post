@@ -29,11 +29,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  border-style: none;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
   padding: 0.3rem;
   cursor: pointer;
-  border-radius: 0.4rem;
+  // border-radius: 0.4rem;
   // background-color: lightgray;
   // border: solid 1px brown;
 }
@@ -90,4 +91,8 @@
     // background-color: rgb(241, 241, 241);
     color: rgb(71, 71, 71);
   }
+}
+
+.cardformnav-toolbar-input {
+  display: none;
 }

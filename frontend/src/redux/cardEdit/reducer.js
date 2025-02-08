@@ -3,7 +3,7 @@ import * as a from './actionTypes'
 const initialState = {
   aroma: null,
   date: null,
-  photo: null,
+  cardphoto: null,
   cardtext: {
     text: [
       {
@@ -31,7 +31,7 @@ const initialState = {
 const cardEditReducer = (state = initialState, action) => {
   switch (action.type) {
     case a.ADD_CARDPHOTO:
-      return { ...state, photo: action.payload }
+      return { ...state, cardphoto: { ...state.cardtext, ...action.payload } }
     case a.ADD_CARDTEXT:
       return { ...state, cardtext: { ...state.cardtext, ...action.payload } }
     case a.ADD_ENVELOPE:

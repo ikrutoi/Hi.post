@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^14.5.2",
     "cra-template": "1.2.0",
     "draft-js": "^0.11.7",
+    "idb": "^8.0.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",
