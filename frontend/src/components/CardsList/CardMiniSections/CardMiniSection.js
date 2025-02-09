@@ -1,10 +1,11 @@
 import './CardMiniSection.scss'
-import sizeCardMini from '../../../data/ratioCardCardMini.json'
+import scaleSizeCardMini from '../../../data/ratioCardCardMini.json'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
 import MiniDate from './MiniDate/MiniDate'
 import MiniAroma from './MiniAroma/MiniAroma'
 import { useRef } from 'react'
+import MiniPhoto from './MiniPhoto/MiniPhoto'
 
 const CardMiniSection = ({
   section,
@@ -12,10 +13,11 @@ const CardMiniSection = ({
   dimensionHeight,
   handleClick,
   heightMinicard,
-  // cardminiRef,
 }) => {
-  const heightCardMini = dimensionHeight * sizeCardMini.cardmini
-  const widthCardMini = heightCardMini * 1.42
+  const sizeCardMini = {
+    height: dimensionHeight * scaleSizeCardMini.cardmini,
+    width: dimensionHeight * scaleSizeCardMini.cardmini * 1.42,
+  }
 
   const cardMiniSectionRef = useRef(null)
 
@@ -28,7 +30,9 @@ const CardMiniSection = ({
     switch (section) {
       case 'cardphoto':
         return (
-          <div className={`mini-section-value mini-section-${section}`}></div>
+          <div className={`mini-section-value mini-section-${section}`}>
+            <MiniPhoto sizeCardMini={sizeCardMini} />
+          </div>
         )
       case 'cardtext':
         return (
@@ -71,7 +75,11 @@ const CardMiniSection = ({
   return (
     <div
       className={`card-mini-section card-mini-${section}`}
-      style={{ width: `${widthCardMini}px`, height: `${heightCardMini}px` }}
+      style={{
+        padding: section === 'cardphoto' ? '0' : '0.5rem',
+        width: `${sizeCardMini.width}px`,
+        height: `${sizeCardMini.height}px`,
+      }}
       onClick={handleClickSection}
       data-name={section}
       ref={cardMiniSectionRef}

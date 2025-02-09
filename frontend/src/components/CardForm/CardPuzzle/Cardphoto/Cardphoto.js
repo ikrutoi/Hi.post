@@ -2,27 +2,28 @@ import { useDispatch, useSelector } from 'react-redux'
 import './Cardphoto.scss'
 import ImgBkg from './ImgBkg/ImgBkg'
 import ImgEditor from './ImgEditor/ImgEditor'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import imgStart from '../../../../data/cardphoto/photo-start-1206-862.jpg'
 
 const Cardphoto = ({ heightCard, widthCard }) => {
   const selectors = useSelector((state) => state.cardEdit)
   const selectorCardphoto = selectors.cardphoto
+  const [src, setSrc] = useState(null)
 
   useEffect(() => {
-    if (selectorCardphoto) {
-      console.log('*', selectorCardphoto.icon)
+    if (selectorCardphoto.url) {
+      setSrc(selectorCardphoto.url)
+    } else {
+      setSrc(imgStart)
     }
   }, [selectorCardphoto])
-  // const inputValueSelectedAroma = selectors.aroma ? selectors.aroma : null
-  // const [selectedAroma, setSelectedAroma] = useState(inputValueSelectedAroma)
-  // const dispatch = useDispatch()
 
   return (
     <div className="cardphoto">
       <ImgEditor
         style={{ width: `${widthCard}px`, height: `${heightCard}px` }}
       />
-      <ImgBkg />
+      <ImgBkg src={src} />
     </div>
   )
 }

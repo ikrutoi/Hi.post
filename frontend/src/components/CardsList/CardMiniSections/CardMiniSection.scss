@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   margin-left: 1rem;
-  padding: 0.5rem;
+  // padding: 0.5rem;
   border-radius: 0.5rem;
   box-sizing: border-box;
   // background-color: #ffffff;
@@ -25,6 +25,11 @@
   height: 100%;
 }
 
+.mini-section-cardphoto {
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0);
+}
+
 .card-mini-kebab {
   position: absolute;
   right: 0;
@@ -37,7 +42,7 @@
   height: 2rem;
   border-radius: 50%;
   // background-color: lightgray;
-  background-color: rgba($color: #ffffff, $alpha: 0);
+  background-color: rgba($color: #ffffff, $alpha: 0.78);
   cursor: pointer;
   // border: solid 1px blue;
 }

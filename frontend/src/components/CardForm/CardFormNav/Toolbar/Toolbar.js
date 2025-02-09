@@ -104,7 +104,7 @@ const Toolbar = ({
     }
 
     if (section === 'cardphoto') {
-      dispatch(addCardphoto({ icon: btnTooltip }))
+      dispatch(addCardphoto({ btn: btnTooltip }))
 
       if (btnTooltip === 'download') {
         fileInputRef.current.click()
@@ -140,55 +140,33 @@ const Toolbar = ({
     // }
   }
 
-  // const [selectedFiles, setSelectedFiles] = useState([])
-  const db = useIndexedDB()
-  const [selectedFiles, setSelectedFiles] = useState([])
-  const fileInputRef = useRef(null)
-
-  // useEffect(() => {
-  //   const initDB = async () => {
-  //     const db = await openDB('files-db', 1, {
-  //       upgrade(db) {
-  //         db.createObjectStore('files', { autoIncrement: true })
-  //       },
-  //     })
-  //     setDb(db)
-  //   }
-  //   initDB()
-  // }, [])
-
-  useEffect(() => {
-    const loadData = async () => {
-      if (db) {
-        const tx = db.transaction('files', 'readonly')
-        const store = tx.objectStore('files')
-        const allFiles = await store.getAll()
-        setSelectedFiles(allFiles)
-      }
-    }
-    loadData()
-  }, [db])
-
-  const handleFileChange = async (event) => {
-    const files = event.target.files
-    const fileArray = Array.from(files)
-    // setSelectedFile(event.target.files[0])
-
-    setSelectedFiles([...selectedFiles, ...fileArray])
-
-    if (db) {
-      const tx = db.transaction('files', 'readwrite')
-      const store = tx.objectStore('files')
-      for (const file of fileArray) {
-        await store.add(file)
-      }
-      await tx.done
-    }
+  const readFilesFromDB = async (db) => {
+    const tx = db.transaction('files', 'readonly')
+    const store = tx.objectStore('files')
+    const allFiles = await store.getAll()
+    console.log('Files in DB:', allFiles)
+    return allFiles
   }
 
-  useEffect(() => {
-    selectedFiles.map((file, i) => console.log('->', file.name))
-  }, [selectedFiles])
+  const db = useIndexedDB()
+  const fileInputRef = useRef(null)
+
+  const addFileToDB = async (db, file) => {
+    const tx = db.transaction('files', 'readwrite')
+    const store = tx.objectStore('files')
+    await store.clear()
+    await store.add(file)
+    await tx.done
+    const url = URL.createObjectURL(file)
+    dispatch(addCardphoto({ url }))
+  }
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0]
+    if (db) {
+      await addFileToDB(db, file)
+    }
+  }
 
   const addIconToolbar = (nameSection, nameBtn) => {
     switch (nameSection) {

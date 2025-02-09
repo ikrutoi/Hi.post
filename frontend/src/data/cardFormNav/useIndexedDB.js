@@ -18,5 +18,3 @@ export const useIndexedDB = () => {
 
   return db
 }
-
-// export default useIndexedDB;

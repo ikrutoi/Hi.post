@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 import CardMiniPuzzle from './CardMiniPuzzle/CardMiniPuzzle'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
@@ -22,7 +22,9 @@ const CardsList = ({
     if (!!sections[section]) {
       switch (section) {
         case 'cardphoto':
-          listSelectedSections.push(`1-${section}`)
+          if (sections[section].url) {
+            listSelectedSections.push(`1-${section}`)
+          }
           break
         case 'cardtext':
           if (sections[section].text[0].children[0].text) {
