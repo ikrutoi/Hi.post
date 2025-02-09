@@ -3,8 +3,9 @@ import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 import { addAroma } from '../../../../redux/cardEdit/actionCreators'
 import './Aroma.scss'
-import AromaElement from './AromaElement/AromaElement'
+// import AromaElement from './AromaElement/AromaElement'
 import aromaList from '../../../../data/aroma/aromaList.json'
+import InfoMiniCardAroma from './InfoMiniCardAroma/InfoMiniCardAroma'
 
 const Aroma = () => {
   const selectors = useSelector((state) => state.cardEdit)
@@ -22,12 +23,20 @@ const Aroma = () => {
       {aromaList
         .sort((name1, name2) => (name1.make > name2.make ? 1 : -1))
         .map((el, i) => (
-          <AromaElement
-            selectedAroma={selectedAroma}
-            elementAroma={el}
-            key={i}
-            setSelectedAroma={setSelectedAroma}
-          />
+          <>
+            {/* <AromaElement
+              selectedAroma={selectedAroma}
+              elementAroma={el}
+              key={`aroma-element-${i}`}
+              setSelectedAroma={setSelectedAroma}
+            /> */}
+            <InfoMiniCardAroma
+              key={`${el.name}-${i}`}
+              selectedAroma={selectedAroma}
+              elementAroma={el}
+              setSelectedAroma={setSelectedAroma}
+            />
+          </>
         ))}
     </form>
   )

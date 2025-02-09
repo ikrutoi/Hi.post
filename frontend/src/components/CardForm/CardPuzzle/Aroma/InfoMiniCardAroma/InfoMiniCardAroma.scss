@@ -1,0 +1,16 @@
+.info-mini-aroma {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  border-radius: 0.5rem;
+  box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.075);
+  border: solid 1px rgb(230, 230, 230);
+  cursor: pointer;
+}
+
+.info-mini-aroma span {
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+}

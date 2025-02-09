@@ -4,6 +4,7 @@ import SpanCircle from './SpanCircle/SpanCircle'
 import cardMiniList from '../../../data/cardMiniList.json'
 import sizeCardMini from '../../../data/ratioCardCardMini.json'
 import imgEmpty from '../../../data/cardFormNav/miniPuzzle.png'
+import { useSelector } from 'react-redux'
 // import imgEmpty from '../../../data/cardMiniBkg-260x183.png'
 
 const CardMiniPuzzle = ({
@@ -12,22 +13,17 @@ const CardMiniPuzzle = ({
   listSelectedSections,
   calcHeightMinicard,
 }) => {
+  const selectors = useSelector((state) => state.layout)
   const heightCardMini = dimensionHeight * sizeCardMini.cardmini
   const widthCardMini = heightCardMini * 1.42
 
   const [remSize, setRemSize] = useState(null)
 
   useEffect(() => {
-    const root = document.documentElement
-    const remSizeInPx = getComputedStyle(root).getPropertyValue('--rem-size')
-    const tempDiv = document.createElement('div')
-    tempDiv.style.width = remSizeInPx
-    tempDiv.style.visibility = 'hidden'
-    document.body.appendChild(tempDiv)
-    const computedRem = tempDiv.getBoundingClientRect().width
-    setRemSize(computedRem)
-    document.body.removeChild(tempDiv)
-  }, [])
+    if (selectors.remSize) {
+      setRemSize(selectors.remSize)
+    }
+  }, [selectors])
 
   const cardPuzzleRef = useRef(null)
 
