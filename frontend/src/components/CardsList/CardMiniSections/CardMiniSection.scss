@@ -13,7 +13,6 @@
 
 .mini-section-title {
   font-size: 0.8rem;
-  // border: solid 1px red;
 }
 
 .mini-section-date,
@@ -67,4 +66,12 @@
   background-repeat: no-repeat;
   background-color: rgba($color: #ffffff, $alpha: 0);
   // border: solid 1px green;
+}
+
+.mini-poly-cards {
+  position: relative;
+  .card-mini-section {
+    position: absolute;
+    margin-left: 0;
+  }
 }

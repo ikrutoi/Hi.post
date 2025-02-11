@@ -3,8 +3,7 @@ import { useSelector } from 'react-redux'
 import './MiniPhoto.scss'
 
 const MiniPhoto = ({ sizeCardMini }) => {
-  const selectors = useSelector((state) => state.cardEdit)
-  const selectorCardphoto = selectors.cardphoto
+  const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
 
   const canvasRef = useRef(null)
   const [imgSrc, setImgSrc] = useState('')
@@ -17,9 +16,15 @@ const MiniPhoto = ({ sizeCardMini }) => {
         const canvas = canvasRef.current
         if (canvas) {
           const ctx = canvas.getContext('2d')
-          canvas.width = sizeCardMini.width
-          canvas.height = sizeCardMini.height
-          ctx.drawImage(img, 0, 0, sizeCardMini.width, sizeCardMini.height)
+          canvas.width = sizeCardMini.width * 2
+          canvas.height = sizeCardMini.height * 2
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            sizeCardMini.width * 2,
+            sizeCardMini.height * 2
+          )
           setImgSrc(canvas.toDataURL('image/jpeg'))
         }
       }

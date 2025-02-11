@@ -10,7 +10,25 @@
   cursor: pointer;
 }
 
+.info-mini-aroma.selected {
+  background-color: #ecf7ff;
+  .info-mini-aroma-img {
+    background-color: #ecf7ff;
+  }
+  span {
+    background-color: #ecf7ff;
+  }
+}
+
 .info-mini-aroma span {
   margin-top: 0.2rem;
   margin-bottom: 0.2rem;
+}
+
+.info-mini-aroma span:first-child {
+  font-size: 0.8rem;
+}
+
+.info-mini-aroma span:last-child {
+  font-size: 0.7rem;
 }

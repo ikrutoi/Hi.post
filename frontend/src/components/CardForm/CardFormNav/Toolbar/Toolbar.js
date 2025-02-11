@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { openDB } from 'idb'
 import './Toolbar.scss'
 import listNavBtnsCardtext from '../../../../data/cardtext/list-textarea-nav-btns.json'
@@ -12,6 +12,7 @@ import {
 import { addIconToolbarCardtext } from '../../../../utils/cardFormNav/addIconToolbarCardtext.js'
 import { addIconToolbarCardphoto } from '../../../../utils/cardFormNav/addIconToolbarCardphoto.js'
 import { useIndexedDB } from '../../../../data/cardFormNav/useIndexedDB.js'
+import imgStart from '../../../../data/cardphoto/photo-start-1206-862.jpg'
 
 const Toolbar = ({
   nameSection,
@@ -21,6 +22,7 @@ const Toolbar = ({
   // handleClickColor,
   toolbarColor,
 }) => {
+  const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
   // const [tooltip, setTooltip] = useState(null)
   const dispatch = useDispatch()
   const [listBtns, setListBtns] = useState(null)
@@ -104,10 +106,25 @@ const Toolbar = ({
     }
 
     if (section === 'cardphoto') {
-      dispatch(addCardphoto({ btn: btnTooltip }))
+      // dispatch(addCardphoto({ btn: btnTooltip }))
 
-      if (btnTooltip === 'download') {
-        fileInputRef.current.click()
+      switch (btnTooltip) {
+        case 'download':
+          fileInputRef.current.click()
+          break
+        case 'delete':
+          dispatch(addCardphoto({ url: null, source: null }))
+          break
+        case 'save':
+          if (selectorCardphoto.source === null) {
+            dispatch(addCardphoto({ url: imgStart, source: 'startImg' }))
+          } else {
+            break
+          }
+          break
+
+        default:
+          break
       }
 
       // const formData = new FormData()
@@ -158,7 +175,7 @@ const Toolbar = ({
     await store.add(file)
     await tx.done
     const url = URL.createObjectURL(file)
-    dispatch(addCardphoto({ url }))
+    dispatch(addCardphoto({ url, source: 'user' }))
   }
 
   const handleFileChange = async (event) => {

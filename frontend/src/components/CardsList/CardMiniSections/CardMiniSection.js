@@ -1,29 +1,37 @@
+import { useEffect, useRef, useState } from 'react'
 import './CardMiniSection.scss'
-import scaleSizeCardMini from '../../../data/ratioCardCardMini.json'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
 import MiniDate from './MiniDate/MiniDate'
 import MiniAroma from './MiniAroma/MiniAroma'
-import { useRef } from 'react'
 import MiniPhoto from './MiniPhoto/MiniPhoto'
 
 const CardMiniSection = ({
-  section,
   valueSection,
-  dimensionHeight,
+  sizeCardMini,
   handleClick,
-  heightMinicard,
+  polyCards,
+  index,
+  sectionInfo,
+  hover,
+  sectionClick,
 }) => {
-  const sizeCardMini = {
-    height: dimensionHeight * scaleSizeCardMini.cardmini,
-    width: dimensionHeight * scaleSizeCardMini.cardmini * 1.42,
-  }
-
   const cardMiniSectionRef = useRef(null)
+
+  // const [upSectionFromPolyCards, setUpSectionFromPolyCards] = useState(null)
+
+  // useEffect(() => {
+  //   if (polyCards && sectionInfo.section === sectionClick) {
+  //     setUpSectionFromPolyCards(hover.toLowerCase())
+  //   }
+  // })
 
   const handleClickSection = (evt) => {
     const parentName = evt.target.closest('.card-mini-section').dataset.name
-    handleClick(parentName.charAt(0).toUpperCase() + parentName.slice(1))
+    handleClick({
+      name: parentName.charAt(0).toUpperCase() + parentName.slice(1),
+      source: 'miniCards',
+    })
   }
 
   const renderSection = (section, valueSection) => {
@@ -38,7 +46,7 @@ const CardMiniSection = ({
         return (
           <div className={`mini-section-value mini-section-${section}`}>
             <MiniCardtext
-              heightMinicard={heightMinicard}
+              heightMinicard={sizeCardMini.height}
               cardMiniSectionRef={cardMiniSectionRef.current}
             />
           </div>
@@ -54,7 +62,7 @@ const CardMiniSection = ({
           <div className={`mini-section-value mini-section-${section}`}>
             <MiniDate
               valueSection={valueSection}
-              heightMinicard={heightMinicard}
+              heightMinicard={sizeCardMini.height}
             />
           </div>
         )
@@ -63,7 +71,7 @@ const CardMiniSection = ({
           <div className={`mini-section-value mini-section-${section}`}>
             <MiniAroma
               valueSection={valueSection}
-              heightMinicard={heightMinicard}
+              heightMinicard={sizeCardMini.height}
             />
           </div>
         )
@@ -74,17 +82,28 @@ const CardMiniSection = ({
 
   return (
     <div
-      className={`card-mini-section card-mini-${section}`}
+      className={`card-mini-section card-mini-${sectionInfo.section} ${
+        polyCards ? 'poly' : ''
+      } ${
+        polyCards && sectionInfo.section === hover.toLowerCase() ? 'hover' : ''
+      }`}
       style={{
-        padding: section === 'cardphoto' ? '0' : '0.5rem',
+        left: polyCards ? `${(index * sizeCardMini.width) / 10}px` : '0',
+        padding: sectionInfo.section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeCardMini.width}px`,
         height: `${sizeCardMini.height}px`,
+        zIndex:
+          polyCards &&
+          sectionInfo.section === sectionClick.name.toLowerCase() &&
+          sectionClick.source === 'miniCards'
+            ? 6
+            : sectionInfo.zIndex,
       }}
       onClick={handleClickSection}
-      data-name={section}
+      data-name={sectionInfo.section}
       ref={cardMiniSectionRef}
     >
-      {renderSection(section, valueSection)}
+      {renderSection(sectionInfo.section, valueSection)}
       <div className="card-mini-kebab">
         <span className="mini-kebab-dots">
           <span className="mini-kebab-icon"></span>

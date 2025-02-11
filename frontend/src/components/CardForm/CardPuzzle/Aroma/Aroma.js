@@ -23,20 +23,12 @@ const Aroma = () => {
       {aromaList
         .sort((name1, name2) => (name1.make > name2.make ? 1 : -1))
         .map((el, i) => (
-          <>
-            {/* <AromaElement
-              selectedAroma={selectedAroma}
-              elementAroma={el}
-              key={`aroma-element-${i}`}
-              setSelectedAroma={setSelectedAroma}
-            /> */}
-            <InfoMiniCardAroma
-              key={`${el.name}-${i}`}
-              selectedAroma={selectedAroma}
-              elementAroma={el}
-              setSelectedAroma={setSelectedAroma}
-            />
-          </>
+          <InfoMiniCardAroma
+            key={`${el.name}-${i}`}
+            selectedAroma={selectedAroma}
+            elementAroma={el}
+            setSelectedAroma={setSelectedAroma}
+          />
         ))}
     </form>
   )

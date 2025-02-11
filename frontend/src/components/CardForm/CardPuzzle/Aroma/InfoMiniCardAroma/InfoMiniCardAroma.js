@@ -26,8 +26,8 @@ const InfoMiniCardAroma = ({
   useEffect(() => {
     if (selector.sizeCard.width && selector.sizeCard.height) {
       setSizeMiniCard({
-        height: (selector.sizeCard.height - 5 * selector.remSize) / 4,
-        width: (selector.sizeCard.width - 5 * selector.remSize) / 4,
+        height: (selector.sizeCard.height - 6 * selector.remSize) / 4,
+        width: (selector.sizeCard.width - 6 * selector.remSize) / 4,
       })
     }
   }, [selector])
@@ -84,7 +84,13 @@ const InfoMiniCardAroma = ({
   return (
     sizeMiniCard && (
       <button
-        className="info-mini-aroma"
+        className={`info-mini-aroma ${
+          !!selectedAroma &&
+          selectedAroma.make === elementAroma.make &&
+          selectedAroma.name === elementAroma.name
+            ? 'selected'
+            : ''
+        }`}
         type="submit"
         style={{
           width: `${sizeMiniCard.width}px`,
@@ -99,7 +105,7 @@ const InfoMiniCardAroma = ({
           })
         }
       >
-        <span>{elementAroma.make}</span>
+        <span>{elementAroma.make === '0' ? '\u00A0' : elementAroma.make}</span>
         <img
           className="info-mini-aroma-img"
           alt={elementAroma.name}

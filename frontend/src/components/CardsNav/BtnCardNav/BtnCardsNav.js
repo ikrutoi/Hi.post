@@ -5,7 +5,7 @@ const BtnCardsNav = ({ nameNav, handleClick, onMouseEnter, onMouseLeave }) => {
     <button
       type="button"
       className="btn-nav"
-      onClick={() => handleClick(nameNav)}
+      onClick={() => handleClick({ source: 'cardsNav', name: nameNav })}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       data-name={nameNav.toLowerCase()}

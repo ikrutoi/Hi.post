@@ -1,5 +1,5 @@
 import './CardPuzzle.scss'
-import sizeCard from '../../../data/ratioCardCardMini.json'
+// import sizeCard from '../../../data/ratioCardCardMini.json'
 import Cardphoto from './Cardphoto/Cardphoto'
 import Cardtext from './Cardtext/Cardtext'
 import Envelope from './Envelope/Envelope'
@@ -23,9 +23,7 @@ const CardPuzzle = ({
   const section = (name) => {
     switch (name) {
       case 'Cardphoto':
-        return (
-          <Cardphoto heightCard={sizeCard.height} widthCard={sizeCard.width} />
-        )
+        return <Cardphoto sizeCard={sizeCard} />
       case 'Cardtext':
         return (
           <Cardtext
@@ -54,7 +52,7 @@ const CardPuzzle = ({
       }}
       ref={cardPuzzleRef}
     >
-      {section(name)}
+      {section(name.name)}
     </div>
   )
 }

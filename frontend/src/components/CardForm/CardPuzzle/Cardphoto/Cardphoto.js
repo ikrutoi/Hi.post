@@ -1,13 +1,12 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
 import './Cardphoto.scss'
 import ImgBkg from './ImgBkg/ImgBkg'
 import ImgEditor from './ImgEditor/ImgEditor'
-import { useEffect, useState } from 'react'
 import imgStart from '../../../../data/cardphoto/photo-start-1206-862.jpg'
 
-const Cardphoto = ({ heightCard, widthCard }) => {
-  const selectors = useSelector((state) => state.cardEdit)
-  const selectorCardphoto = selectors.cardphoto
+const Cardphoto = ({ sizeCard }) => {
+  const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
   const [src, setSrc] = useState(null)
 
   useEffect(() => {
@@ -21,7 +20,7 @@ const Cardphoto = ({ heightCard, widthCard }) => {
   return (
     <div className="cardphoto">
       <ImgEditor
-        style={{ width: `${widthCard}px`, height: `${heightCard}px` }}
+        style={{ width: `${sizeCard.width}px`, height: `${sizeCard.height}px` }}
       />
       <ImgBkg src={src} />
     </div>

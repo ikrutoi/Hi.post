@@ -13,3 +13,10 @@ export const addRemSize = (newSection) => {
     payload: newSection,
   }
 }
+
+export const addBtnNavHover = (newSection) => {
+  return {
+    type: a.ADD_BTNNAVHOVER,
+    payload: newSection,
+  }
+}

@@ -2,7 +2,7 @@ import BtnCardsNav from './BtnCardNav/BtnCardsNav'
 import navList from '../../data/navList.json'
 import './CardsNav.scss'
 
-const CardsNav = ({ handleClick, onMouseEnter, onMouseLeave }) => {
+const CardsNav = ({ handleClick, handleMouseEnter, handleMouseLeave }) => {
   return (
     <div className="cards-nav">
       {navList.map((name, i) => (
@@ -10,8 +10,8 @@ const CardsNav = ({ handleClick, onMouseEnter, onMouseLeave }) => {
           nameNav={name}
           key={i}
           handleClick={handleClick}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           dataName
         />
       ))}

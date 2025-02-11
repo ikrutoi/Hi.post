@@ -6,6 +6,7 @@ const initialState = {
     width: null,
   },
   remSize: null,
+  btnNavHover: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -14,6 +15,8 @@ const layoutReducer = (state = initialState, action) => {
       return { ...state, sizeCard: { ...state.sizeCard, ...action.payload } }
     case a.ADD_REMSIZE:
       return { ...state, remSize: action.payload }
+    case a.ADD_BTNNAVHOVER:
+      return { ...state, btnNavHover: action.payload }
     default:
       return state
   }

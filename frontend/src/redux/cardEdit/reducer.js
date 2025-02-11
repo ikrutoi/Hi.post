@@ -3,7 +3,7 @@ import * as a from './actionTypes'
 const initialState = {
   aroma: null,
   date: null,
-  cardphoto: { btn: null, url: null },
+  cardphoto: { btn: null, url: null, source: null },
   cardtext: {
     text: [
       {

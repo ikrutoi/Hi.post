@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import './ImgEditor.scss'
-import sizeCard from '../../../../../data/ratioCardCardMini.json'
+// import sizeCard from '../../../../../data/ratioCardCardMini.json'
 
 const ImgEditor = ({ dimensionHeight }) => {
   // const heightCard = dimensionHeight * sizeCard.card

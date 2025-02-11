@@ -55,7 +55,7 @@ const CardFormNav = ({
       className="card-form-nav"
       style={{ width: `${sizeCard && sizeCard.width}px` }}
     >
-      {section(name)}
+      {section(name.name)}
     </div>
   )
 }
