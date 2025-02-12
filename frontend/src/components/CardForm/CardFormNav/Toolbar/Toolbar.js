@@ -13,10 +13,10 @@ import { addIconToolbarCardtext } from '../../../../utils/cardFormNav/addIconToo
 import { addIconToolbarCardphoto } from '../../../../utils/cardFormNav/addIconToolbarCardphoto.js'
 import { useIndexedDB } from '../../../../data/cardFormNav/useIndexedDB.js'
 import imgStart from '../../../../data/cardphoto/photo-start-1206-862.jpg'
+import { addChoiceSection } from '../../../../redux/layout/actionCreators.js'
 
 const Toolbar = ({
   nameSection,
-  // handleClickBtnNav,
   setToolbarColorActive,
   // handleClickToolbar,
   // handleClickColor,
@@ -118,6 +118,12 @@ const Toolbar = ({
         case 'save':
           if (selectorCardphoto.source === null) {
             dispatch(addCardphoto({ url: imgStart, source: 'startImg' }))
+            dispatch(
+              addChoiceSection({
+                source: 'cardPuzzle',
+                nameSection: 'cardphoto',
+              })
+            )
           } else {
             break
           }
@@ -176,6 +182,9 @@ const Toolbar = ({
     await tx.done
     const url = URL.createObjectURL(file)
     dispatch(addCardphoto({ url, source: 'user' }))
+    dispatch(
+      addChoiceSection({ source: 'cardPuzzle', nameSection: 'cardphoto' })
+    )
   }
 
   const handleFileChange = async (event) => {

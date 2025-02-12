@@ -20,10 +20,11 @@ const InfoMiniCardAroma = ({
   selectedAroma,
   elementAroma,
   setSelectedAroma,
+  setChoiceSection,
 }) => {
   const selector = useSelector((state) => state.layout)
   const [sizeMiniCard, setSizeMiniCard] = useState(null)
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
   useEffect(() => {
     if (selector.sizeCard.width && selector.sizeCard.height) {
@@ -88,7 +89,7 @@ const InfoMiniCardAroma = ({
       index: elementAroma.index,
       gender: elementAroma.gender,
     })
-    dispatch(addChoiceSection({ source: 'cardPuzzle', nameSection: 'aroma' }))
+    setChoiceSection('aroma')
   }
 
   // const selectors = useSelector((state) => state.cardEdit)

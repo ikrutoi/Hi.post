@@ -5,7 +5,7 @@ import ImgBkg from './ImgBkg/ImgBkg'
 import ImgEditor from './ImgEditor/ImgEditor'
 import imgStart from '../../../../data/cardphoto/photo-start-1206-862.jpg'
 
-const Cardphoto = ({ sizeCard }) => {
+const Cardphoto = ({ sizeCard, setChoiceSection }) => {
   const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
   const [src, setSrc] = useState(null)
 

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './CardMiniSection.scss'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
@@ -24,6 +24,41 @@ const CardMiniSection = ({
       addChoiceSection({ source: 'miniCardPuzzle', nameSection: parentName })
     )
   }
+
+  // const [startSectionZIndex, setStartSectionZIndex] = useState(null)
+
+  const prioritySectors = (section) => {
+    // console.log('polyCards', polyCards)
+    const offsetX = sizeCardMini.width / 10
+    const orderOfSections = {
+      cardphoto: 0,
+      cardtext: 1,
+      envelope: 2,
+      date: 3,
+      aroma: 4,
+    }
+    // const numberOffsetX = orderOfSections[choiceSection.nameSection]
+
+    const indexSelectorSection = polyCards.findIndex(
+      (el) => el.section === choiceSection.nameSection
+    )
+
+    // if (indexSelectorSection === 0) {
+    //   console.log('index', indexSelectorSection)
+    // }
+  }
+
+  useEffect(() => {
+    if (
+      polyCards &&
+      choiceSection.source === 'cardPuzzle' &&
+      cardMiniSectionRef.current.dataset.name === choiceSection.nameSection
+    ) {
+      // console.log('sectionInfo', sectionInfo)
+      // console.log('choiceSection', choiceSection)
+      cardMiniSectionRef.current.style.left = '0'
+    }
+  }, [sectionInfo, polyCards, choiceSection])
 
   const renderSection = (section, valueSection) => {
     switch (section) {
@@ -75,9 +110,7 @@ const CardMiniSection = ({
     <div
       className={`card-mini-section card-mini-${sectionInfo.section} `}
       style={{
-        left: polyCards
-          ? `${(sectionInfo.number * sizeCardMini.width) / 10}px`
-          : '0',
+        left: polyCards ? prioritySectors(sectionInfo.section) : '0',
         padding: sectionInfo.section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeCardMini.width}px`,
         height: `${sizeCardMini.height}px`,

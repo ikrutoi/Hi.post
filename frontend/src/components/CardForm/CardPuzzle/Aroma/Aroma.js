@@ -7,7 +7,7 @@ import './Aroma.scss'
 import aromaList from '../../../../data/aroma/aromaList.json'
 import InfoMiniCardAroma from './InfoMiniCardAroma/InfoMiniCardAroma'
 
-const Aroma = () => {
+const Aroma = ({ setChoiceSection }) => {
   const selectors = useSelector((state) => state.cardEdit)
   const inputValueSelectedAroma = selectors.aroma ? selectors.aroma : null
   const [selectedAroma, setSelectedAroma] = useState(inputValueSelectedAroma)
@@ -28,6 +28,7 @@ const Aroma = () => {
             selectedAroma={selectedAroma}
             elementAroma={el}
             setSelectedAroma={setSelectedAroma}
+            setChoiceSection={setChoiceSection}
           />
         ))}
     </form>

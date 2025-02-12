@@ -7,17 +7,18 @@ import './Envelope.scss'
 import { addEnvelope } from '../../../../redux/cardEdit/actionCreators'
 import Mark from './Mark/Mark'
 import FormAddress from './FormAddress/FormAddress'
+import { addChoiceSection } from '../../../../redux/layout/actionCreators'
 
-const Envelope = ({ cardPuzzleRef }) => {
-  const selectors = useSelector((state) => state.cardEdit)
+const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
+  const selectorCardEdit = useSelector((state) => state.cardEdit)
   const valueEnvelope =
-    selectors.envelope.myaddress === null &&
-    selectors.envelope.toaddress === null
+    selectorCardEdit.envelope.myaddress === null &&
+    selectorCardEdit.envelope.toaddress === null
       ? {
           toaddress: { street: '', index: '', city: '', country: '', name: '' },
           myaddress: { street: '', index: '', city: '', country: '', name: '' },
         }
-      : selectors.envelope
+      : selectorCardEdit.envelope
 
   const [value, setValue] = useState(valueEnvelope)
 
@@ -45,7 +46,11 @@ const Envelope = ({ cardPuzzleRef }) => {
 
   useEffect(() => {
     dispatch(addEnvelope(value))
-  }, [dispatch, value])
+    setChoiceSection('envelope')
+    // dispatch(
+    //   addChoiceSection({ source: 'cardPuzzle', nameSection: 'envelope' })
+    // )
+  }, [dispatch, value, setChoiceSection])
 
   const handleMovingBetweenInputs = (e) => {
     const indexInput = Number(e.target.dataset.index)

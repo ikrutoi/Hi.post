@@ -8,8 +8,9 @@ import CurrentDateTime from './CurrentDateTime/CurrentDateTime'
 import { currentDate } from '../../../../utils/date/date'
 import Slider from './Slider/Slider'
 import nameMonths from '../../../../data/date/monthOfYear.json'
+import { addChoiceSection } from '../../../../redux/layout/actionCreators'
 
-const Date = () => {
+const Date = ({ setChoiceSection }) => {
   const selectors = useSelector((state) => state.cardEdit)
   const inputValueSelectedDate = selectors.date
     ? selectors.date
@@ -62,6 +63,8 @@ const Date = () => {
         day: selectedDay,
       })
     )
+    // dispatch(addChoiceSection({ source: 'cardPuzzle', nameSection: 'date' }))
+    setChoiceSection('date')
   }
 
   const handleChangeYear = () => {

@@ -9,6 +9,7 @@ import scaleBase from '../../../../../data/main/scaleCardAndCardMini.json'
 
 const CardEditor = ({
   toolbarColor,
+  setChoiceSection,
   //  choiceBtnNav
 }) => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
@@ -93,6 +94,7 @@ const CardEditor = ({
         },
       })
     )
+    setChoiceSection('cardtext')
     setMaxLines(lines)
     setEditableWidth(editableRef.current.offsetWidth)
   }

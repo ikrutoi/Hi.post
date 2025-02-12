@@ -4,6 +4,7 @@ import CardEditor from './CardEditor/CardEditor'
 
 const Cardtext = ({
   toolbarColor,
+  setChoiceSection,
   // choiceBtnNav
 }) => {
   return (
@@ -11,6 +12,7 @@ const Cardtext = ({
       {/* <Toolbar editor={editor} /> */}
       <CardEditor
         toolbarColor={toolbarColor}
+        setChoiceSection={setChoiceSection}
         // setToolbarColorActive={setToolbarColorActive}
         // choiceBtnNav={choiceBtnNav}
       />

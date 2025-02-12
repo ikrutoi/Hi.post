@@ -5,8 +5,9 @@ import './CardsList.scss'
 const CardsList = () => {
   const sectionCardEdit = useSelector((state) => state.cardEdit)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
-
+  const choiceSection = useSelector((state) => state.layout.choiceSection)
   const listSelectedSections = []
+
   for (let section in sectionCardEdit) {
     if (!!sectionCardEdit[section]) {
       switch (section) {
@@ -50,6 +51,20 @@ const CardsList = () => {
     (a, b) => a.number - b.number
   )
 
+  const getListPrioritySections = () => {
+    const temporaryArray = []
+    for (let i = 0; i < listSortSelectedSections.length; i++) {
+      if (listSortSelectedSections[i].section !== choiceSection.nameSection) {
+        temporaryArray.push(listSortSelectedSections[i])
+      } else {
+        temporaryArray.unshift(...listSortSelectedSections.slice(i))
+        break
+      }
+    }
+    return temporaryArray
+  }
+  const listPrioritySections = getListPrioritySections()
+
   return (
     <div className="cards-list">
       <div
@@ -59,14 +74,14 @@ const CardsList = () => {
           height: `${sizeMiniCard.height}px`,
         }}
       >
-        {listSortSelectedSections.length !== 0 ? (
-          listSortSelectedSections.map((selectedSection, i) => (
+        {listPrioritySections.length !== 0 ? (
+          listPrioritySections.map((selectedSection, i) => (
             <CardMiniSection
               key={`mini-poly-${selectedSection.section}-${i}`}
               sectionInfo={selectedSection}
               valueSection={sectionCardEdit[selectedSection.section]}
               sizeCardMini={sizeMiniCard}
-              polyCards={true}
+              polyCards={listPrioritySections}
             />
           ))
         ) : (
