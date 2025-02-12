@@ -1,37 +1,28 @@
-import { useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useRef } from 'react'
 import './CardMiniSection.scss'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
 import MiniDate from './MiniDate/MiniDate'
 import MiniAroma from './MiniAroma/MiniAroma'
 import MiniPhoto from './MiniPhoto/MiniPhoto'
+import { addChoiceSection } from '../../../redux/layout/actionCreators'
 
 const CardMiniSection = ({
   valueSection,
   sizeCardMini,
-  handleClick,
   polyCards,
-  index,
   sectionInfo,
-  hover,
-  sectionClick,
 }) => {
   const cardMiniSectionRef = useRef(null)
-
-  // const [upSectionFromPolyCards, setUpSectionFromPolyCards] = useState(null)
-
-  // useEffect(() => {
-  //   if (polyCards && sectionInfo.section === sectionClick) {
-  //     setUpSectionFromPolyCards(hover.toLowerCase())
-  //   }
-  // })
+  const dispatch = useDispatch()
+  const choiceSection = useSelector((state) => state.layout.choiceSection)
 
   const handleClickSection = (evt) => {
     const parentName = evt.target.closest('.card-mini-section').dataset.name
-    handleClick({
-      name: parentName.charAt(0).toUpperCase() + parentName.slice(1),
-      source: 'miniCards',
-    })
+    dispatch(
+      addChoiceSection({ source: 'miniCardPuzzle', nameSection: parentName })
+    )
   }
 
   const renderSection = (section, valueSection) => {
@@ -82,21 +73,19 @@ const CardMiniSection = ({
 
   return (
     <div
-      className={`card-mini-section card-mini-${sectionInfo.section} ${
-        polyCards ? 'poly' : ''
-      } ${
-        polyCards && sectionInfo.section === hover.toLowerCase() ? 'hover' : ''
-      }`}
+      className={`card-mini-section card-mini-${sectionInfo.section} `}
       style={{
-        left: polyCards ? `${(index * sizeCardMini.width) / 10}px` : '0',
+        left: polyCards
+          ? `${(sectionInfo.number * sizeCardMini.width) / 10}px`
+          : '0',
         padding: sectionInfo.section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeCardMini.width}px`,
         height: `${sizeCardMini.height}px`,
         zIndex:
-          polyCards &&
-          sectionInfo.section === sectionClick.name.toLowerCase() &&
-          sectionClick.source === 'miniCards'
-            ? 6
+          polyCards && sectionInfo.section === choiceSection.nameSection
+            ? // &&
+              // sectionClick.source === 'miniCards'
+              6
             : sectionInfo.zIndex,
       }}
       onClick={handleClickSection}
@@ -104,11 +93,15 @@ const CardMiniSection = ({
       ref={cardMiniSectionRef}
     >
       {renderSection(sectionInfo.section, valueSection)}
-      <div className="card-mini-kebab">
-        <span className="mini-kebab-dots">
-          <span className="mini-kebab-icon"></span>
-        </span>
-      </div>
+      {polyCards ? (
+        <></>
+      ) : (
+        <div className="card-mini-kebab">
+          <span className="mini-kebab-dots">
+            <span className="mini-kebab-icon"></span>
+          </span>
+        </div>
+      )}
     </div>
   )
 }

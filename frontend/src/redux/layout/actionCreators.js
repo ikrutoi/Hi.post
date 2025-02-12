@@ -2,7 +2,14 @@ import * as a from './actionTypes'
 
 export const addSizeCard = (newSection) => {
   return {
-    type: a.ADD_SIZECARD,
+    type: a.ADD_SIZE_CARD,
+    payload: newSection,
+  }
+}
+
+export const addSizeMiniCard = (newSection) => {
+  return {
+    type: a.ADD_SIZE_MINI_CARD,
     payload: newSection,
   }
 }
@@ -14,9 +21,16 @@ export const addRemSize = (newSection) => {
   }
 }
 
-export const addBtnNavHover = (newSection) => {
+// export const addBtnNavHover = (newSection) => {
+//   return {
+//     type: a.ADD_BTN_NAV_HOVER,
+//     payload: newSection,
+//   }
+// }
+
+export const addChoiceSection = (newSection) => {
   return {
-    type: a.ADD_BTNNAVHOVER,
+    type: a.ADD_CHOICE_SECTION,
     payload: newSection,
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import './InfoMiniCardAroma.scss'
+import { addChoiceSection } from '../../../../../redux/layout/actionCreators'
 import img00 from '../../../../../data/aroma/no-parfum.png'
 import img10 from '../../../../../data/aroma/nasomatto__black_afgano__10.png'
 import img11 from '../../../../../data/aroma/giorgio_armani__acqua_di_gio_profondo__11.png'
@@ -22,6 +23,7 @@ const InfoMiniCardAroma = ({
 }) => {
   const selector = useSelector((state) => state.layout)
   const [sizeMiniCard, setSizeMiniCard] = useState(null)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (selector.sizeCard.width && selector.sizeCard.height) {
@@ -32,7 +34,6 @@ const InfoMiniCardAroma = ({
     }
   }, [selector])
 
-  // console.log('el', elementAroma)
   let imageAroma
 
   switch (elementAroma.index) {
@@ -80,6 +81,16 @@ const InfoMiniCardAroma = ({
       break
   }
 
+  const handleClickBtnAroma = () => {
+    setSelectedAroma({
+      make: elementAroma.make,
+      name: elementAroma.name,
+      index: elementAroma.index,
+      gender: elementAroma.gender,
+    })
+    dispatch(addChoiceSection({ source: 'cardPuzzle', nameSection: 'aroma' }))
+  }
+
   // const selectors = useSelector((state) => state.cardEdit)
   return (
     sizeMiniCard && (
@@ -96,14 +107,7 @@ const InfoMiniCardAroma = ({
           width: `${sizeMiniCard.width}px`,
           height: `${sizeMiniCard.height}px`,
         }}
-        onClick={() =>
-          setSelectedAroma({
-            make: elementAroma.make,
-            name: elementAroma.name,
-            index: elementAroma.index,
-            gender: elementAroma.gender,
-          })
-        }
+        onClick={handleClickBtnAroma}
       >
         <span>{elementAroma.make === '0' ? '\u00A0' : elementAroma.make}</span>
         <img

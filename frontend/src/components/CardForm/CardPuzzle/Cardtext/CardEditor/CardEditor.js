@@ -5,7 +5,7 @@ import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 import { v4 as uuidv4 } from 'uuid'
 import './CardEditor.scss'
 import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
-import sizeBase from '../../../../../data/ratioCardCardMini.json'
+import scaleBase from '../../../../../data/main/scaleCardAndCardMini.json'
 
 const CardEditor = ({
   toolbarColor,
@@ -78,7 +78,7 @@ const CardEditor = ({
         break
     }
 
-    const scale = (sizeBase.card / sizeBase.cardmini).toFixed(2)
+    const scale = (scaleBase.card / scaleBase.cardmini).toFixed(2)
     const heightEditor = editorRef.current.offsetHeight
     const baseSizeLineHeight = Math.floor((heightEditor / lines) * 10) / 10
     const baseFontSize = Math.floor((baseSizeLineHeight / 1.33) * 10) / 10

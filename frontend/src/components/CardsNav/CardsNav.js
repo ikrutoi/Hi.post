@@ -9,10 +9,10 @@ const CardsNav = ({ handleClick, handleMouseEnter, handleMouseLeave }) => {
         <BtnCardsNav
           nameNav={name}
           key={i}
-          handleClick={handleClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          dataName
+          // handleClick={handleClick}
+          // onMouseEnter={handleMouseEnter}
+          // onMouseLeave={handleMouseLeave}
+          // dataName
         />
       ))}
     </div>

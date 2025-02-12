@@ -1,28 +1,10 @@
-import { useState } from 'react'
 import { useSelector } from 'react-redux'
-// import CardMiniPuzzle from './CardMiniPuzzle/CardMiniPuzzle'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import './CardsList.scss'
-// import MiniPolyCards from './CardMiniSections/MiniPolyCards/MiniPolyCards'
-import scaleSizeCardMini from '../../data/ratioCardCardMini.json'
 
-const CardsList = ({
-  name,
-  hover,
-  dimensionHeight,
-  dimensionWidth,
-  handleClick,
-}) => {
+const CardsList = () => {
   const sectionCardEdit = useSelector((state) => state.cardEdit)
-
-  const sizeCardMini = {
-    height: Number((dimensionHeight * scaleSizeCardMini.cardmini).toFixed(2)),
-    width: Number(
-      (dimensionHeight * scaleSizeCardMini.cardmini * 1.42).toFixed(2)
-    ),
-  }
-
-  // const cardMiniPuzzleRef = useRef(null)
+  const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
 
   const listSelectedSections = []
   for (let section in sectionCardEdit) {
@@ -30,14 +12,12 @@ const CardsList = ({
       switch (section) {
         case 'cardphoto':
           if (sectionCardEdit[section].url) {
-            listSelectedSections.push({ section, number: 1, zIndex: 5 })
-            // listSelectedSections.push(`1-${section}`)
+            listSelectedSections.push({ section, number: 0, zIndex: 5 })
           }
           break
         case 'cardtext':
           if (sectionCardEdit[section].text[0].children[0].text) {
-            listSelectedSections.push({ section, number: 2, zIndex: 4 })
-            // listSelectedSections.push(`2-${section}`)
+            listSelectedSections.push({ section, number: 1, zIndex: 4 })
           }
           break
         case 'envelope':
@@ -48,20 +28,17 @@ const CardsList = ({
             sectionCardEdit[section].toaddress.country !== '' ||
             sectionCardEdit[section].toaddress.name !== ''
           ) {
-            listSelectedSections.push({ section, number: 3, zIndex: 3 })
-            // listSelectedSections.push(`3-${section}`)
+            listSelectedSections.push({ section, number: 2, zIndex: 3 })
           }
           break
         case 'date':
           if (sectionCardEdit[section]) {
-            listSelectedSections.push({ section, number: 4, zIndex: 2 })
-            // listSelectedSections.push(`4-${section}`)
+            listSelectedSections.push({ section, number: 3, zIndex: 2 })
           }
           break
         case 'aroma':
           if (sectionCardEdit[section]) {
-            listSelectedSections.push({ section, number: 5, zIndex: 1 })
-            // listSelectedSections.push(`5-${section}`)
+            listSelectedSections.push({ section, number: 4, zIndex: 1 })
           }
           break
         default:
@@ -75,18 +52,11 @@ const CardsList = ({
 
   return (
     <div className="cards-list">
-      {/* <CardMiniPuzzle
-        // ref={cardMiniPuzzleRef}
-        hover={hover}
-        listSelectedSections={listSelectedSections}
-        sizeCardMini={sizeCardMini}
-        calcHeightMinicard={setHeightMinicard}
-      /> */}
       <div
         className="mini-poly-cards"
         style={{
-          width: `${sizeCardMini.width + (sizeCardMini.width * 4) / 10}px`,
-          height: `${sizeCardMini.height}px`,
+          width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 10}px`,
+          height: `${sizeMiniCard.height}px`,
         }}
       >
         {listSortSelectedSections.length !== 0 ? (
@@ -95,20 +65,16 @@ const CardsList = ({
               key={`mini-poly-${selectedSection.section}-${i}`}
               sectionInfo={selectedSection}
               valueSection={sectionCardEdit[selectedSection.section]}
-              sizeCardMini={sizeCardMini}
-              handleClick={handleClick}
-              index={i}
+              sizeCardMini={sizeMiniCard}
               polyCards={true}
-              hover={hover}
-              sectionClick={name}
             />
           ))
         ) : (
           <div
             className="pattern-mini-card"
             style={{
-              width: `${sizeCardMini.width}px`,
-              height: `${sizeCardMini.height}px`,
+              width: `${sizeMiniCard.width}px`,
+              height: `${sizeMiniCard.height}px`,
             }}
           ></div>
         )}
@@ -119,8 +85,7 @@ const CardsList = ({
             key={`card-mini-${selectedSection.section}-${i}`}
             sectionInfo={selectedSection}
             valueSection={sectionCardEdit[selectedSection.section]}
-            sizeCardMini={sizeCardMini}
-            handleClick={handleClick}
+            sizeCardMini={sizeMiniCard}
             polyCards={false}
           />
         ))

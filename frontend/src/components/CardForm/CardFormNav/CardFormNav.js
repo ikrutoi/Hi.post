@@ -1,47 +1,33 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useSelector } from 'react-redux'
 import Toolbar from './Toolbar/Toolbar'
 import ToolbarDate from './Toolbar/ToolbarDate/ToolbarDate'
 import './CardFormNav.scss'
 
-const CardFormNav = ({
-  name,
-  sizeCard,
-  toolbarColor,
-  setToolbarColorActive,
-  // handleClickBtnNav,
-  // handleClickColor,
-  setCardFormNav,
-}) => {
-  const sections = useSelector((state) => state.cardEdit)
-  const sectionDate = sections.date
+const CardFormNav = ({ toolbarColor, setToolbarColorActive }) => {
+  const sectionDate = useSelector((state) => state.cardEdit.date)
+  const layoutChoiceSection = useSelector((state) => state.layout.choiceSection)
+  const sizeCard = useSelector((state) => state.layout.sizeCard)
 
   const cardFormNavRef = useRef(null)
 
-  useEffect(() => {
-    if (cardFormNavRef.current) {
-      setCardFormNav(cardFormNavRef.current)
-    }
-  }, [cardFormNavRef, setCardFormNav])
-
   const section = (name) => {
     switch (name) {
-      case 'Cardphoto':
-        return <Toolbar nameSection={name.toLowerCase()} />
-      case 'Cardtext':
+      case 'cardphoto':
+        return <Toolbar nameSection={name} />
+      case 'cardtext':
         return (
           <Toolbar
-            nameSection={name.toLowerCase()}
+            nameSection={name}
             toolbarColor={toolbarColor}
             setToolbarColorActive={setToolbarColorActive}
-            // handleClickBtnNav={handleClickBtnNav}
           />
         )
-      case 'Date':
+      case 'date':
         if (sectionDate) {
-          return
+          return <ToolbarDate choice={true} />
         } else {
-          return <ToolbarDate />
+          return <ToolbarDate choice={false} />
         }
 
       default:
@@ -53,9 +39,9 @@ const CardFormNav = ({
     <div
       ref={cardFormNavRef}
       className="card-form-nav"
-      style={{ width: `${sizeCard && sizeCard.width}px` }}
+      style={{ width: `${sizeCard.width}px` }}
     >
-      {section(name.name)}
+      {section(layoutChoiceSection.nameSection)}
     </div>
   )
 }
