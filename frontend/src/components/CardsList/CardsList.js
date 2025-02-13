@@ -13,12 +13,12 @@ const CardsList = () => {
       switch (section) {
         case 'cardphoto':
           if (sectionCardEdit[section].url) {
-            listSelectedSections.push({ section, number: 0, zIndex: 5 })
+            listSelectedSections.push({ section, position: 0 })
           }
           break
         case 'cardtext':
           if (sectionCardEdit[section].text[0].children[0].text) {
-            listSelectedSections.push({ section, number: 1, zIndex: 4 })
+            listSelectedSections.push({ section, position: 1 })
           }
           break
         case 'envelope':
@@ -29,17 +29,17 @@ const CardsList = () => {
             sectionCardEdit[section].toaddress.country !== '' ||
             sectionCardEdit[section].toaddress.name !== ''
           ) {
-            listSelectedSections.push({ section, number: 2, zIndex: 3 })
+            listSelectedSections.push({ section, position: 2 })
           }
           break
         case 'date':
           if (sectionCardEdit[section]) {
-            listSelectedSections.push({ section, number: 3, zIndex: 2 })
+            listSelectedSections.push({ section, position: 3 })
           }
           break
         case 'aroma':
           if (sectionCardEdit[section]) {
-            listSelectedSections.push({ section, number: 4, zIndex: 1 })
+            listSelectedSections.push({ section, position: 4 })
           }
           break
         default:
@@ -48,7 +48,7 @@ const CardsList = () => {
     }
   }
   const listSortSelectedSections = listSelectedSections.sort(
-    (a, b) => a.number - b.number
+    (a, b) => a.position - b.position
   )
 
   const getListPrioritySections = () => {
@@ -81,7 +81,8 @@ const CardsList = () => {
               sectionInfo={selectedSection}
               valueSection={sectionCardEdit[selectedSection.section]}
               sizeCardMini={sizeMiniCard}
-              polyCards={listPrioritySections}
+              // polyCards={listPrioritySections}
+              polyInfo={[listPrioritySections.length - i, i]}
             />
           ))
         ) : (
@@ -101,7 +102,8 @@ const CardsList = () => {
             sectionInfo={selectedSection}
             valueSection={sectionCardEdit[selectedSection.section]}
             sizeCardMini={sizeMiniCard}
-            polyCards={false}
+            // polyCards={false}
+            polyInfo={false}
           />
         ))
       ) : (

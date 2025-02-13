@@ -11,12 +11,13 @@ import { addChoiceSection } from '../../../redux/layout/actionCreators'
 const CardMiniSection = ({
   valueSection,
   sizeCardMini,
-  polyCards,
+  polyInfo,
   sectionInfo,
+  // zIndex,
 }) => {
-  const cardMiniSectionRef = useRef(null)
   const dispatch = useDispatch()
-  const choiceSection = useSelector((state) => state.layout.choiceSection)
+  const cardMiniSectionRef = useRef(null)
+  const offsetXPolyMiniCards = sizeCardMini.width / 10
 
   const handleClickSection = (evt) => {
     const parentName = evt.target.closest('.card-mini-section').dataset.name
@@ -24,41 +25,6 @@ const CardMiniSection = ({
       addChoiceSection({ source: 'miniCardPuzzle', nameSection: parentName })
     )
   }
-
-  // const [startSectionZIndex, setStartSectionZIndex] = useState(null)
-
-  const prioritySectors = (section) => {
-    // console.log('polyCards', polyCards)
-    const offsetX = sizeCardMini.width / 10
-    const orderOfSections = {
-      cardphoto: 0,
-      cardtext: 1,
-      envelope: 2,
-      date: 3,
-      aroma: 4,
-    }
-    // const numberOffsetX = orderOfSections[choiceSection.nameSection]
-
-    const indexSelectorSection = polyCards.findIndex(
-      (el) => el.section === choiceSection.nameSection
-    )
-
-    // if (indexSelectorSection === 0) {
-    //   console.log('index', indexSelectorSection)
-    // }
-  }
-
-  useEffect(() => {
-    if (
-      polyCards &&
-      choiceSection.source === 'cardPuzzle' &&
-      cardMiniSectionRef.current.dataset.name === choiceSection.nameSection
-    ) {
-      // console.log('sectionInfo', sectionInfo)
-      // console.log('choiceSection', choiceSection)
-      cardMiniSectionRef.current.style.left = '0'
-    }
-  }, [sectionInfo, polyCards, choiceSection])
 
   const renderSection = (section, valueSection) => {
     switch (section) {
@@ -110,23 +76,18 @@ const CardMiniSection = ({
     <div
       className={`card-mini-section card-mini-${sectionInfo.section} `}
       style={{
-        left: polyCards ? prioritySectors(sectionInfo.section) : '0',
+        left: polyInfo ? `${polyInfo[1] * offsetXPolyMiniCards}px` : '0',
         padding: sectionInfo.section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeCardMini.width}px`,
         height: `${sizeCardMini.height}px`,
-        zIndex:
-          polyCards && sectionInfo.section === choiceSection.nameSection
-            ? // &&
-              // sectionClick.source === 'miniCards'
-              6
-            : sectionInfo.zIndex,
+        zIndex: polyInfo ? polyInfo[0] : 0,
       }}
       onClick={handleClickSection}
       data-name={sectionInfo.section}
       ref={cardMiniSectionRef}
     >
       {renderSection(sectionInfo.section, valueSection)}
-      {polyCards ? (
+      {polyInfo ? (
         <></>
       ) : (
         <div className="card-mini-kebab">
