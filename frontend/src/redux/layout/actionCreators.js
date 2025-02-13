@@ -34,3 +34,10 @@ export const addChoiceSection = (newSection) => {
     payload: newSection,
   }
 }
+
+export const addBtnToolbar = (newSection) => {
+  return {
+    type: a.ADD_BTN_TOOLBAR,
+    payload: newSection,
+  }
+}

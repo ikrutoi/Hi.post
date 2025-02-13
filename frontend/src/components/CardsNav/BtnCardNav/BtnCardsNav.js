@@ -2,12 +2,11 @@ import { useDispatch } from 'react-redux'
 import './BtnCardsNav.scss'
 import { addChoiceSection } from '../../../redux/layout/actionCreators'
 
-const BtnCardsNav = ({ nameNav, handleClick, onMouseEnter, onMouseLeave }) => {
-  const nameSectionLowerCase = nameNav.toLowerCase()
+const BtnCardsNav = ({ handleClick, onMouseEnter, onMouseLeave, section }) => {
+  const nameSectionLowerCase = section.name.toLowerCase()
   const dispatch = useDispatch()
 
   const handleClickBtnNav = () => {
-    // handleClick({ source: 'cardsNav', name: nameSectionLowerCase })
     dispatch(
       addChoiceSection({ source: 'btnNav', nameSection: nameSectionLowerCase })
     )
@@ -18,11 +17,11 @@ const BtnCardsNav = ({ nameNav, handleClick, onMouseEnter, onMouseLeave }) => {
       type="button"
       className="btn-nav"
       onClick={handleClickBtnNav}
-      // onMouseEnter={onMouseEnter}
-      // onMouseLeave={onMouseLeave}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       data-name={nameSectionLowerCase}
     >
-      {nameNav}
+      {section.name}
     </button>
   )
 }

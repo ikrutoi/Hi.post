@@ -1,6 +1,6 @@
 import { useRef, useState, useLayoutEffect, useEffect } from 'react'
 import useResizeObserver from '@react-hook/resize-observer'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import './App.scss'
 import Logo from './components/Logo/Logo'
 import Status from './components/Status/Status'
@@ -13,22 +13,19 @@ import {
   addSizeCard,
   addSizeMiniCard,
 } from './redux/layout/actionCreators'
+import { addBtnToolbar } from './redux/layout/actionCreators'
 
 function App() {
   const appRef = useRef()
+  const layoutBtnToolbar = useSelector((state) => state.layout.btnToolbar)
   const dispatch = useDispatch()
+  const [colorToolbar, setColorToolbar] = useState(null)
 
-  const [toolbarColor, setToolbarColor] = useState(false)
-  const [toolbarColorActive, setToolbarColorActive] = useState(false)
-
-  // const handleMouseEnter = (e) => {
-  //   setBtnNavHover(e.target.textContent)
-  //   // dispatch(addBtnNavHover(e.target.textContent.toLowerCase()))
-  // }
-  // const handleMouseLeave = () => {
-  //   setBtnNavHover('')
-  //   // dispatch(addBtnNavHover(null))
-  // }
+  useEffect(() => {
+    if (layoutBtnToolbar.firstBtn === 'color') {
+      setColorToolbar(true)
+    }
+  }, [layoutBtnToolbar])
 
   const useSize = (target) => {
     const [size, setSize] = useState()
@@ -41,20 +38,16 @@ function App() {
     return size
   }
 
-  useEffect(() => {
-    if (toolbarColorActive) {
-      setToolbarColor(true)
-    }
-  }, [toolbarColorActive])
-
   const handleAppClick = (evt) => {
-    if (toolbarColor) {
+    if (colorToolbar) {
       if (
         !evt.target.classList.contains('toolbar-color') &&
         !evt.target.classList.contains('toolbar-more')
       ) {
-        setToolbarColor(false)
-        setToolbarColorActive(false)
+        setColorToolbar(false)
+        dispatch(
+          addBtnToolbar({ firstBtn: null, secondBtn: null, section: null })
+        )
       }
     }
   }
@@ -101,12 +94,7 @@ function App() {
         <CardsNav />
         <div className="form" ref={target}>
           {size && <CardsList />}
-          {size && (
-            <CardForm
-              toolbarColor={toolbarColor}
-              setToolbarColorActive={setToolbarColorActive}
-            />
-          )}
+          {size && <CardForm />}
         </div>
       </main>
     </div>

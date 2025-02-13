@@ -6,9 +6,10 @@ import listColor from '../../../../../data/cardtext/list-toolbar-color.json'
 import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 // import { addCardtext } from '../../../../../../redux/cardEdit/actionCreators'
 
-const ToolbarColor = ({ color }) => {
+const ToolbarColor = ({ handleClickBtnToolbar }) => {
   const handleClick = (evt) => {
     handleClickColor(evt)
+    handleClickBtnToolbar(evt)
   }
 
   const dispatch = useDispatch()
@@ -21,27 +22,27 @@ const ToolbarColor = ({ color }) => {
       })
     )
   }
-  // console.log('**', tooltip)
-  // useEffect(() => {
-  //   // if (btnTooltipRef.current) {
-  //     const widthBtn = btnTooltipRef.current.offsetWidth
-  //     const calcLeft = tooltip.left - widthBtn / 2 + tooltip.widthbtn / 2
-  //     setLeftBtnTooltip(calcLeft)
-  //     setIsVisibility('visible')
-  //   // }
-  // }, [tooltip])
+
   return (
     <div className="toolbar-color">
       {listColor.map((el, i) => {
         return (
-          <span
-            key={`${el.name}-${i}`}
-            className="toolbar-more-btn"
-            style={{ backgroundColor: el.code }}
-            data-color-name={el.name}
-            data-color-type={el.code}
-            onClick={handleClick}
-          ></span>
+          <button
+            className="toolbar-btn"
+            key={`toolbar-color-${i}`}
+            data-section="cardtext"
+            data-tooltip={`color`}
+            data-additional={`${el.name}-${el.code}`}
+          >
+            <span
+              key={`${el.name}-${i}`}
+              className="toolbar-more-btn"
+              style={{ backgroundColor: el.code }}
+              data-color-name={el.name}
+              data-color-type={el.code}
+              onClick={handleClick}
+            ></span>
+          </button>
         )
       })}
     </div>

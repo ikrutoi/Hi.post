@@ -12,6 +12,11 @@ const initialState = {
   remSize: null,
   // btnNavHover: null,
   choiceSection: { source: null, nameSection: null },
+  btnToolbar: {
+    firstBtn: null,
+    secondBtn: null,
+    section: null,
+  },
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -22,6 +27,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         sizeMiniCard: { ...state.sizeMiniCard, ...action.payload },
+      }
+    case a.ADD_BTN_TOOLBAR:
+      return {
+        ...state,
+        btnToolbar: { ...state.btnToolbar, ...action.payload },
       }
     case a.ADD_REMSIZE:
       return { ...state, remSize: action.payload }

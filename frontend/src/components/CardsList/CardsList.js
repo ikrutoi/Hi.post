@@ -70,7 +70,7 @@ const CardsList = () => {
       <div
         className="mini-poly-cards"
         style={{
-          width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 10}px`,
+          width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 12}px`,
           height: `${sizeMiniCard.height}px`,
         }}
       >

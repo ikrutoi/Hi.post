@@ -7,6 +7,7 @@ import MiniDate from './MiniDate/MiniDate'
 import MiniAroma from './MiniAroma/MiniAroma'
 import MiniPhoto from './MiniPhoto/MiniPhoto'
 import { addChoiceSection } from '../../../redux/layout/actionCreators'
+import listNavSections from '../../../data/cardsNav/navList.json'
 
 const CardMiniSection = ({
   valueSection,
@@ -17,7 +18,7 @@ const CardMiniSection = ({
 }) => {
   const dispatch = useDispatch()
   const cardMiniSectionRef = useRef(null)
-  const offsetXPolyMiniCards = sizeCardMini.width / 10
+  const offsetXPolyMiniCards = sizeCardMini.width / 12
 
   const handleClickSection = (evt) => {
     const parentName = evt.target.closest('.card-mini-section').dataset.name
@@ -25,6 +26,19 @@ const CardMiniSection = ({
       addChoiceSection({ source: 'miniCardPuzzle', nameSection: parentName })
     )
   }
+
+  const [colorBkg, setColorBkg] = useState(null)
+
+  // useEffect(() => {
+  //   if (polyInfo[1] !== 0) {
+  //     const navSection = listNavSections.find(
+  //       (el) => el.name.toLowerCase() === sectionInfo.section
+  //     )
+  //     if (navSection) {
+  //       setColorBkg(navSection.colorRGBA)
+  //     }
+  //   }
+  // }, [polyInfo, sectionInfo])
 
   const renderSection = (section, valueSection) => {
     switch (section) {
@@ -74,8 +88,9 @@ const CardMiniSection = ({
 
   return (
     <div
-      className={`card-mini-section card-mini-${sectionInfo.section} `}
+      className={`card-mini-section card-mini-${sectionInfo.section}`}
       style={{
+        backgroundColor: polyInfo ? colorBkg : '',
         left: polyInfo ? `${polyInfo[1] * offsetXPolyMiniCards}px` : '0',
         padding: sectionInfo.section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeCardMini.width}px`,

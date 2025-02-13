@@ -19,10 +19,11 @@ const Toolbar = ({
   nameSection,
   setToolbarColorActive,
   // handleClickToolbar,
-  // handleClickColor,
-  toolbarColor,
+  handleClickBtnToolbar,
 }) => {
   const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
+  const layoutBtnToolbar = useSelector((state) => state.layout.btnToolbar)
+  const [toolbarColor, setToolbarColor] = useState(null)
   // const [tooltip, setTooltip] = useState(null)
   const dispatch = useDispatch()
   const [listBtns, setListBtns] = useState(null)
@@ -40,6 +41,16 @@ const Toolbar = ({
         break
     }
   }, [nameSection])
+
+  useEffect(() => {
+    if (layoutBtnToolbar.firstBtn === 'color') {
+      setToolbarColor(true)
+    } else {
+      if (toolbarColor) {
+        setToolbarColor(false)
+      }
+    }
+  }, [layoutBtnToolbar, toolbarColor])
 
   // const handleMouseEnter = (evt) => {
   //   const toolbarElement = document.querySelector('.toolbar')
@@ -79,6 +90,7 @@ const Toolbar = ({
   // }, [btnRefs])
 
   const handleClickToolbar = async (evt, i, section) => {
+    handleClickBtnToolbar(evt)
     const searchParentBtnNav = (el) => {
       if (el.classList.contains('toolbar-btn')) {
         return el
@@ -93,9 +105,9 @@ const Toolbar = ({
     // handleClickBtnNav(parentBtnNav)
     const btnTooltip = parentBtnNav.dataset.tooltip
 
-    if (btnTooltip === 'color') {
-      setToolbarColorActive(true)
-    }
+    // if (btnTooltip === 'color') {
+    //   setToolbarColorActive(true)
+    // }
     if (
       btnTooltip === 'left' ||
       btnTooltip === 'center' ||
@@ -216,6 +228,7 @@ const Toolbar = ({
                 <button
                   className={`toolbar-btn toolbar-btn-${nameSection} toolbar--${btn}`}
                   data-tooltip={btn}
+                  data-section={nameSection}
                   key={i}
                   // ref={btnRefs.current[i]}
                   onClick={(event) => handleClickToolbar(event, i, nameSection)}
@@ -238,6 +251,7 @@ const Toolbar = ({
               <button
                 className={`toolbar-btn toolbar-btn-${nameSection} toolbar--${btn}`}
                 data-tooltip={btn}
+                data-section={nameSection}
                 key={i}
                 // ref={btnRefs.current[i]}
                 onClick={(event) => handleClickToolbar(event, i, nameSection)}
@@ -253,7 +267,7 @@ const Toolbar = ({
         {toolbarColor && (
           <ToolbarColor
             color={toolbarColor.color}
-            // handleClickColor={handleClickColor}
+            handleClickBtnToolbar={handleClickBtnToolbar}
           />
         )}
       </div>

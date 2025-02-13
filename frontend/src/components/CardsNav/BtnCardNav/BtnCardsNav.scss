@@ -2,7 +2,7 @@
   display: flex;
   margin-top: 1rem;
   padding: 0.5rem;
-  background-color: white;
+  // background-color: white;
   border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
@@ -10,10 +10,10 @@
   // border: solid 1px rgb(180, 180, 180);
 }
 
-.btn-nav:hover {
-  background-color: rgb(238, 238, 238);
-  // border-color: red;
-}
+// .btn-nav:hover {
+//   background-color: rgb(238, 238, 238);
+//   // border-color: red;
+// }
 
 .cards-nav .btn-nav:first-child {
   margin-top: 0;
