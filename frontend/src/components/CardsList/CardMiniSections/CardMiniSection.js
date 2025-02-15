@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 import './CardMiniSection.scss'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
@@ -14,7 +14,7 @@ const CardMiniSection = ({
   sizeCardMini,
   polyInfo,
   sectionInfo,
-  // zIndex,
+  choiceSection,
 }) => {
   const dispatch = useDispatch()
   const cardMiniSectionRef = useRef(null)
@@ -29,16 +29,18 @@ const CardMiniSection = ({
 
   const [colorBkg, setColorBkg] = useState(null)
 
-  // useEffect(() => {
-  //   if (polyInfo[1] !== 0) {
-  //     const navSection = listNavSections.find(
-  //       (el) => el.name.toLowerCase() === sectionInfo.section
-  //     )
-  //     if (navSection) {
-  //       setColorBkg(navSection.colorRGBA)
-  //     }
-  //   }
-  // }, [polyInfo, sectionInfo])
+  useEffect(() => {
+    if (choiceSection.nameSection !== sectionInfo.section) {
+      const navSection = listNavSections.find(
+        (el) => el.name.toLowerCase() === sectionInfo.section
+      )
+      if (navSection) {
+        setColorBkg(navSection.colorRGBA)
+      }
+    } else {
+      setColorBkg('rgba(255, 255, 255, 0)')
+    }
+  }, [polyInfo, sectionInfo, choiceSection.nameSection])
 
   const renderSection = (section, valueSection) => {
     switch (section) {
@@ -90,7 +92,6 @@ const CardMiniSection = ({
     <div
       className={`card-mini-section card-mini-${sectionInfo.section}`}
       style={{
-        backgroundColor: polyInfo ? colorBkg : '',
         left: polyInfo ? `${polyInfo[1] * offsetXPolyMiniCards}px` : '0',
         padding: sectionInfo.section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeCardMini.width}px`,
@@ -102,6 +103,12 @@ const CardMiniSection = ({
       ref={cardMiniSectionRef}
     >
       {renderSection(sectionInfo.section, valueSection)}
+      <span
+        className="card-mini-color-filter"
+        style={{
+          backgroundColor: colorBkg ? colorBkg : '',
+        }}
+      ></span>
       {polyInfo ? (
         <></>
       ) : (

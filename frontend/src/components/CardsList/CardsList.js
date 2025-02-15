@@ -83,6 +83,7 @@ const CardsList = () => {
               sizeCardMini={sizeMiniCard}
               // polyCards={listPrioritySections}
               polyInfo={[listPrioritySections.length - i, i]}
+              choiceSection={choiceSection}
             />
           ))
         ) : (
@@ -104,6 +105,7 @@ const CardsList = () => {
             sizeCardMini={sizeMiniCard}
             // polyCards={false}
             polyInfo={false}
+            choiceSection={choiceSection}
           />
         ))
       ) : (

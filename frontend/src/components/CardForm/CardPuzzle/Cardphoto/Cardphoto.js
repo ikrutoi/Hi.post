@@ -1,9 +1,10 @@
 import { useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import './Cardphoto.scss'
-import ImgBkg from './ImgBkg/ImgBkg'
-import ImgEditor from './ImgEditor/ImgEditor'
+// import ImgBkg from './ImgBkg/ImgBkg'
+// import ImgEditor from './ImgEditor/ImgEditor'
 import imgStart from '../../../../data/cardphoto/photo-start-1206-862.jpg'
+import ImageCrop from './ImageCrop/ImageCrop'
 
 const Cardphoto = ({ sizeCard, setChoiceSection }) => {
   const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
@@ -19,10 +20,12 @@ const Cardphoto = ({ sizeCard, setChoiceSection }) => {
 
   return (
     <div className="cardphoto">
-      <ImgEditor
+      <ImageCrop sizeCard={sizeCard} />
+      {/* <ImgEditor
         style={{ width: `${sizeCard.width}px`, height: `${sizeCard.height}px` }}
-      />
-      <ImgBkg src={src} />
+      /> */}
+
+      {/* <ImgBkg src={src} /> */}
     </div>
   )
 }

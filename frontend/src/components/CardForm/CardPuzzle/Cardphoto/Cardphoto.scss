@@ -4,3 +4,21 @@
   height: auto;
   // border: solid 1px blue;
 }
+
+.cropped-img-container {
+  position: absolute;
+  top: 0;
+}
+
+.ReactCrop__child-wrapper,
+.ReactCrop__crop-selection {
+  height: 100%;
+  width: 100%;
+  border: solid 1px blue;
+}
+
+.ReactCrop__drag-handle {
+  height: 2rem;
+  // height: 100%;
+  border: solid 1px red;
+}

@@ -199,8 +199,8 @@ const Toolbar = ({
     )
   }
 
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0]
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0]
     if (db) {
       await addFileToDB(db, file)
     }
@@ -231,7 +231,7 @@ const Toolbar = ({
                   data-section={nameSection}
                   key={i}
                   // ref={btnRefs.current[i]}
-                  onClick={(event) => handleClickToolbar(event, i, nameSection)}
+                  onClick={(e) => handleClickToolbar(e, i, nameSection)}
                   // onMouseEnter={handleMouseEnter}
                   // onMouseLeave={handleMouseLeave}
                 >
@@ -254,7 +254,7 @@ const Toolbar = ({
                 data-section={nameSection}
                 key={i}
                 // ref={btnRefs.current[i]}
-                onClick={(event) => handleClickToolbar(event, i, nameSection)}
+                onClick={(e) => handleClickToolbar(e, i, nameSection)}
                 // onMouseEnter={handleMouseEnter}
                 // onMouseLeave={handleMouseLeave}
               >
