@@ -97,6 +97,10 @@ const ImageCrop = ({ sizeCard }) => {
     setIsDragging(true)
     setStartPosition({ x: e.clientX - crop.x, y: e.clientY - crop.y })
     setLastMousePosition({ x: e.clientX, y: e.clientY })
+
+    window.addEventListener('mousemove', handleMouseMoveDrag)
+    window.addEventListener('mouseup', handleMouseUpDrag)
+    window.addEventListener('mouseleave', handleMouseUpDrag)
   }
 
   const handleMouseMoveDrag = (e) => {
@@ -124,6 +128,10 @@ const ImageCrop = ({ sizeCard }) => {
 
   const handleMouseUpDrag = () => {
     setIsDragging(false)
+
+    window.removeEventListener('mousemove', handleMouseMoveDrag)
+    window.removeEventListener('mouseup', handleMouseUpDrag)
+    window.removeEventListener('mouseleave', handleMouseUpDrag)
   }
 
   return (

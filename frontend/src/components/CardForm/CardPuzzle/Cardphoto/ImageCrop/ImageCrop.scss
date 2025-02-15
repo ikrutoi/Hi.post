@@ -1,6 +1,7 @@
 .crop-container {
   position: relative;
   display: inline-block;
+  user-select: none;
 }
 
 .crop-image {
