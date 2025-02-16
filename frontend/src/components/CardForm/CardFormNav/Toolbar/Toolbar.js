@@ -122,7 +122,7 @@ const Toolbar = ({
 
       switch (btnTooltip) {
         case 'download':
-          fileInputRef.current.click()
+          // fileInputRef.current.click()
           break
         case 'delete':
           dispatch(addCardphoto({ url: null, source: null }))
@@ -235,14 +235,14 @@ const Toolbar = ({
                   // onMouseEnter={handleMouseEnter}
                   // onMouseLeave={handleMouseLeave}
                 >
-                  <input
+                  {/* <input
                     ref={fileInputRef}
                     className="cardformnav-toolbar-input"
                     id="file-input"
                     key={`input-${i}`}
                     type="file"
                     onChange={handleFileChange}
-                  ></input>
+                  ></input> */}
                   {addIconToolbar(nameSection, btn)}
                 </button>
               )

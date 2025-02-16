@@ -2,31 +2,31 @@
   {
     "name": "Cardphoto",
     "colorRGB": "rgb(255, 0, 0)",
-    "colorRGBA": "rgba(255, 0, 0, 0.12)"
+    "colorRGBA": "rgba(255, 0, 0, 0.4)"
   },
   {
     "name": "Cardtext",
     "colorRGB": "rgb(255, 165, 0)",
-    "colorRGBA": "rgba(255, 165, 0, 0.12)"
+    "colorRGBA": "rgba(255, 165, 0, 0.4)"
   },
   {
     "name": "Envelope",
     "colorRGB": "rgb(255, 255, 0)",
-    "colorRGBA": "rgba(255, 255, 0, 0.12)"
+    "colorRGBA": "rgba(255, 255, 0, 0.4)"
   },
   {
     "name": "Date",
     "colorRGB": "rgb(0, 255, 0)",
-    "colorRGBA": "rgba(0, 255, 0, 0.12)"
+    "colorRGBA": "rgba(0, 255, 0, 0.4)"
   },
   {
     "name": "Aroma",
     "colorRGB": "rgb(0, 0, 255)",
-    "colorRGBA": "rgba(0, 0, 255, 0.12)"
+    "colorRGBA": "rgba(0, 0, 255, 0.4)"
   },
   {
     "name": "History",
     "colorRGB": "rgb(128, 128, 128)",
-    "colorRGBA": "rgba(128, 128, 128, 0.12)"
+    "colorRGBA": "rgba(128, 128, 128, 0.4)"
   }
 ]

@@ -10,24 +10,7 @@ const MiniPhoto = ({ sizeCardMini }) => {
 
   useEffect(() => {
     if (selectorCardphoto.url) {
-      const img = new Image()
-      img.src = selectorCardphoto.url
-      img.onload = () => {
-        const canvas = canvasRef.current
-        if (canvas) {
-          const ctx = canvas.getContext('2d')
-          canvas.width = sizeCardMini.width * 2
-          canvas.height = sizeCardMini.height * 2
-          ctx.drawImage(
-            img,
-            0,
-            0,
-            sizeCardMini.width * 2,
-            sizeCardMini.height * 2
-          )
-          setImgSrc(canvas.toDataURL('image/jpeg'))
-        }
-      }
+      setImgSrc(selectorCardphoto.url)
     }
   }, [selectorCardphoto, sizeCardMini])
 
