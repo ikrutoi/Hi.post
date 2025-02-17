@@ -1,24 +1,21 @@
 .cardphoto {
   position: relative;
-  width: 100%;
-  height: auto;
-  // border: solid 1px blue;
 }
 
-.cropped-img-container {
-  position: absolute;
-  top: 0;
-}
+// .cropped-img-container {
+//   position: absolute;
+//   top: 0;
+// }
 
-.ReactCrop__child-wrapper,
-.ReactCrop__crop-selection {
-  height: 100%;
-  width: 100%;
-  border: solid 1px blue;
-}
+// .ReactCrop__child-wrapper,
+// .ReactCrop__crop-selection {
+//   height: 100%;
+//   width: 100%;
+//   // border: solid 1px blue;
+// }
 
-.ReactCrop__drag-handle {
-  height: 2rem;
-  // height: 100%;
-  border: solid 1px red;
-}
+// .ReactCrop__drag-handle {
+//   height: 2rem;
+//   // height: 100%;
+//   // border: solid 1px red;
+// }

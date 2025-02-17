@@ -3,7 +3,11 @@ import './BtnCardsNav.scss'
 import { addChoiceSection } from '../../../redux/layout/actionCreators'
 import { useEffect, useRef, useState } from 'react'
 
-const BtnCardsNav = ({ handleClick, onMouseEnter, onMouseLeave, section }) => {
+const BtnCardsNav = ({
+  handleMouseEnterContainer,
+  handleMouseLeaveContainer,
+  section,
+}) => {
   const [heightBtnNavContainer, setHeightBtnNavContainer] = useState()
   const btnNavRef = useRef()
   const nameSectionLowerCase = section.name.toLowerCase()
@@ -22,19 +26,19 @@ const BtnCardsNav = ({ handleClick, onMouseEnter, onMouseLeave, section }) => {
   }
 
   return (
-    <div className="btn-nav-container">
+    <div
+      className="btn-nav-container"
+      onMouseEnter={() =>
+        handleMouseEnterContainer(btnNavRef.current, section.colorRGBA)
+      }
+      onMouseLeave={() => handleMouseLeaveContainer(btnNavRef.current)}
+    >
       <button
         ref={btnNavRef}
         type="button"
         className="btn-nav"
         onClick={handleClickBtnNav}
-        // onMouseEnter={onMouseEnter}
-        // onMouseLeave={onMouseLeave}
         data-name={nameSectionLowerCase}
-        style={{
-          borderTopColor: 'rgb(255, 255, 255)',
-          borderBottomColor: section.colorRGBA,
-        }}
       >
         {section.name}
       </button>

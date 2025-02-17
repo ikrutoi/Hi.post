@@ -2,22 +2,17 @@ import './CardsNav.scss'
 import BtnCardsNav from './BtnCardNav/BtnCardsNav'
 import listNavSections from '../../data/cardsNav/navList.json'
 
-const CardsNav = ({ handleClick }) => {
-  const handleMouseEnter = (e) => {
-    const navSection = listNavSections.find(
-      (el) => el.name === e.target.textContent
-    )
-    if (navSection) {
-      e.target.style.backgroundColor = navSection.colorRGBA
-    }
-    // dispatch(addBtnNavHover(e.target.textContent.toLowerCase()))
+const CardsNav = () => {
+  const handleMouseEnterContainer = (el, color) => {
+    el.style.borderBottomWidth = '1px'
+    el.style.borderBottomStyle = 'solid'
+    el.style.borderBottomColor = color
   }
 
-  const handleMouseLeave = (e) => {
-    e.target.style.backgroundColor = ''
-    // e.target.classList.remove('hover')
-    // setSectionHover('')
-    // dispatch(addBtnNavHover(null))
+  const handleMouseLeaveContainer = (el) => {
+    el.style.borderBottomWidth = '1px'
+    el.style.borderBottomStyle = 'solid'
+    el.style.borderBottomColor = 'rgb(255, 255, 255)'
   }
 
   return (
@@ -26,9 +21,8 @@ const CardsNav = ({ handleClick }) => {
         <BtnCardsNav
           section={section}
           key={i}
-          // handleClick={handleClick}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          handleMouseEnterContainer={handleMouseEnterContainer}
+          handleMouseLeaveContainer={handleMouseLeaveContainer}
         />
       ))}
     </div>

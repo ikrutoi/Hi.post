@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import './Cardphoto.scss'
 // import ImgBkg from './ImgBkg/ImgBkg'
 // import ImgEditor from './ImgEditor/ImgEditor'
-import imgStart from '../../../../data/cardphoto/photo-start-1206-862.jpg'
+import imgStart from '../../../../data/img/card-photo-bw.jpg'
 import ImageCrop from './ImageCrop/ImageCrop'
 
 const Cardphoto = ({ sizeCard, setChoiceSection }) => {
