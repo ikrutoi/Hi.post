@@ -25,6 +25,7 @@ const ImageCrop = ({ sizeCard }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0, width: 0, height: 0 })
   const layoutToolbar = useSelector((state) => state.layout.btnToolbar)
   const imgRef = useRef(null)
+  const cropAreaRef = useRef(null)
   const inputRef = useRef(null)
   const overlayRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -53,6 +54,7 @@ const ImageCrop = ({ sizeCard }) => {
         width: sizeCard.width,
         height: sizeCard.height,
       })
+      cropAreaRef.current.style.display = 'none'
       dispatch(addCardphoto({ source: 'cardPuzzle', url: croppedImage }))
     }
     if (layoutToolbar.firstBtn === 'delete') {
@@ -68,8 +70,9 @@ const ImageCrop = ({ sizeCard }) => {
           setImage({ source: 'startHiImage', url: startImage })
         }
       }
+      cropAreaRef.current.style.display = 'block'
     }
-  }, [layoutToolbar, inputRef])
+  }, [layoutToolbar, inputRef, cropAreaRef])
 
   useEffect(() => {
     const fetchImageDimensions = async (src) => {
@@ -171,6 +174,7 @@ const ImageCrop = ({ sizeCard }) => {
           />
           <div className="overlay" ref={overlayRef}></div>
           <div
+            ref={cropAreaRef}
             className="crop-area"
             style={{
               top: crop.y / scaleX,

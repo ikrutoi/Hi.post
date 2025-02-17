@@ -3,16 +3,17 @@ import BtnCardsNav from './BtnCardNav/BtnCardsNav'
 import listNavSections from '../../data/cardsNav/navList.json'
 
 const CardsNav = () => {
-  const handleMouseEnterContainer = (el, color) => {
-    el.style.borderBottomWidth = '1px'
-    el.style.borderBottomStyle = 'solid'
-    el.style.borderBottomColor = color
+  const handleMouseEnterContainer = (el, colorHover) => {
+    el.style.backgroundColor = colorHover
+    // el.style.borderBottomStyle = 'solid'
+    // el.style.borderBottomColor = color
   }
 
-  const handleMouseLeaveContainer = (el) => {
-    el.style.borderBottomWidth = '1px'
-    el.style.borderBottomStyle = 'solid'
-    el.style.borderBottomColor = 'rgb(255, 255, 255)'
+  const handleMouseLeaveContainer = (el, color) => {
+    el.style.backgroundColor = color
+    // el.style.border = 'solid 1px rgb(255, 255, 255)'
+    // el.style.borderBottomStyle = 'solid'
+    // el.style.borderBottomColor = 'rgb(255, 255, 255)'
   }
 
   return (
