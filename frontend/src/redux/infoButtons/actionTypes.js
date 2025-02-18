@@ -1,0 +1,1 @@
+export const INFO_BUTTONS = 'INFO_BUTTONS'

@@ -12,9 +12,6 @@
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   border-radius: 0.4rem;
-  // border: solid 1px green;
-  // background-color: white;
-  // background-color: rgba($color: #ffffff, $alpha: 0);
 }
 
 .toolbar-more {
@@ -33,18 +30,11 @@
   margin-left: 0.5rem;
   margin-right: 0.5rem;
   padding: 0.3rem;
-  cursor: pointer;
-  // border-radius: 0.4rem;
-  // background-color: lightgray;
-  // border: solid 1px brown;
 }
 
 .cardformnav-toolbar-icon {
   width: 1.1rem;
   height: 1.1rem;
-  color: rgb(163, 163, 163);
-  // border: solid 1px red;
-  // border: solid 1px lightgray;
 }
 
 .toolbar--font-size,
@@ -83,14 +73,6 @@
   border-radius: 2px;
   width: 0.9rem;
   height: 0.12rem;
-}
-
-.toolbar-btn:hover {
-  // background-color: rgb(241, 241, 241);
-  .cardformnav-toolbar-icon {
-    // background-color: rgb(241, 241, 241);
-    color: rgb(71, 71, 71);
-  }
 }
 
 .cardformnav-toolbar-input {

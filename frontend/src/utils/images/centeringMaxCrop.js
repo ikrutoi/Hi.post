@@ -1,15 +1,27 @@
 export const centeringMaxCrop = (dimensions, aspectRatio) => {
+  const aspectRatioImageUser = Number(
+    (dimensions.width / dimensions.height).toFixed(2)
+  )
   let x
   let y
   let width
   let height
-  if (dimensions.width / dimensions.height > aspectRatio) {
+  if (aspectRatioImageUser > aspectRatio + aspectRatio * 0.1) {
     height = dimensions.height
     width = height * aspectRatio
     y = 0
     x = (dimensions.width - width) / 2
   }
-  if (dimensions.width / dimensions.height <= aspectRatio) {
+  if (
+    aspectRatioImageUser >= aspectRatio &&
+    aspectRatioImageUser <= aspectRatio + aspectRatio * 0.1
+  ) {
+    width = dimensions.width * 0.95
+    height = (width / aspectRatio) * 0.95
+    x = (dimensions.width * 0.05) / 2
+    y = dimensions.height * 0.05
+  }
+  if (aspectRatioImageUser < aspectRatio) {
     width = dimensions.width
     height = width / aspectRatio
     x = 0

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './ImageCrop.scss'
 import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
+import { addBtnToolbar } from '../../../../../redux/layout/actionCreators'
+import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import startImage from '../../../../../data/img/card-photo-bw.jpg'
 import { updateClipPath } from '../../../../../utils/images/updateClipPath'
 import { loadImageDimensions } from '../../../../../utils/images/loadImageDimensions'
@@ -13,6 +15,7 @@ import { handleMouseDownResize } from '../../../../../utils/events/handleMouseDo
 import { centeringMaxCrop } from '../../../../../utils/images/centeringMaxCrop'
 import { adjustImageSize } from '../../../../../utils/images/adjustImageSize'
 import { handleFileChange } from '../../../../../utils/events/handleFileChange'
+import { is } from 'immutable'
 
 const ImageCrop = ({ sizeCard }) => {
   const [image, setImage] = useState({
@@ -30,15 +33,23 @@ const ImageCrop = ({ sizeCard }) => {
   const overlayRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
+  const [isDisplayCrop, setIsDisplayCrop] = useState(false)
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 })
   const dispatch = useDispatch()
   const aspectRatio = 142 / 100
 
-  useEffect(() => {
-    if (layoutToolbar.firstBtn === 'download' && inputRef.current) {
+  const handleDownload = () => {
+    if (inputRef.current) {
       inputRef.current.click()
     }
-    if (layoutToolbar.firstBtn === 'save') {
+  }
+
+  useEffect(() => {
+    console.log('image', image.source)
+  }, [image])
+
+  const handleSave = () => {
+    if (isDisplayCrop) {
       const croppedImage = getCroppedImage(
         imgRef,
         crop,
@@ -54,25 +65,66 @@ const ImageCrop = ({ sizeCard }) => {
         width: sizeCard.width,
         height: sizeCard.height,
       })
-      cropAreaRef.current.style.display = 'none'
       dispatch(addCardphoto({ source: 'cardPuzzle', url: croppedImage }))
-    }
-    if (layoutToolbar.firstBtn === 'delete') {
-      const sourceImage = image.source.split('-')
-      if (sourceImage.length > 1) {
-        setImage({
-          source: `${sourceImage[0]}`,
-          url: sourceImage[0] === 'startUserImage' ? originalImage : startImage,
-        })
+      if (isDisplayCrop) {
+        setIsDisplayCrop(false)
       }
-      if (sourceImage.length === 1) {
-        if (image.source === 'startUserImage') {
-          setImage({ source: 'startHiImage', url: startImage })
-        }
-      }
-      cropAreaRef.current.style.display = 'block'
+      dispatch(infoButtons({ crop: false }))
     }
-  }, [layoutToolbar, inputRef, cropAreaRef])
+  }
+
+  const handleDelete = () => {
+    const sourceImage = image.source.split('-')
+    if (isDisplayCrop) {
+      setIsDisplayCrop(false)
+      return
+    }
+    if (sourceImage.length > 1) {
+      setImage({
+        source: `${sourceImage[0]}`,
+        url: sourceImage[0] === 'startUserImage' ? originalImage : startImage,
+      })
+      dispatch(addCardphoto({ url: null, source: null }))
+    }
+    if (sourceImage.length === 1) {
+      if (image.source === 'startUserImage') {
+        setImage({ source: 'startHiImage', url: startImage })
+        setOriginalImage(null)
+        dispatch(addCardphoto({ url: null, source: null }))
+      }
+    }
+    dispatch(infoButtons({ crop: false }))
+  }
+
+  const handleCrop = () => {
+    if (isDisplayCrop) {
+      setIsDisplayCrop(false)
+      dispatch(infoButtons({ crop: false }))
+    } else {
+      setIsDisplayCrop(true)
+      dispatch(infoButtons({ crop: true }))
+    }
+  }
+
+  useEffect(() => {
+    switch (layoutToolbar.firstBtn) {
+      case 'download':
+        handleDownload()
+        break
+      case 'save':
+        handleSave()
+        break
+      case 'delete':
+        handleDelete()
+        break
+      case 'crop':
+        handleCrop()
+        break
+
+      default:
+        break
+    }
+  }, [layoutToolbar])
 
   useEffect(() => {
     const fetchImageDimensions = async (src) => {
@@ -113,7 +165,7 @@ const ImageCrop = ({ sizeCard }) => {
       fetchImageDimensions(startImage)
       setImage({ source: 'startHiImage', url: startImage })
     }
-  }, [image, sizeCard])
+  }, [image, sizeCard, aspectRatio])
 
   useEffect(() => {
     if (image) {
@@ -172,7 +224,11 @@ const ImageCrop = ({ sizeCard }) => {
             alt="Source"
             className="crop-image"
           />
-          <div className="overlay" ref={overlayRef}></div>
+          <div
+            className="overlay"
+            ref={overlayRef}
+            style={{ display: isDisplayCrop ? 'block' : 'none' }}
+          ></div>
           <div
             ref={cropAreaRef}
             className="crop-area"
@@ -181,6 +237,7 @@ const ImageCrop = ({ sizeCard }) => {
               left: crop.x / scaleY,
               width: crop.width / scaleX,
               height: crop.height / scaleY,
+              display: isDisplayCrop ? 'block' : 'none',
             }}
             onMouseDown={(e) =>
               handleMouseDownDrag(

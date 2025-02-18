@@ -6,6 +6,7 @@ export const handleFileChange = (e, setImage, setOriginalImage) => {
       const imageDataUrl = reader.result
       setImage({ source: 'startUserImage', url: imageDataUrl })
       setOriginalImage(imageDataUrl)
+      e.target.value = ''
     }
     reader.readAsDataURL(file)
   }

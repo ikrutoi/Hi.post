@@ -25,31 +25,15 @@ const CardFormNav = () => {
   const cardFormNavRef = useRef(null)
 
   const section = (name) => {
-    switch (name) {
-      case 'cardphoto':
-        return (
-          <Toolbar
-            nameSection={name}
-            handleClickBtnToolbar={handleClickBtnToolbar}
-          />
-        )
-      case 'cardtext':
-        return (
-          <Toolbar
-            nameSection={name}
-            handleClickBtnToolbar={handleClickBtnToolbar}
-          />
-        )
-      case 'date':
-        if (sectionDate) {
-          return <ToolbarDate choice={true} />
-        } else {
-          return <ToolbarDate choice={false} />
-        }
-
-      default:
-        break
+    if (name === 'date') {
+      return <ToolbarDate choice={sectionDate ? true : false} />
     }
+    return (
+      <Toolbar
+        nameSection={name}
+        handleClickBtnToolbar={handleClickBtnToolbar}
+      />
+    )
   }
 
   return (
