@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './ImageCrop.scss'
 import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
-import { addBtnToolbar } from '../../../../../redux/layout/actionCreators'
+import { addOriginalImage } from '../../../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import startImage from '../../../../../data/img/card-photo-bw.jpg'
 import { updateClipPath } from '../../../../../utils/images/updateClipPath'
@@ -15,18 +15,22 @@ import { handleMouseDownResize } from '../../../../../utils/events/handleMouseDo
 import { centeringMaxCrop } from '../../../../../utils/images/centeringMaxCrop'
 import { adjustImageSize } from '../../../../../utils/images/adjustImageSize'
 import { handleFileChange } from '../../../../../utils/events/handleFileChange'
-import { is } from 'immutable'
 
 const ImageCrop = ({ sizeCard }) => {
-  const [image, setImage] = useState({
-    source: 'startHiImage',
-    url: startImage,
-  })
+  const layoutToolbar = useSelector((state) => state.layout.btnToolbar)
+  const cardphoto = useSelector((state) => state.cardEdit.cardphoto)
+  const [image, setImage] = useState(
+    cardphoto.url
+      ? cardphoto
+      : {
+          source: 'startImage',
+          url: startImage,
+        }
+  )
   const [scaleX, setScaleX] = useState(1)
   const [scaleY, setScaleY] = useState(1)
   const [originalImage, setOriginalImage] = useState(null)
   const [crop, setCrop] = useState({ x: 0, y: 0, width: 0, height: 0 })
-  const layoutToolbar = useSelector((state) => state.layout.btnToolbar)
   const imgRef = useRef(null)
   const cropAreaRef = useRef(null)
   const inputRef = useRef(null)
@@ -43,10 +47,6 @@ const ImageCrop = ({ sizeCard }) => {
       inputRef.current.click()
     }
   }
-
-  useEffect(() => {
-    console.log('image', image.source)
-  }, [image])
 
   const handleSave = () => {
     if (isDisplayCrop) {
@@ -65,7 +65,7 @@ const ImageCrop = ({ sizeCard }) => {
         width: sizeCard.width,
         height: sizeCard.height,
       })
-      dispatch(addCardphoto({ source: 'cardPuzzle', url: croppedImage }))
+      dispatch(addCardphoto({ source: `${source}-save`, url: croppedImage }))
       if (isDisplayCrop) {
         setIsDisplayCrop(false)
       }
@@ -82,13 +82,13 @@ const ImageCrop = ({ sizeCard }) => {
     if (sourceImage.length > 1) {
       setImage({
         source: `${sourceImage[0]}`,
-        url: sourceImage[0] === 'startUserImage' ? originalImage : startImage,
+        url: sourceImage[0] === 'userImage' ? originalImage : startImage,
       })
       dispatch(addCardphoto({ url: null, source: null }))
     }
     if (sourceImage.length === 1) {
-      if (image.source === 'startUserImage') {
-        setImage({ source: 'startHiImage', url: startImage })
+      if (image.source === 'userImage') {
+        setImage({ source: 'startImage', url: startImage })
         setOriginalImage(null)
         dispatch(addCardphoto({ url: null, source: null }))
       }
@@ -163,7 +163,7 @@ const ImageCrop = ({ sizeCard }) => {
       fetchImageDimensions(image.url)
     } else {
       fetchImageDimensions(startImage)
-      setImage({ source: 'startHiImage', url: startImage })
+      setImage({ source: 'startImage', url: startImage })
     }
   }, [image, sizeCard, aspectRatio])
 
@@ -204,7 +204,16 @@ const ImageCrop = ({ sizeCard }) => {
       <input
         type="file"
         accept="image/*"
-        onChange={(e) => handleFileChange(e, setImage, setOriginalImage)}
+        onChange={(e) =>
+          handleFileChange(
+            e,
+            setImage,
+            setOriginalImage,
+            dispatch,
+            addCardphoto,
+            addOriginalImage
+          )
+        }
         ref={inputRef}
         style={{ display: 'none' }}
       />

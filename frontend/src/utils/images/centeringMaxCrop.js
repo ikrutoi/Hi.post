@@ -18,8 +18,8 @@ export const centeringMaxCrop = (dimensions, aspectRatio) => {
   ) {
     width = dimensions.width * 0.95
     height = (width / aspectRatio) * 0.95
-    x = (dimensions.width * 0.05) / 2
-    y = dimensions.height * 0.05
+    x = dimensions.width * 0.025
+    y = (dimensions.height - height) / 2
   }
   if (aspectRatioImageUser < aspectRatio) {
     width = dimensions.width

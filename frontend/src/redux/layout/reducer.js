@@ -17,6 +17,7 @@ const initialState = {
     secondBtn: null,
     section: null,
   },
+  originalImage: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -41,6 +42,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         choiceSection: { ...state.choiceSection, ...action.payload },
+      }
+    case a.ADD_ORIGINAL_IMAGE:
+      return {
+        ...state,
+        originalImage: action.payload,
       }
     default:
       return state

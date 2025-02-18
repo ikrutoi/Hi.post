@@ -41,3 +41,10 @@ export const addBtnToolbar = (newSection) => {
     payload: newSection,
   }
 }
+
+export const addOriginalImage = (newSection) => {
+  return {
+    type: a.ADD_ORIGINAL_IMAGE,
+    payload: newSection,
+  }
+}
