@@ -222,7 +222,7 @@ const ImageCrop = ({ sizeCard }) => {
             setImage,
             setOriginalImage,
             dispatch,
-            addCardphoto,
+            // addCardphoto,
             addOriginalImage,
             setModeCrop
           )

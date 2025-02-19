@@ -47,7 +47,6 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
 
   const handleClickToolbar = (evt, nameBtn) => {
     handleClickBtnToolbar(evt)
-    // checkInfoButtons(nameBtn)
     const searchParentBtnNav = (el) => {
       if (el.classList.contains('toolbar-btn')) {
         return el
@@ -61,7 +60,7 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
 
     if (parentBtnNav.dataset.tooltip === 'download') {
       if (parentBtnNav.style.color === 'rgb(71, 71, 71)') {
-        parentBtnNav.style.color = ''
+        parentBtnNav.style.color = 'rgb(163, 163, 163)'
       }
     }
 
@@ -137,17 +136,26 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
         e.target.style.cursor = 'pointer'
       }
     } else {
-      console.log('//*')
       e.target.style.color = 'rgb(71, 71, 71)'
       e.target.style.cursor = 'pointer'
     }
   }
 
-  const handleMouseLeave = (e) => {
-    if (e.target.dataset.tooltip === 'crop' && infoButtons.crop) {
-      e.target.style.color = 'rgb(71, 71, 71)'
+  const handleMouseLeave = (evt) => {
+    const searchParentBtnNav = (el) => {
+      if (el.classList.contains('toolbar-btn')) {
+        return el
+      } else if (el.parentElement) {
+        return searchParentBtnNav(el.parentElement)
+      }
+      return null
+    }
+
+    const parentBtnNav = searchParentBtnNav(evt.target)
+    if (parentBtnNav.dataset.tooltip === 'crop' && infoButtons.crop) {
+      parentBtnNav.style.color = 'rgb(71, 71, 71)'
     } else {
-      e.target.style.color = 'rgb(163, 163, 163)'
+      parentBtnNav.style.color = 'rgb(163, 163, 163)'
     }
   }
 

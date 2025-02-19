@@ -3,7 +3,6 @@ export const handleFileChange = (
   setImage,
   setOriginalImage,
   dispatch,
-  addCardphoto,
   addOriginalImage,
   setModeCrop
 ) => {
@@ -16,7 +15,7 @@ export const handleFileChange = (
       setOriginalImage(imageDataUrl)
       setModeCrop('startCrop')
       dispatch(addOriginalImage(imageDataUrl))
-      dispatch(addCardphoto({ source: 'userImage', url: imageDataUrl }))
+      // dispatch(addCardphoto({ source: 'userImage', url: imageDataUrl }))
       e.target.value = ''
     }
     reader.readAsDataURL(file)
