@@ -1,5 +1,4 @@
 export const centeringMaxCrop = (dimensions, aspectRatio, mode) => {
-  console.log('mode', mode)
   const aspectRatioImageUser = Number(
     (dimensions.width / dimensions.height).toFixed(2)
   )
@@ -7,12 +6,25 @@ export const centeringMaxCrop = (dimensions, aspectRatio, mode) => {
   let y
   let width
   let height
-  if (mode === 'startCrop') {
-    if (aspectRatioImageUser > aspectRatio + aspectRatio * 0.1) {
+
+  const calcOfValues = (unit) => {
+    if (unit === 'more') {
       height = dimensions.height
       width = height * aspectRatio
       y = 0
       x = (dimensions.width - width) / 2
+    }
+    if (unit === 'less') {
+      width = dimensions.width
+      height = width / aspectRatio
+      x = 0
+      y = (dimensions.height - height) / 2
+    }
+  }
+
+  if (mode === 'startCrop') {
+    if (aspectRatioImageUser > aspectRatio + aspectRatio * 0.1) {
+      calcOfValues('more')
     }
     if (
       aspectRatioImageUser >= aspectRatio &&
@@ -24,24 +36,15 @@ export const centeringMaxCrop = (dimensions, aspectRatio, mode) => {
       y = (dimensions.height - height) / 2
     }
     if (aspectRatioImageUser < aspectRatio) {
-      width = dimensions.width
-      height = width / aspectRatio
-      x = 0
-      y = (dimensions.height - height) / 2
+      calcOfValues('less')
     }
   }
   if (mode === 'maxCrop') {
     if (aspectRatioImageUser > aspectRatio) {
-      height = dimensions.height
-      width = height * aspectRatio
-      y = 0
-      x = (dimensions.width - width) / 2
+      calcOfValues('more')
     }
     if (aspectRatioImageUser <= aspectRatio) {
-      width = dimensions.width
-      height = width / aspectRatio
-      x = 0
-      y = (dimensions.height - height) / 2
+      calcOfValues('less')
     }
   }
   return { x, y, width, height }

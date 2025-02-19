@@ -165,7 +165,6 @@ const ImageCrop = ({ sizeCard }) => {
             height: valueCrop.height,
           })
         }
-        console.log(`Width: ${dimensions.width}, Height: ${dimensions.height}`)
       } catch (err) {
         console.error('Error loading image:', err)
       }

@@ -15,11 +15,11 @@ import { addIconToolbarCardphoto } from '../../../../utils/cardFormNav/addIconTo
 const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
   const layoutBtnToolbar = useSelector((state) => state.layout.btnToolbar)
   const infoButtons = useSelector((state) => state.infoButtons)
+  const cardphoto = useSelector((state) => state.cardEdit.cardphoto)
   const [toolbarColor, setToolbarColor] = useState(null)
   const dispatch = useDispatch()
   const [listBtns, setListBtns] = useState(null)
   const btnRefs = useRef({})
-  // const [btnIsActive, setBtnIsActive] = useState(false)
 
   useEffect(() => {
     switch (nameSection) {
@@ -45,16 +45,17 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
     }
   }, [layoutBtnToolbar, toolbarColor])
 
+  const searchParentBtnNav = (el) => {
+    if (el.classList.contains('toolbar-btn')) {
+      return el
+    } else if (el.parentElement) {
+      return searchParentBtnNav(el.parentElement)
+    }
+    return null
+  }
+
   const handleClickToolbar = (evt, nameBtn) => {
     handleClickBtnToolbar(evt)
-    const searchParentBtnNav = (el) => {
-      if (el.classList.contains('toolbar-btn')) {
-        return el
-      } else if (el.parentElement) {
-        return searchParentBtnNav(el.parentElement)
-      }
-      return null
-    }
 
     const parentBtnNav = searchParentBtnNav(evt.target)
 
@@ -63,6 +64,14 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
         parentBtnNav.style.color = 'rgb(163, 163, 163)'
       }
     }
+
+    // console.log('source', cardphoto.source)
+
+    // if (!cardphoto.source && parentBtnNav.dataset.tooltip === 'delete') {
+    //   console.log('++')
+    //   parentBtnNav.style.color = 'rgb(163, 163, 163)'
+    //   parentBtnNav.style.cursor = 'default'
+    // }
 
     if (parentBtnNav.dataset.tooltip === 'save') {
       parentBtnNav.style.color = 'rgb(163, 163, 163)'
@@ -123,34 +132,32 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
     }
   }
 
-  const handleMouseEnter = (e) => {
+  const handleMouseEnter = (evt) => {
+    const parentBtnNav = searchParentBtnNav(evt.target)
+
     if (
-      e.target.dataset.tooltip === 'save' ||
-      e.target.dataset.tooltip === 'maximaze'
+      parentBtnNav.dataset.tooltip === 'save' ||
+      parentBtnNav.dataset.tooltip === 'maximaze'
     ) {
       if (!infoButtons.crop) {
-        e.target.style.color = 'rgb(163, 163, 163)'
-        e.target.style.cursor = 'default'
+        parentBtnNav.style.color = 'rgb(163, 163, 163)'
+        parentBtnNav.style.cursor = 'default'
       } else {
-        e.target.style.color = 'rgb(71, 71, 71)'
-        e.target.style.cursor = 'pointer'
+        parentBtnNav.style.color = 'rgb(71, 71, 71)'
+        parentBtnNav.style.cursor = 'pointer'
       }
     } else {
-      e.target.style.color = 'rgb(71, 71, 71)'
-      e.target.style.cursor = 'pointer'
+      if (!cardphoto.source && parentBtnNav.dataset.tooltip === 'delete') {
+        parentBtnNav.style.color = 'rgb(163, 163, 163)'
+        parentBtnNav.style.cursor = 'default'
+      } else {
+        parentBtnNav.style.color = 'rgb(71, 71, 71)'
+        parentBtnNav.style.cursor = 'pointer'
+      }
     }
   }
 
   const handleMouseLeave = (evt) => {
-    const searchParentBtnNav = (el) => {
-      if (el.classList.contains('toolbar-btn')) {
-        return el
-      } else if (el.parentElement) {
-        return searchParentBtnNav(el.parentElement)
-      }
-      return null
-    }
-
     const parentBtnNav = searchParentBtnNav(evt.target)
     if (parentBtnNav.dataset.tooltip === 'crop' && infoButtons.crop) {
       parentBtnNav.style.color = 'rgb(71, 71, 71)'
@@ -172,6 +179,15 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
       }
     }
   }, [infoButtons, btnRefs])
+
+  useEffect(() => {
+    if (btnRefs.current && btnRefs.current.delete) {
+      if (!cardphoto.source) {
+        btnRefs.current.delete.style.color = 'rgb(163, 163, 163)'
+        btnRefs.current.delete.style.cursor = 'default'
+      }
+    }
+  }, [cardphoto, btnRefs])
 
   return (
     <div className={`toolbar toolbar-${nameSection}`}>
