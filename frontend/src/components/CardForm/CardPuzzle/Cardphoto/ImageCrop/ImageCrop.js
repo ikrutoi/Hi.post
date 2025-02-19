@@ -37,8 +37,10 @@ const ImageCrop = ({ sizeCard }) => {
   const overlayRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
-  const [isDisplayCrop, setIsDisplayCrop] = useState(false)
+  const [modeCrop, setModeCrop] = useState('startCrop')
+  const [isCropVisibly, setIsCropVisibly] = useState(false)
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 })
+  // const [isCropVisibly, setIsCropVisibly] = useState(false)
   const dispatch = useDispatch()
   const aspectRatio = 142 / 100
 
@@ -49,7 +51,7 @@ const ImageCrop = ({ sizeCard }) => {
   }
 
   const handleSave = () => {
-    if (isDisplayCrop) {
+    if (isCropVisibly) {
       const croppedImage = getCroppedImage(
         imgRef,
         crop,
@@ -66,8 +68,8 @@ const ImageCrop = ({ sizeCard }) => {
         height: sizeCard.height,
       })
       dispatch(addCardphoto({ source: `${source}-save`, url: croppedImage }))
-      if (isDisplayCrop) {
-        setIsDisplayCrop(false)
+      if (isCropVisibly) {
+        setIsCropVisibly(false)
       }
       dispatch(infoButtons({ crop: false }))
     }
@@ -75,8 +77,8 @@ const ImageCrop = ({ sizeCard }) => {
 
   const handleDelete = () => {
     const sourceImage = image.source.split('-')
-    if (isDisplayCrop) {
-      setIsDisplayCrop(false)
+    if (isCropVisibly) {
+      setIsCropVisibly(false)
       return
     }
     if (sourceImage.length > 1) {
@@ -97,12 +99,19 @@ const ImageCrop = ({ sizeCard }) => {
   }
 
   const handleCrop = () => {
-    if (isDisplayCrop) {
-      setIsDisplayCrop(false)
+    if (isCropVisibly) {
+      setIsCropVisibly(false)
       dispatch(infoButtons({ crop: false }))
     } else {
-      setIsDisplayCrop(true)
+      setIsCropVisibly(true)
       dispatch(infoButtons({ crop: true }))
+    }
+  }
+
+  const handleMaximaze = () => {
+    console.log('max', isCropVisibly)
+    if (isCropVisibly) {
+      setModeCrop('maxCrop')
     }
   }
 
@@ -119,6 +128,9 @@ const ImageCrop = ({ sizeCard }) => {
         break
       case 'crop':
         handleCrop()
+        break
+      case 'maximaze':
+        handleMaximaze()
         break
 
       default:
@@ -144,7 +156,7 @@ const ImageCrop = ({ sizeCard }) => {
           setScaleX(scaleX)
           setScaleY(scaleY)
 
-          const valueCrop = centeringMaxCrop(dimensions, aspectRatio)
+          const valueCrop = centeringMaxCrop(dimensions, aspectRatio, modeCrop)
 
           setCrop({
             x: valueCrop.x,
@@ -165,7 +177,7 @@ const ImageCrop = ({ sizeCard }) => {
       fetchImageDimensions(startImage)
       setImage({ source: 'startImage', url: startImage })
     }
-  }, [image, sizeCard, aspectRatio])
+  }, [image, sizeCard, aspectRatio, modeCrop])
 
   useEffect(() => {
     if (image) {
@@ -211,7 +223,8 @@ const ImageCrop = ({ sizeCard }) => {
             setOriginalImage,
             dispatch,
             addCardphoto,
-            addOriginalImage
+            addOriginalImage,
+            setModeCrop
           )
         }
         ref={inputRef}
@@ -236,7 +249,7 @@ const ImageCrop = ({ sizeCard }) => {
           <div
             className="overlay"
             ref={overlayRef}
-            style={{ display: isDisplayCrop ? 'block' : 'none' }}
+            style={{ display: isCropVisibly ? 'block' : 'none' }}
           ></div>
           <div
             ref={cropAreaRef}
@@ -246,7 +259,7 @@ const ImageCrop = ({ sizeCard }) => {
               left: crop.x / scaleY,
               width: crop.width / scaleX,
               height: crop.height / scaleY,
-              display: isDisplayCrop ? 'block' : 'none',
+              display: isCropVisibly ? 'block' : 'none',
             }}
             onMouseDown={(e) =>
               handleMouseDownDrag(

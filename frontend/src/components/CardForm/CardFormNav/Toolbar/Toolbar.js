@@ -5,14 +5,12 @@ import './Toolbar.scss'
 import listNavBtnsCardtext from '../../../../data/cardtext/list-textarea-nav-btns.json'
 import listNavBtnsCardphoto from '../../../../data/cardphoto/list-toolbar-cardphoto.json'
 import ToolbarColor from './ToolbarColor/ToolbarColor'
-import {
-  addCardphoto,
-  addCardtext,
-} from '../../../../redux/cardEdit/actionCreators'
+import { addCardtext } from '../../../../redux/cardEdit/actionCreators'
 import { addIconToolbarCardtext } from '../../../../utils/cardFormNav/addIconToolbarCardtext.js'
 import { addIconToolbarCardphoto } from '../../../../utils/cardFormNav/addIconToolbarCardphoto.js'
 // import { useIndexedDB } from '../../../../data/cardFormNav/useIndexedDB.js'
 // import { addChoiceSection } from '../../../../redux/layout/actionCreators.js'
+// import { ReactComponent as IconFull } from '../../../../data/img/icon--full-size.svg'
 
 const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
   const layoutBtnToolbar = useSelector((state) => state.layout.btnToolbar)
@@ -21,6 +19,7 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
   const dispatch = useDispatch()
   const [listBtns, setListBtns] = useState(null)
   const btnRefs = useRef({})
+  // const [btnIsActive, setBtnIsActive] = useState(false)
 
   useEffect(() => {
     switch (nameSection) {
@@ -46,8 +45,9 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
     }
   }, [layoutBtnToolbar, toolbarColor])
 
-  const handleClickToolbar = async (evt, i, section) => {
+  const handleClickToolbar = (evt, nameBtn) => {
     handleClickBtnToolbar(evt)
+    // checkInfoButtons(nameBtn)
     const searchParentBtnNav = (el) => {
       if (el.classList.contains('toolbar-btn')) {
         return el
@@ -58,6 +58,17 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
     }
 
     const parentBtnNav = searchParentBtnNav(evt.target)
+
+    if (parentBtnNav.dataset.tooltip === 'download') {
+      if (parentBtnNav.style.color === 'rgb(71, 71, 71)') {
+        parentBtnNav.style.color = ''
+      }
+    }
+
+    if (parentBtnNav.dataset.tooltip === 'save') {
+      parentBtnNav.style.color = 'rgb(163, 163, 163)'
+      parentBtnNav.style.cursor = 'default'
+    }
 
     const btnTooltip = parentBtnNav.dataset.tooltip
     if (
@@ -113,18 +124,11 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
     }
   }
 
-  const checkInfoButtons = (nameBtn) => {
-    if (nameBtn in infoButtons) {
-      if (infoButtons[nameBtn]) {
-        return true
-      } else {
-        return false
-      }
-    }
-  }
-
   const handleMouseEnter = (e) => {
-    if (e.target.dataset.tooltip === 'save') {
+    if (
+      e.target.dataset.tooltip === 'save' ||
+      e.target.dataset.tooltip === 'maximaze'
+    ) {
       if (!infoButtons.crop) {
         e.target.style.color = 'rgb(163, 163, 163)'
         e.target.style.cursor = 'default'
@@ -133,6 +137,7 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
         e.target.style.cursor = 'pointer'
       }
     } else {
+      console.log('//*')
       e.target.style.color = 'rgb(71, 71, 71)'
       e.target.style.cursor = 'pointer'
     }
@@ -151,11 +156,14 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
   }
 
   useEffect(() => {
-    if (!infoButtons.crop && Object.keys(btnRefs.current).length !== 0) {
-      btnRefs.current.save.style.color = 'rgb(163, 163, 163)'
-      btnRefs.current.save.style.cursor = 'default'
+    if (btnRefs.current && btnRefs.current.crop) {
+      if (infoButtons.crop) {
+        btnRefs.current.crop.style.color = 'rgb(71, 71, 71)'
+      } else {
+        btnRefs.current.crop.style.color = 'rgb(163, 163, 163)'
+      }
     }
-  }, [infoButtons.crop, btnRefs])
+  }, [infoButtons, btnRefs])
 
   return (
     <div className={`toolbar toolbar-${nameSection}`}>
@@ -169,12 +177,7 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
                 data-section={nameSection}
                 key={i}
                 ref={handleRef(btn)}
-                onClick={(e) => handleClickToolbar(e, i, nameSection)}
-                style={{
-                  color: checkInfoButtons(btn)
-                    ? 'rgb(71, 71, 71)'
-                    : 'rgb(163, 163, 163)',
-                }}
+                onClick={(e) => handleClickToolbar(e, btn)}
                 onMouseEnter={(e) => handleMouseEnter(e)}
                 onMouseLeave={(e) => handleMouseLeave(e)}
               >

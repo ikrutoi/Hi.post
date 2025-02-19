@@ -1,6 +1,6 @@
 import { INFO_BUTTONS } from './actionTypes'
 
-const initialState = { crop: false, italic: true, left: true }
+const initialState = { crop: false, italic: true, left: true, download: false }
 
 const infoButtonsReducer = (state = initialState, action) => {
   switch (action.type) {
