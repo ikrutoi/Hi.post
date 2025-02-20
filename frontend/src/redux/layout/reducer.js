@@ -18,6 +18,7 @@ const initialState = {
     section: null,
   },
   originalImage: null,
+  workingImage: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -47,6 +48,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         originalImage: action.payload,
+      }
+    case a.ADD_WORKING_IMAGE:
+      return {
+        ...state,
+        workingImage: action.payload,
       }
     default:
       return state

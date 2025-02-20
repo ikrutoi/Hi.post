@@ -48,3 +48,10 @@ export const addOriginalImage = (newSection) => {
     payload: newSection,
   }
 }
+
+export const addWorkingImage = (newSection) => {
+  return {
+    type: a.ADD_WORKING_IMAGE,
+    payload: newSection,
+  }
+}

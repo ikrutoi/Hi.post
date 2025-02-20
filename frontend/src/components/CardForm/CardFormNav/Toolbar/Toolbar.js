@@ -16,6 +16,7 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
   const layoutBtnToolbar = useSelector((state) => state.layout.btnToolbar)
   const infoButtons = useSelector((state) => state.infoButtons)
   const cardphoto = useSelector((state) => state.cardEdit.cardphoto)
+  const workingImage = useSelector((state) => state.layout.workingImage)
   const [toolbarColor, setToolbarColor] = useState(null)
   const dispatch = useDispatch()
   const [listBtns, setListBtns] = useState(null)
@@ -147,7 +148,10 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
         parentBtnNav.style.cursor = 'pointer'
       }
     } else {
-      if (!cardphoto.source && parentBtnNav.dataset.tooltip === 'delete') {
+      if (
+        workingImage === 'startImage' &&
+        parentBtnNav.dataset.tooltip === 'delete'
+      ) {
         parentBtnNav.style.color = 'rgb(163, 163, 163)'
         parentBtnNav.style.cursor = 'default'
       } else {
@@ -182,12 +186,12 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
 
   useEffect(() => {
     if (btnRefs.current && btnRefs.current.delete) {
-      if (!cardphoto.source) {
+      if (workingImage === 'startImage') {
         btnRefs.current.delete.style.color = 'rgb(163, 163, 163)'
         btnRefs.current.delete.style.cursor = 'default'
       }
     }
-  }, [cardphoto, btnRefs])
+  }, [cardphoto, btnRefs, workingImage])
 
   return (
     <div className={`toolbar toolbar-${nameSection}`}>

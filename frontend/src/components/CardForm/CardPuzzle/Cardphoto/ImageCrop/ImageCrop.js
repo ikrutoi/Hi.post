@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import './ImageCrop.scss'
 import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
 import { addOriginalImage } from '../../../../../redux/layout/actionCreators'
+import { addWorkingImage } from '../../../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import startImage from '../../../../../data/img/card-photo-bw.jpg'
 import { updateClipPath } from '../../../../../utils/images/updateClipPath'
@@ -30,6 +31,7 @@ const ImageCrop = ({ sizeCard }) => {
   const [scaleX, setScaleX] = useState(1)
   const [scaleY, setScaleY] = useState(1)
   const [originalImage, setOriginalImage] = useState(null)
+  const [workingImage, setWorkingImage] = useState(null)
   const [crop, setCrop] = useState({ x: 0, y: 0, width: 0, height: 0 })
   const imgRef = useRef(null)
   const cropAreaRef = useRef(null)
@@ -109,7 +111,6 @@ const ImageCrop = ({ sizeCard }) => {
   }
 
   const handleMaximaze = () => {
-    console.log('max', isCropVisibly)
     if (isCropVisibly) {
       setModeCrop('maxCrop')
     }
@@ -137,6 +138,18 @@ const ImageCrop = ({ sizeCard }) => {
         break
     }
   }, [layoutToolbar])
+
+  useEffect(() => {
+    if (workingImage) {
+      dispatch(addWorkingImage(workingImage))
+    }
+  }, [workingImage, dispatch])
+
+  useEffect(() => {
+    if (image) {
+      setWorkingImage(image.source)
+    }
+  }, [image])
 
   useEffect(() => {
     const fetchImageDimensions = async (src) => {
