@@ -66,14 +66,6 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
       }
     }
 
-    // console.log('source', cardphoto.source)
-
-    // if (!cardphoto.source && parentBtnNav.dataset.tooltip === 'delete') {
-    //   console.log('++')
-    //   parentBtnNav.style.color = 'rgb(163, 163, 163)'
-    //   parentBtnNav.style.cursor = 'default'
-    // }
-
     if (parentBtnNav.dataset.tooltip === 'save') {
       parentBtnNav.style.color = 'rgb(163, 163, 163)'
       parentBtnNav.style.cursor = 'default'

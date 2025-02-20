@@ -1,12 +1,12 @@
 export const handleFileChange = (
-  e,
+  evt,
   setImage,
   setOriginalImage,
   dispatch,
   addOriginalImage,
   setModeCrop
 ) => {
-  const file = e.target.files[0]
+  const file = evt.target.files[0]
   if (file) {
     const reader = new FileReader()
     reader.onload = () => {
@@ -16,7 +16,7 @@ export const handleFileChange = (
       setModeCrop('startCrop')
       dispatch(addOriginalImage(imageDataUrl))
       // dispatch(addCardphoto({ source: 'userImage', url: imageDataUrl }))
-      e.target.value = ''
+      evt.target.value = ''
     }
     reader.readAsDataURL(file)
   }

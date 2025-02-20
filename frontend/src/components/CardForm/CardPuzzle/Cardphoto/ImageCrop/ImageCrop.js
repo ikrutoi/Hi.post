@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import './ImageCrop.scss'
 import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
 import { addOriginalImage } from '../../../../../redux/layout/actionCreators'
-import { addWorkingImage } from '../../../../../redux/layout/actionCreators'
+import { addBtnToolbar } from '../../../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import startImage from '../../../../../data/img/card-photo-bw.jpg'
 import { updateClipPath } from '../../../../../utils/images/updateClipPath'
@@ -31,7 +31,6 @@ const ImageCrop = ({ sizeCard }) => {
   const [scaleX, setScaleX] = useState(1)
   const [scaleY, setScaleY] = useState(1)
   const [originalImage, setOriginalImage] = useState(null)
-  const [workingImage, setWorkingImage] = useState(null)
   const [crop, setCrop] = useState({ x: 0, y: 0, width: 0, height: 0 })
   const imgRef = useRef(null)
   const cropAreaRef = useRef(null)
@@ -117,39 +116,41 @@ const ImageCrop = ({ sizeCard }) => {
   }
 
   useEffect(() => {
+    const resetBtnToolbar = () => {
+      dispatch(
+        addBtnToolbar({
+          firstBtn: null,
+          section: null,
+          secondBtn: null,
+        })
+      )
+    }
     switch (layoutToolbar.firstBtn) {
       case 'download':
         handleDownload()
+        resetBtnToolbar()
         break
       case 'save':
         handleSave()
+        resetBtnToolbar()
         break
       case 'delete':
         handleDelete()
+        resetBtnToolbar()
         break
       case 'crop':
         handleCrop()
+        resetBtnToolbar()
         break
       case 'maximaze':
         handleMaximaze()
+        resetBtnToolbar()
         break
 
       default:
         break
     }
   }, [layoutToolbar])
-
-  useEffect(() => {
-    if (workingImage) {
-      dispatch(addWorkingImage(workingImage))
-    }
-  }, [workingImage, dispatch])
-
-  useEffect(() => {
-    if (image) {
-      setWorkingImage(image.source)
-    }
-  }, [image])
 
   useEffect(() => {
     const fetchImageDimensions = async (src) => {
@@ -169,14 +170,20 @@ const ImageCrop = ({ sizeCard }) => {
           setScaleX(scaleX)
           setScaleY(scaleY)
 
-          const valueCrop = centeringMaxCrop(dimensions, aspectRatio, modeCrop)
+          if (isCropVisibly) {
+            const valueCrop = centeringMaxCrop(
+              dimensions,
+              aspectRatio,
+              modeCrop
+            )
 
-          setCrop({
-            x: valueCrop.x,
-            y: valueCrop.y,
-            width: valueCrop.width,
-            height: valueCrop.height,
-          })
+            setCrop({
+              x: valueCrop.x,
+              y: valueCrop.y,
+              width: valueCrop.width,
+              height: valueCrop.height,
+            })
+          }
         }
       } catch (err) {
         console.error('Error loading image:', err)
@@ -189,7 +196,7 @@ const ImageCrop = ({ sizeCard }) => {
       fetchImageDimensions(startImage)
       setImage({ source: 'startImage', url: startImage })
     }
-  }, [image, sizeCard, aspectRatio, modeCrop])
+  }, [image, sizeCard, aspectRatio, modeCrop, isCropVisibly])
 
   useEffect(() => {
     if (image) {
@@ -206,9 +213,9 @@ const ImageCrop = ({ sizeCard }) => {
   return (
     <div
       className="image-crop"
-      onMouseMove={(e) =>
+      onMouseMove={(evt) =>
         handleMouseMoveDrag(
-          e,
+          evt,
           isDragging,
           imgRef,
           scaleX,
@@ -258,47 +265,52 @@ const ImageCrop = ({ sizeCard }) => {
             alt="Source"
             className="crop-image"
           />
-          <div
-            className="overlay"
-            ref={overlayRef}
-            style={{ display: isCropVisibly ? 'block' : 'none' }}
-          ></div>
-          <div
-            ref={cropAreaRef}
-            className="crop-area"
-            style={{
-              top: crop.y / scaleX,
-              left: crop.x / scaleY,
-              width: crop.width / scaleX,
-              height: crop.height / scaleY,
-              display: isCropVisibly ? 'block' : 'none',
-            }}
-            onMouseDown={(e) =>
-              handleMouseDownDrag(
-                e,
-                setIsDragging,
-                imgRef,
-                setLastMousePosition,
-                isResizing
-              )
-            }
-          >
+          {isCropVisibly && (
             <div
-              className="crop-resize-handle"
+              className="overlay"
+              ref={overlayRef}
+              // style={{ display: isCropVisibly ? 'block' : 'none' }}
+            ></div>
+          )}
+
+          {isCropVisibly && (
+            <div
+              ref={cropAreaRef}
+              className="crop-area"
+              style={{
+                top: crop.y / scaleX,
+                left: crop.x / scaleY,
+                width: crop.width / scaleX,
+                height: crop.height / scaleY,
+                // display: isCropVisibly ? 'block' : 'none',
+              }}
               onMouseDown={(e) =>
-                handleMouseDownResize(
+                handleMouseDownDrag(
                   e,
-                  setIsResizing,
-                  crop,
-                  scaleX,
-                  scaleY,
-                  aspectRatio,
+                  setIsDragging,
                   imgRef,
-                  setCrop
+                  setLastMousePosition,
+                  isResizing
                 )
               }
-            />
-          </div>
+            >
+              <div
+                className="crop-resize-handle"
+                onMouseDown={(e) =>
+                  handleMouseDownResize(
+                    e,
+                    setIsResizing,
+                    crop,
+                    scaleX,
+                    scaleY,
+                    aspectRatio,
+                    imgRef,
+                    setCrop
+                  )
+                }
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

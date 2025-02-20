@@ -18,7 +18,14 @@ const initialState = {
     section: null,
   },
   originalImage: null,
+  originalImageUrl: { source: null, url: null },
   workingImage: null,
+  workingImageUrl: {
+    source: null,
+    url: null,
+    originalImage: null,
+    originalImageUrl: null,
+  },
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -49,10 +56,20 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         originalImage: action.payload,
       }
+    case a.ADD_ORIGINAL_IMAGE_URL:
+      return {
+        ...state,
+        originalImageUrl: { ...state.originalImageUrl, ...action.payload },
+      }
     case a.ADD_WORKING_IMAGE:
       return {
         ...state,
         workingImage: action.payload,
+      }
+    case a.ADD_WORKING_IMAGE_URL:
+      return {
+        ...state,
+        workingImageUrl: { ...state.workingImageUrl, ...action.payload },
       }
     default:
       return state

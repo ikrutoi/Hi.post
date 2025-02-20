@@ -49,9 +49,23 @@ export const addOriginalImage = (newSection) => {
   }
 }
 
+export const addOriginalImageUrl = (newSection) => {
+  return {
+    type: a.ADD_ORIGINAL_IMAGE_URL,
+    payload: newSection,
+  }
+}
+
 export const addWorkingImage = (newSection) => {
   return {
     type: a.ADD_WORKING_IMAGE,
+    payload: newSection,
+  }
+}
+
+export const addWorkingImageUrl = (newSection) => {
+  return {
+    type: a.ADD_WORKING_IMAGE_URL,
     payload: newSection,
   }
 }
