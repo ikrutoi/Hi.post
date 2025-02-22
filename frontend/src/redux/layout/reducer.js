@@ -17,14 +17,20 @@ const initialState = {
     secondBtn: null,
     section: null,
   },
-  originalImage: null,
-  originalImageUrl: { source: null, url: null },
-  workingImage: null,
-  workingImageUrl: {
-    source: null,
-    url: null,
+  images: [
+    { id: 'startImage', image: null },
+    { id: 'startImage-save', image: null },
+    { id: 'originalImage', image: null },
+    { id: 'userImage', image: null },
+    { id: 'userImage-save', image: null },
+    { id: 'workingImage', image: null },
+    { id: 'miniImage', image: null },
+  ],
+  workingImage: {
     originalImage: null,
-    originalImageUrl: null,
+    source: null,
+    miniImage: null,
+    userImage: null,
   },
 }
 
@@ -51,25 +57,18 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         choiceSection: { ...state.choiceSection, ...action.payload },
       }
-    case a.ADD_ORIGINAL_IMAGE:
-      return {
-        ...state,
-        originalImage: action.payload,
-      }
-    case a.ADD_ORIGINAL_IMAGE_URL:
-      return {
-        ...state,
-        originalImageUrl: { ...state.originalImageUrl, ...action.payload },
-      }
     case a.ADD_WORKING_IMAGE:
       return {
         ...state,
-        workingImage: action.payload,
+        workingImage: { ...state.workingImage, ...action.payload },
       }
-    case a.ADD_WORKING_IMAGE_URL:
+    case a.ADD_IMAGES:
       return {
         ...state,
-        workingImageUrl: { ...state.workingImageUrl, ...action.payload },
+        images: state.images.map((image) => {
+          const foundImage = action.payload.find((img) => img.id === image.id)
+          return foundImage ? { ...image, image: foundImage.image } : image
+        }),
       }
     default:
       return state

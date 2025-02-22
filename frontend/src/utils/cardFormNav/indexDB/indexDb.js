@@ -6,9 +6,9 @@ const dbPromise = openDB('images-database', 1, {
   },
 })
 
-export const addImage = async (id, imageBlob) => {
+export const addImage = async (id, file) => {
   const db = await dbPromise
-  await db.put('images', { id, image: imageBlob })
+  await db.put('images', { id, image: file })
 }
 
 export const getImage = async (id) => {
@@ -19,4 +19,9 @@ export const getImage = async (id) => {
 export const deleteImage = async (id) => {
   const db = await dbPromise
   await db.delete('images', id)
+}
+
+export const getAllImages = async () => {
+  const db = await dbPromise
+  return await db.getAll('images')
 }

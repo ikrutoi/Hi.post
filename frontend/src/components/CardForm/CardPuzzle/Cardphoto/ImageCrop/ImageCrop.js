@@ -2,7 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './ImageCrop.scss'
 import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
-import { addOriginalImage } from '../../../../../redux/layout/actionCreators'
+import {
+  addWorkingImage,
+  addImages,
+} from '../../../../../redux/layout/actionCreators'
+import {
+  addImage,
+  getImage,
+  deleteImage,
+  getAllImages,
+} from '../../../../../utils/cardFormNav/indexDB/indexDb'
 import { addBtnToolbar } from '../../../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import startImage from '../../../../../data/img/card-photo-bw.jpg'
@@ -15,19 +24,15 @@ import { handleMouseDownDrag } from '../../../../../utils/events/handleMouseDown
 import { handleMouseDownResize } from '../../../../../utils/events/handleMouseDownResize'
 import { centeringMaxCrop } from '../../../../../utils/images/centeringMaxCrop'
 import { adjustImageSize } from '../../../../../utils/images/adjustImageSize'
-import { handleFileChange } from '../../../../../utils/events/handleFileChange'
 
 const ImageCrop = ({ sizeCard }) => {
   const layoutToolbar = useSelector((state) => state.layout.btnToolbar)
+  const layoutWorkingImage = useSelector((state) => state.layout.workingImage)
+  const layoutImages = useSelector((state) => state.layout.images)
   const cardphoto = useSelector((state) => state.cardEdit.cardphoto)
-  const [image, setImage] = useState(
-    cardphoto.url
-      ? cardphoto
-      : {
-          source: 'startImage',
-          url: startImage,
-        }
-  )
+  const [workingImage, setWorkingImage] = useState(null)
+  const [images, setImages] = useState(null)
+  const [image, setImage] = useState({ source: null, url: null })
   const [scaleX, setScaleX] = useState(1)
   const [scaleY, setScaleY] = useState(1)
   const [originalImage, setOriginalImage] = useState(null)
@@ -41,13 +46,82 @@ const ImageCrop = ({ sizeCard }) => {
   const [modeCrop, setModeCrop] = useState('startCrop')
   const [isCropVisibly, setIsCropVisibly] = useState(false)
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 })
-  // const [isCropVisibly, setIsCropVisibly] = useState(false)
   const dispatch = useDispatch()
   const aspectRatio = 142 / 100
-
   const handleDownload = () => {
     if (inputRef.current) {
       inputRef.current.click()
+    }
+  }
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const savedImages = await getAllImages()
+        const workingImage = savedImages.find(
+          (image) => image.id === 'workingImage'
+        )
+        if (workingImage) {
+          await fetchImageFromIndexedDb('workingImage')
+        } else {
+          setImage({
+            source: 'startImage',
+            url: startImage,
+          })
+
+          try {
+            const response = await fetch(startImage)
+            const blobStartImage = await response.blob()
+
+            await addImage('startImage', blobStartImage)
+            await addImage('workingImage', blobStartImage)
+          } catch (error) {
+            console.error('Error saving initial image to IndexedDb:', error)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching images:', error)
+      }
+    }
+
+    fetchImages()
+  }, [])
+
+  const fetchImageFromIndexedDb = async (id) => {
+    try {
+      const savedImage = await getImage(id)
+      if (
+        savedImage.image instanceof Blob ||
+        savedImage.image instanceof File
+      ) {
+        setImage({ source: id, url: URL.createObjectURL(savedImage.image) })
+        fetchImageDimensions(URL.createObjectURL(savedImage.image))
+        return
+      } else if (
+        typeof savedImage.image === 'string' &&
+        savedImage.image.startsWith('data:image/')
+      ) {
+        setImage({
+          source: id,
+          url: savedImage.image,
+        })
+        return
+      }
+    } catch (error) {
+      console.error('Error fetching image from IndexedDb:', error)
+    }
+  }
+
+  const deleteImagesInIndexedDb = async (id) => {
+    const savedImage = await getImage(id)
+    setImage(
+      savedImage
+        ? { source: id, url: savedImage.image }
+        : { source: null, url: null }
+    )
+    if (layoutWorkingImage.originalImage) {
+      const originalImage = await getImage('originalImage')
+      setOriginalImage(originalImage.image)
     }
   }
 
@@ -68,7 +142,13 @@ const ImageCrop = ({ sizeCard }) => {
         width: sizeCard.width,
         height: sizeCard.height,
       })
+      addImage(`${source}-save`, croppedImage)
+      addImage('miniImage', croppedImage)
+      fetchImageDimensions(croppedImage)
       dispatch(addCardphoto({ source: `${source}-save`, url: croppedImage }))
+      dispatch(
+        addWorkingImage({ source: `${source}-save`, miniImage: 'miniImage' })
+      )
       if (isCropVisibly) {
         setIsCropVisibly(false)
       }
@@ -87,12 +167,24 @@ const ImageCrop = ({ sizeCard }) => {
         source: `${sourceImage[0]}`,
         url: sourceImage[0] === 'userImage' ? originalImage : startImage,
       })
+      if (sourceImage[0] === 'userImage') {
+        addImage(`${sourceImage[0]}`, originalImage)
+        deleteImage(image.source)
+      } else {
+        addImage(`${sourceImage[0]}`, originalImage)
+        deleteImage()
+      }
+      dispatch(
+        addWorkingImage({ source: `${sourceImage[0]}`, miniImage: null })
+      )
       dispatch(addCardphoto({ url: null, source: null }))
     }
     if (sourceImage.length === 1) {
       if (image.source === 'userImage') {
         setImage({ source: 'startImage', url: startImage })
-        setOriginalImage(null)
+        dispatch(
+          addWorkingImage({ source: `${sourceImage[0]}`, miniImage: null })
+        )
         dispatch(addCardphoto({ url: null, source: null }))
       }
     }
@@ -106,6 +198,7 @@ const ImageCrop = ({ sizeCard }) => {
     } else {
       setIsCropVisibly(true)
       dispatch(infoButtons({ crop: true }))
+      fetchImageDimensions(image.url)
     }
   }
 
@@ -152,51 +245,41 @@ const ImageCrop = ({ sizeCard }) => {
     }
   }, [layoutToolbar])
 
-  useEffect(() => {
-    const fetchImageDimensions = async (src) => {
-      try {
-        const dimensions = await loadImageDimensions(src)
-        const img = imgRef.current
-        if (img) {
-          const { width, height } = adjustImageSize(
-            img,
-            sizeCard.width,
-            sizeCard.height
-          )
-          img.style.width = `${width}px`
-          img.style.height = `${height}px`
-          const scaleX = dimensions.width / img.width
-          const scaleY = dimensions.height / img.height
-          setScaleX(scaleX)
-          setScaleY(scaleY)
+  // useEffect(() => {
+  const fetchImageDimensions = async (src) => {
+    try {
+      const dimensions = await loadImageDimensions(src)
+      const img = imgRef.current
+      if (img) {
+        const { width, height } = adjustImageSize(
+          img,
+          sizeCard.width,
+          sizeCard.height
+        )
+        img.style.width = `${width}px`
+        img.style.height = `${height}px`
+        const scaleX = dimensions.width / img.width
+        const scaleY = dimensions.height / img.height
+        setScaleX(scaleX)
+        setScaleY(scaleY)
 
-          if (isCropVisibly) {
-            const valueCrop = centeringMaxCrop(
-              dimensions,
-              aspectRatio,
-              modeCrop
-            )
+        // console.log('isCropVisibly', isCropVisibly)
 
-            setCrop({
-              x: valueCrop.x,
-              y: valueCrop.y,
-              width: valueCrop.width,
-              height: valueCrop.height,
-            })
-          }
-        }
-      } catch (err) {
-        console.error('Error loading image:', err)
+        // if (isCropVisibly) {
+        const valueCrop = centeringMaxCrop(dimensions, aspectRatio, modeCrop)
+
+        setCrop({
+          x: valueCrop.x,
+          y: valueCrop.y,
+          width: valueCrop.width,
+          height: valueCrop.height,
+        })
+        // }
       }
+    } catch (err) {
+      console.error('Error loading image:', err)
     }
-
-    if (image.url) {
-      fetchImageDimensions(image.url)
-    } else {
-      fetchImageDimensions(startImage)
-      setImage({ source: 'startImage', url: startImage })
-    }
-  }, [image, sizeCard, aspectRatio, modeCrop, isCropVisibly])
+  }
 
   useEffect(() => {
     if (image) {
@@ -209,6 +292,43 @@ const ImageCrop = ({ sizeCard }) => {
       )
     }
   }, [crop, image, scaleX, scaleY])
+
+  const handleFileChange = async (evt) => {
+    const file = evt.target.files[0]
+    // const response = await fetch(startImage)
+    // const blobStartImage = await response.blob()
+
+    if (file) {
+      // await addImage('startImage', blobStartImage)
+      await addImage('originalImage', file)
+      await addImage('userImage', file)
+      await addImage('workingImage', file)
+
+      const reader = new FileReader()
+      reader.onload = () => {
+        const imageDataUrl = reader.result
+        setImage({ source: 'userImage', url: imageDataUrl })
+        setModeCrop('startCrop')
+        dispatch(
+          addImages([
+            { id: 'originalImage', image: true },
+            { id: 'startImage', image: true },
+            { id: 'userImage', image: true },
+            { id: 'workingImage', image: true },
+          ])
+        )
+
+        dispatch(
+          addWorkingImage({
+            originalImage: 'originalImage',
+            source: 'userImage',
+          })
+        )
+      }
+      reader.readAsDataURL(file)
+      evt.target.value = ''
+    }
+  }
 
   return (
     <div
@@ -235,17 +355,7 @@ const ImageCrop = ({ sizeCard }) => {
       <input
         type="file"
         accept="image/*"
-        onChange={(e) =>
-          handleFileChange(
-            e,
-            setImage,
-            setOriginalImage,
-            dispatch,
-            // addCardphoto,
-            addOriginalImage,
-            setModeCrop
-          )
-        }
+        onChange={(evt) => handleFileChange(evt)}
         ref={inputRef}
         style={{ display: 'none' }}
       />

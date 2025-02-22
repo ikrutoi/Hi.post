@@ -42,20 +42,6 @@ export const addBtnToolbar = (newSection) => {
   }
 }
 
-export const addOriginalImage = (newSection) => {
-  return {
-    type: a.ADD_ORIGINAL_IMAGE,
-    payload: newSection,
-  }
-}
-
-export const addOriginalImageUrl = (newSection) => {
-  return {
-    type: a.ADD_ORIGINAL_IMAGE_URL,
-    payload: newSection,
-  }
-}
-
 export const addWorkingImage = (newSection) => {
   return {
     type: a.ADD_WORKING_IMAGE,
@@ -63,9 +49,9 @@ export const addWorkingImage = (newSection) => {
   }
 }
 
-export const addWorkingImageUrl = (newSection) => {
+export const addImages = (newSection) => {
   return {
-    type: a.ADD_WORKING_IMAGE_URL,
+    type: a.ADD_IMAGES,
     payload: newSection,
   }
 }
