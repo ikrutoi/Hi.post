@@ -1,9 +1,9 @@
 import { openDB } from 'idb'
 
-const dbPromise = openDB('images-database', 4, {
+const dbPromise = openDB('images-database', 5, {
   upgrade(db) {
-    if (!db.objectStoreNames.contains('startImages')) {
-      db.createObjectStore('startImages', { keyPath: 'id' })
+    if (!db.objectStoreNames.contains('hiPostImages')) {
+      db.createObjectStore('hiPostImages', { keyPath: 'id' })
     }
     if (!db.objectStoreNames.contains('userImages')) {
       db.createObjectStore('userImages', { keyPath: 'id' })
@@ -11,25 +11,25 @@ const dbPromise = openDB('images-database', 4, {
   },
 })
 
-export const addStartImage = async (id, file) => {
+export const addHiPostImage = async (id, file) => {
   const db = await dbPromise
-  await db.put('startImages', { id, image: file })
+  await db.put('hiPostImages', { id, image: file })
 }
 
-export const getStartImage = async (id) => {
+export const getHiPostImage = async (id) => {
   const db = await dbPromise
-  const result = await db.get('startImages', id)
+  const result = await db.get('hiPostImages', id)
   return result ? result.image : null
 }
 
-export const deleteStartImage = async (id) => {
+export const deleteHiPostImage = async (id) => {
   const db = await dbPromise
-  await db.delete('startImages', id)
+  await db.delete('hiPostImages', id)
 }
 
-export const getAllStartImages = async () => {
+export const getAllHiPostImages = async () => {
   const db = await dbPromise
-  return await db.getAll('startImages')
+  return await db.getAll('hiPostImages')
 }
 
 export const addUserImage = async (id, file) => {

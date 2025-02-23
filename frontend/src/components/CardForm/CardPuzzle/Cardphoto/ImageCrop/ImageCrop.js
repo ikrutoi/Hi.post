@@ -7,10 +7,10 @@ import {
   addImages,
 } from '../../../../../redux/layout/actionCreators'
 import {
-  addStartImage,
-  getStartImage,
-  deleteStartImage,
-  getAllStartImages,
+  addHiPostImage,
+  getHiPostImage,
+  deleteHiPostImage,
+  getAllHiPostImages,
   addUserImage,
   getUserImage,
   deleteUserImage,
@@ -18,7 +18,7 @@ import {
 } from '../../../../../utils/cardFormNav/indexDB/indexDb'
 import { addBtnToolbar } from '../../../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
-import startImage from '../../../../../data/img/card-photo-bw.jpg'
+import coverImage from '../../../../../data/img/card-photo-bw.jpg'
 import { updateClipPath } from '../../../../../utils/images/updateClipPath'
 import { loadImageDimensions } from '../../../../../utils/images/loadImageDimensions'
 import { getCroppedImage } from '../../../../../utils/images/getCroppedImage'
@@ -34,9 +34,11 @@ const ImageCrop = ({ sizeCard }) => {
   const layoutWorkingImage = useSelector((state) => state.layout.workingImage)
   const layoutImages = useSelector((state) => state.layout.images)
   const cardphoto = useSelector((state) => state.cardEdit.cardphoto)
-  const [workingImage, setWorkingImage] = useState(null)
+  // const [workingImage, setWorkingImage] = useState(null)
+  // const [infoImage, setInfoImage] = useState(null)
   const [images, setImages] = useState(null)
-  const [image, setImage] = useState({ source: null, url: null })
+  const [hiPostImage, setHiPostImage] = useState(null)
+  const [image, setImage] = useState({ source: null, url: null, base: null })
   const [scaleX, setScaleX] = useState(1)
   const [scaleY, setScaleY] = useState(1)
   const [originalImage, setOriginalImage] = useState(null)
@@ -60,15 +62,15 @@ const ImageCrop = ({ sizeCard }) => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const startImages = await getAllStartImages()
+        const hiPostImages = await getAllHiPostImages()
         const userImages = await getAllUserImages()
 
-        console.log('startImages', startImages)
+        console.log('hiPostImages', hiPostImages)
         console.log('userImages', userImages)
 
-        // if (startImages.length > 0) {
-        //   for (const image of startImages) {
-        //     deleteStartImage(image.id)
+        // if (hiPostImages.length > 0) {
+        //   for (const image of hiPostImages) {
+        //     deleteHiPostImage(image.id)
         //   }
         // }
         // if (userImages.length > 0) {
@@ -77,52 +79,49 @@ const ImageCrop = ({ sizeCard }) => {
         //   }
         // }
 
-        const workingStartImage = startImages.find(
-          (image) => image.id === 'workingImage'
-        )
-        const workingUserImage = userImages.find(
-          (image) => image.id === 'workingImage'
-        )
+        const checkStartImage = (base, baseName) => {
+          const workingImage = base.find((image) => image.id === 'workingImage')
+          const originalImage = base.find(
+            (image) => image.id === 'originalImage'
+          )
 
-        let workingImage
+          if (workingImage) {
+            return { base: baseName, startImage: 'workingImage' }
+          }
+          if (originalImage) {
+            return { base: baseName, startImage: 'originalImage' }
+          }
 
-        if (workingStartImage) {
-          workingImage = 'startImages'
+          return null
         }
 
-        if (workingUserImage) {
-          workingImage = 'userImages'
-        }
+        const startHiPostImage = checkStartImage(hiPostImages, 'hiPostImages')
+        const startUserImage = checkStartImage(userImages, 'userImages')
 
-        if (!workingStartImage && !workingUserImage) {
-          workingImage = null
-        }
+        const startImage = startUserImage
+          ? startUserImage
+          : startHiPostImage
+          ? startHiPostImage
+          : null
 
-        if (workingImage) {
-          await fetchImageFromIndexedDb(workingImage)
+        if (startImage) {
+          await fetchImageFromIndexedDb(startImage)
         } else {
-          if (
-            startImages.length > 0 &&
-            startImages.find((image) => image.id === 'startImage')
-          ) {
-            const startImageBlob = await getStartImage('startImage')
+          try {
             setImage({
-              source: 'startImage',
-              url: URL.createObjectURL(startImageBlob),
+              base: 'hiPostImages',
+              url: coverImage,
+              source: 'originalImage',
             })
-          } else {
-            setImage({
-              source: 'startImage',
-              url: startImage,
-            })
-            try {
-              const response = await fetch(startImage)
-              const blobStartImage = await response.blob()
+            setHiPostImage('originalImage')
+            const response = await fetch(coverImage)
+            const blobStartImage = await response.blob()
 
-              await addStartImage('startImage', blobStartImage)
-            } catch (error) {
-              console.error('Error saving initial image to IndexedDb:', error)
-            }
+            await addHiPostImage('originalImage', blobStartImage)
+            // await addHiPostImage('workingImage', blobStartImage)
+            // setInfoImage({ base: 'hiPostImage', source: 'workingImage' })
+          } catch (error) {
+            console.error('Error saving initial image to IndexedDb:', error)
           }
         }
       } catch (error) {
@@ -133,21 +132,30 @@ const ImageCrop = ({ sizeCard }) => {
     fetchImages()
   }, [])
 
-  const fetchImageFromIndexedDb = async (id) => {
+  const fetchImageFromIndexedDb = async (startImage) => {
     try {
-      const getWorkingImageFunctions = {
-        startImages: getStartImage,
+      const getStartImageFunctions = {
+        hiPostImages: getHiPostImage,
         userImages: getUserImage,
       }
-      const getWorkingImageFunction = getWorkingImageFunctions[id]
+      const getStartImageFunction = getStartImageFunctions[startImage.base]
 
-      if (!getWorkingImageFunction) {
-        throw new Error(`Unknown id: ${id}`)
+      if (!getStartImageFunction) {
+        throw new Error(`Unknown id: ${startImage.base}`)
       }
 
-      const savedWorkingImage = await getWorkingImageFunction('workingImage')
-      const url = URL.createObjectURL(savedWorkingImage)
-      setImage({ source: id, url: url })
+      const savedStartImage = await getStartImageFunction(startImage.startImage)
+
+      if (!savedStartImage) {
+        throw new Error(`Image not found for id: ${startImage.startImage}`)
+      }
+
+      const url = URL.createObjectURL(savedStartImage)
+      setImage({
+        base: startImage.base,
+        source: startImage.startImage,
+        url: url,
+      })
       fetchImageDimensions(url)
       return
     } catch (error) {
@@ -156,14 +164,14 @@ const ImageCrop = ({ sizeCard }) => {
   }
 
   const deleteImagesInIndexedDb = async (id) => {
-    const savedImage = await getStartImage(id)
+    const savedImage = await getHiPostImage(id)
     setImage(
       savedImage
         ? { source: id, url: savedImage.image }
         : { source: null, url: null }
     )
     if (layoutWorkingImage.originalImage) {
-      const originalImage = await getStartImage('originalImage')
+      const originalImage = await getHiPostImage('originalImage')
       setOriginalImage(originalImage.image)
     }
   }
@@ -174,7 +182,7 @@ const ImageCrop = ({ sizeCard }) => {
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (isCropVisibly) {
       const croppedImage = getCroppedImage(
         imgRef,
@@ -183,9 +191,21 @@ const ImageCrop = ({ sizeCard }) => {
         scaleX,
         scaleY
       )
+      const base = image.base
       const source = image.source
+
+      const addWorkingImageFunctions = {
+        hiPostImages: addHiPostImage,
+        userImages: addUserImage,
+      }
+      const addWorkingImageFunction = addWorkingImageFunctions[base]
+
+      if (!addWorkingImageFunction) {
+        throw new Error(`Unknown id: ${base}`)
+      }
+
       console.log('source', source)
-      setImage({ source: `${source}-save`, url: croppedImage })
+      setImage({ source: source, url: croppedImage })
       setCrop({
         x: 0,
         y: 0,
@@ -193,8 +213,10 @@ const ImageCrop = ({ sizeCard }) => {
         height: sizeCard.height,
       })
       const blobCroppedImage = base64ToBlob(croppedImage, 'image/png')
-      addUserImage(`${source}-save`, blobCroppedImage)
-      addUserImage('miniImage', blobCroppedImage)
+      await addWorkingImageFunction('workingImage', blobCroppedImage)
+      await addWorkingImageFunction('miniImage', blobCroppedImage)
+      // addUserImage(`${source}-save`, blobCroppedImage)
+      // addUserImage('miniImage', blobCroppedImage)
       fetchImageDimensions(croppedImage)
       dispatch(addCardphoto({ source: `${source}-save`, url: croppedImage }))
       dispatch(
@@ -207,36 +229,73 @@ const ImageCrop = ({ sizeCard }) => {
     }
   }
 
-  const handleDelete = () => {
-    const sourceImage = image.source.split('-')
+  const handleDelete = async () => {
     if (isCropVisibly) {
       setIsCropVisibly(false)
       return
     }
-    if (sourceImage.length > 1) {
-      setImage({
-        source: `${sourceImage[0]}`,
-        url: sourceImage[0] === 'userImage' ? originalImage : startImage,
-      })
-      if (sourceImage[0] === 'userImage') {
-        addStartImage(`${sourceImage[0]}`, originalImage)
-        deleteStartImage(image.source)
-      } else {
-        addStartImage(`${sourceImage[0]}`, originalImage)
-        deleteStartImage()
+    const base = image.base
+    const source = image.source
+    console.log('handleDelete', base, '//', source)
+
+    if (base === 'userImages') {
+      if (source === 'workingImage') {
+        fetchImageFromIndexedDb({ base: 'userImages', source: 'originalImage' })
+        await deleteUserImage('workingImage')
       }
-      dispatch(addWorkingImg({ source: `${sourceImage[0]}`, miniImage: null }))
-      dispatch(addCardphoto({ url: null, source: null }))
-    }
-    if (sourceImage.length === 1) {
-      if (image.source === 'userImage') {
-        setImage({ source: 'startImage', url: startImage })
-        dispatch(
-          addWorkingImg({ source: `${sourceImage[0]}`, miniImage: null })
-        )
-        dispatch(addCardphoto({ url: null, source: null }))
+      if (source === 'originalImage') {
+        if (hiPostImage === 'workingImage') {
+          fetchImageFromIndexedDb({
+            base: 'hiPostImages',
+            source: 'workingImage',
+          })
+        }
+        if (hiPostImage === 'originalImage') {
+          fetchImageFromIndexedDb({
+            base: 'hiPostImages',
+            source: 'originalImage',
+          })
+        }
+        await deleteUserImage('originalImage')
       }
     }
+    if (base === 'hiPostImages') {
+      if (hiPostImage === 'workingImage') {
+        fetchImageFromIndexedDb({
+          base: 'hiPostImages',
+          source: 'originalImage',
+        })
+        await deleteHiPostImage('workingImage')
+      }
+      if (hiPostImage === 'originalImage') {
+        return
+      }
+    }
+
+    // if (sourceImage.length > 1) {
+    //   setImage({
+    //     source: `${sourceImage[0]}`,
+    //     url: sourceImage[0] === 'userImage' ? originalImage : coverImage,
+    //   })
+    //   if (sourceImage[0] === 'userImage') {
+    //     addHiPostImage(`${sourceImage[0]}`, originalImage)
+    //     deleteHiPostImage(image.source)
+    //   } else {
+    //     addHiPostImage(`${sourceImage[0]}`, originalImage)
+    //     deleteHiPostImage()
+    //   }
+    //   dispatch(addWorkingImg({ source: `${sourceImage[0]}`, miniImage: null }))
+    //   dispatch(addCardphoto({ url: null, source: null }))
+    // }
+    // if (sourceImage.length === 1) {
+    //   if (image.source === 'userImage') {
+    //     setImage({ source: 'startImage', url: coverImage })
+    //     dispatch(
+    //       addWorkingImg({ source: `${sourceImage[0]}`, miniImage: null })
+    //     )
+    //     dispatch(addCardphoto({ url: null, source: null }))
+    //   }
+    // }
     dispatch(infoButtons({ crop: false }))
   }
 
@@ -311,7 +370,6 @@ const ImageCrop = ({ sizeCard }) => {
     return new Blob(byteArrays, { type: contentType })
   }
 
-  // useEffect(() => {
   const fetchImageDimensions = async (src) => {
     try {
       const dimensions = await loadImageDimensions(src)
@@ -329,7 +387,6 @@ const ImageCrop = ({ sizeCard }) => {
         setScaleX(scaleX)
         setScaleY(scaleY)
 
-        // if (isCropVisibly) {
         const valueCrop = centeringMaxCrop(dimensions, aspectRatio, modeCrop)
 
         setCrop({
@@ -338,7 +395,6 @@ const ImageCrop = ({ sizeCard }) => {
           width: valueCrop.width,
           height: valueCrop.height,
         })
-        // }
       }
     } catch (err) {
       console.error('Error loading image:', err)
@@ -364,10 +420,10 @@ const ImageCrop = ({ sizeCard }) => {
 
     if (file) {
       const blob = new Blob([file], { type: file.type })
-      // await addImage('startImage', blobStartImage)
-      await addStartImage('originalImage', blob)
-      await addUserImage('userImage', blob)
-      await addUserImage('workingImage', blob)
+
+      await addUserImage('originalImage', blob)
+      // await addUserImage('workingImage', blob)
+      await deleteHiPostImage('workingImage')
 
       const reader = new FileReader()
       reader.onload = () => {
