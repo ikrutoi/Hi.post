@@ -42,9 +42,9 @@ export const addBtnToolbar = (newSection) => {
   }
 }
 
-export const addWorkingImage = (newSection) => {
+export const addWorkingImg = (newSection) => {
   return {
-    type: a.ADD_WORKING_IMAGE,
+    type: a.ADD_WORKING_IMG,
     payload: newSection,
   }
 }

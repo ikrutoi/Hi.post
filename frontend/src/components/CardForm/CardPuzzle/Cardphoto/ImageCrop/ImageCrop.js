@@ -3,14 +3,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import './ImageCrop.scss'
 import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
 import {
-  addWorkingImage,
+  addWorkingImg,
   addImages,
 } from '../../../../../redux/layout/actionCreators'
 import {
-  addImage,
-  getImage,
-  deleteImage,
-  getAllImages,
+  addStartImage,
+  getStartImage,
+  deleteStartImage,
+  getAllStartImages,
+  addUserImage,
+  getUserImage,
+  deleteUserImage,
+  getAllUserImages,
 } from '../../../../../utils/cardFormNav/indexDB/indexDb'
 import { addBtnToolbar } from '../../../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
@@ -48,35 +52,77 @@ const ImageCrop = ({ sizeCard }) => {
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 })
   const dispatch = useDispatch()
   const aspectRatio = 142 / 100
-  const handleDownload = () => {
-    if (inputRef.current) {
-      inputRef.current.click()
-    }
-  }
+
+  useEffect(() => {
+    console.log('image', image)
+  }, [image])
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const savedImages = await getAllImages()
-        const workingImage = savedImages.find(
+        const startImages = await getAllStartImages()
+        const userImages = await getAllUserImages()
+
+        console.log('startImages', startImages)
+        console.log('userImages', userImages)
+
+        // if (startImages.length > 0) {
+        //   for (const image of startImages) {
+        //     deleteStartImage(image.id)
+        //   }
+        // }
+        // if (userImages.length > 0) {
+        //   for (const image of userImages) {
+        //     deleteUserImage(image.id)
+        //   }
+        // }
+
+        const workingStartImage = startImages.find(
           (image) => image.id === 'workingImage'
         )
+        const workingUserImage = userImages.find(
+          (image) => image.id === 'workingImage'
+        )
+
+        let workingImage
+
+        if (workingStartImage) {
+          workingImage = 'startImages'
+        }
+
+        if (workingUserImage) {
+          workingImage = 'userImages'
+        }
+
+        if (!workingStartImage && !workingUserImage) {
+          workingImage = null
+        }
+
         if (workingImage) {
-          await fetchImageFromIndexedDb('workingImage')
+          await fetchImageFromIndexedDb(workingImage)
         } else {
-          setImage({
-            source: 'startImage',
-            url: startImage,
-          })
+          if (
+            startImages.length > 0 &&
+            startImages.find((image) => image.id === 'startImage')
+          ) {
+            const startImageBlob = await getStartImage('startImage')
+            setImage({
+              source: 'startImage',
+              url: URL.createObjectURL(startImageBlob),
+            })
+          } else {
+            setImage({
+              source: 'startImage',
+              url: startImage,
+            })
+            try {
+              const response = await fetch(startImage)
+              const blobStartImage = await response.blob()
 
-          try {
-            const response = await fetch(startImage)
-            const blobStartImage = await response.blob()
-
-            await addImage('startImage', blobStartImage)
-            await addImage('workingImage', blobStartImage)
-          } catch (error) {
-            console.error('Error saving initial image to IndexedDb:', error)
+              await addStartImage('startImage', blobStartImage)
+            } catch (error) {
+              console.error('Error saving initial image to IndexedDb:', error)
+            }
           }
         }
       } catch (error) {
@@ -89,39 +135,42 @@ const ImageCrop = ({ sizeCard }) => {
 
   const fetchImageFromIndexedDb = async (id) => {
     try {
-      const savedImage = await getImage(id)
-      if (
-        savedImage.image instanceof Blob ||
-        savedImage.image instanceof File
-      ) {
-        setImage({ source: id, url: URL.createObjectURL(savedImage.image) })
-        fetchImageDimensions(URL.createObjectURL(savedImage.image))
-        return
-      } else if (
-        typeof savedImage.image === 'string' &&
-        savedImage.image.startsWith('data:image/')
-      ) {
-        setImage({
-          source: id,
-          url: savedImage.image,
-        })
-        return
+      const getWorkingImageFunctions = {
+        startImages: getStartImage,
+        userImages: getUserImage,
       }
+      const getWorkingImageFunction = getWorkingImageFunctions[id]
+
+      if (!getWorkingImageFunction) {
+        throw new Error(`Unknown id: ${id}`)
+      }
+
+      const savedWorkingImage = await getWorkingImageFunction('workingImage')
+      const url = URL.createObjectURL(savedWorkingImage)
+      setImage({ source: id, url: url })
+      fetchImageDimensions(url)
+      return
     } catch (error) {
       console.error('Error fetching image from IndexedDb:', error)
     }
   }
 
   const deleteImagesInIndexedDb = async (id) => {
-    const savedImage = await getImage(id)
+    const savedImage = await getStartImage(id)
     setImage(
       savedImage
         ? { source: id, url: savedImage.image }
         : { source: null, url: null }
     )
     if (layoutWorkingImage.originalImage) {
-      const originalImage = await getImage('originalImage')
+      const originalImage = await getStartImage('originalImage')
       setOriginalImage(originalImage.image)
+    }
+  }
+
+  const handleDownload = () => {
+    if (inputRef.current) {
+      inputRef.current.click()
     }
   }
 
@@ -135,6 +184,7 @@ const ImageCrop = ({ sizeCard }) => {
         scaleY
       )
       const source = image.source
+      console.log('source', source)
       setImage({ source: `${source}-save`, url: croppedImage })
       setCrop({
         x: 0,
@@ -142,12 +192,13 @@ const ImageCrop = ({ sizeCard }) => {
         width: sizeCard.width,
         height: sizeCard.height,
       })
-      addImage(`${source}-save`, croppedImage)
-      addImage('miniImage', croppedImage)
+      const blobCroppedImage = base64ToBlob(croppedImage, 'image/png')
+      addUserImage(`${source}-save`, blobCroppedImage)
+      addUserImage('miniImage', blobCroppedImage)
       fetchImageDimensions(croppedImage)
       dispatch(addCardphoto({ source: `${source}-save`, url: croppedImage }))
       dispatch(
-        addWorkingImage({ source: `${source}-save`, miniImage: 'miniImage' })
+        addWorkingImg({ source: `${source}-save`, miniImage: 'miniImage' })
       )
       if (isCropVisibly) {
         setIsCropVisibly(false)
@@ -168,22 +219,20 @@ const ImageCrop = ({ sizeCard }) => {
         url: sourceImage[0] === 'userImage' ? originalImage : startImage,
       })
       if (sourceImage[0] === 'userImage') {
-        addImage(`${sourceImage[0]}`, originalImage)
-        deleteImage(image.source)
+        addStartImage(`${sourceImage[0]}`, originalImage)
+        deleteStartImage(image.source)
       } else {
-        addImage(`${sourceImage[0]}`, originalImage)
-        deleteImage()
+        addStartImage(`${sourceImage[0]}`, originalImage)
+        deleteStartImage()
       }
-      dispatch(
-        addWorkingImage({ source: `${sourceImage[0]}`, miniImage: null })
-      )
+      dispatch(addWorkingImg({ source: `${sourceImage[0]}`, miniImage: null }))
       dispatch(addCardphoto({ url: null, source: null }))
     }
     if (sourceImage.length === 1) {
       if (image.source === 'userImage') {
         setImage({ source: 'startImage', url: startImage })
         dispatch(
-          addWorkingImage({ source: `${sourceImage[0]}`, miniImage: null })
+          addWorkingImg({ source: `${sourceImage[0]}`, miniImage: null })
         )
         dispatch(addCardphoto({ url: null, source: null }))
       }
@@ -245,6 +294,23 @@ const ImageCrop = ({ sizeCard }) => {
     }
   }, [layoutToolbar])
 
+  const base64ToBlob = (base64, contentType = '', sliceSize = 512) => {
+    const byteCharacters = atob(base64.split(',')[1])
+    const byteArrays = []
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize)
+      const byteNumbers = new Array(slice.length)
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i)
+      }
+      const byteArray = new Uint8Array(byteNumbers)
+      byteArrays.push(byteArray)
+    }
+
+    return new Blob(byteArrays, { type: contentType })
+  }
+
   // useEffect(() => {
   const fetchImageDimensions = async (src) => {
     try {
@@ -262,8 +328,6 @@ const ImageCrop = ({ sizeCard }) => {
         const scaleY = dimensions.height / img.height
         setScaleX(scaleX)
         setScaleY(scaleY)
-
-        // console.log('isCropVisibly', isCropVisibly)
 
         // if (isCropVisibly) {
         const valueCrop = centeringMaxCrop(dimensions, aspectRatio, modeCrop)
@@ -299,14 +363,16 @@ const ImageCrop = ({ sizeCard }) => {
     // const blobStartImage = await response.blob()
 
     if (file) {
+      const blob = new Blob([file], { type: file.type })
       // await addImage('startImage', blobStartImage)
-      await addImage('originalImage', file)
-      await addImage('userImage', file)
-      await addImage('workingImage', file)
+      await addStartImage('originalImage', blob)
+      await addUserImage('userImage', blob)
+      await addUserImage('workingImage', blob)
 
       const reader = new FileReader()
       reader.onload = () => {
         const imageDataUrl = reader.result
+        fetchImageDimensions(imageDataUrl)
         setImage({ source: 'userImage', url: imageDataUrl })
         setModeCrop('startCrop')
         dispatch(
@@ -319,7 +385,7 @@ const ImageCrop = ({ sizeCard }) => {
         )
 
         dispatch(
-          addWorkingImage({
+          addWorkingImg({
             originalImage: 'originalImage',
             source: 'userImage',
           })

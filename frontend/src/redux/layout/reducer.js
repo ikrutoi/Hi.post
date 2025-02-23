@@ -26,7 +26,7 @@ const initialState = {
     { id: 'workingImage', image: null },
     { id: 'miniImage', image: null },
   ],
-  workingImage: {
+  workingImg: {
     originalImage: null,
     source: null,
     miniImage: null,
@@ -57,10 +57,10 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         choiceSection: { ...state.choiceSection, ...action.payload },
       }
-    case a.ADD_WORKING_IMAGE:
+    case a.ADD_WORKING_IMG:
       return {
         ...state,
-        workingImage: { ...state.workingImage, ...action.payload },
+        workingImg: { ...state.workingImg, ...action.payload },
       }
     case a.ADD_IMAGES:
       return {
