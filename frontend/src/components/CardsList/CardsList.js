@@ -1,12 +1,18 @@
 import { useSelector } from 'react-redux'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import './CardsList.scss'
+import { useEffect } from 'react'
 
 const CardsList = () => {
+  const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const sectionCardEdit = useSelector((state) => state.cardEdit)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const choiceSection = useSelector((state) => state.layout.choiceSection)
   const listSelectedSections = []
+
+  useEffect(() => {
+    console.log('layoutIndexDb', layoutIndexDb)
+  }, [layoutIndexDb])
 
   for (let section in sectionCardEdit) {
     if (!!sectionCardEdit[section]) {

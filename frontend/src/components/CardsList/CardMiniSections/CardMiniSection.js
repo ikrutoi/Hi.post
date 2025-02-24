@@ -1,6 +1,8 @@
 import { useDispatch } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 import './CardMiniSection.scss'
+import { addAroma, addDate } from '../../../redux/cardEdit/actionCreators'
+import { CgClose } from 'react-icons/cg'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
 import MiniDate from './MiniDate/MiniDate'
@@ -88,6 +90,31 @@ const CardMiniSection = ({
     }
   }
 
+  const handleClickCardMiniKebab = (evt) => {
+    const searchParentBtnNav = (el) => {
+      if (el.classList.contains('card-mini-section')) {
+        return el
+      } else if (el.parentElement) {
+        return searchParentBtnNav(el.parentElement)
+      }
+      return null
+    }
+
+    const parentElement = searchParentBtnNav(evt.target)
+
+    switch (parentElement) {
+      case 'aroma':
+        dispatch(addAroma(null))
+        break
+      case 'date':
+        dispatch(addDate(null))
+        break
+
+      default:
+        break
+    }
+  }
+
   return (
     <div
       className={`card-mini-section card-mini-${sectionInfo.section}`}
@@ -112,10 +139,14 @@ const CardMiniSection = ({
       {polyInfo ? (
         <></>
       ) : (
-        <div className="card-mini-kebab">
-          <span className="mini-kebab-dots">
-            <span className="mini-kebab-icon"></span>
-          </span>
+        <div
+          className="card-mini-kebab"
+          onClick={(evt) => handleClickCardMiniKebab(evt)}
+        >
+          {/* <span className="mini-kebab-dots"> */}
+          <CgClose className="icon-close" />
+          {/* <span className="mini-kebab-icon"></span> */}
+          {/* </span> */}
         </div>
       )}
     </div>

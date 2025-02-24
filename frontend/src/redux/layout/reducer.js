@@ -17,21 +17,7 @@ const initialState = {
     secondBtn: null,
     section: null,
   },
-  images: [
-    { id: 'startImage', image: null },
-    { id: 'startImage-save', image: null },
-    { id: 'originalImage', image: null },
-    { id: 'userImage', image: null },
-    { id: 'userImage-save', image: null },
-    { id: 'workingImage', image: null },
-    { id: 'miniImage', image: null },
-  ],
-  workingImg: {
-    originalImage: null,
-    source: null,
-    miniImage: null,
-    userImage: null,
-  },
+  indexDb: {},
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -57,19 +43,27 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         choiceSection: { ...state.choiceSection, ...action.payload },
       }
-    case a.ADD_WORKING_IMG:
+    case a.ADD_INDEXDB:
       return {
         ...state,
-        workingImg: { ...state.workingImg, ...action.payload },
+        indexDb: {
+          ...action.payload,
+        },
       }
-    case a.ADD_IMAGES:
-      return {
-        ...state,
-        images: state.images.map((image) => {
-          const foundImage = action.payload.find((img) => img.id === image.id)
-          return foundImage ? { ...image, image: foundImage.image } : image
-        }),
-      }
+    // return {
+    //   ...state,
+    //   indexDb: {
+    //     ...state.indexDb,
+    //     hiPostImages: {
+    //       ...state.indexDb.hiPostImages,
+    //       ...action.payload.hiPostImages,
+    //     },
+    //     userImages: {
+    //       ...state.indexDb.hiPostImages,
+    //       ...action.payload.userImages,
+    //     },
+    //   },
+    // }
     default:
       return state
   }

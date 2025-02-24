@@ -4,7 +4,6 @@ import './MiniPhoto.scss'
 
 const MiniPhoto = ({ sizeCardMini }) => {
   const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
-
   const canvasRef = useRef(null)
   const [imgSrc, setImgSrc] = useState('')
 
