@@ -17,7 +17,18 @@ const initialState = {
     secondBtn: null,
     section: null,
   },
-  indexDb: {},
+  indexDb: {
+    hiPostImages: {
+      originalImage: null,
+      workingImage: null,
+      miniImage: null,
+    },
+    userImages: {
+      originalImage: null,
+      workingImage: null,
+      miniImage: null,
+    },
+  },
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -47,7 +58,15 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         indexDb: {
-          ...action.payload,
+          ...state.indexDb,
+          hiPostImages: {
+            ...state.indexDb.hiPostImages,
+            ...action.payload.hiPostImages,
+          },
+          userImages: {
+            ...state.indexDb.userImages,
+            ...action.payload.userImages,
+          },
         },
       }
     // return {

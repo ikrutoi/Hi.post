@@ -2,6 +2,13 @@ import { useDispatch } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 import './CardMiniSection.scss'
 import { addAroma, addDate } from '../../../redux/cardEdit/actionCreators'
+import { addIndexDb } from '../../../redux/layout/actionCreators'
+import {
+  // getAllHiPostImages,
+  deleteHiPostImage,
+  // getAllUserImages,
+  deleteUserImage,
+} from '../../../utils/cardFormNav/indexDB/indexDb'
 import { CgClose } from 'react-icons/cg'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
@@ -90,7 +97,7 @@ const CardMiniSection = ({
     }
   }
 
-  const handleClickCardMiniKebab = (evt) => {
+  const handleClickCardMiniKebab = async (evt) => {
     const searchParentBtnNav = (el) => {
       if (el.classList.contains('card-mini-section')) {
         return el
@@ -102,12 +109,23 @@ const CardMiniSection = ({
 
     const parentElement = searchParentBtnNav(evt.target)
 
-    switch (parentElement) {
+    switch (parentElement.dataset.name) {
       case 'aroma':
+        console.log('aroma++')
         dispatch(addAroma(null))
         break
       case 'date':
         dispatch(addDate(null))
+        break
+      case 'cardphoto':
+        await deleteHiPostImage('miniImage')
+        await deleteUserImage('miniImage')
+        dispatch(
+          addIndexDb({
+            hiPostImages: { miniImage: false },
+            userImages: { miniImage: false },
+          })
+        )
         break
 
       default:

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './ImageCrop.scss'
-import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
+// import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
 import { addIndexDb } from '../../../../../redux/layout/actionCreators'
 import {
   addHiPostImage,
@@ -237,6 +237,11 @@ const ImageCrop = ({ sizeCard }) => {
 
   const handleDownload = () => {
     if (inputRef.current) {
+      if (isCropVisibly) {
+        setIsCropVisibly(false)
+        dispatch(infoButtons({ crop: false }))
+        fetchImageDimensions(image.url)
+      }
       inputRef.current.click()
     }
   }
@@ -273,11 +278,14 @@ const ImageCrop = ({ sizeCard }) => {
       const blobCroppedImage = base64ToBlob(croppedImage, 'image/png')
 
       await addWorkingImageFunction('workingImage', blobCroppedImage)
-      await addWorkingImageFunction('miniImage', blobCroppedImage)
+      if (base === 'hiPostImages') {
+        await deleteUserImage('miniImage')
+        await addWorkingImageFunction('miniImage', blobCroppedImage)
+      }
       await checkIndexDb()
 
       fetchImageDimensions(croppedImage)
-      dispatch(addCardphoto({ source: `${source}-save`, url: croppedImage }))
+      // dispatch(addCardphoto({ source: `${source}-save`, url: croppedImage }))
       // dispatch(
       //   addIndexDb({
       //     [base]: { workingImage: true, miniImage: true },
@@ -367,6 +375,7 @@ const ImageCrop = ({ sizeCard }) => {
     if (isCropVisibly) {
       setIsCropVisibly(false)
       dispatch(infoButtons({ crop: false }))
+      fetchImageDimensions(image.url)
     } else {
       setIsCropVisibly(true)
       dispatch(infoButtons({ crop: true }))
@@ -439,6 +448,9 @@ const ImageCrop = ({ sizeCard }) => {
       const dimensions = await loadImageDimensions(src)
       const img = imgRef.current
       if (img) {
+        img.src = ''
+        img.src = src
+
         const { width, height } = adjustImageSize(
           img,
           sizeCard.width,
@@ -525,6 +537,8 @@ const ImageCrop = ({ sizeCard }) => {
       evt.target.value = ''
     }
   }
+
+  // console.log('sizeCard', sizeCard.width, sizeCard.height)
 
   return (
     <div
