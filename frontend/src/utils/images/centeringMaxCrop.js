@@ -47,5 +47,10 @@ export const centeringMaxCrop = (dimensions, aspectRatio, mode) => {
       calcOfValues('less')
     }
   }
-  return { x, y, width, height }
+  return {
+    x: Number(x.toFixed(2)),
+    y: Number(y.toFixed(2)),
+    width: Number(width.toFixed(2)),
+    height: Number(height.toFixed(2)),
+  }
 }

@@ -280,8 +280,11 @@ const ImageCrop = ({ sizeCard }) => {
       await addWorkingImageFunction('workingImage', blobCroppedImage)
       if (base === 'hiPostImages') {
         await deleteUserImage('miniImage')
-        await addWorkingImageFunction('miniImage', blobCroppedImage)
       }
+      if (base === 'userImages') {
+        await deleteHiPostImage('miniImage')
+      }
+      await addWorkingImageFunction('miniImage', blobCroppedImage)
       await checkIndexDb()
 
       fetchImageDimensions(croppedImage)
@@ -449,28 +452,31 @@ const ImageCrop = ({ sizeCard }) => {
       const img = imgRef.current
       if (img) {
         img.src = ''
+        img.onload = () => {
+          const { width, height } = adjustImageSize(
+            img,
+            sizeCard.width,
+            sizeCard.height
+          )
+          img.style.width = `${width}px`
+          img.style.height = `${height}px`
+
+          const scaleX = dimensions.width / img.width
+          const scaleY = dimensions.height / img.height
+          setScaleX(scaleX)
+          setScaleY(scaleY)
+
+          const valueCrop = centeringMaxCrop(dimensions, aspectRatio, modeCrop)
+
+          setCrop({
+            x: valueCrop.x,
+            y: valueCrop.y,
+            width: valueCrop.width,
+            height: valueCrop.height,
+          })
+        }
+
         img.src = src
-
-        const { width, height } = adjustImageSize(
-          img,
-          sizeCard.width,
-          sizeCard.height
-        )
-        img.style.width = `${width}px`
-        img.style.height = `${height}px`
-        const scaleX = dimensions.width / img.width
-        const scaleY = dimensions.height / img.height
-        setScaleX(scaleX)
-        setScaleY(scaleY)
-
-        const valueCrop = centeringMaxCrop(dimensions, aspectRatio, modeCrop)
-
-        setCrop({
-          x: valueCrop.x,
-          y: valueCrop.y,
-          width: valueCrop.width,
-          height: valueCrop.height,
-        })
       }
     } catch (err) {
       console.error('Error loading image:', err)
@@ -491,8 +497,6 @@ const ImageCrop = ({ sizeCard }) => {
 
   const handleFileChange = async (evt) => {
     const file = evt.target.files[0]
-    // const response = await fetch(startImage)
-    // const blobStartImage = await response.blob()
 
     if (file) {
       const blob = new Blob([file], { type: file.type })
@@ -501,44 +505,17 @@ const ImageCrop = ({ sizeCard }) => {
       await deleteHiPostImage('workingImage')
       await checkIndexDb()
 
-      const reader = new FileReader()
-      reader.onload = () => {
-        const imageDataUrl = reader.result
-        fetchImageDimensions(imageDataUrl)
-        setImage({
-          source: 'originalImage',
-          url: imageDataUrl,
-          base: 'userImages',
-        })
-        setModeCrop('startCrop')
-        // dispatch(
-        //   addIndexDb({
-        //     userImages: { originalImage: true },
-        //     hiPostImages: { workingImage: false },
-        //   })
-        // )
-        // dispatch(
-        //   addImages([
-        //     { id: 'originalImage', image: true },
-        //     { id: 'startImage', image: true },
-        //     { id: 'userImage', image: true },
-        //     { id: 'workingImage', image: true },
-        //   ])
-        // )
-
-        // dispatch(
-        //   addWorkingImg({
-        //     originalImage: 'originalImage',
-        //     source: 'userImage',
-        //   })
-        // )
-      }
-      reader.readAsDataURL(file)
+      const blobUrl = URL.createObjectURL(blob)
+      fetchImageDimensions(blobUrl)
+      setImage({
+        source: 'originalImage',
+        url: blobUrl,
+        base: 'userImages',
+      })
+      setModeCrop('startCrop')
       evt.target.value = ''
     }
   }
-
-  // console.log('sizeCard', sizeCard.width, sizeCard.height)
 
   return (
     <div
@@ -598,11 +575,10 @@ const ImageCrop = ({ sizeCard }) => {
               ref={cropAreaRef}
               className="crop-area"
               style={{
-                top: crop.y / scaleX,
-                left: crop.x / scaleY,
-                width: crop.width / scaleX,
-                height: crop.height / scaleY,
-                // display: isCropVisibly ? 'block' : 'none',
+                top: `${crop.y / scaleX}px`,
+                left: `${crop.x / scaleY}px`,
+                width: `${crop.width / scaleX}px`,
+                height: `${crop.height / scaleY}px`,
               }}
               onMouseDown={(e) =>
                 handleMouseDownDrag(
