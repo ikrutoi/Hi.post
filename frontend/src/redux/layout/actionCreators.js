@@ -48,3 +48,10 @@ export const addIndexDb = (newSection) => {
     payload: newSection,
   }
 }
+
+export const addMemoryCrop = (newSection) => {
+  return {
+    type: a.ADD_MEMORY_CROP,
+    payload: newSection,
+  }
+}

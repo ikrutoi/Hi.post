@@ -29,6 +29,7 @@ const initialState = {
       miniImage: null,
     },
   },
+  memoryCrop: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -53,6 +54,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         choiceSection: { ...state.choiceSection, ...action.payload },
+      }
+    case a.ADD_MEMORY_CROP:
+      return {
+        ...state,
+        memoryCrop: action.payload,
       }
     case a.ADD_INDEXDB:
       return {

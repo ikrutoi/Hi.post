@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './ImageCrop.scss'
-// import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
-import { addIndexDb } from '../../../../../redux/layout/actionCreators'
 import {
   addHiPostImage,
   getHiPostImage,
@@ -13,7 +11,11 @@ import {
   deleteUserImage,
   getAllUserImages,
 } from '../../../../../utils/cardFormNav/indexDB/indexDb'
-import { addBtnToolbar } from '../../../../../redux/layout/actionCreators'
+import {
+  addBtnToolbar,
+  addIndexDb,
+  addMemoryCrop,
+} from '../../../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import coverImage from '../../../../../data/img/card-photo-bw.jpg'
 import { updateClipPath } from '../../../../../utils/images/updateClipPath'
@@ -28,6 +30,7 @@ import { adjustImageSize } from '../../../../../utils/images/adjustImageSize'
 
 const ImageCrop = ({ sizeCard }) => {
   const layoutToolbar = useSelector((state) => state.layout.btnToolbar)
+  const layoutMemoryCrop = useSelector((state) => state.layout.memoryCrop)
   const layoutWorkingImage = useSelector((state) => state.layout.workingImage)
   const [image, setImage] = useState({ source: null, url: null, base: null })
   const [scaleX, setScaleX] = useState(1)
@@ -39,15 +42,10 @@ const ImageCrop = ({ sizeCard }) => {
   const overlayRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
-  const [modeCrop, setModeCrop] = useState('startCrop')
   const [isCropVisibly, setIsCropVisibly] = useState(false)
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 })
   const dispatch = useDispatch()
   const aspectRatio = 142 / 100
-
-  // useEffect(() => {
-  //   console.log('image', image)
-  // }, [image])
 
   const checkIndexDb = async () => {
     try {
@@ -214,8 +212,7 @@ const ImageCrop = ({ sizeCard }) => {
         url: url,
       })
       await checkIndexDb()
-      fetchImageDimensions(url)
-      // dispatch(addIndexDb({ [startImage.base]: { [startImage.source]: true } }))
+      fetchImageDimensions(url, 'startCrop')
       return
     } catch (error) {
       console.error('Error fetching image from IndexedDb:', error)
@@ -240,8 +237,9 @@ const ImageCrop = ({ sizeCard }) => {
       if (isCropVisibly) {
         setIsCropVisibly(false)
         dispatch(infoButtons({ crop: false }))
-        fetchImageDimensions(image.url)
+        fetchImageDimensions(image.url, 'startCrop')
       }
+      dispatch(addMemoryCrop(null))
       inputRef.current.click()
     }
   }
@@ -287,16 +285,7 @@ const ImageCrop = ({ sizeCard }) => {
       await addWorkingImageFunction('miniImage', blobCroppedImage)
       await checkIndexDb()
 
-      fetchImageDimensions(croppedImage)
-      // dispatch(addCardphoto({ source: `${source}-save`, url: croppedImage }))
-      // dispatch(
-      //   addIndexDb({
-      //     [base]: { workingImage: true, miniImage: true },
-      //   })
-      // )
-      // dispatch(
-      //   addWorkingImg({ source: `${source}-save`, miniImage: 'miniImage' })
-      // )
+      fetchImageDimensions(croppedImage, 'startCrop')
       if (isCropVisibly) {
         setIsCropVisibly(false)
       }
@@ -327,11 +316,6 @@ const ImageCrop = ({ sizeCard }) => {
         fetchImageFromIndexedDb({ base: 'userImages', source: 'originalImage' })
         await deleteUserImage('workingImage')
         await checkIndexDb()
-        // dispatch(
-        //   addIndexDb({
-        //     userImages: { workingImage: false },
-        //   })
-        // )
       }
       if (source === 'originalImage') {
         if (isWorkingImage) {
@@ -340,6 +324,7 @@ const ImageCrop = ({ sizeCard }) => {
             source: 'workingImage',
           })
         } else {
+          dispatch(addMemoryCrop(null))
           fetchImageFromIndexedDb({
             base: 'hiPostImages',
             source: 'originalImage',
@@ -347,11 +332,6 @@ const ImageCrop = ({ sizeCard }) => {
         }
         await deleteUserImage('originalImage')
         await checkIndexDb()
-        // dispatch(
-        //   addIndexDb({
-        //     userImages: { originalImage: false },
-        //   })
-        // )
       }
     }
     if (base === 'hiPostImages') {
@@ -362,11 +342,6 @@ const ImageCrop = ({ sizeCard }) => {
         })
         await deleteHiPostImage('workingImage')
         await checkIndexDb()
-        // dispatch(
-        //   addIndexDb({
-        //     hiPostImages: { workingImage: false },
-        //   })
-        // )
       } else {
         return
       }
@@ -376,19 +351,28 @@ const ImageCrop = ({ sizeCard }) => {
 
   const handleCrop = () => {
     if (isCropVisibly) {
+      dispatch(
+        addMemoryCrop({
+          x: crop.x,
+          y: crop.y,
+          width: crop.width,
+          height: crop.height,
+        })
+      )
       setIsCropVisibly(false)
       dispatch(infoButtons({ crop: false }))
-      fetchImageDimensions(image.url)
+      // fetchImageDimensions(image.url)
     } else {
       setIsCropVisibly(true)
       dispatch(infoButtons({ crop: true }))
-      fetchImageDimensions(image.url)
+      fetchImageDimensions(image.url, 'startCrop')
     }
   }
 
   const handleMaximaze = () => {
     if (isCropVisibly) {
-      setModeCrop('maxCrop')
+      fetchImageDimensions(image.url, 'maxCrop')
+      // centeringMaxCrop()
     }
   }
 
@@ -446,7 +430,7 @@ const ImageCrop = ({ sizeCard }) => {
     return new Blob(byteArrays, { type: contentType })
   }
 
-  const fetchImageDimensions = async (src) => {
+  const fetchImageDimensions = async (src, modeCrop) => {
     try {
       const dimensions = await loadImageDimensions(src)
       const img = imgRef.current
@@ -466,14 +450,26 @@ const ImageCrop = ({ sizeCard }) => {
           setScaleX(scaleX)
           setScaleY(scaleY)
 
-          const valueCrop = centeringMaxCrop(dimensions, aspectRatio, modeCrop)
-
-          setCrop({
-            x: valueCrop.x,
-            y: valueCrop.y,
-            width: valueCrop.width,
-            height: valueCrop.height,
-          })
+          if (layoutMemoryCrop) {
+            setCrop({
+              x: layoutMemoryCrop.x,
+              y: layoutMemoryCrop.y,
+              width: layoutMemoryCrop.width,
+              height: layoutMemoryCrop.height,
+            })
+          } else {
+            const valueCrop = centeringMaxCrop(
+              dimensions,
+              aspectRatio,
+              modeCrop
+            )
+            setCrop({
+              x: valueCrop.x,
+              y: valueCrop.y,
+              width: valueCrop.width,
+              height: valueCrop.height,
+            })
+          }
         }
 
         img.src = src
@@ -506,13 +502,12 @@ const ImageCrop = ({ sizeCard }) => {
       await checkIndexDb()
 
       const blobUrl = URL.createObjectURL(blob)
-      fetchImageDimensions(blobUrl)
+      fetchImageDimensions(blobUrl, 'startCrop')
       setImage({
         source: 'originalImage',
         url: blobUrl,
         base: 'userImages',
       })
-      setModeCrop('startCrop')
       evt.target.value = ''
     }
   }
@@ -562,13 +557,7 @@ const ImageCrop = ({ sizeCard }) => {
             alt="Source"
             className="crop-image"
           />
-          {isCropVisibly && (
-            <div
-              className="overlay"
-              ref={overlayRef}
-              // style={{ display: isCropVisibly ? 'block' : 'none' }}
-            ></div>
-          )}
+          {isCropVisibly && <div className="overlay" ref={overlayRef}></div>}
 
           {isCropVisibly && (
             <div
