@@ -1,15 +1,21 @@
 import { useSelector } from 'react-redux'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
+import { TbArrowsMinimize } from 'react-icons/tb'
+import { HiArrowsPointingIn } from 'react-icons/hi2'
+
 import './CardsList.scss'
-// import { useEffect } from 'react'
-// import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const CardsList = () => {
   const sectionCardEdit = useSelector((state) => state.cardEdit)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const choiceSection = useSelector((state) => state.layout.choiceSection)
+  const iconMinimizeContainerRef = useRef()
+  const [styleIconMinimize, setStyleIconMinimize] = useState(null)
   const listSelectedSections = []
+  const [allCardMini, setAllCardMini] = useState(false)
+  let count = 0
 
   for (let section in sectionCardEdit) {
     if (!!sectionCardEdit[section]) {
@@ -21,11 +27,13 @@ const CardsList = () => {
               layoutIndexDb.userImages.miniImage)
           ) {
             listSelectedSections.push({ section, position: 0 })
+            count++
           }
           break
         case 'cardtext':
           if (sectionCardEdit[section].text[0].children[0].text) {
             listSelectedSections.push({ section, position: 1 })
+            count++
           }
           break
         case 'envelope':
@@ -37,16 +45,19 @@ const CardsList = () => {
             sectionCardEdit[section].toaddress.name !== ''
           ) {
             listSelectedSections.push({ section, position: 2 })
+            count++
           }
           break
         case 'date':
           if (sectionCardEdit[section]) {
             listSelectedSections.push({ section, position: 3 })
+            count++
           }
           break
         case 'aroma':
           if (sectionCardEdit[section]) {
             listSelectedSections.push({ section, position: 4 })
+            count++
           }
           break
         default:
@@ -54,9 +65,44 @@ const CardsList = () => {
       }
     }
   }
+
   const listSortSelectedSections = listSelectedSections.sort(
     (a, b) => a.position - b.position
   )
+
+  useEffect(() => {
+    if (count === 5) {
+      setAllCardMini(true)
+    } else {
+      setAllCardMini(false)
+    }
+  }, [count])
+
+  const handleClickIconMinimize = () => {
+    // const searchParentBtnNav = (el) => {
+    //   if (el.classList.contains('icon-minimize-container')) {
+    //     return el
+    //   } else if (el.parentElement) {
+    //     return searchParentBtnNav(el.parentElement)
+    //   }
+    //   return null
+    // }
+
+    // const parentElement = searchParentBtnNav(evt.target)
+
+    console.log('click Minimize')
+  }
+
+  useEffect(() => {
+    if (iconMinimizeContainerRef.current) {
+      const left =
+        (sizeMiniCard.width - iconMinimizeContainerRef.current.offsetWidth) / 2
+      const top =
+        (sizeMiniCard.height - iconMinimizeContainerRef.current.offsetHeight) /
+        2
+      setStyleIconMinimize({ left, top })
+    }
+  }, [iconMinimizeContainerRef, sizeMiniCard])
 
   const getListPrioritySections = () => {
     const temporaryArray = []
@@ -81,6 +127,19 @@ const CardsList = () => {
           height: `${sizeMiniCard.height}px`,
         }}
       >
+        {allCardMini && (
+          <span
+            className="icon-minimize-container"
+            ref={iconMinimizeContainerRef}
+            style={{
+              left: `${styleIconMinimize ? styleIconMinimize.left : 0}px`,
+              top: `${styleIconMinimize ? styleIconMinimize.top : 0}px`,
+            }}
+            onClick={handleClickIconMinimize}
+          >
+            <HiArrowsPointingIn className="icon-minimize" />
+          </span>
+        )}
         {listPrioritySections.length !== 0 ? (
           listPrioritySections.map((selectedSection, i) => (
             <CardMiniSection

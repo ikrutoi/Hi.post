@@ -31,7 +31,6 @@ import { adjustImageSize } from '../../../../../utils/images/adjustImageSize'
 const ImageCrop = ({ sizeCard }) => {
   const layoutToolbar = useSelector((state) => state.layout.btnToolbar)
   const layoutMemoryCrop = useSelector((state) => state.layout.memoryCrop)
-  const layoutWorkingImage = useSelector((state) => state.layout.workingImage)
   const [image, setImage] = useState({ source: null, url: null, base: null })
   const [scaleX, setScaleX] = useState(1)
   const [scaleY, setScaleY] = useState(1)
@@ -44,6 +43,11 @@ const ImageCrop = ({ sizeCard }) => {
   const [isResizing, setIsResizing] = useState(false)
   const [isCropVisibly, setIsCropVisibly] = useState(false)
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 })
+  const [rotation, setRotation] = useState(0)
+  // const [adjustedSize, setAdjustedSize] = useState({
+  //   width: sizeCard.width,
+  //   height: sizeCard.height,
+  // })
   const dispatch = useDispatch()
   const aspectRatio = 142 / 100
 
@@ -349,6 +353,48 @@ const ImageCrop = ({ sizeCard }) => {
     dispatch(infoButtons({ crop: false }))
   }
 
+  const handleTurn = () => {
+    // setRotation((prevRotation) => prevRotation + 90)
+  }
+
+  // const getAdjustedSizes = () => {
+  //   if (!imgRef.current) {
+  //     return { width: sizeCard.width, height: sizeCard.height }
+  //   }
+
+  //   const imgWidth = imgRef.current.naturalWidth
+  //   const imgHeight = imgRef.current.naturalHeight
+  //   let newWidth = imgWidth
+  //   let newHeight = imgHeight
+
+  //   if (rotation % 180 !== 0) {
+  //     newWidth = imgHeight
+  //     newHeight = imgWidth
+  //   }
+
+  //   return {
+  //     width: newWidth,
+  //     height: newHeight,
+  //   }
+  // }
+
+  // const { width, height } = getAdjustedSizes()
+
+  // useEffect(() => {
+  //   const img = imgRef.current
+  //   if (img) {
+  //     const handleImageLoad = () => {
+  //       setAdjustedSize(getAdjustedSizes(img, rotation))
+  //     }
+
+  //     if (img.complete) {
+  //       handleImageLoad()
+  //     } else {
+  //       img.onload = handleImageLoad
+  //     }
+  //   }
+  // }, [rotation, sizeCard])
+
   const handleCrop = () => {
     if (isCropVisibly) {
       dispatch(
@@ -397,6 +443,10 @@ const ImageCrop = ({ sizeCard }) => {
         break
       case 'delete':
         handleDelete()
+        resetBtnToolbar()
+        break
+      case 'turn':
+        handleTurn()
         resetBtnToolbar()
         break
       case 'crop':
@@ -556,6 +606,13 @@ const ImageCrop = ({ sizeCard }) => {
             src={image.url}
             alt="Source"
             className="crop-image"
+            // style={{
+            //   width: `${width}px`,
+            //   height: `${height}px`,
+            //   transform: `rotate(${rotation}deg)`,
+            //   // transition: 'transform 0.5s',
+            //   transition: 'transform 0.5s width 0.5s height 0.5s',
+            // }}
           />
           {isCropVisibly && <div className="overlay" ref={overlayRef}></div>}
 

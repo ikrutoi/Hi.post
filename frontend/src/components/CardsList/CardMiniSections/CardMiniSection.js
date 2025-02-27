@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
 import { CgClose } from 'react-icons/cg'
 import './CardMiniSection.scss'
@@ -13,8 +13,6 @@ import {
   deleteHiPostImage,
   deleteUserImage,
 } from '../../../utils/cardFormNav/indexDB/indexDb'
-// import listLabelsMyAddress from '../../../../data/envelope/list-labels-my-address.json'
-// import listLabelsToAddress from '../../../../data/envelope/list-labels-to-address.json'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
 import MiniDate from './MiniDate/MiniDate'
@@ -101,8 +99,6 @@ const CardMiniSection = ({
         break
     }
   }
-
-  const cardtext = useSelector((state) => state.cardEdit.cardtext)
 
   const handleClickCardMiniKebab = async (evt) => {
     const searchParentBtnNav = (el) => {
