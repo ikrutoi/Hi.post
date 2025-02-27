@@ -1,15 +1,20 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useRef, useState } from 'react'
+import { CgClose } from 'react-icons/cg'
 import './CardMiniSection.scss'
-import { addAroma, addDate } from '../../../redux/cardEdit/actionCreators'
+import {
+  addAroma,
+  addDate,
+  addEnvelope,
+  addCardtext,
+} from '../../../redux/cardEdit/actionCreators'
 import { addIndexDb } from '../../../redux/layout/actionCreators'
 import {
-  // getAllHiPostImages,
   deleteHiPostImage,
-  // getAllUserImages,
   deleteUserImage,
 } from '../../../utils/cardFormNav/indexDB/indexDb'
-import { CgClose } from 'react-icons/cg'
+// import listLabelsMyAddress from '../../../../data/envelope/list-labels-my-address.json'
+// import listLabelsToAddress from '../../../../data/envelope/list-labels-to-address.json'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
 import MiniDate from './MiniDate/MiniDate'
@@ -97,6 +102,8 @@ const CardMiniSection = ({
     }
   }
 
+  const cardtext = useSelector((state) => state.cardEdit.cardtext)
+
   const handleClickCardMiniKebab = async (evt) => {
     const searchParentBtnNav = (el) => {
       if (el.classList.contains('card-mini-section')) {
@@ -111,11 +118,30 @@ const CardMiniSection = ({
 
     switch (parentElement.dataset.name) {
       case 'aroma':
-        console.log('aroma++')
         dispatch(addAroma(null))
         break
       case 'date':
         dispatch(addDate(null))
+        break
+      case 'envelope':
+        dispatch(
+          addEnvelope({
+            myaddress: {
+              street: '',
+              index: '',
+              city: '',
+              country: '',
+              name: '',
+            },
+            toaddress: {
+              street: '',
+              index: '',
+              city: '',
+              country: '',
+              name: '',
+            },
+          })
+        )
         break
       case 'cardphoto':
         await deleteHiPostImage('miniImage')
@@ -124,6 +150,22 @@ const CardMiniSection = ({
           addIndexDb({
             hiPostImages: { miniImage: false },
             userImages: { miniImage: false },
+          })
+        )
+        break
+      case 'cardtext':
+        dispatch(
+          addCardtext({
+            text: [
+              {
+                type: 'paragraph',
+                children: [
+                  {
+                    text: '',
+                  },
+                ],
+              },
+            ],
           })
         )
         break
