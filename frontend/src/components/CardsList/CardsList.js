@@ -1,16 +1,20 @@
+import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { TbArrowsMinimize } from 'react-icons/tb'
 import { HiArrowsPointingIn } from 'react-icons/hi2'
-
 import './CardsList.scss'
-import { useEffect, useRef, useState } from 'react'
+import EnvelopeMemory from './CardMiniSections/EnvelopeMemory/EnvelopeMemory'
+// import sizeMiniCard
 
 const CardsList = () => {
   const sectionCardEdit = useSelector((state) => state.cardEdit)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const choiceSection = useSelector((state) => state.layout.choiceSection)
+  const infoEnvelopeClip = useSelector(
+    (state) => state.infoButtons.envelopeClip
+  )
   const iconMinimizeContainerRef = useRef()
   const [styleIconMinimize, setStyleIconMinimize] = useState(null)
   const listSelectedSections = []
@@ -120,11 +124,13 @@ const CardsList = () => {
 
   return (
     <div className="cards-list">
+      {infoEnvelopeClip && <EnvelopeMemory sizeMiniCard={sizeMiniCard} />}
       <div
         className="mini-poly-cards"
         style={{
           width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 12}px`,
           height: `${sizeMiniCard.height}px`,
+          opacity: !infoEnvelopeClip ? 1 : 0,
         }}
       >
         {allCardMini && (
@@ -169,7 +175,7 @@ const CardsList = () => {
             sectionInfo={selectedSection}
             valueSection={sectionCardEdit[selectedSection.section]}
             sizeCardMini={sizeMiniCard}
-            // polyCards={false}
+            infoEnvelopeClip={infoEnvelopeClip}
             polyInfo={false}
             choiceSection={choiceSection}
           />

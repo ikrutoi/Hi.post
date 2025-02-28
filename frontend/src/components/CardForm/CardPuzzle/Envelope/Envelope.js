@@ -7,6 +7,14 @@ import './Envelope.scss'
 import { addEnvelope } from '../../../../redux/cardEdit/actionCreators'
 import Mark from './Mark/Mark'
 import FormAddress from './FormAddress/FormAddress'
+import {
+  addMyAddress,
+  getMyAddress,
+  deleteMyAddress,
+  addToAddress,
+  getToAddress,
+  deleteToAddress,
+} from '../../../../utils/cardFormNav/indexDB/indexDb'
 import { addChoiceSection } from '../../../../redux/layout/actionCreators'
 
 const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
@@ -26,6 +34,34 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     setValue((state) => {
       return { ...state, [field]: { ...state[field], [input]: value } }
     })
+  }
+
+  const handleSave = async (section) => {
+    switch (section) {
+      case 'myaddress':
+        console.log('click myaddress')
+        await addMyAddress({
+          name: '',
+          street: '',
+          index: '',
+          city: '',
+          country: '',
+        })
+        break
+      case 'toaddress':
+        console.log('click toaddress')
+        await addToAddress({
+          name: 'Alisa Pete',
+          streetHouse: 'Hero, 45',
+          index: '22222',
+          city: 'Paris',
+          country: 'France',
+        })
+        break
+
+      default:
+        break
+    }
   }
 
   const [heightLogo, setHeightLogo] = useState(null)
@@ -94,6 +130,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           handleValue={handleValue}
           handleMovingBetweenInputs={handleMovingBetweenInputs}
           setRef={setRef}
+          handleSave={handleSave}
         />
       </div>
       <Mark />
@@ -104,6 +141,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           handleValue={handleValue}
           handleMovingBetweenInputs={handleMovingBetweenInputs}
           setRef={setRef}
+          handleSave={handleSave}
         />
       </div>
     </div>

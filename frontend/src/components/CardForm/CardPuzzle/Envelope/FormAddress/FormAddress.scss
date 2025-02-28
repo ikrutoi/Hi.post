@@ -1,3 +1,7 @@
+.envelope-form {
+  position: relative;
+}
+
 .input-two-elements {
   display: flex;
 }
@@ -16,4 +20,35 @@
 
 .envelope-toaddress .envelope-label-index {
   margin-right: 0.5rem;
+}
+
+// .envelope-history {
+//   position: absolute;
+//   width: 800px;
+//   height: 200px;
+//   border: solid 1px orangered;
+// }
+
+.toolbar-envelope-container {
+  position: absolute;
+  top: -0.1rem;
+  display: flex;
+  background-color: rgba(255, 255, 255, 0);
+}
+
+.envelope-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.form-toaddress {
+  .envelope-container-toaddress {
+    left: 2rem;
+  }
+}
+
+.form-myaddress {
+  .envelope-container-myaddress {
+    right: 2rem;
+  }
 }

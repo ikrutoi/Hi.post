@@ -27,6 +27,7 @@ const CardMiniSection = ({
   polyInfo,
   sectionInfo,
   choiceSection,
+  infoEnvelopeClip,
 }) => {
   const dispatch = useDispatch()
   const cardMiniSectionRef = useRef(null)
@@ -101,6 +102,7 @@ const CardMiniSection = ({
   }
 
   const handleClickCardMiniKebab = async (evt) => {
+    evt.stopPropagation()
     const searchParentBtnNav = (el) => {
       if (el.classList.contains('card-mini-section')) {
         return el
@@ -180,6 +182,7 @@ const CardMiniSection = ({
         width: `${sizeCardMini.width}px`,
         height: `${sizeCardMini.height}px`,
         zIndex: polyInfo ? polyInfo[0] : 0,
+        opacity: !infoEnvelopeClip ? 1 : 0,
       }}
       onClick={handleClickSection}
       data-name={sectionInfo.section}
