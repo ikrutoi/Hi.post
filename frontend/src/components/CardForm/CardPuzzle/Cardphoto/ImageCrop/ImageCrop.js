@@ -43,11 +43,6 @@ const ImageCrop = ({ sizeCard }) => {
   const [isResizing, setIsResizing] = useState(false)
   const [isCropVisibly, setIsCropVisibly] = useState(false)
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 })
-  const [rotation, setRotation] = useState(0)
-  // const [adjustedSize, setAdjustedSize] = useState({
-  //   width: sizeCard.width,
-  //   height: sizeCard.height,
-  // })
   const dispatch = useDispatch()
   const aspectRatio = 142 / 100
 

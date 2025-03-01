@@ -1,17 +1,14 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Label from '../Label/Label'
 import './FormAddress.scss'
 import { addIconToolbarEnvelope } from '../../../../../utils/envelope/addIconToolbarEnvelope'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
-// import {
-//   addMyAddress,
-//   getMyAddress,
-//   deleteMyAddress,
-//   addToAddress,
-//   getToAddress,
-//   deleteToAddress,
-// } from '../../../../../utils/cardFormNav/indexDB/indexDb'
+import {
+  getToAddress,
+  getAllMyAddress,
+  getAllToAddress,
+} from '../../../../../utils/cardFormNav/indexDB/indexDb'
 
 const FormAddress = ({
   values,
@@ -24,20 +21,51 @@ const FormAddress = ({
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
   )
+  const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
+  const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
+  const resultMyAddress = !Object.values(myAddress).some(
+    (value) => value === ''
+  )
+  const resultToAddress = !Object.values(toAddress).some(
+    (value) => value === ''
+  )
+  const [lengthMyAddress, setLengthMyAddress] = useState(null)
+  const [lengthToAddress, setLengthToAddress] = useState(null)
   const dispatch = useDispatch()
 
-  const handleClickBtn = (evt, section) => {
+  const getLengthAddress = async (section) => {
+    const allMyAddress = await getAllMyAddress('myAddress')
+    const allToAddress = await getAllMyAddress('toAddress')
+    if (section === 'myaddress' && allMyAddress.length > 0) {
+      return true
+    }
+    if (section === 'toaddress' && allToAddress.length > 0) {
+      return true
+    }
+  }
+
+  const handleClickBtn = async (evt, section) => {
     evt.preventDefault()
-    const parentBtn = searchParentBtnNav(evt.target)
+
+    const parentBtn = searchParentBtnNav(evt.target, section)
     if (parentBtn.dataset.tooltip === 'clip') {
-      if (infoEnvelopeClip) {
-        dispatch(infoButtons({ envelopeClip: false }))
-      } else {
-        dispatch(infoButtons({ envelopeClip: true }))
+      if (getLengthAddress(section)) {
+        if (infoEnvelopeClip) {
+          dispatch(infoButtons({ envelopeClip: false }))
+        } else {
+          dispatch(infoButtons({ envelopeClip: true }))
+        }
       }
     }
-    if (parentBtn.dataset.tooltip === 'save') {
-      handleSave(section)
+    if (parentBtn.dataset.tooltip === 'save' && section === 'myaddress') {
+      if (resultMyAddress) {
+        handleSave(section)
+      }
+    }
+    if (parentBtn.dataset.tooltip === 'save' && section === 'toaddress') {
+      if (resultToAddress) {
+        handleSave(section)
+      }
     }
   }
   const btnRefs = useRef({})
@@ -57,15 +85,32 @@ const FormAddress = ({
     return null
   }
 
-  const handleMouseEnterBtn = (evt) => {
+  const handleMouseEnterBtn = (evt, btn) => {
     const parentBtnNav = searchParentBtnNav(evt.target)
-    parentBtnNav.style.color = 'rgb(71, 71, 71)'
-    parentBtnNav.style.cursor = 'pointer'
+    const section = parentBtnNav.dataset.section
+    const hover = () => {
+      parentBtnNav.style.color = 'rgb(71, 71, 71)'
+      parentBtnNav.style.cursor = 'pointer'
+    }
+    if (section === 'myaddress' && btn === 'save') {
+      if (resultMyAddress) {
+        hover()
+      }
+    }
+    if (section === 'toaddress' && btn === 'save') {
+      if (resultToAddress) {
+        hover()
+      }
+    }
+    if (btn === 'clip' && getLengthAddress(section)) {
+      hover()
+    }
   }
 
   const handleMouseLeaveBtn = (evt) => {
     const parentBtnNav = searchParentBtnNav(evt.target)
     parentBtnNav.style.color = 'rgb(163, 163, 163)'
+    parentBtnNav.style.cursor = 'default'
   }
 
   return (
@@ -79,11 +124,12 @@ const FormAddress = ({
             <button
               key={i}
               data-tooltip={btn}
+              data-section={listLabelsAddress.name}
               ref={handleRef(btn)}
               className={`toolbar-btn toolbar-btn-envelope btn-envelope-${btn}`}
               onClick={(evt) => handleClickBtn(evt, listLabelsAddress.name)}
-              onMouseEnter={(evt) => handleMouseEnterBtn(evt)}
-              onMouseLeave={(evt) => handleMouseLeaveBtn(evt)}
+              onMouseEnter={(evt) => handleMouseEnterBtn(evt, btn)}
+              onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btn)}
             >
               {addIconToolbarEnvelope(btn)}
             </button>

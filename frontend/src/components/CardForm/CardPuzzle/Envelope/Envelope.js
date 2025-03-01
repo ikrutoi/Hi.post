@@ -16,9 +16,17 @@ import {
   deleteToAddress,
 } from '../../../../utils/cardFormNav/indexDB/indexDb'
 import { addChoiceSection } from '../../../../redux/layout/actionCreators'
+import {
+  addIndexMyAddress,
+  addIndexToAddress,
+} from '../../../../redux/layout/actionCreators'
 
 const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const selectorCardEdit = useSelector((state) => state.cardEdit)
+  const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
+  const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
+  const indexMyAddress = useSelector((state) => state.layout.indexMyAddress)
+  const indexToAddress = useSelector((state) => state.layout.indexToAddress)
   const valueEnvelope =
     selectorCardEdit.envelope.myaddress === null &&
     selectorCardEdit.envelope.toaddress === null
@@ -39,24 +47,12 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const handleSave = async (section) => {
     switch (section) {
       case 'myaddress':
-        console.log('click myaddress')
-        await addMyAddress({
-          name: '',
-          street: '',
-          index: '',
-          city: '',
-          country: '',
-        })
+        await addMyAddress(indexMyAddress, myAddress)
+        dispatch(addIndexMyAddress(indexMyAddress + 1))
         break
       case 'toaddress':
-        console.log('click toaddress')
-        await addToAddress({
-          name: 'Alisa Pete',
-          streetHouse: 'Hero, 45',
-          index: '22222',
-          city: 'Paris',
-          country: 'France',
-        })
+        await addToAddress(indexToAddress, toAddress)
+        dispatch(addIndexToAddress(indexToAddress + 1))
         break
 
       default:

@@ -5,7 +5,8 @@ const initialState = {
   italic: true,
   left: true,
   download: false,
-  envelopeClip: false,
+  envelopeClipMyAddress: false,
+  envelopeClipToAddress: false,
   envelopeSave: false,
 }
 

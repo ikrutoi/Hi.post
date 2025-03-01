@@ -12,9 +12,9 @@ const EnvelopeMemory = ({ sizeMiniCard }) => {
   const infoSaveEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
   )
-  if (infoSaveEnvelopeClip) {
-    console.log('cardEdit', cardEditEnvelope)
-  }
+  // if (infoSaveEnvelopeClip) {
+  //   console.log('cardEdit', cardEditEnvelope)
+  // }
   const changeAddress = async () => {
     if (infoSaveEnvelopeClip) {
       console.log('address', getMyAddress('myAddress'))

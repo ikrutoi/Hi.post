@@ -75,6 +75,11 @@ export const deleteMyAddress = async (id) => {
   await db.delete('myAddress', id)
 }
 
+export const getAllMyAddress = async () => {
+  const db = await dbPromise
+  return await db.getAll('myAddress')
+}
+
 export const addToAddress = async (id, file) => {
   const db = await dbPromise
   await db.put('toAddress', { id, image: file })
@@ -91,7 +96,7 @@ export const deleteToAddress = async (id) => {
   await db.delete('toAddress', id)
 }
 
-// export const getAllUserImages = async () => {
-//   const db = await dbPromise
-//   return await db.getAll('userImages')
-// }
+export const getAllToAddress = async () => {
+  const db = await dbPromise
+  return await db.getAll('toAddress')
+}

@@ -55,3 +55,17 @@ export const addMemoryCrop = (newSection) => {
     payload: newSection,
   }
 }
+
+export const addIndexMyAddress = (newSection) => {
+  return {
+    type: a.ADD_INDEX_MY_ADDRESS,
+    payload: newSection,
+  }
+}
+
+export const addIndexToAddress = (newSection) => {
+  return {
+    type: a.ADD_INDEX_TO_ADDRESS,
+    payload: newSection,
+  }
+}
