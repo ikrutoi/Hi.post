@@ -18,8 +18,11 @@ const FormAddress = ({
   setRef,
   handleSave,
 }) => {
-  const infoEnvelopeClip = useSelector(
-    (state) => state.infoButtons.envelopeClip
+  const infoEnvelopeClipMyAddress = useSelector(
+    (state) => state.infoButtons.envelopeClipMyAddress
+  )
+  const infoEnvelopeClipToAddress = useSelector(
+    (state) => state.infoButtons.envelopeClipToAddress
   )
   const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
   const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
@@ -29,18 +32,26 @@ const FormAddress = ({
   const resultToAddress = !Object.values(toAddress).some(
     (value) => value === ''
   )
-  const [lengthMyAddress, setLengthMyAddress] = useState(null)
-  const [lengthToAddress, setLengthToAddress] = useState(null)
+  // const [lengthMyAddress, setLengthMyAddress] = useState(null)
+  // const [lengthToAddress, setLengthToAddress] = useState(null)
   const dispatch = useDispatch()
 
   const getLengthAddress = async (section) => {
-    const allMyAddress = await getAllMyAddress('myAddress')
-    const allToAddress = await getAllMyAddress('toAddress')
-    if (section === 'myaddress' && allMyAddress.length > 0) {
-      return true
+    if (section === 'myaddress') {
+      const allMyAddress = await getAllMyAddress('myAddress')
+      if (allMyAddress.length > 0) {
+        return true
+      } else {
+        return false
+      }
     }
-    if (section === 'toaddress' && allToAddress.length > 0) {
-      return true
+    if (section === 'toaddress') {
+      const allToAddress = await getAllToAddress('toAddress')
+      if (allToAddress.length > 0) {
+        return true
+      } else {
+        return false
+      }
     }
   }
 
@@ -50,10 +61,25 @@ const FormAddress = ({
     const parentBtn = searchParentBtnNav(evt.target, section)
     if (parentBtn.dataset.tooltip === 'clip') {
       if (getLengthAddress(section)) {
-        if (infoEnvelopeClip) {
-          dispatch(infoButtons({ envelopeClip: false }))
-        } else {
-          dispatch(infoButtons({ envelopeClip: true }))
+        if (section === 'myaddress') {
+          if (infoEnvelopeClipToAddress) {
+            dispatch(infoButtons({ envelopeClipToAddress: false }))
+          }
+          if (infoEnvelopeClipMyAddress) {
+            dispatch(infoButtons({ envelopeClipMyAddress: false }))
+          } else {
+            dispatch(infoButtons({ envelopeClipMyAddress: true }))
+          }
+        }
+        if (section === 'toaddress') {
+          if (infoEnvelopeClipMyAddress) {
+            dispatch(infoButtons({ envelopeClipMyAddress: false }))
+          }
+          if (infoEnvelopeClipToAddress) {
+            dispatch(infoButtons({ envelopeClipToAddress: false }))
+          } else {
+            dispatch(infoButtons({ envelopeClipToAddress: true }))
+          }
         }
       }
     }

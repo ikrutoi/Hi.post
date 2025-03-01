@@ -12,8 +12,11 @@ const CardsList = () => {
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const choiceSection = useSelector((state) => state.layout.choiceSection)
-  const infoEnvelopeClip = useSelector(
-    (state) => state.infoButtons.envelopeClip
+  const infoEnvelopeClipMyAddress = useSelector(
+    (state) => state.infoButtons.envelopeClipMyAddress
+  )
+  const infoEnvelopeClipToAddress = useSelector(
+    (state) => state.infoButtons.envelopeClipToAddress
   )
   const iconMinimizeContainerRef = useRef()
   const [styleIconMinimize, setStyleIconMinimize] = useState(null)
@@ -124,13 +127,23 @@ const CardsList = () => {
 
   return (
     <div className="cards-list">
-      {infoEnvelopeClip && <EnvelopeMemory sizeMiniCard={sizeMiniCard} />}
+      {(infoEnvelopeClipMyAddress || infoEnvelopeClipToAddress) && (
+        <EnvelopeMemory
+          sizeMiniCard={sizeMiniCard}
+          section={infoEnvelopeClipMyAddress ? 'myaddress' : 'toaddress'}
+        />
+      )}
+      {/* {infoEnvelopeClipToAddress && (
+        <EnvelopeMemory sizeMiniCard={sizeMiniCard} section="toaddress" />
+      )} */}
       <div
         className="mini-poly-cards"
         style={{
           width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 12}px`,
           height: `${sizeMiniCard.height}px`,
-          opacity: !infoEnvelopeClip ? 1 : 0,
+          opacity:
+            (!infoEnvelopeClipMyAddress ? 1 : 0) ||
+            (!infoEnvelopeClipToAddress ? 1 : 0),
         }}
       >
         {allCardMini && (
@@ -175,7 +188,8 @@ const CardsList = () => {
             sectionInfo={selectedSection}
             valueSection={sectionCardEdit[selectedSection.section]}
             sizeCardMini={sizeMiniCard}
-            infoEnvelopeClip={infoEnvelopeClip}
+            infoEnvelopeClipMyAddress={infoEnvelopeClipMyAddress}
+            infoEnvelopeClipToAddress={infoEnvelopeClipToAddress}
             polyInfo={false}
             choiceSection={choiceSection}
           />

@@ -1,25 +1,35 @@
-import { useSelector } from 'react-redux'
 import './EnvelopeMemory.scss'
 import {
   getMyAddress,
   deleteMyAddress,
+  getAllMyAddress,
   getToAddress,
   deleteToAddress,
+  getAllToAddress,
 } from '../../../../utils/cardFormNav/indexDB/indexDb'
+import { useState } from 'react'
 
-const EnvelopeMemory = ({ sizeMiniCard }) => {
-  const cardEditEnvelope = useSelector((state) => state.cardEdit.envelope)
-  const infoSaveEnvelopeClip = useSelector(
-    (state) => state.infoButtons.envelopeClip
-  )
-  // if (infoSaveEnvelopeClip) {
-  //   console.log('cardEdit', cardEditEnvelope)
-  // }
-  const changeAddress = async () => {
-    if (infoSaveEnvelopeClip) {
-      console.log('address', getMyAddress('myAddress'))
+const EnvelopeMemory = ({ sizeMiniCard, section }) => {
+  const getAddress = async (section) => {
+    if (section === 'myaddress') {
+      try {
+        const allMyAddress = await getAllMyAddress('myAddress')
+        console.log('allMyAddress', allMyAddress)
+      } catch (error) {
+        console.error('Error fetching my address:', error)
+      }
+    }
+    if (section === 'toaddress') {
+      try {
+        const allToAddress = await getAllToAddress('toAddress')
+        console.log('allToAddress', allToAddress)
+      } catch (error) {
+        console.error('Error fetching to address:', error)
+      }
     }
   }
+
+  getAddress(section)
 
   return (
     <div className="envelope-history">
@@ -30,7 +40,9 @@ const EnvelopeMemory = ({ sizeMiniCard }) => {
           width: `${sizeMiniCard.width}px`,
           height: `${sizeMiniCard.height}px`,
         }}
-      ></div>
+      >
+        {section}
+      </div>
     </div>
   )
 }
