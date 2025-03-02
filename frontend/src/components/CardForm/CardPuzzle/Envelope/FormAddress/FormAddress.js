@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Label from '../Label/Label'
 import './FormAddress.scss'
@@ -9,6 +9,7 @@ import {
   getAllMyAddress,
   getAllToAddress,
 } from '../../../../../utils/cardFormNav/indexDB/indexDb'
+import { dbPromise } from '../../../../../utils/cardFormNav/indexDB/indexDb'
 
 const FormAddress = ({
   values,
@@ -32,9 +33,63 @@ const FormAddress = ({
   const resultToAddress = !Object.values(toAddress).some(
     (value) => value === ''
   )
+  const [memoryMyAddress, setMemoryMyAddress] = useState(null)
+  const [memoryToAddress, setMemoryToAddress] = useState(null)
+  const myAddressLegendRef = useRef()
+  const toAddressLegendRef = useRef()
+  const myAddressFieldsetRef = useRef()
+  const toAddressFieldsetRef = useRef()
+
   // const [lengthMyAddress, setLengthMyAddress] = useState(null)
   // const [lengthToAddress, setLengthToAddress] = useState(null)
   const dispatch = useDispatch()
+
+  // const getAddress = async (section) => {
+  //   switch (section) {
+  //     case 'myaddress':
+  //       const myAddress = await getAllMyAddress('myAddress')
+  //       setMemoryMyAddress(myAddress)
+  //       break
+  //     case 'toaddress':
+  //       const toAddress = await getAllToAddress('toAddress')
+  //       setMemoryToAddress(toAddress)
+  //       break
+  //     default:
+  //       break
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (infoEnvelopeClipMyAddress) {
+  //     getAddress('myaddress')
+  //   }
+  //   if (infoEnvelopeClipToAddress) {
+  //     getAddress('toaddress')
+  //   }
+  // }, [infoEnvelopeClipMyAddress, infoEnvelopeClipToAddress])
+  // console.log('memory', memoryMyAddress)
+
+  const getAddressLegendRef = (section) => {
+    switch (section) {
+      case 'myaddress':
+        return myAddressLegendRef
+      case 'toaddress':
+        return toAddressLegendRef
+      default:
+        return null
+    }
+  }
+
+  const getAddressFieldsetRef = (section) => {
+    switch (section) {
+      case 'myaddress':
+        return myAddressFieldsetRef
+      case 'toaddress':
+        return toAddressFieldsetRef
+      default:
+        return null
+    }
+  }
 
   const getLengthAddress = async (section) => {
     if (section === 'myaddress') {
@@ -55,8 +110,34 @@ const FormAddress = ({
     }
   }
 
+  const getAddress = async () => {
+    const myAddress = await getAllMyAddress('myAddress')
+    setMemoryMyAddress(myAddress)
+    const toAddress = await getAllToAddress('toAddress')
+    setMemoryToAddress(toAddress)
+  }
+
+  useEffect(() => {
+    getAddress()
+  }, [])
+
   const handleClickBtn = async (evt, section) => {
     evt.preventDefault()
+
+    const clearAddress = async (section) => {
+      const db = await dbPromise
+      const transaction = db.transaction(section, 'readwrite')
+      const objectStore = transaction.objectStore(section)
+      const clearRequest = objectStore.clear()
+
+      clearRequest.onsuccess = () => {
+        console.log('All entries have been cleared.')
+      }
+
+      clearRequest.onerror = (event) => {
+        console.error('Error clearing entries:', event.target.error)
+      }
+    }
 
     const parentBtn = searchParentBtnNav(evt.target, section)
     if (parentBtn.dataset.tooltip === 'clip') {
@@ -64,43 +145,121 @@ const FormAddress = ({
         if (section === 'myaddress') {
           if (infoEnvelopeClipToAddress) {
             dispatch(infoButtons({ envelopeClipToAddress: false }))
+            if (toAddressFieldsetRef.current && toAddressLegendRef.current) {
+              toAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
+              toAddressFieldsetRef.current.style.borderColor =
+                'rgb(211, 211 , 211)'
+            }
           }
           if (infoEnvelopeClipMyAddress) {
             dispatch(infoButtons({ envelopeClipMyAddress: false }))
+            if (myAddressFieldsetRef.current && myAddressLegendRef.current) {
+              myAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
+              myAddressFieldsetRef.current.style.borderColor =
+                'rgb(211, 211 , 211)'
+            }
           } else {
             dispatch(infoButtons({ envelopeClipMyAddress: true }))
+            if (myAddressFieldsetRef.current && myAddressLegendRef.current) {
+              myAddressLegendRef.current.style.color = '#007aac'
+              myAddressFieldsetRef.current.style.borderColor = '#007aac'
+            }
           }
         }
         if (section === 'toaddress') {
           if (infoEnvelopeClipMyAddress) {
             dispatch(infoButtons({ envelopeClipMyAddress: false }))
+            if (myAddressFieldsetRef.current && myAddressLegendRef.current) {
+              myAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
+              myAddressFieldsetRef.current.style.borderColor =
+                'rgb(211, 211 , 211)'
+            }
           }
           if (infoEnvelopeClipToAddress) {
             dispatch(infoButtons({ envelopeClipToAddress: false }))
+            if (toAddressFieldsetRef.current && toAddressLegendRef.current) {
+              toAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
+              toAddressFieldsetRef.current.style.borderColor =
+                'rgb(211, 211 , 211)'
+            }
           } else {
             dispatch(infoButtons({ envelopeClipToAddress: true }))
+            if (toAddressFieldsetRef.current && toAddressLegendRef.current) {
+              toAddressLegendRef.current.style.color = '#007aac'
+              toAddressFieldsetRef.current.style.borderColor = '#007aac'
+            }
           }
         }
       }
     }
+
+    const changeParityInputsAddress = (section) => {
+      const getSection = (section) => {
+        switch (section) {
+          case 'myaddress':
+            return [memoryMyAddress, myAddress]
+          case 'toaddress':
+            return [memoryToAddress, toAddress]
+          default:
+            break
+        }
+      }
+
+      getSection(section)[0].forEach((el) => {
+        const arrInputs = []
+        for (const key in el.address) {
+          if (el.address[key] === getSection[1][key]) {
+            arrInputs.push(true)
+          } else {
+            arrInputs.push(false)
+          }
+        }
+        const parityAddress = arrInputs.every((value) => value === true)
+        if (parityAddress) {
+          return true
+        }
+      })
+      return false
+    }
+
     if (parentBtn.dataset.tooltip === 'save' && section === 'myaddress') {
       if (resultMyAddress) {
+        const parity = changeParityInputsAddress('myaddress')
+        console.log('parity myaddress', parity)
         handleSave(section)
+      }
+      if (parentBtn.style.color === 'rgb(71, 71, 71)') {
+        parentBtn.style.color = 'rgb(163, 163, 163)'
+        parentBtn.style.cursor = 'default'
       }
     }
     if (parentBtn.dataset.tooltip === 'save' && section === 'toaddress') {
       if (resultToAddress) {
+        const parity = changeParityInputsAddress('toaddress')
+        console.log('parity toaddress', parity)
         handleSave(section)
       }
+      if (parentBtn.style.color === 'rgb(71, 71, 71)') {
+        parentBtn.style.color = 'rgb(163, 163, 163)'
+        parentBtn.style.cursor = 'default'
+      }
     }
+    if (parentBtn.dataset.tooltip === 'delete' && section === 'myaddress') {
+      clearAddress('myAddress')
+    }
+    if (parentBtn.dataset.tooltip === 'delete' && section === 'toaddress') {
+      clearAddress('toAddress')
+    }
+    getAddress()
   }
+
   const btnRefs = useRef({})
 
   const handleRef = (name) => (element) => {
     btnRefs.current[name] = element
   }
 
-  const listBtns = ['save', 'clip']
+  const listBtns = ['save', 'clip', 'delete']
 
   const searchParentBtnNav = (el) => {
     if (el.classList.contains('toolbar-btn')) {
@@ -128,7 +287,25 @@ const FormAddress = ({
         hover()
       }
     }
-    if (btn === 'clip' && getLengthAddress(section)) {
+    if (btn === 'clip') {
+      switch (section) {
+        case 'myaddress':
+          if (memoryMyAddress) {
+            hover()
+          }
+          break
+        case 'toaddress':
+          if (memoryToAddress) {
+            hover()
+          }
+          break
+
+        default:
+          break
+      }
+      hover()
+    }
+    if (btn === 'delete') {
       hover()
     }
   }
@@ -162,8 +339,14 @@ const FormAddress = ({
           )
         })}
       </div>
-      <fieldset className="envelope-fieldset">
-        <legend className="envelope-legend">
+      <fieldset
+        className="envelope-fieldset"
+        ref={getAddressFieldsetRef(listLabelsAddress.name)}
+      >
+        <legend
+          className="envelope-legend"
+          ref={getAddressLegendRef(listLabelsAddress.name)}
+        >
           {listLabelsAddress.name === 'myaddress' ? 'My address' : 'To address'}
         </legend>{' '}
         {listLabelsAddress.list.map((nameFirst, i) => {

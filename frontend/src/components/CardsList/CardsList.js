@@ -4,6 +4,10 @@ import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { TbArrowsMinimize } from 'react-icons/tb'
 import { HiArrowsPointingIn } from 'react-icons/hi2'
 import './CardsList.scss'
+import {
+  getAllMyAddress,
+  getAllToAddress,
+} from '../../utils/cardFormNav/indexDB/indexDb'
 import EnvelopeMemory from './CardMiniSections/EnvelopeMemory/EnvelopeMemory'
 // import sizeMiniCard
 
@@ -23,6 +27,32 @@ const CardsList = () => {
   const listSelectedSections = []
   const [allCardMini, setAllCardMini] = useState(false)
   let count = 0
+  const [memoryMyAddress, setMemoryMyAddress] = useState(null)
+  const [memoryToAddress, setMemoryToAddress] = useState(null)
+
+  const getAddress = async (section) => {
+    switch (section) {
+      case 'myaddress':
+        const myAddress = await getAllMyAddress('myAddress')
+        setMemoryMyAddress(myAddress)
+        break
+      case 'toaddress':
+        const toAddress = await getAllToAddress('toAddress')
+        setMemoryToAddress(toAddress)
+        break
+      default:
+        break
+    }
+  }
+
+  useEffect(() => {
+    if (infoEnvelopeClipMyAddress) {
+      getAddress('myaddress')
+    }
+    if (infoEnvelopeClipToAddress) {
+      getAddress('toaddress')
+    }
+  }, [infoEnvelopeClipMyAddress, infoEnvelopeClipToAddress])
 
   for (let section in sectionCardEdit) {
     if (!!sectionCardEdit[section]) {
@@ -125,77 +155,100 @@ const CardsList = () => {
   }
   const listPrioritySections = getListPrioritySections()
 
+  // console.log('memoryMy', memoryMyAddress)
+  // console.log('memoryTo', memoryToAddress)
+
   return (
-    <div className="cards-list">
+    <div className="cards-list" style={{ height: `${sizeMiniCard.height}px` }}>
       {(infoEnvelopeClipMyAddress || infoEnvelopeClipToAddress) && (
-        <EnvelopeMemory
-          sizeMiniCard={sizeMiniCard}
-          section={infoEnvelopeClipMyAddress ? 'myaddress' : 'toaddress'}
-        />
+        <div className="envelope-memory">
+          {infoEnvelopeClipMyAddress &&
+            memoryToAddress &&
+            memoryMyAddress.map((address, i) => (
+              <EnvelopeMemory
+                key={i}
+                sizeMiniCard={sizeMiniCard}
+                section={'myaddress'}
+                address={address}
+              />
+            ))}
+          {infoEnvelopeClipToAddress &&
+            memoryToAddress &&
+            memoryToAddress.map((address, i) => (
+              <EnvelopeMemory
+                key={i}
+                sizeMiniCard={sizeMiniCard}
+                section={'toaddress'}
+                address={address}
+              />
+            ))}
+        </div>
       )}
-      {/* {infoEnvelopeClipToAddress && (
-        <EnvelopeMemory sizeMiniCard={sizeMiniCard} section="toaddress" />
-      )} */}
-      <div
-        className="mini-poly-cards"
-        style={{
-          width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 12}px`,
-          height: `${sizeMiniCard.height}px`,
-          opacity:
-            (!infoEnvelopeClipMyAddress ? 1 : 0) ||
-            (!infoEnvelopeClipToAddress ? 1 : 0),
-        }}
-      >
-        {allCardMini && (
-          <span
-            className="icon-minimize-container"
-            ref={iconMinimizeContainerRef}
-            style={{
-              left: `${styleIconMinimize ? styleIconMinimize.left : 0}px`,
-              top: `${styleIconMinimize ? styleIconMinimize.top : 0}px`,
-            }}
-            onClick={handleClickIconMinimize}
-          >
-            <HiArrowsPointingIn className="icon-minimize" />
-          </span>
-        )}
-        {listPrioritySections.length !== 0 ? (
-          listPrioritySections.map((selectedSection, i) => (
-            <CardMiniSection
-              key={`mini-poly-${selectedSection.section}-${i}`}
-              sectionInfo={selectedSection}
-              valueSection={sectionCardEdit[selectedSection.section]}
-              sizeCardMini={sizeMiniCard}
-              // polyCards={listPrioritySections}
-              polyInfo={[listPrioritySections.length - i, i]}
-              choiceSection={choiceSection}
-            />
-          ))
-        ) : (
+
+      {!infoEnvelopeClipMyAddress && !infoEnvelopeClipToAddress && (
+        <>
           <div
-            className="pattern-mini-card"
+            className="mini-poly-cards"
             style={{
-              width: `${sizeMiniCard.width}px`,
+              width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 12}px`,
               height: `${sizeMiniCard.height}px`,
+              // display:
+              //   (!infoEnvelopeClipMyAddress ? 'flex' : 'none') ||
+              //   (!infoEnvelopeClipToAddress ? 'flex' : 'none'),
             }}
-          ></div>
-        )}
-      </div>
-      {listSortSelectedSections.length !== 0 ? (
-        listSortSelectedSections.map((selectedSection, i) => (
-          <CardMiniSection
-            key={`card-mini-${selectedSection.section}-${i}`}
-            sectionInfo={selectedSection}
-            valueSection={sectionCardEdit[selectedSection.section]}
-            sizeCardMini={sizeMiniCard}
-            infoEnvelopeClipMyAddress={infoEnvelopeClipMyAddress}
-            infoEnvelopeClipToAddress={infoEnvelopeClipToAddress}
-            polyInfo={false}
-            choiceSection={choiceSection}
-          />
-        ))
-      ) : (
-        <span></span>
+          >
+            {allCardMini && (
+              <span
+                className="icon-minimize-container"
+                ref={iconMinimizeContainerRef}
+                style={{
+                  left: `${styleIconMinimize ? styleIconMinimize.left : 0}px`,
+                  top: `${styleIconMinimize ? styleIconMinimize.top : 0}px`,
+                }}
+                onClick={handleClickIconMinimize}
+              >
+                <HiArrowsPointingIn className="icon-minimize" />
+              </span>
+            )}
+            {listPrioritySections.length !== 0 ? (
+              listPrioritySections.map((selectedSection, i) => (
+                <CardMiniSection
+                  key={`mini-poly-${selectedSection.section}-${i}`}
+                  sectionInfo={selectedSection}
+                  valueSection={sectionCardEdit[selectedSection.section]}
+                  sizeCardMini={sizeMiniCard}
+                  // polyCards={listPrioritySections}
+                  polyInfo={[listPrioritySections.length - i, i]}
+                  choiceSection={choiceSection}
+                />
+              ))
+            ) : (
+              <div
+                className="pattern-mini-card"
+                style={{
+                  width: `${sizeMiniCard.width}px`,
+                  height: `${sizeMiniCard.height}px`,
+                }}
+              ></div>
+            )}
+          </div>
+          {listSortSelectedSections.length !== 0 ? (
+            listSortSelectedSections.map((selectedSection, i) => (
+              <CardMiniSection
+                key={`card-mini-${selectedSection.section}-${i}`}
+                sectionInfo={selectedSection}
+                valueSection={sectionCardEdit[selectedSection.section]}
+                sizeCardMini={sizeMiniCard}
+                // infoEnvelopeClipMyAddress={infoEnvelopeClipMyAddress}
+                // infoEnvelopeClipToAddress={infoEnvelopeClipToAddress}
+                polyInfo={false}
+                choiceSection={choiceSection}
+              />
+            ))
+          ) : (
+            <span></span>
+          )}
+        </>
       )}
     </div>
   )

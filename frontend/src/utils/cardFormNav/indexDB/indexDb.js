@@ -1,6 +1,6 @@
 import { openDB } from 'idb'
 
-const dbPromise = openDB('images-database', 6, {
+export const dbPromise = openDB('images-database', 6, {
   upgrade(db) {
     if (!db.objectStoreNames.contains('hiPostImages')) {
       db.createObjectStore('hiPostImages', { keyPath: 'id' })
@@ -61,13 +61,13 @@ export const getAllUserImages = async () => {
 
 export const addMyAddress = async (id, file) => {
   const db = await dbPromise
-  await db.put('myAddress', { id, image: file })
+  await db.put('myAddress', { id, address: file })
 }
 
 export const getMyAddress = async (id) => {
   const db = await dbPromise
   const result = await db.get('myAddress', id)
-  return result ? result.image : null
+  return result ? result.address : null
 }
 
 export const deleteMyAddress = async (id) => {
@@ -82,13 +82,13 @@ export const getAllMyAddress = async () => {
 
 export const addToAddress = async (id, file) => {
   const db = await dbPromise
-  await db.put('toAddress', { id, image: file })
+  await db.put('toAddress', { id, address: file })
 }
 
 export const getToAddress = async (id) => {
   const db = await dbPromise
   const result = await db.get('toAddress', id)
-  return result ? result.image : null
+  return result ? result.address : null
 }
 
 export const deleteToAddress = async (id) => {

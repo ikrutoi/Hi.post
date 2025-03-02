@@ -1,47 +1,25 @@
+import { CgClose } from 'react-icons/cg'
 import './EnvelopeMemory.scss'
-import {
-  getMyAddress,
-  deleteMyAddress,
-  getAllMyAddress,
-  getToAddress,
-  deleteToAddress,
-  getAllToAddress,
-} from '../../../../utils/cardFormNav/indexDB/indexDb'
-import { useState } from 'react'
 
-const EnvelopeMemory = ({ sizeMiniCard, section }) => {
-  const getAddress = async (section) => {
-    if (section === 'myaddress') {
-      try {
-        const allMyAddress = await getAllMyAddress('myAddress')
-        console.log('allMyAddress', allMyAddress)
-      } catch (error) {
-        console.error('Error fetching my address:', error)
-      }
-    }
-    if (section === 'toaddress') {
-      try {
-        const allToAddress = await getAllToAddress('toAddress')
-        console.log('allToAddress', allToAddress)
-      } catch (error) {
-        console.error('Error fetching to address:', error)
-      }
-    }
-  }
-
-  getAddress(section)
-
+const EnvelopeMemory = ({ sizeMiniCard, section, address }) => {
   return (
-    <div className="envelope-history">
+    <div
+      className="envelope-memory-card"
+      style={{
+        width: `${sizeMiniCard.width}px`,
+        height: `${sizeMiniCard.height}px`,
+      }}
+    >
+      <p>{address.address.name}</p>
+      <p>{address.address.street}</p>
+      <p>{address.address.index}</p>
+      <p>{address.address.city}</p>
+      <p>{address.address.country}</p>
       <div
-        className="envelope-history-card"
-        style={{
-          // padding: sectionInfo.section === 'cardphoto' ? '0' : '0.5rem',
-          width: `${sizeMiniCard.width}px`,
-          height: `${sizeMiniCard.height}px`,
-        }}
+        className="card-mini-kebab card-mini-kebab-envelope"
+        // onClick={(evt) => handleClickCardMiniKebab(evt)}
       >
-        {section}
+        <CgClose className="icon-close" />
       </div>
     </div>
   )

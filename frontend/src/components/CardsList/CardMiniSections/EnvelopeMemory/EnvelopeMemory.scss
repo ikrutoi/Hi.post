@@ -1,0 +1,55 @@
+.envelope-memory-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  // background-color: #ffffff;
+  box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
+  border: solid 1px rgb(173, 173, 173);
+}
+
+.envelope-memory-card:first-child {
+  margin-left: 0;
+}
+
+.envelope-memory-card p {
+  font-size: 0.7rem;
+}
+
+.envelope-memory-card p:first-child {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.card-mini-kebab-envelope {
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.075);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  // border: solid 1px blue;
+}
+
+.card-mini-kebab-envelope {
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+    // .mini-kebab-icon {
+    //   background-color: rgba($color: lightgray, $alpha: 0);
+    // }
+    // .icon-close {
+    //   color: rgb(71, 71, 71);
+    // }
+  }
+}

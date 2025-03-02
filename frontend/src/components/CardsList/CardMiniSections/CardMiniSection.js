@@ -27,8 +27,8 @@ const CardMiniSection = ({
   polyInfo,
   sectionInfo,
   choiceSection,
-  infoEnvelopeClipMyAddress,
-  infoEnvelopeClipToAddress,
+  // infoEnvelopeClipMyAddress,
+  // infoEnvelopeClipToAddress,
 }) => {
   const dispatch = useDispatch()
   const cardMiniSectionRef = useRef(null)
@@ -183,9 +183,9 @@ const CardMiniSection = ({
         width: `${sizeCardMini.width}px`,
         height: `${sizeCardMini.height}px`,
         zIndex: polyInfo ? polyInfo[0] : 0,
-        opacity:
-          (!infoEnvelopeClipMyAddress ? 1 : 0) ||
-          (!infoEnvelopeClipToAddress ? 1 : 0),
+        // opacity:
+        //   (!infoEnvelopeClipMyAddress ? 1 : 0) ||
+        //   (!infoEnvelopeClipToAddress ? 1 : 0),
       }}
       onClick={handleClickSection}
       data-name={sectionInfo.section}
