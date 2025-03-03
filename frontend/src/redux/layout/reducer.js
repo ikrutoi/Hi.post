@@ -32,6 +32,10 @@ const initialState = {
   memoryCrop: null,
   indexMyAddress: 0,
   indexToAddress: 0,
+  // myAddressLegendRef: null,
+  // toAddressLegendRef: null,
+  // myAddressFieldsetRef: null,
+  // toAddressFieldsetRef: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -72,6 +76,26 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         indexToAddress: action.payload,
       }
+    // case a.SET_MY_ADDRESS_LEGEND_REF:
+    //   return {
+    //     ...state,
+    //     myAddressLegendRef: action.payload,
+    //   }
+    // case a.SET_TO_ADDRESS_LEGEND_REF:
+    //   return {
+    //     ...state,
+    //     toAddressLegendRef: action.payload,
+    //   }
+    // case a.SET_MY_ADDRESS_FIELDSET_REF:
+    //   return {
+    //     ...state,
+    //     myAddressFieldsetRef: action.payload,
+    //   }
+    // case a.SET_TO_ADDRESS_FIELDSET_REF:
+    //   return {
+    //     ...state,
+    //     toAddressFieldsetRef: action.payload,
+    //   }
     case a.ADD_INDEXDB:
       return {
         ...state,

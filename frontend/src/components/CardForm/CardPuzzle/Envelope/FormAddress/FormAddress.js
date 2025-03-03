@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import Label from '../Label/Label'
+import { useSelector } from 'react-redux'
 import './FormAddress.scss'
 import { addIconToolbarEnvelope } from '../../../../../utils/envelope/addIconToolbarEnvelope'
-import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import {
-  getToAddress,
   getAllMyAddress,
   getAllToAddress,
 } from '../../../../../utils/cardFormNav/indexDB/indexDb'
@@ -17,16 +15,20 @@ const FormAddress = ({
   handleValue,
   handleMovingBetweenInputs,
   setRef,
-  handleSave,
+  toAddressLegendRef,
+  myAddressLegendRef,
+  toAddressFieldsetRef,
+  myAddressFieldsetRef,
+  handleClickBtn,
 }) => {
+  const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
+  const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
   const infoEnvelopeClipMyAddress = useSelector(
     (state) => state.infoButtons.envelopeClipMyAddress
   )
   const infoEnvelopeClipToAddress = useSelector(
     (state) => state.infoButtons.envelopeClipToAddress
   )
-  const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
-  const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
   const resultMyAddress = !Object.values(myAddress).some(
     (value) => value === ''
   )
@@ -35,39 +37,61 @@ const FormAddress = ({
   )
   const [memoryMyAddress, setMemoryMyAddress] = useState(null)
   const [memoryToAddress, setMemoryToAddress] = useState(null)
-  const myAddressLegendRef = useRef()
-  const toAddressLegendRef = useRef()
-  const myAddressFieldsetRef = useRef()
-  const toAddressFieldsetRef = useRef()
 
-  // const [lengthMyAddress, setLengthMyAddress] = useState(null)
-  // const [lengthToAddress, setLengthToAddress] = useState(null)
-  const dispatch = useDispatch()
+  const btnRefs = useRef({})
 
-  // const getAddress = async (section) => {
-  //   switch (section) {
-  //     case 'myaddress':
-  //       const myAddress = await getAllMyAddress('myAddress')
-  //       setMemoryMyAddress(myAddress)
-  //       break
-  //     case 'toaddress':
-  //       const toAddress = await getAllToAddress('toAddress')
-  //       setMemoryToAddress(toAddress)
-  //       break
-  //     default:
-  //       break
-  //   }
-  // }
+  const handleRef = (name) => (element) => {
+    btnRefs.current[name] = element
+  }
 
-  // useEffect(() => {
-  //   if (infoEnvelopeClipMyAddress) {
-  //     getAddress('myaddress')
+  // dbPromise.then((db) => {
+  //   const observeChanges = (storeName) => {
+  //     const transaction = db.transaction(storeName, 'readwrite')
+  //     const objectStore = transaction.objectStore(storeName)
+
+  //     const onChange = (event) => {
+  //       objectStore.count().then((count) => {
+  //         console.log(`Number of entries in ${storeName}:`, count)
+  //       })
+  //     }
+
+  //     transaction.oncomplete = onChange
+  //     transaction.onabort = onChange
+  //     transaction.onerror = onChange
   //   }
-  //   if (infoEnvelopeClipToAddress) {
-  //     getAddress('toaddress')
-  //   }
-  // }, [infoEnvelopeClipMyAddress, infoEnvelopeClipToAddress])
-  // console.log('memory', memoryMyAddress)
+
+  //   observeChanges('myAddress')
+  //   observeChanges('toAddress')
+  // })
+
+  const getAddress = async (section) => {
+    switch (section) {
+      case 'myaddress':
+        const myAddress = await getAllMyAddress('myAddress')
+        myAddress.length === 0
+          ? setMemoryMyAddress(false)
+          : setMemoryMyAddress(true)
+        break
+      case 'toaddress':
+        const toAddress = await getAllToAddress('toAddress')
+        toAddress.length === 0
+          ? setMemoryToAddress(false)
+          : setMemoryToAddress(true)
+        setMemoryToAddress(toAddress)
+        break
+      default:
+        break
+    }
+  }
+
+  useEffect(() => {
+    if (infoEnvelopeClipMyAddress) {
+      getAddress('myaddress')
+    }
+    if (infoEnvelopeClipToAddress) {
+      getAddress('toaddress')
+    }
+  }, [infoEnvelopeClipMyAddress, infoEnvelopeClipToAddress])
 
   const getAddressLegendRef = (section) => {
     switch (section) {
@@ -89,174 +113,6 @@ const FormAddress = ({
       default:
         return null
     }
-  }
-
-  const getLengthAddress = async (section) => {
-    if (section === 'myaddress') {
-      const allMyAddress = await getAllMyAddress('myAddress')
-      if (allMyAddress.length > 0) {
-        return true
-      } else {
-        return false
-      }
-    }
-    if (section === 'toaddress') {
-      const allToAddress = await getAllToAddress('toAddress')
-      if (allToAddress.length > 0) {
-        return true
-      } else {
-        return false
-      }
-    }
-  }
-
-  const getAddress = async () => {
-    const myAddress = await getAllMyAddress('myAddress')
-    setMemoryMyAddress(myAddress)
-    const toAddress = await getAllToAddress('toAddress')
-    setMemoryToAddress(toAddress)
-  }
-
-  useEffect(() => {
-    getAddress()
-  }, [])
-
-  const handleClickBtn = async (evt, section) => {
-    evt.preventDefault()
-
-    const clearAddress = async (section) => {
-      const db = await dbPromise
-      const transaction = db.transaction(section, 'readwrite')
-      const objectStore = transaction.objectStore(section)
-      const clearRequest = objectStore.clear()
-
-      clearRequest.onsuccess = () => {
-        console.log('All entries have been cleared.')
-      }
-
-      clearRequest.onerror = (event) => {
-        console.error('Error clearing entries:', event.target.error)
-      }
-    }
-
-    const parentBtn = searchParentBtnNav(evt.target, section)
-    if (parentBtn.dataset.tooltip === 'clip') {
-      if (getLengthAddress(section)) {
-        if (section === 'myaddress') {
-          if (infoEnvelopeClipToAddress) {
-            dispatch(infoButtons({ envelopeClipToAddress: false }))
-            if (toAddressFieldsetRef.current && toAddressLegendRef.current) {
-              toAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
-              toAddressFieldsetRef.current.style.borderColor =
-                'rgb(211, 211 , 211)'
-            }
-          }
-          if (infoEnvelopeClipMyAddress) {
-            dispatch(infoButtons({ envelopeClipMyAddress: false }))
-            if (myAddressFieldsetRef.current && myAddressLegendRef.current) {
-              myAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
-              myAddressFieldsetRef.current.style.borderColor =
-                'rgb(211, 211 , 211)'
-            }
-          } else {
-            dispatch(infoButtons({ envelopeClipMyAddress: true }))
-            if (myAddressFieldsetRef.current && myAddressLegendRef.current) {
-              myAddressLegendRef.current.style.color = '#007aac'
-              myAddressFieldsetRef.current.style.borderColor = '#007aac'
-            }
-          }
-        }
-        if (section === 'toaddress') {
-          if (infoEnvelopeClipMyAddress) {
-            dispatch(infoButtons({ envelopeClipMyAddress: false }))
-            if (myAddressFieldsetRef.current && myAddressLegendRef.current) {
-              myAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
-              myAddressFieldsetRef.current.style.borderColor =
-                'rgb(211, 211 , 211)'
-            }
-          }
-          if (infoEnvelopeClipToAddress) {
-            dispatch(infoButtons({ envelopeClipToAddress: false }))
-            if (toAddressFieldsetRef.current && toAddressLegendRef.current) {
-              toAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
-              toAddressFieldsetRef.current.style.borderColor =
-                'rgb(211, 211 , 211)'
-            }
-          } else {
-            dispatch(infoButtons({ envelopeClipToAddress: true }))
-            if (toAddressFieldsetRef.current && toAddressLegendRef.current) {
-              toAddressLegendRef.current.style.color = '#007aac'
-              toAddressFieldsetRef.current.style.borderColor = '#007aac'
-            }
-          }
-        }
-      }
-    }
-
-    const changeParityInputsAddress = (section) => {
-      const getSection = (section) => {
-        switch (section) {
-          case 'myaddress':
-            return [memoryMyAddress, myAddress]
-          case 'toaddress':
-            return [memoryToAddress, toAddress]
-          default:
-            break
-        }
-      }
-
-      getSection(section)[0].forEach((el) => {
-        const arrInputs = []
-        for (const key in el.address) {
-          if (el.address[key] === getSection[1][key]) {
-            arrInputs.push(true)
-          } else {
-            arrInputs.push(false)
-          }
-        }
-        const parityAddress = arrInputs.every((value) => value === true)
-        if (parityAddress) {
-          return true
-        }
-      })
-      return false
-    }
-
-    if (parentBtn.dataset.tooltip === 'save' && section === 'myaddress') {
-      if (resultMyAddress) {
-        const parity = changeParityInputsAddress('myaddress')
-        console.log('parity myaddress', parity)
-        handleSave(section)
-      }
-      if (parentBtn.style.color === 'rgb(71, 71, 71)') {
-        parentBtn.style.color = 'rgb(163, 163, 163)'
-        parentBtn.style.cursor = 'default'
-      }
-    }
-    if (parentBtn.dataset.tooltip === 'save' && section === 'toaddress') {
-      if (resultToAddress) {
-        const parity = changeParityInputsAddress('toaddress')
-        console.log('parity toaddress', parity)
-        handleSave(section)
-      }
-      if (parentBtn.style.color === 'rgb(71, 71, 71)') {
-        parentBtn.style.color = 'rgb(163, 163, 163)'
-        parentBtn.style.cursor = 'default'
-      }
-    }
-    if (parentBtn.dataset.tooltip === 'delete' && section === 'myaddress') {
-      clearAddress('myAddress')
-    }
-    if (parentBtn.dataset.tooltip === 'delete' && section === 'toaddress') {
-      clearAddress('toAddress')
-    }
-    getAddress()
-  }
-
-  const btnRefs = useRef({})
-
-  const handleRef = (name) => (element) => {
-    btnRefs.current[name] = element
   }
 
   const listBtns = ['save', 'clip', 'delete']
@@ -290,11 +146,14 @@ const FormAddress = ({
     if (btn === 'clip') {
       switch (section) {
         case 'myaddress':
+          // console.log('memoryMyAddress', memoryMyAddress)
           if (memoryMyAddress) {
+            console.log('hover')
             hover()
           }
           break
         case 'toaddress':
+          // console.log('memoryToAddress', memoryToAddress)
           if (memoryToAddress) {
             hover()
           }
@@ -303,7 +162,7 @@ const FormAddress = ({
         default:
           break
       }
-      hover()
+      // hover()
     }
     if (btn === 'delete') {
       hover()
@@ -318,7 +177,6 @@ const FormAddress = ({
 
   return (
     <form className={`envelope-form form-${listLabelsAddress.name}`}>
-      {/* <div className="envelope-history"></div> */}
       <div
         className={`toolbar-envelope-container envelope-container-${listLabelsAddress.name}`}
       >

@@ -69,3 +69,31 @@ export const addIndexToAddress = (newSection) => {
     payload: newSection,
   }
 }
+
+// export const setMyAddressLegendRef = (newSection) => {
+//   return {
+//     type: a.SET_MY_ADDRESS_LEGEND_REF,
+//     payload: newSection,
+//   }
+// }
+
+// export const setToAddressLegendRef = (newSection) => {
+//   return {
+//     type: a.SET_TO_ADDRESS_LEGEND_REF,
+//     payload: newSection,
+//   }
+// }
+
+// export const setMyAddressFieldsetRef = (newSection) => {
+//   return {
+//     type: a.SET_MY_ADDRESS_FIELDSET_REF,
+//     payload: newSection,
+//   }
+// }
+
+// export const setToAddressFieldsetRef = (newSection) => {
+//   return {
+//     type: a.SET_TO_ADDRESS_FIELDSET_REF,
+//     payload: newSection,
+//   }
+// }
