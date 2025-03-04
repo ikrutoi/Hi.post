@@ -16,6 +16,11 @@ import {
   getToAddress,
   deleteToAddress,
   getAllToAddress,
+  getAllRecordsAddresses,
+  getRecordAddressById,
+  addRecordAddress,
+  addUniqueRecordAddress,
+  deleteRecordAddress,
 } from '../../../../utils/cardFormNav/indexDB/indexDb'
 import { addChoiceSection } from '../../../../redux/layout/actionCreators'
 import {
@@ -59,18 +64,24 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const resultToAddress = !Object.values(toAddress).some(
     (value) => value === ''
   )
+  const envelopeLogoRef = useRef(null)
+  const inputRefs = useRef({})
+
   const dispatch = useDispatch()
 
-  const getAddress = async () => {
+  const getAllAddress = async () => {
     const myAddress = await getAllMyAddress('myAddress')
     setMemoryMyAddress(myAddress)
     const toAddress = await getAllToAddress('toAddress')
-    // console.log('toAddress', toAddress)
     setMemoryToAddress(toAddress)
   }
 
+  const setRef = (id) => (element) => {
+    inputRefs.current[id] = element
+  }
+
   useEffect(() => {
-    getAddress()
+    getAllAddress()
   }, [])
 
   const handleValue = (field, input, value) => {
@@ -82,11 +93,13 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const handleSave = async (section) => {
     switch (section) {
       case 'myaddress':
-        await addMyAddress(indexMyAddress, myAddress)
+        await addUniqueRecordAddress('myAddress', myAddress)
+        // await addMyAddress(indexMyAddress, myAddress)
         dispatch(addIndexMyAddress(indexMyAddress + 1))
         break
       case 'toaddress':
-        await addToAddress(indexToAddress, toAddress)
+        await addUniqueRecordAddress('toAddress', toAddress)
+        // await addToAddress(indexToAddress, toAddress)
         dispatch(addIndexToAddress(indexToAddress + 1))
         break
 
@@ -102,12 +115,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
       setHeightLogo(cardPuzzleRef.clientHeight / 14)
     }
   }, [cardPuzzleRef])
-
-  const inputRefs = useRef({})
-  const setRef = (id) => (element) => {
-    inputRefs.current[id] = element
-  }
-  const envelopeLogoRef = useRef(null)
 
   useEffect(() => {
     dispatch(addEnvelope(value))
@@ -187,38 +194,42 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     return null
   }
 
+  const resetStyles = (legendRef, fieldsetRef) => {
+    legendRef.current.style.color = 'rgb(0, 0, 0)'
+    fieldsetRef.current.style.borderColor = 'rgb(211, 211, 211)'
+  }
+
+  const applyActiveStyles = (legendRef, fieldsetRef) => {
+    legendRef.current.style.color = '#007aac'
+    fieldsetRef.current.style.borderColor = '#007aac'
+  }
+
   const handleClickClip = (section) => {
     if (getLengthAddress(section)) {
       if (section === 'myaddress') {
         if (infoEnvelopeClipToAddress) {
           dispatch(infoButtons({ envelopeClipToAddress: false }))
-          toAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
-          toAddressFieldsetRef.current.style.borderColor = 'rgb(211, 211 , 211)'
+          resetStyles(toAddressLegendRef, toAddressFieldsetRef)
         }
         if (infoEnvelopeClipMyAddress) {
           dispatch(infoButtons({ envelopeClipMyAddress: false }))
-          myAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
-          myAddressFieldsetRef.current.style.borderColor = 'rgb(211, 211 , 211)'
+          resetStyles(myAddressLegendRef, myAddressFieldsetRef)
         } else {
           dispatch(infoButtons({ envelopeClipMyAddress: true }))
-          myAddressLegendRef.current.style.color = '#007aac'
-          myAddressFieldsetRef.current.style.borderColor = '#007aac'
+          applyActiveStyles(myAddressLegendRef, myAddressFieldsetRef)
         }
       }
       if (section === 'toaddress') {
         if (infoEnvelopeClipMyAddress) {
           dispatch(infoButtons({ envelopeClipMyAddress: false }))
-          myAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
-          myAddressFieldsetRef.current.style.borderColor = 'rgb(211, 211 , 211)'
+          resetStyles(myAddressLegendRef, myAddressFieldsetRef)
         }
         if (infoEnvelopeClipToAddress) {
           dispatch(infoButtons({ envelopeClipToAddress: false }))
-          toAddressLegendRef.current.style.color = 'rgb(0, 0 , 0)'
-          toAddressFieldsetRef.current.style.borderColor = 'rgb(211, 211 , 211)'
+          resetStyles(toAddressLegendRef, toAddressFieldsetRef)
         } else {
           dispatch(infoButtons({ envelopeClipToAddress: true }))
-          toAddressLegendRef.current.style.color = '#007aac'
-          toAddressFieldsetRef.current.style.borderColor = '#007aac'
+          applyActiveStyles(toAddressLegendRef, toAddressFieldsetRef)
         }
       }
     }
@@ -287,7 +298,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     if (parentBtn.dataset.tooltip === 'save' && section === 'myaddress') {
       if (resultMyAddress) {
         const parity = changeParityInputsAddress('myaddress')
-        console.log('parity myaddress', parity)
         if (parity) {
           handleSave(section)
         }
@@ -317,7 +327,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     if (parentBtn.dataset.tooltip === 'delete' && section === 'toaddress') {
       clearAddress('toAddress')
     }
-    getAddress()
+    getAllAddress()
   }
 
   return (

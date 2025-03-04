@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { TbArrowsMinimize } from 'react-icons/tb'
 import { HiArrowsPointingIn } from 'react-icons/hi2'
 import './CardsList.scss'
+import CardMiniSection from './CardMiniSections/CardMiniSection'
 import {
+  deleteMyAddress,
   getAllMyAddress,
+  deleteToAddress,
   getAllToAddress,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import EnvelopeMemory from './CardMiniSections/EnvelopeMemory/EnvelopeMemory'
@@ -29,6 +31,7 @@ const CardsList = () => {
   let count = 0
   const [memoryMyAddress, setMemoryMyAddress] = useState(null)
   const [memoryToAddress, setMemoryToAddress] = useState(null)
+  const addressRefs = useRef({})
 
   const getAddress = async (section) => {
     switch (section) {
@@ -43,6 +46,10 @@ const CardsList = () => {
       default:
         break
     }
+  }
+
+  const setRef = (id) => (element) => {
+    addressRefs.current[id] = element
   }
 
   useEffect(() => {
@@ -155,8 +162,22 @@ const CardsList = () => {
   }
   const listPrioritySections = getListPrioritySections()
 
-  // console.log('memoryMy', memoryMyAddress)
-  // console.log('memoryTo', memoryToAddress)
+  const handleClickAddressMiniKebab = async (section, id) => {
+    switch (section) {
+      case 'myaddress':
+        await deleteMyAddress(id)
+        break
+      case 'toaddress':
+        await deleteToAddress(id)
+        break
+
+      default:
+        break
+    }
+    getAddress(section)
+  }
+
+  // console.log('toAddress', memoryToAddress)
 
   return (
     <div className="cards-list" style={{ height: `${sizeMiniCard.height}px` }}>
@@ -167,9 +188,12 @@ const CardsList = () => {
             memoryMyAddress.map((address, i) => (
               <EnvelopeMemory
                 key={i}
+                setRef={setRef}
+                // index={i}
                 sizeMiniCard={sizeMiniCard}
                 section={'myaddress'}
                 address={address}
+                handleClickAddressMiniKebab={handleClickAddressMiniKebab}
               />
             ))}
           {infoEnvelopeClipToAddress &&
@@ -177,9 +201,12 @@ const CardsList = () => {
             memoryToAddress.map((address, i) => (
               <EnvelopeMemory
                 key={i}
+                setRef={setRef}
+                // index={i}
                 sizeMiniCard={sizeMiniCard}
                 section={'toaddress'}
                 address={address}
+                handleClickAddressMiniKebab={handleClickAddressMiniKebab}
               />
             ))}
         </div>

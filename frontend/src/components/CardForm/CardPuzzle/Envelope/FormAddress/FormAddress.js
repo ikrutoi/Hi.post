@@ -120,7 +120,21 @@ const FormAddress = ({
       }
     }
     if (btn === 'delete') {
-      hover()
+      switch (listLabelsAddress.name) {
+        case 'myaddress':
+          if (lengthAddress[0] > 0) {
+            hover()
+          }
+          break
+        case 'toaddress':
+          if (lengthAddress[1] > 0) {
+            hover()
+          }
+          break
+
+        default:
+          break
+      }
     }
   }
 
