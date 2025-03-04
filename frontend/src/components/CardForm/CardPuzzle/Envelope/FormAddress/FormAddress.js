@@ -1,13 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import Label from '../Label/Label'
 import { useSelector } from 'react-redux'
 import './FormAddress.scss'
 import { addIconToolbarEnvelope } from '../../../../../utils/envelope/addIconToolbarEnvelope'
-import {
-  getAllMyAddress,
-  getAllToAddress,
-} from '../../../../../utils/cardFormNav/indexDB/indexDb'
-import { dbPromise } from '../../../../../utils/cardFormNav/indexDB/indexDb'
 
 const FormAddress = ({
   values,
@@ -19,25 +14,17 @@ const FormAddress = ({
   myAddressLegendRef,
   toAddressFieldsetRef,
   myAddressFieldsetRef,
+  lengthAddress,
   handleClickBtn,
 }) => {
   const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
   const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
-  const infoEnvelopeClipMyAddress = useSelector(
-    (state) => state.infoButtons.envelopeClipMyAddress
-  )
-  const infoEnvelopeClipToAddress = useSelector(
-    (state) => state.infoButtons.envelopeClipToAddress
-  )
   const resultMyAddress = !Object.values(myAddress).some(
     (value) => value === ''
   )
   const resultToAddress = !Object.values(toAddress).some(
     (value) => value === ''
   )
-  const [memoryMyAddress, setMemoryMyAddress] = useState(null)
-  const [memoryToAddress, setMemoryToAddress] = useState(null)
-
   const btnRefs = useRef({})
 
   const handleRef = (name) => (element) => {
@@ -63,35 +50,6 @@ const FormAddress = ({
   //   observeChanges('myAddress')
   //   observeChanges('toAddress')
   // })
-
-  const getAddress = async (section) => {
-    switch (section) {
-      case 'myaddress':
-        const myAddress = await getAllMyAddress('myAddress')
-        myAddress.length === 0
-          ? setMemoryMyAddress(false)
-          : setMemoryMyAddress(true)
-        break
-      case 'toaddress':
-        const toAddress = await getAllToAddress('toAddress')
-        toAddress.length === 0
-          ? setMemoryToAddress(false)
-          : setMemoryToAddress(true)
-        setMemoryToAddress(toAddress)
-        break
-      default:
-        break
-    }
-  }
-
-  useEffect(() => {
-    if (infoEnvelopeClipMyAddress) {
-      getAddress('myaddress')
-    }
-    if (infoEnvelopeClipToAddress) {
-      getAddress('toaddress')
-    }
-  }, [infoEnvelopeClipMyAddress, infoEnvelopeClipToAddress])
 
   const getAddressLegendRef = (section) => {
     switch (section) {
@@ -146,15 +104,13 @@ const FormAddress = ({
     if (btn === 'clip') {
       switch (section) {
         case 'myaddress':
-          // console.log('memoryMyAddress', memoryMyAddress)
-          if (memoryMyAddress) {
+          if (lengthAddress[0] > 0) {
             console.log('hover')
             hover()
           }
           break
         case 'toaddress':
-          // console.log('memoryToAddress', memoryToAddress)
-          if (memoryToAddress) {
+          if (lengthAddress[1] > 0) {
             hover()
           }
           break
@@ -162,7 +118,6 @@ const FormAddress = ({
         default:
           break
       }
-      // hover()
     }
     if (btn === 'delete') {
       hover()

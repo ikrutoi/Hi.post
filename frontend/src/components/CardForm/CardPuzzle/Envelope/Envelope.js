@@ -86,7 +86,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
         dispatch(addIndexMyAddress(indexMyAddress + 1))
         break
       case 'toaddress':
-        // console.log('index', indexToAddress, toAddress)
         await addToAddress(indexToAddress, toAddress)
         dispatch(addIndexToAddress(indexToAddress + 1))
         break
@@ -141,23 +140,43 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   }
 
   const getLengthAddress = async (section) => {
-    if (section === 'myaddress') {
-      const allMyAddress = await getAllMyAddress('myAddress')
-      if (allMyAddress.length > 0) {
+    const getAllAddresses = async (storeName) => {
+      switch (storeName) {
+        case 'myAddress':
+          return await getAllMyAddress(storeName)
+        case 'toAddress':
+          return await getAllToAddress(storeName)
+        default:
+          return []
+      }
+    }
+    if (section === 'myaddress' || section === 'toaddress') {
+      const allAddress = await getAllAddresses(section)
+      if (allAddress.length > 0) {
         return true
       } else {
         return false
       }
     }
-    if (section === 'toaddress') {
-      const allToAddress = await getAllToAddress('toAddress')
-      if (allToAddress.length > 0) {
-        return true
-      } else {
-        return false
-      }
+    if (section === 'length') {
+      const allMyAddress = await getAllAddresses('myAddress')
+      const allToAddress = await getAllAddresses('toAddress')
+      return [allMyAddress.length, allToAddress.length]
     }
   }
+
+  useEffect(() => {
+    const fetchLengths = async () => {
+      const lengthAddresses = await getLengthAddress('length')
+      if (lengthAddresses[0] !== indexMyAddress) {
+        dispatch(addIndexMyAddress(lengthAddresses[0]))
+      }
+      if (lengthAddresses[1] !== indexToAddress) {
+        dispatch(addIndexToAddress(lengthAddresses[1]))
+      }
+    }
+    fetchLengths()
+  }, [])
 
   const searchParentBtnNav = (el) => {
     if (el.classList.contains('toolbar-btn')) {
@@ -225,7 +244,20 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
 
     const parentBtn = searchParentBtnNav(evt.target, section)
     if (parentBtn.dataset.tooltip === 'clip') {
-      handleClickClip(section)
+      switch (section) {
+        case 'myaddress':
+          if (indexMyAddress > 0) {
+            handleClickClip(section)
+          }
+          break
+        case 'toaddress':
+          if (indexToAddress > 0) {
+            handleClickClip(section)
+          }
+          break
+        default:
+          break
+      }
     }
 
     const changeParityInputsAddress = (section) => {
@@ -288,12 +320,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     getAddress()
   }
 
-  // const btnRefs = useRef()
-
-  // const handleRef = (name) => (element) => {
-  //   btnRefs.current[name] = element
-  // }
-
   return (
     <div className="envelope">
       <div className="envelope-myaddress">
@@ -315,7 +341,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           toAddressLegendRef={toAddressLegendRef}
           myAddressFieldsetRef={myAddressFieldsetRef}
           toAddressFieldsetRef={toAddressFieldsetRef}
-          // handleRef={handleRef}
+          lengthAddress={[indexMyAddress, indexToAddress]}
           handleClickBtn={handleClickBtn}
         />
       </div>
@@ -332,7 +358,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           toAddressLegendRef={toAddressLegendRef}
           myAddressFieldsetRef={myAddressFieldsetRef}
           toAddressFieldsetRef={toAddressFieldsetRef}
-          // handleRef={handleRef}
+          lengthAddress={[indexMyAddress, indexToAddress]}
           handleClickBtn={handleClickBtn}
         />
       </div>
