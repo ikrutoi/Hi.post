@@ -7,7 +7,7 @@ const Label = ({
   values,
   handleValue,
   handleMovingBetweenInputs,
-  setRef,
+  setInputRef,
 }) => {
   const indexName = name.split('-')[0]
   const nameWithoutIndex = name.split('-')[1]
@@ -38,7 +38,7 @@ const Label = ({
       }
       <input
         className={`envelope-input ${field} ${field}-${shortName}`}
-        ref={setRef(`${field}${indexName}`)}
+        ref={setInputRef(`${field}${indexName}`)}
         data-field={field}
         data-index={indexName}
         data-name={shortName}

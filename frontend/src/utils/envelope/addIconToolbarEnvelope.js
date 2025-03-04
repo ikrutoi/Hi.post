@@ -2,14 +2,29 @@ import { FiSave, FiDelete } from 'react-icons/fi'
 import { FiPaperclip } from 'react-icons/fi'
 import { LuPaperclip } from 'react-icons/lu'
 
-export const addIconToolbarEnvelope = (name) => {
-  switch (name) {
+export const addIconToolbarEnvelope = (section, icon, setIconRef) => {
+  switch (icon) {
     case 'save':
-      return <FiSave className="toolbar-icon" />
+      return (
+        <FiSave
+          ref={setIconRef(`${section}-${icon}`)}
+          className="toolbar-icon"
+        />
+      )
     case 'clip':
-      return <LuPaperclip className="toolbar-icon" />
+      return (
+        <LuPaperclip
+          ref={setIconRef(`${section}-${icon}`)}
+          className="toolbar-icon"
+        />
+      )
     case 'delete':
-      return <FiDelete className="toolbar-icon" />
+      return (
+        <FiDelete
+          ref={setIconRef(`${section}-${icon}`)}
+          className="toolbar-icon"
+        />
+      )
 
     default:
       break

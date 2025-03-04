@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Label from '../Label/Label'
 import { useSelector } from 'react-redux'
 import './FormAddress.scss'
@@ -9,16 +9,18 @@ const FormAddress = ({
   listLabelsAddress,
   handleValue,
   handleMovingBetweenInputs,
-  setRef,
-  toAddressLegendRef,
-  myAddressLegendRef,
-  toAddressFieldsetRef,
-  myAddressFieldsetRef,
+  setInputRef,
+  myAddressRefs,
+  toAddressRefs,
   lengthAddress,
   handleClickBtn,
+  setIconRef,
+  iconsMyAddress,
+  iconsToAddress,
 }) => {
   const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
   const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
+
   const resultMyAddress = !Object.values(myAddress).some(
     (value) => value === ''
   )
@@ -54,9 +56,9 @@ const FormAddress = ({
   const getAddressLegendRef = (section) => {
     switch (section) {
       case 'myaddress':
-        return myAddressLegendRef
+        return myAddressRefs[1]
       case 'toaddress':
-        return toAddressLegendRef
+        return toAddressRefs[1]
       default:
         return null
     }
@@ -65,9 +67,9 @@ const FormAddress = ({
   const getAddressFieldsetRef = (section) => {
     switch (section) {
       case 'myaddress':
-        return myAddressFieldsetRef
+        return myAddressRefs[0]
       case 'toaddress':
-        return toAddressFieldsetRef
+        return toAddressRefs[0]
       default:
         return null
     }
@@ -88,13 +90,15 @@ const FormAddress = ({
     const parentBtnNav = searchParentBtnNav(evt.target)
     const section = parentBtnNav.dataset.section
     const hover = () => {
-      parentBtnNav.style.color = 'rgb(71, 71, 71)'
+      parentBtnNav.style.color = 'rgb(0, 122, 172)'
+      // parentBtnNav.style.color = 'rgb(71, 71, 71)'
       parentBtnNav.style.cursor = 'pointer'
     }
-    if (section === 'myaddress' && btn === 'save') {
-      if (resultMyAddress) {
-        hover()
-      }
+    if (section === 'myaddress' && btn === 'save' && iconsMyAddress[0]) {
+      // if (resultMyAddress) {
+      console.log('hover')
+      hover()
+      // }
     }
     if (section === 'toaddress' && btn === 'save') {
       if (resultToAddress) {
@@ -105,7 +109,6 @@ const FormAddress = ({
       switch (section) {
         case 'myaddress':
           if (lengthAddress[0] > 0) {
-            console.log('hover')
             hover()
           }
           break
@@ -161,7 +164,7 @@ const FormAddress = ({
               onMouseEnter={(evt) => handleMouseEnterBtn(evt, btn)}
               onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btn)}
             >
-              {addIconToolbarEnvelope(btn)}
+              {addIconToolbarEnvelope(listLabelsAddress.name, btn, setIconRef)}
             </button>
           )
         })}
@@ -185,7 +188,7 @@ const FormAddress = ({
               values={values}
               handleValue={handleValue}
               handleMovingBetweenInputs={handleMovingBetweenInputs}
-              setRef={setRef}
+              setInputRef={setInputRef}
             />
           ) : (
             <div
@@ -200,7 +203,7 @@ const FormAddress = ({
                   values={values}
                   handleValue={handleValue}
                   handleMovingBetweenInputs={handleMovingBetweenInputs}
-                  setRef={setRef}
+                  setInputRef={setInputRef}
                 />
               ))}
             </div>
