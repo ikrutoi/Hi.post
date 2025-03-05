@@ -66,23 +66,32 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const [deleteToAddress, setDeleteToAddress] = useState(null)
   const inputRefs = useRef({})
   const btnIconRefs = useRef({})
-  const [fullValueMyAddress, setFullValueMyAddress] = useState(null)
-  const [fullValueToAddress, setFullValueToAddress] = useState(null)
 
   const envelopeLogoRef = useRef(null)
 
   const dispatch = useDispatch()
 
   useEffect(() => {
-    const resultMyAddress = Object.values(myAddress).some(
+    const fullMyAddress = Object.values(myAddress).every(
       (value) => value !== ''
     )
-    resultMyAddress ? setFullValueMyAddress(true) : setFullValueMyAddress(false)
-    const resultToAddress = Object.values(toAddress).some(
+    const notEmptyMyAddress = Object.values(myAddress).some(
       (value) => value !== ''
     )
-    resultToAddress ? setFullValueToAddress(true) : setFullValueToAddress(false)
-  }, [myAddress, toAddress])
+    fullMyAddress ? setSaveMyAddress(true) : setSaveMyAddress(false)
+    notEmptyMyAddress ? setDeleteMyAddress(true) : setDeleteMyAddress(false)
+  }, [myAddress])
+
+  useEffect(() => {
+    const fullToAddress = Object.values(toAddress).every(
+      (value) => value !== ''
+    )
+    const notEmptyToAddress = Object.values(toAddress).some(
+      (value) => value !== ''
+    )
+    fullToAddress ? setSaveToAddress(true) : setSaveToAddress(false)
+    notEmptyToAddress ? setDeleteToAddress(true) : setDeleteToAddress(false)
+  }, [toAddress])
 
   const getAllAddress = async () => {
     const myAddress = await getAllMyAddress('myAddress')
@@ -132,9 +141,23 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   useEffect(() => {
     if (saveMyAddress) {
       btnIconRefs.current['myaddress-save'].style.color = 'rgb(71, 71, 71)'
+    } else {
+      btnIconRefs.current['myaddress-save'].style.color = 'rgb(163, 163, 163)'
     }
     if (saveToAddress) {
       btnIconRefs.current['toaddress-save'].style.color = 'rgb(71, 71, 71)'
+    } else {
+      btnIconRefs.current['toaddress-save'].style.color = 'rgb(163, 163, 163)'
+    }
+    if (deleteMyAddress) {
+      btnIconRefs.current['myaddress-delete'].style.color = 'rgb(71, 71, 71)'
+    } else {
+      btnIconRefs.current['myaddress-delete'].style.color = 'rgb(163, 163, 163)'
+    }
+    if (deleteToAddress) {
+      btnIconRefs.current['toaddress-delete'].style.color = 'rgb(71, 71, 71)'
+    } else {
+      btnIconRefs.current['toaddress-delete'].style.color = 'rgb(163, 163, 163)'
     }
     if (memoryMyAddress && memoryMyAddress.length > 0) {
       btnIconRefs.current['myaddress-clip'].style.color = 'rgb(71, 71, 71)'
@@ -151,6 +174,8 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     memoryToAddress,
     clipMyAddress,
     clipToAddress,
+    deleteMyAddress,
+    deleteToAddress,
   ])
 
   const [heightLogo, setHeightLogo] = useState(null)
@@ -182,7 +207,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
       }
     }
     if (e.key === 'ArrowUp' || e.keyCode === 38) {
-      console.log('*')
       if (indexInput > 1) {
         inputRefs.current[`${field}${indexInput - 1}`].focus()
       } else {
@@ -340,7 +364,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     }
 
     if (parentBtn.dataset.tooltip === 'save' && section === 'myaddress') {
-      if (fullValueMyAddress) {
+      if (saveMyAddress) {
         const parity = changeParityInputsAddress('myaddress')
         if (parity) {
           await addUniqueRecordAddress('myAddress', myAddress)
@@ -357,9 +381,8 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
       }
     }
     if (parentBtn.dataset.tooltip === 'save' && section === 'toaddress') {
-      if (fullValueToAddress) {
+      if (saveToAddress) {
         const parity = changeParityInputsAddress('toaddress')
-        console.log('parity', parity)
         if (parity) {
           await addUniqueRecordAddress('toAddress', toAddress)
           getAllAddress()
