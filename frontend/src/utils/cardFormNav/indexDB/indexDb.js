@@ -206,6 +206,7 @@ export const addUniqueRecordAddress = async (storeName, data) => {
 
   const transaction = db.transaction(storeName, 'readwrite')
   const store = transaction.objectStore(storeName)
-  await store.put({ id: newId, ...data })
+  await store.put({ id: newId, address: { ...data } })
+  // await store.put({ id: newId, ...data })
   await transaction.done
 }

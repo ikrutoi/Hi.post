@@ -6,9 +6,8 @@ import './CardsList.scss'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import {
   deleteMyAddress,
-  getAllMyAddress,
   deleteToAddress,
-  getAllToAddress,
+  getAllRecordsAddresses,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import EnvelopeMemory from './CardMiniSections/EnvelopeMemory/EnvelopeMemory'
 // import sizeMiniCard
@@ -24,6 +23,12 @@ const CardsList = () => {
   const infoEnvelopeClipToAddress = useSelector(
     (state) => state.infoButtons.envelopeClipToAddress
   )
+  const infoEnvelopeSaveMyAddress = useSelector(
+    (state) => state.infoButtons.envelopeSaveMyAddress
+  )
+  const infoEnvelopeSaveToAddress = useSelector(
+    (state) => state.infoButtons.envelopeSaveToAddress
+  )
   const iconMinimizeContainerRef = useRef()
   const [styleIconMinimize, setStyleIconMinimize] = useState(null)
   const listSelectedSections = []
@@ -33,14 +38,23 @@ const CardsList = () => {
   const [memoryToAddress, setMemoryToAddress] = useState(null)
   const addressRefs = useRef({})
 
+  useEffect(() => {
+    if (infoEnvelopeSaveMyAddress) {
+      getAddress('myaddress')
+    }
+    if (infoEnvelopeSaveToAddress) {
+      getAddress('toaddress')
+    }
+  }, [infoEnvelopeSaveMyAddress, infoEnvelopeSaveToAddress])
+
   const getAddress = async (section) => {
     switch (section) {
       case 'myaddress':
-        const myAddress = await getAllMyAddress('myAddress')
+        const myAddress = await getAllRecordsAddresses('myAddress')
         setMemoryMyAddress(myAddress)
         break
       case 'toaddress':
-        const toAddress = await getAllToAddress('toAddress')
+        const toAddress = await getAllRecordsAddresses('toAddress')
         setMemoryToAddress(toAddress)
         break
       default:
@@ -51,6 +65,13 @@ const CardsList = () => {
   const setRef = (id) => (element) => {
     addressRefs.current[id] = element
   }
+
+  // const getAllAddress = async () => {
+  //   const myAddress = await getAllMyAddress('myAddress')
+  //   setMemoryMyAddress(myAddress)
+  //   const toAddress = await getAllToAddress('toAddress')
+  //   setMemoryToAddress(toAddress)
+  // }
 
   useEffect(() => {
     if (infoEnvelopeClipMyAddress) {

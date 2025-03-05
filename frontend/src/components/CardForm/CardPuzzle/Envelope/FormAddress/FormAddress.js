@@ -14,12 +14,13 @@ const FormAddress = ({
   toAddressRefs,
   lengthAddress,
   handleClickBtn,
-  setIconRef,
+  setBtnIconRef,
   iconsMyAddress,
   iconsToAddress,
 }) => {
   const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
   const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
+  const [temporaryStyleHover, setTemporaryStyleHover] = useState(null)
 
   const resultMyAddress = !Object.values(myAddress).some(
     (value) => value === ''
@@ -88,6 +89,7 @@ const FormAddress = ({
 
   const handleMouseEnterBtn = (evt, btn) => {
     const parentBtnNav = searchParentBtnNav(evt.target)
+    setTemporaryStyleHover(parentBtnNav.style.color)
     const section = parentBtnNav.dataset.section
     const hover = () => {
       parentBtnNav.style.color = 'rgb(0, 122, 172)'
@@ -108,12 +110,12 @@ const FormAddress = ({
     if (btn === 'clip') {
       switch (section) {
         case 'myaddress':
-          if (lengthAddress[0] > 0) {
+          if (lengthAddress[0]) {
             hover()
           }
           break
         case 'toaddress':
-          if (lengthAddress[1] > 0) {
+          if (lengthAddress[1]) {
             hover()
           }
           break
@@ -125,12 +127,12 @@ const FormAddress = ({
     if (btn === 'delete') {
       switch (listLabelsAddress.name) {
         case 'myaddress':
-          if (lengthAddress[0] > 0) {
+          if (iconsMyAddress[1]) {
             hover()
           }
           break
         case 'toaddress':
-          if (lengthAddress[1] > 0) {
+          if (iconsToAddress[1]) {
             hover()
           }
           break
@@ -143,7 +145,7 @@ const FormAddress = ({
 
   const handleMouseLeaveBtn = (evt) => {
     const parentBtnNav = searchParentBtnNav(evt.target)
-    parentBtnNav.style.color = 'rgb(163, 163, 163)'
+    parentBtnNav.style.color = temporaryStyleHover
     parentBtnNav.style.cursor = 'default'
   }
 
@@ -158,13 +160,13 @@ const FormAddress = ({
               key={i}
               data-tooltip={btn}
               data-section={listLabelsAddress.name}
-              ref={handleRef(btn)}
+              ref={setBtnIconRef(`${listLabelsAddress.name}-${btn}`)}
               className={`toolbar-btn toolbar-btn-envelope btn-envelope-${btn}`}
               onClick={(evt) => handleClickBtn(evt, listLabelsAddress.name)}
               onMouseEnter={(evt) => handleMouseEnterBtn(evt, btn)}
               onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btn)}
             >
-              {addIconToolbarEnvelope(listLabelsAddress.name, btn, setIconRef)}
+              {addIconToolbarEnvelope(btn)}
             </button>
           )
         })}

@@ -7,7 +7,8 @@ const initialState = {
   download: false,
   envelopeClipMyAddress: false,
   envelopeClipToAddress: false,
-  envelopeSave: false,
+  envelopeSaveMyAddress: false,
+  envelopeSaveToAddress: false,
 }
 
 const infoButtonsReducer = (state = initialState, action) => {
