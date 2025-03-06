@@ -160,7 +160,7 @@ export const getAllRecordsAddresses = async (storeName) => {
   const store = transaction.objectStore(storeName)
   const allRecords = await store.getAll()
   await transaction.done
-  return allRecords
+  return allRecords || []
 }
 
 export const getRecordAddressById = async (storeName, id) => {
@@ -169,7 +169,7 @@ export const getRecordAddressById = async (storeName, id) => {
   const store = transaction.objectStore(storeName)
   const result = await store.get(id)
   await transaction.done
-  return result
+  return result || null
 }
 
 export const addRecordAddress = async (storeName, record) => {

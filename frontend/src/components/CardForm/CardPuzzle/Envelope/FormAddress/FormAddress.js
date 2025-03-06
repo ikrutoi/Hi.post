@@ -1,6 +1,4 @@
-import { useRef, useState } from 'react'
 import Label from '../Label/Label'
-import { useSelector } from 'react-redux'
 import './FormAddress.scss'
 import { addIconToolbarEnvelope } from '../../../../../utils/envelope/addIconToolbarEnvelope'
 
@@ -15,25 +13,9 @@ const FormAddress = ({
   lengthAddress,
   handleClickBtn,
   setBtnIconRef,
-  iconsMyAddress,
-  iconsToAddress,
+  handleMouseEnter,
+  handleMouseLeave,
 }) => {
-  const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
-  const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
-  const [temporaryStyleHover, setTemporaryStyleHover] = useState(null)
-
-  const resultMyAddress = !Object.values(myAddress).some(
-    (value) => value === ''
-  )
-  const resultToAddress = !Object.values(toAddress).some(
-    (value) => value === ''
-  )
-  const btnRefs = useRef({})
-
-  const handleRef = (name) => (element) => {
-    btnRefs.current[name] = element
-  }
-
   // dbPromise.then((db) => {
   //   const observeChanges = (storeName) => {
   //     const transaction = db.transaction(storeName, 'readwrite')
@@ -76,7 +58,7 @@ const FormAddress = ({
     }
   }
 
-  const listBtns = ['save', 'clip', 'delete']
+  const listBtns = ['save', 'delete', 'clip']
 
   const searchParentBtnNav = (el) => {
     if (el.classList.contains('toolbar-btn')) {
@@ -87,66 +69,9 @@ const FormAddress = ({
     return null
   }
 
-  const handleMouseEnterBtn = (evt, btn) => {
+  const handleMouseEnterBtn = (evt) => {
     const parentBtnNav = searchParentBtnNav(evt.target)
-    setTemporaryStyleHover(parentBtnNav.style.color)
-    const section = parentBtnNav.dataset.section
-    const hover = () => {
-      parentBtnNav.style.color = 'rgb(0, 122, 172)'
-      // parentBtnNav.style.color = 'rgb(71, 71, 71)'
-      parentBtnNav.style.cursor = 'pointer'
-    }
-    if (section === 'myaddress' && btn === 'save' && iconsMyAddress[0]) {
-      // if (resultMyAddress) {
-      console.log('hover')
-      hover()
-      // }
-    }
-    if (section === 'toaddress' && btn === 'save') {
-      if (resultToAddress) {
-        hover()
-      }
-    }
-    if (btn === 'clip') {
-      switch (section) {
-        case 'myaddress':
-          if (lengthAddress[0]) {
-            hover()
-          }
-          break
-        case 'toaddress':
-          if (lengthAddress[1]) {
-            hover()
-          }
-          break
-
-        default:
-          break
-      }
-    }
-    if (btn === 'delete') {
-      switch (listLabelsAddress.name) {
-        case 'myaddress':
-          if (iconsMyAddress[1]) {
-            hover()
-          }
-          break
-        case 'toaddress':
-          if (iconsToAddress[1]) {
-            hover()
-          }
-          break
-
-        default:
-          break
-      }
-    }
-  }
-
-  const handleMouseLeaveBtn = (evt) => {
-    const parentBtnNav = searchParentBtnNav(evt.target)
-    parentBtnNav.style.color = temporaryStyleHover
-    parentBtnNav.style.cursor = 'default'
+    handleMouseEnter(parentBtnNav)
   }
 
   return (
@@ -163,8 +88,8 @@ const FormAddress = ({
               ref={setBtnIconRef(`${listLabelsAddress.name}-${btn}`)}
               className={`toolbar-btn toolbar-btn-envelope btn-envelope-${btn}`}
               onClick={(evt) => handleClickBtn(evt, listLabelsAddress.name)}
-              onMouseEnter={(evt) => handleMouseEnterBtn(evt, btn)}
-              onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btn)}
+              onMouseEnter={handleMouseEnterBtn}
+              onMouseLeave={handleMouseLeave}
             >
               {addIconToolbarEnvelope(btn)}
             </button>
