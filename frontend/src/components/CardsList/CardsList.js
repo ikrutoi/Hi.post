@@ -17,70 +17,41 @@ const CardsList = () => {
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const choiceSection = useSelector((state) => state.layout.choiceSection)
-  const infoEnvelopeClipMyAddress = useSelector(
-    (state) => state.infoButtons.envelopeClipMyAddress
-  )
-  const infoEnvelopeClipToAddress = useSelector(
-    (state) => state.infoButtons.envelopeClipToAddress
-  )
-  const infoEnvelopeSaveMyAddress = useSelector(
-    (state) => state.infoButtons.envelopeSaveMyAddress
-  )
-  const infoEnvelopeSaveToAddress = useSelector(
-    (state) => state.infoButtons.envelopeSaveToAddress
+  const infoEnvelopeClip = useSelector(
+    (state) => state.infoButtons.envelopeClip
   )
   const iconMinimizeContainerRef = useRef()
   const [styleIconMinimize, setStyleIconMinimize] = useState(null)
   const listSelectedSections = []
   const [allCardMini, setAllCardMini] = useState(false)
   let count = 0
-  const [memoryMyAddress, setMemoryMyAddress] = useState(null)
-  const [memoryToAddress, setMemoryToAddress] = useState(null)
+  const [memoryAddress, setMemoryAddress] = useState({
+    myaddress: null,
+    toaddress: null,
+  })
   const addressRefs = useRef({})
 
   useEffect(() => {
-    if (infoEnvelopeSaveMyAddress) {
-      getAddress('myaddress')
+    if (infoEnvelopeClip) {
+      getAddress(infoEnvelopeClip)
     }
-    if (infoEnvelopeSaveToAddress) {
-      getAddress('toaddress')
-    }
-  }, [infoEnvelopeSaveMyAddress, infoEnvelopeSaveToAddress])
+  }, [infoEnvelopeClip])
 
   const getAddress = async (section) => {
-    switch (section) {
-      case 'myaddress':
-        const myAddress = await getAllRecordsAddresses('myAddress')
-        setMemoryMyAddress(myAddress)
-        break
-      case 'toaddress':
-        const toAddress = await getAllRecordsAddresses('toAddress')
-        setMemoryToAddress(toAddress)
-        break
-      default:
-        break
-    }
+    const listAddress = await getAllRecordsAddresses(
+      section === 'myaddress' ? 'myAddress' : 'toAddress'
+    )
+    setMemoryAddress((state) => {
+      return {
+        ...state,
+        [section]: listAddress,
+      }
+    })
   }
 
   const setRef = (id) => (element) => {
     addressRefs.current[id] = element
   }
-
-  // const getAllAddress = async () => {
-  //   const myAddress = await getAllMyAddress('myAddress')
-  //   setMemoryMyAddress(myAddress)
-  //   const toAddress = await getAllToAddress('toAddress')
-  //   setMemoryToAddress(toAddress)
-  // }
-
-  useEffect(() => {
-    if (infoEnvelopeClipMyAddress) {
-      getAddress('myaddress')
-    }
-    if (infoEnvelopeClipToAddress) {
-      getAddress('toaddress')
-    }
-  }, [infoEnvelopeClipMyAddress, infoEnvelopeClipToAddress])
 
   for (let section in sectionCardEdit) {
     if (!!sectionCardEdit[section]) {
@@ -198,15 +169,13 @@ const CardsList = () => {
     getAddress(section)
   }
 
-  // console.log('toAddress', memoryToAddress)
-
   return (
     <div className="cards-list" style={{ height: `${sizeMiniCard.height}px` }}>
-      {(infoEnvelopeClipMyAddress || infoEnvelopeClipToAddress) && (
+      {infoEnvelopeClip && (
         <div className="envelope-memory">
-          {infoEnvelopeClipMyAddress &&
-            memoryToAddress &&
-            memoryMyAddress.map((address, i) => (
+          {infoEnvelopeClip &&
+            memoryAddress[infoEnvelopeClip] &&
+            memoryAddress[infoEnvelopeClip].map((address, i) => (
               <EnvelopeMemory
                 key={i}
                 setRef={setRef}
@@ -217,23 +186,10 @@ const CardsList = () => {
                 handleClickAddressMiniKebab={handleClickAddressMiniKebab}
               />
             ))}
-          {infoEnvelopeClipToAddress &&
-            memoryToAddress &&
-            memoryToAddress.map((address, i) => (
-              <EnvelopeMemory
-                key={i}
-                setRef={setRef}
-                // index={i}
-                sizeMiniCard={sizeMiniCard}
-                section={'toaddress'}
-                address={address}
-                handleClickAddressMiniKebab={handleClickAddressMiniKebab}
-              />
-            ))}
         </div>
       )}
 
-      {!infoEnvelopeClipMyAddress && !infoEnvelopeClipToAddress && (
+      {!infoEnvelopeClip && (
         <>
           <div
             className="mini-poly-cards"

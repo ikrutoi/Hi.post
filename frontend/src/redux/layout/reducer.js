@@ -30,8 +30,6 @@ const initialState = {
     },
   },
   memoryCrop: null,
-  indexMyAddress: 0,
-  indexToAddress: 0,
   // myAddressLegendRef: null,
   // toAddressLegendRef: null,
   // myAddressFieldsetRef: null,
@@ -65,16 +63,6 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         memoryCrop: action.payload,
-      }
-    case a.ADD_INDEX_MY_ADDRESS:
-      return {
-        ...state,
-        indexMyAddress: action.payload,
-      }
-    case a.ADD_INDEX_TO_ADDRESS:
-      return {
-        ...state,
-        indexToAddress: action.payload,
       }
     // case a.SET_MY_ADDRESS_LEGEND_REF:
     //   return {

@@ -85,22 +85,22 @@ export const getAllUserImages = async () => {
   return allRecords
 }
 
-export const addMyAddress = async (id, file) => {
-  const db = await dbPromise
-  const transaction = db.transaction('myAddress', 'readwrite')
-  const store = transaction.objectStore('myAddress')
-  await store.put({ id, address: file })
-  await transaction.done
-}
+// export const addMyAddress = async (id, file) => {
+//   const db = await dbPromise
+//   const transaction = db.transaction('myAddress', 'readwrite')
+//   const store = transaction.objectStore('myAddress')
+//   await store.put({ id, address: file })
+//   await transaction.done
+// }
 
-export const getMyAddress = async (id) => {
-  const db = await dbPromise
-  const transaction = db.transaction('myAddress', 'readonly')
-  const store = transaction.objectStore('myAddress')
-  const result = await store.get(id)
-  await transaction.done
-  return result ? result.address : null
-}
+// export const getMyAddress = async (id) => {
+//   const db = await dbPromise
+//   const transaction = db.transaction('myAddress', 'readonly')
+//   const store = transaction.objectStore('myAddress')
+//   const result = await store.get(id)
+//   await transaction.done
+//   return result ? result.address : null
+// }
 
 export const deleteMyAddress = async (id) => {
   const db = await dbPromise
@@ -110,31 +110,31 @@ export const deleteMyAddress = async (id) => {
   await transaction.done
 }
 
-export const getAllMyAddress = async () => {
-  const db = await dbPromise
-  const transaction = db.transaction('myAddress', 'readonly')
-  const store = transaction.objectStore('myAddress')
-  const allRecords = await store.getAll()
-  await transaction.done
-  return allRecords
-}
+// export const getAllMyAddress = async () => {
+//   const db = await dbPromise
+//   const transaction = db.transaction('myAddress', 'readonly')
+//   const store = transaction.objectStore('myAddress')
+//   const allRecords = await store.getAll()
+//   await transaction.done
+//   return allRecords
+// }
 
-export const addToAddress = async (id, file) => {
-  const db = await dbPromise
-  const transaction = db.transaction('toAddress', 'readwrite')
-  const store = transaction.objectStore('toAddress')
-  await store.put({ id, address: file })
-  await transaction.done
-}
+// export const addToAddress = async (id, file) => {
+//   const db = await dbPromise
+//   const transaction = db.transaction('toAddress', 'readwrite')
+//   const store = transaction.objectStore('toAddress')
+//   await store.put({ id, address: file })
+//   await transaction.done
+// }
 
-export const getToAddress = async (id) => {
-  const db = await dbPromise
-  const transaction = db.transaction('toAddress', 'readonly')
-  const store = transaction.objectStore('toAddress')
-  const result = await store.get(id)
-  await transaction.done
-  return result ? result.address : null
-}
+// export const getToAddress = async (id) => {
+//   const db = await dbPromise
+//   const transaction = db.transaction('toAddress', 'readonly')
+//   const store = transaction.objectStore('toAddress')
+//   const result = await store.get(id)
+//   await transaction.done
+//   return result ? result.address : null
+// }
 
 export const deleteToAddress = async (id) => {
   const db = await dbPromise
@@ -145,14 +145,14 @@ export const deleteToAddress = async (id) => {
   await transaction.done
 }
 
-export const getAllToAddress = async () => {
-  const db = await dbPromise
-  const transaction = db.transaction('toAddress', 'readonly')
-  const store = transaction.objectStore('toAddress')
-  const allRecords = await store.getAll()
-  await transaction.done
-  return allRecords
-}
+// export const getAllToAddress = async () => {
+//   const db = await dbPromise
+//   const transaction = db.transaction('toAddress', 'readonly')
+//   const store = transaction.objectStore('toAddress')
+//   const allRecords = await store.getAll()
+//   await transaction.done
+//   return allRecords
+// }
 
 export const getAllRecordsAddresses = async (storeName) => {
   const db = await dbPromise
@@ -161,6 +161,15 @@ export const getAllRecordsAddresses = async (storeName) => {
   const allRecords = await store.getAll()
   await transaction.done
   return allRecords || []
+}
+
+export const getCountRecordsAddresses = async (storeName) => {
+  const db = await dbPromise
+  const transaction = db.transaction(storeName, 'readonly')
+  const store = transaction.objectStore(storeName)
+  const count = await store.count()
+  await transaction.done
+  return count
 }
 
 export const getRecordAddressById = async (storeName, id) => {
@@ -207,6 +216,5 @@ export const addUniqueRecordAddress = async (storeName, data) => {
   const transaction = db.transaction(storeName, 'readwrite')
   const store = transaction.objectStore(storeName)
   await store.put({ id: newId, address: { ...data } })
-  // await store.put({ id: newId, ...data })
   await transaction.done
 }
