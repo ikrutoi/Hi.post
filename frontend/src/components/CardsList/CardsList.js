@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { TbArrowsMinimize } from 'react-icons/tb'
 import { HiArrowsPointingIn } from 'react-icons/hi2'
 import './CardsList.scss'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
+import { infoButtons } from '../../redux/infoButtons/actionCreators'
 import {
   deleteMyAddress,
   deleteToAddress,
   getAllRecordsAddresses,
+  deleteRecordAddress,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import EnvelopeMemory from './CardMiniSections/EnvelopeMemory/EnvelopeMemory'
 // import sizeMiniCard
@@ -17,6 +19,9 @@ const CardsList = () => {
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const choiceSection = useSelector((state) => state.layout.choiceSection)
+  const infoEnvelopeSave = useSelector(
+    (state) => state.infoButtons.envelopeSave
+  )
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
   )
@@ -31,11 +36,17 @@ const CardsList = () => {
   })
   const addressRefs = useRef({})
 
+  const dispatch = useDispatch()
+
   useEffect(() => {
+    if (infoEnvelopeSave) {
+      getAddress(infoEnvelopeSave)
+      dispatch(infoButtons({ envelopeSave: false }))
+    }
     if (infoEnvelopeClip) {
       getAddress(infoEnvelopeClip)
     }
-  }, [infoEnvelopeClip])
+  }, [infoEnvelopeSave, infoEnvelopeClip, dispatch])
 
   const getAddress = async (section) => {
     const listAddress = await getAllRecordsAddresses(
@@ -155,22 +166,22 @@ const CardsList = () => {
   const listPrioritySections = getListPrioritySections()
 
   const handleClickAddressMiniKebab = async (section, id) => {
-    switch (section) {
-      case 'myaddress':
-        await deleteMyAddress(id)
-        break
-      case 'toaddress':
-        await deleteToAddress(id)
-        break
-
-      default:
-        break
-    }
+    await deleteRecordAddress(
+      section === 'myaddress' ? 'myAddress' : 'toAddress',
+      id
+    )
     getAddress(section)
+    dispatch(infoButtons({ miniAddressClose: section }))
   }
 
+  const cardsListRef = useRef()
+
   return (
-    <div className="cards-list" style={{ height: `${sizeMiniCard.height}px` }}>
+    <div
+      className="cards-list"
+      style={{ height: `${sizeMiniCard.height}px` }}
+      ref={cardsListRef}
+    >
       {infoEnvelopeClip && (
         <div className="envelope-memory">
           {infoEnvelopeClip &&
@@ -179,9 +190,8 @@ const CardsList = () => {
               <EnvelopeMemory
                 key={i}
                 setRef={setRef}
-                // index={i}
                 sizeMiniCard={sizeMiniCard}
-                section={'myaddress'}
+                section={infoEnvelopeClip}
                 address={address}
                 handleClickAddressMiniKebab={handleClickAddressMiniKebab}
               />

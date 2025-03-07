@@ -8,56 +8,12 @@ const FormAddress = ({
   handleValue,
   handleMovingBetweenInputs,
   setInputRef,
-  myAddressRefs,
-  toAddressRefs,
-  // lengthAddress,
-  handleClickBtn,
   setBtnIconRef,
+  setAddressFormRef,
+  handleClickBtn,
   handleMouseEnter,
   handleMouseLeave,
 }) => {
-  // dbPromise.then((db) => {
-  //   const observeChanges = (storeName) => {
-  //     const transaction = db.transaction(storeName, 'readwrite')
-  //     const objectStore = transaction.objectStore(storeName)
-
-  //     const onChange = (event) => {
-  //       objectStore.count().then((count) => {
-  //         console.log(`Number of entries in ${storeName}:`, count)
-  //       })
-  //     }
-
-  //     transaction.oncomplete = onChange
-  //     transaction.onabort = onChange
-  //     transaction.onerror = onChange
-  //   }
-
-  //   observeChanges('myAddress')
-  //   observeChanges('toAddress')
-  // })
-
-  const getAddressLegendRef = (section) => {
-    switch (section) {
-      case 'myaddress':
-        return myAddressRefs[1]
-      case 'toaddress':
-        return toAddressRefs[1]
-      default:
-        return null
-    }
-  }
-
-  const getAddressFieldsetRef = (section) => {
-    switch (section) {
-      case 'myaddress':
-        return myAddressRefs[0]
-      case 'toaddress':
-        return toAddressRefs[0]
-      default:
-        return null
-    }
-  }
-
   const listBtns = ['save', 'delete', 'clip']
 
   const searchParentBtnNav = (el) => {
@@ -98,11 +54,11 @@ const FormAddress = ({
       </div>
       <fieldset
         className="envelope-fieldset"
-        ref={getAddressFieldsetRef(listLabelsAddress.name)}
+        ref={setAddressFormRef(`${listLabelsAddress.name}-fieldset`)}
       >
         <legend
           className="envelope-legend"
-          ref={getAddressLegendRef(listLabelsAddress.name)}
+          ref={setAddressFormRef(`${listLabelsAddress.name}-legend`)}
         >
           {listLabelsAddress.name === 'myaddress' ? 'My address' : 'To address'}
         </legend>{' '}

@@ -20,10 +20,11 @@ import { infoButtons } from '../../../../redux/infoButtons/actionCreators'
 
 const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const selectorCardEdit = useSelector((state) => state.cardEdit)
-  const myAddress = useSelector((state) => state.cardEdit.envelope.myaddress)
-  const toAddress = useSelector((state) => state.cardEdit.envelope.toaddress)
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
+  )
+  const infoMiniAddressClose = useSelector(
+    (state) => state.infoButtons.miniAddressClose
   )
   const valueEnvelope =
     selectorCardEdit.envelope.myaddress === null &&
@@ -35,10 +36,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
       : selectorCardEdit.envelope
 
   const [value, setValue] = useState(valueEnvelope)
-  const myAddressLegendRef = useRef()
-  const toAddressLegendRef = useRef()
-  const myAddressFieldsetRef = useRef()
-  const toAddressFieldsetRef = useRef()
   const [memoryAddress, setMemoryAddress] = useState({
     myaddress: null,
     toaddress: null,
@@ -49,6 +46,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   })
   const inputRefs = useRef({})
   const btnIconRefs = useRef({})
+  const addressFormRefs = useRef({})
   const envelopeLogoRef = useRef(null)
 
   const dispatch = useDispatch()
@@ -59,6 +57,10 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
 
   const setBtnIconRef = (id) => (element) => {
     btnIconRefs.current[id] = element
+  }
+
+  const setAddressFormRef = (id) => (element) => {
+    addressFormRefs.current[id] = element
   }
 
   const colorScheme = {
@@ -137,6 +139,26 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     processSections(value)
   }, [value])
 
+  useEffect(() => {
+    if (infoMiniAddressClose) {
+      const fullToAddress = Object.values(value[infoMiniAddressClose]).every(
+        (value) => value !== ''
+      )
+      if (fullToAddress) {
+        setBtnsAddress((state) => {
+          return {
+            ...state,
+            [infoMiniAddressClose]: {
+              ...state[infoMiniAddressClose],
+              save: true,
+            },
+          }
+        })
+        dispatch(infoButtons({ miniAddressClose: false }))
+      }
+    }
+  }, [infoMiniAddressClose, dispatch])
+
   const handleValue = (field, input, value) => {
     setValue((state) => {
       return { ...state, [field]: { ...state[field], [input]: value } }
@@ -150,6 +172,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           const stateBtn = btnsAddress[section][btn]
           btnIconRefs.current[`${section}-${btn}`].style.color =
             colorScheme[stateBtn]
+          btnIconRefs.current[`${section}-${btn}`].style.cursor = 'default'
         })
       })
     }
@@ -201,6 +224,30 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     return null
   }
 
+  useEffect(() => {
+    const sectionsForm = ['myaddress', 'toaddress']
+    const changeStyleForm = (section, state) => {
+      addressFormRefs.current[`${section}-fieldset`].style.borderColor =
+        colorScheme[state]
+      addressFormRefs.current[`${section}-legend`].style.color =
+        colorScheme[state]
+    }
+
+    if (infoEnvelopeClip) {
+      sectionsForm.forEach((section) => {
+        if (section === infoEnvelopeClip) {
+          changeStyleForm(section, 'hover')
+        } else {
+          changeStyleForm(section, 'false')
+        }
+      })
+    } else {
+      sectionsForm.forEach((section) => {
+        changeStyleForm(section, 'false')
+      })
+    }
+  }, [infoEnvelopeClip])
+
   const handleClickClip = (section) => {
     if (infoEnvelopeClip) {
       if (infoEnvelopeClip === section) {
@@ -217,7 +264,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     const memorySection = memoryAddress[section]
     const currentSection = value[section]
 
-    if (memorySection.length === 0) {
+    if (!memorySection) {
       return true
     }
 
@@ -255,44 +302,21 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
       }
     }
 
-    if (parentBtn.dataset.tooltip === 'save' && section === 'myaddress') {
-      if (btnsAddress.myaddress.save) {
-        const parity = changeParityInputsAddress('myaddress')
-        if (parity) {
-          await addUniqueRecordAddress('myAddress', myAddress)
-          getAllRecordsAddresses('myAddress')
-          dispatch(infoButtons({ envelopeSaveMyAddress: true }))
-          setTimeout(() => {
-            dispatch(infoButtons({ envelopeSaveMyAddress: false }))
-          }, 300)
-        }
+    if (parentBtn.dataset.tooltip === 'save') {
+      if (btnsAddress[section].save) {
+        await addUniqueRecordAddress(
+          section === 'myaddress' ? 'myAddress' : 'toAddress',
+          value[section]
+        )
+        dispatch(infoButtons({ envelopeSave: section }))
       }
-      if (parentBtn.style.color === 'rgb(71, 71, 71)') {
-        parentBtn.style.color = 'rgb(163, 163, 163)'
-        parentBtn.style.cursor = 'default'
-      }
-    }
-    if (parentBtn.dataset.tooltip === 'save' && section === 'toaddress') {
-      if (btnsAddress.toaddress.save) {
-        const parity = changeParityInputsAddress('toaddress')
-        if (parity) {
-          await addUniqueRecordAddress('toAddress', toAddress)
-          getAllRecordsAddresses('toAddress')
-          setBtnsAddress((state) => {
-            return {
-              ...state,
-              toaddress: { ...state.toaddress, save: false },
-            }
-          })
-          dispatch(infoButtons({ envelopeSaveToAddress: true }))
-          setTimeout(() => {
-            dispatch(infoButtons({ envelopeSaveToAddress: false }))
-          }, 300)
-        }
-      }
-      if (parentBtn.style.color === 'rgb(71, 71, 71)') {
-        parentBtn.style.color = 'rgb(163, 163, 163)'
-        parentBtn.style.cursor = 'default'
+      if (btnsAddress[section].save) {
+        setBtnsAddress((state) => {
+          return {
+            ...state,
+            [section]: { ...state[section], save: false },
+          }
+        })
       }
     }
     if (parentBtn.dataset.tooltip === 'delete' && section === 'myaddress') {
@@ -358,8 +382,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           handleMovingBetweenInputs={handleMovingBetweenInputs}
           setInputRef={setInputRef}
           setBtnIconRef={setBtnIconRef}
-          myAddressRefs={[myAddressFieldsetRef, myAddressLegendRef]}
-          toAddressRefs={[toAddressFieldsetRef, toAddressLegendRef]}
+          setAddressFormRef={setAddressFormRef}
           handleClickBtn={handleClickBtn}
           handleMouseEnter={handleMouseEnter}
           handleMouseLeave={handleMouseLeave}
@@ -374,8 +397,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           handleMovingBetweenInputs={handleMovingBetweenInputs}
           setInputRef={setInputRef}
           setBtnIconRef={setBtnIconRef}
-          myAddressRefs={[myAddressFieldsetRef, myAddressLegendRef]}
-          toAddressRefs={[toAddressFieldsetRef, toAddressLegendRef]}
+          setAddressFormRef={setAddressFormRef}
           handleClickBtn={handleClickBtn}
           handleMouseEnter={handleMouseEnter}
           handleMouseLeave={handleMouseLeave}
