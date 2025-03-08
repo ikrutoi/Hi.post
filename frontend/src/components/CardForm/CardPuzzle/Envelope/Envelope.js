@@ -7,6 +7,7 @@ import './Envelope.scss'
 import { addEnvelope } from '../../../../redux/cardEdit/actionCreators'
 import Mark from './Mark/Mark'
 import FormAddress from './FormAddress/FormAddress'
+import { choiceAddress } from '../../../../redux/layout/actionCreators'
 import {
   getAllRecordsAddresses,
   getCountRecordsAddresses,
@@ -26,6 +27,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const infoMiniAddressClose = useSelector(
     (state) => state.infoButtons.miniAddressClose
   )
+  const layoutChoiceAddress = useSelector((state) => state.layout.choiceAddress)
   const valueEnvelope =
     selectorCardEdit.envelope.myaddress === null &&
     selectorCardEdit.envelope.toaddress === null
@@ -68,6 +70,30 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     false: 'rgb(163, 163, 163)',
     hover: 'rgb(0, 122, 172)',
   }
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      const address = await getRecordAddressById(
+        layoutChoiceAddress.section === 'myaddress' ? 'myAddress' : 'toAddress',
+        layoutChoiceAddress.id
+      )
+
+      setValue((state) => {
+        return {
+          ...state,
+          [layoutChoiceAddress.section]: {
+            ...state[layoutChoiceAddress.section],
+            ...address.address,
+          },
+        }
+      })
+      dispatch(choiceAddress({ section: null, id: null }))
+    }
+
+    if (layoutChoiceAddress.section && layoutChoiceAddress.id) {
+      fetchAddress()
+    }
+  }, [layoutChoiceAddress, dispatch])
 
   useEffect(() => {
     const checkField = (section) => {
@@ -154,9 +180,9 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
             },
           }
         })
-        dispatch(infoButtons({ miniAddressClose: false }))
       }
     }
+    dispatch(infoButtons({ miniAddressClose: false }))
   }, [infoMiniAddressClose, dispatch])
 
   const handleValue = (field, input, value) => {

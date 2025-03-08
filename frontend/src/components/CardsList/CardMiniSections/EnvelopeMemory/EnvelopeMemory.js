@@ -7,6 +7,7 @@ const EnvelopeMemory = ({
   address,
   setRef,
   handleClickAddressMiniKebab,
+  handleClickAddress,
 }) => {
   return (
     <div
@@ -16,6 +17,7 @@ const EnvelopeMemory = ({
         width: `${sizeMiniCard.width}px`,
         height: `${sizeMiniCard.height}px`,
       }}
+      onClick={() => handleClickAddress(section, address.id)}
     >
       <p>{address.address.name}</p>
       <p>{address.address.street}</p>

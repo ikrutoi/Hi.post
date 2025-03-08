@@ -29,6 +29,10 @@ const initialState = {
       miniImage: null,
     },
   },
+  choiceAddress: {
+    section: null,
+    id: null,
+  },
   memoryCrop: null,
   // myAddressLegendRef: null,
   // toAddressLegendRef: null,
@@ -58,6 +62,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         choiceSection: { ...state.choiceSection, ...action.payload },
+      }
+    case a.CHOICE_ADDRESS:
+      return {
+        ...state,
+        choiceAddress: { ...state.choiceAddress, ...action.payload },
       }
     case a.ADD_MEMORY_CROP:
       return {

@@ -5,6 +5,7 @@ import { HiArrowsPointingIn } from 'react-icons/hi2'
 import './CardsList.scss'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
+import { choiceAddress } from '../../redux/layout/actionCreators'
 import {
   deleteMyAddress,
   deleteToAddress,
@@ -174,15 +175,14 @@ const CardsList = () => {
     dispatch(infoButtons({ miniAddressClose: section }))
   }
 
-  const cardsListRef = useRef()
+  const handleClickAddress = (section, id) => {
+    dispatch(choiceAddress({ section, id }))
+  }
 
   return (
-    <div
-      className="cards-list"
-      style={{ height: `${sizeMiniCard.height}px` }}
-      ref={cardsListRef}
-    >
-      {infoEnvelopeClip && (
+    <div className="cards-list">
+      <div style={{ height: `${sizeMiniCard.height}px` }}></div>
+      {infoEnvelopeClip && choiceSection.nameSection === 'envelope' && (
         <div className="envelope-memory">
           {infoEnvelopeClip &&
             memoryAddress[infoEnvelopeClip] &&
@@ -194,12 +194,13 @@ const CardsList = () => {
                 section={infoEnvelopeClip}
                 address={address}
                 handleClickAddressMiniKebab={handleClickAddressMiniKebab}
+                handleClickAddress={handleClickAddress}
               />
             ))}
         </div>
       )}
 
-      {!infoEnvelopeClip && (
+      {(!infoEnvelopeClip || choiceSection.nameSection !== 'envelope') && (
         <>
           <div
             className="mini-poly-cards"

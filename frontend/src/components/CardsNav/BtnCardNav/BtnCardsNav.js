@@ -1,18 +1,25 @@
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { useRef } from 'react'
 import './BtnCardsNav.scss'
 import { addChoiceSection } from '../../../redux/layout/actionCreators'
-import { useRef } from 'react'
+import { infoButtons } from '../../../redux/infoButtons/actionCreators'
 
 const BtnCardsNav = ({
   handleMouseEnterContainer,
   handleMouseLeaveContainer,
   section,
 }) => {
+  const infoEnvelopeClip = useSelector(
+    (state) => state.infoButtons.envelopeClip
+  )
   const btnNavRef = useRef()
   const nameSectionLowerCase = section.name.toLowerCase()
   const dispatch = useDispatch()
 
   const handleClickBtnNav = () => {
+    if (nameSectionLowerCase !== 'envelope' && infoEnvelopeClip) {
+      dispatch(infoButtons({ envelopeClip: false }))
+    }
     dispatch(
       addChoiceSection({ source: 'btnNav', nameSection: nameSectionLowerCase })
     )
