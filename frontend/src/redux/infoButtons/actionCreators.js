@@ -6,3 +6,10 @@ export const infoButtons = (btn) => {
     payload: btn,
   }
 }
+
+// export const infoButtonsCardtext = (btn) => {
+//   return {
+//     type: a.INFO_BUTTONS_CARDTEXT,
+//     payload: btn,
+//   }
+// }

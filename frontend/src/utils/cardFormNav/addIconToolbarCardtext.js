@@ -14,63 +14,19 @@ export const addIconToolbarCardtext = (name) => {
     case 'bold':
       return <RiBold className="toolbar-icon" />
     case 'italic':
-      return (
-        <RiItalic
-          // ref={iconItalicRef}
-          className="toolbar-icon"
-          // style={{ color: handleChoiceActive('italic') }}
-        />
-      )
+      return <RiItalic className="toolbar-icon" />
     case 'font-size':
-      return (
-        // <span className="toolbar-font-size-full">
-        <RiFontSize2 className="toolbar-icon toolbar-icon-font-size" />
-        // <FaAngleDown className="toolbar-icon" />
-        // </span>
-      )
+      return <RiFontSize2 className="toolbar-icon toolbar-icon-font-size" />
     case 'color':
-      return (
-        // <span className="toolbar-font-size-full">
-        // <span className="cardformnav-toolbar-icon toolbar-icon-color">
-        <RiFontColor className="toolbar-icon toolbar-icon-a" />
-        // <span
-        // className="toolbar-icon-dash"
-        // style={{ backgroundColor: toolbarIconColor }}
-        // ></span>
-        // </span>
-        // <FaAngleDown className="cardformnav-toolbar-icon" />
-        // </span>
-      )
-    // case 'strikethrough':
-    // return <FaStrikethrough className="cardformnav-toolbar-icon" />
+      return <RiFontColor className="toolbar-icon toolbar-icon-a" />
     case 'left':
-      return (
-        <RiAlignLeft
-          className="toolbar-icon"
-          // style={{ color: handleChoiceActive('left') }}
-        />
-      )
+      return <RiAlignLeft className="toolbar-icon" />
     case 'center':
-      return (
-        <RiAlignCenter
-          className="toolbar-icon"
-          // style={{ color: handleChoiceActive('center') }}
-        />
-      )
+      return <RiAlignCenter className="toolbar-icon" />
     case 'right':
-      return (
-        <RiAlignRight
-          className="toolbar-icon"
-          // style={{ color: handleChoiceActive('right') }}
-        />
-      )
+      return <RiAlignRight className="toolbar-icon" />
     case 'justify':
-      return (
-        <RiAlignJustify
-          className="toolbar-icon"
-          // style={{ color: handleChoiceActive('justify') }}
-        />
-      )
+      return <RiAlignJustify className="toolbar-icon" />
 
     default:
       break

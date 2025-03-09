@@ -18,71 +18,107 @@ export const dbPromise = openDB('images-database', 6, {
 })
 
 export const addHiPostImage = async (id, file) => {
-  const db = await dbPromise
-  const transaction = db.transaction('hiPostImages', 'readwrite')
-  const store = transaction.objectStore('hiPostImages')
-  await store.put({ id, image: file })
-  await transaction.done
+  try {
+    const db = await dbPromise
+    const transaction = db.transaction('hiPostImages', 'readwrite')
+    const store = transaction.objectStore('hiPostImages')
+    await store.put({ id, image: file })
+    await transaction.done
+  } catch (error) {
+    console.log('Error adding hiPost image:', error)
+  }
 }
 
 export const getHiPostImage = async (id) => {
-  const db = await dbPromise
-  const transaction = db.transaction('hiPostImages', 'readonly')
-  const store = transaction.objectStore('hiPostImages')
-  const result = await store.get(id)
-  await transaction.done
-  return result ? result.image : null
+  try {
+    const db = await dbPromise
+    const transaction = db.transaction('hiPostImages', 'readonly')
+    const store = transaction.objectStore('hiPostImages')
+    const result = await store.get(id)
+    await transaction.done
+    return result ? result.image : null
+  } catch (error) {
+    console.log('Error getting hiPost image:', error)
+    return null
+  }
 }
 
 export const deleteHiPostImage = async (id) => {
-  const db = await dbPromise
-  const transaction = db.transaction('hiPostImage', 'readwrite')
-  const store = transaction.objectStore('hiPostImage')
-  await store.delete(id)
-  await transaction.done
+  try {
+    const db = await dbPromise
+    const transaction = db.transaction('hiPostImages', 'readwrite')
+    const store = transaction.objectStore('hiPostImages')
+    await store.delete(id)
+    await transaction.done
+  } catch (error) {
+    console.log('Error deleting hiPost image:', error)
+  }
 }
 
 export const getAllHiPostImages = async () => {
-  const db = await dbPromise
-  const transaction = db.transaction('hiPostImages', 'readonly')
-  const store = transaction.objectStore('hiPostImages')
-  const allRecords = await store.getAll()
-  await transaction.done
-  return allRecords
+  try {
+    const db = await dbPromise
+    const transaction = db.transaction('hiPostImages', 'readonly')
+    const store = transaction.objectStore('hiPostImages')
+    const allRecords = await store.getAll()
+    await transaction.done
+    return allRecords
+  } catch (error) {
+    console.log('Error getting all hiPost images:', error)
+    return []
+  }
 }
 
 export const addUserImage = async (id, file) => {
-  const db = await dbPromise
-  const transaction = db.transaction('userImages', 'readwrite')
-  const store = transaction.objectStore('userImages')
-  await store.put({ id, image: file })
-  await transaction.done
+  try {
+    const db = await dbPromise
+    const transaction = db.transaction('userImages', 'readwrite')
+    const store = transaction.objectStore('userImages')
+    await store.put({ id, image: file })
+    await transaction.done
+  } catch (error) {
+    console.log('Error adding user image:', error)
+  }
 }
 
 export const getUserImage = async (id) => {
-  const db = await dbPromise
-  const transaction = db.transaction('userImages', 'readonly')
-  const store = transaction.objectStore('userImages')
-  const result = await store.get(id)
-  await transaction.done
-  return result ? result.image : null
+  try {
+    const db = await dbPromise
+    const transaction = db.transaction('userImages', 'readonly')
+    const store = transaction.objectStore('userImages')
+    const result = await store.get(id)
+    await transaction.done
+    return result ? result.image : null
+  } catch (error) {
+    console.log('Error getting user image:', error)
+    return null
+  }
 }
 
 export const deleteUserImage = async (id) => {
-  const db = await dbPromise
-  const transaction = db.transaction('userImage', 'readwrite')
-  const store = transaction.objectStore('userImage')
-  await store.delete(id)
-  await transaction.done
+  try {
+    const db = await dbPromise
+    const transaction = db.transaction('userImages', 'readwrite')
+    const store = transaction.objectStore('userImages')
+    await store.delete(id)
+    await transaction.done
+  } catch (error) {
+    console.log('Error deleting user image:', error)
+  }
 }
 
 export const getAllUserImages = async () => {
-  const db = await dbPromise
-  const transaction = db.transaction('userImages', 'readonly')
-  const store = transaction.objectStore('userImages')
-  const allRecords = await store.getAll()
-  await transaction.done
-  return allRecords
+  try {
+    const db = await dbPromise
+    const transaction = db.transaction('userImages', 'readonly')
+    const store = transaction.objectStore('userImages')
+    const allRecords = await store.getAll()
+    await transaction.done
+    return allRecords
+  } catch (error) {
+    console.log('Error getting all user images:', error)
+    return []
+  }
 }
 
 // export const addMyAddress = async (id, file) => {

@@ -8,6 +8,15 @@ const initialState = {
   envelopeClip: null,
   envelopeSave: null,
   miniAddressClose: null,
+  cardtext: {
+    italic: 'hover',
+    fontSize: true,
+    color: 'rgb(0, 122, 172)',
+    left: 'hover',
+    center: true,
+    right: true,
+    justify: true,
+  },
 }
 
 const infoButtonsReducer = (state = initialState, action) => {

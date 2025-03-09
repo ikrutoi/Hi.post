@@ -5,7 +5,17 @@ import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 import { v4 as uuidv4 } from 'uuid'
 import './CardEditor.scss'
 import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
+import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
+import { colorScheme } from '../../../../../data/toolbar/colorScheme'
 import scaleBase from '../../../../../data/main/scaleCardAndCardMini.json'
+// import listBtnsCardtext from '../../../../../data/cardtext/list-textarea-nav-btns.json'
+import { addIconToolbar } from '../../../../../data/toolbar/addIconToolbar'
+import {
+  handleMouseEnterBtn,
+  handleMouseLeaveBtn,
+} from '../../../../../data/toolbar/handleMouse'
+import listBtnsCardtext from '../../../../../data/toolbar/listBtnsCardtext.json'
+import { changeIconStyles } from '../../../../../data/toolbar/changeIconStyles'
 
 const CardEditor = ({
   toolbarColor,
@@ -13,32 +23,12 @@ const CardEditor = ({
   //  choiceBtnNav
 }) => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
+  const infoButtonsCardtext = useSelector((state) => state.infoButtons.cardtext)
   const inputCardtext = selector.text ? selector : null
   const [cardtext, setCardtext] = useState(inputCardtext)
-
-  useEffect(() => {
-    setCardtext(selector)
-  }, [selector])
-
   const editor = useMemo(() => withReact(createEditor()), [])
   const [value, setValue] = useState(cardtext.text)
-
-  const dispatch = useDispatch()
-
-  // const [remSize, setRemSize] = useState(0)
-
-  // useEffect(() => {
-  //   const root = document.documentElement
-  //   const remSizeInPx = getComputedStyle(root).getPropertyValue('--rem-size')
-  //   const tempDiv = document.createElement('div')
-  //   tempDiv.style.width = remSizeInPx
-  //   tempDiv.style.visibility = 'hidden'
-  //   document.body.appendChild(tempDiv)
-  //   const computedRem = tempDiv.getBoundingClientRect().width
-  //   setRemSize(computedRem)
-  //   document.body.removeChild(tempDiv)
-  // }, [])
-
+  const btnIconRefs = useRef({})
   const [editable, setEditable] = useState(null)
   const editorRef = useRef(null)
   const editableRef = useRef(null)
@@ -49,10 +39,48 @@ const CardEditor = ({
 
   const markRef = useRef(null)
   const [markPath, setMarkPath] = useState(null)
+  const [btnsCardtext, setBtnsCardtext] = useState({ cardtext: {} })
+
+  const setBtnIconRef = (id) => (element) => {
+    btnIconRefs.current[id] = element
+  }
+
+  const dispatch = useDispatch()
 
   const handleSlateChange = (newValue) => {
     setValue(newValue)
   }
+
+  useEffect(() => {
+    setCardtext(selector)
+  }, [selector])
+
+  useEffect(() => {
+    if (listBtnsCardtext && infoButtonsCardtext) {
+      setBtnsCardtext((state) => {
+        return {
+          ...state,
+          cardtext: {
+            ...state.cardtext,
+            ...listBtnsCardtext.reduce((acc, key) => {
+              acc[key] = infoButtonsCardtext[key]
+              return acc
+            }, {}),
+          },
+        }
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (btnsCardtext && btnIconRefs.current) {
+      changeIconStyles(btnsCardtext, btnIconRefs.current)
+      btnIconRefs.current['cardtext-color'].style.color =
+        infoButtonsCardtext.color
+    }
+  }, [btnsCardtext, btnIconRefs, infoButtonsCardtext])
+
+  useEffect(() => {}, [infoButtonsCardtext])
 
   useEffect(() => {
     if (editorRef.current) {
@@ -251,8 +279,86 @@ const CardEditor = ({
     dispatch(addCardtext({ text: value }))
   }, [value, dispatch])
 
+  const handleClickBtn = (evt, btn) => {
+    if (btn === 'italic') {
+      setBtnsCardtext((state) => {
+        return {
+          ...state,
+          cardtext: {
+            ...state.cardtext,
+            italic: infoButtonsCardtext[btn] === 'hover' ? true : 'hover',
+          },
+        }
+      })
+      dispatch(
+        infoButtons({
+          cardtext: {
+            ...infoButtonsCardtext,
+            [btn]: infoButtonsCardtext[btn] === 'hover' ? true : 'hover',
+          },
+        })
+      )
+    }
+    if (
+      btn === 'left' ||
+      btn === 'center' ||
+      btn === 'right' ||
+      btn === 'justify'
+    ) {
+      if (infoButtonsCardtext[btn] === 'hover') {
+        evt.preventDefault()
+      } else {
+        btnIconRefs.current[`cardtext-${btn}`].style.cursor = 'default'
+        setBtnsCardtext((state) => {
+          return {
+            ...state,
+            cardtext: {
+              ...state.cardtext,
+              left: true,
+              center: true,
+              right: true,
+              justify: true,
+              [btn]: 'hover',
+            },
+          }
+        })
+        dispatch(
+          infoButtons({
+            cardtext: {
+              ...infoButtonsCardtext,
+              left: true,
+              center: true,
+              right: true,
+              justify: true,
+              [btn]: 'hover',
+            },
+          })
+        )
+      }
+    }
+  }
+
   return (
     <div className="cardeditor">
+      <div className="cardeditor-container">
+        {listBtnsCardtext &&
+          listBtnsCardtext.map((btn, i) => {
+            return (
+              <button
+                key={`${i}-${btn}`}
+                data-tooltip={btn}
+                data-section={'cardtext'}
+                ref={setBtnIconRef(`cardtext-${btn}`)}
+                className={`toolbar-btn toolbar-btn-cardtext btn-cardtext-${btn}`}
+                onClick={(evt) => handleClickBtn(evt, btn)}
+                onMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsCardtext)}
+                onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsCardtext)}
+              >
+                {addIconToolbar(btn)}
+              </button>
+            )
+          })}
+      </div>
       <div className="editor" ref={editorRef}>
         <Slate
           editor={editor}

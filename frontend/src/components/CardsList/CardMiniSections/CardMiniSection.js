@@ -12,6 +12,8 @@ import { addIndexDb } from '../../../redux/layout/actionCreators'
 import {
   deleteHiPostImage,
   deleteUserImage,
+  getAllHiPostImages,
+  getAllUserImages,
 } from '../../../utils/cardFormNav/indexDB/indexDb'
 import MiniCardtext from './MiniCardtext/MiniCardtext'
 import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
@@ -114,6 +116,8 @@ const CardMiniSection = ({
     }
 
     const parentElement = searchParentBtnNav(evt.target)
+
+    console.log('parent delete', parentElement)
 
     switch (parentElement.dataset.name) {
       case 'aroma':

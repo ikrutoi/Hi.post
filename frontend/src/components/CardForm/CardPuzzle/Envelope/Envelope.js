@@ -18,6 +18,12 @@ import {
 } from '../../../../utils/cardFormNav/indexDB/indexDb'
 import { dbPromise } from '../../../../utils/cardFormNav/indexDB/indexDb'
 import { infoButtons } from '../../../../redux/infoButtons/actionCreators'
+import {
+  handleMouseEnterBtn,
+  handleMouseLeaveBtn,
+} from '../../../../data/toolbar/handleMouse'
+import { colorScheme } from '../../../../data/toolbar/colorScheme'
+import { changeIconStyles } from '../../../../data/toolbar/changeIconStyles'
 
 const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const selectorCardEdit = useSelector((state) => state.cardEdit)
@@ -63,12 +69,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
 
   const setAddressFormRef = (id) => (element) => {
     addressFormRefs.current[id] = element
-  }
-
-  const colorScheme = {
-    true: 'rgb(71, 71, 71)',
-    false: 'rgb(163, 163, 163)',
-    hover: 'rgb(0, 122, 172)',
   }
 
   useEffect(() => {
@@ -192,17 +192,18 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   }
 
   useEffect(() => {
-    if (btnsAddress) {
-      Object.keys(btnsAddress).forEach((section) => {
-        Object.keys(btnsAddress[section]).forEach((btn) => {
-          const stateBtn = btnsAddress[section][btn]
-          btnIconRefs.current[`${section}-${btn}`].style.color =
-            colorScheme[stateBtn]
-          btnIconRefs.current[`${section}-${btn}`].style.cursor = 'default'
-        })
-      })
+    if (btnsAddress && btnIconRefs.current) {
+      changeIconStyles(btnsAddress, btnIconRefs.current)
+      // Object.keys(btnsAddress).forEach((section) => {
+      //   Object.keys(btnsAddress[section]).forEach((btn) => {
+      //     const stateBtn = btnsAddress[section][btn]
+      //     btnIconRefs.current[`${section}-${btn}`].style.color =
+      //       colorScheme[stateBtn]
+      //     btnIconRefs.current[`${section}-${btn}`].style.cursor = 'default'
+      //   })
+      // })
     }
-  }, [btnsAddress])
+  }, [btnsAddress, btnIconRefs])
 
   const [heightLogo, setHeightLogo] = useState(null)
 
@@ -369,28 +370,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     }
   }
 
-  const handleMouseEnter = (button) => {
-    const hover = (button) => {
-      button.style.color = 'rgb(0, 122, 172)'
-      button.style.cursor = 'pointer'
-    }
-    if (btnsAddress[button.dataset.section][button.dataset.tooltip]) {
-      hover(button)
-    }
-  }
-
-  const handleMouseLeave = (evt) => {
-    const parentElement = searchParentBtnNav(evt.target)
-    if (
-      btnsAddress[parentElement.dataset.section][parentElement.dataset.tooltip]
-    ) {
-      parentElement.style.color = 'rgb(71, 71, 71)'
-    } else {
-      parentElement.style.color = 'rgb(163, 163, 163)'
-    }
-    parentElement.style.cursor = 'default'
-  }
-
   return (
     <div className="envelope">
       <div className="envelope-myaddress">
@@ -410,8 +389,9 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           setBtnIconRef={setBtnIconRef}
           setAddressFormRef={setAddressFormRef}
           handleClickBtn={handleClickBtn}
-          handleMouseEnter={handleMouseEnter}
-          handleMouseLeave={handleMouseLeave}
+          handleMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsAddress)}
+          // handleMouseEnter={handleMouseEnter}
+          handleMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsAddress)}
         />
       </div>
       <Mark />
@@ -425,8 +405,10 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           setBtnIconRef={setBtnIconRef}
           setAddressFormRef={setAddressFormRef}
           handleClickBtn={handleClickBtn}
-          handleMouseEnter={handleMouseEnter}
-          handleMouseLeave={handleMouseLeave}
+          handleMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsAddress)}
+          handleMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsAddress)}
+          // handleMouseEnter={handleMouseEnter}
+          // handleMouseLeave={handleMouseLeave}
         />
       </div>
     </div>

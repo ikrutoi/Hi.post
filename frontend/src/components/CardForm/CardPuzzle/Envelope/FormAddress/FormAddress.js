@@ -1,6 +1,7 @@
 import Label from '../Label/Label'
 import './FormAddress.scss'
-import { addIconToolbarEnvelope } from '../../../../../utils/envelope/addIconToolbarEnvelope'
+import { addIconToolbar } from '../../../../../data/toolbar/addIconToolbar'
+import listBtnsEnvelope from '../../../../../data/toolbar/listBtnsEnvelope.json'
 
 const FormAddress = ({
   values,
@@ -14,40 +15,24 @@ const FormAddress = ({
   handleMouseEnter,
   handleMouseLeave,
 }) => {
-  const listBtns = ['save', 'delete', 'clip']
-
-  const searchParentBtnNav = (el) => {
-    if (el.classList.contains('toolbar-btn')) {
-      return el
-    } else if (el.parentElement) {
-      return searchParentBtnNav(el.parentElement)
-    }
-    return null
-  }
-
-  const handleMouseEnterBtn = (evt) => {
-    const parentBtnNav = searchParentBtnNav(evt.target)
-    handleMouseEnter(parentBtnNav)
-  }
-
   return (
     <form className={`envelope-form form-${listLabelsAddress.name}`}>
       <div
-        className={`toolbar-envelope-container envelope-container-${listLabelsAddress.name}`}
+        className={`toolbar-container toolbar-envelope-container envelope-container-${listLabelsAddress.name}`}
       >
-        {listBtns.map((btn, i) => {
+        {listBtnsEnvelope.map((btn, i) => {
           return (
             <button
-              key={i}
+              key={`${i}-${btn}`}
               data-tooltip={btn}
               data-section={listLabelsAddress.name}
               ref={setBtnIconRef(`${listLabelsAddress.name}-${btn}`)}
               className={`toolbar-btn toolbar-btn-envelope btn-envelope-${btn}`}
               onClick={(evt) => handleClickBtn(evt, listLabelsAddress.name)}
-              onMouseEnter={handleMouseEnterBtn}
+              onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              {addIconToolbarEnvelope(btn)}
+              {addIconToolbar(btn)}
             </button>
           )
         })}
