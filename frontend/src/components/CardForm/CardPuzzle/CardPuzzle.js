@@ -35,6 +35,11 @@ const CardPuzzle = ({ toolbarColor }) => {
           <Cardtext
             toolbarColor={toolbarColor}
             setChoiceSection={setChoiceSection}
+            styleLeftCardPuzzle={
+              cardPuzzleRef.current
+                ? cardPuzzleRef.current.getBoundingClientRect().left
+                : 0
+            }
             // setToolbarColorActive={setToolbarColorActive}
             // choiceBtnNav={choiceBtnNav}
           />

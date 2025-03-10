@@ -6,7 +6,7 @@ import listNavBtnsCardtext from '../../../../data/cardtext/list-textarea-nav-btn
 import listNavBtnsCardphoto from '../../../../data/cardphoto/list-toolbar-cardphoto.json'
 import ToolbarColor from './ToolbarColor/ToolbarColor'
 import { addCardtext } from '../../../../redux/cardEdit/actionCreators'
-import { addIconToolbarCardtext } from '../../../../utils/cardFormNav/addIconToolbarCardtext.js'
+// import { addIconToolbarCardtext } from '../../../../utils/cardFormNav/addIconToolbarCardtext.js'
 import { addIconToolbarCardphoto } from '../../../../utils/cardFormNav/addIconToolbarCardphoto.js'
 // import { useIndexedDB } from '../../../../data/cardFormNav/useIndexedDB.js'
 // import { addChoiceSection } from '../../../../redux/layout/actionCreators.js'
@@ -117,8 +117,8 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
     switch (nameSection) {
       case 'cardphoto':
         return addIconToolbarCardphoto(nameBtn)
-      case 'cardtext':
-        return addIconToolbarCardtext(nameBtn)
+      // case 'cardtext':
+      //   return addIconToolbarCardtext(nameBtn)
 
       default:
         break

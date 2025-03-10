@@ -1,0 +1,65 @@
+import { useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import './TooltipColor.scss'
+import listColors from '../../../../../data/toolbar/listColors.json'
+import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
+import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
+
+const TooltipColor = ({ setBtnColor, infoButtonsCardtext, styleLeft }) => {
+  const btnTooltipColorRef = useRef(null)
+  const [leftBtnTooltip, setLeftBtnTooltip] = useState(0)
+  const [isVisibility, setIsVisibility] = useState('hidden')
+  const remSize = useSelector((state) => state.layout.remSize)
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (btnTooltipColorRef.current) {
+      const widthBtn = btnTooltipColorRef.current.offsetWidth
+      const calcLeft = styleLeft - widthBtn / 2 - remSize
+      setLeftBtnTooltip(calcLeft)
+      setIsVisibility('visible')
+    }
+  }, [])
+
+  const handleClickBtnColor = (evt) => {
+    dispatch(
+      infoButtons({
+        cardtext: {
+          ...infoButtonsCardtext,
+          color: evt.target.dataset.colorType,
+        },
+      })
+    )
+    dispatch(
+      addCardphoto({
+        colorName: evt.target.dataset.colorName,
+        colorType: evt.target.dataset.colorType,
+      })
+    )
+    setBtnColor(false)
+  }
+
+  return (
+    <div
+      ref={btnTooltipColorRef}
+      className="cardeditor-tooltip-color"
+      style={{ left: `${leftBtnTooltip}px`, visibility: isVisibility }}
+    >
+      {listColors &&
+        listColors.map((color) => {
+          return (
+            <button
+              className={`btn-color btn-color-${color.name}`}
+              style={{ backgroundColor: color.code }}
+              data-color-name={color.name}
+              data-color-type={color.code}
+              onClick={handleClickBtnColor}
+            ></button>
+          )
+        })}
+    </div>
+  )
+}
+
+export default TooltipColor

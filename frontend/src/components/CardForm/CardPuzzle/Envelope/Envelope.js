@@ -258,19 +258,43 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
         colorScheme[state]
       addressFormRefs.current[`${section}-legend`].style.color =
         colorScheme[state]
+
+      // if (state === 'hover') {
+      //   console.log('hover')
+      // } else {
+      //   btnIconRefs.current[`${section}-clip`].style.color = colorScheme.true
+      // }
     }
 
     if (infoEnvelopeClip) {
       sectionsForm.forEach((section) => {
         if (section === infoEnvelopeClip) {
           changeStyleForm(section, 'hover')
+          setBtnsAddress((state) => {
+            return {
+              ...state,
+              [section]: { ...state[section], clip: 'hover' },
+            }
+          })
         } else {
           changeStyleForm(section, 'false')
+          setBtnsAddress((state) => {
+            return {
+              ...state,
+              [section]: { ...state[section], clip: true },
+            }
+          })
         }
       })
     } else {
       sectionsForm.forEach((section) => {
         changeStyleForm(section, 'false')
+        setBtnsAddress((state) => {
+          return {
+            ...state,
+            [section]: { ...state[section], clip: true },
+          }
+        })
       })
     }
   }, [infoEnvelopeClip])

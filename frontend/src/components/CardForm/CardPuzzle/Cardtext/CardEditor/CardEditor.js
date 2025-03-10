@@ -16,10 +16,12 @@ import {
 } from '../../../../../data/toolbar/handleMouse'
 import listBtnsCardtext from '../../../../../data/toolbar/listBtnsCardtext.json'
 import { changeIconStyles } from '../../../../../data/toolbar/changeIconStyles'
+import TooltipColor from './TooltipColor'
 
 const CardEditor = ({
   toolbarColor,
   setChoiceSection,
+  styleLeftCardPuzzle,
   //  choiceBtnNav
 }) => {
   const selector = useSelector((state) => state.cardEdit.cardtext)
@@ -29,6 +31,7 @@ const CardEditor = ({
   const editor = useMemo(() => withReact(createEditor()), [])
   const [value, setValue] = useState(cardtext.text)
   const btnIconRefs = useRef({})
+  const btnColorRefs = useRef({})
   const [editable, setEditable] = useState(null)
   const editorRef = useRef(null)
   const editableRef = useRef(null)
@@ -40,9 +43,15 @@ const CardEditor = ({
   const markRef = useRef(null)
   const [markPath, setMarkPath] = useState(null)
   const [btnsCardtext, setBtnsCardtext] = useState({ cardtext: {} })
+  // const [btnsColors, setBtnsColors] = useState({ cardtext: {} })
+  const [btnColor, setBtnColor] = useState(false)
 
   const setBtnIconRef = (id) => (element) => {
     btnIconRefs.current[id] = element
+  }
+
+  const setBtnColorRef = (id) => (element) => {
+    btnColorRefs.current[id] = element
   }
 
   const dispatch = useDispatch()
@@ -71,6 +80,23 @@ const CardEditor = ({
       })
     }
   }, [])
+
+  // useEffect(() => {
+  //   if (listColors) {
+  //     setBtnsColors((state) => {
+  //       return {
+  //         ...state,
+  //         cardtext: {
+  //           ...state.cardtext,
+  //           ...listColors.reduce((acc, key) => {
+  //             acc[key].name = acc[key].code
+  //             return acc
+  //           }, {}),
+  //         },
+  //       }
+  //     })
+  //   }
+  // }, [])
 
   useEffect(() => {
     if (btnsCardtext && btnIconRefs.current) {
@@ -322,6 +348,7 @@ const CardEditor = ({
             },
           }
         })
+        dispatch(addCardtext({ textAlign: btn }))
         dispatch(
           infoButtons({
             cardtext: {
@@ -336,6 +363,21 @@ const CardEditor = ({
         )
       }
     }
+    if (btn === 'color') {
+      if (btnColor) {
+        setBtnColor(false)
+      } else {
+        setBtnColor(true)
+        console.log(
+          'colorStyle'
+          // btnIconRefs.current['cardtext-color'].getBoundingClientRect().left
+        )
+      }
+    }
+  }
+
+  const handleClickTooltipColor = (evt) => {
+    console.log('btnColor', evt.target)
   }
 
   return (
@@ -358,6 +400,16 @@ const CardEditor = ({
               </button>
             )
           })}
+        {btnColor && (
+          <TooltipColor
+            setBtnColor={setBtnColor}
+            infoButtonsCardtext={infoButtonsCardtext}
+            styleLeft={
+              btnIconRefs.current['cardtext-color'].getBoundingClientRect()
+                .left - styleLeftCardPuzzle
+            }
+          />
+        )}
       </div>
       <div className="editor" ref={editorRef}>
         <Slate
