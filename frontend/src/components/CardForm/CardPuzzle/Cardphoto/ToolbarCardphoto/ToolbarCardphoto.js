@@ -14,6 +14,7 @@ const ToolbarCardphoto = () => {
   const infoButtonsCardphoto = useSelector(
     (state) => state.infoButtons.cardphoto
   )
+  const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const btnIconRefs = useRef({})
   const [btnsCardphoto, setBtnsCardphoto] = useState({ cardphoto: {} })
   const dispatch = useDispatch()
@@ -45,6 +46,31 @@ const ToolbarCardphoto = () => {
     }
   }, [])
 
+  useEffect(() => {
+    const isImagePresent =
+      layoutIndexDb.hiPostImages.workingImage ||
+      layoutIndexDb.userImages.originalImage ||
+      layoutIndexDb.userImages.workingImage
+
+    setBtnsCardphoto((state) => {
+      return {
+        ...state,
+        cardphoto: {
+          ...state.cardphoto,
+          delete: isImagePresent,
+        },
+      }
+    })
+    dispatch(
+      infoButtons({
+        cardphoto: {
+          ...infoButtonsCardphoto,
+          delete: isImagePresent,
+        },
+      })
+    )
+  }, [layoutIndexDb, dispatch])
+
   const searchParentBtnNav = (el) => {
     if (el.classList.contains('toolbar-btn')) {
       return el
@@ -59,6 +85,75 @@ const ToolbarCardphoto = () => {
 
     dispatch(infoButtons({ cardphotoClick: parentBtn.dataset.tooltip }))
 
+    switch (btn) {
+      case 'download':
+        if (btnsCardphoto.cardphoto.download) {
+          setBtnsCardphoto((state) => {
+            return {
+              ...state,
+              cardphoto: {
+                ...state.cardphoto,
+                download: false,
+              },
+            }
+          })
+          dispatch(
+            infoButtons({
+              cardphoto: {
+                ...infoButtonsCardphoto,
+                download: false,
+              },
+            })
+          )
+        }
+        break
+      case 'save':
+        setBtnsCardphoto((state) => {
+          return {
+            ...state,
+            cardphoto: {
+              ...state.cardphoto,
+              save: false,
+              crop: true,
+            },
+          }
+        })
+        dispatch(
+          infoButtons({
+            cardphoto: {
+              ...infoButtonsCardphoto,
+              save: false,
+              crop: true,
+            },
+          })
+        )
+        break
+      case 'crop':
+        setBtnsCardphoto((state) => {
+          return {
+            ...state,
+            cardphoto: {
+              ...state.cardphoto,
+              crop: btnsCardphoto.cardphoto.crop === true ? 'hover' : true,
+              save: btnsCardphoto.cardphoto.save ? false : true,
+            },
+          }
+        })
+        dispatch(
+          infoButtons({
+            cardphoto: {
+              ...infoButtonsCardphoto,
+              crop: btnsCardphoto.cardphoto.crop === true ? 'hover' : true,
+              save: btnsCardphoto.cardphoto.save ? false : true,
+            },
+          })
+        )
+        break
+
+      default:
+        break
+    }
+
     // if (parentBtn === 'download') {
     //   if (btnsCardphoto.download) {
     //     setBtnsCardphoto((state) => {
@@ -69,6 +164,54 @@ const ToolbarCardphoto = () => {
     //     })
     //   }
     // }
+  }
+
+  const handleMouseEnter = (evt) => {
+    // const parentBtn = searchParentBtnNav(evt.target)
+    // if (btnsCardphoto.cardphoto.crop === 'hover' && parentBtn === 'crop') {
+    //   setBtnsCardphoto((state) => {
+    //     return {
+    //       ...state,
+    //       cardphoto: {
+    //         ...state.cardphoto,
+    //         crop: 'hover',
+    //       },
+    //     }
+    //   })
+    //   dispatch(
+    //     infoButtons({
+    //       cardphoto: {
+    //         ...infoButtonsCardphoto,
+    //         crop: 'hover',
+    //       },
+    //     })
+    //   )
+    // }
+    handleMouseEnterBtn(evt, btnsCardphoto)
+  }
+
+  const handleMouseLeave = (evt) => {
+    const parentBtn = searchParentBtnNav(evt.target)
+    if (!btnsCardphoto.cardphoto.download && parentBtn === 'download') {
+      setBtnsCardphoto((state) => {
+        return {
+          ...state,
+          cardphoto: {
+            ...state.cardphoto,
+            download: true,
+          },
+        }
+      })
+      dispatch(
+        infoButtons({
+          cardphoto: {
+            ...infoButtonsCardphoto,
+            download: true,
+          },
+        })
+      )
+    }
+    handleMouseLeaveBtn(evt, btnsCardphoto)
   }
 
   return (
@@ -83,8 +226,8 @@ const ToolbarCardphoto = () => {
               ref={setBtnIconRef(`cardphoto-${btn}`)}
               className={`toolbar-btn toolbar-btn-cardphoto btn-cardphoto-${btn}`}
               onClick={(evt) => handleClickBtn(evt, btn)}
-              onMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsCardphoto)}
-              onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsCardphoto)}
+              onMouseEnter={(evt) => handleMouseEnter(evt)}
+              onMouseLeave={(evt) => handleMouseLeave(evt)}
             >
               {addIconToolbar(btn)}
             </button>

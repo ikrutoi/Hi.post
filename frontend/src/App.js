@@ -17,15 +17,15 @@ import { addBtnToolbar } from './redux/layout/actionCreators'
 
 function App() {
   const appRef = useRef()
-  const layoutBtnToolbar = useSelector((state) => state.layout.btnToolbar)
+  // const layoutBtnToolbar = useSelector((state) => state.layout.btnToolbar)
   const dispatch = useDispatch()
   const [colorToolbar, setColorToolbar] = useState(null)
 
-  useEffect(() => {
-    if (layoutBtnToolbar.firstBtn === 'color') {
-      setColorToolbar(true)
-    }
-  }, [layoutBtnToolbar])
+  // useEffect(() => {
+  //   if (layoutBtnToolbar.firstBtn === 'color') {
+  //     setColorToolbar(true)
+  //   }
+  // }, [layoutBtnToolbar])
 
   const useSize = (target) => {
     const [size, setSize] = useState()

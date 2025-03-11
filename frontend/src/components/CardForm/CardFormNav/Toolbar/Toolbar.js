@@ -82,37 +82,6 @@ const Toolbar = ({ nameSection, handleClickBtnToolbar }) => {
     }
   }
 
-  // const readFilesFromDB = async (db) => {
-  //   const tx = db.transaction('files', 'readonly')
-  //   const store = tx.objectStore('files')
-  //   const allFiles = await store.getAll()
-  //   console.log('Files in DB:', allFiles)
-  //   return allFiles
-  // }
-
-  // const db = useIndexedDB()
-  // const fileInputRef = useRef(null)
-
-  // const addFileToDB = async (db, file) => {
-  //   const tx = db.transaction('files', 'readwrite')
-  //   const store = tx.objectStore('files')
-  //   await store.clear()
-  //   await store.add(file)
-  //   await tx.done
-  //   const url = URL.createObjectURL(file)
-  //   dispatch(addCardphoto({ url, source: 'user' }))
-  //   dispatch(
-  //     addChoiceSection({ source: 'cardPuzzle', nameSection: 'cardphoto' })
-  //   )
-  // }
-
-  // const handleFileChange = async (e) => {
-  //   const file = e.target.files[0]
-  //   if (db) {
-  //     await addFileToDB(db, file)
-  //   }
-  // }
-
   const addIconToolbar = (nameSection, nameBtn) => {
     switch (nameSection) {
       case 'cardphoto':

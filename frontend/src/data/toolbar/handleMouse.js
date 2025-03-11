@@ -7,27 +7,25 @@ const hover = (button) => {
 }
 
 export const handleMouseEnterBtn = (evt, btns) => {
-  const parentBtnNav = searchParentElement(evt.target)
-  if (btns[parentBtnNav.dataset.section][parentBtnNav.dataset.tooltip]) {
+  const parentBtn = searchParentElement(evt.target)
+  if (btns[parentBtn.dataset.section][parentBtn.dataset.tooltip]) {
     if (
       !(
-        parentBtnNav.dataset.tooltip === 'left' ||
-        parentBtnNav.dataset.tooltip === 'center' ||
-        parentBtnNav.dataset.tooltip === 'right' ||
-        parentBtnNav.dataset.tooltip === 'justify'
+        parentBtn.dataset.tooltip === 'left' ||
+        parentBtn.dataset.tooltip === 'center' ||
+        parentBtn.dataset.tooltip === 'right' ||
+        parentBtn.dataset.tooltip === 'justify'
       ) ||
-      btns.cardtext[parentBtnNav.dataset.tooltip] !== 'hover'
+      btns.cardtext[parentBtn.dataset.tooltip] !== 'hover'
     ) {
-      hover(parentBtnNav)
+      hover(parentBtn)
     }
   }
 }
 
 export const handleMouseLeaveBtn = (evt, btns) => {
-  const parentBtnNav = searchParentElement(evt.target)
-  parentBtnNav.style.color =
-    colorScheme[
-      btns[parentBtnNav.dataset.section][parentBtnNav.dataset.tooltip]
-    ]
-  parentBtnNav.style.cursor = 'default'
+  const parentBtn = searchParentElement(evt.target)
+  parentBtn.style.color =
+    colorScheme[btns[parentBtn.dataset.section][parentBtn.dataset.tooltip]]
+  parentBtn.style.cursor = 'default'
 }

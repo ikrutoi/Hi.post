@@ -10,13 +10,7 @@ const initialState = {
     width: null,
   },
   remSize: null,
-  // btnNavHover: null,
   choiceSection: { source: null, nameSection: null },
-  // btnToolbar: {
-  //   firstBtn: null,
-  //   secondBtn: null,
-  //   section: null,
-  // },
   indexDb: {
     hiPostImages: {
       originalImage: null,
@@ -34,10 +28,6 @@ const initialState = {
     id: null,
   },
   memoryCrop: null,
-  // myAddressLegendRef: null,
-  // toAddressLegendRef: null,
-  // myAddressFieldsetRef: null,
-  // toAddressFieldsetRef: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -56,8 +46,6 @@ const layoutReducer = (state = initialState, action) => {
       }
     case a.ADD_REMSIZE:
       return { ...state, remSize: action.payload }
-    // case a.ADD_BTN_NAV_HOVER:
-    //   return { ...state, btnNavHover: action.payload }
     case a.ADD_CHOICE_SECTION:
       return {
         ...state,

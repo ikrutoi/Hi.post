@@ -14,9 +14,9 @@ const TooltipColor = ({ setBtnColor, infoButtonsCardtext, styleLeft }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (btnTooltipColorRef.current) {
+    if (btnTooltipColorRef.current && remSize) {
       const widthBtn = btnTooltipColorRef.current.offsetWidth
-      const calcLeft = styleLeft - widthBtn / 2 - remSize
+      const calcLeft = styleLeft - widthBtn / 2 - 2 * remSize + 1
       setLeftBtnTooltip(calcLeft)
       setIsVisibility('visible')
     }
