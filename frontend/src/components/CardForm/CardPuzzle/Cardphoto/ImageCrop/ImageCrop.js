@@ -12,7 +12,6 @@ import {
   getAllUserImages,
 } from '../../../../../utils/cardFormNav/indexDB/indexDb'
 import {
-  addBtnToolbar,
   addIndexDb,
   addMemoryCrop,
 } from '../../../../../redux/layout/actionCreators'
@@ -29,7 +28,9 @@ import { centeringMaxCrop } from '../../../../../utils/images/centeringMaxCrop'
 import { adjustImageSize } from '../../../../../utils/images/adjustImageSize'
 
 const ImageCrop = ({ sizeCard }) => {
-  const layoutToolbar = useSelector((state) => state.layout.btnToolbar)
+  const infoBtnCardphotoClick = useSelector(
+    (state) => state.infoButtons.cardphotoClick
+  )
   const layoutMemoryCrop = useSelector((state) => state.layout.memoryCrop)
   const [image, setImage] = useState({ source: null, url: null, base: null })
   const [scaleX, setScaleX] = useState(1)
@@ -420,14 +421,15 @@ const ImageCrop = ({ sizeCard }) => {
   useEffect(() => {
     const resetBtnToolbar = () => {
       dispatch(
-        addBtnToolbar({
-          firstBtn: null,
-          section: null,
-          secondBtn: null,
-        })
+        infoButtons({ cardphotoClick: null })
+        // addBtnToolbar({
+        //   firstBtn: null,
+        //   section: null,
+        //   secondBtn: null,
+        // })
       )
     }
-    switch (layoutToolbar.firstBtn) {
+    switch (infoBtnCardphotoClick) {
       case 'download':
         handleDownload()
         resetBtnToolbar()
@@ -456,7 +458,7 @@ const ImageCrop = ({ sizeCard }) => {
       default:
         break
     }
-  }, [layoutToolbar])
+  }, [infoBtnCardphotoClick, dispatch])
 
   const base64ToBlob = (base64, contentType = '', sliceSize = 512) => {
     const byteCharacters = atob(base64.split(',')[1])

@@ -1,7 +1,7 @@
 .cardeditor-tooltip-color {
   position: absolute;
   display: flex;
-  top: -3rem;
+  top: calc(-3rem - 2px);
   padding: 0.3rem;
   border-radius: 0.3rem;
   border: solid 1px lightgray;
@@ -15,4 +15,19 @@
   margin-left: 0.5rem;
   margin-right: 0.5rem;
   cursor: pointer;
+}
+
+.ggg {
+  position: absolute;
+  top: -2rem;
+  left: 1rem;
+  width: calc(100% - 2rem);
+  height: calc(2rem - 1px);
+  border-radius: 1rem 1rem 0 0;
+  border-top: solid 1px lightgray;
+  border-right: solid 1px lightgray;
+  border-left: solid 1px lightgray;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0);
+  //   border: solid 1px green;
 }

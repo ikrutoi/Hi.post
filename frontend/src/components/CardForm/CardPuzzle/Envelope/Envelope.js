@@ -52,6 +52,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     myaddress: { save: false, delete: false, clip: false },
     toaddress: { save: false, delete: false, clip: false },
   })
+  const [stateMouseClip, setStateMouseClip] = useState(null)
   const inputRefs = useRef({})
   const btnIconRefs = useRef({})
   const addressFormRefs = useRef({})
@@ -258,12 +259,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
         colorScheme[state]
       addressFormRefs.current[`${section}-legend`].style.color =
         colorScheme[state]
-
-      // if (state === 'hover') {
-      //   console.log('hover')
-      // } else {
-      //   btnIconRefs.current[`${section}-clip`].style.color = colorScheme.true
-      // }
     }
 
     if (infoEnvelopeClip) {
@@ -289,15 +284,17 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     } else {
       sectionsForm.forEach((section) => {
         changeStyleForm(section, 'false')
-        setBtnsAddress((state) => {
-          return {
-            ...state,
-            [section]: { ...state[section], clip: true },
-          }
-        })
+        if (!stateMouseClip) {
+          setBtnsAddress((state) => {
+            return {
+              ...state,
+              [section]: { ...state[section], clip: true },
+            }
+          })
+        }
       })
     }
-  }, [infoEnvelopeClip])
+  }, [infoEnvelopeClip, stateMouseClip])
 
   const handleClickClip = (section) => {
     if (infoEnvelopeClip) {
@@ -394,6 +391,16 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     }
   }
 
+  const handleMouseEnter = (evt, btnsAddress) => {
+    setStateMouseClip(true)
+    handleMouseEnterBtn(evt, btnsAddress)
+  }
+
+  const handleMouseLeave = (evt, btnsAddress) => {
+    setStateMouseClip(false)
+    handleMouseLeaveBtn(evt, btnsAddress)
+  }
+
   return (
     <div className="envelope">
       <div className="envelope-myaddress">
@@ -413,9 +420,8 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           setBtnIconRef={setBtnIconRef}
           setAddressFormRef={setAddressFormRef}
           handleClickBtn={handleClickBtn}
-          handleMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsAddress)}
-          // handleMouseEnter={handleMouseEnter}
-          handleMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsAddress)}
+          handleMouseEnter={(evt) => handleMouseEnter(evt, btnsAddress)}
+          handleMouseLeave={(evt) => handleMouseLeave(evt, btnsAddress)}
         />
       </div>
       <Mark />
@@ -429,10 +435,8 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           setBtnIconRef={setBtnIconRef}
           setAddressFormRef={setAddressFormRef}
           handleClickBtn={handleClickBtn}
-          handleMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsAddress)}
-          handleMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsAddress)}
-          // handleMouseEnter={handleMouseEnter}
-          // handleMouseLeave={handleMouseLeave}
+          handleMouseEnter={(evt) => handleMouseEnter(evt, btnsAddress)}
+          handleMouseLeave={(evt) => handleMouseLeave(evt, btnsAddress)}
         />
       </div>
     </div>

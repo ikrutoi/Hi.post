@@ -24,10 +24,10 @@ export const handleMouseEnterBtn = (evt, btns) => {
 }
 
 export const handleMouseLeaveBtn = (evt, btns) => {
-  const parentElement = searchParentElement(evt.target)
-  parentElement.style.color =
+  const parentBtnNav = searchParentElement(evt.target)
+  parentBtnNav.style.color =
     colorScheme[
-      btns[parentElement.dataset.section][parentElement.dataset.tooltip]
+      btns[parentBtnNav.dataset.section][parentBtnNav.dataset.tooltip]
     ]
-  parentElement.style.cursor = 'default'
+  parentBtnNav.style.cursor = 'default'
 }

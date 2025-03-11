@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './CardFormNav.scss'
-import Toolbar from './Toolbar/Toolbar'
+// import Toolbar from './Toolbar/Toolbar'
 import ToolbarDate from './Toolbar/ToolbarDate/ToolbarDate'
 import { addBtnToolbar } from '../../../redux/layout/actionCreators'
 
@@ -28,12 +28,12 @@ const CardFormNav = () => {
     if (name === 'date') {
       return <ToolbarDate choice={sectionDate ? true : false} />
     }
-    return (
-      <Toolbar
-        nameSection={name}
-        handleClickBtnToolbar={handleClickBtnToolbar}
-      />
-    )
+    // return (
+    //   <Toolbar
+    //     nameSection={name}
+    //     handleClickBtnToolbar={handleClickBtnToolbar}
+    //   />
+    // )
   }
 
   return (

@@ -12,11 +12,11 @@ const initialState = {
   remSize: null,
   // btnNavHover: null,
   choiceSection: { source: null, nameSection: null },
-  btnToolbar: {
-    firstBtn: null,
-    secondBtn: null,
-    section: null,
-  },
+  // btnToolbar: {
+  //   firstBtn: null,
+  //   secondBtn: null,
+  //   section: null,
+  // },
   indexDb: {
     hiPostImages: {
       originalImage: null,

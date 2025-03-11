@@ -5,6 +5,7 @@ import './Cardphoto.scss'
 // import ImgEditor from './ImgEditor/ImgEditor'
 import imgStart from '../../../../data/img/card-photo-bw.jpg'
 import ImageCrop from './ImageCrop/ImageCrop'
+import ToolbarCardphoto from './ToolbarCardphoto/ToolbarCardphoto'
 
 const Cardphoto = ({ sizeCard, setChoiceSection }) => {
   const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
@@ -20,6 +21,9 @@ const Cardphoto = ({ sizeCard, setChoiceSection }) => {
 
   return (
     <div className="cardphoto">
+      <div className="cardphoto-nav-container">
+        <ToolbarCardphoto />
+      </div>
       <ImageCrop sizeCard={sizeCard} />
       {/* <ImgEditor
         style={{ width: `${sizeCard.width}px`, height: `${sizeCard.height}px` }}

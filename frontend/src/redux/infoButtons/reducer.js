@@ -1,6 +1,7 @@
 import { INFO_BUTTONS } from './actionTypes'
 
 const initialState = {
+  navHistory: false,
   crop: false,
   italic: true,
   left: true,
@@ -8,10 +9,19 @@ const initialState = {
   envelopeClip: null,
   envelopeSave: null,
   miniAddressClose: null,
+  cardphoto: {
+    download: true,
+    save: false,
+    delete: false,
+    turn: true,
+    maximaze: false,
+    crop: true,
+  },
+  cardphotoClick: null,
   cardtext: {
     italic: 'hover',
     fontSize: true,
-    color: 'rgb(0, 122, 172)',
+    color: true,
     left: 'hover',
     center: true,
     right: true,

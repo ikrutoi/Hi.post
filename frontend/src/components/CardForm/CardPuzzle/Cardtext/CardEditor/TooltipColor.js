@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './TooltipColor.scss'
 import listColors from '../../../../../data/toolbar/listColors.json'
-import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
+import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 
 const TooltipColor = ({ setBtnColor, infoButtonsCardtext, styleLeft }) => {
@@ -24,15 +24,7 @@ const TooltipColor = ({ setBtnColor, infoButtonsCardtext, styleLeft }) => {
 
   const handleClickBtnColor = (evt) => {
     dispatch(
-      infoButtons({
-        cardtext: {
-          ...infoButtonsCardtext,
-          color: evt.target.dataset.colorType,
-        },
-      })
-    )
-    dispatch(
-      addCardphoto({
+      addCardtext({
         colorName: evt.target.dataset.colorName,
         colorType: evt.target.dataset.colorType,
       })
@@ -47,9 +39,10 @@ const TooltipColor = ({ setBtnColor, infoButtonsCardtext, styleLeft }) => {
       style={{ left: `${leftBtnTooltip}px`, visibility: isVisibility }}
     >
       {listColors &&
-        listColors.map((color) => {
+        listColors.map((color, i) => {
           return (
             <button
+              key={`${i}-${color.name}`}
               className={`btn-color btn-color-${color.name}`}
               style={{ backgroundColor: color.code }}
               data-color-name={color.name}

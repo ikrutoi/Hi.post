@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useRef } from 'react'
 import './BtnCardsNav.scss'
 import { addChoiceSection } from '../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../redux/infoButtons/actionCreators'
 
 const BtnCardsNav = ({
+  btnNavRefs,
+  setBtnNavRef,
   handleMouseEnterContainer,
   handleMouseLeaveContainer,
   section,
@@ -12,35 +13,38 @@ const BtnCardsNav = ({
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
   )
-  const btnNavRef = useRef()
-  const nameSectionLowerCase = section.name.toLowerCase()
+  const nameNav = section.name.toLowerCase()
   const dispatch = useDispatch()
 
   const handleClickBtnNav = () => {
-    if (nameSectionLowerCase !== 'envelope' && infoEnvelopeClip) {
+    if (nameNav !== 'envelope' && infoEnvelopeClip) {
       dispatch(infoButtons({ envelopeClip: false }))
     }
-    dispatch(
-      addChoiceSection({ source: 'btnNav', nameSection: nameSectionLowerCase })
-    )
+    dispatch(addChoiceSection({ source: 'btnNav', nameSection: nameNav }))
   }
 
   return (
     <div
       className="btn-nav-container"
       onMouseEnter={() =>
-        handleMouseEnterContainer(btnNavRef.current, section.colorHoverRGBA)
+        handleMouseEnterContainer(
+          btnNavRefs.current[`nav-${nameNav}`],
+          section.colorHoverRGBA
+        )
       }
       onMouseLeave={() =>
-        handleMouseLeaveContainer(btnNavRef.current, section.colorRGBA)
+        handleMouseLeaveContainer(
+          btnNavRefs.current[`nav-${nameNav}`],
+          section.colorRGBA
+        )
       }
     >
       <button
-        ref={btnNavRef}
+        ref={setBtnNavRef(`nav-${nameNav}`)}
         type="button"
-        className="btn-nav"
+        className={`btn-nav btn-nav-${nameNav}`}
         onClick={handleClickBtnNav}
-        data-name={nameSectionLowerCase}
+        data-name={nameNav}
         style={{
           backgroundColor: section.colorRGBA,
         }}

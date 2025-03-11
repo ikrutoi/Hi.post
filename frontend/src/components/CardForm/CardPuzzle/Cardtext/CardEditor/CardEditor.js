@@ -101,12 +101,8 @@ const CardEditor = ({
   useEffect(() => {
     if (btnsCardtext && btnIconRefs.current) {
       changeIconStyles(btnsCardtext, btnIconRefs.current)
-      btnIconRefs.current['cardtext-color'].style.color =
-        infoButtonsCardtext.color
     }
-  }, [btnsCardtext, btnIconRefs, infoButtonsCardtext])
-
-  useEffect(() => {}, [infoButtonsCardtext])
+  }, [btnsCardtext, btnIconRefs])
 
   useEffect(() => {
     if (editorRef.current) {
@@ -368,16 +364,8 @@ const CardEditor = ({
         setBtnColor(false)
       } else {
         setBtnColor(true)
-        console.log(
-          'colorStyle'
-          // btnIconRefs.current['cardtext-color'].getBoundingClientRect().left
-        )
       }
     }
-  }
-
-  const handleClickTooltipColor = (evt) => {
-    console.log('btnColor', evt.target)
   }
 
   return (
@@ -411,6 +399,7 @@ const CardEditor = ({
           />
         )}
       </div>
+      {/* <div className="ggg"></div> */}
       <div className="editor" ref={editorRef}>
         <Slate
           editor={editor}
