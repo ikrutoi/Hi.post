@@ -14,6 +14,7 @@ const ToolbarCardphoto = () => {
   const infoButtonsCardphoto = useSelector(
     (state) => state.infoButtons.cardphoto
   )
+  const infoCrop = useSelector((state) => state.infoButtons.crop)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const btnIconRefs = useRef({})
   const [btnsCardphoto, setBtnsCardphoto] = useState({ cardphoto: {} })
@@ -134,8 +135,9 @@ const ToolbarCardphoto = () => {
             ...state,
             cardphoto: {
               ...state.cardphoto,
-              crop: btnsCardphoto.cardphoto.crop === true ? 'hover' : true,
+              crop: 'hover',
               save: btnsCardphoto.cardphoto.save ? false : true,
+              maximaze: btnsCardphoto.cardphoto.save ? false : true,
             },
           }
         })
@@ -143,8 +145,9 @@ const ToolbarCardphoto = () => {
           infoButtons({
             cardphoto: {
               ...infoButtonsCardphoto,
-              crop: btnsCardphoto.cardphoto.crop === true ? 'hover' : true,
+              crop: 'hover',
               save: btnsCardphoto.cardphoto.save ? false : true,
+              maximaze: btnsCardphoto.cardphoto.save ? false : true,
             },
           })
         )
@@ -192,7 +195,10 @@ const ToolbarCardphoto = () => {
 
   const handleMouseLeave = (evt) => {
     const parentBtn = searchParentBtnNav(evt.target)
-    if (!btnsCardphoto.cardphoto.download && parentBtn === 'download') {
+    if (
+      !btnsCardphoto.cardphoto.download &&
+      parentBtn.dataset.tooltip === 'download'
+    ) {
       setBtnsCardphoto((state) => {
         return {
           ...state,
@@ -211,11 +217,34 @@ const ToolbarCardphoto = () => {
         })
       )
     }
+    if (
+      parentBtn.dataset.tooltip === 'crop' &&
+      !infoCrop &&
+      btnsCardphoto.cardphoto.crop === 'hover'
+    ) {
+      setBtnsCardphoto((state) => {
+        return {
+          ...state,
+          cardphoto: {
+            ...state.cardphoto,
+            crop: true,
+          },
+        }
+      })
+      dispatch(
+        infoButtons({
+          cardphoto: {
+            ...infoButtonsCardphoto,
+            crop: true,
+          },
+        })
+      )
+    }
     handleMouseLeaveBtn(evt, btnsCardphoto)
   }
 
   return (
-    <div className="toolbar-cardphoto-left">
+    <div className="toolbar-cardphoto">
       {listBtnsCardphoto &&
         listBtnsCardphoto.map((btn, i) => {
           return (

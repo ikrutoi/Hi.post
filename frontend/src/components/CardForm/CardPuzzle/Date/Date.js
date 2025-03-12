@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import { addDate } from '../../../../redux/cardEdit/actionCreators'
+import { FaAngleLeft, FaAngleRight, FaChevronRight } from 'react-icons/fa'
 import './Date.scss'
+import { addDate } from '../../../../redux/cardEdit/actionCreators'
 import Calendar from './Calendar/Calendar'
 import CurrentDateTime from './CurrentDateTime/CurrentDateTime'
 import { currentDate } from '../../../../utils/date/date'
 import Slider from './Slider/Slider'
 import nameMonths from '../../../../data/date/monthOfYear.json'
 import { addChoiceSection } from '../../../../redux/layout/actionCreators'
+import ToolbarDate from './ToolbarDate/ToolbarDate'
+import { colorSchemeMain } from '../../../../data/main/colorSchemeMain'
 
 const Date = ({ setChoiceSection }) => {
   const selectors = useSelector((state) => state.cardEdit)
@@ -172,6 +175,9 @@ const Date = ({ setChoiceSection }) => {
 
   return (
     <div className="date">
+      <div className="nav-container nav-container-date">
+        <ToolbarDate />
+      </div>
       <form className="date-form">
         <div className="date-header">
           <div className="header-left-right">
@@ -189,8 +195,15 @@ const Date = ({ setChoiceSection }) => {
             </div>
           </div>
           <div className="header-center">
-            <div className="header-sign" onClick={handleScrollMinus}>
-              Left
+            <div
+              className="header-sign"
+              style={{
+                color: colorSchemeMain.gray,
+                backgroundColor: colorSchemeMain.lightGray,
+              }}
+              onClick={handleScrollMinus}
+            >
+              <FaAngleLeft className="icon-date" />
             </div>
             <div className="header-date">
               <CurrentDateTime
@@ -200,8 +213,15 @@ const Date = ({ setChoiceSection }) => {
                 handleChangeMonth={handleChangeMonth}
               />
             </div>
-            <div className="header-sign" onClick={handleScrollPlus}>
-              Right
+            <div
+              className="header-sign"
+              style={{
+                color: colorSchemeMain.gray,
+                backgroundColor: colorSchemeMain.lightGray,
+              }}
+              onClick={handleScrollPlus}
+            >
+              <FaAngleRight className="icon-date" />
             </div>
           </div>
           <div className="header-left-right">

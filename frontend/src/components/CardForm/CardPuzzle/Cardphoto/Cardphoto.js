@@ -21,7 +21,7 @@ const Cardphoto = ({ sizeCard, setChoiceSection }) => {
 
   return (
     <div className="cardphoto">
-      <div className="cardphoto-nav-container">
+      <div className="nav-container nav-container-cardphoto">
         <ToolbarCardphoto />
       </div>
       <ImageCrop sizeCard={sizeCard} />

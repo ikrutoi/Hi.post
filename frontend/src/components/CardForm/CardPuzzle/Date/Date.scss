@@ -1,9 +1,17 @@
 .date {
+  position: relative;
   margin: 1rem;
   padding: 1rem;
   width: 100%;
-  border-radius: 1rem;
-  border: solid 1px lightgray;
+  // box-sizing: border-box;
+  // border-radius: 1rem;
+  // border: solid 1px lightgray;
+}
+
+.nav-container-date {
+  top: -3rem;
+  left: 0;
+  width: 100%;
 }
 
 .date-form {
@@ -49,6 +57,12 @@
   // border: solid 1px red;
 }
 
+.icon-date {
+  width: 1.6rem;
+  height: 1.6rem;
+  background-color: rgba(255, 255, 255, 0);
+}
+
 .header-today-selected {
   display: flex;
   width: 8rem;
@@ -75,10 +89,13 @@
 
 .header-sign {
   // width: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 1.5rem;
   padding: 0.5rem;
-  border-radius: 4px;
-  background-color: lightgray;
+  border-radius: 0.3rem;
+  // background-color: lightgray;
   // border: solid 1px orangered;
 }
 
