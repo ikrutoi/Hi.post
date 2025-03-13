@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import './InfoMiniCardAroma.scss'
-import { addChoiceSection } from '../../../../../redux/layout/actionCreators'
 import img00 from '../../../../../data/aroma/no-parfum.png'
 import img10 from '../../../../../data/aroma/nasomatto__black_afgano__10.png'
 import img11 from '../../../../../data/aroma/giorgio_armani__acqua_di_gio_profondo__11.png'
@@ -24,7 +23,6 @@ const InfoMiniCardAroma = ({
 }) => {
   const selector = useSelector((state) => state.layout)
   const [sizeMiniCard, setSizeMiniCard] = useState(null)
-  // const dispatch = useDispatch()
 
   useEffect(() => {
     if (selector.sizeCard.width && selector.sizeCard.height) {

@@ -1,10 +1,9 @@
 import './SunMon.scss'
 
-const SunMon = ({ firstDayTitle, setFirstDayOfWeek }) => {
-  const handleFirstDayOfWeek = () =>
-    firstDayTitle === 'Sun'
-      ? setFirstDayOfWeek('Mon')
-      : setFirstDayOfWeek('Sun')
+const SunMon = ({ firstDayTitle, handleFirstDay }) => {
+  const handleFirstDayOfWeek = () => {
+    handleFirstDay(firstDayTitle === 'Sun' ? 'Mon' : 'Sun')
+  }
 
   return (
     <div className="cell cell-sun-mon" onClick={handleFirstDayOfWeek}>

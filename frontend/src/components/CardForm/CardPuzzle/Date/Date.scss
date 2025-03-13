@@ -53,20 +53,22 @@
 .header-left-right {
   display: flex;
   align-items: center;
-  font-size: 1rem;
+  // font-size: 1rem;
   // border: solid 1px red;
 }
 
 .icon-date {
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 1.2rem;
+  height: 1.2rem;
   background-color: rgba(255, 255, 255, 0);
 }
 
 .header-today-selected {
   display: flex;
-  width: 8rem;
+  align-items: center;
+  width: 9rem;
   cursor: pointer;
+  user-select: none;
   // border: solid 1px green;
 }
 
@@ -88,28 +90,32 @@
 }
 
 .header-sign {
-  // width: 1.5rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 1.5rem;
-  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 0.3rem;
-  // background-color: lightgray;
-  // border: solid 1px orangered;
 }
 
-.header-sign:hover {
-  cursor: pointer;
-  color: #007dd7;
-}
+// .header-sign:hover {
+//   cursor: pointer;
+//   color: #007dd7;
+// }
 
 .header-date {
   display: flex;
   align-items: center;
-  border-radius: 4px;
+  border-radius: 0.3rem;
   margin-left: 2rem;
   margin-right: 2rem;
-  background-color: lightgray;
+  // background-color: lightgray;
   // border: solid 1px orangered;
+}
+
+.icon-title-date {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }

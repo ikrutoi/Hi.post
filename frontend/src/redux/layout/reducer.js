@@ -28,6 +28,7 @@ const initialState = {
     id: null,
   },
   memoryCrop: null,
+  currentDate: null,
 }
 
 const layoutReducer = (state = initialState, action) => {

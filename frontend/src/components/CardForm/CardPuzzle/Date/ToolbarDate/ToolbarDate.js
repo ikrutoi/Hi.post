@@ -6,9 +6,9 @@ const ToolbarDate = () => {
   const sectionDate = useSelector((state) => state.cardEdit.date)
   return (
     <div className="toolbar-date">
-      <span className="toolbar-btn-date">
+      {/* <span className="toolbar-btn-date">
         <LuCalendarArrowUp className="toolbar-icon toolbar-icon-date" />
-      </span>
+      </span> */}
       <p className="toolbar-date-text">
         {sectionDate
           ? 'The dispatch date has been selected'

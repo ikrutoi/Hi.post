@@ -1,7 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import { FaAngleLeft, FaAngleRight, FaChevronRight } from 'react-icons/fa'
+import {
+  FaAngleLeft,
+  FaAngleRight,
+  FaChevronLeft,
+  FaChevronRight,
+} from 'react-icons/fa'
+import {
+  LuCalendarArrowUp,
+  LuCalendarArrowDown,
+  LuCalendar,
+} from 'react-icons/lu'
 import './Date.scss'
 import { addDate } from '../../../../redux/cardEdit/actionCreators'
 import Calendar from './Calendar/Calendar'
@@ -12,11 +22,12 @@ import nameMonths from '../../../../data/date/monthOfYear.json'
 import { addChoiceSection } from '../../../../redux/layout/actionCreators'
 import ToolbarDate from './ToolbarDate/ToolbarDate'
 import { colorSchemeMain } from '../../../../data/main/colorSchemeMain'
+import { searchParent } from '../../../../utils/changeParentElement'
 
 const Date = ({ setChoiceSection }) => {
-  const selectors = useSelector((state) => state.cardEdit)
-  const inputValueSelectedDate = selectors.date
-    ? selectors.date
+  const cardEditDate = useSelector((state) => state.cardEdit.date)
+  const inputValueSelectedDate = cardEditDate
+    ? cardEditDate
     : {
         year: currentDate.currentYear,
         month: currentDate.currentMonth,
@@ -26,21 +37,17 @@ const Date = ({ setChoiceSection }) => {
   const [selectedDateTitle, setSelectedDateTitle] = useState(
     inputValueSelectedDate
   )
-  const [selectedDate, setSelectedDate] = useState(
-    selectors.date ? selectors.date : null
-  )
-
-  const [isActiveChangeYear, setIsActiveChangeYear] = useState(false)
-  const [isActiveChangeMonth, setIsActiveChangeMonth] = useState(false)
+  const [selectedDate, setSelectedDate] = useState(null)
   const [isActiveDateTitle, setIsActiveDateTitle] = useState(false)
 
+  useEffect(() => {
+    cardEditDate ? setSelectedDate(cardEditDate) : setSelectedDate(null)
+    if (!cardEditDate) {
+      clearActiveDateTitleAndSlider()
+    }
+  }, [cardEditDate])
+
   const clearActiveDateTitleAndSlider = () => {
-    if (isActiveChangeMonth) {
-      setIsActiveChangeMonth(false)
-    }
-    if (isActiveChangeYear) {
-      setIsActiveChangeYear(false)
-    }
     if (setIsActiveDateTitle) {
       setIsActiveDateTitle(false)
     }
@@ -70,24 +77,17 @@ const Date = ({ setChoiceSection }) => {
     setChoiceSection('date')
   }
 
-  const handleChangeYear = () => {
-    if (isActiveChangeMonth) {
-      setIsActiveChangeMonth(false)
+  const handleChangeTitle = (evt) => {
+    const parentElement = searchParent(evt.target, 'date-title')
+    if (isActiveDateTitle === parentElement.dataset.name) {
+      setIsActiveDateTitle(false)
+    } else {
+      setIsActiveDateTitle(parentElement.dataset.name)
     }
-    setIsActiveChangeYear(true)
-    setIsActiveDateTitle('year')
-  }
-
-  const handleChangeMonth = () => {
-    if (isActiveChangeYear) {
-      setIsActiveChangeYear(false)
-    }
-    setIsActiveChangeMonth(true)
-    setIsActiveDateTitle('month')
   }
 
   const changeMonthTitleMinus = () => {
-    clearActiveDateTitleAndSlider()
+    // clearActiveDateTitleAndSlider()
     if (selectedDateTitle.month > 0) {
       setSelectedDateTitle((state) => {
         return { ...state, month: selectedDateTitle.month - 1 }
@@ -118,18 +118,23 @@ const Date = ({ setChoiceSection }) => {
   }
 
   const handleScrollMinus = () => {
-    if (isActiveChangeYear) {
-      setSelectedDateTitle((state) => {
-        return { ...state, year: selectedDateTitle.year - 1 }
-      })
-    }
-    if (isActiveChangeMonth) {
-      changeMonthTitleMinus()
+    if (isActiveDateTitle) {
+      switch (isActiveDateTitle) {
+        case 'year':
+          setSelectedDateTitle((state) => {
+            return { ...state, year: selectedDateTitle.year - 1 }
+          })
+          break
+        case 'month':
+          changeMonthTitleMinus()
+          break
+        default:
+          break
+      }
     }
   }
 
   const changeMonthTitlePlus = () => {
-    clearActiveDateTitleAndSlider()
     if (selectedDateTitle.month < 11) {
       setSelectedDateTitle((state) => {
         return { ...state, month: selectedDateTitle.month + 1 }
@@ -143,13 +148,19 @@ const Date = ({ setChoiceSection }) => {
   }
 
   const handleScrollPlus = () => {
-    if (isActiveChangeYear) {
-      setSelectedDateTitle((state) => {
-        return { ...state, year: selectedDateTitle.year + 1 }
-      })
-    }
-    if (isActiveChangeMonth) {
-      changeMonthTitlePlus()
+    if (isActiveDateTitle) {
+      switch (isActiveDateTitle) {
+        case 'year':
+          setSelectedDateTitle((state) => {
+            return { ...state, year: selectedDateTitle.year + 1 }
+          })
+          break
+        case 'month':
+          changeMonthTitlePlus()
+          break
+        default:
+          break
+      }
     }
   }
 
@@ -173,6 +184,13 @@ const Date = ({ setChoiceSection }) => {
     })
   }
 
+  const checkingCurrentMonth = () => {
+    return (
+      selectedDateTitle.year === currentDate.currentYear &&
+      selectedDateTitle.month === currentDate.currentMonth
+    )
+  }
+
   return (
     <div className="date">
       <div className="nav-container nav-container-date">
@@ -182,46 +200,54 @@ const Date = ({ setChoiceSection }) => {
         <div className="date-header">
           <div className="header-left-right">
             <div
-              className="header-today-selected header-today ${
-                disabledDateToday"
+              className="header-today-selected header-today"
               onClick={handleTransitionTodayDate}
+              style={{
+                color: checkingCurrentMonth()
+                  ? colorSchemeMain.mediumGray
+                  : colorSchemeMain.gray,
+                cursor: checkingCurrentMonth() ? 'default' : 'pointer',
+              }}
             >
-              {selectedDateTitle.year === currentDate.currentYear &&
-              selectedDateTitle.month === currentDate.currentMonth
-                ? ''
-                : `${currentDate.currentYear} ${
-                    nameMonths[currentDate.currentMonth]
-                  } ${currentDate.currentDay}`}
+              <LuCalendar className="icon-title-date" />
+              {`${currentDate.currentYear} ${
+                nameMonths[currentDate.currentMonth]
+              } ${currentDate.currentDay}`}
             </div>
           </div>
           <div className="header-center">
             <div
               className="header-sign"
               style={{
-                color: colorSchemeMain.gray,
+                color: isActiveDateTitle
+                  ? colorSchemeMain.gray
+                  : colorSchemeMain.mediumGray,
                 backgroundColor: colorSchemeMain.lightGray,
+                cursor: isActiveDateTitle ? 'pointer' : 'default',
               }}
               onClick={handleScrollMinus}
             >
-              <FaAngleLeft className="icon-date" />
+              <FaChevronLeft className="icon-date" />
             </div>
             <div className="header-date">
               <CurrentDateTime
                 selectedDateTitle={selectedDateTitle}
                 isActiveDateTitle={isActiveDateTitle}
-                handleChangeYear={handleChangeYear}
-                handleChangeMonth={handleChangeMonth}
+                handleChangeTitle={handleChangeTitle}
               />
             </div>
             <div
               className="header-sign"
               style={{
-                color: colorSchemeMain.gray,
+                color: isActiveDateTitle
+                  ? colorSchemeMain.gray
+                  : colorSchemeMain.mediumGray,
                 backgroundColor: colorSchemeMain.lightGray,
+                cursor: isActiveDateTitle ? 'pointer' : 'default',
               }}
               onClick={handleScrollPlus}
             >
-              <FaAngleRight className="icon-date" />
+              <FaChevronRight className="icon-date" />
             </div>
           </div>
           <div className="header-left-right">
@@ -229,6 +255,11 @@ const Date = ({ setChoiceSection }) => {
               className="header-today-selected header-selected"
               onClick={handleTransitionSelectedDate}
             >
+              {selectedDate ? (
+                <LuCalendarArrowUp className="icon-title-date" />
+              ) : (
+                ''
+              )}
               {selectedDate
                 ? `${selectedDate.year} ${nameMonths[selectedDate.month]} ${
                     selectedDate.day
@@ -240,8 +271,7 @@ const Date = ({ setChoiceSection }) => {
         <div className="date-slider">
           <Slider
             selectedDateTitle={selectedDateTitle}
-            isActiveChangeYear={isActiveChangeYear}
-            isActiveChangeMonth={isActiveChangeMonth}
+            isActiveDateTitle={isActiveDateTitle}
             handleChangeDateFromSlider={handleChangeDateFromSlider}
           />
         </div>

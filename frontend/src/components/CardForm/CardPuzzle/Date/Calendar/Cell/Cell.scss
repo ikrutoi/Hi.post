@@ -2,16 +2,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1rem;
-  padding: 0.5rem;
-  width: 1.4rem;
-  height: 1rem;
+  margin: 0.5rem;
+  padding: 0.45rem 0.5rem 0.55rem 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.3rem;
   cursor: pointer;
+  user-select: none;
   // border: solid 1px orange;
 }
 
 .cell-title {
   cursor: default;
+  user-select: none;
 }
 
 .cell-day.day-current:hover {
@@ -24,7 +27,7 @@
 }
 
 .cell.today {
-  background-color: lightgray;
+  background-color: rgb(240, 240, 240);
 }
 
 .cell.selected {

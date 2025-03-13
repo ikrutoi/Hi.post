@@ -19,10 +19,14 @@ const Calendar = ({
   changeMonthTitleMinus,
 }) => {
   const [firstDayOfWeekTitle, setFirstDayOfWeek] = useState('Sun')
-  const daysOfWeek =
-    firstDayOfWeekTitle === 'Sun'
-      ? daysOfWeekStartFromSun
-      : daysOfWeekStartFromMon
+  const [daysOfWeek, setDaysOfWeek] = useState(daysOfWeekStartFromSun)
+
+  const handleFirstDay = (firstDay) => {
+    setFirstDayOfWeek(firstDay)
+    setDaysOfWeek(
+      firstDay === 'Sun' ? daysOfWeekStartFromSun : daysOfWeekStartFromMon
+    )
+  }
 
   const daysInPreviousMonth = numberDaysInPreviousMonth(
     selectedDateTitle.year,
@@ -187,7 +191,7 @@ const Calendar = ({
       <CalendarWeekTitle
         daysOfWeek={daysOfWeek}
         firstDayTitle={firstDayOfWeekTitle}
-        setFirstDayOfWeek={setFirstDayOfWeek}
+        handleFirstDay={handleFirstDay}
       />
       <div className="calendar-month">
         <div className="month-days">{constructionMonth()}</div>

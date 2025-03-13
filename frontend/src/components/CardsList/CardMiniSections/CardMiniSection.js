@@ -117,8 +117,6 @@ const CardMiniSection = ({
 
     const parentElement = searchParentBtnNav(evt.target)
 
-    console.log('parent delete', parentElement)
-
     switch (parentElement.dataset.name) {
       case 'aroma':
         dispatch(addAroma(null))
