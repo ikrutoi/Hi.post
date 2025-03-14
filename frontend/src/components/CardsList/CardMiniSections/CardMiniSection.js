@@ -8,7 +8,7 @@ import {
   addEnvelope,
   addCardtext,
 } from '../../../redux/cardEdit/actionCreators'
-import { addIndexDb } from '../../../redux/layout/actionCreators'
+import { addIndexDb, deleteSection } from '../../../redux/layout/actionCreators'
 import {
   deleteHiPostImage,
   deleteUserImage,
@@ -22,6 +22,7 @@ import MiniAroma from './MiniAroma/MiniAroma'
 import MiniPhoto from './MiniPhoto/MiniPhoto'
 import { addChoiceSection } from '../../../redux/layout/actionCreators'
 import listNavSections from '../../../data/cardsNav/navList.json'
+import { searchParent } from '../../../utils/searchParent'
 
 const CardMiniSection = ({
   valueSection,
@@ -106,16 +107,10 @@ const CardMiniSection = ({
 
   const handleClickCardMiniKebab = async (evt) => {
     evt.stopPropagation()
-    const searchParentBtnNav = (el) => {
-      if (el.classList.contains('card-mini-section')) {
-        return el
-      } else if (el.parentElement) {
-        return searchParentBtnNav(el.parentElement)
-      }
-      return null
-    }
 
-    const parentElement = searchParentBtnNav(evt.target)
+    const parentElement = searchParent(evt.target, 'card-mini-section')
+
+    dispatch(deleteSection(parentElement.dataset.name))
 
     switch (parentElement.dataset.name) {
       case 'aroma':

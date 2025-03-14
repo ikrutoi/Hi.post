@@ -1,13 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
+import './Envelope.scss'
 import listLabelsMyAddress from '../../../../data/envelope/list-labels-my-address.json'
 import listLabelsToAddress from '../../../../data/envelope/list-labels-to-address.json'
-import './Envelope.scss'
 import { addEnvelope } from '../../../../redux/cardEdit/actionCreators'
 import Mark from './Mark/Mark'
 import FormAddress from './FormAddress/FormAddress'
-import { choiceAddress } from '../../../../redux/layout/actionCreators'
+import {
+  choiceAddress,
+  deleteSection,
+} from '../../../../redux/layout/actionCreators'
 import {
   getAllRecordsAddresses,
   getCountRecordsAddresses,
@@ -26,7 +29,7 @@ import { colorScheme } from '../../../../data/toolbar/colorScheme'
 import { changeIconStyles } from '../../../../data/toolbar/changeIconStyles'
 
 const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
-  const selectorCardEdit = useSelector((state) => state.cardEdit)
+  const layoutDeleteSection = useSelector((state) => state.layout.deleteSection)
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
   )
@@ -34,16 +37,18 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     (state) => state.infoButtons.miniAddressClose
   )
   const layoutChoiceAddress = useSelector((state) => state.layout.choiceAddress)
-  const valueEnvelope =
-    selectorCardEdit.envelope.myaddress === null &&
-    selectorCardEdit.envelope.toaddress === null
-      ? {
-          toaddress: { street: '', index: '', city: '', country: '', name: '' },
-          myaddress: { street: '', index: '', city: '', country: '', name: '' },
-        }
-      : selectorCardEdit.envelope
+  // const valueEnvelope =
+  //   cardEditEnvelope.myaddress === null && cardEditEnvelope.toaddress === null
+  //     ? {
+  //         toaddress: { street: '', index: '', city: '', country: '', name: '' },
+  //         myaddress: { street: '', index: '', city: '', country: '', name: '' },
+  //       }
+  //     : cardEditEnvelope
 
-  const [value, setValue] = useState(valueEnvelope)
+  const [value, setValue] = useState({
+    toaddress: { street: '', index: '', city: '', country: '', name: '' },
+    myaddress: { street: '', index: '', city: '', country: '', name: '' },
+  })
   const [memoryAddress, setMemoryAddress] = useState({
     myaddress: null,
     toaddress: null,
@@ -71,6 +76,14 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const setAddressFormRef = (id) => (element) => {
     addressFormRefs.current[id] = element
   }
+
+  useEffect(() => {
+    if (layoutDeleteSection === 'envelope') {
+      clearSectionAddress('myaddress')
+      clearSectionAddress('toaddress')
+      dispatch(deleteSection(null))
+    }
+  }, [layoutDeleteSection, dispatch])
 
   useEffect(() => {
     const fetchAddress = async () => {
@@ -219,14 +232,13 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     setChoiceSection('envelope')
   }, [dispatch, value, setChoiceSection])
 
-  const handleMovingBetweenInputs = (e) => {
-    const indexInput = Number(e.target.dataset.index)
-    const field = e.target.dataset.field
+  const handleMovingBetweenInputs = (evt) => {
+    const indexInput = Number(evt.target.dataset.index)
+    const field = evt.target.dataset.field
     if (
-      e.key === 'ArrowDown' ||
-      e.keyCode === 40 ||
-      e.key === 'Enter' ||
-      e.keyCode === 13
+      evt.key === 'ArrowDown' ||
+      evt.key === 'Enter' ||
+      evt.key === 'ArrowRight'
     ) {
       if (indexInput < 5) {
         inputRefs.current[`${field}${indexInput + 1}`].focus()
@@ -234,7 +246,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
         inputRefs.current[`${field}${indexInput}`].focus()
       }
     }
-    if (e.key === 'ArrowUp' || e.keyCode === 38) {
+    if (evt.key === 'ArrowUp' || evt.key === 'ArrowLeft') {
       if (indexInput > 1) {
         inputRefs.current[`${field}${indexInput - 1}`].focus()
       } else {
@@ -325,6 +337,18 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     })
   }
 
+  const clearSectionAddress = (section) => {
+    setValue((state) => {
+      return {
+        ...state,
+        [section]: Object.keys(state[section]).reduce((acc, key) => {
+          acc[key] = ''
+          return acc
+        }, {}),
+      }
+    })
+  }
+
   const handleClickBtn = async (evt, section) => {
     evt.preventDefault()
 
@@ -368,26 +392,10 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
       }
     }
     if (parentBtn.dataset.tooltip === 'delete' && section === 'myaddress') {
-      setValue((state) => {
-        return {
-          ...state,
-          myaddress: Object.keys(state.myaddress).reduce((acc, key) => {
-            acc[key] = ''
-            return acc
-          }, {}),
-        }
-      })
+      clearSectionAddress('myaddress')
     }
     if (parentBtn.dataset.tooltip === 'delete' && section === 'toaddress') {
-      setValue((state) => {
-        return {
-          ...state,
-          toaddress: Object.keys(state.toaddress).reduce((acc, key) => {
-            acc[key] = ''
-            return acc
-          }, {}),
-        }
-      })
+      clearSectionAddress('toaddress')
     }
   }
 

@@ -22,7 +22,7 @@ import nameMonths from '../../../../data/date/monthOfYear.json'
 import { addChoiceSection } from '../../../../redux/layout/actionCreators'
 import ToolbarDate from './ToolbarDate/ToolbarDate'
 import { colorSchemeMain } from '../../../../data/main/colorSchemeMain'
-import { searchParent } from '../../../../utils/changeParentElement'
+import { searchParent } from '../../../../utils/searchParent'
 
 const Date = ({ setChoiceSection }) => {
   const cardEditDate = useSelector((state) => state.cardEdit.date)

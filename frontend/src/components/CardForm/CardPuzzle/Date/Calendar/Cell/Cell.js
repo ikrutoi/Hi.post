@@ -1,8 +1,6 @@
 import './Cell.scss'
-import Cellule from './Cellule/Cellule'
 
 const Cell = ({
-  setCellRef,
   title,
   dayBefore,
   dayCurrent,
@@ -19,7 +17,6 @@ const Cell = ({
     <div className="cell cell-title">{title}</div>
   ) : dayCurrent ? (
     <div
-      ref={setCellRef(`current-${dayCurrent}`)}
       className={`cell cell-day day-current ${
         today ? 'today' : ''
       } day-${dayCurrent} ${selectedDate ? 'selected' : ''} ${

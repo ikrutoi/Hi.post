@@ -86,10 +86,10 @@ const CardsList = () => {
           break
         case 'envelope':
           if (
-            sectionCardEdit[section].toaddress.street !== '' ||
-            sectionCardEdit[section].toaddress.index !== '' ||
-            sectionCardEdit[section].toaddress.city !== '' ||
-            sectionCardEdit[section].toaddress.country !== '' ||
+            sectionCardEdit[section].toaddress.street !== '' &&
+            sectionCardEdit[section].toaddress.index !== '' &&
+            sectionCardEdit[section].toaddress.city !== '' &&
+            sectionCardEdit[section].toaddress.country !== '' &&
             sectionCardEdit[section].toaddress.name !== ''
           ) {
             listSelectedSections.push({ section, position: 2 })
