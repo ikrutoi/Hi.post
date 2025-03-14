@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './Calendar.scss'
 import daysOfWeekStartFromMon from '../../../../../data/date/daysOfWeekStartFromMon.json'
 import daysOfWeekStartFromSun from '../../../../../data/date/daysOfWeekStartFromSun.json'
@@ -15,8 +15,7 @@ const Calendar = ({
   selectedDateTitle,
   handleSelectedDate,
   selectedDate,
-  changeMonthTitlePlus,
-  changeMonthTitleMinus,
+  handleClickCell,
 }) => {
   const [firstDayOfWeekTitle, setFirstDayOfWeek] = useState('Sun')
   const [daysOfWeek, setDaysOfWeek] = useState(daysOfWeekStartFromSun)
@@ -105,6 +104,20 @@ const Calendar = ({
       }
     }
 
+    const getTabooDays = (day) => {
+      if (
+        (selectedDateTitle.month === currentDate.currentMonth &&
+          selectedDateTitle.year === currentDate.currentYear &&
+          day <= currentDate.currentDay + 5) ||
+        selectedDateTitle.year < currentDate.currentYear ||
+        (selectedDateTitle.year === currentDate.currentYear &&
+          selectedDateTitle.month < currentDate.currentMonth)
+      ) {
+        return true
+      }
+      return false
+    }
+
     const month = previousMonth.map((day) => {
       return (
         <Cell
@@ -117,6 +130,7 @@ const Calendar = ({
               : false
           }
           dayBefore={day}
+          taboo={false}
           selectedDate={
             !!selectedDate &&
             selectedDateTitle.month === dateSelectedBefore().month &&
@@ -126,7 +140,7 @@ const Calendar = ({
               : false
           }
           selectedDateTitle={selectedDateTitle}
-          changeMonthTitleMinus={changeMonthTitleMinus}
+          handleClickCell={handleClickCell}
         />
       )
     })
@@ -141,7 +155,7 @@ const Calendar = ({
               ? true
               : false
           }
-          currentDate={currentDate}
+          taboo={getTabooDays(day)}
           dayCurrent={day}
           handleSelectedDate={handleSelectedDate}
           selectedDate={
@@ -168,6 +182,7 @@ const Calendar = ({
               ? true
               : false
           }
+          taboo={false}
           dayAfter={day}
           selectedDate={
             !!selectedDate &&
@@ -178,7 +193,7 @@ const Calendar = ({
               : false
           }
           selectedDateTitle={selectedDateTitle}
-          changeMonthTitlePlus={changeMonthTitlePlus}
+          handleClickCell={handleClickCell}
         />
       )
     }

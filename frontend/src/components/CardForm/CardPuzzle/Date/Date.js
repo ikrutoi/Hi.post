@@ -43,38 +43,37 @@ const Date = ({ setChoiceSection }) => {
   useEffect(() => {
     cardEditDate ? setSelectedDate(cardEditDate) : setSelectedDate(null)
     if (!cardEditDate) {
-      clearActiveDateTitleAndSlider()
+      setIsActiveDateTitle(false)
     }
   }, [cardEditDate])
 
-  const clearActiveDateTitleAndSlider = () => {
-    if (setIsActiveDateTitle) {
-      setIsActiveDateTitle(false)
-    }
-  }
-
-  const handleSelectedDate = (selectedYear, selectedMonth, selectedDay) => {
-    clearActiveDateTitleAndSlider()
-    setSelectedDate({
-      year: selectedYear,
-      month: selectedMonth,
-      day: selectedDay,
-    })
-    setSelectedDateTitle((state) => {
-      return {
-        ...state,
-        day: selectedDay,
-      }
-    })
-    dispatch(
-      addDate({
+  const handleSelectedDate = (
+    taboo,
+    selectedYear,
+    selectedMonth,
+    selectedDay
+  ) => {
+    if (!taboo) {
+      setSelectedDate({
         year: selectedYear,
         month: selectedMonth,
         day: selectedDay,
       })
-    )
-    // dispatch(addChoiceSection({ source: 'cardPuzzle', nameSection: 'date' }))
-    setChoiceSection('date')
+      setSelectedDateTitle((state) => {
+        return {
+          ...state,
+          day: selectedDay,
+        }
+      })
+      dispatch(
+        addDate({
+          year: selectedYear,
+          month: selectedMonth,
+          day: selectedDay,
+        })
+      )
+      setChoiceSection('date')
+    }
   }
 
   const handleChangeTitle = (evt) => {
@@ -117,20 +116,21 @@ const Date = ({ setChoiceSection }) => {
     }
   }
 
-  const handleScrollMinus = () => {
-    if (isActiveDateTitle) {
-      switch (isActiveDateTitle) {
-        case 'year':
-          setSelectedDateTitle((state) => {
-            return { ...state, year: selectedDateTitle.year - 1 }
-          })
-          break
-        case 'month':
-          changeMonthTitleMinus()
-          break
-        default:
-          break
-      }
+  const handleArrowMinus = () => {
+    if (!isActiveDateTitle) {
+      setIsActiveDateTitle('month')
+    }
+    switch (isActiveDateTitle) {
+      case 'year':
+        setSelectedDateTitle((state) => {
+          return { ...state, year: selectedDateTitle.year - 1 }
+        })
+        break
+      case 'month':
+        changeMonthTitleMinus()
+        break
+      default:
+        break
     }
   }
 
@@ -147,21 +147,36 @@ const Date = ({ setChoiceSection }) => {
     }
   }
 
-  const handleScrollPlus = () => {
-    if (isActiveDateTitle) {
-      switch (isActiveDateTitle) {
-        case 'year':
-          setSelectedDateTitle((state) => {
-            return { ...state, year: selectedDateTitle.year + 1 }
-          })
-          break
-        case 'month':
-          changeMonthTitlePlus()
-          break
-        default:
-          break
-      }
+  const handleClickCell = (month) => {
+    switch (month) {
+      case 'before':
+        changeMonthTitleMinus()
+        break
+      case 'after':
+        changeMonthTitlePlus()
+        break
+      default:
+        break
     }
+  }
+
+  const handleArrowPlus = () => {
+    if (!isActiveDateTitle) {
+      setIsActiveDateTitle('month')
+    }
+    switch (isActiveDateTitle) {
+      case 'year':
+        setSelectedDateTitle((state) => {
+          return { ...state, year: selectedDateTitle.year + 1 }
+        })
+        break
+      case 'month':
+        changeMonthTitlePlus()
+        break
+      default:
+        break
+    }
+    // }
   }
 
   const handleTransitionTodayDate = () => {
@@ -223,9 +238,9 @@ const Date = ({ setChoiceSection }) => {
                   ? colorSchemeMain.gray
                   : colorSchemeMain.mediumGray,
                 backgroundColor: colorSchemeMain.lightGray,
-                cursor: isActiveDateTitle ? 'pointer' : 'default',
+                cursor: 'pointer',
               }}
-              onClick={handleScrollMinus}
+              onClick={handleArrowMinus}
             >
               <FaChevronLeft className="icon-date" />
             </div>
@@ -243,9 +258,9 @@ const Date = ({ setChoiceSection }) => {
                   ? colorSchemeMain.gray
                   : colorSchemeMain.mediumGray,
                 backgroundColor: colorSchemeMain.lightGray,
-                cursor: isActiveDateTitle ? 'pointer' : 'default',
+                cursor: 'pointer',
               }}
-              onClick={handleScrollPlus}
+              onClick={handleArrowPlus}
             >
               <FaChevronRight className="icon-date" />
             </div>
@@ -280,8 +295,7 @@ const Date = ({ setChoiceSection }) => {
             selectedDate={selectedDate}
             selectedDateTitle={selectedDateTitle}
             handleSelectedDate={handleSelectedDate}
-            changeMonthTitlePlus={changeMonthTitlePlus}
-            changeMonthTitleMinus={changeMonthTitleMinus}
+            handleClickCell={handleClickCell}
           />
         </div>
       </form>

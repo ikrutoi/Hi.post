@@ -1,27 +1,33 @@
 import './Cell.scss'
+import Cellule from './Cellule/Cellule'
 
 const Cell = ({
+  setCellRef,
   title,
   dayBefore,
   dayCurrent,
   dayAfter,
-  currentDate,
+  // currentDate,
   today,
+  taboo,
   handleSelectedDate,
   selectedDate,
   selectedDateTitle,
-  changeMonthTitlePlus,
-  changeMonthTitleMinus,
+  handleClickCell,
 }) => {
   return title ? (
     <div className="cell cell-title">{title}</div>
   ) : dayCurrent ? (
     <div
+      ref={setCellRef(`current-${dayCurrent}`)}
       className={`cell cell-day day-current ${
         today ? 'today' : ''
-      } day-${dayCurrent} ${selectedDate ? 'selected' : ''}`}
+      } day-${dayCurrent} ${selectedDate ? 'selected' : ''} ${
+        taboo ? 'taboo' : ''
+      }`}
       onClick={() =>
         handleSelectedDate(
+          taboo,
           selectedDateTitle.year,
           selectedDateTitle.month,
           dayCurrent
@@ -35,7 +41,7 @@ const Cell = ({
       className={`cell cell-day ${
         today ? 'today' : ''
       } day-before day-${dayBefore} ${selectedDate ? 'selected' : ''}`}
-      onClick={changeMonthTitleMinus}
+      onClick={() => handleClickCell('before')}
     >
       {dayBefore}
     </div>
@@ -44,7 +50,7 @@ const Cell = ({
       className={`cell cell-day ${
         today ? 'today' : ''
       } day-after day-${dayAfter} ${selectedDate ? 'selected' : ''}`}
-      onClick={changeMonthTitlePlus}
+      onClick={() => handleClickCell('after')}
     >
       {dayAfter}
     </div>

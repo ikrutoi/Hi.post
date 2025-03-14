@@ -7,7 +7,7 @@
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 0.3rem;
-  cursor: pointer;
+  // cursor: pointer;
   user-select: none;
   // border: solid 1px orange;
 }
@@ -17,13 +17,10 @@
   user-select: none;
 }
 
-.cell-day.day-current:hover {
-  color: #007dd7;
-}
-
 .day-before,
 .day-after {
-  color: rgb(165, 165, 165);
+  cursor: pointer;
+  color: rgb(163, 163, 163);
 }
 
 .cell.today {
@@ -43,4 +40,17 @@
 .day-after.selected {
   color: white;
   background-color: #b6dae9;
+}
+
+.day-current {
+  cursor: pointer;
+}
+
+.day-current:hover {
+  color: rgb(0, 125, 250);
+}
+
+.day-current.taboo {
+  color: rgb(163, 163, 163);
+  cursor: default;
 }
