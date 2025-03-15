@@ -13,14 +13,14 @@ const CardsNav = () => {
     btnNavRefs.current[id] = element
   }
 
-  const handleMouseEnterContainer = (el, colorHover) => {
-    if (el.dataset.name !== 'history' && !infoNavHistory) {
-      el.style.backgroundColor = colorHover
+  const handleMouseEnterContainer = (evt) => {
+    if (evt.target.dataset.name !== 'history' && !infoNavHistory) {
+      evt.target.style.backgroundColor = 'rgb(220, 220, 220)'
     }
   }
 
-  const handleMouseLeaveContainer = (el, color) => {
-    el.style.backgroundColor = color
+  const handleMouseLeaveContainer = (evt) => {
+    evt.target.style.backgroundColor = 'rgb(240, 240, 240)'
   }
 
   useEffect(() => {
@@ -35,10 +35,10 @@ const CardsNav = () => {
     <div className="cards-nav">
       {listNavSections.map((section, i) => (
         <BtnCardsNav
+          key={`${section}-${i}`}
           btnNavRefs={btnNavRefs}
           setBtnNavRef={setBtnNavRef}
           section={section}
-          key={`${section}-${i}`}
           handleMouseEnterContainer={handleMouseEnterContainer}
           handleMouseLeaveContainer={handleMouseLeaveContainer}
         />

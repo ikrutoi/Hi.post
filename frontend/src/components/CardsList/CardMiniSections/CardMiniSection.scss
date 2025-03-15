@@ -1,5 +1,5 @@
 .card-mini-section {
-  position: relative;
+  // position: relative;
   display: flex;
   flex-direction: column;
   margin-left: 1rem;
@@ -11,15 +11,24 @@
   border: solid 1px rgb(173, 173, 173);
 }
 
-.card-mini-color-filter {
+.card-mini-poly {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 0.5rem;
-  // border: solid 1px red;
+  margin-left: 0;
 }
+
+.card-mini-singly {
+  position: relative;
+}
+
+// .card-mini-color-filter {
+//   position: absolute;
+//   left: 0;
+//   top: 0;
+//   width: 100%;
+//   height: 100%;
+//   border-radius: 0.5rem;
+//   // border: solid 1px red;
+// }
 
 .mini-section-title {
   font-size: 0.8rem;
@@ -43,21 +52,23 @@
   position: absolute;
   right: 0;
   top: 0;
-  margin: 5px;
+  margin: 0.35rem;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 2rem;
   height: 2rem;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 1rem;
+  color: rgb(255, 255, 255);
+  background-color: rgba(240, 240, 240, 0.5);
+  transition: background-color 0.3s;
   cursor: pointer;
   // border: solid 1px blue;
 }
 
 .card-mini-kebab {
   &:hover {
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(240, 240, 240, 0.65);
     // .mini-kebab-icon {
     //   background-color: rgba($color: lightgray, $alpha: 0);
     // }
@@ -71,27 +82,18 @@
   position: absolute;
   top: 0;
   right: 0;
-  margin: 4px;
-  width: 24px;
-  height: 24px;
+  width: 1.5rem;
+  height: 1.5rem;
   background-image: url('../../../data/envelope/icon_mini-kebab.svg');
   background-repeat: no-repeat;
   background-color: rgba($color: #ffffff, $alpha: 0);
   // border: solid 1px green;
 }
 
-.mini-poly-cards {
-  position: relative;
-  .card-mini-section {
-    position: absolute;
-    margin-left: 0;
-  }
-}
-
 .icon-close {
-  // border: solid 1px red;
   height: 1.2rem;
   width: 1.2rem;
   color: rgb(71, 71, 71);
   background-color: rgba(255, 255, 255, 0);
+  // border: solid 1px red;
 }

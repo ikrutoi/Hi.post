@@ -4,7 +4,6 @@ import { addChoiceSection } from '../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../redux/infoButtons/actionCreators'
 
 const BtnCardsNav = ({
-  btnNavRefs,
   setBtnNavRef,
   handleMouseEnterContainer,
   handleMouseLeaveContainer,
@@ -26,18 +25,8 @@ const BtnCardsNav = ({
   return (
     <div
       className="btn-nav-container"
-      onMouseEnter={() =>
-        handleMouseEnterContainer(
-          btnNavRefs.current[`nav-${nameNav}`],
-          section.colorHoverRGBA
-        )
-      }
-      onMouseLeave={() =>
-        handleMouseLeaveContainer(
-          btnNavRefs.current[`nav-${nameNav}`],
-          section.colorRGBA
-        )
-      }
+      onMouseEnter={handleMouseEnterContainer}
+      onMouseLeave={handleMouseLeaveContainer}
     >
       <button
         ref={setBtnNavRef(`nav-${nameNav}`)}
@@ -45,9 +34,6 @@ const BtnCardsNav = ({
         className={`btn-nav btn-nav-${nameNav}`}
         onClick={handleClickBtnNav}
         data-name={nameNav}
-        style={{
-          backgroundColor: section.colorRGBA,
-        }}
       >
         {section.name}
       </button>

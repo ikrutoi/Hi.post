@@ -13,6 +13,7 @@ import {
   deleteRecordAddress,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import EnvelopeMemory from './CardMiniSections/EnvelopeMemory/EnvelopeMemory'
+import { colorSchemeMain } from '../../data/main/colorSchemeMain'
 // import sizeMiniCard
 
 const CardsList = () => {
@@ -26,8 +27,6 @@ const CardsList = () => {
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
   )
-  const iconMinimizeContainerRef = useRef()
-  const [styleIconMinimize, setStyleIconMinimize] = useState(null)
   const listSelectedSections = []
   const [allCardMini, setAllCardMini] = useState(false)
   let count = 0
@@ -36,8 +35,9 @@ const CardsList = () => {
     toaddress: null,
   })
   const addressRefs = useRef({})
-
   const dispatch = useDispatch()
+
+  const offsetXPolyMiniCards = sizeMiniCard.width / 24
 
   useEffect(() => {
     if (infoEnvelopeSave) {
@@ -141,17 +141,6 @@ const CardsList = () => {
     console.log('click Minimize')
   }
 
-  useEffect(() => {
-    if (iconMinimizeContainerRef.current) {
-      const left =
-        (sizeMiniCard.width - iconMinimizeContainerRef.current.offsetWidth) / 2
-      const top =
-        (sizeMiniCard.height - iconMinimizeContainerRef.current.offsetHeight) /
-        2
-      setStyleIconMinimize({ left, top })
-    }
-  }, [iconMinimizeContainerRef, sizeMiniCard])
-
   const getListPrioritySections = () => {
     const temporaryArray = []
     for (let i = 0; i < listSortSelectedSections.length; i++) {
@@ -205,36 +194,44 @@ const CardsList = () => {
           <div
             className="mini-poly-cards"
             style={{
-              width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 12}px`,
+              width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 24}px`,
               height: `${sizeMiniCard.height}px`,
               // display:
               //   (!infoEnvelopeClipMyAddress ? 'flex' : 'none') ||
               //   (!infoEnvelopeClipToAddress ? 'flex' : 'none'),
             }}
           >
-            {allCardMini && (
-              <span
-                className="icon-minimize-container"
-                ref={iconMinimizeContainerRef}
-                style={{
-                  left: `${styleIconMinimize ? styleIconMinimize.left : 0}px`,
-                  top: `${styleIconMinimize ? styleIconMinimize.top : 0}px`,
-                }}
-                onClick={handleClickIconMinimize}
-              >
-                <HiArrowsPointingIn className="icon-minimize" />
-              </span>
-            )}
-            {listPrioritySections.length !== 0 ? (
-              listPrioritySections.map((selectedSection, i) => (
+            {/* {allCardMini && ( */}
+            <div
+              className="icon-minimize-container"
+              style={{
+                // right: `${(sizeMiniCard.width * 4) / 24}px`,
+                color:
+                  count === 5
+                    ? colorSchemeMain.lightGray
+                    : colorSchemeMain.mediumGray,
+                backgroundColor:
+                  count === 5
+                    ? 'rgba(0, 125, 250, 0.70)'
+                    : `${colorSchemeMain.gray}`,
+                cursor: count === 5 ? 'pointer' : 'default',
+              }}
+              onClick={handleClickIconMinimize}
+            >
+              <HiArrowsPointingIn className="icon-minimize" />
+            </div>
+            {/* )} */}
+            {listSortSelectedSections.length !== 0 ? (
+              listSortSelectedSections.map((selectedSection, i) => (
                 <CardMiniSection
                   key={`mini-poly-${selectedSection.section}-${i}`}
                   sectionInfo={selectedSection}
                   valueSection={sectionCardEdit[selectedSection.section]}
                   sizeCardMini={sizeMiniCard}
+                  offsetXPolyMiniCards={offsetXPolyMiniCards}
                   // polyCards={listPrioritySections}
-                  polyInfo={[listPrioritySections.length - i, i]}
-                  choiceSection={choiceSection}
+                  polyInfo={[listSortSelectedSections.length - i, i]}
+                  // choiceSection={choiceSection}
                 />
               ))
             ) : (

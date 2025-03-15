@@ -21,7 +21,6 @@ import MiniDate from './MiniDate/MiniDate'
 import MiniAroma from './MiniAroma/MiniAroma'
 import MiniPhoto from './MiniPhoto/MiniPhoto'
 import { addChoiceSection } from '../../../redux/layout/actionCreators'
-import listNavSections from '../../../data/cardsNav/navList.json'
 import { searchParent } from '../../../utils/searchParent'
 
 const CardMiniSection = ({
@@ -30,34 +29,21 @@ const CardMiniSection = ({
   polyInfo,
   sectionInfo,
   choiceSection,
-  // infoEnvelopeClipMyAddress,
-  // infoEnvelopeClipToAddress,
+  offsetXPolyMiniCards,
 }) => {
   const dispatch = useDispatch()
   const cardMiniSectionRef = useRef(null)
-  const offsetXPolyMiniCards = sizeCardMini.width / 12
 
   const handleClickSection = (evt) => {
-    const parentName = evt.target.closest('.card-mini-section').dataset.name
-    dispatch(
-      addChoiceSection({ source: 'miniCardPuzzle', nameSection: parentName })
-    )
-  }
-
-  const [colorBkg, setColorBkg] = useState(null)
-
-  useEffect(() => {
-    if (choiceSection.nameSection !== sectionInfo.section) {
-      const navSection = listNavSections.find(
-        (el) => el.name.toLowerCase() === sectionInfo.section
+    const areaCardsList = evt.target.closest('.card-mini-section').dataset.area
+    if (areaCardsList === 'single') {
+      const parentName =
+        evt.target.closest('.card-mini-section').dataset.section
+      dispatch(
+        addChoiceSection({ source: 'miniCardPuzzle', nameSection: parentName })
       )
-      if (navSection) {
-        setColorBkg(navSection.colorRGBA)
-      }
-    } else {
-      setColorBkg('rgba(255, 255, 255, 0)')
     }
-  }, [polyInfo, sectionInfo, choiceSection.nameSection])
+  }
 
   const renderSection = (section, valueSection) => {
     switch (section) {
@@ -173,28 +159,22 @@ const CardMiniSection = ({
 
   return (
     <div
-      className={`card-mini-section card-mini-${sectionInfo.section}`}
+      className={`card-mini-section card-mini-${sectionInfo.section} ${
+        polyInfo ? 'card-mini-poly' : 'card-mini-singly'
+      }`}
       style={{
         left: polyInfo ? `${polyInfo[1] * offsetXPolyMiniCards}px` : '0',
         padding: sectionInfo.section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeCardMini.width}px`,
         height: `${sizeCardMini.height}px`,
         zIndex: polyInfo ? polyInfo[0] : 0,
-        // opacity:
-        //   (!infoEnvelopeClipMyAddress ? 1 : 0) ||
-        //   (!infoEnvelopeClipToAddress ? 1 : 0),
       }}
       onClick={handleClickSection}
-      data-name={sectionInfo.section}
+      data-section={sectionInfo.section}
+      data-area={polyInfo ? 'poly' : 'single'}
       ref={cardMiniSectionRef}
     >
       {renderSection(sectionInfo.section, valueSection)}
-      <span
-        className="card-mini-color-filter"
-        style={{
-          backgroundColor: colorBkg ? colorBkg : '',
-        }}
-      ></span>
       {polyInfo ? (
         <></>
       ) : (
