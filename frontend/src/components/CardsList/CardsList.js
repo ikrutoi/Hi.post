@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { TbArrowsMinimize } from 'react-icons/tb'
-import { HiArrowsPointingIn } from 'react-icons/hi2'
+import { HiArrowsPointingIn, HiArrowsPointingOut } from 'react-icons/hi2'
 import './CardsList.scss'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
@@ -35,6 +35,7 @@ const CardsList = () => {
   )
   const listSelectedSections = []
   const [allCardMini, setAllCardMini] = useState(false)
+  const [minimize, setMinimize] = useState(null)
   const [stylePolyCard, setStylePolyCard] = useState({
     filter: {},
     icon: {},
@@ -46,8 +47,6 @@ const CardsList = () => {
   })
   const addressRefs = useRef({})
   const dispatch = useDispatch()
-
-  const offsetXPolyMiniCards = sizeMiniCard.width / 24
 
   useEffect(() => {
     if (infoEnvelopeSave) {
@@ -84,13 +83,13 @@ const CardsList = () => {
             (layoutIndexDb.hiPostImages.miniImage ||
               layoutIndexDb.userImages.miniImage)
           ) {
-            listSelectedSections.push({ section, position: 0 })
+            listSelectedSections.push({ section, position: 0, index: 4 })
             count++
           }
           break
         case 'cardtext':
           if (sectionCardEdit[section].text[0].children[0].text) {
-            listSelectedSections.push({ section, position: 1 })
+            listSelectedSections.push({ section, position: 1, index: 3 })
             count++
           }
           break
@@ -102,7 +101,7 @@ const CardsList = () => {
             sectionCardEdit[section].toaddress.country !== '' &&
             sectionCardEdit[section].toaddress.name !== ''
           ) {
-            listSelectedSections.push({ section, position: 2 })
+            listSelectedSections.push({ section, position: 2, index: 2 })
             count++
             if (!layoutActiveEnvelope) {
               dispatch(activeSections({ envelope: true }))
@@ -115,13 +114,13 @@ const CardsList = () => {
           break
         case 'date':
           if (sectionCardEdit[section]) {
-            listSelectedSections.push({ section, position: 3 })
+            listSelectedSections.push({ section, position: 3, index: 1 })
             count++
           }
           break
         case 'aroma':
           if (sectionCardEdit[section]) {
-            listSelectedSections.push({ section, position: 4 })
+            listSelectedSections.push({ section, position: 4, index: 0 })
             count++
           }
           break
@@ -164,8 +163,8 @@ const CardsList = () => {
           // },
           icon: {
             ...state.icon,
-            backgroundColor: 'rgba(240, 240, 240, 0.6)',
-            color: 'rgba(163, 163, 163, 0.5)',
+            backgroundColor: 'rgba(163, 163, 163, 0.4)',
+            color: 'rgba(240, 240, 240, 1)',
             cursor: 'default',
           },
         }
@@ -201,6 +200,9 @@ const CardsList = () => {
   }
 
   const handleClickIconMinimize = () => {
+    if (listSortSelectedSections.length === 5) {
+      minimize ? setMinimize(false) : setMinimize(true)
+    }
     // const searchParentBtnNav = (el) => {
     //   if (el.classList.contains('icon-minimize-container')) {
     //     return el
@@ -211,8 +213,6 @@ const CardsList = () => {
     // }
 
     // const parentElement = searchParentBtnNav(evt.target)
-
-    console.log('click Minimize')
   }
 
   const handleMouseEnterIconMinimize = () => {
@@ -269,12 +269,13 @@ const CardsList = () => {
           <div
             className="poly-cards-filter"
             style={{
-              width: `${sizeMiniCard.width + 2}px`,
-              height: `${sizeMiniCard.height + 2}px`,
-              backgroundColor: 'rgba(163, 163, 163, 0.5)',
-              // display:
-              //   (!infoEnvelopeClipMyAddress ? 'flex' : 'none') ||
-              //   (!infoEnvelopeClipToAddress ? 'flex' : 'none'),
+              width: `${sizeMiniCard.width}px`,
+              height: `${sizeMiniCard.height}px`,
+              backgroundColor: 'rgba(163, 163, 163, 0.2)',
+              boxShadow: minimize
+                ? '2px 1px 5px 2px rgba(34, 60, 80, 0.3)'
+                : '2px 1px 5px 2px rgba(255, 255, 255, 0.2)',
+              transition: 'box-shadow 0.3s',
             }}
           ></div>
           <div
@@ -282,12 +283,8 @@ const CardsList = () => {
             style={{
               width: `${sizeMiniCard.width + (sizeMiniCard.width * 4) / 24}px`,
               height: `${sizeMiniCard.height}px`,
-              // display:
-              //   (!infoEnvelopeClipMyAddress ? 'flex' : 'none') ||
-              //   (!infoEnvelopeClipToAddress ? 'flex' : 'none'),
             }}
           >
-            {/* {allCardMini && ( */}
             <div
               className="icon-minimize-container"
               style={{
@@ -300,43 +297,25 @@ const CardsList = () => {
               onMouseEnter={handleMouseEnterIconMinimize}
               onMouseLeave={handleMouseLeaveIconMinimize}
             >
-              <HiArrowsPointingIn className="icon-minimize" />
+              {minimize && listSortSelectedSections.length === 5 ? (
+                <HiArrowsPointingOut className="icon-minimize" />
+              ) : (
+                <HiArrowsPointingIn className="icon-minimize" />
+              )}
             </div>
-            {/* )} */}
-            {/* {listSortSelectedSections.length !== 0 ? (
-              listSortSelectedSections.map((selectedSection, i) => (
-                <CardMiniSection
-                  key={`mini-poly-${selectedSection.section}-${i}`}
-                  sectionInfo={selectedSection}
-                  valueSection={sectionCardEdit[selectedSection.section]}
-                  sizeCardMini={sizeMiniCard}
-                  offsetXPolyMiniCards={offsetXPolyMiniCards}
-                  // polyCards={listPrioritySections}
-                  polyInfo={[listSortSelectedSections.length - i, i]}
-                  // choiceSection={choiceSection}
-                />
-              ))
-            ) : (
-              <div
-                className="pattern-mini-card"
-                style={{
-                  width: `${sizeMiniCard.width}px`,
-                  height: `${sizeMiniCard.height}px`,
-                }}
-              ></div>
-            )} */}
           </div>
           {listSortSelectedSections.length !== 0 ? (
-            listSortSelectedSections.map((selectedSection, i) => (
+            listSortSelectedSections.map((selectedSection, i, arr) => (
               <CardMiniSection
                 key={`card-mini-${selectedSection.section}-${i}`}
-                sectionInfo={selectedSection}
                 valueSection={sectionCardEdit[selectedSection.section]}
                 sizeCardMini={sizeMiniCard}
-                // infoEnvelopeClipMyAddress={infoEnvelopeClipMyAddress}
-                // infoEnvelopeClipToAddress={infoEnvelopeClipToAddress}
-                polyInfo={false}
-                choiceSection={choiceSection}
+                infoSection={{
+                  section: selectedSection,
+                  i,
+                  length: arr.length,
+                }}
+                minimize={minimize}
               />
             ))
           ) : (

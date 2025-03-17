@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import './ToolbarEnvelope.scss'
 
@@ -6,10 +7,27 @@ const ToolbarEnvelope = () => {
     (state) => state.layout.activeSections.envelope
   )
 
+  const [showText, setShowText] = useState(false)
+
+  useEffect(() => {
+    if (!layoutActiveEnvelope) {
+      const timer = setTimeout(() => setShowText(true), 600)
+      return () => clearTimeout(timer)
+    } else {
+      setShowText(false)
+    }
+  }, [layoutActiveEnvelope])
+
   return (
     <div className="toolbar-envelope">
-      {!layoutActiveEnvelope && (
-        <p className="toolbar-envelope-text">
+      {showText && (
+        <p
+          className="toolbar-envelope-text"
+          style={{
+            color: showText ? 'rgb(71, 71, 71)' : 'rgba(71, 71, 71, 0)',
+            transition: 'opacity 0.3s easy',
+          }}
+        >
           Fill in all the fields of the postcard recipient
         </p>
       )}

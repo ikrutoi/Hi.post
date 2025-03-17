@@ -39,8 +39,8 @@
   justify-content: center;
   align-items: center;
   z-index: 7;
-  width: 4rem;
-  height: 4rem;
+  width: 3.5rem;
+  height: 3.5rem;
   transform: translate(-50%, -50%);
   transition: background-color 0.3s;
   // transition: color 0.3s;
@@ -60,8 +60,8 @@
 
 .icon-minimize {
   // color: rgba(255, 255, 255, 1);
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2rem;
+  height: 2rem;
   background-color: rgba(255, 255, 255, 0);
   // transition: color 0.3s;
 }

@@ -61,9 +61,9 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const btnIconRefs = useRef({})
   const addressFormRefs = useRef({})
   const envelopeLogoRef = useRef(null)
-  // const layoutActiveEnvelope = useSelector(
-  //   (state) => state.layout.activeSections.envelope
-  // )
+  const layoutActiveEnvelope = useSelector(
+    (state) => state.layout.activeSections.envelope
+  )
 
   const dispatch = useDispatch()
 
@@ -78,10 +78,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const setAddressFormRef = (id) => (element) => {
     addressFormRefs.current[id] = element
   }
-
-  useEffect(() => {
-    console.log('cardEdit', cardEditEnvelope)
-  }, [cardEditEnvelope])
 
   useEffect(() => {
     if (layoutDeleteSection === 'envelope') {
@@ -418,7 +414,15 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   return (
     <div className="envelope">
       {/* {!layoutActiveEnvelope && ( */}
-      <div className="nav-container nav-container-envelope">
+      <div
+        className="nav-container nav-container-envelope"
+        style={{
+          borderColor: layoutActiveEnvelope
+            ? 'rgb(255, 255, 255)'
+            : 'rgb(220, 220, 220)',
+          transition: 'border-color 0.3s easy 0.3s',
+        }}
+      >
         <ToolbarEnvelope />
       </div>
       {/* )} */}

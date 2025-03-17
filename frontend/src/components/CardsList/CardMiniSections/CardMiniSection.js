@@ -1,5 +1,5 @@
-import { useDispatch } from 'react-redux'
-import { useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useRef } from 'react'
 import { CgClose } from 'react-icons/cg'
 import './CardMiniSection.scss'
 import {
@@ -30,11 +30,10 @@ import { searchParent } from '../../../utils/searchParent'
 const CardMiniSection = ({
   valueSection,
   sizeCardMini,
-  polyInfo,
-  sectionInfo,
-  choiceSection,
-  offsetXPolyMiniCards,
+  infoSection,
+  minimize,
 }) => {
+  const remSize = useSelector((state) => state.layout.remSize)
   const dispatch = useDispatch()
   const cardMiniSectionRef = useRef(null)
 
@@ -164,25 +163,32 @@ const CardMiniSection = ({
 
   return (
     <div
-      className={`card-mini-section card-mini-${sectionInfo.section} ${
-        polyInfo ? 'card-mini-poly' : 'card-mini-singly'
-      }`}
+      className={`card-mini-section card-mini-${infoSection.section.section}`}
       style={{
-        left: polyInfo ? `${polyInfo[1] * offsetXPolyMiniCards}px` : '0',
-        padding: sectionInfo.section === 'cardphoto' ? '0' : '0.5rem',
+        left: minimize
+          ? '0'
+          : `${
+              sizeCardMini.width +
+              remSize +
+              (sizeCardMini.width * 4) / 24 +
+              (sizeCardMini.width + remSize) * infoSection.i
+            }px`,
+        padding: infoSection.section.section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeCardMini.width}px`,
         height: `${sizeCardMini.height}px`,
-        zIndex: polyInfo ? polyInfo[0] : 0,
+        boxShadow: minimize
+          ? '2px 1px 5px 2px rgba(255, 255, 255, 0.2)'
+          : '2px 1px 5px 2px rgba(34, 60, 80, 0.3)',
+        zIndex: infoSection.section.index,
+        transition: 'left 0.3s, box-shadow 0.3s',
       }}
       onClick={handleClickSection}
-      data-section={sectionInfo.section}
-      data-area={polyInfo ? 'poly' : 'single'}
+      data-section={infoSection.section.section}
+      data-area="single"
       ref={cardMiniSectionRef}
     >
-      {renderSection(sectionInfo.section, valueSection)}
-      {polyInfo ? (
-        <></>
-      ) : (
+      {renderSection(infoSection.section.section, valueSection)}
+      {!minimize && (
         <div className="card-mini-kebab" onClick={handleClickCardMiniKebab}>
           {/* <span className="mini-kebab-dots"> */}
           <CgClose className="icon-close" />

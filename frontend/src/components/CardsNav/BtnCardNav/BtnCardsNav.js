@@ -5,9 +5,10 @@ import { infoButtons } from '../../../redux/infoButtons/actionCreators'
 
 const BtnCardsNav = ({
   setBtnNavRef,
-  handleMouseEnterContainer,
-  handleMouseLeaveContainer,
+  handleMouseEnterBtn,
+  handleMouseLeaveBtn,
   section,
+  navBtn,
 }) => {
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
@@ -15,7 +16,7 @@ const BtnCardsNav = ({
   const nameNav = section.name.toLowerCase()
   const dispatch = useDispatch()
 
-  const handleClickBtnNav = () => {
+  const handleClickBtn = () => {
     if (nameNav !== 'envelope' && infoEnvelopeClip) {
       dispatch(infoButtons({ envelopeClip: false }))
     }
@@ -23,21 +24,21 @@ const BtnCardsNav = ({
   }
 
   return (
-    <div
-      className="btn-nav-container"
-      onMouseEnter={handleMouseEnterContainer}
-      onMouseLeave={handleMouseLeaveContainer}
+    <button
+      ref={setBtnNavRef(`nav-${nameNav}`)}
+      type="button"
+      className={`btn-nav btn-nav-${nameNav}`}
+      onClick={handleClickBtn}
+      data-section={nameNav}
+      style={{
+        backgroundColor:
+          navBtn === nameNav ? 'rgb(220, 220, 220)' : 'rgb(240, 240, 240)',
+      }}
+      onMouseEnter={handleMouseEnterBtn}
+      onMouseLeave={handleMouseLeaveBtn}
     >
-      <button
-        ref={setBtnNavRef(`nav-${nameNav}`)}
-        type="button"
-        className={`btn-nav btn-nav-${nameNav}`}
-        onClick={handleClickBtnNav}
-        data-name={nameNav}
-      >
-        {section.name}
-      </button>
-    </div>
+      {section.name}
+    </button>
   )
 }
 

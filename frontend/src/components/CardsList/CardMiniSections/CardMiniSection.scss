@@ -1,26 +1,22 @@
 .card-mini-section {
-  position: relative;
-  // position: absolute;
+  // position: relative;
+  position: absolute;
   display: flex;
   flex-direction: column;
-  margin-left: 1rem;
+  // margin-left: 1rem;
   // padding: 0.5rem;
   border-radius: 0.5rem;
   box-sizing: border-box;
-  // background-color: #ffffff;
-  box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
-  border: solid 1px rgb(173, 173, 173);
+  background-color: rgb(255, 255, 255);
+  // box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
+  // border: solid 1px rgb(173, 173, 173);
+  user-select: none;
 }
 
 .card-mini-poly {
   position: absolute;
   margin-left: 0;
   border: solid 1px blue;
-}
-
-.card-mini-singly {
-  // position: relative;
-  // border: solid 1px orange;
 }
 
 // .card-mini-color-filter {

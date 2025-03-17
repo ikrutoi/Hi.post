@@ -6,6 +6,7 @@ import listNavSections from '../../data/cardsNav/navList.json'
 import { colorSchemeNav } from '../../data/nav/colorSchemeNav'
 
 const CardsNav = () => {
+  const navBtn = useSelector((state) => state.layout.choiceSection.nameSection)
   const infoNavHistory = useSelector((state) => state.infoButtons.navHistory)
   const btnNavRefs = useRef({})
 
@@ -13,14 +14,18 @@ const CardsNav = () => {
     btnNavRefs.current[id] = element
   }
 
-  const handleMouseEnterContainer = (evt) => {
-    if (evt.target.dataset.name !== 'history' && !infoNavHistory) {
+  const handleMouseEnterBtn = (evt) => {
+    if (
+      (evt.target.dataset.section !== 'history' && !infoNavHistory) ||
+      evt.target.dataset.section === navBtn
+    ) {
       evt.target.style.backgroundColor = 'rgb(220, 220, 220)'
     }
   }
 
-  const handleMouseLeaveContainer = (evt) => {
-    evt.target.style.backgroundColor = 'rgb(240, 240, 240)'
+  const handleMouseLeaveBtn = (evt) => {
+    if (evt.target.dataset.section !== navBtn)
+      evt.target.style.backgroundColor = 'rgb(240, 240, 240)'
   }
 
   useEffect(() => {
@@ -39,8 +44,9 @@ const CardsNav = () => {
           btnNavRefs={btnNavRefs}
           setBtnNavRef={setBtnNavRef}
           section={section}
-          handleMouseEnterContainer={handleMouseEnterContainer}
-          handleMouseLeaveContainer={handleMouseLeaveContainer}
+          handleMouseEnterBtn={handleMouseEnterBtn}
+          handleMouseLeaveBtn={handleMouseLeaveBtn}
+          navBtn={navBtn}
         />
       ))}
     </div>

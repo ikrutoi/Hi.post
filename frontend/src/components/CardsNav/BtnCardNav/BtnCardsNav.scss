@@ -1,19 +1,14 @@
-.btn-nav-container {
-  display: flex;
-  margin-top: 1rem;
-  margin-right: 0.5rem;
-  &:last-child {
-    margin-top: 2rem;
-  }
-}
-
 .btn-nav {
   display: flex;
   width: 100%;
+  margin-top: 1rem;
   padding: 0.5rem;
   border-radius: 0.3rem;
-  // background-color: rgb(240, 240, 240);
   font-size: 0.9rem;
   cursor: pointer;
   border: none;
+  // border: solid 1px blue;
+  &:last-child {
+    margin-top: 2rem;
+  }
 }
