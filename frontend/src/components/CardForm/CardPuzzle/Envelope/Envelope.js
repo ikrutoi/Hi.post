@@ -27,8 +27,10 @@ import {
 } from '../../../../data/toolbar/handleMouse'
 import { colorScheme } from '../../../../data/toolbar/colorScheme'
 import { changeIconStyles } from '../../../../data/toolbar/changeIconStyles'
+import ToolbarEnvelope from './ToolbarEnvelope/ToolbarEnvelope'
 
 const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
+  const cardEditEnvelope = useSelector((state) => state.cardEdit.envelope)
   const layoutDeleteSection = useSelector((state) => state.layout.deleteSection)
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
@@ -45,10 +47,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   //       }
   //     : cardEditEnvelope
 
-  const [value, setValue] = useState({
-    toaddress: { street: '', index: '', city: '', country: '', name: '' },
-    myaddress: { street: '', index: '', city: '', country: '', name: '' },
-  })
+  const [value, setValue] = useState(cardEditEnvelope)
   const [memoryAddress, setMemoryAddress] = useState({
     myaddress: null,
     toaddress: null,
@@ -62,6 +61,9 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const btnIconRefs = useRef({})
   const addressFormRefs = useRef({})
   const envelopeLogoRef = useRef(null)
+  // const layoutActiveEnvelope = useSelector(
+  //   (state) => state.layout.activeSections.envelope
+  // )
 
   const dispatch = useDispatch()
 
@@ -76,6 +78,10 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const setAddressFormRef = (id) => (element) => {
     addressFormRefs.current[id] = element
   }
+
+  useEffect(() => {
+    console.log('cardEdit', cardEditEnvelope)
+  }, [cardEditEnvelope])
 
   useEffect(() => {
     if (layoutDeleteSection === 'envelope') {
@@ -399,18 +405,23 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     }
   }
 
-  const handleMouseEnter = (evt, btnsAddress) => {
+  const handleMouseEnter = (evt) => {
     setStateMouseClip(true)
     handleMouseEnterBtn(evt, btnsAddress)
   }
 
-  const handleMouseLeave = (evt, btnsAddress) => {
+  const handleMouseLeave = (evt) => {
     setStateMouseClip(false)
     handleMouseLeaveBtn(evt, btnsAddress)
   }
 
   return (
     <div className="envelope">
+      {/* {!layoutActiveEnvelope && ( */}
+      <div className="nav-container nav-container-envelope">
+        <ToolbarEnvelope />
+      </div>
+      {/* )} */}
       <div className="envelope-myaddress">
         <div className="envelope-logo-container">
           <span
@@ -428,8 +439,8 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           setBtnIconRef={setBtnIconRef}
           setAddressFormRef={setAddressFormRef}
           handleClickBtn={handleClickBtn}
-          handleMouseEnter={(evt) => handleMouseEnter(evt, btnsAddress)}
-          handleMouseLeave={(evt) => handleMouseLeave(evt, btnsAddress)}
+          handleMouseEnter={handleMouseEnter}
+          handleMouseLeave={handleMouseLeave}
         />
       </div>
       <Mark />
@@ -443,8 +454,10 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           setBtnIconRef={setBtnIconRef}
           setAddressFormRef={setAddressFormRef}
           handleClickBtn={handleClickBtn}
-          handleMouseEnter={(evt) => handleMouseEnter(evt, btnsAddress)}
-          handleMouseLeave={(evt) => handleMouseLeave(evt, btnsAddress)}
+          handleMouseEnter={handleMouseEnter}
+          handleMouseLeave={handleMouseLeave}
+          // handleMouseEnter={(evt) => handleMouseEnter(evt, btnsAddress)}
+          // handleMouseLeave={(evt) => handleMouseLeave(evt, btnsAddress)}
         />
       </div>
     </div>

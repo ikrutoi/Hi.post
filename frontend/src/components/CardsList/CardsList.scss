@@ -5,11 +5,18 @@
   // border: solid 1px green;
 }
 
+.poly-cards-filter {
+  position: absolute;
+  border-radius: 0.5rem;
+  z-index: 6;
+  // background-color: rgba(71, 71, 71, 0.5);
+  // border: solid 1px red;
+}
+
 .envelope-memory {
   display: flex;
   width: 100%;
   border-radius: 0.5rem;
-  // border: solid 1px red;
 }
 
 .mini-poly-cards {
@@ -31,27 +38,30 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 6;
-  width: 5rem;
-  height: 5rem;
+  z-index: 7;
+  width: 4rem;
+  height: 4rem;
   transform: translate(-50%, -50%);
   transition: background-color 0.3s;
+  // transition: color 0.3s;
   border-radius: 2.5rem;
   // background-color: rgba(0, 125, 250, 0.6);
   // cursor: pointer;
 }
 
 .icon-minimize-container:hover {
-  background-color: rgba(0, 125, 250, 1);
-  .icon-minimize {
-    color: rgba(255, 255, 255, 1);
-  }
+  transition: background-color 0.3s;
+  // transition: color 0.3s;
+  //   background-color: rgba(0, 125, 250, 1);
+  //   .icon-minimize {
+  //     color: rgba(255, 255, 255, 1);
+  //   }
 }
 
 .icon-minimize {
   // color: rgba(255, 255, 255, 1);
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   background-color: rgba(255, 255, 255, 0);
   // transition: color 0.3s;
 }

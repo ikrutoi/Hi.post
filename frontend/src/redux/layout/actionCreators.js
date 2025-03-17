@@ -70,6 +70,13 @@ export const deleteSection = (newSection) => {
   }
 }
 
+export const activeSections = (newSection) => {
+  return {
+    type: a.ACTIVE_SECTIONS,
+    payload: newSection,
+  }
+}
+
 // export const setMyAddressLegendRef = (newSection) => {
 //   return {
 //     type: a.SET_MY_ADDRESS_LEGEND_REF,

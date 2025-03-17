@@ -29,6 +29,13 @@ const initialState = {
     id: null,
   },
   deleteSection: null,
+  activeSections: {
+    cardphoto: false,
+    cardtext: false,
+    envelope: false,
+    date: false,
+    aroma: false,
+  },
   memoryCrop: null,
   currentDate: null,
 }
@@ -58,6 +65,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         choiceAddress: { ...state.choiceAddress, ...action.payload },
+      }
+    case a.ACTIVE_SECTIONS:
+      return {
+        ...state,
+        activeSections: { ...state.activeSections, ...action.payload },
       }
     case a.ADD_MEMORY_CROP:
       return {

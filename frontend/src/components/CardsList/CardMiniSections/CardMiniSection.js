@@ -8,7 +8,11 @@ import {
   addEnvelope,
   addCardtext,
 } from '../../../redux/cardEdit/actionCreators'
-import { addIndexDb, deleteSection } from '../../../redux/layout/actionCreators'
+import {
+  addIndexDb,
+  deleteSection,
+  activeSections,
+} from '../../../redux/layout/actionCreators'
 import {
   deleteHiPostImage,
   deleteUserImage,
@@ -96,9 +100,10 @@ const CardMiniSection = ({
 
     const parentElement = searchParent(evt.target, 'card-mini-section')
 
-    dispatch(deleteSection(parentElement.dataset.name))
+    dispatch(deleteSection(parentElement.dataset.section))
+    dispatch(activeSections({ [parentElement.dataset.section]: false }))
 
-    switch (parentElement.dataset.name) {
+    switch (parentElement.dataset.section) {
       case 'aroma':
         dispatch(addAroma(null))
         break
@@ -178,10 +183,7 @@ const CardMiniSection = ({
       {polyInfo ? (
         <></>
       ) : (
-        <div
-          className="card-mini-kebab"
-          onClick={(evt) => handleClickCardMiniKebab(evt)}
-        >
+        <div className="card-mini-kebab" onClick={handleClickCardMiniKebab}>
           {/* <span className="mini-kebab-dots"> */}
           <CgClose className="icon-close" />
           {/* <span className="mini-kebab-icon"></span> */}

@@ -58,6 +58,7 @@ const MiniPhoto = ({ sizeCardMini }) => {
           style={{
             width: `${sizeCardMini.width}px`,
             height: `${sizeCardMini.height}px`,
+            position: 'absolute',
           }}
           alt="minicard-photo"
         ></img>

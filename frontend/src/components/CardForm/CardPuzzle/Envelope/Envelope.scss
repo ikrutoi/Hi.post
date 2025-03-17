@@ -1,9 +1,16 @@
 .envelope {
+  position: relative;
   display: grid;
   grid-template-rows: 1fr 1fr;
   grid-template-columns: 1fr 1fr;
   width: 100%;
   padding: 1rem;
+}
+
+.nav-container-envelope {
+  top: -2rem;
+  left: 1rem;
+  width: calc(100% - 2rem);
 }
 
 .envelope-myaddress {
