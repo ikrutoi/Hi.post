@@ -21,8 +21,8 @@ import { colorSchemeMain } from '../../data/main/colorSchemeMain'
 
 const CardsList = () => {
   const sectionCardEdit = useSelector((state) => state.cardEdit)
-  const layoutActiveEnvelope = useSelector(
-    (state) => state.layout.activeSections.envelope
+  const layoutActiveSection = useSelector(
+    (state) => state.layout.activeSections
   )
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
@@ -103,11 +103,11 @@ const CardsList = () => {
           ) {
             listSelectedSections.push({ section, position: 2, index: 2 })
             count++
-            if (!layoutActiveEnvelope) {
+            if (!layoutActiveSection.envelope) {
               dispatch(activeSections({ envelope: true }))
             }
           } else {
-            if (layoutActiveEnvelope) {
+            if (layoutActiveSection.envelope) {
               dispatch(activeSections({ envelope: false }))
             }
           }
@@ -116,12 +116,26 @@ const CardsList = () => {
           if (sectionCardEdit[section]) {
             listSelectedSections.push({ section, position: 3, index: 1 })
             count++
+            if (!layoutActiveSection.date) {
+              dispatch(activeSections({ date: true }))
+            }
+          } else {
+            if (layoutActiveSection.date) {
+              dispatch(activeSections({ date: false }))
+            }
           }
           break
         case 'aroma':
           if (sectionCardEdit[section]) {
             listSelectedSections.push({ section, position: 4, index: 0 })
             count++
+            if (!layoutActiveSection.aroma) {
+              dispatch(activeSections({ aroma: true }))
+            }
+          } else {
+            if (layoutActiveSection.aroma) {
+              dispatch(activeSections({ aroma: false }))
+            }
           }
           break
         default:

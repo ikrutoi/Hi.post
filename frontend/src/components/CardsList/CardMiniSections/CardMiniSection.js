@@ -180,7 +180,7 @@ const CardMiniSection = ({
           ? '2px 1px 5px 2px rgba(255, 255, 255, 0.2)'
           : '2px 1px 5px 2px rgba(34, 60, 80, 0.3)',
         zIndex: infoSection.section.index,
-        transition: 'left 0.3s, box-shadow 0.3s',
+        transition: `left ${0.3 + 0.15 * infoSection.i}s ease, box-shadow 0.3s`,
       }}
       onClick={handleClickSection}
       data-section={infoSection.section.section}

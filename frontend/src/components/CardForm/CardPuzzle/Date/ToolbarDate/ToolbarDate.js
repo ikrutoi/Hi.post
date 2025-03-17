@@ -1,17 +1,21 @@
 import { useSelector } from 'react-redux'
-import { LuCalendarArrowUp } from 'react-icons/lu'
 import './ToolbarDate.scss'
 
 const ToolbarDate = () => {
-  const cardEditDate = useSelector((state) => state.cardEdit.date)
+  const layoutActiveDate = useSelector(
+    (state) => state.layout.activeSections.date
+  )
+
   return (
     <div className="toolbar-date">
-      {/* <span className="toolbar-btn-date">
-        <LuCalendarArrowUp className="toolbar-icon toolbar-icon-date" />
-      </span> */}
-      <p className="toolbar-date-text">
-        {cardEditDate
-          ? 'The dispatch date has been selected'
+      <p
+        className="toolbar-date-text"
+        style={{
+          color: 'rgb(71, 71, 71)',
+        }}
+      >
+        {layoutActiveDate
+          ? 'Thank you, the postcard sending date has been selected'
           : 'Select the date of sending the postcard'}
       </p>
     </div>

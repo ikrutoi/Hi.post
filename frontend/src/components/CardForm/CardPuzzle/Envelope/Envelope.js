@@ -420,7 +420,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           borderColor: layoutActiveEnvelope
             ? 'rgb(255, 255, 255)'
             : 'rgb(220, 220, 220)',
-          transition: 'border-color 0.3s easy 0.3s',
+          transition: 'border-color 0.3s ease 0.3s',
         }}
       >
         <ToolbarEnvelope />

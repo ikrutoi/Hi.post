@@ -24,8 +24,8 @@ const ToolbarEnvelope = () => {
         <p
           className="toolbar-envelope-text"
           style={{
-            color: showText ? 'rgb(71, 71, 71)' : 'rgba(71, 71, 71, 0)',
-            transition: 'opacity 0.3s easy',
+            color: showText ? 'rgba(71, 71, 71, 1)' : 'rgba(71, 71, 71, 0)',
+            transition: 'opacity 0.3s ease',
           }}
         >
           Fill in all the fields of the postcard recipient

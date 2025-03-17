@@ -15,6 +15,7 @@ import {
   handleMouseLeaveBtn,
 } from '../../../../../data/toolbar/handleMouse'
 import listBtnsCardtext from '../../../../../data/toolbar/listBtnsCardtext.json'
+import listBtnsCardtextMain from '../../../../../data/toolbar/listBtnsCardtextMain.json'
 import { changeIconStyles } from '../../../../../data/toolbar/changeIconStyles'
 import TooltipColor from './TooltipColor'
 
@@ -368,36 +369,65 @@ const CardEditor = ({
     }
   }
 
+  const handleClickBtnMain = () => {}
+
+  const handleMouseEnterBtnMain = () => {}
+
+  const handleMouseLeaveBtnMain = () => {}
+
   return (
     <div className="cardeditor">
       <div className="cardeditor-container">
-        {listBtnsCardtext &&
-          listBtnsCardtext.map((btn, i) => {
+        <div className="cardeditor-container-left">
+          {listBtnsCardtext &&
+            listBtnsCardtext.map((btn, i) => {
+              return (
+                <button
+                  className={`toolbar-btn toolbar-btn-cardtext btn-cardtext-${btn}`}
+                  key={`${i}-${btn}`}
+                  data-tooltip={btn}
+                  data-section={'cardtext'}
+                  ref={setBtnIconRef(`cardtext-${btn}`)}
+                  onClick={(evt) => handleClickBtn(evt, btn)}
+                  onMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsCardtext)}
+                  onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsCardtext)}
+                >
+                  {addIconToolbar(btn)}
+                </button>
+              )
+            })}
+          {btnColor && (
+            <TooltipColor
+              setBtnColor={setBtnColor}
+              infoButtonsCardtext={infoButtonsCardtext}
+              styleLeft={
+                btnIconRefs.current['cardtext-color'].getBoundingClientRect()
+                  .left - styleLeftCardPuzzle
+              }
+            />
+          )}
+        </div>
+        <div className="cardeditor-container-right">
+          {listBtnsCardtextMain.map((btn, i) => {
             return (
               <button
-                key={`${i}-${btn}`}
+                className={`toolbar-btn toolbar-btn-cardtext-main btn-cardtext-main-${btn}`}
+                key={`main-${i}-${btn}`}
                 data-tooltip={btn}
-                data-section={'cardtext'}
-                ref={setBtnIconRef(`cardtext-${btn}`)}
-                className={`toolbar-btn toolbar-btn-cardtext btn-cardtext-${btn}`}
-                onClick={(evt) => handleClickBtn(evt, btn)}
-                onMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsCardtext)}
-                onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsCardtext)}
+                // ref={setBtnIconRef(`cardtext-${btn}`)}
+                onClick={(evt) => handleClickBtnMain(evt, btn)}
+                onMouseEnter={(evt) =>
+                  handleMouseEnterBtnMain(evt, btnsCardtext)
+                }
+                onMouseLeave={(evt) =>
+                  handleMouseLeaveBtnMain(evt, btnsCardtext)
+                }
               >
                 {addIconToolbar(btn)}
               </button>
             )
           })}
-        {btnColor && (
-          <TooltipColor
-            setBtnColor={setBtnColor}
-            infoButtonsCardtext={infoButtonsCardtext}
-            styleLeft={
-              btnIconRefs.current['cardtext-color'].getBoundingClientRect()
-                .left - styleLeftCardPuzzle
-            }
-          />
-        )}
+        </div>
       </div>
       {/* <div className="ggg"></div> */}
       <div className="editor" ref={editorRef}>
