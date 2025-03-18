@@ -8,16 +8,8 @@
 .poly-cards-filter {
   position: absolute;
   border-radius: 0.5rem;
-  background-image: url('../../data/envelope-for-poly-minicards.svg');
-  background-size: contain;
-  opacity: 0.65;
+  background-color: rgba(163, 163, 163, 0.65);
   z-index: 6;
-  // border: solid 1px red;
-}
-
-.poly-minicards-filter {
-  position: absolute;
-  border: solid 1px red;
 }
 
 .envelope-memory {
@@ -27,7 +19,11 @@
 }
 
 .mini-poly-cards {
-  position: relative;
+  position: absolute;
+  border-radius: 0.5rem;
+  background-image: url('../../data/envelope-line-for-poly-minicards.svg');
+  background-size: contain;
+  z-index: 7;
 }
 
 .pattern-mini-card {
@@ -40,19 +36,17 @@
 .icon-minimize-container {
   position: absolute;
   top: 45%;
-  left: 40%;
+  left: 45%;
   margin: 0.35rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 7;
+  z-index: 8;
   width: 3.5rem;
   height: 3.5rem;
   transform: translate(-50%, -50%);
-  transition: background-color 0.3s;
-  // transition: color 0.3s;
+  // transition: background-color 0.3s;
   border-radius: 2.5rem;
-  // background-color: rgba(0, 125, 250, 0.6);
   // cursor: pointer;
 }
 
