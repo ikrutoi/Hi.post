@@ -5,5 +5,5 @@ export const colorSchemeMain = {
   lightGray: 'rgb(240, 240, 240)',
   white: 'rgb(255, 255, 255)',
   black: 'rgb(0, 0, 0)',
-  active: 'rgb(0, 125, 250)',
+  active: 'rgb(0, 125, 215)',
 }

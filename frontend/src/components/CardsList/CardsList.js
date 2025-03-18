@@ -17,7 +17,6 @@ import {
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import EnvelopeMemory from './CardMiniSections/EnvelopeMemory/EnvelopeMemory'
 import { colorSchemeMain } from '../../data/main/colorSchemeMain'
-// import sizeMiniCard
 
 const CardsList = () => {
   const sectionCardEdit = useSelector((state) => state.cardEdit)
@@ -34,9 +33,9 @@ const CardsList = () => {
     (state) => state.infoButtons.envelopeClip
   )
   const listSelectedSections = []
-  const [allCardMini, setAllCardMini] = useState(false)
+  const [fullCardsMini, setFullCardsMini] = useState(false)
   const [minimize, setMinimize] = useState(null)
-  const [stylePolyCard, setStylePolyCard] = useState({
+  const [stylePolyCards, setStylePolyCards] = useState({
     filter: {},
     icon: {},
   })
@@ -45,6 +44,7 @@ const CardsList = () => {
     myaddress: null,
     toaddress: null,
   })
+  const [showIconMinimize, setShowIconMinimize] = useState(minimize)
   const addressRefs = useRef({})
   const dispatch = useDispatch()
 
@@ -150,8 +150,8 @@ const CardsList = () => {
 
   useEffect(() => {
     if (count === 5) {
-      setAllCardMini(true)
-      setStylePolyCard((state) => {
+      setFullCardsMini(true)
+      setStylePolyCards((state) => {
         return {
           ...state,
           // filter: {
@@ -160,15 +160,15 @@ const CardsList = () => {
           // },
           icon: {
             ...state.icon,
-            backgroundColor: 'rgba(0, 125, 250, 0.4)',
+            backgroundColor: 'rgba(0, 125, 215, 0.75)',
             color: colorSchemeMain.lightGray,
             cursor: 'pointer',
           },
         }
       })
     } else {
-      setAllCardMini(false)
-      setStylePolyCard((state) => {
+      setFullCardsMini(false)
+      setStylePolyCards((state) => {
         return {
           ...state,
           // filter: {
@@ -177,8 +177,8 @@ const CardsList = () => {
           // },
           icon: {
             ...state.icon,
-            backgroundColor: 'rgba(163, 163, 163, 0.4)',
-            color: 'rgba(240, 240, 240, 1)',
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            color: 'rgba(255, 255, 255, 0)',
             cursor: 'default',
           },
         }
@@ -186,19 +186,19 @@ const CardsList = () => {
     }
   }, [count])
 
-  const getListPrioritySections = () => {
-    const temporaryArray = []
-    for (let i = 0; i < listSortSelectedSections.length; i++) {
-      if (listSortSelectedSections[i].section !== choiceSection.nameSection) {
-        temporaryArray.push(listSortSelectedSections[i])
-      } else {
-        temporaryArray.unshift(...listSortSelectedSections.slice(i))
-        break
-      }
-    }
-    return temporaryArray
-  }
-  const listPrioritySections = getListPrioritySections()
+  // const getListPrioritySections = () => {
+  //   const temporaryArray = []
+  //   for (let i = 0; i < listSortSelectedSections.length; i++) {
+  //     if (listSortSelectedSections[i].section !== choiceSection.nameSection) {
+  //       temporaryArray.push(listSortSelectedSections[i])
+  //     } else {
+  //       temporaryArray.unshift(...listSortSelectedSections.slice(i))
+  //       break
+  //     }
+  //   }
+  //   return temporaryArray
+  // }
+  // const listPrioritySections = getListPrioritySections()
 
   const handleClickAddressMiniKebab = async (section, id) => {
     await deleteRecordAddress(
@@ -217,26 +217,16 @@ const CardsList = () => {
     if (listSortSelectedSections.length === 5) {
       minimize ? setMinimize(false) : setMinimize(true)
     }
-    // const searchParentBtnNav = (el) => {
-    //   if (el.classList.contains('icon-minimize-container')) {
-    //     return el
-    //   } else if (el.parentElement) {
-    //     return searchParentBtnNav(el.parentElement)
-    //   }
-    //   return null
-    // }
-
-    // const parentElement = searchParentBtnNav(evt.target)
   }
 
   const handleMouseEnterIconMinimize = () => {
-    if (allCardMini) {
-      setStylePolyCard((state) => {
+    if (fullCardsMini) {
+      setStylePolyCards((state) => {
         return {
           ...state,
           icon: {
             ...state.icon,
-            backgroundColor: 'rgba(0, 125, 250, 0.6)',
+            backgroundColor: 'rgba(0, 125, 215, 0.95)',
           },
         }
       })
@@ -244,18 +234,26 @@ const CardsList = () => {
   }
 
   const handleMouseLeaveIconMinimize = () => {
-    if (allCardMini) {
-      setStylePolyCard((state) => {
+    if (fullCardsMini) {
+      setStylePolyCards((state) => {
         return {
           ...state,
           icon: {
             ...state.icon,
-            backgroundColor: 'rgba(0, 125, 250, 0.4)',
+            backgroundColor: 'rgba(0, 125, 215, 0.75)',
           },
         }
       })
     }
   }
+
+  useEffect(() => {
+    const timerIcon = setTimeout(() => {
+      setShowIconMinimize(minimize)
+    }, 800)
+
+    return () => clearTimeout(timerIcon)
+  }, [minimize])
 
   return (
     <div className="cards-list">
@@ -285,7 +283,6 @@ const CardsList = () => {
             style={{
               width: `${sizeMiniCard.width}px`,
               height: `${sizeMiniCard.height}px`,
-              backgroundColor: 'rgba(163, 163, 163, 0.2)',
               boxShadow: minimize
                 ? '2px 1px 5px 2px rgba(34, 60, 80, 0.3)'
                 : '2px 1px 5px 2px rgba(255, 255, 255, 0.2)',
@@ -302,16 +299,16 @@ const CardsList = () => {
             <div
               className="icon-minimize-container"
               style={{
-                color: stylePolyCard.icon.color,
-                backgroundColor: stylePolyCard.icon.backgroundColor,
-                cursor: stylePolyCard.icon.cursor,
-                transition: 'background-color 0.3s, color 0.3s',
+                color: stylePolyCards.icon.color,
+                backgroundColor: stylePolyCards.icon.backgroundColor,
+                cursor: stylePolyCards.icon.cursor,
+                transition: 'background-color 0.3s ease, color 0.3s ease',
               }}
               onClick={handleClickIconMinimize}
               onMouseEnter={handleMouseEnterIconMinimize}
               onMouseLeave={handleMouseLeaveIconMinimize}
             >
-              {minimize && listSortSelectedSections.length === 5 ? (
+              {showIconMinimize ? (
                 <HiArrowsPointingOut className="icon-minimize" />
               ) : (
                 <HiArrowsPointingIn className="icon-minimize" />

@@ -8,9 +8,16 @@
 .poly-cards-filter {
   position: absolute;
   border-radius: 0.5rem;
+  background-image: url('../../data/envelope-for-poly-minicards.svg');
+  background-size: contain;
+  opacity: 0.65;
   z-index: 6;
-  // background-color: rgba(71, 71, 71, 0.5);
   // border: solid 1px red;
+}
+
+.poly-minicards-filter {
+  position: absolute;
+  border: solid 1px red;
 }
 
 .envelope-memory {
