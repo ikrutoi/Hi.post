@@ -275,20 +275,21 @@ export const addUniqueRecordAddress = async (storeName, data) => {
   await transaction.done
 }
 
-const handleTransactionPromise = (transaction, callback = () => null) => {
+const handleTransactionPromise = (transaction) => {
   return new Promise((resolve, reject) => {
-    transaction.oncomplete = () => resolve(callback())
+    transaction.oncomplete = () => resolve()
     transaction.onerror = (event) => reject(event.target.error)
   })
 }
 
-export const getAllCardtext = async () => {
+export const getAllRecordCardtext = async () => {
   try {
     const db = await getDatabase()
     const transaction = db.transaction('cardtext', 'readonly')
     const store = transaction.objectStore('cardtext')
     const allRecords = await store.getAll()
-    return await handleTransactionPromise(transaction, allRecords || [])
+    await handleTransactionPromise(transaction)
+    return allRecords || []
   } catch (error) {
     console.error(`[getAllCardtext] Failed to fetch all cardtext:`, error)
     throw error
@@ -301,7 +302,8 @@ export const getCountRecordsCardtext = async () => {
     const transaction = db.transaction('cardtext', 'readonly')
     const store = transaction.objectStore('cardtext')
     const count = await store.count()
-    return await handleTransactionPromise(transaction, count)
+    await handleTransactionPromise(transaction)
+    return count
   } catch (error) {
     console.error('[getCountRecordsCardtext] Failed to count record:', error)
     throw error
@@ -317,9 +319,10 @@ export const getRecordCardtextById = async (id) => {
     const transaction = db.transaction('cardtext', 'readonly')
     const store = transaction.objectStore('cardtext')
     const result = await store.get(id)
-    return await handleTransactionPromise(transaction, result || null)
+    await handleTransactionPromise(transaction)
+    return result || null
   } catch (error) {
-    console.error('Failed to get cardtext by ID:', error)
+    console.error('[etRecordCardtextById] Failed to get cardtext by ID:', error)
     throw error
   }
 }
@@ -327,7 +330,7 @@ export const getRecordCardtextById = async (id) => {
 export const addRecordCardtext = async (record) => {
   if (!record || typeof record.id === 'undefined') {
     throw new Error(
-      '[getRecordCardtextById] Invalid record format. "id" is required.'
+      '[addRecordCardtext] Invalid record format. "id" is required.'
     )
   }
   try {
@@ -337,7 +340,7 @@ export const addRecordCardtext = async (record) => {
     await store.put(record)
     return await handleTransactionPromise(transaction)
   } catch (error) {
-    console.error('[getRecordCardtextById] Failed to add record:', error)
+    console.error('[addRecordCardtext] Failed to add record:', error)
     throw error
   }
 }
@@ -356,31 +359,13 @@ export const deleteRecordCardtext = async (id) => {
 }
 
 export const getMaxIdCardtext = async () => {
-  try {
-    const db = await getDatabase()
-    const transaction = db.transaction('cardtext', 'readonly')
-    const store = transaction.objectStore('cardtext')
+  const db = await dbPromise
+  const transaction = db.transaction('cardtext', 'readonly')
+  const store = transaction.objectStore('cardtext')
+  const allRecords = await store.getAll()
 
-    let maxId = 0
-    return new Promise((resolve, reject) => {
-      const cursorRequest = store.openCursor()
-      cursorRequest.onsuccess = (evt) => {
-        const cursor = evt.target.result
-        if (cursor) {
-          maxId = Math.max(maxId, cursor.value.id)
-          cursor.continue()
-        } else {
-          resolve(maxId)
-        }
-      }
-      cursorRequest.onerror = (evt) => {
-        reject(evt.target.error)
-      }
-    })
-  } catch (error) {
-    console.error('[getMaxIdCardtext] Failed to get max ID:', error)
-    throw error
-  }
+  const ids = allRecords.map((record) => record.id)
+  return ids.length ? Math.max(...ids) : 0
 }
 
 export const addUniqueRecordCardtext = async (data) => {

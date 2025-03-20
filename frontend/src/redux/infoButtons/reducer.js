@@ -9,6 +9,10 @@ const initialState = {
   envelopeClip: null,
   envelopeSave: null,
   miniAddressClose: null,
+  envelope: {
+    myaddress: { save: false, delete: false, clip: false },
+    toaddress: { save: false, delete: false, clip: false },
+  },
   cardphoto: {
     download: true,
     save: false,
@@ -26,6 +30,9 @@ const initialState = {
     center: true,
     right: true,
     justify: true,
+    save: false,
+    delete: false,
+    clip: false,
   },
 }
 

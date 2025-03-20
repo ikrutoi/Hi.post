@@ -1,5 +1,4 @@
 import { colorScheme } from './colorScheme'
-import { searchParentElement } from './searchParentElement'
 
 const hover = (button) => {
   button.style.color = colorScheme.hover
@@ -7,7 +6,7 @@ const hover = (button) => {
 }
 
 export const handleMouseEnterBtn = (evt, btns) => {
-  const parentBtn = searchParentElement(evt.target)
+  const parentBtn = evt.target.closest('.toolbar-btn')
   if (btns[parentBtn.dataset.section][parentBtn.dataset.tooltip]) {
     if (
       !(
@@ -24,7 +23,7 @@ export const handleMouseEnterBtn = (evt, btns) => {
 }
 
 export const handleMouseLeaveBtn = (evt, btns) => {
-  const parentBtn = searchParentElement(evt.target)
+  const parentBtn = evt.target.closest('.toolbar-btn')
   parentBtn.style.color =
     colorScheme[btns[parentBtn.dataset.section][parentBtn.dataset.tooltip]]
   parentBtn.style.cursor = 'default'

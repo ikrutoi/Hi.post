@@ -1,7 +1,7 @@
 import { CgClose } from 'react-icons/cg'
-import './EnvelopeMemory.scss'
+import './MemoryEnvelope.scss'
 
-const EnvelopeMemory = ({
+const MemoryEnvelope = ({
   sizeMiniCard,
   section,
   address,
@@ -11,7 +11,7 @@ const EnvelopeMemory = ({
 }) => {
   return (
     <div
-      className="envelope-memory-card"
+      className="memory-card memory-envelope-card"
       ref={setRef(`${section}-${address.id}`)}
       style={{
         width: `${sizeMiniCard.width}px`,
@@ -34,4 +34,4 @@ const EnvelopeMemory = ({
   )
 }
 
-export default EnvelopeMemory
+export default MemoryEnvelope

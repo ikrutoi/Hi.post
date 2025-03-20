@@ -14,9 +14,11 @@ import {
   deleteToAddress,
   getAllRecordsAddresses,
   deleteRecordAddress,
+  getAllRecordCardtext,
 } from '../../utils/cardFormNav/indexDB/indexDb'
-import EnvelopeMemory from './CardMiniSections/EnvelopeMemory/EnvelopeMemory'
 import { colorSchemeMain } from '../../data/main/colorSchemeMain'
+import MemoryEnvelope from './CardMiniSections/MemoryEnvelope/MemoryEnvelope'
+import MemoryCardtext from './CardMiniSections/MemoryCardtext/MemoryCardtext'
 
 const CardsList = () => {
   const sectionCardEdit = useSelector((state) => state.cardEdit)
@@ -32,31 +34,60 @@ const CardsList = () => {
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
   )
+  const infoCardtextClip = useSelector(
+    (state) => state.infoButtons.cardtext.clip
+  )
   const listSelectedSections = []
-  const [fullCardsMini, setFullCardsMini] = useState(false)
   const [minimize, setMinimize] = useState(null)
   const [stylePolyCards, setStylePolyCards] = useState({
     filter: {},
     icon: {},
   })
   let count = 0
+  const [memoryList, setMemoryList] = useState(null)
   const [memoryAddress, setMemoryAddress] = useState({
     myaddress: null,
     toaddress: null,
   })
+  const [memoryCardtext, setMemoryCardtext] = useState({ cardtext: null })
   const [showIconMinimize, setShowIconMinimize] = useState(minimize)
-  const addressRefs = useRef({})
+  const memoryRefs = useRef({})
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (infoEnvelopeSave) {
-      getAddress(infoEnvelopeSave)
-      dispatch(infoButtons({ envelopeSave: false }))
+    if (choiceSection.nameSection === 'envelope') {
+      if (infoEnvelopeSave) {
+        getAddress(infoEnvelopeSave)
+        dispatch(infoButtons({ envelopeSave: false }))
+      }
+      if (infoEnvelopeClip) {
+        getAddress(infoEnvelopeClip)
+      }
+      setMemoryList(infoEnvelopeClip)
     }
-    if (infoEnvelopeClip) {
-      getAddress(infoEnvelopeClip)
+    if (choiceSection.nameSection === 'cardtext') {
+      if (infoCardtextClip) {
+        getCardtext()
+      }
+      switch (infoCardtextClip) {
+        case 'hover':
+          setMemoryList('cardtext')
+          break
+        case true:
+          setMemoryList(false)
+          break
+
+        default:
+          break
+      }
     }
-  }, [infoEnvelopeSave, infoEnvelopeClip, dispatch])
+  }, [
+    choiceSection,
+    infoEnvelopeSave,
+    infoEnvelopeClip,
+    infoCardtextClip,
+    dispatch,
+  ])
 
   const getAddress = async (section) => {
     const listAddress = await getAllRecordsAddresses(
@@ -70,9 +101,21 @@ const CardsList = () => {
     })
   }
 
-  const setRef = (id) => (element) => {
-    addressRefs.current[id] = element
+  const getCardtext = async () => {
+    const listCardtexts = await getAllRecordCardtext()
+    setMemoryCardtext((state) => {
+      return {
+        ...state,
+        cardtext: listCardtexts,
+      }
+    })
   }
+
+  const setRef = (id) => (element) => {
+    memoryRefs.current[id] = element
+  }
+
+  console.log('memoryCardtext', memoryCardtext)
 
   for (let section in sectionCardEdit) {
     if (!!sectionCardEdit[section]) {
@@ -150,14 +193,9 @@ const CardsList = () => {
 
   useEffect(() => {
     if (count === 5) {
-      setFullCardsMini(true)
       setStylePolyCards((state) => {
         return {
           ...state,
-          // filter: {
-          //   ...state.icon,
-          //   backgroundColor: 'rgba(0, 125, 250, 0.4)',
-          // },
           icon: {
             ...state.icon,
             backgroundColor: 'rgba(0, 125, 215, 0.75)',
@@ -167,14 +205,9 @@ const CardsList = () => {
         }
       })
     } else {
-      setFullCardsMini(false)
       setStylePolyCards((state) => {
         return {
           ...state,
-          // filter: {
-          //   ...state.icon,
-          //   backgroundColor: 'rgba(163, 163, 163, 0.4)',
-          // },
           icon: {
             ...state.icon,
             backgroundColor: 'rgba(255, 255, 255, 0)',
@@ -220,7 +253,7 @@ const CardsList = () => {
   }
 
   const handleMouseEnterIconMinimize = () => {
-    if (fullCardsMini) {
+    if (count === 5) {
       setStylePolyCards((state) => {
         return {
           ...state,
@@ -234,7 +267,7 @@ const CardsList = () => {
   }
 
   const handleMouseLeaveIconMinimize = () => {
-    if (fullCardsMini) {
+    if (count === 5) {
       setStylePolyCards((state) => {
         return {
           ...state,
@@ -255,28 +288,50 @@ const CardsList = () => {
     return () => clearTimeout(timerIcon)
   }, [minimize])
 
-  return (
-    <div className="cards-list">
-      <div style={{ height: `${sizeMiniCard.height}px` }}></div>
-      {infoEnvelopeClip && choiceSection.nameSection === 'envelope' && (
-        <div className="envelope-memory">
-          {infoEnvelopeClip &&
-            memoryAddress[infoEnvelopeClip] &&
-            memoryAddress[infoEnvelopeClip].map((address, i) => (
-              <EnvelopeMemory
-                key={i}
+  const choiceMemoryList = () => {
+    if (memoryList === 'myaddress' || memoryList === 'toaddress') {
+      return (
+        <div className="memory-list">
+          {memoryAddress[memoryList] &&
+            memoryAddress[memoryList].map((address, i) => (
+              <MemoryEnvelope
+                key={`${memoryList}-${i}`}
                 setRef={setRef}
                 sizeMiniCard={sizeMiniCard}
-                section={infoEnvelopeClip}
+                section={memoryList}
                 address={address}
                 handleClickAddressMiniKebab={handleClickAddressMiniKebab}
                 handleClickAddress={handleClickAddress}
               />
             ))}
         </div>
-      )}
+      )
+    }
+    if (memoryList === 'cardtext') {
+      return (
+        <div className="memory-list">
+          {memoryCardtext.cardtext &&
+            memoryCardtext.cardtext.map((text, i) => (
+              <MemoryCardtext
+                key={`cardtext-${i}`}
+                setRef={setRef}
+                sizeMiniCard={sizeMiniCard}
+                section={memoryList}
+                text={text}
+                handleClickAddressMiniKebab={handleClickAddressMiniKebab}
+                handleClickAddress={handleClickAddress}
+              />
+            ))}
+        </div>
+      )
+    }
+  }
 
-      {(!infoEnvelopeClip || choiceSection.nameSection !== 'envelope') && (
+  return (
+    <div className="cards-list">
+      <div style={{ height: `${sizeMiniCard.height}px` }}></div>
+      {choiceMemoryList()}
+      {!memoryList && (
         <>
           <div
             className="poly-cards-filter"

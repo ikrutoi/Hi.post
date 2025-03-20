@@ -7,6 +7,7 @@ import './CardEditor.scss'
 import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import { colorScheme } from '../../../../../data/toolbar/colorScheme'
+import { colorSchemeMain } from '../../../../../data/main/colorSchemeMain'
 import scaleBase from '../../../../../data/main/scaleCardAndCardMini.json'
 // import listBtnsCardtext from '../../../../../data/cardtext/list-textarea-nav-btns.json'
 import { addIconToolbar } from '../../../../../data/toolbar/addIconToolbar'
@@ -14,6 +15,14 @@ import {
   handleMouseEnterBtn,
   handleMouseLeaveBtn,
 } from '../../../../../data/toolbar/handleMouse'
+import {
+  addRecordCardtext,
+  addUniqueRecordCardtext,
+  deleteRecordCardtext,
+  getRecordCardtextById,
+  getCountRecordsCardtext,
+  getAllRecordCardtext,
+} from '../../../../../utils/cardFormNav/indexDB/indexDb'
 import listBtnsCardtext from '../../../../../data/toolbar/listBtnsCardtext.json'
 import listBtnsCardtextMain from '../../../../../data/toolbar/listBtnsCardtextMain.json'
 import { changeIconStyles } from '../../../../../data/toolbar/changeIconStyles'
@@ -32,6 +41,7 @@ const CardEditor = ({
   const editor = useMemo(() => withReact(createEditor()), [])
   const [value, setValue] = useState(cardtext.text)
   const btnIconRefs = useRef({})
+  // const btnIconMainRefs = useRef({})
   const btnColorRefs = useRef({})
   const [editable, setEditable] = useState(null)
   const editorRef = useRef(null)
@@ -40,16 +50,21 @@ const CardEditor = ({
   const [linesCount, setLinesCount] = useState(1)
   const [focusedElement, setFocusedElement] = useState(null)
   const [maxLines, setMaxLines] = useState(null)
+  const [memoryCardtext, setMemoryCardtext] = useState(null)
 
   const markRef = useRef(null)
   const [markPath, setMarkPath] = useState(null)
   const [btnsCardtext, setBtnsCardtext] = useState({ cardtext: {} })
+  // const [btnsCardtextMain, setBtnsCardtextMain] = useState({ cardtext: {} })
   // const [btnsColors, setBtnsColors] = useState({ cardtext: {} })
   const [btnColor, setBtnColor] = useState(false)
 
-  const setBtnIconRef = (id) => (element) => {
+  const setBtnIconRefs = (id) => (element) => {
     btnIconRefs.current[id] = element
   }
+  // const setBtnIconMainRefs = (id) => (element) => {
+  //   btnIconMainRefs.current[id] = element
+  // }
 
   const setBtnColorRef = (id) => (element) => {
     btnColorRefs.current[id] = element
@@ -73,6 +88,20 @@ const CardEditor = ({
           cardtext: {
             ...state.cardtext,
             ...listBtnsCardtext.reduce((acc, key) => {
+              acc[key] = infoButtonsCardtext[key]
+              return acc
+            }, {}),
+          },
+        }
+      })
+    }
+    if (listBtnsCardtextMain && infoButtonsCardtext) {
+      setBtnsCardtext((state) => {
+        return {
+          ...state,
+          cardtext: {
+            ...state.cardtext,
+            ...listBtnsCardtextMain.reduce((acc, key) => {
               acc[key] = infoButtonsCardtext[key]
               return acc
             }, {}),
@@ -111,7 +140,72 @@ const CardEditor = ({
     }
   }, [editorRef.current])
 
-  useEffect(() => {}, [value])
+  useEffect(() => {
+    setBtnsCardtext((state) => {
+      return {
+        ...state,
+        cardtext: {
+          ...state.cardtext,
+          save: value[0].children[0].text.length ? true : false,
+          delete: value[0].children[0].text.length ? true : false,
+        },
+      }
+    })
+    dispatch(
+      infoButtons({
+        cardtext: {
+          ...infoButtonsCardtext,
+          save: value[0].children[0].text.length ? true : false,
+          delete: value[0].children[0].text.length ? true : false,
+        },
+      })
+    )
+
+    const getCountCardtexts = async () => {
+      const countCardtexts = Boolean(await getCountRecordsCardtext())
+
+      if (countCardtexts) {
+        const listCardtexts = await getAllRecordCardtext()
+        setMemoryCardtext((state) => {
+          return {
+            ...state,
+            listCardtexts,
+          }
+        })
+      }
+
+      setBtnsCardtext((state) => {
+        return {
+          ...state,
+          cardtext: {
+            ...state.cardtext,
+            clip: countCardtexts ? true : false,
+          },
+        }
+      })
+      dispatch(
+        infoButtons({
+          cardtext: {
+            ...infoButtonsCardtext,
+            clip: countCardtexts ? true : false,
+          },
+        })
+      )
+    }
+
+    getCountCardtexts()
+
+    // const processCardtext = async (value) => {
+    //   for (const section of Object.keys(value)) {
+    //     // checkField(section)
+    //     await getCountCardtexts()
+    //   }
+    // }
+
+    // processCardtext(value)
+  }, [value])
+
+  // console.log('memoryCardtext', memoryCardtext)
 
   const calcStyleAndLinesEditable = (condition) => {
     let lines
@@ -369,11 +463,68 @@ const CardEditor = ({
     }
   }
 
-  const handleClickBtnMain = () => {}
+  // const getCountCardtexts = async (section) => {
+  //   const countCardtexts = Boolean(await getCountRecordsCardtext())
 
-  const handleMouseEnterBtnMain = () => {}
+  //   if (countCardtexts) {
+  //     const listCardtexts = await getRecordAllCardtext()
+  //     setMemoryCardtext((state) => {
+  //       return {
+  //         ...state,
+  //         listCardtexts,
+  //       }
+  //     })
+  //   }
 
-  const handleMouseLeaveBtnMain = () => {}
+  //   setBtnsCardtext((state) => {
+  //     return {
+  //       ...state,
+  //       cardtext: {
+  //         ...state.cardtext,
+  //         clip: countCardtexts ? true : false,
+  //       },
+  //     }
+  //   })
+  // }
+
+  const handleClickBtnMain = async (evt) => {
+    const parentBtn = evt.target.closest('.toolbar-btn')
+    switch (parentBtn.dataset.tooltip) {
+      case 'save':
+        await addUniqueRecordCardtext(value)
+        break
+      case 'delete':
+        // await addUniqueRecordCardtext(value)
+        break
+      case 'clip':
+        // const allTexts = await getRecordAllCardtext()
+        // console.log('All texts', allTexts)
+        if (btnsCardtext.cardtext.clip) {
+          setBtnsCardtext((state) => {
+            return {
+              ...state,
+              cardtext: {
+                ...state.cardtext,
+                clip: btnsCardtext.cardtext.clip === true ? 'hover' : true,
+              },
+            }
+          })
+          dispatch(
+            infoButtons({
+              cardtext: {
+                ...infoButtonsCardtext,
+                clip: btnsCardtext.cardtext.clip === true ? 'hover' : true,
+              },
+            })
+          )
+        }
+
+        break
+
+      default:
+        break
+    }
+  }
 
   return (
     <div className="cardeditor">
@@ -387,7 +538,7 @@ const CardEditor = ({
                   key={`${i}-${btn}`}
                   data-tooltip={btn}
                   data-section={'cardtext'}
-                  ref={setBtnIconRef(`cardtext-${btn}`)}
+                  ref={setBtnIconRefs(`cardtext-${btn}`)}
                   onClick={(evt) => handleClickBtn(evt, btn)}
                   onMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsCardtext)}
                   onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsCardtext)}
@@ -412,16 +563,13 @@ const CardEditor = ({
             return (
               <button
                 className={`toolbar-btn toolbar-btn-cardtext-main btn-cardtext-main-${btn}`}
+                ref={setBtnIconRefs(`cardtext-${btn}`)}
                 key={`main-${i}-${btn}`}
                 data-tooltip={btn}
-                // ref={setBtnIconRef(`cardtext-${btn}`)}
-                onClick={(evt) => handleClickBtnMain(evt, btn)}
-                onMouseEnter={(evt) =>
-                  handleMouseEnterBtnMain(evt, btnsCardtext)
-                }
-                onMouseLeave={(evt) =>
-                  handleMouseLeaveBtnMain(evt, btnsCardtext)
-                }
+                data-section={'cardtext'}
+                onClick={handleClickBtnMain}
+                onMouseEnter={(evt) => handleMouseEnterBtn(evt, btnsCardtext)}
+                onMouseLeave={(evt) => handleMouseLeaveBtn(evt, btnsCardtext)}
               >
                 {addIconToolbar(btn)}
               </button>

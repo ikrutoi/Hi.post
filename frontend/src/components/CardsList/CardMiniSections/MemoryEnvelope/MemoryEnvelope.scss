@@ -1,4 +1,4 @@
-.envelope-memory-card {
+.memory-card {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -12,15 +12,15 @@
   border: solid 1px rgb(173, 173, 173);
 }
 
-.envelope-memory-card:first-child {
+.memory-card:first-child {
   margin-left: 0;
 }
 
-.envelope-memory-card p {
+.memory-envelope-card p {
   font-size: 0.7rem;
 }
 
-.envelope-memory-card p:first-child {
+.memory-envelope-card p:first-child {
   font-weight: 600;
   font-size: 0.9rem;
 }
