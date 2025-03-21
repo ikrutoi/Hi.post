@@ -115,8 +115,6 @@ const CardsList = () => {
     memoryRefs.current[id] = element
   }
 
-  console.log('memoryCardtext', memoryCardtext)
-
   for (let section in sectionCardEdit) {
     if (!!sectionCardEdit[section]) {
       switch (section) {

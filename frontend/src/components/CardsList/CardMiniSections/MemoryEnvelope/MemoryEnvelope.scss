@@ -2,7 +2,6 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   margin-left: 1rem;
   padding: 0.5rem;
   border-radius: 0.5rem;
@@ -10,6 +9,10 @@
   // background-color: #ffffff;
   box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
   border: solid 1px rgb(173, 173, 173);
+}
+
+.memory-envelope-card {
+  justify-content: center;
 }
 
 .memory-card:first-child {

@@ -9,6 +9,25 @@ const MemoryCardtext = ({
   handleClickAddressMiniKebab,
   handleClickAddress,
 }) => {
+  // const firstText = text.text[0].children[0].text.slice(0, 12)
+  const fillText = () => {
+    return Object.values(text.text).map((el, i, arr) => {
+      if (i === 0) {
+        const firstText = el.children[0].text.slice(0, 12)
+        return firstText.length < 12 ? (
+          <p>{firstText}...</p>
+        ) : (
+          <p>{firstText}</p>
+        )
+      }
+      return i > 0 && i < arr.length - 1 ? (
+        <p>{el.children[0].text}</p>
+      ) : (
+        <p>{el.children[0].text}...</p>
+      )
+    })
+  }
+
   return (
     <div
       className="memory-card memory-cardtext-card"
@@ -19,7 +38,7 @@ const MemoryCardtext = ({
       }}
       onClick={() => handleClickAddress(section, text.id)}
     >
-      <p>{text.text[0].children[0].text}</p>
+      {fillText()}
       <div
         className="card-mini-kebab card-mini-kebab-envelope"
         onClick={() => handleClickAddressMiniKebab(section, text.id)}
