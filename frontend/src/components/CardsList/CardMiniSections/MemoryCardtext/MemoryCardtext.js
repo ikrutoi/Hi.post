@@ -3,11 +3,11 @@ import './MemoryCardtext.scss'
 
 const MemoryCardtext = ({
   sizeMiniCard,
-  section,
+  // section,
   text,
   setRef,
-  handleClickAddressMiniKebab,
-  handleClickAddress,
+  handleClickMiniKebab,
+  handleClickCardtext,
 }) => {
   // const firstText = text.text[0].children[0].text.slice(0, 12)
   const fillText = () => {
@@ -15,15 +15,15 @@ const MemoryCardtext = ({
       if (i === 0) {
         const firstText = el.children[0].text.slice(0, 12)
         return firstText.length < 12 ? (
-          <p>{firstText}...</p>
+          <p key={`long-${firstText}-${i}`}>{firstText}...</p>
         ) : (
-          <p>{firstText}</p>
+          <p key={`short-${firstText}-${i}`}>{firstText}</p>
         )
       }
       return i > 0 && i < arr.length - 1 ? (
-        <p>{el.children[0].text}</p>
+        <p key={`short-text-${i}`}>{el.children[0].text}</p>
       ) : (
-        <p>{el.children[0].text}...</p>
+        <p key={`long-text-${i}`}>{el.children[0].text}...</p>
       )
     })
   }
@@ -31,17 +31,17 @@ const MemoryCardtext = ({
   return (
     <div
       className="memory-card memory-cardtext-card"
-      ref={setRef(`${section}-${text.id}`)}
+      ref={setRef(`cardtext-${text.id}`)}
       style={{
         width: `${sizeMiniCard.width}px`,
         height: `${sizeMiniCard.height}px`,
       }}
-      onClick={() => handleClickAddress(section, text.id)}
+      onClick={() => handleClickCardtext(text.id)}
     >
       {fillText()}
       <div
         className="card-mini-kebab card-mini-kebab-envelope"
-        onClick={() => handleClickAddressMiniKebab(section, text.id)}
+        onClick={() => handleClickMiniKebab('cardtext', text.id)}
       >
         <CgClose className="icon-close" />
       </div>

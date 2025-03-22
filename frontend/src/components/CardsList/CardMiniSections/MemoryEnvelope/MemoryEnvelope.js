@@ -6,7 +6,7 @@ const MemoryEnvelope = ({
   section,
   address,
   setRef,
-  handleClickAddressMiniKebab,
+  handleClickMiniKebab,
   handleClickAddress,
 }) => {
   return (
@@ -26,7 +26,7 @@ const MemoryEnvelope = ({
       <p>{address.address.country}</p>
       <div
         className="card-mini-kebab card-mini-kebab-envelope"
-        onClick={() => handleClickAddressMiniKebab(section, address.id)}
+        onClick={() => handleClickMiniKebab(section, address.id)}
       >
         <CgClose className="icon-close" />
       </div>

@@ -15,6 +15,7 @@ import {
   getAllRecordsAddresses,
   deleteRecordAddress,
   getAllRecordCardtext,
+  deleteRecordCardtext,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import { colorSchemeMain } from '../../data/main/colorSchemeMain'
 import MemoryEnvelope from './CardMiniSections/MemoryEnvelope/MemoryEnvelope'
@@ -34,7 +35,7 @@ const CardsList = () => {
   const infoEnvelopeClip = useSelector(
     (state) => state.infoButtons.envelopeClip
   )
-  const infoCardtextClip = useSelector(
+  const infoButtonsCardtextClip = useSelector(
     (state) => state.infoButtons.cardtext.clip
   )
   const listSelectedSections = []
@@ -57,39 +58,36 @@ const CardsList = () => {
   useEffect(() => {
     if (choiceSection.nameSection === 'envelope') {
       if (infoEnvelopeSave) {
-        getAddress(infoEnvelopeSave)
+        getAllAddress(infoEnvelopeSave)
         dispatch(infoButtons({ envelopeSave: false }))
       }
       if (infoEnvelopeClip) {
-        getAddress(infoEnvelopeClip)
+        getAllAddress(infoEnvelopeClip)
+      } else {
+        setMemoryList(false)
       }
-      setMemoryList(infoEnvelopeClip)
+      // setMemoryList(infoEnvelopeClip)
     }
-    if (choiceSection.nameSection === 'cardtext') {
-      if (infoCardtextClip) {
-        getCardtext()
-      }
-      switch (infoCardtextClip) {
-        case 'hover':
-          setMemoryList('cardtext')
-          break
-        case true:
-          setMemoryList(false)
-          break
-
-        default:
-          break
-      }
+    switch (infoButtonsCardtextClip) {
+      case 'hover':
+        getAllCardtext()
+        setMemoryList('cardtext')
+        break
+      case true:
+        setMemoryList(false)
+        break
+      default:
+        break
     }
   }, [
     choiceSection,
     infoEnvelopeSave,
     infoEnvelopeClip,
-    infoCardtextClip,
+    infoButtonsCardtextClip,
     dispatch,
   ])
 
-  const getAddress = async (section) => {
+  const getAllAddress = async (section) => {
     const listAddress = await getAllRecordsAddresses(
       section === 'myaddress' ? 'myAddress' : 'toAddress'
     )
@@ -99,9 +97,10 @@ const CardsList = () => {
         [section]: listAddress,
       }
     })
+    setMemoryList(section)
   }
 
-  const getCardtext = async () => {
+  const getAllCardtext = async () => {
     const listCardtexts = await getAllRecordCardtext()
     setMemoryCardtext((state) => {
       return {
@@ -231,17 +230,27 @@ const CardsList = () => {
   // }
   // const listPrioritySections = getListPrioritySections()
 
-  const handleClickAddressMiniKebab = async (section, id) => {
-    await deleteRecordAddress(
-      section === 'myaddress' ? 'myAddress' : 'toAddress',
-      id
-    )
-    getAddress(section)
-    dispatch(infoButtons({ miniAddressClose: section }))
+  const handleClickMiniKebab = async (section, id) => {
+    if (section === 'myaddress' || section === 'toaddress') {
+      await deleteRecordAddress(
+        section === 'myaddress' ? 'myAddress' : 'toAddress',
+        id
+      )
+      getAllAddress(section)
+      dispatch(infoButtons({ miniAddressClose: section }))
+    }
+    if (section === 'cardtext') {
+      await deleteRecordCardtext(id)
+      getAllCardtext()
+    }
   }
 
   const handleClickAddress = (section, id) => {
     dispatch(choiceAddress({ section, id }))
+  }
+
+  const handleClickCardtext = (id) => {
+    // console.log('click mini cardtext id', id)
   }
 
   const handleClickIconMinimize = () => {
@@ -298,7 +307,7 @@ const CardsList = () => {
                 sizeMiniCard={sizeMiniCard}
                 section={memoryList}
                 address={address}
-                handleClickAddressMiniKebab={handleClickAddressMiniKebab}
+                handleClickMiniKebab={handleClickMiniKebab}
                 handleClickAddress={handleClickAddress}
               />
             ))}
@@ -314,10 +323,10 @@ const CardsList = () => {
                 key={`cardtext-${i}`}
                 setRef={setRef}
                 sizeMiniCard={sizeMiniCard}
-                section={memoryList}
+                // section={memoryList}
                 text={text}
-                handleClickAddressMiniKebab={handleClickAddressMiniKebab}
-                handleClickAddress={handleClickAddress}
+                handleClickMiniKebab={handleClickMiniKebab}
+                handleClickCardtext={handleClickCardtext}
               />
             ))}
         </div>

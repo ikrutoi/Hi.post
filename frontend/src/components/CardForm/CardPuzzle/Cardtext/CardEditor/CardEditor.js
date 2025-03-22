@@ -491,7 +491,6 @@ const CardEditor = ({
     const parentBtn = evt.target.closest('.toolbar-btn')
     switch (parentBtn.dataset.tooltip) {
       case 'save':
-        console.log('value', value)
         await addUniqueRecordCardtext(value)
         break
       case 'delete':

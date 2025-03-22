@@ -10,17 +10,26 @@ const BtnCardsNav = ({
   section,
   navBtn,
 }) => {
-  const infoEnvelopeClip = useSelector(
-    (state) => state.infoButtons.envelopeClip
-  )
+  const infoButtonsRedux = useSelector((state) => state.infoButtons)
   const nameNav = section.name.toLowerCase()
   const dispatch = useDispatch()
 
-  const handleClickBtn = () => {
-    if (nameNav !== 'envelope' && infoEnvelopeClip) {
+  const handleClickBtn = (evt) => {
+    const btnNav = evt.target.dataset.section
+    if (btnNav !== 'envelope' && infoButtonsRedux.envelopeClip) {
       dispatch(infoButtons({ envelopeClip: false }))
     }
-    dispatch(addChoiceSection({ source: 'btnNav', nameSection: nameNav }))
+    if (btnNav !== 'cardtext' && infoButtonsRedux.cardtext.clip === 'hover') {
+      dispatch(
+        infoButtons({
+          cardtext: {
+            ...infoButtonsRedux.cardtext,
+            clip: true,
+          },
+        })
+      )
+    }
+    dispatch(addChoiceSection({ source: 'btnNav', nameSection: btnNav }))
   }
 
   return (
