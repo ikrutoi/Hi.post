@@ -6,7 +6,7 @@ const initialState = {
   italic: true,
   left: true,
   download: false,
-  envelopeClip: null,
+  // envelopeClip: null,
   envelopeSave: null,
   miniAddressClose: null,
   envelope: {

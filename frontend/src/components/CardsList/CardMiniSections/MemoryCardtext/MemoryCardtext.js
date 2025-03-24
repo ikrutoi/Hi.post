@@ -3,13 +3,11 @@ import './MemoryCardtext.scss'
 
 const MemoryCardtext = ({
   sizeMiniCard,
-  // section,
   text,
   setRef,
   handleClickMiniKebab,
   handleClickCardtext,
 }) => {
-  // const firstText = text.text[0].children[0].text.slice(0, 12)
   const fillText = () => {
     return Object.values(text.text).map((el, i, arr) => {
       if (i === 0) {

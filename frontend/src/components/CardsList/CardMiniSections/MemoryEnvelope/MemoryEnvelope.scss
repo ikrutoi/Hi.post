@@ -11,21 +11,27 @@
   border: solid 1px rgb(173, 173, 173);
 }
 
-.memory-envelope-card {
-  justify-content: center;
+.memory-envelope-myaddress {
+  justify-content: flex-end;
+}
+
+.memory-envelope-toaddress {
+  justify-content: flex-start;
+}
+
+.memory-envelope-card p {
+  font-size: 0.6rem;
+}
+
+.memory-envelope-myaddress p:nth-child(5),
+.memory-envelope-toaddress p:first-child {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: rgb(0, 125, 250);
 }
 
 .memory-card:first-child {
   margin-left: 0;
-}
-
-.memory-envelope-card p {
-  font-size: 0.7rem;
-}
-
-.memory-envelope-card p:first-child {
-  font-weight: 600;
-  font-size: 0.9rem;
 }
 
 .card-mini-kebab-envelope {

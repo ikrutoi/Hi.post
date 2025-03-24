@@ -1,11 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { createEditor, Editor, Range } from 'slate'
+import { createEditor, Editor, Range, Transforms } from 'slate'
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 import { v4 as uuidv4 } from 'uuid'
 import './CardEditor.scss'
 import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
+import {
+  choiceSave,
+  choiceClip,
+} from '../../../../../redux/layout/actionCreators'
 import { colorScheme } from '../../../../../data/toolbar/colorScheme'
 import { colorSchemeMain } from '../../../../../data/main/colorSchemeMain'
 import scaleBase from '../../../../../data/main/scaleCardAndCardMini.json'
@@ -34,20 +38,22 @@ const CardEditor = ({
   styleLeftCardPuzzle,
   //  choiceBtnNav
 }) => {
-  const selector = useSelector((state) => state.cardEdit.cardtext)
+  const cardEditCardtext = useSelector((state) => state.cardEdit.cardtext)
   const infoButtonsCardtext = useSelector((state) => state.infoButtons.cardtext)
-  const inputCardtext = selector.text ? selector : null
-  const [cardtext, setCardtext] = useState(inputCardtext)
+  const memorySection = useSelector((state) => state.layout.choiceMemorySection)
+  const layoutChoiceClip = useSelector((state) => state.layout.choiceClip)
+  // const inputCardtext = cardEditCardtext.text ? cardEditCardtext : null
+  // const [cardtext, setCardtext] = useState(cardEditCardtext)
   const editor = useMemo(() => withReact(createEditor()), [])
-  const [value, setValue] = useState(cardtext.text)
+  const [value, setValue] = useState(cardEditCardtext.text)
   const btnIconRefs = useRef({})
   // const btnIconMainRefs = useRef({})
   const btnColorRefs = useRef({})
-  const [editable, setEditable] = useState(null)
+  // const [editable, setEditable] = useState(null)
   const editorRef = useRef(null)
   const editableRef = useRef(null)
-  const [editableWidth, setEditableWidth] = useState(null)
-  const [linesCount, setLinesCount] = useState(1)
+  // const [editableWidth, setEditableWidth] = useState(null)
+  // const [linesCount, setLinesCount] = useState(1)
   const [focusedElement, setFocusedElement] = useState(null)
   const [maxLines, setMaxLines] = useState(null)
   const [memoryCardtext, setMemoryCardtext] = useState(null)
@@ -76,9 +82,25 @@ const CardEditor = ({
     setValue(newValue)
   }
 
+  const getCardtextFromMemory = async (id) => {
+    const valueFromMemory = await getRecordCardtextById(id)
+    if (valueFromMemory) {
+      const arrKeys = Object.keys(valueFromMemory.text)
+      const nodes = arrKeys.map((i) => {
+        return valueFromMemory.text[i]
+      })
+      clearEditor()
+      setValue(nodes)
+      Transforms.insertNodes(editor, nodes)
+    }
+    dispatch(choiceClip(false))
+  }
+
   useEffect(() => {
-    setCardtext(selector)
-  }, [selector])
+    if (memorySection.section === 'cardtext') {
+      getCardtextFromMemory(memorySection.id)
+    }
+  }, [memorySection])
 
   useEffect(() => {
     if (listBtnsCardtext && infoButtonsCardtext) {
@@ -241,7 +263,7 @@ const CardEditor = ({
     )
     setChoiceSection('cardtext')
     setMaxLines(lines)
-    setEditableWidth(editableRef.current.offsetWidth)
+    // setEditableWidth(editableRef.current.offsetWidth)
   }
 
   const arrayCompare = (arr1, arr2) => {
@@ -276,9 +298,8 @@ const CardEditor = ({
         editableRef.current.scrollHeight /
           markRef.current.getBoundingClientRect().height
       )
-      setLinesCount(markLineCurrent)
+      // setLinesCount(markLineCurrent)
       if (markLineCurrent > maxLines && maxLines) {
-        console.log('calc+')
         calcStyleAndLinesEditable('increaseLines')
       }
     }
@@ -322,39 +343,39 @@ const CardEditor = ({
     }
   }, [editor, value, markPath])
 
-  const handleKeyDown = (evt) => {
-    // console.log('key down0')
-    // if (editorRef.current && markRef.current) {
-    //   console.log('key down1')
-    //   const markLineCurrent = Math.round(
-    //     (markRef.current.getBoundingClientRect().top -
-    //       editorRef.current.getBoundingClientRect().top +
-    //       markRef.current.getBoundingClientRect().height) /
-    //       markRef.current.getBoundingClientRect().height
-    //   )
-    //   console.log('markLines, maxLines', markLineCurrent, maxLines)
-    //   if (markLineCurrent > maxLines && maxLines) {
-    //     // console.log('key down outside true!')
-    //     // setOutside(true)
-    //     // calcStyleAndLinesEditable('increaseLines')
-    //   }
-    // }
-    // console.log('outside', outside)
-    // setLastKey(evt.key)
-    // if (isMaxLines) {
-    //   console.log('HandleKeyDown. Max Lines!')
-    //   // evt.preventDefault()
-    // }
-  }
+  // const handleKeyDown = (evt) => {
+  // console.log('key down0')
+  // if (editorRef.current && markRef.current) {
+  //   console.log('key down1')
+  //   const markLineCurrent = Math.round(
+  //     (markRef.current.getBoundingClientRect().top -
+  //       editorRef.current.getBoundingClientRect().top +
+  //       markRef.current.getBoundingClientRect().height) /
+  //       markRef.current.getBoundingClientRect().height
+  //   )
+  //   console.log('markLines, maxLines', markLineCurrent, maxLines)
+  //   if (markLineCurrent > maxLines && maxLines) {
+  //     // console.log('key down outside true!')
+  //     // setOutside(true)
+  //     // calcStyleAndLinesEditable('increaseLines')
+  //   }
+  // }
+  // console.log('outside', outside)
+  // setLastKey(evt.key)
+  // if (isMaxLines) {
+  //   console.log('HandleKeyDown. Max Lines!')
+  //   // evt.preventDefault()
+  // }
+  // }
 
-  const handleKeyUp = (evt) => {
-    const { selection } = editor
-    if (selection) {
-      const [start] = Range.edges(selection)
-      const [node] = Editor.node(editor, start)
-      setFocusedElement({ node: node, start: start })
-    }
-  }
+  // const handleKeyUp = (evt) => {
+  //   const { selection } = editor
+  //   if (selection) {
+  //     const [start] = Range.edges(selection)
+  //     const [node] = Editor.node(editor, start)
+  //     setFocusedElement({ node: node, start: start })
+  //   }
+  // }
 
   // const btnRefs = useRef([])
 
@@ -391,6 +412,10 @@ const CardEditor = ({
   //     })
   //   )
   // }
+
+  // useEffect(() => {
+  //   console.log('cardEditCardtext', cardEditCardtext)
+  // }, [cardEditCardtext])
 
   useEffect(() => {
     dispatch(addCardtext({ text: value }))
@@ -487,18 +512,55 @@ const CardEditor = ({
   //   })
   // }
 
+  const clearEditor = () => {
+    const clearNode = () => {
+      Transforms.removeNodes(editor, { at: [0] })
+      if (editor.children.length > 0) {
+        clearNode()
+      }
+    }
+
+    if (editor.children.length > 0) {
+      clearNode()
+    }
+  }
+
   const handleClickBtnMain = async (evt) => {
     const parentBtn = evt.target.closest('.toolbar-btn')
     switch (parentBtn.dataset.tooltip) {
       case 'save':
         await addUniqueRecordCardtext(value)
+        if (btnsCardtext.cardtext.clip === true) {
+          setBtnsCardtext((state) => {
+            return {
+              ...state,
+              cardtext: {
+                ...state.cardtext,
+                clip: 'hover',
+              },
+            }
+          })
+          dispatch(
+            infoButtons({
+              cardtext: {
+                clip: 'hover',
+              },
+            })
+          )
+          dispatch(choiceClip('cardtext'))
+        }
+        dispatch(choiceSave('cardtext'))
         break
       case 'delete':
-        // await addUniqueRecordCardtext(value)
+        clearEditor()
+        Transforms.insertNodes(editor, [
+          {
+            type: 'paragraph',
+            children: [{ text: '' }],
+          },
+        ])
         break
       case 'clip':
-        // const allTexts = await getRecordAllCardtext()
-        // console.log('All texts', allTexts)
         if (btnsCardtext.cardtext.clip) {
           setBtnsCardtext((state) => {
             return {
@@ -517,10 +579,13 @@ const CardEditor = ({
               },
             })
           )
+          if (layoutChoiceClip === 'cardtext') {
+            dispatch(choiceClip(false))
+          } else {
+            dispatch(choiceClip('cardtext'))
+          }
         }
-
         break
-
       default:
         break
     }
@@ -588,19 +653,19 @@ const CardEditor = ({
             placeholder="Hi)"
             className="editable"
             style={
-              cardtext && {
-                fontSize: `${cardtext.fontSize}px`,
-                lineHeight: `${cardtext.lineHeight}px`,
-                color: cardtext.colorType,
-                fontStyle: cardtext.fontStyle,
-                fontWeight: cardtext.fontWeight,
-                textAlign: cardtext.textAlign,
+              cardEditCardtext && {
+                fontSize: `${cardEditCardtext.fontSize}px`,
+                lineHeight: `${cardEditCardtext.lineHeight}px`,
+                color: cardEditCardtext.colorType,
+                fontStyle: cardEditCardtext.fontStyle,
+                fontWeight: cardEditCardtext.fontWeight,
+                textAlign: cardEditCardtext.textAlign,
               }
             }
             ref={editableRef}
-            onBlur={() => setFocusedElement(null)}
-            onKeyDown={handleKeyDown}
-            onKeyUp={handleKeyUp}
+            // onBlur={() => setFocusedElement(null)}
+            // onKeyDown={handleKeyDown}
+            // onKeyUp={handleKeyUp}
           />
         </Slate>
       </div>

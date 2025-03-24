@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { TbArrowsMinimize } from 'react-icons/tb'
 import { HiArrowsPointingIn, HiArrowsPointingOut } from 'react-icons/hi2'
 import './CardsList.scss'
+import { choiceMemorySection } from '../../redux/layout/actionCreators'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
 import {
@@ -26,18 +27,20 @@ const CardsList = () => {
   const layoutActiveSection = useSelector(
     (state) => state.layout.activeSections
   )
+  const choiceSave = useSelector((state) => state.layout.choiceSave)
+  const choiceClip = useSelector((state) => state.layout.choiceClip)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const choiceSection = useSelector((state) => state.layout.choiceSection)
   const infoEnvelopeSave = useSelector(
     (state) => state.infoButtons.envelopeSave
   )
-  const infoEnvelopeClip = useSelector(
-    (state) => state.infoButtons.envelopeClip
-  )
-  const infoButtonsCardtextClip = useSelector(
-    (state) => state.infoButtons.cardtext.clip
-  )
+  // const infoEnvelopeClip = useSelector(
+  //   (state) => state.infoButtons.envelopeClip
+  // )
+  // const infoButtonsCardtextClip = useSelector(
+  //   (state) => state.infoButtons.cardtext.clip
+  // )
   const listSelectedSections = []
   const [minimize, setMinimize] = useState(null)
   const [stylePolyCards, setStylePolyCards] = useState({
@@ -61,31 +64,58 @@ const CardsList = () => {
         getAllAddress(infoEnvelopeSave)
         dispatch(infoButtons({ envelopeSave: false }))
       }
-      if (infoEnvelopeClip) {
-        getAllAddress(infoEnvelopeClip)
-      } else {
-        setMemoryList(false)
-      }
+      // if (infoEnvelopeClip) {
+      //   getAllAddress(infoEnvelopeClip)
+      // } else {
+      //   setMemoryList(false)
+      // }
       // setMemoryList(infoEnvelopeClip)
     }
-    switch (infoButtonsCardtextClip) {
-      case 'hover':
+    if (choiceSection.nameSection === 'cardtext') {
+      if (choiceSave === 'cardtext') {
         getAllCardtext()
         setMemoryList('cardtext')
-        break
-      case true:
-        setMemoryList(false)
-        break
-      default:
-        break
+      }
     }
+    // switch (infoButtonsCardtextClip) {
+    //   case 'hover':
+    //     getAllCardtext()
+    //     setMemoryList('cardtext')
+    //     break
+    //   case true:
+    //     setMemoryList(false)
+    //     break
+    //   default:
+    //     break
+    // }
   }, [
     choiceSection,
     infoEnvelopeSave,
-    infoEnvelopeClip,
-    infoButtonsCardtextClip,
+    // infoEnvelopeClip,
+    // infoButtonsCardtextClip,
+    choiceSave,
+    // choiceClip,
     dispatch,
   ])
+
+  useEffect(() => {
+    // console.log('choiceSave', choiceSave)
+    setMemoryList(choiceClip)
+    switch (choiceClip) {
+      case 'myaddress':
+        getAllAddress('myaddress')
+        break
+      case 'toaddress':
+        getAllAddress('toaddress')
+        break
+      case 'cardtext':
+        getAllCardtext()
+        break
+
+      default:
+        break
+    }
+  }, [choiceSave, choiceClip])
 
   const getAllAddress = async (section) => {
     const listAddress = await getAllRecordsAddresses(
@@ -250,7 +280,7 @@ const CardsList = () => {
   }
 
   const handleClickCardtext = (id) => {
-    // console.log('click mini cardtext id', id)
+    dispatch(choiceMemorySection({ section: 'cardtext', id }))
   }
 
   const handleClickIconMinimize = () => {

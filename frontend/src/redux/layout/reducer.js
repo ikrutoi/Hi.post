@@ -1,4 +1,4 @@
-import { deleteSection } from './actionCreators'
+import { deleteSection, selectedSection } from './actionCreators'
 import * as a from './actionTypes'
 
 const initialState = {
@@ -28,7 +28,14 @@ const initialState = {
     section: null,
     id: null,
   },
+  choiceMemorySection: {
+    section: null,
+    id: null,
+  },
+  choiceSave: null,
+  choiceClip: null,
   deleteSection: null,
+  selectedSection: null,
   activeSections: {
     cardphoto: false,
     cardtext: false,
@@ -66,6 +73,14 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         choiceAddress: { ...state.choiceAddress, ...action.payload },
       }
+    case a.CHOICE_MEMORY_SECTION:
+      return {
+        ...state,
+        choiceMemorySection: {
+          ...state.choiceMemorySection,
+          ...action.payload,
+        },
+      }
     case a.ACTIVE_SECTIONS:
       return {
         ...state,
@@ -75,6 +90,21 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         memoryCrop: action.payload,
+      }
+    case a.CHOICE_SAVE:
+      return {
+        ...state,
+        choiceSave: action.payload,
+      }
+    case a.CHOICE_CLIP:
+      return {
+        ...state,
+        choiceClip: action.payload,
+      }
+    case a.SELECTED_SECTION:
+      return {
+        ...state,
+        selectedSection: action.payload,
       }
     case a.DELETE_SECTION:
       return {

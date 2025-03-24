@@ -10,6 +10,7 @@ import FormAddress from './FormAddress/FormAddress'
 import {
   choiceAddress,
   deleteSection,
+  choiceClip,
 } from '../../../../redux/layout/actionCreators'
 import {
   getAllRecordsAddresses,
@@ -32,21 +33,11 @@ import ToolbarEnvelope from './ToolbarEnvelope/ToolbarEnvelope'
 const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const cardEditEnvelope = useSelector((state) => state.cardEdit.envelope)
   const layoutDeleteSection = useSelector((state) => state.layout.deleteSection)
-  const infoEnvelopeClip = useSelector(
-    (state) => state.infoButtons.envelopeClip
-  )
+  const layoutChoiceClip = useSelector((state) => state.layout.choiceClip)
   const infoMiniAddressClose = useSelector(
     (state) => state.infoButtons.miniAddressClose
   )
   const layoutChoiceAddress = useSelector((state) => state.layout.choiceAddress)
-  // const valueEnvelope =
-  //   cardEditEnvelope.myaddress === null && cardEditEnvelope.toaddress === null
-  //     ? {
-  //         toaddress: { street: '', index: '', city: '', country: '', name: '' },
-  //         myaddress: { street: '', index: '', city: '', country: '', name: '' },
-  //       }
-  //     : cardEditEnvelope
-
   const [value, setValue] = useState(cardEditEnvelope)
   const [memoryAddress, setMemoryAddress] = useState({
     myaddress: null,
@@ -113,20 +104,20 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
 
   useEffect(() => {
     const checkField = (section) => {
-      const fullToAddress = Object.values(value[section]).every(
+      const fullAddress = Object.values(value[section]).every(
         (value) => value !== ''
       )
-      const notEmptyToAddress = Object.values(value[section]).some(
+      const notEmptyAddress = Object.values(value[section]).some(
         (value) => value !== ''
       )
       setBtnsAddress((state) => {
         return {
           ...state,
-          [section]: { ...state[section], delete: notEmptyToAddress },
+          [section]: { ...state[section], delete: notEmptyAddress },
         }
       })
 
-      if (fullToAddress) {
+      if (fullAddress) {
         const parityToaddress = changeParityInputsAddress(section)
         setBtnsAddress((state) => {
           return {
@@ -275,9 +266,9 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
         colorScheme[state]
     }
 
-    if (infoEnvelopeClip) {
+    if (layoutChoiceClip) {
       sectionsForm.forEach((section) => {
-        if (section === infoEnvelopeClip) {
+        if (section === layoutChoiceClip) {
           changeStyleForm(section, 'hover')
           setBtnsAddress((state) => {
             return {
@@ -308,18 +299,27 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
         }
       })
     }
-  }, [infoEnvelopeClip, stateMouseClip])
+  }, [layoutChoiceClip, stateMouseClip])
 
   const handleClickClip = (section) => {
-    if (infoEnvelopeClip) {
-      if (infoEnvelopeClip === section) {
-        dispatch(infoButtons({ envelopeClip: false }))
+    if (layoutChoiceClip) {
+      if (layoutChoiceClip === section) {
+        dispatch(choiceClip(false))
       } else {
-        dispatch(infoButtons({ envelopeClip: section }))
+        dispatch(choiceClip(section))
       }
     } else {
-      dispatch(infoButtons({ envelopeClip: section }))
+      dispatch(choiceClip(section))
     }
+    // if (infoEnvelopeClip) {
+    //   if (infoEnvelopeClip === section) {
+    //     dispatch(infoButtons({ envelopeClip: false }))
+    //   } else {
+    //     dispatch(infoButtons({ envelopeClip: section }))
+    //   }
+    // } else {
+    //   dispatch(infoButtons({ envelopeClip: section }))
+    // }
   }
 
   const changeParityInputsAddress = (section) => {

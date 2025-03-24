@@ -11,7 +11,7 @@ const MemoryEnvelope = ({
 }) => {
   return (
     <div
-      className="memory-card memory-envelope-card"
+      className={`memory-card memory-envelope-card memory-envelope-${section}`}
       ref={setRef(`${section}-${address.id}`)}
       style={{
         width: `${sizeMiniCard.width}px`,
@@ -19,11 +19,12 @@ const MemoryEnvelope = ({
       }}
       onClick={() => handleClickAddress(section, address.id)}
     >
-      <p>{address.address.name}</p>
+      {section === 'toaddress' ? <p>{address.address.name}</p> : ''}
       <p>{address.address.street}</p>
       <p>{address.address.index}</p>
       <p>{address.address.city}</p>
       <p>{address.address.country}</p>
+      {section === 'myaddress' ? <p>{address.address.name}</p> : ''}
       <div
         className="card-mini-kebab card-mini-kebab-envelope"
         onClick={() => handleClickMiniKebab(section, address.id)}
