@@ -23,8 +23,8 @@ import MemoryEnvelope from './CardMiniSections/MemoryEnvelope/MemoryEnvelope'
 import MemoryCardtext from './CardMiniSections/MemoryCardtext/MemoryCardtext'
 
 const CardsList = () => {
-  const sectionCardEdit = useSelector((state) => state.cardEdit)
-  const layoutActiveSection = useSelector(
+  const cardEdit = useSelector((state) => state.cardEdit)
+  const layoutActiveSections = useSelector(
     (state) => state.layout.activeSections
   )
   const choiceSave = useSelector((state) => state.layout.choiceSave)
@@ -35,19 +35,12 @@ const CardsList = () => {
   const infoEnvelopeSave = useSelector(
     (state) => state.infoButtons.envelopeSave
   )
-  // const infoEnvelopeClip = useSelector(
-  //   (state) => state.infoButtons.envelopeClip
-  // )
-  // const infoButtonsCardtextClip = useSelector(
-  //   (state) => state.infoButtons.cardtext.clip
-  // )
-  const listSelectedSections = []
+  const [listActiveSections, setListActiveSections] = useState([])
   const [minimize, setMinimize] = useState(null)
   const [stylePolyCards, setStylePolyCards] = useState({
     filter: {},
     icon: {},
   })
-  let count = 0
   const [memoryList, setMemoryList] = useState(null)
   const [memoryAddress, setMemoryAddress] = useState({
     myaddress: null,
@@ -64,12 +57,6 @@ const CardsList = () => {
         getAllAddress(infoEnvelopeSave)
         dispatch(infoButtons({ envelopeSave: false }))
       }
-      // if (infoEnvelopeClip) {
-      //   getAllAddress(infoEnvelopeClip)
-      // } else {
-      //   setMemoryList(false)
-      // }
-      // setMemoryList(infoEnvelopeClip)
     }
     if (choiceSection.nameSection === 'cardtext') {
       if (choiceSave === 'cardtext') {
@@ -77,29 +64,9 @@ const CardsList = () => {
         setMemoryList('cardtext')
       }
     }
-    // switch (infoButtonsCardtextClip) {
-    //   case 'hover':
-    //     getAllCardtext()
-    //     setMemoryList('cardtext')
-    //     break
-    //   case true:
-    //     setMemoryList(false)
-    //     break
-    //   default:
-    //     break
-    // }
-  }, [
-    choiceSection,
-    infoEnvelopeSave,
-    // infoEnvelopeClip,
-    // infoButtonsCardtextClip,
-    choiceSave,
-    // choiceClip,
-    dispatch,
-  ])
+  }, [choiceSection, infoEnvelopeSave, choiceSave, dispatch])
 
   useEffect(() => {
-    // console.log('choiceSave', choiceSave)
     setMemoryList(choiceClip)
     switch (choiceClip) {
       case 'myaddress':
@@ -144,82 +111,32 @@ const CardsList = () => {
     memoryRefs.current[id] = element
   }
 
-  for (let section in sectionCardEdit) {
-    if (!!sectionCardEdit[section]) {
-      switch (section) {
-        case 'cardphoto':
-          if (
-            Object.keys(layoutIndexDb).length !== 0 &&
-            (layoutIndexDb.hiPostImages.miniImage ||
-              layoutIndexDb.userImages.miniImage)
-          ) {
-            listSelectedSections.push({ section, position: 0, index: 4 })
-            count++
-          }
-          break
-        case 'cardtext':
-          if (sectionCardEdit[section].text[0].children[0].text) {
-            listSelectedSections.push({ section, position: 1, index: 3 })
-            count++
-          }
-          break
-        case 'envelope':
-          if (
-            sectionCardEdit[section].toaddress.street !== '' &&
-            sectionCardEdit[section].toaddress.index !== '' &&
-            sectionCardEdit[section].toaddress.city !== '' &&
-            sectionCardEdit[section].toaddress.country !== '' &&
-            sectionCardEdit[section].toaddress.name !== ''
-          ) {
-            listSelectedSections.push({ section, position: 2, index: 2 })
-            count++
-            if (!layoutActiveSection.envelope) {
-              dispatch(activeSections({ envelope: true }))
-            }
-          } else {
-            if (layoutActiveSection.envelope) {
-              dispatch(activeSections({ envelope: false }))
-            }
-          }
-          break
-        case 'date':
-          if (sectionCardEdit[section]) {
-            listSelectedSections.push({ section, position: 3, index: 1 })
-            count++
-            if (!layoutActiveSection.date) {
-              dispatch(activeSections({ date: true }))
-            }
-          } else {
-            if (layoutActiveSection.date) {
-              dispatch(activeSections({ date: false }))
-            }
-          }
-          break
-        case 'aroma':
-          if (sectionCardEdit[section]) {
-            listSelectedSections.push({ section, position: 4, index: 0 })
-            count++
-            if (!layoutActiveSection.aroma) {
-              dispatch(activeSections({ aroma: true }))
-            }
-          } else {
-            if (layoutActiveSection.aroma) {
-              dispatch(activeSections({ aroma: false }))
-            }
-          }
-          break
-        default:
-          break
+  useEffect(() => {
+    const baseSections = {
+      cardphoto: { section: 'cardphoto', position: 0, index: 4 },
+      cardtext: { section: 'cardtext', position: 1, index: 3 },
+      envelope: { section: 'envelope', position: 2, index: 2 },
+      date: { section: 'date', position: 3, index: 1 },
+      aroma: { section: 'aroma', position: 4, index: 0 },
+    }
+
+    const listSections = []
+
+    for (let section in layoutActiveSections) {
+      if (layoutActiveSections[section]) {
+        listSections.push(baseSections[section])
       }
     }
-  }
 
-  const listSortSelectedSections = listSelectedSections.sort(
-    (a, b) => a.position - b.position
-  )
+    const sortListSections = listSections.sort(
+      (a, b) => a.position - b.position
+    )
+
+    setListActiveSections(sortListSections)
+  }, [layoutActiveSections])
 
   useEffect(() => {
-    if (count === 5) {
+    if (listActiveSections.length === 5) {
       setStylePolyCards((state) => {
         return {
           ...state,
@@ -244,7 +161,7 @@ const CardsList = () => {
         }
       })
     }
-  }, [count])
+  }, [listActiveSections])
 
   // const getListPrioritySections = () => {
   //   const temporaryArray = []
@@ -260,14 +177,14 @@ const CardsList = () => {
   // }
   // const listPrioritySections = getListPrioritySections()
 
-  const handleClickMiniKebab = async (section, id) => {
+  const handleClickMiniKebab = async (evt, section, id) => {
+    evt.stopPropagation()
     if (section === 'myaddress' || section === 'toaddress') {
       await deleteRecordAddress(
         section === 'myaddress' ? 'myAddress' : 'toAddress',
         id
       )
       getAllAddress(section)
-      dispatch(infoButtons({ miniAddressClose: section }))
     }
     if (section === 'cardtext') {
       await deleteRecordCardtext(id)
@@ -284,13 +201,13 @@ const CardsList = () => {
   }
 
   const handleClickIconMinimize = () => {
-    if (listSortSelectedSections.length === 5) {
+    if (listActiveSections.length === 5) {
       minimize ? setMinimize(false) : setMinimize(true)
     }
   }
 
   const handleMouseEnterIconMinimize = () => {
-    if (count === 5) {
+    if (listActiveSections.length === 5) {
       setStylePolyCards((state) => {
         return {
           ...state,
@@ -304,7 +221,7 @@ const CardsList = () => {
   }
 
   const handleMouseLeaveIconMinimize = () => {
-    if (count === 5) {
+    if (listActiveSections.length === 5) {
       setStylePolyCards((state) => {
         return {
           ...state,
@@ -407,11 +324,11 @@ const CardsList = () => {
               )}
             </div>
           </div>
-          {listSortSelectedSections.length !== 0 ? (
-            listSortSelectedSections.map((selectedSection, i, arr) => (
+          {listActiveSections.length !== 0 ? (
+            listActiveSections.map((selectedSection, i, arr) => (
               <CardMiniSection
                 key={`card-mini-${selectedSection.section}-${i}`}
-                valueSection={sectionCardEdit[selectedSection.section]}
+                valueSection={cardEdit[selectedSection.section]}
                 sizeCardMini={sizeMiniCard}
                 infoSection={{
                   section: selectedSection,

@@ -9,6 +9,7 @@ import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import {
   choiceSave,
   choiceClip,
+  activeSections,
 } from '../../../../../redux/layout/actionCreators'
 import { colorScheme } from '../../../../../data/toolbar/colorScheme'
 import { colorSchemeMain } from '../../../../../data/main/colorSchemeMain'
@@ -36,18 +37,16 @@ const CardEditor = ({
   toolbarColor,
   setChoiceSection,
   styleLeftCardPuzzle,
-  //  choiceBtnNav
 }) => {
   const cardEditCardtext = useSelector((state) => state.cardEdit.cardtext)
   const infoButtonsCardtext = useSelector((state) => state.infoButtons.cardtext)
   const memorySection = useSelector((state) => state.layout.choiceMemorySection)
-  const layoutChoiceClip = useSelector((state) => state.layout.choiceClip)
-  // const inputCardtext = cardEditCardtext.text ? cardEditCardtext : null
-  // const [cardtext, setCardtext] = useState(cardEditCardtext)
+  const layoutActiveSections = useSelector(
+    (state) => state.layout.activeSections
+  )
   const editor = useMemo(() => withReact(createEditor()), [])
   const [value, setValue] = useState(cardEditCardtext.text)
   const btnIconRefs = useRef({})
-  // const btnIconMainRefs = useRef({})
   const btnColorRefs = useRef({})
   // const [editable, setEditable] = useState(null)
   const editorRef = useRef(null)
@@ -68,9 +67,6 @@ const CardEditor = ({
   const setBtnIconRefs = (id) => (element) => {
     btnIconRefs.current[id] = element
   }
-  // const setBtnIconMainRefs = (id) => (element) => {
-  //   btnIconMainRefs.current[id] = element
-  // }
 
   const setBtnColorRef = (id) => (element) => {
     btnColorRefs.current[id] = element
@@ -93,7 +89,6 @@ const CardEditor = ({
       setValue(nodes)
       Transforms.insertNodes(editor, nodes)
     }
-    dispatch(choiceClip(false))
   }
 
   useEffect(() => {
@@ -133,23 +128,6 @@ const CardEditor = ({
     }
   }, [])
 
-  // useEffect(() => {
-  //   if (listColors) {
-  //     setBtnsColors((state) => {
-  //       return {
-  //         ...state,
-  //         cardtext: {
-  //           ...state.cardtext,
-  //           ...listColors.reduce((acc, key) => {
-  //             acc[key].name = acc[key].code
-  //             return acc
-  //           }, {}),
-  //         },
-  //       }
-  //     })
-  //   }
-  // }, [])
-
   useEffect(() => {
     if (btnsCardtext && btnIconRefs.current) {
       changeIconStyles(btnsCardtext, btnIconRefs.current)
@@ -180,6 +158,12 @@ const CardEditor = ({
           save: value[0].children[0].text.length ? true : false,
           delete: value[0].children[0].text.length ? true : false,
         },
+      })
+    )
+    dispatch(
+      activeSections({
+        ...layoutActiveSections,
+        cardtext: value[0].children[0].text.length ? true : false,
       })
     )
 
@@ -215,7 +199,9 @@ const CardEditor = ({
       )
     }
 
-    getCountCardtexts()
+    if (infoButtonsCardtext.clip !== 'hover') {
+      getCountCardtexts()
+    }
 
     // const processCardtext = async (value) => {
     //   for (const section of Object.keys(value)) {
@@ -579,17 +565,22 @@ const CardEditor = ({
               },
             })
           )
-          if (layoutChoiceClip === 'cardtext') {
-            dispatch(choiceClip(false))
-          } else {
-            dispatch(choiceClip('cardtext'))
-          }
+          // if (layoutChoiceClip === 'cardtext') {
+          //   dispatch(choiceClip(false))
+          // } else {
+          // }
         }
         break
       default:
         break
     }
   }
+
+  useEffect(() => {
+    infoButtonsCardtext.clip === 'hover'
+      ? dispatch(choiceClip('cardtext'))
+      : dispatch(choiceClip(false))
+  }, [infoButtonsCardtext, dispatch])
 
   return (
     <div className="cardeditor">

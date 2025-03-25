@@ -19,13 +19,19 @@ import CurrentDateTime from './CurrentDateTime/CurrentDateTime'
 import { currentDate } from '../../../../utils/date/date'
 import Slider from './Slider/Slider'
 import nameMonths from '../../../../data/date/monthOfYear.json'
-import { addChoiceSection } from '../../../../redux/layout/actionCreators'
+import {
+  activeSections,
+  addChoiceSection,
+} from '../../../../redux/layout/actionCreators'
 import ToolbarDate from './ToolbarDate/ToolbarDate'
 import { colorSchemeMain } from '../../../../data/main/colorSchemeMain'
 import { searchParent } from '../../../../utils/searchParent'
 
 const Date = ({ setChoiceSection }) => {
   const cardEditDate = useSelector((state) => state.cardEdit.date)
+  const layoutActiveSections = useSelector(
+    (state) => state.layout.activeSections
+  )
   const inputValueSelectedDate = cardEditDate
     ? cardEditDate
     : {
@@ -75,6 +81,12 @@ const Date = ({ setChoiceSection }) => {
       setChoiceSection('date')
     }
   }
+
+  useEffect(() => {
+    dispatch(
+      activeSections({ ...layoutActiveSections, date: Boolean(selectedDate) })
+    )
+  }, [selectedDate, dispatch])
 
   const handleChangeTitle = (evt) => {
     const parentElement = searchParent(evt.target, 'date-title')

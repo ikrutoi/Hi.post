@@ -11,6 +11,7 @@ import {
   choiceAddress,
   deleteSection,
   choiceClip,
+  activeSections,
 } from '../../../../redux/layout/actionCreators'
 import {
   getAllRecordsAddresses,
@@ -34,6 +35,9 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
   const cardEditEnvelope = useSelector((state) => state.cardEdit.envelope)
   const layoutDeleteSection = useSelector((state) => state.layout.deleteSection)
   const layoutChoiceClip = useSelector((state) => state.layout.choiceClip)
+  const layoutActiveSections = useSelector(
+    (state) => state.layout.activeSections
+  )
   const infoMiniAddressClose = useSelector(
     (state) => state.infoButtons.miniAddressClose
   )
@@ -85,6 +89,8 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
         layoutChoiceAddress.id
       )
 
+      console.log('address', address)
+
       setValue((state) => {
         return {
           ...state,
@@ -116,6 +122,12 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           [section]: { ...state[section], delete: notEmptyAddress },
         }
       })
+
+      if (section === 'toaddress') {
+        dispatch(
+          activeSections({ ...layoutActiveSections, envelope: fullAddress })
+        )
+      }
 
       if (fullAddress) {
         const parityToaddress = changeParityInputsAddress(section)
@@ -170,7 +182,7 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
     }
 
     processSections(value)
-  }, [value])
+  }, [value, dispatch])
 
   useEffect(() => {
     if (infoMiniAddressClose) {
@@ -383,14 +395,13 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
           value[section]
         )
         dispatch(infoButtons({ envelopeSave: section }))
-      }
-      if (btnsAddress[section].save) {
         setBtnsAddress((state) => {
           return {
             ...state,
             [section]: { ...state[section], save: false },
           }
         })
+        handleClickClip(section)
       }
     }
     if (parentBtn.dataset.tooltip === 'delete' && section === 'myaddress') {
@@ -413,7 +424,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
 
   return (
     <div className="envelope">
-      {/* {!layoutActiveEnvelope && ( */}
       <div
         className="nav-container nav-container-envelope"
         style={{
@@ -425,7 +435,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
       >
         <ToolbarEnvelope />
       </div>
-      {/* )} */}
       <div className="envelope-myaddress">
         <div className="envelope-logo-container">
           <span

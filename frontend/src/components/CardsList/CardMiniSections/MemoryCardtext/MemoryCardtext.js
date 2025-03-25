@@ -39,7 +39,7 @@ const MemoryCardtext = ({
       {fillText()}
       <div
         className="card-mini-kebab card-mini-kebab-envelope"
-        onClick={() => handleClickMiniKebab('cardtext', text.id)}
+        onClick={(evt) => handleClickMiniKebab(evt, 'cardtext', text.id)}
       >
         <CgClose className="icon-close" />
       </div>

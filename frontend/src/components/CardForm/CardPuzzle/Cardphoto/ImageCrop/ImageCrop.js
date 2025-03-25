@@ -14,6 +14,7 @@ import {
 import {
   addIndexDb,
   addMemoryCrop,
+  activeSections,
 } from '../../../../../redux/layout/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import coverImage from '../../../../../data/img/card-photo-bw.jpg'
@@ -32,6 +33,10 @@ const ImageCrop = ({ sizeCard }) => {
     (state) => state.infoButtons.cardphotoClick
   )
   const layoutMemoryCrop = useSelector((state) => state.layout.memoryCrop)
+  const layoutSaveImage = useSelector((state) => state.layout.indexDb)
+  const layoutActiveSections = useSelector(
+    (state) => state.layout.activeSelectors
+  )
   const [image, setImage] = useState({ source: null, url: null, base: null })
   const [scaleX, setScaleX] = useState(1)
   const [scaleY, setScaleY] = useState(1)
@@ -46,6 +51,15 @@ const ImageCrop = ({ sizeCard }) => {
   const [lastMousePosition, setLastMousePosition] = useState({ x: 0, y: 0 })
   const dispatch = useDispatch()
   const aspectRatio = 142 / 100
+
+  useEffect(() => {
+    const booleanMiniImage = Object.values(layoutSaveImage).some(
+      (image) => !!image.miniImage
+    )
+    dispatch(
+      activeSections({ ...layoutActiveSections, cardphoto: booleanMiniImage })
+    )
+  }, [layoutSaveImage])
 
   const checkIndexDb = async () => {
     try {
