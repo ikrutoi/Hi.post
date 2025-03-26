@@ -1,3 +1,12 @@
-.status {
-  border: solid 1px orange;
+.status-container {
+  display: flex;
+  width: 200px;
+  // height: 2rem;
+  // border: solid 1px orange;
+}
+
+.toolbar-status-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  // border: solid 1px green;
 }

@@ -28,6 +28,7 @@ import { colorSchemeMain } from '../../../../data/main/colorSchemeMain'
 import { searchParent } from '../../../../utils/searchParent'
 
 const Date = ({ setChoiceSection }) => {
+  const fullCard = useSelector((state) => state.layout.fullCard)
   const cardEditDate = useSelector((state) => state.cardEdit.date)
   const layoutActiveSections = useSelector(
     (state) => state.layout.activeSections

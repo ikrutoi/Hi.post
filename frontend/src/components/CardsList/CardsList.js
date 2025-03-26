@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { TbArrowsMinimize } from 'react-icons/tb'
-import { HiArrowsPointingIn, HiArrowsPointingOut } from 'react-icons/hi2'
+import {
+  HiArrowsPointingIn,
+  HiArrowsPointingOut,
+  HiPlus,
+} from 'react-icons/hi2'
 import './CardsList.scss'
-import { choiceMemorySection } from '../../redux/layout/actionCreators'
+import { addAroma } from '../../redux/cardEdit/actionCreators'
+import {
+  choiceMemorySection,
+  fullCard,
+} from '../../redux/layout/actionCreators'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
 import {
@@ -179,16 +187,25 @@ const CardsList = () => {
 
   const handleClickMiniKebab = async (evt, section, id) => {
     evt.stopPropagation()
-    if (section === 'myaddress' || section === 'toaddress') {
-      await deleteRecordAddress(
-        section === 'myaddress' ? 'myAddress' : 'toAddress',
-        id
-      )
-      getAllAddress(section)
-    }
-    if (section === 'cardtext') {
-      await deleteRecordCardtext(id)
-      getAllCardtext()
+    switch (section) {
+      case 'cardtext':
+        await deleteRecordCardtext(id)
+        getAllCardtext()
+        break
+      case 'myaddress':
+        await deleteRecordAddress('myAddress', id)
+        getAllAddress(section)
+        break
+      case 'toaddress':
+        await deleteRecordAddress('toAddress', id)
+        getAllAddress(section)
+        break
+      case 'aroma':
+        dispatch(addAroma(null))
+        break
+
+      default:
+        break
     }
   }
 
@@ -235,6 +252,7 @@ const CardsList = () => {
   }
 
   useEffect(() => {
+    dispatch(fullCard(minimize))
     const timerIcon = setTimeout(() => {
       setShowIconMinimize(minimize)
     }, 800)
@@ -270,7 +288,6 @@ const CardsList = () => {
                 key={`cardtext-${i}`}
                 setRef={setRef}
                 sizeMiniCard={sizeMiniCard}
-                // section={memoryList}
                 text={text}
                 handleClickMiniKebab={handleClickMiniKebab}
                 handleClickCardtext={handleClickCardtext}
@@ -305,39 +322,65 @@ const CardsList = () => {
               height: `${sizeMiniCard.height}px`,
             }}
           >
-            <div
-              className="icon-minimize-container"
-              style={{
-                color: stylePolyCards.icon.color,
-                backgroundColor: stylePolyCards.icon.backgroundColor,
-                cursor: stylePolyCards.icon.cursor,
-                transition: 'background-color 0.3s ease, color 0.3s ease',
-              }}
-              onClick={handleClickIconMinimize}
-              onMouseEnter={handleMouseEnterIconMinimize}
-              onMouseLeave={handleMouseLeaveIconMinimize}
-            >
-              {showIconMinimize ? (
-                <HiArrowsPointingOut className="icon-minimize" />
-              ) : (
-                <HiArrowsPointingIn className="icon-minimize" />
-              )}
+            <div className="poly-cards-icons-container">
+              <div
+                className="icon-minimize-container"
+                style={{
+                  color: stylePolyCards.icon.color,
+                  backgroundColor: stylePolyCards.icon.backgroundColor,
+                  cursor: stylePolyCards.icon.cursor,
+                  transition: 'background-color 0.3s ease, color 0.3s ease',
+                }}
+                onClick={handleClickIconMinimize}
+                onMouseEnter={handleMouseEnterIconMinimize}
+                onMouseLeave={handleMouseLeaveIconMinimize}
+              >
+                {showIconMinimize ? (
+                  <>
+                    <HiArrowsPointingOut className="icon-minimize" />
+                  </>
+                ) : (
+                  <HiArrowsPointingIn className="icon-minimize" />
+                )}
+              </div>
+              <div
+                className="icon-minimize-container"
+                style={{
+                  color: stylePolyCards.icon.color,
+                  backgroundColor: stylePolyCards.icon.backgroundColor,
+                  cursor: stylePolyCards.icon.cursor,
+                  transition: 'background-color 0.3s ease, color 0.3s ease',
+                }}
+                onClick={handleClickIconMinimize}
+                onMouseEnter={handleMouseEnterIconMinimize}
+                onMouseLeave={handleMouseLeaveIconMinimize}
+              >
+                {showIconMinimize ? (
+                  <HiPlus className="icon-minimize" />
+                ) : (
+                  <></>
+                )}
+              </div>
             </div>
           </div>
           {listActiveSections.length !== 0 ? (
-            listActiveSections.map((selectedSection, i, arr) => (
-              <CardMiniSection
-                key={`card-mini-${selectedSection.section}-${i}`}
-                valueSection={cardEdit[selectedSection.section]}
-                sizeCardMini={sizeMiniCard}
-                infoSection={{
-                  section: selectedSection,
-                  i,
-                  length: arr.length,
-                }}
-                minimize={minimize}
-              />
-            ))
+            listActiveSections
+              .filter(
+                (selectedSection) => cardEdit[selectedSection.section] !== null
+              )
+              .map((selectedSection, i, arr) => (
+                <CardMiniSection
+                  key={`card-mini-${selectedSection.section}-${i}`}
+                  valueSection={cardEdit[selectedSection.section]}
+                  sizeCardMini={sizeMiniCard}
+                  infoSection={{
+                    section: selectedSection,
+                    i,
+                    length: arr.length,
+                  }}
+                  minimize={minimize}
+                />
+              ))
           ) : (
             <span></span>
           )}

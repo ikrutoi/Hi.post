@@ -38,6 +38,7 @@ const CardEditor = ({
   setChoiceSection,
   styleLeftCardPuzzle,
 }) => {
+  const fullCard = useSelector((state) => state.layout.fullCard)
   const cardEditCardtext = useSelector((state) => state.cardEdit.cardtext)
   const infoButtonsCardtext = useSelector((state) => state.infoButtons.cardtext)
   const memorySection = useSelector((state) => state.layout.choiceMemorySection)

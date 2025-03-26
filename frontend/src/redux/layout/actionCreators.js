@@ -105,6 +105,13 @@ export const selectedSection = (newSection) => {
   }
 }
 
+export const fullCard = (newSection) => {
+  return {
+    type: a.FULL_CARD,
+    payload: newSection,
+  }
+}
+
 // export const setMyAddressLegendRef = (newSection) => {
 //   return {
 //     type: a.SET_MY_ADDRESS_LEGEND_REF,

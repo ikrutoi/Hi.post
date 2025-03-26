@@ -1,4 +1,4 @@
-import { deleteSection, selectedSection } from './actionCreators'
+import { deleteSection, fullCard, selectedSection } from './actionCreators'
 import * as a from './actionTypes'
 
 const initialState = {
@@ -45,6 +45,7 @@ const initialState = {
   },
   memoryCrop: null,
   currentDate: null,
+  fullCard: false,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -110,6 +111,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         deleteSection: action.payload,
+      }
+    case a.FULL_CARD:
+      return {
+        ...state,
+        fullCard: action.payload,
       }
     // case a.SET_MY_ADDRESS_LEGEND_REF:
     //   return {

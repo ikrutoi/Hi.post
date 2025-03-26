@@ -8,6 +8,7 @@ import ImageCrop from './ImageCrop/ImageCrop'
 import ToolbarCardphoto from './ToolbarCardphoto/ToolbarCardphoto'
 
 const Cardphoto = ({ sizeCard, setChoiceSection }) => {
+  const fullCard = useSelector((state) => state.layout.fullCard)
   const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
   const [src, setSrc] = useState(null)
 

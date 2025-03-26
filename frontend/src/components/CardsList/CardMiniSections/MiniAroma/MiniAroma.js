@@ -15,7 +15,6 @@ import img25 from '../../../../data/aroma/carolina_herrera__212__25.png'
 
 const MiniAroma = ({ valueSection, heightMinicard }) => {
   let imageAroma
-
   switch (valueSection.index) {
     case '00':
       imageAroma = img00
@@ -70,26 +69,7 @@ const MiniAroma = ({ valueSection, heightMinicard }) => {
           style={{ height: `${0.9 * heightMinicard}px` }}
           src={imageAroma}
         ></img>
-        {/* <span
-          className="mini-aroma-img"
-          style={{
-            height: `${0.9 * heightMinicard}px`,
-            backgroundImage: `url('/src/data/aroma/bvlgari--jasmin-noir--05.png')`,
-          }}
-        ></span> */}
       </div>
-      {/* <span
-        className="mini-aroma-name"
-        // style={{ heightLine: `${0.2 * heightMinicard}px` }}
-      >
-        {valueSection.name}
-      </span> */}
-      {/* <span
-        className="mini-aroma-make"
-        style={{ heightLine: `${0.25 * heightMinicard}px` }}
-      >
-        {valueSection.make}
-      </span> */}
     </>
   )
 }

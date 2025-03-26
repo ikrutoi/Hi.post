@@ -32,6 +32,7 @@ import { changeIconStyles } from '../../../../data/toolbar/changeIconStyles'
 import ToolbarEnvelope from './ToolbarEnvelope/ToolbarEnvelope'
 
 const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
+  const fullCard = useSelector((state) => state.layout.fullCard)
   const cardEditEnvelope = useSelector((state) => state.cardEdit.envelope)
   const layoutDeleteSection = useSelector((state) => state.layout.deleteSection)
   const layoutChoiceClip = useSelector((state) => state.layout.choiceClip)
@@ -88,8 +89,6 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
         layoutChoiceAddress.section === 'myaddress' ? 'myAddress' : 'toAddress',
         layoutChoiceAddress.id
       )
-
-      console.log('address', address)
 
       setValue((state) => {
         return {

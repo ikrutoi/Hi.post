@@ -24,6 +24,9 @@
   border-radius: 0.5rem;
   background-image: url('../../data/envelope-line-for-poly-minicards.svg');
   background-size: contain;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 7;
 }
 
@@ -34,21 +37,43 @@
   border: solid 1px rgb(173, 173, 173);
 }
 
+.poly-cards-icons-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  // position: absolute;
+  // top: 50%;
+  // left: 50%;
+  // transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // border: solid 1px green;
+}
+
 .icon-minimize-container {
   position: absolute;
-  top: 45%;
-  left: 45%;
   margin: 0.35rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 8;
-  width: 3.5rem;
-  height: 3.5rem;
-  transform: translate(-50%, -50%);
+  // z-index: 8;
+  width: 2.8rem;
+  height: 2.8rem;
+  // transform: translate(-50%, -50%);
   // transition: background-color 0.3s;
   border-radius: 2.5rem;
   // cursor: pointer;
+}
+
+.icon-minimize-container:first-child {
+  left: 0.8rem;
+  z-index: 9;
+}
+
+.icon-minimize-container:last-child {
+  right: 0.8rem;
+  z-index: 8;
 }
 
 .icon-minimize-container:hover {
@@ -62,8 +87,8 @@
 
 .icon-minimize {
   // color: rgba(255, 255, 255, 1);
-  width: 2rem;
-  height: 2rem;
+  width: 1.9rem;
+  height: 1.9rem;
   background-color: rgba(255, 255, 255, 0);
   // transition: color 0.3s;
 }
