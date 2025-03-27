@@ -6,9 +6,10 @@ const initialState = {
   italic: true,
   left: true,
   download: false,
-  // envelopeClip: null,
   envelopeSave: null,
   miniAddressClose: null,
+  status: { shopping: false },
+  fullCard: { plus: false, delete: false },
   envelope: {
     myaddress: { save: false, delete: false, clip: false },
     toaddress: { save: false, delete: false, clip: false },

@@ -1,10 +1,11 @@
 // import { FiSave, FiDelete } from 'react-icons/fi'
-import { FiPaperclip } from 'react-icons/fi'
+import { FiPaperclip, FiPlus } from 'react-icons/fi'
 import { LuPaperclip } from 'react-icons/lu'
 import { FiEdit, FiDownload, FiSave, FiDelete, FiCrop } from 'react-icons/fi'
 import { PiArrowClockwiseFill } from 'react-icons/pi'
 // import { RiResetLeftFill } from 'react-icons/ri'
 import { TbArrowsMaximize } from 'react-icons/tb'
+import { HiArrowsPointingIn, HiArrowsPointingOut } from 'react-icons/hi2'
 import {
   RiBold,
   RiItalic,
@@ -53,6 +54,12 @@ export const addIconToolbar = (icon) => {
       return <RiAlignRight className="toolbar-icon" />
     case 'justify':
       return <RiAlignJustify className="toolbar-icon" />
+    case 'plus':
+      return <FiPlus className="fullcard-icon" />
+    case 'arrowsOut':
+      return <HiArrowsPointingOut className="fullcard-icon" />
+    case 'arrowsIn':
+      return <HiArrowsPointingIn className="fullcard-icon" />
 
     default:
       break

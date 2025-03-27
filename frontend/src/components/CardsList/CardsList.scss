@@ -37,7 +37,7 @@
   border: solid 1px rgb(173, 173, 173);
 }
 
-.poly-cards-icons-container {
+.fullcard-icons-container {
   position: relative;
   width: 100%;
   height: 100%;
@@ -52,41 +52,41 @@
   // border: solid 1px green;
 }
 
-.poly-cards-line {
+.fullcard-line {
   display: flex;
   height: 100%;
   // border: solid 1px orange;
 }
 
-.poly-cards-line:nth-child(2) {
+.fullcard-line:nth-child(2) {
   align-items: center;
-  .icon-minimize-container {
+  .fullcard-btn {
     width: 2.6rem;
     height: 2.6rem;
-    .icon-minimize {
+    .fullcard-icon {
       width: 1.6rem;
       height: 1.6rem;
     }
   }
 }
 
-.poly-cards-line:first-child,
-.poly-cards-line:last-child {
+.fullcard-line:first-child,
+.fullcard-line:last-child {
   // align-items: flex-start;
   // padding: 0.35rem 0;
-  .icon-minimize-container {
+  .fullcard-btn {
     width: 1.9rem;
     height: 1.9rem;
     margin: 0.35rem;
   }
-  .icon-minimize-container:first-child {
-    .icon-minimize {
+  .fullcard-btn:first-child {
+    .fullcard-icon {
       width: 1.3rem;
       height: 1.3rem;
     }
   }
-  .icon-minimize-container:last-child {
-    .icon-minimize {
+  .fullcard-btn:last-child {
+    .fullcard-icon {
       width: 1.2rem;
       height: 1.2rem;
       margin-right: 1px;
@@ -94,19 +94,20 @@
   }
 }
 
-.poly-cards-line:last-child {
+.fullcard-line:last-child {
   flex-direction: column;
   justify-content: space-between;
 }
 
-.icon-minimize-container {
+.fullcard-btn {
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 2.5rem;
+  border: none;
 }
 
-.icon-minimize-container:hover {
+.fullcard-btn:hover {
   transition: background-color 0.3s;
   // transition: color 0.3s;
   //   background-color: rgba(0, 125, 250, 1);
@@ -115,7 +116,7 @@
   //   }
 }
 
-.icon-minimize {
+.fullcard-icon {
   // color: rgba(255, 255, 255, 1);
   background-color: rgba(255, 255, 255, 0);
   // transition: color 0.3s;

@@ -40,7 +40,7 @@ const CardEditor = ({
 }) => {
   const fullCard = useSelector((state) => state.layout.fullCard)
   const cardEditCardtext = useSelector((state) => state.cardEdit.cardtext)
-  const infoButtonsCardtext = useSelector((state) => state.infoButtons.cardtext)
+  const infoBtnsCardtext = useSelector((state) => state.infoButtons.cardtext)
   const memorySection = useSelector((state) => state.layout.choiceMemorySection)
   const layoutActiveSections = useSelector(
     (state) => state.layout.activeSections
@@ -99,28 +99,28 @@ const CardEditor = ({
   }, [memorySection])
 
   useEffect(() => {
-    if (listBtnsCardtext && infoButtonsCardtext) {
+    if (listBtnsCardtext && infoBtnsCardtext) {
       setBtnsCardtext((state) => {
         return {
           ...state,
           cardtext: {
             ...state.cardtext,
             ...listBtnsCardtext.reduce((acc, key) => {
-              acc[key] = infoButtonsCardtext[key]
+              acc[key] = infoBtnsCardtext[key]
               return acc
             }, {}),
           },
         }
       })
     }
-    if (listBtnsCardtextMain && infoButtonsCardtext) {
+    if (listBtnsCardtextMain && infoBtnsCardtext) {
       setBtnsCardtext((state) => {
         return {
           ...state,
           cardtext: {
             ...state.cardtext,
             ...listBtnsCardtextMain.reduce((acc, key) => {
-              acc[key] = infoButtonsCardtext[key]
+              acc[key] = infoBtnsCardtext[key]
               return acc
             }, {}),
           },
@@ -155,7 +155,7 @@ const CardEditor = ({
     dispatch(
       infoButtons({
         cardtext: {
-          ...infoButtonsCardtext,
+          ...infoBtnsCardtext,
           save: value[0].children[0].text.length ? true : false,
           delete: value[0].children[0].text.length ? true : false,
         },
@@ -193,14 +193,14 @@ const CardEditor = ({
       dispatch(
         infoButtons({
           cardtext: {
-            ...infoButtonsCardtext,
+            ...infoBtnsCardtext,
             clip: countCardtexts ? true : false,
           },
         })
       )
     }
 
-    if (infoButtonsCardtext.clip !== 'hover') {
+    if (infoBtnsCardtext.clip !== 'hover') {
       getCountCardtexts()
     }
 
@@ -415,15 +415,15 @@ const CardEditor = ({
           ...state,
           cardtext: {
             ...state.cardtext,
-            italic: infoButtonsCardtext[btn] === 'hover' ? true : 'hover',
+            italic: infoBtnsCardtext[btn] === 'hover' ? true : 'hover',
           },
         }
       })
       dispatch(
         infoButtons({
           cardtext: {
-            ...infoButtonsCardtext,
-            [btn]: infoButtonsCardtext[btn] === 'hover' ? true : 'hover',
+            ...infoBtnsCardtext,
+            [btn]: infoBtnsCardtext[btn] === 'hover' ? true : 'hover',
           },
         })
       )
@@ -434,7 +434,7 @@ const CardEditor = ({
       btn === 'right' ||
       btn === 'justify'
     ) {
-      if (infoButtonsCardtext[btn] === 'hover') {
+      if (infoBtnsCardtext[btn] === 'hover') {
         evt.preventDefault()
       } else {
         btnIconRefs.current[`cardtext-${btn}`].style.cursor = 'default'
@@ -455,7 +455,7 @@ const CardEditor = ({
         dispatch(
           infoButtons({
             cardtext: {
-              ...infoButtonsCardtext,
+              ...infoBtnsCardtext,
               left: true,
               center: true,
               right: true,
@@ -561,7 +561,7 @@ const CardEditor = ({
           dispatch(
             infoButtons({
               cardtext: {
-                ...infoButtonsCardtext,
+                ...infoBtnsCardtext,
                 clip: btnsCardtext.cardtext.clip === true ? 'hover' : true,
               },
             })
@@ -578,10 +578,10 @@ const CardEditor = ({
   }
 
   useEffect(() => {
-    infoButtonsCardtext.clip === 'hover'
+    infoBtnsCardtext.clip === 'hover'
       ? dispatch(choiceClip('cardtext'))
       : dispatch(choiceClip(false))
-  }, [infoButtonsCardtext, dispatch])
+  }, [infoBtnsCardtext, dispatch])
 
   return (
     <div className="cardeditor">
@@ -607,7 +607,7 @@ const CardEditor = ({
           {btnColor && (
             <TooltipColor
               setBtnColor={setBtnColor}
-              infoButtonsCardtext={infoButtonsCardtext}
+              infoButtonsCardtext={infoBtnsCardtext}
               styleLeft={
                 btnIconRefs.current['cardtext-color'].getBoundingClientRect()
                   .left - styleLeftCardPuzzle

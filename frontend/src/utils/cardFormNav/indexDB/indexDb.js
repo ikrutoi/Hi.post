@@ -424,7 +424,7 @@ export const getCountCards = async () => {
   }
 }
 
-export const getCardsById = async (id) => {
+export const getCardById = async (id) => {
   if (!id) {
     throw new Error('[getCarsById] Invalid ID provided.')
   }
@@ -459,7 +459,7 @@ export const getCardsById = async (id) => {
 //   }
 // }
 
-export const deleteCards = async (id) => {
+export const deleteCard = async (id) => {
   try {
     const db = await getDatabase()
     const transaction = db.transaction('cards', 'readwrite')
@@ -482,7 +482,7 @@ export const getMaxIdCards = async () => {
   return ids.length ? Math.max(...ids) : 0
 }
 
-export const addUniqueCards = async (data) => {
+export const addUniqueCard = async (data) => {
   if (!data || typeof data !== 'object') {
     throw new Error('[addUniqueCards] Invalid data provided.')
   }
