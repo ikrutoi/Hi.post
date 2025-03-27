@@ -25,7 +25,7 @@
   background-image: url('../../data/envelope-line-for-poly-minicards.svg');
   background-size: contain;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   z-index: 7;
 }
@@ -46,34 +46,64 @@
   // left: 50%;
   // transform: translate(-50%, -50%);
   display: flex;
-  justify-content: center;
-  align-items: center;
+  // flex-direction: column;
+  justify-content: space-between;
+  // align-items: center;
   // border: solid 1px green;
 }
 
+.poly-cards-line {
+  display: flex;
+  height: 100%;
+  // border: solid 1px orange;
+}
+
+.poly-cards-line:nth-child(2) {
+  align-items: center;
+  .icon-minimize-container {
+    width: 2.6rem;
+    height: 2.6rem;
+    .icon-minimize {
+      width: 1.6rem;
+      height: 1.6rem;
+    }
+  }
+}
+
+.poly-cards-line:first-child,
+.poly-cards-line:last-child {
+  // align-items: flex-start;
+  // padding: 0.35rem 0;
+  .icon-minimize-container {
+    width: 1.9rem;
+    height: 1.9rem;
+    margin: 0.35rem;
+  }
+  .icon-minimize-container:first-child {
+    .icon-minimize {
+      width: 1.3rem;
+      height: 1.3rem;
+    }
+  }
+  .icon-minimize-container:last-child {
+    .icon-minimize {
+      width: 1.2rem;
+      height: 1.2rem;
+      margin-right: 1px;
+    }
+  }
+}
+
+.poly-cards-line:last-child {
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .icon-minimize-container {
-  position: absolute;
-  margin: 0.35rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  // z-index: 8;
-  width: 2.8rem;
-  height: 2.8rem;
-  // transform: translate(-50%, -50%);
-  // transition: background-color 0.3s;
   border-radius: 2.5rem;
-  // cursor: pointer;
-}
-
-.icon-minimize-container:first-child {
-  left: 0.8rem;
-  z-index: 9;
-}
-
-.icon-minimize-container:last-child {
-  right: 0.8rem;
-  z-index: 8;
 }
 
 .icon-minimize-container:hover {
@@ -87,8 +117,6 @@
 
 .icon-minimize {
   // color: rgba(255, 255, 255, 1);
-  width: 1.9rem;
-  height: 1.9rem;
   background-color: rgba(255, 255, 255, 0);
   // transition: color 0.3s;
 }

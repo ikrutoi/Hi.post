@@ -1,6 +1,6 @@
 import { openDB } from 'idb'
 
-export const dbPromise = openDB('images-database', 7, {
+export const dbPromise = openDB('images-database', 8, {
   upgrade(db) {
     if (!db.objectStoreNames.contains('hiPostImages')) {
       db.createObjectStore('hiPostImages', { keyPath: 'id' })
@@ -16,6 +16,9 @@ export const dbPromise = openDB('images-database', 7, {
     }
     if (!db.objectStoreNames.contains('toAddress')) {
       db.createObjectStore('toAddress', { keyPath: 'id' })
+    }
+    if (!db.objectStoreNames.contains('cards')) {
+      db.createObjectStore('cards', { keyPath: 'id' })
     }
   },
 })
@@ -322,7 +325,10 @@ export const getRecordCardtextById = async (id) => {
     await handleTransactionPromise(transaction)
     return result || null
   } catch (error) {
-    console.error('[etRecordCardtextById] Failed to get cardtext by ID:', error)
+    console.error(
+      '[getRecordCardtextById] Failed to get cardtext by ID:',
+      error
+    )
     throw error
   }
 }
@@ -353,7 +359,7 @@ export const deleteRecordCardtext = async (id) => {
     await store.delete(id)
     return await handleTransactionPromise(transaction)
   } catch (error) {
-    console.error('[ deleteRecordCardtext] Failed to delete cardtext', error)
+    console.error('[deleteRecordCardtext] Failed to delete cardtext', error)
     throw error
   }
 }
@@ -386,6 +392,111 @@ export const addUniqueRecordCardtext = async (data) => {
       '[addUniqueRecordCardtext] Failed to add unique cardtext:',
       error
     )
+    throw error
+  }
+}
+
+export const getAllCards = async () => {
+  try {
+    const db = await getDatabase()
+    const transaction = db.transaction('cards', 'readonly')
+    const store = transaction.objectStore('cards')
+    const allRecords = await store.getAll()
+    await handleTransactionPromise(transaction)
+    return allRecords || []
+  } catch (error) {
+    console.error(`[getAllCards] Failed to fetch all cards:`, error)
+    throw error
+  }
+}
+
+export const getCountCards = async () => {
+  try {
+    const db = await getDatabase()
+    const transaction = db.transaction('cards', 'readonly')
+    const store = transaction.objectStore('cards')
+    const count = await store.count()
+    await handleTransactionPromise(transaction)
+    return count
+  } catch (error) {
+    console.error('[getCountCards] Failed to count cards:', error)
+    throw error
+  }
+}
+
+export const getCardsById = async (id) => {
+  if (!id) {
+    throw new Error('[getCarsById] Invalid ID provided.')
+  }
+  try {
+    const db = await getDatabase()
+    const transaction = db.transaction('cards', 'readonly')
+    const store = transaction.objectStore('cards')
+    const result = await store.get(id)
+    await handleTransactionPromise(transaction)
+    return result || null
+  } catch (error) {
+    console.error('[getCardsById] Failed to get cards by ID:', error)
+    throw error
+  }
+}
+
+// export const addRecordCardtext = async (record) => {
+//   if (!record || typeof record.id === 'undefined') {
+//     throw new Error(
+//       '[addRecordCardtext] Invalid record format. "id" is required.'
+//     )
+//   }
+//   try {
+//     const db = await getDatabase()
+//     const transaction = db.transaction('cardtext', 'readwrite')
+//     const store = transaction.objectStore('cardtext')
+//     await store.put(record)
+//     return await handleTransactionPromise(transaction)
+//   } catch (error) {
+//     console.error('[addRecordCardtext] Failed to add record:', error)
+//     throw error
+//   }
+// }
+
+export const deleteCards = async (id) => {
+  try {
+    const db = await getDatabase()
+    const transaction = db.transaction('cards', 'readwrite')
+    const store = transaction.objectStore('cards')
+    await store.delete(id)
+    return await handleTransactionPromise(transaction)
+  } catch (error) {
+    console.error('[deleteCards] Failed to delete cards', error)
+    throw error
+  }
+}
+
+export const getMaxIdCards = async () => {
+  const db = await dbPromise
+  const transaction = db.transaction('cards', 'readonly')
+  const store = transaction.objectStore('cards')
+  const allRecords = await store.getAll()
+
+  const ids = allRecords.map((record) => record.id)
+  return ids.length ? Math.max(...ids) : 0
+}
+
+export const addUniqueCards = async (data) => {
+  if (!data || typeof data !== 'object') {
+    throw new Error('[addUniqueCards] Invalid data provided.')
+  }
+  try {
+    const db = await getDatabase()
+    const maxId = await getMaxIdCardtext()
+    const newId = maxId + 1
+
+    const transaction = db.transaction('cards', 'readwrite')
+    const store = transaction.objectStore('cards')
+    await store.put({ id: newId, text: { ...data } })
+    return await handleTransactionPromise(transaction)
+  } catch (error) {
+    console.error('[addUniqueCards] Failed to add unique cards:', error)
     throw error
   }
 }

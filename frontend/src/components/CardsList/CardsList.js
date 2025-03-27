@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { TbArrowsMinimize } from 'react-icons/tb'
+import { MdMoreHoriz } from 'react-icons/md'
+import { FaPlus } from 'react-icons/fa6'
+import { FiPlus, FiDelete } from 'react-icons/fi'
+
 import {
   HiArrowsPointingIn,
   HiArrowsPointingOut,
@@ -31,6 +35,7 @@ import MemoryEnvelope from './CardMiniSections/MemoryEnvelope/MemoryEnvelope'
 import MemoryCardtext from './CardMiniSections/MemoryCardtext/MemoryCardtext'
 
 const CardsList = () => {
+  const layoutFullCard = useSelector((state) => state.layout.fullCard)
   const cardEdit = useSelector((state) => state.cardEdit)
   const layoutActiveSections = useSelector(
     (state) => state.layout.activeSections
@@ -48,6 +53,8 @@ const CardsList = () => {
   const [stylePolyCards, setStylePolyCards] = useState({
     filter: {},
     icon: {},
+    iconArrows: {},
+    iconPlus: {},
   })
   const [memoryList, setMemoryList] = useState(null)
   const [memoryAddress, setMemoryAddress] = useState({
@@ -147,11 +154,23 @@ const CardsList = () => {
     if (listActiveSections.length === 5) {
       setStylePolyCards((state) => {
         return {
-          ...state,
-          icon: {
-            ...state.icon,
-            backgroundColor: 'rgba(0, 125, 215, 0.75)',
+          // ...state,
+          // icon: {
+          //   ...state.icon,
+          //   backgroundColor: 'rgba(0, 125, 215, 0.85)',
+          //   color: colorSchemeMain.lightGray,
+          //   cursor: 'pointer',
+          // },
+          iconArrows: {
+            ...state.iconArrows,
+            backgroundColor: 'rgba(0, 125, 215, 0.85)',
             color: colorSchemeMain.lightGray,
+            cursor: 'pointer',
+          },
+          iconPlus: {
+            ...state.iconPlus,
+            backgroundColor: 'rgba(240, 240, 240, 0.85)',
+            color: colorSchemeMain.gray,
             cursor: 'pointer',
           },
         }
@@ -162,6 +181,18 @@ const CardsList = () => {
           ...state,
           icon: {
             ...state.icon,
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            color: 'rgba(255, 255, 255, 0)',
+            cursor: 'default',
+          },
+          iconArrows: {
+            ...state.iconArrows,
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            color: 'rgba(255, 255, 255, 0)',
+            cursor: 'default',
+          },
+          iconPlus: {
+            ...state.iconPlus,
             backgroundColor: 'rgba(255, 255, 255, 0)',
             color: 'rgba(255, 255, 255, 0)',
             cursor: 'default',
@@ -223,33 +254,35 @@ const CardsList = () => {
     }
   }
 
-  const handleMouseEnterIconMinimize = () => {
-    if (listActiveSections.length === 5) {
-      setStylePolyCards((state) => {
-        return {
-          ...state,
-          icon: {
-            ...state.icon,
-            backgroundColor: 'rgba(0, 125, 215, 0.95)',
-          },
-        }
-      })
-    }
-  }
+  const handleClickFullCardIcon = () => {}
 
-  const handleMouseLeaveIconMinimize = () => {
-    if (listActiveSections.length === 5) {
-      setStylePolyCards((state) => {
-        return {
-          ...state,
-          icon: {
-            ...state.icon,
-            backgroundColor: 'rgba(0, 125, 215, 0.75)',
-          },
-        }
-      })
-    }
-  }
+  // const handleMouseEnterIconMinimize = () => {
+  //   if (listActiveSections.length === 5) {
+  //     setStylePolyCards((state) => {
+  //       return {
+  //         ...state,
+  //         icon: {
+  //           ...state.icon,
+  //           backgroundColor: 'rgba(0, 125, 215, 0.95)',
+  //         },
+  //       }
+  //     })
+  //   }
+  // }
+
+  // const handleMouseLeaveIconMinimize = () => {
+  //   if (listActiveSections.length === 5) {
+  //     setStylePolyCards((state) => {
+  //       return {
+  //         ...state,
+  //         icon: {
+  //           ...state.icon,
+  //           backgroundColor: 'rgba(0, 125, 215, 0.85)',
+  //         },
+  //       }
+  //     })
+  //   }
+  // }
 
   useEffect(() => {
     dispatch(fullCard(minimize))
@@ -323,43 +356,87 @@ const CardsList = () => {
             }}
           >
             <div className="poly-cards-icons-container">
-              <div
-                className="icon-minimize-container"
-                style={{
-                  color: stylePolyCards.icon.color,
-                  backgroundColor: stylePolyCards.icon.backgroundColor,
-                  cursor: stylePolyCards.icon.cursor,
-                  transition: 'background-color 0.3s ease, color 0.3s ease',
-                }}
-                onClick={handleClickIconMinimize}
-                onMouseEnter={handleMouseEnterIconMinimize}
-                onMouseLeave={handleMouseLeaveIconMinimize}
-              >
-                {showIconMinimize ? (
-                  <>
-                    <HiArrowsPointingOut className="icon-minimize" />
-                  </>
-                ) : (
-                  <HiArrowsPointingIn className="icon-minimize" />
-                )}
+              <div className="poly-cards-line">
+                <div className="icon-minimize-container"></div>
               </div>
-              <div
-                className="icon-minimize-container"
-                style={{
-                  color: stylePolyCards.icon.color,
-                  backgroundColor: stylePolyCards.icon.backgroundColor,
-                  cursor: stylePolyCards.icon.cursor,
-                  transition: 'background-color 0.3s ease, color 0.3s ease',
-                }}
-                onClick={handleClickIconMinimize}
-                onMouseEnter={handleMouseEnterIconMinimize}
-                onMouseLeave={handleMouseLeaveIconMinimize}
-              >
-                {showIconMinimize ? (
-                  <HiPlus className="icon-minimize" />
-                ) : (
-                  <></>
-                )}
+              <div className="poly-cards-line">
+                <div
+                  className="icon-minimize-container"
+                  style={{
+                    color: stylePolyCards.iconArrows.color,
+                    backgroundColor: stylePolyCards.iconArrows.backgroundColor,
+                    cursor: stylePolyCards.iconArrows.cursor,
+                    // left: layoutFullCard ? '10%' : '30%',
+                    transition:
+                      'background-color 0.3s ease, color 0.3s ease, left 0.3s ease',
+                  }}
+                  onClick={handleClickIconMinimize}
+                  // onMouseEnter={handleMouseEnterIconMinimize}
+                  // onMouseLeave={handleMouseLeaveIconMinimize}
+                >
+                  {showIconMinimize ? (
+                    <>
+                      <HiArrowsPointingOut className="icon-minimize" />
+                    </>
+                  ) : (
+                    <HiArrowsPointingIn className="icon-minimize" />
+                  )}
+                </div>
+              </div>
+              <div className="poly-cards-line">
+                <div
+                  className="icon-minimize-container"
+                  style={{
+                    color: layoutFullCard
+                      ? stylePolyCards.iconPlus.color
+                      : 'rgba(255, 255, 255, 0)',
+                    backgroundColor:
+                      showIconMinimize && layoutFullCard
+                        ? stylePolyCards.iconPlus.backgroundColor
+                        : 'rgba(255, 255, 255, 0)',
+                    cursor: layoutFullCard
+                      ? stylePolyCards.iconPlus.cursor
+                      : 'default',
+                    // right: layoutFullCard ? '10%' : '30%',
+                    transition:
+                      'background-color 0.3s ease, color 0.3s ease, right 0.3s ease',
+                  }}
+                  onClick={handleClickFullCardIcon}
+                  // onMouseEnter={handleMouseEnterIconMinimize}
+                  // onMouseLeave={handleMouseLeaveIconMinimize}
+                >
+                  {showIconMinimize ? (
+                    <FiPlus className="icon-minimize" />
+                  ) : (
+                    <></>
+                  )}
+                </div>
+                <div
+                  className="icon-minimize-container"
+                  style={{
+                    color: layoutFullCard
+                      ? stylePolyCards.iconPlus.color
+                      : 'rgba(255, 255, 255, 0)',
+                    backgroundColor:
+                      showIconMinimize && layoutFullCard
+                        ? stylePolyCards.iconPlus.backgroundColor
+                        : 'rgba(255, 255, 255, 0)',
+                    cursor: layoutFullCard
+                      ? stylePolyCards.iconPlus.cursor
+                      : 'default',
+                    transition:
+                      'background-color 0.3s ease, color 0.3s ease, right 0.3s ease',
+                  }}
+                  onClick={handleClickFullCardIcon}
+                  // onMouseEnter={handleMouseEnterIconMinimize}
+                  // onMouseLeave={handleMouseLeaveIconMinimize}
+                >
+                  {showIconMinimize ? (
+                    <FiDelete className="icon-minimize" />
+                  ) : (
+                    <></>
+                  )}
+                </div>
               </div>
             </div>
           </div>
