@@ -488,7 +488,7 @@ export const addUniqueCard = async (data) => {
   }
   try {
     const db = await getDatabase()
-    const maxId = await getMaxIdCardtext()
+    const maxId = await getMaxIdCards()
     const newId = maxId + 1
 
     const transaction = db.transaction('cards', 'readwrite')

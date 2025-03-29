@@ -13,7 +13,7 @@ import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
 
 const Status = () => {
   const infoBtnsStatus = useSelector((state) => state.infoButtons.status)
-  // const infoFullCard = useSelector((state) => state.infoButtons.fullCard)
+  // const infoAddFullCard = useSelector((state) => state.infoButtons.addFullCard)
   const infoAddFullCard = useSelector((state) => state.layout.addFullCard)
   const [btnsStatus, setBtnsStatus] = useState({ status: infoBtnsStatus })
   const [countCards, setCountCards] = useState(null)
@@ -54,7 +54,7 @@ const Status = () => {
   }, [btnsStatus])
 
   useEffect(() => {
-    getCards()
+    getCards('start')
     if (infoAddFullCard) {
       const timerIcon = setTimeout(() => {
         dispatch(addFullCard(false))
@@ -65,7 +65,8 @@ const Status = () => {
   }, [infoAddFullCard, dispatch])
 
   const handleClickShopping = async () => {
-    const cards = await getAllCards('shopping')
+    const cards = await getCards('shopping')
+    console.log('CARDS:', cards)
   }
 
   return (

@@ -17,6 +17,8 @@ import {
 import {
   getAllHiPostImages,
   getAllUserImages,
+  getHiPostImage,
+  getUserImage,
   deleteMyAddress,
   deleteToAddress,
   getAllRecordsAddresses,
@@ -25,6 +27,7 @@ import {
   deleteRecordCardtext,
   addUniqueCard,
   getCountCards,
+  deleteCard,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import { colorSchemeMain } from '../../data/main/colorSchemeMain'
 import MemoryEnvelope from './CardMiniSections/MemoryEnvelope/MemoryEnvelope'
@@ -49,8 +52,6 @@ const CardsList = () => {
   const [listActiveSections, setListActiveSections] = useState([])
   const [minimize, setMinimize] = useState(null)
   const [stylePolyCards, setStylePolyCards] = useState({
-    filter: {},
-    icon: {},
     iconArrows: {},
     iconPlus: {},
   })
@@ -198,7 +199,7 @@ const CardsList = () => {
             ...state.iconPlus,
             backgroundColor: changeStyleFullCardIcons('backgroundColor'),
             color: changeStyleFullCardIcons('color'),
-            cursor: 'pointer',
+            cursor: minimize && showIconMinimize ? 'pointer' : 'default',
           },
         }
       })
@@ -285,32 +286,35 @@ const CardsList = () => {
     const parentBtn = evt.target.closest('.fullcard-btn')
     switch (parentBtn.dataset.tooltip) {
       case 'plus':
-        console.log('plus')
-        // const imageHiPost = await getAllHiPostImages()
-        // const imageUser = await getAllUserImages()
-        // console.log('imageHiPost', imageHiPost)
-        // console.log('imageUser', imageUser)
-        // if
-        // setBtnsFullCard((state) => {
-        //   return {
-        //     ...state,
-        //     fullCard: { ...state.fullCard, plus: false },
-        //   }
-        // })
-        // dispatch(
-        //   infoButtons({ fullCard: { ...btnsFullCard.fullCard, plus: false } })
-        // )
+        const hiPostImages = await getAllHiPostImages()
+        const userImages = await getAllUserImages()
+
+        const sectionWorkingImage = hiPostImages.some(
+          (el) => el.id === 'workingImage'
+        )
+          ? 'hiPostImages'
+          : userImages.some((el) => el.id === 'workingImage')
+          ? 'userImages'
+          : null
+
+        let workingImage = null
+
+        const getImages = {
+          hiPostImages: getHiPostImage,
+          userImages: getUserImage,
+        }
+
+        if (sectionWorkingImage) {
+          workingImage = await getImages[sectionWorkingImage]('workingImage')
+        }
+
         dispatch(addFullCard(true))
-        const countStart = await getCountCards()
-        // console.log('countStart', countStart)
-        const resultCard = {}
-        listSections.forEach((section) => {
-          resultCard[section] = cardEdit[section]
-        })
-        // setResultFullCard()
+        const resultCard = listSections.reduce((acc, section) => {
+          acc[section] =
+            section === 'cardphoto' ? workingImage : cardEdit[section]
+          return acc
+        }, {})
         await addUniqueCard(resultCard)
-        const countEnd = await getCountCards()
-        // console.log('countEnd', countEnd)
 
         break
 
