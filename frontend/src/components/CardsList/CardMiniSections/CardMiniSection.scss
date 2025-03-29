@@ -56,10 +56,11 @@
   align-items: center;
   width: 1.9rem;
   height: 1.9rem;
+  border: none;
   border-radius: 1rem;
-  color: rgb(255, 255, 255);
-  background-color: rgba(240, 240, 240, 0.85);
-  transition: background-color 0.3s;
+  // color: rgb(255, 255, 255);
+  // background-color: rgba(240, 240, 240, 0.85);
+  // transition: background-color 0.3s;
   cursor: pointer;
   // border: solid 1px blue;
 }
@@ -84,14 +85,14 @@
   height: 1.5rem;
   background-image: url('../../../data/envelope/icon_mini-kebab.svg');
   background-repeat: no-repeat;
-  background-color: rgba($color: #ffffff, $alpha: 0);
+  background-color: rgba(255, 255, 255, 0);
   // border: solid 1px green;
 }
 
 .icon-close {
   height: 1.2rem;
   width: 1.2rem;
-  color: rgb(71, 71, 71);
+  // color: rgb(71, 71, 71);
   background-color: rgba(255, 255, 255, 0);
   // border: solid 1px red;
 }

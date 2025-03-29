@@ -5,8 +5,30 @@
   // border: solid 1px orange;
 }
 
+.toolbar-btn {
+  position: relative;
+}
+
 .toolbar-status-icon {
   width: 1.2rem;
   height: 1.2rem;
   // border: solid 1px green;
+}
+
+.shopping-counter-container {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 1.5rem;
+  border-radius: 0.3rem;
+  background-color: rgb(0, 125, 250);
+  color: rgb(240, 240, 240);
+}
+
+.shopping-counter {
+  padding: 0.1rem 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
 }

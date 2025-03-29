@@ -16,6 +16,7 @@ import {
   addMemoryCrop,
   activeSections,
 } from '../../../../../redux/layout/actionCreators'
+// import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import coverImage from '../../../../../data/img/card-photo-bw.jpg'
 import { updateClipPath } from '../../../../../utils/images/updateClipPath'
@@ -79,12 +80,14 @@ const ImageCrop = ({ sizeCard }) => {
 
       if (listUserImages.originalImage) {
         if (listHiPostImages.workingImage) {
+          // await addHiPostImage('workingImage', false)
           await deleteHiPostImage('workingImage')
           listHiPostImages.workingImage = false
         }
       }
       if (listUserImages.miniImage) {
         if (listHiPostImages.miniImage) {
+          // await addHiPostImage('miniImage', false)
           await deleteHiPostImage('miniImage')
           listHiPostImages.miniImage = false
         }
@@ -142,20 +145,6 @@ const ImageCrop = ({ sizeCard }) => {
 
       if (startImage) {
         await fetchImageFromIndexedDb(startImage)
-        // dispatch(
-        //   addIndexDb({
-        //     hiPostImages: {
-        //       originalImage: true,
-        //       workingImage: false,
-        //       miniImage: false,
-        //     },
-        //     userImages: {
-        //       originalImage: false,
-        //       workingImage: false,
-        //       miniImage: false,
-        //     },
-        //   })
-        // )
       } else {
         try {
           setImage({
@@ -163,20 +152,6 @@ const ImageCrop = ({ sizeCard }) => {
             url: coverImage,
             source: 'originalImage',
           })
-          // dispatch(
-          //   addIndexDb({
-          //     hiPostImages: {
-          //       originalImage: true,
-          //       workingImage: false,
-          //       miniImage: false,
-          //     },
-          //     userImages: {
-          //       originalImage: false,
-          //       workingImage: false,
-          //       miniImage: false,
-          //     },
-          //   })
-          // )
           const response = await fetch(coverImage)
           const blobStartImage = await response.blob()
 
@@ -232,6 +207,14 @@ const ImageCrop = ({ sizeCard }) => {
       console.error('Error fetching image from IndexedDb:', error)
     }
   }
+
+  // const clearImage = async () => {
+  //   await deleteUserImage('workingImage')
+  // }
+
+  // useEffect(() => {
+  //   clearImage()
+  // }, [])
 
   // const deleteImagesInIndexedDb = async (id) => {
   //   const savedImage = await getHiPostImage(id)
@@ -291,9 +274,11 @@ const ImageCrop = ({ sizeCard }) => {
 
       await addWorkingImageFunction('workingImage', blobCroppedImage)
       if (base === 'hiPostImages') {
+        // await addUserImage('miniImage', false)
         await deleteUserImage('miniImage')
       }
       if (base === 'userImages') {
+        // await addHiPostImage('miniImage', false)
         await deleteHiPostImage('miniImage')
       }
       await addWorkingImageFunction('miniImage', blobCroppedImage)
@@ -305,7 +290,14 @@ const ImageCrop = ({ sizeCard }) => {
       }
       dispatch(infoButtons({ crop: false }))
     }
+
+    // const hiPostImages = await getAllHiPostImages()
+    // const userImages = await getAllUserImages()
+    // console.log('hiPostImages', hiPostImages)
+    // console.log('userImages', userImages)
   }
+
+  // useEffect
 
   const handleDelete = async () => {
     if (isCropVisibly) {
@@ -329,6 +321,7 @@ const ImageCrop = ({ sizeCard }) => {
       if (source === 'workingImage') {
         fetchImageFromIndexedDb({ base: 'userImages', source: 'originalImage' })
         await deleteUserImage('workingImage')
+        // await addUserImage('workingImage', false)
         await checkIndexDb()
       }
       if (source === 'originalImage') {
@@ -345,6 +338,7 @@ const ImageCrop = ({ sizeCard }) => {
           })
         }
         await deleteUserImage('originalImage')
+        // await addUserImage('originalImage', false)
         await checkIndexDb()
       }
     }
@@ -355,6 +349,7 @@ const ImageCrop = ({ sizeCard }) => {
           source: 'originalImage',
         })
         await deleteHiPostImage('workingImage')
+        // await addHiPostImage('workingImage', false)
         await checkIndexDb()
       } else {
         return
@@ -560,6 +555,7 @@ const ImageCrop = ({ sizeCard }) => {
 
       await addUserImage('originalImage', blob)
       await deleteHiPostImage('workingImage')
+      // await addHiPostImage('workingImage', false)
       await checkIndexDb()
 
       const blobUrl = URL.createObjectURL(blob)

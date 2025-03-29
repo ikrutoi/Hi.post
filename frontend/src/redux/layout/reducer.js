@@ -46,6 +46,7 @@ const initialState = {
   memoryCrop: null,
   currentDate: null,
   fullCard: false,
+  addFullCard: false,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -116,6 +117,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         fullCard: action.payload,
+      }
+    case a.ADD_FULL_CARD:
+      return {
+        ...state,
+        addFullCard: action.payload,
       }
     // case a.SET_MY_ADDRESS_LEGEND_REF:
     //   return {

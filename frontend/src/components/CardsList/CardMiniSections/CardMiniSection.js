@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CgClose } from 'react-icons/cg'
 import './CardMiniSection.scss'
 import {
@@ -32,10 +32,13 @@ const CardMiniSection = ({
   sizeCardMini,
   infoSection,
   minimize,
+  infoMinimize,
+  showIconMinimize,
 }) => {
   const remSize = useSelector((state) => state.layout.remSize)
   const dispatch = useDispatch()
   const cardMiniSectionRef = useRef(null)
+  const [showIcon, setShowIcon] = useState(minimize)
 
   const handleClickSection = (evt) => {
     const areaCardsList = evt.target.closest('.card-mini-section').dataset.area
@@ -161,6 +164,20 @@ const CardMiniSection = ({
     }
   }
 
+  useEffect(() => {
+    if (infoMinimize && !showIconMinimize) {
+      const timerIcon = setTimeout(() => {
+        setShowIcon(true)
+      }, infoSection.i * 150)
+      return () => clearTimeout(timerIcon)
+    }
+    if (!infoMinimize && !showIconMinimize) {
+      setShowIcon(true)
+    } else {
+      setShowIcon(false)
+    }
+  }, [showIconMinimize, infoMinimize, infoSection])
+
   return (
     <div
       className={`card-mini-section card-mini-${infoSection.section.section}`}
@@ -189,12 +206,19 @@ const CardMiniSection = ({
     >
       {renderSection(infoSection.section.section, valueSection)}
       {!minimize && (
-        <div className="card-mini-kebab" onClick={handleClickCardMiniKebab}>
-          {/* <span className="mini-kebab-dots"> */}
+        <button
+          className="card-mini-kebab"
+          style={{
+            color: showIcon ? 'rgba(71, 71, 71, 1)' : 'rgba(71, 71, 71, 0)',
+            backgroundColor: showIcon
+              ? 'rgba(240, 240, 240, 0.85'
+              : 'rgba(240, 240, 240, 0)',
+            transition: 'background-color 0.3s ease, color 0.3s ease',
+          }}
+          onClick={handleClickCardMiniKebab}
+        >
           <CgClose className="icon-close" />
-          {/* <span className="mini-kebab-icon"></span> */}
-          {/* </span> */}
-        </div>
+        </button>
       )}
     </div>
   )

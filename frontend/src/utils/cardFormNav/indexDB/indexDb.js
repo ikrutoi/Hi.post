@@ -493,7 +493,7 @@ export const addUniqueCard = async (data) => {
 
     const transaction = db.transaction('cards', 'readwrite')
     const store = transaction.objectStore('cards')
-    await store.put({ id: newId, text: { ...data } })
+    await store.put({ id: newId, card: { ...data } })
     return await handleTransactionPromise(transaction)
   } catch (error) {
     console.error('[addUniqueCards] Failed to add unique cards:', error)

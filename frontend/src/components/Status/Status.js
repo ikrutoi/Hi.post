@@ -1,68 +1,92 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { MdOutlineShoppingCart } from 'react-icons/md'
 import './Status.scss'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
+import { addFullCard } from '../../redux/layout/actionCreators'
+import {
+  getAllCards,
+  getAllHiPostImages,
+  getAllUserImages,
+} from '../../utils/cardFormNav/indexDB/indexDb'
 import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
 
 const Status = () => {
   const infoBtnsStatus = useSelector((state) => state.infoButtons.status)
-  const infoFullCard = useSelector((state) => state.infoButtons.fullCard)
-  const [btnsStatus, setBtnsStatus] = useState({ status: {} })
+  // const infoFullCard = useSelector((state) => state.infoButtons.fullCard)
+  const infoAddFullCard = useSelector((state) => state.layout.addFullCard)
+  const [btnsStatus, setBtnsStatus] = useState({ status: infoBtnsStatus })
+  const [countCards, setCountCards] = useState(null)
   const listBtnsStatus = ['shopping']
+  const btnIconRefs = useRef({})
+  const setBtnIconRef = (id) => (element) => {
+    btnIconRefs.current[id] = element
+  }
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    if (infoBtnsStatus) {
-      setBtnsStatus((state) => {
-        return {
-          ...state,
-          status: {
-            ...state.status,
-            ...listBtnsStatus.reduce((acc, key) => {
-              acc[key] = infoBtnsStatus[key]
-              return acc
-            }, {}),
-          },
+  const getCards = async (pos) => {
+    const cards = await getAllCards()
+    switch (pos) {
+      case 'start':
+        if (cards.length > 0) {
+          setBtnsStatus((state) => {
+            return { ...state, status: { ...state.status, shopping: true } }
+          })
+          setCountCards(cards.length)
         }
-      })
+        break
+      case 'shopping':
+        return cards
+
+      default:
+        break
     }
-    console.log('btnsStatus1', btnsStatus)
+  }
+
+  useEffect(() => {
+    getCards('start')
   }, [])
 
   useEffect(() => {
-    setBtnsStatus((state) => {
-      return {
-        ...state,
-        status: {
-          ...state.status,
-          shopping: infoFullCard.plus ? true : false,
-        },
-      }
-    })
-    dispatch(
-      infoButtons({
-        status: {
-          ...infoBtnsStatus,
-          shopping: infoFullCard.plus ? true : false,
-        },
-      })
-    )
-  }, [infoFullCard, setBtnsStatus, dispatch])
+    if (btnsStatus && btnIconRefs.current) {
+      changeIconStyles(btnsStatus, btnIconRefs.current)
+    }
+  }, [btnsStatus])
 
-  // useEffect(() => {
-  //   if (btnsStatus && btnIconRefs.current) {
-  //     changeIconStyles(btnsCardtext, btnIconRefs.current)
-  //   }
-  // }, [btnsCardtext, btnIconRefs])
+  useEffect(() => {
+    getCards()
+    if (infoAddFullCard) {
+      const timerIcon = setTimeout(() => {
+        dispatch(addFullCard(false))
+      }, 300)
 
-  console.log('btnsStatus0', btnsStatus)
+      return () => clearTimeout(timerIcon)
+    }
+  }, [infoAddFullCard, dispatch])
+
+  const handleClickShopping = async () => {
+    const cards = await getAllCards('shopping')
+  }
 
   return (
     <div className="status-container">
-      <button className="toolbar-btn">
-        <MdOutlineShoppingCart className="toolbar-status-icon" />
-      </button>
+      {listBtnsStatus.map((btn, i) => (
+        <button
+          className={`toolbar-btn toolbar-btn-${btn}`}
+          key={`${btn}-${i}`}
+          ref={setBtnIconRef(`status-${btn}`)}
+          onClick={handleClickShopping}
+        >
+          <MdOutlineShoppingCart className="toolbar-status-icon" />
+          {btn === 'shopping' ? (
+            <span className="shopping-counter-container">
+              <span className="shopping-counter">{countCards}</span>
+            </span>
+          ) : (
+            <></>
+          )}
+        </button>
+      ))}
     </div>
   )
 }

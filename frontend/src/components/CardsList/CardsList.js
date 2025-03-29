@@ -6,7 +6,7 @@ import './CardsList.scss'
 import { addAroma } from '../../redux/cardEdit/actionCreators'
 import {
   choiceMemorySection,
-  fullCard,
+  addFullCard,
 } from '../../redux/layout/actionCreators'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
@@ -15,6 +15,8 @@ import {
   activeSections,
 } from '../../redux/layout/actionCreators'
 import {
+  getAllHiPostImages,
+  getAllUserImages,
   deleteMyAddress,
   deleteToAddress,
   getAllRecordsAddresses,
@@ -22,11 +24,13 @@ import {
   getAllRecordCardtext,
   deleteRecordCardtext,
   addUniqueCard,
+  getCountCards,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import { colorSchemeMain } from '../../data/main/colorSchemeMain'
 import MemoryEnvelope from './CardMiniSections/MemoryEnvelope/MemoryEnvelope'
 import MemoryCardtext from './CardMiniSections/MemoryCardtext/MemoryCardtext'
 import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
+import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
 
 const CardsList = () => {
   const layoutFullCard = useSelector((state) => state.layout.fullCard)
@@ -55,12 +59,20 @@ const CardsList = () => {
     myaddress: null,
     toaddress: null,
   })
+  const [btnsFullCard, setBtnsFullCard] = useState({
+    fullCard: { plus: true, delete: true },
+  })
   const [memoryCardtext, setMemoryCardtext] = useState({ cardtext: null })
   const [showIconMinimize, setShowIconMinimize] = useState(minimize)
   const memoryRefs = useRef({})
+  const btnIconRefs = useRef({})
   const dispatch = useDispatch()
   const listIconsFullCard = ['plus', 'delete']
   const listSections = ['cardphoto', 'cardtext', 'envelope', 'date', 'aroma']
+  const setBtnIconRef = (id) => (element) => {
+    btnIconRefs.current[id] = element
+  }
+  const [infoMinimize, setInfoMinimize] = useState(null)
 
   useEffect(() => {
     if (choiceSection.nameSection === 'envelope') {
@@ -146,17 +158,36 @@ const CardsList = () => {
     setListActiveSections(sortListSections)
   }, [layoutActiveSections])
 
+  const changeStyleFullCardIcons = (style) => {
+    switch (style) {
+      case 'backgroundColor':
+        if (minimize) {
+          if (showIconMinimize) {
+            return 'rgba(240, 240, 240, 0.85)'
+          }
+          return 'rgba(240, 240, 240, 0)'
+        } else {
+          return 'rgba(240, 240, 240, 0)'
+        }
+      case 'color':
+        if (minimize) {
+          if (showIconMinimize) {
+            return 'rgba(71, 71, 71, 1)'
+          }
+          return 'rgba(71, 71, 71, 0)'
+        } else {
+          return 'rgba(71, 71, 71, 0)'
+        }
+
+      default:
+        break
+    }
+  }
+
   useEffect(() => {
     if (listActiveSections.length === 5) {
       setStylePolyCards((state) => {
         return {
-          // ...state,
-          // icon: {
-          //   ...state.icon,
-          //   backgroundColor: 'rgba(0, 125, 215, 0.85)',
-          //   color: colorSchemeMain.lightGray,
-          //   cursor: 'pointer',
-          // },
           iconArrows: {
             ...state.iconArrows,
             backgroundColor: 'rgba(0, 125, 215, 0.85)',
@@ -165,22 +196,19 @@ const CardsList = () => {
           },
           iconPlus: {
             ...state.iconPlus,
-            backgroundColor: 'rgba(240, 240, 240, 0.85)',
-            color: colorSchemeMain.gray,
+            backgroundColor: changeStyleFullCardIcons('backgroundColor'),
+            color: changeStyleFullCardIcons('color'),
             cursor: 'pointer',
           },
         }
       })
     } else {
+      if (infoMinimize) {
+        setInfoMinimize(false)
+      }
       setStylePolyCards((state) => {
         return {
           ...state,
-          icon: {
-            ...state.icon,
-            backgroundColor: 'rgba(255, 255, 255, 0)',
-            color: 'rgba(255, 255, 255, 0)',
-            cursor: 'default',
-          },
           iconArrows: {
             ...state.iconArrows,
             backgroundColor: 'rgba(255, 255, 255, 0)',
@@ -189,14 +217,14 @@ const CardsList = () => {
           },
           iconPlus: {
             ...state.iconPlus,
-            backgroundColor: 'rgba(255, 255, 255, 0)',
-            color: 'rgba(255, 255, 255, 0)',
+            backgroundColor: 'rgba(240, 240, 240, 0)',
+            color: 'rgba(71, 71, 71, 0)',
             cursor: 'default',
           },
         }
       })
     }
-  }, [listActiveSections])
+  }, [listActiveSections, showIconMinimize, minimize])
 
   // const getListPrioritySections = () => {
   //   const temporaryArray = []
@@ -247,27 +275,55 @@ const CardsList = () => {
   const handleClickIconMinimize = () => {
     if (listActiveSections.length === 5) {
       minimize ? setMinimize(false) : setMinimize(true)
+      if (!infoMinimize) {
+        setInfoMinimize(true)
+      }
     }
   }
 
   const handleClickFullCardIcon = async (evt) => {
     const parentBtn = evt.target.closest('.fullcard-btn')
-    // console.log('parent', parentBtn)
     switch (parentBtn.dataset.tooltip) {
       case 'plus':
+        console.log('plus')
+        // const imageHiPost = await getAllHiPostImages()
+        // const imageUser = await getAllUserImages()
+        // console.log('imageHiPost', imageHiPost)
+        // console.log('imageUser', imageUser)
+        // if
+        // setBtnsFullCard((state) => {
+        //   return {
+        //     ...state,
+        //     fullCard: { ...state.fullCard, plus: false },
+        //   }
+        // })
+        // dispatch(
+        //   infoButtons({ fullCard: { ...btnsFullCard.fullCard, plus: false } })
+        // )
+        dispatch(addFullCard(true))
+        const countStart = await getCountCards()
+        // console.log('countStart', countStart)
         const resultCard = {}
         listSections.forEach((section) => {
           resultCard[section] = cardEdit[section]
         })
-        // console.log('resultCard', resultCard)
         // setResultFullCard()
         await addUniqueCard(resultCard)
+        const countEnd = await getCountCards()
+        // console.log('countEnd', countEnd)
+
         break
 
       default:
         break
     }
   }
+
+  useEffect(() => {
+    if (btnsFullCard && btnIconRefs.current) {
+      changeIconStyles(btnsFullCard, btnIconRefs.current)
+    }
+  }, [btnsFullCard, btnIconRefs])
 
   // const handleMouseEnterIconMinimize = () => {
   //   if (listActiveSections.length === 5) {
@@ -298,7 +354,7 @@ const CardsList = () => {
   // }
 
   useEffect(() => {
-    dispatch(fullCard(minimize))
+    // dispatch(fullCard(minimize))
     const timerIcon = setTimeout(() => {
       setShowIconMinimize(minimize)
     }, 800)
@@ -390,8 +446,7 @@ const CardsList = () => {
                     color: stylePolyCards.iconArrows.color,
                     backgroundColor: stylePolyCards.iconArrows.backgroundColor,
                     cursor: stylePolyCards.iconArrows.cursor,
-                    transition:
-                      'background-color 0.3s ease, color 0.3s ease, left 0.3s ease',
+                    transition: 'background-color 0.3s ease, color 0.3s ease',
                   }}
                   onClick={handleClickIconMinimize}
                   // onMouseEnter={handleMouseEnterIconMinimize}
@@ -403,29 +458,24 @@ const CardsList = () => {
                 </button>
               </div>
               <div className="fullcard-line">
-                {listIconsFullCard.map((icon, i) => {
+                {listIconsFullCard.map((btn, i) => {
                   return (
                     <button
-                      key={`${icon}-${i}`}
+                      key={`${btn}-${i}`}
                       className="fullcard-btn"
-                      data-tooltip={icon}
+                      ref={setBtnIconRef(`fullCard-${btn}`)}
+                      data-tooltip={btn}
                       style={{
-                        color: layoutFullCard
-                          ? stylePolyCards.iconPlus.color
-                          : 'rgba(255, 255, 255, 0)',
+                        color: stylePolyCards.iconPlus.color,
                         backgroundColor:
-                          showIconMinimize && layoutFullCard
-                            ? stylePolyCards.iconPlus.backgroundColor
-                            : 'rgba(255, 255, 255, 0)',
-                        cursor: layoutFullCard
-                          ? stylePolyCards.iconPlus.cursor
-                          : 'default',
+                          stylePolyCards.iconPlus.backgroundColor,
+                        cursor: stylePolyCards.iconPlus.cursor,
                         transition:
-                          'background-color 0.3s ease, color 0.3s ease, right 0.3s ease',
+                          'background-color 0.3s ease, color 0.3s ease',
                       }}
                       onClick={handleClickFullCardIcon}
                     >
-                      {showIconMinimize ? addIconToolbar(icon) : <></>}
+                      {showIconMinimize ? addIconToolbar(btn) : <></>}
                     </button>
                   )
                 })}
@@ -448,6 +498,8 @@ const CardsList = () => {
                     length: arr.length,
                   }}
                   minimize={minimize}
+                  infoMinimize={infoMinimize}
+                  showIconMinimize={showIconMinimize}
                 />
               ))
           ) : (
