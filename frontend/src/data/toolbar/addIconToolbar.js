@@ -1,7 +1,16 @@
 // import { FiSave, FiDelete } from 'react-icons/fi'
-import { FiPaperclip, FiPlus } from 'react-icons/fi'
+// import { FiPaperclip, FiPlus } from 'react-icons/fi'
 import { LuPaperclip } from 'react-icons/lu'
-import { FiEdit, FiDownload, FiSave, FiDelete, FiCrop } from 'react-icons/fi'
+import { MdDeleteOutline } from 'react-icons/md'
+import {
+  FiEdit,
+  FiDownload,
+  FiSave,
+  FiDelete,
+  FiCrop,
+  FiPaperclip,
+  FiPlus,
+} from 'react-icons/fi'
 import { PiArrowClockwiseFill } from 'react-icons/pi'
 // import { RiResetLeftFill } from 'react-icons/ri'
 import { TbArrowsMaximize } from 'react-icons/tb'
@@ -26,6 +35,8 @@ export const addIconToolbar = (icon) => {
       return <LuPaperclip className="toolbar-icon" />
     case 'delete':
       return <FiDelete className="toolbar-icon" />
+    case 'delete2':
+      return <MdDeleteOutline className="toolbar-icon" />
     case 'download':
       return <FiDownload className="toolbar-icon" />
     case 'turn':
@@ -55,7 +66,7 @@ export const addIconToolbar = (icon) => {
     case 'justify':
       return <RiAlignJustify className="toolbar-icon" />
     case 'plus':
-      return <FiPlus className="fullcard-icon" />
+      return <FiPlus className="toolbar-icon" />
     case 'arrowsOut':
       return <HiArrowsPointingOut className="fullcard-icon" />
     case 'arrowsIn':

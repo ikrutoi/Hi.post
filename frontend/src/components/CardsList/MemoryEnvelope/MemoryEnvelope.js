@@ -1,5 +1,6 @@
 import { CgClose } from 'react-icons/cg'
 import './MemoryEnvelope.scss'
+import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
 
 const MemoryEnvelope = ({
   sizeMiniCard,
@@ -29,7 +30,8 @@ const MemoryEnvelope = ({
         className="card-mini-kebab card-mini-kebab-envelope"
         onClick={(evt) => handleClickMiniKebab(evt, section, address.id)}
       >
-        <CgClose className="icon-close" />
+        {/* <CgClose className="icon-close" /> */}
+        {addIconToolbar('delete2')}
       </div>
     </div>
   )

@@ -467,7 +467,7 @@ export const deleteCard = async (id) => {
     await store.delete(id)
     return await handleTransactionPromise(transaction)
   } catch (error) {
-    console.error('[deleteCards] Failed to delete cards', error)
+    console.error('[deleteCard] Failed to delete card', error)
     throw error
   }
 }

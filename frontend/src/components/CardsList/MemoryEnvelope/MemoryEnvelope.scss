@@ -48,6 +48,11 @@
   background-color: rgba(0, 0, 0, 0.075);
   cursor: pointer;
   transition: background-color 0.3s;
+  .toolbar-icon {
+    width: 1.3rem;
+    height: 1.3rem;
+    color: rgb(71, 71, 71);
+  }
   // border: solid 1px blue;
 }
 

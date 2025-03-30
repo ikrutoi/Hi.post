@@ -26,6 +26,7 @@ import MiniAroma from './MiniAroma/MiniAroma'
 import MiniPhoto from './MiniPhoto/MiniPhoto'
 import { addChoiceSection } from '../../../redux/layout/actionCreators'
 import { searchParent } from '../../../utils/searchParent'
+import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
 
 const CardMiniSection = ({
   valueSection,
@@ -217,7 +218,8 @@ const CardMiniSection = ({
           }}
           onClick={handleClickCardMiniKebab}
         >
-          <CgClose className="icon-close" />
+          {/* <CgClose className="icon-close" /> */}
+          {addIconToolbar('delete2')}
         </button>
       )}
     </div>

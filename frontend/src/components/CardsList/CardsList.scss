@@ -2,6 +2,7 @@
   position: relative;
   display: flex;
   width: 100%;
+  border-radius: 0.5rem;
   // border: solid 1px green;
 }
 
@@ -15,6 +16,7 @@
 .memory-list {
   display: flex;
   width: 100%;
+  background-color: rgb(255, 255, 255);
   border-radius: 0.5rem;
   // border: solid 1px blue;
 }
@@ -63,6 +65,7 @@
   .fullcard-btn {
     width: 2.6rem;
     height: 2.6rem;
+    // border: solid 1px red;
     .fullcard-icon {
       width: 1.6rem;
       height: 1.6rem;
@@ -79,24 +82,28 @@
     height: 1.9rem;
     margin: 0.35rem;
   }
-  .fullcard-btn:first-child {
-    .fullcard-icon {
-      width: 1.3rem;
-      height: 1.3rem;
-    }
-  }
   .fullcard-btn:last-child {
-    .fullcard-icon {
-      width: 1.2rem;
-      height: 1.2rem;
+    .toolbar-icon {
       margin-right: 1px;
     }
   }
+  // .fullcard-btn:first-child {
+  //   .fullcard-icon {
+  //     width: 1.3rem;
+  //     height: 1.3rem;
+  //   }
+  // }
+  // .fullcard-btn:last-child {
+  // }
 }
 
 .fullcard-line:last-child {
   flex-direction: column;
   justify-content: space-between;
+  .toolbar-icon {
+    width: 1.3rem;
+    height: 1.3rem;
+  }
 }
 
 .fullcard-btn {

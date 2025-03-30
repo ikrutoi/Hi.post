@@ -13,6 +13,7 @@ import { infoButtons } from '../../redux/infoButtons/actionCreators'
 import {
   choiceAddress,
   activeSections,
+  // expendShopping,
 } from '../../redux/layout/actionCreators'
 import {
   getAllHiPostImages,
@@ -30,10 +31,11 @@ import {
   deleteCard,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import { colorSchemeMain } from '../../data/main/colorSchemeMain'
-import MemoryEnvelope from './CardMiniSections/MemoryEnvelope/MemoryEnvelope'
-import MemoryCardtext from './CardMiniSections/MemoryCardtext/MemoryCardtext'
+import MemoryEnvelope from './MemoryEnvelope/MemoryEnvelope'
+import MemoryCardtext from './MemoryCardtext/MemoryCardtext'
 import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
 import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
+import Shopping from './Shopping/Shopping'
 
 const CardsList = () => {
   const layoutFullCard = useSelector((state) => state.layout.fullCard)
@@ -46,6 +48,7 @@ const CardsList = () => {
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const choiceSection = useSelector((state) => state.layout.choiceSection)
+  // const infoExpendShopping = useSelector((state) => state.layout.expendShopping)
   const infoEnvelopeSave = useSelector(
     (state) => state.infoButtons.envelopeSave
   )
@@ -68,7 +71,7 @@ const CardsList = () => {
   const memoryRefs = useRef({})
   const btnIconRefs = useRef({})
   const dispatch = useDispatch()
-  const listIconsFullCard = ['plus', 'delete']
+  const listIconsFullCard = ['plus', 'delete2']
   const listSections = ['cardphoto', 'cardtext', 'envelope', 'date', 'aroma']
   const setBtnIconRef = (id) => (element) => {
     btnIconRefs.current[id] = element
@@ -402,6 +405,9 @@ const CardsList = () => {
         </div>
       )
     }
+    if (memoryList === 'shopping') {
+      return <Shopping sizeMiniCard={sizeMiniCard} />
+    }
   }
 
   // const showIconFullCard = (icon) => {
@@ -416,7 +422,10 @@ const CardsList = () => {
   // }
 
   return (
-    <div className="cards-list">
+    <div
+      className="cards-list"
+      style={{ backgroundColor: colorSchemeMain.lightGray }}
+    >
       <div style={{ height: `${sizeMiniCard.height}px` }}></div>
       {choiceMemoryList()}
       {!memoryList && (

@@ -3,7 +3,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { MdOutlineShoppingCart } from 'react-icons/md'
 import './Status.scss'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
-import { addFullCard } from '../../redux/layout/actionCreators'
+import {
+  addFullCard,
+  // expendShopping,
+  choiceClip,
+} from '../../redux/layout/actionCreators'
 import {
   getAllCards,
   getAllHiPostImages,
@@ -15,6 +19,8 @@ const Status = () => {
   const infoBtnsStatus = useSelector((state) => state.infoButtons.status)
   // const infoAddFullCard = useSelector((state) => state.infoButtons.addFullCard)
   const infoAddFullCard = useSelector((state) => state.layout.addFullCard)
+  const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
+  // const infoExpendShopping = useSelector((state) => state.layout.expendShopping)
   const [btnsStatus, setBtnsStatus] = useState({ status: infoBtnsStatus })
   const [countCards, setCountCards] = useState(null)
   const listBtnsStatus = ['shopping']
@@ -27,7 +33,7 @@ const Status = () => {
   const getCards = async (pos) => {
     const cards = await getAllCards()
     switch (pos) {
-      case 'start':
+      case 'reboot':
         if (cards.length > 0) {
           setBtnsStatus((state) => {
             return { ...state, status: { ...state.status, shopping: true } }
@@ -35,8 +41,6 @@ const Status = () => {
           setCountCards(cards.length)
         }
         break
-      case 'shopping':
-        return cards
 
       default:
         break
@@ -44,7 +48,7 @@ const Status = () => {
   }
 
   useEffect(() => {
-    getCards('start')
+    getCards('reboot')
   }, [])
 
   useEffect(() => {
@@ -54,7 +58,7 @@ const Status = () => {
   }, [btnsStatus])
 
   useEffect(() => {
-    getCards('start')
+    getCards('reboot')
     if (infoAddFullCard) {
       const timerIcon = setTimeout(() => {
         dispatch(addFullCard(false))
@@ -65,8 +69,8 @@ const Status = () => {
   }, [infoAddFullCard, dispatch])
 
   const handleClickShopping = async () => {
-    const cards = await getCards('shopping')
-    console.log('CARDS:', cards)
+    // const cards = await getCards('shopping')
+    dispatch(choiceClip(infoChoiceClip === 'shopping' ? false : 'shopping'))
   }
 
   return (
