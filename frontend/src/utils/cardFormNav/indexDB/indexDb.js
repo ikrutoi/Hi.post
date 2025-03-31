@@ -1,6 +1,6 @@
 import { openDB } from 'idb'
 
-export const dbPromise = openDB('images-database', 8, {
+export const dbPromise = openDB('images-database', 11, {
   upgrade(db) {
     if (!db.objectStoreNames.contains('hiPostImages')) {
       db.createObjectStore('hiPostImages', { keyPath: 'id' })
@@ -17,8 +17,11 @@ export const dbPromise = openDB('images-database', 8, {
     if (!db.objectStoreNames.contains('toAddress')) {
       db.createObjectStore('toAddress', { keyPath: 'id' })
     }
-    if (!db.objectStoreNames.contains('cards')) {
-      db.createObjectStore('cards', { keyPath: 'id' })
+    if (!db.objectStoreNames.contains('blanks')) {
+      db.createObjectStore('blanks', { keyPath: 'id' })
+    }
+    if (!db.objectStoreNames.contains('shopping')) {
+      db.createObjectStore('shopping', { keyPath: 'id' })
     }
   },
 })
@@ -396,47 +399,47 @@ export const addUniqueRecordCardtext = async (data) => {
   }
 }
 
-export const getAllCards = async () => {
+export const getAllBlanks = async () => {
   try {
     const db = await getDatabase()
-    const transaction = db.transaction('cards', 'readonly')
-    const store = transaction.objectStore('cards')
+    const transaction = db.transaction('blanks', 'readonly')
+    const store = transaction.objectStore('blanks')
     const allRecords = await store.getAll()
     await handleTransactionPromise(transaction)
     return allRecords || []
   } catch (error) {
-    console.error(`[getAllCards] Failed to fetch all cards:`, error)
+    console.error(`[getAllBlanks] Failed to fetch all blanks:`, error)
     throw error
   }
 }
 
-export const getCountCards = async () => {
+export const getCountBlanks = async () => {
   try {
     const db = await getDatabase()
-    const transaction = db.transaction('cards', 'readonly')
-    const store = transaction.objectStore('cards')
+    const transaction = db.transaction('blanks', 'readonly')
+    const store = transaction.objectStore('blanks')
     const count = await store.count()
     await handleTransactionPromise(transaction)
     return count
   } catch (error) {
-    console.error('[getCountCards] Failed to count cards:', error)
+    console.error('[getCountBlanks] Failed to count blanks:', error)
     throw error
   }
 }
 
-export const getCardById = async (id) => {
+export const getBlankById = async (id) => {
   if (!id) {
-    throw new Error('[getCarsById] Invalid ID provided.')
+    throw new Error('[getBlankById] Invalid ID provided.')
   }
   try {
     const db = await getDatabase()
-    const transaction = db.transaction('cards', 'readonly')
-    const store = transaction.objectStore('cards')
+    const transaction = db.transaction('blanks', 'readonly')
+    const store = transaction.objectStore('blanks')
     const result = await store.get(id)
     await handleTransactionPromise(transaction)
     return result || null
   } catch (error) {
-    console.error('[getCardsById] Failed to get cards by ID:', error)
+    console.error('[getBlankById] Failed to get blank by ID:', error)
     throw error
   }
 }
@@ -459,44 +462,131 @@ export const getCardById = async (id) => {
 //   }
 // }
 
-export const deleteCard = async (id) => {
+export const deleteBlank = async (id) => {
   try {
     const db = await getDatabase()
-    const transaction = db.transaction('cards', 'readwrite')
-    const store = transaction.objectStore('cards')
+    const transaction = db.transaction('blanks', 'readwrite')
+    const store = transaction.objectStore('blanks')
     await store.delete(id)
     return await handleTransactionPromise(transaction)
   } catch (error) {
-    console.error('[deleteCard] Failed to delete card', error)
+    console.error('[deleteBlank] Failed to delete blank', error)
     throw error
   }
 }
 
-export const getMaxIdCards = async () => {
+export const getMaxIdBlanks = async () => {
   const db = await dbPromise
-  const transaction = db.transaction('cards', 'readonly')
-  const store = transaction.objectStore('cards')
+  const transaction = db.transaction('blanks', 'readonly')
+  const store = transaction.objectStore('blanks')
   const allRecords = await store.getAll()
 
   const ids = allRecords.map((record) => record.id)
   return ids.length ? Math.max(...ids) : 0
 }
 
-export const addUniqueCard = async (data) => {
+export const addUniqueBlank = async (data) => {
   if (!data || typeof data !== 'object') {
-    throw new Error('[addUniqueCards] Invalid data provided.')
+    throw new Error('[addUniqueBlank] Invalid data provided.')
   }
   try {
     const db = await getDatabase()
-    const maxId = await getMaxIdCards()
+    const maxId = await getMaxIdBlanks()
     const newId = maxId + 1
 
-    const transaction = db.transaction('cards', 'readwrite')
-    const store = transaction.objectStore('cards')
-    await store.put({ id: newId, card: { ...data } })
+    const transaction = db.transaction('blanks', 'readwrite')
+    const store = transaction.objectStore('blanks')
+    await store.put({ id: newId, blank: { ...data } })
     return await handleTransactionPromise(transaction)
   } catch (error) {
-    console.error('[addUniqueCards] Failed to add unique cards:', error)
+    console.error('[addUniqueBlank] Failed to add unique blank:', error)
+    throw error
+  }
+}
+
+export const getAllShopping = async () => {
+  try {
+    const db = await getDatabase()
+    const transaction = db.transaction('shopping', 'readonly')
+    const store = transaction.objectStore('shopping')
+    const allRecords = await store.getAll()
+    await handleTransactionPromise(transaction)
+    return allRecords || []
+  } catch (error) {
+    console.error(`[getAllShopping] Failed to fetch all shopping:`, error)
+    throw error
+  }
+}
+
+export const getCountShopping = async () => {
+  try {
+    const db = await getDatabase()
+    const transaction = db.transaction('shopping', 'readonly')
+    const store = transaction.objectStore('shopping')
+    const count = await store.count()
+    await handleTransactionPromise(transaction)
+    return count
+  } catch (error) {
+    console.error('[getCountShopping] Failed to count shopping:', error)
+    throw error
+  }
+}
+
+export const getShoppingById = async (id) => {
+  if (!id) {
+    throw new Error('[getShoppingById] Invalid ID provided.')
+  }
+  try {
+    const db = await getDatabase()
+    const transaction = db.transaction('shopping', 'readonly')
+    const store = transaction.objectStore('shopping')
+    const result = await store.get(id)
+    await handleTransactionPromise(transaction)
+    return result || null
+  } catch (error) {
+    console.error('[getShoppingById] Failed to get shopping by ID:', error)
+    throw error
+  }
+}
+
+export const deleteShopping = async (id) => {
+  try {
+    const db = await getDatabase()
+    const transaction = db.transaction('shopping', 'readwrite')
+    const store = transaction.objectStore('shopping')
+    await store.delete(id)
+    return await handleTransactionPromise(transaction)
+  } catch (error) {
+    console.error('[deleteShopping] Failed to delete shopping', error)
+    throw error
+  }
+}
+
+export const getMaxIdShopping = async () => {
+  const db = await dbPromise
+  const transaction = db.transaction('shopping', 'readonly')
+  const store = transaction.objectStore('shopping')
+  const allRecords = await store.getAll()
+
+  const ids = allRecords.map((record) => record.id)
+  return ids.length ? Math.max(...ids) : 0
+}
+
+export const addUniqueShopping = async (data) => {
+  if (!data || typeof data !== 'object') {
+    throw new Error('[addUniqueShopping] Invalid data provided.')
+  }
+  try {
+    const db = await getDatabase()
+    const maxId = await getMaxIdShopping()
+    const newId = maxId + 1
+
+    const transaction = db.transaction('shopping', 'readwrite')
+    const store = transaction.objectStore('shopping')
+    await store.put({ id: newId, shopping: { ...data } })
+    return await handleTransactionPromise(transaction)
+  } catch (error) {
+    console.error('[addUniqueShopping] Failed to add unique shopping:', error)
     throw error
   }
 }

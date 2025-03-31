@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { MdOutlineShoppingCart } from 'react-icons/md'
 import './Status.scss'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
 import {
@@ -9,11 +8,14 @@ import {
   choiceClip,
 } from '../../redux/layout/actionCreators'
 import {
-  getAllCards,
+  getAllBlanks,
   getAllHiPostImages,
   getAllUserImages,
+  getAllShopping,
+  deleteShopping,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
+import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
 
 const Status = () => {
   const infoBtnsStatus = useSelector((state) => state.infoButtons.status)
@@ -22,33 +24,34 @@ const Status = () => {
   const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
   // const infoExpendShopping = useSelector((state) => state.layout.expendShopping)
   const [btnsStatus, setBtnsStatus] = useState({ status: infoBtnsStatus })
-  const [countCards, setCountCards] = useState(null)
-  const listBtnsStatus = ['shopping']
+  const [countShopping, setCountShopping] = useState(null)
+  const [countBlanks, setCountBlanks] = useState(null)
+  const listBtnsStatus = ['shopping', 'clip']
   const btnIconRefs = useRef({})
   const setBtnIconRef = (id) => (element) => {
     btnIconRefs.current[id] = element
   }
   const dispatch = useDispatch()
 
-  const getCards = async (pos) => {
-    const cards = await getAllCards()
-    switch (pos) {
-      case 'reboot':
-        if (cards.length > 0) {
-          setBtnsStatus((state) => {
-            return { ...state, status: { ...state.status, shopping: true } }
-          })
-          setCountCards(cards.length)
-        }
-        break
-
-      default:
-        break
-    }
+  const updateStatus = async () => {
+    const shopping = await getAllShopping()
+    const blanks = await getAllBlanks()
+    setBtnsStatus((state) => {
+      return {
+        ...state,
+        status: {
+          ...state.status,
+          shopping: Boolean(shopping.length),
+          clip: Boolean(blanks.length),
+        },
+      }
+    })
+    setCountShopping(shopping.length > 0 ? shopping.length : 0)
+    setCountBlanks(blanks.length > 0 ? blanks.length : 0)
   }
 
   useEffect(() => {
-    getCards('reboot')
+    updateStatus()
   }, [])
 
   useEffect(() => {
@@ -58,7 +61,7 @@ const Status = () => {
   }, [btnsStatus])
 
   useEffect(() => {
-    getCards('reboot')
+    updateStatus()
     if (infoAddFullCard) {
       const timerIcon = setTimeout(() => {
         dispatch(addFullCard(false))
@@ -68,9 +71,29 @@ const Status = () => {
     }
   }, [infoAddFullCard, dispatch])
 
-  const handleClickShopping = async () => {
-    // const cards = await getCards('shopping')
-    dispatch(choiceClip(infoChoiceClip === 'shopping' ? false : 'shopping'))
+  // const clearBase = async () => {
+  //   const shopping = await getAllShopping()
+  //   for (const el of shopping) {
+  //     await deleteShopping(el.id)
+  //   }
+  //   const shoppingResult = await getAllShopping()
+  //   console.log('resultShopping', shoppingResult)
+  // }
+
+  const handleClickBtn = (evt) => {
+    const parentBtn = evt.target.closest('.toolbar-btn')
+    switch (parentBtn.dataset.tooltip) {
+      case 'shopping':
+        // clearBase()
+        dispatch(choiceClip(infoChoiceClip === 'shopping' ? false : 'shopping'))
+        break
+      case 'clip':
+        dispatch(choiceClip(infoChoiceClip === 'blanks' ? false : 'blanks'))
+        break
+
+      default:
+        break
+    }
   }
 
   return (
@@ -78,14 +101,26 @@ const Status = () => {
       {listBtnsStatus.map((btn, i) => (
         <button
           className={`toolbar-btn toolbar-btn-${btn}`}
+          data-tooltip={btn}
           key={`${btn}-${i}`}
           ref={setBtnIconRef(`status-${btn}`)}
-          onClick={handleClickShopping}
+          onClick={handleClickBtn}
         >
-          <MdOutlineShoppingCart className="toolbar-status-icon" />
-          {btn === 'shopping' ? (
-            <span className="shopping-counter-container">
-              <span className="shopping-counter">{countCards}</span>
+          {addIconToolbar(btn)}
+          {btn === 'shopping' && countShopping ? (
+            <span className={`counter-container ${btn}-counter-container`}>
+              <span className={`status-counter ${btn}-counter`}>
+                {countShopping}
+              </span>
+            </span>
+          ) : (
+            <></>
+          )}
+          {btn === 'clip' && countBlanks ? (
+            <span className={`counter-container ${btn}-counter-container`}>
+              <span className={`status-counter ${btn}-counter`}>
+                {countBlanks}
+              </span>
             </span>
           ) : (
             <></>

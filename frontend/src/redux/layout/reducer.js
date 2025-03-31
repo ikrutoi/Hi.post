@@ -52,7 +52,8 @@ const initialState = {
   currentDate: null,
   fullCard: false,
   addFullCard: false,
-  // expandShopping: false,
+  selectedCard: false,
+  expendShopping: false,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -129,11 +130,11 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         addFullCard: action.payload,
       }
-    // case a.EXPEND_SHOPPING:
-    //   return {
-    //     ...state,
-    //     expendShopping: action.payload,
-    //   }
+    case a.EXPEND_SHOPPING:
+      return {
+        ...state,
+        expendShopping: action.payload,
+      }
     // case a.SET_MY_ADDRESS_LEGEND_REF:
     //   return {
     //     ...state,

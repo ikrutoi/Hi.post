@@ -119,12 +119,12 @@ export const addFullCard = (newSection) => {
   }
 }
 
-// export const expendShopping = (newSection) => {
-//   return {
-//     type: a.EXPEND_SHOPPING,
-//     payload: newSection,
-//   }
-// }
+export const expendShopping = (newSection) => {
+  return {
+    type: a.EXPEND_SHOPPING,
+    payload: newSection,
+  }
+}
 
 // export const setMyAddressLegendRef = (newSection) => {
 //   return {

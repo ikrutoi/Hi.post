@@ -75,18 +75,18 @@
 
 .fullcard-line:first-child,
 .fullcard-line:last-child {
-  // align-items: flex-start;
-  // padding: 0.35rem 0;
   .fullcard-btn {
-    width: 1.9rem;
-    height: 1.9rem;
-    margin: 0.35rem;
+    width: 1.7rem;
+    height: 1.7rem;
+    // border: solid 1px blue;
+    // margin-left: 0.3rem;
+    // margin-right: 0.3rem;
   }
-  .fullcard-btn:last-child {
-    .toolbar-icon {
-      margin-right: 1px;
-    }
-  }
+  // .fullcard-btn:last-child {
+  //   .toolbar-icon {
+  //     // margin-right: 1px;
+  //   }
+  // }
   // .fullcard-btn:first-child {
   //   .fullcard-icon {
   //     width: 1.3rem;
@@ -98,11 +98,14 @@
 }
 
 .fullcard-line:last-child {
+  padding: 0.3rem;
+  box-sizing: border-box;
   flex-direction: column;
   justify-content: space-between;
+  // border: solid 1px green;
   .toolbar-icon {
-    width: 1.3rem;
-    height: 1.3rem;
+    width: 1.2rem;
+    height: 1.2rem;
   }
 }
 

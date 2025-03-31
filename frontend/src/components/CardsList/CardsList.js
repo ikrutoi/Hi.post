@@ -4,16 +4,14 @@ import { TbArrowsMinimize } from 'react-icons/tb'
 import { MdMoreHoriz } from 'react-icons/md'
 import './CardsList.scss'
 import { addAroma } from '../../redux/cardEdit/actionCreators'
-import {
-  choiceMemorySection,
-  addFullCard,
-} from '../../redux/layout/actionCreators'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
 import {
+  addFullCard,
+  choiceMemorySection,
   choiceAddress,
   activeSections,
-  // expendShopping,
+  expendShopping,
 } from '../../redux/layout/actionCreators'
 import {
   getAllHiPostImages,
@@ -29,6 +27,11 @@ import {
   addUniqueCard,
   getCountCards,
   deleteCard,
+  getCardById,
+  getAllShopping,
+  addUniqueShopping,
+  getShoppingById,
+  addUniqueBlank,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import { colorSchemeMain } from '../../data/main/colorSchemeMain'
 import MemoryEnvelope from './MemoryEnvelope/MemoryEnvelope'
@@ -38,11 +41,12 @@ import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
 import Shopping from './Shopping/Shopping'
 
 const CardsList = () => {
-  const layoutFullCard = useSelector((state) => state.layout.fullCard)
+  // const layoutFullCard = useSelector((state) => state.layout.fullCard)
   const cardEdit = useSelector((state) => state.cardEdit)
   const layoutActiveSections = useSelector(
     (state) => state.layout.activeSections
   )
+  const infoExpendShopping = useSelector((state) => state.layout.expendShopping)
   const choiceSave = useSelector((state) => state.layout.choiceSave)
   const choiceClip = useSelector((state) => state.layout.choiceClip)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
@@ -58,25 +62,43 @@ const CardsList = () => {
     iconArrows: {},
     iconPlus: {},
   })
-  const [memoryList, setMemoryList] = useState(null)
+  const [expendCardShopping, setExpendCardShopping] = useState(null)
+  const [selectedListCards, setSelectedListCards] = useState(null)
   const [memoryAddress, setMemoryAddress] = useState({
     myaddress: null,
     toaddress: null,
   })
   const [btnsFullCard, setBtnsFullCard] = useState({
-    fullCard: { plus: true, delete: true },
+    fullCard: { plus: true, remove: true },
   })
   const [memoryCardtext, setMemoryCardtext] = useState({ cardtext: null })
   const [showIconMinimize, setShowIconMinimize] = useState(minimize)
   const memoryRefs = useRef({})
   const btnIconRefs = useRef({})
   const dispatch = useDispatch()
-  const listIconsFullCard = ['plus', 'delete2']
+  const listIconsFullCard = ['plus', 'save', 'remove']
   const listSections = ['cardphoto', 'cardtext', 'envelope', 'date', 'aroma']
   const setBtnIconRef = (id) => (element) => {
     btnIconRefs.current[id] = element
   }
   const [infoMinimize, setInfoMinimize] = useState(null)
+
+  const getExpendShopping = async (id) => {
+    const cardShopping = await getShoppingById(id)
+    setExpendCardShopping(cardShopping)
+    const timerInfoExpendShopping = setTimeout(() => {
+      dispatch(expendShopping(false))
+    }, 300)
+
+    return () => clearTimeout(timerInfoExpendShopping)
+  }
+
+  useEffect(() => {
+    if (infoExpendShopping !== false) {
+      const idExpendCard = Number(infoExpendShopping)
+      getExpendShopping(idExpendCard)
+    }
+  }, [infoExpendShopping])
 
   useEffect(() => {
     if (choiceSection.nameSection === 'envelope') {
@@ -88,13 +110,13 @@ const CardsList = () => {
     if (choiceSection.nameSection === 'cardtext') {
       if (choiceSave === 'cardtext') {
         getAllCardtext()
-        setMemoryList('cardtext')
+        setSelectedListCards('cardtext')
       }
     }
   }, [choiceSection, infoEnvelopeSave, choiceSave, dispatch])
 
   useEffect(() => {
-    setMemoryList(choiceClip)
+    setSelectedListCards(choiceClip)
     switch (choiceClip) {
       case 'myaddress':
         getAllAddress('myaddress')
@@ -105,11 +127,19 @@ const CardsList = () => {
       case 'cardtext':
         getAllCardtext()
         break
+      // case 'shopping':
+      //   getAllCardsShopping()
+      //   break
+      case 'blanks':
+        getAllBlanks()
+        break
 
       default:
         break
     }
-  }, [choiceSave, choiceClip])
+  }, [choiceClip])
+
+  const getAllBlanks = async () => {}
 
   const getAllAddress = async (section) => {
     const listAddress = await getAllRecordsAddresses(
@@ -121,7 +151,7 @@ const CardsList = () => {
         [section]: listAddress,
       }
     })
-    setMemoryList(section)
+    setSelectedListCards(section)
   }
 
   const getAllCardtext = async () => {
@@ -133,6 +163,10 @@ const CardsList = () => {
       }
     })
   }
+
+  // const getAllCardsShopping = async () => {
+  //   const listShopping = await getAllShopping()
+  // }
 
   const setRef = (id) => (element) => {
     memoryRefs.current[id] = element
@@ -286,39 +320,41 @@ const CardsList = () => {
   }
 
   const handleClickFullCardIcon = async (evt) => {
+    const hiPostImages = await getAllHiPostImages()
+    const userImages = await getAllUserImages()
+    const sectionWorkingImage = hiPostImages.some(
+      (el) => el.id === 'workingImage'
+    )
+      ? 'hiPostImages'
+      : userImages.some((el) => el.id === 'workingImage')
+      ? 'userImages'
+      : null
+
+    let workingImage = null
+    const getImages = {
+      hiPostImages: getHiPostImage,
+      userImages: getUserImage,
+    }
+
+    if (sectionWorkingImage) {
+      workingImage = await getImages[sectionWorkingImage]('workingImage')
+    }
+
+    const resultCard = listSections.reduce((acc, section) => {
+      acc[section] = section === 'cardphoto' ? workingImage : cardEdit[section]
+      return acc
+    }, {})
+
+    dispatch(addFullCard(true))
+
     const parentBtn = evt.target.closest('.fullcard-btn')
+
     switch (parentBtn.dataset.tooltip) {
       case 'plus':
-        const hiPostImages = await getAllHiPostImages()
-        const userImages = await getAllUserImages()
-
-        const sectionWorkingImage = hiPostImages.some(
-          (el) => el.id === 'workingImage'
-        )
-          ? 'hiPostImages'
-          : userImages.some((el) => el.id === 'workingImage')
-          ? 'userImages'
-          : null
-
-        let workingImage = null
-
-        const getImages = {
-          hiPostImages: getHiPostImage,
-          userImages: getUserImage,
-        }
-
-        if (sectionWorkingImage) {
-          workingImage = await getImages[sectionWorkingImage]('workingImage')
-        }
-
-        dispatch(addFullCard(true))
-        const resultCard = listSections.reduce((acc, section) => {
-          acc[section] =
-            section === 'cardphoto' ? workingImage : cardEdit[section]
-          return acc
-        }, {})
-        await addUniqueCard(resultCard)
-
+        await addUniqueShopping(resultCard)
+        break
+      case 'save':
+        await addUniqueBlank(resultCard)
         break
 
       default:
@@ -370,16 +406,19 @@ const CardsList = () => {
   }, [minimize])
 
   const choiceMemoryList = () => {
-    if (memoryList === 'myaddress' || memoryList === 'toaddress') {
+    if (
+      selectedListCards === 'myaddress' ||
+      selectedListCards === 'toaddress'
+    ) {
       return (
         <div className="memory-list">
-          {memoryAddress[memoryList] &&
-            memoryAddress[memoryList].map((address, i) => (
+          {memoryAddress[selectedListCards] &&
+            memoryAddress[selectedListCards].map((address, i) => (
               <MemoryEnvelope
-                key={`${memoryList}-${i}`}
+                key={`${selectedListCards}-${i}`}
                 setRef={setRef}
                 sizeMiniCard={sizeMiniCard}
-                section={memoryList}
+                section={selectedListCards}
                 address={address}
                 handleClickMiniKebab={handleClickMiniKebab}
                 handleClickAddress={handleClickAddress}
@@ -388,7 +427,7 @@ const CardsList = () => {
         </div>
       )
     }
-    if (memoryList === 'cardtext') {
+    if (selectedListCards === 'cardtext') {
       return (
         <div className="memory-list">
           {memoryCardtext.cardtext &&
@@ -405,7 +444,7 @@ const CardsList = () => {
         </div>
       )
     }
-    if (memoryList === 'shopping') {
+    if (selectedListCards === 'shopping') {
       return <Shopping sizeMiniCard={sizeMiniCard} />
     }
   }
@@ -428,7 +467,7 @@ const CardsList = () => {
     >
       <div style={{ height: `${sizeMiniCard.height}px` }}></div>
       {choiceMemoryList()}
-      {!memoryList && (
+      {!selectedListCards && (
         <>
           <div
             className="poly-cards-filter"

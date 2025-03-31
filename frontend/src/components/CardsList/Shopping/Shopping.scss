@@ -26,41 +26,28 @@
   height: 100%;
   background-color: rgba(163, 163, 163, 0.3);
   border-radius: 0.5rem;
+  // border: solid 1px green;
 }
 
 .shopping-card-photo {
   border-radius: 0.5rem;
   // cursor: pointer;
-  // border: solid 1px green;
-}
-
-.shopping-card-btns {
-  position: absolute;
-  height: 100%;
-  right: 0;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  // .shopping-card-btn:last-child {
-  //   .toolbar-icon {
-  //     margin-right: 1px;
-  //   }
-  // }
 }
 
 .shopping-card-btn {
+  position: absolute;
+  right: 0.3rem;
+  top: 0.3rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 1.9rem;
-  height: 1.9rem;
-  margin: 0.35rem;
-  border-radius: 2.5rem;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
   border: none;
   cursor: pointer;
   .toolbar-icon {
-    width: 1.3rem;
-    height: 1.3rem;
+    width: 1.2rem;
+    height: 1.2rem;
   }
 }

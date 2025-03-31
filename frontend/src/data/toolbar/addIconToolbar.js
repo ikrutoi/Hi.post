@@ -1,7 +1,7 @@
 // import { FiSave, FiDelete } from 'react-icons/fi'
 // import { FiPaperclip, FiPlus } from 'react-icons/fi'
 import { LuPaperclip } from 'react-icons/lu'
-import { MdDeleteOutline } from 'react-icons/md'
+import { MdDeleteOutline, MdOutlineShoppingCart } from 'react-icons/md'
 import {
   FiEdit,
   FiDownload,
@@ -35,7 +35,7 @@ export const addIconToolbar = (icon) => {
       return <LuPaperclip className="toolbar-icon" />
     case 'delete':
       return <FiDelete className="toolbar-icon" />
-    case 'delete2':
+    case 'remove':
       return <MdDeleteOutline className="toolbar-icon" />
     case 'download':
       return <FiDownload className="toolbar-icon" />
@@ -65,6 +65,8 @@ export const addIconToolbar = (icon) => {
       return <RiAlignRight className="toolbar-icon" />
     case 'justify':
       return <RiAlignJustify className="toolbar-icon" />
+    case 'shopping':
+      return <MdOutlineShoppingCart className="toolbar-icon" />
     case 'plus':
       return <FiPlus className="toolbar-icon" />
     case 'arrowsOut':

@@ -31,7 +31,7 @@ const MemoryEnvelope = ({
         onClick={(evt) => handleClickMiniKebab(evt, section, address.id)}
       >
         {/* <CgClose className="icon-close" /> */}
-        {addIconToolbar('delete2')}
+        {addIconToolbar('remove')}
       </div>
     </div>
   )

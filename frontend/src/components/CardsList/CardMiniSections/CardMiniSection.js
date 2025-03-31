@@ -219,7 +219,7 @@ const CardMiniSection = ({
           onClick={handleClickCardMiniKebab}
         >
           {/* <CgClose className="icon-close" /> */}
-          {addIconToolbar('delete2')}
+          {addIconToolbar('remove')}
         </button>
       )}
     </div>
