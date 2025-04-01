@@ -496,7 +496,7 @@ export const addUniqueBlank = async (data) => {
 
     const transaction = db.transaction('blanks', 'readwrite')
     const store = transaction.objectStore('blanks')
-    await store.put({ id: newId, blank: { ...data } })
+    await store.put({ id: newId, blanks: { ...data } })
     return await handleTransactionPromise(transaction)
   } catch (error) {
     console.error('[addUniqueBlank] Failed to add unique blank:', error)

@@ -9,6 +9,7 @@ import {
 } from '../../redux/layout/actionCreators'
 import {
   getAllBlanks,
+  deleteBlank,
   getAllHiPostImages,
   getAllUserImages,
   getAllShopping,
@@ -72,22 +73,22 @@ const Status = () => {
   }, [infoAddFullCard, dispatch])
 
   // const clearBase = async () => {
-  //   const shopping = await getAllShopping()
+  //   const shopping = await getAllBlanks()
   //   for (const el of shopping) {
-  //     await deleteShopping(el.id)
+  //     await deleteBlank(el.id)
   //   }
-  //   const shoppingResult = await getAllShopping()
-  //   console.log('resultShopping', shoppingResult)
+  //   const shoppingResult = await getAllBlanks()
+  //   console.log('resultMemory', shoppingResult)
   // }
 
   const handleClickBtn = (evt) => {
     const parentBtn = evt.target.closest('.toolbar-btn')
     switch (parentBtn.dataset.tooltip) {
       case 'shopping':
-        // clearBase()
         dispatch(choiceClip(infoChoiceClip === 'shopping' ? false : 'shopping'))
         break
       case 'clip':
+        // clearBase()
         dispatch(choiceClip(infoChoiceClip === 'blanks' ? false : 'blanks'))
         break
 

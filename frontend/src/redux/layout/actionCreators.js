@@ -119,9 +119,9 @@ export const addFullCard = (newSection) => {
   }
 }
 
-export const expendShopping = (newSection) => {
+export const expendStatusCard = (newSection) => {
   return {
-    type: a.EXPEND_SHOPPING,
+    type: a.EXPEND_STATUS_CARD,
     payload: newSection,
   }
 }

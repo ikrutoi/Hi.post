@@ -15,7 +15,7 @@ const BtnCardsNav = ({
   navBtn,
 }) => {
   const infoButtonsRedux = useSelector((state) => state.infoButtons)
-  const layoutChoiceClip = useSelector((state) => state.layout.choiceClip)
+  const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
   const nameNav = section.name.toLowerCase()
   const dispatch = useDispatch()
 
@@ -23,19 +23,19 @@ const BtnCardsNav = ({
     const btnNav = evt.target.dataset.section
     if (
       btnNav !== 'envelope' &&
-      (layoutChoiceClip === 'myaddress' || layoutChoiceClip === 'toaddress')
+      (infoChoiceClip === 'myaddress' || infoChoiceClip === 'toaddress')
     ) {
       dispatch(choiceClip(false))
       dispatch(
         infoButtons({
           envelope: {
-            ...infoButtonsRedux.envelope[layoutChoiceClip],
+            ...infoButtonsRedux.envelope[infoChoiceClip],
             clip: true,
           },
         })
       )
     }
-    if (btnNav !== 'cardtext' && layoutChoiceClip === 'cardtext') {
+    if (btnNav !== 'cardtext' && infoChoiceClip === 'cardtext') {
       dispatch(choiceClip(false))
       dispatch(
         infoButtons({
@@ -45,6 +45,9 @@ const BtnCardsNav = ({
           },
         })
       )
+    }
+    if (infoChoiceClip === 'shopping' || infoChoiceClip === 'blanks') {
+      dispatch(choiceClip(false))
     }
 
     // if (btnNav !== 'envelope' && infoButtonsRedux.envelopeClip) {

@@ -3,7 +3,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { TbArrowsMinimize } from 'react-icons/tb'
 import { MdMoreHoriz } from 'react-icons/md'
 import './CardsList.scss'
-import { addAroma } from '../../redux/cardEdit/actionCreators'
+import {
+  addAroma,
+  addCardphoto,
+  addCardtext,
+  addDate,
+  addEnvelope,
+} from '../../redux/cardEdit/actionCreators'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
 import { infoButtons } from '../../redux/infoButtons/actionCreators'
 import {
@@ -11,7 +17,7 @@ import {
   choiceMemorySection,
   choiceAddress,
   activeSections,
-  expendShopping,
+  expendStatusCard,
 } from '../../redux/layout/actionCreators'
 import {
   getAllHiPostImages,
@@ -32,13 +38,14 @@ import {
   addUniqueShopping,
   getShoppingById,
   addUniqueBlank,
+  getBlankById,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import { colorSchemeMain } from '../../data/main/colorSchemeMain'
 import MemoryEnvelope from './MemoryEnvelope/MemoryEnvelope'
 import MemoryCardtext from './MemoryCardtext/MemoryCardtext'
 import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
 import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
-import Shopping from './Shopping/Shopping'
+import MemoryStatus from './MemoryStatus/MemoryStatus'
 
 const CardsList = () => {
   // const layoutFullCard = useSelector((state) => state.layout.fullCard)
@@ -46,10 +53,13 @@ const CardsList = () => {
   const layoutActiveSections = useSelector(
     (state) => state.layout.activeSections
   )
-  const infoExpendShopping = useSelector((state) => state.layout.expendShopping)
+  const infoExpendStatusCard = useSelector(
+    (state) => state.layout.expendStatusCard
+  )
   const choiceSave = useSelector((state) => state.layout.choiceSave)
-  const choiceClip = useSelector((state) => state.layout.choiceClip)
+  const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
+  const infoActiveSections = useSelector((state) => state.layout.activeSections)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const choiceSection = useSelector((state) => state.layout.choiceSection)
   // const infoExpendShopping = useSelector((state) => state.layout.expendShopping)
@@ -62,7 +72,7 @@ const CardsList = () => {
     iconArrows: {},
     iconPlus: {},
   })
-  const [expendCardShopping, setExpendCardShopping] = useState(null)
+  const [expendCardStatus, setExpendCardStatus] = useState(null)
   const [selectedListCards, setSelectedListCards] = useState(null)
   const [memoryAddress, setMemoryAddress] = useState({
     myaddress: null,
@@ -83,22 +93,57 @@ const CardsList = () => {
   }
   const [infoMinimize, setInfoMinimize] = useState(null)
 
-  const getExpendShopping = async (id) => {
-    const cardShopping = await getShoppingById(id)
-    setExpendCardShopping(cardShopping)
-    const timerInfoExpendShopping = setTimeout(() => {
-      dispatch(expendShopping(false))
+  const getExpendStatusCard = async (expendCard) => {
+    let cardExpend
+    switch (expendCard.source) {
+      case 'shopping':
+        const cardExpendShopping = await getShoppingById(Number(expendCard.id))
+        cardExpend = cardExpendShopping.shopping
+        break
+      case 'blanks':
+        const cardExpendBlank = await getBlankById(Number(expendCard.id))
+        cardExpend = cardExpendBlank.blanks
+        break
+      default:
+        break
+    }
+
+    // setExpendCardStatus(cardExpend)
+    // dispatch(addCardphoto(cardExpend.cardphoto))
+    dispatch(addCardtext(cardExpend.cardtext))
+    // setMemoryCardtext((state) => {
+    //   return {
+    //     ...state,
+    //     cardtext: cardExpend.cardtext,
+    //   }
+    // })
+    dispatch(addEnvelope(cardExpend.envelope))
+    dispatch(addDate(cardExpend.date))
+    dispatch(addAroma(cardExpend.aroma))
+    dispatch(
+      activeSections({
+        ...layoutActiveSections,
+        cardphoto: Boolean(cardExpend.cardphoto),
+        cardtext: Boolean(cardExpend.cardtext),
+        envelope: Boolean(cardExpend.envelope),
+        date: Boolean(cardExpend.date),
+        aroma: Boolean(cardExpend.aroma),
+      })
+    )
+    // console.log('expendCard', cardExpend)
+
+    const timerInfoExpendStatusCard = setTimeout(() => {
+      dispatch(expendStatusCard(false))
     }, 300)
 
-    return () => clearTimeout(timerInfoExpendShopping)
+    return () => clearTimeout(timerInfoExpendStatusCard)
   }
 
   useEffect(() => {
-    if (infoExpendShopping !== false) {
-      const idExpendCard = Number(infoExpendShopping)
-      getExpendShopping(idExpendCard)
+    if (infoExpendStatusCard !== false) {
+      getExpendStatusCard(infoExpendStatusCard)
     }
-  }, [infoExpendShopping])
+  }, [infoExpendStatusCard])
 
   useEffect(() => {
     if (choiceSection.nameSection === 'envelope') {
@@ -110,14 +155,14 @@ const CardsList = () => {
     if (choiceSection.nameSection === 'cardtext') {
       if (choiceSave === 'cardtext') {
         getAllCardtext()
-        setSelectedListCards('cardtext')
+        // setSelectedListCards('cardtext')
       }
     }
   }, [choiceSection, infoEnvelopeSave, choiceSave, dispatch])
 
   useEffect(() => {
-    setSelectedListCards(choiceClip)
-    switch (choiceClip) {
+    setSelectedListCards(infoChoiceClip)
+    switch (infoChoiceClip) {
       case 'myaddress':
         getAllAddress('myaddress')
         break
@@ -137,7 +182,7 @@ const CardsList = () => {
       default:
         break
     }
-  }, [choiceClip])
+  }, [infoChoiceClip])
 
   const getAllBlanks = async () => {}
 
@@ -162,6 +207,7 @@ const CardsList = () => {
         cardtext: listCardtexts,
       }
     })
+    // setSelectedListCards('cardtext')
   }
 
   // const getAllCardsShopping = async () => {
@@ -228,8 +274,10 @@ const CardsList = () => {
         return {
           iconArrows: {
             ...state.iconArrows,
-            backgroundColor: 'rgba(0, 125, 215, 0.85)',
-            color: colorSchemeMain.lightGray,
+            backgroundColor: 'rgba(240, 240, 240, 0.75)',
+            // backgroundColor: 'rgba(0, 125, 215, 0.85)',
+            color: colorSchemeMain.gray,
+            // color: colorSchemeMain.lightGray,
             cursor: 'pointer',
           },
           iconPlus: {
@@ -444,8 +492,10 @@ const CardsList = () => {
         </div>
       )
     }
-    if (selectedListCards === 'shopping') {
-      return <Shopping sizeMiniCard={sizeMiniCard} />
+    if (selectedListCards === 'shopping' || selectedListCards === 'blanks') {
+      return (
+        <MemoryStatus sizeMiniCard={sizeMiniCard} source={selectedListCards} />
+      )
     }
   }
 
