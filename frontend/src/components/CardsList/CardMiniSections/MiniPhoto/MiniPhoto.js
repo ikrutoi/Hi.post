@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import './MiniPhoto.scss'
 import {
@@ -9,11 +9,17 @@ import {
 } from '../../../../utils/cardFormNav/indexDB/indexDb'
 
 const MiniPhoto = ({ sizeCardMini }) => {
-  const selectorCardphoto = useSelector((state) => state.cardEdit.cardphoto)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
-  // const canvasRef = useRef(null)
-  // const [imgSrc, setImgSrc] = useState('')
   const [miniCardUrl, setMiniCardUrl] = useState(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const timerVisibly = setTimeout(() => {
+      setIsVisible(true)
+    }, 100)
+
+    return () => clearTimeout(timerVisibly)
+  }, [])
 
   useEffect(() => {
     const getMiniImage = async () => {
@@ -38,9 +44,11 @@ const MiniPhoto = ({ sizeCardMini }) => {
     }
 
     getMiniImage()
-    // console.log('layoutIndexDb', layoutIndexDb)
   }, [layoutIndexDb])
 
+  // useEffect(() => {
+  //   console.log('Url', miniCardUrl)
+  // }, [miniCardUrl])
   // useEffect(() => {
   //   if (selectorCardphoto.url) {
   //     setImgSrc(selectorCardphoto.url)
@@ -52,8 +60,7 @@ const MiniPhoto = ({ sizeCardMini }) => {
       {/* <canvas ref={canvasRef} style={{ display: 'none' }} /> */}
       {miniCardUrl && (
         <img
-          className="mini-photo"
-          // src={imgSrc}
+          className={`mini-photo ${isVisible ? 'visible' : ''}`}
           src={miniCardUrl}
           style={{
             width: `${sizeCardMini.width}px`,

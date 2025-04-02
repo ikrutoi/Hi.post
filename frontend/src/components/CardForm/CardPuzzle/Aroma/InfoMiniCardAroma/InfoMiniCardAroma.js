@@ -19,7 +19,6 @@ const InfoMiniCardAroma = ({
   selectedAroma,
   elementAroma,
   setSelectedAroma,
-  setChoiceSection,
 }) => {
   const selector = useSelector((state) => state.layout)
   const [sizeMiniCard, setSizeMiniCard] = useState(null)
@@ -87,7 +86,7 @@ const InfoMiniCardAroma = ({
       index: elementAroma.index,
       gender: elementAroma.gender,
     })
-    setChoiceSection('aroma')
+    // setChoiceSection('aroma')
   }
 
   // const selectors = useSelector((state) => state.cardEdit)

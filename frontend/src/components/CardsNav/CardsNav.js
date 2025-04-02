@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import './CardsNav.scss'
 import BtnCardsNav from './BtnCardNav/BtnCardsNav'
@@ -6,9 +6,22 @@ import listNavSections from '../../data/cardsNav/navList.json'
 import { colorSchemeNav } from '../../data/nav/colorSchemeNav'
 
 const CardsNav = () => {
-  const navBtn = useSelector((state) => state.layout.choiceSection.nameSection)
+  const infoChoiceSection = useSelector((state) => state.layout.choiceSection)
   const infoNavHistory = useSelector((state) => state.infoButtons.navHistory)
   const btnNavRefs = useRef({})
+  const [navBtn, setNavBtn] = useState(null)
+
+  useEffect(() => {
+    if (
+      infoChoiceSection.source !== 'shopping' &&
+      infoChoiceSection.source !== 'blanks' &&
+      infoChoiceSection.source !== 'minimize'
+    ) {
+      setNavBtn(infoChoiceSection.nameSection)
+    } else {
+      setNavBtn(false)
+    }
+  }, [infoChoiceSection])
 
   const setBtnNavRef = (id) => (element) => {
     btnNavRefs.current[id] = element

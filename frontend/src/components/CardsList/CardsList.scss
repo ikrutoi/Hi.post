@@ -63,14 +63,18 @@
 .fullcard-line:nth-child(2) {
   align-items: center;
   .fullcard-btn {
-    width: 2.6rem;
-    height: 2.6rem;
+    width: 2.8rem;
+    height: 2.8rem;
     // border: solid 1px red;
     .fullcard-icon {
-      width: 1.6rem;
-      height: 1.6rem;
+      width: 1.8rem;
+      height: 1.8rem;
     }
   }
+}
+
+.fullcard-line:first-child {
+  padding: 0.3rem;
 }
 
 .fullcard-line:first-child,

@@ -1,8 +1,9 @@
 .mini-photo {
   border-radius: 0.5rem;
-  // position: absolute;
-  // left: 0;
-  // position: relative;
-  // z-index: 2;
-  // border: solid 1px red;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+}
+
+.mini-photo.visible {
+  opacity: 1;
 }

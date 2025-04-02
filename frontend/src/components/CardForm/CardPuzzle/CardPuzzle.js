@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useRef } from 'react'
+import { useSelector } from 'react-redux'
 import './CardPuzzle.scss'
 // import sizeCard from '../../../data/ratioCardCardMini.json'
 import Cardphoto from './Cardphoto/Cardphoto'
@@ -7,20 +7,10 @@ import Cardtext from './Cardtext/Cardtext'
 import Envelope from './Envelope/Envelope'
 import Aroma from './Aroma/Aroma'
 import Date from './Date/Date'
-import { addChoiceSection } from '../../../redux/layout/actionCreators'
 
 const CardPuzzle = ({ toolbarColor }) => {
-  const layoutChoiceSection = useSelector((state) => state.layout.choiceSection)
+  const infoChoiceSection = useSelector((state) => state.layout.choiceSection)
   const sizeCard = useSelector((state) => state.layout.sizeCard)
-
-  const dispatch = useDispatch()
-  const [choiceSection, setChoiceSection] = useState(null)
-
-  useEffect(() => {
-    dispatch(
-      addChoiceSection({ source: 'cardPuzzle', nameSection: choiceSection })
-    )
-  }, [dispatch, choiceSection])
 
   const cardPuzzleRef = useRef(null)
 
@@ -28,33 +18,25 @@ const CardPuzzle = ({ toolbarColor }) => {
     switch (name) {
       case 'cardphoto':
         return (
-          <Cardphoto sizeCard={sizeCard} setChoiceSection={setChoiceSection} />
+          <Cardphoto sizeCard={sizeCard} choiceSection={infoChoiceSection} />
         )
       case 'cardtext':
         return (
           <Cardtext
             toolbarColor={toolbarColor}
-            setChoiceSection={setChoiceSection}
             styleLeftCardPuzzle={
               cardPuzzleRef.current
                 ? cardPuzzleRef.current.getBoundingClientRect().left
                 : 0
             }
-            // setToolbarColorActive={setToolbarColorActive}
-            // choiceBtnNav={choiceBtnNav}
           />
         )
       case 'envelope':
-        return (
-          <Envelope
-            cardPuzzleRef={cardPuzzleRef.current}
-            setChoiceSection={setChoiceSection}
-          />
-        )
+        return <Envelope cardPuzzleRef={cardPuzzleRef.current} />
       case 'aroma':
-        return <Aroma setChoiceSection={setChoiceSection} />
+        return <Aroma />
       case 'date':
-        return <Date setChoiceSection={setChoiceSection} />
+        return <Date />
       default:
         break
     }
@@ -69,7 +51,7 @@ const CardPuzzle = ({ toolbarColor }) => {
         height: `${sizeCard.height}px`,
       }}
     >
-      {section(layoutChoiceSection.nameSection)}
+      {section(infoChoiceSection.nameSection)}
     </div>
   )
 }

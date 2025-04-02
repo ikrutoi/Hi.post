@@ -18,8 +18,10 @@ import {
   choiceAddress,
   activeSections,
   expendStatusCard,
+  addChoiceSection,
 } from '../../redux/layout/actionCreators'
 import {
+  addUserImage,
   getAllHiPostImages,
   getAllUserImages,
   getHiPostImage,
@@ -61,7 +63,7 @@ const CardsList = () => {
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const infoActiveSections = useSelector((state) => state.layout.activeSections)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
-  const choiceSection = useSelector((state) => state.layout.choiceSection)
+  const infoChoiceSection = useSelector((state) => state.layout.choiceSection)
   // const infoExpendShopping = useSelector((state) => state.layout.expendShopping)
   const infoEnvelopeSave = useSelector(
     (state) => state.infoButtons.envelopeSave
@@ -94,6 +96,7 @@ const CardsList = () => {
   const [infoMinimize, setInfoMinimize] = useState(null)
 
   const getExpendStatusCard = async (expendCard) => {
+    setMinimize(true)
     let cardExpend
     switch (expendCard.source) {
       case 'shopping':
@@ -108,18 +111,20 @@ const CardsList = () => {
         break
     }
 
-    // setExpendCardStatus(cardExpend)
-    // dispatch(addCardphoto(cardExpend.cardphoto))
+    await addUserImage('originalImage', cardExpend.cardphoto)
+    await addUserImage('workingImage', cardExpend.cardphoto)
+    await addUserImage('miniImage', cardExpend.cardphoto)
     dispatch(addCardtext(cardExpend.cardtext))
-    // setMemoryCardtext((state) => {
-    //   return {
-    //     ...state,
-    //     cardtext: cardExpend.cardtext,
-    //   }
-    // })
     dispatch(addEnvelope(cardExpend.envelope))
     dispatch(addDate(cardExpend.date))
     dispatch(addAroma(cardExpend.aroma))
+
+    dispatch(
+      addChoiceSection({
+        source: `${expendCard.source}`,
+        nameSection: 'cardphoto',
+      })
+    )
     dispatch(
       activeSections({
         ...layoutActiveSections,
@@ -130,13 +135,11 @@ const CardsList = () => {
         aroma: Boolean(cardExpend.aroma),
       })
     )
-    // console.log('expendCard', cardExpend)
-
-    const timerInfoExpendStatusCard = setTimeout(() => {
-      dispatch(expendStatusCard(false))
+    const timerChangeMinimize = setTimeout(() => {
+      setMinimize(false)
     }, 300)
 
-    return () => clearTimeout(timerInfoExpendStatusCard)
+    return () => clearTimeout(timerChangeMinimize)
   }
 
   useEffect(() => {
@@ -146,19 +149,19 @@ const CardsList = () => {
   }, [infoExpendStatusCard])
 
   useEffect(() => {
-    if (choiceSection.nameSection === 'envelope') {
+    if (infoChoiceSection.nameSection === 'envelope') {
       if (infoEnvelopeSave) {
         getAllAddress(infoEnvelopeSave)
         dispatch(infoButtons({ envelopeSave: false }))
       }
     }
-    if (choiceSection.nameSection === 'cardtext') {
+    if (infoChoiceSection.nameSection === 'cardtext') {
       if (choiceSave === 'cardtext') {
         getAllCardtext()
         // setSelectedListCards('cardtext')
       }
     }
-  }, [choiceSection, infoEnvelopeSave, choiceSave, dispatch])
+  }, [infoChoiceSection, infoEnvelopeSave, choiceSave, dispatch])
 
   useEffect(() => {
     setSelectedListCards(infoChoiceClip)
@@ -247,7 +250,7 @@ const CardsList = () => {
       case 'backgroundColor':
         if (minimize) {
           if (showIconMinimize) {
-            return 'rgba(240, 240, 240, 0.85)'
+            return 'rgba(240, 240, 240, 0.75)'
           }
           return 'rgba(240, 240, 240, 0)'
         } else {
@@ -361,6 +364,14 @@ const CardsList = () => {
   const handleClickIconMinimize = () => {
     if (listActiveSections.length === 5) {
       minimize ? setMinimize(false) : setMinimize(true)
+      if (infoChoiceSection.source !== 'minimize') {
+        dispatch(
+          addChoiceSection({
+            source: `minimize`,
+            nameSection: 'cardphoto',
+          })
+        )
+      }
       if (!infoMinimize) {
         setInfoMinimize(true)
       }
@@ -498,17 +509,6 @@ const CardsList = () => {
       )
     }
   }
-
-  // const showIconFullCard = (icon) => {
-  //   switch (icon) {
-  //     case 'plus':
-  //       return <FiPlus className="fullcard-icon" />
-  //     case 'delete':
-  //       return
-  //     default:
-  //       break
-  //   }
-  // }
 
   return (
     <div

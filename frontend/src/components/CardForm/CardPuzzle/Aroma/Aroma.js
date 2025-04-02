@@ -7,8 +7,8 @@ import './Aroma.scss'
 import aromaList from '../../../../data/aroma/aromaList.json'
 import InfoMiniCardAroma from './InfoMiniCardAroma/InfoMiniCardAroma'
 
-const Aroma = ({ setChoiceSection }) => {
-  const fullCard = useSelector((state) => state.layout.fullCard)
+const Aroma = () => {
+  // const fullCard = useSelector((state) => state.layout.fullCard)
   const cardEditAroma = useSelector((state) => state.cardEdit.aroma)
   const layoutActiveSections = useSelector(
     (state) => state.layout.activeSections
@@ -41,7 +41,7 @@ const Aroma = ({ setChoiceSection }) => {
             selectedAroma={selectedAroma}
             elementAroma={el}
             setSelectedAroma={setSelectedAroma}
-            setChoiceSection={setChoiceSection}
+            // setChoiceSection={setChoiceSection}
           />
         ))}
     </form>

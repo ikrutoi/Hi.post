@@ -31,7 +31,7 @@ import { colorScheme } from '../../../../data/toolbar/colorScheme'
 import { changeIconStyles } from '../../../../data/toolbar/changeIconStyles'
 import ToolbarEnvelope from './ToolbarEnvelope/ToolbarEnvelope'
 
-const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
+const Envelope = ({ cardPuzzleRef }) => {
   const fullCard = useSelector((state) => state.layout.fullCard)
   const cardEditEnvelope = useSelector((state) => state.cardEdit.envelope)
   const layoutDeleteSection = useSelector((state) => state.layout.deleteSection)
@@ -233,8 +233,8 @@ const Envelope = ({ cardPuzzleRef, setChoiceSection }) => {
 
   useEffect(() => {
     dispatch(addEnvelope(value))
-    setChoiceSection('envelope')
-  }, [dispatch, value, setChoiceSection])
+    // setChoiceSection('envelope')
+  }, [dispatch, value])
 
   const handleMovingBetweenInputs = (evt) => {
     const indexInput = Number(evt.target.dataset.index)

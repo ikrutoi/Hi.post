@@ -15,6 +15,7 @@ import {
   addIndexDb,
   addMemoryCrop,
   activeSections,
+  expendStatusCard,
 } from '../../../../../redux/layout/actionCreators'
 // import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
@@ -30,13 +31,16 @@ import { centeringMaxCrop } from '../../../../../utils/images/centeringMaxCrop'
 import { adjustImageSize } from '../../../../../utils/images/adjustImageSize'
 
 const ImageCrop = ({ sizeCard }) => {
-  const infoBtnCardphotoClick = useSelector(
+  const infoBtnsCardphotoClick = useSelector(
     (state) => state.infoButtons.cardphotoClick
   )
   const layoutMemoryCrop = useSelector((state) => state.layout.memoryCrop)
-  const layoutSaveImage = useSelector((state) => state.layout.indexDb)
+  const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const layoutActiveSections = useSelector(
-    (state) => state.layout.activeSelectors
+    (state) => state.layout.activeSections
+  )
+  const infoExpendStatusCard = useSelector(
+    (state) => state.layout.expendStatusCard
   )
   const [image, setImage] = useState({ source: null, url: null, base: null })
   const [scaleX, setScaleX] = useState(1)
@@ -54,13 +58,25 @@ const ImageCrop = ({ sizeCard }) => {
   const aspectRatio = 142 / 100
 
   useEffect(() => {
-    const booleanMiniImage = Object.values(layoutSaveImage).some(
+    const booleanMiniImage = Object.values(layoutIndexDb).some(
       (image) => !!image.miniImage
     )
     dispatch(
       activeSections({ ...layoutActiveSections, cardphoto: booleanMiniImage })
     )
-  }, [layoutSaveImage])
+  }, [layoutIndexDb])
+
+  useEffect(() => {
+    if (infoExpendStatusCard) {
+      fetchImages()
+    } else {
+      const timerInfoExpendStatusCard = setTimeout(() => {
+        dispatch(expendStatusCard(false))
+      }, 300)
+
+      return () => clearTimeout(timerInfoExpendStatusCard)
+    }
+  }, [infoExpendStatusCard, dispatch])
 
   const checkIndexDb = async () => {
     try {
@@ -438,7 +454,7 @@ const ImageCrop = ({ sizeCard }) => {
         // })
       )
     }
-    switch (infoBtnCardphotoClick) {
+    switch (infoBtnsCardphotoClick) {
       case 'download':
         handleDownload()
         resetBtnToolbar()
@@ -467,7 +483,7 @@ const ImageCrop = ({ sizeCard }) => {
       default:
         break
     }
-  }, [infoBtnCardphotoClick, dispatch])
+  }, [infoBtnsCardphotoClick, dispatch])
 
   const base64ToBlob = (base64, contentType = '', sliceSize = 512) => {
     const byteCharacters = atob(base64.split(',')[1])

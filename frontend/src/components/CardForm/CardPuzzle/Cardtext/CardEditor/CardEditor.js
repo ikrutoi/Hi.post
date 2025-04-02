@@ -35,7 +35,7 @@ import TooltipColor from './TooltipColor'
 
 const CardEditor = ({
   toolbarColor,
-  setChoiceSection,
+  // setChoiceSection,
   styleLeftCardPuzzle,
 }) => {
   const fullCard = useSelector((state) => state.layout.fullCard)
@@ -248,7 +248,7 @@ const CardEditor = ({
         },
       })
     )
-    setChoiceSection('cardtext')
+    // setChoiceSection('cardtext')
     setMaxLines(lines)
     // setEditableWidth(editableRef.current.offsetWidth)
   }
