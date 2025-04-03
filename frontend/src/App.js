@@ -12,10 +12,12 @@ import {
   addRemSize,
   addSizeCard,
   addSizeMiniCard,
+  maxCardsList,
 } from './redux/layout/actionCreators'
 import { addBtnToolbar } from './redux/layout/actionCreators'
 
 function App() {
+  const remSize = useSelector((state) => state.layout.remSize)
   const appRef = useRef()
   const dispatch = useDispatch()
   const [colorToolbar, setColorToolbar] = useState(null)
@@ -57,8 +59,8 @@ function App() {
     document.body.removeChild(tempDiv)
   }, [])
 
-  const target = useRef(null)
-  const size = useSize(target)
+  const formRef = useRef(null)
+  const size = useSize(formRef)
 
   useEffect(() => {
     if (size) {
@@ -74,8 +76,19 @@ function App() {
           width: Number((size.height * scaleBase.miniCard * 1.42).toFixed(2)),
         })
       )
+      if (remSize && formRef.current) {
+        dispatch(
+          maxCardsList(
+            Math.floor(
+              (formRef.current.clientWidth - 2 * remSize) /
+                (Number((size.height * scaleBase.miniCard * 1.42).toFixed(2)) +
+                  1.2 * remSize)
+            )
+          )
+        )
+      }
     }
-  }, [size, dispatch])
+  }, [size, remSize, dispatch])
 
   return (
     <div ref={appRef} className="app" onClick={handleAppClick}>
@@ -85,7 +98,7 @@ function App() {
       </header>
       <main className="app-main">
         <CardsNav />
-        <div className="form" ref={target}>
+        <div className="form" ref={formRef}>
           {size && <CardsList />}
           {size && <CardForm />}
         </div>

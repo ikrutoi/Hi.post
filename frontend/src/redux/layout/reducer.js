@@ -54,6 +54,7 @@ const initialState = {
   addFullCard: false,
   selectedCard: false,
   expendStatusCard: false,
+  maxCardsList: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -134,6 +135,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         expendStatusCard: action.payload,
+      }
+    case a.MAX_CARDS_LIST:
+      return {
+        ...state,
+        maxCardsList: action.payload,
       }
     // case a.SET_MY_ADDRESS_LEGEND_REF:
     //   return {

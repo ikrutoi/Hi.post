@@ -19,6 +19,7 @@ import {
   activeSections,
   expendStatusCard,
   addChoiceSection,
+  choiceClip,
 } from '../../redux/layout/actionCreators'
 import {
   addUserImage,
@@ -94,6 +95,14 @@ const CardsList = () => {
     btnIconRefs.current[id] = element
   }
   const [infoMinimize, setInfoMinimize] = useState(null)
+  const cardsListRef = useRef(null)
+  const [widthCardsList, setWidthCardsList] = useState(null)
+
+  useEffect(() => {
+    if (cardsListRef.current) {
+      setWidthCardsList(cardsListRef.current.clientWidth)
+    }
+  }, [])
 
   const getExpendStatusCard = async (expendCard) => {
     setMinimize(true)
@@ -364,6 +373,7 @@ const CardsList = () => {
   const handleClickIconMinimize = () => {
     if (listActiveSections.length === 5) {
       minimize ? setMinimize(false) : setMinimize(true)
+      // dispatch(choiceClip(minimize ? 'minimize' : false))
       if (infoChoiceSection.source !== 'minimize') {
         dispatch(
           addChoiceSection({
@@ -372,6 +382,12 @@ const CardsList = () => {
           })
         )
       }
+      // dispatch(
+      //   addChoiceSection({
+      //     source: minimize ? 'minimize' : null,
+      //     nameSection: minimize ? 'cardphoto' : null,
+      //   })
+      // )
       if (!infoMinimize) {
         setInfoMinimize(true)
       }
@@ -505,7 +521,11 @@ const CardsList = () => {
     }
     if (selectedListCards === 'shopping' || selectedListCards === 'blanks') {
       return (
-        <MemoryStatus sizeMiniCard={sizeMiniCard} source={selectedListCards} />
+        <MemoryStatus
+          sizeMiniCard={sizeMiniCard}
+          source={selectedListCards}
+          widthCardsList={widthCardsList}
+        />
       )
     }
   }
@@ -513,7 +533,8 @@ const CardsList = () => {
   return (
     <div
       className="cards-list"
-      style={{ backgroundColor: colorSchemeMain.lightGray }}
+      ref={cardsListRef}
+      // style={{ backgroundColor: colorSchemeMain.lightGray }}
     >
       <div style={{ height: `${sizeMiniCard.height}px` }}></div>
       {choiceMemoryList()}
@@ -609,6 +630,16 @@ const CardsList = () => {
           )}
         </>
       )}
+      <div className="cards-list-slider-container">
+        <div
+          className="cards-list-slider"
+          style={{
+            backgroundColor: infoChoiceClip
+              ? 'rgb(155, 155, 155)'
+              : 'rgb(212, 212, 212)',
+          }}
+        ></div>
+      </div>
     </div>
   )
 }

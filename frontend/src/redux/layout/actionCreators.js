@@ -126,6 +126,13 @@ export const expendStatusCard = (newSection) => {
   }
 }
 
+export const maxCardsList = (newSection) => {
+  return {
+    type: a.MAX_CARDS_LIST,
+    payload: newSection,
+  }
+}
+
 // export const setMyAddressLegendRef = (newSection) => {
 //   return {
 //     type: a.SET_MY_ADDRESS_LEGEND_REF,

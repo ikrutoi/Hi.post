@@ -5,12 +5,12 @@ import './Cardphoto.scss'
 import ImageCrop from './ImageCrop/ImageCrop'
 import ToolbarCardphoto from './ToolbarCardphoto/ToolbarCardphoto'
 
-const Cardphoto = ({ sizeCard, choiceSection }) => {
+const Cardphoto = ({ sizeCard, choiceSection, choiceClip }) => {
   return (
     <div className="cardphoto">
-      {choiceSection.source !== 'shopping' &&
-        choiceSection.source !== 'minimize' &&
-        choiceSection.source !== 'blanks' && (
+      {choiceClip !== 'shopping' &&
+        choiceClip !== 'minimize' &&
+        choiceClip !== 'blanks' && (
           <div className="nav-container nav-container-cardphoto">
             <ToolbarCardphoto />
           </div>

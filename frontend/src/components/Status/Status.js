@@ -32,6 +32,7 @@ const Status = () => {
   const setBtnIconRef = (id) => (element) => {
     btnIconRefs.current[id] = element
   }
+  const maxCardsList = useSelector((state) => state.layout.maxCardsList)
   const dispatch = useDispatch()
 
   const updateStatus = async () => {

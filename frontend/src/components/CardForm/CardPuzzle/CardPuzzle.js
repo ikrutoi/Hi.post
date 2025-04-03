@@ -10,6 +10,7 @@ import Date from './Date/Date'
 
 const CardPuzzle = ({ toolbarColor }) => {
   const infoChoiceSection = useSelector((state) => state.layout.choiceSection)
+  const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
   const sizeCard = useSelector((state) => state.layout.sizeCard)
 
   const cardPuzzleRef = useRef(null)
@@ -18,7 +19,11 @@ const CardPuzzle = ({ toolbarColor }) => {
     switch (name) {
       case 'cardphoto':
         return (
-          <Cardphoto sizeCard={sizeCard} choiceSection={infoChoiceSection} />
+          <Cardphoto
+            sizeCard={sizeCard}
+            choiceSection={infoChoiceSection}
+            choiceClip={infoChoiceClip}
+          />
         )
       case 'cardtext':
         return (

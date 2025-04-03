@@ -14,7 +14,7 @@ import {
   expendStatusCard,
 } from '../../../redux/layout/actionCreators'
 
-const MemoryStatus = ({ sizeMiniCard, source }) => {
+const MemoryStatus = ({ sizeMiniCard, source, widthCardsList }) => {
   const [memoryList, setMemoryList] = useState(null)
   const [selectedSource, setSelectedSource] = useState(null)
   const [listIconsSource, setListIconsSource] = useState(null)
@@ -27,6 +27,7 @@ const MemoryStatus = ({ sizeMiniCard, source }) => {
     filterRefs.current[id] = element
   }
   const remSize = useSelector((state) => state.layout.remSize)
+  const maxCardsList = useSelector((state) => state.layout.maxCardsList)
   const dispatch = useDispatch()
 
   const getMemoryCards = async (source) => {
@@ -49,8 +50,10 @@ const MemoryStatus = ({ sizeMiniCard, source }) => {
   }
 
   useEffect(() => {
-    getMemoryCards(source)
-  }, [source])
+    if (maxCardsList) {
+      getMemoryCards(source)
+    }
+  }, [source, maxCardsList])
 
   const handleClickCardBtn = async (evt) => {
     try {
@@ -97,6 +100,38 @@ const MemoryStatus = ({ sizeMiniCard, source }) => {
     dispatch(choiceClip(false))
   }
 
+  const getLeft = (i) => {
+    const margin = parseFloat(
+      (
+        (widthCardsList - sizeMiniCard.width * maxCardsList) /
+        (maxCardsList - 1)
+      ).toFixed(1)
+    )
+
+    if (memoryList.length > maxCardsList) {
+      if (i === maxCardsList && i + 1 < memoryList.length) {
+        return (
+          (maxCardsList - 1) * (margin + sizeMiniCard.width) - remSize + 'px'
+        )
+      }
+      if (i === maxCardsList + 1 && i + 1 < memoryList.length) {
+        return (
+          (maxCardsList - 1) * (margin + sizeMiniCard.width) -
+          remSize * 0.5 +
+          'px'
+        )
+      }
+      if (i > maxCardsList + 1) {
+        return (maxCardsList - 1) * (margin + sizeMiniCard.width) + 'px'
+      }
+      if (i < maxCardsList) {
+        return i * (margin + sizeMiniCard.width) + 'px'
+      }
+    } else {
+      return i * (margin + sizeMiniCard.width) + 'px'
+    }
+  }
+
   return (
     <div className="memory-list-container">
       {memoryList &&
@@ -105,10 +140,11 @@ const MemoryStatus = ({ sizeMiniCard, source }) => {
           return (
             <div
               className="memory-status-card"
-              key={`${card.id}-${i}`}
+              key={`${card.id}`}
               style={{
                 width: `${sizeMiniCard.width}px`,
                 height: `${sizeMiniCard.height}px`,
+                left: getLeft(i),
               }}
             >
               <div
