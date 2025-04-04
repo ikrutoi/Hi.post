@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './MemoryStatus.scss'
 import {
@@ -13,8 +13,12 @@ import {
   choiceClip,
   expendStatusCard,
 } from '../../../redux/layout/actionCreators'
-
-const MemoryStatus = ({ sizeMiniCard, source, widthCardsList }) => {
+const MemoryStatus = ({
+  sizeMiniCard,
+  source,
+  widthCardsList,
+  setInfoCardsList,
+}) => {
   const [memoryList, setMemoryList] = useState(null)
   const [selectedSource, setSelectedSource] = useState(null)
   const [listIconsSource, setListIconsSource] = useState(null)
@@ -32,14 +36,31 @@ const MemoryStatus = ({ sizeMiniCard, source, widthCardsList }) => {
 
   const getMemoryCards = async (source) => {
     let memoryCards
+    let firstLetterList = []
     switch (source) {
       case 'shopping':
         setListIconsSource(['save', 'remove'])
-        memoryCards = await getAllShopping()
+        const memoryCardsShopping = await getAllShopping()
+        memoryCards = memoryCardsShopping.sort((a, b) => {
+          return a.shopping.envelope.toaddress.name.localeCompare(
+            b.shopping.envelope.toaddress.name
+          )
+        })
+        memoryCards.forEach((el) => {
+          firstLetterList.push(el.shopping.envelope.toaddress.name[0])
+        })
         break
       case 'blanks':
         setListIconsSource(['plus', 'remove'])
-        memoryCards = await getAllBlanks()
+        const memoryCardsBlanks = await getAllBlanks()
+        memoryCards = memoryCardsBlanks.sort((a, b) => {
+          return a.blanks.envelope.toaddress.name.localeCompare(
+            b.blanks.envelope.toaddress.name
+          )
+        })
+        memoryCards.forEach((el) => {
+          firstLetterList.push(el.blanks.envelope.toaddress.name[0])
+        })
         break
 
       default:
@@ -47,6 +68,10 @@ const MemoryStatus = ({ sizeMiniCard, source, widthCardsList }) => {
     }
     setMemoryList(memoryCards)
     setSelectedSource(source)
+    setInfoCardsList({
+      length: memoryCards.length,
+      firstLetters: firstLetterList,
+    })
   }
 
   useEffect(() => {
@@ -108,24 +133,46 @@ const MemoryStatus = ({ sizeMiniCard, source, widthCardsList }) => {
       ).toFixed(1)
     )
 
+    // console.log('memoryList, maxCards', memoryList.length, maxCardsList)
+
     if (memoryList.length > maxCardsList) {
-      if (i === maxCardsList && i + 1 < memoryList.length) {
-        return (
-          (maxCardsList - 1) * (margin + sizeMiniCard.width) - remSize + 'px'
-        )
-      }
-      if (i === maxCardsList + 1 && i + 1 < memoryList.length) {
-        return (
-          (maxCardsList - 1) * (margin + sizeMiniCard.width) -
-          remSize * 0.5 +
-          'px'
-        )
-      }
-      if (i > maxCardsList + 1) {
-        return (maxCardsList - 1) * (margin + sizeMiniCard.width) + 'px'
-      }
-      if (i < maxCardsList) {
-        return i * (margin + sizeMiniCard.width) + 'px'
+      if (memoryList.length === maxCardsList + 1) {
+        if (i === maxCardsList - 1) {
+          return (
+            (maxCardsList - 1) * (margin + sizeMiniCard.width) -
+            0.5 * remSize +
+            'px'
+          )
+        }
+        if (i === maxCardsList) {
+          return (maxCardsList - 1) * (margin + sizeMiniCard.width) + 'px'
+        }
+        if (i < maxCardsList - 1) {
+          return i * (margin + sizeMiniCard.width) + 'px'
+        }
+      } else {
+        if (i === memoryList.length - 3) {
+          return (
+            (maxCardsList - 1) * (margin + sizeMiniCard.width) - remSize + 'px'
+          )
+        }
+        if (i === memoryList.length - 2) {
+          return (
+            (maxCardsList - 1) * (margin + sizeMiniCard.width) -
+            0.5 * remSize +
+            'px'
+          )
+        }
+        if (
+          i >= maxCardsList - 1 &&
+          i !== memoryList.length - 3 &&
+          i !== memoryList.length - 2
+        ) {
+          return (maxCardsList - 1) * (margin + sizeMiniCard.width) + 'px'
+        }
+        if (i < maxCardsList - 1) {
+          return i * (margin + sizeMiniCard.width) + 'px'
+        }
       }
     } else {
       return i * (margin + sizeMiniCard.width) + 'px'

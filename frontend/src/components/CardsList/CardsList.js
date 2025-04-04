@@ -49,6 +49,7 @@ import MemoryCardtext from './MemoryCardtext/MemoryCardtext'
 import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
 import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
 import MemoryStatus from './MemoryStatus/MemoryStatus'
+import SliderCardsList from './SliderCardsList/SliderCardsList'
 
 const CardsList = () => {
   // const layoutFullCard = useSelector((state) => state.layout.fullCard)
@@ -97,6 +98,8 @@ const CardsList = () => {
   const [infoMinimize, setInfoMinimize] = useState(null)
   const cardsListRef = useRef(null)
   const [widthCardsList, setWidthCardsList] = useState(null)
+  const [valueCardsList, setValueCardsList] = useState(1)
+  const [infoCardsList, setInfoCardsList] = useState(null)
 
   useEffect(() => {
     if (cardsListRef.current) {
@@ -480,6 +483,10 @@ const CardsList = () => {
     return () => clearTimeout(timerIcon)
   }, [minimize])
 
+  const handleChangeFromSliderCardsList = (evt) => {
+    setValueCardsList(evt.target.value)
+  }
+
   const choiceMemoryList = () => {
     if (
       selectedListCards === 'myaddress' ||
@@ -525,10 +532,17 @@ const CardsList = () => {
           sizeMiniCard={sizeMiniCard}
           source={selectedListCards}
           widthCardsList={widthCardsList}
+          setInfoCardsList={setInfoCardsList}
         />
       )
     }
   }
+
+  useEffect(() => {
+    if (infoCardsList) {
+      console.log('first', infoCardsList.firstLetters)
+    }
+  }, [infoCardsList])
 
   return (
     <div
@@ -631,14 +645,24 @@ const CardsList = () => {
         </>
       )}
       <div className="cards-list-slider-container">
-        <div
+        {infoCardsList &&
+        (selectedListCards === 'shopping' || selectedListCards === 'blanks') ? (
+          <SliderCardsList
+            value={valueCardsList}
+            infoCardsList={infoCardsList}
+            handleChangeFromSliderCardsList={handleChangeFromSliderCardsList}
+          />
+        ) : (
+          <span className="cards-list-slider-default"></span>
+        )}
+        {/* <div
           className="cards-list-slider"
           style={{
             backgroundColor: infoChoiceClip
               ? 'rgb(155, 155, 155)'
               : 'rgb(212, 212, 212)',
           }}
-        ></div>
+        ></div> */}
       </div>
     </div>
   )
