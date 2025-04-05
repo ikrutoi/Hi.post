@@ -100,6 +100,7 @@ const CardsList = () => {
   const [widthCardsList, setWidthCardsList] = useState(null)
   const [valueCardsList, setValueCardsList] = useState(1)
   const [infoCardsList, setInfoCardsList] = useState(null)
+  const maxCardsList = useSelector((state) => state.layout.maxCardsList)
 
   useEffect(() => {
     if (cardsListRef.current) {
@@ -538,12 +539,6 @@ const CardsList = () => {
     }
   }
 
-  useEffect(() => {
-    if (infoCardsList) {
-      console.log('first', infoCardsList.firstLetters)
-    }
-  }, [infoCardsList])
-
   return (
     <div
       className="cards-list"
@@ -644,26 +639,17 @@ const CardsList = () => {
           )}
         </>
       )}
-      <div className="cards-list-slider-container">
-        {infoCardsList &&
-        (selectedListCards === 'shopping' || selectedListCards === 'blanks') ? (
+      {infoCardsList &&
+        infoCardsList.length > maxCardsList &&
+        (selectedListCards === 'shopping' ||
+          selectedListCards === 'blanks') && (
           <SliderCardsList
             value={valueCardsList}
             infoCardsList={infoCardsList}
             handleChangeFromSliderCardsList={handleChangeFromSliderCardsList}
+            maxCardsList={maxCardsList}
           />
-        ) : (
-          <span className="cards-list-slider-default"></span>
         )}
-        {/* <div
-          className="cards-list-slider"
-          style={{
-            backgroundColor: infoChoiceClip
-              ? 'rgb(155, 155, 155)'
-              : 'rgb(212, 212, 212)',
-          }}
-        ></div> */}
-      </div>
     </div>
   )
 }
