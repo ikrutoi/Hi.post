@@ -1,4 +1,5 @@
 import {
+  choiceLetter,
   deleteSection,
   expendShopping,
   fullCard,
@@ -55,6 +56,7 @@ const initialState = {
   selectedCard: false,
   expendStatusCard: false,
   maxCardsList: null,
+  sliderLetter: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -110,6 +112,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         choiceClip: action.payload,
+      }
+    case a.SLIDER_LETTER:
+      return {
+        ...state,
+        sliderLetter: action.payload,
       }
     case a.SELECTED_SECTION:
       return {

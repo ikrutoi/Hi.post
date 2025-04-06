@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import './SliderCardsList.scss'
+import { sliderLetter } from '../../../redux/layout/actionCreators'
 
 const SliderCardsList = ({
   value,
@@ -9,6 +11,7 @@ const SliderCardsList = ({
 }) => {
   const [widthToddler, setWidthToddler] = useState(null)
   const sliderRef = useRef()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (sliderRef.current) {
@@ -17,12 +20,35 @@ const SliderCardsList = ({
     }
   }, [sliderRef, infoCardsList.length, maxCardsList])
 
-  const discardOfTakes = (letter, i, arr) => {
-    if (i !== 0) {
-      return letter === arr[i - 1] ? '' : letter
-    } else {
-      return letter
-    }
+  const discardOfTakes = () => {
+    return infoCardsList.firstLetters.map((cardId, i, arr) => {
+      const isFirstOrDifferent = i === 0 || cardId.letter !== arr[i - 1].letter
+      const className = isFirstOrDifferent
+        ? 'cards-list-letter'
+        : 'cards-list-letter-default'
+
+      return (
+        <span
+          key={i}
+          className={className}
+          onClick={handleClickLetter}
+          data-id={cardId.id}
+          data-index={cardId.index}
+        >
+          {isFirstOrDifferent ? cardId.letter : null}
+        </span>
+      )
+    })
+  }
+
+  const handleClickLetter = (evt) => {
+    dispatch(
+      sliderLetter({
+        letter: evt.target.textContent,
+        id: evt.target.dataset.id,
+        index: evt.target.dataset.index,
+      })
+    )
   }
 
   return (
@@ -42,15 +68,7 @@ const SliderCardsList = ({
         value={value}
         onChange={handleChangeFromSliderCardsList}
       ></input>
-      <div className="cards-list-letters">
-        {infoCardsList.firstLetters.map((letter, i, arr) => {
-          return (
-            <span key={i} className="cards-list-letter">
-              {discardOfTakes(letter, i, arr)}
-            </span>
-          )
-        })}
-      </div>
+      <div className="cards-list-letters">{discardOfTakes()}</div>
     </div>
   )
 }

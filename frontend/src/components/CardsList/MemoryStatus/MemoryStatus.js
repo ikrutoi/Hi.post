@@ -13,6 +13,7 @@ import {
   choiceClip,
   expendStatusCard,
 } from '../../../redux/layout/actionCreators'
+
 const MemoryStatus = ({
   sizeMiniCard,
   source,
@@ -23,6 +24,7 @@ const MemoryStatus = ({
   const [selectedSource, setSelectedSource] = useState(null)
   const [listIconsSource, setListIconsSource] = useState(null)
   const btnIconRefs = useRef({})
+  const cardRefs = useRef({})
   const setBtnIconRef = (id) => (element) => {
     btnIconRefs.current[id] = element
   }
@@ -32,7 +34,12 @@ const MemoryStatus = ({
   }
   const remSize = useSelector((state) => state.layout.remSize)
   const maxCardsList = useSelector((state) => state.layout.maxCardsList)
+  const sliderLetter = useSelector((state) => state.layout.sliderLetter)
   const dispatch = useDispatch()
+
+  const setCardRef = (id) => (element) => {
+    cardRefs.current[id] = element
+  }
 
   const getMemoryCards = async (source) => {
     let memoryCards
@@ -46,8 +53,13 @@ const MemoryStatus = ({
             b.shopping.envelope.toaddress.name
           )
         })
-        memoryCards.forEach((el) => {
-          firstLetterList.push(el.shopping.envelope.toaddress.name[0])
+        memoryCards.forEach((card, i) => {
+          const cardId = {
+            letter: card.shopping.envelope.toaddress.name[0],
+            id: card.id,
+            index: i,
+          }
+          firstLetterList.push(cardId)
         })
         break
       case 'blanks':
@@ -58,8 +70,13 @@ const MemoryStatus = ({
             b.blanks.envelope.toaddress.name
           )
         })
-        memoryCards.forEach((el) => {
-          firstLetterList.push(el.blanks.envelope.toaddress.name[0])
+        memoryCards.forEach((card, i) => {
+          const cardId = {
+            letter: card.blanks.envelope.toaddress.name[0],
+            id: card.id,
+            index: i,
+          }
+          firstLetterList.push(cardId)
         })
         break
 
@@ -125,16 +142,14 @@ const MemoryStatus = ({
     dispatch(choiceClip(false))
   }
 
+  const margin = parseFloat(
+    (
+      (widthCardsList - sizeMiniCard.width * maxCardsList) /
+      (maxCardsList - 1)
+    ).toFixed(1)
+  )
+
   const getLeft = (i) => {
-    const margin = parseFloat(
-      (
-        (widthCardsList - sizeMiniCard.width * maxCardsList) /
-        (maxCardsList - 1)
-      ).toFixed(1)
-    )
-
-    // console.log('memoryList, maxCards', memoryList.length, maxCardsList)
-
     if (memoryList.length > maxCardsList) {
       if (memoryList.length === maxCardsList + 1) {
         if (i === maxCardsList - 1) {
@@ -179,6 +194,111 @@ const MemoryStatus = ({
     }
   }
 
+  useEffect(() => {
+    if (
+      memoryList &&
+      sliderLetter &&
+      cardRefs.current[`card-${sliderLetter.index}`]
+    ) {
+      const deltaEnd = memoryList.length - Number(sliderLetter.index)
+      console.log(
+        'info',
+        memoryList.length,
+        maxCardsList,
+        sliderLetter.letter,
+        sliderLetter.index,
+        deltaEnd
+      )
+      if (deltaEnd >= maxCardsList) {
+        cardRefs.current[`card-${Number(sliderLetter.index)}`].style.left =
+          remSize + 'px'
+        for (let i = 0; i < Number(sliderLetter.index); i++) {
+          if (i === Number(sliderLetter.index) - 1) {
+            cardRefs.current[`card-${i}`].style.left = 0.5 * remSize + 'px'
+          } else {
+            cardRefs.current[`card-${i}`].style.left = 0
+          }
+        }
+
+        let indexStart = 0
+        for (let i = Number(sliderLetter.index); i < memoryList.length; i++) {
+          if (i === Number(sliderLetter.index)) {
+            console.log('i 00', i)
+            cardRefs.current[`card-${i}`].style.left =
+              remSize + (margin + sizeMiniCard.width) * indexStart + 'px'
+          }
+          if (
+            i !== Number(sliderLetter.index) &&
+            i < Number(sliderLetter.index) + maxCardsList
+          ) {
+            if (deltaEnd - maxCardsList >= 2) {
+              if (i === Number(sliderLetter.index) + maxCardsList - 1) {
+                cardRefs.current[`card-${i}`].style.left =
+                  (margin + sizeMiniCard.width) * indexStart - remSize + 'px'
+              }
+              if (i === Number(sliderLetter.index) + maxCardsList) {
+                cardRefs.current[`card-${i}`].style.left =
+                  (margin + sizeMiniCard.width) * indexStart -
+                  0.5 * remSize +
+                  'px'
+              }
+              if (
+                i !== Number(sliderLetter.index) + maxCardsList - 1 &&
+                i !== Number(sliderLetter.index) + maxCardsList
+              ) {
+                cardRefs.current[`card-${i}`].style.left =
+                  (margin + sizeMiniCard.width) * indexStart + 'px'
+              }
+            }
+
+            if (deltaEnd - maxCardsList === 1) {
+              if (i === Number(sliderLetter.index) + maxCardsList - 1) {
+                cardRefs.current[`card-${i}`].style.left =
+                  (margin + sizeMiniCard.width) * indexStart -
+                  0.5 * remSize +
+                  'px'
+              } else {
+                cardRefs.current[`card-${i}`].style.left =
+                  (margin + sizeMiniCard.width) * indexStart + 'px'
+              }
+            }
+
+            if (deltaEnd - maxCardsList === 0) {
+              cardRefs.current[`card-${i}`].style.left =
+                (margin + sizeMiniCard.width) * indexStart + 'px'
+            }
+          }
+
+          if (i >= Number(sliderLetter.index) + maxCardsList) {
+            console.log('i 02', i)
+            // console.log('indexStart', indexStart)
+            if (i === memoryList.length - 3) {
+              console.log('-3')
+              cardRefs.current[`card-${i}`].style.left =
+                (margin + sizeMiniCard.width) * (indexStart - 1) -
+                remSize +
+                'px'
+            }
+            if (i === memoryList.length - 2) {
+              console.log('-2')
+              cardRefs.current[`card-${i}`].style.left =
+                (margin + sizeMiniCard.width) * (indexStart - 1) -
+                0.5 * remSize +
+                'px'
+            }
+            if (i !== memoryList.length - 3 && i !== memoryList.length - 2) {
+              console.log('-1')
+              cardRefs.current[`card-${i}`].style.left =
+                (margin + sizeMiniCard.width) * (indexStart - 1) + 'px'
+            }
+            indexStart--
+          }
+          indexStart++
+        }
+      }
+    }
+  }, [sliderLetter, memoryList])
+
   return (
     <div className="memory-list-container">
       {memoryList &&
@@ -187,7 +307,8 @@ const MemoryStatus = ({
           return (
             <div
               className="memory-status-card"
-              key={`${card.id}`}
+              key={`${i}`}
+              ref={setCardRef(`card-${i}`)}
               style={{
                 width: `${sizeMiniCard.width}px`,
                 height: `${sizeMiniCard.height}px`,

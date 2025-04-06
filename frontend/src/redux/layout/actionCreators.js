@@ -133,6 +133,13 @@ export const maxCardsList = (newSection) => {
   }
 }
 
+export const sliderLetter = (newSection) => {
+  return {
+    type: a.SLIDER_LETTER,
+    payload: newSection,
+  }
+}
+
 // export const setMyAddressLegendRef = (newSection) => {
 //   return {
 //     type: a.SET_MY_ADDRESS_LEGEND_REF,
