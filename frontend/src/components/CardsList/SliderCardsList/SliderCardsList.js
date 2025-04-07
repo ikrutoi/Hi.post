@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import './SliderCardsList.scss'
-import { sliderLetter } from '../../../redux/layout/actionCreators'
+import { sliderLetter, deltaEnd } from '../../../redux/layout/actionCreators'
 
 const SliderCardsList = ({
   value,
@@ -11,14 +11,32 @@ const SliderCardsList = ({
 }) => {
   const [widthToddler, setWidthToddler] = useState(null)
   const sliderRef = useRef()
+  const [indexLetter, setClickLetter] = useState(0)
+  const infoDeltaEnd = useSelector((state) => state.layout.deltaEnd)
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (infoCardsList.length && indexLetter) {
+      const currentDeltaEnd = infoCardsList.length - indexLetter
+      if (currentDeltaEnd === maxCardsList) {
+        dispatch(deltaEnd(true))
+      } else {
+        dispatch(deltaEnd(false))
+      }
+    }
+  }, [infoCardsList.length, indexLetter, maxCardsList, dispatch])
+
+  useEffect(() => {}, [infoDeltaEnd])
 
   useEffect(() => {
     if (sliderRef.current) {
       const widthSlider = sliderRef.current.clientWidth
-      setWidthToddler((widthSlider / infoCardsList.length) * maxCardsList)
+      setWidthToddler(
+        (widthSlider / infoCardsList.length) *
+          (infoDeltaEnd ? maxCardsList : maxCardsList - 1)
+      )
     }
-  }, [sliderRef, infoCardsList.length, maxCardsList])
+  }, [sliderRef, maxCardsList, infoDeltaEnd, infoCardsList])
 
   const discardOfTakes = () => {
     return infoCardsList.firstLetters.map((cardId, i, arr) => {
@@ -42,13 +60,17 @@ const SliderCardsList = ({
   }
 
   const handleClickLetter = (evt) => {
-    dispatch(
-      sliderLetter({
-        letter: evt.target.textContent,
-        id: evt.target.dataset.id,
-        index: evt.target.dataset.index,
-      })
-    )
+    if (evt.target.textContent) {
+      dispatch(
+        sliderLetter({
+          letter: evt.target.textContent,
+          id: evt.target.dataset.id,
+          index: evt.target.dataset.index,
+        })
+      )
+      setClickLetter(evt.target.dataset.index)
+      handleChangeFromSliderCardsList(evt.target.dataset.index)
+    }
   }
 
   return (
@@ -63,11 +85,29 @@ const SliderCardsList = ({
       <input
         type="range"
         className="cards-list-slider"
-        min="1"
-        max={infoCardsList.length}
-        value={value}
-        onChange={handleChangeFromSliderCardsList}
+        min="0"
+        max={infoCardsList.length - maxCardsList + 1}
+        value={(infoDeltaEnd ? value + 1 : value) || 0}
+        onChange={(evt) => handleChangeFromSliderCardsList(evt.target.value)}
       ></input>
+      {/* <div className="range-ticks">
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+        <span className="range-tick"></span>
+      </div> */}
       <div className="cards-list-letters">{discardOfTakes()}</div>
     </div>
   )

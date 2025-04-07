@@ -140,6 +140,20 @@ export const sliderLetter = (newSection) => {
   }
 }
 
+export const sliderLine = (newSection) => {
+  return {
+    type: a.SLIDER_LINE,
+    payload: newSection,
+  }
+}
+
+export const deltaEnd = (newSection) => {
+  return {
+    type: a.DELTA_END,
+    payload: newSection,
+  }
+}
+
 // export const setMyAddressLegendRef = (newSection) => {
 //   return {
 //     type: a.SET_MY_ADDRESS_LEGEND_REF,

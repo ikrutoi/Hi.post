@@ -20,6 +20,7 @@ import {
   expendStatusCard,
   addChoiceSection,
   choiceClip,
+  sliderLine,
 } from '../../redux/layout/actionCreators'
 import {
   addUserImage,
@@ -98,7 +99,7 @@ const CardsList = () => {
   const [infoMinimize, setInfoMinimize] = useState(null)
   const cardsListRef = useRef(null)
   const [widthCardsList, setWidthCardsList] = useState(null)
-  const [valueCardsList, setValueCardsList] = useState(1)
+  const [valueCardsList, setValueCardsList] = useState(0)
   const [infoCardsList, setInfoCardsList] = useState(null)
   const maxCardsList = useSelector((state) => state.layout.maxCardsList)
 
@@ -484,8 +485,9 @@ const CardsList = () => {
     return () => clearTimeout(timerIcon)
   }, [minimize])
 
-  const handleChangeFromSliderCardsList = (evt) => {
-    setValueCardsList(evt.target.value)
+  const handleChangeFromSliderCardsList = (value) => {
+    setValueCardsList(value)
+    dispatch(sliderLine(value))
   }
 
   const choiceMemoryList = () => {

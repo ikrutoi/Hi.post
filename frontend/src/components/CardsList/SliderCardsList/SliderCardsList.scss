@@ -14,6 +14,24 @@
   // border: solid 1px blue;
 }
 
+.range-ticks {
+  position: absolute;
+  top: 20%;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+// .range-tick {
+//   width: 2px;
+//   height: 1rem;
+//   background: red;
+// }
+
 // .cards-list-slider {
 //   width: 100%;
 //   height: 1rem;
@@ -62,9 +80,17 @@
 
 .cards-list-letter {
   padding: 0 0.25rem 0.25rem 0.25rem;
+  width: 1.1rem;
   box-sizing: border-box;
   cursor: pointer;
   // border: solid 1px blue;
+}
+
+.cards-list-letter-default {
+  padding: 0 0.25rem 0.25rem 0.25rem;
+  width: 1.1rem;
+  box-sizing: border-box;
+  // border: solid 1px green;
 }
 
 .cards-list-slider[type='range'] {

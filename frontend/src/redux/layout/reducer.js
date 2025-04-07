@@ -57,6 +57,8 @@ const initialState = {
   expendStatusCard: false,
   maxCardsList: null,
   sliderLetter: null,
+  sliderLine: null,
+  deltaEnd: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -117,6 +119,16 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         sliderLetter: action.payload,
+      }
+    case a.SLIDER_LINE:
+      return {
+        ...state,
+        sliderLine: action.payload,
+      }
+    case a.DELTA_END:
+      return {
+        ...state,
+        deltaEnd: action.payload,
       }
     case a.SELECTED_SECTION:
       return {
