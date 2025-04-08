@@ -1,11 +1,12 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import './MemoryStatus.scss'
+import './MemoryList.scss'
 import {
   getAllShopping,
   deleteShopping,
   getAllBlanks,
   deleteBlank,
+  getAllRecordsAddresses,
 } from '../../../utils/cardFormNav/indexDB/indexDb'
 import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
 import {
@@ -15,12 +16,13 @@ import {
   deltaEnd,
 } from '../../../redux/layout/actionCreators'
 
-const MemoryStatus = ({
+const MemoryList = ({
   sizeMiniCard,
-  source,
+  // source: infoChoiceClip,
   widthCardsList,
   setInfoCardsList,
 }) => {
+  const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
   const [memoryList, setMemoryList] = useState(null)
   const [selectedSource, setSelectedSource] = useState(null)
   const [listIconsSource, setListIconsSource] = useState(null)
@@ -54,6 +56,38 @@ const MemoryStatus = ({
     let memoryCards
     let firstLetterList = []
     switch (source) {
+      case 'toaddress':
+        setListIconsSource(['remove'])
+        const memoryCardsToAddress = await getAllRecordsAddresses('toAddress')
+        memoryCards = memoryCardsToAddress.sort((a, b) => {
+          return a.address.name.localeCompare(b.address.name)
+        })
+        memoryCards.forEach((card, i) => {
+          const cardId = {
+            letter: card.address.name[0],
+            id: card.id,
+            index: i,
+          }
+          firstLetterList.push(cardId)
+        })
+        firstLetterList.push(firstLetterList[firstLetterList.length - 1])
+        break
+      case 'myaddress':
+        setListIconsSource(['remove'])
+        const memoryCardsMyAddress = await getAllRecordsAddresses('myAddress')
+        memoryCards = memoryCardsMyAddress.sort((a, b) => {
+          return a.address.name.localeCompare(b.address.name)
+        })
+        memoryCards.forEach((card, i) => {
+          const cardId = {
+            letter: card.address.name[0],
+            id: card.id,
+            index: i,
+          }
+          firstLetterList.push(cardId)
+        })
+        firstLetterList.push(firstLetterList[firstLetterList.length - 1])
+        break
       case 'shopping':
         setListIconsSource(['save', 'remove'])
         const memoryCardsShopping = await getAllShopping()
@@ -103,7 +137,10 @@ const MemoryStatus = ({
   }
 
   useEffect(() => {
-    if (cardRefs.current && memoryList) {
+    if (cardRefs.current && memoryList && sliderLine !== undefined) {
+      const currentDeltaEnd =
+        memoryList.length - Number(sliderLine) - maxCardsList
+
       const updatePosition = (index, leftValue) => {
         if (cardRefs.current[`card-${index}`]) {
           cardRefs.current[`card-${index}`].style.left = `${leftValue}px`
@@ -111,12 +148,14 @@ const MemoryStatus = ({
       }
 
       if (Number(sliderLine) === 0) {
+        console.log('0')
         for (let i = 1; i < maxCardsList; i++) {
           updatePosition(i, (margin + sizeMiniCard.width) * i)
         }
       }
 
       if (Number(sliderLine) === 1) {
+        console.log('1')
         updatePosition(1, 0.5 * remSize)
         for (let i = 2; i < maxCardsList + Number(sliderLine); i++) {
           updatePosition(i, (margin + sizeMiniCard.width) * (i - 1))
@@ -124,6 +163,7 @@ const MemoryStatus = ({
       }
 
       if (Number(sliderLine) > 1) {
+        console.log('>1')
         updatePosition(Number(sliderLine) - 1, 0.5 * remSize)
         updatePosition(Number(sliderLine), remSize)
         let index = 1
@@ -137,12 +177,12 @@ const MemoryStatus = ({
         }
       }
 
-      const currentDeltaEnd =
-        memoryList.length - Number(sliderLine) - maxCardsList
       dispatch(deltaEnd(currentDeltaEnd === 0))
 
       if (currentDeltaEnd > 0) {
+        console.log('>0')
         if (currentDeltaEnd > 1) {
+          console.log('>01')
           updatePosition(
             memoryList.length - 2,
             (margin + sizeMiniCard.width) * (maxCardsList - 1) - 0.5 * remSize
@@ -152,10 +192,26 @@ const MemoryStatus = ({
             (margin + sizeMiniCard.width) * (maxCardsList - 1) - remSize
           )
         } else {
+          console.log('else>1')
           updatePosition(
             memoryList.length - 2,
             (margin + sizeMiniCard.width) * (maxCardsList - 1) - 0.5 * remSize
           )
+        }
+      }
+
+      if (currentDeltaEnd < 0) {
+        for (let i = 1; i < memoryList.length - maxCardsList; i++) {
+          updatePosition(i, 0)
+        }
+        let index = 0
+        for (
+          let i = memoryList.length - maxCardsList;
+          i < memoryList.length;
+          i++
+        ) {
+          updatePosition(i, (margin + sizeMiniCard.width) * index)
+          index++
         }
       }
     }
@@ -172,9 +228,9 @@ const MemoryStatus = ({
 
   useEffect(() => {
     if (maxCardsList) {
-      getMemoryCards(source)
+      getMemoryCards(infoChoiceClip)
     }
-  }, [source, maxCardsList])
+  }, [infoChoiceClip, maxCardsList])
 
   const handleClickCardBtn = async (evt) => {
     try {
@@ -182,7 +238,7 @@ const MemoryStatus = ({
       if (!parentBtn && !parentBtn.dataset.id) {
         return
       }
-      switch (source) {
+      switch (infoChoiceClip) {
         case 'shopping':
           await deleteShopping(Number(parentBtn.dataset.id))
           break
@@ -193,7 +249,7 @@ const MemoryStatus = ({
         default:
           break
       }
-      await getMemoryCards(source)
+      await getMemoryCards(infoChoiceClip)
       dispatch(addFullCard(true))
     } catch (error) {
       console.log('Error deleting card:', error)
@@ -217,7 +273,9 @@ const MemoryStatus = ({
   }
 
   const handleClickFilter = (evt) => {
-    dispatch(expendStatusCard({ source, id: evt.target.dataset.id }))
+    dispatch(
+      expendStatusCard({ source: infoChoiceClip, id: evt.target.dataset.id })
+    )
     dispatch(choiceClip(false))
   }
 
@@ -265,102 +323,6 @@ const MemoryStatus = ({
       return i * (margin + sizeMiniCard.width) + 'px'
     }
   }
-
-  // useEffect(() => {
-  //   if (
-  //     memoryList &&
-  //     sliderLetter &&
-  //     cardRefs.current[`card-${sliderLetter.index}`]
-  //   ) {
-  //     const deltaEnd = memoryList.length - Number(sliderLetter.index)
-  //     if (deltaEnd >= maxCardsList) {
-  //       cardRefs.current[`card-${Number(sliderLetter.index)}`].style.left =
-  //         remSize + 'px'
-  //       for (let i = 0; i < Number(sliderLetter.index); i++) {
-  //         if (i === Number(sliderLetter.index) - 1) {
-  //           cardRefs.current[`card-${i}`].style.left = 0.5 * remSize + 'px'
-  //         } else {
-  //           cardRefs.current[`card-${i}`].style.left = 0
-  //         }
-  //       }
-
-  //       let indexStart = 0
-  //       for (let i = Number(sliderLetter.index); i < memoryList.length; i++) {
-  //         if (i === Number(sliderLetter.index)) {
-  //           if (i === 0) {
-  //             cardRefs.current[`card-${i}`].style.left =
-  //               (margin + sizeMiniCard.width) * indexStart + 'px'
-  //           } else {
-  //             cardRefs.current[`card-${i}`].style.left =
-  //               remSize + (margin + sizeMiniCard.width) * indexStart + 'px'
-  //           }
-  //         }
-  //         if (
-  //           i !== Number(sliderLetter.index) &&
-  //           i < Number(sliderLetter.index) + maxCardsList
-  //         ) {
-  //           if (deltaEnd - maxCardsList >= 2) {
-  //             if (i === Number(sliderLetter.index) + maxCardsList - 1) {
-  //               cardRefs.current[`card-${i}`].style.left =
-  //                 (margin + sizeMiniCard.width) * indexStart - remSize + 'px'
-  //             }
-  //             if (i === Number(sliderLetter.index) + maxCardsList) {
-  //               cardRefs.current[`card-${i}`].style.left =
-  //                 (margin + sizeMiniCard.width) * indexStart -
-  //                 0.5 * remSize +
-  //                 'px'
-  //             }
-  //             if (
-  //               i !== Number(sliderLetter.index) + maxCardsList - 1 &&
-  //               i !== Number(sliderLetter.index) + maxCardsList
-  //             ) {
-  //               cardRefs.current[`card-${i}`].style.left =
-  //                 (margin + sizeMiniCard.width) * indexStart + 'px'
-  //             }
-  //           }
-
-  //           if (deltaEnd - maxCardsList === 1) {
-  //             if (i === Number(sliderLetter.index) + maxCardsList - 1) {
-  //               cardRefs.current[`card-${i}`].style.left =
-  //                 (margin + sizeMiniCard.width) * indexStart -
-  //                 0.5 * remSize +
-  //                 'px'
-  //             } else {
-  //               cardRefs.current[`card-${i}`].style.left =
-  //                 (margin + sizeMiniCard.width) * indexStart + 'px'
-  //             }
-  //           }
-
-  //           if (deltaEnd - maxCardsList === 0) {
-  //             cardRefs.current[`card-${i}`].style.left =
-  //               (margin + sizeMiniCard.width) * indexStart + 'px'
-  //           }
-  //         }
-
-  //         if (i >= Number(sliderLetter.index) + maxCardsList) {
-  //           if (i === memoryList.length - 3) {
-  //             cardRefs.current[`card-${i}`].style.left =
-  //               (margin + sizeMiniCard.width) * (indexStart - 1) -
-  //               remSize +
-  //               'px'
-  //           }
-  //           if (i === memoryList.length - 2) {
-  //             cardRefs.current[`card-${i}`].style.left =
-  //               (margin + sizeMiniCard.width) * (indexStart - 1) -
-  //               0.5 * remSize +
-  //               'px'
-  //           }
-  //           if (i !== memoryList.length - 3 && i !== memoryList.length - 2) {
-  //             cardRefs.current[`card-${i}`].style.left =
-  //               (margin + sizeMiniCard.width) * (indexStart - 1) + 'px'
-  //           }
-  //           indexStart--
-  //         }
-  //         indexStart++
-  //       }
-  //     }
-  //   }
-  // }, [sliderLetter, memoryList])
 
   useEffect(() => {
     if (
@@ -431,11 +393,11 @@ const MemoryStatus = ({
   return (
     <div className="memory-list-container">
       {memoryList &&
-        source === selectedSource &&
+        infoChoiceClip === selectedSource &&
         memoryList.map((card, i) => {
           return (
             <div
-              className="memory-status-card"
+              className="memory-list-card"
               key={`${i}`}
               ref={setCardRef(`card-${i}`)}
               style={{
@@ -444,38 +406,51 @@ const MemoryStatus = ({
                 left: getLeft(i),
               }}
             >
-              <div
-                className="memory-status-card-filter"
-                ref={setFilterRef(`filter-${card.id}`)}
-                data-id={card.id}
-                onClick={handleClickFilter}
-                onMouseEnter={handleMouseEnterFilter}
-                onMouseLeave={handleMouseLeaveFilter}
-              ></div>
-              <img
-                className="memory-status-card-photo"
-                src={URL.createObjectURL(card[source].cardphoto)}
-                style={{
-                  width: `${sizeMiniCard.width}px`,
-                  height: `${sizeMiniCard.height}px`,
-                }}
-                alt="memoryCardPhoto"
-              ></img>
-              <span
-                className="memory-status-card-name"
-                data-id={card.id}
-                onClick={handleClickFilter}
-                onMouseEnter={handleMouseEnterFilter}
-                onMouseLeave={handleMouseLeaveFilter}
-              >
-                {card[source].envelope.toaddress.name}
-              </span>
+              {(infoChoiceClip === 'shopping' ||
+                infoChoiceClip === 'blanks') && (
+                <div
+                  className="memory-list-card-filter"
+                  ref={setFilterRef(`filter-${card.id}`)}
+                  data-id={card.id}
+                  onClick={handleClickFilter}
+                  onMouseEnter={handleMouseEnterFilter}
+                  onMouseLeave={handleMouseLeaveFilter}
+                ></div>
+              )}
+              {(infoChoiceClip === 'shopping' ||
+                infoChoiceClip === 'blanks') && (
+                <img
+                  className="memory-list-card-photo"
+                  src={URL.createObjectURL(card[infoChoiceClip].cardphoto)}
+                  style={{
+                    width: `${sizeMiniCard.width}px`,
+                    height: `${sizeMiniCard.height}px`,
+                  }}
+                  alt="memoryCardPhoto"
+                ></img>
+              )}
+              {infoChoiceClip === 'shopping' || infoChoiceClip === 'blanks' ? (
+                <span
+                  className="memory-list-card-name"
+                  data-id={card.id}
+                  onClick={handleClickFilter}
+                  onMouseEnter={handleMouseEnterFilter}
+                  onMouseLeave={handleMouseLeaveFilter}
+                >
+                  {card[infoChoiceClip].envelope.toaddress.name}
+                </span>
+              ) : (
+                <span className="memory-list-card-name" data-id={card.id}>
+                  {card.address.name}
+                </span>
+              )}
               {listIconsSource &&
                 listIconsSource.map((btn, i) => {
-                  return (
+                  return infoChoiceClip === 'shopping' ||
+                    infoChoiceClip === 'blanks' ? (
                     <button
                       key={`${btn}-${i}`}
-                      className="memory-status-card-btn"
+                      className="memory-list-card-btn"
                       ref={setBtnIconRef(`fullCard-${btn}`)}
                       data-id={card.id}
                       style={{
@@ -492,6 +467,23 @@ const MemoryStatus = ({
                     >
                       {addIconToolbar(btn)}
                     </button>
+                  ) : (
+                    <button
+                      key={`${btn}-${i}`}
+                      className="memory-list-card-btn"
+                      ref={setBtnIconRef(`fullCard-${btn}`)}
+                      data-id={card.id}
+                      style={{
+                        color: 'rgb(71, 71, 71)',
+                        backgroundColor: 'rgba(240, 240, 240, 0.75)',
+                        top:
+                          0.3 * remSize +
+                          i * (1.7 * remSize + 0.3 * remSize) +
+                          'px',
+                      }}
+                    >
+                      {addIconToolbar(btn)}
+                    </button>
                   )
                 })}
             </div>
@@ -501,4 +493,4 @@ const MemoryStatus = ({
   )
 }
 
-export default MemoryStatus
+export default MemoryList

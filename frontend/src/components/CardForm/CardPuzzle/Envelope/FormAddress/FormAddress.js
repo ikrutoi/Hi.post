@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import Label from '../Label/Label'
 import './FormAddress.scss'
 import { addIconToolbar } from '../../../../../data/toolbar/addIconToolbar'
 import listBtnsEnvelope from '../../../../../data/toolbar/listBtnsEnvelope.json'
+import { getAllRecordsAddresses } from '../../../../../utils/cardFormNav/indexDB/indexDb'
 
 const FormAddress = ({
   values,
@@ -15,6 +17,40 @@ const FormAddress = ({
   handleMouseEnter,
   handleMouseLeave,
 }) => {
+  const [countAddress, setCountAddress] = useState(null)
+
+  const updateCounts = async (section) => {
+    switch (section) {
+      case 'myaddress':
+        const myAddress = await getAllRecordsAddresses('myaddress')
+        setCountAddress(myAddress.length)
+        break
+      case 'toaddress':
+        const toAddress = await getAllRecordsAddresses('toaddress')
+        setCountAddress(toAddress.length)
+        break
+      default:
+        break
+    }
+    // const blanks = await getAllBlanks()
+    // setBtnsStatus((state) => {
+    //   return {
+    //     ...state,
+    //     status: {
+    //       ...state.status,
+    //       shopping: Boolean(shopping.length),
+    //       clip: Boolean(blanks.length),
+    //     },
+    //   }
+    // })
+    // setCountShopping(shopping.length > 0 ? shopping.length : 0)
+    // setCountBlanks(blanks.length > 0 ? blanks.length : 0)
+  }
+
+  useEffect(() => {
+    updateCounts(listLabelsAddress.name)
+  }, [])
+
   return (
     <form className={`envelope-form form-${listLabelsAddress.name}`}>
       <div
@@ -33,6 +69,17 @@ const FormAddress = ({
               onMouseLeave={handleMouseLeave}
             >
               {addIconToolbar(btn)}
+              {btn === 'clip' && countAddress ? (
+                <span
+                  className={`counter-container envelope-counter-container ${btn}-counter-container`}
+                >
+                  <span className={`status-counter ${btn}-counter`}>
+                    {countAddress}
+                  </span>
+                </span>
+              ) : (
+                <></>
+              )}
             </button>
           )
         })}

@@ -15,18 +15,17 @@ const SliderCardsList = ({
   const infoDeltaEnd = useSelector((state) => state.layout.deltaEnd)
   const dispatch = useDispatch()
 
+  // console.log('infoCardsList', infoCardsList)
   useEffect(() => {
     if (infoCardsList.length && indexLetter) {
       const currentDeltaEnd = infoCardsList.length - indexLetter
-      if (currentDeltaEnd === maxCardsList) {
+      if (currentDeltaEnd <= maxCardsList) {
         dispatch(deltaEnd(true))
       } else {
         dispatch(deltaEnd(false))
       }
     }
   }, [infoCardsList.length, indexLetter, maxCardsList, dispatch])
-
-  useEffect(() => {}, [infoDeltaEnd])
 
   useEffect(() => {
     if (sliderRef.current) {
@@ -36,7 +35,8 @@ const SliderCardsList = ({
           (infoDeltaEnd ? maxCardsList : maxCardsList - 1)
       )
     }
-  }, [sliderRef, maxCardsList, infoDeltaEnd, infoCardsList])
+    // }, [sliderRef, maxCardsList, infoDeltaEnd, infoCardsList])
+  }, [])
 
   const discardOfTakes = () => {
     return infoCardsList.firstLetters.map((cardId, i, arr) => {
@@ -59,6 +59,16 @@ const SliderCardsList = ({
     })
   }
 
+  const getWidth = () => {
+    if (sliderRef.current) {
+      const widthSlider = sliderRef.current.clientWidth
+      return (
+        (widthSlider / infoCardsList.length) *
+        (infoDeltaEnd ? maxCardsList : maxCardsList - 1)
+      )
+    }
+  }
+
   const handleClickLetter = (evt) => {
     if (evt.target.textContent) {
       dispatch(
@@ -79,7 +89,7 @@ const SliderCardsList = ({
         <style>
           {`
         .cards-list-slider::-webkit-slider-thumb {
-          width: ${widthToddler}px}`}
+          width: ${getWidth()}px}`}
         </style>
       )}
       <input

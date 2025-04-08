@@ -18,9 +18,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 0.3rem;
+}
+
+.status-counter-container {
   top: 0;
   left: 1.5rem;
-  border-radius: 0.3rem;
 }
 
 .shopping-counter-container {

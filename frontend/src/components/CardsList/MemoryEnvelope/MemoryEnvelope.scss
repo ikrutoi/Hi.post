@@ -12,22 +12,33 @@
 }
 
 .memory-envelope-myaddress {
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: start;
 }
 
 .memory-envelope-toaddress {
-  justify-content: flex-start;
+  justify-content: flex-end;
+  align-items: end;
+  text-align: right;
 }
 
 .memory-envelope-card p {
   font-size: 0.6rem;
 }
 
-.memory-envelope-myaddress p:nth-child(5),
-.memory-envelope-toaddress p:first-child {
+.memory-envelope-toaddress p,
+.memory-envelope-myaddress p {
+  width: min-content;
   font-weight: 600;
   font-size: 0.8rem;
-  color: rgb(0, 125, 250);
+  box-sizing: border-box;
+  // white-space: nowrap;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.3rem;
+  user-select: none;
+  color: rgb(71, 71, 71);
+  background-color: rgb(240, 240, 240);
+  // color: rgb(0, 125, 250);
 }
 
 .memory-card:first-child {

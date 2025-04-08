@@ -110,7 +110,9 @@ const Status = () => {
         >
           {addIconToolbar(btn)}
           {btn === 'shopping' && countShopping ? (
-            <span className={`counter-container ${btn}-counter-container`}>
+            <span
+              className={`counter-container status-counter-container ${btn}-counter-container`}
+            >
               <span className={`status-counter ${btn}-counter`}>
                 {countShopping}
               </span>
@@ -119,7 +121,9 @@ const Status = () => {
             <></>
           )}
           {btn === 'clip' && countBlanks ? (
-            <span className={`counter-container ${btn}-counter-container`}>
+            <span
+              className={`counter-container status-counter-container ${btn}-counter-container`}
+            >
               <span className={`status-counter ${btn}-counter`}>
                 {countBlanks}
               </span>

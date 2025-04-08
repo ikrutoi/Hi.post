@@ -1,6 +1,6 @@
 import { openDB } from 'idb'
 
-export const dbPromise = openDB('images-database', 11, {
+export const dbPromise = openDB('images-database', 14, {
   upgrade(db) {
     if (!db.objectStoreNames.contains('hiPostImages')) {
       db.createObjectStore('hiPostImages', { keyPath: 'id' })
@@ -11,11 +11,11 @@ export const dbPromise = openDB('images-database', 11, {
     if (!db.objectStoreNames.contains('cardtext')) {
       db.createObjectStore('cardtext', { keyPath: 'id' })
     }
-    if (!db.objectStoreNames.contains('myAddress')) {
-      db.createObjectStore('myAddress', { keyPath: 'id' })
+    if (!db.objectStoreNames.contains('myaddress')) {
+      db.createObjectStore('myaddress', { keyPath: 'id' })
     }
-    if (!db.objectStoreNames.contains('toAddress')) {
-      db.createObjectStore('toAddress', { keyPath: 'id' })
+    if (!db.objectStoreNames.contains('toaddress')) {
+      db.createObjectStore('toaddress', { keyPath: 'id' })
     }
     if (!db.objectStoreNames.contains('blanks')) {
       db.createObjectStore('blanks', { keyPath: 'id' })
@@ -166,8 +166,8 @@ export const getAllUserImages = async () => {
 
 export const deleteMyAddress = async (id) => {
   const db = await dbPromise
-  const transaction = db.transaction('myAddress', 'readwrite')
-  const store = transaction.objectStore('myAddress')
+  const transaction = db.transaction('myaddress', 'readwrite')
+  const store = transaction.objectStore('myaddress')
   await store.delete(id)
   await transaction.done
 }
@@ -200,8 +200,8 @@ export const deleteMyAddress = async (id) => {
 
 export const deleteToAddress = async (id) => {
   const db = await dbPromise
-  const transaction = db.transaction('toAddress', 'readwrite')
-  const store = transaction.objectStore('toAddress')
+  const transaction = db.transaction('toaddress', 'readwrite')
+  const store = transaction.objectStore('toaddress')
   // const count = await store.count()
   await store.delete(id)
   await transaction.done

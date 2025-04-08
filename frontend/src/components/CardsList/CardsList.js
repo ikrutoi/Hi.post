@@ -49,7 +49,7 @@ import MemoryEnvelope from './MemoryEnvelope/MemoryEnvelope'
 import MemoryCardtext from './MemoryCardtext/MemoryCardtext'
 import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
 import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
-import MemoryStatus from './MemoryStatus/MemoryStatus'
+import MemoryList from './MemoryList/MemoryList'
 import SliderCardsList from './SliderCardsList/SliderCardsList'
 
 const CardsList = () => {
@@ -79,10 +79,10 @@ const CardsList = () => {
   })
   const [expendCardStatus, setExpendCardStatus] = useState(null)
   const [selectedListCards, setSelectedListCards] = useState(null)
-  const [memoryAddress, setMemoryAddress] = useState({
-    myaddress: null,
-    toaddress: null,
-  })
+  // const [memoryAddress, setMemoryAddress] = useState({
+  //   myaddress: null,
+  //   toaddress: null,
+  // })
   const [btnsFullCard, setBtnsFullCard] = useState({
     fullCard: { plus: true, remove: true },
   })
@@ -163,12 +163,12 @@ const CardsList = () => {
   }, [infoExpendStatusCard])
 
   useEffect(() => {
-    if (infoChoiceSection.nameSection === 'envelope') {
-      if (infoEnvelopeSave) {
-        getAllAddress(infoEnvelopeSave)
-        dispatch(infoButtons({ envelopeSave: false }))
-      }
-    }
+    // if (infoChoiceSection.nameSection === 'envelope') {
+    //   if (infoEnvelopeSave) {
+    //     getAllAddress(infoEnvelopeSave)
+    //     dispatch(infoButtons({ envelopeSave: false }))
+    //   }
+    // }
     if (infoChoiceSection.nameSection === 'cardtext') {
       if (choiceSave === 'cardtext') {
         getAllCardtext()
@@ -180,41 +180,41 @@ const CardsList = () => {
   useEffect(() => {
     setSelectedListCards(infoChoiceClip)
     switch (infoChoiceClip) {
-      case 'myaddress':
-        getAllAddress('myaddress')
-        break
-      case 'toaddress':
-        getAllAddress('toaddress')
-        break
+      // case 'myaddress':
+      //   getAllAddress('myaddress')
+      //   break
+      // case 'toaddress':
+      //   getAllAddress('toaddress')
+      //   break
       case 'cardtext':
         getAllCardtext()
         break
       // case 'shopping':
       //   getAllCardsShopping()
       //   break
-      case 'blanks':
-        getAllBlanks()
-        break
+      // case 'blanks':
+      //   getAllBlanks()
+      //   break
 
       default:
         break
     }
   }, [infoChoiceClip])
 
-  const getAllBlanks = async () => {}
+  // const getAllBlanks = async () => {}
 
-  const getAllAddress = async (section) => {
-    const listAddress = await getAllRecordsAddresses(
-      section === 'myaddress' ? 'myAddress' : 'toAddress'
-    )
-    setMemoryAddress((state) => {
-      return {
-        ...state,
-        [section]: listAddress,
-      }
-    })
-    setSelectedListCards(section)
-  }
+  // const getAllAddress = async (section) => {
+  //   const listAddress = await getAllRecordsAddresses(
+  //     section === 'myaddress' ? 'myAddress' : 'toAddress'
+  //   )
+  //   setMemoryAddress((state) => {
+  //     return {
+  //       ...state,
+  //       [section]: listAddress,
+  //     }
+  //   })
+  //   setSelectedListCards(section)
+  // }
 
   const getAllCardtext = async () => {
     const listCardtexts = await getAllRecordCardtext()
@@ -350,14 +350,14 @@ const CardsList = () => {
         await deleteRecordCardtext(id)
         getAllCardtext()
         break
-      case 'myaddress':
-        await deleteRecordAddress('myAddress', id)
-        getAllAddress(section)
-        break
-      case 'toaddress':
-        await deleteRecordAddress('toAddress', id)
-        getAllAddress(section)
-        break
+      // case 'myaddress':
+      //   await deleteRecordAddress('myAddress', id)
+      //   getAllAddress(section)
+      //   break
+      // case 'toaddress':
+      //   await deleteRecordAddress('toAddress', id)
+      //   getAllAddress(section)
+      //   break
       case 'aroma':
         dispatch(addAroma(null))
         break
@@ -367,9 +367,9 @@ const CardsList = () => {
     }
   }
 
-  const handleClickAddress = (section, id) => {
-    dispatch(choiceAddress({ section, id }))
-  }
+  // const handleClickAddress = (section, id) => {
+  //   dispatch(choiceAddress({ section, id }))
+  // }
 
   const handleClickCardtext = (id) => {
     dispatch(choiceMemorySection({ section: 'cardtext', id }))
@@ -491,25 +491,22 @@ const CardsList = () => {
   }
 
   const choiceMemoryList = () => {
-    if (
-      selectedListCards === 'myaddress' ||
-      selectedListCards === 'toaddress'
-    ) {
+    if (selectedListCards === 'myaddress') {
       return (
-        <div className="memory-list">
-          {memoryAddress[selectedListCards] &&
-            memoryAddress[selectedListCards].map((address, i) => (
-              <MemoryEnvelope
-                key={`${selectedListCards}-${i}`}
-                setRef={setRef}
-                sizeMiniCard={sizeMiniCard}
-                section={selectedListCards}
-                address={address}
-                handleClickMiniKebab={handleClickMiniKebab}
-                handleClickAddress={handleClickAddress}
-              />
-            ))}
-        </div>
+        <MemoryEnvelope
+          // key={`${selectedListCards}-${i}`}
+          // setRef={setRef}
+          sizeMiniCard={sizeMiniCard}
+          // section={selectedListCards}
+          // address={address}
+          // handleClickMiniKebab={handleClickMiniKebab}
+          // handleClickAddress={handleClickAddress}
+        />
+        // <div className="memory-list">
+        //   {memoryAddress[selectedListCards] &&
+        //     memoryAddress[selectedListCards].map((address, i) => (
+        //     ))}
+        // </div>
       )
     }
     if (selectedListCards === 'cardtext') {
@@ -529,9 +526,13 @@ const CardsList = () => {
         </div>
       )
     }
-    if (selectedListCards === 'shopping' || selectedListCards === 'blanks') {
+    if (
+      selectedListCards === 'shopping' ||
+      selectedListCards === 'blanks' ||
+      selectedListCards === 'toaddress'
+    ) {
       return (
-        <MemoryStatus
+        <MemoryList
           sizeMiniCard={sizeMiniCard}
           source={selectedListCards}
           widthCardsList={widthCardsList}
@@ -540,6 +541,8 @@ const CardsList = () => {
       )
     }
   }
+
+  // console.log('infoCardsList0', infoCardsList)
 
   return (
     <div
@@ -644,7 +647,8 @@ const CardsList = () => {
       {infoCardsList &&
         infoCardsList.length > maxCardsList &&
         (selectedListCards === 'shopping' ||
-          selectedListCards === 'blanks') && (
+          selectedListCards === 'blanks' ||
+          selectedListCards === 'toaddress') && (
           <SliderCardsList
             value={valueCardsList}
             infoCardsList={infoCardsList}

@@ -86,7 +86,7 @@ const Envelope = ({ cardPuzzleRef }) => {
   useEffect(() => {
     const fetchAddress = async () => {
       const address = await getRecordAddressById(
-        layoutChoiceAddress.section === 'myaddress' ? 'myAddress' : 'toAddress',
+        layoutChoiceAddress.section === 'myaddress' ? 'myaddress' : 'toaddress',
         layoutChoiceAddress.id
       )
 
@@ -149,13 +149,13 @@ const Envelope = ({ cardPuzzleRef }) => {
     const getCountAddress = async (section) => {
       const countAddress = Boolean(
         await getCountRecordsAddresses(
-          section === 'myaddress' ? 'myAddress' : 'toAddress'
+          section === 'myaddress' ? 'myaddress' : 'toaddress'
         )
       )
 
       if (countAddress) {
         const listAddresses = await getAllRecordsAddresses(
-          section === 'myaddress' ? 'myAddress' : 'toAddress'
+          section === 'myaddress' ? 'myaddress' : 'toaddress'
         )
         setMemoryAddress((state) => {
           return {
@@ -239,18 +239,14 @@ const Envelope = ({ cardPuzzleRef }) => {
   const handleMovingBetweenInputs = (evt) => {
     const indexInput = Number(evt.target.dataset.index)
     const field = evt.target.dataset.field
-    if (
-      evt.key === 'ArrowDown' ||
-      evt.key === 'Enter' ||
-      evt.key === 'ArrowRight'
-    ) {
+    if (evt.key === 'ArrowDown' || evt.key === 'Enter') {
       if (indexInput < 5) {
         inputRefs.current[`${field}${indexInput + 1}`].focus()
       } else {
         inputRefs.current[`${field}${indexInput}`].focus()
       }
     }
-    if (evt.key === 'ArrowUp' || evt.key === 'ArrowLeft') {
+    if (evt.key === 'ArrowUp') {
       if (indexInput > 1) {
         inputRefs.current[`${field}${indexInput - 1}`].focus()
       } else {
@@ -390,7 +386,7 @@ const Envelope = ({ cardPuzzleRef }) => {
     if (parentBtn.dataset.tooltip === 'save') {
       if (btnsAddress[section].save) {
         await addUniqueRecordAddress(
-          section === 'myaddress' ? 'myAddress' : 'toAddress',
+          section === 'myaddress' ? 'myaddress' : 'toaddress',
           value[section]
         )
         dispatch(infoButtons({ envelopeSave: section }))
