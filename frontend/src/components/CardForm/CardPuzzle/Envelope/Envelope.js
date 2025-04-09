@@ -52,6 +52,10 @@ const Envelope = ({ cardPuzzleRef }) => {
     myaddress: { save: false, delete: false, clip: false },
     toaddress: { save: false, delete: false, clip: false },
   })
+  const [countAddress, setCountAddress] = useState({
+    myaddress: null,
+    toaddress: null,
+  })
   const [stateMouseClip, setStateMouseClip] = useState(null)
   const inputRefs = useRef({})
   const btnIconRefs = useRef({})
@@ -147,13 +151,13 @@ const Envelope = ({ cardPuzzleRef }) => {
     }
 
     const getCountAddress = async (section) => {
-      const countAddress = Boolean(
+      const BooleanCountAddress = Boolean(
         await getCountRecordsAddresses(
           section === 'myaddress' ? 'myaddress' : 'toaddress'
         )
       )
 
-      if (countAddress) {
+      if (BooleanCountAddress) {
         const listAddresses = await getAllRecordsAddresses(
           section === 'myaddress' ? 'myaddress' : 'toaddress'
         )
@@ -168,7 +172,7 @@ const Envelope = ({ cardPuzzleRef }) => {
       setBtnsAddress((state) => {
         return {
           ...state,
-          [section]: { ...state[section], clip: countAddress },
+          [section]: { ...state[section], clip: BooleanCountAddress },
         }
       })
     }
@@ -264,6 +268,11 @@ const Envelope = ({ cardPuzzleRef }) => {
     return null
   }
 
+  const getCountAddress = async (section) => {
+    const countAddress = await getCountRecordsAddresses(section)
+    return countAddress
+  }
+
   useEffect(() => {
     const sectionsForm = ['myaddress', 'toaddress']
     const changeStyleForm = (section, state) => {
@@ -273,39 +282,31 @@ const Envelope = ({ cardPuzzleRef }) => {
         colorScheme[state]
     }
 
-    if (layoutChoiceClip) {
-      sectionsForm.forEach((section) => {
-        if (section === layoutChoiceClip) {
-          changeStyleForm(section, 'hover')
-          setBtnsAddress((state) => {
-            return {
+    const fetchAndSetData = async () => {
+      if (layoutChoiceClip) {
+        for (const section of sectionsForm) {
+          if (section === layoutChoiceClip) {
+            changeStyleForm(section, 'hover')
+            setBtnsAddress((state) => ({
               ...state,
               [section]: { ...state[section], clip: 'hover' },
-            }
-          })
-        } else {
-          changeStyleForm(section, 'false')
-          setBtnsAddress((state) => {
-            return {
+            }))
+          } else {
+            changeStyleForm(section, 'false')
+            const count = await getCountAddress(section)
+            setBtnsAddress((state) => ({
               ...state,
-              [section]: { ...state[section], clip: true },
-            }
-          })
+              [section]: {
+                ...state[section],
+                clip: count ? true : false,
+              },
+            }))
+          }
         }
-      })
-    } else {
-      sectionsForm.forEach((section) => {
-        changeStyleForm(section, 'false')
-        if (!stateMouseClip) {
-          setBtnsAddress((state) => {
-            return {
-              ...state,
-              [section]: { ...state[section], clip: true },
-            }
-          })
-        }
-      })
+      }
     }
+
+    fetchAndSetData()
   }, [layoutChoiceClip, stateMouseClip])
 
   const handleClickClip = (section) => {
@@ -318,15 +319,6 @@ const Envelope = ({ cardPuzzleRef }) => {
     } else {
       dispatch(choiceClip(section))
     }
-    // if (infoEnvelopeClip) {
-    //   if (infoEnvelopeClip === section) {
-    //     dispatch(infoButtons({ envelopeClip: false }))
-    //   } else {
-    //     dispatch(infoButtons({ envelopeClip: section }))
-    //   }
-    // } else {
-    //   dispatch(infoButtons({ envelopeClip: section }))
-    // }
   }
 
   const changeParityInputsAddress = (section) => {
@@ -385,18 +377,16 @@ const Envelope = ({ cardPuzzleRef }) => {
 
     if (parentBtn.dataset.tooltip === 'save') {
       if (btnsAddress[section].save) {
-        await addUniqueRecordAddress(
-          section === 'myaddress' ? 'myaddress' : 'toaddress',
-          value[section]
-        )
-        dispatch(infoButtons({ envelopeSave: section }))
+        await addUniqueRecordAddress(section, value[section])
         setBtnsAddress((state) => {
           return {
             ...state,
             [section]: { ...state[section], save: false },
           }
         })
-        handleClickClip(section)
+        // handleClickClip(section)
+        dispatch(infoButtons({ envelopeSave: section }))
+        dispatch(infoButtons({ envelopeClip: section }))
       }
     }
     if (parentBtn.dataset.tooltip === 'delete' && section === 'myaddress') {
@@ -408,12 +398,12 @@ const Envelope = ({ cardPuzzleRef }) => {
   }
 
   const handleMouseEnter = (evt) => {
-    setStateMouseClip(true)
+    // setStateMouseClip(true)
     handleMouseEnterBtn(evt, btnsAddress)
   }
 
   const handleMouseLeave = (evt) => {
-    setStateMouseClip(false)
+    // setStateMouseClip(false)
     handleMouseLeaveBtn(evt, btnsAddress)
   }
 

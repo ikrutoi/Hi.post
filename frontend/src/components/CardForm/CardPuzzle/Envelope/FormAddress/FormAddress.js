@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import Label from '../Label/Label'
 import './FormAddress.scss'
 import { addIconToolbar } from '../../../../../data/toolbar/addIconToolbar'
 import listBtnsEnvelope from '../../../../../data/toolbar/listBtnsEnvelope.json'
-import { getAllRecordsAddresses } from '../../../../../utils/cardFormNav/indexDB/indexDb'
+import {
+  getAllRecordsAddresses,
+  getCountRecordsAddresses,
+} from '../../../../../utils/cardFormNav/indexDB/indexDb'
+import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 
 const FormAddress = ({
   values,
@@ -17,39 +22,43 @@ const FormAddress = ({
   handleMouseEnter,
   handleMouseLeave,
 }) => {
-  const [countAddress, setCountAddress] = useState(null)
+  const [countAddress, setCountAddress] = useState({
+    myaddress: null,
+    toaddress: null,
+  })
+  const infoEnvelopeSave = useSelector(
+    (state) => state.infoButtons.envelopeSave
+  )
+  const infoEnvelopeRemove = useSelector(
+    (state) => state.infoButtons.envelopeRemove
+  )
+  const dispatch = useDispatch()
 
   const updateCounts = async (section) => {
-    switch (section) {
-      case 'myaddress':
-        const myAddress = await getAllRecordsAddresses('myaddress')
-        setCountAddress(myAddress.length)
-        break
-      case 'toaddress':
-        const toAddress = await getAllRecordsAddresses('toaddress')
-        setCountAddress(toAddress.length)
-        break
-      default:
-        break
-    }
-    // const blanks = await getAllBlanks()
-    // setBtnsStatus((state) => {
-    //   return {
-    //     ...state,
-    //     status: {
-    //       ...state.status,
-    //       shopping: Boolean(shopping.length),
-    //       clip: Boolean(blanks.length),
-    //     },
-    //   }
-    // })
-    // setCountShopping(shopping.length > 0 ? shopping.length : 0)
-    // setCountBlanks(blanks.length > 0 ? blanks.length : 0)
+    const countAddress = await getCountRecordsAddresses(section)
+    setCountAddress((state) => ({
+      ...state,
+      [section]: countAddress,
+    }))
   }
 
   useEffect(() => {
     updateCounts(listLabelsAddress.name)
   }, [])
+
+  useEffect(() => {
+    if (infoEnvelopeSave) {
+      updateCounts(infoEnvelopeSave)
+      dispatch(infoButtons({ envelopeSave: false }))
+    }
+  }, [infoEnvelopeSave])
+
+  useEffect(() => {
+    if (infoEnvelopeRemove) {
+      updateCounts(infoEnvelopeRemove)
+      dispatch(infoButtons({ envelopeRemove: false }))
+    }
+  }, [infoEnvelopeRemove])
 
   return (
     <form className={`envelope-form form-${listLabelsAddress.name}`}>
@@ -69,12 +78,12 @@ const FormAddress = ({
               onMouseLeave={handleMouseLeave}
             >
               {addIconToolbar(btn)}
-              {btn === 'clip' && countAddress ? (
+              {btn === 'clip' && countAddress[listLabelsAddress.name] ? (
                 <span
                   className={`counter-container envelope-counter-container ${btn}-counter-container`}
                 >
                   <span className={`status-counter ${btn}-counter`}>
-                    {countAddress}
+                    {countAddress[listLabelsAddress.name]}
                   </span>
                 </span>
               ) : (

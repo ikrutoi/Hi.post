@@ -491,24 +491,24 @@ const CardsList = () => {
   }
 
   const choiceMemoryList = () => {
-    if (selectedListCards === 'myaddress') {
-      return (
-        <MemoryEnvelope
-          // key={`${selectedListCards}-${i}`}
-          // setRef={setRef}
-          sizeMiniCard={sizeMiniCard}
-          // section={selectedListCards}
-          // address={address}
-          // handleClickMiniKebab={handleClickMiniKebab}
-          // handleClickAddress={handleClickAddress}
-        />
-        // <div className="memory-list">
-        //   {memoryAddress[selectedListCards] &&
-        //     memoryAddress[selectedListCards].map((address, i) => (
-        //     ))}
-        // </div>
-      )
-    }
+    // if (selectedListCards === 'myaddress') {
+    //   return (
+    //     <MemoryEnvelope
+    //       // key={`${selectedListCards}-${i}`}
+    //       // setRef={setRef}
+    //       sizeMiniCard={sizeMiniCard}
+    //       // section={selectedListCards}
+    //       // address={address}
+    //       // handleClickMiniKebab={handleClickMiniKebab}
+    //       // handleClickAddress={handleClickAddress}
+    //     />
+    //     // <div className="memory-list">
+    //     //   {memoryAddress[selectedListCards] &&
+    //     //     memoryAddress[selectedListCards].map((address, i) => (
+    //     //     ))}
+    //     // </div>
+    //   )
+    // }
     if (selectedListCards === 'cardtext') {
       return (
         <div className="memory-list">
@@ -529,7 +529,8 @@ const CardsList = () => {
     if (
       selectedListCards === 'shopping' ||
       selectedListCards === 'blanks' ||
-      selectedListCards === 'toaddress'
+      selectedListCards === 'toaddress' ||
+      selectedListCards === 'myaddress'
     ) {
       return (
         <MemoryList
@@ -542,12 +543,36 @@ const CardsList = () => {
     }
   }
 
-  // console.log('infoCardsList0', infoCardsList)
+  let touchStartX = 0
+  let touchEndX = 0
+
+  const handleWheelCardsList = (event) => {
+    event.preventDefault()
+    if (cardsListRef.current) {
+      cardsListRef.current.scrollLeft += event.deltaY
+    }
+  }
+
+  const handleTouchStartCardsList = (event) => {
+    touchStartX = event.touches[0].clientX
+  }
+
+  const handleTouchMoveCardsList = (event) => {
+    touchEndX = event.touches[0].clientX
+    if (cardsListRef.current) {
+      const deltaX = touchStartX - touchEndX
+      cardsListRef.current.scrollLeft += deltaX
+      touchStartX = touchEndX
+    }
+  }
 
   return (
     <div
       className="cards-list"
       ref={cardsListRef}
+      onWheel={handleWheelCardsList}
+      onTouchStart={handleTouchStartCardsList}
+      onTouchMove={handleTouchMoveCardsList}
       // style={{ backgroundColor: colorSchemeMain.lightGray }}
     >
       <div style={{ height: `${sizeMiniCard.height}px` }}></div>
@@ -648,7 +673,8 @@ const CardsList = () => {
         infoCardsList.length > maxCardsList &&
         (selectedListCards === 'shopping' ||
           selectedListCards === 'blanks' ||
-          selectedListCards === 'toaddress') && (
+          selectedListCards === 'toaddress' ||
+          selectedListCards === 'myaddress') && (
           <SliderCardsList
             value={valueCardsList}
             infoCardsList={infoCardsList}

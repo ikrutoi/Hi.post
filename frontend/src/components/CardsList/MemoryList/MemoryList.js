@@ -1,12 +1,15 @@
-import { memo, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './MemoryList.scss'
+import { infoButtons } from '../../../redux/infoButtons/actionCreators'
 import {
   getAllShopping,
   deleteShopping,
   getAllBlanks,
   deleteBlank,
   getAllRecordsAddresses,
+  deleteToAddress,
+  deleteMyAddress,
 } from '../../../utils/cardFormNav/indexDB/indexDb'
 import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
 import {
@@ -53,88 +56,171 @@ const MemoryList = ({
   }
 
   const getMemoryCards = async (source) => {
-    let memoryCards
-    let firstLetterList = []
-    switch (source) {
-      case 'toaddress':
-        setListIconsSource(['remove'])
-        const memoryCardsToAddress = await getAllRecordsAddresses('toAddress')
-        memoryCards = memoryCardsToAddress.sort((a, b) => {
-          return a.address.name.localeCompare(b.address.name)
-        })
-        memoryCards.forEach((card, i) => {
-          const cardId = {
-            letter: card.address.name[0],
-            id: card.id,
-            index: i,
-          }
-          firstLetterList.push(cardId)
-        })
-        firstLetterList.push(firstLetterList[firstLetterList.length - 1])
-        break
-      case 'myaddress':
-        setListIconsSource(['remove'])
-        const memoryCardsMyAddress = await getAllRecordsAddresses('myAddress')
-        memoryCards = memoryCardsMyAddress.sort((a, b) => {
-          return a.address.name.localeCompare(b.address.name)
-        })
-        memoryCards.forEach((card, i) => {
-          const cardId = {
-            letter: card.address.name[0],
-            id: card.id,
-            index: i,
-          }
-          firstLetterList.push(cardId)
-        })
-        firstLetterList.push(firstLetterList[firstLetterList.length - 1])
-        break
-      case 'shopping':
-        setListIconsSource(['save', 'remove'])
-        const memoryCardsShopping = await getAllShopping()
-        memoryCards = memoryCardsShopping.sort((a, b) => {
-          return a.shopping.envelope.toaddress.name.localeCompare(
-            b.shopping.envelope.toaddress.name
-          )
-        })
-        memoryCards.forEach((card, i) => {
-          const cardId = {
-            letter: card.shopping.envelope.toaddress.name[0],
-            id: card.id,
-            index: i,
-          }
-          firstLetterList.push(cardId)
-        })
-        firstLetterList.push(firstLetterList[firstLetterList.length - 1])
-        break
-      case 'blanks':
-        setListIconsSource(['plus', 'remove'])
-        const memoryCardsBlanks = await getAllBlanks()
-        memoryCards = memoryCardsBlanks.sort((a, b) => {
-          return a.blanks.envelope.toaddress.name.localeCompare(
-            b.blanks.envelope.toaddress.name
-          )
-        })
-        memoryCards.forEach((card, i) => {
-          const cardId = {
-            letter: card.blanks.envelope.toaddress.name[0],
-            id: card.id,
-            index: i,
-          }
-          firstLetterList.push(cardId)
-        })
-        firstLetterList.push(firstLetterList[firstLetterList.length - 1])
-        break
+    const processMemoryCards = (records, getName) => {
+      const sortedRecords = records.sort((a, b) =>
+        getName(a).localeCompare(getName(b))
+      )
+      const firstLetterList = sortedRecords.map((card, i) => ({
+        letter: getName(card)[0],
+        id: card.id,
+        index: i,
+      }))
+      firstLetterList.push(firstLetterList[firstLetterList.length - 1])
+      return { sortedRecords, firstLetterList }
+    }
 
+    let memoryCards = []
+    let firstLetterList = []
+    const iconConfig = {
+      toaddress: ['remove'],
+      myaddress: ['remove'],
+      shopping: ['save', 'remove'],
+      blanks: ['plus', 'remove'],
+    }
+
+    setListIconsSource(iconConfig[source] || [])
+
+    switch (source) {
+      case 'toaddress': {
+        const records = await getAllRecordsAddresses('toaddress')
+        const { sortedRecords, firstLetterList: letters } = processMemoryCards(
+          records,
+          (card) => card.address.name
+        )
+        memoryCards = sortedRecords
+        firstLetterList = letters
+        break
+      }
+      case 'myaddress': {
+        const records = await getAllRecordsAddresses('myaddress')
+        const { sortedRecords, firstLetterList: letters } = processMemoryCards(
+          records,
+          (card) => card.address.name
+        )
+        memoryCards = sortedRecords
+        firstLetterList = letters
+        break
+      }
+      case 'shopping': {
+        const records = await getAllShopping()
+        const { sortedRecords, firstLetterList: letters } = processMemoryCards(
+          records,
+          (card) => card.shopping.envelope.toaddress.name
+        )
+        memoryCards = sortedRecords
+        firstLetterList = letters
+        break
+      }
+      case 'blanks': {
+        const records = await getAllBlanks()
+        const { sortedRecords, firstLetterList: letters } = processMemoryCards(
+          records,
+          (card) => card.blanks.envelope.toaddress.name
+        )
+        memoryCards = sortedRecords
+        firstLetterList = letters
+        break
+      }
       default:
+        console.error('Unknown source:', source)
         break
     }
+
     setMemoryList(memoryCards)
     setSelectedSource(source)
-    setInfoCardsList({
-      length: memoryCards.length,
-      firstLetters: firstLetterList,
-    })
+    if (memoryCards.length) {
+      setInfoCardsList({
+        length: memoryCards.length,
+        firstLetters: firstLetterList,
+      })
+    }
   }
+
+  // const getMemoryCards = async (source) => {
+  //   let memoryCards
+  //   let firstLetterList = []
+  //   switch (source) {
+  //     case 'toaddress':
+  //       setListIconsSource(['remove'])
+  //       const memoryCardsToAddress = await getAllRecordsAddresses('toaddress')
+  //       memoryCards = memoryCardsToAddress.sort((a, b) => {
+  //         return a.address.name.localeCompare(b.address.name)
+  //       })
+  //       memoryCards.forEach((card, i) => {
+  //         const cardId = {
+  //           letter: card.address.name[0],
+  //           id: card.id,
+  //           index: i,
+  //         }
+  //         firstLetterList.push(cardId)
+  //       })
+  //       firstLetterList.push(firstLetterList[firstLetterList.length - 1])
+  //       break
+  //     case 'myaddress':
+  //       setListIconsSource(['remove'])
+  //       const memoryCardsMyAddress = await getAllRecordsAddresses('myaddress')
+  //       memoryCards = memoryCardsMyAddress.sort((a, b) => {
+  //         return a.address.name.localeCompare(b.address.name)
+  //       })
+  //       memoryCards.forEach((card, i) => {
+  //         const cardId = {
+  //           letter: card.address.name[0],
+  //           id: card.id,
+  //           index: i,
+  //         }
+  //         firstLetterList.push(cardId)
+  //       })
+  //       firstLetterList.push(firstLetterList[firstLetterList.length - 1])
+  //       break
+  //     case 'shopping':
+  //       setListIconsSource(['save', 'remove'])
+  //       const memoryCardsShopping = await getAllShopping()
+  //       memoryCards = memoryCardsShopping.sort((a, b) => {
+  //         return a.shopping.envelope.toaddress.name.localeCompare(
+  //           b.shopping.envelope.toaddress.name
+  //         )
+  //       })
+  //       memoryCards.forEach((card, i) => {
+  //         const cardId = {
+  //           letter: card.shopping.envelope.toaddress.name[0],
+  //           id: card.id,
+  //           index: i,
+  //         }
+  //         firstLetterList.push(cardId)
+  //       })
+  //       firstLetterList.push(firstLetterList[firstLetterList.length - 1])
+  //       break
+  //     case 'blanks':
+  //       setListIconsSource(['plus', 'remove'])
+  //       const memoryCardsBlanks = await getAllBlanks()
+  //       memoryCards = memoryCardsBlanks.sort((a, b) => {
+  //         return a.blanks.envelope.toaddress.name.localeCompare(
+  //           b.blanks.envelope.toaddress.name
+  //         )
+  //       })
+  //       memoryCards.forEach((card, i) => {
+  //         const cardId = {
+  //           letter: card.blanks.envelope.toaddress.name[0],
+  //           id: card.id,
+  //           index: i,
+  //         }
+  //         firstLetterList.push(cardId)
+  //       })
+  //       firstLetterList.push(firstLetterList[firstLetterList.length - 1])
+  //       break
+
+  //     default:
+  //       break
+  //   }
+  //   setMemoryList(memoryCards)
+  //   setSelectedSource(source)
+  //   if (memoryCards) {
+  //     setInfoCardsList({
+  //       length: memoryCards.length,
+  //       firstLetters: firstLetterList,
+  //     })
+  //   }
+  // }
 
   const movingCards = (index) => {
     if (cardRefs.current && memoryList) {
@@ -218,6 +304,13 @@ const MemoryList = ({
             updatePosition(i, 0)
           }
         }
+        if (memoryList.length - maxCardsList === 1) {
+          updatePosition(memoryList.length - maxCardsList - 1, 0)
+          updatePosition(memoryList.length - maxCardsList, 0.5 * remSize)
+          for (let i = 0; i < memoryList.length - maxCardsList - 2; i++) {
+            updatePosition(i, 0)
+          }
+        }
         let newIndex = 1
         for (
           let i = memoryList.length - maxCardsList + 1;
@@ -246,14 +339,14 @@ const MemoryList = ({
   }, [sliderLetter])
 
   useEffect(() => {
-    if (maxCardsList) {
+    if (maxCardsList && infoChoiceClip) {
       getMemoryCards(infoChoiceClip)
     }
   }, [infoChoiceClip, maxCardsList])
 
   const handleClickCardBtn = async (evt) => {
     try {
-      const parentBtn = evt.target.closest('.memory-status-card-btn')
+      const parentBtn = evt.target.closest('.memory-list-card-btn')
       if (!parentBtn && !parentBtn.dataset.id) {
         return
       }
@@ -263,6 +356,14 @@ const MemoryList = ({
           break
         case 'blanks':
           await deleteBlank(Number(parentBtn.dataset.id))
+          break
+        case 'myaddress':
+          await deleteMyAddress(Number(parentBtn.dataset.id))
+          dispatch(infoButtons({ envelopeRemove: infoChoiceClip }))
+          break
+        case 'toaddress':
+          await deleteToAddress(Number(parentBtn.dataset.id))
+          dispatch(infoButtons({ envelopeRemove: infoChoiceClip }))
           break
 
         default:
@@ -434,6 +535,7 @@ const MemoryList = ({
                           i * (1.7 * remSize + 0.3 * remSize) +
                           'px',
                       }}
+                      onClick={handleClickCardBtn}
                     >
                       {addIconToolbar(btn)}
                     </button>

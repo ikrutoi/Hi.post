@@ -7,6 +7,7 @@ const initialState = {
   left: true,
   download: false,
   envelopeSave: null,
+  envelopeRemove: null,
   miniAddressClose: null,
   status: { shopping: false },
   fullCard: { plus: false, delete: false },
