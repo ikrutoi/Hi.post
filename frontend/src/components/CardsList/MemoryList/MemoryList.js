@@ -136,10 +136,10 @@ const MemoryList = ({
     })
   }
 
-  useEffect(() => {
-    if (cardRefs.current && memoryList && sliderLine !== undefined) {
-      const currentDeltaEnd =
-        memoryList.length - Number(sliderLine) - maxCardsList
+  const movingCards = (index) => {
+    if (cardRefs.current && memoryList) {
+      const restEnd = memoryList.length - index - maxCardsList
+      const baseLeft = margin + sizeMiniCard.width
 
       const updatePosition = (index, leftValue) => {
         if (cardRefs.current[`card-${index}`]) {
@@ -147,84 +147,103 @@ const MemoryList = ({
         }
       }
 
-      if (Number(sliderLine) === 0) {
-        console.log('0')
+      if (index === 0) {
         for (let i = 1; i < maxCardsList; i++) {
-          updatePosition(i, (margin + sizeMiniCard.width) * i)
+          updatePosition(i, baseLeft * i)
+        }
+        for (let i = maxCardsList; i < memoryList.length - 3; i++) {
+          updatePosition(i, baseLeft * (maxCardsList - 1))
         }
       }
 
-      if (Number(sliderLine) === 1) {
-        console.log('1')
+      if (index === 1) {
+        updatePosition(0, 0)
         updatePosition(1, 0.5 * remSize)
-        for (let i = 2; i < maxCardsList + Number(sliderLine); i++) {
-          updatePosition(i, (margin + sizeMiniCard.width) * (i - 1))
+        for (let i = 2; i < maxCardsList + index; i++) {
+          updatePosition(i, baseLeft * (i - 1))
         }
       }
 
-      if (Number(sliderLine) > 1) {
-        console.log('>1')
-        updatePosition(Number(sliderLine) - 1, 0.5 * remSize)
-        updatePosition(Number(sliderLine), remSize)
-        let index = 1
-        for (
-          let i = Number(sliderLine) + 1;
-          i < maxCardsList + Number(sliderLine);
-          i++
-        ) {
-          updatePosition(i, (margin + sizeMiniCard.width) * index)
-          index++
+      if (index === 2) {
+        updatePosition(index, remSize)
+        let newIndex = 1
+        for (let i = index + 1; i < maxCardsList + index; i++) {
+          updatePosition(i, baseLeft * newIndex)
+          newIndex++
         }
       }
 
-      dispatch(deltaEnd(currentDeltaEnd === 0))
-
-      if (currentDeltaEnd > 0) {
-        console.log('>0')
-        if (currentDeltaEnd > 1) {
-          console.log('>01')
-          updatePosition(
-            memoryList.length - 2,
-            (margin + sizeMiniCard.width) * (maxCardsList - 1) - 0.5 * remSize
-          )
-          updatePosition(
-            memoryList.length - 3,
-            (margin + sizeMiniCard.width) * (maxCardsList - 1) - remSize
-          )
-        } else {
-          console.log('else>1')
-          updatePosition(
-            memoryList.length - 2,
-            (margin + sizeMiniCard.width) * (maxCardsList - 1) - 0.5 * remSize
-          )
-        }
-      }
-
-      if (currentDeltaEnd < 0) {
-        for (let i = 1; i < memoryList.length - maxCardsList; i++) {
+      if (index > 2 && memoryList.length - index >= maxCardsList) {
+        for (let i = 0; i < index - 2; i++) {
           updatePosition(i, 0)
         }
-        let index = 0
+        updatePosition(index - 2, 0)
+        updatePosition(index - 1, 0.5 * remSize)
+        updatePosition(index, remSize)
+        let newIndex = 1
+        for (let i = index + 1; i < maxCardsList + index; i++) {
+          updatePosition(i, baseLeft * newIndex)
+          newIndex++
+        }
+      }
+
+      if (restEnd >= 2) {
+        updatePosition(
+          index + maxCardsList - 1,
+          baseLeft * (maxCardsList - 1) - remSize
+        )
+        updatePosition(
+          index + maxCardsList,
+          baseLeft * (maxCardsList - 1) - 0.5 * remSize
+        )
+        for (let i = index + maxCardsList + 1; i < memoryList.length; i++) {
+          updatePosition(i, baseLeft * (maxCardsList - 1))
+        }
+      }
+
+      if (restEnd === 1) {
+        updatePosition(
+          index + maxCardsList - 1,
+          baseLeft * (maxCardsList - 1) - 0.5 * remSize
+        )
+        updatePosition(index + maxCardsList, baseLeft * (maxCardsList - 1))
+      }
+
+      if (restEnd < 0) {
+        if (memoryList.length - maxCardsList >= 2) {
+          updatePosition(memoryList.length - maxCardsList - 2, 0)
+          updatePosition(memoryList.length - maxCardsList - 1, 0.5 * remSize)
+          updatePosition(memoryList.length - maxCardsList, remSize)
+          for (let i = 0; i < memoryList.length - maxCardsList - 2; i++) {
+            updatePosition(i, 0)
+          }
+        }
+        let newIndex = 1
         for (
-          let i = memoryList.length - maxCardsList;
+          let i = memoryList.length - maxCardsList + 1;
           i < memoryList.length;
           i++
         ) {
-          updatePosition(i, (margin + sizeMiniCard.width) * index)
-          index++
+          updatePosition(i, baseLeft * newIndex)
+          newIndex++
         }
       }
+
+      dispatch(deltaEnd(restEnd === 0))
     }
-  }, [
-    sliderLine,
-    cardRefs,
-    maxCardsList,
-    memoryList,
-    remSize,
-    sizeMiniCard,
-    margin,
-    dispatch,
-  ])
+  }
+
+  useEffect(() => {
+    if (sliderLine) {
+      movingCards(Number(sliderLine))
+    }
+  }, [sliderLine])
+
+  useEffect(() => {
+    if (sliderLetter && sliderLetter.index) {
+      movingCards(Number(sliderLetter.index))
+    }
+  }, [sliderLetter])
 
   useEffect(() => {
     if (maxCardsList) {
@@ -323,72 +342,6 @@ const MemoryList = ({
       return i * (margin + sizeMiniCard.width) + 'px'
     }
   }
-
-  useEffect(() => {
-    if (
-      memoryList &&
-      sliderLetter &&
-      cardRefs.current[`card-${sliderLetter.index}`]
-    ) {
-      const sliderIndex = Number(sliderLetter.index)
-      const deltaEnd = memoryList.length - sliderIndex
-      const updatePosition = (index, leftValue) => {
-        if (cardRefs.current[`card-${index}`]) {
-          cardRefs.current[`card-${index}`].style.left = `${leftValue}px`
-        }
-      }
-
-      if (deltaEnd >= maxCardsList) {
-        updatePosition(sliderIndex, remSize)
-
-        for (let i = 0; i < sliderIndex; i++) {
-          const leftValue = i === sliderIndex - 1 ? 0.5 * remSize : 0
-          updatePosition(i, leftValue)
-        }
-
-        let indexStart = 0
-
-        for (let i = sliderIndex; i < memoryList.length; i++) {
-          const defaultLeft = (margin + sizeMiniCard.width) * indexStart
-
-          if (i === sliderIndex) {
-            const leftValue = i === 0 ? defaultLeft : remSize + defaultLeft
-            updatePosition(i, leftValue)
-          } else if (i < sliderIndex + maxCardsList) {
-            if (deltaEnd - maxCardsList >= 2) {
-              const leftValue =
-                i === sliderIndex + maxCardsList - 1
-                  ? defaultLeft - remSize
-                  : i === sliderIndex + maxCardsList
-                  ? defaultLeft - 0.5 * remSize
-                  : defaultLeft
-              updatePosition(i, leftValue)
-            } else if (deltaEnd - maxCardsList === 1) {
-              const leftValue =
-                i === sliderIndex + maxCardsList - 1
-                  ? defaultLeft - 0.5 * remSize
-                  : defaultLeft
-              updatePosition(i, leftValue)
-            } else {
-              updatePosition(i, defaultLeft)
-            }
-          } else {
-            const adjustedIndexStart = indexStart - 1
-            const leftValue =
-              i === memoryList.length - 3
-                ? (margin + sizeMiniCard.width) * adjustedIndexStart - remSize
-                : i === memoryList.length - 2
-                ? (margin + sizeMiniCard.width) * adjustedIndexStart -
-                  0.5 * remSize
-                : (margin + sizeMiniCard.width) * adjustedIndexStart
-            updatePosition(i, leftValue)
-            indexStart--
-          }
-          indexStart++
-        }
-      }
-    }
-  }, [sliderLetter, memoryList])
 
   return (
     <div className="memory-list-container">

@@ -15,7 +15,6 @@ const SliderCardsList = ({
   const infoDeltaEnd = useSelector((state) => state.layout.deltaEnd)
   const dispatch = useDispatch()
 
-  // console.log('infoCardsList', infoCardsList)
   useEffect(() => {
     if (infoCardsList.length && indexLetter) {
       const currentDeltaEnd = infoCardsList.length - indexLetter
