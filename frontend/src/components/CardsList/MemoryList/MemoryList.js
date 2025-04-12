@@ -15,8 +15,11 @@ import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
 import {
   addFullCard,
   choiceClip,
-  expendStatusCard,
+  expendMemoryCard,
   deltaEnd,
+  choiceSave,
+  addressPersonalId,
+  choiceAddress,
 } from '../../../redux/layout/actionCreators'
 
 const MemoryList = ({
@@ -24,8 +27,14 @@ const MemoryList = ({
   // source: infoChoiceClip,
   widthCardsList,
   setInfoCardsList,
+  valueScroll,
+  setValueScroll,
 }) => {
   const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
+  const infoEnvelopeSave = useSelector(
+    (state) => state.infoButtons.envelopeSave
+  )
+  const personalId = useSelector((state) => state.layout.personalId)
   const [memoryList, setMemoryList] = useState(null)
   const [selectedSource, setSelectedSource] = useState(null)
   const [listIconsSource, setListIconsSource] = useState(null)
@@ -42,6 +51,8 @@ const MemoryList = ({
   const maxCardsList = useSelector((state) => state.layout.maxCardsList)
   const sliderLetter = useSelector((state) => state.layout.sliderLetter)
   const sliderLine = useSelector((state) => state.layout.sliderLine)
+  const [elementSave, setElementSave] = useState(null)
+  const [indexElementSave, setIndexElementSave] = useState(null)
   const dispatch = useDispatch()
 
   const margin = parseFloat(
@@ -54,6 +65,38 @@ const MemoryList = ({
   const setCardRef = (id) => (element) => {
     cardRefs.current[id] = element
   }
+
+  const findElementByPersonalId = (id) => {
+    if (cardRefs.current) {
+      for (const key in cardRefs.current) {
+        const element = cardRefs.current[key]
+        if (element && element.dataset.personalId === id) {
+          setElementSave(element)
+          console.log('elementSave index', element.dataset.index)
+          setIndexElementSave(Number(element.dataset.index))
+          // movingCards(getFirstIndex())
+        }
+      }
+    }
+    return null
+  }
+
+  useEffect(() => {
+    if (elementSave instanceof HTMLElement) {
+      elementSave.classList.add('save')
+      const fadeOutTimer = setTimeout(() => {
+        elementSave.classList.remove('save')
+        elementSave.classList.add('save-fade-out')
+        setTimeout(() => {
+          elementSave.classList.remove('save-fade-out')
+          dispatch(addressPersonalId(false))
+          dispatch(infoButtons({ envelopeSave: false }))
+        }, 500)
+      }, 1000)
+
+      return () => clearTimeout(fadeOutTimer)
+    }
+  }, [elementSave, dispatch])
 
   const getMemoryCards = async (source) => {
     const processMemoryCards = (records, getName) => {
@@ -136,91 +179,32 @@ const MemoryList = ({
     }
   }
 
-  // const getMemoryCards = async (source) => {
-  //   let memoryCards
-  //   let firstLetterList = []
-  //   switch (source) {
-  //     case 'toaddress':
-  //       setListIconsSource(['remove'])
-  //       const memoryCardsToAddress = await getAllRecordsAddresses('toaddress')
-  //       memoryCards = memoryCardsToAddress.sort((a, b) => {
-  //         return a.address.name.localeCompare(b.address.name)
-  //       })
-  //       memoryCards.forEach((card, i) => {
-  //         const cardId = {
-  //           letter: card.address.name[0],
-  //           id: card.id,
-  //           index: i,
-  //         }
-  //         firstLetterList.push(cardId)
-  //       })
-  //       firstLetterList.push(firstLetterList[firstLetterList.length - 1])
-  //       break
-  //     case 'myaddress':
-  //       setListIconsSource(['remove'])
-  //       const memoryCardsMyAddress = await getAllRecordsAddresses('myaddress')
-  //       memoryCards = memoryCardsMyAddress.sort((a, b) => {
-  //         return a.address.name.localeCompare(b.address.name)
-  //       })
-  //       memoryCards.forEach((card, i) => {
-  //         const cardId = {
-  //           letter: card.address.name[0],
-  //           id: card.id,
-  //           index: i,
-  //         }
-  //         firstLetterList.push(cardId)
-  //       })
-  //       firstLetterList.push(firstLetterList[firstLetterList.length - 1])
-  //       break
-  //     case 'shopping':
-  //       setListIconsSource(['save', 'remove'])
-  //       const memoryCardsShopping = await getAllShopping()
-  //       memoryCards = memoryCardsShopping.sort((a, b) => {
-  //         return a.shopping.envelope.toaddress.name.localeCompare(
-  //           b.shopping.envelope.toaddress.name
-  //         )
-  //       })
-  //       memoryCards.forEach((card, i) => {
-  //         const cardId = {
-  //           letter: card.shopping.envelope.toaddress.name[0],
-  //           id: card.id,
-  //           index: i,
-  //         }
-  //         firstLetterList.push(cardId)
-  //       })
-  //       firstLetterList.push(firstLetterList[firstLetterList.length - 1])
-  //       break
-  //     case 'blanks':
-  //       setListIconsSource(['plus', 'remove'])
-  //       const memoryCardsBlanks = await getAllBlanks()
-  //       memoryCards = memoryCardsBlanks.sort((a, b) => {
-  //         return a.blanks.envelope.toaddress.name.localeCompare(
-  //           b.blanks.envelope.toaddress.name
-  //         )
-  //       })
-  //       memoryCards.forEach((card, i) => {
-  //         const cardId = {
-  //           letter: card.blanks.envelope.toaddress.name[0],
-  //           id: card.id,
-  //           index: i,
-  //         }
-  //         firstLetterList.push(cardId)
-  //       })
-  //       firstLetterList.push(firstLetterList[firstLetterList.length - 1])
-  //       break
+  useEffect(() => {
+    if (infoEnvelopeSave && personalId) {
+      findElementByPersonalId(personalId)
+    }
+    if (indexElementSave) {
+      movingCards(indexElementSave)
+    } else {
+      movingCards(getFirstIndex())
+    }
+  }, [memoryList, personalId, infoEnvelopeSave, indexElementSave])
 
-  //     default:
-  //       break
-  //   }
-  //   setMemoryList(memoryCards)
-  //   setSelectedSource(source)
-  //   if (memoryCards) {
-  //     setInfoCardsList({
-  //       length: memoryCards.length,
-  //       firstLetters: firstLetterList,
-  //     })
-  //   }
-  // }
+  const getFirstIndex = () => {
+    const cards = Object.values(cardRefs.current)
+    const sizes = [remSize, 0.5 * remSize, 0]
+
+    for (const size of sizes) {
+      for (const card of cards) {
+        if (card) {
+          const computedStyle = window.getComputedStyle(card)
+          if (parseInt(computedStyle.left, 10) === size) {
+            return Number(card.dataset.index)
+          }
+        }
+      }
+    }
+  }
 
   const movingCards = (index) => {
     if (cardRefs.current && memoryList) {
@@ -234,6 +218,7 @@ const MemoryList = ({
       }
 
       if (index === 0) {
+        // console.log('index0')
         for (let i = 1; i < maxCardsList; i++) {
           updatePosition(i, baseLeft * i)
         }
@@ -243,6 +228,7 @@ const MemoryList = ({
       }
 
       if (index === 1) {
+        // console.log('index1')
         updatePosition(0, 0)
         updatePosition(1, 0.5 * remSize)
         for (let i = 2; i < maxCardsList + index; i++) {
@@ -251,6 +237,7 @@ const MemoryList = ({
       }
 
       if (index === 2) {
+        // console.log('index2')
         updatePosition(index, remSize)
         let newIndex = 1
         for (let i = index + 1; i < maxCardsList + index; i++) {
@@ -260,6 +247,7 @@ const MemoryList = ({
       }
 
       if (index > 2 && memoryList.length - index >= maxCardsList) {
+        // console.log('index>2')
         for (let i = 0; i < index - 2; i++) {
           updatePosition(i, 0)
         }
@@ -274,8 +262,9 @@ const MemoryList = ({
       }
 
       if (restEnd >= 2) {
+        // console.log('restEnd>=2')
         updatePosition(
-          index + maxCardsList - 1,
+          index + (maxCardsList - 1),
           baseLeft * (maxCardsList - 1) - remSize
         )
         updatePosition(
@@ -288,6 +277,7 @@ const MemoryList = ({
       }
 
       if (restEnd === 1) {
+        // console.log('restEnd1')
         updatePosition(
           index + maxCardsList - 1,
           baseLeft * (maxCardsList - 1) - 0.5 * remSize
@@ -295,7 +285,8 @@ const MemoryList = ({
         updatePosition(index + maxCardsList, baseLeft * (maxCardsList - 1))
       }
 
-      if (restEnd < 0) {
+      if (restEnd < 0 && memoryList.length >= maxCardsList) {
+        // console.log('restEnd<0')
         if (memoryList.length - maxCardsList >= 2) {
           updatePosition(memoryList.length - maxCardsList - 2, 0)
           updatePosition(memoryList.length - maxCardsList - 1, 0.5 * remSize)
@@ -338,11 +329,46 @@ const MemoryList = ({
     }
   }, [sliderLetter])
 
+  // useEffect(() => {
+  //   if (valueScroll !== 0) {
+  //     const getNextIndexCard = () => {
+  //       const cards = Object.values(cardRefs.current)
+  //       const arrRemSize = [remSize, 0.5 * remSize, 0]
+
+  //       for (const size of arrRemSize) {
+  //         for (const card of cards) {
+  //           if (card) {
+  //             const computedStyle = window.getComputedStyle(card)
+  //             if (parseInt(computedStyle.left) === size) {
+  //               let indexFirstElement = Number(card.dataset.index)
+  //               return valueScroll > 0
+  //                 ? ++indexFirstElement
+  //                 : --indexFirstElement
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //     movingCards(getNextIndexCard())
+  //   }
+
+  //   if (Math.abs(valueScroll) === 100) {
+  //     setValueScroll(0)
+  //   }
+  // }, [valueScroll])
+
   useEffect(() => {
     if (maxCardsList && infoChoiceClip) {
       getMemoryCards(infoChoiceClip)
     }
   }, [infoChoiceClip, maxCardsList])
+
+  useEffect(() => {
+    if (infoEnvelopeSave && personalId) {
+      getMemoryCards(infoEnvelopeSave)
+      dispatch(infoButtons({ envelopeSaveSecond: infoEnvelopeSave }))
+    }
+  }, [infoEnvelopeSave, personalId, dispatch])
 
   const handleClickCardBtn = async (evt) => {
     try {
@@ -359,11 +385,11 @@ const MemoryList = ({
           break
         case 'myaddress':
           await deleteMyAddress(Number(parentBtn.dataset.id))
-          dispatch(infoButtons({ envelopeRemove: infoChoiceClip }))
+          dispatch(infoButtons({ envelopeRemoveAddress: infoChoiceClip }))
           break
         case 'toaddress':
           await deleteToAddress(Number(parentBtn.dataset.id))
-          dispatch(infoButtons({ envelopeRemove: infoChoiceClip }))
+          dispatch(infoButtons({ envelopeRemoveAddress: infoChoiceClip }))
           break
 
         default:
@@ -392,9 +418,9 @@ const MemoryList = ({
     }
   }
 
-  const handleClickFilter = (evt) => {
+  const handleClickCard = (evt) => {
     dispatch(
-      expendStatusCard({ source: infoChoiceClip, id: evt.target.dataset.id })
+      expendMemoryCard({ source: infoChoiceClip, id: evt.target.dataset.id })
     )
     dispatch(choiceClip(false))
   }
@@ -451,14 +477,18 @@ const MemoryList = ({
         memoryList.map((card, i) => {
           return (
             <div
-              className="memory-list-card"
+              className={`memory-list-card memory-list-card-${infoChoiceClip}`}
               key={`${i}`}
               ref={setCardRef(`card-${i}`)}
+              data-id={card.id}
+              data-index={i}
+              data-personal-id={card.personalId}
               style={{
                 width: `${sizeMiniCard.width}px`,
                 height: `${sizeMiniCard.height}px`,
                 left: getLeft(i),
               }}
+              onClick={handleClickCard}
             >
               {(infoChoiceClip === 'shopping' ||
                 infoChoiceClip === 'blanks') && (
@@ -466,7 +496,7 @@ const MemoryList = ({
                   className="memory-list-card-filter"
                   ref={setFilterRef(`filter-${card.id}`)}
                   data-id={card.id}
-                  onClick={handleClickFilter}
+                  // onClick={handleClickCard}
                   onMouseEnter={handleMouseEnterFilter}
                   onMouseLeave={handleMouseLeaveFilter}
                 ></div>
@@ -485,19 +515,45 @@ const MemoryList = ({
               )}
               {infoChoiceClip === 'shopping' || infoChoiceClip === 'blanks' ? (
                 <span
-                  className="memory-list-card-name"
+                  className={`memory-list-card-name memory-list-card-name-${infoChoiceClip}`}
                   data-id={card.id}
-                  onClick={handleClickFilter}
+                  onClick={handleClickCard}
                   onMouseEnter={handleMouseEnterFilter}
                   onMouseLeave={handleMouseLeaveFilter}
                 >
                   {card[infoChoiceClip].envelope.toaddress.name}
                 </span>
-              ) : (
-                <span className="memory-list-card-name" data-id={card.id}>
-                  {card.address.name}
+              ) : infoChoiceClip === 'myaddress' ? (
+                <span className={`memory-list-address-container`}>
+                  <span
+                    className={`memory-list-${infoChoiceClip}-country`}
+                    data-id={card.id}
+                  >
+                    {card.address.country}
+                  </span>
+                  <span
+                    className={`memory-list-${infoChoiceClip}-name`}
+                    data-id={card.id}
+                  >
+                    {card.address.name}
+                  </span>
                 </span>
-              )}
+              ) : infoChoiceClip === 'toaddress' ? (
+                <span className={`memory-list-address-container`}>
+                  <span
+                    className={`memory-list-${infoChoiceClip}-name`}
+                    data-id={card.id}
+                  >
+                    {card.address.name}
+                  </span>
+                  <span
+                    className={`memory-list-${infoChoiceClip}-country`}
+                    data-id={card.id}
+                  >
+                    {card.address.country}
+                  </span>
+                </span>
+              ) : null}
               {listIconsSource &&
                 listIconsSource.map((btn, i) => {
                   return infoChoiceClip === 'shopping' ||

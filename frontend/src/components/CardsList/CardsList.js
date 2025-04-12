@@ -17,7 +17,6 @@ import {
   choiceMemorySection,
   choiceAddress,
   activeSections,
-  expendStatusCard,
   addChoiceSection,
   choiceClip,
   sliderLine,
@@ -58,16 +57,15 @@ const CardsList = () => {
   const layoutActiveSections = useSelector(
     (state) => state.layout.activeSections
   )
-  const infoExpendStatusCard = useSelector(
-    (state) => state.layout.expendStatusCard
+  const infoExpendMemoryCard = useSelector(
+    (state) => state.layout.expendMemoryCard
   )
-  const choiceSave = useSelector((state) => state.layout.choiceSave)
+  const infoChoiceSave = useSelector((state) => state.layout.choiceSave)
   const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const infoActiveSections = useSelector((state) => state.layout.activeSections)
   const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
   const infoChoiceSection = useSelector((state) => state.layout.choiceSection)
-  // const infoExpendShopping = useSelector((state) => state.layout.expendShopping)
   const infoEnvelopeSave = useSelector(
     (state) => state.infoButtons.envelopeSave
   )
@@ -78,7 +76,7 @@ const CardsList = () => {
     iconPlus: {},
   })
   const [expendCardStatus, setExpendCardStatus] = useState(null)
-  const [selectedListCards, setSelectedListCards] = useState(null)
+  // const [selectedListCards, setSelectedListCards] = useState(null)
   // const [memoryAddress, setMemoryAddress] = useState({
   //   myaddress: null,
   //   toaddress: null,
@@ -101,6 +99,7 @@ const CardsList = () => {
   const [widthCardsList, setWidthCardsList] = useState(null)
   const [valueCardsList, setValueCardsList] = useState(0)
   const [infoCardsList, setInfoCardsList] = useState(null)
+  const [valueScroll, setValueScroll] = useState(0)
   const maxCardsList = useSelector((state) => state.layout.maxCardsList)
 
   useEffect(() => {
@@ -157,10 +156,14 @@ const CardsList = () => {
   }
 
   useEffect(() => {
-    if (infoExpendStatusCard !== false) {
-      getExpendStatusCard(infoExpendStatusCard)
+    if (
+      infoExpendMemoryCard !== false &&
+      (infoExpendMemoryCard.source === 'shopping' ||
+        infoExpendMemoryCard.source === 'blanks')
+    ) {
+      getExpendStatusCard(infoExpendMemoryCard)
     }
-  }, [infoExpendStatusCard])
+  }, [infoExpendMemoryCard])
 
   useEffect(() => {
     // if (infoChoiceSection.nameSection === 'envelope') {
@@ -170,15 +173,15 @@ const CardsList = () => {
     //   }
     // }
     if (infoChoiceSection.nameSection === 'cardtext') {
-      if (choiceSave === 'cardtext') {
+      if (infoChoiceSave === 'cardtext') {
         getAllCardtext()
         // setSelectedListCards('cardtext')
       }
     }
-  }, [infoChoiceSection, infoEnvelopeSave, choiceSave, dispatch])
+  }, [infoChoiceSection, infoEnvelopeSave, infoChoiceSave, dispatch])
 
   useEffect(() => {
-    setSelectedListCards(infoChoiceClip)
+    // setSelectedListCards(infoChoiceClip)
     switch (infoChoiceClip) {
       // case 'myaddress':
       //   getAllAddress('myaddress')
@@ -509,7 +512,7 @@ const CardsList = () => {
     //     // </div>
     //   )
     // }
-    if (selectedListCards === 'cardtext') {
+    if (infoChoiceClip === 'cardtext') {
       return (
         <div className="memory-list">
           {memoryCardtext.cardtext &&
@@ -527,57 +530,65 @@ const CardsList = () => {
       )
     }
     if (
-      selectedListCards === 'shopping' ||
-      selectedListCards === 'blanks' ||
-      selectedListCards === 'toaddress' ||
-      selectedListCards === 'myaddress'
+      infoChoiceClip === 'shopping' ||
+      infoChoiceClip === 'blanks' ||
+      infoChoiceClip === 'toaddress' ||
+      infoChoiceClip === 'myaddress'
     ) {
       return (
         <MemoryList
           sizeMiniCard={sizeMiniCard}
-          source={selectedListCards}
+          // source={infoChoiceClip}
           widthCardsList={widthCardsList}
           setInfoCardsList={setInfoCardsList}
+          valueScroll={valueScroll}
+          setValueScroll={setValueScroll}
         />
       )
     }
   }
 
-  let touchStartX = 0
-  let touchEndX = 0
+  useEffect(() => {
+    const cardsList = cardsListRef.current
 
-  const handleWheelCardsList = (event) => {
-    event.preventDefault()
-    if (cardsListRef.current) {
-      cardsListRef.current.scrollLeft += event.deltaY
+    const handleWheel = (evt) => {
+      evt.preventDefault()
+      if (cardsList) {
+        cardsList.scrollLeft += evt.deltaY
+        setValueScroll(evt.deltaY)
+      }
     }
-  }
 
-  const handleTouchStartCardsList = (event) => {
-    touchStartX = event.touches[0].clientX
-  }
-
-  const handleTouchMoveCardsList = (event) => {
-    touchEndX = event.touches[0].clientX
-    if (cardsListRef.current) {
-      const deltaX = touchStartX - touchEndX
-      cardsListRef.current.scrollLeft += deltaX
-      touchStartX = touchEndX
+    const handleTouchMove = (evt) => {
+      evt.preventDefault()
     }
-  }
+
+    if (cardsList) {
+      cardsList.addEventListener('wheel', handleWheel, { passive: false })
+      cardsList.addEventListener('touchmove', handleTouchMove, {
+        passive: false,
+      })
+    }
+
+    return () => {
+      if (cardsList) {
+        cardsList.removeEventListener('wheel', handleWheel)
+        cardsList.removeEventListener('touchmove', handleTouchMove)
+      }
+    }
+  }, [])
 
   return (
     <div
       className="cards-list"
       ref={cardsListRef}
-      onWheel={handleWheelCardsList}
-      onTouchStart={handleTouchStartCardsList}
-      onTouchMove={handleTouchMoveCardsList}
-      // style={{ backgroundColor: colorSchemeMain.lightGray }}
+      // onWheel={handleWheelCardsList}
+      // onTouchStart={handleTouchStartCardsList}
+      // onTouchMove={handleTouchMoveCardsList}
     >
       <div style={{ height: `${sizeMiniCard.height}px` }}></div>
       {choiceMemoryList()}
-      {!selectedListCards && (
+      {!infoChoiceClip && (
         <>
           <div
             className="poly-cards-filter"
@@ -671,10 +682,10 @@ const CardsList = () => {
       )}
       {infoCardsList &&
         infoCardsList.length > maxCardsList &&
-        (selectedListCards === 'shopping' ||
-          selectedListCards === 'blanks' ||
-          selectedListCards === 'toaddress' ||
-          selectedListCards === 'myaddress') && (
+        (infoChoiceClip === 'shopping' ||
+          infoChoiceClip === 'blanks' ||
+          infoChoiceClip === 'toaddress' ||
+          infoChoiceClip === 'myaddress') && (
           <SliderCardsList
             value={valueCardsList}
             infoCardsList={infoCardsList}

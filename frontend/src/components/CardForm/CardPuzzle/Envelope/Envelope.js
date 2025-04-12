@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
+import { v4 as uuidv4 } from 'uuid'
 import './Envelope.scss'
 import listLabelsMyAddress from '../../../../data/envelope/list-labels-my-address.json'
 import listLabelsToAddress from '../../../../data/envelope/list-labels-to-address.json'
@@ -12,6 +13,8 @@ import {
   deleteSection,
   choiceClip,
   activeSections,
+  addressPersonalId,
+  expendMemoryCard,
 } from '../../../../redux/layout/actionCreators'
 import {
   getAllRecordsAddresses,
@@ -64,7 +67,9 @@ const Envelope = ({ cardPuzzleRef }) => {
   const layoutActiveEnvelope = useSelector(
     (state) => state.layout.activeSections.envelope
   )
-
+  const infoExpendsMemoryCard = useSelector(
+    (state) => state.layout.expendMemoryCard
+  )
   const dispatch = useDispatch()
 
   const setInputRef = (id) => (element) => {
@@ -89,27 +94,57 @@ const Envelope = ({ cardPuzzleRef }) => {
 
   useEffect(() => {
     const fetchAddress = async () => {
-      const address = await getRecordAddressById(
-        layoutChoiceAddress.section === 'myaddress' ? 'myaddress' : 'toaddress',
-        layoutChoiceAddress.id
+      const addressById = await getRecordAddressById(
+        infoExpendsMemoryCard.source,
+        Number(infoExpendsMemoryCard.id)
       )
 
-      setValue((state) => {
-        return {
-          ...state,
-          [layoutChoiceAddress.section]: {
-            ...state[layoutChoiceAddress.section],
-            ...address.address,
-          },
-        }
-      })
-      dispatch(choiceAddress({ section: null, id: null }))
+      if (addressById && addressById.address) {
+        setValue((state) => {
+          return {
+            ...state,
+            [infoExpendsMemoryCard.source]: {
+              ...state[infoExpendsMemoryCard.source],
+              ...addressById.address,
+            },
+          }
+        })
+        dispatch(expendMemoryCard(false))
+      }
     }
 
-    if (layoutChoiceAddress.section && layoutChoiceAddress.id) {
+    if (
+      infoExpendsMemoryCard &&
+      (infoExpendsMemoryCard.source === 'myaddress' ||
+        infoExpendsMemoryCard.source === 'toaddress')
+    ) {
       fetchAddress()
     }
-  }, [layoutChoiceAddress, dispatch])
+  }, [infoExpendsMemoryCard, dispatch])
+
+  // useEffect(() => {
+  //   const fetchAddress = async () => {
+  //     const address = await getRecordAddressById(
+  //       layoutChoiceAddress.section === 'myaddress' ? 'myaddress' : 'toaddress',
+  //       layoutChoiceAddress.id
+  //     )
+
+  //     setValue((state) => {
+  //       return {
+  //         ...state,
+  //         [layoutChoiceAddress.section]: {
+  //           ...state[layoutChoiceAddress.section],
+  //           ...address.address,
+  //         },
+  //       }
+  //     })
+  //     dispatch(choiceAddress({ section: null, id: null }))
+  //   }
+
+  //   if (layoutChoiceAddress.section && layoutChoiceAddress.id) {
+  //     fetchAddress()
+  //   }
+  // }, [layoutChoiceAddress, dispatch])
 
   useEffect(() => {
     const checkField = (section) => {
@@ -309,6 +344,26 @@ const Envelope = ({ cardPuzzleRef }) => {
     fetchAndSetData()
   }, [layoutChoiceClip, stateMouseClip])
 
+  const resetBtnClip = async () => {
+    const sectionsForm = ['myaddress', 'toaddress']
+    for (const section of sectionsForm) {
+      const count = await getCountAddress(section)
+      setBtnsAddress((state) => ({
+        ...state,
+        [section]: {
+          ...state[section],
+          clip: count ? true : false,
+        },
+      }))
+    }
+  }
+
+  useEffect(() => {
+    if (!layoutChoiceClip) {
+      resetBtnClip()
+    }
+  }, [layoutChoiceClip])
+
   const handleClickClip = (section) => {
     if (layoutChoiceClip) {
       if (layoutChoiceClip === section) {
@@ -376,24 +431,22 @@ const Envelope = ({ cardPuzzleRef }) => {
     }
 
     if (parentBtn.dataset.tooltip === 'save') {
+      const personalId = uuidv4().split('-')[0]
       if (btnsAddress[section].save) {
-        await addUniqueRecordAddress(section, value[section])
+        await addUniqueRecordAddress(section, value[section], personalId)
         setBtnsAddress((state) => {
           return {
             ...state,
             [section]: { ...state[section], save: false },
           }
         })
-        // handleClickClip(section)
         dispatch(infoButtons({ envelopeSave: section }))
-        dispatch(infoButtons({ envelopeClip: section }))
+        dispatch(choiceClip(section))
+        dispatch(addressPersonalId(personalId))
       }
     }
-    if (parentBtn.dataset.tooltip === 'delete' && section === 'myaddress') {
-      clearSectionAddress('myaddress')
-    }
-    if (parentBtn.dataset.tooltip === 'delete' && section === 'toaddress') {
-      clearSectionAddress('toaddress')
+    if (parentBtn.dataset.tooltip === 'delete') {
+      clearSectionAddress(section)
     }
   }
 

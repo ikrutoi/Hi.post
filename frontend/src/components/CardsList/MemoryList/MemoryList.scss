@@ -15,12 +15,99 @@
   // position: relative;
   // margin-left: 0.5rem;
   // margin-right: 0.5rem;
+  display: flex;
+  // padding: 0.3rem;
   border-radius: 0.5rem;
   background-color: rgb(255, 255, 255);
   box-sizing: border-box;
   box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
   transition: left 600ms ease-in-out;
   // border: solid 1px rgb(200, 200, 200);
+}
+
+.memory-list-card.save {
+  box-shadow: 2px 1px 6px 3px rgba(0, 125, 250, 0.6);
+  transition: box-shadow 500ms ease-in;
+}
+
+.memory-list-card.save-fade-out {
+  box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
+  transition: box-shadow 500ms ease-out;
+}
+
+// .memory-list-card-myaddress {
+//   align-items: flex-start;
+//   .memory-list-card-name {
+//     width: auto;
+//     left: 0.5rem;
+//     right: 2.3rem;
+//     top: 0.3rem;
+//   }
+// }
+
+// .memory-list-card-toaddress {
+//   justify-content: flex-end;
+//   align-items: flex-end;
+//   .memory-list-card-name {
+//     text-align: right;
+//     width: auto;
+//     left: 0.5rem;
+//     right: 0.3rem;
+//     bottom: 0.3rem;
+//   }
+// }
+
+.memory-list-card-shopping,
+.memory-list-card-blanks {
+  .memory-list-card-name {
+    text-align: right;
+    width: auto;
+    left: 0.5rem;
+    right: 0.3rem;
+    bottom: 0.3rem;
+  }
+}
+
+.memory-list-card-myaddress {
+  flex-direction: column;
+  // justify-content: flex-end;
+  padding: 0.3rem 2.3rem 0.3rem 0.5rem;
+}
+
+.memory-list-card-toaddress {
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.3rem 0.3rem 0.3rem 0.5rem;
+}
+
+.memory-list-address-container {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(240, 240, 240, 0.75);
+  border-radius: 0.3rem;
+  // border: solid 1px red;
+}
+
+.memory-list-address-container span {
+  height: min-content;
+  font-weight: 600;
+  padding: 0 0.3rem 0.1rem 0.3rem;
+  color: rgb(71, 71, 71);
+  user-select: none;
+}
+
+.memory-list-myaddress-name,
+.memory-list-toaddress-name {
+  font-size: 0.85rem;
+}
+
+.memory-list-myaddress-country,
+.memory-list-toaddress-country {
+  font-size: 0.7rem;
+}
+
+.memory-list-card-toaddress span {
+  text-align: end;
 }
 
 .memory-list-card-filter {
@@ -39,8 +126,7 @@
 
 .memory-list-card-name {
   position: absolute;
-  bottom: 0.3rem;
-  right: 0.3rem;
+  height: min-content;
   font-size: 0.8rem;
   font-weight: 600;
   border-radius: 0.3rem;

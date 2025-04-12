@@ -26,12 +26,13 @@ const FormAddress = ({
     myaddress: null,
     toaddress: null,
   })
-  const infoEnvelopeSave = useSelector(
-    (state) => state.infoButtons.envelopeSave
+  const infoEnvelopeSaveSecond = useSelector(
+    (state) => state.infoButtons.envelopeSaveSecond
   )
   const infoEnvelopeRemove = useSelector(
-    (state) => state.infoButtons.envelopeRemove
+    (state) => state.infoButtons.envelopeRemoveAddress
   )
+
   const dispatch = useDispatch()
 
   const updateCounts = async (section) => {
@@ -47,18 +48,18 @@ const FormAddress = ({
   }, [])
 
   useEffect(() => {
-    if (infoEnvelopeSave) {
-      updateCounts(infoEnvelopeSave)
-      dispatch(infoButtons({ envelopeSave: false }))
+    if (infoEnvelopeSaveSecond) {
+      updateCounts(infoEnvelopeSaveSecond)
+      dispatch(infoButtons({ envelopeSaveSecond: false }))
     }
-  }, [infoEnvelopeSave])
+  }, [infoEnvelopeSaveSecond, dispatch])
 
   useEffect(() => {
     if (infoEnvelopeRemove) {
       updateCounts(infoEnvelopeRemove)
-      dispatch(infoButtons({ envelopeRemove: false }))
+      dispatch(infoButtons({ envelopeRemoveAddress: false }))
     }
-  }, [infoEnvelopeRemove])
+  }, [infoEnvelopeRemove, dispatch])
 
   return (
     <form className={`envelope-form form-${listLabelsAddress.name}`}>

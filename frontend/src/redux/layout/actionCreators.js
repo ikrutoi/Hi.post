@@ -119,9 +119,9 @@ export const addFullCard = (newSection) => {
   }
 }
 
-export const expendStatusCard = (newSection) => {
+export const expendMemoryCard = (newSection) => {
   return {
-    type: a.EXPEND_STATUS_CARD,
+    type: a.EXPEND_MEMORY_CARD,
     payload: newSection,
   }
 }
@@ -150,6 +150,13 @@ export const sliderLine = (newSection) => {
 export const deltaEnd = (newSection) => {
   return {
     type: a.DELTA_END,
+    payload: newSection,
+  }
+}
+
+export const addressPersonalId = (newSection) => {
+  return {
+    type: a.ADDRESS_PERSONAL_ID,
     payload: newSection,
   }
 }

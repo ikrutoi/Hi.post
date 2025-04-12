@@ -15,7 +15,7 @@ import {
   addIndexDb,
   addMemoryCrop,
   activeSections,
-  expendStatusCard,
+  expendMemoryCard,
 } from '../../../../../redux/layout/actionCreators'
 // import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
@@ -71,7 +71,7 @@ const ImageCrop = ({ sizeCard }) => {
       fetchImages()
     } else {
       const timerInfoExpendStatusCard = setTimeout(() => {
-        dispatch(expendStatusCard(false))
+        dispatch(expendMemoryCard(false))
       }, 300)
 
       return () => clearTimeout(timerInfoExpendStatusCard)

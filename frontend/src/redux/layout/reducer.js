@@ -30,10 +30,10 @@ const initialState = {
       miniImage: null,
     },
   },
-  choiceAddress: {
-    section: null,
-    id: null,
-  },
+  // choiceAddress: {
+  //   section: null,
+  //   id: null,
+  // },
   choiceMemorySection: {
     section: null,
     id: null,
@@ -54,11 +54,12 @@ const initialState = {
   fullCard: false,
   addFullCard: false,
   selectedCard: false,
-  expendStatusCard: false,
+  expendMemoryCard: false,
   maxCardsList: null,
   sliderLetter: null,
   sliderLine: null,
   deltaEnd: null,
+  personalId: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -82,11 +83,11 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         choiceSection: { ...state.choiceSection, ...action.payload },
       }
-    case a.CHOICE_ADDRESS:
-      return {
-        ...state,
-        choiceAddress: { ...state.choiceAddress, ...action.payload },
-      }
+    // case a.CHOICE_ADDRESS:
+    //   return {
+    //     ...state,
+    //     choiceAddress: { ...state.choiceAddress, ...action.payload },
+    //   }
     case a.CHOICE_MEMORY_SECTION:
       return {
         ...state,
@@ -140,6 +141,11 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         deleteSection: action.payload,
       }
+    case a.ADDRESS_PERSONAL_ID:
+      return {
+        ...state,
+        personalId: action.payload,
+      }
     case a.FULL_CARD:
       return {
         ...state,
@@ -150,10 +156,10 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         addFullCard: action.payload,
       }
-    case a.EXPEND_STATUS_CARD:
+    case a.EXPEND_MEMORY_CARD:
       return {
         ...state,
-        expendStatusCard: action.payload,
+        expendMemoryCard: action.payload,
       }
     case a.MAX_CARDS_LIST:
       return {

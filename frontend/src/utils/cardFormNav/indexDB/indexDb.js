@@ -236,11 +236,16 @@ export const getCountRecordsAddresses = async (storeName) => {
 
 export const getRecordAddressById = async (storeName, id) => {
   const db = await dbPromise
-  const transaction = db.transaction(storeName, 'readonly')
-  const store = transaction.objectStore(storeName)
-  const result = await store.get(id)
-  await transaction.done
-  return result || null
+  try {
+    const transaction = db.transaction(storeName, 'readonly')
+    const store = transaction.objectStore(storeName)
+    const result = await store.get(id)
+    await transaction.done
+    return result || null
+  } catch (error) {
+    console.error('[getRecordAddressById] Error retrieving record:', error)
+    return null
+  }
 }
 
 export const addRecordAddress = async (storeName, record) => {
@@ -270,16 +275,33 @@ export const getMaxIdAddress = async (storeName) => {
   return ids.length ? Math.max(...ids) : 0
 }
 
-export const addUniqueRecordAddress = async (storeName, data) => {
+export const addUniqueRecordAddress = async (storeName, data, personalId) => {
   const db = await dbPromise
   const maxId = await getMaxIdAddress(storeName)
   const newId = maxId + 1
 
   const transaction = db.transaction(storeName, 'readwrite')
   const store = transaction.objectStore(storeName)
-  await store.put({ id: newId, address: { ...data } })
+
+  const record = {
+    id: newId,
+    personalId: personalId,
+    address: { ...data },
+  }
+  await store.put(record)
   await transaction.done
 }
+
+// export const addUniqueRecordAddress = async (storeName, data) => {
+//   const db = await dbPromise
+//   const maxId = await getMaxIdAddress(storeName)
+//   const newId = maxId + 1
+
+//   const transaction = db.transaction(storeName, 'readwrite')
+//   const store = transaction.objectStore(storeName)
+//   await store.put({ id: newId, address: { ...data } })
+//   await transaction.done
+// }
 
 const handleTransactionPromise = (transaction) => {
   return new Promise((resolve, reject) => {
