@@ -433,6 +433,23 @@ const Envelope = ({ cardPuzzleRef }) => {
     if (parentBtn.dataset.tooltip === 'save') {
       const personalId = uuidv4().split('-')[0]
       if (btnsAddress[section].save) {
+        const arrName = value[section].name.split(' ')
+        const nameNoEmpty = arrName.filter((word) => word !== '').join(' ')
+        const arrCountry = value[section].country.split(' ')
+        const countryNoEmpty = arrCountry
+        const arrCity = value[section].city.split(' ')
+        const cityNoEmpty = arrCity.filter((word) => word !== '').join(' ')
+        setValue((state) => {
+          return {
+            ...state,
+            [section]: {
+              ...state[section],
+              name: nameNoEmpty,
+              country: countryNoEmpty,
+              city: cityNoEmpty,
+            },
+          }
+        })
         await addUniqueRecordAddress(section, value[section], personalId)
         setBtnsAddress((state) => {
           return {

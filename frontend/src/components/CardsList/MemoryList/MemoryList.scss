@@ -98,7 +98,7 @@
 
 .memory-list-myaddress-name,
 .memory-list-toaddress-name {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .memory-list-toaddress-name {
@@ -107,6 +107,10 @@
 
 .memory-list-myaddress-country,
 .memory-list-toaddress-country {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-size: 0.7rem;
 }
 
@@ -138,6 +142,7 @@
   background-color: rgba(240, 240, 240, 0.75);
   padding: 0 0.3rem 0.1rem 0.3rem;
   user-select: none;
+  white-space: nowrap;
   color: rgb(71, 71, 71);
 }
 

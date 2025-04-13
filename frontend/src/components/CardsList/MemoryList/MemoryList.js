@@ -508,11 +508,33 @@ const MemoryList = ({
   const trimLines = (source, text) => {
     const arrText = text.trim().split(' ')
     const arrTextNoEmpty = arrText.filter((word) => word !== '')
-    const limitLetters = source === 'myaddress' ? 20 : 25
+    let limitLettersSingle
+    let limitLettersAll
+    switch (source) {
+      case 'shopping':
+        limitLettersSingle = 13
+        limitLettersAll = 15
+        break
+      case 'blanks':
+        limitLettersSingle = 13
+        limitLettersAll = 15
+        break
+      case 'myaddress':
+        limitLettersSingle = 11
+        limitLettersAll = 22
+        break
+      case 'toaddress':
+        limitLettersSingle = 15
+        limitLettersAll = 30
+        break
+
+      default:
+        break
+    }
 
     for (let i = 0; i < arrTextNoEmpty.length; i++) {
-      if (i === 0 && arrTextNoEmpty[i].length > limitLetters - 10) {
-        return arrTextNoEmpty[i].slice(0, limitLetters - 10) + '...'
+      if (i === 0 && arrTextNoEmpty[i].length > limitLettersSingle) {
+        return arrTextNoEmpty[i].slice(0, limitLettersSingle) + '...'
       } else {
         if (arrTextNoEmpty.length === 1) {
           return arrTextNoEmpty[i]
@@ -520,14 +542,28 @@ const MemoryList = ({
       }
       if (i === 1) {
         if (
-          arrTextNoEmpty[0].length + arrTextNoEmpty[i].length + 1 >
-            limitLetters ||
-          arrTextNoEmpty[i].length > limitLetters - 10
+          arrTextNoEmpty[0].length + arrTextNoEmpty[i].length >
+            limitLettersAll ||
+          arrTextNoEmpty[i].length > limitLettersSingle
         ) {
-          return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i].slice(
-            0,
-            limitLetters - 10
-          )}...`
+          if (source === 'myaddress' || source === 'toaddress') {
+            return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i].slice(
+              0,
+              limitLettersSingle
+            )}...`
+          } else {
+            if (
+              limitLettersAll - arrTextNoEmpty[0].length + 1 ===
+              arrTextNoEmpty[i].length
+            ) {
+              return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i]}`
+            } else {
+              return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i].slice(
+                0,
+                limitLettersAll - arrTextNoEmpty[0].length
+              )}...`
+            }
+          }
         } else {
           if (arrTextNoEmpty.length === 2) {
             return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]}`
@@ -537,25 +573,25 @@ const MemoryList = ({
       if (i === 2) {
         if (
           arrTextNoEmpty[0].length + arrTextNoEmpty[1].length + 1 >
-          limitLetters - 10
+          limitLettersSingle
         ) {
           return (
             `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]}` +
             arrTextNoEmpty[i].slice(
               0,
-              limitLetters - 10 - arrTextNoEmpty[1].length
+              limitLettersSingle - arrTextNoEmpty[1].length
             ) +
             '...'
           )
         } else {
           if (
-            arrTextNoEmpty[i].length > limitLetters - 10 ||
-            (arrTextNoEmpty[i].length < limitLetters - 10 &&
+            arrTextNoEmpty[i].length > limitLettersSingle ||
+            (arrTextNoEmpty[i].length < limitLettersSingle &&
               arrTextNoEmpty.length > 3)
           ) {
             return (
               `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]} ` +
-              arrTextNoEmpty[i].slice(0, limitLetters - 10) +
+              arrTextNoEmpty[i].slice(0, limitLettersSingle) +
               '...'
             )
           } else {
@@ -615,7 +651,11 @@ const MemoryList = ({
                   onMouseEnter={handleMouseEnterFilter}
                   onMouseLeave={handleMouseLeaveFilter}
                 >
-                  {card[infoChoiceClip].envelope.toaddress.name}
+                  {/* {card[infoChoiceClip].envelope.toaddress.name} */}
+                  {trimLines(
+                    infoChoiceClip,
+                    card[infoChoiceClip].envelope.toaddress.name
+                  )}
                 </span>
               ) : infoChoiceClip === 'myaddress' ? (
                 <span className={`memory-list-address-container`}>
