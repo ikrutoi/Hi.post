@@ -538,7 +538,6 @@ const CardsList = () => {
       return (
         <MemoryList
           sizeMiniCard={sizeMiniCard}
-          // source={infoChoiceClip}
           widthCardsList={widthCardsList}
           setInfoCardsList={setInfoCardsList}
           valueScroll={valueScroll}

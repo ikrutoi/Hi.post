@@ -21,6 +21,7 @@ import {
   addressPersonalId,
   choiceAddress,
 } from '../../../redux/layout/actionCreators'
+import { current } from '@reduxjs/toolkit'
 
 const MemoryList = ({
   sizeMiniCard,
@@ -53,6 +54,11 @@ const MemoryList = ({
   const sliderLine = useSelector((state) => state.layout.sliderLine)
   const [elementSave, setElementSave] = useState(null)
   const [indexElementSave, setIndexElementSave] = useState(null)
+  const [firstLetterElementSave, setFirstLetterElementSave] = useState(null)
+  const myaddressNameRef = useRef(null)
+  const toaddressNameRef = useRef(null)
+  const spanNameRefs = useRef({})
+  const [trimmedText, setTrimmedText] = useState()
   const dispatch = useDispatch()
 
   const margin = parseFloat(
@@ -66,15 +72,17 @@ const MemoryList = ({
     cardRefs.current[id] = element
   }
 
-  const findElementByPersonalId = (id) => {
+  const findElementByPersonalId = (id, source) => {
     if (cardRefs.current) {
       for (const key in cardRefs.current) {
         const element = cardRefs.current[key]
         if (element && element.dataset.personalId === id) {
           setElementSave(element)
-          console.log('elementSave index', element.dataset.index)
           setIndexElementSave(Number(element.dataset.index))
-          // movingCards(getFirstIndex())
+          const firstLetter = element.querySelector(
+            `.memory-list-${source}-name`
+          ).textContent[0]
+          // setFirstLetterElementSave(firstLetter)
         }
       }
     }
@@ -85,8 +93,8 @@ const MemoryList = ({
     if (elementSave instanceof HTMLElement) {
       elementSave.classList.add('save')
       const fadeOutTimer = setTimeout(() => {
-        elementSave.classList.remove('save')
         elementSave.classList.add('save-fade-out')
+        elementSave.classList.remove('save')
         setTimeout(() => {
           elementSave.classList.remove('save-fade-out')
           dispatch(addressPersonalId(false))
@@ -98,20 +106,20 @@ const MemoryList = ({
     }
   }, [elementSave, dispatch])
 
-  const getMemoryCards = async (source) => {
-    const processMemoryCards = (records, getName) => {
-      const sortedRecords = records.sort((a, b) =>
-        getName(a).localeCompare(getName(b))
-      )
-      const firstLetterList = sortedRecords.map((card, i) => ({
-        letter: getName(card)[0],
-        id: card.id,
-        index: i,
-      }))
-      firstLetterList.push(firstLetterList[firstLetterList.length - 1])
-      return { sortedRecords, firstLetterList }
-    }
+  const processMemoryCards = (records, getName) => {
+    const sortedRecords = records.sort((a, b) =>
+      getName(a).localeCompare(getName(b))
+    )
+    const firstLetterList = sortedRecords.map((card, i) => ({
+      letter: getName(card)[0],
+      id: card.id,
+      index: i,
+    }))
+    firstLetterList.push(firstLetterList[firstLetterList.length - 1])
+    return { sortedRecords, firstLetterList }
+  }
 
+  const getMemoryCards = async (source) => {
     let memoryCards = []
     let firstLetterList = []
     const iconConfig = {
@@ -177,11 +185,12 @@ const MemoryList = ({
         firstLetters: firstLetterList,
       })
     }
+    // changeStyleFirstAndLastCards()
   }
 
   useEffect(() => {
     if (infoEnvelopeSave && personalId) {
-      findElementByPersonalId(personalId)
+      findElementByPersonalId(personalId, infoEnvelopeSave)
     }
     if (indexElementSave) {
       movingCards(indexElementSave)
@@ -189,6 +198,14 @@ const MemoryList = ({
       movingCards(getFirstIndex())
     }
   }, [memoryList, personalId, infoEnvelopeSave, indexElementSave])
+
+  // const getIndexFirstLetter = async (source) => {
+  //   const records = await getAllRecordsAddresses(source)
+  //   const { sortedRecords, firstLetterList: letters } = processMemoryCards(
+  //     records,
+  //     (card) => card.shopping.envelope.toaddress.name
+  //   )
+  // }
 
   const getFirstIndex = () => {
     const cards = Object.values(cardRefs.current)
@@ -205,6 +222,66 @@ const MemoryList = ({
       }
     }
   }
+
+  // const changeStyleFirstAndLastCards = () => {
+  //   const cards = Object.values(cardRefs.current)
+  //   const sizes = [
+  //     0,
+  //     parseInt((maxCardsList - 1) * (margin + sizeMiniCard.width)),
+  //   ]
+  //   let firstCards = []
+  //   let lastCards = []
+
+  //   for (const card of cards) {
+  //     if (card && card.dataset.index) {
+  //       const computedStyle = window.getComputedStyle(card)
+  //       if (parseInt(computedStyle.left, 10) === sizes[0]) {
+  //         firstCards.push(Number(card.dataset.index))
+  //       }
+  //       if (parseInt(computedStyle.left, 10) === sizes[1]) {
+  //         lastCards.push(Number(card.dataset.index))
+  //       }
+  //       const handleTransitionEnd = (event) => {
+  //         if (event.propertyName === 'left') {
+  //           card.classList.add('transition-completed')
+  //         }
+  //       }
+  //       card.addEventListener('transitionend', handleTransitionEnd)
+  //     }
+  //   }
+
+  //   cards.forEach((card) => {
+  //     if (card?.classList?.contains('cancel-shadow')) {
+  //       card.classList.remove('cancel-shadow')
+  //     }
+  //   })
+
+  //   if (firstCards.length > 1) {
+  //     firstCards.pop()
+  //     firstCards.forEach((index) => {
+  //       const targetCard = cardRefs.current[`card-${index}`]
+  //       if (targetCard) {
+  //         console.log('remove')
+  //         targetCard.classList.add('cancel-shadow')
+  //       }
+  //     })
+  //   }
+  //   if (lastCards.length > 1) {
+  //     lastCards.pop()
+  //     lastCards.forEach((index) => {
+  //       const targetCard = cardRefs.current[`card-${index}`]
+  //       if (targetCard) {
+  //         targetCard.classList.add('cancel-shadow')
+  //       }
+  //     })
+  //   }
+  // }
+
+  // // useEffect(() => {
+  // //   if (cardRefs.current) {
+  // //     changeStyleFirstAndLastCards()
+  // //   }
+  // // }, [cardRefs])
 
   const movingCards = (index) => {
     if (cardRefs.current && memoryList) {
@@ -313,6 +390,7 @@ const MemoryList = ({
         }
       }
 
+      // changeStyleFirstAndLastCards()
       dispatch(deltaEnd(restEnd === 0))
     }
   }
@@ -422,51 +500,69 @@ const MemoryList = ({
     dispatch(
       expendMemoryCard({ source: infoChoiceClip, id: evt.target.dataset.id })
     )
-    dispatch(choiceClip(false))
+    if (choiceClip === 'shopping' || choiceClip === 'blanks') {
+      dispatch(choiceClip(false))
+    }
   }
 
-  const getLeft = (i) => {
-    if (memoryList.length > maxCardsList) {
-      if (memoryList.length === maxCardsList + 1) {
-        if (i === maxCardsList - 1) {
-          return (
-            (maxCardsList - 1) * (margin + sizeMiniCard.width) -
-            0.5 * remSize +
-            'px'
-          )
-        }
-        if (i === maxCardsList) {
-          return (maxCardsList - 1) * (margin + sizeMiniCard.width) + 'px'
-        }
-        if (i < maxCardsList - 1) {
-          return i * (margin + sizeMiniCard.width) + 'px'
-        }
+  const trimLines = (source, text) => {
+    const arrText = text.trim().split(' ')
+    const arrTextNoEmpty = arrText.filter((word) => word !== '')
+    const limitLetters = source === 'myaddress' ? 20 : 25
+
+    for (let i = 0; i < arrTextNoEmpty.length; i++) {
+      if (i === 0 && arrTextNoEmpty[i].length > limitLetters - 10) {
+        return arrTextNoEmpty[i].slice(0, limitLetters - 10) + '...'
       } else {
-        if (i === memoryList.length - 3) {
-          return (
-            (maxCardsList - 1) * (margin + sizeMiniCard.width) - remSize + 'px'
-          )
-        }
-        if (i === memoryList.length - 2) {
-          return (
-            (maxCardsList - 1) * (margin + sizeMiniCard.width) -
-            0.5 * remSize +
-            'px'
-          )
-        }
-        if (
-          i >= maxCardsList - 1 &&
-          i !== memoryList.length - 3 &&
-          i !== memoryList.length - 2
-        ) {
-          return (maxCardsList - 1) * (margin + sizeMiniCard.width) + 'px'
-        }
-        if (i < maxCardsList - 1) {
-          return i * (margin + sizeMiniCard.width) + 'px'
+        if (arrTextNoEmpty.length === 1) {
+          return arrTextNoEmpty[i]
         }
       }
-    } else {
-      return i * (margin + sizeMiniCard.width) + 'px'
+      if (i === 1) {
+        if (
+          arrTextNoEmpty[0].length + arrTextNoEmpty[i].length + 1 >
+            limitLetters ||
+          arrTextNoEmpty[i].length > limitLetters - 10
+        ) {
+          return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i].slice(
+            0,
+            limitLetters - 10
+          )}...`
+        } else {
+          if (arrTextNoEmpty.length === 2) {
+            return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]}`
+          }
+        }
+      }
+      if (i === 2) {
+        if (
+          arrTextNoEmpty[0].length + arrTextNoEmpty[1].length + 1 >
+          limitLetters - 10
+        ) {
+          return (
+            `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]}` +
+            arrTextNoEmpty[i].slice(
+              0,
+              limitLetters - 10 - arrTextNoEmpty[1].length
+            ) +
+            '...'
+          )
+        } else {
+          if (
+            arrTextNoEmpty[i].length > limitLetters - 10 ||
+            (arrTextNoEmpty[i].length < limitLetters - 10 &&
+              arrTextNoEmpty.length > 3)
+          ) {
+            return (
+              `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]} ` +
+              arrTextNoEmpty[i].slice(0, limitLetters - 10) +
+              '...'
+            )
+          } else {
+            return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]} ${arrTextNoEmpty[2]}`
+          }
+        }
+      }
     }
   }
 
@@ -486,7 +582,6 @@ const MemoryList = ({
               style={{
                 width: `${sizeMiniCard.width}px`,
                 height: `${sizeMiniCard.height}px`,
-                left: getLeft(i),
               }}
               onClick={handleClickCard}
             >
@@ -496,7 +591,6 @@ const MemoryList = ({
                   className="memory-list-card-filter"
                   ref={setFilterRef(`filter-${card.id}`)}
                   data-id={card.id}
-                  // onClick={handleClickCard}
                   onMouseEnter={handleMouseEnterFilter}
                   onMouseLeave={handleMouseLeaveFilter}
                 ></div>
@@ -532,19 +626,21 @@ const MemoryList = ({
                     {card.address.country}
                   </span>
                   <span
+                    ref={myaddressNameRef}
                     className={`memory-list-${infoChoiceClip}-name`}
                     data-id={card.id}
                   >
-                    {card.address.name}
+                    {trimLines(infoChoiceClip, card.address.name)}
                   </span>
                 </span>
               ) : infoChoiceClip === 'toaddress' ? (
                 <span className={`memory-list-address-container`}>
                   <span
+                    ref={(el) => (spanNameRefs.current[`span-name-${i}`] = el)}
                     className={`memory-list-${infoChoiceClip}-name`}
                     data-id={card.id}
                   >
-                    {card.address.name}
+                    {trimLines(infoChoiceClip, card.address.name)}
                   </span>
                   <span
                     className={`memory-list-${infoChoiceClip}-country`}
