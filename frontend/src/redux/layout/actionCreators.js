@@ -161,6 +161,13 @@ export const addressPersonalId = (newSection) => {
   }
 }
 
+export const fullCardPersonalId = (newSection) => {
+  return {
+    type: a.FULLCARD_PERSONAL_ID,
+    payload: newSection,
+  }
+}
+
 // export const setMyAddressLegendRef = (newSection) => {
 //   return {
 //     type: a.SET_MY_ADDRESS_LEGEND_REF,

@@ -3,6 +3,7 @@ import {
   deleteSection,
   expendShopping,
   fullCard,
+  fullCardPersonalId,
   selectedSection,
 } from './actionCreators'
 import * as a from './actionTypes'
@@ -52,6 +53,7 @@ const initialState = {
   memoryCrop: null,
   currentDate: null,
   fullCard: false,
+  fullCardPersonalId: { shopping: null, blanks: null },
   addFullCard: false,
   selectedCard: false,
   expendMemoryCard: false,
@@ -93,6 +95,14 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         choiceMemorySection: {
           ...state.choiceMemorySection,
+          ...action.payload,
+        },
+      }
+    case a.FULLCARD_PERSONAL_ID:
+      return {
+        ...state,
+        fullCardPersonalId: {
+          ...state.fullCardPersonalId,
           ...action.payload,
         },
       }

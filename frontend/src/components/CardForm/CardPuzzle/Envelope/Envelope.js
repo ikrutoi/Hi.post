@@ -437,6 +437,8 @@ const Envelope = ({ cardPuzzleRef }) => {
         const nameNoEmpty = arrName.filter((word) => word !== '').join(' ')
         const arrCountry = value[section].country.split(' ')
         const countryNoEmpty = arrCountry
+          .filter((word) => word !== '')
+          .join(' ')
         const arrCity = value[section].city.split(' ')
         const cityNoEmpty = arrCity.filter((word) => word !== '').join(' ')
         setValue((state) => {

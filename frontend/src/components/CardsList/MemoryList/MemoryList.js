@@ -53,12 +53,14 @@ const MemoryList = ({
   const sliderLetter = useSelector((state) => state.layout.sliderLetter)
   const sliderLine = useSelector((state) => state.layout.sliderLine)
   const [elementSave, setElementSave] = useState(null)
-  const [indexElementSave, setIndexElementSave] = useState(null)
+  const [infoElementSave, setInfoElementSave] = useState(null)
   const [firstLetterElementSave, setFirstLetterElementSave] = useState(null)
   const myaddressNameRef = useRef(null)
   const toaddressNameRef = useRef(null)
   const spanNameRefs = useRef({})
   const [trimmedText, setTrimmedText] = useState()
+  const [infoFirstLetterCardsList, setFirstLetterCardsList] = useState(null)
+  const [isDeleteCard, setIsDeleteCard] = useState(null)
   const dispatch = useDispatch()
 
   const margin = parseFloat(
@@ -71,40 +73,6 @@ const MemoryList = ({
   const setCardRef = (id) => (element) => {
     cardRefs.current[id] = element
   }
-
-  const findElementByPersonalId = (id, source) => {
-    if (cardRefs.current) {
-      for (const key in cardRefs.current) {
-        const element = cardRefs.current[key]
-        if (element && element.dataset.personalId === id) {
-          setElementSave(element)
-          setIndexElementSave(Number(element.dataset.index))
-          const firstLetter = element.querySelector(
-            `.memory-list-${source}-name`
-          ).textContent[0]
-          // setFirstLetterElementSave(firstLetter)
-        }
-      }
-    }
-    return null
-  }
-
-  useEffect(() => {
-    if (elementSave instanceof HTMLElement) {
-      elementSave.classList.add('save')
-      const fadeOutTimer = setTimeout(() => {
-        elementSave.classList.add('save-fade-out')
-        elementSave.classList.remove('save')
-        setTimeout(() => {
-          elementSave.classList.remove('save-fade-out')
-          dispatch(addressPersonalId(false))
-          dispatch(infoButtons({ envelopeSave: false }))
-        }, 500)
-      }, 1000)
-
-      return () => clearTimeout(fadeOutTimer)
-    }
-  }, [elementSave, dispatch])
 
   const processMemoryCards = (records, getName) => {
     const sortedRecords = records.sort((a, b) =>
@@ -184,20 +152,114 @@ const MemoryList = ({
         length: memoryCards.length,
         firstLetters: firstLetterList,
       })
+      setFirstLetterCardsList(firstLetterList)
     }
     // changeStyleFirstAndLastCards()
   }
 
+  const findElementByPersonalId = (id, source) => {
+    if (cardRefs.current) {
+      for (const key in cardRefs.current) {
+        const element = cardRefs.current[key]
+        if (element && element.dataset.personalId === id) {
+          setElementSave(element)
+          const firstLetter = element.querySelector(
+            `.memory-list-${source}-name`
+          ).textContent[0]
+          setInfoElementSave({
+            index: Number(element.dataset.index),
+            firstLetter,
+          })
+        }
+      }
+    }
+    return null
+  }
+
+  const getPositionCard = (index, firstLetter) => {
+    if (infoFirstLetterCardsList) {
+      const listElements = []
+      memoryList.forEach((elem, i) => {
+        if (elem.address.name[0] === firstLetter) {
+          listElements.push({ name: elem.address.name, index: i })
+        }
+      })
+
+      if (
+        listElements.length === 1 ||
+        (listElements.length !== 1 && listElements.length >= maxCardsList)
+      ) {
+        return index
+      }
+      if (listElements.length !== 1 && listElements.length < maxCardsList) {
+        return listElements[0].index
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (elementSave instanceof HTMLElement) {
+      elementSave.classList.add('save')
+      const fadeOutTimer = setTimeout(() => {
+        elementSave.classList.add('save-fade-out')
+        elementSave.classList.remove('save')
+        setTimeout(() => {
+          elementSave.classList.remove('save-fade-out')
+          dispatch(addressPersonalId(false))
+          dispatch(infoButtons({ envelopeSave: false }))
+        }, 500)
+      }, 1000)
+
+      return () => clearTimeout(fadeOutTimer)
+    }
+  }, [elementSave, dispatch])
+
+  useEffect(() => {
+    if (sliderLine) {
+      movingCards(Number(sliderLine))
+    }
+  }, [sliderLine])
+
+  useEffect(() => {
+    if (sliderLetter && sliderLetter.index) {
+      movingCards(Number(sliderLetter.index))
+    }
+  }, [sliderLetter])
+
+  useEffect(() => {
+    if (maxCardsList && infoChoiceClip) {
+      getMemoryCards(infoChoiceClip)
+    }
+  }, [infoChoiceClip, maxCardsList])
+
   useEffect(() => {
     if (infoEnvelopeSave && personalId) {
+      getMemoryCards(infoEnvelopeSave)
+      dispatch(infoButtons({ envelopeSaveSecond: infoEnvelopeSave }))
+    }
+  }, [infoEnvelopeSave, personalId, dispatch])
+
+  useEffect(() => {
+    if (personalId && infoEnvelopeSave) {
       findElementByPersonalId(personalId, infoEnvelopeSave)
     }
-    if (indexElementSave) {
-      movingCards(indexElementSave)
-    } else {
-      movingCards(getFirstIndex())
+  }, [memoryList, personalId, infoEnvelopeSave])
+
+  useEffect(() => {
+    if (memoryList) {
+      if (infoElementSave) {
+        movingCards(
+          getPositionCard(infoElementSave.index, infoElementSave.firstLetter)
+        )
+      } else {
+        if (!isDeleteCard && !sliderLine) {
+          movingCards(0)
+        } else {
+          movingCards(Number(sliderLine))
+        }
+      }
     }
-  }, [memoryList, personalId, infoEnvelopeSave, indexElementSave])
+  }, [memoryList, infoElementSave, isDeleteCard])
 
   // const getIndexFirstLetter = async (source) => {
   //   const records = await getAllRecordsAddresses(source)
@@ -284,6 +346,7 @@ const MemoryList = ({
   // // }, [cardRefs])
 
   const movingCards = (index) => {
+    // console.log('index: ', index)
     if (cardRefs.current && memoryList) {
       const restEnd = memoryList.length - index - maxCardsList
       const baseLeft = margin + sizeMiniCard.width
@@ -315,6 +378,7 @@ const MemoryList = ({
 
       if (index === 2) {
         // console.log('index2')
+        updatePosition(1, 0.5 * remSize)
         updatePosition(index, remSize)
         let newIndex = 1
         for (let i = index + 1; i < maxCardsList + index; i++) {
@@ -395,62 +459,10 @@ const MemoryList = ({
     }
   }
 
-  useEffect(() => {
-    if (sliderLine) {
-      movingCards(Number(sliderLine))
-    }
-  }, [sliderLine])
-
-  useEffect(() => {
-    if (sliderLetter && sliderLetter.index) {
-      movingCards(Number(sliderLetter.index))
-    }
-  }, [sliderLetter])
-
-  // useEffect(() => {
-  //   if (valueScroll !== 0) {
-  //     const getNextIndexCard = () => {
-  //       const cards = Object.values(cardRefs.current)
-  //       const arrRemSize = [remSize, 0.5 * remSize, 0]
-
-  //       for (const size of arrRemSize) {
-  //         for (const card of cards) {
-  //           if (card) {
-  //             const computedStyle = window.getComputedStyle(card)
-  //             if (parseInt(computedStyle.left) === size) {
-  //               let indexFirstElement = Number(card.dataset.index)
-  //               return valueScroll > 0
-  //                 ? ++indexFirstElement
-  //                 : --indexFirstElement
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //     movingCards(getNextIndexCard())
-  //   }
-
-  //   if (Math.abs(valueScroll) === 100) {
-  //     setValueScroll(0)
-  //   }
-  // }, [valueScroll])
-
-  useEffect(() => {
-    if (maxCardsList && infoChoiceClip) {
-      getMemoryCards(infoChoiceClip)
-    }
-  }, [infoChoiceClip, maxCardsList])
-
-  useEffect(() => {
-    if (infoEnvelopeSave && personalId) {
-      getMemoryCards(infoEnvelopeSave)
-      dispatch(infoButtons({ envelopeSaveSecond: infoEnvelopeSave }))
-    }
-  }, [infoEnvelopeSave, personalId, dispatch])
-
   const handleClickCardBtn = async (evt) => {
+    evt.stopPropagation()
     try {
-      const parentBtn = evt.target.closest('.memory-list-card-btn')
+      const parentBtn = evt.target.closest('.memory-list-btn')
       if (!parentBtn && !parentBtn.dataset.id) {
         return
       }
@@ -475,6 +487,7 @@ const MemoryList = ({
       }
       await getMemoryCards(infoChoiceClip)
       dispatch(addFullCard(true))
+      setIsDeleteCard(true)
     } catch (error) {
       console.log('Error deleting card:', error)
     }
@@ -500,7 +513,7 @@ const MemoryList = ({
     dispatch(
       expendMemoryCard({ source: infoChoiceClip, id: evt.target.dataset.id })
     )
-    if (choiceClip === 'shopping' || choiceClip === 'blanks') {
+    if (infoChoiceClip === 'shopping' || infoChoiceClip === 'blanks') {
       dispatch(choiceClip(false))
     }
   }
@@ -696,7 +709,7 @@ const MemoryList = ({
                     infoChoiceClip === 'blanks' ? (
                     <button
                       key={`${btn}-${i}`}
-                      className="memory-list-card-btn"
+                      className="memory-list-btn"
                       ref={setBtnIconRef(`fullCard-${btn}`)}
                       data-id={card.id}
                       style={{
@@ -716,7 +729,7 @@ const MemoryList = ({
                   ) : (
                     <button
                       key={`${btn}-${i}`}
-                      className="memory-list-card-btn"
+                      className="memory-list-btn"
                       ref={setBtnIconRef(`fullCard-${btn}`)}
                       data-id={card.id}
                       style={{

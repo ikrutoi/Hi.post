@@ -507,7 +507,7 @@ export const getMaxIdBlanks = async () => {
   return ids.length ? Math.max(...ids) : 0
 }
 
-export const addUniqueBlank = async (data) => {
+export const addUniqueBlank = async (data, personalId) => {
   if (!data || typeof data !== 'object') {
     throw new Error('[addUniqueBlank] Invalid data provided.')
   }
@@ -518,7 +518,7 @@ export const addUniqueBlank = async (data) => {
 
     const transaction = db.transaction('blanks', 'readwrite')
     const store = transaction.objectStore('blanks')
-    await store.put({ id: newId, blanks: { ...data } })
+    await store.put({ id: newId, blanks: { ...data }, personalId })
     return await handleTransactionPromise(transaction)
   } catch (error) {
     console.error('[addUniqueBlank] Failed to add unique blank:', error)
@@ -594,7 +594,7 @@ export const getMaxIdShopping = async () => {
   return ids.length ? Math.max(...ids) : 0
 }
 
-export const addUniqueShopping = async (data) => {
+export const addUniqueShopping = async (data, personalId) => {
   if (!data || typeof data !== 'object') {
     throw new Error('[addUniqueShopping] Invalid data provided.')
   }
@@ -605,7 +605,7 @@ export const addUniqueShopping = async (data) => {
 
     const transaction = db.transaction('shopping', 'readwrite')
     const store = transaction.objectStore('shopping')
-    await store.put({ id: newId, shopping: { ...data } })
+    await store.put({ id: newId, shopping: { ...data }, personalId })
     return await handleTransactionPromise(transaction)
   } catch (error) {
     console.error('[addUniqueShopping] Failed to add unique shopping:', error)

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { v4 as uuidv4 } from 'uuid'
 import { TbArrowsMinimize } from 'react-icons/tb'
 import { MdMoreHoriz } from 'react-icons/md'
 import './CardsList.scss'
@@ -20,6 +21,7 @@ import {
   addChoiceSection,
   choiceClip,
   sliderLine,
+  fullCardPersonalId,
 } from '../../redux/layout/actionCreators'
 import {
   addUserImage,
@@ -42,6 +44,7 @@ import {
   getShoppingById,
   addUniqueBlank,
   getBlankById,
+  getAllBlanks,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import { colorSchemeMain } from '../../data/main/colorSchemeMain'
 import MemoryEnvelope from './MemoryEnvelope/MemoryEnvelope'
@@ -88,6 +91,7 @@ const CardsList = () => {
   const [showIconMinimize, setShowIconMinimize] = useState(minimize)
   const memoryRefs = useRef({})
   const btnIconRefs = useRef({})
+  const miniPolyCardsRef = useRef()
   const dispatch = useDispatch()
   const listIconsFullCard = ['plus', 'save', 'remove']
   const listSections = ['cardphoto', 'cardtext', 'envelope', 'date', 'aroma']
@@ -100,6 +104,7 @@ const CardsList = () => {
   const [valueCardsList, setValueCardsList] = useState(0)
   const [infoCardsList, setInfoCardsList] = useState(null)
   const [valueScroll, setValueScroll] = useState(0)
+  const [personalId, setPersonalId] = useState(null)
   const maxCardsList = useSelector((state) => state.layout.maxCardsList)
 
   useEffect(() => {
@@ -155,6 +160,31 @@ const CardsList = () => {
     return () => clearTimeout(timerChangeMinimize)
   }
 
+  const choiceStyleMiniPolyCards = (state) => {
+    switch (state) {
+      case true:
+        if (miniPolyCardsRef.current.classList.contains('full-fade-out')) {
+          miniPolyCardsRef.current.classList.remove('full-fade-out')
+        }
+        miniPolyCardsRef.current.classList.add('full')
+        break
+
+      case false:
+        miniPolyCardsRef.current.classList.add('full-fade-out')
+        miniPolyCardsRef.current.classList.remove('full')
+
+        // const fadeOutTimer = setTimeout(() => {
+        //   miniPolyCardsRef.current.classList.remove('full-fade-out')
+        // }, 500)
+
+        // clearTimeout(fadeOutTimer)
+        break
+
+      default:
+        break
+    }
+  }
+
   useEffect(() => {
     if (
       infoExpendMemoryCard !== false &&
@@ -179,6 +209,86 @@ const CardsList = () => {
       }
     }
   }, [infoChoiceSection, infoEnvelopeSave, infoChoiceSave, dispatch])
+
+  const getAllCards = async (card) => {
+    // console.log('card', card)
+    const sections = ['aroma', 'date']
+    const sources = ['shopping', 'blanks']
+    // const [shopping, blanks] = await Promise.all([
+    //   getAllShopping(),
+    //   getAllBlanks(),
+    // ])
+    const cards = {
+      shopping: await getAllShopping(),
+      blanks: await getAllBlanks(),
+    }
+    const result = {
+      shopping: { aroma: null, date: null, envelope: null, cardtext: null },
+      blanks: { aroma: null, date: null, envelope: null, cardtext: null },
+    }
+
+    let sectionAroma = { shopping: [], blanks: [] }
+    let sectionDate = { shopping: [], blanks: [] }
+
+    const resultAroma = () => {
+      for (const section of sections) {
+        for (const source of sources) {
+          for (const cardSource of cards[source]) {
+            if (
+              card[section].name === cardSource[source][section].name &&
+              card[section].make === cardSource[source][section].make
+            ) {
+              sectionAroma[source].push(true)
+            } else {
+              sectionAroma[source].push(false)
+            }
+          }
+          sectionAroma[source].forEach((aroma, i) => {
+            if (aroma) {
+              result[source].aroma = i
+            } else {
+              result[source].aroma = false
+            }
+          })
+        }
+      }
+    }
+
+    const resultDate = () => {
+      for (const section of sections) {
+        for (const source of sources) {
+          for (const cardSource of cards[source]) {
+            if (
+              card[section].day === cardSource[source][section].day &&
+              card[section].month === cardSource[source][section].month &&
+              card[section].year === cardSource[source][section].year
+            ) {
+              sectionDate[source].push(true)
+            } else {
+              sectionDate[source].push(false)
+            }
+          }
+          sectionDate[source].forEach((date, i) => {
+            if (date) {
+              result[source].date = i
+            } else {
+              result[source].date = false
+            }
+          })
+        }
+      }
+    }
+
+    resultAroma()
+    resultDate()
+    console.log('result', result)
+  }
+
+  useEffect(() => {
+    if (minimize) {
+      getAllCards(cardEdit)
+    }
+  }, [minimize])
 
   useEffect(() => {
     // setSelectedListCards(infoChoiceClip)
@@ -308,9 +418,13 @@ const CardsList = () => {
           },
         }
       })
+      if (miniPolyCardsRef.current) {
+        choiceStyleMiniPolyCards(true)
+      }
     } else {
       if (infoMinimize) {
         setInfoMinimize(false)
+        changeStyleFullCardIcons(false)
       }
       setStylePolyCards((state) => {
         return {
@@ -329,8 +443,11 @@ const CardsList = () => {
           },
         }
       })
+      if (miniPolyCardsRef.current) {
+        choiceStyleMiniPolyCards(false)
+      }
     }
-  }, [listActiveSections, showIconMinimize, minimize])
+  }, [listActiveSections, showIconMinimize, minimize, miniPolyCardsRef])
 
   // const getListPrioritySections = () => {
   //   const temporaryArray = []
@@ -403,6 +520,7 @@ const CardsList = () => {
   }
 
   const handleClickFullCardIcon = async (evt) => {
+    const personalId = uuidv4().split('-')[0]
     const hiPostImages = await getAllHiPostImages()
     const userImages = await getAllUserImages()
     const sectionWorkingImage = hiPostImages.some(
@@ -434,10 +552,12 @@ const CardsList = () => {
 
     switch (parentBtn.dataset.tooltip) {
       case 'plus':
-        await addUniqueShopping(resultCard)
+        await addUniqueShopping(resultCard, personalId)
+        dispatch(fullCardPersonalId({ shopping: personalId }))
         break
       case 'save':
-        await addUniqueBlank(resultCard)
+        await addUniqueBlank(resultCard, personalId)
+        dispatch(fullCardPersonalId({ blanks: personalId }))
         break
 
       default:
@@ -602,6 +722,7 @@ const CardsList = () => {
           ></div>
           <div
             className="mini-poly-cards"
+            ref={miniPolyCardsRef}
             style={{
               width: `${sizeMiniCard.width}px`,
               height: `${sizeMiniCard.height}px`,

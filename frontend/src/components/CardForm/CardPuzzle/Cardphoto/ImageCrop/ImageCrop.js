@@ -40,7 +40,7 @@ const ImageCrop = ({ sizeCard }) => {
     (state) => state.layout.activeSections
   )
   const infoExpendStatusCard = useSelector(
-    (state) => state.layout.expendStatusCard
+    (state) => state.layout.expendMemoryCard
   )
   const [image, setImage] = useState({ source: null, url: null, base: null })
   const [scaleX, setScaleX] = useState(1)
