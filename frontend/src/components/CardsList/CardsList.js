@@ -104,7 +104,7 @@ const CardsList = () => {
   const [valueCardsList, setValueCardsList] = useState(0)
   const [infoCardsList, setInfoCardsList] = useState(null)
   const [valueScroll, setValueScroll] = useState(0)
-  const [personalId, setPersonalId] = useState(null)
+  // const [personalId, setPersonalId] = useState(null)
   const maxCardsList = useSelector((state) => state.layout.maxCardsList)
 
   useEffect(() => {
@@ -112,6 +112,12 @@ const CardsList = () => {
       setWidthCardsList(cardsListRef.current.clientWidth)
     }
   }, [])
+
+  useEffect(() => {
+    if (infoCardsList && infoCardsList <= maxCardsList) {
+      dispatch(sliderLine(false))
+    }
+  }, [infoCardsList])
 
   const getExpendStatusCard = async (expendCard) => {
     setMinimize(true)
@@ -211,81 +217,201 @@ const CardsList = () => {
   }, [infoChoiceSection, infoEnvelopeSave, infoChoiceSave, dispatch])
 
   const getAllCards = async (card) => {
-    // console.log('card', card)
-    const sections = ['aroma', 'date']
+    const sections = ['aroma', 'date', 'envelope', 'cardtext', 'cardphoto']
     const sources = ['shopping', 'blanks']
-    // const [shopping, blanks] = await Promise.all([
-    //   getAllShopping(),
-    //   getAllBlanks(),
-    // ])
     const cards = {
       shopping: await getAllShopping(),
       blanks: await getAllBlanks(),
     }
     const result = {
-      shopping: { aroma: null, date: null, envelope: null, cardtext: null },
-      blanks: { aroma: null, date: null, envelope: null, cardtext: null },
+      shopping: {
+        aroma: [],
+        date: [],
+        envelope: [],
+        cardtext: [],
+        cardphoto: [],
+      },
+      blanks: {
+        aroma: [],
+        date: [],
+        envelope: [],
+        cardtext: [],
+        cardphoto: [],
+      },
     }
 
-    let sectionAroma = { shopping: [], blanks: [] }
-    let sectionDate = { shopping: [], blanks: [] }
+    console.log('cards', cards)
 
     const resultAroma = () => {
-      for (const section of sections) {
-        for (const source of sources) {
-          for (const cardSource of cards[source]) {
-            if (
-              card[section].name === cardSource[source][section].name &&
-              card[section].make === cardSource[source][section].make
-            ) {
-              sectionAroma[source].push(true)
-            } else {
-              sectionAroma[source].push(false)
-            }
+      for (const source of sources) {
+        for (const cardSource of cards[source]) {
+          if (
+            card.aroma.name === cardSource[source].aroma.name &&
+            card.aroma.make === cardSource[source].aroma.make
+          ) {
+            result[source].aroma.push(cardSource.personalId)
           }
-          sectionAroma[source].forEach((aroma, i) => {
-            if (aroma) {
-              result[source].aroma = i
-            } else {
-              result[source].aroma = false
-            }
-          })
         }
       }
     }
 
     const resultDate = () => {
-      for (const section of sections) {
-        for (const source of sources) {
-          for (const cardSource of cards[source]) {
-            if (
-              card[section].day === cardSource[source][section].day &&
-              card[section].month === cardSource[source][section].month &&
-              card[section].year === cardSource[source][section].year
-            ) {
-              sectionDate[source].push(true)
-            } else {
-              sectionDate[source].push(false)
-            }
+      for (const source of sources) {
+        for (const cardSource of cards[source]) {
+          if (
+            card.date.day === cardSource[source].date.day &&
+            card.date.month === cardSource[source].date.month &&
+            card.date.year === cardSource[source].date.year
+          ) {
+            result[source].date.push(cardSource.personalId)
           }
-          sectionDate[source].forEach((date, i) => {
-            if (date) {
-              result[source].date = i
-            } else {
-              result[source].date = false
-            }
-          })
         }
       }
     }
 
-    resultAroma()
-    resultDate()
+    const resultEnvelope = () => {
+      const sectionsEnvelope = ['myaddress', 'toaddress']
+      const inputsEnvelope = {
+        myaddress: Object.keys(card.envelope.myaddress),
+        toaddress: Object.keys(card.envelope.toaddress),
+      }
+      const inputsSection = { myaddress: [], toaddress: [] }
+      const resultAddress = { myaddress: null, toaddress: null }
+      for (const source of sources) {
+        for (const cardSource of cards[source]) {
+          for (const sectionEnv of sectionsEnvelope) {
+            for (const inputEnv of inputsEnvelope[sectionEnv]) {
+              if (
+                card.envelope[sectionEnv][inputEnv] ===
+                cardSource[source].envelope[sectionEnv][inputEnv]
+              ) {
+                inputsSection[sectionEnv].push(true)
+              } else {
+                inputsSection[sectionEnv].push(false)
+              }
+            }
+            resultAddress[sectionEnv] = inputsSection[sectionEnv].every(
+              (input) => input === true
+            )
+            inputsSection[sectionEnv] = []
+          }
+          if (resultAddress.myaddress && resultAddress.toaddress) {
+            result[source].envelope.push(cardSource.personalId)
+          }
+        }
+      }
+    }
+
+    const resultCardtext = () => {
+      const textChildrens = []
+      for (const source of sources) {
+        for (const cardSource of cards[source]) {
+          if (
+            card.cardtext.text.length ===
+            cardSource[source].cardtext.text.length
+          ) {
+            card.cardtext.text.forEach((text, i) => {
+              if (
+                text.children[0].text ===
+                cardSource[source].cardtext.text[i].children[0].text
+              ) {
+                textChildrens.push(true)
+              } else {
+                textChildrens.push(false)
+              }
+            })
+            if (textChildrens.every((text) => text === true)) {
+              result[source].cardtext.push(cardSource.personalId)
+            }
+          }
+        }
+      }
+    }
+
+    const resultCardphoto = async () => {
+      const cardData = await getResultCardphoto()
+      for (const source of sources) {
+        for (const cardSource of cards[source]) {
+          if (cardData.cardphoto.size === cardSource[source].cardphoto.size) {
+            result[source].cardphoto.push(cardSource.personalId)
+          }
+        }
+      }
+    }
+
+    const resultSections = {
+      aroma: resultAroma(),
+      date: resultDate(),
+      envelope: resultEnvelope(),
+      cardtext: resultCardtext(),
+      cardphoto: resultCardphoto(),
+    }
+
+    const results = { shopping: [], blanks: [] }
+    const checkEverySection = () => {
+      for (const source of sources) {
+        for (const section of sections) {
+          if (section === 'aroma') {
+            resultSections[section]()
+            if (result[source][section].length > 0) {
+              results[source].push(result[source][section])
+            } else {
+              results[source] = false
+            }
+          } else {
+            resultSections[section]()
+            const checkMatch = () => {}
+          }
+        }
+      }
+    }
+
+    if (cardEdit.aroma && cardEdit.date) {
+      resultAroma()
+      resultDate()
+      resultEnvelope()
+      resultCardtext()
+      resultCardphoto()
+    }
     console.log('result', result)
   }
 
+  // const getAllCards = async (card) => {
+  //   const sections = ['aroma', 'date']
+  //   const sources = ['shopping', 'blanks']
+
+  //   const [shopping, blanks] = await Promise.all([
+  //     getAllShopping(),
+  //     getAllBlanks(),
+  //   ])
+  //   const cards = { shopping, blanks }
+
+  //   const result = {
+  //     shopping: { aroma: null, date: null, envelope: null, cardtext: null },
+  //     blanks: { aroma: null, date: null, envelope: null, cardtext: null },
+  //   }
+
+  //   const checkMatch = (section, source) => {
+  //     return cards[source].findIndex((cardSource) =>
+  //       Object.keys(card[section]).every(
+  //         (key) => card[section][key] === cardSource[source][section][key]
+  //       )
+  //     )
+  //   }
+
+  //   sources.forEach((source) => {
+  //     sections.forEach((section) => {
+  //       const matchIndex = checkMatch(section, source)
+  //       result[source][section] = matchIndex !== -1 ? matchIndex : false
+  //     })
+  //   })
+
+  //   console.log('result', result)
+  // }
+
   useEffect(() => {
     if (minimize) {
+      // setPersonalId(uuidv4().split('-')[0])
       getAllCards(cardEdit)
     }
   }, [minimize])
@@ -519,8 +645,7 @@ const CardsList = () => {
     }
   }
 
-  const handleClickFullCardIcon = async (evt) => {
-    const personalId = uuidv4().split('-')[0]
+  const getResultCardphoto = async () => {
     const hiPostImages = await getAllHiPostImages()
     const userImages = await getAllUserImages()
     const sectionWorkingImage = hiPostImages.some(
@@ -541,22 +666,51 @@ const CardsList = () => {
       workingImage = await getImages[sectionWorkingImage]('workingImage')
     }
 
-    const resultCard = listSections.reduce((acc, section) => {
+    return listSections.reduce((acc, section) => {
       acc[section] = section === 'cardphoto' ? workingImage : cardEdit[section]
       return acc
     }, {})
+  }
+
+  const handleClickFullCardIcon = async (evt) => {
+    const personalId = uuidv4().split('-')[0]
+    // const hiPostImages = await getAllHiPostImages()
+    // const userImages = await getAllUserImages()
+    // const sectionWorkingImage = hiPostImages.some(
+    //   (el) => el.id === 'workingImage'
+    // )
+    //   ? 'hiPostImages'
+    //   : userImages.some((el) => el.id === 'workingImage')
+    //   ? 'userImages'
+    //   : null
+
+    // let workingImage = null
+    // const getImages = {
+    //   hiPostImages: getHiPostImage,
+    //   userImages: getUserImage,
+    // }
+
+    // if (sectionWorkingImage) {
+    //   workingImage = await getImages[sectionWorkingImage]('workingImage')
+    // }
+
+    // const resultCard = listSections.reduce((acc, section) => {
+    //   acc[section] = section === 'cardphoto' ? workingImage : cardEdit[section]
+    //   return acc
+    // }, {})
 
     dispatch(addFullCard(true))
 
     const parentBtn = evt.target.closest('.fullcard-btn')
+    const cardData = await getResultCardphoto()
 
     switch (parentBtn.dataset.tooltip) {
       case 'plus':
-        await addUniqueShopping(resultCard, personalId)
+        await addUniqueShopping(cardData, personalId)
         dispatch(fullCardPersonalId({ shopping: personalId }))
         break
       case 'save':
-        await addUniqueBlank(resultCard, personalId)
+        await addUniqueBlank(cardData, personalId)
         dispatch(fullCardPersonalId({ blanks: personalId }))
         break
 
