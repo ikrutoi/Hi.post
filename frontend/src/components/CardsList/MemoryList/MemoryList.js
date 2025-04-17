@@ -216,14 +216,14 @@ const MemoryList = ({
 
   useEffect(() => {
     if (sliderLine) {
-      console.log('0')
+      // console.log('0')
       movingCards(Number(sliderLine))
     }
   }, [sliderLine])
 
   useEffect(() => {
     if (sliderLetter && sliderLetter.index) {
-      console.log('1')
+      // console.log('1')
       movingCards(Number(sliderLetter.index))
     }
   }, [sliderLetter])
@@ -250,16 +250,16 @@ const MemoryList = ({
   useEffect(() => {
     if (memoryList) {
       if (infoElementSave) {
-        console.log('2')
+        // console.log('2')
         movingCards(
           getPositionCard(infoElementSave.index, infoElementSave.firstLetter)
         )
       } else {
         if (!isDeleteCard && !sliderLine) {
-          console.log('3')
+          // console.log('3')
           movingCards(0)
         } else {
-          console.log('4')
+          // console.log('4')
           movingCards(Number(sliderLine))
         }
       }
