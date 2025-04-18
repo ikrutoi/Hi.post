@@ -243,78 +243,60 @@ const CardsList = () => {
     }
 
     const resultAroma = (source) => {
-      for (const cardSource of cards[source]) {
-        if (
-          card.aroma.name === cardSource[source].aroma.name &&
-          card.aroma.make === cardSource[source].aroma.make
-        ) {
-          resultSources[source].aroma.push(cardSource.personalId)
-        }
-      }
+      resultSources[source].aroma = cards[source]
+        .filter(
+          (cardSource) =>
+            card.aroma.name === cardSource[source].aroma.name &&
+            card.aroma.make === cardSource[source].aroma.make
+        )
+        .map((cardSource) => cardSource.personalId)
     }
 
     const resultDate = (source) => {
-      for (const cardSource of cards[source]) {
-        if (
-          card.date.day === cardSource[source].date.day &&
-          card.date.month === cardSource[source].date.month &&
-          card.date.year === cardSource[source].date.year
-        ) {
-          resultSources[source].date.push(cardSource.personalId)
-        }
-      }
+      resultSources[source].date = cards[source]
+        .filter(
+          (cardSource) =>
+            card.date.day === cardSource[source].date.day &&
+            card.date.month === cardSource[source].date.month &&
+            card.date.year === cardSource[source].date.year
+        )
+        .map((cardSource) => cardSource.personalId)
     }
 
     const resultEnvelope = (source) => {
       const sectionsEnvelope = ['myaddress', 'toaddress']
-      const inputsEnvelope = {
-        myaddress: Object.keys(card.envelope.myaddress),
-        toaddress: Object.keys(card.envelope.toaddress),
-      }
-      const inputsSection = { myaddress: [], toaddress: [] }
-      const resultAddress = { myaddress: null, toaddress: null }
+
       for (const cardSource of cards[source]) {
-        for (const sectionEnv of sectionsEnvelope) {
-          for (const inputEnv of inputsEnvelope[sectionEnv]) {
-            if (
+        const resultAddress = sectionsEnvelope.every((sectionEnv) =>
+          Object.keys(card.envelope[sectionEnv]).every(
+            (inputEnv) =>
               card.envelope[sectionEnv][inputEnv] ===
               cardSource[source].envelope[sectionEnv][inputEnv]
-            ) {
-              inputsSection[sectionEnv].push(true)
-            } else {
-              inputsSection[sectionEnv].push(false)
-            }
-          }
-          resultAddress[sectionEnv] = inputsSection[sectionEnv].every(
-            (input) => input === true
           )
-          inputsSection[sectionEnv] = []
-        }
-        if (resultAddress.myaddress && resultAddress.toaddress) {
+        )
+
+        if (resultAddress) {
           resultSources[source].envelope.push(cardSource.personalId)
         }
       }
     }
 
     const resultCardtext = (source) => {
-      const textChildrens = []
       for (const cardSource of cards[source]) {
         if (
-          card.cardtext.text.length === cardSource[source].cardtext.text.length
+          card.cardtext.text.length !== cardSource[source].cardtext.text.length
         ) {
-          card.cardtext.text.forEach((text, i) => {
-            if (
-              text.children[0].text ===
-              cardSource[source].cardtext.text[i].children[0].text
-            ) {
-              textChildrens.push(true)
-            } else {
-              textChildrens.push(false)
-            }
-          })
-          if (textChildrens.every((text) => text === true)) {
-            resultSources[source].cardtext.push(cardSource.personalId)
-          }
+          continue
+        }
+
+        const textChildrens = card.cardtext.text.map(
+          (text, i) =>
+            text.children[0].text ===
+            cardSource[source].cardtext.text[i]?.children[0].text
+        )
+
+        if (textChildrens.every(Boolean)) {
+          resultSources[source].cardtext.push(cardSource.personalId)
         }
       }
     }
@@ -340,55 +322,50 @@ const CardsList = () => {
 
     const checkEverySection = async (source) => {
       for (const section of sections) {
-        console.log('+', section)
-        console.log('result', result)
         await callResultSections[section]?.(source)
         if (section === 'aroma') {
           if (resultSources[source][section].length > 0) {
             result[source] = [...resultSources[source][section]]
           } else {
-            console.log('+aroma return')
             return
           }
         } else {
-          const coincidences = result[source].filter((id) =>
-            resultSources[source][section].includes(id)
-          )
+          if (result[source]) {
+            const coincidences = result[source].filter((id) =>
+              resultSources[source][section].includes(id)
+            )
 
-          console.log('coin', source, section, coincidences)
-
-          if (coincidences.length > 0) {
-            result[source] = [...coincidences]
-          } else {
-            result[source] = false
-            return
+            if (coincidences.length > 0) {
+              result[source] = [...coincidences]
+            } else {
+              result[source] = false
+              const buttonType =
+                source === 'shopping'
+                  ? 'plus'
+                  : source === 'blanks'
+                  ? 'save'
+                  : null
+              if (buttonType) {
+                setBtnsFullCard((state) => ({
+                  ...state,
+                  fullCard: { ...state.fullCard, [buttonType]: true },
+                }))
+              }
+            }
           }
         }
-        console.log('++', section)
       }
-      console.log('result', result)
-      setBtnsFullCard((state) => {
-        return {
-          ...state,
-          fullCard: {
-            ...state.fullCard,
-            plus: result.shopping ? false : true,
-            save: result.blanks ? false : true,
-          },
-        }
-      })
     }
 
     if (cardEdit.aroma && cardEdit.date) {
       for (const source of sources) {
-        checkEverySection(source)
+        await checkEverySection(source)
       }
     }
   }
 
   useEffect(() => {
     if (minimize) {
-      console.log('check..')
       checkForDuplicateCards(cardEdit)
     }
   }, [minimize])
