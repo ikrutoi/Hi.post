@@ -46,8 +46,6 @@ import {
   getBlankById,
   getAllBlanks,
 } from '../../utils/cardFormNav/indexDB/indexDb'
-import { colorSchemeMain } from '../../data/main/colorSchemeMain'
-import { colorScheme } from '../../data/toolbar/colorScheme'
 import MemoryEnvelope from './MemoryEnvelope/MemoryEnvelope'
 import MemoryCardtext from './MemoryCardtext/MemoryCardtext'
 import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
@@ -75,10 +73,10 @@ const CardsList = () => {
   )
   const [listActiveSections, setListActiveSections] = useState([])
   const [minimize, setMinimize] = useState(null)
-  const [stylePolyCards, setStylePolyCards] = useState({
-    iconArrows: {},
-    iconPlus: {},
-  })
+  // const [stylePolyCards, setStylePolyCards] = useState({
+  //   fullCardIconArrows: {},
+  //   fullCardIcons: { plus: null, save: null, remove: null },
+  // })
   const [expendCardStatus, setExpendCardStatus] = useState(null)
   // const [selectedListCards, setSelectedListCards] = useState(null)
   // const [memoryAddress, setMemoryAddress] = useState({
@@ -88,6 +86,7 @@ const CardsList = () => {
   const [btnsFullCard, setBtnsFullCard] = useState({
     fullCard: { plus: true, save: true, remove: true },
   })
+  // const [btnsFullCardArrows, setBtnsFullCardArrows] = useState({fullCard: {arrows: true}})
   const [memoryCardtext, setMemoryCardtext] = useState({ cardtext: null })
   const [showIconMinimize, setShowIconMinimize] = useState(minimize)
   const memoryRefs = useRef({})
@@ -107,6 +106,7 @@ const CardsList = () => {
   const [infoCardsList, setInfoCardsList] = useState(null)
   const [valueScroll, setValueScroll] = useState(0)
   // const [personalId, setPersonalId] = useState(null)
+  const [fullCard, setFullCard] = useState(null)
   const maxCardsList = useSelector((state) => state.layout.maxCardsList)
 
   useEffect(() => {
@@ -204,16 +204,9 @@ const CardsList = () => {
   }, [infoExpendMemoryCard])
 
   useEffect(() => {
-    // if (infoChoiceSection.nameSection === 'envelope') {
-    //   if (infoEnvelopeSave) {
-    //     getAllAddress(infoEnvelopeSave)
-    //     dispatch(infoButtons({ envelopeSave: false }))
-    //   }
-    // }
     if (infoChoiceSection.nameSection === 'cardtext') {
       if (infoChoiceSave === 'cardtext') {
         getAllCardtext()
-        // setSelectedListCards('cardtext')
       }
     }
   }, [infoChoiceSection, infoEnvelopeSave, infoChoiceSave, dispatch])
@@ -339,18 +332,6 @@ const CardsList = () => {
               result[source] = [...coincidences]
             } else {
               result[source] = false
-              const buttonType =
-                source === 'shopping'
-                  ? 'plus'
-                  : source === 'blanks'
-                  ? 'save'
-                  : null
-              if (buttonType) {
-                setBtnsFullCard((state) => ({
-                  ...state,
-                  fullCard: { ...state.fullCard, [buttonType]: true },
-                }))
-              }
             }
           }
         }
@@ -361,53 +342,45 @@ const CardsList = () => {
       for (const source of sources) {
         await checkEverySection(source)
       }
+      const updates = {}
+
+      if (btnsFullCard.fullCard.plus !== !result.shopping) {
+        updates.plus = result.shopping ? false : true
+      }
+      if (btnsFullCard.fullCard.save !== !result.blanks) {
+        updates.save = result.blanks ? false : true
+      }
+
+      if (Object.keys(updates).length > 0) {
+        setBtnsFullCard((state) => ({
+          ...state,
+          fullCard: { ...state.fullCard, ...updates },
+        }))
+      }
+      if (btnIconRefs.current && showIconMinimize) {
+      }
     }
   }
 
   useEffect(() => {
-    if (minimize) {
-      checkForDuplicateCards(cardEdit)
+    if (btnIconRefs.current && showIconMinimize) {
+      changeIconStyles(btnsFullCard, btnIconRefs.current)
     }
-  }, [minimize])
+  }, [showIconMinimize, btnIconRefs, btnsFullCard])
+
+  // Проверить код на соответствие!
 
   useEffect(() => {
-    // setSelectedListCards(infoChoiceClip)
     switch (infoChoiceClip) {
-      // case 'myaddress':
-      //   getAllAddress('myaddress')
-      //   break
-      // case 'toaddress':
-      //   getAllAddress('toaddress')
-      //   break
       case 'cardtext':
         getAllCardtext()
         break
-      // case 'shopping':
-      //   getAllCardsShopping()
-      //   break
-      // case 'blanks':
-      //   getAllBlanks()
-      //   break
-
       default:
         break
     }
   }, [infoChoiceClip])
 
-  // const getAllBlanks = async () => {}
-
-  // const getAllAddress = async (section) => {
-  //   const listAddress = await getAllRecordsAddresses(
-  //     section === 'myaddress' ? 'myAddress' : 'toAddress'
-  //   )
-  //   setMemoryAddress((state) => {
-  //     return {
-  //       ...state,
-  //       [section]: listAddress,
-  //     }
-  //   })
-  //   setSelectedListCards(section)
-  // }
+  // -----
 
   const getAllCardtext = async () => {
     const listCardtexts = await getAllRecordCardtext()
@@ -417,12 +390,7 @@ const CardsList = () => {
         cardtext: listCardtexts,
       }
     })
-    // setSelectedListCards('cardtext')
   }
-
-  // const getAllCardsShopping = async () => {
-  //   const listShopping = await getAllShopping()
-  // }
 
   const setRef = (id) => (element) => {
     memoryRefs.current[id] = element
@@ -452,82 +420,112 @@ const CardsList = () => {
     setListActiveSections(sortListSections)
   }, [layoutActiveSections])
 
-  const changeStyleFullCardIcons = (style) => {
-    switch (style) {
-      case 'backgroundColor':
-        if (minimize) {
-          if (showIconMinimize) {
-            return 'rgba(240, 240, 240, 0.75)'
-          }
-          return 'rgba(240, 240, 240, 0)'
-        } else {
-          return 'rgba(240, 240, 240, 0)'
-        }
-      case 'color':
-        if (minimize) {
-          if (showIconMinimize) {
-            return 'rgba(71, 71, 71, 1)'
-          }
-          return 'rgba(71, 71, 71, 0)'
-        } else {
-          return 'rgba(71, 71, 71, 0)'
-        }
+  // const changeStyleFullCardIcons = (style, btn) => {
+  //   const colorsScheme = {
+  //     false: 'rgba(163, 163, 163, 1)',
+  //     true: 'rgba(71, 71, 71, 1)',
+  //   }
+  //   const colorsSchemeTransparent = {
+  //     false: 'rgba(163, 163, 163, 1)',
+  //     true: 'rgba(71, 71, 71, 1)',
+  //   }
+  //   switch (style) {
+  //     case 'backgroundColor':
+  //       if (minimize) {
+  //         if (showIconMinimize) {
+  //           return 'rgba(240, 240, 240, 0.75)'
+  //         }
+  //         return 'rgba(240, 240, 240, 0)'
+  //       } else {
+  //         return 'rgba(240, 240, 240, 0)'
+  //       }
+  //     case 'color':
+  //       if (minimize) {
+  //         if (showIconMinimize) {
+  //           return colorsScheme[btnsFullCard.fullCard[btn]]
+  //           // return 'rgba(71, 71, 71, 1)'
+  //         }
+  //         return colorsSchemeTransparent[btnsFullCard.fullCard[btn]]
+  //         // return 'rgba(71, 71, 71, 0)'
+  //       } else {
+  //         return colorsSchemeTransparent[btnsFullCard.fullCard[btn]]
+  //         return 'rgba(71, 71, 71, 0)'
+  //         // return 'rgba(71, 71, 71, 0)'
+  //       }
 
-      default:
-        break
-    }
-  }
+  //     default:
+  //       break
+  //   }
+  // }
 
   useEffect(() => {
-    if (listActiveSections.length === 5) {
-      setStylePolyCards((state) => {
-        return {
-          iconArrows: {
-            ...state.iconArrows,
-            backgroundColor: 'rgba(240, 240, 240, 0.75)',
-            // backgroundColor: 'rgba(0, 125, 215, 0.85)',
-            color: colorSchemeMain.gray,
-            // color: colorSchemeMain.lightGray,
-            cursor: 'pointer',
-          },
-          iconPlus: {
-            ...state.iconPlus,
-            backgroundColor: changeStyleFullCardIcons('backgroundColor'),
-            color: changeStyleFullCardIcons('color'),
-            cursor: minimize && showIconMinimize ? 'pointer' : 'default',
-          },
-        }
-      })
-      if (miniPolyCardsRef.current) {
-        choiceStyleMiniPolyCards(true)
-      }
-    } else {
-      if (infoMinimize) {
-        setInfoMinimize(false)
-        // changeStyleFullCardIcons(false)
-      }
-      setStylePolyCards((state) => {
-        return {
-          ...state,
-          iconArrows: {
-            ...state.iconArrows,
-            backgroundColor: 'rgba(255, 255, 255, 0)',
-            color: 'rgba(255, 255, 255, 0)',
-            cursor: 'default',
-          },
-          iconPlus: {
-            ...state.iconPlus,
-            backgroundColor: 'rgba(240, 240, 240, 0)',
-            // color: 'rgba(71, 71, 71, 0)',
-            cursor: 'default',
-          },
-        }
-      })
-      if (miniPolyCardsRef.current) {
-        choiceStyleMiniPolyCards(false)
-      }
+    const isFull = listActiveSections.length === 5
+
+    if (fullCard !== isFull) {
+      setFullCard(isFull)
     }
-  }, [listActiveSections, showIconMinimize, minimize, miniPolyCardsRef])
+
+    if (miniPolyCardsRef.current) {
+      choiceStyleMiniPolyCards(isFull)
+    }
+  }, [listActiveSections, miniPolyCardsRef, fullCard])
+
+  // useEffect(() => {
+  //   if (listActiveSections.length === 5) {
+  //     setStylePolyCards((state) => {
+  //       return {
+  //         fullCardIconArrows: {
+  //           ...state.fullCardIconArrows,
+  //           backgroundColor: 'rgba(240, 240, 240, 0.75)',
+  //           // backgroundColor: 'rgba(0, 125, 215, 0.85)',
+  //           color: colorSchemeMain.gray,
+  //           // color: colorSchemeMain.lightGray,
+  //           cursor: 'pointer',
+  //         },
+  //         fullCardIcons: {
+  //           ...state.fullCardIcons,
+  //           backgroundColor: changeStyleFullCardIcons('backgroundColor'),
+  //           color: changeStyleFullCardIcons('color'),
+  //           cursor: minimize && showIconMinimize ? 'pointer' : 'default',
+  //         },
+  //       }
+  //     })
+  //     // if (miniPolyCardsRef.current) {
+  //     //   choiceStyleMiniPolyCards(true)
+  //     // }
+  //   } else {
+  //     if (infoMinimize) {
+  //       setInfoMinimize(false)
+  //       // changeStyleFullCardIcons(false)
+  //     }
+  //     setStylePolyCards((state) => {
+  //       return {
+  //         ...state,
+  //         fullCardIconArrows: {
+  //           ...state.fullCardIconArrows,
+  //           backgroundColor: 'rgba(255, 255, 255, 0)',
+  //           color: 'rgba(255, 255, 255, 0)',
+  //           cursor: 'default',
+  //         },
+  //         fullCardIcons: {
+  //           ...state.fullCardIcons,
+  //           backgroundColor: 'rgba(240, 240, 240, 0)',
+  //           color: 'rgba(71, 71, 71, 0)',
+  //           cursor: 'default',
+  //         },
+  //       }
+  //     })
+  //     if (miniPolyCardsRef.current) {
+  //       choiceStyleMiniPolyCards(false)
+  //     }
+  //   }
+  // }, [
+  //   listActiveSections,
+  //   showIconMinimize,
+  //   minimize,
+  //   miniPolyCardsRef,
+  //   btnsFullCard,
+  // ])
 
   // useEffect(() => {
   //   // if ()
@@ -543,20 +541,6 @@ const CardsList = () => {
   //   })
   // }, [minimize, showIconMinimize])
 
-  // const getListPrioritySections = () => {
-  //   const temporaryArray = []
-  //   for (let i = 0; i < listSortSelectedSections.length; i++) {
-  //     if (listSortSelectedSections[i].section !== choiceSection.nameSection) {
-  //       temporaryArray.push(listSortSelectedSections[i])
-  //     } else {
-  //       temporaryArray.unshift(...listSortSelectedSections.slice(i))
-  //       break
-  //     }
-  //   }
-  //   return temporaryArray
-  // }
-  // const listPrioritySections = getListPrioritySections()
-
   const handleClickMiniKebab = async (evt, section, id) => {
     evt.stopPropagation()
     switch (section) {
@@ -564,14 +548,6 @@ const CardsList = () => {
         await deleteRecordCardtext(id)
         getAllCardtext()
         break
-      // case 'myaddress':
-      //   await deleteRecordAddress('myAddress', id)
-      //   getAllAddress(section)
-      //   break
-      // case 'toaddress':
-      //   await deleteRecordAddress('toAddress', id)
-      //   getAllAddress(section)
-      //   break
       case 'aroma':
         dispatch(addAroma(null))
         break
@@ -581,35 +557,23 @@ const CardsList = () => {
     }
   }
 
-  // const handleClickAddress = (section, id) => {
-  //   dispatch(choiceAddress({ section, id }))
-  // }
-
   const handleClickCardtext = (id) => {
     dispatch(choiceMemorySection({ section: 'cardtext', id }))
   }
 
-  const handleClickIconMinimize = () => {
-    if (listActiveSections.length === 5) {
-      minimize ? setMinimize(false) : setMinimize(true)
-      // dispatch(choiceClip(minimize ? 'minimize' : false))
-      if (infoChoiceSection.source !== 'minimize') {
-        dispatch(
-          addChoiceSection({
-            source: `minimize`,
-            nameSection: 'cardphoto',
-          })
-        )
-      }
-      // dispatch(
-      //   addChoiceSection({
-      //     source: minimize ? 'minimize' : null,
-      //     nameSection: minimize ? 'cardphoto' : null,
-      //   })
-      // )
-      if (!infoMinimize) {
-        setInfoMinimize(true)
-      }
+  const handleClickIconArrows = () => {
+    minimize ? setMinimize(false) : setMinimize(true)
+    checkForDuplicateCards(cardEdit)
+    if (infoChoiceSection.source !== 'minimize') {
+      dispatch(
+        addChoiceSection({
+          source: `minimize`,
+          nameSection: 'cardphoto',
+        })
+      )
+    }
+    if (!infoMinimize) {
+      setInfoMinimize(true)
     }
   }
 
@@ -650,10 +614,12 @@ const CardsList = () => {
       switch (parentBtn.dataset.tooltip) {
         case 'plus':
           await addUniqueShopping(cardData, personalId)
+          checkForDuplicateCards(cardEdit)
           dispatch(fullCardPersonalId({ shopping: personalId }))
           break
         case 'save':
           await addUniqueBlank(cardData, personalId)
+          checkForDuplicateCards(cardEdit)
           dispatch(fullCardPersonalId({ blanks: personalId }))
           break
 
@@ -699,10 +665,9 @@ const CardsList = () => {
   // }
 
   useEffect(() => {
-    // dispatch(fullCard(minimize))
     const timerIcon = setTimeout(() => {
       setShowIconMinimize(minimize)
-    }, 800)
+    }, 700)
 
     return () => clearTimeout(timerIcon)
   }, [minimize])
@@ -713,24 +678,6 @@ const CardsList = () => {
   }
 
   const choiceMemoryList = () => {
-    // if (selectedListCards === 'myaddress') {
-    //   return (
-    //     <MemoryEnvelope
-    //       // key={`${selectedListCards}-${i}`}
-    //       // setRef={setRef}
-    //       sizeMiniCard={sizeMiniCard}
-    //       // section={selectedListCards}
-    //       // address={address}
-    //       // handleClickMiniKebab={handleClickMiniKebab}
-    //       // handleClickAddress={handleClickAddress}
-    //     />
-    //     // <div className="memory-list">
-    //     //   {memoryAddress[selectedListCards] &&
-    //     //     memoryAddress[selectedListCards].map((address, i) => (
-    //     //     ))}
-    //     // </div>
-    //   )
-    // }
     if (infoChoiceClip === 'cardtext') {
       return (
         <div className="memory-list">
@@ -828,19 +775,18 @@ const CardsList = () => {
             }}
           >
             <div className="fullcard-icons-container">
-              <div className="fullcard-line">
-                <div className="fullcard-btn"></div>
-              </div>
-              <div className="fullcard-line">
+              {fullCard && (
                 <button
-                  className="fullcard-btn"
-                  style={{
-                    color: stylePolyCards.iconArrows.color,
-                    backgroundColor: stylePolyCards.iconArrows.backgroundColor,
-                    cursor: stylePolyCards.iconArrows.cursor,
-                    transition: 'background-color 0.3s ease, color 0.3s ease',
-                  }}
-                  onClick={handleClickIconMinimize}
+                  className="fullcard-btn fullcard-btn-arrows"
+                  // ref={setBtnIconRef('fullCard-arrows')}
+                  // style={{
+                  //   color: stylePolyCards.fullCardIconArrows.color,
+                  //   backgroundColor:
+                  //     stylePolyCards.fullCardIconArrows.backgroundColor,
+                  //   cursor: stylePolyCards.fullCardIconArrows.cursor,
+                  //   transition: 'background-color 0.3s ease, color 0.3s ease',
+                  // }}
+                  onClick={handleClickIconArrows}
                   // onMouseEnter={handleMouseEnterIconMinimize}
                   // onMouseLeave={handleMouseLeaveIconMinimize}
                 >
@@ -848,32 +794,30 @@ const CardsList = () => {
                     ? addIconToolbar('arrowsOut')
                     : addIconToolbar('arrowsIn')}
                 </button>
-              </div>
+              )}
               <div className="fullcard-line">
-                {listIconsFullCard.map((btn, i) => {
-                  return (
-                    <button
-                      key={`${btn}-${i}`}
-                      className="fullcard-btn"
-                      ref={setBtnIconRef(`fullCard-${btn}`)}
-                      data-tooltip={btn}
-                      style={{
-                        color: btnsFullCard.fullCard[btn]
-                          ? colorScheme.true
-                          : colorScheme.false,
-                        backgroundColor:
-                          stylePolyCards.iconPlus.backgroundColor,
-                        cursor: btnsFullCard.fullCard[btn]
-                          ? 'pointer'
-                          : 'default',
-                        transition: 'background-color 0.3s ease',
-                      }}
-                      onClick={handleClickFullCardIcon}
-                    >
-                      {showIconMinimize ? addIconToolbar(btn) : <></>}
-                    </button>
-                  )
-                })}
+                {showIconMinimize &&
+                  listIconsFullCard.map((btn, i) => {
+                    return (
+                      <button
+                        key={`${btn}-${i}`}
+                        className="fullcard-btn fullcard-btn-menu"
+                        ref={setBtnIconRef(`fullCard-${btn}`)}
+                        data-tooltip={btn}
+                        // style={{
+                        //   // color: stylePolyCards.fullCardIcons.color,
+                        //   backgroundColor:
+                        //     stylePolyCards.fullCardIcons.backgroundColor,
+                        //   // cursor: stylePolyCards.fullCardIcons.cursor,
+                        //   // transition:
+                        //   // 'background-color 0.3s ease, color 0.3s ease',
+                        // }}
+                        onClick={handleClickFullCardIcon}
+                      >
+                        {showIconMinimize ? addIconToolbar(btn) : <></>}
+                      </button>
+                    )
+                  })}
               </div>
             </div>
           </div>
