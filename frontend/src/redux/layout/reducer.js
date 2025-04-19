@@ -4,6 +4,7 @@ import {
   expendShopping,
   fullCard,
   fullCardPersonalId,
+  lockShowIconsMinimize,
   selectedSection,
 } from './actionCreators'
 import * as a from './actionTypes'
@@ -62,6 +63,7 @@ const initialState = {
   sliderLine: null,
   deltaEnd: null,
   personalId: null,
+  lockShowIconsMinimize: true,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -115,6 +117,11 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         memoryCrop: action.payload,
+      }
+    case a.LOCK_SHOW_ICONS_MINIMIZE:
+      return {
+        ...state,
+        lockShowIconsMinimize: action.payload,
       }
     case a.CHOICE_SAVE:
       return {

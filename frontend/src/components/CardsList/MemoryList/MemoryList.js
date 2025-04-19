@@ -20,6 +20,7 @@ import {
   choiceSave,
   addressPersonalId,
   choiceAddress,
+  lockShowIconsMinimize,
 } from '../../../redux/layout/actionCreators'
 import { current } from '@reduxjs/toolkit'
 
@@ -515,6 +516,7 @@ const MemoryList = ({
   }
 
   const handleClickCard = (evt) => {
+    dispatch(lockShowIconsMinimize(false))
     dispatch(
       expendMemoryCard({ source: infoChoiceClip, id: evt.target.dataset.id })
     )

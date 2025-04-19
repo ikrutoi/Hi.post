@@ -22,6 +22,7 @@ import {
   choiceClip,
   sliderLine,
   fullCardPersonalId,
+  lockShowIconsMinimize,
 } from '../../redux/layout/actionCreators'
 import {
   addUserImage,
@@ -61,6 +62,9 @@ const CardsList = () => {
   )
   const infoExpendMemoryCard = useSelector(
     (state) => state.layout.expendMemoryCard
+  )
+  const infoLockShowIconsMinimize = useSelector(
+    (state) => state.layout.lockShowIconsMinimize
   )
   const infoChoiceSave = useSelector((state) => state.layout.choiceSave)
   const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
@@ -105,6 +109,7 @@ const CardsList = () => {
   const [valueCardsList, setValueCardsList] = useState(0)
   const [infoCardsList, setInfoCardsList] = useState(null)
   const [valueScroll, setValueScroll] = useState(0)
+  const [lockShowIconMinimize, setLockShowIconMinimize] = useState(null)
   // const [personalId, setPersonalId] = useState(null)
   const [fullCard, setFullCard] = useState(null)
   const maxCardsList = useSelector((state) => state.layout.maxCardsList)
@@ -121,6 +126,7 @@ const CardsList = () => {
     }
   }, [infoCardsList])
 
+  console.log('infoLock', infoLockShowIconsMinimize)
   const getExpendStatusCard = async (expendCard) => {
     setMinimize(true)
     let cardExpend
@@ -164,7 +170,6 @@ const CardsList = () => {
     const timerChangeMinimize = setTimeout(() => {
       setMinimize(false)
     }, 300)
-
     return () => clearTimeout(timerChangeMinimize)
   }
 
@@ -195,9 +200,8 @@ const CardsList = () => {
 
   useEffect(() => {
     if (
-      infoExpendMemoryCard !== false &&
-      (infoExpendMemoryCard.source === 'shopping' ||
-        infoExpendMemoryCard.source === 'blanks')
+      infoExpendMemoryCard?.source &&
+      ['shopping', 'blanks'].includes(infoExpendMemoryCard.source)
     ) {
       getExpendStatusCard(infoExpendMemoryCard)
     }
@@ -364,6 +368,7 @@ const CardsList = () => {
 
   useEffect(() => {
     if (btnIconRefs.current && showIconMinimize) {
+      dispatch(lockShowIconsMinimize(true))
       changeIconStyles(btnsFullCard, btnIconRefs.current)
     }
   }, [showIconMinimize, btnIconRefs, btnsFullCard])
@@ -562,7 +567,10 @@ const CardsList = () => {
   }
 
   const handleClickIconArrows = () => {
-    minimize ? setMinimize(false) : setMinimize(true)
+    if (!infoLockShowIconsMinimize) {
+      dispatch(lockShowIconsMinimize(true))
+    }
+    setMinimize(!minimize)
     checkForDuplicateCards(cardEdit)
     if (infoChoiceSection.source !== 'minimize') {
       dispatch(
@@ -572,9 +580,7 @@ const CardsList = () => {
         })
       )
     }
-    if (!infoMinimize) {
-      setInfoMinimize(true)
-    }
+    setInfoMinimize(infoMinimize || true)
   }
 
   const getResultCardphoto = async () => {
@@ -797,6 +803,7 @@ const CardsList = () => {
               )}
               <div className="fullcard-line">
                 {showIconMinimize &&
+                  infoLockShowIconsMinimize &&
                   listIconsFullCard.map((btn, i) => {
                     return (
                       <button

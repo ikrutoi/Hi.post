@@ -3,7 +3,6 @@ import { colorScheme } from './colorScheme'
 const styleCursor = { true: 'pointer', false: 'default', hover: 'pointer' }
 
 export const changeIconStyles = (btns, btnIconRefs) => {
-  console.log('change', btns, btnIconRefs)
   Object.keys(btns).forEach((section) => {
     Object.keys(btns[section]).forEach((btn) => {
       const stateBtn = btns[section][btn]

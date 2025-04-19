@@ -141,6 +141,7 @@
 .fullcard-btn-menu,
 .fullcard-btn-arrows {
   background-color: rgba(240, 240, 240, 0.75);
+  transition: background-color 0.3s ease-in-out;
 }
 
 .fullcard-btn:hover {
