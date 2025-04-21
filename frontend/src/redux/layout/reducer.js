@@ -4,6 +4,7 @@ import {
   expendShopping,
   fullCard,
   fullCardPersonalId,
+  lockExpendMemoryCard,
   lockShowIconsMinimize,
   selectedSection,
 } from './actionCreators'
@@ -63,7 +64,8 @@ const initialState = {
   sliderLine: null,
   deltaEnd: null,
   personalId: null,
-  lockShowIconsMinimize: true,
+  // lockShowIconsMinimize: true,
+  lockExpendMemoryCard: true,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -118,10 +120,15 @@ const layoutReducer = (state = initialState, action) => {
         ...state,
         memoryCrop: action.payload,
       }
-    case a.LOCK_SHOW_ICONS_MINIMIZE:
+    // case a.LOCK_SHOW_ICONS_MINIMIZE:
+    //   return {
+    //     ...state,
+    //     lockShowIconsMinimize: action.payload,
+    //   }
+    case a.LOCK_EXPEND_MEMORY_CARD:
       return {
         ...state,
-        lockShowIconsMinimize: action.payload,
+        lockExpendMemoryCard: action.payload,
       }
     case a.CHOICE_SAVE:
       return {

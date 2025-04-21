@@ -168,9 +168,16 @@ export const fullCardPersonalId = (newSection) => {
   }
 }
 
-export const lockShowIconsMinimize = (newSection) => {
+// export const lockShowIconsMinimize = (newSection) => {
+//   return {
+//     type: a.LOCK_SHOW_ICONS_MINIMIZE,
+//     payload: newSection,
+//   }
+// }
+
+export const lockExpendMemoryCard = (newSection) => {
   return {
-    type: a.LOCK_SHOW_ICONS_MINIMIZE,
+    type: a.LOCK_EXPEND_MEMORY_CARD,
     payload: newSection,
   }
 }

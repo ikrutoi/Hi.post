@@ -8,9 +8,8 @@ import aromaList from '../../../../data/aroma/aromaList.json'
 import InfoMiniCardAroma from './InfoMiniCardAroma/InfoMiniCardAroma'
 
 const Aroma = () => {
-  // const fullCard = useSelector((state) => state.layout.fullCard)
-  const cardEditAroma = useSelector((state) => state.cardEdit.aroma)
-  const layoutActiveSections = useSelector(
+  const selectorCardEditAroma = useSelector((state) => state.cardEdit.aroma)
+  const selectorActiveSections = useSelector(
     (state) => state.layout.activeSections
   )
   const [selectedAroma, setSelectedAroma] = useState(null)
@@ -22,14 +21,19 @@ const Aroma = () => {
   }
 
   useEffect(() => {
-    dispatch(
-      activeSections({ ...layoutActiveSections, aroma: Boolean(selectedAroma) })
-    )
+    if (selectedAroma) {
+      dispatch(
+        activeSections({
+          ...selectorActiveSections,
+          aroma: Boolean(selectedAroma),
+        })
+      )
+    }
   }, [selectedAroma, dispatch])
 
   useEffect(() => {
-    setSelectedAroma(cardEditAroma)
-  }, [cardEditAroma])
+    setSelectedAroma(selectorCardEditAroma)
+  }, [selectorCardEditAroma])
 
   return (
     <form className="aroma" onSubmit={handleSubmit}>

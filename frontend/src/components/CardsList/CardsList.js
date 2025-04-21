@@ -22,7 +22,8 @@ import {
   choiceClip,
   sliderLine,
   fullCardPersonalId,
-  lockShowIconsMinimize,
+  lockExpendMemoryCard,
+  addIndexDb,
 } from '../../redux/layout/actionCreators'
 import {
   addUserImage,
@@ -46,6 +47,8 @@ import {
   addUniqueBlank,
   getBlankById,
   getAllBlanks,
+  deleteHiPostImage,
+  deleteUserImage,
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import MemoryEnvelope from './MemoryEnvelope/MemoryEnvelope'
 import MemoryCardtext from './MemoryCardtext/MemoryCardtext'
@@ -56,31 +59,29 @@ import SliderCardsList from './SliderCardsList/SliderCardsList'
 
 const CardsList = () => {
   // const layoutFullCard = useSelector((state) => state.layout.fullCard)
-  const cardEdit = useSelector((state) => state.cardEdit)
-  const layoutActiveSections = useSelector(
+  const selectorCardEdit = useSelector((state) => state.cardEdit)
+  const selectorActiveSections = useSelector(
     (state) => state.layout.activeSections
   )
-  const infoExpendMemoryCard = useSelector(
+  const selectorExpendMemoryCard = useSelector(
     (state) => state.layout.expendMemoryCard
   )
-  const infoLockShowIconsMinimize = useSelector(
-    (state) => state.layout.lockShowIconsMinimize
+  const selectorLockExpendMemoryCard = useSelector(
+    (state) => state.layout.lockExpendMemoryCard
   )
-  const infoChoiceSave = useSelector((state) => state.layout.choiceSave)
-  const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
+  const selectorChoiceSave = useSelector((state) => state.layout.choiceSave)
+  const selectorChoiceClip = useSelector((state) => state.layout.choiceClip)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
-  const infoActiveSections = useSelector((state) => state.layout.activeSections)
-  const sizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
-  const infoChoiceSection = useSelector((state) => state.layout.choiceSection)
-  const infoEnvelopeSave = useSelector(
+  const selectorSizeMiniCard = useSelector((state) => state.layout.sizeMiniCard)
+  const selectorChoiceSection = useSelector(
+    (state) => state.layout.choiceSection
+  )
+  const selectorEnvelopeSave = useSelector(
     (state) => state.infoButtons.envelopeSave
   )
+  const selectorMaxCardsList = useSelector((state) => state.layout.maxCardsList)
   const [listActiveSections, setListActiveSections] = useState([])
   const [minimize, setMinimize] = useState(null)
-  // const [stylePolyCards, setStylePolyCards] = useState({
-  //   fullCardIconArrows: {},
-  //   fullCardIcons: { plus: null, save: null, remove: null },
-  // })
   const [expendCardStatus, setExpendCardStatus] = useState(null)
   // const [selectedListCards, setSelectedListCards] = useState(null)
   // const [memoryAddress, setMemoryAddress] = useState({
@@ -92,27 +93,26 @@ const CardsList = () => {
   })
   // const [btnsFullCardArrows, setBtnsFullCardArrows] = useState({fullCard: {arrows: true}})
   const [memoryCardtext, setMemoryCardtext] = useState({ cardtext: null })
-  const [showIconMinimize, setShowIconMinimize] = useState(minimize)
+  const [showIconsMinimize, setShowIconsMinimize] = useState(minimize)
   const memoryRefs = useRef({})
   const btnIconRefs = useRef({})
   const miniPolyCardsRef = useRef()
+  const btnArrowsRef = useRef()
   const dispatch = useDispatch()
   const listIconsFullCard = ['plus', 'save', 'remove']
   const listSections = ['cardphoto', 'cardtext', 'envelope', 'date', 'aroma']
   const setBtnIconRef = (id) => (element) => {
     btnIconRefs.current[id] = element
   }
-  // const [duplicateCards, setDuplicateCards] = useState(null)
   const [infoMinimize, setInfoMinimize] = useState(null)
   const cardsListRef = useRef(null)
   const [widthCardsList, setWidthCardsList] = useState(null)
   const [valueCardsList, setValueCardsList] = useState(0)
   const [infoCardsList, setInfoCardsList] = useState(null)
   const [valueScroll, setValueScroll] = useState(0)
-  const [lockShowIconMinimize, setLockShowIconMinimize] = useState(null)
+  // const [lockShowIconMinimize, setLockShowIconMinimize] = useState(null)
   // const [personalId, setPersonalId] = useState(null)
   const [fullCard, setFullCard] = useState(null)
-  const maxCardsList = useSelector((state) => state.layout.maxCardsList)
 
   useEffect(() => {
     if (cardsListRef.current) {
@@ -121,14 +121,15 @@ const CardsList = () => {
   }, [])
 
   useEffect(() => {
-    if (infoCardsList && infoCardsList <= maxCardsList) {
+    if (infoCardsList && infoCardsList <= selectorMaxCardsList) {
       dispatch(sliderLine(false))
     }
   }, [infoCardsList])
 
-  console.log('infoLock', infoLockShowIconsMinimize)
   const getExpendStatusCard = async (expendCard) => {
     setMinimize(true)
+    dispatch(lockExpendMemoryCard(true))
+    // dispatch(lockShowIconsMinimize(true))
     let cardExpend
     switch (expendCard.source) {
       case 'shopping':
@@ -159,7 +160,7 @@ const CardsList = () => {
     )
     dispatch(
       activeSections({
-        ...layoutActiveSections,
+        ...selectorActiveSections,
         cardphoto: Boolean(cardExpend.cardphoto),
         cardtext: Boolean(cardExpend.cardtext),
         envelope: Boolean(cardExpend.envelope),
@@ -200,20 +201,39 @@ const CardsList = () => {
 
   useEffect(() => {
     if (
-      infoExpendMemoryCard?.source &&
-      ['shopping', 'blanks'].includes(infoExpendMemoryCard.source)
+      selectorExpendMemoryCard?.source &&
+      !selectorLockExpendMemoryCard &&
+      ['shopping', 'blanks'].includes(selectorExpendMemoryCard.source)
     ) {
-      getExpendStatusCard(infoExpendMemoryCard)
+      getExpendStatusCard(selectorExpendMemoryCard)
     }
-  }, [infoExpendMemoryCard])
+  }, [selectorExpendMemoryCard, selectorLockExpendMemoryCard])
 
   useEffect(() => {
-    if (infoChoiceSection.nameSection === 'cardtext') {
-      if (infoChoiceSave === 'cardtext') {
+    if (
+      fullCard &&
+      btnArrowsRef.current &&
+      !btnArrowsRef.current.classList.contains('full')
+    ) {
+      const timer = setTimeout(() => {
+        btnArrowsRef.current.classList.add('full')
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [fullCard, btnArrowsRef, selectorExpendMemoryCard])
+
+  useEffect(() => {
+    if (selectorChoiceSection.nameSection === 'cardtext') {
+      if (selectorChoiceSave === 'cardtext') {
         getAllCardtext()
       }
     }
-  }, [infoChoiceSection, infoEnvelopeSave, infoChoiceSave, dispatch])
+  }, [
+    selectorChoiceSection,
+    selectorEnvelopeSave,
+    selectorChoiceSave,
+    dispatch,
+  ])
 
   const checkForDuplicateCards = async (card) => {
     const sections = ['aroma', 'date', 'envelope', 'cardtext', 'cardphoto']
@@ -342,7 +362,7 @@ const CardsList = () => {
       }
     }
 
-    if (cardEdit.aroma && cardEdit.date) {
+    if (selectorCardEdit.aroma && selectorCardEdit.date) {
       for (const source of sources) {
         await checkEverySection(source)
       }
@@ -361,29 +381,29 @@ const CardsList = () => {
           fullCard: { ...state.fullCard, ...updates },
         }))
       }
-      if (btnIconRefs.current && showIconMinimize) {
-      }
+      // if (btnIconRefs.current && showIconsMinimize) {
+      // }
     }
   }
 
   useEffect(() => {
-    if (btnIconRefs.current && showIconMinimize) {
-      dispatch(lockShowIconsMinimize(true))
+    if (btnIconRefs.current && showIconsMinimize) {
+      // dispatch(lockShowIconsMinimize(true))
       changeIconStyles(btnsFullCard, btnIconRefs.current)
     }
-  }, [showIconMinimize, btnIconRefs, btnsFullCard])
+  }, [showIconsMinimize, btnIconRefs, btnsFullCard])
 
   // Проверить код на соответствие!
 
   useEffect(() => {
-    switch (infoChoiceClip) {
+    switch (selectorChoiceClip) {
       case 'cardtext':
         getAllCardtext()
         break
       default:
         break
     }
-  }, [infoChoiceClip])
+  }, [selectorChoiceClip])
 
   // -----
 
@@ -412,8 +432,8 @@ const CardsList = () => {
 
     const listSections = []
 
-    for (let section in layoutActiveSections) {
-      if (layoutActiveSections[section]) {
+    for (let section in selectorActiveSections) {
+      if (selectorActiveSections[section]) {
         listSections.push(baseSections[section])
       }
     }
@@ -423,7 +443,7 @@ const CardsList = () => {
     )
 
     setListActiveSections(sortListSections)
-  }, [layoutActiveSections])
+  }, [selectorActiveSections])
 
   // const changeStyleFullCardIcons = (style, btn) => {
   //   const colorsScheme = {
@@ -473,7 +493,29 @@ const CardsList = () => {
     if (miniPolyCardsRef.current) {
       choiceStyleMiniPolyCards(isFull)
     }
-  }, [listActiveSections, miniPolyCardsRef, fullCard])
+  }, [listActiveSections, miniPolyCardsRef, fullCard, btnArrowsRef])
+
+  useEffect(() => {
+    if (fullCard && btnArrowsRef.current && selectorLockExpendMemoryCard) {
+      const timer = setTimeout(() => {
+        if (!btnArrowsRef.current.classList.contains('full')) {
+          btnArrowsRef.current.classList.add('full')
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [fullCard, btnArrowsRef, selectorLockExpendMemoryCard])
+
+  // useEffect(() => {
+  //   if (infoLockShowIconsMinimize && btnIconRefs.current) {
+  //     const timers = listIconsFullCard.map((btn) =>
+  //       setTimeout(() => {
+  //         btnIconRefs.current[`fullCard-${btn}`]?.classList.add('full')
+  //       }, 0)
+  //     )
+  //     return () => timers.forEach(clearTimeout)
+  //   }
+  // }, [infoLockShowIconsMinimize, btnIconRefs, listIconsFullCard])
 
   // useEffect(() => {
   //   if (listActiveSections.length === 5) {
@@ -567,12 +609,12 @@ const CardsList = () => {
   }
 
   const handleClickIconArrows = () => {
-    if (!infoLockShowIconsMinimize) {
-      dispatch(lockShowIconsMinimize(true))
-    }
+    // if (!selectorLockShowIconsMinimize) {
+    //   dispatch(lockShowIconsMinimize(true))
+    // }
     setMinimize(!minimize)
-    checkForDuplicateCards(cardEdit)
-    if (infoChoiceSection.source !== 'minimize') {
+    checkForDuplicateCards(selectorCardEdit)
+    if (selectorChoiceSection.source !== 'minimize') {
       dispatch(
         addChoiceSection({
           source: `minimize`,
@@ -605,7 +647,8 @@ const CardsList = () => {
     }
 
     return listSections.reduce((acc, section) => {
-      acc[section] = section === 'cardphoto' ? workingImage : cardEdit[section]
+      acc[section] =
+        section === 'cardphoto' ? workingImage : selectorCardEdit[section]
       return acc
     }, {})
   }
@@ -620,13 +663,81 @@ const CardsList = () => {
       switch (parentBtn.dataset.tooltip) {
         case 'plus':
           await addUniqueShopping(cardData, personalId)
-          checkForDuplicateCards(cardEdit)
+          checkForDuplicateCards(selectorCardEdit)
           dispatch(fullCardPersonalId({ shopping: personalId }))
           break
         case 'save':
           await addUniqueBlank(cardData, personalId)
-          checkForDuplicateCards(cardEdit)
+          checkForDuplicateCards(selectorCardEdit)
           dispatch(fullCardPersonalId({ blanks: personalId }))
+          break
+        case 'remove':
+          dispatch(addAroma(null))
+          dispatch(addDate(null))
+          dispatch(
+            addEnvelope({
+              myaddress: {
+                street: '',
+                index: '',
+                city: '',
+                country: '',
+                name: '',
+              },
+              toaddress: {
+                street: '',
+                index: '',
+                city: '',
+                country: '',
+                name: '',
+              },
+            })
+          )
+          dispatch(
+            addCardtext({
+              text: [
+                {
+                  type: 'paragraph',
+                  children: [{ text: '' }],
+                },
+              ],
+              colorName: 'blueribbon',
+              colorType: 'rgba(0, 122, 255, 0.8)',
+              // font: '',
+              // fontSize: 10,
+              fontStyle: 'italic',
+              fontWeight: 500,
+              // textAlign: 'left',
+              // lineHeight: null,
+              // miniCardtextStyle: {
+              //   maxLines: null,
+              //   fontSize: null,
+              //   lineHeight: null,
+              // },
+            })
+          )
+          await deleteHiPostImage('miniImage')
+          await deleteUserImage('miniImage')
+          dispatch(
+            addIndexDb({
+              hiPostImages: { miniImage: false },
+              userImages: { miniImage: false },
+            })
+          )
+          dispatch(
+            activeSections({
+              cardphoto: false,
+              cardtext: false,
+              envelope: false,
+              date: false,
+              aroma: false,
+            })
+          )
+          setShowIconsMinimize(false)
+          setMinimize(false)
+          // setBtnsFullCard((state) => ({
+          //   ...state,
+          //   fullCard: { ...state.fullCard, remove: false },
+          // }))
           break
 
         default:
@@ -671,12 +782,15 @@ const CardsList = () => {
   // }
 
   useEffect(() => {
+    // if (!minimize && selectorLockShowIconsMinimize) {
+    //   dispatch(lockShowIconsMinimize(false))
+    // }
     const timerIcon = setTimeout(() => {
-      setShowIconMinimize(minimize)
+      setShowIconsMinimize(minimize)
     }, 700)
 
     return () => clearTimeout(timerIcon)
-  }, [minimize])
+  }, [minimize, dispatch])
 
   const handleChangeFromSliderCardsList = (value) => {
     setValueCardsList(value)
@@ -684,7 +798,7 @@ const CardsList = () => {
   }
 
   const choiceMemoryList = () => {
-    if (infoChoiceClip === 'cardtext') {
+    if (selectorChoiceClip === 'cardtext') {
       return (
         <div className="memory-list">
           {memoryCardtext.cardtext &&
@@ -692,7 +806,7 @@ const CardsList = () => {
               <MemoryCardtext
                 key={`cardtext-${i}`}
                 setRef={setRef}
-                sizeMiniCard={sizeMiniCard}
+                sizeMiniCard={selectorSizeMiniCard}
                 text={text}
                 handleClickMiniKebab={handleClickMiniKebab}
                 handleClickCardtext={handleClickCardtext}
@@ -702,14 +816,14 @@ const CardsList = () => {
       )
     }
     if (
-      infoChoiceClip === 'shopping' ||
-      infoChoiceClip === 'blanks' ||
-      infoChoiceClip === 'toaddress' ||
-      infoChoiceClip === 'myaddress'
+      selectorChoiceClip === 'shopping' ||
+      selectorChoiceClip === 'blanks' ||
+      selectorChoiceClip === 'toaddress' ||
+      selectorChoiceClip === 'myaddress'
     ) {
       return (
         <MemoryList
-          sizeMiniCard={sizeMiniCard}
+          sizeMiniCard={selectorSizeMiniCard}
           widthCardsList={widthCardsList}
           setInfoCardsList={setInfoCardsList}
           valueScroll={valueScroll}
@@ -757,15 +871,15 @@ const CardsList = () => {
       // onTouchStart={handleTouchStartCardsList}
       // onTouchMove={handleTouchMoveCardsList}
     >
-      <div style={{ height: `${sizeMiniCard.height}px` }}></div>
+      <div style={{ height: `${selectorSizeMiniCard.height}px` }}></div>
       {choiceMemoryList()}
-      {!infoChoiceClip && (
+      {!selectorChoiceClip && selectorLockExpendMemoryCard && (
         <>
           <div
             className="poly-cards-filter"
             style={{
-              width: `${sizeMiniCard.width}px`,
-              height: `${sizeMiniCard.height}px`,
+              width: `${selectorSizeMiniCard.width}px`,
+              height: `${selectorSizeMiniCard.height}px`,
               boxShadow: minimize
                 ? '2px 1px 5px 2px rgba(34, 60, 80, 0.3)'
                 : '2px 1px 5px 2px rgba(255, 255, 255, 0.2)',
@@ -776,14 +890,15 @@ const CardsList = () => {
             className="mini-poly-cards"
             ref={miniPolyCardsRef}
             style={{
-              width: `${sizeMiniCard.width}px`,
-              height: `${sizeMiniCard.height}px`,
+              width: `${selectorSizeMiniCard.width}px`,
+              height: `${selectorSizeMiniCard.height}px`,
             }}
           >
             <div className="fullcard-icons-container">
               {fullCard && (
                 <button
                   className="fullcard-btn fullcard-btn-arrows"
+                  ref={btnArrowsRef}
                   // ref={setBtnIconRef('fullCard-arrows')}
                   // style={{
                   //   color: stylePolyCards.fullCardIconArrows.color,
@@ -796,14 +911,13 @@ const CardsList = () => {
                   // onMouseEnter={handleMouseEnterIconMinimize}
                   // onMouseLeave={handleMouseLeaveIconMinimize}
                 >
-                  {showIconMinimize
+                  {showIconsMinimize
                     ? addIconToolbar('arrowsOut')
                     : addIconToolbar('arrowsIn')}
                 </button>
               )}
               <div className="fullcard-line">
-                {showIconMinimize &&
-                  infoLockShowIconsMinimize &&
+                {showIconsMinimize &&
                   listIconsFullCard.map((btn, i) => {
                     return (
                       <button
@@ -821,7 +935,7 @@ const CardsList = () => {
                         // }}
                         onClick={handleClickFullCardIcon}
                       >
-                        {showIconMinimize ? addIconToolbar(btn) : <></>}
+                        {showIconsMinimize ? addIconToolbar(btn) : <></>}
                       </button>
                     )
                   })}
@@ -831,13 +945,14 @@ const CardsList = () => {
           {listActiveSections.length !== 0 ? (
             listActiveSections
               .filter(
-                (selectedSection) => cardEdit[selectedSection.section] !== null
+                (selectedSection) =>
+                  selectorCardEdit[selectedSection.section] !== null
               )
               .map((selectedSection, i, arr) => (
                 <CardMiniSection
                   key={`card-mini-${selectedSection.section}-${i}`}
-                  valueSection={cardEdit[selectedSection.section]}
-                  sizeCardMini={sizeMiniCard}
+                  valueSection={selectorCardEdit[selectedSection.section]}
+                  sizeCardMini={selectorSizeMiniCard}
                   infoSection={{
                     section: selectedSection,
                     i,
@@ -845,7 +960,7 @@ const CardsList = () => {
                   }}
                   minimize={minimize}
                   infoMinimize={infoMinimize}
-                  showIconMinimize={showIconMinimize}
+                  showIconMinimize={showIconsMinimize}
                 />
               ))
           ) : (
@@ -854,16 +969,16 @@ const CardsList = () => {
         </>
       )}
       {infoCardsList &&
-        infoCardsList.length > maxCardsList &&
-        (infoChoiceClip === 'shopping' ||
-          infoChoiceClip === 'blanks' ||
-          infoChoiceClip === 'toaddress' ||
-          infoChoiceClip === 'myaddress') && (
+        infoCardsList.length > selectorMaxCardsList &&
+        (selectorChoiceClip === 'shopping' ||
+          selectorChoiceClip === 'blanks' ||
+          selectorChoiceClip === 'toaddress' ||
+          selectorChoiceClip === 'myaddress') && (
           <SliderCardsList
             value={valueCardsList}
             infoCardsList={infoCardsList}
             handleChangeFromSliderCardsList={handleChangeFromSliderCardsList}
-            maxCardsList={maxCardsList}
+            maxCardsList={selectorMaxCardsList}
           />
         )}
     </div>

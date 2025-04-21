@@ -20,19 +20,8 @@ const MemoryEnvelope = ({ sizeMiniCard }) => {
 
   const handleClickMiniKebab = async (evt, section, id) => {
     evt.stopPropagation()
-    switch (section) {
-      case 'myaddress':
-        await deleteRecordAddress('myaddress', id)
-        getAllAddress(section)
-        break
-      case 'toaddress':
-        await deleteRecordAddress('toaddress', id)
-        getAllAddress(section)
-        break
-
-      default:
-        break
-    }
+    await deleteRecordAddress(section, id)
+    getAllAddress(section)
   }
 
   useEffect(() => {

@@ -6,8 +6,14 @@ import { createEditor } from 'slate'
 // import sizeBase from '../../../../data/ratioCardCardMini.json'
 
 const MiniCardtext = ({ cardMiniSectionRef }) => {
-  const selector = useSelector((state) => state.cardEdit.cardtext)
-  const inputCardtext = selector && selector.lineHeight ? selector : null
+  const selectorCardEditCardtext = useSelector(
+    (state) => state.cardEdit.cardtext
+  )
+  console.log('cardtext', selectorCardEditCardtext)
+  const inputCardtext =
+    selectorCardEditCardtext && selectorCardEditCardtext.lineHeight
+      ? selectorCardEditCardtext
+      : null
   const miniEditor = useMemo(() => withReact(createEditor()), [])
   const [value, setValue] = useState(
     inputCardtext
@@ -20,19 +26,26 @@ const MiniCardtext = ({ cardMiniSectionRef }) => {
         ]
   )
 
-  const [maxLines, setMaxLines] = useState(selector.miniCardtextStyle.maxLines)
-  const [lineHeight, setLineHeight] = useState(
-    selector.miniCardtextStyle.lineHeight
+  const [maxLines, setMaxLines] = useState(
+    selectorCardEditCardtext.miniCardtextStyle.maxLines
   )
-  const [fontSize, setFontSize] = useState(selector.miniCardtextStyle.fontSize)
+  const [lineHeight, setLineHeight] = useState(
+    selectorCardEditCardtext.miniCardtextStyle.lineHeight
+  )
+  const [fontSize, setFontSize] = useState(
+    selectorCardEditCardtext.miniCardtextStyle.fontSize
+  )
 
   useEffect(() => {
-    if (selector && JSON.stringify(selector.text) !== JSON.stringify(value)) {
-      miniEditor.children = selector.text
-      setValue(selector.text)
-      setMaxLines(selector.miniCardtextStyle.maxLines)
+    if (
+      selectorCardEditCardtext &&
+      JSON.stringify(selectorCardEditCardtext.text) !== JSON.stringify(value)
+    ) {
+      miniEditor.children = selectorCardEditCardtext.text
+      setValue(selectorCardEditCardtext.text)
+      setMaxLines(selectorCardEditCardtext.miniCardtextStyle.maxLines)
     }
-  }, [selector, miniEditor, value])
+  }, [selectorCardEditCardtext, miniEditor, value])
 
   useEffect(() => {
     if (cardMiniSectionRef) {
@@ -45,7 +58,11 @@ const MiniCardtext = ({ cardMiniSectionRef }) => {
       setLineHeight((heightCardMini / maxLines).toFixed(2))
       setFontSize((heightCardMini / maxLines / 1.35).toFixed(2))
     }
-  }, [maxLines, cardMiniSectionRef, selector.miniCardtextStyle.maxLines])
+  }, [
+    maxLines,
+    cardMiniSectionRef,
+    selectorCardEditCardtext.miniCardtextStyle.maxLines,
+  ])
 
   return (
     <div className="mini-editor">
@@ -55,10 +72,14 @@ const MiniCardtext = ({ cardMiniSectionRef }) => {
           style={
             inputCardtext && {
               fontSize: `${
-                fontSize ? fontSize : selector.miniCardtextStyle.fontSize
+                fontSize
+                  ? fontSize
+                  : selectorCardEditCardtext.miniCardtextStyle.fontSize
               }px`,
               lineHeight: `${
-                lineHeight ? lineHeight : selector.miniCardtextStyle.lineHeight
+                lineHeight
+                  ? lineHeight
+                  : selectorCardEditCardtext.miniCardtextStyle.lineHeight
               }px`,
               color: inputCardtext.colorType,
               fontStyle: inputCardtext.fontStyle,

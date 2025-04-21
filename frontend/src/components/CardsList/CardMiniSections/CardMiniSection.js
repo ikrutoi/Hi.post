@@ -100,7 +100,6 @@ const CardMiniSection = ({
 
   const handleClickCardMiniKebab = async (evt) => {
     evt.stopPropagation()
-
     const parentElement = searchParent(evt.target, 'card-mini-section')
 
     dispatch(deleteSection(parentElement.dataset.section))

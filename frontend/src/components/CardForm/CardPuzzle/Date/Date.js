@@ -30,7 +30,7 @@ import { searchParent } from '../../../../utils/searchParent'
 const Date = () => {
   // const fullCard = useSelector((state) => state.layout.fullCard)
   const cardEditDate = useSelector((state) => state.cardEdit.date)
-  const layoutActiveSections = useSelector(
+  const selectorActiveSections = useSelector(
     (state) => state.layout.activeSections
   )
   const inputValueSelectedDate = cardEditDate
@@ -84,9 +84,14 @@ const Date = () => {
   }
 
   useEffect(() => {
-    dispatch(
-      activeSections({ ...layoutActiveSections, date: Boolean(selectedDate) })
-    )
+    if (selectedDate) {
+      dispatch(
+        activeSections({
+          ...selectorActiveSections,
+          date: Boolean(selectedDate),
+        })
+      )
+    }
   }, [selectedDate, dispatch])
 
   const handleChangeTitle = (evt) => {
