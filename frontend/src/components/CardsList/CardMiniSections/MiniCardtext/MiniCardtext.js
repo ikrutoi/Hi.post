@@ -9,7 +9,6 @@ const MiniCardtext = ({ cardMiniSectionRef }) => {
   const selectorCardEditCardtext = useSelector(
     (state) => state.cardEdit.cardtext
   )
-  console.log('cardtext', selectorCardEditCardtext)
   const inputCardtext =
     selectorCardEditCardtext && selectorCardEditCardtext.lineHeight
       ? selectorCardEditCardtext

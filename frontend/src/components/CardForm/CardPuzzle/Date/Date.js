@@ -7,6 +7,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from 'react-icons/fa'
+import { getAllShopping } from '../../../../utils/cardFormNav/indexDB/indexDb'
 import {
   LuCalendarArrowUp,
   LuCalendarArrowDown,
@@ -29,12 +30,15 @@ import { searchParent } from '../../../../utils/searchParent'
 
 const Date = () => {
   // const fullCard = useSelector((state) => state.layout.fullCard)
-  const cardEditDate = useSelector((state) => state.cardEdit.date)
-  const selectorActiveSections = useSelector(
+  const selectorCardEditDate = useSelector((state) => state.cardEdit.date)
+  const selectorLayoutShoppingCards = useSelector(
+    (state) => state.layout.shoppingCards
+  )
+  const selectorLayoutActiveSections = useSelector(
     (state) => state.layout.activeSections
   )
-  const inputValueSelectedDate = cardEditDate
-    ? cardEditDate
+  const inputValueSelectedDate = selectorCardEditDate
+    ? selectorCardEditDate
     : {
         year: currentDate.currentYear,
         month: currentDate.currentMonth,
@@ -46,13 +50,69 @@ const Date = () => {
   )
   const [selectedDate, setSelectedDate] = useState(null)
   const [isActiveDateTitle, setIsActiveDateTitle] = useState(false)
+  // const [urlsShoppingCards, setUrlsShoppingCards] = useState(null)
+  const [dataShoppingCards, setDataShoppingCards] = useState(null)
 
   useEffect(() => {
-    cardEditDate ? setSelectedDate(cardEditDate) : setSelectedDate(null)
-    if (!cardEditDate) {
+    selectorCardEditDate
+      ? setSelectedDate(selectorCardEditDate)
+      : setSelectedDate(null)
+    if (!selectorCardEditDate) {
       setIsActiveDateTitle(false)
     }
-  }, [cardEditDate])
+  }, [selectorCardEditDate])
+
+  function resizeImage(blob) {
+    const width = 128
+    const height = 90
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.src = URL.createObjectURL(blob)
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, width, height)
+
+        canvas.toBlob((resizedBlob) => {
+          resolve(URL.createObjectURL(resizedBlob))
+        }, blob.type)
+      }
+
+      img.onerror = (e) => reject(e)
+    })
+  }
+
+  const getShoppingCards = async () => {
+    const shoppings = await getAllShopping()
+    const dataShoppingCardsPromises = shoppings.map(async (card) => {
+      return {
+        date: card.shopping.date,
+        img: await resizeImage(card.shopping.cardphoto),
+        id: card.id,
+        personalId: card.personalId,
+      }
+    })
+
+    const dataShoppingCards = await Promise.all(dataShoppingCardsPromises)
+    // const imagesShoppingCards = shoppings.map((card) => card.shopping.cardphoto)
+
+    // const urlsImagesShoppingCards = await Promise.all(
+    //   imagesShoppingCards.map((blob) => resizeImage(blob))
+    // )
+
+    // setUrlsShoppingCards(urlsImagesShoppingCards)
+    setDataShoppingCards(dataShoppingCards)
+  }
+
+  useEffect(() => {
+    if (selectorLayoutShoppingCards) {
+      getShoppingCards()
+    }
+  }, [selectorLayoutShoppingCards])
 
   const handleSelectedDate = (
     taboo,
@@ -87,7 +147,7 @@ const Date = () => {
     if (selectedDate) {
       dispatch(
         activeSections({
-          ...selectorActiveSections,
+          ...selectorLayoutActiveSections,
           date: Boolean(selectedDate),
         })
       )
@@ -314,6 +374,7 @@ const Date = () => {
             selectedDateTitle={selectedDateTitle}
             handleSelectedDate={handleSelectedDate}
             handleClickCell={handleClickCell}
+            dataShoppingCards={dataShoppingCards}
           />
         </div>
       </form>

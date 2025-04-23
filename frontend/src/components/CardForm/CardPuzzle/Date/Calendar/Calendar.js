@@ -16,17 +16,16 @@ const Calendar = ({
   handleSelectedDate,
   selectedDate,
   handleClickCell,
+  dataShoppingCards,
 }) => {
   const [firstDayOfWeekTitle, setFirstDayOfWeek] = useState('Sun')
   const [daysOfWeek, setDaysOfWeek] = useState(daysOfWeekStartFromSun)
-
   const handleFirstDay = (firstDay) => {
     setFirstDayOfWeek(firstDay)
     setDaysOfWeek(
       firstDay === 'Sun' ? daysOfWeekStartFromSun : daysOfWeekStartFromMon
     )
   }
-
   const daysInPreviousMonth = numberDaysInPreviousMonth(
     selectedDateTitle.year,
     selectedDateTitle.month,
@@ -36,6 +35,22 @@ const Calendar = ({
     selectedDateTitle.year,
     selectedDateTitle.month
   )
+
+  const changeShoppingDay = (day, month, year) => {
+    for (const shoppingDate of dataShoppingCards) {
+      if (
+        shoppingDate.date.year === year &&
+        shoppingDate.date.month === month &&
+        shoppingDate.date.day === day
+      ) {
+        return {
+          id: shoppingDate.id,
+          personalId: shoppingDate.personalId,
+          img: shoppingDate.img,
+        }
+      }
+    }
+  }
 
   const constructionMonth = () => {
     let previousMonth = []
@@ -167,6 +182,14 @@ const Calendar = ({
               : false
           }
           selectedDateTitle={selectedDateTitle}
+          shoppingDay={
+            dataShoppingCards &&
+            changeShoppingDay(
+              day,
+              selectedDateTitle.month,
+              selectedDateTitle.year
+            )
+          }
         />
       )
     }

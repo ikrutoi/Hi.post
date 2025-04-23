@@ -6,6 +6,7 @@ import {
   addFullCard,
   // expendShopping,
   choiceClip,
+  shoppingCards,
 } from '../../redux/layout/actionCreators'
 import {
   getAllBlanks,
@@ -19,12 +20,17 @@ import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
 import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
 
 const Status = () => {
-  const infoBtnsStatus = useSelector((state) => state.infoButtons.status)
-  // const infoAddFullCard = useSelector((state) => state.infoButtons.addFullCard)
-  const infoAddFullCard = useSelector((state) => state.layout.addFullCard)
-  const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
-  // const infoExpendShopping = useSelector((state) => state.layout.expendShopping)
-  const [btnsStatus, setBtnsStatus] = useState({ status: infoBtnsStatus })
+  const selectorIBStatus = useSelector((state) => state.infoButtons.status)
+  const selectorLayoutAddFullCard = useSelector(
+    (state) => state.layout.addFullCard
+  )
+  const selectorLayoutChoiceClip = useSelector(
+    (state) => state.layout.choiceClip
+  )
+  const selectorLayoutShoppingCards = useSelector(
+    (state) => state.layout.shoppingCards
+  )
+  const [btnsStatus, setBtnsStatus] = useState({ status: selectorIBStatus })
   const [countShopping, setCountShopping] = useState(null)
   const [countBlanks, setCountBlanks] = useState(null)
   const listBtnsStatus = ['shopping', 'clip']
@@ -36,20 +42,26 @@ const Status = () => {
   const dispatch = useDispatch()
 
   const updateStatus = async () => {
-    const shopping = await getAllShopping()
+    const shoppings = await getAllShopping()
     const blanks = await getAllBlanks()
     setBtnsStatus((state) => {
       return {
         ...state,
         status: {
           ...state.status,
-          shopping: Boolean(shopping.length),
+          shopping: Boolean(shoppings.length),
           clip: Boolean(blanks.length),
         },
       }
     })
-    setCountShopping(shopping.length > 0 ? shopping.length : 0)
+    setCountShopping(shoppings.length > 0 ? shoppings.length : 0)
     setCountBlanks(blanks.length > 0 ? blanks.length : 0)
+    if (shoppings.length > 0 && !selectorLayoutShoppingCards) {
+      dispatch(shoppingCards(true))
+    }
+    if (shoppings.length === 0 && selectorLayoutShoppingCards) {
+      dispatch(shoppingCards(false))
+    }
   }
 
   useEffect(() => {
@@ -64,14 +76,14 @@ const Status = () => {
 
   useEffect(() => {
     updateStatus()
-    if (infoAddFullCard) {
+    if (selectorLayoutAddFullCard) {
       const timerIcon = setTimeout(() => {
         dispatch(addFullCard(false))
       }, 300)
 
       return () => clearTimeout(timerIcon)
     }
-  }, [infoAddFullCard, dispatch])
+  }, [selectorLayoutAddFullCard, dispatch])
 
   // const clearBase = async () => {
   //   const shopping = await getAllBlanks()
@@ -86,11 +98,17 @@ const Status = () => {
     const parentBtn = evt.target.closest('.toolbar-btn')
     switch (parentBtn.dataset.tooltip) {
       case 'shopping':
-        dispatch(choiceClip(infoChoiceClip === 'shopping' ? false : 'shopping'))
+        dispatch(
+          choiceClip(
+            selectorLayoutChoiceClip === 'shopping' ? false : 'shopping'
+          )
+        )
         break
       case 'clip':
         // clearBase()
-        dispatch(choiceClip(infoChoiceClip === 'blanks' ? false : 'blanks'))
+        dispatch(
+          choiceClip(selectorLayoutChoiceClip === 'blanks' ? false : 'blanks')
+        )
         break
 
       default:

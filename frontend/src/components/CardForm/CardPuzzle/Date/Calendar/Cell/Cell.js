@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import './Cell.scss'
 
 const Cell = ({
@@ -12,7 +13,14 @@ const Cell = ({
   selectedDate,
   selectedDateTitle,
   handleClickCell,
+  shoppingDay,
 }) => {
+  // useEffect(() => {
+  //   if (shoppingDay) {
+  //     console.log('shoppingDay', shoppingDay)
+  //   }
+  // }, [shoppingDay])
+  // console.log('day shoppingDay', dayCurrent, shoppingDay)
   return title ? (
     <div className="cell cell-title">{title}</div>
   ) : dayCurrent ? (
@@ -21,7 +29,7 @@ const Cell = ({
         today ? 'today' : ''
       } day-${dayCurrent} ${selectedDate ? 'selected' : ''} ${
         taboo ? 'taboo' : ''
-      }`}
+      } ${shoppingDay ? 'shopping' : ''}`}
       onClick={() =>
         handleSelectedDate(
           taboo,
@@ -31,7 +39,19 @@ const Cell = ({
         )
       }
     >
-      {dayCurrent}
+      {shoppingDay ? (
+        <div className="cell-shopping-container">
+          <span className="cell-shopping-filter">{dayCurrent}</span>
+          {/* <span className="cell-shopping-day">{dayCurrent}</span> */}
+          <img
+            className="cell-shopping-img"
+            alt="shopping-day"
+            src={shoppingDay.img}
+          />
+        </div>
+      ) : (
+        dayCurrent
+      )}
     </div>
   ) : dayBefore ? (
     <div

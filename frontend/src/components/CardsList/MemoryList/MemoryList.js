@@ -32,11 +32,15 @@ const MemoryList = ({
   valueScroll,
   setValueScroll,
 }) => {
-  const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
-  const infoEnvelopeSave = useSelector(
+  const selectorLayoutChoiceClip = useSelector(
+    (state) => state.layout.choiceClip
+  )
+  const selectorIBEnvelopeSave = useSelector(
     (state) => state.infoButtons.envelopeSave
   )
-  const personalId = useSelector((state) => state.layout.personalId)
+  const selectorLayoutPersonalId = useSelector(
+    (state) => state.layout.personalId
+  )
   const [memoryList, setMemoryList] = useState(null)
   const [selectedSource, setSelectedSource] = useState(null)
   const [listIconsSource, setListIconsSource] = useState(null)
@@ -50,9 +54,15 @@ const MemoryList = ({
     filterRefs.current[id] = element
   }
   const remSize = useSelector((state) => state.layout.remSize)
-  const maxCardsList = useSelector((state) => state.layout.maxCardsList)
-  const sliderLetter = useSelector((state) => state.layout.sliderLetter)
-  const sliderLine = useSelector((state) => state.layout.sliderLine)
+  const selectorLayoutMaxCardsList = useSelector(
+    (state) => state.layout.maxCardsList
+  )
+  const selectorLayoutSliderLetter = useSelector(
+    (state) => state.layout.sliderLetter
+  )
+  const selectorLayoutSliderLine = useSelector(
+    (state) => state.layout.sliderLine
+  )
   const [elementSave, setElementSave] = useState(null)
   const [infoElementSave, setInfoElementSave] = useState(null)
   const [firstLetterElementSave, setFirstLetterElementSave] = useState(null)
@@ -66,8 +76,8 @@ const MemoryList = ({
 
   const margin = parseFloat(
     (
-      (widthCardsList - sizeMiniCard.width * maxCardsList) /
-      (maxCardsList - 1)
+      (widthCardsList - sizeMiniCard.width * selectorLayoutMaxCardsList) /
+      (selectorLayoutMaxCardsList - 1)
     ).toFixed(1)
   )
 
@@ -188,11 +198,15 @@ const MemoryList = ({
 
       if (
         listElements.length === 1 ||
-        (listElements.length !== 1 && listElements.length >= maxCardsList)
+        (listElements.length !== 1 &&
+          listElements.length >= selectorLayoutMaxCardsList)
       ) {
         return index
       }
-      if (listElements.length !== 1 && listElements.length < maxCardsList) {
+      if (
+        listElements.length !== 1 &&
+        listElements.length < selectorLayoutMaxCardsList
+      ) {
         return listElements[0].index
       }
     }
@@ -216,37 +230,37 @@ const MemoryList = ({
   }, [elementSave, dispatch])
 
   useEffect(() => {
-    if (sliderLine) {
+    if (selectorLayoutSliderLine) {
       // console.log('0')
-      movingCards(Number(sliderLine))
+      movingCards(Number(selectorLayoutSliderLine))
     }
-  }, [sliderLine])
+  }, [selectorLayoutSliderLine])
 
   useEffect(() => {
-    if (sliderLetter && sliderLetter.index) {
+    if (selectorLayoutSliderLetter && selectorLayoutSliderLetter.index) {
       // console.log('1')
-      movingCards(Number(sliderLetter.index))
+      movingCards(Number(selectorLayoutSliderLetter.index))
     }
-  }, [sliderLetter])
+  }, [selectorLayoutSliderLetter])
 
   useEffect(() => {
-    if (maxCardsList && infoChoiceClip) {
-      getMemoryCards(infoChoiceClip)
+    if (selectorLayoutMaxCardsList && selectorLayoutChoiceClip) {
+      getMemoryCards(selectorLayoutChoiceClip)
     }
-  }, [infoChoiceClip, maxCardsList])
+  }, [selectorLayoutChoiceClip, selectorLayoutMaxCardsList])
 
   useEffect(() => {
-    if (infoEnvelopeSave && personalId) {
-      getMemoryCards(infoEnvelopeSave)
-      dispatch(infoButtons({ envelopeSaveSecond: infoEnvelopeSave }))
+    if (selectorIBEnvelopeSave && selectorLayoutPersonalId) {
+      getMemoryCards(selectorIBEnvelopeSave)
+      dispatch(infoButtons({ envelopeSaveSecond: selectorIBEnvelopeSave }))
     }
-  }, [infoEnvelopeSave, personalId, dispatch])
+  }, [selectorIBEnvelopeSave, selectorLayoutPersonalId, dispatch])
 
   useEffect(() => {
-    if (personalId && infoEnvelopeSave) {
-      findElementByPersonalId(personalId, infoEnvelopeSave)
+    if (selectorLayoutPersonalId && selectorIBEnvelopeSave) {
+      findElementByPersonalId(selectorLayoutPersonalId, selectorIBEnvelopeSave)
     }
-  }, [memoryList, personalId, infoEnvelopeSave])
+  }, [memoryList, selectorLayoutPersonalId, selectorIBEnvelopeSave])
 
   useEffect(() => {
     if (memoryList) {
@@ -256,12 +270,12 @@ const MemoryList = ({
           getPositionCard(infoElementSave.index, infoElementSave.firstLetter)
         )
       } else {
-        if (!isDeleteCard && !sliderLine) {
+        if (!isDeleteCard && !selectorLayoutSliderLine) {
           // console.log('3')
           movingCards(0)
         } else {
           // console.log('4')
-          movingCards(Number(sliderLine))
+          movingCards(Number(selectorLayoutSliderLine))
         }
       }
     }
@@ -354,7 +368,7 @@ const MemoryList = ({
   const movingCards = (index) => {
     // console.log('index: ', index)
     if (cardRefs.current && memoryList) {
-      const restEnd = memoryList.length - index - maxCardsList
+      const restEnd = memoryList.length - index - selectorLayoutMaxCardsList
       const baseLeft = margin + sizeMiniCard.width
 
       const updatePosition = (index, leftValue) => {
@@ -365,11 +379,15 @@ const MemoryList = ({
 
       if (index === 0) {
         // console.log('index0')
-        for (let i = 1; i < maxCardsList; i++) {
+        for (let i = 1; i < selectorLayoutMaxCardsList; i++) {
           updatePosition(i, baseLeft * i)
         }
-        for (let i = maxCardsList; i < memoryList.length - 3; i++) {
-          updatePosition(i, baseLeft * (maxCardsList - 1))
+        for (
+          let i = selectorLayoutMaxCardsList;
+          i < memoryList.length - 3;
+          i++
+        ) {
+          updatePosition(i, baseLeft * (selectorLayoutMaxCardsList - 1))
         }
       }
 
@@ -377,7 +395,7 @@ const MemoryList = ({
         // console.log('index1')
         updatePosition(0, 0)
         updatePosition(1, 0.5 * remSize)
-        for (let i = 2; i < maxCardsList + index; i++) {
+        for (let i = 2; i < selectorLayoutMaxCardsList + index; i++) {
           updatePosition(i, baseLeft * (i - 1))
         }
       }
@@ -387,13 +405,16 @@ const MemoryList = ({
         updatePosition(1, 0.5 * remSize)
         updatePosition(index, remSize)
         let newIndex = 1
-        for (let i = index + 1; i < maxCardsList + index; i++) {
+        for (let i = index + 1; i < selectorLayoutMaxCardsList + index; i++) {
           updatePosition(i, baseLeft * newIndex)
           newIndex++
         }
       }
 
-      if (index > 2 && memoryList.length - index >= maxCardsList) {
+      if (
+        index > 2 &&
+        memoryList.length - index >= selectorLayoutMaxCardsList
+      ) {
         // console.log('index>2')
         for (let i = 0; i < index - 2; i++) {
           updatePosition(i, 0)
@@ -402,7 +423,7 @@ const MemoryList = ({
         updatePosition(index - 1, 0.5 * remSize)
         updatePosition(index, remSize)
         let newIndex = 1
-        for (let i = index + 1; i < maxCardsList + index; i++) {
+        for (let i = index + 1; i < selectorLayoutMaxCardsList + index; i++) {
           updatePosition(i, baseLeft * newIndex)
           newIndex++
         }
@@ -411,47 +432,71 @@ const MemoryList = ({
       if (restEnd >= 2) {
         // console.log('restEnd>=2')
         updatePosition(
-          index + (maxCardsList - 1),
-          baseLeft * (maxCardsList - 1) - remSize
+          index + (selectorLayoutMaxCardsList - 1),
+          baseLeft * (selectorLayoutMaxCardsList - 1) - remSize
         )
         updatePosition(
-          index + maxCardsList,
-          baseLeft * (maxCardsList - 1) - 0.5 * remSize
+          index + selectorLayoutMaxCardsList,
+          baseLeft * (selectorLayoutMaxCardsList - 1) - 0.5 * remSize
         )
-        for (let i = index + maxCardsList + 1; i < memoryList.length; i++) {
-          updatePosition(i, baseLeft * (maxCardsList - 1))
+        for (
+          let i = index + selectorLayoutMaxCardsList + 1;
+          i < memoryList.length;
+          i++
+        ) {
+          updatePosition(i, baseLeft * (selectorLayoutMaxCardsList - 1))
         }
       }
 
       if (restEnd === 1) {
         // console.log('restEnd1')
         updatePosition(
-          index + maxCardsList - 1,
-          baseLeft * (maxCardsList - 1) - 0.5 * remSize
+          index + selectorLayoutMaxCardsList - 1,
+          baseLeft * (selectorLayoutMaxCardsList - 1) - 0.5 * remSize
         )
-        updatePosition(index + maxCardsList, baseLeft * (maxCardsList - 1))
+        updatePosition(
+          index + selectorLayoutMaxCardsList,
+          baseLeft * (selectorLayoutMaxCardsList - 1)
+        )
       }
 
-      if (restEnd < 0 && memoryList.length >= maxCardsList) {
+      if (restEnd < 0 && memoryList.length >= selectorLayoutMaxCardsList) {
         // console.log('restEnd<0')
-        if (memoryList.length - maxCardsList >= 2) {
-          updatePosition(memoryList.length - maxCardsList - 2, 0)
-          updatePosition(memoryList.length - maxCardsList - 1, 0.5 * remSize)
-          updatePosition(memoryList.length - maxCardsList, remSize)
-          for (let i = 0; i < memoryList.length - maxCardsList - 2; i++) {
+        if (memoryList.length - selectorLayoutMaxCardsList >= 2) {
+          updatePosition(memoryList.length - selectorLayoutMaxCardsList - 2, 0)
+          updatePosition(
+            memoryList.length - selectorLayoutMaxCardsList - 1,
+            0.5 * remSize
+          )
+          updatePosition(
+            memoryList.length - selectorLayoutMaxCardsList,
+            remSize
+          )
+          for (
+            let i = 0;
+            i < memoryList.length - selectorLayoutMaxCardsList - 2;
+            i++
+          ) {
             updatePosition(i, 0)
           }
         }
-        if (memoryList.length - maxCardsList === 1) {
-          updatePosition(memoryList.length - maxCardsList - 1, 0)
-          updatePosition(memoryList.length - maxCardsList, 0.5 * remSize)
-          for (let i = 0; i < memoryList.length - maxCardsList - 2; i++) {
+        if (memoryList.length - selectorLayoutMaxCardsList === 1) {
+          updatePosition(memoryList.length - selectorLayoutMaxCardsList - 1, 0)
+          updatePosition(
+            memoryList.length - selectorLayoutMaxCardsList,
+            0.5 * remSize
+          )
+          for (
+            let i = 0;
+            i < memoryList.length - selectorLayoutMaxCardsList - 2;
+            i++
+          ) {
             updatePosition(i, 0)
           }
         }
         let newIndex = 1
         for (
-          let i = memoryList.length - maxCardsList + 1;
+          let i = memoryList.length - selectorLayoutMaxCardsList + 1;
           i < memoryList.length;
           i++
         ) {
@@ -472,7 +517,7 @@ const MemoryList = ({
       if (!parentBtn && !parentBtn.dataset.id) {
         return
       }
-      switch (infoChoiceClip) {
+      switch (selectorLayoutChoiceClip) {
         case 'shopping':
           await deleteShopping(Number(parentBtn.dataset.id))
           break
@@ -481,17 +526,21 @@ const MemoryList = ({
           break
         case 'myaddress':
           await deleteMyAddress(Number(parentBtn.dataset.id))
-          dispatch(infoButtons({ envelopeRemoveAddress: infoChoiceClip }))
+          dispatch(
+            infoButtons({ envelopeRemoveAddress: selectorLayoutChoiceClip })
+          )
           break
         case 'toaddress':
           await deleteToAddress(Number(parentBtn.dataset.id))
-          dispatch(infoButtons({ envelopeRemoveAddress: infoChoiceClip }))
+          dispatch(
+            infoButtons({ envelopeRemoveAddress: selectorLayoutChoiceClip })
+          )
           break
 
         default:
           break
       }
-      await getMemoryCards(infoChoiceClip)
+      await getMemoryCards(selectorLayoutChoiceClip)
       dispatch(addFullCard(true))
       setIsDeleteCard(true)
     } catch (error) {
@@ -518,9 +567,15 @@ const MemoryList = ({
   const handleClickCard = (evt) => {
     dispatch(lockExpendMemoryCard(false))
     dispatch(
-      expendMemoryCard({ source: infoChoiceClip, id: evt.target.dataset.id })
+      expendMemoryCard({
+        source: selectorLayoutChoiceClip,
+        id: evt.target.dataset.id,
+      })
     )
-    if (infoChoiceClip === 'shopping' || infoChoiceClip === 'blanks') {
+    if (
+      selectorLayoutChoiceClip === 'shopping' ||
+      selectorLayoutChoiceClip === 'blanks'
+    ) {
       dispatch(choiceClip(false))
     }
   }
@@ -625,11 +680,11 @@ const MemoryList = ({
   return (
     <div className="memory-list-container">
       {memoryList &&
-        infoChoiceClip === selectedSource &&
+        selectorLayoutChoiceClip === selectedSource &&
         memoryList.map((card, i) => {
           return (
             <div
-              className={`memory-list-card memory-list-card-${infoChoiceClip}`}
+              className={`memory-list-card memory-list-card-${selectorLayoutChoiceClip}`}
               key={`${i}`}
               ref={setCardRef(`card-${i}`)}
               data-id={card.id}
@@ -641,8 +696,8 @@ const MemoryList = ({
               }}
               onClick={handleClickCard}
             >
-              {(infoChoiceClip === 'shopping' ||
-                infoChoiceClip === 'blanks') && (
+              {(selectorLayoutChoiceClip === 'shopping' ||
+                selectorLayoutChoiceClip === 'blanks') && (
                 <div
                   className="memory-list-card-filter"
                   ref={setFilterRef(`filter-${card.id}`)}
@@ -651,11 +706,13 @@ const MemoryList = ({
                   onMouseLeave={handleMouseLeaveFilter}
                 ></div>
               )}
-              {(infoChoiceClip === 'shopping' ||
-                infoChoiceClip === 'blanks') && (
+              {(selectorLayoutChoiceClip === 'shopping' ||
+                selectorLayoutChoiceClip === 'blanks') && (
                 <img
                   className="memory-list-card-photo"
-                  src={URL.createObjectURL(card[infoChoiceClip].cardphoto)}
+                  src={URL.createObjectURL(
+                    card[selectorLayoutChoiceClip].cardphoto
+                  )}
                   style={{
                     width: `${sizeMiniCard.width}px`,
                     height: `${sizeMiniCard.height}px`,
@@ -663,9 +720,10 @@ const MemoryList = ({
                   alt="memoryCardPhoto"
                 ></img>
               )}
-              {infoChoiceClip === 'shopping' || infoChoiceClip === 'blanks' ? (
+              {selectorLayoutChoiceClip === 'shopping' ||
+              selectorLayoutChoiceClip === 'blanks' ? (
                 <span
-                  className={`memory-list-card-name memory-list-card-name-${infoChoiceClip}`}
+                  className={`memory-list-card-name memory-list-card-name-${selectorLayoutChoiceClip}`}
                   data-id={card.id}
                   onClick={handleClickCard}
                   onMouseEnter={handleMouseEnterFilter}
@@ -673,37 +731,37 @@ const MemoryList = ({
                 >
                   {/* {card[infoChoiceClip].envelope.toaddress.name} */}
                   {trimLines(
-                    infoChoiceClip,
-                    card[infoChoiceClip].envelope.toaddress.name
+                    selectorLayoutChoiceClip,
+                    card[selectorLayoutChoiceClip].envelope.toaddress.name
                   )}
                 </span>
-              ) : infoChoiceClip === 'myaddress' ? (
+              ) : selectorLayoutChoiceClip === 'myaddress' ? (
                 <span className={`memory-list-address-container`}>
                   <span
-                    className={`memory-list-${infoChoiceClip}-country`}
+                    className={`memory-list-${selectorLayoutChoiceClip}-country`}
                     data-id={card.id}
                   >
                     {card.address.country}
                   </span>
                   <span
                     ref={myaddressNameRef}
-                    className={`memory-list-${infoChoiceClip}-name`}
+                    className={`memory-list-${selectorLayoutChoiceClip}-name`}
                     data-id={card.id}
                   >
-                    {trimLines(infoChoiceClip, card.address.name)}
+                    {trimLines(selectorLayoutChoiceClip, card.address.name)}
                   </span>
                 </span>
-              ) : infoChoiceClip === 'toaddress' ? (
+              ) : selectorLayoutChoiceClip === 'toaddress' ? (
                 <span className={`memory-list-address-container`}>
                   <span
                     ref={(el) => (spanNameRefs.current[`span-name-${i}`] = el)}
-                    className={`memory-list-${infoChoiceClip}-name`}
+                    className={`memory-list-${selectorLayoutChoiceClip}-name`}
                     data-id={card.id}
                   >
-                    {trimLines(infoChoiceClip, card.address.name)}
+                    {trimLines(selectorLayoutChoiceClip, card.address.name)}
                   </span>
                   <span
-                    className={`memory-list-${infoChoiceClip}-country`}
+                    className={`memory-list-${selectorLayoutChoiceClip}-country`}
                     data-id={card.id}
                   >
                     {card.address.country}
@@ -712,8 +770,8 @@ const MemoryList = ({
               ) : null}
               {listIconsSource &&
                 listIconsSource.map((btn, i) => {
-                  return infoChoiceClip === 'shopping' ||
-                    infoChoiceClip === 'blanks' ? (
+                  return selectorLayoutChoiceClip === 'shopping' ||
+                    selectorLayoutChoiceClip === 'blanks' ? (
                     <button
                       key={`${btn}-${i}`}
                       className="memory-list-btn"

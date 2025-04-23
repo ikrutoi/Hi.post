@@ -4,7 +4,7 @@
   align-items: center;
   margin: 0.5rem;
   padding: 0.45rem 0.5rem 0.55rem 0.5rem;
-  width: 1.5rem;
+  width: 2.2rem;
   height: 1.5rem;
   border-radius: 0.3rem;
   // cursor: pointer;
@@ -16,6 +16,33 @@
   cursor: default;
   user-select: none;
 }
+
+.cell-shopping-container {
+  position: relative;
+  display: flex;
+}
+
+.cell-shopping-filter,
+.cell-shopping-img {
+  width: 50px;
+  height: 35px;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+.cell-shopping-filter {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(240, 240, 240);
+  // font-weight: 600;
+  background-color: rgba(163, 163, 163, 0.5);
+}
+
+// .cell-shopping-day {
+//   position: absolute;
+// }
 
 .day-before,
 .day-after {
