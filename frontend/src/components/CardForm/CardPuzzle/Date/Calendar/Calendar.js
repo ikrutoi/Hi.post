@@ -37,19 +37,21 @@ const Calendar = ({
   )
 
   const changeShoppingDay = (day, month, year) => {
+    const shoppingDays = []
     for (const shoppingDate of dataShoppingCards) {
       if (
         shoppingDate.date.year === year &&
         shoppingDate.date.month === month &&
         shoppingDate.date.day === day
       ) {
-        return {
+        shoppingDays.push({
           id: shoppingDate.id,
           personalId: shoppingDate.personalId,
           img: shoppingDate.img,
-        }
+        })
       }
     }
+    return shoppingDays.length > 0 ? shoppingDays : false
   }
 
   const constructionMonth = () => {

@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './Cell.scss'
+import ToolbarShopping from './ToolbarShopping/ToolbarShopping'
 
 const Cell = ({
   title,
@@ -15,21 +16,21 @@ const Cell = ({
   handleClickCell,
   shoppingDay,
 }) => {
-  // useEffect(() => {
-  //   if (shoppingDay) {
-  //     console.log('shoppingDay', shoppingDay)
-  //   }
-  // }, [shoppingDay])
-  // console.log('day shoppingDay', dayCurrent, shoppingDay)
+  const [toolbarShopping, setToolbarShopping] = useState(false)
+
+  const handleCellShopping = () => {
+    setToolbarShopping((state) => !state)
+  }
+
   return title ? (
     <div className="cell cell-title">{title}</div>
   ) : dayCurrent ? (
     <div
       className={`cell cell-day day-current ${
         today ? 'today' : ''
-      } day-${dayCurrent} ${selectedDate ? 'selected' : ''} ${
-        taboo ? 'taboo' : ''
-      } ${shoppingDay ? 'shopping' : ''}`}
+      } day-${dayCurrent} ${
+        selectedDate ? (shoppingDay ? 'shopping' : 'selected') : ''
+      } ${taboo ? 'taboo' : ''}`}
       onClick={() =>
         handleSelectedDate(
           taboo,
@@ -40,14 +41,20 @@ const Cell = ({
       }
     >
       {shoppingDay ? (
-        <div className="cell-shopping-container">
-          <span className="cell-shopping-filter">{dayCurrent}</span>
-          {/* <span className="cell-shopping-day">{dayCurrent}</span> */}
+        <div className="cell-shopping-container" onClick={handleCellShopping}>
+          <span
+            className={`cell-shopping-filter ${selectedDate ? 'selected' : ''}`}
+          >
+            {dayCurrent}
+          </span>
           <img
             className="cell-shopping-img"
             alt="shopping-day"
-            src={shoppingDay.img}
+            src={shoppingDay?.[0]?.img}
           />
+          {toolbarShopping && (
+            <ToolbarShopping day={dayCurrent} shoppingDay={shoppingDay} />
+          )}
         </div>
       ) : (
         dayCurrent

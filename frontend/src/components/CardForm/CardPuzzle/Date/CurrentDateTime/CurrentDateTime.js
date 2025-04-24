@@ -22,12 +22,12 @@ const CurrentDateTime = ({
           />
         )
       })}
-      <span
+      {/* <span
         className="date-title date-title-day"
         style={{ backgroundColor: colorSchemeMain.lightGray }}
       >
         {selectedDateTitle.day}
-      </span>
+      </span> */}
     </>
   )
 }

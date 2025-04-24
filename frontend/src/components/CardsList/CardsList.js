@@ -359,10 +359,10 @@ const CardsList = () => {
   }
 
   useEffect(() => {
-    if (btnIconRefs.current && showIconsMinimize) {
+    if (minimize) {
       changeIconStyles(btnsFullCard, btnIconRefs.current)
     }
-  }, [showIconsMinimize, btnIconRefs, btnsFullCard])
+  }, [minimize, btnIconRefs, btnsFullCard])
 
   useEffect(() => {
     if (!selectorLayoutChoiceClip && fullCard) {
@@ -383,10 +383,6 @@ const CardsList = () => {
         cardtext: listCardtexts,
       }
     })
-  }
-
-  const setRef = (id) => (element) => {
-    memoryRefs.current[id] = element
   }
 
   useEffect(() => {
@@ -424,21 +420,23 @@ const CardsList = () => {
   }, [listActiveSections, miniPolyCardsRef, fullCard, btnArrowsRef])
 
   const choiceClassListContainsFullPolyCards = (state) => {
-    switch (state) {
-      case true:
-        if (miniPolyCardsRef.current.classList.contains('full-fade-out')) {
-          miniPolyCardsRef.current.classList.remove('full-fade-out')
-        }
-        miniPolyCardsRef.current.classList.add('full')
-        break
+    if (miniPolyCardsRef.current) {
+      switch (state) {
+        case true:
+          if (miniPolyCardsRef.current.classList.contains('full-fade-out')) {
+            miniPolyCardsRef.current.classList.remove('full-fade-out')
+          }
+          miniPolyCardsRef.current.classList.add('full')
+          break
 
-      case false:
-        miniPolyCardsRef.current.classList.add('full-fade-out')
-        miniPolyCardsRef.current.classList.remove('full')
-        break
+        case false:
+          miniPolyCardsRef.current.classList.add('full-fade-out')
+          miniPolyCardsRef.current.classList.remove('full')
+          break
 
-      default:
-        break
+        default:
+          break
+      }
     }
   }
 

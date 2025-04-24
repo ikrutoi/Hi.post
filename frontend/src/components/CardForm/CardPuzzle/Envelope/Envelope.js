@@ -311,10 +311,12 @@ const Envelope = ({ cardPuzzleRef }) => {
   useEffect(() => {
     const sectionsForm = ['myaddress', 'toaddress']
     const changeStyleForm = (section, state) => {
-      addressFormRefs.current[`${section}-fieldset`].style.borderColor =
-        colorScheme[state]
-      addressFormRefs.current[`${section}-legend`].style.color =
-        colorScheme[state]
+      if (addressFormRefs.current[`${section}-fieldset`]) {
+        addressFormRefs.current[`${section}-fieldset`].style.borderColor =
+          colorScheme[state]
+        addressFormRefs.current[`${section}-legend`].style.color =
+          colorScheme[state]
+      }
     }
 
     const fetchAndSetData = async () => {

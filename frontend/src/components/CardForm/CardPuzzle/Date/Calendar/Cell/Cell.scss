@@ -20,14 +20,17 @@
 .cell-shopping-container {
   position: relative;
   display: flex;
+  // border: solid 1px orange;
 }
 
 .cell-shopping-filter,
 .cell-shopping-img {
-  width: 50px;
-  height: 35px;
+  width: 3.2rem;
+  height: 2.5rem;
   border-radius: 0.3rem;
   cursor: pointer;
+  // border: solid 1px red;
+  // cursor: pointer;
 }
 
 .cell-shopping-filter {
@@ -37,12 +40,13 @@
   justify-content: center;
   color: rgb(240, 240, 240);
   // font-weight: 600;
-  background-color: rgba(163, 163, 163, 0.5);
+  background-color: rgba(163, 163, 163, 0.6);
 }
 
-// .cell-shopping-day {
-//   position: absolute;
-// }
+.cell-shopping-filter.selected {
+  // font-weight: 600;
+  // color: rgb(0, 125, 250);
+}
 
 .day-before,
 .day-after {
@@ -71,6 +75,10 @@
 
 .day-current {
   cursor: pointer;
+}
+
+.day-current.shopping {
+  cursor: default;
 }
 
 .day-current:hover {
