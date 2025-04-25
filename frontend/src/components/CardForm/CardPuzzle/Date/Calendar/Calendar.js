@@ -48,6 +48,7 @@ const Calendar = ({
           id: shoppingDate.id,
           personalId: shoppingDate.personalId,
           img: shoppingDate.img,
+          date: shoppingDate.date,
         })
       }
     }

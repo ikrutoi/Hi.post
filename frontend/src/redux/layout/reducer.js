@@ -1,5 +1,6 @@
 import {
   choiceLetter,
+  dateShoppingCards,
   deleteSection,
   expendShopping,
   fullCard,
@@ -67,6 +68,8 @@ const initialState = {
   personalId: null,
   lockExpendMemoryCard: true,
   shoppingCards: null,
+  dateShoppingCards: null,
+  lockDateShoppingCards: null,
 }
 
 const layoutReducer = (state = initialState, action) => {
@@ -120,6 +123,16 @@ const layoutReducer = (state = initialState, action) => {
       return {
         ...state,
         memoryCrop: action.payload,
+      }
+    case a.DATE_SHOPPING_CARDS:
+      return {
+        ...state,
+        dateShoppingCards: action.payload,
+      }
+    case a.LOCK_DATE_SHOPPING_CARDS:
+      return {
+        ...state,
+        lockDateShoppingCards: action.payload,
       }
     case a.SHOPPING_CARDS:
       return {

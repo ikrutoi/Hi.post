@@ -182,6 +182,20 @@ export const shoppingCards = (newSection) => {
   }
 }
 
+export const dateShoppingCards = (newSection) => {
+  return {
+    type: a.DATE_SHOPPING_CARDS,
+    payload: newSection,
+  }
+}
+
+export const lockDateShoppingCards = (newSection) => {
+  return {
+    type: a.LOCK_DATE_SHOPPING_CARDS,
+    payload: newSection,
+  }
+}
+
 // export const setMyAddressLegendRef = (newSection) => {
 //   return {
 //     type: a.SET_MY_ADDRESS_LEGEND_REF,

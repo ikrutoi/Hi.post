@@ -653,12 +653,14 @@ const CardsList = () => {
   }
 
   const choiceMemoryList = () => {
-    if (
-      selectorLayoutChoiceClip === 'shopping' ||
-      selectorLayoutChoiceClip === 'blanks' ||
-      selectorLayoutChoiceClip === 'toaddress' ||
-      selectorLayoutChoiceClip === 'myaddress'
-    ) {
+    const memorySections = [
+      'shopping',
+      'blanks',
+      'toaddress',
+      'myaddress',
+      'date',
+    ]
+    if (memorySections.includes(selectorLayoutChoiceClip)) {
       return (
         <MemoryList
           sizeMiniCard={selectorLayoutSizeMiniCard}

@@ -21,12 +21,12 @@ import {
   addressPersonalId,
   choiceAddress,
   lockExpendMemoryCard,
+  lockDateShoppingCards,
 } from '../../../redux/layout/actionCreators'
 import { current } from '@reduxjs/toolkit'
 
 const MemoryList = ({
   sizeMiniCard,
-  // source: infoChoiceClip,
   widthCardsList,
   setInfoCardsList,
   valueScroll,
@@ -41,8 +41,15 @@ const MemoryList = ({
   const selectorLayoutPersonalId = useSelector(
     (state) => state.layout.personalId
   )
+  // const selectorCardEditDate = useSelector((state) => state.cardEdit.date)
+  const selectorLayoutDateShoppingCards = useSelector(
+    (state) => state.layout.dateShoppingCards
+  )
+  const selectorLayoutLockDateShoppingCards = useSelector(
+    (state) => state.layout.lockDateShoppingCards
+  )
   const [memoryList, setMemoryList] = useState(null)
-  const [selectedSource, setSelectedSource] = useState(null)
+  // const [selectedSource, setSelectedSource] = useState(null)
   const [listIconsSource, setListIconsSource] = useState(null)
   const btnIconRefs = useRef({})
   const cardRefs = useRef({})
@@ -63,6 +70,7 @@ const MemoryList = ({
   const selectorLayoutSliderLine = useSelector(
     (state) => state.layout.sliderLine
   )
+  const [sectionClip, setSectionClip] = useState(null)
   const [elementSave, setElementSave] = useState(null)
   const [infoElementSave, setInfoElementSave] = useState(null)
   const [firstLetterElementSave, setFirstLetterElementSave] = useState(null)
@@ -108,7 +116,9 @@ const MemoryList = ({
       blanks: ['plus', 'remove'],
     }
 
-    setListIconsSource(iconConfig[source] || [])
+    setListIconsSource(
+      iconConfig[source === 'date' ? 'shopping' : source] || []
+    )
 
     switch (source) {
       case 'toaddress': {
@@ -151,13 +161,36 @@ const MemoryList = ({
         firstLetterList = letters
         break
       }
+      case 'date': {
+        console.log(
+          'clip, date',
+          selectorLayoutChoiceClip,
+          selectorLayoutDateShoppingCards
+        )
+        const records = await getAllShopping()
+        const dateRecords = records.filter(
+          (card) =>
+            card.shopping.date.year === selectorLayoutDateShoppingCards.year &&
+            card.shopping.date.month ===
+              selectorLayoutDateShoppingCards.month &&
+            card.shopping.date.day === selectorLayoutDateShoppingCards.day
+        )
+        const { sortedRecords, firstLetterList: letters } = processMemoryCards(
+          dateRecords,
+          (card) => card.shopping.envelope.toaddress.name
+        )
+        memoryCards = sortedRecords
+        firstLetterList = letters
+        // dispatch(choiceClip('shopping'))
+        break
+      }
       default:
         console.error('Unknown source:', source)
         break
     }
 
     setMemoryList(memoryCards)
-    setSelectedSource(source)
+    // setSelectedSource(source)
     if (memoryCards.length) {
       setInfoCardsList({
         length: memoryCards.length,
@@ -165,8 +198,17 @@ const MemoryList = ({
       })
       setFirstLetterCardsList(firstLetterList)
     }
+    if (selectorLayoutChoiceClip === 'date') {
+      setSectionClip('shopping')
+    } else {
+      setSectionClip(selectorLayoutChoiceClip)
+    }
     // changeStyleFirstAndLastCards()
   }
+
+  // console.log('memoryList', memoryList)
+  console.log('choiceClip', selectorLayoutChoiceClip)
+  console.log('sectionClip', sectionClip)
 
   const findElementByPersonalId = (id, source) => {
     if (cardRefs.current) {
@@ -248,6 +290,16 @@ const MemoryList = ({
       getMemoryCards(selectorLayoutChoiceClip)
     }
   }, [selectorLayoutChoiceClip, selectorLayoutMaxCardsList])
+
+  useEffect(() => {
+    if (
+      selectorLayoutChoiceClip === 'date' &&
+      selectorLayoutLockDateShoppingCards
+    ) {
+      getMemoryCards(selectorLayoutChoiceClip)
+      dispatch(lockDateShoppingCards(false))
+    }
+  }, [selectorLayoutChoiceClip, selectorLayoutLockDateShoppingCards])
 
   useEffect(() => {
     if (selectorIBEnvelopeSave && selectorLayoutPersonalId) {
@@ -517,7 +569,7 @@ const MemoryList = ({
       if (!parentBtn && !parentBtn.dataset.id) {
         return
       }
-      switch (selectorLayoutChoiceClip) {
+      switch (sectionClip) {
         case 'shopping':
           await deleteShopping(Number(parentBtn.dataset.id))
           break
@@ -526,21 +578,17 @@ const MemoryList = ({
           break
         case 'myaddress':
           await deleteMyAddress(Number(parentBtn.dataset.id))
-          dispatch(
-            infoButtons({ envelopeRemoveAddress: selectorLayoutChoiceClip })
-          )
+          dispatch(infoButtons({ envelopeRemoveAddress: sectionClip }))
           break
         case 'toaddress':
           await deleteToAddress(Number(parentBtn.dataset.id))
-          dispatch(
-            infoButtons({ envelopeRemoveAddress: selectorLayoutChoiceClip })
-          )
+          dispatch(infoButtons({ envelopeRemoveAddress: sectionClip }))
           break
 
         default:
           break
       }
-      await getMemoryCards(selectorLayoutChoiceClip)
+      await getMemoryCards(sectionClip)
       dispatch(addFullCard(true))
       setIsDeleteCard(true)
     } catch (error) {
@@ -568,14 +616,11 @@ const MemoryList = ({
     dispatch(lockExpendMemoryCard(false))
     dispatch(
       expendMemoryCard({
-        source: selectorLayoutChoiceClip,
+        source: sectionClip,
         id: evt.target.dataset.id,
       })
     )
-    if (
-      selectorLayoutChoiceClip === 'shopping' ||
-      selectorLayoutChoiceClip === 'blanks'
-    ) {
+    if (sectionClip === 'shopping' || sectionClip === 'blanks') {
       dispatch(choiceClip(false))
     }
   }
@@ -677,14 +722,16 @@ const MemoryList = ({
     }
   }
 
+  const memorySections = ['shopping', 'blanks']
+
   return (
     <div className="memory-list-container">
       {memoryList &&
-        selectorLayoutChoiceClip === selectedSource &&
+        sectionClip &&
         memoryList.map((card, i) => {
           return (
             <div
-              className={`memory-list-card memory-list-card-${selectorLayoutChoiceClip}`}
+              className={`memory-list-card memory-list-card-${sectionClip}`}
               key={`${i}`}
               ref={setCardRef(`card-${i}`)}
               data-id={card.id}
@@ -696,8 +743,7 @@ const MemoryList = ({
               }}
               onClick={handleClickCard}
             >
-              {(selectorLayoutChoiceClip === 'shopping' ||
-                selectorLayoutChoiceClip === 'blanks') && (
+              {memorySections.includes(sectionClip) && (
                 <div
                   className="memory-list-card-filter"
                   ref={setFilterRef(`filter-${card.id}`)}
@@ -706,13 +752,10 @@ const MemoryList = ({
                   onMouseLeave={handleMouseLeaveFilter}
                 ></div>
               )}
-              {(selectorLayoutChoiceClip === 'shopping' ||
-                selectorLayoutChoiceClip === 'blanks') && (
+              {memorySections.includes(sectionClip) && (
                 <img
                   className="memory-list-card-photo"
-                  src={URL.createObjectURL(
-                    card[selectorLayoutChoiceClip].cardphoto
-                  )}
+                  src={URL.createObjectURL(card[sectionClip].cardphoto)}
                   style={{
                     width: `${sizeMiniCard.width}px`,
                     height: `${sizeMiniCard.height}px`,
@@ -720,10 +763,9 @@ const MemoryList = ({
                   alt="memoryCardPhoto"
                 ></img>
               )}
-              {selectorLayoutChoiceClip === 'shopping' ||
-              selectorLayoutChoiceClip === 'blanks' ? (
+              {memorySections.includes(sectionClip) ? (
                 <span
-                  className={`memory-list-card-name memory-list-card-name-${selectorLayoutChoiceClip}`}
+                  className={`memory-list-card-name memory-list-card-name-${sectionClip}`}
                   data-id={card.id}
                   onClick={handleClickCard}
                   onMouseEnter={handleMouseEnterFilter}
@@ -731,37 +773,37 @@ const MemoryList = ({
                 >
                   {/* {card[infoChoiceClip].envelope.toaddress.name} */}
                   {trimLines(
-                    selectorLayoutChoiceClip,
-                    card[selectorLayoutChoiceClip].envelope.toaddress.name
+                    sectionClip,
+                    card[sectionClip].envelope.toaddress.name
                   )}
                 </span>
-              ) : selectorLayoutChoiceClip === 'myaddress' ? (
+              ) : sectionClip === 'myaddress' ? (
                 <span className={`memory-list-address-container`}>
                   <span
-                    className={`memory-list-${selectorLayoutChoiceClip}-country`}
+                    className={`memory-list-${sectionClip}-country`}
                     data-id={card.id}
                   >
                     {card.address.country}
                   </span>
                   <span
                     ref={myaddressNameRef}
-                    className={`memory-list-${selectorLayoutChoiceClip}-name`}
+                    className={`memory-list-${sectionClip}-name`}
                     data-id={card.id}
                   >
-                    {trimLines(selectorLayoutChoiceClip, card.address.name)}
+                    {trimLines(sectionClip, card.address.name)}
                   </span>
                 </span>
-              ) : selectorLayoutChoiceClip === 'toaddress' ? (
+              ) : sectionClip === 'toaddress' ? (
                 <span className={`memory-list-address-container`}>
                   <span
                     ref={(el) => (spanNameRefs.current[`span-name-${i}`] = el)}
-                    className={`memory-list-${selectorLayoutChoiceClip}-name`}
+                    className={`memory-list-${sectionClip}-name`}
                     data-id={card.id}
                   >
-                    {trimLines(selectorLayoutChoiceClip, card.address.name)}
+                    {trimLines(sectionClip, card.address.name)}
                   </span>
                   <span
-                    className={`memory-list-${selectorLayoutChoiceClip}-country`}
+                    className={`memory-list-${sectionClip}-country`}
                     data-id={card.id}
                   >
                     {card.address.country}
@@ -770,8 +812,8 @@ const MemoryList = ({
               ) : null}
               {listIconsSource &&
                 listIconsSource.map((btn, i) => {
-                  return selectorLayoutChoiceClip === 'shopping' ||
-                    selectorLayoutChoiceClip === 'blanks' ? (
+                  return sectionClip === 'shopping' ||
+                    sectionClip === 'blanks' ? (
                     <button
                       key={`${btn}-${i}`}
                       className="memory-list-btn"
