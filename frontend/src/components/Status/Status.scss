@@ -1,5 +1,6 @@
 .status-container {
   display: flex;
+  justify-content: space-between;
   width: 200px;
   .toolbar-btn {
     position: relative;
@@ -13,12 +14,9 @@
   }
 }
 
-.counter-container {
-  position: absolute;
+.status-container-cards {
   display: flex;
-  justify-content: center;
   align-items: center;
-  border-radius: 0.3rem;
 }
 
 .status-counter-container {
@@ -27,7 +25,8 @@
 }
 
 .shopping-counter-container {
-  background-color: rgb(0, 125, 250);
+  background-color: rgb(255, 89, 0);
+  // background-color: rgb(0, 125, 250);
   color: rgb(240, 240, 240);
 }
 
@@ -40,4 +39,27 @@
   padding: 0.1rem 0.25rem;
   font-size: 0.7rem;
   font-weight: 600;
+}
+
+.status-user {
+  display: flex;
+  align-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.status-user-img {
+  height: 1.7rem;
+  width: 1.7rem;
+  border-radius: 50%;
+  background-image: url('../../data/img/logo-no-user.svg');
+  background-size: cover;
+}
+
+.counter-container {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.3rem;
 }

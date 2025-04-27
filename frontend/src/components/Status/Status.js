@@ -118,39 +118,44 @@ const Status = () => {
 
   return (
     <div className="status-container">
-      {listBtnsStatus.map((btn, i) => (
-        <button
-          className={`toolbar-btn toolbar-btn-${btn}`}
-          data-tooltip={btn}
-          key={`${btn}-${i}`}
-          ref={setBtnIconRef(`status-${btn}`)}
-          onClick={handleClickBtn}
-        >
-          {addIconToolbar(btn)}
-          {btn === 'shopping' && countShopping ? (
-            <span
-              className={`counter-container status-counter-container ${btn}-counter-container`}
-            >
-              <span className={`status-counter ${btn}-counter`}>
-                {countShopping}
+      <div className="status-container-cards">
+        {listBtnsStatus.map((btn, i) => (
+          <button
+            className={`toolbar-btn toolbar-btn-${btn}`}
+            data-tooltip={btn}
+            key={`${btn}-${i}`}
+            ref={setBtnIconRef(`status-${btn}`)}
+            onClick={handleClickBtn}
+          >
+            {addIconToolbar(btn)}
+            {btn === 'shopping' && countShopping ? (
+              <span
+                className={`counter-container status-counter-container ${btn}-counter-container`}
+              >
+                <span className={`status-counter ${btn}-counter`}>
+                  {countShopping}
+                </span>
               </span>
-            </span>
-          ) : (
-            <></>
-          )}
-          {btn === 'clip' && countBlanks ? (
-            <span
-              className={`counter-container status-counter-container ${btn}-counter-container`}
-            >
-              <span className={`status-counter ${btn}-counter`}>
-                {countBlanks}
+            ) : (
+              <></>
+            )}
+            {btn === 'clip' && countBlanks ? (
+              <span
+                className={`counter-container status-counter-container ${btn}-counter-container`}
+              >
+                <span className={`status-counter ${btn}-counter`}>
+                  {countBlanks}
+                </span>
               </span>
-            </span>
-          ) : (
-            <></>
-          )}
-        </button>
-      ))}
+            ) : (
+              <></>
+            )}
+          </button>
+        ))}
+      </div>
+      <div className="status-user">
+        <span className="status-user-img"></span>
+      </div>
     </div>
   )
 }

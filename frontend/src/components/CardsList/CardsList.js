@@ -56,6 +56,7 @@ import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
 import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
 import MemoryList from './MemoryList/MemoryList'
 import SliderCardsList from './SliderCardsList/SliderCardsList'
+import EnvelopeIcon from './EnvelopeIcon/EnvelopeIcon'
 
 const CardsList = () => {
   const selectorCardEdit = useSelector((state) => state.cardEdit)
@@ -120,6 +121,20 @@ const CardsList = () => {
   // const [lockShowIconMinimize, setLockShowIconMinimize] = useState(null)
   // const [personalId, setPersonalId] = useState(null)
   const [fullCard, setFullCard] = useState(null)
+  const envelopeSvg = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="256px" height="180px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 25600 18000"
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str0 {stroke:#6699FF;stroke-width:199.961}
+    .fil0 {fill:none}
+   ]]>
+  </style>
+ </defs>
+ <g id="x0020_1">
+  <path class="fil0 str0" d="M1424 56l22752 0c731,0 1324,593 1324,1324l0 15240c0,731 -593,1324 -1324,1324l-22752 0c-731,0 -1324,-593 -1324,-1324l0 -15240c0,-731 593,-1324 1324,-1324zm-1324 2236c0,847 528,1565 1034,1879l10324 6618c405,242 838,447 1342,447 504,0 912,-179 1342,-447l10324 -6619c551,-375 1034,-1027 1034,-1878"/>
+ </g>
+</svg>`
 
   useEffect(() => {
     if (cardsListRef.current) {
@@ -359,10 +374,10 @@ const CardsList = () => {
   }
 
   useEffect(() => {
-    if (minimize) {
+    if (minimize && showIconsMinimize) {
       changeIconStyles(btnsFullCard, btnIconRefs.current)
     }
-  }, [minimize, btnIconRefs, btnsFullCard])
+  }, [minimize, showIconsMinimize, btnIconRefs, btnsFullCard])
 
   useEffect(() => {
     if (!selectorLayoutChoiceClip && fullCard) {
@@ -511,7 +526,7 @@ const CardsList = () => {
     }, {})
   }
 
-  const handleClickFullCardIcon = async (evt) => {
+  const handleIconFullCardClick = async (evt) => {
     const parentBtn = evt.target.closest('.fullcard-btn')
     if (btnsFullCard.fullCard[parentBtn.dataset.tooltip]) {
       const personalId = uuidv4().split('-')[0]
@@ -715,7 +730,7 @@ const CardsList = () => {
       {choiceMemoryList()}
       {!selectorLayoutChoiceClip && selectorLayoutLockExpendMemoryCard && (
         <>
-          <div
+          {/* <div
             className="poly-cards-filter"
             style={{
               width: `${selectorLayoutSizeMiniCard.width}px`,
@@ -725,7 +740,8 @@ const CardsList = () => {
                 : '2px 1px 5px 2px rgba(255, 255, 255, 0.2)',
               transition: 'box-shadow 0.3s',
             }}
-          ></div>
+          ></div> */}
+          <EnvelopeIcon sizeMiniCard={selectorLayoutSizeMiniCard} />
           <div
             className="mini-poly-cards"
             ref={miniPolyCardsRef}
@@ -750,13 +766,14 @@ const CardsList = () => {
               )}
               <div className="fullcard-line">
                 {minimize &&
+                  showIconsMinimize &&
                   listIconsFullCard.map((btn, i) => (
                     <button
                       key={`${btn}-${i}`}
                       className="fullcard-btn fullcard-btn-menu"
                       ref={setBtnIconRef(`fullCard-${btn}`)}
                       data-tooltip={btn}
-                      onClick={handleClickFullCardIcon}
+                      onClick={handleIconFullCardClick}
                     >
                       {addIconToolbar(btn)}
                     </button>
