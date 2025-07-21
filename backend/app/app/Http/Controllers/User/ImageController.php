@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\ImageTemplate;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class SenderTemplateController extends Controller
+class ImageController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,12 +17,20 @@ class SenderTemplateController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'url' => 'required|url',
+        ]);
+
+        $template = ImageTemplate::create([
+            'title' => $validated['title'],
+            'url' => $validated['url'],
+            'type' => 'user',
+        ]);
+
+        return response()->json($template, 201);
     }
 
     /**
