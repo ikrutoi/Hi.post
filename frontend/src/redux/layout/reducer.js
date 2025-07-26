@@ -1,12 +1,12 @@
 import {
-  choiceLetter,
+  // choiceLetter,
   dateShoppingCards,
   deleteSection,
-  expendShopping,
+  // expendShopping,
   fullCard,
   fullCardPersonalId,
   lockExpendMemoryCard,
-  lockShowIconsMinimize,
+  // lockShowIconsMinimize,
   selectedSection,
   shoppingCards,
 } from './actionCreators'

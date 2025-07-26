@@ -46,8 +46,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend/app
-      dockerfile: ../docker/Dockerfile
+      context: ./frontend
+      dockerfile: docker/app/Dockerfile
     container_name: frontend_app
     ports:
       - '3000:3000'

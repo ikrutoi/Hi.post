@@ -21,13 +21,6 @@ export const addRemSize = (newSection) => {
   }
 }
 
-// export const addBtnNavHover = (newSection) => {
-//   return {
-//     type: a.ADD_BTN_NAV_HOVER,
-//     payload: newSection,
-//   }
-// }
-
 export const addChoiceSection = (newSection) => {
   return {
     type: a.ADD_CHOICE_SECTION,
@@ -195,31 +188,3 @@ export const lockDateShoppingCards = (newSection) => {
     payload: newSection,
   }
 }
-
-// export const setMyAddressLegendRef = (newSection) => {
-//   return {
-//     type: a.SET_MY_ADDRESS_LEGEND_REF,
-//     payload: newSection,
-//   }
-// }
-
-// export const setToAddressLegendRef = (newSection) => {
-//   return {
-//     type: a.SET_TO_ADDRESS_LEGEND_REF,
-//     payload: newSection,
-//   }
-// }
-
-// export const setMyAddressFieldsetRef = (newSection) => {
-//   return {
-//     type: a.SET_MY_ADDRESS_FIELDSET_REF,
-//     payload: newSection,
-//   }
-// }
-
-// export const setToAddressFieldsetRef = (newSection) => {
-//   return {
-//     type: a.SET_TO_ADDRESS_FIELDSET_REF,
-//     payload: newSection,
-//   }
-// }
