@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import infoButtonsReducer from './slices/infoButtons'
+import infoButtonsReducer from './slices/infoButtonsSlice'
 import layoutReducer from './slices/layoutSlice'
 import cardsSlice from './slices/cardsSlice'
 import cardEditSlice from './slices/cardEditSlice'

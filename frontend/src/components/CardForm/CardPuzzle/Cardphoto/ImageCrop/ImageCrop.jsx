@@ -14,9 +14,10 @@ import {
 import {
   addIndexDb,
   addMemoryCrop,
-  activeSections,
-  expendMemoryCard,
-} from '../../../../../redux/layout/actionCreators'
+  setActiveSections,
+  setExpendMemoryCard,
+} from '../../../../../store/slices/layoutSlice'
+// } from '../../../../../redux/layout/actionCreators'
 // import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
 import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
 import coverImage from '../../../../../data/img/card-photo-bw.jpg'
@@ -37,10 +38,10 @@ const ImageCrop = ({ sizeCard }) => {
   const layoutMemoryCrop = useSelector((state) => state.layout.memoryCrop)
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const layoutActiveSections = useSelector(
-    (state) => state.layout.activeSections
+    (state) => state.layout.setActiveSections
   )
   const infoExpendStatusCard = useSelector(
-    (state) => state.layout.expendMemoryCard
+    (state) => state.layout.setExpendMemoryCard
   )
   const [image, setImage] = useState({ source: null, url: null, base: null })
   const [scaleX, setScaleX] = useState(1)
@@ -62,7 +63,10 @@ const ImageCrop = ({ sizeCard }) => {
       (image) => !!image.miniImage
     )
     dispatch(
-      activeSections({ ...layoutActiveSections, cardphoto: booleanMiniImage })
+      setActiveSections({
+        ...layoutActiveSections,
+        cardphoto: booleanMiniImage,
+      })
     )
   }, [layoutIndexDb])
 
@@ -71,7 +75,7 @@ const ImageCrop = ({ sizeCard }) => {
       fetchImages()
     } else {
       const timerInfoExpendStatusCard = setTimeout(() => {
-        dispatch(expendMemoryCard(false))
+        dispatch(setExpendMemoryCard(false))
       }, 300)
 
       return () => clearTimeout(timerInfoExpendStatusCard)

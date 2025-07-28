@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './TooltipColor.scss'
 import listColors from '../../../../../data/toolbar/listColors.json'
-import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
-import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
+import { addCardtext } from '../../../../../store/slices/cardEditSlice'
 
 const TooltipColor = ({ setBtnColor, infoButtonsCardtext, styleLeft }) => {
   const btnTooltipColorRef = useRef(null)

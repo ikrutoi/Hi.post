@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './Status.scss'
-import { infoButtons } from '../../redux/infoButtons/actionCreators'
 import {
-  addFullCard,
-  // expendShopping,
-  choiceClip,
-  shoppingCards,
-} from '../../redux/layout/actionCreators'
+  setFullCard,
+  setChoiceClip,
+  setShoppingCards,
+} from '../../store/slices/layoutSlice'
 import {
   getAllBlanks,
   deleteBlank,
@@ -22,13 +20,13 @@ import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
 const Status = () => {
   const selectorIBStatus = useSelector((state) => state.infoButtons.status)
   const selectorLayoutAddFullCard = useSelector(
-    (state) => state.layout.addFullCard
+    (state) => state.layout.setFullCard
   )
   const selectorLayoutChoiceClip = useSelector(
-    (state) => state.layout.choiceClip
+    (state) => state.layout.setChoiceClip
   )
   const selectorLayoutShoppingCards = useSelector(
-    (state) => state.layout.shoppingCards
+    (state) => state.layout.setShoppingCards
   )
   const [btnsStatus, setBtnsStatus] = useState({ status: selectorIBStatus })
   const [countShopping, setCountShopping] = useState(null)
@@ -57,10 +55,10 @@ const Status = () => {
     setCountShopping(shoppings.length > 0 ? shoppings.length : 0)
     setCountBlanks(blanks.length > 0 ? blanks.length : 0)
     if (shoppings.length > 0 && !selectorLayoutShoppingCards) {
-      dispatch(shoppingCards(true))
+      dispatch(setShoppingCards(true))
     }
     if (shoppings.length === 0 && selectorLayoutShoppingCards) {
-      dispatch(shoppingCards(false))
+      dispatch(setShoppingCards(false))
     }
   }
 
@@ -78,7 +76,7 @@ const Status = () => {
     updateStatus()
     if (selectorLayoutAddFullCard) {
       const timerIcon = setTimeout(() => {
-        dispatch(addFullCard(false))
+        dispatch(setFullCard(false))
       }, 300)
 
       return () => clearTimeout(timerIcon)
@@ -99,7 +97,7 @@ const Status = () => {
     switch (parentBtn.dataset.tooltip) {
       case 'shopping':
         dispatch(
-          choiceClip(
+          setChoiceClip(
             selectorLayoutChoiceClip === 'shopping' ? false : 'shopping'
           )
         )
@@ -107,7 +105,9 @@ const Status = () => {
       case 'clip':
         // clearBase()
         dispatch(
-          choiceClip(selectorLayoutChoiceClip === 'blanks' ? false : 'blanks')
+          setChoiceClip(
+            selectorLayoutChoiceClip === 'blanks' ? false : 'blanks'
+          )
         )
         break
 

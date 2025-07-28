@@ -8,7 +8,7 @@ import {
   getAllRecordsAddresses,
   getCountRecordsAddresses,
 } from '../../../../../utils/cardFormNav/indexDB/indexDb'
-import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
+import { updateButtonsState } from '../../../../../store/slices/infoButtonsSlice'
 
 const FormAddress = ({
   values,
@@ -50,14 +50,14 @@ const FormAddress = ({
   useEffect(() => {
     if (infoEnvelopeSaveSecond) {
       updateCounts(infoEnvelopeSaveSecond)
-      dispatch(infoButtons({ envelopeSaveSecond: false }))
+      dispatch(updateButtonsState({ envelopeSaveSecond: false }))
     }
   }, [infoEnvelopeSaveSecond, dispatch])
 
   useEffect(() => {
     if (infoEnvelopeRemove) {
       updateCounts(infoEnvelopeRemove)
-      dispatch(infoButtons({ envelopeRemoveAddress: false }))
+      dispatch(updateButtonsState({ envelopeRemoveAddress: false }))
     }
   }, [infoEnvelopeRemove, dispatch])
 

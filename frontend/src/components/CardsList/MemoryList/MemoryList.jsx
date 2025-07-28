@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './MemoryList.scss'
-import { infoButtons } from '../../../redux/infoButtons/actionCreators'
+import { updateButtonsState } from '../../../store/slices/infoButtonsSlice'
 import {
   getAllShopping,
   deleteShopping,
@@ -14,16 +14,14 @@ import {
 } from '../../../utils/cardFormNav/indexDB/indexDb'
 import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
 import {
-  addFullCard,
-  choiceClip,
-  expendMemoryCard,
-  deltaEnd,
-  choiceSave,
-  addressPersonalId,
-  choiceAddress,
-  lockExpendMemoryCard,
-  lockDateShoppingCards,
-} from '../../../redux/layout/actionCreators'
+  setFullCard,
+  setChoiceClip,
+  setExpendMemoryCard,
+  setDeltaEnd,
+  setFullCardPersonalId,
+  setLockExpendMemoryCard,
+  setLockDateShoppingCards,
+} from '../../../store/slices/layoutSlice'
 import { current } from '@reduxjs/toolkit'
 import shotMonths from '../../../data/date/monthsShotOfYear.json'
 
@@ -35,7 +33,7 @@ const MemoryList = ({
   setValueScroll,
 }) => {
   const selectorLayoutChoiceClip = useSelector(
-    (state) => state.layout.choiceClip
+    (state) => state.layout.setChoiceClip
   )
   const selectorIBEnvelopeSave = useSelector(
     (state) => state.infoButtons.envelopeSave
@@ -48,7 +46,7 @@ const MemoryList = ({
     (state) => state.layout.dateShoppingCards
   )
   const selectorLayoutLockDateShoppingCards = useSelector(
-    (state) => state.layout.lockDateShoppingCards
+    (state) => state.layout.setLockDateShoppingCards
   )
   const [memoryList, setMemoryList] = useState(null)
   // const [selectedSource, setSelectedSource] = useState(null)
@@ -181,7 +179,7 @@ const MemoryList = ({
         )
         memoryCards = sortedRecords
         firstLetterList = letters
-        // dispatch(choiceClip('shopping'))
+        // dispatch(setChoiceClip('shopping'))
         break
       }
       default:
@@ -258,8 +256,7 @@ const MemoryList = ({
         elementSave.classList.remove('save')
         setTimeout(() => {
           elementSave.classList.remove('save-fade-out')
-          dispatch(addressPersonalId(false))
-          dispatch(infoButtons({ envelopeSave: false }))
+          dispatch(setFullCardPersonalId(false))
         }, 500)
       }, 1000)
 
@@ -293,14 +290,16 @@ const MemoryList = ({
       selectorLayoutLockDateShoppingCards
     ) {
       getMemoryCards(selectorLayoutChoiceClip)
-      dispatch(lockDateShoppingCards(false))
+      dispatch(setLockDateShoppingCards(false))
     }
   }, [selectorLayoutChoiceClip, selectorLayoutLockDateShoppingCards])
 
   useEffect(() => {
     if (selectorIBEnvelopeSave && selectorLayoutPersonalId) {
       getMemoryCards(selectorIBEnvelopeSave)
-      dispatch(infoButtons({ envelopeSaveSecond: selectorIBEnvelopeSave }))
+      dispatch(
+        updateButtonsState({ envelopeSaveSecond: selectorIBEnvelopeSave })
+      )
     }
   }, [selectorIBEnvelopeSave, selectorLayoutPersonalId, dispatch])
 
@@ -554,337 +553,343 @@ const MemoryList = ({
       }
 
       // changeStyleFirstAndLastCards()
-      dispatch(deltaEnd(restEnd === 0))
+      dispatch(setDeltaEnd(restEnd === 0))
     }
-  }
 
-  const handleBtnCardClick = async (evt) => {
-    evt.stopPropagation()
-    try {
-      const parentBtn = evt.target.closest('.memory-list-btn')
-      const nameParentBtn = parentBtn.dataset.tooltip
-      console.log('nameParent', nameParentBtn)
-      if (!parentBtn && !parentBtn.dataset.id) {
-        return
-      }
-      if (nameParentBtn === 'save') {
-        const idSaveElement = parentBtn.dataset.id
-        const saveElement = memoryList.filter(
-          (card) => card.id === Number(idSaveElement)
-        )
-        console.log('personalId', saveElement[0].personalId)
-        await addUniqueBlank(saveElement, saveElement[0].personalId)
-      }
-      if (nameParentBtn === 'remove') {
-        switch (sectionClip) {
-          case 'shopping':
-            await deleteShopping(Number(parentBtn.dataset.id))
-            break
-          case 'blanks':
-            await deleteBlank(Number(parentBtn.dataset.id))
-            break
-          case 'myaddress':
-            await deleteMyAddress(Number(parentBtn.dataset.id))
-            dispatch(infoButtons({ envelopeRemoveAddress: sectionClip }))
-            break
-          case 'toaddress':
-            await deleteToAddress(Number(parentBtn.dataset.id))
-            dispatch(infoButtons({ envelopeRemoveAddress: sectionClip }))
-            break
-
-          default:
-            break
+    const handleBtnCardClick = async (evt) => {
+      evt.stopPropagation()
+      try {
+        const parentBtn = evt.target.closest('.memory-list-btn')
+        const nameParentBtn = parentBtn.dataset.tooltip
+        console.log('nameParent', nameParentBtn)
+        if (!parentBtn && !parentBtn.dataset.id) {
+          return
         }
-      }
-      await getMemoryCards(sectionClip)
-      dispatch(addFullCard(true))
-      setIsDeleteCard(true)
-    } catch (error) {
-      console.log('Error deleting card:', error)
-    }
-  }
-
-  const handleFilterMouseEnter = (evt) => {
-    if (evt.target.dataset.id) {
-      filterRefs.current[
-        `filter-${evt.target.dataset.id}`
-      ].style.backgroundColor = 'rgba(163, 163, 163, 0)'
-    }
-  }
-
-  const handleFilterMouseLeave = (evt) => {
-    if (evt.target.dataset.id) {
-      filterRefs.current[
-        `filter-${evt.target.dataset.id}`
-      ].style.backgroundColor = 'rgba(163, 163, 163, 0.3)'
-    }
-  }
-
-  const handleClickCard = (evt) => {
-    dispatch(lockExpendMemoryCard(false))
-    dispatch(
-      expendMemoryCard({
-        source: sectionClip,
-        id: evt.target.dataset.id,
-      })
-    )
-    if (sectionClip === 'shopping' || sectionClip === 'blanks') {
-      dispatch(choiceClip(false))
-    }
-  }
-
-  const trimLines = (source, text) => {
-    const arrText = text.trim().split(' ')
-    const arrTextNoEmpty = arrText.filter((word) => word !== '')
-    let limitLettersSingle
-    let limitLettersAll
-    switch (source) {
-      case 'shopping':
-        limitLettersSingle = 13
-        limitLettersAll = 15
-        break
-      case 'blanks':
-        limitLettersSingle = 13
-        limitLettersAll = 15
-        break
-      case 'myaddress':
-        limitLettersSingle = 11
-        limitLettersAll = 22
-        break
-      case 'toaddress':
-        limitLettersSingle = 15
-        limitLettersAll = 30
-        break
-
-      default:
-        break
-    }
-
-    for (let i = 0; i < arrTextNoEmpty.length; i++) {
-      if (i === 0 && arrTextNoEmpty[i].length > limitLettersSingle) {
-        return arrTextNoEmpty[i].slice(0, limitLettersSingle) + '...'
-      } else {
-        if (arrTextNoEmpty.length === 1) {
-          return arrTextNoEmpty[i]
+        if (nameParentBtn === 'save') {
+          const idSaveElement = parentBtn.dataset.id
+          const saveElement = memoryList.filter(
+            (card) => card.id === Number(idSaveElement)
+          )
+          console.log('personalId', saveElement[0].personalId)
+          await addUniqueBlank(saveElement, saveElement[0].personalId)
         }
+        if (nameParentBtn === 'remove') {
+          switch (sectionClip) {
+            case 'shopping':
+              await deleteShopping(Number(parentBtn.dataset.id))
+              break
+            case 'blanks':
+              await deleteBlank(Number(parentBtn.dataset.id))
+              break
+            case 'myaddress':
+              await deleteMyAddress(Number(parentBtn.dataset.id))
+              dispatch(
+                updateButtonsState({ envelopeRemoveAddress: sectionClip })
+              )
+              break
+            case 'toaddress':
+              await deleteToAddress(Number(parentBtn.dataset.id))
+              dispatch(
+                updateButtonsState({ envelopeRemoveAddress: sectionClip })
+              )
+              break
+
+            default:
+              break
+          }
+        }
+        await getMemoryCards(sectionClip)
+        dispatch(setFullCard(true))
+        setIsDeleteCard(true)
+      } catch (error) {
+        console.log('Error deleting card:', error)
       }
-      if (i === 1) {
-        if (
-          arrTextNoEmpty[0].length + arrTextNoEmpty[i].length >
-            limitLettersAll ||
-          arrTextNoEmpty[i].length > limitLettersSingle
-        ) {
-          if (source === 'myaddress' || source === 'toaddress') {
-            return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i].slice(
-              0,
-              limitLettersSingle
-            )}...`
-          } else {
-            if (
-              limitLettersAll - arrTextNoEmpty[0].length + 1 ===
-              arrTextNoEmpty[i].length
-            ) {
-              return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i]}`
-            } else {
+    }
+
+    const handleFilterMouseEnter = (evt) => {
+      if (evt.target.dataset.id) {
+        filterRefs.current[
+          `filter-${evt.target.dataset.id}`
+        ].style.backgroundColor = 'rgba(163, 163, 163, 0)'
+      }
+    }
+
+    const handleFilterMouseLeave = (evt) => {
+      if (evt.target.dataset.id) {
+        filterRefs.current[
+          `filter-${evt.target.dataset.id}`
+        ].style.backgroundColor = 'rgba(163, 163, 163, 0.3)'
+      }
+    }
+
+    const handleClickCard = (evt) => {
+      dispatch(setLockExpendMemoryCard(false))
+      dispatch(
+        setExpendMemoryCard({
+          source: sectionClip,
+          id: evt.target.dataset.id,
+        })
+      )
+      if (sectionClip === 'shopping' || sectionClip === 'blanks') {
+        dispatch(setChoiceClip(false))
+      }
+    }
+
+    const trimLines = (source, text) => {
+      const arrText = text.trim().split(' ')
+      const arrTextNoEmpty = arrText.filter((word) => word !== '')
+      let limitLettersSingle
+      let limitLettersAll
+      switch (source) {
+        case 'shopping':
+          limitLettersSingle = 13
+          limitLettersAll = 15
+          break
+        case 'blanks':
+          limitLettersSingle = 13
+          limitLettersAll = 15
+          break
+        case 'myaddress':
+          limitLettersSingle = 11
+          limitLettersAll = 22
+          break
+        case 'toaddress':
+          limitLettersSingle = 15
+          limitLettersAll = 30
+          break
+
+        default:
+          break
+      }
+
+      for (let i = 0; i < arrTextNoEmpty.length; i++) {
+        if (i === 0 && arrTextNoEmpty[i].length > limitLettersSingle) {
+          return arrTextNoEmpty[i].slice(0, limitLettersSingle) + '...'
+        } else {
+          if (arrTextNoEmpty.length === 1) {
+            return arrTextNoEmpty[i]
+          }
+        }
+        if (i === 1) {
+          if (
+            arrTextNoEmpty[0].length + arrTextNoEmpty[i].length >
+              limitLettersAll ||
+            arrTextNoEmpty[i].length > limitLettersSingle
+          ) {
+            if (source === 'myaddress' || source === 'toaddress') {
               return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i].slice(
                 0,
-                limitLettersAll - arrTextNoEmpty[0].length
+                limitLettersSingle
               )}...`
+            } else {
+              if (
+                limitLettersAll - arrTextNoEmpty[0].length + 1 ===
+                arrTextNoEmpty[i].length
+              ) {
+                return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i]}`
+              } else {
+                return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[i].slice(
+                  0,
+                  limitLettersAll - arrTextNoEmpty[0].length
+                )}...`
+              }
+            }
+          } else {
+            if (arrTextNoEmpty.length === 2) {
+              return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]}`
             }
           }
-        } else {
-          if (arrTextNoEmpty.length === 2) {
-            return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]}`
-          }
         }
-      }
-      if (i === 2) {
-        if (
-          arrTextNoEmpty[0].length + arrTextNoEmpty[1].length + 1 >
-          limitLettersSingle
-        ) {
-          return (
-            `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]}` +
-            arrTextNoEmpty[i].slice(
-              0,
-              limitLettersSingle - arrTextNoEmpty[1].length
-            ) +
-            '...'
-          )
-        } else {
+        if (i === 2) {
           if (
-            arrTextNoEmpty[i].length > limitLettersSingle ||
-            (arrTextNoEmpty[i].length < limitLettersSingle &&
-              arrTextNoEmpty.length > 3)
+            arrTextNoEmpty[0].length + arrTextNoEmpty[1].length + 1 >
+            limitLettersSingle
           ) {
             return (
-              `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]} ` +
-              arrTextNoEmpty[i].slice(0, limitLettersSingle) +
+              `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]}` +
+              arrTextNoEmpty[i].slice(
+                0,
+                limitLettersSingle - arrTextNoEmpty[1].length
+              ) +
               '...'
             )
           } else {
-            return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]} ${arrTextNoEmpty[2]}`
+            if (
+              arrTextNoEmpty[i].length > limitLettersSingle ||
+              (arrTextNoEmpty[i].length < limitLettersSingle &&
+                arrTextNoEmpty.length > 3)
+            ) {
+              return (
+                `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]} ` +
+                arrTextNoEmpty[i].slice(0, limitLettersSingle) +
+                '...'
+              )
+            } else {
+              return `${arrTextNoEmpty[0]} ${arrTextNoEmpty[1]} ${arrTextNoEmpty[2]}`
+            }
           }
         }
       }
     }
-  }
 
-  const memorySections = ['shopping', 'blanks']
+    const memorySections = ['shopping', 'blanks']
 
-  return (
-    <div className="memory-list-container">
-      {memoryList &&
-        sectionClip &&
-        memoryList.map((card, i) => {
-          return (
-            <div
-              className={`memory-list-card memory-list-card-${sectionClip}`}
-              key={`${i}`}
-              ref={setCardRef(`card-${i}`)}
-              data-id={card.id}
-              data-index={i}
-              data-personal-id={card?.personalId}
-              style={{
-                width: `${sizeMiniCard.width}px`,
-                height: `${sizeMiniCard.height}px`,
-              }}
-              onClick={handleClickCard}
-            >
-              {memorySections.includes(sectionClip) && (
-                <div
-                  className="memory-list-card-filter"
-                  ref={setFilterRef(`filter-${card.id}`)}
-                  data-id={card.id}
-                  onMouseEnter={handleFilterMouseEnter}
-                  onMouseLeave={handleFilterMouseLeave}
-                ></div>
-              )}
-              {memorySections.includes(sectionClip) && (
-                <img
-                  className="memory-list-card-photo"
-                  src={URL.createObjectURL(card[sectionClip].cardphoto)}
-                  style={{
-                    width: `${sizeMiniCard.width}px`,
-                    height: `${sizeMiniCard.height}px`,
-                  }}
-                  alt="memoryCardPhoto"
-                ></img>
-              )}
-
-              {memorySections.includes(sectionClip) ? (
-                <>
-                  {sectionClip === 'shopping' && card?.shopping?.date && (
-                    <span className="memory-list-shopping-date-container">
-                      <span className="memory-list-shopping-date">
-                        {card.shopping.date.year}
-                      </span>
-                      <span className="memory-list-shopping-date">
-                        {'\xA0'}
-                        {shotMonths[card.shopping.date.month]}
-                        {'\xA0'}
-                      </span>
-                      <span className="memory-list-shopping-date">
-                        {card.shopping.date.day}
-                      </span>
-                    </span>
-                  )}
-                  <span
-                    className={`memory-list-card-name memory-list-card-name-${sectionClip}`}
+    return (
+      <div className="memory-list-container">
+        {memoryList &&
+          sectionClip &&
+          memoryList.map((card, i) => {
+            return (
+              <div
+                className={`memory-list-card memory-list-card-${sectionClip}`}
+                key={`${i}`}
+                ref={setCardRef(`card-${i}`)}
+                data-id={card.id}
+                data-index={i}
+                data-personal-id={card?.personalId}
+                style={{
+                  width: `${sizeMiniCard.width}px`,
+                  height: `${sizeMiniCard.height}px`,
+                }}
+                onClick={handleClickCard}
+              >
+                {memorySections.includes(sectionClip) && (
+                  <div
+                    className="memory-list-card-filter"
+                    ref={setFilterRef(`filter-${card.id}`)}
                     data-id={card.id}
-                    onClick={handleClickCard}
                     onMouseEnter={handleFilterMouseEnter}
                     onMouseLeave={handleFilterMouseLeave}
-                  >
-                    {/* {card[infoChoiceClip].envelope.toaddress.name} */}
-                    {trimLines(
-                      sectionClip,
-                      card[sectionClip].envelope.toaddress.name
+                  ></div>
+                )}
+                {memorySections.includes(sectionClip) && (
+                  <img
+                    className="memory-list-card-photo"
+                    src={URL.createObjectURL(card[sectionClip].cardphoto)}
+                    style={{
+                      width: `${sizeMiniCard.width}px`,
+                      height: `${sizeMiniCard.height}px`,
+                    }}
+                    alt="memoryCardPhoto"
+                  ></img>
+                )}
+
+                {memorySections.includes(sectionClip) ? (
+                  <>
+                    {sectionClip === 'shopping' && card?.shopping?.date && (
+                      <span className="memory-list-shopping-date-container">
+                        <span className="memory-list-shopping-date">
+                          {card.shopping.date.year}
+                        </span>
+                        <span className="memory-list-shopping-date">
+                          {'\xA0'}
+                          {shotMonths[card.shopping.date.month]}
+                          {'\xA0'}
+                        </span>
+                        <span className="memory-list-shopping-date">
+                          {card.shopping.date.day}
+                        </span>
+                      </span>
                     )}
-                  </span>
-                </>
-              ) : sectionClip === 'myaddress' ? (
-                <span className={`memory-list-address-container`}>
-                  <span
-                    className={`memory-list-${sectionClip}-country`}
-                    data-id={card.id}
-                  >
-                    {card.address.country}
-                  </span>
-                  <span
-                    ref={myaddressNameRef}
-                    className={`memory-list-${sectionClip}-name`}
-                    data-id={card.id}
-                  >
-                    {trimLines(sectionClip, card.address.name)}
-                  </span>
-                </span>
-              ) : sectionClip === 'toaddress' ? (
-                <span className={`memory-list-address-container`}>
-                  <span
-                    ref={(el) => (spanNameRefs.current[`span-name-${i}`] = el)}
-                    className={`memory-list-${sectionClip}-name`}
-                    data-id={card.id}
-                  >
-                    {trimLines(sectionClip, card.address.name)}
-                  </span>
-                  <span
-                    className={`memory-list-${sectionClip}-country`}
-                    data-id={card.id}
-                  >
-                    {card.address.country}
-                  </span>
-                </span>
-              ) : null}
-              {listIconsSource &&
-                listIconsSource.map((btn, i) => {
-                  return sectionClip === 'shopping' ||
-                    sectionClip === 'blanks' ? (
-                    <button
-                      key={`${btn}-${i}`}
-                      className="memory-list-btn"
-                      ref={setBtnIconRef(`fullCard-${btn}`)}
+                    <span
+                      className={`memory-list-card-name memory-list-card-name-${sectionClip}`}
                       data-id={card.id}
-                      data-tooltip={btn}
-                      style={{
-                        color: 'rgb(71, 71, 71)',
-                        backgroundColor: 'rgba(240, 240, 240, 0.75)',
-                        top:
-                          0.3 * remSize +
-                          i * (1.7 * remSize + 0.3 * remSize) +
-                          'px',
-                      }}
-                      onClick={handleBtnCardClick}
+                      onClick={handleClickCard}
                       onMouseEnter={handleFilterMouseEnter}
                       onMouseLeave={handleFilterMouseLeave}
                     >
-                      {addIconToolbar(btn)}
-                    </button>
-                  ) : (
-                    <button
-                      key={`${btn}-${i}`}
-                      className="memory-list-btn"
-                      ref={setBtnIconRef(`fullCard-${btn}`)}
+                      {/* {card[infoChoiceClip].envelope.toaddress.name} */}
+                      {trimLines(
+                        sectionClip,
+                        card[sectionClip].envelope.toaddress.name
+                      )}
+                    </span>
+                  </>
+                ) : sectionClip === 'myaddress' ? (
+                  <span className={`memory-list-address-container`}>
+                    <span
+                      className={`memory-list-${sectionClip}-country`}
                       data-id={card.id}
-                      style={{
-                        color: 'rgb(71, 71, 71)',
-                        backgroundColor: 'rgba(240, 240, 240, 0.75)',
-                        top:
-                          0.3 * remSize +
-                          i * (1.7 * remSize + 0.3 * remSize) +
-                          'px',
-                      }}
-                      onClick={handleBtnCardClick}
                     >
-                      {addIconToolbar(btn)}
-                    </button>
-                  )
-                })}
-            </div>
-          )
-        })}
-    </div>
-  )
+                      {card.address.country}
+                    </span>
+                    <span
+                      ref={myaddressNameRef}
+                      className={`memory-list-${sectionClip}-name`}
+                      data-id={card.id}
+                    >
+                      {trimLines(sectionClip, card.address.name)}
+                    </span>
+                  </span>
+                ) : sectionClip === 'toaddress' ? (
+                  <span className={`memory-list-address-container`}>
+                    <span
+                      ref={(el) =>
+                        (spanNameRefs.current[`span-name-${i}`] = el)
+                      }
+                      className={`memory-list-${sectionClip}-name`}
+                      data-id={card.id}
+                    >
+                      {trimLines(sectionClip, card.address.name)}
+                    </span>
+                    <span
+                      className={`memory-list-${sectionClip}-country`}
+                      data-id={card.id}
+                    >
+                      {card.address.country}
+                    </span>
+                  </span>
+                ) : null}
+                {listIconsSource &&
+                  listIconsSource.map((btn, i) => {
+                    return sectionClip === 'shopping' ||
+                      sectionClip === 'blanks' ? (
+                      <button
+                        key={`${btn}-${i}`}
+                        className="memory-list-btn"
+                        ref={setBtnIconRef(`fullCard-${btn}`)}
+                        data-id={card.id}
+                        data-tooltip={btn}
+                        style={{
+                          color: 'rgb(71, 71, 71)',
+                          backgroundColor: 'rgba(240, 240, 240, 0.75)',
+                          top:
+                            0.3 * remSize +
+                            i * (1.7 * remSize + 0.3 * remSize) +
+                            'px',
+                        }}
+                        onClick={handleBtnCardClick}
+                        onMouseEnter={handleFilterMouseEnter}
+                        onMouseLeave={handleFilterMouseLeave}
+                      >
+                        {addIconToolbar(btn)}
+                      </button>
+                    ) : (
+                      <button
+                        key={`${btn}-${i}`}
+                        className="memory-list-btn"
+                        ref={setBtnIconRef(`fullCard-${btn}`)}
+                        data-id={card.id}
+                        style={{
+                          color: 'rgb(71, 71, 71)',
+                          backgroundColor: 'rgba(240, 240, 240, 0.75)',
+                          top:
+                            0.3 * remSize +
+                            i * (1.7 * remSize + 0.3 * remSize) +
+                            'px',
+                        }}
+                        onClick={handleBtnCardClick}
+                      >
+                        {addIconToolbar(btn)}
+                      </button>
+                    )
+                  })}
+              </div>
+            )
+          })}
+      </div>
+    )
+  }
 }
 
 export default MemoryList

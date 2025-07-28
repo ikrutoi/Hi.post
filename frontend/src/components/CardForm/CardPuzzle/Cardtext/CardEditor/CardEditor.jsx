@@ -4,13 +4,13 @@ import { createEditor, Editor, Range, Transforms } from 'slate'
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 import { v4 as uuidv4 } from 'uuid'
 import './CardEditor.scss'
-import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
-import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
+import { addCardtext } from '../../../../../store/slices/cardEditSlice'
+import { updateButtonsState } from '../../../../../store/slices/infoButtonsSlice'
 import {
-  choiceSave,
-  choiceClip,
-  activeSections,
-} from '../../../../../redux/layout/actionCreators'
+  setChoiceSave,
+  setChoiceClip,
+  setActiveSections,
+} from '../../../../../store/slices/layoutSlice'
 import { colorScheme } from '../../../../../data/toolbar/colorScheme'
 import { colorSchemeMain } from '../../../../../data/main/colorSchemeMain'
 import scaleBase from '../../../../../data/main/scaleCardAndCardMini.json'
@@ -43,7 +43,7 @@ const CardEditor = ({
   const infoBtnsCardtext = useSelector((state) => state.infoButtons.cardtext)
   const memorySection = useSelector((state) => state.layout.choiceMemorySection)
   const layoutActiveSections = useSelector(
-    (state) => state.layout.activeSections
+    (state) => state.layout.setActiveSections
   )
   const editor = useMemo(() => withReact(createEditor()), [])
   const [value, setValue] = useState(cardEditCardtext.text)
@@ -153,7 +153,7 @@ const CardEditor = ({
       }
     })
     dispatch(
-      infoButtons({
+      updateButtonsState({
         cardtext: {
           ...infoBtnsCardtext,
           save: value[0].children[0].text.length ? true : false,
@@ -162,7 +162,7 @@ const CardEditor = ({
       })
     )
     dispatch(
-      activeSections({
+      setActiveSections({
         ...layoutActiveSections,
         cardtext: value[0].children[0].text.length ? true : false,
       })
@@ -191,7 +191,7 @@ const CardEditor = ({
         }
       })
       dispatch(
-        infoButtons({
+        updateButtonsState({
           cardtext: {
             ...infoBtnsCardtext,
             clip: countCardtexts ? true : false,
@@ -420,7 +420,7 @@ const CardEditor = ({
         }
       })
       dispatch(
-        infoButtons({
+        updateButtonsState({
           cardtext: {
             ...infoBtnsCardtext,
             [btn]: infoBtnsCardtext[btn] === 'hover' ? true : 'hover',
@@ -453,7 +453,7 @@ const CardEditor = ({
         })
         dispatch(addCardtext({ textAlign: btn }))
         dispatch(
-          infoButtons({
+          updateButtonsState({
             cardtext: {
               ...infoBtnsCardtext,
               left: true,
@@ -528,15 +528,15 @@ const CardEditor = ({
             }
           })
           dispatch(
-            infoButtons({
+            updateButtonsState({
               cardtext: {
                 clip: 'hover',
               },
             })
           )
-          dispatch(choiceClip('cardtext'))
+          dispatch(setChoiceClip('cardtext'))
         }
-        dispatch(choiceSave('cardtext'))
+        dispatch(setChoiceSave('cardtext'))
         break
       case 'delete':
         clearEditor()
@@ -559,7 +559,7 @@ const CardEditor = ({
             }
           })
           dispatch(
-            infoButtons({
+            updateButtonsState({
               cardtext: {
                 ...infoBtnsCardtext,
                 clip: btnsCardtext.cardtext.clip === true ? 'hover' : true,
@@ -567,7 +567,7 @@ const CardEditor = ({
             })
           )
           // if (layoutChoiceClip === 'cardtext') {
-          //   dispatch(choiceClip(false))
+          //   dispatch(setChoiceClip(false))
           // } else {
           // }
         }
@@ -579,8 +579,8 @@ const CardEditor = ({
 
   useEffect(() => {
     infoBtnsCardtext.clip === 'hover'
-      ? dispatch(choiceClip('cardtext'))
-      : dispatch(choiceClip(false))
+      ? dispatch(setChoiceClip('cardtext'))
+      : dispatch(setChoiceClip(false))
   }, [infoBtnsCardtext, dispatch])
 
   return (

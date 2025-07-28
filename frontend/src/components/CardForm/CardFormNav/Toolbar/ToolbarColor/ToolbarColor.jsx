@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 import './ToolbarColor.scss'
 import listColor from '../../../../../data/cardtext/list-toolbar-color.json'
 // import listColor from '../../../../../../data/cardtext/list-toolbar-color.json'
-import { addCardtext } from '../../../../../redux/cardEdit/actionCreators'
+import { addCardtext } from '../../../../../store/slices/cardEditSlice'
 // import { addCardtext } from '../../../../../../redux/cardEdit/actionCreators'
 
 const ToolbarColor = ({ handleClickBtnToolbar }) => {

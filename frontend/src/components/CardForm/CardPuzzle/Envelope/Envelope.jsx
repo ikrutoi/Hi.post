@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import './Envelope.scss'
 import listLabelsMyAddress from '../../../../data/envelope/list-labels-my-address.json'
 import listLabelsToAddress from '../../../../data/envelope/list-labels-to-address.json'
-import { addEnvelope } from '../../../../redux/cardEdit/actionCreators'
+import { addEnvelope } from '../../../../store/slices/cardEditSlice'
 import Mark from './Mark/Mark'
 import FormAddress from './FormAddress/FormAddress'
 import {

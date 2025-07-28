@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CgClose } from 'react-icons/cg'
 import './MemoryEnvelope.scss'
 import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
-import { choiceAddress } from '../../../redux/layout/actionCreators'
+import { setFullCard } from '../../../store/slices/layoutSlice'
 import {
   getAllRecordsAddresses,
   deleteRecordAddress,
@@ -55,7 +55,7 @@ const MemoryEnvelope = ({ sizeMiniCard }) => {
   }
 
   const handleClickAddress = (section, id) => {
-    dispatch(choiceAddress({ section, id }))
+    dispatch(setFullCard({ section, id }))
   }
 
   return (

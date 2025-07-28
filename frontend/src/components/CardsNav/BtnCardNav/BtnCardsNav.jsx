@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import './BtnCardsNav.scss'
 import {
   addChoiceSection,
-  selectedSection,
-  choiceClip,
-} from '../../../redux/layout/actionCreators'
-import { infoButtons } from '../../../redux/infoButtons/actionCreators'
+  setSelectedSection,
+  setChoiceClip,
+} from '../../../store/slices/layoutSlice'
+import { updateButtonsState } from '../../../store/slices/infoButtonsSlice'
 
 const BtnCardsNav = ({
   setBtnNavRef,
@@ -16,7 +16,7 @@ const BtnCardsNav = ({
   navBtn,
 }) => {
   const infoButtonsRedux = useSelector((state) => state.infoButtons)
-  const infoChoiceClip = useSelector((state) => state.layout.choiceClip)
+  const infoChoiceClip = useSelector((state) => state.layout.setChoiceClip)
   const nameNav = section.name.toLowerCase()
   const dispatch = useDispatch()
 
@@ -26,9 +26,9 @@ const BtnCardsNav = ({
       btnNav !== 'envelope' &&
       (infoChoiceClip === 'myaddress' || infoChoiceClip === 'toaddress')
     ) {
-      dispatch(choiceClip(false))
+      dispatch(setChoiceClip(false))
       dispatch(
-        infoButtons({
+        updateButtonsState({
           envelope: {
             ...infoButtonsRedux.envelope[infoChoiceClip],
             clip: true,
@@ -37,9 +37,9 @@ const BtnCardsNav = ({
       )
     }
     if (btnNav !== 'cardtext' && infoChoiceClip === 'cardtext') {
-      dispatch(choiceClip(false))
+      dispatch(setChoiceClip(false))
       dispatch(
-        infoButtons({
+        updateButtonsState({
           cardtext: {
             ...infoButtonsRedux.cardtext,
             clip: true,
@@ -48,7 +48,7 @@ const BtnCardsNav = ({
       )
     }
     if (infoChoiceClip === 'shopping' || infoChoiceClip === 'blanks') {
-      dispatch(choiceClip(false))
+      dispatch(setChoiceClip(false))
     }
 
     // if (btnNav !== 'envelope' && infoButtonsRedux.envelopeClip) {
@@ -65,7 +65,7 @@ const BtnCardsNav = ({
     //   )
     // }
     dispatch(addChoiceSection({ source: 'btnNav', nameSection: btnNav }))
-    dispatch(selectedSection(btnNav))
+    dispatch(setSelectedSection(btnNav))
   }
 
   return (

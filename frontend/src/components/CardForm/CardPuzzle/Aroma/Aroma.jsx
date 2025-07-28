@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
-import { addAroma } from '../../../../redux/cardEdit/actionCreators'
-import { activeSections } from '../../../../redux/layout/actionCreators'
+import { addAroma } from '../../../../store/slices/cardEditSlice'
+import { setActiveSections } from '../../../../store/slices/layoutSlice'
 import './Aroma.scss'
 import aromaList from '../../../../data/aroma/aromaList.json'
 import InfoMiniCardAroma from './InfoMiniCardAroma/InfoMiniCardAroma'
@@ -10,7 +10,7 @@ import InfoMiniCardAroma from './InfoMiniCardAroma/InfoMiniCardAroma'
 const Aroma = () => {
   const selectorCardEditAroma = useSelector((state) => state.cardEdit.aroma)
   const selectorActiveSections = useSelector(
-    (state) => state.layout.activeSections
+    (state) => state.layout.setActiveSections
   )
   const [selectedAroma, setSelectedAroma] = useState(null)
   const dispatch = useDispatch()
@@ -23,7 +23,7 @@ const Aroma = () => {
   useEffect(() => {
     if (selectedAroma) {
       dispatch(
-        activeSections({
+        setActiveSections({
           ...selectorActiveSections,
           aroma: Boolean(selectedAroma),
         })

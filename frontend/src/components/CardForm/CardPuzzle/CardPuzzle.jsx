@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import { useSelector } from 'react-redux'
 import './CardPuzzle.scss'
-// import sizeCard from '../../../data/ratioCardCardMini.json'
 import Cardphoto from './Cardphoto/Cardphoto'
 import Cardtext from './Cardtext/Cardtext'
 import Envelope from './Envelope/Envelope'
@@ -14,6 +13,10 @@ const CardPuzzle = ({ toolbarColor }) => {
   const sizeCard = useSelector((state) => state.layout.sizeCard)
 
   const cardPuzzleRef = useRef(null)
+
+  if (!sizeCard?.width || !sizeCard?.height) {
+    return null
+  }
 
   const section = (name) => {
     switch (name) {

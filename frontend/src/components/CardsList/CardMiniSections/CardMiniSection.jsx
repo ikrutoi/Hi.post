@@ -7,12 +7,13 @@ import {
   addDate,
   addEnvelope,
   addCardtext,
-} from '../../../redux/cardEdit/actionCreators'
+} from '../../../store/slices/cardEditSlice'
 import {
   addIndexDb,
-  deleteSection,
-  activeSections,
-} from '../../../redux/layout/actionCreators'
+  setDeleteSection,
+  setActiveSections,
+  addChoiceSection,
+} from '../../../store/slices/layoutSlice'
 import {
   deleteHiPostImage,
   deleteUserImage,
@@ -24,7 +25,6 @@ import MiniEnvelope from './MiniEnvelope/MiniEnvelope'
 import MiniDate from './MiniDate/MiniDate'
 import MiniAroma from './MiniAroma/MiniAroma'
 import MiniPhoto from './MiniPhoto/MiniPhoto'
-import { addChoiceSection } from '../../../redux/layout/actionCreators'
 import { searchParent } from '../../../utils/searchParent'
 import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
 
@@ -102,8 +102,8 @@ const CardMiniSection = ({
     evt.stopPropagation()
     const parentElement = searchParent(evt.target, 'card-mini-section')
 
-    dispatch(deleteSection(parentElement.dataset.section))
-    dispatch(activeSections({ [parentElement.dataset.section]: false }))
+    dispatch(setDeleteSection(parentElement.dataset.section))
+    dispatch(setActiveSections({ [parentElement.dataset.section]: false }))
 
     switch (parentElement.dataset.section) {
       case 'aroma':

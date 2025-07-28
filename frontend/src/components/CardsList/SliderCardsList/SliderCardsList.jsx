@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './SliderCardsList.scss'
-import { sliderLetter, deltaEnd } from '../../../redux/layout/actionCreators'
+import { setSliderLetter, setDeltaEnd } from '../../../store/slices/layoutSlice'
 
 const SliderCardsList = ({
   value,
@@ -12,16 +12,16 @@ const SliderCardsList = ({
   const [widthToddler, setWidthToddler] = useState(null)
   const sliderRef = useRef()
   const [indexLetter, setClickLetter] = useState(0)
-  const infoDeltaEnd = useSelector((state) => state.layout.deltaEnd)
+  const infoDeltaEnd = useSelector((state) => state.layout.setDeltaEnd)
   const dispatch = useDispatch()
 
   useEffect(() => {
     if (infoCardsList.length && indexLetter) {
       const currentDeltaEnd = infoCardsList.length - indexLetter
       if (currentDeltaEnd <= maxCardsList) {
-        dispatch(deltaEnd(true))
+        dispatch(setDeltaEnd(true))
       } else {
-        dispatch(deltaEnd(false))
+        dispatch(setDeltaEnd(false))
       }
     }
   }, [infoCardsList.length, indexLetter, maxCardsList, dispatch])
@@ -71,7 +71,7 @@ const SliderCardsList = ({
   const handleClickLetter = (evt) => {
     if (evt.target.textContent) {
       dispatch(
-        sliderLetter({
+        setSliderLetter({
           letter: evt.target.textContent,
           id: evt.target.dataset.id,
           index: evt.target.dataset.index,

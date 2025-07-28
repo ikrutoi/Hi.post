@@ -12,8 +12,9 @@ import {
   addRemSize,
   addSizeCard,
   addSizeMiniCard,
-  maxCardsList,
-} from './redux/layout/actionCreators'
+  setMaxCardsList,
+} from './store/slices/layoutSlice'
+// } from './redux/layout/actionCreators'
 import { addBtnToolbar } from './redux/layout/actionCreators'
 
 function App() {
@@ -63,7 +64,9 @@ function App() {
   const size = useSize(formRef)
 
   useEffect(() => {
+    // console.log('size:', size)
     if (size) {
+      // console.log('size.height:', size.height, 'scaleBase', scaleBase)
       dispatch(
         addSizeCard({
           height: Number((size.height * scaleBase.card).toFixed(2)),
@@ -78,7 +81,7 @@ function App() {
       )
       if (remSize && formRef.current) {
         dispatch(
-          maxCardsList(
+          setMaxCardsList(
             Math.floor(
               (formRef.current.clientWidth - 2 * remSize) /
                 (Number((size.height * scaleBase.miniCard * 1.42).toFixed(2)) +

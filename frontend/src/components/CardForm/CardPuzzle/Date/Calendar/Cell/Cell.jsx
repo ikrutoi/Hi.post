@@ -3,10 +3,10 @@ import { useDispatch } from 'react-redux'
 import './Cell.scss'
 import ToolbarShopping from './ToolbarShopping/ToolbarShopping'
 import {
-  choiceClip,
-  dateShoppingCards,
-  lockDateShoppingCards,
-} from '../../../../../../redux/layout/actionCreators'
+  setChoiceClip,
+  setDateShoppingCards,
+  setLockDateShoppingCards,
+} from '../../../../../../store/slices/layoutSlice'
 
 const Cell = ({
   title,
@@ -63,10 +63,10 @@ const Cell = ({
 
   const handleImgShoppingClick = (evt, day) => {
     // evt.stopPropagation()
-    dispatch(lockDateShoppingCards(true))
-    dispatch(choiceClip(toolbarShopping ? 'date' : false))
+    dispatch(setLockDateShoppingCards(true))
+    dispatch(setChoiceClip(toolbarShopping ? 'date' : false))
     dispatch(
-      dateShoppingCards({
+      setDateShoppingCards({
         year: selectedDateTitle.year,
         month: selectedDateTitle.month,
         day,
