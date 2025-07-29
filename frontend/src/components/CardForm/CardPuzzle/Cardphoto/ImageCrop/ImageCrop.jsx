@@ -19,7 +19,7 @@ import {
 } from '../../../../../store/slices/layoutSlice'
 // } from '../../../../../redux/layout/actionCreators'
 // import { addCardphoto } from '../../../../../redux/cardEdit/actionCreators'
-import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
+import { updateButtonsState } from '../../../../../store/slices/infoButtonsSlice'
 import coverImage from '../../../../../data/img/card-photo-bw.jpg'
 import { updateClipPath } from '../../../../../utils/images/updateClipPath'
 import { loadImageDimensions } from '../../../../../utils/images/loadImageDimensions'
@@ -160,8 +160,8 @@ const ImageCrop = ({ sizeCard }) => {
       const startImage = startUserImage
         ? startUserImage
         : startHiPostImage
-        ? startHiPostImage
-        : null
+          ? startHiPostImage
+          : null
 
       if (startImage) {
         await fetchImageFromIndexedDb(startImage)
@@ -253,7 +253,7 @@ const ImageCrop = ({ sizeCard }) => {
     if (inputRef.current) {
       if (isCropVisibly) {
         setIsCropVisibly(false)
-        dispatch(infoButtons({ crop: false }))
+        dispatch(updateButtonsState({ crop: false }))
         fetchImageDimensions(image.url, 'startCrop')
       }
       dispatch(addMemoryCrop(null))
@@ -308,7 +308,7 @@ const ImageCrop = ({ sizeCard }) => {
       if (isCropVisibly) {
         setIsCropVisibly(false)
       }
-      dispatch(infoButtons({ crop: false }))
+      dispatch(updateButtonsState({ crop: false }))
     }
 
     // const hiPostImages = await getAllHiPostImages()
@@ -375,7 +375,7 @@ const ImageCrop = ({ sizeCard }) => {
         return
       }
     }
-    dispatch(infoButtons({ crop: false }))
+    dispatch(updateButtonsState({ crop: false }))
   }
 
   const handleTurn = () => {
@@ -431,11 +431,11 @@ const ImageCrop = ({ sizeCard }) => {
         })
       )
       setIsCropVisibly(false)
-      dispatch(infoButtons({ crop: false }))
+      dispatch(updateButtonsState({ crop: false }))
       // fetchImageDimensions(image.url)
     } else {
       setIsCropVisibly(true)
-      dispatch(infoButtons({ crop: true }))
+      dispatch(updateButtonsState({ crop: true }))
       fetchImageDimensions(image.url, 'startCrop')
     }
   }
@@ -450,7 +450,7 @@ const ImageCrop = ({ sizeCard }) => {
   useEffect(() => {
     const resetBtnToolbar = () => {
       dispatch(
-        infoButtons({ cardphotoClick: null })
+        updateButtonsState({ cardphotoClick: null })
         // addBtnToolbar({
         //   firstBtn: null,
         //   section: null,

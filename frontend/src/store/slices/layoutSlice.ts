@@ -16,6 +16,11 @@ type ActiveSections = {
 type SectionChoice = { source: string | null; nameSection: string | null }
 type MemorySection = { section: string | null; id: string | null }
 type FullCardPersonalId = { shopping: string | null; blanks: string | null }
+type BtnToolbar = {
+  firstBtn: string | null
+  secondBtn: string | null
+  section: string | null
+}
 
 type LayoutState = {
   sizeCard: Size
@@ -26,6 +31,7 @@ type LayoutState = {
     hiPostImages: ImageSet
     userImages: ImageSet
   }
+  btnToolbar: BtnToolbar
   choiceMemorySection: MemorySection
   choiceSave: string | null
   choiceClip: string | null
@@ -59,6 +65,7 @@ const initialState: LayoutState = {
     hiPostImages: { originalImage: null, workingImage: null, miniImage: null },
     userImages: { originalImage: null, workingImage: null, miniImage: null },
   },
+  btnToolbar: { firstBtn: null, secondBtn: null, section: null },
   choiceMemorySection: { section: null, id: null },
   choiceSave: null,
   choiceClip: null,
@@ -145,6 +152,12 @@ const layoutSlice = createSlice({
         ...action.payload,
       }
     },
+    setBtnToolbar: (state, action: PayloadAction<Partial<BtnToolbar>>) => {
+      state.btnToolbar = {
+        ...state.btnToolbar,
+        ...action.payload,
+      }
+    },
     setActiveSections: (
       state,
       action: PayloadAction<Partial<ActiveSections>>
@@ -211,6 +224,7 @@ export const {
   addMemoryCrop,
   setChoiceMemorySection,
   setFullCardPersonalId,
+  setBtnToolbar,
   setActiveSections,
   setDateShoppingCards,
   setLockDateShoppingCards,

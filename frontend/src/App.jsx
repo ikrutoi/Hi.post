@@ -2,6 +2,7 @@ import React, { useRef, useState, useLayoutEffect, useEffect } from 'react'
 import useResizeObserver from '@react-hook/resize-observer'
 import { useDispatch, useSelector } from 'react-redux'
 import './App.scss'
+import ErrorBoundary from './components/ErrorBoundary'
 import Logo from './components/Logo/Logo'
 import Status from './components/Status/Status'
 import CardsNav from './components/CardsNav/CardsNav'
@@ -15,7 +16,7 @@ import {
   setMaxCardsList,
 } from './store/slices/layoutSlice'
 // } from './redux/layout/actionCreators'
-import { addBtnToolbar } from './redux/layout/actionCreators'
+import { setBtnToolbar } from './store/slices/layoutSlice'
 
 function App() {
   const remSize = useSelector((state) => state.layout.remSize)
@@ -102,7 +103,7 @@ function App() {
       <main className="app-main">
         <CardsNav />
         <div className="form" ref={formRef}>
-          {size && <CardsList />}
+          <ErrorBoundary>{size && <CardsList />}</ErrorBoundary>
           {size && <CardForm />}
         </div>
       </main>

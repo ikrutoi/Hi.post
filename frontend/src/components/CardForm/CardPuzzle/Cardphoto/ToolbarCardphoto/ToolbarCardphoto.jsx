@@ -8,7 +8,7 @@ import {
   handleMouseLeaveBtn,
 } from '../../../../../data/toolbar/handleMouse'
 import { changeIconStyles } from '../../../../../data/toolbar/changeIconStyles'
-import { infoButtons } from '../../../../../redux/infoButtons/actionCreators'
+import { updateButtonsState } from '../../../../../store/slices/infoButtonsSlice'
 
 const ToolbarCardphoto = () => {
   const infoButtonsCardphoto = useSelector(
@@ -63,7 +63,7 @@ const ToolbarCardphoto = () => {
       }
     })
     dispatch(
-      infoButtons({
+      updateButtonsState({
         cardphoto: {
           ...infoButtonsCardphoto,
           delete: isImagePresent,
@@ -84,7 +84,7 @@ const ToolbarCardphoto = () => {
   const handleClickBtn = (evt, btn) => {
     const parentBtn = searchParentBtnNav(evt.target)
 
-    dispatch(infoButtons({ cardphotoClick: parentBtn.dataset.tooltip }))
+    dispatch(updateButtonsState({ cardphotoClick: parentBtn.dataset.tooltip }))
 
     switch (btn) {
       case 'download':
@@ -99,7 +99,7 @@ const ToolbarCardphoto = () => {
             }
           })
           dispatch(
-            infoButtons({
+            updateButtonsState({
               cardphoto: {
                 ...infoButtonsCardphoto,
                 download: false,
@@ -120,7 +120,7 @@ const ToolbarCardphoto = () => {
           }
         })
         dispatch(
-          infoButtons({
+          updateButtonsState({
             cardphoto: {
               ...infoButtonsCardphoto,
               save: false,
@@ -142,7 +142,7 @@ const ToolbarCardphoto = () => {
           }
         })
         dispatch(
-          infoButtons({
+          updateButtonsState({
             cardphoto: {
               ...infoButtonsCardphoto,
               crop: 'hover',
@@ -209,7 +209,7 @@ const ToolbarCardphoto = () => {
         }
       })
       dispatch(
-        infoButtons({
+        updateButtonsState({
           cardphoto: {
             ...infoButtonsCardphoto,
             download: true,
@@ -232,7 +232,7 @@ const ToolbarCardphoto = () => {
         }
       })
       dispatch(
-        infoButtons({
+        updateButtonsState({
           cardphoto: {
             ...infoButtonsCardphoto,
             crop: true,

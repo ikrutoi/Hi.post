@@ -9,13 +9,13 @@ import { addEnvelope } from '../../../../store/slices/cardEditSlice'
 import Mark from './Mark/Mark'
 import FormAddress from './FormAddress/FormAddress'
 import {
-  choiceAddress,
-  deleteSection,
-  choiceClip,
-  activeSections,
-  addressPersonalId,
-  expendMemoryCard,
-} from '../../../../redux/layout/actionCreators'
+  // choiceAddress,
+  setDeleteSection,
+  setChoiceClip,
+  setActiveSections,
+  setFullCardPersonalId,
+  setExpendMemoryCard,
+} from '../../../../store/slices/layoutSlice'
 import {
   getAllRecordsAddresses,
   getCountRecordsAddresses,
@@ -25,7 +25,7 @@ import {
   deleteRecordAddress,
 } from '../../../../utils/cardFormNav/indexDB/indexDb'
 import { dbPromise } from '../../../../utils/cardFormNav/indexDB/indexDb'
-import { infoButtons } from '../../../../redux/infoButtons/actionCreators'
+import { updateButtonsState } from '../../../../store/slices/infoButtonsSlice'
 import {
   handleMouseEnterBtn,
   handleMouseLeaveBtn,
@@ -37,15 +37,17 @@ import ToolbarEnvelope from './ToolbarEnvelope/ToolbarEnvelope'
 const Envelope = ({ cardPuzzleRef }) => {
   const fullCard = useSelector((state) => state.layout.fullCard)
   const cardEditEnvelope = useSelector((state) => state.cardEdit.envelope)
-  const layoutDeleteSection = useSelector((state) => state.layout.deleteSection)
-  const layoutChoiceClip = useSelector((state) => state.layout.choiceClip)
+  const layoutDeleteSection = useSelector(
+    (state) => state.layout.setDeleteSection
+  )
+  const layoutChoiceClip = useSelector((state) => state.layout.setChoiceClip)
   const layoutActiveSections = useSelector(
-    (state) => state.layout.activeSections
+    (state) => state.layout.setActiveSections
   )
   const infoMiniAddressClose = useSelector(
     (state) => state.infoButtons.miniAddressClose
   )
-  const layoutChoiceAddress = useSelector((state) => state.layout.choiceAddress)
+  // const layoutChoiceAddress = useSelector((state) => state.layout.choiceAddress)
   const [value, setValue] = useState(cardEditEnvelope)
   const [memoryAddress, setMemoryAddress] = useState({
     myaddress: null,
@@ -65,10 +67,10 @@ const Envelope = ({ cardPuzzleRef }) => {
   const addressFormRefs = useRef({})
   const envelopeLogoRef = useRef(null)
   const layoutActiveEnvelope = useSelector(
-    (state) => state.layout.activeSections.envelope
+    (state) => state.layout.setActiveSections.envelope
   )
   const infoExpendsMemoryCard = useSelector(
-    (state) => state.layout.expendMemoryCard
+    (state) => state.layout.setExpendMemoryCard
   )
   const dispatch = useDispatch()
 
@@ -88,7 +90,7 @@ const Envelope = ({ cardPuzzleRef }) => {
     if (layoutDeleteSection === 'envelope') {
       clearSectionAddress('myaddress')
       clearSectionAddress('toaddress')
-      dispatch(deleteSection(null))
+      dispatch(setDeleteSection(null))
     }
   }, [layoutDeleteSection, dispatch])
 
@@ -109,7 +111,7 @@ const Envelope = ({ cardPuzzleRef }) => {
             },
           }
         })
-        dispatch(expendMemoryCard(false))
+        dispatch(setExpendMemoryCard(false))
       }
     }
 
@@ -163,7 +165,7 @@ const Envelope = ({ cardPuzzleRef }) => {
 
       if (section === 'toaddress') {
         dispatch(
-          activeSections({ ...layoutActiveSections, envelope: fullAddress })
+          setActiveSections({ ...layoutActiveSections, envelope: fullAddress })
         )
       }
 
@@ -239,7 +241,7 @@ const Envelope = ({ cardPuzzleRef }) => {
         })
       }
     }
-    dispatch(infoButtons({ miniAddressClose: false }))
+    dispatch(updateButtonsState({ miniAddressClose: false }))
   }, [infoMiniAddressClose, dispatch])
 
   const handleValue = (field, input, value) => {
@@ -369,12 +371,12 @@ const Envelope = ({ cardPuzzleRef }) => {
   const handleClickClip = (section) => {
     if (layoutChoiceClip) {
       if (layoutChoiceClip === section) {
-        dispatch(choiceClip(false))
+        dispatch(setChoiceClip(false))
       } else {
-        dispatch(choiceClip(section))
+        dispatch(setChoiceClip(section))
       }
     } else {
-      dispatch(choiceClip(section))
+      dispatch(setChoiceClip(section))
     }
   }
 
@@ -461,9 +463,9 @@ const Envelope = ({ cardPuzzleRef }) => {
             [section]: { ...state[section], save: false },
           }
         })
-        dispatch(infoButtons({ envelopeSave: section }))
-        dispatch(choiceClip(section))
-        dispatch(addressPersonalId(personalId))
+        dispatch(updateButtonsState({ envelopeSave: section }))
+        dispatch(setChoiceClip(section))
+        dispatch(setFullCardPersonalId(personalId))
       }
     }
     if (parentBtn.dataset.tooltip === 'delete') {

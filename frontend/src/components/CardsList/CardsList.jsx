@@ -10,21 +10,20 @@ import {
   addCardtext,
   addDate,
   addEnvelope,
-} from '../../redux/cardEdit/actionCreators'
+} from '../../store/slices/cardEditSlice'
 import CardMiniSection from './CardMiniSections/CardMiniSection'
-import { infoButtons } from '../../redux/infoButtons/actionCreators'
+import { updateButtonsState } from '../../store/slices/infoButtonsSlice'
 import {
-  addFullCard,
-  choiceMemorySection,
-  choiceAddress,
-  activeSections,
+  setFullCard,
+  setChoiceMemorySection,
+  setActiveSections,
   addChoiceSection,
-  choiceClip,
-  sliderLine,
-  fullCardPersonalId,
-  lockExpendMemoryCard,
+  setChoiceClip,
+  setSliderLine,
+  setFullCardPersonalId,
+  setLockExpendMemoryCard,
   addIndexDb,
-} from '../../redux/layout/actionCreators'
+} from '../../store/slices/layoutSlice'
 import {
   addUserImage,
   getAllHiPostImages,
@@ -57,19 +56,19 @@ import EnvelopeIcon from './EnvelopeIcon/EnvelopeIcon'
 const CardsList = () => {
   const selectorCardEdit = useSelector((state) => state.cardEdit)
   const selectorLayoutActiveSections = useSelector(
-    (state) => state.layout.activeSections
+    (state) => state.layout.setActiveSections
   )
   const selectorLayoutExpendMemoryCard = useSelector(
     (state) => state.layout.expendMemoryCard
   )
   const selectorLayoutLockExpendMemoryCard = useSelector(
-    (state) => state.layout.lockExpendMemoryCard
+    (state) => state.layout.setLockExpendMemoryCard
   )
   const selectorLayoutChoiceSave = useSelector(
     (state) => state.layout.choiceSave
   )
   const selectorLayoutChoiceClip = useSelector(
-    (state) => state.layout.choiceClip
+    (state) => state.layout.setChoiceClip
   )
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const selectorLayoutSizeMiniCard = useSelector(
@@ -140,13 +139,13 @@ viewBox="0 0 25600 18000"
 
   useEffect(() => {
     if (infoCardsList && infoCardsList <= selectorLayoutMaxCardsList) {
-      dispatch(sliderLine(false))
+      dispatch(setSliderLine(false))
     }
   }, [infoCardsList])
 
   const getExpendStatusCard = async (expendCard) => {
     setMinimize(true)
-    dispatch(lockExpendMemoryCard(true))
+    dispatch(setLockExpendMemoryCard(true))
     // dispatch(lockShowIconsMinimize(true))
     let cardExpend
     switch (expendCard.source) {
@@ -177,7 +176,7 @@ viewBox="0 0 25600 18000"
       })
     )
     dispatch(
-      activeSections({
+      setActiveSections({
         ...selectorLayoutActiveSections,
         cardphoto: Boolean(cardExpend.cardphoto),
         cardtext: Boolean(cardExpend.cardtext),
@@ -477,7 +476,7 @@ viewBox="0 0 25600 18000"
   }
 
   const handleClickCardtext = (id) => {
-    dispatch(choiceMemorySection({ section: 'cardtext', id }))
+    dispatch(setChoiceMemorySection({ section: 'cardtext', id }))
   }
 
   const handleClickIconArrows = () => {
@@ -502,8 +501,8 @@ viewBox="0 0 25600 18000"
     )
       ? 'hiPostImages'
       : userImages.some((el) => el.id === 'workingImage')
-      ? 'userImages'
-      : null
+        ? 'userImages'
+        : null
 
     let workingImage = null
     const getImages = {
@@ -526,19 +525,19 @@ viewBox="0 0 25600 18000"
     const parentBtn = evt.target.closest('.fullcard-btn')
     if (btnsFullCard.fullCard[parentBtn.dataset.tooltip]) {
       const personalId = uuidv4().split('-')[0]
-      dispatch(addFullCard(true))
+      dispatch(setFullCard(true))
       const cardData = await getResultCardphoto()
 
       switch (parentBtn.dataset.tooltip) {
         case 'addShopping':
           await addUniqueShopping(cardData, personalId)
           checkForDuplicateCards(selectorCardEdit)
-          dispatch(fullCardPersonalId({ shopping: personalId }))
+          dispatch(setFullCardPersonalId({ shopping: personalId }))
           break
         case 'save':
           await addUniqueBlank(cardData, personalId)
           checkForDuplicateCards(selectorCardEdit)
-          dispatch(fullCardPersonalId({ blanks: personalId }))
+          dispatch(setFullCardPersonalId({ blanks: personalId }))
           break
         case 'remove':
           dispatch(addAroma(null))
@@ -593,7 +592,7 @@ viewBox="0 0 25600 18000"
             })
           )
           dispatch(
-            activeSections({
+            setActiveSections({
               cardphoto: false,
               cardtext: false,
               envelope: false,
@@ -660,7 +659,7 @@ viewBox="0 0 25600 18000"
 
   const handleChangeFromSliderCardsList = (value) => {
     setValueCardsList(value)
-    dispatch(sliderLine(value))
+    dispatch(setSliderLine(value))
   }
 
   const choiceMemoryList = () => {

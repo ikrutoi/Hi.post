@@ -14,16 +14,16 @@ import {
   LuCalendar,
 } from 'react-icons/lu'
 import './Date.scss'
-import { addDate } from '../../../../redux/cardEdit/actionCreators'
+import { addDate } from '../../../../store/slices/cardEditSlice'
 import Calendar from './Calendar/Calendar'
 import CurrentDateTime from './CurrentDateTime/CurrentDateTime'
 import { currentDate } from '../../../../utils/date/date'
 import Slider from './Slider/Slider'
 import nameMonths from '../../../../data/date/monthOfYear.json'
 import {
-  activeSections,
+  setActiveSections,
   addChoiceSection,
-} from '../../../../redux/layout/actionCreators'
+} from '../../../../store/slices/layoutSlice'
 import ToolbarDate from './ToolbarDate/ToolbarDate'
 import { colorSchemeMain } from '../../../../data/main/colorSchemeMain'
 import { searchParent } from '../../../../utils/searchParent'
@@ -35,7 +35,7 @@ const Date = () => {
     (state) => state.layout.shoppingCards
   )
   const selectorLayoutActiveSections = useSelector(
-    (state) => state.layout.activeSections
+    (state) => state.layout.setActiveSections
   )
   const inputValueSelectedDate = selectorCardEditDate
     ? selectorCardEditDate
@@ -146,7 +146,7 @@ const Date = () => {
   useEffect(() => {
     if (selectedDate) {
       dispatch(
-        activeSections({
+        setActiveSections({
           ...selectorLayoutActiveSections,
           date: Boolean(selectedDate),
         })
