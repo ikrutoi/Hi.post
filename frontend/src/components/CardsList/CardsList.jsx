@@ -56,19 +56,19 @@ import EnvelopeIcon from './EnvelopeIcon/EnvelopeIcon'
 const CardsList = () => {
   const selectorCardEdit = useSelector((state) => state.cardEdit)
   const selectorLayoutActiveSections = useSelector(
-    (state) => state.layout.setActiveSections
+    (state) => state.layout.activeSections
   )
   const selectorLayoutExpendMemoryCard = useSelector(
     (state) => state.layout.expendMemoryCard
   )
   const selectorLayoutLockExpendMemoryCard = useSelector(
-    (state) => state.layout.setLockExpendMemoryCard
+    (state) => state.layout.lockExpendMemoryCard
   )
   const selectorLayoutChoiceSave = useSelector(
     (state) => state.layout.choiceSave
   )
   const selectorLayoutChoiceClip = useSelector(
-    (state) => state.layout.setChoiceClip
+    (state) => state.layout.choiceClip
   )
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const selectorLayoutSizeMiniCard = useSelector(

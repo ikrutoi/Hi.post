@@ -1,3 +1,4 @@
+import React from 'react'
 import './MiniDate.scss'
 import listOfMonthOfYear from '../../../../data/date/monthOfYear.json'
 

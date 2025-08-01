@@ -1,0 +1,42 @@
+.envelope-label {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 1rem;
+}
+
+.envelope-input {
+  width: 100%;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  box-sizing: border-box;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: rgb(0, 125, 250);
+  background-color: rgb(240, 240, 240);
+  border: none;
+  height: 1.6rem;
+  border-radius: 4px;
+  outline: none;
+  letter-spacing: 1px;
+  // user-select: none;
+}
+
+.form-toaddress .envelope-legend,
+.form-toaddress .envelope-label,
+.form-toaddress .envelope-input {
+  text-align: right;
+}
+
+.label-element-space {
+  padding-left: 0.5rem;
+}
+
+// input[type='number']::-webkit-outer-spin-button,
+// input[type='number']::-webkit-inner-spin-button {
+//   -webkit-appearance: none;
+//   margin: 0;
+// }
+
+// input[type='number'] {
+//   -moz-appearance: textfield;
+// }

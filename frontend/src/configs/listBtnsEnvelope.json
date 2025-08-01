@@ -1,0 +1,20 @@
+[
+  {
+    "name": "clip",
+    "tooltip": "Show addresses",
+    "icon": "clip",
+    "showCounter": true
+  },
+  {
+    "name": "edit",
+    "tooltip": "Save address",
+    "icon": "edit",
+    "showCounter": false
+  },
+  {
+    "name": "remove",
+    "tooltip": "Clear address",
+    "icon": "remove",
+    "showCounter": false
+  }
+]

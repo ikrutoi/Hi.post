@@ -144,7 +144,9 @@
 .fullcard-btn-menu {
   color: rgba(71, 71, 71, 0);
   background-color: rgba(240, 240, 240, 0);
-  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+  transition:
+    background-color 300ms ease-in-out,
+    color 300ms ease-in-out;
   // cursor: pointer;
 }
 
@@ -156,7 +158,9 @@
 .fullcard-btn-arrows {
   color: rgba(240, 240, 240, 0);
   background-color: rgba(0, 125, 250, 0);
-  transition: background-color 300ms ease-in-out, color 300ms ease-in-out;
+  transition:
+    background-color 300ms ease-in-out,
+    color 300ms ease-in-out;
 }
 
 .fullcard-btn-arrows.full {

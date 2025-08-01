@@ -1,0 +1,16 @@
+.envelope-mark {
+  grid-row: 1/2;
+  grid-column: 2/3;
+  display: flex;
+  justify-content: end;
+  // border: solid 1px orange;
+}
+
+.mark {
+  width: 26%;
+  height: auto;
+  background-image: url('../../../../../data/envelope/mark-not-active.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  // border: solid 1px red;
+}

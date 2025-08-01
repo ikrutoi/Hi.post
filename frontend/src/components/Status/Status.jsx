@@ -31,7 +31,7 @@ const Status = () => {
   const [btnsStatus, setBtnsStatus] = useState({ status: selectorIBStatus })
   const [countShopping, setCountShopping] = useState(null)
   const [countBlanks, setCountBlanks] = useState(null)
-  const listBtnsStatus = ['shopping', 'clip']
+  const listBtnsStatus = ['shopping', 'clip', 'user']
   const btnIconRefs = useRef({})
   const setBtnIconRef = (id) => (element) => {
     btnIconRefs.current[id] = element
@@ -103,6 +103,14 @@ const Status = () => {
         )
         break
       case 'clip':
+        // clearBase()
+        dispatch(
+          setChoiceClip(
+            selectorLayoutChoiceClip === 'blanks' ? false : 'blanks'
+          )
+        )
+        break
+      case 'user':
         // clearBase()
         dispatch(
           setChoiceClip(

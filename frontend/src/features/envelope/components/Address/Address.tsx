@@ -1,46 +1,46 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Label from '../Label/Label'
-import './FormAddress.scss'
-import { addIconToolbar } from '../../../../../data/toolbar/addIconToolbar'
+import './Address.scss'
 import listBtnsEnvelope from '../../../../../data/toolbar/listBtnsEnvelope.json'
-import {
-  getAllRecordsAddresses,
-  getCountRecordsAddresses,
-} from '../../../../../utils/cardFormNav/indexDB/indexDb'
+import { addIconToolbar } from '../../../../../data/toolbar/addIconToolbar'
+import { getCountRecordsAddresses } from '../../../../../utils/cardFormNav/indexDB/indexDb'
 import { updateButtonsState } from '../../../../../store/slices/infoButtonsSlice'
+import { FormAddressProps } from '../../../../../types/FormAddress'
+import { RootState } from '../../../../../store'
 
-const FormAddress = ({
+const FormAddress: React.FC<FormAddressProps> = ({
   values,
   listLabelsAddress,
   handleValue,
   handleMovingBetweenInputs,
   setInputRef,
   setBtnIconRef,
-  setAddressFormRef,
+  setAddressFieldsetRef,
+  setAddressLegendRef,
   handleClickBtn,
   handleMouseEnter,
   handleMouseLeave,
 }) => {
-  const [countAddress, setCountAddress] = useState({
+  const [countAddress, setCountAddress] = useState<
+    Record<'myaddress' | 'toaddress', number | null>
+  >({
     myaddress: null,
     toaddress: null,
   })
+
   const infoEnvelopeSaveSecond = useSelector(
-    (state) => state.infoButtons.envelopeSaveSecond
+    (state: RootState) => state.infoButtons.envelopeSaveSecond
   )
   const infoEnvelopeRemove = useSelector(
-    (state) => state.infoButtons.envelopeRemoveAddress
+    (state: RootState) => state.infoButtons.envelopeRemoveAddress
   )
 
   const dispatch = useDispatch()
 
-  const updateCounts = async (section) => {
-    const countAddress = await getCountRecordsAddresses(section)
-    setCountAddress((state) => ({
-      ...state,
-      [section]: countAddress,
-    }))
+  const updateCounts = async (section: 'myaddress' | 'toaddress') => {
+    const count = await getCountRecordsAddresses(section)
+    setCountAddress((prev) => ({ ...prev, [section]: count }))
   }
 
   useEffect(() => {
@@ -49,14 +49,14 @@ const FormAddress = ({
 
   useEffect(() => {
     if (infoEnvelopeSaveSecond) {
-      updateCounts(infoEnvelopeSaveSecond)
+      updateCounts(listLabelsAddress.name)
       dispatch(updateButtonsState({ envelopeSaveSecond: false }))
     }
   }, [infoEnvelopeSaveSecond, dispatch])
 
   useEffect(() => {
     if (infoEnvelopeRemove) {
-      updateCounts(infoEnvelopeRemove)
+      updateCounts(listLabelsAddress.name)
       dispatch(updateButtonsState({ envelopeRemoveAddress: false }))
     }
   }, [infoEnvelopeRemove, dispatch])
@@ -66,20 +66,20 @@ const FormAddress = ({
       <div
         className={`toolbar-container toolbar-envelope-container envelope-container-${listLabelsAddress.name}`}
       >
-        {listBtnsEnvelope.map((btn, i) => {
-          return (
-            <button
-              key={`${i}-${btn}`}
-              data-tooltip={btn}
-              data-section={listLabelsAddress.name}
-              ref={setBtnIconRef(`${listLabelsAddress.name}-${btn}`)}
-              className={`toolbar-btn toolbar-btn-envelope btn-envelope-${btn}`}
-              onClick={(evt) => handleClickBtn(evt, listLabelsAddress.name)}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              {addIconToolbar(btn)}
-              {btn === 'clip' && countAddress[listLabelsAddress.name] ? (
+        {listBtnsEnvelope.map((btn: string, i: number) => (
+          <button
+            key={`${i}-${btn}`}
+            data-tooltip={btn}
+            data-section={listLabelsAddress.name}
+            ref={setBtnIconRef(`${listLabelsAddress.name}-${btn}`)}
+            className={`toolbar-btn toolbar-btn-envelope btn-envelope-${btn}`}
+            onClick={(evt) => handleClickBtn(evt, listLabelsAddress.name)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {addIconToolbar(btn)}
+            {btn === 'clip' &&
+              countAddress[listLabelsAddress.name] !== null && (
                 <span
                   className={`counter-container envelope-counter-container ${btn}-counter-container`}
                 >
@@ -87,25 +87,22 @@ const FormAddress = ({
                     {countAddress[listLabelsAddress.name]}
                   </span>
                 </span>
-              ) : (
-                <></>
               )}
-            </button>
-          )
-        })}
+          </button>
+        ))}
       </div>
       <fieldset
         className="envelope-fieldset"
-        ref={setAddressFormRef(`${listLabelsAddress.name}-fieldset`)}
+        ref={setAddressFieldsetRef(`${listLabelsAddress.name}-fieldset`)}
       >
         <legend
           className="envelope-legend"
-          ref={setAddressFormRef(`${listLabelsAddress.name}-legend`)}
+          ref={setAddressLegendRef(`${listLabelsAddress.name}-legend`)}
         >
           {listLabelsAddress.name === 'myaddress' ? 'My address' : 'To address'}
-        </legend>{' '}
-        {listLabelsAddress.list.map((nameFirst, i) => {
-          return typeof nameFirst === 'string' ? (
+        </legend>
+        {listLabelsAddress.list.map((nameFirst, i) =>
+          typeof nameFirst === 'string' ? (
             <Label
               key={`${nameFirst}-${i}`}
               name={nameFirst}
@@ -133,7 +130,7 @@ const FormAddress = ({
               ))}
             </div>
           )
-        })}
+        )}
       </fieldset>
     </form>
   )

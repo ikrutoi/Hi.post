@@ -1,5 +1,5 @@
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useEffect, useRef, useState } from 'react'
 import './MiniEnvelope.scss'
 import listLabelsMyAddress from '../../../../data/envelope/list-labels-my-address.json'
 import listLabelsToAddress from '../../../../data/envelope/list-labels-to-address.json'

@@ -1,3 +1,4 @@
+import React from 'react'
 import './MiniAroma.scss'
 import img00 from '../../../../data/aroma/no-parfum.png'
 import img10 from '../../../../data/aroma/nasomatto__black_afgano__10.png'

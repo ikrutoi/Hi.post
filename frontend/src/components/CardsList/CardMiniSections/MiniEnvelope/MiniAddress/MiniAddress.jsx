@@ -1,3 +1,4 @@
+import React from 'react'
 import './MiniAddress.scss'
 
 const MiniAddress = ({ listLabelsAddress, values }) => {

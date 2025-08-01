@@ -1,5 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
 
+import authReducer from '@features/auth/authSlice'
+import envelopeReducer from '@features/envelope/envelopeSlice'
+import { authListenerMiddleware } from '../middleware/authListener'
+
 import infoButtonsReducer from './slices/infoButtonsSlice'
 import layoutReducer from './slices/layoutSlice'
 import cardsReducer from './slices/cardsSlice'
@@ -11,7 +15,11 @@ export const store = configureStore({
     layout: layoutReducer,
     cards: cardsReducer,
     cardEdit: cardEditReducer,
+    envelope: envelopeReducer,
+    auth: authReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(authListenerMiddleware.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>

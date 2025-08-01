@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import type { AxiosError } from 'axios/index'
 import { registerUserApi } from './api'
-import { AuthState, RegisterPayload, UserData } from './types'
+import { AuthState, RegisterPayload, UserData } from './authTypes'
 
 const initialState: AuthState = {
   user: null,

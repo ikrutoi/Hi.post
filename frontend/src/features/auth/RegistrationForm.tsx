@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import type { RegisterPayload } from './types'
-import { registerUser } from '../../api/auth'
+import type { RegisterPayload } from './authTypes'
+import { registerUser } from './api'
 
 export default function RegisterForm() {
   const [form, setForm] = useState<RegisterPayload>({
     email: '',
     password: '',
-    name: '',
+    username: '',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,9 +18,12 @@ export default function RegisterForm() {
     e.preventDefault()
     try {
       await registerUser(form)
-      alert('Регистрация успешна')
+      alert('Registration successful')
+
+      const response = await registerUser(form)
+      localStorage.setItem('token', response.token)
     } catch {
-      alert('Ошибка регистрации')
+      alert('Registration error')
     }
   }
 
@@ -28,9 +31,9 @@ export default function RegisterForm() {
     <form onSubmit={handleSubmit}>
       <input
         name="name"
-        value={form.name}
+        value={form.username}
         onChange={handleChange}
-        placeholder="Имя"
+        placeholder="Name"
       />
       <input
         name="email"
@@ -43,10 +46,10 @@ export default function RegisterForm() {
         name="password"
         value={form.password}
         onChange={handleChange}
-        placeholder="Пароль"
+        placeholder="Password"
         type="password"
       />
-      <button type="submit">Зарегистрироваться</button>
+      <button type="submit">Register</button>
     </form>
   )
 }

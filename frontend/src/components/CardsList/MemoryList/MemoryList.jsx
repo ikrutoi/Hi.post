@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './MemoryList.scss'
 import { updateButtonsState } from '../../../store/slices/infoButtonsSlice'
@@ -733,6 +733,8 @@ const MemoryList = ({
     }
 
     const memorySections = ['shopping', 'blanks']
+
+    console.log('MemoryList')
 
     return (
       <div className="memory-list-container">

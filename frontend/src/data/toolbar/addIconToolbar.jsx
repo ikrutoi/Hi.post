@@ -30,6 +30,7 @@ import {
   RiAlignRight,
   RiAlignJustify,
   RiResetLeftFill,
+  RiUserLine,
 } from 'react-icons/ri'
 
 export const addIconToolbar = (icon) => {
@@ -44,6 +45,8 @@ export const addIconToolbar = (icon) => {
       return <MdDeleteOutline className="toolbar-icon" />
     case 'download':
       return <FiDownload className="toolbar-icon" />
+    case 'user':
+      return <RiUserLine className="toolbar-icon" />
     case 'turn':
       return <PiArrowClockwiseFill className="toolbar-icon" />
     case 'edit':

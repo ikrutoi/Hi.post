@@ -2,6 +2,8 @@ import React, { useRef, useState, useLayoutEffect, useEffect } from 'react'
 import useResizeObserver from '@react-hook/resize-observer'
 import { useDispatch, useSelector } from 'react-redux'
 import './App.scss'
+import { setAuth } from './store/slices/authSlice'
+// import { setAuth } from './slices/authSlice'
 import ErrorBoundary from './components/ErrorBoundary'
 import Logo from './components/Logo/Logo'
 import Status from './components/Status/Status'
@@ -34,6 +36,15 @@ function App() {
     useResizeObserver(target, (entry) => setSize(entry.contentRect))
     return size
   }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      dispatch(loginStart())
+      const user = { id: '123', name: 'Ihar', email: 'ihar@email.com' }
+      dispatch(loginSuccess({ user, token }))
+    }
+  }, [])
 
   const handleAppClick = (evt) => {
     if (colorToolbar) {

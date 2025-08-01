@@ -1,5 +1,5 @@
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useRef, useState } from 'react'
 import { CgClose } from 'react-icons/cg'
 import './CardMiniSection.scss'
 import {

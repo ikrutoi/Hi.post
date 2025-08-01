@@ -65,12 +65,14 @@ const Envelope = ({ cardPuzzleRef }) => {
   const inputRefs = useRef({})
   const btnIconRefs = useRef({})
   const addressFormRefs = useRef({})
+  const addressFieldsetRefs = useRef({})
+  const addressLegendRefs = useRef({})
   const envelopeLogoRef = useRef(null)
   const layoutActiveEnvelope = useSelector(
-    (state) => state.layout.setActiveSections.envelope
+    (state) => state.layout.activeSections.envelope
   )
   const infoExpendsMemoryCard = useSelector(
-    (state) => state.layout.setExpendMemoryCard
+    (state) => state.layout.expendMemoryCard
   )
   const dispatch = useDispatch()
 
@@ -82,8 +84,16 @@ const Envelope = ({ cardPuzzleRef }) => {
     btnIconRefs.current[id] = element
   }
 
-  const setAddressFormRef = (id) => (element) => {
-    addressFormRefs.current[id] = element
+  // const setAddressFormRef = (id) => (element) => {
+  //   addressFormRefs.current[id] = element
+  // }
+
+  const setAddressFieldsetRef = (id) => (element) => {
+    addressFieldsetRefs.current[id] = element
+  }
+
+  const setAddressLegendRef = (id) => (element) => {
+    addressLegendRefs.current[id] = element
   }
 
   useEffect(() => {
@@ -313,6 +323,12 @@ const Envelope = ({ cardPuzzleRef }) => {
   useEffect(() => {
     const sectionsForm = ['myaddress', 'toaddress']
     const changeStyleForm = (section, state) => {
+      if (addressFieldsetRefs.current[`${section}-fieldset`]) {
+        addressFieldsetRefs.current[`${section}-fieldset`].style.borderColor =
+          colorScheme[state]
+        addressFormRefs.current[`${section}-legend`].style.color =
+          colorScheme[state]
+      }
       if (addressFormRefs.current[`${section}-fieldset`]) {
         addressFormRefs.current[`${section}-fieldset`].style.borderColor =
           colorScheme[state]
@@ -511,7 +527,9 @@ const Envelope = ({ cardPuzzleRef }) => {
           handleMovingBetweenInputs={handleMovingBetweenInputs}
           setInputRef={setInputRef}
           setBtnIconRef={setBtnIconRef}
-          setAddressFormRef={setAddressFormRef}
+          // setAddressFormRef={setAddressFormRef}
+          setAddressFieldsetRef={setAddressFieldsetRef}
+          setAddressLegendRef={setAddressLegendRef}
           handleClickBtn={handleClickBtn}
           handleMouseEnter={handleMouseEnter}
           handleMouseLeave={handleMouseLeave}
@@ -526,7 +544,9 @@ const Envelope = ({ cardPuzzleRef }) => {
           handleMovingBetweenInputs={handleMovingBetweenInputs}
           setInputRef={setInputRef}
           setBtnIconRef={setBtnIconRef}
-          setAddressFormRef={setAddressFormRef}
+          // setAddressFormRef={setAddressFormRef}
+          setAddressFieldsetRef={setAddressFieldsetRef}
+          setAddressLegendRef={setAddressLegendRef}
           handleClickBtn={handleClickBtn}
           handleMouseEnter={handleMouseEnter}
           handleMouseLeave={handleMouseLeave}

@@ -1,5 +1,5 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useEffect, useMemo, useRef, useState } from 'react'
 import './MiniCardtext.scss'
 import { Editable, Slate, withReact } from 'slate-react'
 import { createEditor } from 'slate'
