@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { v4 as uuidv4 } from 'uuid'
 import './Envelope.scss'
 import listLabelsMyAddress from '../../../../data/envelope/list-labels-my-address.json'
@@ -84,10 +83,6 @@ const Envelope = ({ cardPuzzleRef }) => {
     btnIconRefs.current[id] = element
   }
 
-  // const setAddressFormRef = (id) => (element) => {
-  //   addressFormRefs.current[id] = element
-  // }
-
   const setAddressFieldsetRef = (id) => (element) => {
     addressFieldsetRefs.current[id] = element
   }
@@ -133,30 +128,6 @@ const Envelope = ({ cardPuzzleRef }) => {
       fetchAddress()
     }
   }, [infoExpendsMemoryCard, dispatch])
-
-  // useEffect(() => {
-  //   const fetchAddress = async () => {
-  //     const address = await getRecordAddressById(
-  //       layoutChoiceAddress.section === 'myaddress' ? 'myaddress' : 'toaddress',
-  //       layoutChoiceAddress.id
-  //     )
-
-  //     setValue((state) => {
-  //       return {
-  //         ...state,
-  //         [layoutChoiceAddress.section]: {
-  //           ...state[layoutChoiceAddress.section],
-  //           ...address.address,
-  //         },
-  //       }
-  //     })
-  //     dispatch(choiceAddress({ section: null, id: null }))
-  //   }
-
-  //   if (layoutChoiceAddress.section && layoutChoiceAddress.id) {
-  //     fetchAddress()
-  //   }
-  // }, [layoutChoiceAddress, dispatch])
 
   useEffect(() => {
     const checkField = (section) => {
@@ -284,7 +255,6 @@ const Envelope = ({ cardPuzzleRef }) => {
 
   useEffect(() => {
     dispatch(addEnvelope(value))
-    // setChoiceSection('envelope')
   }, [dispatch, value])
 
   const handleMovingBetweenInputs = (evt) => {
@@ -490,12 +460,10 @@ const Envelope = ({ cardPuzzleRef }) => {
   }
 
   const handleMouseEnter = (evt) => {
-    // setStateMouseClip(true)
     handleMouseEnterBtn(evt, btnsAddress)
   }
 
   const handleMouseLeave = (evt) => {
-    // setStateMouseClip(false)
     handleMouseLeaveBtn(evt, btnsAddress)
   }
 
@@ -527,7 +495,6 @@ const Envelope = ({ cardPuzzleRef }) => {
           handleMovingBetweenInputs={handleMovingBetweenInputs}
           setInputRef={setInputRef}
           setBtnIconRef={setBtnIconRef}
-          // setAddressFormRef={setAddressFormRef}
           setAddressFieldsetRef={setAddressFieldsetRef}
           setAddressLegendRef={setAddressLegendRef}
           handleClickBtn={handleClickBtn}
@@ -544,14 +511,11 @@ const Envelope = ({ cardPuzzleRef }) => {
           handleMovingBetweenInputs={handleMovingBetweenInputs}
           setInputRef={setInputRef}
           setBtnIconRef={setBtnIconRef}
-          // setAddressFormRef={setAddressFormRef}
           setAddressFieldsetRef={setAddressFieldsetRef}
           setAddressLegendRef={setAddressLegendRef}
           handleClickBtn={handleClickBtn}
           handleMouseEnter={handleMouseEnter}
           handleMouseLeave={handleMouseLeave}
-          // handleMouseEnter={(evt) => handleMouseEnter(evt, btnsAddress)}
-          // handleMouseLeave={(evt) => handleMouseLeave(evt, btnsAddress)}
         />
       </div>
     </div>

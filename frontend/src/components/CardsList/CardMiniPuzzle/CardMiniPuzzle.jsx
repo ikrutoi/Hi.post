@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import './CardMiniPuzzle.scss'
 // import SpanCircle from './SpanCircle/SpanCircle'
 // import cardMiniList from '../../../data/cardMiniList.json'

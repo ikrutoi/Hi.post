@@ -21,8 +21,13 @@ type BtnToolbar = {
   secondBtn: string | null
   section: string | null
 }
+type MemoryCardInfo = {
+  source: 'sender' | 'recipient'
+  id: number | string
+}
 
 type LayoutState = {
+  fullCardPersonalId: FullCardPersonalId
   sizeCard: Size
   sizeMiniCard: Size
   remSize: number | null
@@ -41,10 +46,9 @@ type LayoutState = {
   memoryCrop: any
   currentDate: string | null
   fullCard: boolean
-  fullCardPersonalId: FullCardPersonalId
   addFullCard: boolean
   selectedCard: boolean
-  expendMemoryCard: boolean
+  expendMemoryCard: MemoryCardInfo | null
   maxCardsList: number | null
   sliderLetter: string | null
   sliderLine: string | null
@@ -67,6 +71,7 @@ const initialState: LayoutState = {
   },
   btnToolbar: { firstBtn: null, secondBtn: null, section: null },
   choiceMemorySection: { section: null, id: null },
+  expendMemoryCard: null,
   choiceSave: null,
   choiceClip: null,
   deleteSection: null,
@@ -84,7 +89,6 @@ const initialState: LayoutState = {
   fullCardPersonalId: { shopping: null, blanks: null },
   addFullCard: false,
   selectedCard: false,
-  expendMemoryCard: false,
   maxCardsList: null,
   sliderLetter: null,
   sliderLine: null,
@@ -206,7 +210,10 @@ const layoutSlice = createSlice({
     setAddFullCard: (state, action: PayloadAction<boolean>) => {
       state.addFullCard = action.payload
     },
-    setExpendMemoryCard: (state, action: PayloadAction<boolean>) => {
+    setExpendMemoryCard: (
+      state,
+      action: PayloadAction<MemoryCardInfo | null>
+    ) => {
       state.expendMemoryCard = action.payload
     },
     setMaxCardsList: (state, action: PayloadAction<number | null>) => {

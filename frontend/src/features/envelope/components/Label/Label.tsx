@@ -1,66 +1,46 @@
 import React from 'react'
 import './Label.scss'
-import { EnvelopeValues } from '@features/envelope/envelope.types'
+import type { LabelProps } from '@features/envelope/types'
 
-interface LabelProps {
-  name: string
-  field: keyof EnvelopeValues
-  values: EnvelopeValues
-  handleValue: (
-    field: keyof EnvelopeValues,
-    shortName: string,
-    value: string
-  ) => void
-  handleMovingBetweenInputs: React.KeyboardEventHandler<HTMLInputElement>
-  setInputRef: (inputKey: string) => React.Ref<HTMLInputElement>
-}
-
-const Label: React.FC<LabelProps> = ({
-  name,
+export const Label: React.FC<LabelProps> = ({
+  label,
   field,
+  role,
   values,
   handleValue,
   handleMovingBetweenInputs,
   setInputRef,
 }) => {
-  const indexName = name.split('-')[0]
-  const nameWithoutIndex = name.split('-')[1]
-  const shortName = nameWithoutIndex.split(' / ')[0].toLowerCase()
+  const indexName = label.split('-')[0]
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     e.preventDefault()
-    const { value } = e.target
-    if (
-      e.target.className.includes('myaddress-index') ||
-      e.target.className.includes('toaddress-index')
-    ) {
-      const numericValue = value.replace(/\D/g, '')
-      handleValue(field, shortName, numericValue)
-    } else {
-      handleValue(field, shortName, value)
-    }
+    const value = e.target.value
+    const isIndexField =
+      e.target.className.includes('sender-index') ||
+      e.target.className.includes('recipient-index')
+    const sanitizedValue = isIndexField ? value.replace(/\D/g, '') : value
+    handleValue(role, field, sanitizedValue)
   }
 
   return (
-    <label className={`envelope-label envelope-label-${shortName}`}>
+    <label className={`envelope-label envelope-label-${field}`}>
       <>
         <span className="label-element-space"></span>
-        <span>{nameWithoutIndex}</span>
+        <span>{label}</span>
         <span className="label-element-space"></span>
       </>
       <input
-        className={`envelope-input ${field} ${field}-${shortName}`}
-        ref={setInputRef(`${field}${indexName}`)}
-        data-field={field}
+        className={`envelope-input ${role} ${role}-${field}`}
+        ref={setInputRef(`${role}${indexName}`)}
+        data-role={role}
         data-index={indexName}
-        data-name={shortName}
+        data-name={field}
         type="text"
-        value={values[field][shortName]}
+        value={values[role][field]}
         onChange={handleChange}
         onKeyDown={handleMovingBetweenInputs}
       />
     </label>
   )
 }
-
-export default Label

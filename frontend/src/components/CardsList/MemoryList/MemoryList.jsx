@@ -12,7 +12,7 @@ import {
   deleteMyAddress,
   addUniqueBlank,
 } from '../../../utils/cardFormNav/indexDB/indexDb'
-import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
+import { addIconToolbar } from '../../../data/toolbar/getIconElement'
 import {
   setFullCard,
   setChoiceClip,

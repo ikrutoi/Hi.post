@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import './Toolbar.scss'
 import { RootState } from '@store/index'
 
-const Toolbar: React.FC = () => {
+export const Toolbar: React.FC = () => {
   const layoutActiveEnvelope = useSelector(
     (state: RootState) => state.layout.activeSections.envelope
   )
@@ -35,5 +35,3 @@ const Toolbar: React.FC = () => {
     </div>
   )
 }
-
-export default Toolbar

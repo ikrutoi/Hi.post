@@ -26,7 +26,7 @@ import MiniDate from './MiniDate/MiniDate'
 import MiniAroma from './MiniAroma/MiniAroma'
 import MiniPhoto from './MiniPhoto/MiniPhoto'
 import { searchParent } from '../../../utils/searchParent'
-import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
+import { addIconToolbar } from '../../../data/toolbar/getIconElement'
 
 const CardMiniSection = ({
   valueSection,

@@ -15,7 +15,7 @@ import { colorScheme } from '../../../../../data/toolbar/colorScheme'
 import { colorSchemeMain } from '../../../../../data/main/colorSchemeMain'
 import scaleBase from '../../../../../data/main/scaleCardAndCardMini.json'
 // import listBtnsCardtext from '../../../../../data/cardtext/list-textarea-nav-btns.json'
-import { addIconToolbar } from '../../../../../data/toolbar/addIconToolbar'
+import { addIconToolbar } from '../../../../../data/toolbar/getIconElement'
 import {
   handleMouseEnterBtn,
   handleMouseLeaveBtn,

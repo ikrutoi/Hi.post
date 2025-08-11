@@ -29,15 +29,15 @@ type CardPhotoState = {
 }
 
 type InfoButtonsState = {
+  miniAddressClose: 'sender' | 'recipient' | null
   navHistory: boolean
   crop: boolean
   italic: boolean
   left: boolean
   download: boolean
-  envelopeSave: boolean | null
+  envelopeSave: 'sender' | 'recipient' | null
   envelopeSaveSecond: boolean | null
   envelopeRemoveAddress: boolean | null
-  miniAddressClose: boolean | null
   status: {
     shopping: boolean
   }
@@ -55,6 +55,7 @@ type InfoButtonsState = {
 }
 
 const initialState: InfoButtonsState = {
+  miniAddressClose: null,
   navHistory: false,
   crop: false,
   italic: true,
@@ -63,7 +64,6 @@ const initialState: InfoButtonsState = {
   envelopeSave: null,
   envelopeSaveSecond: null,
   envelopeRemoveAddress: null,
-  miniAddressClose: null,
   status: { shopping: false },
   fullCard: { plus: false, delete: false },
   envelope: {

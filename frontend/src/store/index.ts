@@ -1,19 +1,19 @@
 import { configureStore } from '@reduxjs/toolkit'
 
-import authReducer from '@features/auth/authSlice'
-import envelopeReducer from '@features/envelope/envelopeSlice'
-import { authListenerMiddleware } from '../middleware/authListener'
+import { authReducer } from '@features/auth/store/authSlice'
+import envelopeReducer from '@features/envelope/store/envelopeSlice'
+import { authListenerMiddleware } from '@middleware/authListener'
 
 import infoButtonsReducer from './slices/infoButtonsSlice'
 import layoutReducer from './slices/layoutSlice'
-import cardsReducer from './slices/cardsSlice'
+// import cardsReducer from './slices/cardsSlice'
 import cardEditReducer from './slices/cardEditSlice'
 
 export const store = configureStore({
   reducer: {
     infoButtons: infoButtonsReducer,
     layout: layoutReducer,
-    cards: cardsReducer,
+    // cards: cardsReducer,
     cardEdit: cardEditReducer,
     envelope: envelopeReducer,
     auth: authReducer,
@@ -23,3 +23,4 @@ export const store = configureStore({
 })
 
 export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch

@@ -1,0 +1,8 @@
+export { postcardCartAdapter } from '@db/adapters/postcard/postcardCartAdapter'
+export { postcardDraftsAdapter } from '@db/adapters/postcard/postcardDraftsAdapter'
+// export { postcardSentAdapter } from '@db/adapters/factory/postcardSentAdapter'
+export { assetStockImagesAdapter } from '@db/adapters/asset/assetStockImagesAdapter'
+export { assetUserImagesAdapter } from '@db/adapters/asset/assetUserImagesAdapter'
+export { assetCardtextAdapter } from '@db/adapters/asset/assetCardtextAdapter'
+export { assetSenderAddressAdapter } from '@db/adapters/asset/assetSenderAddressAdapter'
+export { assetRecipientAddressAdapter } from '@db/adapters/asset/assetRecipientAddressAdapter'

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CgClose } from 'react-icons/cg'
 import './MemoryEnvelope.scss'
-import { addIconToolbar } from '../../../data/toolbar/addIconToolbar'
+import { addIconToolbar } from '../../../data/toolbar/getIconElement'
 import { setFullCard } from '../../../store/slices/layoutSlice'
 import {
   getAllRecordsAddresses,

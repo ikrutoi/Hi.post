@@ -22,7 +22,7 @@ type CardText = {
 
 type Address = {
   street: string
-  index: string
+  zip: string
   city: string
   country: string
   name: string
@@ -37,12 +37,16 @@ type CardEditState = {
   }
   cardtext: CardText
   envelope: {
-    myaddress: Address
-    toaddress: Address
+    sender: Address
+    recipient: Address
   }
 }
 
 const initialState: CardEditState = {
+  envelope: {
+    sender: { street: '', zip: '', city: '', country: '', name: '' },
+    recipient: { street: '', zip: '', city: '', country: '', name: '' },
+  },
   aroma: null,
   date: null,
   cardphoto: { url: null, source: null },
@@ -62,10 +66,6 @@ const initialState: CardEditState = {
     textAlign: 'left',
     lineHeight: null,
     miniCardtextStyle: { maxLines: null, fontSize: null, lineHeight: null },
-  },
-  envelope: {
-    myaddress: { street: '', index: '', city: '', country: '', name: '' },
-    toaddress: { street: '', index: '', city: '', country: '', name: '' },
   },
 }
 

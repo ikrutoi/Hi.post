@@ -1,23 +1,11 @@
 import axios from 'axios'
-
-export interface RegisterPayload {
-  email: string
-  password: string
-  username?: string
-}
+import type { AxiosResponse } from '@features/auth/types/axios'
+import type { RegisterPayload } from '@features/auth/types/auth.types'
+import { AuthResponse } from '@features/auth/types/auth.types'
 
 export interface LoginPayload {
   email: string
   password: string
-}
-
-export interface AuthResponse {
-  token: string
-  user: {
-    id: string
-    email: string
-    username: string
-  }
 }
 
 export const registerUser = (data: RegisterPayload) =>
@@ -25,3 +13,10 @@ export const registerUser = (data: RegisterPayload) =>
 
 export const loginUser = (data: LoginPayload) =>
   axios.post<AuthResponse>('/api/login', data)
+
+export const registerUserApi = async (
+  data: RegisterPayload
+): Promise<AxiosResponse<AuthResponse>> => {
+  const response = await axios.post<AuthResponse>('/api/register', data)
+  return response
+}

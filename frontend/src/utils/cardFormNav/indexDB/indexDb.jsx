@@ -34,15 +34,6 @@ const getDatabase = async () => {
   return dbInstance
 }
 
-// const initializeDatabase = async () => {
-//   try {
-//     const db = await getDatabase()
-//     console.log('Database initialized:', db.name);
-//   } catch (error) {
-//     console.error('Failed to initialize database:', error);
-//   }
-// };
-
 export const addHiPostImage = async (id, file) => {
   try {
     const db = await dbPromise
@@ -147,23 +138,6 @@ export const getAllUserImages = async () => {
   }
 }
 
-// export const addMyAddress = async (id, file) => {
-//   const db = await dbPromise
-//   const transaction = db.transaction('myAddress', 'readwrite')
-//   const store = transaction.objectStore('myAddress')
-//   await store.put({ id, address: file })
-//   await transaction.done
-// }
-
-// export const getMyAddress = async (id) => {
-//   const db = await dbPromise
-//   const transaction = db.transaction('myAddress', 'readonly')
-//   const store = transaction.objectStore('myAddress')
-//   const result = await store.get(id)
-//   await transaction.done
-//   return result ? result.address : null
-// }
-
 export const deleteMyAddress = async (id) => {
   const db = await dbPromise
   const transaction = db.transaction('myaddress', 'readwrite')
@@ -171,32 +145,6 @@ export const deleteMyAddress = async (id) => {
   await store.delete(id)
   await transaction.done
 }
-
-// export const getAllMyAddress = async () => {
-//   const db = await dbPromise
-//   const transaction = db.transaction('myAddress', 'readonly')
-//   const store = transaction.objectStore('myAddress')
-//   const allRecords = await store.getAll()
-//   await transaction.done
-//   return allRecords
-// }
-
-// export const addToAddress = async (id, file) => {
-//   const db = await dbPromise
-//   const transaction = db.transaction('toAddress', 'readwrite')
-//   const store = transaction.objectStore('toAddress')
-//   await store.put({ id, address: file })
-//   await transaction.done
-// }
-
-// export const getToAddress = async (id) => {
-//   const db = await dbPromise
-//   const transaction = db.transaction('toAddress', 'readonly')
-//   const store = transaction.objectStore('toAddress')
-//   const result = await store.get(id)
-//   await transaction.done
-//   return result ? result.address : null
-// }
 
 export const deleteToAddress = async (id) => {
   const db = await dbPromise
@@ -206,15 +154,6 @@ export const deleteToAddress = async (id) => {
   await store.delete(id)
   await transaction.done
 }
-
-// export const getAllToAddress = async () => {
-//   const db = await dbPromise
-//   const transaction = db.transaction('toAddress', 'readonly')
-//   const store = transaction.objectStore('toAddress')
-//   const allRecords = await store.getAll()
-//   await transaction.done
-//   return allRecords
-// }
 
 export const getAllRecordsAddresses = async (storeName) => {
   const db = await dbPromise
@@ -291,17 +230,6 @@ export const addUniqueRecordAddress = async (storeName, data, personalId) => {
   await store.put(record)
   await transaction.done
 }
-
-// export const addUniqueRecordAddress = async (storeName, data) => {
-//   const db = await dbPromise
-//   const maxId = await getMaxIdAddress(storeName)
-//   const newId = maxId + 1
-
-//   const transaction = db.transaction(storeName, 'readwrite')
-//   const store = transaction.objectStore(storeName)
-//   await store.put({ id: newId, address: { ...data } })
-//   await transaction.done
-// }
 
 const handleTransactionPromise = (transaction) => {
   return new Promise((resolve, reject) => {
@@ -465,24 +393,6 @@ export const getBlankById = async (id) => {
     throw error
   }
 }
-
-// export const addRecordCardtext = async (record) => {
-//   if (!record || typeof record.id === 'undefined') {
-//     throw new Error(
-//       '[addRecordCardtext] Invalid record format. "id" is required.'
-//     )
-//   }
-//   try {
-//     const db = await getDatabase()
-//     const transaction = db.transaction('cardtext', 'readwrite')
-//     const store = transaction.objectStore('cardtext')
-//     await store.put(record)
-//     return await handleTransactionPromise(transaction)
-//   } catch (error) {
-//     console.error('[addRecordCardtext] Failed to add record:', error)
-//     throw error
-//   }
-// }
 
 export const deleteBlank = async (id) => {
   try {

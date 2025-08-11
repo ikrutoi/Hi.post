@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import './ToolbarCardphoto.scss'
 import listBtnsCardphoto from '../../../../../data/toolbar/listBtnsCardphoto.json'
-import { addIconToolbar } from '../../../../../data/toolbar/addIconToolbar'
+import { addIconToolbar } from '../../../../../data/toolbar/getIconElement'
 import {
   handleMouseEnterBtn,
   handleMouseLeaveBtn,

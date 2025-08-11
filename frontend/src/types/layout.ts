@@ -2,12 +2,16 @@
 
 export interface ChoiceSection {
   nameSection: string
-  // можно добавить: label, icon, или другие свойства
 }
 
 export interface ChoiceClip {
   clipId: string
-  // если есть координаты или параметры — добавь их
+}
+
+export interface StatusType {
+  shopping: boolean
+  clip: boolean
+  clipId: string
 }
 
 export interface SizeCard {

@@ -47,7 +47,7 @@ import {
 } from '../../utils/cardFormNav/indexDB/indexDb'
 import MemoryEnvelope from './MemoryEnvelope/MemoryEnvelope'
 import MemoryCardtext from './MemoryCardtext/MemoryCardtext'
-import { addIconToolbar } from '../../data/toolbar/addIconToolbar'
+import { addIconToolbar } from '../../data/toolbar/getIconElement'
 import { changeIconStyles } from '../../data/toolbar/changeIconStyles'
 import MemoryList from './MemoryList/MemoryList'
 import SliderCardsList from './SliderCardsList/SliderCardsList'
