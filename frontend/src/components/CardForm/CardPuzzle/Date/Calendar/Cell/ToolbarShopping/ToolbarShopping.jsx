@@ -8,17 +8,6 @@ const ToolbarShopping = ({
   handleCellShoppingClick,
   countShoppingCards,
 }) => {
-  // const [countShoppingCards, setCountShoppingCards] = useState(null)
-
-  // useEffect(() => {
-  //   if (shoppingDay.length > 1) {
-  //     setCountShoppingCards(shoppingDay.length)
-  //   }
-  //   if (shoppingDay.length === 1) {
-  //     setCountShoppingCards(false)
-  //   }
-  // }, [shoppingDay])
-
   return (
     <div className="toolbar-shopping">
       <div className="toolbar-shopping-cell" onClick={handleCellShoppingClick}>

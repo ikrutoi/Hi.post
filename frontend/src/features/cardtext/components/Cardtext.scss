@@ -1,0 +1,12 @@
+.cardtext {
+  position: relative;
+  width: 100%;
+  padding: 1rem;
+  // border: solid 1px olivedrab;
+}
+
+.nav-container-cardtext {
+  top: -2rem;
+  left: 1rem;
+  width: calc(100% - 2rem);
+}

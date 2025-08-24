@@ -1,29 +1,29 @@
 export type {
+  BaseAddress,
+  SenderAddress,
+  RecipientAddress,
+} from './baseAddress'
+export { initialBaseAddress } from './baseAddress'
+
+export type { EnvelopeAddresses } from './envelopeAddresses'
+export {
+  initialSenderAddress,
+  initialRecipientAddress,
+} from './envelopeAddresses'
+
+export type { AddressRole, AddressField, AddressLabel } from './envelopeTypes'
+export { ADDRESS_ROLES } from './envelopeTypes'
+
+export type {
   LabelProps,
   AddressProps,
   EnvelopeAddressProps,
-} from '@features/envelope/types/envelopeAddress'
-
-export type {
-  AddressRole,
-  AddressField,
-  AddressLabel,
-  EnvelopeAddresses,
-  Address,
-} from '@features/envelope/types/envelopeTypes'
-
-export {
-  ADDRESS_ROLES,
-  initialAddress,
-} from '@features/envelope/types/envelopeTypes'
+} from './envelopeAddress'
 
 export type {
   EnvelopeItem,
   FetchEnvelopesResponse,
   CreateEnvelopePayload,
-} from '@features/envelope/types/envelopeApi'
+} from './envelopeApi'
 
-export type {
-  EnvelopeState,
-  EnvelopeStatus,
-} from '@features/envelope/types/envelopeState'
+export type { EnvelopeState, EnvelopeStatus } from './envelopeState'

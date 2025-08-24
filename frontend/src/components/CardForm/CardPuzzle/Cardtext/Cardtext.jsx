@@ -7,7 +7,6 @@ const Cardtext = ({ toolbarColor, styleLeftCardPuzzle }) => {
     <div className="cardtext">
       <CardEditor
         toolbarColor={toolbarColor}
-        // setChoiceSection={setChoiceSection}
         styleLeftCardPuzzle={styleLeftCardPuzzle}
       />
     </div>

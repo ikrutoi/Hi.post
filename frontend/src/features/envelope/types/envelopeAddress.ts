@@ -3,9 +3,9 @@ import type {
   AddressRole,
   AddressField,
   AddressLabel,
-  EnvelopeAddresses,
 } from '@features/envelope/types'
 import type { AddressLabelLayout } from '@i18n/index'
+import { EnvelopeAddresses } from './envelopeAddresses'
 import type { Lang } from '@i18n/index'
 
 export interface LabelProps {

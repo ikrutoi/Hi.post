@@ -5,4 +5,4 @@ export {
   selectRecipientAddress,
   selectEnvelopeLoading,
   selectEnvelopeError,
-} from '@features/envelope/store/envelopeSelectors'
+} from './envelopeSelectors'

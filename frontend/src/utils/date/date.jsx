@@ -42,22 +42,9 @@ const firstDayOfWeek = (firstDay, selectedDate) => {
   return firstDay === 'Sun'
     ? new Date(selectedDate.year, selectedDate.month, 1).getDay()
     : new Date(selectedDate.year, selectedDate.month, 1).getDay() === 0
-    ? 6
-    : new Date(selectedDate.year, selectedDate.month, 1).getDay() - 1
+      ? 6
+      : new Date(selectedDate.year, selectedDate.month, 1).getDay() - 1
 }
-
-// import React, { useState, useEffect } from 'react'
-// const [currentTime, setCurrentTime] = useState(new Date())
-
-// console.log(currentTime.toDateString())
-
-// useEffect(() => {
-//   const timer = setInterval(() => {
-//     setCurrentTime(new Date())
-//   }, 60000)
-
-//   return () => clearInterval(timer)
-// }, [])
 
 export {
   currentDate,

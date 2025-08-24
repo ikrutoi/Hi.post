@@ -7,7 +7,9 @@ import React, {
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { v4 as uuidv4 } from 'uuid'
+
 import './Envelope.scss'
+
 import { AddressRole } from '@features/envelope/types'
 import { ADDRESS_ROLES } from '@features/envelope/types'
 import { useCurrentLang } from '@shared/localization/useCurrentLang'
@@ -15,7 +17,7 @@ import { loadEnvelopeTranslations } from '@shared/localization/loadTranslations'
 import { setSavedCardId } from '@shared/layout/model'
 import { addressLabels, AddressLabelsByLang } from '@i18n/index'
 import { addEnvelope } from '@store/slices/cardEditSlice'
-import { EnvelopeAddress, Mark, Toolbar } from '@features/envelope'
+import { EnvelopeAddress, Mark, Toolbar } from '@features/envelope/publicApi'
 import type { Address } from '@features/envelope/types'
 import { initialAddress } from '@features/envelope/types'
 import type { EnvelopeTranslations } from '@shared/localization/types'

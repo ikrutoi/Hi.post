@@ -38,11 +38,18 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     return ids.length ? Math.max(...ids) : 0
   }
 
-  const addUniqueRecord = async (
-    recordPayload: Record<string, unknown>
+  const addAutoIdRecord = async (
+    recordPayload: Omit<T, 'id'>
   ): Promise<void> => {
     const id = (await getMaxId()) + 1
     await put({ id, ...recordPayload } as T & { id: number })
+  }
+
+  const addRecordWithId = async (
+    id: IDBValidKey,
+    recordPayload: Omit<T, 'id'>
+  ): Promise<void> => {
+    await put({ id, ...recordPayload } as T & { id: IDBValidKey })
   }
 
   const count = async (): Promise<number> => {
@@ -60,7 +67,8 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     put,
     deleteById,
     getMaxId,
-    addUniqueRecord,
+    addAutoIdRecord,
+    addRecordWithId,
     count,
   }
 }

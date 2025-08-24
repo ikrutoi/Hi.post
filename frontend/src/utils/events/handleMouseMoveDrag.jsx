@@ -9,7 +9,6 @@ export const handleMouseMoveDrag = (
   setCrop,
   setLastMousePosition
 ) => {
-  // console.log('imgRef', imgRef.current.height)
   if (!isDragging) return
   const containerRect = imgRef.current.getBoundingClientRect()
   const mouseX = e.clientX - containerRect.left

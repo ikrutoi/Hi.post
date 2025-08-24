@@ -1,0 +1,21 @@
+.calendar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  // border: solid 1px blueviolet;
+}
+
+.calendar-month {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  // border: solid 1px green;
+}
+
+.month-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+}

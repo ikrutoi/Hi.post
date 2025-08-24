@@ -1,25 +1,22 @@
+import type { CartPostcard } from '@features/cart/publicApi'
+import type { DraftPostcard } from '@features/drafts/publicApi'
+import type { SentPostcard } from '@features/sent/publicApi'
+
 export interface StoreMap {
-  assetStockImages: { id: number; image: Blob }
-  assetUserImages: { id: number; image: Blob }
-  assetCardtext: { id: number; text: Record<string, string> }
-  assetSenderAddress: {
+  stockImages: { id: number; image: Blob }
+  userImages: { id: number; image: Blob }
+  cardtext: { id: number; text: Record<string, string> }
+  senderAddress: {
     id: number
     address: Record<string, unknown>
     personalId: number
   }
-  assetRecipientAddress: {
+  recipientAddress: {
     id: number
     address: Record<string, unknown>
     personalId: number
   }
-  postcardDrafts: {
-    id: number
-    blanks: Record<string, unknown>
-    personalId: number
-  }
-  postcardCart: {
-    id: number
-    shopping: Record<string, unknown>
-    personalId: number
-  }
+  cart: CartPostcard
+  drafts: DraftPostcard
+  sent: SentPostcard
 }

@@ -1,0 +1,88 @@
+.cardeditor {
+  // display: flex;
+  // align-items: center;
+  // position: relative;
+  height: 100%;
+  border-radius: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  box-sizing: border-box;
+  // background-color: rgba($color: #e5f1f7, $alpha: 1);
+  border: solid 1px lightgray;
+}
+
+.cardeditor-container {
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  width: calc(100% - 6rem);
+  top: 0.2rem;
+  left: 3rem;
+  display: flex;
+  // border: solid 1px red;
+}
+
+.cardeditor-container-left {
+  // position: absolute;
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0);
+  // border: solid 1px green;
+}
+
+.cardeditor-container-right {
+  display: flex;
+  align-items: center;
+  // border: solid 1px blueviolet;
+}
+
+.editor {
+  height: 100%;
+  overflow: hidden;
+  // width: 100%;
+  // background-color: rgba($color: #e5f1f7, $alpha: 1);
+  // border: solid 1px blue;
+}
+
+// .cardtext-mark {
+//   display: inline-block;
+//   width: 10px;
+//   height: 10px;
+//   border-radius: 50%;
+// }
+
+.editable {
+  outline: none;
+  // text-align: center;
+}
+
+.editable-count {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  top: 0.1rem;
+  right: 5rem;
+  background-color: white;
+  // border: solid 1px green;
+}
+
+.editable-count span {
+  font-size: 1.2rem;
+  margin: 0px 6px;
+  font-weight: 500;
+  color: gray;
+  background-color: white;
+}
+
+.editable-mark {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: orange;
+}
+
+.span-mark {
+  user-select: none;
+  color: orangered;
+}

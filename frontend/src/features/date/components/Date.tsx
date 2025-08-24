@@ -1,55 +1,65 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+
+import './Date.scss'
+import { Toolbar } from './Toolbar/Toolbar'
+import { DateTitleSwitcher } from './DateTitleSwitcher/DateTitleSwitcher'
+import { PostcardPreview } from './PostcardPreview/PostcardPreview'
+import { Calendar } from './Calendar/Calendar'
+
+import type { RootState } from '@app/store/store'
+import { Cart } from '@features/cart/publicApi'
 import {
   FaAngleLeft,
   FaAngleRight,
   FaChevronLeft,
   FaChevronRight,
 } from 'react-icons/fa'
+import type {
+  DateState,
+  PostcardBase,
+  DateField,
+  DateTextTitle,
+} from '@features/date/publicApi.ts'
 import {
   LuCalendarArrowUp,
   LuCalendarArrowDown,
   LuCalendar,
 } from 'react-icons/lu'
-import './Date.scss'
-import { addDate } from '../../../../store/slices/cardEditSlice'
-import Calendar from './Calendar/Calendar'
-import CurrentDateTime from './CurrentDateTime/CurrentDateTime'
-import { currentDate } from '../../../../utils/date/date'
-import Slider from './Slider/Slider'
-import nameMonths from '../../../../data/date/monthOfYear.json'
-import {
-  setActiveSections,
-  addChoiceSection,
-} from '../../../../store/slices/layoutSlice'
-import ToolbarDate from './ToolbarDate/ToolbarDate'
-import { colorSchemeMain } from '../../../../data/main/colorSchemeMain'
-import { searchParent } from '../../../../utils/searchParent'
-import { getAllShopping } from '../../../../utils/cardFormNav/indexDB/indexDb'
-import type { RootState } from '../../../../store/store'
+import { addDate } from '@store/slices/cardEditSlice'
+import { currentDate } from '@features/date/publicApi.ts'
+import { Slider } from './Slider/Slider'
+import { MONTH_NAMES } from '../constants/months'
+import { setActiveSections } from '@features/layout'
+import { themeColors } from '@shared/theme/themeColors'
+import { findParentByClass } from '@shared/lib/date/findParentByClass'
+import { cartAdapter } from '@features/cart/publicApi'
+// import { getAllShopping } from '@db/index'
+// import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
+// import { getAllShopping } from '../../../../utils/cardFormNav/indexDB/indexDb'
 
-interface DateState {
-  year: number
-  month: number
-  day: number
-}
+// interface DateState {
+//   year: number
+//   month: number
+//   day: number
+// }
 
-interface ShoppingCard {
-  date: string
-  img: string
-  id: string
-  personalId: string
-}
+// interface PostcardBase {
+//   date: string
+//   img: string
+//   id: string
+//   personalId: string
+// }
 
 const Date: React.FC = () => {
   const selectorCardEditDate = useSelector(
     (state: RootState) => state.cardEdit.date
   )
-  const selectorLayoutShoppingCards = useSelector(
-    (state: RootState) => state.layout.shoppingCards
+  const selectorLayoutPostcardBases = useSelector(
+    (state: RootState) => state.layout.cart.cartCards
   )
   const selectorLayoutActiveSections = useSelector(
-    (state: RootState) => state.layout.setActiveSections
+    (state: RootState) => state.layout.activeSections
   )
 
   const inputValueSelectedDate: DateState = selectorCardEditDate ?? {
@@ -59,23 +69,24 @@ const Date: React.FC = () => {
   }
 
   const dispatch = useDispatch()
+
   const [selectedDateTitle, setSelectedDateTitle] = useState<DateState>(
     inputValueSelectedDate
   )
+
   const [selectedDate, setSelectedDate] = useState<DateState | null>(null)
-  const [isActiveDateTitle, setIsActiveDateTitle] = useState<string | false>(
-    false
-  )
-  const [dataShoppingCards, setDataShoppingCards] = useState<
-    ShoppingCard[] | null
-  >(null)
+  const [isActiveDateTitle, setIsActiveDateTitle] = useState<
+    DateField | undefined
+  >(undefined)
+
+  const [cart, setCart] = useState<Cart | null>(null)
 
   useEffect(() => {
     selectorCardEditDate
       ? setSelectedDate(selectorCardEditDate)
       : setSelectedDate(null)
     if (!selectorCardEditDate) {
-      setIsActiveDateTitle(false)
+      setIsActiveDateTitle(undefined)
     }
   }, [selectorCardEditDate])
 
@@ -110,34 +121,41 @@ const Date: React.FC = () => {
     })
   }
 
-  const getShoppingCards = async () => {
-    const shoppings = await getAllShopping()
-    const dataShoppingCardsPromises = shoppings.map(async (card) => {
-      return {
-        date: card.shopping.date,
-        img: await resizeImage(card.shopping.cardphoto),
-        id: card.id,
-        personalId: card.personalId,
-      }
-    })
+  const getCart = async () => {
+    const cartItems = await cartAdapter.getAll()
 
-    const dataShoppingCards = await Promise.all(dataShoppingCardsPromises)
-    setDataShoppingCards(dataShoppingCards)
+    const preparedCart: Cart = await Promise.all(
+      cartItems.map(async (item) => {
+        const response = await fetch(item.preview)
+        const blob = await response.blob()
+        const resizedPreview = await resizeImage(blob)
+
+        return {
+          id: item.id.toString(),
+          preview: resizedPreview,
+          recipientName: item.recipientName,
+          date: item.date,
+          price: item.price,
+        }
+      })
+    )
+
+    setCart(preparedCart)
   }
 
   useEffect(() => {
-    if (selectorLayoutShoppingCards) {
-      getShoppingCards()
+    if (selectorLayoutPostcardBases) {
+      getCart()
     }
-  }, [selectorLayoutShoppingCards])
+  }, [selectorLayoutPostcardBases])
 
   const handleSelectedDate = (
-    taboo: boolean,
+    isTaboo: boolean,
     selectedYear: number,
     selectedMonth: number,
     selectedDay: number
   ) => {
-    if (!taboo) {
+    if (!isTaboo) {
       const newDate: DateState = {
         year: selectedYear,
         month: selectedMonth,
@@ -160,14 +178,23 @@ const Date: React.FC = () => {
     }
   }, [selectedDate, dispatch])
 
-  const handleChangeTitle = (evt: React.MouseEvent<HTMLElement>) => {
-    const parentElement = searchParent(evt.target as HTMLElement, 'date-title')
-    if (parentElement?.dataset.name) {
-      setIsActiveDateTitle((prev) =>
-        prev === parentElement.dataset.name ? false : parentElement.dataset.name
-      )
-    }
+  const handleChangeTitle = (field: DateField) => {
+    setIsActiveDateTitle((prev) => (prev === field ? undefined : field))
   }
+
+  // const handleChangeTitle = (evt: React.MouseEvent<HTMLElement>) => {
+  //   const parentElement = findParentByClass(
+  //     evt.target as HTMLElement,
+  //     'date-title'
+  //   )
+  //   if (
+  //     parentElement?.dataset.name &&
+  //     ['year', 'month'].includes(parentElement.dataset.name)
+  //   ) {
+  //     const name = parentElement.dataset.name as keyof DateTextTitle
+  //     setIsActiveDateTitle((prev) => (prev === name ? undefined : name))
+  //   }
+  // }
 
   const changeMonthTitleMinus = () => {
     setSelectedDateTitle((state) => {
@@ -248,7 +275,102 @@ const Date: React.FC = () => {
     )
   }
 
-  return <div className="date-wrapper">{/* Здесь будет твой JSX */}</div>
+  return (
+    <div className="date">
+      <div className="nav-container nav-container-date">
+        <Toolbar />
+      </div>
+      <form className="date-form">
+        <div className="date-header">
+          <div className="header-left-right">
+            <div
+              className="header-today-selected header-today"
+              onClick={handleTransitionTodayDate}
+              style={{
+                color: checkingCurrentMonth()
+                  ? themeColors.text.secondary
+                  : themeColors.text.primary,
+                cursor: checkingCurrentMonth() ? 'default' : 'pointer',
+              }}
+            >
+              <LuCalendar className="icon-title-date" />
+              {`${currentDate.currentYear} ${
+                MONTH_NAMES[currentDate.currentMonth]
+              } ${currentDate.currentDay}`}
+            </div>
+          </div>
+          <div className="header-center">
+            <div
+              className="header-sign"
+              style={{
+                color: isActiveDateTitle
+                  ? themeColors.text.primary
+                  : themeColors.text.secondary,
+                backgroundColor: themeColors.background.default,
+                cursor: 'pointer',
+              }}
+              onClick={handleArrowMinus}
+            >
+              <FaChevronLeft className="icon-date" />
+            </div>
+            <div className="header-date">
+              <DateTitleSwitcher
+                selectedDateTitle={selectedDateTitle}
+                isActiveDateTitle={isActiveDateTitle}
+                handleChangeTitle={handleChangeTitle}
+              />
+            </div>
+            <div
+              className="header-sign"
+              style={{
+                color: isActiveDateTitle
+                  ? themeColors.text.primary
+                  : themeColors.text.secondary,
+                backgroundColor: themeColors.background.default,
+                cursor: 'pointer',
+              }}
+              onClick={handleArrowPlus}
+            >
+              <FaChevronRight className="icon-date" />
+            </div>
+          </div>
+          <div className="header-left-right">
+            <div
+              className="header-today-selected header-selected"
+              onClick={handleTransitionSelectedDate}
+            >
+              {selectedDate ? (
+                <LuCalendarArrowUp className="icon-title-date" />
+              ) : (
+                ''
+              )}
+              {selectedDate
+                ? `${selectedDate.year} ${MONTH_NAMES[selectedDate.month]} ${
+                    selectedDate.day
+                  }`
+                : ''}
+            </div>
+          </div>
+        </div>
+        <div className="date-slider">
+          <Slider
+            selectedDateTitle={selectedDateTitle}
+            isActiveDateTitle={isActiveDateTitle}
+            handleChangeDateFromSlider={handleChangeDateFromSlider}
+          />
+        </div>
+        <div className="date-calendar">
+          <Calendar
+            selectedDate={selectedDate}
+            selectedDateTitle={selectedDateTitle}
+            handleSelectedDate={handleSelectedDate}
+            handleClickCell={handleClickCell}
+            cart={cart}
+          />
+        </div>
+      </form>
+    </div>
+  )
 }
 
 export default Date

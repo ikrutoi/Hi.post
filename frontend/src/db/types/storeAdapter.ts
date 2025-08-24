@@ -4,6 +4,7 @@ export interface StoreAdapter<T> {
   put(record: T & { id: IDBValidKey }): Promise<void>
   deleteById(id: IDBValidKey): Promise<void>
   getMaxId(): Promise<number>
-  addUniqueRecord(payload: Record<string, unknown>): Promise<void>
+  addAutoIdRecord(payload: Omit<T, 'id'>): Promise<void>
+  addRecordWithId(id: IDBValidKey, payload: Omit<T, 'id'>): Promise<void>
   count(): Promise<number>
 }

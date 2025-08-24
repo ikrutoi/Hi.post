@@ -1,30 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import {
+  SizeCard,
+  ImageSet,
+  ActiveSections,
+  ChoiceSection,
+  ChoiceClip,
+  MemorySection,
+  FullCardPersonalId,
+  BtnToolbar,
+  MemoryCardInfo,
+} from '@shared/layout/model'
 
 type Size = { width: number | null; height: number | null }
-type ImageSet = {
-  originalImage: string | null
-  workingImage: string | null
-  miniImage: string | null
-}
-type ActiveSections = {
-  cardphoto: boolean
-  cardtext: boolean
-  envelope: boolean
-  date: boolean
-  aroma: boolean
-}
 type SectionChoice = { source: string | null; nameSection: string | null }
-type MemorySection = { section: string | null; id: string | null }
-type FullCardPersonalId = { shopping: string | null; blanks: string | null }
-type BtnToolbar = {
-  firstBtn: string | null
-  secondBtn: string | null
-  section: string | null
-}
-type MemoryCardInfo = {
-  source: 'sender' | 'recipient'
-  id: number | string
-}
 
 type LayoutState = {
   fullCardPersonalId: FullCardPersonalId
@@ -33,7 +21,7 @@ type LayoutState = {
   remSize: number | null
   choiceSection: SectionChoice
   indexDb: {
-    hiPostImages: ImageSet
+    stockImages: ImageSet
     userImages: ImageSet
   }
   btnToolbar: BtnToolbar
@@ -60,14 +48,20 @@ type LayoutState = {
   lockDateShoppingCards: any
 }
 
+const createEmptyImageSet = (): ImageSet => ({
+  originalImage: false,
+  workingImage: false,
+  miniImage: false,
+})
+
 const initialState: LayoutState = {
   sizeCard: { height: null, width: null },
   sizeMiniCard: { height: null, width: null },
   remSize: null,
   choiceSection: { source: null, nameSection: null },
   indexDb: {
-    hiPostImages: { originalImage: null, workingImage: null, miniImage: null },
-    userImages: { originalImage: null, workingImage: null, miniImage: null },
+    stockImages: createEmptyImageSet(),
+    userImages: createEmptyImageSet(),
   },
   btnToolbar: { firstBtn: null, secondBtn: null, section: null },
   choiceMemorySection: { section: null, id: null },
@@ -122,13 +116,13 @@ const layoutSlice = createSlice({
     addIndexDb: (
       state,
       action: PayloadAction<{
-        hiPostImages?: Partial<ImageSet>
+        stockImages?: Partial<ImageSet>
         userImages?: Partial<ImageSet>
       }>
     ) => {
-      state.indexDb.hiPostImages = {
-        ...state.indexDb.hiPostImages,
-        ...action.payload.hiPostImages,
+      state.indexDb.stockImages = {
+        ...state.indexDb.stockImages,
+        ...action.payload.stockImages,
       }
       state.indexDb.userImages = {
         ...state.indexDb.userImages,

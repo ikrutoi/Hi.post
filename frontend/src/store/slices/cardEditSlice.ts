@@ -1,3 +1,4 @@
+import { DateState } from '@features/date/types'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 type CardText = {
@@ -91,7 +92,7 @@ const cardEditSlice = createSlice({
     ) => {
       state.envelope = { ...state.envelope, ...action.payload }
     },
-    addDate: (state, action: PayloadAction<string | null>) => {
+    addDate: (state, action: PayloadAction<DateState>) => {
       state.date = action.payload
     },
     addAroma: (state, action: PayloadAction<string | null>) => {

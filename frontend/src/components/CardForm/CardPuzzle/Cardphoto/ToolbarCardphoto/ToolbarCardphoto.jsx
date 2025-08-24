@@ -156,41 +156,6 @@ const ToolbarCardphoto = () => {
       default:
         break
     }
-
-    // if (parentBtn === 'download') {
-    //   if (btnsCardphoto.download) {
-    //     setBtnsCardphoto((state) => {
-    //       return {
-    //         ...state,
-    //         cardphoto: { ...state.cardphoto, download: false },
-    //       }
-    //     })
-    //   }
-    // }
-  }
-
-  const handleMouseEnter = (evt) => {
-    // const parentBtn = searchParentBtnNav(evt.target)
-    // if (btnsCardphoto.cardphoto.crop === 'hover' && parentBtn === 'crop') {
-    //   setBtnsCardphoto((state) => {
-    //     return {
-    //       ...state,
-    //       cardphoto: {
-    //         ...state.cardphoto,
-    //         crop: 'hover',
-    //       },
-    //     }
-    //   })
-    //   dispatch(
-    //     infoButtons({
-    //       cardphoto: {
-    //         ...infoButtonsCardphoto,
-    //         crop: 'hover',
-    //       },
-    //     })
-    //   )
-    // }
-    handleMouseEnterBtn(evt, btnsCardphoto)
   }
 
   const handleMouseLeave = (evt) => {
