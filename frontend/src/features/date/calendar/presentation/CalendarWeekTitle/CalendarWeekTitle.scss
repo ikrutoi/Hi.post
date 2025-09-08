@@ -1,0 +1,15 @@
+.calendar-week-title {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.calendar-week-title__sunmon {
+  margin-right: 1rem;
+}
+
+.calendar-week-title__days {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+}

@@ -1,0 +1,19 @@
+.aroma {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 1rem;
+  padding: 1rem;
+  gap: 1rem;
+
+  &__card {
+    flex: 0 1 calc(33.333% - 1rem);
+    box-sizing: border-box;
+  }
+
+  &--submitted {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}

@@ -1,0 +1,58 @@
+.envelope {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  padding: 1rem;
+
+  &__toolbar {
+    position: absolute;
+    top: -2rem;
+    left: 1rem;
+    width: calc(100% - 2rem);
+  }
+
+  &__logo-container {
+    display: flex;
+    margin-bottom: 1rem;
+  }
+
+  &__logo {
+    width: 100%;
+    background-image: url('../../../../data/img/logo-com.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+
+    &--sender {
+      grid-row: 1 / 2;
+      grid-column: 1 / 2;
+      // border: solid 1px blueviolet;
+    }
+
+    &--recipient {
+      grid-row: 2 / 3;
+      grid-column: 2 / 3;
+      justify-content: flex-end;
+      // border: solid 1px yellowgreen;
+    }
+  }
+
+  &__fieldset {
+    padding: 0.5rem;
+    border-radius: 1rem;
+    border: solid 1px lightgray;
+  }
+
+  &__legend {
+    user-select: none;
+    font-size: 1.6vh;
+    font-weight: 600;
+    padding: 4px;
+  }
+}

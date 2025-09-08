@@ -1,0 +1,14 @@
+.mark {
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+  display: flex;
+  justify-content: flex-end;
+
+  &__stamp {
+    width: 26%;
+    height: auto;
+    background-image: url('../../../../../data/envelope/mark-not-active.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+}

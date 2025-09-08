@@ -1,0 +1,16 @@
+.date-toolbar {
+  position: absolute;
+  top: -0.75rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  background-color: transparent;
+}
+
+.date-toolbar__text {
+  padding: 0 0.5rem;
+  user-select: none;
+  background-color: rgb(255, 255, 255);
+  color: rgb(71, 71, 71);
+}

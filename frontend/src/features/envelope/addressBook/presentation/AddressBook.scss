@@ -1,0 +1,34 @@
+.address-book {
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__list {
+    margin-top: 1rem;
+  }
+}
+
+.address-entry {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+
+  &__info {
+    cursor: pointer;
+  }
+
+  &__delete {
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,53 @@
+.address-form {
+  position: relative;
+
+  &__toolbar {
+    position: absolute;
+    top: -0.1rem;
+    display: flex;
+    background-color: rgba(255, 255, 255, 0);
+  }
+
+  &__btn {
+    position: relative;
+
+    &--clip {
+      .address-form__counter {
+        position: absolute;
+        top: -0.3rem;
+        left: 1.4rem;
+      }
+
+      .address-form__counter-value {
+        font-size: 0.8rem;
+        color: #333;
+      }
+    }
+  }
+
+  &__fieldset {
+    padding: 0.5rem;
+    border-radius: 1rem;
+    border: solid 1px lightgray;
+  }
+
+  &__legend {
+    user-select: none;
+    font-size: 1.6vh;
+    font-weight: 600;
+    padding: 4px;
+  }
+
+  &__group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  &--sender .address-form__group .label-index {
+    margin-left: 0.5rem;
+  }
+
+  &--recipient .address-form__group .label-index {
+    margin-right: 0.5rem;
+  }
+}

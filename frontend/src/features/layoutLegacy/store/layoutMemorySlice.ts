@@ -4,7 +4,7 @@ import {
   MemorySection,
   MemoryCardInfo,
   CropRect,
-} from '@shared/layout/model/layoutTypes'
+} from '@shared/layoutLegacy/model/layoutTypes'
 
 interface LayoutMemoryState {
   memoryCrop: CropRect | null

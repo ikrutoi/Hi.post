@@ -4,7 +4,7 @@ import {
   DeleteIcon,
   EditIcon,
   InfoIcon,
-} from '@shared/ui/icons/index'
+} from '@shared/uiLegacy/icons/index'
 import { IconKey } from './types'
 
 const iconRegistry: Record<IconKey, JSX.Element> = {

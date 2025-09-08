@@ -9,7 +9,7 @@ import {
   FullCardPersonalId,
   BtnToolbar,
   MemoryCardInfo,
-} from '@shared/layout/model'
+} from '@shared/layoutLegacy/model'
 
 type Size = { width: number | null; height: number | null }
 type SectionChoice = { source: string | null; nameSection: string | null }

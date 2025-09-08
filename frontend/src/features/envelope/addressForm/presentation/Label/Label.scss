@@ -1,0 +1,36 @@
+.label {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 1rem;
+
+  &__spacer {
+    padding-left: 0.5rem;
+  }
+
+  &__text {
+    font-weight: 500;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0 0.3rem;
+    box-sizing: border-box;
+    font-size: 1.2rem;
+    font-style: italic;
+    color: rgb(0, 125, 250);
+    background-color: rgb(240, 240, 240);
+    border: none;
+    height: 1.6rem;
+    border-radius: 4px;
+    outline: none;
+    letter-spacing: 1px;
+
+    &--sender {
+      text-align: left;
+    }
+
+    &--recipient {
+      text-align: right;
+    }
+  }
+}

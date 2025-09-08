@@ -1,0 +1,17 @@
+.toolbar {
+  position: absolute;
+  top: -0.75rem;
+  left: 2rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  background-color: rgba(255, 255, 255, 0);
+
+  &__text {
+    padding: 0 0.5rem;
+    user-select: none;
+    background-color: rgb(255, 255, 255);
+    color: rgba(71, 71, 71, 1);
+    transition: opacity 0.3s ease;
+  }
+}

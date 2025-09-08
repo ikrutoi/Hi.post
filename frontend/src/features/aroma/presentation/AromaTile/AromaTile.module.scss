@@ -1,0 +1,35 @@
+.tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.075);
+  border: solid 1px rgb(230, 230, 230);
+  cursor: pointer;
+  background-color: #fff;
+}
+
+.tile--selected {
+  background-color: rgb(209, 230, 252);
+}
+
+.tile--selected .tile__image,
+.tile--selected .tile__make,
+.tile--selected .tile__name {
+  background-color: rgb(209, 230, 252);
+}
+
+.tile__make {
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+}
+
+.tile__name {
+  font-size: 0.7rem;
+  margin-bottom: 0.2rem;
+}
+
+.tile__image {
+  display: block;
+}

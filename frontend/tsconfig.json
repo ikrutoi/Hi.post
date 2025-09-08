@@ -30,7 +30,17 @@
       "@utils/*": ["utils/*"],
       "@data/*": ["data/*"],
       "@locales/*": ["locales/*"],
-      "@entities/*": ["entities/*"]
+      "@entities/*": ["entities/*"],
+      "@cardphoto/*": ["features/cardphoto/*"],
+      "@cardtext/*": ["features/cardtext/*"],
+      "@envelope/*": ["features/envelope/*"],
+      "@aroma/*": ["features/aroma/*"],
+      "@date/*": ["features/date/*"],
+      "@history/*": ["features/history/*"],
+      "@cart/*": ["features/cart/*"],
+      "@drafts/*": ["features/drafts/*"],
+      "@sent/*": ["features/sent/*"],
+      "@layout/*": ["features/layout/*"]
     }
   },
   "include": ["src"]

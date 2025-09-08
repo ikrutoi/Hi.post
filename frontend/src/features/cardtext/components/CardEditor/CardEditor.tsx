@@ -18,7 +18,8 @@ import {
 
 import { colorScheme } from '@/shared/data/toolbar/colorScheme'
 import { colorSchemeMain } from '@/shared/data/main/colorSchemeMain'
-import scaleBase from '@/shared/data/main/scaleCardAndCardMini.json'
+import { cardScaleFactors } from '@shared/config/layout/cardScaleFactors'
+
 import listBtnsCardtext from '@/shared/data/toolbar/listBtnsCardtext.json'
 import listBtnsCardtextMain from '@/shared/data/toolbar/listBtnsCardtextMain.json'
 
@@ -222,7 +223,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       lines = maxLines + 1
     }
 
-    const scale = (scaleBase.card / scaleBase.cardmini).toFixed(2)
+    const scale = (cardScaleFactors.card / cardScaleFactors.miniCard).toFixed(2)
     const heightEditor = editorRef.current?.offsetHeight ?? 0
     const baseSizeLineHeight = Math.floor((heightEditor / lines) * 10) / 10
     const baseFontSize = Math.floor((baseSizeLineHeight / 1.33) * 10) / 10

@@ -1,4 +1,4 @@
-import { colorScheme } from './colorScheme'
+import { stateColors } from '@shared/theme'
 
 const styleCursor = { true: 'pointer', false: 'default', hover: 'pointer' }
 
@@ -8,7 +8,7 @@ export const changeIconStyles = (btns, btnIconRefs) => {
       const stateBtn = btns[section][btn]
       if (section === 'fullCard') {
         btnIconRefs[`${section}-${btn}`].style.color =
-          colorScheme[`${stateBtn}Transparent`]
+          stateColors[`${stateBtn}Transparent`]
         const timerAddClassList = setTimeout(() => {
           btnIconRefs[`${section}-${btn}`]?.classList.add('full')
           btnIconRefs[`${section}-${btn}`].style.color = colorScheme[stateBtn]

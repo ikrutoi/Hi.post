@@ -1,10 +1,11 @@
 import type { CartPostcard } from '@features/cart/publicApi'
 import type { DraftPostcard } from '@features/drafts/publicApi'
 import type { SentPostcard } from '@features/sent/publicApi'
+import type { IndexedImage } from '@features/cardphoto/domain/image'
 
 export interface StoreMap {
-  stockImages: { id: number; image: Blob }
-  userImages: { id: number; image: Blob }
+  stockImages: IndexedImage
+  userImages: IndexedImage
   cardtext: { id: number; text: Record<string, string> }
   senderAddress: {
     id: number

@@ -2,7 +2,7 @@ import { adjustImageSize } from '@shared/images/adjustImageSize'
 import { centeringMaxCrop } from '@shared/images/centeringMaxCrop'
 import { loadImageDimensions } from '@shared/images/loadImageDimensions'
 import { CropRect } from '@cardphoto/types'
-import { SizeCard } from '@shared/layout/model'
+import { SizeCard } from '@shared/layoutLegacy/model'
 
 export const base64ToBlob = (
   base64: string,

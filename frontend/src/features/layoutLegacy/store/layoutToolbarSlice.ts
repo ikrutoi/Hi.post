@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { BtnToolbar, ActiveSections } from '@shared/layout/model/layoutTypes'
+import {
+  BtnToolbar,
+  ActiveSections,
+} from '@shared/layoutLegacy/model/layoutTypes'
 
 interface LayoutToolbarState {
   btnToolbar: BtnToolbar
