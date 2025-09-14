@@ -18,7 +18,7 @@ import {
 import { useAddressBookController } from '@envelope/addressBook/application/controllers'
 
 import { ADDRESS_ROLES } from '@envelope/domain'
-import { useCurrentLang } from '@shared/localizationLegacy/useCurrentLang'
+import { useCurrentLang } from 'shared-legacy/localizationLegacy/useCurrentLang'
 import { addEnvelope } from '@store/slices/cardEditSlice'
 
 type EnvelopeProps = {

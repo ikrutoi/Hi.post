@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 import {
   handleMouseEnterBtn,
   handleMouseLeaveBtn,
-} from '@shared/uiLegacy/toolbar/handleMouse'
-import { changeIconStyles } from '@shared/uiLegacy/toolbar/changeIconStyles'
+} from 'shared-legacy/uiLegacy/toolbar/handleMouse'
+import { changeIconStyles } from 'shared-legacy/uiLegacy/toolbar/changeIconStyles'
 
 type InteractionParams = {
   btnsAddress: Record<

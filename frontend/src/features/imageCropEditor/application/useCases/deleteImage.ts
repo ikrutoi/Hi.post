@@ -1,5 +1,5 @@
 import { createStoreAdapter } from '@db/publicApi'
-import type { ImageState } from '../../domain/model/types'
+import type { ImageState } from '../../domain/types/imageCrop.types'
 
 interface DeleteImageParams {
   image: ImageState

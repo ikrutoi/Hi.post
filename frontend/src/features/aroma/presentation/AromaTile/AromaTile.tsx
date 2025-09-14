@@ -1,6 +1,6 @@
 import React from 'react'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
-import type { AromaItem } from '@entities/aroma/domain/aromaTypes'
+import type { AromaItem } from '@entities/aroma/domain/types/aroma.types'
 
 import styles from './AromaTile.module.scss'
 

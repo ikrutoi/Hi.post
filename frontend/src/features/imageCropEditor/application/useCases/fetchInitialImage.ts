@@ -1,8 +1,8 @@
-import type { AppDispatch } from '@app/store/store'
+import type { AppDispatch } from '@app/state/store'
 import { createStoreAdapter } from '@db/publicApi'
 import type { StoreMap } from '@db/publicApi'
 import { checkIndexDb } from './checkIndexDb'
-import type { ImageState } from '../../domain/model/types'
+import type { ImageState } from '../../domain/types/imageCrop.types'
 
 export const fetchInitialImage = async (
   dispatch: AppDispatch,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import type { RootState } from '@app/store'
+import type { RootState } from '@app/state'
 import {
   assetRecipientAddressAdapter,
   assetSenderAddressAdapter,

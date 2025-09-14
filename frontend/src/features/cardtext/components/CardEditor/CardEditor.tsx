@@ -18,7 +18,7 @@ import {
 
 import { colorScheme } from '@/shared/data/toolbar/colorScheme'
 import { colorSchemeMain } from '@/shared/data/main/colorSchemeMain'
-import { cardScaleFactors } from '@shared/config/layout/cardScaleFactors'
+import { cardScaleFactors } from 'shared-legacy/config/layout/cardScaleFactors'
 
 import listBtnsCardtext from '@/shared/data/toolbar/listBtnsCardtext.json'
 import listBtnsCardtextMain from '@/shared/data/toolbar/listBtnsCardtextMain.json'

@@ -1,0 +1,12 @@
+.cardtext {
+  position: relative;
+  width: 100%;
+  padding: 1rem;
+}
+
+.cardtext__nav-container {
+  position: absolute;
+  top: -2rem;
+  left: 1rem;
+  width: calc(100% - 2rem);
+}

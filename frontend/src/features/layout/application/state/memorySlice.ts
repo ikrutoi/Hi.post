@@ -3,7 +3,7 @@ import type {
   DraftLayoutState,
   MemorySection,
   MemoryCardInfo,
-} from '../../domain/layoutTypes'
+} from '../../domain/types/layout.types'
 
 const initialState: DraftLayoutState['memory'] = {
   memoryCrop: null,

@@ -39,7 +39,7 @@ import {
   handleTurn,
 } from './actions/imageCropActions'
 import { centeringMaxCrop } from '@utils/images/centeringMaxCrop'
-import type { RootState } from '@app/store/store'
+import type { RootState } from '@app/state/store'
 import type {
   ImageBase,
   ImageSource,

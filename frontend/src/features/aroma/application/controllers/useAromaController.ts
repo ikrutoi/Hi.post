@@ -1,17 +1,18 @@
-import { useAppSelector } from '@app/hooks/useAppSelector'
-import { useAppDispatch } from '@app/hooks/useAppDispatch'
 import { useEffect, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { addAroma } from '@features/cardedit/application/state/cardEditSlice'
 import { setActiveSections } from '@features/layout/application/state/layoutSlice'
-import type { AromaItem } from '@entities/aroma/domain/aromaTypes'
+import { selectAroma } from '../selectors'
+import type { AromaItem } from '@entities/aroma/domain/types'
 
 export const useAromaController = () => {
   const dispatch = useAppDispatch()
-  const aromaFromStore = useAppSelector((state) => state.cardEdit.aroma)
-  const activeSections = useAppSelector(
-    (state) => state.layout.setActiveSections
-  )
-  const { sizeCard, remSize } = useAppSelector((state) => state.layout)
+  const aromaFromStore = useAppSelector(selectAroma)
+  const {
+    sizeCard,
+    remSize,
+    setActiveSections: activeSections,
+  } = useAppSelector((state) => state.layout)
 
   const [selectedAroma, setSelectedAroma] = useState<AromaItem | null>(null)
 
@@ -25,11 +26,15 @@ export const useAromaController = () => {
     }
   }, [selectedAroma])
 
-  const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault()
+  const submitAroma = () => {
     if (selectedAroma) {
       dispatch(addAroma(selectedAroma))
     }
+  }
+
+  const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
+    evt.preventDefault()
+    submitAroma()
   }
 
   const tileSize = {

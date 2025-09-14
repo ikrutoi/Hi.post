@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { DraftLayoutState } from '../../domain/layoutTypes'
+import type { DraftLayoutState } from '../../domain/types/layout.types'
 
 const initialState: DraftLayoutState['activeSection'] = {
   sections: {},

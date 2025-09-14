@@ -1,7 +1,7 @@
 import React from 'react'
 import './SwitcherButton.scss'
 
-import { theme } from '@shared/theme/themeColors'
+import { theme } from 'shared-legacy/theme/themeColors'
 import { formatDispatchDatePart } from '@features/date/switcher/application'
 import type { DateNumericTitle, DateRole } from '@entities/date/domain'
 

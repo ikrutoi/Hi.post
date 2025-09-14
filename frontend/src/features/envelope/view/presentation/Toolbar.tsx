@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import './Toolbar.scss'
-import type { RootState } from '@app/store'
+import type { RootState } from '@app/state'
 
 export const Toolbar: React.FC = () => {
   const isEnvelopeActive = useSelector(

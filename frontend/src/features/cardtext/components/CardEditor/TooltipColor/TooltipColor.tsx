@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import './TooltipColor.scss'
 
-import { RootState } from '@app/store/store'
+import { RootState } from '@app/state/store'
 import listColors from '@shared/data/toolbar/listColors.json'
 import { addCardtext } from '@features/cardedit/model/store/cardEditSlice'
 

@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { DraftLayoutState, SizeCard } from '../../domain/layoutTypes'
+import type {
+  DraftLayoutState,
+  SizeCard,
+} from '../../domain/types/layout.types'
 
 const initialState: DraftLayoutState['size'] = {
   sizeCard: { width: 0, height: 0 },

@@ -1,7 +1,7 @@
 import { createStoreAdapter } from '@db/publicApi'
 import { addHiPostImage } from '@utils/cardFormNav/indexDB/indexDb'
 import { checkIndexDb } from './checkIndexDb'
-import type { AppDispatch } from '@app/store/store'
+import type { AppDispatch } from '@app/state/store'
 import type { ImageState } from '../model/types'
 
 export const fetchInitialImage = async (

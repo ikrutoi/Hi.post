@@ -1,8 +1,8 @@
-import { SizeCard } from '@shared/layoutLegacy/model'
+import { SizeCard } from 'shared-legacy/layoutLegacy/model'
 import {
   ChoiceSection,
   ChoiceClip,
-} from '@shared/layoutLegacy/model/layoutTypes'
+} from 'shared-legacy/layoutLegacy/model/layoutTypes'
 
 export interface CardphotoProps {
   sizeCard: SizeCard

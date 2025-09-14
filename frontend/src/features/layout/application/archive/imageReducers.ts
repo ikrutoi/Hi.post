@@ -1,5 +1,8 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
-import type { DraftLayoutState, ImageSet } from '../../domain/layoutTypes'
+import type {
+  DraftLayoutState,
+  ImageSet,
+} from '../../domain/types/layout.types'
 
 export const addIndexDb = (
   state: DraftLayoutState,

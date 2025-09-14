@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import './ImageCrop.scss'
 
 import { ImageMeta, CropRect, MousePosition } from '@features/cardphotoLegacy/types'
-import { RootState } from '@app/store/store'
+import { RootState } from '@app/state/store'
 import { CARDPHOTO_ASPECT_RATIO } from '@features/cardphotoLegacy/config'
 import { applyClipMask } from '@features/cardphotoLegacy/utils'
 import {

@@ -1,4 +1,4 @@
-import { AppDispatch } from '@app/store/store'
+import { AppDispatch } from '@app/state/store'
 import { createStoreAdapter } from '@db/publicApi'
 import { StoreMap } from '@db/publicApi'
 import { addIndexDb } from '@store/slices/layoutSlice'

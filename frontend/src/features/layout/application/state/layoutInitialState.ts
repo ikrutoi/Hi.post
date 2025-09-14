@@ -1,4 +1,4 @@
-import type { LayoutState } from '../../domain/layoutTypes'
+import type { LayoutState } from '../../domain/types/layout.types'
 
 export const layoutInitialState: LayoutState = {
   size: {

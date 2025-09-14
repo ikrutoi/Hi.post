@@ -1,4 +1,4 @@
-import type { RootState } from '@app/store/store'
+import type { RootState } from '@app/state/store'
 
 export const selectCardtext = (state: RootState) =>
   state.cardEditor.cardtext.value

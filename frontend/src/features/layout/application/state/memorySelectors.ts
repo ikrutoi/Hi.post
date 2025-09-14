@@ -1,4 +1,4 @@
-import type { RootState } from '@app/store'
+import type { RootState } from '@app/state'
 
 export const selectMemoryCrop = (state: RootState) =>
   state.layout.memory.memoryCrop

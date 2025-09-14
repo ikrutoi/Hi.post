@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type {
   FullCardPersonalId,
   DraftLayoutState,
-} from '../../domain/layoutTypes'
+} from '../../domain/types/layout.types'
 
 const initialState: DraftLayoutState['meta'] = {
   fullCard: false,

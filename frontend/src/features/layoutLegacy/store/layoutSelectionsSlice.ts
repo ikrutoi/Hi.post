@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   ChoiceSection,
   ChoiceClip,
-} from '@shared/layoutLegacy/model/layoutTypes'
+} from 'shared-legacy/layoutLegacy/model/layoutTypes'
 
 interface LayoutSelectionState {
   choiceSection: ChoiceSection

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { loadEnvelopeTranslations } from '@shared/localizationLegacy/loadTranslations'
-import type { EnvelopeTranslations } from '@shared/localizationLegacy/types'
+import { loadEnvelopeTranslations } from 'shared-legacy/localizationLegacy/loadTranslations'
+import type { EnvelopeTranslations } from 'shared-legacy/localizationLegacy/types'
 import type { Lang } from '@i18n/index'
 
 export const useEnvelopeTranslations = (lang: Lang) => {

@@ -1,3 +1,3 @@
-export { default as cartReducer } from './cartSlice'
-export { cartActions } from './cartSlice'
-export * from './cartSelectors'
+export { default as cartReducer } from './cart.slice'
+export { cartActions } from './cart.slice'
+export * from './cart.selectors'

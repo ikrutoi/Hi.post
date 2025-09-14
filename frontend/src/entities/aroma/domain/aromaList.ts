@@ -1,4 +1,4 @@
-import type { AromaItem } from './aromaTypes'
+import type { AromaItem } from './types/aroma.types'
 
 export const aromaList: AromaItem[] = [
   { make: '0', name: 'No aroma', index: '00' },

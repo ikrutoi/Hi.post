@@ -6,7 +6,7 @@ import type {
   CropRect,
   MousePosition,
   SizeCard,
-} from '../../domain/model/types'
+} from '../../domain/types/imageCrop.types'
 import { fetchImageDimensions } from '../../infrastructure/images/fetchImageDimensions'
 
 export const useImageCrop = () => {

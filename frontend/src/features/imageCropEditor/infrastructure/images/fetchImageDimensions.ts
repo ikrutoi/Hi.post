@@ -1,6 +1,6 @@
 import { loadImageDimensions } from './loadImageDimensions'
 import { adjustImageSize } from './adjustImageSize'
-import type { CropRect } from '../../domain/model/types'
+import type { CropRect } from '../../domain/types/imageCrop.types'
 
 interface FetchImageDimensionsParams {
   src: string

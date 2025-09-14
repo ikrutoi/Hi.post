@@ -1,5 +1,8 @@
-import type { AddressRole, AddressField } from '../../../domain/addressModel'
-import type { EnvelopeAddresses } from '../../../domain/addressModel'
+import type {
+  AddressRole,
+  AddressField,
+} from '../../../domain/types/address.types'
+import type { EnvelopeAddresses } from '../../../domain/types/address.types'
 
 export interface LabelProps {
   label: string

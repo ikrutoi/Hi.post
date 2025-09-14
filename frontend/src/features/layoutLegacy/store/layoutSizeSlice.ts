@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { SizeCard } from '@shared/layoutLegacy/model'
+import { SizeCard } from 'shared-legacy/layoutLegacy/model'
 
 interface LayoutSizeState {
   sizeCard: SizeCard

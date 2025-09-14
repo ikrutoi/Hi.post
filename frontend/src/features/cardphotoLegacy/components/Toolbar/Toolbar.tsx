@@ -11,7 +11,7 @@ import {
 } from '../../../../data/toolbar/handleMouse'
 import { changeIconStyles } from '../../../../data/toolbar/changeIconStyles'
 import { updateButtonsState } from '../../../../store/slices/infoButtonsSlice'
-import type { RootState } from '@app/store/store'
+import type { RootState } from '@app/state/store'
 
 type ButtonState = boolean | 'hover'
 type CardphotoButton = string

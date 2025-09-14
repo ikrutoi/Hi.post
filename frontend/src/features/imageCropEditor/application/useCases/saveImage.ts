@@ -1,7 +1,11 @@
 import { createStoreAdapter } from '@db/publicApi'
 import { getCroppedImage } from '../../infrastructure/images/getCroppedImage'
 import { base64ToBlob } from '../../infrastructure/images/base64ToBlob'
-import type { ImageState, CropRect, SizeCard } from '../../domain/model/types'
+import type {
+  ImageState,
+  CropRect,
+  SizeCard,
+} from '../../domain/types/imageCrop.types'
 
 interface SaveImageParams {
   image: ImageState

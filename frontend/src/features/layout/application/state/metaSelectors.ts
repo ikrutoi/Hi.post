@@ -1,4 +1,4 @@
-import type { RootState } from '@app/store'
+import type { RootState } from '@app/state'
 
 export const selectFullCard = (state: RootState) => state.layout.meta.fullCard
 export const selectAddFullCard = (state: RootState) =>

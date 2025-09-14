@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './Calendar.scss'
 
 import { CalendarWeekTitle } from './CalendarWeekTitle/CalendarWeekTitle'
-import { useCalendarConstruction } from '@features/date/calendar/application/useCalendarConstruction'
+import { useCalendarConstruction } from '@features/date/calendar/application/logic/calendarConstruction.logic'
 import {
   daysOfWeekStartFromMon,
   daysOfWeekStartFromSun,

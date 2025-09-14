@@ -1,14 +1,9 @@
 import React from 'react'
 import styles from './ImageCrop.module.scss'
 import { useImageCropFacade } from '../application/facades/useImageCropFacade'
-import { useCropEvents } from '../application/hooks/useCropEvents'
-// import {
-//   handleMouseMoveDrag,
-//   handleMouseUpDrag,
-//   handleMouseDownDrag,
-//   handleMouseDownResize,
-// } from './events'
-import type { SizeCard } from '../domain/image'
+import { useCropDrag } from '../application/hooks/useCropDrag'
+import { useCropResize } from '../application/hooks/useCropResize'
+import type { SizeCard } from '@cardphoto/domain/types'
 
 interface ImageCropProps {
   sizeCard: SizeCard
@@ -32,38 +27,31 @@ export const ImageCrop: React.FC<ImageCropProps> = ({ sizeCard }) => {
     handlers,
   } = useImageCropFacade(sizeCard)
 
-  const { handleMouseDownDrag, handleMouseDownResize } = useCropEvents({
+  const { handleMouseDownDrag } = useCropDrag({
     imgRef: refs.imgRef,
     crop,
     setCrop,
     scaleX,
     scaleY,
-    aspectRatio: 142 / 100,
-    isResizing,
-    setIsResizing,
     isDragging,
     setIsDragging,
     lastMousePosition,
     setLastMousePosition,
   })
 
+  const { handleMouseDownResize } = useCropResize({
+    imgRef: refs.imgRef,
+    crop,
+    setCrop,
+    scaleX,
+    scaleY,
+    aspectRatio: 142 / 100,
+    setIsResizing,
+  })
+
   return (
     <div
       className={styles.imageCrop}
-      onMouseMove={(evt) =>
-        handleMouseMoveDrag(
-          evt,
-          isDragging,
-          refs.imgRef,
-          scaleX,
-          scaleY,
-          lastMousePosition,
-          crop,
-          setCrop,
-          setLastMousePosition
-        )
-      }
-      onMouseUp={() => handleMouseUpDrag(setIsDragging)}
       style={{
         width: `${sizeCard.width}px`,
         height: `${sizeCard.height}px`,
@@ -100,30 +88,11 @@ export const ImageCrop: React.FC<ImageCropProps> = ({ sizeCard }) => {
                 width: `${crop.width / scaleX}px`,
                 height: `${crop.height / scaleY}px`,
               }}
-              onMouseDown={(e) =>
-                handleMouseDownDrag(
-                  e,
-                  setIsDragging,
-                  refs.imgRef,
-                  setLastMousePosition,
-                  isResizing
-                )
-              }
+              onMouseDown={handleMouseDownDrag}
             >
               <div
                 className={styles.cropResizeHandle}
-                onMouseDown={(e) =>
-                  handleMouseDownResize(
-                    e,
-                    setIsResizing,
-                    crop,
-                    scaleX,
-                    scaleY,
-                    142 / 100,
-                    refs.imgRef,
-                    setCrop
-                  )
-                }
+                onMouseDown={handleMouseDownResize}
               />
             </div>
           )}

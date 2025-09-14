@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect } from 'react'
 
-import type { SizeCard } from '../../domain/model/types'
+import type { SizeCard } from '../../domain/types/imageCrop.types'
 import { useImageCrop } from '../hooks/useImageCrop'
 
 import { useAppDispatch } from '@app/hooks/useAppDispatch'

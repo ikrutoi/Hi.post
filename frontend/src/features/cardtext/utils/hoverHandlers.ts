@@ -1,4 +1,4 @@
-import { stateColors } from '@shared/theme'
+import { stateColors } from 'shared-legacy/theme'
 import { applyHoverStyle } from '../utils'
 import type { toolbarDataset, textAlignTooltip, buttonMap } from '../types'
 

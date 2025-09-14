@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getAllRecordsAddresses } from '@utils/cardFormNav/indexDB/indexDb'
-import type { AddressBookEntry } from '@envelope/addressBook/domain'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 
 export const useAddressBookList = (role: 'sender' | 'recipient') => {
   const [entries, setEntries] = useState<AddressBookEntry[]>([])

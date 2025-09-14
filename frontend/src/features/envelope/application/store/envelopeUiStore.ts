@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type {
   EnvelopeUiSignals,
   EnvelopeButtonsState,
-} from '../../domain/uiModel'
+} from '../../domain/types/ui.types'
 
 export interface EnvelopeUiState extends EnvelopeUiSignals {
   envelopeButtons: EnvelopeButtonsState

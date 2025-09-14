@@ -1,4 +1,4 @@
-import type { CropRect, SizeCard } from '../../domain/model/types'
+import type { CropRect, SizeCard } from '../../domain/types/imageCrop.types'
 
 export const getCroppedImage = async (
   imageUrl: string,

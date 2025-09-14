@@ -16,7 +16,7 @@ import { useLayoutActiveFacade } from '@features/layout/application/facades/useL
 import { formatDispatchDate, isCompleteDate } from '@entities/date/utils'
 import { MONTH_NAMES } from '@entities/date/constants'
 
-import { themeColors } from '@shared/theme/themeColors'
+import { themeColors } from 'shared-legacy/theme/themeColors'
 import { LuCalendar, LuCalendarArrowUp } from 'react-icons/lu'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 

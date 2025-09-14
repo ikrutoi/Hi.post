@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux'
-import { SizeCard } from '@shared/layoutLegacy/model'
+import { SizeCard } from 'shared-legacy/layoutLegacy/model'
 import { ImageMeta, CropRect } from '@cardphoto/types'
 import { updateButtonsState } from '@store/slices/infoButtonsSlice'
 import {

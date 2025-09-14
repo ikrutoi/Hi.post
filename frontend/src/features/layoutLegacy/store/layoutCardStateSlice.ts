@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { FullCardPersonalId } from '@shared/layoutLegacy/model/layoutTypes'
+import { FullCardPersonalId } from 'shared-legacy/layoutLegacy/model/layoutTypes'
 
 interface LayoutCardState {
   fullCard: boolean

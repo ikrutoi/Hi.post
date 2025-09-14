@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { cartAdapter } from '@features/cart/model/adapters/cartAdapter'
-import { resizeImage } from '@shared/lib/image/resizeImage'
+import { resizeImage } from 'shared-legacy/lib/image/resizeImage'
 import type { CartPostcard } from '@features/cart/domain'
 
 export const useCartPreviewForCalendar = (targetDate: string | null) => {

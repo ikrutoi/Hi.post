@@ -1,4 +1,4 @@
-import { RootState } from '@app/store/store'
+import { RootState } from '@app/state/store'
 
 export const selectSizeCard = (state: RootState) =>
   state.layout.cardSize.sizeCard

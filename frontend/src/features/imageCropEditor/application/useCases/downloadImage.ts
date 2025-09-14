@@ -1,4 +1,4 @@
-import type { ImageState } from '../../domain/model/types'
+import type { ImageState } from '../../domain/types/imageCrop.types'
 
 export const downloadImage = (image: ImageState): void => {
   if (!image.url) return

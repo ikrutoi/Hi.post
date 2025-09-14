@@ -1,0 +1,29 @@
+.editor {
+  height: 100%;
+  border-radius: 1rem;
+  padding: 1rem 0;
+  box-sizing: border-box;
+  border: solid 1px lightgray;
+}
+
+.editor__area {
+  height: 100%;
+  overflow: hidden;
+}
+
+.editor__editable {
+  outline: none;
+}
+
+.editor__mark {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: orange;
+}
+
+.editor__span-mark {
+  user-select: none;
+  color: orangered;
+}

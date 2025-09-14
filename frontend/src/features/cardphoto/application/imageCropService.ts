@@ -4,7 +4,7 @@ import {
   deleteImageFromDb,
 } from '../infrastructure/indexDbService'
 import { base64ToBlob } from '../domain/logic'
-import type { ImageBase } from '../domain/image'
+import type { ImageBase } from '../domain/image.types'
 
 export const saveCroppedImage = async (
   base: ImageBase,

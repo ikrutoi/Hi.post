@@ -8,7 +8,7 @@ import '@app/styles/variables.scss'
 import '@app/styles/typography.scss'
 import '@app/styles/global.scss'
 
-import type { RootState } from '@app/store/store'
+import type { RootState } from '@app/state/store'
 import { loginStart, loginSuccess } from '@features/auth/store/authSlice'
 import ErrorBoundary from './components/ErrorBoundary'
 import Logo from './components/Logo/Logo'
@@ -16,7 +16,7 @@ import Status from './components/Status/Status'
 import CardsNav from './components/CardsNav/CardsNav'
 import CardForm from './components/CardForm/CardForm'
 import CardsList from './components/CardsList/CardsList'
-import { computeLayoutSizes } from '@shared/lib/layout'
+import { computeLayoutSizes } from 'shared-legacy/lib/layout'
 import {
   addRemSize,
   addSizeCard,
@@ -24,8 +24,8 @@ import {
   setMaxCardsList,
   setBtnToolbar,
 } from './features/layout/application/state/layout'
-import { calculateSizeCard } from '@shared/lib/layout/calculateSizeCard'
-import { calculateMaxCardsList } from '@shared/lib/layout/calculateMaxCardsList'
+import { calculateSizeCard } from 'shared-legacy/lib/layout/calculateSizeCard'
+import { calculateMaxCardsList } from 'shared-legacy/lib/layout/calculateMaxCardsList'
 // import type { RootState } from './store/store'
 
 const useSize = (target: React.RefObject<HTMLElement>) => {

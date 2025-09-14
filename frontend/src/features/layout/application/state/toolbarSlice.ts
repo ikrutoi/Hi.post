@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { DraftLayoutState, BtnToolbar } from '../../domain/layoutTypes'
+import type {
+  DraftLayoutState,
+  BtnToolbar,
+} from '../../domain/types/layout.types'
 
 const initialState: DraftLayoutState['toolbar'] = {
   btnToolbar: {

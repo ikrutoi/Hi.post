@@ -5,7 +5,7 @@ import { updateButtonsState } from '@store/slices/infoButtonsSlice'
 import { changeIconStyles } from '@shared/toolbar/changeIconStyles'
 import { handleMouseLeaveBtn } from '@shared/toolbar/handleMouse'
 import listBtnsCardphoto from '@shared/toolbar/listBtnsCardphoto.json'
-import { RootState } from '@app/store/store'
+import { RootState } from '@app/state/store'
 
 export const useToolbar = () => {
   const dispatch = useDispatch()

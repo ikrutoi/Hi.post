@@ -3,6 +3,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  input {
+    position: absolute;
+    z-index: 3;
+  }
 }
 
 .crop-container {
@@ -22,7 +27,6 @@
 
 .overlay {
   position: absolute;
-  // display: block;
   top: 0;
   left: 0;
   width: 100%;
@@ -36,6 +40,19 @@
   box-sizing: border-box;
   background-color: transparent;
   cursor: move;
+  transition: box-shadow 0.2s ease;
+
+  &--dragging {
+    box-shadow: 0 0 0 2px rgba(31, 111, 234, 0.4);
+  }
+
+  &--resizing {
+    box-shadow: 0 0 0 2px rgba(234, 111, 31, 0.4);
+  }
+
+  &--hovered {
+    border-color: rgb(255, 255, 255);
+  }
 }
 
 .crop-resize-handle {
@@ -46,9 +63,4 @@
   height: 10px;
   background: rgb(31, 111, 234);
   cursor: se-resize;
-}
-
-.image-crop input {
-  position: absolute;
-  z-index: 3;
 }

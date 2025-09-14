@@ -1,4 +1,4 @@
-import { AromaImageIndex } from '../domain/aromaTypes'
+import { AromaImageIndex } from '../domain/types/aroma.types'
 
 import img00 from '../assets/no-parfum.png'
 import img10 from '../assets/10.png'

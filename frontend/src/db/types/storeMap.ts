@@ -1,7 +1,7 @@
 import type { CartPostcard } from '@features/cart/publicApi'
 import type { DraftPostcard } from '@features/drafts/publicApi'
 import type { SentPostcard } from '@features/sent/publicApi'
-import type { IndexedImage } from '@features/cardphoto/domain/image'
+import type { IndexedImage } from '@features/cardphoto/domain/image.types'
 
 export interface StoreMap {
   stockImages: IndexedImage

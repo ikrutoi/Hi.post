@@ -1,3 +1,1 @@
-export * from './aromaSlice'
-export { default as aromaReducer } from './aromaSlice'
-export * from './aromaSelectors'
+export { default as aromaReducer } from './aroma.slice'

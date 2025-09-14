@@ -1,4 +1,7 @@
-import type { CropRect, MousePosition } from '../../domain/model/types'
+import type {
+  CropRect,
+  MousePosition,
+} from '../../domain/types/imageCrop.types'
 
 interface UseCropInteractionParams {
   imgRef: React.RefObject<HTMLImageElement>

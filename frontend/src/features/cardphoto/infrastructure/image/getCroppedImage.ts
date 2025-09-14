@@ -1,6 +1,6 @@
 import type { RefObject } from 'react'
 // import type { CropArea } from '../../domain/image/centeringMaxCrop'
-import type { SizeCard } from '@features/layout/domain'
+import type { SizeCard } from '@features/layout/domain/types'
 
 export const getCroppedImage = (
   img: HTMLImageElement,
