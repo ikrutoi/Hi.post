@@ -2,38 +2,34 @@ import { combineReducers } from '@reduxjs/toolkit'
 
 import {
   cardphotoReducer,
-  cardphotoToolbarReducer,
   cardphotoActiveReducer,
-} from '@features/cardphoto/application/state'
-import {
-  cardtextReducer,
-  cardtextToolbarReducer,
-} from '@features/cardtext/application/state'
+  imageHistoryReducer,
+} from '@cardphoto/infrastructure/state'
+import { cardtextReducer } from '@cardtext/infrastructure/state'
 import {
   envelopeReducer,
-  envelopeToolbarReducer,
   envelopeUiReducer,
-} from '@features/envelope/application/state'
-import { aromaReducer } from '@features/aroma/application/state'
-import { dateReducer } from '@features/date/application/state'
+} from '@envelope/infrastructure/state'
+import { aromaReducer } from '@aroma/infrastructure/state'
+import { dateReducer } from '@date/infrastructure/state'
 
 import { sentReducer } from '@features/sent/application/state'
 import { cartReducer } from '@features/cart/application/state'
 import { draftsReducer } from '@features/drafts/application/state'
 
+import { toolbarReducer } from '@toolbar/infrastructure/state'
+
 import { authReducer } from '@features/auth/store'
 import { postcardReducer } from '@features/postcard/model'
 import { interactionReducer } from '@features/interaction'
-import { layoutReducer } from '@features/layout/application/state/rootReducer'
+import { layoutReducer } from '@layout/infrastructure/state/layoutReducer'
 
 export const rootReducer = combineReducers({
   cardphoto: cardphotoReducer,
-  cardphotoToolbar: cardphotoToolbarReducer,
   cardphotoActive: cardphotoActiveReducer,
+  imageHistory: imageHistoryReducer,
   cardtext: cardtextReducer,
-  cardtextToolbar: cardtextToolbarReducer,
   envelope: envelopeReducer,
-  envelopeToolbar: envelopeToolbarReducer,
   envelopeUi: envelopeUiReducer,
   aroma: aromaReducer,
   date: dateReducer,
@@ -41,6 +37,8 @@ export const rootReducer = combineReducers({
   cart: cartReducer,
   drafts: draftsReducer,
   sent: sentReducer,
+
+  toolbar: toolbarReducer,
 
   auth: authReducer,
   postcard: postcardReducer,

@@ -7,7 +7,7 @@ import styles from './Aroma.module.scss'
 import { aromaList } from '@entities/aroma/domain/aromaList'
 import { useAromaController } from '../application/controllers/useAromaController'
 
-const Aroma: React.FC = () => {
+export const Aroma: React.FC = () => {
   const { selectedAroma, setSelectedAroma, handleSubmit, tileSize } =
     useAromaController()
 
@@ -27,5 +27,3 @@ const Aroma: React.FC = () => {
     </form>
   )
 }
-
-export default Aroma

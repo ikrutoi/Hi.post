@@ -1,0 +1,1 @@
+export { processPresetsCards } from './processMemoryCards'

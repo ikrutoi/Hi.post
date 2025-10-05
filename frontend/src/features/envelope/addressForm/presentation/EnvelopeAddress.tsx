@@ -1,12 +1,9 @@
 import React from 'react'
-
 import './EnvelopeAddress.scss'
-
 import { Label } from './Label/Label'
-
+import { LabelGroup } from './LabelGroup/LabelGroup'
 import { getIconElement } from '@entities/icons'
-import { getAddressLabelLayout } from '@i18n/index'
-import { useAddressCount } from '@envelope/addressForm/application'
+import { useEnvelopeAddress } from '../application/hooks'
 import type { EnvelopeAddressProps } from './EnvelopeAddress.types'
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
@@ -23,10 +20,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   handleMouseEnter,
   handleMouseLeave,
 }) => {
-  const labelLayout = getAddressLabelLayout(role, lang)
-  const count = useAddressCount(role)
-
-  const buttons = ['save', 'delete', 'clip'] as const
+  const { labelLayout, count, buttons } = useEnvelopeAddress(role, lang)
 
   return (
     <form className={`address-form address-form--${role}`}>
@@ -63,28 +57,23 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
           {role === 'sender' ? 'Sender address' : 'Recipient address'}
         </legend>
 
-        {labelLayout.map((labelItem, i) =>
-          Array.isArray(labelItem) ? (
-            <div className="address-form__group" key={`${role}-group-${i}`}>
-              {labelItem.map((subLabel, j) => (
-                <Label
-                  key={`${subLabel.field}-${i}-${j}`}
-                  role={role}
-                  label={subLabel.label}
-                  field={subLabel.field}
-                  values={values}
-                  handleValue={handleValue}
-                  handleMovingBetweenInputs={handleMovingBetweenInputs}
-                  setInputRef={setInputRef}
-                />
-              ))}
-            </div>
+        {labelLayout.map((item, i) =>
+          Array.isArray(item) ? (
+            <LabelGroup
+              group={item}
+              role={role}
+              values={values}
+              handleValue={handleValue}
+              handleMovingBetweenInputs={handleMovingBetweenInputs}
+              setInputRef={setInputRef}
+              groupIndex={i}
+            />
           ) : (
             <Label
-              key={`${labelItem.field}-${i}`}
+              key={`${item.field}-${i}`}
               role={role}
-              label={labelItem.label}
-              field={labelItem.field}
+              label={item.label}
+              field={item.field}
               values={values}
               handleValue={handleValue}
               handleMovingBetweenInputs={handleMovingBetweenInputs}

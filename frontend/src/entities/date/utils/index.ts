@@ -1,4 +1,5 @@
 export * from './formatDispatchDate'
-export * from '../../../features/date/switcher/application/formatDispatchDatePart'
+export * from '../../../features/date/switcher/presentation/utils/formatDispatchDatePart'
 export * from './guard'
 export * from './isTabooDate'
+export * from './isSameDispatchDate'

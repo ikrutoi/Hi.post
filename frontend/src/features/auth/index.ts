@@ -1,2 +1,2 @@
-export { authReducer } from '@features/auth/store/authSlice'
-export * from '@features/auth/store/authSlice'
+export { authReducer } from '@features/auth/application/state/auth.slice'
+export * from '@features/auth/application/state/auth.slice'

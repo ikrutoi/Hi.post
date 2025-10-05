@@ -1,29 +1,23 @@
-import { Transforms, Editor } from 'slate'
-import {
-  getRecordCardtextById,
-  addUniqueRecordCardtext,
-  getCountRecordsCardtext,
-  getAllRecordCardtext,
-} from './cardtextDb'
+import { Transforms, Editor, Node } from 'slate'
+import { db } from '@db/publicApi'
 
 export const useCardtextStorage = (editor: Editor) => {
-  const loadFromMemory = async (id: string) => {
-    const valueFromMemory = await getRecordCardtextById(id)
-    if (!valueFromMemory) return null
+  const loadFromMemory = async (id: number) => {
+    const record = await db.card.cardtext.getById(id)
+    if (!record) return null
 
-    const nodes = Object.values(valueFromMemory.text)
     clearEditor()
-    Transforms.insertNodes(editor, nodes)
-    return nodes
+    Transforms.insertNodes(editor, record.text)
+    return record.text
   }
 
-  const saveToMemory = async (value: any) => {
-    await addUniqueRecordCardtext(value)
+  const saveToMemory = async (nodes: Node[]) => {
+    await db.card.cardtext.addUniqueRecord(nodes)
   }
 
   const getMemoryStats = async () => {
-    const count = await getCountRecordsCardtext()
-    const list = count ? await getAllRecordCardtext() : []
+    const count = await db.card.cardtext.count()
+    const list = count ? await db.card.cardtext.getAll() : []
     return { count, list }
   }
 

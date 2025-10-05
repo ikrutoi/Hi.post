@@ -1,0 +1,65 @@
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  width: 200px;
+}
+
+.headerActions__cards {
+  display: flex;
+  align-items: center;
+}
+
+.toolbarBtn {
+  position: relative;
+  margin: 0 0.75rem;
+
+  &--user {
+    cursor: pointer;
+  }
+
+  .toolbar-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.counterContainer {
+  position: absolute;
+  top: 0;
+  left: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.3rem;
+}
+
+.shoppingCounterContainer {
+  background-color: rgb(255, 89, 0);
+  color: rgb(240, 240, 240);
+}
+
+.clipCounterContainer {
+  background-color: rgb(155, 155, 155);
+  color: rgb(240, 240, 240);
+}
+
+.counter {
+  padding: 0.1rem 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.headerActions__user {
+  display: flex;
+  align-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.headerActions__userImg {
+  height: 1.7rem;
+  width: 1.7rem;
+  border-radius: 50%;
+  background-image: url('../../data/img/logo-no-user.svg');
+  background-size: cover;
+}

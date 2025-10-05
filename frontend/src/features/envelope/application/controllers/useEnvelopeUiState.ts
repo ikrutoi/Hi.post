@@ -1,14 +1,11 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import type { RootState } from '@app/state'
-import {
-  updateEnvelopeUiState,
-  updateEnvelopeButtons,
-} from '@envelope/application/store'
+import { envelopeUiActions } from '@/features/envelope/infrastructure/state'
 import type {
   EnvelopeUiSignals,
   EnvelopeButtonsState,
   EnvelopeUiState,
-} from '@envelope/domain'
+} from '@envelope/domain/types'
 
 export interface EnvelopeUiController extends EnvelopeUiState {
   setUiState: (payload: Partial<EnvelopeUiSignals>) => void
@@ -21,7 +18,9 @@ export const useEnvelopeUiState = (): EnvelopeUiController => {
 
   return {
     ...uiState,
-    setUiState: (payload) => dispatch(updateEnvelopeUiState(payload)),
-    setButtonsState: (payload) => dispatch(updateEnvelopeButtons(payload)),
+    setUiState: (payload) =>
+      dispatch(envelopeUiActions.updateEnvelopeUiState(payload)),
+    setButtonsState: (payload) =>
+      dispatch(envelopeUiActions.updateEnvelopeButtons(payload)),
   }
 }

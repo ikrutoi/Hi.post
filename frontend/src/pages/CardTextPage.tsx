@@ -3,7 +3,7 @@ import MiniCardPreview from '../../components/Common/MiniCardPreview'
 import CardTextToolbar from '../../components/CardText/CardTextToolbar'
 import CardTextInteractive from '../../components/CardText/CardTextInteractive'
 
-const CardTextPage = () => {
+const CardtextPage = () => {
   return (
     <div className="page cardtext-page">
       <MiniCardPreview />
@@ -13,4 +13,4 @@ const CardTextPage = () => {
   )
 }
 
-export default CardTextPage
+export default CardtextPage

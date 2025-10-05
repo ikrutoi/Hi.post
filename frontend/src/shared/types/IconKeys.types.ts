@@ -1,0 +1,28 @@
+export const ICON_KEYS = [
+  'save',
+  'clip',
+  'delete',
+  'remove',
+  'download',
+  'user',
+  'turn',
+  'edit',
+  'fillFrame',
+  'crop',
+  'reset',
+  'bold',
+  'italic',
+  'fontSize',
+  'color',
+  'left',
+  'center',
+  'right',
+  'justify',
+  'cart',
+  'addCart',
+  'plus',
+  'arrowsOut',
+  'arrowsIn',
+] as const
+
+export type IconKey = (typeof ICON_KEYS)[number]

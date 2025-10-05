@@ -1,4 +1,4 @@
-import { stateColors } from 'shared-legacy/theme'
+import { stateColors } from '@/shared/config/theme'
 
 const styleCursor = { true: 'pointer', false: 'default', hover: 'pointer' }
 

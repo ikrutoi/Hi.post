@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import './Cell.scss'
+import clsx from 'clsx'
+import styles from './Cell.module.scss'
+
 import { Toolbar } from './Toolbar/Toolbar'
-import {
-  setChoiceClip,
-  setDateShoppingCards,
-  setLockDateShoppingCards,
-} from '@shared/store/slices/layoutSlice'
-import type { DispatchDate } from '@entities/date/domain/dispatchDate'
+import { useLayoutFacade } from '@layout/application/facades'
+import type { DispatchDate } from '@entities/date/domain/types'
 
 interface CellProps {
   title?: string
@@ -16,16 +13,16 @@ interface CellProps {
   dayAfter?: number
   today?: boolean
   taboo?: boolean
-  handleSelectedDate: (
+  handleDispatchDate?: (
     taboo: boolean,
     year: number,
     month: number,
     day: number
   ) => void
-  selectedDate?: boolean
-  selectedDateTitle: DispatchDate
-  handleClickCell: (direction: 'before' | 'after') => void
-  shoppingDay?: { date?: DispatchDate; length: number; [key: string]: any }[]
+  dispatchDate?: boolean
+  dispatchDateTitle?: DispatchDate
+  handleClickCell?: (direction: 'before' | 'after') => void
+  cartDay?: { date?: DispatchDate; length: number; [key: string]: any }[]
 }
 
 export const Cell: React.FC<CellProps> = ({
@@ -35,123 +32,115 @@ export const Cell: React.FC<CellProps> = ({
   dayAfter,
   today,
   taboo,
-  handleSelectedDate,
-  selectedDate,
-  selectedDateTitle,
+  handleDispatchDate,
+  dispatchDate,
+  dispatchDateTitle,
   handleClickCell,
-  shoppingDay,
+  cartDay,
 }) => {
-  const dispatch = useDispatch()
-  const [toolbarShopping, setToolbarShopping] = useState(false)
-  const [countShoppingCards, setCountShoppingCards] = useState<
-    number | false | null
-  >(null)
+  const { actions } = useLayoutFacade()
+
+  const [toolbarCart, setToolbarCart] = useState(false)
+  const [countCartCards, setCountCartCards] = useState<number | false | null>(
+    null
+  )
 
   useEffect(() => {
-    if (!shoppingDay) return
-    setCountShoppingCards(
-      shoppingDay.length > 1
-        ? shoppingDay.length
-        : shoppingDay.length === 1
-          ? false
-          : null
+    if (!cartDay) return
+    setCountCartCards(
+      cartDay.length > 1 ? cartDay.length : cartDay.length === 1 ? false : null
     )
-  }, [shoppingDay])
+  }, [cartDay])
 
   useEffect(() => {
-    if (!selectedDateTitle.isSelected || !shoppingDay?.[0]?.date?.isSelected) {
-      setToolbarShopping(false)
+    if (!dispatchDateTitle.isSelected || !cartDay?.[0]?.date?.isSelected) {
+      setToolbarCart(false)
       return
     }
 
     const match =
-      shoppingDay[0].date.year === selectedDateTitle.year &&
-      shoppingDay[0].date.month === selectedDateTitle.month
+      cartDay[0].date.year === dispatchDateTitle.year &&
+      cartDay[0].date.month === dispatchDateTitle.month
 
     if (!match) {
-      setToolbarShopping(false)
+      setToolbarCart(false)
     }
-  }, [shoppingDay, selectedDateTitle])
+  }, [cartDay, dispatchDateTitle])
 
-  const addSelectedDate = () => {
-    if (!selectedDateTitle.isSelected || dayCurrent == null) return
-    handleSelectedDate(
+  const addDispatchDate = () => {
+    if (!dispatchDateTitle.isSelected || dayCurrent == null) return
+    handleDispatchDate(
       !!taboo,
-      selectedDateTitle.year!,
-      selectedDateTitle.month!,
+      dispatchDateTitle.year!,
+      dispatchDateTitle.month!,
       dayCurrent
     )
   }
 
-  const handleImgShoppingClick = (_evt: React.MouseEvent, day: number) => {
-    if (!selectedDateTitle.isSelected) return
-    dispatch(setLockDateShoppingCards(true))
-    dispatch(setChoiceClip(toolbarShopping ? 'date' : false))
-    dispatch(
-      setDateShoppingCards({
-        year: selectedDateTitle.year!,
-        month: selectedDateTitle.month!,
-        day,
-      })
-    )
+  const handleImgCartClick = (_evt: React.MouseEvent, day: number) => {
+    if (!dispatchDateTitle.isSelected) return
+    actions.setLockDateCartCards(true)
+    actions.setChoiceClip(toolbarCart ? true : false)
+    actions.setDateCartCards({
+      isSelected: true,
+      year: dispatchDateTitle.year!,
+      month: dispatchDateTitle.month!,
+      day,
+    })
   }
 
   const renderDay = () => {
     if (title) {
-      return <div className="calendar-cell calendar-cell__title">{title}</div>
+      return <div className={clsx(styles.cell, styles.title)}>{title}</div>
     }
 
-    const baseClass = [
-      'calendar-cell',
-      dayCurrent != null && 'calendar-cell--current',
-      dayBefore != null && 'calendar-cell--before',
-      dayAfter != null && 'calendar-cell--after',
-      selectedDate && 'calendar-cell--selected',
-      today && 'calendar-cell--today',
-      taboo && 'calendar-cell--taboo',
-      shoppingDay && 'calendar-cell--shopping',
-      `day-${dayCurrent ?? dayBefore ?? dayAfter}`,
-    ]
-      .filter(Boolean)
-      .join(' ')
+    const dynamicClass = clsx(
+      styles.cell,
+      {
+        [styles.today]: today,
+        [styles.dispatch]: dispatchDate,
+        [styles.taboo]: taboo,
+        [styles.before]: dayBefore != null,
+        [styles.after]: dayAfter != null,
+        [styles.current]: dayCurrent != null,
+        [styles.cart]: !!cartDay,
+      },
+      `day-${dayCurrent ?? dayBefore ?? dayAfter}`
+    )
 
     if (dayCurrent != null) {
       return (
         <div
-          className={baseClass}
-          onClick={() => !shoppingDay && addSelectedDate()}
+          className={dynamicClass}
+          onClick={() => !cartDay && addDispatchDate()}
         >
-          {shoppingDay ? (
+          {cartDay ? (
             <div
-              className="calendar-cell__shopping-container"
-              onClick={() => setToolbarShopping((s) => !s)}
+              className={styles.cartContainer}
+              onClick={() => setToolbarCart((s) => !s)}
             >
               <span
-                className={`calendar-cell__shopping-filter ${
-                  selectedDate ? 'calendar-cell__shopping-filter--selected' : ''
-                }`}
+                className={clsx(styles.cartFilter, {
+                  [styles.cartFilterSelected]: dispatchDate,
+                })}
               >
-                <span className="calendar-cell__shopping-shadow">
-                  {dayCurrent}
-                </span>
+                <span className={styles.cartShadow}>{dayCurrent}</span>
               </span>
               <img
-                className="calendar-cell__shopping-img"
-                alt="shopping-day"
-                src={shoppingDay?.[0]?.img}
+                className={styles.cartImg}
+                alt="cart-day"
+                src={cartDay?.[0]?.img}
               />
-              {countShoppingCards && !toolbarShopping && (
-                <span className="calendar-cell__shopping-count">
-                  {shoppingDay.length}
-                </span>
+              {countCartCards && !toolbarCart && (
+                <span className={styles.cartCount}>{cartDay.length}</span>
               )}
-              {toolbarShopping && (
+              {toolbarCart && (
                 <Toolbar
                   day={dayCurrent}
-                  shoppingDay={shoppingDay}
-                  handleImgShoppingClick={handleImgShoppingClick}
-                  handleCellShoppingClick={addSelectedDate}
-                  countShoppingCards={countShoppingCards}
+                  cartDay={cartDay}
+                  handleImageCartClick={handleImgCartClick}
+                  handleCellCartClick={addDispatchDate}
+                  countCartCards={countCartCards}
                 />
               )}
             </div>
@@ -164,14 +153,14 @@ export const Cell: React.FC<CellProps> = ({
 
     if (dayBefore != null) {
       return (
-        <div className={baseClass} onClick={() => handleClickCell('before')}>
+        <div className={dynamicClass} onClick={() => handleClickCell('before')}>
           {dayBefore}
         </div>
       )
     }
 
     return (
-      <div className={baseClass} onClick={() => handleClickCell('after')}>
+      <div className={dynamicClass} onClick={() => handleClickCell('after')}>
         {dayAfter}
       </div>
     )

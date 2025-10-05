@@ -1,0 +1,1 @@
+export { useDateFacade } from './useDateFacade'

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
-import './Date.scss'
+import clsx from 'clsx'
+import styles from './Date.module.scss'
 
 import {
   Toolbar,
@@ -8,26 +9,30 @@ import {
   Slider,
 } from '@features/date/presentation'
 
-import { currentDate } from '@features/date/calendar/domain/currentDate'
-import { useDateFacade } from '@features/date/application/facades/useDateFacade'
+import { getCurrentDate } from '@shared/utils/date'
+import { useLayoutFacade } from '@layout/application/facades'
 import { useCartPreviewForCalendar } from '@features/date/preview/application/useCartPreviewForCalendar'
-import { useDateController } from '@features/date/switcher/application/useDateController'
-import { useLayoutActiveFacade } from '@features/layout/application/facades/useLayoutActiveFacade'
-import { formatDispatchDate, isCompleteDate } from '@entities/date/utils'
+import { useDateFacade } from '../switcher/application/facades'
+import {
+  formatDispatchDate,
+  isCompleteDate,
+  isSameDispatchDate,
+} from '@entities/date/utils'
 import { MONTH_NAMES } from '@entities/date/constants'
-
-import { themeColors } from 'shared-legacy/theme/themeColors'
+import { themeColors } from '@/shared/config/theme/themeColors'
 import { LuCalendar, LuCalendarArrowUp } from 'react-icons/lu'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 
-const Date: React.FC = () => {
-  const { dispatchDate, setDispatchDate } = useDateFacade()
-  const { activeSections, setActiveSection } = useLayoutActiveFacade()
-
+export const Date: React.FC = () => {
+  const currentDate = getCurrentDate()
   const {
-    state: { selectedDateTitle, selectedDate, activeDateTitleRole },
+    layout: { activeSection },
+    actions: { setActiveSection },
+  } = useLayoutFacade()
+  const {
+    state: { dispatchDateTitle, dispatchDate, activeDateTitleRole },
     actions: {
-      setSelectedDate,
+      setDispatchDate,
       updateDateTitleField,
       toggleActiveDateRole,
       goToTodayDate,
@@ -36,48 +41,34 @@ const Date: React.FC = () => {
       handleDecrementArrow,
       handleIncrementArrow,
       handleSliderChange,
+      handleDispatchDate,
     },
     derived: { isCurrentMonth },
-  } = useDateController(dispatchDate)
+  } = useDateFacade()
 
   const { cartPreview } = useCartPreviewForCalendar(
-    isCompleteDate(selectedDateTitle)
-      ? `${selectedDateTitle.year}-${selectedDateTitle.month}-${selectedDateTitle.day}`
-      : null
+    isCompleteDate(dispatchDateTitle) ? dispatchDateTitle : null
   )
 
   useEffect(() => {
-    if (selectedDate.isSelected) {
-      setActiveSection({ ...activeSections, date: true })
+    if (dispatchDate.isSelected) {
+      setActiveSection({ ...activeSection, date: true })
     }
-  }, [selectedDate])
-
-  const handleSelectedDate = (
-    isTaboo: boolean,
-    year: number,
-    month: number,
-    day: number
-  ) => {
-    if (!isTaboo) {
-      const newDate = { isSelected: true, year, month, day }
-      setSelectedDate(newDate)
-      setDispatchDate(newDate)
-    }
-  }
+  }, [dispatchDate])
 
   return (
-    <div className="date">
-      <div className="date__nav-container">
-        <Toolbar isDateActive={activeSections.date} />
+    <div className={styles.date}>
+      <div className={styles.navContainer}>
+        <Toolbar isDateActive={activeSection.date} />
       </div>
 
-      <form className="date__form">
-        <div className="date__header">
-          <div className="date__header-side">
+      <form className={styles.form}>
+        <div className={styles.header}>
+          <div className={styles.headerSide}>
             <div
-              className={`date__today-selected ${
-                isCurrentMonth() ? 'date__today-selected--disabled' : ''
-              }`}
+              className={clsx(styles.todaySelected, {
+                [styles.todaySelectedDisabled]: isCurrentMonth(),
+              })}
               onClick={goToTodayDate}
               style={{
                 color: isCurrentMonth()
@@ -86,36 +77,31 @@ const Date: React.FC = () => {
                 cursor: isCurrentMonth() ? 'default' : 'pointer',
               }}
             >
-              <LuCalendar className="date__icon-title" />
+              <LuCalendar className={styles.iconTitle} />
               {`${currentDate.currentYear} ${MONTH_NAMES[currentDate.currentMonth]} ${currentDate.currentDay}`}
             </div>
           </div>
 
-          <div className="date__header-center">
+          <div className={styles.headerCenter}>
             <div
-              className="date__arrow-button"
-              style={{
-                color: activeDateTitleRole
-                  ? themeColors.text.primary
-                  : themeColors.text.secondary,
-                backgroundColor: themeColors.background.default,
-                cursor: 'pointer',
-              }}
+              className={clsx(styles.arrowButton, {
+                [styles.arrowButtonInactive]: !activeDateTitleRole,
+              })}
               onClick={handleDecrementArrow}
             >
-              <FaChevronLeft className="date__icon-arrow" />
+              <FaChevronLeft className={styles.iconArrow} />
             </div>
 
-            <div className="date__switcher">
+            <div className={styles.switcher}>
               <Switcher
-                selectedDateTitle={selectedDateTitle}
+                dispatchDateTitle={dispatchDateTitle}
                 activeDateTitleRole={activeDateTitleRole}
                 onToggleRole={toggleActiveDateRole}
               />
             </div>
 
             <div
-              className="date__arrow-button"
+              className={styles.arrowButton}
               style={{
                 color: activeDateTitleRole
                   ? themeColors.text.primary
@@ -125,33 +111,33 @@ const Date: React.FC = () => {
               }}
               onClick={handleIncrementArrow}
             >
-              <FaChevronRight className="date__icon-arrow" />
+              <FaChevronRight className={styles.iconArrow} />
             </div>
           </div>
 
-          <div className="date__header-side">
-            <div className="date__selected" onClick={goToSelectedDate}>
-              {selectedDate.isSelected && (
-                <LuCalendarArrowUp className="date__icon-title" />
+          <div className={styles.headerSide}>
+            <div className={styles.selected} onClick={goToSelectedDate}>
+              {dispatchDate.isSelected && (
+                <LuCalendarArrowUp className={styles.iconTitle} />
               )}
-              {formatDispatchDate(selectedDate)}
+              {formatDispatchDate(dispatchDate)}
             </div>
           </div>
         </div>
 
-        <div className="date__slider">
+        <div className={styles.slider}>
           <Slider
-            selectedDateTitle={selectedDateTitle}
+            dispatchDateTitle={dispatchDateTitle}
             activeDateTitleRole={activeDateTitleRole}
             onChange={handleSliderChange}
           />
         </div>
 
-        <div className="date__calendar">
+        <div className={styles.calendar}>
           <Calendar
-            date={selectedDate}
-            selectedDateTitle={selectedDateTitle}
-            handleSelectedDate={handleSelectedDate}
+            dispatchDate={dispatchDate}
+            dispatchDateTitle={dispatchDateTitle}
+            handleDispatchDate={handleDispatchDate}
             handleClickCell={handleCalendarCellClick}
             cart={cartPreview}
           />
@@ -160,5 +146,3 @@ const Date: React.FC = () => {
     </div>
   )
 }
-
-export default Date

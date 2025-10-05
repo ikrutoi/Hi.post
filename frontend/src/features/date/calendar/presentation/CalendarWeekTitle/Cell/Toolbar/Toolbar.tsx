@@ -1,38 +1,38 @@
 import React from 'react'
-import './Toolbar.scss'
+import clsx from 'clsx'
+import styles from './Toolbar.module.scss'
+
+import { DispatchDate } from '@entities/date/domain/types'
 
 interface ToolbarProps {
   day: number
-  shoppingDay: { img: string; date?: any }[]
-  handleImgShoppingClick: (evt: React.MouseEvent, day: number) => void
-  handleCellShoppingClick: () => void
-  countShoppingCards: number | false | null
+  cartDay: { date?: DispatchDate; length: number; [key: string]: any }[]
+  handleImageCartClick: (evt: React.MouseEvent, day: number) => void
+  handleCellCartClick: () => void
+  countCartCards: number | false | null
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({
   day,
-  shoppingDay,
-  handleImgShoppingClick,
-  handleCellShoppingClick,
-  countShoppingCards,
+  cartDay,
+  handleImageCartClick,
+  handleCellCartClick,
+  countCartCards,
 }) => {
   return (
-    <div className="calendar-cell-toolbar">
-      <div
-        className="calendar-cell-toolbar__day"
-        onClick={handleCellShoppingClick}
-      >
+    <div className={styles.wrapper}>
+      <div className={styles.day} onClick={handleCellCartClick}>
         {day}
       </div>
       <img
-        className="calendar-cell-toolbar__img"
+        className={styles.img}
         alt="shopping-day"
-        src={shoppingDay?.[0]?.img}
-        onClick={(evt) => handleImgShoppingClick(evt, day)}
+        src={cartDay?.[0]?.img}
+        onClick={(evt) => handleImageCartClick(evt, day)}
       />
-      {countShoppingCards && (
-        <span className="calendar-cell-toolbar__count calendar-cell-toolbar__count--img">
-          {shoppingDay.length}
+      {countCartCards && (
+        <span className={clsx(styles.count, styles.countImg)}>
+          {cartDay.length}
         </span>
       )}
     </div>

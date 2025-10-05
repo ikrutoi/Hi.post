@@ -20,8 +20,17 @@ export default defineConfig({
       '/api': 'http://php:8000',
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@app/styles/core" as *;`,
+        loadPaths: [path.resolve(__dirname, 'src')],
+      },
+    },
+  },
   resolve: {
     alias: {
+      '@': path.resolve(__dirname, 'src'),
       '@app/store': path.resolve(__dirname, 'src/app/store/index.ts'),
       '@api': path.resolve(__dirname, 'src/api'),
       '@app': path.resolve(__dirname, 'src/app'),
@@ -38,12 +47,16 @@ export default defineConfig({
       '@data': path.resolve(__dirname, 'src/data'),
       '@locales': path.resolve(__dirname, 'src/locales'),
       '@entities': path.resolve(__dirname, 'src/entities'),
+      '@cardPanel': path.resolve(__dirname, 'src/features/cardPanel'),
       '@cardphoto': path.resolve(__dirname, 'src/features/cardphoto'),
       '@cardtext': path.resolve(__dirname, 'src/features/cardtext'),
       '@envelope': path.resolve(__dirname, 'src/features/envelope'),
       '@aroma': path.resolve(__dirname, 'src/features/aroma'),
       '@date': path.resolve(__dirname, 'src/features/date'),
       '@history': path.resolve(__dirname, 'src/features/history'),
+      '@toolbar': path.resolve(__dirname, 'src/features/toolbar'),
+      '@header': path.resolve(__dirname, 'src/features/header'),
+      '@headerActions': path.resolve(__dirname, 'src/features/headerActions'),
       '@cart': path.resolve(__dirname, 'src/features/cart'),
       '@drafts': path.resolve(__dirname, 'src/features/drafts'),
       '@sent': path.resolve(__dirname, 'src/features/sent'),

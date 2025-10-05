@@ -1,0 +1,1 @@
+export { getToolbarIcon } from './getToolbarIcon'

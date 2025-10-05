@@ -4,7 +4,7 @@ import './Envelope.scss'
 import { Mark, Toolbar } from '@envelope/view/presentation'
 import { EnvelopeAddress } from '../addressForm/presentation'
 
-import { useEnvelopeState } from '../application/state'
+import { useEnvelopeState } from '../infrastructure/state'
 import {
   useEnvelopeController,
   useEnvelopeTranslations,
@@ -17,7 +17,7 @@ import {
 } from '@envelope/view/application'
 import { useAddressBookController } from '@envelope/addressBook/application/controllers'
 
-import { ADDRESS_ROLES } from '@envelope/domain'
+import { ADDRESS_ROLES } from '../domain/models'
 import { useCurrentLang } from 'shared-legacy/localizationLegacy/useCurrentLang'
 import { addEnvelope } from '@store/slices/cardEditSlice'
 

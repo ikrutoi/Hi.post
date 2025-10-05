@@ -17,3 +17,9 @@ export type DateTextTitle = {
 export type DateRole = keyof DateTextTitle
 
 export type MonthDirection = 'before' | 'after'
+
+// export type DateState = {
+//   year: number
+//   month: number
+//   day: number
+// }

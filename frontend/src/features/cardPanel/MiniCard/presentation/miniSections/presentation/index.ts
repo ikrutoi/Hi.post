@@ -1,0 +1,5 @@
+export { MiniCardphoto } from './MiniCardphoto'
+export { MiniCardtext } from './MiniCardtext'
+export { MiniEnvelope } from './MiniEnvelope'
+export { MiniAroma } from './MiniAroma'
+export { MiniDate } from './MiniDate'

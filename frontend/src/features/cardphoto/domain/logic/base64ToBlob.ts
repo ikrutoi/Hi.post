@@ -1,5 +1,8 @@
-export const base64ToBlob = (base64: string, mimeType: string): Blob => {
-  const byteString = atob(base64.split(',')[1])
+export const base64ToBlob = (base64: string, mimeType?: string): Blob => {
+  const [prefix, data] = base64.split(',')
+  if (!data) throw new Error('Invalid base64 format')
+
+  const byteString = atob(data)
   const arrayBuffer = new ArrayBuffer(byteString.length)
   const intArray = new Uint8Array(arrayBuffer)
 
@@ -7,5 +10,9 @@ export const base64ToBlob = (base64: string, mimeType: string): Blob => {
     intArray[i] = byteString.charCodeAt(i)
   }
 
-  return new Blob([intArray], { type: mimeType })
+  const inferredMime =
+    mimeType ??
+    prefix.match(/^data:(.*);base64/)?.[1] ??
+    'application/octet-stream'
+  return new Blob([intArray], { type: inferredMime })
 }

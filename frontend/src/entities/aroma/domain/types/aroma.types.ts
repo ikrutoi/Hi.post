@@ -18,3 +18,9 @@ export interface AromaItem {
   name: string
   index: AromaImageIndex
 }
+
+export type AromaState = {
+  make: string | null
+  name: string | null
+  index: AromaImageIndex | null
+}

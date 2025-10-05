@@ -1,4 +1,4 @@
-import { DispatchDate } from '@entities/date/domain/dispatchDate'
+import { DispatchDate } from '@entities/date/domain/types'
 import { isCompleteDate } from '@entities/date/utils/guard'
 
 export const getDaysInPreviousMonth = (year: number, month: number): number => {

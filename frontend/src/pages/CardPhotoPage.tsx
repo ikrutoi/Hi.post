@@ -1,10 +1,9 @@
-// CardPhotoPage.tsx
 import { useSelector } from 'react-redux'
 import Cardphoto from '../components/CardPuzzle/Cardphoto/Cardphoto'
 import { ChoiceSection, ChoiceClip, SizeCard } from '../types/layout'
 import { RootState } from '../store'
 
-const CardPhotoPage = () => {
+const CardphotoPage = () => {
   const choiceSection = useSelector<RootState, ChoiceSection>(
     (state) => state.layout.choiceSection
   )
@@ -19,7 +18,7 @@ const CardPhotoPage = () => {
 
   return (
     <div
-      className="page card-photo"
+      className="page cardphoto-page"
       style={{
         width: `${sizeCard.width}px`,
         height: `${sizeCard.height}px`,
@@ -34,4 +33,4 @@ const CardPhotoPage = () => {
   )
 }
 
-export default CardPhotoPage
+export default CardphotoPage

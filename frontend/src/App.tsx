@@ -1,115 +1,40 @@
-import { useRef, useState, useLayoutEffect, useEffect } from 'react'
-import useResizeObserver from '@react-hook/resize-observer'
-import { useDispatch, useSelector } from 'react-redux'
-import './App.scss'
+import { useRef, useState } from 'react'
 
-import '@app/styles/reset.scss'
-import '@app/styles/variables.scss'
-import '@app/styles/typography.scss'
-import '@app/styles/global.scss'
+import { ErrorBoundary } from './shared/ui/ErrorBoundary'
+import { Header } from './features/header/presentation/Header'
+import { SectionNav } from './features/sectionNav/presentation/SectionNav'
+import { CardPanel } from './features/cardPanel/presentation/CardPanel'
+import { SectionEditor } from './features/sectionEditor/presentation/SectionEditor'
 
-import type { RootState } from '@app/state/store'
-import { loginStart, loginSuccess } from '@features/auth/store/authSlice'
-import ErrorBoundary from './components/ErrorBoundary'
-import Logo from './components/Logo/Logo'
-import Status from './components/Status/Status'
-import CardsNav from './components/CardsNav/CardsNav'
-import CardForm from './components/CardForm/CardForm'
-import CardsList from './components/CardsList/CardsList'
-import { computeLayoutSizes } from 'shared-legacy/lib/layout'
-import {
-  addRemSize,
-  addSizeCard,
-  addSizeMiniCard,
-  setMaxCardsList,
-  setBtnToolbar,
-} from './features/layout/application/state/layout'
-import { calculateSizeCard } from 'shared-legacy/lib/layout/calculateSizeCard'
-import { calculateMaxCardsList } from 'shared-legacy/lib/layout/calculateMaxCardsList'
-// import type { RootState } from './store/store'
+import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
+import { useLayoutInit } from '@features/layout/application/hooks/useLayoutInit'
+import { useLayoutResize } from '@features/layout/application/hooks/useLayoutResize'
+import { useToolbarClickReset } from '@features/layout/application/hooks/useToolbarClickReset'
+import { useSize } from '@shared/hooks/useSize'
 
-const useSize = (target: React.RefObject<HTMLElement>) => {
-  const [size, setSize] = useState<DOMRect | undefined>()
-
-  useLayoutEffect(() => {
-    if (target.current) {
-      setSize(target.current.getBoundingClientRect())
-    }
-  }, [target])
-
-  useResizeObserver(target, (entry) => setSize(entry.contentRect))
-  return size
-}
+import styles from './App.module.scss'
 
 const App = () => {
-  const remSize = useSelector((state: RootState) => state.layout.remSize)
-  const dispatch = useDispatch()
   const appRef = useRef<HTMLDivElement>(null)
   const formRef = useRef<HTMLDivElement>(null)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
-  const size = useSize(formRef)
 
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      dispatch(loginStart())
-      const user = { id: '123', name: 'Ihar', email: 'ihar@email.com' }
-      dispatch(loginSuccess({ user, token }))
-    }
-  }, [dispatch])
+  const sectionEditorSize = useSize(formRef)
 
-  const handleAppClick = (evt: MouseEvent) => {
-    if (
-      colorToolbar &&
-      !(
-        (evt.target as HTMLElement).classList.contains('toolbar-color') ||
-        (evt.target as HTMLElement).classList.contains('toolbar-more')
-      )
-    ) {
-      setColorToolbar(false)
-      dispatch(
-        setBtnToolbar({ firstBtn: null, secondBtn: null, section: null })
-      )
-    }
-  }
+  useAuthInit()
+  useLayoutInit()
+  useLayoutResize(formRef, sectionEditorSize)
 
-  useEffect(() => {
-    const root = document.documentElement
-    const remSizeInPx = getComputedStyle(root).getPropertyValue('--rem-size')
-    const tempDiv = document.createElement('div')
-    tempDiv.style.width = remSizeInPx
-    tempDiv.style.visibility = 'hidden'
-    document.body.appendChild(tempDiv)
-    const computedRem = tempDiv.getBoundingClientRect().width
-    dispatch(addRemSize(computedRem))
-    document.body.removeChild(tempDiv)
-  }, [dispatch])
-
-  useEffect(() => {
-    if (size && remSize && formRef.current) {
-      const { cardSize, miniCardSize, maxCardsList } = computeLayoutSizes({
-        containerHeight: size.height,
-        containerWidth: formRef.current.clientWidth,
-        remSize,
-      })
-
-      dispatch(addSizeCard(cardSize))
-      dispatch(addSizeMiniCard(miniCardSize))
-      dispatch(setMaxCardsList(maxCardsList))
-    }
-  }, [size, remSize, dispatch])
+  const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
 
   return (
-    <div ref={appRef} className="app" onClick={handleAppClick}>
-      <header className="app-header">
-        <Logo />
-        <Status />
-      </header>
-      <main className="app-main">
-        <CardsNav />
-        <div className="form" ref={formRef}>
-          <ErrorBoundary>{size && <CardsList />}</ErrorBoundary>
-          {size && <CardForm />}
+    <div ref={appRef} className={styles.app} onClick={handleAppClick}>
+      <Header />
+      <main className={styles.app__main}>
+        <SectionNav />
+        <div ref={formRef} className={styles.app__form}>
+          <ErrorBoundary>{sectionEditorSize && <CardPanel />}</ErrorBoundary>
+          {sectionEditorSize && <SectionEditor />}
         </div>
       </main>
     </div>

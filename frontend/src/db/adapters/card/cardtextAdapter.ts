@@ -1,14 +1,13 @@
+import type { Node as SlateNode } from 'slate'
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import type { StoreMap } from '@db/types/storeMap'
-import type { StoreAdapter } from '@db/types'
+import type { CardtextAdapter } from '@db/types'
 
-const base = createStoreAdapter<StoreMap['cardtext']>('cardtext')
+const base = createStoreAdapter<{ id: number; text: SlateNode[] }>('cardtext')
 
-export const cardtextAdapter: StoreAdapter<StoreMap['cardtext']> = {
+export const cardtextAdapter: CardtextAdapter = {
   ...base,
-  addUniqueRecord: async (text: Record<string, string>) => {
-    const maxId = await base.getMaxId()
-    const newId = maxId + 1
+  addUniqueRecord: async (text) => {
+    const newId = (await base.getMaxId()) + 1
     await base.put({ id: newId, text })
   },
 }

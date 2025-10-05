@@ -1,4 +1,4 @@
-import type { DispatchDate } from '../domain/dispatchDate'
+import type { DispatchDate } from '../domain/types'
 import { MONTH_NAMES } from '../constants/months'
 
 export const formatDispatchDate = (date: DispatchDate): string => {

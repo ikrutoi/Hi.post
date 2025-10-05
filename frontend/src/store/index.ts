@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 
-import { authReducer } from '@features/auth/store/authSlice'
+import { authReducer } from '@features/auth/application/state/auth.slice'
 import envelopeReducer from '@features/envelope/store/envelopeSlice'
 import { authListenerMiddleware } from '@middleware/authListener'
 

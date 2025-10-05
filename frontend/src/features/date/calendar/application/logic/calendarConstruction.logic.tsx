@@ -1,53 +1,56 @@
 import { useMemo } from 'react'
-import { currentDate } from '../../domain/currentDate'
+
+import { getCurrentDate } from '@shared/utils/date'
 import {
   getDaysInPreviousMonth,
   getDaysInCurrentMonth,
   getFirstDayOfWeekFromDispatch,
   shiftMonth,
-} from '../utils'
+} from '../../utils'
 import { isCompleteDate } from '@entities/date/utils/guard'
 import type { DispatchDate } from '@entities/date/domain/types'
-import type { CartPostcard } from '@features/cart/publicApi'
+import type { Cart } from '@cart/domain/types'
 import { buildPreviousMonthCells } from './buildPreviousMonthCells'
 import { buildCurrentMonthCells } from './buildCurrentMonthCells'
 import { buildNextMonthCells } from './buildNextMonthCells'
 
 interface UseCalendarConstructionParams {
-  selectedDateTitle: DispatchDate
-  selectedDate: DispatchDate
-  handleSelectedDate: (
+  dispatchDateTitle: DispatchDate
+  dispatchDate: DispatchDate
+  handleDispatchDate: (
     isTaboo: boolean,
     year: number,
     month: number,
     day: number
   ) => void
   handleClickCell: (direction: 'before' | 'after') => void
-  isCountCart?: CartPostcard[]
+  isCountCart?: Cart[]
   firstDayOfWeekTitle: 'Sun' | 'Mon'
 }
 
+const currentDate = getCurrentDate()
+
 export const useCalendarConstruction = ({
-  selectedDateTitle,
-  selectedDate,
-  handleSelectedDate,
+  dispatchDateTitle,
+  dispatchDate,
+  handleDispatchDate,
   handleClickCell,
   isCountCart,
   firstDayOfWeekTitle,
 }: UseCalendarConstructionParams) => {
-  if (!selectedDateTitle.isSelected) return []
+  if (!dispatchDateTitle.isSelected) return []
 
   const {
     year: titleYear,
     month: titleMonth,
     day: titleDay,
-  } = selectedDateTitle
+  } = dispatchDateTitle
 
   const daysInPreviousMonth = getDaysInPreviousMonth(titleYear, titleMonth)
   const daysInCurrentMonth = getDaysInCurrentMonth(titleYear, titleMonth)
   const offset = getFirstDayOfWeekFromDispatch(
     firstDayOfWeekTitle,
-    selectedDateTitle
+    dispatchDateTitle
   )
 
   const dateTodayBefore = shiftMonth(
@@ -61,19 +64,19 @@ export const useCalendarConstruction = ({
     -1
   )
 
-  const dateSelectedBefore = isCompleteDate(selectedDate)
-    ? shiftMonth(selectedDate.year, selectedDate.month, +1)
+  const dateSelectedBefore = isCompleteDate(dispatchDate)
+    ? shiftMonth(dispatchDate.year, dispatchDate.month, +1)
     : { year: 0, month: 0 }
 
-  const dateSelectedAfter = isCompleteDate(selectedDate)
-    ? shiftMonth(selectedDate.year, selectedDate.month, -1)
+  const dateSelectedAfter = isCompleteDate(dispatchDate)
+    ? shiftMonth(dispatchDate.year, dispatchDate.month, -1)
     : { year: 0, month: 0 }
 
   const previousCells = buildPreviousMonthCells(
     offset,
     daysInPreviousMonth,
-    selectedDate,
-    selectedDateTitle,
+    dispatchDate,
+    dispatchDateTitle,
     dateTodayBefore,
     dateSelectedBefore,
     titleYear,
@@ -85,21 +88,21 @@ export const useCalendarConstruction = ({
 
   const currentCells = buildCurrentMonthCells({
     daysInCurrentMonth,
-    selectedDate,
-    selectedDateTitle,
+    dispatchDate,
+    dispatchDateTitle,
     titleYear,
     titleMonth,
     titleDay,
     currentDate,
-    handleSelectedDate,
+    handleDispatchDate,
     handleClickCell,
     isCountCart,
   })
 
   const nextCells = buildNextMonthCells({
     count: 42 - offset - daysInCurrentMonth,
-    selectedDate,
-    selectedDateTitle,
+    dispatchDate,
+    dispatchDateTitle,
     titleYear,
     titleMonth,
     titleDay,
@@ -112,9 +115,9 @@ export const useCalendarConstruction = ({
   return useMemo(
     () => [...previousCells, ...currentCells, ...nextCells],
     [
-      selectedDateTitle,
-      selectedDate,
-      handleSelectedDate,
+      dispatchDateTitle,
+      dispatchDate,
+      handleDispatchDate,
       handleClickCell,
       isCountCart,
       firstDayOfWeekTitle,

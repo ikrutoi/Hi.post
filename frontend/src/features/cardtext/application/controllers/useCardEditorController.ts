@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import { useAppDispatch } from '@app/hooks'
-import { useEditorSetup } from '@features/cardtext/infrastructure/slate/useEditorSetup'
-import { useCardtextStorage } from '@features/cardtext/infrastructure/indexDb/useCardtextStorage'
-import { useCardtextBehavior } from '@features/cardtext/application/logic/useCardtextBehavior'
-import { useEditorMarkers } from '@features/cardtext/application/logic/useEditorMarkers'
-import { useCardtext } from '@features/cardtext/infrastructure/useCardtext'
+import { useEditorSetup } from '@cardtext/infrastructure/slate/useEditorSetup'
+import { useCardtext } from '@/features/cardtext/application/hooks/useCardtext'
+import { useCardtextBehavior } from '@cardtext/application/logic/useCardtext.behavior'
+import { useEditorMarkers } from '@cardtext/application/logic/useEditorMarkers'
+import { useCardtext } from '@/features/cardtext/application/hooks/useCardtext'
 import { useInfoButtons } from '@features/infobuttons/infrastructure/useInfoButtons'
-import { useLayout } from '@features/layout/infrastructure/useLayout'
+import { useLayoutFacade } from '@layout/application/facades/useLayoutFasade'
 import { addCardtext } from '@features/cardedit/application/state/cardEditSlice'
 
 export const useCardEditorController = () => {
@@ -32,27 +32,35 @@ export const useCardEditorController = () => {
     calcStyleAndLinesEditable,
   } = useCardtextBehavior(editor)
 
-  const { loadFromMemory, saveToMemory, getMemoryStats } =
-    useCardtextStorage(editor)
+  const { loadFromMemory, saveToMemory, getMemoryStats } = useCardtext(editor)
 
   const { cardtextState, updateCardtextState } = useCardtext()
   const { infoButtonsState, updateInfoButtonsState } = useInfoButtons()
+
   const {
-    memorySection,
-    layoutActiveSections,
-    styleLeftCardPuzzle,
-    remSize,
-    setChoiceClip,
-    setActiveSections,
-  } = useLayout()
+    size,
+    memory,
+    section,
+    // editor,
+    // editor,
+    // choiceMemorySection,
+    // layoutActiveSections,
+    // styleLeftCardPuzzle,
+    // remSize,
+    // setChoiceClip,
+    // setActiveSections,
+  } = useLayoutFacade()
+
+  const { remSize } = size
+  const { choiceMemorySection, activeSection } = section
 
   useEffect(() => {
-    if (memorySection.section === 'cardtext') {
-      loadFromMemory(memorySection.id).then((nodes) => {
+    if (choiceMemorySection.section === 'cardtext') {
+      loadFromMemory(choiceMemorySection.id).then((nodes) => {
         if (nodes) setValue(nodes)
       })
     }
-  }, [memorySection])
+  }, [choiceMemorySection])
 
   useEffect(() => {
     dispatch(addCardtext({ text: value }))
@@ -67,10 +75,10 @@ export const useCardEditorController = () => {
       },
     })
 
-    setActiveSections({
-      ...layoutActiveSections,
-      cardtext: hasText,
-    })
+    // setActiveSections({
+    //   ...activeSection,
+    //   cardtext: hasText,
+    // })
 
     getMemoryStats().then(({ count }) => {
       updateInfoButtonsState({

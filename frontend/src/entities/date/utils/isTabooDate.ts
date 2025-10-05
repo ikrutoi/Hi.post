@@ -1,5 +1,5 @@
-import { DispatchDate } from '../domain/dispatchDate'
-import { currentDate } from '@features/date/calendar/domain/currentDate'
+import { DispatchDate } from '../domain/types'
+import { currentDate } from '@features/date/calendar/domain/models'
 
 export const isTabooDate = (
   day: number,

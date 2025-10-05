@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { updateDispatchDate } from '../state/date.slice'
-import { selectDispatchDate } from '../selectors/date.selector'
+import { updateDispatchDate } from '../../infrastructure/state/date.slice'
+import { selectDispatchDate } from '../../infrastructure/selectors/date.selector'
 import type { DispatchDate } from '@entities/date/domain/types'
 
 export const useDateController = () => {

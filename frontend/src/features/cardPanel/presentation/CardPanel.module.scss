@@ -1,0 +1,117 @@
+.card-panel {
+  position: relative;
+  display: flex;
+  width: 100%;
+  border-radius: 0.5rem;
+  scroll-behavior: smooth;
+
+  &__filter {
+    position: absolute;
+    border-radius: 0.5rem;
+    z-index: 6;
+  }
+
+  &__memory-list {
+    display: flex;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 0.5rem;
+  }
+
+  &__mini-cards {
+    position: absolute;
+    border-radius: 0.5rem;
+    background-size: contain;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    z-index: 7;
+
+    &--full {
+      box-shadow: 0 0 6px 3px rgba(255, 89, 0, 0.6);
+      transition: box-shadow 300ms ease-in;
+    }
+
+    &--fade-out {
+      box-shadow: 2px 1px 6px 3px rgba(190, 190, 190, 0);
+      transition: box-shadow 300ms ease-out;
+    }
+  }
+
+  &__mini-pattern {
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
+    border: 1px solid rgb(173, 173, 173);
+  }
+
+  &__icons {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__line {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.3rem;
+
+    &-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 2.5rem;
+      border: none;
+      width: 1.7rem;
+      height: 1.7rem;
+
+      &-icon {
+        width: 1.2rem;
+        height: 1.2rem;
+      }
+
+      &--menu {
+        color: rgba(71, 71, 71, 0);
+        background-color: rgba(240, 240, 240, 0);
+        transition:
+          background-color 300ms ease-in-out,
+          color 300ms ease-in-out;
+
+        &.card-panel__line-btn--full {
+          background-color: rgba(240, 240, 240, 0.75);
+        }
+      }
+
+      &--arrows {
+        position: absolute;
+        left: calc(50% - 1.5rem);
+        top: calc(50% - 1.5rem);
+        width: 3rem;
+        height: 3rem;
+        color: rgba(240, 240, 240, 0);
+        background-color: rgba(0, 125, 250, 0);
+        transition:
+          background-color 300ms ease-in-out,
+          color 300ms ease-in-out;
+
+        &.card-panel__line-btn--full {
+          color: rgba(240, 240, 240, 1);
+          background-color: rgba(255, 89, 0, 0.6);
+        }
+
+        .card-panel__line-btn-icon {
+          width: 1.9rem;
+          height: 1.9rem;
+        }
+      }
+
+      &:hover {
+        transition: background-color 0.3s;
+      }
+    }
+  }
+}

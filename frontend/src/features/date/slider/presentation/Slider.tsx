@@ -1,28 +1,26 @@
 import React from 'react'
 import './Slider.scss'
 
-import { currentDate } from '@features/date/calendar/domain/currentDate'
-import type {
-  DateNumericTitle,
-  DateRole,
-} from '@entities/date/domain/dispatchDate'
+import { getCurrentDate } from '@shared/utils/date'
+import type { DateNumericTitle, DateRole } from '@entities/date/domain/types'
 
 interface SliderProps {
-  selectedDateTitle: DateNumericTitle
+  dispatchDateTitle: DateNumericTitle
   activeDateTitleRole?: DateRole
   onChange: (role: DateRole, value: number) => void
 }
 
 export const Slider: React.FC<SliderProps> = ({
-  selectedDateTitle,
+  dispatchDateTitle,
   activeDateTitleRole,
   onChange,
 }) => {
-  if (!activeDateTitleRole || !selectedDateTitle.isSelected) {
+  const currentDate = getCurrentDate()
+  if (!activeDateTitleRole || !dispatchDateTitle.isSelected) {
     return <span className="date-slider__default" />
   }
 
-  const { year, month } = selectedDateTitle
+  const { year, month } = dispatchDateTitle
 
   const renderSlider = (
     role: DateRole,

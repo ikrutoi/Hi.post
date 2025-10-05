@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { AddressRole, ToggleSet } from '@envelope/domain'
+import type { AddressRole, ToggleSet } from '@envelope/domain/types'
 import { useEnvelopeUiState } from '@envelope/application/controllers'
 
 export const useMiniAddressEffect = ({

@@ -1,0 +1,95 @@
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5rem;
+  padding: 0.45rem 0.5rem 0.55rem 0.5rem;
+  width: 2.2rem;
+  height: 1.5rem;
+  border-radius: 0.3rem;
+  user-select: none;
+  cursor: pointer;
+
+  &--today {
+    background-color: rgb(240, 240, 240);
+  }
+
+  &--dispatch {
+    color: white;
+    background-color: #007dd7;
+
+    &:hover {
+      color: white;
+    }
+  }
+
+  &--taboo {
+    color: rgb(163, 163, 163);
+    cursor: default;
+  }
+
+  &--before,
+  &--after {
+    color: rgb(163, 163, 163);
+
+    &.cell--selected {
+      background-color: #b6dae9;
+      color: white;
+    }
+  }
+
+  &--current:hover {
+    color: rgb(0, 125, 250);
+  }
+
+  &--current.cell--shopping:hover {
+    color: black;
+    cursor: default;
+  }
+}
+
+.title {
+  cursor: default;
+  user-select: none;
+}
+
+.cartContainer {
+  position: relative;
+  display: flex;
+}
+
+.cartFilter,
+.cartImg {
+  width: 3.2rem;
+  height: 2.5rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+.cartFilter {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(163, 163, 163, 0.5);
+
+  &--selected {
+    // future styling if needed
+  }
+}
+
+.cartShadow {
+  padding: 0 0.1rem;
+  color: rgb(240, 240, 240);
+}
+
+.cartCount {
+  position: absolute;
+  bottom: -0.5rem;
+  right: -0.5rem;
+  background-color: #007dd7;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 1rem;
+}

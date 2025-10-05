@@ -1,26 +1,26 @@
 import React from 'react'
-import styles from './Cardphoto.module.scss'
 
-import { useLayoutFacade } from '@features/layout/application/facades/useLayoutFacade1'
+import { useLayoutFacade } from '@features/layout/application/facades/useLayoutFasade'
 import { ImageCrop } from './ImageCrop'
-import { Toolbar } from '@features/cardphoto/toolbar/presentation/Toolbar.view'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
+
+import styles from './Cardphoto.module.scss'
 
 export const Cardphoto = () => {
   const {
-    size: { sizeCard },
-    meta: { choiceClip },
+    layout: { sizeCard, choiceClip },
   } = useLayoutFacade()
 
-  const shouldShowToolbar =
-    choiceClip !== 'cart' &&
-    choiceClip !== 'minimize' &&
-    choiceClip !== 'drafts'
+  // const shouldShowToolbar =
+  //   choiceClip !== 'cart' &&
+  //   choiceClip !== 'minimize' &&
+  //   choiceClip !== 'drafts'
 
   return (
     <div className={styles.cardphoto}>
-      {shouldShowToolbar && (
+      {choiceClip && (
         <div className={styles.cardphoto__toolbar}>
-          <Toolbar />
+          <Toolbar section="cardphoto" />
         </div>
       )}
       <ImageCrop sizeCard={sizeCard} />

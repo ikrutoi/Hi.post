@@ -1,5 +1,8 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { setCardphotoActive, selectCardphotoActive } from '../state'
+import {
+  setCardphotoActive,
+  selectCardphotoActive,
+} from '../../infrastructure/state'
 
 export const useCardphotoActiveController = () => {
   const dispatch = useAppDispatch()

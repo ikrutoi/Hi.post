@@ -1,4 +1,4 @@
-import type { DispatchDate } from '../domain/dispatchDate'
+import type { DispatchDate } from '../domain/types'
 
 export const isCompleteDate = (
   date: DispatchDate

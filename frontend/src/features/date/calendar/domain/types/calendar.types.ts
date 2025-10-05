@@ -1,4 +1,4 @@
-import { FirstDay } from '@entities/date/domain'
+import { FirstDay } from '@entities/date/domain/types'
 
 export interface CalendarWeekTitle {
   day: string[]

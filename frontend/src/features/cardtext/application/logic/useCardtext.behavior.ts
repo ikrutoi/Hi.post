@@ -2,112 +2,133 @@ import { useEffect, useRef, useState } from 'react'
 import { Transforms, Editor } from 'slate'
 import { ReactEditor } from 'slate-react'
 import { useDispatch, useSelector } from 'react-redux'
-import { updateButtonsState } from '@/features/infobuttons/application/state/infoButtonsSlice'
-import { setActiveSections } from '@/features/layout/application/state/layoutSlice'
-import { RootState } from '@/app/store'
-import { cardScaleFactors } from '@/shared/config/layout/cardScaleFactors'
-import { addCardtext } from '@/features/cardedit/application/state/cardEditSlice'
-import { changeIconStyles } from '@/features/cardtext/utils/changeIconStyles'
+
+import { RootState } from '@app/state'
+import { cardScaleFactors } from '@shared/config/card'
+import { applyIconStylesByStatus } from '@shared/lib/dom'
+// import { updateButtonsState } from '@features/infobuttons/application/state/infoButtonsSlice'
+// import { setActiveSections } from '@features/layout/application/state/layoutSlice'
+// import { addCardtext } from '@features/cardedit/application/state/cardEditSlice'
+import { updateToolbar } from '@toolbar/infrastructure/state'
+import { updateCardtext } from '@cardtext/infrastructure/state'
+import type { CardtextToolbarKey } from '@features/toolbar/domain/types'
+import type { State } from '@shared/config/theme'
+import { updateCard } from '@/app/state/slices/cardsSlice'
 
 export const useCardtextBehavior = (editor: Editor) => {
   const dispatch = useDispatch()
-
-  const infoBtnsCardtext = useSelector(
-    (state: RootState) => state.infoButtons.cardtext
+  const storeToolbarCardtext = useSelector(
+    (state: RootState) => state.toolbar.cardtext
   )
-  const layoutActiveSections = useSelector(
-    (state: RootState) => state.layout.setActiveSections
-  )
+  const storeCardtext = useSelector((state: RootState) => state.cardtext)
+  // const layoutActiveSections = useSelector(
+  //   (state: RootState) => state.layout.setActiveSections
+  // )
 
   const [value, setValue] = useState<any[]>([])
-  const [btnColor, setBtnColor] = useState(false)
-  const [btnsCardtext, setBtnsCardtext] = useState({
-    cardtext: {} as Record<string, boolean>,
-  })
+  const [buttonColor, setButtonColor] = useState(false)
+  const [cardtextToolbar, setCardtextToolbar] = useState<{
+    cardtext: Partial<Record<CardtextToolbarKey, State>>
+  }>({ cardtext: {} })
+
   const [maxLines, setMaxLines] = useState<number | null>(null)
   const [markPath, setMarkPath] = useState<any>(null)
 
   const editorRef = useRef<HTMLDivElement | null>(null)
   const editableRef = useRef<HTMLDivElement | null>(null)
-  const btnIconRefs = useRef<Record<string, HTMLElement | null>>({})
-  const markRef = useRef<HTMLElement | null>(null)
+  const buttonIconRefs = useRef<Record<string, HTMLElement | null>>({})
+  // const markRef = useRef<HTMLElement | null>(null)
 
   const setBtnIconRefs = (id: string) => (element: HTMLElement | null) => {
-    btnIconRefs.current[id] = element
+    buttonIconRefs.current[id] = element
   }
 
   const handleSlateChange = (newValue: any) => {
     setValue(newValue)
   }
 
-  const handleClickBtn = (
+  const handleClickButton = (
     evt: React.MouseEvent<HTMLButtonElement>,
-    btn: string
+    key: CardtextToolbarKey
   ) => {
-    if (btn === 'italic') {
-      const nextState = infoBtnsCardtext[btn] === 'hover' ? true : 'hover'
-      setBtnsCardtext((state) => ({
-        ...state,
+    if (key === 'italic') {
+      const currentState =
+        storeToolbarCardtext[key] === 'active' ? 'active' : 'enabled'
+
+      setCardtextToolbar((state) => ({
         cardtext: {
           ...state.cardtext,
-          italic: nextState,
+          [key]: currentState,
         },
       }))
+
       dispatch(
-        updateButtonsState({
+        updateToolbar({
           cardtext: {
-            ...infoBtnsCardtext,
-            [btn]: nextState,
+            ...storeToolbarCardtext,
+            [key]: currentState,
           },
         })
       )
     }
 
-    if (['left', 'center', 'right', 'justify'].includes(btn)) {
-      if (infoBtnsCardtext[btn] === 'hover') {
+    const alignmentKeys: CardtextToolbarKey[] = [
+      'left',
+      'center',
+      'right',
+      'justify',
+    ]
+
+    if (alignmentKeys.includes(key)) {
+      if (storeToolbarCardtext[key] === 'active') {
         evt.preventDefault()
       } else {
-        const icon = btnIconRefs.current[`cardtext-${btn}`]
-        if (icon) icon.style.cursor = 'default'
+        const buttonIcon = buttonIconRefs.current[`cardtext-${key}`]
+        if (buttonIcon) buttonIcon.style.cursor = 'default'
 
-        const newState = {
-          left: true,
-          center: true,
-          right: true,
-          justify: true,
-          [btn]: 'hover',
+        const newState: Partial<Record<CardtextToolbarKey, State>> = {
+          left: 'enabled',
+          center: 'enabled',
+          right: 'enabled',
+          justify: 'enabled',
+          [key]: 'active',
         }
 
-        setBtnsCardtext((state) => ({
+        setCardtextToolbar((state) => ({
           ...state,
           cardtext: newState,
         }))
 
-        dispatch(addCardtext({ textAlign: btn }))
-        dispatch(updateButtonsState({ cardtext: newState }))
+        dispatch(
+          updateCardtext({
+            ...storeCardtext,
+            textAlign: key,
+          })
+        )
+        // dispatch(updateButtonsState({ cardtext: newState }))
       }
     }
 
-    if (btn === 'color') {
-      setBtnColor((prev) => !prev)
+    if (key === 'color') {
+      setButtonColor((prev) => !prev)
     }
   }
 
-  const handleClickBtnMain = async (
+  const handleClickButtonMain = async (
     evt: React.MouseEvent<HTMLButtonElement>
   ) => {
-    const parentBtn = (evt.target as HTMLElement).closest(
-      '.toolbar-btn'
+    const parentButton = (evt.target as HTMLElement).closest(
+      '.toolbar-key'
     ) as HTMLElement | null
-    if (!parentBtn?.dataset.tooltip) return
+    if (!parentButton?.dataset.tooltip) return
 
-    const btn = parentBtn.dataset.tooltip
+    const key = parentButton.dataset.tooltip
 
-    if (btn === 'delete') {
+    if (key === 'delete') {
       clearEditor()
       Transforms.insertNodes(editor, [
         {
-          type: 'paragraph',
+          // type: 'paragraph',
           children: [{ text: '' }],
         },
       ])
@@ -130,25 +151,40 @@ export const useCardtextBehavior = (editor: Editor) => {
     const baseFontSize = Math.floor((baseSizeLineHeight / 1.33) * 10) / 10
 
     dispatch(
-      addCardtext({
+      updateCardtext({
+        ...storeCardtext,
         fontSize: baseFontSize,
         lineHeight: baseSizeLineHeight,
         miniCardtextStyle: {
           maxLines: lines,
-          fontSize: (baseFontSize / Number(scale)).toFixed(2),
-          lineHeight: (baseSizeLineHeight / Number(scale)).toFixed(2),
+          fontSize: parseFloat((baseFontSize / Number(scale)).toFixed(2)),
+          lineHeight: parseFloat(
+            (baseSizeLineHeight / Number(scale)).toFixed(2)
+          ),
         },
       })
     )
+
+    // dispatch(
+    //   addCardtext({
+    //     fontSize: baseFontSize,
+    //     lineHeight: baseSizeLineHeight,
+    //     miniCardtextStyle: {
+    //       maxLines: lines,
+    //       fontSize: (baseFontSize / Number(scale)).toFixed(2),
+    //       lineHeight: (baseSizeLineHeight / Number(scale)).toFixed(2),
+    //     },
+    //   })
+    // )
 
     setMaxLines(lines)
   }
 
   useEffect(() => {
-    if (btnsCardtext && btnIconRefs.current) {
-      changeIconStyles(btnsCardtext, btnIconRefs.current)
+    if (cardtextToolbar && buttonIconRefs.current) {
+      applyIconStylesByStatus(cardtextToolbar, buttonIconRefs.current)
     }
-  }, [btnsCardtext])
+  }, [cardtextToolbar])
 
   useEffect(() => {
     if (editorRef.current) {
@@ -159,15 +195,15 @@ export const useCardtextBehavior = (editor: Editor) => {
   return {
     value,
     setValue,
-    btnsCardtext,
-    handleClickBtn,
-    handleClickBtnMain,
+    cardtextToolbar,
+    handleClickButton,
+    handleClickButtonMain,
     handleSlateChange,
     editorRef,
     editableRef,
-    btnColor,
-    setBtnColor,
-    btnIconRefs,
+    buttonColor,
+    setButtonColor,
+    buttonIconRefs,
     setBtnIconRefs,
     markPath,
     setMarkPath,

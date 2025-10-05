@@ -1,0 +1,27 @@
+@use './variables' as *;
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+}
+
+.spacing-sm {
+  margin-bottom: $spacing-sm;
+}
+
+.spacing-md {
+  margin-bottom: $spacing-md;
+}
+
+.spacing-lg {
+  margin-bottom: $spacing-lg;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}

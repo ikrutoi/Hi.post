@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
-import CardPhotoPage from '../pages/CardPhotoPage'
-import CardTextPage from '../pages/CardTextPage'
+import CardPhotoPage from '../pages/CardphotoPage'
+import CardTextPage from '../pages/CardtextPage'
 import EnvelopePage from '../pages/EnvelopePage'
 import DatePage from '../pages/DatePage'
 import AromaPage from '../pages/AromaPage'

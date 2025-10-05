@@ -1,20 +1,20 @@
 import React from 'react'
 import './SwitcherButton.scss'
 
-import { theme } from 'shared-legacy/theme/themeColors'
+import { theme } from '@/shared/config/theme/themeColors'
 import { formatDispatchDatePart } from '@features/date/switcher/application'
-import type { DateNumericTitle, DateRole } from '@entities/date/domain'
+import type { DateNumericTitle, DateRole } from '@entities/date/domain/types'
 
 interface SwitcherButtonProps {
   role: DateRole
-  selectedDateTitle: DateNumericTitle
+  dispatchDateTitle: DateNumericTitle
   activeDateTitleRole?: DateRole
   onToggleRole: (role: DateRole) => void
 }
 
 export const SwitcherButton: React.FC<SwitcherButtonProps> = ({
   role,
-  selectedDateTitle,
+  dispatchDateTitle,
   activeDateTitleRole,
   onToggleRole,
 }) => {
@@ -39,7 +39,7 @@ export const SwitcherButton: React.FC<SwitcherButtonProps> = ({
           : theme.colors.text.primary,
       }}
     >
-      {formatDispatchDatePart(selectedDateTitle, role)}
+      {formatDispatchDatePart(dispatchDateTitle, role)}
     </span>
   )
 }

@@ -8,7 +8,7 @@ import {
   getUserImage,
 } from '../../../../utils/cardFormNav/indexDB/indexDb'
 
-const MiniPhoto = ({ sizeCardMini }) => {
+const MiniCardPhoto = ({ sizeMiniCard }) => {
   const layoutIndexDb = useSelector((state) => state.layout.indexDb)
   const [miniCardUrl, setMiniCardUrl] = useState(null)
   const [isVisible, setIsVisible] = useState(false)
@@ -53,7 +53,7 @@ const MiniPhoto = ({ sizeCardMini }) => {
   //   if (selectorCardphoto.url) {
   //     setImgSrc(selectorCardphoto.url)
   //   }
-  // }, [selectorCardphoto, sizeCardMini])
+  // }, [selectorCardphoto, sizeMiniCard])
 
   return (
     <>
@@ -63,8 +63,8 @@ const MiniPhoto = ({ sizeCardMini }) => {
           className={`mini-photo ${isVisible ? 'visible' : ''}`}
           src={miniCardUrl}
           style={{
-            width: `${sizeCardMini.width}px`,
-            height: `${sizeCardMini.height}px`,
+            width: `${sizeMiniCard.width}px`,
+            height: `${sizeMiniCard.height}px`,
             position: 'absolute',
           }}
           alt="minicard-photo"

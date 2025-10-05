@@ -3,7 +3,8 @@ import styles from './ImageCrop.module.scss'
 import { useImageCropFacade } from '../application/facades/useImageCropFacade'
 import { useCropDrag } from '../application/hooks/useCropDrag'
 import { useCropResize } from '../application/hooks/useCropResize'
-import type { SizeCard } from '@cardphoto/domain/types'
+// import type { SizeCard } from '@cardphoto/domain/types'
+import type { SizeCard } from '@layout/domain/types'
 
 interface ImageCropProps {
   sizeCard: SizeCard

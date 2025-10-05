@@ -1,12 +1,11 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import type { StoreMap } from '@db/types/storeMap'
-import type { StoreAdapter } from '@db/types'
+import type { StoreMap, SenderAddressAdapter } from '@db/types'
 
 const base = createStoreAdapter<StoreMap['senderAddress']>('senderAddress')
 
-export const senderAddressAdapter: StoreAdapter<StoreMap['senderAddress']> = {
+export const senderAddressAdapter: SenderAddressAdapter = {
   ...base,
-  addUniqueRecord: async (payload: Omit<StoreMap['senderAddress'], 'id'>) => {
+  addUniqueRecord: async (payload) => {
     const id = (await base.getMaxId()) + 1
     await base.put({ id, ...payload })
   },

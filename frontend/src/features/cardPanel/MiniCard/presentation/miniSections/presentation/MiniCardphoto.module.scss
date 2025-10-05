@@ -1,0 +1,9 @@
+.miniCardphoto {
+  border-radius: 0.5rem;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+}
+
+.miniCardphoto.visible {
+  opacity: 1;
+}

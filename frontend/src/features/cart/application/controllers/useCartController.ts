@@ -1,19 +1,21 @@
-import { useAppDispatch } from '@app/hooks/useAppDispatch'
-import { useAppSelector } from '@app/hooks/useAppSelector'
-import { cartActions } from '../state/cart.slice'
-import { selectCartItems, selectCartCount } from '../selectors/cart.selector'
-import type { CartPostcard } from '../../domain/types/cart.types'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { cartActions } from '../../infrastructure/state'
+import {
+  selectCartItems,
+  selectCartCount,
+} from '../../infrastructure/selectors'
+import type { Cart, CartItem } from '../../domain/types'
 
 export const useCartController = () => {
   const dispatch = useAppDispatch()
   const cartItems = useAppSelector(selectCartItems)
   const cartCount = useAppSelector(selectCartCount)
 
-  const setCart = (payload: CartPostcard[]) => {
+  const setCart = (payload: Cart[]) => {
     dispatch(cartActions.setCart(payload))
   }
 
-  const addCartItem = (item: CartPostcard) => {
+  const addCartItem = (item: CartItem) => {
     dispatch(cartActions.addCartItem(item))
   }
 

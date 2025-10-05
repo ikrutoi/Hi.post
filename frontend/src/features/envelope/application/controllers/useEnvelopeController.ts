@@ -1,4 +1,4 @@
-import type { AddressRole, Address } from '@envelope/domain'
+import type { AddressRole, Address } from '@envelope/domain/types'
 
 export const useEnvelopeController = ({
   inputRefs,

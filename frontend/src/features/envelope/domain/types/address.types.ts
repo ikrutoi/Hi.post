@@ -1,3 +1,5 @@
+import { Lang } from '@/i18n'
+
 export interface Address {
   name: string
   street: string
@@ -18,4 +20,12 @@ export interface EnvelopeAddresses {
 export interface AddressLabel {
   field: AddressField
   label: string
+}
+
+export type AddressLabelGroup = AddressLabel[]
+
+export type AddressLabelLayout = Array<AddressLabel | AddressLabelGroup>
+
+export type AddressLabelsByLang = {
+  [key in Lang]: AddressLabelLayout
 }

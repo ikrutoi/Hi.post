@@ -1,35 +1,30 @@
 import { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { addAroma } from '@features/cardedit/application/state/cardEditSlice'
-import { setActiveSections } from '@features/layout/application/state/layoutSlice'
-import { selectAroma } from '../selectors'
+import { useLayoutFacade } from '@layout/application/facades'
+import { updateAroma } from '@features/aroma/infrastructure/state/aroma.slice'
+import { setActiveSection } from '@layout/infrastructure/state'
+import { selectAroma } from '../../infrastructure/selectors'
 import type { AromaItem } from '@entities/aroma/domain/types'
 
 export const useAromaController = () => {
   const dispatch = useAppDispatch()
-  const aromaFromStore = useAppSelector(selectAroma)
+  const storeAroma = useAppSelector(selectAroma)
+  const activeSection = useAppSelector(
+    (state) => state.layout.section.activeSection
+  )
+
   const {
-    sizeCard,
-    remSize,
-    setActiveSections: activeSections,
-  } = useAppSelector((state) => state.layout)
-
-  const [selectedAroma, setSelectedAroma] = useState<AromaItem | null>(null)
+    layout: { sizeCard, remSize },
+  } = useLayoutFacade()
 
   useEffect(() => {
-    setSelectedAroma(aromaFromStore)
-  }, [aromaFromStore])
-
-  useEffect(() => {
-    if (selectedAroma) {
-      dispatch(setActiveSections({ ...activeSections, aroma: true }))
+    if (storeAroma) {
+      dispatch(setActiveSection('aroma'))
     }
-  }, [selectedAroma])
+  }, [storeAroma])
 
   const submitAroma = () => {
-    if (selectedAroma) {
-      dispatch(addAroma(selectedAroma))
-    }
+    dispatch(updateAroma(storeAroma))
   }
 
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
@@ -37,14 +32,16 @@ export const useAromaController = () => {
     submitAroma()
   }
 
-  const tileSize = {
-    height: (sizeCard.height - 6 * remSize) / 4,
-    width: (sizeCard.width - 6 * remSize) / 4,
-  }
+  const tileSize =
+    remSize !== null
+      ? {
+          height: (sizeCard.height - 6 * remSize) / 4,
+          width: (sizeCard.width - 6 * remSize) / 4,
+        }
+      : null
 
   return {
-    selectedAroma,
-    setSelectedAroma,
+    selectedAroma: storeAroma,
     handleSubmit,
     tileSize,
   }

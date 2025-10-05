@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import './Calendar.scss'
+import styles from './Calendar.module.scss'
 
 import { CalendarWeekTitle } from './CalendarWeekTitle/CalendarWeekTitle'
 import { useCalendarConstruction } from '@features/date/calendar/application/logic/calendarConstruction.logic'
@@ -7,27 +7,26 @@ import {
   daysOfWeekStartFromMon,
   daysOfWeekStartFromSun,
 } from '@entities/date/constants'
-
-import type { DispatchDate } from '@entities/date/domain/dispatchDate'
-import type { CartPostcard } from '@features/cart/publicApi'
+import type { DispatchDate } from '@entities/date/domain/types'
+import type { Cart } from '@cart/domain/types'
 
 interface CalendarProps {
-  selectedDate: DispatchDate
-  selectedDateTitle: DispatchDate
-  handleSelectedDate: (
+  dispatchDate: DispatchDate
+  dispatchDateTitle: DispatchDate
+  handleDispatchDate: (
     isTaboo: boolean,
     year: number,
     month: number,
     day: number
   ) => void
   handleClickCell: (direction: 'before' | 'after') => void
-  cart?: CartPostcard[]
+  cart?: Cart[]
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
-  selectedDate,
-  selectedDateTitle,
-  handleSelectedDate,
+  dispatchDate,
+  dispatchDateTitle,
+  handleDispatchDate,
   handleClickCell,
   cart,
 }) => {
@@ -44,23 +43,23 @@ export const Calendar: React.FC<CalendarProps> = ({
   }
 
   const calendarCells = useCalendarConstruction({
-    selectedDateTitle,
-    selectedDate,
-    handleSelectedDate,
+    dispatchDateTitle,
+    dispatchDate,
+    handleDispatchDate,
     handleClickCell,
     isCountCart: cart,
     firstDayOfWeekTitle,
   })
 
   return (
-    <div className="calendar">
+    <div className={styles.calendar}>
       <CalendarWeekTitle
         daysOfWeek={daysOfWeek}
         firstDayTitle={firstDayOfWeekTitle}
         handleFirstDay={handleFirstDay}
       />
-      <div className="calendar__month">
-        <div className="calendar__days">{calendarCells}</div>
+      <div className={styles.month}>
+        <div className={styles.days}>{calendarCells}</div>
       </div>
     </div>
   )
