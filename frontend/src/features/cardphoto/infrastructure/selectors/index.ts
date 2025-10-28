@@ -1,3 +1,3 @@
-export * from '../selectors/cardphoto.selectors'
-export * from '../selectors/cardphotoActive.selectors'
-export * from '../selectors/imageHistory.selectors'
+export { selectCardphotoState } from './cardphoto.selectors'
+export { selectCardphotoActive } from './cardphotoActive.selectors'
+export { selectActiveImage } from './imageHistory.selectors'

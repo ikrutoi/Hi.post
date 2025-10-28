@@ -1,34 +1,27 @@
 import { useSelector } from 'react-redux'
 import { useAppDispatch } from '@app/hooks'
-import {
-  selectToolbar,
-  selectCardphotoToolbar,
-  selectCardtextToolbar,
-  selectEnvelopeToolbar,
-  selectFullCardToolbar,
-} from '../../infrastructure/selectors'
+import { selectToolbar } from '../../infrastructure/selectors'
 import { useToolbarController } from '../../application/controllers'
-import { useToolbarUI } from '../ui'
-import type { CardSectionName } from '@shared/types'
+import type { ToolbarState } from '../../domain/types'
+import type { SectionsToolbar } from '@shared/config/constants'
 
-export const useToolbarFacade = (section: CardSectionName) => {
+export const useToolbarFacade = <K extends SectionsToolbar>(section: K) => {
   const dispatch = useAppDispatch()
   const toolbar = useSelector(selectToolbar)
-  const cardphoto = useSelector(selectCardphotoToolbar)
-  const cardtext = useSelector(selectCardtextToolbar)
-  const envelope = useSelector(selectEnvelopeToolbar)
-  const fullCard = useSelector(selectFullCardToolbar)
 
   const actions = useToolbarController(dispatch)
-  const ui = useToolbarUI(section)
 
   return {
-    toolbar,
-    cardphoto,
-    cardtext,
-    envelope,
-    fullCard,
-    actions,
-    ui,
+    state: toolbar[section],
+    actions: {
+      ...actions,
+      updateCurrent: (payload: Partial<ToolbarState[K]>) =>
+        actions.updateSection(section, payload),
+
+      updateKey: <Key extends keyof ToolbarState[K]>(
+        key: Key,
+        value: ToolbarState[K][Key]
+      ) => actions.updateKey(section, key, value),
+    },
   }
 }

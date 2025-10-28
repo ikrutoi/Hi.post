@@ -1,3 +1,2 @@
-export * from '@i18n/langs'
-export * from '@i18n/envelope/addressLabels'
-// export * from '@features/envelope/types'
+export { DEFAULT_LANG } from './config'
+export type { Lang } from './types'

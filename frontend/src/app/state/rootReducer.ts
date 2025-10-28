@@ -13,6 +13,11 @@ import {
 import { aromaReducer } from '@aroma/infrastructure/state'
 import { dateReducer } from '@date/infrastructure/state'
 
+import { cardReducer } from '@entities/card/infrastructure/state'
+
+import { cardMenuNavReducer } from '@layoutNav/infrastructure/state'
+import { templateNavReducer } from '@layoutNav/infrastructure/state'
+
 import { sentReducer } from '@features/sent/application/state'
 import { cartReducer } from '@features/cart/application/state'
 import { draftsReducer } from '@features/drafts/application/state'
@@ -33,6 +38,11 @@ export const rootReducer = combineReducers({
   envelopeUi: envelopeUiReducer,
   aroma: aromaReducer,
   date: dateReducer,
+
+  card: cardReducer,
+
+  cardMenuNav: cardMenuNavReducer,
+  templateNav: templateNavReducer,
 
   cart: cartReducer,
   drafts: draftsReducer,

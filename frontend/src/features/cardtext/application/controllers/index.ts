@@ -1,0 +1,1 @@
+export { useCardtextController } from './useCardtextController'

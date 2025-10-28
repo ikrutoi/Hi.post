@@ -1,91 +1,102 @@
 import { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { preparePresets } from '../helpers'
+import { useLayoutFacade } from '@layout/application/facades'
+import { useLayoutNavFacade } from '@layoutNav/application/facades'
 
 import {
-  SectionPreset,
-  PresetLetterInfo,
-  PresetSource,
-} from '../../domain/types'
-import { processPresetsCards } from '../helpers'
-import { setChoiceClip, setLockDateShoppingCards } from '../state/layoutSlice'
+  cartTemplatesAdapter,
+  draftsTemplatesAdapter,
+  senderTemplatesAdapter,
+  recipientTemplatesAdapter,
+} from '@db/adapters/templateAdapters'
 
-import { cartAdapter } from '@db/adapters/cart/cartAdapter'
-import { draftsAdapter } from '@db/adapters/drafts/draftsAdapter'
-import { recipientAddressAdapter } from '@db/adapters/card/recipientAddressAdapter'
-import { senderAddressAdapter } from '@db/adapters/card/senderAddressAdapter'
+import type { PresetLetterItem } from '../../domain/types'
+import type { Template } from '@shared/config/constants'
 
-export const useSectionPresets = (source: PresetSource) => {
-  const dispatch = useAppDispatch()
-  const date = useAppSelector((state) => state.layout.dateShoppingCards)
-  const choiceClip = useAppSelector((state) => state.layout.setChoiceClip)
+type PresetItem = any
 
-  const [sectionPresets, setSectionPresets] = useState<SectionPreset[]>([])
-  const [firstLetterList, setFirstLetterList] = useState<PresetLetterInfo[]>([])
-  const [sectionClip, setSectionClip] = useState<PresetSource>()
+export const useSectionPresets = (template: Template) => {
+  const { state } = useLayoutNavFacade()
+  const { selectedTemplate } = state
+
+  const {
+    meta: { dateCartCards },
+  } = useLayoutFacade()
+
+  const [sectionPresets, setSectionPresets] = useState<PresetItem[]>([])
+  const [letterIndexList, setFirstLetterList] = useState<PresetLetterItem[]>([])
 
   useEffect(() => {
     const load = async () => {
-      let records: SectionPreset[] = []
-      let getName: (card: SectionPreset) => string
+      let records: PresetItem[] = []
+      let getName: (item: PresetItem) => string = () => ''
 
-      switch (source) {
+      switch (template) {
         case 'recipient': {
-          records = await recipientAddressAdapter.getAll()
-          getName = (card) => card.address?.name || ''
+          records = await recipientTemplatesAdapter.getAll()
+          getName = (item) => item.recipient?.name || ''
           break
         }
         case 'sender': {
-          records = await senderAddressAdapter.getAll()
-          getName = (card) => card.address?.name || ''
+          records = await senderTemplatesAdapter.getAll()
+          getName = (item) => item.address?.name || ''
           break
         }
         case 'cart': {
-          records = await cartAdapter.getAll()
-          getName = (card) => card.cart?.envelope.recipient.name || ''
+          records = await cartTemplatesAdapter.getAll()
+          getName = (item) => item.cart?.envelope.recipient.name || ''
           break
         }
         case 'drafts': {
-          records = await draftsAdapter.getAll()
-          getName = (card) => card.drafts?.envelope.recipient.name || ''
+          records = await draftsTemplatesAdapter.getAll()
+          getName = (item) => item.drafts?.envelope.recipient.name || ''
           break
         }
-        case 'date': {
-          const all = await cartAdapter.getAll()
-          records = all.filter(
-            (card) =>
-              card.cart?.date?.year === date.year &&
-              card.cart?.date?.month === date.month &&
-              card.cart?.date?.day === date.day
-          )
-          getName = (card) => card.cart?.envelope.recipient.name || ''
-          break
-        }
+        // case 'date': {
+        //   const all = await cartTemplatesAdapter.getAll()
+
+        //   if (!dateCartCards?.isSelected) {
+        //     setSectionPresets([])
+        //     setFirstLetterList([])
+        //     setSectionClip('cart')
+        //     setLockDateCartCards(false)
+        //     return
+        //   }
+
+        //   records = all.filter((item) => {
+        //     const date = item.cart?.date
+        //     return (
+        //       date?.year === dateCartCards.year &&
+        //       date?.month === dateCartCards.month &&
+        //       date?.day === dateCartCards.day
+        //     )
+        //   })
+
+        //   getName = (item) => item.cart?.envelope.recipient.name || ''
+        //   break
+        // }
       }
 
-      const { sortedRecords, firstLetterList } = processPresetsCards(
+      const { sortedRecords, letterIndexList } = preparePresets(
         records,
         getName
       )
       setSectionPresets(sortedRecords)
-      setFirstLetterList(firstLetterList)
+      setFirstLetterList(letterIndexList)
 
-      setSectionClip(source === 'date' ? 'cart' : choiceClip)
+      // const clip = template === 'date' ? 'cart' : choiceClip
+      // setSectionClip(clip)
 
-      if (source === 'date') {
-        dispatch(setLockDateShoppingCards(false))
-      }
-
-      if (source === 'sender' || source === 'recipient') {
-        dispatch(setChoiceClip(source))
-      }
+      // if (template === 'date') {
+      //   setLockDateCartCards(false)
+      // }
     }
 
     load()
-  }, [source, date, choiceClip, dispatch])
+  }, [template, dateCartCards, selectedTemplate])
 
   return {
     sectionPresets,
-    firstLetterList,
-    sectionClip,
+    letterIndexList,
   }
 }

@@ -1,32 +1,28 @@
 import React, { useEffect } from 'react'
 import clsx from 'clsx'
-import styles from './Date.module.scss'
-
-import {
-  Toolbar,
-  Switcher,
-  Calendar,
-  Slider,
-} from '@features/date/presentation'
-
-import { getCurrentDate } from '@shared/utils/date'
-import { useLayoutFacade } from '@layout/application/facades'
-import { useCartPreviewForCalendar } from '@features/date/preview/application/useCartPreviewForCalendar'
-import { useDateFacade } from '../switcher/application/facades'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { MONTH_NAMES } from '@entities/date/constants'
 import {
   formatDispatchDate,
   isCompleteDate,
   isSameDispatchDate,
 } from '@entities/date/utils'
-import { MONTH_NAMES } from '@entities/date/constants'
-import { themeColors } from '@/shared/config/theme/themeColors'
+import { useLayoutFacade } from '@layout/application/facades'
+import { themeColors } from '@shared/config/theme/themeColors'
+import { getCurrentDate } from '@shared/utils/date'
+import { Calendar } from '../calendar/presentation/Calendar'
+import { Slider } from '../slider/presentation/Slider'
+import { Switcher } from '../switcher/presentation/Switcher'
+import { useCartPreviewForCalendar } from '../preview/application/hooks/useCartPreviewForCalendar'
+import { useDateFacade } from '../switcher/application/facades'
 import { LuCalendar, LuCalendarArrowUp } from 'react-icons/lu'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import styles from './Date.module.scss'
 
 export const Date: React.FC = () => {
   const currentDate = getCurrentDate()
   const {
-    layout: { activeSection },
+    section: { activeSection },
     actions: { setActiveSection },
   } = useLayoutFacade()
   const {
@@ -52,14 +48,14 @@ export const Date: React.FC = () => {
 
   useEffect(() => {
     if (dispatchDate.isSelected) {
-      setActiveSection({ ...activeSection, date: true })
+      setActiveSection('date')
     }
   }, [dispatchDate])
 
   return (
     <div className={styles.date}>
       <div className={styles.navContainer}>
-        <Toolbar isDateActive={activeSection.date} />
+        {activeSection && <Toolbar section={activeSection} />}
       </div>
 
       <form className={styles.form}>

@@ -1,13 +1,14 @@
 import React from 'react'
 import styles from './SectionPresets.module.scss'
-import { SectionPreset, PresetSource } from '../domain/types'
+import type { CardItem } from '@entities/card/domain/types'
+import type { Template } from '@shared/config/constants'
 import { trimLines } from '../application/helpers/trimLines'
 import shotMonths from '@data/date/monthsShotOfYear.json'
 
 interface Props {
-  card: SectionPreset
+  card: CardItem
   index: number
-  section: PresetSource
+  section: Template
   size: { width: number; height: number }
   remSize: number
   refs: {
@@ -27,7 +28,7 @@ export const PresetCard: React.FC<Props> = ({
   refs,
   onClick,
 }) => {
-  const memorySections = ['shopping', 'blanks']
+  const memorySections = ['cart', 'drafts']
   const id = card.id
 
   return (
@@ -36,7 +37,7 @@ export const PresetCard: React.FC<Props> = ({
       ref={refs.cardRef}
       data-id={id}
       data-index={index}
-      data-personal-id={card.personalId}
+      data-personal-id={card.id}
       style={{ width: size.width, height: size.height }}
       onClick={() => onClick(String(id))}
     >
@@ -47,31 +48,37 @@ export const PresetCard: React.FC<Props> = ({
             ref={refs.filterRef}
             data-id={id}
           />
-          <img
-            className={styles['section-presets__photo']}
-            src={URL.createObjectURL(card[section].cardphoto)}
-            alt="memoryCardPhoto"
-            style={{ width: size.width, height: size.height }}
-          />
-          {section === 'shopping' && card.shopping?.date && (
-            <span className={styles['section-presets__date-container']}>
-              <span className={styles['section-presets__date']}>
-                {card.shopping.date.year}
-              </span>
-              <span className={styles['section-presets__date']}>
-                {'\xA0'}
-                {shotMonths[card.shopping.date.month]}
-                {'\xA0'}
-              </span>
-              <span className={styles['section-presets__date']}>
-                {card.shopping.date.day}
-              </span>
-            </span>
+          {section === 'cardphoto' && card.cardphoto.isComplete && (
+            <img
+              className={styles['section-presets__photo']}
+              src={URL.createObjectURL(card.cardphoto.data.url)}
+              alt="memoryCardPhoto"
+              style={{ width: size.width, height: size.height }}
+            />
           )}
+          {section === 'cart' &&
+            card.date.isComplete &&
+            card.date.data.isSelected && (
+              <span className={styles['section-presets__date-container']}>
+                <span className={styles['section-presets__date']}>
+                  {card.date.data.year}
+                </span>
+                <span className={styles['section-presets__date']}>
+                  {'\xA0'}
+                  {shotMonths[card.date.data.month]}
+                  {'\xA0'}
+                </span>
+                <span className={styles['section-presets__date']}>
+                  {card.date.data.day}
+                </span>
+              </span>
+            )}
           <span
             className={`${styles['section-presets__name']} ${styles[`section-presets__name--${section}`]}`}
           >
-            {trimLines(section, card[section].envelope.toaddress.name)}
+            {section === 'recipient' &&
+              card.envelope.isComplete &&
+              trimLines(section, card.envelope.data.recipient.name)}
           </span>
         </>
       )}

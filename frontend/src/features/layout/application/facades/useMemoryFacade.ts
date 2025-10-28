@@ -5,7 +5,7 @@ import {
   selectExpendMemoryCard,
   selectLockExpendMemoryCard,
 } from '../../infrastructure/selectors'
-import { memoryController } from '../../application/controllers'
+import { useMemoryController } from '../../application/controllers'
 
 export const useMemoryFacade = () => {
   const dispatch = useAppDispatch()
@@ -18,9 +18,9 @@ export const useMemoryFacade = () => {
   const {
     setMemoryCrop,
     // setChoiceMemorySection,
-    setExpendCard,
-    setLockExpendCard,
-  } = memoryController(dispatch)
+    setExpendMemoryCard,
+    setLockExpendMemoryCard,
+  } = useMemoryController(dispatch)
 
   return {
     memory: {
@@ -32,8 +32,8 @@ export const useMemoryFacade = () => {
     actions: {
       setMemoryCrop,
       // setChoiceMemorySection,
-      setExpendCard,
-      setLockExpendCard,
+      setExpendMemoryCard,
+      setLockExpendMemoryCard,
     },
   }
 }

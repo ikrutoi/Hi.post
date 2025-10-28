@@ -1,18 +1,13 @@
 import { useAppDispatch } from '@app/hooks'
-import { searchParent } from '@utils/searchParent'
-import { dispatchSectionReset } from '../services/sectionDispatcher'
+import { resetCardSection } from '../services/resetCardSection'
 import type { CardSectionName } from '@shared/types'
 
-export const useMiniCardKebab = () => {
+export const useMiniCardKebab = (section: CardSectionName) => {
   const dispatch = useAppDispatch()
 
   const handleClick = async (evt: React.MouseEvent<HTMLButtonElement>) => {
     evt.stopPropagation()
-    const parent = searchParent(evt.target, 'mini-card')
-    const section = parent?.dataset.section as CardSectionName | undefined
-    if (section) {
-      await dispatchSectionReset(section, dispatch)
-    }
+    await resetCardSection(section, dispatch)
   }
 
   return { handleClick }

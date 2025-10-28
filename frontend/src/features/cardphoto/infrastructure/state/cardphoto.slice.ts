@@ -16,8 +16,12 @@ const cardphotoSlice = createSlice({
     ) => {
       Object.assign(state, action.payload)
     },
+    resetCardphoto: (state) => {
+      state.url = null
+      state.source = null
+    },
   },
 })
 
-export const { updateCardphoto } = cardphotoSlice.actions
+export const { updateCardphoto, resetCardphoto } = cardphotoSlice.actions
 export default cardphotoSlice.reducer

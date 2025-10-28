@@ -12,24 +12,6 @@ export const useLayoutFacade = () => {
   const { section, actions: sectionActions } = useSectionFacade()
 
   return {
-    layout: {
-      sizeCard: size.sizeCard,
-      sizeMiniCard: size.sizeMiniCard,
-      remSize: size.remSize,
-      activeSection: section.activeSection,
-      sliderLine: meta.sliderLine,
-      sliderLetter: meta.sliderLetter,
-      sliderLetterPayload: meta.sliderLetterPayload,
-      expendMemoryCard: memory.expendMemoryCard,
-      lockExpendMemoryCard: memory.lockExpendMemoryCard,
-      choiceClip: meta.choiceClip,
-      choiceSave: section.choiceSave,
-      choiceSection: section.choiceSection,
-      maxCardsList: meta.maxCardsList,
-      deltaEnd: meta.deltaEnd,
-      dateCartCards: meta.dateCartCards,
-      lockDateCartCards: meta.lockDateCartCards,
-    },
     size,
     memory,
     meta,

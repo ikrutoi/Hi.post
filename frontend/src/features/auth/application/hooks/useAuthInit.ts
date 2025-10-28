@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { loginStart, loginSuccess } from '../state'
+import { useAppDispatch } from '@app/hooks'
+import { loginStart, loginSuccess } from '../../infrastructure/state'
 
 export const useAuthInit = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     const token = localStorage.getItem('token')

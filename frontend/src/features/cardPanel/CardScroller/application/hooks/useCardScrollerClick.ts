@@ -1,16 +1,18 @@
 import { useDispatch } from 'react-redux'
-
-import { setSliderLetter } from '../../../store/slices/layoutSlice'
+import { useLayoutFacade } from '@layout/application/facades'
 
 export const useCardScrollerClick = (
   setIndex: (i: number) => void,
   onChange: (index: number | string) => void
 ) => {
   const dispatch = useDispatch()
+  const {
+    actions: { setSliderLetter },
+  } = useLayoutFacade()
 
   return (evt: React.MouseEvent<HTMLSpanElement>) => {
     const { textContent, dataset } = evt.target as HTMLSpanElement
-    if (textContent) {
+    if (textContent && dataset.id && dataset.index) {
       dispatch(
         setSliderLetter({
           letter: textContent,
@@ -19,7 +21,7 @@ export const useCardScrollerClick = (
         })
       )
       setIndex(Number(dataset.index))
-      onChange(dataset.index || 0)
+      onChange(dataset.index)
     }
   }
 }

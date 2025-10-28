@@ -1,12 +1,10 @@
 import { useEffect } from 'react'
-
-import { SECTIONS } from '@/features/cardPanel/domain/constants'
-
-import type { RootState } from '@app/state'
-import type { CardPanelSections } from '@/features/cardPanel/domain/types'
+import { CARD_SECTIONS } from '@entities/card/domain/types'
+import type { CardSection } from '@entities/card/domain/types'
+import type { CardPanelSections } from '@cardPanel/domain/types'
 
 interface UseCardPanelSectionsProps {
-  selectorLayoutActiveSections: RootState['layout']['activeSections']
+  activeSection: Record<CardSection, boolean>
   listActiveSections: { section: string; position: number; index: number }[]
   setListActiveSections: React.Dispatch<
     React.SetStateAction<{ section: string; position: number; index: number }[]>
@@ -14,34 +12,37 @@ interface UseCardPanelSectionsProps {
   fullCard: boolean
   setFullCardState: React.Dispatch<React.SetStateAction<boolean>>
   miniPolyCardsRef: React.RefObject<HTMLDivElement | null>
-  btnArrowsRef: React.RefObject<HTMLElement | null>
+  buttonArrowsRef: React.RefObject<HTMLElement | null>
 }
 
 export const useCardPanelSections = ({
-  selectorLayoutActiveSections,
+  activeSection,
   listActiveSections,
   setListActiveSections,
   fullCard,
   setFullCardState,
   miniPolyCardsRef,
-  btnArrowsRef,
+  buttonArrowsRef,
 }: UseCardPanelSectionsProps): CardPanelSections => {
   useEffect(() => {
-    const baseSections = {
+    const baseSections: Record<
+      CardSection,
+      { section: CardSection; position: number; index: number }
+    > = {
       cardphoto: { section: 'cardphoto', position: 0, index: 4 },
       cardtext: { section: 'cardtext', position: 1, index: 3 },
       envelope: { section: 'envelope', position: 2, index: 2 },
-      date: { section: 'date', position: 3, index: 1 },
-      aroma: { section: 'aroma', position: 4, index: 0 },
+      aroma: { section: 'aroma', position: 3, index: 1 },
+      date: { section: 'date', position: 4, index: 0 },
     }
 
-    const active = SECTIONS.filter(
-      (key) => selectorLayoutActiveSections[key]
-    ).map((key) => baseSections[key])
+    const active = CARD_SECTIONS.filter(
+      (key: CardSection) => activeSection[key]
+    ).map((key: CardSection) => baseSections[key])
 
     const sorted = active.sort((a, b) => a.position - b.position)
     setListActiveSections(sorted)
-  }, [selectorLayoutActiveSections])
+  }, [activeSection])
 
   useEffect(() => {
     const isFull = listActiveSections.length === 5
@@ -57,7 +58,7 @@ export const useCardPanelSections = ({
 
   const choiceClassListContainsFullArrows = () => {
     setTimeout(() => {
-      btnArrowsRef.current?.classList.add('full')
+      buttonArrowsRef.current?.classList.add('full')
     }, 0)
   }
 

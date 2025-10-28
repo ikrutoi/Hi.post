@@ -1,6 +1,6 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit'
 import { registerThunk, loginThunk } from '@features/auth/store/auth.thunks'
-import { logout } from '@features/auth/application/state/auth.slice'
+import { logout } from '@/features/auth/infrastructure/state/auth.slice'
 
 export const authListenerMiddleware = createListenerMiddleware()
 

@@ -1,21 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-
 import { useLayoutFacade } from '@layout/application/facades'
 import type { CardPanelState } from '@/features/cardPanel/domain/types'
 
 export const useCardPanelState = (): CardPanelState => {
-  const {
-    layout: {
-      activeSection,
-      expendMemoryCard,
-      lockExpendMemoryCard,
-      choiceClip,
-      maxCardsList,
-      choiceSave,
-      sizeMiniCard,
-      choiceSection,
-    },
-  } = useLayoutFacade()
+  const { section, size, meta, ui, memory } = useLayoutFacade()
+  const { activeSection, choiceSection, choiceSave } = section
+  const { sizeMiniCard } = size
+  const { maxCardsList } = meta
+  const { expendMemoryCard, lockExpendMemoryCard } = memory
+  const { selectedTemplate } = ui
 
   const [buttonsFullCard, setButtonsFullCard] = useState({
     fullCard: { addCart: true, save: true, remove: true },
@@ -30,7 +23,7 @@ export const useCardPanelState = (): CardPanelState => {
   >([])
 
   const buttonIconRefs = useRef<Record<string, HTMLButtonElement | null>>({})
-  const btnArrowsRef = useRef<HTMLElement | null>(null)
+  const buttonArrowsRef = useRef<HTMLButtonElement | null>(null)
   const miniPolyCardsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -50,16 +43,14 @@ export const useCardPanelState = (): CardPanelState => {
   }, [minimize, showIconsMinimize])
 
   return {
-    // selectorCardEdit,
     activeSection,
     expendMemoryCard,
     lockExpendMemoryCard,
     choiceSave,
-    choiceClip,
+    selectedTemplate,
     maxCardsList,
     sizeMiniCard,
     choiceSection,
-    // selectorInfoEnvelopeSave,
     buttonsFullCard,
     setButtonsFullCard,
     memoryCardtext,
@@ -73,7 +64,7 @@ export const useCardPanelState = (): CardPanelState => {
     listActiveSections,
     setListActiveSections,
     buttonIconRefs,
-    btnArrowsRef,
+    buttonArrowsRef,
     miniPolyCardsRef,
   }
 }

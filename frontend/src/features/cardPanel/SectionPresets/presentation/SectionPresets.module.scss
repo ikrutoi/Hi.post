@@ -1,4 +1,4 @@
-.section-presets {
+.template-presets {
   display: flex;
   flex-direction: row;
   overflow-x: auto;
@@ -37,14 +37,14 @@
     font-weight: 500;
     margin-top: 0.25rem;
 
-    &--myaddress,
-    &--toaddress {
+    &--sender,
+    &--recipient {
       font-weight: 600;
     }
   }
 
-  &__country--myaddress,
-  &__country--toaddress {
+  &__country--sender,
+  &__country--recipient {
     font-size: 0.75rem;
     color: #666;
   }

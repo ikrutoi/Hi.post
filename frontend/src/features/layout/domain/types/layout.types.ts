@@ -1,5 +1,10 @@
 import type { WritableDraft } from 'immer'
-import type { CardSectionName } from '@shared/types'
+import type {
+  Template,
+  CardMenuSection,
+  IconState,
+  SectionsToolbar,
+} from '@shared/config/constants'
 import type { DispatchDate } from '@entities/date/domain/types'
 
 export type SizeCard = {
@@ -8,8 +13,10 @@ export type SizeCard = {
 }
 
 export interface SliderLetter {
-  index: number
-  value: string
+  letter: string
+  id: string
+  index: string
+  // value: string
 }
 
 export interface SliderLetterPayload {
@@ -37,17 +44,17 @@ export interface ButtonToolbar {
 
 export interface ChoiceSection {
   source: string | null
-  nameSection: string | null
+  section: CardMenuSection | null
 }
 
 export interface ChoiceMemorySection {
-  section: CardSectionName | null
+  section: CardMenuSection | null
   id: string | null
 }
 
 export interface MemoryCardInfo {
   id: string
-  section: string
+  source: string
   timestamp: number
 }
 
@@ -89,17 +96,23 @@ export interface MetaState {
 }
 
 export interface SectionState {
-  activeSection: CardSectionName | null
-  selectedSection: string | null
+  activeSection: SectionsToolbar | null
+  selectedSection: CardMenuSection | null
   deleteSection: string | null
   choiceSection: Partial<ChoiceSection>
-  choiceMemorySection: Partial<ChoiceMemorySection>
+  choiceMemorySection: ChoiceMemorySection
   buttonToolbar: ButtonToolbar
   choiceSave: string | null
   // choiceClip: string | null
 }
 
+export type TemplateState = Record<Template, IconState>
+
 export interface UiState {
+  selectedTemplate: Template | null
+  selectedSection: CardMenuSection | null
+  templateState: TemplateState
+
   isLoading: boolean
   error: string | null
   buttonsVisible: boolean

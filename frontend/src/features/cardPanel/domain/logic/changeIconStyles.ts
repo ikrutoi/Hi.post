@@ -1,3 +1,5 @@
+import { themeColors } from '@shared/config/theme'
+
 export function changeIconStyles(
   btnsState: { fullCard: Record<string, boolean> },
   refs: Record<string, HTMLElement | null>
@@ -14,11 +16,11 @@ export function changeIconStyles(
       'background-color 300ms ease-in-out, color 300ms ease-in-out'
 
     if (isActive) {
-      ref.style.backgroundColor = 'rgba(240, 240, 240, 0.75)'
-      ref.style.color = 'rgba(71, 71, 71, 1)'
+      ref.style.backgroundColor = themeColors.background.default
+      ref.style.color = themeColors.text.primary
     } else {
-      ref.style.backgroundColor = 'rgba(240, 240, 240, 0)'
-      ref.style.color = 'rgba(71, 71, 71, 0)'
+      ref.style.backgroundColor = 'transparent'
+      ref.style.color = 'transparent'
     }
   })
 }

@@ -1,102 +1,89 @@
-import React from 'react'
-import './Envelope.scss'
-
-import { Mark, Toolbar } from '@envelope/view/presentation'
+import React, { useEffect } from 'react'
+import clsx from 'clsx'
+import { ENVELOPE_ROLES } from '@shared/config/constants'
+import { Mark } from '@envelope/view/presentation'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { getSafeLang } from '@i18n/helpers'
+import { i18n } from '@i18n/i18n'
 import { EnvelopeAddress } from '../addressForm/presentation'
-
-import { useEnvelopeState } from '../infrastructure/state'
-import {
-  useEnvelopeController,
-  useEnvelopeTranslations,
-  useMiniAddressEffect,
-  useEnvelopeSyncController,
-} from '@envelope/application/controllers'
-import {
-  useToolbarInteraction,
-  useLogoHeight,
-} from '@envelope/view/application'
-import { useAddressBookController } from '@envelope/addressBook/application/controllers'
-
-import { ADDRESS_ROLES } from '../domain/models'
-import { useCurrentLang } from 'shared-legacy/localizationLegacy/useCurrentLang'
-import { addEnvelope } from '@store/slices/cardEditSlice'
+import { useLayoutNavFacade } from '@layoutNav/application/facades'
+import { useEnvelopeFacade } from '../application/facades'
+import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
-  cardPuzzleRef: React.RefObject<HTMLDivElement>
+  cardPuzzleRef: React.RefObject<HTMLDivElement | null>
 }
 
 export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
-  const lang = useCurrentLang()
+  const lang = getSafeLang(i18n.language)
+
+  // const t = useEnvelopeTranslations(lang)
 
   const {
-    value,
-    setValue,
-    memoryAddress,
-    setMemoryAddress,
-    btnsAddress,
-    setBtnsAddress,
-    countAddress,
-    setCountAddress,
-    stateMouseClip,
-    setStateMouseClip,
-    heightLogo,
-    setHeightLogo,
-    inputRefs,
-    btnIconRefs,
-    addressFieldsetRefs,
-    addressLegendRefs,
-    envelopeLogoRef,
-  } = useEnvelopeState()
+    state: {
+      value,
+      memoryAddress,
+      btnsAddress,
+      countAddress,
+      stateMouseClip,
+      heightLogo,
+    },
+    refs: {
+      inputRefs,
+      btnIconRefs,
+      addressFieldsetRefs,
+      addressLegendRefs,
+      envelopeLogoRef,
+    },
+    actions: {
+      local: {
+        setValue,
+        setMemoryAddress,
+        setBtnsAddress,
+        setCountAddress,
+        setStateMouseClip,
+        setHeightLogo,
+      },
+      controller: { handleValue, handleMovingBetweenInputs },
+      interaction: { handleAddressAction },
+    },
+  } = useEnvelopeFacade()
 
-  const t = useEnvelopeTranslations(lang)
+  const { state } = useLayoutNavFacade()
+  const { selectedCardMenuSection } = state
 
-  // useMiniAddressEffect({ value, setBtnsAddress })
-  useLogoHeight({ cardPuzzleRef, setHeightLogo })
-
-  const { handleValue, handleMovingBetweenInputs } = useEnvelopeController({
-    inputRefs,
-    setValue,
-  })
-
-  const { handleClickBtn, handleClickClip } = useAddressBookController({
-    value,
-    setValue,
-    memoryAddress,
-    setMemoryAddress,
-    btnsAddress,
-    setBtnsAddress,
-    countAddress,
-    setCountAddress,
-  })
-
-  const { handleMouseEnter, handleMouseLeave } = useToolbarInteraction({
-    btnsAddress,
-    btnIconRefs,
-  })
-
-  useEnvelopeSyncController(value)
+  useEffect(() => {
+    if (!cardPuzzleRef.current) return
+    const observer = new ResizeObserver(() => {
+      const height = cardPuzzleRef.current?.offsetHeight ?? 0
+      setHeightLogo(height * 0.15)
+    })
+    observer.observe(cardPuzzleRef.current)
+    return () => observer.disconnect()
+  }, [cardPuzzleRef, setHeightLogo])
 
   return (
-    <div className="envelope">
-      <div className="envelope__toolbar">
-        <Toolbar />
-      </div>
+    <div className={styles.envelope}>
+      <div className={styles.envelope__toolbar}>{/* <Toolbar /> */}</div>
 
-      <div className="envelope__logo-container">
+      <div className={styles.envelope__logoContainer}>
         <span
-          className="envelope__logo"
+          className={styles.envelope__logo}
           ref={envelopeLogoRef}
           style={{ height: heightLogo ?? 0 }}
         />
       </div>
 
-      {ADDRESS_ROLES.map((role) => (
+      {ENVELOPE_ROLES.map((role) => (
         <div
           key={role}
-          className={`envelope__section envelope__section--${role}`}
+          className={clsx(
+            styles.envelope__section,
+            styles[`envelope__section--${role}`]
+          )}
         >
           <EnvelopeAddress
-            values={value}
+            value={value}
             role={role}
             lang={lang}
             handleValue={handleValue}
@@ -109,10 +96,9 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
             setAddressLegendRef={(id) => (el) =>
               (addressLegendRefs.current[id] = el!)
             }
-            handleClickBtn={handleClickBtn}
-            handleClickClip={handleClickClip}
-            handleMouseEnter={handleMouseEnter}
-            handleMouseLeave={handleMouseLeave}
+            handleAddressAction={handleAddressAction}
+            handleMouseEnter={(id) => setStateMouseClip(id)}
+            handleMouseLeave={() => setStateMouseClip(null)}
             stateMouseClip={stateMouseClip}
           />
         </div>

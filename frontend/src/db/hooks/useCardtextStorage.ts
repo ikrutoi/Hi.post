@@ -1,9 +1,9 @@
 import { Transforms, Editor, Node } from 'slate'
-import { db } from '@db/publicApi'
+import { cardtextAdapter } from '../adapters/storeAdapters'
 
 export const useCardtextStorage = (editor: Editor) => {
-  const loadFromMemory = async (id: number) => {
-    const record = await db.card.cardtext.getById(id)
+  const loadTemplateById = async (id: number) => {
+    const record = await cardtextAdapter.getByLocalId(id)
     if (!record) return null
 
     clearEditor()
@@ -11,13 +11,13 @@ export const useCardtextStorage = (editor: Editor) => {
     return record.text
   }
 
-  const saveToMemory = async (nodes: Node[]) => {
-    await db.card.cardtext.addUniqueRecord(nodes)
+  const saveTemplate = async (nodes: Node[]) => {
+    await cardtextAdapter.addUniqueRecord(nodes)
   }
 
-  const getMemoryStats = async () => {
-    const count = await db.card.cardtext.count()
-    const list = count ? await db.card.cardtext.getAll() : []
+  const getTemplateStats = async () => {
+    const count = await cardtextAdapter.count()
+    const list = count ? await cardtextAdapter.getAll() : []
     return { count, list }
   }
 
@@ -30,8 +30,9 @@ export const useCardtextStorage = (editor: Editor) => {
   }
 
   return {
-    loadFromMemory,
-    saveToMemory,
-    getMemoryStats,
+    loadTemplateById,
+    saveTemplate,
+    getTemplateStats,
+    clearEditor,
   }
 }

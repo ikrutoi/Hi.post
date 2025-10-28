@@ -4,7 +4,7 @@ import {
   selectSizeMiniCard,
   selectRemSize,
 } from '../../infrastructure/selectors'
-import { sizeController } from '../../application/controllers'
+import { useSizeController } from '../../application/controllers'
 
 export const useSizeFacade = () => {
   const dispatch = useAppDispatch()
@@ -12,7 +12,8 @@ export const useSizeFacade = () => {
   const sizeMiniCard = useAppSelector(selectSizeMiniCard)
   const remSize = useAppSelector(selectRemSize)
 
-  const { setSizeCard, setSizeMiniCard, setRemSize } = sizeController(dispatch)
+  const { setSizeCard, setSizeMiniCard, setRemSize } =
+    useSizeController(dispatch)
 
   return {
     size: {

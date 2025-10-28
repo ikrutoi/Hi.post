@@ -1,4 +1,3 @@
-export * from './cardPanel.types'
 export * from './ui.types'
 export * from './duplicate.types'
 

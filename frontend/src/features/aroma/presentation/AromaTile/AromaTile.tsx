@@ -1,24 +1,17 @@
 import React from 'react'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
-import type { AromaItem } from '@entities/aroma/domain/types/aroma.types'
-
+import type { AromaTileProps } from '../../domain/types'
 import styles from './AromaTile.module.scss'
 
-interface AromaTileProps {
-  selectedAroma: AromaItem | null
-  elementAroma: AromaItem
-  setSelectedAroma: (aroma: AromaItem) => void
-  tileSize: { width: number; height: number }
-}
-
-const AromaTile: React.FC<AromaTileProps> = ({
+export const AromaTile: React.FC<AromaTileProps> = ({
   selectedAroma,
   elementAroma,
   setSelectedAroma,
   tileSize,
 }) => {
-  const imageSrc = getAromaImage(elementAroma.index)
+  if (!tileSize) return null
 
+  const imageSrc = getAromaImage(elementAroma.index)
   const isSelected =
     selectedAroma?.make === elementAroma.make &&
     selectedAroma?.name === elementAroma.name
@@ -50,5 +43,3 @@ const AromaTile: React.FC<AromaTileProps> = ({
     </button>
   )
 }
-
-export default AromaTile

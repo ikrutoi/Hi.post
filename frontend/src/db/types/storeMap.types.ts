@@ -1,25 +1,28 @@
-import type { Address } from '@envelope/domain/types'
-
-import type { CartPostcard } from '@features/cart/publicApi'
-import type { DraftPostcard } from '@features/drafts/publicApi'
-import type { SentPostcard } from '@features/sent/publicApi'
-import type { IndexedImage } from '@features/cardphoto/domain/image.types'
+import type { ImageTemplateItem } from '@cardphoto/domain/types'
+import type { CardtextTemplateItem } from '@cardtext/domain/types'
+import type { CardtextRecord } from '../types'
+import type { AddressTemplateItem } from '@entities/envelope/domain/types'
+import type { CartItem } from '@entities/cart/domain/types'
+import type { DraftsItem } from '@entities/drafts/domain/types'
+import type { SentItem } from '@entities/sent/domain/types'
 
 export interface StoreMap {
-  stockImages: IndexedImage
-  userImages: IndexedImage
-  cardtext: { id: number; text: Node[] }
-  senderAddress: {
-    id: number
-    address: Address
-    personalId: string
-  }
-  recipientAddress: {
-    id: number
-    address: Address
-    personalId: string
-  }
-  cart: CartPostcard
-  drafts: DraftPostcard
-  sent: SentPostcard
+  stockImages: ImageTemplateItem
+  userImages: ImageTemplateItem
+  cardtext: CardtextRecord
+  sender: AddressTemplateItem
+  recipient: AddressTemplateItem
+  cart: CartItem
+  drafts: DraftsItem
+  sent: SentItem
+}
+export interface TemplateStoreMap {
+  stockImages: ImageTemplateItem[]
+  userImages: ImageTemplateItem[]
+  cardtext: CardtextTemplateItem[]
+  sender: AddressTemplateItem[]
+  recipient: AddressTemplateItem[]
+  cart: CartItem[]
+  drafts: DraftsItem[]
+  sent: SentItem[]
 }

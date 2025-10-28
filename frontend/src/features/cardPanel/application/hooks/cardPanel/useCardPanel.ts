@@ -2,7 +2,6 @@ import { useCardPanelState } from './useCardPanelState'
 import { useCardPanelHandlers } from './useCardPanelHandlers'
 import { useCardPanelDb } from './useCardPanelDb'
 import { useCardPanelSections } from './useCardPanelSections'
-
 import type { CardPanel } from '@features/cardPanel/domain/types'
 
 export const useCardPanel = (): CardPanel => {

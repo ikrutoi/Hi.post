@@ -1,7 +1,7 @@
 import axios from 'axios'
-import type { AxiosResponse } from '@features/auth/types/axios'
-import type { RegisterPayload } from '@features/auth/types/auth.types'
-import { AuthResponse } from '@features/auth/types/auth.types'
+import type { AxiosResponse } from '@/features/auth/domain/types/axios.types'
+import type { RegisterPayload } from '@/features/auth/domain/types/auth.types'
+import { AuthResponse } from '@/features/auth/domain/types/auth.types'
 
 export interface LoginPayload {
   email: string

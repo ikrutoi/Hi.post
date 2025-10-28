@@ -1,62 +1,72 @@
-import { PresetSource, SectionPreset } from '../../domain/types'
 import { presetService } from '../services/presetService'
 import { addressService } from '../services/addressService'
-import { useLayoutControllers } from '@/features/layout/application/hooks'
-import { useAppDispatch } from '@app/hooks'
-import { updateButtonsState } from '../state/infoButtonsSlice'
+import { useLayoutFacade } from '@layout/application/facades'
+import { useLayoutNavFacade } from '@layoutNav/application/facades'
+import { useEnvelopeFacade } from '@envelope/application/facades'
+import type { CartItem } from '@entities/cart/domain/types'
+import type { Template } from '@shared/config/constants'
 
 type PresetAction = 'save' | 'remove'
 
 export const useSectionPresetsActions = (
-  sectionClip: PresetSource,
-  memoryList: SectionPreset[],
-  getMemoryCards: (source: PresetSource) => Promise<void>
+  template: Template,
+  cart: CartItem[],
+  getMemoryCards: (source: Template) => Promise<void>
 ) => {
-  const dispatch = useAppDispatch()
+  // const { setUiState } = useEnvelopeFacade()
   const {
-    setLockExpendMemoryCard,
-    setExpendMemoryCard,
-    setChoiceClip,
-    setFullCard,
-  } = useLayoutControllers()
+    actions: {
+      setExpendMemoryCard,
+      setLockExpendMemoryCard,
+      // setChoiceClip,
+      setFullCard,
+    },
+  } = useLayoutFacade()
+
+  const { actions } = useLayoutNavFacade()
+  const { selectTemplate } = actions
 
   const handleClickCard = (id: string) => {
     setLockExpendMemoryCard(false)
-    setExpendMemoryCard({ source: sectionClip, id })
+    // setExpendMemoryCard({
+    //   id,
+    //   section: template,
+    //   timestamp: Date.now(),
+    // })
 
-    if (sectionClip === 'cart' || sectionClip === 'drafts') {
-      setChoiceClip(false)
-    }
+    // if (template === 'cart' || template === 'drafts') {
+    //   setChoiceClip(false)
+    // }
   }
 
   const handleBtnCardClick = async (btn: PresetAction, id: string) => {
-    const card = memoryList.find((c) => c.id === id)
+    const card = cart.find((card) => card.id === id)
     if (!card) return
 
-    if (btn === 'save' && card.personalId) {
-      switch (sectionClip) {
+    if (btn === 'save' && card.id) {
+      switch (template) {
         case 'cart':
         case 'drafts':
           await presetService.saveBlank(card)
           break
         case 'recipient':
-          await addressService.saveRecipient(card.address!, card.personalId)
+          await addressService.saveRecipient(card.recipient!, card.id)
           break
-        case 'sender':
-          await addressService.saveSender(card.address!, card.personalId)
-          break
+        // case 'sender':
+        //   await addressService.saveSender(card.sender!, card.id)
+        //   break
       }
     }
 
     if (btn === 'remove') {
-      await presetService.deletePreset(sectionClip, id)
+      await presetService.deletePreset(template, id)
 
-      if (sectionClip === 'recipient' || sectionClip === 'sender') {
-        dispatch(updateButtonsState({ envelopeRemoveAddress: sectionClip }))
-      }
+      // if (template === 'recipient' || template === 'sender') {
+      //   setUiState({ envelopeRemoveAddress: template })
+      // }
     }
 
-    await getMemoryCards(sectionClip)
+    await getMemoryCards(template)
     setFullCard(true)
   }
 

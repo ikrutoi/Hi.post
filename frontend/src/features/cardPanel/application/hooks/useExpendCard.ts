@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import type { RefObject } from 'react'
 import { useDispatch } from 'react-redux'
-
+import { useLayoutFacade } from '@layout/application/facades'
 import {
   setLockExpendMemoryCard,
   setActiveSections,
@@ -13,27 +13,33 @@ import {
   addEnvelope,
   addCardtext,
 } from '@store/slices/cardEditSlice'
-
-import { cartAdapter } from '@db/adapters/cart'
-import { draftsAdapter } from '@db/adapters/drafts'
-import { userImagesAdapter } from '@db/adapters/card/userImagesAdapter'
-
-import type { ExpendCard } from '../../domain/types'
+import {
+  cartTemplatesAdapter,
+  draftsTemplatesAdapter,
+} from '@db/adapters/templateAdapters'
+import { imageAdapter } from '@db/adapters/storeAdapters'
+import type { MemoryCardInfo } from '@layout/domain/types'
+import type { SectionsToolbar } from '@shared/types'
+import { act } from '@testing-library/react'
 
 interface UseExpendCardParams {
-  expendCard: ExpendCard | null
+  expendCard: MemoryCardInfo | null
   lockExpendCard: boolean
-  activeSections: Record<string, boolean>
-  btnArrowsRef: RefObject<HTMLElement | null>
+  selectSection: SectionsToolbar | null
+  buttonArrowsRef: RefObject<HTMLButtonElement | null>
 }
 
 export function useExpendCard({
   expendCard,
   lockExpendCard,
-  activeSections,
-  btnArrowsRef,
+  selectSection,
+  buttonArrowsRef,
 }: UseExpendCardParams) {
+  const { section } = useLayoutFacade()
+  const { activeSection } = section
   const dispatch = useDispatch()
+
+  const userImagesAdapter = imageAdapter.userImages
 
   useEffect(() => {
     const loadCard = async () => {
@@ -42,7 +48,10 @@ export function useExpendCard({
 
       dispatch(setLockExpendMemoryCard(true))
 
-      const adapter = expendCard.source === 'cart' ? cartAdapter : draftsAdapter
+      const adapter =
+        expendCard.source === 'cart'
+          ? cartTemplatesAdapter
+          : draftsTemplatesAdapter
 
       const cardExpend = await adapter.getById(Number(expendCard.id))
       if (!cardExpend) return
@@ -71,18 +80,18 @@ export function useExpendCard({
         })
       )
 
-      dispatch(
-        setActiveSections({
-          ...activeSections,
-          cardphoto: !!cardExpend.cardphoto,
-          cardtext: !!cardExpend.cardtext,
-          envelope: !!cardExpend.envelope,
-          date: !!cardExpend.date,
-          aroma: !!cardExpend.aroma,
-        })
-      )
+      // dispatch(
+      //   setActiveSections({
+      //     ...activeSection,
+      //     cardphoto: !!cardExpend.cardphoto,
+      //     cardtext: !!cardExpend.cardtext,
+      //     envelope: !!cardExpend.envelope,
+      //     date: !!cardExpend.date,
+      //     aroma: !!cardExpend.aroma,
+      //   })
+      // )
 
-      btnArrowsRef?.current?.classList.add('full')
+      buttonArrowsRef?.current?.classList.add('full')
     }
 
     loadCard()

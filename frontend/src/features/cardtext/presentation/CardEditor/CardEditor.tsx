@@ -1,50 +1,55 @@
 import React from 'react'
 import { Slate, Editable } from 'slate-react'
-import { useCardEditorController } from '@features/cardtext/application/controllers/useCardEditorController'
-import { Toolbar } from '@features/cardtext/toolbar/presentation/Toolbar.view'
+import { useCardEditorController } from '@features/cardtext/application/hooks'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
 import styles from './CardEditor.module.scss'
 
-export const CardEditor: React.FC = () => {
+interface CardEditorProps {
+  styleLeft: number
+}
+
+export const CardEditor: React.FC<CardEditorProps> = ({ styleLeft }) => {
   const {
     editor,
     value,
     setValue,
     handleSlateChange,
-    handleClickBtn,
-    handleClickBtnMain,
+    handleClickButton,
+    handleClickButtonMain,
     handleClickColor,
     editorRef,
     editableRef,
-    btnColor,
-    setBtnColor,
-    btnsCardtext,
-    btnIconRefs,
-    setBtnIconRefs,
-    infoButtonsCardtext,
-    styleLeftCardPuzzle,
+    buttonColor,
+    setButtonColor,
+    cardtextToolbar,
+    buttonIconRefs,
+    setButtonIconRefs,
+    // infoButtonsCardtext,
+    // styleLeftCardPuzzle,
     cardEditCardtext,
     remSize,
     saveToMemory,
-    listBtnsCardtext,
-    listBtnsCardtextMain,
+    // listBtnsCardtext,
+    // listBtnsCardtextMain,
   } = useCardEditorController()
 
   return (
     <div className={styles.editor}>
       <Toolbar
-        listBtns={listBtnsCardtext}
-        listBtnsMain={listBtnsCardtextMain}
-        btnColor={btnColor}
-        remSize={remSize}
-        setBtnColor={setBtnColor}
-        infoButtonsCardtext={infoButtonsCardtext}
-        onSelectColor={handleClickColor}
-        styleLeftCardPuzzle={styleLeftCardPuzzle}
-        btnIconRefs={btnIconRefs}
-        setBtnIconRefs={setBtnIconRefs}
-        handleClickBtn={handleClickBtn}
-        handleClickBtnMain={handleClickBtnMain}
-        btnsCardtext={btnsCardtext}
+        section="cardtext"
+        // listBtns={listBtnsCardtext}
+        // listBtnsMain={listBtnsCardtextMain}
+        // buttonColor={buttonColor}
+        // remSize={remSize}
+        // setButtonColor={setButtonColor}
+        // infoButtonsCardtext={infoButtonsCardtext}
+        // onSelectColor={handleClickColor}
+        // styleLeftCardPuzzle={styleLeftCardPuzzle}
+        // buttonIconRefs={buttonIconRefs}
+        // setButtonIconRefs={setButtonIconRefs}
+        // handleClickButton={handleClickButton}
+        // handleClickButtonMain={handleClickButtonMain}
+        // cardtextToolbar={cardtextToolbar}
       />
 
       <div className={styles['editor__area']} ref={editorRef}>

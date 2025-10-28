@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { initialAddress } from '@envelope/domain/models'
-import type { Address, AddressRole } from '@envelope/domain/types'
+import { initialAddressFields } from '@envelope/domain/models'
+import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
 
 export interface EnvelopeState {
-  sender: Address
-  recipient: Address
+  sender: AddressFields
+  recipient: AddressFields
 }
 
 const initialState: EnvelopeState = {
-  sender: { ...initialAddress },
-  recipient: { ...initialAddress },
+  sender: { ...initialAddressFields },
+  recipient: { ...initialAddressFields },
 }
 
 const envelopeSlice = createSlice({
@@ -23,8 +23,8 @@ const envelopeSlice = createSlice({
     updateAddressField(
       state,
       action: PayloadAction<{
-        role: AddressRole
-        field: keyof Address
+        role: EnvelopeRole
+        field: keyof AddressFields
         value: string
       }>
     ) {
@@ -32,8 +32,8 @@ const envelopeSlice = createSlice({
       state[role][field] = value
     },
     resetEnvelope(state) {
-      state.sender = { ...initialAddress }
-      state.recipient = { ...initialAddress }
+      state.sender = { ...initialAddressFields }
+      state.recipient = { ...initialAddressFields }
     },
   },
 })

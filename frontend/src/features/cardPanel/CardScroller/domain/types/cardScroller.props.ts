@@ -1,15 +1,10 @@
-import type { CardLetter } from './cardScroller.types'
-
-export interface InfoCardsList {
-  length: number
-  firstLetters: CardLetter[]
-}
+import type { ScrollIndex } from './cardScroller.types'
 
 export interface CardScrollerProps {
   value: number
-  infoCardsList: InfoCardsList
-  maxCardsList: number
-  deltaEnd: boolean
+  scrollIndex: ScrollIndex | null
+  maxCardsList: number | null
+  deltaEnd: number | null
   handleChangeFromSliderCardsList: (index: number | string) => void
   onLetterClick: (evt: React.MouseEvent<HTMLSpanElement>) => void
 }

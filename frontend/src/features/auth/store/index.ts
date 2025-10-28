@@ -1,3 +1,3 @@
-export { authReducer } from '../application/state/auth.slice'
-export * from '../application/state/auth.slice'
+export { authReducer } from '../infrastructure/state/auth.slice'
+export * from '../infrastructure/state/auth.slice'
 export * from './auth.thunks'

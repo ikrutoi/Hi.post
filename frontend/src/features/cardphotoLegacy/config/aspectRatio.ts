@@ -1,1 +1,0 @@
-export const CARDPHOTO_ASPECT_RATIO = 142 / 100

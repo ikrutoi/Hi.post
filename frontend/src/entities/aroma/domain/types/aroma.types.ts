@@ -13,14 +13,8 @@ export type AromaImageIndex =
   | '24'
   | '25'
 
-export interface AromaItem {
+export interface AromaState {
   make: string
   name: string
   index: AromaImageIndex
-}
-
-export type AromaState = {
-  make: string | null
-  name: string | null
-  index: AromaImageIndex | null
 }

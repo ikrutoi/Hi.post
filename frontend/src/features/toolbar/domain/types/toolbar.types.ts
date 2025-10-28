@@ -7,6 +7,10 @@ import type {
   EnvelopeToolbarKey,
 } from '../types'
 
+export const TOOLBAR_SECTIONS = ['cardphoto', 'cardtext', 'envelope'] as const
+
+export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
+
 export type ToolbarState = {
   cardphoto: CardphotoToolbarState
   cardtext: CardtextToolbarState

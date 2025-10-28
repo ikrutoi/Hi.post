@@ -4,7 +4,7 @@ export interface CardLetter {
   letter: string
 }
 
-export interface InfoCardsList {
-  length: number
+export interface ScrollIndex {
+  totalCount: number
   firstLetters: CardLetter[]
 }

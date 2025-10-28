@@ -1,6 +1,9 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { updateDispatchDate } from '../../infrastructure/state/date.slice'
-import { selectDispatchDate } from '../../infrastructure/selectors/date.selector'
+import {
+  updateDispatchDate,
+  resetDispatchDate,
+} from '../../infrastructure/state'
+import { selectDispatchDate } from '../../infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 
 export const useDateController = () => {
@@ -9,10 +12,6 @@ export const useDateController = () => {
 
   const setDispatchDate = (payload: DispatchDate) => {
     dispatch(updateDispatchDate(payload))
-  }
-
-  const resetDispatchDate = () => {
-    dispatch(updateDispatchDate({ isSelected: false }))
   }
 
   const isDateSelected = dispatchDate.isSelected

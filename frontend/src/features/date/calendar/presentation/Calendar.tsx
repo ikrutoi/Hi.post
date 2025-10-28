@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import styles from './Calendar.module.scss'
-
 import { CalendarWeekTitle } from './CalendarWeekTitle/CalendarWeekTitle'
-import { useCalendarConstruction } from '@features/date/calendar/application/logic/calendarConstruction.logic'
 import {
   daysOfWeekStartFromMon,
   daysOfWeekStartFromSun,
 } from '@entities/date/constants'
+import { useCalendarConstruction } from '@date/calendar/application/logic'
+import styles from './Calendar.module.scss'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { Cart } from '@cart/domain/types'
 

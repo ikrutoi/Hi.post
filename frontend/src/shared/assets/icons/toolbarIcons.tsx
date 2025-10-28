@@ -33,7 +33,7 @@ import type { IconKey } from '@shared/types'
 
 export const toolbarIcons: Record<IconKey, JSX.Element> = {
   save: <FiSave />,
-  clip: <LuPaperclip />,
+  savedTemplates: <LuPaperclip />,
   delete: <FiDelete />,
   remove: <MdDeleteOutline />,
   download: <FiDownload />,

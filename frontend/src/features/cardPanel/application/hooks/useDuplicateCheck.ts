@@ -7,7 +7,7 @@ import type { CardData } from '@cardPanel/domain/types/cardPanel.types'
 export function useDuplicate(card: CardData) {
   const dispatch = useDispatch()
   const [flags, setFlags] = useState({
-    addShopping: true,
+    addedCart: true,
     save: true,
   })
 
@@ -22,7 +22,7 @@ export function useDuplicate(card: CardData) {
     }
   }, [card])
 
-  const updatePersonalId = (source: 'shopping' | 'blanks', id: string) => {
+  const updatePersonalId = (source: 'cart' | 'drafts', id: string) => {
     dispatch(setFullCardPersonalId({ [source]: id }))
   }
 

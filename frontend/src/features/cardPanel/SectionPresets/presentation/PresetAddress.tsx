@@ -1,43 +1,43 @@
 import React from 'react'
 import styles from './SectionPresets.module.scss'
-import { PresetSource } from '../domain/types'
+import type { Template } from '@shared/config/constants'
 import { trimLines } from '../application/helpers/trimLines'
 
 interface Props {
   name: string
   country: string
-  section: PresetSource
+  template: Template
   spanRef?: (el: HTMLElement | null) => void
 }
 
 export const PresetAddress: React.FC<Props> = ({
   name,
   country,
-  section,
+  template,
   spanRef,
 }) => {
   return (
-    <span className={styles['section-presets__address']}>
-      {section === 'toaddress' && (
+    <span className={styles['template-presets__address']}>
+      {template === 'recipient' && (
         <>
           <span
-            className={styles['section-presets__name--toaddress']}
+            className={styles['template-presets__name--recipient']}
             ref={spanRef}
           >
-            {trimLines(section, name)}
+            {trimLines(template, name)}
           </span>
-          <span className={styles['section-presets__country--toaddress']}>
+          <span className={styles['template-presets__country--recipient']}>
             {country}
           </span>
         </>
       )}
-      {section === 'myaddress' && (
+      {template === 'sender' && (
         <>
-          <span className={styles['section-presets__country--myaddress']}>
+          <span className={styles['template-presets__country--sender']}>
             {country}
           </span>
-          <span className={styles['section-presets__name--myaddress']}>
-            {trimLines(section, name)}
+          <span className={styles['template-presets__name--sender']}>
+            {trimLines(template, name)}
           </span>
         </>
       )}

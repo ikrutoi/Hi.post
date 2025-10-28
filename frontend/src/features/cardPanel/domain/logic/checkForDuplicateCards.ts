@@ -1,21 +1,25 @@
-import { cartAdapter } from '@db/adapters/cart'
-import { draftsAdapter } from '@db/adapters/drafts'
-
-import { SOURCES } from '../constants'
-import type { Source, Section, DuplicateResult, CardData } from '../types'
+import {
+  cartTemplatesAdapter,
+  draftsTemplatesAdapter,
+} from '@db/adapters/templateAdapters'
+import { SOURCES } from '@shared/config/constants'
 import type {
-  AddressRole,
+  Template,
+  CardMenuSection,
+  EnvelopeRole,
   AddressField,
-} from '@/features/envelope/domain/types'
+} from '@shared/config/constants'
+import type { CardItem } from '@entities/card/domain/types'
+import type { DuplicateResult } from '../types'
 
 export async function checkForDuplicateCards(
-  card: CardData
+  card: CardItem
 ): Promise<DuplicateResult> {
   const sources = SOURCES
 
   const cards = {
-    cart: await cartAdapter.getAll(),
-    drafts: await draftsAdapter.getAll(),
+    cart: await cartTemplatesAdapter.getAll(),
+    drafts: await draftsTemplatesAdapter.getAll(),
   }
 
   const result: DuplicateResult = {
@@ -31,7 +35,7 @@ export async function checkForDuplicateCards(
         card.aroma.name === sourceCard.aroma.name &&
         card.aroma.make === sourceCard.aroma.make
       ) {
-        result[source].aroma.push(sourceCard.personalId)
+        result[source].aroma.push(sourceCard.id)
       }
 
       if (
@@ -41,22 +45,19 @@ export async function checkForDuplicateCards(
         card.date.month === sourceCard.date.month &&
         card.date.day === sourceCard.date.day
       ) {
-        result[source].date.push(sourceCard.personalId)
+        result[source].date.push(sourceCard.id)
       }
 
-      const sectionsEnvelope: AddressRole[] = ['sender', 'recipient']
-      const envelopeMatch = sectionsEnvelope.every((sectionEnv) =>
-        (
-          Object.keys(card.envelope?.[sectionEnv] || {}) as AddressField[]
-        ).every(
+      const envelopeRole: EnvelopeRole[] = ['sender', 'recipient']
+      const envelopeMatch = envelopeRole.every((role) =>
+        (Object.keys(card.envelope?.[role] || {}) as AddressField[]).every(
           (key) =>
-            card.envelope?.[sectionEnv]?.[key] ===
-            sourceCard.envelope?.[sectionEnv]?.[key]
+            card.envelope?.[role]?.[key] === sourceCard.envelope?.[role]?.[key]
         )
       )
 
       if (envelopeMatch) {
-        result[source].envelope.push(sourceCard.personalId)
+        result[source].envelope.push(sourceCard.id)
       }
 
       if (
@@ -67,11 +68,11 @@ export async function checkForDuplicateCards(
             sourceCard.cardtext?.text[i]?.children[0]?.text
         )
       ) {
-        result[source].cardtext.push(sourceCard.personalId)
+        result[source].cardtext.push(sourceCard.id)
       }
 
       // if (card.cardphoto?.size === sourceCard.cardphoto?.size) {
-      //   result[source].cardphoto.push(sourceCard.personalId)
+      //   result[source].cardphoto.push(sourceCard.id)
       // }
     }
   }
@@ -79,18 +80,18 @@ export async function checkForDuplicateCards(
   return result
 }
 
-export async function getDuplicateFlags(card: CardData): Promise<{
-  addCart: boolean
+export async function getDuplicateFlags(card: CardItem): Promise<{
+  addedCart: boolean
   save: boolean
 }> {
   const result = await checkForDuplicateCards(card)
   return {
-    addCart: result.cart.aroma.length === 0,
+    addedCart: result.cart.aroma.length === 0,
     save: result.drafts.aroma.length === 0,
   }
 }
 
-export async function getDuplicateSummary(card: CardData): Promise<{
+export async function getDuplicateSummary(card: CardItem): Promise<{
   cart: boolean
   drafts: boolean
 }> {

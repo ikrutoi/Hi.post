@@ -1,18 +1,18 @@
 import { useEffect } from 'react'
-import { useLayoutControllers } from '@/features/layout/application/hooks'
+import { useLayoutFacade } from '@layout/application/facades'
 
 export const useSectionPresetsScroll = (
   movingCards: (index: number) => void
 ) => {
-  const { getSliderLine, getSliderLetter } = useLayoutControllers()
+  const { meta } = useLayoutFacade()
+  const { sliderLetter, sliderLine } = meta
 
   useEffect(() => {
-    const line = getSliderLine()
-    if (line !== null) movingCards(Number(line))
-  }, [getSliderLine])
+    if (sliderLine !== null) movingCards(Number(sliderLine))
+  }, [sliderLine])
 
   useEffect(() => {
-    const letter = getSliderLetter()
-    if (letter?.index !== undefined) movingCards(Number(letter.index))
-  }, [getSliderLetter])
+    if (sliderLetter?.index !== undefined)
+      movingCards(Number(sliderLetter.index))
+  }, [sliderLetter])
 }

@@ -1,24 +1,24 @@
 import { stateColors, transparentColor } from '@shared/config/theme'
-import type { State } from '@shared/config/theme'
-import type { CardSectionName } from '@shared/types'
+import type { IconState, CardMenuSection } from '../../config/constants'
 import type { CardtextToolbarKey } from '@toolbar/domain/types'
 
-const styleCursor: Record<State, string> = {
+const styleCursor: Record<IconState, string> = {
   disabled: 'default',
   enabled: 'pointer',
   active: 'pointer',
 }
 
-type ButtonState = Record<string, State>
-type SectionState = Record<CardSectionName, ButtonState>
+type ButtonState = Record<string, IconState>
 type IconRefs = Record<string, HTMLButtonElement | null>
 
+type PartialSectionState = Partial<Record<CardMenuSection, ButtonState>>
+
 export const applyIconStylesByStatus = (
-  buttons: SectionState,
+  buttons: PartialSectionState,
   buttonIconRefs: IconRefs
 ): void => {
-  Object.entries(buttons).forEach(([section, buttons]) => {
-    Object.entries(buttons).forEach(([key, state]) => {
+  Object.entries(buttons).forEach(([section, sectionButtons]) => {
+    Object.entries(sectionButtons).forEach(([key, state]) => {
       const refKey = `${section}-${key}`
       const ref = buttonIconRefs[refKey]
       if (!ref) return
@@ -28,9 +28,7 @@ export const applyIconStylesByStatus = (
         const timer = setTimeout(() => {
           ref.classList.add('full')
           ref.style.color = stateColors[state]
-          if (state in styleCursor) {
-            ref.style.cursor = styleCursor[state as keyof typeof styleCursor]
-          }
+          ref.style.cursor = styleCursor[state]
         }, 0)
         return () => clearTimeout(timer)
       }
@@ -41,12 +39,10 @@ export const applyIconStylesByStatus = (
         key
       )
       const typedKey = key as CardtextToolbarKey
-      const isActive = buttons.cardtext?.[typedKey] === 'active'
+      const isActive = sectionButtons[typedKey] === 'active'
 
       if (!isTextAlignButton || !isActive) {
-        if (state in styleCursor) {
-          ref.style.cursor = styleCursor[state as keyof typeof styleCursor]
-        }
+        ref.style.cursor = styleCursor[state]
       }
     })
   })

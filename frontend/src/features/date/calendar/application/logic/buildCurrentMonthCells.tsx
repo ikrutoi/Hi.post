@@ -1,13 +1,13 @@
-import { Cell } from '../../presentation/Calendar/Cell/Cell'
 import { isTabooDate } from '@entities/date/utils/isTabooDate'
-import type { DispatchDate } from '@entities/date/domain/types'
-import type { CartPostcard } from '@features/cart/publicApi'
 import { changeCartDay } from './changeCartDay'
+import { Cell } from '../../../cell/presentation/Cell'
+import type { DispatchDate } from '@entities/date/domain/types'
+import type { CartItem } from '@cart/domain/types'
 
 interface BuildCurrentMonthCellsParams {
   daysInCurrentMonth: number
-  selectedDate: DispatchDate
-  selectedDateTitle: DispatchDate
+  dispatchDate: DispatchDate
+  dispatchDateTitle: DispatchDate
   titleYear: number
   titleMonth: number
   titleDay: number
@@ -23,13 +23,13 @@ interface BuildCurrentMonthCellsParams {
     day: number
   ) => void
   handleClickCell: (direction: 'before' | 'after') => void
-  isCountCart?: CartPostcard[]
+  isCountCart?: CartItem[]
 }
 
 export const buildCurrentMonthCells = ({
   daysInCurrentMonth,
-  selectedDate,
-  selectedDateTitle,
+  dispatchDate,
+  dispatchDateTitle,
   titleYear,
   titleMonth,
   titleDay,
@@ -46,10 +46,10 @@ export const buildCurrentMonthCells = ({
       titleYear === currentDate.currentYear
 
     const isSelected =
-      selectedDate.isSelected &&
-      selectedDate.year === titleYear &&
-      selectedDate.month === titleMonth &&
-      selectedDate.day === day
+      dispatchDate.isSelected &&
+      dispatchDate.year === titleYear &&
+      dispatchDate.month === titleMonth &&
+      dispatchDate.day === day
 
     const cartDay = isCountCart
       ? changeCartDay(day, titleMonth, titleYear, isCountCart)
@@ -59,11 +59,11 @@ export const buildCurrentMonthCells = ({
       <Cell
         key={`day-${day}`}
         today={isToday}
-        isTaboo={isTabooDate(day, selectedDateTitle, currentDate)}
+        isTaboo={isTabooDate(day, dispatchDateTitle, currentDate)}
         dayCurrent={day}
         handleSelectedDate={handleSelectedDate}
         selected={isSelected}
-        selectedDateTitle={selectedDateTitle}
+        dispatchDateTitle={dispatchDateTitle}
         cartDay={cartDay}
         handleClickCell={handleClickCell}
       />

@@ -1,11 +1,11 @@
-import { Cell } from '../../presentation/Calendar/Cell/Cell'
+import { Cell } from '@date/cell/presentation/Cell'
 import type { DispatchDate } from '@entities/date/domain/types'
 
 export const buildPreviousMonthCells = (
   offset: number,
   daysInPreviousMonth: number,
-  selectedDate: DispatchDate,
-  selectedDateTitle: DispatchDate,
+  dispatchDate: DispatchDate,
+  dispatchDateTitle: DispatchDate,
   dateTodayBefore: { year: number; month: number },
   dateSelectedBefore: { year: number; month: number },
   titleYear: number,
@@ -22,16 +22,20 @@ export const buildPreviousMonthCells = (
   return previousMonth.map((day) => (
     <Cell
       key={`day-before-${day}`}
-      today={day === currentDay && titleMonth === dateTodayBefore.month && titleYear === dateTodayBefore.year}
+      today={
+        day === currentDay &&
+        titleMonth === dateTodayBefore.month &&
+        titleYear === dateTodayBefore.year
+      }
       dayBefore={day}
       isTaboo={false}
-      selected={
-        selectedDate.isSelected &&
+      dispatchDate={
+        dispatchDate.isSelected &&
         titleMonth === dateSelectedBefore.month &&
         titleYear === dateSelectedBefore.year &&
         titleDay === day
       }
-      selectedDateTitle={selectedDateTitle}
+      dispatchDateTitle={dispatchDateTitle}
       handleClickCell={handleClickCell}
     />
   ))

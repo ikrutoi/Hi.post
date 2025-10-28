@@ -1,1 +1,1 @@
-export * from './toolbar.controller'
+export * from './useToolbarController'

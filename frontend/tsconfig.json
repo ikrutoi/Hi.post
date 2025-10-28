@@ -21,6 +21,7 @@
       "@api/*": ["api/*"],
       "@app/*": ["app/*"],
       "@i18n/*": ["i18n/*"],
+      "@cardMenu/*": ["features/cardMenu/*"],
       "@db/*": ["db/*"],
       "@components/*": ["components/*"],
       "@middleware/*": ["middleware/*"],
@@ -46,7 +47,9 @@
       "@cart/*": ["features/cart/*"],
       "@drafts/*": ["features/drafts/*"],
       "@sent/*": ["features/sent/*"],
-      "@layout/*": ["features/layout/*"]
+      "@layout/*": ["features/layout/*"],
+      "@layoutNav/*": ["features/layoutNav/*"],
+      "@styles/*": ["styles/*"]
     }
   },
   "include": ["src"]

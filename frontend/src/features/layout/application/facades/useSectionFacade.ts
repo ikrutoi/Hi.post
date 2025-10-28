@@ -7,13 +7,13 @@ import {
 import type { CardSectionName } from '@/shared/types'
 
 import {
-  getActiveSection,
-  getSelectedSection,
-  getDeleteSection,
-  getChoiceSection,
-  getChoiceMemorySection,
-  getButtonToolbar,
-  getChoiceSave,
+  selectActiveSection,
+  selectSelectedSection,
+  selectDeleteSection,
+  selectChoiceSection,
+  selectChoiceMemorySection,
+  selectButtonToolbar,
+  selectChoiceSave,
   // getChoiceClip,
 } from '../../infrastructure/selectors'
 import {
@@ -30,13 +30,13 @@ import {
 export const useSectionFacade = () => {
   const dispatch = useAppDispatch()
 
-  const activeSection = useAppSelector(getActiveSection)
-  const selectedSection = useAppSelector(getSelectedSection)
-  const deleteSection = useAppSelector(getDeleteSection)
-  const choiceSection = useAppSelector(getChoiceSection)
-  const choiceMemorySection = useAppSelector(getChoiceMemorySection)
-  const buttonToolbar = useAppSelector(getButtonToolbar)
-  const choiceSave = useAppSelector(getChoiceSave)
+  const activeSection = useAppSelector(selectActiveSection)
+  const selectedSection = useAppSelector(selectSelectedSection)
+  const deleteSection = useAppSelector(selectDeleteSection)
+  const choiceSection = useAppSelector(selectChoiceSection)
+  const choiceMemorySection = useAppSelector(selectChoiceMemorySection)
+  const buttonToolbar = useAppSelector(selectButtonToolbar)
+  const choiceSave = useAppSelector(selectChoiceSave)
   // const choiceClip = useAppSelector(getChoiceClip)
 
   return {

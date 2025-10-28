@@ -1,0 +1,16 @@
+.sunmonToggle {
+  background-color: rgb(240, 240, 240);
+  cursor: pointer;
+  user-select: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.3rem;
+  transition: color 0.2s ease;
+
+  &:hover .sunmonLabel {
+    color: #007dd7;
+  }
+}
+
+.sunmonLabel {
+  background-color: transparent;
+}

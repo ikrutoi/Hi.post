@@ -1,8 +1,7 @@
 import React from 'react'
-import './SwitcherButton.scss'
-
-import { theme } from '@/shared/config/theme/themeColors'
-import { formatDispatchDatePart } from '@features/date/switcher/application'
+import clsx from 'clsx'
+import styles from '../Switcher.module.scss'
+import { formatDispatchDate } from '@entities/date/utils'
 import type { DateNumericTitle, DateRole } from '@entities/date/domain/types'
 
 interface SwitcherButtonProps {
@@ -20,26 +19,16 @@ export const SwitcherButton: React.FC<SwitcherButtonProps> = ({
 }) => {
   const isActive = activeDateTitleRole === role
 
-  const handleClick = () => {
-    onToggleRole(role)
-  }
-
   return (
     <span
-      className={`switcher__button switcher__button--${role} ${
-        isActive ? 'switcher__button--active' : ''
-      }`}
-      onClick={handleClick}
-      style={{
-        backgroundColor: isActive
-          ? theme.colors.background.active
-          : theme.colors.background.default,
-        color: isActive
-          ? theme.colors.text.inverted
-          : theme.colors.text.primary,
-      }}
+      className={clsx(
+        styles.switcher__button,
+        styles[`switcher__button--${role}`],
+        isActive && styles['switcher__button--active']
+      )}
+      onClick={() => onToggleRole(role)}
     >
-      {formatDispatchDatePart(dispatchDateTitle, role)}
+      {formatDispatchDate(dispatchDateTitle, role)}
     </span>
   )
 }

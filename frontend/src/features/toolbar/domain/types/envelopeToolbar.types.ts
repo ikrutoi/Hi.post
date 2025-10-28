@@ -1,19 +1,23 @@
-import type { State } from '@shared/config/theme'
+import type { IconKey, IconState } from '@shared/config/constants'
 
-export const ENVELOPE_KEYS = ['save', 'delete', 'clip'] as const
+export const ENVELOPE_KEYS = [
+  'save',
+  'delete',
+  'savedTemplates',
+] as const satisfies readonly IconKey[]
 
 export type EnvelopeToolbarKey = (typeof ENVELOPE_KEYS)[number]
 
 type AddressState = {
-  save: State
-  delete: State
-  clip: State
+  save: IconState
+  delete: IconState
+  savedTemplates: IconState
 }
 
 const initialAddressState: AddressState = {
   save: 'disabled',
   delete: 'disabled',
-  clip: 'disabled',
+  savedTemplates: 'disabled',
 }
 
 export type EnvelopeToolbarState = {

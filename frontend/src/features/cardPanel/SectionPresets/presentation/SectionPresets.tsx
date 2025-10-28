@@ -1,55 +1,63 @@
 import React, { useRef } from 'react'
-import styles from './SectionPresets.module.scss'
-
-import { useAppSelector } from '@app/hooks'
-import { useSectionPresets } from '../application/hooks/useSectionPresets'
-import { useSectionPresetsPositioning } from '../application/hooks/useSectionPresetsPositioning'
-import { useSectionPresetsActions } from '../application/hooks/useSectionPresetsActions'
-import { useSectionPresetsScroll } from '../application/hooks/useSectionPresetsScroll'
+import { useLayoutFacade } from '@layout/application/facades'
+import { useLayoutNavFacade } from '@layoutNav/application/facades'
+import {
+  useSectionPresets,
+  useSectionPresetsPositioning,
+  useSectionPresetsActions,
+  useSectionPresetsScroll,
+} from '../application/hooks'
 import { PresetCard } from './PresetCard'
 import { PresetToolbar } from './PresetToolbar'
 import { PresetAddress } from './PresetAddress'
-import { PresetSource } from '../domain/types'
+import styles from './SectionPresets.module.scss'
+import type { Template } from '@shared/config/constants'
+// import type { InfoCardsList } from '../../CardScroller/domain/types'
 
 interface Props {
-  sizeMiniCard: { width: number; height: number }
   widthCardsList: number
-  setInfoCardsList: (info: { length: number; firstLetters: any[] }) => void
+  // setScrollIndex: (info: { length: number; firstLetters: any[] }) => void
   valueScroll: number
   setValueScroll: (value: number) => void
 }
 
 export const SectionPresets: React.FC<Props> = ({
-  sizeMiniCard,
   widthCardsList,
-  setInfoCardsList,
+  // setScrollIndex,
   valueScroll,
   setValueScroll,
 }) => {
-  const remSize = useAppSelector((state) => state.layout.remSize)
-  const source = useAppSelector((state) => state.layout.setChoiceClip)
+  const { size, ui } = useLayoutFacade()
+  const { remSize, sizeMiniCard } = size
+  // const { selectedTemplate } = ui
+
+  const { state } = useLayoutNavFacade()
+  const { selectedTemplate } = state
 
   const cardRefs = useRef<Record<string, HTMLElement | null>>({})
   const filterRefs = useRef<Record<string, HTMLElement | null>>({})
   const btnIconRefs = useRef<Record<string, HTMLElement | null>>({})
   const spanNameRefs = useRef<Record<string, HTMLElement | null>>({})
 
-  const { sectionPresets, firstLetterList, sectionClip } =
-    useSectionPresets(source)
+  if (!selectedTemplate) return null
+
+  const { sectionPresets, letterIndexList } =
+    useSectionPresets(selectedTemplate)
+
   const { movingCards } = useSectionPresetsPositioning(
     sectionPresets,
-    remSize,
     sizeMiniCard,
-    cardRefs
+    letterIndexList
   )
   const { handleClickCard, handleBtnCardClick } = useSectionPresetsActions(
-    sectionClip,
+    selectedTemplate,
     sectionPresets,
-    () => useSectionPresets(source)
+    () => useSectionPresets(selectedTemplate)
   )
+
   useSectionPresetsScroll(movingCards)
 
-  const memorySections: PresetSource[] = ['cart', 'drafts']
+  const memorySections: Template[] = ['cart', 'drafts']
 
   return (
     <div className={styles['section-presets']}>
@@ -58,36 +66,37 @@ export const SectionPresets: React.FC<Props> = ({
           <PresetCard
             card={card}
             index={index}
-            section={sectionClip}
+            section={selectedTemplate}
             size={sizeMiniCard}
             remSize={remSize}
             refs={{
               cardRef: (el) => (cardRefs.current[`card-${index}`] = el),
-              filterRef: memorySections.includes(sectionClip)
+              filterRef: memorySections.includes(selectedTemplate)
                 ? (el) => (filterRefs.current[`filter-${card.id}`] = el)
                 : undefined,
               spanNameRef:
-                sectionClip === 'recipient'
+                selectedTemplate === 'recipient'
                   ? (el) => (spanNameRefs.current[`span-name-${index}`] = el)
                   : undefined,
             }}
             onClick={handleClickCard}
           />
 
-          {(sectionClip === 'sender' || sectionClip === 'recipient') && (
+          {(selectedTemplate === 'sender' ||
+            selectedTemplate === 'recipient') && (
             <PresetAddress
               name={card.address.name}
               country={card.address.country}
-              section={sectionClip}
+              section={selectedTemplate}
               spanRef={
-                sectionClip === 'recipient'
+                selectedTemplate === 'recipient'
                   ? (el) => (spanNameRefs.current[`span-name-${index}`] = el)
                   : undefined
               }
             />
           )}
 
-          {memorySections.includes(sectionClip) && (
+          {memorySections.includes(selectedTemplate) && (
             <PresetToolbar
               cardId={card.id}
               buttons={['save', 'remove', 'addCart']}

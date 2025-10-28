@@ -5,7 +5,7 @@ import {
   selectCardphotoToolbar,
   selectCardtextToolbar,
   selectEnvelopeToolbar,
-  selectFullCardToolbar,
+  // selectFullCardToolbar,
 } from '../../infrastructure/selectors'
 import { updateToolbar, resetToolbar } from '../../infrastructure/state'
 import type { ToolbarState } from '../../domain/types'
@@ -16,14 +16,14 @@ export const useToolbar = () => {
   const cardphoto = useSelector(selectCardphotoToolbar)
   const cardtext = useSelector(selectCardtextToolbar)
   const envelope = useSelector(selectEnvelopeToolbar)
-  const fullCard = useSelector(selectFullCardToolbar)
+  // const fullCard = useSelector(selectFullCardToolbar)
 
   return {
     toolbar,
     cardphoto,
     cardtext,
     envelope,
-    fullCard,
+    // fullCard,
     updateToolbar: (payload: Partial<ToolbarState>) =>
       dispatch(updateToolbar(payload)),
     resetToolbar: () => dispatch(resetToolbar()),

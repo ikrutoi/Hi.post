@@ -15,7 +15,10 @@ const initialState: SectionState = {
     source: null,
     nameSection: null,
   },
-  choiceMemorySection: {},
+  choiceMemorySection: {
+    section: null,
+    id: null,
+  },
   buttonToolbar: {
     firstBtn: '',
     secondBtn: '',

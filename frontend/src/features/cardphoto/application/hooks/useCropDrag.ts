@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react'
-import type { Position, CropArea } from '@shared/types/crop'
+import type { Position, CropArea } from '../../domain/types'
 
 interface UseCropDragParams {
   imgRef: React.RefObject<HTMLImageElement | null>

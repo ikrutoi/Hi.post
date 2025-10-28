@@ -23,7 +23,7 @@ export const EnvelopeOverlay: React.FC<EnvelopeOverlayProps> = ({
       style={{
         shapeRendering: 'geometricPrecision',
         textRendering: 'geometricPrecision',
-        imageRendering: 'optimizeQuality',
+        imageRendering: 'auto',
         fillRule: 'evenodd',
         clipRule: 'evenodd',
       }}

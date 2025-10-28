@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { z } from 'zod'
 import { userSchema } from '@schemas/userSchema'
-import type { AuthResponse, LoginPayload } from '../types/auth.types'
+import type { AuthResponse, LoginPayload } from '../domain/types/auth.types'
 
 export type RegisterPayload = z.infer<typeof userSchema>
 

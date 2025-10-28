@@ -1,6 +1,6 @@
-import { PresetSource } from '../../domain/types'
+import type { Template } from '@shared/config/constants'
 
-export const trimLines = (source: PresetSource, text: string): string => {
+export const trimLines = (source: Template, text: string): string => {
   const arrText = text
     .trim()
     .split(' ')
@@ -9,16 +9,16 @@ export const trimLines = (source: PresetSource, text: string): string => {
   let limitAll = 0
 
   switch (source) {
-    case 'shopping':
-    case 'blanks':
+    case 'cart':
+    case 'drafts':
       limitSingle = 13
       limitAll = 15
       break
-    case 'myaddress':
+    case 'sender':
       limitSingle = 11
       limitAll = 22
       break
-    case 'toaddress':
+    case 'recipient':
       limitSingle = 15
       limitAll = 30
       break

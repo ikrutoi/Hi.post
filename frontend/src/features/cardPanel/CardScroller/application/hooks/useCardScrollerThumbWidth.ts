@@ -4,7 +4,7 @@ export const useCardScrollerThumbWidth = (
   ref: React.RefObject<HTMLDivElement | null>,
   totalCards: number,
   maxCards: number,
-  deltaEnd: boolean
+  deltaEnd: number
 ) => {
   const [thumbWidth, setThumbWidth] = useState<number | null>(null)
 

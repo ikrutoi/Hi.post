@@ -1,59 +1,56 @@
-import { useRef, useEffect } from 'react'
-
-import styles from './HeaderActions.module.scss'
-import { useHeaderStatus } from '../application/hooks/useHeaderStatus'
+import { useRef } from 'react'
+import clsx from 'clsx'
 import { applyIconStylesByStatus } from '@shared/lib/dom'
 import { getToolbarIcon } from '@shared/utils/icons'
-import { handleToolbarClick } from '../application/handlers/handleToolbarClick'
-import type { State } from '@shared/config/theme/stateColors'
+import { SOURCES } from '@shared/config/constants'
+import { useStoreCount } from '@db/hooks'
+import { cartAdapter, draftsAdapter } from '@db/adapters/factory'
+import styles from './HeaderActions.module.scss'
 
-type Tooltip = 'cart' | 'clip' | 'user'
 type IconRefMap = Record<string, HTMLButtonElement | null>
 
 export const HeaderActions: React.FC = () => {
-  const { status, cartCount, draftsCount } = useHeaderStatus()
+  const sourceCountMap = {
+    cart: useStoreCount(cartAdapter),
+    drafts: useStoreCount(draftsAdapter),
+  }
 
   const btnIconRefs = useRef<IconRefMap>({})
   const setBtnIconRef = (id: string) => (el: HTMLButtonElement | null) => {
     btnIconRefs.current[id] = el
   }
 
-  const statusMapped: Record<string, State> = {
-    cart: status.cart ? 'true' : 'false',
-    clip: status.clip ? 'true' : 'false',
+  const handleClick = () => {
+    // TODO: implement click logic
   }
-
-  useEffect(() => {
-    applyIconStylesByStatus({ status: statusMapped }, btnIconRefs.current)
-  }, [statusMapped])
-
-  const handleClick = (evt: React.MouseEvent<HTMLButtonElement>) =>
-    handleToolbarClick(evt, status)
-
-  const buttons: Tooltip[] = ['cart', 'clip', 'user']
 
   return (
     <div className={styles.headerActions}>
       <div className={styles.headerActions__cards}>
-        {buttons.map((btn) => {
-          const count =
-            btn === 'cart' ? cartCount : btn === 'clip' ? draftsCount : null
+        {SOURCES.map((source) => {
+          const count = sourceCountMap[source] ?? null
 
           return (
             <button
-              key={btn}
-              className={`${styles.toolbarBtn} ${styles[`toolbarBtn--${btn}`]}`}
-              data-tooltip={btn}
-              ref={setBtnIconRef(`status-${btn}`)}
+              key={source}
+              className={clsx(
+                styles.toolbarBtn,
+                styles[`toolbarBtn--${source}`]
+              )}
+              data-tooltip={source}
+              ref={setBtnIconRef(`status-${source}`)}
               onClick={handleClick}
             >
-              {getToolbarIcon(btn)}
+              {getToolbarIcon(source)}
               {count ? (
                 <span
-                  className={`${styles.counterContainer} ${styles[`${btn}CounterContainer`]}`}
+                  className={clsx(
+                    styles.counterContainer,
+                    styles[`${source}CounterContainer`]
+                  )}
                 >
                   <span
-                    className={`${styles.counter} ${styles[`${btn}Counter`]}`}
+                    className={clsx(styles.counter, styles[`${source}Counter`])}
                   >
                     {count}
                   </span>

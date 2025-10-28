@@ -1,6 +1,22 @@
-.headerLogo__container {
+.headerLogo {
   display: flex;
   width: 20vw;
+
+  &--left {
+    justify-content: flex-start;
+  }
+
+  &--center {
+    justify-content: center;
+  }
+
+  &--right {
+    justify-content: flex-end;
+  }
+
+  &.compact {
+    width: 120px;
+  }
 }
 
 .headerLogo__image {

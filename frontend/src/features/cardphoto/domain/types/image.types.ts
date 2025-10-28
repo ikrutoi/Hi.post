@@ -23,3 +23,8 @@ export interface ImageBase {
   store: ImageStore
   role: Role
 }
+
+export interface LoadedImage extends ImageBase {
+  url: string
+  source: File
+}

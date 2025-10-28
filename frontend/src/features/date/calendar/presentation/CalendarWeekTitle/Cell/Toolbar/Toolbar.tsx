@@ -1,8 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
-import styles from './Toolbar.module.scss'
-
 import { DispatchDate } from '@entities/date/domain/types'
+import styles from './Toolbar.module.scss'
 
 interface ToolbarProps {
   day: number
@@ -26,7 +25,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </div>
       <img
         className={styles.img}
-        alt="shopping-day"
+        alt="cart-day"
         src={cartDay?.[0]?.img}
         onClick={(evt) => handleImageCartClick(evt, day)}
       />

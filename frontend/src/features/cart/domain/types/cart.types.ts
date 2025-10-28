@@ -1,6 +1,7 @@
 import { DispatchDate } from '@entities/date/domain/types'
 
 export interface CartItem {
+  localId: number
   id: string
   preview: string
   recipientName: string
@@ -8,7 +9,21 @@ export interface CartItem {
   price: number
 }
 
-export type Cart = CartItem[]
+export interface Cart {
+  items: CartItem[]
+  totalPrice: number
+  currency: string
+}
+
+export interface CartDayItem {
+  id: string
+  date: DispatchDate
+  img: string
+  title?: string
+  preview?: string
+  recipientName?: string
+  price?: number
+}
 
 export interface CartState {
   items: CartItem[]

@@ -1,0 +1,1 @@
+export { getAddressLabelLayout } from './getAddressLabelLayout'

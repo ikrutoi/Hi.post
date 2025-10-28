@@ -35,6 +35,7 @@ export default defineConfig({
       '@api': path.resolve(__dirname, 'src/api'),
       '@app': path.resolve(__dirname, 'src/app'),
       '@i18n': path.resolve(__dirname, 'src/i18n'),
+      '@cardMenu': path.resolve(__dirname, 'src/features/cardMenu'),
       '@db': path.resolve(__dirname, 'src/db'),
       '@features': path.resolve(__dirname, 'src/features'),
       '@components': path.resolve(__dirname, 'src/components'),
@@ -61,6 +62,8 @@ export default defineConfig({
       '@drafts': path.resolve(__dirname, 'src/features/drafts'),
       '@sent': path.resolve(__dirname, 'src/features/sent'),
       '@layout': path.resolve(__dirname, 'src/features/layout'),
+      '@layoutNav': path.resolve(__dirname, 'src/features/layoutNav'),
+      '@styles': path.resolve(__dirname, 'src/styles'),
     },
   },
 })

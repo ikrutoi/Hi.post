@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-
-import type { AppDispatch } from '@app/state'
+import { useAppDispatch } from '@app/hooks'
 import { fetchHeaderStatus } from '../../infrastructure/services'
 import type { StatusType } from '../../domain/types'
 
 export const useHeaderStatus = () => {
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch
   const [status, setStatus] = useState<StatusType>({
     cart: false,
     clip: false,

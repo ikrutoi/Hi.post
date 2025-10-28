@@ -1,13 +1,14 @@
 import React from 'react'
-import './EnvelopeAddress.scss'
+import clsx from 'clsx'
 import { Label } from './Label/Label'
 import { LabelGroup } from './LabelGroup/LabelGroup'
-import { getIconElement } from '@entities/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { useEnvelopeAddress } from '../application/hooks'
-import type { EnvelopeAddressProps } from './EnvelopeAddress.types'
+import type { EnvelopeAddressProps } from '../domain/types'
+import styles from './EnvelopeAddress.module.scss'
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
-  values,
+  value,
   role,
   lang,
   handleValue,
@@ -16,30 +17,40 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   setBtnIconRef,
   setAddressFieldsetRef,
   setAddressLegendRef,
-  handleClickBtn,
+  handleAddressAction,
   handleMouseEnter,
   handleMouseLeave,
 }) => {
   const { labelLayout, count, buttons } = useEnvelopeAddress(role, lang)
 
   return (
-    <form className={`address-form address-form--${role}`}>
-      <div className={`address-form__toolbar address-form__toolbar--${role}`}>
+    <form className={clsx(styles.addressForm, styles[`addressForm--${role}`])}>
+      <div
+        className={clsx(
+          styles.addressForm__toolbar,
+          styles[`addressForm__toolbar--${role}`]
+        )}
+      >
         {buttons.map((btn) => (
           <button
             key={btn}
             data-tooltip={btn}
             data-section={role}
             ref={setBtnIconRef(`${role}-${btn}`)}
-            className={`address-form__btn address-form__btn--${btn}`}
-            onClick={(evt) => handleClickBtn(evt, role)}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            className={clsx(
+              styles.addressForm__btn,
+              styles[`addressForm__btn--${btn}`]
+            )}
+            onClick={() => handleAddressAction(btn, role)}
+            onMouseEnter={() => handleMouseEnter(`${role}-${btn}`)}
+            onMouseLeave={() => handleMouseLeave(null)}
           >
-            {getIconElement(btn)}
-            {btn === 'clip' && count !== null && (
-              <span className="address-form__counter">
-                <span className="address-form__counter-value">{count}</span>
+            {getToolbarIcon(btn)}
+            {btn === 'savedTemplates' && count !== null && (
+              <span className={styles.addressForm__counter}>
+                <span className={styles.addressForm__counterValue}>
+                  {count}
+                </span>
               </span>
             )}
           </button>
@@ -47,11 +58,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       </div>
 
       <fieldset
-        className="address-form__fieldset"
+        className={styles.addressForm__fieldset}
         ref={setAddressFieldsetRef(`${role}-fieldset`)}
       >
         <legend
-          className="address-form__legend"
+          className={styles.addressForm__legend}
           ref={setAddressLegendRef(`${role}-legend`)}
         >
           {role === 'sender' ? 'Sender address' : 'Recipient address'}
@@ -60,9 +71,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         {labelLayout.map((item, i) =>
           Array.isArray(item) ? (
             <LabelGroup
+              key={`group-${i}`}
               group={item}
               role={role}
-              values={values}
+              valueRole={value[role]}
               handleValue={handleValue}
               handleMovingBetweenInputs={handleMovingBetweenInputs}
               setInputRef={setInputRef}
@@ -74,7 +86,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               role={role}
               label={item.label}
               field={item.field}
-              values={values}
+              valueRole={value[role][item.field]}
+              index={i}
               handleValue={handleValue}
               handleMovingBetweenInputs={handleMovingBetweenInputs}
               setInputRef={setInputRef}

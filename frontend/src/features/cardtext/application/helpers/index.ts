@@ -1,0 +1,1 @@
+export { isTextAlignKey } from './isTextAlignKey'

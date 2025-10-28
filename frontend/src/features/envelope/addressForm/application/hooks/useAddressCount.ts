@@ -1,28 +1,17 @@
 import { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
-import type { RootState } from '@app/state'
-import {
-  recipientAddressAdapter,
-  senderAddressAdapter,
-} from '@db/adapters/card'
-import type { AddressRole } from '@envelope/domain/types'
-import { updateButtonsState } from '@store/slices/infoButtonsSlice'
+import { recipientAdapter, senderAdapter } from '@db/adapters/card'
+import { useEnvelopeFacade } from '../../../application/facades'
+import type { EnvelopeRole } from '@shared/config/constants'
 
-export const useAddressCount = (role: AddressRole) => {
+export const useAddressCount = (role: EnvelopeRole) => {
   const [count, setCount] = useState<number | null>(null)
-  const dispatch = useAppDispatch()
-
-  const infoEnvelopeSaveSecond = useAppSelector(
-    (state: RootState) => state.infoButtons.envelopeSaveSecond
-  )
-  const infoEnvelopeRemove = useAppSelector(
-    (state: RootState) => state.infoButtons.envelopeRemoveAddress
-  )
+  const { state, actions } = useEnvelopeFacade()
+  const { envelopeSaveSecond, envelopeRemoveAddress } = state
+  const { updateSignal } = actions.ui
 
   useEffect(() => {
     const update = async () => {
-      const adapter =
-        role === 'sender' ? senderAddressAdapter : recipientAddressAdapter
+      const adapter = role === 'sender' ? senderAdapter : recipientAdapter
       const count = await adapter.count()
       setCount(count)
     }
@@ -30,13 +19,13 @@ export const useAddressCount = (role: AddressRole) => {
   }, [role])
 
   useEffect(() => {
-    if (infoEnvelopeSaveSecond) {
-      dispatch(updateButtonsState({ envelopeSaveSecond: false }))
+    if (envelopeSaveSecond) {
+      updateSignal('envelopeSaveSecond', false)
     }
-    if (infoEnvelopeRemove) {
-      dispatch(updateButtonsState({ envelopeRemoveAddress: false }))
+    if (envelopeRemoveAddress) {
+      updateSignal('envelopeRemoveAddress', false)
     }
-  }, [infoEnvelopeSaveSecond, infoEnvelopeRemove, dispatch])
+  }, [envelopeSaveSecond, envelopeRemoveAddress])
 
   return count
 }

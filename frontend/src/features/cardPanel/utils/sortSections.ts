@@ -1,4 +1,4 @@
-import type { SectionMeta } from '@/shared/types/sections.types'
+import type { SectionMeta } from '@/shared/config/constants/toolbar'
 
 export function sortSections(
   sections: SectionMeta[],

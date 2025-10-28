@@ -1,10 +1,8 @@
 import React from 'react'
-import styles from './CalendarWeekTitle.module.scss'
-
-import { Cell } from './Cell/Cell'
-import { SunMon } from './SunMon/SunMon'
-
 import { FirstDay } from '@entities/date/domain/types'
+import { Cell } from '@date/cell/presentation/Cell'
+import { SunMon } from './SunMon/SunMon'
+import styles from './CalendarWeekTitle.module.scss'
 
 interface CalendarWeekTitleProps {
   daysOfWeek: string[]

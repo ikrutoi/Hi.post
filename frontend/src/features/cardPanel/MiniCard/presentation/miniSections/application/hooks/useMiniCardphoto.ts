@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { stockImagesAdapter } from '@db/adapters/card/stockImagesAdapter'
-import { userImagesAdapter } from '@db/adapters/card/userImagesAdapter'
+import { stockImagesAdapter } from '@/db/adapters/storeAdapters/stockImagesAdapter'
+import { userImagesAdapter } from '@/db/adapters/storeAdapters/userImagesAdapter'
 import type { RootState } from '@app/state'
 import type { IndexedImage } from '@features/cardphoto/domain/types'
 

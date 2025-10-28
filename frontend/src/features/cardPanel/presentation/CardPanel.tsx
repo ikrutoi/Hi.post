@@ -1,33 +1,38 @@
 import React, { useRef, useState } from 'react'
-
-import { useCardPanel } from '@features/cardPanel/application/hooks/cardPanel/useCardPanel'
-import { useScrollSync } from '@cardPanel/application/hooks'
-import { useExpendCard } from '@cardPanel/application/hooks/useExpendCard'
-import { useMinimizeIcons } from '@cardPanel/application/hooks/useMinimizeIcons'
+import { CARD_SECTIONS } from '@entities/card/domain/types'
+import { useCardPanel } from '@cardPanel/application/hooks/cardPanel/useCardPanel'
+import {
+  useScrollSync,
+  useExpendCard,
+  useMinimizeIcons,
+} from '@cardPanel/application/hooks'
+import { useCardFacade } from '@entities/card/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
-// import { useCardPanelHandlers } from '@features/cardPanel/application/hooks/useSliderLetterHandlers'
+import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useSliderLetterHandlers } from '@cardPanel/application/hooks/useSliderLetterHandlers'
 import { MiniCard } from '../MiniCard/presentation/MiniCard'
 import { SectionPresets } from '../SectionPresets/presentation/SectionPresets'
 import { CardScroller } from '../CardScroller/presentation/CardScroller'
 import { SectionPresetsRenderer } from './SectionPresetsRender'
 import { EnvelopeOverlay } from './EnvelopeOverlay'
-
+import type { ScrollIndex } from '../CardScroller/domain/types'
 import styles from './CardPanel.module.scss'
 
 export const CardPanel = () => {
   const cardsListRef = useRef<HTMLDivElement>(null)
   const [valueScroll, setValueScroll] = useState(0)
-  const [infoCardsList, setInfoCardsList] = useState<number | null>(null)
+  const [scrollIndex, setScrollIndex] = useState<ScrollIndex | null>(null)
+
+  const { completionMap } = useCardFacade()
 
   const {
-    btnsFullCard,
+    buttonsFullCard,
     memoryCardtext,
     fullCard,
     minimize,
     showIconsMinimize,
-    btnIconRefs,
-    btnArrowsRef,
+    buttonIconRefs,
+    buttonArrowsRef,
     miniPolyCardsRef,
     handleClickMiniKebab,
     handleClickCardtext,
@@ -35,19 +40,14 @@ export const CardPanel = () => {
     handleIconFullCardClick,
   } = useCardPanel()
 
-  // const { getInfoCardsList } = useLayoutControllers()
+  const { size, section, meta, memory } = useLayoutFacade()
+  const { sizeMiniCard } = size
+  const { activeSection } = section
+  const { deltaEnd, maxCardsList, choiceClip } = meta
+  const { lockExpendMemoryCard, expendMemoryCard } = memory
 
-  const {
-    layout: {
-      deltaEnd,
-      activeSection,
-      expendMemoryCard,
-      lockExpendMemoryCard,
-      maxCardsList,
-      sizeMiniCard,
-      choiceClip,
-    },
-  } = useLayoutFacade()
+  const { state } = useLayoutNavFacade()
+  const { selectedTemplate } = state
 
   const { handleChangeFromSliderCardsList, handleLetterClick } =
     useSliderLetterHandlers()
@@ -57,11 +57,11 @@ export const CardPanel = () => {
   useExpendCard({
     expendCard: expendMemoryCard,
     lockExpendCard: lockExpendMemoryCard,
-    activeSections: activeSection,
-    btnArrowsRef,
+    selectSection: activeSection,
+    buttonArrowsRef,
   })
 
-  useMinimizeIcons(minimize, showIconsMinimize, btnsFullCard, btnIconRefs)
+  useMinimizeIcons(minimize, showIconsMinimize, buttonsFullCard, buttonIconRefs)
 
   return (
     <div className={styles.cardPanel} ref={cardsListRef}>
@@ -69,7 +69,7 @@ export const CardPanel = () => {
         <EnvelopeOverlay sizeMiniCard={sizeMiniCard} />
         <CardScroller
           value={valueScroll}
-          // infoCardsList={getInfoCardsList()}
+          scrollIndex={scrollIndex}
           maxCardsList={maxCardsList}
           deltaEnd={deltaEnd}
           handleChangeFromSliderCardsList={handleChangeFromSliderCardsList}
@@ -78,34 +78,41 @@ export const CardPanel = () => {
       </div>
 
       <div className={styles.sections} ref={miniPolyCardsRef}>
-        {activeSection.cardtext && (
+        {CARD_SECTIONS.map(
+          (section) =>
+            completionMap[section] && (
+              <MiniCard key={section} section={section} />
+            )
+        )}
+
+        {/* {activeSection === 'cardtext' && (
           <MiniCard
             section="cardtext"
             memoryCardtext={memoryCardtext.cardtext}
             onClickCard={handleClickCardtext}
             onClickKebab={handleClickMiniKebab}
           />
-        )}
+        )} */}
         {/* Другие секции: cardphoto, envelope, date, aroma — аналогично */}
       </div>
 
       <SectionPresetsRenderer
-        choiceClip={choiceClip}
-        sizeMiniCard={sizeMiniCard}
+        // sizeMiniCard={sizeMiniCard}
+        selectedTemplate={selectedTemplate}
         widthCardsList={cardsListRef.current?.clientWidth || 0}
+        // setScrollIndex={setScrollIndex}
         valueScroll={valueScroll}
         setValueScroll={setValueScroll}
-        setInfoCardsList={setInfoCardsList}
       />
 
       <div className={styles.actions}>
-        {Object.entries(btnsFullCard.fullCard).map(([key, isActive]) => (
+        {Object.entries(buttonsFullCard.fullCard).map(([key, isActive]) => (
           <button
             key={key}
             className={styles.fullcardBtn}
             data-tooltip={key}
             ref={(el) => {
-              btnIconRefs.current[key] = el
+              buttonIconRefs.current[key] = el
             }}
             onClick={() =>
               handleIconFullCardClick(key as 'save' | 'addCart' | 'remove')
@@ -117,7 +124,7 @@ export const CardPanel = () => {
         ))}
         <button
           className={styles.toggle}
-          ref={btnArrowsRef}
+          ref={buttonArrowsRef}
           onClick={handleClickIconArrows}
         >
           ⬌

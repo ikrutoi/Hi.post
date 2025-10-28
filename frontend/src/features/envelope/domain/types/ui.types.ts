@@ -1,20 +1,8 @@
-import type { AddressRole } from './index'
-
-export type ToggleSet = {
-  save: boolean
-  delete: boolean
-  clip: boolean
-}
-
-export type EnvelopeButtonsState = Record<AddressRole, ToggleSet>
+import type { AddressKey } from './index'
 
 export interface EnvelopeUiSignals {
-  miniAddressClose: AddressRole | null
-  envelopeSave: AddressRole | null
+  miniAddressClose: AddressKey | null
+  envelopeSave: AddressKey | null
   envelopeSaveSecond: boolean | null
   envelopeRemoveAddress: boolean | null
-}
-
-export interface EnvelopeUiState extends EnvelopeUiSignals {
-  envelopeButtons: EnvelopeButtonsState
 }

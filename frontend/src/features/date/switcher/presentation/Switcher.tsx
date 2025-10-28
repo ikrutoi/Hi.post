@@ -1,16 +1,15 @@
 import React from 'react'
-import './Switcher.scss'
-
-import type { DateNumericTitle, DateRole } from '@entities/date/domain/types'
 import { SwitcherButton } from './SwitcherButton/SwitcherButton'
+import styles from './Switcher.module.scss'
+import type { DateNumericTitle, DateRole } from '@entities/date/domain/types'
 
-interface SwitcherProps {
+interface Props {
   dispatchDateTitle: DateNumericTitle
   activeDateTitleRole?: DateRole
   onToggleRole: (role: DateRole) => void
 }
 
-export const Switcher: React.FC<SwitcherProps> = ({
+export const Switcher: React.FC<Props> = ({
   dispatchDateTitle,
   activeDateTitleRole,
   onToggleRole,
@@ -18,7 +17,7 @@ export const Switcher: React.FC<SwitcherProps> = ({
   const roles: DateRole[] = ['year', 'month']
 
   return (
-    <div className="switcher">
+    <div className={styles.switcher}>
       {roles.map((role) => (
         <SwitcherButton
           key={role}

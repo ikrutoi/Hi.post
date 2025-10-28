@@ -1,10 +1,13 @@
 import { useEffect } from 'react'
 import { useAppDispatch } from '@app/hooks'
 import { addEnvelope } from '@store/slices/cardEditSlice'
-import type { AddressRole, Address } from '@envelope/domain/types'
+import type {
+  AddressRole,
+  AddressFields,
+} from '@entities/envelope/domain/types'
 
 export const useEnvelopeSyncController = (
-  value: Record<AddressRole, Address>
+  value: Record<AddressRole, AddressFields>
 ) => {
   const dispatch = useAppDispatch()
 

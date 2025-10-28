@@ -1,16 +1,17 @@
 import React from 'react'
 import { Label } from '../Label/Label'
-import type {
-  AddressRole,
-  AddressLabelGroup,
-  Address,
-} from '@envelope/domain/types'
+import type { EnvelopeRole, AddressFields } from '@shared/config/constants'
+import type { AddressLabelGroup } from '../../../domain/types'
 
 interface LabelGroupProps {
   group: AddressLabelGroup
-  role: AddressRole
-  values: Address
-  handleValue: (role: AddressRole, field: keyof Address, value: string) => void
+  role: EnvelopeRole
+  valueRole: AddressFields
+  handleValue: (
+    role: EnvelopeRole,
+    field: keyof AddressFields,
+    valueRole: string
+  ) => void
   handleMovingBetweenInputs: React.KeyboardEventHandler<HTMLInputElement>
   setInputRef: (id: string) => React.RefCallback<HTMLInputElement>
   groupIndex: number
@@ -19,20 +20,21 @@ interface LabelGroupProps {
 export const LabelGroup: React.FC<LabelGroupProps> = ({
   group,
   role,
-  values,
+  valueRole,
   handleValue,
   handleMovingBetweenInputs,
   setInputRef,
   groupIndex,
 }) => (
   <div className={`address-form__group`} key={`${role}-group-${groupIndex}`}>
-    {group.map((subLabel, j) => (
+    {group.map((item, j) => (
       <Label
-        key={`${subLabel.field}-${groupIndex}-${j}`}
+        key={`${item.field}-${groupIndex}-${j}`}
         role={role}
-        label={subLabel.label}
-        field={subLabel.field}
-        values={values}
+        label={item.label}
+        field={item.field}
+        valueRole={item.field}
+        index={j}
         handleValue={handleValue}
         handleMovingBetweenInputs={handleMovingBetweenInputs}
         setInputRef={setInputRef}

@@ -1,0 +1,33 @@
+@use '@styles/config/colors' as *;
+
+.switcher__button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  color: $color-enabled;
+  background-color: $color-transparent;
+
+  &--year {
+    width: 2.5rem;
+  }
+
+  &--month {
+    width: 5.5rem;
+    margin: 0 0.5rem;
+  }
+
+  &--active {
+    background-color: $color-active;
+    color: white;
+  }
+
+  &:hover {
+    color: $color-hover;
+  }
+}

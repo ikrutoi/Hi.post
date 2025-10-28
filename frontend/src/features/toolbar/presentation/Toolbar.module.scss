@@ -1,19 +1,32 @@
-// Toolbar.module.scss
+@use '@styles/config/colors' as *;
 
-.toolbar {
+.toolbar__btn {
   position: absolute;
   display: flex;
   top: -0.9rem;
   left: 2rem;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: $color-transparent;
+  transition:
+    color 0.2s ease,
+    cursor 0.2s ease;
 
-  &__btn {
-    margin-right: 0.5rem;
+  &--disabled {
+    color: $color-disabled;
+    cursor: not-allowed;
+  }
 
-    &--save {
-    }
+  &--enabled {
+    color: $color-enabled;
+    cursor: default;
+  }
 
-    &--delete {
-    }
+  &--active {
+    color: $color-active;
+    cursor: default;
+  }
+
+  &--hover {
+    color: $color-hover;
+    cursor: pointer;
   }
 }

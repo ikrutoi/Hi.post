@@ -1,6 +1,6 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
 import type { StoreMap } from '@/db/types/storeMap.types'
-import type { StoreAdapter } from '@db/types'
+import type { StoreAdapter } from '@/db/types'
 
 const base = createStoreAdapter<StoreMap['cart']>('cart')
 

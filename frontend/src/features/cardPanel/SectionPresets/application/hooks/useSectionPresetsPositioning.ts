@@ -1,22 +1,26 @@
 import { useMemo } from 'react'
-import { SectionPreset } from '../../domain/types'
-import { useLayoutControllers } from '@/features/layout/application/hooks'
+import { useLayoutFacade } from '@layout/application/facades'
+import type { CartItem } from '@entities/cart/domain/types'
+import type { PresetLetterItem } from '../../domain/types'
 
 export const useSectionPresetsPositioning = (
-  sectionPreset: SectionPreset[],
+  cart: CartItem[],
   sizeMiniCard: { width: number; height: number },
-  activeIndex: number
+  letterIndexList: PresetLetterItem[]
 ) => {
-  const { setDeltaEnd, getMaxCardsList } = useLayoutControllers()
-  const maxCardsList = getMaxCardsList()
+  const { meta, actions } = useLayoutFacade()
+  const { maxCardsList } = meta
+  // const {sizeMiniCard} = size
+  const { setDeltaEnd } = actions
+
+  if (!maxCardsList) return
 
   const baseLeft = sizeMiniCard.width + 8
-
   const positions = useMemo(() => {
     const result: number[] = []
-    const restEnd = sectionPreset.length - activeIndex - maxCardsList
+    const restEnd = cart.length - activeIndex - maxCardsList
 
-    for (let i = 0; i < sectionPreset.length; i++) {
+    for (let i = 0; i < cart.length; i++) {
       const left =
         i < activeIndex
           ? 0
@@ -28,7 +32,7 @@ export const useSectionPresetsPositioning = (
 
     setDeltaEnd(restEnd <= 0 ? 1 : 0)
     return result
-  }, [sectionPreset, activeIndex, maxCardsList, baseLeft])
+  }, [cart, activeIndex, maxCardsList, baseLeft])
 
   return { positions }
 }

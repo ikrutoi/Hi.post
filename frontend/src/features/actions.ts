@@ -1,5 +1,5 @@
 export * as cardphotoActions from './cardphoto/infrastructure/state/cardphoto.slice'
-export * as cardtextActions from './cardtext/application/state/cardtextSlice'
+export * as cardtextActions from './cardtext/infrastructure/state'
 export * as envelopeActions from './envelope/infrastructure/state/envelope.slice'
 export * as envelopeUiActions from './envelope/infrastructure/state/envelopeUi.slice'
 export * as aromaActions from './aroma/infrastructure/state/aroma.slice'

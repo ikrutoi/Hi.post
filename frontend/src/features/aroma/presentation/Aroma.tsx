@@ -1,15 +1,13 @@
 import React from 'react'
-
-import AromaTile from './AromaTile/AromaTile'
-
+import { AromaTile } from './AromaTile/AromaTile'
+import { aromaList } from '@entities/aroma/domain/aromaList'
+import { useAromaFacade } from '../application/facades'
 import styles from './Aroma.module.scss'
 
-import { aromaList } from '@entities/aroma/domain/aromaList'
-import { useAromaController } from '../application/controllers/useAromaController'
-
 export const Aroma: React.FC = () => {
-  const { selectedAroma, setSelectedAroma, handleSubmit, tileSize } =
-    useAromaController()
+  const { state, actions } = useAromaFacade()
+  const { selectedAroma, tileSize } = state
+  const { handleSubmit, update } = actions
 
   return (
     <form className={styles.aroma} onSubmit={handleSubmit}>
@@ -20,7 +18,7 @@ export const Aroma: React.FC = () => {
             key={`${el.name}-${i}`}
             selectedAroma={selectedAroma}
             elementAroma={el}
-            setSelectedAroma={setSelectedAroma}
+            setSelectedAroma={update}
             tileSize={tileSize}
           />
         ))}

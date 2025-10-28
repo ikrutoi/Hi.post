@@ -2,9 +2,9 @@ import { useRef, useState } from 'react'
 
 import { ErrorBoundary } from './shared/ui/ErrorBoundary'
 import { Header } from './features/header/presentation/Header'
-import { SectionNav } from './features/sectionNav/presentation/SectionNav'
+import { CardMenu } from '@cardMenu/presentation/CardMenu'
 import { CardPanel } from './features/cardPanel/presentation/CardPanel'
-import { SectionEditor } from './features/sectionEditor/presentation/SectionEditor'
+import { CardSectionEditor } from './features/cardSectionEditor/presentation/CardSectionEditor'
 
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
 import { useLayoutInit } from '@features/layout/application/hooks/useLayoutInit'
@@ -31,10 +31,10 @@ const App = () => {
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
       <Header />
       <main className={styles.app__main}>
-        <SectionNav />
+        <CardMenu />
         <div ref={formRef} className={styles.app__form}>
           <ErrorBoundary>{sectionEditorSize && <CardPanel />}</ErrorBoundary>
-          {sectionEditorSize && <SectionEditor />}
+          {sectionEditorSize && <CardSectionEditor />}
         </div>
       </main>
     </div>

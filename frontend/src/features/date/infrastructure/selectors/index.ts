@@ -1,1 +1,1 @@
-export * from './date.selector'
+export { selectDispatchDate } from './date.selector'

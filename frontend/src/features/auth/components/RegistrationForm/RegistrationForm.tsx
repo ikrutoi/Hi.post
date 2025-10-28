@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { RegisterPayload } from '../../types/auth.types'
+import type { RegisterPayload } from '../../domain/types/auth.types'
 import { registerUserApi } from '@features/auth/api/auth.api'
 import { userSchema } from '@schemas/userSchema'
 

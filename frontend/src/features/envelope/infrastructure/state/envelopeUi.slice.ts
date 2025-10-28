@@ -1,22 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type {
-  EnvelopeUiSignals,
-  EnvelopeButtonsState,
-} from '../../domain/types/ui.types'
+import type { EnvelopeUiSignals } from '../../domain/types'
 
-export interface EnvelopeUiState extends EnvelopeUiSignals {
-  envelopeButtons: EnvelopeButtonsState
-}
-
-const initialState: EnvelopeUiState = {
+const initialState: EnvelopeUiSignals = {
   miniAddressClose: null,
   envelopeSave: null,
   envelopeSaveSecond: null,
   envelopeRemoveAddress: null,
-  envelopeButtons: {
-    sender: { save: false, delete: false, clip: false },
-    recipient: { save: false, delete: false, clip: false },
-  },
 }
 
 const envelopeUiSlice = createSlice({
@@ -29,15 +18,12 @@ const envelopeUiSlice = createSlice({
     ) => {
       Object.assign(state, action.payload)
     },
-    updateEnvelopeButtons: (
-      state,
-      action: PayloadAction<Partial<EnvelopeButtonsState>>
-    ) => {
-      Object.assign(state.envelopeButtons, action.payload)
-    },
   },
 })
 
-export const { updateEnvelopeUiState, updateEnvelopeButtons } =
-  envelopeUiSlice.actions
+export const { updateEnvelopeUiState } = envelopeUiSlice.actions
 export default envelopeUiSlice.reducer
+
+export const envelopeUiActions = {
+  updateEnvelopeUiState,
+}

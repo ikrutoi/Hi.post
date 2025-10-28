@@ -1,0 +1,1 @@
+export { useCardFacade } from './useCardFacade'

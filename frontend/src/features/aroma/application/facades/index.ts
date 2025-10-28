@@ -1,0 +1,1 @@
+export { useAromaFacade } from './useAromaFacade'

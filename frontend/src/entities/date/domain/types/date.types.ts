@@ -1,5 +1,5 @@
 export type DateState = {
-  year: number | null
-  month: number | null
-  day: number | null
+  year: number
+  month: number
+  day: number
 }

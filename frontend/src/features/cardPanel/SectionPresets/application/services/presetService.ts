@@ -1,33 +1,33 @@
 import {
-  senderAddressAdapter,
-  recipientAddressAdapter,
-} from '@db/adapters/card'
-import { cartAdapter } from '@/db/adapters/cart'
-import { draftsAdapter } from '@/db/adapters/drafts'
-
-import type { SectionPreset, PresetSource } from '../../domain/types'
+  cartTemplatesAdapter,
+  draftsTemplatesAdapter,
+  senderTemplatesAdapter,
+  recipientTemplatesAdapter,
+} from '@db/adapters/templateAdapters'
+import type { CardItem } from '@entities/card/domain/types'
+import type { CardMenuSection, Template } from '@shared/config/constants'
 
 export const presetService = {
-  saveBlank: async (card: SectionPreset) => {
-    if (card.personalId) {
-      await draftsAdapter.addRecordWithId(card.id, {
+  saveBlank: async (card: CardItem) => {
+    if (card.id) {
+      await draftsTemplatesAdapter.addRecordWithId(card.id, {
         envelope: card.cart?.envelope ?? card.drafts?.envelope!,
         cardphoto: card.cart?.cardphoto ?? card.drafts?.cardphoto,
-        personalId: card.personalId,
+        id: card.id,
       })
     }
   },
 
-  deletePreset: async (source: PresetSource, id: number) => {
-    switch (source) {
+  deletePreset: async (template: Template, id: number) => {
+    switch (template) {
       case 'cart':
-        return cartAdapter.deleteById(id)
+        return cartTemplatesAdapter.deleteById(id)
       case 'drafts':
-        return draftsAdapter.deleteById(id)
+        return draftsTemplatesAdapter.deleteById(id)
       case 'sender':
-        return senderAddressAdapter.deleteById(id)
+        return senderTemplatesAdapter.deleteById(id)
       case 'recipient':
-        return recipientAddressAdapter.deleteById(id)
+        return recipientTemplatesAdapter.deleteById(id)
     }
   },
 }

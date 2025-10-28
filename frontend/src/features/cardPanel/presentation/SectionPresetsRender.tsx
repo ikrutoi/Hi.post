@@ -1,32 +1,30 @@
-// @features/cardPanel/presentation/SectionPresetsRenderer.tsx
 import React from 'react'
 import { SectionPresets } from '../SectionPresets/presentation/SectionPresets'
+import type { Template } from '@shared/config/constants'
 
 interface Props {
-  choiceClip: string | null
-  sizeMiniCard: { width: number; height: number }
+  selectedTemplate: Template | null
   widthCardsList: number
   valueScroll: number
   setValueScroll: (v: number) => void
-  setInfoCardsList: (v: number | null) => void
+  // setScrollIndex: (v: InfoCardsList | null) => void
 }
 
 export const SectionPresetsRenderer: React.FC<Props> = ({
-  choiceClip,
-  sizeMiniCard,
+  selectedTemplate,
   widthCardsList,
   valueScroll,
   setValueScroll,
-  setInfoCardsList,
+  // setScrollIndex,
 }) => {
   const presetSections = ['cart', 'drafts', 'recipient', 'sender', 'date']
-  if (!choiceClip || !presetSections.includes(choiceClip)) return null
+  if (!selectedTemplate || !presetSections.includes(selectedTemplate))
+    return null
 
   return (
     <SectionPresets
-      sizeMiniCard={sizeMiniCard}
       widthCardsList={widthCardsList}
-      setInfoCardsList={setInfoCardsList}
+      // setScrollIndex={setScrollIndex}
       valueScroll={valueScroll}
       setValueScroll={setValueScroll}
     />

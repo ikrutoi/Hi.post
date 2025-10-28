@@ -1,6 +1,7 @@
 import React from 'react'
-import './SunMon.scss'
-import { FirstDay } from '@entities/date/domain'
+import clsx from 'clsx'
+import { FirstDay } from '@entities/date/domain/types'
+import styles from './SunMon.module.scss'
 
 interface SunMonProps {
   firstDayTitle: FirstDay
@@ -16,11 +17,8 @@ export const SunMon: React.FC<SunMonProps> = ({
   }
 
   return (
-    <div
-      className="calendar-week-title__sunmon-toggle"
-      onClick={handleFirstDayOfWeek}
-    >
-      <span className="calendar-week-title__sunmon-label">{firstDayTitle}</span>
+    <div className={clsx(styles.sunmonToggle)} onClick={handleFirstDayOfWeek}>
+      <span className={styles.sunmonLabel}>{firstDayTitle}</span>
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { calculateSizeCard } from '../../../../shared/utils/layout/calculateSizeCard'
 import { calculateMaxCardsList } from '../../../../shared/utils/layout/calculateMaxCardsList'
-import { cardScaleFactors } from 'shared-legacy/config/layout/cardScaleFactors'
+import { cardScaleFactors } from '@/shared/config/ui'
 import type { SizeCard } from '@features/layout/domain/types/layout.types'
 
 interface ComputeLayoutSizesParams {

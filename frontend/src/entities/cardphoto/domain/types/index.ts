@@ -1,1 +1,1 @@
-export * from './cardCompose.types'
+export * from './cardphoto.types'

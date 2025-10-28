@@ -1,4 +1,4 @@
-import type { IconMeta, ToolbarButton } from '@shared/types/toolbar'
+import type { IconMeta, ToolbarButton } from '@/shared/config/constants/toolbar'
 
 export const iconMeta: Partial<Record<ToolbarButton, IconMeta>> = {
   save: { key: 'save', iconKey: 'save', tooltip: 'Save', group: 'file' },

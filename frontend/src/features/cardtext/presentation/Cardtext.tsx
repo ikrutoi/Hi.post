@@ -1,18 +1,20 @@
 import React from 'react'
-import { CardEditor } from '../CardEditor'
-import { CardtextProps } from '@/features/cardtext/model/types'
-
+import { CardEditor } from './CardEditor/CardEditor'
 import styles from './Cardtext.module.scss'
 
+interface CardtextProps {
+  styleLeft: number
+}
+
 export const Cardtext: React.FC<CardtextProps> = ({
-  toolbarColor,
-  styleLeftCardPuzzle,
+  // toolbarColor,
+  styleLeft,
 }) => {
   return (
     <div className={styles.cardtext}>
       <CardEditor
-        toolbarColor={toolbarColor}
-        styleLeftCardPuzzle={styleLeftCardPuzzle}
+        // toolbarColor={toolbarColor}
+        styleLeft={styleLeft}
       />
     </div>
   )

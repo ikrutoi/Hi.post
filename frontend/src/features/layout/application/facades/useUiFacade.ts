@@ -1,35 +1,58 @@
-import { useAppDispatch, useAppSelector } from '@app/hooks'
-import {
-  getIsLoading,
-  getError,
-  getButtonsVisibility,
-  getButtonsLock,
-  getTheme,
-  getLayoutMode,
-} from '../../infrastructure/selectors'
-import { uiController } from '../../application/controllers'
+// useUiFacade.ts
+import { useMemo } from 'react'
+import { useUiController } from '../controllers'
+import type { Template } from '@shared/config/constants'
+import type { IconState } from '@shared/types'
 
 export const useUiFacade = () => {
-  const dispatch = useAppDispatch()
-
-  const isLoading = useAppSelector(getIsLoading)
-  const error = useAppSelector(getError)
-  const buttonsVisible = useAppSelector(getButtonsVisibility)
-  const buttonsLocked = useAppSelector(getButtonsLock)
-  const theme = useAppSelector(getTheme)
-  const layoutMode = useAppSelector(getLayoutMode)
+  const { state, actions } = useUiController()
 
   const {
-    setIsLoading,
-    setError,
-    setButtonsVisibility,
-    setButtonsLock,
-    setTheme,
-    setLayoutMode,
-  } = uiController(dispatch)
+    uiState,
+    isLoading,
+    error,
+    buttonsVisible,
+    buttonsLocked,
+    theme,
+    layoutMode,
+    selectedTemplate,
+    templateState,
+    selectedSection,
+  } = state
+
+  const {
+    setUiLoading,
+    setUiError,
+    toggleButtonsVisibility,
+    toggleButtonsLock,
+    changeTheme,
+    changeLayoutMode,
+    selectTemplate,
+    clearSelectedTemplate,
+    setTemplateIconState,
+  } = actions
+
+  const isDarkTheme = theme === 'dark'
+  const isCompactLayout = layoutMode === 'compact'
+
+  const isSectionActive = useMemo(() => {
+    if (!selectedTemplate) return false
+    return templateState[selectedTemplate] === 'active'
+  }, [selectedTemplate, templateState])
+
+  const getSectionState = (section: Template): IconState =>
+    templateState[section]
+
+  const setSectionState = (section: Template, value: IconState) =>
+    setTemplateIconState(section, value)
 
   return {
     ui: {
+      selectedTemplate,
+      templateState,
+      selectedSection,
+
+      uiState,
       isLoading,
       error,
       buttonsVisible,
@@ -38,12 +61,21 @@ export const useUiFacade = () => {
       layoutMode,
     },
     actions: {
-      setIsLoading,
-      setError,
-      setButtonsVisibility,
-      setButtonsLock,
-      setTheme,
-      setLayoutMode,
+      setUiLoading,
+      setUiError,
+      toggleButtonsVisibility,
+      toggleButtonsLock,
+      changeTheme,
+      changeLayoutMode,
+      selectTemplate,
+      clearSelectedTemplate,
+      setSectionState,
+    },
+    computed: {
+      isDarkTheme,
+      isCompactLayout,
+      isSectionActive,
+      getSectionState,
     },
   }
 }

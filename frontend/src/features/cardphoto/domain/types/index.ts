@@ -1,5 +1,6 @@
 export * from './image.types'
 export * from './crop.types'
 export * from './size.types'
-export * from './cardphoto.types'
+export * from './template.types'
 export * from './imageHistory.types'
+export * from './template.types'

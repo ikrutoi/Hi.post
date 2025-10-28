@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-
 import { getCurrentDate } from '@shared/utils/date'
 import {
   getDaysInPreviousMonth,
@@ -8,11 +7,11 @@ import {
   shiftMonth,
 } from '../../utils'
 import { isCompleteDate } from '@entities/date/utils/guard'
-import type { DispatchDate } from '@entities/date/domain/types'
-import type { Cart } from '@cart/domain/types'
 import { buildPreviousMonthCells } from './buildPreviousMonthCells'
 import { buildCurrentMonthCells } from './buildCurrentMonthCells'
 import { buildNextMonthCells } from './buildNextMonthCells'
+import type { DispatchDate } from '@entities/date/domain/types'
+import type { CartItem } from '@cart/domain/types'
 
 interface UseCalendarConstructionParams {
   dispatchDateTitle: DispatchDate
@@ -24,7 +23,7 @@ interface UseCalendarConstructionParams {
     day: number
   ) => void
   handleClickCell: (direction: 'before' | 'after') => void
-  isCountCart?: Cart[]
+  isCountCart?: CartItem[]
   firstDayOfWeekTitle: 'Sun' | 'Mon'
 }
 
@@ -38,20 +37,15 @@ export const useCalendarConstruction = ({
   isCountCart,
   firstDayOfWeekTitle,
 }: UseCalendarConstructionParams) => {
-  if (!dispatchDateTitle.isSelected) return []
+  const isTitleSelected = dispatchDateTitle?.isSelected
+  if (!isTitleSelected) return useMemo(() => [], [])
 
-  const {
-    year: titleYear,
-    month: titleMonth,
-    day: titleDay,
-  } = dispatchDateTitle
+  const title = dispatchDateTitle
+  const { year: titleYear, month: titleMonth, day: titleDay } = title
 
   const daysInPreviousMonth = getDaysInPreviousMonth(titleYear, titleMonth)
   const daysInCurrentMonth = getDaysInCurrentMonth(titleYear, titleMonth)
-  const offset = getFirstDayOfWeekFromDispatch(
-    firstDayOfWeekTitle,
-    dispatchDateTitle
-  )
+  const offset = getFirstDayOfWeekFromDispatch(firstDayOfWeekTitle, title)
 
   const dateTodayBefore = shiftMonth(
     currentDate.currentYear,
@@ -76,7 +70,7 @@ export const useCalendarConstruction = ({
     offset,
     daysInPreviousMonth,
     dispatchDate,
-    dispatchDateTitle,
+    title,
     dateTodayBefore,
     dateSelectedBefore,
     titleYear,
@@ -89,7 +83,7 @@ export const useCalendarConstruction = ({
   const currentCells = buildCurrentMonthCells({
     daysInCurrentMonth,
     dispatchDate,
-    dispatchDateTitle,
+    dispatchDateTitle: title,
     titleYear,
     titleMonth,
     titleDay,
@@ -102,7 +96,7 @@ export const useCalendarConstruction = ({
   const nextCells = buildNextMonthCells({
     count: 42 - offset - daysInCurrentMonth,
     dispatchDate,
-    dispatchDateTitle,
+    dispatchDateTitle: title,
     titleYear,
     titleMonth,
     titleDay,
@@ -115,7 +109,9 @@ export const useCalendarConstruction = ({
   return useMemo(
     () => [...previousCells, ...currentCells, ...nextCells],
     [
-      dispatchDateTitle,
+      titleYear,
+      titleMonth,
+      titleDay,
       dispatchDate,
       handleDispatchDate,
       handleClickCell,

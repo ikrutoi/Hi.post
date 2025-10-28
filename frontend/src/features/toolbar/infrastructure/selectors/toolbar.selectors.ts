@@ -7,5 +7,5 @@ export const selectCardtextToolbar = (state: RootState) =>
   state.toolbar.cardtext
 export const selectEnvelopeToolbar = (state: RootState) =>
   state.toolbar.envelope
-export const selectFullCardToolbar = (state: RootState) =>
-  state.toolbar.fullCard
+// export const selectFullCardToolbar = (state: RootState) =>
+//   state.toolbar.fullCard

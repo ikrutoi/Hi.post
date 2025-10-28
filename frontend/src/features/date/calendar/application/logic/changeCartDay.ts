@@ -1,17 +1,20 @@
-import type { CartPostcard } from '@features/cart/publicApi'
+import type { CartItem } from '@cart/domain/types'
+import { isCompleteDate } from '@entities/date/utils/guard'
 
 export const changeCartDay = (
   day: number,
   month: number,
   year: number,
-  isCountCart?: CartPostcard[]
-): CartPostcard[] => {
-  const targetDate = { year, month, day }
+  cartItems: CartItem[] | null
+): CartItem[] => {
   return (
-    isCountCart?.filter((card) => {
-      const [y, m, d] = card.date.split('-').map(Number)
+    cartItems?.filter((item) => {
+      const date = item.date
       return (
-        y === targetDate.year && m === targetDate.month && d === targetDate.day
+        isCompleteDate(date) &&
+        date.year === year &&
+        date.month === month &&
+        date.day === day
       )
     }) ?? []
   )

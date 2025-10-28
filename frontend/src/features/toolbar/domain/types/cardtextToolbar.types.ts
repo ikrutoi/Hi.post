@@ -1,4 +1,4 @@
-import type { State } from '@shared/config/theme'
+import type { IconKey, IconState } from '@shared/config/constants'
 
 export const CARDTEXT_KEYS = [
   'italic',
@@ -10,33 +10,27 @@ export const CARDTEXT_KEYS = [
   'justify',
   'save',
   'delete',
-  'clip',
-] as const
+  'savedTemplates',
+  // 'savedTemplatesCount',
+] as const satisfies readonly IconKey[]
 
 export type CardtextToolbarKey = (typeof CARDTEXT_KEYS)[number]
 
-export type CardtextToolbarState = {
-  italic: State
-  fontSize: State
-  color: State
-  left: State
-  center: State
-  right: State
-  justify: State
-  save: State
-  delete: State
-  clip: State
-}
+export type CardtextToolbarState = Record<CardtextToolbarKey, IconState>
 
-export const initialCardtextToolbarState: CardtextToolbarState = {
-  italic: 'enabled',
-  fontSize: 'enabled',
-  color: 'enabled',
-  left: 'enabled',
-  center: 'enabled',
-  right: 'enabled',
-  justify: 'enabled',
-  save: 'disabled',
-  delete: 'disabled',
-  clip: 'disabled',
-}
+export const CARDTEXT_TEXT_ALIGN_KEYS = [
+  'left',
+  'center',
+  'right',
+  'justify',
+] as const
+
+export type CardtextTextAlignKey = (typeof CARDTEXT_TEXT_ALIGN_KEYS)[number]
+
+const DISABLED_KEYS: CardtextToolbarKey[] = ['save', 'delete', 'savedTemplates']
+
+export const initialCardtextToolbarState: CardtextToolbarState =
+  CARDTEXT_KEYS.reduce((acc, key) => {
+    acc[key] = DISABLED_KEYS.includes(key) ? 'disabled' : 'enabled'
+    return acc
+  }, {} as CardtextToolbarState)

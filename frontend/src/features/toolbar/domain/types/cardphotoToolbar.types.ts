@@ -1,4 +1,4 @@
-import type { State } from '@shared/config/theme'
+import type { IconKey, IconState } from '@shared/config/constants'
 
 export const CARDPHOTO_KEYS = [
   'download',
@@ -7,18 +7,11 @@ export const CARDPHOTO_KEYS = [
   'turn',
   'fillFrame',
   'crop',
-] as const
+] as const satisfies readonly IconKey[]
 
 export type CardphotoToolbarKey = (typeof CARDPHOTO_KEYS)[number]
 
-export type CardphotoToolbarState = {
-  download: State
-  save: State
-  delete: State
-  turn: State
-  fillFrame: State
-  crop: State
-}
+export type CardphotoToolbarState = Record<CardphotoToolbarKey, IconState>
 
 export const initialCardphotoToolbarState: CardphotoToolbarState = {
   download: 'enabled',

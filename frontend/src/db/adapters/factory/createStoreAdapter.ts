@@ -1,5 +1,5 @@
 import { getDatabase, handleTransactionPromise } from '@db/core'
-import type { StoreAdapter } from '@db/types'
+import type { StoreAdapter } from '@/db/types'
 
 export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
   const getAll = async (): Promise<T[]> => {
@@ -10,46 +10,48 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     return result || []
   }
 
-  const getById = async (id: IDBValidKey): Promise<T | null> => {
+  const getByLocalId = async (localId: IDBValidKey): Promise<T | null> => {
     const db = await getDatabase()
     const tx = db.transaction(storeName, 'readonly')
-    const result = await tx.objectStore(storeName).get(id)
+    const result = await tx.objectStore(storeName).get(localId)
     await handleTransactionPromise(tx)
     return result || null
   }
 
-  const put = async (record: T & { id: IDBValidKey }): Promise<void> => {
+  const put = async (record: T & { localId: IDBValidKey }): Promise<void> => {
     const db = await getDatabase()
     const tx = db.transaction(storeName, 'readwrite')
     tx.objectStore(storeName).put(record)
     await handleTransactionPromise(tx)
   }
 
-  const deleteById = async (id: IDBValidKey): Promise<void> => {
+  const deleteByLocalId = async (localId: IDBValidKey): Promise<void> => {
     const db = await getDatabase()
     const tx = db.transaction(storeName, 'readwrite')
-    tx.objectStore(storeName).delete(id)
+    tx.objectStore(storeName).delete(localId)
     await handleTransactionPromise(tx)
   }
 
-  const getMaxId = async (): Promise<number> => {
+  const getMaxLocalId = async (): Promise<number> => {
     const all = await getAll()
-    const ids = all.map((r: any) => r.id).filter((id) => typeof id === 'number')
-    return ids.length ? Math.max(...ids) : 0
+    const localIds = all
+      .map((r: any) => r.localId)
+      .filter((localId) => typeof localId === 'number')
+    return localIds.length ? Math.max(...localIds) : 0
   }
 
-  const addAutoIdRecord = async (
-    recordPayload: Omit<T, 'id'>
+  const addAutoLocalIdRecord = async (
+    recordPayload: Omit<T, 'localId'>
   ): Promise<void> => {
-    const id = (await getMaxId()) + 1
-    await put({ id, ...recordPayload } as T & { id: number })
+    const localId = (await getMaxLocalId()) + 1
+    await put({ localId, ...recordPayload } as T & { localId: number })
   }
 
-  const addRecordWithId = async (
-    id: IDBValidKey,
-    recordPayload: Omit<T, 'id'>
+  const addRecordWithLocalId = async (
+    localId: IDBValidKey,
+    recordPayload: Omit<T, 'localId'>
   ): Promise<void> => {
-    await put({ id, ...recordPayload } as T & { id: IDBValidKey })
+    await put({ localId, ...recordPayload } as T & { localId: IDBValidKey })
   }
 
   const count = async (): Promise<number> => {
@@ -63,12 +65,12 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
 
   return {
     getAll,
-    getById,
+    getByLocalId,
     put,
-    deleteById,
-    getMaxId,
-    addAutoIdRecord,
-    addRecordWithId,
+    deleteByLocalId,
+    getMaxLocalId,
+    addAutoLocalIdRecord,
+    addRecordWithLocalId,
     count,
   }
 }

@@ -1,34 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
 import { Transforms, Editor } from 'slate'
 import { ReactEditor } from 'slate-react'
-import { useDispatch, useSelector } from 'react-redux'
-
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { RootState } from '@app/state'
-import { cardScaleFactors } from '@shared/config/card'
+import { cardScaleFactors } from '@/shared/config/ui'
 import { applyIconStylesByStatus } from '@shared/lib/dom'
-// import { updateButtonsState } from '@features/infobuttons/application/state/infoButtonsSlice'
-// import { setActiveSections } from '@features/layout/application/state/layoutSlice'
-// import { addCardtext } from '@features/cardedit/application/state/cardEditSlice'
-import { updateToolbar } from '@toolbar/infrastructure/state'
-import { updateCardtext } from '@cardtext/infrastructure/state'
+import { toolbarActions } from '@toolbar/infrastructure/state'
+import { cardtextActions } from '@cardtext/infrastructure/state'
+import { isTextAlignKey } from '../helpers'
 import type { CardtextToolbarKey } from '@features/toolbar/domain/types'
-import type { State } from '@shared/config/theme'
-import { updateCard } from '@/app/state/slices/cardsSlice'
+import type { IconState } from '@shared/config/constants'
 
 export const useCardtextBehavior = (editor: Editor) => {
-  const dispatch = useDispatch()
-  const storeToolbarCardtext = useSelector(
+  const dispatch = useAppDispatch()
+  const storeToolbarCardtext = useAppSelector(
     (state: RootState) => state.toolbar.cardtext
   )
-  const storeCardtext = useSelector((state: RootState) => state.cardtext)
-  // const layoutActiveSections = useSelector(
-  //   (state: RootState) => state.layout.setActiveSections
-  // )
-
+  const storeCardtext = useAppSelector((state: RootState) => state.cardtext)
   const [value, setValue] = useState<any[]>([])
   const [buttonColor, setButtonColor] = useState(false)
   const [cardtextToolbar, setCardtextToolbar] = useState<{
-    cardtext: Partial<Record<CardtextToolbarKey, State>>
+    cardtext: Partial<Record<CardtextToolbarKey, IconState>>
   }>({ cardtext: {} })
 
   const [maxLines, setMaxLines] = useState<number | null>(null)
@@ -36,12 +28,12 @@ export const useCardtextBehavior = (editor: Editor) => {
 
   const editorRef = useRef<HTMLDivElement | null>(null)
   const editableRef = useRef<HTMLDivElement | null>(null)
-  const buttonIconRefs = useRef<Record<string, HTMLElement | null>>({})
-  // const markRef = useRef<HTMLElement | null>(null)
+  const buttonIconRefs = useRef<Record<string, HTMLButtonElement | null>>({})
 
-  const setBtnIconRefs = (id: string) => (element: HTMLElement | null) => {
-    buttonIconRefs.current[id] = element
-  }
+  const setButtonIconRefs =
+    (id: string) => (element: HTMLButtonElement | null) => {
+      buttonIconRefs.current[id] = element
+    }
 
   const handleSlateChange = (newValue: any) => {
     setValue(newValue)
@@ -63,7 +55,7 @@ export const useCardtextBehavior = (editor: Editor) => {
       }))
 
       dispatch(
-        updateToolbar({
+        toolbarActions.updateToolbar({
           cardtext: {
             ...storeToolbarCardtext,
             [key]: currentState,
@@ -86,7 +78,7 @@ export const useCardtextBehavior = (editor: Editor) => {
         const buttonIcon = buttonIconRefs.current[`cardtext-${key}`]
         if (buttonIcon) buttonIcon.style.cursor = 'default'
 
-        const newState: Partial<Record<CardtextToolbarKey, State>> = {
+        const newState: Partial<Record<CardtextToolbarKey, IconState>> = {
           left: 'enabled',
           center: 'enabled',
           right: 'enabled',
@@ -99,12 +91,14 @@ export const useCardtextBehavior = (editor: Editor) => {
           cardtext: newState,
         }))
 
-        dispatch(
-          updateCardtext({
-            ...storeCardtext,
-            textAlign: key,
-          })
-        )
+        if (isTextAlignKey(key)) {
+          dispatch(
+            cardtextActions.updateCardtext({
+              ...storeCardtext,
+              textAlign: key,
+            })
+          )
+        }
         // dispatch(updateButtonsState({ cardtext: newState }))
       }
     }
@@ -151,7 +145,7 @@ export const useCardtextBehavior = (editor: Editor) => {
     const baseFontSize = Math.floor((baseSizeLineHeight / 1.33) * 10) / 10
 
     dispatch(
-      updateCardtext({
+      cardtextActions.updateCardtext({
         ...storeCardtext,
         fontSize: baseFontSize,
         lineHeight: baseSizeLineHeight,
@@ -204,7 +198,7 @@ export const useCardtextBehavior = (editor: Editor) => {
     buttonColor,
     setButtonColor,
     buttonIconRefs,
-    setBtnIconRefs,
+    setButtonIconRefs,
     markPath,
     setMarkPath,
   }

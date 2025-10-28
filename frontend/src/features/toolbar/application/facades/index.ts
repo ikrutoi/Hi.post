@@ -1,1 +1,1 @@
-export * from './useToolbarFacade'
+export { useToolbarFacade } from './useToolbarFacade'

@@ -1,15 +1,20 @@
-import type { AddressRole, Address } from '@envelope/domain/types'
+import type {
+  AddressRole,
+  AddressFields,
+} from '@entities/envelope/domain/types'
 
 export const useEnvelopeController = ({
   inputRefs,
   setValue,
 }: {
   inputRefs: React.RefObject<Record<string, HTMLInputElement>>
-  setValue: React.Dispatch<React.SetStateAction<Record<AddressRole, Address>>>
+  setValue: React.Dispatch<
+    React.SetStateAction<Record<AddressRole, AddressFields>>
+  >
 }) => {
   const handleValue = (
     role: AddressRole,
-    field: keyof Address,
+    field: keyof AddressFields,
     value: string
   ) => {
     setValue((prev) => ({

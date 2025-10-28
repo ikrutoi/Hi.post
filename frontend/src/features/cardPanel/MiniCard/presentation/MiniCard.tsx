@@ -1,31 +1,32 @@
 import React, { useRef } from 'react'
-
-import styles from './MiniCard.module.scss'
-
-import { useRemSize } from '@/shared/helpers'
-import { addIconToolbar } from '@data/toolbar/getIconElement'
-
+import { useRemSize } from '@shared/helpers'
+import { getToolbarIcon } from '@shared/utils/icons'
 import {
   useMiniCardRender,
   useMiniCardKebab,
   useMiniCardIconVisibility,
 } from '../application/hooks'
 import { MiniCardProps } from '../domain/types/miniCard.props'
+import styles from './MiniCard.module.scss'
+import type { CardSection } from '@entities/card/domain/types'
 
 export const MiniCard: React.FC<MiniCardProps> = ({
-  valueSection,
-  sizeMiniCard,
-  infoSection,
-  minimize,
-  infoMinimize,
-  showIconMinimize,
-  onClickSection,
+  section,
+  // valueSection,
+  // sizeMiniCard,
+  // infoSection,
+  // minimize,
+  // infoMinimize,
+  // showIconMinimize,
+  // onClickSection,
 }) => {
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
 
   const { render } = useMiniCardRender()
-  const { handleClick } = useMiniCardKebab()
+  const { handleClick } = useMiniCardKebab(
+    infoSection.section.section as CardSection
+  )
 
   const showIcon = useMiniCardIconVisibility({
     infoMinimize,
@@ -76,7 +77,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
           }}
           onClick={handleClick}
         >
-          {addIconToolbar('remove')}
+          {getToolbarIcon('remove')}
         </button>
       )}
     </div>

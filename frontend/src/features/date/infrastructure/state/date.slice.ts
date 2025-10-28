@@ -10,8 +10,9 @@ const dateSlice = createSlice({
     updateDispatchDate: (state, action: PayloadAction<DispatchDate>) => {
       Object.assign(state, action.payload)
     },
+    resetDispatchDate: () => initialState,
   },
 })
 
-export const { updateDispatchDate } = dateSlice.actions
+export const { updateDispatchDate, resetDispatchDate } = dateSlice.actions
 export default dateSlice.reducer

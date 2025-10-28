@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-
 import {
   initialCardphotoToolbarState,
   initialCardtextToolbarState,
@@ -13,20 +12,25 @@ const initialState: ToolbarState = {
   envelope: initialEnvelopeToolbarState,
 }
 
+type PartialToolbarPayload = {
+  [K in keyof ToolbarState]?: Partial<ToolbarState[K]>
+}
+
 const toolbarSlice = createSlice({
   name: 'toolbar',
   initialState,
   reducers: {
-    updateToolbar(state, action: PayloadAction<Partial<ToolbarState>>) {
-      if (action.payload.cardphoto) {
-        Object.assign(state.cardphoto, action.payload.cardphoto)
-      }
-      if (action.payload.cardtext) {
-        Object.assign(state.cardtext, action.payload.cardtext)
-      }
-      if (action.payload.envelope) {
-        Object.assign(state.envelope, action.payload.envelope)
-      }
+    updateToolbar(state, action: PayloadAction<PartialToolbarPayload>) {
+      Object.entries(action.payload).forEach(([key, value]) => {
+        if (
+          key in state &&
+          value &&
+          typeof value === 'object' &&
+          !Array.isArray(value)
+        ) {
+          Object.assign(state[key as keyof ToolbarState], value)
+        }
+      })
     },
     resetToolbar() {
       return structuredClone(initialState)

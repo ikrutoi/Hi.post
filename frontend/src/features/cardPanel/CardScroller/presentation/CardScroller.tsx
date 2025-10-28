@@ -1,16 +1,15 @@
 import React, { useRef, useState } from 'react'
-import styles from './CardScroller.module.scss'
-
 import {
   useCardScrollerThumbWidth,
   useCardScrollerDelta,
 } from '../application/hooks'
-import CardScrollerLetters from './CardScrollerLetters'
+import { CardScrollerLetters } from './CardScrollerLetters'
+import styles from './CardScroller.module.scss'
 import type { CardScrollerProps } from '../domain/types'
 
 export const CardScroller: React.FC<CardScrollerProps> = ({
   value,
-  infoCardsList,
+  scrollIndex,
   maxCardsList,
   deltaEnd,
   handleChangeFromSliderCardsList,
@@ -19,14 +18,16 @@ export const CardScroller: React.FC<CardScrollerProps> = ({
   const sliderRef = useRef<HTMLDivElement>(null)
   const [indexLetter, setIndexLetter] = useState<number>(0)
 
+  if (!maxCardsList || !deltaEnd || !scrollIndex) return
+
   const thumbWidth = useCardScrollerThumbWidth(
     sliderRef,
-    infoCardsList.length,
+    scrollIndex.totalCount,
     maxCardsList,
     deltaEnd
   )
 
-  useCardScrollerDelta(infoCardsList.length, indexLetter, maxCardsList)
+  useCardScrollerDelta(scrollIndex.totalCount, indexLetter, maxCardsList)
 
   return (
     <div className={styles['card-scroller__container']} ref={sliderRef}>
@@ -43,12 +44,12 @@ export const CardScroller: React.FC<CardScrollerProps> = ({
         type="range"
         className={styles['card-scroller__slider']}
         min={0}
-        max={infoCardsList.length - maxCardsList + 1}
+        max={scrollIndex.totalCount - maxCardsList + 1}
         value={(deltaEnd ? value + 1 : value) || 0}
         onChange={(evt) => handleChangeFromSliderCardsList(evt.target.value)}
       />
       <CardScrollerLetters
-        letters={infoCardsList.firstLetters}
+        firstLetters={scrollIndex.firstLetters}
         onLetterClick={(evt) => {
           const index = Number(evt.currentTarget.dataset.index)
           setIndexLetter(index)

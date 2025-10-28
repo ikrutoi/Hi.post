@@ -1,6 +1,6 @@
-import type { Address } from '../types'
+import type { AddressFields } from '@entities/envelope/domain/types'
 
-export const emptyAddress: Address = {
+export const emptyAddress: AddressFields = {
   name: '',
   street: '',
   city: '',

@@ -1,11 +1,12 @@
-import { cartAdapter } from '@db/adapters/cart'
-import { draftsAdapter } from '@db/adapters/drafts'
+import { cartAdapter, draftsAdapter } from '@db/adapters/storeAdapters'
 import {
-  stockImagesAdapter,
-  userImagesAdapter,
-  cardtextAdapter,
-} from '@db/adapters/card'
-import type { CardPanelDb, CardData } from '@cardPanel/domain/types'
+  cardtextTemplatesAdapter,
+  stockImagesTemplatesAdapter,
+  userImagesTemplatesAdapter,
+} from '@db/adapters/templateAdapters'
+import type { CartItem } from '@entities/cart/domain/types'
+import type { DraftsItem } from '@entities/drafts/domain/types'
+import type { CardPanelDb } from '@cardPanel/domain/types'
 
 export const useCardPanelDb = ({
   setMemoryCardtext,
@@ -13,7 +14,7 @@ export const useCardPanelDb = ({
   setMemoryCardtext: React.Dispatch<React.SetStateAction<{ cardtext: any }>>
 }): CardPanelDb => {
   const getAllCardtext = async () => {
-    const listCardtexts = await cardtextAdapter.getAll()
+    const listCardtexts = await cardtextTemplatesAdapter.getAll()
     setMemoryCardtext((state) => ({
       ...state,
       cardtext: listCardtexts,
@@ -21,21 +22,21 @@ export const useCardPanelDb = ({
   }
 
   const deleteCardtextById = async (id: string) => {
-    await cardtextAdapter.deleteById(id)
+    await cardtextTemplatesAdapter.deleteByLocalId(id)
     await getAllCardtext()
   }
 
-  const saveCardToCart = async (cardData: CardData, personalId: string) => {
-    await cartAdapter.addRecordWithId(personalId, cardData)
+  const saveCardToCart = async (cardData: CartItem, id: string) => {
+    await cartAdapter.addRecordWithLocalId(id, cardData)
   }
 
-  const saveCardToDrafts = async (cardData: any, personalId: string) => {
-    await draftsAdapter.addRecordWithId(personalId, cardData)
+  const saveCardToDrafts = async (cardData: DraftsItem, id: string) => {
+    await draftsAdapter.addRecordWithLocalId(id, cardData)
   }
 
   const deleteMiniImage = async () => {
-    await stockImagesAdapter.deleteById('miniImage')
-    await userImagesAdapter.deleteById('miniImage')
+    await stockImagesTemplatesAdapter.deleteByLocalId('miniImage')
+    await userImagesTemplatesAdapter.deleteByLocalId('miniImage')
   }
 
   return {

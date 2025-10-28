@@ -1,16 +1,17 @@
 import { useMemo } from 'react'
-import { getAddressLabelLayout } from '@i18n/index'
+import { ENVELOPE_KEYS } from '@toolbar/domain/types'
+import { getAddressLabelLayout } from '../helpers'
 import { useAddressCount } from './useAddressCount'
-import type { AddressRole } from '@envelope/domain/types'
-import type { Lang } from '@i18n/langs'
+import type { Lang } from '@i18n/types'
+import type { EnvelopeRole } from '@shared/config/constants'
 
-export const useEnvelopeAddress = (role: AddressRole, lang: Lang) => {
+export const useEnvelopeAddress = (role: EnvelopeRole, lang: Lang) => {
   const labelLayout = useMemo(
     () => getAddressLabelLayout(role, lang),
     [role, lang]
   )
   const count = useAddressCount(role)
-  const buttons = ['save', 'delete', 'clip'] as const
+  const buttons = ENVELOPE_KEYS
 
   return { labelLayout, count, buttons }
 }

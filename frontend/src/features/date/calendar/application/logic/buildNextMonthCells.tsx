@@ -1,10 +1,10 @@
-import { Cell } from '../../presentation/Calendar/Cell/Cell'
+import { Cell } from '@date/cell/presentation/Cell'
 import type { DispatchDate } from '@entities/date/domain/types'
 
 interface BuildNextMonthCellsParams {
   count: number
-  selectedDate: DispatchDate
-  selectedDateTitle: DispatchDate
+  dispatchDate: DispatchDate
+  dispatchDateTitle: DispatchDate
   titleYear: number
   titleMonth: number
   titleDay: number
@@ -16,8 +16,8 @@ interface BuildNextMonthCellsParams {
 
 export const buildNextMonthCells = ({
   count,
-  selectedDate,
-  selectedDateTitle,
+  dispatchDate,
+  dispatchDateTitle,
   titleYear,
   titleMonth,
   titleDay,
@@ -34,7 +34,7 @@ export const buildNextMonthCells = ({
       titleYear === dateTodayAfter.year
 
     const isSelected =
-      selectedDate.isSelected &&
+      dispatchDate.isSelected &&
       titleMonth === dateSelectedAfter.month &&
       titleYear === dateSelectedAfter.year &&
       titleDay === day
@@ -45,8 +45,8 @@ export const buildNextMonthCells = ({
         today={isToday}
         isTaboo={false}
         dayAfter={day}
-        selected={isSelected}
-        selectedDateTitle={selectedDateTitle}
+        dispatchDate={isSelected}
+        dispatchDateTitle={dispatchDateTitle}
         handleClickCell={handleClickCell}
       />
     )
