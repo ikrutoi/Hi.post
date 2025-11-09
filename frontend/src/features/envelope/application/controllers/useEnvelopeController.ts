@@ -1,7 +1,4 @@
-import type {
-  AddressRole,
-  AddressFields,
-} from '@entities/envelope/domain/types'
+import type { EnvelopeRole, AddressFields } from '@shared/config/constants'
 
 export const useEnvelopeController = ({
   inputRefs,
@@ -9,11 +6,11 @@ export const useEnvelopeController = ({
 }: {
   inputRefs: React.RefObject<Record<string, HTMLInputElement>>
   setValue: React.Dispatch<
-    React.SetStateAction<Record<AddressRole, AddressFields>>
+    React.SetStateAction<Record<EnvelopeRole, AddressFields>>
   >
 }) => {
   const handleValue = (
-    role: AddressRole,
+    role: EnvelopeRole,
     field: keyof AddressFields,
     value: string
   ) => {
@@ -30,7 +27,7 @@ export const useEnvelopeController = ({
     evt: React.KeyboardEvent<HTMLInputElement>
   ) => {
     const indexInput = Number(evt.currentTarget.dataset.index)
-    const role = evt.currentTarget.dataset.role as AddressRole
+    const role = evt.currentTarget.dataset.role as EnvelopeRole
     if (evt.key === 'ArrowDown' || evt.key === 'Enter') {
       inputRefs.current[`${role}${indexInput + 1}`]?.focus()
     }

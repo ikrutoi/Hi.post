@@ -1,4 +1,6 @@
 import React from 'react'
+import clsx from 'clsx'
+import styles from './CardScroller.module.scss'
 import type { CardLetter } from '../domain/types'
 
 interface Props {
@@ -11,15 +13,16 @@ export const CardScrollerLetters: React.FC<Props> = ({
   onLetterClick,
 }) => {
   return (
-    <div className="card-scroller__letters">
+    <div className={styles['card-scroller__letters']}>
       {firstLetters.map((card, i, arr) => {
         const isNew = i === 0 || card.letter !== arr[i - 1].letter
-        const className = `card-scroller__letter${isNew ? '' : '--default'}`
 
         return (
           <span
             key={card.id}
-            className={className}
+            className={clsx(styles['card-scroller__letter'], {
+              [styles['card-scroller__letter--default']]: !isNew,
+            })}
             onClick={onLetterClick}
             data-id={card.id}
             data-index={card.index}

@@ -4,7 +4,7 @@ import type { DispatchDate } from '@entities/date/domain/types'
 interface BuildNextMonthCellsParams {
   count: number
   dispatchDate: DispatchDate
-  dispatchDateTitle: DispatchDate
+  // dispatchDateTitle: DispatchDate
   titleYear: number
   titleMonth: number
   titleDay: number
@@ -17,7 +17,7 @@ interface BuildNextMonthCellsParams {
 export const buildNextMonthCells = ({
   count,
   dispatchDate,
-  dispatchDateTitle,
+  // dispatchDateTitle,
   titleYear,
   titleMonth,
   titleDay,
@@ -45,8 +45,8 @@ export const buildNextMonthCells = ({
         today={isToday}
         isTaboo={false}
         dayAfter={day}
-        dispatchDate={isSelected}
-        dispatchDateTitle={dispatchDateTitle}
+        dispatchDate={dispatchDate}
+        // dispatchDateTitle={dispatchDateTitle}
         handleClickCell={handleClickCell}
       />
     )

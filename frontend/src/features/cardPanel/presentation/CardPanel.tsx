@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react'
+import clsx from 'clsx'
 import { CARD_SECTIONS } from '@entities/card/domain/types'
-import { useCardPanel } from '@cardPanel/application/hooks/cardPanel/useCardPanel'
+import { useCardPanel } from '@cardPanel/application/hooks/cardPanel'
 import {
   useScrollSync,
   useExpendCard,
   useMinimizeIcons,
 } from '@cardPanel/application/hooks'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { useCardFacade } from '@entities/card/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
@@ -15,10 +17,15 @@ import { SectionPresets } from '../SectionPresets/presentation/SectionPresets'
 import { CardScroller } from '../CardScroller/presentation/CardScroller'
 import { SectionPresetsRenderer } from './SectionPresetsRender'
 import { EnvelopeOverlay } from './EnvelopeOverlay'
-import type { ScrollIndex } from '../CardScroller/domain/types'
 import styles from './CardPanel.module.scss'
+import type { ScrollIndex } from '../CardScroller/domain/types'
+import type { SizeCard } from '@layout/domain/types'
 
-export const CardPanel = () => {
+type CardPanelProps = {
+  sizeMiniCard: SizeCard | null
+}
+
+export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
   const cardsListRef = useRef<HTMLDivElement>(null)
   const [valueScroll, setValueScroll] = useState(0)
   const [scrollIndex, setScrollIndex] = useState<ScrollIndex | null>(null)
@@ -41,10 +48,12 @@ export const CardPanel = () => {
   } = useCardPanel()
 
   const { size, section, meta, memory } = useLayoutFacade()
-  const { sizeMiniCard } = size
+  const { remSize } = size
   const { activeSection } = section
-  const { deltaEnd, maxCardsList, choiceClip } = meta
+  const { deltaEnd, maxMiniCardsCount, choiceClip } = meta
   const { lockExpendMemoryCard, expendMemoryCard } = memory
+
+  if (!remSize) return
 
   const { state } = useLayoutNavFacade()
   const { selectedTemplate } = state
@@ -65,51 +74,50 @@ export const CardPanel = () => {
 
   return (
     <div className={styles.cardPanel} ref={cardsListRef}>
-      <div className={styles.toolbar}>
-        <EnvelopeOverlay sizeMiniCard={sizeMiniCard} />
+      <div>
+        {sizeMiniCard && <EnvelopeOverlay sizeMiniCard={sizeMiniCard} />}
+        {/* <div className={styles['cardPanel__toolbar-container']}> */}
+        {/* <Toolbar section="cardPanel" /> */}
+        {/* </div> */}
         <CardScroller
           value={valueScroll}
           scrollIndex={scrollIndex}
-          maxCardsList={maxCardsList}
+          maxMiniCardsCount={maxMiniCardsCount}
           deltaEnd={deltaEnd}
           handleChangeFromSliderCardsList={handleChangeFromSliderCardsList}
           onLetterClick={handleLetterClick}
         />
       </div>
 
-      <div className={styles.sections} ref={miniPolyCardsRef}>
+      <div
+        className={clsx(styles['card-panel__mini-cards'], {
+          [styles['card-panel__mini-cards--full']]: fullCard,
+          [styles['card-panel__mini-cards--fade-out']]: !fullCard,
+        })}
+        ref={miniPolyCardsRef}
+      >
         {CARD_SECTIONS.map(
           (section) =>
             completionMap[section] && (
               <MiniCard key={section} section={section} />
             )
         )}
-
-        {/* {activeSection === 'cardtext' && (
-          <MiniCard
-            section="cardtext"
-            memoryCardtext={memoryCardtext.cardtext}
-            onClickCard={handleClickCardtext}
-            onClickKebab={handleClickMiniKebab}
-          />
-        )} */}
-        {/* Другие секции: cardphoto, envelope, date, aroma — аналогично */}
       </div>
 
       <SectionPresetsRenderer
-        // sizeMiniCard={sizeMiniCard}
         selectedTemplate={selectedTemplate}
         widthCardsList={cardsListRef.current?.clientWidth || 0}
-        // setScrollIndex={setScrollIndex}
         valueScroll={valueScroll}
         setValueScroll={setValueScroll}
       />
 
-      <div className={styles.actions}>
+      {/* <div className={styles.actions}>
         {Object.entries(buttonsFullCard.fullCard).map(([key, isActive]) => (
           <button
             key={key}
-            className={styles.fullcardBtn}
+            className={clsx(styles.fullcardBtn, {
+              [styles['fullcardBtn--active']]: isActive,
+            })}
             data-tooltip={key}
             ref={(el) => {
               buttonIconRefs.current[key] = el
@@ -122,14 +130,7 @@ export const CardPanel = () => {
             {key}
           </button>
         ))}
-        <button
-          className={styles.toggle}
-          ref={buttonArrowsRef}
-          onClick={handleClickIconArrows}
-        >
-          ⬌
-        </button>
-      </div>
+      </div> */}
     </div>
   )
 }

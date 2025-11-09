@@ -11,7 +11,7 @@ export const useCardPanelState = (): CardPanelState => {
   const { selectedTemplate } = ui
 
   const [buttonsFullCard, setButtonsFullCard] = useState({
-    fullCard: { addCart: true, save: true, remove: true },
+    fullCard: { addCart: true, addDrafts: true, remove: true },
   })
 
   const [memoryCardtext, setMemoryCardtext] = useState({ cardtext: null })

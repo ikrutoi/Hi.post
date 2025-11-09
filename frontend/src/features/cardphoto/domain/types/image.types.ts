@@ -1,5 +1,7 @@
+// export type ImageStore = 'stockImages' | 'userImages'
+import type { ImageStore } from './cardphotoSteps.types'
+
 export type Role = 'originalImage' | 'workingImage' | 'miniImage'
-export type ImageStore = 'stockImages' | 'userImages'
 
 export interface ImageCropState {
   role: Role | null
@@ -13,7 +15,7 @@ export interface StartImage {
 }
 
 export interface IndexedImage {
-  id: string
+  localId: string
   image: Blob
   store?: ImageStore
   role?: Role

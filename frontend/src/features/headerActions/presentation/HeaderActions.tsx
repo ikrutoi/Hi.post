@@ -4,15 +4,18 @@ import { applyIconStylesByStatus } from '@shared/lib/dom'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { SOURCES } from '@shared/config/constants'
 import { useStoreCount } from '@db/hooks'
-import { cartAdapter, draftsAdapter } from '@db/adapters/factory'
+import {
+  cartTemplatesAdapter,
+  draftsTemplatesAdapter,
+} from '@db/adapters/templateAdapters'
 import styles from './HeaderActions.module.scss'
 
 type IconRefMap = Record<string, HTMLButtonElement | null>
 
 export const HeaderActions: React.FC = () => {
   const sourceCountMap = {
-    cart: useStoreCount(cartAdapter),
-    drafts: useStoreCount(draftsAdapter),
+    cart: useStoreCount(cartTemplatesAdapter),
+    drafts: useStoreCount(draftsTemplatesAdapter),
   }
 
   const btnIconRefs = useRef<IconRefMap>({})

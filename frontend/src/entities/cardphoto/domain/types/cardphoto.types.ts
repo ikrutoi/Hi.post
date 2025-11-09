@@ -1,13 +1,22 @@
+import { FormatPreview } from '@entities/preview/domain/types'
+
+export type CardphotoMeta = {
+  source: string | null
+  createdAt?: string
+  author?: string
+  [key: string]: unknown
+}
+
+export type CardphotoPreview = {
+  blob: Blob
+  // viewportSize: ViewportSize
+  width: number
+  height: number
+  format: FormatPreview
+}
+
 export type CardphotoState = {
   url: Blob
-  source: string | null
-  ui: {
-    download: boolean
-    save: boolean
-    delete: boolean
-    turn: boolean
-    maximize: boolean
-    crop: boolean
-    click: boolean | null
-  }
+  preview: CardphotoPreview
+  meta?: CardphotoMeta
 }

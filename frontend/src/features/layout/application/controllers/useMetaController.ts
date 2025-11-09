@@ -4,7 +4,7 @@ import {
   setFullCard,
   setAddFullCard,
   setSelectedCard,
-  setMaxCardsList,
+  setMaxMiniCardsCount,
   setSliderLetter,
   setSliderLetterPayload,
   setSliderLine,
@@ -29,7 +29,8 @@ export const useMetaController = (dispatch: AppDispatch) => ({
   setFullCard: (value: boolean) => dispatch(setFullCard(value)),
   setAddFullCard: (value: boolean) => dispatch(setAddFullCard(value)),
   setSelectedCard: (value: boolean) => dispatch(setSelectedCard(value)),
-  setMaxCardsList: (value: number | null) => dispatch(setMaxCardsList(value)),
+  setMaxMiniCardsCount: (value: number | null) =>
+    dispatch(setMaxMiniCardsCount(value)),
   setSliderLetter: (value: SliderLetter | null) =>
     dispatch(setSliderLetter(value)),
   setSliderLetterPayload: (value: SliderLetterPayload | null) =>

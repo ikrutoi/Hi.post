@@ -1,2 +1,5 @@
-export * from './calculateMaxCardsList'
-export * from './calculateSizeCard'
+export { getSizeMiniCard } from './getSizeMiniCard'
+export { getSizeCard } from './getSizeCard'
+export { getMaxMiniCardsCount } from './getMaxMiniCardsCount'
+
+export * from './getSizeMiniCard'

@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react'
+import clsx from 'clsx'
 import {
   useCardScrollerThumbWidth,
   useCardScrollerDelta,
@@ -10,7 +11,7 @@ import type { CardScrollerProps } from '../domain/types'
 export const CardScroller: React.FC<CardScrollerProps> = ({
   value,
   scrollIndex,
-  maxCardsList,
+  maxMiniCardsCount,
   deltaEnd,
   handleChangeFromSliderCardsList,
   onLetterClick,
@@ -18,19 +19,25 @@ export const CardScroller: React.FC<CardScrollerProps> = ({
   const sliderRef = useRef<HTMLDivElement>(null)
   const [indexLetter, setIndexLetter] = useState<number>(0)
 
-  if (!maxCardsList || !deltaEnd || !scrollIndex) return
+  if (!maxMiniCardsCount || !deltaEnd || !scrollIndex) return null
 
   const thumbWidth = useCardScrollerThumbWidth(
     sliderRef,
     scrollIndex.totalCount,
-    maxCardsList,
+    maxMiniCardsCount,
     deltaEnd
   )
 
-  useCardScrollerDelta(scrollIndex.totalCount, indexLetter, maxCardsList)
+  useCardScrollerDelta(scrollIndex.totalCount, indexLetter, maxMiniCardsCount)
 
   return (
-    <div className={styles['card-scroller__container']} ref={sliderRef}>
+    <div
+      className={clsx(styles['card-scroller__container'], {
+        [styles['card-scroller--active']]:
+          thumbWidth !== null && thumbWidth > 0,
+      })}
+      ref={sliderRef}
+    >
       {thumbWidth && (
         <style>
           {`
@@ -42,9 +49,11 @@ export const CardScroller: React.FC<CardScrollerProps> = ({
       )}
       <input
         type="range"
-        className={styles['card-scroller__slider']}
+        className={clsx(styles['card-scroller__slider'], {
+          [styles['card-scroller__slider--shifted']]: deltaEnd,
+        })}
         min={0}
-        max={scrollIndex.totalCount - maxCardsList + 1}
+        max={scrollIndex.totalCount - maxMiniCardsCount + 1}
         value={(deltaEnd ? value + 1 : value) || 0}
         onChange={(evt) => handleChangeFromSliderCardsList(evt.target.value)}
       />

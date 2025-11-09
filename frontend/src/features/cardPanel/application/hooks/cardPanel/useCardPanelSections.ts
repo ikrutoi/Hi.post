@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { CARD_SECTIONS } from '@entities/card/domain/types'
 import type { CardSection } from '@entities/card/domain/types'
-import type { CardPanelSections } from '@cardPanel/domain/types'
+// import type { CardPanelSections } from '@cardPanel/domain/types'
 
 interface UseCardPanelSectionsProps {
   activeSection: Record<CardSection, boolean>
@@ -23,7 +23,7 @@ export const useCardPanelSections = ({
   setFullCardState,
   miniPolyCardsRef,
   buttonArrowsRef,
-}: UseCardPanelSectionsProps): CardPanelSections => {
+}: UseCardPanelSectionsProps): void => {
   useEffect(() => {
     const baseSections: Record<
       CardSection,
@@ -62,7 +62,7 @@ export const useCardPanelSections = ({
     }, 0)
   }
 
-  return {
-    choiceClassListContainsFullArrows,
-  }
+  // return {
+  //   choiceClassListContainsFullArrows,
+  // }
 }

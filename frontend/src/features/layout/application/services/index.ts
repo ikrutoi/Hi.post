@@ -1,1 +1,1 @@
-export * from './computeLayoutSizes'
+export * from '../../../../shared/utils/layout/computeLayoutSizes'

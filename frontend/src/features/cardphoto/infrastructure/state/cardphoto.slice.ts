@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { CardphotoState } from '../../domain/types'
+import type { CardphotoState } from '@entities/cardphoto/domain/types'
 
 const initialState: CardphotoState = {
   url: null,

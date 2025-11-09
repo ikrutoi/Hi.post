@@ -1,17 +1,29 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { DispatchDate } from '@entities/date/domain/types'
+import type {
+  DispatchDate,
+  SelectedDispatchDate,
+} from '@entities/date/domain/types'
 
-const initialState: DispatchDate = { isSelected: false }
+const initialState: SelectedDispatchDate = null
 
 const dateSlice = createSlice({
   name: 'date',
   initialState,
   reducers: {
-    updateDispatchDate: (state, action: PayloadAction<DispatchDate>) => {
-      Object.assign(state, action.payload)
-    },
-    resetDispatchDate: () => initialState,
+    updateDispatchDate: (_state, action: PayloadAction<DispatchDate>) =>
+      action.payload,
+    resetDispatchDate: () => null,
   },
+} as {
+  name: string
+  initialState: SelectedDispatchDate
+  reducers: {
+    updateDispatchDate: (
+      state: SelectedDispatchDate,
+      action: PayloadAction<DispatchDate>
+    ) => SelectedDispatchDate
+    resetDispatchDate: () => SelectedDispatchDate
+  }
 })
 
 export const { updateDispatchDate, resetDispatchDate } = dateSlice.actions

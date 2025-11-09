@@ -1,25 +1,17 @@
-import { useLayoutFacade } from '@layout/application/facades'
+import { useSelector } from 'react-redux'
+import { selectAroma as aroma } from '../../infrastructure/selectors'
 import { useAromaController } from '../controllers'
 
 export const useAromaFacade = () => {
-  const { state, actions } = useAromaController()
-  const { selectedAroma } = state
-  const { size } = useLayoutFacade()
-  const { sizeCard, remSize } = size
-
-  const tileSize =
-    remSize !== null
-      ? {
-          height: (sizeCard.height - 6 * remSize) / 4,
-          width: (sizeCard.width - 6 * remSize) / 4,
-        }
-      : null
+  const selectedAroma = useSelector(aroma)
+  const { selectAroma, resetAroma, selectByIndex } = useAromaController()
 
   return {
-    state: {
-      selectedAroma,
-      tileSize,
+    selectedAroma,
+    actions: {
+      selectAroma,
+      resetAroma,
+      selectByIndex,
     },
-    actions,
   }
 }

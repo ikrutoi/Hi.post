@@ -1,5 +1,6 @@
 import { AppDispatch } from '@app/state'
 import { emptyEnvelope } from '@entities/envelope/domain/types'
+import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import {
   cardphotoActions,
@@ -8,18 +9,18 @@ import {
   aromaActions,
   dateActions,
 } from '@features/actions'
-import { userImagesAdapter } from '@/db/adapters/storeAdapters/userImagesAdapter'
-import { stockImagesAdapter } from '@/db/adapters/storeAdapters/stockImagesAdapter'
-import type { CardSectionName } from '@shared/types'
+import { imageAdapter } from '@db/adapters/storeAdapters'
+import type { CardSection } from '@entities/card/domain/types'
 
 export const resetCardSection = async (
-  section: CardSectionName,
+  cardSection: CardSection,
   dispatch: AppDispatch
 ) => {
   const { actions } = useLayoutFacade()
   actions.setActiveSection(null)
+  const { update } = useCardphotoFacade()
 
-  switch (section) {
+  switch (cardSection) {
     case 'aroma':
       dispatch(aromaActions.updateAroma(null))
       break
@@ -34,9 +35,10 @@ export const resetCardSection = async (
 
     case 'cardphoto':
       await Promise.all([
-        stockImagesAdapter.deleteById('miniImage'),
-        userImagesAdapter.deleteById('miniImage'),
+        imageAdapter.stockImages.deleteByLocalId('miniImage'),
+        imageAdapter.userImages.deleteByLocalId('miniImage'),
       ])
+      update
       dispatch(
         cardphotoActions.updateCardphoto({
           stockImages: { miniImage: false },

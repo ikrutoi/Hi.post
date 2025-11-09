@@ -1,27 +1,27 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type {
-  CardItem,
+  CardEditor,
   Completion,
   CardphotoState,
   CardtextState,
   EnvelopeState,
-  AromaState,
+  AromaItem,
   DispatchDate,
 } from '../../domain/types'
 
 const isIncomplete = <T>(): Completion<T> => ({ isComplete: false })
 
-const initialState: CardItem = {
+const initialState: CardEditor = {
   cardphoto: isIncomplete<CardphotoState>(),
   cardtext: isIncomplete<CardtextState>(),
   envelope: isIncomplete<EnvelopeState>(),
-  aroma: isIncomplete<AromaState>(),
+  aroma: isIncomplete<AromaItem>(),
   date: isIncomplete<DispatchDate>(),
   id: null,
 }
 
-export const cardSlice = createSlice({
-  name: 'card',
+const cardEditorSlice = createSlice({
+  name: 'cardEditor',
   initialState,
   reducers: {
     setCardphoto(state, action: PayloadAction<CardphotoState>) {
@@ -33,7 +33,7 @@ export const cardSlice = createSlice({
     setEnvelope(state, action: PayloadAction<EnvelopeState>) {
       state.envelope = { isComplete: true, data: action.payload }
     },
-    setAroma(state, action: PayloadAction<AromaState>) {
+    setAroma(state, action: PayloadAction<AromaItem>) {
       state.aroma = { isComplete: true, data: action.payload }
     },
     setDate(state, action: PayloadAction<DispatchDate>) {
@@ -42,11 +42,11 @@ export const cardSlice = createSlice({
     setCardId(state, action: PayloadAction<string>) {
       state.id = action.payload
     },
-    resetCard(state) {
+    resetCardEditor(state) {
       state.cardphoto = isIncomplete<CardphotoState>()
       state.cardtext = isIncomplete<CardtextState>()
       state.envelope = isIncomplete<EnvelopeState>()
-      state.aroma = isIncomplete<AromaState>()
+      state.aroma = isIncomplete<AromaItem>()
       state.date = isIncomplete<DispatchDate>()
       state.id = null
     },
@@ -60,7 +60,7 @@ export const {
   setAroma,
   setDate,
   setCardId,
-  resetCard,
-} = cardSlice.actions
+  resetCardEditor,
+} = cardEditorSlice.actions
 
-export default cardSlice.reducer
+export default cardEditorSlice.reducer

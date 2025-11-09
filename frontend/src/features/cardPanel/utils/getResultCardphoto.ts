@@ -1,8 +1,8 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import type { CardData } from '@cardPanel/domain/types'
-import type { IndexedImage } from '@features/cardphoto/domain/types'
+import type { CardItem } from '@entities/card/domain/types'
+import type { IndexedImage } from '@cardphoto/domain/types'
 
-export async function getResultCardphoto(): Promise<CardData> {
+export async function getResultCardphoto(): Promise<CardItem> {
   const stockAdapter = createStoreAdapter<IndexedImage>('stockImages')
   const userAdapter = createStoreAdapter<IndexedImage>('userImages')
 
@@ -25,7 +25,7 @@ export async function getResultCardphoto(): Promise<CardData> {
   }
 
   const workingImage = sectionWorkingImage
-    ? await adapterMap[sectionWorkingImage].getById('workingImage')
+    ? await adapterMap[sectionWorkingImage].getByLocalId('workingImage')
     : null
 
   const cardEdit = JSON.parse(localStorage.getItem('cardEdit') || '{}')

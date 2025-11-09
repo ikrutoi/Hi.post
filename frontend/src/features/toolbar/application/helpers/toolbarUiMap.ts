@@ -1,13 +1,13 @@
-import { useCardphotoToolbarUI } from '../hooks'
+import { useCardphotoToolbarUI, useCardPanelOverlayToolbarUI } from '../hooks'
 
-import type { SectionsToolbar } from '@shared/config/constants'
+import type { ToolbarSection } from '@toolbar/domain/types'
 
 export const toolbarUiMap: Partial<
   Record<
-    SectionsToolbar,
-    (section: SectionsToolbar) => ReturnType<typeof useCardphotoToolbarUI>
+    ToolbarSection,
+    (section: ToolbarSection) => ReturnType<typeof useCardphotoToolbarUI>
   >
 > = {
   cardphoto: useCardphotoToolbarUI,
-  // cardtext: useCardtextToolbarUI,
+  cardPanelOverlay: useCardPanelOverlayToolbarUI,
 }

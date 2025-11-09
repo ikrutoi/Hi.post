@@ -1,6 +1,8 @@
 import React from 'react'
 import clsx from 'clsx'
 import { TOOLBAR_KEYS_MAP } from '@toolbar/domain/constants/toolbarKeysMap'
+import { ICON_SIZE_MAP } from '@shared/config/constants'
+import { useLayoutFacade } from '@layout/application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons/getToolbarIcon'
 import {
@@ -8,27 +10,39 @@ import {
   handleMouseLeaveBtn,
 } from '../application/helpers'
 import { toolbarUiMap } from '../application/helpers'
+import { useViewportSize } from '@shared/hooks'
 import styles from './Toolbar.module.scss'
-import type { SectionsToolbar, IconState } from '@shared/config/constants'
-import type { ToolbarKey } from '../domain/types'
+import type { IconState } from '@shared/config/constants'
+import type { ToolbarKey, ToolbarSection } from '../domain/types'
 
 interface ToolbarProps {
-  section: SectionsToolbar
+  section: ToolbarSection
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({ section }) => {
-  const { state: stateToolbar } = useToolbarFacade(section)
+  const { viewportSize } = useViewportSize()
+  const iconSize = ICON_SIZE_MAP[viewportSize]
 
+  const { size } = useLayoutFacade()
+  const { sizeMiniCard, sizeCard } = size
+  const { state: stateToolbar } = useToolbarFacade(section)
   const useToolbarUI = toolbarUiMap[section]
   const toolbarUi = useToolbarUI?.(section)
 
-  if (!toolbarUi) return null
+  if (!toolbarUi || !TOOLBAR_KEYS_MAP[section]) return null
 
   const { handleClickButton, setButtonIconRef } = toolbarUi
   const keys = TOOLBAR_KEYS_MAP[section]
 
   return (
-    <div className={styles.toolbar}>
+    <div
+      className={clsx(styles.toolbar, styles[`toolbar--${section}`])}
+      style={
+        section === 'cardPanelOverlay'
+          ? { height: `${sizeMiniCard.height}px` }
+          : undefined
+      }
+    >
       {keys.map((key) => {
         const state = stateToolbar[
           key as keyof typeof stateToolbar
@@ -49,7 +63,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ section }) => {
             onMouseEnter={handleMouseEnterBtn}
             onMouseLeave={handleMouseLeaveBtn}
           >
-            {getToolbarIcon(key as ToolbarKey)}
+            {getToolbarIcon({ key: key as ToolbarKey, size: iconSize })}
           </button>
         )
       })}

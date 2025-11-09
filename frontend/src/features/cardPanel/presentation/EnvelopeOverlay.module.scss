@@ -1,5 +1,17 @@
 .envelopeOverlay {
-  position: absolute;
-  z-index: 7;
-  pointer-events: none;
+  position: relative;
+  // border: solid 1px red;
+
+  &--svg {
+    position: absolute;
+    // margin-top: 1rem;
+    // margin-bottom: 1rem;
+    z-index: 7;
+    pointer-events: none;
+  }
+
+  &__plug {
+    position: absolute;
+    opacity: 0;
+  }
 }

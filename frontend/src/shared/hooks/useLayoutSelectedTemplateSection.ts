@@ -1,5 +1,5 @@
 import { useLayoutFacade } from '@layout/application/facades'
-import { AddressRole } from '@entities/envelope/domain/types'
+import type { EnvelopeRole } from '@shared/config/constants'
 
 export const useLayoutSelectedTemplateSection = () => {
   const {
@@ -7,7 +7,7 @@ export const useLayoutSelectedTemplateSection = () => {
     actions: { setUiSelectedTemplateSection },
   } = useLayoutFacade()
 
-  const handleSelectedTemplateSection = (section: AddressRole) => {
+  const handleSelectedTemplateSection = (section: EnvelopeRole) => {
     if (selectedTemplateSection === section) {
       setUiSelectedTemplateSection(null)
     } else {

@@ -4,8 +4,9 @@ import {
   stockImagesTemplatesAdapter,
   userImagesTemplatesAdapter,
 } from '@db/adapters/templateAdapters'
-import type { CartItem } from '@entities/cart/domain/types'
-import type { DraftsItem } from '@entities/drafts/domain/types'
+import type { CardItem } from '@entities/card/domain/types'
+import type { CartItem, CartItemMeta } from '@entities/cart/domain/types'
+import type { DraftsItem, DraftsItemMeta } from '@entities/drafts/domain/types'
 import type { CardPanelDb } from '@cardPanel/domain/types'
 
 export const useCardPanelDb = ({
@@ -21,17 +22,37 @@ export const useCardPanelDb = ({
     }))
   }
 
-  const deleteCardtextById = async (id: string) => {
-    await cardtextTemplatesAdapter.deleteByLocalId(id)
+  const deleteCardtextById = async (localId: string) => {
+    await cardtextTemplatesAdapter.deleteByLocalId(localId)
     await getAllCardtext()
   }
 
-  const saveCardToCart = async (cardData: CartItem, id: string) => {
-    await cartAdapter.addRecordWithLocalId(id, cardData)
+  const saveCardToCart = async (
+    localId: string,
+    price: string,
+    card: CardItem,
+    meta?: CartItemMeta
+  ) => {
+    const cartItem: CartItem = {
+      LocalId: Number(localId),
+      price,
+      card,
+      meta,
+    }
+    await cartAdapter.addRecordWithLocalId(localId, cartItem)
   }
 
-  const saveCardToDrafts = async (cardData: DraftsItem, id: string) => {
-    await draftsAdapter.addRecordWithLocalId(id, cardData)
+  const saveCardToDrafts = async (
+    localId: string,
+    card: CardItem,
+    meta?: DraftsItemMeta
+  ) => {
+    const draftsItem: DraftsItem = {
+      LocalId: Number(localId),
+      card,
+      meta,
+    }
+    await draftsAdapter.addRecordWithLocalId(localId, draftsItem)
   }
 
   const deleteMiniImage = async () => {

@@ -1,9 +1,10 @@
-.card-panel {
+.cardPanel {
   position: relative;
   display: flex;
   width: 100%;
   border-radius: 0.5rem;
   scroll-behavior: smooth;
+  border: solid 1px blue;
 
   &__filter {
     position: absolute;
@@ -114,4 +115,9 @@
       }
     }
   }
+}
+
+.actions button {
+  color: red;
+  border: solid 1px aquamarine;
 }

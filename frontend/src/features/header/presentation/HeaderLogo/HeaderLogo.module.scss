@@ -1,28 +1,31 @@
 .headerLogo {
   display: flex;
-  width: 20vw;
+}
 
-  &--left {
-    justify-content: flex-start;
-  }
+.headerLogo--xs {
+  width: 100px;
+}
 
-  &--center {
-    justify-content: center;
-  }
+.headerLogo--sm {
+  width: 140px;
+}
 
-  &--right {
-    justify-content: flex-end;
-  }
+.headerLogo--md {
+  width: 180px;
+}
 
-  &.compact {
-    width: 120px;
-  }
+.headerLogo--lg {
+  width: 220px;
+}
+
+.headerLogo--xl {
+  width: 260px;
 }
 
 .headerLogo__image {
   width: 100%;
   height: 30px;
-  background-image: url('../../data/img/logo.svg');
+  background-image: url('@shared/assets/images/logo-app.svg');
   background-repeat: no-repeat;
   background-size: contain;
 }

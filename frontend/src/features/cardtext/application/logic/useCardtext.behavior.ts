@@ -3,7 +3,7 @@ import { Transforms, Editor } from 'slate'
 import { ReactEditor } from 'slate-react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { RootState } from '@app/state'
-import { cardScaleFactors } from '@/shared/config/ui'
+import { useLayoutFacade } from '@layout/application/facades'
 import { applyIconStylesByStatus } from '@shared/lib/dom'
 import { toolbarActions } from '@toolbar/infrastructure/state'
 import { cardtextActions } from '@cardtext/infrastructure/state'
@@ -17,6 +17,10 @@ export const useCardtextBehavior = (editor: Editor) => {
     (state: RootState) => state.toolbar.cardtext
   )
   const storeCardtext = useAppSelector((state: RootState) => state.cardtext)
+
+  const { size } = useLayoutFacade()
+  const { scale } = size
+
   const [value, setValue] = useState<any[]>([])
   const [buttonColor, setButtonColor] = useState(false)
   const [cardtextToolbar, setCardtextToolbar] = useState<{
@@ -139,7 +143,6 @@ export const useCardtextBehavior = (editor: Editor) => {
 
   const calcStyleAndLinesEditable = (condition: string) => {
     let lines = condition === 'increaseLines' && maxLines ? maxLines + 1 : 12
-    const scale = (cardScaleFactors.card / cardScaleFactors.miniCard).toFixed(2)
     const heightEditor = editorRef.current?.offsetHeight ?? 0
     const baseSizeLineHeight = Math.floor((heightEditor / lines) * 10) / 10
     const baseFontSize = Math.floor((baseSizeLineHeight / 1.33) * 10) / 10

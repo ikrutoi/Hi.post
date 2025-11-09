@@ -14,7 +14,7 @@ export const useDateController = () => {
     dispatch(updateDispatchDate(payload))
   }
 
-  const isDateSelected = dispatchDate.isSelected
+  const isDateSelected = dispatchDate !== null
 
   return {
     dispatchDate,

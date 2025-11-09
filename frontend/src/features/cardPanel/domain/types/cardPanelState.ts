@@ -12,7 +12,7 @@ export interface CardPanelState {
   buttonsFullCard: {
     fullCard: {
       addCart: boolean
-      save: boolean
+      addDrafts: boolean
       remove: boolean
     }
   }

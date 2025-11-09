@@ -1,6 +1,6 @@
 import React from 'react'
-import './Slider.scss'
-
+import clsx from 'clsx'
+import styles from './Slider.module.scss'
 import { getCurrentDate } from '@shared/utils/date'
 import type { DateNumericTitle, DateRole } from '@entities/date/domain/types'
 
@@ -16,8 +16,9 @@ export const Slider: React.FC<SliderProps> = ({
   onChange,
 }) => {
   const currentDate = getCurrentDate()
+
   if (!activeDateTitleRole || !dispatchDateTitle.isSelected) {
-    return <span className="date-slider__default" />
+    return <span className={styles['date-slider__default']} />
   }
 
   const { year, month } = dispatchDateTitle
@@ -27,11 +28,14 @@ export const Slider: React.FC<SliderProps> = ({
     value: number,
     min: number,
     max: number,
-    modifier: string
+    modifier: 'year' | 'month'
   ) => (
     <input
       type="range"
-      className={`date-slider__line date-slider__line--${modifier}`}
+      className={clsx(
+        styles['date-slider__line'],
+        styles[`date-slider__line--${modifier}`]
+      )}
       min={min}
       max={max}
       value={value}
@@ -48,10 +52,8 @@ export const Slider: React.FC<SliderProps> = ({
         currentDate.currentYear + 100,
         'year'
       )
-
     case 'month':
       return renderSlider('month', month, 0, 11, 'month')
-
     default:
       return null
   }

@@ -1,45 +1,28 @@
-import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { aromaActions } from '@aroma/infrastructure/state'
-import { setActiveSection } from '@layout/infrastructure/state'
-import { selectAroma } from '@aroma/infrastructure/selectors'
-import { useLayoutFacade } from '@layout/application/facades'
+import { useDispatch } from 'react-redux'
+import { setAroma, clearAroma } from '../../infrastructure/state'
+import type { AromaItem } from '@entities/aroma'
 
 export const useAromaController = () => {
-  const dispatch = useAppDispatch()
-  const selectedAroma = useAppSelector(selectAroma)
+  const dispatch = useDispatch()
 
-  const { size } = useLayoutFacade()
-  const { sizeCard, remSize } = size
-
-  const update = (item: typeof selectedAroma) => {
-    dispatch(aromaActions.updateAroma(item))
+  const selectAroma = (item: AromaItem) => {
+    dispatch(setAroma(item))
   }
 
-  const reset = () => {
-    dispatch(aromaActions.resetAroma())
+  const resetAroma = () => {
+    dispatch(clearAroma())
   }
 
-  const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
-    evt.preventDefault()
-    if (selectedAroma) {
-      dispatch(aromaActions.updateAroma(selectedAroma))
-      dispatch(setActiveSection('aroma'))
+  const selectByIndex = (index: AromaItem['index'], list: AromaItem[]) => {
+    const found = list.find((item) => item.index === index)
+    if (found) {
+      dispatch(setAroma(found))
     }
   }
 
-  const isSelected = (id: string) => {
-    return selectedAroma?.index === id
-  }
-
   return {
-    state: {
-      selectedAroma,
-    },
-    actions: {
-      update,
-      reset,
-      handleSubmit,
-      isSelected,
-    },
+    selectAroma,
+    resetAroma,
+    selectByIndex,
   }
 }

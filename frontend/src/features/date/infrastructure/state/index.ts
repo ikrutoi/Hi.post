@@ -1,3 +1,3 @@
-export * as dateActions from './date.slice'
+export { updateDispatchDate, resetDispatchDate } from './date.slice'
 
 export { default as dateReducer } from './date.slice'

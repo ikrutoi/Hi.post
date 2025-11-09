@@ -1,2 +1,13 @@
 export type FirstDay = 'Sun' | 'Mon'
-export type DaysOfWeek = 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat'
+
+export const DAYS_OF_WEEK = [
+  'Sun',
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat',
+] as const
+
+export type DaysOfWeek = (typeof DAYS_OF_WEEK)[number]

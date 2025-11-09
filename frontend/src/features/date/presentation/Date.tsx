@@ -2,55 +2,41 @@ import React, { useEffect } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { MONTH_NAMES } from '@entities/date/constants'
-import {
-  formatDispatchDate,
-  isCompleteDate,
-  isSameDispatchDate,
-} from '@entities/date/utils'
+import { formatSelectedDispatchDate } from '@entities/date/utils'
 import { useLayoutFacade } from '@layout/application/facades'
 import { themeColors } from '@shared/config/theme/themeColors'
 import { getCurrentDate } from '@shared/utils/date'
 import { Calendar } from '../calendar/presentation/Calendar'
 import { Slider } from '../slider/presentation/Slider'
 import { Switcher } from '../switcher/presentation/Switcher'
-import { useCartPreviewForCalendar } from '../preview/application/hooks/useCartPreviewForCalendar'
-import { useDateFacade } from '../switcher/application/facades'
+import { useDateFacade } from '../application/facades/useDateFacade'
+import { useDateSwitcherController } from '../application/hooks'
 import { LuCalendar, LuCalendarArrowUp } from 'react-icons/lu'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import styles from './Date.module.scss'
 
 export const Date: React.FC = () => {
   const currentDate = getCurrentDate()
+
   const {
     section: { activeSection },
     actions: { setActiveSection },
   } = useLayoutFacade()
-  const {
-    state: { dispatchDateTitle, dispatchDate, activeDateTitleRole },
-    actions: {
-      setDispatchDate,
-      updateDateTitleField,
-      toggleActiveDateRole,
-      goToTodayDate,
-      goToSelectedDate,
-      handleCalendarCellClick,
-      handleDecrementArrow,
-      handleIncrementArrow,
-      handleSliderChange,
-      handleDispatchDate,
-    },
-    derived: { isCurrentMonth },
-  } = useDateFacade()
 
-  const { cartPreview } = useCartPreviewForCalendar(
-    isCompleteDate(dispatchDateTitle) ? dispatchDateTitle : null
-  )
+  const { state: stateDate, actions: actionsDate } = useDateFacade()
+  const { selectedDispatchDate } = stateDate
+  const { setSelectedDispatchDate, resetSelectedDispatchDate } = actionsDate
+
+  const { state: stateSwitcher, actions: actionsSwitcher } =
+    useDateSwitcherController()
+  const {} = stateSwitcher
+  const {} = actionsSwitcher
 
   useEffect(() => {
-    if (dispatchDate.isSelected) {
+    if (selectedDispatchDate) {
       setActiveSection('date')
     }
-  }, [dispatchDate])
+  }, [selectedDispatchDate])
 
   return (
     <div className={styles.date}>
@@ -62,8 +48,8 @@ export const Date: React.FC = () => {
         <div className={styles.header}>
           <div className={styles.headerSide}>
             <div
-              className={clsx(styles.todaySelected, {
-                [styles.todaySelectedDisabled]: isCurrentMonth(),
+              className={clsx(styles['today-selected'], {
+                [styles['today-selected--disabled']]: isCurrentMonth(),
               })}
               onClick={goToTodayDate}
               style={{
@@ -81,7 +67,7 @@ export const Date: React.FC = () => {
           <div className={styles.headerCenter}>
             <div
               className={clsx(styles.arrowButton, {
-                [styles.arrowButtonInactive]: !activeDateTitleRole,
+                [styles['arrow-button--inactive']]: !activeDateTitleRole,
               })}
               onClick={handleDecrementArrow}
             >
@@ -113,10 +99,13 @@ export const Date: React.FC = () => {
 
           <div className={styles.headerSide}>
             <div className={styles.selected} onClick={goToSelectedDate}>
-              {dispatchDate.isSelected && (
-                <LuCalendarArrowUp className={styles.iconTitle} />
+              {selectedDispatchDate && (
+                <>
+                  <LuCalendarArrowUp className={styles.iconTitle} />
+                  {selectedDispatchDate &&
+                    formatSelectedDispatchDate(selectedDispatchDate)}
+                </>
               )}
-              {formatDispatchDate(dispatchDate)}
             </div>
           </div>
         </div>
@@ -131,11 +120,10 @@ export const Date: React.FC = () => {
 
         <div className={styles.calendar}>
           <Calendar
-            dispatchDate={dispatchDate}
-            dispatchDateTitle={dispatchDateTitle}
-            handleDispatchDate={handleDispatchDate}
+            selectedDispatchDate={selectedDispatchDate}
+            setSelectedDispatchDate={setSelectedDispatchDate}
+            resetSelectedDispatchDate={resetSelectedDispatchDate}
             handleClickCell={handleCalendarCellClick}
-            cart={cartPreview}
           />
         </div>
       </form>

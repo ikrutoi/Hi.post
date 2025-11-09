@@ -9,15 +9,15 @@ export const useCardtextController = () => {
   const dispatch = useAppDispatch()
   const cardtextState = useAppSelector(selectCardtext)
 
-  const update = (payload: Partial<CardtextState>) => {
+  const updateCardtext = (payload: Partial<CardtextState>) => {
     dispatch(cardtextActions.updateCardtext(payload))
   }
 
-  const clearContent = () => {
+  const clearCardtextContent = () => {
     dispatch(cardtextActions.clearCardtextContent())
   }
 
-  const setText = (text: SlateNode[]) => {
+  const setCardtext = (text: SlateNode[]) => {
     const blocks = text.filter((node): node is CardtextBlock => {
       if (!Element.isElement(node)) return false
 
@@ -28,7 +28,7 @@ export const useCardtextController = () => {
     dispatch(cardtextActions.addCardtext({ text: blocks }))
   }
 
-  const reset = () => {
+  const resetCardtext = () => {
     dispatch(cardtextActions.resetCardtext())
   }
 
@@ -37,10 +37,10 @@ export const useCardtextController = () => {
       cardtextState,
     },
     actions: {
-      update,
-      clearContent,
-      setText,
-      reset,
+      updateCardtext,
+      clearCardtextContent,
+      setCardtext,
+      resetCardtext,
     },
   }
 }

@@ -1,13 +1,14 @@
 import { useRef } from 'react'
-import { SECTIONS_TOOLBAR } from '@shared/config/constants'
+import { TOOLBAR_SECTIONS } from '@toolbar/domain/types'
 import { handleMouseLeaveBtn } from '../helpers'
 import { useToolbarFacade } from '../facades'
 import { CardphotoToolbarState } from '../../domain/types'
 import type { MouseEvent } from 'react'
-import type { SectionsToolbar, IconState } from '@shared/config/constants'
+import type { ToolbarSection } from '@toolbar/domain/types'
+import type { IconState } from '@shared/config/constants'
 
-export const useCardphotoToolbarUI = (section: SectionsToolbar) => {
-  if (!SECTIONS_TOOLBAR.includes(section)) return null
+export const useCardphotoToolbarUI = (section: ToolbarSection) => {
+  if (!TOOLBAR_SECTIONS.includes(section)) return null
 
   const { state, actions } = useToolbarFacade('cardphoto')
   const { crop, download } = state as CardphotoToolbarState

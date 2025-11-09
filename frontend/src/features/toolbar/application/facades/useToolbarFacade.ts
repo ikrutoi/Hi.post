@@ -3,9 +3,9 @@ import { useAppDispatch } from '@app/hooks'
 import { selectToolbar } from '../../infrastructure/selectors'
 import { useToolbarController } from '../../application/controllers'
 import type { ToolbarState } from '../../domain/types'
-import type { SectionsToolbar } from '@shared/config/constants'
+import type { ToolbarSection } from '@toolbar/domain/types'
 
-export const useToolbarFacade = <K extends SectionsToolbar>(section: K) => {
+export const useToolbarFacade = <K extends ToolbarSection>(section: K) => {
   const dispatch = useAppDispatch()
   const toolbar = useSelector(selectToolbar)
 

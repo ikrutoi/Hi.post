@@ -3,14 +3,10 @@ import type {
   Template,
   CardMenuSection,
   IconState,
-  SectionsToolbar,
 } from '@shared/config/constants'
+import type { ToolbarSection } from '@toolbar/domain/types'
 import type { DispatchDate } from '@entities/date/domain/types'
-
-export type SizeCard = {
-  width: number
-  height: number
-}
+import type { ViewportSize } from '@shared/config/constants'
 
 export interface SliderLetter {
   letter: string
@@ -64,10 +60,23 @@ export interface ImageSet {
   miniImage: boolean
 }
 
+export type SizeCard = {
+  width: number
+  height: number
+}
+
+export type ViewportSizeState = {
+  width: number
+  height: number
+  viewportSize: ViewportSize | null
+}
+
 export interface SizeState {
   sizeCard: SizeCard
   sizeMiniCard: SizeCard
   remSize: number | null
+  viewportSize: ViewportSizeState
+  scale: number | null
 }
 
 export interface MemoryState {
@@ -81,7 +90,7 @@ export interface MetaState {
   fullCard: boolean
   addFullCard: boolean
   selectedCard: boolean
-  maxCardsList: number | null
+  maxMiniCardsCount: number | null
   sliderLetter: SliderLetter | null
   sliderLetterPayload: SliderLetterPayload | null
   sliderLine: number | null
@@ -96,7 +105,7 @@ export interface MetaState {
 }
 
 export interface SectionState {
-  activeSection: SectionsToolbar | null
+  activeSection: ToolbarSection | null
   selectedSection: CardMenuSection | null
   deleteSection: string | null
   choiceSection: Partial<ChoiceSection>

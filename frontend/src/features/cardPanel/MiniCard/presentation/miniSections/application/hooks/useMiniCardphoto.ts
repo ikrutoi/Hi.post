@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { stockImagesAdapter } from '@/db/adapters/storeAdapters/stockImagesAdapter'
-import { userImagesAdapter } from '@/db/adapters/storeAdapters/userImagesAdapter'
+import {
+  stockImagesTemplatesAdapter,
+  userImagesTemplatesAdapter,
+} from '@db/adapters/templateAdapters'
 import type { RootState } from '@app/state'
 import type { IndexedImage } from '@features/cardphoto/domain/types'
 
@@ -21,8 +23,8 @@ export const useMiniCardphoto = () => {
   useEffect(() => {
     const loadMiniImage = async () => {
       const [userImages, stockImages] = await Promise.all([
-        userImagesAdapter.getAll(),
-        stockImagesAdapter.getAll(),
+        userImagesTemplatesAdapter.getAll(),
+        stockImagesTemplatesAdapter.getAll(),
       ])
 
       const hasUser = userImages.some((img) => img.id === 'miniImage')
@@ -31,9 +33,9 @@ export const useMiniCardphoto = () => {
       let image: IndexedImage | null = null
 
       if (hasUser) {
-        image = await userImagesAdapter.getById('miniImage')
+        image = await userImagesTemplatesAdapter.getByLocalId('miniImage')
       } else if (hasStock) {
-        image = await stockImagesAdapter.getById('miniImage')
+        image = await stockImagesTemplatesAdapter.getByLocalId('miniImage')
       }
 
       if (image?.image instanceof Blob) {

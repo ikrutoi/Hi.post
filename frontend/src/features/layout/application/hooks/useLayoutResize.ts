@@ -10,15 +10,15 @@ export const useLayoutResize = (
 
   useEffect(() => {
     if (formSize && size.remSize && formRef.current) {
-      const { cardSize, miniCardSize, maxCardsList } = computeLayoutSizes({
+      const { cardSize } = computeLayoutSizes({
         containerHeight: formSize.height,
         containerWidth: formRef.current.clientWidth,
         remSize: size.remSize,
       })
 
       actions.setSizeCard(cardSize)
-      actions.setSizeMiniCard(miniCardSize)
-      actions.setMaxCardsList(maxCardsList)
+      // actions.setSizeMiniCard(miniCardSize)
+      // actions.setMaxCardsList(maxCardsList)
     }
   }, [formSize, size.remSize])
 }

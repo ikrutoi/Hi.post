@@ -1,33 +1,37 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { cartActions } from '../../infrastructure/state'
 import {
-  selectCartItems,
+  addItem,
+  removeItem,
+  updateItem,
+  clearCart,
+} from '../../infrastructure/state'
+import {
+  selectCartAmount,
   selectCartCount,
 } from '../../infrastructure/selectors'
-import type { Cart, CartItem } from '../../domain/types'
+import type { CartItem } from '@entities/cart/domain/types'
 
 export const useCartController = () => {
   const dispatch = useAppDispatch()
-  const cartItems = useAppSelector(selectCartItems)
-  const cartCount = useAppSelector(selectCartCount)
 
-  const setCart = (payload: Cart[]) => {
-    dispatch(cartActions.setCart(payload))
-  }
+  const amount = useAppSelector(selectCartAmount)
+  const count = useAppSelector(selectCartCount)
 
-  const addCartItem = (item: CartItem) => {
-    dispatch(cartActions.addCartItem(item))
-  }
-
-  const clearCart = () => {
-    dispatch(cartActions.clearCart())
-  }
+  const addCartItem = (item: CartItem) => dispatch(addItem(item))
+  const removeCartItem = (localId: number) => dispatch(removeItem(localId))
+  const updateCartItem = (item: CartItem) => dispatch(updateItem(item))
+  const clearCartItems = () => dispatch(clearCart())
 
   return {
-    cartItems,
-    cartCount,
-    setCart,
-    addCartItem,
-    clearCart,
+    state: {
+      amount,
+      count,
+    },
+    actions: {
+      addCartItem,
+      removeCartItem,
+      updateCartItem,
+      clearCartItems,
+    },
   }
 }

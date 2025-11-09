@@ -5,7 +5,8 @@ import { useCardtextBehavior } from '@cardtext/application/logic'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
-import { useCardtextController } from '../controllers'
+import { useCardtextFacade } from '../facades'
+// import { useCardtextController } from '../controllers'
 import type { CardtextBlock } from '../../domain/types'
 
 export const useCardEditorController = () => {
@@ -28,11 +29,10 @@ export const useCardEditorController = () => {
     setMarkPath,
   } = useCardtextBehavior(editor)
 
-  const { loadFromMemory, saveToMemory, getMemoryStats } = useCardtextStore()
+  const { loadFromTemplate, saveToTemplate, getTemplateStats } =
+    useCardtextStore()
 
-  const { state: stateCardtextController, actions } = useCardtextController()
-  const { cardtextState } = stateCardtextController
-  const { update, setText } = actions
+  const { cardtext, updateCardtext, setCardtext } = useCardtextFacade()
 
   const { state: stateLayoutNavFacade } = useLayoutNavFacade()
   const { selectedCardMenuSection } = stateLayoutNavFacade
@@ -44,14 +44,14 @@ export const useCardEditorController = () => {
 
   useEffect(() => {
     if (selectedCardMenuSection === 'cardtext') {
-      loadFromMemory(selectedCardMenuSection).then((nodes) => {
+      loadFromTemplate(selectedCardMenuSection).then((nodes) => {
         if (nodes) setValue(nodes)
       })
     }
   }, [selectedCardMenuSection])
 
   useEffect(() => {
-    setText(value)
+    setCardtext(value)
 
     const hasText = value.some((block: CardtextBlock) =>
       block.children.some((child) => child.text.trim().length > 0)
@@ -60,7 +60,7 @@ export const useCardEditorController = () => {
 
     toolbarActions.updateCurrent({ save: isHasText, delete: isHasText })
 
-    // getMemoryStats().then(({ count }) => {
+    // getTemplateStats().then(({ count }) => {
     //   toolbarActions.updateCurrent({ savedTemplatesCount: count })
     // })
   }, [value])
@@ -88,7 +88,7 @@ export const useCardEditorController = () => {
   // })
 
   const handleClickColor = (colorName: string, colorType: string) => {
-    update({ colorName, colorType })
+    updateCardtext({ colorName, colorType })
     setButtonColor(false)
   }
 
@@ -110,8 +110,8 @@ export const useCardEditorController = () => {
     toolbarCardtext: state,
     // infoBtnsCardtext: infoButtonsState.cardtext,
     // styleLeftCardPuzzle,
-    cardEditCardtext: cardtextState,
+    cardEditCardtext: cardtext,
     remSize,
-    saveToMemory,
+    saveToTemplate,
   }
 }

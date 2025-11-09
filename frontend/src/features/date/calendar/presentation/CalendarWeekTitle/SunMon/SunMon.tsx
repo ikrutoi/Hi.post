@@ -17,8 +17,11 @@ export const SunMon: React.FC<SunMonProps> = ({
   }
 
   return (
-    <div className={clsx(styles.sunmonToggle)} onClick={handleFirstDayOfWeek}>
-      <span className={styles.sunmonLabel}>{firstDayTitle}</span>
+    <div
+      className={clsx(styles['sun-mon__toggle'])}
+      onClick={handleFirstDayOfWeek}
+    >
+      <span className={styles['sun-mon__label']}>{firstDayTitle}</span>
     </div>
   )
 }

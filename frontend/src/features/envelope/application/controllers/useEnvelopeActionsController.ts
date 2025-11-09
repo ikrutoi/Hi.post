@@ -2,11 +2,9 @@ import { useAppDispatch } from '@app/hooks'
 import {
   setEnvelope,
   resetEnvelope,
-} from '@envelope/infrastructure/state/envelope.slice'
-import type {
-  AddressRole,
-  AddressFields,
-} from '@entities/envelope/domain/types'
+  updateAddressField,
+} from '@envelope/infrastructure/state'
+import type { EnvelopeRole, AddressFields } from '@shared/config/constants'
 
 export const useEnvelopeActionsController = () => {
   const dispatch = useAppDispatch()
@@ -15,19 +13,16 @@ export const useEnvelopeActionsController = () => {
     dispatch(setEnvelope({ sender, recipient }))
   }
 
-  const resetEnvelopeState = () => {
-    dispatch(resetEnvelope())
+  const resetEnvelopeState = (role?: EnvelopeRole) => {
+    dispatch(resetEnvelope(role))
   }
 
   const updateField = (
-    role: AddressRole,
+    role: EnvelopeRole,
     field: keyof AddressFields,
     value: string
   ) => {
-    dispatch({
-      type: 'envelope/updateAddressField',
-      payload: { role, field, value },
-    })
+    dispatch(updateAddressField({ role, field, value }))
   }
 
   return {

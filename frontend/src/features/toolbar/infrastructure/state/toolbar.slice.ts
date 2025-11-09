@@ -3,6 +3,8 @@ import {
   initialCardphotoToolbarState,
   initialCardtextToolbarState,
   initialEnvelopeToolbarState,
+  initialCardPanelToolbarState,
+  initialCardPanelOverlayToolbarState,
 } from '../../domain/types'
 import type { ToolbarState } from '../../domain/types'
 
@@ -10,6 +12,8 @@ const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
   cardtext: initialCardtextToolbarState,
   envelope: initialEnvelopeToolbarState,
+  cardPanel: initialCardPanelToolbarState,
+  cardPanelOverlay: initialCardPanelOverlayToolbarState,
 }
 
 type PartialToolbarPayload = {

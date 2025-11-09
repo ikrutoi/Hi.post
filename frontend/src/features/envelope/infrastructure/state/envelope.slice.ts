@@ -31,9 +31,15 @@ const envelopeSlice = createSlice({
       const { role, field, value } = action.payload
       state[role][field] = value
     },
-    resetEnvelope(state) {
-      state.sender = { ...initialAddressFields }
-      state.recipient = { ...initialAddressFields }
+    resetEnvelope(state, action: PayloadAction<EnvelopeRole | undefined>) {
+      const role = action.payload
+
+      if (role === 'sender' || role === 'recipient') {
+        state[role] = { ...initialAddressFields }
+      } else {
+        state.sender = { ...initialAddressFields }
+        state.recipient = { ...initialAddressFields }
+      }
     },
   },
 })

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getCurrentDate } from '@shared/utils/date'
 import {
   getDaysInPreviousMonth,
@@ -10,12 +10,15 @@ import { isCompleteDate } from '@entities/date/utils/guard'
 import { buildPreviousMonthCells } from './buildPreviousMonthCells'
 import { buildCurrentMonthCells } from './buildCurrentMonthCells'
 import { buildNextMonthCells } from './buildNextMonthCells'
-import type { DispatchDate } from '@entities/date/domain/types'
-import type { CartItem } from '@cart/domain/types'
+import { cartAdapter } from '@db/adapters/storeAdapters'
+import type {
+  DispatchDate,
+  SelectedDispatchDate,
+} from '@entities/date/domain/types'
+import type { CartItem } from '@entities/cart/domain/types'
 
 interface UseCalendarConstructionParams {
-  dispatchDateTitle: DispatchDate
-  dispatchDate: DispatchDate
+  dispatchDate: SelectedDispatchDate
   handleDispatchDate: (
     isTaboo: boolean,
     year: number,
@@ -23,29 +26,37 @@ interface UseCalendarConstructionParams {
     day: number
   ) => void
   handleClickCell: (direction: 'before' | 'after') => void
-  isCountCart?: CartItem[]
   firstDayOfWeekTitle: 'Sun' | 'Mon'
 }
 
 const currentDate = getCurrentDate()
 
 export const useCalendarConstruction = ({
-  dispatchDateTitle,
   dispatchDate,
   handleDispatchDate,
   handleClickCell,
-  isCountCart,
   firstDayOfWeekTitle,
 }: UseCalendarConstructionParams) => {
-  const isTitleSelected = dispatchDateTitle?.isSelected
-  if (!isTitleSelected) return useMemo(() => [], [])
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
 
-  const title = dispatchDateTitle
-  const { year: titleYear, month: titleMonth, day: titleDay } = title
+  useEffect(() => {
+    const loadCartItems = async () => {
+      const items = await cartAdapter.getAll()
+      setCartItems(items)
+    }
+    loadCartItems()
+  }, [])
 
-  const daysInPreviousMonth = getDaysInPreviousMonth(titleYear, titleMonth)
-  const daysInCurrentMonth = getDaysInCurrentMonth(titleYear, titleMonth)
-  const offset = getFirstDayOfWeekFromDispatch(firstDayOfWeekTitle, title)
+  if (!dispatchDate) return useMemo(() => [], [])
+
+  const { year, month, day } = dispatchDate
+
+  const daysInPreviousMonth = getDaysInPreviousMonth(year, month)
+  const daysInCurrentMonth = getDaysInCurrentMonth(year, month)
+  const offset = getFirstDayOfWeekFromDispatch(
+    firstDayOfWeekTitle,
+    dispatchDate
+  )
 
   const dateTodayBefore = shiftMonth(
     currentDate.currentYear,
@@ -59,23 +70,19 @@ export const useCalendarConstruction = ({
   )
 
   const dateSelectedBefore = isCompleteDate(dispatchDate)
-    ? shiftMonth(dispatchDate.year, dispatchDate.month, +1)
+    ? shiftMonth(year, month, +1)
     : { year: 0, month: 0 }
 
   const dateSelectedAfter = isCompleteDate(dispatchDate)
-    ? shiftMonth(dispatchDate.year, dispatchDate.month, -1)
+    ? shiftMonth(year, month, -1)
     : { year: 0, month: 0 }
 
   const previousCells = buildPreviousMonthCells(
     offset,
     daysInPreviousMonth,
     dispatchDate,
-    title,
     dateTodayBefore,
     dateSelectedBefore,
-    titleYear,
-    titleMonth,
-    titleDay,
     currentDate.currentDay,
     handleClickCell
   )
@@ -83,23 +90,18 @@ export const useCalendarConstruction = ({
   const currentCells = buildCurrentMonthCells({
     daysInCurrentMonth,
     dispatchDate,
-    dispatchDateTitle: title,
-    titleYear,
-    titleMonth,
-    titleDay,
     currentDate,
     handleDispatchDate,
     handleClickCell,
-    isCountCart,
+    cartItems,
   })
 
   const nextCells = buildNextMonthCells({
     count: 42 - offset - daysInCurrentMonth,
     dispatchDate,
-    dispatchDateTitle: title,
-    titleYear,
-    titleMonth,
-    titleDay,
+    year,
+    month,
+    day,
     dateTodayAfter,
     dateSelectedAfter,
     currentDay: currentDate.currentDay,
@@ -109,13 +111,13 @@ export const useCalendarConstruction = ({
   return useMemo(
     () => [...previousCells, ...currentCells, ...nextCells],
     [
-      titleYear,
-      titleMonth,
-      titleDay,
+      year,
+      month,
+      day,
       dispatchDate,
       handleDispatchDate,
       handleClickCell,
-      isCountCart,
+      cartItems,
       firstDayOfWeekTitle,
     ]
   )

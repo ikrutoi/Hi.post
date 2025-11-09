@@ -24,7 +24,9 @@ export const SwitcherButton: React.FC<SwitcherButtonProps> = ({
       className={clsx(
         styles.switcher__button,
         styles[`switcher__button--${role}`],
-        isActive && styles['switcher__button--active']
+        {
+          [styles['switcher__button--active']]: isActive,
+        }
       )}
       onClick={() => onToggleRole(role)}
     >

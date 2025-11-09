@@ -1,3 +1,3 @@
-export interface CardPanelSections {
-  choiceClassListContainsFullArrows(): void
-}
+// export interface CardPanelSections {
+//   choiceClassListContainsFullArrows(): void
+// }

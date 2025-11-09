@@ -28,7 +28,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({ styleLeft }) => {
     // styleLeftCardPuzzle,
     cardEditCardtext,
     remSize,
-    saveToMemory,
+    saveToTemplate,
     // listBtnsCardtext,
     // listBtnsCardtextMain,
   } = useCardEditorController()

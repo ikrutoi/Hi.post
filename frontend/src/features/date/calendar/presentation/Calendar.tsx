@@ -7,11 +7,9 @@ import {
 import { useCalendarConstruction } from '@date/calendar/application/logic'
 import styles from './Calendar.module.scss'
 import type { DispatchDate } from '@entities/date/domain/types'
-import type { Cart } from '@cart/domain/types'
 
 interface CalendarProps {
   dispatchDate: DispatchDate
-  dispatchDateTitle: DispatchDate
   handleDispatchDate: (
     isTaboo: boolean,
     year: number,
@@ -19,15 +17,12 @@ interface CalendarProps {
     day: number
   ) => void
   handleClickCell: (direction: 'before' | 'after') => void
-  cart?: Cart[]
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
   dispatchDate,
-  dispatchDateTitle,
   handleDispatchDate,
   handleClickCell,
-  cart,
 }) => {
   const [firstDayOfWeekTitle, setFirstDayOfWeek] = useState<'Sun' | 'Mon'>(
     'Sun'
@@ -42,11 +37,9 @@ export const Calendar: React.FC<CalendarProps> = ({
   }
 
   const calendarCells = useCalendarConstruction({
-    dispatchDateTitle,
     dispatchDate,
     handleDispatchDate,
     handleClickCell,
-    isCountCart: cart,
     firstDayOfWeekTitle,
   })
 
@@ -57,8 +50,8 @@ export const Calendar: React.FC<CalendarProps> = ({
         firstDayTitle={firstDayOfWeekTitle}
         handleFirstDay={handleFirstDay}
       />
-      <div className={styles.month}>
-        <div className={styles.days}>{calendarCells}</div>
+      <div className={styles['calendar__month']}>
+        <div className={styles['calendar__days']}>{calendarCells}</div>
       </div>
     </div>
   )

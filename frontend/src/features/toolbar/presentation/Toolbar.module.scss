@@ -1,32 +1,42 @@
 @use '@styles/config/colors' as *;
 
-.toolbar__btn {
+.toolbar {
   position: absolute;
   display: flex;
-  top: -0.9rem;
-  left: 2rem;
-  background-color: $color-transparent;
-  transition:
-    color 0.2s ease,
-    cursor 0.2s ease;
 
-  &--disabled {
-    color: $color-disabled;
-    cursor: not-allowed;
+  &--cardPanelOverlay {
+    flex-direction: column;
+    justify-content: space-around;
+    top: 0;
+    right: 0;
+    // border: solid 1px red;
   }
 
-  &--enabled {
-    color: $color-enabled;
-    cursor: default;
-  }
-
-  &--active {
-    color: $color-active;
-    cursor: default;
-  }
-
-  &--hover {
-    color: $color-hover;
+  &__btn {
+    background-color: $color-transparent;
     cursor: pointer;
+    transition:
+      color 0.2s ease,
+      cursor 0.2s ease;
+
+    &--disabled {
+      color: $color-disabled;
+      cursor: not-allowed;
+    }
+
+    &--enabled {
+      color: $color-enabled;
+      cursor: default;
+    }
+
+    &--active {
+      color: $color-active;
+      cursor: default;
+    }
+
+    &--hover {
+      color: $color-hover;
+      cursor: pointer;
+    }
   }
 }

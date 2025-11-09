@@ -1,5 +1,4 @@
 import { useLayoutInit } from './useLayoutInit'
-import { useLayoutResize } from './useLayoutResize'
 import { useToolbarClickReset } from './useToolbarClickReset'
 
 export const useLayoutEffects = ({
@@ -14,6 +13,5 @@ export const useLayoutEffects = ({
   setColorToolbar: (v: boolean) => void
 }) => {
   useLayoutInit()
-  useLayoutResize(formRef, formSize)
   useToolbarClickReset(colorToolbar, setColorToolbar)
 }

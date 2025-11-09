@@ -1,24 +1,16 @@
-import { useCardtextController } from '../controllers'
-import type { CardtextState } from '../../domain/types'
+import { useMemo } from 'react'
+import { useCardtextController } from '../controllers/useCardtextController'
 
 export const useCardtextFacade = () => {
-  const {
-    state: { cardtextState },
-    actions: { update, clearContent, reset },
-  } = useCardtextController()
+  const { state, actions } = useCardtextController()
 
-  const safeUpdate = (payload: Partial<CardtextState>) => {
-    if (Object.keys(payload).length > 0) {
-      update(payload)
-    }
-  }
+  const cardtext = useMemo(() => state.cardtextState, [state.cardtextState])
 
   return {
-    data: cardtextState,
-    actions: {
-      update: safeUpdate,
-      clearContent,
-      reset,
-    },
+    cardtext,
+    updateCardtext: actions.updateCardtext,
+    clearCardtextContent: actions.clearCardtextContent,
+    setCardtext: actions.setCardtext,
+    resetCardtext: actions.resetCardtext,
   }
 }

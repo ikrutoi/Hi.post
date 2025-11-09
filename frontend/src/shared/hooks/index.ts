@@ -1,2 +1,4 @@
 export { useLayoutSelectedTemplateSection } from './useLayoutSelectedTemplateSection'
 export { useSize } from './useSize'
+export { useViewportSize } from './useViewportSize'
+export { useMiniCardSize } from './useMiniCardSize'

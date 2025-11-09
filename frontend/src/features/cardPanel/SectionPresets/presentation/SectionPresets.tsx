@@ -57,7 +57,7 @@ export const SectionPresets: React.FC<Props> = ({
 
   useSectionPresetsScroll(movingCards)
 
-  const memorySections: Template[] = ['cart', 'drafts']
+  const source: Template[] = ['cart', 'drafts']
 
   return (
     <div className={styles['section-presets']}>
@@ -71,7 +71,7 @@ export const SectionPresets: React.FC<Props> = ({
             remSize={remSize}
             refs={{
               cardRef: (el) => (cardRefs.current[`card-${index}`] = el),
-              filterRef: memorySections.includes(selectedTemplate)
+              filterRef: source.includes(selectedTemplate)
                 ? (el) => (filterRefs.current[`filter-${card.id}`] = el)
                 : undefined,
               spanNameRef:
@@ -96,7 +96,7 @@ export const SectionPresets: React.FC<Props> = ({
             />
           )}
 
-          {memorySections.includes(selectedTemplate) && (
+          {source.includes(selectedTemplate) && (
             <PresetToolbar
               cardId={card.id}
               buttons={['save', 'remove', 'addCart']}

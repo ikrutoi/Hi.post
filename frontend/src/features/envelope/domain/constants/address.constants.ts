@@ -1,4 +1,4 @@
-import type { AddressFields } from '@entities/envelope/domain/types'
+import type { AddressFields } from '@shared/config/constants'
 
 export const emptyAddress: AddressFields = {
   name: '',

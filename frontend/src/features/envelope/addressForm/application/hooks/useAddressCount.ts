@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
-import { recipientAdapter, senderAdapter } from '@db/adapters/card'
+import {
+  recipientTemplatesAdapter,
+  senderTemplatesAdapter,
+} from '@db/adapters/templateAdapters'
 import { useEnvelopeFacade } from '../../../application/facades'
 import type { EnvelopeRole } from '@shared/config/constants'
 
@@ -11,7 +14,8 @@ export const useAddressCount = (role: EnvelopeRole) => {
 
   useEffect(() => {
     const update = async () => {
-      const adapter = role === 'sender' ? senderAdapter : recipientAdapter
+      const adapter =
+        role === 'sender' ? senderTemplatesAdapter : recipientTemplatesAdapter
       const count = await adapter.count()
       setCount(count)
     }

@@ -12,6 +12,7 @@ import {
   MdDeleteOutline,
   MdOutlineShoppingCart,
   MdAddShoppingCart,
+  MdOutlineDrafts,
 } from 'react-icons/md'
 import {
   RiUserLine,
@@ -29,7 +30,7 @@ import { PiArrowClockwiseFill } from 'react-icons/pi'
 import { TbArrowsMaximize } from 'react-icons/tb'
 import { HiArrowsPointingOut, HiArrowsPointingIn } from 'react-icons/hi2'
 
-import type { IconKey } from '@shared/types'
+import type { IconKey } from '@shared/config/constants'
 
 export const toolbarIcons: Record<IconKey, JSX.Element> = {
   save: <FiSave />,
@@ -51,9 +52,11 @@ export const toolbarIcons: Record<IconKey, JSX.Element> = {
   center: <RiAlignCenter />,
   right: <RiAlignRight />,
   justify: <RiAlignJustify />,
-  cart: <MdOutlineShoppingCart />,
-  addCart: <MdAddShoppingCart />,
   plus: <FiPlus />,
   arrowsOut: <HiArrowsPointingOut />,
   arrowsIn: <HiArrowsPointingIn />,
+  cart: <MdOutlineShoppingCart />,
+  addCart: <MdAddShoppingCart />,
+  drafts: <MdOutlineDrafts />,
+  addDrafts: <MdOutlineDrafts />,
 }

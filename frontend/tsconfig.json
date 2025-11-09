@@ -42,6 +42,7 @@
       "@history/*": ["features/history/*"],
       "@toolbar": ["features/toolbar/index.ts"],
       "@toolbar/*": ["features/toolbar/*"],
+      "@preview/*": ["features/preview/*"],
       "@header/*": ["features/header/*"],
       "@headerActions/*": ["features/headerActions/*"],
       "@cart/*": ["features/cart/*"],

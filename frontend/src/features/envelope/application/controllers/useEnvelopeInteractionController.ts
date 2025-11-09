@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { useAppDispatch } from '@app/hooks'
 import { createStoreAdapter } from '@db/adapters/factory'
-import { AddressRole, AddressFields } from '@entities/envelope/domain/types'
+import { EnvelopeRole, AddressFields } from '@shared/config/constants'
 import { useLayoutSelectedTemplateSection } from '@shared/hooks'
 import { useEnvelopeLocalState } from '../hooks'
 import { useEnvelopeUiController } from './useEnvelopeUiController'
@@ -23,7 +23,7 @@ export const useEnvelopeInteractionController = () => {
 
   const handleAddressAction = async (
     action: EnvelopeToolbarKey,
-    role: AddressRole
+    role: EnvelopeRole
   ) => {
     if (action === 'savedTemplates' && btnsAddress[role].clip) {
       handleSelectedTemplateSection(role)
@@ -63,7 +63,7 @@ export const useEnvelopeInteractionController = () => {
       return
     }
 
-    const resetLocalAddress = (role: AddressRole) => {
+    const resetLocalAddress = (role: EnvelopeRole) => {
       setValue((prev) => ({
         ...prev,
         [role]: Object.keys(prev[role]).reduce((acc, key) => {

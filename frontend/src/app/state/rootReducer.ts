@@ -4,6 +4,7 @@ import {
   cardphotoReducer,
   cardphotoActiveReducer,
   imageHistoryReducer,
+  cardphotoStepsReducer,
 } from '@cardphoto/infrastructure/state'
 import { cardtextReducer } from '@cardtext/infrastructure/state'
 import {
@@ -13,13 +14,13 @@ import {
 import { aromaReducer } from '@aroma/infrastructure/state'
 import { dateReducer } from '@date/infrastructure/state'
 
-import { cardReducer } from '@entities/card/infrastructure/state'
+import { cardEditorReducer } from '@entities/card/infrastructure/state'
 
 import { cardMenuNavReducer } from '@layoutNav/infrastructure/state'
 import { templateNavReducer } from '@layoutNav/infrastructure/state'
 
 import { sentReducer } from '@features/sent/application/state'
-import { cartReducer } from '@features/cart/application/state'
+import { cartReducer } from '@features/cart/infrastructure/state'
 import { draftsReducer } from '@features/drafts/application/state'
 
 import { toolbarReducer } from '@toolbar/infrastructure/state'
@@ -32,6 +33,7 @@ import { layoutReducer } from '@layout/infrastructure/state/layoutReducer'
 export const rootReducer = combineReducers({
   cardphoto: cardphotoReducer,
   cardphotoActive: cardphotoActiveReducer,
+  cardphotoSteps: cardphotoStepsReducer,
   imageHistory: imageHistoryReducer,
   cardtext: cardtextReducer,
   envelope: envelopeReducer,
@@ -39,7 +41,7 @@ export const rootReducer = combineReducers({
   aroma: aromaReducer,
   date: dateReducer,
 
-  card: cardReducer,
+  cardEditor: cardEditorReducer,
 
   cardMenuNav: cardMenuNavReducer,
   templateNav: templateNavReducer,

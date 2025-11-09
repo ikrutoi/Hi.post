@@ -56,6 +56,7 @@ export default defineConfig({
       '@date': path.resolve(__dirname, 'src/features/date'),
       '@history': path.resolve(__dirname, 'src/features/history'),
       '@toolbar': path.resolve(__dirname, 'src/features/toolbar'),
+      '@preview': path.resolve(__dirname, 'src/features/preview'),
       '@header': path.resolve(__dirname, 'src/features/header'),
       '@headerActions': path.resolve(__dirname, 'src/features/headerActions'),
       '@cart': path.resolve(__dirname, 'src/features/cart'),

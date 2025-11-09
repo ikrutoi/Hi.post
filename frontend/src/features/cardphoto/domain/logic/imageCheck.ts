@@ -1,4 +1,4 @@
-import type { Role, ImageStore } from '../types/image.types'
+import type { Role, ImageStore } from '../types'
 
 export const checkImages = (base: { id: string }[]): Record<Role, boolean> => {
   const miniImage = base.some((image) => image.id === 'miniImage')

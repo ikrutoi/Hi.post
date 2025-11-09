@@ -12,7 +12,7 @@ const initialState: MetaState = {
   fullCard: false,
   addFullCard: false,
   selectedCard: false,
-  maxCardsList: null,
+  maxMiniCardsCount: null,
   sliderLetter: null,
   sliderLetterPayload: null,
   sliderLine: null,
@@ -39,8 +39,8 @@ export const metaSlice = createSlice({
     setSelectedCard(state, action: PayloadAction<boolean>) {
       state.selectedCard = action.payload
     },
-    setMaxCardsList(state, action: PayloadAction<number | null>) {
-      state.maxCardsList = action.payload
+    setMaxMiniCardsCount(state, action: PayloadAction<number | null>) {
+      state.maxMiniCardsCount = action.payload
     },
     setSliderLetter(state, action: PayloadAction<SliderLetter | null>) {
       state.sliderLetter = action.payload
@@ -91,7 +91,7 @@ export const {
   setFullCard,
   setAddFullCard,
   setSelectedCard,
-  setMaxCardsList,
+  setMaxMiniCardsCount,
   setSliderLetter,
   setSliderLetterPayload,
   setSliderLine,

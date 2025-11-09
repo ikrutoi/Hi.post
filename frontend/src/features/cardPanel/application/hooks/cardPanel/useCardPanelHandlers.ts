@@ -2,13 +2,10 @@ import { useDispatch } from 'react-redux'
 import { v4 as uuidv4 } from 'uuid'
 import { getResultCardphoto } from '@cardPanel/utils/getResultCardphoto'
 import { getDuplicateSummary } from '@cardPanel/domain/logic'
-import { emptyAddress } from '@/features/envelope/domain/constants/address.constants'
-import {
-  addAroma,
-  addCardtext,
-  addDate,
-  addEnvelope,
-} from '@store/slices/cardEditSlice'
+import { useCardtextFacade } from '@cardtext/application/facades'
+import { useEnvelopeFacade } from '@envelope/application/facades'
+import { useDateFacade } from '@date/application/facades'
+import { useAromaFacade } from '@aroma/application/facades'
 import {
   setFullCard,
   setChoiceMemorySection,
@@ -17,13 +14,13 @@ import {
   setFullCardPersonalId,
   addIndexDb,
 } from '@store/slices/layoutSlice'
-
+import type { CardItem } from '@entities/card/domain/types'
 import type {
   CardPanelHandlers,
   CardPanelState,
   CardPanelDb,
-  CardActionsState,
-} from '@/features/cardPanel/domain/types'
+  // CardActionsState,
+} from '@cardPanel/domain/types'
 
 export const useCardPanelHandlers = (
   state: CardPanelState,
@@ -31,13 +28,24 @@ export const useCardPanelHandlers = (
 ): CardPanelHandlers => {
   const dispatch = useDispatch()
 
+  const { resetCardtext } = useCardtextFacade()
+
+  const { actions: actionsEnvelope } = useEnvelopeFacade()
+  const { resetEnvelope } = actionsEnvelope.store
+
+  const { actions: actionsDate } = useDateFacade()
+  const { resetDate } = actionsDate
+
+  const { actions: actionsAroma } = useAromaFacade()
+  const { resetAroma } = actionsAroma
+
   const handleClickMiniKebab = async (section: string, id: string) => {
     switch (section) {
       case 'cardtext':
         await db.deleteCardtextById(id)
         break
       case 'aroma':
-        dispatch(addAroma(null))
+        resetAroma()
         break
     }
   }
@@ -49,7 +57,7 @@ export const useCardPanelHandlers = (
   const handleClickIconArrows = async () => {
     state.setMinimize((prev) => !prev)
     await updateDuplicateButtons()
-    if (state.selectorLayoutChoiceSection.source !== 'minimize') {
+    if (state.selectedTemplate.source !== 'minimize') {
       dispatch(
         addChoiceSection({ source: 'minimize', nameSection: 'cardphoto' })
       )
@@ -57,38 +65,30 @@ export const useCardPanelHandlers = (
   }
 
   const handleIconFullCardClick = async (
-    action: 'addCart' | 'save' | 'remove'
+    action: 'addCart' | 'addDrafts' | 'remove'
   ) => {
-    if (!state.btnsFullCard.fullCard[action]) return
+    if (!state.buttonsFullCard.fullCard[action]) return
 
-    const personalId = uuidv4().split('-')[0]
+    const id = uuidv4().split('-')[0]
     dispatch(setFullCard(true))
     const cardData = await getResultCardphoto()
 
     switch (action) {
       case 'addCart':
-        await db.saveCardToCart(cardData, personalId)
+        await db.saveCardToCart(cardData, id)
         await updateDuplicateButtons()
-        dispatch(setFullCardPersonalId({ cart: personalId }))
+        dispatch(setFullCardPersonalId({ cart: id }))
         break
-      case 'save':
-        await db.saveCardToDrafts(cardData, personalId)
+      case 'addDrafts':
+        await db.saveCardToDrafts(cardData, id)
         await updateDuplicateButtons()
-        dispatch(setFullCardPersonalId({ drafts: personalId }))
+        dispatch(setFullCardPersonalId({ drafts: id }))
         break
       case 'remove':
-        dispatch(addAroma(null))
-        dispatch(addDate(null))
-        dispatch(addEnvelope({ sender: emptyAddress, recipient: emptyAddress }))
-        dispatch(
-          addCardtext({
-            text: [{ type: 'paragraph', children: [{ text: '' }] }],
-            colorName: 'blueribbon',
-            colorType: 'rgba(0, 122, 255, 0.8)',
-            fontStyle: 'italic',
-            fontWeight: 500,
-          })
-        )
+        resetAroma()
+        resetDate()
+        resetEnvelope()
+        resetCardtext()
         await db.deleteMiniImage()
         dispatch(
           addIndexDb({
@@ -113,21 +113,21 @@ export const useCardPanelHandlers = (
 
   const updateDuplicateButtons = async () => {
     const result = await getDuplicateSummary(state.selectorCardEdit)
-    const updates: Partial<typeof state.btnsFullCard.fullCard> = {}
+    const updates: Partial<typeof state.buttonsFullCard.fullCard> = {}
 
-    if (state.btnsFullCard.fullCard.addCart !== !result.cart) {
+    if (state.buttonsFullCard.fullCard.addCart !== !result.cart) {
       updates.addCart = result.cart ? false : true
     }
-    if (state.btnsFullCard.fullCard.save !== !result.drafts) {
-      updates.save = result.drafts ? false : true
+    if (state.buttonsFullCard.fullCard.addDrafts !== !result.drafts) {
+      updates.addDrafts = result.drafts ? false : true
     }
 
-    if (Object.keys(updates).length > 0) {
-      state.setBtnsFullCard((prev: CardActionsState) => ({
-        ...prev,
-        fullCard: { ...prev.fullCard, ...updates },
-      }))
-    }
+    // if (Object.keys(updates).length > 0) {
+    //   state.setButtonsFullCard((prev: CardActionsState) => ({
+    //     ...prev,
+    //     fullCard: { ...prev.fullCard, ...updates },
+    //   }))
+    // }
   }
 
   return {

@@ -1,1 +1,2 @@
-export * from './useCalendarMetrics'
+export { useCalendarMetrics } from './useCalendarMetrics'
+export { useDateSwitcherController } from './useDateSwitcherController'

@@ -28,7 +28,7 @@ export const PresetCard: React.FC<Props> = ({
   refs,
   onClick,
 }) => {
-  const memorySections = ['cart', 'drafts']
+  const source = ['cart', 'drafts']
   const id = card.id
 
   return (
@@ -41,7 +41,7 @@ export const PresetCard: React.FC<Props> = ({
       style={{ width: size.width, height: size.height }}
       onClick={() => onClick(String(id))}
     >
-      {memorySections.includes(section) && (
+      {source.includes(section) && (
         <>
           <div
             className={styles['section-presets__filter']}
