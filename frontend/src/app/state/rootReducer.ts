@@ -11,8 +11,12 @@ import {
   envelopeReducer,
   envelopeUiReducer,
 } from '@envelope/infrastructure/state'
+
 import { aromaReducer } from '@aroma/infrastructure/state'
+
 import { dateReducer } from '@date/infrastructure/state'
+import { calendarReducer } from '@date/calendar/infrastructure/state'
+import { switcherReducer } from '@date/switcher/infrastructure/state'
 
 import { cardEditorReducer } from '@entities/card/infrastructure/state'
 
@@ -39,7 +43,10 @@ export const rootReducer = combineReducers({
   envelope: envelopeReducer,
   envelopeUi: envelopeUiReducer,
   aroma: aromaReducer,
+
   date: dateReducer,
+  calendar: calendarReducer,
+  switcher: switcherReducer,
 
   cardEditor: cardEditorReducer,
 

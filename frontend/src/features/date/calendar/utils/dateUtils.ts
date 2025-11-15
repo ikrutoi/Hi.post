@@ -1,5 +1,8 @@
-import { DispatchDate } from '@entities/date/domain/types'
-import { isCompleteDate } from '@entities/date/utils/guard'
+import {
+  DispatchDate,
+  SelectedDispatchDate,
+  CalendarViewDate,
+} from '@entities/date/domain/types'
 
 export const getDaysInPreviousMonth = (year: number, month: number): number => {
   const prevMonth = month === 0 ? 11 : month - 1
@@ -22,10 +25,13 @@ export const getFirstDayOfWeek = (
 
 export const getFirstDayOfWeekFromDispatch = (
   startFrom: 'Sun' | 'Mon',
-  date: DispatchDate
+  calendarViewDate: CalendarViewDate
 ): number => {
-  if (!isCompleteDate(date)) return 0
-  return getFirstDayOfWeek(startFrom, date.year, date.month)
+  return getFirstDayOfWeek(
+    startFrom,
+    calendarViewDate.year,
+    calendarViewDate.month
+  )
 }
 
 export const shiftMonth = (

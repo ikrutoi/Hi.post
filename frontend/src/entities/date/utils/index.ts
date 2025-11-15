@@ -1,5 +1,4 @@
 export { formatSelectedDispatchDate } from './formatSelectedDispatchDate'
-export { isCompleteDate } from './guard'
-export { isTabooDate } from './isTabooDate'
+export { isDisabledDate } from './isDisabledDate'
 export { isSameDispatchDate } from './isSameDispatchDate'
 export { isSameMonthAndYear } from './isSameMonthAndYear'

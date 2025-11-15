@@ -1,74 +1,74 @@
 import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
-import { CartDatePreview } from '../../calendar/presentation/CalendarWeekTitle/CartDatePreview/CartDatePreview'
+import { CartDatePreview } from '../../calendar/presentation/CalendarWeekdayHeader/CartDatePreview/CartDatePreview'
+import { useDateFacade } from '../../application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
-import type { DispatchDate } from '@entities/date/domain/types'
-import type { CartItem } from '@entities/cart/domain/types'
+import { useCalendarCellController } from '../application/hooks'
 import styles from './Cell.module.scss'
+import type {
+  DispatchDate,
+  SelectedDispatchDate,
+  CalendarViewDate,
+  MonthDirection,
+} from '@entities/date/domain/types'
+import type { CartItem } from '@entities/cart/domain/types'
+import type { HandleCellClickParams } from '../domain/types'
 
 interface CellProps {
-  title?: string
   dayCurrent?: number
   dayBefore?: number
   dayAfter?: number
-  today?: boolean
-  isTaboo?: boolean
-  isSelected?: boolean
-  dispatchDate?: DispatchDate
+  calendarViewDate: CalendarViewDate
+  direction: MonthDirection
+  isToday?: boolean
+  isDisabledDate?: boolean
+  isSelectedDispatchDate?: boolean
+  selectedDispatchDate?: SelectedDispatchDate
   handleDispatchDate?: (
-    isTaboo: boolean,
+    isDisabledDate: boolean,
     year: number,
     month: number,
     day: number
   ) => void
-  handleClickCell?: (direction: 'before' | 'after') => void
-  children?: React.ReactNode // для CartDatePreview
+  handleClickCell: (params: HandleCellClickParams) => void
+  children?: React.ReactNode
 }
 
 export const Cell: React.FC<CellProps> = ({
-  title,
   dayBefore,
   dayCurrent,
   dayAfter,
-  today,
-  isTaboo,
-  isSelected,
-  dispatchDate,
+  calendarViewDate,
+  direction,
+  isToday,
+  isDisabledDate,
+  isSelectedDispatchDate,
+  // selectedDispatchDate,
   handleDispatchDate,
   handleClickCell,
   children,
 }) => {
   const dynamicClass = clsx(
     styles.cell,
-    today && styles['cell--today'],
-    dispatchDate && styles['cell--dispatch'],
-    isTaboo && styles['cell--taboo'],
-    dayBefore != null && styles['cell--before'],
-    dayAfter != null && styles['cell--after'],
-    dayCurrent != null && styles['cell--current'],
-    isSelected && styles['cell--selected']
+    isToday && styles.today,
+    isDisabledDate && styles.disabled,
+    dayBefore != null && styles.before,
+    dayAfter != null && styles.after,
+    dayCurrent != null && styles.current,
+    isSelectedDispatchDate && styles.dispatch
   )
 
-  if (title) {
-    return (
-      <div className={clsx(styles.cell, styles['cell--title'])}>{title}</div>
-    )
-  }
-
   const handleClick = () => {
-    if (
-      dayCurrent != null &&
-      !children &&
-      dispatchDate?.isSelected &&
-      handleDispatchDate
-    ) {
-      handleDispatchDate(
-        !!isTaboo,
-        dispatchDate.year!,
-        dispatchDate.month!,
-        dayCurrent
-      )
-    }
+    // if (isDisabledDate) return
+    handleClickCell({
+      isDisabledDate,
+      dayBefore,
+      dayCurrent,
+      dayAfter,
+      calendarViewDate,
+      direction,
+      // cartItem,
+    })
   }
 
   return (

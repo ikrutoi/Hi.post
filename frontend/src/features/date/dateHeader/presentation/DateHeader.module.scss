@@ -1,0 +1,89 @@
+@use '@styles/config/colors' as *;
+
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  justify-content: space-between;
+  margin: 1rem;
+  padding: 1rem 0;
+  // border: solid 1px blue;
+}
+
+.headerSide {
+  display: flex;
+  align-items: center;
+  // border: solid 1px green;
+}
+
+.headerSide:last-child {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.todaySelected {
+  display: flex;
+  // align-items: center;
+  // width: 11rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  user-select: none;
+
+  &Disabled {
+    cursor: default;
+  }
+}
+
+.selected {
+  display: flex;
+  font-size: 0.9rem;
+  justify-content: flex-end;
+  color: #007dd7;
+}
+
+.selected:hover {
+  cursor: pointer;
+}
+
+.today {
+  display: flex;
+  // border: solid 1px aquamarine;
+}
+
+.headerCenter {
+  display: flex;
+}
+
+.arrowButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  // border: solid 1px red;
+
+  &Inactive {
+    color: var(--text-secondary);
+  }
+}
+
+.switcher {
+  display: flex;
+  align-items: center;
+  border-radius: 0.3rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.iconArrow {
+  width: 1.2rem;
+  height: 1.2rem;
+  background-color: transparent;
+}
+
+.iconTitle {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0 0.5rem;
+}

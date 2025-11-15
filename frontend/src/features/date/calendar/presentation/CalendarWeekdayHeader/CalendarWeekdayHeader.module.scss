@@ -1,13 +1,14 @@
-.calendar-week-title {
+.calendarWeekdayHeader {
   display: flex;
   justify-content: center;
   width: 100%;
+  border: solid 1px orange;
 
-  &__sunmon {
+  .sunmon {
     margin-right: 1rem;
   }
 
-  &__days {
+  .days {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 0.5rem;

@@ -8,7 +8,7 @@ import {
   useMinimizeIcons,
 } from '@cardPanel/application/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { useCardFacade } from '@entities/card/application/facades'
+import { useCardEditorFacade } from '@entities/card/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useSliderLetterHandlers } from '@cardPanel/application/hooks/useSliderLetterHandlers'
@@ -30,7 +30,8 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
   const [valueScroll, setValueScroll] = useState(0)
   const [scrollIndex, setScrollIndex] = useState<ScrollIndex | null>(null)
 
-  const { completionMap } = useCardFacade()
+  const { state: stateCardEditor } = useCardEditorFacade()
+  const { completionMap } = stateCardEditor
 
   const {
     buttonsFullCard,
@@ -55,8 +56,8 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
 
   if (!remSize) return
 
-  const { state } = useLayoutNavFacade()
-  const { selectedTemplate } = state
+  const { state: stateLayoutNav } = useLayoutNavFacade()
+  const { selectedTemplate } = stateLayoutNav
 
   const { handleChangeFromSliderCardsList, handleLetterClick } =
     useSliderLetterHandlers()

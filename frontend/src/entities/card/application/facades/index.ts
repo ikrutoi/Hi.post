@@ -1,1 +1,1 @@
-export { useCardFacade } from './useCardFacade'
+export { useCardEditorFacade } from './useCardFacade'

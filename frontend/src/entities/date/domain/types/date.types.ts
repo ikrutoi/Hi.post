@@ -15,4 +15,19 @@ export type DateTextTitle = {
 
 export type DatePart = keyof DateTextTitle
 
-export type MonthDirection = 'before' | 'after'
+export const MONTH_DIRECTION = ['before', 'after', 'current'] as const
+
+export type MonthDirection = (typeof MONTH_DIRECTION)[number]
+
+export type CalendarViewDate = {
+  year: number
+  month: number
+}
+
+export type LastCalendarViewDate = CalendarViewDate | null
+
+export const VISIBLE_CALENDAR_DATE = ['year', 'month'] as const
+
+export type VisibleCalendarDate = (typeof VISIBLE_CALENDAR_DATE)[number]
+
+export type Switcher = (typeof VISIBLE_CALENDAR_DATE)[number] | null

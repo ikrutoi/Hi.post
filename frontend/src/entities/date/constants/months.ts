@@ -12,3 +12,18 @@ export const MONTH_NAMES: string[] = [
   'November',
   'December',
 ]
+
+export const MONTH_NAMES_UPPER: string[] = [
+  'JANUARY',
+  'FEBRUARY',
+  'MARCH',
+  'APRIL',
+  'MAY',
+  'JUNE',
+  'JULY',
+  'AUGUST',
+  'SEPTEMBER',
+  'OCTOBER',
+  'NOVEMBER',
+  'DECEMBER',
+]

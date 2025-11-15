@@ -1,18 +1,20 @@
 import { Cell } from '@date/cell/presentation/Cell'
-import type { DispatchDate } from '@entities/date/domain/types'
+import type {
+  DispatchDate,
+  SelectedDispatchDate,
+  CalendarViewDate,
+} from '@entities/date/domain/types'
+import type { HandleCellClickParams } from '../../../cell/domain/types'
 
 export const buildPreviousMonthCells = (
   offset: number,
   daysInPreviousMonth: number,
-  dispatchDate: DispatchDate,
-  dispatchDateTitle: DispatchDate,
+  selectedDispatchDate: SelectedDispatchDate,
+  calendarViewDate: CalendarViewDate,
   dateTodayBefore: { year: number; month: number },
   dateSelectedBefore: { year: number; month: number },
-  titleYear: number,
-  titleMonth: number,
-  titleDay: number,
   currentDay: number,
-  handleClickCell: (direction: 'before' | 'after') => void
+  handleClickCell: (params: HandleCellClickParams) => void
 ) => {
   const previousMonth: number[] = []
   for (let day = 0; day < offset; day++) {
@@ -22,20 +24,23 @@ export const buildPreviousMonthCells = (
   return previousMonth.map((day) => (
     <Cell
       key={`day-before-${day}`}
-      today={
-        day === currentDay &&
-        titleMonth === dateTodayBefore.month &&
-        titleYear === dateTodayBefore.year
-      }
       dayBefore={day}
-      isTaboo={false}
-      dispatchDate={
-        dispatchDate.isSelected &&
-        titleMonth === dateSelectedBefore.month &&
-        titleYear === dateSelectedBefore.year &&
-        titleDay === day
+      calendarViewDate={calendarViewDate}
+      direction={'before'}
+      isToday={
+        !!selectedDispatchDate &&
+        day === currentDay &&
+        selectedDispatchDate.month === dateTodayBefore.month &&
+        selectedDispatchDate.year === dateTodayBefore.year
       }
-      dispatchDateTitle={dispatchDateTitle}
+      isDisabledDate={false}
+      isSelectedDispatchDate={
+        !!selectedDispatchDate &&
+        selectedDispatchDate.year === dateSelectedBefore.year &&
+        selectedDispatchDate.month === dateSelectedBefore.month &&
+        selectedDispatchDate.day === day
+      }
+      // selectedDispatchDate={selectedDispatchDate}
       handleClickCell={handleClickCell}
     />
   ))

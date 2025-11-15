@@ -1,4 +1,9 @@
 export const themeColors = {
+  color: {
+    disabled: 'hsl(0, 0%, 96%)',
+    enabled: 'hsl(0, 0%, 88%)',
+    font: 'hsl(0, 0%, 11)',
+  },
   text: {
     primary: 'rgb(71, 71, 71)',
     secondary: 'rgb(163, 163, 163)',

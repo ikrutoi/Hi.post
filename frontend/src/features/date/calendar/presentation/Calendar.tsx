@@ -1,33 +1,33 @@
 import React, { useState } from 'react'
-import { CalendarWeekTitle } from './CalendarWeekTitle/CalendarWeekTitle'
+import { CalendarWeekdayHeader } from './CalendarWeekdayHeader/CalendarWeekdayHeader'
 import {
   daysOfWeekStartFromMon,
   daysOfWeekStartFromSun,
 } from '@entities/date/constants'
 import { useCalendarConstruction } from '@date/calendar/application/logic'
 import styles from './Calendar.module.scss'
-import type { DispatchDate } from '@entities/date/domain/types'
+import type {
+  DispatchDate,
+  SelectedDispatchDate,
+  CalendarViewDate,
+  DaysOfWeek,
+} from '@entities/date/domain/types'
 
 interface CalendarProps {
-  dispatchDate: DispatchDate
-  handleDispatchDate: (
-    isTaboo: boolean,
-    year: number,
-    month: number,
-    day: number
-  ) => void
-  handleClickCell: (direction: 'before' | 'after') => void
+  selectedDispatchDate: SelectedDispatchDate
+  calendarViewDate: CalendarViewDate
+  setSelectedDispatchDate: (date: DispatchDate) => void
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
-  dispatchDate,
-  handleDispatchDate,
-  handleClickCell,
+  selectedDispatchDate,
+  calendarViewDate,
+  setSelectedDispatchDate,
 }) => {
-  const [firstDayOfWeekTitle, setFirstDayOfWeek] = useState<'Sun' | 'Mon'>(
-    'Sun'
+  const [firstDayOfWeek, setFirstDayOfWeek] = useState<'Sun' | 'Mon'>('Sun')
+  const [daysOfWeek, setDaysOfWeek] = useState<DaysOfWeek[]>(
+    daysOfWeekStartFromSun
   )
-  const [daysOfWeek, setDaysOfWeek] = useState<string[]>(daysOfWeekStartFromSun)
 
   const handleFirstDay = (firstDay: 'Sun' | 'Mon') => {
     setFirstDayOfWeek(firstDay)
@@ -37,17 +37,18 @@ export const Calendar: React.FC<CalendarProps> = ({
   }
 
   const calendarCells = useCalendarConstruction({
-    dispatchDate,
-    handleDispatchDate,
-    handleClickCell,
-    firstDayOfWeekTitle,
+    selectedDispatchDate,
+    firstDayOfWeek,
+    calendarViewDate,
+    setSelectedDispatchDate,
+    // handleClickCell,
   })
 
   return (
     <div className={styles.calendar}>
-      <CalendarWeekTitle
+      <CalendarWeekdayHeader
         daysOfWeek={daysOfWeek}
-        firstDayTitle={firstDayOfWeekTitle}
+        firstDayTitle={firstDayOfWeek}
         handleFirstDay={handleFirstDay}
       />
       <div className={styles['calendar__month']}>

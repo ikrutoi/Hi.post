@@ -1,5 +1,5 @@
-import type { CartItem } from '@cart/domain/types'
-import { isCompleteDate } from '@entities/date/utils/guard'
+import type { CartItem } from '@entities/cart/domain/types'
+// import { isCompleteDate } from '@entities/date/utils/guard'
 
 export const changeCartDay = (
   day: number,

@@ -1,36 +1,50 @@
 import React from 'react'
 import clsx from 'clsx'
 import styles from '../Switcher.module.scss'
-import { formatDispatchDate } from '@entities/date/utils'
-import type { DateNumericTitle, DateRole } from '@entities/date/domain/types'
+import { MONTH_NAMES_UPPER } from '@entities/date/constants/months'
+import type {
+  SelectedDispatchDate,
+  DatePart,
+  Switcher,
+} from '@entities/date/domain/types'
 
 interface SwitcherButtonProps {
-  role: DateRole
-  dispatchDateTitle: DateNumericTitle
-  activeDateTitleRole?: DateRole
-  onToggleRole: (role: DateRole) => void
+  part: DatePart
+  calendarViewPart: number
+  activeSwitcher?: Switcher
+  onTogglePart: (part: DatePart) => void
 }
 
 export const SwitcherButton: React.FC<SwitcherButtonProps> = ({
-  role,
-  dispatchDateTitle,
-  activeDateTitleRole,
-  onToggleRole,
+  part,
+  calendarViewPart,
+  activeSwitcher,
+  onTogglePart,
 }) => {
-  const isActive = activeDateTitleRole === role
+  const isActive = activeSwitcher === part
+
+  const label =
+    part === 'month' ? MONTH_NAMES_UPPER[calendarViewPart] : calendarViewPart
 
   return (
-    <span
-      className={clsx(
-        styles.switcher__button,
-        styles[`switcher__button--${role}`],
-        {
-          [styles['switcher__button--active']]: isActive,
-        }
-      )}
-      onClick={() => onToggleRole(role)}
+    <div
+      className={clsx(styles.buttonWrapper, {
+        [styles.buttonWrapperMonth]: part === 'month',
+        [styles.buttonWrapperYear]: part === 'year',
+      })}
     >
-      {formatDispatchDate(dispatchDateTitle, role)}
-    </span>
+      <div
+        className={clsx(styles.button, styles[`button${capitalize(part)}`], {
+          [styles.buttonActive]: isActive,
+        })}
+        onClick={() => onTogglePart(part)}
+      >
+        {label}
+      </div>
+    </div>
   )
+}
+
+function capitalize(part: string): string {
+  return part.charAt(0).toUpperCase() + part.slice(1)
 }

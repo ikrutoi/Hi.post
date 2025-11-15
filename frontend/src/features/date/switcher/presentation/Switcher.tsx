@@ -1,30 +1,39 @@
 import React from 'react'
 import { SwitcherButton } from './SwitcherButton/SwitcherButton'
+import { VISIBLE_CALENDAR_DATE } from '@entities/date/domain/types'
 import styles from './Switcher.module.scss'
-import type { DateNumericTitle, DateRole } from '@entities/date/domain/types'
+import type {
+  SelectedDispatchDate,
+  DatePart,
+  CalendarViewDate,
+  Switcher as typeSwitcher,
+} from '@entities/date/domain/types'
 
 interface Props {
-  dispatchDateTitle: DateNumericTitle
-  activeDateTitleRole?: DateRole
-  onToggleRole: (role: DateRole) => void
+  // selectedDispatchDate: SelectedDispatchDate
+  activeSwitcher?: typeSwitcher
+  calendarViewDate: CalendarViewDate
+  onTogglePart: (part: DatePart) => void
 }
 
 export const Switcher: React.FC<Props> = ({
-  dispatchDateTitle,
-  activeDateTitleRole,
-  onToggleRole,
+  // selectedDispatchDate,
+  activeSwitcher,
+  calendarViewDate,
+  onTogglePart,
 }) => {
-  const roles: DateRole[] = ['year', 'month']
+  const pats = VISIBLE_CALENDAR_DATE
 
   return (
     <div className={styles.switcher}>
-      {roles.map((role) => (
+      {pats.map((part) => (
         <SwitcherButton
-          key={role}
-          role={role}
-          dispatchDateTitle={dispatchDateTitle}
-          activeDateTitleRole={activeDateTitleRole}
-          onToggleRole={onToggleRole}
+          key={part}
+          part={part}
+          calendarViewPart={calendarViewDate[part]}
+          // selectedDispatchDate={selectedDispatchDate}
+          activeSwitcher={activeSwitcher}
+          onTogglePart={onTogglePart}
         />
       ))}
     </div>

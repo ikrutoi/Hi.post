@@ -1,0 +1,1 @@
+export { useSwitcherFacade } from './useSwitcherFacade'

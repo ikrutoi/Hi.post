@@ -1,89 +1,110 @@
+@use '@styles/config/colors' as *;
+
 .cell {
   display: flex;
+  color: $color-font-enabled;
   justify-content: center;
   align-items: center;
-  margin: 0.5rem;
-  padding: 0.45rem 0.5rem 0.55rem 0.5rem;
-  width: 2.2rem;
-  height: 1.5rem;
-  border-radius: 0.3rem;
+  margin: 0.275rem;
+  // padding: 0.45rem 0.5rem 0.55rem 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  // border: solid 2px $color-transparent;
   user-select: none;
   cursor: pointer;
-  // color: red;
 
-  &--title {
+  &.title {
     cursor: default;
     user-select: none;
   }
 
-  &--today {
-    background-color: rgb(240, 240, 240);
+  &.today {
+    background-color: $color-enabled;
+    // color: $color-font-enabled;
+    // border: solid 2px $color-font-enabled;
   }
 
-  &--dispatch {
-    color: white;
-    background-color: #007dd7;
+  &.dispatch {
+    // color: white;
+    // background-color: #007dd7;
+    color: $color-font-active;
+    background-color: $color-enabled;
+    // border: solid 2px $color-font-active;
 
     &:hover {
       color: white;
     }
   }
 
-  &--taboo {
-    color: rgb(163, 163, 163);
+  &.disabled {
+    color: $color-font-disabled;
     cursor: default;
   }
 
-  &--before,
-  &--after {
-    color: rgb(163, 163, 163);
+  &.before,
+  &.after {
+    color: $color-font-disabled;
 
-    &.cell--selected {
-      background-color: #b6dae9;
-      color: white;
+    &.selected {
+      background-color: $color-font-active;
+      color: $color-disabled;
     }
   }
 
-  &--current:hover {
+  &.current {
+    // color: $color-font-enabled;
+
+    &.disabled {
+      // color: $color-font-disabled;
+      cursor: default;
+    }
+
+    &.disabled:hover {
+      color: $color-font-disabled;
+    }
+  }
+
+  &.current:hover {
     color: rgb(0, 125, 250);
   }
 
-  &--current.cell--shopping:hover {
+  &.current.cart:hover {
     color: black;
     cursor: default;
   }
 
-  &__cart-container {
+  .cartContainer {
     position: relative;
     display: flex;
   }
 
-  &__cart-filter,
-  &__cart-img {
+  .cartFilter,
+  .cartImg {
     width: 3.2rem;
     height: 2.5rem;
     border-radius: 0.3rem;
     cursor: pointer;
   }
 
-  &__cart-filter {
+  .cartFilter {
     position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: rgba(163, 163, 163, 0.5);
 
-    &--selected {
-      // future styling if needed
+    &.selected {
+      color: aqua;
     }
   }
 
-  &__cart-shadow {
+  .cartShadow {
     padding: 0 0.1rem;
     color: rgb(240, 240, 240);
   }
 
-  &__cart-count {
+  .cartCount {
     position: absolute;
     bottom: -0.5rem;
     right: -0.5rem;

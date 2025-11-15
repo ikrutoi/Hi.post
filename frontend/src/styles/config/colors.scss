@@ -1,6 +1,15 @@
-$color-disabled: hsl(0, 0%, 64%);
-$color-enabled: hsl(0, 0%, 28%);
-$color-active: hsl(200, 100%, 40%);
-$color-hover: hsl(200, 100%, 48%);
+$color-disabled: hsl(0, 0%, 96%);
+$color-enabled: hsl(0, 0%, 90%);
+$color-font-enabled: hsl(0, 0%, 11%);
+$color-font-disabled: hsl(0, 0%, 65%);
+$color-font-active: hsl(204, 100%, 42%);
+// $color-active: hsl(200, 100%, 40%);
+// $color-hover: hsl(200, 100%, 48%);
 
-$color-transparent: hsla(0, 0%, 0%, 0);
+// $color-transparent: hsla(0, 0%, 0%, 0);
+
+$color-active: #007dd7;
+// $color-enabled: #333;
+$color-hover: #007dd7;
+$color-hover-bg: rgba(0, 125, 215, 0.1);
+$color-transparent: transparent;

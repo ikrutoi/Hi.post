@@ -1,26 +1,25 @@
 import { Cell } from '@date/cell/presentation/Cell'
-import type { DispatchDate } from '@entities/date/domain/types'
+import type {
+  DispatchDate,
+  SelectedDispatchDate,
+  CalendarViewDate,
+} from '@entities/date/domain/types'
+import type { HandleCellClickParams } from '../../../cell/domain/types'
 
 interface BuildNextMonthCellsParams {
   count: number
-  dispatchDate: DispatchDate
-  // dispatchDateTitle: DispatchDate
-  titleYear: number
-  titleMonth: number
-  titleDay: number
+  selectedDispatchDate: SelectedDispatchDate
+  calendarViewDate: CalendarViewDate
   dateTodayAfter: { year: number; month: number }
   dateSelectedAfter: { year: number; month: number }
   currentDay: number
-  handleClickCell: (direction: 'before' | 'after') => void
+  handleClickCell: (params: HandleCellClickParams) => void
 }
 
 export const buildNextMonthCells = ({
   count,
-  dispatchDate,
-  // dispatchDateTitle,
-  titleYear,
-  titleMonth,
-  titleDay,
+  selectedDispatchDate,
+  calendarViewDate,
   dateTodayAfter,
   dateSelectedAfter,
   currentDay,
@@ -30,23 +29,25 @@ export const buildNextMonthCells = ({
     const day = i + 1
     const isToday =
       day === currentDay &&
-      titleMonth === dateTodayAfter.month &&
-      titleYear === dateTodayAfter.year
+      selectedDispatchDate?.month === dateTodayAfter.month &&
+      selectedDispatchDate.year === dateTodayAfter.year
 
-    const isSelected =
-      dispatchDate.isSelected &&
-      titleMonth === dateSelectedAfter.month &&
-      titleYear === dateSelectedAfter.year &&
-      titleDay === day
+    const isSelectedDispatchDate =
+      !!selectedDispatchDate &&
+      selectedDispatchDate.month === dateSelectedAfter.month &&
+      selectedDispatchDate.year === dateSelectedAfter.year &&
+      selectedDispatchDate.day === day
 
     return (
       <Cell
         key={`day-after-${day}`}
-        today={isToday}
-        isTaboo={false}
         dayAfter={day}
-        dispatchDate={dispatchDate}
-        // dispatchDateTitle={dispatchDateTitle}
+        calendarViewDate={calendarViewDate}
+        direction={'after'}
+        isToday={isToday}
+        isDisabledDate={false}
+        isSelectedDispatchDate={isSelectedDispatchDate}
+        // selectedDispatchDate={selectedDispatchDate}
         handleClickCell={handleClickCell}
       />
     )

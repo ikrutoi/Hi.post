@@ -1,2 +1,2 @@
 export { useCalendarMetrics } from './useCalendarMetrics'
-export { useDateSwitcherController } from './useDateSwitcherController'
+export { useDateSwitcherController } from '../../switcher/application/hooks/useDateSwitcherController'
