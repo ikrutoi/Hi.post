@@ -18,6 +18,7 @@ export const useCalendarViewDate = () => {
   })
 
   useEffect(() => {
+    console.log('viewDate Effect', viewDate)
     setCalendarViewDate({ year: viewDate.year, month: viewDate.month })
   }, [viewDate])
 

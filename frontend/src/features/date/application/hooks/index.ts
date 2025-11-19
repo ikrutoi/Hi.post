@@ -1,2 +1,5 @@
 export { useCalendarMetrics } from './useCalendarMetrics'
 export { useDateSwitcherController } from '../../switcher/application/hooks/useDateSwitcherController'
+export { useInitializeCalendarViewDate } from './useInitializeCalendarViewDate'
+export { useFormattedSelectedDate } from './useFormattedSelectedDate'
+export { useAutoActivateDateSection } from './useAutoActivateDateSection'

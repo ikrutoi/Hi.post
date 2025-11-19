@@ -15,6 +15,7 @@ import type {
   DispatchDate,
   SelectedDispatchDate,
   CalendarViewDate,
+  Switcher,
 } from '@entities/date/domain/types'
 import type { CartItem } from '@entities/cart/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
@@ -24,7 +25,7 @@ interface UseCalendarConstructionParams {
   firstDayOfWeek: 'Sun' | 'Mon'
   calendarViewDate: CalendarViewDate
   setSelectedDispatchDate: (date: DispatchDate) => void
-  // handleClickCell: (params: HandleCellClickParams) => void
+  triggerFlash: (part: Switcher) => void
 }
 
 const currentDate = getCurrentDate()
@@ -34,7 +35,7 @@ export const useCalendarConstruction = ({
   firstDayOfWeek,
   calendarViewDate,
   setSelectedDispatchDate,
-  // handleClickCell,
+  triggerFlash,
 }: UseCalendarConstructionParams) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
 
@@ -64,7 +65,7 @@ export const useCalendarConstruction = ({
     -1
   )
 
-  const { handleCellClickLogic } = useCalendarCellController()
+  const { handleCellClickLogic } = useCalendarCellController({ triggerFlash })
   const handleClickCell = (params: HandleCellClickParams) => {
     handleCellClickLogic(params)
   }
@@ -113,7 +114,6 @@ export const useCalendarConstruction = ({
     [
       year,
       month,
-      // day,
       selectedDispatchDate,
       setSelectedDispatchDate,
       handleClickCell,

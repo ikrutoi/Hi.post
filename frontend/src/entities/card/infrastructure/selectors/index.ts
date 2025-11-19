@@ -1,1 +1,1 @@
-export * from './card.selectors'
+export * from './cardEditor.selector'

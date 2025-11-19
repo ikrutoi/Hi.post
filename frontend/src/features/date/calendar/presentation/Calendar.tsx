@@ -11,18 +11,21 @@ import type {
   SelectedDispatchDate,
   CalendarViewDate,
   DaysOfWeek,
+  Switcher,
 } from '@entities/date/domain/types'
 
 interface CalendarProps {
   selectedDispatchDate: SelectedDispatchDate
   calendarViewDate: CalendarViewDate
   setSelectedDispatchDate: (date: DispatchDate) => void
+  triggerFlash: (part: Switcher) => void
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
   selectedDispatchDate,
   calendarViewDate,
   setSelectedDispatchDate,
+  triggerFlash,
 }) => {
   const [firstDayOfWeek, setFirstDayOfWeek] = useState<'Sun' | 'Mon'>('Sun')
   const [daysOfWeek, setDaysOfWeek] = useState<DaysOfWeek[]>(
@@ -41,6 +44,7 @@ export const Calendar: React.FC<CalendarProps> = ({
     firstDayOfWeek,
     calendarViewDate,
     setSelectedDispatchDate,
+    triggerFlash,
     // handleClickCell,
   })
 

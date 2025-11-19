@@ -1,17 +1,25 @@
+@use '@styles/config/colors' as *;
+
 .envelopeOverlay {
   position: relative;
-  // border: solid 1px red;
+}
 
-  &--svg {
-    position: absolute;
-    // margin-top: 1rem;
-    // margin-bottom: 1rem;
-    z-index: 7;
-    pointer-events: none;
-  }
+.envelopeOverlaySvg {
+  position: absolute;
+  z-index: 7;
+  pointer-events: none;
+}
 
-  &__plug {
-    position: absolute;
-    opacity: 0;
-  }
+.envelopeOverlayPlug {
+  position: absolute;
+  opacity: 0;
+}
+
+.envelopeOverlaySvg {
+  display: block;
+  border-radius: 0.5rem;
+  width: 100%;
+  height: 100%;
+  color: $color-font-disabled;
+  opacity: 0.6;
 }

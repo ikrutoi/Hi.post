@@ -11,13 +11,13 @@ import type {
 interface SliderProps {
   selectedDispatchDate: SelectedDispatchDate
   activeSwitcher?: Switcher
-  onChange: (role: DatePart, value: number) => void
+  // onChange: (role: DatePart, value: number) => void
 }
 
 export const Slider: React.FC<SliderProps> = ({
   selectedDispatchDate,
   activeSwitcher,
-  onChange,
+  // onChange,
 }) => {
   const currentDate = getCurrentDate()
 
@@ -43,7 +43,7 @@ export const Slider: React.FC<SliderProps> = ({
       min={min}
       max={max}
       value={value}
-      onChange={(e) => onChange(role, Number(e.target.value))}
+      // onChange={(e) => onChange(role, Number(e.target.value))}
     />
   )
 

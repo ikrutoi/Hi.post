@@ -2,3 +2,4 @@ export { useLayoutSelectedTemplateSection } from './useLayoutSelectedTemplateSec
 export { useSize } from './useSize'
 export { useViewportSize } from './useViewportSize'
 export { useMiniCardSize } from './useMiniCardSize'
+export { useFlashEffect } from './useFlashEffect'

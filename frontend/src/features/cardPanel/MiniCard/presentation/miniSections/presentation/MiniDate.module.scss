@@ -6,18 +6,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
+  height: 100%;
 
-.miniDate__day {
-  font-size: 2.4rem;
-  line-height: 2.2rem;
-}
+  &Day {
+    font-size: 2.4rem;
+    line-height: 2.2rem;
+  }
 
-.miniDate__year,
-.miniDate__month {
-  font-size: 1rem;
-}
+  &Year,
+  &Month {
+    font-size: 1rem;
+  }
 
-.miniDate__month {
-  margin-top: 0.2rem;
+  &Month {
+    margin-top: 0.2rem;
+  }
 }

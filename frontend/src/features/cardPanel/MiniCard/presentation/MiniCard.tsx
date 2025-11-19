@@ -6,80 +6,98 @@ import {
   useMiniCardKebab,
   useMiniCardIconVisibility,
 } from '../application/hooks'
-import { MiniCardProps } from '../domain/types/miniCard.props'
 import styles from './MiniCard.module.scss'
 import type { CardSection } from '@entities/card/domain/types'
+import type { SizeCard } from '@layout/domain/types'
+
+interface MiniCardProps {
+  section: CardSection
+  // valueSection: unknown
+  sizeMiniCard: SizeCard
+  zIndex: number
+  position: number
+  isPacked: boolean
+  // infoSection: SectionInfo
+  // isPacked: boolean
+  // infoMinimize: boolean
+  // showsIconMinimize: boolean
+  // onClickSection?: (section: string, area: string) => void
+}
 
 export const MiniCard: React.FC<MiniCardProps> = ({
   section,
   // valueSection,
-  // sizeMiniCard,
+  sizeMiniCard,
+  zIndex,
+  position,
+  isPacked,
   // infoSection,
-  // minimize,
+  // isPacked,
   // infoMinimize,
-  // showIconMinimize,
+  // showsIconMinimize,
   // onClickSection,
 }) => {
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
 
   const { render } = useMiniCardRender()
-  const { handleClick } = useMiniCardKebab(
-    infoSection.section.section as CardSection
-  )
+  // const { handleClick } = useMiniCardKebab(
+  //   infoSection.section.section as CardSection
+  // )
 
-  const showIcon = useMiniCardIconVisibility({
-    infoMinimize,
-    showIconMinimize,
-    infoSection,
-    minimize,
-  })
+  // const showIcon = useMiniCardIconVisibility({
+  //   infoMinimize,
+  //   showsIconMinimize,
+  //   infoSection,
+  //   isPacked,
+  // })
 
-  const handleClickSection = () => {
-    onClickSection?.(infoSection.section.section, 'single')
-  }
+  // const handleClickSection = () => {
+  //   onClickSection?.(infoSection.section.section, 'single')
+  // }
 
   return (
     <div
       ref={miniCardRef}
-      className={`${styles['mini-card']} ${styles[`mini-card-${infoSection.section.section}`]}`}
+      className={`${styles['mini-card']} ${styles[`mini-card-${section}`]}`}
       style={{
-        left: minimize
+        left: isPacked
           ? '0'
-          : `${sizeMiniCard.width + remSize + (sizeMiniCard.width * 4) / 24 + (sizeMiniCard.width + remSize) * infoSection.i}px`,
-        padding: infoSection.section.section === 'cardphoto' ? '0' : '0.5rem',
+          : `${sizeMiniCard.width + remSize + (sizeMiniCard.width * 4) / 24 + (sizeMiniCard.width + remSize) * position}px`,
+        // padding: section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeMiniCard.width}px`,
         height: `${sizeMiniCard.height}px`,
-        boxShadow: minimize
+        boxShadow: isPacked
           ? '2px 1px 5px 2px rgba(255, 255, 255, 0.2)'
           : '2px 1px 5px 2px rgba(34, 60, 80, 0.3)',
-        zIndex: infoSection.section.index,
-        transition: `left ${0.3 + 0.15 * infoSection.i}s ease, box-shadow 0.3s`,
+        zIndex,
+        transition: `left ${0.3 + 0.15 * position}s ease, box-shadow 0.3s`,
       }}
-      onClick={handleClickSection}
+      // onClick={handleClickSection}
     >
       {render({
-        section: infoSection.section.section,
-        valueSection,
+        section,
+        // valueSection,
         sizeMiniCard,
         ref: miniCardRef.current,
       })}
 
-      {!minimize && (
+      {
+        // !isPacked &&
         <button
           className={styles['mini-card__kebab']}
           style={{
-            color: showIcon ? 'rgba(71, 71, 71, 1)' : 'rgba(71, 71, 71, 0)',
-            backgroundColor: showIcon
-              ? 'rgba(240, 240, 240, 0.85)'
-              : 'rgba(240, 240, 240, 0)',
+            // color: showIcon ? 'rgba(71, 71, 71, 1)' : 'rgba(71, 71, 71, 0)',
+            // backgroundColor: showIcon
+            //   ? 'rgba(240, 240, 240, 0.85)'
+            //   : 'rgba(240, 240, 240, 0)',
             transition: 'background-color 0.3s ease, color 0.3s ease',
           }}
-          onClick={handleClick}
+          // onClick={handleClick}
         >
-          {getToolbarIcon('remove')}
+          {/* {getToolbarIcon('remove')} */}
         </button>
-      )}
+      }
     </div>
   )
 }

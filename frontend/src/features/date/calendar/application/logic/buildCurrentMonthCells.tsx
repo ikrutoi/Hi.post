@@ -1,14 +1,11 @@
 import { isDisabledDate } from '@entities/date/utils'
-import { changeCartDay } from './changeCartDay'
 import { Cell } from '../../../cell/presentation/Cell'
 import { CartDatePreview } from '../../presentation/CalendarWeekdayHeader/CartDatePreview/CartDatePreview'
 import { isSameDate } from '../helpers'
-import { currentDate } from '@features/date/calendar/domain/models'
 import type {
   DispatchDate,
   SelectedDispatchDate,
   CalendarViewDate,
-  MonthDirection,
 } from '@entities/date/domain/types'
 import type { CartItem } from '@entities/cart/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
@@ -75,19 +72,15 @@ export const buildCurrentMonthCells = ({
         direction={'current'}
         isToday={isToday}
         isDisabledDate={isDisabledDate(day, calendarViewDate, currentDate)}
-        // setSelectedDispatchDate={setSelectedDispatchDate}
         isSelectedDispatchDate={isSelectedDispatchDate}
-        // selectedDispatchDate={selectedDispatchDate}
-        handleClickCell={handleClickCell}
+        onClickCell={handleClickCell}
       >
         {cartItem && (
           <CartDatePreview
             day={day}
             cartItem={cartItem}
             countCartCards={cartItemCount}
-            handleImageCartDateClick={(evt) => {
-              // можно вынести в отдельную функцию
-            }}
+            handleImageCartDateClick={(evt) => {}}
             handleCellCartDateClick={() => {
               setSelectedDispatchDate({ year: viewYear, month: viewMonth, day })
             }}

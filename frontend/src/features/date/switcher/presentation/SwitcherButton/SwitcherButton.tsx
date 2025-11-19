@@ -2,24 +2,22 @@ import React from 'react'
 import clsx from 'clsx'
 import styles from '../Switcher.module.scss'
 import { MONTH_NAMES_UPPER } from '@entities/date/constants/months'
-import type {
-  SelectedDispatchDate,
-  DatePart,
-  Switcher,
-} from '@entities/date/domain/types'
+import type { DatePart, Switcher } from '@entities/date/domain/types'
 
 interface SwitcherButtonProps {
   part: DatePart
   calendarViewPart: number
   activeSwitcher?: Switcher
-  onTogglePart: (part: DatePart) => void
+  onSwitcherClick: (part: Switcher) => void
+  isFlashing?: boolean
 }
 
 export const SwitcherButton: React.FC<SwitcherButtonProps> = ({
   part,
   calendarViewPart,
   activeSwitcher,
-  onTogglePart,
+  onSwitcherClick,
+  isFlashing,
 }) => {
   const isActive = activeSwitcher === part
 
@@ -36,10 +34,11 @@ export const SwitcherButton: React.FC<SwitcherButtonProps> = ({
       <div
         className={clsx(styles.button, styles[`button${capitalize(part)}`], {
           [styles.buttonActive]: isActive,
+          [styles.buttonFlash]: isFlashing,
         })}
-        onClick={() => onTogglePart(part)}
+        onClick={() => onSwitcherClick(part)}
       >
-        {label}
+        <span className={styles.buttonLabel}>{label}</span>
       </div>
     </div>
   )

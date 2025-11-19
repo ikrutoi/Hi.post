@@ -1,6 +1,5 @@
 import { Cell } from '@date/cell/presentation/Cell'
 import type {
-  DispatchDate,
   SelectedDispatchDate,
   CalendarViewDate,
 } from '@entities/date/domain/types'
@@ -47,8 +46,7 @@ export const buildNextMonthCells = ({
         isToday={isToday}
         isDisabledDate={false}
         isSelectedDispatchDate={isSelectedDispatchDate}
-        // selectedDispatchDate={selectedDispatchDate}
-        handleClickCell={handleClickCell}
+        onClickCell={handleClickCell}
       />
     )
   })

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ErrorBoundary } from '@shared/ui/ErrorBoundary'
 import { Header } from './features/header/presentation/Header'
 import { CardMenu } from '@cardMenu/presentation/CardMenu'
-import { CardPanel } from '@cardPanel/presentation/CardPanel'
+import { CardPanelWrapper } from '@cardPanel/presentation/CardPanelWrapper'
 import { CardSectionEditor } from './features/cardSectionEditor/presentation/CardSectionEditor'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
 import {
@@ -37,9 +37,9 @@ const App = () => {
         <div ref={formRef} className={styles.app__form}>
           <>
             <ErrorBoundary>
-              {sectionEditorSize && <CardPanel sizeMiniCard={sizeMiniCard} />}
+              <CardPanelWrapper sizeMiniCard={sizeMiniCard} />
             </ErrorBoundary>
-            {sectionEditorSize && <CardSectionEditor />}
+            <CardSectionEditor />
           </>
         </div>
       </main>

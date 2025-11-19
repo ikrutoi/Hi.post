@@ -25,12 +25,18 @@
   // align-items: center;
   // width: 11rem;
   font-size: 0.9rem;
-  cursor: pointer;
+  // cursor: pointer;
   user-select: none;
 
   &Disabled {
     cursor: default;
+    pointer-events: none;
+    color: $color-font-disabled;
   }
+}
+
+.todaySelected:hover {
+  color: $color-font-active;
 }
 
 .selected {

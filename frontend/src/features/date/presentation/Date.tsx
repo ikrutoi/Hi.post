@@ -1,23 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
-import { formatSelectedDispatchDate } from '@entities/date/utils'
-import { useLayoutFacade } from '@layout/application/facades'
-import { getCurrentDate, getInitialCalendarDate } from '@shared/utils/date'
+import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
 import { Calendar } from '../calendar/presentation/Calendar'
 import { Slider } from '../slider/presentation/Slider'
 import { useDateFacade } from '../application/facades/useDateFacade'
 import { useCalendarFacade } from '../calendar/application/facades'
 import { useDateSwitcherController } from '../application/hooks'
+import {
+  useInitializeCalendarViewDate,
+  useFormattedSelectedDate,
+  useAutoActivateDateSection,
+} from '../application/hooks'
+import { useFlashEffect } from '@shared/hooks'
 import styles from './Date.module.scss'
+import type { CalendarViewDate } from '@entities/date/domain/types'
 
 export const Date: React.FC = () => {
   const currentDate = useMemo(() => getCurrentDate(), [])
-
-  const {
-    section: { activeSection },
-    actions: { setActiveSection },
-  } = useLayoutFacade()
+  const { flashParts, triggerFlash } = useFlashEffect()
 
   const { state: stateDate, actions: actionsDate } = useDateFacade()
   const { selectedDispatchDate } = stateDate
@@ -26,48 +27,31 @@ export const Date: React.FC = () => {
   const { state: stateCalendar } = useCalendarFacade()
   const { lastViewedCalendarDate } = stateCalendar
 
-  const initialDate = getInitialCalendarDate(
-    selectedDispatchDate,
-    lastViewedCalendarDate
-  )
-  const [calendarViewDate, setCalendarViewDate] = useState(initialDate)
-
-  useEffect(() => {
-    if (lastViewedCalendarDate) {
-      setCalendarViewDate(lastViewedCalendarDate)
-    }
-  }, [lastViewedCalendarDate])
+  useInitializeCalendarViewDate()
 
   const {
     state: stateSwitcher,
     actions: actionsSwitcher,
     derived: derivedSwitcher,
-  } = useDateSwitcherController()
+  } = useDateSwitcherController({ triggerFlash })
   const { activeSwitcher } = stateSwitcher
   const {
     handleDecrementArrow,
     handleIncrementArrow,
-    toggleActiveSwitcher,
     goToTodayDate,
     goToSelectedDate,
-    handleSliderChange,
-    // handleCalendarCellClick,
+    // handleSliderChange,
   } = actionsSwitcher
   const { isCurrentMonth } = derivedSwitcher
 
-  const formattedSelectedDate = selectedDispatchDate
-    ? formatSelectedDispatchDate(selectedDispatchDate)
-    : null
+  const formattedSelectedDate = useFormattedSelectedDate()
 
-  useEffect(() => {}, [])
+  useAutoActivateDateSection()
 
-  // console.log('date calendarViewDate', calendarViewDate)
-
-  useEffect(() => {
-    if (selectedDispatchDate) {
-      setActiveSection('date')
-    }
-  }, [selectedDispatchDate])
+  const calendarViewDate: CalendarViewDate = lastViewedCalendarDate ?? {
+    year: currentDate.currentYear,
+    month: currentDate.currentMonth,
+  }
 
   return (
     <div className={styles.date}>
@@ -80,16 +64,17 @@ export const Date: React.FC = () => {
           isCurrentMonth={isCurrentMonth}
           onDecrement={handleDecrementArrow}
           onIncrement={handleIncrementArrow}
-          onToggleSwitcher={toggleActiveSwitcher}
           onGoToToday={goToTodayDate}
           onGoToSelected={goToSelectedDate}
+          flashParts={flashParts}
+          // triggerFlash={triggerFlash}
         />
 
         <div className={styles.slider}>
           <Slider
             selectedDispatchDate={selectedDispatchDate}
             activeSwitcher={activeSwitcher}
-            onChange={handleSliderChange}
+            // onChange={handleSliderChange}
           />
         </div>
 
@@ -98,6 +83,7 @@ export const Date: React.FC = () => {
             selectedDispatchDate={selectedDispatchDate}
             calendarViewDate={calendarViewDate}
             setSelectedDispatchDate={setSelectedDispatchDate}
+            triggerFlash={triggerFlash}
           />
         </div>
       </form>

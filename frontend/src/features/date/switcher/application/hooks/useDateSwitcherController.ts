@@ -1,107 +1,108 @@
-import { useState } from 'react'
 import { getCurrentDate } from '@shared/utils/date'
 import { useDateFacade } from '../../../application/facades'
+import { useCalendarFacade } from '../../../calendar/application/facades'
 import { useSwitcherFacade } from '../facades'
-import { useCalendarViewDate } from '.'
-import type { DatePart, MonthDirection } from '@entities/date/domain/types'
-import { SelectedDispatchDate } from '@entities/date/domain/types'
+import { getFlashPartsForDateChange } from '../helpers'
+import type { DatePart, Switcher } from '@entities/date/domain/types'
 
-export const useDateSwitcherController = () => {
+interface UseDateSwitcherControllerParams {
+  triggerFlash?: (part: Switcher) => void
+}
+
+export const useDateSwitcherController = ({
+  triggerFlash,
+}: UseDateSwitcherControllerParams = {}) => {
   const currentDate = getCurrentDate()
 
   const { state: stateDate, actions: actionsDate } = useDateFacade()
   const { selectedDispatchDate } = stateDate
   const { setSelectedDispatchDate, resetSelectedDispatchDate } = actionsDate
 
-  const { state: stateSwitcher, actions: actionsSwitcher } = useSwitcherFacade()
+  const { state: stateSwitcher } = useSwitcherFacade()
   const { activeSwitcher } = stateSwitcher
-  const { setActiveSwitcher, toggleActiveSwitcher } = actionsSwitcher
 
-  const { viewDate, setViewDate } = useCalendarViewDate()
-  // conSwitcherveDatePart, setActiveDatePart] = useState<DatePart | undefined>(
-  //   undefined
-  // )
+  const { state: stateCalendar, actions: actionsCalendar } = useCalendarFacade()
+  const { lastViewedCalendarDate } = stateCalendar
+  const { setCalendarViewDate } = actionsCalendar
 
-  // const toggleActiveDatePart = (part: DatePart) => {
-  //   setActiveDatePart((prev) => (prev === part ? undefined : part))
+  // const updateDatePart = (part: DatePart, value: number) => {
+  //   if (!selectedDispatchDate) return
+
+  //   setCalendarViewDate((prev) => ({ ...prev, [part]: value }))
   // }
 
-  const updateDatePart = (part: DatePart, value: number) => {
-    if (!selectedDispatchDate) return
-
-    setViewDate((prev) => ({ ...prev, [part]: value }))
-  }
-
   const goToTodayDate = () => {
-    setViewDate({
+    if (!lastViewedCalendarDate) return
+
+    const todayDate = {
       year: currentDate.currentYear,
       month: currentDate.currentMonth,
-    })
+    }
+
+    setCalendarViewDate(todayDate)
+
+    if (triggerFlash) {
+      const partsToFlash = getFlashPartsForDateChange(
+        lastViewedCalendarDate,
+        todayDate
+      )
+      partsToFlash.forEach(triggerFlash)
+    }
   }
 
   const goToSelectedDate = () => {
-    if (!selectedDispatchDate) return
-    setViewDate((prev) => ({
-      ...prev,
+    if (!selectedDispatchDate || !lastViewedCalendarDate) return
+
+    const selectedDate = {
       year: selectedDispatchDate.year,
       month: selectedDispatchDate.month,
-    }))
+    }
+
+    setCalendarViewDate(selectedDate)
+
+    if (triggerFlash) {
+      const partsToFlash = getFlashPartsForDateChange(
+        lastViewedCalendarDate,
+        selectedDate
+      )
+      partsToFlash.forEach(triggerFlash)
+    }
   }
 
-  // const handleCalendarCellClick = (direction: MonthDirection) => {
-  //   direction === 'before' ? decrementMonth() : incrementMonth()
-  // }
-
   const decrementMonth = () => {
-    // if (!selectedDispatchDate) return
-    const { year, month } = viewDate
-    setViewDate({
+    if (!lastViewedCalendarDate) return
+    const { year, month } = lastViewedCalendarDate
+    setCalendarViewDate({
       year: month > 0 ? year : year - 1,
       month: month > 0 ? month - 1 : 11,
-      // day,
     })
   }
 
   const incrementMonth = () => {
-    // if (!selectedDispatchDate) return
-    const { year, month } = viewDate
-    setViewDate({
+    if (!lastViewedCalendarDate) return
+    const { year, month } = lastViewedCalendarDate
+    setCalendarViewDate({
       year: month < 11 ? year : year + 1,
       month: month < 11 ? month + 1 : 0,
-      // day,
     })
   }
 
   const handleDecrementArrow = () => {
-    if (!activeSwitcher) setActiveSwitcher('month')
-    // if (!selectedDispatchDate) return
-    const { year, month } = viewDate
+    if (!lastViewedCalendarDate) return
+    const { year, month } = lastViewedCalendarDate
     if (activeSwitcher === 'year') {
-      setViewDate({ year: year - 1, month })
+      setCalendarViewDate({ year: year - 1, month })
     }
     if (activeSwitcher === 'month') {
       decrementMonth()
     }
   }
 
-  // const handleDispatchDate = (
-  //   isTaboo: boolean,
-  //   year: number,
-  //   month: number,
-  //   day: number
-  // ) => {
-  //   if (!isTaboo) {
-  //     const newDate = { year, month, day }
-  //     setSelectedDispatchDate(newDate)
-  //   }
-  // }
-
   const handleIncrementArrow = () => {
-    if (!activeSwitcher) setActiveSwitcher('month')
-    // if (!selectedDispatchDate) return
-    const { year, month } = viewDate
+    if (!lastViewedCalendarDate) return
+    const { year, month } = lastViewedCalendarDate
     if (activeSwitcher === 'year') {
-      setViewDate({ year: year + 1, month })
+      setCalendarViewDate({ year: year + 1, month })
     }
     if (activeSwitcher === 'month') {
       incrementMonth()
@@ -109,36 +110,34 @@ export const useDateSwitcherController = () => {
   }
 
   const isCurrentMonth = (): boolean => {
-    if (!selectedDispatchDate) return false
+    if (!lastViewedCalendarDate) return false
     return (
-      viewDate.year === currentDate.currentYear &&
-      viewDate.month === currentDate.currentMonth
+      lastViewedCalendarDate.year === currentDate.currentYear &&
+      lastViewedCalendarDate.month === currentDate.currentMonth
     )
   }
 
-  const handleSliderChange = (section: DatePart, value: number) => {
-    updateDatePart(section, value)
-  }
+  // const handleSliderChange = (section: DatePart, value: number) => {
+  //   updateDatePart(section, value)
+  // }
 
   return {
     state: {
       selectedDispatchDate,
-      viewDate,
+      lastViewedCalendarDate,
       activeSwitcher,
     },
     actions: {
       setSelectedDispatchDate,
-      setViewDate,
-      setActiveSwitcher,
-      toggleActiveSwitcher,
-      updateDatePart,
+      setCalendarViewDate,
+      // updateDatePart,
       goToTodayDate,
       goToSelectedDate,
-      // handleCalendarCellClick,
       handleDecrementArrow,
       handleIncrementArrow,
-      handleSliderChange,
-      // handleDispatchDate,
+      // handleSliderChange,
+      decrementMonth,
+      incrementMonth,
     },
     derived: {
       isCurrentMonth,

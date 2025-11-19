@@ -4,13 +4,12 @@ import { MONTH_NAMES } from '@entities/date/constants'
 import { LuCalendar, LuCalendarArrowUp } from 'react-icons/lu'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { Switcher } from '../../switcher/presentation/Switcher'
+import { themeColors } from '@shared/config/theme/themeColors'
 import styles from './DateHeader.module.scss'
 import type {
   CalendarViewDate,
-  DatePart,
   Switcher as typeSwitcher,
 } from '@entities/date/domain/types'
-import { themeColors } from '@shared/config/theme/themeColors'
 
 interface DateHeaderProps {
   currentDate: {
@@ -24,9 +23,9 @@ interface DateHeaderProps {
   isCurrentMonth: () => boolean
   onDecrement: () => void
   onIncrement: () => void
-  onToggleSwitcher: (part: DatePart) => void
   onGoToToday: () => void
   onGoToSelected: () => void
+  flashParts: typeSwitcher[]
 }
 
 export const DateHeader: React.FC<DateHeaderProps> = ({
@@ -37,9 +36,9 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
   isCurrentMonth,
   onDecrement,
   onIncrement,
-  onToggleSwitcher,
   onGoToToday,
   onGoToSelected,
+  flashParts,
 }) => {
   return (
     <div className={styles.header}>
@@ -78,7 +77,7 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
           <Switcher
             activeSwitcher={activeSwitcher}
             calendarViewDate={calendarViewDate}
-            onToggleSwitcher={onToggleSwitcher}
+            flashParts={flashParts}
           />
         </div>
 

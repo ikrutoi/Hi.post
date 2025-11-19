@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
-import { CartDatePreview } from '../../calendar/presentation/CalendarWeekdayHeader/CartDatePreview/CartDatePreview'
-import { useDateFacade } from '../../application/facades'
-import { useLayoutFacade } from '@layout/application/facades'
-import { useCalendarCellController } from '../application/hooks'
 import styles from './Cell.module.scss'
 import type {
-  DispatchDate,
   SelectedDispatchDate,
   CalendarViewDate,
   MonthDirection,
@@ -30,7 +25,7 @@ interface CellProps {
     month: number,
     day: number
   ) => void
-  handleClickCell: (params: HandleCellClickParams) => void
+  onClickCell: (params: HandleCellClickParams) => void
   children?: React.ReactNode
 }
 
@@ -43,9 +38,8 @@ export const Cell: React.FC<CellProps> = ({
   isToday,
   isDisabledDate,
   isSelectedDispatchDate,
-  // selectedDispatchDate,
   handleDispatchDate,
-  handleClickCell,
+  onClickCell,
   children,
 }) => {
   const dynamicClass = clsx(
@@ -59,8 +53,7 @@ export const Cell: React.FC<CellProps> = ({
   )
 
   const handleClick = () => {
-    // if (isDisabledDate) return
-    handleClickCell({
+    onClickCell({
       isDisabledDate,
       dayBefore,
       dayCurrent,

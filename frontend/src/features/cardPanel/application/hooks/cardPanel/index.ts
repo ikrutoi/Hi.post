@@ -1,4 +1,4 @@
-export { useCardPanel } from './useCardPanel'
+export { useCardPanelController } from './useCardPaneController'
 export { useCardPanelState } from './useCardPanelState'
 export { useCardPanelDb } from './useCardPanelDb'
 export { useCardPanelHandlers } from './useCardPanelHandlers'

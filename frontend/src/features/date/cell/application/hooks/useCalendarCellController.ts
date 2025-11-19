@@ -1,11 +1,14 @@
 import { useEffect } from 'react'
 import { useDateFacade } from '../../../application/facades'
-
+import { useCalendarFacade } from '../../../calendar/application/facades'
+import { useSwitcherFacade } from '../../../switcher/application/facades'
+import { useCardEditorFacade } from '@entities/card/application/facades'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
 import type { CartItem } from '@entities/cart/domain/types'
 import type {
   CalendarViewDate,
   MonthDirection,
+  Switcher,
 } from '@entities/date/domain/types'
 
 interface HandleCellClickParams {
@@ -15,19 +18,32 @@ interface HandleCellClickParams {
   dayAfter?: number
   calendarViewDate?: CalendarViewDate
   direction: MonthDirection
-  // viewYear: number
-  // viewMonth: number
   // cartItem?: CartItem
 }
 
-export const useCalendarCellController = () => {
+interface UseCalendarCellControllerParams {
+  triggerFlash: (part: Switcher) => void
+}
+
+export const useCalendarCellController = ({
+  triggerFlash,
+}: UseCalendarCellControllerParams) => {
   const { state: stateDate, actions: actionsDate } = useDateFacade()
   const { selectedDispatchDate } = stateDate
   const { setSelectedDispatchDate } = actionsDate
 
-  const { actions: actionsSwitcher } = useDateSwitcherController()
-  const { handleDecrementArrow, handleIncrementArrow } = actionsSwitcher
-  // const { logClick } = useAnalytics()
+  const { state: stateCalendar } = useCalendarFacade()
+  const { lastViewedCalendarDate } = stateCalendar
+
+  const { state: stateSwitcher, actions: actionsSwitcher } = useSwitcherFacade()
+  const { activeSwitcher } = stateSwitcher
+  const { setActiveSwitcher } = actionsSwitcher
+
+  const { actions: actionsSwitcherController } = useDateSwitcherController()
+  const { decrementMonth, incrementMonth } = actionsSwitcherController
+
+  const { actions: actionsCardEditor } = useCardEditorFacade()
+  const { setSectionComplete } = actionsCardEditor
 
   useEffect(() => {
     if (selectedDispatchDate) {
@@ -41,12 +57,7 @@ export const useCalendarCellController = () => {
     dayAfter,
     calendarViewDate,
     direction,
-    // viewYear,
-    // viewMonth,
-    // cartItem,
   }: HandleCellClickParams) => {
-    // if (isDisabledDate || dayCurrent == null) return
-
     const dayValue = dayCurrent ?? dayBefore ?? dayAfter
 
     if (
@@ -56,14 +67,31 @@ export const useCalendarCellController = () => {
       calendarViewDate?.year != null &&
       calendarViewDate?.month != null
     ) {
-      setSelectedDispatchDate({
+      const dispatchDate = {
         year: calendarViewDate.year,
         month: calendarViewDate.month,
         day: dayCurrent,
-      })
+      }
+      setSelectedDispatchDate(dispatchDate)
+      setSectionComplete('date', dispatchDate)
+    }
+
+    if (direction === 'before') {
+      if (activeSwitcher) setActiveSwitcher(null)
+      decrementMonth()
+      triggerFlash('month')
+      if (lastViewedCalendarDate?.month === 0) {
+        triggerFlash('year')
+      }
     }
 
     if (direction === 'after') {
+      if (activeSwitcher) setActiveSwitcher(null)
+      incrementMonth()
+      triggerFlash('month')
+      if (lastViewedCalendarDate?.month === 11) {
+        triggerFlash('year')
+      }
     }
 
     // setSelectedDispatchDate({
