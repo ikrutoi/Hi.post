@@ -1,61 +1,73 @@
 import React from 'react'
+import clsx from 'clsx'
 import styles from './Label.module.scss'
-import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
+import type {
+  AddressFields,
+  AddressFieldLabel,
+  EnvelopeRole,
+  EnvelopeRoleLabel,
+} from '@shared/config/constants'
 
 interface LabelProps {
-  label: string
-  field: keyof AddressFields
   role: EnvelopeRole
-  valueRole: string
+  roleLabel: EnvelopeRoleLabel
+  label: AddressFieldLabel
+  field: keyof AddressFields
+  value: string
+  // value: string
   index: number
-  handleValue: (
-    role: EnvelopeRole,
-    field: keyof AddressFields,
-    valueRole: string
-  ) => void
-  handleMovingBetweenInputs: React.KeyboardEventHandler<HTMLInputElement>
-  setInputRef: (id: string) => React.RefCallback<HTMLInputElement>
+  onValueChange: (field: keyof AddressFields, value: string) => void
+  // onInputNavigation: React.KeyboardEventHandler<HTMLInputElement>
+  // setInputRef: (id: string) => React.RefCallback<HTMLInputElement>
 }
 
 export const Label: React.FC<LabelProps> = ({
+  role,
+  roleLabel,
   label,
   field,
-  role,
-  valueRole,
+  value,
   index,
-  handleValue,
-  handleMovingBetweenInputs,
-  setInputRef,
+  onValueChange,
+  // onInputNavigation,
+  // setInputRef,
 }) => {
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     const raw = e.target.value
     const sanitizeInput = (
       field: keyof AddressFields,
-      valueRole: string
+      value: string
     ): string => {
-      if (field === 'zip') return valueRole.replace(/\D/g, '')
-      return valueRole
+      if (field === 'zip') return value.replace(/\D/g, '')
+      return value
     }
     const sanitized = sanitizeInput(field, raw)
-    handleValue(role, field, sanitized)
+    onValueChange(field, sanitized)
   }
   const refKey = `${role}-${field}-${index}`
 
   return (
-    <label className={`${styles.label} ${styles[`label--${field}`]}`}>
-      <span className={styles.label__spacer} />
-      <span className={styles.label__text}>{label}</span>
-      <span className={styles.label__spacer} />
+    <label
+      className={clsx(
+        styles.label,
+        styles[`label${roleLabel}`],
+        styles[`label${label}`]
+      )}
+    >
+      <span className={styles.labelSpacer} />
+      <span className={styles.labelText}>{label}</span>
+      <span className={styles.labelSpacer} />
       <input
-        className={`${styles.label__input} ${styles[`label__input--${role}`]} ${styles[`label__input--${field}`]}`}
-        ref={setInputRef(refKey)}
-        data-role={role}
-        data-index={index}
-        data-name={field}
+        className={clsx(
+          styles.labelInput,
+          styles[`labelInput${roleLabel}`],
+          styles[`labelInput${label}`]
+        )}
+        // ref={setInputRef(refKey)}
         type="text"
-        value={valueRole}
+        value={value}
         onChange={handleChange}
-        onKeyDown={handleMovingBetweenInputs}
+        // onKeyDown={onInputNavigation}
       />
     </label>
   )

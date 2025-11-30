@@ -1,13 +1,13 @@
 import React from 'react'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import { useLayoutFacade } from '@layout/application/facades'
-import type { AromaTileProps } from '../../domain/types'
 import styles from './AromaTile.module.scss'
+import type { AromaTileProps } from '../../domain/types'
 
 export const AromaTile: React.FC<AromaTileProps> = ({
   selectedAroma,
   aromaItem,
-  selectAroma,
+  onSelectAroma,
 }) => {
   const { size } = useLayoutFacade()
   const { sizeMiniCard } = size
@@ -18,12 +18,12 @@ export const AromaTile: React.FC<AromaTileProps> = ({
     selectedAroma?.name === aromaItem.name
 
   const handleClick = () => {
-    selectAroma(aromaItem)
+    onSelectAroma(aromaItem)
   }
 
   return (
     <button
-      className={`${styles.tile} ${isSelected ? styles['tile--selected'] : ''}`}
+      className={`${styles.tile} ${isSelected ? styles.tileSelected : ''}`}
       type="submit"
       style={{
         width: `${sizeMiniCard.width}px`,
@@ -31,16 +31,16 @@ export const AromaTile: React.FC<AromaTileProps> = ({
       }}
       onClick={handleClick}
     >
-      <span className={styles['tile__make']}>
+      <span className={styles.tileMake}>
         {aromaItem.make === '0' ? '\u00A0' : aromaItem.make}
       </span>
       <img
-        className={styles['tile__image']}
+        className={styles.tileImage}
         alt={aromaItem.name}
         style={{ height: `${0.6 * sizeMiniCard.height}px` }}
         src={imageSrc}
       />
-      <span className={styles['tile__name']}>{aromaItem.name}</span>
+      <span className={styles.tileName}>{aromaItem.name}</span>
     </button>
   )
 }

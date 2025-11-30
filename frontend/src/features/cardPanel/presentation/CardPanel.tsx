@@ -94,7 +94,12 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
   return (
     <div className={styles.cardPanel} ref={cardsListRef}>
       <div>
-        {sizeMiniCard && <EnvelopeOverlay sizeMiniCard={sizeMiniCard} />}
+        {sizeMiniCard && (
+          <EnvelopeOverlay
+            sizeMiniCard={sizeMiniCard}
+            completedSections={completedSections}
+          />
+        )}
         <CardScroller
           value={valueScroll}
           scrollIndex={scrollIndex}

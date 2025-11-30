@@ -1,33 +1,29 @@
 import { cloneElement } from 'react'
 import { toolbarIcons } from '@shared/assets/icons'
+import { IconKey } from '@shared/config/constants'
 import type { JSX } from 'react'
-import type { ToolbarKey } from '@toolbar/domain/types'
 
-interface ToolbarIconOptions {
-  key: ToolbarKey
+export const getToolbarIcon = ({
+  key,
+  className = 'toolbarIcon',
+  size = '1.6rem',
+  color,
+  style = {},
+}: {
+  key: IconKey
   className?: string
   size?: string
   color?: string
   style?: React.CSSProperties
-}
-
-export const getToolbarIcon = ({
-  key,
-  className = 'toolbar-icon',
-  size = '1.2rem',
-  color,
-  style = {},
-}: ToolbarIconOptions): JSX.Element | undefined => {
+}): JSX.Element => {
   const icon = toolbarIcons[key]
-  return icon
-    ? cloneElement(icon, {
-        className,
-        style: {
-          width: size,
-          height: size,
-          color,
-          ...style,
-        },
-      })
-    : undefined
+  return cloneElement(icon, {
+    className,
+    style: {
+      width: size,
+      height: size,
+      ...(color && { color }),
+      ...style,
+    },
+  })
 }

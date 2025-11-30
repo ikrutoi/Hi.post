@@ -31,8 +31,8 @@ export const useMiniCardRender = () => {
         return <MiniCardtext {...commonProps} cardMiniSectionRef={ref} />
       case 'envelope':
         return <MiniEnvelope />
-      // case 'aroma':
-      //   return <MiniAroma {...commonProps} />
+      case 'aroma':
+        return <MiniAroma {...commonProps} />
       case 'date':
         return <MiniDate {...commonProps} />
       default:

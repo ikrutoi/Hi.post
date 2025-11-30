@@ -10,10 +10,12 @@ import {
 import { LuPaperclip } from 'react-icons/lu'
 import {
   MdDeleteOutline,
+  MdOutlineDeleteForever,
   MdOutlineShoppingCart,
   MdAddShoppingCart,
   MdOutlineDrafts,
 } from 'react-icons/md'
+import { LuMail, LuMailOpen, LuMailPlus } from 'react-icons/lu'
 import {
   RiUserLine,
   RiResetLeftFill,
@@ -25,38 +27,78 @@ import {
   RiAlignCenter,
   RiAlignRight,
   RiAlignJustify,
+  RiDeleteBin2Line,
+  RiDeleteBinLine,
 } from 'react-icons/ri'
+import { PiCards, PiCardsBold } from 'react-icons/pi'
+import { FaRegIdCard, FaRegAddressCard } from 'react-icons/fa'
+import { ICON_KEYS } from '../../config/constants'
 import { PiArrowClockwiseFill } from 'react-icons/pi'
 import { TbArrowsMaximize } from 'react-icons/tb'
 import { HiArrowsPointingOut, HiArrowsPointingIn } from 'react-icons/hi2'
-
 import type { IconKey } from '@shared/config/constants'
 
-export const toolbarIcons: Record<IconKey, JSX.Element> = {
-  save: <FiSave />,
-  savedTemplates: <LuPaperclip />,
-  delete: <FiDelete />,
-  remove: <MdDeleteOutline />,
-  download: <FiDownload />,
-  user: <RiUserLine />,
-  turn: <PiArrowClockwiseFill />,
-  edit: <FiEdit />,
-  fillFrame: <TbArrowsMaximize />,
-  crop: <FiCrop />,
-  reset: <RiResetLeftFill />,
-  bold: <RiBold />,
-  italic: <RiItalic />,
-  fontSize: <RiFontSize2 />,
-  color: <RiFontColor />,
-  left: <RiAlignLeft />,
-  center: <RiAlignCenter />,
-  right: <RiAlignRight />,
-  justify: <RiAlignJustify />,
-  plus: <FiPlus />,
-  arrowsOut: <HiArrowsPointingOut />,
-  arrowsIn: <HiArrowsPointingIn />,
-  cart: <MdOutlineShoppingCart />,
-  addCart: <MdAddShoppingCart />,
-  drafts: <MdOutlineDrafts />,
-  addDrafts: <MdOutlineDrafts />,
+export const toolbarIcons = Object.fromEntries(
+  ICON_KEYS.map((key) => [key, getIconByKey(key)])
+) as Record<IconKey, JSX.Element>
+
+function getIconByKey(key: IconKey): JSX.Element {
+  switch (key) {
+    case 'save':
+      return <FiSave />
+    case 'savedTemplates':
+      return <LuPaperclip />
+    case 'delete':
+      return <FiDelete />
+    case 'remove':
+      return <RiDeleteBinLine />
+    case 'download':
+      return <FiDownload />
+    case 'user':
+      return <RiUserLine />
+    case 'turn':
+      return <PiArrowClockwiseFill />
+    case 'edit':
+      return <FiEdit />
+    case 'fillFrame':
+      return <TbArrowsMaximize />
+    case 'crop':
+      return <FiCrop />
+    case 'reset':
+      return <RiResetLeftFill />
+    case 'bold':
+      return <RiBold />
+    case 'italic':
+      return <RiItalic />
+    case 'fontSize':
+      return <RiFontSize2 />
+    case 'color':
+      return <RiFontColor />
+    case 'left':
+      return <RiAlignLeft />
+    case 'center':
+      return <RiAlignCenter />
+    case 'right':
+      return <RiAlignRight />
+    case 'justify':
+      return <RiAlignJustify />
+    case 'plus':
+      return <FiPlus />
+    case 'arrowsOut':
+      return <HiArrowsPointingOut />
+    case 'arrowsIn':
+      return <HiArrowsPointingIn />
+    case 'cart':
+      return <LuMail />
+    case 'addCart':
+      return <LuMailPlus />
+    case 'drafts':
+      return <LuMailOpen />
+    case 'addDrafts':
+      return <MdOutlineDrafts />
+    case 'cards':
+      return <PiCards />
+    case 'cardUser':
+      return <FaRegAddressCard />
+  }
 }

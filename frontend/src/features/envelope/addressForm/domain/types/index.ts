@@ -1,2 +1,2 @@
 export * from './envelopeAddress.props'
-export * from './addressLabel.layout'
+export * from './address.types'

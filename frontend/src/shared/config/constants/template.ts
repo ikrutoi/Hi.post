@@ -1,5 +1,6 @@
 export const TEMPLATES = [
-  'cardphoto',
+  'stockImages',
+  'userImages',
   'cardtext',
   'sender',
   'recipient',

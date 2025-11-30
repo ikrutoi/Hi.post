@@ -1,3 +1,5 @@
+@use '@styles/config/colors' as *;
+
 .cardMenuButton {
   display: flex;
   width: 100%;
@@ -7,15 +9,25 @@
   font-size: 0.9rem;
   cursor: pointer;
   border: none;
-  background-color: rgb(240, 240, 240);
+  background: linear-gradient(
+    to right,
+    $color-section-light,
+    $color-section-dark
+  );
+  // background-color: $color-enabled;
   transition: background-color 0.2s ease;
 
   &:hover:not(:disabled) {
-    background-color: rgb(220, 220, 220);
+    color: $color-active;
   }
 
   &.active {
-    background-color: rgb(220, 220, 220);
+    background: linear-gradient(
+      to right,
+      $color-section-light-completed,
+      $color-section-dark-completed
+    );
+    // background-color: $color-base-completed;
   }
 
   &.disabled {
@@ -28,16 +40,45 @@
     margin-top: 2rem;
   }
 
-  &--cardtext {
-  }
-  &--envelope {
-  }
-  &--aroma {
-  }
-  &--cardphoto {
-  }
-  &--date {
-  }
-  &--history {
-  }
+  // &Cardphoto {
+  //   background-color: $color-base-cardphoto;
+
+  //   &:hover {
+  //     background-color: $color-base-cardphoto-hover;
+  //   }
+
+  //   &.active {
+  //     background-color: $color-base-cardphoto-hover;
+  //   }
+  // }
+  // &Cardtext {
+  //   background-color: $color-base-cardtext;
+
+  //   &:hover {
+  //     background-color: $color-base-cardtext-hover;
+  //   }
+  // }
+  // &Envelope {
+  //   background-color: $color-base-envelope;
+
+  //   &:hover {
+  //     background-color: $color-base-envelope-hover;
+  //   }
+  // }
+  // &Aroma {
+  //   background-color: $color-base-aroma;
+
+  //   &:hover {
+  //     background-color: $color-base-aroma-hover;
+  //   }
+  // }
+  // &Date {
+  //   background-color: $color-base-date;
+
+  //   &:hover {
+  //     background-color: $color-base-date-hover;
+  //   }
+  // }
+  // // &History {
+  // }
 }

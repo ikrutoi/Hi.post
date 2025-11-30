@@ -1,4 +1,5 @@
 import React from 'react'
+import { useAromaFacade } from '@aroma/application/facades'
 import styles from './MiniAroma.module.scss'
 
 import img00 from '@/data/aroma/no-parfum.png'
@@ -16,10 +17,6 @@ import img24 from '@/data/aroma/chanel__1957__24.png'
 import img25 from '@/data/aroma/carolina_herrera__212__25.png'
 
 interface MiniAromaProps {
-  valueSection: {
-    index: string
-    name: string
-  }
   heightMinicard: number
 }
 
@@ -39,19 +36,21 @@ const aromaImages: Record<string, string> = {
   '25': img25,
 }
 
-export const MiniAroma: React.FC<MiniAromaProps> = ({
-  valueSection,
-  heightMinicard,
-}) => {
-  const imageAroma = aromaImages[valueSection.index]
+export const MiniAroma: React.FC<MiniAromaProps> = ({ heightMinicard }) => {
+  const { state: stateAroma } = useAromaFacade()
+  const { selectedAroma } = stateAroma
+
+  if (!selectedAroma) return
+
+  const imageAroma = aromaImages[selectedAroma.index]
 
   if (!imageAroma) return null
 
   return (
     <div className={styles.miniAroma}>
       <img
-        className={styles.miniAroma__img}
-        alt={valueSection.name}
+        className={styles.miniAromaImg}
+        alt={selectedAroma.name}
         src={imageAroma}
         style={{ height: `${0.9 * heightMinicard}px` }}
       />

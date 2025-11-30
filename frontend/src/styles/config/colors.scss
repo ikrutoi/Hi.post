@@ -1,15 +1,22 @@
 $color-disabled: hsl(0, 0%, 96%);
 $color-enabled: hsl(0, 0%, 90%);
+$color-hover: hsl(0, 0%, 80%);
 $color-font-enabled: hsl(0, 0%, 11%);
 $color-font-disabled: hsl(0, 0%, 65%);
 $color-font-active: hsl(204, 100%, 42%);
-// $color-active: hsl(200, 100%, 40%);
-// $color-hover: hsl(200, 100%, 48%);
-
-// $color-transparent: hsla(0, 0%, 0%, 0);
 
 $color-active: #007dd7;
 // $color-enabled: #333;
-$color-hover: #007dd7;
+// $color-hover: #007dd7;
 $color-hover-bg: rgba(0, 125, 215, 0.1);
 $color-transparent: transparent;
+
+$color-section-light: hsl(0, 0%, 90%);
+$color-section-dark: hsl(0, 0%, 80%);
+
+$color-section-light-completed: hsl(211, 51%, 90%);
+$color-section-dark-completed: hsl(211, 51%, 80%);
+
+$color-base-completed: #cce3f5;
+
+$color-base: #f9f9f9;

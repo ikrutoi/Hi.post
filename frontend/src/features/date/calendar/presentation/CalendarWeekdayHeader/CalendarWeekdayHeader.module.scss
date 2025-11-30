@@ -1,16 +1,6 @@
 .calendarWeekdayHeader {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  border: solid 1px orange;
-
-  .sunmon {
-    margin-right: 1rem;
-  }
-
-  .days {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 0.5rem;
-  }
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-column: 1/-1;
+  grid-row: 1/2;
 }

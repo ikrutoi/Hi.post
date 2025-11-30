@@ -7,10 +7,12 @@ import {
   cardphotoStepsReducer,
 } from '@cardphoto/infrastructure/state'
 import { cardtextReducer } from '@cardtext/infrastructure/state'
+
 import {
   envelopeReducer,
-  envelopeUiReducer,
+  // envelopeUiReducer,
 } from '@envelope/infrastructure/state'
+import { addressReducer } from '@envelope/addressForm/infrastructure/state'
 
 import { aromaReducer } from '@aroma/infrastructure/state'
 
@@ -42,8 +44,11 @@ export const rootReducer = combineReducers({
   cardphotoSteps: cardphotoStepsReducer,
   imageHistory: imageHistoryReducer,
   cardtext: cardtextReducer,
+
   envelope: envelopeReducer,
-  envelopeUi: envelopeUiReducer,
+  // envelopeUi: envelopeUiReducer,
+  address: addressReducer,
+
   aroma: aromaReducer,
 
   date: dateReducer,

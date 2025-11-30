@@ -2,7 +2,7 @@ import type { IconKey, IconState } from '@shared/config/constants'
 
 export const CARD_PANEL_OVERLAY_KEYS = [
   'addCart',
-  'save',
+  'drafts',
   'remove',
 ] as const satisfies readonly IconKey[]
 
@@ -16,9 +16,9 @@ export type CardPanelOverlayToolbarState = Record<
 
 export const initialCardPanelOverlayToolbarState: CardPanelOverlayToolbarState =
   {
-    addCart: 'enabled',
-    save: 'enabled',
-    remove: 'enabled',
+    addCart: 'disabled',
+    drafts: 'disabled',
+    remove: 'disabled',
   }
 
 export const CARD_PANEL_KEYS = [

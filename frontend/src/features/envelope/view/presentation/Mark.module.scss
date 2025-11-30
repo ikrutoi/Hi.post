@@ -1,0 +1,17 @@
+.mark {
+  grid-row: 1 / 4;
+  grid-column: 4 / 5;
+  display: flex;
+  justify-content: flex-end;
+
+  &Stamp {
+    height: 100%;
+    aspect-ratio: 0.7;
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  &StampNotActive {
+    background-image: url('@data/envelope/mark-not-active.svg');
+  }
+}

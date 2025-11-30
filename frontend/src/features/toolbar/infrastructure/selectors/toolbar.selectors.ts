@@ -5,7 +5,6 @@ export const selectCardphotoToolbar = (state: RootState) =>
   state.toolbar.cardphoto
 export const selectCardtextToolbar = (state: RootState) =>
   state.toolbar.cardtext
-export const selectEnvelopeToolbar = (state: RootState) =>
-  state.toolbar.envelope
-// export const selectFullCardToolbar = (state: RootState) =>
-//   state.toolbar.fullCard
+export const selectSenderToolbar = (state: RootState) => state.toolbar.sender
+export const selectRecipientToolbar = (state: RootState) =>
+  state.toolbar.recipient

@@ -2,7 +2,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   initialCardphotoToolbarState,
   initialCardtextToolbarState,
-  initialEnvelopeToolbarState,
+  initialSenderToolbarState,
+  initialRecipientToolbarState,
   initialCardPanelToolbarState,
   initialCardPanelOverlayToolbarState,
 } from '../../domain/types'
@@ -11,7 +12,8 @@ import type { ToolbarState } from '../../domain/types'
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
   cardtext: initialCardtextToolbarState,
-  envelope: initialEnvelopeToolbarState,
+  sender: initialSenderToolbarState,
+  recipient: initialRecipientToolbarState,
   cardPanel: initialCardPanelToolbarState,
   cardPanelOverlay: initialCardPanelOverlayToolbarState,
 }

@@ -36,6 +36,7 @@ export default defineConfig({
       '@app/store': path.resolve(__dirname, 'src/app/store/index.ts'),
       '@api': path.resolve(__dirname, 'src/api'),
       '@app': path.resolve(__dirname, 'src/app'),
+      '@assets': path.resolve(__dirname, 'src/assets'),
       '@i18n': path.resolve(__dirname, 'src/i18n'),
       '@cardMenu': path.resolve(__dirname, 'src/features/cardMenu'),
       '@db': path.resolve(__dirname, 'src/db'),

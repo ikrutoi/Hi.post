@@ -1,10 +1,11 @@
 .miniAroma {
   display: flex;
+  height: 100%;
   align-items: center;
   justify-content: center;
 }
 
-.miniAroma__img {
+.miniAromaImg {
   border-radius: 0.5rem;
   object-fit: contain;
 }

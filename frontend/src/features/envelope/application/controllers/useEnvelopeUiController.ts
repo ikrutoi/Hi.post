@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 import { useAppDispatch } from '@app/hooks'
-import { envelopeUiActions } from '../../infrastructure/state'
-import { selectEnvelopeUi } from '../../infrastructure/selectors'
+import { envelopeUiActions } from '../../infrastructure/state/envelope.layout.slice'
+import { selectEnvelopeUi } from '../../infrastructure/selectors/envelope.layout.selector'
 import type { EnvelopeUiSignals } from '../../domain/types'
 
 export const useEnvelopeUiController = () => {

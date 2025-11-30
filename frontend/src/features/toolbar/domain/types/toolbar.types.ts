@@ -4,7 +4,7 @@ import type {
   CardtextToolbarKey,
   CardtextToolbarState,
   EnvelopeToolbarKey,
-  EnvelopeToolbarState,
+  AddressState,
   CardPanelToolbarKey,
   CardPanelToolbarState,
   CardPanelOverlayToolbarKey,
@@ -14,7 +14,8 @@ import type {
 export const TOOLBAR_SECTIONS = [
   'cardphoto',
   'cardtext',
-  'envelope',
+  'sender',
+  'recipient',
   'cardPanel',
   'cardPanelOverlay',
 ] as const
@@ -24,7 +25,8 @@ export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
 export type ToolbarState = {
   cardphoto: CardphotoToolbarState
   cardtext: CardtextToolbarState
-  envelope: EnvelopeToolbarState
+  sender: AddressState
+  recipient: AddressState
   cardPanel: CardPanelToolbarState
   cardPanelOverlay: CardPanelOverlayToolbarState
 }

@@ -4,7 +4,8 @@ import {
   daysOfWeekStartFromMon,
   daysOfWeekStartFromSun,
 } from '@entities/date/constants'
-import { useCalendarConstruction } from '@date/calendar/application/logic'
+import { useCalendarConstruction } from '../application/hooks'
+// import { useCalendarConstruction } from '@date/calendar/application/logic'
 import styles from './Calendar.module.scss'
 import type {
   DispatchDate,
@@ -55,9 +56,9 @@ export const Calendar: React.FC<CalendarProps> = ({
         firstDayTitle={firstDayOfWeek}
         handleFirstDay={handleFirstDay}
       />
-      <div className={styles['calendar__month']}>
-        <div className={styles['calendar__days']}>{calendarCells}</div>
-      </div>
+      {/* <div className={styles.calendarMonth}> */}
+      <div className={styles.calendarDays}>{calendarCells}</div>
+      {/* </div> */}
     </div>
   )
 }

@@ -44,7 +44,7 @@ export const HeaderActions: React.FC = () => {
               ref={setBtnIconRef(`status-${source}`)}
               onClick={handleClick}
             >
-              {getToolbarIcon(source)}
+              {getToolbarIcon({ key: source })}
               {count ? (
                 <span
                   className={clsx(

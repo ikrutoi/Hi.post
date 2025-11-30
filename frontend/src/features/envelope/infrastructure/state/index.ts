@@ -1,10 +1,5 @@
-export {
-  setEnvelope,
-  updateAddressField,
-  resetEnvelope,
-} from './envelope.slice'
+import { envelopeUiActions } from '@/features/actions'
 
-export * as envelopeUiActions from './envelopeUi.slice'
+export * from './envelope.slice'
 
 export { default as envelopeReducer } from './envelope.slice'
-export { default as envelopeUiReducer } from './envelopeUi.slice'

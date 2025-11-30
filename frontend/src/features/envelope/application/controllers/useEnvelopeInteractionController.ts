@@ -4,7 +4,7 @@ import { createStoreAdapter } from '@db/adapters/factory'
 import { EnvelopeRole, AddressFields } from '@shared/config/constants'
 import { useLayoutSelectedTemplateSection } from '@shared/hooks'
 import { useEnvelopeLocalState } from '../hooks'
-import { useEnvelopeUiController } from './useEnvelopeUiController'
+// import { useEnvelopeUiController } from './useEnvelopeUiController'
 import type { StoreMap } from '@/db/types'
 import type { EnvelopeToolbarKey } from '@toolbar/domain/types'
 
@@ -13,7 +13,7 @@ import type { EnvelopeToolbarKey } from '@toolbar/domain/types'
 export const useEnvelopeInteractionController = () => {
   const { value, setValue, btnsAddress, setBtnsAddress } =
     useEnvelopeLocalState()
-  const { actions } = useEnvelopeUiController()
+  // const { actions } = useEnvelopeUiController()
   const dispatch = useAppDispatch()
   const { handleSelectedTemplateSection } = useLayoutSelectedTemplateSection()
 

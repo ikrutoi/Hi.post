@@ -1,19 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { CARD_TEMPLATE_SECTIONS } from '@entities/card/domain/types'
 import type { WritableDraft } from 'immer'
 import type {
-  CardEditor,
-  CardEditorDataMap,
+  Card,
   CardSection,
   Completion,
-  CardTemplateSection,
+  CardStatus,
 } from '@entities/card/domain/types'
 
 const initialCompletion = { isComplete: false } as const
 
-const initialState: CardEditor = {
+const initialState: Card = {
   id: null,
-  templates: {},
+  status: 'inProgress',
   cardphoto: initialCompletion,
   cardtext: initialCompletion,
   envelope: initialCompletion,
@@ -21,43 +19,45 @@ const initialState: CardEditor = {
   date: initialCompletion,
 }
 
+function makeInitial<T = any>(): Completion<T> {
+  return { isComplete: false }
+}
+
 export const cardEditorSlice = createSlice({
   name: 'cardEditor',
   initialState,
   reducers: {
-    setSectionComplete<K extends keyof CardEditorDataMap>(
-      state: WritableDraft<CardEditor>,
+    setSectionComplete<K extends CardSection>(
+      state: WritableDraft<Card>,
       action: PayloadAction<{
         section: K
-        data: CardEditorDataMap[K]
+        data: Card[K] extends Completion<infer T> ? T : never
       }>
     ) {
       const { section, data } = action.payload
-
-      const completion: Completion<CardEditorDataMap[K]> = {
+      const completion: Completion<typeof data> = {
         isComplete: true,
         data,
       }
-
-      state[section] = completion as WritableDraft<CardEditor>[K]
+      state[section] = completion as WritableDraft<Card>[K]
     },
-    resetSection(state, action: PayloadAction<CardSection>) {
+
+    resetSection<K extends CardSection>(
+      state: WritableDraft<Card>,
+      action: PayloadAction<K>
+    ) {
       const section = action.payload
-      state[section] = initialCompletion
-
-      if (CARD_TEMPLATE_SECTIONS.includes(section as CardTemplateSection)) {
-        delete state.templates[section as CardTemplateSection]
-      }
+      state[section] = makeInitial() as WritableDraft<Card>[K]
     },
+
     setEditorId(state, action: PayloadAction<string>) {
       state.id = action.payload
     },
-    setTemplateId<K extends CardTemplateSection>(
-      state: WritableDraft<CardEditor>,
-      action: PayloadAction<{ section: K; templateId: string }>
-    ) {
-      state.templates[action.payload.section] = action.payload.templateId
+
+    setStatus(state, action: PayloadAction<CardStatus>) {
+      state.status = action.payload
     },
+
     resetEditor(state) {
       Object.assign(state, initialState)
     },
@@ -68,7 +68,7 @@ export const {
   setSectionComplete,
   resetSection,
   setEditorId,
-  setTemplateId,
+  setStatus,
   resetEditor,
 } = cardEditorSlice.actions
 

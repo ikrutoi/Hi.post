@@ -20,6 +20,7 @@
       "@features/*": ["features/*"],
       "@api/*": ["api/*"],
       "@app/*": ["app/*"],
+      "@assets/*": ["assets/*"],
       "@i18n/*": ["i18n/*"],
       "@cardMenu/*": ["features/cardMenu/*"],
       "@db/*": ["db/*"],

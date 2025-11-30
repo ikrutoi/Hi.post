@@ -41,6 +41,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const miniCardRef = useRef<HTMLDivElement>(null)
 
   const { render } = useMiniCardRender()
+
   // const { handleClick } = useMiniCardKebab(
   //   infoSection.section.section as CardSection
   // )

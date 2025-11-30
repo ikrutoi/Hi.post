@@ -1,50 +1,44 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { initialAddressFields } from '@envelope/domain/models'
-import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
+import type { EnvelopeRole } from '@shared/config/constants'
+import type { EnvelopeState, RoleState } from '../../domain/types'
 
-export interface EnvelopeState {
-  sender: AddressFields
-  recipient: AddressFields
+const initialSection: RoleState = {
+  data: {
+    name: '',
+    street: '',
+    zip: '',
+    city: '',
+    country: '',
+  },
+  isComplete: false,
 }
 
 const initialState: EnvelopeState = {
-  sender: { ...initialAddressFields },
-  recipient: { ...initialAddressFields },
+  sender: { ...initialSection },
+  recipient: { ...initialSection },
+  isComplete: false,
 }
 
-const envelopeSlice = createSlice({
+export const envelopeSlice = createSlice({
   name: 'envelope',
   initialState,
   reducers: {
-    setEnvelope(state, action: PayloadAction<EnvelopeState>) {
-      state.sender = action.payload.sender
-      state.recipient = action.payload.recipient
-    },
-    updateAddressField(
+    updateRole: (
       state,
-      action: PayloadAction<{
-        role: EnvelopeRole
-        field: keyof AddressFields
-        value: string
-      }>
-    ) {
-      const { role, field, value } = action.payload
-      state[role][field] = value
+      action: PayloadAction<{ role: EnvelopeRole; data: RoleState }>
+    ) => {
+      const { role, data } = action.payload
+      state[role] = data
+      state.isComplete = state.recipient.isComplete
     },
-    resetEnvelope(state, action: PayloadAction<EnvelopeRole | undefined>) {
+    clearRole: (state, action: PayloadAction<EnvelopeRole>) => {
       const role = action.payload
-
-      if (role === 'sender' || role === 'recipient') {
-        state[role] = { ...initialAddressFields }
-      } else {
-        state.sender = { ...initialAddressFields }
-        state.recipient = { ...initialAddressFields }
-      }
+      state[role] = { ...initialSection }
+      state.isComplete = state.recipient.isComplete
     },
+    resetEnvelope: () => initialState,
   },
 })
 
-export const { setEnvelope, updateAddressField, resetEnvelope } =
-  envelopeSlice.actions
-
+export const { updateRole, clearRole, resetEnvelope } = envelopeSlice.actions
 export default envelopeSlice.reducer

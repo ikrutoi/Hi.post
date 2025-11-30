@@ -1,53 +1,76 @@
-.address-form {
+@use '@styles/config/colors' as *;
+
+.addressForm {
+  position: relative;
+  // border: solid 1px green;
+}
+
+.addressBtn {
+  position: relative;
+  margin: 0 0.2rem;
+  background-color: white;
+  border-radius: 0.3rem;
+}
+
+.addressBtnClip {
+  .addressCounter {
+    position: absolute;
+    top: -0.3rem;
+    left: 1.4rem;
+  }
+
+  .addressCounterValue {
+    font-size: 0.8rem;
+    color: #333;
+  }
+}
+
+.addressFieldset {
+  padding: 0.5rem;
+  border-radius: 1rem;
+  border: solid 1px lightgray;
+}
+
+.addressLegend {
+  user-select: none;
+  font-size: 0.9rem;
+  font-weight: 400;
+  padding: 4px;
+  color: $color-font-disabled;
+  text-transform: uppercase;
+}
+
+.envelopeAddressGroup {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.addressForm {
   position: relative;
 
-  &__toolbar {
+  &Toolbar {
     position: absolute;
-    top: -0.1rem;
-    display: flex;
-    background-color: rgba(255, 255, 255, 0);
   }
 
-  &__btn {
-    position: relative;
+  &ToolbarSender {
+    right: 1rem;
+  }
 
-    &--clip {
-      .address-form__counter {
-        position: absolute;
-        top: -0.3rem;
-        left: 1.4rem;
-      }
+  &ToolbarRecipient {
+    left: 1rem;
+  }
 
-      .address-form__counter-value {
-        font-size: 0.8rem;
-        color: #333;
-      }
+  &Recipient {
+    .addressLegend {
+      text-align: right;
     }
   }
+}
 
-  &__fieldset {
-    padding: 0.5rem;
-    border-radius: 1rem;
-    border: solid 1px lightgray;
-  }
+.addressFormSender .addressGroup .labelIndex {
+  margin-left: 0.5rem;
+}
 
-  &__legend {
-    user-select: none;
-    font-size: 1.6vh;
-    font-weight: 600;
-    padding: 4px;
-  }
-
-  &__group {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  &--sender .address-form__group .label-index {
-    margin-left: 0.5rem;
-  }
-
-  &--recipient .address-form__group .label-index {
-    margin-right: 0.5rem;
-  }
+.addressFormRecipient .addressGroup .labelIndex {
+  margin-right: 0.5rem;
 }

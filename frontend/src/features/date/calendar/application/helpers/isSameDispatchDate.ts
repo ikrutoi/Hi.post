@@ -1,3 +1,5 @@
+import type { MonthDirection } from '@entities/date/domain/types'
+
 export interface DateLike {
   year: number
   month: number
@@ -5,10 +7,16 @@ export interface DateLike {
 }
 
 export const isSameDate = (
+  direction: MonthDirection,
   a: DateLike | null | undefined,
   b: DateLike | null | undefined
 ): boolean => {
   return (
-    !!a && !!b && a.year === b.year && a.month === b.month && a.day === b.day
+    direction === 'current' &&
+    !!a &&
+    !!b &&
+    a.year === b.year &&
+    a.month === b.month &&
+    a.day === b.day
   )
 }

@@ -1,71 +1,62 @@
-import React from 'react'
+import React, { use, useEffect } from 'react'
 import clsx from 'clsx'
 import { Label } from './Label/Label'
 import { LabelGroup } from './LabelGroup/LabelGroup'
-import { getToolbarIcon } from '@shared/utils/icons'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { useEnvelopeAddress } from '../application/hooks'
-import type { EnvelopeAddressProps } from '../domain/types'
+import { useAddressFacade } from '../application/facades'
+import { useCardEditorFacade } from '@entities/card/application/facades'
+import {} from '@entities/card/application/facades'
 import styles from './EnvelopeAddress.module.scss'
+import type { EnvelopeAddressProps } from '../domain/types'
+import { cardEditorReducer } from '@/entities/card/infrastructure/state'
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
-  value,
   role,
+  roleLabel,
   lang,
-  handleValue,
-  handleMovingBetweenInputs,
-  setInputRef,
-  setBtnIconRef,
-  setAddressFieldsetRef,
-  setAddressLegendRef,
-  handleAddressAction,
-  handleMouseEnter,
-  handleMouseLeave,
+  // setInputRef,
+  // setBtnIconRef,
+  // setAddressFieldsetRef,
+  // setAddressLegendRef,
+  // onValueChange,
+  // onInputNavigation,
+  // onAddressAction,
+  // onMouseEnter,
+  // onMouseLeave,
 }) => {
   const { labelLayout, count, buttons } = useEnvelopeAddress(role, lang)
 
+  const { state: stateAddress, actions: actionsAddress } =
+    useAddressFacade(role)
+  const { address: value, isComplete } = stateAddress
+  const { onValueChange } = actionsAddress
+
+  const { actions: actionsCardEditor } = useCardEditorFacade()
+  const { setSectionComplete } = actionsCardEditor
+
   return (
-    <form className={clsx(styles.addressForm, styles[`addressForm--${role}`])}>
+    <form
+      className={clsx(styles.addressForm, styles[`addressForm${roleLabel}`])}
+    >
       <div
         className={clsx(
-          styles.addressForm__toolbar,
-          styles[`addressForm__toolbar--${role}`]
+          styles.addressFormToolbar,
+          styles[`addressFormToolbar${roleLabel}`]
         )}
       >
-        {buttons.map((btn) => (
-          <button
-            key={btn}
-            data-tooltip={btn}
-            data-section={role}
-            ref={setBtnIconRef(`${role}-${btn}`)}
-            className={clsx(
-              styles.addressForm__btn,
-              styles[`addressForm__btn--${btn}`]
-            )}
-            onClick={() => handleAddressAction(btn, role)}
-            onMouseEnter={() => handleMouseEnter(`${role}-${btn}`)}
-            onMouseLeave={() => handleMouseLeave(null)}
-          >
-            {getToolbarIcon(btn)}
-            {btn === 'savedTemplates' && count !== null && (
-              <span className={styles.addressForm__counter}>
-                <span className={styles.addressForm__counterValue}>
-                  {count}
-                </span>
-              </span>
-            )}
-          </button>
-        ))}
+        <Toolbar section={role} />
       </div>
 
       <fieldset
-        className={styles.addressForm__fieldset}
-        ref={setAddressFieldsetRef(`${role}-fieldset`)}
+        className={styles.addressFieldset}
+        // ref={setAddressFieldsetRef(`${role}-fieldset`)}
       >
         <legend
-          className={styles.addressForm__legend}
-          ref={setAddressLegendRef(`${role}-legend`)}
+          className={styles.addressLegend}
+          // ref={setAddressLegendRef(`${role}-legend`)}
         >
-          {role === 'sender' ? 'Sender address' : 'Recipient address'}
+          {roleLabel} value
         </legend>
 
         {labelLayout.map((item, i) =>
@@ -73,24 +64,25 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             <LabelGroup
               key={`group-${i}`}
               group={item}
+              roleLabel={roleLabel}
               role={role}
-              valueRole={value[role]}
-              handleValue={handleValue}
-              handleMovingBetweenInputs={handleMovingBetweenInputs}
-              setInputRef={setInputRef}
-              groupIndex={i}
+              value={value}
+              onValueChange={onValueChange}
+              // onInputNavigation={onInputNavigation}
+              // setInputRef={setInputRef}
             />
           ) : (
             <Label
-              key={`${item.field}-${i}`}
+              key={`${item}-${i}`}
               role={role}
+              roleLabel={roleLabel}
               label={item.label}
-              field={item.field}
-              valueRole={value[role][item.field]}
+              field={item.key}
+              value={value[item.key]}
               index={i}
-              handleValue={handleValue}
-              handleMovingBetweenInputs={handleMovingBetweenInputs}
-              setInputRef={setInputRef}
+              onValueChange={onValueChange}
+              // onInputNavigation={onInputNavigation}
+              // setInputRef={setInputRef}
             />
           )
         )}

@@ -66,7 +66,10 @@ export const Cell: React.FC<CellProps> = ({
 
   return (
     <div className={dynamicClass} onClick={handleClick}>
-      {children ?? dayCurrent ?? dayBefore ?? dayAfter}
+      <span className={styles.dayNumber}>
+        {dayCurrent ?? dayBefore ?? dayAfter}
+      </span>
+      <div className={styles.cellContent}>{children}</div>
     </div>
   )
 }

@@ -1,36 +1,54 @@
+@use '@styles/config/colors' as *;
+
 .label {
   display: block;
   margin-top: 0.1rem;
-  font-size: 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: $color-font-enabled;
+}
 
-  &__spacer {
-    padding-left: 0.5rem;
-  }
+.labelRecipient {
+  text-align: right;
+}
 
-  &__text {
-    font-weight: 500;
-  }
+.labelSpacer {
+  padding-left: 0.5rem;
+}
 
-  &__input {
-    width: 100%;
-    padding: 0 0.3rem;
-    box-sizing: border-box;
-    font-size: 1.2rem;
-    font-style: italic;
-    color: rgb(0, 125, 250);
-    background-color: rgb(240, 240, 240);
-    border: none;
-    height: 1.6rem;
-    border-radius: 4px;
-    outline: none;
-    letter-spacing: 1px;
+.labelText {
+  font-weight: 500;
+}
 
-    &--sender {
-      text-align: left;
-    }
+.labelInput {
+  width: 100%;
+  padding: 0 0.3rem;
+  box-sizing: border-box;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: rgb(0, 125, 250);
+  background-color: rgb(240, 240, 240);
+  border: none;
+  height: 1.5rem;
+  border-radius: 4px;
+  outline: none;
+  letter-spacing: 1px;
+}
 
-    &--recipient {
-      text-align: right;
-    }
-  }
+.labelInputSender {
+  text-align: left;
+}
+
+.labelInputRecipient {
+  text-align: right;
+}
+
+.labelZip {
+  grid-column: 1/2;
+  margin-right: 0.5rem;
+}
+
+.labelCity {
+  grid-column: 2/4;
 }

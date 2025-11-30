@@ -1,117 +1,134 @@
 @use '@styles/config/colors' as *;
 
 .cell {
+  position: relative;
   display: flex;
-  color: $color-font-enabled;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  border: 1px solid $color-disabled;
+  cursor: pointer;
+  height: 100%;
+  aspect-ratio: 1.42;
+
+  // &:nth-last-child(-n + 7) {
+  //   border-bottom: none;
+  // }
+
+  // &:nth-child(7n + 1) {
+  //   border-left: none;
+  // }
+
+  // &:nth-child(7n) {
+  //   border-right: none;
+  // }
+}
+
+.dayNumber {
+  display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0.275rem;
-  // padding: 0.45rem 0.5rem 0.55rem 0.5rem;
-  width: 2rem;
-  height: 2rem;
+  position: absolute;
+  font-size: 0.9rem;
+  width: 1.6rem;
+  height: 1.6rem;
   border-radius: 50%;
-  // border: solid 2px $color-transparent;
+  margin-top: 0.2rem;
+  margin-right: 0.2rem;
+}
+
+.cellContent {
+  width: 100%;
+  display: flex;
+}
+
+.title {
+  cursor: default;
   user-select: none;
-  cursor: pointer;
+}
 
-  &.title {
-    cursor: default;
-    user-select: none;
-  }
-
-  &.today {
+.today {
+  .dayNumber {
     background-color: $color-enabled;
-    // color: $color-font-enabled;
-    // border: solid 2px $color-font-enabled;
+    border: solid 1px $color-enabled;
+  }
+}
+
+.dispatch {
+  &:hover {
+    color: white;
   }
 
-  &.dispatch {
-    // color: white;
-    // background-color: #007dd7;
-    color: $color-font-active;
-    background-color: $color-enabled;
-    // border: solid 2px $color-font-active;
+  .dayNumber {
+    background-color: $color-font-active;
+    border: solid 1px $color-font-active;
+    color: $color-disabled;
+  }
+}
 
-    &:hover {
-      color: white;
-    }
+.disabled {
+  color: $color-font-disabled;
+  cursor: default;
+}
+
+.before,
+.after {
+  color: $color-font-disabled;
+}
+
+.selected {
+  background-color: $color-font-active;
+  color: $color-disabled;
+}
+
+.current {
+  .dayNumber {
+    font-weight: bold;
   }
 
-  &.disabled {
-    color: $color-font-disabled;
-    cursor: default;
-  }
-
-  &.before,
-  &.after {
-    color: $color-font-disabled;
-
-    &.selected {
-      background-color: $color-font-active;
-      color: $color-disabled;
-    }
-  }
-
-  &.current {
-    // color: $color-font-enabled;
-
-    &.disabled {
-      // color: $color-font-disabled;
-      cursor: default;
-    }
-
-    &.disabled:hover {
-      color: $color-font-disabled;
-    }
-  }
-
-  &.current:hover {
+  &:hover {
     color: rgb(0, 125, 250);
   }
 
-  &.current.cart:hover {
+  &.cart:hover {
     color: black;
     cursor: default;
   }
+}
 
-  .cartContainer {
-    position: relative;
-    display: flex;
-  }
+.cartContainer {
+  position: relative;
+  display: flex;
+}
 
-  .cartFilter,
-  .cartImg {
-    width: 3.2rem;
-    height: 2.5rem;
-    border-radius: 0.3rem;
-    cursor: pointer;
-  }
+.cartImg,
+.cartFilter {
+  width: 3.2rem;
+  height: 2.5rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
 
-  .cartFilter {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(163, 163, 163, 0.5);
+.cartFilter {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(163, 163, 163, 0.5);
+}
 
-    &.selected {
-      color: aqua;
-    }
-  }
+.cartShadow {
+  padding: 0 0.1rem;
+  color: rgb(240, 240, 240);
+}
 
-  .cartShadow {
-    padding: 0 0.1rem;
-    color: rgb(240, 240, 240);
-  }
-
-  .cartCount {
-    position: absolute;
-    bottom: -0.5rem;
-    right: -0.5rem;
-    background-color: #007dd7;
-    color: white;
-    font-size: 0.75rem;
-    padding: 0.2rem 0.4rem;
-    border-radius: 1rem;
-  }
+.cartCount {
+  position: absolute;
+  bottom: -0.5rem;
+  right: -0.5rem;
+  background-color: #007dd7;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 1rem;
 }

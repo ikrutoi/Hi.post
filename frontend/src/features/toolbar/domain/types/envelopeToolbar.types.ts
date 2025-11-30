@@ -2,30 +2,27 @@ import type { IconKey, IconState } from '@shared/config/constants'
 
 export const ENVELOPE_KEYS = [
   'save',
-  'delete',
-  'savedTemplates',
+  'remove',
+  'cardUser',
 ] as const satisfies readonly IconKey[]
 
 export type EnvelopeToolbarKey = (typeof ENVELOPE_KEYS)[number]
 
-type AddressState = {
+export type AddressState = {
   save: IconState
-  delete: IconState
-  savedTemplates: IconState
+  remove: IconState
+  cardUser: IconState
 }
 
 const initialAddressState: AddressState = {
   save: 'disabled',
-  delete: 'disabled',
-  savedTemplates: 'disabled',
+  remove: 'disabled',
+  cardUser: 'disabled',
 }
 
-export type EnvelopeToolbarState = {
-  sender: AddressState
-  recipient: AddressState
+export const initialSenderToolbarState: AddressState = {
+  ...initialAddressState,
 }
-
-export const initialEnvelopeToolbarState: EnvelopeToolbarState = {
-  sender: initialAddressState,
-  recipient: initialAddressState,
+export const initialRecipientToolbarState: AddressState = {
+  ...initialAddressState,
 }

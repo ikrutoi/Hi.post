@@ -1,24 +1,26 @@
-import { useDispatch, useSelector } from 'react-redux'
 import { useCallback, useMemo } from 'react'
 import {
   setSectionComplete,
   resetSection,
   setEditorId,
-  setTemplateId,
   resetEditor,
+  setStatus,
 } from '../../infrastructure/state'
 import {
   CARD_SECTIONS,
   type CardSection,
-  type CardEditorDataMap,
-  type CardTemplateSection,
-  type CardEditor,
+  type Card,
+  type Completion,
+  type EditorData,
+  type CardStatus,
 } from '../../domain/types'
-import type { RootState } from '@app/state'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+
+type ExtractData<T> = T extends Completion<infer U> ? U : never
 
 export const useCardEditorController = () => {
-  const dispatch = useDispatch()
-  const editor = useSelector((state: RootState) => state.cardEditor)
+  const dispatch = useAppDispatch()
+  const editor = useAppSelector((state) => state.cardEditor)
 
   const isComplete = useCallback(
     (section: CardSection): boolean => editor[section].isComplete,
@@ -26,20 +28,11 @@ export const useCardEditorController = () => {
   )
 
   const getSectionData = useCallback(
-    <K extends CardSection>(section: K): CardEditorDataMap[K] | undefined => {
+    <K extends CardSection>(section: K): ExtractData<Card[K]> | undefined => {
       const entry = editor[section]
-      if (entry.isComplete) {
-        return entry.data as CardEditorDataMap[K]
-      }
-      return undefined
+      return entry.isComplete ? (entry.data as ExtractData<Card[K]>) : undefined
     },
     [editor]
-  )
-
-  const getTemplateId = useCallback(
-    (section: CardTemplateSection): string | undefined =>
-      editor.templates[section],
-    [editor.templates]
   )
 
   const incompleteSections = useMemo(
@@ -75,17 +68,16 @@ export const useCardEditorController = () => {
   const actions = {
     setEditorId: (id: string) => dispatch(setEditorId(id)),
 
-    setSectionComplete: <K extends keyof CardEditorDataMap>(
+    setSectionComplete: <K extends CardSection>(
       section: K,
-      data: CardEditorDataMap[K]
+      data: ExtractData<Card[K]> & EditorData
     ) => dispatch(setSectionComplete({ section, data })),
 
     resetSection: (section: CardSection) => dispatch(resetSection(section)),
 
-    setTemplateId: (section: CardTemplateSection, templateId: string) =>
-      dispatch(setTemplateId({ section, templateId })),
-
     resetEditor: () => dispatch(resetEditor()),
+
+    setStatus: (status: CardStatus) => dispatch(setStatus(status)),
   }
 
   return {
@@ -95,9 +87,9 @@ export const useCardEditorController = () => {
       isDraftReady,
       isFullReady,
       getSectionData,
-      getTemplateId,
       incompleteSections,
       progress,
+      status: editor.status,
     },
     actions,
   }

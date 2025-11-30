@@ -7,7 +7,9 @@ export const useAromaFacade = () => {
   const { selectAroma, resetAroma, selectByIndex } = useAromaController()
 
   return {
-    selectedAroma,
+    state: {
+      selectedAroma,
+    },
     actions: {
       selectAroma,
       resetAroma,

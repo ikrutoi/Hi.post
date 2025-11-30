@@ -15,13 +15,6 @@ export const useEnvelopeLocalState = () => {
     recipient: null,
   })
 
-  const [btnsAddress, setBtnsAddress] = useState<
-    Record<EnvelopeRole, { save: boolean; delete: boolean; clip: boolean }>
-  >({
-    sender: { save: false, delete: false, clip: false },
-    recipient: { save: false, delete: false, clip: false },
-  })
-
   const [countAddress, setCountAddress] = useState<
     Record<EnvelopeRole, number | null>
   >({
@@ -30,7 +23,7 @@ export const useEnvelopeLocalState = () => {
   })
 
   const [stateMouseClip, setStateMouseClip] = useState<string | null>(null)
-  const [heightLogo, setHeightLogo] = useState<number | null>(null)
+  // const [heightLogo, setHeightLogo] = useState<number | null>(null)
 
   const inputRefs = useRef<Record<string, HTMLInputElement>>({})
   const btnIconRefs = useRef<Record<string, HTMLElement>>({})
@@ -43,14 +36,12 @@ export const useEnvelopeLocalState = () => {
     setValue,
     memoryAddress,
     setMemoryAddress,
-    btnsAddress,
-    setBtnsAddress,
     countAddress,
     setCountAddress,
     stateMouseClip,
     setStateMouseClip,
-    heightLogo,
-    setHeightLogo,
+    // heightLogo,
+    // setHeightLogo,
     inputRefs,
     btnIconRefs,
     addressFieldsetRefs,

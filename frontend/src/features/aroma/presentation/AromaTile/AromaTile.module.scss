@@ -1,5 +1,8 @@
+@use '@styles/config/colors' as *;
+
 .tile {
   display: flex;
+  height: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -10,26 +13,30 @@
   background-color: #fff;
 }
 
-.tile--selected {
-  background-color: rgb(209, 230, 252);
+.tileSelected {
+  background: linear-gradient(
+    to right,
+    $color-section-light-completed,
+    $color-section-dark-completed
+  );
 }
 
-.tile--selected .tile__image,
-.tile--selected .tile__make,
-.tile--selected .tile__name {
-  background-color: rgb(209, 230, 252);
+.tileSelected .tileImage,
+.tileSelected .tileMake,
+.tileSelected .tileName {
+  background-color: transparent;
 }
 
-.tile__make {
+.tileMake {
   font-size: 0.8rem;
   margin-top: 0.2rem;
 }
 
-.tile__name {
+.tileName {
   font-size: 0.7rem;
   margin-bottom: 0.2rem;
 }
 
-.tile__image {
+.tileImage {
   display: block;
 }

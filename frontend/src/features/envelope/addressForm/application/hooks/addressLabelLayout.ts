@@ -1,28 +1,30 @@
 import { Langs } from '@i18n/types'
-import {
-  senderEnLayout,
-  recipientEnLayout,
-} from '@envelope/addressForm/domain/types'
+import { senderLayout, recipientLayout } from '../../domain/types'
+import type { AddressLayout } from '../../domain/types'
 import type { EnvelopeRole } from '@shared/config/constants'
-import type { AddressLabelsByLang } from '../../../domain/types'
+
+export type Lang = (typeof Langs)[number]
+
+export type AddressLabelsByLang = Record<Lang, AddressLayout>
 
 const createEmptyLabels = (): AddressLabelsByLang =>
-  Langs.reduce((acc, lang) => {
-    acc[lang] = []
-    return acc
-  }, {} as AddressLabelsByLang)
+  Langs.reduce<Record<Lang, AddressLayout>>(
+    (acc, lang) => {
+      acc[lang] = []
+      return acc
+    },
+    {} as Record<Lang, AddressLayout>
+  )
 
 export const addressLabels: Readonly<
   Record<EnvelopeRole, AddressLabelsByLang>
 > = {
   sender: {
     ...createEmptyLabels(),
-    en: senderEnLayout,
-    // ru: senderRuLayout,
+    en: senderLayout,
   },
   recipient: {
     ...createEmptyLabels(),
-    en: recipientEnLayout,
-    // ru: recipientRuLayout,
+    en: recipientLayout,
   },
 }

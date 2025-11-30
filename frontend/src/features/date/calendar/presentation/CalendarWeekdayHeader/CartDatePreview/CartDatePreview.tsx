@@ -23,12 +23,12 @@ export const CartDatePreview: React.FC<CartDatePreviewProps> = ({
       <div className={styles.day} onClick={handleCellCartDateClick}>
         {day}
       </div>
-      <img
+      {/* <img
         className={styles.img}
         alt="cart-day"
         src={cartItem.card.cardphoto.data.preview?.blob ?? ''}
         onClick={(evt) => handleImageCartDateClick(evt, day)}
-      />
+      /> */}
       {countCartCards > 1 && (
         <span className={clsx(styles.count, styles.countImg)}>
           {countCartCards}

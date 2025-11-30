@@ -1,62 +1,24 @@
-import { useEnvelopeLocalState } from '../hooks/useEnvelopeLocalState'
-import { useEnvelopeUiController } from '../controllers/useEnvelopeUiController'
-import { useEnvelopeController } from '../controllers/useEnvelopeController'
-import { useEnvelopeActionsController } from '../controllers/useEnvelopeActionsController'
-import { useEnvelopeInteractionController } from '../controllers/useEnvelopeInteractionController'
+import { useEnvelopeController } from '../controllers'
+import type { EnvelopeRole, AddressFields } from '@shared/config/constants'
+import type { RoleState } from '../../domain/types'
 
-export const useEnvelopeFacade = () => {
-  const local = useEnvelopeLocalState()
-  const ui = useEnvelopeUiController()
-  const controller = useEnvelopeController({
-    inputRefs: local.inputRefs,
-    setValue: local.setValue,
-  })
-  const storeActions = useEnvelopeActionsController()
-  const interaction = useEnvelopeInteractionController()
+export function useEnvelopeFacade() {
+  const { state, actions } = useEnvelopeController()
 
   return {
     state: {
-      value: local.value,
-      memoryAddress: local.memoryAddress,
-      btnsAddress: local.btnsAddress,
-      countAddress: local.countAddress,
-      stateMouseClip: local.stateMouseClip,
-      heightLogo: local.heightLogo,
-      ...ui.state,
-    },
-    refs: {
-      inputRefs: local.inputRefs,
-      btnIconRefs: local.btnIconRefs,
-      addressFieldsetRefs: local.addressFieldsetRefs,
-      addressLegendRefs: local.addressLegendRefs,
-      envelopeLogoRef: local.envelopeLogoRef,
+      envelope: state.envelope,
+      isEnvelopeComplete: state.isEnvelopeComplete,
+      getRole: (role: EnvelopeRole): RoleState => state.getRole(role),
+      getRoleFields: (role: EnvelopeRole): AddressFields =>
+        state.getRoleFields(role),
+      isRoleComplete: (role: EnvelopeRole): boolean =>
+        state.isRoleComplete(role),
     },
     actions: {
-      local: {
-        setValue: local.setValue,
-        setMemoryAddress: local.setMemoryAddress,
-        setBtnsAddress: local.setBtnsAddress,
-        setCountAddress: local.setCountAddress,
-        setStateMouseClip: local.setStateMouseClip,
-        setHeightLogo: local.setHeightLogo,
-      },
-      ui: {
-        update: ui.actions.update,
-        updateSignal: ui.actions.updateSignal,
-        reset: ui.actions.reset,
-      },
-      controller: {
-        handleValue: controller.handleValue,
-        handleMovingBetweenInputs: controller.handleMovingBetweenInputs,
-      },
-      store: {
-        saveEnvelope: storeActions.saveEnvelope,
-        resetEnvelope: storeActions.resetEnvelopeState,
-        updateField: storeActions.updateField,
-      },
-      interaction: {
-        handleAddressAction: interaction.handleAddressAction,
-      },
+      setRole: actions.setRole,
+      clearRoleSection: actions.clearRoleSection,
+      reset: actions.reset,
     },
   }
 }

@@ -1,34 +1,43 @@
 import { useCardEditorController } from '../controllers'
 import {
-  CARD_SECTIONS,
-  type CardSaved,
+  type Card,
   type CardSection,
+  type CardEditorDataMap,
+  type CardStatus,
 } from '../../domain/types'
+import { isCardValidForStatus } from '../../domain/helpers'
 
 export const useCardEditorFacade = () => {
   const { state, actions } = useCardEditorController()
 
   const isAllComplete = state.incompleteSections.length === 0
 
-  const isDateFilled =
-    state.editor.date.isComplete && state.editor.date.data !== null
-
-  const isDraftReady = isAllComplete && !isDateFilled
-  const isFullReady = isAllComplete && isDateFilled
-
   const getFirstIncompleteSection = (): CardSection | null =>
     state.incompleteSections.length > 0 ? state.incompleteSections[0] : null
 
-  const buildCardSaved = (): CardSaved | null => {
+  const buildCardSaved = (): Card | null => {
     if (!isAllComplete || !state.editor.id) return null
+
+    const cardphoto = state.getSectionData(
+      'cardphoto'
+    ) as CardEditorDataMap['cardphoto']
+    const cardtext = state.getSectionData(
+      'cardtext'
+    ) as CardEditorDataMap['cardtext']
+    const envelope = state.getSectionData(
+      'envelope'
+    ) as CardEditorDataMap['envelope']
+    const aroma = state.getSectionData('aroma') as CardEditorDataMap['aroma']
+    const date = state.getSectionData('date') as CardEditorDataMap['date']
 
     return {
       id: state.editor.id,
-      cardphoto: state.getSectionData('cardphoto')!,
-      cardtext: state.getSectionData('cardtext')!,
-      envelope: state.getSectionData('envelope')!,
-      aroma: state.getSectionData('aroma')!,
-      date: state.getSectionData('date')!,
+      status: state.status,
+      cardphoto: { isComplete: true, data: cardphoto },
+      cardtext: { isComplete: true, data: cardtext },
+      envelope: { isComplete: true, data: envelope },
+      aroma: { isComplete: true, data: aroma },
+      date: { isComplete: true, data: date },
     }
   }
 
@@ -37,11 +46,13 @@ export const useCardEditorFacade = () => {
     actions,
     computed: {
       isAllComplete,
-      isDraftReady,
-      isFullReady,
-      isReadyToSave: isAllComplete,
       getFirstIncompleteSection,
       buildCardSaved,
+      currentStatus: state.status as CardStatus,
+      isValidForDrafts: isCardValidForStatus(state.editor, 'drafts'),
+      isValidForSaved: isCardValidForStatus(state.editor, 'saved'),
+      isValidForTrash: isCardValidForStatus(state.editor, 'trash'),
+      isValidInProgress: isCardValidForStatus(state.editor, 'inProgress'),
     },
   }
 }

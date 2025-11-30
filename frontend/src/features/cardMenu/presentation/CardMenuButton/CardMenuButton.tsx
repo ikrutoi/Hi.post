@@ -57,12 +57,14 @@ export const CardMenuButton: React.FC<CardMenuButtonProps> = ({
     actionsLayoutNav.selectCardMenuSection(section)
   }
 
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
   return (
     <button
       type="button"
       className={clsx(
         styles.cardMenuButton,
-        styles[`cardMenuButton--${section.toLowerCase()}`],
+        styles[`cardMenuButton${capitalize(section)}`],
         {
           [styles.active]: isSelected,
           [styles.disabled]: isDisabled,
@@ -71,7 +73,7 @@ export const CardMenuButton: React.FC<CardMenuButtonProps> = ({
       onClick={() => handleClick(section)}
       disabled={isDisabled}
     >
-      {section}
+      {capitalize(section)}
     </button>
   )
 }
