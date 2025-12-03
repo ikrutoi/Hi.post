@@ -7,22 +7,22 @@
   color: #007aac;
 }
 
-.miniAddress--recipient {
+.miniAddressRecipient {
   align-items: flex-end;
   text-align: right;
 }
 
-.miniAddress__group {
+.miniAddressGroup {
   display: flex;
   justify-content: space-between;
   width: 100%;
 }
 
-.miniAddress__field {
+.miniAddressField {
   width: 100%;
   overflow: hidden;
 }
 
-.miniAddress__zip {
+.miniAddressZip {
   width: 35%;
 }

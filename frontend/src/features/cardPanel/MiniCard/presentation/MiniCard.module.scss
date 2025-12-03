@@ -1,4 +1,4 @@
-.mini-card {
+.miniCard {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -6,31 +6,30 @@
   box-sizing: border-box;
   background-color: #fff;
   user-select: none;
-  // border: solid 1px blue;
 
-  &--photo {
+  &Photo {
     padding: 0;
     background-color: transparent;
   }
 
-  &__value {
+  &Value {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    &--cardphoto {
+    &Cardphoto {
       background-color: transparent;
     }
 
-    &--date,
-    &--aroma {
+    &Date,
+    &Aroma {
       font-size: 0.8rem;
     }
   }
 
-  &__kebab {
+  &Kebab {
     position: absolute;
     top: 0;
     right: 0;
@@ -47,7 +46,7 @@
       background-color 0.3s ease,
       color 0.3s ease;
 
-    .toolbar-icon {
+    .toolbarIcon {
       width: 1.2rem;
       height: 1.2rem;
       background-color: transparent;
@@ -58,7 +57,7 @@
     }
   }
 
-  &__kebab-icon {
+  &KebabIcon {
     position: absolute;
     top: 0;
     right: 0;

@@ -1,6 +1,6 @@
 import { Cell } from '@date/cell/presentation/Cell'
 import { CartDatePreview } from '../../presentation/CalendarWeekdayHeader/CartDatePreview/CartDatePreview'
-import { isSameDate } from '../helpers'
+import { isSameDate, shiftMonth } from '../helpers'
 import { isDisabledDate } from '@entities/date/utils'
 import type {
   SelectedDispatchDate,
@@ -15,10 +15,10 @@ interface BuildMonthCellsParams {
   days: number[]
   direction: MonthDirection
   calendarViewDate: CalendarViewDate
-  selectedDispatchDate: SelectedDispatchDate
-  currentDate: { currentDay: number; currentMonth: number; currentYear: number }
+  selectedDate: SelectedDispatchDate
+  currentDate: { day: number; month: number; year: number }
   handleClickCell: (params: HandleCellClickParams) => void
-  setSelectedDispatchDate?: (date: DispatchDate) => void
+  chooseDate?: (date: DispatchDate) => void
   cartItems?: CartItem[]
 }
 
@@ -26,23 +26,28 @@ export const buildMonthCells = ({
   days,
   direction,
   calendarViewDate,
-  selectedDispatchDate,
+  selectedDate,
   currentDate,
   handleClickCell,
-  setSelectedDispatchDate,
+  chooseDate,
   cartItems,
 }: BuildMonthCellsParams) => {
   if (!calendarViewDate) return []
 
   const { year: viewYear, month: viewMonth } = calendarViewDate
 
+  const { year: currentViewYear, month: currentViewMonth } = shiftMonth(
+    calendarViewDate,
+    direction
+  )
+
   return days.map((day) => {
     const isToday =
-      day === currentDate.currentDay &&
-      viewMonth === currentDate.currentMonth &&
-      viewYear === currentDate.currentYear
+      day === currentDate.day &&
+      currentViewMonth === currentDate.month &&
+      currentViewYear === currentDate.year
 
-    const isSelectedDispatchDate = isSameDate(direction, selectedDispatchDate, {
+    const isSelectedDate = isSameDate(direction, selectedDate, {
       year: viewYear,
       month: viewMonth,
       day,
@@ -58,25 +63,9 @@ export const buildMonthCells = ({
         direction={direction}
         isToday={isToday}
         isDisabledDate={isDisabledDate(day, calendarViewDate, currentDate)}
-        isSelectedDispatchDate={isSelectedDispatchDate}
+        isSelectedDate={isSelectedDate}
         onClickCell={handleClickCell}
-      >
-        {/* {direction === 'current' && cartItems && (
-          <CartDatePreview
-            day={day}
-            cartItem={cartItems[0]}
-            countCartCards={cartItems.length}
-            handleImageCartDateClick={() => {}}
-            handleCellCartDateClick={() =>
-              setSelectedDispatchDate?.({
-                year: calendarViewDate.year,
-                month: calendarViewDate.month,
-                day,
-              })
-            }
-          />
-        )} */}
-      </Cell>
+      ></Cell>
     )
   })
 }

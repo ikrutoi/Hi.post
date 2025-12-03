@@ -1,13 +1,12 @@
 import { CalendarViewDate } from '../domain/types'
-import { currentDate } from '@features/date/calendar/domain/models'
 
 export const isDisabledDate = (
   day: number,
   calendarViewDate: CalendarViewDate,
   currentDate: {
-    currentDay: number
-    currentMonth: number
-    currentYear: number
+    day: number
+    month: number
+    year: number
   }
 ): boolean => {
   if (!calendarViewDate) return false
@@ -15,10 +14,10 @@ export const isDisabledDate = (
   const { year, month } = calendarViewDate
 
   return (
-    (month === currentDate.currentMonth &&
-      year === currentDate.currentYear &&
-      day <= currentDate.currentDay + 5) ||
-    year < currentDate.currentYear ||
-    (year === currentDate.currentYear && month < currentDate.currentMonth)
+    (month === currentDate.month &&
+      year === currentDate.year &&
+      day <= currentDate.day + 5) ||
+    year < currentDate.year ||
+    (year === currentDate.year && month < currentDate.month)
   )
 }

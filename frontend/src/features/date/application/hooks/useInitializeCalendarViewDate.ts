@@ -5,7 +5,7 @@ import { getInitialCalendarDate } from '@shared/utils/date'
 
 export const useInitializeCalendarViewDate = () => {
   const { state: stateDate } = useDateFacade()
-  const { selectedDispatchDate } = stateDate
+  const { selectedDate } = stateDate
 
   const { state: stateCalendar, actions: actionsCalendar } = useCalendarFacade()
   const { lastViewedCalendarDate } = stateCalendar
@@ -16,7 +16,7 @@ export const useInitializeCalendarViewDate = () => {
   useEffect(() => {
     if (!initialized.current) {
       const initial = getInitialCalendarDate(
-        selectedDispatchDate,
+        selectedDate,
         lastViewedCalendarDate
       )
       setCalendarViewDate(initial)

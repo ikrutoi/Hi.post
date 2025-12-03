@@ -1,20 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import clsx from 'clsx'
-import { CARD_SECTIONS } from '@entities/card/domain/types'
-import { useCardPanelController } from '@cardPanel/application/hooks/cardPanel'
-import {
-  useScrollSync,
-  useExpendCard,
-  useMinimizeIcons,
-} from '@cardPanel/application/hooks'
+import { CARD_SECTIONS } from '@shared/config/constants'
+import { useScrollSync } from '@cardPanel/application/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { useCardEditorFacade } from '@entities/card/application/facades'
+import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useCardPanelFacade } from '../application/facades'
+import { useDateFacade } from '@date/application/facades'
 import { useSliderLetterHandlers } from '@cardPanel/application/hooks/useSliderLetterHandlers'
 import { MiniCard } from '../MiniCard/presentation/MiniCard'
-import { SectionPresets } from '../SectionPresets/presentation/SectionPresets'
 import { CardScroller } from '../CardScroller/presentation/CardScroller'
 import { SectionPresetsRenderer } from './SectionPresetsRender'
 import { EnvelopeOverlay } from './EnvelopeOverlay'
@@ -33,16 +28,20 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
   const [valueScroll, setValueScroll] = useState(0)
   const [scrollIndex, setScrollIndex] = useState<ScrollIndex | null>(null)
 
-  const { state: stateCardEditor, computed: computedCardEditor } =
-    useCardEditorFacade()
-  const { editor } = stateCardEditor
-  const { isDraftReady, isFullReady } = computedCardEditor
+  const { state: stateCardEditor } = useCardEditorFacade()
+  const { editorState } = stateCardEditor
+
+  const { state: stateDate } = useDateFacade()
+  const { isDateComplete } = stateDate
+
+  console.log('cardEditor', editorState.date.isComplete)
+  console.log('isDateComplete', isDateComplete)
 
   const { state: stateCardPanel } = useCardPanelFacade()
   const { isPacked } = stateCardPanel
 
   const completedSections = CARD_SECTIONS.filter(
-    (section) => editor[section].isComplete
+    (section) => editorState[section].isComplete
   )
 
   const sortedSections = getSortedSections(completedSections)
@@ -50,21 +49,6 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
   const miniPolyCardsRef = useRef<HTMLDivElement>(null)
 
   const isTemplateMode = false
-
-  // const {
-  //   buttonsFullCard,
-  //   memoryCardtext,
-  //   fullCard,
-  //   minimize,
-  //   showIconsMinimize,
-  //   buttonIconRefs,
-  //   buttonArrowsRef,
-  //   miniPolyCardsRef,
-  //   handleClickMiniKebab,
-  //   handleClickCardtext,
-  //   handleClickIconArrows,
-  //   handleIconFullCardClick,
-  // } = useCardPanelController()
 
   const { size, section, meta, memory } = useLayoutFacade()
   const { remSize } = size
@@ -81,15 +65,6 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
     useSliderLetterHandlers()
 
   useScrollSync(cardsListRef, setValueScroll)
-
-  // useExpendCard({
-  //   expendCard: expendMemoryCard,
-  //   lockExpendCard: lockExpendMemoryCard,
-  //   selectSection: activeSection,
-  //   buttonArrowsRef,
-  // })
-
-  // useMinimizeIcons(minimize, showIconsMinimize, buttonsFullCard, buttonIconRefs)
 
   return (
     <div className={styles.cardPanel} ref={cardsListRef}>
@@ -147,27 +122,6 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
           })}
         </div>
       )}
-
-      {/* <div className={styles.actions}>
-        {Object.entries(buttonsFullCard.fullCard).map(([key, isActive]) => (
-          <button
-            key={key}
-            className={clsx(styles.fullcardBtn, {
-              [styles['fullcardBtn--active']]: isActive,
-            })}
-            data-tooltip={key}
-            ref={(el) => {
-              buttonIconRefs.current[key] = el
-            }}
-            onClick={() =>
-              handleIconFullCardClick(key as 'save' | 'addCart' | 'remove')
-            }
-            disabled={!isActive}
-          >
-            {key}
-          </button>
-        ))}
-      </div> */}
     </div>
   )
 }

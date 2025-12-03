@@ -1,6 +1,8 @@
 import React, { useRef } from 'react'
+import clsx from 'clsx'
 import { useRemSize } from '@shared/helpers'
 import { getToolbarIcon } from '@shared/utils/icons'
+import { capitalize } from '@shared/utils/helpers'
 import {
   useMiniCardRender,
   useMiniCardKebab,
@@ -12,30 +14,18 @@ import type { SizeCard } from '@layout/domain/types'
 
 interface MiniCardProps {
   section: CardSection
-  // valueSection: unknown
   sizeMiniCard: SizeCard
   zIndex: number
   position: number
   isPacked: boolean
-  // infoSection: SectionInfo
-  // isPacked: boolean
-  // infoMinimize: boolean
-  // showsIconMinimize: boolean
-  // onClickSection?: (section: string, area: string) => void
 }
 
 export const MiniCard: React.FC<MiniCardProps> = ({
   section,
-  // valueSection,
   sizeMiniCard,
   zIndex,
   position,
   isPacked,
-  // infoSection,
-  // isPacked,
-  // infoMinimize,
-  // showsIconMinimize,
-  // onClickSection,
 }) => {
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
@@ -60,12 +50,14 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   return (
     <div
       ref={miniCardRef}
-      className={`${styles['mini-card']} ${styles[`mini-card-${section}`]}`}
+      className={clsx(
+        styles.miniCard,
+        styles[`miniCard${capitalize(section)}`]
+      )}
       style={{
         left: isPacked
           ? '0'
           : `${sizeMiniCard.width + remSize + (sizeMiniCard.width * 4) / 24 + (sizeMiniCard.width + remSize) * position}px`,
-        // padding: section === 'cardphoto' ? '0' : '0.5rem',
         width: `${sizeMiniCard.width}px`,
         height: `${sizeMiniCard.height}px`,
         boxShadow: isPacked
@@ -74,31 +66,19 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         zIndex,
         transition: `left ${0.3 + 0.15 * position}s ease, box-shadow 0.3s`,
       }}
-      // onClick={handleClickSection}
     >
       {render({
         section,
-        // valueSection,
         sizeMiniCard,
-        ref: miniCardRef.current,
+        cardMiniSectionRef: miniCardRef.current,
       })}
 
-      {
-        // !isPacked &&
-        <button
-          className={styles['mini-card__kebab']}
-          style={{
-            // color: showIcon ? 'rgba(71, 71, 71, 1)' : 'rgba(71, 71, 71, 0)',
-            // backgroundColor: showIcon
-            //   ? 'rgba(240, 240, 240, 0.85)'
-            //   : 'rgba(240, 240, 240, 0)',
-            transition: 'background-color 0.3s ease, color 0.3s ease',
-          }}
-          // onClick={handleClick}
-        >
-          {/* {getToolbarIcon('remove')} */}
-        </button>
-      }
+      <button
+        className={styles.miniCardKebab}
+        style={{ transition: 'background-color 0.3s ease, color 0.3s ease' }}
+      >
+        {/* {getToolbarIcon('remove')} */}
+      </button>
     </div>
   )
 }

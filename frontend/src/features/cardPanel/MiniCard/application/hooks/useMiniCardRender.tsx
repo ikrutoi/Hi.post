@@ -5,22 +5,21 @@ import {
   MiniAroma,
   MiniDate,
 } from '../../presentation/miniSections/presentation'
+import type { CardSection } from '@entities/card/domain/types'
 
 // import { MiniCardRenderProps } from '../../domain/types'
 
 interface MiniCardRenderProps {
-  section: string
-  // valueSection: any
+  section: CardSection
   sizeMiniCard: { width: number; height: number }
-  ref: HTMLDivElement | null
+  cardMiniSectionRef: HTMLDivElement | null
 }
 
 export const useMiniCardRender = () => {
   const render = ({
     section,
-    // valueSection,
     sizeMiniCard,
-    ref,
+    cardMiniSectionRef,
   }: MiniCardRenderProps) => {
     const commonProps = { heightMinicard: sizeMiniCard.height }
 
@@ -28,7 +27,12 @@ export const useMiniCardRender = () => {
       case 'cardphoto':
         return <MiniCardphoto sizeMiniCard={sizeMiniCard} />
       case 'cardtext':
-        return <MiniCardtext {...commonProps} cardMiniSectionRef={ref} />
+        return (
+          <MiniCardtext
+            {...commonProps}
+            cardMiniSectionRef={cardMiniSectionRef}
+          />
+        )
       case 'envelope':
         return <MiniEnvelope />
       case 'aroma':

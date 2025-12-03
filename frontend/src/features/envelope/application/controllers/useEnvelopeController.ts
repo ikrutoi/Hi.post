@@ -1,52 +1,49 @@
+import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import {
-  updateRole,
-  clearRole,
-  resetEnvelope,
-} from '../../infrastructure/state'
-import {
-  selectEnvelope,
-  selectEnvelopeRole,
-  selectEnvelopeRoleFields,
-  selectIsEnvelopeRoleComplete,
-  selectIsEnvelopeComplete,
-} from '../../infrastructure/selectors'
-import type { EnvelopeRole, AddressFields } from '@shared/config/constants'
-import type { RoleState } from '../../domain/types'
+import { setComplete } from '../../infrastructure/state'
+import { useSenderFacade } from '../../sender/application/facades'
+import { useRecipientFacade } from '../../recipient/application/facades'
 
-export function useEnvelopeController() {
+export const useEnvelopeController = () => {
   const dispatch = useAppDispatch()
+  const isEnvelopeComplete = useAppSelector((s) => s.envelope.isComplete)
 
-  const envelope = useAppSelector(selectEnvelope)
-  const isEnvelopeComplete = useAppSelector(selectIsEnvelopeComplete)
+  const { state: stateSender, actions: actionsSender } = useSenderFacade()
+  const { isEnabled, isComplete: isCompleteSender } = stateSender
+  const { clear: actionsClearSender } = actionsSender
 
-  const getRole = (role: EnvelopeRole): RoleState =>
-    useAppSelector((state) => selectEnvelopeRole(state, role))
+  const { state: stateRecipient, actions: actionsRecipient } =
+    useRecipientFacade()
+  const { isComplete: isCompleteRecipient } = stateRecipient
+  const { clear: actionsClearRecipient } = actionsRecipient
 
-  const getRoleFields = (role: EnvelopeRole): AddressFields =>
-    useAppSelector((state) => selectEnvelopeRoleFields(state, role))
+  const clearSender = () => {
+    actionsClearSender()
+  }
 
-  const isRoleComplete = (role: EnvelopeRole): boolean =>
-    useAppSelector((state) => selectIsEnvelopeRoleComplete(state, role))
+  const clearRecipient = () => {
+    actionsClearRecipient()
+  }
 
-  const setRole = (role: EnvelopeRole, data: RoleState) =>
-    dispatch(updateRole({ role, data }))
+  const reset = () => {
+    actionsClearSender()
+    actionsClearRecipient()
+  }
 
-  const clearRoleSection = (role: EnvelopeRole) => dispatch(clearRole(role))
-
-  const reset = () => dispatch(resetEnvelope())
+  useEffect(() => {
+    const senderReady = (isCompleteSender && isEnabled) || !isEnabled
+    const recipientReady = isCompleteRecipient
+    const envelopeReady = senderReady && recipientReady
+    dispatch(setComplete(envelopeReady))
+  }, [dispatch, isCompleteSender, isEnabled, isCompleteRecipient])
 
   return {
     state: {
-      envelope,
       isEnvelopeComplete,
-      getRole,
-      getRoleFields,
-      isRoleComplete,
     },
     actions: {
-      setRole,
-      clearRoleSection,
+      clearSender,
+      clearRecipient,
       reset,
     },
   }

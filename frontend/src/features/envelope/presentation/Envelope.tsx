@@ -5,8 +5,6 @@ import { Mark } from '@envelope/view/presentation'
 import { getSafeLang } from '@i18n/helpers'
 import { i18n } from '@i18n/i18n'
 import { EnvelopeAddress } from '../addressForm/presentation'
-import { useLayoutNavFacade } from '@layoutNav/application/facades'
-import { useEnvelopeFacade } from '../application/facades'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -15,11 +13,6 @@ type EnvelopeProps = {
 
 export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const lang = getSafeLang(i18n.language)
-
-  const {} = useEnvelopeFacade()
-
-  const { state } = useLayoutNavFacade()
-  const { selectedCardMenuSection } = state
 
   return (
     <div className={styles.envelope}>
@@ -32,28 +25,9 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
             styles[`envelopeSection${label}`]
           )}
         >
-          <EnvelopeAddress
-            role={role}
-            roleLabel={label}
-            lang={lang}
-            // setInputRef={(id) => (el) => (inputRefs.current[id] = el!)}
-            // setBtnIconRef={(id) => (el) => (btnIconRefs.current[id] = el!)}
-            // setAddressFieldsetRef={(id) => (el) =>
-            //   (addressFieldsetRefs.current[id] = el!)
-            // }
-            // setAddressLegendRef={(id) => (el) =>
-            //   (addressLegendRefs.current[id] = el!)
-            // }
-            // onValueChange={handleValue}
-            // onInputNavigation={handleMovingBetweenInputs}
-            // onAddressAction={handleAddressAction}
-            // onMouseEnter={(id) => setStateMouseClip(id)}
-            // onMouseLeave={() => setStateMouseClip(null)}
-            // stateMouseClip={stateMouseClip}
-          />
+          <EnvelopeAddress role={role} roleLabel={label} lang={lang} />
         </div>
       ))}
-
       <Mark />
     </div>
   )

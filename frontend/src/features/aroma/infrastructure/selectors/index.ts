@@ -1,1 +1,1 @@
-export * from './aroma.selectors'
+export * from './aromaSelectors'

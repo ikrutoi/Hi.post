@@ -3,9 +3,7 @@ import { useDateFacade } from '../facades'
 
 export const useFormattedSelectedDate = () => {
   const { state } = useDateFacade()
-  const { selectedDispatchDate } = state
+  const { selectedDate } = state
 
-  return selectedDispatchDate
-    ? formatSelectedDispatchDate(selectedDispatchDate)
-    : null
+  return selectedDate ? formatSelectedDispatchDate(selectedDate) : null
 }

@@ -8,11 +8,9 @@ import {
 } from '@cardphoto/infrastructure/state'
 import { cardtextReducer } from '@cardtext/infrastructure/state'
 
-import {
-  envelopeReducer,
-  // envelopeUiReducer,
-} from '@envelope/infrastructure/state'
-import { addressReducer } from '@envelope/addressForm/infrastructure/state'
+import { envelopeReducer } from '@envelope/infrastructure/state'
+import { senderReducer } from '@envelope/sender/infrastructure/state'
+import { recipientReducer } from '@envelope/recipient/infrastructure/state'
 
 import { aromaReducer } from '@aroma/infrastructure/state'
 
@@ -22,7 +20,9 @@ import { switcherReducer } from '@date/switcher/infrastructure/state'
 
 import { CardPanelReducer } from '@cardPanel/infrastructure/state'
 
-import { cardEditorReducer } from '@entities/card/infrastructure/state'
+import { cardEditorReducer } from '@entities/cardEditor/infrastructure/state'
+
+import { cardReducer } from '@entities/card/infrastructure/state'
 
 import { cardMenuNavReducer } from '@layoutNav/infrastructure/state'
 import { templateNavReducer } from '@layoutNav/infrastructure/state'
@@ -46,8 +46,8 @@ export const rootReducer = combineReducers({
   cardtext: cardtextReducer,
 
   envelope: envelopeReducer,
-  // envelopeUi: envelopeUiReducer,
-  address: addressReducer,
+  sender: senderReducer,
+  recipient: recipientReducer,
 
   aroma: aromaReducer,
 
@@ -58,6 +58,8 @@ export const rootReducer = combineReducers({
   cardPanel: CardPanelReducer,
 
   cardEditor: cardEditorReducer,
+
+  card: cardReducer,
 
   cardMenuNav: cardMenuNavReducer,
   templateNav: templateNavReducer,

@@ -1,4 +1,3 @@
-// src/features/calendar/facade/calendarViewFacade.ts
 import { useCalendarController } from '../controllers'
 
 export const useCalendarFacade = () => {

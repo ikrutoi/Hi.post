@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import clsx from 'clsx'
 import styles from './Cell.module.scss'
 import type {
@@ -17,14 +17,8 @@ interface CellProps {
   direction: MonthDirection
   isToday?: boolean
   isDisabledDate?: boolean
-  isSelectedDispatchDate?: boolean
+  isSelectedDate?: boolean
   selectedDispatchDate?: SelectedDispatchDate
-  handleDispatchDate?: (
-    isDisabledDate: boolean,
-    year: number,
-    month: number,
-    day: number
-  ) => void
   onClickCell: (params: HandleCellClickParams) => void
   children?: React.ReactNode
 }
@@ -37,8 +31,7 @@ export const Cell: React.FC<CellProps> = ({
   direction,
   isToday,
   isDisabledDate,
-  isSelectedDispatchDate,
-  handleDispatchDate,
+  isSelectedDate,
   onClickCell,
   children,
 }) => {
@@ -49,7 +42,7 @@ export const Cell: React.FC<CellProps> = ({
     dayBefore != null && styles.before,
     dayAfter != null && styles.after,
     dayCurrent != null && styles.current,
-    isSelectedDispatchDate && styles.dispatch
+    isSelectedDate && styles.dispatch
   )
 
   const handleClick = () => {

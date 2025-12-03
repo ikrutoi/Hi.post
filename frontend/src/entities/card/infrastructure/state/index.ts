@@ -1,3 +1,3 @@
-export { default as cardEditorReducer } from './cardEditor.slice'
+export { default as cardReducer } from './cardSlice'
 
-export * from './cardEditor.slice'
+export * from './cardSlice'

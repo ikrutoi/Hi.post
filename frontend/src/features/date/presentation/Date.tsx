@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
@@ -21,8 +21,8 @@ export const Date: React.FC = () => {
   const { flashParts, triggerFlash } = useFlashEffect()
 
   const { state: stateDate, actions: actionsDate } = useDateFacade()
-  const { selectedDispatchDate } = stateDate
-  const { setSelectedDispatchDate } = actionsDate
+  const { selectedDate } = stateDate
+  const { chooseDate } = actionsDate
 
   const { state: stateCalendar } = useCalendarFacade()
   const { lastViewedCalendarDate } = stateCalendar
@@ -49,8 +49,8 @@ export const Date: React.FC = () => {
   useAutoActivateDateSection()
 
   const calendarViewDate: CalendarViewDate = lastViewedCalendarDate ?? {
-    year: currentDate.currentYear,
-    month: currentDate.currentMonth,
+    year: currentDate.year,
+    month: currentDate.month,
   }
 
   return (
@@ -72,7 +72,7 @@ export const Date: React.FC = () => {
 
         <div className={styles.slider}>
           <Slider
-            selectedDispatchDate={selectedDispatchDate}
+            selectedDate={selectedDate}
             activeSwitcher={activeSwitcher}
             // onChange={handleSliderChange}
           />
@@ -80,9 +80,9 @@ export const Date: React.FC = () => {
 
         <div className={styles.calendar}>
           <Calendar
-            selectedDispatchDate={selectedDispatchDate}
+            selectedDate={selectedDate}
             calendarViewDate={calendarViewDate}
-            setSelectedDispatchDate={setSelectedDispatchDate}
+            chooseDate={chooseDate}
             triggerFlash={triggerFlash}
           />
         </div>

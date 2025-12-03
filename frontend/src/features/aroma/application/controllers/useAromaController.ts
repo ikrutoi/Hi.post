@@ -1,28 +1,33 @@
-import { useDispatch } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { setAroma, clearAroma } from '../../infrastructure/state'
-import type { AromaItem } from '@entities/aroma'
+import {
+  selectSelectedAroma,
+  selectIsAromaComplete,
+} from '../../infrastructure/selectors'
+import type { AromaItem } from '@entities/aroma/domain/types'
 
 export const useAromaController = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const selectAroma = (item: AromaItem) => {
-    dispatch(setAroma(item))
+  const selectedAroma = useAppSelector(selectSelectedAroma)
+  const isAromaComplete = useAppSelector(selectIsAromaComplete)
+
+  const chooseAroma = (aroma: AromaItem) => {
+    dispatch(setAroma(aroma))
   }
 
-  const resetAroma = () => {
+  const clear = () => {
     dispatch(clearAroma())
   }
 
-  const selectByIndex = (index: AromaItem['index'], list: AromaItem[]) => {
-    const found = list.find((item) => item.index === index)
-    if (found) {
-      dispatch(setAroma(found))
-    }
-  }
-
   return {
-    selectAroma,
-    resetAroma,
-    selectByIndex,
+    state: {
+      selectedAroma,
+      isAromaComplete,
+    },
+    actions: {
+      chooseAroma,
+      clear,
+    },
   }
 }

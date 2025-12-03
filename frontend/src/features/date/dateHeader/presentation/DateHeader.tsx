@@ -13,9 +13,9 @@ import type {
 
 interface DateHeaderProps {
   currentDate: {
-    currentYear: number
-    currentMonth: number
-    currentDay: number
+    year: number
+    month: number
+    day: number
   }
   calendarViewDate: CalendarViewDate
   activeSwitcher?: typeSwitcher
@@ -56,7 +56,7 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
           }}
         >
           <LuCalendar className={styles.iconTitle} />
-          {`${currentDate.currentYear} ${MONTH_NAMES[currentDate.currentMonth]} ${currentDate.currentDay}`}
+          {`${currentDate.year} ${MONTH_NAMES[currentDate.month]} ${currentDate.day}`}
         </div>
       </div>
 

@@ -1,8 +1,4 @@
-import {
-  DispatchDate,
-  SelectedDispatchDate,
-  CalendarViewDate,
-} from '@entities/date/domain/types'
+import { CalendarViewDate } from '@entities/date/domain/types'
 
 export const getDaysInPreviousMonth = (year: number, month: number): number => {
   const prevMonth = month === 0 ? 11 : month - 1

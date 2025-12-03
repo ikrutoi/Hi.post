@@ -1,5 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
+import { capitalize } from '@shared/utils/helpers'
 import styles from '../Switcher.module.scss'
 import { MONTH_NAMES_UPPER } from '@entities/date/constants/months'
 import type { DatePart, Switcher } from '@entities/date/domain/types'
@@ -42,8 +43,4 @@ export const SwitcherButton: React.FC<SwitcherButtonProps> = ({
       </div>
     </div>
   )
-}
-
-function capitalize(part: string): string {
-  return part.charAt(0).toUpperCase() + part.slice(1)
 }

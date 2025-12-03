@@ -1,92 +1,128 @@
-import React, { use, useEffect } from 'react'
+import React, { useRef } from 'react'
 import clsx from 'clsx'
 import { Label } from './Label/Label'
-import { LabelGroup } from './LabelGroup/LabelGroup'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { useEnvelopeAddress } from '../application/hooks'
-import { useAddressFacade } from '../application/facades'
-import { useCardEditorFacade } from '@entities/card/application/facades'
-import {} from '@entities/card/application/facades'
+import { useSenderFacade } from '../../sender/application/facades'
+import { useRecipientFacade } from '../../recipient/application/facades'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
-import { cardEditorReducer } from '@/entities/card/infrastructure/state'
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   role,
   roleLabel,
   lang,
-  // setInputRef,
-  // setBtnIconRef,
-  // setAddressFieldsetRef,
-  // setAddressLegendRef,
-  // onValueChange,
-  // onInputNavigation,
-  // onAddressAction,
-  // onMouseEnter,
-  // onMouseLeave,
 }) => {
-  const { labelLayout, count, buttons } = useEnvelopeAddress(role, lang)
+  const { labelLayout } = useEnvelopeAddress(role, lang)
 
-  const { state: stateAddress, actions: actionsAddress } =
-    useAddressFacade(role)
-  const { address: value, isComplete } = stateAddress
-  const { onValueChange } = actionsAddress
+  const senderFacade = useSenderFacade()
+  const recipientFacade = useRecipientFacade()
 
-  const { actions: actionsCardEditor } = useCardEditorFacade()
-  const { setSectionComplete } = actionsCardEditor
+  const facade = role === 'sender' ? senderFacade : recipientFacade
+  const { state, layout, actions } = facade
+  const { address: value } = state
+  const { update } = actions
+
+  const inputsRef = useRef<(HTMLInputElement | null)[]>([])
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    i: number
+  ) => {
+    if (e.key === 'ArrowDown' || e.key === 'Enter') {
+      e.preventDefault()
+      inputsRef.current[i + 1]?.focus()
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      inputsRef.current[i - 1]?.focus()
+    }
+  }
+
+  let fieldIndex = 0
 
   return (
     <form
       className={clsx(styles.addressForm, styles[`addressForm${roleLabel}`])}
     >
-      <div
-        className={clsx(
-          styles.addressFormToolbar,
-          styles[`addressFormToolbar${roleLabel}`]
-        )}
-      >
-        <Toolbar section={role} />
-      </div>
+      {role === 'sender' && (
+        <div className={styles.senderToggle}>
+          <Toggle
+            label="Specify the sender's address"
+            checked={senderFacade.state.isEnabled}
+            onChange={senderFacade.actions.toggle}
+            size="default"
+          />
+        </div>
+      )}
 
-      <fieldset
-        className={styles.addressFieldset}
-        // ref={setAddressFieldsetRef(`${role}-fieldset`)}
-      >
-        <legend
-          className={styles.addressLegend}
-          // ref={setAddressLegendRef(`${role}-legend`)}
-        >
-          {roleLabel} value
-        </legend>
+      {(role === 'recipient' || senderFacade.state.isEnabled) && (
+        <>
+          <div
+            className={clsx(
+              styles.addressFormToolbar,
+              styles[`addressFormToolbar${roleLabel}`]
+            )}
+          >
+            <Toolbar section={role} />
+          </div>
 
-        {labelLayout.map((item, i) =>
-          Array.isArray(item) ? (
-            <LabelGroup
-              key={`group-${i}`}
-              group={item}
-              roleLabel={roleLabel}
-              role={role}
-              value={value}
-              onValueChange={onValueChange}
-              // onInputNavigation={onInputNavigation}
-              // setInputRef={setInputRef}
-            />
-          ) : (
-            <Label
-              key={`${item}-${i}`}
-              role={role}
-              roleLabel={roleLabel}
-              label={item.label}
-              field={item.key}
-              value={value[item.key]}
-              index={i}
-              onValueChange={onValueChange}
-              // onInputNavigation={onInputNavigation}
-              // setInputRef={setInputRef}
-            />
-          )
-        )}
-      </fieldset>
+          <fieldset className={styles.addressFieldset}>
+            <legend className={styles.addressLegend}>{roleLabel} value</legend>
+
+            {labelLayout.flatMap((item, i) => {
+              if (Array.isArray(item)) {
+                return (
+                  <div
+                    key={`group-${i}`}
+                    className={clsx(
+                      styles.labelGroup,
+                      styles[`labelGroup${roleLabel}`]
+                    )}
+                  >
+                    {item.map((subItem, j) => {
+                      const currentIndex = fieldIndex++
+                      return (
+                        <Label
+                          key={`${subItem.key}-${i}-${j}`}
+                          ref={(el: HTMLInputElement | null) => {
+                            if (el) inputsRef.current[currentIndex] = el
+                          }}
+                          role={role}
+                          roleLabel={roleLabel}
+                          label={subItem.label}
+                          field={subItem.key}
+                          value={value[subItem.key]}
+                          onValueChange={(field, val) => update(field, val)}
+                          onKeyDown={(e) => handleKeyDown(e, currentIndex)}
+                        />
+                      )
+                    })}
+                  </div>
+                )
+              } else {
+                const currentIndex = fieldIndex++
+                return (
+                  <Label
+                    key={`${item.key}-${i}`}
+                    ref={(el: HTMLInputElement | null) => {
+                      if (el) inputsRef.current[currentIndex] = el
+                    }}
+                    role={role}
+                    roleLabel={roleLabel}
+                    label={item.label}
+                    field={item.key}
+                    value={value[item.key]}
+                    onValueChange={(field, val) => update(field, val)}
+                    onKeyDown={(e) => handleKeyDown(e, currentIndex)}
+                  />
+                )
+              }
+            })}
+          </fieldset>
+        </>
+      )}
     </form>
   )
 }

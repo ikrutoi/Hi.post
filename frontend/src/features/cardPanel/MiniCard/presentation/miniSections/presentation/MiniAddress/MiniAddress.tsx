@@ -1,16 +1,12 @@
 import React from 'react'
-import type {
-  Address,
-  AddressRole,
-  AddressLabelLayout,
-  AddressLabelGroup,
-  AddressLabel,
-} from '@envelope/domain/types'
+import clsx from 'clsx'
+import type { Address, AddressLabelLayout } from '@envelope/domain/types'
+import { EnvelopeRole } from '@shared/config/constants'
 import styles from './MiniAddress.module.scss'
 import { MiniAddressGroup } from './MiniAddressGroup/MiniAddressGroup'
 
 interface MiniAddressProps {
-  role: AddressRole
+  role: EnvelopeRole
   values: Address
   labelLayout: AddressLabelLayout
 }
@@ -21,7 +17,12 @@ export const MiniAddress: React.FC<MiniAddressProps> = ({
   labelLayout,
 }) => {
   return (
-    <div className={`${styles.miniAddress} ${styles[`miniAddress--${role}`]}`}>
+    <div
+      className={clsx(
+        styles.miniAddress,
+        styles[`miniAddress${role[0].toUpperCase() + role.slice(1)}`]
+      )}
+    >
       {labelLayout.map((item, i) =>
         Array.isArray(item) ? (
           <MiniAddressGroup
@@ -34,7 +35,12 @@ export const MiniAddress: React.FC<MiniAddressProps> = ({
         ) : (
           <span
             key={`${item.field}-${i}`}
-            className={`${styles.miniAddress__field} ${styles[`miniAddress__${item.field}`]}`}
+            className={clsx(
+              styles.miniAddressField,
+              styles[
+                `miniAddress${item.field[0].toUpperCase() + item.field.slice(1)}`
+              ]
+            )}
           >
             {values[item.field]}
           </span>

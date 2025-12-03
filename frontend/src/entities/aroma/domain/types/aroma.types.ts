@@ -25,4 +25,5 @@ export interface AromaItem {
 
 export interface AromaState {
   selectedAroma: AromaItem | null
+  isComplete: boolean
 }

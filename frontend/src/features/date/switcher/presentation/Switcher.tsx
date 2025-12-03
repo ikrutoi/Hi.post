@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { SwitcherButton } from './SwitcherButton/SwitcherButton'
 import { VISIBLE_CALENDAR_DATE } from '@entities/date/domain/types'
 import { useSwitcherLogic } from '../application/hooks'

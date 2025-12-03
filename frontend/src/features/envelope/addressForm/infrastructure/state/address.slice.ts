@@ -1,6 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
-import { RoleState, EnvelopeState } from '../../../domain/types'
+import type {
+  RoleState,
+  SenderState,
+  EnvelopeState,
+} from '../../../domain/types'
 
 const initialSection: RoleState = {
   data: {
@@ -13,8 +17,13 @@ const initialSection: RoleState = {
   isComplete: false,
 }
 
+const initialSender: SenderState = {
+  ...initialSection,
+  enabled: true,
+}
+
 const initialState: EnvelopeState = {
-  sender: { ...initialSection },
+  sender: initialSender,
   recipient: { ...initialSection },
   isComplete: false,
 }
@@ -34,6 +43,7 @@ const addressSlice = createSlice({
       const { role, field, value } = action.payload
       state[role].data[field] = value
     },
+
     setComplete: (
       state,
       action: PayloadAction<{ role: EnvelopeRole; isComplete: boolean }>
@@ -41,12 +51,25 @@ const addressSlice = createSlice({
       const { role, isComplete } = action.payload
       state[role].isComplete = isComplete
     },
+
+    toggleSenderEnabled: (state, action: PayloadAction<boolean>) => {
+      state.sender.enabled = action.payload
+      if (!action.payload) {
+        state.sender.isComplete = true
+      }
+    },
+
     clearRole: (state, action: PayloadAction<EnvelopeRole>) => {
       const role = action.payload
-      state[role] = { ...initialSection }
+      if (role === 'sender') {
+        state.sender = { ...initialSender }
+      } else {
+        state.recipient = { ...initialSection }
+      }
     },
   },
 })
 
-export const { updateField, setComplete, clearRole } = addressSlice.actions
+export const { updateField, setComplete, toggleSenderEnabled, clearRole } =
+  addressSlice.actions
 export default addressSlice.reducer

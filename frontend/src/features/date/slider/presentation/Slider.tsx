@@ -9,23 +9,23 @@ import type {
 } from '@entities/date/domain/types'
 
 interface SliderProps {
-  selectedDispatchDate: SelectedDispatchDate
+  selectedDate: SelectedDispatchDate
   activeSwitcher?: Switcher
   // onChange: (role: DatePart, value: number) => void
 }
 
 export const Slider: React.FC<SliderProps> = ({
-  selectedDispatchDate,
+  selectedDate,
   activeSwitcher,
   // onChange,
 }) => {
   const currentDate = getCurrentDate()
 
-  if (!activeSwitcher || !selectedDispatchDate) {
+  if (!activeSwitcher || !selectedDate) {
     return <span className={styles['date-slider__default']} />
   }
 
-  const { year, month } = selectedDispatchDate
+  const { year, month } = selectedDate
 
   const renderSlider = (
     role: DatePart,

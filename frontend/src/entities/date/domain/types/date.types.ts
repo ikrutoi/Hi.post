@@ -6,6 +6,11 @@ export type DispatchDate = {
 
 export type SelectedDispatchDate = DispatchDate | null
 
+export interface DateState {
+  selectedDate: SelectedDispatchDate
+  isComplete: boolean
+}
+
 export type CardDispatchDate = DispatchDate | null
 
 export type DateTextTitle = {

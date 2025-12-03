@@ -1,4 +1,4 @@
-import type { AddressFields, EnvelopeState } from '@shared/config/constants'
+import type { AddressFields } from '@shared/config/constants'
 
 export const initialAddressFields: AddressFields = {
   name: '',
@@ -6,9 +6,4 @@ export const initialAddressFields: AddressFields = {
   city: '',
   zip: '',
   country: '',
-}
-
-export const initialEnvelopeAddresses: EnvelopeState = {
-  sender: { ...initialAddressFields },
-  recipient: { ...initialAddressFields },
 }

@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
 import { useSwitcherFacade } from '../../../switcher/application/facades'
-import { useCardEditorFacade } from '@entities/card/application/facades'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
 import type { CartItem } from '@entities/cart/domain/types'
 import type {
@@ -29,8 +28,8 @@ export const useCalendarCellController = ({
   triggerFlash,
 }: UseCalendarCellControllerParams) => {
   const { state: stateDate, actions: actionsDate } = useDateFacade()
-  const { selectedDispatchDate } = stateDate
-  const { setSelectedDispatchDate } = actionsDate
+  const { selectedDate } = stateDate
+  const { chooseDate } = actionsDate
 
   const { state: stateCalendar } = useCalendarFacade()
   const { lastViewedCalendarDate } = stateCalendar
@@ -42,13 +41,10 @@ export const useCalendarCellController = ({
   const { actions: actionsSwitcherController } = useDateSwitcherController()
   const { decrementMonth, incrementMonth } = actionsSwitcherController
 
-  const { actions: actionsCardEditor } = useCardEditorFacade()
-  const { setSectionComplete } = actionsCardEditor
-
   useEffect(() => {
-    if (selectedDispatchDate) {
+    if (selectedDate) {
     }
-  }, [selectedDispatchDate])
+  }, [selectedDate])
 
   const handleCellClickLogic = ({
     isDisabledDate,
@@ -72,8 +68,7 @@ export const useCalendarCellController = ({
         month: calendarViewDate.month,
         day: dayCurrent,
       }
-      setSelectedDispatchDate(dispatchDate)
-      setSectionComplete('date', dispatchDate)
+      chooseDate(dispatchDate)
     }
 
     if (direction === 'before') {
@@ -93,18 +88,6 @@ export const useCalendarCellController = ({
         triggerFlash('year')
       }
     }
-
-    // setSelectedDispatchDate({
-    //   year: viewYear,
-    //   month: viewMonth,
-    //   day: dayCurrent,
-    // })
-
-    // if (cartItem) {
-    //   logClick('calendar_cell_with_cart', { day: dayCurrent })
-    // } else {
-    //   logClick('calendar_cell_click', { day: dayCurrent })
-    // }
   }
 
   return { handleCellClickLogic }

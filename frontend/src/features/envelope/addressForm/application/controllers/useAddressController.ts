@@ -1,9 +1,15 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { updateField, clearRole, setComplete } from '../../infrastructure/state'
+import {
+  updateField,
+  clearRole,
+  setComplete,
+  toggleSenderEnabled,
+} from '../../infrastructure/state'
 import {
   selectAddressByRole,
   selectIsAddressComplete,
   selectCompletedFields,
+  selectIsSenderEnabled,
 } from '../../infrastructure/selectors'
 import type { EnvelopeRole, AddressFields } from '@shared/config/constants'
 
@@ -18,6 +24,11 @@ export function useAddressController(role: EnvelopeRole) {
     selectIsAddressComplete(state, role)
   )
 
+  const enabled =
+    role === 'sender'
+      ? useAppSelector((state) => selectIsSenderEnabled(state))
+      : true
+
   const onValueChange = (field: keyof AddressFields, value: string) => {
     dispatch(updateField({ role, field, value }))
   }
@@ -30,16 +41,24 @@ export function useAddressController(role: EnvelopeRole) {
     dispatch(setComplete({ role, isComplete: flag }))
   }
 
+  const toggleEnabled = (flag: boolean) => {
+    if (role === 'sender') {
+      dispatch(toggleSenderEnabled(flag))
+    }
+  }
+
   return {
     state: {
       address,
       completedFields,
       isComplete,
+      enabled,
     },
     actions: {
       onValueChange,
       clearSection,
       markComplete,
+      toggleEnabled,
     },
   }
 }

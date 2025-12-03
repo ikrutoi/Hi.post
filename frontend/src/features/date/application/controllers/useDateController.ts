@@ -1,25 +1,33 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { setDate, clearDate } from '../../infrastructure/state'
 import {
-  updateDispatchDate,
-  resetDispatchDate,
-} from '../../infrastructure/state'
-import { selectDispatchDate } from '../../infrastructure/selectors'
+  selectSelectedDate,
+  selectIsDateComplete,
+} from '../../infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 
 export const useDateController = () => {
   const dispatch = useAppDispatch()
-  const dispatchDate = useAppSelector(selectDispatchDate)
 
-  const setDispatchDate = (payload: DispatchDate) => {
-    dispatch(updateDispatchDate(payload))
+  const selectedDate = useAppSelector(selectSelectedDate)
+  const isDateComplete = useAppSelector(selectIsDateComplete)
+
+  const chooseDate = (date: DispatchDate) => {
+    dispatch(setDate(date))
   }
 
-  const isDateSelected = dispatchDate !== null
+  const clear = () => {
+    dispatch(clearDate())
+  }
 
   return {
-    dispatchDate,
-    setDispatchDate,
-    resetDispatchDate,
-    isDateSelected,
+    state: {
+      selectedDate,
+      isDateComplete,
+    },
+    actions: {
+      chooseDate,
+      clear,
+    },
   }
 }

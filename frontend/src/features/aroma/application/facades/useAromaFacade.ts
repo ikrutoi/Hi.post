@@ -1,19 +1,20 @@
-import { useSelector } from 'react-redux'
-import { selectAroma as aroma } from '../../infrastructure/selectors'
-import { useAromaController } from '../controllers'
+import { useAromaController } from '../controllers/useAromaController'
+import { aromaIndexes } from '@entities/aroma/domain/types'
 
 export const useAromaFacade = () => {
-  const selectedAroma = useSelector(aroma)
-  const { selectAroma, resetAroma, selectByIndex } = useAromaController()
+  const { state, actions } = useAromaController()
 
   return {
     state: {
-      selectedAroma,
+      selectedAroma: state.selectedAroma,
+      isAromaComplete: state.isAromaComplete,
+    },
+    layout: {
+      aromaIndexes,
     },
     actions: {
-      selectAroma,
-      resetAroma,
-      selectByIndex,
+      chooseAroma: actions.chooseAroma,
+      clear: actions.clear,
     },
   }
 }

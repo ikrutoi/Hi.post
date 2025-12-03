@@ -1,10 +1,17 @@
 import { RootState } from '@app/state'
+import { createSelector } from '@reduxjs/toolkit'
 import type { EnvelopeRole, AddressFields } from '@shared/config/constants'
+import type { RoleState, SenderState } from '../../../domain/types'
 
-export const selectAddressByRole = (
+export const selectRoleState = (
   state: RootState,
   role: EnvelopeRole
-): AddressFields => state.address[role].data
+): RoleState | SenderState => state.address[role]
+
+export const selectAddressByRole = createSelector(
+  [selectRoleState],
+  (roleState): AddressFields => roleState.data
+)
 
 export const selectAddressField = (
   state: RootState,
@@ -12,19 +19,23 @@ export const selectAddressField = (
   field: keyof AddressFields
 ): string => state.address[role].data[field]
 
-export const selectCompletedFields = (
-  state: RootState,
-  role: EnvelopeRole
-): (keyof AddressFields)[] => {
-  const fields = state.address[role].data
-  return (Object.keys(fields) as (keyof AddressFields)[]).filter(
-    (key) => fields[key].trim() !== ''
-  )
-}
+export const selectCompletedFields = createSelector(
+  [selectRoleState],
+  (roleState): (keyof AddressFields)[] =>
+    (Object.keys(roleState.data) as (keyof AddressFields)[]).filter(
+      (key) => roleState.data[key].trim() !== ''
+    )
+)
 
-export const selectIsAddressComplete = (
-  state: RootState,
-  role: EnvelopeRole
-): boolean => {
-  return state.address[role].isComplete
-}
+export const selectIsAddressComplete = createSelector(
+  [selectRoleState, (_: RootState, role: EnvelopeRole) => role],
+  (roleState, role): boolean => {
+    if (role === 'sender' && 'enabled' in roleState && !roleState.enabled) {
+      return true
+    }
+    return Object.values(roleState.data).every((val) => val.trim() !== '')
+  }
+)
+
+export const selectIsSenderEnabled = (state: RootState): boolean =>
+  state.address.sender.enabled

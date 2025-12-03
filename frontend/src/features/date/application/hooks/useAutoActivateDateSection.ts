@@ -4,14 +4,14 @@ import { useDateFacade } from '../facades'
 
 export const useAutoActivateDateSection = () => {
   const { state } = useDateFacade()
-  const { selectedDispatchDate } = state
+  const { selectedDate } = state
 
   const { actions } = useLayoutFacade()
   const { setActiveSection } = actions
 
   useEffect(() => {
-    if (selectedDispatchDate) {
+    if (selectedDate) {
       setActiveSection('date')
     }
-  }, [selectedDispatchDate])
+  }, [selectedDate])
 }

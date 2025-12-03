@@ -1,30 +1,39 @@
 import { RootState } from '@app/state'
-import type { EnvelopeRole, AddressFields } from '@shared/config/constants'
-import type { RoleState, EnvelopeState } from '../../domain/types'
+import { createSelector } from '@reduxjs/toolkit'
+import type { EnvelopeState } from '../../domain/types'
 
-export const selectEnvelope = (state: RootState): EnvelopeState =>
+export const selectEnvelopeState = (state: RootState): EnvelopeState =>
   state.envelope
 
-export const selectEnvelopeRole = (
-  state: RootState,
-  role: EnvelopeRole
-): RoleState => state.envelope[role]
+export const selectIsEnvelopeComplete = createSelector(
+  [selectEnvelopeState],
+  (envelope): boolean => envelope.isComplete
+)
 
-export const selectEnvelopeRoleFields = (
-  state: RootState,
-  role: EnvelopeRole
-): AddressFields => state.envelope[role].data
+export const selectEnvelopeSenderFlags = createSelector(
+  [selectEnvelopeState],
+  (envelope) => ({
+    isComplete: envelope.sender.isComplete,
+    enabled: envelope.sender.enabled,
+  })
+)
 
-export const selectEnvelopeRoleField = (
-  state: RootState,
-  role: EnvelopeRole,
-  field: keyof AddressFields
-): string => state.envelope[role].data[field]
+export const selectEnvelopeRecipientFlags = createSelector(
+  [selectEnvelopeState],
+  (envelope) => ({
+    isComplete: envelope.recipient.isComplete,
+  })
+)
 
-export const selectIsEnvelopeRoleComplete = (
-  state: RootState,
-  role: EnvelopeRole
-): boolean => state.envelope[role].isComplete
-
-export const selectIsEnvelopeComplete = (state: RootState): boolean =>
-  state.envelope.isComplete
+export const selectEnvelopeFlags = createSelector(
+  [
+    selectEnvelopeSenderFlags,
+    selectEnvelopeRecipientFlags,
+    selectIsEnvelopeComplete,
+  ],
+  (sender, recipient, isComplete) => ({
+    sender,
+    recipient,
+    isComplete,
+  })
+)

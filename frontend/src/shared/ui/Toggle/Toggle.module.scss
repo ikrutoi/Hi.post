@@ -1,0 +1,82 @@
+@use '@styles/config/colors' as *;
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: $color-font-enabled;
+}
+
+.toggleInput {
+  display: none;
+}
+
+.toggleSlider {
+  position: relative;
+  background-color: #ccc;
+  border-radius: 18px;
+  transition: background-color 0.3s ease;
+}
+
+.toggleSlider::after {
+  content: '';
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toggleDefault .toggleSlider {
+  width: 40px;
+  height: 18px;
+}
+
+.toggleDefault .toggleSlider::after {
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+}
+
+.toggleDefault .toggleInput:checked + .toggleSlider {
+  background-color: $color-toggle-active;
+}
+
+.toggleDefault .toggleInput:checked + .toggleSlider::after {
+  transform: translateX(22px);
+}
+
+.toggleSmall .toggleSlider {
+  width: 30px;
+  height: 14px;
+}
+
+.toggleSmall .toggleSlider::after {
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+}
+
+.toggleSmall .toggleInput:checked + .toggleSlider::after {
+  transform: translateX(16px);
+}
+
+.toggleLarge .toggleSlider {
+  width: 50px;
+  height: 22px;
+}
+
+.toggleLarge .toggleSlider::after {
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+}
+
+.toggleLarge .toggleInput:checked + .toggleSlider::after {
+  transform: translateX(28px);
+}

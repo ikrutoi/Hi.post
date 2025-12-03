@@ -5,7 +5,6 @@ import {
   daysOfWeekStartFromSun,
 } from '@entities/date/constants'
 import { useCalendarConstruction } from '../application/hooks'
-// import { useCalendarConstruction } from '@date/calendar/application/logic'
 import styles from './Calendar.module.scss'
 import type {
   DispatchDate,
@@ -16,16 +15,16 @@ import type {
 } from '@entities/date/domain/types'
 
 interface CalendarProps {
-  selectedDispatchDate: SelectedDispatchDate
+  selectedDate: SelectedDispatchDate
   calendarViewDate: CalendarViewDate
-  setSelectedDispatchDate: (date: DispatchDate) => void
+  chooseDate: (date: DispatchDate) => void
   triggerFlash: (part: Switcher) => void
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
-  selectedDispatchDate,
+  selectedDate,
   calendarViewDate,
-  setSelectedDispatchDate,
+  chooseDate,
   triggerFlash,
 }) => {
   const [firstDayOfWeek, setFirstDayOfWeek] = useState<'Sun' | 'Mon'>('Sun')
@@ -41,10 +40,10 @@ export const Calendar: React.FC<CalendarProps> = ({
   }
 
   const calendarCells = useCalendarConstruction({
-    selectedDispatchDate,
+    selectedDate,
     firstDayOfWeek,
     calendarViewDate,
-    setSelectedDispatchDate,
+    chooseDate,
     triggerFlash,
     // handleClickCell,
   })

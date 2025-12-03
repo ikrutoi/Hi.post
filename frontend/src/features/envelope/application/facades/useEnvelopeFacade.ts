@@ -1,23 +1,21 @@
-import { useEnvelopeController } from '../controllers'
-import type { EnvelopeRole, AddressFields } from '@shared/config/constants'
-import type { RoleState } from '../../domain/types'
+import { useEnvelopeController } from '../controllers/useEnvelopeController'
+import { senderLayout } from '../../sender/domain/types'
+import { recipientLayout } from '../../recipient/domain/types'
 
-export function useEnvelopeFacade() {
+export const useEnvelopeFacade = () => {
   const { state, actions } = useEnvelopeController()
 
   return {
     state: {
-      envelope: state.envelope,
       isEnvelopeComplete: state.isEnvelopeComplete,
-      getRole: (role: EnvelopeRole): RoleState => state.getRole(role),
-      getRoleFields: (role: EnvelopeRole): AddressFields =>
-        state.getRoleFields(role),
-      isRoleComplete: (role: EnvelopeRole): boolean =>
-        state.isRoleComplete(role),
+    },
+    layout: {
+      sender: senderLayout,
+      recipient: recipientLayout,
     },
     actions: {
-      setRole: actions.setRole,
-      clearRoleSection: actions.clearRoleSection,
+      clearSender: actions.clearSender,
+      clearRecipient: actions.clearRecipient,
       reset: actions.reset,
     },
   }

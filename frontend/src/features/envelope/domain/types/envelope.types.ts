@@ -1,12 +1,18 @@
 import type { AddressFields } from '@shared/config/constants'
 
-export type RoleState = {
+export type RecipientState = {
   data: AddressFields
   isComplete: boolean
 }
 
+export type SenderState = {
+  data: AddressFields
+  isComplete: boolean
+  enabled: boolean
+}
+
 export type EnvelopeState = {
-  sender: RoleState
-  recipient: RoleState
+  sender: { enabled: boolean; isComplete: boolean }
+  recipient: { isComplete: boolean }
   isComplete: boolean
 }

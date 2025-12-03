@@ -19,20 +19,20 @@ import type { CartItem } from '@entities/cart/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 
 interface UseCalendarConstructionParams {
-  selectedDispatchDate: SelectedDispatchDate
+  selectedDate: SelectedDispatchDate
   firstDayOfWeek: 'Sun' | 'Mon'
   calendarViewDate: CalendarViewDate
-  setSelectedDispatchDate: (date: DispatchDate) => void
+  chooseDate: (date: DispatchDate) => void
   triggerFlash: (part: Switcher) => void
 }
 
 const currentDate = getCurrentDate()
 
 export const useCalendarConstruction = ({
-  selectedDispatchDate,
+  selectedDate,
   firstDayOfWeek,
   calendarViewDate,
-  setSelectedDispatchDate,
+  chooseDate,
   triggerFlash,
 }: UseCalendarConstructionParams) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -53,6 +53,7 @@ export const useCalendarConstruction = ({
   const offset = getFirstDayOfWeekFromDispatch(firstDayOfWeek, calendarViewDate)
 
   const { handleCellClickLogic } = useCalendarCellController({ triggerFlash })
+
   const handleClickCell = (params: HandleCellClickParams) => {
     handleCellClickLogic(params)
   }
@@ -71,7 +72,7 @@ export const useCalendarConstruction = ({
     days: prevDays,
     direction: 'before',
     calendarViewDate,
-    selectedDispatchDate,
+    selectedDate,
     currentDate,
     handleClickCell,
   })
@@ -80,10 +81,10 @@ export const useCalendarConstruction = ({
     days: currDays,
     direction: 'current',
     calendarViewDate,
-    selectedDispatchDate,
+    selectedDate,
     currentDate,
     handleClickCell,
-    setSelectedDispatchDate,
+    chooseDate,
     cartItems,
   })
 
@@ -91,7 +92,7 @@ export const useCalendarConstruction = ({
     days: nextDays,
     direction: 'after',
     calendarViewDate,
-    selectedDispatchDate,
+    selectedDate,
     currentDate,
     handleClickCell,
   })
@@ -101,8 +102,8 @@ export const useCalendarConstruction = ({
     [
       year,
       month,
-      selectedDispatchDate,
-      setSelectedDispatchDate,
+      selectedDate,
+      chooseDate,
       handleClickCell,
       cartItems,
       firstDayOfWeek,

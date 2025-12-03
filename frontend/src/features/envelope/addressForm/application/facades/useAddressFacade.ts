@@ -9,11 +9,13 @@ export function useAddressFacade(role: EnvelopeRole) {
       address: state.address,
       completedFields: state.completedFields,
       isComplete: state.isComplete,
+      enabled: state.enabled,
     },
     actions: {
       onValueChange: actions.onValueChange,
       clearSection: actions.clearSection,
       markComplete: actions.markComplete,
+      toggleEnabled: actions.toggleEnabled,
     },
   }
 }

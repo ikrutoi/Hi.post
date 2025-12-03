@@ -1,1 +1,1 @@
-export { useCardEditorController } from './useCardEditorController'
+export { useCardController } from './useCardController'
