@@ -16,9 +16,7 @@ import img23 from '@/data/aroma/hermes__caleche__23.png'
 import img24 from '@/data/aroma/chanel__1957__24.png'
 import img25 from '@/data/aroma/carolina_herrera__212__25.png'
 
-interface MiniAromaProps {
-  heightMinicard: number
-}
+interface MiniAromaProps {}
 
 const aromaImages: Record<string, string> = {
   '00': img00,
@@ -36,7 +34,7 @@ const aromaImages: Record<string, string> = {
   '25': img25,
 }
 
-export const MiniAroma: React.FC<MiniAromaProps> = ({ heightMinicard }) => {
+export const MiniAroma: React.FC<MiniAromaProps> = () => {
   const { state: stateAroma } = useAromaFacade()
   const { selectedAroma } = stateAroma
 
@@ -52,7 +50,7 @@ export const MiniAroma: React.FC<MiniAromaProps> = ({ heightMinicard }) => {
         className={styles.miniAromaImg}
         alt={selectedAroma.name}
         src={imageAroma}
-        style={{ height: `${0.9 * heightMinicard}px` }}
+        // style={{ height: `${0.9 * heightMinicard}px` }}
       />
     </div>
   )

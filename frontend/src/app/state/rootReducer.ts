@@ -18,6 +18,8 @@ import { dateReducer } from '@date/infrastructure/state'
 import { calendarReducer } from '@date/calendar/infrastructure/state'
 import { switcherReducer } from '@date/switcher/infrastructure/state'
 
+import { cardMenuReducer } from '@cardMenu/infrastructure/state'
+
 import { CardPanelReducer } from '@cardPanel/infrastructure/state'
 
 import { cardEditorReducer } from '@entities/cardEditor/infrastructure/state'
@@ -54,6 +56,8 @@ export const rootReducer = combineReducers({
   date: dateReducer,
   calendar: calendarReducer,
   switcher: switcherReducer,
+
+  cardMenu: cardMenuReducer,
 
   cardPanel: CardPanelReducer,
 

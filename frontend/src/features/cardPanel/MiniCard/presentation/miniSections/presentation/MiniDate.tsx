@@ -1,32 +1,22 @@
 import React from 'react'
 import { useDateFacade } from '@date/application/facades'
-import styles from './MiniDate.module.scss'
 import listOfMonthOfYear from '@/data/date/monthOfYear.json'
+import styles from './MiniDate.module.scss'
 
-interface MiniDateProps {
-  // valueSection: {
-  //   year: string
-  //   day: string
-  //   month: string
-  // }
-  heightMinicard: number
-}
+interface MiniDateProps {}
 
-export const MiniDate: React.FC<MiniDateProps> = ({
-  // valueSection,
-  heightMinicard,
-}) => {
+export const MiniDate: React.FC<MiniDateProps> = () => {
   const { state: stateDate } = useDateFacade()
-  const { selectedDispatchDate } = stateDate
+  const { selectedDate } = stateDate
 
-  if (!selectedDispatchDate) return
+  if (!selectedDate) return
 
   return (
     <div className={styles.miniDate}>
-      <span className={styles.miniDateYear}>{selectedDispatchDate.year}</span>
-      <span className={styles.miniDateDay}>{selectedDispatchDate.day}</span>
+      <span className={styles.miniDateYear}>{selectedDate.year}</span>
+      <span className={styles.miniDateDay}>{selectedDate.day}</span>
       <span className={styles.miniDateMonth}>
-        {listOfMonthOfYear[selectedDispatchDate.month]}
+        {listOfMonthOfYear[selectedDate.month]}
       </span>
     </div>
   )

@@ -24,8 +24,5 @@ export const selectRecipientCompletedFields = createSelector(
     )
 )
 
-export const selectIsRecipientComplete = createSelector(
-  [selectRecipientState],
-  (recipient): boolean =>
-    Object.values(recipient.data).every((val) => val.trim() !== '')
-)
+export const selectIsRecipientComplete = (state: RootState): boolean =>
+  state.recipient.isComplete

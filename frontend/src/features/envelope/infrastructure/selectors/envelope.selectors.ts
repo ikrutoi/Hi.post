@@ -1,6 +1,6 @@
 import { RootState } from '@app/state'
 import { createSelector } from '@reduxjs/toolkit'
-import type { EnvelopeState } from '../../domain/types'
+import type { EnvelopeState } from '@envelope/domain/types'
 
 export const selectEnvelopeState = (state: RootState): EnvelopeState =>
   state.envelope
@@ -10,30 +10,20 @@ export const selectIsEnvelopeComplete = createSelector(
   (envelope): boolean => envelope.isComplete
 )
 
-export const selectEnvelopeSenderFlags = createSelector(
+export const selectIsSenderComplete = createSelector(
   [selectEnvelopeState],
-  (envelope) => ({
-    isComplete: envelope.sender.isComplete,
-    enabled: envelope.sender.enabled,
-  })
+  (envelope): boolean => envelope.sender.isComplete
 )
 
-export const selectEnvelopeRecipientFlags = createSelector(
+export const selectIsRecipientComplete = createSelector(
   [selectEnvelopeState],
-  (envelope) => ({
-    isComplete: envelope.recipient.isComplete,
-  })
+  (envelope): boolean => envelope.recipient.isComplete
 )
 
-export const selectEnvelopeFlags = createSelector(
-  [
-    selectEnvelopeSenderFlags,
-    selectEnvelopeRecipientFlags,
-    selectIsEnvelopeComplete,
-  ],
-  (sender, recipient, isComplete) => ({
-    sender,
-    recipient,
-    isComplete,
-  })
-)
+export const selectRoleComplete = (
+  state: RootState,
+  role: 'sender' | 'recipient'
+): boolean => {
+  const envelope = selectEnvelopeState(state)
+  return envelope[role].isComplete
+}

@@ -9,20 +9,23 @@ interface CardMenuButtonProps {
   section: CardMenuSection
   isSelected: boolean
   isDisabled?: boolean
+  onClick: (section: CardMenuSection) => void
 }
 
 export const CardMenuButton: React.FC<CardMenuButtonProps> = ({
   section,
   isSelected,
   isDisabled = false,
+  onClick,
 }) => {
-  const { state: stateLayoutNav, actions: actionsLayoutNav } =
-    useLayoutNavFacade()
-  const { selectedCardMenuSection } = stateLayoutNav
+  const { actions: actionsLayoutNav } = useLayoutNavFacade()
+  // const { selectedCardMenuSection } = stateLayoutNav
   const { ui: uiLayout, actions: actionsLayout } = useLayoutFacade()
   const selectedTemplate = uiLayout.selectedTemplate
 
   const handleClick = (section: CardMenuSection) => {
+    onClick(section)
+
     const clickedSection = section.toLowerCase() as CardMenuSection
 
     if (

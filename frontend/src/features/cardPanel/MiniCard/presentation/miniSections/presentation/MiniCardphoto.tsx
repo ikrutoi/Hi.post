@@ -2,16 +2,9 @@ import React from 'react'
 import styles from './MiniCardphoto.module.scss'
 import { useMiniCardphoto } from '../application/hooks'
 
-interface MiniCardphotoProps {
-  sizeMiniCard: {
-    width: number
-    height: number
-  }
-}
+interface MiniCardphotoProps {}
 
-export const MiniCardphoto: React.FC<MiniCardphotoProps> = ({
-  sizeMiniCard,
-}) => {
+export const MiniCardphoto: React.FC<MiniCardphotoProps> = () => {
   const { miniCardUrl, isVisible } = useMiniCardphoto()
 
   if (!miniCardUrl) return null
@@ -21,11 +14,6 @@ export const MiniCardphoto: React.FC<MiniCardphotoProps> = ({
       className={`${styles.miniCardphoto} ${isVisible ? styles.visible : ''}`}
       src={miniCardUrl}
       alt="MiniCard photo"
-      style={{
-        width: `${sizeMiniCard.width}px`,
-        height: `${sizeMiniCard.height}px`,
-        position: 'absolute',
-      }}
     />
   )
 }

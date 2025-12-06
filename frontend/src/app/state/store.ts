@@ -1,9 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
 import createSagaMiddleware from 'redux-saga'
-
 import { rootReducer } from './rootReducer'
 import { authListenerMiddleware } from '@middleware/authListener'
-import { cardEditorSaga } from '@app/middleware'
+import { rootSaga } from './rootSaga'
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -15,7 +14,7 @@ export const store = configureStore({
       .concat(sagaMiddleware),
 })
 
-sagaMiddleware.run(cardEditorSaga)
+sagaMiddleware.run(rootSaga)
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

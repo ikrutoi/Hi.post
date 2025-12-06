@@ -27,13 +27,24 @@
   box-sizing: border-box;
   font-size: 1.2rem;
   font-style: italic;
-  color: rgb(0, 125, 250);
-  background-color: rgb(240, 240, 240);
+  color: $color-font-enabled;
+  background-color: $color-disabled;
   border: none;
   height: 1.5rem;
   border-radius: 4px;
   outline: none;
   letter-spacing: 1px;
+}
+
+.labelInput:focus {
+  outline: none;
+  color: $color-font-active;
+  background-color: $color-enabled;
+  box-shadow: 0 0 0 1px rgba(0, 125, 215, 0.2);
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
 }
 
 .labelInputSender {

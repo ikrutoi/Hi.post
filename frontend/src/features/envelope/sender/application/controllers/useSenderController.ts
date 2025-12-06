@@ -1,8 +1,7 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   updateField,
-  setComplete,
-  toggleEnabled,
+  setEnabled,
   clearSender,
 } from '../../infrastructure/state'
 import {
@@ -16,20 +15,18 @@ import {
 import type { AddressField } from '@shared/config/constants'
 
 export const useSenderController = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const state = useSelector(selectSenderState)
-  const address = useSelector(selectSenderAddress)
-  const completedFields = useSelector(selectSenderCompletedFields)
-  const isComplete = useSelector(selectIsSenderComplete)
-  const isEnabled = useSelector(selectIsSenderEnabled)
+  const state = useAppSelector(selectSenderState)
+  const address = useAppSelector(selectSenderAddress)
+  const completedFields = useAppSelector(selectSenderCompletedFields)
+  const isComplete = useAppSelector(selectIsSenderComplete)
+  const isEnabled = useAppSelector(selectIsSenderEnabled)
 
   const update = (field: AddressField, value: string) =>
     dispatch(updateField({ field, value }))
 
-  const markComplete = (complete: boolean) => dispatch(setComplete(complete))
-
-  const toggle = (enabled: boolean) => dispatch(toggleEnabled(enabled))
+  const toggleEnabled = (enabled: boolean) => dispatch(setEnabled(enabled))
 
   const clear = () => dispatch(clearSender())
 
@@ -40,8 +37,7 @@ export const useSenderController = () => {
     isComplete,
     isEnabled,
     update,
-    markComplete,
-    toggle,
+    toggleEnabled,
     clear,
   }
 }

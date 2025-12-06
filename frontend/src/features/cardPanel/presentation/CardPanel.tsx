@@ -7,7 +7,6 @@ import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useCardPanelFacade } from '../application/facades'
-import { useDateFacade } from '@date/application/facades'
 import { useSliderLetterHandlers } from '@cardPanel/application/hooks/useSliderLetterHandlers'
 import { MiniCard } from '../MiniCard/presentation/MiniCard'
 import { CardScroller } from '../CardScroller/presentation/CardScroller'
@@ -31,12 +30,6 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
   const { state: stateCardEditor } = useCardEditorFacade()
   const { editorState } = stateCardEditor
 
-  const { state: stateDate } = useDateFacade()
-  const { isDateComplete } = stateDate
-
-  console.log('cardEditor', editorState.date.isComplete)
-  console.log('isDateComplete', isDateComplete)
-
   const { state: stateCardPanel } = useCardPanelFacade()
   const { isPacked } = stateCardPanel
 
@@ -52,9 +45,7 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
 
   const { size, section, meta, memory } = useLayoutFacade()
   const { remSize } = size
-  const { activeSection } = section
   const { deltaEnd, maxMiniCardsCount, choiceClip } = meta
-  const { lockExpendMemoryCard, expendMemoryCard } = memory
 
   if (!remSize) return
 

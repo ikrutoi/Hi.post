@@ -1,50 +1,43 @@
-import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { setComplete } from '../../infrastructure/state'
-import { useSenderFacade } from '../../sender/application/facades'
-import { useRecipientFacade } from '../../recipient/application/facades'
+import {
+  setEnvelopeComplete,
+  recomputeEnvelope,
+  clearRole,
+  clearEnvelope,
+} from '../../infrastructure/state'
+import {
+  selectEnvelopeState,
+  selectIsEnvelopeComplete,
+  selectIsSenderComplete,
+  selectIsRecipientComplete,
+} from '../../infrastructure/selectors'
+import type { EnvelopeRole } from '@shared/config/constants'
 
 export const useEnvelopeController = () => {
   const dispatch = useAppDispatch()
-  const isEnvelopeComplete = useAppSelector((s) => s.envelope.isComplete)
 
-  const { state: stateSender, actions: actionsSender } = useSenderFacade()
-  const { isEnabled, isComplete: isCompleteSender } = stateSender
-  const { clear: actionsClearSender } = actionsSender
+  const envelope = useAppSelector(selectEnvelopeState)
+  const isEnvelopeComplete = useAppSelector(selectIsEnvelopeComplete)
+  const isSenderComplete = useAppSelector(selectIsSenderComplete)
+  const isRecipientComplete = useAppSelector(selectIsRecipientComplete)
 
-  const { state: stateRecipient, actions: actionsRecipient } =
-    useRecipientFacade()
-  const { isComplete: isCompleteRecipient } = stateRecipient
-  const { clear: actionsClearRecipient } = actionsRecipient
+  const actions = {
+    setEnvelopeComplete: (value: boolean) =>
+      dispatch(setEnvelopeComplete(value)),
 
-  const clearSender = () => {
-    actionsClearSender()
+    recomputeEnvelope: (sender: boolean, recipient: boolean) =>
+      dispatch(recomputeEnvelope({ sender, recipient })),
+
+    clearRole: (role: EnvelopeRole) => dispatch(clearRole(role)),
+
+    clearEnvelope: () => dispatch(clearEnvelope()),
   }
-
-  const clearRecipient = () => {
-    actionsClearRecipient()
-  }
-
-  const reset = () => {
-    actionsClearSender()
-    actionsClearRecipient()
-  }
-
-  useEffect(() => {
-    const senderReady = (isCompleteSender && isEnabled) || !isEnabled
-    const recipientReady = isCompleteRecipient
-    const envelopeReady = senderReady && recipientReady
-    dispatch(setComplete(envelopeReady))
-  }, [dispatch, isCompleteSender, isEnabled, isCompleteRecipient])
 
   return {
-    state: {
-      isEnvelopeComplete,
-    },
-    actions: {
-      clearSender,
-      clearRecipient,
-      reset,
-    },
+    envelope,
+    isEnvelopeComplete,
+    isSenderComplete,
+    isRecipientComplete,
+    actions,
   }
 }

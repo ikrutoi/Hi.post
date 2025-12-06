@@ -1,14 +1,17 @@
+@use '@styles/config/colors' as *;
+
 .miniAddress {
   display: flex;
   flex-direction: column;
+  width: 100%;
   font-size: 0.3rem;
   font-style: italic;
   font-weight: 600;
-  color: #007aac;
+  color: $color-font-enabled;
 }
 
 .miniAddressRecipient {
-  align-items: flex-end;
+  display: flex;
   text-align: right;
 }
 
@@ -16,13 +19,23 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-}
 
-.miniAddressField {
-  width: 100%;
-  overflow: hidden;
+  .miniAddressFieldZip {
+    width: 33%;
+  }
+  .miniAddressFieldCity {
+    width: 66%;
+  }
 }
 
 .miniAddressZip {
   width: 35%;
+}
+
+.miniAddressField {
+  margin: 1px;
+  border-radius: 0.3rem;
+  background-color: $color-disabled;
+  width: 100%;
+  overflow: hidden;
 }

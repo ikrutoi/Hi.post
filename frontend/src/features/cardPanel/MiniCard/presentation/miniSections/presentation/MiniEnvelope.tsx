@@ -1,48 +1,44 @@
 import React from 'react'
 import clsx from 'clsx'
-// import { useMiniEnvelope } from '../application/hooks'
 import { MiniAddress } from './MiniAddress/MiniAddress'
-import { useEnvelopeFacade } from '@envelope/application/facades'
-// import { useAddressFacade } from '@envelope/addressForm/application/facades'
+import { Mark } from '@/features/envelope/view/presentation'
+import { useSenderFacade } from '@envelope/sender/application/facades'
+import { useRecipientFacade } from '@envelope/recipient/application/facades'
 import styles from './MiniEnvelope.module.scss'
 
 export const MiniEnvelope: React.FC = () => {
-  // const { sender, recipient, senderLabels, recipientLabels } = useMiniEnvelope()
+  const { state: stateSender } = useSenderFacade()
+  const { address: addressSender, isEnabled } = stateSender
 
-  const { state: stateEnvelope } = useEnvelopeFacade()
-  // const { getRoleFields, envelope } = stateEnvelope
-  // const valueSender = getRoleFields('sender')
-  // const valueRecipient = getRoleFields('recipient')
-
-  // const { state: stateRecipientAddress } = useAddressFacade('recipient')
-  // const { address } = stateRecipientAddress
-
-  // console.log('valueEnvelope', envelope)
-  // console.log('valueRecipient', valueRecipient)
+  const { state: stateRecipient } = useRecipientFacade()
+  const { address: addressRecipient } = stateRecipient
 
   return (
     <div className={styles.miniEnvelope}>
-      <div className={styles.miniEnvelopeLogoContainer}>
-        <span className={styles.miniEnvelopeLogo} />
-      </div>
-      <div
-        className={clsx(styles.miniEnvelopeAddress, styles.miniEnvelopeSender)}
-      >
-        {/* <MiniAddress role="sender" values={sender} labelLayout={senderLabels} /> */}
-      </div>
-
+      <div className={styles.miniEnvelopeLogo} />
+      {isEnabled && (
+        <div
+          className={clsx(
+            styles.miniEnvelopeAddress,
+            styles.miniEnvelopeSender
+          )}
+        >
+          <MiniAddress role="sender" roleLabel="Sender" value={addressSender} />
+        </div>
+      )}
       <div
         className={clsx(
           styles.miniEnvelopeAddress,
           styles.miniEnvelopeRecipient
         )}
       >
-        {/* <MiniAddress
+        <MiniAddress
           role="recipient"
-          values={recipient}
-          labelLayout={recipientLabels}
-        /> */}
+          roleLabel="Recipient"
+          value={addressRecipient}
+        />
       </div>
+      <Mark />
     </div>
   )
 }

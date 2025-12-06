@@ -1,16 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { initialSection } from '../../../addressForm/domain/models'
 import type { AddressFields } from '@shared/config/constants'
 import type { SenderState } from '@envelope/domain/types'
 
 export const initialSender: SenderState = {
-  data: {
-    name: '',
-    street: '',
-    zip: '',
-    city: '',
-    country: '',
-  },
-  isComplete: false,
+  ...initialSection,
   enabled: true,
 }
 
@@ -23,23 +17,24 @@ const senderSlice = createSlice({
       action: PayloadAction<{ field: keyof AddressFields; value: string }>
     ) => {
       state.data[action.payload.field] = action.payload.value
+      state.isComplete = recomputeComplete(state)
     },
 
-    setComplete: (state, action: PayloadAction<boolean>) => {
-      state.isComplete = action.payload
-    },
-
-    toggleEnabled: (state, action: PayloadAction<boolean>) => {
+    setEnabled: (state, action: PayloadAction<boolean>) => {
       state.enabled = action.payload
-      if (!action.payload) {
-        state.isComplete = true
-      }
+      state.isComplete = recomputeComplete(state)
     },
 
     clearSender: () => initialSender,
   },
 })
 
-export const { updateField, setComplete, toggleEnabled, clearSender } =
-  senderSlice.actions
+function recomputeComplete(state: SenderState): boolean {
+  if (!state.enabled) {
+    return true
+  }
+  return Object.values(state.data).every((val) => val.trim() !== '')
+}
+
+export const { updateField, setEnabled, clearSender } = senderSlice.actions
 export default senderSlice.reducer

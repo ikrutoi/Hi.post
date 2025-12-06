@@ -1,22 +1,21 @@
-import { useEnvelopeController } from '../controllers/useEnvelopeController'
-import { senderLayout } from '../../sender/domain/types'
-import { recipientLayout } from '../../recipient/domain/types'
+import { useEnvelopeController } from '../controllers'
 
 export const useEnvelopeFacade = () => {
-  const { state, actions } = useEnvelopeController()
+  const {
+    envelope,
+    isEnvelopeComplete,
+    isSenderComplete,
+    isRecipientComplete,
+    actions,
+  } = useEnvelopeController()
 
   return {
     state: {
-      isEnvelopeComplete: state.isEnvelopeComplete,
+      envelope,
+      isEnvelopeComplete,
+      isSenderComplete,
+      isRecipientComplete,
     },
-    layout: {
-      sender: senderLayout,
-      recipient: recipientLayout,
-    },
-    actions: {
-      clearSender: actions.clearSender,
-      clearRecipient: actions.clearRecipient,
-      reset: actions.reset,
-    },
+    actions,
   }
 }

@@ -1,16 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { initialSection } from '../../../addressForm/domain/models'
 import type { AddressFields } from '@shared/config/constants'
 import type { RecipientState } from '@envelope/domain/types'
 
 export const initialRecipient: RecipientState = {
-  data: {
-    name: '',
-    street: '',
-    zip: '',
-    city: '',
-    country: '',
-  },
-  isComplete: false,
+  ...initialSection,
 }
 
 const recipientSlice = createSlice({
@@ -22,16 +16,14 @@ const recipientSlice = createSlice({
       action: PayloadAction<{ field: keyof AddressFields; value: string }>
     ) => {
       state.data[action.payload.field] = action.payload.value
-    },
-
-    setComplete: (state, action: PayloadAction<boolean>) => {
-      state.isComplete = action.payload
+      state.isComplete = Object.values(state.data).every(
+        (val) => val.trim() !== ''
+      )
     },
 
     clearRecipient: () => initialRecipient,
   },
 })
 
-export const { updateField, setComplete, clearRecipient } =
-  recipientSlice.actions
+export const { updateField, clearRecipient } = recipientSlice.actions
 export default recipientSlice.reducer

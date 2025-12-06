@@ -9,8 +9,7 @@ export const useSenderFacade = () => {
     isComplete,
     isEnabled,
     update,
-    markComplete,
-    toggle,
+    toggleEnabled,
     clear,
   } = useSenderController()
 
@@ -25,8 +24,7 @@ export const useSenderFacade = () => {
     layout: senderLayout,
     actions: {
       update,
-      markComplete,
-      toggle,
+      toggleEnabled,
       clear,
     },
   }

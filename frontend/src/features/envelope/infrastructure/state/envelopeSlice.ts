@@ -1,26 +1,53 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { EnvelopeState } from '../../domain/types'
+import type { EnvelopeState } from '@envelope/domain/types'
+import type { EnvelopeRole } from '@shared/config/constants'
 
 const initialState: EnvelopeState = {
-  sender: {
-    enabled: true,
-    isComplete: false,
-  },
-  recipient: {
-    isComplete: false,
-  },
+  sender: { isComplete: false },
+  recipient: { isComplete: false },
   isComplete: false,
 }
 
-export const envelopeSlice = createSlice({
+const envelopeSlice = createSlice({
   name: 'envelope',
   initialState,
   reducers: {
-    setComplete: (state, action: PayloadAction<boolean>) => {
+    setEnvelopeComplete: (state, action: PayloadAction<boolean>) => {
       state.isComplete = action.payload
+    },
+
+    recomputeEnvelope: (
+      state,
+      action: PayloadAction<{ sender: boolean; recipient: boolean }>
+    ) => {
+      state.sender.isComplete = action.payload.sender
+      state.recipient.isComplete = action.payload.recipient
+      state.isComplete = action.payload.sender && action.payload.recipient
+    },
+
+    clearRole: (state, action: PayloadAction<EnvelopeRole>) => {
+      const role = action.payload
+      if (role === 'sender') {
+        state.sender.isComplete = false
+      } else {
+        state.recipient.isComplete = false
+      }
+      state.isComplete = state.sender.isComplete && state.recipient.isComplete
+    },
+
+    clearEnvelope: (state) => {
+      state.sender.isComplete = false
+      state.recipient.isComplete = false
+      state.isComplete = false
     },
   },
 })
 
-export const { setComplete } = envelopeSlice.actions
+export const {
+  setEnvelopeComplete,
+  recomputeEnvelope,
+  clearRole,
+  clearEnvelope,
+} = envelopeSlice.actions
+
 export default envelopeSlice.reducer

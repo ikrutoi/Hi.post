@@ -1,18 +1,23 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { CardMenuButton } from './CardMenuButton/CardMenuButton'
 import { useLayoutFacade } from '@layout/application/facades'
 import { CARD_MENU_SECTIONS } from '@shared/config/constants'
+import { useCardMenuFacade } from '../application/facades'
 import styles from './CardMenu.module.scss'
 
 export const CardMenu: React.FC = () => {
+  const { state: stateCardMenu, actions: actionsCardMenu } = useCardMenuFacade()
+  const { activeSection } = stateCardMenu
+  const { setActiveSection } = actionsCardMenu
+
   const { section } = useLayoutFacade()
   const { choiceSection, selectedSection } = section
 
-  const activeSection = useMemo(() => {
-    const { source, section } = choiceSection
-    if (!source) return null
-    return ['cart', 'drafts', 'minimize'].includes(source) ? null : section
-  }, [choiceSection])
+  // const activeSection = useMemo(() => {
+  //   const { source, section } = choiceSection
+  //   if (!source) return null
+  //   return ['cart', 'drafts', 'minimize'].includes(source) ? null : section
+  // }, [choiceSection])
 
   return (
     <nav className={styles.cardMenu}>
@@ -27,6 +32,7 @@ export const CardMenu: React.FC = () => {
             section={section}
             isSelected={isSelected}
             isDisabled={isDisabled}
+            onClick={setActiveSection}
           />
         )
       })}

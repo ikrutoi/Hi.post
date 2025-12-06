@@ -51,7 +51,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
           <Toggle
             label="Specify the sender's address"
             checked={senderFacade.state.isEnabled}
-            onChange={senderFacade.actions.toggle}
+            onChange={senderFacade.actions.toggleEnabled}
             size="default"
           />
         </div>

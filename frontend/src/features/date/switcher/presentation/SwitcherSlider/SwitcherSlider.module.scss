@@ -1,0 +1,80 @@
+@use '@styles/config/colors' as *;
+
+.slider {
+  position: relative;
+  width: 10rem;
+  height: 2.5rem;
+  background: #eee;
+  border-radius: 2rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.sliderTextLayer {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border-radius: 2rem;
+  background: linear-gradient(
+    to right,
+    $color-section-light-completed,
+    $color-section-dark-completed
+  );
+  transition: clip-path 0.4s ease;
+
+  &Year {
+    z-index: 1;
+  }
+
+  &Month {
+    z-index: 2;
+  }
+}
+
+.sliderTextLayerYear.sliderLeft {
+  clip-path: inset(0 100% 0 0);
+}
+
+.sliderTextLayerYear.sliderRight {
+  clip-path: inset(0 0 0 0);
+}
+
+.sliderTextLayerMonth.sliderLeft {
+  clip-path: inset(0 0 0 0);
+}
+
+.sliderTextLayerMonth.sliderRight {
+  clip-path: inset(0 0 0 100%);
+}
+
+.sliderText {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: $color-font-enabled;
+}
+
+.sliderBall {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background-color: $color-disabled;
+  transition: transform 0.4s ease;
+  z-index: 3;
+}
+
+.sliderBall.sliderLeft {
+  transform: translateX(calc(-10rem + 2.5rem));
+}
+
+.sliderBall.sliderRight {
+  transform: translateX(0);
+}

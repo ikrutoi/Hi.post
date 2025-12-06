@@ -1,15 +1,11 @@
 import React, { useRef } from 'react'
 import clsx from 'clsx'
 import { useRemSize } from '@shared/helpers'
-import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@shared/utils/helpers'
-import {
-  useMiniCardRender,
-  useMiniCardKebab,
-  useMiniCardIconVisibility,
-} from '../application/hooks'
+import { useMiniCardRender } from '../application/hooks'
+import { useCardMenuFacade } from '@cardMenu/application/facades'
 import styles from './MiniCard.module.scss'
-import type { CardSection } from '@entities/card/domain/types'
+import type { CardSection } from '@shared/config/constants'
 import type { SizeCard } from '@layout/domain/types'
 
 interface MiniCardProps {
@@ -31,21 +27,8 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const miniCardRef = useRef<HTMLDivElement>(null)
 
   const { render } = useMiniCardRender()
-
-  // const { handleClick } = useMiniCardKebab(
-  //   infoSection.section.section as CardSection
-  // )
-
-  // const showIcon = useMiniCardIconVisibility({
-  //   infoMinimize,
-  //   showsIconMinimize,
-  //   infoSection,
-  //   isPacked,
-  // })
-
-  // const handleClickSection = () => {
-  //   onClickSection?.(infoSection.section.section, 'single')
-  // }
+  const { actions: actionsCardMenu } = useCardMenuFacade()
+  const { setActiveSection } = actionsCardMenu
 
   return (
     <div
@@ -66,19 +49,17 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         zIndex,
         transition: `left ${0.3 + 0.15 * position}s ease, box-shadow 0.3s`,
       }}
+      onClick={() => setActiveSection(section)}
     >
       {render({
         section,
-        sizeMiniCard,
         cardMiniSectionRef: miniCardRef.current,
       })}
 
       <button
         className={styles.miniCardKebab}
         style={{ transition: 'background-color 0.3s ease, color 0.3s ease' }}
-      >
-        {/* {getToolbarIcon('remove')} */}
-      </button>
+      ></button>
     </div>
   )
 }

@@ -23,13 +23,8 @@ export const selectSenderCompletedFields = createSelector(
     )
 )
 
-export const selectIsSenderComplete = createSelector(
-  [selectSenderState],
-  (sender): boolean => {
-    if (!sender.enabled) return true
-    return Object.values(sender.data).every((val) => val.trim() !== '')
-  }
-)
+export const selectIsSenderComplete = (state: RootState): boolean =>
+  state.sender.isComplete
 
 export const selectIsSenderEnabled = (state: RootState): boolean =>
   state.sender.enabled

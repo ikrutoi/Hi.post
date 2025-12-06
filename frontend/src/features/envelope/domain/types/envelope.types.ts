@@ -12,7 +12,7 @@ export type SenderState = {
 }
 
 export type EnvelopeState = {
-  sender: { enabled: boolean; isComplete: boolean }
+  sender: { isComplete: boolean }
   recipient: { isComplete: boolean }
   isComplete: boolean
 }

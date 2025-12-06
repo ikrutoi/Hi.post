@@ -1,9 +1,5 @@
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  updateField,
-  setComplete,
-  clearRecipient,
-} from '../../infrastructure/state'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { updateField, clearRecipient } from '../../infrastructure/state'
 import {
   selectRecipientState,
   selectRecipientAddress,
@@ -14,17 +10,15 @@ import {
 import type { AddressField } from '@shared/config/constants'
 
 export const useRecipientController = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const state = useSelector(selectRecipientState)
-  const address = useSelector(selectRecipientAddress)
-  const completedFields = useSelector(selectRecipientCompletedFields)
-  const isComplete = useSelector(selectIsRecipientComplete)
+  const state = useAppSelector(selectRecipientState)
+  const address = useAppSelector(selectRecipientAddress)
+  const completedFields = useAppSelector(selectRecipientCompletedFields)
+  const isComplete = useAppSelector(selectIsRecipientComplete)
 
   const update = (field: AddressField, value: string) =>
     dispatch(updateField({ field, value }))
-
-  const markComplete = (complete: boolean) => dispatch(setComplete(complete))
 
   const clear = () => dispatch(clearRecipient())
 
@@ -34,7 +28,6 @@ export const useRecipientController = () => {
     completedFields,
     isComplete,
     update,
-    markComplete,
     clear,
   }
 }

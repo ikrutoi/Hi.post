@@ -1,8 +1,7 @@
 import React from 'react'
-import { SwitcherButton } from './SwitcherButton/SwitcherButton'
+import { SwitcherSlider } from './SwitcherSlider/SwitcherSlider'
 import { VISIBLE_CALENDAR_DATE } from '@entities/date/domain/types'
 import { useSwitcherLogic } from '../application/hooks'
-// import { useFlashEffect } from '@shared/hooks'
 import styles from './Switcher.module.scss'
 import type {
   CalendarViewDate,
@@ -20,21 +19,18 @@ export const Switcher: React.FC<Props> = ({
   calendarViewDate,
   flashParts,
 }) => {
-  const pats = VISIBLE_CALENDAR_DATE
+  const parts = VISIBLE_CALENDAR_DATE
   const { handleSwitcherClick } = useSwitcherLogic()
 
   return (
     <div className={styles.switcher}>
-      {pats.map((part) => (
-        <SwitcherButton
-          key={part}
-          part={part}
-          calendarViewPart={calendarViewDate[part]}
-          activeSwitcher={activeSwitcher}
-          onSwitcherClick={handleSwitcherClick}
-          isFlashing={(flashParts ?? []).includes(part)}
-        />
-      ))}
+      <SwitcherSlider
+        parts={parts}
+        activeSwitcher={activeSwitcher}
+        calendarViewDate={calendarViewDate}
+        onSwitcherClick={handleSwitcherClick}
+        // flashParts={flashParts}
+      />
     </div>
   )
 }

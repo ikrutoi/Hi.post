@@ -1,16 +1,21 @@
-// cardEditorSaga.ts
-import { takeEvery, put } from 'redux-saga/effects'
+import { takeEvery, put, select } from 'redux-saga/effects'
 import {
   setSectionComplete,
   clearSection,
 } from '@entities/cardEditor/infrastructure/state'
-
 import { setDate, clearDate } from '@date/infrastructure/state'
 import { setAroma, clearAroma } from '@aroma/infrastructure/state'
-import { setEnvelope, clearEnvelope } from '@envelope/infrastructure/state'
+import {
+  recomputeEnvelope,
+  clearEnvelope,
+} from '@envelope/infrastructure/state'
+import { selectIsDateComplete } from '@date/infrastructure/selectors'
+import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
+import { selectIsEnvelopeComplete } from '@envelope/infrastructure/selectors'
 
 function* syncDateSet() {
-  yield put(setSectionComplete({ section: 'date', isComplete: true }))
+  const dateComplete: boolean = yield select(selectIsDateComplete)
+  yield put(setSectionComplete({ section: 'date', isComplete: dateComplete }))
 }
 
 function* syncDateClear() {
@@ -18,15 +23,19 @@ function* syncDateClear() {
 }
 
 function* syncAromaSet() {
-  yield put(setSectionComplete({ section: 'aroma', isComplete: true }))
+  const aromaComplete: boolean = yield select(selectIsAromaComplete)
+  yield put(setSectionComplete({ section: 'aroma', isComplete: aromaComplete }))
 }
 
 function* syncAromaClear() {
   yield put(clearSection('aroma'))
 }
 
-function* syncEnvelopeSet() {
-  yield put(setSectionComplete({ section: 'envelope', isComplete: true }))
+function* syncEnvelopeRecompute() {
+  const envelopeComplete: boolean = yield select(selectIsEnvelopeComplete)
+  yield put(
+    setSectionComplete({ section: 'envelope', isComplete: envelopeComplete })
+  )
 }
 
 function* syncEnvelopeClear() {
@@ -40,6 +49,6 @@ export function* cardEditorSaga() {
   yield takeEvery(setAroma.type, syncAromaSet)
   yield takeEvery(clearAroma.type, syncAromaClear)
 
-  yield takeEvery(setEnvelope.type, syncEnvelopeSet)
+  yield takeEvery(recomputeEnvelope.type, syncEnvelopeRecompute)
   yield takeEvery(clearEnvelope.type, syncEnvelopeClear)
 }

@@ -15,6 +15,14 @@ export const ADDRESS_FIELDS_LABELLED = [
   { key: 'country', label: 'Country' },
 ] as const
 
+export const ADDRESS_FIELD_ORDER: AddressField[] = [
+  'name',
+  'street',
+  'zip',
+  'city',
+  'country',
+]
+
 export type AddressField = (typeof ADDRESS_FIELDS_LABELLED)[number]['key']
 export type AddressFieldLabel =
   (typeof ADDRESS_FIELDS_LABELLED)[number]['label']
