@@ -1,18 +1,20 @@
-$slider-color: #007aac;
-$slider-thumb-size: 1rem;
-$slider-height: 3px;
-$slider-thumb-shadow: rgba(0, 122, 172, 0.3);
+@use '@styles/config/colors' as *;
 
-.date-slider__default {
+$sliderThumbSize: 1rem;
+$sliderHeight: 2px;
+$sliderThumbShadow: $color-toggle-active;
+
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
   width: 100%;
-  height: $slider-height;
-  background-color: lightgray;
 }
 
-.date-slider__line {
+.dateSliderLine {
   width: 100%;
-  height: $slider-height;
-  background-color: $slider-color;
+  height: $sliderHeight;
+  background-color: $color-section-light-completed;
   outline: none;
   transition: background-color 0.2s ease;
 
@@ -24,73 +26,78 @@ $slider-thumb-shadow: rgba(0, 122, 172, 0.3);
   &:focus::-webkit-slider-thumb,
   &:focus::-moz-range-thumb,
   &:focus::-ms-thumb {
-    box-shadow: 0 0 0 4px $slider-thumb-shadow;
+    background-color: $color-section-dark-completed;
   }
 
-  &--year,
-  &--month {
-    // модификаторы для будущих стилей
-  }
-
-  // WebKit
+  // WebKit (Chrome, Safari, Edge)
   &::-webkit-slider-runnable-track {
     width: 100%;
-    height: $slider-height;
-    background-color: $slider-color;
+    height: $sliderHeight;
+    background-color: $color-section-light-completed;
     transition: background-color 0.2s ease;
   }
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: $slider-thumb-size;
-    height: $slider-thumb-size;
-    background-color: $slider-color;
-    cursor: pointer;
+    appearance: none;
+    width: $sliderThumbSize;
+    height: $sliderThumbSize;
+    background-color: $color-section-light-completed;
     border-radius: 50%;
-    margin-top: -0.38rem;
+    cursor: pointer;
+    margin-top: calc(-0.5rem + 1px);
     transition: background-color 0.2s ease;
+  }
+
+  &:hover::-webkit-slider-thumb {
+    background-color: $color-section-dark-completed;
   }
 
   // Firefox
   &::-moz-range-track {
     width: 100%;
-    height: $slider-height;
-    background-color: $slider-color;
+    height: $sliderHeight;
+    background-color: $color-section-light-completed;
     transition: background-color 0.2s ease;
   }
 
   &::-moz-range-thumb {
-    width: $slider-thumb-size;
-    height: $slider-thumb-size;
-    background-color: $slider-color;
-    cursor: pointer;
+    width: $sliderThumbSize;
+    height: $sliderThumbSize;
+    background-color: $color-section-light-completed;
     border-radius: 50%;
-    margin-top: -0.38rem;
+    cursor: pointer;
     transition: background-color 0.2s ease;
   }
 
-  // IE / Edge
+  &:hover::-moz-range-thumb {
+    background-color: $color-section-dark-completed;
+  }
+
+  // IE / старый Edge
   &::-ms-track {
     width: 100%;
-    height: $slider-height;
+    height: $sliderHeight;
     background: transparent;
     color: transparent;
-    background-color: $slider-color;
   }
 
   &::-ms-fill-lower,
   &::-ms-fill-upper {
-    height: $slider-height;
-    background-color: $slider-color;
+    height: $sliderHeight;
+    background-color: $color-section-light-completed;
   }
 
   &::-ms-thumb {
-    width: $slider-thumb-size;
-    height: $slider-thumb-size;
-    background-color: $slider-color;
-    cursor: pointer;
+    width: $sliderThumbSize;
+    height: $sliderThumbSize;
+    background-color: $color-section-light-completed;
     border-radius: 50%;
-    margin-top: -0.38rem;
+    cursor: pointer;
     transition: background-color 0.2s ease;
+  }
+
+  &:hover::-ms-thumb {
+    background-color: $color-section-dark-completed;
   }
 }

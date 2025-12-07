@@ -1,31 +1,22 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { Switcher, VisibleCalendarDate } from '@entities/date/domain/types'
-
-interface SwitcherState {
-  active: Switcher
-}
+import { createSlice } from '@reduxjs/toolkit'
+import type { SwitcherState } from '../../domain/types'
 
 const initialState: SwitcherState = {
-  active: null,
+  position: 'month',
 }
 
 export const switcherSlice = createSlice({
   name: 'switcher',
   initialState,
   reducers: {
-    setSwitcher(state, action: PayloadAction<Switcher>) {
-      state.active = action.payload
+    togglePosition(state) {
+      state.position = state.position === 'month' ? 'year' : 'month'
     },
-    toggleSwitcher(state, action: PayloadAction<VisibleCalendarDate>) {
-      state.active = state.active === action.payload ? null : action.payload
-    },
-    resetSwitcher(state) {
-      state.active = null
+    setPosition(state, action: { payload: 'month' | 'year' }) {
+      state.position = action.payload
     },
   },
 })
 
-export const { setSwitcher, toggleSwitcher, resetSwitcher } =
-  switcherSlice.actions
-
+export const { togglePosition, setPosition } = switcherSlice.actions
 export default switcherSlice.reducer

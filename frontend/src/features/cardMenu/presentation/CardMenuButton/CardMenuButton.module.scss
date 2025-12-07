@@ -9,30 +9,33 @@
   font-size: 0.9rem;
   cursor: pointer;
   border: none;
-  background: linear-gradient(
-    to right,
-    $color-section-light,
-    $color-section-dark
-  );
+  background-color: $color-section-light-completed;
+  // background: linear-gradient(
+  //   to right,
+  //   $color-section-light,
+  //   $color-section-dark
+  // );
   // background-color: $color-enabled;
   transition: background-color 0.2s ease;
 
   &:hover:not(:disabled) {
-    color: $color-active;
+    background-color: $color-section-dark-completed;
+    // color: $color-active;
   }
 
   &.active {
-    background: linear-gradient(
-      to right,
-      $color-section-light-completed,
-      $color-section-dark-completed
-    );
+    background-color: $color-section-dark-completed;
+    // background: linear-gradient(
+    //   to right,
+    //   $color-section-light-completed,
+    //   $color-section-dark-completed
+    // );
     // background-color: $color-base-completed;
   }
 
   &.disabled {
     cursor: default;
-    opacity: 0.6;
+    // opacity: 0.8;
     pointer-events: none;
   }
 

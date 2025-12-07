@@ -1,28 +1,29 @@
 import { useSwitcherController } from '../controllers'
-import { useMemo } from 'react'
+import {
+  selectSwitcher,
+  selectSwitcherPosition,
+} from '../../infrastructure/selectors'
+import { togglePosition, setPosition } from '../../infrastructure/state'
 
 export const useSwitcherFacade = () => {
-  const { state, actions } = useSwitcherController()
-
-  const isMonthActive = useMemo(
-    () => state.activeSwitcher === 'month',
-    [state.activeSwitcher]
-  )
-  const isYearActive = useMemo(
-    () => state.activeSwitcher === 'year',
-    [state.activeSwitcher]
-  )
+  const controller = useSwitcherController()
 
   return {
     state: {
-      activeSwitcher: state.activeSwitcher,
-      isMonthActive,
-      isYearActive,
+      position: controller.position,
     },
+
     actions: {
-      setActiveSwitcher: actions.setActiveSwitcher,
-      toggleActiveSwitcher: actions.toggleActiveSwitcher,
-      resetActiveSwitcher: actions.resetActiveSwitcher,
+      toggle: controller.toggle,
+      changePosition: controller.changePosition,
+
+      togglePosition,
+      setPosition,
+    },
+
+    selectors: {
+      selectSwitcher,
+      selectSwitcherPosition,
     },
   }
 }

@@ -30,11 +30,11 @@ export const Date: React.FC = () => {
   useInitializeCalendarViewDate()
 
   const {
-    state: stateSwitcher,
+    // state: stateSwitcher,
     actions: actionsSwitcher,
     derived: derivedSwitcher,
   } = useDateSwitcherController({ triggerFlash })
-  const { activeSwitcher } = stateSwitcher
+  // const { activeSwitcher } = stateSwitcher
   const {
     handleDecrementArrow,
     handleIncrementArrow,
@@ -59,7 +59,7 @@ export const Date: React.FC = () => {
         <DateHeader
           currentDate={currentDate}
           calendarViewDate={calendarViewDate}
-          activeSwitcher={activeSwitcher}
+          // activeSwitcher={activeSwitcher}
           formattedSelectedDate={formattedSelectedDate}
           isCurrentMonth={isCurrentMonth}
           onDecrement={handleDecrementArrow}
@@ -73,7 +73,7 @@ export const Date: React.FC = () => {
         <div className={styles.slider}>
           <Slider
             selectedDate={selectedDate}
-            activeSwitcher={activeSwitcher}
+            // activeSwitcher={activeSwitcher}
             // onChange={handleSliderChange}
           />
         </div>

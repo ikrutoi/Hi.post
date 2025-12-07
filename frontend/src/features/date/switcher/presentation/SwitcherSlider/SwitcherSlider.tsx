@@ -1,55 +1,52 @@
-import React, { useState } from 'react'
+import React from 'react'
 import clsx from 'clsx'
-import styles from './SwitcherSlider.module.scss'
-import type {
-  CalendarViewDate,
-  Switcher as typeSwitcher,
-} from '@entities/date/domain/types'
 import { MONTH_NAMES } from '@entities/date/constants'
+import { useSwitcherLogic } from '../../application/hooks'
+import { useSwitcherFacade } from '../../application/facades'
+import styles from './SwitcherSlider.module.scss'
+import type { CalendarViewDate } from '@entities/date/domain/types'
 
 interface SwitcherSliderProps {
-  parts: readonly typeSwitcher[]
-  activeSwitcher?: typeSwitcher
   calendarViewDate: CalendarViewDate
-  onSwitcherClick: (part: typeSwitcher) => void
 }
 
 export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
-  parts,
-  activeSwitcher,
   calendarViewDate,
-  onSwitcherClick,
 }) => {
-  const [position, setPosition] = useState<'month' | 'year'>('month')
+  const { state: stateSwitcher, actions: actionsSwitcher } = useSwitcherFacade()
+  const { position } = stateSwitcher
+  const { toggle } = actionsSwitcher
+
+  const { handleSwitcherClick } = useSwitcherLogic()
 
   return (
     <div
       className={styles.slider}
       onClick={() => {
         const next = position === 'month' ? 'year' : 'month'
-        setPosition(next)
-        onSwitcherClick(next)
+        toggle()
+        handleSwitcherClick(next)
       }}
     >
       <div
-        className={clsx(styles.sliderTextLayer, styles.sliderTextLayerYear, {
-          [styles.sliderLeft]: position === 'year',
+        className={clsx(styles.sliderTextLayer, styles.sliderTextLayerMonth, {
           [styles.sliderRight]: position === 'month',
+          [styles.sliderLeft]: position === 'year',
         })}
       >
-        <span className={clsx(styles.sliderText, styles.sliderTextYear)}>
-          {calendarViewDate.year}
+        <span className={clsx(styles.sliderText, styles.sliderTextMonth)}>
+          {MONTH_NAMES[calendarViewDate.month]}
         </span>
       </div>
 
       <div
-        className={clsx(styles.sliderTextLayer, styles.sliderTextLayerMonth, {
-          [styles.sliderLeft]: position === 'year',
+        className={clsx(styles.sliderTextLayer, styles.sliderTextLayerYear, {
           [styles.sliderRight]: position === 'month',
+          [styles.sliderLeft]: position === 'year',
         })}
       >
-        <span className={clsx(styles.sliderText, styles.sliderTextMonth)}>
-          {MONTH_NAMES[calendarViewDate.month - 1]}
+        <span className={clsx(styles.sliderText, styles.sliderTextYear)}>
+          {calendarViewDate.year}
         </span>
       </div>
 

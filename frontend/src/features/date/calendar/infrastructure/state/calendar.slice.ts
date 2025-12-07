@@ -1,15 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type {
-  CalendarViewDate,
-  LastCalendarViewDate,
-} from '@entities/date/domain/types'
+import { getCurrentDate } from '@shared/utils/date'
+import type { CalendarViewDate } from '@entities/date/domain/types'
 
 type CalendarState = {
-  lastViewedCalendarDate: CalendarViewDate | null
+  lastViewedCalendarDate: CalendarViewDate
 }
 
+const now = getCurrentDate()
+
 const initialState: CalendarState = {
-  lastViewedCalendarDate: null,
+  lastViewedCalendarDate: {
+    year: now.year,
+    month: now.month,
+  },
 }
 
 const calendarSlice = createSlice({
@@ -22,12 +25,8 @@ const calendarSlice = createSlice({
     ) {
       state.lastViewedCalendarDate = action.payload
     },
-    resetLastViewedCalendarDate(state) {
-      state.lastViewedCalendarDate = null
-    },
   },
 })
 
-export const { updateLastViewedCalendarDate, resetLastViewedCalendarDate } =
-  calendarSlice.actions
+export const { updateLastViewedCalendarDate } = calendarSlice.actions
 export default calendarSlice.reducer

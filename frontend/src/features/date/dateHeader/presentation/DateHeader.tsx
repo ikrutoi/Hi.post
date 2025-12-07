@@ -18,7 +18,7 @@ interface DateHeaderProps {
     day: number
   }
   calendarViewDate: CalendarViewDate
-  activeSwitcher?: typeSwitcher
+  // activeSwitcher?: typeSwitcher
   formattedSelectedDate: string | null
   isCurrentMonth: () => boolean
   onDecrement: () => void
@@ -31,7 +31,7 @@ interface DateHeaderProps {
 export const DateHeader: React.FC<DateHeaderProps> = ({
   currentDate,
   calendarViewDate,
-  activeSwitcher,
+  // activeSwitcher,
   formattedSelectedDate,
   isCurrentMonth,
   onDecrement,
@@ -61,35 +61,18 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
       </div>
 
       <div className={styles.headerCenter}>
-        <div
-          className={clsx(styles.arrowButton, {
-            [styles.arrowButtonInactive]: !activeSwitcher,
-          })}
-          onClick={onDecrement}
-          style={{
-            backgroundColor: themeColors.color.disabled,
-          }}
-        >
+        <div className={clsx(styles.arrowButton)} onClick={onDecrement}>
           <FaChevronLeft className={styles.iconArrow} />
         </div>
 
         <div className={styles.switcher}>
           <Switcher
-            activeSwitcher={activeSwitcher}
             calendarViewDate={calendarViewDate}
             flashParts={flashParts}
           />
         </div>
 
-        <div
-          className={clsx(styles.arrowButton, {
-            [styles.arrowButtonInactive]: !activeSwitcher,
-          })}
-          onClick={onIncrement}
-          style={{
-            backgroundColor: themeColors.color.disabled,
-          }}
-        >
+        <div className={clsx(styles.arrowButton)} onClick={onIncrement}>
           <FaChevronRight className={styles.iconArrow} />
         </div>
       </div>

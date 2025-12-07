@@ -15,8 +15,8 @@ export const useDateSwitcherController = ({
   const currentDate = getCurrentDate()
 
   const { state: stateDate, actions: actionsDate } = useDateFacade()
-  const { selectedDispatchDate } = stateDate
-  const { setSelectedDispatchDate, resetSelectedDispatchDate } = actionsDate
+  const { selectedDate } = stateDate
+  const { chooseDate } = actionsDate
 
   const { state: stateSwitcher } = useSwitcherFacade()
   const { activeSwitcher } = stateSwitcher
@@ -25,18 +25,12 @@ export const useDateSwitcherController = ({
   const { lastViewedCalendarDate } = stateCalendar
   const { setCalendarViewDate } = actionsCalendar
 
-  // const updateDatePart = (part: DatePart, value: number) => {
-  //   if (!selectedDispatchDate) return
-
-  //   setCalendarViewDate((prev) => ({ ...prev, [part]: value }))
-  // }
-
   const goToTodayDate = () => {
     if (!lastViewedCalendarDate) return
 
     const todayDate = {
-      year: currentDate.currentYear,
-      month: currentDate.currentMonth,
+      year: currentDate.year,
+      month: currentDate.month,
     }
 
     setCalendarViewDate(todayDate)
@@ -51,19 +45,19 @@ export const useDateSwitcherController = ({
   }
 
   const goToSelectedDate = () => {
-    if (!selectedDispatchDate || !lastViewedCalendarDate) return
+    if (!selectedDate || !lastViewedCalendarDate) return
 
-    const selectedDate = {
-      year: selectedDispatchDate.year,
-      month: selectedDispatchDate.month,
+    const targetDate = {
+      year: selectedDate.year,
+      month: selectedDate.month,
     }
 
-    setCalendarViewDate(selectedDate)
+    setCalendarViewDate(targetDate)
 
     if (triggerFlash) {
       const partsToFlash = getFlashPartsForDateChange(
         lastViewedCalendarDate,
-        selectedDate
+        targetDate
       )
       partsToFlash.forEach(triggerFlash)
     }
@@ -112,8 +106,8 @@ export const useDateSwitcherController = ({
   const isCurrentMonth = (): boolean => {
     if (!lastViewedCalendarDate) return false
     return (
-      lastViewedCalendarDate.year === currentDate.currentYear &&
-      lastViewedCalendarDate.month === currentDate.currentMonth
+      lastViewedCalendarDate.year === currentDate.year &&
+      lastViewedCalendarDate.month === currentDate.month
     )
   }
 
@@ -123,12 +117,12 @@ export const useDateSwitcherController = ({
 
   return {
     state: {
-      selectedDispatchDate,
+      selectedDate,
       lastViewedCalendarDate,
       activeSwitcher,
     },
     actions: {
-      setSelectedDispatchDate,
+      chooseDate,
       setCalendarViewDate,
       // updateDatePart,
       goToTodayDate,

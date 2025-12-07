@@ -36,14 +36,14 @@
 }
 
 .todaySelected:hover {
-  color: $color-font-active;
+  color: $color-active;
 }
 
 .selected {
   display: flex;
   font-size: 0.9rem;
   justify-content: flex-end;
-  color: #007dd7;
+  color: $color-active;
 }
 
 .selected:hover {
@@ -63,15 +63,25 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 2.2rem;
-  height: 2.2rem;
-  border-radius: 0.3rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: $color-section-light-completed;
+  // background: linear-gradient(
+  //   to right,
+  //   $color-section-light-completed,
+  //   $color-section-dark-completed
+  // );
   cursor: pointer;
-  // border: solid 1px red;
+  transition: background-color 0.2s ease;
 
   &Inactive {
     color: var(--text-secondary);
   }
+}
+
+.arrowButton:hover {
+  background-color: $color-section-dark-completed;
 }
 
 .switcher {
@@ -80,12 +90,24 @@
   border-radius: 0.3rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
+  // border: solid 1px red;
 }
 
 .iconArrow {
+  color: $color-font-enabled-light;
   width: 1.2rem;
   height: 1.2rem;
   background-color: transparent;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.arrowButton:hover {
+  .iconArrow {
+    color: $color-font-enabled-light-hover;
+    transform: scale(1.1);
+  }
 }
 
 .iconTitle {

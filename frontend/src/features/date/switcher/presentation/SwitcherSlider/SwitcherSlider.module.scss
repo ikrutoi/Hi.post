@@ -4,13 +4,16 @@
   position: relative;
   width: 10rem;
   height: 2.5rem;
-  background: #eee;
   border-radius: 2rem;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+.slider:hover .sliderTextLayer {
+  background-color: $color-section-dark-completed;
 }
 
 .sliderTextLayer {
@@ -21,50 +24,41 @@
   height: 100%;
   width: 100%;
   border-radius: 2rem;
-  background: linear-gradient(
-    to right,
-    $color-section-light-completed,
-    $color-section-dark-completed
-  );
-  transition: clip-path 0.4s ease;
+  background-color: $color-section-light-completed;
 
-  &Year {
-    z-index: 1;
-  }
-
-  &Month {
-    z-index: 2;
-  }
+  transition:
+    clip-path 0.4s ease,
+    background-color 0.2s ease;
 }
 
 .sliderTextLayerYear.sliderLeft {
-  clip-path: inset(0 100% 0 0);
+  clip-path: inset(0 0 0 0);
 }
 
 .sliderTextLayerYear.sliderRight {
-  clip-path: inset(0 0 0 0);
-}
-
-.sliderTextLayerMonth.sliderLeft {
-  clip-path: inset(0 0 0 0);
-}
-
-.sliderTextLayerMonth.sliderRight {
   clip-path: inset(0 0 0 100%);
 }
 
+.sliderTextLayerMonth.sliderLeft {
+  clip-path: inset(0 100% 0 0);
+}
+
+.sliderTextLayerMonth.sliderRight {
+  clip-path: inset(0 0 0 0);
+}
+
 .sliderText {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.95rem;
   color: $color-font-enabled;
 }
 
 .sliderBall {
   position: absolute;
-  top: 0.2rem;
-  right: 0.2rem;
-  width: 2.1rem;
-  height: 2.1rem;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 1.9rem;
+  height: 1.9rem;
   border-radius: 50%;
   background-color: $color-disabled;
   transition: transform 0.4s ease;
@@ -72,7 +66,7 @@
 }
 
 .sliderBall.sliderLeft {
-  transform: translateX(calc(-10rem + 2.5rem));
+  transform: translateX(calc(-10rem + 2.6rem));
 }
 
 .sliderBall.sliderRight {

@@ -1,7 +1,5 @@
 import { VisibleCalendarDate } from '@entities/date/domain/types'
 
-export interface SwitcherPosition {
+export interface SwitcherState {
   position: VisibleCalendarDate
-  year: number | null
-  month: number | null
 }

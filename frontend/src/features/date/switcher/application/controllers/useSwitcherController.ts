@@ -1,37 +1,26 @@
-// @features/switcher/model/controller.ts
-import { useSelector, useDispatch } from 'react-redux'
-import { selectActiveSwitcher } from '../../infrastructure/selectors'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import type { RootState } from '@app/state'
+import { togglePosition, setPosition } from '../../infrastructure/state'
 import {
-  setSwitcher,
-  toggleSwitcher,
-  resetSwitcher,
-} from '../../infrastructure/state'
-import type { Switcher, VisibleCalendarDate } from '@entities/date/domain/types'
+  selectSwitcher,
+  selectSwitcherPosition,
+} from '../../infrastructure/selectors'
 
 export const useSwitcherController = () => {
-  const dispatch = useDispatch()
-  const activeSwitcher = useSelector(selectActiveSwitcher)
+  const dispatch = useAppDispatch()
 
-  const setActiveSwitcher = (part: Switcher) => {
-    dispatch(setSwitcher(part))
-  }
+  const switcher = useAppSelector((state: RootState) => selectSwitcher(state))
+  const position = useAppSelector((state: RootState) =>
+    selectSwitcherPosition(state)
+  )
 
-  const toggleActiveSwitcher = (part: VisibleCalendarDate) => {
-    dispatch(toggleSwitcher(part))
-  }
-
-  const resetActiveSwitcher = () => {
-    dispatch(resetSwitcher())
-  }
+  const toggle = () => dispatch(togglePosition())
+  const changePosition = (pos: 'month' | 'year') => dispatch(setPosition(pos))
 
   return {
-    state: {
-      activeSwitcher,
-    },
-    actions: {
-      setActiveSwitcher,
-      toggleActiveSwitcher,
-      resetActiveSwitcher,
-    },
+    switcher,
+    position,
+    toggle,
+    changePosition,
   }
 }

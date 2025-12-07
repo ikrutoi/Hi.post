@@ -1,63 +1,54 @@
 import React from 'react'
 import clsx from 'clsx'
-import styles from './Slider.module.scss'
 import { getCurrentDate } from '@shared/utils/date'
-import type {
-  DatePart,
-  SelectedDispatchDate,
-  Switcher,
-} from '@entities/date/domain/types'
+import { useCalendarFacade } from '../../calendar/application/facades'
+import { useSwitcherFacade } from '../../switcher/application/facades'
+import styles from './Slider.module.scss'
+import type { DatePart } from '@entities/date/domain/types'
 
-interface SliderProps {
-  selectedDate: SelectedDispatchDate
-  activeSwitcher?: Switcher
-  // onChange: (role: DatePart, value: number) => void
-}
+export const Slider: React.FC = () => {
+  const { state: stateCalendar, actions: actionsCalendar } = useCalendarFacade()
+  const { lastViewedCalendarDate } = stateCalendar
+  const { setCalendarViewDate } = actionsCalendar
 
-export const Slider: React.FC<SliderProps> = ({
-  selectedDate,
-  activeSwitcher,
-  // onChange,
-}) => {
+  const { state: stateSwitcher } = useSwitcherFacade()
+  const { position } = stateSwitcher
+
   const currentDate = getCurrentDate()
 
-  if (!activeSwitcher || !selectedDate) {
-    return <span className={styles['date-slider__default']} />
+  const handleChange = (role: 'year' | 'month', newValue: number) => {
+    setCalendarViewDate({
+      year: role === 'year' ? newValue : lastViewedCalendarDate.year,
+      month: role === 'month' ? newValue : lastViewedCalendarDate.month,
+    })
   }
 
-  const { year, month } = selectedDate
-
   const renderSlider = (
-    role: DatePart,
+    role: 'year' | 'month',
     value: number,
     min: number,
-    max: number,
-    modifier: 'year' | 'month'
+    max: number
   ) => (
     <input
       type="range"
-      className={clsx(
-        styles['date-slider__line'],
-        styles[`date-slider__line--${modifier}`]
-      )}
+      className={clsx(styles.dateSliderLine, styles[`dateSliderLine${role}`])}
       min={min}
       max={max}
       value={value}
-      // onChange={(e) => onChange(role, Number(e.target.value))}
+      onChange={(e) => handleChange(role, Number(e.target.value))}
     />
   )
 
-  switch (activeSwitcher) {
+  switch (position) {
     case 'year':
       return renderSlider(
         'year',
-        year,
-        currentDate.currentYear,
-        currentDate.currentYear + 100,
-        'year'
+        lastViewedCalendarDate.year,
+        currentDate.year,
+        currentDate.year + 100
       )
     case 'month':
-      return renderSlider('month', month, 0, 11, 'month')
+      return renderSlider('month', lastViewedCalendarDate.month, 0, 11)
     default:
       return null
   }

@@ -60,8 +60,8 @@
   }
 
   .dayNumber {
-    background-color: $color-font-active;
-    border: solid 1px $color-font-active;
+    background-color: $color-active;
+    border: solid 1px $color-active;
     color: $color-disabled;
   }
 }
@@ -77,7 +77,7 @@
 }
 
 .selected {
-  background-color: $color-font-active;
+  background-color: $color-active;
   color: $color-disabled;
 }
 
@@ -87,7 +87,7 @@
   }
 
   &:hover {
-    color: rgb(0, 125, 250);
+    color: $color-active;
   }
 
   &.cart:hover {
