@@ -1,6 +1,8 @@
+@use '@styles/config/colors' as *;
+
 .miniDate {
   user-select: none;
-  color: #007dd7;
+  color: $color-active;
   font-weight: 600;
   display: flex;
   flex-direction: column;

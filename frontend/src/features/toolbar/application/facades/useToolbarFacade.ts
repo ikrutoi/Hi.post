@@ -1,5 +1,4 @@
-import { useSelector } from 'react-redux'
-import { useAppDispatch } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectToolbar } from '../../infrastructure/selectors'
 import { useToolbarController } from '../../application/controllers'
 import type { ToolbarState } from '../../domain/types'
@@ -7,7 +6,7 @@ import type { ToolbarSection } from '@toolbar/domain/types'
 
 export const useToolbarFacade = <K extends ToolbarSection>(section: K) => {
   const dispatch = useAppDispatch()
-  const toolbar = useSelector(selectToolbar)
+  const toolbar = useAppSelector(selectToolbar)
 
   const actions = useToolbarController(dispatch)
 

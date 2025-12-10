@@ -13,6 +13,7 @@ export const ICON_KEYS = [
   'crop',
   'reset',
   'bold',
+  'underline',
   'italic',
   'fontSize',
   'color',
@@ -29,11 +30,13 @@ export const ICON_KEYS = [
   'addDrafts',
   'cards',
   'cardUser',
+  'cardText',
+  'textTemplates',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]
 
-export const ICON_STATE = ['disabled', 'enabled', 'active', 'hover']
+export const ICON_STATE = ['disabled', 'enabled', 'active']
 
 export type IconState = (typeof ICON_STATE)[number]
 

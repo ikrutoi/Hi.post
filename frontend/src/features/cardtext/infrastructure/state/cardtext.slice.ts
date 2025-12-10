@@ -1,54 +1,36 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { CardtextBlock, CardtextState } from '../../domain/types'
+import { type CardtextValue, initialCardtextValue } from '../../domain/types'
+import {
+  type CardtextToolbarState,
+  initialCardtextToolbarState,
+} from '@toolbar/domain/types'
 
-const initialState: CardtextState = {
-  text: [
-    {
-      type: 'paragraph',
-      children: [{ text: '' }],
-    },
-  ],
-  colorName: 'blueribbon',
-  colorType: 'rgba(0, 122, 255, 0.8)',
-  font: '',
-  fontSize: 10,
-  fontStyle: 'italic',
-  fontWeight: 500,
-  textAlign: 'left',
-  lineHeight: null,
-  miniCardtextStyle: {
-    maxLines: null,
-    fontSize: null,
-    lineHeight: null,
-  },
+interface CardtextState {
+  value: CardtextValue
+  toolbar: CardtextToolbarState
 }
 
-const cardtextSlice = createSlice({
+const initialState: CardtextState = {
+  value: initialCardtextValue,
+  toolbar: initialCardtextToolbarState,
+}
+
+export const cardtextSlice = createSlice({
   name: 'cardtext',
   initialState,
   reducers: {
-    updateCardtext: (state, action: PayloadAction<Partial<CardtextState>>) => {
-      Object.assign(state, action.payload)
+    setValue(state, action: PayloadAction<CardtextValue>) {
+      state.value = action.payload
     },
-    addCardtext: (state, action: PayloadAction<{ text: CardtextBlock[] }>) => {
-      state.text = action.payload.text
+    updateToolbar(state, action: PayloadAction<Partial<CardtextToolbarState>>) {
+      state.toolbar = { ...state.toolbar, ...action.payload }
     },
-    clearCardtextContent: (state) => {
-      state.text = [
-        {
-          type: 'paragraph',
-          children: [{ text: '' }],
-        },
-      ]
+    reset(state) {
+      state.value = initialCardtextValue
+      state.toolbar = initialCardtextToolbarState
     },
-    resetCardtext: () => initialState,
   },
 })
 
-export const {
-  updateCardtext,
-  addCardtext,
-  clearCardtextContent,
-  resetCardtext,
-} = cardtextSlice.actions
+export const { setValue, updateToolbar, reset } = cardtextSlice.actions
 export default cardtextSlice.reducer

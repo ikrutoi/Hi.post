@@ -14,13 +14,24 @@ import {
   MdOutlineShoppingCart,
   MdAddShoppingCart,
   MdOutlineDrafts,
+  MdFormatBold,
+  MdFormatItalic,
+  MdFormatUnderlined,
+  MdFormatColorText,
+  MdFormatSize,
+  MdAlignHorizontalLeft,
+  MdAlignHorizontalRight,
+  MdAlignHorizontalCenter,
+  MdFormatAlignJustify,
 } from 'react-icons/md'
 import { LuMail, LuMailOpen, LuMailPlus } from 'react-icons/lu'
+import { BsCardText } from 'react-icons/bs'
 import {
   RiUserLine,
   RiResetLeftFill,
   RiBold,
   RiItalic,
+  RiUnderline,
   RiFontSize2,
   RiFontColor,
   RiAlignLeft,
@@ -29,13 +40,24 @@ import {
   RiAlignJustify,
   RiDeleteBin2Line,
   RiDeleteBinLine,
+  RiSaveLine,
+  RiIdCardLine,
+  RiMailAddLine,
+  RiMailOpenLine,
+  RiMailLine,
+  RiTextSnippet,
+  RiTextBlock,
 } from 'react-icons/ri'
-import { PiCards, PiCardsBold } from 'react-icons/pi'
+import {
+  PiCards,
+  PiCardsBold,
+  PiArrowClockwiseFill,
+  PiCardsThreeBold,
+} from 'react-icons/pi'
 import { FaRegIdCard, FaRegAddressCard } from 'react-icons/fa'
-import { ICON_KEYS } from '../../config/constants'
-import { PiArrowClockwiseFill } from 'react-icons/pi'
 import { TbArrowsMaximize } from 'react-icons/tb'
 import { HiArrowsPointingOut, HiArrowsPointingIn } from 'react-icons/hi2'
+import { ICON_KEYS } from '../../config/constants'
 import type { IconKey } from '@shared/config/constants'
 
 export const toolbarIcons = Object.fromEntries(
@@ -68,6 +90,8 @@ function getIconByKey(key: IconKey): JSX.Element {
       return <RiResetLeftFill />
     case 'bold':
       return <RiBold />
+    case 'underline':
+      return <RiUnderline />
     case 'italic':
       return <RiItalic />
     case 'fontSize':
@@ -89,16 +113,20 @@ function getIconByKey(key: IconKey): JSX.Element {
     case 'arrowsIn':
       return <HiArrowsPointingIn />
     case 'cart':
-      return <LuMail />
+      return <RiMailLine />
     case 'addCart':
-      return <LuMailPlus />
+      return <RiMailAddLine />
     case 'drafts':
-      return <LuMailOpen />
+      return <RiMailOpenLine />
     case 'addDrafts':
       return <MdOutlineDrafts />
     case 'cards':
-      return <PiCards />
+      return <PiCardsBold />
     case 'cardUser':
       return <FaRegAddressCard />
+    case 'cardText':
+      return <BsCardText />
+    case 'textTemplates':
+      return <PiCardsThreeBold />
   }
 }

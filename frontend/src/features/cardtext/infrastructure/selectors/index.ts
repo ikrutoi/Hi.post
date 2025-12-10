@@ -1,1 +1,1 @@
-export { selectCardtext } from './cardtext.selectors'
+export * from './cardtext.selectors'

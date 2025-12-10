@@ -1,74 +1,53 @@
 import React from 'react'
-import { Slate, Editable } from 'slate-react'
+import { Slate, Editable, ReactEditor } from 'slate-react'
 import { useCardEditorController } from '@features/cardtext/application/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { renderLeaf } from '../renderLeaf'
+import { useEditorLayout } from '../../application/hooks'
+import { DEFAULT_CARDTEXT_LINES } from '../../domain/types'
 import styles from './CardEditor.module.scss'
 
-interface CardEditorProps {
-  styleLeft: number
-}
-
-export const CardEditor: React.FC<CardEditorProps> = ({ styleLeft }) => {
+export const CardEditor: React.FC = () => {
   const {
-    editor,
-    value,
-    setValue,
-    handleSlateChange,
-    handleClickButton,
-    handleClickButtonMain,
-    handleClickColor,
-    editorRef,
-    editableRef,
-    buttonColor,
-    setButtonColor,
-    cardtextToolbar,
-    buttonIconRefs,
-    setButtonIconRefs,
-    // infoButtonsCardtext,
-    // styleLeftCardPuzzle,
-    cardEditCardtext,
-    remSize,
-    saveToTemplate,
-    // listBtnsCardtext,
-    // listBtnsCardtextMain,
+    state: stateCardEditorController,
+    actions: actionsCardEditorController,
   } = useCardEditorController()
+  const { editor, value, editorRef, editableRef } = stateCardEditorController
+  const { handleSlateChange } = actionsCardEditorController
+
+  const handleClickEditorArea = () => {
+    editableRef.current?.focus()
+    ReactEditor.focus(editor)
+  }
+
+  const { lineHeight, fontSize } = useEditorLayout(
+    editorRef,
+    DEFAULT_CARDTEXT_LINES
+  )
 
   return (
     <div className={styles.editor}>
-      <Toolbar
-        section="cardtext"
-        // listBtns={listBtnsCardtext}
-        // listBtnsMain={listBtnsCardtextMain}
-        // buttonColor={buttonColor}
-        // remSize={remSize}
-        // setButtonColor={setButtonColor}
-        // infoButtonsCardtext={infoButtonsCardtext}
-        // onSelectColor={handleClickColor}
-        // styleLeftCardPuzzle={styleLeftCardPuzzle}
-        // buttonIconRefs={buttonIconRefs}
-        // setButtonIconRefs={setButtonIconRefs}
-        // handleClickButton={handleClickButton}
-        // handleClickButtonMain={handleClickButtonMain}
-        // cardtextToolbar={cardtextToolbar}
-      />
+      <Toolbar section="cardtext" />
 
-      <div className={styles['editor__area']} ref={editorRef}>
+      <div
+        className={styles.editorArea}
+        ref={editorRef}
+        onClick={handleClickEditorArea}
+      >
         <Slate
           editor={editor}
           initialValue={value}
           onChange={handleSlateChange}
         >
           <Editable
-            className={styles['editor__editable']}
-            style={{
-              fontSize: `${cardEditCardtext.fontSize}px`,
-              lineHeight: `${cardEditCardtext.lineHeight}px`,
-              color: cardEditCardtext.colorType,
-              fontStyle: cardEditCardtext.fontStyle,
-              fontWeight: cardEditCardtext.fontWeight,
-              textAlign: cardEditCardtext.textAlign,
-            }}
+            className={styles.editorEditable}
             ref={editableRef}
+            style={{
+              lineHeight: `${lineHeight}px`,
+              fontSize: `${fontSize}px`,
+            }}
+            placeholder="Hi..."
+            renderLeaf={renderLeaf}
           />
         </Slate>
       </div>

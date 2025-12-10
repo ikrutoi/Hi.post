@@ -1,4 +1,5 @@
 import React from 'react'
+import clsx from 'clsx'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import { useLayoutFacade } from '@layout/application/facades'
 import styles from './AromaTile.module.scss'
@@ -23,7 +24,7 @@ export const AromaTile: React.FC<AromaTileProps> = ({
 
   return (
     <button
-      className={`${styles.tile} ${isSelected ? styles.tileSelected : ''}`}
+      className={clsx(styles.tile, { [styles.tileSelected]: isSelected })}
       type="submit"
       style={{
         width: `${sizeMiniCard.width}px`,

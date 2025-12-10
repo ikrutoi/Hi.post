@@ -6,13 +6,11 @@
   justify-content: space-between;
   margin: 1rem;
   padding: 1rem 0;
-  // border: solid 1px blue;
 }
 
 .headerSide {
   display: flex;
   align-items: center;
-  // border: solid 1px green;
 }
 
 .headerSide:last-child {
@@ -22,10 +20,7 @@
 
 .todaySelected {
   display: flex;
-  // align-items: center;
-  // width: 11rem;
   font-size: 0.9rem;
-  // cursor: pointer;
   user-select: none;
 
   &Disabled {
@@ -52,7 +47,6 @@
 
 .today {
   display: flex;
-  // border: solid 1px aquamarine;
 }
 
 .headerCenter {
@@ -67,13 +61,9 @@
   height: 2.5rem;
   border-radius: 50%;
   background-color: $color-section-light-completed;
-  // background: linear-gradient(
-  //   to right,
-  //   $color-section-light-completed,
-  //   $color-section-dark-completed
-  // );
   cursor: pointer;
   transition: background-color 0.2s ease;
+  // border: solid 1px aquamarine;
 
   &Inactive {
     color: var(--text-secondary);

@@ -7,7 +7,7 @@
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
-  color: $color-font-enabled;
+  color: $color-inactive;
 }
 
 .toggleInput {
@@ -16,7 +16,7 @@
 
 .toggleSlider {
   position: relative;
-  background-color: #ccc;
+  background-color: $color-inactive;
   border-radius: 18px;
   transition: background-color 0.3s ease;
 }
@@ -24,7 +24,7 @@
 .toggleSlider::after {
   content: '';
   position: absolute;
-  background-color: white;
+  background-color: $color-disabled;
   border-radius: 50%;
   transition: transform 0.3s ease;
 }
@@ -42,7 +42,7 @@
 }
 
 .toggleDefault .toggleInput:checked + .toggleSlider {
-  background-color: $color-toggle-active;
+  background-color: $color-active;
 }
 
 .toggleDefault .toggleInput:checked + .toggleSlider::after {

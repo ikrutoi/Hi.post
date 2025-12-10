@@ -1,9 +1,9 @@
 import { getCurrentDate } from '@shared/utils/date'
 import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
-import { useSwitcherFacade } from '../facades'
+import { useSwitcherFacade } from '../../../switcher/application/facades'
 import { getFlashPartsForDateChange } from '../helpers'
-import type { DatePart, Switcher } from '@entities/date/domain/types'
+import type { Switcher } from '@entities/date/domain/types'
 
 interface UseDateSwitcherControllerParams {
   triggerFlash?: (part: Switcher) => void
@@ -19,7 +19,7 @@ export const useDateSwitcherController = ({
   const { chooseDate } = actionsDate
 
   const { state: stateSwitcher } = useSwitcherFacade()
-  const { activeSwitcher } = stateSwitcher
+  const { position } = stateSwitcher
 
   const { state: stateCalendar, actions: actionsCalendar } = useCalendarFacade()
   const { lastViewedCalendarDate } = stateCalendar
@@ -84,10 +84,10 @@ export const useDateSwitcherController = ({
   const handleDecrementArrow = () => {
     if (!lastViewedCalendarDate) return
     const { year, month } = lastViewedCalendarDate
-    if (activeSwitcher === 'year') {
+    if (position === 'year') {
       setCalendarViewDate({ year: year - 1, month })
     }
-    if (activeSwitcher === 'month') {
+    if (position === 'month') {
       decrementMonth()
     }
   }
@@ -95,10 +95,10 @@ export const useDateSwitcherController = ({
   const handleIncrementArrow = () => {
     if (!lastViewedCalendarDate) return
     const { year, month } = lastViewedCalendarDate
-    if (activeSwitcher === 'year') {
+    if (position === 'year') {
       setCalendarViewDate({ year: year + 1, month })
     }
-    if (activeSwitcher === 'month') {
+    if (position === 'month') {
       incrementMonth()
     }
   }
@@ -111,25 +111,19 @@ export const useDateSwitcherController = ({
     )
   }
 
-  // const handleSliderChange = (section: DatePart, value: number) => {
-  //   updateDatePart(section, value)
-  // }
-
   return {
     state: {
       selectedDate,
       lastViewedCalendarDate,
-      activeSwitcher,
+      position,
     },
     actions: {
       chooseDate,
       setCalendarViewDate,
-      // updateDatePart,
       goToTodayDate,
       goToSelectedDate,
       handleDecrementArrow,
       handleIncrementArrow,
-      // handleSliderChange,
       decrementMonth,
       incrementMonth,
     },

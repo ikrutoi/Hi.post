@@ -38,13 +38,36 @@
 }
 
 .toolbarCardPanelOverlay {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
   height: 100%;
+  z-index: 8;
+
+  .toolbarGroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+  }
 
   .toolbarKey {
     background-color: rgba($color-disabled, 0.75);
-    z-index: 8;
+  }
+}
+
+.toolbarCardtext {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0 3rem;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  // border: solid 1px red;
+
+  .toolbarGroupText {
+    // border: solid 1px blue;
+  }
+
+  .toolbarGroupUi {
+    // border: solid 1px green;
   }
 }

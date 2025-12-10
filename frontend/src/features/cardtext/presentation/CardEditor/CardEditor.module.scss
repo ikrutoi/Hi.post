@@ -1,29 +1,32 @@
+@use '@styles/config/colors' as *;
+
 .editor {
   height: 100%;
   border-radius: 1rem;
   padding: 1rem 0;
   box-sizing: border-box;
-  border: solid 1px lightgray;
+  border: solid 1px $color-inactive-light;
 }
 
-.editor__area {
+.editorArea {
   height: 100%;
   overflow: hidden;
+  // border: solid 1px red;
 }
 
-.editor__editable {
+.editorEditable {
   outline: none;
 }
 
-.editor__mark {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: orange;
-}
+// .editor__mark {
+//   display: inline-block;
+//   width: 10px;
+//   height: 10px;
+//   border-radius: 50%;
+//   border: solid 1px red;
+// }
 
-.editor__span-mark {
-  user-select: none;
-  color: orangered;
-}
+// .editor__span-mark {
+//   user-select: none;
+//   color: orangered;
+// }

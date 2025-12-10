@@ -1,28 +1,30 @@
-import type { CardtextTextAlignKey } from '@toolbar/domain/types'
+import { BaseEditor } from 'slate'
+import { ReactEditor } from 'slate-react'
+import { Descendant } from 'slate'
 
-export interface CardtextBlock {
+export type CardtextText = {
+  text: string
+  italic?: boolean
+  bold?: boolean
+  underline?: boolean
+  fontSize?: number
+  color?: string
+}
+
+export type ParagraphElement = {
   type: 'paragraph'
-  children: { text: string }[]
+  align?: 'left' | 'center' | 'right' | 'justify'
+  children: CardtextText[]
 }
 
-export interface MiniCardtextStyle {
-  maxLines: number | null
-  fontSize: number | null
-  lineHeight: number | null
-}
+export type CardtextBlock = ParagraphElement
 
-type FontStyle = 'normal' | 'italic'
-type FontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
+export type CardtextValue = Descendant[]
 
-export interface CardtextState {
-  text: CardtextBlock[]
-  colorName: string
-  colorType: string
-  font: string
-  fontSize: number
-  fontStyle: FontStyle
-  fontWeight: FontWeight
-  textAlign: CardtextTextAlignKey
-  lineHeight: number | null
-  miniCardtextStyle: MiniCardtextStyle
+declare module 'slate' {
+  interface CustomTypes {
+    Editor: BaseEditor & ReactEditor
+    Element: ParagraphElement
+    Text: CardtextText
+  }
 }

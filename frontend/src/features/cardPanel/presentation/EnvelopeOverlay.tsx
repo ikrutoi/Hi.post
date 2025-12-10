@@ -5,7 +5,7 @@ import EnvelopeIcon from '@assets/illustration/EnvelopeIcon'
 import { renderSections } from '../application/helpers'
 import styles from './EnvelopeOverlay.module.scss'
 import type { SizeCard } from '@layout/domain/types'
-import type { CardSection } from '@entities/card/domain/types'
+import type { CardSection } from '@shared/config/constants'
 
 interface EnvelopeOverlayProps {
   sizeMiniCard: SizeCard
@@ -37,9 +37,9 @@ export const EnvelopeOverlay: React.FC<EnvelopeOverlayProps> = ({
         <div data-id="aroma" className={styles.hitSection}></div>
         <div data-id="date" className={styles.hitSection}></div>
       </div>
-      <div className={styles.envelopeOverlayToolbarContainer}>
-        <Toolbar section="cardPanelOverlay" />
-      </div>
+      {/* <div className={styles.envelopeOverlayToolbarContainer}> */}
+      <Toolbar section="cardPanelOverlay" />
+      {/* </div> */}
     </div>
   )
 }

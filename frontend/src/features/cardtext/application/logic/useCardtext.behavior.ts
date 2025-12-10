@@ -8,7 +8,7 @@ import { applyIconStylesByStatus } from '@shared/lib/dom'
 import { toolbarActions } from '@toolbar/infrastructure/state'
 import { cardtextActions } from '@cardtext/infrastructure/state'
 import { isTextAlignKey } from '../helpers'
-import type { CardtextToolbarKey } from '@features/toolbar/domain/types'
+import type { CardtextKey } from '@features/toolbar/domain/types'
 import type { IconState } from '@shared/config/constants'
 
 export const useCardtextBehavior = (editor: Editor) => {
@@ -24,7 +24,7 @@ export const useCardtextBehavior = (editor: Editor) => {
   const [value, setValue] = useState<any[]>([])
   const [buttonColor, setButtonColor] = useState(false)
   const [cardtextToolbar, setCardtextToolbar] = useState<{
-    cardtext: Partial<Record<CardtextToolbarKey, IconState>>
+    cardtext: Partial<Record<CardtextKey, IconState>>
   }>({ cardtext: {} })
 
   const [maxLines, setMaxLines] = useState<number | null>(null)
@@ -45,7 +45,7 @@ export const useCardtextBehavior = (editor: Editor) => {
 
   const handleClickButton = (
     evt: React.MouseEvent<HTMLButtonElement>,
-    key: CardtextToolbarKey
+    key: CardtextKey
   ) => {
     if (key === 'italic') {
       const currentState =
@@ -68,12 +68,7 @@ export const useCardtextBehavior = (editor: Editor) => {
       )
     }
 
-    const alignmentKeys: CardtextToolbarKey[] = [
-      'left',
-      'center',
-      'right',
-      'justify',
-    ]
+    const alignmentKeys: CardtextKey[] = ['left', 'center', 'right', 'justify']
 
     if (alignmentKeys.includes(key)) {
       if (storeToolbarCardtext[key] === 'active') {
@@ -82,7 +77,7 @@ export const useCardtextBehavior = (editor: Editor) => {
         const buttonIcon = buttonIconRefs.current[`cardtext-${key}`]
         if (buttonIcon) buttonIcon.style.cursor = 'default'
 
-        const newState: Partial<Record<CardtextToolbarKey, IconState>> = {
+        const newState: Partial<Record<CardtextKey, IconState>> = {
           left: 'enabled',
           center: 'enabled',
           right: 'enabled',

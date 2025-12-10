@@ -18,10 +18,12 @@ $color-transparent: transparent;
 $color-section-light: hsl(0, 0%, 90%);
 $color-section-dark: hsl(0, 0%, 80%);
 
-$color-section-light-completed: hsl(211, 60%, 94%);
-$color-section-dark-completed: hsl(211, 60%, 88%);
+$color-section-light-completed: hsl(211, 60%, 90%);
+$color-section-dark-completed: hsl(211, 60%, 83%);
 
 $color-active: hsl(211, 69%, 58%);
+$color-inactive: hsl(0, 0%, 48%);
+$color-inactive-light: hsl(0, 0%, 70%);
 
 $color-base-completed: #cce3f5;
 

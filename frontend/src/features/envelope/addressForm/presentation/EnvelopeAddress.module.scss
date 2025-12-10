@@ -28,7 +28,7 @@
 .addressFieldset {
   padding: 0.5rem;
   border-radius: 1rem;
-  border: solid 1px lightgray;
+  border: solid 1px $color-inactive-light;
 }
 
 .addressLegend {
@@ -36,7 +36,7 @@
   font-size: 0.9rem;
   font-weight: 400;
   padding: 4px;
-  color: $color-font-disabled;
+  color: $color-inactive-light;
   text-transform: uppercase;
 }
 
@@ -79,52 +79,3 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 }
-
-// -----
-
-// .senderToggle {
-//   margin: 0.5rem 0;
-// }
-
-// .toggleLabel {
-//   display: flex;
-//   align-items: center;
-//   gap: 0.5rem;
-//   cursor: pointer;
-//   font-size: 0.9rem;
-//   font-weight: 500;
-//   color: $color-font-enabled;
-// }
-
-// .toggleInput {
-//   display: none;
-// }
-
-// .toggleSlider {
-//   position: relative;
-//   width: 40px;
-//   height: 18px;
-//   background-color: #ccc;
-//   border-radius: 18px;
-//   transition: background-color 0.3s ease;
-// }
-
-// .toggleSlider::after {
-//   content: '';
-//   position: absolute;
-//   top: 2px;
-//   left: 2px;
-//   width: 14px;
-//   height: 14px;
-//   background-color: white;
-//   border-radius: 50%;
-//   transition: transform 0.3s ease;
-// }
-
-// .toggleInput:checked + .toggleSlider {
-//   background-color: $color-toggle-active;
-// }
-
-// .toggleInput:checked + .toggleSlider::after {
-//   transform: translateX(22px);
-// }

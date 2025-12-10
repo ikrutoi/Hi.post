@@ -1,0 +1,1 @@
+export { flattenIcons } from './flattenIcons'

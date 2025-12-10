@@ -1,46 +1,36 @@
-import { Element } from 'slate'
-import type { Node as SlateNode } from 'slate'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { cardtextActions } from '../../infrastructure/state'
-import { selectCardtext } from '../../infrastructure/selectors'
-import type { CardtextState, CardtextBlock } from '../../domain/types'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
+import { setValue, updateToolbar, reset } from '../../infrastructure/state'
+import {
+  selectCardtextValue,
+  selectCardtextToolbar,
+  selectToolbarIconState,
+} from '../../infrastructure/selectors'
+import type { CardtextKey } from '@toolbar/domain/types'
+import type { CardtextValue } from '../../domain/types'
 
 export const useCardtextController = () => {
   const dispatch = useAppDispatch()
-  const cardtextState = useAppSelector(selectCardtext)
 
-  const updateCardtext = (payload: Partial<CardtextState>) => {
-    dispatch(cardtextActions.updateCardtext(payload))
-  }
+  const value = useAppSelector(selectCardtextValue)
+  const toolbar = useAppSelector(selectCardtextToolbar)
 
-  const clearCardtextContent = () => {
-    dispatch(cardtextActions.clearCardtextContent())
-  }
+  const getIconState = (key: CardtextKey) =>
+    useAppSelector(selectToolbarIconState(key))
 
-  const setCardtext = (text: SlateNode[]) => {
-    const blocks = text.filter((node): node is CardtextBlock => {
-      if (!Element.isElement(node)) return false
+  const setCardtextValue = (newValue: CardtextValue) =>
+    dispatch(setValue(newValue))
 
-      const element = node as CardtextBlock
-      return element.type === 'paragraph' && Array.isArray(element.children)
-    })
+  const updateCardtextToolbar = (partial: Partial<typeof toolbar>) =>
+    dispatch(updateToolbar(partial))
 
-    dispatch(cardtextActions.addCardtext({ text: blocks }))
-  }
-
-  const resetCardtext = () => {
-    dispatch(cardtextActions.resetCardtext())
-  }
+  const resetCardtext = () => dispatch(reset())
 
   return {
-    state: {
-      cardtextState,
-    },
-    actions: {
-      updateCardtext,
-      clearCardtextContent,
-      setCardtext,
-      resetCardtext,
-    },
+    value,
+    toolbar,
+    getIconState,
+    setCardtextValue,
+    updateCardtextToolbar,
+    resetCardtext,
   }
 }

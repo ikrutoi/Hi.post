@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 
 .tile {
+  // all: unset;
   display: flex;
   height: 100%;
   flex-direction: column;
@@ -10,15 +11,15 @@
   box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.075);
   border: solid 1px rgb(230, 230, 230);
   cursor: pointer;
-  background-color: #fff;
+  transition: background-color 0.2s ease;
+}
+
+.tile:hover {
+  background-color: $color-section-light-completed;
 }
 
 .tileSelected {
-  background: linear-gradient(
-    to right,
-    $color-section-light-completed,
-    $color-section-dark-completed
-  );
+  background-color: $color-section-light-completed;
 }
 
 .tileSelected .tileImage,
