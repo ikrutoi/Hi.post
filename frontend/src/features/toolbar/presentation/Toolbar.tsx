@@ -1,4 +1,5 @@
 import React from 'react'
+import type { ReactEditor } from 'slate-react'
 import clsx from 'clsx'
 import { getToolbarIcon } from '@shared/utils/icons/getToolbarIcon'
 import { capitalize } from '@shared/utils/helpers'
@@ -10,8 +11,17 @@ import type {
   ToolbarState,
 } from '../domain/types'
 import type { IconState, IconKey } from '@shared/config/constants'
+import type { AppDispatch } from '@app/state'
 
-export const Toolbar = ({ section }: { section: ToolbarSection }) => {
+export const Toolbar = ({
+  section,
+  editor,
+  dispatch,
+}: {
+  section: ToolbarSection
+  editor?: ReactEditor
+  dispatch?: AppDispatch
+}) => {
   const { config, badges, onAction, state } = useToolbarConstruction(section)
 
   const renderIcon = (key: keyof ToolbarState[typeof section]) => {
@@ -25,11 +35,13 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           styles[`toolbarKey${String(key)}`],
           styles[`toolbarKey${capitalize(iconState)}`]
         )}
-        onClick={() => onAction(key, section)}
+        onMouseDown={(e) => {
+          e.preventDefault()
+          editor && dispatch && onAction(key, section, editor, dispatch)
+        }}
         disabled={iconState === 'disabled'}
       >
         {getToolbarIcon({ key: key as IconKey })}
-
         {badges[key as string] && (
           <span className={styles.toolbarBadge}>
             <span className={styles.toolbarBadgeValue}>

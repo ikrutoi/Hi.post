@@ -1,3 +1,3 @@
-export * from './cardtext.slice'
+export * from './cardtextSlice'
 
-export { default as cardtextReducer } from './cardtext.slice'
+export { default as cardtextReducer } from './cardtextSlice'

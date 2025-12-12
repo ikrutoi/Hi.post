@@ -4,7 +4,7 @@ import {
   clearSection,
 } from '@entities/cardEditor/infrastructure/state'
 import { setDate, clearDate } from '@date/infrastructure/state'
-import { setAroma, clearAroma } from '@aroma/infrastructure/state'
+import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
   recomputeEnvelope,
   clearEnvelope,
@@ -12,6 +12,11 @@ import {
 import { selectIsDateComplete } from '@date/infrastructure/selectors'
 import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
 import { selectIsEnvelopeComplete } from '@envelope/infrastructure/selectors'
+import {
+  setValue,
+  clear as clearCardtext,
+} from '@cardtext/infrastructure/state'
+import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 
 function* syncDateSet() {
   const dateComplete: boolean = yield select(selectIsDateComplete)
@@ -42,6 +47,17 @@ function* syncEnvelopeClear() {
   yield put(clearSection('envelope'))
 }
 
+function* syncCardtextSet() {
+  const textComplete: boolean = yield select(selectCardtextIsComplete)
+  yield put(
+    setSectionComplete({ section: 'cardtext', isComplete: textComplete })
+  )
+}
+
+function* syncCardtextReset() {
+  yield put(clearSection('cardtext'))
+}
+
 export function* cardEditorSaga() {
   yield takeEvery(setDate.type, syncDateSet)
   yield takeEvery(clearDate.type, syncDateClear)
@@ -51,4 +67,7 @@ export function* cardEditorSaga() {
 
   yield takeEvery(recomputeEnvelope.type, syncEnvelopeRecompute)
   yield takeEvery(clearEnvelope.type, syncEnvelopeClear)
+
+  yield takeEvery(setValue.type, syncCardtextSet)
+  yield takeEvery(clearCardtext.type, syncCardtextReset)
 }

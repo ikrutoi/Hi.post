@@ -1,3 +1,6 @@
+import type { Editor } from 'slate'
+import type { ReactEditor } from 'slate-react'
+import type { AppDispatch } from '@app/state'
 import type { IconKey, IconState } from '@shared/config/constants'
 import type {
   CardtextKey,
@@ -83,7 +86,12 @@ export interface BaseSectionConfig<
 > {
   keys: ReadonlyArray<TKey>
   initialState: TState
-  onAction: (key: TKey, section: TSection) => void
+  onAction: (
+    key: TKey,
+    section: TSection,
+    editor: ReactEditor,
+    dispatch: AppDispatch
+  ) => void
   group: string
   toolbar?: ToolbarConfig
   getBadges?: (state: TState) => Record<string, number | null>

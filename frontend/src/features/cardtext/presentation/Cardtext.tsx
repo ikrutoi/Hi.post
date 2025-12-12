@@ -13,8 +13,8 @@ export const Cardtext: React.FC<CardtextProps> = ({
   return (
     <div className={styles.cardtext}>
       <CardEditor
-        // toolbarColor={toolbarColor}
-        styleLeft={styleLeft}
+      // toolbarColor={toolbarColor}
+      // styleLeft={styleLeft}
       />
     </div>
   )

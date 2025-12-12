@@ -35,8 +35,8 @@ export const useCalendarCellController = ({
   const { lastViewedCalendarDate } = stateCalendar
 
   const { state: stateSwitcher, actions: actionsSwitcher } = useSwitcherFacade()
-  const { activeSwitcher } = stateSwitcher
-  const { setActiveSwitcher } = actionsSwitcher
+  const { position } = stateSwitcher
+  const { changePosition } = actionsSwitcher
 
   const { actions: actionsSwitcherController } = useDateSwitcherController()
   const { decrementMonth, incrementMonth } = actionsSwitcherController
@@ -72,7 +72,7 @@ export const useCalendarCellController = ({
     }
 
     if (direction === 'before') {
-      if (activeSwitcher) setActiveSwitcher(null)
+      // if (position) changePosition(null)
       decrementMonth()
       triggerFlash('month')
       if (lastViewedCalendarDate?.month === 0) {
@@ -81,7 +81,7 @@ export const useCalendarCellController = ({
     }
 
     if (direction === 'after') {
-      if (activeSwitcher) setActiveSwitcher(null)
+      // if (position) changePosition(null)
       incrementMonth()
       triggerFlash('month')
       if (lastViewedCalendarDate?.month === 11) {

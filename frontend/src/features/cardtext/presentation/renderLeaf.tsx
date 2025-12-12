@@ -1,5 +1,5 @@
 import React from 'react'
-import type { CardtextText } from '../domain/types'
+import type { CardtextTextNode } from '../domain/types'
 
 export const renderLeaf = ({
   attributes,
@@ -8,7 +8,7 @@ export const renderLeaf = ({
 }: {
   attributes: any
   children: React.ReactNode
-  leaf: CardtextText
+  leaf: CardtextTextNode
 }) => {
   let style: React.CSSProperties = {}
 

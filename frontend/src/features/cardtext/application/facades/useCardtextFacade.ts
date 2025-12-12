@@ -1,36 +1,43 @@
-import { useAppDispatch, useAppSelector } from '@/app/hooks'
-import { setValue, updateToolbar, reset } from '../../infrastructure/state'
+import { useCardtextController } from '../controllers'
 import {
+  selectCardtextState,
   selectCardtextValue,
-  selectCardtextToolbar,
-  selectToolbarIconState,
+  selectCardtextPlainText,
+  selectCardtextIsComplete,
 } from '../../infrastructure/selectors'
-import { initialCardtextValue } from '../../domain/types'
-import { initialCardtextToolbarState } from '@toolbar/domain/types'
-import type { CardtextKey } from '@toolbar/domain/types'
-import type { CardtextValue } from '../../domain/types'
 
 export const useCardtextFacade = () => {
-  const dispatch = useAppDispatch()
+  const controller = useCardtextController()
 
-  const value = useAppSelector(selectCardtextValue)
-  const toolbar = useAppSelector(selectCardtextToolbar)
+  return {
+    state: {
+      editor: controller.state.editor,
+      value: controller.state.value,
+      plainText: controller.state.plainText,
+      isComplete: controller.state.isComplete,
+      editorRef: controller.state.editorRef,
+      editableRef: controller.state.editableRef,
+    },
 
-  const state = {
-    value,
-    toolbar,
-    initialValue: initialCardtextValue,
-    initialToolbar: initialCardtextToolbarState,
+    actions: {
+      setValue: controller.actions.handleSlateChange,
+      reset: controller.actions.clearCardtext,
+      applyAlign: controller.actions.applyAlign,
+
+      toggleBold: controller.actions.toggleBold,
+      toggleItalic: controller.actions.toggleItalic,
+      toggleUnderline: controller.actions.toggleUnderline,
+
+      isBoldActive: controller.actions.isBoldActive,
+      isItalicActive: controller.actions.isItalicActive,
+      isUnderlineActive: controller.actions.isUnderlineActive,
+    },
+
+    selectors: {
+      selectCardtextState,
+      selectCardtextValue,
+      selectCardtextPlainText,
+      selectCardtextIsComplete,
+    },
   }
-
-  const actions = {
-    setValue: (newValue: CardtextValue) => dispatch(setValue(newValue)),
-    updateToolbar: (partial: Partial<typeof toolbar>) =>
-      dispatch(updateToolbar(partial)),
-    reset: () => dispatch(reset()),
-    getIconState: (key: CardtextKey) =>
-      useAppSelector(selectToolbarIconState(key)),
-  }
-
-  return { state, actions }
 }

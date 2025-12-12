@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { setAroma, clearAroma } from '../../infrastructure/state'
+import { setAroma, clear } from '../../infrastructure/state'
 import {
   selectSelectedAroma,
   selectIsAromaComplete,
@@ -16,8 +16,8 @@ export const useAromaController = () => {
     dispatch(setAroma(aroma))
   }
 
-  const clear = () => {
-    dispatch(clearAroma())
+  const clearAroma = () => {
+    dispatch(clear())
   }
 
   return {
@@ -27,7 +27,7 @@ export const useAromaController = () => {
     },
     actions: {
       chooseAroma,
-      clear,
+      clearAroma,
     },
   }
 }

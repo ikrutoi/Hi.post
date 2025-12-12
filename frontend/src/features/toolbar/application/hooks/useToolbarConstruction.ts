@@ -8,6 +8,8 @@ import type {
   ToolbarSectionConfigMap,
 } from '../../domain/types'
 import type { IconState } from '@shared/config/constants'
+import type { ReactEditor } from 'slate-react'
+import type { AppDispatch } from '@app/state'
 
 function getToolbarConfig<S extends ToolbarSection>(
   section: S
@@ -42,7 +44,12 @@ export const useToolbarConstruction = <S extends ToolbarSection>(
 
   return {
     config: groups,
-    onAction: config.onAction as (key: string, section: ToolbarSection) => void,
+    onAction: config.onAction as (
+      key: keyof ToolbarState[S],
+      section: S,
+      editor: ReactEditor,
+      dispatch: AppDispatch
+    ) => void,
     badges,
     state: typedState,
   }

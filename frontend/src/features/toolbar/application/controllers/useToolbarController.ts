@@ -1,79 +1,36 @@
-import { toolbarActions } from '../../infrastructure/state'
-import type { AppDispatch } from '@app/state'
-import type { ToolbarState } from '../../domain/types'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { selectToolbarSection } from '../../infrastructure/selectors'
+import type { ToolbarSection } from '../../domain/types'
 
-import {
-  toggleItalic,
-  toggleBold,
-  toggleUnderline,
-} from '@features/cardtext/application/commands'
-import { Editor } from 'slate'
+import { cardtextController } from './cardtextController'
+import { cardphotoController } from './cardphotoController'
+import { senderController } from './senderController'
+import { recipientController } from './recipientController'
+import { cardPanelController } from './cardPanelController'
+import { cardPanelOverlayController } from './cardPanelOverlayController'
 
-export const useToolbarController = (dispatch: AppDispatch) => {
-  const updateToolbar = (payload: Partial<ToolbarState>) =>
-    dispatch(toolbarActions.updateToolbar(payload))
+export const useToolbarController = (section: ToolbarSection, editor?: any) => {
+  const dispatch = useAppDispatch()
+  const state = useAppSelector((s) => selectToolbarSection(s, section))
+
+  const controllers = {
+    cardtext: cardtextController,
+    cardphoto: cardphotoController,
+    sender: senderController,
+    recipient: recipientController,
+    cardPanel: cardPanelController,
+    cardPanelOverlay: cardPanelOverlayController,
+  } as const
+
+  const controller = controllers[section]
 
   return {
-    update: updateToolbar,
-
-    updateSection: <K extends keyof ToolbarState>(
-      section: K,
-      payload: Partial<ToolbarState[K]>
-    ) => {
-      updateToolbar({ [section]: payload })
+    state, // текущее состояние секции тулбара
+    actions: {
+      // методы секции
+      ...controller,
     },
-
-    updateKey: <
-      K extends keyof ToolbarState,
-      Key extends keyof ToolbarState[K],
-    >(
-      section: K,
-      key: Key,
-      value: ToolbarState[K][Key]
-    ) => {
-      updateToolbar({ [section]: { [key]: value } })
-    },
-
-    reset: () => dispatch(toolbarActions.resetToolbar()),
-
-    toggleItalic: (editor: Editor) => {
-      toggleItalic(editor)
-      dispatch(
-        toolbarActions.updateToolbar({
-          cardtext: { italic: 'active' },
-        })
-      )
-    },
-
-    toggleBold: (editor: Editor) => {
-      toggleBold(editor)
-      dispatch(
-        toolbarActions.updateToolbar({
-          cardtext: { bold: 'active' },
-        })
-      )
-    },
-
-    toggleUnderline: (editor: Editor) => {
-      toggleUnderline(editor)
-      dispatch(
-        toolbarActions.updateToolbar({
-          cardtext: { underline: 'active' },
-        })
-      )
-    },
-
-    setAlign: (value: 'left' | 'center' | 'right' | 'justify') => {
-      dispatch(
-        toolbarActions.updateToolbar({
-          cardtext: {
-            left: value === 'left' ? 'active' : 'enabled',
-            center: value === 'center' ? 'active' : 'enabled',
-            right: value === 'right' ? 'active' : 'enabled',
-            justify: value === 'justify' ? 'active' : 'enabled',
-          },
-        })
-      )
-    },
+    dispatch, // доступ к redux dispatch
+    editor, // редактор, если нужен для вызова методов
   }
 }

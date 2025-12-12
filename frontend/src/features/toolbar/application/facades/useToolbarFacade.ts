@@ -1,26 +1,36 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { selectToolbar } from '../../infrastructure/selectors'
+import { selectToolbarSection } from '../../infrastructure/selectors'
 import { useToolbarController } from '../../application/controllers'
 import type { ToolbarState } from '../../domain/types'
 import type { ToolbarSection } from '@toolbar/domain/types'
 
-export const useToolbarFacade = <K extends ToolbarSection>(section: K) => {
+export const useToolbarFacade = <K extends ToolbarSection>(
+  section: K,
+  editor?: any
+) => {
   const dispatch = useAppDispatch()
-  const toolbar = useAppSelector(selectToolbar)
+  const state = useAppSelector((s) => selectToolbarSection(s, section))
 
-  const actions = useToolbarController(dispatch)
+  const { actions } = useToolbarController(section, editor)
 
   return {
-    state: toolbar[section],
+    state,
     actions: {
       ...actions,
       updateCurrent: (payload: Partial<ToolbarState[K]>) =>
-        actions.updateSection(section, payload),
+        dispatch({
+          type: 'toolbar/updateToolbar',
+          payload: { [section]: payload },
+        }),
 
       updateKey: <Key extends keyof ToolbarState[K]>(
         key: Key,
         value: ToolbarState[K][Key]
-      ) => actions.updateKey(section, key, value),
+      ) =>
+        dispatch({
+          type: 'toolbar/updateToolbar',
+          payload: { [section]: { [key]: value } },
+        }),
     },
   }
 }

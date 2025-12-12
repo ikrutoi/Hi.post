@@ -14,7 +14,7 @@ export const useAromaFacade = () => {
     },
     actions: {
       chooseAroma: actions.chooseAroma,
-      clear: actions.clear,
+      clear: actions.clearAroma,
     },
   }
 }

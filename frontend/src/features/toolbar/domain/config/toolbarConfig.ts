@@ -12,6 +12,7 @@ import {
   initialCardPanelToolbarState,
   initialCardPanelOverlayToolbarState,
 } from '../types'
+import { cardtextController } from '../../application/controllers'
 
 import type { ToolbarState, ToolbarSectionConfigMap } from '../types'
 
@@ -26,7 +27,25 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardtext: {
     keys: CARDTEXT_KEYS,
     initialState: initialCardtextToolbarState,
-    onAction: (key, section) => console.log('Cardtext action', key, section),
+    onAction: (key, section, editor, dispatch) => {
+      switch (key) {
+        case 'bold':
+          cardtextController.toggleBold(editor, dispatch)
+          break
+        case 'italic':
+          cardtextController.toggleItalic(editor, dispatch)
+          break
+        case 'underline':
+          cardtextController.toggleUnderline(editor, dispatch)
+          break
+        case 'left':
+        case 'center':
+        case 'right':
+        case 'justify':
+          cardtextController.setAlign(editor, dispatch, key as any)
+          break
+      }
+    },
     group: 'text',
     toolbar: CARDTEXT_TOOLBAR,
     getBadges: (state: ToolbarState['cardtext']) => ({}),

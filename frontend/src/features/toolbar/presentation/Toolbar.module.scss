@@ -22,17 +22,18 @@
 
     &Enabled {
       color: $color-font-enabled;
-      cursor: default;
+    }
+
+    &Enabled:hover {
+      color: $color-active;
     }
 
     &Active {
       color: $color-font-active;
-      cursor: default;
     }
 
     &Hover {
       color: $color-hover;
-      cursor: pointer;
     }
   }
 }

@@ -30,6 +30,8 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
   const { state: stateCardEditor } = useCardEditorFacade()
   const { editorState } = stateCardEditor
 
+  console.log('editor', editorState)
+
   const { state: stateCardPanel } = useCardPanelFacade()
   const { isPacked } = stateCardPanel
 

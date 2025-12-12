@@ -14,12 +14,12 @@ export const aromaSlice = createSlice({
       state.selectedAroma = action.payload
       state.isComplete = true
     },
-    clearAroma(state) {
+    clear(state) {
       state.selectedAroma = null
       state.isComplete = false
     },
   },
 })
 
-export const { setAroma, clearAroma } = aromaSlice.actions
+export const { setAroma, clear } = aromaSlice.actions
 export default aromaSlice.reducer

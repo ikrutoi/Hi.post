@@ -1,1 +1,1 @@
-export * from './cardtext.selectors'
+export * from './cardtextSelectors'

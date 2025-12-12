@@ -14,7 +14,7 @@ export const MiniCardtext: React.FC<MiniCardtextProps> = ({
 
   return (
     <div className={styles.miniCardtext}>
-      <Slate editor={editor} initialValue={value}>
+      <Slate editor={editor} value={value} onChange={() => {}}>
         <Editable readOnly style={style} />
       </Slate>
     </div>

@@ -7,7 +7,6 @@ import {
   FiCrop,
   FiPlus,
 } from 'react-icons/fi'
-import { LuPaperclip } from 'react-icons/lu'
 import {
   MdDeleteOutline,
   MdOutlineDeleteForever,
@@ -24,7 +23,7 @@ import {
   MdAlignHorizontalCenter,
   MdFormatAlignJustify,
 } from 'react-icons/md'
-import { LuMail, LuMailOpen, LuMailPlus } from 'react-icons/lu'
+import { LuPaperclip, LuMail, LuMailOpen, LuMailPlus } from 'react-icons/lu'
 import { BsCardText } from 'react-icons/bs'
 import {
   RiUserLine,
@@ -55,7 +54,12 @@ import {
   PiCardsThreeBold,
 } from 'react-icons/pi'
 import { FaRegIdCard, FaRegAddressCard } from 'react-icons/fa'
-import { TbArrowsMaximize } from 'react-icons/tb'
+import {
+  TbArrowsMaximize,
+  TbMail,
+  TbMailPlus,
+  TbMailOpened,
+} from 'react-icons/tb'
 import { HiArrowsPointingOut, HiArrowsPointingIn } from 'react-icons/hi2'
 import { ICON_KEYS } from '../../config/constants'
 import type { IconKey } from '@shared/config/constants'
@@ -113,13 +117,13 @@ function getIconByKey(key: IconKey): JSX.Element {
     case 'arrowsIn':
       return <HiArrowsPointingIn />
     case 'cart':
-      return <RiMailLine />
+      return <TbMail />
     case 'addCart':
-      return <RiMailAddLine />
+      return <TbMailPlus />
     case 'drafts':
-      return <RiMailOpenLine />
+      return <TbMailOpened />
     case 'addDrafts':
-      return <MdOutlineDrafts />
+      return <FiSave />
     case 'cards':
       return <PiCardsBold />
     case 'cardUser':
