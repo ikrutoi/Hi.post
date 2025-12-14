@@ -4,6 +4,7 @@ import {
   selectCardtextValue,
   selectCardtextPlainText,
   selectCardtextIsComplete,
+  selectCardtextLines,
 } from '../../infrastructure/selectors'
 
 export const useCardtextFacade = () => {
@@ -38,6 +39,7 @@ export const useCardtextFacade = () => {
       selectCardtextValue,
       selectCardtextPlainText,
       selectCardtextIsComplete,
+      selectCardtextLines,
     },
   }
 }

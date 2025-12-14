@@ -5,15 +5,16 @@
     position: relative;
     margin: 0 0.2rem;
     background-color: white;
-    width: 1.9rem;
-    height: 1.9rem;
+    width: 1.85rem;
+    height: 1.85rem;
     border-radius: 50%;
     background-color: white;
     cursor: pointer;
     // border: solid 1px blue;
     transition:
-      color 0.2s ease,
-      cursor 0.2s ease;
+      color 0.15s ease,
+      cursor 0.15s ease,
+      transform 0.15s ease;
 
     &Disabled {
       color: $color-font-disabled;
@@ -25,11 +26,17 @@
     }
 
     &Enabled:hover {
-      color: $color-active;
+      // color: $color-active;
+      transform: scale(1.1);
+      // background-color: $color-enabled;
     }
 
     &Active {
       color: $color-font-active;
+    }
+
+    &Active:hover {
+      transform: scale(1.1);
     }
 
     &Hover {
@@ -65,7 +72,11 @@
   // border: solid 1px red;
 
   .toolbarGroupText {
-    // border: solid 1px blue;
+    .toolbarKey {
+      width: 1.75rem;
+      height: 1.75rem;
+      margin-top: 0.125rem;
+    }
   }
 
   .toolbarGroupUi {

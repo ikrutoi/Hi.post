@@ -12,6 +12,7 @@ import type {
 } from '../domain/types'
 import type { IconState, IconKey } from '@shared/config/constants'
 import type { AppDispatch } from '@app/state'
+import { isMarkActive } from '@cardtext/application/commands'
 
 export const Toolbar = ({
   section,
@@ -25,7 +26,15 @@ export const Toolbar = ({
   const { config, badges, onAction, state } = useToolbarConstruction(section)
 
   const renderIcon = (key: keyof ToolbarState[typeof section]) => {
-    const iconState = state[key] as IconState
+    let iconState = state[key] as IconState
+
+    if (editor) {
+      if (key === 'bold' && isMarkActive(editor, 'bold')) iconState = 'active'
+      if (key === 'italic' && isMarkActive(editor, 'italic'))
+        iconState = 'active'
+      if (key === 'underline' && isMarkActive(editor, 'underline'))
+        iconState = 'active'
+    }
 
     return (
       <button

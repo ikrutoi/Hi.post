@@ -34,7 +34,7 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
       { key: 'underline', state: 'enabled' },
       { key: 'fontSize', state: 'enabled' },
       { key: 'color', state: 'enabled' },
-      { key: 'left', state: 'enabled' },
+      { key: 'left', state: 'active' },
       { key: 'center', state: 'enabled' },
       { key: 'right', state: 'enabled' },
       { key: 'justify', state: 'enabled' },
@@ -53,5 +53,8 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
 export const initialCardtextToolbarState: CardtextToolbarState =
   Object.fromEntries(flattenIcons(CARDTEXT_TOOLBAR)) as CardtextToolbarState
 
-export interface CardtextSectionConfig
-  extends BaseSectionConfig<CardtextToolbarState, CardtextKey, 'cardtext'> {}
+export interface CardtextSectionConfig extends BaseSectionConfig<
+  CardtextToolbarState,
+  CardtextKey,
+  'cardtext'
+> {}

@@ -17,6 +17,8 @@ import {
   clear as clearCardtext,
 } from '@cardtext/infrastructure/state'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
+import { updateToolbar } from '@toolbar/infrastructure/state'
+import type { CardtextValue } from '@cardtext/domain/types'
 
 function* syncDateSet() {
   const dateComplete: boolean = yield select(selectIsDateComplete)
@@ -58,6 +60,26 @@ function* syncCardtextReset() {
   yield put(clearSection('cardtext'))
 }
 
+function mapCardtextValueToToolbarState(value: CardtextValue) {
+  const firstBlock = value[0]
+  const firstChild = firstBlock?.children[0]
+
+  return {
+    italic: firstChild?.italic ? 'active' : 'enabled',
+    bold: firstChild?.bold ? 'active' : 'enabled',
+    underline: firstChild?.underline ? 'active' : 'enabled',
+    left: firstBlock?.align === 'left' ? 'active' : 'enabled',
+    center: firstBlock?.align === 'center' ? 'active' : 'enabled',
+    right: firstBlock?.align === 'right' ? 'active' : 'enabled',
+    justify: firstBlock?.align === 'justify' ? 'active' : 'enabled',
+  }
+}
+
+function* syncCardtextToolbar(action: ReturnType<typeof setValue>) {
+  const toolbarState = mapCardtextValueToToolbarState(action.payload)
+  yield put(updateToolbar({ cardtext: toolbarState }))
+}
+
 export function* cardEditorSaga() {
   yield takeEvery(setDate.type, syncDateSet)
   yield takeEvery(clearDate.type, syncDateClear)
@@ -69,5 +91,6 @@ export function* cardEditorSaga() {
   yield takeEvery(clearEnvelope.type, syncEnvelopeClear)
 
   yield takeEvery(setValue.type, syncCardtextSet)
+  yield takeEvery(setValue.type, syncCardtextToolbar)
   yield takeEvery(clearCardtext.type, syncCardtextReset)
 }

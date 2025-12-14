@@ -1,30 +1,35 @@
 import { useState, useEffect } from 'react'
-import { calculateEditorLayout } from '../helpers'
-import { CARDTEXT_FONT_RATIO } from '@shared/config/constants'
+import { useSelector } from 'react-redux'
+import type { EditorLayoutResult } from '../../domain/types'
+import { RootState } from '@app/state'
+import { selectCardtextLines } from '../../infrastructure/selectors'
 import {
   DEFAULT_CARDTEXT_LINES,
-  DEFAULT_FONT_SIZE,
-  DEFAULT_LINE_HEIGHT,
+  FONT_SIZE_COEFFICIENT,
 } from '../../domain/types'
-import type { EditorLayoutResult } from '../../domain/types'
+import { calculateEditorLayout } from '../helpers/calculateEditorLayout'
 
 export const useEditorLayout = (
-  editorRef: React.RefObject<HTMLDivElement | null>,
-  lines: number = DEFAULT_CARDTEXT_LINES
+  editorRef: React.RefObject<HTMLDivElement | null>
 ): EditorLayoutResult => {
+  const lines = useSelector((state: RootState) => selectCardtextLines(state))
+
   const [layout, setLayout] = useState<EditorLayoutResult>({
-    lineHeight: DEFAULT_LINE_HEIGHT,
-    fontSize: DEFAULT_FONT_SIZE,
+    lineHeight: 0,
+    fontSize: 0,
   })
 
   useEffect(() => {
-    if (editorRef.current) {
-      const height = editorRef.current.offsetHeight
-      const lineHeight = height / lines
-      const fontSize = lineHeight * CARDTEXT_FONT_RATIO
-      setLayout({ lineHeight, fontSize })
+    const node = editorRef.current
+    if (node && node.offsetHeight > 0) {
+      const result = calculateEditorLayout({
+        editorHeight: node.offsetHeight,
+        lines: lines || DEFAULT_CARDTEXT_LINES,
+        fontRatio: FONT_SIZE_COEFFICIENT,
+      })
+      setLayout(result)
     }
-  }, [editorRef, lines])
+  }, [lines, editorRef])
 
   return layout
 }

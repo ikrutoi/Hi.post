@@ -2,15 +2,15 @@ import type {
   EditorLayoutOptions,
   EditorLayoutResult,
 } from '../../domain/types'
+import { CARDTEXT_FONT_RATIO } from '@shared/config/constants'
 
 export function calculateEditorLayout(
   options: EditorLayoutOptions
 ): EditorLayoutResult {
-  const { lines, editorHeight } = options
+  const { lines, editorHeight, fontRatio } = options
 
-  const lineHeight = editorHeight / lines
-
-  const fontSize = lineHeight * 0.75
+  const lineHeight = lines > 0 ? editorHeight / lines : editorHeight
+  const fontSize = lineHeight * fontRatio
 
   return {
     lineHeight: Math.floor(lineHeight),

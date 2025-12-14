@@ -31,6 +31,9 @@ export type QuoteElement = {
 export type CardtextBlock = ParagraphElement | HeadingElement | QuoteElement
 
 export type CardtextValue = CardtextBlock[]
+// export type CardtextValue = Descendant[]
+
+export type MarkFormat = 'bold' | 'italic' | 'underline'
 
 export interface CardtextState {
   value: CardtextValue

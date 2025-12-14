@@ -24,7 +24,6 @@ import {
   MdFormatAlignJustify,
 } from 'react-icons/md'
 import { LuPaperclip, LuMail, LuMailOpen, LuMailPlus } from 'react-icons/lu'
-import { BsCardText } from 'react-icons/bs'
 import {
   RiUserLine,
   RiResetLeftFill,
@@ -53,13 +52,26 @@ import {
   PiArrowClockwiseFill,
   PiCardsThreeBold,
 } from 'react-icons/pi'
-import { FaRegIdCard, FaRegAddressCard } from 'react-icons/fa'
+import {
+  FaRegIdCard,
+  FaRegAddressCard,
+  FaEnvelopeOpen,
+  FaEnvelope,
+  FaEnvelopeOpenText,
+} from 'react-icons/fa'
 import {
   TbArrowsMaximize,
   TbMail,
   TbMailPlus,
   TbMailOpened,
 } from 'react-icons/tb'
+import {
+  BsEnvelope,
+  BsEnvelopePaper,
+  BsEnvelopePlus,
+  BsEnvelopeOpen,
+  BsCardText,
+} from 'react-icons/bs'
 import { HiArrowsPointingOut, HiArrowsPointingIn } from 'react-icons/hi2'
 import { ICON_KEYS } from '../../config/constants'
 import type { IconKey } from '@shared/config/constants'
@@ -117,11 +129,11 @@ function getIconByKey(key: IconKey): JSX.Element {
     case 'arrowsIn':
       return <HiArrowsPointingIn />
     case 'cart':
-      return <TbMail />
+      return <FaEnvelope />
     case 'addCart':
       return <TbMailPlus />
     case 'drafts':
-      return <TbMailOpened />
+      return <FaEnvelopeOpen />
     case 'addDrafts':
       return <FiSave />
     case 'cards':
@@ -131,6 +143,6 @@ function getIconByKey(key: IconKey): JSX.Element {
     case 'cardText':
       return <BsCardText />
     case 'textTemplates':
-      return <PiCardsThreeBold />
+      return <PiCardsBold />
   }
 }

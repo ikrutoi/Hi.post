@@ -1,6 +1,7 @@
 export interface EditorLayoutOptions {
-  lines: number
   editorHeight: number
+  lines: number
+  fontRatio: number
 }
 
 export interface EditorLayoutResult {

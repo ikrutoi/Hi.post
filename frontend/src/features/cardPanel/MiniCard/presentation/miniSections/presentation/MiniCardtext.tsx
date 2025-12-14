@@ -1,21 +1,23 @@
 import React from 'react'
 import { Slate, Editable } from 'slate-react'
-import styles from './MiniCardtext.module.scss'
 import { useMiniCardtext } from '../application/hooks'
+import { renderLeaf } from '@cardtext/presentation/renderLeaf'
+import { renderElement } from '@cardtext/presentation/renderElement'
+import styles from './MiniCardtext.module.scss'
 
-interface MiniCardtextProps {
-  cardMiniSectionRef: HTMLDivElement | null
-}
-
-export const MiniCardtext: React.FC<MiniCardtextProps> = ({
-  cardMiniSectionRef,
-}) => {
-  const { editor, value, style } = useMiniCardtext(cardMiniSectionRef)
+export const MiniCardtext: React.FC = () => {
+  const { editor, value, style } = useMiniCardtext()
 
   return (
     <div className={styles.miniCardtext}>
-      <Slate editor={editor} value={value} onChange={() => {}}>
-        <Editable readOnly style={style} />
+      <Slate key={JSON.stringify(value)} editor={editor} initialValue={value}>
+        <Editable
+          readOnly
+          className={styles.miniCardtextEditable}
+          style={style}
+          renderLeaf={renderLeaf}
+          renderElement={renderElement}
+        />
       </Slate>
     </div>
   )

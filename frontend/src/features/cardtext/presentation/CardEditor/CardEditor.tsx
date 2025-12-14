@@ -7,7 +7,7 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
 import { useEditorLayout } from '../../application/hooks'
-import { DEFAULT_CARDTEXT_LINES } from '../../domain/types'
+import { useForceUpdateCardtextToolbar } from '../../application/commands'
 import styles from './CardEditor.module.scss'
 import type { CardtextValue } from '../../domain/types'
 
@@ -17,10 +17,9 @@ export const CardEditor: React.FC = () => {
   const { setValue } = actionsCardtext
 
   const dispatch = useAppDispatch()
-
   const lastSelectionRef = React.useRef<any>(null)
 
-  const handleClickEditorArea = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClickEditorArea = () => {
     editableRef.current?.focus()
 
     if (lastSelectionRef.current) {
@@ -35,10 +34,9 @@ export const CardEditor: React.FC = () => {
     }
   }
 
-  const { lineHeight, fontSize } = useEditorLayout(
-    editorRef,
-    DEFAULT_CARDTEXT_LINES
-  )
+  const { forceUpdateToolbar } = useForceUpdateCardtextToolbar(editor)
+
+  const { lineHeight, fontSize } = useEditorLayout(editorRef)
 
   return (
     <div className={styles.editor}>
@@ -88,6 +86,9 @@ export const CardEditor: React.FC = () => {
                 lastSelectionRef.current = editor.selection
               }
             }}
+            // onSelect={forceUpdateToolbar}
+            onKeyUp={forceUpdateToolbar}
+            onMouseUp={forceUpdateToolbar}
           />
         </Slate>
       </div>

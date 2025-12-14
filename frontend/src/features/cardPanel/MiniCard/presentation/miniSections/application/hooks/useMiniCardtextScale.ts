@@ -9,8 +9,9 @@ import {
 } from '@cardtext/domain/types'
 import { calculateEditorLayout } from '@cardtext/application/helpers'
 import { useLayoutFacade } from '@layout/application/facades'
+import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 
-export const useMiniCardtext = () => {
+export const useMiniCardtextScale = () => {
   const editor = useMemo(() => withReact(createEditor()), [])
 
   const { value, cardtextLines } = useSelector(
@@ -18,7 +19,7 @@ export const useMiniCardtext = () => {
   )
 
   const { size } = useLayoutFacade()
-  const { sizeMiniCard } = size
+  const { sizeCard, sizeMiniCard } = size
 
   const style = sizeMiniCard?.height
     ? (() => {
@@ -39,5 +40,7 @@ export const useMiniCardtext = () => {
         textAlign: 'left' as const,
       }
 
-  return { editor, value, style }
+  const scale = CARD_SCALE_CONFIG.scaleMiniCard
+
+  return { editor, value, style, sizeCard, scale }
 }

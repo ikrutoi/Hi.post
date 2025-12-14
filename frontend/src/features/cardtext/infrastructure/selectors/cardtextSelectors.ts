@@ -1,5 +1,5 @@
 import { RootState } from '@app/state'
-import type { CardtextValue } from '@cardtext/domain/types/cardtext.types'
+import type { CardtextValue } from '@cardtext/domain/types'
 
 export const selectCardtextState = (state: RootState) => state.cardtext
 
@@ -11,3 +11,6 @@ export const selectCardtextPlainText = (state: RootState): string =>
 
 export const selectCardtextIsComplete = (state: RootState): boolean =>
   state.cardtext.isComplete
+
+export const selectCardtextLines = (state: RootState): number =>
+  state.cardtext.cardtextLines

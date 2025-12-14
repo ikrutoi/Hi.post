@@ -53,7 +53,6 @@ export const MiniCard: React.FC<MiniCardProps> = ({
     >
       {render({
         section,
-        cardMiniSectionRef: miniCardRef.current,
       })}
 
       <button

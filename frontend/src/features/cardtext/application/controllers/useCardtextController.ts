@@ -20,7 +20,7 @@ export const useCardtextController = () => {
   const plainText = useAppSelector(selectCardtextPlainText)
   const isComplete = useAppSelector(selectCardtextIsComplete)
 
-  const [value, setLocalValue] = React.useState<CardtextValue>(EMPTY_PARAGRAPH)
+  const [value, setLocalValue] = React.useState<CardtextValue>(reduxValue)
 
   React.useEffect(() => {
     setLocalValue(reduxValue)
@@ -36,8 +36,9 @@ export const useCardtextController = () => {
 
   const clearCardtext = () => {
     dispatch(clear())
-    setLocalValue([])
+    setLocalValue(EMPTY_PARAGRAPH)
     Transforms.delete(editor, { at: [] })
+    Transforms.insertNodes(editor, EMPTY_PARAGRAPH, { at: [0] })
   }
 
   const isBoldActive = () => Editor.marks(editor)?.bold === true
