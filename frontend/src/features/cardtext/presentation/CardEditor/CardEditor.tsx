@@ -1,12 +1,11 @@
 import React from 'react'
 import { Slate, Editable, ReactEditor } from 'slate-react'
 import { Editor, Transforms, Range, Descendant } from 'slate'
-import { useAppDispatch } from '@app/hooks'
 import { useCardtextFacade } from '../../application/facades'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
-import { useEditorLayout } from '../../application/hooks'
+import { useEditorLayout, useInitSelection } from '../../application/hooks'
 import { useForceUpdateCardtextToolbar } from '../../application/commands'
 import styles from './CardEditor.module.scss'
 import type { CardtextValue } from '../../domain/types'
@@ -16,7 +15,8 @@ export const CardEditor: React.FC = () => {
   const { editor, value, editorRef, editableRef } = stateCardtext
   const { setValue } = actionsCardtext
 
-  const dispatch = useAppDispatch()
+  useInitSelection(editor)
+
   const lastSelectionRef = React.useRef<any>(null)
 
   const handleClickEditorArea = () => {
@@ -69,7 +69,7 @@ export const CardEditor: React.FC = () => {
             setValue(newValue as CardtextValue)
           }}
         >
-          <Toolbar section="cardtext" editor={editor} dispatch={dispatch} />
+          <Toolbar section="cardtext" editor={editor} />
 
           <Editable
             className={styles.editorEditable}

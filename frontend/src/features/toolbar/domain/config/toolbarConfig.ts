@@ -6,13 +6,15 @@ import {
   PANEL_KEYS,
   CARD_PANEL_OVERLAY_KEYS,
   initialCardphotoToolbarState,
-  initialCardtextToolbarState,
   initialSenderToolbarState,
   initialRecipientToolbarState,
   initialCardPanelToolbarState,
   initialCardPanelOverlayToolbarState,
+  ENVELOPE_TOOLBAR,
+  CARD_PANEL_OVERLAY_TOOLBAR,
 } from '../types'
-import { cardtextController } from '../../application/controllers'
+import { initialCardtextToolbarState } from '@cardtext/domain/types'
+import { cardtextController } from '@cardtext/application/controllers'
 
 import type { ToolbarState, ToolbarSectionConfigMap } from '../types'
 
@@ -57,14 +59,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['sender']) => ({
       cardUser: state.cardUser === 'enabled' ? 1 : null,
     }),
-    group: 'sender',
+    group: 'address',
+    toolbar: ENVELOPE_TOOLBAR,
   },
   recipient: {
     keys: ENVELOPE_KEYS,
     initialState: initialRecipientToolbarState,
     onAction: (key, section) => console.log('Recipient action', key, section),
-    group: 'recipient',
+    group: 'address',
     getBadges: (state: ToolbarState['recipient']) => ({}),
+    toolbar: ENVELOPE_TOOLBAR,
   },
   cardPanel: {
     keys: PANEL_KEYS,
@@ -80,5 +84,6 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
       console.log('CardPanelOverlay action', key, section),
     group: 'overlay',
     getBadges: (state: ToolbarState['cardPanelOverlay']) => ({}),
+    toolbar: CARD_PANEL_OVERLAY_TOOLBAR,
   },
 }

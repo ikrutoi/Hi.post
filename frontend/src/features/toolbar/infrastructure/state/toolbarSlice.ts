@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   initialCardphotoToolbarState,
-  initialCardtextToolbarState,
+  // initialCardtextToolbarState,
   initialSenderToolbarState,
   initialRecipientToolbarState,
   initialCardPanelToolbarState,
   initialCardPanelOverlayToolbarState,
+  UpdateSectionPayload,
 } from '../../domain/types'
+import { initialCardtextToolbarState } from '@cardtext/domain/types'
 import type { ToolbarState } from '../../domain/types'
 
 const initialState: ToolbarState = {
@@ -18,25 +20,15 @@ const initialState: ToolbarState = {
   cardPanelOverlay: initialCardPanelOverlayToolbarState,
 }
 
-type PartialToolbarPayload = {
-  [K in keyof ToolbarState]?: Partial<ToolbarState[K]>
-}
-
 const toolbarSlice = createSlice({
   name: 'toolbar',
   initialState,
   reducers: {
-    updateToolbar(state, action: PayloadAction<PartialToolbarPayload>) {
-      Object.entries(action.payload).forEach(([key, value]) => {
-        if (
-          key in state &&
-          value &&
-          typeof value === 'object' &&
-          !Array.isArray(value)
-        ) {
-          Object.assign(state[key as keyof ToolbarState], value)
-        }
-      })
+    updateToolbarSection<K extends keyof ToolbarState>(
+      state: ToolbarState,
+      action: PayloadAction<UpdateSectionPayload<K>>
+    ) {
+      Object.assign(state[action.payload.section], action.payload.value)
     },
     resetToolbar() {
       return structuredClone(initialState)
@@ -44,5 +36,5 @@ const toolbarSlice = createSlice({
   },
 })
 
-export const { updateToolbar, resetToolbar } = toolbarSlice.actions
+export const { updateToolbarSection, resetToolbar } = toolbarSlice.actions
 export default toolbarSlice.reducer

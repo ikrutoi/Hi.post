@@ -1,32 +1,14 @@
-import type { Editor } from 'slate'
 import type { ReactEditor } from 'slate-react'
 import type { AppDispatch } from '@app/state'
 import type { IconKey, IconState } from '@shared/config/constants'
 import type {
   CardtextKey,
   CardtextToolbarState,
-  CardtextSectionConfig,
-} from './cardtext.types'
-import type {
   CardphotoKey,
-  CardphotoToolbarState,
-  CardphotoSectionConfig,
-} from './cardphoto.types'
-import type {
-  PanelKey,
-  CardPanelToolbarState,
-  CardPanelSectionConfig,
-} from './cardPanel.types'
-import type {
-  CardPanelOverlayToolbarKey,
-  CardPanelOverlayToolbarState,
-  CardPanelOverlaySectionConfig,
-} from './cardPanelOverlay.types'
-import type {
   EnvelopeKey,
-  AddressState,
-  EnvelopeSectionConfig,
-} from './envelope.types'
+  PanelKey,
+  CardPanelOverlayToolbarKey,
+} from './index'
 
 export interface ToolbarIcon {
   key: IconKey
@@ -54,29 +36,15 @@ export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
 export type ToolbarState = {
   cardphoto: CardphotoToolbarState
   cardtext: CardtextToolbarState
-  sender: AddressState
-  recipient: AddressState
+  sender: EnvelopeToolbarState
+  recipient: EnvelopeToolbarState
   cardPanel: CardPanelToolbarState
   cardPanelOverlay: CardPanelOverlayToolbarState
 }
 
-export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
-  ? CardphotoKey
-  : S extends 'cardtext'
-    ? CardtextKey
-    : S extends 'sender' | 'recipient'
-      ? EnvelopeKey
-      : S extends 'cardPanel'
-        ? PanelKey
-        : S extends 'cardPanelOverlay'
-          ? CardPanelOverlayToolbarKey
-          : never
-
-export interface ToolbarSectionConfig<S extends ToolbarSection> {
-  keys: ReadonlyArray<keyof ToolbarState[S]>
-  initialState: ToolbarState[S]
-  onAction: (key: keyof ToolbarState[S], section: S) => void
-  getBadges?: (state: ToolbarState[S]) => Record<string, number | null>
+export type UpdateSectionPayload<K extends keyof ToolbarState> = {
+  section: K
+  value: Partial<ToolbarState[K]>
 }
 
 export interface BaseSectionConfig<
@@ -98,10 +66,28 @@ export interface BaseSectionConfig<
 }
 
 export type ToolbarSectionConfigMap = {
-  cardphoto: CardphotoSectionConfig
-  cardtext: CardtextSectionConfig
-  sender: EnvelopeSectionConfig
-  recipient: EnvelopeSectionConfig
-  cardPanel: CardPanelSectionConfig
-  cardPanelOverlay: CardPanelOverlaySectionConfig
+  cardphoto: BaseSectionConfig<CardphotoToolbarState, CardphotoKey, 'cardphoto'>
+  cardtext: BaseSectionConfig<CardtextToolbarState, CardtextKey, 'cardtext'>
+  sender: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'sender'>
+  recipient: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'recipient'>
+  cardPanel: BaseSectionConfig<CardPanelToolbarState, PanelKey, 'cardPanel'>
+  cardPanelOverlay: BaseSectionConfig<
+    CardPanelOverlayToolbarState,
+    CardPanelOverlayToolbarKey,
+    'cardPanelOverlay'
+  >
 }
+
+export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
+  ? CardphotoKey
+  : S extends 'cardtext'
+    ? CardtextKey
+    : S extends 'sender'
+      ? EnvelopeKey
+      : S extends 'recipient'
+        ? EnvelopeKey
+        : S extends 'cardPanel'
+          ? PanelKey
+          : S extends 'cardPanelOverlay'
+            ? CardPanelOverlayToolbarKey
+            : never

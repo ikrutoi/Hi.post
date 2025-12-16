@@ -3,6 +3,7 @@ import { createEditor, Transforms, Editor } from 'slate'
 import { withReact } from 'slate-react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { setValue, clear } from '../../infrastructure/state'
+import { useForceUpdateCardtextToolbar } from '../commands'
 import {
   selectCardtextValue,
   selectCardtextPlainText,
@@ -15,6 +16,7 @@ import type { CardtextValue } from '../../domain/types'
 export const useCardtextController = () => {
   const dispatch = useAppDispatch()
   const editor = React.useMemo(() => withReact(createEditor()), [])
+  const { forceUpdateToolbar } = useForceUpdateCardtextToolbar(editor)
 
   const reduxValue = useAppSelector(selectCardtextValue)
   const plainText = useAppSelector(selectCardtextPlainText)
@@ -25,6 +27,11 @@ export const useCardtextController = () => {
   React.useEffect(() => {
     setLocalValue(reduxValue)
   }, [reduxValue])
+
+  React.useEffect(() => {
+    dispatch({ type: 'cardtext/init' })
+    forceUpdateToolbar()
+  }, [dispatch])
 
   const editorRef = React.useRef<HTMLDivElement>(null)
   const editableRef = React.useRef<HTMLDivElement>(null)

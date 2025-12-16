@@ -1,1 +1,1 @@
-export * from './toolbar.selectors'
+export * from './toolbarSelectors'

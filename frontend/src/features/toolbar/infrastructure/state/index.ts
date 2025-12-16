@@ -1,3 +1,3 @@
-export * from './toolbar.slice'
+export * from './toolbarSlice'
 
-export { default as toolbarReducer } from './toolbar.slice'
+export { default as toolbarReducer } from './toolbarSlice'

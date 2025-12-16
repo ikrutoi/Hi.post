@@ -41,6 +41,13 @@ export const cardtextSlice = createSlice({
     setCardtextLines(state, action: PayloadAction<number>) {
       state.cardtextLines = action.payload
     },
+    initCardtext(state, action: PayloadAction<CardtextValue>) {
+      state.value = action.payload
+      state.plainText = action.payload
+        .map((block) => block.children.map((child) => child.text).join(' '))
+        .join('\n')
+      state.isComplete = state.plainText.trim().length > 0
+    },
     clear(state) {
       state.value = EMPTY_PARAGRAPH
       state.plainText = ''
@@ -50,7 +57,13 @@ export const cardtextSlice = createSlice({
   },
 })
 
-export const { setValue, setPlainText, setComplete, setCardtextLines, clear } =
-  cardtextSlice.actions
+export const {
+  setValue,
+  setPlainText,
+  setComplete,
+  setCardtextLines,
+  initCardtext,
+  clear,
+} = cardtextSlice.actions
 
 export default cardtextSlice.reducer

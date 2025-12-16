@@ -1,3 +1,3 @@
-export { withAlign } from './withAlign'
-export { focusAtEnd } from './focusAtEnd'
+export * from './withAlign'
+export * from './focusAtEnd'
 export * from './restoreSelection'

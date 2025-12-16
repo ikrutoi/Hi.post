@@ -39,7 +39,7 @@ export const toggleMark = (editor: Editor, format: MarkFormat) => {
 }
 
 export const useForceUpdateCardtextToolbar = (editor: Editor) => {
-  const { actions } = useToolbarFacade('cardtext', editor)
+  const { actions } = useToolbarFacade('cardtext')
 
   const forceUpdateToolbar = () => {
     const updatedState: Partial<CardtextToolbarState> = {}

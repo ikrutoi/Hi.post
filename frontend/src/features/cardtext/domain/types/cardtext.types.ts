@@ -31,7 +31,6 @@ export type QuoteElement = {
 export type CardtextBlock = ParagraphElement | HeadingElement | QuoteElement
 
 export type CardtextValue = CardtextBlock[]
-// export type CardtextValue = Descendant[]
 
 export type MarkFormat = 'bold' | 'italic' | 'underline'
 
@@ -48,3 +47,11 @@ declare module 'slate' {
     Text: CardtextTextNode
   }
 }
+
+export const initialCardtextValue: CardtextValue = [
+  {
+    type: 'paragraph',
+    align: 'left',
+    children: [{ text: '', italic: true }],
+  },
+]

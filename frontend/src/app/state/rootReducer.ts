@@ -6,7 +6,9 @@ import {
   imageHistoryReducer,
   cardphotoStepsReducer,
 } from '@cardphoto/infrastructure/state'
+
 import { cardtextReducer } from '@cardtext/infrastructure/state'
+import { cardtextToolbarReducer } from '@cardtext/infrastructure/state'
 
 import { envelopeReducer } from '@envelope/infrastructure/state'
 import { senderReducer } from '@envelope/sender/infrastructure/state'
@@ -45,7 +47,9 @@ export const rootReducer = combineReducers({
   cardphotoActive: cardphotoActiveReducer,
   cardphotoSteps: cardphotoStepsReducer,
   imageHistory: imageHistoryReducer,
+
   cardtext: cardtextReducer,
+  cardtextToolbar: cardtextToolbarReducer,
 
   envelope: envelopeReducer,
   sender: senderReducer,
