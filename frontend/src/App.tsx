@@ -32,9 +32,9 @@ const App = () => {
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
       <Header />
-      <main ref={mainRef} className={styles.app__main}>
+      <main ref={mainRef} className={styles.appMain}>
         <CardMenu />
-        <div ref={formRef} className={styles.app__form}>
+        <div ref={formRef} className={styles.appForm}>
           <>
             <ErrorBoundary>
               <CardPanelWrapper sizeMiniCard={sizeMiniCard} />

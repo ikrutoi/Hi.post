@@ -1,16 +1,10 @@
+@use '@styles/config/colors' as *;
+
 .cardphoto {
   position: relative;
 
-  &__toolbar {
+  &Toolbar {
     position: absolute;
-    top: -2rem;
-    left: 1rem;
-    width: calc(100% - 2rem);
-    height: calc(2rem - 1px);
-    border-radius: 1rem 1rem 0 0;
-    border: solid 1px lightgray;
-    border-bottom: none;
-    box-sizing: border-box;
-    background-color: rgba(255, 255, 255, 0);
+    inset: 0;
   }
 }

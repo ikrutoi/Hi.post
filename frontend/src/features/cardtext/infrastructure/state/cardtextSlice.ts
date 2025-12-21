@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { Descendant } from 'slate'
 import {
   EMPTY_PARAGRAPH,
   DEFAULT_CARDTEXT_LINES,
@@ -12,6 +11,7 @@ export interface CardtextState {
   plainText: string
   isComplete: boolean
   cardtextLines: number
+  resetToken: number
 }
 
 const initialState: CardtextState = {
@@ -19,6 +19,7 @@ const initialState: CardtextState = {
   plainText: '',
   isComplete: false,
   cardtextLines: DEFAULT_CARDTEXT_LINES,
+  resetToken: 0,
 }
 
 export const cardtextSlice = createSlice({
@@ -49,10 +50,13 @@ export const cardtextSlice = createSlice({
       state.isComplete = state.plainText.trim().length > 0
     },
     clear(state) {
-      state.value = EMPTY_PARAGRAPH
+      state.value = initialCardtextValue.map((b) => ({
+        ...b,
+        children: b.children.map((c) => ({ ...c })),
+      }))
       state.plainText = ''
       state.isComplete = false
-      state.cardtextLines = DEFAULT_CARDTEXT_LINES
+      state.resetToken += 1
     },
   },
 })

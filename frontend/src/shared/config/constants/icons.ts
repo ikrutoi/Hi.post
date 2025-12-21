@@ -5,6 +5,7 @@ export const ICON_KEYS = [
   'savedTemplates',
   'delete',
   'remove',
+  'deleteSmall',
   'download',
   'user',
   'turn',
@@ -32,6 +33,13 @@ export const ICON_KEYS = [
   'cardUser',
   'cardText',
   'textTemplates',
+  'photoTemplates',
+  'addressTemplates',
+  'cardphoto',
+  'cardtext',
+  'envelope',
+  'aroma',
+  'date',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

@@ -12,7 +12,7 @@ export const CARDTEXT_KEYS = [
   'right',
   'justify',
   'save',
-  'remove',
+  'delete',
   'textTemplates',
 ] as const
 
@@ -45,7 +45,7 @@ export const CARDTEXT_TOOLBAR: {
   {
     group: 'ui',
     icons: CARDTEXT_KEYS.filter((k) =>
-      ['save', 'remove', 'textTemplates'].includes(k)
+      ['save', 'delete', 'textTemplates'].includes(k)
     ).map((key) => ({ key, state: 'disabled' })),
   },
 ]

@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import EnvelopeIcon from '@assets/illustration/EnvelopeIcon'
+import EnvelopeIcon from '@/shared/assets/illustration/EnvelopeIcon'
 import { renderSections } from '../application/helpers'
 import styles from './EnvelopeOverlay.module.scss'
 import type { SizeCard } from '@layout/domain/types'

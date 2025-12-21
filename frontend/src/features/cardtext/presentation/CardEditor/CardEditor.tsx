@@ -7,6 +7,7 @@ import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
 import { useEditorLayout, useInitSelection } from '../../application/hooks'
 import { useForceUpdateCardtextToolbar } from '../../application/commands'
+import { EMPTY_PARAGRAPH } from '../../domain/types'
 import styles from './CardEditor.module.scss'
 import type { CardtextValue } from '../../domain/types'
 
@@ -67,9 +68,10 @@ export const CardEditor: React.FC = () => {
           initialValue={value as Descendant[]}
           onChange={(newValue: Descendant[]) => {
             setValue(newValue as CardtextValue)
+            forceUpdateToolbar()
           }}
         >
-          <Toolbar section="cardtext" editor={editor} />
+          <Toolbar section="cardtext" />
 
           <Editable
             className={styles.editorEditable}
@@ -86,9 +88,6 @@ export const CardEditor: React.FC = () => {
                 lastSelectionRef.current = editor.selection
               }
             }}
-            // onSelect={forceUpdateToolbar}
-            onKeyUp={forceUpdateToolbar}
-            onMouseUp={forceUpdateToolbar}
           />
         </Slate>
       </div>

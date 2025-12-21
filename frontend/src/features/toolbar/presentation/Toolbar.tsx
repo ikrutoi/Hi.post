@@ -1,8 +1,8 @@
 import React from 'react'
-import type { ReactEditor } from 'slate-react'
 import clsx from 'clsx'
 import { getToolbarIcon } from '@shared/utils/icons/getToolbarIcon'
 import { capitalize } from '@shared/utils/helpers'
+import { useCardtextFacade } from '@cardtext/application/facades'
 import styles from './Toolbar.module.scss'
 import type {
   ToolbarGroup,
@@ -12,14 +12,11 @@ import type {
 import type { IconState, IconKey } from '@shared/config/constants'
 import { useToolbarFacade } from '../application/facades'
 
-export const Toolbar = ({
-  section,
-  editor,
-}: {
-  section: ToolbarSection
-  editor: ReactEditor
-}) => {
+export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { state, config, badges, onAction } = useToolbarFacade(section)
+
+  const { state: stateCardtext } = useCardtextFacade()
+  const { editor } = stateCardtext
 
   const renderIcon = (key: keyof ToolbarState[typeof section]) => {
     const iconState = state[key] as IconState
@@ -35,7 +32,9 @@ export const Toolbar = ({
         )}
         onMouseDown={(e) => {
           e.preventDefault()
-          onAction(key as any, editor)
+          section === 'cardtext'
+            ? onAction(key as any, editor)
+            : onAction(key as any)
         }}
         disabled={iconState === 'disabled'}
       >

@@ -13,7 +13,7 @@ export const HeaderLogo: React.FC = () => {
 
   return (
     <div className={clsx(styles.headerLogo, logoSizeClass)}>
-      <span className={styles.headerLogo__image} />
+      <span className={styles.headerLogoImage} />
     </div>
   )
 }

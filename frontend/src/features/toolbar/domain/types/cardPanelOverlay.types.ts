@@ -5,7 +5,7 @@ import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 export const CARD_PANEL_OVERLAY_KEYS = [
   'addCart',
   'addDrafts',
-  'remove',
+  'delete',
 ] as const
 export type CardPanelOverlayToolbarKey =
   (typeof CARD_PANEL_OVERLAY_KEYS)[number]
@@ -20,12 +20,12 @@ export const CARD_PANEL_OVERLAY_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'addCart', state: 'disabled' },
       { key: 'addDrafts', state: 'disabled' },
-      { key: 'remove', state: 'disabled' },
+      { key: 'delete', state: 'disabled' },
     ],
   },
 ]
 
-export const OVERLAY_KEYS = ['addCart', 'addDrafts', 'remove'] as const
+export const OVERLAY_KEYS = ['addCart', 'addDrafts', 'delete'] as const
 
 export type OverlayKey = (typeof OVERLAY_KEYS)[number]
 
@@ -34,9 +34,8 @@ export const initialCardPanelOverlayToolbarState: CardPanelOverlayToolbarState =
     flattenIcons(CARD_PANEL_OVERLAY_TOOLBAR)
   ) as CardPanelOverlayToolbarState
 
-export interface CardPanelOverlaySectionConfig
-  extends BaseSectionConfig<
-    CardPanelOverlayToolbarState,
-    OverlayKey,
-    'cardPanelOverlay'
-  > {}
+export interface CardPanelOverlaySectionConfig extends BaseSectionConfig<
+  CardPanelOverlayToolbarState,
+  OverlayKey,
+  'cardPanelOverlay'
+> {}

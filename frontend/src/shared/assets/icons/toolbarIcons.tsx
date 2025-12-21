@@ -24,6 +24,7 @@ import {
   MdFormatAlignJustify,
 } from 'react-icons/md'
 import { LuPaperclip, LuMail, LuMailOpen, LuMailPlus } from 'react-icons/lu'
+import { TiDelete } from 'react-icons/ti'
 import {
   RiUserLine,
   RiResetLeftFill,
@@ -59,11 +60,16 @@ import {
   FaEnvelope,
   FaEnvelopeOpenText,
 } from 'react-icons/fa'
+import { FaRegImage } from 'react-icons/fa6'
 import {
   TbArrowsMaximize,
   TbMail,
   TbMailPlus,
   TbMailOpened,
+  TbPhoto,
+  TbCalendar,
+  TbAlignBoxCenterMiddle,
+  TbAlertTriangle,
 } from 'react-icons/tb'
 import {
   BsEnvelope,
@@ -76,6 +82,23 @@ import { HiArrowsPointingOut, HiArrowsPointingIn } from 'react-icons/hi2'
 import { ICON_KEYS } from '../../config/constants'
 import type { IconKey } from '@shared/config/constants'
 
+import {
+  IconSectionMenuCardphoto,
+  IconSectionMenuCardtext,
+  IconSectionMenuEnvelope,
+  IconSectionMenuEnvelopeV2,
+  IconSectionMenuAroma,
+  IconSectionMenuAromaV2,
+  IconSectionMenuDate,
+  IconCardphotoTemplates,
+  IconCardtextTemplates,
+  IconAddressTemplates,
+  IconEnvelopeTemplatesV5,
+  IconCardPlus,
+  IconDelete,
+  IconSave,
+} from '@shared/ui/icons'
+
 export const toolbarIcons = Object.fromEntries(
   ICON_KEYS.map((key) => [key, getIconByKey(key)])
 ) as Record<IconKey, JSX.Element>
@@ -83,13 +106,15 @@ export const toolbarIcons = Object.fromEntries(
 function getIconByKey(key: IconKey): JSX.Element {
   switch (key) {
     case 'save':
-      return <FiSave />
+      return <IconSave />
     case 'savedTemplates':
       return <LuPaperclip />
-    case 'delete':
-      return <FiDelete />
     case 'remove':
       return <RiDeleteBinLine />
+    case 'delete':
+      return <IconDelete />
+    case 'deleteSmall':
+      return <TiDelete />
     case 'download':
       return <FiDownload />
     case 'user':
@@ -131,18 +156,32 @@ function getIconByKey(key: IconKey): JSX.Element {
     case 'cart':
       return <FaEnvelope />
     case 'addCart':
-      return <TbMailPlus />
+      return <IconCardPlus />
     case 'drafts':
       return <FaEnvelopeOpen />
     case 'addDrafts':
-      return <FiSave />
+      return <IconSave />
     case 'cards':
       return <PiCardsBold />
     case 'cardUser':
-      return <FaRegAddressCard />
+      return <IconEnvelopeTemplatesV5 />
+    case 'addressTemplates':
+      return <IconAddressTemplates />
     case 'cardText':
       return <BsCardText />
     case 'textTemplates':
-      return <PiCardsBold />
+      return <IconCardtextTemplates />
+    case 'photoTemplates':
+      return <IconCardphotoTemplates />
+    case 'cardphoto':
+      return <IconSectionMenuCardphoto />
+    case 'cardtext':
+      return <IconSectionMenuCardtext />
+    case 'envelope':
+      return <IconSectionMenuEnvelopeV2 />
+    case 'aroma':
+      return <IconSectionMenuAromaV2 />
+    case 'date':
+      return <IconSectionMenuDate />
   }
 }

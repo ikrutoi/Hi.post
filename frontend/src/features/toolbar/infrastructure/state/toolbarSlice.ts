@@ -6,6 +6,7 @@ import {
   initialRecipientToolbarState,
   initialCardPanelToolbarState,
   initialCardPanelOverlayToolbarState,
+  initialSectionEditorMenuToolbarState,
   UpdateSectionPayload,
 } from '../../domain/types'
 import { initialCardtextToolbarState } from '@cardtext/domain/types'
@@ -18,6 +19,7 @@ const initialState: ToolbarState = {
   recipient: initialRecipientToolbarState,
   cardPanel: initialCardPanelToolbarState,
   cardPanelOverlay: initialCardPanelOverlayToolbarState,
+  sectionEditorMenu: initialSectionEditorMenuToolbarState,
 }
 
 const toolbarSlice = createSlice({

@@ -4,7 +4,7 @@ import type { ReactEditor } from 'slate-react'
 import type { AppDispatch } from '@app/state'
 import { updateCardtextToolbarState } from '../../infrastructure/state'
 
-export const cardtextController = {
+export const cardtextToolbarController = {
   toggleBold(editor: ReactEditor, dispatch: AppDispatch) {
     if (!editor.selection) return
 

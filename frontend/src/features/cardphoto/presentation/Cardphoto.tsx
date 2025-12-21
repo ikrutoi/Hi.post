@@ -6,7 +6,7 @@ import styles from './Cardphoto.module.scss'
 export const Cardphoto = () => {
   return (
     <div className={styles.cardphoto}>
-      <div className={styles.cardphoto__toolbar}>
+      <div className={styles.cardphotoToolbar}>
         <Toolbar section="cardphoto" />
       </div>
       <ImageCrop />

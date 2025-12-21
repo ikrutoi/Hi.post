@@ -11,11 +11,11 @@ export const buildSenderToolbarState = (
       case 'save':
         state.save = isComplete ? 'enabled' : 'disabled'
         break
-      case 'remove':
-        state.remove = hasData ? 'enabled' : 'disabled'
+      case 'delete':
+        state.delete = hasData ? 'enabled' : 'disabled'
         break
-      case 'cardUser':
-        state.cardUser = 'disabled'
+      case 'addressTemplates':
+        state.addressTemplates = 'disabled'
         break
       default:
         const exhaustiveCheck: never = key

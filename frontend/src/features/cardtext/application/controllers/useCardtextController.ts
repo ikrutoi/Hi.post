@@ -21,6 +21,7 @@ export const useCardtextController = () => {
   const reduxValue = useAppSelector(selectCardtextValue)
   const plainText = useAppSelector(selectCardtextPlainText)
   const isComplete = useAppSelector(selectCardtextIsComplete)
+  const resetToken = useAppSelector((state) => state.cardtext.resetToken)
 
   const [value, setLocalValue] = React.useState<CardtextValue>(reduxValue)
 
@@ -32,6 +33,14 @@ export const useCardtextController = () => {
     dispatch({ type: 'cardtext/init' })
     forceUpdateToolbar()
   }, [dispatch])
+
+  React.useEffect(() => {
+    editor.children = reduxValue
+    const start = Editor.start(editor, [])
+    editor.selection = { anchor: start, focus: start }
+    editor.onChange()
+    forceUpdateToolbar()
+  }, [resetToken])
 
   const editorRef = React.useRef<HTMLDivElement>(null)
   const editableRef = React.useRef<HTMLDivElement>(null)

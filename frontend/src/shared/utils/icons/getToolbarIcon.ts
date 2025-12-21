@@ -6,13 +6,11 @@ import type { JSX } from 'react'
 export const getToolbarIcon = ({
   key,
   className = 'toolbarIcon',
-  size = '1.6rem',
   color,
   style = {},
 }: {
   key: IconKey
   className?: string
-  size?: string
   color?: string
   style?: React.CSSProperties
 }): JSX.Element => {
@@ -20,8 +18,6 @@ export const getToolbarIcon = ({
   return cloneElement(icon, {
     className,
     style: {
-      width: size,
-      height: size,
       ...(color && { color }),
       ...style,
     },

@@ -4,17 +4,17 @@
   .toolbarKey {
     position: relative;
     margin: 0 0.2rem;
+    // padding: 0.4rem;
     background-color: white;
     width: 1.85rem;
     height: 1.85rem;
-    border-radius: 50%;
+    border-radius: 0.7rem;
     background-color: white;
-    cursor: pointer;
-    // border: solid 1px blue;
     transition:
       color 0.15s ease,
       cursor 0.15s ease,
-      transform 0.15s ease;
+      background-color 0.15s ease;
+    // border: solid 1px blue;
 
     &Disabled {
       color: $color-font-disabled;
@@ -23,12 +23,12 @@
 
     &Enabled {
       color: $color-font-enabled;
+      cursor: pointer;
     }
 
     &Enabled:hover {
-      // color: $color-active;
-      transform: scale(1.1);
-      // background-color: $color-enabled;
+      background-color: $color-enabled;
+      cursor: pointer;
     }
 
     &Active {
@@ -36,11 +36,7 @@
     }
 
     &Active:hover {
-      transform: scale(1.1);
-    }
-
-    &Hover {
-      color: $color-hover;
+      background-color: $color-enabled;
     }
   }
 }
@@ -57,29 +53,65 @@
   }
 
   .toolbarKey {
-    background-color: rgba($color-disabled, 0.75);
+    background-color: $color-disabled;
+  }
+}
+
+.toolbarCardtext,
+.toolbarCardphoto {
+  position: absolute;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  .toolbarGroupText {
+    .toolbarKey {
+      border: solid 1px red;
+
+      .toolbarIcon {
+        width: 1.6rem;
+        height: 1.6rem;
+      }
+    }
   }
 }
 
 .toolbarCardtext {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 0 3rem;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  // border: solid 1px red;
+  top: -3rem;
+}
 
-  .toolbarGroupText {
-    .toolbarKey {
-      width: 1.75rem;
-      height: 1.75rem;
-      margin-top: 0.125rem;
-    }
+.toolbarCardphoto {
+  top: -3rem;
+}
+
+.toolbarSectionEditorMenu {
+  position: absolute;
+  left: -1.2rem;
+
+  .toolbarGroup {
+    display: flex;
+    flex-direction: column;
   }
 
-  .toolbarGroupUi {
-    // border: solid 1px green;
+  .toolbarKey {
+    width: 2.4rem;
+    height: 2.4rem;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    border-radius: 0.9rem;
+    background-color: white;
+    border: solid 1px $color-section-dark;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  &Active {
+    color: $color-font-active;
+  }
+
+  .toolbarIcon {
+    margin: 0.4rem;
   }
 }

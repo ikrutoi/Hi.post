@@ -63,3 +63,38 @@
 .labelCity {
   grid-column: 2/4;
 }
+
+.inputWrapper {
+  position: relative;
+}
+
+.clearButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0;
+  background: none;
+  color: $color-font-disabled;
+  border: none;
+  border-radius: 1rem;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.inputWrapperRecipient .clearButton {
+  left: 0;
+}
+
+.inputWrapperSender .clearButton {
+  right: 0;
+}
+
+.clearButton svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.inputWrapper:hover .clearButton {
+  opacity: 1;
+}

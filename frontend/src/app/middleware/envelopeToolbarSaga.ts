@@ -2,7 +2,6 @@ import { takeLatest, put } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { clearSender } from '@envelope/sender/infrastructure/state'
 import { clearRecipient } from '@envelope/recipient/infrastructure/state'
-import { recomputeEnvelope } from '@envelope/infrastructure/state'
 
 function* handleEnvelopeToolbarAction(
   action: ReturnType<typeof toolbarAction>
@@ -11,7 +10,7 @@ function* handleEnvelopeToolbarAction(
 
   switch (section) {
     case 'sender':
-      if (key === 'remove') {
+      if (key === 'delete') {
         yield put(clearSender())
         // yield put(recomputeEnvelope({ sender: false, recipient: true }))
       }
@@ -20,7 +19,7 @@ function* handleEnvelopeToolbarAction(
       break
 
     case 'recipient':
-      if (key === 'remove') {
+      if (key === 'delete') {
         yield put(clearRecipient())
         // yield put(recomputeEnvelope({ sender: true, recipient: false }))
       }

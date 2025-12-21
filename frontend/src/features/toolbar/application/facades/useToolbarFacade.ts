@@ -23,7 +23,7 @@ export function useToolbarFacade<S extends ToolbarSection>(section: S) {
 
   const badges = (TOOLBAR_CONFIG[section] as any).getBadges?.(state) ?? {}
 
-  const onAction = (key: ToolbarKeyFor<S>, editor: ReactEditor) => {
+  const onAction = (key: ToolbarKeyFor<S>, editor?: ReactEditor) => {
     dispatch(toolbarAction({ section, key }))
     toolbarController.onAction(section, key, editor, dispatch)
   }

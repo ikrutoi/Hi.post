@@ -1,7 +1,9 @@
 .headerActions {
   display: flex;
+  // width: 50%;
   justify-content: space-between;
-  width: 200px;
+  border: solid 1px green;
+  // width: 200px;
 }
 
 .headerActions__cards {

@@ -2,12 +2,15 @@ import type { ReactEditor } from 'slate-react'
 import type { AppDispatch } from '@app/state'
 import type { IconKey, IconState } from '@shared/config/constants'
 import type {
+  CardphotoKey,
+  CardphotoToolbarState,
   CardtextKey,
   CardtextToolbarState,
-  CardphotoKey,
   EnvelopeKey,
   PanelKey,
   CardPanelOverlayToolbarKey,
+  SectionEditorMenuToolbarState,
+  SectionEditorMenuKey,
 } from './index'
 
 export interface ToolbarIcon {
@@ -29,6 +32,7 @@ export const TOOLBAR_SECTIONS = [
   'recipient',
   'cardPanel',
   'cardPanelOverlay',
+  'sectionEditorMenu',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -40,6 +44,7 @@ export type ToolbarState = {
   recipient: EnvelopeToolbarState
   cardPanel: CardPanelToolbarState
   cardPanelOverlay: CardPanelOverlayToolbarState
+  sectionEditorMenu: SectionEditorMenuToolbarState
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -76,6 +81,11 @@ export type ToolbarSectionConfigMap = {
     CardPanelOverlayToolbarKey,
     'cardPanelOverlay'
   >
+  sectionEditorMenu: BaseSectionConfig<
+    SectionEditorMenuToolbarState,
+    SectionEditorMenuKey,
+    'sectionEditorMenu'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -90,4 +100,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
           ? PanelKey
           : S extends 'cardPanelOverlay'
             ? CardPanelOverlayToolbarKey
-            : never
+            : S extends 'sectionEditorMenu'
+              ? SectionEditorMenuKey
+              : never

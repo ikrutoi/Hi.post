@@ -1,20 +1,24 @@
 import {
   CARDPHOTO_KEYS,
+  CARDPHOTO_TOOLBAR,
   CARDTEXT_KEYS,
   CARDTEXT_TOOLBAR,
   ENVELOPE_KEYS,
   PANEL_KEYS,
   CARD_PANEL_OVERLAY_KEYS,
+  SECTION_EDITOR_MENU_KEYS,
+  SECTION_EDITOR_MENU_TOOLBAR,
   initialCardphotoToolbarState,
   initialSenderToolbarState,
   initialRecipientToolbarState,
   initialCardPanelToolbarState,
   initialCardPanelOverlayToolbarState,
+  initialSectionEditorMenuToolbarState,
   ENVELOPE_TOOLBAR,
   CARD_PANEL_OVERLAY_TOOLBAR,
 } from '../types'
 import { initialCardtextToolbarState } from '@cardtext/domain/types'
-import { cardtextController } from '@cardtext/application/controllers'
+import { cardtextToolbarController } from '@cardtext/application/controllers'
 
 import type { ToolbarState, ToolbarSectionConfigMap } from '../types'
 
@@ -24,6 +28,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     initialState: initialCardphotoToolbarState,
     onAction: (key, section) => console.log('Cardphoto action', key, section),
     group: 'photo',
+    toolbar: CARDPHOTO_TOOLBAR,
     getBadges: (state: ToolbarState['cardphoto']) => ({}),
   },
   cardtext: {
@@ -32,19 +37,19 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     onAction: (key, section, editor, dispatch) => {
       switch (key) {
         case 'bold':
-          cardtextController.toggleBold(editor, dispatch)
+          cardtextToolbarController.toggleBold(editor, dispatch)
           break
         case 'italic':
-          cardtextController.toggleItalic(editor, dispatch)
+          cardtextToolbarController.toggleItalic(editor, dispatch)
           break
         case 'underline':
-          cardtextController.toggleUnderline(editor, dispatch)
+          cardtextToolbarController.toggleUnderline(editor, dispatch)
           break
         case 'left':
         case 'center':
         case 'right':
         case 'justify':
-          cardtextController.setAlign(editor, dispatch, key as any)
+          cardtextToolbarController.setAlign(editor, dispatch, key as any)
           break
       }
     },
@@ -85,5 +90,14 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'overlay',
     getBadges: (state: ToolbarState['cardPanelOverlay']) => ({}),
     toolbar: CARD_PANEL_OVERLAY_TOOLBAR,
+  },
+  sectionEditorMenu: {
+    keys: SECTION_EDITOR_MENU_KEYS,
+    initialState: initialSectionEditorMenuToolbarState,
+    onAction: (key, section) =>
+      console.log('SectionEditorMenu action', key, section),
+    group: 'menu',
+    getBadges: (state: ToolbarState['sectionEditorMenu']) => ({}),
+    toolbar: SECTION_EDITOR_MENU_TOOLBAR,
   },
 }
