@@ -1,4 +1,3 @@
-// CardSectionRenderer.ts
 import React, { useRef, useLayoutEffect, useState } from 'react'
 import { renderCardSection } from '../../application/helpers/renderCardSection'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
