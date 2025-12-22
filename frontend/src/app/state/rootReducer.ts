@@ -1,5 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit'
 
+import { sectionEditorMenuReducer } from '@entities/sectionEditorMenu/infrastructure/state'
+
 import {
   cardphotoReducer,
   cardphotoActiveReducer,
@@ -20,7 +22,7 @@ import { dateReducer } from '@date/infrastructure/state'
 import { calendarReducer } from '@date/calendar/infrastructure/state'
 import { switcherReducer } from '@date/switcher/infrastructure/state'
 
-import { cardMenuReducer } from '@cardMenu/infrastructure/state'
+import { cardMenuReducer } from '@/app/basket/cardMenu/infrastructure/state'
 
 import { CardPanelReducer } from '@cardPanel/infrastructure/state'
 
@@ -43,6 +45,8 @@ import { interactionReducer } from '@features/interaction'
 import { layoutReducer } from '@layout/infrastructure/state/layoutReducer'
 
 export const rootReducer = combineReducers({
+  sectionEditorMenu: sectionEditorMenuReducer,
+
   cardphoto: cardphotoReducer,
   cardphotoActive: cardphotoActiveReducer,
   cardphotoSteps: cardphotoStepsReducer,

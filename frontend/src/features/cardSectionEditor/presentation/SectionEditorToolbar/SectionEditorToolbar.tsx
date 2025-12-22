@@ -19,9 +19,7 @@ export const SectionEditorToolbar: React.FC = () => {
       className={clsx(styles.sectionEditorToolbar)}
       style={{ width: `${width}px`, height: `${height}px` }}
     >
-      {/* <div className={clsx(styles.sectionEditorMenuContainer)}> */}
       <Toolbar section="sectionEditorMenu" />
-      {/* </div> */}
     </div>
   )
 }

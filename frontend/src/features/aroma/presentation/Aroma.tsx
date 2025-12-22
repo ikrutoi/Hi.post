@@ -1,4 +1,5 @@
 import React from 'react'
+import clsx from 'clsx'
 import { AromaTile } from './AromaTile/AromaTile'
 import { AROMA_LIST } from '@entities/aroma/domain/constants'
 import { useAromaFacade } from '../application/facades'
@@ -18,7 +19,7 @@ export const Aroma: React.FC = () => {
   }
 
   return (
-    <form className={styles.aroma} onSubmit={handleSubmit}>
+    <form className={clsx(styles.aroma)} onSubmit={handleSubmit}>
       {AROMA_LIST.sort((a, b) => (a.make > b.make ? 1 : -1)).map((el, i) => (
         <AromaTile
           key={`${el.name}-${i}`}

@@ -9,39 +9,17 @@ import type { CardMenuSection } from '@shared/config/constants'
 export const renderCardSection = (
   section: CardMenuSection | null,
   options: {
-    // sizeCard: { width: number; height: number }
-    // choiceSection: any
-    // choiceClip: any
-    // toolbarColor?: string
     sectionLeft: number
     sectionRef: RefObject<HTMLDivElement | null>
   }
 ) => {
-  const {
-    // sizeCard,
-    // choiceSection,
-    // choiceClip,
-    // toolbarColor,
-    sectionLeft,
-    sectionRef,
-  } = options
+  const { sectionLeft, sectionRef } = options
 
   switch (section) {
     case 'cardphoto':
-      return (
-        <Cardphoto
-        // sizeCard={sizeCard}
-        // choiceSection={choiceSection}
-        // choiceClip={choiceClip}
-        />
-      )
+      return <Cardphoto />
     case 'cardtext':
-      return (
-        <Cardtext
-          // toolbarColor={toolbarColor}
-          styleLeft={sectionLeft ?? 0}
-        />
-      )
+      return <Cardtext styleLeft={sectionLeft ?? 0} />
     case 'envelope':
       return <Envelope cardPuzzleRef={sectionRef} />
     case 'aroma':

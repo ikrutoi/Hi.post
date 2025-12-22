@@ -9,17 +9,22 @@
   align-items: center;
   border-radius: 0.5rem;
   box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.075);
-  border: solid 1px rgb(230, 230, 230);
+  border: solid 1px $color-section-light;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .tile:hover {
+  background-color: $color-enabled;
+}
+
+.tileSelected,
+.tileSelected:hover {
   background-color: $color-section-light-completed;
 }
 
-.tileSelected {
-  background-color: $color-section-light-completed;
+.tileSelected:hover {
+  cursor: default;
 }
 
 .tileSelected .tileImage,

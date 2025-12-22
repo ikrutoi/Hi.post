@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ErrorBoundary } from '@shared/ui/ErrorBoundary'
 import { Header } from './features/header/presentation/Header'
-import { CardMenu } from '@cardMenu/presentation/CardMenu'
+import { CardMenu } from '@/app/basket/cardMenu/presentation/CardMenu'
 import { CardPanelWrapper } from '@cardPanel/presentation/CardPanelWrapper'
 import { CardSectionEditor } from './features/cardSectionEditor/presentation/CardSectionEditor'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
@@ -10,7 +10,7 @@ import {
   useToolbarClickReset,
   useViewportInit,
 } from '@layout/application/hooks'
-import { useSize } from '@shared/hooks/useSize'
+// import { useSize } from '@shared/hooks/useSize'
 import { useMiniCardSize } from '@shared/hooks'
 import styles from './App.module.scss'
 
@@ -19,7 +19,7 @@ const App = () => {
   const mainRef = useRef<HTMLDivElement>(null)
   const formRef = useRef<HTMLDivElement>(null)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
-  const sectionEditorSize = useSize(formRef)
+  // const sectionEditorSize = useSize(formRef)
 
   useAuthInit()
   useLayoutInit()
@@ -33,7 +33,7 @@ const App = () => {
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
       <Header />
       <main ref={mainRef} className={styles.appMain}>
-        <CardMenu />
+        <div></div>
         <div ref={formRef} className={styles.appForm}>
           <>
             <ErrorBoundary>

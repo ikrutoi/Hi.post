@@ -1,18 +1,12 @@
 import React, { useRef, useLayoutEffect, useState } from 'react'
 import { renderCardSection } from '../../application/helpers/renderCardSection'
-import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
+import { useSectionEditorMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import styles from './CardSectionRenderer.module.scss'
 
-interface CardSectionRendererProps {
-  toolbarColor?: string
-}
-
-export const CardSectionRenderer: React.FC<CardSectionRendererProps> = ({
-  toolbarColor,
-}) => {
-  const { state } = useLayoutNavFacade()
-  const { selectedCardMenuSection } = state
+export const CardSectionRenderer = () => {
+  const { state: stateSectionEditorMenu } = useSectionEditorMenuFacade()
+  const { activeSection } = stateSectionEditorMenu
 
   const { size } = useLayoutFacade()
   const sizeCard = size.sizeCard
@@ -38,10 +32,9 @@ export const CardSectionRenderer: React.FC<CardSectionRendererProps> = ({
         height: `${sizeCard.height}px`,
       }}
     >
-      {renderCardSection(selectedCardMenuSection, {
+      {renderCardSection(activeSection, {
         sectionLeft,
         sectionRef,
-        // toolbarColor, //
       })}
     </div>
   )
