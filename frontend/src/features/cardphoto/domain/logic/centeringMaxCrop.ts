@@ -1,5 +1,5 @@
-import type { CropArea, CropMode } from '../types/crop.types'
-import type { ImageDimensions } from '../types/size.types'
+import type { CropArea, CropMode } from '../typesLayout/crop.types'
+import type { ImageDimensions } from '../typesLayout/size.types'
 
 export const centeringMaxCrop = (
   dimensions: ImageDimensions,

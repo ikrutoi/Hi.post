@@ -1,13 +1,13 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { cardphotoStepsActions } from '../../infrastructure/state'
+import { cardphotoStepsActions } from '../../infrastructure/stateLayout'
 import {
   selectCardphotoSteps,
   selectCurrentStepIndex,
   selectCurrentStep,
   selectCanUndo,
   selectCanRedo,
-} from '../../infrastructure/selectors'
-import type { CardphotoItem } from '../../domain/types'
+} from '../../infrastructure/selectorsLayout'
+import type { CardphotoItem } from '../../domain/typesLayout'
 
 export function useCardphotoSteps() {
   const dispatch = useAppDispatch()

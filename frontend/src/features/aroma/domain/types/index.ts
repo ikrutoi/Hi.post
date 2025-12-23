@@ -1,1 +1,1 @@
-export * from './aroma.props'
+export * from './aroma.types'

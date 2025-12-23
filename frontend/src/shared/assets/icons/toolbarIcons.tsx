@@ -97,6 +97,9 @@ import {
   IconCardPlus,
   IconDelete,
   IconSave,
+  IconDownload,
+  IconApply,
+  IconClose,
 } from '@shared/ui/icons'
 
 export const toolbarIcons = Object.fromEntries(
@@ -116,7 +119,11 @@ function getIconByKey(key: IconKey): JSX.Element {
     case 'deleteSmall':
       return <TiDelete />
     case 'download':
-      return <FiDownload />
+      return <IconDownload />
+    case 'apply':
+      return <IconApply />
+    case 'close':
+      return <IconClose />
     case 'user':
       return <RiUserLine />
     case 'turn':

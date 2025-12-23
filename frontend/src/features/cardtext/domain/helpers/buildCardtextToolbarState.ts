@@ -46,8 +46,8 @@ export const buildCardtextToolbarState = (
       case 'save':
         state.save = hasContent ? 'enabled' : 'disabled'
         break
-      case 'delete':
-        state.delete = hasContent ? 'enabled' : 'disabled'
+      case 'close':
+        state.close = hasContent ? 'enabled' : 'disabled'
         break
       case 'textTemplates':
         state.textTemplates = 'disabled'

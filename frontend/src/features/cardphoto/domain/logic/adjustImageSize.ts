@@ -1,4 +1,4 @@
-import type { ImageSize } from '../types/size.types'
+import type { ImageSize } from '../typesLayout/size.types'
 
 export const adjustImageSize = (
   img: HTMLImageElement,

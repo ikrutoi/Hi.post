@@ -13,7 +13,7 @@ function* handleCardtextToolbarAction(
       console.log('Saving cardtext...')
       break
 
-    case 'delete':
+    case 'close':
       yield put(clear())
       break
 

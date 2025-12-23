@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { CardphotoSteps, CardphotoItem } from '../../domain/types'
+import type { CardphotoSteps, CardphotoItem } from '../../domain/typesLayout'
 
 const initialState: CardphotoSteps = {
   steps: [],

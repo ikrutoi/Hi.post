@@ -1,3 +1,5 @@
+@use '@styles/config/colors' as *;
+
 .miniCard {
   position: absolute;
   display: flex;
@@ -28,43 +30,27 @@
       font-size: 0.8rem;
     }
   }
+}
 
-  &Kebab {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0.3rem;
-    width: 1.7rem;
-    height: 1.7rem;
-    border: none;
-    border-radius: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition:
-      background-color 0.3s ease,
-      color 0.3s ease;
+.deleteMiniCard {
+  border: none;
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
 
-    .toolbarIcon {
-      width: 1.2rem;
-      height: 1.2rem;
-      background-color: transparent;
-    }
+.deleteMiniCard svg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: $color-font-disabled;
+  // background-color: rgba($color-section-light, 0.6);
+  margin: 0.2rem;
+  border-radius: 0.6rem;
+}
 
-    &:hover {
-      background-color: rgba(240, 240, 240, 0.85);
-    }
-  }
-
-  &KebabIcon {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 1.5rem;
-    height: 1.5rem;
-    background-image: url('../../../data/envelope/icon_mini-kebab.svg');
-    background-repeat: no-repeat;
-    background-color: transparent;
-  }
+.miniCard:hover .deleteMiniCard {
+  opacity: 1;
 }

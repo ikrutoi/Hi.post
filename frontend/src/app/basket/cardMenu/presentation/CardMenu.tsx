@@ -1,14 +1,16 @@
-import { useEffect, useMemo } from 'react'
+import React from 'react'
 import { CardMenuButton } from './CardMenuButton/CardMenuButton'
 import { useLayoutFacade } from '@layout/application/facades'
 import { CARD_MENU_SECTIONS } from '@shared/config/constants'
-import { useCardMenuFacade } from '../application/facades'
+import { useSectionEditorMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+// import { useCardMenuFacade } from '../application/facades'
 import styles from './CardMenu.module.scss'
 
 export const CardMenu: React.FC = () => {
-  const { state: stateCardMenu, actions: actionsCardMenu } = useCardMenuFacade()
-  const { activeSection } = stateCardMenu
-  const { setActiveSection } = actionsCardMenu
+  const { state: stateSectionEditorMenu, actions: actionsSectionEditorMenu } =
+    useSectionEditorMenuFacade()
+  const { activeSection } = stateSectionEditorMenu
+  const { setActiveSection } = actionsSectionEditorMenu
 
   const { section } = useLayoutFacade()
   const { choiceSection, selectedSection } = section
@@ -32,7 +34,7 @@ export const CardMenu: React.FC = () => {
             section={section}
             isSelected={isSelected}
             isDisabled={isDisabled}
-            onClick={setActiveSection}
+            // onClick={setActiveSection}
           />
         )
       })}

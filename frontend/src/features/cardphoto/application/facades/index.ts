@@ -1,2 +1,1 @@
-export { useCardphotoFacade } from './useCardphotoFacade'
-export { useImageCropFacade } from './useCardphotoImageCropFacade'
+export * from './useCardphotoFacade'

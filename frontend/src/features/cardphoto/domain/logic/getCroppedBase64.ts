@@ -1,4 +1,4 @@
-import type { CropArea } from '../types/crop.types'
+import type { CropArea } from '../typesLayout/crop.types'
 
 export const getCroppedBase64 = (
   img: HTMLImageElement,

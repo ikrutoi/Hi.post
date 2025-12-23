@@ -1,9 +1,10 @@
 import React, { useRef } from 'react'
 import clsx from 'clsx'
+import { toolbarIcons } from '@shared/assets/icons'
 import { useRemSize } from '@shared/helpers'
 import { capitalize } from '@shared/utils/helpers'
 import { useMiniCardRender } from '../application/hooks'
-import { useCardMenuFacade } from '@/app/basket/cardMenu/application/facades'
+import { useSectionEditorMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import styles from './MiniCard.module.scss'
 import type { CardSection } from '@shared/config/constants'
 import type { SizeCard } from '@layout/domain/types'
@@ -26,9 +27,12 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
 
+  const { actions: actionsSectionEditorMenu } = useSectionEditorMenuFacade()
+  const { setActiveSection } = actionsSectionEditorMenu
+
   const { render } = useMiniCardRender()
-  const { actions: actionsCardMenu } = useCardMenuFacade()
-  const { setActiveSection } = actionsCardMenu
+
+  const handleDeleteMiniCard = () => {}
 
   return (
     <div
@@ -56,9 +60,11 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       })}
 
       <button
-        className={styles.miniCardKebab}
-        style={{ transition: 'background-color 0.3s ease, color 0.3s ease' }}
-      ></button>
+        className={clsx(styles.deleteMiniCard)}
+        onClick={handleDeleteMiniCard}
+      >
+        {toolbarIcons.deleteSmall}
+      </button>
     </div>
   )
 }

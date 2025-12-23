@@ -3,11 +3,13 @@ import { combineReducers } from '@reduxjs/toolkit'
 import { sectionEditorMenuReducer } from '@entities/sectionEditorMenu/infrastructure/state'
 
 import {
-  cardphotoReducer,
+  cardphotoLayoutReducer,
   cardphotoActiveReducer,
   imageHistoryReducer,
   cardphotoStepsReducer,
-} from '@cardphoto/infrastructure/state'
+} from '@/features/cardphoto/infrastructure/stateLayout'
+
+import { cardphotoReducer } from '@cardphoto/infrastructure/state'
 
 import { cardtextReducer } from '@cardtext/infrastructure/state'
 import { cardtextToolbarReducer } from '@cardtext/infrastructure/state'
@@ -22,7 +24,7 @@ import { dateReducer } from '@date/infrastructure/state'
 import { calendarReducer } from '@date/calendar/infrastructure/state'
 import { switcherReducer } from '@date/switcher/infrastructure/state'
 
-import { cardMenuReducer } from '@/app/basket/cardMenu/infrastructure/state'
+// import { cardMenuReducer } from '@/app/basket/cardMenu/infrastructure/state'
 
 import { CardPanelReducer } from '@cardPanel/infrastructure/state'
 
@@ -47,10 +49,12 @@ import { layoutReducer } from '@layout/infrastructure/state/layoutReducer'
 export const rootReducer = combineReducers({
   sectionEditorMenu: sectionEditorMenuReducer,
 
-  cardphoto: cardphotoReducer,
+  cardphotoLayout: cardphotoLayoutReducer,
   cardphotoActive: cardphotoActiveReducer,
   cardphotoSteps: cardphotoStepsReducer,
   imageHistory: imageHistoryReducer,
+
+  cardphoto: cardphotoReducer,
 
   cardtext: cardtextReducer,
   cardtextToolbar: cardtextToolbarReducer,
@@ -65,7 +69,7 @@ export const rootReducer = combineReducers({
   calendar: calendarReducer,
   switcher: switcherReducer,
 
-  cardMenu: cardMenuReducer,
+  // cardMenu: cardMenuReducer,
 
   cardPanel: CardPanelReducer,
 

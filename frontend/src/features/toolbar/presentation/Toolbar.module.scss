@@ -3,18 +3,14 @@
 .toolbar {
   .toolbarKey {
     position: relative;
-    margin: 0 0.2rem;
-    // padding: 0.4rem;
+    margin: 0 0.3rem;
     background-color: white;
-    width: 1.85rem;
-    height: 1.85rem;
     border-radius: 0.7rem;
     background-color: white;
     transition:
       color 0.15s ease,
       cursor 0.15s ease,
       background-color 0.15s ease;
-    // border: solid 1px blue;
 
     &Disabled {
       color: $color-font-disabled;
@@ -117,8 +113,11 @@
   }
 }
 
+.toolbarCardphoto,
+.toolbarCardtext,
 .toolbarSender,
-.toolbarRecipient {
+.toolbarRecipient,
+.toolbarCardPanelOverlay {
   .toolbarKey {
     width: 1.75rem;
     height: 1.75rem;

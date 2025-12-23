@@ -1,11 +1,11 @@
-import { cardphotoStepsActions } from '../../infrastructure/state'
+import { cardphotoStepsActions } from '../../infrastructure/stateLayout'
 import {
   selectCardphotoSteps,
   selectCurrentStepIndex,
   selectCurrentStep,
   selectCanUndo,
   selectCanRedo,
-} from '../../infrastructure/selectors'
+} from '../../infrastructure/selectorsLayout'
 import { useCardphotoSteps } from '../hooks'
 
 export const cardphotoStepsFacade = {

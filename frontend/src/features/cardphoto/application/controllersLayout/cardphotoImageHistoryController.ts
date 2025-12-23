@@ -1,8 +1,8 @@
 import { AppDispatch } from '@app/state'
 
-import { cardphotoImageHistoryActions } from '../../infrastructure/state'
+import { cardphotoImageHistoryActions } from '../../infrastructure/stateLayout'
 import { createImageUrl, generateImageId } from '../../utils'
-import { ImageStage, ImageVersion } from '../../domain/types'
+import { ImageStage, ImageVersion } from '../../domain/typesLayout'
 
 export const cardphotoImageHistoryController = (dispatch: AppDispatch) => ({
   addUserImage: (blob: Blob) => {

@@ -1,4 +1,4 @@
-import { ImageVersion, ImageStage } from '../domain/types'
+import { ImageVersion, ImageStage } from '../domain/typesLayout'
 
 export const createImageUrl = (blob: Blob): string => URL.createObjectURL(blob)
 

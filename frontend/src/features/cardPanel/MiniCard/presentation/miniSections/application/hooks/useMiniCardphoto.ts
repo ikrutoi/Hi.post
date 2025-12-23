@@ -5,7 +5,7 @@ import {
   userImagesTemplatesAdapter,
 } from '@db/adapters/templateAdapters'
 import type { RootState } from '@app/state'
-import type { IndexedImage } from '@features/cardphoto/domain/types'
+import type { IndexedImage } from '@/features/cardphoto/domain/typesLayout'
 
 export const useMiniCardphoto = () => {
   const layoutIndexDb = useSelector(

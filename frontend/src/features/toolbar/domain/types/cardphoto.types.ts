@@ -6,9 +6,10 @@ export const CARDPHOTO_KEYS = [
   'turn',
   'fillFrame',
   'crop',
+  'apply',
   'download',
+  'close',
   'save',
-  'delete',
   'photoTemplates',
 ] as const
 
@@ -28,9 +29,10 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'ui',
     icons: [
+      { key: 'apply', state: 'enabled' },
       { key: 'download', state: 'enabled' },
-      { key: 'save', state: 'disabled' },
-      { key: 'delete', state: 'disabled' },
+      { key: 'close', state: 'disabled' },
+      { key: 'save', state: 'enabled' },
       { key: 'photoTemplates', state: 'disabled' },
     ],
   },

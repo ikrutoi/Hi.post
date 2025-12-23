@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { initialCrop } from '../../domain/constants'
-import type { CropArea, Position, LoadedImage } from '../../domain/types'
+import type { CropArea, Position, LoadedImage } from '../../domain/typesLayout'
 
 export const useImageCropState = () => {
   const [image, setImage] = useState<LoadedImage | null>(null)

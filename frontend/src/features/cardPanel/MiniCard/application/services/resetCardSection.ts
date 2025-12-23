@@ -1,6 +1,6 @@
 import { AppDispatch } from '@app/state'
 import { emptyEnvelope } from '@entities/envelope/domain/types'
-import { useCardphotoFacade } from '@cardphoto/application/facades'
+import { useCardphotoFacade } from '@/features/cardphoto/application/facadesLayout'
 import { useLayoutFacade } from '@layout/application/facades'
 import {
   cardphotoActions,

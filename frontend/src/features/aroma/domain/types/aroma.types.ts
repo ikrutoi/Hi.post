@@ -4,5 +4,4 @@ export interface AromaTileProps {
   selectedAroma: AromaItem | null
   aromaItem: AromaItem
   onSelectAroma: (selectedAroma: AromaItem) => void
-  // tileSize: { width: number; height: number } | null
 }

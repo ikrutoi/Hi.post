@@ -1,23 +1,23 @@
-import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { cardphotoActions } from '../../infrastructure/state'
-import { selectCardphotoState } from '../../infrastructure/selectors'
-import type { CardphotoState } from '@entities/cardphoto/domain/types'
+// cardphoto.facade.ts
+import { AppDispatch, RootState } from '@app/state'
+import { useCardphotoController } from '../controllers'
 
-export const useCardphotoFacade = () => {
-  const dispatch = useAppDispatch()
-  const state = useAppSelector(selectCardphotoState)
+export const useCardphotoFacade = (
+  dispatch: AppDispatch,
+  getState: () => RootState
+) => {
+  const controller = useCardphotoController(dispatch, getState)
 
-  const update = (payload: Partial<CardphotoState>) => {
-    dispatch(cardphotoActions.updateCardphoto(payload))
-  }
-
-  const reset = () => {
-    dispatch(cardphotoActions.resetCardphoto())
+  const helpers = {
+    canUndo: () => controller.state.activeIndex >= 0,
+    canRedo: () =>
+      controller.state.activeIndex < controller.state.operations.length - 1,
+    isReadyForMiniSection: () =>
+      controller.state.hasConfirmedImage && controller.state.isComplete,
   }
 
   return {
-    state,
-    update,
-    reset,
+    ...controller,
+    helpers,
   }
 }

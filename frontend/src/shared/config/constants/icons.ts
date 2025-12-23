@@ -7,6 +7,8 @@ export const ICON_KEYS = [
   'remove',
   'deleteSmall',
   'download',
+  'apply',
+  'close',
   'user',
   'turn',
   'edit',

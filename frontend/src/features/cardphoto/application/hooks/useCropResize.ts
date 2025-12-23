@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import type { CropArea } from '../../domain/types'
+import type { CropArea } from '../../domain/typesLayout'
 
 interface UseCropResizeParams {
   imgRef: React.RefObject<HTMLImageElement | null>

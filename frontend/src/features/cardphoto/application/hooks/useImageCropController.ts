@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { saveCroppedImage } from './imageCropService'
-import type { ImageBase } from '../../domain/types'
+import type { ImageBase } from '../../domain/typesLayout'
 
 export const useImageCropController = () => {
   const [isSaving, setIsSaving] = useState(false)

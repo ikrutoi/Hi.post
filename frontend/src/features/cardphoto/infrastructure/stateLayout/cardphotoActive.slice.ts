@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { CardphotoActiveState } from '../../domain/types'
+import type { CardphotoActiveState } from '../../domain/typesLayout'
 
 const initialState: CardphotoActiveState = {
   activeState: null,

@@ -1,4 +1,3 @@
-// export type ImageStore = 'stockImages' | 'userImages'
 import type { ImageStore } from './cardphotoSteps.types'
 
 export type Role = 'originalImage' | 'workingImage' | 'miniImage'

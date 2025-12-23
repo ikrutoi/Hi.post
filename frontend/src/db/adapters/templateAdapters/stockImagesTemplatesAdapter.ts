@@ -1,9 +1,8 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import type { ImageTemplateItem } from '@cardphoto/domain/types'
+import type { ImageTemplateItem } from '@/features/cardphoto/domain/typesLayout'
 import type { StoreAdapter } from '../../types'
 
-export interface StockImagesTemplatesAdapter
-  extends StoreAdapter<ImageTemplateItem> {
+export interface StockImagesTemplatesAdapter extends StoreAdapter<ImageTemplateItem> {
   addTemplate(template: ImageTemplateItem): Promise<void>
 }
 

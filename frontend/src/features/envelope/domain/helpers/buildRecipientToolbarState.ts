@@ -11,8 +11,8 @@ export const buildRecipientToolbarState = (
       case 'save':
         state.save = isComplete ? 'enabled' : 'disabled'
         break
-      case 'delete':
-        state.delete = hasData ? 'enabled' : 'disabled'
+      case 'close':
+        state.close = hasData ? 'enabled' : 'disabled'
         break
       case 'addressTemplates':
         state.addressTemplates = 'disabled'

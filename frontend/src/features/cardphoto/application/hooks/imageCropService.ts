@@ -4,7 +4,7 @@ import {
   saveImageToDb,
   deleteImageFromDb,
 } from './useImageCropService'
-import type { ImageBase } from '../../domain/types'
+import type { ImageBase } from '../../domain/typesLayout'
 
 export const saveCroppedImage = async (
   store: ImageBase,

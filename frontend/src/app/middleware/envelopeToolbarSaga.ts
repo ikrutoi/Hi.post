@@ -10,7 +10,7 @@ function* handleEnvelopeToolbarAction(
 
   switch (section) {
     case 'sender':
-      if (key === 'delete') {
+      if (key === 'close') {
         yield put(clearSender())
         // yield put(recomputeEnvelope({ sender: false, recipient: true }))
       }
@@ -19,7 +19,7 @@ function* handleEnvelopeToolbarAction(
       break
 
     case 'recipient':
-      if (key === 'delete') {
+      if (key === 'close') {
         yield put(clearRecipient())
         // yield put(recomputeEnvelope({ sender: true, recipient: false }))
       }

@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { cardphotoActions } from '../../infrastructure/state'
-import { selectCardphotoState } from '../../infrastructure/selectors'
-import type { CardphotoState } from '../../domain/types'
+import { cardphotoActions } from '../../infrastructure/stateLayout'
+import { selectCardphotoState } from '../../infrastructure/selectorsLayout'
+import type { CardphotoState } from '../../domain/typesLayout'
 
 export const useCardphotoController = () => {
   const dispatch = useAppDispatch()

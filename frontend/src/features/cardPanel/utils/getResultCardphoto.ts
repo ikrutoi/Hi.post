@@ -1,6 +1,6 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
 import type { CardItem } from '@entities/card/domain/types'
-import type { IndexedImage } from '@cardphoto/domain/types'
+import type { IndexedImage } from '@/features/cardphoto/domain/typesLayout'
 
 export async function getResultCardphoto(): Promise<CardItem> {
   const stockAdapter = createStoreAdapter<IndexedImage>('stockImages')

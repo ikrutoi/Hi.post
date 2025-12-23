@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ImageHistory, ImageVersion } from '../../domain/types'
+import { ImageHistory, ImageVersion } from '../../domain/typesLayout'
 
 const initialState: ImageHistory = {
   stockImages: [],

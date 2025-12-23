@@ -1,5 +1,5 @@
 import React from 'react'
-import { useImageCropFacade } from '../application/facades'
+import { useImageCropFacade } from '../application/facadesLayout'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useCropDrag, useCropResize } from '../application/hooks'
 import styles from './ImageCrop.module.scss'

@@ -1,4 +1,4 @@
-import type { ImageTemplateItem } from '@cardphoto/domain/types'
+import type { ImageTemplateItem } from '@/features/cardphoto/domain/typesLayout'
 import type { CardtextTemplateItem } from '@cardtext/domain/types'
 import type { CardtextRecord } from '../types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
