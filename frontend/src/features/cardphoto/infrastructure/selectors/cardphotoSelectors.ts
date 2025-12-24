@@ -1,20 +1,94 @@
+import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
+import type { ImageOperation } from '@cardphoto/domain/types'
 
-export const selectActiveImage = (state: RootState) =>
-  state.cardphoto.activeImage
+const selectCardphoto = (state: RootState) => state.cardphoto
 
-export const selectHistory = (state: RootState) => state.cardphoto.history
+export const selectActiveImage = createSelector(
+  [selectCardphoto],
+  (cardphoto) => cardphoto.activeImage
+)
 
-export const selectActiveIndex = (state: RootState) =>
-  state.cardphoto.history?.activeIndex ?? -1
+export const selectHistory = createSelector(
+  [selectCardphoto],
+  (cardphoto) => cardphoto.history
+)
 
-export const selectOperations = (state: RootState) =>
-  state.cardphoto.history?.operations ?? []
+export const selectActiveIndex = createSelector(
+  [selectHistory],
+  (history) => history?.activeIndex ?? -1
+)
 
-export const selectIsComplete = (state: RootState) => state.cardphoto.isComplete
+export const selectOperations = createSelector(
+  [selectHistory],
+  (history) => history?.operations ?? []
+)
 
-export const selectHasConfirmedImage = (state: RootState) =>
-  !!state.cardphoto.activeImage && state.cardphoto.isComplete
+export const selectIsComplete = createSelector(
+  [selectCardphoto],
+  (cardphoto) => cardphoto.isComplete
+)
 
-export const selectOriginalImage = (state: RootState) =>
-  state.cardphoto.history?.original ?? null
+export const selectHasConfirmedImage = createSelector(
+  [selectActiveImage, selectIsComplete],
+  (activeImage, isComplete) => !!activeImage && isComplete
+)
+
+export const selectOriginalImage = createSelector(
+  [selectHistory],
+  (history) => history?.original ?? null
+)
+
+export const selectOperationsWithActive = createSelector(
+  [selectOperations, selectActiveIndex],
+  (operations, activeIndex) => ({
+    operations,
+    activeOperation: activeIndex >= 0 ? operations[activeIndex] : null,
+  })
+)
+
+export const selectActiveOperation = createSelector(
+  [selectOperations, selectActiveIndex],
+  (operations, activeIndex): ImageOperation | null =>
+    activeIndex >= 0 ? operations[activeIndex] : null
+)
+
+export const selectHasOperations = createSelector(
+  [selectOperations],
+  (operations) => operations.length > 0
+)
+
+export const selectCanUndo = createSelector(
+  [selectActiveIndex],
+  (activeIndex) => activeIndex >= 0
+)
+
+export const selectCanRedo = createSelector(
+  [selectOperations, selectActiveIndex],
+  (operations, activeIndex) => activeIndex < operations.length - 1
+)
+
+export const selectCardphotoContext = createSelector(
+  [
+    selectActiveImage,
+    selectOriginalImage,
+    selectActiveOperation,
+    selectIsComplete,
+  ],
+  (activeImage, originalImage, activeOperation, isComplete) => ({
+    activeImage,
+    originalImage,
+    activeOperation,
+    isComplete,
+  })
+)
+
+export const selectShouldOpenFileDialog = createSelector(
+  [selectCardphoto],
+  (cardphoto) => cardphoto.shouldOpenFileDialog
+)
+
+export const selectIsLoading = createSelector(
+  [selectCardphoto],
+  (cardphoto) => cardphoto.isLoading
+)

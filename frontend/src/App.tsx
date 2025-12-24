@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { ErrorBoundary } from '@shared/ui/ErrorBoundary'
 import { Header } from './features/header/presentation/Header'
-import { CardMenu } from '@/app/basket/cardMenu/presentation/CardMenu'
-import { CardPanelWrapper } from '@cardPanel/presentation/CardPanelWrapper'
+// import { CardMenu } from '@/app/basket/cardMenu/presentation/CardMenu'
+// import { CardPanelWrapper } from '@cardPanel/presentation/CardPanelWrapper'
+import { CardPanel } from './features/cardPanel/presentation/CardPanel'
 import { CardSectionEditor } from './features/cardSectionEditor/presentation/CardSectionEditor'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
 import {
@@ -24,8 +25,7 @@ const App = () => {
   useAuthInit()
   useLayoutInit()
   useViewportInit()
-
-  const sizeMiniCard = useMiniCardSize(formRef)
+  useMiniCardSize(formRef)
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
 
@@ -37,7 +37,7 @@ const App = () => {
         <div ref={formRef} className={styles.appForm}>
           <>
             <ErrorBoundary>
-              <CardPanelWrapper sizeMiniCard={sizeMiniCard} />
+              <CardPanel />
             </ErrorBoundary>
             <CardSectionEditor />
           </>

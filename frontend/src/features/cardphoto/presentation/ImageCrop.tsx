@@ -1,50 +1,41 @@
-import React from 'react'
-import { useImageCropFacade } from '../application/facadesLayout'
+import React, { useRef, useEffect } from 'react'
+import clsx from 'clsx'
 import { useLayoutFacade } from '@layout/application/facades'
-import { useCropDrag, useCropResize } from '../application/hooks'
+import { useCardphotoFacade } from '../application/facades'
+import { useImageLoader } from '../application/hooks'
+import placeholderImage from '@shared/assets/images/card-photo-bw.jpg'
 import styles from './ImageCrop.module.scss'
+import type { ImageMeta } from '../domain/types'
 
 export const ImageCrop = () => {
+  const { state: stateCardphoto, actions: actionsCardphoto } =
+    useCardphotoFacade()
+  const { activeImage, shouldOpenFileDialog, isLoading } = stateCardphoto
+
   const { size } = useLayoutFacade()
   const { sizeCard } = size
-  const {
-    image,
-    crop,
-    scaleX,
-    scaleY,
-    isCropVisibly,
-    isDragging,
-    isResizing,
-    lastMousePosition,
-    setCrop,
-    setLastMousePosition,
-    setIsDragging,
-    setIsResizing,
-    refs,
-    handlers,
-  } = useImageCropFacade()
 
-  const { handleMouseDownDrag } = useCropDrag({
-    imgRef: refs.imgRef,
-    crop,
-    setCrop,
-    scaleX,
-    scaleY,
-    isDragging,
-    setIsDragging,
-    lastMousePosition,
-    setLastMousePosition,
-  })
+  const src = activeImage?.url || ''
+  const alt = activeImage?.id || 'Placeholder'
 
-  const { handleMouseDownResize } = useCropResize({
-    imgRef: refs.imgRef,
-    crop,
-    setCrop,
-    scaleX,
-    scaleY,
-    aspectRatio: 142 / 100,
-    setIsResizing,
-  })
+  const { imageData, isReady, hasError } = useImageLoader(
+    src,
+    sizeCard.width,
+    sizeCard.height
+  )
+
+  const inputRef = useRef<HTMLInputElement>(null)
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const cropAreaRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (shouldOpenFileDialog) {
+      inputRef.current?.click()
+      actionsCardphoto.resetFileDialog()
+    }
+  }, [shouldOpenFileDialog])
+
+  const shouldShowRealImage = !!src && isReady && imageData && !hasError
 
   return (
     <div
@@ -57,44 +48,92 @@ export const ImageCrop = () => {
       <input
         type="file"
         accept="image/*"
-        onChange={handlers.handleFileChange}
-        ref={refs.inputRef}
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) {
+            const url = URL.createObjectURL(file)
+            const imageMeta: ImageMeta = {
+              id: `${file.name}-${file.lastModified}`,
+              source: 'user',
+              role: 'original',
+              url,
+              timestamp: file.lastModified ?? Date.now(),
+              width: 0,
+              height: 0,
+            }
+            actionsCardphoto.uploadImage(imageMeta)
+          }
+        }}
+        ref={inputRef}
         style={{ display: 'none' }}
       />
 
-      {image && image.url && (
-        <div className={styles.cropContainer}>
+      <div
+        className={styles.cropContainer}
+        style={{
+          width: sizeCard.width,
+          height: sizeCard.height,
+          position: 'relative',
+        }}
+      >
+        {!activeImage && (
           <img
-            ref={refs.imgRef}
-            src={image.url}
-            alt="Source"
-            className={styles.cropImage}
+            src={placeholderImage}
+            alt="Placeholder"
+            className={clsx(styles.cropImage, styles.cropImageVisible)}
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              left: 0,
+              top: 0,
+            }}
           />
+        )}
 
-          {isCropVisibly && (
-            <div className={styles.overlay} ref={refs.overlayRef} />
-          )}
+        {shouldShowRealImage && (
+          <img
+            src={src}
+            alt={alt}
+            className={clsx(styles.cropImage, styles.cropImageVisible)}
+            style={{
+              position: 'absolute',
+              width: `${imageData!.width}px`,
+              height: `${imageData!.height}px`,
+              left: `${imageData!.left}px`,
+              top: `${imageData!.top}px`,
+            }}
+          />
+        )}
 
-          {isCropVisibly && (
-            <div
-              ref={refs.cropAreaRef}
-              className={styles.cropArea}
-              style={{
-                top: `${crop.y / scaleX}px`,
-                left: `${crop.x / scaleY}px`,
-                width: `${crop.width / scaleX}px`,
-                height: `${crop.height / scaleY}px`,
-              }}
-              onMouseDown={handleMouseDownDrag}
-            >
-              <div
-                className={styles.cropResizeHandle}
-                onMouseDown={handleMouseDownResize}
-              />
-            </div>
-          )}
-        </div>
-      )}
+        {stateCardphoto.isComplete && (
+          <div className={styles.overlay} ref={overlayRef} />
+        )}
+
+        {stateCardphoto.isComplete && (
+          <div
+            ref={cropAreaRef}
+            className={styles.cropArea}
+            style={{
+              top: `0px`,
+              left: `0px`,
+              width: `100px`,
+              height: `100px`,
+            }}
+          >
+            <div className={styles.cropResizeHandle} />
+          </div>
+        )}
+
+        {isLoading && (
+          <div
+            className={clsx(styles.loaderOverlay, styles.loaderOverlayVisible)}
+          >
+            <div className={styles.spinner}></div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

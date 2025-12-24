@@ -26,10 +26,12 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardphoto: {
     keys: CARDPHOTO_KEYS,
     initialState: initialCardphotoToolbarState,
-    onAction: (key, section) => console.log('Cardphoto action', key, section),
+    onAction: (key, section, editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
     group: 'photo',
     toolbar: CARDPHOTO_TOOLBAR,
-    getBadges: (state: ToolbarState['cardphoto']) => ({}),
+    getBadges: (state) => ({}),
   },
   cardtext: {
     keys: CARDTEXT_KEYS,

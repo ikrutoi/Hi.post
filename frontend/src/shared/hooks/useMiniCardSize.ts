@@ -5,9 +5,7 @@ import { getMaxMiniCardsCount } from '@shared/utils/layout'
 import { roundTo } from '@shared/helpers'
 import type { SizeCard } from '@layout/domain/types'
 
-export const useMiniCardSize = (
-  ref: React.RefObject<HTMLElement | null>
-): SizeCard | null => {
+export const useMiniCardSize = (ref: React.RefObject<HTMLElement | null>) => {
   const [sizeMiniCard, setSizeMiniCard] = useState<SizeCard | null>(null)
   const { size, actions: actionsSize } = useLayoutFacade()
   const { remSize } = size
@@ -57,5 +55,5 @@ export const useMiniCardSize = (
     return () => resizeObserver.disconnect()
   }, [])
 
-  return sizeMiniCard
+  // return sizeMiniCard
 }

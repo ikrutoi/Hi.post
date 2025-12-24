@@ -1,5 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
+// import { useAppDispatch } from '@/app/hooks'
+// import { useFileUpload } from '@cardphoto/application/hooks'
 import { getToolbarIcon } from '@shared/utils/icons/getToolbarIcon'
 import { capitalize } from '@shared/utils/helpers'
 import { useCardtextFacade } from '@cardtext/application/facades'
@@ -14,7 +16,6 @@ import { useToolbarFacade } from '../application/facades'
 
 export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { state, config, badges, onAction } = useToolbarFacade(section)
-
   const { state: stateCardtext } = useCardtextFacade()
   const { editor } = stateCardtext
 
@@ -32,9 +33,11 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
         )}
         onMouseDown={(e) => {
           e.preventDefault()
-          section === 'cardtext'
-            ? onAction(key as any, editor)
-            : onAction(key as any)
+          if (section === 'cardtext') {
+            onAction(key as any, editor)
+          } else {
+            onAction(key as any)
+          }
         }}
         disabled={iconState === 'disabled'}
       >

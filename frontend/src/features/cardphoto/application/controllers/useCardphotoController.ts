@@ -7,6 +7,10 @@ import {
   reset,
   markComplete,
   cancelSelection,
+  openFileDialog,
+  resetFileDialog,
+  uploadImage,
+  markLoading,
 } from '../../infrastructure/state'
 import {
   selectActiveImage,
@@ -16,6 +20,8 @@ import {
   selectIsComplete,
   selectHasConfirmedImage,
   selectOriginalImage,
+  selectShouldOpenFileDialog,
+  selectIsLoading,
 } from '../../infrastructure/selectors'
 import type { ImageMeta, ImageOperation } from '../../domain/types'
 
@@ -31,6 +37,8 @@ export const useCardphotoController = (
     isComplete: selectIsComplete(getState()),
     hasConfirmedImage: selectHasConfirmedImage(getState()),
     originalImage: selectOriginalImage(getState()),
+    shouldOpenFileDialog: selectShouldOpenFileDialog(getState()),
+    isLoading: selectIsLoading(getState()),
   }
 
   const actions = {
@@ -41,6 +49,11 @@ export const useCardphotoController = (
     undo: () => dispatch(undo()),
     redo: () => dispatch(redo()),
     reset: () => dispatch(reset()),
+
+    openFileDialog: () => dispatch(openFileDialog()),
+    resetFileDialog: () => dispatch(resetFileDialog()),
+    uploadImage: (file: ImageMeta) => dispatch(uploadImage(file)),
+    markLoading: () => dispatch(markLoading()),
   }
 
   return { state, actions }

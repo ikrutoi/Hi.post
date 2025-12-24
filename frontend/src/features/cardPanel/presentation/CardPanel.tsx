@@ -18,11 +18,7 @@ import styles from './CardPanel.module.scss'
 import type { ScrollIndex } from '../CardScroller/domain/types'
 import type { SizeCard } from '@layout/domain/types'
 
-type CardPanelProps = {
-  sizeMiniCard: SizeCard
-}
-
-export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
+export const CardPanel = () => {
   const cardsListRef = useRef<HTMLDivElement>(null)
   const [valueScroll, setValueScroll] = useState(0)
   const [scrollIndex, setScrollIndex] = useState<ScrollIndex | null>(null)
@@ -36,18 +32,14 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
   const completedSections = CARD_SECTIONS.filter(
     (section) => editorState[section].isComplete
   )
-
   const sortedSections = getSortedSections(completedSections)
 
   const miniPolyCardsRef = useRef<HTMLDivElement>(null)
-
   const isTemplateMode = false
 
   const { size, section, meta, memory } = useLayoutFacade()
-  const { remSize } = size
+  const { remSize, sizeMiniCard } = size
   const { deltaEnd, maxMiniCardsCount, choiceClip } = meta
-
-  if (!remSize) return
 
   const { state: stateLayoutNav } = useLayoutNavFacade()
   const { selectedTemplate } = stateLayoutNav
@@ -57,15 +49,15 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
 
   useScrollSync(cardsListRef, setValueScroll)
 
+  if (!remSize || !sizeMiniCard) return
+
   return (
     <div className={styles.cardPanel} ref={cardsListRef}>
       <div>
-        {sizeMiniCard && (
-          <EnvelopeOverlay
-            sizeMiniCard={sizeMiniCard}
-            completedSections={completedSections}
-          />
-        )}
+        <EnvelopeOverlay
+          sizeMiniCard={sizeMiniCard}
+          completedSections={completedSections}
+        />
         <CardScroller
           value={valueScroll}
           scrollIndex={scrollIndex}
@@ -84,16 +76,7 @@ export const CardPanel: React.FC<CardPanelProps> = ({ sizeMiniCard }) => {
       />
 
       {isTemplateMode ? (
-        <div className={styles.cardPanelTemplates}>
-          {/* {templateList.map((template) => (
-            <MiniTemplateCard
-              key={template.id}
-              template={template}
-              sizeMiniCard={sizeMiniCard}
-              onClick={() => applyTemplate(template)}
-            />
-          ))} */}
-        </div>
+        <div className={styles.cardPanelTemplates}></div>
       ) : (
         <div className={styles.cardPanelMiniCards}>
           {sortedSections.map((section, i) => {

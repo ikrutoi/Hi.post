@@ -5,6 +5,8 @@ import {
   envelopeToolbarSaga,
   cardtextToolbarSaga,
   sectionEditorMenuSaga,
+  cardphotoToolbarSaga,
+  cardphotoDownloadSaga,
 } from '../middleware'
 
 export function* rootSaga() {
@@ -13,6 +15,8 @@ export function* rootSaga() {
     fork(envelopeSaga),
     fork(envelopeToolbarSaga),
     fork(cardtextToolbarSaga),
+    fork(cardphotoToolbarSaga),
+    fork(cardphotoDownloadSaga),
     fork(sectionEditorMenuSaga),
   ])
 }

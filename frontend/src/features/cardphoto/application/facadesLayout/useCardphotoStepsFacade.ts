@@ -6,7 +6,7 @@ import {
   selectCanUndo,
   selectCanRedo,
 } from '../../infrastructure/selectorsLayout'
-import { useCardphotoSteps } from '../hooks'
+import { useCardphotoSteps } from '../hooksLayer'
 
 export const cardphotoStepsFacade = {
   actions: cardphotoStepsActions,
