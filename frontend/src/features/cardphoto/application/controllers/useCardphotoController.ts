@@ -9,6 +9,7 @@ import {
   cancelSelection,
   openFileDialog,
   resetFileDialog,
+  cancelFileDialog,
   uploadImage,
   markLoading,
 } from '../../infrastructure/state'
@@ -52,6 +53,7 @@ export const useCardphotoController = (
 
     openFileDialog: () => dispatch(openFileDialog()),
     resetFileDialog: () => dispatch(resetFileDialog()),
+    cancelFileDialog: () => dispatch(cancelFileDialog()),
     uploadImage: (file: ImageMeta) => dispatch(uploadImage(file)),
     markLoading: () => dispatch(markLoading()),
   }

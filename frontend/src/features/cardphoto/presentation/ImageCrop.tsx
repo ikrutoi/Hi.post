@@ -35,6 +35,28 @@ export const ImageCrop = () => {
     }
   }, [shouldOpenFileDialog])
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) {
+      actionsCardphoto.cancelFileDialog()
+      return
+    }
+
+    actionsCardphoto.markLoading()
+
+    const url = URL.createObjectURL(file)
+    const imageMeta: ImageMeta = {
+      id: `${file.name}-${file.lastModified}`,
+      source: 'user',
+      role: 'original',
+      url,
+      timestamp: file.lastModified ?? Date.now(),
+      width: 0,
+      height: 0,
+    }
+    actionsCardphoto.uploadImage(imageMeta)
+  }
+
   const shouldShowRealImage = !!src && isReady && imageData && !hasError
 
   return (
@@ -48,22 +70,7 @@ export const ImageCrop = () => {
       <input
         type="file"
         accept="image/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0]
-          if (file) {
-            const url = URL.createObjectURL(file)
-            const imageMeta: ImageMeta = {
-              id: `${file.name}-${file.lastModified}`,
-              source: 'user',
-              role: 'original',
-              url,
-              timestamp: file.lastModified ?? Date.now(),
-              width: 0,
-              height: 0,
-            }
-            actionsCardphoto.uploadImage(imageMeta)
-          }
-        }}
+        onChange={handleFileChange}
         ref={inputRef}
         style={{ display: 'none' }}
       />

@@ -4,6 +4,7 @@ import {
   openFileDialog,
   uploadImage,
   setActiveImage,
+  cancelFileDialog,
 } from '@cardphoto/infrastructure/state'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
@@ -45,7 +46,20 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
   )
 }
 
+function* onCancelFileDialog() {
+  const state: CardphotoToolbarState = yield select(
+    selectToolbarSectionState('cardphoto')
+  )
+  yield put(
+    updateToolbarSection({
+      section: 'cardphoto',
+      value: { ...state, download: 'enabled' },
+    })
+  )
+}
+
 export function* cardphotoDownloadSaga() {
   yield takeEvery(toolbarAction.type, onDownloadClick)
   yield takeEvery(uploadImage.type, onUploadImage)
+  yield takeEvery(cancelFileDialog.type, onCancelFileDialog)
 }

@@ -29,10 +29,10 @@ export const useImageLoader = (
       const scaleY = cardHeight / img.naturalHeight
       const scale = Math.min(scaleX, scaleY)
 
-      const finalWidth = img.naturalWidth * scale
-      const finalHeight = img.naturalHeight * scale
-      const offsetX = (cardWidth - finalWidth) / 2
-      const offsetY = (cardHeight - finalHeight) / 2
+      const finalWidth = img.naturalWidth * scale - 1
+      const finalHeight = img.naturalHeight * scale - 1
+      const offsetX = (cardWidth - finalWidth) / 2 - 1
+      const offsetY = (cardHeight - finalHeight) / 2 - 1
 
       setImageData({
         width: finalWidth,

@@ -11,6 +11,7 @@ export interface CardphotoState {
   isComplete: boolean
   shouldOpenFileDialog: boolean
   isLoading: boolean
+  needsCrop: boolean
 }
 
 const initialState: CardphotoState = {
@@ -19,6 +20,7 @@ const initialState: CardphotoState = {
   isComplete: false,
   shouldOpenFileDialog: false,
   isLoading: false,
+  needsCrop: false,
 }
 
 export const cardphotoSlice = createSlice({
@@ -93,11 +95,16 @@ export const cardphotoSlice = createSlice({
 
     openFileDialog(state) {
       state.shouldOpenFileDialog = true
-      state.isLoading = true
+      // state.isLoading = true
     },
 
     resetFileDialog(state) {
       state.shouldOpenFileDialog = false
+    },
+
+    cancelFileDialog(state) {
+      state.shouldOpenFileDialog = false
+      state.isLoading = false
     },
 
     uploadImage(_state, _action: PayloadAction<ImageMeta>) {},
@@ -115,6 +122,7 @@ export const {
   cancelSelection,
   openFileDialog,
   resetFileDialog,
+  cancelFileDialog,
   uploadImage,
 } = cardphotoSlice.actions
 
