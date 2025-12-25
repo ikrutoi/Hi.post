@@ -9,7 +9,10 @@ import {
   cardphotoStepsReducer,
 } from '@/features/cardphoto/infrastructure/stateLayout'
 
-import { cardphotoReducer } from '@cardphoto/infrastructure/state'
+import {
+  cardphotoReducer,
+  cardphotoUiReducer,
+} from '@cardphoto/infrastructure/state'
 
 import { cardtextReducer } from '@cardtext/infrastructure/state'
 import { cardtextToolbarReducer } from '@cardtext/infrastructure/state'
@@ -55,6 +58,7 @@ export const rootReducer = combineReducers({
   imageHistory: imageHistoryReducer,
 
   cardphoto: cardphotoReducer,
+  cardphotoUi: cardphotoUiReducer,
 
   cardtext: cardtextReducer,
   cardtextToolbar: cardtextToolbarReducer,

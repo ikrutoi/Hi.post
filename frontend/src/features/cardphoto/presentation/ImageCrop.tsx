@@ -1,22 +1,34 @@
 import React, { useRef, useEffect } from 'react'
 import clsx from 'clsx'
+import { useAppSelector } from '@app/hooks'
 import { useLayoutFacade } from '@layout/application/facades'
-import { useCardphotoFacade } from '../application/facades'
-import { useImageLoader } from '../application/hooks'
+import {
+  useCardphotoFacade,
+  useCardphotoUiFacade,
+} from '../application/facades'
+import { STOCK_IMAGES } from '@shared/assets/stock'
+import { useImageLoader, useImageUpload } from '../application/hooks'
+import { selectTransformedImage } from '../infrastructure/selectors'
 import placeholderImage from '@shared/assets/images/card-photo-bw.jpg'
 import styles from './ImageCrop.module.scss'
-import type { ImageMeta } from '../domain/types'
 
 export const ImageCrop = () => {
+  const selector = useAppSelector
+
   const { state: stateCardphoto, actions: actionsCardphoto } =
     useCardphotoFacade()
-  const { activeImage, shouldOpenFileDialog, isLoading } = stateCardphoto
+
+  const { state: stateCardphotoUi, actions: actionsCardphotoUi } =
+    useCardphotoUiFacade()
+  const { shouldOpenFileDialog, isLoading } = stateCardphotoUi
 
   const { size } = useLayoutFacade()
   const { sizeCard } = size
 
-  const src = activeImage?.url || ''
-  const alt = activeImage?.id || 'Placeholder'
+  const transformedImage = selector(selectTransformedImage)
+
+  const src = transformedImage?.url || ''
+  const alt = transformedImage?.id || 'Placeholder'
 
   const { imageData, isReady, hasError } = useImageLoader(
     src,
@@ -31,33 +43,27 @@ export const ImageCrop = () => {
   useEffect(() => {
     if (shouldOpenFileDialog) {
       inputRef.current?.click()
-      actionsCardphoto.resetFileDialog()
+      actionsCardphotoUi.resetFileDialog()
     }
   }, [shouldOpenFileDialog])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) {
-      actionsCardphoto.cancelFileDialog()
-      return
+  useEffect(() => {
+    if (!stateCardphoto.activeImage) {
+      const randomImage =
+        STOCK_IMAGES[Math.floor(Math.random() * STOCK_IMAGES.length)]
+      actionsCardphoto.setImage(randomImage)
     }
+  }, [])
 
-    actionsCardphoto.markLoading()
-
-    const url = URL.createObjectURL(file)
-    const imageMeta: ImageMeta = {
-      id: `${file.name}-${file.lastModified}`,
-      source: 'user',
-      role: 'original',
-      url,
-      timestamp: file.lastModified ?? Date.now(),
-      width: 0,
-      height: 0,
-    }
-    actionsCardphoto.uploadImage(imageMeta)
-  }
+  const handleFileChange = useImageUpload(
+    actionsCardphoto.uploadImage,
+    actionsCardphotoUi.cancelFileDialog,
+    actionsCardphotoUi.markLoading
+  )
 
   const shouldShowRealImage = !!src && isReady && imageData && !hasError
+
+  console.log('transformedImage', transformedImage)
 
   return (
     <div
@@ -83,7 +89,7 @@ export const ImageCrop = () => {
           position: 'relative',
         }}
       >
-        {!activeImage && (
+        {!transformedImage && (
           <img
             src={placeholderImage}
             alt="Placeholder"

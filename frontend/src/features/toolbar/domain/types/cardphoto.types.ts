@@ -23,7 +23,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'turn', state: 'disabled' },
       { key: 'fillFrame', state: 'disabled' },
-      { key: 'crop', state: 'disabled' },
+      { key: 'crop', state: 'enabled' },
     ],
   },
   {

@@ -82,13 +82,3 @@ export const selectCardphotoContext = createSelector(
     isComplete,
   })
 )
-
-export const selectShouldOpenFileDialog = createSelector(
-  [selectCardphoto],
-  (cardphoto) => cardphoto.shouldOpenFileDialog
-)
-
-export const selectIsLoading = createSelector(
-  [selectCardphoto],
-  (cardphoto) => cardphoto.isLoading
-)

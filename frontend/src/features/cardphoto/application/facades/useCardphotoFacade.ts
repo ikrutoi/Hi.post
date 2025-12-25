@@ -8,11 +8,7 @@ import {
   markComplete,
   cancelSelection,
   uploadImage,
-  openFileDialog,
-  resetFileDialog,
-  cancelFileDialog,
-  markLoading,
-} from '../../infrastructure/state'
+} from '../../infrastructure/state/cardphotoSlice'
 import {
   selectActiveImage,
   selectHistory,
@@ -21,9 +17,7 @@ import {
   selectIsComplete,
   selectHasConfirmedImage,
   selectOriginalImage,
-  selectShouldOpenFileDialog,
-  selectIsLoading,
-} from '../../infrastructure/selectors'
+} from '../../infrastructure/selectors/cardphotoSelectors'
 import type { ImageMeta, ImageOperation } from '../../domain/types'
 
 export const useCardphotoFacade = () => {
@@ -37,8 +31,6 @@ export const useCardphotoFacade = () => {
     isComplete: useSelector(selectIsComplete),
     hasConfirmedImage: useSelector(selectHasConfirmedImage),
     originalImage: useSelector(selectOriginalImage),
-    shouldOpenFileDialog: useSelector(selectShouldOpenFileDialog),
-    isLoading: useSelector(selectIsLoading),
   }
 
   const actions = {
@@ -49,13 +41,7 @@ export const useCardphotoFacade = () => {
     undo: () => dispatch(undo()),
     redo: () => dispatch(redo()),
     reset: () => dispatch(reset()),
-
-    uploadImage: (imageMeta: ImageMeta) => dispatch(uploadImage(imageMeta)),
-
-    openFileDialog: () => dispatch(openFileDialog()),
-    resetFileDialog: () => dispatch(resetFileDialog()),
-    cancelFileDialog: () => dispatch(cancelFileDialog()),
-    markLoading: () => dispatch(markLoading()),
+    uploadImage: (file: ImageMeta) => dispatch(uploadImage(file)),
   }
 
   const helpers = {

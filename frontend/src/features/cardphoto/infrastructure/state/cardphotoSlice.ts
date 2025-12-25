@@ -9,18 +9,12 @@ export interface CardphotoState {
   activeImage: ImageMeta | null
   history: ImageHistory | null
   isComplete: boolean
-  shouldOpenFileDialog: boolean
-  isLoading: boolean
-  needsCrop: boolean
 }
 
 const initialState: CardphotoState = {
   activeImage: null,
   history: null,
   isComplete: false,
-  shouldOpenFileDialog: false,
-  isLoading: false,
-  needsCrop: false,
 }
 
 export const cardphotoSlice = createSlice({
@@ -28,18 +22,23 @@ export const cardphotoSlice = createSlice({
   initialState,
   reducers: {
     setActiveImage(state, action: PayloadAction<ImageMeta>) {
-      state.activeImage = action.payload
+      const meta = action.payload
+
+      state.activeImage = meta
       state.history = {
         original: {
-          id: action.payload.id,
-          source: action.payload.source,
-          url: action.payload.url,
+          id: meta.id,
+          source: meta.source,
+          url: meta.url,
         },
-        operations: [],
-        activeIndex: -1,
+        operations: [
+          {
+            type: 'initial',
+          },
+        ],
+        activeIndex: 0,
       }
       state.isComplete = false
-      state.isLoading = false
     },
 
     addOperation(state, action: PayloadAction<ImageOperation>) {
@@ -75,36 +74,16 @@ export const cardphotoSlice = createSlice({
       }
       state.isComplete = false
       state.activeImage = null
-      state.isLoading = false
     },
 
     markComplete(state) {
       state.isComplete = true
     },
 
-    markLoading(state) {
-      state.isLoading = true
-    },
-
     cancelSelection(state) {
       state.activeImage = null
       state.history = null
       state.isComplete = false
-      state.isLoading = false
-    },
-
-    openFileDialog(state) {
-      state.shouldOpenFileDialog = true
-      // state.isLoading = true
-    },
-
-    resetFileDialog(state) {
-      state.shouldOpenFileDialog = false
-    },
-
-    cancelFileDialog(state) {
-      state.shouldOpenFileDialog = false
-      state.isLoading = false
     },
 
     uploadImage(_state, _action: PayloadAction<ImageMeta>) {},
@@ -118,11 +97,7 @@ export const {
   redo,
   reset,
   markComplete,
-  markLoading,
   cancelSelection,
-  openFileDialog,
-  resetFileDialog,
-  cancelFileDialog,
   uploadImage,
 } = cardphotoSlice.actions
 

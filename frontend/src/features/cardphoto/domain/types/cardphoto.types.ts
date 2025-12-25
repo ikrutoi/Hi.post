@@ -9,8 +9,8 @@ export interface ImageMeta {
   source: ImageSource
   role: ImageRole
   url?: string
-  width?: number
-  height?: number
+  width: number
+  height: number
   timestamp?: number
 }
 
@@ -34,6 +34,7 @@ export const IMAGE_OPERATION_TYPE = ['crop', 'rotate', 'scale'] as const
 export type ImageOperationType = (typeof IMAGE_OPERATION_TYPE)[number]
 
 export type ImageOperation =
+  | { type: 'initial' }
   | { type: 'crop'; area: CropArea }
   | { type: 'rotate'; angle: number }
   | { type: 'scale'; factor: number }
