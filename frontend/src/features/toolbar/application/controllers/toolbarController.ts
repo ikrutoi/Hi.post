@@ -34,9 +34,9 @@ export const toolbarController = {
 
       case 'cardphoto':
         switch (key) {
-          case 'crop':
-            console.log('Crop action')
-            break
+          // case 'crop':
+          // console.log('Crop action')
+          // break
           case 'turn':
             console.log('Turn photo')
             break

@@ -1,0 +1,36 @@
+@use '@styles/config/colors' as *;
+
+.cropArea {
+  position: absolute;
+  cursor: move;
+  z-index: 0;
+}
+
+.handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: $color-toggle-active;
+  border: 1px solid white;
+}
+
+.handleTL {
+  cursor: nwse-resize;
+  transform: translate(-50%, -50%);
+}
+
+.handleTR {
+  cursor: nesw-resize;
+  transform: translate(50%, -50%);
+}
+
+.handleBL {
+  cursor: nesw-resize;
+  transform: translate(-50%, 50%);
+}
+
+.handleBR {
+  cursor: nwse-resize;
+  transform: translate(50%, 50%);
+}

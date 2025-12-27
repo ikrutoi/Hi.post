@@ -1,0 +1,8 @@
+@use '@styles/config/colors' as *;
+
+.overlay {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  // z-index: 1;
+}

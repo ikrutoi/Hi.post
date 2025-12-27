@@ -60,3 +60,11 @@ export interface CardSize {
   width: number
   height: number
 }
+
+export interface ImageData {
+  width: number
+  height: number
+  left: number
+  top: number
+  aspectRatio: number
+}

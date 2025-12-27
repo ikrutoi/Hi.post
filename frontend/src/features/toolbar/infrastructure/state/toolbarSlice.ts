@@ -32,11 +32,25 @@ const toolbarSlice = createSlice({
     ) {
       Object.assign(state[action.payload.section], action.payload.value)
     },
+    updateToolbarIcon<
+      S extends keyof ToolbarState,
+      K extends keyof ToolbarState[S],
+    >(
+      state: ToolbarState,
+      action: PayloadAction<{
+        section: S
+        key: K
+        value: ToolbarState[S][K]
+      }>
+    ) {
+      state[action.payload.section][action.payload.key] = action.payload.value
+    },
     resetToolbar() {
       return structuredClone(initialState)
     },
   },
 })
 
-export const { updateToolbarSection, resetToolbar } = toolbarSlice.actions
+export const { updateToolbarSection, updateToolbarIcon, resetToolbar } =
+  toolbarSlice.actions
 export default toolbarSlice.reducer

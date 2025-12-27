@@ -1,18 +1,17 @@
 import { useEffect, useState } from 'react'
+import type { ImageData } from '../../domain/types'
 
 export const useImageLoader = (
   src: string,
   cardWidth: number,
   cardHeight: number
+  // aspectRatio: number
 ) => {
-  const [imageData, setImageData] = useState<{
-    width: number
-    height: number
-    left: number
-    top: number
-  } | null>(null)
+  const [imageData, setImageData] = useState<ImageData | null>(null)
   const [isReady, setIsReady] = useState(false)
   const [hasError, setHasError] = useState(false)
+
+  const round2 = (value: number) => Number(value.toFixed(2))
 
   useEffect(() => {
     setIsReady(false)
@@ -28,6 +27,7 @@ export const useImageLoader = (
       const scaleX = cardWidth / img.naturalWidth
       const scaleY = cardHeight / img.naturalHeight
       const scale = Math.min(scaleX, scaleY)
+      const aspectRatio = img.naturalWidth / img.naturalHeight
 
       const finalWidth = img.naturalWidth * scale - 1
       const finalHeight = img.naturalHeight * scale - 1
@@ -35,11 +35,13 @@ export const useImageLoader = (
       const offsetY = (cardHeight - finalHeight) / 2 - 1
 
       setImageData({
-        width: finalWidth,
-        height: finalHeight,
-        left: offsetX,
-        top: offsetY,
+        width: round2(finalWidth),
+        height: round2(finalHeight),
+        left: round2(offsetX),
+        top: round2(offsetY),
+        aspectRatio: round2(aspectRatio),
       })
+
       setIsReady(true)
     }
 

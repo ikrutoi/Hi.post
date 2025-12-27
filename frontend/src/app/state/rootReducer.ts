@@ -12,6 +12,7 @@ import {
 import {
   cardphotoReducer,
   cardphotoUiReducer,
+  cardphotoCropReducer,
 } from '@cardphoto/infrastructure/state'
 
 import { cardtextReducer } from '@cardtext/infrastructure/state'
@@ -59,6 +60,7 @@ export const rootReducer = combineReducers({
 
   cardphoto: cardphotoReducer,
   cardphotoUi: cardphotoUiReducer,
+  cardphotoCrop: cardphotoCropReducer,
 
   cardtext: cardtextReducer,
   cardtextToolbar: cardtextToolbarReducer,

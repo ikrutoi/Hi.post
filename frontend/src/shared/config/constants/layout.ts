@@ -3,6 +3,7 @@ export const CARD_SCALE_CONFIG = {
   aspectRatio: 1.42,
   precision: 2,
   scaleMiniCard: 1 / 7,
+  scaleCrop: 0.9,
 } as const
 
 export type CardScaleConfig = typeof CARD_SCALE_CONFIG

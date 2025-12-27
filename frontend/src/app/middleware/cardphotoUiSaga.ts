@@ -8,6 +8,7 @@ import {
   markLoading,
   markLoaded,
   setNeedsCrop,
+  // resetCrop,
 } from '@cardphoto/infrastructure/state'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
@@ -78,6 +79,7 @@ function* onCancelFileDialog() {
       value: { ...state, download: 'enabled' },
     })
   )
+  yield put(markLoaded())
 }
 
 export function* cardphotoUiSaga() {
