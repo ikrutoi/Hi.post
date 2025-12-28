@@ -1,5 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
+import { CARD_SCALE_CONFIG } from '@shared/config/constants'
+import { clampCropToImage, enforceAspectRatio } from '../application/helpers'
 import styles from './CropArea.module.scss'
 import type { ImageData } from '../domain/types'
 
@@ -35,18 +37,14 @@ export const CropArea: React.FC<CropAreaProps> = ({
       switch (corner) {
         case 'BR': {
           let newWidth = startCrop.width + dx
-          let newHeight = aspectRatio
-            ? newWidth / aspectRatio
-            : startCrop.height + dy
+          let newHeight = newWidth / CARD_SCALE_CONFIG.aspectRatio
           newCrop.width = Math.max(newWidth, minWidth)
           newCrop.height = Math.max(newHeight, minHeight)
           break
         }
         case 'TR': {
           let newWidth = startCrop.width + dx
-          let newHeight = aspectRatio
-            ? newWidth / aspectRatio
-            : startCrop.height - dy
+          let newHeight = newWidth / CARD_SCALE_CONFIG.aspectRatio
           newCrop.width = Math.max(newWidth, minWidth)
           newCrop.height = Math.max(newHeight, minHeight)
           newCrop.top = startCrop.top + dy
@@ -54,9 +52,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
         }
         case 'BL': {
           let newWidth = startCrop.width - dx
-          let newHeight = aspectRatio
-            ? newWidth / aspectRatio
-            : startCrop.height + dy
+          let newHeight = newWidth / CARD_SCALE_CONFIG.aspectRatio
           newCrop.width = Math.max(newWidth, minWidth)
           newCrop.height = Math.max(newHeight, minHeight)
           newCrop.left = startCrop.left + dx
@@ -64,15 +60,18 @@ export const CropArea: React.FC<CropAreaProps> = ({
         }
         case 'TL': {
           let newWidth = startCrop.width - dx
-          let newHeight = aspectRatio
-            ? newWidth / aspectRatio
-            : startCrop.height - dy
+          let newHeight = newWidth / CARD_SCALE_CONFIG.aspectRatio
           newCrop.width = Math.max(newWidth, minWidth)
           newCrop.height = Math.max(newHeight, minHeight)
           newCrop.left = startCrop.left + dx
           newCrop.top = startCrop.top + dy
           break
         }
+      }
+
+      if (imageData) {
+        newCrop = clampCropToImage(newCrop, imageData)
+        newCrop = enforceAspectRatio(newCrop, aspectRatio, imageData)
       }
 
       onChange({
@@ -103,6 +102,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
       let newLeft = startCrop.left + dx
       let newTop = startCrop.top + dy
 
+      console.log('drag+', imageData)
+
       if (!imageData) return
 
       newLeft = Math.max(
@@ -118,7 +119,6 @@ export const CropArea: React.FC<CropAreaProps> = ({
         ...startCrop,
         left: newLeft,
         top: newTop,
-        aspectRatio: crop.aspectRatio,
       })
     }
 

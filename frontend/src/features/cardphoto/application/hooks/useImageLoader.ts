@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import type { ImageData } from '../../domain/types'
+import { CARD_SCALE_CONFIG } from '@shared/config/constants'
+import type { CropState, ImageData } from '../../domain/types'
 
 export const useImageLoader = (
   src: string,
   cardWidth: number,
-  cardHeight: number
-  // aspectRatio: number
+  cardHeight: number,
+  imageId?: string
 ) => {
-  const [imageData, setImageData] = useState<ImageData | null>(null)
+  const [imageData, setImageData] = useState<CropState | null>(null)
   const [isReady, setIsReady] = useState(false)
   const [hasError, setHasError] = useState(false)
 
@@ -27,19 +28,23 @@ export const useImageLoader = (
       const scaleX = cardWidth / img.naturalWidth
       const scaleY = cardHeight / img.naturalHeight
       const scale = Math.min(scaleX, scaleY)
-      const aspectRatio = img.naturalWidth / img.naturalHeight
+      const imageAspectRatio = img.naturalWidth / img.naturalHeight
 
       const finalWidth = img.naturalWidth * scale - 1
       const finalHeight = img.naturalHeight * scale - 1
       const offsetX = (cardWidth - finalWidth) / 2 - 1
       const offsetY = (cardHeight - finalHeight) / 2 - 1
 
+      if (!imageId) return
+
       setImageData({
         width: round2(finalWidth),
         height: round2(finalHeight),
         left: round2(offsetX),
         top: round2(offsetY),
-        aspectRatio: round2(aspectRatio),
+        aspectRatio: CARD_SCALE_CONFIG.aspectRatio,
+        imageAspectRatio: round2(imageAspectRatio),
+        ownerImageId: imageId,
       })
 
       setIsReady(true)
@@ -56,6 +61,8 @@ export const useImageLoader = (
       img.onerror = null
     }
   }, [src, cardWidth, cardHeight])
+
+  console.log('load', imageData, imageId)
 
   return { imageData, isReady, hasError }
 }

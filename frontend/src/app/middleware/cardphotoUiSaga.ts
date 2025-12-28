@@ -12,8 +12,14 @@ import {
 } from '@cardphoto/infrastructure/state'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
-import { updateToolbarSection } from '@toolbar/infrastructure/state'
-import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
+import {
+  updateToolbarSection,
+  updateToolbarIcon,
+} from '@toolbar/infrastructure/state'
+import {
+  selectToolbarSectionState,
+  selectToolbarIconState,
+} from '@toolbar/infrastructure/selectors'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { ImageMeta } from '@cardphoto/domain/types'
@@ -23,15 +29,25 @@ function* onDownloadClick(action: ReturnType<typeof toolbarAction>) {
   const { section, key } = action.payload
   if (section !== 'cardphoto' || key !== 'download') return
 
-  const state: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto')
-  )
+  // const state: CardphotoToolbarState = yield select(
+  //   selectToolbarSectionState('cardphoto')
+  // )
 
+  // yield put(
+  //   updateToolbarSection({
+  //     section: 'cardphoto',
+  //     value: { ...state, download: 'disabled' },
+  //   })
+  // )
   yield put(
-    updateToolbarSection({
+    updateToolbarIcon({
       section: 'cardphoto',
-      value: { ...state, download: 'disabled' },
+      key: 'download',
+      value: 'disabled',
     })
+  )
+  yield put(
+    updateToolbarIcon({ section: 'cardphoto', key: 'crop', value: 'enabled' })
   )
 
   yield put(openFileDialog())
@@ -46,7 +62,6 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
   yield put(markLoaded())
 
   const sizeCard: SizeCard = yield select(selectSizeCard)
-
   if (!sizeCard) return
 
   const { needsCrop } = validateImageSize(
@@ -55,6 +70,17 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
     sizeCard.height
   )
   yield put(setNeedsCrop(needsCrop))
+
+  // console.log('saga Upload', imageMeta)
+  // yield put(
+  //   resetCrop({
+  //     imageWidth: imageMeta.width,
+  //     imageHeight: imageMeta.height,
+  //     imageLeft: 0,
+  //     imageTop: 0,
+  //     imageId: imageMeta.id,
+  //   })
+  // )
 
   const state: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')

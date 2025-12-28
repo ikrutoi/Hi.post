@@ -67,4 +67,9 @@ export interface ImageData {
   left: number
   top: number
   aspectRatio: number
+  imageAspectRatio: number
+}
+
+export interface CropState extends ImageData {
+  ownerImageId: string | null
 }

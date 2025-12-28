@@ -23,16 +23,20 @@ export function useCardphotoCropFacade() {
       imageWidth: number,
       imageHeight: number,
       aspectRatio: number,
+      imageAspectRatio: number,
       imageLeft: number,
-      imageTop: number
+      imageTop: number,
+      imageId: string
     ) => {
       dispatch(
         resetCrop({
           imageWidth,
           imageHeight,
           aspectRatio,
+          imageAspectRatio,
           imageLeft,
           imageTop,
+          imageId,
         })
       )
     },

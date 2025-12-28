@@ -1,5 +1,5 @@
 import { RootState } from '@app/state'
-import { CropState } from '../state'
+import { CropState } from '../../domain/types'
 
 export const selectCrop = (state: RootState): CropState => state.cardphotoCrop
 

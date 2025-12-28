@@ -1,2 +1,5 @@
 export * from './validateImageSize'
 export * from './calculateInitialCrop'
+export * from './calculateCropPosition'
+export * from './clampCropToImage'
+export * from './enforceAspectRatio'

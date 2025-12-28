@@ -1,4 +1,3 @@
-// src/cardphoto/application/controllers/useCardphotoCropController.ts
 import { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { resetCrop, updateCrop } from '../../infrastructure/state'
@@ -9,6 +8,7 @@ import {
   selectCropWidth,
   selectCropHeight,
 } from '../../infrastructure/selectors'
+import type { ImageData } from '../../domain/types'
 
 export function useCardphotoCropController() {
   const dispatch = useAppDispatch()
@@ -24,16 +24,20 @@ export function useCardphotoCropController() {
       imageWidth: number,
       imageHeight: number,
       aspectRatio: number,
+      imageAspectRatio: number,
       imageLeft: number,
-      imageTop: number
+      imageTop: number,
+      imageId: string
     ) => {
       dispatch(
         resetCrop({
           imageWidth,
           imageHeight,
           aspectRatio,
+          imageAspectRatio,
           imageLeft,
           imageTop,
+          imageId,
         })
       )
     },

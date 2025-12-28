@@ -11,9 +11,12 @@ import {
 } from '../application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
 import { STOCK_IMAGES } from '@shared/assets/stock'
-import { CARD_SCALE_CONFIG } from '@shared/config/constants'
-import { useImageLoader, useImageUpload } from '../application/hooks'
-import { calculateInitialCrop } from '../application/helpers'
+// import { CARD_SCALE_CONFIG } from '@shared/config/constants'
+import {
+  useImageLoader,
+  useImageUpload,
+  useCropInitialization,
+} from '../application/hooks'
 import { selectTransformedImage } from '../infrastructure/selectors'
 import placeholderImage from '@shared/assets/images/card-photo-bw.jpg'
 import styles from './ImageCrop.module.scss'
@@ -37,9 +40,8 @@ export const ImageCrop = () => {
   const { sizeCard } = size
 
   const [loaded, setLoaded] = useState(false)
-  // const [extrasVisible, setExtrasVisible] = useState(false)
 
-  const aspectRatio = CARD_SCALE_CONFIG.aspectRatio
+  // const aspectRatio = CARD_SCALE_CONFIG.aspectRatio
 
   const transformedImage = useAppSelector(selectTransformedImage)
 
@@ -49,23 +51,13 @@ export const ImageCrop = () => {
   const { imageData, isReady, hasError } = useImageLoader(
     src,
     sizeCard.width,
-    sizeCard.height
+    sizeCard.height,
+    stateCardphoto.activeImage?.id
   )
 
   const inputRef = useRef<HTMLInputElement>(null)
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const cropAreaRef = useRef<HTMLDivElement>(null)
-
-  // useEffect(() => {
-  //   if (stateToolbar.crop === 'active' && imageData) {
-  //     const crop = calculateInitialCrop(
-  //       imageData.width,
-  //       imageData.height,
-  //       aspectRatio
-  //     )
-  //     reset(crop.width, crop.height, aspectRatio, crop.left, crop.top)
-  //   }
-  // }, [stateToolbar.crop, imageData, aspectRatio, reset])
+  // const overlayRef = useRef<HTMLDivElement>(null)
+  // const cropAreaRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (shouldOpenFileDialog) {
@@ -82,41 +74,20 @@ export const ImageCrop = () => {
     }
   }, [])
 
-  useEffect(() => {
-    if (isReady && imageData && !hasError) {
-      if (!crop.width || !crop.height) {
-        const left = imageData.aspectRatio < aspectRatio ? 0 : imageData.left
-        const top = imageData.aspectRatio > aspectRatio ? 0 : imageData.top
+  console.log('ImageCrop', crop)
 
-        resetCrop(
-          imageData.width,
-          imageData.height,
-          imageData.aspectRatio,
-          left,
-          top
-        )
-      } else {
-        updateCrop(crop)
-      }
-    }
-  }, [
-    isReady,
+  useCropInitialization(
     imageData,
-    hasError,
-    resetCrop,
-    updateCrop,
     crop,
-    stateCardphoto.activeImage?.id,
-  ])
+    resetCrop,
+    isReady,
+    hasError,
+    stateCardphoto.activeImage?.id
+  )
 
   useEffect(() => {
     setLoaded(false)
   }, [src])
-
-  // const handleImageLoad = () => {
-  //   setLoaded(true)
-  //   setTimeout(() => setExtrasVisible(true), 1000)
-  // }
 
   const handleFileChange = useImageUpload(
     actionsCardphoto.uploadImage,
@@ -186,23 +157,13 @@ export const ImageCrop = () => {
           />
         )}
 
-        {/* {stateCardphoto.isComplete && (
-          <div className={styles.overlay} ref={overlayRef} />
-        )} */}
-
         {loaded && imageData && stateToolbar.crop === 'active' && (
           <CropOverlay crop={crop} imageData={imageData} />
         )}
 
         {loaded && stateToolbar.crop === 'active' && (
           <CropArea
-            crop={{
-              top: Number(((imageData?.top ?? 0) + crop.top).toFixed(2)),
-              left: Number(((imageData?.left ?? 0) + crop.left).toFixed(2)),
-              width: crop.width,
-              height: crop.height,
-              aspectRatio,
-            }}
+            crop={crop}
             imageData={imageData}
             onChange={(newCrop) => updateCrop(newCrop)}
           />
