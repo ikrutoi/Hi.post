@@ -44,13 +44,6 @@ export const cardphotoCropSlice = createSlice({
         imageId,
       } = action.payload
 
-      console.log('reset', imageWidth, imageHeight)
-
-      // const imageAspectRatio =
-      //   imageWidth && imageHeight
-      //     ? Number((imageWidth / imageHeight).toFixed(2))
-      //     : CARD_SCALE_CONFIG.aspectRatio
-
       const cropSize = calculateInitialCrop(
         imageWidth,
         imageHeight,

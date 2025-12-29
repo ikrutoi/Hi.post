@@ -11,11 +11,11 @@ import {
 } from '../application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
 import { STOCK_IMAGES } from '@shared/assets/stock'
-// import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import {
   useImageLoader,
   useImageUpload,
   useCropInitialization,
+  useFileDialog,
 } from '../application/hooks'
 import { selectTransformedImage } from '../infrastructure/selectors'
 import placeholderImage from '@shared/assets/images/card-photo-bw.jpg'
@@ -41,8 +41,6 @@ export const ImageCrop = () => {
 
   const [loaded, setLoaded] = useState(false)
 
-  // const aspectRatio = CARD_SCALE_CONFIG.aspectRatio
-
   const transformedImage = useAppSelector(selectTransformedImage)
 
   const src = transformedImage?.url || ''
@@ -55,12 +53,12 @@ export const ImageCrop = () => {
     stateCardphoto.activeImage?.id
   )
 
-  const inputRef = useRef<HTMLInputElement>(null)
-  // const overlayRef = useRef<HTMLDivElement>(null)
-  // const cropAreaRef = useRef<HTMLDivElement>(null)
+  const { inputRef, handleBlur } = useFileDialog()
 
   useEffect(() => {
     if (shouldOpenFileDialog) {
+      console.log('+')
+      inputRef.current?.focus()
       inputRef.current?.click()
       actionsCardphotoUi.resetFileDialog()
     }
@@ -73,8 +71,6 @@ export const ImageCrop = () => {
       actionsCardphoto.setImage(randomImage)
     }
   }, [])
-
-  console.log('ImageCrop', crop)
 
   useCropInitialization(
     imageData,
@@ -108,9 +104,10 @@ export const ImageCrop = () => {
       <input
         type="file"
         accept="image/*"
-        onChange={handleFileChange}
         ref={inputRef}
-        style={{ display: 'none' }}
+        className={styles.imageInput}
+        onBlur={handleBlur}
+        onChange={handleFileChange}
       />
 
       <div

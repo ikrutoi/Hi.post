@@ -62,7 +62,5 @@ export const useImageLoader = (
     }
   }, [src, cardWidth, cardHeight])
 
-  console.log('load', imageData, imageId)
-
   return { imageData, isReady, hasError }
 }

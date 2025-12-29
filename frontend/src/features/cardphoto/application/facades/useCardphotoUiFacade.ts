@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import {
   openFileDialog,
   resetFileDialog,
@@ -14,12 +14,12 @@ import {
 } from '../../infrastructure/selectors/cardphotoUiSelectors'
 
 export const useCardphotoUiFacade = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const state = {
-    shouldOpenFileDialog: useSelector(selectShouldOpenFileDialog),
-    isLoading: useSelector(selectIsLoading),
-    needsCrop: useSelector(selectNeedsCrop),
+    shouldOpenFileDialog: useAppSelector(selectShouldOpenFileDialog),
+    isLoading: useAppSelector(selectIsLoading),
+    needsCrop: useAppSelector(selectNeedsCrop),
   }
 
   const actions = {

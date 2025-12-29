@@ -96,6 +96,7 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
 }
 
 function* onCancelFileDialog() {
+  console.log('onCancel')
   const state: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
   )
