@@ -6,9 +6,7 @@ export const useFileDialog = () => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleBlur = () => {
-    console.log('++')
     if (!inputRef.current?.files?.length) {
-      console.log('+++')
       actions.cancelFileDialog()
     }
   }

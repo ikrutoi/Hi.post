@@ -1,30 +1,21 @@
-import { takeLatest, put, select } from 'redux-saga/effects'
+import { takeLatest, put } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import type { CardphotoToolbarState } from '@toolbar/domain/types'
+import { addOperation } from '@cardphoto/infrastructure/state'
+import { handleCropAction } from './cardphotoToolbarHandlers'
 
 function* handleCardphotoToolbarAction(
   action: ReturnType<typeof toolbarAction>
 ) {
   const { section, key } = action.payload
-
-  const state: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto')
-  )
-
   if (section !== 'cardphoto') return
 
   switch (key) {
     case 'crop':
-      yield put(
-        updateToolbarIcon({
-          section: 'cardphoto',
-          key: 'crop',
-          value: state.crop === 'enabled' ? 'active' : 'enabled',
-        })
-      )
+      yield* handleCropAction()
+      break
 
+    case 'rotate':
+      yield put(addOperation({ type: 'rotate', payload: { angle: 90 } }))
       break
   }
 }

@@ -68,12 +68,24 @@ export const selectCanRedo = createSelector(
   (operations, activeIndex) => activeIndex < operations.length - 1
 )
 
+export const selectHasHistory = createSelector(
+  [selectHistory],
+  (history) => !!history
+)
+
+export const selectIsStockImage = createSelector(
+  [selectActiveImage],
+  (activeImage) => activeImage?.source === 'stock'
+)
+
 export const selectCardphotoContext = createSelector(
   [
     selectActiveImage,
     selectOriginalImage,
     selectActiveOperation,
     selectIsComplete,
+    selectHasHistory,
+    selectIsStockImage,
   ],
   (activeImage, originalImage, activeOperation, isComplete) => ({
     activeImage,

@@ -10,7 +10,7 @@ export const ICON_KEYS = [
   'apply',
   'close',
   'user',
-  'turn',
+  'rotate',
   'edit',
   'fillFrame',
   'crop',

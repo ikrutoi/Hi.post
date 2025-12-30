@@ -1,5 +1,6 @@
 import { AppDispatch, RootState } from '@app/state'
 import {
+  initStockImage,
   setActiveImage,
   addOperation,
   undo,
@@ -17,8 +18,12 @@ import {
   selectIsComplete,
   selectHasConfirmedImage,
   selectOriginalImage,
+  selectHasHistory,
+  selectIsStockImage,
+  selectCanUndo,
+  selectCanRedo,
 } from '../../infrastructure/selectors/cardphotoSelectors'
-import type { ImageMeta, ImageOperation } from '../../domain/types'
+import type { ImageMeta, ImageOperation, CropArea } from '../../domain/types'
 
 export const useCardphotoController = (
   dispatch: AppDispatch,
@@ -32,9 +37,14 @@ export const useCardphotoController = (
     isComplete: selectIsComplete(getState()),
     hasConfirmedImage: selectHasConfirmedImage(getState()),
     originalImage: selectOriginalImage(getState()),
+    hasHistory: selectHasHistory(getState()),
+    isStockImage: selectIsStockImage(getState()),
+    canUndo: selectCanUndo(getState()),
+    canRedo: selectCanRedo(getState()),
   }
 
   const actions = {
+    initStockImage: (image: ImageMeta) => dispatch(initStockImage(image)),
     setImage: (image: ImageMeta) => dispatch(setActiveImage(image)),
     confirmSelection: () => dispatch(markComplete()),
     cancelSelection: () => dispatch(cancelSelection()),
@@ -43,6 +53,15 @@ export const useCardphotoController = (
     redo: () => dispatch(redo()),
     reset: () => dispatch(reset()),
     uploadImage: (file: ImageMeta) => dispatch(uploadImage(file)),
+
+    applyCrop: (area: CropArea) =>
+      dispatch(addOperation({ type: 'crop', area })),
+    applyRotate: (angle: number) =>
+      dispatch(addOperation({ type: 'rotate', angle })),
+    applyScale: (factor: number) =>
+      dispatch(addOperation({ type: 'scale', factor })),
+
+    resetToOriginal: () => dispatch(reset()),
   }
 
   return { state, actions }

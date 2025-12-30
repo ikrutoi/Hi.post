@@ -1,5 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import {
+  initCardphoto,
+  initStockImage,
   setActiveImage,
   addOperation,
   undo,
@@ -17,8 +19,12 @@ import {
   selectIsComplete,
   selectHasConfirmedImage,
   selectOriginalImage,
+  selectHasHistory,
+  selectIsStockImage,
+  selectCanUndo,
+  selectCanRedo,
 } from '../../infrastructure/selectors/cardphotoSelectors'
-import type { ImageMeta, ImageOperation } from '../../domain/types'
+import type { ImageMeta, ImageOperation, CropArea } from '../../domain/types'
 
 export const useCardphotoFacade = () => {
   const dispatch = useDispatch()
@@ -31,9 +37,15 @@ export const useCardphotoFacade = () => {
     isComplete: useSelector(selectIsComplete),
     hasConfirmedImage: useSelector(selectHasConfirmedImage),
     originalImage: useSelector(selectOriginalImage),
+    hasHistory: useSelector(selectHasHistory),
+    isStockImage: useSelector(selectIsStockImage),
+    canUndo: useSelector(selectCanUndo),
+    canRedo: useSelector(selectCanRedo),
   }
 
   const actions = {
+    initCardphoto: () => dispatch(initCardphoto()),
+    initStockImage: (image: ImageMeta) => dispatch(initStockImage(image)),
     setImage: (image: ImageMeta) => dispatch(setActiveImage(image)),
     confirmSelection: () => dispatch(markComplete()),
     cancelSelection: () => dispatch(cancelSelection()),
@@ -42,11 +54,16 @@ export const useCardphotoFacade = () => {
     redo: () => dispatch(redo()),
     reset: () => dispatch(reset()),
     uploadImage: (file: ImageMeta) => dispatch(uploadImage(file)),
+
+    applyCrop: (area: CropArea) =>
+      dispatch(addOperation({ type: 'crop', area })),
+    applyRotate: (angle: number) =>
+      dispatch(addOperation({ type: 'rotate', angle })),
+    applyScale: (factor: number) =>
+      dispatch(addOperation({ type: 'scale', factor })),
   }
 
   const helpers = {
-    canUndo: () => state.activeIndex >= 0,
-    canRedo: () => state.activeIndex < state.operations.length - 1,
     isReadyForMiniSection: () => state.hasConfirmedImage && state.isComplete,
   }
 

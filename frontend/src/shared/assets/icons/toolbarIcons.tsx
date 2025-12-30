@@ -126,7 +126,7 @@ function getIconByKey(key: IconKey): JSX.Element {
       return <IconClose />
     case 'user':
       return <RiUserLine />
-    case 'turn':
+    case 'rotate':
       return <PiArrowClockwiseFill />
     case 'edit':
       return <FiEdit />

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { ensureHistory } from '../../application/helpers'
 import type {
   ImageMeta,
   ImageOperation,
@@ -21,6 +22,22 @@ export const cardphotoSlice = createSlice({
   name: 'cardphoto',
   initialState,
   reducers: {
+    initCardphoto(state) {},
+    initStockImage(state, action: PayloadAction<ImageMeta>) {
+      const meta = action.payload
+      state.activeImage = meta
+      state.history = {
+        original: {
+          id: meta.id,
+          source: meta.source,
+          url: meta.url,
+        },
+        operations: [{ type: 'initial' }],
+        activeIndex: 0,
+      }
+      state.isComplete = false
+    },
+
     setActiveImage(state, action: PayloadAction<ImageMeta>) {
       const meta = action.payload
 
@@ -42,14 +59,14 @@ export const cardphotoSlice = createSlice({
     },
 
     addOperation(state, action: PayloadAction<ImageOperation>) {
-      if (state.history) {
-        state.history.operations = state.history.operations.slice(
-          0,
-          state.history.activeIndex + 1
-        )
-        state.history.operations.push(action.payload)
-        state.history.activeIndex = state.history.operations.length - 1
-      }
+      state.history = ensureHistory(state.history, state.activeImage)
+
+      state.history.operations = state.history.operations.slice(
+        0,
+        state.history.activeIndex + 1
+      )
+      state.history.operations.push(action.payload)
+      state.history.activeIndex = state.history.operations.length - 1
     },
 
     undo(state) {
@@ -91,6 +108,8 @@ export const cardphotoSlice = createSlice({
 })
 
 export const {
+  initCardphoto,
+  initStockImage,
   setActiveImage,
   addOperation,
   undo,

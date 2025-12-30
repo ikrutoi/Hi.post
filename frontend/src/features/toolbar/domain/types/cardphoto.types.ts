@@ -3,7 +3,7 @@ import type { IconState } from '@shared/config/constants'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
 export const CARDPHOTO_KEYS = [
-  'turn',
+  'rotate',
   'fillFrame',
   'crop',
   'apply',
@@ -21,7 +21,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'photo',
     icons: [
-      { key: 'turn', state: 'disabled' },
+      { key: 'rotate', state: 'disabled' },
       { key: 'fillFrame', state: 'disabled' },
       { key: 'crop', state: 'enabled' },
     ],

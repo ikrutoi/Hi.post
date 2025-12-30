@@ -24,6 +24,7 @@ import styles from './ImageCrop.module.scss'
 export const ImageCrop = () => {
   const { state: stateCardphoto, actions: actionsCardphoto } =
     useCardphotoFacade()
+  const { initCardphoto } = actionsCardphoto
 
   const { state: stateCardphotoUi, actions: actionsCardphotoUi } =
     useCardphotoUiFacade()
@@ -46,6 +47,12 @@ export const ImageCrop = () => {
   const src = transformedImage?.url || ''
   const alt = transformedImage?.id || 'Placeholder'
 
+  useEffect(() => {
+    initCardphoto()
+  }, [initCardphoto])
+
+  console.log('stateCardphoto', stateCardphoto)
+
   const { imageData, isReady, hasError } = useImageLoader(
     src,
     sizeCard.width,
@@ -57,20 +64,11 @@ export const ImageCrop = () => {
 
   useEffect(() => {
     if (shouldOpenFileDialog) {
-      console.log('+')
       inputRef.current?.focus()
       inputRef.current?.click()
       actionsCardphotoUi.resetFileDialog()
     }
   }, [shouldOpenFileDialog])
-
-  useEffect(() => {
-    if (!stateCardphoto.activeImage) {
-      const randomImage =
-        STOCK_IMAGES[Math.floor(Math.random() * STOCK_IMAGES.length)]
-      actionsCardphoto.setImage(randomImage)
-    }
-  }, [])
 
   useCropInitialization(
     imageData,

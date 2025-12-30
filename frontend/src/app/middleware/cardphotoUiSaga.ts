@@ -49,6 +49,9 @@ function* onDownloadClick(action: ReturnType<typeof toolbarAction>) {
   yield put(
     updateToolbarIcon({ section: 'cardphoto', key: 'crop', value: 'enabled' })
   )
+  yield put(
+    updateToolbarIcon({ section: 'cardphoto', key: 'save', value: 'disabled' })
+  )
 
   yield put(openFileDialog())
   yield put(markLoading())
@@ -89,6 +92,7 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
   const newState = {
     ...state,
     download: 'enabled',
+    save: 'enabled',
     apply: needsCrop ? 'enabled' : 'disabled',
   }
 
@@ -96,16 +100,12 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
 }
 
 function* onCancelFileDialog() {
-  console.log('onCancel')
   const state: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
   )
-  yield put(
-    updateToolbarSection({
-      section: 'cardphoto',
-      value: { ...state, download: 'enabled' },
-    })
-  )
+  const newState = { ...state, download: 'enabled', save: 'enabled' }
+
+  yield put(updateToolbarSection({ section: 'cardphoto', value: newState }))
   yield put(markLoaded())
 }
 
