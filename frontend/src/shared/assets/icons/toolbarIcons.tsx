@@ -100,6 +100,14 @@ import {
   IconDownload,
   IconApply,
   IconClose,
+  IconCrop,
+  IconCropCheck,
+  IconCropFull,
+  IconCropRotate,
+  IconRotateLeft,
+  IconRotateLeftHorizontal,
+  IconRotateRight,
+  IconRotateRightHorizontal,
 } from '@shared/ui/icons'
 
 export const toolbarIcons = Object.fromEntries(
@@ -126,14 +134,20 @@ function getIconByKey(key: IconKey): JSX.Element {
       return <IconClose />
     case 'user':
       return <RiUserLine />
-    case 'rotate':
-      return <PiArrowClockwiseFill />
+    case 'rotateLeft':
+      return <IconRotateLeftHorizontal />
+    case 'rotateRight':
+      return <IconRotateRightHorizontal />
     case 'edit':
       return <FiEdit />
-    case 'fillFrame':
-      return <TbArrowsMaximize />
     case 'crop':
-      return <FiCrop />
+      return <IconCrop />
+    case 'cropCheck':
+      return <IconCropCheck />
+    case 'cropFull':
+      return <IconCropFull />
+    case 'cropRotate':
+      return <IconCropRotate />
     case 'reset':
       return <RiResetLeftFill />
     case 'bold':

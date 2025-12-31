@@ -1,6 +1,10 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
-import type { ImageOperation } from '@cardphoto/domain/types'
+import type {
+  ImageOperation,
+  WorkingConfig,
+  Orientation,
+} from '@cardphoto/domain/types'
 
 const selectCardphoto = (state: RootState) => state.cardphoto
 
@@ -60,7 +64,7 @@ export const selectHasOperations = createSelector(
 
 export const selectCanUndo = createSelector(
   [selectActiveIndex],
-  (activeIndex) => activeIndex >= 0
+  (activeIndex) => activeIndex > 0
 )
 
 export const selectCanRedo = createSelector(
@@ -78,6 +82,26 @@ export const selectIsStockImage = createSelector(
   (activeImage) => activeImage?.source === 'stock'
 )
 
+export const selectWorkingConfig = createSelector(
+  [selectHistory],
+  (history): WorkingConfig => history?.workingConfig ?? { orientation: 0 }
+)
+
+export const selectOrientation = createSelector(
+  [selectWorkingConfig],
+  (workingConfig): Orientation => workingConfig.orientation
+)
+
+export const selectCropArea = createSelector(
+  [selectWorkingConfig],
+  (workingConfig) => workingConfig.crop ?? null
+)
+
+export const selectLastApplied = createSelector(
+  [selectHistory],
+  (history) => history?.lastApplied ?? null
+)
+
 export const selectCardphotoContext = createSelector(
   [
     selectActiveImage,
@@ -86,11 +110,32 @@ export const selectCardphotoContext = createSelector(
     selectIsComplete,
     selectHasHistory,
     selectIsStockImage,
+    selectWorkingConfig,
+    selectLastApplied,
+    selectOrientation,
+    selectCropArea,
   ],
-  (activeImage, originalImage, activeOperation, isComplete) => ({
+  (
     activeImage,
     originalImage,
     activeOperation,
     isComplete,
+    hasHistory,
+    isStock,
+    workingConfig,
+    lastApplied,
+    orientation,
+    cropArea
+  ) => ({
+    activeImage,
+    originalImage,
+    activeOperation,
+    isComplete,
+    hasHistory,
+    isStock,
+    workingConfig,
+    lastApplied,
+    orientation,
+    cropArea,
   })
 )

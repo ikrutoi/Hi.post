@@ -49,7 +49,7 @@ export const ImageCrop = () => {
 
   useEffect(() => {
     initCardphoto()
-  }, [initCardphoto])
+  }, [])
 
   console.log('stateCardphoto', stateCardphoto)
 

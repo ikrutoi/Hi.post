@@ -22,8 +22,12 @@ import {
   selectIsStockImage,
   selectCanUndo,
   selectCanRedo,
+  selectWorkingConfig,
+  selectLastApplied,
+  selectOrientation,
+  selectCropArea,
 } from '../../infrastructure/selectors/cardphotoSelectors'
-import type { ImageMeta, ImageOperation, CropArea } from '../../domain/types'
+import type { ImageMeta, CropArea, Orientation } from '../../domain/types'
 
 export const useCardphotoController = (
   dispatch: AppDispatch,
@@ -41,6 +45,10 @@ export const useCardphotoController = (
     isStockImage: selectIsStockImage(getState()),
     canUndo: selectCanUndo(getState()),
     canRedo: selectCanRedo(getState()),
+    workingConfig: selectWorkingConfig(getState()),
+    lastApplied: selectLastApplied(getState()),
+    orientation: selectOrientation(getState()),
+    cropArea: selectCropArea(getState()),
   }
 
   const actions = {
@@ -48,18 +56,50 @@ export const useCardphotoController = (
     setImage: (image: ImageMeta) => dispatch(setActiveImage(image)),
     confirmSelection: () => dispatch(markComplete()),
     cancelSelection: () => dispatch(cancelSelection()),
-    addOperation: (op: ImageOperation) => dispatch(addOperation(op)),
+    addOperation: (op: any) => dispatch(addOperation(op)), // generic fallback
     undo: () => dispatch(undo()),
     redo: () => dispatch(redo()),
     reset: () => dispatch(reset()),
     uploadImage: (file: ImageMeta) => dispatch(uploadImage(file)),
 
-    applyCrop: (area: CropArea) =>
-      dispatch(addOperation({ type: 'crop', area })),
-    applyRotate: (angle: number) =>
-      dispatch(addOperation({ type: 'rotate', angle })),
-    applyScale: (factor: number) =>
-      dispatch(addOperation({ type: 'scale', factor })),
+    applyCrop: (area: CropArea, orientation: Orientation) =>
+      dispatch(
+        addOperation({
+          type: 'apply',
+          payload: {
+            snapshot: { crop: area, orientation },
+            orientation,
+          },
+        })
+      ),
+
+    rotateRight: () => {
+      const current = selectOrientation(getState())
+      const next: Orientation = ((current + 90) % 360) as Orientation
+      dispatch(
+        addOperation({
+          type: 'apply',
+          payload: {
+            snapshot: { ...selectWorkingConfig(getState()), orientation: next },
+            orientation: next,
+          },
+        })
+      )
+    },
+
+    rotateLeft: () => {
+      const current = selectOrientation(getState())
+      const next: Orientation = ((current + 270) % 360) as Orientation
+      dispatch(
+        addOperation({
+          type: 'apply',
+          payload: {
+            snapshot: { ...selectWorkingConfig(getState()), orientation: next },
+            orientation: next,
+          },
+        })
+      )
+    },
 
     resetToOriginal: () => dispatch(reset()),
   }

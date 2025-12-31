@@ -1,7 +1,6 @@
-import { takeLatest, put } from 'redux-saga/effects'
+import { takeLatest } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { addOperation } from '@cardphoto/infrastructure/state'
-import { handleCropAction } from './cardphotoToolbarHandlers'
+import { handleCropAction, handleApplyAction } from './cardphotoToolbarHandlers'
 
 function* handleCardphotoToolbarAction(
   action: ReturnType<typeof toolbarAction>
@@ -14,8 +13,8 @@ function* handleCardphotoToolbarAction(
       yield* handleCropAction()
       break
 
-    case 'rotate':
-      yield put(addOperation({ type: 'rotate', payload: { angle: 90 } }))
+    case 'apply':
+      yield* handleApplyAction()
       break
   }
 }

@@ -30,19 +30,8 @@ export interface ImageThumbnail {
   height: number
 }
 
-export const IMAGE_OPERATION_TYPE = [
-  'initial',
-  'crop',
-  'rotate',
-  'scale',
-] as const
+export const IMAGE_OPERATION_TYPE = ['initial', 'crop', 'apply'] as const
 export type ImageOperationType = (typeof IMAGE_OPERATION_TYPE)[number]
-
-export type ImageOperation =
-  | { type: 'initial'; payload?: undefined }
-  | { type: 'crop'; payload: CropArea }
-  | { type: 'rotate'; payload: { angle: number } }
-  | { type: 'scale'; payload: { factor: number } }
 
 export interface CropArea {
   x: number
@@ -51,10 +40,33 @@ export interface CropArea {
   height: number
 }
 
+export type Orientation = 0 | 90 | 180 | 270
+
+export type ImageOperation =
+  | { type: 'initial'; payload?: undefined }
+  | {
+      type: 'crop'
+      payload: { area: CropArea; orientation: Orientation }
+    }
+  | {
+      type: 'apply'
+      payload: {
+        snapshot: WorkingConfig
+        orientation: Orientation
+      }
+    }
+
+export interface WorkingConfig {
+  crop?: CropArea
+  orientation: Orientation
+}
+
 export interface ImageHistory {
   original: ImageOriginal
   operations: ImageOperation[]
   activeIndex: number
+  workingConfig: WorkingConfig
+  lastApplied?: WorkingConfig | null
 }
 
 export interface UserImageLimit {

@@ -1,4 +1,4 @@
-import type { ImageHistory, ImageMeta } from '../../domain/types'
+import type { ImageHistory, ImageMeta, Orientation } from '../../domain/types'
 
 export function ensureHistory(
   history: ImageHistory | null,
@@ -13,6 +13,8 @@ export function ensureHistory(
       },
       operations: [{ type: 'initial' }],
       activeIndex: 0,
+      workingConfig: { orientation: 0 as Orientation },
+      lastApplied: null,
     }
   }
   return history!
