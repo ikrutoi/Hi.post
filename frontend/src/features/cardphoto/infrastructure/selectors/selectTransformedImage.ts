@@ -6,7 +6,7 @@ import {
   selectActiveIndex,
 } from './index'
 
-function applyOperations(
+export function applyOperations(
   original: ImageMeta,
   operations: ImageOperation[]
 ): ImageMeta {
@@ -17,23 +17,21 @@ function applyOperations(
       case 'initial':
         break
       case 'crop':
-        result = {
-          ...result,
-          width: op.area.width,
-          height: op.area.height,
+        if (op.payload.area) {
+          result = {
+            ...result,
+            width: op.payload.area.width,
+            height: op.payload.area.height,
+          }
         }
         break
-      case 'rotate':
-        result = {
-          ...result,
-          timestamp: Date.now(),
-        }
-        break
-      case 'scale':
-        result = {
-          ...result,
-          width: Math.round(result.width * op.factor),
-          height: Math.round(result.height * op.factor),
+      case 'apply':
+        if (op.payload.snapshot.crop) {
+          result = {
+            ...result,
+            width: op.payload.snapshot.crop.width,
+            height: op.payload.snapshot.crop.height,
+          }
         }
         break
     }
@@ -42,11 +40,11 @@ function applyOperations(
   return result
 }
 
-export const selectTransformedImage = createSelector(
-  [selectOriginalImage, selectOperations, selectActiveIndex],
-  (original, operations, activeIndex) => {
-    if (!original) return null
-    const applied = operations.slice(0, activeIndex + 1)
-    return applyOperations(original as ImageMeta, applied)
-  }
-)
+// export const selectTransformedImage = createSelector(
+//   [selectOriginalImage, selectOperations, selectActiveIndex],
+//   (original, operations, activeIndex) => {
+//     if (!original) return null
+//     const applied = operations.slice(0, activeIndex + 1)
+//     return applyOperations(original as ImageMeta, applied)
+//   }
+// )

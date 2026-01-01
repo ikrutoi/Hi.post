@@ -3,7 +3,6 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import {
   openFileDialog,
   uploadImage,
-  setActiveImage,
   cancelFileDialog,
   markLoading,
   markLoaded,
@@ -61,7 +60,7 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
   const imageMeta = action.payload
   if (!imageMeta) return
 
-  yield put(setActiveImage(imageMeta))
+  // yield put(setActiveImage(imageMeta))
   yield put(markLoaded())
 
   const sizeCard: SizeCard = yield select(selectSizeCard)

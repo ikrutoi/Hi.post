@@ -17,6 +17,7 @@ function* initCardphotoSaga() {
     (history.operations.length === 1 &&
       history.operations[0].type === 'initial')
   ) {
+    console.log('init random')
     const randomMeta: ImageMeta = yield call(getRandomStockMeta)
     yield put(initStockImage(randomMeta))
   }

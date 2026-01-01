@@ -8,11 +8,6 @@ import type {
 
 const selectCardphoto = (state: RootState) => state.cardphoto
 
-export const selectActiveImage = createSelector(
-  [selectCardphoto],
-  (cardphoto) => cardphoto.activeImage
-)
-
 export const selectHistory = createSelector(
   [selectCardphoto],
   (cardphoto) => cardphoto.history
@@ -33,14 +28,14 @@ export const selectIsComplete = createSelector(
   (cardphoto) => cardphoto.isComplete
 )
 
-export const selectHasConfirmedImage = createSelector(
-  [selectActiveImage, selectIsComplete],
-  (activeImage, isComplete) => !!activeImage && isComplete
-)
-
 export const selectOriginalImage = createSelector(
   [selectHistory],
   (history) => history?.original ?? null
+)
+
+export const selectFinalImage = createSelector(
+  [selectHistory],
+  (history) => history?.finalImage ?? null
 )
 
 export const selectOperationsWithActive = createSelector(
@@ -77,14 +72,10 @@ export const selectHasHistory = createSelector(
   (history) => !!history
 )
 
-export const selectIsStockImage = createSelector(
-  [selectActiveImage],
-  (activeImage) => activeImage?.source === 'stock'
-)
-
 export const selectWorkingConfig = createSelector(
   [selectHistory],
-  (history): WorkingConfig => history?.workingConfig ?? { orientation: 0 }
+  (history): WorkingConfig =>
+    history?.workingConfig ?? { orientation: 0, crop: null }
 )
 
 export const selectOrientation = createSelector(
@@ -104,35 +95,32 @@ export const selectLastApplied = createSelector(
 
 export const selectCardphotoContext = createSelector(
   [
-    selectActiveImage,
     selectOriginalImage,
+    selectFinalImage,
     selectActiveOperation,
     selectIsComplete,
     selectHasHistory,
-    selectIsStockImage,
     selectWorkingConfig,
     selectLastApplied,
     selectOrientation,
     selectCropArea,
   ],
   (
-    activeImage,
     originalImage,
+    finalImage,
     activeOperation,
     isComplete,
     hasHistory,
-    isStock,
     workingConfig,
     lastApplied,
     orientation,
     cropArea
   ) => ({
-    activeImage,
     originalImage,
+    finalImage,
     activeOperation,
     isComplete,
     hasHistory,
-    isStock,
     workingConfig,
     lastApplied,
     orientation,

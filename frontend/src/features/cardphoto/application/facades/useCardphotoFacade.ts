@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   initCardphoto,
   initStockImage,
-  setActiveImage,
+  setFinalImage,
   addOperation,
   undo,
   redo,
@@ -12,15 +12,13 @@ import {
   uploadImage,
 } from '../../infrastructure/state/cardphotoSlice'
 import {
-  selectActiveImage,
   selectHistory,
   selectActiveIndex,
   selectOperations,
   selectIsComplete,
-  selectHasConfirmedImage,
   selectOriginalImage,
+  selectFinalImage,
   selectHasHistory,
-  selectIsStockImage,
   selectCanUndo,
   selectCanRedo,
   selectWorkingConfig,
@@ -34,15 +32,13 @@ export const useCardphotoFacade = () => {
   const dispatch = useDispatch()
 
   const state = {
-    activeImage: useSelector(selectActiveImage),
     history: useSelector(selectHistory),
     activeIndex: useSelector(selectActiveIndex),
     operations: useSelector(selectOperations),
     isComplete: useSelector(selectIsComplete),
-    hasConfirmedImage: useSelector(selectHasConfirmedImage),
     originalImage: useSelector(selectOriginalImage),
+    finalImage: useSelector(selectFinalImage),
     hasHistory: useSelector(selectHasHistory),
-    isStockImage: useSelector(selectIsStockImage),
     canUndo: useSelector(selectCanUndo),
     canRedo: useSelector(selectCanRedo),
     workingConfig: useSelector(selectWorkingConfig),
@@ -54,7 +50,7 @@ export const useCardphotoFacade = () => {
   const actions = {
     initCardphoto: () => dispatch(initCardphoto()),
     initStockImage: (image: ImageMeta) => dispatch(initStockImage(image)),
-    setImage: (image: ImageMeta) => dispatch(setActiveImage(image)),
+    setFinalImage: (image: ImageMeta) => dispatch(setFinalImage(image)),
     confirmSelection: () => dispatch(markComplete()),
     cancelSelection: () => dispatch(cancelSelection()),
     addOperation: (op: any) => dispatch(addOperation(op)),
@@ -106,7 +102,7 @@ export const useCardphotoFacade = () => {
   }
 
   const helpers = {
-    isReadyForMiniSection: () => state.hasConfirmedImage && state.isComplete,
+    isReadyForMiniSection: () => !!state.finalImage && state.isComplete,
   }
 
   return { state, actions, helpers }

@@ -1,6 +1,9 @@
 import { takeLatest } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { handleCropAction, handleApplyAction } from './cardphotoToolbarHandlers'
+import {
+  handleCropAction,
+  handleCropCheckAction,
+} from './cardphotoToolbarHandlers'
 
 function* handleCardphotoToolbarAction(
   action: ReturnType<typeof toolbarAction>
@@ -13,8 +16,8 @@ function* handleCardphotoToolbarAction(
       yield* handleCropAction()
       break
 
-    case 'apply':
-      yield* handleApplyAction()
+    case 'cropCheck':
+      yield* handleCropCheckAction()
       break
   }
 }

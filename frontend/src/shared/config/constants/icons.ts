@@ -19,6 +19,7 @@ export const ICON_KEYS = [
   'cropRotate',
   'rotateRight',
   'rotateLeft',
+  'undo',
   'reset',
   'bold',
   'underline',

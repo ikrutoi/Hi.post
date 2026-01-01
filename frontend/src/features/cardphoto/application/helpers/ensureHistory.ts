@@ -6,15 +6,12 @@ export function ensureHistory(
 ): ImageHistory {
   if (!history && activeImage) {
     return {
-      original: {
-        id: activeImage.id,
-        source: activeImage.source,
-        url: activeImage.url,
-      },
+      original: activeImage,
       operations: [{ type: 'initial' }],
       activeIndex: 0,
-      workingConfig: { orientation: 0 as Orientation },
+      workingConfig: { orientation: 0 as Orientation, crop: null },
       lastApplied: null,
+      finalImage: null,
     }
   }
   return history!

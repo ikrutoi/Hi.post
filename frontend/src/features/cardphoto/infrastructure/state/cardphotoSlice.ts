@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ensureHistory } from '../../application/helpers'
 import { CARDPHOTO_CONFIG } from '@shared/config/constants'
+import { applyOperations } from '../selectors'
 import type {
   ImageMeta,
   ImageOperation,
@@ -10,13 +11,13 @@ import type {
 } from '../../domain/types'
 
 export interface CardphotoState {
-  activeImage: ImageMeta | null
+  // activeImage: ImageMeta | null
   history: ImageHistory | null
   isComplete: boolean
 }
 
 const initialState: CardphotoState = {
-  activeImage: null,
+  // activeImage: null,
   history: null,
   isComplete: false,
 }
@@ -25,44 +26,46 @@ export const cardphotoSlice = createSlice({
   name: 'cardphoto',
   initialState,
   reducers: {
-    initCardphoto(state) {},
+    // initCardphoto(state) {},
+    initCardphoto(state) {
+      state.history = null
+      state.isComplete = false
+    },
 
     initStockImage(state, action: PayloadAction<ImageMeta>) {
       const meta = action.payload
-      state.activeImage = meta
       state.history = {
-        original: {
-          id: meta.id,
-          source: meta.source,
-          url: meta.url,
-        },
+        original: meta,
         operations: [{ type: 'initial' }],
         activeIndex: 0,
-        workingConfig: { orientation: 0 },
+        workingConfig: { orientation: 0, crop: null },
         lastApplied: null,
+        finalImage: meta,
       }
       state.isComplete = false
     },
 
-    setActiveImage(state, action: PayloadAction<ImageMeta>) {
-      const meta = action.payload
-      state.activeImage = meta
-      state.history = {
-        original: {
-          id: meta.id,
-          source: meta.source,
-          url: meta.url,
-        },
-        operations: [{ type: 'initial' }],
-        activeIndex: 0,
-        workingConfig: { orientation: 0 },
-        lastApplied: null,
+    // setActiveImage(state, action: PayloadAction<ImageMeta>) {
+    //   const meta = action.payload
+    //   state.history = {
+    //     original: meta,
+    //     operations: [{ type: 'initial' }],
+    //     activeIndex: 0,
+    //     workingConfig: { orientation: 0, crop: null },
+    //     lastApplied: null,
+    //     finalImage: null,
+    //   }
+    //   state.isComplete = false
+    // },
+
+    setFinalImage(state, action: PayloadAction<ImageMeta>) {
+      if (state.history) {
+        state.history.finalImage = action.payload
       }
-      state.isComplete = false
     },
 
     addOperation(state, action: PayloadAction<ImageOperation>) {
-      state.history = ensureHistory(state.history, state.activeImage)
+      if (!state.history) return
       const op = action.payload
 
       state.history.operations = state.history.operations.slice(
@@ -115,7 +118,7 @@ export const cardphotoSlice = createSlice({
         case 'initial': {
           state.history.operations = [{ type: 'initial' }]
           state.history.activeIndex = 0
-          state.history.workingConfig = { orientation: 0 }
+          state.history.workingConfig = { orientation: 0, crop: null }
           state.history.lastApplied = null
           break
         }
@@ -127,6 +130,10 @@ export const cardphotoSlice = createSlice({
       }
 
       state.history.activeIndex = state.history.operations.length - 1
+      state.history.finalImage = applyOperations(
+        state.history.original,
+        state.history.operations.slice(0, state.history.activeIndex + 1)
+      )
     },
 
     undo(state) {
@@ -142,6 +149,10 @@ export const cardphotoSlice = createSlice({
       if (op.type === 'apply') {
         state.history.workingConfig = { ...op.payload.snapshot }
       }
+      state.history.finalImage = applyOperations(
+        state.history.original,
+        state.history.operations.slice(0, state.history.activeIndex + 1)
+      )
     },
 
     redo(state) {
@@ -158,17 +169,21 @@ export const cardphotoSlice = createSlice({
       if (op.type === 'apply') {
         state.history.workingConfig = { ...op.payload.snapshot }
       }
+      state.history.finalImage = applyOperations(
+        state.history.original,
+        state.history.operations.slice(0, state.history.activeIndex + 1)
+      )
     },
 
     reset(state) {
       if (state.history) {
         state.history.operations = [{ type: 'initial' }]
         state.history.activeIndex = 0
-        state.history.workingConfig = { orientation: 0 }
+        state.history.workingConfig = { orientation: 0, crop: null }
         state.history.lastApplied = null
+        state.history.finalImage = state.history.original
       }
       state.isComplete = false
-      state.activeImage = null
     },
 
     markComplete(state) {
@@ -176,7 +191,6 @@ export const cardphotoSlice = createSlice({
     },
 
     cancelSelection(state) {
-      state.activeImage = null
       state.history = null
       state.isComplete = false
     },
@@ -187,8 +201,8 @@ export const cardphotoSlice = createSlice({
 
 export const {
   initCardphoto,
+  setFinalImage,
   initStockImage,
-  setActiveImage,
   addOperation,
   undo,
   redo,

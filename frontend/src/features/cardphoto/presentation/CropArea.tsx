@@ -19,6 +19,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
   const minWidth = 20
   const minHeight = 20
 
+  const round2 = (value: number) => Number(value.toFixed(0))
+
   const handleMouseDown = (corner: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -37,14 +39,14 @@ export const CropArea: React.FC<CropAreaProps> = ({
       switch (corner) {
         case 'BR': {
           let newWidth = startCrop.width + dx
-          let newHeight = newWidth / CARD_SCALE_CONFIG.aspectRatio
+          let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
           newCrop.width = Math.max(newWidth, minWidth)
           newCrop.height = Math.max(newHeight, minHeight)
           break
         }
         case 'TR': {
           let newWidth = startCrop.width + dx
-          let newHeight = newWidth / CARD_SCALE_CONFIG.aspectRatio
+          let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
           newCrop.width = Math.max(newWidth, minWidth)
           newCrop.height = Math.max(newHeight, minHeight)
           newCrop.top = startCrop.top + dy
@@ -52,7 +54,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
         }
         case 'BL': {
           let newWidth = startCrop.width - dx
-          let newHeight = newWidth / CARD_SCALE_CONFIG.aspectRatio
+          let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
           newCrop.width = Math.max(newWidth, minWidth)
           newCrop.height = Math.max(newHeight, minHeight)
           newCrop.left = startCrop.left + dx
@@ -60,7 +62,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
         }
         case 'TL': {
           let newWidth = startCrop.width - dx
-          let newHeight = newWidth / CARD_SCALE_CONFIG.aspectRatio
+          let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
           newCrop.width = Math.max(newWidth, minWidth)
           newCrop.height = Math.max(newHeight, minHeight)
           newCrop.left = startCrop.left + dx
@@ -102,8 +104,6 @@ export const CropArea: React.FC<CropAreaProps> = ({
       let newLeft = startCrop.left + dx
       let newTop = startCrop.top + dy
 
-      console.log('drag+', imageData)
-
       if (!imageData) return
 
       newLeft = Math.max(
@@ -117,8 +117,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
 
       onChange({
         ...startCrop,
-        left: newLeft,
-        top: newTop,
+        left: round2(newLeft),
+        top: round2(newTop),
       })
     }
 

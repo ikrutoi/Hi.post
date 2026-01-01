@@ -1,25 +1,26 @@
 export const IMAGE_SOURCE = ['stock', 'user', 'sent'] as const
 export type ImageSource = (typeof IMAGE_SOURCE)[number]
 
-export const IMAGE_ROLE = ['original', 'thumbnail', 'working'] as const
-export type ImageRole = (typeof IMAGE_ROLE)[number]
+// export const IMAGE_ROLE = ['original', 'thumbnail', 'working'] as const
+// export type ImageRole = (typeof IMAGE_ROLE)[number]
 
 export interface ImageMeta {
   id: string
   source: ImageSource
-  role: ImageRole
-  url?: string
+  // role: ImageRole
+  url: string
+  blob?: Blob
   width: number
   height: number
   timestamp?: number
 }
 
-export interface ImageOriginal {
-  id: string
-  source: ImageSource
-  blob?: Blob
-  url?: string
-}
+// export interface ImageOriginal {
+//   id: string
+//   source: ImageSource
+//   blob?: Blob
+//   url?: string
+// }
 
 export interface ImageThumbnail {
   id: string
@@ -57,16 +58,17 @@ export type ImageOperation =
     }
 
 export interface WorkingConfig {
-  crop?: CropArea
+  crop: CropArea | null
   orientation: Orientation
 }
 
 export interface ImageHistory {
-  original: ImageOriginal
+  original: ImageMeta
   operations: ImageOperation[]
   activeIndex: number
   workingConfig: WorkingConfig
-  lastApplied?: WorkingConfig | null
+  lastApplied: WorkingConfig | null
+  finalImage: ImageMeta | null
 }
 
 export interface UserImageLimit {

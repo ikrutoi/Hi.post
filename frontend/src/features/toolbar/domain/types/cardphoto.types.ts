@@ -5,6 +5,7 @@ import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 export const CARDPHOTO_KEYS = [
   'rotateLeft',
   'rotateRight',
+  'undo',
   'crop',
   'cropFull',
   'cropRotate',
@@ -26,6 +27,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'rotateLeft', state: 'enabled' },
       { key: 'rotateRight', state: 'enabled' },
+      { key: 'undo', state: 'disabled' },
       { key: 'crop', state: 'enabled' },
       { key: 'cropRotate', state: 'disabled' },
       { key: 'cropFull', state: 'disabled' },

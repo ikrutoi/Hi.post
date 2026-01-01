@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { CropArea } from './CropArea'
 import { CropOverlay } from './CropOverlay'
-import { useAppSelector } from '@app/hooks'
 import { useLayoutFacade } from '@layout/application/facades'
 import {
   useCardphotoFacade,
@@ -10,20 +9,19 @@ import {
   useCardphotoCropFacade,
 } from '../application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
-import { STOCK_IMAGES } from '@shared/assets/stock'
 import {
   useImageLoader,
   useImageUpload,
   useCropInitialization,
   useFileDialog,
 } from '../application/hooks'
-import { selectTransformedImage } from '../infrastructure/selectors'
 import placeholderImage from '@shared/assets/images/card-photo-bw.jpg'
 import styles from './ImageCrop.module.scss'
 
 export const ImageCrop = () => {
   const { state: stateCardphoto, actions: actionsCardphoto } =
     useCardphotoFacade()
+  const finalImage = stateCardphoto.history?.finalImage
   const { initCardphoto } = actionsCardphoto
 
   const { state: stateCardphotoUi, actions: actionsCardphotoUi } =
@@ -42,22 +40,30 @@ export const ImageCrop = () => {
 
   const [loaded, setLoaded] = useState(false)
 
-  const transformedImage = useAppSelector(selectTransformedImage)
+  const [startImage, setStartImage] = useState<string>('')
 
-  const src = transformedImage?.url || ''
-  const alt = transformedImage?.id || 'Placeholder'
+  useEffect(() => {
+    if (stateCardphoto.history?.finalImage?.url) {
+      setStartImage(stateCardphoto.history.finalImage.url)
+    } else if (stateCardphoto.history?.original?.url) {
+      setStartImage(stateCardphoto.history.original.url)
+    } else {
+      setStartImage('')
+    }
+  }, [stateCardphoto.history?.finalImage, stateCardphoto.history?.original])
+
+  const src = startImage
+  const alt = finalImage?.id || 'Placeholder'
 
   useEffect(() => {
     initCardphoto()
   }, [])
 
-  console.log('stateCardphoto', stateCardphoto)
-
   const { imageData, isReady, hasError } = useImageLoader(
     src,
     sizeCard.width,
     sizeCard.height,
-    stateCardphoto.activeImage?.id
+    stateCardphoto.history?.finalImage?.id
   )
 
   const { inputRef, handleBlur } = useFileDialog()
@@ -76,12 +82,15 @@ export const ImageCrop = () => {
     resetCrop,
     isReady,
     hasError,
-    stateCardphoto.activeImage?.id
+    stateCardphoto.history?.finalImage?.id
+    // stateCardphoto.activeImage?.id
   )
 
   useEffect(() => {
     setLoaded(false)
   }, [src])
+
+  console.log('ImageCrop history', stateCardphoto.history)
 
   const handleFileChange = useImageUpload(
     actionsCardphoto.uploadImage,
@@ -116,26 +125,9 @@ export const ImageCrop = () => {
           position: 'relative',
         }}
       >
-        {!transformedImage && (
-          <img
-            src={placeholderImage}
-            onLoad={() => setLoaded(true)}
-            alt="Placeholder"
-            className={clsx(styles.cropImage, styles.fadeInVisible)}
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              left: 0,
-              top: 0,
-            }}
-          />
-        )}
-
         {shouldShowRealImage && (
           <img
-            src={src}
+            src={shouldShowRealImage ? src : placeholderImage}
             alt={alt}
             onLoad={() => setLoaded(true)}
             className={clsx(
