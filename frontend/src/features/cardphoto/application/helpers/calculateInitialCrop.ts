@@ -24,8 +24,7 @@ export function calculateInitialCrop(
     width: initialWidth,
     height: initialHeight,
     aspectRatio,
-    imageAspectRatio,
-    left: Math.round((imageWidth - initialWidth) / 2),
-    top: Math.round((imageHeight - initialHeight) / 2),
+    x: Math.round((imageWidth - initialWidth) / 2),
+    y: Math.round((imageHeight - initialHeight) / 2),
   }
 }

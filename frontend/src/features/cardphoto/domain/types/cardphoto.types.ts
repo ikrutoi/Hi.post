@@ -1,26 +1,15 @@
 export const IMAGE_SOURCE = ['stock', 'user', 'sent'] as const
 export type ImageSource = (typeof IMAGE_SOURCE)[number]
 
-// export const IMAGE_ROLE = ['original', 'thumbnail', 'working'] as const
-// export type ImageRole = (typeof IMAGE_ROLE)[number]
-
 export interface ImageMeta {
   id: string
   source: ImageSource
-  // role: ImageRole
   url: string
   blob?: Blob
   width: number
   height: number
   timestamp?: number
 }
-
-// export interface ImageOriginal {
-//   id: string
-//   source: ImageSource
-//   blob?: Blob
-//   url?: string
-// }
 
 export interface ImageThumbnail {
   id: string
@@ -35,10 +24,11 @@ export const IMAGE_OPERATION_TYPE = ['initial', 'crop', 'apply'] as const
 export type ImageOperationType = (typeof IMAGE_OPERATION_TYPE)[number]
 
 export interface CropArea {
-  x: number
-  y: number
   width: number
   height: number
+  x: number
+  y: number
+  aspectRatio: number
 }
 
 export type Orientation = 0 | 90 | 180 | 270

@@ -10,7 +10,10 @@ import {
   markComplete,
   cancelSelection,
   uploadImage,
-} from '../../infrastructure/state/cardphotoSlice'
+  updateCrop,
+  clearCrop,
+  resetCrop,
+} from '../../infrastructure/state'
 import {
   selectHistory,
   selectActiveIndex,
@@ -25,7 +28,7 @@ import {
   selectLastApplied,
   selectOrientation,
   selectCropArea,
-} from '../../infrastructure/selectors/cardphotoSelectors'
+} from '../../infrastructure/selectors'
 import type { ImageMeta, CropArea, Orientation } from '../../domain/types'
 
 export const useCardphotoFacade = () => {
@@ -58,6 +61,19 @@ export const useCardphotoFacade = () => {
     redo: () => dispatch(redo()),
     reset: () => dispatch(reset()),
     uploadImage: (file: ImageMeta) => dispatch(uploadImage(file)),
+
+    // новые экшены для кропа
+    updateCrop: (area: Partial<CropArea>) => dispatch(updateCrop(area)),
+    clearCrop: () => dispatch(clearCrop()),
+    resetCrop: (params: {
+      imageWidth: number
+      imageHeight: number
+      aspectRatio: number
+      imageAspectRatio: number
+      imageLeft: number
+      imageTop: number
+      imageId: string
+    }) => dispatch(resetCrop(params)),
 
     applyCrop: (area: CropArea, orientation: Orientation) =>
       dispatch(

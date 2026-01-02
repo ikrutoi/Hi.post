@@ -6,10 +6,10 @@ export function calculateCropPosition(
   imageLeft: number,
   imageTop: number
 ) {
-  if (imageAspectRatio === aspectRatio) return { left: cropLeft, top: cropTop }
+  if (imageAspectRatio === aspectRatio) return { x: cropLeft, y: cropTop }
   if (imageAspectRatio < aspectRatio)
-    return { left: cropLeft + imageLeft, top: cropTop }
+    return { x: cropLeft + imageLeft, y: cropTop }
   if (imageAspectRatio > aspectRatio)
-    return { left: cropLeft, top: cropTop + imageTop }
-  return { left: cropLeft, top: cropTop }
+    return { x: cropLeft, y: cropTop + imageTop }
+  return { x: cropLeft, y: cropTop }
 }

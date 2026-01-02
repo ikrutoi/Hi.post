@@ -8,9 +8,7 @@ export const STOCK_IMAGES: ImageMeta[] = Object.entries(modules).map(
     return {
       id: `stock-${fileName}`,
       source: 'stock',
-      role: 'original',
       url: (mod as { default: string }).default,
-      timestamp: Date.now(),
       width: 1313,
       height: 925,
     }

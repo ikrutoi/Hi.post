@@ -15,7 +15,7 @@ export const useImageUpload = (
       const imageMeta: ImageMeta = {
         id: `${file.name}-${file.lastModified}`,
         source: 'user',
-        role: 'original',
+        // role: 'original',
         url: URL.createObjectURL(file),
         timestamp: file.lastModified ?? Date.now(),
         width: 0,

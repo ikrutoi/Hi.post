@@ -51,8 +51,8 @@ export const cardphotoCropSlice = createSlice({
         imageAspectRatio
       )
       const cropPosition = calculateCropPosition(
-        cropSize.left,
-        cropSize.top,
+        cropSize.x,
+        cropSize.y,
         aspectRatio,
         imageAspectRatio,
         imageLeft,
@@ -64,8 +64,8 @@ export const cardphotoCropSlice = createSlice({
         height: cropSize.height,
         aspectRatio,
         imageAspectRatio,
-        left: cropPosition?.left,
-        top: cropPosition?.top,
+        left: cropPosition?.x,
+        top: cropPosition?.y,
       }
 
       Object.assign(state, crop)

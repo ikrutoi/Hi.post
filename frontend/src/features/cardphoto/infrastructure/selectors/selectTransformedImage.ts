@@ -1,10 +1,4 @@
-import { createSelector } from '@reduxjs/toolkit'
 import { ImageMeta, ImageOperation } from '@cardphoto/domain/types'
-import {
-  selectOriginalImage,
-  selectOperations,
-  selectActiveIndex,
-} from './index'
 
 export function applyOperations(
   original: ImageMeta,
@@ -39,12 +33,3 @@ export function applyOperations(
 
   return result
 }
-
-// export const selectTransformedImage = createSelector(
-//   [selectOriginalImage, selectOperations, selectActiveIndex],
-//   (original, operations, activeIndex) => {
-//     if (!original) return null
-//     const applied = operations.slice(0, activeIndex + 1)
-//     return applyOperations(original as ImageMeta, applied)
-//   }
-// )

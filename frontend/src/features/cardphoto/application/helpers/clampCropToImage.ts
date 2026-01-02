@@ -1,27 +1,27 @@
-import type { ImageData } from '../../domain/types'
+import type { CropArea, ImageData } from '../../domain/types'
 
 export function clampCropToImage(
-  crop: ImageData,
+  crop: CropArea,
   imageData: ImageData
-): ImageData {
+): CropArea {
   const clamped = { ...crop }
 
-  if (clamped.left < imageData.left) {
-    clamped.left = imageData.left
-  }
-
-  if (clamped.top < imageData.top) {
-    clamped.top = imageData.top
+  if (clamped.x < imageData.left) {
+    clamped.x = imageData.left
   }
 
   const maxRight = imageData.left + imageData.width
-  if (clamped.left + clamped.width > maxRight) {
-    clamped.width = maxRight - clamped.left
+  if (clamped.x + clamped.width > maxRight) {
+    clamped.width = maxRight - clamped.x
+  }
+
+  if (clamped.y < imageData.top) {
+    clamped.y = imageData.top
   }
 
   const maxBottom = imageData.top + imageData.height
-  if (clamped.top + clamped.height > maxBottom) {
-    clamped.height = maxBottom - clamped.top
+  if (clamped.y + clamped.height > maxBottom) {
+    clamped.height = maxBottom - clamped.y
   }
 
   return clamped

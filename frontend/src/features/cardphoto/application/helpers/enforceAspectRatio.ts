@@ -1,10 +1,10 @@
-import type { ImageData } from '../../domain/types'
+import type { CropArea, ImageData } from '../../domain/types'
 
 export function enforceAspectRatio(
-  crop: ImageData,
+  crop: CropArea,
   aspectRatio: number,
   imageData: ImageData
-): ImageData {
+): CropArea {
   const adjusted = { ...crop }
 
   const currentRatio = adjusted.width / adjusted.height
@@ -15,14 +15,14 @@ export function enforceAspectRatio(
   adjusted.height = Math.round(adjusted.width / aspectRatio)
 
   const maxBottom = imageData.top + imageData.height
-  if (adjusted.top + adjusted.height > maxBottom) {
-    adjusted.height = maxBottom - adjusted.top
+  if (adjusted.y + adjusted.height > maxBottom) {
+    adjusted.height = maxBottom - adjusted.y
     adjusted.width = Math.round(adjusted.height * aspectRatio)
   }
 
   const maxRight = imageData.left + imageData.width
-  if (adjusted.left + adjusted.width > maxRight) {
-    adjusted.width = maxRight - adjusted.left
+  if (adjusted.x + adjusted.width > maxRight) {
+    adjusted.width = maxRight - adjusted.x
     adjusted.height = Math.round(adjusted.width / aspectRatio)
   }
 

@@ -1,19 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { CARDPHOTO_CONFIG, CARD_SCALE_CONFIG } from '@shared/config/constants'
-import {
-  calculateInitialCrop,
-  calculateCropPosition,
-} from '../../application/helpers'
+import { CARDPHOTO_CONFIG } from '@shared/config/constants'
 import { applyOperations } from '../selectors'
 import type {
   ImageMeta,
   ImageOperation,
   ImageHistory,
   WorkingConfig,
-  CropArea,
+  Orientation,
 } from '../../domain/types'
-
-const aspectRatio = CARD_SCALE_CONFIG.aspectRatio
 
 export interface CardphotoState {
   history: ImageHistory | null
@@ -47,67 +41,23 @@ export const cardphotoSlice = createSlice({
       state.isComplete = false
     },
 
+    // setActiveImage(state, action: PayloadAction<ImageMeta>) {
+    //   const meta = action.payload
+    //   state.history = {
+    //     original: meta,
+    //     operations: [{ type: 'initial' }],
+    //     activeIndex: 0,
+    //     workingConfig: { orientation: 0, crop: null },
+    //     lastApplied: null,
+    //     finalImage: null,
+    //   }
+    //   state.isComplete = false
+    // },
+
     setFinalImage(state, action: PayloadAction<ImageMeta>) {
       if (state.history) {
         state.history.finalImage = action.payload
       }
-    },
-
-    resetCrop(
-      state,
-      action: PayloadAction<{
-        imageWidth: number
-        imageHeight: number
-        aspectRatio: number
-        imageAspectRatio: number
-        imageLeft: number
-        imageTop: number
-        imageId: string
-      }>
-    ) {
-      if (!state.history) return
-      const {
-        imageWidth,
-        imageHeight,
-        aspectRatio,
-        imageAspectRatio,
-        imageLeft,
-        imageTop,
-        imageId,
-      } = action.payload
-
-      const cropSize = calculateInitialCrop(
-        imageWidth,
-        imageHeight,
-        aspectRatio,
-        imageAspectRatio
-      )
-      const cropPosition = calculateCropPosition(
-        cropSize.x,
-        cropSize.y,
-        aspectRatio,
-        imageAspectRatio,
-        imageLeft,
-        imageTop
-      )
-
-      state.history.workingConfig.crop = {
-        width: cropSize.width,
-        height: cropSize.height,
-        x: cropPosition?.x ?? 0,
-        y: cropPosition?.y ?? 0,
-        aspectRatio,
-      }
-    },
-
-    updateCrop(state, action: PayloadAction<Partial<CropArea>>) {
-      if (!state.history || !state.history.workingConfig.crop) return
-      Object.assign(state.history.workingConfig.crop, action.payload)
-    },
-
-    clearCrop(state) {
-      if (!state.history) return
-      state.history.workingConfig.crop = null
     },
 
     addOperation(state, action: PayloadAction<ImageOperation>) {
@@ -247,11 +197,8 @@ export const cardphotoSlice = createSlice({
 
 export const {
   initCardphoto,
-  initStockImage,
   setFinalImage,
-  resetCrop,
-  updateCrop,
-  clearCrop,
+  initStockImage,
   addOperation,
   undo,
   redo,

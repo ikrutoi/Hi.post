@@ -1,7 +1,8 @@
 import { AppDispatch, RootState } from '@app/state'
 import {
+  initCardphoto,
   initStockImage,
-  setActiveImage,
+  setFinalImage,
   addOperation,
   undo,
   redo,
@@ -9,24 +10,25 @@ import {
   markComplete,
   cancelSelection,
   uploadImage,
-} from '../../infrastructure/state/cardphotoSlice'
+  updateCrop,
+  clearCrop,
+  resetCrop,
+} from '../../infrastructure/state'
 import {
-  selectActiveImage,
   selectHistory,
   selectActiveIndex,
   selectOperations,
   selectIsComplete,
-  selectHasConfirmedImage,
   selectOriginalImage,
+  selectFinalImage,
   selectHasHistory,
-  selectIsStockImage,
   selectCanUndo,
   selectCanRedo,
   selectWorkingConfig,
   selectLastApplied,
   selectOrientation,
   selectCropArea,
-} from '../../infrastructure/selectors/cardphotoSelectors'
+} from '../../infrastructure/selectors'
 import type { ImageMeta, CropArea, Orientation } from '../../domain/types'
 
 export const useCardphotoController = (
@@ -34,15 +36,13 @@ export const useCardphotoController = (
   getState: () => RootState
 ) => {
   const state = {
-    activeImage: selectActiveImage(getState()),
     history: selectHistory(getState()),
     activeIndex: selectActiveIndex(getState()),
     operations: selectOperations(getState()),
     isComplete: selectIsComplete(getState()),
-    hasConfirmedImage: selectHasConfirmedImage(getState()),
     originalImage: selectOriginalImage(getState()),
+    finalImage: selectFinalImage(getState()),
     hasHistory: selectHasHistory(getState()),
-    isStockImage: selectIsStockImage(getState()),
     canUndo: selectCanUndo(getState()),
     canRedo: selectCanRedo(getState()),
     workingConfig: selectWorkingConfig(getState()),
@@ -52,15 +52,29 @@ export const useCardphotoController = (
   }
 
   const actions = {
+    initCardphoto: () => dispatch(initCardphoto()),
     initStockImage: (image: ImageMeta) => dispatch(initStockImage(image)),
-    setImage: (image: ImageMeta) => dispatch(setActiveImage(image)),
+    setFinalImage: (image: ImageMeta) => dispatch(setFinalImage(image)),
     confirmSelection: () => dispatch(markComplete()),
     cancelSelection: () => dispatch(cancelSelection()),
-    addOperation: (op: any) => dispatch(addOperation(op)), // generic fallback
+    addOperation: (op: any) => dispatch(addOperation(op)),
     undo: () => dispatch(undo()),
     redo: () => dispatch(redo()),
     reset: () => dispatch(reset()),
     uploadImage: (file: ImageMeta) => dispatch(uploadImage(file)),
+
+    // новые экшены для кропа
+    updateCrop: (area: Partial<CropArea>) => dispatch(updateCrop(area)),
+    clearCrop: () => dispatch(clearCrop()),
+    resetCrop: (params: {
+      imageWidth: number
+      imageHeight: number
+      aspectRatio: number
+      imageAspectRatio: number
+      imageLeft: number
+      imageTop: number
+      imageId: string
+    }) => dispatch(resetCrop(params)),
 
     applyCrop: (area: CropArea, orientation: Orientation) =>
       dispatch(
