@@ -1,43 +1,48 @@
 import React from 'react'
 import clsx from 'clsx'
 import styles from './CropOverlay.module.scss'
-import type { ImageData, CropArea } from '../domain/types'
+import type { ImageLayer, CropLayer } from '../domain/types'
 
 interface CropOverlayProps {
-  crop: CropArea
-  imageData: ImageData
+  cropLayer: CropLayer
+  imageLayer: ImageLayer
 }
 
 export const CropOverlay: React.FC<CropOverlayProps> = ({
-  crop,
-  imageData,
+  cropLayer,
+  imageLayer,
 }) => {
   const top = {
-    top: imageData.top,
-    left: imageData.left,
-    width: imageData.width,
-    height: crop.y - imageData.top,
+    top: imageLayer.top,
+    left: imageLayer.left,
+    width: imageLayer.meta.width,
+    height: cropLayer.y - imageLayer.top,
   }
 
   const left = {
-    top: imageData.top + crop.y - imageData.top,
-    left: imageData.left,
-    width: crop.x - imageData.left,
-    height: crop.height,
+    top: imageLayer.top + cropLayer.y - imageLayer.top,
+    left: imageLayer.left,
+    width: cropLayer.x - imageLayer.left,
+    height: cropLayer.meta.height,
   }
 
   const right = {
-    top: imageData.top + crop.y - imageData.top,
-    left: crop.x + crop.width,
-    width: imageData.width - crop.width - (crop.x - imageData.left),
-    height: crop.height,
+    top: imageLayer.top + cropLayer.y - imageLayer.top,
+    left: cropLayer.x + cropLayer.meta.width,
+    width:
+      imageLayer.meta.width -
+      cropLayer.meta.width -
+      (cropLayer.x - imageLayer.left),
+    height: cropLayer.meta.height,
   }
 
   const bottom = {
-    top: crop.y + crop.height,
-    left: imageData.left,
-    width: imageData.width,
-    height: imageData.height - (crop.y + crop.height - imageData.top),
+    top: cropLayer.y + cropLayer.meta.height,
+    left: imageLayer.left,
+    width: imageLayer.meta.width,
+    height:
+      imageLayer.meta.height -
+      (cropLayer.y + cropLayer.meta.height - imageLayer.top),
   }
 
   return (

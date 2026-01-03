@@ -5,12 +5,18 @@ const modules = import.meta.glob('./*.jpg', { eager: true })
 export const STOCK_IMAGES: ImageMeta[] = Object.entries(modules).map(
   ([path, mod]) => {
     const fileName = path.replace('./', '').replace('.jpg', '')
+
+    const width = 1313
+    const height = 925
+
     return {
       id: `stock-${fileName}`,
       source: 'stock',
       url: (mod as { default: string }).default,
-      width: 1313,
-      height: 925,
+      width,
+      height,
+      imageAspectRatio: width / height,
+      timestamp: Date.now(),
     }
   }
 )

@@ -1,5 +1,5 @@
 export * from './useFileUpload'
-export * from './useImageLoaderLayout'
+export * from './useImageMetaLoader'
 export * from './useImageUpload'
 export * from './useCropArea'
 // export * from './useCropInitialization'

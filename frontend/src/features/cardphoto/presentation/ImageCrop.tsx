@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { CropArea } from './CropArea'
 import { CropOverlay } from './CropOverlay'
@@ -8,63 +8,55 @@ import {
   useCardphotoUiFacade,
 } from '../application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
-import {
-  useImageLoader,
-  useImageUpload,
-  useFileDialog,
-} from '../application/hooks'
-import styles from './ImageCrop.module.scss'
+import { useImageMetaLoader } from '../application/hooks/useImageMetaLoader'
+import { useImageLayer } from '../application/hooks/useImageLayer'
+import { useImageUpload, useFileDialog } from '../application/hooks'
 import { useCardphotoSrc } from '../application/hooks/useCardphotoSrc'
+import styles from './ImageCrop.module.scss'
 
 export const ImageCrop = () => {
-  const { state: stateCardphoto, actions: actionsCardphoto } =
+  const { state: cardphotoState, actions: cardphotoActions } =
     useCardphotoFacade()
-  const workingConfig = stateCardphoto.history?.workingConfig
-  const crop = workingConfig?.crop
-  const { initCardphoto, updateCrop } = actionsCardphoto
+  const { init, setUserImage, addOp } = cardphotoActions
 
-  const { state: stateCardphotoUi, actions: actionsCardphotoUi } =
+  const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
-  const { shouldOpenFileDialog } = stateCardphotoUi
+  const { shouldOpenFileDialog } = cardphotoUiState
 
-  const { state: stateToolbar } = useToolbarFacade('cardphoto')
+  const { state: toolbarState } = useToolbarFacade('cardphoto')
   const { size } = useLayoutFacade()
   const { sizeCard } = size
 
   const [loaded, setLoaded] = useState(false)
 
-  const { src, alt } = useCardphotoSrc(stateCardphoto.history)
+  const { src, alt } = useCardphotoSrc(cardphotoState.state)
 
   useEffect(() => {
-    initCardphoto()
+    init()
   }, [])
 
-  const { imageData, isReady, hasError } = useImageLoader(
-    src,
-    sizeCard.width,
-    sizeCard.height
-  )
+  const { imageMeta, isReady, hasError } = useImageMetaLoader(src)
+  const imageLayer = useImageLayer(imageMeta, sizeCard.width, sizeCard.height)
+
   const { inputRef, handleBlur } = useFileDialog()
 
   useEffect(() => {
     if (shouldOpenFileDialog) {
-      inputRef.current?.focus()
       inputRef.current?.click()
-      actionsCardphotoUi.resetFileDialog()
+      cardphotoUiActions.resetFileDialog()
     }
-  }, [shouldOpenFileDialog])
+  }, [shouldOpenFileDialog, cardphotoUiActions])
 
   useEffect(() => {
     setLoaded(false)
   }, [src])
 
   const handleFileChange = useImageUpload(
-    actionsCardphoto.uploadImage,
-    actionsCardphotoUi.cancelFileDialog,
-    actionsCardphotoUi.markLoading
+    setUserImage,
+    cardphotoUiActions.markLoading
   )
 
-  const shouldShowImage = !!src && isReady && imageData && !hasError
+  const shouldShowImage = !!src && isReady && imageMeta && !hasError
 
   return (
     <div
@@ -88,33 +80,51 @@ export const ImageCrop = () => {
           position: 'relative',
         }}
       >
-        <img
-          src={src}
-          alt={alt}
-          onLoad={() => setLoaded(true)}
-          className={clsx(
-            styles.cropImage,
-            loaded ? styles.fadeInVisible : styles.fadeIn
-          )}
-          style={{
-            position: 'absolute',
-            width: `${imageData?.width ?? sizeCard.width}px`,
-            height: `${imageData?.height ?? sizeCard.height}px`,
-            left: `${imageData?.left ?? 0}px`,
-            top: `${imageData?.top ?? 0}px`,
-          }}
-        />
-
-        {loaded && imageData && stateToolbar.crop === 'active' && crop && (
-          <>
-            <CropOverlay crop={crop} imageData={imageData} />
-            <CropArea
-              crop={crop}
-              imageData={imageData}
-              onChange={(newCrop) => updateCrop(newCrop)}
-            />
-          </>
+        {shouldShowImage && imageLayer && (
+          <img
+            src={src}
+            alt={alt}
+            onLoad={() => setLoaded(true)}
+            className={clsx(
+              styles.cropImage,
+              loaded ? styles.fadeInVisible : styles.fadeIn
+            )}
+            style={{
+              position: 'absolute',
+              width: `${imageLayer.meta.width}px`,
+              height: `${imageLayer.meta.height}px`,
+              left: `${imageLayer.left}px`,
+              top: `${imageLayer.top}px`,
+            }}
+          />
         )}
+
+        {loaded &&
+          imageLayer &&
+          toolbarState.crop === 'active' &&
+          cardphotoState.currentConfig?.crop && (
+            <>
+              <CropOverlay
+                cropLayer={cardphotoState.currentConfig?.crop}
+                imageLayer={imageLayer}
+              />
+              <CropArea
+                cropLayer={cardphotoState.currentConfig?.crop}
+                imageLayer={imageLayer}
+                onChange={(newCrop) =>
+                  addOp({
+                    type: 'operation',
+                    payload: {
+                      config: {
+                        ...cardphotoState.currentConfig!,
+                        crop: newCrop,
+                      },
+                    },
+                  })
+                }
+              />
+            </>
+          )}
       </div>
     </div>
   )

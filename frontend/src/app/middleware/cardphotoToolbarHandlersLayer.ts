@@ -1,14 +1,18 @@
 import { put, select } from 'redux-saga/effects'
-import { addOperation, applyFinal } from '@cardphoto/infrastructure/state'
+import { addOperation, setFinalImage } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
-import { selectCurrentConfig } from '@cardphoto/infrastructure/selectors'
+import {
+  selectCrop,
+  selectOrientation,
+} from '@cardphoto/infrastructure/selectors'
 import { updateCropToolbarState } from './cardphotoToolbarHelpers'
 import { getCroppedBase64 } from '@cardphoto/application/helpers'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type {
-  WorkingConfig,
+  ImageOperation,
+  CropArea,
+  Orientation,
   ImageMeta,
-  CardphotoOperation,
 } from '@cardphoto/domain/types'
 
 export function* handleCropAction() {
@@ -26,11 +30,12 @@ export function* handleCropCheckAction() {
   )
   if (state.crop !== 'active') return
 
-  const currentConfig: WorkingConfig | null = yield select(selectCurrentConfig)
-  if (!currentConfig) return
+  const crop: CropArea = yield select(selectCrop)
+  const orientation: Orientation = yield select(selectOrientation)
 
-  const { crop, image, card } = currentConfig
-  const imageMeta = image.meta
+  const imageMeta: ImageMeta = yield select(
+    (s) => s.cardphoto.history.finalImage || s.cardphoto.history.original
+  )
 
   const img = new Image()
   img.src = imageMeta.url
@@ -46,32 +51,20 @@ export function* handleCropCheckAction() {
   const newImage: ImageMeta = {
     id: imageMeta.id + '-crop',
     url: croppedBase64,
-    width: crop.meta.width,
-    height: crop.meta.height,
+    width: crop.width,
+    height: crop.height,
     source: imageMeta.source,
-    imageAspectRatio: crop.meta.width / crop.meta.height,
-    timestamp: Date.now(),
   }
 
-  // формируем новый WorkingConfig
-  const newConfig: WorkingConfig = {
-    card,
-    image: {
-      ...image,
-      meta: newImage,
-    },
-    crop,
-  }
-
-  const operation: CardphotoOperation = {
-    type: 'operation',
+  const operation: ImageOperation = {
+    type: 'crop',
     payload: {
-      config: newConfig,
-      reason: 'crop',
+      area: crop,
+      orientation,
     },
   }
 
   yield put(addOperation(operation))
-  yield put(applyFinal(newImage))
+  yield put(setFinalImage(newImage))
   yield* updateCropToolbarState('enabled', state)
 }

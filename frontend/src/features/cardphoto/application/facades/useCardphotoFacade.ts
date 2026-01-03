@@ -2,124 +2,114 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   initCardphoto,
   initStockImage,
-  setFinalImage,
+  uploadUserImage,
   addOperation,
   undo,
   redo,
+  applyFinal,
   reset,
-  markComplete,
   cancelSelection,
-  uploadImage,
-  updateCrop,
-  clearCrop,
-  resetCrop,
+  resetCropLayers,
 } from '../../infrastructure/state'
 import {
-  selectHistory,
-  selectActiveIndex,
+  selectCardphotoState,
+  selectCardphotoIsComplete,
+  selectStockImage,
+  selectUserImage,
+  selectAppliedImage,
   selectOperations,
-  selectIsComplete,
-  selectOriginalImage,
-  selectFinalImage,
-  selectHasHistory,
-  selectCanUndo,
-  selectCanRedo,
-  selectWorkingConfig,
-  selectLastApplied,
-  selectOrientation,
-  selectCropArea,
+  selectActiveIndex,
+  selectActiveOperation,
+  selectCurrentConfig,
 } from '../../infrastructure/selectors'
-import type { ImageMeta, CropArea, Orientation } from '../../domain/types'
+import type {
+  ImageMeta,
+  CardphotoOperation,
+  CardphotoState,
+  WorkingConfig,
+} from '../../domain/types'
 
-export const useCardphotoFacade = () => {
+export interface CardphotoFacade {
+  state: {
+    state: CardphotoState | null
+    isComplete: boolean
+    stockImage: ImageMeta | null
+    userImage: ImageMeta | null
+    appliedImage: ImageMeta | null
+    operations: CardphotoOperation[]
+    activeIndex: number
+    activeOperation: CardphotoOperation | null
+    currentConfig: WorkingConfig | null
+  }
+  actions: {
+    init: () => void
+    setStockImage: (meta: ImageMeta) => void
+    setUserImage: (meta: ImageMeta) => void
+    addOp: (op: CardphotoOperation) => void
+    undoOp: () => void
+    redoOp: () => void
+    apply: (meta: ImageMeta) => void
+    resetAll: () => void
+    cancel: () => void
+    resetLayers: (payload: {
+      imageLayer: any
+      cropLayer: any
+      card: WorkingConfig['card']
+    }) => void
+  }
+}
+
+export const useCardphotoFacade = (): CardphotoFacade => {
   const dispatch = useDispatch()
 
-  const state = {
-    history: useSelector(selectHistory),
-    activeIndex: useSelector(selectActiveIndex),
-    operations: useSelector(selectOperations),
-    isComplete: useSelector(selectIsComplete),
-    originalImage: useSelector(selectOriginalImage),
-    finalImage: useSelector(selectFinalImage),
-    hasHistory: useSelector(selectHasHistory),
-    canUndo: useSelector(selectCanUndo),
-    canRedo: useSelector(selectCanRedo),
-    workingConfig: useSelector(selectWorkingConfig),
-    lastApplied: useSelector(selectLastApplied),
-    orientation: useSelector(selectOrientation),
-    cropArea: useSelector(selectCropArea),
-  }
+  const state = useSelector(selectCardphotoState)
+  const isComplete = useSelector(selectCardphotoIsComplete)
+  const stockImage = useSelector(selectStockImage)
+  const userImage = useSelector(selectUserImage)
+  const appliedImage = useSelector(selectAppliedImage)
+  const operations = useSelector(selectOperations)
+  const activeIndex = useSelector(selectActiveIndex)
+  const activeOperation = useSelector(selectActiveOperation)
+  const currentConfig = useSelector(selectCurrentConfig)
 
-  const actions = {
-    initCardphoto: () => dispatch(initCardphoto()),
-    initStockImage: (image: ImageMeta) => dispatch(initStockImage(image)),
-    setFinalImage: (image: ImageMeta) => dispatch(setFinalImage(image)),
-    confirmSelection: () => dispatch(markComplete()),
-    cancelSelection: () => dispatch(cancelSelection()),
-    addOperation: (op: any) => dispatch(addOperation(op)),
-    undo: () => dispatch(undo()),
-    redo: () => dispatch(redo()),
-    reset: () => dispatch(reset()),
-    uploadImage: (file: ImageMeta) => dispatch(uploadImage(file)),
+  const init = () => dispatch(initCardphoto())
+  const setStockImage = (meta: ImageMeta) => dispatch(initStockImage(meta))
+  const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
+  const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
+  const undoOp = () => dispatch(undo())
+  const redoOp = () => dispatch(redo())
+  const apply = (meta: ImageMeta) => dispatch(applyFinal(meta))
+  const resetAll = () => dispatch(reset())
+  const cancel = () => dispatch(cancelSelection())
+  const resetLayers = (payload: {
+    imageLayer: any
+    cropLayer: any
+    card: WorkingConfig['card']
+  }) => dispatch(resetCropLayers(payload))
 
-    // новые экшены для кропа
-    updateCrop: (area: Partial<CropArea>) => dispatch(updateCrop(area)),
-    clearCrop: () => dispatch(clearCrop()),
-    resetCrop: (params: {
-      imageWidth: number
-      imageHeight: number
-      aspectRatio: number
-      imageAspectRatio: number
-      imageLeft: number
-      imageTop: number
-      imageId: string
-    }) => dispatch(resetCrop(params)),
-
-    applyCrop: (area: CropArea, orientation: Orientation) =>
-      dispatch(
-        addOperation({
-          type: 'apply',
-          payload: {
-            snapshot: { crop: area, orientation },
-            orientation,
-          },
-        })
-      ),
-
-    rotateRight: () => {
-      const current = state.orientation
-      const next: Orientation = ((current + 90) % 360) as Orientation
-      dispatch(
-        addOperation({
-          type: 'apply',
-          payload: {
-            snapshot: { ...state.workingConfig, orientation: next },
-            orientation: next,
-          },
-        })
-      )
+  return {
+    state: {
+      state,
+      isComplete,
+      stockImage,
+      userImage,
+      appliedImage,
+      operations,
+      activeIndex,
+      activeOperation,
+      currentConfig,
     },
-
-    rotateLeft: () => {
-      const current = state.orientation
-      const next: Orientation = ((current + 270) % 360) as Orientation
-      dispatch(
-        addOperation({
-          type: 'apply',
-          payload: {
-            snapshot: { ...state.workingConfig, orientation: next },
-            orientation: next,
-          },
-        })
-      )
+    actions: {
+      init,
+      setStockImage,
+      setUserImage,
+      addOp,
+      undoOp,
+      redoOp,
+      apply,
+      resetAll,
+      cancel,
+      resetLayers,
     },
-
-    resetToOriginal: () => dispatch(reset()),
   }
-
-  const helpers = {
-    isReadyForMiniSection: () => !!state.finalImage && state.isComplete,
-  }
-
-  return { state, actions, helpers }
 }

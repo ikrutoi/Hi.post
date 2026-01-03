@@ -1,16 +1,6 @@
 export const IMAGE_SOURCE = ['stock', 'user', 'sent'] as const
 export type ImageSource = (typeof IMAGE_SOURCE)[number]
 
-export interface ImageMeta {
-  id: string
-  source: ImageSource
-  url: string
-  blob?: Blob
-  width: number
-  height: number
-  timestamp?: number
-}
-
 export interface ImageThumbnail {
   id: string
   source: ImageSource
@@ -20,37 +10,93 @@ export interface ImageThumbnail {
   height: number
 }
 
-export const IMAGE_OPERATION_TYPE = ['initial', 'crop', 'apply'] as const
-export type ImageOperationType = (typeof IMAGE_OPERATION_TYPE)[number]
+export type LayoutOrientation = 'portrait' | 'landscape'
 
-export interface CropArea {
+export interface CardLayer {
   width: number
   height: number
-  x: number
-  y: number
+  aspectRatio: number
+  orientation: LayoutOrientation
+}
+
+export type ImageOrientation = 0 | 90 | 180 | 270
+
+export interface ImageMeta {
+  id: string
+  source: ImageSource
+  url: string
+  blob?: Blob
+  width: number
+  height: number
+  imageAspectRatio: number
+  timestamp?: number
+}
+
+export interface ImageLayer {
+  meta: ImageMeta
+  left: number
+  top: number
+  orientation: ImageOrientation
+}
+
+export interface CropMeta {
+  width: number
+  height: number
   aspectRatio: number
 }
 
-export type Orientation = 0 | 90 | 180 | 270
+export interface CropLayer {
+  meta: CropMeta
+  x: number
+  y: number
+  orientation: LayoutOrientation
+}
+
+export interface WorkingConfig {
+  card: CardLayer
+  image: ImageLayer
+  crop: CropLayer
+}
+
+export interface CardphotoBase {
+  stock: { image: ImageMeta | null }
+  user: { image: ImageMeta | null }
+  apply: { image: ImageMeta | null }
+}
+
+export type CardphotoOperation = {
+  type: 'operation'
+  payload: {
+    config: WorkingConfig
+    reason?: 'crop' | 'rotateCard' | 'rotateImage' | 'moveCrop'
+  }
+}
+
+export interface CardphotoState {
+  base: CardphotoBase
+  operations: CardphotoOperation[]
+  activeIndex: number
+  currentConfig: WorkingConfig | null
+}
+
+// ----------------------
+
+export const IMAGE_OPERATION_TYPE = ['initial', 'crop', 'apply'] as const
+export type ImageOperationType = (typeof IMAGE_OPERATION_TYPE)[number]
 
 export type ImageOperation =
   | { type: 'initial'; payload?: undefined }
   | {
       type: 'crop'
-      payload: { area: CropArea; orientation: Orientation }
+      payload: { area: CropLayer }
     }
   | {
       type: 'apply'
       payload: {
         snapshot: WorkingConfig
-        orientation: Orientation
+        orientation: LayoutOrientation
       }
     }
-
-export interface WorkingConfig {
-  crop: CropArea | null
-  orientation: Orientation
-}
 
 export interface ImageHistory {
   original: ImageMeta
@@ -60,6 +106,8 @@ export interface ImageHistory {
   lastApplied: WorkingConfig | null
   finalImage: ImageMeta | null
 }
+
+// ----------------------
 
 export interface UserImageLimit {
   maxCount: number

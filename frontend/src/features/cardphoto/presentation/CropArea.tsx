@@ -3,17 +3,17 @@ import clsx from 'clsx'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { clampCropToImage, enforceAspectRatio } from '../application/helpers'
 import styles from './CropArea.module.scss'
-import type { ImageData, CropArea as CropAreaType } from '../domain/types'
+import type { ImageLayer, CropLayer } from '../domain/types'
 
 interface CropAreaProps {
-  crop: CropAreaType
-  imageData: ImageData | null
-  onChange: (newCrop: CropAreaType) => void
+  cropLayer: CropLayer
+  imageLayer: ImageLayer
+  onChange: (newCrop: CropLayer) => void
 }
 
 export const CropArea: React.FC<CropAreaProps> = ({
-  crop,
-  imageData,
+  cropLayer,
+  imageLayer,
   onChange,
 }) => {
   const minWidth = 20
@@ -27,8 +27,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
 
     const startX = e.clientX
     const startY = e.clientY
-    const startCrop = { ...crop }
-    const aspectRatio = crop.aspectRatio
+    const startCrop = { ...cropLayer }
+    const aspectRatio = cropLayer.meta.aspectRatio
 
     const onMouseMove = (moveEvent: MouseEvent) => {
       const dx = moveEvent.clientX - startX
@@ -38,47 +38,50 @@ export const CropArea: React.FC<CropAreaProps> = ({
 
       switch (corner) {
         case 'BR': {
-          let newWidth = startCrop.width + dx
+          let newWidth = startCrop.meta.width + dx
           let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
-          newCrop.width = Math.max(newWidth, minWidth)
-          newCrop.height = Math.max(newHeight, minHeight)
+          newCrop.meta.width = Math.max(newWidth, minWidth)
+          newCrop.meta.height = Math.max(newHeight, minHeight)
           break
         }
         case 'TR': {
-          let newWidth = startCrop.width + dx
+          let newWidth = startCrop.meta.width + dx
           let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
-          newCrop.width = Math.max(newWidth, minWidth)
-          newCrop.height = Math.max(newHeight, minHeight)
+          newCrop.meta.width = Math.max(newWidth, minWidth)
+          newCrop.meta.height = Math.max(newHeight, minHeight)
           newCrop.y = startCrop.y + dy
           break
         }
         case 'BL': {
-          let newWidth = startCrop.width - dx
+          let newWidth = startCrop.meta.width - dx
           let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
-          newCrop.width = Math.max(newWidth, minWidth)
-          newCrop.height = Math.max(newHeight, minHeight)
+          newCrop.meta.width = Math.max(newWidth, minWidth)
+          newCrop.meta.height = Math.max(newHeight, minHeight)
           newCrop.x = startCrop.x + dx
           break
         }
         case 'TL': {
-          let newWidth = startCrop.width - dx
+          let newWidth = startCrop.meta.width - dx
           let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
-          newCrop.width = Math.max(newWidth, minWidth)
-          newCrop.height = Math.max(newHeight, minHeight)
+          newCrop.meta.width = Math.max(newWidth, minWidth)
+          newCrop.meta.height = Math.max(newHeight, minHeight)
           newCrop.x = startCrop.x + dx
           newCrop.y = startCrop.y + dy
           break
         }
       }
 
-      if (imageData) {
-        newCrop = clampCropToImage(newCrop, imageData)
-        newCrop = enforceAspectRatio(newCrop, aspectRatio, imageData)
+      if (imageLayer) {
+        newCrop = clampCropToImage(newCrop, imageLayer)
+        newCrop = enforceAspectRatio(newCrop, imageLayer)
       }
 
       onChange({
         ...newCrop,
-        aspectRatio,
+        meta: {
+          ...newCrop.meta,
+          aspectRatio,
+        },
       })
     }
 
@@ -95,7 +98,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
     e.preventDefault()
     const startX = e.clientX
     const startY = e.clientY
-    const startCrop = { ...crop }
+    const startCrop = { ...cropLayer }
 
     const onMouseMove = (moveEvent: MouseEvent) => {
       const dx = moveEvent.clientX - startX
@@ -104,15 +107,21 @@ export const CropArea: React.FC<CropAreaProps> = ({
       let newX = startCrop.x + dx
       let newY = startCrop.y + dy
 
-      if (!imageData) return
+      if (!imageLayer) return
 
       newX = Math.max(
-        imageData.left,
-        Math.min(newX, imageData.left + imageData.width - startCrop.width)
+        imageLayer.left,
+        Math.min(
+          newX,
+          imageLayer.left + imageLayer.meta.width - startCrop.meta.width
+        )
       )
       newY = Math.max(
-        imageData.top,
-        Math.min(newY, imageData.top + imageData.height - startCrop.height)
+        imageLayer.top,
+        Math.min(
+          newY,
+          imageLayer.top + imageLayer.meta.height - startCrop.meta.height
+        )
       )
 
       onChange({
@@ -135,10 +144,10 @@ export const CropArea: React.FC<CropAreaProps> = ({
     <div
       className={styles.cropArea}
       style={{
-        top: `${crop.y}px`,
-        left: `${crop.x}px`,
-        width: `${crop.width}px`,
-        height: `${crop.height}px`,
+        top: `${cropLayer.y}px`,
+        left: `${cropLayer.x}px`,
+        width: `${cropLayer.meta.width}px`,
+        height: `${cropLayer.meta.height}px`,
       }}
       onMouseDown={handleDrag}
     >

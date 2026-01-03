@@ -1,8 +1,8 @@
 import { put, select, call, takeLatest } from 'redux-saga/effects'
 import { initStockImage, initCardphoto } from '@cardphoto/infrastructure/state'
-import { selectHistory } from '@cardphoto/infrastructure/selectors'
+import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { STOCK_IMAGES } from '@shared/assets/stock'
-import type { ImageMeta, ImageHistory } from '@cardphoto/domain/types'
+import type { ImageMeta, CardphotoState } from '@cardphoto/domain/types'
 
 function getRandomStockMeta(): ImageMeta {
   const index = Math.floor(Math.random() * STOCK_IMAGES.length)
@@ -10,14 +10,9 @@ function getRandomStockMeta(): ImageMeta {
 }
 
 function* initCardphotoSaga() {
-  let history: ImageHistory | null = yield select(selectHistory)
+  const state: CardphotoState | null = yield select(selectCardphotoState)
 
-  if (
-    !history ||
-    (history.operations.length === 1 &&
-      history.operations[0].type === 'initial')
-  ) {
-    console.log('init random')
+  if (!state || state.operations.length === 0) {
     const randomMeta: ImageMeta = yield call(getRandomStockMeta)
     yield put(initStockImage(randomMeta))
   }

@@ -2,12 +2,12 @@ import { takeEvery, put, select } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import {
   openFileDialog,
-  uploadUserImage,
+  uploadImage,
   cancelFileDialog,
   markLoading,
   markLoaded,
   setNeedsCrop,
-  resetCropLayers,
+  resetCrop,
 } from '@cardphoto/infrastructure/state'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
@@ -18,68 +18,8 @@ import {
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import type {
-  ImageMeta,
-  ImageLayer,
-  CropLayer,
-  CardLayer,
-  WorkingConfig,
-} from '@cardphoto/domain/types'
-import { CARD_SCALE_CONFIG } from '@shared/config/constants'
-
-function fitImageToCard(meta: ImageMeta, cardLayer: CardLayer): ImageLayer {
-  const scaleX = cardLayer.width / meta.width
-  const scaleY = cardLayer.height / meta.height
-  const scale = Math.min(scaleX, scaleY)
-
-  const finalWidth = meta.width * scale
-  const finalHeight = meta.height * scale
-  const offsetX = (cardLayer.width - finalWidth) / 2
-  const offsetY = (cardLayer.height - finalHeight) / 2
-
-  return {
-    meta: {
-      ...meta,
-      width: Number(finalWidth.toFixed(2)),
-      height: Number(finalHeight.toFixed(2)),
-      imageAspectRatio: meta.width / meta.height,
-    },
-    left: Number(offsetX.toFixed(2)),
-    top: Number(offsetY.toFixed(2)),
-    orientation: 0,
-  }
-}
-
-function createInitialCropLayer(
-  imageLayer: ImageLayer,
-  cardLayer: CardLayer
-): CropLayer {
-  const targetAR = CARD_SCALE_CONFIG.aspectRatio
-  const imgW = imageLayer.meta.width
-  const imgH = imageLayer.meta.height
-
-  let cropW = imgW * 0.9
-  let cropH = cropW / targetAR
-
-  if (cropH > imgH) {
-    cropH = imgH * 0.9
-    cropW = cropH * targetAR
-  }
-
-  const x = imageLayer.left + (imgW - cropW) / 2
-  const y = imageLayer.top + (imgH - cropH) / 2
-
-  return {
-    x: Number(x.toFixed(2)),
-    y: Number(y.toFixed(2)),
-    meta: {
-      width: Number(cropW.toFixed(2)),
-      height: Number(cropH.toFixed(2)),
-      aspectRatio: targetAR,
-    },
-    orientation: cardLayer.orientation,
-  }
-}
+import type { ImageMeta } from '@cardphoto/domain/types'
+import type { SizeCard } from '@layout/domain/types'
 
 function* onDownloadClick(action: ReturnType<typeof toolbarAction>) {
   const { section, key } = action.payload
@@ -109,35 +49,32 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
 
   yield put(markLoaded())
 
-  const cardLayer: CardLayer = yield select(selectSizeCard)
-  if (!cardLayer) return
+  const sizeCard: SizeCard = yield select(selectSizeCard)
+  if (!sizeCard) return
 
   const { needsCrop } = validateImageSize(
     imageMeta,
-    cardLayer.width,
-    cardLayer.height
+    sizeCard.width,
+    sizeCard.height
   )
   yield put(setNeedsCrop(needsCrop))
 
-  const imageLayer = fitImageToCard(imageMeta, cardLayer)
-  const cropLayer = createInitialCropLayer(imageLayer, cardLayer)
-
   yield put(
-    resetCropLayers({
-      imageLayer,
-      cropLayer,
-      card: {
-        width: cardLayer.width,
-        height: cardLayer.height,
-        aspectRatio: cardLayer.width / cardLayer.height,
-        orientation: cardLayer.orientation,
-      },
+    resetCrop({
+      imageWidth: imageMeta.width,
+      imageHeight: imageMeta.height,
+      aspectRatio: sizeCard.width / sizeCard.height,
+      imageAspectRatio: imageMeta.width / imageMeta.height,
+      imageLeft: 0,
+      imageTop: 0,
+      imageId: imageMeta.id,
     })
   )
 
   const state: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
   )
+
   const newState = {
     ...state,
     download: 'enabled',
@@ -160,6 +97,6 @@ function* onCancelFileDialog() {
 
 export function* cardphotoUiSaga() {
   yield takeEvery(toolbarAction.type, onDownloadClick)
-  yield takeEvery(uploadUserImage.type, onUploadImage)
+  yield takeEvery(uploadImage.type, onUploadImage)
   yield takeEvery(cancelFileDialog.type, onCancelFileDialog)
 }
