@@ -6,6 +6,7 @@ import type {
   WorkingConfig,
   ImageMeta,
 } from '../../domain/types'
+import type { LayoutOrientation } from '@layout/domain/types'
 
 export const selectCardphotoSlice = (state: RootState) => state.cardphoto
 
@@ -32,13 +33,39 @@ export const selectOperations = createSelector(
 export const selectActiveIndex = (state: RootState): number =>
   state.cardphoto.state?.activeIndex ?? -1
 
-export const selectActiveOperation = (
-  state: RootState
-): CardphotoOperation | null => {
-  const s = state.cardphoto.state
-  if (!s) return null
-  return s.operations[s.activeIndex] || null
-}
+export const selectActiveOperation = createSelector(
+  [selectOperations, selectActiveIndex],
+  (operations, index) => (index >= 0 ? (operations[index] ?? null) : null)
+)
 
 export const selectCurrentConfig = (state: RootState): WorkingConfig | null =>
   state.cardphoto.state?.currentConfig ?? null
+
+export const selectCurrentImageMeta = createSelector(
+  [selectCurrentConfig],
+  (config): ImageMeta | null => config?.image?.meta ?? null
+)
+
+export const selectCardOrientation = (state: RootState): LayoutOrientation =>
+  state.cardphoto.state?.currentConfig?.card.orientation ?? 'landscape'
+
+export const selectCropOrientation = (state: RootState): LayoutOrientation =>
+  state.cardphoto.state?.currentConfig?.crop.orientation ??
+  state.cardphoto.state?.currentConfig?.card.orientation ??
+  'landscape'
+
+export const selectLastOperationReason = (state: RootState) =>
+  state.cardphoto.state?.operations[state.cardphoto.state.activeIndex]?.payload
+    .reason ?? null
+
+const selectCurrentCard = (state: RootState) =>
+  state.cardphoto.state?.currentConfig?.card
+
+export const selectCardSize = createSelector([selectCurrentCard], (card) => {
+  if (!card) return { width: 0, height: 0, orientation: 'landscape' }
+  return {
+    width: card.width,
+    height: card.height,
+    orientation: card.orientation,
+  }
+})

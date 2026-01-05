@@ -1,5 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
+import type { IconState } from '@shared/config/constants'
 import type { ToolbarSection, ToolbarState } from '../../domain/types'
 
 const selectToolbarBase = (state: RootState) => state.toolbar
@@ -19,3 +20,8 @@ export const selectToolbarIconState = <
   section: S,
   key: K
 ) => createSelector([selectToolbarBase], (toolbar) => toolbar[section][key])
+
+export const selectCardphotoOrientationIcon = createSelector(
+  [selectToolbarBase],
+  (toolbar): IconState => toolbar.cardphoto.cardOrientation
+)

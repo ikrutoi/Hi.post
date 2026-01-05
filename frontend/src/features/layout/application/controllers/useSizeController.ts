@@ -5,8 +5,13 @@ import {
   setRemSize,
   setScale,
   setViewportSize,
+  setCardOrientation,
 } from '../../infrastructure/state'
-import type { SizeCard, ViewportSizeState } from '../../domain/types'
+import type {
+  SizeCard,
+  ViewportSizeState,
+  LayoutOrientation,
+} from '../../domain/types'
 
 export const useSizeController = (dispatch: AppDispatch) => ({
   setSizeCard: (payload: Partial<SizeCard>) => dispatch(setSizeCard(payload)),
@@ -16,4 +21,9 @@ export const useSizeController = (dispatch: AppDispatch) => ({
   setScale: (value: number | null) => dispatch(setScale(value)),
   setViewportSize: (payload: Partial<ViewportSizeState>) =>
     dispatch(setViewportSize(payload)),
+
+  setCardOrientation: (
+    orientation: LayoutOrientation,
+    viewportHeight: number
+  ) => dispatch(setCardOrientation({ orientation, viewportHeight })),
 })

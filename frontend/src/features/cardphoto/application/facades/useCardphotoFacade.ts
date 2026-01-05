@@ -10,6 +10,7 @@ import {
   reset,
   cancelSelection,
   resetCropLayers,
+  setOrientation,
 } from '../../infrastructure/state'
 import {
   selectCardphotoState,
@@ -21,6 +22,10 @@ import {
   selectActiveIndex,
   selectActiveOperation,
   selectCurrentConfig,
+  selectCardOrientation,
+  selectCropOrientation,
+  selectLastOperationReason,
+  selectCardSize,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
@@ -28,6 +33,7 @@ import type {
   CardphotoState,
   WorkingConfig,
 } from '../../domain/types'
+import type { LayoutOrientation } from '@layout/domain/types'
 
 export interface CardphotoFacade {
   state: {
@@ -40,6 +46,10 @@ export interface CardphotoFacade {
     activeIndex: number
     activeOperation: CardphotoOperation | null
     currentConfig: WorkingConfig | null
+    cardOrientation: LayoutOrientation
+    cropOrientation: LayoutOrientation
+    lastOperationReason: string | null
+    cardSize: { width: number; height: number }
   }
   actions: {
     init: () => void
@@ -56,6 +66,7 @@ export interface CardphotoFacade {
       cropLayer: any
       card: WorkingConfig['card']
     }) => void
+    rotateCard: (orientation: LayoutOrientation) => void
   }
 }
 
@@ -72,6 +83,11 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const activeOperation = useSelector(selectActiveOperation)
   const currentConfig = useSelector(selectCurrentConfig)
 
+  const cardOrientation = useSelector(selectCardOrientation)
+  const cropOrientation = useSelector(selectCropOrientation)
+  const lastOperationReason = useSelector(selectLastOperationReason)
+  const cardSize = useSelector(selectCardSize)
+
   const init = () => dispatch(initCardphoto())
   const setStockImage = (meta: ImageMeta) => dispatch(initStockImage(meta))
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
@@ -86,6 +102,8 @@ export const useCardphotoFacade = (): CardphotoFacade => {
     cropLayer: any
     card: WorkingConfig['card']
   }) => dispatch(resetCropLayers(payload))
+  const rotateCard = (orientation: LayoutOrientation) =>
+    dispatch(setOrientation(orientation))
 
   return {
     state: {
@@ -98,6 +116,10 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       activeIndex,
       activeOperation,
       currentConfig,
+      cardOrientation,
+      cropOrientation,
+      lastOperationReason,
+      cardSize,
     },
     actions: {
       init,
@@ -110,6 +132,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       resetAll,
       cancel,
       resetLayers,
+      rotateCard,
     },
   }
 }

@@ -1,14 +1,37 @@
 import { put, select } from 'redux-saga/effects'
+import type { SagaIterator } from 'redux-saga'
 import { addOperation, applyFinal } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
-import { selectCurrentConfig } from '@cardphoto/infrastructure/selectors'
+import {
+  selectCurrentConfig,
+  selectCurrentImageMeta,
+} from '@cardphoto/infrastructure/selectors'
+import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { updateCropToolbarState } from './cardphotoToolbarHelpers'
 import { getCroppedBase64 } from '@cardphoto/application/helpers'
+import {} from '@cardphoto/application/hooks'
+import { setCardOrientation } from '@layout/infrastructure/state'
+import {
+  selectSizeCard,
+  selectViewportSize,
+} from '@layout/infrastructure/selectors'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import {
+  fitImageToCard,
+  createInitialCropLayer,
+} from '@cardphoto/application/utils'
+import type {
+  SizeCard,
+  ViewportSizeState,
+  LayoutOrientation,
+} from '@layout/domain/types'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type {
   WorkingConfig,
   ImageMeta,
+  ImageLayer,
   CardphotoOperation,
+  CardLayer,
 } from '@cardphoto/domain/types'
 
 export function* handleCropAction() {
@@ -53,7 +76,6 @@ export function* handleCropCheckAction() {
     timestamp: Date.now(),
   }
 
-  // формируем новый WorkingConfig
   const newConfig: WorkingConfig = {
     card,
     image: {
@@ -74,4 +96,88 @@ export function* handleCropCheckAction() {
   yield put(addOperation(operation))
   yield put(applyFinal(newImage))
   yield* updateCropToolbarState('enabled', state)
+}
+
+export function* handleOrientationAction() {
+  const sizeCard: SizeCard = yield select(selectSizeCard)
+  const newOrientation: LayoutOrientation =
+    sizeCard.orientation === 'portrait' ? 'landscape' : 'portrait'
+
+  const viewportSize: ViewportSizeState = yield select(selectViewportSize)
+  const viewportHeight = viewportSize?.height ?? sizeCard.height
+
+  yield put(setCardOrientation({ orientation: newOrientation, viewportHeight }))
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'orientation',
+      value: newOrientation,
+    })
+  )
+}
+
+export function* handleImageLayerUpdate() {
+  const sizeCard: SizeCard = yield select(selectSizeCard)
+  const config: WorkingConfig | null = yield select(selectCurrentConfig)
+  if (!config || !config.image?.meta) return
+
+  const newImageLayer: ImageLayer = fitImageToCard(config.image.meta, sizeCard)
+  const newCropLayer = createInitialCropLayer(newImageLayer, sizeCard)
+  const newConfig: WorkingConfig = {
+    card: sizeCard,
+    image: newImageLayer,
+    crop: newCropLayer,
+  }
+
+  const op: CardphotoOperation = {
+    type: 'operation',
+    payload: { config: newConfig, reason: 'rotateCard' },
+  }
+
+  yield put(addOperation(op))
+}
+
+export function* handleCardOrientation(): SagaIterator {
+  const config: WorkingConfig | null = yield select(selectCurrentConfig)
+
+  console.log('+', config)
+  if (!config) return
+
+  const newOrientation: LayoutOrientation =
+    config.card.orientation === 'portrait' ? 'landscape' : 'portrait'
+
+  const viewportSize = yield select(selectViewportSize)
+  const viewportHeight = viewportSize?.height ?? config.card.height
+
+  const newCardLayer: CardLayer = {
+    ...config.card,
+    orientation: newOrientation,
+    height: viewportHeight,
+    aspectRatio: CARD_SCALE_CONFIG.aspectRatio,
+  }
+
+  const newImageLayer = fitImageToCard(config.image.meta, newCardLayer)
+  const newCropLayer = createInitialCropLayer(newImageLayer, newCardLayer)
+
+  const newConfig: WorkingConfig = {
+    card: newCardLayer,
+    image: newImageLayer,
+    crop: newCropLayer,
+  }
+
+  const op: CardphotoOperation = {
+    type: 'operation',
+    payload: { config: newConfig, reason: 'rotateCard' },
+  }
+
+  yield put(addOperation(op))
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'orientation',
+      value: newOrientation,
+    })
+  )
 }

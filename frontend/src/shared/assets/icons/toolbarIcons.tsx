@@ -110,13 +110,24 @@ import {
   IconRotateRightHorizontal,
   IconUndo,
   IconCropRotateRight,
+  IconImageRotateLeft,
+  IconImageRotateRight,
+  IconCardVertical,
+  IconCardHorizontal,
+  IconCardVerticalV2,
+  IconCardHorizontalV2,
+  IconCardDynamic,
 } from '@shared/ui/icons'
+import type { LayoutOrientation } from '@layout/domain/types'
 
 export const toolbarIcons = Object.fromEntries(
   ICON_KEYS.map((key) => [key, getIconByKey(key)])
 ) as Record<IconKey, JSX.Element>
 
-function getIconByKey(key: IconKey): JSX.Element {
+function getIconByKey(
+  key: IconKey,
+  orientation?: LayoutOrientation
+): JSX.Element {
   switch (key) {
     case 'save':
       return <IconSave />
@@ -140,6 +151,16 @@ function getIconByKey(key: IconKey): JSX.Element {
       return <IconRotateLeftHorizontal />
     case 'rotateRight':
       return <IconRotateRightHorizontal />
+    case 'imageRotateLeft':
+      return <IconImageRotateLeft />
+    case 'imageRotateRight':
+      return <IconImageRotateRight />
+    case 'cardHorizontal':
+      return <IconCardHorizontalV2 />
+    case 'cardVertical':
+      return <IconCardVerticalV2 />
+    case 'cardOrientation':
+      return <IconCardDynamic orientation={orientation ?? 'landscape'} />
     case 'undo':
       return <IconUndo />
     case 'edit':

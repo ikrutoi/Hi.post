@@ -18,68 +18,12 @@ import {
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
-import type {
-  ImageMeta,
-  ImageLayer,
-  CropLayer,
-  CardLayer,
-  WorkingConfig,
-} from '@cardphoto/domain/types'
-import { CARD_SCALE_CONFIG } from '@shared/config/constants'
+import type { ImageMeta, CardLayer } from '@cardphoto/domain/types'
 
-function fitImageToCard(meta: ImageMeta, cardLayer: CardLayer): ImageLayer {
-  const scaleX = cardLayer.width / meta.width
-  const scaleY = cardLayer.height / meta.height
-  const scale = Math.min(scaleX, scaleY)
-
-  const finalWidth = meta.width * scale
-  const finalHeight = meta.height * scale
-  const offsetX = (cardLayer.width - finalWidth) / 2
-  const offsetY = (cardLayer.height - finalHeight) / 2
-
-  return {
-    meta: {
-      ...meta,
-      width: Number(finalWidth.toFixed(2)),
-      height: Number(finalHeight.toFixed(2)),
-      imageAspectRatio: meta.width / meta.height,
-    },
-    left: Number(offsetX.toFixed(2)),
-    top: Number(offsetY.toFixed(2)),
-    orientation: 0,
-  }
-}
-
-function createInitialCropLayer(
-  imageLayer: ImageLayer,
-  cardLayer: CardLayer
-): CropLayer {
-  const targetAR = CARD_SCALE_CONFIG.aspectRatio
-  const imgW = imageLayer.meta.width
-  const imgH = imageLayer.meta.height
-
-  let cropW = imgW * 0.9
-  let cropH = cropW / targetAR
-
-  if (cropH > imgH) {
-    cropH = imgH * 0.9
-    cropW = cropH * targetAR
-  }
-
-  const x = imageLayer.left + (imgW - cropW) / 2
-  const y = imageLayer.top + (imgH - cropH) / 2
-
-  return {
-    x: Number(x.toFixed(2)),
-    y: Number(y.toFixed(2)),
-    meta: {
-      width: Number(cropW.toFixed(2)),
-      height: Number(cropH.toFixed(2)),
-      aspectRatio: targetAR,
-    },
-    orientation: cardLayer.orientation,
-  }
-}
+import {
+  fitImageToCard,
+  createInitialCropLayer,
+} from '@cardphoto/application/utils/imageFit'
 
 function* onDownloadClick(action: ReturnType<typeof toolbarAction>) {
   const { section, key } = action.payload

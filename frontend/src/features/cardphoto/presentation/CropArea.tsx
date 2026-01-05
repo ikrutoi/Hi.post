@@ -4,16 +4,19 @@ import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { clampCropToImage, enforceAspectRatio } from '../application/helpers'
 import styles from './CropArea.module.scss'
 import type { ImageLayer, CropLayer } from '../domain/types'
+import type { LayoutOrientation } from '@layout/domain/types'
 
 interface CropAreaProps {
   cropLayer: CropLayer
   imageLayer: ImageLayer
+  orientation: LayoutOrientation
   onChange: (newCrop: CropLayer) => void
 }
 
 export const CropArea: React.FC<CropAreaProps> = ({
   cropLayer,
   imageLayer,
+  orientation,
   onChange,
 }) => {
   const minWidth = 20

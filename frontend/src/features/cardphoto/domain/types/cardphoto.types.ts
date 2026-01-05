@@ -1,5 +1,6 @@
 export const IMAGE_SOURCE = ['stock', 'user', 'sent'] as const
 export type ImageSource = (typeof IMAGE_SOURCE)[number]
+import type { LayoutOrientation } from '@layout/domain/types'
 
 export interface ImageThumbnail {
   id: string
@@ -10,7 +11,7 @@ export interface ImageThumbnail {
   height: number
 }
 
-export type LayoutOrientation = 'portrait' | 'landscape'
+// export type LayoutOrientation = 'portrait' | 'landscape'
 
 export interface CardLayer {
   width: number
@@ -68,7 +69,15 @@ export type CardphotoOperation = {
   type: 'operation'
   payload: {
     config: WorkingConfig
-    reason?: 'crop' | 'rotateCard' | 'rotateImage' | 'moveCrop'
+    reason?:
+      | 'crop'
+      | 'rotateCard'
+      | 'rotateImage'
+      | 'moveCrop'
+      | 'initStock'
+      | 'uploadUser'
+      | 'applyFinal'
+      | 'resetCrop'
   }
 }
 

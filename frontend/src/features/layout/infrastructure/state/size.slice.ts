@@ -1,9 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { SizeState, SizeCard } from '../../domain/types'
+import { calcSizeCard } from '../../helpers'
+import { CARD_SCALE_CONFIG } from '@shared/config/constants'
+import type { SizeState, SizeCard, LayoutOrientation } from '../../domain/types'
 
 const initialState: SizeState = {
-  sizeCard: { width: 0, height: 0 },
-  sizeMiniCard: { width: 0, height: 0 },
+  sizeCard: {
+    width: 0,
+    height: 0,
+    orientation: 'landscape',
+    aspectRatio: CARD_SCALE_CONFIG.aspectRatio,
+  },
+  sizeMiniCard: {
+    width: 0,
+    height: 0,
+    orientation: 'landscape',
+    aspectRatio: CARD_SCALE_CONFIG.aspectRatio,
+  },
   remSize: null,
   viewportSize: { width: 0, height: 0, viewportSize: null },
   scale: null,
@@ -37,6 +49,24 @@ export const sizeSlice = createSlice({
         ...action.payload,
       }
     },
+
+    setCardOrientation(
+      state,
+      action: PayloadAction<{
+        orientation: LayoutOrientation
+        viewportHeight: number
+      }>
+    ) {
+      const { orientation, viewportHeight } = action.payload
+      const { width, height } = calcSizeCard(viewportHeight, orientation)
+
+      state.sizeCard = {
+        width: width || state.sizeCard.width,
+        height: height || state.sizeCard.height,
+        orientation,
+        aspectRatio: CARD_SCALE_CONFIG.aspectRatio,
+      }
+    },
   },
 })
 
@@ -46,5 +76,7 @@ export const {
   setRemSize,
   setScale,
   setViewportSize,
+  setCardOrientation,
 } = sizeSlice.actions
+
 export default sizeSlice.reducer

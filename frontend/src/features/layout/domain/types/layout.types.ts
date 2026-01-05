@@ -7,6 +7,8 @@ import type {
 import type { ToolbarSection } from '@toolbar/domain/types'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { ViewportSize } from '@shared/config/constants'
+import type { CardLayer } from '@cardphoto/domain/types'
+// import type { LayoutOrientation } from '@cardphoto/domain/types'
 
 export interface SliderLetter {
   letter: string
@@ -60,9 +62,19 @@ export interface ImageSet {
   miniImage: boolean
 }
 
+export type LayoutOrientation = 'portrait' | 'landscape'
+
+// export type SizeCard = {
+//   width: number
+//   height: number
+//   orientation: LayoutOrientation
+// }
+
 export type SizeCard = {
   width: number
   height: number
+  aspectRatio: number
+  orientation: LayoutOrientation
 }
 
 export type ViewportSizeState = {
@@ -72,7 +84,7 @@ export type ViewportSizeState = {
 }
 
 export interface SizeState {
-  sizeCard: SizeCard
+  sizeCard: CardLayer
   sizeMiniCard: SizeCard
   remSize: number | null
   viewportSize: ViewportSizeState

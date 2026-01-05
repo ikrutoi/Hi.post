@@ -36,7 +36,7 @@ export const ImageCrop = () => {
   }, [])
 
   const { imageMeta, isReady, hasError } = useImageMetaLoader(src)
-  const imageLayer = useImageLayer(imageMeta, sizeCard.width, sizeCard.height)
+  const imageLayer = useImageLayer(imageMeta, sizeCard)
 
   const { inputRef, handleBlur } = useFileDialog()
 
@@ -111,6 +111,7 @@ export const ImageCrop = () => {
               <CropArea
                 cropLayer={cardphotoState.currentConfig?.crop}
                 imageLayer={imageLayer}
+                orientation={sizeCard.orientation}
                 onChange={(newCrop) =>
                   addOp({
                     type: 'operation',

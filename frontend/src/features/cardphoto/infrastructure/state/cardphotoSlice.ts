@@ -8,6 +8,7 @@ import type {
   ImageLayer,
   CropLayer,
 } from '../../domain/types'
+import type { LayoutOrientation } from '@layout/domain/types'
 
 export interface CardphotoSliceState {
   state: CardphotoState | null
@@ -41,6 +42,15 @@ export const cardphotoSlice = createSlice({
         currentConfig: null,
       }
       state.isComplete = false
+    },
+
+    setBaseImage(
+      state,
+      action: PayloadAction<{ target: keyof CardphotoBase; image: ImageMeta }>
+    ) {
+      if (!state.state) return
+      const { target, image } = action.payload
+      state.state.base[target].image = image
     },
 
     uploadUserImage(state, action: PayloadAction<ImageMeta>) {
@@ -79,6 +89,34 @@ export const cardphotoSlice = createSlice({
 
       state.state.currentConfig =
         state.state.operations[state.state.activeIndex]?.payload.config ?? null
+    },
+
+    setOrientation(state, action: PayloadAction<LayoutOrientation>) {
+      if (!state.state || !state.state.currentConfig) return
+
+      const newConfig: WorkingConfig = {
+        ...state.state.currentConfig,
+        card: {
+          ...state.state.currentConfig.card,
+          orientation: action.payload,
+        },
+      }
+
+      const op: CardphotoOperation = {
+        type: 'operation',
+        payload: {
+          config: newConfig,
+          reason: 'rotateCard',
+        },
+      }
+
+      state.state.operations = state.state.operations.slice(
+        0,
+        state.state.activeIndex + 1
+      )
+      state.state.operations.push(op)
+      state.state.activeIndex = state.state.operations.length - 1
+      state.state.currentConfig = newConfig
     },
 
     applyFinal(state, action: PayloadAction<ImageMeta>) {
@@ -130,10 +168,12 @@ export const cardphotoSlice = createSlice({
 export const {
   initCardphoto,
   initStockImage,
+  setBaseImage,
   uploadUserImage,
   addOperation,
   undo,
   redo,
+  setOrientation,
   applyFinal,
   reset,
   cancelSelection,
