@@ -1,6 +1,8 @@
 @use '@styles/config/colors' as *;
 
 .toolbar {
+  width: 100%;
+  // position: relative;
   .toolbarKey {
     position: relative;
     margin: 0 0.3rem;
@@ -35,6 +37,7 @@
       background-color: $color-enabled;
     }
   }
+  // border: solid 1px blue;
 }
 
 .toolbarCardPanelOverlay {
@@ -60,6 +63,7 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
+  // border: solid 1px green;
 
   .toolbarGroupText {
     .toolbarKey {
@@ -70,6 +74,9 @@
     }
   }
 }
+
+// .toolbarGroup {
+// }
 
 .toolbarCardtext {
   top: -3rem;

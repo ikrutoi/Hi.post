@@ -1,7 +1,11 @@
 @use '@styles/config/colors' as *;
 
 .cardphoto {
+  display: flex;
+  justify-content: center;
   position: relative;
+  width: 100%;
+  // border: solid 1px blue;
 
   &Toolbar {
     position: absolute;

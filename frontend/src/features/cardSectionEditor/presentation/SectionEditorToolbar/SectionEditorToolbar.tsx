@@ -11,8 +11,10 @@ export const SectionEditorToolbar: React.FC = () => {
 
   if (!sizeCard || !remSize) return null
 
-  const width = sizeCard.width + 6 * remSize
   const height = sizeCard.height + 4 * remSize
+  const width = Number(
+    (sizeCard.height * sizeCard.aspectRatio + 6 * remSize).toFixed(2)
+  )
 
   return (
     <div

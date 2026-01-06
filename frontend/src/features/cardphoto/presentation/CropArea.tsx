@@ -1,16 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
-import { CARD_SCALE_CONFIG } from '@shared/config/constants'
-import { clampCropToImage, enforceAspectRatio } from '../application/helpers'
 import styles from './CropArea.module.scss'
 import type { ImageLayer, CropLayer } from '../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
+import {
+  useInteractionState,
+  useGlobalListeners,
+  useCropDrag,
+  useCropResize,
+} from '../application/hooks'
 
 interface CropAreaProps {
   cropLayer: CropLayer
   imageLayer: ImageLayer
   orientation: LayoutOrientation
   onChange: (newCrop: CropLayer) => void
+  onCommit: (finalCrop: CropLayer) => void
 }
 
 export const CropArea: React.FC<CropAreaProps> = ({
@@ -18,161 +23,121 @@ export const CropArea: React.FC<CropAreaProps> = ({
   imageLayer,
   orientation,
   onChange,
+  onCommit,
 }) => {
-  const minWidth = 20
-  const minHeight = 20
+  const [tempCrop, setTempCrop] = useState<CropLayer>(cropLayer)
+  const { interactingRef, lastCropRef, begin, end, setLast } =
+    useInteractionState(cropLayer)
+  const { attach } = useGlobalListeners()
 
-  const round2 = (value: number) => Number(value.toFixed(0))
+  const startDrag = useCropDrag(
+    tempCrop,
+    imageLayer,
+    setTempCrop,
+    setLast,
+    onChange,
+    onCommit,
+    begin,
+    end,
+    attach,
+    lastCropRef
+  )
 
-  const handleMouseDown = (corner: string, e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  const startResize = useCropResize(
+    tempCrop,
+    imageLayer,
+    setTempCrop,
+    setLast,
+    onChange,
+    onCommit,
+    begin,
+    end,
+    attach,
+    lastCropRef
+  )
 
-    const startX = e.clientX
-    const startY = e.clientY
-    const startCrop = { ...cropLayer }
-    const aspectRatio = cropLayer.meta.aspectRatio
-
-    const onMouseMove = (moveEvent: MouseEvent) => {
-      const dx = moveEvent.clientX - startX
-      const dy = moveEvent.clientY - startY
-
-      let newCrop = { ...startCrop }
-
-      switch (corner) {
-        case 'BR': {
-          let newWidth = startCrop.meta.width + dx
-          let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
-          newCrop.meta.width = Math.max(newWidth, minWidth)
-          newCrop.meta.height = Math.max(newHeight, minHeight)
-          break
-        }
-        case 'TR': {
-          let newWidth = startCrop.meta.width + dx
-          let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
-          newCrop.meta.width = Math.max(newWidth, minWidth)
-          newCrop.meta.height = Math.max(newHeight, minHeight)
-          newCrop.y = startCrop.y + dy
-          break
-        }
-        case 'BL': {
-          let newWidth = startCrop.meta.width - dx
-          let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
-          newCrop.meta.width = Math.max(newWidth, minWidth)
-          newCrop.meta.height = Math.max(newHeight, minHeight)
-          newCrop.x = startCrop.x + dx
-          break
-        }
-        case 'TL': {
-          let newWidth = startCrop.meta.width - dx
-          let newHeight = round2(newWidth / CARD_SCALE_CONFIG.aspectRatio)
-          newCrop.meta.width = Math.max(newWidth, minWidth)
-          newCrop.meta.height = Math.max(newHeight, minHeight)
-          newCrop.x = startCrop.x + dx
-          newCrop.y = startCrop.y + dy
-          break
-        }
-      }
-
-      if (imageLayer) {
-        newCrop = clampCropToImage(newCrop, imageLayer)
-        newCrop = enforceAspectRatio(newCrop, imageLayer)
-      }
-
-      onChange({
-        ...newCrop,
-        meta: {
-          ...newCrop.meta,
-          aspectRatio,
-        },
-      })
+  useEffect(() => {
+    if (!interactingRef.current) {
+      setTempCrop(cropLayer)
+      setLast(cropLayer)
     }
-
-    const onMouseUp = () => {
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
-    }
-
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
-  }
-
-  const handleDrag = (e: React.MouseEvent) => {
-    e.preventDefault()
-    const startX = e.clientX
-    const startY = e.clientY
-    const startCrop = { ...cropLayer }
-
-    const onMouseMove = (moveEvent: MouseEvent) => {
-      const dx = moveEvent.clientX - startX
-      const dy = moveEvent.clientY - startY
-
-      let newX = startCrop.x + dx
-      let newY = startCrop.y + dy
-
-      if (!imageLayer) return
-
-      newX = Math.max(
-        imageLayer.left,
-        Math.min(
-          newX,
-          imageLayer.left + imageLayer.meta.width - startCrop.meta.width
-        )
-      )
-      newY = Math.max(
-        imageLayer.top,
-        Math.min(
-          newY,
-          imageLayer.top + imageLayer.meta.height - startCrop.meta.height
-        )
-      )
-
-      onChange({
-        ...startCrop,
-        x: round2(newX),
-        y: round2(newY),
-      })
-    }
-
-    const onMouseUp = () => {
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup', onMouseUp)
-    }
-
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup', onMouseUp)
-  }
+  }, [cropLayer])
 
   return (
     <div
       className={styles.cropArea}
       style={{
-        top: `${cropLayer.y}px`,
-        left: `${cropLayer.x}px`,
-        width: `${cropLayer.meta.width}px`,
-        height: `${cropLayer.meta.height}px`,
+        top: `${tempCrop.y}px`,
+        left: `${tempCrop.x}px`,
+        width: `${tempCrop.meta.width}px`,
+        height: `${tempCrop.meta.height}px`,
       }}
-      onMouseDown={handleDrag}
+      onMouseDown={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        startDrag(e.clientX, e.clientY)
+      }}
+      onTouchStart={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        startDrag(e.touches[0].clientX, e.touches[0].clientY)
+      }}
     >
       <div
         className={clsx(styles.handle, styles.handleTL)}
         style={{ left: 0, top: 0 }}
-        onMouseDown={(e) => handleMouseDown('TL', e)}
+        onMouseDown={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          startResize('TL', e.clientX, e.clientY)
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          startResize('TL', e.touches[0].clientX, e.touches[0].clientY)
+        }}
       />
       <div
         className={clsx(styles.handle, styles.handleTR)}
         style={{ right: 0, top: 0 }}
-        onMouseDown={(e) => handleMouseDown('TR', e)}
+        onMouseDown={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          startResize('TR', e.clientX, e.clientY)
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          startResize('TR', e.touches[0].clientX, e.touches[0].clientY)
+        }}
       />
       <div
         className={clsx(styles.handle, styles.handleBL)}
         style={{ left: 0, bottom: 0 }}
-        onMouseDown={(e) => handleMouseDown('BL', e)}
+        onMouseDown={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          startResize('BL', e.clientX, e.clientY)
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          startResize('BL', e.touches[0].clientX, e.touches[0].clientY)
+        }}
       />
       <div
         className={clsx(styles.handle, styles.handleBR)}
         style={{ right: 0, bottom: 0 }}
-        onMouseDown={(e) => handleMouseDown('BR', e)}
+        onMouseDown={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          startResize('BR', e.clientX, e.clientY)
+        }}
+        onTouchStart={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          startResize('BR', e.touches[0].clientX, e.touches[0].clientY)
+        }}
       />
     </div>
   )

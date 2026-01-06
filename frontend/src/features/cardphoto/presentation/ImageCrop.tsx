@@ -13,6 +13,7 @@ import { useImageLayer } from '../application/hooks/useImageLayer'
 import { useImageUpload, useFileDialog } from '../application/hooks'
 import { useCardphotoSrc } from '../application/hooks/useCardphotoSrc'
 import styles from './ImageCrop.module.scss'
+import type { CropLayer } from '../domain/types'
 
 export const ImageCrop = () => {
   const { state: cardphotoState, actions: cardphotoActions } =
@@ -57,6 +58,19 @@ export const ImageCrop = () => {
   )
 
   const shouldShowImage = !!src && isReady && imageMeta && !hasError
+
+  console.log('++')
+  const [tempCrop, setTempCrop] = useState<CropLayer | null>(
+    cardphotoState.currentConfig?.crop ?? null
+  )
+
+  useEffect(() => {
+    if (toolbarState.crop === 'active' && cardphotoState.currentConfig?.crop) {
+      setTempCrop(cardphotoState.currentConfig.crop)
+    }
+  }, [toolbarState.crop, cardphotoState.currentConfig?.crop])
+
+  console.log('ImageCrop state', cardphotoState)
 
   return (
     <div
@@ -104,25 +118,28 @@ export const ImageCrop = () => {
           toolbarState.crop === 'active' &&
           cardphotoState.currentConfig?.crop && (
             <>
-              <CropOverlay
-                cropLayer={cardphotoState.currentConfig?.crop}
-                imageLayer={imageLayer}
-              />
+              {tempCrop && (
+                <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
+              )}
+
               <CropArea
                 cropLayer={cardphotoState.currentConfig?.crop}
                 imageLayer={imageLayer}
                 orientation={sizeCard.orientation}
-                onChange={(newCrop) =>
+                onChange={(newCrop) => {
+                  setTempCrop(newCrop)
+                }}
+                onCommit={(finalCrop) => {
                   addOp({
                     type: 'operation',
                     payload: {
                       config: {
                         ...cardphotoState.currentConfig!,
-                        crop: newCrop,
+                        crop: finalCrop,
                       },
                     },
                   })
-                }
+                }}
               />
             </>
           )}

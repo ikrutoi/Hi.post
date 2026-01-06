@@ -2,7 +2,10 @@
 
 .cardSectionRenderer {
   display: flex;
+  // justify-content: center;
+  width: 100%;
   margin-bottom: 2rem;
   box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
   border: 1px solid $color-section-dark;
+  // border: solid 1px green;
 }

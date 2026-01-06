@@ -1,16 +1,21 @@
 import { put, select } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
-import { addOperation, applyFinal } from '@cardphoto/infrastructure/state'
+import {
+  addOperation,
+  applyFinal,
+  type CardphotoSliceState,
+} from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
   selectCurrentConfig,
+  selectCardphotoSlice,
   selectCurrentImageMeta,
 } from '@cardphoto/infrastructure/selectors'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { updateCropToolbarState } from './cardphotoToolbarHelpers'
 import { getCroppedBase64 } from '@cardphoto/application/helpers'
 import {} from '@cardphoto/application/hooks'
-import { setCardOrientation } from '@layout/infrastructure/state'
+import { setCardOrientation, setSizeCard } from '@layout/infrastructure/state'
 import {
   selectSizeCard,
   selectViewportSize,
@@ -38,6 +43,8 @@ export function* handleCropAction() {
   const state: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
   )
+  const currentSlice: CardphotoSliceState = yield select(selectCardphotoSlice)
+  console.log('state', currentSlice)
 
   const newCrop = state.crop === 'enabled' ? 'active' : 'enabled'
   yield* updateCropToolbarState(newCrop, state)
@@ -140,23 +147,25 @@ export function* handleImageLayerUpdate() {
 
 export function* handleCardOrientation(): SagaIterator {
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
-
-  console.log('+', config)
   if (!config) return
 
   const newOrientation: LayoutOrientation =
     config.card.orientation === 'portrait' ? 'landscape' : 'portrait'
 
-  const viewportSize = yield select(selectViewportSize)
-  const viewportHeight = viewportSize?.height ?? config.card.height
+  const ratio = config.card.aspectRatio
+  const height = config.card.height
+
+  const rawWidth =
+    newOrientation === 'landscape' ? height * ratio : height / ratio
+  const width = Number(rawWidth.toFixed(2))
 
   const newCardLayer: CardLayer = {
     ...config.card,
     orientation: newOrientation,
-    height: viewportHeight,
-    aspectRatio: CARD_SCALE_CONFIG.aspectRatio,
+    height,
+    width,
+    aspectRatio: ratio,
   }
-
   const newImageLayer = fitImageToCard(config.image.meta, newCardLayer)
   const newCropLayer = createInitialCropLayer(newImageLayer, newCardLayer)
 
@@ -172,6 +181,8 @@ export function* handleCardOrientation(): SagaIterator {
   }
 
   yield put(addOperation(op))
+
+  yield put(setSizeCard(newCardLayer))
 
   yield put(
     updateToolbarIcon({

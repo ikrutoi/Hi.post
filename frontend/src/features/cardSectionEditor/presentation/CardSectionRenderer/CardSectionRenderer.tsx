@@ -19,16 +19,20 @@ export const CardSectionRenderer = () => {
       const { left } = sectionRef.current.getBoundingClientRect()
       setSectionLeft(left)
     }
-  }, [sizeCard?.width, sizeCard?.height])
+  }, [sizeCard?.height])
 
-  if (!sizeCard?.width || !sizeCard?.height) return null
+  if (!sizeCard?.height) return null
+
+  const currentWidth = Number(
+    (sizeCard.height * sizeCard.aspectRatio).toFixed(2)
+  )
 
   return (
     <div
       ref={sectionRef}
       className={styles.cardSectionRenderer}
       style={{
-        width: `${sizeCard.width}px`,
+        width: `${currentWidth}px`,
         height: `${sizeCard.height}px`,
       }}
     >
