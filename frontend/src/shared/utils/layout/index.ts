@@ -1,5 +1,4 @@
-export { getSizeMiniCard } from './getSizeMiniCard'
-export { getSizeCard } from './getSizeCard'
-export { getMaxMiniCardsCount } from './getMaxMiniCardsCount'
-
 export * from './getSizeMiniCard'
+export * from './getMaxMiniCardsCount'
+export * from './getSizeCard'
+export * from './roundTo'

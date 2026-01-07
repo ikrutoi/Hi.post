@@ -1,4 +1,5 @@
 import { clampDragWithinImage, applyBounds } from '../helpers'
+import type { LayoutOrientation } from '@layout/domain/types'
 import type { CropLayer, ImageLayer } from '../../domain/types'
 
 export const useCropDrag = (
@@ -16,7 +17,8 @@ export const useCropDrag = (
     touchMove: (e: TouchEvent) => void,
     touchEnd: (e: TouchEvent) => void
   ) => () => void,
-  lastCropRef: React.MutableRefObject<CropLayer>
+  lastCropRef: React.MutableRefObject<CropLayer>,
+  orientation: LayoutOrientation
 ) => {
   return (startX: number, startY: number) => {
     begin()
@@ -27,7 +29,7 @@ export const useCropDrag = (
       const dx = clientX - startX
       const dy = clientY - startY
       const { x, y } = clampDragWithinImage(start, dx, dy, imageLayer)
-      const next = applyBounds({ ...start, x, y }, imageLayer)
+      const next = applyBounds({ ...start, x, y }, imageLayer, orientation)
       setTempCrop(next)
       setLast(next)
       onChange(next)

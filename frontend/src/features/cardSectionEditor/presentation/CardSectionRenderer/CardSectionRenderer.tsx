@@ -1,4 +1,6 @@
 import React, { useRef, useLayoutEffect, useState } from 'react'
+import clsx from 'clsx'
+import { capitalize } from '@shared/utils/helpers'
 import { renderCardSection } from '../../application/helpers/renderCardSection'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useSectionEditorMenuFacade } from '@entities/sectionEditorMenu/application/facades'
@@ -30,7 +32,10 @@ export const CardSectionRenderer = () => {
   return (
     <div
       ref={sectionRef}
-      className={styles.cardSectionRenderer}
+      className={clsx(
+        styles.cardSectionRenderer,
+        styles[`cardSectionRenderer${capitalize(sizeCard.orientation)}`]
+      )}
       style={{
         width: `${currentWidth}px`,
         height: `${sizeCard.height}px`,

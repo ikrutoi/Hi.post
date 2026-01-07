@@ -1,25 +1,26 @@
-import type { CropLayer, ImageLayer } from '../../domain/types'
 import { clampCropToImage, enforceAspectRatio } from './index'
-
-export const round0 = (v: number) => Number(v.toFixed(0))
+import { roundTo } from '@shared/utils/layout'
+import type { LayoutOrientation } from '@layout/domain/types'
+import type { CropLayer, ImageLayer } from '../../domain/types'
 
 export const applyBounds = (
   crop: CropLayer,
-  imageLayer?: ImageLayer
+  imageLayer: ImageLayer,
+  orientation: LayoutOrientation
 ): CropLayer => {
   let bounded = crop
   if (imageLayer) {
     bounded = clampCropToImage(bounded, imageLayer)
-    bounded = enforceAspectRatio(bounded, imageLayer)
+    bounded = enforceAspectRatio(bounded, imageLayer, orientation)
   }
   return {
     ...bounded,
-    x: round0(bounded.x),
-    y: round0(bounded.y),
+    x: roundTo(bounded.x, 2),
+    y: roundTo(bounded.y),
     meta: {
       ...bounded.meta,
-      width: round0(bounded.meta.width),
-      height: round0(bounded.meta.height),
+      width: roundTo(bounded.meta.width),
+      height: roundTo(bounded.meta.height),
     },
   }
 }
@@ -29,9 +30,10 @@ export const updateCrop = (
   dx: number,
   dy: number,
   startCrop: CropLayer,
-  imageLayer?: ImageLayer,
-  minWidth = 20
+  imageLayer: ImageLayer,
+  orientation: LayoutOrientation
 ): CropLayer => {
+  const minWidth = 20
   const aspectRatio = startCrop.meta.aspectRatio
 
   let newWidth = startCrop.meta.width
@@ -42,21 +44,21 @@ export const updateCrop = (
   switch (corner) {
     case 'BR':
       newWidth = startCrop.meta.width + dx
-      newHeight = round0(newWidth / aspectRatio)
+      newHeight = roundTo(newWidth / aspectRatio, 2)
       break
     case 'TR':
       newWidth = startCrop.meta.width + dx
-      newHeight = round0(newWidth / aspectRatio)
+      newHeight = roundTo(newWidth / aspectRatio, 2)
       newY = startCrop.y + dy
       break
     case 'BL':
       newWidth = startCrop.meta.width - dx
-      newHeight = round0(newWidth / aspectRatio)
+      newHeight = roundTo(newWidth / aspectRatio, 2)
       newX = startCrop.x + dx
       break
     case 'TL':
       newWidth = startCrop.meta.width - dx
-      newHeight = round0(newWidth / aspectRatio)
+      newHeight = roundTo(newWidth / aspectRatio, 2)
       newX = startCrop.x + dx
       newY = startCrop.y + dy
       break
@@ -72,7 +74,8 @@ export const updateCrop = (
       y: newY,
       meta: { ...startCrop.meta, width: newWidth, height: newHeight },
     },
-    imageLayer
+    imageLayer,
+    orientation
   )
 }
 

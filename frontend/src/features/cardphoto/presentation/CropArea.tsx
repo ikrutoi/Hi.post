@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
 import styles from './CropArea.module.scss'
-import type { ImageLayer, CropLayer } from '../domain/types'
-import type { LayoutOrientation } from '@layout/domain/types'
 import {
   useInteractionState,
   useGlobalListeners,
   useCropDrag,
   useCropResize,
 } from '../application/hooks'
+import type { ImageLayer, CropLayer } from '../domain/types'
+import type { LayoutOrientation } from '@layout/domain/types'
 
 interface CropAreaProps {
   cropLayer: CropLayer
@@ -40,7 +40,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
     begin,
     end,
     attach,
-    lastCropRef
+    lastCropRef,
+    orientation
   )
 
   const startResize = useCropResize(
@@ -53,7 +54,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
     begin,
     end,
     attach,
-    lastCropRef
+    lastCropRef,
+    orientation
   )
 
   useEffect(() => {

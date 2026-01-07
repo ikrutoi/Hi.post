@@ -59,7 +59,6 @@ export const ImageCrop = () => {
 
   const shouldShowImage = !!src && isReady && imageMeta && !hasError
 
-  console.log('++')
   const [tempCrop, setTempCrop] = useState<CropLayer | null>(
     cardphotoState.currentConfig?.crop ?? null
   )
@@ -70,7 +69,7 @@ export const ImageCrop = () => {
     }
   }, [toolbarState.crop, cardphotoState.currentConfig?.crop])
 
-  console.log('ImageCrop state', cardphotoState)
+  // console.log('ImageCrop state', cardphotoState)
 
   return (
     <div

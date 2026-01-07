@@ -10,7 +10,7 @@ export function calculateInitialCrop(
   let initialHeight = 0
 
   if (imageAspectRatio === aspectRatio) {
-    initialWidth = Math.round(imageWidth * CARD_SCALE_CONFIG.scaleCrop)
+    initialWidth = Math.round(imageWidth * 0.5)
     initialHeight = Math.round(initialWidth / aspectRatio)
   } else if (imageAspectRatio < aspectRatio) {
     initialWidth = Math.round(imageWidth)

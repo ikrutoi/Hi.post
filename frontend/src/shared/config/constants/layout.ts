@@ -4,6 +4,7 @@ export const CARD_SCALE_CONFIG = {
   precision: 2,
   scaleMiniCard: 1 / 7,
   scaleCrop: 0.9,
+  deltaAspectRatio: 0.2,
 } as const
 
 export type CardScaleConfig = typeof CARD_SCALE_CONFIG

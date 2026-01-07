@@ -1,4 +1,5 @@
 import { updateCrop } from '../helpers'
+import type { LayoutOrientation } from '@layout/domain/types'
 import type { CropLayer, ImageLayer } from '../../domain/types'
 
 export const useCropResize = (
@@ -16,7 +17,8 @@ export const useCropResize = (
     touchMove: (e: TouchEvent) => void,
     touchEnd: (e: TouchEvent) => void
   ) => () => void,
-  lastCropRef: React.MutableRefObject<CropLayer>
+  lastCropRef: React.MutableRefObject<CropLayer>,
+  orientation: LayoutOrientation
 ) => {
   return (
     corner: 'TL' | 'TR' | 'BL' | 'BR',
@@ -29,7 +31,7 @@ export const useCropResize = (
     const move = (clientX: number, clientY: number) => {
       const dx = clientX - startX
       const dy = clientY - startY
-      const next = updateCrop(corner, dx, dy, start, imageLayer)
+      const next = updateCrop(corner, dx, dy, start, imageLayer, orientation)
       setTempCrop(next)
       setLast(next)
       onChange(next)

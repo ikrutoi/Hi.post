@@ -37,12 +37,12 @@
       background-color: $color-enabled;
     }
   }
-  // border: solid 1px blue;
 }
 
 .toolbarCardPanelOverlay {
   height: 100%;
   z-index: 8;
+  // border: solid 1px blue;
 
   .toolbarGroup {
     display: flex;
@@ -53,6 +53,7 @@
 
   .toolbarKey {
     background-color: $color-disabled;
+    // border: solid 1px red;
   }
 }
 

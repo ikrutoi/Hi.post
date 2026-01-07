@@ -13,8 +13,10 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { updateCropToolbarState } from './cardphotoToolbarHelpers'
-import { getCroppedBase64 } from '@cardphoto/application/helpers'
-import {} from '@cardphoto/application/hooks'
+import {
+  getCroppedBase64,
+  transformCropForOrientation,
+} from '@cardphoto/application/helpers'
 import { setCardOrientation, setSizeCard } from '@layout/infrastructure/state'
 import {
   selectSizeCard,
@@ -43,8 +45,10 @@ export function* handleCropAction() {
   const state: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
   )
-  const currentSlice: CardphotoSliceState = yield select(selectCardphotoSlice)
-  console.log('state', currentSlice)
+  // const currentSlice: CardphotoSliceState = yield select(selectCardphotoSlice)
+  // if (!currentSlice.state || !currentSlice.state.currentConfig) return
+  // const cardOrientation: LayoutOrientation =
+  //   currentSlice.state.currentConfig.card.orientation
 
   const newCrop = state.crop === 'enabled' ? 'active' : 'enabled'
   yield* updateCropToolbarState(newCrop, state)
@@ -167,7 +171,27 @@ export function* handleCardOrientation(): SagaIterator {
     aspectRatio: ratio,
   }
   const newImageLayer = fitImageToCard(config.image.meta, newCardLayer)
+
+  // let newCropLayer = transformCropForOrientation(
+  //   config.crop,
+  //   config.card,
+  //   newCardLayer,
+  //   newImageLayer
+  // )
+
+  // const outOfBounds =
+  //   newCropLayer.x < newImageLayer.left ||
+  //   newCropLayer.y < newImageLayer.top ||
+  //   newCropLayer.x + newCropLayer.meta.width >
+  //     newImageLayer.left + newImageLayer.meta.width ||
+  //   newCropLayer.y + newCropLayer.meta.height >
+  //     newImageLayer.top + newImageLayer.meta.height
+
+  // const tooSmall = newCropLayer.meta.width < 10 || newCropLayer.meta.height < 10
+
+  // if (outOfBounds || tooSmall) {
   const newCropLayer = createInitialCropLayer(newImageLayer, newCardLayer)
+  // }
 
   const newConfig: WorkingConfig = {
     card: newCardLayer,
