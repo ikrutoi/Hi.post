@@ -72,7 +72,7 @@ export function createInitialCropLayer(
 
       crop.meta.width = image.meta.width * ratio
       crop.meta.height = roundTo(image.meta.width * ratio * card.aspectRatio, 2)
-      crop.x = image.left + (image.meta.width - crop.meta.width) / 2
+      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
       crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
     }
   } else {
@@ -102,7 +102,7 @@ export function createInitialCropLayer(
         (image.meta.width * ratio) / card.aspectRatio,
         2
       )
-      crop.x = image.left + (image.meta.width - crop.meta.width) / 2
+      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
       crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
     }
   }

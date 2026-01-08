@@ -7,6 +7,7 @@ export function enforceAspectRatio(
   imageLayer: ImageLayer,
   orientation: LayoutOrientation
 ): CropLayer {
+  console.log('enforce', crop)
   const adjusted: CropLayer = {
     ...crop,
     meta: { ...crop.meta },
@@ -46,8 +47,6 @@ export function enforceAspectRatio(
       adjusted.meta.height = roundTo(adjusted.meta.width / aspectRatio, 2)
     }
   }
-
-  console.log('enforce adjusted', adjusted)
 
   return adjusted
 }

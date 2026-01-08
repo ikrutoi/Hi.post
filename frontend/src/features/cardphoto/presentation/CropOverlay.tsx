@@ -16,7 +16,8 @@ export const CropOverlay: React.FC<CropOverlayProps> = ({
     top: imageLayer.top,
     left: imageLayer.left,
     width: imageLayer.meta.width,
-    height: cropLayer.y - imageLayer.top,
+    height: Math.max(0, cropLayer.y - imageLayer.top),
+    // height: cropLayer.y - imageLayer.top,
   }
 
   const left = {
@@ -41,8 +42,10 @@ export const CropOverlay: React.FC<CropOverlayProps> = ({
     left: imageLayer.left,
     width: imageLayer.meta.width,
     height:
-      imageLayer.meta.height -
-      (cropLayer.y + cropLayer.meta.height - imageLayer.top),
+      imageLayer.meta.height +
+      imageLayer.top -
+      cropLayer.y -
+      cropLayer.meta.height,
   }
 
   return (

@@ -32,6 +32,8 @@ export const useCropResize = (
       const dx = clientX - startX
       const dy = clientY - startY
       const next = updateCrop(corner, dx, dy, start, imageLayer, orientation)
+
+      console.log('useCropResize', next)
       setTempCrop(next)
       setLast(next)
       onChange(next)

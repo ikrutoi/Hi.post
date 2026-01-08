@@ -10,10 +10,13 @@ import {
 import { useToolbarFacade } from '@toolbar/application/facades'
 import { useImageMetaLoader } from '../application/hooks/useImageMetaLoader'
 import { useImageLayer } from '../application/hooks/useImageLayer'
-import { useImageUpload, useFileDialog } from '../application/hooks'
+import {
+  useImageUpload,
+  useFileDialog,
+  useCropState,
+} from '../application/hooks'
 import { useCardphotoSrc } from '../application/hooks/useCardphotoSrc'
 import styles from './ImageCrop.module.scss'
-import type { CropLayer } from '../domain/types'
 
 export const ImageCrop = () => {
   const { state: cardphotoState, actions: cardphotoActions } =
@@ -59,17 +62,12 @@ export const ImageCrop = () => {
 
   const shouldShowImage = !!src && isReady && imageMeta && !hasError
 
-  const [tempCrop, setTempCrop] = useState<CropLayer | null>(
+  const [tempCrop, setTempCrop] = useCropState(
+    toolbarState.crop,
+    imageLayer,
+    sizeCard,
     cardphotoState.currentConfig?.crop ?? null
   )
-
-  useEffect(() => {
-    if (toolbarState.crop === 'active' && cardphotoState.currentConfig?.crop) {
-      setTempCrop(cardphotoState.currentConfig.crop)
-    }
-  }, [toolbarState.crop, cardphotoState.currentConfig?.crop])
-
-  // console.log('ImageCrop state', cardphotoState)
 
   return (
     <div

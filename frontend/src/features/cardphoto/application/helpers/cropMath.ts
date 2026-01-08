@@ -11,7 +11,7 @@ export const applyBounds = (
   let bounded = crop
   if (imageLayer) {
     bounded = clampCropToImage(bounded, imageLayer)
-    bounded = enforceAspectRatio(bounded, imageLayer, orientation)
+    // bounded = enforceAspectRatio(bounded, imageLayer, orientation)
   }
   return {
     ...bounded,
@@ -43,22 +43,44 @@ export const updateCrop = (
 
   switch (corner) {
     case 'BR':
-      newWidth = startCrop.meta.width + dx
-      newHeight = roundTo(newWidth / aspectRatio, 2)
+      if (orientation === 'portrait') {
+        newHeight = startCrop.meta.height + dy
+        newWidth = roundTo(newHeight / aspectRatio, 2)
+      } else {
+        newWidth = startCrop.meta.width + dx
+        newHeight = roundTo(newWidth / aspectRatio, 2)
+      }
       break
     case 'TR':
-      newWidth = startCrop.meta.width + dx
-      newHeight = roundTo(newWidth / aspectRatio, 2)
-      newY = startCrop.y + dy
+      if (orientation === 'portrait') {
+        newHeight = startCrop.meta.height + dy
+        newWidth = roundTo(newHeight / aspectRatio, 2)
+        newX = startCrop.x + dx
+      } else {
+        newWidth = startCrop.meta.width + dx
+        newHeight = roundTo(newWidth / aspectRatio, 2)
+        newY = startCrop.y + dy
+      }
       break
     case 'BL':
-      newWidth = startCrop.meta.width - dx
-      newHeight = roundTo(newWidth / aspectRatio, 2)
-      newX = startCrop.x + dx
+      if (orientation === 'portrait') {
+        newHeight = startCrop.meta.height - dy
+        newWidth = roundTo(newHeight / aspectRatio, 2)
+        newY = startCrop.y + dy
+      } else {
+        newWidth = startCrop.meta.width - dx
+        newHeight = roundTo(newWidth / aspectRatio, 2)
+        newX = startCrop.x + dx
+      }
       break
     case 'TL':
-      newWidth = startCrop.meta.width - dx
-      newHeight = roundTo(newWidth / aspectRatio, 2)
+      if (orientation === 'portrait') {
+        newHeight = startCrop.meta.height - dy
+        newWidth = roundTo(newHeight / aspectRatio, 2)
+      } else {
+        newWidth = startCrop.meta.width - dx
+        newHeight = roundTo(newWidth / aspectRatio, 2)
+      }
       newX = startCrop.x + dx
       newY = startCrop.y + dy
       break
