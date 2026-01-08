@@ -24,7 +24,9 @@ export const cardphotoSlice = createSlice({
   name: 'cardphoto',
   initialState,
   reducers: {
-    initCardphoto(state) {
+    initCardphoto() {},
+
+    resetCardphoto(state) {
       state.state = null
       state.isComplete = false
     },
@@ -167,6 +169,7 @@ export const cardphotoSlice = createSlice({
 
 export const {
   initCardphoto,
+  resetCardphoto,
   initStockImage,
   setBaseImage,
   uploadUserImage,

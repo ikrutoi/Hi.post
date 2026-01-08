@@ -22,24 +22,21 @@ function getRandomStockMeta(): ImageMeta {
 function* initCardphotoSaga() {
   const state: CardphotoState | null = yield select(selectCardphotoState)
 
-  if (state && (state.operations.length > 0 || state.base.stock.image)) {
+  if (state && state.operations.length > 1) {
     return
   }
 
   const randomMeta: ImageMeta = yield call(getRandomStockMeta)
-
   yield put(initStockImage(randomMeta))
 
   const workingConfig: WorkingConfig = yield call(
     createWorkingConfig,
     randomMeta
   )
-
   const op: CardphotoOperation = {
     type: 'operation',
     payload: { config: workingConfig, reason: 'initStock' },
   }
-
   yield put(addOperation(op))
 }
 

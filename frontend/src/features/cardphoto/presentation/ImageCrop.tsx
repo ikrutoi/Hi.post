@@ -23,6 +23,8 @@ export const ImageCrop = () => {
     useCardphotoFacade()
   const { init, setUserImage, addOp } = cardphotoActions
 
+  console.log('ImageCrop', cardphotoState)
+
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
