@@ -63,7 +63,7 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
   )
   yield put(setNeedsCrop(needsCrop))
 
-  const imageLayer = fitImageToCard(imageMeta, cardLayer)
+  const imageLayer = fitImageToCard(imageMeta, cardLayer, 0)
   const cropLayer = createInitialCropLayer(imageLayer, cardLayer)
 
   yield put(

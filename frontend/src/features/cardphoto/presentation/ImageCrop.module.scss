@@ -7,7 +7,6 @@
   justify-content: center;
   align-items: center;
   user-select: none;
-  // border: solid 1px red;
   box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
   border: 1px solid $color-section-dark;
 
@@ -23,16 +22,21 @@
 
 .cropContainer {
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   user-select: none;
 }
 
 .cropImage {
-  display: block;
+  // position: absolute;
   opacity: 0;
+  will-change: transform;
   transition: opacity 0.4s ease;
+  // max-width: 100%;
+  // max-height: 100%;
+  // width: auto;
+  // height: auto;
+  // object-fit: contain;
+  // border: solid 1px red;
+  // border-bottom: solid 1px blue;
 }
 
 .fadeIn {

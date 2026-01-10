@@ -4,6 +4,7 @@ import {
   handleCropAction,
   handleCropCheckAction,
   handleCardOrientation,
+  handleImageRotate,
 } from './cardphotoToolbarHandlers'
 
 function* handleCardphotoToolbarAction(
@@ -11,6 +12,8 @@ function* handleCardphotoToolbarAction(
 ) {
   const { section, key } = action.payload
   if (section !== 'cardphoto') return
+
+  // console.log('key', key)
 
   switch (key) {
     case 'crop':
@@ -23,6 +26,10 @@ function* handleCardphotoToolbarAction(
 
     case 'cardOrientation':
       yield call(handleCardOrientation)
+      break
+
+    case 'imageRotateRight':
+      yield call(handleImageRotate)
       break
   }
 }

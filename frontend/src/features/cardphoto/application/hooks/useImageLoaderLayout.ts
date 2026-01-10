@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
+import { roundTo } from '@shared/utils/layout'
 import type { CropState, ImageData } from '../../domain/types'
 
 export const useImageLoader = (
@@ -11,8 +12,6 @@ export const useImageLoader = (
   const [imageData, setImageData] = useState<CropState | null>(null)
   const [isReady, setIsReady] = useState(false)
   const [hasError, setHasError] = useState(false)
-
-  const round2 = (value: number) => Number(value.toFixed(2))
 
   useEffect(() => {
     setIsReady(false)
@@ -38,12 +37,12 @@ export const useImageLoader = (
       if (!imageId) return
 
       setImageData({
-        width: round2(finalWidth),
-        height: round2(finalHeight),
-        left: round2(offsetX),
-        top: round2(offsetY),
+        width: roundTo(finalWidth, 2),
+        height: roundTo(finalHeight, 2),
+        left: roundTo(offsetX, 2),
+        top: roundTo(offsetY, 2),
         aspectRatio: CARD_SCALE_CONFIG.aspectRatio,
-        imageAspectRatio: round2(imageAspectRatio),
+        imageAspectRatio: roundTo(imageAspectRatio, 3),
         ownerImageId: imageId,
       })
 

@@ -23,7 +23,7 @@ export const ImageCrop = () => {
     useCardphotoFacade()
   const { init, setUserImage, addOp } = cardphotoActions
 
-  console.log('ImageCrop', cardphotoState)
+  // console.log('ImageCrop', cardphotoState)
 
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
@@ -42,7 +42,14 @@ export const ImageCrop = () => {
   }, [])
 
   const { imageMeta, isReady, hasError } = useImageMetaLoader(src)
-  const imageLayer = useImageLayer(imageMeta, sizeCard)
+
+  const imageLayer = useImageLayer(
+    imageMeta,
+    sizeCard,
+    cardphotoState.currentConfig?.image.orientation ?? 0
+  )
+
+  // console.log('ImageCrop', imageLayer?.meta.width, imageLayer?.meta.height)
 
   const { inputRef, handleBlur } = useFileDialog()
 
@@ -71,6 +78,42 @@ export const ImageCrop = () => {
     cardphotoState.currentConfig?.crop ?? null
   )
 
+  // const [sizeCardTurn, setSizeCardTurn] = useState({
+  //   width: imageLayer?.meta.width,
+  //   height: imageLayer?.meta.height,
+  // })
+
+  // useEffect(() => {
+  //   if (!imageLayer) return
+  //   if (imageLayer.orientation === 0 || imageLayer.orientation === 180) {
+  //     setSizeCardTurn({ width: sizeCard.width, height: sizeCard.height })
+  //   } else {
+  //     setSizeCardTurn({ width: sizeCard.height, height: sizeCard.width })
+  //   }
+  // }, [imageLayer?.orientation])
+
+  if (!imageLayer) return
+
+  const isRotated =
+    imageLayer.orientation === 90 || imageLayer.orientation === 270
+
+  const imageStyle: React.CSSProperties = {
+    position: 'absolute',
+    left: `${imageLayer.left}px`,
+    top: `${imageLayer.top}px`,
+    width: `${isRotated ? imageLayer.meta.height : imageLayer.meta.width}px`,
+    height: `${isRotated ? imageLayer.meta.width : imageLayer.meta.height}px`,
+    transform: `rotate(${imageLayer.orientation}deg)`,
+    transformOrigin: 'center center',
+    marginLeft: isRotated
+      ? `${(imageLayer.meta.width - imageLayer.meta.height) / 2}px`
+      : 0,
+    marginTop: isRotated
+      ? `${(imageLayer.meta.height - imageLayer.meta.width) / 2}px`
+      : 0,
+    maxWidth: 'none',
+  }
+
   return (
     <div
       className={styles.imageCrop}
@@ -88,9 +131,9 @@ export const ImageCrop = () => {
       <div
         className={styles.cropContainer}
         style={{
-          width: sizeCard.width,
-          height: sizeCard.height,
-          position: 'relative',
+          width: `${sizeCard.width}px`,
+          height: `${sizeCard.height}px`,
+          // position: 'relative',
         }}
       >
         {shouldShowImage && imageLayer && (
@@ -102,13 +145,7 @@ export const ImageCrop = () => {
               styles.cropImage,
               loaded ? styles.fadeInVisible : styles.fadeIn
             )}
-            style={{
-              position: 'absolute',
-              width: `${imageLayer.meta.width}px`,
-              height: `${imageLayer.meta.height}px`,
-              left: `${imageLayer.left}px`,
-              top: `${imageLayer.top}px`,
-            }}
+            style={imageStyle}
           />
         )}
 

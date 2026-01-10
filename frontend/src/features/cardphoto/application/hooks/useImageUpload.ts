@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { roundTo } from '@shared/utils/layout'
 import type { ImageMeta } from '../../domain/types'
 
 export const useImageUpload = (
@@ -23,7 +24,7 @@ export const useImageUpload = (
           timestamp: file.lastModified ?? Date.now(),
           width: img.width,
           height: img.height,
-          imageAspectRatio: img.width / img.height,
+          imageAspectRatio: roundTo(img.width / img.height, 3),
         }
 
         onUpload(imageMeta)

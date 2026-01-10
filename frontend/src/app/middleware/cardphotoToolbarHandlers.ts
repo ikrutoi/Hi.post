@@ -10,6 +10,8 @@ import {
   selectCurrentConfig,
   selectCardphotoSlice,
   selectCurrentImageMeta,
+  selectCardphotoState,
+  selectActiveSourceImage,
 } from '@cardphoto/infrastructure/selectors'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { updateCropToolbarState } from './cardphotoToolbarHelpers'
@@ -27,6 +29,7 @@ import {
   fitImageToCard,
   createInitialCropLayer,
 } from '@cardphoto/application/utils'
+import { roundTo } from '@shared/utils/layout'
 import type {
   SizeCard,
   ViewportSizeState,
@@ -39,6 +42,8 @@ import type {
   ImageLayer,
   CardphotoOperation,
   CardLayer,
+  CardphotoState,
+  ImageOrientation,
 } from '@cardphoto/domain/types'
 
 export function* handleCropAction() {
@@ -105,7 +110,7 @@ export function* handleCropCheckAction() {
   }
 
   yield put(addOperation(operation))
-  yield put(applyFinal(newImage))
+  // yield put(applyFinal(newImage))
   yield* updateCropToolbarState('enabled', state)
 }
 
@@ -133,7 +138,11 @@ export function* handleImageLayerUpdate() {
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config || !config.image?.meta) return
 
-  const newImageLayer: ImageLayer = fitImageToCard(config.image.meta, sizeCard)
+  const newImageLayer: ImageLayer = fitImageToCard(
+    config.image.meta,
+    sizeCard,
+    config.image.orientation
+  )
   const newCropLayer = createInitialCropLayer(newImageLayer, sizeCard)
   const newConfig: WorkingConfig = {
     card: sizeCard,
@@ -152,6 +161,7 @@ export function* handleImageLayerUpdate() {
 export function* handleCardOrientation(): SagaIterator {
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config) return
+  // console.log('handleCardOrientation', config)
 
   const newOrientation: LayoutOrientation =
     config.card.orientation === 'portrait' ? 'landscape' : 'portrait'
@@ -161,7 +171,7 @@ export function* handleCardOrientation(): SagaIterator {
 
   const rawWidth =
     newOrientation === 'landscape' ? height * ratio : height / ratio
-  const width = Number(rawWidth.toFixed(2))
+  const width = roundTo(rawWidth, 2)
 
   const newCardLayer: CardLayer = {
     ...config.card,
@@ -170,28 +180,13 @@ export function* handleCardOrientation(): SagaIterator {
     width,
     aspectRatio: ratio,
   }
-  const newImageLayer = fitImageToCard(config.image.meta, newCardLayer)
+  const newImageLayer = fitImageToCard(
+    config.image.meta,
+    newCardLayer,
+    config.image.orientation
+  )
 
-  // let newCropLayer = transformCropForOrientation(
-  //   config.crop,
-  //   config.card,
-  //   newCardLayer,
-  //   newImageLayer
-  // )
-
-  // const outOfBounds =
-  //   newCropLayer.x < newImageLayer.left ||
-  //   newCropLayer.y < newImageLayer.top ||
-  //   newCropLayer.x + newCropLayer.meta.width >
-  //     newImageLayer.left + newImageLayer.meta.width ||
-  //   newCropLayer.y + newCropLayer.meta.height >
-  //     newImageLayer.top + newImageLayer.meta.height
-
-  // const tooSmall = newCropLayer.meta.width < 10 || newCropLayer.meta.height < 10
-
-  // if (outOfBounds || tooSmall) {
   const newCropLayer = createInitialCropLayer(newImageLayer, newCardLayer)
-  // }
 
   const newConfig: WorkingConfig = {
     card: newCardLayer,
@@ -215,4 +210,53 @@ export function* handleCardOrientation(): SagaIterator {
       value: newOrientation,
     })
   )
+}
+
+function rotateRight(o: ImageOrientation): ImageOrientation {
+  switch (o) {
+    case 0:
+      return 90
+    case 90:
+      return 180
+    case 180:
+      return 270
+    case 270:
+      return 0
+  }
+}
+
+export function* handleImageRotate(): SagaIterator {
+  const state = yield select(selectCardphotoState)
+  const sourceImageMeta: ImageMeta | null = yield select(
+    selectActiveSourceImage
+  )
+
+  if (!state?.currentConfig || !sourceImageMeta) return
+
+  const currentConfig: WorkingConfig = state.currentConfig
+  const nextOrientation = rotateRight(currentConfig.image.orientation ?? 0)
+
+  const newImageLayer = fitImageToCard(
+    sourceImageMeta,
+    currentConfig.card,
+    nextOrientation
+  )
+
+  const newCropLayer = createInitialCropLayer(newImageLayer, currentConfig.card)
+
+  const newConfig: WorkingConfig = {
+    ...currentConfig,
+    image: newImageLayer,
+    crop: newCropLayer,
+  }
+
+  const op: CardphotoOperation = {
+    type: 'operation',
+    payload: {
+      config: newConfig,
+      reason: 'rotateImage',
+    },
+  }
+
+  yield put(addOperation(op))
 }

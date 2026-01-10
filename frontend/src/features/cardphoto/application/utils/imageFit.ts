@@ -5,30 +5,41 @@ import type {
   ImageLayer,
   CropLayer,
   CardLayer,
+  ImageOrientation,
 } from '../../domain/types'
 
-export function fitImageToCard(meta: ImageMeta, card: CardLayer): ImageLayer {
-  const scaleX = card.width / meta.width
-  const scaleY = card.height / meta.height
+export function fitImageToCard(
+  meta: ImageMeta,
+  card: CardLayer,
+  orientation: ImageOrientation
+): ImageLayer {
+  console.log('fitImage image', meta.width, meta.height)
+  console.log('fitImage card', card.width, card.height)
+  const isRotated = orientation === 90 || orientation === 270
+
+  const logicalWidth = isRotated ? meta.height : meta.width
+  const logicalHeight = isRotated ? meta.width : meta.height
+
+  const scaleX = card.width / logicalWidth
+  const scaleY = card.height / logicalHeight
   const scale = Math.min(scaleX, scaleY)
 
-  const finalWidth = roundTo(meta.width * scale, 2)
-  const finalHeight = roundTo(meta.height * scale, 2)
+  const finalWidth = roundTo(logicalWidth * scale, 2)
+  const finalHeight = roundTo(logicalHeight * scale, 2)
+
   const offsetX = roundTo((card.width - finalWidth) / 2, 2)
   const offsetY = roundTo((card.height - finalHeight) / 2, 2)
 
-  const imageAspectRatio = roundTo(meta.width / meta.height, 2)
-
+  console.log('fitImage imageLayer', finalWidth, finalHeight)
   return {
     meta: {
       ...meta,
-      width: roundTo(finalWidth, 2),
-      height: roundTo(finalHeight, 2),
-      imageAspectRatio,
+      width: finalWidth,
+      height: finalHeight,
     },
-    left: roundTo(offsetX, 2),
-    top: roundTo(offsetY, 2),
-    orientation: 0,
+    left: offsetX,
+    top: offsetY,
+    orientation,
   }
 }
 
@@ -39,21 +50,38 @@ export function createInitialCropLayer(
   const crop: CropLayer = {
     x: 0,
     y: 0,
-    meta: { width: 0, height: 0, aspectRatio: card.aspectRatio },
+    meta: {
+      width: 0,
+      height: 0,
+      aspectRatio: card.aspectRatio,
+    },
     orientation: card.orientation,
   }
 
+  console.log('createInitialCrop', card.orientation, image.orientation)
+
   const deltaAR = CARD_SCALE_CONFIG.deltaAspectRatio
 
+  const isRotated = image.orientation === 90 || image.orientation === 270
+  const currentVisualAR = isRotated
+    ? roundTo(1 / image.meta.imageAspectRatio, 3)
+    : roundTo(image.meta.imageAspectRatio, 3)
+  const targetAR =
+    card.orientation === 'landscape'
+      ? card.aspectRatio
+      : roundTo(1 / card.aspectRatio, 3)
+
+  // console.log('target', targetAR, currentVisualAR)
+  console.log('image', image.meta.width, image.meta.height)
+  console.log('card', card.width, card.height)
+
   if (card.orientation === 'portrait') {
-    const aspectRatioPortrait = roundTo(1 / card.aspectRatio, 3)
-
-    if (image.meta.imageAspectRatio > aspectRatioPortrait) {
+    if (currentVisualAR > targetAR) {
       let ratio = 1
-      const deltaAspectRatio = image.meta.imageAspectRatio - aspectRatioPortrait
+      const deltaAspectRatio = currentVisualAR - targetAR
 
-      if (deltaAspectRatio < aspectRatioPortrait * deltaAR) {
-        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / aspectRatioPortrait, 2)
+      if (deltaAspectRatio < targetAR * deltaAR) {
+        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / targetAR, 2)
       }
 
       crop.meta.height = image.meta.height * ratio
@@ -61,49 +89,66 @@ export function createInitialCropLayer(
         (image.meta.height * ratio) / card.aspectRatio,
         2
       )
-      crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
-      crop.y = image.top + (image.meta.height - crop.meta.height) / 2
+      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
+      crop.y = roundTo(
+        image.top + (image.meta.height - crop.meta.height) / 2,
+        2
+      )
+
+      // crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
+      // crop.y = image.top + (image.meta.height - crop.meta.height) / 2
     } else {
       let ratio = 1
-      const deltaAspectRatio = aspectRatioPortrait - image.meta.imageAspectRatio
-      if (deltaAspectRatio < aspectRatioPortrait * deltaAR) {
-        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / aspectRatioPortrait, 2)
+      const deltaAspectRatio = targetAR - currentVisualAR
+      if (deltaAspectRatio < targetAR * deltaAR) {
+        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / targetAR, 2)
       }
 
       crop.meta.width = image.meta.width * ratio
-      crop.meta.height = roundTo(image.meta.width * ratio * card.aspectRatio, 2)
+      crop.meta.height = roundTo(image.meta.width * ratio * targetAR, 2)
       crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
-      crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
+      crop.y = roundTo(
+        image.top + (image.meta.height - crop.meta.height) / 2,
+        2
+      )
+      // crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
+      // crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
     }
   } else {
-    if (image.meta.imageAspectRatio > card.aspectRatio) {
+    // const targetAR = card.aspectRatio
+
+    if (currentVisualAR > targetAR) {
       let ratio = 1
-      const deltaAspectRatio = image.meta.imageAspectRatio - card.aspectRatio
-      if (deltaAspectRatio < card.aspectRatio * deltaAR) {
-        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / card.aspectRatio, 2)
+      const deltaAspectRatio = currentVisualAR - targetAR
+      if (deltaAspectRatio < targetAR * deltaAR) {
+        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / targetAR, 2)
       }
 
       crop.meta.height = image.meta.height * ratio
-      crop.meta.width = roundTo(image.meta.height * ratio * card.aspectRatio, 2)
-      crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
-      crop.y =
-        ratio === 1
-          ? image.top
-          : image.top + (image.meta.height - crop.meta.height) / 2
+      crop.meta.width = roundTo(image.meta.height * ratio * targetAR, 2)
+      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
+      crop.y = roundTo(
+        image.top + (image.meta.height - crop.meta.height) / 2,
+        2
+      )
+      // crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
+      // crop.y = image.top + (image.meta.height - crop.meta.height) / 2
     } else {
       let ratio = 1
-      const deltaAspectRatio = card.aspectRatio - image.meta.imageAspectRatio
-      if (deltaAspectRatio < card.aspectRatio * deltaAR) {
-        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / card.aspectRatio, 2)
+      const deltaAspectRatio = targetAR - currentVisualAR
+      if (deltaAspectRatio < targetAR * deltaAR) {
+        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / targetAR, 2)
       }
 
       crop.meta.width = image.meta.width * ratio
-      crop.meta.height = roundTo(
-        (image.meta.width * ratio) / card.aspectRatio,
+      crop.meta.height = roundTo((image.meta.width * ratio) / targetAR, 2)
+      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
+      crop.y = roundTo(
+        image.top + (image.meta.height - crop.meta.height) / 2,
         2
       )
-      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
-      crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
+      // crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
+      // crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
     }
   }
 

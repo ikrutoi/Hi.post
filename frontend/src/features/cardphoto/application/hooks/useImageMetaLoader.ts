@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { roundTo } from '@/shared/utils/layout'
 import type { ImageMeta } from '../../domain/types'
 
 export const useImageMetaLoader = (src: string, imageId: string = 'loaded') => {
@@ -23,7 +24,7 @@ export const useImageMetaLoader = (src: string, imageId: string = 'loaded') => {
         url: src,
         width: img.naturalWidth,
         height: img.naturalHeight,
-        imageAspectRatio: img.naturalWidth / img.naturalHeight,
+        imageAspectRatio: roundTo(img.naturalWidth / img.naturalHeight, 3),
         timestamp: Date.now(),
       })
       setIsReady(true)

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createInitialCropLayer } from '../utils'
 import type { CropLayer, ImageLayer } from '../../domain/types'
 import type { SizeCard } from '@layout/domain/types'
@@ -11,29 +11,21 @@ export function useCropState(
   currentConfigCrop: CropLayer | null
 ) {
   const [tempCrop, setTempCrop] = useState<CropLayer | null>(currentConfigCrop)
-  const prevOrientationRef = useRef(sizeCard.orientation)
+
+  useEffect(() => {
+    setTempCrop(currentConfigCrop)
+  }, [currentConfigCrop, imageLayer])
 
   useEffect(() => {
     if (!imageLayer) return
 
-    const orientationChanged =
-      prevOrientationRef.current !== sizeCard.orientation
-
     if (toolbarStateCrop === 'active') {
-      if (orientationChanged) {
+      if (!currentConfigCrop) {
         const freshCrop = createInitialCropLayer(imageLayer, sizeCard)
         setTempCrop(freshCrop)
-      } else if (currentConfigCrop) {
-        setTempCrop(currentConfigCrop)
-      }
-    } else {
-      if (orientationChanged) {
-        setTempCrop(null)
       }
     }
-
-    prevOrientationRef.current = sizeCard.orientation
-  }, [toolbarStateCrop, sizeCard.orientation, imageLayer, currentConfigCrop])
+  }, [toolbarStateCrop, sizeCard.orientation, imageLayer])
 
   return [tempCrop, setTempCrop] as const
 }

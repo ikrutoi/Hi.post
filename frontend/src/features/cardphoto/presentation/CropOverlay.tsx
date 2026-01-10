@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import styles from './CropOverlay.module.scss'
+import { roundTo } from '@shared/utils/layout'
 import type { ImageLayer, CropLayer } from '../domain/types'
 
 interface CropOverlayProps {
@@ -12,40 +13,46 @@ export const CropOverlay: React.FC<CropOverlayProps> = ({
   cropLayer,
   imageLayer,
 }) => {
+  const rawDiffTopY = roundTo(cropLayer.y - imageLayer.top, 2)
   const top = {
     top: imageLayer.top,
     left: imageLayer.left,
     width: imageLayer.meta.width,
-    height: Math.max(0, cropLayer.y - imageLayer.top),
-    // height: cropLayer.y - imageLayer.top,
+    height: rawDiffTopY < 1 ? 0 : rawDiffTopY,
   }
 
+  const rawDiffLeftX = roundTo(cropLayer.x - imageLayer.left, 2)
   const left = {
-    top: imageLayer.top + cropLayer.y - imageLayer.top,
+    top: cropLayer.y,
     left: imageLayer.left,
-    width: cropLayer.x - imageLayer.left,
+    width: rawDiffLeftX < 1 ? 0 : rawDiffLeftX,
     height: cropLayer.meta.height,
   }
 
-  const right = {
-    top: imageLayer.top + cropLayer.y - imageLayer.top,
-    left: cropLayer.x + cropLayer.meta.width,
-    width:
+  const rawDiffRightX = roundTo(
+    imageLayer.left +
       imageLayer.meta.width -
-      cropLayer.meta.width -
-      (cropLayer.x - imageLayer.left),
+      (cropLayer.x + cropLayer.meta.width),
+    2
+  )
+  const right = {
+    top: cropLayer.y,
+    left: cropLayer.x + cropLayer.meta.width,
+    width: rawDiffRightX < 1 ? 0 : rawDiffRightX,
     height: cropLayer.meta.height,
   }
 
+  const rawDiffBottomY = roundTo(
+    imageLayer.top +
+      imageLayer.meta.height -
+      (cropLayer.y + cropLayer.meta.height),
+    2
+  )
   const bottom = {
     top: cropLayer.y + cropLayer.meta.height,
     left: imageLayer.left,
     width: imageLayer.meta.width,
-    height:
-      imageLayer.meta.height +
-      imageLayer.top -
-      cropLayer.y -
-      cropLayer.meta.height,
+    height: rawDiffBottomY < 1 ? 0 : rawDiffBottomY,
   }
 
   return (

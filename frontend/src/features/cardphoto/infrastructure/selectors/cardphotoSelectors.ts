@@ -5,6 +5,7 @@ import type {
   CardphotoOperation,
   WorkingConfig,
   ImageMeta,
+  CardphotoBase,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -69,3 +70,22 @@ export const selectCardSize = createSelector([selectCurrentCard], (card) => {
     orientation: card.orientation,
   }
 })
+
+export const selectBaseImageByTarget = createSelector(
+  [
+    (state: RootState) => state.cardphoto.state?.base,
+    (_state: RootState, target: keyof CardphotoBase) => target,
+  ],
+  (base, target): ImageMeta | null => {
+    if (!base || !target) return null
+    return base[target].image || null
+  }
+)
+
+export const selectActiveSourceImage = createSelector(
+  [selectCardphotoState],
+  (state): ImageMeta | null => {
+    if (!state) return null
+    return state.base.user.image || state.base.stock.image
+  }
+)
