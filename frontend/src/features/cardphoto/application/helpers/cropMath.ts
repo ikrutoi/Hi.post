@@ -11,21 +11,105 @@ export const applyBounds = (
   let bounded = crop
   if (imageLayer) {
     bounded = clampCropToImage(bounded, imageLayer)
-    // bounded = enforceAspectRatio(bounded, imageLayer, orientation)
+    bounded = enforceAspectRatio(bounded, imageLayer, orientation)
   }
   return {
     ...bounded,
     x: roundTo(bounded.x, 2),
-    y: roundTo(bounded.y),
+    y: roundTo(bounded.y, 2),
     meta: {
       ...bounded.meta,
-      width: roundTo(bounded.meta.width),
-      height: roundTo(bounded.meta.height),
+      width: roundTo(bounded.meta.width, 2),
+      height: roundTo(bounded.meta.height, 2),
     },
   }
 }
 
 export const updateCrop = (
+  corner: 'TL' | 'TR' | 'BL' | 'BR',
+  dx: number,
+  dy: number,
+  startCrop: CropLayer,
+  imageLayer: ImageLayer,
+  orientation: LayoutOrientation
+): CropLayer => {
+  const minWidth = 20
+  const aspectRatio = startCrop.meta.aspectRatio
+
+  let newWidth = startCrop.meta.width
+  let newHeight = startCrop.meta.height
+
+  const startBottomY = roundTo(startCrop.y + startCrop.meta.height, 2)
+  const startRightX = roundTo(startCrop.x + startCrop.meta.width, 2)
+
+  const isLeft = corner === 'TL' || corner === 'BL'
+  const isTop = corner === 'TL' || corner === 'TR'
+
+  const threshold = 0.5
+
+  switch (corner) {
+    case 'BR':
+    case 'TR':
+      if (orientation === 'portrait') {
+        const deltaH = corner === 'TR' ? -dy : dy
+        if (Math.abs(deltaH) > threshold) {
+          newHeight = startCrop.meta.height + deltaH
+          newWidth = roundTo(newHeight / aspectRatio, 2)
+        }
+      } else {
+        if (Math.abs(dx) > threshold) {
+          newWidth = startCrop.meta.width + dx
+          newHeight = roundTo(newWidth / aspectRatio, 2)
+        }
+      }
+      break
+
+    case 'BL':
+    case 'TL':
+      if (orientation === 'portrait') {
+        const deltaH = corner === 'TL' ? -dy : dy
+        if (Math.abs(deltaH) > threshold) {
+          newHeight = startCrop.meta.height + deltaH
+          newWidth = roundTo(newHeight / aspectRatio, 2)
+        }
+      } else {
+        if (Math.abs(dx) > threshold) {
+          newWidth = startCrop.meta.width - dx
+          newHeight = roundTo(newWidth / aspectRatio, 2)
+        }
+      }
+      break
+  }
+
+  if (newWidth < minWidth) {
+    newWidth = minWidth
+    newHeight = roundTo(newWidth / aspectRatio, 2)
+  }
+  if (newHeight < minWidth / aspectRatio) {
+    newHeight = roundTo(minWidth / aspectRatio, 2)
+    newWidth = roundTo(newHeight * aspectRatio, 2)
+  }
+
+  let newX = isLeft ? roundTo(startRightX - newWidth, 2) : startCrop.x
+  let newY = isTop ? roundTo(startBottomY - newHeight, 2) : startCrop.y
+
+  return applyBounds(
+    {
+      ...startCrop,
+      x: newX,
+      y: newY,
+      meta: {
+        ...startCrop.meta,
+        width: newWidth,
+        height: newHeight,
+      },
+    },
+    imageLayer,
+    orientation
+  )
+}
+
+export const updateCrop1 = (
   corner: 'TL' | 'TR' | 'BL' | 'BR',
   dx: number,
   dy: number,

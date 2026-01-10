@@ -212,6 +212,21 @@ export function* handleCardOrientation(): SagaIterator {
   )
 }
 
+function rotateLeft(o: ImageOrientation): ImageOrientation {
+  switch (o) {
+    case 0:
+      return 270
+    case 270:
+      return 180
+    case 180:
+      return 90
+    case 90:
+      return 0
+    default:
+      return 0
+  }
+}
+
 function rotateRight(o: ImageOrientation): ImageOrientation {
   switch (o) {
     case 0:
@@ -222,10 +237,14 @@ function rotateRight(o: ImageOrientation): ImageOrientation {
       return 270
     case 270:
       return 0
+    default:
+      return 0
   }
 }
 
-export function* handleImageRotate(): SagaIterator {
+export function* handleImageRotate(
+  key: 'imageRotateLeft' | 'imageRotateRight'
+): SagaIterator {
   const state = yield select(selectCardphotoState)
   const sourceImageMeta: ImageMeta | null = yield select(
     selectActiveSourceImage
@@ -234,7 +253,11 @@ export function* handleImageRotate(): SagaIterator {
   if (!state?.currentConfig || !sourceImageMeta) return
 
   const currentConfig: WorkingConfig = state.currentConfig
-  const nextOrientation = rotateRight(currentConfig.image.orientation ?? 0)
+  const currentOrientation = state.currentConfig.image.orientation ?? 0
+  const nextOrientation =
+    key === 'imageRotateRight'
+      ? rotateRight(currentOrientation)
+      : rotateLeft(currentOrientation)
 
   const newImageLayer = fitImageToCard(
     sourceImageMeta,

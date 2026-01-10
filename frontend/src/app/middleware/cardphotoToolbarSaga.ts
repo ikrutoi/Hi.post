@@ -28,8 +28,9 @@ function* handleCardphotoToolbarAction(
       yield call(handleCardOrientation)
       break
 
+    case 'imageRotateLeft':
     case 'imageRotateRight':
-      yield call(handleImageRotate)
+      yield call(handleImageRotate, key)
       break
   }
 }
