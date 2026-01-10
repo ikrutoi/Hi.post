@@ -2,9 +2,14 @@ import { put } from 'redux-saga/effects'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 
+interface UpdateCropOptions {
+  isFull?: boolean
+}
+
 export function* updateCropToolbarState(
   newCrop: 'active' | 'enabled',
-  state: CardphotoToolbarState
+  state: CardphotoToolbarState,
+  options: UpdateCropOptions = {}
 ) {
   yield put(
     updateToolbarIcon({ section: 'cardphoto', key: 'crop', value: newCrop })
@@ -20,12 +25,11 @@ export function* updateCropToolbarState(
     updateToolbarIcon({ section: 'cardphoto', key: 'save', value: newSave })
   )
 
+  const { isFull = false } = options
+
   const newCropFull =
-    newCrop === 'active'
-      ? 'enabled'
-      : state.cropFull === 'enabled'
-        ? 'disabled'
-        : state.cropFull
+    newCrop === 'active' ? (isFull ? 'disabled' : 'enabled') : 'disabled'
+
   yield put(
     updateToolbarIcon({
       section: 'cardphoto',
@@ -48,17 +52,17 @@ export function* updateCropToolbarState(
     })
   )
 
-  const newCropRotate =
-    newCrop === 'active'
-      ? 'enabled'
-      : state.cropRotate === 'enabled'
-        ? 'disabled'
-        : state.cropRotate
-  yield put(
-    updateToolbarIcon({
-      section: 'cardphoto',
-      key: 'cropRotate',
-      value: newCropRotate,
-    })
-  )
+  // const newCropRotate =
+  //   newCrop === 'active'
+  //     ? 'enabled'
+  //     : state.cropRotate === 'enabled'
+  //       ? 'disabled'
+  //       : state.cropRotate
+  // yield put(
+  //   updateToolbarIcon({
+  //     section: 'cardphoto',
+  //     key: 'cropRotate',
+  //     value: newCropRotate,
+  //   })
+  // )
 }

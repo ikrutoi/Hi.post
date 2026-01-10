@@ -78,6 +78,7 @@ export type CardphotoOperation = {
       | 'uploadUser'
       | 'applyFinal'
       | 'resetCrop'
+      | 'cropFull'
   }
 }
 

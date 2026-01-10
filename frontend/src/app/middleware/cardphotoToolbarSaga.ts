@@ -1,33 +1,39 @@
-import { call, takeLatest } from 'redux-saga/effects'
+import { call, takeLatest, all, fork, select } from 'redux-saga/effects'
+import { SagaIterator } from 'redux-saga'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { addOperation } from '@cardphoto/infrastructure/state'
 import {
   handleCropAction,
   handleCropCheckAction,
   handleCardOrientation,
   handleImageRotate,
+  handleCropFullAction,
+  syncCropFullIcon,
 } from './cardphotoToolbarHandlers'
+
+export function* watchCropChanges(): SagaIterator {
+  yield takeLatest(addOperation.type, syncCropFullIcon)
+}
 
 function* handleCardphotoToolbarAction(
   action: ReturnType<typeof toolbarAction>
-) {
+): SagaIterator {
   const { section, key } = action.payload
   if (section !== 'cardphoto') return
-
-  // console.log('key', key)
 
   switch (key) {
     case 'crop':
       yield* handleCropAction()
       break
-
     case 'cropCheck':
-      yield* handleCropCheckAction()
+      yield call(handleCropCheckAction)
       break
-
+    case 'cropFull':
+      yield call(handleCropFullAction)
+      break
     case 'cardOrientation':
       yield call(handleCardOrientation)
       break
-
     case 'imageRotateLeft':
     case 'imageRotateRight':
       yield call(handleImageRotate, key)
@@ -35,6 +41,9 @@ function* handleCardphotoToolbarAction(
   }
 }
 
-export function* cardphotoToolbarSaga() {
-  yield takeLatest(toolbarAction.type, handleCardphotoToolbarAction)
+export function* cardphotoToolbarSaga(): SagaIterator {
+  yield all([
+    fork(watchCropChanges),
+    takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
+  ])
 }

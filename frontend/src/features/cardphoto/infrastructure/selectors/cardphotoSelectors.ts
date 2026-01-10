@@ -1,5 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
+import { roundTo } from '@shared/utils/layout'
 import type {
   CardphotoState,
   CardphotoOperation,
@@ -87,5 +88,37 @@ export const selectActiveSourceImage = createSelector(
   (state): ImageMeta | null => {
     if (!state) return null
     return state.base.user.image || state.base.stock.image
+  }
+)
+
+export const selectIsCropFull = createSelector(
+  [selectCurrentConfig],
+  (config): boolean => {
+    if (!config || !config.crop) return false
+
+    const { image, card, crop } = config
+    const isRotated = image.orientation === 90 || image.orientation === 270
+
+    const currentVisualAR = isRotated
+      ? roundTo(1 / image.meta.imageAspectRatio, 3)
+      : image.meta.imageAspectRatio
+
+    const targetAR = card.aspectRatio
+
+    let maxWidth = 0
+    let maxHeight = 0
+
+    if (currentVisualAR > targetAR) {
+      maxHeight = image.meta.height
+      maxWidth = roundTo(maxHeight * targetAR, 2)
+    } else {
+      maxWidth = image.meta.width
+      maxHeight = roundTo(maxWidth / targetAR, 2)
+    }
+
+    const isFullWidth = Math.abs(crop.meta.width - maxWidth) < 2
+    const isFullHeight = Math.abs(crop.meta.height - maxHeight) < 2
+
+    return isFullWidth && isFullHeight
   }
 )

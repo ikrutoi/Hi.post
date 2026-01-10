@@ -13,8 +13,6 @@ export function fitImageToCard(
   card: CardLayer,
   orientation: ImageOrientation
 ): ImageLayer {
-  console.log('fitImage image', meta.width, meta.height)
-  console.log('fitImage card', card.width, card.height)
   const isRotated = orientation === 90 || orientation === 270
 
   const logicalWidth = isRotated ? meta.height : meta.width
@@ -30,7 +28,6 @@ export function fitImageToCard(
   const offsetX = roundTo((card.width - finalWidth) / 2, 2)
   const offsetY = roundTo((card.height - finalHeight) / 2, 2)
 
-  console.log('fitImage imageLayer', finalWidth, finalHeight)
   return {
     meta: {
       ...meta,
@@ -58,8 +55,6 @@ export function createInitialCropLayer(
     orientation: card.orientation,
   }
 
-  console.log('createInitialCrop', card.orientation, image.orientation)
-
   const deltaAR = CARD_SCALE_CONFIG.deltaAspectRatio
 
   const isRotated = image.orientation === 90 || image.orientation === 270
@@ -70,10 +65,6 @@ export function createInitialCropLayer(
     card.orientation === 'landscape'
       ? card.aspectRatio
       : roundTo(1 / card.aspectRatio, 3)
-
-  // console.log('target', targetAR, currentVisualAR)
-  console.log('image', image.meta.width, image.meta.height)
-  console.log('card', card.width, card.height)
 
   if (card.orientation === 'portrait') {
     if (currentVisualAR > targetAR) {
@@ -153,4 +144,39 @@ export function createInitialCropLayer(
   }
 
   return crop
+}
+
+export function createFullCropLayer(
+  image: ImageLayer,
+  card: CardLayer
+): CropLayer {
+  const isRotated = image.orientation === 90 || image.orientation === 270
+
+  const currentVisualAR = isRotated
+    ? roundTo(1 / image.meta.imageAspectRatio, 3)
+    : image.meta.imageAspectRatio
+
+  const targetAR = card.aspectRatio
+
+  let finalWidth = 0
+  let finalHeight = 0
+
+  if (currentVisualAR > targetAR) {
+    finalHeight = image.meta.height
+    finalWidth = roundTo(finalHeight * targetAR, 2)
+  } else {
+    finalWidth = image.meta.width
+    finalHeight = roundTo(finalWidth / targetAR, 2)
+  }
+
+  return {
+    x: roundTo(image.left + (image.meta.width - finalWidth) / 2, 2),
+    y: roundTo(image.top + (image.meta.height - finalHeight) / 2, 2),
+    meta: {
+      width: finalWidth,
+      height: finalHeight,
+      aspectRatio: targetAR,
+    },
+    orientation: card.orientation,
+  }
 }

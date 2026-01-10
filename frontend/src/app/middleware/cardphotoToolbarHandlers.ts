@@ -1,4 +1,4 @@
-import { put, select } from 'redux-saga/effects'
+import { put, select, takeLatest } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
 import {
   addOperation,
@@ -12,6 +12,7 @@ import {
   selectCurrentImageMeta,
   selectCardphotoState,
   selectActiveSourceImage,
+  selectIsCropFull,
 } from '@cardphoto/infrastructure/selectors'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { updateCropToolbarState } from './cardphotoToolbarHelpers'
@@ -28,6 +29,7 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   fitImageToCard,
   createInitialCropLayer,
+  createFullCropLayer,
 } from '@cardphoto/application/utils'
 import { roundTo } from '@shared/utils/layout'
 import type {
@@ -101,7 +103,7 @@ export function* handleCropCheckAction() {
     crop,
   }
 
-  const operation: CardphotoOperation = {
+  const op: CardphotoOperation = {
     type: 'operation',
     payload: {
       config: newConfig,
@@ -109,9 +111,46 @@ export function* handleCropCheckAction() {
     },
   }
 
-  yield put(addOperation(operation))
+  yield put(addOperation(op))
   // yield put(applyFinal(newImage))
   yield* updateCropToolbarState('enabled', state)
+}
+
+export function* handleCropFullAction(): SagaIterator {
+  const state = yield select(selectCardphotoState)
+
+  if (!state?.currentConfig && state.crop !== 'active') return
+
+  const { image, card } = state.currentConfig
+
+  const fullCrop = createFullCropLayer(image, card)
+
+  const newConfig: WorkingConfig = {
+    ...state.currentConfig,
+    crop: fullCrop,
+  }
+
+  const op: CardphotoOperation = {
+    type: 'operation',
+    payload: {
+      config: newConfig,
+      reason: 'cropFull',
+    },
+  }
+
+  yield put(addOperation(op))
+}
+
+export function* syncCropFullIcon(): SagaIterator {
+  const toolbarState: CardphotoToolbarState = yield select(
+    selectToolbarSectionState('cardphoto')
+  )
+
+  if (toolbarState.crop !== 'active') return
+
+  const isFull: boolean = yield select(selectIsCropFull)
+
+  yield* updateCropToolbarState('active', toolbarState, { isFull })
 }
 
 export function* handleOrientationAction() {
