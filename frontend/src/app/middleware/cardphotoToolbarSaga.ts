@@ -10,18 +10,22 @@ import {
   handleCropFullAction,
   syncCropFullIcon,
 } from './cardphotoToolbarHandlers'
+import { onDownloadClick } from './cardphotoProcessSaga'
 
 export function* watchCropChanges(): SagaIterator {
   yield takeLatest(addOperation.type, syncCropFullIcon)
 }
 
-function* handleCardphotoToolbarAction(
+export function* handleCardphotoToolbarAction(
   action: ReturnType<typeof toolbarAction>
 ): SagaIterator {
   const { section, key } = action.payload
   if (section !== 'cardphoto') return
 
   switch (key) {
+    case 'download':
+      yield call(onDownloadClick)
+      break
     case 'crop':
       yield* handleCropAction()
       break

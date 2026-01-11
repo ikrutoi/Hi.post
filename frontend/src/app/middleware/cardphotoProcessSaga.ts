@@ -1,4 +1,12 @@
-import { takeEvery, put, select } from 'redux-saga/effects'
+import {
+  takeEvery,
+  put,
+  select,
+  all,
+  takeLatest,
+  fork,
+} from 'redux-saga/effects'
+import { SagaIterator } from 'redux-saga'
 import { toolbarAction } from '@toolbar/application/helpers'
 import {
   openFileDialog,
@@ -19,15 +27,22 @@ import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { ImageMeta, CardLayer } from '@cardphoto/domain/types'
-
 import {
   fitImageToCard,
   createInitialCropLayer,
 } from '@cardphoto/application/utils/imageFit'
+import { updateCropToolbarState } from './cardphotoToolbarHelpers'
+import {
+  handleCardphotoToolbarAction,
+  watchCropChanges,
+} from './cardphotoToolbarSaga'
 
-function* onDownloadClick(action: ReturnType<typeof toolbarAction>) {
-  const { section, key } = action.payload
-  if (section !== 'cardphoto' || key !== 'download') return
+export function* onDownloadClick(): SagaIterator {
+  const state: CardphotoToolbarState = yield select(
+    selectToolbarSectionState('cardphoto')
+  )
+
+  yield* updateCropToolbarState('enabled', state)
 
   yield put(
     updateToolbarIcon({
@@ -35,12 +50,6 @@ function* onDownloadClick(action: ReturnType<typeof toolbarAction>) {
       key: 'download',
       value: 'disabled',
     })
-  )
-  yield put(
-    updateToolbarIcon({ section: 'cardphoto', key: 'crop', value: 'enabled' })
-  )
-  yield put(
-    updateToolbarIcon({ section: 'cardphoto', key: 'save', value: 'disabled' })
   )
 
   yield put(openFileDialog())
@@ -92,18 +101,32 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
   yield put(updateToolbarSection({ section: 'cardphoto', value: newState }))
 }
 
-function* onCancelFileDialog() {
+function* onCancelFileDialog(): SagaIterator {
+  console.log('onCancelFileDialog')
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'download',
+      value: 'enabled',
+    })
+  )
+
+  yield put(markLoaded())
+
   const state: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
   )
-  const newState = { ...state, download: 'enabled', save: 'enabled' }
 
-  yield put(updateToolbarSection({ section: 'cardphoto', value: newState }))
-  yield put(markLoaded())
+  yield* updateCropToolbarState('enabled', state)
 }
 
-export function* cardphotoUiSaga() {
-  yield takeEvery(toolbarAction.type, onDownloadClick)
-  yield takeEvery(uploadUserImage.type, onUploadImage)
-  yield takeEvery(cancelFileDialog.type, onCancelFileDialog)
+export function* cardphotoProcessSaga(): SagaIterator {
+  yield all([
+    takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
+
+    fork(watchCropChanges),
+
+    takeEvery(uploadUserImage.type, onUploadImage),
+    takeEvery(cancelFileDialog.type, onCancelFileDialog),
+  ])
 }

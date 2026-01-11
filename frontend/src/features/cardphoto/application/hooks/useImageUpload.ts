@@ -11,6 +11,8 @@ export const useImageUpload = (
       const file = e.target.files?.[0]
       if (!file) return
 
+      e.target.value = ''
+
       onLoading()
 
       const objectUrl = URL.createObjectURL(file)

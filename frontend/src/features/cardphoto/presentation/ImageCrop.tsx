@@ -23,8 +23,6 @@ export const ImageCrop = () => {
     useCardphotoFacade()
   const { init, setUserImage, addOp } = cardphotoActions
 
-  // console.log('ImageCrop', cardphotoState)
-
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
@@ -49,16 +47,15 @@ export const ImageCrop = () => {
     cardphotoState.currentConfig?.image.orientation ?? 0
   )
 
-  // console.log('ImageCrop', imageLayer?.meta.width, imageLayer?.meta.height)
-
-  const { inputRef, handleBlur } = useFileDialog()
+  const { inputRef, trackCancel } = useFileDialog()
 
   useEffect(() => {
     if (shouldOpenFileDialog) {
+      trackCancel()
       inputRef.current?.click()
       cardphotoUiActions.resetFileDialog()
     }
-  }, [shouldOpenFileDialog, cardphotoUiActions])
+  }, [shouldOpenFileDialog, cardphotoUiActions, trackCancel])
 
   useEffect(() => {
     setLoaded(false)
@@ -77,20 +74,6 @@ export const ImageCrop = () => {
     sizeCard,
     cardphotoState.currentConfig?.crop ?? null
   )
-
-  // const [sizeCardTurn, setSizeCardTurn] = useState({
-  //   width: imageLayer?.meta.width,
-  //   height: imageLayer?.meta.height,
-  // })
-
-  // useEffect(() => {
-  //   if (!imageLayer) return
-  //   if (imageLayer.orientation === 0 || imageLayer.orientation === 180) {
-  //     setSizeCardTurn({ width: sizeCard.width, height: sizeCard.height })
-  //   } else {
-  //     setSizeCardTurn({ width: sizeCard.height, height: sizeCard.width })
-  //   }
-  // }, [imageLayer?.orientation])
 
   if (!imageLayer) return
 
@@ -124,7 +107,6 @@ export const ImageCrop = () => {
         accept="image/*"
         ref={inputRef}
         className={styles.imageInput}
-        onBlur={handleBlur}
         onChange={handleFileChange}
       />
 

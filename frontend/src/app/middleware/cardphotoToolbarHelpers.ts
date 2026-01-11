@@ -51,18 +51,4 @@ export function* updateCropToolbarState(
       value: newCropCheck,
     })
   )
-
-  // const newCropRotate =
-  //   newCrop === 'active'
-  //     ? 'enabled'
-  //     : state.cropRotate === 'enabled'
-  //       ? 'disabled'
-  //       : state.cropRotate
-  // yield put(
-  //   updateToolbarIcon({
-  //     section: 'cardphoto',
-  //     key: 'cropRotate',
-  //     value: newCropRotate,
-  //   })
-  // )
 }
