@@ -15,10 +15,12 @@ export function useCropState(
   }, [currentConfigCrop])
 
   useEffect(() => {
-    if (toolbarStateCrop !== 'active') {
+    if (toolbarStateCrop === 'active') {
+      setTempCrop(currentConfigCrop)
+    } else {
       setTempCrop(null)
     }
-  }, [toolbarStateCrop])
+  }, [toolbarStateCrop, currentConfigCrop])
 
   return [tempCrop, setTempCrop] as const
 }

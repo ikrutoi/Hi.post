@@ -73,6 +73,7 @@ export const ImageCrop = () => {
   const [tempCrop, setTempCrop] = useCropState(
     iconStates.crop,
     cardphotoState.currentConfig?.crop ?? null
+    // cardphotoState.cardOrientation
   )
 
   if (!imageLayer) return
@@ -111,6 +112,7 @@ export const ImageCrop = () => {
       />
 
       <div
+        // key={sizeCard.orientation}
         className={styles.cropContainer}
         style={{
           width: `${sizeCard.width}px`,
@@ -130,7 +132,6 @@ export const ImageCrop = () => {
             style={imageStyle}
           />
         )}
-
         {loaded && imageLayer && iconStates.crop === 'active' && (
           <>
             {tempCrop && (

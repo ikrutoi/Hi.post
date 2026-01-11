@@ -1,4 +1,4 @@
-import { put, select, takeLatest } from 'redux-saga/effects'
+import { delay, put, select, takeLatest } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
 import {
   addOperation,
@@ -211,9 +211,25 @@ export function* handleImageLayerUpdate() {
 }
 
 export function* handleCardOrientation(): SagaIterator {
+  const toolbarState: CardphotoToolbarState = yield select(
+    selectToolbarSectionState('cardphoto')
+  )
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
+
   if (!config) return
-  // console.log('handleCardOrientation', config)
+
+  const isCropActive = toolbarState.crop === 'active'
+
+  if (isCropActive) {
+    yield put(
+      updateToolbarIcon({
+        section: 'cardphoto',
+        key: 'crop',
+        value: 'disabled',
+      })
+    )
+  }
+  // console.log('handleCardOrientation', toolbarState.crop)
 
   const newOrientation: LayoutOrientation =
     config.card.orientation === 'portrait' ? 'landscape' : 'portrait'
@@ -251,15 +267,29 @@ export function* handleCardOrientation(): SagaIterator {
     payload: { config: newConfig, reason: 'rotateCard' },
   }
 
+  yield put(setSizeCard(newCardLayer))
+
   yield put(addOperation(op))
 
-  yield put(setSizeCard(newCardLayer))
+  yield delay(0)
 
   yield put(
     updateToolbarIcon({
       section: 'cardphoto',
       key: 'orientation',
       value: newOrientation,
+    })
+  )
+
+  const resultCropState = isCropActive ? 'active' : 'enabled'
+
+  console.log('result', resultCropState)
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'crop',
+      value: resultCropState,
     })
   )
 }

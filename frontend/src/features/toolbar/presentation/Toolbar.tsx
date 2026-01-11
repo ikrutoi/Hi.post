@@ -12,13 +12,10 @@ import type {
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({ section }: { section: ToolbarSection }) => {
-  console.log('toolbar0 section', section)
   const { state: toolbarState, actions: toolbarActions } =
     useToolbarFacade(section)
   const { state: iconStates, groups, badges } = toolbarState
   const { onAction } = toolbarActions
-
-  console.log('toolbar', groups)
 
   const renderIcon = (key: IconKey, groupStatus: IconStateGroup) => {
     const iconState = iconStates[key as keyof typeof iconStates] as IconState

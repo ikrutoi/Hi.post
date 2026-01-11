@@ -75,7 +75,7 @@ export function createInitialCropLayer(
         ratio = 1 - deltaAR + roundTo(deltaAspectRatio / targetAR, 2)
       }
 
-      crop.meta.height = image.meta.height * ratio
+      crop.meta.height = roundTo(image.meta.height * ratio, 2)
       crop.meta.width = roundTo(
         (image.meta.height * ratio) / card.aspectRatio,
         2
@@ -85,43 +85,8 @@ export function createInitialCropLayer(
         image.top + (image.meta.height - crop.meta.height) / 2,
         2
       )
+      console.log('createInitialCrop0 crop', crop.meta.width, crop.meta.height)
 
-      // crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
-      // crop.y = image.top + (image.meta.height - crop.meta.height) / 2
-    } else {
-      let ratio = 1
-      const deltaAspectRatio = targetAR - currentVisualAR
-      if (deltaAspectRatio < targetAR * deltaAR) {
-        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / targetAR, 2)
-      }
-
-      crop.meta.width = image.meta.width * ratio
-      crop.meta.height = roundTo(image.meta.width * ratio * targetAR, 2)
-      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
-      crop.y = roundTo(
-        image.top + (image.meta.height - crop.meta.height) / 2,
-        2
-      )
-      // crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
-      // crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
-    }
-  } else {
-    // const targetAR = card.aspectRatio
-
-    if (currentVisualAR > targetAR) {
-      let ratio = 1
-      const deltaAspectRatio = currentVisualAR - targetAR
-      if (deltaAspectRatio < targetAR * deltaAR) {
-        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / targetAR, 2)
-      }
-
-      crop.meta.height = image.meta.height * ratio
-      crop.meta.width = roundTo(image.meta.height * ratio * targetAR, 2)
-      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
-      crop.y = roundTo(
-        image.top + (image.meta.height - crop.meta.height) / 2,
-        2
-      )
       // crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
       // crop.y = image.top + (image.meta.height - crop.meta.height) / 2
     } else {
@@ -141,7 +106,45 @@ export function createInitialCropLayer(
       // crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
       // crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
     }
+  } else {
+    // const targetAR = card.aspectRatio
+
+    if (currentVisualAR > targetAR) {
+      let ratio = 1
+      const deltaAspectRatio = currentVisualAR - targetAR
+      if (deltaAspectRatio < targetAR * deltaAR) {
+        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / targetAR, 2)
+      }
+
+      crop.meta.height = roundTo(image.meta.height * ratio, 2)
+      crop.meta.width = roundTo(image.meta.height * ratio * targetAR, 2)
+      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
+      crop.y = roundTo(
+        image.top + (image.meta.height - crop.meta.height) / 2,
+        2
+      )
+      // crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
+      // crop.y = image.top + (image.meta.height - crop.meta.height) / 2
+    } else {
+      let ratio = 1
+      const deltaAspectRatio = targetAR - currentVisualAR
+      if (deltaAspectRatio < targetAR * deltaAR) {
+        ratio = 1 - deltaAR + roundTo(deltaAspectRatio / targetAR, 2)
+      }
+
+      crop.meta.width = roundTo(image.meta.width * ratio, 2)
+      crop.meta.height = roundTo((image.meta.width * ratio) / targetAR, 2)
+      crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
+      crop.y = roundTo(
+        image.top + (image.meta.height - crop.meta.height) / 2,
+        2
+      )
+      // crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
+      // crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
+    }
   }
+
+  console.log('crop', crop)
 
   return crop
 }
