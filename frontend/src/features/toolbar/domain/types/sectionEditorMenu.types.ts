@@ -1,6 +1,6 @@
 import { flattenIcons } from '../helpers'
-import type { IconState } from '@shared/config/constants'
-import type { BaseSectionConfig } from './toolbar.types'
+import type { IconState, IconStateGroup } from '@shared/config/constants'
+import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const SECTION_EDITOR_MENU_KEYS = [
   'cardphoto',
@@ -11,27 +11,30 @@ export const SECTION_EDITOR_MENU_KEYS = [
 ] as const
 
 export type SectionEditorMenuKey = (typeof SECTION_EDITOR_MENU_KEYS)[number]
-export type SectionEditorMenuToolbarState = Record<
-  SectionEditorMenuKey,
-  IconState
->
 
-export const SECTION_EDITOR_MENU_TOOLBAR: {
-  group: string
-  icons: { key: SectionEditorMenuKey; state: IconState }[]
-}[] = [
+export interface SectionEditorMenuToolbarState extends Record<string, any> {
+  [key: string]: any
+  config: ToolbarConfig
+}
+
+export const SECTION_EDITOR_MENU_TOOLBAR: ToolbarConfig = [
   {
     group: 'menu',
-    icons: SECTION_EDITOR_MENU_KEYS.filter((k) =>
-      ['cardphoto', 'cardtext', 'envelope', 'aroma', 'date'].includes(k)
-    ).map((key) => ({ key, state: 'enabled' })),
+    icons: ['cardphoto', 'cardtext', 'envelope', 'aroma', 'date'].map(
+      (key) => ({ key: key as SectionEditorMenuKey, state: 'enabled' })
+    ),
+    status: 'enabled',
   },
 ]
 
 export const initialSectionEditorMenuToolbarState: SectionEditorMenuToolbarState =
-  Object.fromEntries(
-    flattenIcons(SECTION_EDITOR_MENU_TOOLBAR)
-  ) as SectionEditorMenuToolbarState
+  {
+    ...(Object.fromEntries(flattenIcons(SECTION_EDITOR_MENU_TOOLBAR)) as Record<
+      SectionEditorMenuKey,
+      IconState
+    >),
+    config: [...SECTION_EDITOR_MENU_TOOLBAR],
+  }
 
 export interface SectionEditorMenuConfig extends BaseSectionConfig<
   SectionEditorMenuToolbarState,

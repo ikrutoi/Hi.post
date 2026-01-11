@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import clsx from 'clsx'
 import { Label } from './Label/Label'
-import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useSenderFacade } from '../../sender/application/facades'

@@ -7,12 +7,14 @@ export const CARD_PANEL_OVERLAY_KEYS = [
   'addDrafts',
   'delete',
 ] as const
+
 export type CardPanelOverlayToolbarKey =
   (typeof CARD_PANEL_OVERLAY_KEYS)[number]
-export type CardPanelOverlayToolbarState = Record<
-  CardPanelOverlayToolbarKey,
-  IconState
->
+
+export interface CardPanelOverlayToolbarState extends Record<string, any> {
+  [key: string]: any
+  config: ToolbarConfig
+}
 
 export const CARD_PANEL_OVERLAY_TOOLBAR: ToolbarConfig = [
   {
@@ -22,20 +24,21 @@ export const CARD_PANEL_OVERLAY_TOOLBAR: ToolbarConfig = [
       { key: 'addDrafts', state: 'disabled' },
       { key: 'delete', state: 'disabled' },
     ],
+    status: 'enabled',
   },
 ]
 
-export const OVERLAY_KEYS = ['addCart', 'addDrafts', 'delete'] as const
-
-export type OverlayKey = (typeof OVERLAY_KEYS)[number]
-
 export const initialCardPanelOverlayToolbarState: CardPanelOverlayToolbarState =
-  Object.fromEntries(
-    flattenIcons(CARD_PANEL_OVERLAY_TOOLBAR)
-  ) as CardPanelOverlayToolbarState
+  {
+    ...(Object.fromEntries(flattenIcons(CARD_PANEL_OVERLAY_TOOLBAR)) as Record<
+      CardPanelOverlayToolbarKey,
+      IconState
+    >),
+    config: [...CARD_PANEL_OVERLAY_TOOLBAR],
+  }
 
 export interface CardPanelOverlaySectionConfig extends BaseSectionConfig<
   CardPanelOverlayToolbarState,
-  OverlayKey,
+  CardPanelOverlayToolbarKey,
   'cardPanelOverlay'
 > {}

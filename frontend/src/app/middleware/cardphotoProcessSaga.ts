@@ -24,9 +24,7 @@ import {
   updateToolbarIcon,
 } from '@toolbar/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
-import type { CardphotoToolbarState } from '@toolbar/domain/types'
-import type { PayloadAction } from '@reduxjs/toolkit'
-import type { ImageMeta, CardLayer } from '@cardphoto/domain/types'
+import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import {
   fitImageToCard,
   createInitialCropLayer,
@@ -36,13 +34,22 @@ import {
   handleCardphotoToolbarAction,
   watchCropChanges,
 } from './cardphotoToolbarSaga'
+import type { CardphotoToolbarState } from '@toolbar/domain/types'
+import type { PayloadAction } from '@reduxjs/toolkit'
+import type { ImageMeta, CardLayer } from '@cardphoto/domain/types'
 
 export function* onDownloadClick(): SagaIterator {
-  const state: CardphotoToolbarState = yield select(
+  const toolbarState: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
   )
 
-  yield* updateCropToolbarState('enabled', state)
+  yield put(
+    updateGroupStatus({
+      section: 'cardphoto',
+      groupName: 'photo',
+      status: 'disabled',
+    })
+  )
 
   yield put(
     updateToolbarIcon({
@@ -102,7 +109,6 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
 }
 
 function* onCancelFileDialog(): SagaIterator {
-  console.log('onCancelFileDialog')
   yield put(
     updateToolbarIcon({
       section: 'cardphoto',
@@ -117,7 +123,13 @@ function* onCancelFileDialog(): SagaIterator {
     selectToolbarSectionState('cardphoto')
   )
 
-  yield* updateCropToolbarState('enabled', state)
+  yield put(
+    updateGroupStatus({
+      section: 'cardphoto',
+      groupName: 'photo',
+      status: 'enabled',
+    })
+  )
 }
 
 export function* cardphotoProcessSaga(): SagaIterator {

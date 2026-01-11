@@ -19,12 +19,16 @@ function* handleSectionEditorMenuToolbarAction(
       selectToolbarSectionState('sectionEditorMenu')
     )
 
-    const newState = Object.fromEntries(
-      Object.keys(currentState).map((iconKey) => [
-        iconKey,
-        iconKey === key ? 'active' : 'enabled',
-      ])
+    const updatedIcons = Object.fromEntries(
+      Object.keys(currentState)
+        .filter((k) => k !== 'config')
+        .map((iconKey) => [iconKey, iconKey === key ? 'active' : 'enabled'])
     )
+
+    const newState = {
+      ...updatedIcons,
+      config: currentState.config,
+    }
 
     yield put(
       updateToolbarSection({ section: 'sectionEditorMenu', value: newState })

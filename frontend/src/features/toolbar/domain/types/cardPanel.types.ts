@@ -10,17 +10,29 @@ export const CARD_PANEL_TOOLBAR: ToolbarConfig = [
       { key: 'addDrafts', state: 'enabled' },
       { key: 'delete', state: 'enabled' },
     ],
+    status: 'enabled',
   },
 ]
 
-export const PANEL_KEYS = ['addCart', 'drafts', 'remove'] as const
+export const PANEL_KEYS = ['addCart', 'addDrafts', 'delete'] as const
 
 export type PanelKey = (typeof PANEL_KEYS)[number]
 
-export type CardPanelToolbarState = Record<PanelKey, IconState>
+export interface CardPanelToolbarState extends Record<string, any> {
+  [key: string]: any
+  config: ToolbarConfig
+}
 
-export const initialCardPanelToolbarState: CardPanelToolbarState =
-  Object.fromEntries(flattenIcons(CARD_PANEL_TOOLBAR)) as CardPanelToolbarState
+export const initialCardPanelToolbarState: CardPanelToolbarState = {
+  ...(Object.fromEntries(flattenIcons(CARD_PANEL_TOOLBAR)) as Record<
+    PanelKey,
+    IconState
+  >),
+  config: [...CARD_PANEL_TOOLBAR],
+}
 
-export interface CardPanelSectionConfig
-  extends BaseSectionConfig<CardPanelToolbarState, PanelKey, 'cardPanel'> {}
+export interface CardPanelSectionConfig extends BaseSectionConfig<
+  CardPanelToolbarState,
+  PanelKey,
+  'cardPanel'
+> {}

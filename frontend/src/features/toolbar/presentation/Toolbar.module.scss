@@ -37,6 +37,22 @@
       background-color: $color-enabled;
     }
   }
+
+  .toolbarGroup {
+    display: flex;
+    transition:
+      opacity 0.2s ease,
+      filter 0.2s ease;
+
+    &Disabled {
+      pointer-events: none;
+      filter: grayscale(0.5);
+      cursor: not-allowed;
+    }
+  }
+  .toolbarKeyDisabled {
+    color: $color-font-disabled !important;
+  }
 }
 
 .toolbarCardPanelOverlay {

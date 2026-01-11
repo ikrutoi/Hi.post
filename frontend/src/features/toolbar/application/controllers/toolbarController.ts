@@ -1,63 +1,36 @@
-import type { ReactEditor } from 'slate-react'
-import type { AppDispatch } from '@app/state'
-import type { ToolbarSection, ToolbarKeyFor } from '../../domain/types'
-import { cardtextToolbarController } from '@cardtext/application/controllers'
+import { useAppDispatch } from '@app/hooks'
+import {
+  updateGroupStatus,
+  updateToolbarIcon,
+  updateToolbarSection,
+} from '../../infrastructure/state'
+import { toolbarAction } from '../helpers'
+import type { IconKey, IconStateGroup } from '@shared/config/constants'
+import type { ToolbarSection } from '../../domain/types'
 
-export const toolbarController = {
-  onAction: (
-    section: ToolbarSection,
-    key: ToolbarKeyFor<typeof section>,
-    editor: ReactEditor | undefined,
-    dispatch: AppDispatch
-  ) => {
-    switch (section) {
-      case 'cardtext':
-        if (!editor) return
-        switch (key) {
-          case 'bold':
-            cardtextToolbarController.toggleBold(editor, dispatch)
-            break
-          case 'italic':
-            cardtextToolbarController.toggleItalic(editor, dispatch)
-            break
-          case 'underline':
-            cardtextToolbarController.toggleUnderline(editor, dispatch)
-            break
-          case 'left':
-          case 'center':
-          case 'right':
-          case 'justify':
-            cardtextToolbarController.setAlign(editor, dispatch, key as any)
-            break
-        }
-        break
+export const useToolbarController = (section: ToolbarSection) => {
+  const dispatch = useAppDispatch()
 
-      case 'cardphoto':
-        switch (key) {
-          // case 'crop':
-          // console.log('Crop action')
-          // break
-          case 'turn':
-            console.log('Turn photo')
-            break
-          case 'fillFrame':
-            console.log('Fill frame')
-            break
-          // и т.д.
-        }
-        break
+  const onAction = (key: IconKey, payload?: any) => {
+    dispatch(toolbarAction({ section, key, payload }))
+  }
 
-      case 'sender':
-      case 'recipient':
-        if (key === 'remove') {
-          console.log('Remove address field')
-        }
-        break
+  const setGroupStatus = (groupName: string, status: IconStateGroup) => {
+    dispatch(updateGroupStatus({ section, groupName, status }))
+  }
 
-      case 'cardPanel':
-      case 'cardPanelOverlay':
-        console.log('Panel action', key)
-        break
-    }
-  },
+  const setIconState = (key: IconKey, value: any) => {
+    dispatch(updateToolbarIcon({ section, key, value }))
+  }
+
+  const updateSection = (value: any) => {
+    dispatch(updateToolbarSection({ section, value }))
+  }
+
+  return {
+    onAction,
+    setGroupStatus,
+    setIconState,
+    updateSection,
+  }
 }

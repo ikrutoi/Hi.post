@@ -19,7 +19,14 @@ export const CARDPHOTO_KEYS = [
 
 export type CardphotoKey = (typeof CARDPHOTO_KEYS)[number]
 
-export type CardphotoToolbarState = Record<CardphotoKey, IconState>
+export interface CardphotoToolbarState extends Record<string, any> {
+  [key: string]: any
+  config: ToolbarConfig
+}
+
+export interface BaseToolbarState extends Record<string, any> {
+  config: ToolbarConfig
+}
 
 export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
   {
@@ -33,6 +40,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
       { key: 'cropFull', state: 'disabled' },
       { key: 'cropCheck', state: 'disabled' },
     ],
+    status: 'enabled',
   },
   {
     group: 'ui',
@@ -43,11 +51,17 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
       { key: 'save', state: 'enabled' },
       { key: 'photoTemplates', state: 'disabled' },
     ],
+    status: 'enabled',
   },
 ]
 
-export const initialCardphotoToolbarState: CardphotoToolbarState =
-  Object.fromEntries(flattenIcons(CARDPHOTO_TOOLBAR)) as CardphotoToolbarState
+export const initialCardphotoToolbarState: CardphotoToolbarState = {
+  ...(Object.fromEntries(flattenIcons(CARDPHOTO_TOOLBAR)) as Record<
+    CardphotoKey,
+    IconState
+  >),
+  config: [...CARDPHOTO_TOOLBAR],
+}
 
 export interface CardphotoSectionConfig extends BaseSectionConfig<
   CardphotoToolbarState,

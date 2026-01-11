@@ -1,5 +1,5 @@
 import React from 'react'
-import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { ImageCrop } from './ImageCrop'
 import styles from './Cardphoto.module.scss'
 

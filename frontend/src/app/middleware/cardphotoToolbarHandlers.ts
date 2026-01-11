@@ -52,13 +52,26 @@ export function* handleCropAction() {
   const state: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
   )
-  // const currentSlice: CardphotoSliceState = yield select(selectCardphotoSlice)
-  // if (!currentSlice.state || !currentSlice.state.currentConfig) return
-  // const cardOrientation: LayoutOrientation =
-  //   currentSlice.state.currentConfig.card.orientation
+  const config: WorkingConfig | null = yield select(selectCurrentConfig)
+  if (!config) return
 
-  const newCrop = state.crop === 'enabled' ? 'active' : 'enabled'
-  yield* updateCropToolbarState(newCrop, state)
+  const isActivating = state.crop === 'enabled'
+
+  if (isActivating) {
+    const initialCrop = createInitialCropLayer(config.image, config.card)
+
+    yield put(
+      addOperation({
+        type: 'operation',
+        payload: {
+          config: { ...config, crop: initialCrop },
+          reason: 'initCrop',
+        },
+      })
+    )
+  }
+
+  yield* updateCropToolbarState(isActivating ? 'active' : 'enabled', state)
 }
 
 export function* handleCropCheckAction() {

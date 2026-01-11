@@ -1,82 +1,50 @@
 import React from 'react'
 import clsx from 'clsx'
-import { getToolbarIcon } from '@shared/utils/icons/getToolbarIcon'
-import { capitalize } from '@shared/utils/helpers'
-import { useCardtextFacade } from '@cardtext/application/facades'
 import { useToolbarFacade } from '../application/facades'
-import styles from './Toolbar.module.scss'
+import { getToolbarIcon } from '@shared/utils/icons'
+import { capitalize } from '@/shared/utils/helpers'
+import type { ToolbarSection, ToolbarGroup } from '../domain/types'
 import type {
-  ToolbarGroup,
-  ToolbarSection,
-  ToolbarState,
-} from '../domain/types'
-import type { IconState, IconKey } from '@shared/config/constants'
+  IconKey,
+  IconState,
+  IconStateGroup,
+} from '@shared/config/constants'
+import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({ section }: { section: ToolbarSection }) => {
-  const {
-    state: stateToolbar,
-    config,
-    badges,
-    onAction,
-  } = useToolbarFacade(section)
-  const { state: stateCardtext } = useCardtextFacade()
-  const { editor } = stateCardtext
+  console.log('toolbar0 section', section)
+  const { state: toolbarState, actions: toolbarActions } =
+    useToolbarFacade(section)
+  const { state: iconStates, groups, badges } = toolbarState
+  const { onAction } = toolbarActions
 
-  const renderIcon = (key: keyof ToolbarState[typeof section]) => {
-    const iconState = stateToolbar[key] as IconState
+  console.log('toolbar', groups)
 
-    if (section === 'cardphoto' && key === 'cardOrientation') {
-      return (
-        <button
-          key={String(key)}
-          type="button"
-          className={clsx(
-            styles.toolbarKey,
-            styles[`toolbarKey${String(key)}`],
-            styles[`toolbarKey${capitalize(iconState)}`],
-            styles[
-              `toolbarKeyOrientation${capitalize(stateToolbar.orientation)}`
-            ]
-          )}
-          onMouseDown={(e) => {
-            e.preventDefault()
-            onAction(key as any)
-          }}
-          disabled={iconState === 'disabled'}
-        >
-          {getToolbarIcon({
-            key: key as IconKey,
-            orientation: stateToolbar.orientation,
-          })}
-        </button>
-      )
-    }
+  const renderIcon = (key: IconKey, groupStatus: IconStateGroup) => {
+    const iconState = iconStates[key as keyof typeof iconStates] as IconState
 
     return (
       <button
-        key={String(key)}
+        key={key}
         type="button"
         className={clsx(
           styles.toolbarKey,
-          styles[`toolbarKey${String(key)}`],
-          styles[`toolbarKey${capitalize(iconState)}`]
+          styles[`toolbarKey${capitalize(iconState)}`],
+          groupStatus === 'disabled' && styles.toolbarKeyDisabled
         )}
         onMouseDown={(e) => {
           e.preventDefault()
-          if (section === 'cardtext') {
-            onAction(key as any, editor)
-          } else {
-            onAction(key as any)
+          if (groupStatus !== 'disabled' && iconState !== 'disabled') {
+            onAction(key as IconKey)
           }
         }}
-        disabled={iconState === 'disabled'}
+        disabled={iconState === 'disabled' || groupStatus === 'disabled'}
       >
         {getToolbarIcon({ key: key as IconKey })}
-        {badges[key as string] && (
+
+        {badges[key] && (
           <span className={styles.toolbarBadge}>
-            <span className={styles.toolbarBadgeValue}>
-              {badges[key as string]}
-            </span>
+            <span className={styles.toolbarBadgeValue}>{badges[key]}</span>
           </span>
         )}
       </button>
@@ -87,21 +55,18 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     <div
       className={clsx(styles.toolbar, styles[`toolbar${capitalize(section)}`])}
     >
-      {config.toolbar
-        ? config.toolbar.map((group: ToolbarGroup) => (
-            <div
-              key={group.group}
-              className={clsx(
-                styles.toolbarGroup,
-                styles[`toolbarGroup${capitalize(group.group)}`]
-              )}
-            >
-              {group.icons.map((icon) =>
-                renderIcon(icon.key as keyof ToolbarState[typeof section])
-              )}
-            </div>
-          ))
-        : null}
+      {groups.map((group: ToolbarGroup) => (
+        <div
+          key={group.group}
+          className={clsx(
+            styles.toolbarGroup,
+            styles[`toolbarGroup${capitalize(group.group)}`],
+            group.status === 'disabled' && styles.toolbarGroupDisabled
+          )}
+        >
+          {group.icons.map((icon) => renderIcon(icon.key, group.status))}
+        </div>
+      ))}
     </div>
   )
 }

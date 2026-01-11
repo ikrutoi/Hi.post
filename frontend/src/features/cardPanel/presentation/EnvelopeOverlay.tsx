@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import EnvelopeIcon from '@/shared/assets/illustration/EnvelopeIcon'
 import { renderSections } from '../application/helpers'
 import styles from './EnvelopeOverlay.module.scss'

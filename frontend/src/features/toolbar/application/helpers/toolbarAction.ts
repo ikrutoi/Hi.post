@@ -5,4 +5,5 @@ import type { IconKey } from '@shared/config/constants'
 export const toolbarAction = createAction<{
   section: ToolbarSection
   key: IconKey
+  payload?: any
 }>('toolbar/action')

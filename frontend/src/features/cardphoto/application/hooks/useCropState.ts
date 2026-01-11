@@ -6,26 +6,19 @@ import type { IconState } from '@shared/config/constants'
 
 export function useCropState(
   toolbarStateCrop: IconState,
-  imageLayer: ImageLayer | null,
-  sizeCard: SizeCard,
   currentConfigCrop: CropLayer | null
 ) {
   const [tempCrop, setTempCrop] = useState<CropLayer | null>(currentConfigCrop)
 
   useEffect(() => {
     setTempCrop(currentConfigCrop)
-  }, [currentConfigCrop, imageLayer])
+  }, [currentConfigCrop])
 
   useEffect(() => {
-    if (!imageLayer) return
-
-    if (toolbarStateCrop === 'active') {
-      if (!currentConfigCrop) {
-        const freshCrop = createInitialCropLayer(imageLayer, sizeCard)
-        setTempCrop(freshCrop)
-      }
+    if (toolbarStateCrop !== 'active') {
+      setTempCrop(null)
     }
-  }, [toolbarStateCrop, sizeCard.orientation, imageLayer])
+  }, [toolbarStateCrop])
 
   return [tempCrop, setTempCrop] as const
 }

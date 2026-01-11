@@ -1,14 +1,21 @@
 import type { ReactEditor } from 'slate-react'
 import type { AppDispatch } from '@app/state'
-import type { IconKey, IconState } from '@shared/config/constants'
+import type {
+  IconKey,
+  IconState,
+  IconStateGroup,
+} from '@shared/config/constants'
 import type {
   CardphotoKey,
   CardphotoToolbarState,
   CardtextKey,
   CardtextToolbarState,
+  EnvelopeToolbarState,
   EnvelopeKey,
   PanelKey,
+  CardPanelToolbarState,
   CardPanelOverlayToolbarKey,
+  CardPanelOverlayToolbarState,
   SectionEditorMenuToolbarState,
   SectionEditorMenuKey,
 } from './index'
@@ -21,6 +28,7 @@ export interface ToolbarIcon {
 export interface ToolbarGroup {
   group: string
   icons: ToolbarIcon[]
+  status: IconStateGroup
 }
 
 export type ToolbarConfig = ToolbarGroup[]
@@ -38,13 +46,13 @@ export const TOOLBAR_SECTIONS = [
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
 
 export type ToolbarState = {
-  cardphoto: CardphotoToolbarState
-  cardtext: CardtextToolbarState
-  sender: EnvelopeToolbarState
-  recipient: EnvelopeToolbarState
-  cardPanel: CardPanelToolbarState
-  cardPanelOverlay: CardPanelOverlayToolbarState
-  sectionEditorMenu: SectionEditorMenuToolbarState
+  cardphoto: CardphotoToolbarState & { config: ToolbarGroup[] }
+  cardtext: CardtextToolbarState & { config: ToolbarGroup[] }
+  sender: EnvelopeToolbarState & { config: ToolbarGroup[] }
+  recipient: EnvelopeToolbarState & { config: ToolbarGroup[] }
+  cardPanel: CardPanelToolbarState & { config: ToolbarGroup[] }
+  cardPanelOverlay: CardPanelOverlayToolbarState & { config: ToolbarGroup[] }
+  sectionEditorMenu: SectionEditorMenuToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {

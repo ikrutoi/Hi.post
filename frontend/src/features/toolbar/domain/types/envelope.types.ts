@@ -1,6 +1,10 @@
 import { flattenIcons } from '../helpers'
-import type { IconKey, IconState } from '@shared/config/constants'
-import type { BaseSectionConfig } from './toolbar.types'
+import type {
+  IconKey,
+  IconState,
+  IconStateGroup,
+} from '@shared/config/constants'
+import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const ENVELOPE_KEYS = [
   'close',
@@ -10,12 +14,12 @@ export const ENVELOPE_KEYS = [
 
 export type EnvelopeKey = (typeof ENVELOPE_KEYS)[number]
 
-export type EnvelopeToolbarState = Record<EnvelopeKey, IconState>
+export interface EnvelopeToolbarState extends Record<string, any> {
+  [key: string]: any
+  config: ToolbarConfig
+}
 
-export const ENVELOPE_TOOLBAR: {
-  group: string
-  icons: { key: EnvelopeKey; state: IconState }[]
-}[] = [
+export const ENVELOPE_TOOLBAR: ToolbarConfig = [
   {
     group: 'address',
     icons: [
@@ -23,14 +27,25 @@ export const ENVELOPE_TOOLBAR: {
       { key: 'save', state: 'disabled' },
       { key: 'addressTemplates', state: 'disabled' },
     ],
+    status: 'enabled',
   },
 ]
 
-export const initialSenderToolbarState: EnvelopeToolbarState =
-  Object.fromEntries(flattenIcons(ENVELOPE_TOOLBAR)) as EnvelopeToolbarState
+export const initialSenderToolbarState: EnvelopeToolbarState = {
+  ...(Object.fromEntries(flattenIcons(ENVELOPE_TOOLBAR)) as Record<
+    EnvelopeKey,
+    IconState
+  >),
+  config: [...ENVELOPE_TOOLBAR],
+}
 
-export const initialRecipientToolbarState: EnvelopeToolbarState =
-  Object.fromEntries(flattenIcons(ENVELOPE_TOOLBAR)) as EnvelopeToolbarState
+export const initialRecipientToolbarState: EnvelopeToolbarState = {
+  ...(Object.fromEntries(flattenIcons(ENVELOPE_TOOLBAR)) as Record<
+    EnvelopeKey,
+    IconState
+  >),
+  config: [...ENVELOPE_TOOLBAR],
+}
 
 export interface EnvelopeSectionConfig extends BaseSectionConfig<
   EnvelopeToolbarState,

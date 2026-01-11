@@ -1,16 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   initialCardphotoToolbarState,
-  // initialCardtextToolbarState,
   initialSenderToolbarState,
   initialRecipientToolbarState,
   initialCardPanelToolbarState,
   initialCardPanelOverlayToolbarState,
   initialSectionEditorMenuToolbarState,
   UpdateSectionPayload,
+  initialCardtextToolbarState,
 } from '../../domain/types'
-import { initialCardtextToolbarState } from '@cardtext/domain/types'
-import type { ToolbarState } from '../../domain/types'
+import type { ToolbarState, ToolbarGroup } from '../../domain/types'
+import type { IconStateGroup } from '@shared/config/constants'
 
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
@@ -32,6 +32,7 @@ const toolbarSlice = createSlice({
     ) {
       Object.assign(state[action.payload.section], action.payload.value)
     },
+
     updateToolbarIcon<
       S extends keyof ToolbarState,
       K extends keyof ToolbarState[S],
@@ -45,12 +46,37 @@ const toolbarSlice = createSlice({
     ) {
       state[action.payload.section][action.payload.key] = action.payload.value
     },
+
+    updateGroupStatus(
+      state: ToolbarState,
+      action: PayloadAction<{
+        section: keyof ToolbarState
+        groupName: string
+        status: IconStateGroup
+      }>
+    ) {
+      const { section, groupName, status } = action.payload
+      const sectionConfig = state[section].config
+      if (sectionConfig) {
+        const group = sectionConfig.find(
+          (g: ToolbarGroup) => g.group === groupName
+        )
+        if (group) {
+          group.status = status
+        }
+      }
+    },
+
     resetToolbar() {
       return structuredClone(initialState)
     },
   },
 })
 
-export const { updateToolbarSection, updateToolbarIcon, resetToolbar } =
-  toolbarSlice.actions
+export const {
+  updateToolbarSection,
+  updateToolbarIcon,
+  updateGroupStatus,
+  resetToolbar,
+} = toolbarSlice.actions
 export default toolbarSlice.reducer

@@ -61,6 +61,10 @@ export const ICON_STATE = ['disabled', 'enabled', 'active']
 
 export type IconState = (typeof ICON_STATE)[number]
 
+export const ICON_STATE_GROUP = ['disabled', 'enabled'] as const
+
+export type IconStateGroup = (typeof ICON_STATE)[number]
+
 export const ICON_SIZE_MAP: Record<ViewportSize, string> = {
   xs: '1rem',
   sm: '1.1rem',

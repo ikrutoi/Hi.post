@@ -28,6 +28,8 @@ export const ImageCrop = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
+  const { state: iconStates } = toolbarState
+
   const { size } = useLayoutFacade()
   const { sizeCard } = size
 
@@ -69,9 +71,7 @@ export const ImageCrop = () => {
   const shouldShowImage = !!src && isReady && imageMeta && !hasError
 
   const [tempCrop, setTempCrop] = useCropState(
-    toolbarState.crop,
-    imageLayer,
-    sizeCard,
+    iconStates.crop,
     cardphotoState.currentConfig?.crop ?? null
   )
 
@@ -131,36 +131,34 @@ export const ImageCrop = () => {
           />
         )}
 
-        {loaded &&
-          imageLayer &&
-          toolbarState.crop === 'active' &&
-          cardphotoState.currentConfig?.crop && (
-            <>
-              {tempCrop && (
+        {loaded && imageLayer && iconStates.crop === 'active' && (
+          <>
+            {tempCrop && (
+              <>
                 <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
-              )}
-
-              <CropArea
-                cropLayer={cardphotoState.currentConfig?.crop}
-                imageLayer={imageLayer}
-                orientation={sizeCard.orientation}
-                onChange={(newCrop) => {
-                  setTempCrop(newCrop)
-                }}
-                onCommit={(finalCrop) => {
-                  addOp({
-                    type: 'operation',
-                    payload: {
-                      config: {
-                        ...cardphotoState.currentConfig!,
-                        crop: finalCrop,
+                <CropArea
+                  cropLayer={tempCrop}
+                  imageLayer={imageLayer}
+                  orientation={sizeCard.orientation}
+                  onChange={(newCrop) => {
+                    setTempCrop(newCrop)
+                  }}
+                  onCommit={(finalCrop) => {
+                    addOp({
+                      type: 'operation',
+                      payload: {
+                        config: {
+                          ...cardphotoState.currentConfig!,
+                          crop: finalCrop,
+                        },
                       },
-                    },
-                  })
-                }}
-              />
-            </>
-          )}
+                    })
+                  }}
+                />
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   )

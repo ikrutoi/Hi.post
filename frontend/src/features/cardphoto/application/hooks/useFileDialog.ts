@@ -12,7 +12,7 @@ export const useFileDialog = () => {
           actions.cancelFileDialog()
         }
         window.removeEventListener('focus', onWindowFocus)
-      }, 300)
+      }, 150)
     }
 
     window.addEventListener('focus', onWindowFocus)
