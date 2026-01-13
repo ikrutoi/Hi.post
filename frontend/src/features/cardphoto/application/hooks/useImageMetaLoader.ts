@@ -2,45 +2,65 @@ import { useEffect, useState } from 'react'
 import { roundTo } from '@/shared/utils/layout'
 import type { ImageMeta } from '../../domain/types'
 
-export const useImageMetaLoader = (src: string, imageId: string = 'loaded') => {
-  const [imageMeta, setImageMeta] = useState<ImageMeta | null>(null)
-  const [isReady, setIsReady] = useState(false)
-  const [hasError, setHasError] = useState(false)
+export const useImageMetaLoader = (src: string) => {
+  const [state, setState] = useState<{
+    imageMeta: ImageMeta | null
+    isReady: boolean
+    hasError: boolean
+    loadedUrl: string | null
+  }>({
+    imageMeta: null,
+    isReady: false,
+    hasError: false,
+    loadedUrl: null,
+  })
 
   useEffect(() => {
-    setIsReady(false)
-    setHasError(false)
-    setImageMeta(null)
+    if (!src) {
+      setState({
+        imageMeta: null,
+        isReady: false,
+        hasError: false,
+        loadedUrl: null,
+      })
+      return
+    }
 
-    if (!src) return
+    setState((prev) => ({ ...prev, isReady: false, hasError: false }))
 
     const img = new Image()
-    img.src = src
+    img.crossOrigin = 'anonymous'
 
     img.onload = () => {
-      setImageMeta({
-        id: imageId,
+      const meta: ImageMeta = {
+        id: `user-img-${Date.now()}`,
         source: 'user',
         url: src,
         width: img.naturalWidth,
         height: img.naturalHeight,
         imageAspectRatio: roundTo(img.naturalWidth / img.naturalHeight, 3),
         timestamp: Date.now(),
+      }
+
+      setState({
+        imageMeta: meta,
+        isReady: true,
+        hasError: false,
+        loadedUrl: src,
       })
-      setIsReady(true)
     }
 
     img.onerror = () => {
-      setHasError(true)
-      setIsReady(false)
-      setImageMeta(null)
+      setState((prev) => ({ ...prev, hasError: true, isReady: false }))
     }
+
+    img.src = src
 
     return () => {
       img.onload = null
       img.onerror = null
     }
-  }, [src, imageId])
+  }, [src])
 
-  return { imageMeta, isReady, hasError }
+  return state
 }

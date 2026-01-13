@@ -3,15 +3,25 @@ import {
   initStockImage,
   initCardphoto,
   addOperation,
+  type CardphotoSliceState,
 } from '@cardphoto/infrastructure/state'
-import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
+import {
+  selectCardphotoState,
+  selectCurrentConfig,
+} from '@cardphoto/infrastructure/selectors'
+import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { STOCK_IMAGES } from '@shared/assets/stock'
 import { createWorkingConfig } from './utils'
+import {
+  fitImageToCard,
+  createInitialCropLayer,
+} from '@cardphoto/application/utils/imageFit'
 import type {
   ImageMeta,
   CardphotoState,
   CardphotoOperation,
   WorkingConfig,
+  CardLayer,
 } from '@cardphoto/domain/types'
 
 function getRandomStockMeta(): ImageMeta {
@@ -20,24 +30,21 @@ function getRandomStockMeta(): ImageMeta {
 }
 
 function* initCardphotoSaga() {
-  const state: CardphotoState | null = yield select(selectCardphotoState)
-
-  if (state && state.operations.length > 1) {
-    return
-  }
+  const state: CardphotoState = yield select(selectCardphotoState)
+  if (state.operations.length > 0) return
 
   const randomMeta: ImageMeta = yield call(getRandomStockMeta)
-  yield put(initStockImage(randomMeta))
+  const cardLayer: CardLayer = yield select(selectSizeCard)
+  const imageLayer = fitImageToCard(randomMeta, cardLayer, 0)
+  const cropLayer = createInitialCropLayer(imageLayer, cardLayer)
+  const workingConfig = { card: cardLayer, image: imageLayer, crop: cropLayer }
 
-  const workingConfig: WorkingConfig = yield call(
-    createWorkingConfig,
-    randomMeta
+  yield put(
+    initStockImage({
+      meta: randomMeta,
+      config: workingConfig,
+    })
   )
-  const op: CardphotoOperation = {
-    type: 'operation',
-    payload: { config: workingConfig, reason: 'initStock' },
-  }
-  yield put(addOperation(op))
 }
 
 export function* cardphotoHistorySaga() {

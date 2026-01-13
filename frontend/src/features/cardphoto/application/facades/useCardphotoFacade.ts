@@ -11,6 +11,7 @@ import {
   cancelSelection,
   resetCropLayers,
   setOrientation,
+  uploadImageReady,
 } from '../../infrastructure/state'
 import {
   selectCardphotoState,
@@ -53,7 +54,8 @@ export interface CardphotoFacade {
   }
   actions: {
     init: () => void
-    setStockImage: (meta: ImageMeta) => void
+    uploadImage: (meta: ImageMeta) => void
+    setStockImage: (payload: { meta: ImageMeta; config: WorkingConfig }) => void
     setUserImage: (meta: ImageMeta) => void
     addOp: (op: CardphotoOperation) => void
     undoOp: () => void
@@ -89,7 +91,9 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const cardSize = useSelector(selectCardSize)
 
   const init = () => dispatch(initCardphoto())
-  const setStockImage = (meta: ImageMeta) => dispatch(initStockImage(meta))
+  const uploadImage = (meta: ImageMeta) => dispatch(uploadImageReady(meta))
+  const setStockImage = (payload: { meta: ImageMeta; config: WorkingConfig }) =>
+    dispatch(initStockImage(payload))
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
   const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
   const undoOp = () => dispatch(undo())
@@ -123,6 +127,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
     },
     actions: {
       init,
+      uploadImage,
       setStockImage,
       setUserImage,
       addOp,

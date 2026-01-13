@@ -3,43 +3,40 @@ import placeholderImage from '@shared/assets/images/card-photo-bw.jpg'
 import type { CardphotoState, ImageMeta } from '../../domain/types'
 import { STOCK_IMAGES } from '@shared/assets/stock'
 
-export function useCardphotoSrc(state: CardphotoState | null): {
-  src: string
-  alt: string
-} {
+export function useCardphotoSrc(state: CardphotoState | null) {
+  console.log('useCardphotoSrc', state)
   return useMemo(() => {
-    if (!state) {
-      return { src: placeholderImage, alt: 'Placeholder' }
+    if (!state) return { src: placeholderImage, alt: 'Placeholder' }
+
+    const userImg = state.base.user.image
+    const stockImg = state.base.stock.image
+    const configImg = state.currentConfig?.image.meta
+
+    if (userImg && (!configImg || configImg.source !== 'user')) {
+      console.log('+', userImg.url)
+      return { src: userImg.url, alt: userImg.id }
     }
 
-    if (state.operations.length === 0) {
-      const random =
-        STOCK_IMAGES[Math.floor(Math.random() * STOCK_IMAGES.length)]
-      return { src: random.url, alt: random.id }
+    if (configImg?.url) {
+      console.log('++', configImg.url)
+      return { src: configImg.url, alt: configImg.id }
     }
 
-    const finalImage: ImageMeta | null = state.base.apply.image
-    if (finalImage) {
-      return {
-        src: finalImage.url,
-        alt: finalImage.id,
-      }
+    if (userImg) {
+      console.log('+++', userImg.url)
+      return { src: userImg.url, alt: userImg.id }
+    }
+    if (stockImg) {
+      console.log('+++', stockImg.url)
+      return { src: stockImg.url, alt: stockImg.id }
     }
 
-    if (state.base.user.image) {
-      return {
-        src: state.base.user.image.url,
-        alt: state.base.user.image.id,
-      }
-    }
-
-    if (state.base.stock.image) {
-      return {
-        src: state.base.stock.image.url,
-        alt: state.base.stock.image.id,
-      }
-    }
-
+    console.log('+++++')
     return { src: placeholderImage, alt: 'Placeholder' }
-  }, [state])
+  }, [
+    state?.currentConfig?.image.meta.url,
+    state?.currentConfig?.image.meta.source,
+    state?.base.user.image?.url,
+    state?.base.stock.image?.url,
+  ])
 }

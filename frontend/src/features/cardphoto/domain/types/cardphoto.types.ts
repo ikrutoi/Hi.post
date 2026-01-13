@@ -80,6 +80,7 @@ export type CardphotoOperation = {
       | 'resetCrop'
       | 'cropFull'
       | 'initCrop'
+      | 'initUserImage'
   }
 }
 

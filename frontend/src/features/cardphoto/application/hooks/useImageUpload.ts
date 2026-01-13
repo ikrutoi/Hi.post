@@ -20,21 +20,20 @@ export const useImageUpload = (
 
       img.onload = () => {
         const imageMeta: ImageMeta = {
-          id: `${file.name}-${file.lastModified}`,
+          id: `${file.name}-${file.lastModified}-${Date.now()}`,
           source: 'user',
           url: objectUrl,
-          timestamp: file.lastModified ?? Date.now(),
-          width: img.width,
-          height: img.height,
-          imageAspectRatio: roundTo(img.width / img.height, 3),
+          timestamp: Date.now(),
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          imageAspectRatio: roundTo(img.naturalWidth / img.naturalHeight, 3),
         }
 
         onUpload(imageMeta)
-
-        URL.revokeObjectURL(objectUrl)
       }
 
       img.onerror = () => {
+        console.error('Failed to load image for metadata')
         URL.revokeObjectURL(objectUrl)
       }
 

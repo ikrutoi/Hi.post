@@ -10,6 +10,7 @@ import {
   reset,
   cancelSelection,
   setOrientation,
+  uploadImageReady,
 } from '../../infrastructure/state'
 import {
   selectCardphotoState,
@@ -26,7 +27,11 @@ import {
   selectLastOperationReason,
   selectCardSize,
 } from '../../infrastructure/selectors'
-import type { ImageMeta, CardphotoOperation } from '../../domain/types'
+import type {
+  ImageMeta,
+  CardphotoOperation,
+  WorkingConfig,
+} from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
 export const useCardphotoController = () => {
@@ -48,7 +53,9 @@ export const useCardphotoController = () => {
   const cardSize = useSelector(selectCardSize)
 
   const init = () => dispatch(initCardphoto())
-  const setStockImage = (meta: ImageMeta) => dispatch(initStockImage(meta))
+  const uploadImage = (meta: ImageMeta) => dispatch(uploadImageReady(meta))
+  const setStockImage = (payload: { meta: ImageMeta; config: WorkingConfig }) =>
+    dispatch(initStockImage(payload))
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
   const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
   const undoOp = () => dispatch(undo())
@@ -76,6 +83,7 @@ export const useCardphotoController = () => {
     cardSize,
 
     init,
+    uploadImage,
     setStockImage,
     setUserImage,
     addOp,

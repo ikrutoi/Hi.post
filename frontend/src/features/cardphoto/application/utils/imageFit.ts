@@ -85,7 +85,6 @@ export function createInitialCropLayer(
         image.top + (image.meta.height - crop.meta.height) / 2,
         2
       )
-      console.log('createInitialCrop0 crop', crop.meta.width, crop.meta.height)
 
       // crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
       // crop.y = image.top + (image.meta.height - crop.meta.height) / 2
@@ -144,7 +143,7 @@ export function createInitialCropLayer(
     }
   }
 
-  console.log('crop', crop)
+  // console.log('crop', crop)
 
   return crop
 }

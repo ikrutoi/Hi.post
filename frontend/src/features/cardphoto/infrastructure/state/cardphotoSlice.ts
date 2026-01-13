@@ -7,16 +7,26 @@ import type {
   CardphotoBase,
   ImageLayer,
   CropLayer,
+  CardLayer,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
 export interface CardphotoSliceState {
-  state: CardphotoState | null
+  state: CardphotoState
   isComplete: boolean
 }
 
 const initialState: CardphotoSliceState = {
-  state: null,
+  state: {
+    base: {
+      stock: { image: null },
+      user: { image: null },
+      apply: { image: null },
+    },
+    operations: [],
+    activeIndex: -1,
+    currentConfig: null,
+  },
   isComplete: false,
 }
 
@@ -26,22 +36,30 @@ export const cardphotoSlice = createSlice({
   reducers: {
     initCardphoto() {},
 
-    resetCardphoto(state) {
-      state.state = null
-      state.isComplete = false
-    },
+    uploadImageReady(state, action: PayloadAction<ImageMeta>) {},
 
-    initStockImage(state, action: PayloadAction<ImageMeta>) {
-      const meta = action.payload
+    resetCardphoto: () => initialState,
+
+    initStockImage(
+      state,
+      action: PayloadAction<{ meta: ImageMeta; config: WorkingConfig }>
+    ) {
+      const { meta, config } = action.payload
+
+      const initialOperation: CardphotoOperation = {
+        type: 'operation',
+        payload: { config, reason: 'initStock' },
+      }
+
       state.state = {
         base: {
           stock: { image: meta },
           user: { image: null },
           apply: { image: null },
         },
-        operations: [],
-        activeIndex: -1,
-        currentConfig: null,
+        operations: [initialOperation],
+        activeIndex: 0,
+        currentConfig: config,
       }
       state.isComplete = false
     },
@@ -136,17 +154,14 @@ export const cardphotoSlice = createSlice({
       state.isComplete = false
     },
 
-    cancelSelection(state) {
-      state.state = null
-      state.isComplete = false
-    },
+    cancelSelection: () => initialState,
 
     resetCropLayers(
       state,
       action: PayloadAction<{
         imageLayer: ImageLayer
         cropLayer: CropLayer
-        card: WorkingConfig['card']
+        card: CardLayer
       }>
     ) {
       if (!state.state) return
@@ -169,6 +184,7 @@ export const cardphotoSlice = createSlice({
 
 export const {
   initCardphoto,
+  uploadImageReady,
   resetCardphoto,
   initStockImage,
   setBaseImage,

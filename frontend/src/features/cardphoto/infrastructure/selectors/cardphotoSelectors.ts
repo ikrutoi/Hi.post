@@ -27,10 +27,8 @@ export const selectUserImage = (state: RootState): ImageMeta | null =>
 export const selectAppliedImage = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.base.apply.image || null
 
-export const selectOperations = createSelector(
-  (state: RootState) => state.cardphoto.state?.operations,
-  (operations): CardphotoOperation[] => operations ?? []
-)
+export const selectOperations = (state: RootState): CardphotoOperation[] =>
+  state.cardphoto.state?.operations ?? []
 
 export const selectActiveIndex = (state: RootState): number =>
   state.cardphoto.state?.activeIndex ?? -1
@@ -43,10 +41,8 @@ export const selectActiveOperation = createSelector(
 export const selectCurrentConfig = (state: RootState): WorkingConfig | null =>
   state.cardphoto.state?.currentConfig ?? null
 
-export const selectCurrentImageMeta = createSelector(
-  [selectCurrentConfig],
-  (config): ImageMeta | null => config?.image?.meta ?? null
-)
+export const selectCurrentImageMeta = (state: RootState): ImageMeta | null =>
+  selectCurrentConfig(state)?.image?.meta ?? null
 
 export const selectCardOrientation = (state: RootState): LayoutOrientation =>
   state.cardphoto.state?.currentConfig?.card.orientation ?? 'landscape'
@@ -72,24 +68,19 @@ export const selectCardSize = createSelector([selectCurrentCard], (card) => {
   }
 })
 
-export const selectBaseImageByTarget = createSelector(
-  [
-    (state: RootState) => state.cardphoto.state?.base,
-    (_state: RootState, target: keyof CardphotoBase) => target,
-  ],
-  (base, target): ImageMeta | null => {
-    if (!base || !target) return null
-    return base[target].image || null
-  }
-)
+export const selectBaseImageByTarget = (
+  state: RootState,
+  target: keyof CardphotoBase
+): ImageMeta | null => {
+  const base = state.cardphoto.state?.base
+  return base?.[target]?.image ?? null
+}
 
-export const selectActiveSourceImage = createSelector(
-  [selectCardphotoState],
-  (state): ImageMeta | null => {
-    if (!state) return null
-    return state.base.user.image || state.base.stock.image
-  }
-)
+export const selectActiveSourceImage = (state: RootState): ImageMeta | null => {
+  const cardState = state.cardphoto.state
+  if (!cardState) return null
+  return cardState.base.user.image || cardState.base.stock.image || null
+}
 
 export const selectIsCropFull = createSelector(
   [selectCurrentConfig],

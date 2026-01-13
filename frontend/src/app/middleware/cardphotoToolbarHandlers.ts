@@ -229,7 +229,6 @@ export function* handleCardOrientation(): SagaIterator {
       })
     )
   }
-  // console.log('handleCardOrientation', toolbarState.crop)
 
   const newOrientation: LayoutOrientation =
     config.card.orientation === 'portrait' ? 'landscape' : 'portrait'
@@ -282,8 +281,6 @@ export function* handleCardOrientation(): SagaIterator {
   )
 
   const resultCropState = isCropActive ? 'active' : 'enabled'
-
-  console.log('result', resultCropState)
 
   yield put(
     updateToolbarIcon({

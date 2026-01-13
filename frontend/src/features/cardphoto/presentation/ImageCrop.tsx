@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { CropArea } from './CropArea'
 import { CropOverlay } from './CropOverlay'
@@ -9,7 +9,6 @@ import {
 } from '../application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
 import { useImageMetaLoader } from '../application/hooks/useImageMetaLoader'
-import { useImageLayer } from '../application/hooks/useImageLayer'
 import {
   useImageUpload,
   useFileDialog,
@@ -21,7 +20,7 @@ import styles from './ImageCrop.module.scss'
 export const ImageCrop = () => {
   const { state: cardphotoState, actions: cardphotoActions } =
     useCardphotoFacade()
-  const { init, setUserImage, addOp } = cardphotoActions
+  const { init, setUserImage, addOp, uploadImage } = cardphotoActions
 
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
@@ -35,19 +34,32 @@ export const ImageCrop = () => {
 
   const [loaded, setLoaded] = useState(false)
 
+  console.log('cardphotoState0', cardphotoState.state)
+
   const { src, alt } = useCardphotoSrc(cardphotoState.state)
+
+  console.log('cardphotoState1', src, alt)
+
+  const processedSrcRef = useRef<string | null>(null)
 
   useEffect(() => {
     init()
   }, [])
 
-  const { imageMeta, isReady, hasError } = useImageMetaLoader(src)
+  const { imageMeta, isReady, loadedUrl } = useImageMetaLoader(src)
 
-  const imageLayer = useImageLayer(
-    imageMeta,
-    sizeCard,
-    cardphotoState.currentConfig?.image.orientation ?? 0
-  )
+  useEffect(() => {
+    const isUserFile = src.startsWith('blob:') || src.startsWith('data:')
+
+    if (isReady && imageMeta && isUserFile && loadedUrl === src) {
+      if (processedSrcRef.current !== src) {
+        processedSrcRef.current = src
+        uploadImage(imageMeta)
+      }
+    }
+  }, [isReady, imageMeta, src, loadedUrl])
+
+  const imageLayer = cardphotoState.currentConfig?.image || null
 
   const { inputRef, trackCancel } = useFileDialog()
 
@@ -68,7 +80,9 @@ export const ImageCrop = () => {
     cardphotoUiActions.markLoading
   )
 
-  const shouldShowImage = !!src && isReady && imageMeta && !hasError
+  const shouldShowImage = !!src && imageMeta
+
+  // console.log('should', shouldShowImage)
 
   const [tempCrop, setTempCrop] = useCropState(
     iconStates.crop,
@@ -76,27 +90,36 @@ export const ImageCrop = () => {
     // cardphotoState.cardOrientation
   )
 
-  if (!imageLayer) return
+  // if (!imageLayer) return
 
-  const isRotated =
-    imageLayer.orientation === 90 || imageLayer.orientation === 270
-
-  const imageStyle: React.CSSProperties = {
-    position: 'absolute',
-    left: `${imageLayer.left}px`,
-    top: `${imageLayer.top}px`,
-    width: `${isRotated ? imageLayer.meta.height : imageLayer.meta.width}px`,
-    height: `${isRotated ? imageLayer.meta.width : imageLayer.meta.height}px`,
-    transform: `rotate(${imageLayer.orientation}deg)`,
-    transformOrigin: 'center center',
-    marginLeft: isRotated
-      ? `${(imageLayer.meta.width - imageLayer.meta.height) / 2}px`
-      : 0,
-    marginTop: isRotated
-      ? `${(imageLayer.meta.height - imageLayer.meta.width) / 2}px`
-      : 0,
-    maxWidth: 'none',
-  }
+  const imageStyle: React.CSSProperties | undefined = imageLayer
+    ? {
+        position: 'absolute',
+        left: `${imageLayer.left}px`,
+        top: `${imageLayer.top}px`,
+        width: `${
+          imageLayer.orientation === 90 || imageLayer.orientation === 270
+            ? imageLayer.meta.height
+            : imageLayer.meta.width
+        }px`,
+        height: `${
+          imageLayer.orientation === 90 || imageLayer.orientation === 270
+            ? imageLayer.meta.width
+            : imageLayer.meta.height
+        }px`,
+        transform: `rotate(${imageLayer.orientation}deg)`,
+        transformOrigin: 'center center',
+        marginLeft:
+          imageLayer.orientation === 90 || imageLayer.orientation === 270
+            ? `${(imageLayer.meta.width - imageLayer.meta.height) / 2}px`
+            : 0,
+        marginTop:
+          imageLayer.orientation === 90 || imageLayer.orientation === 270
+            ? `${(imageLayer.meta.height - imageLayer.meta.width) / 2}px`
+            : 0,
+        maxWidth: 'none',
+      }
+    : undefined
 
   return (
     <div
@@ -113,6 +136,7 @@ export const ImageCrop = () => {
 
       <div
         // key={sizeCard.orientation}
+        key={src}
         className={styles.cropContainer}
         style={{
           width: `${sizeCard.width}px`,
@@ -132,32 +156,28 @@ export const ImageCrop = () => {
             style={imageStyle}
           />
         )}
-        {loaded && imageLayer && iconStates.crop === 'active' && (
+        {loaded && imageLayer && iconStates.crop === 'active' && tempCrop && (
           <>
-            {tempCrop && (
-              <>
-                <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
-                <CropArea
-                  cropLayer={tempCrop}
-                  imageLayer={imageLayer}
-                  orientation={sizeCard.orientation}
-                  onChange={(newCrop) => {
-                    setTempCrop(newCrop)
-                  }}
-                  onCommit={(finalCrop) => {
-                    addOp({
-                      type: 'operation',
-                      payload: {
-                        config: {
-                          ...cardphotoState.currentConfig!,
-                          crop: finalCrop,
-                        },
-                      },
-                    })
-                  }}
-                />
-              </>
-            )}
+            <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
+            <CropArea
+              cropLayer={tempCrop}
+              imageLayer={imageLayer}
+              orientation={sizeCard.orientation}
+              onChange={(newCrop) => {
+                setTempCrop(newCrop)
+              }}
+              onCommit={(finalCrop) => {
+                addOp({
+                  type: 'operation',
+                  payload: {
+                    config: {
+                      ...cardphotoState.currentConfig!,
+                      crop: finalCrop,
+                    },
+                  },
+                })
+              }}
+            />
           </>
         )}
       </div>
