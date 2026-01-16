@@ -1,28 +1,36 @@
 import type { CropLayer, ImageLayer } from '../../domain/types'
 
 export function clampCropToImage(
-  cropLayer: CropLayer,
-  imageLayer: ImageLayer
+  crop: CropLayer,
+  image: ImageLayer
 ): CropLayer {
-  const clamped = { ...cropLayer }
+  const result = { ...crop, meta: { ...crop.meta } }
 
-  if (clamped.x < imageLayer.left) {
-    clamped.x = imageLayer.left
+  if (result.meta.width > image.meta.width) result.meta.width = image.meta.width
+  if (result.meta.height > image.meta.height)
+    result.meta.height = image.meta.height
+
+  if (result.x < image.left) result.x = image.left
+  if (result.y < image.top) result.y = image.top
+
+  const maxRight = image.left + image.meta.width
+  if (result.x + result.meta.width > maxRight) {
+    result.x = maxRight - result.meta.width
   }
 
-  const maxRight = imageLayer.left + imageLayer.meta.width
-  if (clamped.x + clamped.meta.width > maxRight) {
-    clamped.meta.width = maxRight - clamped.x
+  if (result.x < image.left) {
+    result.x = image.left
+    result.meta.width = maxRight - result.x
   }
 
-  if (clamped.y < imageLayer.top) {
-    clamped.y = imageLayer.top
+  const maxBottom = image.top + image.meta.height
+  if (result.y + result.meta.height > maxBottom) {
+    result.y = maxBottom - result.meta.height
+  }
+  if (result.y < image.top) {
+    result.y = image.top
+    result.meta.height = maxBottom - result.y
   }
 
-  const maxBottom = imageLayer.top + imageLayer.meta.height
-  if (clamped.y + clamped.meta.height > maxBottom) {
-    clamped.meta.height = maxBottom - clamped.y
-  }
-
-  return clamped
+  return result
 }

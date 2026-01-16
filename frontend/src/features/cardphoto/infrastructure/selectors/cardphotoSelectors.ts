@@ -94,7 +94,10 @@ export const selectIsCropFull = createSelector(
       ? roundTo(1 / image.meta.imageAspectRatio, 3)
       : image.meta.imageAspectRatio
 
-    const targetAR = card.aspectRatio
+    const targetAR =
+      card.orientation === 'portrait'
+        ? roundTo(1 / card.aspectRatio, 3)
+        : card.aspectRatio
 
     let maxWidth = 0
     let maxHeight = 0

@@ -5,7 +5,7 @@ import {
   envelopeToolbarSaga,
   cardtextToolbarSaga,
   sectionEditorMenuSaga,
-  cardphotoToolbarSaga,
+  // cardphotoToolbarSaga,
   cardphotoProcessSaga,
   cardphotoHistorySaga,
 } from '../middleware'
@@ -16,7 +16,7 @@ export function* rootSaga() {
     fork(envelopeSaga),
     fork(envelopeToolbarSaga),
     fork(cardtextToolbarSaga),
-    fork(cardphotoToolbarSaga),
+    // fork(cardphotoToolbarSaga),
     fork(cardphotoHistorySaga),
     fork(cardphotoProcessSaga),
     fork(sectionEditorMenuSaga),

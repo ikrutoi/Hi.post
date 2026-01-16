@@ -2,7 +2,7 @@ import { put, select, call, takeLatest } from 'redux-saga/effects'
 import {
   initStockImage,
   initCardphoto,
-  addOperation,
+  // addOperation,
   type CardphotoSliceState,
 } from '@cardphoto/infrastructure/state'
 import {
@@ -31,7 +31,7 @@ function getRandomStockMeta(): ImageMeta {
 
 function* initCardphotoSaga() {
   const state: CardphotoState = yield select(selectCardphotoState)
-  if (state.operations.length > 0) return
+  if (state.operations.length > 1) return
 
   const randomMeta: ImageMeta = yield call(getRandomStockMeta)
   const cardLayer: CardLayer = yield select(selectSizeCard)

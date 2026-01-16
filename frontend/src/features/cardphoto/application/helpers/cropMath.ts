@@ -33,156 +33,61 @@ export const updateCrop = (
   imageLayer: ImageLayer,
   orientation: LayoutOrientation
 ): CropLayer => {
+  const isPortrait = orientation === 'portrait'
+  const ar = isPortrait
+    ? 1 / startCrop.meta.aspectRatio
+    : startCrop.meta.aspectRatio
+
   const minWidth = 20
-  const aspectRatio = startCrop.meta.aspectRatio
-
-  let newWidth = startCrop.meta.width
-  let newHeight = startCrop.meta.height
-
-  const startBottomY = roundTo(startCrop.y + startCrop.meta.height, 2)
-  const startRightX = roundTo(startCrop.x + startCrop.meta.width, 2)
-
   const isLeft = corner === 'TL' || corner === 'BL'
   const isTop = corner === 'TL' || corner === 'TR'
 
-  const threshold = 0.5
+  const maxFreeWidth = isLeft
+    ? startCrop.x + startCrop.meta.width - imageLayer.left
+    : imageLayer.left + imageLayer.meta.width - startCrop.x
 
-  switch (corner) {
-    case 'BR':
-    case 'TR':
-      if (orientation === 'portrait') {
-        const deltaH = corner === 'TR' ? -dy : dy
-        if (Math.abs(deltaH) > threshold) {
-          newHeight = startCrop.meta.height + deltaH
-          newWidth = roundTo(newHeight / aspectRatio, 2)
-        }
-      } else {
-        if (Math.abs(dx) > threshold) {
-          newWidth = startCrop.meta.width + dx
-          newHeight = roundTo(newWidth / aspectRatio, 2)
-        }
-      }
-      break
+  const maxFreeHeight = isTop
+    ? startCrop.y + startCrop.meta.height - imageLayer.top
+    : imageLayer.top + imageLayer.meta.height - startCrop.y
 
-    case 'BL':
-    case 'TL':
-      if (orientation === 'portrait') {
-        const deltaH = corner === 'TL' ? -dy : dy
-        if (Math.abs(deltaH) > threshold) {
-          newHeight = startCrop.meta.height + deltaH
-          newWidth = roundTo(newHeight / aspectRatio, 2)
-        }
-      } else {
-        if (Math.abs(dx) > threshold) {
-          newWidth = startCrop.meta.width - dx
-          newHeight = roundTo(newWidth / aspectRatio, 2)
-        }
-      }
-      break
-  }
-
-  if (newWidth < minWidth) {
-    newWidth = minWidth
-    newHeight = roundTo(newWidth / aspectRatio, 2)
-  }
-  if (newHeight < minWidth / aspectRatio) {
-    newHeight = roundTo(minWidth / aspectRatio, 2)
-    newWidth = roundTo(newHeight * aspectRatio, 2)
-  }
-
-  let newX = isLeft ? roundTo(startRightX - newWidth, 2) : startCrop.x
-  let newY = isTop ? roundTo(startBottomY - newHeight, 2) : startCrop.y
-
-  return applyBounds(
-    {
-      ...startCrop,
-      x: newX,
-      y: newY,
-      meta: {
-        ...startCrop.meta,
-        width: newWidth,
-        height: newHeight,
-      },
-    },
-    imageLayer,
-    orientation
-  )
-}
-
-export const updateCrop1 = (
-  corner: 'TL' | 'TR' | 'BL' | 'BR',
-  dx: number,
-  dy: number,
-  startCrop: CropLayer,
-  imageLayer: ImageLayer,
-  orientation: LayoutOrientation
-): CropLayer => {
-  const minWidth = 20
-  const aspectRatio = startCrop.meta.aspectRatio
+  const absoluteMaxWidth = Math.min(maxFreeWidth, maxFreeHeight * ar)
+  const absoluteMaxHeight = Math.min(maxFreeHeight, maxFreeWidth / ar)
 
   let newWidth = startCrop.meta.width
   let newHeight = startCrop.meta.height
-  let newX = startCrop.x
-  let newY = startCrop.y
 
-  switch (corner) {
-    case 'BR':
-      if (orientation === 'portrait') {
-        newHeight = startCrop.meta.height + dy
-        newWidth = roundTo(newHeight / aspectRatio, 2)
-      } else {
-        newWidth = startCrop.meta.width + dx
-        newHeight = roundTo(newWidth / aspectRatio, 2)
-      }
-      break
-    case 'TR':
-      if (orientation === 'portrait') {
-        newHeight = startCrop.meta.height + dy
-        newWidth = roundTo(newHeight / aspectRatio, 2)
-        newX = startCrop.x + dx
-      } else {
-        newWidth = startCrop.meta.width + dx
-        newHeight = roundTo(newWidth / aspectRatio, 2)
-        newY = startCrop.y + dy
-      }
-      break
-    case 'BL':
-      if (orientation === 'portrait') {
-        newHeight = startCrop.meta.height - dy
-        newWidth = roundTo(newHeight / aspectRatio, 2)
-        newY = startCrop.y + dy
-      } else {
-        newWidth = startCrop.meta.width - dx
-        newHeight = roundTo(newWidth / aspectRatio, 2)
-        newX = startCrop.x + dx
-      }
-      break
-    case 'TL':
-      if (orientation === 'portrait') {
-        newHeight = startCrop.meta.height - dy
-        newWidth = roundTo(newHeight / aspectRatio, 2)
-      } else {
-        newWidth = startCrop.meta.width - dx
-        newHeight = roundTo(newWidth / aspectRatio, 2)
-      }
-      newX = startCrop.x + dx
-      newY = startCrop.y + dy
-      break
+  if (isPortrait) {
+    const deltaH = isTop ? -dy : dy
+    newHeight = Math.max(
+      minWidth / ar,
+      Math.min(startCrop.meta.height + deltaH, absoluteMaxHeight)
+    )
+    newWidth = newHeight * ar
+  } else {
+    const deltaW = isLeft ? -dx : dx
+    newWidth = Math.max(
+      minWidth,
+      Math.min(startCrop.meta.width + deltaW, absoluteMaxWidth)
+    )
+    newHeight = newWidth / ar
   }
 
-  newWidth = Math.max(newWidth, minWidth)
-  newHeight = Math.max(newHeight, minWidth / aspectRatio)
+  const startBottomY = startCrop.y + startCrop.meta.height
+  const startRightX = startCrop.x + startCrop.meta.width
 
-  return applyBounds(
-    {
-      ...startCrop,
-      x: newX,
-      y: newY,
-      meta: { ...startCrop.meta, width: newWidth, height: newHeight },
+  const newX = isLeft ? startRightX - newWidth : startCrop.x
+  const newY = isTop ? startBottomY - newHeight : startCrop.y
+
+  return {
+    ...startCrop,
+    x: roundTo(newX, 2),
+    y: roundTo(newY, 2),
+    meta: {
+      ...startCrop.meta,
+      width: roundTo(newWidth, 2),
+      height: roundTo(newHeight, 2),
     },
-    imageLayer,
-    orientation
-  )
+  }
 }
 
 export const clampDragWithinImage = (

@@ -45,9 +45,9 @@ export function* handleCardphotoToolbarAction(
   }
 }
 
-export function* cardphotoToolbarSaga(): SagaIterator {
-  yield all([
-    fork(watchCropChanges),
-    takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
-  ])
-}
+// export function* cardphotoToolbarSaga(): SagaIterator {
+//   yield all([
+//     // fork(watchCropChanges),
+//     // takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
+//   ])
+// }

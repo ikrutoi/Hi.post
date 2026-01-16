@@ -26,12 +26,21 @@ export const useCropResize = (
     startY: number
   ) => {
     begin()
-    const start = { ...tempCrop, meta: { ...tempCrop.meta } }
+
+    const startState = { ...tempCrop, meta: { ...tempCrop.meta } }
 
     const move = (clientX: number, clientY: number) => {
       const dx = clientX - startX
       const dy = clientY - startY
-      const next = updateCrop(corner, dx, dy, start, imageLayer, orientation)
+
+      const next = updateCrop(
+        corner,
+        dx,
+        dy,
+        startState,
+        imageLayer,
+        orientation
+      )
 
       setTempCrop(next)
       setLast(next)
@@ -41,16 +50,19 @@ export const useCropResize = (
     const finish = () => {
       end()
       onCommit(lastCropRef.current)
-      detach()
+      if (detachRef) detachRef()
     }
 
     const mouseMove = (e: MouseEvent) => move(e.clientX, e.clientY)
     const mouseUp = () => finish()
+
     const touchMove = (e: TouchEvent) => {
-      if (e.touches.length) move(e.touches[0].clientX, e.touches[0].clientY)
+      if (e.touches.length > 0) {
+        move(e.touches[0].clientX, e.touches[0].clientY)
+      }
     }
     const touchEnd = () => finish()
 
-    const detach = attach(mouseMove, mouseUp, touchMove, touchEnd)
+    const detachRef = attach(mouseMove, mouseUp, touchMove, touchEnd)
   }
 }

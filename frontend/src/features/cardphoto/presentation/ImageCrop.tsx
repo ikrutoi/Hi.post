@@ -34,11 +34,7 @@ export const ImageCrop = () => {
 
   const [loaded, setLoaded] = useState(false)
 
-  console.log('cardphotoState0', cardphotoState.state)
-
   const { src, alt } = useCardphotoSrc(cardphotoState.state)
-
-  console.log('cardphotoState1', src, alt)
 
   const processedSrcRef = useRef<string | null>(null)
 

@@ -89,86 +89,6 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
   yield put(setBaseImage({ target: 'user', image: imageMeta }))
 }
 
-function* onUploadImage1(action: PayloadAction<ImageMeta>) {
-  const imageMeta = action.payload
-  if (!imageMeta) return
-
-  yield put(markLoaded())
-
-  yield put(
-    setBaseImage({
-      target: 'user',
-      image: imageMeta,
-    })
-  )
-
-  const cardLayer: CardLayer = yield select(selectSizeCard)
-  if (!cardLayer) return
-
-  const { needsCrop } = validateImageSize(
-    imageMeta,
-    cardLayer.width,
-    cardLayer.height
-  )
-  yield put(setNeedsCrop(needsCrop))
-
-  const imageLayer = fitImageToCard(imageMeta, cardLayer, 0)
-  const cropLayer = createInitialCropLayer(imageLayer, cardLayer)
-
-  yield put(
-    resetCropLayers({
-      imageLayer,
-      cropLayer,
-      card: {
-        width: cardLayer.width,
-        height: cardLayer.height,
-        aspectRatio: cardLayer.width / cardLayer.height,
-        orientation: cardLayer.orientation,
-      },
-    })
-  )
-
-  const initialConfig: WorkingConfig = {
-    card: cardLayer,
-    image: imageLayer,
-    crop: cropLayer,
-  }
-
-  yield put(
-    addOperation({
-      type: 'operation',
-      payload: {
-        config: initialConfig,
-        reason: 'initUserImage',
-      },
-    })
-  )
-
-  yield put(
-    updateGroupStatus({
-      section: 'cardphoto',
-      groupName: 'photo',
-      status: 'enabled',
-    })
-  )
-
-  const toolbarState: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto')
-  )
-
-  yield put(
-    updateToolbarSection({
-      section: 'cardphoto',
-      value: {
-        ...toolbarState,
-        download: 'enabled',
-        save: 'enabled',
-        apply: needsCrop ? 'enabled' : 'disabled',
-      },
-    })
-  )
-}
-
 function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   const imageMeta = action.payload
   const cardLayer: CardLayer = yield select(selectSizeCard)
@@ -257,7 +177,6 @@ function* onCancelFileDialog(): SagaIterator {
 }
 
 export function* cardphotoProcessSaga(): SagaIterator {
-  console.log('WATCHING FOR:', uploadImageReady.type)
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
 

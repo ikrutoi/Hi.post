@@ -9,14 +9,14 @@ import type {
 } from '../../domain/types'
 
 export function fitImageToCard(
-  meta: ImageMeta,
+  originalMeta: ImageMeta,
   card: CardLayer,
   orientation: ImageOrientation
 ): ImageLayer {
   const isRotated = orientation === 90 || orientation === 270
 
-  const logicalWidth = isRotated ? meta.height : meta.width
-  const logicalHeight = isRotated ? meta.width : meta.height
+  const logicalWidth = isRotated ? originalMeta.height : originalMeta.width
+  const logicalHeight = isRotated ? originalMeta.width : originalMeta.height
 
   const scaleX = card.width / logicalWidth
   const scaleY = card.height / logicalHeight
@@ -30,7 +30,7 @@ export function fitImageToCard(
 
   return {
     meta: {
-      ...meta,
+      ...originalMeta,
       width: finalWidth,
       height: finalHeight,
     },
@@ -85,9 +85,6 @@ export function createInitialCropLayer(
         image.top + (image.meta.height - crop.meta.height) / 2,
         2
       )
-
-      // crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
-      // crop.y = image.top + (image.meta.height - crop.meta.height) / 2
     } else {
       let ratio = 1
       const deltaAspectRatio = targetAR - currentVisualAR
@@ -102,12 +99,8 @@ export function createInitialCropLayer(
         image.top + (image.meta.height - crop.meta.height) / 2,
         2
       )
-      // crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
-      // crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
     }
   } else {
-    // const targetAR = card.aspectRatio
-
     if (currentVisualAR > targetAR) {
       let ratio = 1
       const deltaAspectRatio = currentVisualAR - targetAR
@@ -122,8 +115,6 @@ export function createInitialCropLayer(
         image.top + (image.meta.height - crop.meta.height) / 2,
         2
       )
-      // crop.x = roundTo((card.width - crop.meta.width) / 2, 2)
-      // crop.y = image.top + (image.meta.height - crop.meta.height) / 2
     } else {
       let ratio = 1
       const deltaAspectRatio = targetAR - currentVisualAR
@@ -138,12 +129,8 @@ export function createInitialCropLayer(
         image.top + (image.meta.height - crop.meta.height) / 2,
         2
       )
-      // crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
-      // crop.y = roundTo((card.height - crop.meta.height) / 2, 2)
     }
   }
-
-  // console.log('crop', crop)
 
   return crop
 }
@@ -158,7 +145,8 @@ export function createFullCropLayer(
     ? roundTo(1 / image.meta.imageAspectRatio, 3)
     : image.meta.imageAspectRatio
 
-  const targetAR = card.aspectRatio
+  const targetAR =
+    card.orientation === 'portrait' ? 1 / card.aspectRatio : card.aspectRatio
 
   let finalWidth = 0
   let finalHeight = 0
