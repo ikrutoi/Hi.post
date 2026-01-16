@@ -50,6 +50,26 @@ import type {
   ImageOrientation,
 } from '@cardphoto/domain/types'
 
+// export function* syncCropFullIcon1(customConfig?: WorkingConfig): SagaIterator {
+//   const toolbarState: CardphotoToolbarState = yield select(
+//     selectToolbarSectionState('cardphoto')
+//   )
+
+//   if (toolbarState.crop !== 'active' && toolbarState.crop !== 'enabled') return
+
+//   let isFull: boolean
+//   if (customConfig) {
+//     isFull = yield select((state: RootState) =>
+//       selectIsCropFull.resultFunc(customConfig)
+//     )
+//   } else {
+//     isFull = yield select(selectIsCropFull)
+//   }
+
+//   const currentMode = toolbarState.crop === 'active' ? 'active' : 'enabled'
+//   yield call(updateCropToolbarState, currentMode, toolbarState, { isFull })
+// }
+
 export function* handleCropAction() {
   const state: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
@@ -60,12 +80,8 @@ export function* handleCropAction() {
   const isActivating = state.crop === 'enabled'
 
   if (isActivating) {
-    let cropToUse = config.crop
-
-    if (!cropToUse) {
-      cropToUse = createInitialCropLayer(config.image, config.card)
-    }
-
+    const cropToUse =
+      config.crop || createInitialCropLayer(config.image, config.card)
     const newConfig = { ...config, crop: cropToUse }
 
     yield put(
@@ -75,17 +91,10 @@ export function* handleCropAction() {
       })
     )
 
-    const isFull: boolean = yield select((state: RootState) =>
-      selectIsCropFull({
-        ...state,
-        cardphoto: {
-          ...state.cardphoto,
-          state: { ...state.cardphoto.state, currentConfig: newConfig },
-        },
-      })
-    )
-
-    yield call(updateCropToolbarState, 'active', state, { isFull })
+    yield call(syncCropFullIcon, {
+      forceActive: true,
+      customConfig: newConfig,
+    })
   } else {
     yield call(updateCropToolbarState, 'enabled', state)
   }
@@ -177,8 +186,6 @@ export function* handleCropFullAction(): SagaIterator {
 
   const { image, card } = state.currentConfig
 
-  console.log('cropFull', image, card)
-
   const rawFullCrop = createFullCropLayer(image, card)
 
   const fullCrop = applyBounds(rawFullCrop, image, card.orientation)
@@ -198,14 +205,30 @@ export function* handleCropFullAction(): SagaIterator {
   yield put(addOperation(op))
 }
 
-export function* syncCropFullIcon(): SagaIterator {
+export function* syncCropFullIcon(params?: {
+  forceActive?: boolean
+  customConfig?: WorkingConfig
+}): SagaIterator {
+  if (!params) {
+    yield delay(0)
+  }
+
   const toolbarState: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto')
   )
 
-  if (toolbarState.crop !== 'active') return
+  const currentStatus = params?.forceActive ? 'active' : toolbarState.crop
 
-  const isFull: boolean = yield select(selectIsCropFull)
+  if (currentStatus !== 'active') return
+
+  let isFull: boolean
+  if (params?.customConfig) {
+    isFull = yield select((state: RootState) =>
+      selectIsCropFull.resultFunc(params.customConfig!)
+    )
+  } else {
+    isFull = yield select(selectIsCropFull)
+  }
 
   yield* updateCropToolbarState('active', toolbarState, { isFull })
 }
@@ -253,87 +276,6 @@ export function* handleImageLayerUpdate() {
 
   yield put(addOperation(op))
 }
-
-// export function* handleCardOrientation1(): SagaIterator {
-//   const toolbarState: CardphotoToolbarState = yield select(
-//     selectToolbarSectionState('cardphoto')
-//   )
-//   const config: WorkingConfig | null = yield select(selectCurrentConfig)
-
-//   if (!config) return
-
-//   const isCropActive = toolbarState.crop === 'active'
-
-//   if (isCropActive) {
-//     yield put(
-//       updateToolbarIcon({
-//         section: 'cardphoto',
-//         key: 'crop',
-//         value: 'disabled',
-//       })
-//     )
-//   }
-
-//   const newOrientation: LayoutOrientation =
-//     config.card.orientation === 'portrait' ? 'landscape' : 'portrait'
-
-//   const ratio = config.card.aspectRatio
-//   const height = config.card.height
-
-//   const rawWidth =
-//     newOrientation === 'landscape' ? height * ratio : height / ratio
-//   const width = roundTo(rawWidth, 2)
-
-//   const newCardLayer: CardLayer = {
-//     ...config.card,
-//     orientation: newOrientation,
-//     height,
-//     width,
-//     aspectRatio: ratio,
-//   }
-//   const newImageLayer = fitImageToCard(
-//     config.image.meta,
-//     newCardLayer,
-//     config.image.orientation
-//   )
-
-//   const newCropLayer = createInitialCropLayer(newImageLayer, newCardLayer)
-
-//   const newConfig: WorkingConfig = {
-//     card: newCardLayer,
-//     image: newImageLayer,
-//     crop: newCropLayer,
-//   }
-
-//   const op: CardphotoOperation = {
-//     type: 'operation',
-//     payload: { config: newConfig, reason: 'rotateCard' },
-//   }
-
-//   yield put(setSizeCard(newCardLayer))
-
-//   yield put(addOperation(op))
-
-//   yield delay(0)
-
-//   yield put(
-//     updateToolbarIcon({
-//       section: 'cardphoto',
-//       key: 'orientation',
-//       value: newOrientation,
-//     })
-//   )
-
-//   const resultCropState = isCropActive ? 'active' : 'enabled'
-
-//   yield put(
-//     updateToolbarIcon({
-//       section: 'cardphoto',
-//       key: 'crop',
-//       value: resultCropState,
-//     })
-//   )
-// }
 
 export function* handleCardOrientation(): SagaIterator {
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
@@ -394,8 +336,6 @@ export function* handleCardOrientation(): SagaIterator {
   yield put(setSizeCard(newCardLayer))
   yield put(addOperation(op))
 
-  yield delay(0)
-
   yield put(
     updateToolbarIcon({
       section: 'cardphoto',
@@ -412,6 +352,13 @@ export function* handleCardOrientation(): SagaIterator {
       value: resultCropState,
     })
   )
+
+  if (isCropActive) {
+    yield call(syncCropFullIcon, {
+      forceActive: true,
+      customConfig: newConfig,
+    })
+  }
 }
 
 function rotateLeft(o: ImageOrientation): ImageOrientation {
