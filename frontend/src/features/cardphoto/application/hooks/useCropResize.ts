@@ -1,6 +1,6 @@
 import { updateCrop } from '../helpers'
 import type { LayoutOrientation } from '@layout/domain/types'
-import type { CropLayer, ImageLayer } from '../../domain/types'
+import type { CropLayer, ImageLayer, ImageMeta } from '../../domain/types'
 
 export const useCropResize = (
   tempCrop: CropLayer,
@@ -18,6 +18,7 @@ export const useCropResize = (
     touchEnd: (e: TouchEvent) => void
   ) => () => void,
   lastCropRef: React.MutableRefObject<CropLayer>,
+  imageMeta: ImageMeta,
   orientation: LayoutOrientation
 ) => {
   return (
@@ -39,6 +40,7 @@ export const useCropResize = (
         dy,
         startState,
         imageLayer,
+        imageMeta,
         orientation
       )
 

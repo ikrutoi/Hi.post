@@ -7,6 +7,7 @@ import type {
   WorkingConfig,
   ImageMeta,
   CardphotoBase,
+  QualityLevel,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -48,13 +49,17 @@ export const selectCardOrientation = (state: RootState): LayoutOrientation =>
   state.cardphoto.state?.currentConfig?.card.orientation ?? 'landscape'
 
 export const selectCropOrientation = (state: RootState): LayoutOrientation =>
-  state.cardphoto.state?.currentConfig?.crop.orientation ??
+  state.cardphoto.state?.currentConfig?.crop?.orientation ??
   state.cardphoto.state?.currentConfig?.card.orientation ??
   'landscape'
 
-export const selectLastOperationReason = (state: RootState) =>
-  state.cardphoto.state?.operations[state.cardphoto.state.activeIndex]?.payload
-    .reason ?? null
+export const selectLastOperationReason = (state: RootState): string | null => {
+  const cardState = state.cardphoto.state
+  if (!cardState) return null
+
+  const activeOp = cardState.operations[cardState.activeIndex]
+  return activeOp?.payload.reason ?? null
+}
 
 const selectCurrentCard = (state: RootState) =>
   state.cardphoto.state?.currentConfig?.card
@@ -116,3 +121,9 @@ export const selectIsCropFull = createSelector(
     return isFullWidth && isFullHeight
   }
 )
+
+export const selectCropQuality = (state: RootState): QualityLevel =>
+  state.cardphoto.state?.currentConfig?.crop?.meta?.quality ?? 'low'
+
+export const selectCropQualityProgress = (state: RootState): number =>
+  state.cardphoto.state?.currentConfig?.crop?.meta?.qualityProgress ?? 0

@@ -86,7 +86,10 @@ export const ImageCrop = () => {
     // cardphotoState.cardOrientation
   )
 
-  // if (!imageLayer) return
+  const currentQuality = tempCrop?.meta.quality ?? 'low'
+  const currentProgress = tempCrop?.meta.qualityProgress ?? 0
+
+  console.log('Realtime Quality', currentQuality, currentProgress)
 
   const imageStyle: React.CSSProperties | undefined = imageLayer
     ? {
@@ -155,25 +158,28 @@ export const ImageCrop = () => {
         {loaded && imageLayer && iconStates.crop === 'active' && tempCrop && (
           <>
             <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
-            <CropArea
-              cropLayer={tempCrop}
-              imageLayer={imageLayer}
-              orientation={sizeCard.orientation}
-              onChange={(newCrop) => {
-                setTempCrop(newCrop)
-              }}
-              onCommit={(finalCrop) => {
-                addOp({
-                  type: 'operation',
-                  payload: {
-                    config: {
-                      ...cardphotoState.currentConfig!,
-                      crop: finalCrop,
+            {imageMeta && (
+              <CropArea
+                cropLayer={tempCrop}
+                imageLayer={imageLayer}
+                orientation={sizeCard.orientation}
+                imageMeta={imageMeta}
+                onChange={(newCrop) => {
+                  setTempCrop(newCrop)
+                }}
+                onCommit={(finalCrop) => {
+                  addOp({
+                    type: 'operation',
+                    payload: {
+                      config: {
+                        ...cardphotoState.currentConfig!,
+                        crop: finalCrop,
+                      },
                     },
-                  },
-                })
-              }}
-            />
+                  })
+                }}
+              />
+            )}
           </>
         )}
       </div>

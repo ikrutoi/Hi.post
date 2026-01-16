@@ -26,6 +26,8 @@ import {
   selectCropOrientation,
   selectLastOperationReason,
   selectCardSize,
+  selectCropQuality,
+  selectCropQualityProgress,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
@@ -46,6 +48,8 @@ export const useCardphotoController = () => {
   const activeIndex = useSelector(selectActiveIndex)
   const activeOperation = useSelector(selectActiveOperation)
   const currentConfig = useSelector(selectCurrentConfig)
+  const quality = useSelector(selectCropQuality)
+  const qualityProgress = useSelector(selectCropQualityProgress)
 
   const cardOrientation = useSelector(selectCardOrientation)
   const cropOrientation = useSelector(selectCropOrientation)
@@ -76,11 +80,12 @@ export const useCardphotoController = () => {
     activeIndex,
     activeOperation,
     currentConfig,
-
     cardOrientation,
     cropOrientation,
     lastOperationReason,
     cardSize,
+    quality,
+    qualityProgress,
 
     init,
     uploadImage,

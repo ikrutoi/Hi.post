@@ -9,6 +9,7 @@ import {
   handleImageRotate,
   handleCropFullAction,
   syncCropFullIcon,
+  handleCropConfirm,
 } from './cardphotoToolbarHandlers'
 import { onDownloadClick } from './cardphotoProcessSaga'
 
@@ -30,7 +31,8 @@ export function* handleCardphotoToolbarAction(
       yield* handleCropAction()
       break
     case 'cropCheck':
-      yield call(handleCropCheckAction)
+      // yield call(handleCropCheckAction)
+      yield call(handleCropConfirm)
       break
     case 'cropFull':
       yield call(handleCropFullAction)

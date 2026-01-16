@@ -22,6 +22,7 @@ export interface CardLayer {
 
 export type ImageOrientation = 0 | 90 | 180 | 270
 
+export type QualityLevel = 'high' | 'medium' | 'low'
 export interface ImageMeta {
   id: string
   source: ImageSource
@@ -44,6 +45,8 @@ export interface CropMeta {
   width: number
   height: number
   aspectRatio: number
+  quality: QualityLevel
+  qualityProgress: number
 }
 
 export interface CropLayer {
@@ -82,6 +85,7 @@ export type CardphotoOperation = {
       | 'initCrop'
       | 'initUserImage'
       | 'activateCrop'
+      | 'applyCrop'
   }
 }
 

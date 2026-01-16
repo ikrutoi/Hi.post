@@ -7,13 +7,14 @@ import {
   useCropDrag,
   useCropResize,
 } from '../application/hooks'
-import type { ImageLayer, CropLayer } from '../domain/types'
+import type { ImageLayer, CropLayer, ImageMeta } from '../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
 interface CropAreaProps {
   cropLayer: CropLayer
   imageLayer: ImageLayer
   orientation: LayoutOrientation
+  imageMeta: ImageMeta
   onChange: (newCrop: CropLayer) => void
   onCommit: (finalCrop: CropLayer) => void
 }
@@ -22,6 +23,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
   cropLayer,
   imageLayer,
   orientation,
+  imageMeta,
   onChange,
   onCommit,
 }) => {
@@ -62,6 +64,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
     end,
     attach,
     lastCropRef,
+    imageMeta,
     orientation
   )
 

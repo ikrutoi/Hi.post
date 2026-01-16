@@ -48,6 +48,7 @@ import type {
   CardLayer,
   CardphotoState,
   ImageOrientation,
+  CropLayer,
 } from '@cardphoto/domain/types'
 
 // export function* syncCropFullIcon1(customConfig?: WorkingConfig): SagaIterator {
@@ -431,4 +432,93 @@ export function* handleImageRotate(
   }
 
   yield put(addOperation(op))
+}
+
+import { getCroppedImg, loadAsyncImage } from '@cardphoto/application/hooks'
+import { markLoading, markLoaded } from '@cardphoto/infrastructure/state'
+import { updateToolbarSection } from '@toolbar/infrastructure/state'
+
+export function* handleCropConfirm(): SagaIterator {
+  const state: CardphotoState = yield select(selectCardphotoState)
+  const config = state.currentConfig
+
+  if (!config || !config.crop || !config.image.meta.url) return
+
+  try {
+    yield put(markLoading())
+
+    const img: HTMLImageElement = yield call(
+      loadAsyncImage,
+      config.image.meta.url
+    )
+
+    const scaleX = img.naturalWidth / config.image.meta.width
+    const scaleY = img.naturalHeight / config.image.meta.height
+
+    const realCrop: CropLayer = {
+      ...config.crop,
+      x: config.crop.x * scaleX,
+      y: config.crop.y * scaleY,
+      meta: {
+        ...config.crop.meta,
+        width: config.crop.meta.width * scaleX,
+        height: config.crop.meta.height * scaleY,
+      },
+    }
+
+    const croppedBlob: Blob = yield call(getCroppedImg, img, realCrop)
+    const croppedUrl = URL.createObjectURL(croppedBlob)
+
+    const finalImageMeta: ImageMeta = {
+      ...config.image.meta,
+      url: croppedUrl,
+      width: config.crop.meta.width,
+      height: config.crop.meta.height,
+      imageAspectRatio: config.crop.meta.aspectRatio,
+      blob: croppedBlob,
+      timestamp: Date.now(),
+    }
+
+    yield put(applyFinal(finalImageMeta))
+
+    const finalConfig: WorkingConfig = {
+      ...config,
+      image: {
+        ...config.image,
+        meta: finalImageMeta,
+        orientation: 0,
+        left: 0,
+        top: 0,
+      },
+      // crop: {
+      //   ...config.crop,
+      //   x: 0,
+      //   y: 0,
+      //   meta: {
+      //     width: finalImageMeta.width,
+      //     height: finalImageMeta.height,
+      //     aspectRatio: finalImageMeta.imageAspectRatio,
+      //   },
+      // },
+    }
+
+    yield put(
+      addOperation({
+        type: 'operation',
+        payload: { config: finalConfig, reason: 'applyCrop' },
+      })
+    )
+
+    yield put(
+      updateToolbarIcon({
+        section: 'cardphoto',
+        key: 'crop',
+        value: 'enabled',
+      })
+    )
+  } catch (error) {
+    console.error('Error crop:', error)
+  } finally {
+    yield put(markLoaded())
+  }
 }

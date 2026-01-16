@@ -27,12 +27,17 @@ import {
   selectCropOrientation,
   selectLastOperationReason,
   selectCardSize,
+  selectCropQuality,
+  selectCropQualityProgress,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
+  ImageLayer,
+  CropLayer,
   CardphotoOperation,
   CardphotoState,
   WorkingConfig,
+  QualityLevel,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -51,6 +56,8 @@ export interface CardphotoFacade {
     cropOrientation: LayoutOrientation
     lastOperationReason: string | null
     cardSize: { width: number; height: number }
+    quality: QualityLevel
+    qualityProgress: number
   }
   actions: {
     init: () => void
@@ -64,8 +71,8 @@ export interface CardphotoFacade {
     resetAll: () => void
     cancel: () => void
     resetLayers: (payload: {
-      imageLayer: any
-      cropLayer: any
+      imageLayer: ImageLayer
+      cropLayer: CropLayer
       card: WorkingConfig['card']
     }) => void
     rotateCard: (orientation: LayoutOrientation) => void
@@ -84,11 +91,12 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const activeIndex = useSelector(selectActiveIndex)
   const activeOperation = useSelector(selectActiveOperation)
   const currentConfig = useSelector(selectCurrentConfig)
-
   const cardOrientation = useSelector(selectCardOrientation)
   const cropOrientation = useSelector(selectCropOrientation)
   const lastOperationReason = useSelector(selectLastOperationReason)
   const cardSize = useSelector(selectCardSize)
+  const quality = useSelector(selectCropQuality)
+  const qualityProgress = useSelector(selectCropQualityProgress)
 
   const init = () => dispatch(initCardphoto())
   const uploadImage = (meta: ImageMeta) => dispatch(uploadImageReady(meta))
@@ -124,6 +132,8 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       cropOrientation,
       lastOperationReason,
       cardSize,
+      quality,
+      qualityProgress,
     },
     actions: {
       init,
