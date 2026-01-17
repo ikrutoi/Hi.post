@@ -19,6 +19,9 @@ export const selectRemSize = (state: RootState) =>
 
 export const selectScale = (state: RootState) => selectLayoutSize(state).scale
 
+export const selectSectionMenuHeight = (state: RootState) =>
+  selectLayoutSize(state).sectionMenuHeight
+
 export const selectViewportSize = (state: RootState): ViewportSizeState =>
   selectLayoutSize(state).viewportSize
 

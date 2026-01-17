@@ -12,7 +12,8 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: $color-toggle-active;
+  background-color: var(--crop-handle-color, $color-toggle-active);
+  // background: $color-toggle-active;
   border: 1px solid white;
 }
 

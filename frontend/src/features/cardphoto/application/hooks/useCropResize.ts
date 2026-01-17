@@ -1,4 +1,4 @@
-import { updateCrop } from '../helpers'
+import { updateCrop, dispatchQualityUpdate, getQualityColor } from '../helpers'
 import type { LayoutOrientation } from '@layout/domain/types'
 import type { CropLayer, ImageLayer, ImageMeta } from '../../domain/types'
 
@@ -43,6 +43,10 @@ export const useCropResize = (
         imageMeta,
         orientation
       )
+
+      dispatchQualityUpdate(next.meta.qualityProgress, next.meta.quality)
+      const color = getQualityColor(next.meta.qualityProgress)
+      document.documentElement.style.setProperty('--crop-handle-color', color)
 
       setTempCrop(next)
       setLast(next)

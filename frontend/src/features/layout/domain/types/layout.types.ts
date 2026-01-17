@@ -89,6 +89,7 @@ export interface SizeState {
   remSize: number | null
   viewportSize: ViewportSizeState
   scale: number | null
+  sectionMenuHeight: number | null
 }
 
 export interface MemoryState {

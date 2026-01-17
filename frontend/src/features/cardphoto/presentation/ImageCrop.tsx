@@ -78,18 +78,11 @@ export const ImageCrop = () => {
 
   const shouldShowImage = !!src && imageMeta
 
-  // console.log('should', shouldShowImage)
-
   const [tempCrop, setTempCrop] = useCropState(
     iconStates.crop,
     cardphotoState.currentConfig?.crop ?? null
     // cardphotoState.cardOrientation
   )
-
-  const currentQuality = tempCrop?.meta.quality ?? 'low'
-  const currentProgress = tempCrop?.meta.qualityProgress ?? 0
-
-  console.log('Realtime Quality', currentQuality, currentProgress)
 
   const imageStyle: React.CSSProperties | undefined = imageLayer
     ? {

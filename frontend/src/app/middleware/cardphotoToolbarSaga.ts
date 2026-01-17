@@ -11,10 +11,35 @@ import {
   syncCropFullIcon,
   handleCropConfirm,
 } from './cardphotoToolbarHandlers'
+import {
+  getQualityColor,
+  dispatchQualityUpdate,
+  calculateCropQuality,
+} from '@cardphoto/application/helpers'
 import { onDownloadClick } from './cardphotoProcessSaga'
+import type { CardphotoState } from '@cardphoto/domain/types'
 
 export function* watchCropChanges(): SagaIterator {
-  yield takeLatest(addOperation.type, syncCropFullIcon)
+  yield takeLatest(addOperation.type, function* (): SagaIterator {
+    yield call(syncCropFullIcon)
+
+    const state = (yield select((s) => s.cardphoto)) as CardphotoState
+
+    const config = state.currentConfig
+
+    if (config?.crop && config?.image?.meta) {
+      const { quality, qualityProgress } = calculateCropQuality(
+        config.crop,
+        config.image,
+        config.image.meta
+      )
+
+      yield call(dispatchQualityUpdate, qualityProgress, quality)
+
+      const color = getQualityColor(qualityProgress)
+      document.documentElement.style.setProperty('--crop-handle-color', color)
+    }
+  })
 }
 
 export function* handleCardphotoToolbarAction(

@@ -1,6 +1,7 @@
 import { clampCropToImage, enforceAspectRatio } from './index'
 import { roundTo } from '@shared/utils/layout'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
+import { calculateCropQuality } from '../helpers'
 import type { LayoutOrientation } from '@layout/domain/types'
 import type {
   CropLayer,
@@ -44,22 +45,22 @@ export const updateCrop = (
   const ar = isPortrait
     ? 1 / startCrop.meta.aspectRatio
     : startCrop.meta.aspectRatio
-  const scale = imageMeta.width / Math.max(1, imageLayer.meta.width)
+  // const scale = imageMeta.width / Math.max(1, imageLayer.meta.width)
 
   const isLeft = corner === 'TL' || corner === 'BL'
   const isTop = corner === 'TL' || corner === 'TR'
-  const minAllowedDpi = CARD_SCALE_CONFIG.minAllowedDpi
-  const inches = CARD_SCALE_CONFIG.widthMm / 25.4
-  const minRealPx = minAllowedDpi * inches
+  // const minAllowedDpi = CARD_SCALE_CONFIG.minAllowedDpi
+  // const inches = CARD_SCALE_CONFIG.widthMm / 25.4
+  // const minRealPx = minAllowedDpi * inches
 
-  const calculatedMinWidth = Math.round(minRealPx / scale)
-  const safeMinWidth = Math.max(
-    20,
-    Math.min(calculatedMinWidth, imageLayer.meta.width * 0.9)
-  )
+  // const calculatedMinWidth = Math.round(minRealPx / scale)
+  // const safeMinWidth = Math.max(
+  //   20,
+  //   Math.min(calculatedMinWidth, imageLayer.meta.width * 0.9)
+  // )
 
-  const minDPI = CARD_SCALE_CONFIG.minAllowedDpi
-  const maxDPI = CARD_SCALE_CONFIG.maxAllowedDpi
+  // const minDPI = CARD_SCALE_CONFIG.minAllowedDpi
+  // const maxDPI = CARD_SCALE_CONFIG.maxAllowedDpi
 
   const maxFreeWidth = isLeft
     ? startCrop.x + startCrop.meta.width - imageLayer.left
@@ -78,27 +79,31 @@ export const updateCrop = (
   if (isPortrait) {
     const deltaH = isTop ? -dy : dy
     newHeight = Math.max(
-      safeMinWidth / ar,
+      // safeMinWidth / ar,
       Math.min(startCrop.meta.height + deltaH, absoluteMaxHeight)
     )
     newWidth = newHeight * ar
   } else {
     const deltaW = isLeft ? -dx : dx
     newWidth = Math.max(
-      safeMinWidth,
+      // safeMinWidth,
       Math.min(startCrop.meta.width + deltaW, absoluteMaxWidth)
     )
     newHeight = newWidth / ar
   }
 
-  const realCropWidthPx = newWidth * scale
-  const dpi = Math.round(realCropWidthPx / inches)
-  const quality: QualityLevel =
-    dpi >= maxDPI ? 'high' : dpi >= 150 ? 'medium' : 'low'
-  const progress = Math.max(
-    0,
-    Math.min(minDPI, ((dpi - minDPI) / (maxDPI - minDPI)) * 100)
+  const { quality, qualityProgress } = calculateCropQuality(
+    { ...startCrop, meta: { ...startCrop.meta, width: newWidth } } as CropLayer,
+    imageLayer,
+    imageMeta
   )
+
+  // const realCropWidthPx = newWidth * scale
+  // const dpi = Math.round(realCropWidthPx / inches)
+  // const quality: QualityLevel =
+  //   dpi >= maxDPI ? 'high' : dpi >= 150 ? 'medium' : 'low'
+  // const rawProgress = ((dpi - minDPI) / (maxDPI - minDPI)) * 100
+  // const qualityProgress = roundTo(Math.max(0, Math.min(100, rawProgress)), 2)
 
   const startBottomY = startCrop.y + startCrop.meta.height
   const startRightX = startCrop.x + startCrop.meta.width
@@ -115,7 +120,7 @@ export const updateCrop = (
       width: roundTo(newWidth, 2),
       height: roundTo(newHeight, 2),
       quality,
-      qualityProgress: progress,
+      qualityProgress,
     },
   }
 }

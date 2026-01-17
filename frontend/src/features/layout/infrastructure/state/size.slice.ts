@@ -19,6 +19,7 @@ const initialState: SizeState = {
   remSize: null,
   viewportSize: { width: 0, height: 0, viewportSize: null },
   scale: null,
+  sectionMenuHeight: null,
 }
 
 export const sizeSlice = createSlice({
@@ -42,6 +43,9 @@ export const sizeSlice = createSlice({
     },
     setScale(state, action: PayloadAction<number | null>) {
       state.scale = action.payload
+    },
+    setSectionMenuHeight(state, action: PayloadAction<number | null>) {
+      state.sectionMenuHeight = action.payload
     },
     setViewportSize(state, action: PayloadAction<Partial<SizeCard>>) {
       state.viewportSize = {
@@ -75,6 +79,7 @@ export const {
   setSizeMiniCard,
   setRemSize,
   setScale,
+  setSectionMenuHeight,
   setViewportSize,
   setCardOrientation,
 } = sizeSlice.actions

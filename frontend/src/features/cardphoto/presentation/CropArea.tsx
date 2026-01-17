@@ -7,6 +7,11 @@ import {
   useCropDrag,
   useCropResize,
 } from '../application/hooks'
+import {
+  getQualityColor,
+  calculateCropQuality,
+  dispatchQualityUpdate,
+} from '../application/helpers'
 import type { ImageLayer, CropLayer, ImageMeta } from '../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -67,6 +72,19 @@ export const CropArea: React.FC<CropAreaProps> = ({
     imageMeta,
     orientation
   )
+
+  useEffect(() => {
+    const { quality, qualityProgress } = calculateCropQuality(
+      cropLayer,
+      imageLayer,
+      imageMeta
+    )
+
+    dispatchQualityUpdate(qualityProgress, quality)
+
+    const color = getQualityColor(qualityProgress)
+    document.documentElement.style.setProperty('--crop-handle-color', color)
+  }, [cropLayer.orientation, imageLayer.orientation])
 
   useEffect(() => {
     if (!interactingRef.current) {

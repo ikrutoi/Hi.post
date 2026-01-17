@@ -21,6 +21,8 @@ import { updateCropToolbarState } from './cardphotoToolbarHelpers'
 import {
   getCroppedBase64,
   transformCropForOrientation,
+  calculateCropQuality,
+  dispatchQualityUpdate,
 } from '@cardphoto/application/helpers'
 import { setCardOrientation, setSizeCard } from '@layout/infrastructure/state'
 import {
@@ -50,26 +52,6 @@ import type {
   ImageOrientation,
   CropLayer,
 } from '@cardphoto/domain/types'
-
-// export function* syncCropFullIcon1(customConfig?: WorkingConfig): SagaIterator {
-//   const toolbarState: CardphotoToolbarState = yield select(
-//     selectToolbarSectionState('cardphoto')
-//   )
-
-//   if (toolbarState.crop !== 'active' && toolbarState.crop !== 'enabled') return
-
-//   let isFull: boolean
-//   if (customConfig) {
-//     isFull = yield select((state: RootState) =>
-//       selectIsCropFull.resultFunc(customConfig)
-//     )
-//   } else {
-//     isFull = yield select(selectIsCropFull)
-//   }
-
-//   const currentMode = toolbarState.crop === 'active' ? 'active' : 'enabled'
-//   yield call(updateCropToolbarState, currentMode, toolbarState, { isFull })
-// }
 
 export function* handleCropAction() {
   const state: CardphotoToolbarState = yield select(
@@ -490,16 +472,6 @@ export function* handleCropConfirm(): SagaIterator {
         left: 0,
         top: 0,
       },
-      // crop: {
-      //   ...config.crop,
-      //   x: 0,
-      //   y: 0,
-      //   meta: {
-      //     width: finalImageMeta.width,
-      //     height: finalImageMeta.height,
-      //     aspectRatio: finalImageMeta.imageAspectRatio,
-      //   },
-      // },
     }
 
     yield put(
@@ -520,5 +492,19 @@ export function* handleCropConfirm(): SagaIterator {
     console.error('Error crop:', error)
   } finally {
     yield put(markLoaded())
+  }
+}
+
+export function* syncQualitySaga() {
+  const state: CardphotoState = yield select((s) => s.cardphoto)
+  const config = state.currentConfig
+
+  if (config?.crop && config?.image) {
+    const { qualityProgress, quality } = calculateCropQuality(
+      config.crop,
+      config.image,
+      config.image.meta
+    )
+    dispatchQualityUpdate(qualityProgress, quality)
   }
 }

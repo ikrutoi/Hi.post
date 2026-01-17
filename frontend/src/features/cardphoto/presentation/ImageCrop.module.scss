@@ -20,6 +20,15 @@
   }
 }
 
+.imageCropQuality {
+  position: absolute;
+  right: -2rem;
+  width: 4px;
+  height: 200px;
+  background-color: aqua;
+  z-index: 1;
+}
+
 .cropContainer {
   position: relative;
   user-select: none;

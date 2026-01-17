@@ -37,6 +37,8 @@ export const useCropDrag = (
         orientation
       )
 
+      // getQualityProgress(next)
+
       const realDx = next.x - initialCropX
       const realDy = next.y - initialCropY
 

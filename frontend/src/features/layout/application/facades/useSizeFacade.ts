@@ -5,6 +5,7 @@ import {
   selectSizeMiniCard,
   selectRemSize,
   selectScale,
+  selectSectionMenuHeight,
   selectViewportSize,
   selectCardOrientation,
   selectCardDimensions,
@@ -19,6 +20,7 @@ export const useSizeFacade = () => {
   const sizeMiniCard = useAppSelector(selectSizeMiniCard)
   const remSize = useAppSelector(selectRemSize)
   const scale = useAppSelector(selectScale)
+  const sectionMenuHeight = useAppSelector(selectSectionMenuHeight)
   const viewportSize = useAppSelector(selectViewportSize)
 
   const cardOrientation = useAppSelector(selectCardOrientation)
@@ -33,6 +35,7 @@ export const useSizeFacade = () => {
       sizeMiniCard,
       remSize,
       scale,
+      sectionMenuHeight,
       viewportSize,
       cardOrientation,
       cardDimensions,

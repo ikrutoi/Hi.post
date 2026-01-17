@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect, useLayoutEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { useToolbarFacade } from '../application/facades'
+import { useLayoutFacade } from '@layout/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
 import type { ToolbarSection, ToolbarGroup } from '../domain/types'
@@ -16,6 +17,22 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     useToolbarFacade(section)
   const { state: iconStates, groups, badges } = toolbarState
   const { onAction } = toolbarActions
+
+  const groupRef = useRef<HTMLDivElement>(null)
+
+  const { size: layoutSize, actions: layoutActions } = useLayoutFacade()
+  const { sectionMenuHeight } = layoutSize
+  const { setSectionMenuHeight } = layoutActions
+
+  useEffect(() => {
+    if (groupRef.current) {
+      const actualHeight = groupRef.current.offsetHeight
+
+      if (actualHeight !== sectionMenuHeight) {
+        setSectionMenuHeight(actualHeight)
+      }
+    }
+  }, [section, groups, sectionMenuHeight, setSectionMenuHeight])
 
   const renderIcon = (key: IconKey, groupStatus: IconStateGroup) => {
     const iconState = iconStates[key as keyof typeof iconStates] as IconState
@@ -55,6 +72,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
       {groups.map((group: ToolbarGroup) => (
         <div
           key={group.group}
+          ref={section === 'sectionEditorMenu' ? groupRef : undefined}
           className={clsx(
             styles.toolbarGroup,
             styles[`toolbarGroup${capitalize(group.group)}`],
