@@ -15,16 +15,16 @@ export const useCropResize = (
     mouseMove: (e: MouseEvent) => void,
     mouseUp: (e: MouseEvent) => void,
     touchMove: (e: TouchEvent) => void,
-    touchEnd: (e: TouchEvent) => void
+    touchEnd: (e: TouchEvent) => void,
   ) => () => void,
   lastCropRef: React.MutableRefObject<CropLayer>,
   imageMeta: ImageMeta,
-  orientation: LayoutOrientation
+  orientation: LayoutOrientation,
 ) => {
   return (
     corner: 'TL' | 'TR' | 'BL' | 'BR',
     startX: number,
-    startY: number
+    startY: number,
   ) => {
     begin()
 
@@ -34,6 +34,8 @@ export const useCropResize = (
       const dx = clientX - startX
       const dy = clientY - startY
 
+      console.log('useCropResize', orientation)
+
       const next = updateCrop(
         corner,
         dx,
@@ -41,9 +43,10 @@ export const useCropResize = (
         startState,
         imageLayer,
         imageMeta,
-        orientation
+        orientation,
       )
 
+      console.log('useCropResize->>color')
       dispatchQualityUpdate(next.meta.qualityProgress, next.meta.quality)
       const color = getQualityColor(next.meta.qualityProgress)
       document.documentElement.style.setProperty('--crop-handle-color', color)

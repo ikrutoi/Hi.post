@@ -8,6 +8,7 @@ import {
 import {
   selectCardphotoState,
   selectCurrentConfig,
+  selectActiveSourceImage,
 } from '@cardphoto/infrastructure/selectors'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { STOCK_IMAGES } from '@shared/assets/stock'
@@ -32,18 +33,19 @@ function getRandomStockMeta(): ImageMeta {
 function* initCardphotoSaga() {
   const state: CardphotoState = yield select(selectCardphotoState)
   if (state.operations.length > 1) return
+  // const originalImage: ImageMeta = yield select(selectActiveSourceImage)
 
   const randomMeta: ImageMeta = yield call(getRandomStockMeta)
   const cardLayer: CardLayer = yield select(selectSizeCard)
   const imageLayer = fitImageToCard(randomMeta, cardLayer, 0)
-  const cropLayer = createInitialCropLayer(imageLayer, cardLayer)
+  const cropLayer = createInitialCropLayer(imageLayer, cardLayer, randomMeta)
   const workingConfig = { card: cardLayer, image: imageLayer, crop: cropLayer }
 
   yield put(
     initStockImage({
       meta: randomMeta,
       config: workingConfig,
-    })
+    }),
   )
 }
 

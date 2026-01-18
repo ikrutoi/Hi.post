@@ -20,11 +20,16 @@ import styles from './ImageCrop.module.scss'
 export const ImageCrop = () => {
   const { state: cardphotoState, actions: cardphotoActions } =
     useCardphotoFacade()
+  const { activeSourceImage } = cardphotoState
   const { init, setUserImage, addOp, uploadImage } = cardphotoActions
+
+  const reduxCrop = cardphotoState.currentConfig?.crop
 
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
+
+  // console.log('ImageCrop activeSourceImage', activeSourceImage)
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
   const { state: iconStates } = toolbarState
@@ -38,9 +43,23 @@ export const ImageCrop = () => {
 
   const processedSrcRef = useRef<string | null>(null)
 
+  const [tempCrop, setTempCrop] = useCropState(
+    iconStates.crop,
+    cardphotoState.currentConfig?.crop ?? null,
+  )
+
+  // console.log('tempCrop', tempCrop?.meta.qualityProgress)
+
   useEffect(() => {
     init()
   }, [])
+
+  useEffect(() => {
+    if (reduxCrop) {
+      // console.log('reduxCRop', reduxCrop)
+      setTempCrop(reduxCrop)
+    }
+  }, [reduxCrop, setTempCrop])
 
   const { imageMeta, isReady, loadedUrl } = useImageMetaLoader(src)
 
@@ -73,16 +92,10 @@ export const ImageCrop = () => {
 
   const handleFileChange = useImageUpload(
     setUserImage,
-    cardphotoUiActions.markLoading
+    cardphotoUiActions.markLoading,
   )
 
   const shouldShowImage = !!src && imageMeta
-
-  const [tempCrop, setTempCrop] = useCropState(
-    iconStates.crop,
-    cardphotoState.currentConfig?.crop ?? null
-    // cardphotoState.cardOrientation
-  )
 
   const imageStyle: React.CSSProperties | undefined = imageLayer
     ? {
@@ -143,38 +156,42 @@ export const ImageCrop = () => {
             onLoad={() => setLoaded(true)}
             className={clsx(
               styles.cropImage,
-              loaded ? styles.fadeInVisible : styles.fadeIn
+              loaded ? styles.fadeInVisible : styles.fadeIn,
             )}
             style={imageStyle}
           />
         )}
-        {loaded && imageLayer && iconStates.crop === 'active' && tempCrop && (
-          <>
-            <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
-            {imageMeta && (
-              <CropArea
-                cropLayer={tempCrop}
-                imageLayer={imageLayer}
-                orientation={sizeCard.orientation}
-                imageMeta={imageMeta}
-                onChange={(newCrop) => {
-                  setTempCrop(newCrop)
-                }}
-                onCommit={(finalCrop) => {
-                  addOp({
-                    type: 'operation',
-                    payload: {
-                      config: {
-                        ...cardphotoState.currentConfig!,
-                        crop: finalCrop,
+        {loaded &&
+          imageLayer &&
+          iconStates.crop === 'active' &&
+          tempCrop &&
+          activeSourceImage && (
+            <>
+              <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
+              {imageMeta && (
+                <CropArea
+                  cropLayer={tempCrop}
+                  imageLayer={imageLayer}
+                  orientation={sizeCard.orientation}
+                  originalImage={activeSourceImage}
+                  onChange={(newCrop) => {
+                    setTempCrop(newCrop)
+                  }}
+                  onCommit={(finalCrop) => {
+                    addOp({
+                      type: 'operation',
+                      payload: {
+                        config: {
+                          ...cardphotoState.currentConfig!,
+                          crop: finalCrop,
+                        },
                       },
-                    },
-                  })
-                }}
-              />
-            )}
-          </>
-        )}
+                    })
+                  }}
+                />
+              )}
+            </>
+          )}
       </div>
     </div>
   )

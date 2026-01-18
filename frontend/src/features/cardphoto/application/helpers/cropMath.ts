@@ -5,15 +5,17 @@ import { calculateCropQuality } from '../helpers'
 import type { LayoutOrientation } from '@layout/domain/types'
 import type {
   CropLayer,
+  CropMeta,
   ImageLayer,
   QualityLevel,
   ImageMeta,
+  WorkingConfig,
 } from '../../domain/types'
 
 export const applyBounds = (
   crop: CropLayer,
   imageLayer: ImageLayer,
-  orientation: LayoutOrientation
+  orientation: LayoutOrientation,
 ): CropLayer => {
   let bounded = crop
   if (imageLayer) {
@@ -39,28 +41,15 @@ export const updateCrop = (
   startCrop: CropLayer,
   imageLayer: ImageLayer,
   imageMeta: ImageMeta,
-  orientation: LayoutOrientation
+  orientation: LayoutOrientation,
 ): CropLayer => {
   const isPortrait = orientation === 'portrait'
   const ar = isPortrait
     ? 1 / startCrop.meta.aspectRatio
     : startCrop.meta.aspectRatio
-  // const scale = imageMeta.width / Math.max(1, imageLayer.meta.width)
 
   const isLeft = corner === 'TL' || corner === 'BL'
   const isTop = corner === 'TL' || corner === 'TR'
-  // const minAllowedDpi = CARD_SCALE_CONFIG.minAllowedDpi
-  // const inches = CARD_SCALE_CONFIG.widthMm / 25.4
-  // const minRealPx = minAllowedDpi * inches
-
-  // const calculatedMinWidth = Math.round(minRealPx / scale)
-  // const safeMinWidth = Math.max(
-  //   20,
-  //   Math.min(calculatedMinWidth, imageLayer.meta.width * 0.9)
-  // )
-
-  // const minDPI = CARD_SCALE_CONFIG.minAllowedDpi
-  // const maxDPI = CARD_SCALE_CONFIG.maxAllowedDpi
 
   const maxFreeWidth = isLeft
     ? startCrop.x + startCrop.meta.width - imageLayer.left
@@ -80,30 +69,25 @@ export const updateCrop = (
     const deltaH = isTop ? -dy : dy
     newHeight = Math.max(
       // safeMinWidth / ar,
-      Math.min(startCrop.meta.height + deltaH, absoluteMaxHeight)
+      Math.min(startCrop.meta.height + deltaH, absoluteMaxHeight),
     )
     newWidth = newHeight * ar
   } else {
     const deltaW = isLeft ? -dx : dx
     newWidth = Math.max(
       // safeMinWidth,
-      Math.min(startCrop.meta.width + deltaW, absoluteMaxWidth)
+      Math.min(startCrop.meta.width + deltaW, absoluteMaxWidth),
     )
     newHeight = newWidth / ar
   }
 
+  console.log('updateCrop-->>')
   const { quality, qualityProgress } = calculateCropQuality(
-    { ...startCrop, meta: { ...startCrop.meta, width: newWidth } } as CropLayer,
+    { ...startCrop.meta, ...startCrop.meta, width: newWidth } as CropMeta,
+    // { ...startCrop, meta: { ...startCrop.meta, width: newWidth } } as CropLayer,
     imageLayer,
-    imageMeta
+    imageMeta,
   )
-
-  // const realCropWidthPx = newWidth * scale
-  // const dpi = Math.round(realCropWidthPx / inches)
-  // const quality: QualityLevel =
-  //   dpi >= maxDPI ? 'high' : dpi >= 150 ? 'medium' : 'low'
-  // const rawProgress = ((dpi - minDPI) / (maxDPI - minDPI)) * 100
-  // const qualityProgress = roundTo(Math.max(0, Math.min(100, rawProgress)), 2)
 
   const startBottomY = startCrop.y + startCrop.meta.height
   const startRightX = startCrop.x + startCrop.meta.width
@@ -129,19 +113,49 @@ export const clampDragWithinImage = (
   start: CropLayer,
   dx: number,
   dy: number,
-  imageLayer: ImageLayer
+  imageLayer: ImageLayer,
 ): { x: number; y: number } => {
   let newX = start.x + dx
   let newY = start.y + dy
 
   newX = Math.max(
     imageLayer.left,
-    Math.min(newX, imageLayer.left + imageLayer.meta.width - start.meta.width)
+    Math.min(newX, imageLayer.left + imageLayer.meta.width - start.meta.width),
   )
   newY = Math.max(
     imageLayer.top,
-    Math.min(newY, imageLayer.top + imageLayer.meta.height - start.meta.height)
+    Math.min(newY, imageLayer.top + imageLayer.meta.height - start.meta.height),
   )
 
   return { x: newX, y: newY }
+}
+
+export const checkIsCropFull = (config: WorkingConfig): boolean => {
+  const { image, card, crop } = config
+  const isRotated = image.orientation === 90 || image.orientation === 270
+
+  const currentVisualAR = isRotated
+    ? roundTo(1 / image.meta.imageAspectRatio, 3)
+    : image.meta.imageAspectRatio
+
+  const targetAR =
+    card.orientation === 'portrait'
+      ? roundTo(1 / card.aspectRatio, 3)
+      : card.aspectRatio
+
+  let maxWidth = 0
+  let maxHeight = 0
+
+  if (currentVisualAR > targetAR) {
+    maxHeight = image.meta.height
+    maxWidth = roundTo(maxHeight * targetAR, 2)
+  } else {
+    maxWidth = image.meta.width
+    maxHeight = roundTo(maxWidth / targetAR, 2)
+  }
+
+  const isFullWidth = Math.abs(crop.meta.width - maxWidth) < 2
+  const isFullHeight = Math.abs(crop.meta.height - maxHeight) < 2
+
+  return isFullWidth && isFullHeight
 }

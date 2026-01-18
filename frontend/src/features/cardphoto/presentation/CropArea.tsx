@@ -19,7 +19,7 @@ interface CropAreaProps {
   cropLayer: CropLayer
   imageLayer: ImageLayer
   orientation: LayoutOrientation
-  imageMeta: ImageMeta
+  originalImage: ImageMeta
   onChange: (newCrop: CropLayer) => void
   onCommit: (finalCrop: CropLayer) => void
 }
@@ -28,21 +28,15 @@ export const CropArea: React.FC<CropAreaProps> = ({
   cropLayer,
   imageLayer,
   orientation,
-  imageMeta,
+  originalImage,
   onChange,
   onCommit,
 }) => {
+  console.log('CropArea', cropLayer.meta.qualityProgress)
   const [tempCrop, setTempCrop] = useState<CropLayer>(cropLayer)
   const { interactingRef, lastCropRef, begin, end, setLast } =
     useInteractionState(cropLayer)
   const { attach } = useGlobalListeners()
-
-  useEffect(() => {
-    if (!interactingRef.current) {
-      setTempCrop(cropLayer)
-      setLast(cropLayer)
-    }
-  }, [cropLayer])
 
   const startDrag = useCropDrag(
     tempCrop,
@@ -55,7 +49,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
     end,
     attach,
     lastCropRef,
-    orientation
+    orientation,
   )
 
   const startResize = useCropResize(
@@ -69,18 +63,20 @@ export const CropArea: React.FC<CropAreaProps> = ({
     end,
     attach,
     lastCropRef,
-    imageMeta,
-    orientation
+    originalImage,
+    orientation,
   )
 
   useEffect(() => {
+    console.log('CropArea-->>', originalImage)
     const { quality, qualityProgress } = calculateCropQuality(
-      cropLayer,
+      cropLayer.meta,
       imageLayer,
-      imageMeta
+      originalImage,
     )
 
     dispatchQualityUpdate(qualityProgress, quality)
+    console.log('CropArea->>color')
 
     const color = getQualityColor(qualityProgress)
     document.documentElement.style.setProperty('--crop-handle-color', color)

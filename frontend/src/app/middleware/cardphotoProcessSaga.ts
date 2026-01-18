@@ -48,7 +48,7 @@ import type {
 
 export function* onDownloadClick(): SagaIterator {
   const toolbarState: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto')
+    selectToolbarSectionState('cardphoto'),
   )
 
   yield put(
@@ -56,7 +56,7 @@ export function* onDownloadClick(): SagaIterator {
       section: 'cardphoto',
       groupName: 'photo',
       status: 'disabled',
-    })
+    }),
   )
 
   yield put(
@@ -64,7 +64,7 @@ export function* onDownloadClick(): SagaIterator {
       section: 'cardphoto',
       key: 'download',
       value: 'disabled',
-    })
+    }),
   )
 
   if (toolbarState.crop === 'active') {
@@ -73,7 +73,7 @@ export function* onDownloadClick(): SagaIterator {
         section: 'cardphoto',
         key: 'crop',
         value: 'enabled',
-      })
+      }),
     )
   }
 
@@ -97,11 +97,11 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   if (!cardLayer) return
 
   const imageLayer = fitImageToCard(imageMeta, cardLayer, 0)
-  const cropLayer = createInitialCropLayer(imageLayer, cardLayer)
+  const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
   const { needsCrop } = validateImageSize(
     imageMeta,
     cardLayer.width,
-    cardLayer.height
+    cardLayer.height,
   )
 
   const newConfig: WorkingConfig = {
@@ -122,7 +122,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
         // config: { card: cardLayer, image: imageLayer, crop: cropLayer },
         reason: 'initUserImage',
       },
-    })
+    }),
   )
 
   yield put(
@@ -130,11 +130,11 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
       section: 'cardphoto',
       groupName: 'photo',
       status: 'enabled',
-    })
+    }),
   )
 
   const toolbarState: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto')
+    selectToolbarSectionState('cardphoto'),
   )
 
   yield put(
@@ -146,7 +146,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
         save: 'enabled',
         apply: needsCrop ? 'enabled' : 'disabled',
       },
-    })
+    }),
   )
 
   yield put(markLoaded())
@@ -158,13 +158,13 @@ function* onCancelFileDialog(): SagaIterator {
       section: 'cardphoto',
       key: 'download',
       value: 'enabled',
-    })
+    }),
   )
 
   yield put(markLoaded())
 
   const state: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto')
+    selectToolbarSectionState('cardphoto'),
   )
 
   yield put(
@@ -172,7 +172,7 @@ function* onCancelFileDialog(): SagaIterator {
       section: 'cardphoto',
       groupName: 'photo',
       status: 'enabled',
-    })
+    }),
   )
 }
 

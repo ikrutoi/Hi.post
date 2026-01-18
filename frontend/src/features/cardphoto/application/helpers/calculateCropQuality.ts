@@ -1,23 +1,40 @@
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
+import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
+import { useCardphotoController } from '@cardphoto/application/controllers'
+import { roundTo } from '@shared/utils/layout'
 import type {
   CropLayer,
   ImageLayer,
   ImageMeta,
+  CropMeta,
   QualityLevel,
 } from '../../domain/types'
 
 export const calculateCropQuality = (
-  crop: CropLayer,
+  crop: CropMeta,
   image: ImageLayer,
-  meta: ImageMeta
+  originalImage: ImageMeta,
 ) => {
+  console.log('calculateCropQuality+ crop', crop)
+  console.log('calculateCropQuality originalImage', originalImage)
   const { minAllowedDpi, maxAllowedDpi, widthMm } = CARD_SCALE_CONFIG
 
   const inches = widthMm / 25.4
 
-  const scale = meta.width / Math.max(1, image.meta.width)
+  const isSideOrientation =
+    image.orientation === 90 || image.orientation === 270
+  const originalReferenceWidth = isSideOrientation
+    ? originalImage.width / crop.aspectRatio
+    : originalImage.width
 
-  const realCropWidthPx = crop.meta.width * scale
+  const scale = roundTo(
+    originalReferenceWidth / Math.max(1, image.meta.width),
+    2,
+  )
+
+  // console.log('scale', scale, originalReferenceWidth, image.meta.width)
+
+  const realCropWidthPx = crop.width * scale
 
   const dpi = Math.round(realCropWidthPx / inches)
 
@@ -26,22 +43,30 @@ export const calculateCropQuality = (
 
   const rawProgress =
     ((dpi - minAllowedDpi) / (maxAllowedDpi - minAllowedDpi)) * 100
+
   const qualityProgress = Math.max(
     0,
-    Math.min(100, Math.round(rawProgress * 100) / 100)
+    Math.min(100, Math.round(rawProgress * 100) / 100),
   )
+  console.log('calculateCropQuality++', qualityProgress, scale)
 
-  return { quality, qualityProgress, dpi }
+  return {
+    quality,
+    qualityProgress,
+    dpi,
+    scale,
+  }
 }
 
 export const dispatchQualityUpdate = (
   progress: number,
-  quality: QualityLevel
+  quality: QualityLevel,
 ) => {
+  console.log('dispatchQuality', progress)
   window.dispatchEvent(
     new CustomEvent('crop-quality-change', {
       detail: { progress, quality },
-    })
+    }),
   )
 }
 
@@ -52,6 +77,7 @@ export const dispatchQualityUpdate = (
 // }
 
 export const getQualityColor = (progress: number) => {
+  console.log('getQualityColor', progress)
   const colors = {
     red: { r: 244, g: 67, b: 54 },
     yellow: { r: 255, g: 193, b: 7 },

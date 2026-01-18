@@ -1,6 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import { roundTo } from '@shared/utils/layout'
+import { checkIsCropFull } from '../../application/helpers'
 import type {
   CardphotoState,
   CardphotoOperation,
@@ -36,7 +37,7 @@ export const selectActiveIndex = (state: RootState): number =>
 
 export const selectActiveOperation = createSelector(
   [selectOperations, selectActiveIndex],
-  (operations, index) => (index >= 0 ? (operations[index] ?? null) : null)
+  (operations, index) => (index >= 0 ? (operations[index] ?? null) : null),
 )
 
 export const selectCurrentConfig = (state: RootState): WorkingConfig | null =>
@@ -75,7 +76,7 @@ export const selectCardSize = createSelector([selectCurrentCard], (card) => {
 
 export const selectBaseImageByTarget = (
   state: RootState,
-  target: keyof CardphotoBase
+  target: keyof CardphotoBase,
 ): ImageMeta | null => {
   const base = state.cardphoto.state?.base
   return base?.[target]?.image ?? null
@@ -119,7 +120,7 @@ export const selectIsCropFull = createSelector(
     const isFullHeight = Math.abs(crop.meta.height - maxHeight) < 2
 
     return isFullWidth && isFullHeight
-  }
+  },
 )
 
 export const selectCropQuality = (state: RootState): QualityLevel =>

@@ -55,23 +55,25 @@ import type {
 
 export function* handleCropAction() {
   const state: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto')
+    selectToolbarSectionState('cardphoto'),
   )
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config) return
-
+  console.log('handlerCrop', state)
   const isActivating = state.crop === 'enabled'
+  const baseImage: ImageMeta = yield select(selectActiveSourceImage)
 
   if (isActivating) {
     const cropToUse =
-      config.crop || createInitialCropLayer(config.image, config.card)
+      config.crop ||
+      createInitialCropLayer(config.image, config.card, baseImage)
     const newConfig = { ...config, crop: cropToUse }
 
     yield put(
       addOperation({
         type: 'operation',
         payload: { config: newConfig, reason: 'activateCrop' },
-      })
+      }),
     )
 
     yield call(syncCropFullIcon, {
@@ -85,7 +87,7 @@ export function* handleCropAction() {
 
 export function* handleCropCheckAction() {
   const state: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto')
+    selectToolbarSectionState('cardphoto'),
   )
   if (state.crop !== 'active') return
 
@@ -138,45 +140,38 @@ export function* handleCropCheckAction() {
   yield* updateCropToolbarState('enabled', state)
 }
 
-export function* handleCropFullAction1(): SagaIterator {
-  const state = yield select(selectCardphotoState)
-
-  if (!state?.currentConfig && state.crop !== 'active') return
-
-  const { image, card } = state.currentConfig
-
-  const fullCrop = createFullCropLayer(image, card)
-
-  const newConfig: WorkingConfig = {
-    ...state.currentConfig,
-    crop: fullCrop,
-  }
-
-  const op: CardphotoOperation = {
-    type: 'operation',
-    payload: {
-      config: newConfig,
-      reason: 'cropFull',
-    },
-  }
-
-  yield put(addOperation(op))
-}
-
 export function* handleCropFullAction(): SagaIterator {
-  const state = yield select(selectCardphotoState)
+  const state = (yield select(selectCardphotoState)) as CardphotoState
   if (!state?.currentConfig) return
+  const baseImage: ImageMeta = yield select(selectActiveSourceImage)
 
   const { image, card } = state.currentConfig
 
   const rawFullCrop = createFullCropLayer(image, card)
-
   const fullCrop = applyBounds(rawFullCrop, image, card.orientation)
+
+  console.log('handleCropFull-->>')
+  const { quality, qualityProgress } = calculateCropQuality(
+    fullCrop.meta,
+    image,
+    baseImage,
+  )
+
+  console.log('quality', qualityProgress)
 
   const newConfig: WorkingConfig = {
     ...state.currentConfig,
-    crop: fullCrop,
+    crop: {
+      ...fullCrop,
+      meta: {
+        ...fullCrop.meta,
+        quality,
+        qualityProgress,
+      },
+    },
   }
+
+  console.log('newConfig', newConfig)
 
   const op: CardphotoOperation = {
     type: 'operation',
@@ -197,7 +192,7 @@ export function* syncCropFullIcon(params?: {
   }
 
   const toolbarState: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto')
+    selectToolbarSectionState('cardphoto'),
   )
 
   const currentStatus = params?.forceActive ? 'active' : toolbarState.crop
@@ -207,7 +202,7 @@ export function* syncCropFullIcon(params?: {
   let isFull: boolean
   if (params?.customConfig) {
     isFull = yield select((state: RootState) =>
-      selectIsCropFull.resultFunc(params.customConfig!)
+      selectIsCropFull.resultFunc(params.customConfig!),
     )
   } else {
     isFull = yield select(selectIsCropFull)
@@ -231,7 +226,7 @@ export function* handleOrientationAction() {
       section: 'cardphoto',
       key: 'orientation',
       value: newOrientation,
-    })
+    }),
   )
 }
 
@@ -239,13 +234,18 @@ export function* handleImageLayerUpdate() {
   const sizeCard: SizeCard = yield select(selectSizeCard)
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config || !config.image?.meta) return
+  const baseImage: ImageMeta = yield select(selectActiveSourceImage)
 
   const newImageLayer: ImageLayer = fitImageToCard(
     config.image.meta,
     sizeCard,
-    config.image.orientation
+    config.image.orientation,
   )
-  const newCropLayer = createInitialCropLayer(newImageLayer, sizeCard)
+  const newCropLayer = createInitialCropLayer(
+    newImageLayer,
+    sizeCard,
+    baseImage,
+  )
   const newConfig: WorkingConfig = {
     card: sizeCard,
     image: newImageLayer,
@@ -275,7 +275,7 @@ export function* handleCardOrientation(): SagaIterator {
         section: 'cardphoto',
         key: 'crop',
         value: 'disabled',
-      })
+      }),
     )
   }
 
@@ -300,10 +300,14 @@ export function* handleCardOrientation(): SagaIterator {
   const newImageLayer = fitImageToCard(
     baseImage,
     newCardLayer,
-    config.image.orientation
+    config.image.orientation,
   )
 
-  const newCropLayer = createInitialCropLayer(newImageLayer, newCardLayer)
+  const newCropLayer = createInitialCropLayer(
+    newImageLayer,
+    newCardLayer,
+    baseImage,
+  )
 
   const newConfig: WorkingConfig = {
     card: newCardLayer,
@@ -324,7 +328,7 @@ export function* handleCardOrientation(): SagaIterator {
       section: 'cardphoto',
       key: 'orientation',
       value: newOrientation,
-    })
+    }),
   )
 
   const resultCropState = isCropActive ? 'active' : 'enabled'
@@ -333,7 +337,7 @@ export function* handleCardOrientation(): SagaIterator {
       section: 'cardphoto',
       key: 'crop',
       value: resultCropState,
-    })
+    }),
   )
 
   if (isCropActive) {
@@ -375,14 +379,12 @@ function rotateRight(o: ImageOrientation): ImageOrientation {
 }
 
 export function* handleImageRotate(
-  key: 'imageRotateLeft' | 'imageRotateRight'
+  key: 'imageRotateLeft' | 'imageRotateRight',
 ): SagaIterator {
   const state = yield select(selectCardphotoState)
-  const sourceImageMeta: ImageMeta | null = yield select(
-    selectActiveSourceImage
-  )
+  const baseImage: ImageMeta = yield select(selectActiveSourceImage)
 
-  if (!state?.currentConfig || !sourceImageMeta) return
+  if (!state?.currentConfig || !baseImage) return
 
   const currentConfig: WorkingConfig = state.currentConfig
   const currentOrientation = state.currentConfig.image.orientation ?? 0
@@ -392,17 +394,34 @@ export function* handleImageRotate(
       : rotateLeft(currentOrientation)
 
   const newImageLayer = fitImageToCard(
-    sourceImageMeta,
+    baseImage,
     currentConfig.card,
-    nextOrientation
+    nextOrientation,
   )
 
-  const newCropLayer = createInitialCropLayer(newImageLayer, currentConfig.card)
+  const newCropLayer = createInitialCropLayer(
+    newImageLayer,
+    currentConfig.card,
+    baseImage,
+  )
+  console.log('handleImageRotate-->>')
+  const { quality, qualityProgress } = calculateCropQuality(
+    newCropLayer.meta,
+    newImageLayer,
+    baseImage,
+  )
 
   const newConfig: WorkingConfig = {
     ...currentConfig,
     image: newImageLayer,
-    crop: newCropLayer,
+    crop: {
+      ...newCropLayer,
+      meta: {
+        ...newCropLayer.meta,
+        quality,
+        qualityProgress,
+      },
+    },
   }
 
   const op: CardphotoOperation = {
@@ -431,7 +450,7 @@ export function* handleCropConfirm(): SagaIterator {
 
     const img: HTMLImageElement = yield call(
       loadAsyncImage,
-      config.image.meta.url
+      config.image.meta.url,
     )
 
     const scaleX = img.naturalWidth / config.image.meta.width
@@ -478,7 +497,7 @@ export function* handleCropConfirm(): SagaIterator {
       addOperation({
         type: 'operation',
         payload: { config: finalConfig, reason: 'applyCrop' },
-      })
+      }),
     )
 
     yield put(
@@ -486,7 +505,7 @@ export function* handleCropConfirm(): SagaIterator {
         section: 'cardphoto',
         key: 'crop',
         value: 'enabled',
-      })
+      }),
     )
   } catch (error) {
     console.error('Error crop:', error)
@@ -500,10 +519,11 @@ export function* syncQualitySaga() {
   const config = state.currentConfig
 
   if (config?.crop && config?.image) {
+    console.log('syncQuality-->>')
     const { qualityProgress, quality } = calculateCropQuality(
-      config.crop,
+      config.crop.meta,
       config.image,
-      config.image.meta
+      config.image.meta,
     )
     dispatchQualityUpdate(qualityProgress, quality)
   }

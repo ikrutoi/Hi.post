@@ -28,10 +28,11 @@ export function* watchCropChanges(): SagaIterator {
     const config = state.currentConfig
 
     if (config?.crop && config?.image?.meta) {
+      console.log('watchCrop-->>')
       const { quality, qualityProgress } = calculateCropQuality(
-        config.crop,
+        config.crop.meta,
         config.image,
-        config.image.meta
+        config.image.meta,
       )
 
       yield call(dispatchQualityUpdate, qualityProgress, quality)
@@ -43,7 +44,7 @@ export function* watchCropChanges(): SagaIterator {
 }
 
 export function* handleCardphotoToolbarAction(
-  action: ReturnType<typeof toolbarAction>
+  action: ReturnType<typeof toolbarAction>,
 ): SagaIterator {
   const { section, key } = action.payload
   if (section !== 'cardphoto') return

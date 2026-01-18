@@ -1,5 +1,6 @@
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { roundTo } from '@shared/utils/layout'
+import { calculateCropQuality } from '../helpers'
 import type {
   ImageMeta,
   ImageLayer,
@@ -11,7 +12,7 @@ import type {
 export function fitImageToCard(
   originalMeta: ImageMeta,
   card: CardLayer,
-  orientation: ImageOrientation
+  orientation: ImageOrientation,
 ): ImageLayer {
   const isRotated = orientation === 90 || orientation === 270
 
@@ -42,7 +43,8 @@ export function fitImageToCard(
 
 export function createInitialCropLayer(
   image: ImageLayer,
-  card: CardLayer
+  card: CardLayer,
+  originalImage: ImageMeta,
 ): CropLayer {
   const crop: CropLayer = {
     x: 0,
@@ -51,10 +53,12 @@ export function createInitialCropLayer(
       width: 0,
       height: 0,
       aspectRatio: card.aspectRatio,
+      quality: 'low',
+      qualityProgress: 0,
     },
     orientation: card.orientation,
   }
-
+  // console.log('createInitialCrop originalImage', originalImage)
   const deltaAR = CARD_SCALE_CONFIG.deltaAspectRatio
 
   const isRotated = image.orientation === 90 || image.orientation === 270
@@ -78,12 +82,12 @@ export function createInitialCropLayer(
       crop.meta.height = roundTo(image.meta.height * ratio, 2)
       crop.meta.width = roundTo(
         (image.meta.height * ratio) / card.aspectRatio,
-        2
+        2,
       )
       crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
       crop.y = roundTo(
         image.top + (image.meta.height - crop.meta.height) / 2,
-        2
+        2,
       )
     } else {
       let ratio = 1
@@ -97,7 +101,7 @@ export function createInitialCropLayer(
       crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
       crop.y = roundTo(
         image.top + (image.meta.height - crop.meta.height) / 2,
-        2
+        2,
       )
     }
   } else {
@@ -113,7 +117,7 @@ export function createInitialCropLayer(
       crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
       crop.y = roundTo(
         image.top + (image.meta.height - crop.meta.height) / 2,
-        2
+        2,
       )
     } else {
       let ratio = 1
@@ -127,18 +131,27 @@ export function createInitialCropLayer(
       crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
       crop.y = roundTo(
         image.top + (image.meta.height - crop.meta.height) / 2,
-        2
+        2,
       )
     }
   }
+
+  console.log('createInitialCrop-->>')
+  const qualityData = calculateCropQuality(crop.meta, image, originalImage)
+
+  // console.log('createInitialCrop++', qualityData)
+
+  crop.meta.quality = qualityData.quality
+  crop.meta.qualityProgress = qualityData.qualityProgress
 
   return crop
 }
 
 export function createFullCropLayer(
   image: ImageLayer,
-  card: CardLayer
+  card: CardLayer,
 ): CropLayer {
+  console.log('createFullCrop!!---000')
   const isRotated = image.orientation === 90 || image.orientation === 270
 
   const currentVisualAR = isRotated
@@ -166,6 +179,8 @@ export function createFullCropLayer(
       width: finalWidth,
       height: finalHeight,
       aspectRatio: targetAR,
+      quality: 'low',
+      qualityProgress: 0,
     },
     orientation: card.orientation,
   }
