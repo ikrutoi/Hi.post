@@ -1,3 +1,4 @@
+import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { updateCrop, dispatchQualityUpdate, getQualityColor } from '../helpers'
 import type { LayoutOrientation } from '@layout/domain/types'
 import type { CropLayer, ImageLayer, ImageMeta } from '../../domain/types'
@@ -28,13 +29,23 @@ export const useCropResize = (
   ) => {
     begin()
 
+    const { minAllowedDpi, widthMm } = CARD_SCALE_CONFIG
+    const inches = widthMm / 25.4
+
+    const isSideOrientation =
+      imageLayer.orientation === 90 || imageLayer.orientation === 270
+    const originalRefWidth = isSideOrientation
+      ? imageMeta.height
+      : imageMeta.width
+    const scale = originalRefWidth / Math.max(1, imageLayer.meta.width)
+
+    const safeMinWidth = (minAllowedDpi * inches) / scale
+
     const startState = { ...tempCrop, meta: { ...tempCrop.meta } }
 
     const move = (clientX: number, clientY: number) => {
       const dx = clientX - startX
       const dy = clientY - startY
-
-      console.log('useCropResize', orientation)
 
       const next = updateCrop(
         corner,
@@ -44,9 +55,9 @@ export const useCropResize = (
         imageLayer,
         imageMeta,
         orientation,
+        safeMinWidth,
       )
 
-      console.log('useCropResize->>color')
       dispatchQualityUpdate(next.meta.qualityProgress, next.meta.quality)
       const color = getQualityColor(next.meta.qualityProgress)
       document.documentElement.style.setProperty('--crop-handle-color', color)

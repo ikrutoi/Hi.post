@@ -23,8 +23,6 @@ export const ImageCrop = () => {
   const { activeSourceImage } = cardphotoState
   const { init, setUserImage, addOp, uploadImage } = cardphotoActions
 
-  const reduxCrop = cardphotoState.currentConfig?.crop
-
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
@@ -53,13 +51,6 @@ export const ImageCrop = () => {
   useEffect(() => {
     init()
   }, [])
-
-  useEffect(() => {
-    if (reduxCrop) {
-      // console.log('reduxCRop', reduxCrop)
-      setTempCrop(reduxCrop)
-    }
-  }, [reduxCrop, setTempCrop])
 
   const { imageMeta, isReady, loadedUrl } = useImageMetaLoader(src)
 

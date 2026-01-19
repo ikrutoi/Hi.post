@@ -58,7 +58,6 @@ export function createInitialCropLayer(
     },
     orientation: card.orientation,
   }
-  // console.log('createInitialCrop originalImage', originalImage)
   const deltaAR = CARD_SCALE_CONFIG.deltaAspectRatio
 
   const isRotated = image.orientation === 90 || image.orientation === 270
@@ -136,10 +135,12 @@ export function createInitialCropLayer(
     }
   }
 
-  console.log('createInitialCrop-->>')
-  const qualityData = calculateCropQuality(crop.meta, image, originalImage)
-
-  // console.log('createInitialCrop++', qualityData)
+  const qualityData = calculateCropQuality(
+    crop.meta,
+    image,
+    originalImage,
+    card.orientation,
+  )
 
   crop.meta.quality = qualityData.quality
   crop.meta.qualityProgress = qualityData.qualityProgress
@@ -151,7 +152,6 @@ export function createFullCropLayer(
   image: ImageLayer,
   card: CardLayer,
 ): CropLayer {
-  console.log('createFullCrop!!---000')
   const isRotated = image.orientation === 90 || image.orientation === 270
 
   const currentVisualAR = isRotated
@@ -159,7 +159,9 @@ export function createFullCropLayer(
     : image.meta.imageAspectRatio
 
   const targetAR =
-    card.orientation === 'portrait' ? 1 / card.aspectRatio : card.aspectRatio
+    card.orientation === 'portrait'
+      ? roundTo(1 / card.aspectRatio, 2)
+      : card.aspectRatio
 
   let finalWidth = 0
   let finalHeight = 0
@@ -178,7 +180,7 @@ export function createFullCropLayer(
     meta: {
       width: finalWidth,
       height: finalHeight,
-      aspectRatio: targetAR,
+      aspectRatio: card.aspectRatio,
       quality: 'low',
       qualityProgress: 0,
     },

@@ -22,12 +22,8 @@ export const SectionEditorToolbar: React.FC = () => {
   const reduxProgress =
     cardphotoState.currentConfig?.crop?.meta?.qualityProgress ?? 0
 
-  console.log('SectionEditorToolbar', reduxProgress)
-
   useEffect(() => {
     const updateVisuals = (progress: number) => {
-      console.log('SectionEditorToolbar->>color')
-
       const color = getQualityColor(progress)
       if (thumbRef.current) {
         thumbRef.current.style.bottom = `${progress}%`

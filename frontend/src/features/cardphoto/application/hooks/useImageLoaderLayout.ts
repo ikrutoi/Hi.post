@@ -7,7 +7,7 @@ export const useImageLoader = (
   src: string,
   cardWidth: number,
   cardHeight: number,
-  imageId?: string
+  imageId?: string,
 ) => {
   const [imageData, setImageData] = useState<CropState | null>(null)
   const [isReady, setIsReady] = useState(false)
@@ -27,7 +27,7 @@ export const useImageLoader = (
       const scaleX = cardWidth / img.naturalWidth
       const scaleY = cardHeight / img.naturalHeight
       const scale = Math.min(scaleX, scaleY)
-      const imageAspectRatio = img.naturalWidth / img.naturalHeight
+      const imageAspectRatio = roundTo(img.naturalWidth / img.naturalHeight, 3)
 
       const finalWidth = img.naturalWidth * scale - 1
       const finalHeight = img.naturalHeight * scale - 1

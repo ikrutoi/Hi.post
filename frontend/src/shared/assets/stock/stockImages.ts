@@ -1,3 +1,4 @@
+import { roundTo } from '@shared/utils/layout'
 import type { ImageMeta } from '@cardphoto/domain/types'
 
 const modules = import.meta.glob('./*.jpg', { eager: true })
@@ -15,8 +16,8 @@ export const STOCK_IMAGES: ImageMeta[] = Object.entries(modules).map(
       url: (mod as { default: string }).default,
       width,
       height,
-      imageAspectRatio: width / height,
+      imageAspectRatio: roundTo(width / height, 3),
       timestamp: Date.now(),
     }
-  }
+  },
 )

@@ -32,7 +32,6 @@ export const CropArea: React.FC<CropAreaProps> = ({
   onChange,
   onCommit,
 }) => {
-  console.log('CropArea', cropLayer.meta.qualityProgress)
   const [tempCrop, setTempCrop] = useState<CropLayer>(cropLayer)
   const { interactingRef, lastCropRef, begin, end, setLast } =
     useInteractionState(cropLayer)
@@ -67,20 +66,27 @@ export const CropArea: React.FC<CropAreaProps> = ({
     orientation,
   )
 
-  useEffect(() => {
-    console.log('CropArea-->>', originalImage)
-    const { quality, qualityProgress } = calculateCropQuality(
-      cropLayer.meta,
-      imageLayer,
-      originalImage,
-    )
+  // useEffect(() => {
+  //   console.log('CropArea-->> original', originalImage)
+  //   console.log('CropArea-->> crop', cropLayer.meta)
+  //   console.log('CropArea-->> image', imageLayer.meta)
+  //   const { quality, qualityProgress } = calculateCropQuality(
+  //     cropLayer.meta,
+  //     imageLayer,
+  //     originalImage,
+  //     orientation,
+  //   )
 
-    dispatchQualityUpdate(qualityProgress, quality)
-    console.log('CropArea->>color')
+  //   dispatchQualityUpdate(qualityProgress, quality)
+  //   console.log('CropArea->>color')
 
-    const color = getQualityColor(qualityProgress)
-    document.documentElement.style.setProperty('--crop-handle-color', color)
-  }, [cropLayer.orientation, imageLayer.orientation])
+  //   const color = getQualityColor(qualityProgress)
+  //   document.documentElement.style.setProperty('--crop-handle-color', color)
+  // }, [
+  //   cropLayer.orientation,
+  //   imageLayer.orientation,
+  //   cropLayer.meta.qualityProgress,
+  // ])
 
   useEffect(() => {
     if (!interactingRef.current) {

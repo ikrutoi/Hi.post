@@ -28,11 +28,11 @@ export function* watchCropChanges(): SagaIterator {
     const config = state.currentConfig
 
     if (config?.crop && config?.image?.meta) {
-      console.log('watchCrop-->>')
       const { quality, qualityProgress } = calculateCropQuality(
         config.crop.meta,
         config.image,
         config.image.meta,
+        config.card.orientation,
       )
 
       yield call(dispatchQualityUpdate, qualityProgress, quality)

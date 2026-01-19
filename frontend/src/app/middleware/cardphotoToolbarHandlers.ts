@@ -59,7 +59,6 @@ export function* handleCropAction() {
   )
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config) return
-  console.log('handlerCrop', state)
   const isActivating = state.crop === 'enabled'
   const baseImage: ImageMeta = yield select(selectActiveSourceImage)
 
@@ -114,7 +113,7 @@ export function* handleCropCheckAction() {
     width: crop.meta.width,
     height: crop.meta.height,
     source: imageMeta.source,
-    imageAspectRatio: crop.meta.width / crop.meta.height,
+    imageAspectRatio: roundTo(crop.meta.width / crop.meta.height, 2),
     timestamp: Date.now(),
   }
 
@@ -150,14 +149,12 @@ export function* handleCropFullAction(): SagaIterator {
   const rawFullCrop = createFullCropLayer(image, card)
   const fullCrop = applyBounds(rawFullCrop, image, card.orientation)
 
-  console.log('handleCropFull-->>')
   const { quality, qualityProgress } = calculateCropQuality(
     fullCrop.meta,
     image,
     baseImage,
+    card.orientation,
   )
-
-  console.log('quality', qualityProgress)
 
   const newConfig: WorkingConfig = {
     ...state.currentConfig,
@@ -170,8 +167,6 @@ export function* handleCropFullAction(): SagaIterator {
       },
     },
   }
-
-  console.log('newConfig', newConfig)
 
   const op: CardphotoOperation = {
     type: 'operation',
@@ -404,13 +399,6 @@ export function* handleImageRotate(
     currentConfig.card,
     baseImage,
   )
-  console.log('handleImageRotate-->>')
-  const { quality, qualityProgress } = calculateCropQuality(
-    newCropLayer.meta,
-    newImageLayer,
-    baseImage,
-  )
-
   const newConfig: WorkingConfig = {
     ...currentConfig,
     image: newImageLayer,
@@ -418,8 +406,6 @@ export function* handleImageRotate(
       ...newCropLayer,
       meta: {
         ...newCropLayer.meta,
-        quality,
-        qualityProgress,
       },
     },
   }
@@ -458,12 +444,12 @@ export function* handleCropConfirm(): SagaIterator {
 
     const realCrop: CropLayer = {
       ...config.crop,
-      x: config.crop.x * scaleX,
-      y: config.crop.y * scaleY,
+      x: roundTo(config.crop.x * scaleX, 2),
+      y: roundTo(config.crop.y * scaleY, 2),
       meta: {
         ...config.crop.meta,
-        width: config.crop.meta.width * scaleX,
-        height: config.crop.meta.height * scaleY,
+        width: roundTo(config.crop.meta.width * scaleX, 2),
+        height: roundTo(config.crop.meta.height * scaleY, 2),
       },
     }
 
@@ -519,11 +505,11 @@ export function* syncQualitySaga() {
   const config = state.currentConfig
 
   if (config?.crop && config?.image) {
-    console.log('syncQuality-->>')
     const { qualityProgress, quality } = calculateCropQuality(
       config.crop.meta,
       config.image,
       config.image.meta,
+      config.card.orientation,
     )
     dispatchQualityUpdate(qualityProgress, quality)
   }

@@ -42,6 +42,7 @@ export const updateCrop = (
   imageLayer: ImageLayer,
   imageMeta: ImageMeta,
   orientation: LayoutOrientation,
+  safeMinWidth: number,
 ): CropLayer => {
   const isPortrait = orientation === 'portrait'
   const ar = isPortrait
@@ -68,25 +69,24 @@ export const updateCrop = (
   if (isPortrait) {
     const deltaH = isTop ? -dy : dy
     newHeight = Math.max(
-      // safeMinWidth / ar,
+      safeMinWidth,
       Math.min(startCrop.meta.height + deltaH, absoluteMaxHeight),
     )
     newWidth = newHeight * ar
   } else {
     const deltaW = isLeft ? -dx : dx
     newWidth = Math.max(
-      // safeMinWidth,
+      safeMinWidth,
       Math.min(startCrop.meta.width + deltaW, absoluteMaxWidth),
     )
     newHeight = newWidth / ar
   }
 
-  console.log('updateCrop-->>')
   const { quality, qualityProgress } = calculateCropQuality(
     { ...startCrop.meta, ...startCrop.meta, width: newWidth } as CropMeta,
-    // { ...startCrop, meta: { ...startCrop.meta, width: newWidth } } as CropLayer,
     imageLayer,
     imageMeta,
+    orientation,
   )
 
   const startBottomY = startCrop.y + startCrop.meta.height
