@@ -23,6 +23,8 @@ export const ImageCrop = () => {
   const { activeSourceImage } = cardphotoState
   const { init, setUserImage, addOp, uploadImage } = cardphotoActions
 
+  const reduxCrop = cardphotoState.currentConfig?.crop
+
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
@@ -51,6 +53,13 @@ export const ImageCrop = () => {
   useEffect(() => {
     init()
   }, [])
+
+  useEffect(() => {
+    if (reduxCrop) {
+      // console.log('reduxCRop', reduxCrop)
+      setTempCrop(reduxCrop)
+    }
+  }, [reduxCrop, setTempCrop])
 
   const { imageMeta, isReady, loadedUrl } = useImageMetaLoader(src)
 
@@ -117,6 +126,21 @@ export const ImageCrop = () => {
       }
     : undefined
 
+  if (!imageLayer) return
+
+  const isRotated =
+    imageLayer.orientation === 90 || imageLayer.orientation === 270
+  const visualWidth = isRotated ? imageLayer.meta.height : imageLayer.meta.width
+  const visualHeight = isRotated
+    ? imageLayer.meta.width
+    : imageLayer.meta.height
+
+  const maskStyle: React.CSSProperties = {
+    ...imageStyle,
+    overflow: 'hidden',
+    pointerEvents: 'none', // Чтобы клики проходили сквозь маску на CropArea
+  }
+
   return (
     <div
       className={styles.imageCrop}
@@ -141,16 +165,23 @@ export const ImageCrop = () => {
         }}
       >
         {shouldShowImage && imageLayer && (
-          <img
-            src={src}
-            alt={alt}
-            onLoad={() => setLoaded(true)}
-            className={clsx(
-              styles.cropImage,
-              loaded ? styles.fadeInVisible : styles.fadeIn,
+          <>
+            <img
+              src={src}
+              alt={alt}
+              onLoad={() => setLoaded(true)}
+              className={clsx(
+                styles.cropImage,
+                loaded ? styles.fadeInVisible : styles.fadeIn,
+              )}
+              style={imageStyle}
+            />
+            {tempCrop && iconStates.crop === 'active' && activeSourceImage && (
+              <div className={styles.cropMask} style={maskStyle}>
+                <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
+              </div>
             )}
-            style={imageStyle}
-          />
+          </>
         )}
         {loaded &&
           imageLayer &&
@@ -158,7 +189,7 @@ export const ImageCrop = () => {
           tempCrop &&
           activeSourceImage && (
             <>
-              <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
+              {/* <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} /> */}
               {imageMeta && (
                 <CropArea
                   cropLayer={tempCrop}

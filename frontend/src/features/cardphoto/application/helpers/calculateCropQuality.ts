@@ -11,14 +11,26 @@ import type {
   QualityLevel,
 } from '../../domain/types'
 
+const { minAllowedDpi, maxAllowedDpi, widthMm, heightMm } = CARD_SCALE_CONFIG
+
+const calculateSteppedProgress = (currentDpi: number) => {
+  const min = minAllowedDpi
+  const max = maxAllowedDpi
+  const step = 2
+
+  const exactProgress = ((currentDpi - min) / (max - min)) * 100
+
+  const stepped = Math.round(exactProgress / step) * step
+
+  return Math.max(0, Math.min(100, stepped))
+}
+
 export const calculateCropQuality = (
   crop: CropMeta,
   image: ImageLayer,
   originalImage: ImageMeta,
   orientation: LayoutOrientation,
 ) => {
-  const { minAllowedDpi, maxAllowedDpi, widthMm, heightMm } = CARD_SCALE_CONFIG
-
   const isCardOrientation = orientation === 'landscape'
   const inches = isCardOrientation ? widthMm / 25.4 : heightMm / 25.4
 
@@ -28,10 +40,7 @@ export const calculateCropQuality = (
     ? originalImage.height
     : originalImage.width
 
-  const scale = roundTo(
-    originalReferenceWidth / Math.max(1, image.meta.width),
-    2,
-  )
+  const scale = originalReferenceWidth / Math.max(1, image.meta.width)
 
   const realCropWidthPx = crop.width * scale
 
@@ -40,10 +49,7 @@ export const calculateCropQuality = (
   const quality: QualityLevel =
     dpi >= maxAllowedDpi ? 'high' : dpi >= 150 ? 'medium' : 'low'
 
-  const rawProgress = roundTo(
-    ((dpi - minAllowedDpi) / (maxAllowedDpi - minAllowedDpi)) * 100,
-    2,
-  )
+  const rawProgress = calculateSteppedProgress(dpi)
 
   const qualityProgress = Math.max(0, Math.min(100, rawProgress))
 

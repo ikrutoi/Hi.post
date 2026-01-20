@@ -31,7 +31,10 @@
 
 .cropContainer {
   position: relative;
+  // position: absolute;
   user-select: none;
+  overflow: 'hidden';
+  // pointerEvents: 'none';
 }
 
 .cropImage {
@@ -44,7 +47,6 @@
   // width: auto;
   // height: auto;
   // object-fit: contain;
-  // border: solid 1px red;
   // border-bottom: solid 1px blue;
 }
 
