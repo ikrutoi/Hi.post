@@ -5,18 +5,17 @@ import {
   addOperation,
   applyFinal,
   type CardphotoSliceState,
+  markLoading,
+  markLoaded,
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
   selectCurrentConfig,
-  selectCardphotoSlice,
-  selectCurrentImageMeta,
   selectCardphotoState,
   selectActiveSourceImage,
   selectIsCropFull,
 } from '@cardphoto/infrastructure/selectors'
 import { applyBounds } from '@cardphoto/application/helpers'
-import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { updateCropToolbarState } from './cardphotoToolbarHelpers'
 import {
   getCroppedBase64,
@@ -35,6 +34,7 @@ import {
   createInitialCropLayer,
   createFullCropLayer,
 } from '@cardphoto/application/utils'
+import { getCroppedImg, loadAsyncImage } from '@cardphoto/application/hooks'
 import { roundTo } from '@shared/utils/layout'
 import type {
   SizeCard,
@@ -420,10 +420,6 @@ export function* handleImageRotate(
 
   yield put(addOperation(op))
 }
-
-import { getCroppedImg, loadAsyncImage } from '@cardphoto/application/hooks'
-import { markLoading, markLoaded } from '@cardphoto/infrastructure/state'
-import { updateToolbarSection } from '@toolbar/infrastructure/state'
 
 export function* handleCropConfirm(): SagaIterator {
   const state: CardphotoState = yield select(selectCardphotoState)

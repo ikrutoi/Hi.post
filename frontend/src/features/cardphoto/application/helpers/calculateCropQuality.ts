@@ -17,9 +17,7 @@ const calculateSteppedProgress = (currentDpi: number) => {
   const min = minAllowedDpi
   const max = maxAllowedDpi
   const step = 2
-
   const exactProgress = ((currentDpi - min) / (max - min)) * 100
-
   const stepped = Math.round(exactProgress / step) * step
 
   return Math.max(0, Math.min(100, stepped))

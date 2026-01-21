@@ -10,12 +10,12 @@ import styles from './SectionEditorToolbar.module.scss'
 export const SectionEditorToolbar: React.FC = () => {
   const { size } = useLayoutFacade()
   const { sizeCard, remSize, sectionMenuHeight } = size
-  // const [liveProgress, setLiveProgress] = useState(0)
-
   const { state: cardphotoState } = useCardphotoFacade()
-
   const { state: toolbarCardphotoState } = useToolbarFacade('cardphoto')
   const { state: toolbarCardphoto } = toolbarCardphotoState
+  const { state: toolbarSectionEditorMenuState } =
+    useToolbarFacade('sectionEditorMenu')
+  const sectionMenuCardphoto = toolbarSectionEditorMenuState.state.cardphoto
 
   const thumbRef = useRef<HTMLDivElement>(null)
 
@@ -40,23 +40,7 @@ export const SectionEditorToolbar: React.FC = () => {
 
     window.addEventListener('crop-quality-change', handleUpdate)
     return () => window.removeEventListener('crop-quality-change', handleUpdate)
-  }, [toolbarCardphoto.crop, reduxProgress])
-
-  // useEffect(() => {
-  //   const handleUpdate = (e: any) => {
-  //     const progress = e.detail.progress
-  //     const color = getQualityColor(progress)
-
-  //     if (thumbRef.current) {
-  //       thumbRef.current.style.bottom = `${progress}%`
-  //       thumbRef.current.style.backgroundColor = color
-  //     }
-  //     document.documentElement.style.setProperty('--crop-handle-color', color)
-  //   }
-
-  //   window.addEventListener('crop-quality-change', handleUpdate)
-  //   return () => window.removeEventListener('crop-quality-change', handleUpdate)
-  // }, [])
+  }, [toolbarCardphoto.crop, reduxProgress, sectionMenuCardphoto])
 
   if (!sizeCard || !remSize) return null
 
@@ -71,23 +55,18 @@ export const SectionEditorToolbar: React.FC = () => {
       style={{ width: `${width}px`, height: `${height}px` }}
     >
       <Toolbar section="sectionEditorMenu" />
-      {sectionMenuHeight && toolbarCardphoto.crop === 'active' && (
-        <div
-          className={clsx(styles.toolbarCropQualityContainer)}
-          style={{ height: `${sectionMenuHeight}px` }}
-        >
-          <div className={styles.toolbarCropQuality}>
-            <div
-              ref={thumbRef}
-              className={styles.qualityThumb}
-              // style={{
-              //   bottom: `${liveProgress}%`,
-              //   backgroundColor: getQualityColor(liveProgress),
-              // }}
-            />
+      {sectionMenuHeight &&
+        toolbarCardphoto.crop === 'active' &&
+        sectionMenuCardphoto === 'active' && (
+          <div
+            className={clsx(styles.toolbarCropQualityContainer)}
+            style={{ height: `${sectionMenuHeight}px` }}
+          >
+            <div className={styles.toolbarCropQuality}>
+              <div ref={thumbRef} className={styles.qualityThumb} />
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   )
 }

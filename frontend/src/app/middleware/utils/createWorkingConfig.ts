@@ -13,17 +13,17 @@ import type {
 } from '@cardphoto/domain/types'
 
 export function* createWorkingConfig(imageMeta: ImageMeta) {
-  const sizeCard: CardLayer = yield select(selectSizeCard)
+  const cardLayer: CardLayer = yield select(selectSizeCard)
 
-  const imageLayer: ImageLayer = fitImageToCard(imageMeta, sizeCard, 0)
+  const imageLayer: ImageLayer = fitImageToCard(imageMeta, cardLayer, 0)
   const cropLayer: CropLayer = createInitialCropLayer(
     imageLayer,
-    sizeCard,
+    cardLayer,
     imageMeta,
   )
 
   const workingConfig: WorkingConfig = {
-    card: sizeCard,
+    card: cardLayer,
     image: imageLayer,
     crop: cropLayer,
   }

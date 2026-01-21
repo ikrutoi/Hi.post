@@ -36,6 +36,7 @@ import { updateCropToolbarState } from './cardphotoToolbarHelpers'
 import {
   handleCardphotoToolbarAction,
   watchCropChanges,
+  watchCropToolbarStatus,
 } from './cardphotoToolbarSaga'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -83,7 +84,7 @@ export function* onDownloadClick(): SagaIterator {
 
 function* onUploadImage(action: PayloadAction<ImageMeta>) {
   const imageMeta = action.payload
-  console.log('onUploadImage', imageMeta)
+  console.log('onUploadImage imageMeta', imageMeta)
   if (!imageMeta) return
 
   yield put(setBaseImage({ target: 'user', image: imageMeta }))
@@ -92,38 +93,28 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
 function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   const imageMeta = action.payload
   const cardLayer: CardLayer = yield select(selectSizeCard)
-  console.log('onUploadImageReady', imageMeta, cardLayer)
-
-  if (!cardLayer) return
 
   const imageLayer = fitImageToCard(imageMeta, cardLayer, 0)
   const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
+
+  console.log('onUploadImageReady imageLayer', imageLayer)
+
+  const newConfig = { card: cardLayer, image: imageLayer, crop: cropLayer }
+
+  yield put(
+    addOperation({
+      type: 'operation',
+      payload: { config: newConfig, reason: 'initUserImage' },
+    }),
+  )
+
   const { needsCrop } = validateImageSize(
     imageMeta,
     cardLayer.width,
     cardLayer.height,
   )
 
-  const newConfig: WorkingConfig = {
-    card: cardLayer,
-    image: imageLayer,
-    crop: cropLayer,
-  }
-
-  // yield put(setBaseImage({ target: 'user', image: imageMeta }))
-
-  yield put(resetCropLayers({ imageLayer, cropLayer, card: cardLayer }))
-
-  yield put(
-    addOperation({
-      type: 'operation',
-      payload: {
-        config: newConfig,
-        // config: { card: cardLayer, image: imageLayer, crop: cropLayer },
-        reason: 'initUserImage',
-      },
-    }),
-  )
+  console.log('onUploadImageReady needsCrop', needsCrop)
 
   yield put(
     updateGroupStatus({
@@ -181,10 +172,26 @@ export function* cardphotoProcessSaga(): SagaIterator {
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
 
     fork(watchCropChanges),
+    fork(watchCropToolbarStatus),
 
     takeEvery(uploadUserImage.type, onUploadImage),
-    takeEvery(cancelFileDialog.type, onCancelFileDialog),
 
-    takeLatest(uploadImageReady.type, onUploadImageReadySaga),
+    takeLatest(uploadUserImage.type, onUploadImageReadySaga),
+
+    takeEvery(cancelFileDialog.type, onCancelFileDialog),
   ])
 }
+
+// export function* cardphotoProcessSaga(): SagaIterator {
+//   yield all([
+//     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
+
+//     fork(watchCropChanges),
+//     fork(watchCropToolbarStatus),
+
+//     takeEvery(uploadUserImage.type, onUploadImage),
+//     takeEvery(cancelFileDialog.type, onCancelFileDialog),
+
+//     takeLatest(uploadImageReady.type, onUploadImageReadySaga),
+//   ])
+// }

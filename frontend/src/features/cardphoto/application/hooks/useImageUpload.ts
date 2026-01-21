@@ -1,10 +1,42 @@
+import { nanoid } from 'nanoid'
 import { useCallback } from 'react'
 import { roundTo } from '@shared/utils/layout'
 import type { ImageMeta } from '../../domain/types'
 
 export const useImageUpload = (
   onUpload: (meta: ImageMeta) => void,
-  onLoading: () => void
+  onLoading: () => void,
+) => {
+  return useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (!file) return
+
+      onLoading()
+      const objectUrl = URL.createObjectURL(file)
+      const img = new Image()
+
+      img.onload = () => {
+        const imageMeta: ImageMeta = {
+          id: nanoid(),
+          source: 'user',
+          url: objectUrl,
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+          imageAspectRatio: roundTo(img.naturalWidth / img.naturalHeight, 3),
+          timestamp: Date.now(),
+        }
+        onUpload(imageMeta)
+      }
+      img.src = objectUrl
+    },
+    [onUpload, onLoading],
+  )
+}
+
+export const useImageUpload1 = (
+  onUpload: (meta: ImageMeta) => void,
+  onLoading: () => void,
 ) => {
   return useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,6 +71,6 @@ export const useImageUpload = (
 
       img.src = objectUrl
     },
-    [onUpload, onLoading]
+    [onUpload, onLoading],
   )
 }

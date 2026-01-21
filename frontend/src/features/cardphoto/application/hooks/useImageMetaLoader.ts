@@ -15,6 +15,8 @@ export const useImageMetaLoader = (src: string) => {
     loadedUrl: null,
   })
 
+  console.log('useImageMetaLoader src', src)
+
   useEffect(() => {
     if (!src) {
       setState({

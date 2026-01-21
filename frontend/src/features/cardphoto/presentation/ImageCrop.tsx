@@ -13,6 +13,7 @@ import {
   useImageUpload,
   useFileDialog,
   useCropState,
+  useCurrentImageMeta,
 } from '../application/hooks'
 import { useCardphotoSrc } from '../application/hooks/useCardphotoSrc'
 import styles from './ImageCrop.module.scss'
@@ -29,7 +30,7 @@ export const ImageCrop = () => {
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
 
-  // console.log('ImageCrop activeSourceImage', activeSourceImage)
+  console.log('ImageCrop state', cardphotoState)
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
   const { state: iconStates } = toolbarState
@@ -38,6 +39,10 @@ export const ImageCrop = () => {
   const { sizeCard } = size
 
   const [loaded, setLoaded] = useState(false)
+
+  const imageMeta = useCurrentImageMeta(cardphotoState.state)
+
+  console.log('ImageCrop imageMeta', imageMeta)
 
   const { src, alt } = useCardphotoSrc(cardphotoState.state)
 
@@ -48,31 +53,15 @@ export const ImageCrop = () => {
     cardphotoState.currentConfig?.crop ?? null,
   )
 
-  // console.log('tempCrop', tempCrop?.meta.qualityProgress)
-
   useEffect(() => {
     init()
   }, [])
 
   useEffect(() => {
     if (reduxCrop) {
-      // console.log('reduxCRop', reduxCrop)
       setTempCrop(reduxCrop)
     }
   }, [reduxCrop, setTempCrop])
-
-  const { imageMeta, isReady, loadedUrl } = useImageMetaLoader(src)
-
-  useEffect(() => {
-    const isUserFile = src.startsWith('blob:') || src.startsWith('data:')
-
-    if (isReady && imageMeta && isUserFile && loadedUrl === src) {
-      if (processedSrcRef.current !== src) {
-        processedSrcRef.current = src
-        uploadImage(imageMeta)
-      }
-    }
-  }, [isReady, imageMeta, src, loadedUrl])
 
   const imageLayer = cardphotoState.currentConfig?.image || null
 
@@ -128,17 +117,16 @@ export const ImageCrop = () => {
 
   if (!imageLayer) return
 
-  const isRotated =
-    imageLayer.orientation === 90 || imageLayer.orientation === 270
-  const visualWidth = isRotated ? imageLayer.meta.height : imageLayer.meta.width
-  const visualHeight = isRotated
-    ? imageLayer.meta.width
-    : imageLayer.meta.height
+  // const isRotated =
+  //   imageLayer.orientation === 90 || imageLayer.orientation === 270
+  // const visualWidth = isRotated ? imageLayer.meta.height : imageLayer.meta.width
+  // const visualHeight = isRotated
+  //   ? imageLayer.meta.width
+  //   : imageLayer.meta.height
 
   const maskStyle: React.CSSProperties = {
     ...imageStyle,
     overflow: 'hidden',
-    pointerEvents: 'none', // Чтобы клики проходили сквозь маску на CropArea
   }
 
   return (
@@ -155,13 +143,11 @@ export const ImageCrop = () => {
       />
 
       <div
-        // key={sizeCard.orientation}
         key={src}
         className={styles.cropContainer}
         style={{
           width: `${sizeCard.width}px`,
           height: `${sizeCard.height}px`,
-          // position: 'relative',
         }}
       >
         {shouldShowImage && imageLayer && (
@@ -189,7 +175,6 @@ export const ImageCrop = () => {
           tempCrop &&
           activeSourceImage && (
             <>
-              {/* <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} /> */}
               {imageMeta && (
                 <CropArea
                   cropLayer={tempCrop}

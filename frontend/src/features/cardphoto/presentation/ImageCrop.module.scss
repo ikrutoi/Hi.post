@@ -31,21 +31,15 @@
 
 .cropContainer {
   position: relative;
-  // position: absolute;
   user-select: none;
   overflow: 'hidden';
   // pointerEvents: 'none';
 }
 
 .cropImage {
-  // position: absolute;
   opacity: 0;
   will-change: transform;
   transition: opacity 0.4s ease;
-  // max-width: 100%;
-  // max-height: 100%;
-  // width: auto;
-  // height: auto;
   // object-fit: contain;
   // border-bottom: solid 1px blue;
 }
@@ -58,15 +52,6 @@
 .fadeInVisible {
   opacity: 1;
 }
-
-// .overlay {
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100%;
-//   background-color: rgba(0, 0, 0, 0.5);
-// }
 
 .cropArea {
   position: absolute;
