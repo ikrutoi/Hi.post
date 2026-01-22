@@ -15,6 +15,7 @@ export const ICON_KEYS = [
   'edit',
   'crop',
   'cropCheck',
+  'cropHistory',
   'cropFull',
   'cropRotate',
   'rotateRight',
@@ -60,6 +61,20 @@ export type IconKey = (typeof ICON_KEYS)[number]
 export const ICON_STATE = ['disabled', 'enabled', 'active']
 
 export type IconState = (typeof ICON_STATE)[number]
+
+export type IconValue =
+  | IconState
+  | {
+      state: IconState
+      badge?: number | null
+    }
+
+export type UpdateIconPayloadValue =
+  | IconState
+  | {
+      state?: IconState
+      badge?: number | null
+    }
 
 export const ICON_STATE_GROUP = ['disabled', 'enabled'] as const
 

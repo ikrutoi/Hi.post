@@ -1,4 +1,4 @@
-export const IMAGE_SOURCE = ['stock', 'user', 'sent'] as const
+export const IMAGE_SOURCE = ['stock', 'user', 'apply', 'gallery'] as const
 export type ImageSource = (typeof IMAGE_SOURCE)[number]
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -12,6 +12,17 @@ export interface ImageThumbnail {
 }
 
 // export type LayoutOrientation = 'portrait' | 'landscape'
+export interface GalleryItem extends ImageMeta {
+  orientation: LayoutOrientation
+  previewUrl?: string
+}
+
+export interface CardphotoBase {
+  stock: { image: ImageMeta | null }
+  user: { image: ImageMeta | null }
+  gallery: { image: ImageMeta | null }
+  apply: { image: ImageMeta | null }
+}
 
 export interface CardLayer {
   width: number
@@ -62,11 +73,11 @@ export interface WorkingConfig {
   crop: CropLayer
 }
 
-export interface CardphotoBase {
-  stock: { image: ImageMeta | null }
-  user: { image: ImageMeta | null }
-  apply: { image: ImageMeta | null }
-}
+// export interface CardphotoBase {
+//   stock: { image: ImageMeta | null }
+//   user: { image: ImageMeta | null }
+//   apply: { image: ImageMeta | null }
+// }
 
 export type CardphotoOperation = {
   type: 'operation'
@@ -93,6 +104,7 @@ export interface CardphotoState {
   base: CardphotoBase
   operations: CardphotoOperation[]
   activeIndex: number
+  cropIndices: number[]
   currentConfig: WorkingConfig | null
 }
 

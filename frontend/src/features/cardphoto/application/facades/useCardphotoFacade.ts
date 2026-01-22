@@ -18,6 +18,7 @@ import {
   selectCardphotoIsComplete,
   selectStockImage,
   selectUserImage,
+  selectGalleryImage,
   selectAppliedImage,
   selectOperations,
   selectActiveIndex,
@@ -48,6 +49,7 @@ export interface CardphotoFacade {
     isComplete: boolean
     stockImage: ImageMeta | null
     userImage: ImageMeta | null
+    galleryImage: ImageMeta | null
     appliedImage: ImageMeta | null
     operations: CardphotoOperation[]
     activeIndex: number
@@ -88,6 +90,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const isComplete = useSelector(selectCardphotoIsComplete)
   const stockImage = useSelector(selectStockImage)
   const userImage = useSelector(selectUserImage)
+  const galleryImage = useSelector(selectGalleryImage)
   const appliedImage = useSelector(selectAppliedImage)
   const operations = useSelector(selectOperations)
   const activeIndex = useSelector(selectActiveIndex)
@@ -126,6 +129,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       isComplete,
       stockImage,
       userImage,
+      galleryImage,
       appliedImage,
       operations,
       activeIndex,

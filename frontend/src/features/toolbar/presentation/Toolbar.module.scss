@@ -50,8 +50,39 @@
       cursor: not-allowed;
     }
   }
+
   .toolbarKeyDisabled {
     color: $color-font-disabled !important;
+  }
+
+  .toolbarBadge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+
+    background-color: $color-toggle-active;
+    border-radius: 10px;
+    border: 2px solid #fff;
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .toolbarBadgeValue {
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    font-family: sans-serif;
   }
 }
 

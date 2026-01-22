@@ -37,6 +37,7 @@ import {
   handleCardphotoToolbarAction,
   watchCropChanges,
   watchCropToolbarStatus,
+  watchCropHistory,
 } from './cardphotoToolbarSaga'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -173,6 +174,7 @@ export function* cardphotoProcessSaga(): SagaIterator {
 
     fork(watchCropChanges),
     fork(watchCropToolbarStatus),
+    fork(watchCropHistory),
 
     takeEvery(uploadUserImage.type, onUploadImage),
 

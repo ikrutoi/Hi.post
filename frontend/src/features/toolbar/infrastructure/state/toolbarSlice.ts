@@ -9,8 +9,17 @@ import {
   UpdateSectionPayload,
   initialCardtextToolbarState,
 } from '../../domain/types'
-import type { ToolbarState, ToolbarGroup } from '../../domain/types'
-import type { IconStateGroup } from '@shared/config/constants'
+import type {
+  ToolbarState,
+  ToolbarGroup,
+  UpdateIconValue,
+} from '../../domain/types'
+import type {
+  IconStateGroup,
+  IconValue,
+  IconState,
+  UpdateIconPayloadValue,
+} from '@shared/config/constants'
 
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
@@ -28,10 +37,24 @@ const toolbarSlice = createSlice({
   reducers: {
     updateToolbarSection<K extends keyof ToolbarState>(
       state: ToolbarState,
-      action: PayloadAction<UpdateSectionPayload<K>>
+      action: PayloadAction<UpdateSectionPayload<K>>,
     ) {
       Object.assign(state[action.payload.section], action.payload.value)
     },
+
+    // updateToolbarIcon<
+    //   S extends keyof ToolbarState,
+    //   K extends keyof ToolbarState[S],
+    // >(
+    //   state: ToolbarState,
+    //   action: PayloadAction<{
+    //     section: S
+    //     key: K
+    //     value: ToolbarState[S][K]
+    //   }>
+    // ) {
+    //   state[action.payload.section][action.payload.key] = action.payload.value
+    // },
 
     updateToolbarIcon<
       S extends keyof ToolbarState,
@@ -41,10 +64,35 @@ const toolbarSlice = createSlice({
       action: PayloadAction<{
         section: S
         key: K
-        value: ToolbarState[S][K]
-      }>
+        value: UpdateIconPayloadValue
+        badge?: number | null
+      }>,
     ) {
-      state[action.payload.section][action.payload.key] = action.payload.value
+      const { section, key, value, badge } = action.payload
+      const current = state[section][key] as IconValue
+
+      const base = typeof current === 'object' ? current : { state: current }
+
+      const newState =
+        typeof value === 'object' && value !== null
+          ? (value.state ?? base.state)
+          : (value as IconState)
+
+      const newBadge =
+        badge !== undefined
+          ? badge
+          : typeof value === 'object' && value !== null
+            ? value.badge
+            : base.badge
+
+      if (newBadge !== undefined && newBadge !== null) {
+        state[section][key] = {
+          state: newState,
+          badge: newBadge,
+        } as ToolbarState[S][K]
+      } else {
+        state[section][key] = newState as ToolbarState[S][K]
+      }
     },
 
     updateGroupStatus(
@@ -53,13 +101,13 @@ const toolbarSlice = createSlice({
         section: keyof ToolbarState
         groupName: string
         status: IconStateGroup
-      }>
+      }>,
     ) {
       const { section, groupName, status } = action.payload
       const sectionConfig = state[section].config
       if (sectionConfig) {
         const group = sectionConfig.find(
-          (g: ToolbarGroup) => g.group === groupName
+          (g: ToolbarGroup) => g.group === groupName,
         )
         if (group) {
           group.status = status

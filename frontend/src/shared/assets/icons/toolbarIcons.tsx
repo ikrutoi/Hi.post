@@ -121,12 +121,12 @@ import {
 import type { LayoutOrientation } from '@layout/domain/types'
 
 export const toolbarIcons = Object.fromEntries(
-  ICON_KEYS.map((key) => [key, getIconByKey(key)])
+  ICON_KEYS.map((key) => [key, getIconByKey(key)]),
 ) as Record<IconKey, JSX.Element>
 
 function getIconByKey(
   key: IconKey,
-  orientation?: LayoutOrientation
+  orientation?: LayoutOrientation,
 ): JSX.Element {
   switch (key) {
     case 'save':
@@ -169,6 +169,8 @@ function getIconByKey(
       return <IconCrop />
     case 'cropCheck':
       return <IconCropCheck />
+    case 'cropHistory':
+      return <IconCardphotoTemplates />
     case 'cropFull':
       return <IconCropFull />
     case 'cropRotate':

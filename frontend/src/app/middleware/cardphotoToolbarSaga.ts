@@ -1,7 +1,19 @@
-import { call, takeLatest, all, fork, select, put } from 'redux-saga/effects'
+import {
+  call,
+  takeLatest,
+  all,
+  fork,
+  select,
+  put,
+  takeEvery,
+} from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { addOperation } from '@cardphoto/infrastructure/state'
+import {
+  addOperation,
+  initStockImage,
+  resetCardphoto,
+} from '@cardphoto/infrastructure/state'
 import {
   handleCropAction,
   handleCropCheckAction,
@@ -10,7 +22,9 @@ import {
   handleCropFullAction,
   syncCropFullIcon,
   handleCropConfirm,
+  handleCropGalleryAction,
 } from './cardphotoToolbarHandlers'
+import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
   getQualityColor,
   dispatchQualityUpdate,
@@ -66,6 +80,9 @@ export function* handleCardphotoToolbarAction(
     case 'cropFull':
       yield call(handleCropFullAction)
       break
+    case 'cropHistory':
+      yield call(handleCropGalleryAction)
+      break
     case 'cardOrientation':
       yield call(handleCardOrientation)
       break
@@ -100,4 +117,30 @@ export function* watchCropToolbarStatus(): SagaIterator {
       ),
     ])
   })
+}
+
+export function* syncCropHistoryIcon() {
+  const state: CardphotoToolbarState = yield select(
+    (state) => state.cardphoto.state,
+  )
+
+  if (!state) return
+
+  const count = state.cropIndices.length
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'cropHistory',
+      value: count > 0 ? 'enabled' : 'disabled',
+      // badge: count > 0 ? count : null,
+    }),
+  )
+}
+
+export function* watchCropHistory() {
+  yield takeEvery(
+    [addOperation.type, initStockImage.type, resetCardphoto.type],
+    syncCropHistoryIcon,
+  )
 }

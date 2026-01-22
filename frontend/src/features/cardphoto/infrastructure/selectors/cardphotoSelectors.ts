@@ -9,8 +9,10 @@ import type {
   ImageMeta,
   CardphotoBase,
   QualityLevel,
+  GalleryItem,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
+import { cardEditorReducer } from '@/entities/cardEditor/infrastructure/state'
 
 export const selectCardphotoSlice = (state: RootState) => state.cardphoto
 
@@ -25,6 +27,9 @@ export const selectStockImage = (state: RootState): ImageMeta | null =>
 
 export const selectUserImage = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.base.user.image || null
+
+export const selectGalleryImage = (state: RootState): ImageMeta | null =>
+  state.cardphoto.state?.base.gallery.image || null
 
 export const selectAppliedImage = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.base.apply.image || null
@@ -128,3 +133,9 @@ export const selectCropQuality = (state: RootState): QualityLevel =>
 
 export const selectCropQualityProgress = (state: RootState): number =>
   state.cardphoto.state?.currentConfig?.crop?.meta?.qualityProgress ?? 0
+
+export const selectGalleryItems = (state: RootState): GalleryItem[] =>
+  state.cardphoto.galleryItems ?? []
+
+export const selectIsGalleryLoading = (state: RootState): boolean =>
+  state.cardphoto.isGalleryLoading

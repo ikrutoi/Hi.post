@@ -9,31 +9,29 @@ export function useCardphotoSrc(state: CardphotoState | null) {
 
     const userImg = state.base.user.image
     const stockImg = state.base.stock.image
+    const galleryImg = state.base.gallery.image
     const configImg = state.currentConfig?.image.meta
 
-    console.log('*0 state', state)
-    console.log('*0 base.user.meta.id', userImg?.id)
-    console.log('*0 config.meta.id', configImg?.id)
     if (userImg && (!configImg || configImg.source !== 'user')) {
-      console.log('*1')
+      // console.log('*1')
       return { src: userImg.url, alt: userImg.id }
     }
 
     if (configImg?.url) {
-      console.log('*2')
+      // console.log('*2')
       return { src: configImg.url, alt: configImg.id }
     }
 
     if (userImg) {
-      console.log('*3')
+      // console.log('*3')
       return { src: userImg.url, alt: userImg.id }
     }
 
     if (stockImg) {
-      console.log('*4')
+      // console.log('*4')
       return { src: stockImg.url, alt: stockImg.id }
     }
-    console.log('*5')
+    // console.log('*5')
 
     return { src: placeholderImage, alt: 'Placeholder' }
   }, [
@@ -41,5 +39,6 @@ export function useCardphotoSrc(state: CardphotoState | null) {
     state?.currentConfig?.image.meta.source,
     state?.base.user.image?.url,
     state?.base.stock.image?.url,
+    state?.base.gallery.image?.url,
   ])
 }

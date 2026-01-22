@@ -1,4 +1,5 @@
 import { call, delay, put, select, takeLatest } from 'redux-saga/effects'
+import { nanoid } from 'nanoid'
 import type { SagaIterator } from 'redux-saga'
 import { RootState } from '../state'
 import {
@@ -454,9 +455,10 @@ export function* handleCropConfirm(): SagaIterator {
 
     const finalImageMeta: ImageMeta = {
       ...config.image.meta,
+      id: nanoid(),
       url: croppedUrl,
-      width: config.crop.meta.width,
-      height: config.crop.meta.height,
+      width: realCrop.meta.width,
+      height: realCrop.meta.height,
       imageAspectRatio: config.crop.meta.aspectRatio,
       blob: croppedBlob,
       timestamp: Date.now(),
@@ -464,16 +466,29 @@ export function* handleCropConfirm(): SagaIterator {
 
     yield put(applyFinal(finalImageMeta))
 
+    const newImageLayer = fitImageToCard(finalImageMeta, config.card, 0)
+    const newCropLayer = createInitialCropLayer(
+      newImageLayer,
+      config.card,
+      finalImageMeta,
+    )
+
     const finalConfig: WorkingConfig = {
-      ...config,
-      image: {
-        ...config.image,
-        meta: finalImageMeta,
-        orientation: 0,
-        left: 0,
-        top: 0,
-      },
+      card: config.card,
+      image: newImageLayer,
+      crop: newCropLayer,
     }
+
+    // const finalConfig: WorkingConfig = {
+    //   ...config,
+    //   image: {
+    //     ...config.image,
+    //     meta: finalImageMeta,
+    //     orientation: 0,
+    //     left: 0,
+    //     top: 0,
+    //   },
+    // }
 
     yield put(
       addOperation({
@@ -509,4 +524,40 @@ export function* syncQualitySaga() {
     )
     dispatchQualityUpdate(qualityProgress, quality)
   }
+}
+
+// export function* handleHistoryStackAction(): SagaIterator {
+//   const state: CardphotoState = yield select(selectCardphotoState)
+//   const { activeIndex, operations } = state
+
+//   if (operations.length <= 1) return
+
+//   if (activeIndex === 0) {
+//     yield put(cardphotoActions.goToOperation(1))
+//   } else {
+//     let nextIndex = activeIndex + 1
+//     if (nextIndex >= operations.length) {
+//       nextIndex = 1
+//     }
+//     yield put(cardphotoActions.goToOperation(nextIndex))
+//   }
+// }
+
+export function* handleCropGalleryAction() {
+  const sizeCard: SizeCard = yield select(selectSizeCard)
+  const newOrientation: LayoutOrientation =
+    sizeCard.orientation === 'portrait' ? 'landscape' : 'portrait'
+
+  const viewportSize: ViewportSizeState = yield select(selectViewportSize)
+  const viewportHeight = viewportSize?.height ?? sizeCard.height
+
+  yield put(setCardOrientation({ orientation: newOrientation, viewportHeight }))
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'orientation',
+      value: newOrientation,
+    }),
+  )
 }

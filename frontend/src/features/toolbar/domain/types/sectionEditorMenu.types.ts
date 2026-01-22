@@ -1,5 +1,5 @@
 import { flattenIcons } from '../helpers'
-import type { IconState, IconStateGroup } from '@shared/config/constants'
+import type { IconValue } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const SECTION_EDITOR_MENU_KEYS = [
@@ -21,7 +21,7 @@ export const SECTION_EDITOR_MENU_TOOLBAR: ToolbarConfig = [
   {
     group: 'menu',
     icons: ['cardphoto', 'cardtext', 'envelope', 'aroma', 'date'].map(
-      (key) => ({ key: key as SectionEditorMenuKey, state: 'enabled' })
+      (key) => ({ key: key as SectionEditorMenuKey, state: 'enabled' }),
     ),
     status: 'enabled',
   },
@@ -31,7 +31,7 @@ export const initialSectionEditorMenuToolbarState: SectionEditorMenuToolbarState
   {
     ...(Object.fromEntries(flattenIcons(SECTION_EDITOR_MENU_TOOLBAR)) as Record<
       SectionEditorMenuKey,
-      IconState
+      IconValue
     >),
     config: [...SECTION_EDITOR_MENU_TOOLBAR],
   }

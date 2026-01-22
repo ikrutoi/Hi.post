@@ -1,5 +1,5 @@
 import { flattenIcons } from '../helpers'
-import type { IconState } from '@shared/config/constants'
+import type { IconValue } from '@shared/config/constants'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
 export const CARDPHOTO_KEYS = [
@@ -15,6 +15,7 @@ export const CARDPHOTO_KEYS = [
   'close',
   'save',
   'photoTemplates',
+  'cropHistory',
 ] as const
 
 export type CardphotoKey = (typeof CARDPHOTO_KEYS)[number]
@@ -39,6 +40,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
       { key: 'crop', state: 'enabled' },
       { key: 'cropFull', state: 'disabled' },
       { key: 'cropCheck', state: 'disabled' },
+      { key: 'cropHistory', state: 'disabled' },
     ],
     status: 'enabled',
   },
@@ -58,7 +60,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
 export const initialCardphotoToolbarState: CardphotoToolbarState = {
   ...(Object.fromEntries(flattenIcons(CARDPHOTO_TOOLBAR)) as Record<
     CardphotoKey,
-    IconState
+    IconValue
   >),
   config: [...CARDPHOTO_TOOLBAR],
 }

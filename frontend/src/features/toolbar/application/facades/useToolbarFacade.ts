@@ -6,18 +6,23 @@ import {
   selectToolbarGroups,
 } from '../../infrastructure/selectors'
 import { useToolbarController } from '../controllers'
-import type { ToolbarSection, ToolbarKeyFor } from '../../domain/types'
+import type {
+  ToolbarSection,
+  ToolbarKeyFor,
+  ToolbarSectionConfigMap,
+} from '../../domain/types'
 import type { IconKey } from '@shared/config/constants'
 
 export function useToolbarFacade<S extends ToolbarSection>(section: S) {
   const { onAction, setGroupStatus, setIconState, updateSection } =
     useToolbarController(section)
 
-  const state = useSelector(selectToolbarSectionState(section))
+  const toolbarState = useSelector(selectToolbarSectionState(section))
   const groups = useSelector(selectToolbarGroups(section))
+  const businessState = useSelector((state: any) => state[section]?.state)
 
-  const config = TOOLBAR_CONFIG[section]
-  const badges = (config as any).getBadges?.(state) ?? {}
+  const config = TOOLBAR_CONFIG[section] as ToolbarSectionConfigMap[S]
+  const badges = config.getBadges?.({ ...toolbarState, ...businessState }) ?? {}
 
   const handleAction = (key: IconKey, editor?: ReactEditor) => {
     onAction(key as ToolbarKeyFor<S>, editor)
@@ -25,7 +30,7 @@ export function useToolbarFacade<S extends ToolbarSection>(section: S) {
 
   return {
     state: {
-      state,
+      state: toolbarState,
       groups,
       config,
       badges,
@@ -38,7 +43,10 @@ export function useToolbarFacade<S extends ToolbarSection>(section: S) {
     },
 
     extra: {
-      orientation: (state as any).orientation,
+      orientation:
+        'orientation' in toolbarState
+          ? (toolbarState as any).orientation
+          : null,
     },
   }
 }

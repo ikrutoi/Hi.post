@@ -1,5 +1,5 @@
 import { flattenIcons } from '../helpers'
-import type { IconState, IconStateGroup } from '@shared/config/constants'
+import type { IconValue, IconStateGroup } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const CARDTEXT_KEYS = [
@@ -56,7 +56,7 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
 export const initialCardtextToolbarState: CardtextToolbarState = {
   ...(Object.fromEntries(flattenIcons(CARDTEXT_TOOLBAR)) as Record<
     CardtextKey,
-    IconState
+    IconValue
   >),
   config: [...CARDTEXT_TOOLBAR],
 }

@@ -8,12 +8,19 @@ import type {
   ImageLayer,
   CropLayer,
   CardLayer,
+  GalleryItem,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
+// export interface CardphotoSliceState {
+//   state: CardphotoState
+//   isComplete: boolean
+// }
 export interface CardphotoSliceState {
   state: CardphotoState
   isComplete: boolean
+  galleryItems: GalleryItem[] | null
+  isGalleryLoading: boolean
 }
 
 const initialState: CardphotoSliceState = {
@@ -22,12 +29,16 @@ const initialState: CardphotoSliceState = {
       stock: { image: null },
       user: { image: null },
       apply: { image: null },
+      gallery: { image: null },
     },
     operations: [],
     activeIndex: -1,
+    cropIndices: [],
     currentConfig: null,
   },
   isComplete: false,
+  galleryItems: null,
+  isGalleryLoading: false,
 }
 
 export const cardphotoSlice = createSlice({
@@ -42,7 +53,7 @@ export const cardphotoSlice = createSlice({
 
     initStockImage(
       state,
-      action: PayloadAction<{ meta: ImageMeta; config: WorkingConfig }>
+      action: PayloadAction<{ meta: ImageMeta; config: WorkingConfig }>,
     ) {
       const { meta, config } = action.payload
 
@@ -56,21 +67,45 @@ export const cardphotoSlice = createSlice({
           stock: { image: meta },
           user: { image: null },
           apply: { image: null },
+          gallery: { image: null },
         },
         operations: [initialOperation],
         activeIndex: 0,
+        cropIndices: [],
         currentConfig: config,
       }
       state.isComplete = false
+      // state.galleryItems = null
+      // state.isGalleryLoading = false
     },
 
     setBaseImage(
       state,
-      action: PayloadAction<{ target: keyof CardphotoBase; image: ImageMeta }>
+      action: PayloadAction<{ target: keyof CardphotoBase; image: ImageMeta }>,
     ) {
       if (!state.state) return
       const { target, image } = action.payload
       state.state.base[target].image = image
+    },
+
+    setGalleryList(state, action: PayloadAction<GalleryItem[]>) {
+      state.galleryItems = action.payload
+    },
+
+    addItemToGallery(state, action: PayloadAction<GalleryItem>) {
+      if (!state.galleryItems) {
+        state.galleryItems = []
+      }
+
+      state.galleryItems.unshift(action.payload)
+    },
+
+    removeItemFromGallery(state, action: PayloadAction<string>) {
+      if (state.galleryItems) {
+        state.galleryItems = state.galleryItems.filter(
+          (item) => item.id !== action.payload,
+        )
+      }
     },
 
     uploadUserImage(state, action: PayloadAction<ImageMeta>) {
@@ -78,19 +113,39 @@ export const cardphotoSlice = createSlice({
       state.state.base.user.image = action.payload
     },
 
+    // addOperation(state, action: PayloadAction<CardphotoOperation>) {
+    //   if (!state.state) return
+    //   const op = action.payload
+
+    //   state.state.operations = state.state.operations.slice(
+    //     0,
+    //     state.state.activeIndex + 1,
+    //   )
+
+    //   state.state.operations.push(op)
+    //   state.state.activeIndex = state.state.operations.length - 1
+
+    //   state.state.currentConfig = op.payload.config
+    // },
+
     addOperation(state, action: PayloadAction<CardphotoOperation>) {
       if (!state.state) return
       const op = action.payload
 
+      state.state.currentConfig = op.payload.config
+
       state.state.operations = state.state.operations.slice(
         0,
-        state.state.activeIndex + 1
+        state.state.activeIndex + 1,
       )
 
       state.state.operations.push(op)
-      state.state.activeIndex = state.state.operations.length - 1
+      const newIndex = state.state.operations.length - 1
+      state.state.activeIndex = newIndex
 
-      state.state.currentConfig = op.payload.config
+      if (op.payload.reason === 'applyCrop') {
+        state.state.cropIndices.push(newIndex)
+      }
     },
 
     undo(state) {
@@ -132,7 +187,7 @@ export const cardphotoSlice = createSlice({
 
       state.state.operations = state.state.operations.slice(
         0,
-        state.state.activeIndex + 1
+        state.state.activeIndex + 1,
       )
       state.state.operations.push(op)
       state.state.activeIndex = state.state.operations.length - 1
@@ -162,7 +217,7 @@ export const cardphotoSlice = createSlice({
         imageLayer: ImageLayer
         cropLayer: CropLayer
         card: CardLayer
-      }>
+      }>,
     ) {
       if (!state.state) return
       const { imageLayer, cropLayer, card } = action.payload
@@ -187,6 +242,9 @@ export const {
   uploadImageReady,
   resetCardphoto,
   initStockImage,
+  setGalleryList,
+  addItemToGallery,
+  removeItemFromGallery,
   setBaseImage,
   uploadUserImage,
   addOperation,

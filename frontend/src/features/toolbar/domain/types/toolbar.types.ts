@@ -4,6 +4,7 @@ import type {
   IconKey,
   IconState,
   IconStateGroup,
+  IconValue,
 } from '@shared/config/constants'
 import type {
   CardphotoKey,
@@ -24,6 +25,15 @@ export interface ToolbarIcon {
   key: IconKey
   state: IconState
 }
+
+export type UpdateIconValue = IconState | Partial<IconValue>
+
+// export type UpdateIconPayloadValue =
+//   | IconState
+//   | Partial<{
+//       state: IconState
+//       badge: number | null
+//     }>
 
 export interface ToolbarGroup {
   group: string
@@ -71,7 +81,7 @@ export interface BaseSectionConfig<
     key: TKey,
     section: TSection,
     editor: ReactEditor,
-    dispatch: AppDispatch
+    dispatch: AppDispatch,
   ) => void
   group: string
   toolbar?: ToolbarConfig

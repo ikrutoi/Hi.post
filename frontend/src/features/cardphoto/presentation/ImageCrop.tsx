@@ -42,8 +42,6 @@ export const ImageCrop = () => {
 
   const imageMeta = useCurrentImageMeta(cardphotoState.state)
 
-  console.log('ImageCrop imageMeta', imageMeta)
-
   const { src, alt } = useCardphotoSrc(cardphotoState.state)
 
   const processedSrcRef = useRef<string | null>(null)

@@ -18,6 +18,8 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { state: iconStates, groups, badges } = toolbarState
   const { onAction } = toolbarActions
 
+  console.log('Toolbar badges', badges)
+
   const groupRef = useRef<HTMLDivElement>(null)
 
   const { size: layoutSize, actions: layoutActions } = useLayoutFacade()
@@ -35,7 +37,13 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   }, [section, groups, sectionMenuHeight, setSectionMenuHeight])
 
   const renderIcon = (key: IconKey, groupStatus: IconStateGroup) => {
-    const iconState = iconStates[key as keyof typeof iconStates] as IconState
+    const rawData = iconStates[key as keyof typeof iconStates]
+
+    const iconState = (
+      typeof rawData === 'object' && rawData !== null ? rawData.state : rawData
+    ) as IconState
+
+    const badgeValue = badges[key]
 
     return (
       <button
@@ -44,7 +52,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
         className={clsx(
           styles.toolbarKey,
           styles[`toolbarKey${capitalize(iconState)}`],
-          groupStatus === 'disabled' && styles.toolbarKeyDisabled
+          groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
         onMouseDown={(e) => {
           e.preventDefault()
@@ -56,9 +64,9 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
       >
         {getToolbarIcon({ key: key as IconKey })}
 
-        {badges[key] && (
+        {badgeValue !== null && badgeValue > 0 && (
           <span className={styles.toolbarBadge}>
-            <span className={styles.toolbarBadgeValue}>{badges[key]}</span>
+            <span className={styles.toolbarBadgeValue}>{badgeValue}</span>
           </span>
         )}
       </button>
@@ -76,7 +84,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           className={clsx(
             styles.toolbarGroup,
             styles[`toolbarGroup${capitalize(group.group)}`],
-            group.status === 'disabled' && styles.toolbarGroupDisabled
+            group.status === 'disabled' && styles.toolbarGroupDisabled,
           )}
         >
           {group.icons.map((icon) => renderIcon(icon.key, group.status))}

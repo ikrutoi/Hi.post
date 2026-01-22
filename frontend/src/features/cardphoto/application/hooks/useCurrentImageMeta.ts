@@ -10,6 +10,7 @@ export function useCurrentImageMeta(
     const userImg = state.base.user.image
     const stockImg = state.base.stock.image
     const configImg = state.currentConfig?.image.meta
+    const galleryImg = state.base.gallery.image
 
     if (configImg?.source === 'user' && userImg) {
       return userImg
@@ -20,6 +21,8 @@ export function useCurrentImageMeta(
     }
 
     if (userImg) return userImg
+
+    // if (galleryImg) return { src: galleryImg.url, alt: galleryImg.id }
 
     return stockImg || null
   }, [

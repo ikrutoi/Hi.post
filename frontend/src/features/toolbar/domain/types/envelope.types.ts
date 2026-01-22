@@ -1,7 +1,7 @@
 import { flattenIcons } from '../helpers'
 import type {
   IconKey,
-  IconState,
+  IconValue,
   IconStateGroup,
 } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
@@ -34,7 +34,7 @@ export const ENVELOPE_TOOLBAR: ToolbarConfig = [
 export const initialSenderToolbarState: EnvelopeToolbarState = {
   ...(Object.fromEntries(flattenIcons(ENVELOPE_TOOLBAR)) as Record<
     EnvelopeKey,
-    IconState
+    IconValue
   >),
   config: [...ENVELOPE_TOOLBAR],
 }
@@ -42,7 +42,7 @@ export const initialSenderToolbarState: EnvelopeToolbarState = {
 export const initialRecipientToolbarState: EnvelopeToolbarState = {
   ...(Object.fromEntries(flattenIcons(ENVELOPE_TOOLBAR)) as Record<
     EnvelopeKey,
-    IconState
+    IconValue
   >),
   config: [...ENVELOPE_TOOLBAR],
 }
