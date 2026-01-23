@@ -79,6 +79,32 @@ export const cardphotoSlice = createSlice({
       // state.isGalleryLoading = false
     },
 
+    initUserImage(
+      state,
+      action: PayloadAction<{ meta: ImageMeta; config: WorkingConfig }>,
+    ) {
+      const { meta, config } = action.payload
+
+      const initialOperation: CardphotoOperation = {
+        type: 'operation',
+        payload: { config, reason: 'initUserImage' },
+      }
+
+      state.state = {
+        base: {
+          stock: state.state?.base.stock || { image: null },
+          user: { image: meta },
+          apply: { image: null },
+          gallery: state.state?.base.gallery || { image: null },
+        },
+        operations: [initialOperation],
+        activeIndex: 0,
+        cropIndices: [],
+        currentConfig: config,
+      }
+      state.isComplete = false
+    },
+
     setBaseImage(
       state,
       action: PayloadAction<{ target: keyof CardphotoBase; image: ImageMeta }>,
@@ -242,6 +268,7 @@ export const {
   uploadImageReady,
   resetCardphoto,
   initStockImage,
+  initUserImage,
   setGalleryList,
   addItemToGallery,
   removeItemFromGallery,

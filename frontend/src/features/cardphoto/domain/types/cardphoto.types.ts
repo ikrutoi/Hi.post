@@ -1,4 +1,10 @@
-export const IMAGE_SOURCE = ['stock', 'user', 'apply', 'gallery'] as const
+export const IMAGE_SOURCE = [
+  'stock',
+  'user',
+  'apply',
+  'gallery',
+  'processed',
+] as const
 export type ImageSource = (typeof IMAGE_SOURCE)[number]
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -42,7 +48,9 @@ export interface ImageMeta {
   width: number
   height: number
   imageAspectRatio: number
+  isCropped: boolean
   timestamp?: number
+  parentImageId?: string
 }
 
 export interface ImageLayer {

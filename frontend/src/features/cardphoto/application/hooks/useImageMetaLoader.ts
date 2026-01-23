@@ -41,6 +41,7 @@ export const useImageMetaLoader = (src: string) => {
         width: img.naturalWidth,
         height: img.naturalHeight,
         imageAspectRatio: roundTo(img.naturalWidth / img.naturalHeight, 3),
+        isCropped: false,
         timestamp: Date.now(),
       }
 

@@ -32,8 +32,6 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'photo',
     toolbar: CARDPHOTO_TOOLBAR,
     getBadges: (mergedState) => {
-      console.log('mergedState inside getBadges', mergedState)
-
       const count = mergedState.cropIndices ? mergedState.cropIndices.length : 0
 
       return {

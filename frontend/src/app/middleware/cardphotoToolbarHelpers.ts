@@ -9,10 +9,10 @@ interface UpdateCropOptions {
 export function* updateCropToolbarState(
   newCrop: 'active' | 'enabled',
   state: CardphotoToolbarState,
-  options: UpdateCropOptions = {}
+  options: UpdateCropOptions = {},
 ) {
   yield put(
-    updateToolbarIcon({ section: 'cardphoto', key: 'crop', value: newCrop })
+    updateToolbarIcon({ section: 'cardphoto', key: 'crop', value: newCrop }),
   )
 
   const newSave =
@@ -22,7 +22,7 @@ export function* updateCropToolbarState(
         ? 'enabled'
         : state.save
   yield put(
-    updateToolbarIcon({ section: 'cardphoto', key: 'save', value: newSave })
+    updateToolbarIcon({ section: 'cardphoto', key: 'save', value: newSave }),
   )
 
   const { isFull = false } = options
@@ -35,7 +35,7 @@ export function* updateCropToolbarState(
       section: 'cardphoto',
       key: 'cropFull',
       value: newCropFull,
-    })
+    }),
   )
 
   const newCropCheck =
@@ -49,6 +49,6 @@ export function* updateCropToolbarState(
       section: 'cardphoto',
       key: 'cropCheck',
       value: newCropCheck,
-    })
+    }),
   )
 }

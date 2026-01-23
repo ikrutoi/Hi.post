@@ -37,7 +37,7 @@ function* initCardphotoSaga() {
 
   const randomMeta: ImageMeta = yield call(getRandomStockMeta)
   const cardLayer: CardLayer = yield select(selectSizeCard)
-  const imageLayer = fitImageToCard(randomMeta, cardLayer, 0)
+  const imageLayer = fitImageToCard(randomMeta, cardLayer, 0, true)
   const cropLayer = createInitialCropLayer(imageLayer, cardLayer, randomMeta)
   const workingConfig = { card: cardLayer, image: imageLayer, crop: cropLayer }
 

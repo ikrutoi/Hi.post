@@ -13,6 +13,7 @@ export function fitImageToCard(
   originalMeta: ImageMeta,
   card: CardLayer,
   orientation: ImageOrientation,
+  isCropped: boolean,
 ): ImageLayer {
   const isRotated = orientation === 90 || orientation === 270
 
@@ -34,6 +35,7 @@ export function fitImageToCard(
       ...originalMeta,
       width: finalWidth,
       height: finalHeight,
+      isCropped,
     },
     left: offsetX,
     top: offsetY,

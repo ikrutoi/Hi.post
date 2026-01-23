@@ -24,6 +24,7 @@ export const useImageUpload = (
           width: img.naturalWidth,
           height: img.naturalHeight,
           imageAspectRatio: roundTo(img.naturalWidth / img.naturalHeight, 3),
+          isCropped: false,
           timestamp: Date.now(),
         }
         onUpload(imageMeta)
@@ -34,43 +35,43 @@ export const useImageUpload = (
   )
 }
 
-export const useImageUpload1 = (
-  onUpload: (meta: ImageMeta) => void,
-  onLoading: () => void,
-) => {
-  return useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (!file) return
+// export const useImageUpload1 = (
+//   onUpload: (meta: ImageMeta) => void,
+//   onLoading: () => void,
+// ) => {
+//   return useCallback(
+//     (e: React.ChangeEvent<HTMLInputElement>) => {
+//       const file = e.target.files?.[0]
+//       if (!file) return
 
-      e.target.value = ''
+//       e.target.value = ''
 
-      onLoading()
+//       onLoading()
 
-      const objectUrl = URL.createObjectURL(file)
-      const img = new Image()
+//       const objectUrl = URL.createObjectURL(file)
+//       const img = new Image()
 
-      img.onload = () => {
-        const imageMeta: ImageMeta = {
-          id: `${file.name}-${file.lastModified}-${Date.now()}`,
-          source: 'user',
-          url: objectUrl,
-          timestamp: Date.now(),
-          width: img.naturalWidth,
-          height: img.naturalHeight,
-          imageAspectRatio: roundTo(img.naturalWidth / img.naturalHeight, 3),
-        }
+//       img.onload = () => {
+//         const imageMeta: ImageMeta = {
+//           id: `${file.name}-${file.lastModified}-${Date.now()}`,
+//           source: 'user',
+//           url: objectUrl,
+//           timestamp: Date.now(),
+//           width: img.naturalWidth,
+//           height: img.naturalHeight,
+//           imageAspectRatio: roundTo(img.naturalWidth / img.naturalHeight, 3),
+//         }
 
-        onUpload(imageMeta)
-      }
+//         onUpload(imageMeta)
+//       }
 
-      img.onerror = () => {
-        console.error('Failed to load image for metadata')
-        URL.revokeObjectURL(objectUrl)
-      }
+//       img.onerror = () => {
+//         console.error('Failed to load image for metadata')
+//         URL.revokeObjectURL(objectUrl)
+//       }
 
-      img.src = objectUrl
-    },
-    [onUpload, onLoading],
-  )
-}
+//       img.src = objectUrl
+//     },
+//     [onUpload, onLoading],
+//   )
+// }

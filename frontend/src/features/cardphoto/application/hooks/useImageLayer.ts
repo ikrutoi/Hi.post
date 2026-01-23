@@ -10,11 +10,16 @@ import type {
 export const useImageLayer = (
   imageMeta: ImageMeta | null,
   cardLayer: CardLayer,
-  orientation: ImageOrientation
+  orientation: ImageOrientation,
 ): ImageLayer | null => {
   return useMemo(() => {
     if (!imageMeta) return null
-    return fitImageToCard(imageMeta, cardLayer, orientation)
+    return fitImageToCard(
+      imageMeta,
+      cardLayer,
+      orientation,
+      imageMeta.isCropped,
+    )
   }, [
     imageMeta,
     cardLayer.width,

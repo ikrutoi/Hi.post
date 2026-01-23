@@ -117,6 +117,7 @@ import {
   IconCardVerticalV2,
   IconCardHorizontalV2,
   IconCardDynamic,
+  IconImageReset,
 } from '@shared/ui/icons'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -155,6 +156,8 @@ function getIconByKey(
       return <IconImageRotateLeft />
     case 'imageRotateRight':
       return <IconImageRotateRight />
+    case 'imageReset':
+      return <IconImageReset />
     case 'cardHorizontal':
       return <IconCardHorizontalV2 />
     case 'cardVertical':
@@ -173,6 +176,8 @@ function getIconByKey(
       return <IconCardphotoTemplates />
     case 'cropFull':
       return <IconCropFull />
+    case 'cropDelete':
+      return <IconClose />
     case 'cropRotate':
       return <IconCropRotateRight />
     case 'reset':

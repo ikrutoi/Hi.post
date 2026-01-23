@@ -76,6 +76,8 @@ export function* handleCropAction() {
       }),
     )
 
+    // yield call(updateCropToolbarState, 'active', state)
+
     yield call(syncCropFullIcon, {
       forceActive: true,
       customConfig: newConfig,
@@ -115,6 +117,7 @@ export function* handleCropCheckAction() {
     height: crop.meta.height,
     source: imageMeta.source,
     imageAspectRatio: roundTo(crop.meta.width / crop.meta.height, 2),
+    isCropped: true,
     timestamp: Date.now(),
   }
 
@@ -236,6 +239,7 @@ export function* handleImageLayerUpdate() {
     config.image.meta,
     sizeCard,
     config.image.orientation,
+    config.image.meta.isCropped,
   )
   const newCropLayer = createInitialCropLayer(
     newImageLayer,
@@ -297,6 +301,7 @@ export function* handleCardOrientation(): SagaIterator {
     baseImage,
     newCardLayer,
     config.image.orientation,
+    config.image.meta.isCropped,
   )
 
   const newCropLayer = createInitialCropLayer(
@@ -393,6 +398,7 @@ export function* handleImageRotate(
     baseImage,
     currentConfig.card,
     nextOrientation,
+    currentConfig.image.meta.isCropped,
   )
 
   const newCropLayer = createInitialCropLayer(
@@ -466,7 +472,12 @@ export function* handleCropConfirm(): SagaIterator {
 
     yield put(applyFinal(finalImageMeta))
 
-    const newImageLayer = fitImageToCard(finalImageMeta, config.card, 0)
+    const newImageLayer = fitImageToCard(
+      finalImageMeta,
+      config.card,
+      0,
+      config.image.meta.isCropped,
+    )
     const newCropLayer = createInitialCropLayer(
       newImageLayer,
       config.card,

@@ -12,6 +12,7 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import {
   addOperation,
   initStockImage,
+  initUserImage,
   resetCardphoto,
 } from '@cardphoto/infrastructure/state'
 import {
@@ -34,6 +35,7 @@ import { onDownloadClick } from './cardphotoProcessSaga'
 import {
   updateToolbarSection,
   updateToolbarIcon,
+  updateGroupStatus,
 } from '@toolbar/infrastructure/state'
 import type { CardphotoState } from '@cardphoto/domain/types'
 
@@ -119,28 +121,134 @@ export function* watchCropToolbarStatus(): SagaIterator {
   })
 }
 
-export function* syncCropHistoryIcon() {
-  const state: CardphotoToolbarState = yield select(
-    (state) => state.cardphoto.state,
-  )
+// export function* syncCropHistoryIcon() {
+//   const state: CardphotoToolbarState = yield select(
+//     (state) => state.cardphoto.state,
+//   )
 
+//   if (!state) return
+
+//   const cropsCount = state.cropIndices.length
+
+//   console.log('getCropHistory', state)
+
+//   const isOriginalShowing = state.activeIndex === 0
+
+//   yield put(
+//     updateToolbarIcon({
+//       section: 'cardphoto',
+//       key: 'cropHistory',
+//       value: cropsCount > 0 ? 'enabled' : 'disabled',
+//       // badge: cropsCount > 0 ? cropsCount : null,
+//     }),
+//   )
+
+//   yield put(
+//     updateToolbarIcon({
+//       section: 'cardphoto',
+//       key: 'undo',
+//       value: !isOriginalShowing ? 'enabled' : 'disabled',
+//     }),
+//   )
+
+//   yield put(
+//     updateToolbarIcon({
+//       section: 'cardphoto',
+//       key: 'cropDelete',
+//       value: cropsCount > 0 ? 'enabled' : 'disabled',
+//     }),
+//   )
+// }
+
+export function* syncToolbarContext() {
+  const state: CardphotoState = yield select((s) => s.cardphoto.state)
   if (!state) return
 
-  const count = state.cropIndices.length
+  const { activeIndex, operations, cropIndices, base } = state
+  const currentOp = operations[activeIndex]
+
+  // const toolbarState: CardphotoToolbarState = yield select(
+  //   (s) => s.toolbar.cardphoto,
+  // )
+  // const isCropCurrentlyActive = toolbarState.crop === 'active'
+
+  const hasUserImage = base.user.image !== null
+  const cropsCount = cropIndices.length
+
+  const isViewingAppliedCrop = currentOp?.payload.reason === 'applyCrop'
+
+  const hasCrops = cropsCount > 0
+
+  if (!hasUserImage) {
+    yield put(
+      updateGroupStatus({
+        section: 'cardphoto',
+        groupName: 'photo',
+        status: 'disabled',
+      }),
+    )
+    return
+  }
 
   yield put(
-    updateToolbarIcon({
+    updateGroupStatus({
       section: 'cardphoto',
-      key: 'cropHistory',
-      value: count > 0 ? 'enabled' : 'disabled',
-      // badge: count > 0 ? count : null,
+      groupName: 'photo',
+      status: 'enabled',
     }),
   )
+
+  if (isViewingAppliedCrop) {
+    yield put(
+      updateToolbarSection({
+        section: 'cardphoto',
+        value: {
+          cardOrientation: 'disabled',
+          imageRotateLeft: 'disabled',
+          imageRotateRight: 'disabled',
+          imageReset: 'enabled',
+          crop: 'disabled',
+          cropHistory: 'active',
+          cropDelete: 'enabled',
+        },
+      }),
+    )
+  } else {
+    yield put(
+      updateToolbarSection({
+        section: 'cardphoto',
+        value: {
+          cardOrientation: 'enabled',
+          imageRotateLeft: 'enabled',
+          imageRotateRight: 'enabled',
+          imageReset: hasCrops ? 'enabled' : 'disabled',
+          crop: 'enabled',
+          cropFull: 'enabled',
+          cropCheck: 'enabled',
+          cropDelete: 'disabled',
+          cropHistory: cropsCount > 0 ? 'enabled' : 'disabled',
+        },
+      }),
+    )
+  }
 }
 
-export function* watchCropHistory() {
+// export function* watchCropHistory() {
+//   yield takeEvery(
+//     [addOperation.type, initStockImage.type, resetCardphoto.type],
+//     syncCropHistoryIcon,
+//   )
+// }
+
+export function* watchToolbarContext() {
   yield takeEvery(
-    [addOperation.type, initStockImage.type, resetCardphoto.type],
-    syncCropHistoryIcon,
+    [
+      addOperation.type,
+      initStockImage.type,
+      initUserImage.type,
+      resetCardphoto.type,
+      'cardphoto/setActiveIndex',
+    ],
+    syncToolbarContext,
   )
 }

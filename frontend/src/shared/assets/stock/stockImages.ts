@@ -17,6 +17,7 @@ export const STOCK_IMAGES: ImageMeta[] = Object.entries(modules).map(
       width,
       height,
       imageAspectRatio: roundTo(width / height, 3),
+      isCropped: true,
       timestamp: Date.now(),
     }
   },

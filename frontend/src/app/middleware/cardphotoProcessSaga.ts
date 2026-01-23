@@ -11,6 +11,7 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import {
   openFileDialog,
   uploadUserImage,
+  initUserImage,
   cancelFileDialog,
   markLoading,
   markLoaded,
@@ -37,7 +38,8 @@ import {
   handleCardphotoToolbarAction,
   watchCropChanges,
   watchCropToolbarStatus,
-  watchCropHistory,
+  // watchCropHistory,
+  watchToolbarContext,
 } from './cardphotoToolbarSaga'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -95,7 +97,47 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   const imageMeta = action.payload
   const cardLayer: CardLayer = yield select(selectSizeCard)
 
-  const imageLayer = fitImageToCard(imageMeta, cardLayer, 0)
+  const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
+  const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
+  const newConfig = { card: cardLayer, image: imageLayer, crop: cropLayer }
+
+  yield put(
+    initUserImage({
+      meta: imageMeta,
+      config: newConfig,
+    }),
+  )
+
+  const { needsCrop } = validateImageSize(
+    imageMeta,
+    cardLayer.width,
+    cardLayer.height,
+  )
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'apply',
+      value: needsCrop ? 'enabled' : 'disabled',
+    }),
+  )
+
+  // yield put(
+  //   updateToolbarIcon({
+  //     section: 'cardphoto',
+  //     key: 'save',
+  //     value: 'enabled',
+  //   }),
+  // )
+
+  yield put(markLoaded())
+}
+
+function* onUploadImageReadySaga1(action: PayloadAction<ImageMeta>) {
+  const imageMeta = action.payload
+  const cardLayer: CardLayer = yield select(selectSizeCard)
+
+  const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
   const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
 
   console.log('onUploadImageReady imageLayer', imageLayer)
@@ -174,26 +216,10 @@ export function* cardphotoProcessSaga(): SagaIterator {
 
     fork(watchCropChanges),
     fork(watchCropToolbarStatus),
-    fork(watchCropHistory),
+    fork(watchToolbarContext),
 
-    takeEvery(uploadUserImage.type, onUploadImage),
-
+    // takeEvery(uploadUserImage.type, onUploadImage),
     takeLatest(uploadUserImage.type, onUploadImageReadySaga),
-
     takeEvery(cancelFileDialog.type, onCancelFileDialog),
   ])
 }
-
-// export function* cardphotoProcessSaga(): SagaIterator {
-//   yield all([
-//     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
-
-//     fork(watchCropChanges),
-//     fork(watchCropToolbarStatus),
-
-//     takeEvery(uploadUserImage.type, onUploadImage),
-//     takeEvery(cancelFileDialog.type, onCancelFileDialog),
-
-//     takeLatest(uploadImageReady.type, onUploadImageReadySaga),
-//   ])
-// }

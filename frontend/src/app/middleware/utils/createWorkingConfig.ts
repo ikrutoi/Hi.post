@@ -15,7 +15,12 @@ import type {
 export function* createWorkingConfig(imageMeta: ImageMeta) {
   const cardLayer: CardLayer = yield select(selectSizeCard)
 
-  const imageLayer: ImageLayer = fitImageToCard(imageMeta, cardLayer, 0)
+  const imageLayer: ImageLayer = fitImageToCard(
+    imageMeta,
+    cardLayer,
+    0,
+    imageMeta.isCropped,
+  )
   const cropLayer: CropLayer = createInitialCropLayer(
     imageLayer,
     cardLayer,
