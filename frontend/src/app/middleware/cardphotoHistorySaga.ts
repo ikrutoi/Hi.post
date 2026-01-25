@@ -1,10 +1,12 @@
 import { put, select, call, takeLatest } from 'redux-saga/effects'
 import {
-  initStockImage,
+  // initStockImage,
   initCardphoto,
+  hydrateEditor,
   // addOperation,
   type CardphotoSliceState,
 } from '@cardphoto/infrastructure/state'
+import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
   selectCardphotoState,
   selectCurrentConfig,
@@ -23,6 +25,8 @@ import type {
   CardphotoOperation,
   WorkingConfig,
   CardLayer,
+  CardphotoBase,
+  ImageSource,
 } from '@cardphoto/domain/types'
 
 function getRandomStockMeta(): ImageMeta {
@@ -32,19 +36,60 @@ function getRandomStockMeta(): ImageMeta {
 
 function* initCardphotoSaga() {
   const state: CardphotoState = yield select(selectCardphotoState)
+  const allCrops: ImageMeta[] = yield call(storeAdapters.cropImages.getAll)
+  const cropCount = allCrops.length
+  const cropIds = allCrops.map((c) => c.id)
+
   if (state.operations.length > 1) return
+
+  const base: CardphotoBase = {
+    stock: { image: yield call(getRandomStockMeta) },
+    user: { image: null },
+    apply: { image: null },
+    processed: { image: null },
+  }
+
+  if (!base.stock.image) return
+
+  let activeSource: ImageSource = 'stock'
+  let initialImageMeta: ImageMeta = base.stock.image
+
   // const originalImage: ImageMeta = yield select(selectActiveSourceImage)
 
-  const randomMeta: ImageMeta = yield call(getRandomStockMeta)
+  if (cropCount > 0) {
+    const lastCrop = allCrops[cropCount - 1]
+    let blobUrl = lastCrop.url
+    if (lastCrop.blob) {
+      blobUrl = URL.createObjectURL(lastCrop.blob)
+    }
+
+    const { blob, ...serializableMeta } = lastCrop
+    const metaForRedux: ImageMeta = {
+      ...serializableMeta,
+    }
+
+    base.processed.image = metaForRedux
+    // initialMeta = lastCrop
+    // activeSource = 'processed'
+  }
+
+  // const randomMeta: ImageMeta = yield call(getRandomStockMeta)
   const cardLayer: CardLayer = yield select(selectSizeCard)
-  const imageLayer = fitImageToCard(randomMeta, cardLayer, 0, true)
-  const cropLayer = createInitialCropLayer(imageLayer, cardLayer, randomMeta)
-  const workingConfig = { card: cardLayer, image: imageLayer, crop: cropLayer }
+  const imageLayer = fitImageToCard(initialImageMeta, cardLayer, 0, true)
+  const cropLayer = createInitialCropLayer(
+    imageLayer,
+    cardLayer,
+    initialImageMeta,
+  )
+  const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
 
   yield put(
-    initStockImage({
-      meta: randomMeta,
-      config: workingConfig,
+    hydrateEditor({
+      base,
+      config,
+      activeSource,
+      cropIds,
+      cropCount,
     }),
   )
 }

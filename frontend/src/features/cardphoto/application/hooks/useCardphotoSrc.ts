@@ -9,7 +9,7 @@ export function useCardphotoSrc(state: CardphotoState | null) {
 
     const userImg = state.base.user.image
     const stockImg = state.base.stock.image
-    const galleryImg = state.base.gallery.image
+    // const galleryImg = state.base.gallery.image
     const configImg = state.currentConfig?.image.meta
 
     if (userImg && (!configImg || configImg.source !== 'user')) {
@@ -39,6 +39,6 @@ export function useCardphotoSrc(state: CardphotoState | null) {
     state?.currentConfig?.image.meta.source,
     state?.base.user.image?.url,
     state?.base.stock.image?.url,
-    state?.base.gallery.image?.url,
+    // state?.base.gallery.image?.url,
   ])
 }

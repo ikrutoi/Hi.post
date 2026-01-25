@@ -2,12 +2,15 @@ import { call, delay, put, select, takeLatest } from 'redux-saga/effects'
 import { nanoid } from 'nanoid'
 import type { SagaIterator } from 'redux-saga'
 import { RootState } from '../state'
+import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
   addOperation,
   applyFinal,
   type CardphotoSliceState,
   markLoading,
   markLoaded,
+  addCropId,
+  setProcessedImage,
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
@@ -76,7 +79,7 @@ export function* handleCropAction() {
       }),
     )
 
-    // yield call(updateCropToolbarState, 'active', state)
+    yield call(updateCropToolbarState, 'active', state)
 
     yield call(syncCropFullIcon, {
       forceActive: true,
@@ -434,6 +437,9 @@ export function* handleCropConfirm(): SagaIterator {
 
   if (!config || !config.crop || !config.image.meta.url) return
 
+  console.log('handleCropConfirm state', state)
+  console.log('handleCropConfirm config', config)
+
   try {
     yield put(markLoading())
 
@@ -442,8 +448,16 @@ export function* handleCropConfirm(): SagaIterator {
       config.image.meta.url,
     )
 
+    console.log('handleCropConfirm img', img)
+    console.log(
+      'handleCropConfirm img size',
+      img.naturalWidth,
+      img.naturalHeight,
+    )
     const scaleX = img.naturalWidth / config.image.meta.width
     const scaleY = img.naturalHeight / config.image.meta.height
+
+    console.log('**** scaleX / scaleY', scaleX, scaleY)
 
     const realCrop: CropLayer = {
       ...config.crop,
@@ -451,56 +465,57 @@ export function* handleCropConfirm(): SagaIterator {
       y: roundTo(config.crop.y * scaleY, 2),
       meta: {
         ...config.crop.meta,
-        width: roundTo(config.crop.meta.width * scaleX, 2),
-        height: roundTo(config.crop.meta.height * scaleY, 2),
+        width: Math.floor(config.crop.meta.width * scaleX),
+        height: Math.floor(config.crop.meta.height * scaleY),
       },
     }
 
     const croppedBlob: Blob = yield call(getCroppedImg, img, realCrop)
+    console.log('////0')
     const croppedUrl = URL.createObjectURL(croppedBlob)
+    console.log('////1')
 
     const finalImageMeta: ImageMeta = {
       ...config.image.meta,
       id: nanoid(),
+      source: 'processed',
       url: croppedUrl,
       width: realCrop.meta.width,
       height: realCrop.meta.height,
       imageAspectRatio: config.crop.meta.aspectRatio,
+      isCropped: true,
       blob: croppedBlob,
       timestamp: Date.now(),
     }
 
-    yield put(applyFinal(finalImageMeta))
+    yield call(storeAdapters.cropImages.put, finalImageMeta)
+    console.log('////2')
 
-    const newImageLayer = fitImageToCard(
-      finalImageMeta,
-      config.card,
-      0,
-      config.image.meta.isCropped,
-    )
+    yield put(addCropId(finalImageMeta.id))
+
+    yield put(setProcessedImage(finalImageMeta))
+
+    const { blob, ...reduxMeta } = finalImageMeta
+
+    yield put(applyFinal(reduxMeta))
+    console.log('////3')
+
+    const newImageLayer = fitImageToCard(reduxMeta, config.card, 0, true)
+    console.log('////4', newImageLayer)
     const newCropLayer = createInitialCropLayer(
       newImageLayer,
       config.card,
-      finalImageMeta,
+      reduxMeta,
     )
 
+    console.log('////5')
     const finalConfig: WorkingConfig = {
       card: config.card,
       image: newImageLayer,
       crop: newCropLayer,
     }
 
-    // const finalConfig: WorkingConfig = {
-    //   ...config,
-    //   image: {
-    //     ...config.image,
-    //     meta: finalImageMeta,
-    //     orientation: 0,
-    //     left: 0,
-    //     top: 0,
-    //   },
-    // }
-
+    console.log('////6', finalConfig)
     yield put(
       addOperation({
         type: 'operation',
@@ -520,6 +535,10 @@ export function* handleCropConfirm(): SagaIterator {
   } finally {
     yield put(markLoaded())
   }
+  console.log('////7')
+
+  const allImageFromDb = yield call(storeAdapters.cropImages.getAll)
+  console.log('handleCropConfirm cropImages DB', allImageFromDb)
 }
 
 export function* syncQualitySaga() {

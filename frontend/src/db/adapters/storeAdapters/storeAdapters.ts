@@ -5,6 +5,7 @@ import type { StoreAdapter } from '../../types'
 export const storeAdapters: {
   stockImages: StoreAdapter<StoreMap['stockImages']>
   userImages: StoreAdapter<StoreMap['userImages']>
+  cropImages: StoreAdapter<StoreMap['cropImages']>
   cardtext: StoreAdapter<StoreMap['cardtext']>
   sender: StoreAdapter<StoreMap['sender']>
   recipient: StoreAdapter<StoreMap['recipient']>
@@ -14,6 +15,7 @@ export const storeAdapters: {
 } = {
   stockImages: createStoreAdapter<StoreMap['stockImages']>('stockImages'),
   userImages: createStoreAdapter<StoreMap['userImages']>('userImages'),
+  cropImages: createStoreAdapter<StoreMap['cropImages']>('cropImages'),
   cardtext: createStoreAdapter<StoreMap['cardtext']>('cardtext'),
   sender: createStoreAdapter<StoreMap['sender']>('sender'),
   recipient: createStoreAdapter<StoreMap['recipient']>('recipient'),

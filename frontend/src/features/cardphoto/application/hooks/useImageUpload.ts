@@ -7,6 +7,7 @@ export const useImageUpload = (
   onUpload: (meta: ImageMeta) => void,
   onLoading: () => void,
 ) => {
+  console.log('useImageUpload imageMeta')
   return useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]

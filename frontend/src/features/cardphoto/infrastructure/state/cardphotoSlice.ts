@@ -9,6 +9,7 @@ import type {
   CropLayer,
   CardLayer,
   GalleryItem,
+  ImageSource,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -19,8 +20,8 @@ import type { LayoutOrientation } from '@layout/domain/types'
 export interface CardphotoSliceState {
   state: CardphotoState
   isComplete: boolean
-  galleryItems: GalleryItem[] | null
-  isGalleryLoading: boolean
+  // galleryItems: GalleryItem[] | null
+  // isGalleryLoading: boolean
 }
 
 const initialState: CardphotoSliceState = {
@@ -29,16 +30,18 @@ const initialState: CardphotoSliceState = {
       stock: { image: null },
       user: { image: null },
       apply: { image: null },
-      gallery: { image: null },
+      processed: { image: null },
     },
     operations: [],
     activeIndex: -1,
-    cropIndices: [],
+    cropCount: 0,
+    cropIds: null,
+    activeSource: null,
     currentConfig: null,
   },
   isComplete: false,
-  galleryItems: null,
-  isGalleryLoading: false,
+  // galleryItems: null,
+  // isGalleryLoading: false,
 }
 
 export const cardphotoSlice = createSlice({
@@ -51,33 +54,64 @@ export const cardphotoSlice = createSlice({
 
     resetCardphoto: () => initialState,
 
-    initStockImage(
+    hydrateEditor(
       state,
-      action: PayloadAction<{ meta: ImageMeta; config: WorkingConfig }>,
+      action: PayloadAction<{
+        base: CardphotoBase
+        config: WorkingConfig
+        activeSource: ImageSource
+        cropIds: string[]
+        cropCount: number
+      }>,
     ) {
-      const { meta, config } = action.payload
+      const { base, config, activeSource, cropIds, cropCount } = action.payload
 
       const initialOperation: CardphotoOperation = {
         type: 'operation',
-        payload: { config, reason: 'initStock' },
+        payload: { config, reason: 'init' },
       }
 
       state.state = {
-        base: {
-          stock: { image: meta },
-          user: { image: null },
-          apply: { image: null },
-          gallery: { image: null },
-        },
+        base,
         operations: [initialOperation],
         activeIndex: 0,
-        cropIndices: [],
+        cropCount,
+        cropIds,
+        activeSource,
         currentConfig: config,
       }
       state.isComplete = false
-      // state.galleryItems = null
-      // state.isGalleryLoading = false
     },
+
+    // initStockImage(
+    //   state,
+    //   action: PayloadAction<{ meta: ImageMeta; config: WorkingConfig }>,
+    // ) {
+    //   const { meta, config } = action.payload
+
+    //   const initialOperation: CardphotoOperation = {
+    //     type: 'operation',
+    //     payload: { config, reason: 'initStockImage' },
+    //   }
+
+    //   state.state = {
+    //     base: {
+    //       stock: { image: meta },
+    //       user: { image: null },
+    //       apply: { image: null },
+    //       processed: { image: null },
+    //     },
+    //     operations: [initialOperation],
+    //     activeIndex: 0,
+    //     cropCount: 0,
+    //     cropIds: ['stock2'],
+    //     activeSource: 'stock',
+    //     currentConfig: config,
+    //   }
+    //   state.isComplete = false
+    //   // state.galleryItems = null
+    //   // state.isGalleryLoading = false
+    // },
 
     initUserImage(
       state,
@@ -95,11 +129,13 @@ export const cardphotoSlice = createSlice({
           stock: state.state?.base.stock || { image: null },
           user: { image: meta },
           apply: { image: null },
-          gallery: state.state?.base.gallery || { image: null },
+          processed: state.state?.base.processed || { image: null },
         },
         operations: [initialOperation],
         activeIndex: 0,
-        cropIndices: [],
+        cropCount: 0,
+        cropIds: ['user4'],
+        activeSource: 'user',
         currentConfig: config,
       }
       state.isComplete = false
@@ -114,25 +150,25 @@ export const cardphotoSlice = createSlice({
       state.state.base[target].image = image
     },
 
-    setGalleryList(state, action: PayloadAction<GalleryItem[]>) {
-      state.galleryItems = action.payload
-    },
+    // setGalleryList(state, action: PayloadAction<GalleryItem[]>) {
+    //   state.galleryItems = action.payload
+    // },
 
-    addItemToGallery(state, action: PayloadAction<GalleryItem>) {
-      if (!state.galleryItems) {
-        state.galleryItems = []
-      }
+    // addItemToGallery(state, action: PayloadAction<GalleryItem>) {
+    //   if (!state.galleryItems) {
+    //     state.galleryItems = []
+    //   }
 
-      state.galleryItems.unshift(action.payload)
-    },
+    //   state.galleryItems.unshift(action.payload)
+    // },
 
-    removeItemFromGallery(state, action: PayloadAction<string>) {
-      if (state.galleryItems) {
-        state.galleryItems = state.galleryItems.filter(
-          (item) => item.id !== action.payload,
-        )
-      }
-    },
+    // removeItemFromGallery(state, action: PayloadAction<string>) {
+    //   if (state.galleryItems) {
+    //     state.galleryItems = state.galleryItems.filter(
+    //       (item) => item.id !== action.payload,
+    //     )
+    //   }
+    // },
 
     uploadUserImage(state, action: PayloadAction<ImageMeta>) {
       if (!state.state) return
@@ -169,9 +205,9 @@ export const cardphotoSlice = createSlice({
       const newIndex = state.state.operations.length - 1
       state.state.activeIndex = newIndex
 
-      if (op.payload.reason === 'applyCrop') {
-        state.state.cropIndices.push(newIndex)
-      }
+      // if (op.payload.reason === 'applyCrop') {
+      //   state.state.cropIndices.push(newIndex)
+      // }
     },
 
     undo(state) {
@@ -260,6 +296,28 @@ export const cardphotoSlice = createSlice({
       state.state.currentConfig = workingConfig
       state.isComplete = false
     },
+
+    setActiveSource(state, action: PayloadAction<ImageSource>) {
+      if (state.state) {
+        state.state.activeSource = action.payload
+      }
+    },
+
+    addCropId(state, action: PayloadAction<string>) {
+      if (state.state) {
+        if (!state.state.cropIds) state.state.cropIds = []
+        if (!state.state.cropIds.includes(action.payload)) {
+          state.state.cropIds.push(action.payload)
+        }
+      }
+    },
+
+    setProcessedImage(state, action: PayloadAction<ImageMeta>) {
+      if (state.state) {
+        state.state.base.processed.image = action.payload
+        state.state.activeSource = 'processed'
+      }
+    },
   },
 })
 
@@ -267,11 +325,11 @@ export const {
   initCardphoto,
   uploadImageReady,
   resetCardphoto,
-  initStockImage,
+  // initStockImage,
   initUserImage,
-  setGalleryList,
-  addItemToGallery,
-  removeItemFromGallery,
+  // setGalleryList,
+  // addItemToGallery,
+  // removeItemFromGallery,
   setBaseImage,
   uploadUserImage,
   addOperation,
@@ -282,6 +340,10 @@ export const {
   reset,
   cancelSelection,
   resetCropLayers,
+  setActiveSource,
+  addCropId,
+  setProcessedImage,
+  hydrateEditor,
 } = cardphotoSlice.actions
 
 export default cardphotoSlice.reducer

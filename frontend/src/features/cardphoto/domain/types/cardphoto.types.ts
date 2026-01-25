@@ -26,7 +26,7 @@ export interface GalleryItem extends ImageMeta {
 export interface CardphotoBase {
   stock: { image: ImageMeta | null }
   user: { image: ImageMeta | null }
-  gallery: { image: ImageMeta | null }
+  processed: { image: ImageMeta | null }
   apply: { image: ImageMeta | null }
 }
 
@@ -79,6 +79,7 @@ export interface WorkingConfig {
   card: CardLayer
   image: ImageLayer
   crop: CropLayer
+  // activeSource: ImageSource
 }
 
 // export interface CardphotoBase {
@@ -96,7 +97,7 @@ export type CardphotoOperation = {
       | 'rotateCard'
       | 'rotateImage'
       | 'moveCrop'
-      | 'initStock'
+      | 'initStockImage'
       | 'uploadUser'
       | 'applyFinal'
       | 'resetCrop'
@@ -105,6 +106,7 @@ export type CardphotoOperation = {
       | 'initUserImage'
       | 'activateCrop'
       | 'applyCrop'
+      | 'init'
   }
 }
 
@@ -112,7 +114,9 @@ export interface CardphotoState {
   base: CardphotoBase
   operations: CardphotoOperation[]
   activeIndex: number
-  cropIndices: number[]
+  cropCount: number
+  cropIds: string[] | null
+  activeSource: ImageSource | null
   currentConfig: WorkingConfig | null
 }
 

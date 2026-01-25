@@ -21,7 +21,7 @@ import styles from './ImageCrop.module.scss'
 export const ImageCrop = () => {
   const { state: cardphotoState, actions: cardphotoActions } =
     useCardphotoFacade()
-  const { activeSourceImage } = cardphotoState
+  const { activeSourceImage, activeImage } = cardphotoState
   const { init, setUserImage, addOp, uploadImage } = cardphotoActions
 
   const reduxCrop = cardphotoState.currentConfig?.crop
@@ -31,6 +31,7 @@ export const ImageCrop = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
 
   console.log('ImageCrop state', cardphotoState)
+  console.log('ImageCrop state SOURCE', cardphotoState.state?.activeSource)
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
   const { state: iconStates } = toolbarState
@@ -40,9 +41,11 @@ export const ImageCrop = () => {
 
   const [loaded, setLoaded] = useState(false)
 
-  const imageMeta = useCurrentImageMeta(cardphotoState.state)
+  // const imageMeta = useCurrentImageMeta(cardphotoState.state)
+  // console.log('ImageCrop1111 imageMeta', imageMeta)
 
   const { src, alt } = useCardphotoSrc(cardphotoState.state)
+  // console.log('ImageCrop2222 src', src)
 
   const processedSrcRef = useRef<string | null>(null)
 
@@ -82,7 +85,7 @@ export const ImageCrop = () => {
     cardphotoUiActions.markLoading,
   )
 
-  const shouldShowImage = !!src && imageMeta
+  const shouldShowImage = !!src && activeImage
 
   const imageStyle: React.CSSProperties | undefined = imageLayer
     ? {
@@ -173,7 +176,7 @@ export const ImageCrop = () => {
           tempCrop &&
           activeSourceImage && (
             <>
-              {imageMeta && (
+              {activeImage && (
                 <CropArea
                   cropLayer={tempCrop}
                   imageLayer={imageLayer}

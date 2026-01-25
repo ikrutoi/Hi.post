@@ -1,7 +1,8 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
   initCardphoto,
-  initStockImage,
+  // initStockImage,
   uploadUserImage,
   addOperation,
   undo,
@@ -28,6 +29,8 @@ import {
   selectCardSize,
   selectCropQuality,
   selectCropQualityProgress,
+  selectActiveImage,
+  selectIsProcessedMode,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
@@ -37,7 +40,7 @@ import type {
 import type { LayoutOrientation } from '@layout/domain/types'
 
 export const useCardphotoController = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const state = useSelector(selectCardphotoState)
   const isComplete = useSelector(selectCardphotoIsComplete)
@@ -50,6 +53,8 @@ export const useCardphotoController = () => {
   const currentConfig = useSelector(selectCurrentConfig)
   const quality = useSelector(selectCropQuality)
   const qualityProgress = useSelector(selectCropQualityProgress)
+  const activeImage = useSelector(selectActiveImage)
+  const processedMode = useSelector(selectIsProcessedMode)
 
   const cardOrientation = useSelector(selectCardOrientation)
   const cropOrientation = useSelector(selectCropOrientation)
@@ -58,8 +63,8 @@ export const useCardphotoController = () => {
 
   const init = () => dispatch(initCardphoto())
   const uploadImage = (meta: ImageMeta) => dispatch(uploadImageReady(meta))
-  const setStockImage = (payload: { meta: ImageMeta; config: WorkingConfig }) =>
-    dispatch(initStockImage(payload))
+  // const setStockImage = (payload: { meta: ImageMeta; config: WorkingConfig }) =>
+  //   dispatch(initStockImage(payload))
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
   const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
   const undoOp = () => dispatch(undo())
@@ -86,10 +91,12 @@ export const useCardphotoController = () => {
     cardSize,
     quality,
     qualityProgress,
+    activeImage,
+    processedMode,
 
     init,
     uploadImage,
-    setStockImage,
+    // setStockImage,
     setUserImage,
     addOp,
     undoOp,

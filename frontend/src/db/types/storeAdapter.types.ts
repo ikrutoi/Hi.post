@@ -1,13 +1,10 @@
 export interface StoreAdapter<T> {
   getAll(): Promise<T[]>
-  getByLocalId(localId: IDBValidKey): Promise<T | null>
-  put(record: T & { localId: IDBValidKey }): Promise<void>
-  deleteByLocalId(localId: IDBValidKey): Promise<void>
-  getMaxLocalId(): Promise<number>
-  addAutoLocalIdRecord(payload: Omit<T, 'localId'>): Promise<void>
-  addRecordWithLocalId(
-    localId: IDBValidKey,
-    payload: Omit<T, 'localId'>
-  ): Promise<void>
+  getById(id: IDBValidKey): Promise<T | null>
+  put(record: T & { id: IDBValidKey }): Promise<void>
+  deleteById(id: IDBValidKey): Promise<void>
+  // getMaxId(): Promise<number>
+  // addAutoIdRecord(payload: Omit<T, 'id'>): Promise<void>
+  addRecordWithId(id: IDBValidKey, payload: Omit<T, 'id'>): Promise<void>
   count(): Promise<number>
 }

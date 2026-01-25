@@ -10,7 +10,7 @@ export function useCurrentImageMeta(
     const userImg = state.base.user.image
     const stockImg = state.base.stock.image
     const configImg = state.currentConfig?.image.meta
-    const galleryImg = state.base.gallery.image
+    // const galleryImg = state.base.gallery.image
 
     if (configImg?.source === 'user' && userImg) {
       return userImg

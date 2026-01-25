@@ -6,7 +6,7 @@ let dbInstance: IDBPDatabase | undefined
 
 export const getDatabase = async () => {
   if (!dbInstance) {
-    dbInstance = await openDB('AppDB', 1, {
+    dbInstance = await openDB('AppDB', 2, {
       upgrade(db) {
         storesSchema.forEach(({ name, keyPath }) => {
           if (!db.objectStoreNames.contains(name)) {
@@ -20,7 +20,7 @@ export const getDatabase = async () => {
 }
 
 export const handleTransactionPromise = (
-  tx: IDBPTransaction<any, any, any>
+  tx: IDBPTransaction<any, any, any>,
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     tx.done.then(resolve).catch(reject)

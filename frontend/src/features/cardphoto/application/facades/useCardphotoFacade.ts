@@ -1,7 +1,8 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
   initCardphoto,
-  initStockImage,
+  // initStockImage,
   uploadUserImage,
   addOperation,
   undo,
@@ -18,7 +19,7 @@ import {
   selectCardphotoIsComplete,
   selectStockImage,
   selectUserImage,
-  selectGalleryImage,
+  // selectGalleryImage,
   selectAppliedImage,
   selectOperations,
   selectActiveIndex,
@@ -31,6 +32,8 @@ import {
   selectCardSize,
   selectCropQuality,
   selectCropQualityProgress,
+  selectActiveImage,
+  selectIsProcessedMode,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
@@ -49,7 +52,7 @@ export interface CardphotoFacade {
     isComplete: boolean
     stockImage: ImageMeta | null
     userImage: ImageMeta | null
-    galleryImage: ImageMeta | null
+    // galleryImage: ImageMeta | null
     appliedImage: ImageMeta | null
     operations: CardphotoOperation[]
     activeIndex: number
@@ -62,11 +65,13 @@ export interface CardphotoFacade {
     cardSize: { width: number; height: number }
     quality: QualityLevel
     qualityProgress: number
+    activeImage: ImageMeta | null
+    processedMode: boolean
   }
   actions: {
     init: () => void
     uploadImage: (meta: ImageMeta) => void
-    setStockImage: (payload: { meta: ImageMeta; config: WorkingConfig }) => void
+    // setStockImage: (payload: { meta: ImageMeta; config: WorkingConfig }) => void
     setUserImage: (meta: ImageMeta) => void
     addOp: (op: CardphotoOperation) => void
     undoOp: () => void
@@ -84,13 +89,13 @@ export interface CardphotoFacade {
 }
 
 export const useCardphotoFacade = (): CardphotoFacade => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const state = useSelector(selectCardphotoState)
   const isComplete = useSelector(selectCardphotoIsComplete)
   const stockImage = useSelector(selectStockImage)
   const userImage = useSelector(selectUserImage)
-  const galleryImage = useSelector(selectGalleryImage)
+  // const galleryImage = useSelector(selectGalleryImage)
   const appliedImage = useSelector(selectAppliedImage)
   const operations = useSelector(selectOperations)
   const activeIndex = useSelector(selectActiveIndex)
@@ -103,11 +108,13 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const cardSize = useSelector(selectCardSize)
   const quality = useSelector(selectCropQuality)
   const qualityProgress = useSelector(selectCropQualityProgress)
+  const activeImage = useSelector(selectActiveImage)
+  const processedMode = useSelector(selectIsProcessedMode)
 
   const init = () => dispatch(initCardphoto())
   const uploadImage = (meta: ImageMeta) => dispatch(uploadImageReady(meta))
-  const setStockImage = (payload: { meta: ImageMeta; config: WorkingConfig }) =>
-    dispatch(initStockImage(payload))
+  // const setStockImage = (payload: { meta: ImageMeta; config: WorkingConfig }) =>
+  //   dispatch(initStockImage(payload))
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
   const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
   const undoOp = () => dispatch(undo())
@@ -129,7 +136,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       isComplete,
       stockImage,
       userImage,
-      galleryImage,
+      // galleryImage,
       appliedImage,
       operations,
       activeIndex,
@@ -142,11 +149,13 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       cardSize,
       quality,
       qualityProgress,
+      activeImage,
+      processedMode,
     },
     actions: {
       init,
       uploadImage,
-      setStockImage,
+      // setStockImage,
       setUserImage,
       addOp,
       undoOp,

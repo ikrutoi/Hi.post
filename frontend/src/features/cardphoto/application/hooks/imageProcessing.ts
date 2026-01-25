@@ -3,7 +3,6 @@ import { CropLayer, QualityLevel } from '../../domain/types'
 export const getCroppedImg = (
   imageElement: HTMLImageElement,
   crop: CropLayer,
-  rotation: number = 0
 ): Promise<Blob> => {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
@@ -22,8 +21,10 @@ export const getCroppedImg = (
     0,
     0,
     crop.meta.width,
-    crop.meta.height
+    crop.meta.height,
   )
+
+  console.log('getCroppedImg crop', crop)
 
   return new Promise((resolve) => {
     canvas.toBlob(
@@ -31,7 +32,7 @@ export const getCroppedImg = (
         if (blob) resolve(blob)
       },
       'image/jpeg',
-      1.0
+      1.0,
     )
   })
 }
@@ -48,7 +49,7 @@ export const loadAsyncImage = (url: string): Promise<HTMLImageElement> => {
 
 export const calculateDPI = (
   cropWidthPx: number,
-  cardWidthMm: number
+  cardWidthMm: number,
 ): number => {
   const inches = cardWidthMm / 25.4
   return Math.round(cropWidthPx / inches)
