@@ -1,4 +1,5 @@
-import { call, delay, put, select, takeLatest } from 'redux-saga/effects'
+import { call, delay, put, select, fork, takeLatest } from 'redux-saga/effects'
+import { PayloadAction } from '@reduxjs/toolkit'
 import { nanoid } from 'nanoid'
 import type { SagaIterator } from 'redux-saga'
 import { RootState } from '../state'
@@ -11,6 +12,8 @@ import {
   markLoaded,
   addCropId,
   setProcessedImage,
+  removeCropId,
+  clearAllCrops,
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
@@ -40,6 +43,7 @@ import {
 } from '@cardphoto/application/utils'
 import { getCroppedImg, loadAsyncImage } from '@cardphoto/application/hooks'
 import { roundTo } from '@shared/utils/layout'
+import { syncToolbarContext } from './cardphotoToolbarSaga'
 import type {
   SizeCard,
   ViewportSizeState,
@@ -56,6 +60,7 @@ import type {
   ImageOrientation,
   CropLayer,
 } from '@cardphoto/domain/types'
+import { prepareForRedux } from './cardphotoToolbarHelpers'
 
 export function* handleCropAction() {
   const state: CardphotoToolbarState = yield select(
@@ -434,11 +439,9 @@ export function* handleImageRotate(
 export function* handleCropConfirm(): SagaIterator {
   const state: CardphotoState = yield select(selectCardphotoState)
   const config = state.currentConfig
+  const thumbConfigWidth = 150
 
   if (!config || !config.crop || !config.image.meta.url) return
-
-  console.log('handleCropConfirm state', state)
-  console.log('handleCropConfirm config', config)
 
   try {
     yield put(markLoading())
@@ -448,16 +451,8 @@ export function* handleCropConfirm(): SagaIterator {
       config.image.meta.url,
     )
 
-    console.log('handleCropConfirm img', img)
-    console.log(
-      'handleCropConfirm img size',
-      img.naturalWidth,
-      img.naturalHeight,
-    )
     const scaleX = img.naturalWidth / config.image.meta.width
     const scaleY = img.naturalHeight / config.image.meta.height
-
-    console.log('**** scaleX / scaleY', scaleX, scaleY)
 
     const realCrop: CropLayer = {
       ...config.crop,
@@ -470,52 +465,61 @@ export function* handleCropConfirm(): SagaIterator {
       },
     }
 
-    const croppedBlob: Blob = yield call(getCroppedImg, img, realCrop)
-    console.log('////0')
-    const croppedUrl = URL.createObjectURL(croppedBlob)
-    console.log('////1')
+    const { full, thumb, thumbHeight } = yield call(
+      getCroppedImg,
+      img,
+      realCrop,
+      thumbConfigWidth,
+    )
+
+    const fullUrl = URL.createObjectURL(full)
+    const thumbUrl = URL.createObjectURL(thumb)
+    const id = nanoid()
 
     const finalImageMeta: ImageMeta = {
-      ...config.image.meta,
-      id: nanoid(),
+      id,
       source: 'processed',
-      url: croppedUrl,
+      url: fullUrl,
       width: realCrop.meta.width,
       height: realCrop.meta.height,
-      imageAspectRatio: config.crop.meta.aspectRatio,
+      full: {
+        blob: full,
+        url: fullUrl,
+        width: realCrop.meta.width,
+        height: realCrop.meta.height,
+      },
+      thumbnail: {
+        blob: thumb,
+        url: thumbUrl,
+        width: thumbConfigWidth,
+        height: thumbHeight,
+      },
+      imageAspectRatio: realCrop.meta.aspectRatio,
       isCropped: true,
-      blob: croppedBlob,
       timestamp: Date.now(),
+      parentImageId: config.image.meta.id,
     }
 
     yield call(storeAdapters.cropImages.put, finalImageMeta)
-    console.log('////2')
 
-    yield put(addCropId(finalImageMeta.id))
-
-    yield put(setProcessedImage(finalImageMeta))
-
-    const { blob, ...reduxMeta } = finalImageMeta
-
+    const reduxMeta = prepareForRedux(finalImageMeta)
+    yield put(setProcessedImage(reduxMeta))
     yield put(applyFinal(reduxMeta))
-    console.log('////3')
+    yield put(addCropId(id))
 
     const newImageLayer = fitImageToCard(reduxMeta, config.card, 0, true)
-    console.log('////4', newImageLayer)
     const newCropLayer = createInitialCropLayer(
       newImageLayer,
       config.card,
       reduxMeta,
     )
 
-    console.log('////5')
     const finalConfig: WorkingConfig = {
       card: config.card,
       image: newImageLayer,
       crop: newCropLayer,
     }
 
-    console.log('////6', finalConfig)
     yield put(
       addOperation({
         type: 'operation',
@@ -535,10 +539,36 @@ export function* handleCropConfirm(): SagaIterator {
   } finally {
     yield put(markLoaded())
   }
-  console.log('////7')
+}
 
-  const allImageFromDb = yield call(storeAdapters.cropImages.getAll)
-  console.log('handleCropConfirm cropImages DB', allImageFromDb)
+export function* handleDeleteCropSaga(
+  action: PayloadAction<string>,
+): SagaIterator {
+  const id = action.payload
+  try {
+    yield call(storeAdapters.cropImages.deleteById, id)
+
+    yield put(removeCropId(id))
+
+    yield fork(syncToolbarContext)
+  } catch (error) {
+    console.error('Failed to delete crop:', error)
+  }
+}
+
+export function* handleClearAllCropsSaga() {
+  try {
+    yield put(markLoading())
+    yield call(storeAdapters.cropImages.clear)
+    yield put(clearAllCrops())
+    yield fork(syncToolbarContext)
+
+    // yield put(showNotification({ message: 'History cleared', type: 'success' }))
+  } catch (error) {
+    console.error('Failed to clear crops history:', error)
+  } finally {
+    yield put(markLoaded())
+  }
 }
 
 export function* syncQualitySaga() {
@@ -555,23 +585,6 @@ export function* syncQualitySaga() {
     dispatchQualityUpdate(qualityProgress, quality)
   }
 }
-
-// export function* handleHistoryStackAction(): SagaIterator {
-//   const state: CardphotoState = yield select(selectCardphotoState)
-//   const { activeIndex, operations } = state
-
-//   if (operations.length <= 1) return
-
-//   if (activeIndex === 0) {
-//     yield put(cardphotoActions.goToOperation(1))
-//   } else {
-//     let nextIndex = activeIndex + 1
-//     if (nextIndex >= operations.length) {
-//       nextIndex = 1
-//     }
-//     yield put(cardphotoActions.goToOperation(nextIndex))
-//   }
-// }
 
 export function* handleCropGalleryAction() {
   const sizeCard: SizeCard = yield select(selectSizeCard)

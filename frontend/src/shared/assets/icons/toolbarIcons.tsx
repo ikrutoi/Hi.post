@@ -118,6 +118,7 @@ import {
   IconCardHorizontalV2,
   IconCardDynamic,
   IconImageReset,
+  IconCloseList,
 } from '@shared/ui/icons'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -146,6 +147,8 @@ function getIconByKey(
       return <IconApply />
     case 'close':
       return <IconClose />
+    case 'closeList':
+      return <IconCloseList />
     case 'user':
       return <RiUserLine />
     case 'rotateLeft':

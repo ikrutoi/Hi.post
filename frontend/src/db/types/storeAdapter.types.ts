@@ -7,4 +7,5 @@ export interface StoreAdapter<T> {
   // addAutoIdRecord(payload: Omit<T, 'id'>): Promise<void>
   addRecordWithId(id: IDBValidKey, payload: Omit<T, 'id'>): Promise<void>
   count(): Promise<number>
+  clear(): Promise<void>
 }

@@ -11,7 +11,7 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import {
   openFileDialog,
   uploadUserImage,
-  initUserImage,
+  // initUserImage,
   cancelFileDialog,
   markLoading,
   markLoaded,
@@ -20,7 +20,9 @@ import {
   addOperation,
   setBaseImage,
   uploadImageReady,
+  hydrateEditor,
 } from '@cardphoto/infrastructure/state'
+import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import {
@@ -48,6 +50,8 @@ import type {
   CardLayer,
   WorkingConfig,
   CardphotoOperation,
+  CardphotoState,
+  CardphotoBase,
 } from '@cardphoto/domain/types'
 
 export function* onDownloadClick(): SagaIterator {
@@ -55,13 +59,7 @@ export function* onDownloadClick(): SagaIterator {
     selectToolbarSectionState('cardphoto'),
   )
 
-  yield put(
-    updateGroupStatus({
-      section: 'cardphoto',
-      groupName: 'photo',
-      status: 'disabled',
-    }),
-  )
+  console.log('onDownloadClick+')
 
   yield put(
     updateToolbarIcon({
@@ -94,99 +92,60 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
 }
 
 function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
-  const imageMeta = action.payload
-  const cardLayer: CardLayer = yield select(selectSizeCard)
+  try {
+    const imageMeta = action.payload
+    const cardLayer: CardLayer = yield select(selectSizeCard)
 
-  const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
-  const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
-  const newConfig = { card: cardLayer, image: imageLayer, crop: cropLayer }
+    const state: CardphotoState = yield select(selectCardphotoState)
+    const cropCount = state.cropCount || 0
+    const cropIds = state.cropIds || []
 
-  yield put(
-    initUserImage({
-      meta: imageMeta,
-      config: newConfig,
-    }),
-  )
+    const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
+    const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
+    const newConfig: WorkingConfig = {
+      card: cardLayer,
+      image: imageLayer,
+      crop: cropLayer,
+    }
 
-  const { needsCrop } = validateImageSize(
-    imageMeta,
-    cardLayer.width,
-    cardLayer.height,
-  )
+    const base: CardphotoBase = {
+      ...state.base,
+      user: { image: imageMeta },
+      processed: { image: null },
+    }
 
-  yield put(
-    updateToolbarIcon({
-      section: 'cardphoto',
-      key: 'apply',
-      value: needsCrop ? 'enabled' : 'disabled',
-    }),
-  )
+    yield put(
+      hydrateEditor({
+        base,
+        config: newConfig,
+        activeSource: 'user',
+        cropCount,
+        cropIds,
+      }),
+    )
 
-  // yield put(
-  //   updateToolbarIcon({
-  //     section: 'cardphoto',
-  //     key: 'save',
-  //     value: 'enabled',
-  //   }),
-  // )
+    // const { needsCrop } = validateImageSize(
+    //   imageMeta,
+    //   cardLayer.width,
+    //   cardLayer.height,
+    // )
 
-  yield put(markLoaded())
-}
-
-function* onUploadImageReadySaga1(action: PayloadAction<ImageMeta>) {
-  const imageMeta = action.payload
-  const cardLayer: CardLayer = yield select(selectSizeCard)
-
-  const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
-  const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
-
-  console.log('onUploadImageReady imageLayer', imageLayer)
-
-  const newConfig = { card: cardLayer, image: imageLayer, crop: cropLayer }
-
-  yield put(
-    addOperation({
-      type: 'operation',
-      payload: { config: newConfig, reason: 'initUserImage' },
-    }),
-  )
-
-  const { needsCrop } = validateImageSize(
-    imageMeta,
-    cardLayer.width,
-    cardLayer.height,
-  )
-
-  console.log('onUploadImageReady needsCrop', needsCrop)
-
-  yield put(
-    updateGroupStatus({
-      section: 'cardphoto',
-      groupName: 'photo',
-      status: 'enabled',
-    }),
-  )
-
-  const toolbarState: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto'),
-  )
-
-  yield put(
-    updateToolbarSection({
-      section: 'cardphoto',
-      value: {
-        ...toolbarState,
-        download: 'enabled',
-        save: 'enabled',
-        apply: needsCrop ? 'enabled' : 'disabled',
-      },
-    }),
-  )
-
-  yield put(markLoaded())
+    // yield put(
+    //   updateToolbarIcon({
+    //     section: 'cardphoto',
+    //     key: 'apply',
+    //     value: needsCrop ? 'enabled' : 'disabled',
+    //   }),
+    // )
+  } catch (error) {
+    console.error('Error in onUploadImageReadySaga:', error)
+  } finally {
+    yield put(markLoaded())
+  }
 }
 
 function* onCancelFileDialog(): SagaIterator {
+  console.log('onCancelFileDialog')
   yield put(
     updateToolbarIcon({
       section: 'cardphoto',
@@ -197,9 +156,9 @@ function* onCancelFileDialog(): SagaIterator {
 
   yield put(markLoaded())
 
-  const state: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto'),
-  )
+  // const state: CardphotoToolbarState = yield select(
+  //   selectToolbarSectionState('cardphoto'),
+  // )
 
   yield put(
     updateGroupStatus({

@@ -54,6 +54,14 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     await put({ id, ...recordPayload } as T & { id: IDBValidKey })
   }
 
+  const clear = async (): Promise<void> => {
+    const db = await getDatabase()
+    const tx = db.transaction(storeName, 'readwrite')
+    const store = tx.objectStore(storeName)
+    store.clear()
+    await handleTransactionPromise(tx)
+  }
+
   const count = async (): Promise<number> => {
     const db = await getDatabase()
     const tx = db.transaction(storeName, 'readonly')
@@ -72,5 +80,6 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     // addAutoIdRecord,
     addRecordWithId,
     count,
+    clear,
   }
 }

@@ -1,23 +1,8 @@
-export const IMAGE_SOURCE = [
-  'stock',
-  'user',
-  'apply',
-  'gallery',
-  'processed',
-] as const
-export type ImageSource = (typeof IMAGE_SOURCE)[number]
 import type { LayoutOrientation } from '@layout/domain/types'
 
-export interface ImageThumbnail {
-  id: string
-  source: ImageSource
-  role: 'thumbnail'
-  url: string
-  width: number
-  height: number
-}
+export const IMAGE_SOURCE = ['stock', 'user', 'processed'] as const
+export type ImageSource = (typeof IMAGE_SOURCE)[number]
 
-// export type LayoutOrientation = 'portrait' | 'landscape'
 export interface GalleryItem extends ImageMeta {
   orientation: LayoutOrientation
   previewUrl?: string
@@ -39,17 +24,25 @@ export interface CardLayer {
 
 export type ImageOrientation = 0 | 90 | 180 | 270
 
+export interface ImageData {
+  blob?: Blob
+  url: string
+  width: number
+  height: number
+}
+
 export type QualityLevel = 'high' | 'medium' | 'low'
 export interface ImageMeta {
   id: string
   source: ImageSource
   url: string
-  blob?: Blob
+  full?: ImageData
+  thumbnail?: ImageData
   width: number
   height: number
   imageAspectRatio: number
   isCropped: boolean
-  timestamp?: number
+  timestamp: number
   parentImageId?: string
 }
 
@@ -79,14 +72,7 @@ export interface WorkingConfig {
   card: CardLayer
   image: ImageLayer
   crop: CropLayer
-  // activeSource: ImageSource
 }
-
-// export interface CardphotoBase {
-//   stock: { image: ImageMeta | null }
-//   user: { image: ImageMeta | null }
-//   apply: { image: ImageMeta | null }
-// }
 
 export type CardphotoOperation = {
   type: 'operation'
@@ -115,7 +101,7 @@ export interface CardphotoState {
   operations: CardphotoOperation[]
   activeIndex: number
   cropCount: number
-  cropIds: string[] | null
+  cropIds: string[]
   activeSource: ImageSource | null
   currentConfig: WorkingConfig | null
 }
@@ -159,15 +145,11 @@ export interface CardSize {
   height: number
 }
 
-export interface ImageData {
+export interface ImageThumbnail {
+  id: string
+  source: ImageSource
+  role: 'thumbnail'
+  url: string
   width: number
   height: number
-  left: number
-  top: number
-  aspectRatio: number
-  imageAspectRatio: number
-}
-
-export interface CropState extends ImageData {
-  ownerImageId: string | null
 }

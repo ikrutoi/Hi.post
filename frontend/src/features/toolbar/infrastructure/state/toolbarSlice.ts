@@ -104,7 +104,7 @@ const toolbarSlice = createSlice({
       }>,
     ) {
       const { section, groupName, status } = action.payload
-      console.log('updateGroupStatus', status)
+      console.log('updateGroupStatus +', status)
       const sectionConfig = state[section].config
       if (sectionConfig) {
         const group = sectionConfig.find(

@@ -54,26 +54,32 @@ function* initCardphotoSaga() {
   let activeSource: ImageSource = 'stock'
   let initialImageMeta: ImageMeta = base.stock.image
 
-  // const originalImage: ImageMeta = yield select(selectActiveSourceImage)
-
   if (cropCount > 0) {
     const lastCrop = allCrops[cropCount - 1]
-    let blobUrl = lastCrop.url
-    if (lastCrop.blob) {
-      blobUrl = URL.createObjectURL(lastCrop.blob)
+
+    const fullUrl = lastCrop.full?.blob
+      ? URL.createObjectURL(lastCrop.full.blob)
+      : lastCrop.url
+    const thumbUrl = lastCrop.thumbnail?.blob
+      ? URL.createObjectURL(lastCrop.thumbnail.blob)
+      : ''
+
+    const serializableMeta: ImageMeta = {
+      ...lastCrop,
+      url: fullUrl,
+      full: lastCrop.full
+        ? { ...lastCrop.full, blob: undefined, url: fullUrl }
+        : undefined,
+      thumbnail: lastCrop.thumbnail
+        ? { ...lastCrop.thumbnail, blob: undefined, url: thumbUrl }
+        : undefined,
     }
 
-    const { blob, ...serializableMeta } = lastCrop
-    const metaForRedux: ImageMeta = {
-      ...serializableMeta,
-    }
-
-    base.processed.image = metaForRedux
-    // initialMeta = lastCrop
+    base.processed.image = serializableMeta
+    // initialImageMeta = serializableMeta
     // activeSource = 'processed'
   }
 
-  // const randomMeta: ImageMeta = yield call(getRandomStockMeta)
   const cardLayer: CardLayer = yield select(selectSizeCard)
   const imageLayer = fitImageToCard(initialImageMeta, cardLayer, 0, true)
   const cropLayer = createInitialCropLayer(
