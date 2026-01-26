@@ -214,7 +214,7 @@ export const cardphotoSlice = createSlice({
       }
     },
 
-    removeCropId(state, action: PayloadAction<string>) {
+    removeCropId1(state, action: PayloadAction<string>) {
       if (state.state && state.state.cropIds) {
         state.state.cropIds = state.state.cropIds.filter(
           (id) => id !== action.payload,
@@ -228,6 +228,38 @@ export const cardphotoSlice = createSlice({
       }
     },
 
+    removeCropId(state, action: PayloadAction<string>) {
+      const cp = state.state
+      if (!cp || !cp.cropIds) return
+
+      const deletedId = action.payload
+      const isDeletingActive = cp.base.processed.image?.id === deletedId
+
+      let nextActiveId: string | null = null
+      if (isDeletingActive) {
+        const currentIndex = cp.cropIds.indexOf(deletedId)
+        if (cp.cropIds.length > 1) {
+          const nextIndex =
+            currentIndex < cp.cropIds.length - 1
+              ? currentIndex + 1
+              : currentIndex - 1
+          nextActiveId = cp.cropIds[nextIndex]
+        }
+      }
+
+      cp.cropIds = cp.cropIds.filter((id) => id !== deletedId)
+      cp.cropCount = cp.cropIds.length
+
+      if (isDeletingActive) {
+        if (nextActiveId) {
+          cp.base.processed.image = null
+        } else {
+          cp.base.processed.image = null
+          cp.activeSource = cp.base.user.image ? 'user' : 'stock'
+        }
+      }
+    },
+
     clearAllCrops(state) {
       if (state.state) {
         state.state.cropIds = []
@@ -236,6 +268,21 @@ export const cardphotoSlice = createSlice({
         if (state.state.activeSource === 'processed') {
           state.state.activeSource = 'user'
           state.state.base.processed.image = null
+        }
+      }
+    },
+
+    removeUserImage(state) {
+      const cp = state.state
+      if (!cp) return
+
+      cp.base.user.image = null
+
+      if (cp.activeSource === 'user') {
+        if (cp.base.processed.image) {
+          cp.activeSource = 'processed'
+        } else {
+          cp.activeSource = 'stock'
         }
       }
     },
@@ -262,6 +309,7 @@ export const {
   hydrateEditor,
   removeCropId,
   clearAllCrops,
+  removeUserImage,
 } = cardphotoSlice.actions
 
 export default cardphotoSlice.reducer

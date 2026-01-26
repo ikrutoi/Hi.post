@@ -19,7 +19,12 @@ import {
   markLoaded,
   markLoading,
 } from '@cardphoto/infrastructure/state'
-import { selectIsLoading } from '@cardphoto/infrastructure/selectors'
+import {
+  selectIsLoading,
+  selectCardphotoState,
+  selectActiveSource,
+  selectIsProcessedMode,
+} from '@cardphoto/infrastructure/selectors'
 import {
   handleCropAction,
   handleCropCheckAction,
@@ -30,6 +35,7 @@ import {
   handleCropConfirm,
   handleCropGalleryAction,
   handleClearAllCropsSaga,
+  handleDeleteImageSaga,
 } from './cardphotoToolbarHandlers'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
@@ -44,7 +50,7 @@ import {
   updateGroupStatus,
 } from '@toolbar/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
-import type { CardphotoState } from '@cardphoto/domain/types'
+import type { CardphotoState, ImageSource } from '@cardphoto/domain/types'
 
 export function* watchCropChanges(): SagaIterator {
   yield takeLatest(addOperation.type, function* (): SagaIterator {
@@ -79,6 +85,16 @@ export function* handleCardphotoToolbarAction(
   switch (key) {
     case 'closeList':
       yield call(handleClearAllCropsSaga)
+      break
+    case 'close':
+      const state: CardphotoState = yield select(selectCardphotoState)
+      const isProcessed: boolean = yield select(selectIsProcessedMode)
+
+      const currentImageId = isProcessed
+        ? state.base.processed.image?.id
+        : state.base.user.image?.id
+
+      yield call(handleDeleteImageSaga, currentImageId, state.activeSource)
       break
     case 'download':
       yield call(onDownloadClick)

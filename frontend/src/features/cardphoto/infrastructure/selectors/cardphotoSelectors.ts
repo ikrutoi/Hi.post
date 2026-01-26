@@ -160,5 +160,5 @@ export const selectActiveImage = (state: RootState): ImageMeta | null => {
   return base.user.image || base.stock.image || null
 }
 
-export const selectIsProcessedMode = (state: RootState) =>
+export const selectIsProcessedMode = (state: RootState): boolean =>
   state.cardphoto.state?.activeSource === 'processed'

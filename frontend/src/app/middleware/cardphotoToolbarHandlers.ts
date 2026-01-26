@@ -14,6 +14,7 @@ import {
   setProcessedImage,
   removeCropId,
   clearAllCrops,
+  removeUserImage,
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
@@ -59,6 +60,7 @@ import type {
   CardphotoState,
   ImageOrientation,
   CropLayer,
+  ImageSource,
 } from '@cardphoto/domain/types'
 import { prepareForRedux } from './cardphotoToolbarHelpers'
 
@@ -548,18 +550,89 @@ export function* handleCropConfirm(): SagaIterator {
   }
 }
 
-export function* handleDeleteCropSaga(
-  action: PayloadAction<string>,
-): SagaIterator {
-  const id = action.payload
-  try {
-    yield call(storeAdapters.cropImages.deleteById, id)
+function* rebuildConfigFromMeta(meta: ImageMeta) {
+  const card: CardLayer = yield select(selectSizeCard)
+  const imageLayer = fitImageToCard(meta, card, 0, true)
+  const cropLayer = createInitialCropLayer(imageLayer, card, meta)
 
-    yield put(removeCropId(id))
+  yield put(
+    addOperation({
+      type: 'operation',
+      payload: {
+        config: { card, image: imageLayer, crop: cropLayer },
+        reason: 'init',
+      },
+    }),
+  )
+}
+
+export function* handleDeleteImageSaga(
+  id: string | undefined,
+  source: ImageSource | null,
+) {
+  try {
+    if (source === 'processed' && id) {
+      const state: CardphotoState = yield select(selectCardphotoState)
+      const currentIndex = state.cropIds.indexOf(id)
+
+      yield call(storeAdapters.cropImages.deleteById, id)
+
+      let nextId: string | null = null
+      if (state.cropIds.length > 1) {
+        const nextIdx =
+          currentIndex < state.cropIds.length - 1
+            ? currentIndex + 1
+            : currentIndex - 1
+        nextId = state.cropIds[nextIdx]
+      }
+
+      yield put(removeCropId(id))
+
+      if (nextId) {
+        const nextCrop: ImageMeta = yield call(
+          storeAdapters.cropImages.getById,
+          nextId,
+        )
+        if (nextCrop) {
+          const freshUrl = nextCrop.full?.blob
+            ? URL.createObjectURL(nextCrop.full.blob)
+            : nextCrop.url
+          const serializableMeta = prepareForRedux({
+            ...nextCrop,
+            url: freshUrl,
+          })
+
+          yield put(setProcessedImage(serializableMeta))
+          yield fork(rebuildConfigFromMeta, serializableMeta)
+        }
+      } else {
+        const newState: CardphotoState = yield select(selectCardphotoState)
+        const fallbackMeta =
+          newState.activeSource === 'user'
+            ? newState.base.user.image
+            : newState.base.stock.image
+        if (fallbackMeta) yield fork(rebuildConfigFromMeta, fallbackMeta)
+      }
+    }
+
+    if (source === 'user') {
+      yield put(removeUserImage())
+
+      const newState: CardphotoState = yield select(selectCardphotoState)
+
+      const fallbackMeta =
+        newState.activeSource === 'processed'
+          ? newState.base.processed.image
+          : newState.base.stock.image
+
+      if (fallbackMeta) {
+        yield fork(rebuildConfigFromMeta, fallbackMeta)
+      }
+    }
 
     yield fork(syncToolbarContext)
   } catch (error) {
-    console.error('Failed to delete crop:', error)
+    console.error('Advanced delete failed:', error)
   }
 }
 
