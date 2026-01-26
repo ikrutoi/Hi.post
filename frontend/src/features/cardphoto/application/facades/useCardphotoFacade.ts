@@ -24,7 +24,7 @@ import {
   selectOperations,
   selectActiveIndex,
   selectActiveOperation,
-  selectActiveSourceImage,
+  selectActiveSource,
   selectCurrentConfig,
   selectCardOrientation,
   selectCropOrientation,
@@ -43,6 +43,7 @@ import type {
   CardphotoState,
   WorkingConfig,
   QualityLevel,
+  ImageSource,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -57,7 +58,7 @@ export interface CardphotoFacade {
     operations: CardphotoOperation[]
     activeIndex: number
     activeOperation: CardphotoOperation | null
-    activeSourceImage: ImageMeta | null
+    activeSource: ImageSource | null
     currentConfig: WorkingConfig | null
     cardOrientation: LayoutOrientation
     cropOrientation: LayoutOrientation
@@ -100,7 +101,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const operations = useSelector(selectOperations)
   const activeIndex = useSelector(selectActiveIndex)
   const activeOperation = useSelector(selectActiveOperation)
-  const activeSourceImage = useSelector(selectActiveSourceImage)
+  const activeSource = useSelector(selectActiveSource)
   const currentConfig = useSelector(selectCurrentConfig)
   const cardOrientation = useSelector(selectCardOrientation)
   const cropOrientation = useSelector(selectCropOrientation)
@@ -141,7 +142,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       operations,
       activeIndex,
       activeOperation,
-      activeSourceImage,
+      activeSource,
       currentConfig,
       cardOrientation,
       cropOrientation,

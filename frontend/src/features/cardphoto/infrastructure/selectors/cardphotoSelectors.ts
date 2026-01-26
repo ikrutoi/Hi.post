@@ -10,6 +10,7 @@ import type {
   CardphotoBase,
   QualityLevel,
   GalleryItem,
+  ImageSource,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 import { cardEditorReducer } from '@/entities/cardEditor/infrastructure/state'
@@ -87,12 +88,6 @@ export const selectBaseImageByTarget = (
   return base?.[target]?.image ?? null
 }
 
-export const selectActiveSourceImage = (state: RootState): ImageMeta | null => {
-  const cardState = state.cardphoto.state
-  if (!cardState) return null
-  return cardState.base.user.image || cardState.base.stock.image || null
-}
-
 export const selectIsCropFull = createSelector(
   [selectCurrentConfig],
   (config): boolean => {
@@ -139,6 +134,12 @@ export const selectCropQualityProgress = (state: RootState): number =>
 
 // export const selectIsGalleryLoading = (state: RootState): boolean =>
 //   state.cardphoto.isGalleryLoading
+
+export const selectActiveSource = (state: RootState): ImageSource | null => {
+  const cardState = state.cardphoto.state
+  if (!cardState) return null
+  return cardState.activeSource || null
+}
 
 export const selectActiveImage = (state: RootState): ImageMeta | null => {
   const cp = state.cardphoto.state

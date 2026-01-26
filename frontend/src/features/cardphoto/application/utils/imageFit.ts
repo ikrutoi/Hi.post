@@ -9,6 +9,41 @@ import type {
   ImageOrientation,
 } from '../../domain/types'
 
+// export function fitImageToCard(
+//   originalMeta: ImageMeta,
+//   card: CardLayer,
+//   orientation: ImageOrientation,
+//   isCropped: boolean,
+// ): ImageLayer {
+//   const isRotated = orientation === 90 || orientation === 270
+
+//   const logicalWidth = isRotated ? originalMeta.height : originalMeta.width
+//   const logicalHeight = isRotated ? originalMeta.width : originalMeta.height
+
+//   const scaleX = card.width / logicalWidth
+//   const scaleY = card.height / logicalHeight
+
+//   const scale = isCropped ? Math.max(scaleX, scaleY) : Math.min(scaleX, scaleY)
+
+//   const finalWidth = roundTo(logicalWidth * scale, 2)
+//   const finalHeight = roundTo(logicalHeight * scale, 2)
+
+//   const offsetX = roundTo((card.width - finalWidth) / 2, 2)
+//   const offsetY = roundTo((card.height - finalHeight) / 2, 2)
+
+//   return {
+//     meta: {
+//       ...originalMeta,
+//       width: finalWidth,
+//       height: finalHeight,
+//       isCropped,
+//     },
+//     left: offsetX,
+//     top: offsetY,
+//     orientation,
+//   }
+// }
+
 export function fitImageToCard(
   originalMeta: ImageMeta,
   card: CardLayer,

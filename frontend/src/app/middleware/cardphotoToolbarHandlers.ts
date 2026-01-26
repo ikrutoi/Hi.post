@@ -19,7 +19,7 @@ import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
   selectCurrentConfig,
   selectCardphotoState,
-  selectActiveSourceImage,
+  selectActiveImage,
   selectIsCropFull,
 } from '@cardphoto/infrastructure/selectors'
 import { applyBounds } from '@cardphoto/application/helpers'
@@ -69,7 +69,7 @@ export function* handleCropAction() {
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config) return
   const isActivating = state.crop === 'enabled'
-  const baseImage: ImageMeta = yield select(selectActiveSourceImage)
+  const baseImage: ImageMeta = yield select(selectActiveImage)
 
   if (isActivating) {
     const cropToUse =
@@ -154,7 +154,7 @@ export function* handleCropCheckAction() {
 export function* handleCropFullAction(): SagaIterator {
   const state = (yield select(selectCardphotoState)) as CardphotoState
   if (!state?.currentConfig) return
-  const baseImage: ImageMeta = yield select(selectActiveSourceImage)
+  const baseImage: ImageMeta = yield select(selectActiveImage)
 
   const { image, card } = state.currentConfig
 
@@ -241,7 +241,7 @@ export function* handleImageLayerUpdate() {
   const sizeCard: SizeCard = yield select(selectSizeCard)
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config || !config.image?.meta) return
-  const baseImage: ImageMeta = yield select(selectActiveSourceImage)
+  const baseImage: ImageMeta = yield select(selectActiveImage)
 
   const newImageLayer: ImageLayer = fitImageToCard(
     config.image.meta,
@@ -275,7 +275,7 @@ export function* handleCardOrientation(): SagaIterator {
   const toolbarState = yield select(selectToolbarSectionState('cardphoto'))
   const isCropActive = toolbarState.crop === 'active'
 
-  const baseImage: ImageMeta = yield select(selectActiveSourceImage)
+  const baseImage: ImageMeta = yield select(selectActiveImage)
 
   if (isCropActive) {
     yield put(
@@ -391,7 +391,7 @@ export function* handleImageRotate(
   key: 'imageRotateLeft' | 'imageRotateRight',
 ): SagaIterator {
   const state = yield select(selectCardphotoState)
-  const baseImage: ImageMeta = yield select(selectActiveSourceImage)
+  const baseImage: ImageMeta = yield select(selectActiveImage)
 
   if (!state?.currentConfig || !baseImage) return
 
@@ -456,8 +456,8 @@ export function* handleCropConfirm(): SagaIterator {
 
     const realCrop: CropLayer = {
       ...config.crop,
-      x: roundTo(config.crop.x * scaleX, 2),
-      y: roundTo(config.crop.y * scaleY, 2),
+      x: roundTo(Math.abs((config.crop.x - config.image.left) * scaleX), 2),
+      y: roundTo(Math.abs((config.crop.y - config.image.top) * scaleY), 2),
       meta: {
         ...config.crop.meta,
         width: Math.floor(config.crop.meta.width * scaleX),
@@ -534,6 +534,13 @@ export function* handleCropConfirm(): SagaIterator {
         value: 'enabled',
       }),
     )
+    yield put(
+      updateToolbarIcon({
+        section: 'cardphoto',
+        key: 'cropCheck',
+        value: 'disabled',
+      }),
+    )
   } catch (error) {
     console.error('Error crop:', error)
   } finally {
@@ -557,6 +564,7 @@ export function* handleDeleteCropSaga(
 }
 
 export function* handleClearAllCropsSaga() {
+  console.log('handleClearAll')
   try {
     yield put(markLoading())
     yield call(storeAdapters.cropImages.clear)

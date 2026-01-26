@@ -22,6 +22,7 @@ export function* updateCropToolbarState(
       : state.save === 'disabled'
         ? 'enabled'
         : state.save
+
   yield put(
     updateToolbarIcon({ section: 'cardphoto', key: 'save', value: newSave }),
   )
@@ -45,11 +46,22 @@ export function* updateCropToolbarState(
       : state.cropCheck === 'enabled'
         ? 'disabled'
         : state.cropCheck
+
   yield put(
     updateToolbarIcon({
       section: 'cardphoto',
       key: 'cropCheck',
       value: newCropCheck,
+    }),
+  )
+
+  const newClose = newCrop === 'active' ? 'disabled' : 'enabled'
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'close',
+      value: newClose,
     }),
   )
 }

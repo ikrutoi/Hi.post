@@ -39,7 +39,7 @@ import { updateCropToolbarState } from './cardphotoToolbarHelpers'
 import {
   handleCardphotoToolbarAction,
   watchCropChanges,
-  watchCropToolbarStatus,
+  // watchCropToolbarStatus,
   // watchCropHistory,
   watchToolbarContext,
 } from './cardphotoToolbarSaga'
@@ -55,32 +55,36 @@ import type {
 } from '@cardphoto/domain/types'
 
 export function* onDownloadClick(): SagaIterator {
-  const toolbarState: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto'),
+  yield put(
+    updateToolbarIcon({ section: 'cardphoto', key: 'crop', value: 'enabled' }),
   )
-
-  console.log('onDownloadClick+')
-
   yield put(
     updateToolbarIcon({
       section: 'cardphoto',
-      key: 'download',
+      key: 'cropCheck',
       value: 'disabled',
     }),
   )
 
-  if (toolbarState.crop === 'active') {
-    yield put(
-      updateToolbarIcon({
-        section: 'cardphoto',
-        key: 'crop',
-        value: 'enabled',
-      }),
-    )
-  }
+  yield put(markLoading())
+
+  yield put(
+    updateGroupStatus({
+      section: 'cardphoto',
+      groupName: 'ui',
+      status: 'disabled',
+    }),
+  )
+
+  yield put(
+    updateGroupStatus({
+      section: 'cardphoto',
+      groupName: 'photo',
+      status: 'disabled',
+    }),
+  )
 
   yield put(openFileDialog())
-  yield put(markLoading())
 }
 
 function* onUploadImage(action: PayloadAction<ImageMeta>) {
@@ -142,28 +146,41 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   } finally {
     yield put(markLoaded())
   }
-}
-
-function* onCancelFileDialog(): SagaIterator {
-  console.log('onCancelFileDialog')
-  yield put(
-    updateToolbarIcon({
-      section: 'cardphoto',
-      key: 'download',
-      value: 'enabled',
-    }),
-  )
-
-  yield put(markLoaded())
-
-  // const state: CardphotoToolbarState = yield select(
-  //   selectToolbarSectionState('cardphoto'),
-  // )
 
   yield put(
     updateGroupStatus({
       section: 'cardphoto',
       groupName: 'photo',
+      status: 'enabled',
+    }),
+  )
+
+  yield put(
+    updateGroupStatus({
+      section: 'cardphoto',
+      groupName: 'ui',
+      status: 'enabled',
+    }),
+  )
+}
+
+function* onCancelFileDialog(): SagaIterator {
+  console.log('onCancelFileDialog')
+
+  yield put(markLoaded())
+
+  yield put(
+    updateGroupStatus({
+      section: 'cardphoto',
+      groupName: 'photo',
+      status: 'enabled',
+    }),
+  )
+
+  yield put(
+    updateGroupStatus({
+      section: 'cardphoto',
+      groupName: 'ui',
       status: 'enabled',
     }),
   )
@@ -174,7 +191,7 @@ export function* cardphotoProcessSaga(): SagaIterator {
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
 
     fork(watchCropChanges),
-    fork(watchCropToolbarStatus),
+    // fork(watchCropToolbarStatus),
     fork(watchToolbarContext),
 
     // takeEvery(uploadUserImage.type, onUploadImage),

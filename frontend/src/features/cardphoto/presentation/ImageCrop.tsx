@@ -21,7 +21,7 @@ import styles from './ImageCrop.module.scss'
 export const ImageCrop = () => {
   const { state: cardphotoState, actions: cardphotoActions } =
     useCardphotoFacade()
-  const { activeSourceImage, activeImage } = cardphotoState
+  const { activeSource, activeImage } = cardphotoState
   const { init, setUserImage, addOp, uploadImage } = cardphotoActions
 
   const reduxCrop = cardphotoState.currentConfig?.crop
@@ -31,7 +31,7 @@ export const ImageCrop = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
 
   console.log('ImageCrop state', cardphotoState)
-  console.log('ImageCrop state SOURCE', cardphotoState.state?.activeSource)
+  console.log('ImageCrop activeImage', activeImage)
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
   const { state: iconStates } = toolbarState
@@ -44,11 +44,6 @@ export const ImageCrop = () => {
   // const imageMeta = useCurrentImageMeta(cardphotoState.state)
   // console.log('ImageCrop1111 imageMeta', imageMeta)
 
-  const { src, alt } = useCardphotoSrc(cardphotoState.state)
-  // console.log('ImageCrop2222 src', src)
-
-  const processedSrcRef = useRef<string | null>(null)
-
   const [tempCrop, setTempCrop] = useCropState(
     iconStates.crop,
     cardphotoState.currentConfig?.crop ?? null,
@@ -57,6 +52,9 @@ export const ImageCrop = () => {
   useEffect(() => {
     init()
   }, [])
+
+  const src = activeImage?.url
+  const alt = activeImage?.id
 
   useEffect(() => {
     if (reduxCrop) {
@@ -118,13 +116,6 @@ export const ImageCrop = () => {
 
   if (!imageLayer) return
 
-  // const isRotated =
-  //   imageLayer.orientation === 90 || imageLayer.orientation === 270
-  // const visualWidth = isRotated ? imageLayer.meta.height : imageLayer.meta.width
-  // const visualHeight = isRotated
-  //   ? imageLayer.meta.width
-  //   : imageLayer.meta.height
-
   const maskStyle: React.CSSProperties = {
     ...imageStyle,
     overflow: 'hidden',
@@ -151,7 +142,7 @@ export const ImageCrop = () => {
           height: `${sizeCard.height}px`,
         }}
       >
-        {shouldShowImage && imageLayer && (
+        {shouldShowImage && imageLayer && src && (
           <>
             <img
               src={src}
@@ -163,7 +154,7 @@ export const ImageCrop = () => {
               )}
               style={imageStyle}
             />
-            {tempCrop && iconStates.crop === 'active' && activeSourceImage && (
+            {tempCrop && iconStates.crop === 'active' && activeImage && (
               <div className={styles.cropMask} style={maskStyle}>
                 <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
               </div>
@@ -174,14 +165,14 @@ export const ImageCrop = () => {
           imageLayer &&
           iconStates.crop === 'active' &&
           tempCrop &&
-          activeSourceImage && (
+          activeImage && (
             <>
               {activeImage && (
                 <CropArea
                   cropLayer={tempCrop}
                   imageLayer={imageLayer}
                   orientation={sizeCard.orientation}
-                  originalImage={activeSourceImage}
+                  originalImage={activeImage}
                   onChange={(newCrop) => {
                     setTempCrop(newCrop)
                   }}

@@ -17,7 +17,9 @@ import {
   hydrateEditor,
   setProcessedImage,
   markLoaded,
+  markLoading,
 } from '@cardphoto/infrastructure/state'
+import { selectIsLoading } from '@cardphoto/infrastructure/selectors'
 import {
   handleCropAction,
   handleCropCheckAction,
@@ -27,6 +29,7 @@ import {
   syncCropFullIcon,
   handleCropConfirm,
   handleCropGalleryAction,
+  handleClearAllCropsSaga,
 } from './cardphotoToolbarHandlers'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
@@ -74,6 +77,9 @@ export function* handleCardphotoToolbarAction(
   if (section !== 'cardphoto') return
 
   switch (key) {
+    case 'closeList':
+      yield call(handleClearAllCropsSaga)
+      break
     case 'download':
       yield call(onDownloadClick)
       break
@@ -99,51 +105,43 @@ export function* handleCardphotoToolbarAction(
   }
 }
 
-export function* watchCropToolbarStatus(): SagaIterator {
-  yield takeLatest(updateToolbarIcon.type, function* (action: any) {
-    const { key, value, section } = action.payload
-    if (section !== 'cardphoto' || key !== 'crop') return
+// export function* watchCropToolbarStatus(): SagaIterator {
+//   yield takeLatest(updateToolbarIcon.type, function* (action: any) {
+//     const { key, value, section } = action.payload
+//     if (section !== 'cardphoto' || key !== 'crop') return
 
-    const subButtonsStatus = value === 'active' ? 'enabled' : 'disabled'
+//     const subButtonsStatus = value === 'active' ? 'enabled' : 'disabled'
 
-    yield all([
-      put(
-        updateToolbarIcon({
-          section,
-          key: 'cropFull',
-          value: subButtonsStatus,
-        }),
-      ),
-      put(
-        updateToolbarIcon({
-          section,
-          key: 'cropCheck',
-          value: subButtonsStatus,
-        }),
-      ),
-    ])
-  })
-}
+//     yield all([
+//       put(
+//         updateToolbarIcon({
+//           section,
+//           key: 'cropFull',
+//           value: subButtonsStatus,
+//         }),
+//       ),
+//       put(
+//         updateToolbarIcon({
+//           section,
+//           key: 'cropCheck',
+//           value: subButtonsStatus,
+//         }),
+//       ),
+//     ])
+//   })
+// }
 
 export function* syncToolbarContext() {
   const state: CardphotoState = yield select((s) => s.cardphoto.state)
   const toolbarState: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto'),
   )
+
   if (!state || toolbarState.crop === 'active') return
 
   const { activeSource, cropCount } = state
   console.log('syncToolbarContext + cropCount', cropCount)
   const hasCrops = cropCount > 0
-
-  const isPhotoEnabled = activeSource !== null
-  yield put(
-    updateGroupStatus({
-      section: 'cardphoto',
-      groupName: 'photo',
-      status: isPhotoEnabled ? 'enabled' : 'disabled',
-    }),
-  )
 
   let sectionUpdate = {}
 
@@ -158,11 +156,11 @@ export function* syncToolbarContext() {
         imageReset: 'enabled',
 
         apply: 'enabled',
+        close: 'enabled',
         download: 'enabled',
-        close: 'disabled',
         cropHistory: 'enabled',
         cropBadge: cropCount,
-        closeList: cropCount,
+        closeList: hasCrops ? 'enabled' : 'disabled',
       }
       break
 
@@ -176,11 +174,11 @@ export function* syncToolbarContext() {
         imageReset: 'disabled',
 
         apply: 'disabled',
-        download: 'enabled',
         close: 'enabled',
+        download: 'enabled',
         cropHistory: hasCrops ? 'enabled' : 'disabled',
         cropBadge: cropCount,
-        closeList: cropCount,
+        closeList: hasCrops ? 'enabled' : 'disabled',
       }
       break
 
@@ -192,14 +190,15 @@ export function* syncToolbarContext() {
         imageRotateLeft: 'disabled',
         imageRotateRight: 'disabled',
         crop: 'disabled',
+        // cropCheck: ''
         imageReset: 'disabled',
 
         apply: 'enabled',
-        download: 'enabled',
         close: 'disabled',
+        download: 'enabled',
         cropHistory: hasCrops ? 'enabled' : 'disabled',
         cropBadge: cropCount,
-        closeList: cropCount,
+        closeList: hasCrops ? 'enabled' : 'disabled',
       }
       break
   }
@@ -221,6 +220,7 @@ export function* watchToolbarContext() {
       resetCardphoto.type,
       setProcessedImage.type,
       markLoaded.type,
+      markLoading.type,
     ],
     syncToolbarContext,
   )
