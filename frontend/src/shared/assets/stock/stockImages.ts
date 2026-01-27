@@ -16,8 +16,14 @@ export const STOCK_IMAGES: ImageMeta[] = Object.entries(modules).map(
       url: (mod as { default: string }).default,
       width,
       height,
+      full: {
+        url: (mod as { default: string }).default,
+        width,
+        height,
+      },
       imageAspectRatio: roundTo(width / height, 3),
       isCropped: true,
+      orientation: width / height > 1 ? 'landscape' : 'portrait',
       timestamp: Date.now(),
     }
   },

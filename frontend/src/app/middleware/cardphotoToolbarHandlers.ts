@@ -339,6 +339,8 @@ export function* handleCardOrientation(): SagaIterator {
     payload: { config: newConfig, reason: 'rotateCard' },
   }
 
+  console.log('handleCardOrientation newCardLayer', newCardLayer)
+
   yield put(setSizeCard(newCardLayer))
   yield put(addOperation(op))
 
@@ -508,6 +510,7 @@ export function* handleCropConfirm(): SagaIterator {
       isCropped: true,
       timestamp: Date.now(),
       parentImageId: config.image.meta.id,
+      orientation: config.card.orientation,
     }
 
     yield call(storeAdapters.cropImages.put, finalImageMeta)
@@ -579,8 +582,12 @@ export function* handleDeleteImageSaga(
   source: ImageSource | null,
 ) {
   try {
+    const state: CardphotoState = yield select(selectCardphotoState)
+    let orientation
+
+    if (!state.currentConfig) return
+
     if (source === 'processed' && id) {
-      const state: CardphotoState = yield select(selectCardphotoState)
       const currentIndex = state.cropIds.indexOf(id)
 
       yield call(storeAdapters.cropImages.deleteById, id)
@@ -610,6 +617,8 @@ export function* handleDeleteImageSaga(
             url: freshUrl,
           })
 
+          orientation = nextCrop.orientation
+
           yield put(setProcessedImage(serializableMeta))
           yield fork(rebuildConfigFromMeta, serializableMeta)
         }
@@ -619,7 +628,11 @@ export function* handleDeleteImageSaga(
           newState.activeSource === 'user'
             ? newState.base.user.image
             : newState.base.stock.image
-        if (fallbackMeta) yield fork(rebuildConfigFromMeta, fallbackMeta)
+        if (fallbackMeta) {
+          orientation = fallbackMeta.orientation
+
+          yield fork(rebuildConfigFromMeta, fallbackMeta)
+        }
       }
     }
 
@@ -628,16 +641,34 @@ export function* handleDeleteImageSaga(
 
       yield put(removeUserImage())
 
-      const newState: CardphotoState = yield select(selectCardphotoState)
+      // const newState: CardphotoState = yield select(selectCardphotoState)
       const fallbackMeta =
-        newState.activeSource === 'processed'
-          ? newState.base.processed.image
-          : newState.base.stock.image
+        state.activeSource === 'processed'
+          ? state.base.processed.image
+          : state.base.stock.image
 
       if (fallbackMeta) {
+        orientation = fallbackMeta?.orientation
+
         yield fork(rebuildConfigFromMeta, fallbackMeta)
       }
     }
+
+    const ratio = state.currentConfig.card.aspectRatio
+    const height = state.currentConfig.card.height
+
+    console.log('handleDelete orientation', orientation)
+    const rawWidth =
+      orientation === 'landscape' ? height * ratio : height / ratio
+    const width = roundTo(rawWidth, 2)
+
+    const newCardLayer = {
+      ...state.currentConfig.card,
+      width,
+      orientation,
+    }
+
+    yield put(setSizeCard(newCardLayer))
 
     yield fork(syncToolbarContext)
   } catch (error) {
@@ -698,11 +729,14 @@ export function* handleCropGalleryAction() {
 export function* handleBackToOriginalSaga() {
   const state: CardphotoState = yield select(selectCardphotoState)
   const userMeta = state.base.user.image
+  const stockMeta = state.base.stock.image
+  const activeSource = state.activeSource
 
-  console.log('handleBackToOriginal', userMeta)
-  if (userMeta && state.currentConfig) {
-    yield put(setActiveSource('user'))
-
+  if (
+    (activeSource === 'processed' || activeSource === 'stock') &&
+    userMeta &&
+    state.currentConfig
+  ) {
     const cardLayer = state.currentConfig.card
     const imageLayer = fitImageToCard(userMeta, cardLayer, 0, false)
     const cropLayer = createInitialCropLayer(imageLayer, cardLayer, userMeta)
@@ -713,6 +747,23 @@ export function* handleBackToOriginalSaga() {
         ...state,
         config,
         activeSource: 'user',
+      }),
+    )
+
+    yield fork(syncToolbarContext)
+  }
+
+  if (activeSource === 'user' && state.currentConfig && stockMeta) {
+    const cardLayer = state.currentConfig.card
+    const imageLayer = fitImageToCard(stockMeta, cardLayer, 0, false)
+    const cropLayer = createInitialCropLayer(imageLayer, cardLayer, stockMeta)
+    const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
+
+    yield put(
+      hydrateEditor({
+        ...state,
+        config,
+        activeSource: 'stock',
       }),
     )
 

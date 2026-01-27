@@ -174,7 +174,7 @@ export function* syncToolbarContext() {
         imageRotateLeft: 'disabled',
         imageRotateRight: 'disabled',
         crop: 'disabled',
-        imageReset: isUserImage ? 'enabled' : 'disabled',
+        imageReset: 'enabled',
 
         apply: 'enabled',
         close: 'enabled',
@@ -192,7 +192,7 @@ export function* syncToolbarContext() {
         imageRotateLeft: 'enabled',
         imageRotateRight: 'enabled',
         crop: 'enabled',
-        imageReset: 'disabled',
+        imageReset: 'enabled',
 
         apply: 'disabled',
         close: 'enabled',

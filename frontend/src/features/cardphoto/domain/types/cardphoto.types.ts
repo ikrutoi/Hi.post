@@ -44,6 +44,7 @@ export interface ImageMeta {
   isCropped: boolean
   timestamp: number
   parentImageId?: string
+  orientation?: LayoutOrientation
 }
 
 export interface ImageLayer {

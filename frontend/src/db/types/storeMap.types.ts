@@ -10,7 +10,6 @@ import type { ImageMeta, WorkingConfig } from '@cardphoto/domain/types'
 export interface StoreMap {
   stockImages: ImageMeta
   userImages: ImageMeta & { id: string }
-  // userImages: { id: string; config: WorkingConfig; timestamp: number }
   cropImages: ImageMeta & { id: string }
   cardtext: CardtextRecord
   sender: AddressTemplateItem

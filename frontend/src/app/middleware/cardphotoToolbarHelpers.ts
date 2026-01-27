@@ -1,7 +1,7 @@
 import { put } from 'redux-saga/effects'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
-import type { ImageMeta } from '@cardphoto/domain/types'
+import type { ImageMeta, WorkingConfig } from '@cardphoto/domain/types'
 
 interface UpdateCropOptions {
   isFull?: boolean
@@ -72,4 +72,14 @@ export const prepareForRedux = (meta: ImageMeta): ImageMeta => ({
   thumbnail: meta.thumbnail
     ? { ...meta.thumbnail, blob: undefined }
     : undefined,
+})
+
+export const prepareConfigForRedux = (
+  config: WorkingConfig,
+): WorkingConfig => ({
+  ...config,
+  image: {
+    ...config.image,
+    meta: prepareForRedux(config.image.meta),
+  },
 })

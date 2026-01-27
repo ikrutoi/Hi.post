@@ -24,7 +24,10 @@ import {
   uploadImageReady,
   hydrateEditor,
 } from '@cardphoto/infrastructure/state'
-import { prepareForRedux } from './cardphotoToolbarHelpers'
+import {
+  prepareForRedux,
+  prepareConfigForRedux,
+} from './cardphotoToolbarHelpers'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
@@ -90,6 +93,62 @@ export function* onDownloadClick(): SagaIterator {
   yield put(openFileDialog())
 }
 
+function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
+  try {
+    const imageMeta = action.payload
+    const cardLayer: CardLayer = yield select(selectSizeCard)
+
+    const state: CardphotoState = yield select(selectCardphotoState)
+    const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
+    const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
+
+    const newConfig: WorkingConfig = {
+      card: cardLayer,
+      image: imageLayer,
+      crop: cropLayer,
+    }
+
+    const imageForDb = {
+      ...imageMeta,
+      id: 'current',
+    }
+    yield call(storeAdapters.userImages.put, imageForDb)
+
+    const serializableMeta = prepareForRedux(imageMeta)
+    const serializableConfig = prepareConfigForRedux(newConfig)
+
+    const base: CardphotoBase = {
+      ...state.base,
+      user: { image: serializableMeta },
+    }
+
+    yield put(
+      hydrateEditor({
+        base,
+        config: serializableConfig,
+        activeSource: 'user',
+        cropCount: state.cropCount || 0,
+        cropIds: state.cropIds || [],
+      }),
+    )
+  } catch (error) {
+    console.error('Error in onUploadImageReadySaga:', error)
+  } finally {
+    yield put(markLoaded())
+  }
+
+  const groups = ['photo', 'ui']
+  for (const groupName of groups) {
+    yield put(
+      updateGroupStatus({
+        section: 'cardphoto',
+        groupName,
+        status: 'enabled',
+      }),
+    )
+  }
+}
+
 function* onUploadImage(action: PayloadAction<ImageMeta>) {
   const imageMeta = action.payload
   console.log('onUploadImage imageMeta', imageMeta)
@@ -98,7 +157,7 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
   yield put(setBaseImage({ target: 'user', image: imageMeta }))
 }
 
-function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
+function* onUploadImageReadySaga1(action: PayloadAction<ImageMeta>) {
   try {
     const imageMeta = action.payload
     const cardLayer: CardLayer = yield select(selectSizeCard)
