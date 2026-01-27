@@ -15,6 +15,8 @@ import {
   removeCropId,
   clearAllCrops,
   removeUserImage,
+  setActiveSource,
+  hydrateEditor,
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
@@ -97,61 +99,67 @@ export function* handleCropAction() {
   }
 }
 
-export function* handleCropCheckAction() {
-  const state: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto'),
-  )
-  if (state.crop !== 'active') return
+// export function* handleCropCheckAction() {
+//   const state: CardphotoToolbarState = yield select(
+//     selectToolbarSectionState('cardphoto'),
+//   )
+//   if (state.crop !== 'active') return
 
-  const currentConfig: WorkingConfig | null = yield select(selectCurrentConfig)
-  if (!currentConfig) return
+//   const currentConfig: WorkingConfig | null = yield select(selectCurrentConfig)
+//   if (!currentConfig) return
 
-  const { crop, image, card } = currentConfig
-  const imageMeta = image.meta
+//   const { crop, image, card } = currentConfig
+//   const imageMeta = image.meta
 
-  const img = new Image()
-  img.src = imageMeta.url
-  yield new Promise((resolve) => {
-    img.onload = resolve
-  })
+//   const img = new Image()
+//   img.src = imageMeta.url
+//   yield new Promise((resolve) => {
+//     img.onload = resolve
+//   })
 
-  const croppedBase64 = getCroppedBase64(img, crop, {
-    width: img.naturalWidth,
-    height: img.naturalHeight,
-  })
+//   const croppedBase64 = getCroppedBase64(img, crop, {
+//     width: img.naturalWidth,
+//     height: img.naturalHeight,
+//   })
 
-  const newImage: ImageMeta = {
-    id: imageMeta.id + '-crop',
-    url: croppedBase64,
-    width: crop.meta.width,
-    height: crop.meta.height,
-    source: imageMeta.source,
-    imageAspectRatio: roundTo(crop.meta.width / crop.meta.height, 2),
-    isCropped: true,
-    timestamp: Date.now(),
-  }
+//   const newImage: ImageMeta = {
+//     id: imageMeta.id + '-crop',
+//     url: croppedBase64,
+//     width: crop.meta.width,
+//     height: crop.meta.height,
+//     source: imageMeta.source,
+//     imageAspectRatio: roundTo(crop.meta.width / crop.meta.height, 2),
+//     isCropped: true,
+//     timestamp: Date.now(),
+//     full: {
+//       blob: undefined,
+//       url: croppedBase64,
+//       width: crop.meta.width,
+//       height: crop.meta.height,
+//     },
+//   }
 
-  const newConfig: WorkingConfig = {
-    card,
-    image: {
-      ...image,
-      meta: newImage,
-    },
-    crop,
-  }
+//   const newConfig: WorkingConfig = {
+//     card,
+//     image: {
+//       ...image,
+//       meta: newImage,
+//     },
+//     crop,
+//   }
 
-  const op: CardphotoOperation = {
-    type: 'operation',
-    payload: {
-      config: newConfig,
-      reason: 'crop',
-    },
-  }
+//   const op: CardphotoOperation = {
+//     type: 'operation',
+//     payload: {
+//       config: newConfig,
+//       reason: 'crop',
+//     },
+//   }
 
-  yield put(addOperation(op))
-  // yield put(applyFinal(newImage))
-  yield* updateCropToolbarState('enabled', state)
-}
+//   yield put(addOperation(op))
+//   // yield put(applyFinal(newImage))
+//   yield* updateCropToolbarState('enabled', state)
+// }
 
 export function* handleCropFullAction(): SagaIterator {
   const state = (yield select(selectCardphotoState)) as CardphotoState
@@ -616,10 +624,11 @@ export function* handleDeleteImageSaga(
     }
 
     if (source === 'user') {
+      yield call(storeAdapters.userImages.deleteById, 'current')
+
       yield put(removeUserImage())
 
       const newState: CardphotoState = yield select(selectCardphotoState)
-
       const fallbackMeta =
         newState.activeSource === 'processed'
           ? newState.base.processed.image
@@ -684,4 +693,29 @@ export function* handleCropGalleryAction() {
       value: newOrientation,
     }),
   )
+}
+
+export function* handleBackToOriginalSaga() {
+  const state: CardphotoState = yield select(selectCardphotoState)
+  const userMeta = state.base.user.image
+
+  console.log('handleBackToOriginal', userMeta)
+  if (userMeta && state.currentConfig) {
+    yield put(setActiveSource('user'))
+
+    const cardLayer = state.currentConfig.card
+    const imageLayer = fitImageToCard(userMeta, cardLayer, 0, false)
+    const cropLayer = createInitialCropLayer(imageLayer, cardLayer, userMeta)
+    const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
+
+    yield put(
+      hydrateEditor({
+        ...state,
+        config,
+        activeSource: 'user',
+      }),
+    )
+
+    yield fork(syncToolbarContext)
+  }
 }

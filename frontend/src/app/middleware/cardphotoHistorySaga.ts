@@ -15,6 +15,7 @@ import {
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { STOCK_IMAGES } from '@shared/assets/stock'
 import { createWorkingConfig } from './utils'
+import { prepareForRedux } from './cardphotoToolbarHelpers'
 import {
   fitImageToCard,
   createInitialCropLayer,
@@ -39,6 +40,10 @@ function* initCardphotoSaga() {
   const allCrops: ImageMeta[] = yield call(storeAdapters.cropImages.getAll)
   const cropCount = allCrops.length
   const cropIds = allCrops.map((c) => c.id)
+  const savedUserImg: ImageMeta | null = yield call(
+    storeAdapters.userImages.getById,
+    'current',
+  )
 
   if (state.operations.length > 1) return
 
@@ -54,6 +59,15 @@ function* initCardphotoSaga() {
   let activeSource: ImageSource = 'stock'
   let initialImageMeta: ImageMeta = base.stock.image
 
+  console.log('initCardphotoSaga ++ savedUserImg', savedUserImg)
+  if (savedUserImg && savedUserImg.full.blob) {
+    savedUserImg.url = URL.createObjectURL(savedUserImg.full.blob)
+    base.user.image = prepareForRedux(savedUserImg)
+
+    initialImageMeta = base.user.image
+    activeSource = 'user'
+  }
+
   if (cropCount > 0) {
     const lastCrop = allCrops[cropCount - 1]
 
@@ -67,17 +81,17 @@ function* initCardphotoSaga() {
     const serializableMeta: ImageMeta = {
       ...lastCrop,
       url: fullUrl,
-      full: lastCrop.full
-        ? { ...lastCrop.full, blob: undefined, url: fullUrl }
-        : undefined,
+      full: {
+        ...lastCrop.full,
+        blob: undefined,
+        url: fullUrl,
+      },
       thumbnail: lastCrop.thumbnail
         ? { ...lastCrop.thumbnail, blob: undefined, url: thumbUrl }
         : undefined,
     }
 
     base.processed.image = serializableMeta
-    // initialImageMeta = serializableMeta
-    // activeSource = 'processed'
   }
 
   const cardLayer: CardLayer = yield select(selectSizeCard)

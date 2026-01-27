@@ -5,11 +5,12 @@ import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { CartItem } from '@entities/cart/domain/types'
 import type { DraftsItem } from '@entities/drafts/domain/types'
 import type { SentItem } from '@entities/sent/domain/types'
-import type { ImageMeta } from '@cardphoto/domain/types'
+import type { ImageMeta, WorkingConfig } from '@cardphoto/domain/types'
 
 export interface StoreMap {
   stockImages: ImageMeta
-  userImages: ImageMeta
+  userImages: ImageMeta & { id: string }
+  // userImages: { id: string; config: WorkingConfig; timestamp: number }
   cropImages: ImageMeta & { id: string }
   cardtext: CardtextRecord
   sender: AddressTemplateItem
@@ -18,14 +19,14 @@ export interface StoreMap {
   drafts: DraftsItem
   sent: SentItem
 }
-export interface TemplateStoreMap {
-  stockImages: ImageMeta[]
-  userImages: ImageMeta[]
-  cropImages: ImageMeta[]
-  cardtext: CardtextTemplateItem[]
-  sender: AddressTemplateItem[]
-  recipient: AddressTemplateItem[]
-  cart: CartItem[]
-  drafts: DraftsItem[]
-  sent: SentItem[]
-}
+// export interface TemplateStoreMap {
+//   stockImages: ImageMeta[]
+//   userImages: ImageMeta[]
+//   cropImages: ImageMeta[]
+//   cardtext: CardtextTemplateItem[]
+//   sender: AddressTemplateItem[]
+//   recipient: AddressTemplateItem[]
+//   cart: CartItem[]
+//   drafts: DraftsItem[]
+//   sent: SentItem[]
+// }

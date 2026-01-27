@@ -83,10 +83,7 @@ export const cardphotoSlice = createSlice({
       state.state.base[target].image = image
     },
 
-    uploadUserImage(state, action: PayloadAction<ImageMeta>) {
-      if (!state.state) return
-      state.state.base.user.image = action.payload
-    },
+    uploadUserImage(state, action: PayloadAction<ImageMeta>) {},
 
     addOperation(state, action: PayloadAction<CardphotoOperation>) {
       if (!state.state) return

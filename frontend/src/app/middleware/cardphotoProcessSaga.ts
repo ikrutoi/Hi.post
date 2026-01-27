@@ -5,9 +5,11 @@ import {
   all,
   takeLatest,
   fork,
+  call,
 } from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
   openFileDialog,
   uploadUserImage,
@@ -22,6 +24,7 @@ import {
   uploadImageReady,
   hydrateEditor,
 } from '@cardphoto/infrastructure/state'
+import { prepareForRedux } from './cardphotoToolbarHelpers'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
@@ -114,9 +117,21 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
 
     const base: CardphotoBase = {
       ...state.base,
-      user: { image: imageMeta },
-      processed: { image: null },
+      user: { image: prepareForRedux(imageMeta) },
     }
+
+    const imageForDb = {
+      ...imageMeta,
+      id: 'current',
+    }
+
+    const dataToSave = {
+      id: 'current',
+      config: newConfig,
+      timestamp: Date.now(),
+    }
+
+    yield call(storeAdapters.userImages.put, imageForDb)
 
     yield put(
       hydrateEditor({
@@ -127,20 +142,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
         cropIds,
       }),
     )
-
-    // const { needsCrop } = validateImageSize(
-    //   imageMeta,
-    //   cardLayer.width,
-    //   cardLayer.height,
-    // )
-
-    // yield put(
-    //   updateToolbarIcon({
-    //     section: 'cardphoto',
-    //     key: 'apply',
-    //     value: needsCrop ? 'enabled' : 'disabled',
-    //   }),
-    // )
   } catch (error) {
     console.error('Error in onUploadImageReadySaga:', error)
   } finally {

@@ -24,6 +24,7 @@ export interface CardLayer {
 
 export type ImageOrientation = 0 | 90 | 180 | 270
 
+export type QualityLevel = 'high' | 'medium' | 'low'
 export interface ImageData {
   blob?: Blob
   url: string
@@ -31,12 +32,11 @@ export interface ImageData {
   height: number
 }
 
-export type QualityLevel = 'high' | 'medium' | 'low'
 export interface ImageMeta {
   id: string
   source: ImageSource
   url: string
-  full?: ImageData
+  full: ImageData
   thumbnail?: ImageData
   width: number
   height: number

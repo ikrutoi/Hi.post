@@ -68,7 +68,7 @@ export function* updateCropToolbarState(
 
 export const prepareForRedux = (meta: ImageMeta): ImageMeta => ({
   ...meta,
-  full: meta.full ? { ...meta.full, blob: undefined } : undefined,
+  full: { ...meta.full, blob: undefined },
   thumbnail: meta.thumbnail
     ? { ...meta.thumbnail, blob: undefined }
     : undefined,

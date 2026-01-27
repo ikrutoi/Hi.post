@@ -27,7 +27,7 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import {
   handleCropAction,
-  handleCropCheckAction,
+  // handleCropCheckAction,
   handleCardOrientation,
   handleImageRotate,
   handleCropFullAction,
@@ -36,6 +36,7 @@ import {
   handleCropGalleryAction,
   handleClearAllCropsSaga,
   handleDeleteImageSaga,
+  handleBackToOriginalSaga,
 } from './cardphotoToolbarHandlers'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
@@ -99,6 +100,9 @@ export function* handleCardphotoToolbarAction(
     case 'download':
       yield call(onDownloadClick)
       break
+    case 'imageReset':
+      yield call(handleBackToOriginalSaga)
+      break
     case 'crop':
       yield* handleCropAction()
       break
@@ -160,6 +164,7 @@ export function* syncToolbarContext() {
   const hasCrops = cropCount > 0
 
   let sectionUpdate = {}
+  const isUserImage = !!state.base.user.image
 
   switch (activeSource) {
     case 'processed':
@@ -169,7 +174,7 @@ export function* syncToolbarContext() {
         imageRotateLeft: 'disabled',
         imageRotateRight: 'disabled',
         crop: 'disabled',
-        imageReset: 'enabled',
+        imageReset: isUserImage ? 'enabled' : 'disabled',
 
         apply: 'enabled',
         close: 'enabled',
@@ -207,7 +212,7 @@ export function* syncToolbarContext() {
         imageRotateRight: 'disabled',
         crop: 'disabled',
         // cropCheck: ''
-        imageReset: 'disabled',
+        imageReset: isUserImage ? 'enabled' : 'disabled',
 
         apply: 'enabled',
         close: 'disabled',
