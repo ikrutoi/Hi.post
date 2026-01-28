@@ -211,52 +211,6 @@ export const cardphotoSlice = createSlice({
       }
     },
 
-    removeCropId1(state, action: PayloadAction<string>) {
-      if (state.state && state.state.cropIds) {
-        state.state.cropIds = state.state.cropIds.filter(
-          (id) => id !== action.payload,
-        )
-        state.state.cropCount = state.state.cropIds.length
-
-        if (state.state.base.processed.image?.id === action.payload) {
-          state.state.base.processed.image = null
-          state.state.activeSource = 'user'
-        }
-      }
-    },
-
-    removeCropId(state, action: PayloadAction<string>) {
-      const cp = state.state
-      if (!cp || !cp.cropIds) return
-
-      const deletedId = action.payload
-      const isDeletingActive = cp.base.processed.image?.id === deletedId
-
-      let nextActiveId: string | null = null
-      if (isDeletingActive) {
-        const currentIndex = cp.cropIds.indexOf(deletedId)
-        if (cp.cropIds.length > 1) {
-          const nextIndex =
-            currentIndex < cp.cropIds.length - 1
-              ? currentIndex + 1
-              : currentIndex - 1
-          nextActiveId = cp.cropIds[nextIndex]
-        }
-      }
-
-      cp.cropIds = cp.cropIds.filter((id) => id !== deletedId)
-      cp.cropCount = cp.cropIds.length
-
-      if (isDeletingActive) {
-        if (nextActiveId) {
-          cp.base.processed.image = null
-        } else {
-          cp.base.processed.image = null
-          cp.activeSource = cp.base.user.image ? 'user' : 'stock'
-        }
-      }
-    },
-
     clearAllCrops(state) {
       if (state.state) {
         state.state.cropIds = []
@@ -271,16 +225,19 @@ export const cardphotoSlice = createSlice({
 
     removeUserImage(state) {
       const cp = state.state
+      if (cp) cp.base.user.image = null
+    },
+
+    removeCropId(state, action: PayloadAction<string>) {
+      const cp = state.state
       if (!cp) return
+      cp.cropIds = cp.cropIds.filter((id) => id !== action.payload)
+      cp.cropCount = cp.cropIds.length
+    },
 
-      cp.base.user.image = null
-
-      if (cp.activeSource === 'user') {
-        if (cp.base.processed.image) {
-          cp.activeSource = 'processed'
-        } else {
-          cp.activeSource = 'stock'
-        }
+    clearCurrentConfig(state) {
+      if (state.state) {
+        state.state.currentConfig = null
       }
     },
   },
@@ -307,6 +264,7 @@ export const {
   removeCropId,
   clearAllCrops,
   removeUserImage,
+  clearCurrentConfig,
 } = cardphotoSlice.actions
 
 export default cardphotoSlice.reducer

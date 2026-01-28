@@ -34,6 +34,7 @@ import {
   dispatchQualityUpdate,
 } from '@cardphoto/application/helpers'
 import { setCardOrientation, setSizeCard } from '@layout/infrastructure/state'
+import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import {
   selectSizeCard,
   selectViewportSize,
@@ -250,25 +251,31 @@ export function* handleOrientationAction() {
 export function* handleImageLayerUpdate() {
   const sizeCard: SizeCard = yield select(selectSizeCard)
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
-  if (!config || !config.image?.meta) return
-  const baseImage: ImageMeta = yield select(selectActiveImage)
+  // const baseImage: ImageMeta = yield select(selectActiveImage)
 
-  const newImageLayer: ImageLayer = fitImageToCard(
+  if (!config || !config.image?.meta) return
+
+  const newConfig: WorkingConfig = yield call(
+    rebuildConfigFromMeta,
     config.image.meta,
-    sizeCard,
-    config.image.orientation,
-    config.image.meta.isCropped,
   )
-  const newCropLayer = createInitialCropLayer(
-    newImageLayer,
-    sizeCard,
-    baseImage,
-  )
-  const newConfig: WorkingConfig = {
-    card: sizeCard,
-    image: newImageLayer,
-    crop: newCropLayer,
-  }
+
+  // const newImageLayer: ImageLayer = fitImageToCard(
+  //   config.image.meta,
+  //   sizeCard,
+  //   config.image.orientation,
+  //   config.image.meta.isCropped,
+  // )
+  // const newCropLayer = createInitialCropLayer(
+  //   newImageLayer,
+  //   sizeCard,
+  //   baseImage,
+  // )
+  // const newConfig: WorkingConfig = {
+  //   card: sizeCard,
+  //   image: newImageLayer,
+  //   crop: newCropLayer,
+  // }
 
   const op: CardphotoOperation = {
     type: 'operation',
@@ -315,24 +322,26 @@ export function* handleCardOrientation(): SagaIterator {
     aspectRatio: ratio,
   }
 
-  const newImageLayer = fitImageToCard(
-    baseImage,
-    newCardLayer,
-    config.image.orientation,
-    config.image.meta.isCropped,
-  )
+  const newConfig: WorkingConfig = yield call(rebuildConfigFromMeta, baseImage)
 
-  const newCropLayer = createInitialCropLayer(
-    newImageLayer,
-    newCardLayer,
-    baseImage,
-  )
+  // const newImageLayer = fitImageToCard(
+  //   baseImage,
+  //   newCardLayer,
+  //   config.image.orientation,
+  //   config.image.meta.isCropped,
+  // )
 
-  const newConfig: WorkingConfig = {
-    card: newCardLayer,
-    image: newImageLayer,
-    crop: newCropLayer,
-  }
+  // const newCropLayer = createInitialCropLayer(
+  //   newImageLayer,
+  //   newCardLayer,
+  //   baseImage,
+  // )
+
+  // const newConfig: WorkingConfig = {
+  //   card: newCardLayer,
+  //   image: newImageLayer,
+  //   crop: newCropLayer,
+  // }
 
   const op: CardphotoOperation = {
     type: 'operation',
@@ -414,33 +423,35 @@ export function* handleImageRotate(
       ? rotateRight(currentOrientation)
       : rotateLeft(currentOrientation)
 
-  const newImageLayer = fitImageToCard(
-    baseImage,
-    currentConfig.card,
-    nextOrientation,
-    currentConfig.image.meta.isCropped,
-  )
+  const config: WorkingConfig = yield call(rebuildConfigFromMeta, baseImage)
 
-  const newCropLayer = createInitialCropLayer(
-    newImageLayer,
-    currentConfig.card,
-    baseImage,
-  )
-  const newConfig: WorkingConfig = {
-    ...currentConfig,
-    image: newImageLayer,
-    crop: {
-      ...newCropLayer,
-      meta: {
-        ...newCropLayer.meta,
-      },
-    },
-  }
+  // const newImageLayer = fitImageToCard(
+  //   baseImage,
+  //   currentConfig.card,
+  //   nextOrientation,
+  //   currentConfig.image.meta.isCropped,
+  // )
+
+  // const newCropLayer = createInitialCropLayer(
+  //   newImageLayer,
+  //   currentConfig.card,
+  //   baseImage,
+  // )
+  // const newConfig: WorkingConfig = {
+  //   ...currentConfig,
+  //   image: newImageLayer,
+  //   crop: {
+  //     ...newCropLayer,
+  //     meta: {
+  //       ...newCropLayer.meta,
+  //     },
+  //   },
+  // }
 
   const op: CardphotoOperation = {
     type: 'operation',
     payload: {
-      config: newConfig,
+      config,
       reason: 'rotateImage',
     },
   }
@@ -513,6 +524,8 @@ export function* handleCropConfirm(): SagaIterator {
       orientation: config.card.orientation,
     }
 
+    console.log('handleCropConfirm finalImageMeta', finalImageMeta)
+
     yield call(storeAdapters.cropImages.put, finalImageMeta)
 
     const reduxMeta = prepareForRedux(finalImageMeta)
@@ -520,23 +533,28 @@ export function* handleCropConfirm(): SagaIterator {
     yield put(applyFinal(reduxMeta))
     yield put(addCropId(id))
 
-    const newImageLayer = fitImageToCard(reduxMeta, config.card, 0, true)
-    const newCropLayer = createInitialCropLayer(
-      newImageLayer,
-      config.card,
+    const newConfig: WorkingConfig = yield call(
+      rebuildConfigFromMeta,
       reduxMeta,
     )
 
-    const finalConfig: WorkingConfig = {
-      card: config.card,
-      image: newImageLayer,
-      crop: newCropLayer,
-    }
+    // const newImageLayer = fitImageToCard(reduxMeta, config.card, 0, true)
+    // const newCropLayer = createInitialCropLayer(
+    //   newImageLayer,
+    //   config.card,
+    //   reduxMeta,
+    // )
+
+    // const finalConfig: WorkingConfig = {
+    //   card: config.card,
+    //   image: newImageLayer,
+    //   crop: newCropLayer,
+    // }
 
     yield put(
       addOperation({
         type: 'operation',
-        payload: { config: finalConfig, reason: 'applyCrop' },
+        payload: { config: newConfig, reason: 'applyCrop' },
       }),
     )
 
@@ -561,21 +579,21 @@ export function* handleCropConfirm(): SagaIterator {
   }
 }
 
-function* rebuildConfigFromMeta(meta: ImageMeta) {
-  const card: CardLayer = yield select(selectSizeCard)
-  const imageLayer = fitImageToCard(meta, card, 0, true)
-  const cropLayer = createInitialCropLayer(imageLayer, card, meta)
+// function* rebuildConfigFromMeta(meta: ImageMeta) {
+//   const card: CardLayer = yield select(selectSizeCard)
+//   const imageLayer = fitImageToCard(meta, card, 0, true)
+//   const cropLayer = createInitialCropLayer(imageLayer, card, meta)
 
-  yield put(
-    addOperation({
-      type: 'operation',
-      payload: {
-        config: { card, image: imageLayer, crop: cropLayer },
-        reason: 'init',
-      },
-    }),
-  )
-}
+//   yield put(
+//     addOperation({
+//       type: 'operation',
+//       payload: {
+//         config: { card, image: imageLayer, crop: cropLayer },
+//         reason: 'init',
+//       },
+//     }),
+//   )
+// }
 
 export function* handleDeleteImageSaga(
   id: string | undefined,
@@ -583,98 +601,156 @@ export function* handleDeleteImageSaga(
 ) {
   try {
     const state: CardphotoState = yield select(selectCardphotoState)
-    let orientation
-
-    if (!state.currentConfig) return
+    const stockImage = state.base.stock.image
 
     if (source === 'processed' && id) {
       const currentIndex = state.cropIds.indexOf(id)
 
       yield call(storeAdapters.cropImages.deleteById, id)
 
-      let nextId: string | null = null
-      if (state.cropIds.length > 1) {
-        const nextIdx =
-          currentIndex < state.cropIds.length - 1
-            ? currentIndex + 1
-            : currentIndex - 1
-        nextId = state.cropIds[nextIdx]
-      }
+      const remainingIds = state.cropIds.filter((cropId) => cropId !== id)
 
       yield put(removeCropId(id))
 
-      if (nextId) {
+      if (remainingIds.length > 0) {
+        const nextIdx =
+          currentIndex < remainingIds.length
+            ? currentIndex
+            : remainingIds.length - 1
+        const nextId = remainingIds[nextIdx]
+
         const nextCrop: ImageMeta = yield call(
           storeAdapters.cropImages.getById,
           nextId,
         )
+
         if (nextCrop) {
           const freshUrl = nextCrop.full?.blob
             ? URL.createObjectURL(nextCrop.full.blob)
             : nextCrop.url
-          const serializableMeta = prepareForRedux({
-            ...nextCrop,
-            url: freshUrl,
-          })
 
-          orientation = nextCrop.orientation
+          const serializable = prepareForRedux({ ...nextCrop, url: freshUrl })
 
-          yield put(setProcessedImage(serializableMeta))
-          yield fork(rebuildConfigFromMeta, serializableMeta)
+          yield put(setProcessedImage(serializable))
+          yield put(setActiveSource('processed'))
+          yield fork(rebuildConfigFromMeta, serializable)
         }
-      } else {
-        const newState: CardphotoState = yield select(selectCardphotoState)
-        const fallbackMeta =
-          newState.activeSource === 'user'
-            ? newState.base.user.image
-            : newState.base.stock.image
-        if (fallbackMeta) {
-          orientation = fallbackMeta.orientation
-
-          yield fork(rebuildConfigFromMeta, fallbackMeta)
-        }
+      } else if (state.base.user.image) {
+        yield put(setActiveSource('user'))
+        yield fork(rebuildConfigFromMeta, state.base.user.image)
+      } else if (stockImage) {
+        yield put(setActiveSource('stock'))
+        yield fork(rebuildConfigFromMeta, stockImage)
       }
-    }
-
-    if (source === 'user') {
+    } else if (source === 'user') {
       yield call(storeAdapters.userImages.deleteById, 'current')
-
       yield put(removeUserImage())
 
-      // const newState: CardphotoState = yield select(selectCardphotoState)
-      const fallbackMeta =
-        state.activeSource === 'processed'
-          ? state.base.processed.image
-          : state.base.stock.image
-
-      if (fallbackMeta) {
-        orientation = fallbackMeta?.orientation
-
-        yield fork(rebuildConfigFromMeta, fallbackMeta)
+      if (state.cropIds.length > 0) {
+        const lastId = state.cropIds[state.cropIds.length - 1]
+        const lastCrop: ImageMeta = yield call(
+          storeAdapters.cropImages.getById,
+          lastId,
+        )
+        if (lastCrop) {
+          const serializable = prepareForRedux({
+            ...lastCrop,
+            url: lastCrop.full?.blob
+              ? URL.createObjectURL(lastCrop.full.blob)
+              : lastCrop.url,
+          })
+          yield put(setProcessedImage(serializable))
+          yield put(setActiveSource('processed'))
+          yield fork(rebuildConfigFromMeta, serializable)
+        }
+      } else {
+        if (stockImage) {
+          yield put(setActiveSource('stock'))
+          yield fork(rebuildConfigFromMeta, stockImage)
+        }
       }
     }
-
-    const ratio = state.currentConfig.card.aspectRatio
-    const height = state.currentConfig.card.height
-
-    console.log('handleDelete orientation', orientation)
-    const rawWidth =
-      orientation === 'landscape' ? height * ratio : height / ratio
-    const width = roundTo(rawWidth, 2)
-
-    const newCardLayer = {
-      ...state.currentConfig.card,
-      width,
-      orientation,
-    }
-
-    yield put(setSizeCard(newCardLayer))
 
     yield fork(syncToolbarContext)
   } catch (error) {
-    console.error('Advanced delete failed:', error)
+    console.error('Delete flow failed:', error)
   }
 }
+
+// export function* handleDeleteImageSaga1(
+//   id: string | undefined,
+//   source: ImageSource | null,
+// ) {
+//   try {
+//     const state: CardphotoState = yield select(selectCardphotoState)
+
+//     if (!state.currentConfig) return
+
+//     if (source === 'processed' && id) {
+//       const currentIndex = state.cropIds.indexOf(id)
+
+//       yield call(storeAdapters.cropImages.deleteById, id)
+
+//       let nextId: string | null = null
+//       if (state.cropIds.length > 1) {
+//         const nextIdx =
+//           currentIndex < state.cropIds.length - 1
+//             ? currentIndex + 1
+//             : currentIndex - 1
+//         nextId = state.cropIds[nextIdx]
+//       }
+
+//       yield put(removeCropId(id))
+
+//       if (nextId) {
+//         const nextCrop: ImageMeta = yield call(
+//           storeAdapters.cropImages.getById,
+//           nextId,
+//         )
+//         if (nextCrop) {
+//           const freshUrl = nextCrop.full?.blob
+//             ? URL.createObjectURL(nextCrop.full.blob)
+//             : nextCrop.url
+//           const serializableMeta = prepareForRedux({
+//             ...nextCrop,
+//             url: freshUrl,
+//           })
+
+//           yield put(setProcessedImage(serializableMeta))
+//           yield fork(rebuildConfigFromMeta, serializableMeta)
+//         }
+//       } else {
+//         const newState: CardphotoState = yield select(selectCardphotoState)
+//         const fallbackMeta =
+//           newState.activeSource === 'user'
+//             ? newState.base.user.image
+//             : newState.base.stock.image
+//         if (fallbackMeta) {
+//           yield fork(rebuildConfigFromMeta, fallbackMeta)
+//         }
+//       }
+//     }
+
+//     if (source === 'user') {
+//       yield call(storeAdapters.userImages.deleteById, 'current')
+
+//       yield put(removeUserImage())
+
+//       const fallbackMeta =
+//         state.activeSource === 'processed'
+//           ? state.base.processed.image
+//           : state.base.stock.image
+
+//       if (fallbackMeta) {
+//         yield fork(rebuildConfigFromMeta, fallbackMeta)
+//       }
+//     }
+
+//     yield fork(syncToolbarContext)
+//   } catch (error) {
+//     console.error('Advanced delete failed:', error)
+//   }
+// }
 
 export function* handleClearAllCropsSaga() {
   console.log('handleClearAll')
@@ -737,10 +813,11 @@ export function* handleBackToOriginalSaga() {
     userMeta &&
     state.currentConfig
   ) {
-    const cardLayer = state.currentConfig.card
-    const imageLayer = fitImageToCard(userMeta, cardLayer, 0, false)
-    const cropLayer = createInitialCropLayer(imageLayer, cardLayer, userMeta)
-    const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
+    // const cardLayer = state.currentConfig.card
+    const config: WorkingConfig = yield call(rebuildConfigFromMeta, userMeta)
+    // const imageLayer = fitImageToCard(userMeta, cardLayer, 0, false)
+    // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, userMeta)
+    // const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
 
     yield put(
       hydrateEditor({
@@ -755,9 +832,10 @@ export function* handleBackToOriginalSaga() {
 
   if (activeSource === 'user' && state.currentConfig && stockMeta) {
     const cardLayer = state.currentConfig.card
-    const imageLayer = fitImageToCard(stockMeta, cardLayer, 0, false)
-    const cropLayer = createInitialCropLayer(imageLayer, cardLayer, stockMeta)
-    const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
+    const config: WorkingConfig = yield call(rebuildConfigFromMeta, stockMeta)
+    // const imageLayer = fitImageToCard(stockMeta, cardLayer, 0, false)
+    // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, stockMeta)
+    // const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
 
     yield put(
       hydrateEditor({

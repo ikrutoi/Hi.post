@@ -16,6 +16,7 @@ import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { STOCK_IMAGES } from '@shared/assets/stock'
 import { createWorkingConfig } from './utils'
 import { prepareForRedux } from './cardphotoToolbarHelpers'
+import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import {
   fitImageToCard,
   createInitialCropLayer,
@@ -94,14 +95,19 @@ function* initCardphotoSaga() {
     base.processed.image = serializableMeta
   }
 
-  const cardLayer: CardLayer = yield select(selectSizeCard)
-  const imageLayer = fitImageToCard(initialImageMeta, cardLayer, 0, true)
-  const cropLayer = createInitialCropLayer(
-    imageLayer,
-    cardLayer,
+  // const cardLayer: CardLayer = yield select(selectSizeCard)
+  const config: WorkingConfig = yield call(
+    rebuildConfigFromMeta,
     initialImageMeta,
   )
-  const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
+  // const {image, card, crop} = newConfig
+  // const imageLayer = fitImageToCard(initialImageMeta, cardLayer, 0, true)
+  // const cropLayer = createInitialCropLayer(
+  //   imageLayer,
+  //   cardLayer,
+  //   initialImageMeta,
+  // )
+  // const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
 
   yield put(
     hydrateEditor({

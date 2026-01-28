@@ -91,6 +91,8 @@ export function* handleCardphotoToolbarAction(
       const state: CardphotoState = yield select(selectCardphotoState)
       const isProcessed: boolean = yield select(selectIsProcessedMode)
 
+      console.log(state.base.stock.image)
+
       const currentImageId = isProcessed
         ? state.base.processed.image?.id
         : state.base.user.image?.id
@@ -174,6 +176,7 @@ export function* syncToolbarContext() {
         imageRotateLeft: 'disabled',
         imageRotateRight: 'disabled',
         crop: 'disabled',
+        cropFull: 'disabled',
         imageReset: 'enabled',
 
         apply: 'enabled',
@@ -211,7 +214,7 @@ export function* syncToolbarContext() {
         imageRotateLeft: 'disabled',
         imageRotateRight: 'disabled',
         crop: 'disabled',
-        // cropCheck: ''
+        cropFull: 'disabled',
         imageReset: isUserImage ? 'enabled' : 'disabled',
 
         apply: 'enabled',

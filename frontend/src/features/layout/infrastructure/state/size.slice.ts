@@ -27,6 +27,7 @@ export const sizeSlice = createSlice({
   initialState,
   reducers: {
     setSizeCard(state, action: PayloadAction<Partial<SizeCard>>) {
+      console.log('setSizeCard', action.payload, action.type)
       state.sizeCard = {
         ...state.sizeCard,
         ...action.payload,
@@ -59,7 +60,7 @@ export const sizeSlice = createSlice({
       action: PayloadAction<{
         orientation: LayoutOrientation
         viewportHeight: number
-      }>
+      }>,
     ) {
       const { orientation, viewportHeight } = action.payload
       const { width, height } = calcSizeCard(viewportHeight, orientation)

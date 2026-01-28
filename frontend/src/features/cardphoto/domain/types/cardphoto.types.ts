@@ -94,6 +94,7 @@ export type CardphotoOperation = {
       | 'activateCrop'
       | 'applyCrop'
       | 'init'
+      | 'rebuild_by_orientation'
   }
 }
 

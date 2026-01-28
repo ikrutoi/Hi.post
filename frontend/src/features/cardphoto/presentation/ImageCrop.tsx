@@ -39,10 +39,13 @@ export const ImageCrop = () => {
   const { size } = useLayoutFacade()
   const { sizeCard } = size
 
+  console.log('ImageCrop sizeCard', sizeCard)
+
   const [loaded, setLoaded] = useState(false)
 
   // const imageMeta = useCurrentImageMeta(cardphotoState.state)
   // console.log('ImageCrop1111 imageMeta', imageMeta)
+  const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeSource}`
 
   const [tempCrop, setTempCrop] = useCropState(
     iconStates.crop,
@@ -135,7 +138,8 @@ export const ImageCrop = () => {
       />
 
       <div
-        key={src}
+        key={containerKey}
+        // key={src}
         className={styles.cropContainer}
         style={{
           width: `${sizeCard.width}px`,

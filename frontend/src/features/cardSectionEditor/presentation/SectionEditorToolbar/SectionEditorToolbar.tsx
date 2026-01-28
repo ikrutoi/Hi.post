@@ -5,6 +5,7 @@ import { useToolbarFacade } from '@toolbar/application/facades'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import { getQualityColor } from '@cardphoto/application/helpers'
+import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import styles from './SectionEditorToolbar.module.scss'
 
 export const SectionEditorToolbar: React.FC = () => {
@@ -46,7 +47,7 @@ export const SectionEditorToolbar: React.FC = () => {
 
   const height = sizeCard.height + 4 * remSize
   const width = Number(
-    (sizeCard.height * sizeCard.aspectRatio + 6 * remSize).toFixed(2),
+    (sizeCard.height * CARD_SCALE_CONFIG.aspectRatio + 6 * remSize).toFixed(2),
   )
 
   return (

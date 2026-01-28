@@ -1,9 +1,10 @@
-import { select } from 'redux-saga/effects'
+import { call, select } from 'redux-saga/effects'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import {
   fitImageToCard,
   createInitialCropLayer,
 } from '@cardphoto/application/utils/imageFit'
+import { rebuildConfigFromMeta } from '../cardphotoProcessSaga'
 import type {
   ImageMeta,
   WorkingConfig,
@@ -13,25 +14,25 @@ import type {
 } from '@cardphoto/domain/types'
 
 export function* createWorkingConfig(imageMeta: ImageMeta) {
-  const cardLayer: CardLayer = yield select(selectSizeCard)
+  // const cardLayer: CardLayer = yield select(selectSizeCard)
+  const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
+  // const imageLayer: ImageLayer = fitImageToCard(
+  //   imageMeta,
+  //   cardLayer,
+  //   0,
+  //   imageMeta.isCropped,
+  // )
+  // const cropLayer: CropLayer = createInitialCropLayer(
+  //   imageLayer,
+  //   cardLayer,
+  //   imageMeta,
+  // )
 
-  const imageLayer: ImageLayer = fitImageToCard(
-    imageMeta,
-    cardLayer,
-    0,
-    imageMeta.isCropped,
-  )
-  const cropLayer: CropLayer = createInitialCropLayer(
-    imageLayer,
-    cardLayer,
-    imageMeta,
-  )
+  // const workingConfig: WorkingConfig = {
+  //   card: cardLayer,
+  //   image: imageLayer,
+  //   crop: cropLayer,
+  // }
 
-  const workingConfig: WorkingConfig = {
-    card: cardLayer,
-    image: imageLayer,
-    crop: cropLayer,
-  }
-
-  return workingConfig
+  return config
 }

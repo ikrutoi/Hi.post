@@ -6,6 +6,7 @@ import {
   takeLatest,
   fork,
   call,
+  delay,
 } from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
 import { toolbarAction } from '@toolbar/application/helpers'
@@ -23,6 +24,7 @@ import {
   setBaseImage,
   uploadImageReady,
   hydrateEditor,
+  clearCurrentConfig,
 } from '@cardphoto/infrastructure/state'
 import {
   prepareForRedux,
@@ -30,6 +32,7 @@ import {
 } from './cardphotoToolbarHelpers'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
+import { setSizeCard } from '@layout/infrastructure/state'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import {
   updateToolbarSection,
@@ -59,6 +62,7 @@ import type {
   CardphotoState,
   CardphotoBase,
 } from '@cardphoto/domain/types'
+import type { SizeCard, LayoutOrientation } from '@layout/domain/types'
 
 export function* onDownloadClick(): SagaIterator {
   yield put(
@@ -96,17 +100,18 @@ export function* onDownloadClick(): SagaIterator {
 function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   try {
     const imageMeta = action.payload
-    const cardLayer: CardLayer = yield select(selectSizeCard)
+    // const cardLayer: CardLayer = yield select(selectSizeCard)
 
     const state: CardphotoState = yield select(selectCardphotoState)
-    const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
-    const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
+    const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
+    // const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
+    // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
 
-    const newConfig: WorkingConfig = {
-      card: cardLayer,
-      image: imageLayer,
-      crop: cropLayer,
-    }
+    // const newConfig: WorkingConfig = {
+    //   card: cardLayer,
+    //   image: imageLayer,
+    //   crop: cropLayer,
+    // }
 
     const imageForDb = {
       ...imageMeta,
@@ -115,7 +120,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     yield call(storeAdapters.userImages.put, imageForDb)
 
     const serializableMeta = prepareForRedux(imageMeta)
-    const serializableConfig = prepareConfigForRedux(newConfig)
+    const serializableConfig = prepareConfigForRedux(config)
 
     const base: CardphotoBase = {
       ...state.base,
@@ -160,19 +165,20 @@ function* onUploadImage(action: PayloadAction<ImageMeta>) {
 function* onUploadImageReadySaga1(action: PayloadAction<ImageMeta>) {
   try {
     const imageMeta = action.payload
-    const cardLayer: CardLayer = yield select(selectSizeCard)
+    // const cardLayer: CardLayer = yield select(selectSizeCard)
 
     const state: CardphotoState = yield select(selectCardphotoState)
     const cropCount = state.cropCount || 0
     const cropIds = state.cropIds || []
 
-    const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
-    const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
-    const newConfig: WorkingConfig = {
-      card: cardLayer,
-      image: imageLayer,
-      crop: cropLayer,
-    }
+    const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
+    // const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
+    // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
+    // const newConfig: WorkingConfig = {
+    //   card: cardLayer,
+    //   image: imageLayer,
+    //   crop: cropLayer,
+    // }
 
     const base: CardphotoBase = {
       ...state.base,
@@ -184,18 +190,18 @@ function* onUploadImageReadySaga1(action: PayloadAction<ImageMeta>) {
       id: 'current',
     }
 
-    const dataToSave = {
-      id: 'current',
-      config: newConfig,
-      timestamp: Date.now(),
-    }
+    // const dataToSave = {
+    //   id: 'current',
+    //   config,
+    //   timestamp: Date.now(),
+    // }
 
     yield call(storeAdapters.userImages.put, imageForDb)
 
     yield put(
       hydrateEditor({
         base,
-        config: newConfig,
+        config,
         activeSource: 'user',
         cropCount,
         cropIds,
@@ -245,6 +251,80 @@ function* onCancelFileDialog(): SagaIterator {
     }),
   )
 }
+
+export function* rebuildConfigFromMeta(meta: ImageMeta) {
+  try {
+    yield put(clearCurrentConfig())
+
+    yield delay(16)
+
+    const currentCard: SizeCard = yield select(selectSizeCard)
+    const targetOrientation =
+      meta.imageAspectRatio >= 1 ? 'landscape' : 'portrait'
+
+    if (currentCard.orientation !== targetOrientation) {
+      const newWidth = Math.round(currentCard.height * meta.imageAspectRatio)
+
+      yield put(
+        setSizeCard({
+          orientation: targetOrientation,
+          width: newWidth,
+          aspectRatio: meta.imageAspectRatio,
+        }),
+      )
+
+      yield delay(32)
+    }
+
+    const updatedCard: CardLayer = yield select(selectSizeCard)
+    const imageLayer = fitImageToCard(meta, updatedCard, 0, false)
+    const cropLayer = createInitialCropLayer(imageLayer, updatedCard, meta)
+
+    const newConfig: WorkingConfig = {
+      card: updatedCard,
+      image: imageLayer,
+      crop: cropLayer,
+    }
+
+    yield put(
+      addOperation({
+        type: 'operation',
+        payload: {
+          config: newConfig,
+          reason: 'rebuild_by_orientation',
+        },
+      }),
+    )
+
+    return newConfig
+  } catch (error) {
+    console.error('Rebuild failed:', error)
+  }
+}
+
+// export function* syncOrientationSaga(meta: ImageMeta) {
+//   const sizeCard: SizeCard = yield select(selectSizeCard)
+
+//   const imageOrientation: LayoutOrientation = meta.orientation
+//     ? meta.orientation
+//     : meta.imageAspectRatio >= 1
+//       ? 'landscape'
+//       : 'portrait'
+
+//   if (sizeCard.orientation !== imageOrientation) {
+//     const newWidth = Math.round(sizeCard.height * meta.imageAspectRatio)
+
+//     yield put(
+//       setSizeCard({
+//         orientation: imageOrientation,
+//         width: newWidth,
+//         aspectRatio: meta.imageAspectRatio,
+//       }),
+//     )
+
+//     yield delay(0)
+//   }
+// }
 
 export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
