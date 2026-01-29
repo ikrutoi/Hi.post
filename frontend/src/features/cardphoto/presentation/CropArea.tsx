@@ -36,6 +36,9 @@ export const CropArea: React.FC<CropAreaProps> = ({
   const { interactingRef, lastCropRef, begin, end, setLast } =
     useInteractionState(cropLayer)
   const { attach } = useGlobalListeners()
+  console.log('CropArea cropLayer ', cropLayer)
+  console.log('CropArea tempCrop ', tempCrop)
+  console.log('CropArea orientation ', orientation)
 
   const startDrag = useCropDrag(
     tempCrop,

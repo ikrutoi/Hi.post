@@ -34,10 +34,12 @@ export const CropPreviewItem = ({ cropId }: { cropId: string }) => {
   }, [cropId])
 
   return (
-    <div className={styles.previewIcon}>
-      {imageUrl && (
-        <img src={imageUrl} className={styles.previewImg} alt="crop" />
-      )}
+    <div className={styles.previewIconContainer}>
+      <div className={styles.previewIcon}>
+        {imageUrl && (
+          <img src={imageUrl} className={styles.previewImg} alt="crop" />
+        )}
+      </div>
     </div>
   )
 }

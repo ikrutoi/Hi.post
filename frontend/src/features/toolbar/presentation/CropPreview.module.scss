@@ -2,11 +2,8 @@
 
 .cropSidebar {
   position: absolute;
-  right: -4.5rem;
+  right: -4.9rem;
   top: 3rem;
   display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-end;
-  // border: solid 1px red;
-  // gap: 8px;
+  flex-direction: column;
 }

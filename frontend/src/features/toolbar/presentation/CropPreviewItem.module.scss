@@ -1,23 +1,53 @@
 @use '@styles/config/colors' as *;
 
+.previewIconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.8rem;
+  height: 3.8rem;
+  margin: 0.4rem 0;
+  border-radius: 0.9rem;
+  background-color: #ffffff;
+
+  &:first-child {
+    margin-bottom: 0;
+  }
+  &:last-child {
+    margin-top: 0;
+  }
+}
+
 .previewIcon {
   width: 3rem;
   height: 3rem;
   border-radius: 0.9rem;
-  margin: 1rem 0;
   overflow: hidden;
   border: solid 1px $color-section-dark;
-  // border: 2px solid transparent;
   cursor: pointer;
-  transition: border-color 0.2s;
+  background-color: $color-section-dark;
+  transition:
+    // transform 0.2s,
+    border-color 0.2s;
 
   &:hover {
-    border-color: #ffcc00;
+    border-color: $color-toggle-active;
+    // transform: scale(1.05);
   }
+
+  opacity: 0;
+  animation: fadeInIcon 0.4s ease-out forwards;
 }
 
-.previewIcon:first-child {
-  margin-top: 0;
+@keyframes fadeInIcon {
+  from {
+    opacity: 0;
+    // transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    // transform: translateX(0);
+  }
 }
 
 .previewImg {

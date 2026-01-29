@@ -21,7 +21,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { state: iconStates, groups, badges } = toolbarState
   const { onAction } = toolbarActions
 
-  // console.log('Toolbar badges', badges)
+  console.log('Toolbar iconStates', iconStates)
 
   const groupRef = useRef<HTMLDivElement>(null)
 
@@ -100,7 +100,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           {group.icons.map((icon) => renderIcon(icon.key, group.status))}
         </div>
       ))}
-      {section === 'cardphoto' && (
+      {section === 'cardphoto' && iconStates.crop !== 'active' && (
         <CropPreview cropIdsReversed={cropIdsReversed} />
       )}
     </div>
