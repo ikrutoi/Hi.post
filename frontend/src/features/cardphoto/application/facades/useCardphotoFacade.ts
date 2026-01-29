@@ -34,6 +34,8 @@ import {
   selectCropQualityProgress,
   selectActiveImage,
   selectIsProcessedMode,
+  selectCropIds,
+  // selectCropIdsReversed,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
@@ -68,6 +70,8 @@ export interface CardphotoFacade {
     qualityProgress: number
     activeImage: ImageMeta | null
     processedMode: boolean
+    cropIds: string[]
+    // cropIdsReversed: string[]
   }
   actions: {
     init: () => void
@@ -111,6 +115,8 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const qualityProgress = useSelector(selectCropQualityProgress)
   const activeImage = useSelector(selectActiveImage)
   const processedMode = useSelector(selectIsProcessedMode)
+  const cropIds = useSelector(selectCropIds)
+  // const cropIdsReversed = useSelector(selectCropIdsReversed)
 
   const init = () => dispatch(initCardphoto())
   const uploadImage = (meta: ImageMeta) => dispatch(uploadImageReady(meta))
@@ -152,6 +158,8 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       qualityProgress,
       activeImage,
       processedMode,
+      cropIds,
+      // cropIdsReversed,
     },
     actions: {
       init,

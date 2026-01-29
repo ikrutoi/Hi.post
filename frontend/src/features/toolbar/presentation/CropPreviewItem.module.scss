@@ -1,0 +1,27 @@
+@use '@styles/config/colors' as *;
+
+.previewIcon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  margin: 1rem 0;
+  overflow: hidden;
+  border: solid 1px $color-section-dark;
+  // border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: #ffcc00;
+  }
+}
+
+.previewIcon:first-child {
+  margin-top: 0;
+}
+
+.previewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

@@ -197,12 +197,30 @@ export const cardphotoSlice = createSlice({
     addCropId(state, action: PayloadAction<string>) {
       if (state.state) {
         if (!state.state.cropIds) state.state.cropIds = []
-        if (!state.state.cropIds.includes(action.payload)) {
-          state.state.cropIds.push(action.payload)
-          state.state.cropCount = state.state.cropIds.length
+
+        const { cropIds } = state.state
+
+        if (!cropIds.includes(action.payload)) {
+          cropIds.push(action.payload)
+
+          if (cropIds.length > 10) {
+            cropIds.shift()
+          }
+
+          state.state.cropCount = cropIds.length
         }
       }
     },
+
+    // addCropId(state, action: PayloadAction<string>) {
+    //   if (state.state) {
+    //     if (!state.state.cropIds) state.state.cropIds = []
+    //     if (!state.state.cropIds.includes(action.payload)) {
+    //       state.state.cropIds.push(action.payload)
+    //       state.state.cropCount = state.state.cropIds.length
+    //     }
+    //   }
+    // },
 
     setProcessedImage(state, action: PayloadAction<ImageMeta>) {
       if (state.state) {

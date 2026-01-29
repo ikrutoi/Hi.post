@@ -1,6 +1,8 @@
-import React, { useEffect, useLayoutEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
+import { CropPreview } from './CropPreview'
 import { useToolbarFacade } from '../application/facades'
+import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
@@ -26,6 +28,10 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { size: layoutSize, actions: layoutActions } = useLayoutFacade()
   const { sectionMenuHeight } = layoutSize
   const { setSectionMenuHeight } = layoutActions
+
+  const { state: cardphotoState } = useCardphotoFacade()
+  const { cropIds } = cardphotoState
+  const cropIdsReversed = useMemo(() => [...cropIds].reverse(), [cropIds])
 
   useEffect(() => {
     if (groupRef.current) {
@@ -94,6 +100,9 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           {group.icons.map((icon) => renderIcon(icon.key, group.status))}
         </div>
       ))}
+      {section === 'cardphoto' && (
+        <CropPreview cropIdsReversed={cropIdsReversed} />
+      )}
     </div>
   )
 }

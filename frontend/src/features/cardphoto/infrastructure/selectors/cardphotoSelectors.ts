@@ -55,6 +55,17 @@ export const selectCurrentImageMeta = (state: RootState): ImageMeta | null =>
 export const selectCardOrientation = (state: RootState): LayoutOrientation =>
   state.cardphoto.state?.currentConfig?.card.orientation ?? 'landscape'
 
+export const selectCropIds = (state: RootState): string[] =>
+  state.cardphoto.state?.cropIds ?? []
+
+// export const selectCropIdsReversed = createSelector(
+//   [selectCropIds],
+//   (cropIds) => {
+//     if (!Array.isArray(cropIds)) return []
+//     return [...cropIds].reverse()
+//   },
+// )
+
 export const selectCropOrientation = (state: RootState): LayoutOrientation =>
   state.cardphoto.state?.currentConfig?.crop?.orientation ??
   state.cardphoto.state?.currentConfig?.card.orientation ??
