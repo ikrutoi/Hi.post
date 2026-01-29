@@ -38,6 +38,7 @@ import {
   handleDeleteImageSaga,
   handleBackToOriginalSaga,
 } from './cardphotoToolbarHandlers'
+import { selectSizeCard } from '@layout/infrastructure/selectors'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
   getQualityColor,
@@ -52,6 +53,7 @@ import {
 } from '@toolbar/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import type { CardphotoState, ImageSource } from '@cardphoto/domain/types'
+import { SizeCard } from '@layout/domain/types'
 
 export function* watchCropChanges(): SagaIterator {
   yield takeLatest(addOperation.type, function* (): SagaIterator {
@@ -190,8 +192,9 @@ export function* syncToolbarContext() {
 
     case 'user':
       console.log('syncToolbarContext user', activeSource)
+      const sizeCard: SizeCard = yield select(selectSizeCard)
       sectionUpdate = {
-        cardOrientation: 'enabled',
+        cardOrientation: sizeCard.orientation,
         imageRotateLeft: 'enabled',
         imageRotateRight: 'enabled',
         crop: 'enabled',

@@ -38,7 +38,7 @@ export const HeaderActions: React.FC = () => {
               key={source}
               className={clsx(
                 styles.toolbarBtn,
-                styles[`toolbarBtn--${source}`]
+                styles[`toolbarBtn--${source}`],
               )}
               data-tooltip={source}
               ref={setBtnIconRef(`status-${source}`)}
@@ -49,7 +49,7 @@ export const HeaderActions: React.FC = () => {
                 <span
                   className={clsx(
                     styles.counterContainer,
-                    styles[`${source}CounterContainer`]
+                    styles[`${source}CounterContainer`],
                   )}
                 >
                   <span

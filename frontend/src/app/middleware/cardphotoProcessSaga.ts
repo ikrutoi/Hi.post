@@ -26,6 +26,7 @@ import {
   hydrateEditor,
   clearCurrentConfig,
 } from '@cardphoto/infrastructure/state'
+import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import {
   prepareForRedux,
   prepareConfigForRedux,
@@ -61,6 +62,7 @@ import type {
   CardphotoOperation,
   CardphotoState,
   CardphotoBase,
+  ImageSource,
 } from '@cardphoto/domain/types'
 import type { SizeCard, LayoutOrientation } from '@layout/domain/types'
 
@@ -252,27 +254,46 @@ function* onCancelFileDialog(): SagaIterator {
   )
 }
 
-export function* rebuildConfigFromMeta(meta: ImageMeta) {
+export function* rebuildConfigFromMeta(
+  meta: ImageMeta,
+  forceOrientation?: LayoutOrientation,
+) {
   try {
     yield put(clearCurrentConfig())
-
     yield delay(16)
 
     const currentCard: SizeCard = yield select(selectSizeCard)
-    const targetOrientation =
-      meta.imageAspectRatio >= 1 ? 'landscape' : 'portrait'
+
+    let targetOrientation: LayoutOrientation
+    if (forceOrientation) {
+      targetOrientation = forceOrientation
+    } else {
+      targetOrientation = meta.orientation
+        ? meta.orientation
+        : meta.imageAspectRatio >= 1
+          ? 'landscape'
+          : 'portrait'
+    }
 
     if (currentCard.orientation !== targetOrientation) {
-      const newWidth = Math.round(currentCard.height * meta.imageAspectRatio)
+      const cardBaseRatio =
+        currentCard.aspectRatio > 1
+          ? currentCard.aspectRatio
+          : 1 / currentCard.aspectRatio
+
+      const finalRatio =
+        targetOrientation === 'landscape' ? cardBaseRatio : 1 / cardBaseRatio
+
+      const newWidth = Math.round(currentCard.height * finalRatio)
 
       yield put(
         setSizeCard({
           orientation: targetOrientation,
           width: newWidth,
-          aspectRatio: meta.imageAspectRatio,
+          height: currentCard.height,
+          aspectRatio: finalRatio,
         }),
       )
-
       yield delay(32)
     }
 
@@ -286,12 +307,14 @@ export function* rebuildConfigFromMeta(meta: ImageMeta) {
       crop: cropLayer,
     }
 
+    yield put(setBaseImage({ target: 'user', image: imageLayer.meta }))
+
     yield put(
       addOperation({
         type: 'operation',
         payload: {
           config: newConfig,
-          reason: 'rebuild_by_orientation',
+          reason: forceOrientation ? 'rotateCard' : 'rebuild',
         },
       }),
     )
@@ -299,6 +322,7 @@ export function* rebuildConfigFromMeta(meta: ImageMeta) {
     return newConfig
   } catch (error) {
     console.error('Rebuild failed:', error)
+    return null
   }
 }
 

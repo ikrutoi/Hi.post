@@ -122,11 +122,11 @@ import {
 } from '@shared/ui/icons'
 import type { LayoutOrientation } from '@layout/domain/types'
 
-export const toolbarIcons = Object.fromEntries(
-  ICON_KEYS.map((key) => [key, getIconByKey(key)]),
-) as Record<IconKey, JSX.Element>
+// export const toolbarIcons = Object.fromEntries(
+//   ICON_KEYS.map((key) => [key, getIconByKey(key)]),
+// ) as Record<IconKey, JSX.Element>
 
-function getIconByKey(
+export function getIconByKey(
   key: IconKey,
   orientation?: LayoutOrientation,
 ): JSX.Element {

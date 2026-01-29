@@ -322,7 +322,11 @@ export function* handleCardOrientation(): SagaIterator {
     aspectRatio: ratio,
   }
 
-  const newConfig: WorkingConfig = yield call(rebuildConfigFromMeta, baseImage)
+  const newConfig: WorkingConfig = yield call(
+    rebuildConfigFromMeta,
+    baseImage,
+    newOrientation,
+  )
 
   // const newImageLayer = fitImageToCard(
   //   baseImage,
@@ -348,9 +352,9 @@ export function* handleCardOrientation(): SagaIterator {
     payload: { config: newConfig, reason: 'rotateCard' },
   }
 
-  console.log('handleCardOrientation newCardLayer', newCardLayer)
+  // console.log('handleCardOrientation newCardLayer', newCardLayer)
 
-  yield put(setSizeCard(newCardLayer))
+  // yield put(setSizeCard(newConfig.card))
   yield put(addOperation(op))
 
   yield put(

@@ -44,7 +44,7 @@ export interface ImageMeta {
   isCropped: boolean
   timestamp: number
   parentImageId?: string
-  orientation?: LayoutOrientation
+  orientation: LayoutOrientation
 }
 
 export interface ImageLayer {
@@ -95,6 +95,8 @@ export type CardphotoOperation = {
       | 'applyCrop'
       | 'init'
       | 'rebuild_by_orientation'
+      | 'rebuild'
+      | 'rotateCard'
   }
 }
 

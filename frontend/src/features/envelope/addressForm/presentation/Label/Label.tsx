@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 import clsx from 'clsx'
-import { toolbarIcons } from '@shared/assets/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './Label.module.scss'
 import type { AddressFields } from '@shared/config/constants'
 
@@ -31,7 +31,7 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
         className={clsx(
           styles.label,
           styles[`label${roleLabel}`],
-          styles[`label${label}`]
+          styles[`label${label}`],
         )}
       >
         <span className={styles.labelSpacer} />
@@ -41,14 +41,14 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
         <div
           className={clsx(
             styles.inputWrapper,
-            styles[`inputWrapper${roleLabel}`]
+            styles[`inputWrapper${roleLabel}`],
           )}
         >
           <input
             className={clsx(
               styles.labelInput,
               styles[`labelInput${roleLabel}`],
-              styles[`labelInput${label}`]
+              styles[`labelInput${label}`],
             )}
             ref={ref}
             type="text"
@@ -63,11 +63,11 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
               onClick={handleClear}
               // aria-label="Очистить поле"
             >
-              {toolbarIcons.deleteSmall}
+              {/* {toolbarIcons.deleteSmall} */}
             </button>
           )}
         </div>
       </label>
     )
-  }
+  },
 )

@@ -10,6 +10,7 @@ import type {
   IconState,
   IconStateGroup,
 } from '@shared/config/constants'
+import { LayoutOrientation } from '@layout/domain/types'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({ section }: { section: ToolbarSection }) => {
@@ -62,7 +63,10 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
         }}
         disabled={iconState === 'disabled' || groupStatus === 'disabled'}
       >
-        {getToolbarIcon({ key: key as IconKey })}
+        {getToolbarIcon({
+          key: key as IconKey,
+          orientation: iconState as LayoutOrientation,
+        })}
 
         {badgeValue !== null && badgeValue > 0 && (
           <span className={styles.toolbarBadge}>

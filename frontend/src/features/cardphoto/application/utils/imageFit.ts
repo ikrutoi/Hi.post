@@ -71,6 +71,7 @@ export function fitImageToCard(
       width: finalWidth,
       height: finalHeight,
       isCropped,
+      orientation: card.orientation,
     },
     left: offsetX,
     top: offsetY,

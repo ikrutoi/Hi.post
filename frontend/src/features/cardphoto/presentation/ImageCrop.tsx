@@ -31,7 +31,7 @@ export const ImageCrop = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
 
   console.log('ImageCrop state', cardphotoState)
-  console.log('ImageCrop activeImage', activeImage)
+  // console.log('ImageCrop activeImage', activeImage)
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
   const { state: iconStates } = toolbarState
@@ -39,7 +39,7 @@ export const ImageCrop = () => {
   const { size } = useLayoutFacade()
   const { sizeCard } = size
 
-  console.log('ImageCrop sizeCard', sizeCard)
+  // console.log('ImageCrop sizeCard', sizeCard)
 
   const [loaded, setLoaded] = useState(false)
 

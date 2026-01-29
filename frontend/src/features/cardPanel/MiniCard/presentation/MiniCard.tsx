@@ -1,6 +1,6 @@
 import React, { useRef } from 'react'
 import clsx from 'clsx'
-import { toolbarIcons } from '@shared/assets/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { useRemSize } from '@shared/helpers'
 import { capitalize } from '@shared/utils/helpers'
 import { useMiniCardRender } from '../application/hooks'
@@ -39,7 +39,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       ref={miniCardRef}
       className={clsx(
         styles.miniCard,
-        styles[`miniCard${capitalize(section)}`]
+        styles[`miniCard${capitalize(section)}`],
       )}
       style={{
         left: isPacked
@@ -63,7 +63,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         className={clsx(styles.deleteMiniCard)}
         onClick={handleDeleteMiniCard}
       >
-        {toolbarIcons.deleteSmall}
+        {/* {getToolbarIcon({ key: 'cardOrientation', orientation: 'landscape' })} */}
       </button>
     </div>
   )
