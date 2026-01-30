@@ -69,28 +69,6 @@ export const CropArea: React.FC<CropAreaProps> = ({
     orientation,
   )
 
-  // useEffect(() => {
-  //   console.log('CropArea-->> original', originalImage)
-  //   console.log('CropArea-->> crop', cropLayer.meta)
-  //   console.log('CropArea-->> image', imageLayer.meta)
-  //   const { quality, qualityProgress } = calculateCropQuality(
-  //     cropLayer.meta,
-  //     imageLayer,
-  //     originalImage,
-  //     orientation,
-  //   )
-
-  //   dispatchQualityUpdate(qualityProgress, quality)
-  //   console.log('CropArea->>color')
-
-  //   const color = getQualityColor(qualityProgress)
-  //   document.documentElement.style.setProperty('--crop-handle-color', color)
-  // }, [
-  //   cropLayer.orientation,
-  //   imageLayer.orientation,
-  //   cropLayer.meta.qualityProgress,
-  // ])
-
   useEffect(() => {
     if (!interactingRef.current) {
       setTempCrop(cropLayer)

@@ -39,7 +39,7 @@ export const ImageCrop = () => {
   const { size } = useLayoutFacade()
   const { sizeCard } = size
 
-  console.log('ImageCrop sizeCard', sizeCard)
+  // console.log('ImageCrop sizeCard', sizeCard)
 
   const [loaded, setLoaded] = useState(false)
 
@@ -93,26 +93,10 @@ export const ImageCrop = () => {
         position: 'absolute',
         left: `${imageLayer.left}px`,
         top: `${imageLayer.top}px`,
-        width: `${
-          imageLayer.orientation === 90 || imageLayer.orientation === 270
-            ? imageLayer.meta.height
-            : imageLayer.meta.width
-        }px`,
-        height: `${
-          imageLayer.orientation === 90 || imageLayer.orientation === 270
-            ? imageLayer.meta.width
-            : imageLayer.meta.height
-        }px`,
-        transform: `rotate(${imageLayer.orientation}deg)`,
+        width: `${imageLayer.meta.width}px`,
+        height: `${imageLayer.meta.height}px`,
+        transform: `rotate(${imageLayer.rotation}deg)`,
         transformOrigin: 'center center',
-        marginLeft:
-          imageLayer.orientation === 90 || imageLayer.orientation === 270
-            ? `${(imageLayer.meta.width - imageLayer.meta.height) / 2}px`
-            : 0,
-        marginTop:
-          imageLayer.orientation === 90 || imageLayer.orientation === 270
-            ? `${(imageLayer.meta.height - imageLayer.meta.width) / 2}px`
-            : 0,
         maxWidth: 'none',
       }
     : undefined

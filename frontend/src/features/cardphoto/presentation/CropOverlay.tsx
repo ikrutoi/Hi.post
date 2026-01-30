@@ -15,67 +15,52 @@ export const CropOverlay: React.FC<CropOverlayProps> = ({
   cropLayer,
   imageLayer,
 }) => {
-  const sizeOverlay = {
-    left: 0,
-    top: 0,
-    width: 0,
-    height: 0,
-  }
+  const dx =
+    cropLayer.x +
+    cropLayer.meta.width / 2 -
+    (imageLayer.left + imageLayer.meta.width / 2)
+  const dy =
+    cropLayer.y +
+    cropLayer.meta.height / 2 -
+    (imageLayer.top + imageLayer.meta.height / 2)
 
-  switch (imageLayer.orientation) {
+  const size = { left: 0, top: 0, width: 0, height: 0 }
+
+  switch (imageLayer.rotation) {
     case 0:
-      sizeOverlay.left = cropLayer.x - imageLayer.left
-      sizeOverlay.top = cropLayer.y - imageLayer.top
-      sizeOverlay.width = cropLayer.meta.width
-      sizeOverlay.height = cropLayer.meta.height
+      size.left = imageLayer.meta.width / 2 + dx - cropLayer.meta.width / 2
+      size.top = imageLayer.meta.height / 2 + dy - cropLayer.meta.height / 2
+      size.width = cropLayer.meta.width
+      size.height = cropLayer.meta.height
       break
     case 90:
-      sizeOverlay.left = cropLayer.y - imageLayer.top
-      sizeOverlay.top = Math.round(
-        imageLayer.left -
-          cropLayer.x +
-          imageLayer.meta.width -
-          cropLayer.meta.width,
-      )
-      sizeOverlay.width = cropLayer.meta.height
-      sizeOverlay.height = cropLayer.meta.width
+      size.left = imageLayer.meta.width / 2 + dy - cropLayer.meta.height / 2
+      size.top = imageLayer.meta.height / 2 - dx - cropLayer.meta.width / 2
+      size.width = cropLayer.meta.height
+      size.height = cropLayer.meta.width
       break
     case 180:
-      sizeOverlay.left = Math.round(
-        imageLayer.left -
-          cropLayer.x +
-          imageLayer.meta.width -
-          cropLayer.meta.width,
-      )
-      sizeOverlay.top = Math.round(
-        imageLayer.top -
-          cropLayer.y +
-          (imageLayer.meta.height - cropLayer.meta.height),
-      )
-      sizeOverlay.width = cropLayer.meta.width
-      sizeOverlay.height = cropLayer.meta.height
+      size.left = imageLayer.meta.width / 2 - dx - cropLayer.meta.width / 2
+      size.top = imageLayer.meta.height / 2 - dy - cropLayer.meta.height / 2
+      size.width = cropLayer.meta.width
+      size.height = cropLayer.meta.height
       break
     case 270:
-      sizeOverlay.left = Math.round(
-        imageLayer.top -
-          cropLayer.y -
-          cropLayer.meta.height +
-          imageLayer.meta.height,
-      )
-      sizeOverlay.top = Math.round(cropLayer.x - imageLayer.left)
-      sizeOverlay.width = cropLayer.meta.height
-      sizeOverlay.height = cropLayer.meta.width
+      size.left = imageLayer.meta.width / 2 - dy - cropLayer.meta.height / 2
+      size.top = imageLayer.meta.height / 2 + dx - cropLayer.meta.width / 2
+      size.width = cropLayer.meta.height
+      size.height = cropLayer.meta.width
       break
   }
 
   return (
     <div
-      className={clsx(styles.overlay)}
+      className={styles.overlay}
       style={{
-        left: `${sizeOverlay.left}px`,
-        top: `${sizeOverlay.top}px`,
-        width: `${sizeOverlay.width}px`,
-        height: `${sizeOverlay.height}px`,
+        left: `${size.left}px`,
+        top: `${size.top}px`,
+        width: `${size.width}px`,
+        height: `${size.height}px`,
       }}
     />
   )

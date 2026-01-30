@@ -105,7 +105,7 @@ export const selectIsCropFull = createSelector(
     if (!config || !config.crop) return false
 
     const { image, card, crop } = config
-    const isRotated = image.orientation === 90 || image.orientation === 270
+    const isRotated = image.rotation === 90 || image.rotation === 270
 
     const currentVisualAR = isRotated
       ? roundTo(1 / image.meta.imageAspectRatio, 3)
@@ -154,20 +154,26 @@ export const selectActiveSource = (state: RootState): ImageSource | null => {
 
 export const selectActiveImage = (state: RootState): ImageMeta | null => {
   const cp = state.cardphoto.state
+  console.log('selectActiveImage1+')
   if (!cp) return null
 
   const { activeSource, base } = cp
+  console.log('selectActiveImage2+', activeSource, base)
 
   if (activeSource === 'processed' && base.processed.image) {
+    console.log('selectActiveImage3+')
     return base.processed.image
   }
   if (activeSource === 'user' && base.user.image) {
+    console.log('selectActiveImage4+')
     return base.user.image
   }
   if (activeSource === 'stock' && base.stock.image) {
+    console.log('selectActiveImage5+')
     return base.stock.image
   }
 
+  console.log('selectActiveImage6+')
   return base.user.image || base.stock.image || null
 }
 

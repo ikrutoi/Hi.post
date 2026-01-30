@@ -6,16 +6,16 @@ import type {
   ImageLayer,
   CropLayer,
   CardLayer,
-  ImageOrientation,
+  ImageRotation,
 } from '../../domain/types'
 
 // export function fitImageToCard(
 //   originalMeta: ImageMeta,
 //   card: CardLayer,
-//   orientation: ImageOrientation,
+//   rotation: ImageRotation,
 //   isCropped: boolean,
 // ): ImageLayer {
-//   const isRotated = orientation === 90 || orientation === 270
+//   const isRotated = rotation === 90 || rotation === 270
 
 //   const logicalWidth = isRotated ? originalMeta.height : originalMeta.width
 //   const logicalHeight = isRotated ? originalMeta.width : originalMeta.height
@@ -40,17 +40,53 @@ import type {
 //     },
 //     left: offsetX,
 //     top: offsetY,
-//     orientation,
+//     rotation,
 //   }
 // }
 
 export function fitImageToCard(
   originalMeta: ImageMeta,
   card: CardLayer,
-  orientation: ImageOrientation,
+  rotation: ImageRotation,
   isCropped: boolean,
 ): ImageLayer {
-  const isRotated = orientation === 90 || orientation === 270
+  const isRotated = rotation === 90 || rotation === 270
+
+  const targetWidth = isRotated ? originalMeta.height : originalMeta.width
+  const targetHeight = isRotated ? originalMeta.width : originalMeta.height
+
+  const scale = Math.min(card.width / targetWidth, card.height / targetHeight)
+
+  const imgWidth = roundTo(originalMeta.width * scale, 2)
+  const imgHeight = roundTo(originalMeta.height * scale, 2)
+
+  const visualCenterX = card.width / 2
+  const visualCenterY = card.height / 2
+
+  const offsetX = roundTo(visualCenterX - imgWidth / 2, 2)
+  const offsetY = roundTo(visualCenterY - imgHeight / 2, 2)
+
+  return {
+    meta: {
+      ...originalMeta,
+      width: imgWidth,
+      height: imgHeight,
+      isCropped,
+      orientation: card.orientation,
+    },
+    left: offsetX,
+    top: offsetY,
+    rotation,
+  }
+}
+
+export function fitImageToCard1(
+  originalMeta: ImageMeta,
+  card: CardLayer,
+  rotation: ImageRotation,
+  isCropped: boolean,
+): ImageLayer {
+  const isRotated = rotation === 90 || rotation === 270
 
   const logicalWidth = isRotated ? originalMeta.height : originalMeta.width
   const logicalHeight = isRotated ? originalMeta.width : originalMeta.height
@@ -71,11 +107,12 @@ export function fitImageToCard(
       width: finalWidth,
       height: finalHeight,
       isCropped,
+      // rotation: originalMeta.rotation,
       orientation: card.orientation,
     },
     left: offsetX,
     top: offsetY,
-    orientation,
+    rotation,
   }
 }
 
@@ -98,17 +135,20 @@ export function createInitialCropLayer(
   }
   const deltaAR = CARD_SCALE_CONFIG.deltaAspectRatio
 
-  const isRotated = image.orientation === 90 || image.orientation === 270
+  const isRotated = image.rotation === 90 || image.rotation === 270
   const currentVisualAR = isRotated
     ? roundTo(1 / image.meta.imageAspectRatio, 3)
     : roundTo(image.meta.imageAspectRatio, 3)
-  const targetAR =
-    card.orientation === 'landscape'
-      ? card.aspectRatio
-      : roundTo(1 / card.aspectRatio, 3)
+  const targetAR = card.aspectRatio
+  card.orientation === 'landscape'
+    ? card.aspectRatio
+    : roundTo(1 / card.aspectRatio, 3)
 
+  console.log('createInitialCrop', currentVisualAR, targetAR)
+  console.log('createInitialCrop card.AspectRatio', card.aspectRatio)
   if (card.orientation === 'portrait') {
     if (currentVisualAR > targetAR) {
+      console.log('createInitialCrop portrait+')
       let ratio = 1
       const deltaAspectRatio = currentVisualAR - targetAR
 
@@ -118,7 +158,8 @@ export function createInitialCropLayer(
 
       crop.meta.height = roundTo(image.meta.height * ratio, 2)
       crop.meta.width = roundTo(
-        (image.meta.height * ratio) / card.aspectRatio,
+        image.meta.height * ratio * card.aspectRatio,
+        // (image.meta.height * ratio) / card.aspectRatio,
         2,
       )
       crop.x = roundTo(image.left + (image.meta.width - crop.meta.width) / 2, 2)
@@ -127,6 +168,7 @@ export function createInitialCropLayer(
         2,
       )
     } else {
+      console.log('createInitialCrop portrait++')
       let ratio = 1
       const deltaAspectRatio = targetAR - currentVisualAR
       if (deltaAspectRatio < targetAR * deltaAR) {
@@ -173,6 +215,8 @@ export function createInitialCropLayer(
     }
   }
 
+  console.log('createInitialCrop++++')
+
   const qualityData = calculateCropQuality(
     crop.meta,
     image,
@@ -190,31 +234,34 @@ export function createFullCropLayer(
   image: ImageLayer,
   card: CardLayer,
 ): CropLayer {
-  const isRotated = image.orientation === 90 || image.orientation === 270
+  const isRotated = image.rotation === 90 || image.rotation === 270
 
-  const currentVisualAR = isRotated
-    ? roundTo(1 / image.meta.imageAspectRatio, 3)
-    : image.meta.imageAspectRatio
+  const vWidth = isRotated ? image.meta.height : image.meta.width
+  const vHeight = isRotated ? image.meta.width : image.meta.height
 
-  const targetAR =
-    card.orientation === 'portrait'
-      ? roundTo(1 / card.aspectRatio, 2)
-      : card.aspectRatio
+  const currentVisualAR = vWidth / vHeight
+  const targetAR = card.aspectRatio
 
   let finalWidth = 0
   let finalHeight = 0
 
   if (currentVisualAR > targetAR) {
-    finalHeight = image.meta.height
+    finalHeight = vHeight
     finalWidth = roundTo(finalHeight * targetAR, 2)
   } else {
-    finalWidth = image.meta.width
+    finalWidth = vWidth
     finalHeight = roundTo(finalWidth / targetAR, 2)
   }
 
+  const visualCenterX = image.left + image.meta.width / 2
+  const visualCenterY = image.top + image.meta.height / 2
+
+  const x = roundTo(visualCenterX - finalWidth / 2, 2)
+  const y = roundTo(visualCenterY - finalHeight / 2, 2)
+
   return {
-    x: roundTo(image.left + (image.meta.width - finalWidth) / 2, 2),
-    y: roundTo(image.top + (image.meta.height - finalHeight) / 2, 2),
+    x,
+    y,
     meta: {
       width: finalWidth,
       height: finalHeight,

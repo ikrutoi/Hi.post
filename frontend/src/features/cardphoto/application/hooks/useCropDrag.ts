@@ -14,7 +14,7 @@ export const useCropDrag = (
   end: () => void,
   attach: any,
   lastCropRef: React.MutableRefObject<CropLayer>,
-  orientation: LayoutOrientation
+  orientation: LayoutOrientation,
 ) => {
   return (startX: number, startY: number) => {
     begin()
@@ -34,7 +34,7 @@ export const useCropDrag = (
       const next = applyBounds(
         { ...tempCrop, x: targetX, y: targetY },
         imageLayer,
-        orientation
+        orientation,
       )
 
       // getQualityProgress(next)
@@ -67,52 +67,52 @@ export const useCropDrag = (
   }
 }
 
-export const useCropDrag1 = (
-  tempCrop: CropLayer,
-  imageLayer: ImageLayer,
-  setTempCrop: (c: CropLayer) => void,
-  setLast: (c: CropLayer) => void,
-  onChange: (c: CropLayer) => void,
-  onCommit: (c: CropLayer) => void,
-  begin: () => void,
-  end: () => void,
-  attach: (
-    mouseMove: (e: MouseEvent) => void,
-    mouseUp: (e: MouseEvent) => void,
-    touchMove: (e: TouchEvent) => void,
-    touchEnd: (e: TouchEvent) => void
-  ) => () => void,
-  lastCropRef: React.MutableRefObject<CropLayer>,
-  orientation: LayoutOrientation
-) => {
-  return (startX: number, startY: number) => {
-    begin()
-    const start = { ...tempCrop, meta: { ...tempCrop.meta } }
+// export const useCropDrag1 = (
+//   tempCrop: CropLayer,
+//   imageLayer: ImageLayer,
+//   setTempCrop: (c: CropLayer) => void,
+//   setLast: (c: CropLayer) => void,
+//   onChange: (c: CropLayer) => void,
+//   onCommit: (c: CropLayer) => void,
+//   begin: () => void,
+//   end: () => void,
+//   attach: (
+//     mouseMove: (e: MouseEvent) => void,
+//     mouseUp: (e: MouseEvent) => void,
+//     touchMove: (e: TouchEvent) => void,
+//     touchEnd: (e: TouchEvent) => void
+//   ) => () => void,
+//   lastCropRef: React.MutableRefObject<CropLayer>,
+//   orientation: LayoutOrientation
+// ) => {
+//   return (startX: number, startY: number) => {
+//     begin()
+//     const start = { ...tempCrop, meta: { ...tempCrop.meta } }
 
-    const move = (clientX: number, clientY: number) => {
-      if (!imageLayer) return
-      const dx = clientX - startX
-      const dy = clientY - startY
-      const { x, y } = clampDragWithinImage(start, dx, dy, imageLayer)
-      const next = applyBounds({ ...start, x, y }, imageLayer, orientation)
-      setTempCrop(next)
-      setLast(next)
-      onChange(next)
-    }
+//     const move = (clientX: number, clientY: number) => {
+//       if (!imageLayer) return
+//       const dx = clientX - startX
+//       const dy = clientY - startY
+//       const { x, y } = clampDragWithinImage(start, dx, dy, imageLayer)
+//       const next = applyBounds({ ...start, x, y }, imageLayer, orientation)
+//       setTempCrop(next)
+//       setLast(next)
+//       onChange(next)
+//     }
 
-    const finish = () => {
-      end()
-      onCommit(lastCropRef.current)
-      detach()
-    }
+//     const finish = () => {
+//       end()
+//       onCommit(lastCropRef.current)
+//       detach()
+//     }
 
-    const mouseMove = (e: MouseEvent) => move(e.clientX, e.clientY)
-    const mouseUp = () => finish()
-    const touchMove = (e: TouchEvent) => {
-      if (e.touches.length) move(e.touches[0].clientX, e.touches[0].clientY)
-    }
-    const touchEnd = () => finish()
+//     const mouseMove = (e: MouseEvent) => move(e.clientX, e.clientY)
+//     const mouseUp = () => finish()
+//     const touchMove = (e: TouchEvent) => {
+//       if (e.touches.length) move(e.touches[0].clientX, e.touches[0].clientY)
+//     }
+//     const touchEnd = () => finish()
 
-    const detach = attach(mouseMove, mouseUp, touchMove, touchEnd)
-  }
-}
+//     const detach = attach(mouseMove, mouseUp, touchMove, touchEnd)
+//   }
+// }

@@ -164,7 +164,7 @@ export function* syncToolbarContext() {
   if (!state || toolbarState.crop === 'active') return
 
   const { activeSource, cropCount } = state
-  console.log('syncToolbarContext + cropCount', cropCount)
+  // console.log('syncToolbarContext + cropCount', cropCount)
   const hasCrops = cropCount > 0
 
   let sectionUpdate = {}

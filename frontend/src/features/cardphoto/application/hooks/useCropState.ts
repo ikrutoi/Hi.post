@@ -6,7 +6,7 @@ import type { IconState } from '@shared/config/constants'
 
 export function useCropState(
   toolbarStateCrop: IconState,
-  currentConfigCrop: CropLayer | null
+  currentConfigCrop: CropLayer | null,
 ) {
   const [tempCrop, setTempCrop] = useState<CropLayer | null>(currentConfigCrop)
 

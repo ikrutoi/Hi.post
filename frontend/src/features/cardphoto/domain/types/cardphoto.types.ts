@@ -22,7 +22,7 @@ export interface CardLayer {
   orientation: LayoutOrientation
 }
 
-export type ImageOrientation = 0 | 90 | 180 | 270
+export type ImageRotation = 0 | 90 | 180 | 270
 
 export type QualityLevel = 'high' | 'medium' | 'low'
 export interface ImageData {
@@ -51,7 +51,7 @@ export interface ImageLayer {
   meta: ImageMeta
   left: number
   top: number
-  orientation: ImageOrientation
+  rotation: ImageRotation
 }
 
 export interface CropMeta {

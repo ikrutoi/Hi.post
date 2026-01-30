@@ -17,6 +17,51 @@ export const applyBounds = (
   imageLayer: ImageLayer,
   orientation: LayoutOrientation,
 ): CropLayer => {
+  if (!imageLayer) return crop
+
+  const isRotated = imageLayer.rotation === 90 || imageLayer.rotation === 270
+
+  const imgCenterX = imageLayer.left + imageLayer.meta.width / 2
+  const imgCenterY = imageLayer.top + imageLayer.meta.height / 2
+
+  const vWidth = isRotated ? imageLayer.meta.height : imageLayer.meta.width
+  const vHeight = isRotated ? imageLayer.meta.width : imageLayer.meta.height
+
+  const vLeft = imgCenterX - vWidth / 2
+  const vTop = imgCenterY - vHeight / 2
+
+  const visualImageLayer: ImageLayer = {
+    ...imageLayer,
+    left: vLeft,
+    top: vTop,
+    meta: {
+      ...imageLayer.meta,
+      width: vWidth,
+      height: vHeight,
+    },
+  }
+
+  let bounded = enforceAspectRatio(crop, visualImageLayer, orientation)
+
+  bounded = clampCropToImage(bounded, visualImageLayer)
+
+  return {
+    ...bounded,
+    x: roundTo(bounded.x, 2),
+    y: roundTo(bounded.y, 2),
+    meta: {
+      ...bounded.meta,
+      width: roundTo(bounded.meta.width, 2),
+      height: roundTo(bounded.meta.height, 2),
+    },
+  }
+}
+
+export const applyBounds1 = (
+  crop: CropLayer,
+  imageLayer: ImageLayer,
+  orientation: LayoutOrientation,
+): CropLayer => {
   let bounded = crop
   if (imageLayer) {
     bounded = clampCropToImage(bounded, imageLayer)
@@ -45,9 +90,10 @@ export const updateCrop = (
   safeMinWidth: number,
 ): CropLayer => {
   const isPortrait = orientation === 'portrait'
-  const ar = isPortrait
-    ? 1 / startCrop.meta.aspectRatio
-    : startCrop.meta.aspectRatio
+  const ar = startCrop.meta.aspectRatio
+  // const ar = isPortrait
+  //   ? 1 / startCrop.meta.aspectRatio
+  //   : startCrop.meta.aspectRatio
 
   const isLeft = corner === 'TL' || corner === 'BL'
   const isTop = corner === 'TL' || corner === 'TR'
@@ -132,7 +178,7 @@ export const clampDragWithinImage = (
 
 export const checkIsCropFull = (config: WorkingConfig): boolean => {
   const { image, card, crop } = config
-  const isRotated = image.orientation === 90 || image.orientation === 270
+  const isRotated = image.rotation === 90 || image.rotation === 270
 
   const currentVisualAR = isRotated
     ? roundTo(1 / image.meta.imageAspectRatio, 3)

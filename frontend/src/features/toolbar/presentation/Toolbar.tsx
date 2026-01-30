@@ -21,7 +21,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { state: iconStates, groups, badges } = toolbarState
   const { onAction } = toolbarActions
 
-  console.log('Toolbar iconStates', iconStates)
+  // console.log('Toolbar iconStates', iconStates)
 
   const groupRef = useRef<HTMLDivElement>(null)
 

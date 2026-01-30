@@ -33,7 +33,7 @@ export const useCropResize = (
     const inches = widthMm / 25.4
 
     const isSideOrientation =
-      imageLayer.orientation === 90 || imageLayer.orientation === 270
+      imageLayer.rotation === 90 || imageLayer.rotation === 270
     const originalRefWidth = isSideOrientation
       ? imageMeta.height
       : imageMeta.width

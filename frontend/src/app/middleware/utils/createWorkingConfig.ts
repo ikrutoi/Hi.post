@@ -15,7 +15,8 @@ import type {
 
 export function* createWorkingConfig(imageMeta: ImageMeta) {
   // const cardLayer: CardLayer = yield select(selectSizeCard)
-  const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
+  console.log('createWorkingConfig--->>>', imageMeta)
+  // const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
   // const imageLayer: ImageLayer = fitImageToCard(
   //   imageMeta,
   //   cardLayer,
@@ -34,5 +35,5 @@ export function* createWorkingConfig(imageMeta: ImageMeta) {
   //   crop: cropLayer,
   // }
 
-  return config
+  // return config
 }

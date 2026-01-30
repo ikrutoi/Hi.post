@@ -35,6 +35,7 @@ import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { setSizeCard } from '@layout/infrastructure/state'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
+import { roundTo } from '@shared/utils/layout'
 import {
   updateToolbarSection,
   updateToolbarIcon,
@@ -63,6 +64,7 @@ import type {
   CardphotoState,
   CardphotoBase,
   ImageSource,
+  ImageRotation,
 } from '@cardphoto/domain/types'
 import type { SizeCard, LayoutOrientation } from '@layout/domain/types'
 
@@ -105,6 +107,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     // const cardLayer: CardLayer = yield select(selectSizeCard)
 
     const state: CardphotoState = yield select(selectCardphotoState)
+    console.log('onUploadImageReady--->>>', imageMeta)
     const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
     // const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
     // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
@@ -156,81 +159,81 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   }
 }
 
-function* onUploadImage(action: PayloadAction<ImageMeta>) {
-  const imageMeta = action.payload
-  console.log('onUploadImage imageMeta', imageMeta)
-  if (!imageMeta) return
+// function* onUploadImage(action: PayloadAction<ImageMeta>) {
+//   const imageMeta = action.payload
+//   console.log('onUploadImage imageMeta', imageMeta)
+//   if (!imageMeta) return
 
-  yield put(setBaseImage({ target: 'user', image: imageMeta }))
-}
+//   yield put(setBaseImage({ target: 'user', image: imageMeta }))
+// }
 
-function* onUploadImageReadySaga1(action: PayloadAction<ImageMeta>) {
-  try {
-    const imageMeta = action.payload
-    // const cardLayer: CardLayer = yield select(selectSizeCard)
+// function* onUploadImageReadySaga1(action: PayloadAction<ImageMeta>) {
+//   try {
+//     const imageMeta = action.payload
+//     // const cardLayer: CardLayer = yield select(selectSizeCard)
 
-    const state: CardphotoState = yield select(selectCardphotoState)
-    const cropCount = state.cropCount || 0
-    const cropIds = state.cropIds || []
+//     const state: CardphotoState = yield select(selectCardphotoState)
+//     const cropCount = state.cropCount || 0
+//     const cropIds = state.cropIds || []
 
-    const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
-    // const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
-    // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
-    // const newConfig: WorkingConfig = {
-    //   card: cardLayer,
-    //   image: imageLayer,
-    //   crop: cropLayer,
-    // }
+//     const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
+//     // const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
+//     // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
+//     // const newConfig: WorkingConfig = {
+//     //   card: cardLayer,
+//     //   image: imageLayer,
+//     //   crop: cropLayer,
+//     // }
 
-    const base: CardphotoBase = {
-      ...state.base,
-      user: { image: prepareForRedux(imageMeta) },
-    }
+//     const base: CardphotoBase = {
+//       ...state.base,
+//       user: { image: prepareForRedux(imageMeta) },
+//     }
 
-    const imageForDb = {
-      ...imageMeta,
-      id: 'current',
-    }
+//     const imageForDb = {
+//       ...imageMeta,
+//       id: 'current',
+//     }
 
-    // const dataToSave = {
-    //   id: 'current',
-    //   config,
-    //   timestamp: Date.now(),
-    // }
+//     // const dataToSave = {
+//     //   id: 'current',
+//     //   config,
+//     //   timestamp: Date.now(),
+//     // }
 
-    yield call(storeAdapters.userImages.put, imageForDb)
+//     yield call(storeAdapters.userImages.put, imageForDb)
 
-    yield put(
-      hydrateEditor({
-        base,
-        config,
-        activeSource: 'user',
-        cropCount,
-        cropIds,
-      }),
-    )
-  } catch (error) {
-    console.error('Error in onUploadImageReadySaga:', error)
-  } finally {
-    yield put(markLoaded())
-  }
+//     yield put(
+//       hydrateEditor({
+//         base,
+//         config,
+//         activeSource: 'user',
+//         cropCount,
+//         cropIds,
+//       }),
+//     )
+//   } catch (error) {
+//     console.error('Error in onUploadImageReadySaga:', error)
+//   } finally {
+//     yield put(markLoaded())
+//   }
 
-  yield put(
-    updateGroupStatus({
-      section: 'cardphoto',
-      groupName: 'photo',
-      status: 'enabled',
-    }),
-  )
+//   yield put(
+//     updateGroupStatus({
+//       section: 'cardphoto',
+//       groupName: 'photo',
+//       status: 'enabled',
+//     }),
+//   )
 
-  yield put(
-    updateGroupStatus({
-      section: 'cardphoto',
-      groupName: 'ui',
-      status: 'enabled',
-    }),
-  )
-}
+//   yield put(
+//     updateGroupStatus({
+//       section: 'cardphoto',
+//       groupName: 'ui',
+//       status: 'enabled',
+//     }),
+//   )
+// }
 
 function* onCancelFileDialog(): SagaIterator {
   console.log('onCancelFileDialog')
@@ -257,8 +260,11 @@ function* onCancelFileDialog(): SagaIterator {
 export function* rebuildConfigFromMeta(
   meta: ImageMeta,
   forceOrientation?: LayoutOrientation,
+  rotation?: ImageRotation,
 ) {
   try {
+    console.log('rebuild+ meta', meta)
+    console.log('rebuild+ forceOrientation', forceOrientation)
     yield put(clearCurrentConfig())
     yield delay(16)
 
@@ -279,10 +285,15 @@ export function* rebuildConfigFromMeta(
       const cardBaseRatio =
         currentCard.aspectRatio > 1
           ? currentCard.aspectRatio
-          : 1 / currentCard.aspectRatio
+          : roundTo(1 / currentCard.aspectRatio, 3)
 
       const finalRatio =
-        targetOrientation === 'landscape' ? cardBaseRatio : 1 / cardBaseRatio
+        targetOrientation === 'landscape'
+          ? cardBaseRatio
+          : // : currentCard.aspectRatio
+            roundTo(1 / cardBaseRatio, 3)
+
+      console.log('rebuild++ finalRatio', finalRatio)
 
       const newWidth = Math.round(currentCard.height * finalRatio)
 
@@ -291,14 +302,17 @@ export function* rebuildConfigFromMeta(
           orientation: targetOrientation,
           width: newWidth,
           height: currentCard.height,
+          // aspectRatio: currentCard.aspectRatio,
           aspectRatio: finalRatio,
         }),
       )
       yield delay(32)
     }
 
+    const newRotation = rotation ?? 0
+
     const updatedCard: CardLayer = yield select(selectSizeCard)
-    const imageLayer = fitImageToCard(meta, updatedCard, 0, false)
+    const imageLayer = fitImageToCard(meta, updatedCard, newRotation, false)
     const cropLayer = createInitialCropLayer(imageLayer, updatedCard, meta)
 
     const newConfig: WorkingConfig = {
@@ -307,7 +321,12 @@ export function* rebuildConfigFromMeta(
       crop: cropLayer,
     }
 
-    yield put(setBaseImage({ target: 'user', image: imageLayer.meta }))
+    console.log('rebuild++++ newConfig', newConfig)
+    console.log('rebuild5+ meta', meta)
+
+    const newOriginalMeta = { ...meta, orientation: targetOrientation }
+
+    yield put(setBaseImage({ target: 'user', image: newOriginalMeta }))
 
     yield put(
       addOperation({

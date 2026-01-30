@@ -19,7 +19,7 @@ import { prepareForRedux } from './cardphotoToolbarHelpers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import {
   fitImageToCard,
-  createInitialCropLayer,
+  // createInitialCropLayer,
 } from '@cardphoto/application/utils/imageFit'
 import type {
   ImageMeta,
@@ -96,6 +96,7 @@ function* initCardphotoSaga() {
   }
 
   // const cardLayer: CardLayer = yield select(selectSizeCard)
+  console.log('initialCardphoto--->>>', initialImageMeta)
   const config: WorkingConfig = yield call(
     rebuildConfigFromMeta,
     initialImageMeta,
