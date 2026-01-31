@@ -166,7 +166,7 @@ export function* syncToolbarContext() {
         imageReset: { state: 'enabled' },
 
         apply: { state: 'enabled' },
-        close: { state: 'disabled' },
+        close: { state: 'enabled' },
         download: { state: 'enabled' },
         cropHistory: {
           state: hasCrops ? 'enabled' : 'disabled',
@@ -240,8 +240,6 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
       cropId,
     )
 
-    console.log('onSelectCrop cropRecord', cropRecord)
-
     if (cropRecord) {
       const currentUrl = cropRecord.full?.blob
         ? URL.createObjectURL(cropRecord.full.blob)
@@ -254,7 +252,7 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
 
       yield put(setProcessedImage(serializable))
 
-      yield call(rebuildConfigFromMeta, serializable)
+      yield call(rebuildConfigFromMeta, serializable, 'processed')
     }
   } catch (error) {
     console.error('Select crop history error:', error)

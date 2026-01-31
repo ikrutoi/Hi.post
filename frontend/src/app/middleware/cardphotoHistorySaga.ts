@@ -97,6 +97,7 @@ function* initCardphotoSaga() {
   const config: WorkingConfig = yield call(
     rebuildConfigFromMeta,
     initialImageMeta,
+    activeSource,
   )
 
   yield put(

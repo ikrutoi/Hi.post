@@ -109,7 +109,11 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     // const cardLayer: CardLayer = yield select(selectSizeCard)
 
     const state: CardphotoState = yield select(selectCardphotoState)
-    const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
+    const config: WorkingConfig = yield call(
+      rebuildConfigFromMeta,
+      imageMeta,
+      'user',
+    )
 
     const imageForDb = {
       ...imageMeta,
@@ -174,6 +178,7 @@ function* onCancelFileDialog(): SagaIterator {
 
 export function* rebuildConfigFromMeta(
   meta: ImageMeta,
+  source: ImageSource,
   forceOrientation?: LayoutOrientation,
   rotation?: ImageRotation,
 ) {
@@ -231,15 +236,17 @@ export function* rebuildConfigFromMeta(
       crop: cropLayer,
     }
 
-    const newOriginalMeta = {
-      ...meta,
-      orientation: targetOrientation,
-      rotation: newRotation,
+    if (source === 'user') {
+      const newOriginalMeta = {
+        ...meta,
+        orientation: targetOrientation,
+        rotation: newRotation,
+      }
+
+      const serializableMeta = prepareForRedux(newOriginalMeta)
+
+      yield put(setBaseImage({ target: 'user', image: serializableMeta }))
     }
-
-    const serializableMeta = prepareForRedux(newOriginalMeta)
-
-    yield put(setBaseImage({ target: 'user', image: serializableMeta }))
 
     yield put(
       addOperation({

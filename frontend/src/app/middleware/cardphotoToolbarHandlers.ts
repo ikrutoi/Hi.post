@@ -185,6 +185,7 @@ export function* handleImageLayerUpdate() {
   const newConfig: WorkingConfig = yield call(
     rebuildConfigFromMeta,
     config.image.meta,
+    'user',
   )
 
   // const newImageLayer: ImageLayer = fitImageToCard(
@@ -243,6 +244,7 @@ export function* handleCardOrientation(): SagaIterator {
   const newConfig: WorkingConfig = yield call(
     rebuildConfigFromMeta,
     originalImage,
+    'user',
     newOrientation,
   )
 
@@ -306,6 +308,7 @@ export function* handleImageRotate(
   const config: WorkingConfig = yield call(
     rebuildConfigFromMeta,
     originalImage,
+    'user',
     undefined,
     nextRotation,
   )
@@ -402,6 +405,7 @@ export function* handleCropConfirm(): SagaIterator {
     const newConfig: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       reduxMeta,
+      'user',
     )
 
     yield put(
@@ -486,14 +490,14 @@ export function* handleDeleteImageSaga(
 
           yield put(setProcessedImage(serializable))
           yield put(setActiveSource('processed'))
-          yield fork(rebuildConfigFromMeta, serializable)
+          yield fork(rebuildConfigFromMeta, serializable, 'processed')
         }
       } else if (state.base.user.image) {
         yield put(setActiveSource('user'))
-        yield fork(rebuildConfigFromMeta, state.base.user.image)
+        yield fork(rebuildConfigFromMeta, state.base.user.image, 'user')
       } else if (stockImage) {
         yield put(setActiveSource('stock'))
-        yield fork(rebuildConfigFromMeta, stockImage)
+        yield fork(rebuildConfigFromMeta, stockImage, 'stock')
       }
     } else if (source === 'user') {
       yield call(storeAdapters.userImages.deleteById, 'current')
@@ -514,12 +518,12 @@ export function* handleDeleteImageSaga(
           })
           yield put(setProcessedImage(serializable))
           yield put(setActiveSource('processed'))
-          yield fork(rebuildConfigFromMeta, serializable)
+          yield fork(rebuildConfigFromMeta, serializable, 'processed')
         }
       } else {
         if (stockImage) {
           yield put(setActiveSource('stock'))
-          yield fork(rebuildConfigFromMeta, stockImage)
+          yield fork(rebuildConfigFromMeta, stockImage, 'stock')
         }
       }
     }
@@ -599,6 +603,7 @@ export function* handleBackToOriginalSaga() {
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       userMeta,
+      activeSource,
       userMeta.orientation,
     )
     // const imageLayer = fitImageToCard(userMeta, cardLayer, 0, false)
@@ -620,7 +625,11 @@ export function* handleBackToOriginalSaga() {
   if (activeSource === 'user' && state.currentConfig && stockMeta) {
     const cardLayer = state.currentConfig.card
     console.log('handleBackToOriginal--->>>11', userMeta)
-    const config: WorkingConfig = yield call(rebuildConfigFromMeta, stockMeta)
+    const config: WorkingConfig = yield call(
+      rebuildConfigFromMeta,
+      stockMeta,
+      activeSource,
+    )
     // const imageLayer = fitImageToCard(stockMeta, cardLayer, 0, false)
     // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, stockMeta)
     // const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
