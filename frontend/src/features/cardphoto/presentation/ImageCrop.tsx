@@ -108,13 +108,6 @@ export const ImageCrop = () => {
     overflow: 'hidden',
   }
 
-  console.log('RENDER CHECK:', {
-    hasImageLayer: !!imageLayer,
-    isCropActive: iconStates.crop.state === 'active',
-    hasTempCrop: !!tempCrop,
-    activeImageId: activeImage?.id,
-  })
-
   return (
     <div
       className={styles.imageCrop}

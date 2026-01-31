@@ -45,6 +45,8 @@ export const cardphotoSlice = createSlice({
 
     resetCardphoto: () => initialState,
 
+    selectCropFromHistory(state, action: PayloadAction<string>) {},
+
     hydrateEditor(
       state,
       action: PayloadAction<{
@@ -55,7 +57,6 @@ export const cardphotoSlice = createSlice({
         cropCount: number
       }>,
     ) {
-      console.log('hydrateEditor/////')
       const { base, config, activeSource, cropIds, cropCount } = action.payload
 
       const initialOperation: CardphotoOperation = {
@@ -79,7 +80,6 @@ export const cardphotoSlice = createSlice({
       state,
       action: PayloadAction<{ target: keyof CardphotoBase; image: ImageMeta }>,
     ) {
-      console.log('setBaseImage/////')
       if (!state.state) return
       const { target, image } = action.payload
       state.state.base[target].image = image
@@ -88,7 +88,6 @@ export const cardphotoSlice = createSlice({
     uploadUserImage(state, action: PayloadAction<ImageMeta>) {},
 
     addOperation(state, action: PayloadAction<CardphotoOperation>) {
-      console.log('addOperation/////')
       if (!state.state) return
       const op = action.payload
 
@@ -268,6 +267,7 @@ export const {
   initCardphoto,
   uploadImageReady,
   resetCardphoto,
+  selectCropFromHistory,
   setBaseImage,
   uploadUserImage,
   addOperation,

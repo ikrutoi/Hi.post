@@ -12,6 +12,7 @@ import {
   cancelSelection,
   setOrientation,
   uploadImageReady,
+  selectCropFromHistory,
 } from '../../infrastructure/state'
 import {
   selectCardphotoState,
@@ -72,6 +73,8 @@ export const useCardphotoController = () => {
   const apply = (meta: ImageMeta) => dispatch(applyFinal(meta))
   const resetAll = () => dispatch(reset())
   const cancel = () => dispatch(cancelSelection())
+  const cropFromHistory = (cropId: string) =>
+    dispatch(selectCropFromHistory(cropId))
   const rotateCard = (orientation: LayoutOrientation) =>
     dispatch(setOrientation(orientation))
 
@@ -105,5 +108,6 @@ export const useCardphotoController = () => {
     resetAll,
     cancel,
     rotateCard,
+    cropFromHistory,
   }
 }

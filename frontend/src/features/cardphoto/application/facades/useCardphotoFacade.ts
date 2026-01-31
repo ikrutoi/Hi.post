@@ -13,6 +13,7 @@ import {
   resetCropLayers,
   setOrientation,
   uploadImageReady,
+  selectCropFromHistory,
 } from '../../infrastructure/state'
 import {
   selectCardphotoState,
@@ -35,6 +36,7 @@ import {
   selectActiveImage,
   selectIsProcessedMode,
   selectCropIds,
+
   // selectCropIdsReversed,
 } from '../../infrastructure/selectors'
 import type {
@@ -90,6 +92,7 @@ export interface CardphotoFacade {
       card: WorkingConfig['card']
     }) => void
     rotateCard: (orientation: LayoutOrientation) => void
+    cropFromHistory: (cropId: string) => void
   }
 }
 
@@ -136,6 +139,8 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   }) => dispatch(resetCropLayers(payload))
   const rotateCard = (orientation: LayoutOrientation) =>
     dispatch(setOrientation(orientation))
+  const cropFromHistory = (cropId: string) =>
+    dispatch(selectCropFromHistory(cropId))
 
   return {
     state: {
@@ -174,6 +179,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       cancel,
       resetLayers,
       rotateCard,
+      cropFromHistory,
     },
   }
 }

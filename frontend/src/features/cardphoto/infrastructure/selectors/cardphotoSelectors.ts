@@ -29,9 +29,6 @@ export const selectStockImage = (state: RootState): ImageMeta | null =>
 export const selectUserImage = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.base.user.image || null
 
-// export const selectGalleryImage = (state: RootState): ImageMeta | null =>
-//   state.cardphoto.state?.base.gallery.image || null
-
 export const selectAppliedImage = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.base.apply.image || null
 
@@ -158,12 +155,6 @@ export const selectCropQuality = (state: RootState): QualityLevel =>
 export const selectCropQualityProgress = (state: RootState): number =>
   state.cardphoto.state?.currentConfig?.crop?.meta?.qualityProgress ?? 0
 
-// export const selectGalleryItems = (state: RootState): GalleryItem[] =>
-//   state.cardphoto.galleryItems ?? []
-
-// export const selectIsGalleryLoading = (state: RootState): boolean =>
-//   state.cardphoto.isGalleryLoading
-
 export const selectActiveSource = (state: RootState): ImageSource | null => {
   const cardState = state.cardphoto.state
   if (!cardState) return null
@@ -172,26 +163,20 @@ export const selectActiveSource = (state: RootState): ImageSource | null => {
 
 export const selectActiveImage = (state: RootState): ImageMeta | null => {
   const cp = state.cardphoto.state
-  console.log('selectActiveImage1+')
   if (!cp) return null
 
   const { activeSource, base } = cp
-  console.log('selectActiveImage2+', activeSource, base)
 
   if (activeSource === 'processed' && base.processed.image) {
-    console.log('selectActiveImage3+')
     return base.processed.image
   }
   if (activeSource === 'user' && base.user.image) {
-    console.log('selectActiveImage4+')
     return base.user.image
   }
   if (activeSource === 'stock' && base.stock.image) {
-    console.log('selectActiveImage5+')
     return base.stock.image
   }
 
-  console.log('selectActiveImage6+')
   return base.user.image || base.stock.image || null
 }
 

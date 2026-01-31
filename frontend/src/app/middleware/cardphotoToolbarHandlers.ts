@@ -404,19 +404,6 @@ export function* handleCropConfirm(): SagaIterator {
       reduxMeta,
     )
 
-    // const newImageLayer = fitImageToCard(reduxMeta, config.card, 0, true)
-    // const newCropLayer = createInitialCropLayer(
-    //   newImageLayer,
-    //   config.card,
-    //   reduxMeta,
-    // )
-
-    // const finalConfig: WorkingConfig = {
-    //   card: config.card,
-    //   image: newImageLayer,
-    //   crop: newCropLayer,
-    // }
-
     yield put(
       addOperation({
         type: 'operation',

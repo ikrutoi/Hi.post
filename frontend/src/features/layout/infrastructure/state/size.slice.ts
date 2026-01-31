@@ -27,7 +27,6 @@ export const sizeSlice = createSlice({
   initialState,
   reducers: {
     setSizeCard(state, action: PayloadAction<Partial<SizeCard>>) {
-      console.log('setSizeCard', action.payload, action.type)
       state.sizeCard = {
         ...state.sizeCard,
         ...action.payload,

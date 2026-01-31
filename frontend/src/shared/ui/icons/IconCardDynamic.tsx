@@ -26,7 +26,6 @@ export const IconCardDynamic: React.FC<IconCardProps> = ({
   orientation,
   ...props
 }) => {
-  console.log('ICON_DYNAMIC', orientation)
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

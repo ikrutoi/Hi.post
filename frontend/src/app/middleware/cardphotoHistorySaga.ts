@@ -60,7 +60,6 @@ function* initCardphotoSaga() {
   let activeSource: ImageSource = 'stock'
   let initialImageMeta: ImageMeta = base.stock.image
 
-  console.log('initCardphotoSaga ++ savedUserImg', savedUserImg)
   if (savedUserImg && savedUserImg.full.blob) {
     savedUserImg.url = URL.createObjectURL(savedUserImg.full.blob)
     base.user.image = prepareForRedux(savedUserImg)
@@ -95,20 +94,10 @@ function* initCardphotoSaga() {
     base.processed.image = serializableMeta
   }
 
-  // const cardLayer: CardLayer = yield select(selectSizeCard)
-  console.log('initialCardphoto--->>>', initialImageMeta)
   const config: WorkingConfig = yield call(
     rebuildConfigFromMeta,
     initialImageMeta,
   )
-  // const {image, card, crop} = newConfig
-  // const imageLayer = fitImageToCard(initialImageMeta, cardLayer, 0, true)
-  // const cropLayer = createInitialCropLayer(
-  //   imageLayer,
-  //   cardLayer,
-  //   initialImageMeta,
-  // )
-  // const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
 
   yield put(
     hydrateEditor({

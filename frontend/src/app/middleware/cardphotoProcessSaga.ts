@@ -25,6 +25,7 @@ import {
   uploadImageReady,
   hydrateEditor,
   clearCurrentConfig,
+  selectCropFromHistory,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import {
@@ -53,6 +54,7 @@ import {
   // watchCropToolbarStatus,
   // watchCropHistory,
   watchToolbarContext,
+  onSelectCropFromHistorySaga,
 } from './cardphotoToolbarSaga'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -107,7 +109,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     // const cardLayer: CardLayer = yield select(selectSizeCard)
 
     const state: CardphotoState = yield select(selectCardphotoState)
-    console.log('onUploadImageReady--->>>', imageMeta)
     const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
 
     const imageForDb = {
@@ -152,8 +153,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
 }
 
 function* onCancelFileDialog(): SagaIterator {
-  console.log('onCancelFileDialog')
-
   yield put(markLoaded())
 
   yield put(
@@ -179,9 +178,7 @@ export function* rebuildConfigFromMeta(
   rotation?: ImageRotation,
 ) {
   try {
-    console.log('REBUILD+ meta', meta)
-    // console.log('rebuild+ forceOrientation', forceOrientation)
-    console.log('rebuild+ rotation', rotation)
+    // console.log('REBUILD+ meta', meta)
     yield put(clearCurrentConfig())
     yield delay(16)
 
@@ -207,10 +204,7 @@ export function* rebuildConfigFromMeta(
       const finalRatio =
         targetOrientation === 'landscape'
           ? cardBaseRatio
-          : // : currentCard.aspectRatio
-            roundTo(1 / cardBaseRatio, 3)
-
-      // console.log('rebuild++ finalRatio', finalRatio)
+          : roundTo(1 / cardBaseRatio, 3)
 
       const newWidth = Math.round(currentCard.height * finalRatio)
 
@@ -219,7 +213,6 @@ export function* rebuildConfigFromMeta(
           orientation: targetOrientation,
           width: newWidth,
           height: currentCard.height,
-          // aspectRatio: currentCard.aspectRatio,
           aspectRatio: finalRatio,
         }),
       )
@@ -237,9 +230,6 @@ export function* rebuildConfigFromMeta(
       image: imageLayer,
       crop: cropLayer,
     }
-
-    console.log('rebuild++++ newConfig', newConfig)
-    console.log('rebuild5+ meta', meta)
 
     const newOriginalMeta = {
       ...meta,
@@ -263,44 +253,19 @@ export function* rebuildConfigFromMeta(
 
     return newConfig
   } catch (error) {
-    console.error('Rebuild failed:', error)
     return null
   }
 }
-
-// export function* syncOrientationSaga(meta: ImageMeta) {
-//   const sizeCard: SizeCard = yield select(selectSizeCard)
-
-//   const imageOrientation: LayoutOrientation = meta.orientation
-//     ? meta.orientation
-//     : meta.imageAspectRatio >= 1
-//       ? 'landscape'
-//       : 'portrait'
-
-//   if (sizeCard.orientation !== imageOrientation) {
-//     const newWidth = Math.round(sizeCard.height * meta.imageAspectRatio)
-
-//     yield put(
-//       setSizeCard({
-//         orientation: imageOrientation,
-//         width: newWidth,
-//         aspectRatio: meta.imageAspectRatio,
-//       }),
-//     )
-
-//     yield delay(0)
-//   }
-// }
 
 export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
 
+    takeEvery(selectCropFromHistory.type, onSelectCropFromHistorySaga),
+
     fork(watchCropChanges),
-    // fork(watchCropToolbarStatus),
     fork(watchToolbarContext),
 
-    // takeEvery(uploadUserImage.type, onUploadImage),
     takeLatest(uploadUserImage.type, onUploadImageReadySaga),
     takeEvery(cancelFileDialog.type, onCancelFileDialog),
   ])

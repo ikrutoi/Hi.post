@@ -8,6 +8,7 @@ import {
   takeEvery,
 } from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
+import { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
@@ -38,6 +39,8 @@ import {
   handleDeleteImageSaga,
   handleBackToOriginalSaga,
 } from './cardphotoToolbarHandlers'
+import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
+import { prepareForRedux } from './cardphotoToolbarHelpers'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
@@ -52,7 +55,11 @@ import {
   updateGroupStatus,
 } from '@toolbar/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
-import type { CardphotoState, ImageSource } from '@cardphoto/domain/types'
+import type {
+  CardphotoState,
+  ImageSource,
+  ImageMeta,
+} from '@cardphoto/domain/types'
 import { SizeCard } from '@layout/domain/types'
 
 export function* watchCropChanges(): SagaIterator {
@@ -147,7 +154,6 @@ export function* syncToolbarContext() {
 
   switch (activeSource) {
     case 'processed':
-      console.log('syncToolbarContext processed', activeSource)
       sectionUpdate = {
         cardOrientation: {
           state: 'disabled',
@@ -171,7 +177,6 @@ export function* syncToolbarContext() {
       break
 
     case 'user':
-      console.log('syncToolbarContext user', activeSource)
       sectionUpdate = {
         cardOrientation: {
           state: 'enabled',
@@ -196,7 +201,6 @@ export function* syncToolbarContext() {
 
     case 'stock':
     default:
-      console.log('syncToolbarContext stock', activeSource)
       sectionUpdate = {
         cardOrientation: {
           state: 'disabled',
@@ -226,6 +230,35 @@ export function* syncToolbarContext() {
       value: sectionUpdate,
     }),
   )
+}
+
+export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
+  try {
+    const cropId = action.payload
+    const cropRecord: ImageMeta | null = yield call(
+      [storeAdapters.cropImages, storeAdapters.cropImages.getById],
+      cropId,
+    )
+
+    console.log('onSelectCrop cropRecord', cropRecord)
+
+    if (cropRecord) {
+      const currentUrl = cropRecord.full?.blob
+        ? URL.createObjectURL(cropRecord.full.blob)
+        : cropRecord.url
+
+      const serializable = prepareForRedux({
+        ...cropRecord,
+        url: currentUrl,
+      })
+
+      yield put(setProcessedImage(serializable))
+
+      yield call(rebuildConfigFromMeta, serializable)
+    }
+  } catch (error) {
+    console.error('Select crop history error:', error)
+  }
 }
 
 export function* watchToolbarContext() {
