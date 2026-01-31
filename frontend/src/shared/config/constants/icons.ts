@@ -65,12 +65,12 @@ export const ICON_STATE = ['disabled', 'enabled', 'active']
 
 export type IconState = (typeof ICON_STATE)[number]
 
-export type IconValue =
-  | IconState
-  | {
-      state: IconState
-      badge?: number | null
-    }
+// export type IconValue =
+//   | IconState
+//   | {
+//       state: IconState
+//       badge?: number | null
+//     }
 
 export type UpdateIconPayloadValue =
   | IconState

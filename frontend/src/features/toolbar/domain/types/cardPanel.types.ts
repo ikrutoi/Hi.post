@@ -1,5 +1,4 @@
 import { flattenIcons } from '../helpers'
-import type { IconValue } from '@shared/config/constants'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
 export const CARD_PANEL_TOOLBAR: ToolbarConfig = [
@@ -24,10 +23,7 @@ export interface CardPanelToolbarState extends Record<string, any> {
 }
 
 export const initialCardPanelToolbarState: CardPanelToolbarState = {
-  ...(Object.fromEntries(flattenIcons(CARD_PANEL_TOOLBAR)) as Record<
-    PanelKey,
-    IconValue
-  >),
+  ...Object.fromEntries(flattenIcons(CARD_PANEL_TOOLBAR)),
   config: [...CARD_PANEL_TOOLBAR],
 }
 

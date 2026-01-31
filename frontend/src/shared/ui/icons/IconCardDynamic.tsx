@@ -25,17 +25,20 @@ const icons: Record<LayoutOrientation, JSX.Element> = {
 export const IconCardDynamic: React.FC<IconCardProps> = ({
   orientation,
   ...props
-}) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 1280 1280"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth={107.498}
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    {icons[orientation]}
-  </svg>
-)
+}) => {
+  console.log('ICON_DYNAMIC', orientation)
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 1280 1280"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={107.498}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      {icons[orientation]}
+    </svg>
+  )
+}

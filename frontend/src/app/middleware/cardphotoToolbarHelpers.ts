@@ -12,6 +12,7 @@ export function* updateCropToolbarState(
   state: CardphotoToolbarState,
   options: UpdateCropOptions = {},
 ) {
+  console.log('updateCropToolbar +++', newCrop, state)
   yield put(
     updateToolbarIcon({ section: 'cardphoto', key: 'crop', value: newCrop }),
   )
@@ -19,9 +20,9 @@ export function* updateCropToolbarState(
   const newSave =
     newCrop === 'active'
       ? 'disabled'
-      : state.save === 'disabled'
+      : state.save.state === 'disabled'
         ? 'enabled'
-        : state.save
+        : state.save.state
 
   yield put(
     updateToolbarIcon({ section: 'cardphoto', key: 'save', value: newSave }),
@@ -43,9 +44,9 @@ export function* updateCropToolbarState(
   const newCropCheck =
     newCrop === 'active'
       ? 'enabled'
-      : state.cropCheck === 'enabled'
+      : state.cropCheck.state === 'enabled'
         ? 'disabled'
-        : state.cropCheck
+        : state.cropCheck.state
 
   yield put(
     updateToolbarIcon({

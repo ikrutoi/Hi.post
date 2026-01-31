@@ -12,11 +12,13 @@ import {
 import type {
   ToolbarState,
   ToolbarGroup,
-  UpdateIconValue,
+  ToolbarIcon,
+  // UpdateIconValue,
+  // ToolbarValue,
 } from '../../domain/types'
 import type {
   IconStateGroup,
-  IconValue,
+  // IconValue,
   IconState,
   UpdateIconPayloadValue,
 } from '@shared/config/constants'
@@ -42,20 +44,6 @@ const toolbarSlice = createSlice({
       Object.assign(state[action.payload.section], action.payload.value)
     },
 
-    // updateToolbarIcon<
-    //   S extends keyof ToolbarState,
-    //   K extends keyof ToolbarState[S],
-    // >(
-    //   state: ToolbarState,
-    //   action: PayloadAction<{
-    //     section: S
-    //     key: K
-    //     value: ToolbarState[S][K]
-    //   }>
-    // ) {
-    //   state[action.payload.section][action.payload.key] = action.payload.value
-    // },
-
     updateToolbarIcon<
       S extends keyof ToolbarState,
       K extends keyof ToolbarState[S],
@@ -64,34 +52,26 @@ const toolbarSlice = createSlice({
       action: PayloadAction<{
         section: S
         key: K
-        value: UpdateIconPayloadValue
-        badge?: number | null
+        value: IconState | Partial<Omit<ToolbarIcon, 'key'>>
       }>,
     ) {
-      const { section, key, value, badge } = action.payload
-      const current = state[section][key] as IconValue
+      const { section, key, value } = action.payload
+      const current = state[section][key] as Omit<ToolbarIcon, 'key'>
 
-      const base = typeof current === 'object' ? current : { state: current }
-
-      const newState =
-        typeof value === 'object' && value !== null
-          ? (value.state ?? base.state)
-          : (value as IconState)
-
-      const newBadge =
-        badge !== undefined
-          ? badge
-          : typeof value === 'object' && value !== null
-            ? value.badge
-            : base.badge
-
-      if (newBadge !== undefined && newBadge !== null) {
+      if (typeof value === 'string') {
         state[section][key] = {
-          state: newState,
-          badge: newBadge,
+          ...current,
+          state: value,
         } as ToolbarState[S][K]
       } else {
-        state[section][key] = newState as ToolbarState[S][K]
+        state[section][key] = {
+          ...current,
+          ...value,
+          options: {
+            ...(current?.options || {}),
+            ...(value?.options || {}),
+          },
+        } as ToolbarState[S][K]
       }
     },
 

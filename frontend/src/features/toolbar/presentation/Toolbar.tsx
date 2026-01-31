@@ -6,7 +6,7 @@ import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
-import type { ToolbarSection, ToolbarGroup } from '../domain/types'
+import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
   IconState,
@@ -44,39 +44,39 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   }, [section, groups, sectionMenuHeight, setSectionMenuHeight])
 
   const renderIcon = (key: IconKey, groupStatus: IconStateGroup) => {
-    const rawData = iconStates[key as keyof typeof iconStates]
+    const rawData = iconStates[key] as {
+      state: IconState
+      options?: IconOptions
+    }
 
-    const iconState = (
-      typeof rawData === 'object' && rawData !== null ? rawData.state : rawData
-    ) as IconState
-
-    const badgeValue = badges[key]
+    const buttonStatus = rawData.state
+    const orientation = rawData.options?.orientation
+    const badge = rawData.options?.badge
 
     return (
       <button
         key={key}
-        type="button"
         className={clsx(
           styles.toolbarKey,
-          styles[`toolbarKey${capitalize(iconState)}`],
+          styles[`toolbarKey${capitalize(buttonStatus)}`],
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
+        disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
         onMouseDown={(e) => {
           e.preventDefault()
-          if (groupStatus !== 'disabled' && iconState !== 'disabled') {
+          if (groupStatus !== 'disabled' && buttonStatus !== 'disabled') {
             onAction(key as IconKey)
           }
         }}
-        disabled={iconState === 'disabled' || groupStatus === 'disabled'}
       >
         {getToolbarIcon({
           key: key as IconKey,
-          orientation: iconState as LayoutOrientation,
+          orientation: orientation as LayoutOrientation,
         })}
 
-        {badgeValue !== null && badgeValue > 0 && (
+        {Boolean(badge && badge > 0) && (
           <span className={styles.toolbarBadge}>
-            <span className={styles.toolbarBadgeValue}>{badgeValue}</span>
+            <span className={styles.toolbarBadgeValue}>{badge}</span>
           </span>
         )}
       </button>
@@ -100,7 +100,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           {group.icons.map((icon) => renderIcon(icon.key, group.status))}
         </div>
       ))}
-      {section === 'cardphoto' && iconStates.crop !== 'active' && (
+      {section === 'cardphoto' && iconStates.crop.state !== 'active' && (
         <CropPreview cropIdsReversed={cropIdsReversed} />
       )}
     </div>

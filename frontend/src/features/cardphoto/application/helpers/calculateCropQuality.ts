@@ -29,6 +29,39 @@ export const calculateCropQuality = (
   originalImage: ImageMeta,
   orientation: LayoutOrientation,
 ) => {
+  const isCardOrientation = orientation === 'landscape'
+  const inches = isCardOrientation ? widthMm / 25.4 : heightMm / 25.4
+
+  const isSideOrientation = image.rotation === 90 || image.rotation === 270
+
+  const scale = originalImage.width / Math.max(1, image.meta.width)
+
+  const realCropWidthPx = isSideOrientation
+    ? crop.width * (originalImage.height / image.meta.height)
+    : crop.width * scale
+
+  const dpi = Math.round(realCropWidthPx / inches)
+
+  const quality: QualityLevel =
+    dpi >= maxAllowedDpi ? 'high' : dpi >= 150 ? 'medium' : 'low'
+
+  const rawProgress = calculateSteppedProgress(dpi)
+  const qualityProgress = Math.max(0, Math.min(100, rawProgress))
+
+  return {
+    quality,
+    qualityProgress,
+    dpi,
+    scale,
+  }
+}
+
+export const calculateCropQuality1 = (
+  crop: CropMeta,
+  image: ImageLayer,
+  originalImage: ImageMeta,
+  orientation: LayoutOrientation,
+) => {
   console.log('calculateCropQuality+ crop/image', crop, image)
   console.log('calculateCropQuality++ originalImage', originalImage)
   const isCardOrientation = orientation === 'landscape'
@@ -40,7 +73,10 @@ export const calculateCropQuality = (
     ? originalImage.height
     : originalImage.width
 
-  const scale = originalReferenceWidth / Math.max(1, image.meta.width)
+  const scale = roundTo(
+    originalReferenceWidth / Math.max(1, image.meta.width),
+    3,
+  )
 
   console.log(
     'calculateCropQuality+++ originalReferenceWidth',

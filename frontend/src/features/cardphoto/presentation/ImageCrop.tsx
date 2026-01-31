@@ -48,7 +48,7 @@ export const ImageCrop = () => {
   const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeSource}`
 
   const [tempCrop, setTempCrop] = useCropState(
-    iconStates.crop,
+    iconStates.crop.state,
     cardphotoState.currentConfig?.crop ?? null,
   )
 
@@ -108,6 +108,13 @@ export const ImageCrop = () => {
     overflow: 'hidden',
   }
 
+  console.log('RENDER CHECK:', {
+    hasImageLayer: !!imageLayer,
+    isCropActive: iconStates.crop.state === 'active',
+    hasTempCrop: !!tempCrop,
+    activeImageId: activeImage?.id,
+  })
+
   return (
     <div
       className={styles.imageCrop}
@@ -142,7 +149,7 @@ export const ImageCrop = () => {
               )}
               style={imageStyle}
             />
-            {tempCrop && iconStates.crop === 'active' && activeImage && (
+            {tempCrop && iconStates.crop.state === 'active' && activeImage && (
               <div className={styles.cropMask} style={maskStyle}>
                 <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
               </div>
@@ -151,7 +158,7 @@ export const ImageCrop = () => {
         )}
         {loaded &&
           imageLayer &&
-          iconStates.crop === 'active' &&
+          iconStates.crop.state === 'active' &&
           tempCrop &&
           activeImage && (
             <>

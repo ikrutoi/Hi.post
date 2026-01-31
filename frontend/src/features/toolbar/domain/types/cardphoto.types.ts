@@ -1,5 +1,4 @@
 import { flattenIcons } from '../helpers'
-import type { IconValue } from '@shared/config/constants'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
 export const CARDPHOTO_KEYS = [
@@ -35,14 +34,17 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'photo',
     icons: [
-      { key: 'cardOrientation', state: 'disabled' },
+      {
+        key: 'cardOrientation',
+        state: 'disabled',
+        options: { orientation: 'landscape' },
+      },
       { key: 'imageRotateLeft', state: 'disabled' },
       { key: 'imageRotateRight', state: 'disabled' },
       { key: 'crop', state: 'disabled' },
       { key: 'cropFull', state: 'disabled' },
       { key: 'cropCheck', state: 'disabled' },
       { key: 'imageReset', state: 'disabled' },
-      // { key: 'cropDelete', state: 'disabled' },
     ],
     status: 'enabled',
   },
@@ -52,9 +54,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
       { key: 'apply', state: 'enabled' },
       { key: 'close', state: 'disabled' },
       { key: 'download', state: 'enabled' },
-      // { key: 'save', state: 'enabled' },
-      // { key: 'photoTemplates', state: 'disabled' },
-      { key: 'cropHistory', state: 'disabled' },
+      { key: 'cropHistory', state: 'disabled', options: { badge: 0 } },
       { key: 'closeList', state: 'disabled' },
     ],
     status: 'enabled',
@@ -62,10 +62,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
 ]
 
 export const initialCardphotoToolbarState: CardphotoToolbarState = {
-  ...(Object.fromEntries(flattenIcons(CARDPHOTO_TOOLBAR)) as Record<
-    CardphotoKey,
-    IconValue
-  >),
+  ...Object.fromEntries(flattenIcons(CARDPHOTO_TOOLBAR)),
   config: [...CARDPHOTO_TOOLBAR],
 }
 

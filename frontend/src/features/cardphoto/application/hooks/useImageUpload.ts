@@ -34,6 +34,7 @@ export const useImageUpload = (
           height,
           imageAspectRatio,
           orientation: sizeCard.orientation,
+          rotation: 0,
           isCropped: false,
           timestamp: Date.now(),
           full: {

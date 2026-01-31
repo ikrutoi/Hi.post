@@ -45,6 +45,7 @@ export interface ImageMeta {
   timestamp: number
   parentImageId?: string
   orientation: LayoutOrientation
+  rotation: ImageRotation
 }
 
 export interface ImageLayer {

@@ -1,5 +1,4 @@
 import { flattenIcons } from '../helpers'
-import type { IconValue } from '@shared/config/constants'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
 export const CARD_PANEL_OVERLAY_KEYS = [
@@ -30,10 +29,7 @@ export const CARD_PANEL_OVERLAY_TOOLBAR: ToolbarConfig = [
 
 export const initialCardPanelOverlayToolbarState: CardPanelOverlayToolbarState =
   {
-    ...(Object.fromEntries(flattenIcons(CARD_PANEL_OVERLAY_TOOLBAR)) as Record<
-      CardPanelOverlayToolbarKey,
-      IconValue
-    >),
+    ...Object.fromEntries(flattenIcons(CARD_PANEL_OVERLAY_TOOLBAR)),
     config: [...CARD_PANEL_OVERLAY_TOOLBAR],
   }
 

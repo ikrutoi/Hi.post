@@ -57,28 +57,6 @@ export const applyBounds = (
   }
 }
 
-export const applyBounds1 = (
-  crop: CropLayer,
-  imageLayer: ImageLayer,
-  orientation: LayoutOrientation,
-): CropLayer => {
-  let bounded = crop
-  if (imageLayer) {
-    bounded = clampCropToImage(bounded, imageLayer)
-    bounded = enforceAspectRatio(bounded, imageLayer, orientation)
-  }
-  return {
-    ...bounded,
-    x: roundTo(bounded.x, 2),
-    y: roundTo(bounded.y, 2),
-    meta: {
-      ...bounded.meta,
-      width: roundTo(bounded.meta.width, 2),
-      height: roundTo(bounded.meta.height, 2),
-    },
-  }
-}
-
 export const updateCrop = (
   corner: 'TL' | 'TR' | 'BL' | 'BR',
   dx: number,
@@ -89,22 +67,26 @@ export const updateCrop = (
   orientation: LayoutOrientation,
   safeMinWidth: number,
 ): CropLayer => {
-  const isPortrait = orientation === 'portrait'
-  const ar = startCrop.meta.aspectRatio
-  // const ar = isPortrait
-  //   ? 1 / startCrop.meta.aspectRatio
-  //   : startCrop.meta.aspectRatio
+  const isRotated = imageLayer.rotation === 90 || imageLayer.rotation === 270
 
+  const imgCenterX = imageLayer.left + imageLayer.meta.width / 2
+  const imgCenterY = imageLayer.top + imageLayer.meta.height / 2
+  const vWidth = isRotated ? imageLayer.meta.height : imageLayer.meta.width
+  const vHeight = isRotated ? imageLayer.meta.width : imageLayer.meta.height
+  const vLeft = imgCenterX - vWidth / 2
+  const vTop = imgCenterY - vHeight / 2
+
+  const ar = startCrop.meta.aspectRatio
   const isLeft = corner === 'TL' || corner === 'BL'
   const isTop = corner === 'TL' || corner === 'TR'
 
   const maxFreeWidth = isLeft
-    ? startCrop.x + startCrop.meta.width - imageLayer.left
-    : imageLayer.left + imageLayer.meta.width - startCrop.x
+    ? startCrop.x + startCrop.meta.width - vLeft
+    : vLeft + vWidth - startCrop.x
 
   const maxFreeHeight = isTop
-    ? startCrop.y + startCrop.meta.height - imageLayer.top
-    : imageLayer.top + imageLayer.meta.height - startCrop.y
+    ? startCrop.y + startCrop.meta.height - vTop
+    : vTop + vHeight - startCrop.y
 
   const absoluteMaxWidth = Math.min(maxFreeWidth, maxFreeHeight * ar)
   const absoluteMaxHeight = Math.min(maxFreeHeight, maxFreeWidth / ar)
@@ -112,7 +94,7 @@ export const updateCrop = (
   let newWidth = startCrop.meta.width
   let newHeight = startCrop.meta.height
 
-  if (isPortrait) {
+  if (isRotated) {
     const deltaH = isTop ? -dy : dy
     newHeight = Math.max(
       safeMinWidth,

@@ -1,5 +1,4 @@
 import { flattenIcons } from '../helpers'
-import type { IconValue } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const SECTION_EDITOR_MENU_KEYS = [
@@ -29,10 +28,7 @@ export const SECTION_EDITOR_MENU_TOOLBAR: ToolbarConfig = [
 
 export const initialSectionEditorMenuToolbarState: SectionEditorMenuToolbarState =
   {
-    ...(Object.fromEntries(flattenIcons(SECTION_EDITOR_MENU_TOOLBAR)) as Record<
-      SectionEditorMenuKey,
-      IconValue
-    >),
+    ...Object.fromEntries(flattenIcons(SECTION_EDITOR_MENU_TOOLBAR)),
     config: [...SECTION_EDITOR_MENU_TOOLBAR],
   }
 

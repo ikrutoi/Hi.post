@@ -129,39 +129,13 @@ export function* handleCardphotoToolbarAction(
   }
 }
 
-// export function* watchCropToolbarStatus(): SagaIterator {
-//   yield takeLatest(updateToolbarIcon.type, function* (action: any) {
-//     const { key, value, section } = action.payload
-//     if (section !== 'cardphoto' || key !== 'crop') return
-
-//     const subButtonsStatus = value === 'active' ? 'enabled' : 'disabled'
-
-//     yield all([
-//       put(
-//         updateToolbarIcon({
-//           section,
-//           key: 'cropFull',
-//           value: subButtonsStatus,
-//         }),
-//       ),
-//       put(
-//         updateToolbarIcon({
-//           section,
-//           key: 'cropCheck',
-//           value: subButtonsStatus,
-//         }),
-//       ),
-//     ])
-//   })
-// }
-
 export function* syncToolbarContext() {
   const state: CardphotoState = yield select((s) => s.cardphoto.state)
   const toolbarState: CardphotoToolbarState = yield select(
     selectToolbarSectionState('cardphoto'),
   )
 
-  if (!state || toolbarState.crop === 'active') return
+  if (!state || toolbarState.crop.state === 'active') return
 
   const { activeSource, cropCount } = state
   // console.log('syncToolbarContext + cropCount', cropCount)
@@ -169,43 +143,54 @@ export function* syncToolbarContext() {
 
   let sectionUpdate = {}
   const isUserImage = !!state.base.user.image
+  const sizeCard: SizeCard = yield select(selectSizeCard)
 
   switch (activeSource) {
     case 'processed':
       console.log('syncToolbarContext processed', activeSource)
       sectionUpdate = {
-        cardOrientation: 'disabled',
-        imageRotateLeft: 'disabled',
-        imageRotateRight: 'disabled',
-        crop: 'disabled',
-        cropFull: 'disabled',
-        imageReset: 'enabled',
+        cardOrientation: {
+          state: 'disabled',
+          options: { orientation: sizeCard.orientation },
+        },
+        imageRotateLeft: { state: 'disabled' },
+        imageRotateRight: { state: 'disabled' },
+        crop: { state: 'disabled' },
+        cropFull: { state: 'disabled' },
+        imageReset: { state: 'enabled' },
 
-        apply: 'enabled',
-        close: 'enabled',
-        download: 'enabled',
-        cropHistory: 'enabled',
-        cropBadge: cropCount,
-        closeList: hasCrops ? 'enabled' : 'disabled',
+        apply: { state: 'enabled' },
+        close: { state: 'disabled' },
+        download: { state: 'enabled' },
+        cropHistory: {
+          state: hasCrops ? 'enabled' : 'disabled',
+          options: { badge: cropCount },
+        },
+        closeList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break
 
     case 'user':
       console.log('syncToolbarContext user', activeSource)
-      const sizeCard: SizeCard = yield select(selectSizeCard)
       sectionUpdate = {
-        cardOrientation: sizeCard.orientation,
-        imageRotateLeft: 'enabled',
-        imageRotateRight: 'enabled',
-        crop: 'enabled',
-        imageReset: 'enabled',
+        cardOrientation: {
+          state: 'enabled',
+          options: { orientation: sizeCard.orientation },
+        },
+        imageRotateLeft: { state: 'enabled' },
+        imageRotateRight: { state: 'enabled' },
+        crop: { state: 'enabled' },
+        cropFull: { state: 'disabled' },
+        imageReset: { state: 'enabled' },
 
-        apply: 'disabled',
-        close: 'enabled',
-        download: 'enabled',
-        cropHistory: hasCrops ? 'enabled' : 'disabled',
-        cropBadge: cropCount,
-        closeList: hasCrops ? 'enabled' : 'disabled',
+        apply: { state: 'enabled' },
+        close: { state: 'enabled' },
+        download: { state: 'enabled' },
+        cropHistory: {
+          state: hasCrops ? 'enabled' : 'disabled',
+          options: { badge: cropCount },
+        },
+        closeList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break
 
@@ -213,19 +198,24 @@ export function* syncToolbarContext() {
     default:
       console.log('syncToolbarContext stock', activeSource)
       sectionUpdate = {
-        cardOrientation: 'disabled',
-        imageRotateLeft: 'disabled',
-        imageRotateRight: 'disabled',
-        crop: 'disabled',
-        cropFull: 'disabled',
-        imageReset: isUserImage ? 'enabled' : 'disabled',
+        cardOrientation: {
+          state: 'disabled',
+          options: { orientation: sizeCard.orientation },
+        },
+        imageRotateLeft: { state: 'disabled' },
+        imageRotateRight: { state: 'disabled' },
+        crop: { state: 'disabled' },
+        cropFull: { state: 'disabled' },
+        imageReset: { state: isUserImage ? 'enabled' : 'disabled' },
 
-        apply: 'enabled',
-        close: 'disabled',
-        download: 'enabled',
-        cropHistory: hasCrops ? 'enabled' : 'disabled',
-        cropBadge: cropCount,
-        closeList: hasCrops ? 'enabled' : 'disabled',
+        apply: { state: 'enabled' },
+        close: { state: 'disabled' },
+        download: { state: 'enabled' },
+        cropHistory: {
+          state: hasCrops ? 'enabled' : 'disabled',
+          options: { badge: cropCount },
+        },
+        closeList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break
   }

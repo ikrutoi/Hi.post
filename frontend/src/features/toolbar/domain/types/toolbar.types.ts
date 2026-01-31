@@ -4,7 +4,7 @@ import type {
   IconKey,
   IconState,
   IconStateGroup,
-  IconValue,
+  // IconValue,
 } from '@shared/config/constants'
 import type {
   CardphotoKey,
@@ -20,25 +20,22 @@ import type {
   SectionEditorMenuToolbarState,
   SectionEditorMenuKey,
 } from './index'
+import type { LayoutOrientation } from '@layout/domain/types'
 
+export type IconOptions = {
+  badge?: number | null
+  orientation?: LayoutOrientation
+}
 export interface ToolbarIcon {
   key: IconKey
   state: IconState
+  options?: IconOptions
 }
-
-export type UpdateIconValue = IconState | Partial<IconValue>
-
-// export type UpdateIconPayloadValue =
-//   | IconState
-//   | Partial<{
-//       state: IconState
-//       badge: number | null
-//     }>
 
 export interface ToolbarGroup {
   group: string
   icons: ToolbarIcon[]
-  status: IconStateGroup
+  status: IconState
 }
 
 export type ToolbarConfig = ToolbarGroup[]

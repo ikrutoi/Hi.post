@@ -101,6 +101,24 @@ export const selectBaseImageByTarget = (
 
 export const selectIsCropFull = createSelector(
   [selectCurrentConfig],
+  (config) => {
+    if (!config) return false
+    const { crop, image } = config
+
+    const isRotated = image.rotation === 90 || image.rotation === 270
+
+    const vWidth = isRotated ? image.meta.height : image.meta.width
+    const vHeight = isRotated ? image.meta.width : image.meta.height
+
+    const isFullWidth = Math.abs(crop.meta.width - vWidth) < 0.5
+    const isFullHeight = Math.abs(crop.meta.height - vHeight) < 0.5
+
+    return isFullWidth || isFullHeight
+  },
+)
+
+export const selectIsCropFull1 = createSelector(
+  [selectCurrentConfig],
   (config): boolean => {
     if (!config || !config.crop) return false
 

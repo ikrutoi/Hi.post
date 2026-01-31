@@ -109,14 +109,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     const state: CardphotoState = yield select(selectCardphotoState)
     console.log('onUploadImageReady--->>>', imageMeta)
     const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
-    // const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
-    // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
-
-    // const newConfig: WorkingConfig = {
-    //   card: cardLayer,
-    //   image: imageLayer,
-    //   crop: cropLayer,
-    // }
 
     const imageForDb = {
       ...imageMeta,
@@ -159,82 +151,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   }
 }
 
-// function* onUploadImage(action: PayloadAction<ImageMeta>) {
-//   const imageMeta = action.payload
-//   console.log('onUploadImage imageMeta', imageMeta)
-//   if (!imageMeta) return
-
-//   yield put(setBaseImage({ target: 'user', image: imageMeta }))
-// }
-
-// function* onUploadImageReadySaga1(action: PayloadAction<ImageMeta>) {
-//   try {
-//     const imageMeta = action.payload
-//     // const cardLayer: CardLayer = yield select(selectSizeCard)
-
-//     const state: CardphotoState = yield select(selectCardphotoState)
-//     const cropCount = state.cropCount || 0
-//     const cropIds = state.cropIds || []
-
-//     const config: WorkingConfig = yield call(rebuildConfigFromMeta, imageMeta)
-//     // const imageLayer = fitImageToCard(imageMeta, cardLayer, 0, false)
-//     // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, imageMeta)
-//     // const newConfig: WorkingConfig = {
-//     //   card: cardLayer,
-//     //   image: imageLayer,
-//     //   crop: cropLayer,
-//     // }
-
-//     const base: CardphotoBase = {
-//       ...state.base,
-//       user: { image: prepareForRedux(imageMeta) },
-//     }
-
-//     const imageForDb = {
-//       ...imageMeta,
-//       id: 'current',
-//     }
-
-//     // const dataToSave = {
-//     //   id: 'current',
-//     //   config,
-//     //   timestamp: Date.now(),
-//     // }
-
-//     yield call(storeAdapters.userImages.put, imageForDb)
-
-//     yield put(
-//       hydrateEditor({
-//         base,
-//         config,
-//         activeSource: 'user',
-//         cropCount,
-//         cropIds,
-//       }),
-//     )
-//   } catch (error) {
-//     console.error('Error in onUploadImageReadySaga:', error)
-//   } finally {
-//     yield put(markLoaded())
-//   }
-
-//   yield put(
-//     updateGroupStatus({
-//       section: 'cardphoto',
-//       groupName: 'photo',
-//       status: 'enabled',
-//     }),
-//   )
-
-//   yield put(
-//     updateGroupStatus({
-//       section: 'cardphoto',
-//       groupName: 'ui',
-//       status: 'enabled',
-//     }),
-//   )
-// }
-
 function* onCancelFileDialog(): SagaIterator {
   console.log('onCancelFileDialog')
 
@@ -263,8 +179,9 @@ export function* rebuildConfigFromMeta(
   rotation?: ImageRotation,
 ) {
   try {
-    console.log('rebuild+ meta', meta)
-    console.log('rebuild+ forceOrientation', forceOrientation)
+    console.log('REBUILD+ meta', meta)
+    // console.log('rebuild+ forceOrientation', forceOrientation)
+    console.log('rebuild+ rotation', rotation)
     yield put(clearCurrentConfig())
     yield delay(16)
 
@@ -293,7 +210,7 @@ export function* rebuildConfigFromMeta(
           : // : currentCard.aspectRatio
             roundTo(1 / cardBaseRatio, 3)
 
-      console.log('rebuild++ finalRatio', finalRatio)
+      // console.log('rebuild++ finalRatio', finalRatio)
 
       const newWidth = Math.round(currentCard.height * finalRatio)
 
@@ -309,7 +226,7 @@ export function* rebuildConfigFromMeta(
       yield delay(32)
     }
 
-    const newRotation = rotation ?? 0
+    const newRotation = rotation ?? meta.rotation ?? 0
 
     const updatedCard: CardLayer = yield select(selectSizeCard)
     const imageLayer = fitImageToCard(meta, updatedCard, newRotation, false)
@@ -324,9 +241,15 @@ export function* rebuildConfigFromMeta(
     console.log('rebuild++++ newConfig', newConfig)
     console.log('rebuild5+ meta', meta)
 
-    const newOriginalMeta = { ...meta, orientation: targetOrientation }
+    const newOriginalMeta = {
+      ...meta,
+      orientation: targetOrientation,
+      rotation: newRotation,
+    }
 
-    yield put(setBaseImage({ target: 'user', image: newOriginalMeta }))
+    const serializableMeta = prepareForRedux(newOriginalMeta)
+
+    yield put(setBaseImage({ target: 'user', image: serializableMeta }))
 
     yield put(
       addOperation({

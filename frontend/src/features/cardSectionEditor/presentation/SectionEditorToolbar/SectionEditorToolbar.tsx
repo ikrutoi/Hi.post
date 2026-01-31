@@ -33,7 +33,7 @@ export const SectionEditorToolbar: React.FC = () => {
       document.documentElement.style.setProperty('--crop-handle-color', color)
     }
 
-    if (toolbarCardphoto.crop === 'active') {
+    if (toolbarCardphoto.crop.state === 'active') {
       updateVisuals(reduxProgress)
     }
 
@@ -57,7 +57,7 @@ export const SectionEditorToolbar: React.FC = () => {
     >
       <Toolbar section="sectionEditorMenu" />
       {sectionMenuHeight &&
-        toolbarCardphoto.crop === 'active' &&
+        toolbarCardphoto.crop.state === 'active' &&
         sectionMenuCardphoto === 'active' && (
           <div
             className={clsx(styles.toolbarCropQualityContainer)}

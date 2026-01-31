@@ -1,18 +1,13 @@
-import type { IconKey, IconState } from '@shared/config/constants'
-import type { ToolbarConfig, ToolbarIcon } from '../types'
+import type { ToolbarConfig } from '../types'
 
-export const flattenIcons = (groups: ToolbarConfig): [IconKey, IconState][] => {
-  const result: [IconKey, IconState][] = []
-
-  const walk = (icons: ToolbarIcon[]) => {
-    for (const icon of icons) {
-      result.push([icon.key, icon.state])
-    }
-  }
-
-  for (const group of groups) {
-    walk(group.icons)
-  }
-
-  return result
+export const flattenIcons = (config: ToolbarConfig) => {
+  return config.flatMap((group) =>
+    group.icons.map((icon) => [
+      icon.key,
+      {
+        state: icon.state,
+        options: icon.options || {},
+      },
+    ]),
+  )
 }
