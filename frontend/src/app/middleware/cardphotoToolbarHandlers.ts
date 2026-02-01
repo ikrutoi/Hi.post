@@ -598,7 +598,6 @@ export function* handleBackToOriginalSaga() {
     state.currentConfig
   ) {
     // const cardLayer = state.currentConfig.card
-    console.log('handleBackToOriginal--->>>00', userMeta)
 
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
@@ -606,9 +605,6 @@ export function* handleBackToOriginalSaga() {
       activeSource,
       userMeta.orientation,
     )
-    // const imageLayer = fitImageToCard(userMeta, cardLayer, 0, false)
-    // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, userMeta)
-    // const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
 
     yield put(
       hydrateEditor({
@@ -621,18 +617,22 @@ export function* handleBackToOriginalSaga() {
     yield fork(syncToolbarContext)
   }
 
-  console.log('HANDLE_BACK', userMeta)
   if (activeSource === 'user' && state.currentConfig && stockMeta) {
-    const cardLayer = state.currentConfig.card
-    console.log('handleBackToOriginal--->>>11', userMeta)
+    // const cardLayer = state.currentConfig.card
+    const toolbarState: CardphotoToolbarState = yield select(
+      selectToolbarSectionState('cardphoto'),
+    )
+    const isCropActivating = toolbarState.crop.state === 'active'
+
+    if (isCropActivating) {
+      yield call(updateCropToolbarState, 'enabled', toolbarState)
+    }
+
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       stockMeta,
       activeSource,
     )
-    // const imageLayer = fitImageToCard(stockMeta, cardLayer, 0, false)
-    // const cropLayer = createInitialCropLayer(imageLayer, cardLayer, stockMeta)
-    // const config = { card: cardLayer, image: imageLayer, crop: cropLayer }
 
     yield put(
       hydrateEditor({
