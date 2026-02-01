@@ -61,9 +61,8 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
               type="button"
               className={clsx(styles.clearButton)}
               onClick={handleClear}
-              // aria-label="Очистить поле"
             >
-              {/* {toolbarIcons.deleteSmall} */}
+              {getToolbarIcon({ key: 'deleteSmall' })}
             </button>
           )}
         </div>

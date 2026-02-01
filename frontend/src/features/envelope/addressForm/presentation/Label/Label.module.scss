@@ -76,23 +76,31 @@
   background: none;
   color: $color-font-disabled;
   border: none;
-  border-radius: 0.45rem;
+  border-radius: 50%;
   opacity: 0;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  border: solid 2px #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+}
+
+.clearButton:hover {
+  color: $color-font-enabled;
 }
 
 .inputWrapperRecipient .clearButton {
-  left: 0;
+  left: 0.2rem;
 }
 
 .inputWrapperSender .clearButton {
-  right: 0;
+  right: 0.2rem;
 }
 
 .clearButton svg {
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 0.8rem;
+  height: 0.8rem;
 }
 
 .inputWrapper:hover .clearButton {

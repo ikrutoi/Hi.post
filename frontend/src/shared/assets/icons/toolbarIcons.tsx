@@ -24,7 +24,7 @@ import {
   MdFormatAlignJustify,
 } from 'react-icons/md'
 import { LuPaperclip, LuMail, LuMailOpen, LuMailPlus } from 'react-icons/lu'
-import { TiDelete } from 'react-icons/ti'
+import { TiDelete, TiPlus } from 'react-icons/ti'
 import {
   RiUserLine,
   RiResetLeftFill,
@@ -119,6 +119,10 @@ import {
   IconCardDynamic,
   IconImageReset,
   IconCloseList,
+  IconDownloadV2,
+  IconSaveList,
+  IconDeleteSmall,
+  IconPlus,
 } from '@shared/ui/icons'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -135,14 +139,20 @@ export function getIconByKey(
       return <IconSave />
     case 'savedTemplates':
       return <LuPaperclip />
+    case 'saveList':
+      return <IconSaveList />
+    case 'saveSmall':
+      return <TiPlus />
+    case 'plusSmall':
+      return <IconPlus />
     case 'remove':
       return <RiDeleteBinLine />
     case 'delete':
       return <IconDelete />
     case 'deleteSmall':
-      return <TiDelete />
+      return <IconDeleteSmall />
     case 'download':
-      return <IconDownload />
+      return <IconDownloadV2 />
     case 'apply':
       return <IconApply />
     case 'close':

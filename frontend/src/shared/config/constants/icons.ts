@@ -57,6 +57,9 @@ export const ICON_KEYS = [
   'aroma',
   'date',
   'closeList',
+  'saveList',
+  'saveSmall',
+  'plusSmall',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

@@ -4,34 +4,48 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
-import type { ToolbarState } from '@toolbar/domain/types'
+import type {
+  ToolbarState,
+  SectionEditorMenuToolbarState,
+} from '@toolbar/domain/types'
 import type { CardSection } from '@shared/config/constants'
 
 function* handleSectionEditorMenuToolbarAction(
-  action: PayloadAction<{ section: string; key: string }>
+  action: PayloadAction<{ section: string; key: string }>,
 ) {
   const { section, key } = action.payload
 
   if (section === 'sectionEditorMenu') {
     yield put(setActiveSection(key as CardSection))
 
-    const currentState: ToolbarState['sectionEditorMenu'] = yield select(
-      selectToolbarSectionState('sectionEditorMenu')
+    const currentState: SectionEditorMenuToolbarState = yield select(
+      selectToolbarSectionState('sectionEditorMenu'),
     )
 
-    const updatedIcons = Object.fromEntries(
+    const updatedFlatKeys = Object.fromEntries(
       Object.keys(currentState)
         .filter((k) => k !== 'config')
-        .map((iconKey) => [iconKey, iconKey === key ? 'active' : 'enabled'])
+        .map((iconKey) => [iconKey, iconKey === key ? 'active' : 'enabled']),
     )
 
+    const updatedConfig = currentState.config.map((group) => ({
+      ...group,
+      icons: group.icons.map((icon) => ({
+        ...icon,
+        state: icon.key === key ? 'active' : 'enabled',
+      })),
+    }))
+
+    console.log('SECTION_EDITOR_MENU config', updatedConfig)
+
     const newState = {
-      ...updatedIcons,
-      config: currentState.config,
+      ...updatedFlatKeys,
+      config: updatedConfig,
     }
+    console.log('SECTION_EDITOR_MENU newState', newState)
 
     yield put(
-      updateToolbarSection({ section: 'sectionEditorMenu', value: newState })
+      updateToolbarSection({ section: 'sectionEditorMenu', value: newState }),
     )
   }
 }

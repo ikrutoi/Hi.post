@@ -251,8 +251,14 @@ export const cardphotoSlice = createSlice({
     removeCropId(state, action: PayloadAction<string>) {
       const cp = state.state
       if (!cp) return
-      cp.cropIds = cp.cropIds.filter((id) => id !== action.payload)
+      const targetId = action.payload
+
+      cp.cropIds = cp.cropIds.filter((id) => id !== targetId)
       cp.cropCount = cp.cropIds.length
+
+      if (cp.base.processed.image?.id === targetId) {
+        cp.base.processed.image = null
+      }
     },
 
     clearCurrentConfig(state) {

@@ -26,6 +26,7 @@ import {
   hydrateEditor,
   clearCurrentConfig,
   selectCropFromHistory,
+  removeCropId,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import {
@@ -264,11 +265,25 @@ export function* rebuildConfigFromMeta(
   }
 }
 
+export function* onDeleteCropSaga(action: PayloadAction<string>): SagaIterator {
+  try {
+    const cropId = action.payload
+
+    yield call(
+      [storeAdapters.cropImages, storeAdapters.cropImages.deleteById],
+      cropId,
+    )
+  } catch (error) {
+    console.error('Failed to delete crop from DB:', error)
+  }
+}
+
 export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
 
     takeEvery(selectCropFromHistory.type, onSelectCropFromHistorySaga),
+    takeEvery(removeCropId.type, onDeleteCropSaga),
 
     fork(watchCropChanges),
     fork(watchToolbarContext),

@@ -17,6 +17,7 @@ export const CARDPHOTO_KEYS = [
   // 'photoTemplates',
   'cropHistory',
   'closeList',
+  'saveList',
 ] as const
 
 export type CardphotoKey = (typeof CARDPHOTO_KEYS)[number]
@@ -52,9 +53,15 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
     group: 'ui',
     icons: [
       { key: 'apply', state: 'enabled' },
-      { key: 'close', state: 'disabled' },
       { key: 'download', state: 'enabled' },
-      { key: 'cropHistory', state: 'disabled', options: { badge: 0 } },
+      { key: 'close', state: 'disabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'processed',
+    icons: [
+      { key: 'saveList', state: 'disabled' },
       { key: 'closeList', state: 'disabled' },
     ],
     status: 'enabled',

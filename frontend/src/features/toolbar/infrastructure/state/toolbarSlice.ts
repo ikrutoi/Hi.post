@@ -41,7 +41,32 @@ const toolbarSlice = createSlice({
       state: ToolbarState,
       action: PayloadAction<UpdateSectionPayload<K>>,
     ) {
-      Object.assign(state[action.payload.section], action.payload.value)
+      const { section, value } = action.payload
+
+      Object.assign(state[section], value)
+
+      const sectionData = state[section] as any
+      if (sectionData.config) {
+        sectionData.config = sectionData.config.map((group: ToolbarGroup) => ({
+          ...group,
+          icons: group.icons.map((icon) => {
+            const update = (value as any)[icon.key]
+            if (update) {
+              return {
+                ...icon,
+                state:
+                  typeof update === 'string'
+                    ? update
+                    : update.state || icon.state,
+                options: update.options
+                  ? { ...icon.options, ...update.options }
+                  : icon.options,
+              }
+            }
+            return icon
+          }),
+        }))
+      }
     },
 
     updateToolbarIcon<
@@ -56,22 +81,28 @@ const toolbarSlice = createSlice({
       }>,
     ) {
       const { section, key, value } = action.payload
-      const current = state[section][key] as Omit<ToolbarIcon, 'key'>
+      const current = state[section][key] as any
 
-      if (typeof value === 'string') {
-        state[section][key] = {
-          ...current,
-          state: value,
-        } as ToolbarState[S][K]
-      } else {
-        state[section][key] = {
-          ...current,
-          ...value,
-          options: {
-            ...(current?.options || {}),
-            ...(value?.options || {}),
-          },
-        } as ToolbarState[S][K]
+      const newValue =
+        typeof value === 'string'
+          ? { ...current, state: value }
+          : {
+              ...current,
+              ...value,
+              options: { ...current?.options, ...value?.options },
+            }
+
+      state[section][key] = newValue
+
+      const sectionData = state[section] as any
+      if (sectionData.config) {
+        sectionData.config.forEach((group: ToolbarGroup) => {
+          const icon = group.icons.find((i) => i.key === key)
+          if (icon) {
+            icon.state = newValue.state
+            icon.options = newValue.options
+          }
+        })
       }
     },
 

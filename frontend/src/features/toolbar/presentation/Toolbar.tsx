@@ -43,13 +43,17 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     }
   }, [section, groups, sectionMenuHeight, setSectionMenuHeight])
 
-  const renderIcon = (key: IconKey, groupStatus: IconStateGroup) => {
+  const renderIcon = (
+    key: IconKey,
+    groupStatus: IconStateGroup,
+    currentIconState?: IconState,
+  ) => {
     const rawData = iconStates[key] as {
       state: IconState
       options?: IconOptions
     }
 
-    const buttonStatus = rawData.state
+    const buttonStatus = currentIconState || rawData.state
     const orientation = rawData.options?.orientation
     const badge = rawData.options?.badge
 
@@ -97,7 +101,9 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
             group.status === 'disabled' && styles.toolbarGroupDisabled,
           )}
         >
-          {group.icons.map((icon) => renderIcon(icon.key, group.status))}
+          {group.icons.map((icon) =>
+            renderIcon(icon.key, group.status, icon.state),
+          )}
         </div>
       ))}
       {section === 'cardphoto' && iconStates.crop.state !== 'active' && (

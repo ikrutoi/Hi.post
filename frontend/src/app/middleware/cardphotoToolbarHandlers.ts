@@ -405,7 +405,7 @@ export function* handleCropConfirm(): SagaIterator {
     const newConfig: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       reduxMeta,
-      'user',
+      'processed',
     )
 
     yield put(

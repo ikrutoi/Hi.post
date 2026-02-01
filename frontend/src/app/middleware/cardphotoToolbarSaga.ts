@@ -172,6 +172,7 @@ export function* syncToolbarContext() {
           state: hasCrops ? 'enabled' : 'disabled',
           options: { badge: cropCount },
         },
+        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
         closeList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break
@@ -188,13 +189,14 @@ export function* syncToolbarContext() {
         cropFull: { state: 'disabled' },
         imageReset: { state: 'enabled' },
 
-        apply: { state: 'enabled' },
+        apply: { state: 'disabled' },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
         cropHistory: {
           state: hasCrops ? 'enabled' : 'disabled',
           options: { badge: cropCount },
         },
+        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
         closeList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break
@@ -219,6 +221,7 @@ export function* syncToolbarContext() {
           state: hasCrops ? 'enabled' : 'disabled',
           options: { badge: cropCount },
         },
+        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
         closeList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break

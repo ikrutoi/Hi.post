@@ -14,6 +14,7 @@ import {
   setOrientation,
   uploadImageReady,
   selectCropFromHistory,
+  removeCropId as deleteCropId,
 } from '../../infrastructure/state'
 import {
   selectCardphotoState,
@@ -93,6 +94,7 @@ export interface CardphotoFacade {
     }) => void
     rotateCard: (orientation: LayoutOrientation) => void
     cropFromHistory: (cropId: string) => void
+    removeCropId: (cropId: string) => void
   }
 }
 
@@ -141,6 +143,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
     dispatch(setOrientation(orientation))
   const cropFromHistory = (cropId: string) =>
     dispatch(selectCropFromHistory(cropId))
+  const removeCropId = (cropId: string) => dispatch(deleteCropId(cropId))
 
   return {
     state: {
@@ -180,6 +183,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       resetLayers,
       rotateCard,
       cropFromHistory,
+      removeCropId,
     },
   }
 }
