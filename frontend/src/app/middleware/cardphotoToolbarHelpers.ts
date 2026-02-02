@@ -65,6 +65,24 @@ export function* updateCropToolbarState(
       value: newClose,
     }),
   )
+
+  const newSaveList = newCrop === 'active' ? 'disabled' : 'enabled'
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'saveList',
+      value: newSaveList,
+    }),
+  )
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'closeList',
+      value: newSaveList,
+    }),
+  )
 }
 
 export const prepareForRedux = (meta: ImageMeta): ImageMeta => ({

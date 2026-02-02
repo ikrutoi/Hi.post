@@ -35,6 +35,31 @@ const initialState: CardphotoSliceState = {
   isComplete: false,
 }
 
+const pushOperation = (
+  state: { state: CardphotoState | null },
+  config: WorkingConfig,
+  reason: CardphotoOperation['payload']['reason'] = 'init',
+) => {
+  const s = state.state
+  if (!s) return
+
+  const op: CardphotoOperation = {
+    type: 'operation',
+    payload: { config, reason },
+  }
+
+  s.operations = s.operations.slice(0, s.activeIndex + 1)
+
+  s.operations.push(op)
+
+  if (s.operations.length > 7) {
+    s.operations = s.operations.slice(-7)
+  }
+
+  s.activeIndex = s.operations.length - 1
+  s.currentConfig = config
+}
+
 export const cardphotoSlice = createSlice({
   name: 'cardphoto',
   initialState,
@@ -59,22 +84,57 @@ export const cardphotoSlice = createSlice({
     ) {
       const { base, config, activeSource, cropIds, cropCount } = action.payload
 
-      const initialOperation: CardphotoOperation = {
-        type: 'operation',
-        payload: { config, reason: 'init' },
-      }
+      if (state.state) {
+        state.state.base = base
+        state.state.activeSource = activeSource
+        state.state.cropCount = cropCount
+        state.state.cropIds = cropIds
 
-      state.state = {
-        base,
-        operations: [initialOperation],
-        activeIndex: 0,
-        cropCount,
-        cropIds,
-        activeSource,
-        currentConfig: config,
+        pushOperation(state, config, 'reset')
+      } else {
+        state.state = {
+          base,
+          operations: [
+            { type: 'operation', payload: { config, reason: 'reset' } },
+          ],
+          activeIndex: 0,
+          cropCount,
+          cropIds,
+          activeSource,
+          currentConfig: config,
+        }
       }
       state.isComplete = false
     },
+
+    // hydrateEditor1(
+    //   state,
+    //   action: PayloadAction<{
+    //     base: CardphotoBase
+    //     config: WorkingConfig
+    //     activeSource: ImageSource
+    //     cropIds: string[]
+    //     cropCount: number
+    //   }>,
+    // ) {
+    //   const { base, config, activeSource, cropIds, cropCount } = action.payload
+
+    //   const initialOperation: CardphotoOperation = {
+    //     type: 'operation',
+    //     payload: { config, reason: 'init' },
+    //   }
+
+    //   state.state = {
+    //     base,
+    //     operations: [initialOperation],
+    //     activeIndex: 0,
+    //     cropCount,
+    //     cropIds,
+    //     activeSource,
+    //     currentConfig: config,
+    //   }
+    //   state.isComplete = false
+    // },
 
     setBaseImage(
       state,
@@ -88,20 +148,28 @@ export const cardphotoSlice = createSlice({
     uploadUserImage(state, action: PayloadAction<ImageMeta>) {},
 
     addOperation(state, action: PayloadAction<CardphotoOperation>) {
-      if (!state.state) return
-      const op = action.payload
-
-      state.state.currentConfig = op.payload.config
-
-      state.state.operations = state.state.operations.slice(
-        0,
-        state.state.activeIndex + 1,
+      pushOperation(
+        state,
+        action.payload.payload.config,
+        action.payload.payload.reason,
       )
-
-      state.state.operations.push(op)
-      const newIndex = state.state.operations.length - 1
-      state.state.activeIndex = newIndex
     },
+
+    // addOperation1(state, action: PayloadAction<CardphotoOperation>) {
+    //   if (!state.state) return
+    //   const op = action.payload
+
+    //   state.state.currentConfig = op.payload.config
+
+    //   state.state.operations = state.state.operations.slice(
+    //     0,
+    //     state.state.activeIndex + 1,
+    //   )
+
+    //   state.state.operations.push(op)
+    //   const newIndex = state.state.operations.length - 1
+    //   state.state.activeIndex = newIndex
+    // },
 
     undo(state) {
       if (!state.state) return

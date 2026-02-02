@@ -48,6 +48,8 @@ function* initCardphotoSaga() {
 
   if (state.operations.length > 1) return
 
+  console.log('INIT_CARDPHOTO')
+
   const base: CardphotoBase = {
     stock: { image: yield call(getRandomStockMeta) },
     user: { image: null },

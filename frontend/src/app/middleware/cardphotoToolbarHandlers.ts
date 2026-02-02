@@ -592,6 +592,59 @@ export function* handleBackToOriginalSaga() {
   const stockMeta = state.base.stock.image
   const activeSource = state.activeSource
 
+  let nextSource: ImageSource | null = null
+  let nextMeta = null
+
+  if (activeSource === 'processed') {
+    if (userMeta) {
+      nextSource = 'user'
+      nextMeta = userMeta
+    } else {
+      nextSource = 'stock'
+      nextMeta = stockMeta
+    }
+  } else if (activeSource === 'user') {
+    nextSource = 'stock'
+    nextMeta = stockMeta
+  } else if (activeSource === 'stock' && userMeta) {
+    nextSource = 'user'
+    nextMeta = userMeta
+  }
+
+  if (nextSource && nextMeta) {
+    const toolbarState: CardphotoToolbarState = yield select(
+      selectToolbarSectionState('cardphoto'),
+    )
+
+    if (toolbarState.crop.state === 'active') {
+      yield call(updateCropToolbarState, 'enabled', toolbarState)
+    }
+
+    const config: WorkingConfig = yield call(
+      rebuildConfigFromMeta,
+      nextMeta,
+      nextSource,
+      nextMeta.orientation,
+    )
+
+    yield put(
+      hydrateEditor({
+        ...state,
+        config,
+        activeSource: nextSource,
+      }),
+    )
+
+    yield fork(syncToolbarContext)
+  }
+}
+
+export function* handleBackToOriginalSaga1() {
+  const state: CardphotoState = yield select(selectCardphotoState)
+  const userMeta = state.base.user.image
+  const stockMeta = state.base.stock.image
+  const activeSource = state.activeSource
+
   if (
     (activeSource === 'processed' || activeSource === 'stock') &&
     userMeta &&

@@ -98,6 +98,7 @@ export type CardphotoOperation = {
       | 'rebuild_by_orientation'
       | 'rebuild'
       | 'rotateCard'
+      | 'reset'
   }
 }
 

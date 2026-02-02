@@ -36,13 +36,10 @@ function* handleSectionEditorMenuToolbarAction(
       })),
     }))
 
-    console.log('SECTION_EDITOR_MENU config', updatedConfig)
-
     const newState = {
       ...updatedFlatKeys,
       config: updatedConfig,
     }
-    console.log('SECTION_EDITOR_MENU newState', newState)
 
     yield put(
       updateToolbarSection({ section: 'sectionEditorMenu', value: newState }),
