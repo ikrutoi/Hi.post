@@ -123,6 +123,19 @@ import {
   IconSaveList,
   IconDeleteSmall,
   IconPlus,
+  IconAlignLeft,
+  IconAlignRight,
+  IconAlignCenter,
+  IconAlignJustify,
+  IconBold,
+  IconItalic,
+  IconFontFamily,
+  IconFontSizePlus,
+  IconFontSizeMinus,
+  IconFontSizePlusV2,
+  IconFontSizeMinusV2,
+  IconFontSizePlusV3,
+  IconFontSizeMinusV3,
 } from '@shared/ui/icons'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -196,23 +209,29 @@ export function getIconByKey(
     case 'reset':
       return <RiResetLeftFill />
     case 'bold':
-      return <RiBold />
+      return <IconBold />
     case 'underline':
       return <RiUnderline />
     case 'italic':
-      return <RiItalic />
+      return <IconItalic />
     case 'fontSize':
       return <RiFontSize2 />
+    case 'fontSizePlus':
+      return <IconFontSizePlusV3 />
+    case 'fontSizeMinus':
+      return <IconFontSizeMinusV3 />
+    case 'fontFamily':
+      return <IconFontFamily />
     case 'color':
       return <RiFontColor />
     case 'left':
-      return <RiAlignLeft />
+      return <IconAlignLeft />
     case 'center':
-      return <RiAlignCenter />
+      return <IconAlignCenter />
     case 'right':
-      return <RiAlignRight />
+      return <IconAlignRight />
     case 'justify':
-      return <RiAlignJustify />
+      return <IconAlignJustify />
     case 'plus':
       return <FiPlus />
     case 'arrowsOut':
@@ -247,6 +266,8 @@ export function getIconByKey(
       return <IconSectionMenuEnvelopeV2 />
     case 'aroma':
       return <IconSectionMenuAromaV2 />
+    case 'date':
+      return <IconSectionMenuDate />
     case 'date':
       return <IconSectionMenuDate />
   }

@@ -2,11 +2,13 @@ import { flattenIcons } from '../helpers'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const CARDTEXT_KEYS = [
-  'italic',
-  'bold',
-  'underline',
-  'fontSize',
-  'color',
+  // 'italic',
+  // 'bold',
+  // 'underline',
+  'fontFamily',
+  'fontSizeMinus',
+  'fontSizePlus',
+  // 'color',
   'left',
   'center',
   'right',
@@ -30,11 +32,10 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
   {
     group: 'text',
     icons: [
-      'italic',
-      'bold',
-      'underline',
-      'fontSize',
-      'color',
+      'fontFamily',
+      'fontSizeMinus',
+      'fontSizePlus',
+      // 'color',
       'left',
       'center',
       'right',

@@ -44,11 +44,15 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       style={{
         left: isPacked
           ? '0'
-          : `${sizeMiniCard.width + remSize + (sizeMiniCard.width * 4) / 24 + (sizeMiniCard.width + remSize) * position}px`,
-        width: `${sizeMiniCard.width}px`,
+          : `${sizeMiniCard.width + remSize + (sizeMiniCard.height * 4) / 24 + (sizeMiniCard.height + remSize) * position}px`,
+        width: `${sizeMiniCard.height}px`,
         height: `${sizeMiniCard.height}px`,
         boxShadow: isPacked
-          ? '2px 1px 5px 2px rgba(255, 255, 255, 0.2)'
+          ? //   : `${sizeMiniCard.width + remSize + (sizeMiniCard.width * 4) / 24 + (sizeMiniCard.width + remSize) * position}px`,
+            // width: `${sizeMiniCard.width}px`,
+            // height: `${sizeMiniCard.height}px`,
+            // boxShadow: isPacked
+            '2px 1px 5px 2px rgba(255, 255, 255, 0.2)'
           : '2px 1px 5px 2px rgba(34, 60, 80, 0.3)',
         zIndex,
         transition: `left ${0.3 + 0.15 * position}s ease, box-shadow 0.3s`,

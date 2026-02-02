@@ -2,7 +2,6 @@ import React from 'react'
 import { Slate, Editable, ReactEditor } from 'slate-react'
 import { Editor, Transforms, Range, Descendant } from 'slate'
 import { useCardtextFacade } from '../../application/facades'
-import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
 import { useEditorLayout, useInitSelection } from '../../application/hooks'
@@ -71,8 +70,6 @@ export const CardEditor: React.FC = () => {
             forceUpdateToolbar()
           }}
         >
-          <Toolbar section="cardtext" />
-
           <Editable
             className={styles.editorEditable}
             ref={editableRef}

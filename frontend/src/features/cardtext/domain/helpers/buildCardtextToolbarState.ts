@@ -2,7 +2,7 @@ import { CARDTEXT_KEYS, type CardtextToolbarState } from '@toolbar/domain/types'
 import type { CardtextValue } from '../types'
 
 export const buildCardtextToolbarState = (
-  value: CardtextValue
+  value: CardtextValue,
 ): CardtextToolbarState => {
   const firstBlock = value[0]
   const firstLeaf = firstBlock?.children?.[0] ?? {}
@@ -16,21 +16,20 @@ export const buildCardtextToolbarState = (
 
   for (const key of CARDTEXT_KEYS) {
     switch (key) {
-      case 'italic':
-        state.italic = firstLeaf.italic ? 'active' : 'enabled'
+      // case 'italic':
+      //   state.italic = firstLeaf.italic ? 'active' : 'enabled'
+      //   break
+      case 'fontFamily':
+        state.fontFamily = 'enabled'
         break
-      case 'bold':
-        state.bold = firstLeaf.bold ? 'active' : 'enabled'
+      case 'fontSizeMinus':
+        state.fontSizeMinus = 'enabled'
+      case 'fontSizePlus':
+        state.fontSizeMinus = 'enabled'
         break
-      case 'underline':
-        state.underline = firstLeaf.underline ? 'active' : 'enabled'
-        break
-      case 'fontSize':
-        state.fontSize = 'enabled'
-        break
-      case 'color':
-        state.color = 'enabled'
-        break
+      // case 'color':
+      //   state.color = 'enabled'
+      //   break
       case 'left':
         state.left = firstBlock.align === 'left' ? 'active' : 'enabled'
         break

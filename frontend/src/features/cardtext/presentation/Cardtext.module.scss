@@ -1,7 +1,17 @@
-.cardtext {
+@use '@styles/config/colors' as *;
+
+.cardtextContainer {
   position: relative;
   width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.cardtext {
+  width: 100%;
   padding: 1rem;
+  box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
+  border: 1px solid $color-section-dark;
 }
 
 // .cardtext__nav-container {

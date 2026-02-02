@@ -60,6 +60,9 @@ export const ICON_KEYS = [
   'saveList',
   'saveSmall',
   'plusSmall',
+  'fontFamily',
+  'fontSizePlus',
+  'fontSizeMinus',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

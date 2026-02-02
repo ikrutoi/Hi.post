@@ -4,10 +4,11 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   box-sizing: border-box;
   background-color: #fff;
   user-select: none;
+  // border: solid 1px orange;
 
   &Photo {
     padding: 0;
