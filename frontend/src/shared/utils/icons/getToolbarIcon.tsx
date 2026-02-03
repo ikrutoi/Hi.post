@@ -1,4 +1,5 @@
 import { cloneElement } from 'react'
+import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { getIconByKey } from '@shared/assets/icons'
 import { IconKey } from '@shared/config/constants'
 import { IconCardDynamic } from '@shared/ui/icons'
@@ -11,12 +12,14 @@ export const getToolbarIcon = ({
   color,
   style = {},
   orientation,
+  step,
 }: {
   key: IconKey
   className?: string
   color?: string
   style?: React.CSSProperties
   orientation?: LayoutOrientation
+  step?: number
 }): JSX.Element => {
   if (key === 'cardOrientation') {
     return (
@@ -25,6 +28,13 @@ export const getToolbarIcon = ({
         className={className}
         style={{ ...(color && { color }), ...style }}
       />
+    )
+  }
+  if (key === 'fontSizeIndicator') {
+    return (
+      <div className={className} style={{ ...(color && { color }), ...style }}>
+        <FontSizeIndicator currentStep={step ?? 3} />
+      </div>
     )
   }
 

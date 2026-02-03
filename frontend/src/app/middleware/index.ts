@@ -1,6 +1,7 @@
 export * from './cardEditorSaga'
 export * from './envelopeSyncSaga'
 export * from './cardtextToolbarSaga'
+export * from './cardtextProcessSaga'
 export * from './envelopeToolbarSaga'
 export * from './sectionEditorMenuToolbarSaga'
 export * from './cardphotoToolbarSaga'

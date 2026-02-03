@@ -12,6 +12,7 @@ export interface CardtextState {
   isComplete: boolean
   cardtextLines: number
   resetToken: number
+  fontSizeStep: number
 }
 
 const initialState: CardtextState = {
@@ -20,6 +21,7 @@ const initialState: CardtextState = {
   isComplete: false,
   cardtextLines: DEFAULT_CARDTEXT_LINES,
   resetToken: 0,
+  fontSizeStep: 3,
 }
 
 export const cardtextSlice = createSlice({
@@ -33,15 +35,23 @@ export const cardtextSlice = createSlice({
         .join('\n')
       state.isComplete = state.plainText.trim().length > 0
     },
+
+    setFontSizeStep(state, action: PayloadAction<number>) {
+      state.fontSizeStep = action.payload
+    },
+
     setPlainText(state, action: PayloadAction<string>) {
       state.plainText = action.payload
     },
+
     setComplete(state, action: PayloadAction<boolean>) {
       state.isComplete = action.payload
     },
+
     setCardtextLines(state, action: PayloadAction<number>) {
       state.cardtextLines = action.payload
     },
+
     initCardtext(state, action: PayloadAction<CardtextValue>) {
       state.value = action.payload
       state.plainText = action.payload
@@ -49,6 +59,7 @@ export const cardtextSlice = createSlice({
         .join('\n')
       state.isComplete = state.plainText.trim().length > 0
     },
+
     clear(state) {
       state.value = initialCardtextValue.map((b) => ({
         ...b,
@@ -63,6 +74,7 @@ export const cardtextSlice = createSlice({
 
 export const {
   setValue,
+  setFontSizeStep,
   setPlainText,
   setComplete,
   setCardtextLines,

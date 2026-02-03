@@ -1,0 +1,45 @@
+@use '@styles/config/colors' as *;
+
+.stepWrapperContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+  width: 100%;
+  gap: 0.3rem;
+  user-select: none;
+  // border: solid 1px red;
+}
+
+.stepWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-font-disabled;
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 0.2s ease;
+
+  .icon {
+    width: 0.45rem;
+    height: 0.45rem;
+    stroke: $color-font-disabled;
+    // stroke: currentColor;
+    transition:
+      fill 0.2s ease,
+      stroke 0.2s ease;
+  }
+
+  &.empty {
+    color: $color-hover-dark;
+  }
+
+  &.filled {
+    transform: scale(1.25);
+    color: $color-toggle-active;
+  }
+
+  &.active {
+    transform: scale(1.25);
+    color: $color-toggle-active;
+  }
+}

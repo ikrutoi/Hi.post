@@ -5,7 +5,7 @@
   // position: relative;
   .toolbarKey {
     position: relative;
-    margin: 0 0.3rem;
+    margin: 2px 0.3rem 0 0.3rem;
     background-color: white;
     border-radius: 0.7rem;
     background-color: white;
@@ -102,11 +102,6 @@
     justify-content: space-around;
     height: 100%;
   }
-
-  .toolbarKey {
-    background-color: $color-disabled;
-    // border: solid 1px red;
-  }
 }
 
 .toolbarCardtext,
@@ -120,9 +115,27 @@
   .toolbarGroupText {
     .toolbarKey {
       .toolbarIcon {
-        width: 1.6rem;
-        height: 1.6rem;
+        width: 1.5rem;
+        height: 1.5rem;
       }
+      // border: solid 1px green;
+    }
+
+    .toolbarKey:nth-child(2) {
+      margin-right: 0;
+    }
+
+    .toolbarKey:nth-child(3) {
+      // display: flex;
+      // align-items: center;
+      margin: 0;
+      width: max-content;
+      cursor: default;
+      background-color: #ffffff;
+    }
+
+    .toolbarKey:nth-child(4) {
+      margin-left: 0;
     }
   }
 }
@@ -177,7 +190,7 @@
 .toolbarRecipient,
 .toolbarCardPanelOverlay {
   .toolbarKey {
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.65rem;
+    height: 1.65rem;
   }
 }

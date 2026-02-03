@@ -22,10 +22,12 @@ export const buildCardtextToolbarState = (
       case 'fontFamily':
         state.fontFamily = 'enabled'
         break
-      case 'fontSizeMinus':
-        state.fontSizeMinus = 'enabled'
-      case 'fontSizePlus':
-        state.fontSizeMinus = 'enabled'
+      case 'fontSizeLess':
+        state.fontSizeLess = 'enabled'
+      case 'fontSizeIndicator':
+        state.fontSizeIndicator = 'enabled'
+      case 'fontSizeMore':
+        state.fontSizeMore = 'enabled'
         break
       // case 'color':
       //   state.color = 'enabled'
@@ -48,7 +50,7 @@ export const buildCardtextToolbarState = (
       case 'close':
         state.close = hasContent ? 'enabled' : 'disabled'
         break
-      case 'textTemplates':
+      case 'textList':
         state.textTemplates = 'disabled'
         break
       default:

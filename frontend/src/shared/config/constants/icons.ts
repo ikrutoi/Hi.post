@@ -48,7 +48,7 @@ export const ICON_KEYS = [
   'cards',
   'cardUser',
   'cardText',
-  'textTemplates',
+  'textList',
   'photoTemplates',
   'addressTemplates',
   'cardphoto',
@@ -63,6 +63,9 @@ export const ICON_KEYS = [
   'fontFamily',
   'fontSizePlus',
   'fontSizeMinus',
+  'fontSizeIndicator',
+  'fontSizeMore',
+  'fontSizeLess',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

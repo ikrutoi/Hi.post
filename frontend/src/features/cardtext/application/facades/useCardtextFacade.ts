@@ -1,23 +1,48 @@
+import React from 'react'
+import { createEditor } from 'slate'
+import { withReact } from 'slate-react'
+import { useAppSelector } from '@app/hooks'
 import { useCardtextController } from '../controllers'
+import { useForceUpdateCardtextToolbar } from '../commands'
 import {
   selectCardtextState,
   selectCardtextValue,
   selectCardtextPlainText,
   selectCardtextIsComplete,
   selectCardtextLines,
+  selectFontSizeStep,
 } from '../../infrastructure/selectors'
+import type { CardtextValue } from '../../domain/types'
 
 export const useCardtextFacade = () => {
   const controller = useCardtextController()
 
+  const editor = React.useMemo(() => withReact(createEditor()), [])
+  const { forceUpdateToolbar } = useForceUpdateCardtextToolbar(editor)
+
+  const reduxValue = useAppSelector(selectCardtextValue)
+  const plainText = useAppSelector(selectCardtextPlainText)
+  const isComplete = useAppSelector(selectCardtextIsComplete)
+  const fontSizeStep = useAppSelector(selectFontSizeStep)
+  const resetToken = useAppSelector((state) => state.cardtext.resetToken)
+  const editorRef = React.useRef<HTMLDivElement>(null)
+  const editableRef = React.useRef<HTMLDivElement>(null)
+
+  const [value, setLocalValue] = React.useState<CardtextValue>(reduxValue)
+
+  React.useEffect(() => {
+    setLocalValue(reduxValue)
+  }, [reduxValue])
+
   return {
     state: {
-      editor: controller.state.editor,
-      value: controller.state.value,
-      plainText: controller.state.plainText,
-      isComplete: controller.state.isComplete,
-      editorRef: controller.state.editorRef,
-      editableRef: controller.state.editableRef,
+      editor,
+      value,
+      plainText,
+      isComplete,
+      editorRef,
+      editableRef,
+      fontSizeStep,
     },
 
     actions: {
@@ -32,6 +57,8 @@ export const useCardtextFacade = () => {
       isBoldActive: controller.actions.isBoldActive,
       isItalicActive: controller.actions.isItalicActive,
       isUnderlineActive: controller.actions.isUnderlineActive,
+
+      setFontSizeStep: controller.actions.setFontSizeStep,
     },
 
     selectors: {
@@ -40,6 +67,7 @@ export const useCardtextFacade = () => {
       selectCardtextPlainText,
       selectCardtextIsComplete,
       selectCardtextLines,
+      selectFontSizeStep,
     },
   }
 }

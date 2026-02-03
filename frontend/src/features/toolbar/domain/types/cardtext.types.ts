@@ -6,8 +6,9 @@ export const CARDTEXT_KEYS = [
   // 'bold',
   // 'underline',
   'fontFamily',
-  'fontSizeMinus',
-  'fontSizePlus',
+  'fontSizeLess',
+  'fontSizeIndicator',
+  'fontSizeMore',
   // 'color',
   'left',
   'center',
@@ -15,7 +16,7 @@ export const CARDTEXT_KEYS = [
   'justify',
   'close',
   'save',
-  'textTemplates',
+  'textList',
 ] as const
 
 export type CardtextKey = (typeof CARDTEXT_KEYS)[number]
@@ -32,23 +33,24 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
   {
     group: 'text',
     icons: [
-      'fontFamily',
-      'fontSizeMinus',
-      'fontSizePlus',
-      // 'color',
-      'left',
-      'center',
-      'right',
-      'justify',
-    ].map((key) => ({ key: key as CardtextKey, state: 'disabled' })),
+      { key: 'fontFamily', state: 'enabled' },
+      { key: 'fontSizeLess', state: 'enabled' },
+      { key: 'fontSizeIndicator', state: 'enabled' },
+      { key: 'fontSizeMore', state: 'enabled' },
+      { key: 'left', state: 'enabled' },
+      { key: 'center', state: 'enabled' },
+      { key: 'right', state: 'enabled' },
+      { key: 'justify', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {
     group: 'ui',
-    icons: ['close', 'save', 'textTemplates'].map((key) => ({
-      key: key as CardtextKey,
-      state: 'disabled',
-    })),
+    icons: [
+      { key: 'close', state: 'disabled' },
+      { key: 'save', state: 'disabled' },
+      { key: 'textList', state: 'disabled' },
+    ],
     status: 'enabled',
   },
 ]

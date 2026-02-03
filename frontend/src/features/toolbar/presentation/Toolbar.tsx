@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { CropPreview } from './CropPreview'
 import { useToolbarFacade } from '../application/facades'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
+import { useCardtextFacade } from '@cardtext/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
@@ -20,6 +21,9 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     useToolbarFacade(section)
   const { state: iconStates, groups, badges } = toolbarState
   const { onAction } = toolbarActions
+
+  const { state: cardtextState } = useCardtextFacade()
+  const { fontSizeStep } = cardtextState
 
   // console.log('Toolbar iconStates', iconStates)
 
@@ -76,6 +80,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
         {getToolbarIcon({
           key: key as IconKey,
           orientation: orientation as LayoutOrientation,
+          step: fontSizeStep,
         })}
 
         {Boolean(badge && badge > 0) && (

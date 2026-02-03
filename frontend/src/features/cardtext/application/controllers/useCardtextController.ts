@@ -2,12 +2,17 @@ import React from 'react'
 import { createEditor, Transforms, Editor } from 'slate'
 import { withReact } from 'slate-react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { setValue, clear } from '../../infrastructure/state'
+import {
+  setValue,
+  clear,
+  setFontSizeStep as changeFontSizeStep,
+} from '../../infrastructure/state'
 import { useForceUpdateCardtextToolbar } from '../commands'
 import {
   selectCardtextValue,
   selectCardtextPlainText,
   selectCardtextIsComplete,
+  selectFontSizeStep,
 } from '../../infrastructure/selectors'
 import { EMPTY_PARAGRAPH } from '../../domain/types'
 import { toggleBold, toggleItalic, toggleUnderline } from '../commands'
@@ -15,12 +20,14 @@ import type { CardtextValue } from '../../domain/types'
 
 export const useCardtextController = () => {
   const dispatch = useAppDispatch()
+
   const editor = React.useMemo(() => withReact(createEditor()), [])
   const { forceUpdateToolbar } = useForceUpdateCardtextToolbar(editor)
 
   const reduxValue = useAppSelector(selectCardtextValue)
   const plainText = useAppSelector(selectCardtextPlainText)
   const isComplete = useAppSelector(selectCardtextIsComplete)
+  const fontSizeStep = useAppSelector(selectFontSizeStep)
   const resetToken = useAppSelector((state) => state.cardtext.resetToken)
 
   const [value, setLocalValue] = React.useState<CardtextValue>(reduxValue)
@@ -61,9 +68,11 @@ export const useCardtextController = () => {
   const isItalicActive = () => Editor.marks(editor)?.italic === true
   const isUnderlineActive = () => Editor.marks(editor)?.underline === true
 
+  const setFontSizeStep = (step: number) => dispatch(changeFontSizeStep(step))
+
   const applyMark = (
     format: 'bold' | 'italic' | 'underline' | 'color' | 'fontSize',
-    value?: any
+    value?: any,
   ) => {
     if (Editor.marks(editor)?.[format]) {
       Editor.removeMark(editor, format)
@@ -76,7 +85,7 @@ export const useCardtextController = () => {
     Transforms.setNodes(
       editor,
       { align },
-      { match: (n) => Editor.isBlock(editor, n as any) }
+      { match: (n) => Editor.isBlock(editor, n as any) },
     )
   }
 
@@ -88,6 +97,7 @@ export const useCardtextController = () => {
       isComplete,
       editorRef,
       editableRef,
+      fontSizeStep,
     },
     actions: {
       handleSlateChange,
@@ -100,6 +110,7 @@ export const useCardtextController = () => {
       isUnderlineActive,
       applyMark,
       applyAlign,
+      setFontSizeStep,
     },
   }
 }

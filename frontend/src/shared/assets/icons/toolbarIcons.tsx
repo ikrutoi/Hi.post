@@ -136,7 +136,12 @@ import {
   IconFontSizeMinusV2,
   IconFontSizePlusV3,
   IconFontSizeMinusV3,
+  IconCircleV2,
+  IconFontSizeLess,
+  IconFontSizeMore,
+  IconFontSizeLessV2,
 } from '@shared/ui/icons'
+import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
 
 // export const toolbarIcons = Object.fromEntries(
@@ -146,6 +151,7 @@ import type { LayoutOrientation } from '@layout/domain/types'
 export function getIconByKey(
   key: IconKey,
   orientation?: LayoutOrientation,
+  currentStep?: number,
 ): JSX.Element {
   switch (key) {
     case 'save':
@@ -218,10 +224,16 @@ export function getIconByKey(
       return <RiFontSize2 />
     case 'fontSizePlus':
       return <IconFontSizePlusV3 />
+    case 'fontSizeMore':
+      return <IconFontSizeMore />
     case 'fontSizeMinus':
       return <IconFontSizeMinusV3 />
+    case 'fontSizeLess':
+      return <IconFontSizeLess />
     case 'fontFamily':
       return <IconFontFamily />
+    case 'fontSizeIndicator':
+      return <FontSizeIndicator currentStep={currentStep ?? 3} />
     case 'color':
       return <RiFontColor />
     case 'left':
@@ -254,7 +266,7 @@ export function getIconByKey(
       return <IconAddressTemplates />
     case 'cardText':
       return <BsCardText />
-    case 'textTemplates':
+    case 'textList':
       return <IconCardtextTemplates />
     case 'photoTemplates':
       return <IconCardphotoTemplates />

@@ -14,3 +14,6 @@ export const selectCardtextIsComplete = (state: RootState): boolean =>
 
 export const selectCardtextLines = (state: RootState): number =>
   state.cardtext.cardtextLines
+
+export const selectFontSizeStep = (state: RootState): number =>
+  state.cardtext.fontSizeStep
