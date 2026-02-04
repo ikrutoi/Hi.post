@@ -67,7 +67,7 @@ export const CardEditor: React.FC = () => {
           initialValue={value as Descendant[]}
           onChange={(newValue: Descendant[]) => {
             setValue(newValue as CardtextValue)
-            forceUpdateToolbar()
+            // forceUpdateToolbar()
           }}
         >
           <Editable

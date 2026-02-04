@@ -5,7 +5,7 @@ import { clearRecipient } from '@envelope/recipient/infrastructure/state'
 import { updateGroupStatus } from '@toolbar/infrastructure/state'
 
 function* handleEnvelopeToolbarAction(
-  action: ReturnType<typeof toolbarAction>
+  action: ReturnType<typeof toolbarAction>,
 ) {
   const { section, key } = action.payload
 
@@ -18,12 +18,14 @@ function* handleEnvelopeToolbarAction(
       yield put(clearRecipient())
     }
 
+    console.log('handleEnvelope')
+
     yield put(
       updateGroupStatus({
         section,
         groupName: 'address',
         status: 'disabled',
-      })
+      }),
     )
   }
 

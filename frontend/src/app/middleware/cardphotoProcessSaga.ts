@@ -68,6 +68,7 @@ import type {
   CardphotoBase,
   ImageSource,
   ImageRotation,
+  CardphotoSessionRecord,
 } from '@cardphoto/domain/types'
 import type { SizeCard, LayoutOrientation } from '@layout/domain/types'
 
@@ -84,6 +85,7 @@ export function* onDownloadClick(): SagaIterator {
   )
 
   yield put(markLoading())
+  console.log('onDownload')
 
   yield put(
     updateGroupStatus({
@@ -144,6 +146,8 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   } finally {
     yield put(markLoaded())
   }
+
+  console.log('onUpload')
 
   const groups = ['photo', 'ui']
   for (const groupName of groups) {
@@ -258,6 +262,30 @@ export function* rebuildConfigFromMeta(
         },
       }),
     )
+
+    yield fork(function* () {
+      try {
+        const sessionData: CardphotoSessionRecord = {
+          id: 'cardphoto_last_state',
+          source: source,
+          activeMetaId: meta.id,
+          config: {
+            card: newConfig.card,
+            image: {
+              left: newConfig.image.left,
+              top: newConfig.image.top,
+              rotation: newConfig.image.rotation,
+              metaId: meta.id,
+            },
+            crop: newConfig.crop,
+          },
+          timestamp: Date.now(),
+        }
+        yield call([storeAdapters.session, 'put'], sessionData)
+      } catch (e) {
+        console.error('Persistence failed', e)
+      }
+    })
 
     return newConfig
   } catch (error) {

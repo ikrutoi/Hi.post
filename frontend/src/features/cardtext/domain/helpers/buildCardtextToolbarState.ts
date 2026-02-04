@@ -16,9 +16,9 @@ export const buildCardtextToolbarState = (
 
   for (const key of CARDTEXT_KEYS) {
     switch (key) {
-      // case 'italic':
-      //   state.italic = firstLeaf.italic ? 'active' : 'enabled'
-      //   break
+      case 'cardOrientation':
+        state.cardOrientation = 'enabled'
+        break
       case 'fontFamily':
         state.fontFamily = 'enabled'
         break

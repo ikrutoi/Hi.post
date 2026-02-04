@@ -41,7 +41,7 @@ function* syncAromaClear() {
 function* syncEnvelopeRecompute() {
   const envelopeComplete: boolean = yield select(selectIsEnvelopeComplete)
   yield put(
-    setSectionComplete({ section: 'envelope', isComplete: envelopeComplete })
+    setSectionComplete({ section: 'envelope', isComplete: envelopeComplete }),
   )
 }
 
@@ -52,7 +52,7 @@ function* syncEnvelopeClear() {
 function* syncCardtextSet() {
   const textComplete: boolean = yield select(selectCardtextIsComplete)
   yield put(
-    setSectionComplete({ section: 'cardtext', isComplete: textComplete })
+    setSectionComplete({ section: 'cardtext', isComplete: textComplete }),
   )
 }
 
@@ -76,6 +76,6 @@ export function* cardEditorSaga() {
   yield takeEvery(clearEnvelope.type, syncEnvelopeClear)
 
   yield takeEvery(setValue.type, syncCardtextSet)
-  yield takeEvery(setValue.type, syncCardtextToolbar)
+  // yield takeEvery(setValue.type, syncCardtextToolbar)
   yield takeEvery(clearCardtext.type, syncCardtextReset)
 }

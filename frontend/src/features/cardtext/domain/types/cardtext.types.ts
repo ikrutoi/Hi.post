@@ -55,3 +55,5 @@ export const initialCardtextValue: CardtextValue = [
     children: [{ text: '', italic: true }],
   },
 ]
+
+export interface CardtextSessionRecord {}

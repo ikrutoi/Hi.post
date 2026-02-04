@@ -16,6 +16,7 @@ export const useToolbarController = (section: ToolbarSection) => {
   }
 
   const setGroupStatus = (groupName: string, status: IconStateGroup) => {
+    console.log('setGroup Controller')
     dispatch(updateGroupStatus({ section, groupName, status }))
   }
 

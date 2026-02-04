@@ -31,7 +31,7 @@ export const setAlign = (editor: Editor, align: CardtextBlock['align']) => {
       match: (n) =>
         !Editor.isEditor(n) &&
         ['paragraph', 'heading', 'quote'].includes((n as any).type),
-    }
+    },
   )
   ReactEditor.focus(editor as ReactEditor)
 }
@@ -68,12 +68,12 @@ export const useForceUpdateCardtextToolbar = (editor: Editor) => {
     const hasSelection = !!editor.selection
     const textGroupStatus = groups.find((g) => g.group === 'text')?.status
 
-    if (hasSelection && textGroupStatus === 'disabled') {
-      toolbarActions.setGroupStatus('text', 'enabled')
-    } else if (!hasSelection && textGroupStatus === 'enabled') {
-      toolbarActions.setGroupStatus('text', 'disabled')
-      return
-    }
+    // if (hasSelection && textGroupStatus === 'disabled') {
+    //   toolbarActions.setGroupStatus('text', 'enabled')
+    // } else if (!hasSelection && textGroupStatus === 'enabled') {
+    //   toolbarActions.setGroupStatus('text', 'disabled')
+    //   return
+    // }
 
     if (!hasSelection) return
 
@@ -84,9 +84,10 @@ export const useForceUpdateCardtextToolbar = (editor: Editor) => {
     })
 
     const currentAlign = getActiveAlign(editor)
-    ;(['left', 'center', 'right', 'justify'] as const).forEach((key) => {
-      updatedState[key] = currentAlign === key ? 'active' : 'enabled'
-    })
+
+    // ;(['left', 'center', 'right', 'justify'] as const).forEach((key) => {
+    //   updatedState[key] = currentAlign === key ? 'active' : 'enabled'
+    // })
 
     toolbarActions.updateSection(updatedState)
   }

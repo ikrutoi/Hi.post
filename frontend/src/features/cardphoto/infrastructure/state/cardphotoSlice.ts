@@ -107,35 +107,6 @@ export const cardphotoSlice = createSlice({
       state.isComplete = false
     },
 
-    // hydrateEditor1(
-    //   state,
-    //   action: PayloadAction<{
-    //     base: CardphotoBase
-    //     config: WorkingConfig
-    //     activeSource: ImageSource
-    //     cropIds: string[]
-    //     cropCount: number
-    //   }>,
-    // ) {
-    //   const { base, config, activeSource, cropIds, cropCount } = action.payload
-
-    //   const initialOperation: CardphotoOperation = {
-    //     type: 'operation',
-    //     payload: { config, reason: 'init' },
-    //   }
-
-    //   state.state = {
-    //     base,
-    //     operations: [initialOperation],
-    //     activeIndex: 0,
-    //     cropCount,
-    //     cropIds,
-    //     activeSource,
-    //     currentConfig: config,
-    //   }
-    //   state.isComplete = false
-    // },
-
     setBaseImage(
       state,
       action: PayloadAction<{ target: keyof CardphotoBase; image: ImageMeta }>,
@@ -154,22 +125,6 @@ export const cardphotoSlice = createSlice({
         action.payload.payload.reason,
       )
     },
-
-    // addOperation1(state, action: PayloadAction<CardphotoOperation>) {
-    //   if (!state.state) return
-    //   const op = action.payload
-
-    //   state.state.currentConfig = op.payload.config
-
-    //   state.state.operations = state.state.operations.slice(
-    //     0,
-    //     state.state.activeIndex + 1,
-    //   )
-
-    //   state.state.operations.push(op)
-    //   const newIndex = state.state.operations.length - 1
-    //   state.state.activeIndex = newIndex
-    // },
 
     undo(state) {
       if (!state.state) return
@@ -282,6 +237,15 @@ export const cardphotoSlice = createSlice({
       }
     },
 
+    setInitialSessionState(
+      state,
+      action: PayloadAction<{ config: WorkingConfig; source: ImageSource }>,
+    ) {
+      if (state.state) {
+        state.state.currentConfig = action.payload.config
+      }
+    },
+
     // addCropId(state, action: PayloadAction<string>) {
     //   if (state.state) {
     //     if (!state.state.cropIds) state.state.cropIds = []
@@ -354,6 +318,7 @@ export const {
   resetCropLayers,
   setActiveSource,
   addCropId,
+  setInitialSessionState,
   setProcessedImage,
   hydrateEditor,
   removeCropId,

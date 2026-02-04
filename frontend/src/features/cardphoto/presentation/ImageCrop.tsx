@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { CropArea } from './CropArea'
 import { CropOverlay } from './CropOverlay'
@@ -8,14 +8,11 @@ import {
   useCardphotoUiFacade,
 } from '../application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
-import { useImageMetaLoader } from '../application/hooks/useImageMetaLoader'
 import {
   useImageUpload,
   useFileDialog,
   useCropState,
-  useCurrentImageMeta,
 } from '../application/hooks'
-import { useCardphotoSrc } from '../application/hooks/useCardphotoSrc'
 import styles from './ImageCrop.module.scss'
 
 export const ImageCrop = () => {
@@ -31,15 +28,12 @@ export const ImageCrop = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
 
   console.log('ImageCrop state', cardphotoState)
-  // console.log('ImageCrop activeImage', activeImage)
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
   const { state: iconStates } = toolbarState
 
   const { size } = useLayoutFacade()
   const { sizeCard } = size
-
-  // console.log('ImageCrop sizeCard', sizeCard)
 
   const [loaded, setLoaded] = useState(false)
 

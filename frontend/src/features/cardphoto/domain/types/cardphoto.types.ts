@@ -76,6 +76,16 @@ export interface WorkingConfig {
   crop: CropLayer
 }
 
+export interface CardphotoSessionRecord {
+  source: ImageSource
+  activeMetaId: string
+  config: {
+    card: CardLayer
+    image: Omit<ImageLayer, 'meta'> & { metaId: string }
+    crop: CropLayer
+  }
+}
+
 export type CardphotoOperation = {
   type: 'operation'
   payload: {
@@ -110,6 +120,7 @@ export interface CardphotoState {
   cropIds: string[]
   activeSource: ImageSource | null
   currentConfig: WorkingConfig | null
+  source: ImageSource
 }
 
 // ----------------------

@@ -51,8 +51,8 @@ import {
 import { onDownloadClick } from './cardphotoProcessSaga'
 import {
   updateToolbarSection,
-  updateToolbarIcon,
-  updateGroupStatus,
+  // updateToolbarIcon,
+  // updateGroupStatus,
 } from '@toolbar/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import type {

@@ -16,3 +16,5 @@ export type EnvelopeState = {
   recipient: { isComplete: boolean }
   isComplete: boolean
 }
+
+export interface EnvelopeSessionRecord {}

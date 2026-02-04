@@ -12,6 +12,7 @@ export const storeAdapters: {
   cart: StoreAdapter<StoreMap['cart']>
   drafts: StoreAdapter<StoreMap['drafts']>
   sent: StoreAdapter<StoreMap['sent']>
+  session: StoreAdapter<StoreMap['session']>
 } = {
   stockImages: createStoreAdapter<StoreMap['stockImages']>('stockImages'),
   userImages: createStoreAdapter<StoreMap['userImages']>('userImages'),
@@ -22,4 +23,5 @@ export const storeAdapters: {
   cart: createStoreAdapter<StoreMap['cart']>('cart'),
   drafts: createStoreAdapter<StoreMap['drafts']>('drafts'),
   sent: createStoreAdapter<StoreMap['sent']>('sent'),
+  session: createStoreAdapter<StoreMap['session']>('session'),
 }

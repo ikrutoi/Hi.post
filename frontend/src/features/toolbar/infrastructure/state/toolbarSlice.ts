@@ -82,6 +82,7 @@ const toolbarSlice = createSlice({
     ) {
       const { section, key, value } = action.payload
       const current = state[section][key] as any
+      // console.log('updateToolbarIcon ', action.payload, action.type)
 
       const newValue =
         typeof value === 'string'
@@ -115,7 +116,7 @@ const toolbarSlice = createSlice({
       }>,
     ) {
       const { section, groupName, status } = action.payload
-      console.log('updateGroupStatus +', status)
+      // console.log('updateGroupStatus +', action.payload)
       const sectionConfig = state[section].config
       if (sectionConfig) {
         const group = sectionConfig.find(

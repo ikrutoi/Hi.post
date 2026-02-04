@@ -1,17 +1,18 @@
-import { takeEvery, put, select } from 'redux-saga/effects'
+import { takeEvery, put, select, call } from 'redux-saga/effects'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
+import { syncCardOrientationStatus } from './cardtextProcessSaga'
 import type {
-  ToolbarState,
   SectionEditorMenuToolbarState,
+  SectionEditorMenuKey,
 } from '@toolbar/domain/types'
 import type { CardSection } from '@shared/config/constants'
 
 function* handleSectionEditorMenuToolbarAction(
-  action: PayloadAction<{ section: string; key: string }>,
+  action: PayloadAction<{ section: string; key: SectionEditorMenuKey }>,
 ) {
   const { section, key } = action.payload
 

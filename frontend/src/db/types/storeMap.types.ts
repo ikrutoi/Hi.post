@@ -5,7 +5,13 @@ import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { CartItem } from '@entities/cart/domain/types'
 import type { DraftsItem } from '@entities/drafts/domain/types'
 import type { SentItem } from '@entities/sent/domain/types'
-import type { ImageMeta, WorkingConfig } from '@cardphoto/domain/types'
+import type {
+  ImageMeta,
+  WorkingConfig,
+  ImageSource,
+  CardphotoSessionRecord,
+} from '@cardphoto/domain/types'
+import type { SessionData } from '@entities/db/domain/types'
 
 export interface StoreMap {
   stockImages: ImageMeta
@@ -17,6 +23,7 @@ export interface StoreMap {
   cart: CartItem
   drafts: DraftsItem
   sent: SentItem
+  session: SessionData
 }
 // export interface TemplateStoreMap {
 //   stockImages: ImageMeta[]

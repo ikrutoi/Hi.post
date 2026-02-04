@@ -22,6 +22,8 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { state: iconStates, groups, badges } = toolbarState
   const { onAction } = toolbarActions
 
+  // console.log('TOOLBAR state', iconStates)
+
   const { state: cardtextState } = useCardtextFacade()
   const { fontSizeStep } = cardtextState
 

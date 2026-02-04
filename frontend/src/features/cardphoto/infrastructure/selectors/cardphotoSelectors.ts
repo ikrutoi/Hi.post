@@ -11,6 +11,7 @@ import type {
   QualityLevel,
   GalleryItem,
   ImageSource,
+  CardphotoSessionRecord,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 import { cardEditorReducer } from '@/entities/cardEditor/infrastructure/state'
@@ -182,3 +183,28 @@ export const selectActiveImage = (state: RootState): ImageMeta | null => {
 
 export const selectIsProcessedMode = (state: RootState): boolean =>
   state.cardphoto.state?.activeSource === 'processed'
+
+export const selectCardphotoSessionRecord = (
+  state: RootState,
+): CardphotoSessionRecord | null => {
+  const s = state.cardphoto.state
+  if (!s) return null
+
+  const config = s.currentConfig
+  if (!config) return null
+
+  return {
+    source: s.source,
+    activeMetaId: config.image.meta.id,
+    config: {
+      card: config.card,
+      image: {
+        left: config.image.left,
+        top: config.image.top,
+        rotation: config.image.rotation,
+        metaId: config.image.meta.id,
+      },
+      crop: config.crop,
+    },
+  }
+}

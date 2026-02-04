@@ -5,6 +5,7 @@ export const CARDTEXT_KEYS = [
   // 'italic',
   // 'bold',
   // 'underline',
+  'cardOrientation',
   'fontFamily',
   'fontSizeLess',
   'fontSizeIndicator',
@@ -33,6 +34,11 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
   {
     group: 'text',
     icons: [
+      {
+        key: 'cardOrientation',
+        state: 'disabled',
+        options: { orientation: 'landscape' },
+      },
       { key: 'fontFamily', state: 'enabled' },
       { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
