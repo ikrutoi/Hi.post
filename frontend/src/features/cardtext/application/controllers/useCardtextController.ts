@@ -1,25 +1,32 @@
 import React from 'react'
-import { createEditor, Transforms, Editor } from 'slate'
+import {
+  createEditor,
+  Transforms,
+  Editor,
+  Element as SlateElement,
+} from 'slate'
 import { withReact } from 'slate-react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import {
-  setValue,
-  clear,
-  setFontSizeStep as changeFontSizeStep,
-} from '../../infrastructure/state'
+import { setValue, clear, setTextStyle } from '../../infrastructure/state'
 import { useForceUpdateCardtextToolbar } from '../commands'
 import {
   selectCardtextValue,
   selectCardtextPlainText,
   selectCardtextIsComplete,
   selectFontSizeStep,
+  selectCardtextStyle,
 } from '../../infrastructure/selectors'
 import { EMPTY_PARAGRAPH } from '../../domain/types'
 import { toggleBold, toggleItalic, toggleUnderline } from '../commands'
-import type { CardtextValue } from '../../domain/types'
+import type {
+  CardtextValue,
+  CardtextStyle,
+  TextAlign,
+} from '../../domain/types'
 
 export const useCardtextController = () => {
   const dispatch = useAppDispatch()
+  // const { setValue, clear, setTextStyle } = cardtextSlice.actions
 
   const editor = React.useMemo(() => withReact(createEditor()), [])
   const { forceUpdateToolbar } = useForceUpdateCardtextToolbar(editor)
@@ -27,8 +34,10 @@ export const useCardtextController = () => {
   const reduxValue = useAppSelector(selectCardtextValue)
   const plainText = useAppSelector(selectCardtextPlainText)
   const isComplete = useAppSelector(selectCardtextIsComplete)
-  const fontSizeStep = useAppSelector(selectFontSizeStep)
   const resetToken = useAppSelector((state) => state.cardtext.resetToken)
+
+  const style = useAppSelector(selectCardtextStyle)
+  // const { fontSizeStep, fontFamily, color } = style
 
   const [value, setLocalValue] = React.useState<CardtextValue>(reduxValue)
 
@@ -43,11 +52,13 @@ export const useCardtextController = () => {
 
   React.useEffect(() => {
     editor.children = reduxValue
-    const start = Editor.start(editor, [])
-    editor.selection = { anchor: start, focus: start }
+    if (editor.children.length > 0) {
+      const start = Editor.start(editor, [])
+      editor.selection = { anchor: start, focus: start }
+    }
     editor.onChange()
     forceUpdateToolbar()
-  }, [resetToken])
+  }, [resetToken, editor, reduxValue])
 
   const editorRef = React.useRef<HTMLDivElement>(null)
   const editableRef = React.useRef<HTMLDivElement>(null)
@@ -64,29 +75,15 @@ export const useCardtextController = () => {
     Transforms.insertNodes(editor, EMPTY_PARAGRAPH, { at: [0] })
   }
 
-  const isBoldActive = () => Editor.marks(editor)?.bold === true
-  const isItalicActive = () => Editor.marks(editor)?.italic === true
-  const isUnderlineActive = () => Editor.marks(editor)?.underline === true
-
-  const setFontSizeStep = (step: number) => dispatch(changeFontSizeStep(step))
-
-  const applyMark = (
-    format: 'bold' | 'italic' | 'underline' | 'color' | 'fontSize',
-    value?: any,
-  ) => {
-    if (Editor.marks(editor)?.[format]) {
-      Editor.removeMark(editor, format)
-    } else {
-      Editor.addMark(editor, format, value ?? true)
-    }
-  }
-
-  const applyAlign = (align: 'left' | 'center' | 'right' | 'justify') => {
+  const applyAlign = (align: TextAlign) => {
     Transforms.setNodes(
       editor,
       { align },
-      { match: (n) => Editor.isBlock(editor, n as any) },
+      {
+        match: (n) => SlateElement.isElement(n) && Editor.isBlock(editor, n),
+      },
     )
+    dispatch(setTextStyle({ align }))
   }
 
   return {
@@ -97,20 +94,14 @@ export const useCardtextController = () => {
       isComplete,
       editorRef,
       editableRef,
-      fontSizeStep,
+      style,
     },
     actions: {
       handleSlateChange,
       clearCardtext,
-      toggleBold: () => toggleBold(editor),
-      toggleItalic: () => toggleItalic(editor),
-      toggleUnderline: () => toggleUnderline(editor),
-      isBoldActive,
-      isItalicActive,
-      isUnderlineActive,
-      applyMark,
       applyAlign,
-      setFontSizeStep,
+      updateStyle: (newStyle: Partial<CardtextStyle>) =>
+        dispatch(setTextStyle(newStyle)),
     },
   }
 }

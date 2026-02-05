@@ -4,11 +4,11 @@ import { capitalize } from '@shared/utils/helpers'
 import { renderCardSection } from '../../application/helpers/renderCardSection'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { useLayoutFacade } from '@layout/application/facades'
-import { useSectionEditorMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import styles from './CardSectionRenderer.module.scss'
 
 export const CardSectionRenderer = () => {
-  const { state: stateSectionEditorMenu } = useSectionEditorMenuFacade()
+  const { state: stateSectionEditorMenu } = useSectionMenuFacade()
   const { activeSection } = stateSectionEditorMenu
 
   const { size } = useLayoutFacade()

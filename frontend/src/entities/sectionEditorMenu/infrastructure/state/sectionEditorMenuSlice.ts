@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { CardSection } from '@shared/config/constants'
+import { SectionEditorMenuKey } from '@toolbar/domain/types'
 
 interface SectionEditorMenuState {
-  activeSection: CardSection | null
+  activeSection: SectionEditorMenuKey | null
 }
 
 const initialState: SectionEditorMenuState = {
@@ -13,17 +13,23 @@ export const sectionEditorMenuSlice = createSlice({
   name: 'sectionEditorMenu',
   initialState,
   reducers: {
-    setActiveSection(state, action: PayloadAction<CardSection>) {
+    setActiveSection(state, action: PayloadAction<SectionEditorMenuKey>) {
+      console.log('SET_ACTIVE_SECTION')
       if (state.activeSection !== action.payload) {
         state.activeSection = action.payload
       }
     },
+
+    restoreEditorSession(state, action: PayloadAction<SectionEditorMenuKey>) {
+      state.activeSection = action.payload
+    },
+
     resetActiveSection(state) {
       state.activeSection = null
     },
   },
 })
 
-export const { setActiveSection, resetActiveSection } =
+export const { setActiveSection, restoreEditorSession, resetActiveSection } =
   sectionEditorMenuSlice.actions
 export default sectionEditorMenuSlice.reducer

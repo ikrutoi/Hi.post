@@ -191,10 +191,10 @@ export const selectCardphotoSessionRecord = (
   if (!s) return null
 
   const config = s.currentConfig
-  if (!config) return null
+  if (!config || !s.activeSource) return null
 
   return {
-    source: s.source,
+    source: s.activeSource,
     activeMetaId: config.image.meta.id,
     config: {
       card: config.card,

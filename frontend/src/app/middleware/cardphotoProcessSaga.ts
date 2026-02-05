@@ -10,6 +10,7 @@ import {
 } from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { persistGlobalSession } from './sessionSaga'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
   openFileDialog,
@@ -29,10 +30,7 @@ import {
   removeCropId,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
-import {
-  prepareForRedux,
-  prepareConfigForRedux,
-} from './cardphotoToolbarHelpers'
+import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { setSizeCard } from '@layout/infrastructure/state'
@@ -42,13 +40,14 @@ import {
   updateToolbarSection,
   updateToolbarIcon,
 } from '@toolbar/infrastructure/state'
+import {} from './cardphotoHelpers'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import {
   fitImageToCard,
   createInitialCropLayer,
 } from '@cardphoto/application/utils/imageFit'
-import { updateCropToolbarState } from './cardphotoToolbarHelpers'
+import { updateCropToolbarState } from './cardphotoHelpers'
 import {
   handleCardphotoToolbarAction,
   watchCropChanges,
@@ -263,29 +262,7 @@ export function* rebuildConfigFromMeta(
       }),
     )
 
-    yield fork(function* () {
-      try {
-        const sessionData: CardphotoSessionRecord = {
-          id: 'cardphoto_last_state',
-          source: source,
-          activeMetaId: meta.id,
-          config: {
-            card: newConfig.card,
-            image: {
-              left: newConfig.image.left,
-              top: newConfig.image.top,
-              rotation: newConfig.image.rotation,
-              metaId: meta.id,
-            },
-            crop: newConfig.crop,
-          },
-          timestamp: Date.now(),
-        }
-        yield call([storeAdapters.session, 'put'], sessionData)
-      } catch (e) {
-        console.error('Persistence failed', e)
-      }
-    })
+    yield fork(persistGlobalSession)
 
     return newConfig
   } catch (error) {

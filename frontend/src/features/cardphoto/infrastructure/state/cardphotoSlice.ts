@@ -9,6 +9,7 @@ import type {
   CropLayer,
   CardLayer,
   ImageSource,
+  CardphotoSessionRecord,
 } from '../../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -298,6 +299,20 @@ export const cardphotoSlice = createSlice({
         state.state.currentConfig = null
       }
     },
+
+    restoreSession(state, action: PayloadAction<CardphotoSessionRecord>) {
+      if (state.state) {
+        state.state.activeSource = action.payload.source
+        state.state.currentConfig = {
+          card: action.payload.config.card,
+          crop: action.payload.config.crop,
+          image: {
+            ...action.payload.config.image,
+            meta: { id: action.payload.config.image.metaId } as ImageMeta,
+          },
+        }
+      }
+    },
   },
 })
 
@@ -325,6 +340,7 @@ export const {
   clearAllCrops,
   removeUserImage,
   clearCurrentConfig,
+  restoreSession,
 } = cardphotoSlice.actions
 
 export default cardphotoSlice.reducer

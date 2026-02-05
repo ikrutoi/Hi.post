@@ -1,17 +1,34 @@
-import { useSectionEditorMenuController } from '../controllers'
-import type { CardSection } from '@shared/config/constants'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { selectActiveSection } from '../../infrastructure/selectors'
+import {
+  setActiveSection,
+  resetActiveSection,
+} from '../../infrastructure/state'
+import { SectionEditorMenuKey } from '@toolbar/domain/types'
 
-export const useSectionEditorMenuFacade = () => {
-  const { state, actions } = useSectionEditorMenuController()
+export const useSectionMenuFacade = () => {
+  const dispatch = useAppDispatch()
 
-  const isSectionActive = (section: CardSection) =>
-    state.activeSection === section
+  const activeSection = useAppSelector(selectActiveSection)
+  const isHydrated = activeSection !== null
+
+  const changeSection = (key: SectionEditorMenuKey) => {
+    dispatch(setActiveSection(key))
+  }
+
+  const resetMenu = () => {
+    dispatch(resetActiveSection())
+  }
 
   return {
-    state,
-    actions,
-    helpers: {
-      isSectionActive,
+    state: {
+      activeSection,
+      isHydrated,
+    },
+
+    actions: {
+      changeSection,
+      resetMenu,
     },
   }
 }

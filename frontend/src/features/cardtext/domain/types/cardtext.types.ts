@@ -3,12 +3,14 @@ import { ReactEditor } from 'slate-react'
 
 export type CardtextTextNode = {
   text: string
-  italic?: boolean
-  bold?: boolean
-  underline?: boolean
-  fontSize?: number
-  color?: string
+  // italic?: boolean
+  // bold?: boolean
+  // underline?: boolean
+  // fontSize?: number
+  // color?: string
 }
+
+export type TextAlign = 'left' | 'center' | 'right' | 'justify'
 
 export type ParagraphElement = {
   type: 'paragraph'
@@ -28,7 +30,13 @@ export type QuoteElement = {
   children: CardtextTextNode[]
 }
 
-export type CardtextBlock = ParagraphElement | HeadingElement | QuoteElement
+// export type CardtextBlock = ParagraphElement | HeadingElement | QuoteElement
+
+export type CardtextBlock = {
+  type: 'paragraph' | 'heading' | 'quote'
+  align: TextAlign
+  children: CardtextTextNode[]
+}
 
 export type CardtextValue = CardtextBlock[]
 
@@ -52,8 +60,29 @@ export const initialCardtextValue: CardtextValue = [
   {
     type: 'paragraph',
     align: 'left',
-    children: [{ text: '', italic: true }],
+    children: [{ text: '' }],
   },
 ]
 
-export interface CardtextSessionRecord {}
+export type CardtextSessionRecord = CardtextStyle
+
+export interface CardtextStyle {
+  fontFamily: string
+  fontSizeStep: number
+  color: string
+  align: TextAlign
+}
+
+// export interface CardtextState {
+//   value: CardtextValue
+//   style: CardtextStyle
+// }
+
+export interface CardtextState {
+  value: CardtextValue
+  style: CardtextStyle
+  plainText: string
+  isComplete: boolean
+  cardtextLines: number
+  resetToken: number
+}

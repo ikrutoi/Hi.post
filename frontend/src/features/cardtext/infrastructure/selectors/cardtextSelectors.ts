@@ -1,5 +1,5 @@
 import { RootState } from '@app/state'
-import type { CardtextValue } from '@cardtext/domain/types'
+import type { CardtextValue, CardtextStyle } from '../../domain/types'
 
 export const selectCardtextState = (state: RootState) => state.cardtext
 
@@ -15,5 +15,17 @@ export const selectCardtextIsComplete = (state: RootState): boolean =>
 export const selectCardtextLines = (state: RootState): number =>
   state.cardtext.cardtextLines
 
+export const selectCardtextStyle = (state: RootState): CardtextStyle =>
+  state.cardtext.style
+
 export const selectFontSizeStep = (state: RootState): number =>
-  state.cardtext.fontSizeStep
+  state.cardtext.style.fontSizeStep
+
+export const selectFontFamily = (state: RootState): string =>
+  state.cardtext.style.fontFamily
+
+export const selectFontColor = (state: RootState): string =>
+  state.cardtext.style.color
+
+export const selectCardtextSessionRecord = (state: RootState): CardtextStyle =>
+  state.cardtext.style

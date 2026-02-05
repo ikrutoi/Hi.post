@@ -4,7 +4,7 @@ import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 
 export interface SessionData {
-  id: 'current_session'
+  id: string
   cardphoto: CardphotoSessionRecord | null
   cardtext: CardtextSessionRecord | null
   envelope: EnvelopeSessionRecord | null

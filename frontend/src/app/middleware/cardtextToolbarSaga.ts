@@ -1,7 +1,7 @@
 import { SagaIterator } from 'redux-saga'
 import { call } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { changeFontSizeStep } from './cardtextToolbarHandlers'
+import { changeFontSizeStep } from './cardtextHandlers'
 import { syncCardOrientationStatus } from './cardtextProcessSaga'
 
 export function* handleCardtextToolbarAction(

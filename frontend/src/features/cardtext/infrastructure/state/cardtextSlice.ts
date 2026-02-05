@@ -4,30 +4,74 @@ import {
   DEFAULT_CARDTEXT_LINES,
   initialCardtextValue,
 } from '../../domain/types'
-import type { CardtextValue } from '../../domain/types'
+import type {
+  CardtextValue,
+  CardtextState,
+  CardtextStyle,
+  CardtextBlock,
+  CardtextSessionRecord,
+} from '../../domain/types'
 
-export interface CardtextState {
-  value: CardtextValue
-  plainText: string
-  isComplete: boolean
-  cardtextLines: number
-  resetToken: number
-  fontSizeStep: number
-}
+// export interface CardtextState {
+//   value: CardtextValue
+//   plainText: string
+//   isComplete: boolean
+//   cardtextLines: number
+//   resetToken: number
+//   fontSizeStep: number
+// }
+
+// const initialState: CardtextState = {
+//   value: initialCardtextValue,
+//   plainText: '',
+//   isComplete: false,
+//   cardtextLines: DEFAULT_CARDTEXT_LINES,
+//   resetToken: 0,
+//   fontSizeStep: 3,
+// }
 
 const initialState: CardtextState = {
-  value: initialCardtextValue,
+  value: [
+    {
+      type: 'paragraph',
+      align: 'left',
+      children: [{ text: '' }],
+    },
+  ],
+  style: {
+    fontFamily: 'Roboto',
+    fontSizeStep: 3,
+    color: '#000000',
+    align: 'left',
+  },
   plainText: '',
   isComplete: false,
-  cardtextLines: DEFAULT_CARDTEXT_LINES,
+  cardtextLines: 15,
   resetToken: 0,
-  fontSizeStep: 3,
 }
 
 export const cardtextSlice = createSlice({
   name: 'cardtext',
   initialState,
   reducers: {
+    setTextStyle(state, action: PayloadAction<Partial<CardtextStyle>>) {
+      state.style = {
+        ...state.style,
+        ...action.payload,
+      }
+    },
+
+    setAlign(state, action: PayloadAction<CardtextBlock['align']>) {
+      state.value = state.value.map((block) => ({
+        ...block,
+        align: action.payload,
+      }))
+    },
+
+    restoreCardtextSession(state, action: PayloadAction<CardtextStyle>) {
+      state.style = action.payload
+    },
+
     setValue(state, action: PayloadAction<CardtextValue>) {
       state.value = action.payload
       state.plainText = action.payload
@@ -36,9 +80,9 @@ export const cardtextSlice = createSlice({
       state.isComplete = state.plainText.trim().length > 0
     },
 
-    setFontSizeStep(state, action: PayloadAction<number>) {
-      state.fontSizeStep = action.payload
-    },
+    // setFontSizeStep(state, action: PayloadAction<number>) {
+    //   state.fontSizeStep = action.payload
+    // },
 
     setPlainText(state, action: PayloadAction<string>) {
       state.plainText = action.payload
@@ -69,17 +113,30 @@ export const cardtextSlice = createSlice({
       state.isComplete = false
       state.resetToken += 1
     },
+
+    // restoreFontSize(state, action: PayloadAction<number>) {
+    //   state.fontSizeStep = action.payload
+    // },
+
+    restoreCardtext(state, action: PayloadAction<CardtextValue>) {
+      state.value = action.payload
+    },
   },
 })
 
 export const {
   setValue,
-  setFontSizeStep,
+  // setFontSizeStep,
+  setAlign,
+  setTextStyle,
+  restoreCardtextSession,
   setPlainText,
   setComplete,
   setCardtextLines,
   initCardtext,
   clear,
+  restoreCardtext,
+  // restoreFontSize,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

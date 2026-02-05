@@ -4,7 +4,7 @@ import { getToolbarIcon } from '@shared/utils/icons'
 import { useRemSize } from '@shared/helpers'
 import { capitalize } from '@shared/utils/helpers'
 import { useMiniCardRender } from '../application/hooks'
-import { useSectionEditorMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import styles from './MiniCard.module.scss'
 import type { CardSection } from '@shared/config/constants'
 import type { SizeCard } from '@layout/domain/types'
@@ -27,8 +27,8 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
 
-  const { actions: actionsSectionEditorMenu } = useSectionEditorMenuFacade()
-  const { setActiveSection } = actionsSectionEditorMenu
+  const { actions: sectionMenuActions } = useSectionMenuFacade()
+  const { changeSection } = sectionMenuActions
 
   const { render } = useMiniCardRender()
 
@@ -57,7 +57,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         zIndex,
         transition: `left ${0.3 + 0.15 * position}s ease, box-shadow 0.3s`,
       }}
-      onClick={() => setActiveSection(section)}
+      onClick={() => changeSection(section)}
     >
       {render({
         section,

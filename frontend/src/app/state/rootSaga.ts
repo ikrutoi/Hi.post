@@ -9,10 +9,16 @@ import {
   // cardphotoToolbarSaga,
   cardphotoProcessSaga,
   cardphotoHistorySaga,
+  hydrateAppSession,
+  watchSessionChanges,
 } from '../middleware'
 
 export function* rootSaga() {
+  yield fork(hydrateAppSession)
+
   yield all([
+    fork(watchSessionChanges),
+
     fork(cardEditorSaga),
     fork(envelopeSaga),
     fork(envelopeToolbarSaga),

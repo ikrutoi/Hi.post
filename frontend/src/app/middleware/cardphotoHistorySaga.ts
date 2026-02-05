@@ -15,7 +15,7 @@ import {
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { STOCK_IMAGES } from '@shared/assets/stock'
 import { createWorkingConfig } from './utils'
-import { prepareForRedux } from './cardphotoToolbarHelpers'
+import { prepareForRedux } from './cardphotoHelpers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import {
   fitImageToCard,

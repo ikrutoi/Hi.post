@@ -38,9 +38,9 @@ import {
   handleClearAllCropsSaga,
   handleDeleteImageSaga,
   handleBackToOriginalSaga,
-} from './cardphotoToolbarHandlers'
+} from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
-import { prepareForRedux } from './cardphotoToolbarHelpers'
+import { prepareForRedux } from './cardphotoHelpers'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {

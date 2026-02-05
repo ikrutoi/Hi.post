@@ -10,7 +10,7 @@ import {
 } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { selectFontSizeStep } from '@cardtext/infrastructure/selectors'
-import { setFontSizeStep } from '@cardtext/infrastructure/state'
+import { setTextStyle } from '@cardtext/infrastructure/state'
 import {
   selectActiveSource,
   selectCardOrientation,
@@ -49,7 +49,7 @@ export function* syncFontSizeButtonsStatus(): SagaIterator {
 }
 
 export function* watchFontSizeChanges(): SagaIterator {
-  yield takeEvery(setFontSizeStep.type, syncFontSizeButtonsStatus)
+  yield takeEvery(setTextStyle.type, syncFontSizeButtonsStatus)
 }
 
 export function* syncCardOrientationStatus(): SagaIterator {

@@ -1,7 +1,5 @@
-import { call, put, select } from 'redux-saga/effects'
+import { put } from 'redux-saga/effects'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { storeAdapters } from '@db/adapters/storeAdapters'
-import { selectCardphotoSessionRecord } from '@cardphoto/infrastructure/selectors'
 import type {
   CardphotoToolbarState,
   SectionEditorMenuKey,
@@ -12,9 +10,6 @@ import type {
   ImageSource,
   CardphotoSessionRecord,
 } from '@cardphoto/domain/types'
-import type { SessionData } from '@entities/db/domain/types'
-import type { CardtextSessionRecord } from '@cardtext/domain/types'
-import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 
 interface UpdateCropOptions {
   isFull?: boolean
@@ -115,27 +110,3 @@ export const prepareConfigForRedux = (
     meta: prepareForRedux(config.image.meta),
   },
 })
-
-export function* persistGlobalSession() {
-  const cardphoto: CardphotoSessionRecord | null = yield select(
-    selectCardphotoSessionRecord,
-  )
-  // const cardtext: CardtextSessionRecord = yield select(
-  //   selectCardtextSessionRecord,
-  // )
-  // const envelope: EnvelopeSessionRecord = yield select(
-  //   selectEnvelopeSessionRecord,
-  // )
-  // const activeSection: SectionEditorMenuKey = yield select(selectActiveSection)
-
-  const sessionData: SessionData = {
-    id: 'current_session',
-    cardphoto,
-    cardtext: null,
-    envelope: null,
-    activeSection: 'envelope',
-    timestamp: Date.now(),
-  }
-
-  yield call([storeAdapters.session, 'put'], sessionData)
-}
