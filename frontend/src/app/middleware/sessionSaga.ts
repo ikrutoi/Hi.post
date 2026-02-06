@@ -9,26 +9,42 @@ import {
   setOrientation,
   restoreSession,
 } from '@cardphoto/infrastructure/state'
+import {
+  updateRecipientField,
+  clearRecipient,
+} from '@envelope/recipient/infrastructure/state'
+import {
+  updateSenderField,
+  setEnabled,
+  clearSender,
+} from '@envelope/sender/infrastructure/state'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { setSizeCard } from '@layout/infrastructure/state'
 import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
-import { restoreEnvelopeSession } from '@envelope/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
+import { syncCardOrientationStatus } from './cardtextProcessSaga'
 import { selectCardtextSessionRecord } from '@cardtext/infrastructure/selectors'
 import { setTextStyle } from '@cardtext/infrastructure/state'
 import { selectEnvelopeSessionRecord } from '@envelope/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { restoreEditorSession } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
+import { selectAromaState } from '@aroma/infrastructure/selectors'
+import { setAroma } from '@aroma/infrastructure/state'
+import { selectDateState } from '@date/infrastructure/selectors'
+import { setDate } from '@date/infrastructure/state'
 import type { SessionData } from '@entities/db/domain/types'
 import type { CardtextSessionRecord } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { CardphotoSessionRecord } from '@cardphoto/domain/types'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
+import type { AromaState } from '@entities/aroma/domain/types'
+import type { DateState } from '@entities/date/domain/types'
 
 export function* persistGlobalSession() {
   const cardphoto: CardphotoSessionRecord | null = yield select(
@@ -38,9 +54,14 @@ export function* persistGlobalSession() {
     selectCardtextSessionRecord,
   )
 
+  // console.log('PERSIST envelope', selectEnvelopeSessionRecord)
   const envelope: EnvelopeSessionRecord | null = yield select(
     selectEnvelopeSessionRecord,
   )
+
+  const aroma: AromaState = yield select(selectAromaState)
+
+  const date: DateState = yield select(selectDateState)
 
   const currentSection: SectionEditorMenuKey | null =
     yield select(selectActiveSection)
@@ -54,12 +75,12 @@ export function* persistGlobalSession() {
     cardphoto,
     cardtext,
     envelope,
+    aroma,
+    date,
     activeSection,
     sizeCard,
     timestamp: Date.now(),
   }
-
-  // console.log('PERSIST sessionData', sessionData)
 
   yield call([storeAdapters.session, 'put'], sessionData)
 }
@@ -67,6 +88,11 @@ export function* persistGlobalSession() {
 const SESSION_WATCH_ACTIONS = [
   setTextStyle.type,
   setActiveSection.type,
+  updateRecipientField.type,
+  updateSenderField.type,
+  setEnabled.type,
+  clearRecipient.type,
+  clearSender.type,
   // cardtextSlice.actions.setFontFamily.type,
   addOperation.type,
   initCardphoto.type,
@@ -84,7 +110,7 @@ export function* hydrateAppSession() {
 
     if (!session) return
 
-    // console.log('SESSION', session)
+    console.log('SESSION', session)
 
     if (session.cardphoto) {
       yield put(restoreSession(session.cardphoto))
@@ -94,7 +120,7 @@ export function* hydrateAppSession() {
       yield put(setTextStyle(session.cardtext))
     }
 
-    if (session && session.envelope) {
+    if (session.envelope) {
       const { sender, recipient } = session.envelope
 
       if (sender) {
@@ -104,6 +130,16 @@ export function* hydrateAppSession() {
       if (recipient) {
         yield put(restoreRecipient(recipient))
       }
+
+      yield call(processEnvelopeVisuals)
+    }
+
+    if (session.aroma && session.aroma.selectedAroma) {
+      yield put(setAroma(session.aroma.selectedAroma))
+    }
+
+    if (session.date && session.date.selectedDate) {
+      yield put(setDate(session.date.selectedDate))
     }
 
     if (session.sizeCard) {

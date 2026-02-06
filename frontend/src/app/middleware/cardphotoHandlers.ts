@@ -327,7 +327,7 @@ export function* handleImageRotate(
 export function* handleCropConfirm(): SagaIterator {
   const state: CardphotoState = yield select(selectCardphotoState)
   const config = state.currentConfig
-  const thumbConfigWidth = 150
+  const thumbConfigSize = 360
 
   if (!config || !config.crop || !config.image.meta.url) return
 
@@ -353,11 +353,11 @@ export function* handleCropConfirm(): SagaIterator {
       },
     }
 
-    const { full, thumb, thumbHeight } = yield call(
+    const { full, thumb } = yield call(
       getCroppedImg,
       img,
       realCrop,
-      thumbConfigWidth,
+      thumbConfigSize,
     )
 
     const fullUrl = URL.createObjectURL(full)
@@ -379,8 +379,8 @@ export function* handleCropConfirm(): SagaIterator {
       thumbnail: {
         blob: thumb,
         url: thumbUrl,
-        width: thumbConfigWidth,
-        height: thumbHeight,
+        width: thumbConfigSize,
+        height: thumbConfigSize,
       },
       imageAspectRatio: realCrop.meta.aspectRatio,
       isCropped: true,

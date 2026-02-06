@@ -6,7 +6,7 @@ let dbInstance: IDBPDatabase | undefined
 
 export const getDatabase = async () => {
   if (!dbInstance) {
-    dbInstance = await openDB('AppDB', 3, {
+    dbInstance = await openDB('AppDB', 4, {
       upgrade(db) {
         storesSchema.forEach(({ name, keyPath }) => {
           if (!db.objectStoreNames.contains(name)) {

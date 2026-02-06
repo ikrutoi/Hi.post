@@ -3,39 +3,61 @@
 .miniAddress {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   width: 100%;
   font-size: 0.3rem;
   font-style: italic;
   font-weight: 600;
   color: $color-font-enabled;
-}
 
-.miniAddressRecipient {
-  display: flex;
-  text-align: right;
-}
-
-.miniAddressGroup {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-
-  .miniAddressFieldZip {
-    width: 33%;
+  &Field {
+    display: block;
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .miniAddressFieldCity {
-    width: 66%;
+
+  &Name {
+    font-size: 0.8rem;
+  }
+
+  &City {
+    font-size: 0.6rem;
+  }
+
+  &Country {
+    font-size: 0.6rem;
   }
 }
 
-.miniAddressZip {
-  width: 35%;
-}
+// .miniAddressRecipient {
+//   display: flex;
+//   text-align: right;
+// }
 
-.miniAddressField {
-  margin: 1px;
-  border-radius: 0.3rem;
-  background-color: $color-disabled;
-  width: 100%;
-  overflow: hidden;
-}
+// .miniAddressGroup {
+//   display: flex;
+//   justify-content: space-between;
+//   width: 100%;
+
+//   .miniAddressFieldZip {
+//     width: 33%;
+//   }
+//   .miniAddressFieldCity {
+//     width: 66%;
+//   }
+// }
+
+// .miniAddressZip {
+//   width: 35%;
+// }
+
+// .miniAddressField {
+//   margin: 1px;
+//   border-radius: 0.3rem;
+//   background-color: $color-disabled;
+//   width: 100%;
+//   overflow: hidden;
+// }

@@ -59,15 +59,6 @@ export function* syncCardOrientationStatus(): SagaIterator {
     selectToolbarSectionState('sectionEditorMenu'),
   )
 
-  // const activeSection: string = yield select(selectActiveSection)
-
-  console.log(
-    'syncCardOrientation',
-    cardphotoSource,
-    cardOrientation,
-    sectionEditorMenu,
-  )
-
   const isUserSource = cardphotoSource === 'user'
 
   yield put(

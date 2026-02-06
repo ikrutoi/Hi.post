@@ -22,64 +22,21 @@ export const MiniAddress: React.FC<MiniAddressProps> = ({
   roleLabel,
   value,
 }) => {
-  const lang = getSafeLang(i18n.language)
-  const { labelLayout } = useEnvelopeAddress(role, lang)
+  // const lang = getSafeLang(i18n.language)
+  // const { labelLayout } = useEnvelopeAddress(role, lang)
 
   return (
     <div
       className={clsx(styles.miniAddress, styles[`miniAddress${roleLabel}`])}
     >
-      <div className={styles.miniAddress}>
-        {labelLayout.flatMap((item, i) => {
-          if (Array.isArray(item)) {
-            return (
-              <div
-                key={`group-${i}`}
-                className={clsx(
-                  styles.miniAddressGroup,
-                  styles[`miniAddressGroup${roleLabel}`]
-                )}
-              >
-                {item.map((subItem, j) => {
-                  return (
-                    <div
-                      className={clsx(
-                        styles.miniAddressField,
-                        styles[`miniAddressField${capitalize(subItem.key)}`]
-                      )}
-                      key={`${subItem.key}-${i}-${j}`}
-                    >
-                      {value[subItem.key]}
-                    </div>
-                  )
-                })}
-              </div>
-            )
-          } else {
-            return (
-              <div
-                className={clsx(
-                  styles.miniAddressField,
-                  styles[`miniAddressField${capitalize(item.key)}`]
-                )}
-                key={`${item.key}-${i}`}
-              >
-                {value[item.key]}
-              </div>
-            )
-          }
-        })}
-        {/* {ADDRESS_FIELD_ORDER.map((field) => (
-          <span
-            key={field}
-            className={clsx(
-              styles.miniAddressField,
-              styles[`miniAddressField${capitalize(field)}`]
-            )}
-          >
-            {value[field]}
-          </span>
-        ))} */}
+      <div className={clsx(styles.miniAddressField, styles.miniAddressName)}>
+        {value.name}
+      </div>
+      <div className={clsx(styles.miniAddressField, styles.miniAddressCity)}>
+        {value.city}
+      </div>
+      <div className={clsx(styles.miniAddressField, styles.miniAddressCountry)}>
+        {value.country}
       </div>
     </div>
   )

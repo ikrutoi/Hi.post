@@ -24,7 +24,6 @@ import {
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { buildCardtextToolbarState } from '@cardtext/domain/helpers'
-import type { RecipientState, SenderState } from '@envelope/domain/types'
 
 function* syncDateSet() {
   const dateComplete: boolean = yield select(selectIsDateComplete)

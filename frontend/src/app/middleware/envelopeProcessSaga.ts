@@ -17,7 +17,7 @@ import {
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 
-function* processEnvelopeVisuals() {
+export function* processEnvelopeVisuals() {
   const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
 

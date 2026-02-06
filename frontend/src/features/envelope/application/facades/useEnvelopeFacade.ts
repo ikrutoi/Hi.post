@@ -8,6 +8,7 @@ import {
 } from '../../recipient/infrastructure/state'
 import {
   updateSenderField,
+  setEnabled,
   clearSender,
 } from '../../sender/infrastructure/state'
 import {
@@ -18,9 +19,9 @@ import {
 
 export const useEnvelopeFacade = () => {
   const dispatch = useAppDispatch()
+
   const sender = useAppSelector(selectSenderState)
   const recipient = useAppSelector(selectRecipientState)
-
   const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
 
   const handleFieldChange = (
@@ -39,15 +40,21 @@ export const useEnvelopeFacade = () => {
     dispatch(role === 'sender' ? clearSender() : clearRecipient())
   }
 
+  const toggleSenderEnabled = (enabled: boolean) => {
+    dispatch(setEnabled(enabled))
+  }
+
   return {
     state: {
       sender,
       recipient,
       isEnvelopeComplete,
       addressFields: ADDRESS_FIELD_ORDER,
+      isSenderVisible: sender.enabled,
     },
     actions: {
       handleFieldChange,
+      toggleSenderEnabled,
       clearRole,
     },
   }

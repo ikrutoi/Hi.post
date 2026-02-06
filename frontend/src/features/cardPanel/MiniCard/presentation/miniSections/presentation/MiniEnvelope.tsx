@@ -15,17 +15,10 @@ export const MiniEnvelope: React.FC = () => {
 
   return (
     <div className={styles.miniEnvelope}>
-      <div className={styles.miniEnvelopeLogo} />
-      {/* {isEnabled && (
-        <div
-          className={clsx(
-            styles.miniEnvelopeAddress,
-            styles.miniEnvelopeSender
-          )}
-        >
-          <MiniAddress role="sender" roleLabel="Sender" value={addressSender} />
-        </div>
-      )} */}
+      {/* <div className={styles.miniEnvelopeLogo} /> */}
+      <div className={styles.miniEnvelopeMack}>
+        <Mark />
+      </div>
       <div
         className={clsx(
           styles.miniEnvelopeAddress,
@@ -38,7 +31,6 @@ export const MiniEnvelope: React.FC = () => {
           value={addressRecipient}
         />
       </div>
-      <Mark />
     </div>
   )
 }
