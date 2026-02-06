@@ -217,6 +217,7 @@ export function* rebuildConfigFromMeta(
 
       const newWidth = Math.round(currentCard.height * finalRatio)
 
+      // console.log('REBUILD')
       yield put(
         setSizeCard({
           orientation: targetOrientation,

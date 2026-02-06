@@ -1,5 +1,5 @@
 export * from './cardEditorSaga'
-export * from './envelopeSyncSaga'
+export * from './envelopeProcessSaga'
 export * from './cardtextToolbarSaga'
 export * from './cardtextProcessSaga'
 export * from './envelopeToolbarSaga'

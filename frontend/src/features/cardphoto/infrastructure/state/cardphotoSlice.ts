@@ -301,6 +301,7 @@ export const cardphotoSlice = createSlice({
     },
 
     restoreSession(state, action: PayloadAction<CardphotoSessionRecord>) {
+      // console.log('RESTORE_SESSION CARDPHOTO', state)
       if (state.state) {
         state.state.activeSource = action.payload.source
         state.state.currentConfig = {

@@ -9,11 +9,18 @@ import {
   setOrientation,
   restoreSession,
 } from '@cardphoto/infrastructure/state'
+import { selectSizeCard } from '@layout/infrastructure/selectors'
+import { setSizeCard } from '@layout/infrastructure/state'
+import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
+import { restoreSender } from '@envelope/sender/infrastructure/state'
+import { restoreEnvelopeSession } from '@envelope/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
 import { selectCardtextSessionRecord } from '@cardtext/infrastructure/selectors'
 import { setTextStyle } from '@cardtext/infrastructure/state'
+import { selectEnvelopeSessionRecord } from '@envelope/infrastructure/selectors'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { restoreEditorSession } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import type { SessionData } from '@entities/db/domain/types'
@@ -21,6 +28,7 @@ import type { CardtextSessionRecord } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { CardphotoSessionRecord } from '@cardphoto/domain/types'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
+import type { SizeCard } from '@layout/domain/types'
 
 export function* persistGlobalSession() {
   const cardphoto: CardphotoSessionRecord | null = yield select(
@@ -30,19 +38,28 @@ export function* persistGlobalSession() {
     selectCardtextSessionRecord,
   )
 
+  const envelope: EnvelopeSessionRecord | null = yield select(
+    selectEnvelopeSessionRecord,
+  )
+
   const currentSection: SectionEditorMenuKey | null =
     yield select(selectActiveSection)
 
   const activeSection = currentSection || 'cardphoto'
 
+  const sizeCard: SizeCard = yield select(selectSizeCard)
+
   const sessionData: SessionData = {
     id: 'current_session',
     cardphoto,
     cardtext,
-    envelope: null,
+    envelope,
     activeSection,
+    sizeCard,
     timestamp: Date.now(),
   }
+
+  // console.log('PERSIST sessionData', sessionData)
 
   yield call([storeAdapters.session, 'put'], sessionData)
 }
@@ -56,7 +73,6 @@ const SESSION_WATCH_ACTIONS = [
   setOrientation.type,
   setActiveSource.type,
   hydrateEditor.type,
-  // toolbarSlice.actions.setActiveSection.type,
 ]
 
 export function* hydrateAppSession() {
@@ -68,6 +84,8 @@ export function* hydrateAppSession() {
 
     if (!session) return
 
+    // console.log('SESSION', session)
+
     if (session.cardphoto) {
       yield put(restoreSession(session.cardphoto))
     }
@@ -76,22 +94,30 @@ export function* hydrateAppSession() {
       yield put(setTextStyle(session.cardtext))
     }
 
+    if (session && session.envelope) {
+      const { sender, recipient } = session.envelope
+
+      if (sender) {
+        yield put(restoreSender(sender))
+      }
+
+      if (recipient) {
+        yield put(restoreRecipient(recipient))
+      }
+    }
+
+    if (session.sizeCard) {
+      yield put(setSizeCard(session.sizeCard))
+    }
+
     if (session.activeSection) {
       yield put(restoreEditorSession(session.activeSection))
-
       yield call(syncSectionMenuVisuals, session.activeSection)
 
       if (session.activeSection === 'cardtext') {
         yield call(syncCardtextToolbarVisuals)
       }
     }
-
-    // if (session.activeSection) {
-    //   yield put(setActiveSection(session.activeSection))
-    // }
-
-    // yield call(syncFontSizeButtonsStatus)
-    // yield call(syncOrientationButtonStatus)
   } catch (e) {
     console.error('Session hydration failed', e)
   }

@@ -21,9 +21,7 @@ import {
   markLoading,
 } from '@cardphoto/infrastructure/state'
 import {
-  selectIsLoading,
   selectCardphotoState,
-  selectActiveSource,
   selectIsProcessedMode,
 } from '@cardphoto/infrastructure/selectors'
 import {
@@ -49,6 +47,7 @@ import {
   calculateCropQuality,
 } from '@cardphoto/application/helpers'
 import { onDownloadClick } from './cardphotoProcessSaga'
+import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import {
   updateToolbarSection,
   // updateToolbarIcon,
@@ -89,8 +88,77 @@ export function* watchCropChanges(): SagaIterator {
 export function* handleCardphotoToolbarAction(
   action: ReturnType<typeof toolbarAction>,
 ): SagaIterator {
+  const { section, key, payload: editor } = action.payload
+
+  if (section !== 'cardphoto' && key !== 'cardOrientation') return
+
+  if (key === 'cardOrientation') {
+    yield call(handleCardOrientation)
+    if (section === 'cardtext') {
+      yield call(syncCardtextToolbarVisuals)
+    }
+    return
+  }
+
+  switch (key) {
+    case 'closeList':
+      yield call(handleClearAllCropsSaga)
+      break
+
+    case 'close': {
+      const state: CardphotoState = yield select(selectCardphotoState)
+      const isProcessed: boolean = yield select(selectIsProcessedMode)
+
+      const currentImageId = isProcessed
+        ? state.base.processed.image?.id
+        : state.base.user.image?.id
+
+      yield call(handleDeleteImageSaga, currentImageId, state.activeSource)
+      break
+    }
+
+    case 'download':
+      yield call(onDownloadClick)
+      break
+
+    case 'imageReset':
+      yield call(handleBackToOriginalSaga)
+      break
+
+    case 'crop':
+      yield* handleCropAction()
+      break
+
+    case 'cropCheck':
+      yield call(handleCropConfirm)
+      break
+
+    case 'cropFull':
+      yield call(handleCropFullAction)
+      break
+
+    case 'cropHistory':
+      yield call(handleCropGalleryAction)
+      break
+
+    case 'imageRotateLeft':
+    case 'imageRotateRight':
+      yield call(handleImageRotate, key)
+      break
+
+    default:
+      break
+  }
+}
+
+export function* handleCardphotoToolbarAction1(
+  action: ReturnType<typeof toolbarAction>,
+): SagaIterator {
   const { section, key } = action.payload
-  if (section !== 'cardphoto') return
+  const isCardOrientationCall = key === 'cardOrientation'
+  const isCardphotoSection = section === 'cardphoto'
+
+  if (!isCardphotoSection && !isCardOrientationCall) return
 
   switch (key) {
     case 'closeList':

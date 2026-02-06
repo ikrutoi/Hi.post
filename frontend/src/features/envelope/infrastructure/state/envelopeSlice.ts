@@ -1,53 +1,89 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { EnvelopeState } from '@envelope/domain/types'
-import type { EnvelopeRole } from '@shared/config/constants'
+import { ADDRESS_FIELD_ORDER } from '@shared/config/constants'
+import type {
+  SenderState,
+  RecipientState,
+  EnvelopeSessionRecord,
+} from '../../domain/types'
+import type {
+  EnvelopeRole,
+  AddressFields,
+  AddressField,
+} from '@shared/config/constants'
 
-const initialState: EnvelopeState = {
-  sender: { isComplete: false },
-  recipient: { isComplete: false },
-  isComplete: false,
+const initialAddress: AddressFields = {
+  name: '',
+  street: '',
+  city: '',
+  zip: '',
+  country: '',
+}
+
+const initialState: {
+  sender: SenderState
+  recipient: RecipientState
+} = {
+  sender: {
+    data: { ...initialAddress },
+    isComplete: false,
+    enabled: false,
+  },
+  recipient: {
+    data: { ...initialAddress },
+    isComplete: false,
+  },
 }
 
 const envelopeSlice = createSlice({
   name: 'envelope',
   initialState,
   reducers: {
-    setEnvelopeComplete: (state, action: PayloadAction<boolean>) => {
-      state.isComplete = action.payload
+    updateAddressField: (
+      state,
+      action: PayloadAction<{
+        role: EnvelopeRole
+        field: AddressField
+        value: string
+      }>,
+    ) => {
+      const { role, field, value } = action.payload
+      state[role].data[field] = value
+
+      const allFieldsFilled = ADDRESS_FIELD_ORDER.every(
+        (f) => state[role].data[f].trim().length > 0,
+      )
+      state[role].isComplete = allFieldsFilled
     },
 
-    recomputeEnvelope: (
-      state,
-      action: PayloadAction<{ sender: boolean; recipient: boolean }>
-    ) => {
-      state.sender.isComplete = action.payload.sender
-      state.recipient.isComplete = action.payload.recipient
-      state.isComplete = action.payload.sender && action.payload.recipient
+    toggleSender: (state, action: PayloadAction<boolean>) => {
+      state.sender.enabled = action.payload
     },
+
+    restoreEnvelopeSession: (
+      state,
+      action: PayloadAction<EnvelopeSessionRecord>,
+    ) => {
+      return { ...state, ...action.payload }
+    },
+
+    clearEnvelope: () => initialState,
 
     clearRole: (state, action: PayloadAction<EnvelopeRole>) => {
       const role = action.payload
-      if (role === 'sender') {
-        state.sender.isComplete = false
-      } else {
-        state.recipient.isComplete = false
-      }
-      state.isComplete = state.sender.isComplete && state.recipient.isComplete
-    },
 
-    clearEnvelope: (state) => {
-      state.sender.isComplete = false
-      state.recipient.isComplete = false
-      state.isComplete = false
+      state[role].data = { ...initialAddress }
+
+      state[role].isComplete = false
     },
   },
 })
 
 export const {
-  setEnvelopeComplete,
-  recomputeEnvelope,
-  clearRole,
+  updateAddressField,
+  toggleSender,
+  restoreEnvelopeSession,
   clearEnvelope,
+  clearRole,
 } = envelopeSlice.actions
 
 export default envelopeSlice.reducer

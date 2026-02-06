@@ -1,8 +1,11 @@
-import { takeLatest, put } from 'redux-saga/effects'
+import { takeLatest, put, select } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { clearSender } from '@envelope/sender/infrastructure/state'
 import { clearRecipient } from '@envelope/recipient/infrastructure/state'
+import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
+import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { updateGroupStatus } from '@toolbar/infrastructure/state'
+import type { RecipientState, SenderState } from '@envelope/domain/types'
 
 function* handleEnvelopeToolbarAction(
   action: ReturnType<typeof toolbarAction>,
@@ -17,19 +20,17 @@ function* handleEnvelopeToolbarAction(
     } else {
       yield put(clearRecipient())
     }
-
-    console.log('handleEnvelope')
-
-    yield put(
-      updateGroupStatus({
-        section,
-        groupName: 'address',
-        status: 'disabled',
-      }),
-    )
   }
 
   if (key === 'save') {
+    const sender: SenderState = yield select(selectSenderState)
+    const recipient: RecipientState = yield select(selectRecipientState)
+
+    const addressToSave = section === 'sender' ? sender.data : recipient.data
+
+    // yield put(addToAddressBook(addressToSave))
+
+    console.log('Address saved to book:', addressToSave)
   }
 }
 

@@ -2,9 +2,11 @@ import { Editor, Transforms, Text as SlateText } from 'slate'
 import { select, put } from 'redux-saga/effects'
 import { selectActiveSource } from '@cardphoto/infrastructure/selectors'
 import { selectFontSizeStep } from '@cardtext/infrastructure/selectors'
+import { selectCardOrientation } from '@layout/infrastructure/selectors'
 import { setTextStyle } from '@cardtext/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { CARDTEXT_CONFIG } from '@cardtext/domain/types'
+import type { LayoutOrientation } from '@layout/domain/types'
 
 const STEP_TO_PX = [12, 14, 16, 18, 22, 28]
 
@@ -37,7 +39,16 @@ export function* changeFontSizeStep(
 
 export function* syncCardtextToolbarVisuals() {
   const currentStep: number = yield select(selectFontSizeStep)
+  const orientation: LayoutOrientation = yield select(selectCardOrientation)
   const maxStep = CARDTEXT_CONFIG.step
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardtext',
+      key: 'fontSizeLess',
+      value: currentStep <= 1 ? 'disabled' : 'enabled',
+    }),
+  )
 
   yield put(
     updateToolbarIcon({
@@ -50,8 +61,8 @@ export function* syncCardtextToolbarVisuals() {
   yield put(
     updateToolbarIcon({
       section: 'cardtext',
-      key: 'fontSizeLess',
-      value: currentStep <= 1 ? 'disabled' : 'enabled',
+      key: 'left',
+      value: 'active',
     }),
   )
 
@@ -62,7 +73,10 @@ export function* syncCardtextToolbarVisuals() {
     updateToolbarIcon({
       section: 'cardtext',
       key: 'cardOrientation',
-      value: isUserBranch ? 'enabled' : 'disabled',
+      value: {
+        state: isUserBranch ? 'enabled' : 'disabled',
+        options: { orientation },
+      },
     }),
   )
 }

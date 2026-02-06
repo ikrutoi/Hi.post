@@ -1,5 +1,8 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { updateField, clearRecipient } from '../../infrastructure/state'
+import {
+  updateRecipientField,
+  clearRecipient,
+} from '../../infrastructure/state'
 import {
   selectRecipientState,
   selectRecipientAddress,
@@ -18,7 +21,7 @@ export const useRecipientController = () => {
   const isComplete = useAppSelector(selectIsRecipientComplete)
 
   const update = (field: AddressField, value: string) =>
-    dispatch(updateField({ field, value }))
+    dispatch(updateRecipientField({ field, value }))
 
   const clear = () => dispatch(clearRecipient())
 

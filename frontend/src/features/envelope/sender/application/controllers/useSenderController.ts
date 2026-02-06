@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
-  updateField,
+  updateSenderField,
   setEnabled,
   clearSender,
 } from '../../infrastructure/state'
@@ -24,7 +24,7 @@ export const useSenderController = () => {
   const isEnabled = useAppSelector(selectIsSenderEnabled)
 
   const update = (field: AddressField, value: string) =>
-    dispatch(updateField({ field, value }))
+    dispatch(updateSenderField({ field, value }))
 
   const toggleEnabled = (enabled: boolean) => dispatch(setEnabled(enabled))
 

@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { SectionEditorMenuKey } from '@toolbar/domain/types'
-
-interface SectionEditorMenuState {
-  activeSection: SectionEditorMenuKey | null
-}
+import type { SectionEditorMenuState } from '../../domain/types'
 
 const initialState: SectionEditorMenuState = {
   activeSection: null,

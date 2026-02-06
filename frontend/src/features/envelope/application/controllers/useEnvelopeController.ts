@@ -1,43 +1,37 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
-  setEnvelopeComplete,
-  recomputeEnvelope,
-  clearRole,
+  updateAddressField,
+  toggleSender,
   clearEnvelope,
+  clearRole,
 } from '../../infrastructure/state'
-import {
-  selectEnvelopeState,
-  selectIsEnvelopeComplete,
-  selectIsSenderComplete,
-  selectIsRecipientComplete,
-} from '../../infrastructure/selectors'
-import type { EnvelopeRole } from '@shared/config/constants'
+import { selectIsEnvelopeReady } from '../../infrastructure/selectors'
+import { selectRecipientState } from '../../recipient/infrastructure/selectors'
+import { selectSenderState } from '../../sender/infrastructure/selectors'
+import type { EnvelopeRole, AddressField } from '@shared/config/constants'
 
 export const useEnvelopeController = () => {
   const dispatch = useAppDispatch()
 
-  const envelope = useAppSelector(selectEnvelopeState)
-  const isEnvelopeComplete = useAppSelector(selectIsEnvelopeComplete)
-  const isSenderComplete = useAppSelector(selectIsSenderComplete)
-  const isRecipientComplete = useAppSelector(selectIsRecipientComplete)
+  const sender = useAppSelector(selectSenderState)
+  const recipient = useAppSelector(selectRecipientState)
+  const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
 
   const actions = {
-    setEnvelopeComplete: (value: boolean) =>
-      dispatch(setEnvelopeComplete(value)),
+    updateField: (role: EnvelopeRole, field: AddressField, value: string) =>
+      dispatch(updateAddressField({ role, field, value })),
 
-    recomputeEnvelope: (sender: boolean, recipient: boolean) =>
-      dispatch(recomputeEnvelope({ sender, recipient })),
+    toggleSenderEnabled: (enabled: boolean) => dispatch(toggleSender(enabled)),
 
     clearRole: (role: EnvelopeRole) => dispatch(clearRole(role)),
 
-    clearEnvelope: () => dispatch(clearEnvelope()),
+    reset: () => dispatch(clearEnvelope()),
   }
 
   return {
-    envelope,
+    sender,
+    recipient,
     isEnvelopeComplete,
-    isSenderComplete,
-    isRecipientComplete,
     actions,
   }
 }

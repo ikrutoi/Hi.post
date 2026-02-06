@@ -11,19 +11,24 @@ const recipientSlice = createSlice({
   name: 'recipient',
   initialState: initialRecipient,
   reducers: {
-    updateField: (
+    updateRecipientField: (
       state,
-      action: PayloadAction<{ field: keyof AddressFields; value: string }>
+      action: PayloadAction<{ field: keyof AddressFields; value: string }>,
     ) => {
       state.data[action.payload.field] = action.payload.value
       state.isComplete = Object.values(state.data).every(
-        (val) => val.trim() !== ''
+        (val) => val.trim() !== '',
       )
+    },
+
+    restoreRecipient: (state, action: PayloadAction<RecipientState>) => {
+      return action.payload
     },
 
     clearRecipient: () => initialRecipient,
   },
 })
 
-export const { updateField, clearRecipient } = recipientSlice.actions
+export const { updateRecipientField, restoreRecipient, clearRecipient } =
+  recipientSlice.actions
 export default recipientSlice.reducer

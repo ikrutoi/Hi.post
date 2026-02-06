@@ -30,6 +30,7 @@ import type {
   CardphotoBase,
   ImageSource,
 } from '@cardphoto/domain/types'
+import type { SizeCard } from '@layout/domain/types'
 
 function getRandomStockMeta(): ImageMeta {
   const index = Math.floor(Math.random() * STOCK_IMAGES.length)
@@ -94,10 +95,14 @@ function* initCardphotoSaga() {
     base.processed.image = serializableMeta
   }
 
+  const sizeCard: SizeCard = yield select(selectSizeCard)
+
+  // console.log('INIT_CARDPHOTO')
   const config: WorkingConfig = yield call(
     rebuildConfigFromMeta,
     initialImageMeta,
     activeSource,
+    sizeCard.orientation,
   )
 
   yield put(

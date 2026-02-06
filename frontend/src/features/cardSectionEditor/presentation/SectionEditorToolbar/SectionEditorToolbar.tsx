@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import { getQualityColor } from '@cardphoto/application/helpers'
@@ -9,6 +10,9 @@ import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import styles from './SectionEditorToolbar.module.scss'
 
 export const SectionEditorToolbar: React.FC = () => {
+  const { state: sectionMenuState } = useSectionMenuFacade()
+  const { isHydrated } = sectionMenuState
+
   const { size } = useLayoutFacade()
   const { sizeCard, remSize, sectionMenuHeight } = size
   const { state: cardphotoState } = useCardphotoFacade()
@@ -55,7 +59,7 @@ export const SectionEditorToolbar: React.FC = () => {
       className={clsx(styles.sectionEditorToolbar)}
       style={{ width: `${width}px`, height: `${height}px` }}
     >
-      <Toolbar section="sectionEditorMenu" />
+      {isHydrated && <Toolbar section="sectionEditorMenu" />}
       {sectionMenuHeight &&
         toolbarCardphoto.crop.state === 'active' &&
         sectionMenuCardphoto === 'active' && (

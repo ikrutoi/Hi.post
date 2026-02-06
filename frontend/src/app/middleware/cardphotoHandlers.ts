@@ -237,10 +237,7 @@ export function* handleCardOrientation(): SagaIterator {
 
   const ratio = config.card.aspectRatio
 
-  console.log('newOrientation ratio', ratio)
-
-  console.log('handleCardOrientation--->>>', originalImage)
-
+  console.log('HANDLE_CARD')
   const newConfig: WorkingConfig = yield call(
     rebuildConfigFromMeta,
     originalImage,
@@ -305,6 +302,7 @@ export function* handleImageRotate(
       ? rotateRight(currentRotation)
       : rotateLeft(currentRotation)
 
+  console.log('HANDLE_IMAGE')
   const config: WorkingConfig = yield call(
     rebuildConfigFromMeta,
     originalImage,
@@ -401,7 +399,7 @@ export function* handleCropConfirm(): SagaIterator {
     yield put(applyFinal(reduxMeta))
     yield put(addCropId(id))
 
-    console.log('handleCropConfirm--->>>', reduxMeta)
+    console.log('HANDLE_CROP')
     const newConfig: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       reduxMeta,
@@ -619,7 +617,7 @@ export function* handleBackToOriginalSaga() {
     if (toolbarState.crop.state === 'active') {
       yield call(updateCropToolbarState, 'enabled', toolbarState)
     }
-
+    console.log('HANDLE_BACK')
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       nextMeta,
@@ -639,62 +637,62 @@ export function* handleBackToOriginalSaga() {
   }
 }
 
-export function* handleBackToOriginalSaga1() {
-  const state: CardphotoState = yield select(selectCardphotoState)
-  const userMeta = state.base.user.image
-  const stockMeta = state.base.stock.image
-  const activeSource = state.activeSource
+// export function* handleBackToOriginalSaga1() {
+//   const state: CardphotoState = yield select(selectCardphotoState)
+//   const userMeta = state.base.user.image
+//   const stockMeta = state.base.stock.image
+//   const activeSource = state.activeSource
 
-  if (
-    (activeSource === 'processed' || activeSource === 'stock') &&
-    userMeta &&
-    state.currentConfig
-  ) {
-    // const cardLayer = state.currentConfig.card
+//   if (
+//     (activeSource === 'processed' || activeSource === 'stock') &&
+//     userMeta &&
+//     state.currentConfig
+//   ) {
+//     // const cardLayer = state.currentConfig.card
 
-    const config: WorkingConfig = yield call(
-      rebuildConfigFromMeta,
-      userMeta,
-      activeSource,
-      userMeta.orientation,
-    )
+//     const config: WorkingConfig = yield call(
+//       rebuildConfigFromMeta,
+//       userMeta,
+//       activeSource,
+//       userMeta.orientation,
+//     )
 
-    yield put(
-      hydrateEditor({
-        ...state,
-        config,
-        activeSource: 'user',
-      }),
-    )
+//     yield put(
+//       hydrateEditor({
+//         ...state,
+//         config,
+//         activeSource: 'user',
+//       }),
+//     )
 
-    yield fork(syncToolbarContext)
-  }
+//     yield fork(syncToolbarContext)
+//   }
 
-  if (activeSource === 'user' && state.currentConfig && stockMeta) {
-    // const cardLayer = state.currentConfig.card
-    const toolbarState: CardphotoToolbarState = yield select(
-      selectToolbarSectionState('cardphoto'),
-    )
-    const isCropActivating = toolbarState.crop.state === 'active'
+//   if (activeSource === 'user' && state.currentConfig && stockMeta) {
+//     // const cardLayer = state.currentConfig.card
+//     const toolbarState: CardphotoToolbarState = yield select(
+//       selectToolbarSectionState('cardphoto'),
+//     )
+//     const isCropActivating = toolbarState.crop.state === 'active'
 
-    if (isCropActivating) {
-      yield call(updateCropToolbarState, 'enabled', toolbarState)
-    }
+//     if (isCropActivating) {
+//       yield call(updateCropToolbarState, 'enabled', toolbarState)
+//     }
 
-    const config: WorkingConfig = yield call(
-      rebuildConfigFromMeta,
-      stockMeta,
-      activeSource,
-    )
+//     const config: WorkingConfig = yield call(
+//       rebuildConfigFromMeta,
+//       stockMeta,
+//       activeSource,
+//     )
 
-    yield put(
-      hydrateEditor({
-        ...state,
-        config,
-        activeSource: 'stock',
-      }),
-    )
+//     yield put(
+//       hydrateEditor({
+//         ...state,
+//         config,
+//         activeSource: 'stock',
+//       }),
+//     )
 
-    yield fork(syncToolbarContext)
-  }
-}
+//     yield fork(syncToolbarContext)
+//   }
+// }

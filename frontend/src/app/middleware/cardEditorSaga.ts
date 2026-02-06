@@ -6,12 +6,17 @@ import {
 import { setDate, clearDate } from '@date/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
-  recomputeEnvelope,
-  clearEnvelope,
-} from '@envelope/infrastructure/state'
+  updateRecipientField,
+  clearRecipient,
+} from '@envelope/recipient/infrastructure/state'
+import {
+  updateSenderField,
+  setEnabled,
+  clearSender,
+} from '@envelope/sender/infrastructure/state'
+import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { selectIsDateComplete } from '@date/infrastructure/selectors'
 import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
-import { selectIsEnvelopeComplete } from '@envelope/infrastructure/selectors'
 import {
   setValue,
   clear as clearCardtext,
@@ -19,6 +24,7 @@ import {
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { buildCardtextToolbarState } from '@cardtext/domain/helpers'
+import type { RecipientState, SenderState } from '@envelope/domain/types'
 
 function* syncDateSet() {
   const dateComplete: boolean = yield select(selectIsDateComplete)
@@ -38,14 +44,14 @@ function* syncAromaClear() {
   yield put(clearSection('aroma'))
 }
 
-function* syncEnvelopeRecompute() {
-  const envelopeComplete: boolean = yield select(selectIsEnvelopeComplete)
-  yield put(
-    setSectionComplete({ section: 'envelope', isComplete: envelopeComplete }),
-  )
+function* syncEnvelopeStatus() {
+  const isReady: boolean = yield select(selectIsEnvelopeReady)
+
+  yield put(setSectionComplete({ section: 'envelope', isComplete: isReady }))
 }
 
 function* syncEnvelopeClear() {
+  yield put(setSectionComplete({ section: 'envelope', isComplete: false }))
   yield put(clearSection('envelope'))
 }
 
@@ -72,8 +78,11 @@ export function* cardEditorSaga() {
   yield takeEvery(setAroma.type, syncAromaSet)
   yield takeEvery(clearAroma.type, syncAromaClear)
 
-  yield takeEvery(recomputeEnvelope.type, syncEnvelopeRecompute)
-  yield takeEvery(clearEnvelope.type, syncEnvelopeClear)
+  yield takeEvery(
+    [updateSenderField.type, updateRecipientField.type, setEnabled.type],
+    syncEnvelopeStatus,
+  )
+  yield takeEvery([clearSender.type, clearRecipient.type], syncEnvelopeClear)
 
   yield takeEvery(setValue.type, syncCardtextSet)
   // yield takeEvery(setValue.type, syncCardtextToolbar)

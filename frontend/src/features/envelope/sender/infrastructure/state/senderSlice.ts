@@ -8,33 +8,34 @@ export const initialSender: SenderState = {
   enabled: true,
 }
 
+function recomputeComplete(data: AddressFields): boolean {
+  return Object.values(data).every((val) => val.trim() !== '')
+}
+
 const senderSlice = createSlice({
   name: 'sender',
   initialState: initialSender,
   reducers: {
-    updateField: (
+    updateSenderField: (
       state,
-      action: PayloadAction<{ field: keyof AddressFields; value: string }>
+      action: PayloadAction<{ field: keyof AddressFields; value: string }>,
     ) => {
       state.data[action.payload.field] = action.payload.value
-      state.isComplete = recomputeComplete(state)
+      state.isComplete = recomputeComplete(state.data)
     },
 
     setEnabled: (state, action: PayloadAction<boolean>) => {
       state.enabled = action.payload
-      state.isComplete = recomputeComplete(state)
+    },
+
+    restoreSender: (state, action: PayloadAction<SenderState>) => {
+      return action.payload
     },
 
     clearSender: () => initialSender,
   },
 })
 
-function recomputeComplete(state: SenderState): boolean {
-  if (!state.enabled) {
-    return true
-  }
-  return Object.values(state.data).every((val) => val.trim() !== '')
-}
-
-export const { updateField, setEnabled, clearSender } = senderSlice.actions
+export const { updateSenderField, setEnabled, restoreSender, clearSender } =
+  senderSlice.actions
 export default senderSlice.reducer
