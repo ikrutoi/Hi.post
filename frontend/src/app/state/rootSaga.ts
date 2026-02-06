@@ -19,8 +19,8 @@ export function* rootSaga() {
 
   yield all([
     fork(watchSessionChanges),
-
     fork(cardEditorSaga),
+
     // fork(envelopeSaga),
     fork(envelopeToolbarSaga),
     fork(envelopeProcessSaga),

@@ -390,13 +390,13 @@ export function* handleCropConfirm(): SagaIterator {
       rotation: 0,
     }
 
-    console.log('handleCropConfirm finalImageMeta', finalImageMeta)
+    // console.log('handleCropConfirm finalImageMeta', finalImageMeta)
 
     yield call(storeAdapters.cropImages.put, finalImageMeta)
 
     const reduxMeta = prepareForRedux(finalImageMeta)
     yield put(setProcessedImage(reduxMeta))
-    yield put(applyFinal(reduxMeta))
+    // yield put(applyFinal(reduxMeta))
     yield put(addCropId(id))
 
     console.log('HANDLE_CROP')
@@ -637,62 +637,21 @@ export function* handleBackToOriginalSaga() {
   }
 }
 
-// export function* handleBackToOriginalSaga1() {
-//   const state: CardphotoState = yield select(selectCardphotoState)
-//   const userMeta = state.base.user.image
-//   const stockMeta = state.base.stock.image
-//   const activeSource = state.activeSource
+export function* handleApplyAction() {
+  const state: CardphotoState = yield select(selectCardphotoState)
+  const userMeta = state.base.user.image
+  const stockMeta = state.base.stock.image
+  const activeSource = state.activeSource
 
-//   if (
-//     (activeSource === 'processed' || activeSource === 'stock') &&
-//     userMeta &&
-//     state.currentConfig
-//   ) {
-//     // const cardLayer = state.currentConfig.card
+  if (state.activeSource !== 'processed' && state.activeSource !== 'stock')
+    return
 
-//     const config: WorkingConfig = yield call(
-//       rebuildConfigFromMeta,
-//       userMeta,
-//       activeSource,
-//       userMeta.orientation,
-//     )
+  const currentSource = state.activeSource
+  const currentImageMeta = state.base[currentSource].image
 
-//     yield put(
-//       hydrateEditor({
-//         ...state,
-//         config,
-//         activeSource: 'user',
-//       }),
-//     )
+  if (currentImageMeta) {
+    yield put(applyFinal(currentImageMeta))
 
-//     yield fork(syncToolbarContext)
-//   }
-
-//   if (activeSource === 'user' && state.currentConfig && stockMeta) {
-//     // const cardLayer = state.currentConfig.card
-//     const toolbarState: CardphotoToolbarState = yield select(
-//       selectToolbarSectionState('cardphoto'),
-//     )
-//     const isCropActivating = toolbarState.crop.state === 'active'
-
-//     if (isCropActivating) {
-//       yield call(updateCropToolbarState, 'enabled', toolbarState)
-//     }
-
-//     const config: WorkingConfig = yield call(
-//       rebuildConfigFromMeta,
-//       stockMeta,
-//       activeSource,
-//     )
-
-//     yield put(
-//       hydrateEditor({
-//         ...state,
-//         config,
-//         activeSource: 'stock',
-//       }),
-//     )
-
-//     yield fork(syncToolbarContext)
-//   }
-// }
+    // yield call(storeAdapters., finalImageMeta)
+  }
+}

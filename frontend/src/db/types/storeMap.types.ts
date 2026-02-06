@@ -17,6 +17,7 @@ export interface StoreMap {
   stockImages: ImageMeta
   userImages: ImageMeta & { id: string }
   cropImages: ImageMeta & { id: string }
+  applyImage: ImageMeta & { id: string }
   cardtext: CardtextRecord
   sender: AddressTemplateItem
   recipient: AddressTemplateItem

@@ -1,50 +1,45 @@
-import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import {
-  stockImagesTemplatesAdapter,
-  userImagesTemplatesAdapter,
-} from '@db/adapters/templateAdapters'
-import type { RootState } from '@app/state'
-import type { IndexedImage } from '@/features/cardphoto/domain/typesLayout'
+import { useState, useEffect } from 'react'
+import { useCardphotoFacade } from '@cardphoto/application/facades'
+import { storeAdapters } from '@db/adapters/storeAdapters'
 
-export const useMiniCardphoto = () => {
-  const layoutIndexDb = useSelector(
-    (state: RootState) => state.layout.image.indexDb
-  )
+export const useActiveImageUrl = () => {
+  const { state: cardphotoState } = useCardphotoFacade()
+  console.log('USE_MINI_CARDPHOTO state', cardphotoState)
+  const { appliedImage } = cardphotoState
 
-  const [miniCardUrl, setMiniCardUrl] = useState<string | null>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const appliedId = appliedImage?.id
+  // const activeId = cardphotoState.activeImage?.id
+  const [url, setUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 100)
-    return () => clearTimeout(timer)
-  }, [])
+    if (!appliedId) return
 
-  useEffect(() => {
-    const loadMiniImage = async () => {
-      const [userImages, stockImages] = await Promise.all([
-        userImagesTemplatesAdapter.getAll(),
-        stockImagesTemplatesAdapter.getAll(),
-      ])
+    let currentObjectUrl: string | null = null
 
-      const hasUser = userImages.some((img) => img.id === 'miniImage')
-      const hasStock = stockImages.some((img) => img.id === 'miniImage')
+    const loadImage = async () => {
+      const cropRecord = await storeAdapters.cropImages.getById(appliedId)
 
-      let image: IndexedImage | null = null
-
-      if (hasUser) {
-        image = await userImagesTemplatesAdapter.getByLocalId('miniImage')
-      } else if (hasStock) {
-        image = await stockImagesTemplatesAdapter.getByLocalId('miniImage')
-      }
-
-      if (image?.image instanceof Blob) {
-        setMiniCardUrl(URL.createObjectURL(image.image))
+      if (cropRecord) {
+        if (cropRecord.thumbnail?.blob) {
+          currentObjectUrl = URL.createObjectURL(cropRecord.thumbnail.blob)
+          setUrl(currentObjectUrl)
+        } else if (cropRecord.full?.blob) {
+          currentObjectUrl = URL.createObjectURL(cropRecord.full.blob)
+          setUrl(currentObjectUrl)
+        } else {
+          setUrl(cropRecord.thumbnail?.url || cropRecord.url || null)
+        }
       }
     }
 
-    loadMiniImage()
-  }, [layoutIndexDb])
+    loadImage()
 
-  return { miniCardUrl, isVisible }
+    return () => {
+      if (currentObjectUrl) {
+        URL.revokeObjectURL(currentObjectUrl)
+      }
+    }
+  }, [appliedId])
+
+  return url
 }

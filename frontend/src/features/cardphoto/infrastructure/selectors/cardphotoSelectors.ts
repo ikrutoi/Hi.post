@@ -184,27 +184,33 @@ export const selectActiveImage = (state: RootState): ImageMeta | null => {
 export const selectIsProcessedMode = (state: RootState): boolean =>
   state.cardphoto.state?.activeSource === 'processed'
 
-export const selectCardphotoSessionRecord = (
-  state: RootState,
-): CardphotoSessionRecord | null => {
-  const s = state.cardphoto.state
-  if (!s) return null
+export const selectCardphotoSessionRecord = createSelector(
+  [
+    (state: RootState) => state.cardphoto.state,
+    selectCardphotoIsComplete,
+    selectAppliedImage,
+  ],
+  (s, isComplete, appliedImage): CardphotoSessionRecord | null => {
+    if (!s) return null
 
-  const config = s.currentConfig
-  if (!config || !s.activeSource) return null
+    const config = s.currentConfig
+    if (!config || !s.activeSource) return null
 
-  return {
-    source: s.activeSource,
-    activeMetaId: config.image.meta.id,
-    config: {
-      card: config.card,
-      image: {
-        left: config.image.left,
-        top: config.image.top,
-        rotation: config.image.rotation,
-        metaId: config.image.meta.id,
+    return {
+      source: s.activeSource,
+      activeMetaId: config.image.meta.id,
+      config: {
+        card: config.card,
+        image: {
+          left: config.image.left,
+          top: config.image.top,
+          rotation: config.image.rotation,
+          metaId: config.image.meta.id,
+        },
+        crop: config.crop,
       },
-      crop: config.crop,
-    },
-  }
-}
+      apply: appliedImage,
+      isComplete: isComplete,
+    }
+  },
+)

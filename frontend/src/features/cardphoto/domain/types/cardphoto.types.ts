@@ -84,6 +84,8 @@ export interface CardphotoSessionRecord {
     image: Omit<ImageLayer, 'meta'> & { metaId: string }
     crop: CropLayer
   }
+  apply: ImageMeta | null
+  isComplete: boolean
 }
 
 export type CardphotoOperation = {

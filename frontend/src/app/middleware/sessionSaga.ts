@@ -8,6 +8,7 @@ import {
   setActiveSource,
   setOrientation,
   restoreSession,
+  applyFinal,
 } from '@cardphoto/infrastructure/state'
 import {
   updateRecipientField,
@@ -28,7 +29,10 @@ import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
 import { syncCardOrientationStatus } from './cardtextProcessSaga'
 import { selectCardtextSessionRecord } from '@cardtext/infrastructure/selectors'
 import { setTextStyle } from '@cardtext/infrastructure/state'
-import { selectEnvelopeSessionRecord } from '@envelope/infrastructure/selectors'
+import {
+  selectEnvelopeSessionRecord,
+  selectIsEnvelopeReady,
+} from '@envelope/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { restoreEditorSession } from '@entities/sectionEditorMenu/infrastructure/state'
@@ -37,6 +41,11 @@ import { selectAromaState } from '@aroma/infrastructure/selectors'
 import { setAroma } from '@aroma/infrastructure/state'
 import { selectDateState } from '@date/infrastructure/selectors'
 import { setDate } from '@date/infrastructure/state'
+import {
+  syncCardphotoStatus,
+  syncCardtextStatus,
+  syncEnvelopeStatus,
+} from './cardEditorSaga'
 import type { SessionData } from '@entities/db/domain/types'
 import type { CardtextSessionRecord } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
@@ -98,6 +107,7 @@ const SESSION_WATCH_ACTIONS = [
   initCardphoto.type,
   setOrientation.type,
   setActiveSource.type,
+  applyFinal.type,
   hydrateEditor.type,
 ]
 
@@ -153,6 +163,16 @@ export function* hydrateAppSession() {
       if (session.activeSection === 'cardtext') {
         yield call(syncCardtextToolbarVisuals)
       }
+    }
+
+    if (session.cardphoto) {
+      yield call(syncCardphotoStatus)
+    }
+    if (session.cardtext) {
+      yield call(syncCardtextStatus)
+    }
+    if (session.envelope) {
+      yield call(syncEnvelopeStatus)
     }
   } catch (e) {
     console.error('Session hydration failed', e)

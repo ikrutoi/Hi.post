@@ -1,7 +1,8 @@
 .miniCardphoto {
-  position: absolute;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   opacity: 0;
+  object-fit: cover;
+  overflow: hidden;
   transition: opacity 150ms ease-in-out;
 }
 

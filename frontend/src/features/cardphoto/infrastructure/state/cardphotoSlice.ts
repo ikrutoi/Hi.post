@@ -312,6 +312,8 @@ export const cardphotoSlice = createSlice({
             meta: { id: action.payload.config.image.metaId } as ImageMeta,
           },
         }
+        state.state.base.apply.image = action.payload.apply
+        state.isComplete = action.payload.isComplete
       }
     },
   },

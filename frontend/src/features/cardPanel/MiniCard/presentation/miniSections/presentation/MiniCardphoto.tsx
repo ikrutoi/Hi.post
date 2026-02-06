@@ -1,18 +1,17 @@
 import React from 'react'
+import clsx from 'clsx'
 import styles from './MiniCardphoto.module.scss'
-import { useMiniCardphoto } from '../application/hooks'
+import { useActiveImageUrl } from '../application/hooks'
 
-interface MiniCardphotoProps {}
+export const MiniCardphoto = () => {
+  const url = useActiveImageUrl()
 
-export const MiniCardphoto: React.FC<MiniCardphotoProps> = () => {
-  const { miniCardUrl, isVisible } = useMiniCardphoto()
-
-  if (!miniCardUrl) return null
+  if (!url) return null
 
   return (
     <img
-      className={`${styles.miniCardphoto} ${isVisible ? styles.visible : ''}`}
-      src={miniCardUrl}
+      className={clsx(styles.miniCardphoto, url && styles.visible)}
+      src={url}
       alt="MiniCard photo"
     />
   )

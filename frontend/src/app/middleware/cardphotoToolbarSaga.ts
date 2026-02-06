@@ -11,6 +11,7 @@ import { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { storeAdapters } from '@db/adapters/storeAdapters'
+import { RootState } from '@app/state'
 import {
   addOperation,
   resetCardphoto,
@@ -36,6 +37,7 @@ import {
   handleClearAllCropsSaga,
   handleDeleteImageSaga,
   handleBackToOriginalSaga,
+  handleApplyAction,
 } from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { prepareForRedux } from './cardphotoHelpers'
@@ -146,6 +148,9 @@ export function* handleCardphotoToolbarAction(
       yield call(handleImageRotate, key)
       break
 
+    case 'apply':
+      yield call(handleApplyAction)
+      break
     default:
       break
   }
@@ -303,15 +308,25 @@ export function* syncToolbarContext() {
   )
 }
 
+const selectCurrentProcessedUrl = (state: RootState) =>
+  state.cardphoto.state?.base.processed.image?.url
+
 export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
   try {
     const cropId = action.payload
+
+    const oldUrl: string | undefined = yield select(selectCurrentProcessedUrl)
+
     const cropRecord: ImageMeta | null = yield call(
       [storeAdapters.cropImages, storeAdapters.cropImages.getById],
       cropId,
     )
 
     if (cropRecord) {
+      if (oldUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(oldUrl)
+      }
+
       const currentUrl = cropRecord.full?.blob
         ? URL.createObjectURL(cropRecord.full.blob)
         : cropRecord.url

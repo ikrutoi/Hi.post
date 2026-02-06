@@ -4,6 +4,7 @@ const storeNames: (keyof StoreMap)[] = [
   'stockImages',
   'userImages',
   'cropImages',
+  'applyImage',
   'cardtext',
   'sender',
   'recipient',
