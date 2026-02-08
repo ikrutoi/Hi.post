@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import {
@@ -37,6 +38,7 @@ import {
   selectActiveImage,
   selectIsProcessedMode,
   selectCropIds,
+  selectCardphotoSessionRecord,
 
   // selectCropIdsReversed,
 } from '../../infrastructure/selectors'
@@ -101,11 +103,10 @@ export interface CardphotoFacade {
 export const useCardphotoFacade = (): CardphotoFacade => {
   const dispatch = useAppDispatch()
 
-  const state = useSelector(selectCardphotoState)
+  const stateRaw = useSelector(selectCardphotoState)
   const isComplete = useSelector(selectCardphotoIsComplete)
   const stockImage = useSelector(selectStockImage)
   const userImage = useSelector(selectUserImage)
-  // const galleryImage = useSelector(selectGalleryImage)
   const appliedImage = useSelector(selectAppliedImage)
   const operations = useSelector(selectOperations)
   const activeIndex = useSelector(selectActiveIndex)
@@ -121,37 +122,13 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const activeImage = useSelector(selectActiveImage)
   const processedMode = useSelector(selectIsProcessedMode)
   const cropIds = useSelector(selectCropIds)
-  // const cropIdsReversed = useSelector(selectCropIdsReversed)
 
-  const init = () => dispatch(initCardphoto())
-  const uploadImage = (meta: ImageMeta) => dispatch(uploadImageReady(meta))
-  // const setStockImage = (payload: { meta: ImageMeta; config: WorkingConfig }) =>
-  //   dispatch(initStockImage(payload))
-  const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
-  const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
-  const undoOp = () => dispatch(undo())
-  const redoOp = () => dispatch(redo())
-  const apply = (meta: ImageMeta) => dispatch(applyFinal(meta))
-  const resetAll = () => dispatch(reset())
-  const cancel = () => dispatch(cancelSelection())
-  const resetLayers = (payload: {
-    imageLayer: any
-    cropLayer: any
-    card: WorkingConfig['card']
-  }) => dispatch(resetCropLayers(payload))
-  const rotateCard = (orientation: LayoutOrientation) =>
-    dispatch(setOrientation(orientation))
-  const cropFromHistory = (cropId: string) =>
-    dispatch(selectCropFromHistory(cropId))
-  const removeCropId = (cropId: string) => dispatch(deleteCropId(cropId))
-
-  return {
-    state: {
-      state,
+  const state = useMemo(
+    () => ({
+      state: stateRaw,
       isComplete,
       stockImage,
       userImage,
-      // galleryImage,
       appliedImage,
       operations,
       activeIndex,
@@ -167,23 +144,50 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       activeImage,
       processedMode,
       cropIds,
-      // cropIdsReversed,
-    },
-    actions: {
-      init,
-      uploadImage,
-      // setStockImage,
-      setUserImage,
-      addOp,
-      undoOp,
-      redoOp,
-      apply,
-      resetAll,
-      cancel,
-      resetLayers,
-      rotateCard,
-      cropFromHistory,
-      removeCropId,
-    },
-  }
+    }),
+    [
+      stateRaw,
+      isComplete,
+      stockImage,
+      userImage,
+      appliedImage,
+      operations,
+      activeIndex,
+      activeOperation,
+      activeSource,
+      currentConfig,
+      cardOrientation,
+      cropOrientation,
+      lastOperationReason,
+      cardSize,
+      quality,
+      qualityProgress,
+      activeImage,
+      processedMode,
+      cropIds,
+    ],
+  )
+
+  const actions = useMemo(
+    () => ({
+      init: () => dispatch(initCardphoto()),
+      uploadImage: (meta: ImageMeta) => dispatch(uploadImageReady(meta)),
+      setUserImage: (meta: ImageMeta) => dispatch(uploadUserImage(meta)),
+      addOp: (op: CardphotoOperation) => dispatch(addOperation(op)),
+      undoOp: () => dispatch(undo()),
+      redoOp: () => dispatch(redo()),
+      apply: (meta: ImageMeta) => dispatch(applyFinal(meta)),
+      resetAll: () => dispatch(reset()),
+      cancel: () => dispatch(cancelSelection()),
+      resetLayers: (payload: any) => dispatch(resetCropLayers(payload)),
+      rotateCard: (orientation: LayoutOrientation) =>
+        dispatch(setOrientation(orientation)),
+      cropFromHistory: (cropId: string) =>
+        dispatch(selectCropFromHistory(cropId)),
+      removeCropId: (cropId: string) => dispatch(deleteCropId(cropId)),
+    }),
+    [dispatch],
+  )
+
+  return { state, actions }
 }

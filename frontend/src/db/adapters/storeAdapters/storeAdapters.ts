@@ -6,6 +6,7 @@ export const storeAdapters: {
   stockImages: StoreAdapter<StoreMap['stockImages']>
   userImages: StoreAdapter<StoreMap['userImages']>
   cropImages: StoreAdapter<StoreMap['cropImages']>
+  applyImage: StoreAdapter<StoreMap['applyImage']>
   cardtext: StoreAdapter<StoreMap['cardtext']>
   sender: StoreAdapter<StoreMap['sender']>
   recipient: StoreAdapter<StoreMap['recipient']>
@@ -17,6 +18,7 @@ export const storeAdapters: {
   stockImages: createStoreAdapter<StoreMap['stockImages']>('stockImages'),
   userImages: createStoreAdapter<StoreMap['userImages']>('userImages'),
   cropImages: createStoreAdapter<StoreMap['cropImages']>('cropImages'),
+  applyImage: createStoreAdapter<StoreMap['applyImage']>('applyImage'),
   cardtext: createStoreAdapter<StoreMap['cardtext']>('cardtext'),
   sender: createStoreAdapter<StoreMap['sender']>('sender'),
   recipient: createStoreAdapter<StoreMap['recipient']>('recipient'),

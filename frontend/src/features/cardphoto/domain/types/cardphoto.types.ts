@@ -1,6 +1,6 @@
 import type { LayoutOrientation } from '@layout/domain/types'
 
-export const IMAGE_SOURCE = ['stock', 'user', 'processed'] as const
+export const IMAGE_SOURCE = ['stock', 'user', 'processed', 'apply'] as const
 export type ImageSource = (typeof IMAGE_SOURCE)[number]
 
 export interface GalleryItem extends ImageMeta {
@@ -13,6 +13,11 @@ export interface CardphotoBase {
   user: { image: ImageMeta | null }
   processed: { image: ImageMeta | null }
   apply: { image: ImageMeta | null }
+}
+
+export interface ImageRecord {
+  id: string
+  image: ImageMeta
 }
 
 export interface CardLayer {
@@ -79,6 +84,7 @@ export interface WorkingConfig {
 export interface CardphotoSessionRecord {
   source: ImageSource
   activeMetaId: string
+  cropIds: string[]
   config: {
     card: CardLayer
     image: Omit<ImageLayer, 'meta'> & { metaId: string }

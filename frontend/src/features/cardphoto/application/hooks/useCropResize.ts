@@ -9,7 +9,7 @@ export const useCropResize = (
   setTempCrop: (c: CropLayer) => void,
   setLast: (c: CropLayer) => void,
   onChange: (c: CropLayer) => void,
-  onCommit: (c: CropLayer) => void,
+  // onCommit: (c: CropLayer) => void,
   begin: () => void,
   end: () => void,
   attach: (
@@ -69,7 +69,7 @@ export const useCropResize = (
 
     const finish = () => {
       end()
-      onCommit(lastCropRef.current)
+      // onCommit(lastCropRef.current)
       if (detachRef) detachRef()
     }
 

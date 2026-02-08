@@ -7,6 +7,7 @@ import type { DraftsItem } from '@entities/drafts/domain/types'
 import type { SentItem } from '@entities/sent/domain/types'
 import type {
   ImageMeta,
+  ImageRecord,
   WorkingConfig,
   ImageSource,
   CardphotoSessionRecord,
@@ -14,10 +15,10 @@ import type {
 import type { SessionData } from '@entities/db/domain/types'
 
 export interface StoreMap {
-  stockImages: ImageMeta
-  userImages: ImageMeta & { id: string }
+  stockImages: ImageRecord
+  userImages: ImageRecord
   cropImages: ImageMeta & { id: string }
-  applyImage: ImageMeta & { id: string }
+  applyImage: ImageRecord
   cardtext: CardtextRecord
   sender: AddressTemplateItem
   recipient: AddressTemplateItem

@@ -36,8 +36,10 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { setSectionMenuHeight } = layoutActions
 
   const { state: cardphotoState } = useCardphotoFacade()
-  const { cropIds } = cardphotoState
-  const cropIdsReversed = useMemo(() => [...cropIds].reverse(), [cropIds])
+  // const { cropIds } = cardphotoState
+
+  console.log('TOOLBAR')
+  // const cropIdsReversed = useMemo(() => [...cropIds].reverse(), [cropIds])
 
   useEffect(() => {
     if (groupRef.current) {
@@ -114,7 +116,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
         </div>
       ))}
       {section === 'cardphoto' && iconStates.crop.state !== 'active' && (
-        <CropPreview cropIdsReversed={cropIdsReversed} />
+        <CropPreview />
       )}
     </div>
   )

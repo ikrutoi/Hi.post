@@ -56,14 +56,6 @@ export const selectCardOrientation = (state: RootState): LayoutOrientation =>
 export const selectCropIds = (state: RootState): string[] =>
   state.cardphoto.state?.cropIds ?? []
 
-// export const selectCropIdsReversed = createSelector(
-//   [selectCropIds],
-//   (cropIds) => {
-//     if (!Array.isArray(cropIds)) return []
-//     return [...cropIds].reverse()
-//   },
-// )
-
 export const selectCropOrientation = (state: RootState): LayoutOrientation =>
   state.cardphoto.state?.currentConfig?.crop?.orientation ??
   state.cardphoto.state?.currentConfig?.card.orientation ??
@@ -115,41 +107,6 @@ export const selectIsCropFull = createSelector(
   },
 )
 
-export const selectIsCropFull1 = createSelector(
-  [selectCurrentConfig],
-  (config): boolean => {
-    if (!config || !config.crop) return false
-
-    const { image, card, crop } = config
-    const isRotated = image.rotation === 90 || image.rotation === 270
-
-    const currentVisualAR = isRotated
-      ? roundTo(1 / image.meta.imageAspectRatio, 3)
-      : image.meta.imageAspectRatio
-
-    const targetAR =
-      card.orientation === 'portrait'
-        ? roundTo(1 / card.aspectRatio, 3)
-        : card.aspectRatio
-
-    let maxWidth = 0
-    let maxHeight = 0
-
-    if (currentVisualAR > targetAR) {
-      maxHeight = image.meta.height
-      maxWidth = roundTo(maxHeight * targetAR, 2)
-    } else {
-      maxWidth = image.meta.width
-      maxHeight = roundTo(maxWidth / targetAR, 2)
-    }
-
-    const isFullWidth = Math.abs(crop.meta.width - maxWidth) < 2
-    const isFullHeight = Math.abs(crop.meta.height - maxHeight) < 2
-
-    return isFullWidth && isFullHeight
-  },
-)
-
 export const selectCropQuality = (state: RootState): QualityLevel =>
   state.cardphoto.state?.currentConfig?.crop?.meta?.quality ?? 'low'
 
@@ -164,22 +121,39 @@ export const selectActiveSource = (state: RootState): ImageSource | null => {
 
 export const selectActiveImage = (state: RootState): ImageMeta | null => {
   const cp = state.cardphoto.state
+  if (!cp || !cp.activeSource) return null
+
+  const { activeSource, base } = cp
+  return base[activeSource]?.image || null
+}
+
+export const selectActiveImage1 = (state: RootState): ImageMeta | null => {
+  const cp = state.cardphoto.state
   if (!cp) return null
 
   const { activeSource, base } = cp
 
+  if (activeSource === 'apply' && base.apply.image) {
+    return base.apply.image
+  }
+
   if (activeSource === 'processed' && base.processed.image) {
     return base.processed.image
   }
+
   if (activeSource === 'user' && base.user.image) {
     return base.user.image
   }
+
   if (activeSource === 'stock' && base.stock.image) {
     return base.stock.image
   }
 
-  return base.user.image || base.stock.image || null
+  return base.processed.image || base.user.image || base.stock.image || null
 }
+
+export const selectCardphotoCropIds = (state: RootState): string[] =>
+  state.cardphoto.state?.cropIds || []
 
 export const selectIsProcessedMode = (state: RootState): boolean =>
   state.cardphoto.state?.activeSource === 'processed'
@@ -189,23 +163,31 @@ export const selectCardphotoSessionRecord = createSelector(
     (state: RootState) => state.cardphoto.state,
     selectCardphotoIsComplete,
     selectAppliedImage,
+    selectCardphotoCropIds,
   ],
-  (s, isComplete, appliedImage): CardphotoSessionRecord | null => {
-    if (!s) return null
+  (s, isComplete, appliedImage, cropIds): CardphotoSessionRecord | null => {
+    if (!s || !s.activeSource || !s.currentConfig) return null
 
-    const config = s.currentConfig
-    if (!config || !s.activeSource) return null
+    const { activeSource, currentConfig: config } = s
+
+    const activeMetaId =
+      activeSource === 'user'
+        ? 'current_user_image'
+        : activeSource === 'apply'
+          ? 'current_apply_image'
+          : config.image.meta.id
 
     return {
-      source: s.activeSource,
-      activeMetaId: config.image.meta.id,
+      source: activeSource,
+      activeMetaId,
+      cropIds: cropIds,
       config: {
         card: config.card,
         image: {
           left: config.image.left,
           top: config.image.top,
           rotation: config.image.rotation,
-          metaId: config.image.meta.id,
+          metaId: activeMetaId,
         },
         crop: config.crop,
       },

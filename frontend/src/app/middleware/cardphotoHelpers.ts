@@ -110,3 +110,30 @@ export const prepareConfigForRedux = (
     meta: prepareForRedux(config.image.meta),
   },
 })
+
+export const hydrateMeta = (meta: ImageMeta | null): ImageMeta | null => {
+  if (!meta) return null
+
+  const blob = meta.full?.blob || (meta as any).blob
+
+  const activeUrl = blob instanceof Blob ? URL.createObjectURL(blob) : meta.url
+
+  return {
+    ...meta,
+    url: activeUrl,
+    full: {
+      ...meta.full,
+      url: activeUrl,
+      blob: undefined,
+    },
+    thumbnail: meta.thumbnail
+      ? {
+          ...meta.thumbnail,
+          url: meta.thumbnail.blob
+            ? URL.createObjectURL(meta.thumbnail.blob)
+            : meta.thumbnail.url || '',
+          blob: undefined,
+        }
+      : undefined,
+  }
+}

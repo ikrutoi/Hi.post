@@ -64,8 +64,10 @@ import type {
   ImageRotation,
   CropLayer,
   ImageSource,
+  ImageRecord,
 } from '@cardphoto/domain/types'
 import { prepareForRedux } from './cardphotoHelpers'
+import { persistGlobalSession } from './sessionSaga'
 
 export function* handleCropAction() {
   const toolbarState: CardphotoToolbarState = yield select(
@@ -639,10 +641,6 @@ export function* handleBackToOriginalSaga() {
 
 export function* handleApplyAction() {
   const state: CardphotoState = yield select(selectCardphotoState)
-  const userMeta = state.base.user.image
-  const stockMeta = state.base.stock.image
-  const activeSource = state.activeSource
-
   if (state.activeSource !== 'processed' && state.activeSource !== 'stock')
     return
 
@@ -650,8 +648,44 @@ export function* handleApplyAction() {
   const currentImageMeta = state.base[currentSource].image
 
   if (currentImageMeta) {
-    yield put(applyFinal(currentImageMeta))
+    try {
+      const adapter =
+        currentSource === 'stock'
+          ? storeAdapters.stockImages
+          : storeAdapters.cropImages
 
-    // yield call(storeAdapters., finalImageMeta)
+      const fullRecord: ImageMeta | null = yield call(
+        [adapter, 'getById'],
+        currentImageMeta.id,
+      )
+
+      if (fullRecord) {
+        const applyUrl = fullRecord.full?.blob
+          ? URL.createObjectURL(fullRecord.full.blob)
+          : fullRecord.url
+
+        const appliedMeta: ImageMeta = {
+          ...fullRecord,
+          url: applyUrl,
+          source: 'apply',
+        }
+
+        const wrapper: ImageRecord = {
+          id: 'current_apply_image',
+          image: appliedMeta,
+        }
+        yield call([storeAdapters.applyImage, 'put'], wrapper)
+
+        yield put(applyFinal(prepareForRedux(appliedMeta)))
+        yield put(setActiveSource('apply'))
+
+        console.log(
+          'Apply saved to DB as wrapper with original ID:',
+          appliedMeta.id,
+        )
+      }
+    } catch (error) {
+      console.error('Apply error:', error)
+    }
   }
 }

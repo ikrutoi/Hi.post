@@ -26,7 +26,7 @@ export function* rootSaga() {
     fork(envelopeProcessSaga),
     fork(cardtextProcessSaga),
     // fork(cardphotoToolbarSaga),
-    fork(cardphotoHistorySaga),
+    // fork(cardphotoHistorySaga),
     fork(cardphotoProcessSaga),
     fork(sectionEditorMenuSaga),
   ])

@@ -59,7 +59,8 @@ export const SectionEditorToolbar: React.FC = () => {
       className={clsx(styles.sectionEditorToolbar)}
       style={{ width: `${width}px`, height: `${height}px` }}
     >
-      {isHydrated && <Toolbar section="sectionEditorMenu" />}
+      {<Toolbar section="sectionEditorMenu" />}
+      {/* {isHydrated && <Toolbar section="sectionEditorMenu" />} */}
       {sectionMenuHeight &&
         toolbarCardphoto.crop.state === 'active' &&
         sectionMenuCardphoto === 'active' && (

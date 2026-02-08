@@ -1,8 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
+import { useSelector } from 'react-redux'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import {
+  initCardphoto,
+  uploadUserImage,
+  addOperation,
+} from '../infrastructure/state'
+import {
+  selectActiveImage,
+  selectCurrentConfig,
+  selectActiveSource,
+} from '../infrastructure/selectors'
 import { CropArea } from './CropArea'
 import { CropOverlay } from './CropOverlay'
-import { useLayoutFacade } from '@layout/application/facades'
+import { useSizeFacade } from '@layout/application/facades'
 import {
   useCardphotoFacade,
   useCardphotoUiFacade,
@@ -14,25 +26,36 @@ import {
   useCropState,
 } from '../application/hooks'
 import styles from './ImageCrop.module.scss'
+import { CardphotoOperation, ImageMeta, ImageSource } from '../domain/types'
 
 export const ImageCrop = () => {
-  const { state: cardphotoState, actions: cardphotoActions } =
-    useCardphotoFacade()
-  const { activeSource, activeImage } = cardphotoState
-  const { init, setUserImage, addOp, uploadImage } = cardphotoActions
+  const dispatch = useAppDispatch()
+  const activeSource = useAppSelector(selectActiveSource)
+  const activeImage = useAppSelector(selectActiveImage)
+  const currentConfig = useAppSelector(selectCurrentConfig)
 
-  const reduxCrop = cardphotoState.currentConfig?.crop
+  const init = () => dispatch(initCardphoto())
+  const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
+  // const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
+
+  // const { state: cardphotoState, actions: cardphotoActions } =
+  //   useCardphotoFacade()
+  // const { activeSource, activeImage } = cardphotoState
+  // const { init, setUserImage, addOp, uploadImage } = cardphotoActions
+
+  // const reduxCrop = cardphotoState.currentConfig?.crop
 
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
 
   // console.log('ImageCrop state', cardphotoState)
+  console.count('ImageCrop Render')
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
   const { state: iconStates } = toolbarState
 
-  const { size } = useLayoutFacade()
+  const { size } = useSizeFacade()
   const { sizeCard } = size
 
   const [loaded, setLoaded] = useState(false)
@@ -43,23 +66,25 @@ export const ImageCrop = () => {
 
   const [tempCrop, setTempCrop] = useCropState(
     iconStates.crop.state,
-    cardphotoState.currentConfig?.crop ?? null,
+    currentConfig?.crop ?? null,
   )
 
   useEffect(() => {
+    console.log('ImageCrop USE_EFFECT_init')
     init()
   }, [])
+  console.log('ImageCrop + activeImage', activeImage)
 
   const src = activeImage?.url
   const alt = activeImage?.id
 
-  useEffect(() => {
-    if (reduxCrop) {
-      setTempCrop(reduxCrop)
-    }
-  }, [reduxCrop, setTempCrop])
+  // useEffect(() => {
+  //   if (reduxCrop) {
+  //     setTempCrop(reduxCrop)
+  //   }
+  // }, [reduxCrop, setTempCrop])
 
-  const imageLayer = cardphotoState.currentConfig?.image || null
+  const imageLayer = currentConfig?.image || null
 
   const { inputRef, trackCancel } = useFileDialog()
 
@@ -71,14 +96,17 @@ export const ImageCrop = () => {
     }
   }, [shouldOpenFileDialog, cardphotoUiActions, trackCancel])
 
-  useEffect(() => {
-    setLoaded(false)
-  }, [src])
+  // useEffect(() => {
+  //   console.log('ImageCrop USE_EFFECT_src', src)
+  //   setLoaded(false)
+  // }, [src])
 
+  console.log('ImageCrop ++')
   const handleFileChange = useImageUpload(
     setUserImage,
     cardphotoUiActions.markLoading,
   )
+  console.log('ImageCrop +++')
 
   const shouldShowImage = !!src && activeImage
 
@@ -101,6 +129,8 @@ export const ImageCrop = () => {
     ...imageStyle,
     overflow: 'hidden',
   }
+
+  console.log('ImageCrop ++++')
 
   return (
     <div
@@ -127,6 +157,7 @@ export const ImageCrop = () => {
         {shouldShowImage && imageLayer && src && (
           <>
             <img
+              key={src}
               src={src}
               alt={alt}
               onLoad={() => setLoaded(true)}
@@ -158,17 +189,17 @@ export const ImageCrop = () => {
                   onChange={(newCrop) => {
                     setTempCrop(newCrop)
                   }}
-                  onCommit={(finalCrop) => {
-                    addOp({
-                      type: 'operation',
-                      payload: {
-                        config: {
-                          ...cardphotoState.currentConfig!,
-                          crop: finalCrop,
-                        },
-                      },
-                    })
-                  }}
+                  // onCommit={(finalCrop) => {
+                  //   addOp({
+                  //     type: 'operation',
+                  //     payload: {
+                  //       config: {
+                  //         ...currentConfig!,
+                  //         crop: finalCrop,
+                  //       },
+                  //     },
+                  //   })
+                  // }}
                 />
               )}
             </>

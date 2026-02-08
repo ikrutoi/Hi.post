@@ -1,4 +1,4 @@
-import { call, delay, put, select, takeLatest } from 'redux-saga/effects'
+import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { selectCardphotoSessionRecord } from '@cardphoto/infrastructure/selectors'
 import {
@@ -9,6 +9,7 @@ import {
   setOrientation,
   restoreSession,
   applyFinal,
+  addCropId,
 } from '@cardphoto/infrastructure/state'
 import {
   updateRecipientField,
@@ -34,6 +35,7 @@ import {
   selectIsEnvelopeReady,
 } from '@envelope/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { prepareForRedux, hydrateMeta } from './cardphotoHelpers'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { restoreEditorSession } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
@@ -49,16 +51,66 @@ import {
 import type { SessionData } from '@entities/db/domain/types'
 import type { CardtextSessionRecord } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
-import type { CardphotoSessionRecord } from '@cardphoto/domain/types'
+import type {
+  ImageRecord,
+  CardphotoBase,
+  CardphotoSessionRecord,
+  ImageMeta,
+  WorkingConfig,
+} from '@cardphoto/domain/types'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
 import type { AromaState } from '@entities/aroma/domain/types'
 import type { DateState } from '@entities/date/domain/types'
+import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
+import { getRandomStockMeta } from './cardphotoHistorySaga'
+import { CardSection } from '@shared/config/constants'
 
 export function* persistGlobalSession() {
   const cardphoto: CardphotoSessionRecord | null = yield select(
     selectCardphotoSessionRecord,
   )
+
+  if (!cardphoto) {
+    console.log('>>>>PERSIST SKIP: Cardphoto not ready<<<<')
+    return
+  }
+
+  const cardtext: CardtextSessionRecord | null = yield select(
+    selectCardtextSessionRecord,
+  )
+  const envelope: EnvelopeSessionRecord | null = yield select(
+    selectEnvelopeSessionRecord,
+  )
+  const aroma: AromaState = yield select(selectAromaState)
+  const date: DateState = yield select(selectDateState)
+  const activeSection: CardSection =
+    (yield select(selectActiveSection)) || 'cardphoto'
+  const sizeCard: SizeCard = yield select(selectSizeCard)
+
+  const sessionData: SessionData = {
+    id: 'current_session',
+    cardphoto,
+    cardtext,
+    envelope,
+    aroma,
+    date,
+    activeSection,
+    sizeCard,
+    timestamp: Date.now(),
+  }
+
+  console.log('>>>>PERSIST SAVING<<<<')
+
+  yield call([storeAdapters.session, 'put'], sessionData)
+}
+
+export function* persistGlobalSession1() {
+  console.log('>>>>PERSIST<<<<')
+  const cardphoto: CardphotoSessionRecord | null = yield select(
+    selectCardphotoSessionRecord,
+  )
+
   const cardtext: CardtextSessionRecord | null = yield select(
     selectCardtextSessionRecord,
   )
@@ -107,8 +159,10 @@ const SESSION_WATCH_ACTIONS = [
   initCardphoto.type,
   setOrientation.type,
   setActiveSource.type,
+  addCropId.type,
   applyFinal.type,
   hydrateEditor.type,
+  setAroma.type,
 ]
 
 export function* hydrateAppSession() {
@@ -123,8 +177,117 @@ export function* hydrateAppSession() {
     console.log('SESSION', session)
 
     if (session.cardphoto) {
-      yield put(restoreSession(session.cardphoto))
+      console.log('SESSION_CARDPHOTO cardphoto', session.cardphoto)
+      const { activeMetaId, cropIds, source, config } = session.cardphoto
+
+      const [stockRec, userRec, rawProcess, applyRec]: [
+        { image: ImageMeta } | null,
+        { image: ImageMeta } | null,
+        ImageMeta | null,
+        { image: ImageMeta } | null,
+      ] = yield all([
+        call([storeAdapters.stockImages, 'getById'], 'current_stock_image'),
+        call([storeAdapters.userImages, 'getById'], 'current_user_image'),
+        activeMetaId
+          ? call([storeAdapters.cropImages, 'getById'], activeMetaId)
+          : null,
+        call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
+      ])
+
+      const base: CardphotoBase = {
+        stock: { image: hydrateMeta(stockRec?.image || null) },
+        user: { image: hydrateMeta(userRec?.image || null) },
+        processed: { image: hydrateMeta(rawProcess) },
+        apply: { image: hydrateMeta(applyRec?.image || null) },
+      }
+
+      const cropCount: number = yield call([storeAdapters.cropImages, 'count'])
+      let finalCropIds = cropIds || []
+
+      if (cropCount > 0 && finalCropIds.length !== cropCount) {
+        const allCrops: ImageMeta[] = yield call([
+          storeAdapters.cropImages,
+          'getAll',
+        ])
+        finalCropIds = allCrops.map((c) => c.id)
+      }
+
+      console.log('SESSION_CARDPHOTO cropIds', finalCropIds)
+
+      let activeImage = base[source]?.image || base.stock.image
+
+      if (!activeImage) {
+        console.log('>>> Image missing, fetching emergency stock...')
+        const emergencyRaw: ImageMeta = yield call(getRandomStockMeta)
+        activeImage = hydrateMeta(emergencyRaw)
+        if (activeImage) base.stock.image = activeImage
+      }
+
+      if (!activeImage) return
+
+      let finalConfig: WorkingConfig
+
+      if (source === 'user' && config) {
+        finalConfig = {
+          ...config,
+          image: { ...config.image, meta: activeImage },
+        }
+      } else {
+        finalConfig = yield call(
+          rebuildConfigFromMeta,
+          activeImage,
+          source,
+          activeImage.orientation,
+        )
+      }
+
+      yield put(
+        hydrateEditor({
+          base,
+          config: finalConfig,
+          activeSource: source,
+          cropIds: finalCropIds || [],
+          cropCount,
+        }),
+      )
+
+      yield call(syncCardphotoStatus)
+    } else {
+      console.log('>>> SESSION EMPTY: Initializing default Cardphoto')
+
+      const rawStock: ImageMeta = yield call(getRandomStockMeta)
+      const stockImage = hydrateMeta(rawStock)
+
+      if (!stockImage) return
+
+      const sizeCard: SizeCard = yield select(selectSizeCard)
+
+      const config: WorkingConfig = yield call(
+        rebuildConfigFromMeta,
+        stockImage,
+        'stock',
+        sizeCard.orientation,
+      )
+
+      const base: CardphotoBase = {
+        stock: { image: stockImage },
+        user: { image: null },
+        processed: { image: null },
+        apply: { image: null },
+      }
+
+      yield put(
+        hydrateEditor({
+          base,
+          config,
+          activeSource: 'stock',
+          cropIds: [],
+          cropCount: 0,
+        }),
+      )
     }
+
+    console.log('SESSION>>>')
 
     if (session.cardtext) {
       yield put(setTextStyle(session.cardtext))
@@ -165,9 +328,6 @@ export function* hydrateAppSession() {
       }
     }
 
-    if (session.cardphoto) {
-      yield call(syncCardphotoStatus)
-    }
     if (session.cardtext) {
       yield call(syncCardtextStatus)
     }
@@ -181,7 +341,7 @@ export function* hydrateAppSession() {
 
 export function* watchSessionChanges() {
   yield takeLatest(SESSION_WATCH_ACTIONS, function* () {
-    yield delay(600)
+    yield delay(900)
     yield call(persistGlobalSession)
   })
 }

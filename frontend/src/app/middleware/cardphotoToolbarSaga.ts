@@ -226,6 +226,30 @@ export function* syncToolbarContext() {
   const sizeCard: SizeCard = yield select(selectSizeCard)
 
   switch (activeSource) {
+    case 'apply':
+      sectionUpdate = {
+        cardOrientation: {
+          state: 'disabled',
+          options: { orientation: sizeCard.orientation },
+        },
+        imageRotateLeft: { state: 'disabled' },
+        imageRotateRight: { state: 'disabled' },
+        crop: { state: 'disabled' },
+        cropFull: { state: 'disabled' },
+        imageReset: { state: 'enabled' },
+
+        apply: { state: 'enabled' },
+        close: { state: 'enabled' },
+        download: { state: 'enabled' },
+        cropHistory: {
+          state: hasCrops ? 'enabled' : 'disabled',
+          options: { badge: cropCount },
+        },
+        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
+        closeList: { state: hasCrops ? 'enabled' : 'disabled' },
+      }
+      break
+
     case 'processed':
       sectionUpdate = {
         cardOrientation: {

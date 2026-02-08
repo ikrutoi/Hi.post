@@ -9,7 +9,7 @@ export const useCropDrag = (
   setTempCrop: (c: CropLayer) => void,
   setLast: (c: CropLayer) => void,
   onChange: (c: CropLayer) => void,
-  onCommit: (c: CropLayer) => void,
+  // onCommit: (c: CropLayer) => void,
   begin: () => void,
   end: () => void,
   attach: any,
@@ -52,7 +52,7 @@ export const useCropDrag = (
 
     const finish = () => {
       end()
-      onCommit(lastCropRef.current)
+      // onCommit(lastCropRef.current)
       detach()
     }
 

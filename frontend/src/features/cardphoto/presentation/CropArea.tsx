@@ -21,7 +21,7 @@ interface CropAreaProps {
   orientation: LayoutOrientation
   originalImage: ImageMeta
   onChange: (newCrop: CropLayer) => void
-  onCommit: (finalCrop: CropLayer) => void
+  // onCommit: (finalCrop: CropLayer) => void
 }
 
 export const CropArea: React.FC<CropAreaProps> = ({
@@ -30,7 +30,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
   orientation,
   originalImage,
   onChange,
-  onCommit,
+  // onCommit,
 }) => {
   const [tempCrop, setTempCrop] = useState<CropLayer>(cropLayer)
   const { interactingRef, lastCropRef, begin, end, setLast } =
@@ -46,7 +46,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
     setTempCrop,
     setLast,
     onChange,
-    onCommit,
+    // onCommit,
     begin,
     end,
     attach,
@@ -60,7 +60,7 @@ export const CropArea: React.FC<CropAreaProps> = ({
     setTempCrop,
     setLast,
     onChange,
-    onCommit,
+    // onCommit,
     begin,
     end,
     attach,

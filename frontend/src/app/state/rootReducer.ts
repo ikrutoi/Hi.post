@@ -1,5 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit'
 
+// import { appReducer } from '@shared/infrastructure/state'
+
 import { sectionEditorMenuReducer } from '@entities/sectionEditorMenu/infrastructure/state'
 
 import {
@@ -51,6 +53,8 @@ import { interactionReducer } from '@features/interaction'
 import { layoutReducer } from '@layout/infrastructure/state/layoutReducer'
 
 export const rootReducer = combineReducers({
+  // app: appReducer,
+
   sectionEditorMenu: sectionEditorMenuReducer,
 
   cardphotoLayout: cardphotoLayoutReducer,

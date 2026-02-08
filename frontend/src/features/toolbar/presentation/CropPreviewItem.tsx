@@ -13,26 +13,33 @@ export const CropPreviewItem = ({ cropId }: { cropId: string }) => {
   const { cropFromHistory, removeCropId } = cardphotoActions
 
   useEffect(() => {
-    let isMounted = true
+    let currentBlobUrl: string | null = null
 
     const fetchCrop = async () => {
-      const record = await storeAdapters.cropImages.getById(cropId)
+      try {
+        const record = await storeAdapters.cropImages.getById(cropId)
 
-      if (record && isMounted) {
-        const src = record.thumbnail?.blob
-          ? URL.createObjectURL(record.thumbnail.blob)
-          : record.url
+        if (record) {
+          const src = record.thumbnail?.blob
+            ? URL.createObjectURL(record.thumbnail.blob)
+            : record.url
 
-        setImageUrl(src)
+          if (src.startsWith('blob:')) {
+            currentBlobUrl = src
+          }
+
+          setImageUrl(src)
+        }
+      } catch (error) {
+        console.error('Failed to fetch crop from DB:', error)
       }
     }
 
     fetchCrop()
 
     return () => {
-      isMounted = false
-      if (imageUrl?.startsWith('blob:')) {
-        URL.revokeObjectURL(imageUrl)
+      if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl)
       }
     }
   }, [cropId])
@@ -49,10 +56,15 @@ export const CropPreviewItem = ({ cropId }: { cropId: string }) => {
     <div className={styles.previewIconContainer}>
       <div className={styles.previewIcon} onClick={handleClickPreview}>
         {imageUrl && (
-          <img src={imageUrl} className={styles.previewImg} alt="crop" />
+          <img
+            src={imageUrl}
+            id={`id-${cropId}`}
+            className={styles.previewImg}
+            alt="crop preview"
+          />
         )}
       </div>
-      <div className={clsx(styles.previewButtonContainer)}>
+      <div className={styles.previewButtonContainer}>
         <button
           type="button"
           className={clsx(styles.previewButton, styles.previewButtonDelete)}
@@ -63,7 +75,7 @@ export const CropPreviewItem = ({ cropId }: { cropId: string }) => {
         <button
           type="button"
           className={clsx(styles.previewButton, styles.previewButtonPlus)}
-          onClick={handleClear}
+          // onClick={handleClear}
         >
           {getToolbarIcon({ key: 'plusSmall' })}
         </button>

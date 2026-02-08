@@ -11,6 +11,7 @@ export const useLayoutFacade = () => {
   const { ui, actions: uiActions } = useUiFacade()
   const { section, actions: sectionActions } = useSectionFacade()
 
+  // console.log('USE_LAYOUT_FACADE')
   return {
     size,
     memory,

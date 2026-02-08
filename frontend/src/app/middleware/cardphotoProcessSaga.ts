@@ -68,6 +68,7 @@ import type {
   ImageSource,
   ImageRotation,
   CardphotoSessionRecord,
+  ImageRecord,
 } from '@cardphoto/domain/types'
 import type { SizeCard, LayoutOrientation } from '@layout/domain/types'
 
@@ -110,6 +111,8 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     const imageMeta = action.payload
     // const cardLayer: CardLayer = yield select(selectSizeCard)
 
+    console.log('onUploadImage')
+
     const state: CardphotoState = yield select(selectCardphotoState)
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
@@ -117,11 +120,11 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
       'user',
     )
 
-    const imageForDb = {
-      ...imageMeta,
-      id: 'current',
+    const imageRecord: ImageRecord = {
+      id: 'current_user_image',
+      image: imageMeta,
     }
-    yield call(storeAdapters.userImages.put, imageForDb)
+    yield call([storeAdapters.userImages, 'put'], imageRecord)
 
     const serializableMeta = prepareForRedux(imageMeta)
     const serializableConfig = prepareConfigForRedux(config)
@@ -187,7 +190,7 @@ export function* rebuildConfigFromMeta(
   rotation?: ImageRotation,
 ) {
   try {
-    // console.log('REBUILD+ meta', meta)
+    console.log('REBUILD+ meta', meta)
     yield put(clearCurrentConfig())
     yield delay(16)
 
@@ -217,7 +220,7 @@ export function* rebuildConfigFromMeta(
 
       const newWidth = Math.round(currentCard.height * finalRatio)
 
-      // console.log('REBUILD')
+      console.log('REBUILD---0')
       yield put(
         setSizeCard({
           orientation: targetOrientation,

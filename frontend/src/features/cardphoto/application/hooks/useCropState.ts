@@ -9,6 +9,31 @@ export function useCropState(
   currentConfigCrop: CropLayer | null,
 ) {
   const [tempCrop, setTempCrop] = useState<CropLayer | null>(currentConfigCrop)
+  const [prevConfigCrop, setPrevConfigCrop] = useState<CropLayer | null>(
+    currentConfigCrop,
+  )
+
+  if (currentConfigCrop !== prevConfigCrop) {
+    setTempCrop(currentConfigCrop)
+    setPrevConfigCrop(currentConfigCrop)
+  }
+
+  useEffect(() => {
+    if (toolbarStateCrop !== 'active') {
+      setTempCrop(null)
+    } else {
+      setTempCrop(currentConfigCrop)
+    }
+  }, [toolbarStateCrop])
+
+  return [tempCrop, setTempCrop] as const
+}
+
+export function useCropState1(
+  toolbarStateCrop: IconState,
+  currentConfigCrop: CropLayer | null,
+) {
+  const [tempCrop, setTempCrop] = useState<CropLayer | null>(currentConfigCrop)
 
   useEffect(() => {
     setTempCrop(currentConfigCrop)
