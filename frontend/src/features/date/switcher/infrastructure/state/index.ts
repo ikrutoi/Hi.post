@@ -1,3 +1,3 @@
-export { default as switcherReducer } from './switcher.slice'
+export { default as switcherReducer } from './switcherSlice'
 
-export * from './switcher.slice'
+export * from './switcherSlice'

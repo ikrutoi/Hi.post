@@ -75,6 +75,7 @@ function* syncCardtextToolbar(action: ReturnType<typeof setValue>) {
 
 export function* syncCardphotoStatus() {
   const cardphotoComplete: boolean = yield select(selectCardphotoIsComplete)
+  console.log('SYNC_CARDPHOTO isComplete', cardphotoComplete)
 
   yield put(
     setSectionComplete({ section: 'cardphoto', isComplete: cardphotoComplete }),

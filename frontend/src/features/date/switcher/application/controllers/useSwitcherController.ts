@@ -11,7 +11,7 @@ export const useSwitcherController = () => {
 
   const switcher = useAppSelector((state: RootState) => selectSwitcher(state))
   const position = useAppSelector((state: RootState) =>
-    selectSwitcherPosition(state)
+    selectSwitcherPosition(state),
   )
 
   const toggle = () => dispatch(togglePosition())

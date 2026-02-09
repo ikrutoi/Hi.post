@@ -1,20 +1,13 @@
 import { useSwitcherFacade } from '../facades'
-import type { Switcher } from '@entities/date/domain/types'
+// import type { Switcher } from '@entities/date/domain/types'
 
 export const useSwitcherLogic = () => {
-  const { actions: actionsSwitcher } = useSwitcherFacade()
-  const { setActiveSwitcher, toggleActiveSwitcher, resetActiveSwitcher } =
-    actionsSwitcher
+  const { actions } = useSwitcherFacade()
 
-  const handleSwitcherClick = (part: Switcher) => {
-    if (part === null) {
-      resetActiveSwitcher()
-    } else {
-      toggleActiveSwitcher(part)
-    }
+  const handleSwitcherClick = (currentPosition: 'month' | 'year') => {
+    const next = currentPosition === 'month' ? 'year' : 'month'
+    actions.changePosition(next)
   }
 
-  return {
-    handleSwitcherClick,
-  }
+  return { handleSwitcherClick }
 }

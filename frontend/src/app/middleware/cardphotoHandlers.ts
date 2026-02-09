@@ -341,6 +341,8 @@ export function* handleCropConfirm(): SagaIterator {
       config.image.meta.url,
     )
 
+    console.log('HANDLE_CROP_CONFIRM img', img)
+
     const scaleX = img.naturalWidth / config.image.meta.width
     const scaleY = img.naturalHeight / config.image.meta.height
 
@@ -591,6 +593,9 @@ export function* handleBackToOriginalSaga() {
   const userMeta = state.base.user.image
   const stockMeta = state.base.stock.image
   const activeSource = state.activeSource
+  const isComplete = !!state.base.apply.image
+
+  console.log('BACK_SAGA state', state)
 
   let nextSource: ImageSource | null = null
   let nextMeta = null
@@ -632,6 +637,7 @@ export function* handleBackToOriginalSaga() {
         ...state,
         config,
         activeSource: nextSource,
+        isComplete,
       }),
     )
 

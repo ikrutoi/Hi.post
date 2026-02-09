@@ -4,6 +4,40 @@ $sliderThumbSize: 1rem;
 $sliderHeight: 2px;
 $sliderThumbShadow: $color-toggle-active;
 
+.sliderContainer {
+  position: relative;
+  width: 100%;
+  padding-top: 1rem;
+  // border: solid 1px green;
+}
+
+.sliderLabel {
+  position: absolute;
+  top: 0;
+  display: flex;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  pointer-events: none;
+  font-size: 0.75rem;
+  opacity: 1;
+
+  transition: left 0.15s ease-out;
+}
+
+.labelPart {
+  color: $color-font-enabled-light;
+  font-weight: 400;
+  transition:
+    opacity 0.3s ease,
+    color 0.3s ease,
+    font-weight 0.3s set-after;
+
+  &.active {
+    font-weight: 700;
+    color: $color-font-enabled-light-hover;
+  }
+}
+
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
@@ -12,6 +46,7 @@ input[type='range'] {
 }
 
 .dateSliderLine {
+  margin: 0;
   width: 100%;
   height: $sliderHeight;
   background-color: $color-section-light-completed;

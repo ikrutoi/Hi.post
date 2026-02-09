@@ -38,6 +38,14 @@
     }
   }
 
+  .toolbarKeyApplyEnabled {
+    background-color: $color-section-light-completed;
+  }
+
+  .toolbarKeyApplyEnabled:hover {
+    background-color: $color-section-dark-completed;
+  }
+
   .toolbarGroup {
     display: flex;
     transition:

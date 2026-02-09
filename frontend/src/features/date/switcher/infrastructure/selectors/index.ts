@@ -1,1 +1,1 @@
-export * from './switcher.selector'
+export * from './switcherSelectors'

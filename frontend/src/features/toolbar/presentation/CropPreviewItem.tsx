@@ -6,7 +6,7 @@ import { getToolbarIcon } from '@shared/utils/icons'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import styles from './CropPreviewItem.module.scss'
 
-export const CropPreviewItem = ({ cropId }: { cropId: string }) => {
+export const CropPreviewItem = React.memo(({ cropId }: { cropId: string }) => {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
 
   const { actions: cardphotoActions } = useCardphotoFacade()
@@ -67,19 +67,19 @@ export const CropPreviewItem = ({ cropId }: { cropId: string }) => {
       <div className={styles.previewButtonContainer}>
         <button
           type="button"
-          className={clsx(styles.previewButton, styles.previewButtonDelete)}
-          onClick={handleClear}
-        >
-          {getToolbarIcon({ key: 'deleteSmall' })}
-        </button>
-        <button
-          type="button"
           className={clsx(styles.previewButton, styles.previewButtonPlus)}
           // onClick={handleClear}
         >
           {getToolbarIcon({ key: 'plusSmall' })}
         </button>
+        <button
+          type="button"
+          className={clsx(styles.previewButton, styles.previewButtonDelete)}
+          onClick={handleClear}
+        >
+          {getToolbarIcon({ key: 'deleteSmall' })}
+        </button>
       </div>
     </div>
   )
-}
+})

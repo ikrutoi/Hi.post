@@ -44,8 +44,9 @@ export const selectActiveOperation = createSelector(
   (operations, index) => (index >= 0 ? (operations[index] ?? null) : null),
 )
 
-export const selectCurrentConfig = (state: RootState): WorkingConfig | null =>
-  state.cardphoto.state?.currentConfig ?? null
+export const selectCurrentConfig = (state: RootState): WorkingConfig | null => {
+  return state.cardphoto.state?.currentConfig ?? null
+}
 
 export const selectCurrentImageMeta = (state: RootState): ImageMeta | null =>
   selectCurrentConfig(state)?.image?.meta ?? null
@@ -60,6 +61,18 @@ export const selectCropOrientation = (state: RootState): LayoutOrientation =>
   state.cardphoto.state?.currentConfig?.crop?.orientation ??
   state.cardphoto.state?.currentConfig?.card.orientation ??
   'landscape'
+
+export const selectIsCurrentCropApplied = (state: RootState): boolean => {
+  const cp = state.cardphoto.state
+  if (!cp) return false
+
+  const currentImg = cp.currentConfig?.image.meta
+  const appliedImg = cp.base.apply.image
+
+  if (!currentImg || !appliedImg) return false
+
+  return currentImg.id === appliedImg.id
+}
 
 export const selectLastOperationReason = (state: RootState): string | null => {
   const cardState = state.cardphoto.state

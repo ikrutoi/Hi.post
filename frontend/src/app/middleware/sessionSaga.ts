@@ -57,6 +57,7 @@ import type {
   CardphotoSessionRecord,
   ImageMeta,
   WorkingConfig,
+  ImageSource,
 } from '@cardphoto/domain/types'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
@@ -67,14 +68,11 @@ import { getRandomStockMeta } from './cardphotoHistorySaga'
 import { CardSection } from '@shared/config/constants'
 
 export function* persistGlobalSession() {
+  console.log('>>>>PERSIST SAVING START<<<<')
+
   const cardphoto: CardphotoSessionRecord | null = yield select(
     selectCardphotoSessionRecord,
   )
-
-  if (!cardphoto) {
-    console.log('>>>>PERSIST SKIP: Cardphoto not ready<<<<')
-    return
-  }
 
   const cardtext: CardtextSessionRecord | null = yield select(
     selectCardtextSessionRecord,
@@ -83,51 +81,11 @@ export function* persistGlobalSession() {
     selectEnvelopeSessionRecord,
   )
   const aroma: AromaState = yield select(selectAromaState)
+
   const date: DateState = yield select(selectDateState)
+
   const activeSection: CardSection =
     (yield select(selectActiveSection)) || 'cardphoto'
-  const sizeCard: SizeCard = yield select(selectSizeCard)
-
-  const sessionData: SessionData = {
-    id: 'current_session',
-    cardphoto,
-    cardtext,
-    envelope,
-    aroma,
-    date,
-    activeSection,
-    sizeCard,
-    timestamp: Date.now(),
-  }
-
-  console.log('>>>>PERSIST SAVING<<<<')
-
-  yield call([storeAdapters.session, 'put'], sessionData)
-}
-
-export function* persistGlobalSession1() {
-  console.log('>>>>PERSIST<<<<')
-  const cardphoto: CardphotoSessionRecord | null = yield select(
-    selectCardphotoSessionRecord,
-  )
-
-  const cardtext: CardtextSessionRecord | null = yield select(
-    selectCardtextSessionRecord,
-  )
-
-  // console.log('PERSIST envelope', selectEnvelopeSessionRecord)
-  const envelope: EnvelopeSessionRecord | null = yield select(
-    selectEnvelopeSessionRecord,
-  )
-
-  const aroma: AromaState = yield select(selectAromaState)
-
-  const date: DateState = yield select(selectDateState)
-
-  const currentSection: SectionEditorMenuKey | null =
-    yield select(selectActiveSection)
-
-  const activeSection = currentSection || 'cardphoto'
 
   const sizeCard: SizeCard = yield select(selectSizeCard)
 
@@ -144,7 +102,49 @@ export function* persistGlobalSession1() {
   }
 
   yield call([storeAdapters.session, 'put'], sessionData)
+  console.log('>>>>PERSIST SAVING END<<<<', sessionData)
 }
+
+// export function* persistGlobalSession1() {
+//   console.log('>>>>PERSIST<<<<')
+//   const cardphoto: CardphotoSessionRecord | null = yield select(
+//     selectCardphotoSessionRecord,
+//   )
+
+//   const cardtext: CardtextSessionRecord | null = yield select(
+//     selectCardtextSessionRecord,
+//   )
+
+//   // console.log('PERSIST envelope', selectEnvelopeSessionRecord)
+//   const envelope: EnvelopeSessionRecord | null = yield select(
+//     selectEnvelopeSessionRecord,
+//   )
+
+//   const aroma: AromaState = yield select(selectAromaState)
+
+//   const date: DateState = yield select(selectDateState)
+
+//   const currentSection: SectionEditorMenuKey | null =
+//     yield select(selectActiveSection)
+
+//   const activeSection = currentSection || 'cardphoto'
+
+//   const sizeCard: SizeCard = yield select(selectSizeCard)
+
+//   const sessionData: SessionData = {
+//     id: 'current_session',
+//     cardphoto,
+//     cardtext,
+//     envelope,
+//     aroma,
+//     date,
+//     activeSection,
+//     sizeCard,
+//     timestamp: Date.now(),
+//   }
+
+//   yield call([storeAdapters.session, 'put'], sessionData)
+// }
 
 const SESSION_WATCH_ACTIONS = [
   setTextStyle.type,
@@ -163,6 +163,7 @@ const SESSION_WATCH_ACTIONS = [
   applyFinal.type,
   hydrateEditor.type,
   setAroma.type,
+  setDate.type,
 ]
 
 export function* hydrateAppSession() {
@@ -178,7 +179,8 @@ export function* hydrateAppSession() {
 
     if (session.cardphoto) {
       console.log('SESSION_CARDPHOTO cardphoto', session.cardphoto)
-      const { activeMetaId, cropIds, source, config } = session.cardphoto
+      const { activeMetaId, cropIds, source, config, isComplete } =
+        session.cardphoto
 
       const [stockRec, userRec, rawProcess, applyRec]: [
         { image: ImageMeta } | null,
@@ -193,6 +195,8 @@ export function* hydrateAppSession() {
           : null,
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
       ])
+
+      console.log('SESSION userRec', userRec)
 
       const base: CardphotoBase = {
         stock: { image: hydrateMeta(stockRec?.image || null) },
@@ -212,9 +216,8 @@ export function* hydrateAppSession() {
         finalCropIds = allCrops.map((c) => c.id)
       }
 
-      console.log('SESSION_CARDPHOTO cropIds', finalCropIds)
-
       let activeImage = base[source]?.image || base.stock.image
+      console.log('SESSION activeImage', activeImage)
 
       if (!activeImage) {
         console.log('>>> Image missing, fetching emergency stock...')
@@ -225,69 +228,98 @@ export function* hydrateAppSession() {
 
       if (!activeImage) return
 
+      // const sizeCard: SizeCard = yield select(selectSizeCard)
+
       let finalConfig: WorkingConfig
+
+      const calculatedConfig: WorkingConfig = yield call(
+        rebuildConfigFromMeta,
+        activeImage,
+        source,
+        config.card.orientation,
+      )
 
       if (source === 'user' && config) {
         finalConfig = {
-          ...config,
-          image: { ...config.image, meta: activeImage },
+          ...calculatedConfig,
+          image: {
+            ...calculatedConfig.image,
+            left: config.image.left,
+            top: config.image.top,
+            rotation: config.image.rotation,
+          },
+          crop: config.crop,
         }
       } else {
-        finalConfig = yield call(
-          rebuildConfigFromMeta,
-          activeImage,
-          source,
-          activeImage.orientation,
-        )
+        finalConfig = calculatedConfig
       }
 
       yield put(
         hydrateEditor({
           base,
-          config: finalConfig,
+          config: calculatedConfig,
           activeSource: source,
           cropIds: finalCropIds || [],
           cropCount,
+          isComplete,
         }),
       )
 
       yield call(syncCardphotoStatus)
     } else {
-      console.log('>>> SESSION EMPTY: Initializing default Cardphoto')
+      const [rawApplyRec, rawUserRec, allCrops, sizeCard]: [
+        { image: ImageMeta } | null,
+        { image: ImageMeta } | null,
+        ImageMeta[],
+        SizeCard,
+      ] = yield all([
+        call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
+        call([storeAdapters.userImages, 'getById'], 'current_user_image'),
+        call([storeAdapters.cropImages, 'getAll']),
+        select(selectSizeCard),
+      ])
 
-      const rawStock: ImageMeta = yield call(getRandomStockMeta)
-      const stockImage = hydrateMeta(rawStock)
+      const applyImg = hydrateMeta(rawApplyRec?.image || null)
+      const userImg = hydrateMeta(rawUserRec?.image || null)
+      const lastCrop = hydrateMeta(allCrops[allCrops.length - 1] || null)
+      const stockRaw: ImageMeta = yield call(getRandomStockMeta)
+      const stockImg = hydrateMeta(stockRaw)
 
-      if (!stockImage) return
+      const base: CardphotoBase = {
+        apply: { image: applyImg },
+        user: { image: userImg },
+        processed: { image: lastCrop },
+        stock: { image: stockImg },
+      }
 
-      const sizeCard: SizeCard = yield select(selectSizeCard)
+      let autoSource: ImageSource = 'stock'
+      if (applyImg) autoSource = 'apply'
+      else if (userImg) autoSource = 'user'
+      else if (lastCrop) autoSource = 'processed'
+
+      const activeImage = base[autoSource].image || stockImg
+      if (!activeImage) return
 
       const config: WorkingConfig = yield call(
         rebuildConfigFromMeta,
-        stockImage,
-        'stock',
-        sizeCard.orientation,
+        activeImage,
+        autoSource,
+        activeImage.orientation,
       )
-
-      const base: CardphotoBase = {
-        stock: { image: stockImage },
-        user: { image: null },
-        processed: { image: null },
-        apply: { image: null },
-      }
 
       yield put(
         hydrateEditor({
           base,
           config,
-          activeSource: 'stock',
-          cropIds: [],
-          cropCount: 0,
+          activeSource: autoSource,
+          cropIds: allCrops.map((c) => c.id),
+          cropCount: allCrops.length,
+          isComplete: !!applyImg,
         }),
       )
-    }
 
-    console.log('SESSION>>>')
+      console.log(`>>> Recovered from DB! Active Source: ${autoSource}`)
+    }
 
     if (session.cardtext) {
       yield put(setTextStyle(session.cardtext))

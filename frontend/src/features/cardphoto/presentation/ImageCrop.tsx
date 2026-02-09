@@ -49,7 +49,7 @@ export const ImageCrop = () => {
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
 
-  // console.log('ImageCrop state', cardphotoState)
+  // console.log('ImageCrop activeImage', activeImage)
   console.count('ImageCrop Render')
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
@@ -101,14 +101,15 @@ export const ImageCrop = () => {
   //   setLoaded(false)
   // }, [src])
 
-  console.log('ImageCrop ++')
+  // console.log('ImageCrop ++ imageLayer', imageLayer)
   const handleFileChange = useImageUpload(
     setUserImage,
     cardphotoUiActions.markLoading,
   )
-  console.log('ImageCrop +++')
+  // console.log('ImageCrop +++')
 
   const shouldShowImage = !!src && activeImage
+  // console.log('ImageCrop ++++4')
 
   const imageStyle: React.CSSProperties | undefined = imageLayer
     ? {
@@ -130,7 +131,7 @@ export const ImageCrop = () => {
     overflow: 'hidden',
   }
 
-  console.log('ImageCrop ++++')
+  // console.log('ImageCrop +++++5')
 
   return (
     <div

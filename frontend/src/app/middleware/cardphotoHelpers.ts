@@ -1,4 +1,4 @@
-import { put } from 'redux-saga/effects'
+import { call, put, select } from 'redux-saga/effects'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type {
   CardphotoToolbarState,
@@ -9,7 +9,12 @@ import type {
   WorkingConfig,
   ImageSource,
   CardphotoSessionRecord,
+  CardphotoBase,
 } from '@cardphoto/domain/types'
+import { SizeCard } from '@/features/layout/domain/types'
+import { selectSizeCard } from '@/features/layout/infrastructure/selectors'
+import { getRandomStockMeta } from './cardphotoHistorySaga'
+import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 
 interface UpdateCropOptions {
   isFull?: boolean
@@ -137,3 +142,57 @@ export const hydrateMeta = (meta: ImageMeta | null): ImageMeta | null => {
       : undefined,
   }
 }
+
+// export function* prepareCardphotoHydration(
+//   raw: {
+//     stock?: ImageMeta | null
+//     user?: ImageMeta | null
+//     processed?: ImageMeta | null
+//     apply?: ImageMeta | null
+//   },
+//   source: ImageSource,
+//   savedConfig?: WorkingConfig | null,
+//   cropIds: string[] = [],
+// ) {
+//   const sizeCard: SizeCard = yield select(selectSizeCard)
+
+//   const base: CardphotoBase = {
+//     stock: { image: hydrateMeta(raw.stock || null) },
+//     user: { image: hydrateMeta(raw.user || null) },
+//     processed: { image: hydrateMeta(raw.processed || null) },
+//     apply: { image: hydrateMeta(raw.apply || null) },
+//   }
+
+//   let activeImage = base[source]?.image || base.stock.image
+
+//   if (!activeImage) {
+//     const emergencyRaw: ImageMeta = yield call(getRandomStockMeta)
+//     activeImage = hydrateMeta(emergencyRaw)
+//     if (activeImage) base.stock.image = activeImage
+//   }
+
+//   if (!activeImage) return null
+
+//   let config: WorkingConfig
+//   if (source === 'user' && savedConfig) {
+//     config = {
+//       ...savedConfig,
+//       image: { ...savedConfig.image, meta: activeImage },
+//     }
+//   } else {
+//     config = yield call(
+//       rebuildConfigFromMeta,
+//       activeImage,
+//       source,
+//       sizeCard.orientation,
+//     )
+//   }
+
+//   return {
+//     base,
+//     config,
+//     activeSource: source,
+//     cropIds,
+//     cropCount: cropIds.length,
+//   }
+// }

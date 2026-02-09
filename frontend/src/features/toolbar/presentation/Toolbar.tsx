@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { CropPreview } from './CropPreview'
 import { useToolbarFacade } from '../application/facades'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
@@ -7,6 +8,10 @@ import { useCardtextFacade } from '@cardtext/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
+import {
+  selectAppliedImage,
+  selectIsCurrentCropApplied,
+} from '@/features/cardphoto/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
@@ -35,10 +40,13 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { sectionMenuHeight } = layoutSize
   const { setSectionMenuHeight } = layoutActions
 
-  const { state: cardphotoState } = useCardphotoFacade()
+  const isAlreadyApplied = useAppSelector(selectIsCurrentCropApplied)
+  const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
+  // const { state: cardphotoState } = useCardphotoFacade()
   // const { cropIds } = cardphotoState
 
-  console.log('TOOLBAR')
+  // console.count('Toolbar Render')
+
   // const cropIdsReversed = useMemo(() => [...cropIds].reverse(), [cropIds])
 
   useEffect(() => {
@@ -61,7 +69,12 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
       options?: IconOptions
     }
 
-    const buttonStatus = currentIconState || rawData.state
+    let buttonStatus = currentIconState || rawData.state
+
+    if (key === 'apply' && isAlreadyApplied) {
+      buttonStatus = 'disabled'
+    }
+
     const orientation = rawData.options?.orientation
     const badge = rawData.options?.badge
 
@@ -71,6 +84,8 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
         className={clsx(
           styles.toolbarKey,
           styles[`toolbarKey${capitalize(buttonStatus)}`],
+          styles[`toolbarKey${capitalize(key)}`],
+          styles[`toolbarKey${capitalize(key)}${capitalize(buttonStatus)}`],
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}

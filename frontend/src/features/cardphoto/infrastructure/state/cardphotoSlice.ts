@@ -81,25 +81,28 @@ export const cardphotoSlice = createSlice({
         activeSource: ImageSource
         cropIds: string[]
         cropCount: number
+        isComplete: boolean
       }>,
     ) {
-      const { base, config, activeSource, cropIds, cropCount } = action.payload
-      // console.log('hydrateEditor--->>> base', base)
-      console.log('hydrateEditor--->>> apply', base.apply)
-      console.log('hydrateEditor--->>> source', activeSource)
+      console.log('>>HYDRATE')
+      const { base, config, activeSource, cropIds, cropCount, isComplete } =
+        action.payload
 
       if (state.state) {
-        state.state.base.stock = base.stock
-        state.state.base.user = base.user
-        state.state.base.processed = base.processed
-        state.state.base.apply = base.apply
-
-        state.state.activeSource = activeSource
-        state.state.cropCount = cropCount
-        state.state.cropIds = cropIds
-
-        // pushOperation(state, config, 'reset')
+        console.log('>>HYDRATE TRUE config', config)
+        state.state = {
+          base,
+          operations: [
+            { type: 'operation', payload: { config, reason: 'reset' } },
+          ],
+          activeIndex: 0,
+          cropCount,
+          cropIds,
+          activeSource,
+          currentConfig: config,
+        }
       } else {
+        console.log('>>HYDRATE FALSE')
         state.state = {
           base,
           operations: [
@@ -112,7 +115,7 @@ export const cardphotoSlice = createSlice({
           currentConfig: config,
         }
       }
-      // state.isComplete = false
+      state.isComplete = isComplete
     },
 
     setBaseImage(

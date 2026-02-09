@@ -114,6 +114,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     console.log('onUploadImage')
 
     const state: CardphotoState = yield select(selectCardphotoState)
+    const isComplete = !!state.base.apply.image
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       imageMeta,
@@ -141,6 +142,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
         activeSource: 'user',
         cropCount: state.cropCount || 0,
         cropIds: state.cropIds || [],
+        isComplete,
       }),
     )
   } catch (error) {

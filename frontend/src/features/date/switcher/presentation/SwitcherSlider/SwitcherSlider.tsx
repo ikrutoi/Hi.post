@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { MONTH_NAMES } from '@entities/date/constants'
+import { MONTH_NAMES_UPPER } from '@entities/date/constants'
 import { useSwitcherLogic } from '../../application/hooks'
 import { useSwitcherFacade } from '../../application/facades'
 import styles from './SwitcherSlider.module.scss'
@@ -13,21 +13,18 @@ interface SwitcherSliderProps {
 export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
   calendarViewDate,
 }) => {
-  const { state: stateSwitcher, actions: actionsSwitcher } = useSwitcherFacade()
-  const { position } = stateSwitcher
-  const { toggle } = actionsSwitcher
+  // const { state: stateSwitcher, actions: actionsSwitcher } = useSwitcherFacade()
+  // const { position } = stateSwitcher
+  // const { toggle } = actionsSwitcher
+  const {
+    state: { position },
+    actions: { toggle },
+  } = useSwitcherFacade()
 
   const { handleSwitcherClick } = useSwitcherLogic()
 
   return (
-    <div
-      className={styles.slider}
-      onClick={() => {
-        const next = position === 'month' ? 'year' : 'month'
-        toggle()
-        handleSwitcherClick(next)
-      }}
-    >
+    <div className={styles.slider} onClick={() => toggle()}>
       <div
         className={clsx(styles.sliderTextLayer, styles.sliderTextLayerMonth, {
           [styles.sliderRight]: position === 'month',
@@ -35,7 +32,7 @@ export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
         })}
       >
         <span className={clsx(styles.sliderText, styles.sliderTextMonth)}>
-          {MONTH_NAMES[calendarViewDate.month]}
+          {MONTH_NAMES_UPPER[calendarViewDate.month]}
         </span>
       </div>
 
