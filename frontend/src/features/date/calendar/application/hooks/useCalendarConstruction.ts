@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useAppSelector } from '@app/hooks'
 import { getCurrentDate } from '@shared/utils/date'
 import {
   getDaysInPreviousMonth,
@@ -17,6 +18,8 @@ import type {
 } from '@entities/date/domain/types'
 import type { CartItem } from '@entities/cart/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
+import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
+import { CardCalendarIndex } from '@/entities/card/domain/types'
 
 interface UseCalendarConstructionParams {
   selectedDate: SelectedDispatchDate
@@ -36,6 +39,9 @@ export const useCalendarConstruction = ({
   triggerFlash,
 }: UseCalendarConstructionParams) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
+  const cardsMap = useAppSelector(selectCardsByDateMap)
+
+  // console.log('USE_CALENDAR_CONSTRUCTION cardsMap', cardsMap)
 
   useEffect(() => {
     const loadCartItems = async () => {
@@ -60,12 +66,12 @@ export const useCalendarConstruction = ({
 
   const prevDays = Array.from(
     { length: offset },
-    (_, i) => daysInPrevMonth - i
+    (_, i) => daysInPrevMonth - i,
   ).reverse()
   const currDays = Array.from({ length: daysInCurrMonth }, (_, i) => i + 1)
   const nextDays = Array.from(
     { length: 42 - offset - daysInCurrMonth },
-    (_, i) => i + 1
+    (_, i) => i + 1,
   )
 
   const previousCells = buildMonthCells({
@@ -75,6 +81,7 @@ export const useCalendarConstruction = ({
     selectedDate,
     currentDate,
     handleClickCell,
+    cardsMap,
   })
 
   const currentCells = buildMonthCells({
@@ -86,6 +93,7 @@ export const useCalendarConstruction = ({
     handleClickCell,
     chooseDate,
     cartItems,
+    cardsMap,
   })
 
   const nextCells = buildMonthCells({
@@ -95,6 +103,7 @@ export const useCalendarConstruction = ({
     selectedDate,
     currentDate,
     handleClickCell,
+    cardsMap,
   })
 
   return useMemo(
@@ -107,6 +116,6 @@ export const useCalendarConstruction = ({
       handleClickCell,
       cartItems,
       firstDayOfWeek,
-    ]
+    ],
   )
 }

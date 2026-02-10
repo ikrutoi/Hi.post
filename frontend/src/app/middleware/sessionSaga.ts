@@ -68,7 +68,7 @@ import { getRandomStockMeta } from './cardphotoHistorySaga'
 import { CardSection } from '@shared/config/constants'
 
 export function* persistGlobalSession() {
-  console.log('>>>>PERSIST SAVING START<<<<')
+  // console.log('>>>>PERSIST SAVING START<<<<')
 
   const cardphoto: CardphotoSessionRecord | null = yield select(
     selectCardphotoSessionRecord,
@@ -102,7 +102,7 @@ export function* persistGlobalSession() {
   }
 
   yield call([storeAdapters.session, 'put'], sessionData)
-  console.log('>>>>PERSIST SAVING END<<<<', sessionData)
+  // console.log('>>>>PERSIST SAVING END<<<<', sessionData)
 }
 
 // export function* persistGlobalSession1() {

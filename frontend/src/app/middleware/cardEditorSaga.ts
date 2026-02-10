@@ -1,4 +1,4 @@
-import { takeEvery, put, select } from 'redux-saga/effects'
+import { takeEvery, put, select, call } from 'redux-saga/effects'
 import {
   setSectionComplete,
   clearSection,
@@ -16,18 +16,48 @@ import {
   restoreSender,
   clearSender,
 } from '@envelope/sender/infrastructure/state'
-import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
-import { selectIsDateComplete } from '@date/infrastructure/selectors'
-import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
+import {
+  selectEnvelopeSessionRecord,
+  selectIsEnvelopeReady,
+} from '@envelope/infrastructure/selectors'
+import {
+  selectIsDateComplete,
+  selectSelectedDate,
+} from '@date/infrastructure/selectors'
+import {
+  selectSelectedAroma,
+  selectIsAromaComplete,
+} from '@aroma/infrastructure/selectors'
 import {
   setValue,
   clear as clearCardtext,
 } from '@cardtext/infrastructure/state'
-import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
+import {
+  selectCardtextIsComplete,
+  selectCardtextState,
+} from '@cardtext/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { applyFinal } from '@cardphoto/infrastructure/state'
-import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
+import {
+  selectCardphotoIsComplete,
+  selectCardphotoState,
+} from '@cardphoto/infrastructure/selectors'
 import { buildCardtextToolbarState } from '@cardtext/domain/helpers'
+import {
+  selectIsCardReady,
+  selectIsProcessedReady,
+} from '@entities/card/infrastructure/selectors'
+import {
+  clearProcessed,
+  setProcessedCard,
+  syncProcessedRequest,
+} from '@entities/card/infrastructure/state'
+import type { DispatchDate } from '@entities/date'
+import type { CardphotoState } from '@cardphoto/domain/types'
+import type { CardtextState } from '@cardtext/domain/types'
+import type { EnvelopeSessionRecord } from '@envelope/domain/types'
+import type { Card } from '@entities/card/domain/types'
+import type { AromaItem, AromaState } from '@entities/aroma'
 
 function* syncDateSet() {
   const dateComplete: boolean = yield select(selectIsDateComplete)
@@ -75,11 +105,54 @@ function* syncCardtextToolbar(action: ReturnType<typeof setValue>) {
 
 export function* syncCardphotoStatus() {
   const cardphotoComplete: boolean = yield select(selectCardphotoIsComplete)
-  console.log('SYNC_CARDPHOTO isComplete', cardphotoComplete)
 
   yield put(
     setSectionComplete({ section: 'cardphoto', isComplete: cardphotoComplete }),
   )
+}
+
+function* handleSectionChange() {
+  const isCurrentlyReady: boolean = yield select(selectIsCardReady)
+
+  console.log('HANDLE_SECTION_CHANGE isReady:', isCurrentlyReady)
+
+  if (isCurrentlyReady) {
+    yield put(syncProcessedRequest())
+  } else {
+    yield put(clearProcessed())
+  }
+}
+
+function* checkAndSyncProcessedCard() {
+  const photo: CardphotoState = yield select(selectCardphotoState)
+  const text: CardtextState = yield select(selectCardtextState)
+  const envelope: EnvelopeSessionRecord = yield select(
+    selectEnvelopeSessionRecord,
+  )
+  const calendarDate: DispatchDate = yield select(selectSelectedDate)
+  const aroma: AromaItem = yield select(selectSelectedAroma)
+
+  console.log('CHECK_AND_SYNC_PROCESSED photo', photo)
+
+  if (!photo.base.apply.image) return
+
+  const processedCard: Card = {
+    id: photo.base.apply.image.id,
+    status: 'processed',
+    thumbnailUrl: photo.base.apply.image.thumbnail?.url || '',
+    photo,
+    text,
+    envelope,
+    aroma,
+    date: calendarDate,
+    meta: {
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    },
+  }
+
+  console.log('CHECK_AND_SYNC_PROCESSED processedCard', processedCard)
+  yield put(setProcessedCard(processedCard))
 }
 
 export function* cardEditorSaga() {
@@ -102,6 +175,19 @@ export function* cardEditorSaga() {
     ],
     syncEnvelopeClear,
   )
+
+  yield takeEvery(
+    [
+      setDate.type,
+      applyFinal.type,
+      setValue.type,
+      updateRecipientField.type,
+      setAroma.type,
+    ],
+    handleSectionChange,
+  )
+
+  yield takeEvery(syncProcessedRequest.type, checkAndSyncProcessedCard)
 
   yield takeEvery(setValue.type, syncCardtextStatus)
   // yield takeEvery(setValue.type, syncCardtextToolbar)

@@ -42,7 +42,7 @@ export const Cell: React.FC<CellProps> = ({
     dayBefore != null && styles.before,
     dayAfter != null && styles.after,
     dayCurrent != null && styles.current,
-    isSelectedDate && styles.dispatch
+    isSelectedDate && styles.dispatch,
   )
 
   const handleClick = () => {

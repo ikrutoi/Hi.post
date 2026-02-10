@@ -1,15 +1,14 @@
 .calendar {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(7, 1fr);
+  grid-template-rows: 0.5fr, repeat(6, 1fr);
   height: 100%;
-  // width: 100%;
-  aspect-ratio: 1.42;
-  border: solid 1px orange;
 
   &Days {
     display: grid;
     grid-column: 1 / -1;
+    grid-row: 2/8;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(6, 1fr);
   }

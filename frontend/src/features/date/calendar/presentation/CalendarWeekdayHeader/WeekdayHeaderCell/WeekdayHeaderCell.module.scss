@@ -8,9 +8,14 @@
   user-select: none;
   font-size: 0.8rem;
   font-weight: bold;
-  border: 1px solid $color-disabled;
+  margin: 2px 0.75rem;
+  // border: 1px solid $color-disabled;
   text-transform: uppercase;
   // border: solid 1px blue;
+}
+
+.cell:first-child {
+  border-radius: 0.75rem;
 }
 
 .firstDayToggle {

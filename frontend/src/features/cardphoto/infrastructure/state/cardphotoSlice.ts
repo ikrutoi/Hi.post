@@ -84,12 +84,11 @@ export const cardphotoSlice = createSlice({
         isComplete: boolean
       }>,
     ) {
-      console.log('>>HYDRATE')
+      // console.log('>>HYDRATE')
       const { base, config, activeSource, cropIds, cropCount, isComplete } =
         action.payload
 
       if (state.state) {
-        console.log('>>HYDRATE TRUE config', config)
         state.state = {
           base,
           operations: [
@@ -102,7 +101,6 @@ export const cardphotoSlice = createSlice({
           currentConfig: config,
         }
       } else {
-        console.log('>>HYDRATE FALSE')
         state.state = {
           base,
           operations: [

@@ -1,4 +1,5 @@
 import { Cell } from '@date/cell/presentation/Cell'
+import { CardPreview } from '@features/date/cardPreview/presentation/CardPreview'
 import { CartDatePreview } from '../../presentation/CalendarWeekdayHeader/CartDatePreview/CartDatePreview'
 import { isSameDate, shiftMonth } from '../helpers'
 import { isDisabledDate } from '@entities/date/utils'
@@ -10,6 +11,10 @@ import type {
 import type { CartItem } from '@entities/cart/domain/types'
 import type { MonthDirection } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
+import {
+  CalendarCardItem,
+  CardCalendarIndex,
+} from '@entities/card/domain/types'
 
 interface BuildMonthCellsParams {
   days: number[]
@@ -20,6 +25,7 @@ interface BuildMonthCellsParams {
   handleClickCell: (params: HandleCellClickParams) => void
   chooseDate?: (date: DispatchDate) => void
   cartItems?: CartItem[]
+  cardsMap: Record<string, CardCalendarIndex>
 }
 
 export const buildMonthCells = ({
@@ -31,6 +37,7 @@ export const buildMonthCells = ({
   handleClickCell,
   chooseDate,
   cartItems,
+  cardsMap,
 }: BuildMonthCellsParams) => {
   if (!calendarViewDate) return []
 
@@ -38,10 +45,13 @@ export const buildMonthCells = ({
 
   const { year: currentViewYear, month: currentViewMonth } = shiftMonth(
     calendarViewDate,
-    direction
+    direction,
   )
 
   return days.map((day) => {
+    const dateKey = `${currentViewYear}-${currentViewMonth}-${day}`
+    const dayData = cardsMap[dateKey]
+
     const isToday =
       day === currentDate.day &&
       currentViewMonth === currentDate.month &&
@@ -65,7 +75,9 @@ export const buildMonthCells = ({
         isDisabledDate={isDisabledDate(day, calendarViewDate, currentDate)}
         isSelectedDate={isSelectedDate}
         onClickCell={handleClickCell}
-      ></Cell>
+      >
+        {dayData && <CardPreview data={dayData} />}
+      </Cell>
     )
   })
 }

@@ -42,11 +42,11 @@ export type CardtextValue = CardtextBlock[]
 
 export type MarkFormat = 'bold' | 'italic' | 'underline'
 
-export interface CardtextState {
-  value: CardtextValue
-  plainText: string
-  isComplete: boolean
-}
+// export interface CardtextState {
+//   value: CardtextValue
+//   plainText: string
+//   isComplete: boolean
+// }
 
 declare module 'slate' {
   interface CustomTypes {

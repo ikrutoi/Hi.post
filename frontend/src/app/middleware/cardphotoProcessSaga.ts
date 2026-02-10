@@ -192,7 +192,7 @@ export function* rebuildConfigFromMeta(
   rotation?: ImageRotation,
 ) {
   try {
-    console.log('REBUILD+ meta', meta)
+    // console.log('REBUILD+ meta', meta)
     yield put(clearCurrentConfig())
     yield delay(16)
 
@@ -222,7 +222,6 @@ export function* rebuildConfigFromMeta(
 
       const newWidth = Math.round(currentCard.height * finalRatio)
 
-      console.log('REBUILD---0')
       yield put(
         setSizeCard({
           orientation: targetOrientation,

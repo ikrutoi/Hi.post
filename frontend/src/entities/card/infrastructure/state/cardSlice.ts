@@ -1,64 +1,60 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { Card } from '../../domain/types'
-import type { CardphotoState } from '@entities/cardphoto'
-import type { CardtextState } from '@entities/cardtext'
-import type { EnvelopeState } from '@envelope/domain/types'
-import type { AromaItem } from '@entities/aroma'
-import type { DispatchDate } from '@entities/date'
+import type { Card, CardCalendarIndex } from '../../domain/types'
 
-export type CardState = {
+interface CardState {
   cards: Card[]
+  calendarIndex: CardCalendarIndex
+  isReady: boolean
 }
 
 const initialState: CardState = {
   cards: [],
+  calendarIndex: {
+    processed: null,
+    cart: [],
+    sent: [],
+  },
+  isReady: false,
 }
 
 export const cardSlice = createSlice({
   name: 'card',
   initialState,
   reducers: {
-    addCard(
-      state,
-      action: PayloadAction<{
-        id: string
-        status: Card['status']
-        cardphoto: CardphotoState
-        cardtext: CardtextState
-        envelope: EnvelopeState
-        aroma: AromaItem
-        date: DispatchDate
-      }>
-    ) {
-      const { id, status, cardphoto, cardtext, envelope, aroma, date } =
-        action.payload
-
-      state.cards.push({
-        id,
-        status,
-        cardphoto,
-        cardtext,
-        envelope,
-        aroma,
-        date,
-      })
-    },
-
-    updateCardStatus(
-      state,
-      action: PayloadAction<{ id: string; status: Card['status'] }>
-    ) {
-      const card = state.cards.find((c) => c.id === action.payload.id)
-      if (card) {
-        card.status = action.payload.status
+    setCardReadyStatus: (state, action: PayloadAction<boolean>) => {
+      state.isReady = action.payload
+      if (!action.payload) {
+        state.calendarIndex.processed = null
       }
     },
 
-    removeCard(state, action: PayloadAction<{ id: string }>) {
-      state.cards = state.cards.filter((c) => c.id !== action.payload.id)
+    syncProcessedRequest: (state) => state,
+
+    setProcessedCard: (state, action: PayloadAction<Card>) => {
+      console.log('SetProcessesCard')
+      const index = state.cards.findIndex((c) => c.id === action.payload.id)
+      if (index !== -1) state.cards[index] = action.payload
+      else state.cards.push(action.payload)
+
+      state.calendarIndex.processed = {
+        cardId: action.payload.id,
+        date: action.payload.date,
+        previewUrl: action.payload.thumbnailUrl,
+      }
+      state.isReady = true
+    },
+
+    clearProcessed: (state) => {
+      state.calendarIndex.processed = null
+      state.isReady = false
     },
   },
 })
 
-export const { addCard, updateCardStatus, removeCard } = cardSlice.actions
+export const {
+  setCardReadyStatus,
+  syncProcessedRequest,
+  setProcessedCard,
+  clearProcessed,
+} = cardSlice.actions
 export default cardSlice.reducer
