@@ -1,0 +1,38 @@
+.hubContainer {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  // pointer-events: none;
+  // aspect-ratio: 1;
+  z-index: 7;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.sector {
+  cursor: pointer;
+  transition:
+    opacity 0.2s,
+    transform 0.2s,
+    filter 0.2s;
+  stroke: white;
+  stroke-width: 20;
+  // border: solid 1px blue;
+
+  &:hover {
+    filter: brightness(1.1);
+    opacity: 0.9;
+  }
+
+  &.active {
+    filter: brightness(1.2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
+    stroke: #fff;
+    stroke-width: 40;
+    transform: scale(1.02);
+    transform-origin: center;
+  }
+}

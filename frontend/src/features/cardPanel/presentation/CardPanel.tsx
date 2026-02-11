@@ -3,7 +3,9 @@ import clsx from 'clsx'
 import { CARD_SECTIONS } from '@shared/config/constants'
 import { useScrollSync } from '@cardPanel/application/hooks'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
+import { CardPie } from '../cardPie/presentation/CardPie'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
+import { useCardFacade } from '@entities/card/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useCardPanelFacade } from '../application/facades'
@@ -29,8 +31,10 @@ export const CardPanel = () => {
   const { state: stateCardPanel } = useCardPanelFacade()
   const { isPacked } = stateCardPanel
 
+  const { isPreviewOpen } = useCardFacade()
+
   const completedSections = CARD_SECTIONS.filter(
-    (section) => editorState[section].isComplete
+    (section) => editorState[section].isComplete,
   )
   const sortedSections = getSortedSections(completedSections)
 
@@ -96,6 +100,7 @@ export const CardPanel = () => {
           })}
         </div>
       )}
+      {isPreviewOpen && <CardPie />}
     </div>
   )
 }

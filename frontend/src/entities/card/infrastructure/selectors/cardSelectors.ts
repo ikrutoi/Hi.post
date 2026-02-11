@@ -6,6 +6,8 @@ import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectIsDateComplete } from '@date/infrastructure/selectors'
+import { DispatchDate } from '@entities/date'
+import { CardSection } from '@shared/config/constants'
 
 export const selectCardState = (state: RootState) => state.card
 
@@ -17,40 +19,53 @@ export const selectCalendarIndex = (state: RootState) =>
 export const selectCardById = (id: string) => (state: RootState) =>
   state.card.cards.find((card) => card.id === id)
 
+export const selectPreviewCard = createSelector(
+  [selectAllCards, (state: RootState) => state.card.previewCardId],
+  (cards, previewId) => cards.find((c) => c.id === previewId) || null,
+)
+
 export const selectCardsByDateMap = createSelector(
   [selectCalendarIndex],
   (index: CardCalendarIndex) => {
     const map: Record<
       string,
-      {
-        processed: CalendarCardItem | null
-        cart: CalendarCardItem[]
-        sent: CalendarCardItem[]
-      }
+      Record<
+        keyof CardCalendarIndex,
+        CalendarCardItem[] | CalendarCardItem | null
+      >
     > = {}
 
-    const getEntry = (date: { year: number; month: number; day: number }) => {
+    const getEntry = (date: DispatchDate) => {
       const key = `${date.year}-${date.month}-${date.day}`
       if (!map[key]) {
-        map[key] = { processed: null, cart: [], sent: [] }
+        map[key] = {
+          processed: null,
+          cart: [],
+          ready: [],
+          sent: [],
+          delivered: [],
+          error: [],
+        }
       }
       return map[key]
     }
 
-    if (index.processed) {
-      const entry = getEntry(index.processed.date)
-      entry.processed = index.processed
+    const fill = (key: keyof CardCalendarIndex) => {
+      const data = index[key]
+      if (!data) return
+
+      if (Array.isArray(data)) {
+        data.forEach((item) => {
+          const entry = getEntry(item.date)
+          ;(entry[key] as CalendarCardItem[]).push(item)
+        })
+      } else {
+        const entry = getEntry(data.date)
+        entry[key] = data
+      }
     }
 
-    index.cart.forEach((item) => {
-      const entry = getEntry(item.date)
-      entry.cart.push(item)
-    })
-
-    index.sent.forEach((item) => {
-      const entry = getEntry(item.date)
-      entry.sent.push(item)
-    })
+    ;(Object.keys(index) as Array<keyof CardCalendarIndex>).forEach(fill)
 
     return map
   },
@@ -70,3 +85,12 @@ export const selectIsCardReady = createSelector(
 )
 
 export const selectIsProcessedReady = (state: RootState) => state.card.isReady
+
+export const selectActiveSection = (state: RootState) =>
+  state.card.activeSection
+
+export const selectIsSectionActive = (section: CardSection) =>
+  createSelector(
+    [selectActiveSection],
+    (activeSection) => activeSection === section,
+  )

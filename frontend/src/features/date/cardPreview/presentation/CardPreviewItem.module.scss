@@ -1,24 +1,9 @@
 @use '@styles/config/colors' as *;
 
-.processed {
-  //   position: relative;
-  //   width: 3rem;
-  //   // height: 100%;
-  //   // margin: 0.85rem 0;
-  //   border-radius: 0.9rem;
-  //   overflow: hidden;
-  //   border: solid 1px $color-section-dark;
-  //   cursor: pointer;
-  //   background-color: $color-section-dark;
-  //   transition: border-color 0.2s;
-  //   // transform 0.2s,
-}
-
 .previewItem {
-  // position: relative;
+  position: relative;
   height: 100%;
   aspect-ratio: 1 / 1;
-  // width: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,16 +29,42 @@
   }
 }
 
-// .previewImage {
-//   // width: 100%;
-//   // height: 100%;
-//   object-fit: cover;
-// }
-
 .previewImage {
-  height: 100%;
   width: auto;
   max-width: 100%;
+  height: 100%;
   object-fit: contain;
   display: block;
+}
+
+.previewIndicator {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  border: solid 1px white;
+  background-color: $color-preview-indicator-delivered;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease;
+
+  &.processed {
+    background-color: $color-preview-indicator-processed;
+  }
+  &.cart {
+    background-color: $color-preview-indicator-cart;
+  }
+  &.ready {
+    background-color: $color-preview-indicator-ready;
+  }
+  &.sent {
+    background-color: $color-preview-indicator-sent;
+  }
+  &.delivered {
+    background-color: $color-preview-indicator-delivered;
+  }
+  &.error {
+    background-color: $color-preview-indicator-error;
+  }
 }

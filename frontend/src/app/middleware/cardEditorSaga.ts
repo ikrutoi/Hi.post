@@ -44,11 +44,16 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import { buildCardtextToolbarState } from '@cardtext/domain/helpers'
 import {
+  selectCardById,
   selectIsCardReady,
   selectIsProcessedReady,
 } from '@entities/card/infrastructure/selectors'
 import {
+  cardActions,
+  changeStatus,
   clearProcessed,
+  copySectionToProcessed,
+  setPreviewCardId,
   setProcessedCard,
   syncProcessedRequest,
 } from '@entities/card/infrastructure/state'
@@ -124,24 +129,24 @@ function* handleSectionChange() {
 }
 
 function* checkAndSyncProcessedCard() {
-  const photo: CardphotoState = yield select(selectCardphotoState)
-  const text: CardtextState = yield select(selectCardtextState)
+  const cardphoto: CardphotoState = yield select(selectCardphotoState)
+  const cardtext: CardtextState = yield select(selectCardtextState)
   const envelope: EnvelopeSessionRecord = yield select(
     selectEnvelopeSessionRecord,
   )
   const calendarDate: DispatchDate = yield select(selectSelectedDate)
   const aroma: AromaItem = yield select(selectSelectedAroma)
 
-  console.log('CHECK_AND_SYNC_PROCESSED photo', photo)
+  console.log('CHECK_AND_SYNC_PROCESSED photo', cardphoto)
 
-  if (!photo.base.apply.image) return
+  if (!cardphoto.base.apply.image) return
 
   const processedCard: Card = {
-    id: photo.base.apply.image.id,
+    id: cardphoto.base.apply.image.id,
     status: 'processed',
-    thumbnailUrl: photo.base.apply.image.thumbnail?.url || '',
-    photo,
-    text,
+    thumbnailUrl: cardphoto.base.apply.image.thumbnail?.url || '',
+    cardphoto,
+    cardtext,
     envelope,
     aroma,
     date: calendarDate,
@@ -153,6 +158,57 @@ function* checkAndSyncProcessedCard() {
 
   console.log('CHECK_AND_SYNC_PROCESSED processedCard', processedCard)
   yield put(setProcessedCard(processedCard))
+}
+
+function* handleFullCopy(
+  action: ReturnType<typeof cardActions.requestFullCopy>,
+) {
+  const donorId = action.payload
+  const donor: Card | undefined = yield select(selectCardById(donorId))
+
+  if (donor) {
+    yield put(applyFinal(donor.cardphoto))
+    yield put(setValue(donor.cardtext.content))
+    yield put(updateRecipientField(donor.envelope.recipient))
+    yield put(setAroma(donor.aroma))
+    yield put(setDate(donor.date))
+
+    yield put(setPreviewCardId(null))
+  }
+}
+
+function* handleSectionCopy(action: ReturnType<typeof copySectionToProcessed>) {
+  const { donorId, section } = action.payload
+  const donor: Card | undefined = yield select(selectCardById(donorId))
+
+  if (donor) {
+    switch (section) {
+      case 'cardphoto':
+        yield put(applyFinal(donor.cardphoto.base.apply.image))
+        break
+      case 'cardtext':
+        yield put(setValue(donor.cardtext.value))
+        break
+      case 'envelope':
+        yield put(updateRecipientField(donor.envelope.recipient.data))
+        break
+      case 'aroma':
+        yield put(setAroma(donor.aroma))
+        break
+    }
+  }
+}
+
+function* handleStatusToDrafts(
+  action: ReturnType<typeof cardActions.changeStatus>,
+) {
+  if (action.payload.newStatus === 'drafts') {
+    yield put(clearDate())
+
+    yield put(setSectionComplete({ section: 'date', isComplete: false }))
+
+    // yield put(uiActions.showDraftIncrement());
+  }
 }
 
 export function* cardEditorSaga() {
@@ -186,6 +242,10 @@ export function* cardEditorSaga() {
     ],
     handleSectionChange,
   )
+
+  yield takeEvery(changeStatus.type, handleStatusToDrafts)
+  yield takeEvery(cardActions.requestFullCopy.type, handleFullCopy)
+  yield takeEvery(copySectionToProcessed.type, handleSectionCopy)
 
   yield takeEvery(syncProcessedRequest.type, checkAndSyncProcessedCard)
 
