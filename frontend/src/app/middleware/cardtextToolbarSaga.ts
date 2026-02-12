@@ -19,7 +19,6 @@ export function* handleCardtextToolbarAction(
     case 'fontSizeMore':
       yield call(changeFontSizeStep, editor, 'more')
       break
-    // ... остальные кейсы
   }
 }
 

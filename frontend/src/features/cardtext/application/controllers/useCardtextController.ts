@@ -1,107 +1,87 @@
 import React from 'react'
-import {
-  createEditor,
-  Transforms,
-  Editor,
-  Element as SlateElement,
-} from 'slate'
-import { withReact } from 'slate-react'
+import { Transforms, Editor, Element as SlateElement } from 'slate'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { setValue, clear, setTextStyle } from '../../infrastructure/state'
-import { useForceUpdateCardtextToolbar } from '../commands'
-import {
-  selectCardtextValue,
-  selectCardtextPlainText,
-  selectCardtextIsComplete,
-  selectFontSizeStep,
-  selectCardtextStyle,
-} from '../../infrastructure/selectors'
-import { EMPTY_PARAGRAPH } from '../../domain/types'
-import { toggleBold, toggleItalic, toggleUnderline } from '../commands'
+import { setValue, clearText, setTextStyle } from '../../infrastructure/state'
+import { initialCardtextValue } from '../../domain/types'
 import type {
   CardtextValue,
   CardtextStyle,
   TextAlign,
 } from '../../domain/types'
+import { selectFontSizeStep } from '../../infrastructure/selectors'
 
-export const useCardtextController = () => {
+export const useCardtextController = (editor: Editor) => {
   const dispatch = useAppDispatch()
-  // const { setValue, clear, setTextStyle } = cardtextSlice.actions
+  const fontSizeStep = useAppSelector(selectFontSizeStep)
+  const maxStep = 6
 
-  const editor = React.useMemo(() => withReact(createEditor()), [])
-  const { forceUpdateToolbar } = useForceUpdateCardtextToolbar(editor)
-
-  const reduxValue = useAppSelector(selectCardtextValue)
-  const plainText = useAppSelector(selectCardtextPlainText)
-  const isComplete = useAppSelector(selectCardtextIsComplete)
-  const resetToken = useAppSelector((state) => state.cardtext.resetToken)
-
-  const style = useAppSelector(selectCardtextStyle)
-  // const { fontSizeStep, fontFamily, color } = style
-
-  const [value, setLocalValue] = React.useState<CardtextValue>(reduxValue)
-
-  React.useEffect(() => {
-    setLocalValue(reduxValue)
-  }, [reduxValue])
-
-  React.useEffect(() => {
-    dispatch({ type: 'cardtext/init' })
-    forceUpdateToolbar()
-  }, [dispatch])
-
-  React.useEffect(() => {
-    editor.children = reduxValue
-    if (editor.children.length > 0) {
-      const start = Editor.start(editor, [])
-      editor.selection = { anchor: start, focus: start }
+  const decreaseFontSize = React.useCallback(() => {
+    if (fontSizeStep > 1) {
+      dispatch(setTextStyle({ fontSizeStep: fontSizeStep - 1 }))
     }
-    editor.onChange()
-    forceUpdateToolbar()
-  }, [resetToken, editor, reduxValue])
+  }, [dispatch, fontSizeStep])
 
-  const editorRef = React.useRef<HTMLDivElement>(null)
-  const editableRef = React.useRef<HTMLDivElement>(null)
+  const changeFontSize = React.useCallback(
+    (direction: 'more' | 'less') => {
+      let nextStep = fontSizeStep
 
-  const handleSlateChange = (newValue: CardtextValue) => {
-    setLocalValue(newValue)
-    dispatch(setValue(newValue))
-  }
+      if (direction === 'more' && fontSizeStep < maxStep) nextStep++
+      if (direction === 'less' && fontSizeStep > 1) nextStep--
 
-  const clearCardtext = () => {
-    dispatch(clear())
-    setLocalValue(EMPTY_PARAGRAPH)
-    Transforms.delete(editor, { at: [] })
-    Transforms.insertNodes(editor, EMPTY_PARAGRAPH, { at: [0] })
-  }
+      if (nextStep !== fontSizeStep) {
+        dispatch(setTextStyle({ fontSizeStep: nextStep }))
+      }
+    },
+    [dispatch, fontSizeStep],
+  )
 
-  const applyAlign = (align: TextAlign) => {
-    Transforms.setNodes(
-      editor,
-      { align },
-      {
-        match: (n) => SlateElement.isElement(n) && Editor.isBlock(editor, n),
-      },
-    )
-    dispatch(setTextStyle({ align }))
-  }
+  const handleSlateChange = React.useCallback(
+    (newValue: CardtextValue) => {
+      dispatch(setValue(newValue))
+    },
+    [dispatch],
+  )
+
+  const clearCardtext = React.useCallback(() => {
+    dispatch(clearText())
+
+    const pointStart = Editor.start(editor, [])
+    const pointEnd = Editor.end(editor, [])
+
+    Transforms.delete(editor, {
+      at: { anchor: pointStart, focus: pointEnd },
+    })
+
+    Transforms.insertNodes(editor, initialCardtextValue, { at: [0] })
+  }, [dispatch, editor])
+
+  const applyAlign = React.useCallback(
+    (align: TextAlign) => {
+      Transforms.setNodes(
+        editor,
+        { align },
+        {
+          match: (n) => SlateElement.isElement(n) && Editor.isBlock(editor, n),
+        },
+      )
+      dispatch(setTextStyle({ align }))
+    },
+    [dispatch, editor],
+  )
+
+  const updateStyle = React.useCallback(
+    (newStyle: Partial<CardtextStyle>) => {
+      dispatch(setTextStyle(newStyle))
+    },
+    [dispatch],
+  )
 
   return {
-    state: {
-      editor,
-      value,
-      plainText,
-      isComplete,
-      editorRef,
-      editableRef,
-      style,
-    },
-    actions: {
-      handleSlateChange,
-      clearCardtext,
-      applyAlign,
-      updateStyle: (newStyle: Partial<CardtextStyle>) =>
-        dispatch(setTextStyle(newStyle)),
-    },
+    handleSlateChange,
+    clearCardtext,
+    applyAlign,
+    updateStyle,
+    changeFontSize,
+    decreaseFontSize,
   }
 }

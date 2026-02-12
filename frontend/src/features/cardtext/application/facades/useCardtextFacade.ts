@@ -3,71 +3,31 @@ import { createEditor } from 'slate'
 import { withReact } from 'slate-react'
 import { useAppSelector } from '@app/hooks'
 import { useCardtextController } from '../controllers'
-import { useForceUpdateCardtextToolbar } from '../commands'
 import {
-  selectCardtextState,
   selectCardtextValue,
-  selectCardtextPlainText,
-  selectCardtextIsComplete,
-  selectCardtextLines,
   selectFontSizeStep,
 } from '../../infrastructure/selectors'
-import type { CardtextValue } from '../../domain/types'
 
 export const useCardtextFacade = () => {
-  const controller = useCardtextController()
-
   const editor = React.useMemo(() => withReact(createEditor()), [])
-  const { forceUpdateToolbar } = useForceUpdateCardtextToolbar(editor)
+  const controller = useCardtextController(editor)
 
-  const reduxValue = useAppSelector(selectCardtextValue)
-  const plainText = useAppSelector(selectCardtextPlainText)
-  const isComplete = useAppSelector(selectCardtextIsComplete)
+  const value = useAppSelector(selectCardtextValue)
   const fontSizeStep = useAppSelector(selectFontSizeStep)
   const resetToken = useAppSelector((state) => state.cardtext.resetToken)
-  const editorRef = React.useRef<HTMLDivElement>(null)
-  const editableRef = React.useRef<HTMLDivElement>(null)
-
-  const [value, setLocalValue] = React.useState<CardtextValue>(reduxValue)
-
-  React.useEffect(() => {
-    setLocalValue(reduxValue)
-  }, [reduxValue])
 
   return {
-    state: {
-      editor,
-      value,
-      plainText,
-      isComplete,
-      editorRef,
-      editableRef,
-      fontSizeStep,
-    },
-
-    actions: {
-      setValue: controller.actions.handleSlateChange,
-      reset: controller.actions.clearCardtext,
-      applyAlign: controller.actions.applyAlign,
-
-      toggleBold: controller.actions.toggleBold,
-      toggleItalic: controller.actions.toggleItalic,
-      toggleUnderline: controller.actions.toggleUnderline,
-
-      isBoldActive: controller.actions.isBoldActive,
-      isItalicActive: controller.actions.isItalicActive,
-      isUnderlineActive: controller.actions.isUnderlineActive,
-
-      setFontSizeStep: controller.actions.setFontSizeStep,
-    },
-
-    selectors: {
-      selectCardtextState,
-      selectCardtextValue,
-      selectCardtextPlainText,
-      selectCardtextIsComplete,
-      selectCardtextLines,
-      selectFontSizeStep,
-    },
+    editor,
+    value,
+    resetToken,
+    fontSizeStep,
+    setValue: controller.handleSlateChange,
+    reset: controller.clearCardtext,
+    applyAlign: controller.applyAlign,
+    updateStyle: controller.updateStyle,
+    changeFontSize: controller.changeFontSize,
+    decreaseFontSize: controller.decreaseFontSize,
+    editorRef: React.useRef<HTMLDivElement>(null),
+    editableRef: React.useRef<HTMLDivElement>(null),
   }
 }

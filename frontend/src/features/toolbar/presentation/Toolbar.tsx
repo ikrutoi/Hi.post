@@ -29,10 +29,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
 
   // console.log('TOOLBAR state', iconStates)
 
-  const { state: cardtextState } = useCardtextFacade()
-  const { fontSizeStep } = cardtextState
-
-  // console.log('Toolbar iconStates', iconStates)
+  const { fontSizeStep } = useCardtextFacade()
 
   const groupRef = useRef<HTMLDivElement>(null)
 
@@ -42,12 +39,6 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
 
   const isAlreadyApplied = useAppSelector(selectIsCurrentCropApplied)
   const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
-  // const { state: cardphotoState } = useCardphotoFacade()
-  // const { cropIds } = cardphotoState
-
-  // console.count('Toolbar Render')
-
-  // const cropIdsReversed = useMemo(() => [...cropIds].reverse(), [cropIds])
 
   useEffect(() => {
     if (groupRef.current) {

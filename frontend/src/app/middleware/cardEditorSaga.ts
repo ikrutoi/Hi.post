@@ -28,10 +28,7 @@ import {
   selectSelectedAroma,
   selectIsAromaComplete,
 } from '@aroma/infrastructure/selectors'
-import {
-  setValue,
-  clear as clearCardtext,
-} from '@cardtext/infrastructure/state'
+import { setValue, clearText } from '@cardtext/infrastructure/state'
 import {
   selectCardtextIsComplete,
   selectCardtextState,
@@ -251,8 +248,8 @@ export function* cardEditorSaga() {
 
   yield takeEvery(setValue.type, syncCardtextStatus)
   // yield takeEvery(setValue.type, syncCardtextToolbar)
-  yield takeEvery(clearCardtext.type, syncCardtextReset)
+  yield takeEvery(clearText.type, syncCardtextReset)
 
   yield takeEvery(applyFinal.type, syncCardphotoStatus)
-  // yield takeEvery(clearCardtext.type, syncCardtextReset)
+  // yield clearText.type, syncCardtextReset)
 }

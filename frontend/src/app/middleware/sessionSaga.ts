@@ -28,8 +28,10 @@ import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/sta
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
 import { syncCardOrientationStatus } from './cardtextProcessSaga'
-import { selectCardtextSessionRecord } from '@cardtext/infrastructure/selectors'
-import { setTextStyle } from '@cardtext/infrastructure/state'
+import {
+  selectCardtextSessionData,
+  selectCardtextSessionRecord,
+} from '@cardtext/infrastructure/selectors'
 import {
   selectEnvelopeSessionRecord,
   selectIsEnvelopeReady,
@@ -59,6 +61,14 @@ import type {
   WorkingConfig,
   ImageSource,
 } from '@cardphoto/domain/types'
+import {
+  setValue,
+  setTextStyle,
+  setAlign,
+  clearText,
+  restoreCardtext,
+  restoreCardtextSession,
+} from '@cardtext/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
 import type { AromaState } from '@entities/aroma/domain/types'
@@ -68,14 +78,12 @@ import { getRandomStockMeta } from './cardphotoHistorySaga'
 import { CardSection } from '@shared/config/constants'
 
 export function* persistGlobalSession() {
-  // console.log('>>>>PERSIST SAVING START<<<<')
-
   const cardphoto: CardphotoSessionRecord | null = yield select(
     selectCardphotoSessionRecord,
   )
 
   const cardtext: CardtextSessionRecord | null = yield select(
-    selectCardtextSessionRecord,
+    selectCardtextSessionData,
   )
   const envelope: EnvelopeSessionRecord | null = yield select(
     selectEnvelopeSessionRecord,
@@ -102,49 +110,7 @@ export function* persistGlobalSession() {
   }
 
   yield call([storeAdapters.session, 'put'], sessionData)
-  // console.log('>>>>PERSIST SAVING END<<<<', sessionData)
 }
-
-// export function* persistGlobalSession1() {
-//   console.log('>>>>PERSIST<<<<')
-//   const cardphoto: CardphotoSessionRecord | null = yield select(
-//     selectCardphotoSessionRecord,
-//   )
-
-//   const cardtext: CardtextSessionRecord | null = yield select(
-//     selectCardtextSessionRecord,
-//   )
-
-//   // console.log('PERSIST envelope', selectEnvelopeSessionRecord)
-//   const envelope: EnvelopeSessionRecord | null = yield select(
-//     selectEnvelopeSessionRecord,
-//   )
-
-//   const aroma: AromaState = yield select(selectAromaState)
-
-//   const date: DateState = yield select(selectDateState)
-
-//   const currentSection: SectionEditorMenuKey | null =
-//     yield select(selectActiveSection)
-
-//   const activeSection = currentSection || 'cardphoto'
-
-//   const sizeCard: SizeCard = yield select(selectSizeCard)
-
-//   const sessionData: SessionData = {
-//     id: 'current_session',
-//     cardphoto,
-//     cardtext,
-//     envelope,
-//     aroma,
-//     date,
-//     activeSection,
-//     sizeCard,
-//     timestamp: Date.now(),
-//   }
-
-//   yield call([storeAdapters.session, 'put'], sessionData)
-// }
 
 const SESSION_WATCH_ACTIONS = [
   setTextStyle.type,
@@ -164,6 +130,10 @@ const SESSION_WATCH_ACTIONS = [
   hydrateEditor.type,
   setAroma.type,
   setDate.type,
+  setValue.type,
+  setTextStyle.type,
+  setAlign.type,
+  clearText.type,
 ]
 
 export function* hydrateAppSession() {
@@ -322,7 +292,7 @@ export function* hydrateAppSession() {
     }
 
     if (session.cardtext) {
-      yield put(setTextStyle(session.cardtext))
+      yield put(restoreCardtextSession(session.cardtext))
     }
 
     if (session.envelope) {

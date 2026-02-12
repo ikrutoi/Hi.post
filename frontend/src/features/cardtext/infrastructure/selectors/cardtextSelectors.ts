@@ -1,5 +1,9 @@
 import { RootState } from '@app/state'
-import type { CardtextValue, CardtextStyle } from '../../domain/types'
+import type {
+  CardtextValue,
+  CardtextStyle,
+  CardtextSessionRecord,
+} from '../../domain/types'
 
 export const selectCardtextState = (state: RootState) => state.cardtext
 
@@ -29,3 +33,14 @@ export const selectFontColor = (state: RootState): string =>
 
 export const selectCardtextSessionRecord = (state: RootState): CardtextStyle =>
   state.cardtext.style
+
+export const selectCardtextSessionData = (
+  state: RootState,
+): CardtextSessionRecord => {
+  return {
+    value: state.cardtext.value,
+    style: state.cardtext.style,
+    plainText: state.cardtext.plainText,
+    cardtextLines: state.cardtext.cardtextLines,
+  }
+}

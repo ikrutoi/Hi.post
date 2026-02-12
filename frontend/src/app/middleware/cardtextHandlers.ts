@@ -5,10 +5,8 @@ import { selectFontSizeStep } from '@cardtext/infrastructure/selectors'
 import { selectCardOrientation } from '@layout/infrastructure/selectors'
 import { setTextStyle } from '@cardtext/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { CARDTEXT_CONFIG } from '@cardtext/domain/types'
+import { CARDTEXT_CONFIG, STEP_TO_PX } from '@cardtext/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
-
-const STEP_TO_PX = [12, 14, 16, 18, 22, 28]
 
 export function* changeFontSizeStep(
   editor: Editor,

@@ -12,24 +12,6 @@ import type {
   CardtextSessionRecord,
 } from '../../domain/types'
 
-// export interface CardtextState {
-//   value: CardtextValue
-//   plainText: string
-//   isComplete: boolean
-//   cardtextLines: number
-//   resetToken: number
-//   fontSizeStep: number
-// }
-
-// const initialState: CardtextState = {
-//   value: initialCardtextValue,
-//   plainText: '',
-//   isComplete: false,
-//   cardtextLines: DEFAULT_CARDTEXT_LINES,
-//   resetToken: 0,
-//   fontSizeStep: 3,
-// }
-
 const initialState: CardtextState = {
   value: [
     {
@@ -41,7 +23,7 @@ const initialState: CardtextState = {
   style: {
     fontFamily: 'Roboto',
     fontSizeStep: 3,
-    color: '#000000',
+    color: 'blue',
     align: 'left',
   },
   plainText: '',
@@ -68,8 +50,19 @@ export const cardtextSlice = createSlice({
       }))
     },
 
-    restoreCardtextSession(state, action: PayloadAction<CardtextStyle>) {
-      state.style = action.payload
+    restoreCardtextSession(
+      state,
+      action: PayloadAction<CardtextSessionRecord>,
+    ) {
+      const { value, style, plainText, cardtextLines } = action.payload
+
+      if (value) state.value = value
+      if (style) state.style = style
+      if (plainText !== undefined) state.plainText = plainText
+      if (cardtextLines !== undefined) state.cardtextLines = cardtextLines
+
+      state.isComplete = state.plainText.trim().length > 0
+      state.resetToken += 1
     },
 
     setValue(state, action: PayloadAction<CardtextValue>) {
@@ -80,9 +73,9 @@ export const cardtextSlice = createSlice({
       state.isComplete = state.plainText.trim().length > 0
     },
 
-    // setFontSizeStep(state, action: PayloadAction<number>) {
-    //   state.fontSizeStep = action.payload
-    // },
+    setFontSizeStep(state, action: PayloadAction<number>) {
+      state.style.fontSizeStep = action.payload
+    },
 
     setPlainText(state, action: PayloadAction<string>) {
       state.plainText = action.payload
@@ -104,7 +97,7 @@ export const cardtextSlice = createSlice({
       state.isComplete = state.plainText.trim().length > 0
     },
 
-    clear(state) {
+    clearText(state) {
       state.value = initialCardtextValue.map((b) => ({
         ...b,
         children: b.children.map((c) => ({ ...c })),
@@ -114,9 +107,9 @@ export const cardtextSlice = createSlice({
       state.resetToken += 1
     },
 
-    // restoreFontSize(state, action: PayloadAction<number>) {
-    //   state.fontSizeStep = action.payload
-    // },
+    restoreFontSize(state, action: PayloadAction<number>) {
+      state.style.fontSizeStep = action.payload
+    },
 
     restoreCardtext(state, action: PayloadAction<CardtextValue>) {
       state.value = action.payload
@@ -126,7 +119,7 @@ export const cardtextSlice = createSlice({
 
 export const {
   setValue,
-  // setFontSizeStep,
+  setFontSizeStep,
   setAlign,
   setTextStyle,
   restoreCardtextSession,
@@ -134,9 +127,9 @@ export const {
   setComplete,
   setCardtextLines,
   initCardtext,
-  clear,
+  clearText,
   restoreCardtext,
-  // restoreFontSize,
+  restoreFontSize,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

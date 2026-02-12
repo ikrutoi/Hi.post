@@ -1,19 +1,29 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Slate, Editable, ReactEditor } from 'slate-react'
 import { Editor, Transforms, Range, Descendant } from 'slate'
 import { useCardtextFacade } from '../../application/facades'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
-import { useEditorLayout, useInitSelection } from '../../application/hooks'
-import { useForceUpdateCardtextToolbar } from '../../application/commands'
-import { EMPTY_PARAGRAPH } from '../../domain/types'
+import { useInitSelection } from '../../application/hooks'
+// import { useForceUpdateCardtextToolbar } from '../../application/commands'
+import { STEP_TO_PX } from '../../domain/types'
 import styles from './CardEditor.module.scss'
 import type { CardtextValue } from '../../domain/types'
 
 export const CardEditor: React.FC = () => {
-  const { state: stateCardtext, actions: actionsCardtext } = useCardtextFacade()
-  const { editor, value, editorRef, editableRef } = stateCardtext
-  const { setValue } = actionsCardtext
+  const {
+    fontSizeStep,
+    editor,
+    value,
+    editorRef,
+    editableRef,
+    resetToken,
+    setValue,
+    decreaseFontSize,
+  } = useCardtextFacade()
+
+  const currentPxSize = STEP_TO_PX[fontSizeStep - 1] || 16
+  const currentLineHeight = Math.round(currentPxSize * 1.5)
 
   useInitSelection(editor)
 
@@ -34,9 +44,18 @@ export const CardEditor: React.FC = () => {
     }
   }
 
-  const { forceUpdateToolbar } = useForceUpdateCardtextToolbar(editor)
+  useEffect(() => {
+    const container = editorRef.current
+    if (!container) return
 
-  const { lineHeight, fontSize } = useEditorLayout(editorRef)
+    const isOverflown = container.scrollHeight > container.clientHeight
+
+    if (isOverflown && fontSizeStep > 1) {
+      decreaseFontSize()
+    }
+  }, [value, fontSizeStep, decreaseFontSize, editorRef])
+
+  // const { forceUpdateToolbar } = useForceUpdateCardtextToolbar(editor)
 
   return (
     <div className={styles.editor}>
@@ -63,6 +82,7 @@ export const CardEditor: React.FC = () => {
         tabIndex={0}
       >
         <Slate
+          key={resetToken}
           editor={editor}
           initialValue={value as Descendant[]}
           onChange={(newValue: Descendant[]) => {
@@ -74,8 +94,8 @@ export const CardEditor: React.FC = () => {
             className={styles.editorEditable}
             ref={editableRef}
             style={{
-              lineHeight: `${lineHeight}px`,
-              fontSize: `${fontSize}px`,
+              lineHeight: `${currentLineHeight}px`,
+              fontSize: `${currentPxSize}px`,
             }}
             placeholder="Hi..."
             renderLeaf={renderLeaf}

@@ -32,7 +32,6 @@ export const cardSlice = createSlice({
     syncProcessedRequest: (state) => state,
 
     openSection: (state, action: PayloadAction<CardSection | null>) => {
-      console.log('openSection', action.payload)
       state.activeSection = action.payload
     },
 

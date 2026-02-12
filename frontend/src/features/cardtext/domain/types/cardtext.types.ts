@@ -12,6 +12,17 @@ export type CardtextTextNode = {
 
 export type TextAlign = 'left' | 'center' | 'right' | 'justify'
 
+export const TEXT_COLOR = [
+  'deepBlack',
+  'blue',
+  'burgundy',
+  'forestGreen',
+] as const
+
+export const STEP_TO_PX = [16, 18, 22, 28, 36, 48]
+
+export type TextColor = (typeof TEXT_COLOR)[number]
+
 export type ParagraphElement = {
   type: 'paragraph'
   align?: 'left' | 'center' | 'right' | 'justify'
@@ -64,19 +75,19 @@ export const initialCardtextValue: CardtextValue = [
   },
 ]
 
-export type CardtextSessionRecord = CardtextStyle
+export type CardtextSessionRecord = {
+  value: CardtextValue
+  style: CardtextStyle
+  plainText: string
+  cardtextLines: number
+}
 
 export interface CardtextStyle {
   fontFamily: string
   fontSizeStep: number
-  color: string
+  color: TextColor
   align: TextAlign
 }
-
-// export interface CardtextState {
-//   value: CardtextValue
-//   style: CardtextStyle
-// }
 
 export interface CardtextState {
   value: CardtextValue

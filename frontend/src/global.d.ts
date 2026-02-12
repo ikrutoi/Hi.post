@@ -33,3 +33,9 @@ declare module '*.jpeg' {
   const value: string
   export default value
 }
+
+// declare namespace React {
+//   interface HTMLAttributes<T> {
+//     xmlns?: string
+//   }
+// }
