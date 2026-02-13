@@ -11,10 +11,10 @@ import type {
 import { number } from 'zod'
 
 const initialState: SizeState = {
-  sizeToolbarContour: {
-    width: 0,
-    height: 0,
-  },
+  // sizeToolbarContour: {
+  //   width: 0,
+  //   height: 0,
+  // },
   sizeCard: {
     width: 0,
     height: 0,
@@ -55,12 +55,12 @@ export const sizeSlice = createSlice({
     //   }
     // },
 
-    setSizeToolbarContour(state, action: PayloadAction<Partial<SizeBox>>) {
-      state.sizeToolbarContour = {
-        ...state.sizeToolbarContour,
-        ...action.payload,
-      }
-    },
+    // setSizeToolbarContour(state, action: PayloadAction<Partial<SizeBox>>) {
+    //   state.sizeToolbarContour = {
+    //     ...state.sizeToolbarContour,
+    //     ...action.payload,
+    //   }
+    // },
 
     setSizeMiniCard(state, action: PayloadAction<Partial<SizeCard>>) {
       state.sizeMiniCard = {
@@ -109,7 +109,7 @@ export const sizeSlice = createSlice({
 })
 
 export const {
-  setSizeToolbarContour,
+  // setSizeToolbarContour,
   setSizeCard,
   setSizeMiniCard,
   // setSizeItemCalendar,

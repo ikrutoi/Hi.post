@@ -19,7 +19,7 @@ export const Cardtext: React.FC<CardtextProps> = ({
 
   return (
     <div className={styles.cardtextContainer}>
-      <Toolbar section="cardtext" />
+      {/* <Toolbar section="cardtext" /> */}
       <div
         className={styles.cardtext}
         style={{

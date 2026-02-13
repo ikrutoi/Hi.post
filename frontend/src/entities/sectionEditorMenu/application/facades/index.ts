@@ -1,1 +1,1 @@
-export * from './useSectionEditorMenuFacade'
+export * from './useSectionMenuFacade'

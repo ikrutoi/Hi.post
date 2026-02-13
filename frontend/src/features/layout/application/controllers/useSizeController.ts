@@ -1,7 +1,6 @@
 import React from 'react'
 import { useAppDispatch } from '@app/hooks'
 import {
-  setSizeToolbarContour,
   setSizeCard,
   setSizeMiniCard,
   setRemSize,
@@ -19,11 +18,6 @@ import type {
 
 export const useSizeController = () => {
   const dispatch = useAppDispatch()
-
-  const handleSetSizeToolbarContour = React.useCallback(
-    (payload: Partial<SizeBox>) => dispatch(setSizeToolbarContour(payload)),
-    [dispatch],
-  )
 
   const handleSetSizeCard = React.useCallback(
     (payload: Partial<SizeCard>) => dispatch(setSizeCard(payload)),
@@ -62,7 +56,6 @@ export const useSizeController = () => {
   )
 
   return {
-    setSizeToolbarContour: handleSetSizeToolbarContour,
     setSizeCard: handleSetSizeCard,
     setSizeMiniCard: handleSetSizeMiniCard,
     setRemSize: handleSetRemSize,

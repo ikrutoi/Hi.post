@@ -89,7 +89,7 @@ export type SizeBox = {
 }
 
 export interface SizeState {
-  sizeToolbarContour: SizeBox
+  // sizeToolbarContour: SizeBox
   sizeCard: CardLayer
   sizeMiniCard: SizeCard
   // sizeItemCalendar: SizeBox

@@ -25,6 +25,7 @@
       "@i18n/*": ["i18n/*"],
       "@cardMenu/*": ["features/cardMenu/*"],
       "@cardEditorMenu/*": ["features/cardEditorMenu/*"],
+      "@cardSectionToolbar/*": ["features/cardSectionToolbar/*"],
       "@db/*": ["db/*"],
       "@components/*": ["components/*"],
       "@middleware/*": ["middleware/*"],

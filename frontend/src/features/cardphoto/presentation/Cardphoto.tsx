@@ -6,9 +6,9 @@ import styles from './Cardphoto.module.scss'
 export const Cardphoto = () => {
   return (
     <div className={styles.cardphoto}>
-      <div className={styles.cardphotoToolbar}>
+      {/* <div className={styles.cardphotoToolbar}>
         <Toolbar section="cardphoto" />
-      </div>
+      </div> */}
       <ImageCrop />
     </div>
   )

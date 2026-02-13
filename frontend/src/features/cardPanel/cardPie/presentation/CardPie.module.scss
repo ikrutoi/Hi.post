@@ -1,12 +1,39 @@
 @use '@styles/config/colors' as *;
 
 .hubContainer {
+  --pie-cardphoto: #{$color-pie-cardphoto};
+  --pie-cardtext: #{$color-pie-cardtext};
+  --pie-envelope: #{$color-pie-envelope};
+  --pie-aroma: #{$color-pie-aroma};
+  --pie-date: #{$color-pie-date};
+
   position: absolute;
   right: 0;
   height: 100%;
   border-radius: 1rem;
   z-index: 7;
   box-shadow: 1px 1px 5px 3px rgba(34, 60, 80, 0.2);
+}
+
+.rectCardphoto {
+  fill: var(--pie-cardphoto);
+}
+.rectCardtext {
+  fill: var(--pie-cardtext);
+}
+.rectEnvelope {
+  fill: var(--pie-envelope);
+}
+.rectAroma {
+  fill: var(--pie-aroma);
+}
+.rectDate {
+  fill: var(--pie-date);
+}
+
+.pieBgRect {
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
 }
 
 .svg {

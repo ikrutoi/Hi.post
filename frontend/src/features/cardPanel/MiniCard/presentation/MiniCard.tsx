@@ -27,8 +27,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
 
-  const { actions: sectionMenuActions } = useSectionMenuFacade()
-  const { changeSection } = sectionMenuActions
+  const { changeSection } = useSectionMenuFacade()
 
   const { render } = useMiniCardRender()
 

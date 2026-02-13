@@ -1,0 +1,45 @@
+@use '@styles/config/colors' as *;
+
+.toolbarCropQualityContainer {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.8rem;
+  right: -1rem;
+  width: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  // border: solid 1px $color-section-dark;
+  border-radius: 0.9rem;
+  background-color: white;
+}
+
+.toolbarCropQuality {
+  position: relative;
+  width: 4px;
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(
+    to top,
+    $color-indicator-low 0%,
+    $color-indicator-medium 50%,
+    $color-indicator-hight 100%
+  );
+}
+
+.qualityThumb {
+  position: absolute;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  // border: 2px solid $color-section-dark;
+  border: 2px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, 50%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  transition:
+    bottom 0.1s linear,
+    background-color 0.3s ease;
+  z-index: 2;
+}

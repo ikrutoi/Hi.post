@@ -1,4 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
+import { CARD_SCALE_CONFIG } from '@shared/config/constants'
+import { roundTo } from '@shared/utils/layout'
 import type { RootState } from '@app/state'
 import type {
   LayoutOrientation,
@@ -8,9 +10,6 @@ import type {
 } from '../../domain/types'
 
 const selectLayoutSize = (state: RootState) => state.layout.size
-
-export const selectSizeToolbarContour = (state: RootState): SizeBox =>
-  selectLayoutSize(state).sizeToolbarContour
 
 export const selectSizeCard = (state: RootState): SizeCard =>
   selectLayoutSize(state).sizeCard
@@ -23,6 +22,23 @@ export const selectRemSize = (state: RootState) =>
 
 // export const selectSizeItemCalendar = (state: RootState): SizeBox =>
 //   selectLayoutSize(state).sizeItemCalendar
+
+export const selectSizeToolbarContour = createSelector(
+  [selectSizeCard, selectRemSize],
+  (size, remSize): SizeBox => {
+    if (!remSize) return { width: 0, height: 0 }
+
+    const height = size.height + 6 * remSize
+    const width =
+      size.height * CARD_SCALE_CONFIG.aspectRatio +
+      6 * CARD_SCALE_CONFIG.aspectRatio * remSize
+
+    return {
+      width: roundTo(width),
+      height: roundTo(height),
+    }
+  },
+)
 
 export const selectSizeItemCalendar = createSelector(
   [selectSizeCard],

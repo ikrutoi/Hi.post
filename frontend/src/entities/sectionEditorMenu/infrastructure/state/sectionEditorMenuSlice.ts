@@ -11,7 +11,7 @@ export const sectionEditorMenuSlice = createSlice({
   initialState,
   reducers: {
     setActiveSection(state, action: PayloadAction<SectionEditorMenuKey>) {
-      console.log('SET_ACTIVE_SECTION')
+      // console.log('SET_ACTIVE_SECTION', action.payload)
       if (state.activeSection !== action.payload) {
         state.activeSection = action.payload
       }

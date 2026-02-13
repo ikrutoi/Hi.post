@@ -3,10 +3,9 @@ import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { CropPreview } from './CropPreview'
 import { useToolbarFacade } from '../application/facades'
-import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
-import { useLayoutFacade } from '@layout/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
 import {
@@ -25,16 +24,17 @@ import styles from './Toolbar.module.scss'
 export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const { state: toolbarState, actions: toolbarActions } =
     useToolbarFacade(section)
+  // const { activeSection } = useSectionMenuFacade()
   const { state: iconStates, groups, badges } = toolbarState
   const { onAction } = toolbarActions
-
-  // console.log('TOOLBAR state', iconStates)
 
   const { fontSizeStep } = useCardtextFacade()
 
   const groupRef = useRef<HTMLDivElement>(null)
 
-  const { sectionMenuHeight, setSectionMenuHeight } = useSizeFacade()
+  const { sizeToolbarContour, sectionMenuHeight, setSectionMenuHeight } =
+    useSizeFacade()
+  // console.log('TOOLBAR remSize', remSize)
 
   const isAlreadyApplied = useAppSelector(selectIsCurrentCropApplied)
   const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
@@ -104,6 +104,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   return (
     <div
       className={clsx(styles.toolbar, styles[`toolbar${capitalize(section)}`])}
+      style={{ width: `${sizeToolbarContour.width}px` }}
     >
       {groups.map((group: ToolbarGroup) => (
         <div

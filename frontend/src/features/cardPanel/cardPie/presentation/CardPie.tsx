@@ -57,7 +57,12 @@ export const CardPie: React.FC = () => {
                 preserveAspectRatio="xMidYMid slice"
               />
             ) : (
-              <rect width="2560" height="2560" fill="#ffced2" opacity="0.4" />
+              <rect
+                width="2560"
+                height="2560"
+                className={clsx(styles.rectCardphoto, styles.pieBgRect)}
+                style={{}}
+              />
             )}
           </pattern>
 
@@ -71,7 +76,11 @@ export const CardPie: React.FC = () => {
           >
             {text ? (
               <>
-                <rect width="2560" height="3135" fill="#ffe8a1" opacity="0.5" />
+                <rect
+                  width="2560"
+                  height="3135"
+                  className={clsx(styles.rectCardtext, styles.pieBgRect)}
+                />
                 <text
                   x="100"
                   y="400"
@@ -105,7 +114,11 @@ export const CardPie: React.FC = () => {
               </>
             ) : (
               <>
-                <rect width="2560" height="3135" fill="#ffe8a1" opacity="0.5" />
+                <rect
+                  width="2560"
+                  height="3135"
+                  className={clsx(styles.rectCardtext, styles.pieBgRect)}
+                />
                 <text x="100" y="600" fill="#064e3b" opacity="0.5">
                   <tspan>Hi...</tspan>
                 </text>
@@ -126,8 +139,7 @@ export const CardPie: React.FC = () => {
                 <rect
                   width="2560"
                   height="2560"
-                  fill="#c0ddff"
-                  opacity="0.4"
+                  className={clsx(styles.rectEnvelope, styles.pieBgRect)}
                 ></rect>
                 <text
                   x="1280"
@@ -149,8 +161,7 @@ export const CardPie: React.FC = () => {
               <rect
                 width="2560"
                 height="2560"
-                fill="#c0ddff"
-                opacity="0.4"
+                className={clsx(styles.rectEnvelope, styles.pieBgRect)}
               ></rect>
             )}
           </pattern>
@@ -168,8 +179,7 @@ export const CardPie: React.FC = () => {
                 <rect
                   width="2560"
                   height="2560"
-                  fill="#ecbbff"
-                  opacity="0.4"
+                  className={clsx(styles.rectAroma, styles.pieBgRect)}
                 ></rect>
                 <image
                   href={aromaImageUrl}
@@ -181,7 +191,11 @@ export const CardPie: React.FC = () => {
                 />
               </>
             ) : (
-              <rect width="2560" height="2560" fill="#efc6ff" opacity="0.4" />
+              <rect
+                width="2560"
+                height="2560"
+                className={clsx(styles.rectAroma, styles.pieBgRect)}
+              />
             )}
           </pattern>
 
@@ -198,8 +212,7 @@ export const CardPie: React.FC = () => {
                 <rect
                   width="2560"
                   height="3135"
-                  fill="#b7ffcf"
-                  opacity="0.4"
+                  className={clsx(styles.rectDate, styles.pieBgRect)}
                 ></rect>
                 <text
                   x="1280"
@@ -228,8 +241,7 @@ export const CardPie: React.FC = () => {
               <rect
                 width="2560"
                 height="3135"
-                fill="#b7ffcf"
-                opacity="0.4"
+                className={clsx(styles.rectDate, styles.pieBgRect)}
               ></rect>
             )}
           </pattern>

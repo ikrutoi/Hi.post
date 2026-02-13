@@ -21,14 +21,9 @@ export const useSectionMenuFacade = () => {
   }
 
   return {
-    state: {
-      activeSection,
-      isHydrated,
-    },
-
-    actions: {
-      changeSection,
-      resetMenu,
-    },
+    activeSection,
+    isHydrated,
+    changeSection,
+    resetMenu,
   }
 }

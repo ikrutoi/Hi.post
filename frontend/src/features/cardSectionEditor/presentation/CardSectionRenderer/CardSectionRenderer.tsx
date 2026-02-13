@@ -8,8 +8,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import styles from './CardSectionRenderer.module.scss'
 
 export const CardSectionRenderer = () => {
-  const { state: stateSectionEditorMenu } = useSectionMenuFacade()
-  const { activeSection } = stateSectionEditorMenu
+  const { activeSection } = useSectionMenuFacade()
 
   const { sizeCard } = useSizeFacade()
 

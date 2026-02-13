@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   getSizeMiniCard,
   getSizeCard,
-  getSizeToolbarContour,
+  // getSizeToolbarContour,
 } from '@shared/utils/layout'
 // import { useLayoutFacade } from '@layout/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
@@ -16,7 +16,7 @@ export const useRecordSizeCard = (ref: React.RefObject<HTMLElement | null>) => {
     setSizeCard,
     setSizeMiniCard,
     // setScale,
-    setSizeToolbarContour,
+    // setSizeToolbarContour,
   } = useSizeFacade()
 
   useEffect(() => {
@@ -29,17 +29,17 @@ export const useRecordSizeCard = (ref: React.RefObject<HTMLElement | null>) => {
       const resultSizeMiniCard = getSizeMiniCard({ width, height })
       const currentRemSize = remSize ? remSize : 16
       const resultSizeCard = getSizeCard({ width, height }, currentRemSize)
-      const resultSizeToolbarContour = getSizeToolbarContour(
-        resultSizeCard,
-        currentRemSize,
-      )
+      // const resultSizeToolbarContour = getSizeToolbarContour(
+      //   resultSizeCard,
+      //   currentRemSize,
+      // )
       // const scale = roundTo.nearest(
       //   resultSizeCard.width / resultSizeMiniCard.width,
       // )
 
       setSizeMiniCard(resultSizeMiniCard)
       setSizeCard(resultSizeCard)
-      setSizeToolbarContour(resultSizeToolbarContour)
+      // setSizeToolbarContour(resultSizeToolbarContour)
       // setScale(scale)
 
       if (!remSize) return

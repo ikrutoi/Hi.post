@@ -1,7 +1,8 @@
 @use '@styles/config/colors' as *;
 
 .toolbar {
-  width: 100%;
+  // width: 100%;
+
   // position: relative;
   .toolbarKey {
     position: relative;
@@ -116,9 +117,12 @@
 .toolbarCardphoto {
   position: absolute;
   left: 0;
+  top: -1rem;
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  padding: 0 3rem;
+  // width: 100%;
+  // border: solid 1px green;
 
   .toolbarGroupText {
     .toolbarKey {
@@ -126,7 +130,6 @@
         width: 1.5rem;
         height: 1.5rem;
       }
-      // border: solid 1px green;
     }
 
     .toolbarKey:nth-child(3) {
@@ -148,13 +151,13 @@
   }
 }
 
-.toolbarCardtext {
-  top: -3rem;
-}
+// .toolbarCardtext {
+//   top: -4rem;
+// }
 
-.toolbarCardphoto {
-  top: -3rem;
-}
+// .toolbarCardphoto {
+//   top: -4rem;
+// }
 
 .toolbarSectionEditorMenu {
   position: absolute;
@@ -200,5 +203,6 @@
   .toolbarKey {
     width: 1.65rem;
     height: 1.65rem;
+    // border: solid 1px red;
   }
 }

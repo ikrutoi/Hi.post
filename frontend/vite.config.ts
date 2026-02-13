@@ -40,6 +40,10 @@ export default defineConfig({
       '@i18n': path.resolve(__dirname, 'src/i18n'),
       '@cardMenu': path.resolve(__dirname, 'src/features/cardMenu'),
       '@cardEditorMenu': path.resolve(__dirname, 'src/features/cardEditorMenu'),
+      '@cardSectionToolbar': path.resolve(
+        __dirname,
+        'src/features/cardSectionToolbar',
+      ),
       '@db': path.resolve(__dirname, 'src/db'),
       '@features': path.resolve(__dirname, 'src/features'),
       '@components': path.resolve(__dirname, 'src/components'),

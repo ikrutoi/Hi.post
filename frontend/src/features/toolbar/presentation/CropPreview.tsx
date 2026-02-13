@@ -6,7 +6,6 @@ import styles from './CropPreview.module.scss'
 
 export const CropPreview = React.memo(() => {
   const cropIds = useAppSelector(selectCropIds)
-  console.log('CROP_PREVIEW cropIds', cropIds)
 
   const reversed = useMemo(() => [...cropIds].reverse(), [cropIds])
 
