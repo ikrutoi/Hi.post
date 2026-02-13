@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { capitalize } from '@shared/utils/helpers'
 import { renderCardSection } from '../../application/helpers/renderCardSection'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
-import { useLayoutFacade } from '@layout/application/facades'
+import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import styles from './CardSectionRenderer.module.scss'
 
@@ -11,8 +11,7 @@ export const CardSectionRenderer = () => {
   const { state: stateSectionEditorMenu } = useSectionMenuFacade()
   const { activeSection } = stateSectionEditorMenu
 
-  const { size } = useLayoutFacade()
-  const sizeCard = size.sizeCard
+  const { sizeCard } = useSizeFacade()
 
   const sectionRef = useRef<HTMLDivElement>(null)
   const [sectionLeft, setSectionLeft] = useState<number>(0)
@@ -37,10 +36,10 @@ export const CardSectionRenderer = () => {
         styles.cardSectionRenderer,
         styles[`cardSectionRenderer${capitalize(sizeCard.orientation)}`],
       )}
-      style={{
-        width: `${currentWidth}px`,
-        height: `${sizeCard.height}px`,
-      }}
+      // style={{
+      //   width: `${currentWidth}px`,
+      //   height: `${sizeCard.height}px`,
+      // }}
     >
       {renderCardSection(activeSection, {
         sectionLeft,

@@ -83,12 +83,19 @@ export type ViewportSizeState = {
   viewportSize: ViewportSize | null
 }
 
+export type SizeBox = {
+  width: number
+  height: number
+}
+
 export interface SizeState {
+  sizeToolbarContour: SizeBox
   sizeCard: CardLayer
   sizeMiniCard: SizeCard
-  remSize: number | null
+  // sizeItemCalendar: SizeBox
+  remSize: number
   viewportSize: ViewportSizeState
-  scale: number | null
+  // scale: number | null
   sectionMenuHeight: number | null
 }
 

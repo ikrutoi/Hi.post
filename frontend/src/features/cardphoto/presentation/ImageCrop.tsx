@@ -136,7 +136,7 @@ export const ImageCrop = () => {
   return (
     <div
       className={styles.imageCrop}
-      style={{ width: `${sizeCard.width}px`, height: `${sizeCard.height}px` }}
+      // style={{ width: `${sizeCard.width}px`, height: `${sizeCard.height}px` }}
     >
       <input
         type="file"

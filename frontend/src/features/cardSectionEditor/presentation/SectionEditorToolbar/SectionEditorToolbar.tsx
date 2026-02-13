@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
-import { useLayoutFacade } from '@layout/application/facades'
+import { useSizeFacade } from '@layout/application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
@@ -13,8 +13,8 @@ export const SectionEditorToolbar: React.FC = () => {
   const { state: sectionMenuState } = useSectionMenuFacade()
   const { isHydrated } = sectionMenuState
 
-  const { size } = useLayoutFacade()
-  const { sizeCard, remSize, sectionMenuHeight } = size
+  const { sizeToolbarContour, sizeCard, remSize, sectionMenuHeight } =
+    useSizeFacade()
   const { state: cardphotoState } = useCardphotoFacade()
   const { state: toolbarCardphotoState } = useToolbarFacade('cardphoto')
   const { state: toolbarCardphoto } = toolbarCardphotoState
@@ -49,15 +49,18 @@ export const SectionEditorToolbar: React.FC = () => {
 
   if (!sizeCard || !remSize) return null
 
-  const height = sizeCard.height + 4 * remSize
-  const width = Number(
-    (sizeCard.height * CARD_SCALE_CONFIG.aspectRatio + 6 * remSize).toFixed(2),
-  )
+  // const height = sizeCard.height + 6 * remSize
+  // const width = Number(
+  //   (sizeCard.height * CARD_SCALE_CONFIG.aspectRatio + 8 * remSize).toFixed(2),
+  // )
 
   return (
     <div
       className={clsx(styles.sectionEditorToolbar)}
-      style={{ width: `${width}px`, height: `${height}px` }}
+      style={{
+        width: `${sizeToolbarContour.width}px`,
+        height: `${sizeToolbarContour.height}px`,
+      }}
     >
       {<Toolbar section="sectionEditorMenu" />}
       {/* {isHydrated && <Toolbar section="sectionEditorMenu" />} */}

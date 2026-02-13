@@ -2,6 +2,7 @@ import React from 'react'
 import clsx from 'clsx'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import { useLayoutFacade } from '@layout/application/facades'
+import { useSizeFacade } from '@layout/application/facades'
 import styles from './AromaTile.module.scss'
 import type { AromaTileProps } from '../../domain/types'
 
@@ -10,8 +11,7 @@ export const AromaTile: React.FC<AromaTileProps> = ({
   aromaItem,
   onSelectAroma,
 }) => {
-  const { size } = useLayoutFacade()
-  const { sizeMiniCard } = size
+  const { sizeItemAroma } = useSizeFacade()
 
   const imageSrc = getAromaImage(aromaItem.index)
   const isSelected =
@@ -27,8 +27,8 @@ export const AromaTile: React.FC<AromaTileProps> = ({
       className={clsx(styles.tile, { [styles.tileSelected]: isSelected })}
       type="submit"
       style={{
-        width: `${sizeMiniCard.width}px`,
-        height: `${sizeMiniCard.height}px`,
+        width: `${sizeItemAroma.width}px`,
+        height: `${sizeItemAroma.height}px`,
       }}
       onClick={handleClick}
     >
@@ -38,7 +38,7 @@ export const AromaTile: React.FC<AromaTileProps> = ({
       <img
         className={styles.tileImage}
         alt={aromaItem.name}
-        style={{ height: `${0.6 * sizeMiniCard.height}px` }}
+        style={{ height: `${0.65 * sizeItemAroma.height}px` }}
         src={imageSrc}
       />
       <span className={styles.tileName}>{aromaItem.name}</span>

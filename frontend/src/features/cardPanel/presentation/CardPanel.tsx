@@ -7,6 +7,7 @@ import { CardPie } from '../cardPie/presentation/CardPie'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import { useCardFacade } from '@entities/card/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
+import { useSizeFacade } from '@layout/application/facades'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useCardPanelFacade } from '../application/facades'
 import { useSliderLetterHandlers } from '@cardPanel/application/hooks/useSliderLetterHandlers'
@@ -41,8 +42,8 @@ export const CardPanel = () => {
   const miniPolyCardsRef = useRef<HTMLDivElement>(null)
   const isTemplateMode = false
 
-  const { size, section, meta, memory } = useLayoutFacade()
-  const { remSize, sizeMiniCard } = size
+  const { section, meta, memory } = useLayoutFacade()
+  const { remSize, sizeMiniCard } = useSizeFacade()
   const { deltaEnd, maxMiniCardsCount, choiceClip } = meta
 
   const { state: stateLayoutNav } = useLayoutNavFacade()
@@ -56,28 +57,39 @@ export const CardPanel = () => {
   if (!remSize || !sizeMiniCard) return
 
   return (
-    <div className={styles.cardPanel} ref={cardsListRef}>
-      <div>
-        <EnvelopeOverlay
+    <div
+      className={styles.cardPanel}
+      ref={cardsListRef}
+      style={{ height: `${sizeMiniCard.height}px` }}
+    >
+      <div
+        className={styles.cardPanelPie}
+        style={{
+          height: `${sizeMiniCard.height}px`,
+          width: `${sizeMiniCard.height}px`,
+        }}
+      >
+        <CardPie />
+        {/* <EnvelopeOverlay
           sizeMiniCard={sizeMiniCard}
           completedSections={completedSections}
-        />
-        <CardScroller
-          value={valueScroll}
-          scrollIndex={scrollIndex}
-          maxMiniCardsCount={maxMiniCardsCount}
-          deltaEnd={deltaEnd}
-          handleChangeFromSliderCardsList={handleChangeFromSliderCardsList}
-          onLetterClick={handleLetterClick}
-        />
+        /> */}
       </div>
+      <CardScroller
+        value={valueScroll}
+        scrollIndex={scrollIndex}
+        maxMiniCardsCount={maxMiniCardsCount}
+        deltaEnd={deltaEnd}
+        handleChangeFromSliderCardsList={handleChangeFromSliderCardsList}
+        onLetterClick={handleLetterClick}
+      />
 
-      <SectionPresetsRenderer
+      {/* <SectionPresetsRenderer
         selectedTemplate={selectedTemplate}
         widthCardsList={cardsListRef.current?.clientWidth || 0}
         valueScroll={valueScroll}
         setValueScroll={setValueScroll}
-      />
+      /> */}
 
       {isTemplateMode ? (
         <div className={styles.cardPanelTemplates}></div>

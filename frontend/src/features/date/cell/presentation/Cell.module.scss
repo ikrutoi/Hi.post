@@ -10,8 +10,8 @@
   border: 1px solid $color-hover;
   border-radius: 1rem;
   cursor: pointer;
-  width: 4rem;
-  height: 4rem;
+  // width: 4rem;
+  // height: 4rem;
 
   // aspect-ratio: 1;
 
@@ -44,8 +44,8 @@
   margin-top: 0.2rem;
   margin-right: 0.2rem;
   z-index: 1;
-  top: 0.1rem;
-  right: 0.1rem;
+  // top: 0.1rem;
+  // right: 0.1rem;
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(4px);
   // color: #333;
@@ -120,32 +120,6 @@
     // border: solid 1px red;s
   }
 }
-
-// .cartContainer {
-//   position: relative;
-//   display: flex;
-// }
-
-// .cartImg,
-// .cartFilter {
-//   width: 3.2rem;
-//   height: 2.5rem;
-//   border-radius: 0.3rem;
-//   cursor: pointer;
-// }
-
-// .cartFilter {
-//   position: absolute;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   background-color: rgba(163, 163, 163, 0.5);
-// }
-
-// .cartShadow {
-//   padding: 0 0.1rem;
-//   color: rgb(240, 240, 240);
-// }
 
 // .cartCount {
 //   position: absolute;

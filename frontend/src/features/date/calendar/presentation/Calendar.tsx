@@ -4,6 +4,7 @@ import {
   daysOfWeekStartFromMon,
   daysOfWeekStartFromSun,
 } from '@entities/date/constants'
+// import { useSizeFacade } from '@layout/application/facades'
 import { useCalendarConstruction } from '../application/hooks'
 import styles from './Calendar.module.scss'
 import type {
@@ -29,13 +30,15 @@ export const Calendar: React.FC<CalendarProps> = ({
 }) => {
   const [firstDayOfWeek, setFirstDayOfWeek] = useState<'Sun' | 'Mon'>('Sun')
   const [daysOfWeek, setDaysOfWeek] = useState<DaysOfWeek[]>(
-    daysOfWeekStartFromSun
+    daysOfWeekStartFromSun,
   )
+
+  // const { sizeItemCalendar } = useSizeFacade()
 
   const handleFirstDay = (firstDay: 'Sun' | 'Mon') => {
     setFirstDayOfWeek(firstDay)
     setDaysOfWeek(
-      firstDay === 'Sun' ? daysOfWeekStartFromSun : daysOfWeekStartFromMon
+      firstDay === 'Sun' ? daysOfWeekStartFromSun : daysOfWeekStartFromMon,
     )
   }
 

@@ -5,8 +5,6 @@
   right: 0;
   height: 100%;
   border-radius: 1rem;
-  // pointer-events: none;
-  // aspect-ratio: 1;
   z-index: 7;
   box-shadow: 1px 1px 5px 3px rgba(34, 60, 80, 0.2);
 }
@@ -25,7 +23,6 @@
     filter 0.2s;
   stroke: $color-font-disabled;
   stroke-width: 20;
-  // border: solid 1px blue;
 
   &:hover {
     filter: brightness(1.1);

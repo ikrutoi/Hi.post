@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
 import { getRemSize } from '../../helpers/getRemSize'
-import { useLayoutFacade } from '../facades/useLayoutFasade'
+import { useSizeFacade } from '../facades/'
 
 export const useLayoutInit = () => {
-  const { actions } = useLayoutFacade()
+  const { setRemSize } = useSizeFacade()
 
   useEffect(() => {
-    actions.setRemSize(getRemSize())
-  }, [actions.setRemSize])
+    setRemSize(getRemSize())
+  }, [setRemSize])
 }

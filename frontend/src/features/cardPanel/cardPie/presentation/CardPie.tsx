@@ -2,23 +2,39 @@ import React from 'react'
 import clsx from 'clsx'
 import { AROMA_IMAGES } from '@entities/aroma/domain/types'
 import listOfMonthOfYear from '@data/date/monthOfYear.json'
+import { useSizeFacade } from '@layout/application/facades'
 import { useCardFacade } from '@entities/card/application/facades'
+import { useCardtextFacade } from '@cardtext/application/facades'
 import styles from './CardPie.module.scss'
 
 export const CardPie: React.FC = () => {
   const { activeSection, previewCard, openSection } = useCardFacade()
+  const { value } = useCardtextFacade()
+  const { sizeMiniCard } = useSizeFacade()
+
+  const previewLines = value
+    .slice(0, 6)
+    .map((block) => {
+      const fullLineText = block.children.map((child) => child.text).join('')
+      return fullLineText.split(/\s+/).filter(Boolean).slice(0, 4).join(' ')
+    })
+    .filter((line) => line.length > 0)
 
   const photoUrl = previewCard?.cardphoto?.base?.apply?.image?.url
   const aromaIndex = previewCard?.aroma.index
   const aromaImageUrl = aromaIndex ? AROMA_IMAGES[aromaIndex] : null
   const recipient = previewCard?.envelope.recipient.data
   const date = previewCard?.date
-  if (previewCard) {
-    console.log('CardPie', listOfMonthOfYear[previewCard.date.month])
-  }
+  const text = previewCard?.cardtext.value
 
   return (
-    <div className={styles.hubContainer}>
+    <div
+      className={styles.hubContainer}
+      style={{
+        height: `${sizeMiniCard.height}px`,
+        width: `${sizeMiniCard.height}px`,
+      }}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 5120 5120"
@@ -41,30 +57,59 @@ export const CardPie: React.FC = () => {
                 preserveAspectRatio="xMidYMid slice"
               />
             ) : (
-              <rect width="2560" height="2560" fill="#e0e0e0" />
+              <rect width="2560" height="2560" fill="#ffced2" opacity="0.4" />
             )}
           </pattern>
+
           <pattern
-            id="aroma-fill"
+            id="cardtext-fill"
             patternUnits="userSpaceOnUse"
             width="2560"
-            height="2560"
-            x="2560"
-            y="2560"
+            height="3135"
+            x="0"
+            y="2000"
           >
-            {aromaImageUrl ? (
+            {text ? (
               <>
-                <image
-                  href={aromaImageUrl}
-                  width="2000"
-                  height="2000"
-                  x="256"
-                  y="256"
-                  preserveAspectRatio="xMidYMid meet"
-                />
+                <rect width="2560" height="3135" fill="#ffe8a1" opacity="0.5" />
+                <text
+                  x="100"
+                  y="400"
+                  textAnchor="start"
+                  className={styles.pieTextBase}
+                  fill="#064e3b"
+                  style={{ fontStyle: 'italic' }}
+                >
+                  {previewLines.length > 0 ? (
+                    previewLines.map((line, i) => {
+                      const currentOpacity = Math.max(1 - i * 0.15, 0.4)
+                      return (
+                        <tspan
+                          key={i}
+                          x="100"
+                          dy={i === 0 ? 0 : 500}
+                          fontWeight="400"
+                          fontSize={350 - i * 5}
+                          opacity={currentOpacity}
+                        >
+                          {line}
+                        </tspan>
+                      )
+                    })
+                  ) : (
+                    <tspan x="100" dy="0">
+                      ...
+                    </tspan>
+                  )}
+                </text>
               </>
             ) : (
-              <rect width="2560" height="2560" fill="#9b59b6" opacity="0.3" />
+              <>
+                <rect width="2560" height="3135" fill="#ffe8a1" opacity="0.5" />
+                <text x="100" y="600" fill="#064e3b" opacity="0.5">
+                  <tspan>Hi...</tspan>
+                </text>
+              </>
             )}
           </pattern>
 
@@ -76,8 +121,14 @@ export const CardPie: React.FC = () => {
             x="0"
             y="0"
           >
-            {recipient && (
+            {recipient ? (
               <>
+                <rect
+                  width="2560"
+                  height="2560"
+                  fill="#c0ddff"
+                  opacity="0.4"
+                ></rect>
                 <text
                   x="1280"
                   y="1050"
@@ -94,6 +145,43 @@ export const CardPie: React.FC = () => {
                   </tspan>
                 </text>
               </>
+            ) : (
+              <rect
+                width="2560"
+                height="2560"
+                fill="#c0ddff"
+                opacity="0.4"
+              ></rect>
+            )}
+          </pattern>
+
+          <pattern
+            id="aroma-fill"
+            patternUnits="userSpaceOnUse"
+            width="2560"
+            height="2560"
+            x="2560"
+            y="2560"
+          >
+            {aromaImageUrl ? (
+              <>
+                <rect
+                  width="2560"
+                  height="2560"
+                  fill="#ecbbff"
+                  opacity="0.4"
+                ></rect>
+                <image
+                  href={aromaImageUrl}
+                  width="2560"
+                  height="2560"
+                  x="0"
+                  y="256"
+                  preserveAspectRatio="xMidYMid meet"
+                />
+              </>
+            ) : (
+              <rect width="2560" height="2560" fill="#efc6ff" opacity="0.4" />
             )}
           </pattern>
 
@@ -105,13 +193,13 @@ export const CardPie: React.FC = () => {
             x="0"
             y="2000"
           >
-            {date && (
+            {date ? (
               <>
                 <rect
                   width="2560"
                   height="3135"
-                  fill="hsl(207, 70%, 47%)"
-                  opacity="1"
+                  fill="#b7ffcf"
+                  opacity="0.4"
                 ></rect>
                 <text
                   x="1280"
@@ -120,14 +208,14 @@ export const CardPie: React.FC = () => {
                   // stroke="white"
                   // strokeWidth="5"
                   strokeLinejoin="round"
-                  fill="white"
+                  fill="hsl(207, 70%, 47%)"
                   // className={styles.pieDateContainer}
                 >
                   <tspan x="1280" dy="0" fontWeight="400" fontSize="550">
                     {date.year}
                   </tspan>
 
-                  <tspan x="1280" dy="1100" fontWeight="600" fontSize="1200">
+                  <tspan x="1280" dy="1250" fontWeight="600" fontSize="1400">
                     {date.day}
                   </tspan>
 
@@ -136,6 +224,13 @@ export const CardPie: React.FC = () => {
                   </tspan>
                 </text>
               </>
+            ) : (
+              <rect
+                width="2560"
+                height="3135"
+                fill="#b7ffcf"
+                opacity="0.4"
+              ></rect>
             )}
           </pattern>
         </defs>
@@ -155,7 +250,7 @@ export const CardPie: React.FC = () => {
           <path
             id="cardtext"
             d="m896 5120 1664-2560L0 1985v2371c0 420 344 764 764 764z"
-            fill={previewCard?.cardtext ? '#ffca28' : '#eee'}
+            fill="url(#cardtext-fill)"
             className={clsx(
               styles.sector,
               activeSection === 'cardtext' && styles.active,

@@ -1,5 +1,5 @@
 export { useLayoutSelectedTemplateSection } from './useLayoutSelectedTemplateSection'
 export { useSize } from './useSize'
 export { useViewportSize } from './useViewportSize'
-export { useMiniCardSize } from './useMiniCardSize'
+export { useRecordSizeCard } from './useRecordSizeCard'
 export { useFlashEffect } from './useFlashEffect'

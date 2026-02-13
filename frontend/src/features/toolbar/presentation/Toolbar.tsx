@@ -6,6 +6,7 @@ import { useToolbarFacade } from '../application/facades'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
+import { useSizeFacade } from '@layout/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
 import {
@@ -33,9 +34,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
 
   const groupRef = useRef<HTMLDivElement>(null)
 
-  const { size: layoutSize, actions: layoutActions } = useLayoutFacade()
-  const { sectionMenuHeight } = layoutSize
-  const { setSectionMenuHeight } = layoutActions
+  const { sectionMenuHeight, setSectionMenuHeight } = useSizeFacade()
 
   const isAlreadyApplied = useAppSelector(selectIsCurrentCropApplied)
   const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'

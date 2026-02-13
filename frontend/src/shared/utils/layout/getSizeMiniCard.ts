@@ -7,7 +7,7 @@ export interface SplitHeightResult {
   sectionEditorHeight: number
 }
 
-export const getSizeMiniCard = (size: SizeCard) => {
+export const getSizeMiniCard = (size: { width: number; height: number }) => {
   const rawWidth = size.width * CARD_SCALE_CONFIG.scaleMiniCard
   const rawHeight = rawWidth / CARD_SCALE_CONFIG.aspectRatio
 

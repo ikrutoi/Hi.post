@@ -1,9 +1,11 @@
-import { AppDispatch } from '@app/state'
+import React from 'react'
+import { useAppDispatch } from '@app/hooks'
 import {
+  setSizeToolbarContour,
   setSizeCard,
   setSizeMiniCard,
   setRemSize,
-  setScale,
+  // setScale,
   setSectionMenuHeight,
   setViewportSize,
   setCardOrientation,
@@ -12,21 +14,61 @@ import type {
   SizeCard,
   ViewportSizeState,
   LayoutOrientation,
+  SizeBox,
 } from '../../domain/types'
 
-export const useSizeController = (dispatch: AppDispatch) => ({
-  setSizeCard: (payload: Partial<SizeCard>) => dispatch(setSizeCard(payload)),
-  setSizeMiniCard: (payload: Partial<SizeCard>) =>
-    dispatch(setSizeMiniCard(payload)),
-  setRemSize: (value: number | null) => dispatch(setRemSize(value)),
-  setScale: (value: number | null) => dispatch(setScale(value)),
-  setSectionMenuHeight: (value: number | null) =>
-    dispatch(setSectionMenuHeight(value)),
-  setViewportSize: (payload: Partial<ViewportSizeState>) =>
-    dispatch(setViewportSize(payload)),
+export const useSizeController = () => {
+  const dispatch = useAppDispatch()
 
-  setCardOrientation: (
-    orientation: LayoutOrientation,
-    viewportHeight: number
-  ) => dispatch(setCardOrientation({ orientation, viewportHeight })),
-})
+  const handleSetSizeToolbarContour = React.useCallback(
+    (payload: Partial<SizeBox>) => dispatch(setSizeToolbarContour(payload)),
+    [dispatch],
+  )
+
+  const handleSetSizeCard = React.useCallback(
+    (payload: Partial<SizeCard>) => dispatch(setSizeCard(payload)),
+    [dispatch],
+  )
+
+  const handleSetSizeMiniCard = React.useCallback(
+    (payload: Partial<SizeCard>) => dispatch(setSizeMiniCard(payload)),
+    [dispatch],
+  )
+
+  const handleSetRemSize = React.useCallback(
+    (value: number | null) => dispatch(setRemSize(value)),
+    [dispatch],
+  )
+
+  // const handleSetScale = React.useCallback(
+  //   (value: number | null) => dispatch(setScale(value)),
+  //   [dispatch],
+  // )
+
+  const handleSetSectionMenuHeight = React.useCallback(
+    (value: number | null) => dispatch(setSectionMenuHeight(value)),
+    [dispatch],
+  )
+
+  const handleSetViewportSize = React.useCallback(
+    (payload: Partial<ViewportSizeState>) => dispatch(setViewportSize(payload)),
+    [dispatch],
+  )
+
+  const handleSetCardOrientation = React.useCallback(
+    (orientation: LayoutOrientation, viewportHeight: number) =>
+      dispatch(setCardOrientation({ orientation, viewportHeight })),
+    [dispatch],
+  )
+
+  return {
+    setSizeToolbarContour: handleSetSizeToolbarContour,
+    setSizeCard: handleSetSizeCard,
+    setSizeMiniCard: handleSetSizeMiniCard,
+    setRemSize: handleSetRemSize,
+    // setScale: handleSetScale,
+    setCardOrientation: handleSetCardOrientation,
+    setViewportSize: handleSetViewportSize,
+    setSectionMenuHeight: handleSetSectionMenuHeight,
+  }
+}

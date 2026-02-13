@@ -6,6 +6,7 @@ import { Calendar } from '../calendar/presentation/Calendar'
 import { Slider } from '../slider/presentation/Slider'
 import { useDateFacade } from '../application/facades/useDateFacade'
 import { useCalendarFacade } from '../calendar/application/facades'
+// import { useSizeFacade } from '@layout/application/facades'
 import { useDateSwitcherController } from '../application/hooks'
 import {
   useInitializeCalendarViewDate,
@@ -23,6 +24,8 @@ export const Date: React.FC = () => {
   const { state: stateDate, actions: actionsDate } = useDateFacade()
   const { selectedDate } = stateDate
   const { chooseDate } = actionsDate
+
+  // const { sizeItemCalendar } = useSizeFacade()
 
   const { state: stateCalendar } = useCalendarFacade()
   const { lastViewedCalendarDate } = stateCalendar
