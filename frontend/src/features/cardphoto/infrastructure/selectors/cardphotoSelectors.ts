@@ -191,6 +191,7 @@ export const selectCardphotoSessionRecord = createSelector(
           : config.image.meta.id
 
     return {
+      appliedImageUrl: appliedImage?.url || null,
       source: activeSource,
       activeMetaId,
       cropIds: cropIds,
@@ -206,6 +207,21 @@ export const selectCardphotoSessionRecord = createSelector(
       },
       apply: appliedImage,
       isComplete: isComplete,
+    }
+  },
+)
+
+export const selectCardphotoPreview = createSelector(
+  [
+    (state: RootState) => state.cardphoto.state?.base.apply.image?.id,
+    (state: RootState) => state.cardphoto.state?.base.apply.image?.url,
+    selectCardphotoIsComplete,
+  ],
+  (id, url, isComplete) => {
+    return {
+      previewUrl: url || null,
+      isComplete: isComplete,
+      id: id,
     }
   },
 )

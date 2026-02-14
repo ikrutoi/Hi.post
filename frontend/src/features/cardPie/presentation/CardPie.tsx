@@ -6,13 +6,40 @@ import { useSizeFacade } from '@layout/application/facades'
 import { useCardFacade } from '@entities/card/application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import styles from './CardPie.module.scss'
+import { CardPieProps } from '../domain/types'
+import { useCardPieFacade } from '../application/facade'
+import { useSectionMenuFacade } from '@/entities/sectionEditorMenu/application/facades'
 
-export const CardPie: React.FC = () => {
+// export const CardPie: React.FC<CardPieProps> = () => {
+//   const { activeSection, previewCard, openSection } = useCardFacade()
+//   const { value } = useCardtextFacade()
+//   const { sizeMiniCard } = useSizeFacade()
+
+//   const previewLines = value
+//     .slice(0, 6)
+//     .map((block) => {
+//       const fullLineText = block.children.map((child) => child.text).join('')
+//       return fullLineText.split(/\s+/).filter(Boolean).slice(0, 4).join(' ')
+//     })
+//     .filter((line) => line.length > 0)
+
+//   const photoUrl = previewCard?.cardphoto?.base?.apply?.image?.url
+//   const aromaIndex = previewCard?.aroma.index
+//   const aromaImageUrl = aromaIndex ? AROMA_IMAGES[aromaIndex] : null
+//   const recipient = previewCard?.envelope.recipient.data
+//   const date = previewCard?.date
+//   const text = previewCard?.cardtext.value
+
+export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
+  const { data, isReady } = useCardPieFacade(status, id)
   const { activeSection, previewCard, openSection } = useCardFacade()
-  const { value } = useCardtextFacade()
+  // const { activeSection, openSection } = useSectionMenuFacade()
   const { sizeMiniCard } = useSizeFacade()
 
-  const previewLines = value
+  const cardData = data?.data
+
+  const valueCardtext = cardData?.cardtext?.value || []
+  const previewLines = valueCardtext
     .slice(0, 6)
     .map((block) => {
       const fullLineText = block.children.map((child) => child.text).join('')
@@ -20,12 +47,13 @@ export const CardPie: React.FC = () => {
     })
     .filter((line) => line.length > 0)
 
-  const photoUrl = previewCard?.cardphoto?.base?.apply?.image?.url
-  const aromaIndex = previewCard?.aroma.index
+  const photoUrl = cardData?.cardphoto.previewUrl
+  // const photoUrl = cardData?.cardphoto?.appliedImage?.url
+  const aromaIndex = cardData?.aroma?.index
   const aromaImageUrl = aromaIndex ? AROMA_IMAGES[aromaIndex] : null
-  const recipient = previewCard?.envelope.recipient.data
-  const date = previewCard?.date
-  const text = previewCard?.cardtext.value
+  const recipient = cardData?.recipient ? cardData?.recipient : null
+  // const recipient = cardData?.envelope?.recipient?.data
+  const date = cardData?.date
 
   return (
     <div
@@ -60,7 +88,7 @@ export const CardPie: React.FC = () => {
               <rect
                 width="2560"
                 height="2560"
-                className={clsx(styles.rectCardphoto, styles.pieBgRect)}
+                className={clsx(styles.rectCardphoto)}
                 style={{}}
               />
             )}
@@ -74,12 +102,12 @@ export const CardPie: React.FC = () => {
             x="0"
             y="2000"
           >
-            {text ? (
+            {previewLines ? (
               <>
                 <rect
                   width="2560"
                   height="3135"
-                  className={clsx(styles.rectCardtext, styles.pieBgRect)}
+                  className={clsx(styles.rectCardtext)}
                 />
                 <text
                   x="100"
@@ -117,7 +145,7 @@ export const CardPie: React.FC = () => {
                 <rect
                   width="2560"
                   height="3135"
-                  className={clsx(styles.rectCardtext, styles.pieBgRect)}
+                  className={clsx(styles.rectCardtext)}
                 />
                 <text x="100" y="600" fill="#064e3b" opacity="0.5">
                   <tspan>Hi...</tspan>
@@ -139,7 +167,7 @@ export const CardPie: React.FC = () => {
                 <rect
                   width="2560"
                   height="2560"
-                  className={clsx(styles.rectEnvelope, styles.pieBgRect)}
+                  className={clsx(styles.rectEnvelope)}
                 ></rect>
                 <text
                   x="1280"
@@ -161,7 +189,7 @@ export const CardPie: React.FC = () => {
               <rect
                 width="2560"
                 height="2560"
-                className={clsx(styles.rectEnvelope, styles.pieBgRect)}
+                className={clsx(styles.rectEnvelope)}
               ></rect>
             )}
           </pattern>
@@ -179,7 +207,7 @@ export const CardPie: React.FC = () => {
                 <rect
                   width="2560"
                   height="2560"
-                  className={clsx(styles.rectAroma, styles.pieBgRect)}
+                  className={clsx(styles.rectAroma)}
                 ></rect>
                 <image
                   href={aromaImageUrl}
@@ -194,7 +222,7 @@ export const CardPie: React.FC = () => {
               <rect
                 width="2560"
                 height="2560"
-                className={clsx(styles.rectAroma, styles.pieBgRect)}
+                className={clsx(styles.rectAroma)}
               />
             )}
           </pattern>
@@ -212,7 +240,7 @@ export const CardPie: React.FC = () => {
                 <rect
                   width="2560"
                   height="3135"
-                  className={clsx(styles.rectDate, styles.pieBgRect)}
+                  className={clsx(styles.rectDate)}
                 ></rect>
                 <text
                   x="1280"
@@ -241,7 +269,7 @@ export const CardPie: React.FC = () => {
               <rect
                 width="2560"
                 height="3135"
-                className={clsx(styles.rectDate, styles.pieBgRect)}
+                className={clsx(styles.rectDate)}
               ></rect>
             )}
           </pattern>
@@ -254,6 +282,7 @@ export const CardPie: React.FC = () => {
             fill="url(#photo-fill)"
             className={clsx(
               styles.sector,
+              styles.sectorCardphoto,
               activeSection === 'cardphoto' && styles.active,
             )}
             onClick={() => openSection('cardphoto')}
@@ -265,6 +294,7 @@ export const CardPie: React.FC = () => {
             fill="url(#cardtext-fill)"
             className={clsx(
               styles.sector,
+              styles.sectorCardtext,
               activeSection === 'cardtext' && styles.active,
             )}
             onClick={() => openSection('cardtext')}
@@ -276,6 +306,7 @@ export const CardPie: React.FC = () => {
             fill="url(#envelope-fill)"
             className={clsx(
               styles.sector,
+              styles.sectorEnvelope,
               activeSection === 'envelope' && styles.active,
             )}
             onClick={() => openSection('envelope')}
@@ -287,6 +318,7 @@ export const CardPie: React.FC = () => {
             fill="url(#aroma-fill)"
             className={clsx(
               styles.sector,
+              styles.sectorAroma,
               activeSection === 'aroma' && styles.active,
             )}
             onClick={() => openSection('aroma')}
@@ -298,6 +330,7 @@ export const CardPie: React.FC = () => {
             fill="url(#date-fill)"
             className={clsx(
               styles.sector,
+              styles.sectorDate,
               activeSection === 'date' && styles.active,
             )}
             onClick={() => openSection('date')}

@@ -6,14 +6,9 @@ import { CalendarCardItem, Card } from '@entities/card/domain/types'
 import { setPreviewCardId } from '@entities/card/infrastructure/state'
 import styles from './CardPreviewItem.module.scss'
 import type { CardStatus } from '@entities/card/domain/types'
+import { PreviewItem } from '@cardphoto/domain/types'
 
-interface ItemProps {
-  item: { previewUrl: string }
-  status: CardStatus
-  cardId: string
-}
-
-export const CardPreviewItem: React.FC<ItemProps> = ({
+export const CardPreviewItem: React.FC<PreviewItem> = ({
   item,
   status,
   cardId,

@@ -27,13 +27,14 @@ export const selectPreviewCard = createSelector(
 export const selectCardsByDateMap = createSelector(
   [selectCalendarIndex],
   (index: CardCalendarIndex) => {
-    const map: Record<
-      string,
-      Record<
-        keyof CardCalendarIndex,
-        CalendarCardItem[] | CalendarCardItem | null
-      >
-    > = {}
+    // const map: Record<
+    //   string,
+    //   Record<
+    //     keyof CardCalendarIndex,
+    //     CalendarCardItem[] | CalendarCardItem | null
+    //   >
+    // > = {}
+    const map: Record<string, CardCalendarIndex> = {}
 
     const getEntry = (date: DispatchDate) => {
       const key = `${date.year}-${date.month}-${date.day}`
@@ -57,11 +58,13 @@ export const selectCardsByDateMap = createSelector(
       if (Array.isArray(data)) {
         data.forEach((item) => {
           const entry = getEntry(item.date)
-          ;(entry[key] as CalendarCardItem[]).push(item)
+          if (key !== 'processed') {
+            ;(entry[key] as CalendarCardItem[]).push(item)
+          }
         })
       } else {
         const entry = getEntry(data.date)
-        entry[key] = data
+        entry.processed = data
       }
     }
 

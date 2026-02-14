@@ -310,29 +310,61 @@ export const cardphotoSlice = createSlice({
 
     restoreSession(state, action: PayloadAction<CardphotoSessionRecord>) {
       if (state.state) {
-        const { source, config, apply, isComplete, cropIds } = action.payload
-
-        state.state.activeSource = source
+        const { source, config, apply, isComplete, cropIds, activeMetaId } =
+          action.payload
 
         state.isComplete = isComplete
-
-        state.state.base.apply.image = apply
-
+        state.state.activeSource = source
         state.state.cropIds = cropIds || []
         state.state.cropCount = (cropIds || []).length
 
-        state.state.currentConfig = {
-          card: config.card,
-          crop: config.crop,
-          image: {
-            ...config.image,
-            meta:
-              (config.image as any).meta ||
-              ({ id: config.image.metaId } as ImageMeta),
-          },
+        state.state.base.apply.image = apply
+
+        if (config) {
+          state.state.currentConfig = {
+            card: config.card,
+            crop: config.crop,
+            image: {
+              left: config.image.left,
+              top: config.image.top,
+              rotation: config.image.rotation,
+              meta:
+                (config.image as any).meta ||
+                ({
+                  id: config.image.metaId || activeMetaId || '',
+                  url: apply?.url || '',
+                } as ImageMeta),
+            },
+          }
         }
       }
     },
+
+    // restoreSession(state, action: PayloadAction<CardphotoSessionRecord>) {
+    //   if (state.state) {
+    //     const { source, config, apply, isComplete, cropIds } = action.payload
+
+    //     state.state.activeSource = source
+
+    //     state.isComplete = isComplete
+
+    //     state.state.base.apply.image = apply
+
+    //     state.state.cropIds = cropIds || []
+    //     state.state.cropCount = (cropIds || []).length
+
+    //     state.state.currentConfig = {
+    //       card: config.card,
+    //       crop: config.crop,
+    //       image: {
+    //         ...config.image,
+    //         meta:
+    //           (config.image as any).meta ||
+    //           ({ id: config.image.metaId } as ImageMeta),
+    //       },
+    //     }
+    //   }
+    // },
   },
 })
 

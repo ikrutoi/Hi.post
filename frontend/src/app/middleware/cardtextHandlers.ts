@@ -1,12 +1,23 @@
 import { Editor, Transforms, Text as SlateText } from 'slate'
-import { select, put } from 'redux-saga/effects'
+import { select, put, call } from 'redux-saga/effects'
+import { nanoid } from 'nanoid'
 import { selectActiveSource } from '@cardphoto/infrastructure/selectors'
-import { selectFontSizeStep } from '@cardtext/infrastructure/selectors'
+import {
+  selectCardtextSessionData,
+  selectCardtextState,
+  selectFontSizeStep,
+} from '@cardtext/infrastructure/selectors'
 import { selectCardOrientation } from '@layout/infrastructure/selectors'
-import { setTextStyle } from '@cardtext/infrastructure/state'
+import { setAssetId, setTextStyle } from '@cardtext/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { CARDTEXT_CONFIG, STEP_TO_PX } from '@cardtext/domain/types'
+import {
+  CARDTEXT_CONFIG,
+  CardtextSessionRecord,
+  STEP_TO_PX,
+} from '@cardtext/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
+import { CardtextRecord } from '@db/types'
+import { storeAdapters } from '@db/adapters/storeAdapters'
 
 export function* changeFontSizeStep(
   editor: Editor,
@@ -77,4 +88,24 @@ export function* syncCardtextToolbarVisuals() {
       },
     }),
   )
+}
+
+export function* syncCardtextToAssets() {
+  const session: CardtextSessionRecord = yield select(selectCardtextSessionData)
+
+  if (!session.plainText.trim()) return
+
+  const record: CardtextRecord = {
+    id: session.assetId || nanoid(),
+    value: session.value,
+    style: session.style,
+    plainText: session.plainText,
+    cardtextLines: session.cardtextLines,
+  }
+
+  yield call([storeAdapters.cardtext, 'put'], record)
+
+  if (!session.assetId) {
+    yield put(setAssetId(record.id))
+  }
 }

@@ -13,6 +13,7 @@ import type {
 } from '../../domain/types'
 
 const initialState: CardtextState = {
+  assetId: null,
   value: [
     {
       type: 'paragraph',
@@ -43,6 +44,22 @@ export const cardtextSlice = createSlice({
       }
     },
 
+    setAssetId(state, action: PayloadAction<string | null>) {
+      state.assetId = action.payload
+    },
+
+    setValue(state, action: PayloadAction<CardtextValue>) {
+      state.value = action.payload
+      state.plainText = action.payload
+        .map((block) => block.children.map((child) => child.text).join(' '))
+        .join('\n')
+
+      const hasText = state.plainText.trim().length > 0
+      state.isComplete = hasText
+
+      if (!hasText) state.assetId = null
+    },
+
     setAlign(state, action: PayloadAction<CardtextBlock['align']>) {
       state.value = state.value.map((block) => ({
         ...block,
@@ -65,13 +82,13 @@ export const cardtextSlice = createSlice({
       state.resetToken += 1
     },
 
-    setValue(state, action: PayloadAction<CardtextValue>) {
-      state.value = action.payload
-      state.plainText = action.payload
-        .map((block) => block.children.map((child) => child.text).join(' '))
-        .join('\n')
-      state.isComplete = state.plainText.trim().length > 0
-    },
+    // setValue(state, action: PayloadAction<CardtextValue>) {
+    //   state.value = action.payload
+    //   state.plainText = action.payload
+    //     .map((block) => block.children.map((child) => child.text).join(' '))
+    //     .join('\n')
+    //   state.isComplete = state.plainText.trim().length > 0
+    // },
 
     setFontSizeStep(state, action: PayloadAction<number>) {
       state.style.fontSizeStep = action.payload
@@ -104,6 +121,7 @@ export const cardtextSlice = createSlice({
       }))
       state.plainText = ''
       state.isComplete = false
+      state.assetId = null
       state.resetToken += 1
     },
 
@@ -119,6 +137,7 @@ export const cardtextSlice = createSlice({
 
 export const {
   setValue,
+  setAssetId,
   setFontSizeStep,
   setAlign,
   setTextStyle,

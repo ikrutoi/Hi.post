@@ -1,11 +1,11 @@
 @use '@styles/config/colors' as *;
 
 .hubContainer {
-  --pie-cardphoto: #{$color-pie-cardphoto};
-  --pie-cardtext: #{$color-pie-cardtext};
-  --pie-envelope: #{$color-pie-envelope};
-  --pie-aroma: #{$color-pie-aroma};
-  --pie-date: #{$color-pie-date};
+  --pie-cardphoto: #{$color-pie-cardphoto-alpha};
+  --pie-cardtext: #{$color-pie-cardtext-alpha};
+  --pie-envelope: #{$color-pie-envelope-alpha};
+  --pie-aroma: #{$color-pie-aroma-alpha};
+  --pie-date: #{$color-pie-date-alpha};
 
   position: absolute;
   right: 0;
@@ -31,10 +31,20 @@
   fill: var(--pie-date);
 }
 
-.pieBgRect {
-  opacity: 0.4;
-  transition: opacity 0.2s ease;
-}
+// .rectAroma,
+// .rectDate,
+// .rectCardtext,
+// .rectEnvelope,
+// .rectCardphoto {
+//   stroke: var(--inner-stroke);
+//   stroke-width: 40;
+//   transition: stroke 0.2s ease;
+// }
+
+// .pieBgRect {
+//   opacity: 0.4;
+//   transition: opacity 0.2s ease;
+// }
 
 .svg {
   width: 100%;
@@ -45,9 +55,10 @@
 .sector {
   cursor: pointer;
   transition:
-    opacity 0.2s,
-    transform 0.2s,
-    filter 0.2s;
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    filter 0.2s ease,
+    stroke 0.2s ease;
   stroke: $color-font-disabled;
   stroke-width: 20;
 

@@ -50,3 +50,15 @@ $color-pie-cardtext: #ffe8a1;
 $color-pie-envelope: #c0ddff;
 $color-pie-aroma: #d8b4fe;
 $color-pie-date: #b7ffcf;
+
+// $color-pie-cardphoto-alpha: change($color-pie-cardphoto, $alpha: 0.4);
+// $color-pie-cardtext-alpha: change($color-pie-cardtext, $alpha: 0.4);
+// $color-pie-envelope-alpha: change($color-pie-envelope, $alpha: 0.4);
+// $color-pie-aroma-alpha: change($color-pie-aroma, $alpha: 0.4);
+// $color-pie-date-alpha: change($color-pie-date, $alpha: 0.4);
+
+$color-pie-cardphoto-alpha: rgba($color-pie-cardphoto, 0.3);
+$color-pie-cardtext-alpha: rgba($color-pie-cardtext, 0.3);
+$color-pie-envelope-alpha: rgba($color-pie-envelope, 0.3);
+$color-pie-aroma-alpha: rgba($color-pie-aroma, 0.25);
+$color-pie-date-alpha: rgba($color-pie-date, 0.3);

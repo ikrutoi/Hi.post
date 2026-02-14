@@ -20,7 +20,8 @@
 
 .tileSelected,
 .tileSelected:hover {
-  background-color: $color-section-light-completed;
+  background-color: $color-pie-aroma-alpha;
+  border-color: $color-pie-aroma;
 }
 
 .tileSelected:hover {
@@ -34,7 +35,7 @@
 }
 
 .tileMake {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 600;
   margin-top: 0.2rem;
 }

@@ -1,3 +1,4 @@
+import { CardStatus } from '@/entities/card/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
 export const IMAGE_SOURCE = ['stock', 'user', 'processed', 'apply'] as const
@@ -92,6 +93,7 @@ export interface CardphotoSessionRecord {
   }
   apply: ImageMeta | null
   isComplete: boolean
+  appliedImageUrl: string | null
 }
 
 export type CardphotoOperation = {
@@ -128,6 +130,12 @@ export interface CardphotoState {
   cropIds: string[]
   activeSource: ImageSource | null
   currentConfig: WorkingConfig | null
+}
+
+export interface PreviewItem {
+  item: { previewUrl: string }
+  status: CardStatus
+  cardId: string
 }
 
 // ----------------------

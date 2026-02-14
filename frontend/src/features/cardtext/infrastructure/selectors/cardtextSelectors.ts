@@ -37,10 +37,6 @@ export const selectCardtextSessionRecord = (state: RootState): CardtextStyle =>
 export const selectCardtextSessionData = (
   state: RootState,
 ): CardtextSessionRecord => {
-  return {
-    value: state.cardtext.value,
-    style: state.cardtext.style,
-    plainText: state.cardtext.plainText,
-    cardtextLines: state.cardtext.cardtextLines,
-  }
+  const { assetId, value, style, plainText, cardtextLines } = state.cardtext
+  return { assetId, value, style, plainText, cardtextLines }
 }

@@ -43,7 +43,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       style={{
         left: isPacked
           ? '0'
-          : `${sizeMiniCard.width + remSize + (sizeMiniCard.height * 4) / 24 + (sizeMiniCard.height + remSize) * position}px`,
+          : `${sizeMiniCard.height + remSize + (sizeMiniCard.height * 4) / 24 + (sizeMiniCard.height + remSize) * position}px`,
         width: `${sizeMiniCard.height}px`,
         height: `${sizeMiniCard.height}px`,
         boxShadow: isPacked

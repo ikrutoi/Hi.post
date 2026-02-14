@@ -1,4 +1,5 @@
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects'
+import { nanoid } from 'nanoid'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { selectCardphotoSessionRecord } from '@cardphoto/infrastructure/selectors'
 import {
@@ -25,12 +26,17 @@ import { setSizeCard } from '@layout/infrastructure/state'
 import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
-import { syncCardtextToolbarVisuals } from './cardtextHandlers'
+import {
+  syncCardtextToAssets,
+  syncCardtextToolbarVisuals,
+} from './cardtextHandlers'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
 import { syncCardOrientationStatus } from './cardtextProcessSaga'
 import {
+  selectCardtextPlainText,
   selectCardtextSessionData,
   selectCardtextSessionRecord,
+  selectCardtextStyle,
 } from '@cardtext/infrastructure/selectors'
 import {
   selectEnvelopeSessionRecord,
@@ -51,7 +57,10 @@ import {
   syncEnvelopeStatus,
 } from './cardEditorSaga'
 import type { SessionData } from '@entities/db/domain/types'
-import type { CardtextSessionRecord } from '@cardtext/domain/types'
+import type {
+  CardtextSessionRecord,
+  CardtextStyle,
+} from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type {
   ImageRecord,
@@ -68,6 +77,7 @@ import {
   clearText,
   restoreCardtext,
   restoreCardtextSession,
+  setAssetId,
 } from '@cardtext/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
@@ -77,7 +87,13 @@ import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { getRandomStockMeta } from './cardphotoHistorySaga'
 import { CardSection } from '@shared/config/constants'
 
+import { CardtextRecord } from '@/db/types'
+
 export function* persistGlobalSession() {
+  const cardtextId: string | null = yield select(
+    (state) => state.cardtext.assetId,
+  )
+
   const cardphoto: CardphotoSessionRecord | null = yield select(
     selectCardphotoSessionRecord,
   )
@@ -85,9 +101,11 @@ export function* persistGlobalSession() {
   const cardtext: CardtextSessionRecord | null = yield select(
     selectCardtextSessionData,
   )
+
   const envelope: EnvelopeSessionRecord | null = yield select(
     selectEnvelopeSessionRecord,
   )
+
   const aroma: AromaState = yield select(selectAromaState)
 
   const date: DateState = yield select(selectDateState)
@@ -96,6 +114,20 @@ export function* persistGlobalSession() {
     (yield select(selectActiveSection)) || 'cardphoto'
 
   const sizeCard: SizeCard = yield select(selectSizeCard)
+
+  // const newSessionData: SessionData = {
+  //   id: 'current_session',
+  //   assets: {
+  //     cardtextId,
+  //     cardphotoId,
+  //     aromaId: yield select(selectAromaId),
+  //   },
+  //   ui: {
+  //     activeSection: yield select(selectActiveSection),
+  //     sizeCard: yield select(selectSizeCard),
+  //   },
+  //   timestamp: Date.now(),
+  // }
 
   const sessionData: SessionData = {
     id: 'current_session',
@@ -342,8 +374,14 @@ export function* hydrateAppSession() {
 }
 
 export function* watchSessionChanges() {
-  yield takeLatest(SESSION_WATCH_ACTIONS, function* () {
+  yield takeLatest(SESSION_WATCH_ACTIONS, function* (action: any) {
     yield delay(900)
+
+    const textActions = [setValue.type, setTextStyle.type, setAlign.type]
+    if (textActions.includes(action.type)) {
+      yield call(syncCardtextToAssets)
+    }
+
     yield call(persistGlobalSession)
   })
 }

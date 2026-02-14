@@ -116,8 +116,6 @@ export function* syncCardphotoStatus() {
 function* handleSectionChange() {
   const isCurrentlyReady: boolean = yield select(selectIsCardReady)
 
-  console.log('HANDLE_SECTION_CHANGE isReady:', isCurrentlyReady)
-
   if (isCurrentlyReady) {
     yield put(syncProcessedRequest())
   } else {
