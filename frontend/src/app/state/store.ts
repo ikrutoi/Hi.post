@@ -14,6 +14,30 @@ export const store = configureStore({
       .concat(sagaMiddleware),
 })
 
+// export const store = configureStore({
+//   reducer: rootReducer,
+//   middleware: (getDefaultMiddleware) =>
+//     getDefaultMiddleware({
+//       thunk: false,
+//       serializableCheck: {
+//         ignoredActions: [
+//           'cardphoto/uploadUserImage',
+//           'cardphoto/setProcessedImage',
+//           'assetRegistry/setAsset',
+//           'assetRegistry/setAssets',
+//         ],
+//         ignoredActionPaths: [
+//           'payload.full.blob',
+//           'payload.thumbnail.blob',
+//           'payload.image.full.blob',
+//         ],
+//         ignoredPaths: ['cardphoto.state.base.user.image.full.blob'],
+//       },
+//     })
+//       .prepend(authListenerMiddleware.middleware)
+//       .concat(sagaMiddleware),
+// })
+
 sagaMiddleware.run(rootSaga)
 
 export type RootState = ReturnType<typeof store.getState>

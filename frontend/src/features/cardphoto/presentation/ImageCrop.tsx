@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   initCardphoto,
   uploadUserImage,
-  addOperation,
+  // addOperation,
 } from '../infrastructure/state'
 import {
   selectActiveImage,
@@ -41,7 +41,7 @@ export const ImageCrop = () => {
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
-  const { registry } = useAssetRegistryFacade()
+  const { registry, getAssetById } = useAssetRegistryFacade()
 
   console.count('ImageCrop Render')
   console.log('ImageCrop assetRegistry', registry)
@@ -66,7 +66,10 @@ export const ImageCrop = () => {
     init()
   }, [])
 
-  const src = activeImage?.url
+  if (!activeImage) return
+  const asset = getAssetById(activeImage?.id)
+
+  const src = asset?.url || null
   const alt = activeImage?.id
 
   const imageLayer = currentConfig?.image || null

@@ -34,10 +34,10 @@
     margin-bottom: 0;
   }
 
-  &:hover {
-    border-color: $color-toggle-active;
-    // transform: scale(1.05);
-  }
+  // &:hover {
+  //   border-color: $color-toggle-active;
+  //   // transform: scale(1.05);
+  // }
 
   opacity: 0;
   animation: fadeInIcon 0.4s ease-out forwards;
@@ -86,14 +86,29 @@
   transition:
     opacity 0.2s ease,
     color 0.2s ease;
+
+  svg {
+    color: $color-font-disabled;
+    transition: color 0.2s ease;
+  }
+
+  &Plus svg {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  &Delete svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
 }
 
-.previewButton svg {
-  width: 0.8rem;
-  height: 0.8rem;
-  color: $color-font-disabled;
-  transition: color 0.2s ease;
-}
+// .previewButton svg {
+//   width: 0.8rem;
+//   height: 0.8rem;
+//   color: $color-font-disabled;
+//   transition: color 0.2s ease;
+// }
 
 .previewButton:hover svg {
   color: $color-font-enabled;

@@ -15,10 +15,10 @@ export const MiniEnvelope: React.FC = () => {
 
   return (
     <div className={styles.miniEnvelope}>
-      {/* <div className={styles.miniEnvelopeLogo} /> */}
-      <div className={styles.miniEnvelopeMack}>
+      <div className={styles.miniEnvelopeLogo} />
+      {/* <div className={styles.miniEnvelopeMack}>
         <Mark />
-      </div>
+      </div> */}
       <div
         className={clsx(
           styles.miniEnvelopeAddress,

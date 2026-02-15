@@ -26,7 +26,10 @@ import {
   selectIsCropFull,
 } from '@cardphoto/infrastructure/selectors'
 import { applyBounds } from '@cardphoto/application/helpers'
-import { updateCropToolbarState } from './cardphotoHelpers'
+import {
+  prepareConfigForRedux,
+  updateCropToolbarState,
+} from './cardphotoHelpers'
 import {
   getCroppedBase64,
   transformCropForOrientation,
@@ -125,10 +128,11 @@ export function* handleCropFullAction(): SagaIterator {
   const op: CardphotoOperation = {
     type: 'operation',
     payload: {
-      config: newConfig,
+      config: prepareConfigForRedux(newConfig),
       reason: 'cropFull',
     },
   }
+
   yield put(addOperation(op))
 }
 

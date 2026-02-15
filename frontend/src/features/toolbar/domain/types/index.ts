@@ -1,5 +1,5 @@
 export * from './cardPanel.types'
-export * from './cardPanelOverlay.types'
+export * from './editorPie.types'
 export * from './cardphoto.types'
 export * from './cardtext.types'
 export * from './envelope.types'

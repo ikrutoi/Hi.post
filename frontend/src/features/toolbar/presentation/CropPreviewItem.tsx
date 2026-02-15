@@ -31,7 +31,16 @@ export const CropPreviewItem = React.memo(({ cropId }: { cropId: string }) => {
       </div>
       <div className={styles.previewButtonContainer}>
         <button
-          className={styles.previewButtonDelete}
+          className={clsx(styles.previewButton, styles.previewButtonPlus)}
+          onClick={(e) => {
+            e.stopPropagation()
+            removeCropId(cropId)
+          }}
+        >
+          {getToolbarIcon({ key: 'plusSmall' })}
+        </button>
+        <button
+          className={clsx(styles.previewButton, styles.previewButtonDelete)}
           onClick={(e) => {
             e.stopPropagation()
             removeCropId(cropId)

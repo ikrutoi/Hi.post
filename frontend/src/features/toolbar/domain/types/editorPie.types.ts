@@ -21,7 +21,7 @@ export const CARD_PANEL_OVERLAY_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'addCart', state: 'disabled' },
       { key: 'addDrafts', state: 'disabled' },
-      { key: 'delete', state: 'disabled' },
+      { key: 'delete', state: 'enabled' },
     ],
     status: 'enabled',
   },

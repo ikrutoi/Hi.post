@@ -74,6 +74,9 @@ export const CardPanel = () => {
           sizeMiniCard={sizeMiniCard}
           completedSections={completedSections}
         /> */}
+        <div className={styles.pieToolbar}>
+          <Toolbar section="cardPanelOverlay" />
+        </div>
       </div>
       <CardScroller
         value={valueScroll}

@@ -36,30 +36,30 @@ const initialState: CardphotoSliceState = {
   isComplete: false,
 }
 
-const pushOperation = (
-  state: { state: CardphotoState | null },
-  config: WorkingConfig,
-  reason: CardphotoOperation['payload']['reason'] = 'init',
-) => {
-  const s = state.state
-  if (!s) return
+// const pushOperation = (
+//   state: { state: CardphotoState | null },
+//   config: WorkingConfig,
+//   reason: CardphotoOperation['payload']['reason'] = 'init',
+// ) => {
+//   const s = state.state
+//   if (!s) return
 
-  const op: CardphotoOperation = {
-    type: 'operation',
-    payload: { config, reason },
-  }
+//   const op: CardphotoOperation = {
+//     type: 'operation',
+//     payload: { config, reason },
+//   }
 
-  s.operations = s.operations.slice(0, s.activeIndex + 1)
+//   s.operations = s.operations.slice(0, s.activeIndex + 1)
 
-  s.operations.push(op)
+//   s.operations.push(op)
 
-  if (s.operations.length > 7) {
-    s.operations = s.operations.slice(-7)
-  }
+//   if (s.operations.length > 7) {
+//     s.operations = s.operations.slice(-7)
+//   }
 
-  s.activeIndex = s.operations.length - 1
-  s.currentConfig = config
-}
+//   s.activeIndex = s.operations.length - 1
+//   s.currentConfig = config
+// }
 
 export const cardphotoSlice = createSlice({
   name: 'cardphoto',
@@ -129,12 +129,21 @@ export const cardphotoSlice = createSlice({
       console.log('>>>uploadUserImage<<<<<<< payload', action.payload)
     },
 
+    // addOperation(state, action: PayloadAction<CardphotoOperation>) {
+    //   pushOperation(
+    //     state,
+    //     action.payload.payload.config,
+    //     action.payload.payload.reason,
+    //   )
+    // },
+
     addOperation(state, action: PayloadAction<CardphotoOperation>) {
-      pushOperation(
-        state,
-        action.payload.payload.config,
-        action.payload.payload.reason,
-      )
+      if (state.state) {
+        state.state.currentConfig = action.payload.payload.config
+
+        state.state.operations = []
+        state.state.activeIndex = -1
+      }
     },
 
     undo(state) {

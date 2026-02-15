@@ -269,7 +269,7 @@ export function* rebuildConfigFromMeta(
       addOperation({
         type: 'operation',
         payload: {
-          config: newConfig,
+          config: prepareConfigForRedux(newConfig),
           reason: forceOrientation ? 'rotateCard' : 'rebuild',
         },
       }),

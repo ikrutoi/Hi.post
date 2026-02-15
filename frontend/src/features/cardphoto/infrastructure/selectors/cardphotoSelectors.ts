@@ -213,19 +213,17 @@ export const selectCardphotoSessionRecord = createSelector(
 
 export const selectCardphotoPreview = createSelector(
   [
-    (state: RootState) => state.cardphoto.state,
     (state: RootState) => state.cardphoto.state?.base.apply.image?.id,
-    (state: RootState) =>
-      state.cardphoto.state?.base.apply.image?.thumbnail?.url,
+    (state: RootState) => state.assetRegistry.images,
     selectCardphotoIsComplete,
   ],
-  (state, id, thumbUrl, isComplete) => {
-    console.log('SELECT_CARDPHOTO_PREVIEW state', state)
-    console.log('SELECT_CARDPHOTO_PREVIEW', id, '<<<>>>', thumbUrl)
+  (id, registry, isComplete) => {
+    const asset = id ? registry[id] : null
+
     return {
-      previewUrl: thumbUrl || null,
+      previewUrl: asset?.thumbUrl || asset?.url || null,
       isComplete: isComplete,
-      id: id,
+      id: id || 'empty',
     }
   },
 )

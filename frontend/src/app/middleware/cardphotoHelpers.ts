@@ -150,6 +150,7 @@ export function* fuelAssetRegistry(base: CardphotoBase, allCrops: ImageMeta[]) {
 
   const processMeta = (meta: ImageMeta | null) => {
     if (!meta) return
+    console.log('HYDRATE_BLOB_CHECK', !!meta.full?.blob)
     const url = meta.full?.blob ? URL.createObjectURL(meta.full.blob) : meta.url
     const thumbUrl = meta.thumbnail?.blob
       ? URL.createObjectURL(meta.thumbnail.blob)

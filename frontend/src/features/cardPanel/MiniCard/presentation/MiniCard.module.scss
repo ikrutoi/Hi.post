@@ -61,3 +61,41 @@
 .miniCard:hover .deleteMiniCard {
   opacity: 1;
 }
+
+.previewButton {
+  position: absolute;
+  right: 0;
+  // z-index: 10;
+  margin: 0.4rem;
+  padding: 1px;
+  background-color: $color-disabled;
+  // color: $color-font-disabled;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  cursor: pointer;
+  // border: solid 1px #ffffff;
+  pointer-events: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+}
+
+.previewButton svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  color: $color-font-disabled;
+  transition: color 0.2s ease;
+}
+
+.previewButton:hover svg {
+  color: $color-font-enabled;
+}
+
+.miniCard:hover .previewButton {
+  opacity: 1;
+}

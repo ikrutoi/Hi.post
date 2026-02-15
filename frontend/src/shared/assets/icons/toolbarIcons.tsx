@@ -140,6 +140,8 @@ import {
   IconFontSizeLess,
   IconFontSizeMore,
   IconFontSizeLessV2,
+  IconDeleteV2,
+  IconDeleteV3,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -169,7 +171,7 @@ export function getIconByKey(
     case 'delete':
       return <IconDelete />
     case 'deleteSmall':
-      return <IconDeleteSmall />
+      return <IconDeleteV3 />
     case 'download':
       return <IconDownloadV2 />
     case 'apply':
