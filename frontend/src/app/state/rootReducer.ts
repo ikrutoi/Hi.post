@@ -1,6 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit'
 
 // import { appReducer } from '@shared/infrastructure/state'
+import { assetRegistryReducer } from '@entities/assetRegistry/infrastructure/state'
 
 import { sectionEditorMenuReducer } from '@entities/sectionEditorMenu/infrastructure/state'
 
@@ -54,6 +55,8 @@ import { layoutReducer } from '@layout/infrastructure/state/layoutReducer'
 
 export const rootReducer = combineReducers({
   // app: appReducer,
+
+  assetRegistry: assetRegistryReducer,
 
   sectionEditorMenu: sectionEditorMenuReducer,
 

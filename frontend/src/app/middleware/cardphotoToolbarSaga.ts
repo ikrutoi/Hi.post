@@ -340,6 +340,9 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
     const cropId = action.payload
 
     const oldUrl: string | undefined = yield select(selectCurrentProcessedUrl)
+    const appliedUrl: string | undefined = yield select(
+      (state) => state.cardphoto.state?.base.apply.image?.url,
+    )
 
     const cropRecord: ImageMeta | null = yield call(
       [storeAdapters.cropImages, storeAdapters.cropImages.getById],
@@ -347,7 +350,7 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
     )
 
     if (cropRecord) {
-      if (oldUrl?.startsWith('blob:')) {
+      if (oldUrl?.startsWith('blob:') && oldUrl !== appliedUrl) {
         URL.revokeObjectURL(oldUrl)
       }
 
@@ -361,13 +364,46 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
       })
 
       yield put(setProcessedImage(serializable))
-
       yield call(rebuildConfigFromMeta, serializable, 'processed')
     }
   } catch (error) {
     console.error('Select crop history error:', error)
   }
 }
+
+// export function* onSelectCropFromHistorySaga1(action: PayloadAction<string>) {
+//   try {
+//     const cropId = action.payload
+
+//     const oldUrl: string | undefined = yield select(selectCurrentProcessedUrl)
+
+//     const cropRecord: ImageMeta | null = yield call(
+//       [storeAdapters.cropImages, storeAdapters.cropImages.getById],
+//       cropId,
+//     )
+
+//     if (cropRecord) {
+//       if (oldUrl?.startsWith('blob:')) {
+//         URL.revokeObjectURL(oldUrl)
+//       }
+
+//       const currentUrl = cropRecord.full?.blob
+//         ? URL.createObjectURL(cropRecord.full.blob)
+//         : cropRecord.url
+
+//       const serializable = prepareForRedux({
+//         ...cropRecord,
+//         url: currentUrl,
+//       })
+
+//       yield put(setProcessedImage(serializable))
+
+//       yield call(rebuildConfigFromMeta, serializable, 'processed')
+//     }
+//   } catch (error) {
+//     console.error('Select crop history error:', error)
+//   }
+// }
 
 export function* watchToolbarContext() {
   yield takeEvery(

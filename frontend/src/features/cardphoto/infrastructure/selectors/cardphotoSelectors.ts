@@ -213,15 +213,32 @@ export const selectCardphotoSessionRecord = createSelector(
 
 export const selectCardphotoPreview = createSelector(
   [
+    (state: RootState) => state.cardphoto.state,
     (state: RootState) => state.cardphoto.state?.base.apply.image?.id,
-    (state: RootState) => state.cardphoto.state?.base.apply.image?.url,
+    (state: RootState) =>
+      state.cardphoto.state?.base.apply.image?.thumbnail?.url,
     selectCardphotoIsComplete,
   ],
-  (id, url, isComplete) => {
+  (state, id, thumbUrl, isComplete) => {
+    console.log('SELECT_CARDPHOTO_PREVIEW state', state)
+    console.log('SELECT_CARDPHOTO_PREVIEW', id, '<<<>>>', thumbUrl)
     return {
-      previewUrl: url || null,
+      previewUrl: thumbUrl || null,
       isComplete: isComplete,
       id: id,
     }
+  },
+)
+
+export const selectCropById = createSelector(
+  [
+    (state: RootState) => state.cardphoto.state?.base.processed.image,
+    (state: RootState) => state.cardphoto.state?.base.apply.image,
+    (state: RootState, cropId: string) => cropId,
+  ],
+  (processed, applied, cropId) => {
+    if (processed?.id === cropId) return processed
+    if (applied?.id === cropId) return applied
+    return null
   },
 )

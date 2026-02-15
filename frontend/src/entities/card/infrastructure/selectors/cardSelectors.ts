@@ -4,8 +4,14 @@ import { CalendarCardItem, CardCalendarIndex } from '../../domain/types'
 import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
-import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
-import { selectIsDateComplete } from '@date/infrastructure/selectors'
+import {
+  selectCardphotoIsComplete,
+  selectCardphotoPreview,
+} from '@cardphoto/infrastructure/selectors'
+import {
+  selectIsDateComplete,
+  selectSelectedDate,
+} from '@date/infrastructure/selectors'
 import { DispatchDate } from '@entities/date'
 import { CardSection } from '@shared/config/constants'
 
@@ -25,15 +31,13 @@ export const selectPreviewCard = createSelector(
 )
 
 export const selectCardsByDateMap = createSelector(
-  [selectCalendarIndex],
-  (index: CardCalendarIndex) => {
-    // const map: Record<
-    //   string,
-    //   Record<
-    //     keyof CardCalendarIndex,
-    //     CalendarCardItem[] | CalendarCardItem | null
-    //   >
-    // > = {}
+  [
+    selectCalendarIndex,
+    // (1) Используем тот самый селектор, который мы вылизали для Пирога!
+    selectCardphotoPreview,
+    selectSelectedDate,
+  ],
+  (index, photoPreview, activeDate) => {
     const map: Record<string, CardCalendarIndex> = {}
 
     const getEntry = (date: DispatchDate) => {
@@ -51,24 +55,35 @@ export const selectCardsByDateMap = createSelector(
       return map[key]
     }
 
-    const fill = (key: keyof CardCalendarIndex) => {
+    // 1. Заполняем из базы
+    Object.keys(index).forEach((k) => {
+      const key = k as keyof CardCalendarIndex
       const data = index[key]
       if (!data) return
 
       if (Array.isArray(data)) {
         data.forEach((item) => {
           const entry = getEntry(item.date)
-          if (key !== 'processed') {
-            ;(entry[key] as CalendarCardItem[]).push(item)
-          }
+          if (key !== 'processed') (entry[key] as CalendarCardItem[]).push(item)
         })
       } else {
         const entry = getEntry(data.date)
         entry.processed = data
       }
-    }
+    })
 
-    ;(Object.keys(index) as Array<keyof CardCalendarIndex>).forEach(fill)
+    // 2. ГИДРАТАЦИЯ (Наложение живых данных из Пирога)
+    if (activeDate && photoPreview) {
+      const entry = getEntry(activeDate)
+
+      entry.processed = {
+        cardId: 'current_session',
+        date: activeDate,
+        // (2) Берем тот самый стабильный URL, который подготовил Пирог
+        previewUrl: photoPreview.previewUrl || '',
+        status: 'processed',
+      }
+    }
 
     return map
   },

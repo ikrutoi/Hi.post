@@ -14,6 +14,7 @@ export const CARD_STATUSES = [
   'delivered',
   'error',
 ] as const
+
 export type CardStatus = (typeof CARD_STATUSES)[number]
 
 export interface Card {

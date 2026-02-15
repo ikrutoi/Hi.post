@@ -15,6 +15,8 @@ export const CardPreviewItem: React.FC<PreviewItem> = ({
 }) => {
   const { openPreview } = useCardFacade()
 
+  console.log('CardPreviewItem', item, status, cardId)
+
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()

@@ -1,81 +1,41 @@
-import React, { useEffect } from 'react'
-import { useState } from 'react'
+import React from 'react'
 import clsx from 'clsx'
-import { storeAdapters } from '@db/adapters/storeAdapters'
+import { useAssetRegistryFacade } from '@entities/assetRegistry/application/facade'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import styles from './CropPreviewItem.module.scss'
 
 export const CropPreviewItem = React.memo(({ cropId }: { cropId: string }) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const { getAssetById } = useAssetRegistryFacade()
+  const asset = getAssetById(cropId)
 
   const { actions: cardphotoActions } = useCardphotoFacade()
   const { cropFromHistory, removeCropId } = cardphotoActions
 
-  useEffect(() => {
-    let currentBlobUrl: string | null = null
+  if (!asset) return <div className={styles.loader} />
 
-    const fetchCrop = async () => {
-      try {
-        const record = await storeAdapters.cropImages.getById(cropId)
-
-        if (record) {
-          const src = record.thumbnail?.blob
-            ? URL.createObjectURL(record.thumbnail.blob)
-            : record.url
-
-          if (src.startsWith('blob:')) {
-            currentBlobUrl = src
-          }
-
-          setImageUrl(src)
-        }
-      } catch (error) {
-        console.error('Failed to fetch crop from DB:', error)
-      }
-    }
-
-    fetchCrop()
-
-    return () => {
-      if (currentBlobUrl) {
-        URL.revokeObjectURL(currentBlobUrl)
-      }
-    }
-  }, [cropId])
-
-  const handleClickPreview = () => {
-    cropFromHistory(cropId)
-  }
-
-  const handleClear = () => {
-    removeCropId(cropId)
-  }
+  const imageUrl = asset.thumbUrl || asset.url
 
   return (
     <div className={styles.previewIconContainer}>
-      <div className={styles.previewIcon} onClick={handleClickPreview}>
-        {imageUrl && (
-          <img
-            src={imageUrl}
-            id={`id-${cropId}`}
-            className={styles.previewImg}
-            alt="crop preview"
-          />
-        )}
+      <div
+        className={styles.previewIcon}
+        onClick={() => cropFromHistory(cropId)}
+      >
+        <img
+          key={imageUrl}
+          src={imageUrl}
+          className={styles.previewImg}
+          alt="crop"
+        />
       </div>
       <div className={styles.previewButtonContainer}>
         <button
-          type="button"
-          className={clsx(styles.previewButton, styles.previewButtonPlus)}
-          // onClick={handleClear}
-        >
-          {getToolbarIcon({ key: 'plusSmall' })}
-        </button>
-        <button
-          type="button"
-          className={clsx(styles.previewButton, styles.previewButtonDelete)}
-          onClick={handleClear}
+          className={styles.previewButtonDelete}
+          onClick={(e) => {
+            e.stopPropagation()
+            removeCropId(cropId)
+          }}
         >
           {getToolbarIcon({ key: 'deleteSmall' })}
         </button>

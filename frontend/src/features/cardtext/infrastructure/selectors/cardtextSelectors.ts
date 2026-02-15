@@ -4,6 +4,7 @@ import type {
   CardtextStyle,
   CardtextSessionRecord,
 } from '../../domain/types'
+import { createSelector } from '@reduxjs/toolkit'
 
 export const selectCardtextState = (state: RootState) => state.cardtext
 
@@ -34,9 +35,10 @@ export const selectFontColor = (state: RootState): string =>
 export const selectCardtextSessionRecord = (state: RootState): CardtextStyle =>
   state.cardtext.style
 
-export const selectCardtextSessionData = (
-  state: RootState,
-): CardtextSessionRecord => {
-  const { assetId, value, style, plainText, cardtextLines } = state.cardtext
-  return { assetId, value, style, plainText, cardtextLines }
-}
+export const selectCardtextSessionData = createSelector(
+  [(state: RootState) => state.cardtext],
+  (cardtext): CardtextSessionRecord => {
+    const { assetId, value, style, plainText, cardtextLines } = cardtext
+    return { assetId, value, style, plainText, cardtextLines }
+  },
+)

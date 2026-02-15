@@ -68,6 +68,9 @@ import type {
 } from '@cardphoto/domain/types'
 import { prepareForRedux } from './cardphotoHelpers'
 import { persistGlobalSession } from './sessionSaga'
+import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
+import { ImageAsset } from '@/entities/assetRegistry/domain/types'
+import { selectAssetById } from '@/entities/assetRegistry/infrastructure/selectors/assetRegistrySelectors'
 
 export function* handleCropAction() {
   const toolbarState: CardphotoToolbarState = yield select(
@@ -368,6 +371,14 @@ export function* handleCropConfirm(): SagaIterator {
     const thumbUrl = URL.createObjectURL(thumb)
     const id = nanoid()
 
+    yield put(
+      setAsset({
+        id,
+        url: fullUrl,
+        thumbUrl: thumbUrl,
+      }),
+    )
+
     const finalImageMeta: ImageMeta = {
       id,
       source: 'processed',
@@ -647,6 +658,80 @@ export function* handleBackToOriginalSaga() {
 
 export function* handleApplyAction() {
   const state: CardphotoState = yield select(selectCardphotoState)
+  const currentSource = state.activeSource
+
+  if (currentSource !== 'processed' && currentSource !== 'stock') return
+
+  const currentImageMeta = state.base[currentSource].image
+
+  if (currentImageMeta) {
+    try {
+      const asset: ImageAsset | null = yield select((state) =>
+        selectAssetById(state, currentImageMeta.id),
+      )
+
+      let finalUrl = asset?.url
+      let finalThumb = asset?.thumbUrl
+
+      if (!asset) {
+        const adapter =
+          currentSource === 'stock'
+            ? storeAdapters.stockImages
+            : storeAdapters.cropImages
+
+        const fullRecord: ImageMeta | null = yield call(
+          [adapter, 'getById'],
+          currentImageMeta.id,
+        )
+
+        if (fullRecord) {
+          finalUrl = fullRecord.full?.blob
+            ? URL.createObjectURL(fullRecord.full.blob)
+            : fullRecord.url
+          finalThumb =
+            fullRecord.thumbnail?.url ||
+            (fullRecord.thumbnail?.blob
+              ? URL.createObjectURL(fullRecord.thumbnail.blob)
+              : '')
+
+          yield put(
+            setAsset({
+              id: fullRecord.id,
+              url: finalUrl,
+              thumbUrl: finalThumb,
+            }),
+          )
+        }
+      }
+
+      if (finalUrl) {
+        const appliedMeta: ImageMeta = {
+          ...currentImageMeta,
+          url: finalUrl,
+          thumbnail: {
+            ...currentImageMeta.thumbnail!,
+            url: finalThumb || '',
+          },
+          source: 'apply',
+        }
+
+        const wrapper: ImageRecord = {
+          id: 'current_apply_image',
+          image: appliedMeta,
+        }
+
+        yield call([storeAdapters.applyImage, 'put'], wrapper)
+        yield put(applyFinal(prepareForRedux(appliedMeta)))
+        yield put(setActiveSource('apply'))
+      }
+    } catch (error) {
+      console.error('Apply error:', error)
+    }
+  }
+}
+
+export function* handleApplyAction2() {
+  const state: CardphotoState = yield select(selectCardphotoState)
   if (state.activeSource !== 'processed' && state.activeSource !== 'stock')
     return
 
@@ -670,9 +755,12 @@ export function* handleApplyAction() {
           ? URL.createObjectURL(fullRecord.full.blob)
           : fullRecord.url
 
+        const thumbnail = fullRecord.thumbnail
+
         const appliedMeta: ImageMeta = {
           ...fullRecord,
           url: applyUrl,
+          thumbnail: thumbnail,
           source: 'apply',
         }
 
@@ -680,18 +768,67 @@ export function* handleApplyAction() {
           id: 'current_apply_image',
           image: appliedMeta,
         }
+
         yield call([storeAdapters.applyImage, 'put'], wrapper)
 
         yield put(applyFinal(prepareForRedux(appliedMeta)))
         yield put(setActiveSource('apply'))
 
-        console.log(
-          'Apply saved to DB as wrapper with original ID:',
-          appliedMeta.id,
-        )
+        console.log('Apply saved with thumbnail:', !!thumbnail)
       }
     } catch (error) {
       console.error('Apply error:', error)
     }
   }
 }
+
+// export function* handleApplyAction1() {
+//   const state: CardphotoState = yield select(selectCardphotoState)
+//   if (state.activeSource !== 'processed' && state.activeSource !== 'stock')
+//     return
+
+//   const currentSource = state.activeSource
+//   const currentImageMeta = state.base[currentSource].image
+
+//   if (currentImageMeta) {
+//     try {
+//       const adapter =
+//         currentSource === 'stock'
+//           ? storeAdapters.stockImages
+//           : storeAdapters.cropImages
+
+//       const fullRecord: ImageMeta | null = yield call(
+//         [adapter, 'getById'],
+//         currentImageMeta.id,
+//       )
+
+//       if (fullRecord) {
+//         const applyUrl = fullRecord.full?.blob
+//           ? URL.createObjectURL(fullRecord.full.blob)
+//           : fullRecord.url
+
+//         const appliedMeta: ImageMeta = {
+//           ...fullRecord,
+//           url: applyUrl,
+//           source: 'apply',
+//         }
+
+//         const wrapper: ImageRecord = {
+//           id: 'current_apply_image',
+//           image: appliedMeta,
+//         }
+//         yield call([storeAdapters.applyImage, 'put'], wrapper)
+
+//         yield put(applyFinal(prepareForRedux(appliedMeta)))
+//         yield put(setActiveSource('apply'))
+
+//         console.log(
+//           'Apply saved to DB as wrapper with original ID:',
+//           appliedMeta.id,
+//         )
+//       }
+//     } catch (error) {
+//       console.error('Apply error:', error)
+//     }
+//   }
+// }

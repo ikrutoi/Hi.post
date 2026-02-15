@@ -43,7 +43,11 @@ import {
   selectIsEnvelopeReady,
 } from '@envelope/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { prepareForRedux, hydrateMeta } from './cardphotoHelpers'
+import {
+  prepareForRedux,
+  hydrateMeta,
+  fuelAssetRegistry,
+} from './cardphotoHelpers'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { restoreEditorSession } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
@@ -256,6 +260,13 @@ export function* hydrateAppSession() {
         finalConfig = calculatedConfig
       }
 
+      const allCrops: ImageMeta[] = yield call([
+        storeAdapters.cropImages,
+        'getAll',
+      ])
+
+      yield call(fuelAssetRegistry, base, allCrops)
+
       yield put(
         hydrateEditor({
           base,
@@ -308,6 +319,8 @@ export function* hydrateAppSession() {
         autoSource,
         activeImage.orientation,
       )
+
+      yield call(fuelAssetRegistry, base, allCrops)
 
       yield put(
         hydrateEditor({

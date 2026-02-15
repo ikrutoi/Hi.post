@@ -51,6 +51,7 @@ export const buildMonthCells = ({
   return days.map((day) => {
     const dateKey = `${currentViewYear}-${currentViewMonth}-${day}`
     const dayData = cardsMap[dateKey]
+    console.log('dayData', dayData)
 
     const isToday =
       day === currentDate.day &&

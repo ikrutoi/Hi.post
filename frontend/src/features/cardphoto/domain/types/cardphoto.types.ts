@@ -122,6 +122,12 @@ export type CardphotoOperation = {
   }
 }
 
+type ImageAsset = {
+  id: string
+  fullUrl: string
+  thumbUrl: string
+}
+
 export interface CardphotoState {
   base: CardphotoBase
   operations: CardphotoOperation[]

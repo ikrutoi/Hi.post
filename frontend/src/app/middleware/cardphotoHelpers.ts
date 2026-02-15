@@ -15,6 +15,8 @@ import { SizeCard } from '@/features/layout/domain/types'
 import { selectSizeCard } from '@/features/layout/infrastructure/selectors'
 import { getRandomStockMeta } from './cardphotoHistorySaga'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
+import { ImageAsset } from '@/entities/assetRegistry/domain/types'
+import { setAssets } from '@/entities/assetRegistry/infrastructure/state'
 
 interface UpdateCropOptions {
   isFull?: boolean
@@ -143,56 +145,26 @@ export const hydrateMeta = (meta: ImageMeta | null): ImageMeta | null => {
   }
 }
 
-// export function* prepareCardphotoHydration(
-//   raw: {
-//     stock?: ImageMeta | null
-//     user?: ImageMeta | null
-//     processed?: ImageMeta | null
-//     apply?: ImageMeta | null
-//   },
-//   source: ImageSource,
-//   savedConfig?: WorkingConfig | null,
-//   cropIds: string[] = [],
-// ) {
-//   const sizeCard: SizeCard = yield select(selectSizeCard)
+export function* fuelAssetRegistry(base: CardphotoBase, allCrops: ImageMeta[]) {
+  const assets: ImageAsset[] = []
 
-//   const base: CardphotoBase = {
-//     stock: { image: hydrateMeta(raw.stock || null) },
-//     user: { image: hydrateMeta(raw.user || null) },
-//     processed: { image: hydrateMeta(raw.processed || null) },
-//     apply: { image: hydrateMeta(raw.apply || null) },
-//   }
+  const processMeta = (meta: ImageMeta | null) => {
+    if (!meta) return
+    const url = meta.full?.blob ? URL.createObjectURL(meta.full.blob) : meta.url
+    const thumbUrl = meta.thumbnail?.blob
+      ? URL.createObjectURL(meta.thumbnail.blob)
+      : meta.thumbnail?.url || ''
+    assets.push({ id: meta.id, url, thumbUrl })
+  }
 
-//   let activeImage = base[source]?.image || base.stock.image
+  processMeta(base.stock.image)
+  processMeta(base.user.image)
+  processMeta(base.apply.image)
+  processMeta(base.processed.image)
 
-//   if (!activeImage) {
-//     const emergencyRaw: ImageMeta = yield call(getRandomStockMeta)
-//     activeImage = hydrateMeta(emergencyRaw)
-//     if (activeImage) base.stock.image = activeImage
-//   }
+  allCrops.forEach(processMeta)
 
-//   if (!activeImage) return null
-
-//   let config: WorkingConfig
-//   if (source === 'user' && savedConfig) {
-//     config = {
-//       ...savedConfig,
-//       image: { ...savedConfig.image, meta: activeImage },
-//     }
-//   } else {
-//     config = yield call(
-//       rebuildConfigFromMeta,
-//       activeImage,
-//       source,
-//       sizeCard.orientation,
-//     )
-//   }
-
-//   return {
-//     base,
-//     config,
-//     activeSource: source,
-//     cropIds,
-//     cropCount: cropIds.length,
-//   }
-// }
+  if (assets.length > 0) {
+    yield put(setAssets(assets))
+  }
+}

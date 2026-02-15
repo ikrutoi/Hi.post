@@ -27,6 +27,7 @@ import {
 } from '../application/hooks'
 import styles from './ImageCrop.module.scss'
 import { CardphotoOperation, ImageMeta, ImageSource } from '../domain/types'
+import { useAssetRegistryFacade } from '@entities/assetRegistry/application/facade/assetRegistryFacade'
 
 export const ImageCrop = () => {
   const dispatch = useAppDispatch()
@@ -36,21 +37,14 @@ export const ImageCrop = () => {
 
   const init = () => dispatch(initCardphoto())
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
-  // const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
-
-  // const { state: cardphotoState, actions: cardphotoActions } =
-  //   useCardphotoFacade()
-  // const { activeSource, activeImage } = cardphotoState
-  // const { init, setUserImage, addOp, uploadImage } = cardphotoActions
-
-  // const reduxCrop = cardphotoState.currentConfig?.crop
 
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
+  const { registry } = useAssetRegistryFacade()
 
-  // console.log('ImageCrop activeImage', activeImage)
   console.count('ImageCrop Render')
+  console.log('ImageCrop assetRegistry', registry)
 
   const { state: toolbarState } = useToolbarFacade('cardphoto')
   const { state: iconStates } = toolbarState
@@ -60,8 +54,6 @@ export const ImageCrop = () => {
 
   const [loaded, setLoaded] = useState(false)
 
-  // const imageMeta = useCurrentImageMeta(cardphotoState.state)
-  // console.log('ImageCrop1111 imageMeta', imageMeta)
   const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeSource}`
 
   const [tempCrop, setTempCrop] = useCropState(
@@ -73,16 +65,9 @@ export const ImageCrop = () => {
     console.log('ImageCrop USE_EFFECT_init')
     init()
   }, [])
-  console.log('ImageCrop + activeImage', activeImage)
 
   const src = activeImage?.url
   const alt = activeImage?.id
-
-  // useEffect(() => {
-  //   if (reduxCrop) {
-  //     setTempCrop(reduxCrop)
-  //   }
-  // }, [reduxCrop, setTempCrop])
 
   const imageLayer = currentConfig?.image || null
 
@@ -96,20 +81,12 @@ export const ImageCrop = () => {
     }
   }, [shouldOpenFileDialog, cardphotoUiActions, trackCancel])
 
-  // useEffect(() => {
-  //   console.log('ImageCrop USE_EFFECT_src', src)
-  //   setLoaded(false)
-  // }, [src])
-
-  // console.log('ImageCrop ++ imageLayer', imageLayer)
   const handleFileChange = useImageUpload(
     setUserImage,
     cardphotoUiActions.markLoading,
   )
-  // console.log('ImageCrop +++')
 
   const shouldShowImage = !!src && activeImage
-  // console.log('ImageCrop ++++4')
 
   const imageStyle: React.CSSProperties | undefined = imageLayer
     ? {

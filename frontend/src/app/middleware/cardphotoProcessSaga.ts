@@ -71,6 +71,7 @@ import type {
   ImageRecord,
 } from '@cardphoto/domain/types'
 import type { SizeCard, LayoutOrientation } from '@layout/domain/types'
+import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 
 export function* onDownloadClick(): SagaIterator {
   yield put(
@@ -110,8 +111,15 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   try {
     const imageMeta = action.payload
     // const cardLayer: CardLayer = yield select(selectSizeCard)
+    // console.log('onUploadImage')
 
-    console.log('onUploadImage')
+    yield put(
+      setAsset({
+        id: imageMeta.id,
+        url: imageMeta.url,
+        thumbUrl: imageMeta.thumbnail?.url || imageMeta.url,
+      }),
+    )
 
     const state: CardphotoState = yield select(selectCardphotoState)
     const isComplete = !!state.base.apply.image
