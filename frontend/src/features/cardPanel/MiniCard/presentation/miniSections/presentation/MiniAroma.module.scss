@@ -1,8 +1,19 @@
+@use '@styles/config/colors' as *;
+
 .miniAroma {
   display: flex;
   height: 100%;
   align-items: center;
   justify-content: center;
+  border-radius: 1rem;
+  border: solid 1px $color-section-light;
+  box-shadow: 1px 2px 6px 3px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.miniAroma:hover {
+  border-color: $color-pie-aroma-alpha;
+  box-shadow: 0 0 10px 4px $color-pie-aroma-alpha;
 }
 
 .miniAromaImg {
