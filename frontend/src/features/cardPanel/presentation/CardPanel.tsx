@@ -75,7 +75,7 @@ export const CardPanel = () => {
           completedSections={completedSections}
         /> */}
         <div className={styles.pieToolbar}>
-          <Toolbar section="cardPanelOverlay" />
+          <Toolbar section="editorPie" />
         </div>
       </div>
       <CardScroller

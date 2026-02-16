@@ -1,40 +1,33 @@
 import { flattenIcons } from '../helpers'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
-export const CARD_PANEL_OVERLAY_KEYS = [
-  'addCart',
-  'addDrafts',
-  'delete',
-] as const
+export const EDITOR_PIE_KEYS = ['addDrafts', 'delete'] as const
 
-export type CardPanelOverlayToolbarKey =
-  (typeof CARD_PANEL_OVERLAY_KEYS)[number]
+export type EditorPieKey = (typeof EDITOR_PIE_KEYS)[number]
 
-export interface CardPanelOverlayToolbarState extends Record<string, any> {
-  [key: string]: any
-  config: ToolbarConfig
-}
-
-export const CARD_PANEL_OVERLAY_TOOLBAR: ToolbarConfig = [
+export const EDITOR_PIE_TOOLBAR: ToolbarConfig = [
   {
-    group: 'overlay',
+    group: 'main',
     icons: [
-      { key: 'addCart', state: 'disabled' },
-      { key: 'addDrafts', state: 'disabled' },
+      { key: 'addDrafts', state: 'enabled' },
       { key: 'delete', state: 'enabled' },
     ],
     status: 'enabled',
   },
 ]
 
-export const initialCardPanelOverlayToolbarState: CardPanelOverlayToolbarState =
-  {
-    ...Object.fromEntries(flattenIcons(CARD_PANEL_OVERLAY_TOOLBAR)),
-    config: [...CARD_PANEL_OVERLAY_TOOLBAR],
-  }
+export interface EditorPieToolbarState extends Record<string, any> {
+  [key: string]: any
+  config: ToolbarConfig
+}
 
-export interface CardPanelOverlaySectionConfig extends BaseSectionConfig<
-  CardPanelOverlayToolbarState,
-  CardPanelOverlayToolbarKey,
-  'cardPanelOverlay'
+export const initialEditorPieToolbarState: EditorPieToolbarState = {
+  ...Object.fromEntries(flattenIcons(EDITOR_PIE_TOOLBAR)),
+  config: [...EDITOR_PIE_TOOLBAR],
+}
+
+export interface EditorPieSectionConfig extends BaseSectionConfig<
+  EditorPieToolbarState,
+  EditorPieKey,
+  'editorPie'
 > {}

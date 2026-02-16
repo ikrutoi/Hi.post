@@ -13,8 +13,8 @@ import type {
   CardtextToolbarState,
   EnvelopeToolbarState,
   EnvelopeKey,
-  PanelKey,
-  CardPanelToolbarState,
+  EditorPieKey,
+  EditorPieToolbarState,
   CardPanelOverlayToolbarKey,
   CardPanelOverlayToolbarState,
   SectionEditorMenuToolbarState,
@@ -45,7 +45,7 @@ export const TOOLBAR_SECTIONS = [
   'cardtext',
   'sender',
   'recipient',
-  'cardPanel',
+  'editorPie',
   'cardPanelOverlay',
   'sectionEditorMenu',
 ] as const
@@ -57,7 +57,7 @@ export type ToolbarState = {
   cardtext: CardtextToolbarState & { config: ToolbarGroup[] }
   sender: EnvelopeToolbarState & { config: ToolbarGroup[] }
   recipient: EnvelopeToolbarState & { config: ToolbarGroup[] }
-  cardPanel: CardPanelToolbarState & { config: ToolbarGroup[] }
+  editorPie: EditorPieToolbarState & { config: ToolbarGroup[] }
   cardPanelOverlay: CardPanelOverlayToolbarState & { config: ToolbarGroup[] }
   sectionEditorMenu: SectionEditorMenuToolbarState & { config: ToolbarGroup[] }
 }
@@ -90,7 +90,7 @@ export type ToolbarSectionConfigMap = {
   cardtext: BaseSectionConfig<CardtextToolbarState, CardtextKey, 'cardtext'>
   sender: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'sender'>
   recipient: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'recipient'>
-  cardPanel: BaseSectionConfig<CardPanelToolbarState, PanelKey, 'cardPanel'>
+  editorPie: BaseSectionConfig<EditorPieToolbarState, EditorPieKey, 'editorPie'>
   cardPanelOverlay: BaseSectionConfig<
     CardPanelOverlayToolbarState,
     CardPanelOverlayToolbarKey,
@@ -111,8 +111,8 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
       ? EnvelopeKey
       : S extends 'recipient'
         ? EnvelopeKey
-        : S extends 'cardPanel'
-          ? PanelKey
+        : S extends 'editorPie'
+          ? EditorPieKey
           : S extends 'cardPanelOverlay'
             ? CardPanelOverlayToolbarKey
             : S extends 'sectionEditorMenu'

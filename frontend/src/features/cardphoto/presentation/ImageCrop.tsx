@@ -44,10 +44,9 @@ export const ImageCrop = () => {
   const { registry, getAssetById } = useAssetRegistryFacade()
 
   console.count('ImageCrop Render')
-  console.log('ImageCrop assetRegistry', registry)
+  // console.log('ImageCrop assetRegistry', registry)
 
-  const { state: toolbarState } = useToolbarFacade('cardphoto')
-  const { state: iconStates } = toolbarState
+  const { state: iconState } = useToolbarFacade('cardphoto')
 
   const { size } = useSizeFacade()
   const { sizeCard } = size
@@ -57,7 +56,7 @@ export const ImageCrop = () => {
   const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeSource}`
 
   const [tempCrop, setTempCrop] = useCropState(
-    iconStates.crop.state,
+    iconState.crop.state,
     currentConfig?.crop ?? null,
   )
 
@@ -148,7 +147,7 @@ export const ImageCrop = () => {
               )}
               style={imageStyle}
             />
-            {tempCrop && iconStates.crop.state === 'active' && activeImage && (
+            {tempCrop && iconState.crop.state === 'active' && activeImage && (
               <div className={styles.cropMask} style={maskStyle}>
                 <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
               </div>
@@ -157,7 +156,7 @@ export const ImageCrop = () => {
         )}
         {loaded &&
           imageLayer &&
-          iconStates.crop.state === 'active' &&
+          iconState.crop.state === 'active' &&
           tempCrop &&
           activeImage && (
             <>

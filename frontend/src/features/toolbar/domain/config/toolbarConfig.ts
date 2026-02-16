@@ -4,14 +4,15 @@ import {
   CARDTEXT_KEYS,
   CARDTEXT_TOOLBAR,
   ENVELOPE_KEYS,
-  PANEL_KEYS,
+  EDITOR_PIE_KEYS,
+  EDITOR_PIE_TOOLBAR,
   CARD_PANEL_OVERLAY_KEYS,
   SECTION_EDITOR_MENU_KEYS,
   SECTION_EDITOR_MENU_TOOLBAR,
   initialCardphotoToolbarState,
   initialSenderToolbarState,
   initialRecipientToolbarState,
-  initialCardPanelToolbarState,
+  initialEditorPieToolbarState,
   initialCardPanelOverlayToolbarState,
   initialSectionEditorMenuToolbarState,
   ENVELOPE_TOOLBAR,
@@ -44,15 +45,15 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     initialState: initialCardtextToolbarState,
     onAction: (key, section, editor, dispatch) => {
       switch (key) {
-        case 'bold':
-          cardtextToolbarController.toggleBold(editor, dispatch)
-          break
-        case 'italic':
-          cardtextToolbarController.toggleItalic(editor, dispatch)
-          break
-        case 'underline':
-          cardtextToolbarController.toggleUnderline(editor, dispatch)
-          break
+        // case 'bold':
+        //   cardtextToolbarController.toggleBold(editor, dispatch)
+        //   break
+        // case 'italic':
+        //   cardtextToolbarController.toggleItalic(editor, dispatch)
+        //   break
+        // case 'underline':
+        //   cardtextToolbarController.toggleUnderline(editor, dispatch)
+        // break
         case 'left':
         case 'center':
         case 'right':
@@ -83,12 +84,13 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['recipient']) => ({}),
     toolbar: ENVELOPE_TOOLBAR,
   },
-  cardPanel: {
-    keys: PANEL_KEYS,
-    initialState: initialCardPanelToolbarState,
-    onAction: (key, section) => console.log('CardPanel action', key, section),
-    group: 'panel',
-    getBadges: (state: ToolbarState['cardPanel']) => ({}),
+  editorPie: {
+    keys: EDITOR_PIE_KEYS,
+    initialState: initialEditorPieToolbarState,
+    onAction: (key, section) => console.log('EditorPie action', key, section),
+    group: 'main',
+    getBadges: (state: ToolbarState['editorPie']) => ({}),
+    toolbar: EDITOR_PIE_TOOLBAR,
   },
   cardPanelOverlay: {
     keys: CARD_PANEL_OVERLAY_KEYS,

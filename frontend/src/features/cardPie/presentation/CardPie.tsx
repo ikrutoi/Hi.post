@@ -337,6 +337,12 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
           />
         </g>
       </svg>
+      <div
+        className={clsx(
+          styles.sectorIndicator,
+          // activeSection === 'date' && styles.active,
+        )}
+      ></div>
     </div>
   )
 }

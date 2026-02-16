@@ -3,7 +3,7 @@ import {
   initialCardphotoToolbarState,
   initialSenderToolbarState,
   initialRecipientToolbarState,
-  initialCardPanelToolbarState,
+  initialEditorPieToolbarState,
   initialCardPanelOverlayToolbarState,
   initialSectionEditorMenuToolbarState,
   UpdateSectionPayload,
@@ -28,7 +28,7 @@ const initialState: ToolbarState = {
   cardtext: initialCardtextToolbarState,
   sender: initialSenderToolbarState,
   recipient: initialRecipientToolbarState,
-  cardPanel: initialCardPanelToolbarState,
+  editorPie: initialEditorPieToolbarState,
   cardPanelOverlay: initialCardPanelOverlayToolbarState,
   sectionEditorMenu: initialSectionEditorMenuToolbarState,
 }

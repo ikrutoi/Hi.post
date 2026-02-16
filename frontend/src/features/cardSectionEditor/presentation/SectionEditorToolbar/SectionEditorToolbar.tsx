@@ -11,15 +11,16 @@ export const SectionEditorToolbar: React.FC = () => {
   const { activeSection } = useSectionMenuFacade()
   const { sizeCard, remSize, sectionMenuHeight } = useSizeFacade()
 
-  const { state: toolbarCardphoto } = useToolbarFacade('cardphoto')
-  const { state: toolbarMenu } = useToolbarFacade('sectionEditorMenu')
+  const { state: toolbarCardphotoState } = useToolbarFacade('cardphoto')
+  const { state: toolbarEditorMenuState } =
+    useToolbarFacade('sectionEditorMenu')
 
   if (!sizeCard || !remSize) return null
 
   const showQualityIndicator =
     sectionMenuHeight &&
-    toolbarCardphoto.state.crop.state === 'active' &&
-    toolbarMenu.state.cardphoto === 'active'
+    toolbarCardphotoState.crop.state === 'active' &&
+    toolbarEditorMenuState.cardphoto === 'active'
 
   return (
     <div className={styles.sectionEditorToolbar}>

@@ -22,10 +22,7 @@ import { LayoutOrientation } from '@layout/domain/types'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({ section }: { section: ToolbarSection }) => {
-  const { state: toolbarState, actions: toolbarActions } =
-    useToolbarFacade(section)
-  // const { activeSection } = useSectionMenuFacade()
-  const { state: iconStates, groups, badges } = toolbarState
+  const { state, groups, actions: toolbarActions } = useToolbarFacade(section)
   const { onAction } = toolbarActions
 
   const { fontSizeStep } = useCardtextFacade()
@@ -54,7 +51,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     groupStatus: IconStateGroup,
     currentIconState?: IconState,
   ) => {
-    const rawData = iconStates[key] as {
+    const rawData = state[key] as {
       state: IconState
       options?: IconOptions
     }
@@ -121,7 +118,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           )}
         </div>
       ))}
-      {section === 'cardphoto' && iconStates.crop.state !== 'active' && (
+      {section === 'cardphoto' && state.crop.state !== 'active' && (
         <CropPreview />
       )}
     </div>

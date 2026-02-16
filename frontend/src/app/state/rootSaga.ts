@@ -1,6 +1,7 @@
 import { all, fork } from 'redux-saga/effects'
 import {
   cardEditorSaga,
+  editorPieProcessSaga,
   // envelopeSaga,
   envelopeToolbarSaga,
   envelopeProcessSaga,
@@ -20,8 +21,10 @@ export function* rootSaga() {
   yield all([
     fork(watchSessionChanges),
     fork(cardEditorSaga),
+    fork(editorPieProcessSaga),
 
     // fork(envelopeSaga),
+
     fork(envelopeToolbarSaga),
     fork(envelopeProcessSaga),
     fork(cardtextProcessSaga),
