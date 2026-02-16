@@ -11,6 +11,8 @@ const initialState: CardEditorState = {
   aroma: { isComplete: false },
   date: { isComplete: false },
   isCompleted: false,
+  isRainbowActive: false,
+  isRainbowStopping: false,
 }
 
 export const cardEditorSlice = createSlice({
@@ -19,7 +21,7 @@ export const cardEditorSlice = createSlice({
   reducers: {
     setSectionComplete(
       state,
-      action: PayloadAction<{ section: CardSection; isComplete: boolean }>
+      action: PayloadAction<{ section: CardSection; isComplete: boolean }>,
     ) {
       const { section, isComplete } = action.payload
       state[section].isComplete = isComplete
@@ -57,9 +59,29 @@ export const cardEditorSlice = createSlice({
 
       state.isCompleted = allComplete
     },
+
+    startRainbow(state) {
+      state.isRainbowActive = true
+      state.isRainbowStopping = false
+    },
+
+    requestRainbowStop(state) {
+      state.isRainbowStopping = true
+    },
+
+    clearRainbow(state) {
+      state.isRainbowActive = false
+      state.isRainbowStopping = false
+    },
   },
 })
 
-export const { setSectionComplete, resetEditor, clearSection } =
-  cardEditorSlice.actions
+export const {
+  setSectionComplete,
+  resetEditor,
+  clearSection,
+  startRainbow,
+  requestRainbowStop,
+  clearRainbow,
+} = cardEditorSlice.actions
 export default cardEditorSlice.reducer

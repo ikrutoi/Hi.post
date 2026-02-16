@@ -31,12 +31,7 @@ export const selectPreviewCard = createSelector(
 )
 
 export const selectCardsByDateMap = createSelector(
-  [
-    selectCalendarIndex,
-    // (1) Используем тот самый селектор, который мы вылизали для Пирога!
-    selectCardphotoPreview,
-    selectSelectedDate,
-  ],
+  [selectCalendarIndex, selectCardphotoPreview, selectSelectedDate],
   (index, photoPreview, activeDate) => {
     const map: Record<string, CardCalendarIndex> = {}
 
@@ -55,7 +50,6 @@ export const selectCardsByDateMap = createSelector(
       return map[key]
     }
 
-    // 1. Заполняем из базы
     Object.keys(index).forEach((k) => {
       const key = k as keyof CardCalendarIndex
       const data = index[key]
@@ -72,14 +66,12 @@ export const selectCardsByDateMap = createSelector(
       }
     })
 
-    // 2. ГИДРАТАЦИЯ (Наложение живых данных из Пирога)
     if (activeDate && photoPreview) {
       const entry = getEntry(activeDate)
 
       entry.processed = {
         cardId: 'current_session',
         date: activeDate,
-        // (2) Берем тот самый стабильный URL, который подготовил Пирог
         previewUrl: photoPreview.previewUrl || '',
         status: 'processed',
       }

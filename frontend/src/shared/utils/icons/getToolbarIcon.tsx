@@ -8,6 +8,42 @@ import type { LayoutOrientation } from '@layout/domain/types'
 
 export const getToolbarIcon = ({
   key,
+  className,
+  color,
+  style = {},
+  orientation,
+  step,
+}: {
+  key: IconKey
+  className?: string
+  color?: string
+  style?: React.CSSProperties
+  orientation?: LayoutOrientation
+  step?: number
+}): JSX.Element => {
+  const iconProps = {
+    className,
+    style: { ...(color && { color }), ...style },
+  }
+
+  if (key === 'cardOrientation') {
+    return (
+      <IconCardDynamic
+        orientation={orientation ?? 'landscape'}
+        {...iconProps}
+      />
+    )
+  }
+
+  if (key === 'fontSizeIndicator') {
+    return <FontSizeIndicator currentStep={step ?? 3} {...iconProps} />
+  }
+
+  return <>{getIconByKey(key)}</>
+}
+
+export const getToolbarIcon1 = ({
+  key,
   className = 'toolbarIcon',
   color,
   style = {},

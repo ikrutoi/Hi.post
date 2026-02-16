@@ -6,4 +6,6 @@ export type CardEditorState = {
   aroma: { isComplete: boolean }
   date: { isComplete: boolean }
   isCompleted: boolean
+  isRainbowActive: boolean
+  isRainbowStopping: boolean
 }

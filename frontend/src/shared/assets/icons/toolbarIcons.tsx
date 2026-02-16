@@ -12,6 +12,7 @@ import {
   MdOutlineDeleteForever,
   MdOutlineShoppingCart,
   MdAddShoppingCart,
+  MdOutlineAddShoppingCart,
   MdOutlineDrafts,
   MdFormatBold,
   MdFormatItalic,
@@ -58,6 +59,7 @@ import {
   FaRegAddressCard,
   FaEnvelopeOpen,
   FaEnvelope,
+  FaRegStar,
   FaEnvelopeOpenText,
 } from 'react-icons/fa'
 import { FaRegImage } from 'react-icons/fa6'
@@ -142,6 +144,7 @@ import {
   IconFontSizeLessV2,
   IconDeleteV2,
   IconDeleteV3,
+  IconStar,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -255,11 +258,11 @@ export function getIconByKey(
     case 'cart':
       return <FaEnvelope />
     case 'addCart':
-      return <IconCardPlus />
+      return <MdOutlineAddShoppingCart />
     case 'drafts':
       return <FaEnvelopeOpen />
     case 'addDrafts':
-      return <IconSave />
+      return <IconStar />
     case 'cards':
       return <PiCardsBold />
     case 'cardUser':

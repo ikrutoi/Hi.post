@@ -17,16 +17,11 @@ export const selectSectionComplete = (
 ): boolean => state.cardEditor[section].isComplete
 
 import { createSelector } from '@reduxjs/toolkit'
-import { CardStatus } from '@entities/card/domain/types'
-import { selectDateState } from '@features/date/infrastructure/selectors'
-import { selectAromaState } from '@features/aroma/infrastructure/selectors'
-import { selectCardphotoSessionRecord } from '@features/cardphoto/infrastructure/selectors'
-import { selectCardtextSessionData } from '@features/cardtext/infrastructure/selectors'
 
-export const selectPieHubStatus = createSelector(
+export const selectPieProgress = createSelector(
   [selectCardEditorState],
   (editor) => {
-    const completedSections = [
+    const completedCount = [
       editor.cardphoto.isComplete,
       editor.cardtext.isComplete,
       editor.envelope.isComplete,
@@ -35,50 +30,66 @@ export const selectPieHubStatus = createSelector(
     ].filter(Boolean).length
 
     return {
+      sections: {
+        cardphoto: editor.cardphoto.isComplete,
+        cardtext: editor.cardtext.isComplete,
+        envelope: editor.envelope.isComplete,
+        aroma: editor.aroma.isComplete,
+        date: editor.date.isComplete,
+      },
       isAllComplete: editor.isCompleted,
-      isReadyForTemplate:
-        editor.cardphoto.isComplete &&
-        editor.cardtext.isComplete &&
-        editor.envelope.isComplete &&
-        editor.aroma.isComplete,
-      progress: completedSections,
+      isRainbowActive: editor.isRainbowActive,
+      isRainbowStopping: editor.isRainbowStopping,
+      progress: completedCount,
     }
   },
 )
 
-export const selectActiveCardFullData = createSelector(
-  [
-    selectCardEditorState,
-    selectCardtextSessionData,
-    selectCardphotoSessionRecord,
-    selectAromaState,
-    selectDateState,
-  ],
-  (editor, text, photo, aroma, date) => ({
-    ...editor,
-    data: {
-      cardtext: text,
-      cardphoto: photo,
-      aroma,
-      date,
-    },
-  }),
-)
+// export const selectPieUIIcons = createSelector(
+//   [selectCardEditorState],
+//   (editor) => ({
+//     isRainbowActive: editor.isRainbowActive,
+//     isRainbowStopping: editor.isRainbowStopping,
+//     sections: {
+//       cardphoto: editor.cardphoto.isComplete,
+//       cardtext: editor.cardtext.isComplete,
+//       envelope: editor.envelope.isComplete,
+//       aroma: editor.aroma.isComplete,
+//       date: editor.date.isComplete,
+//     },
+//   }),
+// )
 
-export const selectPieDataByContext = createSelector(
-  [
-    (state: RootState) => state,
-    (_state, status: CardStatus) => status,
-    (_state, _status, id?: string) => id,
-  ],
-  (state, status, id) => {
-    if (status === 'processed') {
-      return selectActiveCardFullData(state)
-    }
+// export const selectActiveCardFullData = createSelector(
+//   [
+//     selectCardEditorState,
+//     selectCardtextSessionData,
+//     selectCardphotoSessionRecord,
+//     selectAromaState,
+//     selectDateState,
+//   ],
+//   (editor, text, photo, aroma, date) => ({
+//     ...editor,
+//     data: {
+//       cardtext: text,
+//       cardphoto: photo,
+//       aroma,
+//       date,
+//     },
+//   }),
+// )
 
-    // Когда появится Корзина (Cart), тут будет поиск по ID в таблице Cart
-    // if (status === 'cart' && id) { ... }
+// export const selectPieDataByContext = createSelector(
+//   [
+//     (state: RootState) => state,
+//     (_state, status: CardStatus) => status,
+//     (_state, _status, id?: string) => id,
+//   ],
+//   (state, status, id) => {
+//     if (status === 'processed') {
+//       return selectActiveCardFullData(state)
+//     }
 
-    return null
-  },
-)
+//     return null
+//   },
+// )

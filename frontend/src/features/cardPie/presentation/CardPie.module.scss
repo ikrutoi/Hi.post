@@ -15,36 +15,76 @@
   box-shadow: 1px 1px 5px 3px rgba(34, 60, 80, 0.2);
 }
 
-.rectCardphoto {
-  fill: var(--pie-cardphoto);
-}
-.rectCardtext {
-  fill: var(--pie-cardtext);
-}
-.rectEnvelope {
-  fill: var(--pie-envelope);
-}
-.rectAroma {
-  fill: var(--pie-aroma);
-}
-.rectDate {
-  fill: var(--pie-date);
+.rect {
+  fill: white;
 }
 
-// .rectAroma,
-// .rectDate,
-// .rectCardtext,
-// .rectEnvelope,
-// .rectCardphoto {
-//   stroke: var(--inner-stroke);
-//   stroke-width: 40;
-//   transition: stroke 0.2s ease;
-// }
+.bgInactive {
+  fill: $color-inactive-light;
+  transition: fill 0.3s ease;
+}
 
-// .pieBgRect {
-//   opacity: 0.4;
-//   transition: opacity 0.2s ease;
-// }
+.bgCardphoto {
+  fill: url('#grad-cardphoto');
+}
+.bgCardtext {
+  fill: url('#grad-cardtext');
+}
+.bgEnvelope {
+  fill: url('#grad-envelope');
+}
+.bgAroma {
+  fill: url('#grad-aroma');
+}
+.bgDate {
+  fill: url('#grad-date');
+}
+
+.rainbowRotationWrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conicGradient {
+  flex-shrink: 0;
+  width: 150%;
+  height: 150%;
+  background: conic-gradient(
+    from 0deg,
+    #ba6c9e,
+    #9b72cb,
+    #6f7ccf,
+    #4285f4,
+    #479a9a,
+    #4caf50,
+    #a0af49,
+    #f4af42,
+    #e78a59,
+    #d96570,
+    #ba6c9e
+  );
+
+  &.rotating {
+    animation: spin-only 3s linear infinite;
+  }
+
+  &.stopping {
+    animation: spin-only 3s linear 1 forwards;
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes spin-only {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .svg {
   width: 100%;
@@ -74,16 +114,4 @@
     transform: scale(1.02);
     transform-origin: center;
   }
-}
-
-.sectorIndicator {
-  position: absolute;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.75rem;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: $color-enabled;
-  border: solid 3px $color-inactive-light;
 }

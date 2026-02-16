@@ -1,0 +1,37 @@
+@use '@styles/config/colors' as *;
+
+.pieStatus {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.75rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  border: solid 2px $color-section-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  // z-index: 10;
+  pointer-events: auto;
+}
+
+.pieStatusIcon {
+  color: $color-font-disabled;
+  transition: all 0.3s ease;
+
+  svg {
+    fill: currentColor;
+  }
+
+  &.completed {
+    color: $color-font-enabled;
+    stroke: $color-section-dark;
+  }
+}
+
+.pieStatus:hover .pieStatusIcon {
+  transform: scale(1.1);
+}
