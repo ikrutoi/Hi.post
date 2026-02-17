@@ -77,7 +77,6 @@ export const cardEditorSlice = createSlice({
 
     setHoveredSection(state, action: PayloadAction<CardSection | null>) {
       state.hoveredSection = action.payload
-      console.log('setHoverSection>>> section', action.payload)
     },
   },
 })

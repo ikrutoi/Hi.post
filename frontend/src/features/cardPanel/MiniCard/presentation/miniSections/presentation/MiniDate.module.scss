@@ -1,6 +1,8 @@
 @use '@styles/config/colors' as *;
+@use '@shared/assets/styles/mixins' as *;
 
 .miniDate {
+  position: relative;
   user-select: none;
   color: $color-font-active;
   font-weight: 600;
@@ -33,4 +35,8 @@
 .miniDate.hovered {
   border-color: $color-pie-date-alpha;
   box-shadow: 0 0 10px 4px $color-pie-date-alpha;
+}
+
+.previewButton {
+  @include preview-button-logic('.miniDate');
 }

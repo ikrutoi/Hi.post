@@ -4,6 +4,7 @@ import { AROMA_IMAGES } from '@entities/aroma/domain/types'
 import styles from './MiniAroma.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import clsx from 'clsx'
+import { getToolbarIcon } from '@shared/utils/icons'
 
 interface MiniAromaProps {}
 
@@ -28,6 +29,16 @@ export const MiniAroma: React.FC<MiniAromaProps> = () => {
         onMouseEnter={() => setHovered('aroma')}
         onMouseLeave={() => setHovered(null)}
       />
+      <button
+        className={clsx(styles.previewButton, styles.previewButtonDelete)}
+        aria-label="Delete section content"
+        onClick={(e) => {
+          e.stopPropagation()
+          // removeCropId(cropId)
+        }}
+      >
+        {getToolbarIcon({ key: 'deleteSmall' })}
+      </button>
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { useSenderFacade } from '@envelope/sender/application/facades'
 import { useRecipientFacade } from '@envelope/recipient/application/facades'
 import styles from './MiniEnvelope.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
+import { getToolbarIcon } from '@/shared/utils/icons'
 
 export const MiniEnvelope: React.FC = () => {
   const { state: stateSender } = useSenderFacade()
@@ -42,6 +43,16 @@ export const MiniEnvelope: React.FC = () => {
           value={addressRecipient}
         />
       </div>
+      <button
+        className={clsx(styles.previewButton, styles.previewButtonDelete)}
+        aria-label="Delete section content"
+        onClick={(e) => {
+          e.stopPropagation()
+          // removeCropId(cropId)
+        }}
+      >
+        {getToolbarIcon({ key: 'deleteSmall' })}
+      </button>
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { renderElement } from '@cardtext/presentation/renderElement'
 import styles from './MiniCardtext.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import clsx from 'clsx'
+import { getToolbarIcon } from '@shared/utils/icons'
 
 export const MiniCardtext: React.FC = () => {
   const { editor, value, style } = useMiniCardtext()
@@ -31,6 +32,16 @@ export const MiniCardtext: React.FC = () => {
           onMouseLeave={() => setHovered(null)}
         />
       </Slate>
+      <button
+        className={clsx(styles.previewButton, styles.previewButtonDelete)}
+        aria-label="Delete section content"
+        onClick={(e) => {
+          e.stopPropagation()
+          // removeCropId(cropId)
+        }}
+      >
+        {getToolbarIcon({ key: 'deleteSmall' })}
+      </button>
     </div>
   )
 }

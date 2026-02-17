@@ -55,7 +55,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         section,
       })}
 
-      <button
+      {/* <button
         className={clsx(styles.previewButton, styles.previewButtonDelete)}
         onClick={(e) => {
           e.stopPropagation()
@@ -63,7 +63,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         }}
       >
         {getToolbarIcon({ key: 'deleteSmall' })}
-      </button>
+      </button> */}
     </div>
   )
 }

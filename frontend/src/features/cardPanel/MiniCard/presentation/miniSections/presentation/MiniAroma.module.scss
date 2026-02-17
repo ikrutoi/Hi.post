@@ -1,6 +1,8 @@
 @use '@styles/config/colors' as *;
+@use '@shared/assets/styles/mixins' as *;
 
 .miniAroma {
+  position: relative;
   display: flex;
   height: 100%;
   align-items: center;
@@ -21,4 +23,8 @@
   border-radius: 0.5rem;
   object-fit: contain;
   height: 85%;
+}
+
+.previewButton {
+  @include preview-button-logic('.miniAroma');
 }

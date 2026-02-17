@@ -4,6 +4,7 @@ import listOfMonthOfYear from '@/data/date/monthOfYear.json'
 import styles from './MiniDate.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import clsx from 'clsx'
+import { getToolbarIcon } from '@/shared/utils/icons'
 
 interface MiniDateProps {}
 
@@ -30,6 +31,16 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
       <span className={styles.miniDateMonth}>
         {listOfMonthOfYear[selectedDate.month]}
       </span>
+      <button
+        className={clsx(styles.previewButton, styles.previewButtonDelete)}
+        aria-label="Delete section content"
+        onClick={(e) => {
+          e.stopPropagation()
+          // removeCropId(cropId)
+        }}
+      >
+        {getToolbarIcon({ key: 'deleteSmall' })}
+      </button>
     </div>
   )
 }

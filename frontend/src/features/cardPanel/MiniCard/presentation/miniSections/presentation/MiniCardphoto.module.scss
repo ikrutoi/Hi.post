@@ -1,8 +1,8 @@
 @use '@styles/config/colors' as *;
+@use '@shared/assets/styles/mixins' as *;
 
 .miniCardphoto {
   border-radius: 1rem;
-  opacity: 0;
   object-fit: cover;
   overflow: hidden;
   transition: opacity 150ms ease-in-out;
@@ -18,6 +18,7 @@
   box-shadow: 0 0 10px 4px $color-pie-cardphoto-alpha;
 }
 
-.miniCardphoto.visible {
-  opacity: 1;
+.previewButton {
+  @include preview-button-logic('.miniCardphoto');
+  // border: solid 1px blue;
 }
