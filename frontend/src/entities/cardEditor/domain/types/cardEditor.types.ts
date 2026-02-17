@@ -1,3 +1,5 @@
+import { CardSection } from '@shared/config/constants'
+
 export type CardEditorState = {
   id: string
   cardphoto: { isComplete: boolean }
@@ -8,4 +10,5 @@ export type CardEditorState = {
   isCompleted: boolean
   isRainbowActive: boolean
   isRainbowStopping: boolean
+  hoveredSection: CardSection | null
 }

@@ -12,7 +12,8 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.miniCardphoto:hover {
+.miniCardphoto:hover,
+.miniCardphoto.hovered {
   border-color: $color-pie-cardphoto-alpha;
   box-shadow: 0 0 10px 4px $color-pie-cardphoto-alpha;
 }

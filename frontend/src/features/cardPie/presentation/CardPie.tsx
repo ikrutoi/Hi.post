@@ -10,6 +10,8 @@ import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
 import { useSectionMenuFacade } from '@/entities/sectionEditorMenu/application/facades'
 import { CardPieStatus } from './CardPieStatus'
+import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
+import { CardSection } from '@shared/config/constants'
 
 export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
   const {
@@ -23,14 +25,15 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
   // const { data, isReady } = useCardPieFacade(status, id)
   const { activeSection, previewCard, openSection } = useCardFacade()
   const { sizeMiniCard } = useSizeFacade()
+  const { setHovered, hoveredSection, isSectionHovered } = useCardEditorFacade()
+  const handleMouseEnter = (e: React.MouseEvent<SVGPathElement>) => {
+    const sectionId = e.currentTarget.id as CardSection
+    setHovered(sectionId)
+  }
+
+  const handleMouseLeave = () => setHovered(null)
 
   const cardData = data?.data
-
-  console.log(
-    'CardPie isRainbowActive, isRainbowStopping',
-    isRainbowActive,
-    isRainbowStopping,
-  )
 
   const valueCardtext = cardData?.cardtext?.value || []
   const previewLines = valueCardtext
@@ -400,7 +403,10 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
               styles.sector,
               styles.sectorCardphoto,
               activeSection === 'cardphoto' && styles.active,
+              isSectionHovered('cardphoto') && styles.hovered,
             )}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             onClick={() => openSection('cardphoto')}
           />
 
@@ -412,7 +418,10 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
               styles.sector,
               styles.sectorCardtext,
               activeSection === 'cardtext' && styles.active,
+              isSectionHovered('cardtext') && styles.hovered,
             )}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             onClick={() => openSection('cardtext')}
           />
 
@@ -424,7 +433,10 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
               styles.sector,
               styles.sectorEnvelope,
               activeSection === 'envelope' && styles.active,
+              isSectionHovered('envelope') && styles.hovered,
             )}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             onClick={() => openSection('envelope')}
           />
 
@@ -436,7 +448,10 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
               styles.sector,
               styles.sectorAroma,
               activeSection === 'aroma' && styles.active,
+              isSectionHovered('aroma') && styles.hovered,
             )}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             onClick={() => openSection('aroma')}
           />
 
@@ -448,7 +463,10 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
               styles.sector,
               styles.sectorDate,
               activeSection === 'date' && styles.active,
+              isSectionHovered('date') && styles.hovered,
             )}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             onClick={() => openSection('date')}
           />
         </g>

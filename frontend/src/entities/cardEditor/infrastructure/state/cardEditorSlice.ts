@@ -13,6 +13,7 @@ const initialState: CardEditorState = {
   isCompleted: false,
   isRainbowActive: false,
   isRainbowStopping: false,
+  hoveredSection: null,
 }
 
 export const cardEditorSlice = createSlice({
@@ -73,6 +74,11 @@ export const cardEditorSlice = createSlice({
       state.isRainbowActive = false
       state.isRainbowStopping = false
     },
+
+    setHoveredSection(state, action: PayloadAction<CardSection | null>) {
+      state.hoveredSection = action.payload
+      console.log('setHoverSection>>> section', action.payload)
+    },
   },
 })
 
@@ -83,5 +89,6 @@ export const {
   startRainbow,
   requestRainbowStop,
   clearRainbow,
+  setHoveredSection,
 } = cardEditorSlice.actions
 export default cardEditorSlice.reducer

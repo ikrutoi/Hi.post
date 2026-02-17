@@ -13,7 +13,8 @@
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.miniEnvelope:hover {
+.miniEnvelope:hover,
+.miniEnvelope.hovered {
   border-color: $color-pie-envelope-alpha;
   box-shadow: 0 0 10px 4px $color-pie-envelope-alpha;
 }

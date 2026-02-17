@@ -45,6 +45,14 @@ export const selectPieProgress = createSelector(
   },
 )
 
+export const selectHoveredSection = (state: RootState) =>
+  state.cardEditor.hoveredSection
+
+export const selectIsSectionHovered = createSelector(
+  [selectHoveredSection, (_state: RootState, section: CardSection) => section],
+  (hoveredSection, section) => hoveredSection === section,
+)
+
 // export const selectPieUIIcons = createSelector(
 //   [selectCardEditorState],
 //   (editor) => ({

@@ -13,7 +13,8 @@
   // border: solid 1px red;
 }
 
-.miniCardtext:hover {
+.miniCardtext:hover,
+.miniCardtext.hovered {
   border-color: $color-pie-cardtext-alpha;
   box-shadow: 0 0 10px 4px $color-pie-cardtext-alpha;
 }

@@ -4,12 +4,22 @@ import { useMiniCardtext } from '../application/hooks'
 import { renderLeaf } from '@cardtext/presentation/renderLeaf'
 import { renderElement } from '@cardtext/presentation/renderElement'
 import styles from './MiniCardtext.module.scss'
+import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
+import clsx from 'clsx'
 
 export const MiniCardtext: React.FC = () => {
   const { editor, value, style } = useMiniCardtext()
+  const { setHovered, isSectionHovered } = useCardEditorFacade()
+  const isHovered = isSectionHovered('cardtext')
 
   return (
-    <div className={styles.miniCardtext}>
+    <div
+      className={clsx(
+        styles.miniCardtext,
+        styles.visible,
+        isHovered && styles.hovered,
+      )}
+    >
       <Slate key={JSON.stringify(value)} editor={editor} initialValue={value}>
         <Editable
           readOnly
@@ -17,6 +27,8 @@ export const MiniCardtext: React.FC = () => {
           style={style}
           renderLeaf={renderLeaf}
           renderElement={renderElement}
+          onMouseEnter={() => setHovered('cardtext')}
+          onMouseLeave={() => setHovered(null)}
         />
       </Slate>
     </div>

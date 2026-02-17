@@ -29,7 +29,8 @@
   }
 }
 
-.miniDate:hover {
+.miniDate:hover,
+.miniDate.hovered {
   border-color: $color-pie-date-alpha;
   box-shadow: 0 0 10px 4px $color-pie-date-alpha;
 }

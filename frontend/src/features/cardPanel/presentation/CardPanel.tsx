@@ -26,8 +26,7 @@ export const CardPanel = () => {
   const [valueScroll, setValueScroll] = useState(0)
   const [scrollIndex, setScrollIndex] = useState<ScrollIndex | null>(null)
 
-  const { state: stateCardEditor } = useCardEditorFacade()
-  const { editorState } = stateCardEditor
+  const { editorState } = useCardEditorFacade()
 
   const { state: stateCardPanel } = useCardPanelFacade()
   const { isPacked } = stateCardPanel
