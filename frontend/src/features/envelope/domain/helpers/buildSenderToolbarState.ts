@@ -2,13 +2,13 @@ import { ENVELOPE_KEYS, type EnvelopeToolbarState } from '@toolbar/domain/types'
 
 export const buildSenderToolbarState = (
   isComplete: boolean,
-  hasData: boolean
+  hasData: boolean,
 ): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
   for (const key of ENVELOPE_KEYS) {
     switch (key) {
-      case 'save':
+      case 'favorite':
         state.save = isComplete ? 'enabled' : 'disabled'
         break
       case 'close':

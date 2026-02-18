@@ -13,8 +13,11 @@ export const aromaSlice = createSlice({
     setAroma(state, action: PayloadAction<AromaItem>) {
       state.selectedAroma = action.payload
       state.isComplete = true
+      console.log('>>Aroma set', action.payload)
     },
+
     clear(state) {
+      console.log('>>Aroma clear')
       state.selectedAroma = null
       state.isComplete = false
     },

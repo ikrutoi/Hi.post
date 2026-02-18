@@ -1,33 +1,33 @@
-import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { setAroma, clear } from '../../infrastructure/state'
-import {
-  selectSelectedAroma,
-  selectIsAromaComplete,
-} from '../../infrastructure/selectors'
-import type { AromaItem } from '@entities/aroma/domain/types'
+// import { useAppDispatch, useAppSelector } from '@app/hooks'
+// import { setAroma, clear } from '../../infrastructure/state'
+// import {
+//   selectSelectedAroma,
+//   selectIsAromaComplete,
+// } from '../../infrastructure/selectors'
+// import type { AromaItem } from '@entities/aroma/domain/types'
 
-export const useAromaController = () => {
-  const dispatch = useAppDispatch()
+// export const useAromaController = () => {
+//   const dispatch = useAppDispatch()
 
-  const selectedAroma = useAppSelector(selectSelectedAroma)
-  const isAromaComplete = useAppSelector(selectIsAromaComplete)
+//   const selectedAroma = useAppSelector(selectSelectedAroma)
+//   const isAromaComplete = useAppSelector(selectIsAromaComplete)
 
-  const chooseAroma = (aroma: AromaItem) => {
-    dispatch(setAroma(aroma))
-  }
+//   const chooseAroma = (aroma: AromaItem) => {
+//     dispatch(setAroma(aroma))
+//   }
 
-  const clearAroma = () => {
-    dispatch(clear())
-  }
+//   const clearAroma = () => {
+//     dispatch(clear())
+//   }
 
-  return {
-    state: {
-      selectedAroma,
-      isAromaComplete,
-    },
-    actions: {
-      chooseAroma,
-      clearAroma,
-    },
-  }
-}
+//   return {
+//     state: {
+//       selectedAroma,
+//       isAromaComplete,
+//     },
+//     actions: {
+//       chooseAroma,
+//       clearAroma,
+//     },
+//   }
+// }

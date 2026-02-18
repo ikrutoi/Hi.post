@@ -4,7 +4,7 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const ENVELOPE_KEYS = [
   'close',
-  'save',
+  'favorite',
   'addressTemplates',
 ] as const satisfies readonly IconKey[]
 
@@ -20,7 +20,7 @@ export const ENVELOPE_TOOLBAR: ToolbarConfig = [
     group: 'address',
     icons: [
       { key: 'close', state: 'disabled' },
-      { key: 'save', state: 'disabled' },
+      { key: 'favorite', state: 'disabled' },
       { key: 'addressTemplates', state: 'disabled' },
     ],
     status: 'enabled',

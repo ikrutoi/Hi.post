@@ -8,9 +8,7 @@ import styles from './Aroma.module.scss'
 import type { AromaItem } from '@entities/aroma/domain/types'
 
 export const Aroma: React.FC = () => {
-  const { state: stateAroma, actions: actionsAroma } = useAromaFacade()
-  const { selectedAroma } = stateAroma
-  const { chooseAroma } = actionsAroma
+  const { selectedAroma, chooseAroma } = useAromaFacade()
 
   const { handleSubmit } = useAromaForm()
 

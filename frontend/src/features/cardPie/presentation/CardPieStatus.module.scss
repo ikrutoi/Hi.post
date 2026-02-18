@@ -13,7 +13,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   // z-index: 10;
   pointer-events: auto;
 }
@@ -27,6 +26,7 @@
   }
 
   &.completed {
+    cursor: pointer;
     color: $color-font-enabled;
     stroke: $color-section-dark;
   }

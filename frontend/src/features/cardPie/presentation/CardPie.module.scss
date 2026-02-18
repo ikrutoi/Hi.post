@@ -22,7 +22,7 @@
 }
 
 .bgInactive {
-  fill: $color-inactive-light;
+  fill: $color-section-light;
   transition: fill 0.3s ease;
 }
 
@@ -40,6 +40,27 @@
 }
 .bgDate {
   fill: url('#grad-date');
+}
+
+.buttonStatus {
+  stroke: $color-font-disabled;
+  stroke-width: 60;
+  // fill: $color-disabled;
+  // fill: url('#grad-date');
+}
+
+.buttonStatusIcon {
+  fill: #4caf50;
+  stroke: #4285f4;
+}
+
+#buttonStatusIcon {
+  fill: red;
+  stroke: #4285f4;
+}
+
+.buttonStatusBkg {
+  fill: $color-disabled;
 }
 
 .rainbowRotationWrapper {

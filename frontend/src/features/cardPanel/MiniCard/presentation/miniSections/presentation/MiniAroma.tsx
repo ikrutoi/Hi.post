@@ -9,8 +9,7 @@ import { getToolbarIcon } from '@shared/utils/icons'
 interface MiniAromaProps {}
 
 export const MiniAroma: React.FC<MiniAromaProps> = () => {
-  const { state: stateAroma } = useAromaFacade()
-  const { selectedAroma } = stateAroma
+  const { selectedAroma, clearAroma } = useAromaFacade()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('aroma')
 
@@ -34,6 +33,7 @@ export const MiniAroma: React.FC<MiniAromaProps> = () => {
         aria-label="Delete section content"
         onClick={(e) => {
           e.stopPropagation()
+          clearAroma()
           // removeCropId(cropId)
         }}
       >

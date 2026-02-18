@@ -22,7 +22,7 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
-  if (key === 'save') {
+  if (key === 'favorite') {
     const sender: SenderState = yield select(selectSenderState)
     const recipient: RecipientState = yield select(selectRecipientState)
 

@@ -52,7 +52,7 @@ import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { restoreEditorSession } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectAromaState } from '@aroma/infrastructure/selectors'
-import { setAroma } from '@aroma/infrastructure/state'
+import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import { selectDateState } from '@date/infrastructure/selectors'
 import { setDate } from '@date/infrastructure/state'
 import {
@@ -165,6 +165,7 @@ const SESSION_WATCH_ACTIONS = [
   applyFinal.type,
   hydrateEditor.type,
   setAroma.type,
+  clearAroma.type,
   setDate.type,
   setValue.type,
   setTextStyle.type,

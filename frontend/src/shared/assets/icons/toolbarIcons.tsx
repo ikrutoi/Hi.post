@@ -287,5 +287,7 @@ export function getIconByKey(
       return <IconSectionMenuDate />
     case 'date':
       return <IconSectionMenuDate />
+    case 'favorite':
+      return <IconStar />
   }
 }

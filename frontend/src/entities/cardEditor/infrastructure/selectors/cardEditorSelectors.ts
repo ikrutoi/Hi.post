@@ -28,7 +28,7 @@ export const selectPieProgress = createSelector(
       editor.aroma.isComplete,
       editor.date.isComplete,
     ].filter(Boolean).length
-
+    console.log('selectPieProgress editor', editor)
     return {
       sections: {
         cardphoto: editor.cardphoto.isComplete,

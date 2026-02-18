@@ -28,6 +28,8 @@ export const CardPanel = () => {
 
   const { editorState } = useCardEditorFacade()
 
+  console.log('CARD_PANEL editor', editorState)
+
   const { state: stateCardPanel } = useCardPanelFacade()
   const { isPacked } = stateCardPanel
 

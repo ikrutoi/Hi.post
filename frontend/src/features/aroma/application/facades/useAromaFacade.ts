@@ -1,20 +1,36 @@
-import { useAromaController } from '../controllers/useAromaController'
 import { aromaIndexes } from '@entities/aroma/domain/types'
+import { useCallback } from 'react'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { setAroma, clear } from '../../infrastructure/state'
+import {
+  selectSelectedAroma,
+  selectIsAromaComplete,
+} from '../../infrastructure/selectors'
+import type { AromaItem } from '@entities/aroma/domain/types'
 
 export const useAromaFacade = () => {
-  const { state, actions } = useAromaController()
+  const dispatch = useAppDispatch()
+
+  const selectedAroma = useAppSelector(selectSelectedAroma)
+  const isComplete = useAppSelector(selectIsAromaComplete)
+
+  const chooseAroma = useCallback(
+    (aroma: AromaItem) => {
+      dispatch(setAroma(aroma))
+    },
+    [dispatch],
+  )
+
+  const clearAroma = useCallback(() => {
+    dispatch(clear())
+  }, [dispatch])
 
   return {
-    state: {
-      selectedAroma: state.selectedAroma,
-      isAromaComplete: state.isAromaComplete,
-    },
-    layout: {
-      aromaIndexes,
-    },
-    actions: {
-      chooseAroma: actions.chooseAroma,
-      clear: actions.clearAroma,
-    },
+    selectedAroma,
+    isComplete,
+    aromaIndexes,
+
+    chooseAroma,
+    clearAroma,
   }
 }

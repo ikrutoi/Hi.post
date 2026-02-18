@@ -42,43 +42,43 @@ export const getToolbarIcon = ({
   return <>{getIconByKey(key)}</>
 }
 
-export const getToolbarIcon1 = ({
-  key,
-  className = 'toolbarIcon',
-  color,
-  style = {},
-  orientation,
-  step,
-}: {
-  key: IconKey
-  className?: string
-  color?: string
-  style?: React.CSSProperties
-  orientation?: LayoutOrientation
-  step?: number
-}): JSX.Element => {
-  if (key === 'cardOrientation') {
-    return (
-      <IconCardDynamic
-        orientation={orientation ?? 'landscape'}
-        className={className}
-        style={{ ...(color && { color }), ...style }}
-      />
-    )
-  }
-  if (key === 'fontSizeIndicator') {
-    return (
-      <div className={className} style={{ ...(color && { color }), ...style }}>
-        <FontSizeIndicator currentStep={step ?? 3} />
-      </div>
-    )
-  }
+// export const getToolbarIcon1 = ({
+//   key,
+//   className = 'toolbarIcon',
+//   color,
+//   style = {},
+//   orientation,
+//   step,
+// }: {
+//   key: IconKey
+//   className?: string
+//   color?: string
+//   style?: React.CSSProperties
+//   orientation?: LayoutOrientation
+//   step?: number
+// }): JSX.Element => {
+//   if (key === 'cardOrientation') {
+//     return (
+//       <IconCardDynamic
+//         orientation={orientation ?? 'landscape'}
+//         className={className}
+//         style={{ ...(color && { color }), ...style }}
+//       />
+//     )
+//   }
+//   if (key === 'fontSizeIndicator') {
+//     return (
+//       <div className={className} style={{ ...(color && { color }), ...style }}>
+//         <FontSizeIndicator currentStep={step ?? 3} />
+//       </div>
+//     )
+//   }
 
-  const IconComponent = getIconByKey(key)
+//   const IconComponent = getIconByKey(key)
 
-  return (
-    <div className={className} style={{ ...(color && { color }), ...style }}>
-      {IconComponent}
-    </div>
-  )
-}
+//   return (
+//     <div className={className} style={{ ...(color && { color }), ...style }}>
+//       {IconComponent}
+//     </div>
+//   )
+// }

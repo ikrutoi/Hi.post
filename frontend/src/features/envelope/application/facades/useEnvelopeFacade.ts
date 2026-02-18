@@ -1,6 +1,9 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectSenderState } from '../../sender/infrastructure/selectors'
-import { selectRecipientState } from '../../recipient/infrastructure/selectors'
+import {
+  selectRecipientAddress,
+  selectRecipientState,
+} from '../../recipient/infrastructure/selectors'
 import { selectIsEnvelopeReady } from '../../infrastructure/selectors'
 import {
   updateRecipientField,
@@ -22,6 +25,7 @@ export const useEnvelopeFacade = () => {
 
   const sender = useAppSelector(selectSenderState)
   const recipient = useAppSelector(selectRecipientState)
+  const addressRecipient = useAppSelector(selectRecipientAddress)
   const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
 
   const handleFieldChange = (
@@ -29,33 +33,36 @@ export const useEnvelopeFacade = () => {
     field: AddressField,
     value: string,
   ) => {
-    if (role === 'sender') {
-      dispatch(updateSenderField({ field, value }))
-    } else {
-      dispatch(updateRecipientField({ field, value }))
-    }
-  }
-
-  const clearRole = (role: EnvelopeRole) => {
-    dispatch(role === 'sender' ? clearSender() : clearRecipient())
+    const action = role === 'sender' ? updateSenderField : updateRecipientField
+    dispatch(action({ field, value }))
   }
 
   const toggleSenderEnabled = (enabled: boolean) => {
     dispatch(setEnabled(enabled))
   }
 
+  const clearRole = (role: EnvelopeRole) => {
+    dispatch(role === 'sender' ? clearSender() : clearRecipient())
+  }
+
+  const fullClear = () => {
+    dispatch(clearRecipient())
+    if (sender.enabled) {
+      dispatch(clearSender())
+    }
+  }
+
   return {
-    state: {
-      sender,
-      recipient,
-      isEnvelopeComplete,
-      addressFields: ADDRESS_FIELD_ORDER,
-      isSenderVisible: sender.enabled,
-    },
-    actions: {
-      handleFieldChange,
-      toggleSenderEnabled,
-      clearRole,
-    },
+    sender,
+    recipient,
+    addressRecipient,
+    isEnvelopeComplete,
+    addressFields: ADDRESS_FIELD_ORDER,
+    isSenderVisible: sender.enabled,
+
+    handleFieldChange,
+    toggleSenderEnabled,
+    clearRole,
+    fullClear,
   }
 }

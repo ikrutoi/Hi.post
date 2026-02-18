@@ -3,14 +3,18 @@
 
 .miniEnvelope {
   position: relative;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: space-between;
+  // flex-wrap: nowrap;
   display: grid;
-  padding: 0.5rem;
+  padding: 0.4rem;
   height: 100%;
   width: 100%;
   border: solid 1px $color-section-light;
   border-radius: 1rem;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, 1fr);
   box-shadow: 1px 2px 6px 3px rgba(0, 0, 0, 0.12);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -22,25 +26,51 @@
 }
 
 .miniEnvelopeLogo {
-  grid-column: 1/6;
+  grid-column: 1/2;
   grid-row: 1/2;
+  width: 75%;
+  // height: 10%;
   background-image: url('@data/img/logo-com.svg');
   background-repeat: no-repeat;
   background-size: contain;
+  // border: solid 1px red;
 }
 
 .miniEnvelopeMack {
   display: flex;
   justify-content: flex-end;
-  grid-column: 7/8;
-  grid-row: 1/3;
+  // grid-column: 7/8;
+  // grid-row: 1/3;
   // border: solid 1px blue;
 }
 
-.miniEnvelopeRecipient {
-  grid-column: 1 / 8;
-  grid-row: 3 / 7;
+.miniEnvelopeAddress {
+  color: $color-font-blue;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  // grid-column: 1 / 8;
+  // grid-row: 3 / 7;
   // border: solid 1px red;
+}
+
+.miniEnvelopeName {
+  grid-column: 1/2;
+  grid-row: 2/3;
+  // font-size: 1.2rem;
+  font-weight: 600;
+  display: block;
+  width: 100%;
+  text-align: center;
+  align-content: center;
+}
+
+.miniEnvelopeCity {
+  grid-column: 1/2;
+  grid-row: 3/4;
+  align-content: center;
 }
 
 .previewButton {

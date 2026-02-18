@@ -29,7 +29,8 @@
 
   &:hover {
     svg {
-      color: $color-font-enabled;
+      color: $color-inactive;
+      background-color: $color-enabled;
     }
   }
 

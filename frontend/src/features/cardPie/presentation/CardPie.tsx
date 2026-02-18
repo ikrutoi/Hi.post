@@ -12,6 +12,7 @@ import { useSectionMenuFacade } from '@/entities/sectionEditorMenu/application/f
 import { CardPieStatus } from './CardPieStatus'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
+import { getToolbarIcon } from '@/shared/utils/icons'
 
 export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
   const {
@@ -63,6 +64,11 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
         viewBox="0 0 5120 5120"
         className={styles.svg}
       >
+        <defs>
+          <symbol id="buttonStatusIcon" viewBox="0 0 40 40">
+            {getToolbarIcon({ key: 'addCart' })}
+          </symbol>
+        </defs>
         <defs>
           <pattern
             id="photo-fill"
@@ -268,20 +274,30 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
               ></rect>
             )}
           </pattern>
+          <pattern
+            id="buttonStatus-fill"
+            x="0"
+            y="0"
+            width="100"
+            height="100"
+            viewBox="0 0 100 100"
+          >
+            {getToolbarIcon({ key: 'addCart' })}
+          </pattern>
         </defs>
         <defs>
           <linearGradient id="grad-cardphoto" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#a0af49" />
-            <stop offset="15%" stop-color="#4caf50" />
-            <stop offset="85%" stop-color="#4caf50" />
-            <stop offset="100%" stop-color="#479a9a" />
+            <stop offset="0%" stopColor="#a0af49" />
+            <stop offset="15%" stopColor="#4caf50" />
+            <stop offset="85%" stopColor="#4caf50" />
+            <stop offset="100%" stopColor="#479a9a" />
           </linearGradient>
 
           <linearGradient id="grad-cardtext" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#e78a59" />
-            <stop offset="20%" stop-color="#f4af42" />
-            <stop offset="85%" stop-color="#f4af42" />
-            <stop offset="100%" stop-color="#a0af49" />
+            <stop offset="0%" stopColor="#e78a59" />
+            <stop offset="20%" stopColor="#f4af42" />
+            <stop offset="85%" stopColor="#f4af42" />
+            <stop offset="100%" stopColor="#a0af49" />
           </linearGradient>
 
           <linearGradient
@@ -291,24 +307,24 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             x2="100%"
             y2="0%"
           >
-            <stop offset="0%" stop-color="#e78a59" />
-            <stop offset="20%" stop-color="#d96570" />
-            <stop offset="80%" stop-color="#d96570" />
-            <stop offset="100%" stop-color="#ba6c9e" />
+            <stop offset="0%" stopColor="#e78a59" />
+            <stop offset="20%" stopColor="#d96570" />
+            <stop offset="80%" stopColor="#d96570" />
+            <stop offset="100%" stopColor="#ba6c9e" />
           </linearGradient>
 
           <linearGradient id="grad-aroma" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#ba6c9e" />
-            <stop offset="20%" stop-color="#9b72cb" />
-            <stop offset="80%" stop-color="#9b72cb" />
-            <stop offset="100%" stop-color="#6f7ccf" />
+            <stop offset="0%" stopColor="#ba6c9e" />
+            <stop offset="20%" stopColor="#9b72cb" />
+            <stop offset="80%" stopColor="#9b72cb" />
+            <stop offset="100%" stopColor="#6f7ccf" />
           </linearGradient>
 
           <linearGradient id="grad-date" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stop-color="#479a9a" />
-            <stop offset="15%" stop-color="#4285f4" />
-            <stop offset="80%" stop-color="#4285f4" />
-            <stop offset="100%" stop-color="#6f7ccf" />
+            <stop offset="0%" stopColor="#479a9a" />
+            <stop offset="15%" stopColor="#4285f4" />
+            <stop offset="80%" stopColor="#4285f4" />
+            <stop offset="100%" stopColor="#6f7ccf" />
           </linearGradient>
         </defs>
 
@@ -393,11 +409,19 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             />
           </g>
         )}
-
         <g id="HubGroups">
+          <rect
+            x="1775"
+            y="1775"
+            width="1550"
+            height="1550"
+            rx="580"
+            className={styles.buttonStatusBkg}
+          />
+
           <path
             id="cardphoto"
-            d="m2560 2560 1560 2400H1000z"
+            d="M3019 3267l1101 1693 -3120 0 1101 -1693c71,35 151,55 235,55l448 0c84,0 164,-20 235,-55z"
             fill="url(#photo-fill)"
             className={clsx(
               styles.sector,
@@ -412,7 +436,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
 
           <path
             id="cardtext"
-            d="m1000 4960 1560-2400-2400-539v2223c0 394 322 716 716 716z"
+            d="M2101 3267c-179,-88 -303,-272 -303,-483l0 -395 -1638 -368 0 2223c0,394 322,716 716,716l124 0 1101 -1693z"
             fill="url(#cardtext-fill)"
             className={clsx(
               styles.sector,
@@ -427,7 +451,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
 
           <path
             id="envelope"
-            d="M2560 160H876c-394 0-716 322-716 716v1145l2400 539z"
+            d="M2560 160l0 1638 -224 0c-296,0 -538,242 -538,538l0 53 -1638 -368 0 -1145c0,-394 322,-716 716,-716l1684 0z"
             fill="url(#envelope-fill)"
             className={clsx(
               styles.sector,
@@ -442,7 +466,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
 
           <path
             id="aroma"
-            d="M4960 2021V876c0-394-322-716-716-716H2560v2400z"
+            d="M3322 2389l1638 -368 0 -1145c0,-394 -322,-716 -716,-716l-1684 0 0 1638 224 0c296,0 538,242 538,538l0 53z"
             fill="url(#aroma-fill)"
             className={clsx(
               styles.sector,
@@ -457,7 +481,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
 
           <path
             id="date"
-            d="m4960 2021-2400 539 1560 2400h124c394 0 716-322 716-716z"
+            d="M4120 4960l124 0c394,0 716,-322 716,-716l0 -2223 -1638 368 0 395c0,211 -124,395 -303,483l1101 1693z"
             fill="url(#date-fill)"
             className={clsx(
               styles.sector,
@@ -469,12 +493,32 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             onMouseLeave={handleMouseLeave}
             onClick={() => openSection('date')}
           />
+
+          <use
+            href="#buttonStatusIcon"
+            x="2200"
+            y="2200"
+            width="2000"
+            height="2000"
+            className={clsx(
+              styles.buttonStatusIcon,
+              // activeSection === 'cart' && styles.active,
+            )}
+          />
+
+          <path
+            id="buttonStatus"
+            d="M1798 2336c0,-296 242,-538 538,-538l448 0c296,0 538,242 538,538l0 447c0,296 -242,538 -538,538l-448 0c-296,0 -538,-242 -538,-538l0 -447z"
+            fill="url(#buttonStatus-fill)"
+            className={clsx(
+              styles.buttonStatus,
+              // activeSection === 'cart' && styles.active
+            )}
+            // onClick={() => handleAddToCart()}
+            style={{ cursor: 'pointer' }}
+          />
         </g>
       </svg>
-      <CardPieStatus
-        isRainbowActive={isRainbowActive}
-        isRainbowStopping={isRainbowStopping}
-      />
     </div>
   )
 }

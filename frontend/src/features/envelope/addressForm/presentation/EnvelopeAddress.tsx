@@ -20,15 +20,13 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientFacade = useRecipientFacade()
 
   const facade = role === 'sender' ? senderFacade : recipientFacade
-  const { state, layout, actions } = facade
-  const { address: value } = state
-  const { update } = actions
+  const { state, layout, update, address: value } = facade
 
   const inputsRef = useRef<(HTMLInputElement | null)[]>([])
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
-    i: number
+    i: number,
   ) => {
     if (e.key === 'ArrowDown' || e.key === 'Enter') {
       e.preventDefault()
@@ -50,19 +48,19 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         <div className={styles.senderToggle}>
           <Toggle
             label="Specify the sender's address"
-            checked={senderFacade.state.isEnabled}
-            onChange={senderFacade.actions.toggleEnabled}
+            checked={senderFacade.isEnabled}
+            onChange={senderFacade.toggleEnabled}
             size="default"
           />
         </div>
       )}
 
-      {(role === 'recipient' || senderFacade.state.isEnabled) && (
+      {(role === 'recipient' || senderFacade.isEnabled) && (
         <>
           <div
             className={clsx(
               styles.addressFormToolbar,
-              styles[`addressFormToolbar${roleLabel}`]
+              styles[`addressFormToolbar${roleLabel}`],
             )}
           >
             <Toolbar section={role} />
@@ -78,7 +76,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     key={`group-${i}`}
                     className={clsx(
                       styles.labelGroup,
-                      styles[`labelGroup${roleLabel}`]
+                      styles[`labelGroup${roleLabel}`],
                     )}
                   >
                     {item.map((subItem, j) => {

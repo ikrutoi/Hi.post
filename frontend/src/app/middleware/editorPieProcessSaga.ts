@@ -14,7 +14,7 @@ import { selectPieProgress } from '@/entities/cardEditor/infrastructure/selector
 function* handleRainbowLogic() {
   const { isAllComplete, isRainbowActive } = yield select(selectPieProgress)
 
-  console.log('>>handleRainbowLogic', isAllComplete, isRainbowActive)
+  // console.log('>>handleRainbowLogic', isAllComplete, isRainbowActive)
   if (isAllComplete && !isRainbowActive) {
     yield put(startRainbow())
   } else if (!isAllComplete && isRainbowActive) {
