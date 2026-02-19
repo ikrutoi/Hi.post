@@ -25,7 +25,7 @@ export async function getResultCardphoto(): Promise<CardItem> {
   }
 
   const workingImage = sectionWorkingImage
-    ? await adapterMap[sectionWorkingImage].getByLocalId('workingImage')
+    ? await adapterMap[sectionWorkingImage].getById('workingImage')
     : null
 
   const cardEdit = JSON.parse(localStorage.getItem('cardEdit') || '{}')

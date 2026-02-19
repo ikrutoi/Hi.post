@@ -3,7 +3,7 @@ import { cardtextAdapter } from '../adapters/storeAdapters'
 
 export const useCardtextStorage = (editor: Editor) => {
   const loadTemplateById = async (id: number) => {
-    const record = await cardtextAdapter.getByLocalId(id)
+    const record = await cardtextAdapter.getById(id)
     if (!record) return null
 
     clearEditor()

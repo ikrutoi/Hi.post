@@ -49,6 +49,13 @@ export const cardEditorSlice = createSlice({
 
     clearSection(state, action: PayloadAction<CardSection>) {
       state[action.payload].isComplete = false
+      const allComplete =
+        state.cardphoto.isComplete &&
+        state.cardtext.isComplete &&
+        state.envelope.isComplete &&
+        state.aroma.isComplete &&
+        state.date.isComplete
+      state.isCompleted = allComplete
     },
 
     startRainbow(state) {

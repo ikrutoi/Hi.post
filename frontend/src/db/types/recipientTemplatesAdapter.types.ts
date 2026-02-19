@@ -4,6 +4,6 @@ import type { TemplateStoreMap } from './storeMap.types'
 export interface RecipientTemplatesAdapter
   extends StoreAdapter<TemplateStoreMap['recipient']> {
   addUniqueRecord(
-    payload: Omit<TemplateStoreMap['recipient'][number], 'localId'>
+    payload: Omit<TemplateStoreMap['recipient'], 'localId'>
   ): Promise<void>
 }

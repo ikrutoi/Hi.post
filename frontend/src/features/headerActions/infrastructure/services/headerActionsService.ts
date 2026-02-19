@@ -1,6 +1,5 @@
 import type { AppDispatch } from '@app/state'
-import { cartAdapter } from '@db/adapters/cart'
-import { draftsAdapter } from '@db/adapters/drafts'
+import { cartAdapter, draftsAdapter } from '@db/adapters/storeAdapters'
 import { setShoppingCards } from '@store/slices/layoutSlice'
 import type { StatusType } from '../../domain/types'
 

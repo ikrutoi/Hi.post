@@ -7,7 +7,8 @@ const base = createStoreAdapter<StoreMap['cardtext']>('cardtext')
 export const cardtextAdapter: CardtextAdapter = {
   ...base,
   addUniqueRecord: async (text: SlateNode[]) => {
-    const localId = (await base.getMaxLocalId()) + 1
-    await base.put({ localId, text })
+    const maxId = await base.getMaxLocalId()
+    const id = String(maxId + 1)
+    await base.put({ id, text } as StoreMap['cardtext'] & { id: string })
   },
 }

@@ -26,12 +26,18 @@
   }
 
   &.completed {
-    cursor: pointer;
     color: $color-font-enabled;
     stroke: $color-section-dark;
+    fill: red;
   }
 }
-
 .pieStatus:hover .pieStatusIcon {
   transform: scale(1.1);
+}
+
+.buttonStatus.completed {
+  cursor: pointer;
+  stroke: $color-section-dark;
+  fill: $color-section-dark-completed;
+  fill: red;
 }

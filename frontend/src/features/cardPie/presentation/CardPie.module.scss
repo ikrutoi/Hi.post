@@ -43,20 +43,25 @@
 }
 
 .buttonStatus {
-  stroke: $color-font-disabled;
+  stroke: $color-hover;
   stroke-width: 60;
-  // fill: $color-disabled;
-  // fill: url('#grad-date');
+  transition: stroke 0.2s ease;
+
+  &.completed {
+    stroke: $color-inactive-light;
+    cursor: pointer;
+  }
 }
 
 .buttonStatusIcon {
-  fill: #4caf50;
-  stroke: #4285f4;
-}
+  opacity: 0.5;
+  transition: opacity 0.2s ease, filter 0.2s ease;
 
-#buttonStatusIcon {
-  fill: red;
-  stroke: #4285f4;
+  &.completed {
+    opacity: 1;
+    filter: brightness(0.85);
+    cursor: pointer;
+  }
 }
 
 .buttonStatusBkg {

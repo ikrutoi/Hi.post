@@ -8,7 +8,7 @@ import type { CardtextBlock } from '../../domain/types'
 export const useCardtextStore = () => {
   const loadFromTemplate = useCallback(
     async (id: string): Promise<SlateNode[] | null> => {
-      const record = await cardtextTemplatesAdapter.getByLocalId(id)
+      const record = await cardtextTemplatesAdapter.getById(id)
       return record?.state.text ?? null
     },
     []
@@ -27,7 +27,7 @@ export const useCardtextStore = () => {
 
   const saveToTemplate = useCallback(
     async (id: string, value: SlateNode[]): Promise<void> => {
-      const record = await cardtextTemplatesAdapter.getByLocalId(id)
+      const record = await cardtextTemplatesAdapter.getById(id)
       if (record) {
         const converted = slateToCardtext(value)
         await cardtextTemplatesAdapter.put({

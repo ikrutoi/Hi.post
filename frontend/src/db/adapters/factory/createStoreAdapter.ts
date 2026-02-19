@@ -34,17 +34,10 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
 
   // const getMaxLocalId = async (): Promise<number> => {
   //   const all = await getAll()
-  //   const localIds = all
-  //     .map((r: any) => r.id)
-  //     .filter((id) => typeof id === 'number')
+  //   const localIds = (all as { id?: unknown }[])
+  //     .map((r) => r.id)
+  //     .filter((id): id is number => typeof id === 'number')
   //   return localIds.length ? Math.max(...localIds) : 0
-  // }
-
-  // const addAutoIdRecord = async (
-  //   recordPayload: Omit<T, 'id'>,
-  // ): Promise<void> => {
-  //   const id = (await getMaxLocalId()) + 1
-  //   await put({ id, ...recordPayload } as T & { id: number })
   // }
 
   const addRecordWithId = async (
@@ -77,7 +70,6 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     put,
     deleteById,
     // getMaxLocalId,
-    // addAutoIdRecord,
     addRecordWithId,
     count,
     clear,

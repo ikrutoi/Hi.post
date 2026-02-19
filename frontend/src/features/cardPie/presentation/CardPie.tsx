@@ -26,7 +26,8 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
   // const { data, isReady } = useCardPieFacade(status, id)
   const { activeSection, previewCard, openSection } = useCardFacade()
   const { sizeMiniCard } = useSizeFacade()
-  const { setHovered, hoveredSection, isSectionHovered } = useCardEditorFacade()
+  const { setHovered, hoveredSection, isSectionHovered, isCompleted } =
+    useCardEditorFacade()
   const handleMouseEnter = (e: React.MouseEvent<SVGPathElement>) => {
     const sectionId = e.currentTarget.id as CardSection
     setHovered(sectionId)
@@ -502,6 +503,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             height="2000"
             className={clsx(
               styles.buttonStatusIcon,
+              isCompleted && styles.completed,
               // activeSection === 'cart' && styles.active,
             )}
           />
@@ -512,10 +514,10 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             fill="url(#buttonStatus-fill)"
             className={clsx(
               styles.buttonStatus,
+              isCompleted && styles.completed,
               // activeSection === 'cart' && styles.active
             )}
             // onClick={() => handleAddToCart()}
-            style={{ cursor: 'pointer' }}
           />
         </g>
       </svg>

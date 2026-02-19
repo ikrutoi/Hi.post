@@ -7,7 +7,8 @@ const base = createStoreAdapter<CardtextTemplateItem>('cardtext')
 export const cardtextTemplatesAdapter: CardtextTemplatesAdapter = {
   ...base,
   addTemplate: async (template) => {
-    const localId = (await base.getMaxLocalId()) + 1
-    await base.put({ ...template, localId })
+    const maxId = await base.getMaxLocalId()
+    const id = String(maxId + 1)
+    await base.put({ ...template, id } as CardtextTemplateItem & { id: string })
   },
 }

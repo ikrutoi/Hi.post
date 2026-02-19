@@ -27,14 +27,15 @@ export interface StoreMap {
   sent: SentItem
   session: SessionData
 }
-// export interface TemplateStoreMap {
-//   stockImages: ImageMeta[]
-//   userImages: ImageMeta[]
-//   cropImages: ImageMeta[]
-//   cardtext: CardtextTemplateItem[]
-//   sender: AddressTemplateItem[]
-//   recipient: AddressTemplateItem[]
-//   cart: CartItem[]
-//   drafts: DraftsItem[]
-//   sent: SentItem[]
-// }
+
+export interface TemplateStoreMap {
+  stockImages: ImageRecord
+  userImages: ImageRecord
+  cropImages: ImageMeta & { id: string }
+  cardtext: CardtextTemplateItem
+  sender: AddressTemplateItem
+  recipient: AddressTemplateItem
+  cart: CartItem
+  drafts: DraftsItem
+  sent: SentItem
+}
