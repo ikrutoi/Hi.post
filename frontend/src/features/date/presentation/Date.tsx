@@ -21,9 +21,7 @@ export const Date: React.FC = () => {
   const currentDate = useMemo(() => getCurrentDate(), [])
   const { flashParts, triggerFlash } = useFlashEffect()
 
-  const { state: stateDate, actions: actionsDate } = useDateFacade()
-  const { selectedDate } = stateDate
-  const { chooseDate } = actionsDate
+  const { selectedDate, chooseDate } = useDateFacade()
 
   // const { sizeItemCalendar } = useSizeFacade()
 

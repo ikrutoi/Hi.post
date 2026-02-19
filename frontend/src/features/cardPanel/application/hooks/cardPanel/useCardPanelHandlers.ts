@@ -28,13 +28,12 @@ export const useCardPanelHandlers = (
 ): CardPanelHandlers => {
   const dispatch = useDispatch()
 
-  const { resetCardtext } = useCardtextFacade()
+  const { reset: resetCardtext } = useCardtextFacade()
 
   const { actions: actionsEnvelope } = useEnvelopeFacade()
   const { resetEnvelope } = actionsEnvelope.store
 
-  const { actions: actionsDate } = useDateFacade()
-  const { resetDate } = actionsDate
+  const { clear: resetDate } = useDateFacade()
 
   const { actions: actionsAroma } = useAromaFacade()
   const { resetAroma } = actionsAroma

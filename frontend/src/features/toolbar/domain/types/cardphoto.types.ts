@@ -16,7 +16,7 @@ export const CARDPHOTO_KEYS = [
   // 'save',
   // 'photoTemplates',
   'cropHistory',
-  'closeList',
+  'deleteList',
   'saveList',
 ] as const
 
@@ -62,7 +62,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
     group: 'processed',
     icons: [
       { key: 'saveList', state: 'disabled' },
-      { key: 'closeList', state: 'disabled' },
+      { key: 'deleteList', state: 'disabled' },
     ],
     status: 'enabled',
   },

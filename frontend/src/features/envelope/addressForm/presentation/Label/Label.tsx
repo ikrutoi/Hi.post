@@ -62,7 +62,7 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
               className={clsx(styles.clearButton)}
               onClick={handleClear}
             >
-              {getToolbarIcon({ key: 'deleteSmall' })}
+              {getToolbarIcon({ key: 'clearInput' })}
             </button>
           )}
         </div>

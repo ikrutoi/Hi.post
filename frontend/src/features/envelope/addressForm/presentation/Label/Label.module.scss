@@ -6,7 +6,8 @@
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: $color-font-enabled;
+  color: $color-inactive;
+  // color: red;
 }
 
 .labelRecipient {
@@ -25,9 +26,10 @@
   width: 100%;
   padding: 0 0.3rem;
   box-sizing: border-box;
-  font-size: 1.2rem;
-  font-style: italic;
-  color: $color-font-enabled;
+  font-size: 1rem;
+  font-weight: 4100;
+  // font-style: italic;
+  color: $color-font-deepBlack;
   background-color: $color-disabled;
   border: none;
   height: 1.5rem;
@@ -72,15 +74,14 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  padding: 0;
-  background: none;
+  padding: 0.2rem;
+  background: #fff;
   color: $color-font-disabled;
   border: none;
   border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   opacity: 0;
   cursor: pointer;
-  border: solid 2px #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition:
     opacity 0.2s ease,
     color 0.2s ease;

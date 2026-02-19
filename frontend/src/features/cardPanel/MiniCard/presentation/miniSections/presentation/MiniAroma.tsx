@@ -20,13 +20,15 @@ export const MiniAroma: React.FC<MiniAromaProps> = () => {
   if (!imageAroma) return null
 
   return (
-    <div className={clsx(styles.miniAroma, isHovered && styles.hovered)}>
+    <div
+      className={clsx(styles.miniAroma, isHovered && styles.hovered)}
+      onMouseEnter={() => setHovered('aroma')}
+      onMouseLeave={() => setHovered(null)}
+    >
       <img
         className={styles.miniAromaImg}
         alt={selectedAroma.name}
         src={imageAroma}
-        onMouseEnter={() => setHovered('aroma')}
-        onMouseLeave={() => setHovered(null)}
       />
       <button
         className={clsx(styles.previewButton, styles.previewButtonDelete)}
@@ -37,7 +39,7 @@ export const MiniAroma: React.FC<MiniAromaProps> = () => {
           // removeCropId(cropId)
         }}
       >
-        {getToolbarIcon({ key: 'deleteSmall' })}
+        {getToolbarIcon({ key: 'clearInput' })}
       </button>
     </div>
   )

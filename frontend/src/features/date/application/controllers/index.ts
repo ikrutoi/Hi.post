@@ -1,1 +1,1 @@
-export { useDateController } from './useDateController'
+// useDateController removed — use useDateFacade (flat API) instead

@@ -6,6 +6,7 @@ import {
   FiEdit,
   FiCrop,
   FiPlus,
+  FiX,
 } from 'react-icons/fi'
 import {
   MdDeleteOutline,
@@ -95,7 +96,7 @@ import {
   IconCardphotoTemplates,
   IconCardtextTemplates,
   IconAddressTemplates,
-  IconEnvelopeTemplatesV5,
+  IconAddressList,
   IconCardPlus,
   IconDelete,
   IconSave,
@@ -145,6 +146,7 @@ import {
   IconDeleteV2,
   IconDeleteV3,
   IconStar,
+  IconAddressPlus,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -175,13 +177,15 @@ export function getIconByKey(
       return <IconDelete />
     case 'deleteSmall':
       return <IconDeleteV3 />
+    case 'clearInput':
+      return <FiX />
     case 'download':
       return <IconDownloadV2 />
     case 'apply':
       return <IconApply />
     case 'close':
       return <IconClose />
-    case 'closeList':
+    case 'deleteList':
       return <IconCloseList />
     case 'user':
       return <RiUserLine />
@@ -266,8 +270,8 @@ export function getIconByKey(
     case 'cards':
       return <PiCardsBold />
     case 'cardUser':
-      return <IconEnvelopeTemplatesV5 />
-    case 'addressTemplates':
+      return <IconAddressList />
+    case 'addressList':
       return <IconAddressTemplates />
     case 'cardText':
       return <BsCardText />
@@ -289,5 +293,7 @@ export function getIconByKey(
       return <IconSectionMenuDate />
     case 'favorite':
       return <IconStar />
+    case 'addressPlus':
+      return <IconAddressPlus />
   }
 }

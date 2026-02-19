@@ -1,6 +1,7 @@
 import React from 'react'
 import { Slate, Editable } from 'slate-react'
 import { useMiniCardtext } from '../application/hooks'
+import { useCardtextFacade } from '@cardtext/application/facades'
 import { renderLeaf } from '@cardtext/presentation/renderLeaf'
 import { renderElement } from '@cardtext/presentation/renderElement'
 import styles from './MiniCardtext.module.scss'
@@ -10,6 +11,7 @@ import { getToolbarIcon } from '@shared/utils/icons'
 
 export const MiniCardtext: React.FC = () => {
   const { editor, value, style } = useMiniCardtext()
+  const { reset } = useCardtextFacade()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('cardtext')
 
@@ -37,10 +39,10 @@ export const MiniCardtext: React.FC = () => {
         aria-label="Delete section content"
         onClick={(e) => {
           e.stopPropagation()
-          // removeCropId(cropId)
+          reset()
         }}
       >
-        {getToolbarIcon({ key: 'deleteSmall' })}
+        {getToolbarIcon({ key: 'clearInput' })}
       </button>
     </div>
   )

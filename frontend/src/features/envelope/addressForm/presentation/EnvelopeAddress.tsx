@@ -18,6 +18,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
+  console.log('SenderFacade', senderFacade)
 
   const facade = role === 'sender' ? senderFacade : recipientFacade
   const { state, layout, update, address: value } = facade
@@ -51,11 +52,13 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             checked={senderFacade.isEnabled}
             onChange={senderFacade.toggleEnabled}
             size="default"
+            variant="envelope"
           />
         </div>
       )}
 
-      {(role === 'recipient' || senderFacade.isEnabled) && (
+      {(role === 'recipient' ||
+        (senderFacade.isEnabled && role === 'sender')) && (
         <>
           <div
             className={clsx(

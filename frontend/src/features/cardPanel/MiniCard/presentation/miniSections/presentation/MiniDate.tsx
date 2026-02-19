@@ -9,8 +9,7 @@ import { getToolbarIcon } from '@/shared/utils/icons'
 interface MiniDateProps {}
 
 export const MiniDate: React.FC<MiniDateProps> = () => {
-  const { state: stateDate } = useDateFacade()
-  const { selectedDate } = stateDate
+  const { selectedDate, clear } = useDateFacade()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('date')
 
@@ -36,10 +35,10 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
         aria-label="Delete section content"
         onClick={(e) => {
           e.stopPropagation()
-          // removeCropId(cropId)
+          clear()
         }}
       >
-        {getToolbarIcon({ key: 'deleteSmall' })}
+        {getToolbarIcon({ key: 'clearInput' })}
       </button>
     </div>
   )

@@ -31,7 +31,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
 
   const { sizeToolbarContour, sectionMenuHeight, setSectionMenuHeight } =
     useSizeFacade()
-  // console.log('TOOLBAR remSize', remSize)
+  console.log('TOOLBAR section', section)
 
   const isAlreadyApplied = useAppSelector(selectIsCurrentCropApplied)
   const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
@@ -45,6 +45,11 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
       }
     }
   }, [section, groups, sectionMenuHeight, setSectionMenuHeight])
+
+  const sectionsWithFixedWidth = ['cardphoto', 'cardtext']
+  const toolbarStyle = sectionsWithFixedWidth.includes(section)
+    ? { width: `${sizeToolbarContour.width}px` }
+    : {}
 
   const renderIcon = (
     key: IconKey,
@@ -101,7 +106,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   return (
     <div
       className={clsx(styles.toolbar, styles[`toolbar${capitalize(section)}`])}
-      style={{ width: `${sizeToolbarContour.width}px` }}
+      style={toolbarStyle}
     >
       {groups.map((group: ToolbarGroup) => (
         <div

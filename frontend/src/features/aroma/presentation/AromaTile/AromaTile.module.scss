@@ -20,8 +20,8 @@
 
 .tileSelected,
 .tileSelected:hover {
-  background-color: $color-pie-aroma-alpha;
-  border-color: $color-pie-aroma;
+  background-color: rgba($color-pie-aroma, 0.15);
+  border-color: $color-pie-aroma-alpha;
 }
 
 .tileSelected:hover {

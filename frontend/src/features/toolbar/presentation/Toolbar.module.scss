@@ -1,8 +1,9 @@
 @use '@styles/config/colors' as *;
 
 .toolbar {
-  // width: 100%;
-
+  width: auto;
+  display: flex;
+  // border: solid 1px green;
   // position: relative;
   .toolbarKey {
     position: relative;
@@ -50,6 +51,7 @@
   }
 
   .toolbarGroup {
+    width: auto;
     display: flex;
     transition:
       opacity 0.2s ease,
@@ -210,6 +212,12 @@
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
-    // border: solid 1px red;
   }
+}
+
+.toolbarSender {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 1rem;
+  // border: solid 1px blue;
 }

@@ -43,7 +43,7 @@ export const MiniCardphoto = () => {
           // removeCropId(cropId)
         }}
       >
-        {getToolbarIcon({ key: 'deleteSmall' })}
+        {getToolbarIcon({ key: 'clearInput' })}
       </button>
     </div>
   )

@@ -27,9 +27,7 @@ interface UseCalendarCellControllerParams {
 export const useCalendarCellController = ({
   triggerFlash,
 }: UseCalendarCellControllerParams) => {
-  const { state: stateDate, actions: actionsDate } = useDateFacade()
-  const { selectedDate } = stateDate
-  const { chooseDate } = actionsDate
+  const { selectedDate, chooseDate } = useDateFacade()
 
   const { state: stateCalendar } = useCalendarFacade()
   const { lastViewedCalendarDate } = stateCalendar

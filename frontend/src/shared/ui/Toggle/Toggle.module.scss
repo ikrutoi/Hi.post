@@ -7,7 +7,7 @@
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 500;
-  color: $color-inactive;
+  color: $color-font-enabled-light;
 }
 
 .toggleInput {
@@ -16,9 +16,11 @@
 
 .toggleSlider {
   position: relative;
-  background-color: $color-inactive;
+  background-color: $color-inactive-light;
   border-radius: 18px;
-  transition: background-color 0.3s ease;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .toggleSlider::after {
@@ -26,11 +28,29 @@
   position: absolute;
   background-color: $color-disabled;
   border-radius: 50%;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
+}
+
+.toggleInput:checked + .toggleSlider {
+  background-color: $color-active;
+}
+
+.toggleText {
+  user-select: none;
+}
+
+.toggleEnvelope {
+  .toggleSlider {
+    box-shadow: 0 0 0 1px rgba($color-active, 0.1);
+  }
+
+  .toggleInput:checked + .toggleSlider {
+    box-shadow: 0 0 0 1px rgba($color-active, 0.25);
+  }
 }
 
 .toggleDefault .toggleSlider {
-  width: 40px;
+  width: 34px;
   height: 18px;
 }
 
@@ -41,12 +61,8 @@
   height: 14px;
 }
 
-.toggleDefault .toggleInput:checked + .toggleSlider {
-  background-color: $color-active;
-}
-
 .toggleDefault .toggleInput:checked + .toggleSlider::after {
-  transform: translateX(22px);
+  transform: translateX(16px);
 }
 
 .toggleSmall .toggleSlider {

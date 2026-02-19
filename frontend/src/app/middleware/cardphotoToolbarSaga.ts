@@ -103,7 +103,7 @@ export function* handleCardphotoToolbarAction(
   }
 
   switch (key) {
-    case 'closeList':
+    case 'deleteList':
       yield call(handleClearAllCropsSaga)
       break
 
@@ -166,7 +166,7 @@ export function* handleCardphotoToolbarAction1(
   if (!isCardphotoSection && !isCardOrientationCall) return
 
   switch (key) {
-    case 'closeList':
+    case 'deleteList':
       yield call(handleClearAllCropsSaga)
       break
     case 'close':
@@ -246,7 +246,7 @@ export function* syncToolbarContext() {
           options: { badge: cropCount },
         },
         saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        closeList: { state: hasCrops ? 'enabled' : 'disabled' },
+        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break
 
@@ -270,7 +270,7 @@ export function* syncToolbarContext() {
           options: { badge: cropCount },
         },
         saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        closeList: { state: hasCrops ? 'enabled' : 'disabled' },
+        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break
 
@@ -294,7 +294,7 @@ export function* syncToolbarContext() {
           options: { badge: cropCount },
         },
         saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        closeList: { state: hasCrops ? 'enabled' : 'disabled' },
+        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break
 
@@ -319,7 +319,7 @@ export function* syncToolbarContext() {
           options: { badge: cropCount },
         },
         saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        closeList: { state: hasCrops ? 'enabled' : 'disabled' },
+        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
       }
       break
   }

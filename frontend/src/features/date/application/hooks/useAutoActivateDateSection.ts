@@ -3,8 +3,7 @@ import { useLayoutFacade } from '@layout/application/facades'
 import { useDateFacade } from '../facades'
 
 export const useAutoActivateDateSection = () => {
-  const { state } = useDateFacade()
-  const { selectedDate } = state
+  const { selectedDate } = useDateFacade()
 
   const { actions } = useLayoutFacade()
   const { setActiveSection } = actions

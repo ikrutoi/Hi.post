@@ -14,9 +14,7 @@ export const useDateSwitcherController = ({
 }: UseDateSwitcherControllerParams = {}) => {
   const currentDate = getCurrentDate()
 
-  const { state: stateDate, actions: actionsDate } = useDateFacade()
-  const { selectedDate } = stateDate
-  const { chooseDate } = actionsDate
+  const { selectedDate, chooseDate } = useDateFacade()
 
   const { state: stateSwitcher } = useSwitcherFacade()
   const { position } = stateSwitcher

@@ -4,8 +4,7 @@ import { useCalendarFacade } from '../../calendar/application/facades'
 import { getInitialCalendarDate } from '@shared/utils/date'
 
 export const useInitializeCalendarViewDate = () => {
-  const { state: stateDate } = useDateFacade()
-  const { selectedDate } = stateDate
+  const { selectedDate } = useDateFacade()
 
   const { state: stateCalendar, actions: actionsCalendar } = useCalendarFacade()
   const { lastViewedCalendarDate } = stateCalendar

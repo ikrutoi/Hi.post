@@ -2,7 +2,6 @@
 
 .addressForm {
   position: relative;
-  // border: solid 1px green;
 }
 
 .addressBtn {
@@ -36,8 +35,10 @@
   font-size: 0.9rem;
   font-weight: 400;
   padding: 4px;
-  color: $color-inactive-light;
+  margin-right: 0.6rem;
+  color: $color-inactive;
   text-transform: uppercase;
+  // border: solid 1px green;
 }
 
 .envelopeAddressGroup {
@@ -67,6 +68,23 @@
   }
 }
 
+.addressFormToolbar {
+  width: 100%;
+  left: 0;
+}
+
+.addressFormToolbarSender {
+  width: 100%;
+  // position: absolute;
+  // left: 0;
+  // display: flex;
+  // justify-content: flex-end;
+}
+
+.addressFormToolbarRecipient {
+  padding-left: 1rem;
+}
+
 .addressFormSender .addressGroup .labelIndex {
   margin-left: 0.5rem;
 }
@@ -78,4 +96,8 @@
 .labelGroup {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+}
+
+.senderToggle {
+  margin-top: 0.3rem;
 }

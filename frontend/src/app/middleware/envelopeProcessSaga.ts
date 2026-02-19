@@ -29,10 +29,12 @@ export function* processEnvelopeVisuals() {
     checkHasData(sender.data),
   )
 
+  console.log('processEnvelopeVisuals recipient', recipient)
   const recipientToolbar = buildRecipientToolbarState(
     recipient.isComplete,
     checkHasData(recipient.data),
   )
+  console.log('processEnvelopeVisuals recipientToolbar', recipientToolbar)
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
   yield put(

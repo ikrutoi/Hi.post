@@ -64,7 +64,7 @@ export const MiniEnvelope: React.FC = () => {
           fullClear()
         }}
       >
-        {getToolbarIcon({ key: 'deleteSmall' })}
+        {getToolbarIcon({ key: 'clearInput' })}
       </button>
     </div>
   )
