@@ -1,4 +1,4 @@
-import { select, put, takeEvery, call } from 'redux-saga/effects'
+import { select, put, takeEvery, call, all } from 'redux-saga/effects'
 import {
   updateRecipientField,
   clearRecipient,
@@ -13,8 +13,12 @@ import { selectRecipientState } from '@envelope/recipient/infrastructure/selecto
 import {
   buildRecipientToolbarState,
   buildSenderToolbarState,
+  isAddressInList,
 } from '@envelope/domain/helpers'
-import { updateToolbarSection, updateToolbarIcon } from '@toolbar/infrastructure/state'
+import {
+  updateToolbarSection,
+  updateToolbarIcon,
+} from '@toolbar/infrastructure/state'
 import {
   recipientTemplatesAdapter,
   senderTemplatesAdapter,
@@ -51,24 +55,33 @@ export function* processEnvelopeVisuals() {
   const checkHasData = (data: Record<string, string>) =>
     Object.values(data).some((v) => v.trim() !== '')
 
-  const senderToolbar = buildSenderToolbarState(
-    sender.isComplete,
-    checkHasData(sender.data),
-  )
+  const [senderList, recipientList]: [
+    Awaited<ReturnType<typeof senderTemplatesAdapter.getAll>>,
+    Awaited<ReturnType<typeof recipientTemplatesAdapter.getAll>>,
+  ] = yield all([
+    call([senderTemplatesAdapter, 'getAll']),
+    call([recipientTemplatesAdapter, 'getAll']),
+  ])
 
-  console.log('processEnvelopeVisuals recipient', recipient)
-  const recipientToolbar = buildRecipientToolbarState(
-    recipient.isComplete,
-    checkHasData(recipient.data),
-  )
-  console.log('processEnvelopeVisuals recipientToolbar', recipientToolbar)
+  const senderToolbar = buildSenderToolbarState({
+    isComplete: sender.isComplete,
+    hasData: checkHasData(sender.data),
+    addressListCount: senderList.length,
+    isCurrentAddressInList: isAddressInList(sender.data, senderList),
+  })
+
+  const recipientToolbar = buildRecipientToolbarState({
+    isComplete: recipient.isComplete,
+    hasData: checkHasData(recipient.data),
+    addressListCount: recipientList.length,
+    isCurrentAddressInList: isAddressInList(recipient.data, recipientList),
+  })
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
   yield put(
     updateToolbarSection({ section: 'recipient', value: recipientToolbar }),
   )
 
-  // Обновляем бэджи с количеством записей
   yield call(updateAddressListBadge, 'sender')
   yield call(updateAddressListBadge, 'recipient')
 }

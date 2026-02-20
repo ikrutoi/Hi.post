@@ -318,7 +318,7 @@ export const templateService = {
     return records.map((record) => ({
       id: record.id,
       localId: record.localId,
-      image: record.image as any, // ImageMeta из типа ImageTemplateItem
+      image: record.image as any,
       source,
       theme: record.theme,
       imageBlob: record.image,
@@ -327,6 +327,20 @@ export const templateService = {
       serverId: null,
       syncedAt: null,
       isDirty: false,
+      userId: '',
+      visibility: 'private' as const,
+      isPublic: false,
+      isModerated: false,
+      isApproved: false,
+      monetization: {
+        enabled: false,
+        totalEarnings: 0,
+        totalUses: 0,
+      },
+      stats: {
+        views: 0,
+        uses: 0,
+      },
     }))
   },
 
@@ -355,6 +369,20 @@ export const templateService = {
       serverId: null,
       syncedAt: null,
       isDirty: false,
+      userId: '',
+      visibility: 'private' as const,
+      isPublic: false,
+      isModerated: false,
+      isApproved: false,
+      monetization: {
+        enabled: false,
+        totalEarnings: 0,
+        totalUses: 0,
+      },
+      stats: {
+        views: 0,
+        uses: 0,
+      },
     }
   },
 

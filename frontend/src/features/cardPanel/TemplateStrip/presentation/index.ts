@@ -1,0 +1,6 @@
+export { TemplateStrip } from './TemplateStrip'
+export { TemplateStripCard } from './TemplateStripCard'
+export { TemplateSlider } from './TemplateSlider'
+export type { TemplateStripProps } from './TemplateStrip/TemplateStrip.types'
+export type { TemplateStripCardProps } from './TemplateStripCard/TemplateStripCard.types'
+export type { TemplateSliderProps } from './TemplateSlider/TemplateSlider.types'

@@ -1,9 +1,18 @@
 import { ENVELOPE_KEYS, type EnvelopeToolbarState } from '@toolbar/domain/types'
 
-export const buildRecipientToolbarState = (
-  isComplete: boolean,
-  hasData: boolean,
-): EnvelopeToolbarState => {
+export interface BuildRecipientToolbarParams {
+  isComplete: boolean
+  hasData: boolean
+  addressListCount: number
+  isCurrentAddressInList: boolean
+}
+
+export const buildRecipientToolbarState = ({
+  isComplete,
+  hasData,
+  addressListCount,
+  isCurrentAddressInList,
+}: BuildRecipientToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
   for (const key of ENVELOPE_KEYS) {
@@ -12,13 +21,16 @@ export const buildRecipientToolbarState = (
         state.close = hasData ? 'enabled' : 'disabled'
         break
       case 'addressPlus':
-        state.addressPlus = isComplete ? 'enabled' : 'disabled'
+        state.addressPlus =
+          isComplete && !isCurrentAddressInList ? 'enabled' : 'disabled'
         break
       case 'addressList':
-        state.addressList = 'disabled'
+        state.addressList = {
+          state: addressListCount > 0 ? 'enabled' : 'disabled',
+        }
         break
       case 'deleteList':
-        state.deleteList = 'disabled'
+        state.deleteList = addressListCount > 0 ? 'enabled' : 'disabled'
         break
       default:
         const exhaustiveCheck: never = key

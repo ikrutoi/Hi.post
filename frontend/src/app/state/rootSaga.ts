@@ -2,18 +2,15 @@ import { all, fork } from 'redux-saga/effects'
 import {
   cardEditorSaga,
   editorPieProcessSaga,
-  // envelopeSaga,
   envelopeToolbarSaga,
   envelopeProcessSaga,
   cardtextProcessSaga,
-  // cardtextToolbarSaga,
   sectionEditorMenuSaga,
-  // cardphotoToolbarSaga,
   cardphotoProcessSaga,
-  cardphotoHistorySaga,
   hydrateAppSession,
   watchSessionChanges,
   addressSaveSaga,
+  cardPanelToolbarSaga,
 } from '../middleware'
 
 export function* rootSaga() {
@@ -34,5 +31,6 @@ export function* rootSaga() {
     // fork(cardphotoHistorySaga),
     fork(cardphotoProcessSaga),
     fork(sectionEditorMenuSaga),
+    fork(cardPanelToolbarSaga),
   ])
 }

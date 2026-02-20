@@ -3,13 +3,10 @@ import { call, select, put, takeLatest } from 'redux-saga/effects'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
-import { updateGroupStatus, updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import { saveAddressRequested as recipientSaveRequested } from '@envelope/recipient/infrastructure/state'
 import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/infrastructure/state'
-import {
-  recipientTemplatesAdapter,
-  senderTemplatesAdapter,
-} from '@db/adapters/templateAdapters'
+import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
 
@@ -27,28 +24,6 @@ function cleanupAddress(address: Record<string, string>): AddressFields {
 
 function isAddressComplete(address: Record<string, string>): boolean {
   return Object.values(address).every((val) => val.trim() !== '')
-}
-
-function* updateAddressListBadge(role: EnvelopeRole) {
-  try {
-    const adapter =
-      role === 'recipient' ? recipientTemplatesAdapter : senderTemplatesAdapter
-    const count: number = yield call([adapter, 'count'])
-
-    yield put(
-      updateToolbarIcon({
-        section: role,
-        key: 'addressList',
-        value: {
-          options: {
-            badge: count > 0 ? count : null,
-          },
-        },
-      }),
-    )
-  } catch (error) {
-    console.error(`Error updating addressList badge for ${role}:`, error)
-  }
 }
 
 function* handleAddressSave(
@@ -82,7 +57,6 @@ function* handleAddressSave(
     )
 
     if (result.success) {
-      // Обновляем статус группы
       yield put(
         updateGroupStatus({
           section: role,
@@ -90,9 +64,8 @@ function* handleAddressSave(
           status: 'enabled',
         }),
       )
-
-      // Обновляем бэдж иконки addressList с количеством записей
-      yield call(updateAddressListBadge, role)
+      // Пересчёт тулбара: addressList enabled, addressPlus disabled при совпадении, бэдж, deleteList
+      yield call(processEnvelopeVisuals)
     } else {
       console.error('Failed to save address:', result.error)
     }

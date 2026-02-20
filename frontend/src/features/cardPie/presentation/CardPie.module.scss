@@ -55,7 +55,9 @@
 
 .buttonStatusIcon {
   opacity: 0.5;
-  transition: opacity 0.2s ease, filter 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
 
   &.completed {
     opacity: 1;
@@ -65,7 +67,7 @@
 }
 
 .buttonStatusBkg {
-  fill: $color-disabled;
+  fill: #ffffff;
 }
 
 .rainbowRotationWrapper {
