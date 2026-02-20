@@ -13,6 +13,7 @@ import {
   cardphotoHistorySaga,
   hydrateAppSession,
   watchSessionChanges,
+  addressSaveSaga,
 } from '../middleware'
 
 export function* rootSaga() {
@@ -27,6 +28,7 @@ export function* rootSaga() {
 
     fork(envelopeToolbarSaga),
     fork(envelopeProcessSaga),
+    fork(addressSaveSaga),
     fork(cardtextProcessSaga),
     // fork(cardphotoToolbarSaga),
     // fork(cardphotoHistorySaga),

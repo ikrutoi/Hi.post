@@ -33,9 +33,12 @@ const senderSlice = createSlice({
     },
 
     clearSender: () => initialSender,
+
+    /** Триггер сохранения адреса в базу шаблонов (при клике addressPlus) */
+    saveAddressRequested: () => {},
   },
 })
 
-export const { updateSenderField, setEnabled, restoreSender, clearSender } =
+export const { updateSenderField, setEnabled, restoreSender, clearSender, saveAddressRequested } =
   senderSlice.actions
 export default senderSlice.reducer

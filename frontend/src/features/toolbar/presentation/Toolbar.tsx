@@ -31,7 +31,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
 
   const { sizeToolbarContour, sectionMenuHeight, setSectionMenuHeight } =
     useSizeFacade()
-  console.log('TOOLBAR section', section)
+  // console.log('TOOLBAR section', section)
 
   const isAlreadyApplied = useAppSelector(selectIsCurrentCropApplied)
   const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
@@ -73,6 +73,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     return (
       <button
         key={key}
+        type="button"
         className={clsx(
           styles.toolbarKey,
           styles[`toolbarKey${capitalize(buttonStatus)}`],

@@ -1,0 +1,57 @@
+import type { CardStatus } from './card.types'
+import type { AromaImageIndex } from '@entities/aroma/domain/types'
+import type { DispatchDate } from '@entities/date'
+
+export interface CardTemplateReferences {
+  cardphotoId: string | null
+  cardtextId: string | null
+  recipientId: string | null
+  senderId: string | null
+}
+
+export interface CardPreview {
+  cardphotoPreview?: string
+  cardtextPreview?: string
+  recipientPreview?: string
+  senderPreview?: string
+  aromaPreview?: string
+  datePreview?: string
+}
+
+export interface PhotoUsage {
+  photoId: string
+  photoOwnerId: string
+  tokensCost: number
+}
+
+export interface CardMeta {
+  price?: string
+  createdAt: number
+  updatedAt: number
+}
+
+export interface CardReference {
+  id: string
+  userId: string
+  status: CardStatus
+
+  templates: CardTemplateReferences
+
+  aromaId: AromaImageIndex
+  date: DispatchDate
+
+  thumbnailUrl: string
+  preview: CardPreview
+
+  meta: CardMeta
+
+  photoUsage?: PhotoUsage[]
+}
+
+export interface CardListItem {
+  id: string
+  status: CardStatus
+  thumbnailUrl: string
+  date: DispatchDate
+  preview?: Partial<CardPreview>
+}

@@ -26,9 +26,15 @@ const recipientSlice = createSlice({
     },
 
     clearRecipient: () => initialRecipient,
+
+    saveAddressRequested: () => {},
   },
 })
 
-export const { updateRecipientField, restoreRecipient, clearRecipient } =
-  recipientSlice.actions
+export const {
+  updateRecipientField,
+  restoreRecipient,
+  clearRecipient,
+  saveAddressRequested,
+} = recipientSlice.actions
 export default recipientSlice.reducer

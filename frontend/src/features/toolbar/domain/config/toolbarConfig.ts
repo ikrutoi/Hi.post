@@ -45,15 +45,6 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     initialState: initialCardtextToolbarState,
     onAction: (key, section, editor, dispatch) => {
       switch (key) {
-        // case 'bold':
-        //   cardtextToolbarController.toggleBold(editor, dispatch)
-        //   break
-        // case 'italic':
-        //   cardtextToolbarController.toggleItalic(editor, dispatch)
-        //   break
-        // case 'underline':
-        //   cardtextToolbarController.toggleUnderline(editor, dispatch)
-        // break
         case 'left':
         case 'center':
         case 'right':
@@ -70,9 +61,13 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     keys: ENVELOPE_KEYS,
     initialState: initialSenderToolbarState,
     onAction: (key, section) => console.log('Sender action', key, section),
-    getBadges: (state: ToolbarState['sender']) => ({
-      cardUser: state.cardUser === 'enabled' ? 1 : null,
-    }),
+    getBadges: (state: ToolbarState['sender']) => {
+      const addressListBadge = (state.addressList as any)?.options?.badge
+      return {
+        cardUser: state.cardUser === 'enabled' ? 1 : null,
+        addressList: addressListBadge && addressListBadge > 0 ? addressListBadge : null,
+      }
+    },
     group: 'address',
     toolbar: ENVELOPE_TOOLBAR,
   },
@@ -81,7 +76,12 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     initialState: initialRecipientToolbarState,
     onAction: (key, section) => console.log('Recipient action', key, section),
     group: 'address',
-    getBadges: (state: ToolbarState['recipient']) => ({}),
+    getBadges: (state: ToolbarState['recipient']) => {
+      const addressListBadge = (state.addressList as any)?.options?.badge
+      return {
+        addressList: addressListBadge && addressListBadge > 0 ? addressListBadge : null,
+      }
+    },
     toolbar: ENVELOPE_TOOLBAR,
   },
   editorPie: {

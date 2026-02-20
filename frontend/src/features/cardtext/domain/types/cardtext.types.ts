@@ -117,3 +117,19 @@ export interface CardtextState extends CardtextSessionRecord {
   isComplete: boolean
   resetToken: number
 }
+
+/**
+ * Тип для хранения шаблона текста карточки в IndexedDB
+ * Используется в адаптере cardtextTemplatesAdapter
+ */
+export interface CardtextTemplateItem {
+  /** Уникальный идентификатор (nanoid или число) */
+  id: string
+  /** Состояние текста карточки */
+  state: {
+    text: CardtextValue
+    style: CardtextStyle
+    plainText: string
+    cardtextLines: number
+  }
+}

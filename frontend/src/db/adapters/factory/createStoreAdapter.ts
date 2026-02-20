@@ -32,13 +32,22 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     await handleTransactionPromise(tx)
   }
 
-  // const getMaxLocalId = async (): Promise<number> => {
-  //   const all = await getAll()
-  //   const localIds = (all as { id?: unknown }[])
-  //     .map((r) => r.id)
-  //     .filter((id): id is number => typeof id === 'number')
-  //   return localIds.length ? Math.max(...localIds) : 0
-  // }
+  const getMaxLocalId = async (): Promise<number> => {
+    const all = await getAll()
+    const localIds = (all as { localId?: number; id?: string | number }[])
+      .map((r) => {
+        if (typeof r.localId === 'number') return r.localId
+        if (typeof r.id === 'number') return r.id
+        if (typeof r.id === 'string') {
+          const numId = Number.parseInt(r.id, 10)
+          return Number.isNaN(numId) ? 0 : numId
+        }
+        return 0
+      })
+      .filter((id): id is number => typeof id === 'number' && id > 0)
+
+    return localIds.length > 0 ? Math.max(...localIds) : 0
+  }
 
   const addRecordWithId = async (
     id: IDBValidKey,
@@ -69,7 +78,7 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     getById,
     put,
     deleteById,
-    // getMaxLocalId,
+    getMaxLocalId,
     addRecordWithId,
     count,
     clear,

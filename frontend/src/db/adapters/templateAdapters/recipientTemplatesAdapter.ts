@@ -2,7 +2,7 @@ import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
 import type { TemplateStoreMap, RecipientTemplatesAdapter } from '@/db/types'
 
 const base =
-  createStoreAdapter<TemplateStoreMap['recipient']>('recipientTemplates')
+  createStoreAdapter<TemplateStoreMap['recipient']>('recipient')
 
 export const recipientTemplatesAdapter: RecipientTemplatesAdapter = {
   ...base,

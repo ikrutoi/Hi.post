@@ -44,6 +44,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   return (
     <form
       className={clsx(styles.addressForm, styles[`addressForm${roleLabel}`])}
+      onSubmit={(e) => {
+        e.preventDefault()
+      }}
     >
       {role === 'sender' && (
         <div className={styles.senderToggle}>

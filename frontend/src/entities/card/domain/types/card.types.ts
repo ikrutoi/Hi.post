@@ -5,6 +5,9 @@ import type { AromaItem, AromaState } from '@entities/aroma/domain/types'
 import type { DispatchDate } from '@entities/date'
 import { CardSection } from '@shared/config/constants'
 
+// Re-export new types
+export * from './cardReference.types'
+
 export const CARD_STATUSES = [
   'processed',
   'cart',
