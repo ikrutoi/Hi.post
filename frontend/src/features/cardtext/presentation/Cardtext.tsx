@@ -1,7 +1,7 @@
 import React from 'react'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { CardEditor } from './CardEditor/CardEditor'
-import { useLayoutFacade } from '@layout/application/facades'
+import { useSizeFacade } from '@layout/application/facades'
 // import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import styles from './Cardtext.module.scss'
 
@@ -13,8 +13,7 @@ export const Cardtext: React.FC<CardtextProps> = ({
   // toolbarColor,
   styleLeft,
 }) => {
-  const { size } = useLayoutFacade()
-  const { sizeCard } = size
+  const { sizeCard } = useSizeFacade()
   // const widthRenderer = sizeCard.height * CARD_SCALE_CONFIG.aspectRatio
 
   return (

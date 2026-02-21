@@ -8,11 +8,13 @@
   padding: 0.8rem;
   right: -1rem;
   width: 2rem;
-  top: 50%;
-  transform: translateY(-50%);
+  height: 100%;
+  top: 0;
+  // transform: translateY(-50%);
   // border: solid 1px $color-section-dark;
   border-radius: 0.9rem;
   background-color: white;
+  // border: solid 1px red;
 }
 
 .toolbarCropQuality {

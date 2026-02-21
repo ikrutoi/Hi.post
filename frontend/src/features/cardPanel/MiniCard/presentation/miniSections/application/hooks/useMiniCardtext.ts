@@ -8,17 +8,16 @@ import {
   FONT_SIZE_COEFFICIENT_MINICARD,
 } from '@cardtext/domain/types'
 import { calculateEditorLayout } from '@cardtext/application/helpers'
-import { useLayoutFacade } from '@layout/application/facades'
+import { useSizeFacade } from '@layout/application/facades'
 
 export const useMiniCardtext = () => {
   const editor = useMemo(() => withReact(createEditor()), [])
 
   const { value, cardtextLines } = useSelector(
-    (state: RootState) => state.cardtext
+    (state: RootState) => state.cardtext,
   )
 
-  const { size } = useLayoutFacade()
-  const { sizeMiniCard } = size
+  const { sizeMiniCard } = useSizeFacade()
 
   const style = sizeMiniCard?.height
     ? (() => {

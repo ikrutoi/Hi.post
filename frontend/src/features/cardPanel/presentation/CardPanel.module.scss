@@ -3,18 +3,23 @@
 .cardPanel {
   position: relative;
   width: 100%;
+  height: 100%;
+  margin: 0 auto;
   border-radius: 1rem;
   scroll-behavior: smooth;
+  border: solid 1px purple;
 
   &Content {
     position: relative;
     margin-left: auto;
     margin-right: auto;
+    border: solid 1px blue;
   }
 
   &Main {
     position: relative;
     width: 100%;
+    border: solid 1px green;
   }
 
   &PreviewSlot {
@@ -35,7 +40,6 @@
     border-radius: 1rem;
     // width: 100%;
     // height: 100%;
-    // border: solid 1px purple;
   }
 
   .pieToolbar {
@@ -75,6 +79,7 @@
     border-radius: 1rem;
     display: flex;
     align-items: center;
+    border: solid 1px red;
   }
 
   &MiniCards {

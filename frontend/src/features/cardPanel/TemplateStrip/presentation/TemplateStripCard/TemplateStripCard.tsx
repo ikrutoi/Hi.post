@@ -1,5 +1,6 @@
 import React from 'react'
 import type { TemplateStripCardProps } from './TemplateStripCard.types'
+import styles from './TemplateStripCard.module.scss'
 
 export const TemplateStripCard: React.FC<TemplateStripCardProps> = ({
   item,
@@ -14,6 +15,7 @@ export const TemplateStripCard: React.FC<TemplateStripCardProps> = ({
   return (
     <div
       ref={cardRef}
+      className={styles.templateStripCard}
       data-index={index}
       data-section={item.section}
       role="button"
@@ -23,9 +25,6 @@ export const TemplateStripCard: React.FC<TemplateStripCardProps> = ({
       style={{
         width: `${size.width}px`,
         height: `${size.height}px`,
-        position: 'absolute',
-        left: 0,
-        boxSizing: 'border-box',
       }}
     >
       <span>{item.section}</span>

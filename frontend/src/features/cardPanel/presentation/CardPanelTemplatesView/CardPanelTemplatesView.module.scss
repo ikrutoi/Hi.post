@@ -1,0 +1,34 @@
+.root {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.main {
+  position: relative;
+  width: 100%;
+  border: solid 1px blue;
+}
+
+.strip {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.stripRow {
+  display: flex;
+  flex-direction: row;
+  width: max-content;
+  transition: transform 0.15s ease-out;
+}
+
+.cardSlot {
+  position: relative;
+  flex-shrink: 0;
+}

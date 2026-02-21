@@ -5,9 +5,7 @@ import { useAppSelector } from '@app/hooks'
 import { selectCropQualityProgress } from '@cardphoto/infrastructure/selectors'
 import styles from './CropQualityIndicator.module.scss'
 
-export const CropQualityIndicator: React.FC<{ height: number }> = ({
-  height,
-}) => {
+export const CropQualityIndicator: React.FC = () => {
   const thumbRef = useRef<HTMLDivElement>(null)
   const reduxProgress = useAppSelector(selectCropQualityProgress)
 
@@ -31,7 +29,7 @@ export const CropQualityIndicator: React.FC<{ height: number }> = ({
   return (
     <div
       className={clsx(styles.toolbarCropQualityContainer)}
-      style={{ height: `${height}px` }}
+      // style={{ height: `${height}px` }}
     >
       <div className={styles.toolbarCropQuality}>
         <div ref={thumbRef} className={styles.qualityThumb} />

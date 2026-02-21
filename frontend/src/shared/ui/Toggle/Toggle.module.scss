@@ -49,6 +49,22 @@
   }
 }
 
+/* Тумблер в цветах отправителя (мята) — сразу видно, что относится к форме отправителя */
+.toggleEnvelopeSender {
+  .toggleSlider {
+    box-shadow: 0 0 0 1px rgba(26, 77, 58, 0.15);
+  }
+
+  .toggleInput:checked + .toggleSlider {
+    background-color: #c5e5db;
+    box-shadow: 0 0 0 1px rgba(26, 77, 58, 0.25);
+  }
+
+  .toggleText {
+    color: #1a4d3a;
+  }
+}
+
 .toggleDefault .toggleSlider {
   width: 34px;
   height: 18px;

@@ -48,8 +48,7 @@ export const ImageCrop = () => {
 
   const { state: iconState } = useToolbarFacade('cardphoto')
 
-  const { size } = useSizeFacade()
-  const { sizeCard } = size
+  const { sizeCard } = useSizeFacade()
 
   const [loaded, setLoaded] = useState(false)
 

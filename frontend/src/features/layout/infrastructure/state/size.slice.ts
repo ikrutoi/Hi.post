@@ -31,6 +31,7 @@ const initialState: SizeState = {
   //   width: 0,
   //   height: 0,
   // },
+  workingAreaWidth: null,
   remSize: 16,
   viewportSize: { width: 0, height: 0, viewportSize: null },
   // scale: null,
@@ -78,6 +79,10 @@ export const sizeSlice = createSlice({
     // },
 
     setSectionMenuHeight(state, action: PayloadAction<number | null>) {
+      state.sectionMenuHeight = action.payload
+    },
+
+    setWidthWorkingArea(state, action: PayloadAction<number | null>) {
       state.sectionMenuHeight = action.payload
     },
 

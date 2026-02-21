@@ -1,0 +1,54 @@
+@use '@styles/config/colors' as *;
+
+.placeholder {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  padding: 0.15rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.9rem;
+  border: 1px solid $color-section-dark;
+  cursor: pointer;
+  overflow: hidden;
+  text-align: center;
+  background-color: #ffffff;
+  transition: border-color 0.2s ease;
+
+  &.placeholderSender {
+    background-color: $color-envelope-sender;
+    border-color: $color-envelope-sender-border;
+    .placeholderText {
+      color: $color-envelope-sender-legend;
+    }
+  }
+
+  &.placeholderRecipient {
+    background-color: $color-envelope-recipient;
+    border-color: $color-envelope-recipient-border;
+    .placeholderText {
+      color: $color-envelope-recipient-legend;
+    }
+  }
+}
+
+.placeholderLabel {
+  font-size: 0.5rem;
+  color: $color-font-enabled-light-hover;
+  margin-bottom: 0.1rem;
+  line-height: 1;
+}
+
+.placeholderText {
+  font-size: 0.65rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  // text-overflow: ellipsis;
+  max-width: 2.7rem;
+  color: $color-font-enabled;
+}

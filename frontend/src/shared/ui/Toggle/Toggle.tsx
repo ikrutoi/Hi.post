@@ -7,7 +7,7 @@ type ToggleProps = {
   checked: boolean
   onChange: (value: boolean) => void
   size?: 'small' | 'default' | 'large'
-  variant?: 'default' | 'envelope'
+  variant?: 'default' | 'envelope' | 'envelopeSender'
 }
 
 export const Toggle: React.FC<ToggleProps> = ({
@@ -23,6 +23,7 @@ export const Toggle: React.FC<ToggleProps> = ({
         styles.toggleLabel,
         styles[`toggle${size[0].toUpperCase() + size.slice(1)}`],
         variant === 'envelope' && styles.toggleEnvelope,
+        variant === 'envelopeSender' && styles.toggleEnvelopeSender,
       )}
     >
       <input

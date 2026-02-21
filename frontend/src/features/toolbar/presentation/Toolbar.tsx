@@ -124,9 +124,9 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           )}
         </div>
       ))}
-      {section === 'cardphoto' && state.crop.state !== 'active' && (
+      {/* {section === 'cardphoto' && state.crop.state !== 'active' && (
         <CropPreview />
-      )}
+      )} */}
     </div>
   )
 }

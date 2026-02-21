@@ -4,7 +4,6 @@ import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { SectionEditorToolbar } from './SectionEditorToolbar/SectionEditorToolbar'
 import { useSizeFacade } from '@layout/application/facades'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
-
 import styles from './CardSectionEditor.module.scss'
 
 export const CardSectionEditor: React.FC = () => {
@@ -16,7 +15,7 @@ export const CardSectionEditor: React.FC = () => {
       <div
         className={clsx(styles.editorToolbar)}
         style={{
-          width: `${sizeToolbarContour.width}px`,
+          // width: `${sizeToolbarContour.width}px`,
           height: `${sizeToolbarContour.height}px`,
         }}
       >

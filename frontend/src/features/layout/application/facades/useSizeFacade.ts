@@ -47,17 +47,5 @@ export const useSizeFacade = () => {
     miniCardDimensions,
 
     ...actions,
-
-    size: {
-      sizeCard,
-      sizeMiniCard,
-      remSize,
-      // scale,
-      sectionMenuHeight,
-      viewportSize,
-      cardOrientation,
-      cardDimensions,
-      miniCardDimensions,
-    },
   }
 }

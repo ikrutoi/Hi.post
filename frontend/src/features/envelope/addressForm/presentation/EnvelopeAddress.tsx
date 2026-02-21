@@ -55,7 +55,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             checked={senderFacade.isEnabled}
             onChange={senderFacade.toggleEnabled}
             size="default"
-            variant="envelope"
+            variant="envelopeSender"
           />
         </div>
       )}

@@ -1,3 +1,4 @@
+export * from './useCardPanelTemplates'
 export * from './useDuplicateCheck'
 export * from './useExpendCard'
 export * from './useMinimizeIcons'

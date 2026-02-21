@@ -1,0 +1,10 @@
+@use '@styles/config/colors' as *;
+
+.templateStripCard {
+  width: 100%;
+  height: 100%;
+  position: 'absolute';
+  left: 0;
+  box-sizing: 'border-box';
+  border: 1px solid red;
+}

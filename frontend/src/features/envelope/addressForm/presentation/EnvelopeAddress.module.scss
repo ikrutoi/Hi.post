@@ -30,6 +30,16 @@
   border: solid 1px $color-section-dark;
 }
 
+.addressFormSender .addressFieldset {
+  // background-color: #e8f5f0;
+  border-color: $color-envelope-sender-border;
+}
+
+.addressFormRecipient .addressFieldset {
+  // background-color: #f0e8f5;
+  border-color: $color-envelope-recipient-border;
+}
+
 .addressLegend {
   user-select: none;
   font-size: 0.9rem;
@@ -38,7 +48,14 @@
   margin-right: 0.6rem;
   color: $color-inactive;
   text-transform: uppercase;
-  // border: solid 1px green;
+}
+
+.addressFormSender .addressLegend {
+  color: #1a4d3a;
+}
+
+.addressFormRecipient .addressLegend {
+  color: #3d2a5c;
 }
 
 .envelopeAddressGroup {

@@ -9,8 +9,7 @@ export const useImageUpload = (
   onUpload: (meta: ImageMeta) => void,
   onLoading: () => void,
 ) => {
-  const { size: sizeState } = useSizeFacade()
-  const { sizeCard } = sizeState
+  const { sizeCard } = useSizeFacade()
   console.log('USE_IMAGE_UPLOAD')
 
   return useCallback(

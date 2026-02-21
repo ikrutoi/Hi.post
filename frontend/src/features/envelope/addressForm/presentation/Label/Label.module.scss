@@ -28,33 +28,46 @@
   box-sizing: border-box;
   font-size: 1rem;
   font-weight: 4100;
-  // font-style: italic;
   color: $color-font-deepBlack;
   background-color: $color-disabled;
-  border: none;
+  border: 1px solid transparent;
   height: 1.5rem;
   border-radius: 4px;
   outline: none;
   letter-spacing: 1px;
 }
 
+.labelInputSender {
+  text-align: left;
+  background-color: #f0faf7;
+  border-color: #c5e5db;
+}
+
+.labelInputRecipient {
+  text-align: right;
+  background-color: #faf7fc;
+  border-color: #e0d0eb;
+}
+
 .labelInput:focus {
   outline: none;
   color: $color-font-active;
   background-color: $color-enabled;
-  box-shadow: 0 0 0 1px rgba(0, 125, 215, 0.2);
+  box-shadow: 0 0 0 1px rgba(53, 65, 73, 0.2);
   transition:
     background-color 0.2s ease,
     box-shadow 0.2s ease,
     color 0.2s ease;
 }
 
-.labelInputSender {
-  text-align: left;
+.labelInputSender:focus {
+  background-color: #fff;
+  box-shadow: 0 0 0 1px #1a4d3a40;
 }
 
-.labelInputRecipient {
-  text-align: right;
+.labelInputRecipient:focus {
+  background-color: #fff;
+  box-shadow: 0 0 0 1px #3d2a5c40;
 }
 
 .labelZip {

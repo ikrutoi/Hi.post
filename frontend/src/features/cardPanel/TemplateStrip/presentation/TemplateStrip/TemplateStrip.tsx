@@ -23,7 +23,7 @@ export const TemplateStrip: React.FC<TemplateStripProps> = ({
 
   return (
     <div data-template-strip-section={section}>
-      <div aria-label={`Шаблоны: ${section}`} role="list">
+      <div aria-label={`templates: ${section}`} role="list">
         {items.map((item, index) => (
           <TemplateStripCard
             key={`${item.section}-${item.template.id ?? index}`}

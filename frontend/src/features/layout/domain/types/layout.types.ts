@@ -94,6 +94,7 @@ export interface SizeState {
   sizeMiniCard: SizeCard
   // sizeItemCalendar: SizeBox
   remSize: number
+  workingAreaWidth: number | null
   viewportSize: ViewportSizeState
   // scale: number | null
   sectionMenuHeight: number | null

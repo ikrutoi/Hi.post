@@ -10,7 +10,16 @@ import { getMaxMiniCardsCount } from '@shared/utils/layout'
 import { roundTo } from '@shared/helpers'
 import type { SizeCard } from '@layout/domain/types'
 
-export const useRecordSizeCard = (ref: React.RefObject<HTMLElement | null>) => {
+export interface UseRecordSizeCardOptions {
+  /** Когда true, размер панели не обновляется (нижний блок сохраняет прежнюю ширину). */
+  skipPanelMeasure?: boolean
+}
+
+export const useRecordSizeCard = (
+  formRef: React.RefObject<HTMLElement | null>,
+  cardPanelRef: React.RefObject<HTMLElement | null>,
+  options?: UseRecordSizeCardOptions,
+) => {
   const {
     remSize,
     setSizeCard,
@@ -18,17 +27,36 @@ export const useRecordSizeCard = (ref: React.RefObject<HTMLElement | null>) => {
     // setScale,
     // setSizeToolbarContour,
   } = useSizeFacade()
+  const skipPanelMeasure = options?.skipPanelMeasure ?? false
 
   useEffect(() => {
-    const element = ref.current
-    if (!element) return
+    const elementForm = formRef.current
+    const elementCardPanel = cardPanelRef.current
+    if (!elementForm || !elementCardPanel) return
 
     const updateSize = () => {
-      const width = element.clientWidth
-      const height = element.clientHeight
-      const resultSizeMiniCard = getSizeMiniCard({ width, height })
+      const widthForm = elementForm.clientWidth
+      const heightForm = elementForm.clientHeight
+      if (skipPanelMeasure) {
+        const currentRemSize = remSize ?? 16
+        const resultSizeCard = getSizeCard(
+          { width: widthForm, height: heightForm },
+          currentRemSize,
+        )
+        setSizeCard(resultSizeCard)
+        return
+      }
+      const widthCardPanel = elementCardPanel.clientWidth
+      const heightCardPanel = elementCardPanel.clientHeight
+      const resultSizeMiniCard = getSizeMiniCard({
+        width: widthCardPanel,
+        height: heightCardPanel,
+      })
       const currentRemSize = remSize ? remSize : 16
-      const resultSizeCard = getSizeCard({ width, height }, currentRemSize)
+      const resultSizeCard = getSizeCard(
+        { width: widthForm, height: heightForm },
+        currentRemSize,
+      )
       // const resultSizeToolbarContour = getSizeToolbarContour(
       //   resultSizeCard,
       //   currentRemSize,
@@ -48,10 +76,10 @@ export const useRecordSizeCard = (ref: React.RefObject<HTMLElement | null>) => {
     updateSize()
 
     const resizeObserver = new ResizeObserver(() => updateSize())
-    resizeObserver.observe(element)
+    resizeObserver.observe(elementForm)
 
     return () => resizeObserver.disconnect()
-  }, [])
+  }, [skipPanelMeasure])
 
   // return sizeMiniCard
 }

@@ -23,7 +23,7 @@ export const MiniCardtextScale: React.FC = () => {
         style={{
           width: sizeCard.width,
           height: sizeCard.height,
-          transform: `scale(${CARD_SCALE_CONFIG.scaleMiniCard})`,
+          // transform: `scale(${CARD_SCALE_CONFIG.scaleMiniCard})`,
           transformOrigin: 'top left',
         }}
       >

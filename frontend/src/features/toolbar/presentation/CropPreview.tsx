@@ -1,21 +1,37 @@
 import React, { useMemo } from 'react'
+import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
+import { useSizeFacade } from '@layout/application/facades'
 import { selectCropIds } from '@cardphoto/infrastructure/selectors'
 import { CropPreviewItem } from './CropPreviewItem'
 import styles from './CropPreview.module.scss'
 
-export const CropPreview = React.memo(() => {
-  const cropIds = useAppSelector(selectCropIds)
+export type CropPreviewVariant = 'toolbar' | 'panel'
 
-  const reversed = useMemo(() => [...cropIds].reverse(), [cropIds])
+export const CropPreview = React.memo(
+  ({ variant = 'toolbar' }: { variant?: CropPreviewVariant }) => {
+    const cropIds = useAppSelector(selectCropIds)
+    const { sizeToolbarContour } = useSizeFacade()
 
-  if (reversed.length === 0) return null
+    const reversed = useMemo(() => [...cropIds].reverse(), [cropIds])
 
-  return (
-    <div className={styles.cropSidebar}>
-      {reversed.map((id) => (
-        <CropPreviewItem key={id} cropId={id} />
-      ))}
-    </div>
-  )
-})
+    if (reversed.length === 0) return null
+
+    const isPanel = variant === 'panel'
+
+    return (
+      <div
+        className={clsx(styles.cropSidebar, isPanel && styles.cropSidebarPanel)}
+        style={
+          isPanel
+            ? undefined
+            : { left: `${sizeToolbarContour?.width ?? 0}px` }
+        }
+      >
+        {reversed.map((id) => (
+          <CropPreviewItem key={id} cropId={id} />
+        ))}
+      </div>
+    )
+  },
+)
