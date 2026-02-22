@@ -4,6 +4,8 @@ export interface CartItemMeta {
   comment?: string
   source?: 'user' | 'system'
   tags?: string[]
+  /** Группа реплик: несколько открыток с одним replicaGroupId синхронизируют общие секции. */
+  replicaGroupId?: string | null
   [key: string]: unknown
 }
 export interface CartItem {

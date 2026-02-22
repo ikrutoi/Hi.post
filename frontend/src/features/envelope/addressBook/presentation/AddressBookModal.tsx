@@ -1,7 +1,7 @@
 import React from 'react'
 import { useAddressBookList } from '@envelope/addressBook/application/controllers'
 import { AddressEntry } from './AddressEntry'
-import type { AddressBookEntry } from '@envelope/addressBook/domain'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 
 type Props = {
   role: 'sender' | 'recipient'

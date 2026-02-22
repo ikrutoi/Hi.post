@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 
 .panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -8,102 +9,42 @@
   background-color: #fff;
   border: 1px solid $color-envelope-recipient-border;
   border-radius: 0.5rem;
-  box-shadow: 0 2px 8px rgba(61, 42, 92, 0.12);
 }
 
 .header {
-  flex-shrink: 0;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid $color-envelope-recipient-border;
+  position: absolute;
+  top: -1rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.title {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: $color-envelope-recipient-legend;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-.filterWrap {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.5rem;
+  width: 100%;
+  height: auto;
+  flex-shrink: 0;
+  padding: 0 1rem;
+  // border-bottom: 1px solid $color-envelope-recipient-border;
+  // border: 1px solid red;
 }
 
-.filterHint {
-  font-size: 0.7rem;
-  color: $color-font-enabled-light;
-}
-
-.filter {
+.headerLabel {
   display: flex;
-  gap: 0;
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid $color-envelope-recipient-border;
-}
-
-.filterBtn {
-  flex: 1;
-  padding: 0.25rem 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: $color-font-enabled-light;
+  padding: 0 0.5rem;
   background-color: #fff;
-  border: none;
-  border-right: 1px solid $color-envelope-recipient-border;
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-
-  &:last-child {
-    border-right: none;
-  }
-
-  &:hover:not(:disabled) {
-    background-color: $color-envelope-recipient-input;
-    color: $color-envelope-recipient-legend;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
+  // border: 1px solid blue;
 }
 
-.filterBtnActive {
-  flex: 1;
-  padding: 0.25rem 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 500;
+.label {
+  font-size: 0.9rem;
+  padding-top: 4px;
+  color: $color-envelope-recipient-legend;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  background-color: $color-envelope-recipient-input;
-  color: $color-envelope-recipient-legend;
-  border: none;
-  border-right: 1px solid $color-envelope-recipient-border;
-  cursor: pointer;
-
-  &:last-child {
-    border-right: none;
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
+  // border: 1px solid red;s
 }
 
 .list {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem 0.75rem 0.5rem 0.5rem; /* справа место под вертикальный скролл */
+  padding: 0.75rem 0.75rem 0.5rem 0.5rem;
 }
 
 .empty {
@@ -111,79 +52,4 @@
   font-size: 0.85rem;
   color: $color-font-enabled-light;
   text-align: center;
-}
-
-/* Строки по высоте как инпуты в формах адресов (1.5rem), фон лавандовый для Получатель */
-.list :global(.address-entry) {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  height: 1.5rem;
-  padding: 0 0.3rem;
-  margin-bottom: 0.25rem;
-  box-sizing: border-box;
-  background-color: $color-envelope-recipient-input;
-  border: 1px solid $color-envelope-recipient-border;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-
-  &:hover {
-    background-color: darken($color-envelope-recipient-input, 2%);
-  }
-}
-
-.list :global(.address-entry__info) {
-  flex: 1;
-  min-width: 0;
-  cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  strong {
-    font-size: 0.85rem;
-    color: $color-envelope-recipient-legend;
-  }
-
-  strong::after {
-    content: ' · ';
-    font-weight: 400;
-    color: $color-font-enabled-light;
-  }
-
-  div {
-    display: inline;
-    font-size: 0.8rem;
-    color: $color-font-enabled-light;
-  }
-}
-
-.list :global(.address-entry__role) {
-  display: inline-block;
-  margin-right: 0.35rem;
-  padding: 0.1rem 0.25rem;
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: $color-envelope-recipient-legend;
-  background-color: rgba(61, 42, 92, 0.12);
-  border-radius: 3px;
-  flex-shrink: 0;
-}
-
-.list :global(.address-entry__delete) {
-  flex-shrink: 0;
-  padding: 0.2rem 0.4rem;
-  background: none;
-  border: none;
-  color: $color-font-enabled-light;
-  cursor: pointer;
-  font-size: 1rem;
-  line-height: 1;
-
-  &:hover {
-    color: #c62828;
-  }
 }

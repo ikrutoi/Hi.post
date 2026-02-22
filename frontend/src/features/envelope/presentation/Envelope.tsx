@@ -1,9 +1,8 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import clsx from 'clsx'
-import { ENVELOPE_ROLE_LABELLED } from '@shared/config/constants'
 import type { AddressField } from '@shared/config/constants'
 import type { AddressBookEntry } from '@envelope/addressBook/domain'
-import { useAppDispatch } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { Mark } from '@envelope/view/presentation'
 import { getSafeLang } from '@i18n/helpers'
 import { i18n } from '@i18n/i18n'
@@ -12,6 +11,7 @@ import { RecipientListPanel } from '../addressBook/presentation/RecipientListPan
 import { useRecipientFacade } from '../recipient/application/facades'
 import { useAddressBookList } from '../addressBook/application/controllers'
 import { updateRecipientField } from '../recipient/infrastructure/state'
+import { toggleRecipientSelection } from '../infrastructure/state'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -27,33 +27,65 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const showRecipientList =
     recipientListEnabled && recipientEntries.length > 0
 
-  const handleRecipientSelect = (entry: AddressBookEntry) => {
-    ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-      ([field, value]) => {
-        dispatch(updateRecipientField({ field, value }))
+  const selectedRecipientIds = useAppSelector(
+    (state) => state.envelopeSelection.selectedRecipientIds,
+  )
+
+  const handleRecipientSelect = useCallback(
+    (entry: AddressBookEntry) => {
+      const wasSelected = selectedRecipientIds.includes(entry.id)
+      dispatch(toggleRecipientSelection(entry.id))
+      if (!wasSelected) {
+        ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
+          ([field, value]) => {
+            dispatch(updateRecipientField({ field, value }))
+          }
+        )
       }
-    )
-  }
+    },
+    [dispatch, selectedRecipientIds],
+  )
 
   return (
     <div className={styles.envelope}>
-      <div className={styles.envelopeLogo} />
-      {ENVELOPE_ROLE_LABELLED.map(({ key: role, label }) => (
-        <div
-          key={role}
-          className={clsx(
-            styles.envelopeSection,
-            styles[`envelopeSection${label}`]
-          )}
-        >
-          <EnvelopeAddress role={role} roleLabel={label} lang={lang} />
-        </div>
-      ))}
-      {showRecipientList && (
-        <div className={styles.recipientListPanelWrap}>
-          <RecipientListPanel onSelect={handleRecipientSelect} />
-        </div>
-      )}
+      <div className={styles.envelopeLeftSlot}>
+        {showRecipientList ? (
+          <div className={styles.recipientListPanelWrap}>
+            <RecipientListPanel
+              onSelect={handleRecipientSelect}
+              selectedIds={selectedRecipientIds}
+            />
+          </div>
+        ) : (
+          <>
+            <div className={styles.envelopeLogo} />
+            <div
+              className={clsx(
+                styles.envelopeSection,
+                styles.envelopeSectionSender
+              )}
+            >
+              <EnvelopeAddress
+                role="sender"
+                roleLabel="Sender"
+                lang={lang}
+              />
+            </div>
+          </>
+        )}
+      </div>
+      <div
+        className={clsx(
+          styles.envelopeSection,
+          styles.envelopeSectionRecipient
+        )}
+      >
+        <EnvelopeAddress
+          role="recipient"
+          roleLabel="Recipient"
+          lang={lang}
+        />
+      </div>
       <Mark />
     </div>
   )

@@ -14,21 +14,3 @@
     margin-top: 1rem;
   }
 }
-
-.address-entry {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem;
-  border-bottom: 1px solid #eee;
-
-  &__info {
-    cursor: pointer;
-  }
-
-  &__delete {
-    background: none;
-    border: none;
-    color: red;
-    cursor: pointer;
-  }
-}

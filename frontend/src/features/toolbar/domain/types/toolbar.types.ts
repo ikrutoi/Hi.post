@@ -19,6 +19,8 @@ import type {
   CardPanelOverlayToolbarState,
   SectionEditorMenuToolbarState,
   SectionEditorMenuKey,
+  AddressListToolbarState,
+  AddressListKey,
 } from './index'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -48,6 +50,7 @@ export const TOOLBAR_SECTIONS = [
   'editorPie',
   'cardPanelOverlay',
   'sectionEditorMenu',
+  'addressList',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -60,6 +63,7 @@ export type ToolbarState = {
   editorPie: EditorPieToolbarState & { config: ToolbarGroup[] }
   cardPanelOverlay: CardPanelOverlayToolbarState & { config: ToolbarGroup[] }
   sectionEditorMenu: SectionEditorMenuToolbarState & { config: ToolbarGroup[] }
+  addressList: AddressListToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -101,6 +105,11 @@ export type ToolbarSectionConfigMap = {
     SectionEditorMenuKey,
     'sectionEditorMenu'
   >
+  addressList: BaseSectionConfig<
+    AddressListToolbarState,
+    AddressListKey,
+    'addressList'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -117,4 +126,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
             ? CardPanelOverlayToolbarKey
             : S extends 'sectionEditorMenu'
               ? SectionEditorMenuKey
-              : never
+              : S extends 'addressList'
+                ? AddressListKey
+                : never

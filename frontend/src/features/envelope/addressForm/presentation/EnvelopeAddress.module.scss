@@ -92,14 +92,13 @@
 
 .addressFormToolbarSender {
   width: 100%;
-  // position: absolute;
-  // left: 0;
-  // display: flex;
-  // justify-content: flex-end;
+  margin-top: -1px;
+  padding-left: 4.8rem;
 }
 
 .addressFormToolbarRecipient {
   padding-left: 1rem;
+  padding-right: 6.5rem;
 }
 
 .addressFormSender .addressGroup .labelIndex {

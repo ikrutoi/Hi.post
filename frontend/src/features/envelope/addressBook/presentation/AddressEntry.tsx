@@ -1,35 +1,69 @@
 import React from 'react'
-import type { AddressBookEntry } from '@envelope/addressBook/domain'
+import { IconDelete } from '@shared/ui/icons/IconDelete'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
+import styles from './AddressEntry.module.scss'
+import { getToolbarIcon } from '@/shared/utils/icons'
 
 type Props = {
   entry: AddressBookEntry
   onSelect: (entry: AddressBookEntry) => void
   onDelete: (id: string) => void
-  showRole?: boolean
+  isStarred?: boolean
+  isSelected?: boolean
+  onToggleStar?: () => void
 }
 
 export const AddressEntry: React.FC<Props> = ({
   entry,
   onSelect,
   onDelete,
-  showRole = false,
+  isStarred = false,
+  isSelected = false,
+  onToggleStar,
 }) => {
   return (
-    <div className="address-entry">
-      <div className="address-entry__info" onClick={() => onSelect(entry)}>
-        {showRole && (
-          <span className="address-entry__role">{entry.role === 'sender' ? 'Sender' : 'Recipient'}</span>
-        )}
-        {entry.label ? <strong>{entry.label}</strong> : null}
-        <div>
-          {[entry.address.name, entry.address.city].filter(Boolean).join(', ') || '—'}
+    <div
+      className={styles.root}
+      data-selected={isSelected ? 'true' : undefined}
+    >
+      {onToggleStar && (
+        <button
+          type="button"
+          className={styles.star}
+          data-starred={isStarred ? 'true' : undefined}
+          onClick={(e) => {
+            e.stopPropagation()
+            onToggleStar()
+          }}
+          aria-label={
+            isStarred ? 'Remove from quick access' : 'Add to quick access'
+          }
+          title={isStarred ? 'Remove from quick access' : 'Add to quick access'}
+        >
+          ★
+        </button>
+      )}
+      <div className={styles.field}>
+        <div className={styles.info} onClick={() => onSelect(entry)}>
+          {entry.label ? <strong>{entry.label}</strong> : null}
+          <div>
+            {[entry.address.name, entry.address.city]
+              .filter(Boolean)
+              .join(', ') || '—'}
+          </div>
         </div>
       </div>
       <button
-        className="address-entry__delete"
-        onClick={() => onDelete(entry.id)}
+        type="button"
+        className={styles.deleteButton}
+        onClick={(e) => {
+          e.stopPropagation()
+          onDelete(entry.id)
+        }}
+        aria-label="Delete address"
+        title="Delete address"
       >
-        ✕
+        {getToolbarIcon({ key: 'clearInput' })}
       </button>
     </div>
   )

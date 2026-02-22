@@ -67,6 +67,11 @@ import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
 } from '@features/previewStrip/infrastructure/state'
+import {
+  setSelectedRecipientIds,
+  toggleRecipientSelection,
+  clearRecipientSelection,
+} from '@envelope/infrastructure/state'
 import type { SessionData } from '@entities/db/domain/types'
 import type {
   CardtextSessionRecord,
@@ -131,6 +136,11 @@ export function* persistGlobalSession() {
       state.previewStripOrder,
   )
 
+  const envelopeSelection = yield select(
+    (state: { envelopeSelection: { selectedRecipientIds: string[] } }) =>
+      state.envelopeSelection?.selectedRecipientIds ?? [],
+  )
+
   // const newSessionData: SessionData = {
   //   id: 'current_session',
   //   assets: {
@@ -155,6 +165,10 @@ export function* persistGlobalSession() {
     activeSection,
     sizeCard,
     previewStripOrder: previewStripOrder ?? null,
+    envelopeSelection:
+      envelopeSelection.length > 0
+        ? { selectedRecipientIds: envelopeSelection }
+        : null,
     timestamp: Date.now(),
   }
 
@@ -188,6 +202,9 @@ const SESSION_WATCH_ACTIONS = [
   removeCardtextTemplateId.type,
   addAddressTemplateRef.type,
   removeAddressTemplateRef.type,
+  setSelectedRecipientIds.type,
+  toggleRecipientSelection.type,
+  clearRecipientSelection.type,
 ]
 
 export function* hydrateAppSession() {
@@ -374,6 +391,12 @@ export function* hydrateAppSession() {
       }
 
       yield call(processEnvelopeVisuals)
+    }
+
+    if (session.envelopeSelection?.selectedRecipientIds?.length) {
+      yield put(
+        setSelectedRecipientIds(session.envelopeSelection.selectedRecipientIds),
+      )
     }
 
     if (session.aroma && session.aroma.selectedAroma) {

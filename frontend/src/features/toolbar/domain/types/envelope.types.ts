@@ -6,7 +6,8 @@ export const ENVELOPE_KEYS = [
   'close',
   'addressPlus',
   'addressList',
-  'deleteList',
+  'favorite',
+  // 'deleteList',
 ] as const satisfies readonly IconKey[]
 
 export type EnvelopeKey = (typeof ENVELOPE_KEYS)[number]
@@ -23,8 +24,12 @@ export const ENVELOPE_TOOLBAR: ToolbarConfig = [
       { key: 'close', state: 'disabled' },
       { key: 'addressPlus', state: 'disabled' },
       { key: 'addressList', state: 'disabled' },
-      { key: 'deleteList', state: 'disabled' },
     ],
+    status: 'enabled',
+  },
+  {
+    group: 'favorite',
+    icons: [{ key: 'favorite', state: 'enabled' }],
     status: 'enabled',
   },
 ]

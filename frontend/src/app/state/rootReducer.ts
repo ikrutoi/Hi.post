@@ -22,6 +22,7 @@ import { cardtextReducer } from '@cardtext/infrastructure/state'
 import { cardtextToolbarReducer } from '@cardtext/infrastructure/state'
 
 // import { envelopeReducer } from '@envelope/infrastructure/state'
+import { envelopeSelectionReducer } from '@envelope/infrastructure/state'
 import { senderReducer } from '@envelope/sender/infrastructure/state'
 import { recipientReducer } from '@envelope/recipient/infrastructure/state'
 
@@ -74,6 +75,7 @@ export const rootReducer = combineReducers({
   cardtextToolbar: cardtextToolbarReducer,
 
   // envelope: envelopeReducer,
+  envelopeSelection: envelopeSelectionReducer,
   sender: senderReducer,
   recipient: recipientReducer,
 

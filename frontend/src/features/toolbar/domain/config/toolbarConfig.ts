@@ -17,6 +17,9 @@ import {
   initialSectionEditorMenuToolbarState,
   ENVELOPE_TOOLBAR,
   CARD_PANEL_OVERLAY_TOOLBAR,
+  ADDRESS_LIST_KEYS,
+  initialAddressListToolbarState,
+  ADDRESS_LIST_TOOLBAR,
 } from '../types'
 import { initialCardtextToolbarState } from '@cardtext/domain/types'
 import { cardtextToolbarController } from '@cardtext/application/controllers'
@@ -65,7 +68,8 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
       const addressListBadge = (state.addressList as any)?.options?.badge
       return {
         cardUser: state.cardUser === 'enabled' ? 1 : null,
-        addressList: addressListBadge && addressListBadge > 0 ? addressListBadge : null,
+        addressList:
+          addressListBadge && addressListBadge > 0 ? addressListBadge : null,
       }
     },
     group: 'address',
@@ -79,7 +83,8 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['recipient']) => {
       const addressListBadge = (state.addressList as any)?.options?.badge
       return {
-        addressList: addressListBadge && addressListBadge > 0 ? addressListBadge : null,
+        addressList:
+          addressListBadge && addressListBadge > 0 ? addressListBadge : null,
       }
     },
     toolbar: ENVELOPE_TOOLBAR,
@@ -109,5 +114,13 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'menu',
     getBadges: (state: ToolbarState['sectionEditorMenu']) => ({}),
     toolbar: SECTION_EDITOR_MENU_TOOLBAR,
+  },
+  addressList: {
+    keys: ADDRESS_LIST_KEYS,
+    initialState: initialAddressListToolbarState,
+    onAction: (key, section) => console.log('AddressList action', key, section),
+    group: 'address',
+    getBadges: (state: ToolbarState['addressList']) => ({}),
+    toolbar: ADDRESS_LIST_TOOLBAR,
   },
 }

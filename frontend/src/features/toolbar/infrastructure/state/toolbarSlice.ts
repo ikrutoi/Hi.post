@@ -8,6 +8,7 @@ import {
   initialSectionEditorMenuToolbarState,
   UpdateSectionPayload,
   initialCardtextToolbarState,
+  initialAddressListToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -31,6 +32,7 @@ const initialState: ToolbarState = {
   editorPie: initialEditorPieToolbarState,
   cardPanelOverlay: initialCardPanelOverlayToolbarState,
   sectionEditorMenu: initialSectionEditorMenuToolbarState,
+  addressList: initialAddressListToolbarState,
 }
 
 const toolbarSlice = createSlice({

@@ -30,6 +30,8 @@ export interface CardMeta {
   updatedAt: number
 }
 
+export type ReplicaGroupId = string | null
+
 export interface CardReference {
   id: string
   userId: string
@@ -46,6 +48,8 @@ export interface CardReference {
   meta: CardMeta
 
   photoUsage?: PhotoUsage[]
+
+  replicaGroupId?: ReplicaGroupId
 }
 
 export interface CardListItem {

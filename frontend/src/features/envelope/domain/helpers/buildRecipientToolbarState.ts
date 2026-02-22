@@ -32,8 +32,7 @@ export const buildRecipientToolbarState = ({
           },
         }
         break
-      case 'deleteList':
-        state.deleteList = addressListCount > 0 ? 'enabled' : 'disabled'
+      case 'favorite':
         break
       default:
         const exhaustiveCheck: never = key
