@@ -26,3 +26,6 @@ export const selectRecipientCompletedFields = createSelector(
 
 export const selectIsRecipientComplete = (state: RootState): boolean =>
   state.recipient.isComplete
+
+export const selectRecipientEnabled = (state: RootState): boolean =>
+  state.recipient.enabled

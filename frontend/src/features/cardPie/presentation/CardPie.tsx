@@ -289,15 +289,15 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
         <defs>
           <linearGradient id="grad-cardphoto" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#a0af49" />
-            <stop offset="15%" stopColor="#4caf50" />
-            <stop offset="85%" stopColor="#4caf50" />
-            <stop offset="100%" stopColor="#479a9a" />
+            <stop offset="15%" stopColor="#f4af42" />
+            <stop offset="85%" stopColor="#f4af42" />
+            <stop offset="100%" stopColor="#e68a59" />
           </linearGradient>
 
           <linearGradient id="grad-cardtext" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#e78a59" />
-            <stop offset="20%" stopColor="#f4af42" />
-            <stop offset="85%" stopColor="#f4af42" />
+            <stop offset="0%" stopColor="#73908d" />
+            <stop offset="20%" stopColor="#4caf50" />
+            <stop offset="85%" stopColor="#4caf50" />
             <stop offset="100%" stopColor="#a0af49" />
           </linearGradient>
 
@@ -308,24 +308,24 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             x2="100%"
             y2="0%"
           >
-            <stop offset="0%" stopColor="#e78a59" />
-            <stop offset="20%" stopColor="#d96570" />
-            <stop offset="80%" stopColor="#d96570" />
-            <stop offset="100%" stopColor="#ba6c9e" />
-          </linearGradient>
-
-          <linearGradient id="grad-aroma" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ba6c9e" />
+            <stop offset="0%" stopColor="#73908d" />
             <stop offset="20%" stopColor="#9b72cb" />
             <stop offset="80%" stopColor="#9b72cb" />
             <stop offset="100%" stopColor="#6f7ccf" />
           </linearGradient>
 
-          <linearGradient id="grad-date" x1="0%" y1="100%" x2="0%" y2="0%">
-            <stop offset="0%" stopColor="#479a9a" />
-            <stop offset="15%" stopColor="#4285f4" />
+          <linearGradient id="grad-aroma" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#6f7ccf" />
+            <stop offset="20%" stopColor="#4285f4" />
             <stop offset="80%" stopColor="#4285f4" />
-            <stop offset="100%" stopColor="#6f7ccf" />
+            <stop offset="100%" stopColor="#8d75b2" />
+          </linearGradient>
+
+          <linearGradient id="grad-date" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="#e68a59" />
+            <stop offset="15%" stopColor="#d96570" />
+            <stop offset="80%" stopColor="#d96570" />
+            <stop offset="100%" stopColor="#8d75b2" />
           </linearGradient>
         </defs>
 

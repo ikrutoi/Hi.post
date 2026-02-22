@@ -248,9 +248,9 @@ export const cardphotoSlice = createSlice({
         if (!cropIds.includes(action.payload)) {
           cropIds.push(action.payload)
 
-          if (cropIds.length > 10) {
-            cropIds.shift()
-          }
+          // if (cropIds.length > 10) {
+          //   cropIds.shift()
+          // }
 
           // state.state.cropCount = cropIds.length
         }

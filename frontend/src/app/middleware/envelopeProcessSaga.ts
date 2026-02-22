@@ -15,38 +15,12 @@ import {
   buildSenderToolbarState,
   isAddressInList,
 } from '@envelope/domain/helpers'
-import {
-  updateToolbarSection,
-  updateToolbarIcon,
-} from '@toolbar/infrastructure/state'
+import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import {
   recipientTemplatesAdapter,
   senderTemplatesAdapter,
 } from '@db/adapters/templateAdapters'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
-import type { EnvelopeRole } from '@shared/config/constants'
-
-function* updateAddressListBadge(role: EnvelopeRole) {
-  try {
-    const adapter =
-      role === 'recipient' ? recipientTemplatesAdapter : senderTemplatesAdapter
-    const count: number = yield call([adapter, 'count'])
-
-    yield put(
-      updateToolbarIcon({
-        section: role,
-        key: 'addressList',
-        value: {
-          options: {
-            badge: count > 0 ? count : null,
-          },
-        },
-      }),
-    )
-  } catch (error) {
-    console.error(`Error updating addressList badge for ${role}:`, error)
-  }
-}
 
 export function* processEnvelopeVisuals() {
   const sender: SenderState = yield select(selectSenderState)
@@ -81,9 +55,6 @@ export function* processEnvelopeVisuals() {
   yield put(
     updateToolbarSection({ section: 'recipient', value: recipientToolbar }),
   )
-
-  yield call(updateAddressListBadge, 'sender')
-  yield call(updateAddressListBadge, 'recipient')
 }
 
 export function* envelopeProcessSaga() {

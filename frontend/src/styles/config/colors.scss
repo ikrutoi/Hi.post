@@ -45,23 +45,24 @@ $color-font-blue: #1e3a8a;
 $color-font-burgundy: #741b47;
 $color-font-forestGreen: #064e3b;
 
-$color-pie-cardphoto: #4caf50;
-$color-pie-cardtext: #f4af42;
-$color-pie-envelope: #d96570;
-$color-pie-aroma: #9b72cb;
-$color-pie-date: #4285f4;
+// Пай: фото-жёлтый, текст-зелёный, конверт-фиолетовый, аромат-синий, дата-красный
+$color-pie-cardphoto: #f4af42;
+$color-pie-cardtext: #4caf50;
+$color-pie-envelope: #9b72cb;
+$color-pie-aroma: #4285f4;
+$color-pie-date: #d96570;
 
-$color-pie-cardphoto-shadow: #4caf5040;
-$color-pie-cardtext-shadow: #f4af4240;
-$color-pie-envelope-shadow: #d9657040;
-$color-pie-aroma-shadow: #9b72cb40;
-$color-pie-date-shadow: #4285f440;
+$color-pie-cardphoto-shadow: #f4af4240;
+$color-pie-cardtext-shadow: #4caf5040;
+$color-pie-envelope-shadow: #9b72cb40;
+$color-pie-aroma-shadow: #4285f440;
+$color-pie-date-shadow: #d9657040;
 
-$color-pie-mix1: #a0af49;
-$color-pie-mix2: #e78a59;
-$color-pie-mix3: #ba6c9e;
-$color-pie-mix4: #6f7ccf;
-$color-pie-mix5: #479a9a;
+$color-pie-mix1: #a0af49;   // cardphoto (жёлтый) ↔ cardtext (зелёный)
+$color-pie-mix2: #73908d;   // cardtext (зелёный) ↔ envelope (фиолетовый)
+$color-pie-mix3: #6f7ccf;   // envelope (фиолетовый) ↔ aroma (синий)
+$color-pie-mix4: #8d75b2;   // aroma (синий) ↔ date (красный)
+$color-pie-mix5: #e68a59;   // date (красный) ↔ cardphoto (жёлтый)
 
 $color-pie-cardphoto-alpha: rgba($color-pie-cardphoto, 0.4);
 $color-pie-cardtext-alpha: rgba($color-pie-cardtext, 0.4);

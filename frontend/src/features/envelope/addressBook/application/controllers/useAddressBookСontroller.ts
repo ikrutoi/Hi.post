@@ -1,16 +1,7 @@
 import { useCallback } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useAppDispatch } from '@app/hooks/useAppDispatch'
-
-import { addUniqueRecordAddress } from '@utils/cardFormNav/indexDB/indexDb'
-import { useLayoutMetaFacade } from '@layout/application/facades'
-// import {
-//   setChoiceClip,
-//   setSavedCardId,
-//   updateButtonsState,
-// } from '@layout/application/facades'
-// } from '@store/slices/infoButtonsSlice'
+import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import type { Address, AddressRole } from '@envelope/domain/types'
 
 type ControllerParams = {
@@ -37,10 +28,6 @@ export const useAddressBookController = ({
   countAddress,
   setCountAddress,
 }: ControllerParams) => {
-  const dispatch = useAppDispatch()
-
-  const { setChoiceClip } = useLayoutMetaFacade()
-
   const clearSectionAddress = useCallback(
     (section: AddressRole) => {
       setValue((prev) => ({
@@ -71,16 +58,9 @@ export const useAddressBookController = ({
     [memoryAddress, value]
   )
 
-  const handleClickClip = useCallback(
-    (section: AddressRole) => {
-      if (btnsAddress[section].clip === true) {
-        dispatch(setChoiceClip(section))
-      } else {
-        dispatch(setChoiceClip(null))
-      }
-    },
-    [btnsAddress, dispatch]
-  )
+  const handleClickClip = useCallback((_section: AddressRole) => {
+    // Раньше вызывался setChoiceClip (старый layout) — больше не используется
+  }, [])
 
   const handleClickBtn = useCallback(
     async (evt: React.MouseEvent<HTMLButtonElement>, section: AddressRole) => {
@@ -107,16 +87,16 @@ export const useAddressBookController = ({
           },
         }))
 
-        await addUniqueRecordAddress(section, value[section], personalId)
+        const adapter = section === 'sender' ? senderAdapter : recipientAdapter
+        await adapter.addUniqueRecord({
+          id: personalId,
+          address: value[section],
+        })
 
         setBtnsAddress((prev) => ({
           ...prev,
           [section]: { ...prev[section], save: false },
         }))
-
-        dispatch(updateButtonsState({ envelopeSave: section }))
-        dispatch(setChoiceClip(section))
-        dispatch(setSavedCardId(personalId))
       }
 
       if (tooltip === 'delete') {
@@ -127,7 +107,6 @@ export const useAddressBookController = ({
       btnsAddress,
       value,
       setValue,
-      dispatch,
       clearSectionAddress,
       handleClickClip,
     ]

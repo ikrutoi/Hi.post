@@ -5,6 +5,7 @@ import type { RecipientState } from '@envelope/domain/types'
 
 export const initialRecipient: RecipientState = {
   ...initialSection,
+  enabled: true,
 }
 
 const recipientSlice = createSlice({
@@ -22,7 +23,14 @@ const recipientSlice = createSlice({
     },
 
     restoreRecipient: (state, action: PayloadAction<RecipientState>) => {
-      return action.payload
+      return {
+        ...action.payload,
+        enabled: action.payload.enabled ?? true,
+      }
+    },
+
+    setEnabled: (state, action: PayloadAction<boolean>) => {
+      state.enabled = action.payload
     },
 
     clearRecipient: () => initialRecipient,
@@ -33,6 +41,7 @@ const recipientSlice = createSlice({
 
 export const {
   updateRecipientField,
+  setEnabled,
   restoreRecipient,
   clearRecipient,
   saveAddressRequested,

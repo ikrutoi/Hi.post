@@ -7,7 +7,8 @@ type ToggleProps = {
   checked: boolean
   onChange: (value: boolean) => void
   size?: 'small' | 'default' | 'large'
-  variant?: 'default' | 'envelope' | 'envelopeSender'
+  variant?: 'default' | 'envelope' | 'envelopeSender' | 'envelopeRecipient'
+  disabled?: boolean
 }
 
 export const Toggle: React.FC<ToggleProps> = ({
@@ -16,6 +17,7 @@ export const Toggle: React.FC<ToggleProps> = ({
   onChange,
   size = 'default',
   variant = 'default',
+  disabled = false,
 }) => {
   return (
     <label
@@ -24,12 +26,15 @@ export const Toggle: React.FC<ToggleProps> = ({
         styles[`toggle${size[0].toUpperCase() + size.slice(1)}`],
         variant === 'envelope' && styles.toggleEnvelope,
         variant === 'envelopeSender' && styles.toggleEnvelopeSender,
+        variant === 'envelopeRecipient' && styles.toggleEnvelopeRecipient,
+        disabled && styles.toggleDisabled,
       )}
     >
       <input
         type="checkbox"
         checked={checked}
-        onChange={() => onChange(!checked)}
+        onChange={() => !disabled && onChange(!checked)}
+        disabled={disabled}
         className={styles.toggleInput}
       />
       <span className={styles.toggleSlider} />

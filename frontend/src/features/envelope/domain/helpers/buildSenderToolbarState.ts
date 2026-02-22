@@ -27,6 +27,9 @@ export const buildSenderToolbarState = ({
       case 'addressList':
         state.addressList = {
           state: addressListCount > 0 ? 'enabled' : 'disabled',
+          options: {
+            badge: addressListCount > 0 ? addressListCount : null,
+          },
         }
         break
       case 'deleteList':

@@ -60,6 +60,13 @@ import {
   syncCardtextStatus,
   syncEnvelopeStatus,
 } from './cardEditorSaga'
+import {
+  restorePreviewStripOrder,
+  addCardtextTemplateId,
+  removeCardtextTemplateId,
+  addAddressTemplateRef,
+  removeAddressTemplateRef,
+} from '@features/previewStrip/infrastructure/state'
 import type { SessionData } from '@entities/db/domain/types'
 import type {
   CardtextSessionRecord,
@@ -119,6 +126,11 @@ export function* persistGlobalSession() {
 
   const sizeCard: SizeCard = yield select(selectSizeCard)
 
+  const previewStripOrder = yield select(
+    (state: { previewStripOrder: { cardtextTemplateIds: string[]; addressTemplateRefs: { type: string; id: string }[] } }) =>
+      state.previewStripOrder,
+  )
+
   // const newSessionData: SessionData = {
   //   id: 'current_session',
   //   assets: {
@@ -142,6 +154,7 @@ export function* persistGlobalSession() {
     date,
     activeSection,
     sizeCard,
+    previewStripOrder: previewStripOrder ?? null,
     timestamp: Date.now(),
   }
 
@@ -171,6 +184,10 @@ const SESSION_WATCH_ACTIONS = [
   setTextStyle.type,
   setAlign.type,
   clearText.type,
+  addCardtextTemplateId.type,
+  removeCardtextTemplateId.type,
+  addAddressTemplateRef.type,
+  removeAddressTemplateRef.type,
 ]
 
 export function* hydrateAppSession() {
@@ -339,6 +356,10 @@ export function* hydrateAppSession() {
 
     if (session.cardtext) {
       yield put(restoreCardtextSession(session.cardtext))
+    }
+
+    if (session.previewStripOrder) {
+      yield put(restorePreviewStripOrder(session.previewStripOrder))
     }
 
     if (session.envelope) {

@@ -5,6 +5,7 @@ import type { AromaState } from '@entities/aroma/domain/types'
 import type { DateState } from '@entities/date/domain/types'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
+import type { PreviewStripOrderState } from '@features/previewStrip/infrastructure/state'
 
 export interface SessionData {
   id: string
@@ -15,5 +16,7 @@ export interface SessionData {
   date: DateState | null
   activeSection: SectionEditorMenuKey
   sizeCard: SizeCard
+  /** Порядок превью (cardtext и envelope) для стабильного отображения после перезагрузки */
+  previewStripOrder: PreviewStripOrderState | null
   timestamp: number
 }

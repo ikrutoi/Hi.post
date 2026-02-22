@@ -37,9 +37,8 @@
 }
 
 .miniEnvelopeAddress {
-  color: $color-font-deepBlack;
+  color: $color-envelope-recipient-legend;
   text-align: center;
-  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   mask-image: linear-gradient(to right, black 80%, transparent 100%);
@@ -52,6 +51,7 @@
   // font-size: 1.2rem;
   display: block;
   width: 100%;
+  font-weight: 600;
   font-size: 0.9rem;
   text-align: center;
   align-content: center;
@@ -61,7 +61,8 @@
   grid-column: 1/2;
   grid-row: 3/4;
   align-content: center;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  // font-weight: 300;
 }
 
 .previewButton {

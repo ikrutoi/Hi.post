@@ -9,6 +9,7 @@ export interface EnvelopeSessionRecord {
 export type RecipientState = {
   data: AddressFields
   isComplete: boolean
+  enabled: boolean
 }
 
 export type SenderState = {

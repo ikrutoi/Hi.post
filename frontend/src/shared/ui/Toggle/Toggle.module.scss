@@ -39,6 +39,15 @@
   user-select: none;
 }
 
+.toggleDisabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+
+  .toggleText {
+    color: $color-font-disabled;
+  }
+}
+
 .toggleEnvelope {
   .toggleSlider {
     box-shadow: 0 0 0 1px rgba($color-active, 0.1);
@@ -62,6 +71,24 @@
 
   .toggleText {
     color: #1a4d3a;
+  }
+}
+
+/* Тумблер в цветах получателя (лаванда) — зеркально: текст слева, переключатель справа */
+.toggleEnvelopeRecipient {
+  flex-direction: row-reverse;
+
+  .toggleSlider {
+    box-shadow: 0 0 0 1px rgba(61, 42, 92, 0.15);
+  }
+
+  .toggleInput:checked + .toggleSlider {
+    background-color: #e0d0eb;
+    box-shadow: 0 0 0 1px rgba(61, 42, 92, 0.25);
+  }
+
+  .toggleText {
+    color: #3d2a5c;
   }
 }
 

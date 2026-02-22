@@ -7,6 +7,10 @@ import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import { saveAddressRequested as recipientSaveRequested } from '@envelope/recipient/infrastructure/state'
 import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
+import {
+  addAddressTemplateRef,
+  incrementAddressTemplatesReloadVersion,
+} from '@features/previewStrip/infrastructure/state'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
 
@@ -56,7 +60,9 @@ function* handleAddressSave(
       }),
     )
 
-    if (result.success) {
+    if (result.success && result.templateId) {
+      yield put(addAddressTemplateRef({ type: role, id: result.templateId }))
+      yield put(incrementAddressTemplatesReloadVersion())
       yield put(
         updateGroupStatus({
           section: role,

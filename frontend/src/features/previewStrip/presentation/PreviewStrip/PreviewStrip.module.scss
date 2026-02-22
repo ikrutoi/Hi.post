@@ -1,14 +1,46 @@
+@use '@styles/config/colors' as *;
+
 .strip {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
-  overflow: hidden;
 }
 
 .stripSlot {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   min-height: 0;
+}
+
+.deleteButton {
+  position: absolute;
+  top: 0;
+  right: -0.4rem;
+  padding: 0.1rem;
+  background: #fff;
+  color: $color-font-disabled;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+}
+
+.deleteButton:hover svg {
+  color: $color-font-enabled;
+}
+
+.stripSlot:hover .deleteButton {
+  opacity: 1;
+}
+
+.stripSlotSelectable {
+  cursor: pointer;
 }

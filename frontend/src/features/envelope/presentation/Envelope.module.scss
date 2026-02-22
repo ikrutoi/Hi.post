@@ -53,6 +53,17 @@
   justify-content: flex-end;
 }
 
+/* Панель списка получателей: absolute, отступы 0.5rem слева/сверху/снизу */
+.recipientListPanelWrap {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: calc(50% - 0.5rem); /* левая половина конверта минус отступ справа 0.5rem */
+  min-height: 0;
+  z-index: 1;
+}
+
 // .envelopeFieldset {
 //   padding: 0.5rem;
 //   border-radius: 1rem;

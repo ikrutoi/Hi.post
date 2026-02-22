@@ -6,6 +6,7 @@ import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useSenderFacade } from '../../sender/application/facades'
 import { useRecipientFacade } from '../../recipient/application/facades'
+import { useAddressBookList } from '../../addressBook/application/controllers'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 
@@ -18,7 +19,15 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
-  console.log('SenderFacade', senderFacade)
+  const { entries: recipientEntries } = useAddressBookList('recipient')
+
+  const recipientListEmpty = recipientEntries.length === 0
+  const recipientFormVisible =
+    role === 'recipient' &&
+    (recipientListEmpty || !recipientFacade.isEnabled)
+  const recipientToggleDisabled = role === 'recipient' && recipientListEmpty
+  const recipientToggleChecked =
+    role === 'recipient' && !recipientListEmpty && recipientFacade.isEnabled
 
   const facade = role === 'sender' ? senderFacade : recipientFacade
   const { state, layout, update, address: value } = facade
@@ -60,7 +69,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         </div>
       )}
 
-      {(role === 'recipient' ||
+      {(recipientFormVisible ||
         (senderFacade.isEnabled && role === 'sender')) && (
         <>
           <div
@@ -73,7 +82,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
           </div>
 
           <fieldset className={styles.addressFieldset}>
-            <legend className={styles.addressLegend}>{roleLabel} value</legend>
+            <legend className={styles.addressLegend}>{roleLabel}</legend>
 
             {labelLayout.flatMap((item, i) => {
               if (Array.isArray(item)) {
@@ -126,6 +135,19 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             })}
           </fieldset>
         </>
+      )}
+
+      {role === 'recipient' && (
+        <div className={styles.recipientToggle}>
+          <Toggle
+            label="Specify the recipient's address"
+            checked={recipientToggleChecked}
+            onChange={recipientFacade.toggleEnabled}
+            size="default"
+            variant="envelopeRecipient"
+            disabled={recipientToggleDisabled}
+          />
+        </div>
       )}
     </form>
   )

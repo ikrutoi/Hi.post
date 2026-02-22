@@ -1,4 +1,6 @@
 import { useCallback } from 'react'
+import { useAppDispatch } from '@app/hooks'
+import { addCardtextTemplateId } from '@features/previewStrip/infrastructure/state'
 import { templateService } from '../../domain/services/templateService'
 import type {
   CreateAddressTemplatePayload,
@@ -16,6 +18,8 @@ import type { AddressType, ImageSourceType } from '../../domain/types'
 import type { TemplateOperationResult } from '../../domain/types/template.types'
 
 export const useTemplateActions = () => {
+  const dispatch = useAppDispatch()
+
   const createAddressTemplate = useCallback(
     async (
       payload: CreateAddressTemplatePayload,
@@ -50,9 +54,13 @@ export const useTemplateActions = () => {
     async (
       payload: CreateCardtextTemplatePayload,
     ): Promise<TemplateOperationResult> => {
-      return await templateService.createCardtextTemplate(payload)
+      const result = await templateService.createCardtextTemplate(payload)
+      if (result.success && result.templateId) {
+        dispatch(addCardtextTemplateId(String(result.templateId)))
+      }
+      return result
     },
-    [],
+    [dispatch],
   )
 
   const updateCardtextTemplate = useCallback(

@@ -47,6 +47,7 @@ import { cartReducer } from '@features/cart/infrastructure/state'
 import { draftsReducer } from '@features/drafts/application/state'
 
 import { toolbarReducer } from '@toolbar/infrastructure/state'
+import { previewStripOrderReducer } from '@features/previewStrip/infrastructure/state'
 
 import { authReducer } from '@features/auth/store'
 import { postcardReducer } from '@features/postcard/model'
@@ -98,6 +99,7 @@ export const rootReducer = combineReducers({
   sent: sentReducer,
 
   toolbar: toolbarReducer,
+  previewStripOrder: previewStripOrderReducer,
 
   auth: authReducer,
   postcard: postcardReducer,

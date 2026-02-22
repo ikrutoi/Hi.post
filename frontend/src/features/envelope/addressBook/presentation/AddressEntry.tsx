@@ -5,19 +5,24 @@ type Props = {
   entry: AddressBookEntry
   onSelect: (entry: AddressBookEntry) => void
   onDelete: (id: string) => void
+  showRole?: boolean
 }
 
 export const AddressEntry: React.FC<Props> = ({
   entry,
   onSelect,
   onDelete,
+  showRole = false,
 }) => {
   return (
     <div className="address-entry">
       <div className="address-entry__info" onClick={() => onSelect(entry)}>
-        <strong>{entry.label ?? 'Без метки'}</strong>
+        {showRole && (
+          <span className="address-entry__role">{entry.role === 'sender' ? 'Sender' : 'Recipient'}</span>
+        )}
+        {entry.label ? <strong>{entry.label}</strong> : null}
         <div>
-          {entry.address.name}, {entry.address.city}
+          {[entry.address.name, entry.address.city].filter(Boolean).join(', ') || '—'}
         </div>
       </div>
       <button

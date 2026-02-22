@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { CropPreviewItem } from '@/features/toolbar/presentation/CropPreviewItem'
+import { CropPreviewItem } from '../PreviewCrop/CropPreviewItem'
 import type { PreviewStripItemProps } from './PreviewStripItem.types'
 import styles from './PreviewStripItem.module.scss'
 import { capitalize } from '@/shared/utils/helpers'
