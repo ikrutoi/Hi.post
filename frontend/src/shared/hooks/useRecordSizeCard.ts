@@ -11,7 +11,6 @@ import { roundTo } from '@shared/helpers'
 import type { SizeCard } from '@layout/domain/types'
 
 export interface UseRecordSizeCardOptions {
-  /** Когда true, размер панели не обновляется (нижний блок сохраняет прежнюю ширину). */
   skipPanelMeasure?: boolean
 }
 

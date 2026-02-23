@@ -8,9 +8,7 @@ import {
 import type { CardPanelTemplate } from '@cardPanel/domain/types'
 import type { RootState } from '@app/state'
 
-function getTemplateForSection(
-  section: string,
-): CardPanelTemplate | null {
+function getTemplateForSection(section: string): CardPanelTemplate | null {
   if (section === 'sender') return 'envelopeSender'
   if (section === 'recipient') return 'envelopeRecipient'
   if (section === 'cardtext') return 'cardtext'
@@ -25,11 +23,12 @@ function* handleCardPanelToolbarAction(
   const template = getTemplateForSection(section)
   if (template === null) return
 
-  const isAddressList = key === 'addressList' && (section === 'sender' || section === 'recipient')
   const isTextList = key === 'textList' && section === 'cardtext'
-  if (!isAddressList && !isTextList) return
+  if (!isTextList) return
 
-  const cardPanel: RootState['cardPanel'] = yield select((s: RootState) => s.cardPanel)
+  const cardPanel: RootState['cardPanel'] = yield select(
+    (s: RootState) => s.cardPanel,
+  )
   const isAlreadyOpen =
     cardPanel.source === 'templates' && cardPanel.activeTemplate === template
 

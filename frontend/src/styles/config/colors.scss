@@ -45,7 +45,6 @@ $color-font-blue: #1e3a8a;
 $color-font-burgundy: #741b47;
 $color-font-forestGreen: #064e3b;
 
-// Пай: фото-жёлтый, текст-зелёный, конверт-фиолетовый, аромат-синий, дата-красный
 $color-pie-cardphoto: #f4af42;
 $color-pie-cardtext: #4caf50;
 $color-pie-envelope: #9b72cb;
@@ -58,11 +57,11 @@ $color-pie-envelope-shadow: #9b72cb40;
 $color-pie-aroma-shadow: #4285f440;
 $color-pie-date-shadow: #d9657040;
 
-$color-pie-mix1: #a0af49;   // cardphoto (жёлтый) ↔ cardtext (зелёный)
-$color-pie-mix2: #73908d;   // cardtext (зелёный) ↔ envelope (фиолетовый)
-$color-pie-mix3: #6f7ccf;   // envelope (фиолетовый) ↔ aroma (синий)
-$color-pie-mix4: #8d75b2;   // aroma (синий) ↔ date (красный)
-$color-pie-mix5: #e68a59;   // date (красный) ↔ cardphoto (жёлтый)
+$color-pie-mix1: #a0af49;
+$color-pie-mix2: #73908d;
+$color-pie-mix3: #6f7ccf;
+$color-pie-mix4: #8d75b2;
+$color-pie-mix5: #e68a59;
 
 $color-pie-cardphoto-alpha: rgba($color-pie-cardphoto, 0.4);
 $color-pie-cardtext-alpha: rgba($color-pie-cardtext, 0.4);

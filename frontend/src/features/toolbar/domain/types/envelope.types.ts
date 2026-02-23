@@ -30,11 +30,6 @@ export const ENVELOPE_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
-  // {
-  //   group: 'favorite',
-  //   icons: [{ key: 'favorite', state: 'enabled' }],
-  //   status: 'enabled',
-  // },
 ]
 
 export const initialSenderToolbarState: EnvelopeToolbarState = {

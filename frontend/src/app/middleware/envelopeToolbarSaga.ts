@@ -28,7 +28,34 @@ function* handleEnvelopeToolbarAction(
 ) {
   const { section, key } = action.payload
 
-  if (section === 'addressFavorite' && key === 'favorite') {
+  if (section === 'senderFavorite' && key === 'favorite') {
+    const sender: SenderState = yield select(selectSenderState)
+    const raw: { id: string; address?: Record<string, string> }[] =
+      yield call([senderAdapter, 'getAll'])
+    const match = Array.isArray(raw)
+      ? raw.find((r) => addressMatches(sender.data, r.address))
+      : null
+    const entryId = match ? String(match.id) : null
+    const addressTemplateRefs: { type: string; id: string }[] = yield select(
+      (s: { previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] } }) =>
+        s.previewStripOrder?.addressTemplateRefs ?? [],
+    )
+    const isInFavorites = entryId
+      ? addressTemplateRefs.some(
+          (r) => r.type === 'sender' && r.id === entryId,
+        )
+      : false
+    if (entryId) {
+      if (isInFavorites) {
+        yield put(removeAddressTemplateRef({ type: 'sender', id: entryId }))
+      } else {
+        yield put(addAddressTemplateRef({ type: 'sender', id: entryId }))
+      }
+    }
+    return
+  }
+
+  if (section === 'recipientFavorite' && key === 'favorite') {
     const recipient: RecipientState = yield select(selectRecipientState)
     const raw: { id: string; address?: Record<string, string> }[] =
       yield call([recipientAdapter, 'getAll'])

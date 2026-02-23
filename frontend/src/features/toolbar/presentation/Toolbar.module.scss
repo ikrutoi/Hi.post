@@ -209,6 +209,10 @@
   }
 }
 
+.toolbarAddressFavorite {
+  border: solid 1px red;
+}
+
 // .toolbarRecipient {
 //   display: flex;
 //   justify-content: space-between;
@@ -235,7 +239,8 @@
 .toolbarEditorPie,
 .toolbarAddressList,
 .toolbarRecipients,
-.toolbarAddressFavorite {
+.toolbarRecipientFavorite,
+.toolbarSenderFavorite {
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;

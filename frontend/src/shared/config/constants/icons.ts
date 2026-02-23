@@ -69,6 +69,8 @@ export const ICON_KEYS = [
   'favorite',
   'addressPlus',
   'clearInput',
+  'search',
+  'empty',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

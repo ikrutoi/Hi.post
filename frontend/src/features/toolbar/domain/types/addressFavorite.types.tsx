@@ -21,13 +21,19 @@ export const ADDRESS_FAVORITE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const initialAddressFavoriteToolbarState: AddressFavoriteToolbarState = {
+export const initialRecipientFavoriteToolbarState: AddressFavoriteToolbarState =
+  {
+    ...Object.fromEntries(flattenIcons(ADDRESS_FAVORITE_TOOLBAR)),
+    config: [...ADDRESS_FAVORITE_TOOLBAR],
+  }
+
+export const initialSenderFavoriteToolbarState: AddressFavoriteToolbarState = {
   ...Object.fromEntries(flattenIcons(ADDRESS_FAVORITE_TOOLBAR)),
   config: [...ADDRESS_FAVORITE_TOOLBAR],
 }
 
-export interface AddressFavoriteConfig extends BaseSectionConfig<
+export interface FavoriteConfig extends BaseSectionConfig<
   AddressFavoriteToolbarState,
   AddressFavoriteKey,
-  'addressFavorite'
+  'recipientFavorite' | 'senderFavorite'
 > {}

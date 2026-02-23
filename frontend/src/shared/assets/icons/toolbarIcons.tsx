@@ -73,6 +73,7 @@ import {
   TbCalendar,
   TbAlignBoxCenterMiddle,
   TbAlertTriangle,
+  TbSearch,
 } from 'react-icons/tb'
 import {
   BsEnvelope,
@@ -147,6 +148,7 @@ import {
   IconDeleteV3,
   IconStar,
   IconAddressPlus,
+  IconEmpty,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -295,5 +297,9 @@ export function getIconByKey(
       return <IconStar />
     case 'addressPlus':
       return <IconAddressPlus />
+    case 'search':
+      return <TbSearch />
+    case 'empty':
+      return <IconEmpty />
   }
 }

@@ -10,7 +10,8 @@ import {
   initialCardtextToolbarState,
   initialAddressListToolbarState,
   initialRecipientsToolbarState,
-  initialAddressFavoriteToolbarState,
+  initialRecipientFavoriteToolbarState,
+  initialSenderFavoriteToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -36,7 +37,8 @@ const initialState: ToolbarState = {
   sectionEditorMenu: initialSectionEditorMenuToolbarState,
   addressList: initialAddressListToolbarState,
   recipients: initialRecipientsToolbarState,
-  addressFavorite: initialAddressFavoriteToolbarState,
+  recipientFavorite: initialRecipientFavoriteToolbarState,
+  senderFavorite: initialSenderFavoriteToolbarState,
 }
 
 const toolbarSlice = createSlice({
@@ -48,6 +50,7 @@ const toolbarSlice = createSlice({
       action: PayloadAction<UpdateSectionPayload<K>>,
     ) {
       const { section, value } = action.payload
+      if (state[section] == null || value == null) return
 
       Object.assign(state[section], value)
 

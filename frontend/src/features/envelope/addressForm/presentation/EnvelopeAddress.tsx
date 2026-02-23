@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect } from 'react'
+import React, { useRef, useMemo } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { Label } from './Label/Label'
@@ -10,11 +10,6 @@ import { useEnvelopeAddress } from '../application/hooks'
 import { useSenderFacade } from '../../sender/application/facades'
 import { useRecipientFacade } from '../../recipient/application/facades'
 import { useAddressBookList } from '../../addressBook/application/controllers'
-import {
-  addAddressTemplateRef,
-  removeAddressTemplateRef,
-} from '@features/previewStrip/infrastructure/state'
-import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 
@@ -44,42 +39,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         .filter(Boolean) as typeof recipientEntries,
     [selectedRecipientIds, recipientEntries],
   )
-
-  const addressTemplateRefs = useAppSelector(
-    (s) => s.previewStripOrder?.addressTemplateRefs ?? [],
-  )
-  const matchingRecipientEntry = useMemo(() => {
-    if (role !== 'recipient' || !recipientFacade.address) return null
-    return (
-      recipientEntries.find((e) =>
-        ADDRESS_FIELDS.every(
-          (f) =>
-            (recipientFacade.address![f] ?? '').trim() ===
-            (e.address[f] ?? '').trim(),
-        ),
-      ) ?? null
-    )
-  }, [role, recipientFacade.address, recipientEntries])
-  const isRecipientStarred =
-    !!matchingRecipientEntry &&
-    addressTemplateRefs.some(
-      (r) => r.type === 'recipient' && r.id === matchingRecipientEntry.id,
-    )
-
-  useEffect(() => {
-    if (role !== 'recipient') return
-    const favoriteState = !matchingRecipientEntry
-      ? 'disabled'
-      : isRecipientStarred
-        ? 'active'
-        : 'enabled'
-    dispatch(
-      updateToolbarSection({
-        section: 'addressFavorite',
-        value: { favorite: { state: favoriteState } },
-      }),
-    )
-  }, [role, matchingRecipientEntry, isRecipientStarred, dispatch])
 
   const recipientListEmpty = recipientEntries.length === 0
   const recipientToggleDisabled = role === 'recipient' && recipientListEmpty
@@ -187,7 +146,14 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
           <fieldset
             className={clsx(styles.addressFieldset, styles.addressFormSender)}
           >
-            <legend className={styles.addressLegend}>{roleLabel}</legend>
+            <legend
+              className={clsx(styles.addressLegend, styles.addressLegendSender)}
+            >
+              {roleLabel}
+              <div>
+                <Toolbar section="senderFavorite" />
+              </div>
+            </legend>
             <div
               className={clsx(
                 styles.addressToolbar,
@@ -219,7 +185,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               )}
             >
               {!recipientFacade.isEnabled && (
-                <Toolbar section="addressFavorite" />
+                <Toolbar section="recipientFavorite" />
               )}
               {recipientFacade.isEnabled
                 ? selectedEntriesInOrder.length > 1

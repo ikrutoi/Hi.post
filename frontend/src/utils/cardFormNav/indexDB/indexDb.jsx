@@ -11,12 +11,6 @@ export const dbPromise = openDB('images-database', 14, {
     if (!db.objectStoreNames.contains('cardtext')) {
       db.createObjectStore('cardtext', { keyPath: 'id' })
     }
-    if (!db.objectStoreNames.contains('myaddress')) {
-      db.createObjectStore('myaddress', { keyPath: 'id' })
-    }
-    if (!db.objectStoreNames.contains('toaddress')) {
-      db.createObjectStore('toaddress', { keyPath: 'id' })
-    }
     if (!db.objectStoreNames.contains('blanks')) {
       db.createObjectStore('blanks', { keyPath: 'id' })
     }
@@ -136,99 +130,6 @@ export const getAllUserImages = async () => {
     console.log('Error getting all user images:', error)
     return []
   }
-}
-
-export const deleteMyAddress = async (id) => {
-  const db = await dbPromise
-  const transaction = db.transaction('myaddress', 'readwrite')
-  const store = transaction.objectStore('myaddress')
-  await store.delete(id)
-  await transaction.done
-}
-
-export const deleteToAddress = async (id) => {
-  const db = await dbPromise
-  const transaction = db.transaction('toaddress', 'readwrite')
-  const store = transaction.objectStore('toaddress')
-  // const count = await store.count()
-  await store.delete(id)
-  await transaction.done
-}
-
-export const getAllRecordsAddresses = async (storeName) => {
-  const db = await dbPromise
-  const transaction = db.transaction(storeName, 'readonly')
-  const store = transaction.objectStore(storeName)
-  const allRecords = await store.getAll()
-  await transaction.done
-  return allRecords || []
-}
-
-export const getCountRecordsAddresses = async (storeName) => {
-  const db = await dbPromise
-  const transaction = db.transaction(storeName, 'readonly')
-  const store = transaction.objectStore(storeName)
-  const count = await store.count()
-  await transaction.done
-  return count
-}
-
-export const getRecordAddressById = async (storeName, id) => {
-  const db = await dbPromise
-  try {
-    const transaction = db.transaction(storeName, 'readonly')
-    const store = transaction.objectStore(storeName)
-    const result = await store.get(id)
-    await transaction.done
-    return result || null
-  } catch (error) {
-    console.error('[getRecordAddressById] Error retrieving record:', error)
-    return null
-  }
-}
-
-export const addRecordAddress = async (storeName, record) => {
-  const db = await dbPromise
-  const transaction = db.transaction(storeName, 'readwrite')
-  const store = transaction.objectStore(storeName)
-  await store.put(record)
-  await transaction.done
-}
-
-export const deleteRecordAddress = async (storeName, id) => {
-  const db = await dbPromise
-  const transaction = db.transaction(storeName, 'readwrite')
-  const store = transaction.objectStore(storeName)
-  await store.delete(id)
-  await transaction.done
-}
-
-export const getMaxIdAddress = async (storeName) => {
-  const db = await dbPromise
-  const transaction = db.transaction(storeName, 'readonly')
-  const store = transaction.objectStore(storeName)
-  const allRecords = await store.getAll()
-  await transaction.done
-
-  const ids = allRecords.map((record) => record.id)
-  return ids.length ? Math.max(...ids) : 0
-}
-
-export const addUniqueRecordAddress = async (storeName, data, personalId) => {
-  const db = await dbPromise
-  const maxId = await getMaxIdAddress(storeName)
-  const newId = maxId + 1
-
-  const transaction = db.transaction(storeName, 'readwrite')
-  const store = transaction.objectStore(storeName)
-
-  const record = {
-    id: newId,
-    personalId: personalId,
-    address: { ...data },
-  }
-  await store.put(record)
-  await transaction.done
 }
 
 const handleTransactionPromise = (transaction) => {

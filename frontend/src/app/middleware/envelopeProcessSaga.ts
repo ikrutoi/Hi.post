@@ -77,6 +77,29 @@ export function* processEnvelopeVisuals() {
   yield put(
     updateToolbarSection({ section: 'recipient', value: recipientToolbar }),
   )
+
+  const senderFavoriteState = !sender.isComplete
+    ? 'disabled'
+    : isSenderFavorite
+      ? 'active'
+      : 'enabled'
+  const recipientFavoriteState = !recipient.isComplete
+    ? 'disabled'
+    : isRecipientFavorite
+      ? 'active'
+      : 'enabled'
+  yield put(
+    updateToolbarSection({
+      section: 'senderFavorite',
+      value: { favorite: { state: senderFavoriteState } },
+    }),
+  )
+  yield put(
+    updateToolbarSection({
+      section: 'recipientFavorite',
+      value: { favorite: { state: recipientFavoriteState } },
+    }),
+  )
 }
 
 export function* envelopeProcessSaga() {
