@@ -9,6 +9,8 @@ import {
   UpdateSectionPayload,
   initialCardtextToolbarState,
   initialAddressListToolbarState,
+  initialRecipientsToolbarState,
+  initialAddressFavoriteToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -33,6 +35,8 @@ const initialState: ToolbarState = {
   cardPanelOverlay: initialCardPanelOverlayToolbarState,
   sectionEditorMenu: initialSectionEditorMenuToolbarState,
   addressList: initialAddressListToolbarState,
+  recipients: initialRecipientsToolbarState,
+  addressFavorite: initialAddressFavoriteToolbarState,
 }
 
 const toolbarSlice = createSlice({

@@ -51,9 +51,9 @@ export const RecipientListPanel: React.FC<Props> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <span className={styles.headerLabel}>
-          <span className={styles.label}>Recipients</span>
-        </span>
+        {/* <span className={styles.headerLabel}> */}
+        {/* <span className={styles.label}>Recipients</span> */}
+        {/* </span> */}
         <Toolbar section="addressList" />
       </div>
       <div className={styles.list}>

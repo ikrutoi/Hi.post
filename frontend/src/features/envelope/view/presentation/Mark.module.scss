@@ -1,8 +1,9 @@
 .mark {
-  grid-row: 1 / 4;
-  grid-column: 4 / 5;
   display: flex;
   justify-content: flex-end;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
 
   &Stamp {
     height: 100%;

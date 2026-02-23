@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import clsx from 'clsx'
 import type { AddressField } from '@shared/config/constants'
-import type { AddressBookEntry } from '@envelope/addressBook/domain'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { Mark } from '@envelope/view/presentation'
 import { getSafeLang } from '@i18n/helpers'
@@ -11,7 +11,10 @@ import { RecipientListPanel } from '../addressBook/presentation/RecipientListPan
 import { useRecipientFacade } from '../recipient/application/facades'
 import { useAddressBookList } from '../addressBook/application/controllers'
 import { updateRecipientField } from '../recipient/infrastructure/state'
-import { toggleRecipientSelection } from '../infrastructure/state'
+import {
+  toggleRecipientSelection,
+  setSelectedRecipientIds,
+} from '../infrastructure/state'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -24,26 +27,39 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const { isEnabled: recipientListEnabled } = useRecipientFacade()
   const { entries: recipientEntries } = useAddressBookList('recipient')
 
-  const showRecipientList =
-    recipientListEnabled && recipientEntries.length > 0
-
   const selectedRecipientIds = useAppSelector(
     (state) => state.envelopeSelection.selectedRecipientIds,
   )
+  const recipientListPanelOpen = useAppSelector(
+    (state) => state.envelopeSelection.recipientListPanelOpen,
+  )
+
+  const showRecipientList =
+    (recipientListEnabled || recipientListPanelOpen) &&
+    recipientEntries.length > 0
 
   const handleRecipientSelect = useCallback(
     (entry: AddressBookEntry) => {
-      const wasSelected = selectedRecipientIds.includes(entry.id)
-      dispatch(toggleRecipientSelection(entry.id))
-      if (!wasSelected) {
+      if (recipientListEnabled) {
+        const wasSelected = selectedRecipientIds.includes(entry.id)
+        dispatch(toggleRecipientSelection(entry.id))
+        if (!wasSelected) {
+          ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
+            ([field, value]) => {
+              dispatch(updateRecipientField({ field, value }))
+            },
+          )
+        }
+      } else {
+        dispatch(setSelectedRecipientIds([entry.id]))
         ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
           ([field, value]) => {
             dispatch(updateRecipientField({ field, value }))
-          }
+          },
         )
       }
     },
-    [dispatch, selectedRecipientIds],
+    [dispatch, recipientListEnabled, selectedRecipientIds],
   )
 
   return (
@@ -62,14 +78,10 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
             <div
               className={clsx(
                 styles.envelopeSection,
-                styles.envelopeSectionSender
+                styles.envelopeSectionSender,
               )}
             >
-              <EnvelopeAddress
-                role="sender"
-                roleLabel="Sender"
-                lang={lang}
-              />
+              <EnvelopeAddress role="sender" roleLabel="Sender" lang={lang} />
             </div>
           </>
         )}
@@ -77,16 +89,14 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
       <div
         className={clsx(
           styles.envelopeSection,
-          styles.envelopeSectionRecipient
+          styles.envelopeSectionRecipient,
         )}
       >
-        <EnvelopeAddress
-          role="recipient"
-          roleLabel="Recipient"
-          lang={lang}
-        />
+        <EnvelopeAddress role="recipient" roleLabel="Recipient" lang={lang} />
       </div>
-      <Mark />
+      <div className={styles.envelopeMark}>
+        <Mark />
+      </div>
     </div>
   )
 }

@@ -3,10 +3,11 @@ import type { IconKey } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const ENVELOPE_KEYS = [
+  // 'favorite',
+  // 'empty',
   'close',
   'addressPlus',
   'addressList',
-  'favorite',
   // 'deleteList',
 ] as const satisfies readonly IconKey[]
 
@@ -24,14 +25,16 @@ export const ENVELOPE_TOOLBAR: ToolbarConfig = [
       { key: 'close', state: 'disabled' },
       { key: 'addressPlus', state: 'disabled' },
       { key: 'addressList', state: 'disabled' },
+      // { key: 'empty', state: 'disabled' },
+      // { key: 'favorite', state: 'enabled' },
     ],
     status: 'enabled',
   },
-  {
-    group: 'favorite',
-    icons: [{ key: 'favorite', state: 'enabled' }],
-    status: 'enabled',
-  },
+  // {
+  //   group: 'favorite',
+  //   icons: [{ key: 'favorite', state: 'enabled' }],
+  //   status: 'enabled',
+  // },
 ]
 
 export const initialSenderToolbarState: EnvelopeToolbarState = {

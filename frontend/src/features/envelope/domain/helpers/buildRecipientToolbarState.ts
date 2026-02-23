@@ -5,6 +5,7 @@ export interface BuildRecipientToolbarParams {
   hasData: boolean
   addressListCount: number
   isCurrentAddressInList: boolean
+  isCurrentAddressFavorite: boolean
 }
 
 export const buildRecipientToolbarState = ({
@@ -12,6 +13,7 @@ export const buildRecipientToolbarState = ({
   hasData,
   addressListCount,
   isCurrentAddressInList,
+  isCurrentAddressFavorite,
 }: BuildRecipientToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
@@ -32,8 +34,16 @@ export const buildRecipientToolbarState = ({
           },
         }
         break
-      case 'favorite':
-        break
+      // case 'favorite':
+      //   state.favorite = !isComplete
+      //     ? 'disabled'
+      //     : isCurrentAddressFavorite
+      //       ? 'active'
+      //       : 'enabled'
+      //   break
+      // case 'empty':
+      //   state.empty = 'disabled'
+      //   break
       default:
         const exhaustiveCheck: never = key
         throw new Error(`Unhandled key: ${exhaustiveCheck}`)

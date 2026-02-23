@@ -4,6 +4,120 @@
   position: relative;
 }
 
+.senderToggle {
+  margin-bottom: 0.1rem;
+}
+
+.recipientToggle {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.addressFieldset {
+  position: relative;
+  padding: 0.5rem 0.35rem;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.addressToolbar {
+  position: absolute;
+  left: 0;
+  top: -1.75rem;
+  width: 100%;
+  // border: solid 1px red;
+}
+
+.addressToolbarSender {
+  padding-right: 1rem;
+}
+
+.addressToolbarRecipient {
+  padding-left: 1rem;
+}
+
+.addressFormRecipientBody {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.addressFormRecipientBody .recipientFieldsetContent,
+.addressFormRecipientBody .recipientFieldsetMulti {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.addressFormSender {
+  &.addressFieldset {
+    border: solid 1px $color-envelope-sender-border;
+  }
+}
+
+.addressFormRecipient {
+  &.addressFieldset {
+    border: solid 1px $color-envelope-recipient-border;
+  }
+}
+
+.addressLegend {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 1.8rem;
+  width: min-content;
+  white-space: nowrap;
+  user-select: none;
+  font-size: 0.9rem;
+  font-weight: 400;
+  background-color: #fff;
+  text-transform: uppercase;
+
+  &Multi {
+    padding-left: 5px;
+  }
+}
+
+.addressFormSender .addressLegend {
+  color: $color-envelope-sender-legend;
+  margin-left: 0.5rem;
+  padding: 0 0 0 5px;
+}
+
+.addressFormRecipient .addressLegend {
+  text-align: right;
+  margin-right: 0.5rem;
+  padding: 0 5px 0 0;
+}
+
+.addressFormRecipient .addressLegend.addressLegendRecipient {
+  color: $color-envelope-recipient-legend;
+}
+
+.addressLegendMulti {
+  min-height: 1.6rem;
+  box-sizing: border-box;
+}
+
+.labelGroup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.recipientsList {
+  display: flex;
+  flex-direction: column-reverse;
+  padding-bottom: 0.25rem;
+  min-height: 0;
+}
+
 .addressBtn {
   position: relative;
   margin: 0 0.2rem;
@@ -22,104 +136,4 @@
     font-size: 0.8rem;
     color: #333;
   }
-}
-
-.addressFieldset {
-  padding: 0.5rem;
-  border-radius: 1rem;
-  border: solid 1px $color-section-dark;
-}
-
-.addressFormSender .addressFieldset {
-  // background-color: #e8f5f0;
-  border-color: $color-envelope-sender-border;
-}
-
-.addressFormRecipient .addressFieldset {
-  // background-color: #f0e8f5;
-  border-color: $color-envelope-recipient-border;
-}
-
-.addressLegend {
-  user-select: none;
-  font-size: 0.9rem;
-  font-weight: 400;
-  padding: 4px;
-  margin-right: 0.6rem;
-  color: $color-inactive;
-  text-transform: uppercase;
-}
-
-.addressFormSender .addressLegend {
-  color: #1a4d3a;
-}
-
-.addressFormRecipient .addressLegend {
-  color: #3d2a5c;
-}
-
-.envelopeAddressGroup {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.addressForm {
-  position: relative;
-
-  &Toolbar {
-    position: absolute;
-  }
-
-  &ToolbarSender {
-    right: 1rem;
-  }
-
-  &ToolbarRecipient {
-    left: 1rem;
-  }
-
-  &Recipient {
-    .addressLegend {
-      text-align: right;
-    }
-  }
-}
-
-.addressFormToolbar {
-  width: 100%;
-  left: 0;
-}
-
-.addressFormToolbarSender {
-  width: 100%;
-  margin-top: -1px;
-  padding-left: 4.8rem;
-}
-
-.addressFormToolbarRecipient {
-  padding-left: 1rem;
-  padding-right: 6.5rem;
-}
-
-.addressFormSender .addressGroup .labelIndex {
-  margin-left: 0.5rem;
-}
-
-.addressFormRecipient .addressGroup .labelIndex {
-  margin-right: 0.5rem;
-}
-
-.labelGroup {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.senderToggle {
-  margin-top: 0.3rem;
-}
-
-.recipientToggle {
-  margin-top: 0.5rem;
-  display: flex;
-  justify-content: flex-end;
 }

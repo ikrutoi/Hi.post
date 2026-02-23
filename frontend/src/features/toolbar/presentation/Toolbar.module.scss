@@ -7,7 +7,7 @@
   // position: relative;
   .toolbarKey {
     position: relative;
-    margin: 2px 0.3rem 0 0.3rem;
+    margin: 0 0.3rem;
     background-color: white;
     border-radius: 0.7rem;
     background-color: white;
@@ -40,6 +40,10 @@
     }
   }
 
+  .toolbarKeyFavoriteActive {
+    color: $color-toggle-active;
+  }
+
   .toolbarKeyApplyEnabled,
   .toolbarKeyCropCheckEnabled {
     background-color: $color-section-light-completed;
@@ -51,7 +55,7 @@
   }
 
   .toolbarGroup {
-    width: auto;
+    // width: min-content;
     display: flex;
     transition:
       opacity 0.2s ease,
@@ -119,6 +123,7 @@
     flex-direction: column;
     justify-content: space-around;
     height: 100%;
+    // width: min-content;
   }
 }
 
@@ -204,20 +209,35 @@
   }
 }
 
+// .toolbarRecipient {
+//   display: flex;
+//   justify-content: space-between;
+//   // border: 1px solid red;
+// }
+
+// .toolbarRecipients {
+//   display: flex;
+//   justify-content: space-between;
+//   // border: 1px solid red;
+// }
+
+.toolbarSender {
+  display: flex;
+  // justify-content: space-between;
+  flex-direction: row-reverse;
+  // margin-right: 1rem;
+}
+
 .toolbarCardphoto,
 .toolbarCardtext,
 .toolbarSender,
 .toolbarRecipient,
-.toolbarEditorPie {
+.toolbarEditorPie,
+.toolbarAddressList,
+.toolbarRecipients,
+.toolbarAddressFavorite {
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
   }
-}
-
-.toolbarSender {
-  display: flex;
-  justify-content: flex-end;
-  margin-right: 1rem;
-  // border: solid 1px blue;
 }

@@ -90,14 +90,8 @@ export function usePreviewStripItems(
     if (activeSection === 'envelope') {
       const senderById = new Map(senderTemplates.map((t) => [t.id, t]))
       const recipientById = new Map(recipientTemplates.map((t) => [t.id, t]))
-      const refsWithData = (
-        addressTemplateRefs.length > 0
-          ? addressTemplateRefs
-          : [
-              ...senderTemplates.map((t) => ({ ...t, addressType: 'sender' as const })),
-              ...recipientTemplates.map((t) => ({ ...t, addressType: 'recipient' as const })),
-            ].sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0)).map((t) => ({ type: t.addressType, id: t.id }))
-      ).filter((ref) => {
+      // Показываем только избранные адреса (звёздочка); при пустом списке — пустая панель
+      const refsWithData = addressTemplateRefs.filter((ref) => {
         const map = ref.type === 'sender' ? senderById : recipientById
         return map.has(ref.id)
       })

@@ -14,8 +14,13 @@ import {
   buildRecipientToolbarState,
   buildSenderToolbarState,
   isAddressInList,
+  getMatchingEntryId,
 } from '@envelope/domain/helpers'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
+import {
+  addAddressTemplateRef,
+  removeAddressTemplateRef,
+} from '@features/previewStrip/infrastructure/state'
 import {
   recipientTemplatesAdapter,
   senderTemplatesAdapter,
@@ -37,11 +42,27 @@ export function* processEnvelopeVisuals() {
     call([recipientTemplatesAdapter, 'getAll']),
   ])
 
+  const addressTemplateRefs: { type: string; id: string }[] = yield select(
+    (s: { previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] } }) =>
+      s.previewStripOrder?.addressTemplateRefs ?? [],
+  )
+  const senderMatchId = getMatchingEntryId(sender.data, senderList)
+  const recipientMatchId = getMatchingEntryId(recipient.data, recipientList)
+  const isSenderFavorite =
+    senderMatchId != null &&
+    addressTemplateRefs.some((r) => r.type === 'sender' && r.id === senderMatchId)
+  const isRecipientFavorite =
+    recipientMatchId != null &&
+    addressTemplateRefs.some(
+      (r) => r.type === 'recipient' && r.id === recipientMatchId,
+    )
+
   const senderToolbar = buildSenderToolbarState({
     isComplete: sender.isComplete,
     hasData: checkHasData(sender.data),
     addressListCount: senderList.length,
     isCurrentAddressInList: isAddressInList(sender.data, senderList),
+    isCurrentAddressFavorite: isSenderFavorite,
   })
 
   const recipientToolbar = buildRecipientToolbarState({
@@ -49,6 +70,7 @@ export function* processEnvelopeVisuals() {
     hasData: checkHasData(recipient.data),
     addressListCount: recipientList.length,
     isCurrentAddressInList: isAddressInList(recipient.data, recipientList),
+    isCurrentAddressFavorite: isRecipientFavorite,
   })
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
@@ -65,6 +87,8 @@ export function* envelopeProcessSaga() {
       setEnabled.type,
       clearRecipient.type,
       clearSender.type,
+      addAddressTemplateRef.type,
+      removeAddressTemplateRef.type,
     ],
     processEnvelopeVisuals,
   )

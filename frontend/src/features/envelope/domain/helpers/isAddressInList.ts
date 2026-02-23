@@ -36,3 +36,23 @@ export function isAddressInList(
   if (byFirstField.length === 0) return false
   return byFirstField.some((item) => addressEquals(current, item.address))
 }
+
+/** Возвращает id записи из списка, совпадающей с текущим адресом, или null. */
+export function getMatchingEntryId(
+  current: AddressFields,
+  list: Pick<AddressTemplateItem, 'id' | 'address'>[],
+  firstField: AddressField = 'name',
+): string | null {
+  const firstValue = (current[firstField] ?? '').trim()
+  const toCheck =
+    firstValue === ''
+      ? list
+      : list.filter(
+          (item) =>
+            (item.address?.[firstField] ?? '').trim() === firstValue,
+        )
+  const match = toCheck.find(
+    (item) => item.address && addressEquals(current, item.address),
+  )
+  return match ? String(match.id) : null
+}

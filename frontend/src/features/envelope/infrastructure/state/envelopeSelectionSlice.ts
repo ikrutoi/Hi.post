@@ -9,10 +9,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
  */
 export interface EnvelopeSelectionState {
   selectedRecipientIds: string[]
+  /** Панель списка получателей открыта по клику на иконку addressList (форма Recipient при этом не отключается). */
+  recipientListPanelOpen: boolean
 }
 
 const initialState: EnvelopeSelectionState = {
   selectedRecipientIds: [],
+  recipientListPanelOpen: false,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -36,6 +39,14 @@ export const envelopeSelectionSlice = createSlice({
     clearRecipientSelection(state) {
       state.selectedRecipientIds = []
     },
+
+    toggleRecipientListPanel(state) {
+      state.recipientListPanelOpen = !state.recipientListPanelOpen
+    },
+
+    closeRecipientListPanel(state) {
+      state.recipientListPanelOpen = false
+    },
   },
 })
 
@@ -43,6 +54,8 @@ export const {
   toggleRecipientSelection,
   setSelectedRecipientIds,
   clearRecipientSelection,
+  toggleRecipientListPanel,
+  closeRecipientListPanel,
 } = envelopeSelectionSlice.actions
 
 export default envelopeSelectionSlice.reducer

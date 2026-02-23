@@ -3,14 +3,7 @@
 .root {
   position: relative;
   margin-bottom: 0.25rem;
-}
-
-.field {
-  width: 100%;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  height: 1.5rem;
+  min-height: 1.5rem;
   padding: 0 2rem 0 1.75rem;
   box-sizing: border-box;
   background-color: $color-envelope-recipient-input;
@@ -25,12 +18,30 @@
     background-color: darken($color-envelope-recipient-input, 2%);
   }
 
-  .root[data-selected='true'] & {
+  &[data-selected='true'] {
     background-color: darken($color-envelope-recipient-input, 2%);
     border-left-color: $color-toggle-active;
     border-left-width: 2px;
     padding-left: calc(2rem - 1px);
   }
+
+  /* Без звёздочки (форма RECIPIENTS) — меньше отступ слева */
+  &[data-no-star='true'] {
+    padding-left: 0.5rem;
+  }
+
+  &[data-no-star='true'][data-selected='true'] {
+    padding-left: calc(0.5rem - 1px);
+  }
+}
+
+.field {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 1.5rem;
+  box-sizing: border-box;
 }
 
 .info {
@@ -125,6 +136,5 @@
   svg {
     width: 0.8rem;
     height: 0.8rem;
-    // display: block;
   }
 }

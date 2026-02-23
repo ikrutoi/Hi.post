@@ -25,6 +25,7 @@ export const AddressEntry: React.FC<Props> = ({
     <div
       className={styles.root}
       data-selected={isSelected ? 'true' : undefined}
+      data-no-star={!onToggleStar ? 'true' : undefined}
     >
       {onToggleStar && (
         <button

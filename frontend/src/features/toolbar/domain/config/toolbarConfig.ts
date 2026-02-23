@@ -20,6 +20,12 @@ import {
   ADDRESS_LIST_KEYS,
   initialAddressListToolbarState,
   ADDRESS_LIST_TOOLBAR,
+  RECIPIENTS_KEYS,
+  initialRecipientsToolbarState,
+  RECIPIENTS_TOOLBAR,
+  ADDRESS_FAVORITE_KEYS,
+  initialAddressFavoriteToolbarState,
+  ADDRESS_FAVORITE_TOOLBAR,
 } from '../types'
 import { initialCardtextToolbarState } from '@cardtext/domain/types'
 import { cardtextToolbarController } from '@cardtext/application/controllers'
@@ -122,5 +128,22 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'address',
     getBadges: (state: ToolbarState['addressList']) => ({}),
     toolbar: ADDRESS_LIST_TOOLBAR,
+  },
+  recipients: {
+    keys: RECIPIENTS_KEYS,
+    initialState: initialRecipientsToolbarState,
+    onAction: (key, section) => console.log('Recipients action', key, section),
+    group: 'recipients',
+    getBadges: (state: ToolbarState['recipients']) => ({}),
+    toolbar: RECIPIENTS_TOOLBAR,
+  },
+  addressFavorite: {
+    keys: ADDRESS_FAVORITE_KEYS,
+    initialState: initialAddressFavoriteToolbarState,
+    onAction: (key, section) =>
+      console.log('AddressFavorite action', key, section),
+    group: 'address',
+    getBadges: (state: ToolbarState['addressFavorite']) => ({}),
+    toolbar: ADDRESS_FAVORITE_TOOLBAR,
   },
 }
