@@ -1,5 +1,13 @@
 import { ENVELOPE_KEYS, type EnvelopeToolbarState } from '@toolbar/domain/types'
 
+/** Общая логика addressList (state + badge) для recipient и recipients тулбаров */
+export const getAddressListToolbarFragment = (addressListCount: number) => ({
+  state: addressListCount > 0 ? ('enabled' as const) : ('disabled' as const),
+  options: {
+    badge: addressListCount > 0 ? addressListCount : null,
+  },
+})
+
 export interface BuildRecipientToolbarParams {
   isComplete: boolean
   hasData: boolean
@@ -27,11 +35,12 @@ export const buildRecipientToolbarState = ({
           isComplete && !isCurrentAddressInList ? 'enabled' : 'disabled'
         break
       case 'addressList':
-        state.addressList = {
-          state: addressListCount > 0 ? 'enabled' : 'disabled',
-          options: {
-            badge: addressListCount > 0 ? addressListCount : null,
-          },
+        state.addressList = getAddressListToolbarFragment(addressListCount)
+        break
+      case 'apply':
+        state.apply = {
+          state: isComplete ? 'enabled' : 'disabled',
+          options: {},
         }
         break
       // case 'favorite':

@@ -1,7 +1,15 @@
 import { takeLatest, put, select, call } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { clearSender } from '@envelope/sender/infrastructure/state'
-import { clearRecipient } from '@envelope/recipient/infrastructure/state'
+import {
+  clearSender,
+  setSenderApplied,
+  saveAddressRequested as senderSaveRequested,
+} from '@envelope/sender/infrastructure/state'
+import {
+  clearRecipient,
+  setRecipientApplied,
+  saveAddressRequested as recipientSaveRequested,
+} from '@envelope/recipient/infrastructure/state'
 import { toggleRecipientListPanel } from '@envelope/infrastructure/state'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
@@ -51,6 +59,9 @@ function* handleEnvelopeToolbarAction(
       } else {
         yield put(addAddressTemplateRef({ type: 'sender', id: entryId }))
       }
+    } else if (sender.isComplete) {
+      // Новый контакт: сохраняем в шаблоны и сразу добавляем в избранное
+      yield put(senderSaveRequested())
     }
     return
   }
@@ -78,11 +89,14 @@ function* handleEnvelopeToolbarAction(
       } else {
         yield put(addAddressTemplateRef({ type: 'recipient', id: entryId }))
       }
+    } else if (recipient.isComplete) {
+      yield put(recipientSaveRequested())
     }
     return
   }
 
-  if (section !== 'sender' && section !== 'recipient') return
+  if (section !== 'sender' && section !== 'recipient' && section !== 'recipients')
+    return
 
   if (key === 'close') {
     if (section === 'sender') {
@@ -92,17 +106,32 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
-  if (key === 'addressList' && section === 'recipient') {
+  if (key === 'apply') {
+    if (section === 'sender') {
+      const sender: SenderState = yield select(selectSenderState)
+      if (sender.isComplete) yield put(setSenderApplied(true))
+    }
+    if (section === 'recipient') {
+      const recipient: RecipientState = yield select(selectRecipientState)
+      if (recipient.isComplete) yield put(setRecipientApplied(true))
+    }
+  }
+
+  if (
+    key === 'addressList' &&
+    (section === 'recipient' || section === 'recipients')
+  ) {
     yield put(toggleRecipientListPanel())
   }
 
-  if (key === 'favorite') {
+  if (key === 'favorite' && (section === 'sender' || section === 'recipient')) {
+    const addressSection = section
     const sender: SenderState = yield select(selectSenderState)
     const recipient: RecipientState = yield select(selectRecipientState)
-    const addressData = section === 'sender' ? sender.data : recipient.data
+    const addressData = addressSection === 'sender' ? sender.data : recipient.data
 
     const adapter =
-      section === 'sender' ? senderAdapter : recipientAdapter
+      addressSection === 'sender' ? senderAdapter : recipientAdapter
     const raw: { id: string; address?: Record<string, string> }[] =
       yield call([adapter, 'getAll'])
     const match = Array.isArray(raw)
@@ -116,15 +145,15 @@ function* handleEnvelopeToolbarAction(
     )
     const isInFavorites = entryId
       ? addressTemplateRefs.some(
-          (r) => r.type === section && r.id === entryId,
+          (r) => r.type === addressSection && r.id === entryId,
         )
       : false
 
     if (entryId) {
       if (isInFavorites) {
-        yield put(removeAddressTemplateRef({ type: section, id: entryId }))
+        yield put(removeAddressTemplateRef({ type: addressSection, id: entryId }))
       } else {
-        yield put(addAddressTemplateRef({ type: section, id: entryId }))
+        yield put(addAddressTemplateRef({ type: addressSection, id: entryId }))
       }
     }
   }

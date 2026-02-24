@@ -1,17 +1,16 @@
-import type { CardSaved } from '@entities/card/domain/types'
+import type { Card } from '@entities/card/domain/types'
 
 export interface CartItemMeta {
   comment?: string
   source?: 'user' | 'system'
   tags?: string[]
-  /** Группа реплик: несколько открыток с одним replicaGroupId синхронизируют общие секции. */
   replicaGroupId?: string | null
   [key: string]: unknown
 }
 export interface CartItem {
   LocalId: number
   price: string
-  card: CardSaved
+  card: Card
   meta?: CartItemMeta
 }
 

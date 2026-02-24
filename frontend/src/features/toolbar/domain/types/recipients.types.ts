@@ -4,7 +4,7 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const RECIPIENTS_KEYS = [
   'deleteList',
-  // 'addressList',
+  'addressList',
 ] as const satisfies readonly IconKey[]
 
 export type RecipientsKey = (typeof RECIPIENTS_KEYS)[number]
@@ -18,8 +18,8 @@ export const RECIPIENTS_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipients',
     icons: [
+      { key: 'addressList', state: 'disabled' },
       { key: 'deleteList', state: 'enabled' },
-      // { key: 'addressList', state: 'disabled' },
     ],
     status: 'enabled',
   },

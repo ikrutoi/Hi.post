@@ -63,7 +63,10 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
 
     let buttonStatus = currentIconState || rawData.state
 
-    if (key === 'apply' && isAlreadyApplied) {
+    // apply: для sender и recipient — только state тулбара (envelopeProcessSaga). Для cardphoto — ещё disable, если кроп применён.
+    const isEnvelopeApply =
+      key === 'apply' && (section === 'sender' || section === 'recipient')
+    if (key === 'apply' && !isEnvelopeApply && isAlreadyApplied) {
       buttonStatus = 'disabled'
     }
 

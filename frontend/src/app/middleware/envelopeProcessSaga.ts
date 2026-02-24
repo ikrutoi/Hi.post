@@ -13,10 +13,14 @@ import { selectRecipientState } from '@envelope/recipient/infrastructure/selecto
 import {
   buildRecipientToolbarState,
   buildSenderToolbarState,
+  getAddressListToolbarFragment,
   isAddressInList,
   getMatchingEntryId,
 } from '@envelope/domain/helpers'
-import { updateToolbarSection } from '@toolbar/infrastructure/state'
+import {
+  updateToolbarSection,
+  updateToolbarIcon,
+} from '@toolbar/infrastructure/state'
 import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
@@ -78,6 +82,34 @@ export function* processEnvelopeVisuals() {
     updateToolbarSection({ section: 'recipient', value: recipientToolbar }),
   )
 
+  yield put(
+    updateToolbarIcon({
+      section: 'sender',
+      key: 'apply',
+      value: {
+        state: sender.isComplete ? 'enabled' : 'disabled',
+      },
+    }),
+  )
+  yield put(
+    updateToolbarIcon({
+      section: 'recipient',
+      key: 'apply',
+      value: {
+        state: recipient.isComplete ? 'enabled' : 'disabled',
+      },
+    }),
+  )
+
+  yield put(
+    updateToolbarSection({
+      section: 'recipients',
+      value: {
+        addressList: getAddressListToolbarFragment(recipientList.length),
+      },
+    }),
+  )
+
   const senderFavoriteState = !sender.isComplete
     ? 'disabled'
     : isSenderFavorite
@@ -103,16 +135,11 @@ export function* processEnvelopeVisuals() {
 }
 
 export function* envelopeProcessSaga() {
-  yield takeEvery(
-    [
-      updateRecipientField.type,
-      updateSenderField.type,
-      setEnabled.type,
-      clearRecipient.type,
-      clearSender.type,
-      addAddressTemplateRef.type,
-      removeAddressTemplateRef.type,
-    ],
-    processEnvelopeVisuals,
-  )
+  yield takeEvery(updateRecipientField.type, processEnvelopeVisuals)
+  yield takeEvery(updateSenderField.type, processEnvelopeVisuals)
+  yield takeEvery(setEnabled.type, processEnvelopeVisuals)
+  yield takeEvery(clearRecipient.type, processEnvelopeVisuals)
+  yield takeEvery(clearSender.type, processEnvelopeVisuals)
+  yield takeEvery(addAddressTemplateRef.type, processEnvelopeVisuals)
+  yield takeEvery(removeAddressTemplateRef.type, processEnvelopeVisuals)
 }

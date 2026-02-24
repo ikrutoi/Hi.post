@@ -1,15 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-/**
- * Выбор получателей для текущей открытки (мультивыбор, тоггл по клику).
- * Сохраняется в Redux и в IndexedDB (сессия), время до попадания в корзину может быть долгим.
- * Для залогиненных пользователей можно дополнительно синхронизировать на бэкенд (SessionData.envelopeSelection).
- * При формировании корзины: 1 получатель — одна открытка, replicaGroupId = null;
- * N получателей — N открыток с общим replicaGroupId.
- */
 export interface EnvelopeSelectionState {
   selectedRecipientIds: string[]
-  /** Панель списка получателей открыта по клику на иконку addressList (форма Recipient при этом не отключается). */
   recipientListPanelOpen: boolean
 }
 

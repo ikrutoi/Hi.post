@@ -34,9 +34,9 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
     (state) => state.envelopeSelection.recipientListPanelOpen,
   )
 
+  // Список слева вкл/выкл только иконкой addressList; тумблер мульти-получатель на него не влияет
   const showRecipientList =
-    (recipientListEnabled || recipientListPanelOpen) &&
-    recipientEntries.length > 0
+    recipientListPanelOpen && recipientEntries.length > 0
 
   const handleRecipientSelect = useCallback(
     (entry: AddressBookEntry) => {
@@ -67,10 +67,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
       <div className={styles.envelopeLeftSlot}>
         {showRecipientList ? (
           <div className={styles.recipientListPanelWrap}>
-            <RecipientListPanel
-              onSelect={handleRecipientSelect}
-              selectedIds={selectedRecipientIds}
-            />
+            <RecipientListPanel onSelect={handleRecipientSelect} />
           </div>
         ) : (
           <>

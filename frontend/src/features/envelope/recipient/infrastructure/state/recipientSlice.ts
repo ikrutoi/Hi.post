@@ -6,6 +6,7 @@ import type { RecipientState } from '@envelope/domain/types'
 export const initialRecipient: RecipientState = {
   ...initialSection,
   enabled: false,
+  applied: false,
 }
 
 const recipientSlice = createSlice({
@@ -20,12 +21,14 @@ const recipientSlice = createSlice({
       state.isComplete = Object.values(state.data).every(
         (val) => val.trim() !== '',
       )
+      state.applied = false
     },
 
     restoreRecipient: (state, action: PayloadAction<RecipientState>) => {
       return {
         ...action.payload,
-        enabled: false, // при перезагрузке всегда выключен, чтобы не было скачка высоты (сначала меряем одиночную форму)
+        enabled: false,
+        applied: action.payload.applied ?? false,
       }
     },
 
@@ -34,6 +37,10 @@ const recipientSlice = createSlice({
     },
 
     clearRecipient: () => initialRecipient,
+
+    setRecipientApplied: (state, action: PayloadAction<boolean>) => {
+      state.applied = action.payload
+    },
 
     saveAddressRequested: () => {},
   },
@@ -44,6 +51,7 @@ export const {
   setEnabled,
   restoreRecipient,
   clearRecipient,
+  setRecipientApplied,
   saveAddressRequested,
 } = recipientSlice.actions
 export default recipientSlice.reducer

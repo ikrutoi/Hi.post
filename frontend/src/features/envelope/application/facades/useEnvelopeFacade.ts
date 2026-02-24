@@ -4,7 +4,11 @@ import {
   selectRecipientAddress,
   selectRecipientState,
 } from '../../recipient/infrastructure/selectors'
-import { selectIsEnvelopeReady } from '../../infrastructure/selectors'
+import {
+  selectIsEnvelopeReady,
+  selectSelectedRecipientIds,
+  selectRecipientListPanelOpen,
+} from '../../infrastructure/selectors'
 import {
   updateRecipientField,
   clearRecipient,
@@ -14,6 +18,13 @@ import {
   setEnabled,
   clearSender,
 } from '../../sender/infrastructure/state'
+import {
+  toggleRecipientSelection,
+  setSelectedRecipientIds,
+  clearRecipientSelection,
+  toggleRecipientListPanel,
+  closeRecipientListPanel as closeRecipientListPanelAction,
+} from '../../infrastructure/state/envelopeSelectionSlice'
 import {
   ADDRESS_FIELD_ORDER,
   type AddressField,
@@ -27,6 +38,8 @@ export const useEnvelopeFacade = () => {
   const recipient = useAppSelector(selectRecipientState)
   const addressRecipient = useAppSelector(selectRecipientAddress)
   const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
+  const selectedRecipientIds = useAppSelector(selectSelectedRecipientIds)
+  const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
 
   const handleFieldChange = (
     role: EnvelopeRole,
@@ -52,6 +65,26 @@ export const useEnvelopeFacade = () => {
     }
   }
 
+  const toggleRecipientSelectionById = (id: string) => {
+    dispatch(toggleRecipientSelection(id))
+  }
+
+  const setRecipientSelection = (ids: string[]) => {
+    dispatch(setSelectedRecipientIds(ids))
+  }
+
+  const clearRecipientSelectionIds = () => {
+    dispatch(clearRecipientSelection())
+  }
+
+  const toggleRecipientListPanelOpen = () => {
+    dispatch(toggleRecipientListPanel())
+  }
+
+  const closeRecipientListPanel = () => {
+    dispatch(closeRecipientListPanelAction())
+  }
+
   return {
     sender,
     recipient,
@@ -60,9 +93,18 @@ export const useEnvelopeFacade = () => {
     addressFields: ADDRESS_FIELD_ORDER,
     isSenderVisible: sender.enabled,
 
+    selectedRecipientIds,
+    recipientListPanelOpen,
+
     handleFieldChange,
     toggleSenderEnabled,
     clearRole,
     fullClear,
+
+    toggleRecipientSelectionById,
+    setRecipientSelection,
+    clearRecipientSelectionIds,
+    toggleRecipientListPanelOpen,
+    closeRecipientListPanel,
   }
 }

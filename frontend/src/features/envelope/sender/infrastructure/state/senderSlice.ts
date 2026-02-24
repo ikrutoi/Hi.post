@@ -6,6 +6,7 @@ import type { SenderState } from '@envelope/domain/types'
 export const initialSender: SenderState = {
   ...initialSection,
   enabled: true,
+  applied: false,
 }
 
 function recomputeComplete(data: AddressFields): boolean {
@@ -22,6 +23,7 @@ const senderSlice = createSlice({
     ) => {
       state.data[action.payload.field] = action.payload.value
       state.isComplete = recomputeComplete(state.data)
+      state.applied = false
     },
 
     setEnabled: (state, action: PayloadAction<boolean>) => {
@@ -29,16 +31,26 @@ const senderSlice = createSlice({
     },
 
     restoreSender: (state, action: PayloadAction<SenderState>) => {
-      return action.payload
+      return { ...action.payload, applied: action.payload.applied ?? false }
     },
 
     clearSender: () => initialSender,
+
+    setSenderApplied: (state, action: PayloadAction<boolean>) => {
+      state.applied = action.payload
+    },
 
     /** Триггер сохранения адреса в базу шаблонов (при клике addressPlus) */
     saveAddressRequested: () => {},
   },
 })
 
-export const { updateSenderField, setEnabled, restoreSender, clearSender, saveAddressRequested } =
-  senderSlice.actions
+export const {
+  updateSenderField,
+  setEnabled,
+  restoreSender,
+  clearSender,
+  setSenderApplied,
+  saveAddressRequested,
+} = senderSlice.actions
 export default senderSlice.reducer

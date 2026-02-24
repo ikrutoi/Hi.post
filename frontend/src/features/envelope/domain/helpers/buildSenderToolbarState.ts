@@ -34,6 +34,12 @@ export const buildSenderToolbarState = ({
           },
         }
         break
+      case 'apply':
+        state.apply = {
+          state: isComplete ? 'enabled' : 'disabled',
+          options: {},
+        }
+        break
       // case 'favorite':
       //   state.favorite = !isComplete
       //     ? 'disabled'

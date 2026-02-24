@@ -10,10 +10,12 @@ export type RecipientState = {
   data: AddressFields
   isComplete: boolean
   enabled: boolean
+  applied: boolean
 }
 
 export type SenderState = {
   data: AddressFields
   isComplete: boolean
   enabled: boolean
+  applied: boolean
 }

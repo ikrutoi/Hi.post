@@ -15,7 +15,8 @@ import {
   initialEditorPieToolbarState,
   initialCardPanelOverlayToolbarState,
   initialSectionEditorMenuToolbarState,
-  ENVELOPE_TOOLBAR,
+  SENDER_TOOLBAR,
+  RECIPIENT_TOOLBAR,
   CARD_PANEL_OVERLAY_TOOLBAR,
   ADDRESS_LIST_KEYS,
   initialAddressListToolbarState,
@@ -80,7 +81,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
       }
     },
     group: 'address',
-    toolbar: ENVELOPE_TOOLBAR,
+    toolbar: SENDER_TOOLBAR,
   },
   recipient: {
     keys: ENVELOPE_KEYS,
@@ -94,7 +95,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
           addressListBadge && addressListBadge > 0 ? addressListBadge : null,
       }
     },
-    toolbar: ENVELOPE_TOOLBAR,
+    toolbar: RECIPIENT_TOOLBAR,
   },
   editorPie: {
     keys: EDITOR_PIE_KEYS,
@@ -141,8 +142,9 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   recipientFavorite: {
     keys: ADDRESS_FAVORITE_KEYS,
     initialState: initialRecipientFavoriteToolbarState,
-    onAction: (key, section) =>
-      console.log('RecipientFavorite action', key, section),
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
     group: 'addressFavorite',
     getBadges: (state: ToolbarState['recipientFavorite']) => ({}),
     toolbar: ADDRESS_FAVORITE_TOOLBAR,
@@ -150,8 +152,9 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   senderFavorite: {
     keys: ADDRESS_FAVORITE_KEYS,
     initialState: initialSenderFavoriteToolbarState,
-    onAction: (key, section) =>
-      console.log('SenderFavorite action', key, section),
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
     group: 'addressFavorite',
     getBadges: (state: ToolbarState['senderFavorite']) => ({}),
     toolbar: ADDRESS_FAVORITE_TOOLBAR,

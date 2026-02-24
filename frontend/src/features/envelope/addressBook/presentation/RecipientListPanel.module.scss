@@ -24,7 +24,6 @@
   height: auto;
   flex-shrink: 0;
   padding: 0 1rem;
-  // border: 1px solid red;
 }
 
 .headerToolbar {
@@ -39,10 +38,8 @@
   width: 1.6rem;
   height: 1.6rem;
   padding: 0;
-  // border: none;
   border: 1px solid $color-envelope-recipient-border;
   border-radius: 0.65rem;
-  // background: transparent;
   background-color: #fff;
   color: $color-font-disabled;
   cursor: pointer;

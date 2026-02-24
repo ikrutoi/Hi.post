@@ -9,11 +9,8 @@ export type AddressTemplateRef = {
 }
 
 export interface PreviewStripOrderState {
-  /** Порядок id шаблонов кардтекста для превью (новый — в конце, показываем с конца). */
   cardtextTemplateIds: string[]
-  /** Порядок адресных шаблонов (новый — в конце). */
   addressTemplateRefs: AddressTemplateRef[]
-  /** Инкрементируется при добавлении адреса в шаблоны — триггер перезагрузки списка в превью. */
   addressTemplatesReloadVersion: number
 }
 
@@ -34,9 +31,8 @@ export const previewStripOrderSlice = createSlice({
       )
       state.cardtextTemplateIds.push(id)
       if (state.cardtextTemplateIds.length > MAX_PREVIEW_ORDER) {
-        state.cardtextTemplateIds = state.cardtextTemplateIds.slice(
-          -MAX_PREVIEW_ORDER,
-        )
+        state.cardtextTemplateIds =
+          state.cardtextTemplateIds.slice(-MAX_PREVIEW_ORDER)
       }
     },
 
@@ -53,9 +49,8 @@ export const previewStripOrderSlice = createSlice({
       )
       state.addressTemplateRefs.push(ref)
       if (state.addressTemplateRefs.length > MAX_PREVIEW_ORDER) {
-        state.addressTemplateRefs = state.addressTemplateRefs.slice(
-          -MAX_PREVIEW_ORDER,
-        )
+        state.addressTemplateRefs =
+          state.addressTemplateRefs.slice(-MAX_PREVIEW_ORDER)
       }
     },
 
@@ -74,7 +69,6 @@ export const previewStripOrderSlice = createSlice({
         state.cardtextTemplateIds = action.payload.cardtextTemplateIds
       if (action.payload.addressTemplateRefs !== undefined)
         state.addressTemplateRefs = action.payload.addressTemplateRefs
-      // addressTemplatesReloadVersion не восстанавливаем из сессии — только триггер перезагрузки
     },
 
     incrementAddressTemplatesReloadVersion(state) {
