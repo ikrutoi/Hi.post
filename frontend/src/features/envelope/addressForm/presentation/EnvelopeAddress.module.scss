@@ -5,7 +5,7 @@
 }
 
 .senderToggle {
-  margin-bottom: 0.1rem;
+  margin-bottom: 0.25rem;
 }
 
 .recipientToggle {
@@ -23,20 +23,27 @@
   justify-content: flex-end;
 }
 
-.addressToolbar {
+.addressLegendReplicaContainer {
   position: absolute;
-  left: 0;
-  top: -1.75rem;
+  top: -1.55rem;
+  right: 0;
   width: 100%;
-  // border: solid 1px red;
+  height: min-content;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
 }
 
-.addressToolbarSender {
-  padding-right: 1rem;
+.addressToolbarDouble {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 
-.addressToolbarRecipient {
-  padding-left: 1rem;
+.addressToolbar {
+  width: min-content;
 }
 
 .addressFormRecipientBody {
@@ -67,11 +74,14 @@
   }
 }
 
-.addressLegend {
+.addressLegend,
+.addressLegendReplica {
   display: flex;
   align-items: center;
-  gap: 0;
-  height: 1.8rem;
+  // gap: 0;
+  height: min-content;
+  // height: 1.8rem;
+  padding: 0 5px;
   width: min-content;
   white-space: nowrap;
   user-select: none;
@@ -85,25 +95,30 @@
   }
 }
 
-.addressFormSender .addressLegend {
+.addressLegendSender {
+  margin-left: 0.65rem;
   color: $color-envelope-sender-legend;
-  margin-left: 0.5rem;
-  padding: 0 0 0 5px;
+}
+
+.addressLegendRecipient {
+  text-align: right;
+  margin-right: 0.65rem;
+  color: $color-envelope-recipient-legend;
+}
+
+.addressLegendReplica {
+  z-index: -1;
+  color: transparent;
+  padding: 0 5px;
 }
 
 .addressLegendSender {
-  gap: 0;
+  // gap: 0;
 }
 
-.addressFormRecipient .addressLegend {
-  text-align: right;
-  margin-right: 0.5rem;
-  padding: 0 5px 0 0;
-}
-
-.addressFormRecipient .addressLegend.addressLegendRecipient {
-  color: $color-envelope-recipient-legend;
-}
+// .addressFormRecipient .addressLegend.addressLegendRecipient {
+//   // color: $color-envelope-recipient-legend;
+// }
 
 .addressLegendMulti {
   min-height: 1.6rem;

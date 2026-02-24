@@ -150,18 +150,37 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               className={clsx(styles.addressLegend, styles.addressLegendSender)}
             >
               {roleLabel}
-              <div>
-                <Toolbar section="senderFavorite" />
-              </div>
             </legend>
+
             <div
               className={clsx(
-                styles.addressToolbar,
-                styles.addressToolbarSender,
+                styles.addressLegendReplicaContainer,
+                styles.addressLegendReplicaContainerSender,
               )}
             >
-              <Toolbar section={role} />
+              <span className={clsx(styles.addressLegendReplica)}>
+                {roleLabel}
+              </span>
+              <div className={clsx(styles.addressToolbarDouble)}>
+                <div
+                  className={clsx(
+                    styles.addressToolbarFavorite,
+                    styles.addressToolbarFavoriteSender,
+                  )}
+                >
+                  <Toolbar section="senderFavorite" />
+                </div>
+              </div>
+              <div
+                className={clsx(
+                  styles.addressToolbar,
+                  styles.addressToolbarSender,
+                )}
+              >
+                <Toolbar section="sender" />
+              </div>
             </div>
+
             {renderLabelFields(labelLayout, 'sender', roleLabel)}
           </fieldset>
         </div>
@@ -184,9 +203,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 recipientFacade.isEnabled && styles.addressLegendMulti,
               )}
             >
-              {!recipientFacade.isEnabled && (
-                <Toolbar section="recipientFavorite" />
-              )}
               {recipientFacade.isEnabled
                 ? selectedEntriesInOrder.length > 1
                   ? `${selectedEntriesInOrder.length} Recipients`
@@ -195,17 +211,39 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             </legend>
             <div
               className={clsx(
-                styles.addressToolbar,
-                styles.addressToolbarRecipient,
+                styles.addressLegendReplicaContainer,
+                styles.addressLegendReplicaContainerRecipient,
               )}
             >
-              <Toolbar
-                section={recipientFacade.isEnabled ? 'recipients' : 'recipient'}
-              />
+              <div className={clsx(styles.addressToolbarDouble)}>
+                <div
+                  className={clsx(
+                    styles.addressToolbar,
+                    styles.addressToolbarRecipient,
+                  )}
+                >
+                  <Toolbar
+                    section={
+                      recipientFacade.isEnabled ? 'recipients' : 'recipient'
+                    }
+                  />
+                </div>
+                {!recipientFacade.isEnabled && (
+                  <div
+                    className={clsx(
+                      styles.addressToolbarFavorite,
+                      styles.addressToolbarFavoriteRecipient,
+                    )}
+                  >
+                    <Toolbar section="recipientFavorite" />
+                  </div>
+                )}
+              </div>
+
+              <span className={styles.addressLegendReplica}>
+                {recipientFacade.isEnabled ? 'Recipients' : 'Recipient'}
+              </span>
             </div>
-            {/* <Toolbar
-              section={recipientFacade.isEnabled ? 'recipients' : 'recipient'}
-            /> */}
             {recipientFacade.isEnabled ? (
               <div className={styles.recipientsList}>
                 {selectedEntriesInOrder.map((entry) => (
