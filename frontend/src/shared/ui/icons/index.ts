@@ -17,6 +17,7 @@ export * from './IconSave'
 export * from './IconDownload'
 export * from './IconApply'
 export * from './IconClose'
+export * from './IconX'
 
 export * from './IconCrop'
 export * from './IconCropCheck'

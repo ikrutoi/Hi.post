@@ -113,7 +113,7 @@
 }
 
 .addressLegendSender {
-  // gap: 0;
+  gap: 0;
 }
 
 // .addressFormRecipient .addressLegend.addressLegendRecipient {
@@ -121,7 +121,7 @@
 // }
 
 .addressLegendMulti {
-  min-height: 1.6rem;
+  min-height: min-content;
   box-sizing: border-box;
 }
 
@@ -133,8 +133,12 @@
 .recipientsList {
   display: flex;
   flex-direction: column-reverse;
-  padding-bottom: 0.25rem;
+  // padding-bottom: 0.25rem;
   min-height: 0;
+
+  > *:first-child {
+    margin-bottom: 0;
+  }
 }
 
 .addressBtn {

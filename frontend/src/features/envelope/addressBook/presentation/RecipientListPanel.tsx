@@ -1,6 +1,8 @@
 import React, { useMemo, useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { IconX } from '@shared/ui/icons'
+import { closeRecipientListPanel } from '@envelope/infrastructure/state'
 import { useAddressBookList } from '@envelope/addressBook/application/controllers'
 import {
   addAddressTemplateRef,
@@ -51,10 +53,17 @@ export const RecipientListPanel: React.FC<Props> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        {/* <span className={styles.headerLabel}> */}
-        {/* <span className={styles.label}>Recipients</span> */}
-        {/* </span> */}
-        <Toolbar section="addressList" />
+        <div className={styles.headerToolbar}>
+          <Toolbar section="addressList" />
+        </div>
+        <button
+          type="button"
+          className={styles.closeBtn}
+          onClick={() => dispatch(closeRecipientListPanel())}
+          aria-label="Close address list"
+        >
+          <IconX />
+        </button>
       </div>
       <div className={styles.list}>
         {entries.length === 0 ? (
