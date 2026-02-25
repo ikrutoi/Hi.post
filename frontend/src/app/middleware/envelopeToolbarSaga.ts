@@ -14,6 +14,7 @@ import {
   toggleRecipientListPanel,
   toggleSenderListPanel,
   setRecipientsList,
+  setRecipientMode,
 } from '@envelope/infrastructure/state'
 import { selectSelectedRecipientIds } from '@envelope/infrastructure/selectors'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
@@ -129,7 +130,10 @@ function* handleEnvelopeToolbarAction(
     }
     if (section === 'recipient') {
       const recipient: RecipientState = yield select(selectRecipientState)
-      if (recipient.isComplete) yield put(setRecipientApplied(true))
+      if (recipient.isComplete) {
+        yield put(setRecipientMode('recipient'))
+        yield put(setRecipientApplied(true))
+      }
     }
     if (section === 'recipients') {
       const ids: string[] = yield select(selectSelectedRecipientIds)
@@ -149,6 +153,7 @@ function* handleEnvelopeToolbarAction(
           })
         }
       }
+      yield put(setRecipientMode('recipients'))
       yield put(setRecipientsList(list))
     }
   }

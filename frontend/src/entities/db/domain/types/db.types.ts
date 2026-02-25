@@ -9,7 +9,7 @@ import type { PreviewStripOrderState } from '@features/previewStrip/infrastructu
 
 export interface SessionEnvelopeSelection {
   selectedRecipientIds: string[]
-  recipientMode?: 'single' | 'multi'
+  recipientMode?: 'recipient' | 'recipients'
 }
 
 export interface SessionData {

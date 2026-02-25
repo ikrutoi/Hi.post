@@ -1,6 +1,6 @@
 import type { AddressFields } from '@shared/config/constants'
 
-export type RecipientMode = 'single' | 'multi'
+export type RecipientMode = 'recipient' | 'recipients'
 
 export type RecipientState = {
   data: AddressFields

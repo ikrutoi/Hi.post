@@ -12,7 +12,7 @@ export const envelopeToolbarSyncMiddleware: Middleware =
   (store) => (next) => (action) => {
     if (
       setRecipientMode.match(action) &&
-      action.payload === 'multi'
+      action.payload === 'recipients'
     ) {
       const state = store.getState()
       const selectedIds =

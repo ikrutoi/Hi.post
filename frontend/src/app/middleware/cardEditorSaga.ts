@@ -242,7 +242,7 @@ export function* cardEditorSaga() {
   yield takeEvery(setRecipientMode.type, function* (
     action: ReturnType<typeof setRecipientMode>,
   ) {
-    if (action.payload === 'single') {
+    if (action.payload === 'recipient') {
       yield put(clearRecipientsList())
     }
   })

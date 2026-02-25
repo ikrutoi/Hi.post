@@ -31,7 +31,7 @@ export const useRecipientFacade = () => {
   const toggleEnabled = () => {
     const nextEnabled = !isEnabled
     dispatch(setEnabled(nextEnabled))
-    dispatch(setRecipientMode(nextEnabled ? 'multi' : 'single'))
+    dispatch(setRecipientMode(nextEnabled ? 'recipients' : 'recipient'))
   }
 
   return {

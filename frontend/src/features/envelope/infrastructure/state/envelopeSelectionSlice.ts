@@ -13,7 +13,7 @@ const initialState: EnvelopeSelectionState = {
   selectedRecipientIds: [],
   recipientListPanelOpen: false,
   senderListPanelOpen: false,
-  recipientMode: 'single',
+  recipientMode: 'recipient',
 }
 
 export const envelopeSelectionSlice = createSlice({

@@ -145,16 +145,16 @@ export function* persistGlobalSession() {
 
   const envelopeSelectionState: {
     selectedRecipientIds: string[]
-    recipientMode: 'single' | 'multi'
+    recipientMode: 'recipient' | 'recipients'
   } = yield select(
     (state: {
       envelopeSelection: {
         selectedRecipientIds: string[]
-        recipientMode: 'single' | 'multi'
+        recipientMode: 'recipient' | 'recipients'
       }
     }) => ({
       selectedRecipientIds: state.envelopeSelection?.selectedRecipientIds ?? [],
-      recipientMode: state.envelopeSelection?.recipientMode ?? 'single',
+      recipientMode: state.envelopeSelection?.recipientMode ?? 'recipient',
     }),
   )
 
@@ -184,7 +184,7 @@ export function* persistGlobalSession() {
     previewStripOrder: previewStripOrder ?? null,
     envelopeSelection:
       envelopeSelectionState.selectedRecipientIds.length > 0 ||
-      envelopeSelectionState.recipientMode !== 'single'
+      envelopeSelectionState.recipientMode !== 'recipient'
         ? {
             selectedRecipientIds: envelopeSelectionState.selectedRecipientIds,
             recipientMode: envelopeSelectionState.recipientMode,
@@ -415,7 +415,7 @@ export function* hydrateAppSession() {
 
       if (recipientMode) {
         yield put(setRecipientMode(recipientMode))
-        yield put(setRecipientEnabled(recipientMode === 'multi'))
+        yield put(setRecipientEnabled(recipientMode === 'recipients'))
       }
 
       if (recipients?.length) {
@@ -433,11 +433,11 @@ export function* hydrateAppSession() {
     if (session.envelopeSelection?.recipientMode) {
       const mode = session.envelopeSelection.recipientMode
       yield put(setRecipientMode(mode))
-      yield put(setRecipientEnabled(mode === 'multi'))
+      yield put(setRecipientEnabled(mode === 'recipients'))
     }
     const multiWithIds =
-      (session.envelopeSelection?.recipientMode === 'multi' ||
-        session.envelope?.recipientMode === 'multi') &&
+      (session.envelopeSelection?.recipientMode === 'recipients' ||
+        session.envelope?.recipientMode === 'recipients') &&
       (session.envelopeSelection?.selectedRecipientIds?.length ?? 0) > 0
     if (multiWithIds) {
       yield put(incrementAddressBookReloadVersion())
