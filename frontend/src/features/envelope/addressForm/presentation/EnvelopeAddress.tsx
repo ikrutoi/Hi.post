@@ -5,7 +5,11 @@ import { Label } from './Label/Label'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { AddressEntry } from '../../addressBook/presentation/AddressEntry'
-import { toggleRecipientSelection } from '../../infrastructure/state'
+import {
+  toggleRecipientSelection,
+  removeRecipientAt,
+} from '../../infrastructure/state'
+import { selectRecipientsList } from '../../infrastructure/selectors'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useSenderFacade } from '../../sender/application/facades'
 import { useRecipientFacade } from '../../recipient/application/facades'
@@ -29,6 +33,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const inputsRef = useRef<(HTMLInputElement | null)[]>([])
 
   const { entries: recipientEntries } = useAddressBookList('recipient')
+  const envelopeRecipients = useAppSelector(selectRecipientsList)
   const selectedRecipientIds = useAppSelector(
     (s) => s.envelopeSelection.selectedRecipientIds,
   )
@@ -39,11 +44,32 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         .filter(Boolean) as typeof recipientEntries,
     [selectedRecipientIds, recipientEntries],
   )
+  // В multi всегда опираемся на массив Пользователи (envelopeRecipients): после перезагрузки или переключения с single он уже может быть заполнен
+  const recipientsDisplayList = useMemo(() => {
+    if (role !== 'recipient' || !recipientFacade.isEnabled) return []
+    if (envelopeRecipients.length > 0) {
+      return envelopeRecipients.map((r, i) => ({
+        id: `recipient-${i}`,
+        role: 'recipient' as const,
+        address: { ...r.data },
+        createdAt: new Date().toISOString(),
+      }))
+    }
+    return selectedEntriesInOrder
+  }, [
+    role,
+    recipientFacade.isEnabled,
+    envelopeRecipients,
+    selectedEntriesInOrder,
+  ])
 
-  const recipientListEmpty = recipientEntries.length === 0
-  const recipientToggleDisabled = role === 'recipient' && recipientListEmpty
+  // Тумблер отражает режим (enabled), а не «есть ли записи» — иначе после перезагрузки
+  // при гидрации multi форма уже показывается, а список ещё пуст → тумблер показывал бы off
   const recipientToggleChecked =
-    role === 'recipient' && !recipientListEmpty && recipientFacade.isEnabled
+    role === 'recipient' && recipientFacade.isEnabled
+  // Тумблер не отключаем: иначе в single при пустом списке показывается красный стоп при ховере.
+  // В multi с пустым списком просто показываем 0 получателей.
+  const recipientToggleDisabled = false
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -60,7 +86,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   }
 
   const handleRemoveRecipient = (id: string) => {
-    dispatch(toggleRecipientSelection(id))
+    if (id.startsWith('recipient-')) {
+      const index = parseInt(id.replace('recipient-', ''), 10)
+      if (!Number.isNaN(index)) dispatch(removeRecipientAt(index))
+    } else {
+      dispatch(toggleRecipientSelection(id))
+    }
   }
 
   let fieldIndex = 0
@@ -253,7 +284,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             </div>
             {recipientFacade.isEnabled ? (
               <div className={styles.recipientsList}>
-                {selectedEntriesInOrder.map((entry) => (
+                {recipientsDisplayList.map((entry) => (
                   <AddressEntry
                     key={entry.id}
                     entry={entry}

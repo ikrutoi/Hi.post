@@ -26,9 +26,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const dispatch = useAppDispatch()
   const { isEnabled: recipientListEnabled } = useRecipientFacade()
   const { entries: recipientEntries } = useAddressBookList('recipient')
-  const recipientData = useAppSelector(
-    (state) => state.recipient.data,
-  )
+  const recipientData = useAppSelector((state) => state.recipient.data)
   const selectedRecipientIds = useAppSelector(
     (state) => state.envelopeSelection.selectedRecipientIds,
   )
@@ -47,12 +45,16 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
     [senderData, senderEntries],
   )
 
-  // В single — подсвечиваем только адрес, совпадающий с формой; в multi — выбранные в списке
   const listSelectedIds = useMemo(() => {
     if (recipientListEnabled) return selectedRecipientIds
     const singleId = getMatchingEntryId(recipientData, recipientEntries)
     return singleId ? [singleId] : []
-  }, [recipientListEnabled, selectedRecipientIds, recipientData, recipientEntries])
+  }, [
+    recipientListEnabled,
+    selectedRecipientIds,
+    recipientData,
+    recipientEntries,
+  ])
 
   const handleRecipientSelect = useCallback(
     (entry: AddressBookEntry) => {

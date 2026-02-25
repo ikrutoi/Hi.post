@@ -30,11 +30,7 @@ export const selectRecipientMode = createSelector(
   (s) => s.recipientMode,
 )
 
-/** Список получателей в мульти-режиме (для сохранения в сессию и отображения) */
-export const selectRecipientsList = createSelector(
-  [selectRecipientsListState],
-  (list) => list,
-)
+export const selectRecipientsList = selectRecipientsListState
 
 export const selectEnvelopeSessionRecord = createSelector(
   [
@@ -44,7 +40,6 @@ export const selectEnvelopeSessionRecord = createSelector(
     selectRecipientsListState,
   ],
   (sender, recipient, recipientMode, recipients): EnvelopeSessionRecord => {
-    // Тумблер Отправитель выключен: достаточно Apply в Получателе. Включён: нужен Apply и в Отправителе, и в Получателе.
     const isComplete = sender.enabled
       ? sender.applied && recipient.applied
       : recipient.applied

@@ -25,7 +25,7 @@ export const AddressTemplatesView: React.FC<AddressTemplatesViewProps> = ({
       console.log('Адрес успешно сохранен')
     },
     onError: (error) => {
-      console.error('Ошибка:', error)
+      console.error('Error:', error)
     },
   })
 

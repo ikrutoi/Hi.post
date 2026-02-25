@@ -6,6 +6,7 @@ import { CardPie } from '../../cardPie/presentation/CardPie'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import { useCardFacade } from '@entities/card/application/facades'
 import { useLayoutFacade } from '@layout/application/facades'
+import { useEnvelopeFacade } from '@envelope/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardPanelFacade } from '../application/facades'
 import { useSliderLetterHandlers } from '@cardPanel/application/hooks/useSliderLetterHandlers'
@@ -22,7 +23,8 @@ export const CardPanel = () => {
   const { editorState } = useCardEditorFacade()
   const { state: stateCardPanel } = useCardPanelFacade()
   const { isPacked } = stateCardPanel
-
+  const { recipient } = useEnvelopeFacade()
+  console.log('recipient', recipient)
   const { isPreviewOpen } = useCardFacade()
   const { meta } = useLayoutFacade()
   const { remSize, sizeMiniCard, sizeToolbarContour } = useSizeFacade()

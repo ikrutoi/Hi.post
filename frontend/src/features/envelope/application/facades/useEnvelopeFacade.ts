@@ -8,6 +8,7 @@ import {
   selectIsEnvelopeReady,
   selectSelectedRecipientIds,
   selectRecipientListPanelOpen,
+  selectRecipientsList,
 } from '../../infrastructure/selectors'
 import {
   updateRecipientField,
@@ -40,6 +41,7 @@ export const useEnvelopeFacade = () => {
   const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
   const selectedRecipientIds = useAppSelector(selectSelectedRecipientIds)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
+  const recipients = useAppSelector(selectRecipientsList)
 
   const handleFieldChange = (
     role: EnvelopeRole,
@@ -95,6 +97,7 @@ export const useEnvelopeFacade = () => {
 
     selectedRecipientIds,
     recipientListPanelOpen,
+    recipients,
 
     handleFieldChange,
     toggleSenderEnabled,
