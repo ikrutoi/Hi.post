@@ -15,6 +15,7 @@ export const CARDTEXT_KEYS = [
   'center',
   'right',
   'justify',
+  'apply',
   'close',
   'save',
   'textList',
@@ -53,6 +54,7 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
   {
     group: 'ui',
     icons: [
+      { key: 'apply', state: 'enabled' },
       { key: 'close', state: 'disabled' },
       { key: 'save', state: 'disabled' },
       { key: 'textList', state: 'disabled' },

@@ -15,10 +15,12 @@
   overflow: hidden;
   text-align: center;
   background-color: #ffffff;
-  transition: border-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.15s ease;
 
   &.placeholderSender {
-    background-color: $color-envelope-sender;
+    background-color: $color-envelope-sender-input;
     border-color: $color-envelope-sender-border;
     .placeholderText {
       color: $color-envelope-sender-legend;
@@ -26,7 +28,7 @@
   }
 
   &.placeholderRecipient {
-    background-color: $color-envelope-recipient;
+    background-color: $color-envelope-recipient-input;
     border-color: $color-envelope-recipient-border;
     .placeholderText {
       color: $color-envelope-recipient-legend;

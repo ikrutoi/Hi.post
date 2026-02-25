@@ -1,6 +1,7 @@
 import { SagaIterator } from 'redux-saga'
-import { call } from 'redux-saga/effects'
+import { call, put } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { setComplete } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
 import { syncCardOrientationStatus } from './cardtextProcessSaga'
 
@@ -12,6 +13,10 @@ export function* handleCardtextToolbarAction(
   // if (section !== 'cardtext' || !editor) return
 
   switch (key) {
+    case 'apply':
+      yield put(setComplete(true))
+      break
+
     case 'fontSizeLess':
       yield call(changeFontSizeStep, editor, 'less')
       break

@@ -55,8 +55,7 @@ export const cardtextSlice = createSlice({
         .join('\n')
 
       const hasText = state.plainText.trim().length > 0
-      state.isComplete = hasText
-
+      // isComplete выставляется только по нажатию Apply (setComplete), не по наличию текста
       if (!hasText) state.assetId = null
     },
 

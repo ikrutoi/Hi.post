@@ -10,7 +10,11 @@ import {
   setRecipientApplied,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
-import { toggleRecipientListPanel } from '@envelope/infrastructure/state'
+import {
+  toggleRecipientListPanel,
+  setRecipientsList,
+} from '@envelope/infrastructure/state'
+import { selectSelectedRecipientIds } from '@envelope/infrastructure/selectors'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import {
@@ -38,20 +42,23 @@ function* handleEnvelopeToolbarAction(
 
   if (section === 'senderFavorite' && key === 'favorite') {
     const sender: SenderState = yield select(selectSenderState)
-    const raw: { id: string; address?: Record<string, string> }[] =
-      yield call([senderAdapter, 'getAll'])
+    const raw: { id: string; address?: Record<string, string> }[] = yield call([
+      senderAdapter,
+      'getAll',
+    ])
     const match = Array.isArray(raw)
       ? raw.find((r) => addressMatches(sender.data, r.address))
       : null
     const entryId = match ? String(match.id) : null
     const addressTemplateRefs: { type: string; id: string }[] = yield select(
-      (s: { previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] } }) =>
-        s.previewStripOrder?.addressTemplateRefs ?? [],
+      (s: {
+        previewStripOrder: {
+          addressTemplateRefs: { type: string; id: string }[]
+        }
+      }) => s.previewStripOrder?.addressTemplateRefs ?? [],
     )
     const isInFavorites = entryId
-      ? addressTemplateRefs.some(
-          (r) => r.type === 'sender' && r.id === entryId,
-        )
+      ? addressTemplateRefs.some((r) => r.type === 'sender' && r.id === entryId)
       : false
     if (entryId) {
       if (isInFavorites) {
@@ -60,7 +67,6 @@ function* handleEnvelopeToolbarAction(
         yield put(addAddressTemplateRef({ type: 'sender', id: entryId }))
       }
     } else if (sender.isComplete) {
-      // Новый контакт: сохраняем в шаблоны и сразу добавляем в избранное
       yield put(senderSaveRequested())
     }
     return
@@ -68,15 +74,20 @@ function* handleEnvelopeToolbarAction(
 
   if (section === 'recipientFavorite' && key === 'favorite') {
     const recipient: RecipientState = yield select(selectRecipientState)
-    const raw: { id: string; address?: Record<string, string> }[] =
-      yield call([recipientAdapter, 'getAll'])
+    const raw: { id: string; address?: Record<string, string> }[] = yield call([
+      recipientAdapter,
+      'getAll',
+    ])
     const match = Array.isArray(raw)
       ? raw.find((r) => addressMatches(recipient.data, r.address))
       : null
     const entryId = match ? String(match.id) : null
     const addressTemplateRefs: { type: string; id: string }[] = yield select(
-      (s: { previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] } }) =>
-        s.previewStripOrder?.addressTemplateRefs ?? [],
+      (s: {
+        previewStripOrder: {
+          addressTemplateRefs: { type: string; id: string }[]
+        }
+      }) => s.previewStripOrder?.addressTemplateRefs ?? [],
     )
     const isInFavorites = entryId
       ? addressTemplateRefs.some(
@@ -95,7 +106,11 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
-  if (section !== 'sender' && section !== 'recipient' && section !== 'recipients')
+  if (
+    section !== 'sender' &&
+    section !== 'recipient' &&
+    section !== 'recipients'
+  )
     return
 
   if (key === 'close') {
@@ -115,6 +130,26 @@ function* handleEnvelopeToolbarAction(
       const recipient: RecipientState = yield select(selectRecipientState)
       if (recipient.isComplete) yield put(setRecipientApplied(true))
     }
+    if (section === 'recipients') {
+      const ids: string[] = yield select(selectSelectedRecipientIds)
+      const list: RecipientState[] = []
+      for (const id of ids) {
+        const record: { id: string; address?: Record<string, string> } | null =
+          yield call([recipientAdapter, 'getById'], id)
+        if (record?.address) {
+          const isComplete = Object.values(record.address).every(
+            (v) => (v ?? '').trim() !== '',
+          )
+          list.push({
+            data: record.address as RecipientState['data'],
+            isComplete,
+            enabled: false,
+            applied: true,
+          })
+        }
+      }
+      yield put(setRecipientsList(list))
+    }
   }
 
   if (
@@ -128,20 +163,26 @@ function* handleEnvelopeToolbarAction(
     const addressSection = section
     const sender: SenderState = yield select(selectSenderState)
     const recipient: RecipientState = yield select(selectRecipientState)
-    const addressData = addressSection === 'sender' ? sender.data : recipient.data
+    const addressData =
+      addressSection === 'sender' ? sender.data : recipient.data
 
     const adapter =
       addressSection === 'sender' ? senderAdapter : recipientAdapter
-    const raw: { id: string; address?: Record<string, string> }[] =
-      yield call([adapter, 'getAll'])
+    const raw: { id: string; address?: Record<string, string> }[] = yield call([
+      adapter,
+      'getAll',
+    ])
     const match = Array.isArray(raw)
       ? raw.find((r) => addressMatches(addressData, r.address))
       : null
     const entryId = match ? String(match.id) : null
 
     const addressTemplateRefs: { type: string; id: string }[] = yield select(
-      (s: { previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] } }) =>
-        s.previewStripOrder?.addressTemplateRefs ?? [],
+      (s: {
+        previewStripOrder: {
+          addressTemplateRefs: { type: string; id: string }[]
+        }
+      }) => s.previewStripOrder?.addressTemplateRefs ?? [],
     )
     const isInFavorites = entryId
       ? addressTemplateRefs.some(
@@ -151,7 +192,9 @@ function* handleEnvelopeToolbarAction(
 
     if (entryId) {
       if (isInFavorites) {
-        yield put(removeAddressTemplateRef({ type: addressSection, id: entryId }))
+        yield put(
+          removeAddressTemplateRef({ type: addressSection, id: entryId }),
+        )
       } else {
         yield put(addAddressTemplateRef({ type: addressSection, id: entryId }))
       }

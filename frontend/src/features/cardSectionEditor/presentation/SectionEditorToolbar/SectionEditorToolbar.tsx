@@ -36,7 +36,7 @@ export const SectionEditorToolbar: React.FC = () => {
   const { items: previewStripItems, reload: reloadPreviewStrip } =
     usePreviewStripItems(activeSection)
   const { actions: cardphotoActions } = useCardphotoFacade()
-  const { deleteCardtextTemplate, deleteAddressTemplate } = useTemplateActions()
+  const { deleteCardtextTemplate } = useTemplateActions()
 
   const handleSelectPreviewItem = useCallback(
     async (item: PreviewStripItem) => {
@@ -68,7 +68,7 @@ export const SectionEditorToolbar: React.FC = () => {
         dispatch(removeCardtextTemplateId(item.templateId))
         await reloadPreviewStrip()
       } else if (item.kind === 'address') {
-        await deleteAddressTemplate(item.addressType, item.templateId)
+        // Только снять из избранного (полоса быстрого доступа), контакт в адресной книге не удаляем
         dispatch(
           removeAddressTemplateRef({
             type: item.addressType,
@@ -84,7 +84,6 @@ export const SectionEditorToolbar: React.FC = () => {
       sender.enabled,
       cardphotoActions,
       deleteCardtextTemplate,
-      deleteAddressTemplate,
       reloadPreviewStrip,
     ],
   )

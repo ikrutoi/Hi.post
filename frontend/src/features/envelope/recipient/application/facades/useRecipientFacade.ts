@@ -12,6 +12,7 @@ import {
   setEnabled,
   updateRecipientField,
 } from '../../infrastructure/state'
+import { setRecipientMode } from '@envelope/infrastructure/state'
 import type { AddressField } from '@shared/config/constants'
 
 export const useRecipientFacade = () => {
@@ -27,7 +28,11 @@ export const useRecipientFacade = () => {
     dispatch(updateRecipientField({ field, value }))
 
   const clear = () => dispatch(clearRecipient())
-  const toggleEnabled = () => dispatch(setEnabled(!isEnabled))
+  const toggleEnabled = () => {
+    const nextEnabled = !isEnabled
+    dispatch(setEnabled(nextEnabled))
+    dispatch(setRecipientMode(nextEnabled ? 'multi' : 'single'))
+  }
 
   return {
     state,

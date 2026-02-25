@@ -3,8 +3,17 @@ import { selectSenderState } from '../../sender/infrastructure/selectors'
 import { selectRecipientState } from '../../recipient/infrastructure/selectors'
 import { EnvelopeSessionRecord } from '../../domain/types'
 
-const selectEnvelopeSelectionState = (state: { envelopeSelection: { selectedRecipientIds: string[]; recipientListPanelOpen: boolean } }) =>
-  state.envelopeSelection
+const selectEnvelopeSelectionState = (state: {
+  envelopeSelection: {
+    selectedRecipientIds: string[]
+    recipientListPanelOpen: boolean
+    recipientMode: EnvelopeSessionRecord['recipientMode']
+  }
+}) => state.envelopeSelection
+
+const selectRecipientsListState = (state: {
+  envelopeRecipients: EnvelopeSessionRecord['recipients']
+}) => state.envelopeRecipients ?? []
 
 export const selectSelectedRecipientIds = createSelector(
   [selectEnvelopeSelectionState],
@@ -16,9 +25,25 @@ export const selectRecipientListPanelOpen = createSelector(
   (s) => s.recipientListPanelOpen,
 )
 
+export const selectRecipientMode = createSelector(
+  [selectEnvelopeSelectionState],
+  (s) => s.recipientMode,
+)
+
+/** Список получателей в мульти-режиме (для сохранения в сессию и отображения) */
+export const selectRecipientsList = createSelector(
+  [selectRecipientsListState],
+  (list) => list,
+)
+
 export const selectEnvelopeSessionRecord = createSelector(
-  [selectSenderState, selectRecipientState],
-  (sender, recipient): EnvelopeSessionRecord => {
+  [
+    selectSenderState,
+    selectRecipientState,
+    selectRecipientMode,
+    selectRecipientsListState,
+  ],
+  (sender, recipient, recipientMode, recipients): EnvelopeSessionRecord => {
     // Тумблер Отправитель выключен: достаточно Apply в Получателе. Включён: нужен Apply и в Отправителе, и в Получателе.
     const isComplete = sender.enabled
       ? sender.applied && recipient.applied
@@ -27,6 +52,8 @@ export const selectEnvelopeSessionRecord = createSelector(
     return {
       sender,
       recipient,
+      recipients,
+      recipientMode,
       isComplete,
     }
   },

@@ -12,12 +12,15 @@ export interface PreviewStripOrderState {
   cardtextTemplateIds: string[]
   addressTemplateRefs: AddressTemplateRef[]
   addressTemplatesReloadVersion: number
+  /** Инкремент при сохранении адреса — список адресов (useAddressBookList) перезапрашивает данные */
+  addressBookReloadVersion: number
 }
 
 const initialState: PreviewStripOrderState = {
   cardtextTemplateIds: [],
   addressTemplateRefs: [],
   addressTemplatesReloadVersion: 0,
+  addressBookReloadVersion: 0,
 }
 
 export const previewStripOrderSlice = createSlice({
@@ -74,6 +77,10 @@ export const previewStripOrderSlice = createSlice({
     incrementAddressTemplatesReloadVersion(state) {
       state.addressTemplatesReloadVersion += 1
     },
+
+    incrementAddressBookReloadVersion(state) {
+      state.addressBookReloadVersion += 1
+    },
   },
 })
 
@@ -84,6 +91,7 @@ export const {
   removeAddressTemplateRef,
   restorePreviewStripOrder,
   incrementAddressTemplatesReloadVersion,
+  incrementAddressBookReloadVersion,
 } = previewStripOrderSlice.actions
 
 export default previewStripOrderSlice.reducer

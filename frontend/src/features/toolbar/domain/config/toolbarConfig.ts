@@ -62,6 +62,9 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
         case 'justify':
           cardtextToolbarController.setAlign(editor, dispatch, key as any)
           break
+        default:
+          dispatch({ type: 'toolbar/action', payload: { section, key } })
+          break
       }
     },
     group: 'text',

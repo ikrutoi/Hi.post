@@ -13,6 +13,7 @@ import type {
   CardphotoSessionRecord,
 } from '@cardphoto/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
+import type { WorkingCardRecord } from '@entities/card/domain/types'
 
 export interface StoreMap {
   stockImages: ImageRecord
@@ -26,6 +27,8 @@ export interface StoreMap {
   drafts: DraftsItem
   sent: SentItem
   session: SessionData
+  /** Рабочий макет открытки (секции + массив recipientIds + превью кардфото) */
+  workingCard: WorkingCardRecord
 }
 
 export interface TemplateStoreMap {

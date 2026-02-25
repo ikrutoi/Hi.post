@@ -88,17 +88,22 @@ export function usePreviewStripItems(
     }
 
     if (activeSection === 'envelope') {
-      const senderById = new Map(senderTemplates.map((t) => [t.id, t]))
-      const recipientById = new Map(recipientTemplates.map((t) => [t.id, t]))
+      // Ключи в Map — всегда string, чтобы совпадать с ref.id из списка (избегаем number/string)
+      const senderById = new Map(
+        senderTemplates.map((t) => [String(t.id), t]),
+      )
+      const recipientById = new Map(
+        recipientTemplates.map((t) => [String(t.id), t]),
+      )
       // Показываем только избранные адреса (звёздочка); при пустом списке — пустая панель
       const refsWithData = addressTemplateRefs.filter((ref) => {
         const map = ref.type === 'sender' ? senderById : recipientById
-        return map.has(ref.id)
+        return map.has(String(ref.id))
       })
       const refsNewestFirst = [...refsWithData].reverse().slice(0, MAX_ITEMS)
       return refsNewestFirst.map((ref) => {
         const map = ref.type === 'sender' ? senderById : recipientById
-        const t = map.get(ref.id)!
+        const t = map.get(String(ref.id))!
         return {
           kind: 'address' as const,
           id: `${ref.type}-${t.id}`,

@@ -2,6 +2,21 @@ import type { CardStatus } from './card.types'
 import type { AromaImageIndex } from '@entities/aroma/domain/types'
 import type { DispatchDate } from '@entities/date'
 
+/** Рабочий макет открытки (до «положить в корзину»): id секций + массив получателей. Хранится в БД. */
+export interface WorkingCardRecord {
+  id: string
+  cardphotoId: string | null
+  cardtextId: string | null
+  aromaId: AromaImageIndex
+  date: DispatchDate
+  senderId: string | null
+  /** Id шаблонов получателей из БД; одиночный режим = массив из одного элемента */
+  recipientIds: string[]
+  /** Ссылка на превью картинки для пирога секций и списков */
+  cardphotoPreviewUrl: string | null
+  updatedAt: number
+}
+
 export interface CardTemplateReferences {
   cardphotoId: string | null
   cardtextId: string | null

@@ -4,22 +4,13 @@ import type { AddressTemplate } from '@entities/templates'
 import styles from './AddressTemplateItem.module.scss'
 
 interface AddressTemplateItemProps {
-  /** Шаблон адреса */
   template: AddressTemplate
-  /** Обработчик выбора шаблона */
   onSelect?: (template: AddressTemplate) => void
-  /** Обработчик удаления шаблона */
   onDelete?: (templateId: number | string) => void
-  /** Обработчик редактирования шаблона */
   onEdit?: (template: AddressTemplate) => void
-  /** Активен ли элемент (выбран) */
   isActive?: boolean
 }
 
-/**
- * Компонент элемента списка шаблонов адресов
- * Отображает превью адреса и действия (выбрать, редактировать, удалить)
- */
 export const AddressTemplateItem: React.FC<AddressTemplateItemProps> = ({
   template,
   onSelect,
@@ -51,7 +42,7 @@ export const AddressTemplateItem: React.FC<AddressTemplateItemProps> = ({
       <div className={styles.itemContent}>
         <AddressTemplatePreview template={template} compact />
       </div>
-      
+
       <div className={styles.itemActions}>
         {onEdit && (
           <button

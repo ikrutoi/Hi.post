@@ -10,3 +10,6 @@ export const selectAddressTemplateRefs = (state: RootState) =>
 
 export const selectAddressTemplatesReloadVersion = (state: RootState) =>
   selectPreviewStripOrder(state)?.addressTemplatesReloadVersion ?? 0
+
+export const selectAddressBookReloadVersion = (state: RootState) =>
+  selectPreviewStripOrder(state)?.addressBookReloadVersion ?? 0

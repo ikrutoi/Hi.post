@@ -11,6 +11,14 @@ import {
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import {
+  selectSelectedRecipientIds,
+} from '@envelope/infrastructure/selectors'
+import {
+  toggleRecipientSelection,
+  setSelectedRecipientIds,
+  setRecipientMode,
+} from '@envelope/infrastructure/state'
+import {
   buildRecipientToolbarState,
   buildSenderToolbarState,
   getAddressListToolbarFragment,
@@ -101,11 +109,20 @@ export function* processEnvelopeVisuals() {
     }),
   )
 
+  const selectedRecipientIds: string[] = yield select(selectSelectedRecipientIds)
+  const isMultiMode = recipient.enabled
+  const canApplyRecipients =
+    isMultiMode && selectedRecipientIds.length >= 1
+
   yield put(
     updateToolbarSection({
       section: 'recipients',
       value: {
         addressList: getAddressListToolbarFragment(recipientList.length),
+        apply: {
+          state: canApplyRecipients ? 'enabled' : 'disabled',
+          options: {},
+        },
       },
     }),
   )
@@ -142,4 +159,12 @@ export function* envelopeProcessSaga() {
   yield takeEvery(clearSender.type, processEnvelopeVisuals)
   yield takeEvery(addAddressTemplateRef.type, processEnvelopeVisuals)
   yield takeEvery(removeAddressTemplateRef.type, processEnvelopeVisuals)
+  yield takeEvery(
+    [
+      toggleRecipientSelection.type,
+      setSelectedRecipientIds.type,
+      setRecipientMode.type,
+    ],
+    processEnvelopeVisuals,
+  )
 }

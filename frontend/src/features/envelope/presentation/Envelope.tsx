@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import type { AddressField } from '@shared/config/constants'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
@@ -11,10 +11,8 @@ import { RecipientListPanel } from '../addressBook/presentation/RecipientListPan
 import { useRecipientFacade } from '../recipient/application/facades'
 import { useAddressBookList } from '../addressBook/application/controllers'
 import { updateRecipientField } from '../recipient/infrastructure/state'
-import {
-  toggleRecipientSelection,
-  setSelectedRecipientIds,
-} from '../infrastructure/state'
+import { toggleRecipientSelection } from '../infrastructure/state'
+import { getMatchingEntryId } from '../domain/helpers'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -26,7 +24,9 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const dispatch = useAppDispatch()
   const { isEnabled: recipientListEnabled } = useRecipientFacade()
   const { entries: recipientEntries } = useAddressBookList('recipient')
-
+  const recipientData = useAppSelector(
+    (state) => state.recipient.data,
+  )
   const selectedRecipientIds = useAppSelector(
     (state) => state.envelopeSelection.selectedRecipientIds,
   )
@@ -34,24 +34,20 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
     (state) => state.envelopeSelection.recipientListPanelOpen,
   )
 
-  // Список слева вкл/выкл только иконкой addressList; тумблер мульти-получатель на него не влияет
-  const showRecipientList =
-    recipientListPanelOpen && recipientEntries.length > 0
+  const showRecipientList = recipientListPanelOpen
+
+  // В single — подсвечиваем только адрес, совпадающий с формой; в multi — выбранные в списке
+  const listSelectedIds = useMemo(() => {
+    if (recipientListEnabled) return selectedRecipientIds
+    const singleId = getMatchingEntryId(recipientData, recipientEntries)
+    return singleId ? [singleId] : []
+  }, [recipientListEnabled, selectedRecipientIds, recipientData, recipientEntries])
 
   const handleRecipientSelect = useCallback(
     (entry: AddressBookEntry) => {
       if (recipientListEnabled) {
-        const wasSelected = selectedRecipientIds.includes(entry.id)
         dispatch(toggleRecipientSelection(entry.id))
-        if (!wasSelected) {
-          ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-            ([field, value]) => {
-              dispatch(updateRecipientField({ field, value }))
-            },
-          )
-        }
       } else {
-        dispatch(setSelectedRecipientIds([entry.id]))
         ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
           ([field, value]) => {
             dispatch(updateRecipientField({ field, value }))
@@ -59,7 +55,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         )
       }
     },
-    [dispatch, recipientListEnabled, selectedRecipientIds],
+    [dispatch, recipientListEnabled],
   )
 
   return (
@@ -67,7 +63,10 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
       <div className={styles.envelopeLeftSlot}>
         {showRecipientList ? (
           <div className={styles.recipientListPanelWrap}>
-            <RecipientListPanel onSelect={handleRecipientSelect} />
+            <RecipientListPanel
+              onSelect={handleRecipientSelect}
+              selectedIds={listSelectedIds}
+            />
           </div>
         ) : (
           <>

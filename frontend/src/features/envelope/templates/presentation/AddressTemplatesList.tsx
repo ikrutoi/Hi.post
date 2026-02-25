@@ -5,30 +5,16 @@ import type { EnvelopeRole } from '@shared/config/constants'
 import styles from './AddressTemplatesList.module.scss'
 
 interface AddressTemplatesListProps {
-  /** Список шаблонов адресов */
   templates: AddressTemplate[]
-  /** Тип адреса (recipient/sender) */
   type: EnvelopeRole
-  /** Загружаются ли данные */
   isLoading?: boolean
-  /** Выбранный шаблон (ID) */
   selectedId?: number | string | null
-  /** Обработчик выбора шаблона */
   onSelect?: (template: AddressTemplate) => void
-  /** Обработчик удаления шаблона */
-  onDelete?: (templateId: number | string) => void
-  /** Обработчик редактирования шаблона */
   onEdit?: (template: AddressTemplate) => void
-  /** Пустое состояние (когда нет шаблонов) */
   emptyMessage?: string
-  /** Класс для кастомизации */
   className?: string
 }
 
-/**
- * Компонент списка шаблонов адресов
- * Отображает список сохраненных адресов для выбранного типа (recipient/sender)
- */
 export const AddressTemplatesList: React.FC<AddressTemplatesListProps> = ({
   templates,
   type,
@@ -42,7 +28,9 @@ export const AddressTemplatesList: React.FC<AddressTemplatesListProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className={`${styles.list} ${styles.listLoading} ${className || ''}`}>
+      <div
+        className={`${styles.list} ${styles.listLoading} ${className || ''}`}
+      >
         <div className={styles.listLoadingText}>Загрузка...</div>
       </div>
     )
@@ -52,7 +40,8 @@ export const AddressTemplatesList: React.FC<AddressTemplatesListProps> = ({
     return (
       <div className={`${styles.list} ${styles.listEmpty} ${className || ''}`}>
         <div className={styles.listEmptyText}>
-          {emptyMessage || `Нет сохраненных адресов для ${type === 'recipient' ? 'получателя' : 'отправителя'}`}
+          {emptyMessage ||
+            `Нет сохраненных адресов для ${type === 'recipient' ? 'получателя' : 'отправителя'}`}
         </div>
       </div>
     )
@@ -62,10 +51,11 @@ export const AddressTemplatesList: React.FC<AddressTemplatesListProps> = ({
     <div className={`${styles.list} ${className || ''}`}>
       <div className={styles.listHeader}>
         <h3 className={styles.listTitle}>
-          {type === 'recipient' ? 'Получатели' : 'Отправители'} ({templates.length})
+          {type === 'recipient' ? 'Получатели' : 'Отправители'} (
+          {templates.length})
         </h3>
       </div>
-      
+
       <div className={styles.listItems}>
         {templates.map((template) => (
           <AddressTemplateItem

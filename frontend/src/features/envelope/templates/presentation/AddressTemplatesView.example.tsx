@@ -3,19 +3,8 @@ import { AddressTemplatesList } from './AddressTemplatesList'
 import { useAddressTemplatesView } from '../application/hooks'
 import type { EnvelopeRole } from '@shared/config/constants'
 
-/**
- * Пример использования компонента списка шаблонов адресов
- * 
- * Использование:
- * ```tsx
- * <AddressTemplatesView type="recipient" />
- * <AddressTemplatesView type="sender" />
- * ```
- */
 interface AddressTemplatesViewProps {
-  /** Тип адреса (recipient/sender) */
   type: EnvelopeRole
-  /** Обработчик выбора шаблона */
   onSelectTemplate?: (templateId: number | string) => void
 }
 

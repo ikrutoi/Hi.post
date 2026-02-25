@@ -4,6 +4,7 @@ import {
   editorPieProcessSaga,
   envelopeToolbarSaga,
   envelopeProcessSaga,
+  addressBookSyncSaga,
   cardtextProcessSaga,
   sectionEditorMenuSaga,
   cardphotoProcessSaga,
@@ -25,6 +26,7 @@ export function* rootSaga() {
 
     fork(envelopeToolbarSaga),
     fork(envelopeProcessSaga),
+    fork(addressBookSyncSaga),
     fork(addressSaveSaga),
     fork(cardtextProcessSaga),
     // fork(cardphotoToolbarSaga),

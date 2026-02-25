@@ -12,6 +12,7 @@ import {
   selectAppliedImage,
   selectIsCurrentCropApplied,
 } from '@/features/cardphoto/infrastructure/selectors'
+import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
@@ -33,7 +34,10 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     useSizeFacade()
   // console.log('TOOLBAR section', section)
 
-  const isAlreadyApplied = useAppSelector(selectIsCurrentCropApplied)
+  const cardphotoApplied = useAppSelector(selectIsCurrentCropApplied)
+  const cardtextApplied = useAppSelector(selectCardtextIsComplete)
+  const isAlreadyApplied =
+    section === 'cardtext' ? cardtextApplied : cardphotoApplied
   const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
 
   useEffect(() => {
@@ -63,9 +67,10 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
 
     let buttonStatus = currentIconState || rawData.state
 
-    // apply: для sender и recipient — только state тулбара (envelopeProcessSaga). Для cardphoto — ещё disable, если кроп применён.
+    // apply: для sender, recipient, recipients — только state тулбара (envelopeProcessSaga). Для cardphoto/cardtext — ещё disable, если уже применено.
     const isEnvelopeApply =
-      key === 'apply' && (section === 'sender' || section === 'recipient')
+      key === 'apply' &&
+      (section === 'sender' || section === 'recipient' || section === 'recipients')
     if (key === 'apply' && !isEnvelopeApply && isAlreadyApplied) {
       buttonStatus = 'disabled'
     }

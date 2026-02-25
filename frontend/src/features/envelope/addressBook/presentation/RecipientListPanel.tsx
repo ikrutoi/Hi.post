@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react'
+import React, { useMemo, useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { IconX } from '@shared/ui/icons'
@@ -7,6 +7,8 @@ import { useAddressBookList } from '@envelope/addressBook/application/controller
 import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
+  incrementAddressTemplatesReloadVersion,
+  incrementAddressBookReloadVersion,
 } from '@features/previewStrip/infrastructure/state'
 import { AddressEntry } from './AddressEntry'
 import type { AddressBookEntry } from '../domain/types'
@@ -25,6 +27,10 @@ export const RecipientListPanel: React.FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch()
   const { entries } = useAddressBookList('recipient')
+  // При открытии панели синхронизируем список с БД (один источник правды)
+  useEffect(() => {
+    dispatch(incrementAddressBookReloadVersion())
+  }, [dispatch])
   const addressTemplateRefs = useAppSelector(
     (state) => state.previewStripOrder.addressTemplateRefs,
   )
@@ -45,6 +51,7 @@ export const RecipientListPanel: React.FC<Props> = ({
         dispatch(removeAddressTemplateRef({ type: 'recipient', id }))
       } else {
         dispatch(addAddressTemplateRef({ type: 'recipient', id }))
+        dispatch(incrementAddressTemplatesReloadVersion())
       }
     },
     [dispatch],

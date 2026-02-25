@@ -7,12 +7,14 @@ import { setDate, clearDate } from '@date/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
   updateRecipientField,
+  setRecipientApplied,
   restoreRecipient,
   clearRecipient,
 } from '@envelope/recipient/infrastructure/state'
 import {
   updateSenderField,
   setEnabled,
+  setSenderApplied,
   restoreSender,
   clearSender,
 } from '@envelope/sender/infrastructure/state'
@@ -21,6 +23,10 @@ import {
   selectIsEnvelopeReady,
 } from '@envelope/infrastructure/selectors'
 import {
+  setRecipientMode,
+  clearRecipientsList,
+} from '@envelope/infrastructure/state'
+import {
   selectIsDateComplete,
   selectSelectedDate,
 } from '@date/infrastructure/selectors'
@@ -28,13 +34,13 @@ import {
   selectSelectedAroma,
   selectIsAromaComplete,
 } from '@aroma/infrastructure/selectors'
-import { setValue, clearText } from '@cardtext/infrastructure/state'
+import { setValue, setComplete, clearText } from '@cardtext/infrastructure/state'
 import {
   selectCardtextIsComplete,
   selectCardtextState,
 } from '@cardtext/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
-import { applyFinal } from '@cardphoto/infrastructure/state'
+import { applyFinal, clearApply } from '@cardphoto/infrastructure/state'
 import {
   selectCardphotoIsComplete,
   selectCardphotoState,
@@ -214,7 +220,13 @@ export function* cardEditorSaga() {
   yield takeEvery(clearAroma.type, syncAromaClear)
 
   yield takeEvery(
-    [updateSenderField.type, updateRecipientField.type, setEnabled.type],
+    [
+      updateSenderField.type,
+      updateRecipientField.type,
+      setEnabled.type,
+      setSenderApplied.type,
+      setRecipientApplied.type,
+    ],
     syncEnvelopeStatus,
   )
   yield takeEvery(
@@ -226,6 +238,14 @@ export function* cardEditorSaga() {
     ],
     syncEnvelopeClear,
   )
+
+  yield takeEvery(setRecipientMode.type, function* (
+    action: ReturnType<typeof setRecipientMode>,
+  ) {
+    if (action.payload === 'single') {
+      yield put(clearRecipientsList())
+    }
+  })
 
   yield takeEvery(
     [
@@ -244,10 +264,8 @@ export function* cardEditorSaga() {
 
   yield takeEvery(syncProcessedRequest.type, checkAndSyncProcessedCard)
 
-  yield takeEvery(setValue.type, syncCardtextStatus)
-  // yield takeEvery(setValue.type, syncCardtextToolbar)
+  yield takeEvery([setValue.type, setComplete.type], syncCardtextStatus)
   yield takeEvery(clearText.type, syncCardtextReset)
 
-  yield takeEvery(applyFinal.type, syncCardphotoStatus)
-  // yield clearText.type, syncCardtextReset)
+  yield takeEvery([applyFinal.type, clearApply.type], syncCardphotoStatus)
 }

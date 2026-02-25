@@ -4,7 +4,6 @@ import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import type { PreviewStripProps } from './PreviewStrip.types'
 import styles from './PreviewStrip.module.scss'
 import clsx from 'clsx'
-import { getToolbarIcon } from '@/shared/utils/icons'
 
 const SLOT_COUNT = CARD_SCALE_CONFIG.maxPreviewToolbarRight
 
@@ -35,10 +34,13 @@ export const PreviewStrip: React.FC<PreviewStripProps> = ({
             )}
             style={{ height: `${slotHeight}px` }}
             role="listitem"
+            data-addresstype={
+              item?.kind === 'address' ? item.addressType : undefined
+            }
             onClick={
               canSelect
                 ? (e) => {
-                    if ((e.target as HTMLElement).closest(`.${styles.deleteButton}`)) return
+                    if ((e.target as HTMLElement).closest(`.${styles.starButton}`)) return
                     onSelectItem(item)
                   }
                 : undefined
@@ -48,14 +50,15 @@ export const PreviewStrip: React.FC<PreviewStripProps> = ({
             {item && onDelete && (
               <button
                 type="button"
-                className={clsx(styles.deleteButton)}
-                aria-label="Delete section content"
+                className={clsx(styles.starButton)}
+                aria-label="Remove from quick access"
+                title="Remove from quick access"
                 onClick={(e) => {
                   e.stopPropagation()
                   onDelete(item)
                 }}
               >
-                {getToolbarIcon({ key: 'clearInput' })}
+                ★
               </button>
             )}
           </div>

@@ -23,7 +23,10 @@ import {
 } from '@envelope/sender/infrastructure/state'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { setSizeCard } from '@layout/infrastructure/state'
-import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
+import {
+  restoreRecipient,
+  setEnabled as setRecipientEnabled,
+} from '@envelope/recipient/infrastructure/state'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import {
@@ -67,8 +70,11 @@ import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
 } from '@features/previewStrip/infrastructure/state'
+import type { PreviewStripOrderState } from '@features/previewStrip/infrastructure/state'
 import {
   setSelectedRecipientIds,
+  setRecipientMode,
+  setRecipientsList,
   toggleRecipientSelection,
   clearRecipientSelection,
 } from '@envelope/infrastructure/state'
@@ -131,14 +137,24 @@ export function* persistGlobalSession() {
 
   const sizeCard: SizeCard = yield select(selectSizeCard)
 
-  const previewStripOrder = yield select(
-    (state: { previewStripOrder: { cardtextTemplateIds: string[]; addressTemplateRefs: { type: string; id: string }[] } }) =>
+  const previewStripOrder: PreviewStripOrderState | undefined = yield select(
+    (state: { previewStripOrder: PreviewStripOrderState }) =>
       state.previewStripOrder,
   )
 
-  const envelopeSelection = yield select(
-    (state: { envelopeSelection: { selectedRecipientIds: string[] } }) =>
-      state.envelopeSelection?.selectedRecipientIds ?? [],
+  const envelopeSelectionState: {
+    selectedRecipientIds: string[]
+    recipientMode: 'single' | 'multi'
+  } = yield select(
+    (state: {
+      envelopeSelection: {
+        selectedRecipientIds: string[]
+        recipientMode: 'single' | 'multi'
+      }
+    }) => ({
+      selectedRecipientIds: state.envelopeSelection?.selectedRecipientIds ?? [],
+      recipientMode: state.envelopeSelection?.recipientMode ?? 'single',
+    }),
   )
 
   // const newSessionData: SessionData = {
@@ -166,8 +182,12 @@ export function* persistGlobalSession() {
     sizeCard,
     previewStripOrder: previewStripOrder ?? null,
     envelopeSelection:
-      envelopeSelection.length > 0
-        ? { selectedRecipientIds: envelopeSelection }
+      envelopeSelectionState.selectedRecipientIds.length > 0 ||
+      envelopeSelectionState.recipientMode !== 'single'
+        ? {
+            selectedRecipientIds: envelopeSelectionState.selectedRecipientIds,
+            recipientMode: envelopeSelectionState.recipientMode,
+          }
         : null,
     timestamp: Date.now(),
   }
@@ -203,6 +223,8 @@ const SESSION_WATCH_ACTIONS = [
   addAddressTemplateRef.type,
   removeAddressTemplateRef.type,
   setSelectedRecipientIds.type,
+  setRecipientMode.type,
+  setRecipientsList.type,
   toggleRecipientSelection.type,
   clearRecipientSelection.type,
 ]
@@ -380,7 +402,7 @@ export function* hydrateAppSession() {
     }
 
     if (session.envelope) {
-      const { sender, recipient } = session.envelope
+      const { sender, recipient, recipientMode, recipients } = session.envelope
 
       if (sender) {
         yield put(restoreSender(sender))
@@ -390,6 +412,15 @@ export function* hydrateAppSession() {
         yield put(restoreRecipient(recipient))
       }
 
+      if (recipientMode) {
+        yield put(setRecipientMode(recipientMode))
+        yield put(setRecipientEnabled(recipientMode === 'multi'))
+      }
+
+      if (recipients?.length) {
+        yield put(setRecipientsList(recipients))
+      }
+
       yield call(processEnvelopeVisuals)
     }
 
@@ -397,6 +428,11 @@ export function* hydrateAppSession() {
       yield put(
         setSelectedRecipientIds(session.envelopeSelection.selectedRecipientIds),
       )
+    }
+    if (session.envelopeSelection?.recipientMode) {
+      const mode = session.envelopeSelection.recipientMode
+      yield put(setRecipientMode(mode))
+      yield put(setRecipientEnabled(mode === 'multi'))
     }
 
     if (session.aroma && session.aroma.selectedAroma) {

@@ -12,6 +12,7 @@ const storeNames: (keyof StoreMap)[] = [
   'drafts',
   'sent',
   'session',
+  'workingCard',
 ]
 
 export const storesSchema = storeNames.map((name) => ({

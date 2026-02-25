@@ -1,10 +1,6 @@
 import type { AddressFields } from '@shared/config/constants'
 
-export interface EnvelopeSessionRecord {
-  sender: SenderState
-  recipient: RecipientState
-  isComplete: boolean
-}
+export type RecipientMode = 'single' | 'multi'
 
 export type RecipientState = {
   data: AddressFields
@@ -18,4 +14,12 @@ export type SenderState = {
   isComplete: boolean
   enabled: boolean
   applied: boolean
+}
+
+export interface EnvelopeSessionRecord {
+  sender: SenderState
+  recipient: RecipientState
+  recipients: RecipientState[]
+  recipientMode: RecipientMode
+  isComplete: boolean
 }

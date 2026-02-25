@@ -198,6 +198,13 @@ export const cardphotoSlice = createSlice({
       state.isComplete = !!action.payload
     },
 
+    /** Снять Apply: секция перестаёт быть complete, контент (кропы и т.д.) не удаляется */
+    clearApply(state) {
+      if (!state.state) return
+      state.state.base.apply.image = null
+      state.isComplete = false
+    },
+
     reset(state) {
       if (!state.state) return
       state.state.operations = []
@@ -391,6 +398,7 @@ export const {
   redo,
   setOrientation,
   applyFinal,
+  clearApply,
   reset,
   cancelSelection,
   resetCropLayers,
