@@ -203,11 +203,18 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 recipientFacade.isEnabled && styles.addressLegendMulti,
               )}
             >
-              {recipientFacade.isEnabled
-                ? selectedEntriesInOrder.length > 1
-                  ? `${selectedEntriesInOrder.length} Recipients`
-                  : 'Recipients'
-                : 'Recipient'}
+              {recipientFacade.isEnabled ? (
+                <>
+                  {selectedEntriesInOrder.length > 0 && (
+                    <span className={styles.recipientsCountBadge}>
+                      {selectedEntriesInOrder.length}
+                    </span>
+                  )}
+                  Recipients
+                </>
+              ) : (
+                'Recipient'
+              )}
             </legend>
             <div
               className={clsx(
