@@ -1,4 +1,5 @@
 import React from 'react'
+import clsx from 'clsx'
 import { IconDelete } from '@shared/ui/icons/IconDelete'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import styles from './AddressEntry.module.scss'
@@ -11,6 +12,8 @@ type Props = {
   isStarred?: boolean
   isSelected?: boolean
   onToggleStar?: () => void
+  /** 'sender' — мятные стили; по умолчанию — лавандовые (recipient) */
+  variant?: 'sender' | 'recipient'
 }
 
 export const AddressEntry: React.FC<Props> = ({
@@ -20,10 +23,11 @@ export const AddressEntry: React.FC<Props> = ({
   isStarred = false,
   isSelected = false,
   onToggleStar,
+  variant = 'recipient',
 }) => {
   return (
     <div
-      className={styles.root}
+      className={clsx(styles.root, variant === 'sender' && styles.rootSender)}
       data-selected={isSelected ? 'true' : undefined}
       data-no-star={!onToggleStar ? 'true' : undefined}
     >

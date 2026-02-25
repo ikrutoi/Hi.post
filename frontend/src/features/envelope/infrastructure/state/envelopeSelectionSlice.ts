@@ -4,6 +4,7 @@ import type { RecipientMode } from '../../domain/types'
 export interface EnvelopeSelectionState {
   selectedRecipientIds: string[]
   recipientListPanelOpen: boolean
+  senderListPanelOpen: boolean
   /** Режим получателей: на каком остановился пользователь (для отображения в секции Конверт) */
   recipientMode: RecipientMode
 }
@@ -11,6 +12,7 @@ export interface EnvelopeSelectionState {
 const initialState: EnvelopeSelectionState = {
   selectedRecipientIds: [],
   recipientListPanelOpen: false,
+  senderListPanelOpen: false,
   recipientMode: 'single',
 }
 
@@ -47,6 +49,14 @@ export const envelopeSelectionSlice = createSlice({
     closeRecipientListPanel(state) {
       state.recipientListPanelOpen = false
     },
+
+    toggleSenderListPanel(state) {
+      state.senderListPanelOpen = !state.senderListPanelOpen
+    },
+
+    closeSenderListPanel(state) {
+      state.senderListPanelOpen = false
+    },
   },
 })
 
@@ -57,6 +67,8 @@ export const {
   clearRecipientSelection,
   toggleRecipientListPanel,
   closeRecipientListPanel,
+  toggleSenderListPanel,
+  closeSenderListPanel,
 } = envelopeSelectionSlice.actions
 
 export default envelopeSelectionSlice.reducer

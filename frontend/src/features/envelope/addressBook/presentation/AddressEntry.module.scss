@@ -35,6 +35,29 @@
   }
 }
 
+/* Мятная стилистика для списка отправителей */
+.rootSender {
+  background-color: $color-envelope-sender-input;
+  border-color: $color-envelope-sender-border;
+
+  &:hover {
+    background-color: darken($color-envelope-sender-input, 2%);
+  }
+
+  &[data-selected='true'] {
+    background-color: darken($color-envelope-sender-input, 2%);
+    border-left-color: $color-toggle-active;
+  }
+
+  .info strong {
+    color: $color-envelope-sender-legend;
+  }
+}
+
+.rootSender .star[data-starred='true'] {
+  color: $color-toggle-active;
+}
+
 .field {
   width: 100%;
   min-width: 0;

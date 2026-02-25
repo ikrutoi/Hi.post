@@ -8,9 +8,11 @@ import { getSafeLang } from '@i18n/helpers'
 import { i18n } from '@i18n/i18n'
 import { EnvelopeAddress } from '../addressForm/presentation'
 import { RecipientListPanel } from '../addressBook/presentation/RecipientListPanel'
+import { SenderListPanel } from '../addressBook/presentation/SenderListPanel'
 import { useRecipientFacade } from '../recipient/application/facades'
 import { useAddressBookList } from '../addressBook/application/controllers'
 import { updateRecipientField } from '../recipient/infrastructure/state'
+import { updateSenderField } from '../sender/infrastructure/state'
 import { toggleRecipientSelection } from '../infrastructure/state'
 import { getMatchingEntryId } from '../domain/helpers'
 import styles from './Envelope.module.scss'
@@ -33,8 +35,17 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const recipientListPanelOpen = useAppSelector(
     (state) => state.envelopeSelection.recipientListPanelOpen,
   )
+  const senderListPanelOpen = useAppSelector(
+    (state) => state.envelopeSelection.senderListPanelOpen,
+  )
+  const { entries: senderEntries } = useAddressBookList('sender')
+  const senderData = useAppSelector((state) => state.sender.data)
 
   const showRecipientList = recipientListPanelOpen
+  const senderSelectedId = useMemo(
+    () => getMatchingEntryId(senderData, senderEntries),
+    [senderData, senderEntries],
+  )
 
   // В single — подсвечиваем только адрес, совпадающий с формой; в multi — выбранные в списке
   const listSelectedIds = useMemo(() => {
@@ -56,6 +67,17 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
       }
     },
     [dispatch, recipientListEnabled],
+  )
+
+  const handleSenderSelect = useCallback(
+    (entry: AddressBookEntry) => {
+      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
+        ([field, value]) => {
+          dispatch(updateSenderField({ field, value }))
+        },
+      )
+    },
+    [dispatch],
   )
 
   return (
@@ -82,16 +104,33 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
           </>
         )}
       </div>
-      <div
-        className={clsx(
-          styles.envelopeSection,
-          styles.envelopeSectionRecipient,
+      <div className={styles.envelopeRightSlot}>
+        {senderListPanelOpen ? (
+          <div className={styles.senderListPanelWrap}>
+            <SenderListPanel
+              onSelect={handleSenderSelect}
+              selectedId={senderSelectedId}
+            />
+          </div>
+        ) : (
+          <>
+            <div className={styles.envelopeMark}>
+              <Mark />
+            </div>
+            <div
+              className={clsx(
+                styles.envelopeSection,
+                styles.envelopeSectionRecipient,
+              )}
+            >
+              <EnvelopeAddress
+                role="recipient"
+                roleLabel="Recipient"
+                lang={lang}
+              />
+            </div>
+          </>
         )}
-      >
-        <EnvelopeAddress role="recipient" roleLabel="Recipient" lang={lang} />
-      </div>
-      <div className={styles.envelopeMark}>
-        <Mark />
       </div>
     </div>
   )

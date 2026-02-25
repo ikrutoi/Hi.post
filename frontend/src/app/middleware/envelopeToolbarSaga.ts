@@ -12,6 +12,7 @@ import {
 } from '@envelope/recipient/infrastructure/state'
 import {
   toggleRecipientListPanel,
+  toggleSenderListPanel,
   setRecipientsList,
 } from '@envelope/infrastructure/state'
 import { selectSelectedRecipientIds } from '@envelope/infrastructure/selectors'
@@ -152,11 +153,15 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
-  if (
-    key === 'addressList' &&
-    (section === 'recipient' || section === 'recipients')
-  ) {
-    yield put(toggleRecipientListPanel())
+  if (key === 'addressList') {
+    if (section === 'sender') {
+      yield put(toggleSenderListPanel())
+    } else if (
+      section === 'recipient' ||
+      section === 'recipients'
+    ) {
+      yield put(toggleRecipientListPanel())
+    }
   }
 
   if (key === 'favorite' && (section === 'sender' || section === 'recipient')) {
