@@ -6,6 +6,10 @@ import { selectRecipientState } from '@envelope/recipient/infrastructure/selecto
 import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import { saveAddressRequested as recipientSaveRequested } from '@envelope/recipient/infrastructure/state'
 import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/infrastructure/state'
+import {
+  setRecipientTemplateId,
+  setSenderTemplateId,
+} from '@envelope/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
@@ -58,7 +62,6 @@ function* handleAddressSave(
     )
 
     if (result.success && result.templateId) {
-      // Новый контакт не добавляем в фавориты; только обновляем тулбар и список
       yield put(incrementAddressBookReloadVersion())
       yield put(
         updateGroupStatus({
@@ -67,7 +70,11 @@ function* handleAddressSave(
           status: 'enabled',
         }),
       )
-      // Пересчёт тулбара: addressList enabled, addressPlus disabled при совпадении, бэдж
+      if (role === 'recipient') {
+        yield put(setRecipientTemplateId(String(result.templateId)))
+      } else {
+        yield put(setSenderTemplateId(String(result.templateId)))
+      }
       yield call(processEnvelopeVisuals)
     } else {
       console.error('Failed to save address:', result.error)

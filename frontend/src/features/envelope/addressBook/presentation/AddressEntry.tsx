@@ -67,7 +67,7 @@ export const AddressEntry: React.FC<Props> = ({
         aria-label="Delete address"
         title="Delete address"
       >
-        {getToolbarIcon({ key: 'clearInput' })}
+        {getToolbarIcon({ key: 'delete' })}
       </button>
     </div>
   )

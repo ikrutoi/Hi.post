@@ -210,6 +210,16 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
+  if (key === 'listAdd') {
+    if (section === 'sender') {
+      const sender: SenderState = yield select(selectSenderState)
+      if (sender.isComplete) yield put(senderSaveRequested())
+    } else if (section === 'recipient') {
+      const recipient: RecipientState = yield select(selectRecipientState)
+      if (recipient.isComplete) yield put(recipientSaveRequested())
+    }
+  }
+
   if (key === 'addressList') {
     if (section === 'sender') {
       yield put(toggleSenderListPanel())

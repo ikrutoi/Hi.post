@@ -37,9 +37,7 @@ export const SenderListPanel: React.FC<Props> = ({
   const starredSenderIds = useMemo(
     () =>
       new Set(
-        addressTemplateRefs
-          .filter((r) => r.type === 'sender')
-          .map((r) => r.id),
+        addressTemplateRefs.filter((r) => r.type === 'sender').map((r) => r.id),
       ),
     [addressTemplateRefs],
   )

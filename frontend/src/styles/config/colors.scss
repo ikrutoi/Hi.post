@@ -3,6 +3,9 @@ $color-enabled: hsl(0, 0%, 92%);
 $color-hover: hsl(0, 0%, 88%);
 $color-hover-dark: hsl(0, 0%, 80%);
 $color-toggle-active: hsl(207, 70%, 47%);
+/** Оранжевый из логотипа — для звёздочки «фаворит» */
+$color-logo-orange: hsl(28, 85%, 55%);
+$color-favorite-star: $color-logo-orange;
 $color-font-enabled: hsl(0, 0%, 11%);
 $color-font-enabled-light: hsl(0, 0%, 48%);
 $color-font-enabled-light-hover: hsl(0, 0%, 36%);
