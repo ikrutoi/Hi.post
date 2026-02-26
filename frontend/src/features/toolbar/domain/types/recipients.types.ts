@@ -3,9 +3,10 @@ import type { IconKey } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const RECIPIENTS_KEYS = [
-  'deleteList',
+  'listDelete',
   'addressList',
   'apply',
+  'addressPlus',
 ] as const satisfies readonly IconKey[]
 
 export type RecipientsKey = (typeof RECIPIENTS_KEYS)[number]
@@ -21,7 +22,8 @@ export const RECIPIENTS_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'addressList', state: 'disabled' },
       { key: 'apply', state: 'enabled' },
-      { key: 'deleteList', state: 'enabled' },
+      { key: 'addressPlus', state: 'enabled' },
+      { key: 'listDelete', state: 'enabled' },
     ],
     status: 'enabled',
   },

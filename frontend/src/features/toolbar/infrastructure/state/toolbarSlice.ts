@@ -13,6 +13,7 @@ import {
   initialRecipientFavoriteToolbarState,
   initialSenderFavoriteToolbarState,
   initialSavedAddressToolbarState,
+  initialRecipientSavedAddressToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -41,6 +42,7 @@ const initialState: ToolbarState = {
   recipientFavorite: initialRecipientFavoriteToolbarState,
   senderFavorite: initialSenderFavoriteToolbarState,
   savedAddress: initialSavedAddressToolbarState,
+  recipientSavedAddress: initialRecipientSavedAddressToolbarState,
 }
 
 const toolbarSlice = createSlice({

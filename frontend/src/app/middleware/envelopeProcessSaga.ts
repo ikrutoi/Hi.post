@@ -186,6 +186,19 @@ export function* processEnvelopeVisuals() {
       value: { favorite: { state: savedAddressFavoriteState } },
     }),
   )
+
+  yield put(
+    updateToolbarSection({
+      section: 'recipientSavedAddress',
+      value: {
+        addressList: getAddressListToolbarFragment(recipientList.length),
+        apply: {
+          state: 'enabled' as const,
+          options: {},
+        },
+      },
+    }),
+  )
 }
 
 export function* envelopeProcessSaga() {

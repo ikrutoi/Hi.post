@@ -28,6 +28,8 @@ import {
   ADDRESS_FAVORITE_TOOLBAR,
   initialSenderFavoriteToolbarState,
   initialRecipientFavoriteToolbarState,
+  initialRecipientSavedAddressToolbarState,
+  RECIPIENT_SAVED_ADDRESS_TOOLBAR,
 } from '../types'
 import {
   SAVED_ADDRESS_KEYS,
@@ -176,5 +178,21 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'savedAddress',
     getBadges: (state: ToolbarState['savedAddress']) => ({}),
     toolbar: SAVED_ADDRESS_TOOLBAR,
+  },
+  recipientSavedAddress: {
+    keys: ENVELOPE_KEYS,
+    initialState: initialRecipientSavedAddressToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'recipientSavedAddress',
+    getBadges: (state: ToolbarState['recipientSavedAddress']) => {
+      const addressListBadge = (state.addressList as { options?: { badge?: number | null } })?.options?.badge
+      return {
+        addressList:
+          addressListBadge != null && addressListBadge > 0 ? addressListBadge : null,
+      }
+    },
+    toolbar: RECIPIENT_SAVED_ADDRESS_TOOLBAR,
   },
 }

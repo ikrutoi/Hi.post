@@ -8,9 +8,9 @@ export const IconAddressPlus = (props: React.SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <path
-      d="M1005 59v429M791 274h428"
+      d="M1018 30v500M768 258h500"
       stroke="currentColor"
-      strokeWidth={106.666}
+      strokeWidth={140}
       strokeLinecap="round"
       strokeLinejoin="round"
     />

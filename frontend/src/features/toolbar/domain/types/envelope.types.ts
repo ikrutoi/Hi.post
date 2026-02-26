@@ -7,6 +7,7 @@ export const ENVELOPE_KEYS = [
   'addressPlus',
   'addressList',
   'apply',
+  'listAdd',
   // 'deleteList',
 ] as const satisfies readonly IconKey[]
 
@@ -23,7 +24,8 @@ export const RECIPIENT_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'addressList', state: 'disabled' },
       { key: 'apply', state: 'disabled' },
-      { key: 'addressPlus', state: 'disabled' },
+      // { key: 'addressPlus', state: 'disabled' },
+      { key: 'listAdd', state: 'enabled' },
       { key: 'close', state: 'disabled' },
     ],
     status: 'enabled',
@@ -34,10 +36,22 @@ export const SENDER_TOOLBAR: ToolbarConfig = [
   {
     group: 'address',
     icons: [
-      { key: 'close', state: 'disabled' },
-      { key: 'addressPlus', state: 'disabled' },
-      { key: 'apply', state: 'disabled' },
       { key: 'addressList', state: 'disabled' },
+      { key: 'apply', state: 'disabled' },
+      { key: 'listAdd', state: 'disabled' },
+      { key: 'close', state: 'disabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
+export const RECIPIENT_SAVED_ADDRESS_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'recipientSavedAddress',
+    icons: [
+      { key: 'addressList', state: 'disabled' },
+      { key: 'apply', state: 'enabled' },
+      { key: 'addressPlus', state: 'enabled' },
     ],
     status: 'enabled',
   },
@@ -53,8 +67,19 @@ export const initialRecipientToolbarState: EnvelopeToolbarState = {
   config: [...RECIPIENT_TOOLBAR],
 }
 
+export const initialRecipientSavedAddressToolbarState: EnvelopeToolbarState = {
+  ...Object.fromEntries(flattenIcons(RECIPIENT_SAVED_ADDRESS_TOOLBAR)),
+  config: [...RECIPIENT_SAVED_ADDRESS_TOOLBAR],
+}
+
 export interface EnvelopeSectionConfig extends BaseSectionConfig<
   EnvelopeToolbarState,
   EnvelopeKey,
   'sender' | 'recipient'
+> {}
+
+export interface RecipientSavedAddressSectionConfig extends BaseSectionConfig<
+  EnvelopeToolbarState,
+  EnvelopeKey,
+  'recipientSavedAddress'
 > {}

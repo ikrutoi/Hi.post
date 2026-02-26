@@ -5,7 +5,7 @@
 }
 
 .senderToggle {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.75rem;
 }
 
 .recipientToggle {
@@ -96,7 +96,9 @@
 }
 
 .addressLegendSender {
-  margin-left: 0.65rem;
+  align-self: flex-end;
+  text-align: right;
+  margin-right: 0.65rem;
   color: $color-envelope-sender-legend;
 }
 

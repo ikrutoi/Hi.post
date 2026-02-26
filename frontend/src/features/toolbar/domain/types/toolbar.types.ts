@@ -61,6 +61,7 @@ export const TOOLBAR_SECTIONS = [
   'recipientFavorite',
   'senderFavorite',
   'savedAddress',
+  'recipientSavedAddress',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -78,6 +79,7 @@ export type ToolbarState = {
   recipientFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
   senderFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
   savedAddress: SavedAddressToolbarState & { config: ToolbarGroup[] }
+  recipientSavedAddress: EnvelopeToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -144,6 +146,11 @@ export type ToolbarSectionConfigMap = {
     SavedAddressKey,
     'savedAddress'
   >
+  recipientSavedAddress: BaseSectionConfig<
+    EnvelopeToolbarState,
+    EnvelopeKey,
+    'recipientSavedAddress'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -168,4 +175,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                     ? AddressFavoriteKey
                     : S extends 'savedAddress'
                       ? SavedAddressKey
-                      : never
+                      : S extends 'recipientSavedAddress'
+                        ? EnvelopeKey
+                        : never

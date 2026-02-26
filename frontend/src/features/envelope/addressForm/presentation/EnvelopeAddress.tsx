@@ -11,6 +11,7 @@ import { useSenderFacade } from '../../sender/application/facades'
 import { useRecipientFacade } from '../../recipient/application/facades'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
+import { ToolbarSection } from '@/features/toolbar/domain/types'
 
 const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
 
@@ -154,19 +155,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 styles.addressLegendReplicaContainerSender,
               )}
             >
-              <span className={clsx(styles.addressLegendReplica)}>
-                {roleLabel}
-              </span>
-              {/* <div className={clsx(styles.addressToolbarDouble)}>
-                <div
-                  className={clsx(
-                    styles.addressToolbarFavorite,
-                    styles.addressToolbarFavoriteSender,
-                  )}
-                >
-                  <Toolbar section="senderFavorite" />
-                </div>
-              </div> */}
               <div
                 className={clsx(
                   styles.addressToolbar,
@@ -175,6 +163,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               >
                 <Toolbar section="sender" />
               </div>
+              <span className={clsx(styles.addressLegendReplica)}>
+                {roleLabel}
+              </span>
             </div>
 
             {renderLabelFields(labelLayout, 'sender', roleLabel)}
@@ -228,7 +219,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 >
                   <Toolbar
                     section={
-                      recipientFacade.isEnabled ? 'recipients' : 'recipient'
+                      recipientFacade.isEnabled
+                        ? 'recipients'
+                        : isSingleRecipientWithSavedTemplate
+                          ? 'recipientSavedAddress'
+                          : ('recipient' as ToolbarSection)
                     }
                   />
                 </div>

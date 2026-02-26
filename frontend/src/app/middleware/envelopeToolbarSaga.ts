@@ -147,7 +147,8 @@ function* handleEnvelopeToolbarAction(
   if (
     section !== 'sender' &&
     section !== 'recipient' &&
-    section !== 'recipients'
+    section !== 'recipients' &&
+    section !== 'recipientSavedAddress'
   )
     return
 
@@ -161,12 +162,25 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
+  if (key === 'addressPlus') {
+    if (section === 'sender') {
+      yield put(setSenderTemplateId(null))
+      yield put(clearSender())
+    } else if (
+      section === 'recipient' ||
+      section === 'recipientSavedAddress'
+    ) {
+      yield put(setRecipientTemplateId(null))
+      yield put(clearRecipient())
+    }
+  }
+
   if (key === 'apply') {
     if (section === 'sender') {
       const sender: SenderState = yield select(selectSenderState)
       if (sender.isComplete) yield put(setSenderApplied(true))
     }
-    if (section === 'recipient') {
+    if (section === 'recipient' || section === 'recipientSavedAddress') {
       const recipient: RecipientState = yield select(selectRecipientState)
       if (recipient.isComplete) {
         yield put(setRecipientMode('recipient'))
@@ -199,7 +213,11 @@ function* handleEnvelopeToolbarAction(
   if (key === 'addressList') {
     if (section === 'sender') {
       yield put(toggleSenderListPanel())
-    } else if (section === 'recipient' || section === 'recipients') {
+    } else if (
+      section === 'recipient' ||
+      section === 'recipients' ||
+      section === 'recipientSavedAddress'
+    ) {
       yield put(toggleRecipientListPanel())
     }
   }

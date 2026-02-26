@@ -3,7 +3,7 @@ import type { IconKey } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const SAVED_ADDRESS_KEYS = [
-  'close',
+  'delete',
   'edit',
   'apply',
   'favorite',
@@ -20,9 +20,9 @@ export const SAVED_ADDRESS_TOOLBAR: ToolbarConfig = [
   {
     group: 'savedAddress',
     icons: [
-      { key: 'apply', state: 'disabled' },
+      // { key: 'apply', state: 'disabled' },
       { key: 'edit', state: 'enabled' },
-      { key: 'close', state: 'enabled' },
+      { key: 'delete', state: 'enabled' },
       { key: 'favorite', state: 'enabled' },
     ],
     status: 'enabled',

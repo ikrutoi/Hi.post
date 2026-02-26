@@ -76,6 +76,8 @@ import {
   setSelectedRecipientIds,
   setRecipientMode,
   setRecipientsList,
+  setRecipientTemplateId,
+  setSenderTemplateId,
   toggleRecipientSelection,
   clearRecipientSelection,
 } from '@envelope/infrastructure/state'
@@ -146,15 +148,21 @@ export function* persistGlobalSession() {
   const envelopeSelectionState: {
     selectedRecipientIds: string[]
     recipientMode: 'recipient' | 'recipients'
+    recipientTemplateId: string | null
+    senderTemplateId: string | null
   } = yield select(
     (state: {
       envelopeSelection: {
         selectedRecipientIds: string[]
         recipientMode: 'recipient' | 'recipients'
+        recipientTemplateId: string | null
+        senderTemplateId: string | null
       }
     }) => ({
       selectedRecipientIds: state.envelopeSelection?.selectedRecipientIds ?? [],
       recipientMode: state.envelopeSelection?.recipientMode ?? 'recipient',
+      recipientTemplateId: state.envelopeSelection?.recipientTemplateId ?? null,
+      senderTemplateId: state.envelopeSelection?.senderTemplateId ?? null,
     }),
   )
 
@@ -184,10 +192,14 @@ export function* persistGlobalSession() {
     previewStripOrder: previewStripOrder ?? null,
     envelopeSelection:
       envelopeSelectionState.selectedRecipientIds.length > 0 ||
-      envelopeSelectionState.recipientMode !== 'recipient'
+      envelopeSelectionState.recipientMode !== 'recipient' ||
+      envelopeSelectionState.recipientTemplateId != null ||
+      envelopeSelectionState.senderTemplateId != null
         ? {
             selectedRecipientIds: envelopeSelectionState.selectedRecipientIds,
             recipientMode: envelopeSelectionState.recipientMode,
+            recipientTemplateId: envelopeSelectionState.recipientTemplateId,
+            senderTemplateId: envelopeSelectionState.senderTemplateId,
           }
         : null,
     timestamp: Date.now(),
@@ -225,6 +237,8 @@ const SESSION_WATCH_ACTIONS = [
   removeAddressTemplateRef.type,
   setSelectedRecipientIds.type,
   setRecipientMode.type,
+  setRecipientTemplateId.type,
+  setSenderTemplateId.type,
   setRecipientsList.type,
   toggleRecipientSelection.type,
   clearRecipientSelection.type,
@@ -434,6 +448,15 @@ export function* hydrateAppSession() {
       const mode = session.envelopeSelection.recipientMode
       yield put(setRecipientMode(mode))
       yield put(setRecipientEnabled(mode === 'recipients'))
+    }
+    if (session.envelopeSelection?.recipientTemplateId != null) {
+      yield put(setRecipientTemplateId(session.envelopeSelection.recipientTemplateId))
+    }
+    if (session.envelopeSelection?.senderTemplateId != null) {
+      yield put(setSenderTemplateId(session.envelopeSelection.senderTemplateId))
+    }
+    if (session.envelopeSelection) {
+      yield call(processEnvelopeVisuals)
     }
     const multiWithIds =
       (session.envelopeSelection?.recipientMode === 'recipients' ||
