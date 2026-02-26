@@ -27,7 +27,6 @@ export const RecipientListPanel: React.FC<Props> = ({
 }) => {
   const dispatch = useAppDispatch()
   const { entries } = useAddressBookList('recipient')
-  // При открытии панели синхронизируем список с БД (один источник правды)
   useEffect(() => {
     dispatch(incrementAddressBookReloadVersion())
   }, [dispatch])

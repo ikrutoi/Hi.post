@@ -10,7 +10,7 @@ import { useEnvelopeFacade } from '@envelope/application/facades'
 export const MiniEnvelope: React.FC = () => {
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('envelope')
-  const { addressRecipient, fullClear } = useEnvelopeFacade()
+  const { addressRecipient, cancelEnvelopeSelection } = useEnvelopeFacade()
 
   return (
     <div
@@ -58,10 +58,10 @@ export const MiniEnvelope: React.FC = () => {
       </div>
       <button
         className={clsx(styles.previewButton, styles.previewButtonDelete)}
-        aria-label="Delete section content"
+        aria-label="Отменить выбор"
         onClick={(e) => {
           e.stopPropagation()
-          fullClear()
+          cancelEnvelopeSelection()
         }}
       >
         {getToolbarIcon({ key: 'clearInput' })}

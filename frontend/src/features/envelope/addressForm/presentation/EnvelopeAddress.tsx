@@ -1,19 +1,14 @@
-import React, { useRef, useMemo } from 'react'
+import React, { useRef } from 'react'
 import clsx from 'clsx'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { Label } from './Label/Label'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { AddressEntry } from '../../addressBook/presentation/AddressEntry'
-import {
-  toggleRecipientSelection,
-  removeRecipientAt,
-} from '../../infrastructure/state'
-import { selectRecipientsList } from '../../infrastructure/selectors'
+import { SavedAddressView } from './SavedAddressView'
 import { useEnvelopeAddress } from '../application/hooks'
+import { useEnvelopeFacade } from '../../application/facades'
 import { useSenderFacade } from '../../sender/application/facades'
 import { useRecipientFacade } from '../../recipient/application/facades'
-import { useAddressBookList } from '../../addressBook/application/controllers'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 
@@ -25,50 +20,27 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   lang,
 }) => {
   const { labelLayout } = useEnvelopeAddress(role, lang)
-  const dispatch = useAppDispatch()
+  const envelopeFacade = useEnvelopeFacade()
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
   const facade = role === 'sender' ? senderFacade : recipientFacade
   const { layout, update, address: value } = facade
   const inputsRef = useRef<(HTMLInputElement | null)[]>([])
 
-  const { entries: recipientEntries } = useAddressBookList('recipient')
-  const envelopeRecipients = useAppSelector(selectRecipientsList)
-  const selectedRecipientIds = useAppSelector(
-    (s) => s.envelopeSelection.selectedRecipientIds,
-  )
-  const selectedEntriesInOrder = useMemo(
-    () =>
-      selectedRecipientIds
-        .map((id) => recipientEntries.find((e) => e.id === id))
-        .filter(Boolean) as typeof recipientEntries,
-    [selectedRecipientIds, recipientEntries],
-  )
-  // В multi всегда опираемся на массив Пользователи (envelopeRecipients): после перезагрузки или переключения с single он уже может быть заполнен
-  const recipientsDisplayList = useMemo(() => {
-    if (role !== 'recipient' || !recipientFacade.isEnabled) return []
-    if (envelopeRecipients.length > 0) {
-      return envelopeRecipients.map((r, i) => ({
-        id: `recipient-${i}`,
-        role: 'recipient' as const,
-        address: { ...r.data },
-        createdAt: new Date().toISOString(),
-      }))
-    }
-    return selectedEntriesInOrder
-  }, [
-    role,
-    recipientFacade.isEnabled,
-    envelopeRecipients,
-    selectedEntriesInOrder,
-  ])
+  const editingTemplateId =
+    role === 'sender'
+      ? envelopeFacade.senderTemplateId
+      : envelopeFacade.recipientTemplateId
 
-  // Тумблер отражает режим (enabled), а не «есть ли записи» — иначе после перезагрузки
-  // при гидрации multi форма уже показывается, а список ещё пуст → тумблер показывал бы off
+  console.log('editingTemplateId', editingTemplateId)
+
+  const isSingleRecipientWithSavedTemplate =
+    role === 'recipient' &&
+    !recipientFacade.isEnabled &&
+    editingTemplateId != null
+
   const recipientToggleChecked =
     role === 'recipient' && recipientFacade.isEnabled
-  // Тумблер не отключаем: иначе в single при пустом списке показывается красный стоп при ховере.
-  // В multi с пустым списком просто показываем 0 получателей.
   const recipientToggleDisabled = false
 
   const handleKeyDown = (
@@ -85,14 +57,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     }
   }
 
-  const handleRemoveRecipient = (id: string) => {
-    if (id.startsWith('recipient-')) {
-      const index = parseInt(id.replace('recipient-', ''), 10)
-      if (!Number.isNaN(index)) dispatch(removeRecipientAt(index))
-    } else {
-      dispatch(toggleRecipientSelection(id))
-    }
-  }
+  const handleRemoveRecipient = envelopeFacade.removeRecipientFromList
 
   let fieldIndex = 0
 
@@ -236,9 +201,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             >
               {recipientFacade.isEnabled ? (
                 <>
-                  {selectedEntriesInOrder.length > 0 && (
+                  {envelopeFacade.selectedRecipientEntriesInOrder.length >
+                    0 && (
                     <span className={styles.recipientsCountBadge}>
-                      {selectedEntriesInOrder.length}
+                      {envelopeFacade.selectedRecipientEntriesInOrder.length}
                     </span>
                   )}
                   Recipients
@@ -266,7 +232,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     }
                   />
                 </div>
-                {!recipientFacade.isEnabled && (
+              </div>
+
+              {!recipientFacade.isEnabled ? (
+                <div className={styles.recipientLegendAndFavorite}>
                   <div
                     className={clsx(
                       styles.addressToolbarFavorite,
@@ -275,25 +244,30 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                   >
                     <Toolbar section="recipientFavorite" />
                   </div>
-                )}
-              </div>
-
-              <span className={styles.addressLegendReplica}>
-                {recipientFacade.isEnabled ? 'Recipients' : 'Recipient'}
-              </span>
+                  <span className={styles.addressLegendReplica}>Recipient</span>
+                </div>
+              ) : (
+                <span className={styles.addressLegendReplica}>Recipients</span>
+              )}
             </div>
             {recipientFacade.isEnabled ? (
               <div className={styles.recipientsList}>
-                {recipientsDisplayList.map((entry) => (
+                {envelopeFacade.recipientsDisplayList.map((entry) => (
                   <AddressEntry
                     key={entry.id}
                     entry={entry}
-                    onSelect={() => handleRemoveRecipient(entry.id)}
+                    onSelect={() => {}}
                     onDelete={handleRemoveRecipient}
                     isSelected={false}
                   />
                 ))}
               </div>
+            ) : isSingleRecipientWithSavedTemplate ? (
+              <SavedAddressView
+                role="recipient"
+                templateId={editingTemplateId!}
+                address={value}
+              />
             ) : (
               renderLabelFields(labelLayout, 'recipient', 'Recipient')
             )}

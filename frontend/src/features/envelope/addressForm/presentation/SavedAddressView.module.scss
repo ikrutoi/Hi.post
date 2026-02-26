@@ -1,0 +1,60 @@
+@use '@styles/config/colors' as *;
+
+.savedAddressViewContainer {
+  position: relative;
+  width: 100%;
+  height: min-content;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.savedAddressViewToolbar {
+  position: absolute;
+  top: -2rem;
+  left: 0;
+  width: 100%;
+  height: 2rem;
+  border: 1px solid red;
+  // background-color: $color-envelope-recipient-input;
+}
+
+.savedAddressView {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  height: min-content;
+  min-height: 0;
+  padding: 0.5rem 0.75rem;
+  box-sizing: border-box;
+  background-color: $color-envelope-recipient-input;
+  border: 1px solid $color-envelope-recipient-border;
+  border-radius: 4px;
+}
+
+.recipientAddress {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  mask-image: linear-gradient(to left, black 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, black 95%, transparent 100%);
+}
+
+.recipientAddressName {
+  font-size: 0.85rem;
+  color: $color-envelope-recipient-legend;
+}
+
+.recipientAddressStreet,
+.recipientAddressCityZip,
+.recipientAddressCountry {
+  font-size: 0.8rem;
+  color: $color-font-enabled-light;
+}

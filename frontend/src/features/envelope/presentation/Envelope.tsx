@@ -1,20 +1,12 @@
-import React, { useCallback, useMemo } from 'react'
+import React from 'react'
 import clsx from 'clsx'
-import type { AddressField } from '@shared/config/constants'
-import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { Mark } from '@envelope/view/presentation'
 import { getSafeLang } from '@i18n/helpers'
 import { i18n } from '@i18n/i18n'
 import { EnvelopeAddress } from '../addressForm/presentation'
 import { RecipientListPanel } from '../addressBook/presentation/RecipientListPanel'
 import { SenderListPanel } from '../addressBook/presentation/SenderListPanel'
-import { useRecipientFacade } from '../recipient/application/facades'
-import { useAddressBookList } from '../addressBook/application/controllers'
-import { updateRecipientField } from '../recipient/infrastructure/state'
-import { updateSenderField } from '../sender/infrastructure/state'
-import { toggleRecipientSelection } from '../infrastructure/state'
-import { getMatchingEntryId } from '../domain/helpers'
+import { useEnvelopeFacade } from '../application/facades/useEnvelopeFacade'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -23,64 +15,14 @@ type EnvelopeProps = {
 
 export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const lang = getSafeLang(i18n.language)
-  const dispatch = useAppDispatch()
-  const { isEnabled: recipientListEnabled } = useRecipientFacade()
-  const { entries: recipientEntries } = useAddressBookList('recipient')
-  const recipientData = useAppSelector((state) => state.recipient.data)
-  const selectedRecipientIds = useAppSelector(
-    (state) => state.envelopeSelection.selectedRecipientIds,
-  )
-  const recipientListPanelOpen = useAppSelector(
-    (state) => state.envelopeSelection.recipientListPanelOpen,
-  )
-  const senderListPanelOpen = useAppSelector(
-    (state) => state.envelopeSelection.senderListPanelOpen,
-  )
-  const { entries: senderEntries } = useAddressBookList('sender')
-  const senderData = useAppSelector((state) => state.sender.data)
-
-  const showRecipientList = recipientListPanelOpen
-  const senderSelectedId = useMemo(
-    () => getMatchingEntryId(senderData, senderEntries),
-    [senderData, senderEntries],
-  )
-
-  const listSelectedIds = useMemo(() => {
-    if (recipientListEnabled) return selectedRecipientIds
-    const singleId = getMatchingEntryId(recipientData, recipientEntries)
-    return singleId ? [singleId] : []
-  }, [
-    recipientListEnabled,
-    selectedRecipientIds,
-    recipientData,
-    recipientEntries,
-  ])
-
-  const handleRecipientSelect = useCallback(
-    (entry: AddressBookEntry) => {
-      if (recipientListEnabled) {
-        dispatch(toggleRecipientSelection(entry.id))
-      } else {
-        ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-          ([field, value]) => {
-            dispatch(updateRecipientField({ field, value }))
-          },
-        )
-      }
-    },
-    [dispatch, recipientListEnabled],
-  )
-
-  const handleSenderSelect = useCallback(
-    (entry: AddressBookEntry) => {
-      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-        ([field, value]) => {
-          dispatch(updateSenderField({ field, value }))
-        },
-      )
-    },
-    [dispatch],
-  )
+  const {
+    recipientListPanelOpen: showRecipientList,
+    senderListPanelOpen,
+    listSelectedIds,
+    senderSelectedId,
+    selectRecipientFromList,
+    selectSenderFromList,
+  } = useEnvelopeFacade()
 
   return (
     <div className={styles.envelope}>
@@ -88,7 +30,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         {showRecipientList ? (
           <div className={styles.recipientListPanelWrap}>
             <RecipientListPanel
-              onSelect={handleRecipientSelect}
+              onSelect={selectRecipientFromList}
               selectedIds={listSelectedIds}
             />
           </div>
@@ -110,7 +52,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         {senderListPanelOpen ? (
           <div className={styles.senderListPanelWrap}>
             <SenderListPanel
-              onSelect={handleSenderSelect}
+              onSelect={selectSenderFromList}
               selectedId={senderSelectedId}
             />
           </div>

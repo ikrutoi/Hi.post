@@ -32,6 +32,7 @@ export const useRecipientFacade = () => {
     const nextEnabled = !isEnabled
     dispatch(setEnabled(nextEnabled))
     dispatch(setRecipientMode(nextEnabled ? 'recipients' : 'recipient'))
+    // Не сбрасываем recipientTemplateId при переходе в «Пользователи» — при возврате в одиночный режим сохраняем выбранный адрес
   }
 
   return {

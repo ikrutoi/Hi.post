@@ -12,7 +12,6 @@ type Props = {
   isStarred?: boolean
   isSelected?: boolean
   onToggleStar?: () => void
-  /** 'sender' — мятные стили; по умолчанию — лавандовые (recipient) */
   variant?: 'sender' | 'recipient'
 }
 

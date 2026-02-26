@@ -8,12 +8,20 @@ import {
   selectIsEnvelopeReady,
   selectSelectedRecipientIds,
   selectRecipientListPanelOpen,
+  selectSenderListPanelOpen,
   selectRecipientMode,
   selectRecipientsList,
+  selectRecipientTemplateId,
+  selectSenderTemplateId,
+  selectSelectedRecipientEntriesInOrder,
+  selectRecipientsDisplayList,
+  selectListSelectedIds,
+  selectSenderSelectedId,
 } from '../../infrastructure/selectors'
 import {
   updateRecipientField,
   clearRecipient,
+  setRecipientApplied,
 } from '../../recipient/infrastructure/state'
 import {
   updateSenderField,
@@ -26,7 +34,15 @@ import {
   clearRecipientSelection,
   toggleRecipientListPanel,
   closeRecipientListPanel as closeRecipientListPanelAction,
+  toggleSenderListPanel,
+  closeSenderListPanel as closeSenderListPanelAction,
+  setRecipientTemplateId,
+  setSenderTemplateId,
 } from '../../infrastructure/state/envelopeSelectionSlice'
+import {
+  clearRecipientsList,
+  removeRecipientAt,
+} from '../../infrastructure/state'
 import {
   ADDRESS_FIELD_ORDER,
   type AddressField,
@@ -42,8 +58,17 @@ export const useEnvelopeFacade = () => {
   const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
   const selectedRecipientIds = useAppSelector(selectSelectedRecipientIds)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
+  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientMode = useAppSelector(selectRecipientMode)
+  const listSelectedIds = useAppSelector(selectListSelectedIds)
+  const senderSelectedId = useAppSelector(selectSenderSelectedId)
   const recipients = useAppSelector(selectRecipientsList)
+  const recipientTemplateId = useAppSelector(selectRecipientTemplateId)
+  const senderTemplateId = useAppSelector(selectSenderTemplateId)
+  const selectedRecipientEntriesInOrder = useAppSelector(
+    selectSelectedRecipientEntriesInOrder,
+  )
+  const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
 
   const handleFieldChange = (
     role: EnvelopeRole,
@@ -59,13 +84,29 @@ export const useEnvelopeFacade = () => {
   }
 
   const clearRole = (role: EnvelopeRole) => {
-    dispatch(role === 'sender' ? clearSender() : clearRecipient())
+    if (role === 'sender') {
+      dispatch(setSenderTemplateId(null))
+      dispatch(clearSender())
+    } else {
+      dispatch(setRecipientTemplateId(null))
+      dispatch(clearRecipient())
+    }
   }
 
   const fullClear = () => {
+    dispatch(setRecipientTemplateId(null))
     dispatch(clearRecipient())
     if (sender.enabled) {
+      dispatch(setSenderTemplateId(null))
       dispatch(clearSender())
+    }
+  }
+
+  const cancelEnvelopeSelection = () => {
+    if (recipientMode === 'recipient') {
+      dispatch(setRecipientApplied(false))
+    } else {
+      dispatch(clearRecipientsList())
     }
   }
 
@@ -89,6 +130,41 @@ export const useEnvelopeFacade = () => {
     dispatch(closeRecipientListPanelAction())
   }
 
+  const removeRecipientFromList = (id: string) => {
+    if (id.startsWith('recipient-')) {
+      const index = parseInt(id.replace('recipient-', ''), 10)
+      if (!Number.isNaN(index)) dispatch(removeRecipientAt(index))
+    } else {
+      dispatch(toggleRecipientSelection(id))
+    }
+  }
+
+  const selectRecipientFromList = (entry: { id: string; address: Record<string, string> }) => {
+    if (recipient.enabled) {
+      dispatch(toggleRecipientSelection(entry.id))
+    } else {
+      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
+        ([field, value]) => dispatch(updateRecipientField({ field, value })),
+      )
+      dispatch(setRecipientTemplateId(entry.id))
+    }
+  }
+
+  const selectSenderFromList = (entry: { id: string; address: Record<string, string> }) => {
+    ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
+      ([field, value]) => dispatch(updateSenderField({ field, value })),
+    )
+    dispatch(setSenderTemplateId(entry.id))
+  }
+
+  const toggleSenderListPanelOpen = () => {
+    dispatch(toggleSenderListPanel())
+  }
+
+  const closeSenderListPanel = () => {
+    dispatch(closeSenderListPanelAction())
+  }
+
   return {
     sender,
     recipient,
@@ -99,18 +175,31 @@ export const useEnvelopeFacade = () => {
 
     selectedRecipientIds,
     recipientListPanelOpen,
+    senderListPanelOpen,
+    listSelectedIds,
+    senderSelectedId,
     recipientMode,
     recipients,
+    recipientTemplateId,
+    senderTemplateId,
+    selectedRecipientEntriesInOrder,
+    recipientsDisplayList,
 
     handleFieldChange,
     toggleSenderEnabled,
     clearRole,
     fullClear,
+    cancelEnvelopeSelection,
 
     toggleRecipientSelectionById,
     setRecipientSelection,
     clearRecipientSelectionIds,
     toggleRecipientListPanelOpen,
     closeRecipientListPanel,
+    removeRecipientFromList,
+    selectRecipientFromList,
+    selectSenderFromList,
+    toggleSenderListPanelOpen,
+    closeSenderListPanel,
   }
 }

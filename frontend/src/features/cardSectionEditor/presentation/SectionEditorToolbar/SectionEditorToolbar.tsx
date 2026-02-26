@@ -17,13 +17,8 @@ import {
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { useTemplateActions } from '@entities/templates/application/hooks'
 import { templateService } from '@entities/templates/domain/services/templateService'
-import {
-  setEnabled,
-  updateSenderField,
-} from '@envelope/sender/infrastructure/state'
-import { updateRecipientField } from '@envelope/recipient/infrastructure/state'
+import { useEnvelopeFacade } from '@envelope/application/facades'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
-import { ADDRESS_FIELD_ORDER } from '@shared/config/constants'
 import styles from './SectionEditorToolbar.module.scss'
 import { CropQualityIndicator } from '@cardSectionToolbar/presentation/CropQualityIndicator'
 // import { CropPreview } from '@/features/toolbar/presentation/CropPreview'
@@ -37,6 +32,8 @@ export const SectionEditorToolbar: React.FC = () => {
     usePreviewStripItems(activeSection)
   const { actions: cardphotoActions } = useCardphotoFacade()
   const { deleteCardtextTemplate } = useTemplateActions()
+  const { selectSenderFromList, selectRecipientFromList, toggleSenderEnabled } =
+    useEnvelopeFacade()
 
   const handleSelectPreviewItem = useCallback(
     async (item: PreviewStripItem) => {
@@ -46,17 +43,14 @@ export const SectionEditorToolbar: React.FC = () => {
         item.templateId,
       )
       if (!template?.address) return
-      const { address, type } = template
-      for (const field of ADDRESS_FIELD_ORDER) {
-        const value = address[field] ?? ''
-        dispatch(
-          type === 'sender'
-            ? updateSenderField({ field, value })
-            : updateRecipientField({ field, value }),
-        )
+      const entry = { id: String(template.id), address: template.address }
+      if (template.type === 'sender') {
+        selectSenderFromList(entry)
+      } else {
+        selectRecipientFromList(entry)
       }
     },
-    [dispatch],
+    [selectSenderFromList, selectRecipientFromList],
   )
 
   const handleDeletePreviewItem = useCallback(
@@ -76,7 +70,7 @@ export const SectionEditorToolbar: React.FC = () => {
           }),
         )
         await reloadPreviewStrip()
-        dispatch(setEnabled(sender.enabled))
+        toggleSenderEnabled(sender.enabled)
       }
     },
     [
@@ -85,6 +79,7 @@ export const SectionEditorToolbar: React.FC = () => {
       cardphotoActions,
       deleteCardtextTemplate,
       reloadPreviewStrip,
+      toggleSenderEnabled,
     ],
   )
 

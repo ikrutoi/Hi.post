@@ -15,6 +15,8 @@ import {
   toggleSenderListPanel,
   setRecipientsList,
   setRecipientMode,
+  setRecipientTemplateId,
+  setSenderTemplateId,
 } from '@envelope/infrastructure/state'
 import { selectSelectedRecipientIds } from '@envelope/infrastructure/selectors'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
@@ -117,8 +119,10 @@ function* handleEnvelopeToolbarAction(
 
   if (key === 'close') {
     if (section === 'sender') {
+      yield put(setSenderTemplateId(null))
       yield put(clearSender())
     } else {
+      yield put(setRecipientTemplateId(null))
       yield put(clearRecipient())
     }
   }
@@ -161,10 +165,7 @@ function* handleEnvelopeToolbarAction(
   if (key === 'addressList') {
     if (section === 'sender') {
       yield put(toggleSenderListPanel())
-    } else if (
-      section === 'recipient' ||
-      section === 'recipients'
-    ) {
+    } else if (section === 'recipient' || section === 'recipients') {
       yield put(toggleRecipientListPanel())
     }
   }

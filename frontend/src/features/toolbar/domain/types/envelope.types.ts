@@ -3,8 +3,6 @@ import type { IconKey } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const ENVELOPE_KEYS = [
-  // 'favorite',
-  // 'empty',
   'close',
   'addressPlus',
   'addressList',
@@ -27,8 +25,6 @@ export const RECIPIENT_TOOLBAR: ToolbarConfig = [
       { key: 'apply', state: 'disabled' },
       { key: 'addressPlus', state: 'disabled' },
       { key: 'close', state: 'disabled' },
-      // { key: 'empty', state: 'disabled' },
-      // { key: 'favorite', state: 'enabled' },
     ],
     status: 'enabled',
   },
@@ -42,8 +38,6 @@ export const SENDER_TOOLBAR: ToolbarConfig = [
       { key: 'addressPlus', state: 'disabled' },
       { key: 'apply', state: 'disabled' },
       { key: 'addressList', state: 'disabled' },
-      // { key: 'empty', state: 'disabled' },
-      // { key: 'favorite', state: 'enabled' },
     ],
     status: 'enabled',
   },

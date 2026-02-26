@@ -5,8 +5,9 @@ export interface EnvelopeSelectionState {
   selectedRecipientIds: string[]
   recipientListPanelOpen: boolean
   senderListPanelOpen: boolean
-  /** Режим получателей: на каком остановился пользователь (для отображения в секции Конверт) */
   recipientMode: RecipientMode
+  recipientTemplateId: string | null
+  senderTemplateId: string | null
 }
 
 const initialState: EnvelopeSelectionState = {
@@ -14,6 +15,8 @@ const initialState: EnvelopeSelectionState = {
   recipientListPanelOpen: false,
   senderListPanelOpen: false,
   recipientMode: 'recipient',
+  recipientTemplateId: null,
+  senderTemplateId: null,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -57,6 +60,14 @@ export const envelopeSelectionSlice = createSlice({
     closeSenderListPanel(state) {
       state.senderListPanelOpen = false
     },
+
+    setRecipientTemplateId(state, action: PayloadAction<string | null>) {
+      state.recipientTemplateId = action.payload
+    },
+
+    setSenderTemplateId(state, action: PayloadAction<string | null>) {
+      state.senderTemplateId = action.payload
+    },
   },
 })
 
@@ -69,6 +80,8 @@ export const {
   closeRecipientListPanel,
   toggleSenderListPanel,
   closeSenderListPanel,
+  setRecipientTemplateId,
+  setSenderTemplateId,
 } = envelopeSelectionSlice.actions
 
 export default envelopeSelectionSlice.reducer

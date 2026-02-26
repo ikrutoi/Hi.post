@@ -25,6 +25,8 @@ import type {
   RecipientsKey,
   AddressFavoriteToolbarState,
   AddressFavoriteKey,
+  SavedAddressToolbarState,
+  SavedAddressKey,
 } from './index'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -58,6 +60,7 @@ export const TOOLBAR_SECTIONS = [
   'recipients',
   'recipientFavorite',
   'senderFavorite',
+  'savedAddress',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -74,6 +77,7 @@ export type ToolbarState = {
   recipients: RecipientsToolbarState & { config: ToolbarGroup[] }
   recipientFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
   senderFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
+  savedAddress: SavedAddressToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -135,6 +139,11 @@ export type ToolbarSectionConfigMap = {
     AddressFavoriteKey,
     'senderFavorite'
   >
+  savedAddress: BaseSectionConfig<
+    SavedAddressToolbarState,
+    SavedAddressKey,
+    'savedAddress'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -157,4 +166,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                   ? AddressFavoriteKey
                   : S extends 'senderFavorite'
                     ? AddressFavoriteKey
-                    : never
+                    : S extends 'savedAddress'
+                      ? SavedAddressKey
+                      : never
