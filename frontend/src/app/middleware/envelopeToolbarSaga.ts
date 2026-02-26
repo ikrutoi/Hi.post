@@ -110,6 +110,40 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
+  if (section === 'savedAddress' && key === 'favorite') {
+    const envelopeSelection: {
+      recipientTemplateId: string | null
+      senderTemplateId: string | null
+    } = yield select(
+      (s: {
+        envelopeSelection: {
+          recipientTemplateId: string | null
+          senderTemplateId: string | null
+        }
+      }) => s.envelopeSelection ?? { recipientTemplateId: null, senderTemplateId: null },
+    )
+    const addressTemplateRefs: { type: string; id: string }[] = yield select(
+      (s: {
+        previewStripOrder: {
+          addressTemplateRefs: { type: string; id: string }[]
+        }
+      }) => s.previewStripOrder?.addressTemplateRefs ?? [],
+    )
+    const templateId = envelopeSelection.recipientTemplateId ?? envelopeSelection.senderTemplateId
+    const type = envelopeSelection.recipientTemplateId != null ? 'recipient' : 'sender'
+    if (templateId != null) {
+      const isInFavorites = addressTemplateRefs.some(
+        (r) => r.type === type && r.id === templateId,
+      )
+      if (isInFavorites) {
+        yield put(removeAddressTemplateRef({ type, id: templateId }))
+      } else {
+        yield put(addAddressTemplateRef({ type, id: templateId }))
+      }
+    }
+    return
+  }
+
   if (
     section !== 'sender' &&
     section !== 'recipient' &&

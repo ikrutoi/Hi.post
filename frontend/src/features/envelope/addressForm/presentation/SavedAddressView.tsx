@@ -1,4 +1,5 @@
 import React from 'react'
+import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import type { AddressFields } from '@shared/config/constants'
 import styles from './SavedAddressView.module.scss'
 
@@ -15,7 +16,9 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
 }) => {
   return (
     <div className={styles.savedAddressViewContainer}>
-      <div className={styles.savedAddressViewToolbar}></div>
+      <div className={styles.savedAddressViewToolbar}>
+        <Toolbar section="savedAddress" />
+      </div>
       <div className={styles.savedAddressView}>
         {role === 'recipient' ? (
           <div className={styles.recipientAddress}>

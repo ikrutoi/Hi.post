@@ -149,6 +149,7 @@ import {
   IconStar,
   IconAddressPlus,
   IconEmpty,
+  IconEdit,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -301,5 +302,7 @@ export function getIconByKey(
       return <TbSearch />
     case 'empty':
       return <IconEmpty />
+    case 'edit':
+      return <IconEdit />
   }
 }

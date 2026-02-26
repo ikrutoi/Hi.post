@@ -71,6 +71,7 @@ export const ICON_KEYS = [
   'clearInput',
   'search',
   'empty',
+  'edit',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

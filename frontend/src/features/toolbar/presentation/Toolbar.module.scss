@@ -240,9 +240,17 @@
 .toolbarAddressList,
 .toolbarRecipients,
 .toolbarRecipientFavorite,
-.toolbarSenderFavorite {
+.toolbarSenderFavorite,
+.toolbarSavedAddress {
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
+  }
+}
+
+.toolbarSavedAddress {
+  .toolbarKey {
+    width: 1.5rem;
+    height: 1.5rem;
   }
 }

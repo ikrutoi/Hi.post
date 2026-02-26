@@ -17,6 +17,8 @@ import {
   toggleRecipientSelection,
   setSelectedRecipientIds,
   setRecipientMode,
+  setRecipientTemplateId,
+  setSenderTemplateId,
 } from '@envelope/infrastructure/state'
 import {
   buildRecipientToolbarState,
@@ -149,6 +151,41 @@ export function* processEnvelopeVisuals() {
       value: { favorite: { state: recipientFavoriteState } },
     }),
   )
+
+  const envelopeSelection: {
+    recipientTemplateId: string | null
+    senderTemplateId: string | null
+  } = yield select(
+    (s: {
+      envelopeSelection: {
+        recipientTemplateId: string | null
+        senderTemplateId: string | null
+      }
+    }) => s.envelopeSelection ?? { recipientTemplateId: null, senderTemplateId: null },
+  )
+  const isSavedAddressRecipientFavorite =
+    envelopeSelection.recipientTemplateId != null &&
+    addressTemplateRefs.some(
+      (r) =>
+        r.type === 'recipient' &&
+        r.id === envelopeSelection.recipientTemplateId,
+    )
+  const isSavedAddressSenderFavorite =
+    envelopeSelection.senderTemplateId != null &&
+    addressTemplateRefs.some(
+      (r) =>
+        r.type === 'sender' && r.id === envelopeSelection.senderTemplateId,
+    )
+  const savedAddressFavoriteState =
+    isSavedAddressRecipientFavorite || isSavedAddressSenderFavorite
+      ? 'active'
+      : 'enabled'
+  yield put(
+    updateToolbarSection({
+      section: 'savedAddress',
+      value: { favorite: { state: savedAddressFavoriteState } },
+    }),
+  )
 }
 
 export function* envelopeProcessSaga() {
@@ -164,6 +201,8 @@ export function* envelopeProcessSaga() {
       toggleRecipientSelection.type,
       setSelectedRecipientIds.type,
       setRecipientMode.type,
+      setRecipientTemplateId.type,
+      setSenderTemplateId.type,
     ],
     processEnvelopeVisuals,
   )

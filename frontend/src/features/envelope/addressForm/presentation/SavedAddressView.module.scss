@@ -10,11 +10,13 @@
 
 .savedAddressViewToolbar {
   position: absolute;
-  top: -2rem;
+  top: -1.6rem;
   left: 0;
   width: 100%;
-  height: 2rem;
-  border: 1px solid red;
+  height: 1.6rem;
+  display: flex;
+  justify-content: flex-end;
+  // border: 1px solid red;
   // background-color: $color-envelope-recipient-input;
 }
 

@@ -157,7 +157,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               <span className={clsx(styles.addressLegendReplica)}>
                 {roleLabel}
               </span>
-              <div className={clsx(styles.addressToolbarDouble)}>
+              {/* <div className={clsx(styles.addressToolbarDouble)}>
                 <div
                   className={clsx(
                     styles.addressToolbarFavorite,
@@ -166,7 +166,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 >
                   <Toolbar section="senderFavorite" />
                 </div>
-              </div>
+              </div> */}
               <div
                 className={clsx(
                   styles.addressToolbar,
@@ -235,17 +235,17 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               </div>
 
               {!recipientFacade.isEnabled ? (
-                <div className={styles.recipientLegendAndFavorite}>
-                  <div
-                    className={clsx(
-                      styles.addressToolbarFavorite,
-                      styles.addressToolbarFavoriteRecipient,
-                    )}
-                  >
-                    <Toolbar section="recipientFavorite" />
-                  </div>
-                  <span className={styles.addressLegendReplica}>Recipient</span>
-                </div>
+                // <div className={styles.recipientLegendAndFavorite}>
+                //   <div
+                //     className={clsx(
+                //       styles.addressToolbarFavorite,
+                //       styles.addressToolbarFavoriteRecipient,
+                //     )}
+                //   >
+                //     <Toolbar section="recipientFavorite" />
+                //   </div>
+                // </div>
+                <span className={styles.addressLegendReplica}>Recipient</span>
               ) : (
                 <span className={styles.addressLegendReplica}>Recipients</span>
               )}
