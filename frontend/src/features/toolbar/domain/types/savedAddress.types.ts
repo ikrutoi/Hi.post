@@ -5,7 +5,7 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 export const SAVED_ADDRESS_KEYS = [
   'delete',
   'edit',
-  'apply',
+  // 'apply',
   'favorite',
 ] as const satisfies readonly IconKey[]
 
@@ -16,12 +16,12 @@ export interface SavedAddressToolbarState extends Record<string, any> {
   config: ToolbarConfig
 }
 
-export const SAVED_ADDRESS_TOOLBAR: ToolbarConfig = [
+export const RECIPIENT_SAVED_ADDRESS_TOOLBAR: ToolbarConfig = [
   {
-    group: 'savedAddress',
+    group: 'recipientSavedAddress',
     icons: [
-      // { key: 'apply', state: 'disabled' },
       { key: 'edit', state: 'enabled' },
+      // { key: 'apply', state: 'disabled' },
       { key: 'delete', state: 'enabled' },
       { key: 'favorite', state: 'enabled' },
     ],
@@ -29,13 +29,32 @@ export const SAVED_ADDRESS_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const initialSavedAddressToolbarState: SavedAddressToolbarState = {
-  ...Object.fromEntries(flattenIcons(SAVED_ADDRESS_TOOLBAR)),
-  config: [...SAVED_ADDRESS_TOOLBAR],
+export const initialRecipientSavedAddressToolbarState: SavedAddressToolbarState =
+  {
+    ...Object.fromEntries(flattenIcons(RECIPIENT_SAVED_ADDRESS_TOOLBAR)),
+    config: [...RECIPIENT_SAVED_ADDRESS_TOOLBAR],
+  }
+
+export const SENDER_SAVED_ADDRESS_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'senderSavedAddress',
+    icons: [
+      { key: 'edit', state: 'enabled' },
+      // { key: 'apply', state: 'disabled' },
+      { key: 'delete', state: 'enabled' },
+      { key: 'favorite', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
+export const initialSenderSavedAddressToolbarState: SavedAddressToolbarState = {
+  ...Object.fromEntries(flattenIcons(SENDER_SAVED_ADDRESS_TOOLBAR)),
+  config: [...SENDER_SAVED_ADDRESS_TOOLBAR],
 }
 
 export interface SavedAddressSectionConfig extends BaseSectionConfig<
   SavedAddressToolbarState,
   SavedAddressKey,
-  'savedAddress'
+  'senderSavedAddress' | 'recipientSavedAddress'
 > {}

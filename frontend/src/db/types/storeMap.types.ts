@@ -27,7 +27,6 @@ export interface StoreMap {
   drafts: DraftsItem
   sent: SentItem
   session: SessionData
-  /** Рабочий макет открытки (секции + массив recipientIds + превью кардфото) */
   workingCard: WorkingCardRecord
 }
 

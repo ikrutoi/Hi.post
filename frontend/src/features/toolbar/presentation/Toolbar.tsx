@@ -67,14 +67,11 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
 
     let buttonStatus = currentIconState || rawData.state
 
-    // apply: для sender, recipient, recipients, recipientSavedAddress — только state тулбара. Для cardphoto/cardtext — ещё disable, если уже применено.
-    const isEnvelopeApply =
-      key === 'apply' &&
-      (section === 'sender' ||
-        section === 'recipient' ||
-        section === 'recipients' ||
-        section === 'recipientSavedAddress')
-    if (key === 'apply' && !isEnvelopeApply && isAlreadyApplied) {
+    // apply: для sender, recipient, recipients, recipientSavedAddress, savedAddress — только state тулбара.
+    // Для cardphoto/cardtext — ещё disable, если уже применено.
+    const isCardApply =
+      key === 'apply' && (section === 'cardphoto' || section === 'cardtext')
+    if (isCardApply && isAlreadyApplied) {
       buttonStatus = 'disabled'
     }
 
@@ -94,10 +91,15 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
         )}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
         onMouseDown={(e) => {
-          e.preventDefault()
-          if (groupStatus !== 'disabled' && buttonStatus !== 'disabled') {
-            onAction(key as IconKey)
+          // Для отключённых кнопок предотвращаем дефолт,
+          // чтобы не забирать фокус у активного инпута, но не вызываем action.
+          if (groupStatus === 'disabled' || buttonStatus === 'disabled') {
+            e.preventDefault()
+            return
           }
+
+          e.preventDefault()
+          onAction(key as IconKey)
         }}
       >
         {getToolbarIcon({

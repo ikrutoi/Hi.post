@@ -12,8 +12,8 @@ import {
   initialRecipientsToolbarState,
   initialRecipientFavoriteToolbarState,
   initialSenderFavoriteToolbarState,
-  initialSavedAddressToolbarState,
   initialRecipientSavedAddressToolbarState,
+  initialSenderSavedAddressToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -41,7 +41,7 @@ const initialState: ToolbarState = {
   recipients: initialRecipientsToolbarState,
   recipientFavorite: initialRecipientFavoriteToolbarState,
   senderFavorite: initialSenderFavoriteToolbarState,
-  savedAddress: initialSavedAddressToolbarState,
+  senderSavedAddress: initialSenderSavedAddressToolbarState,
   recipientSavedAddress: initialRecipientSavedAddressToolbarState,
 }
 

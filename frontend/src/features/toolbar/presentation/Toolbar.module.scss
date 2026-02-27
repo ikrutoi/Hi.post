@@ -241,17 +241,25 @@
 .toolbarRecipients,
 .toolbarRecipientFavorite,
 .toolbarSenderFavorite,
-.toolbarSavedAddress,
-.toolbarRecipientSavedAddress {
+.toolbarSavedAddress {
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
   }
 }
 
-.toolbarSavedAddress {
+.toolbarSenderSavedAddress,
+.toolbarRecipientSavedAddress {
   .toolbarKey {
     width: 1.5rem;
     height: 1.5rem;
+  }
+
+  .toolbarKeyApplyEnabled {
+    background-color: white;
+  }
+
+  .toolbarKeyApplyEnabled:hover {
+    background-color: $color-enabled;
   }
 }

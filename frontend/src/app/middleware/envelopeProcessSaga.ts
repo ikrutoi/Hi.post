@@ -180,23 +180,18 @@ export function* processEnvelopeVisuals() {
     isSavedAddressRecipientFavorite || isSavedAddressSenderFavorite
       ? 'active'
       : 'enabled'
+
+  // Обновляем favorite в тулбаре сохранённых адресов отправителя и получателя
   yield put(
     updateToolbarSection({
-      section: 'savedAddress',
+      section: 'senderSavedAddress',
       value: { favorite: { state: savedAddressFavoriteState } },
     }),
   )
-
   yield put(
     updateToolbarSection({
       section: 'recipientSavedAddress',
-      value: {
-        addressList: getAddressListToolbarFragment(recipientList.length),
-        apply: {
-          state: 'enabled' as const,
-          options: {},
-        },
-      },
+      value: { favorite: { state: savedAddressFavoriteState } },
     }),
   )
 }

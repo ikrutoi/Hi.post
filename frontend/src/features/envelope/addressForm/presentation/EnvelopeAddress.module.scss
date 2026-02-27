@@ -46,7 +46,8 @@
   width: min-content;
 }
 
-.addressFormRecipientBody {
+.addressFormRecipientBody,
+.addressFormSenderBody {
   position: relative;
   flex: 1;
   min-height: 0;
@@ -63,6 +64,7 @@
 }
 
 .addressFormSender {
+  height: 100%;
   &.addressFieldset {
     border: solid 1px $color-envelope-sender-border;
   }

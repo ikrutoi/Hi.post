@@ -8,6 +8,8 @@ export interface EnvelopeSelectionState {
   recipientMode: RecipientMode
   recipientTemplateId: string | null
   senderTemplateId: string | null
+  savedSenderAddressEditMode: boolean
+  savedRecipientAddressEditMode: boolean
 }
 
 const initialState: EnvelopeSelectionState = {
@@ -17,6 +19,8 @@ const initialState: EnvelopeSelectionState = {
   recipientMode: 'recipient',
   recipientTemplateId: null,
   senderTemplateId: null,
+  savedSenderAddressEditMode: false,
+  savedRecipientAddressEditMode: false,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -68,6 +72,14 @@ export const envelopeSelectionSlice = createSlice({
     setSenderTemplateId(state, action: PayloadAction<string | null>) {
       state.senderTemplateId = action.payload
     },
+
+    setSenderSavedAddressEditMode(state, action: PayloadAction<boolean>) {
+      state.savedSenderAddressEditMode = action.payload
+    },
+
+    setRecipientSavedAddressEditMode(state, action: PayloadAction<boolean>) {
+      state.savedRecipientAddressEditMode = action.payload
+    },
   },
 })
 
@@ -82,6 +94,8 @@ export const {
   closeSenderListPanel,
   setRecipientTemplateId,
   setSenderTemplateId,
+  setSenderSavedAddressEditMode,
+  setRecipientSavedAddressEditMode,
 } = envelopeSelectionSlice.actions
 
 export default envelopeSelectionSlice.reducer

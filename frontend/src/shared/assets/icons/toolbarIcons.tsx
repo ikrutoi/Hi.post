@@ -122,7 +122,7 @@ import {
   IconCardHorizontalV2,
   IconCardDynamic,
   IconImageReset,
-  IconCloseList,
+  IconListClose,
   IconDownloadV2,
   IconListAdd,
   IconDeleteSmall,
@@ -151,6 +151,7 @@ import {
   IconEmpty,
   IconEdit,
   IconListDelete,
+  IconListAddV2,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -169,8 +170,6 @@ export function getIconByKey(
       return <IconSave />
     case 'savedTemplates':
       return <LuPaperclip />
-    case 'listAdd':
-      return <IconListAdd />
     case 'saveSmall':
       return <TiPlus />
     case 'plusSmall':
@@ -191,6 +190,10 @@ export function getIconByKey(
       return <IconClose />
     case 'listDelete':
       return <IconListDelete />
+    case 'listClose':
+      return <IconListClose />
+    case 'listAdd':
+      return <IconListAdd />
     case 'user':
       return <RiUserLine />
     case 'rotateLeft':

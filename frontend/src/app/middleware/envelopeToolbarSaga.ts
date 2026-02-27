@@ -8,6 +8,7 @@ import {
 import {
   clearRecipient,
   setRecipientApplied,
+  restoreRecipient,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
 import {
@@ -17,6 +18,9 @@ import {
   setRecipientMode,
   setRecipientTemplateId,
   setSenderTemplateId,
+  clearRecipientSelection,
+  setSenderSavedAddressEditMode,
+  setRecipientSavedAddressEditMode,
 } from '@envelope/infrastructure/state'
 import { selectSelectedRecipientIds } from '@envelope/infrastructure/selectors'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
@@ -25,6 +29,7 @@ import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
 } from '@features/previewStrip/infrastructure/state'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 
@@ -110,7 +115,12 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
-  if (section === 'savedAddress' && key === 'favorite') {
+  if (
+    (section === 'savedAddress' ||
+      section === 'senderSavedAddress' ||
+      section === 'recipientSavedAddress') &&
+    key === 'favorite'
+  ) {
     const envelopeSelection: {
       recipientTemplateId: string | null
       senderTemplateId: string | null
@@ -141,6 +151,70 @@ function* handleEnvelopeToolbarAction(
         yield put(addAddressTemplateRef({ type, id: templateId }))
       }
     }
+    return
+  }
+
+  if (section === 'senderSavedAddress' && key === 'edit') {
+    const isEditMode: boolean = yield select(
+      (s: {
+        envelopeSelection?: { savedSenderAddressEditMode?: boolean }
+      }) => s.envelopeSelection?.savedSenderAddressEditMode ?? false,
+    )
+
+    if (!isEditMode) {
+      // Входим в режим редактирования сохранённого адреса отправителя
+      yield put(setSenderSavedAddressEditMode(true))
+      yield put(
+        updateToolbarIcon({
+          section: 'senderSavedAddress',
+          key: 'edit',
+          value: 'active',
+        }),
+      )
+    } else {
+      // Выходим из режима редактирования
+      yield put(setSenderSavedAddressEditMode(false))
+      yield put(
+        updateToolbarIcon({
+          section: 'senderSavedAddress',
+          key: 'edit',
+          value: 'enabled',
+        }),
+      )
+    }
+
+    return
+  }
+
+  if (section === 'recipientSavedAddress' && key === 'edit') {
+    const isEditMode: boolean = yield select(
+      (s: {
+        envelopeSelection?: { savedRecipientAddressEditMode?: boolean }
+      }) => s.envelopeSelection?.savedRecipientAddressEditMode ?? false,
+    )
+
+    if (!isEditMode) {
+      // Входим в режим редактирования сохранённого адреса получателя
+      yield put(setRecipientSavedAddressEditMode(true))
+      yield put(
+        updateToolbarIcon({
+          section: 'recipientSavedAddress',
+          key: 'edit',
+          value: 'active',
+        }),
+      )
+    } else {
+      // Выходим из режима редактирования
+      yield put(setRecipientSavedAddressEditMode(false))
+      yield put(
+        updateToolbarIcon({
+          section: 'recipientSavedAddress',
+          key: 'edit',
+          value: 'enabled',
+        }),
+      )
+    }
+
     return
   }
 
@@ -218,6 +292,11 @@ function* handleEnvelopeToolbarAction(
       const recipient: RecipientState = yield select(selectRecipientState)
       if (recipient.isComplete) yield put(recipientSaveRequested())
     }
+  }
+
+  if (key === 'listDelete' && section === 'recipients') {
+    yield put(setRecipientsList([]))
+    yield put(clearRecipientSelection())
   }
 
   if (key === 'addressList') {

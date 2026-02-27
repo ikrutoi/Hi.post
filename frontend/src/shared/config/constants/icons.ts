@@ -57,6 +57,7 @@ export const ICON_KEYS = [
   'aroma',
   'date',
   'listDelete',
+  'listClose',
   'listAdd',
   'saveSmall',
   'plusSmall',

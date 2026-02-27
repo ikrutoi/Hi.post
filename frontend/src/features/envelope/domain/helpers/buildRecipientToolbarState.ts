@@ -46,6 +46,9 @@ export const buildRecipientToolbarState = ({
       case 'listAdd':
         state.listAdd = isComplete ? 'enabled' : 'disabled'
         break
+      case 'listClose':
+        state.listClose = 'enabled'
+        break
       // case 'favorite':
       //   state.favorite = !isComplete
       //     ? 'disabled'

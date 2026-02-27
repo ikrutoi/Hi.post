@@ -40,6 +40,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     !recipientFacade.isEnabled &&
     editingTemplateId != null
 
+  const isSenderWithSavedTemplate =
+    role === 'sender' && senderFacade.isEnabled && editingTemplateId != null
+
   const recipientToggleChecked =
     role === 'recipient' && recipientFacade.isEnabled
   const recipientToggleDisabled = false
@@ -168,7 +171,15 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               </span>
             </div>
 
-            {renderLabelFields(labelLayout, 'sender', roleLabel)}
+            {isSenderWithSavedTemplate ? (
+              <SavedAddressView
+                role="sender"
+                templateId={editingTemplateId!}
+                address={value}
+              />
+            ) : (
+              renderLabelFields(labelLayout, 'sender', roleLabel)
+            )}
           </fieldset>
         </div>
       )}
@@ -221,9 +232,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     section={
                       recipientFacade.isEnabled
                         ? 'recipients'
-                        : isSingleRecipientWithSavedTemplate
-                          ? 'recipientSavedAddress'
-                          : ('recipient' as ToolbarSection)
+                        : ('recipient' as ToolbarSection)
+                      // : isSingleRecipientWithSavedTemplate
+                      //   ? 'recipientSavedAddress'
+                      //   : ('recipient' as ToolbarSection)
                     }
                   />
                 </div>
