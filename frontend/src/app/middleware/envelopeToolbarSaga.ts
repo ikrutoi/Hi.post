@@ -2,6 +2,7 @@ import { takeLatest, put, select, call } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import {
   clearSender,
+  restoreSender,
   setSenderApplied,
   saveAddressRequested as senderSaveRequested,
 } from '@envelope/sender/infrastructure/state'
@@ -21,6 +22,8 @@ import {
   clearRecipientSelection,
   setSenderSavedAddressEditMode,
   setRecipientSavedAddressEditMode,
+  clearSenderDraft,
+  clearRecipientDraft,
 } from '@envelope/infrastructure/state'
 import { selectSelectedRecipientIds } from '@envelope/infrastructure/selectors'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
@@ -164,11 +167,20 @@ function* handleEnvelopeToolbarAction(
     if (!isEditMode) {
       // Входим в режим редактирования сохранённого адреса отправителя
       yield put(setSenderSavedAddressEditMode(true))
+      yield put(setRecipientSavedAddressEditMode(false))
       yield put(
         updateToolbarIcon({
           section: 'senderSavedAddress',
           key: 'edit',
           value: 'active',
+        }),
+      )
+      // Отключаем редактирование у получателя, если оно было активно
+      yield put(
+        updateToolbarIcon({
+          section: 'recipientSavedAddress',
+          key: 'edit',
+          value: 'enabled',
         }),
       )
     } else {
@@ -196,11 +208,20 @@ function* handleEnvelopeToolbarAction(
     if (!isEditMode) {
       // Входим в режим редактирования сохранённого адреса получателя
       yield put(setRecipientSavedAddressEditMode(true))
+      yield put(setSenderSavedAddressEditMode(false))
       yield put(
         updateToolbarIcon({
           section: 'recipientSavedAddress',
           key: 'edit',
           value: 'active',
+        }),
+      )
+      // Отключаем редактирование у отправителя, если оно было активно
+      yield put(
+        updateToolbarIcon({
+          section: 'senderSavedAddress',
+          key: 'edit',
+          value: 'enabled',
         }),
       )
     } else {
@@ -238,14 +259,54 @@ function* handleEnvelopeToolbarAction(
 
   if (key === 'addressPlus') {
     if (section === 'sender') {
-      yield put(setSenderTemplateId(null))
-      yield put(clearSender())
+      const senderDraft: Record<string, string> | null = yield select(
+        (s: { envelopeSelection?: { senderDraft?: Record<string, string> | null } }) =>
+          s.envelopeSelection?.senderDraft ?? null,
+      )
+      if (senderDraft != null && Object.keys(senderDraft).length > 0) {
+        const isComplete = Object.values(senderDraft).every(
+          (v) => (v ?? '').trim() !== '',
+        )
+        yield put(
+          restoreSender({
+            data: senderDraft as import('@envelope/domain/types').SenderState['data'],
+            isComplete,
+            enabled: true,
+            applied: false,
+          }),
+        )
+        yield put(setSenderTemplateId(null))
+        yield put(clearSenderDraft())
+      } else {
+        yield put(setSenderTemplateId(null))
+        yield put(clearSender())
+      }
     } else if (
       section === 'recipient' ||
       section === 'recipientSavedAddress'
     ) {
-      yield put(setRecipientTemplateId(null))
-      yield put(clearRecipient())
+      const recipientDraft: Record<string, string> | null = yield select(
+        (s: { envelopeSelection?: { recipientDraft?: Record<string, string> | null } }) =>
+          s.envelopeSelection?.recipientDraft ?? null,
+      )
+      if (recipientDraft != null && Object.keys(recipientDraft).length > 0) {
+        const isComplete = Object.values(recipientDraft).every(
+          (v) => (v ?? '').trim() !== '',
+        )
+        yield put(
+          restoreRecipient({
+            data: recipientDraft as import('@envelope/domain/types').RecipientState['data'],
+            isComplete,
+            enabled: false,
+            applied: false,
+          }),
+        )
+        yield put(setRecipientTemplateId(null))
+        yield put(clearRecipientDraft())
+      } else {
+        yield put(setRecipientTemplateId(null))
+        yield put(clearRecipient())
+      }
     }
   }
 

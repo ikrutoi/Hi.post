@@ -6,6 +6,7 @@ export interface BuildSenderToolbarParams {
   addressListCount: number
   isCurrentAddressInList: boolean
   isCurrentAddressFavorite: boolean
+  hasDraft: boolean
 }
 
 export const buildSenderToolbarState = ({
@@ -14,6 +15,7 @@ export const buildSenderToolbarState = ({
   addressListCount,
   isCurrentAddressInList,
   isCurrentAddressFavorite,
+  hasDraft,
 }: BuildSenderToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
@@ -23,8 +25,10 @@ export const buildSenderToolbarState = ({
         state.close = hasData ? 'enabled' : 'disabled'
         break
       case 'addressPlus':
-        state.addressPlus =
-          isComplete && !isCurrentAddressInList ? 'enabled' : 'disabled'
+        state.addressPlus = {
+          state: 'enabled',
+          options: hasDraft ? { badgeDot: true } : { badgeDot: false },
+        }
         break
       case 'addressList':
         state.addressList = {
@@ -41,7 +45,10 @@ export const buildSenderToolbarState = ({
         }
         break
       case 'listAdd':
-        state.listAdd = 'enabled'
+        // Enabled только при заполненных полях и если адреса ещё нет в списке:
+        // сохраняет в шаблоны и присваивает id
+        state.listAdd =
+          isComplete && !isCurrentAddressInList ? 'enabled' : 'disabled'
         break
       case 'listClose':
         state.listClose = 'enabled'

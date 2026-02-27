@@ -12,6 +12,7 @@ import {
 } from '@features/previewStrip/infrastructure/state'
 import { AddressEntry } from './AddressEntry'
 import type { AddressBookEntry } from '../domain/types'
+import { useAddressTemplateActions } from '@entities/templates'
 import styles from './SenderListPanel.module.scss'
 
 type Props = {
@@ -26,6 +27,7 @@ export const SenderListPanel: React.FC<Props> = ({
   selectedId = null,
 }) => {
   const dispatch = useAppDispatch()
+  const { delete: deleteTemplate } = useAddressTemplateActions('sender')
   const { entries } = useAddressBookList('sender')
   useEffect(() => {
     dispatch(incrementAddressBookReloadVersion())
@@ -54,6 +56,33 @@ export const SenderListPanel: React.FC<Props> = ({
     [dispatch],
   )
 
+  const handleDeleteEntry = useCallback(
+    async (id: string) => {
+      try {
+        const result = await deleteTemplate(id)
+        if (result.success) {
+          // Удаляем из панели быстрого доступа, если шаблон там был
+          dispatch(removeAddressTemplateRef({ type: 'sender', id }))
+          // Обновляем список адресов и шаблонов
+          dispatch(incrementAddressBookReloadVersion())
+          dispatch(incrementAddressTemplatesReloadVersion())
+          onDelete(id)
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn('Failed to delete sender address template:', result.error)
+        }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to delete sender address template:', e)
+      }
+    },
+    [
+      deleteTemplate,
+      dispatch,
+      onDelete,
+    ],
+  )
+
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
@@ -78,7 +107,7 @@ export const SenderListPanel: React.FC<Props> = ({
               key={entry.id}
               entry={entry}
               onSelect={onSelect}
-              onDelete={onDelete}
+              onDelete={handleDeleteEntry}
               isStarred={starredSenderIds.has(entry.id)}
               isSelected={selectedId === entry.id}
               onToggleStar={() =>

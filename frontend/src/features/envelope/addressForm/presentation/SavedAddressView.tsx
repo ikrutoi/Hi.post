@@ -31,6 +31,7 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
   })
 
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
+  const prevActiveRow = useRef<EditableRowKey | null>(null)
 
   const nameRef = useRef<HTMLInputElement | null>(null)
   const streetRef = useRef<HTMLInputElement | null>(null)
@@ -65,19 +66,31 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
       return
     }
 
-    const map = {
-      name: nameRef,
-      street: streetRef,
-      cityZip: zipRef,
-      country: countryRef,
-    } as const
+    let input: HTMLInputElement | null = null
 
-    const input = map[activeRow].current
+    if (activeRow === 'cityZip') {
+      // Входим в строку ZIP/CITY:
+      // - сверху вниз (street -> cityZip): фокус в ZIP
+      // - снизу вверх (country -> cityZip): фокус в CITY
+      const fromBottom = prevActiveRow.current === 'country'
+      const targetRef = fromBottom ? cityRef : zipRef
+      input = targetRef.current
+    } else {
+      const map = {
+        name: nameRef,
+        street: streetRef,
+        country: countryRef,
+      } as const
+      input = map[activeRow].current
+    }
+
     if (input) {
       const len = input.value.length
       input.focus()
       input.setSelectionRange(len, len)
     }
+
+    prevActiveRow.current = activeRow
   }, [isEditMode, role, activeRow])
 
   const moveFocus = (direction: 'up' | 'down', current: EditableRowKey) => {

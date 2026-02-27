@@ -1,6 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RecipientMode } from '../../domain/types'
 
+/** Черновик адреса (несохранённый ввод) для возврата по addressPlus */
+export type AddressDraft = Record<string, string> | null
+
 export interface EnvelopeSelectionState {
   selectedRecipientIds: string[]
   recipientListPanelOpen: boolean
@@ -10,6 +13,10 @@ export interface EnvelopeSelectionState {
   senderTemplateId: string | null
   savedSenderAddressEditMode: boolean
   savedRecipientAddressEditMode: boolean
+  /** Черновик отправителя: сохраняется при выходе в другой контакт */
+  senderDraft: AddressDraft
+  /** Черновик получателя */
+  recipientDraft: AddressDraft
 }
 
 const initialState: EnvelopeSelectionState = {
@@ -21,6 +28,8 @@ const initialState: EnvelopeSelectionState = {
   senderTemplateId: null,
   savedSenderAddressEditMode: false,
   savedRecipientAddressEditMode: false,
+  senderDraft: null,
+  recipientDraft: null,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -80,6 +89,22 @@ export const envelopeSelectionSlice = createSlice({
     setRecipientSavedAddressEditMode(state, action: PayloadAction<boolean>) {
       state.savedRecipientAddressEditMode = action.payload
     },
+
+    setSenderDraft(state, action: PayloadAction<AddressDraft>) {
+      state.senderDraft = action.payload
+    },
+
+    setRecipientDraft(state, action: PayloadAction<AddressDraft>) {
+      state.recipientDraft = action.payload
+    },
+
+    clearSenderDraft(state) {
+      state.senderDraft = null
+    },
+
+    clearRecipientDraft(state) {
+      state.recipientDraft = null
+    },
   },
 })
 
@@ -96,6 +121,10 @@ export const {
   setSenderTemplateId,
   setSenderSavedAddressEditMode,
   setRecipientSavedAddressEditMode,
+  setSenderDraft,
+  setRecipientDraft,
+  clearSenderDraft,
+  clearRecipientDraft,
 } = envelopeSelectionSlice.actions
 
 export default envelopeSelectionSlice.reducer

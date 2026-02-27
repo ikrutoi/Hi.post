@@ -57,6 +57,7 @@ const toolbarSlice = createSlice({
       if (state[section] == null || value == null) return
 
       Object.assign(state[section], value)
+      state[section] = { ...state[section] } as ToolbarState[K]
 
       const sectionData = state[section] as any
       if (sectionData.config) {

@@ -32,6 +32,8 @@ import type { LayoutOrientation } from '@layout/domain/types'
 
 export type IconOptions = {
   badge?: number | null
+  /** Синяя точка на иконке (например, есть черновик адреса) */
+  badgeDot?: boolean
   orientation?: LayoutOrientation
 }
 export interface ToolbarIcon {

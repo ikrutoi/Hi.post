@@ -59,13 +59,18 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     key: IconKey,
     groupStatus: IconStateGroup,
     currentIconState?: IconState,
+    iconOptions?: IconOptions,
   ) => {
-    const rawData = state[key] as {
-      state: IconState
-      options?: IconOptions
-    }
+    const rawData = state[key] as
+      | { state: IconState; options?: IconOptions }
+      | undefined
+    const options = rawData && typeof rawData === 'object' && 'options' in rawData
+      ? rawData.options
+      : undefined
+    const mergedOptions = { ...iconOptions, ...options }
 
-    let buttonStatus = currentIconState || rawData.state
+    const buttonState = typeof rawData === 'string' ? rawData : rawData?.state
+    let buttonStatus = currentIconState || buttonState
 
     // apply: для sender, recipient, recipients, recipientSavedAddress, savedAddress — только state тулбара.
     // Для cardphoto/cardtext — ещё disable, если уже применено.
@@ -75,8 +80,9 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
       buttonStatus = 'disabled'
     }
 
-    const orientation = rawData.options?.orientation
-    const badge = rawData.options?.badge
+    const orientation = mergedOptions?.orientation ?? rawData?.options?.orientation
+    const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
+    const badgeDot = mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
 
     return (
       <button
@@ -113,6 +119,9 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
             <span className={styles.toolbarBadgeValue}>{badge}</span>
           </span>
         )}
+        {Boolean(badgeDot) && (
+          <span className={styles.toolbarBadgeDot} title="Вернуть к несохранённому адресу" />
+        )}
       </button>
     )
   }
@@ -133,7 +142,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           )}
         >
           {group.icons.map((icon) =>
-            renderIcon(icon.key, group.status, icon.state),
+            renderIcon(icon.key, group.status, icon.state, icon.options),
           )}
         </div>
       ))}

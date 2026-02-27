@@ -14,6 +14,7 @@ export interface BuildRecipientToolbarParams {
   addressListCount: number
   isCurrentAddressInList: boolean
   isCurrentAddressFavorite: boolean
+  hasDraft: boolean
 }
 
 export const buildRecipientToolbarState = ({
@@ -22,6 +23,7 @@ export const buildRecipientToolbarState = ({
   addressListCount,
   isCurrentAddressInList,
   isCurrentAddressFavorite,
+  hasDraft,
 }: BuildRecipientToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
@@ -31,8 +33,10 @@ export const buildRecipientToolbarState = ({
         state.close = hasData ? 'enabled' : 'disabled'
         break
       case 'addressPlus':
-        state.addressPlus =
-          isComplete && !isCurrentAddressInList ? 'enabled' : 'disabled'
+        state.addressPlus = {
+          state: 'enabled',
+          options: hasDraft ? { badgeDot: true } : { badgeDot: false },
+        }
         break
       case 'addressList':
         state.addressList = getAddressListToolbarFragment(addressListCount)
@@ -44,7 +48,10 @@ export const buildRecipientToolbarState = ({
         }
         break
       case 'listAdd':
-        state.listAdd = isComplete ? 'enabled' : 'disabled'
+        // Enabled только при заполненных полях и если адреса ещё нет в списке:
+        // сохраняет в шаблоны и присваивает id
+        state.listAdd =
+          isComplete && !isCurrentAddressInList ? 'enabled' : 'disabled'
         break
       case 'listClose':
         state.listClose = 'enabled'

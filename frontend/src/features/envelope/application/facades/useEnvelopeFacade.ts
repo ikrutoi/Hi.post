@@ -38,6 +38,8 @@ import {
   closeSenderListPanel as closeSenderListPanelAction,
   setRecipientTemplateId,
   setSenderTemplateId,
+  setSenderDraft,
+  setRecipientDraft,
 } from '../../infrastructure/state/envelopeSelectionSlice'
 import {
   clearRecipientsList,
@@ -139,22 +141,46 @@ export const useEnvelopeFacade = () => {
     }
   }
 
+  const hasAddressData = (data: Record<string, string>) =>
+    Object.values(data).some((v) => (v ?? '').trim() !== '')
+  const addressEquals = (
+    a: Record<string, string>,
+    b: Record<string, string>,
+  ) =>
+    ADDRESS_FIELD_ORDER.every(
+      (f) => (a[f] ?? '').trim() === (b[f] ?? '').trim(),
+    )
+
   const selectRecipientFromList = (entry: { id: string; address: Record<string, string> }) => {
     if (recipient.enabled) {
       dispatch(toggleRecipientSelection(entry.id))
     } else {
+      if (
+        hasAddressData(recipient.data) &&
+        !addressEquals(recipient.data, entry.address)
+      ) {
+        dispatch(setRecipientDraft({ ...recipient.data }))
+      }
       ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
         ([field, value]) => dispatch(updateRecipientField({ field, value })),
       )
       dispatch(setRecipientTemplateId(entry.id))
+      dispatch(closeRecipientListPanelAction())
     }
   }
 
   const selectSenderFromList = (entry: { id: string; address: Record<string, string> }) => {
+    if (
+      hasAddressData(sender.data) &&
+      !addressEquals(sender.data, entry.address)
+    ) {
+      dispatch(setSenderDraft({ ...sender.data }))
+    }
     ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
       ([field, value]) => dispatch(updateSenderField({ field, value })),
     )
     dispatch(setSenderTemplateId(entry.id))
+    dispatch(closeSenderListPanelAction())
   }
 
   const toggleSenderListPanelOpen = () => {

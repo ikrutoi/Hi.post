@@ -2,11 +2,13 @@ import { select, put, takeEvery, call, all } from 'redux-saga/effects'
 import {
   updateRecipientField,
   clearRecipient,
+  restoreRecipient,
 } from '@envelope/recipient/infrastructure/state'
 import {
   updateSenderField,
   setEnabled,
   clearSender,
+  restoreSender,
 } from '@envelope/sender/infrastructure/state'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
@@ -19,6 +21,10 @@ import {
   setRecipientMode,
   setRecipientTemplateId,
   setSenderTemplateId,
+  setSenderDraft,
+  setRecipientDraft,
+  clearSenderDraft,
+  clearRecipientDraft,
 } from '@envelope/infrastructure/state'
 import {
   buildRecipientToolbarState,
@@ -71,12 +77,27 @@ export function* processEnvelopeVisuals() {
       (r) => r.type === 'recipient' && r.id === recipientMatchId,
     )
 
+  const envelopeSelection: {
+    senderDraft?: Record<string, string> | null
+    recipientDraft?: Record<string, string> | null
+  } = yield select(
+    (s: { envelopeSelection?: { senderDraft?: Record<string, string> | null; recipientDraft?: Record<string, string> | null } }) =>
+      s.envelopeSelection ?? {},
+  )
+  const hasSenderDraft =
+    envelopeSelection.senderDraft != null &&
+    Object.keys(envelopeSelection.senderDraft).length > 0
+  const hasRecipientDraft =
+    envelopeSelection.recipientDraft != null &&
+    Object.keys(envelopeSelection.recipientDraft).length > 0
+
   const senderToolbar = buildSenderToolbarState({
     isComplete: sender.isComplete,
     hasData: checkHasData(sender.data),
     addressListCount: senderList.length,
     isCurrentAddressInList: isAddressInList(sender.data, senderList),
     isCurrentAddressFavorite: isSenderFavorite,
+    hasDraft: hasSenderDraft,
   })
 
   const recipientToolbar = buildRecipientToolbarState({
@@ -85,6 +106,7 @@ export function* processEnvelopeVisuals() {
     addressListCount: recipientList.length,
     isCurrentAddressInList: isAddressInList(recipient.data, recipientList),
     isCurrentAddressFavorite: isRecipientFavorite,
+    hasDraft: hasRecipientDraft,
   })
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
@@ -152,7 +174,7 @@ export function* processEnvelopeVisuals() {
     }),
   )
 
-  const envelopeSelection: {
+  const envelopeSelectionFull: {
     recipientTemplateId: string | null
     senderTemplateId: string | null
   } = yield select(
@@ -164,17 +186,17 @@ export function* processEnvelopeVisuals() {
     }) => s.envelopeSelection ?? { recipientTemplateId: null, senderTemplateId: null },
   )
   const isSavedAddressRecipientFavorite =
-    envelopeSelection.recipientTemplateId != null &&
+    envelopeSelectionFull.recipientTemplateId != null &&
     addressTemplateRefs.some(
       (r) =>
         r.type === 'recipient' &&
-        r.id === envelopeSelection.recipientTemplateId,
+        r.id === envelopeSelectionFull.recipientTemplateId,
     )
   const isSavedAddressSenderFavorite =
-    envelopeSelection.senderTemplateId != null &&
+    envelopeSelectionFull.senderTemplateId != null &&
     addressTemplateRefs.some(
       (r) =>
-        r.type === 'sender' && r.id === envelopeSelection.senderTemplateId,
+        r.type === 'sender' && r.id === envelopeSelectionFull.senderTemplateId,
     )
   const savedAddressFavoriteState =
     isSavedAddressRecipientFavorite || isSavedAddressSenderFavorite
@@ -202,6 +224,8 @@ export function* envelopeProcessSaga() {
   yield takeEvery(setEnabled.type, processEnvelopeVisuals)
   yield takeEvery(clearRecipient.type, processEnvelopeVisuals)
   yield takeEvery(clearSender.type, processEnvelopeVisuals)
+  yield takeEvery(restoreSender.type, processEnvelopeVisuals)
+  yield takeEvery(restoreRecipient.type, processEnvelopeVisuals)
   yield takeEvery(addAddressTemplateRef.type, processEnvelopeVisuals)
   yield takeEvery(removeAddressTemplateRef.type, processEnvelopeVisuals)
   yield takeEvery(
@@ -211,6 +235,10 @@ export function* envelopeProcessSaga() {
       setRecipientMode.type,
       setRecipientTemplateId.type,
       setSenderTemplateId.type,
+      setSenderDraft.type,
+      setRecipientDraft.type,
+      clearSenderDraft.type,
+      clearRecipientDraft.type,
     ],
     processEnvelopeVisuals,
   )

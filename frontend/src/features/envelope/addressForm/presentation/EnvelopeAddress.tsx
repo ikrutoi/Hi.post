@@ -9,11 +9,22 @@ import { useEnvelopeAddress } from '../application/hooks'
 import { useEnvelopeFacade } from '../../application/facades'
 import { useSenderFacade } from '../../sender/application/facades'
 import { useRecipientFacade } from '../../recipient/application/facades'
+import { useAppSelector } from '@app/hooks'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import { ToolbarSection } from '@/features/toolbar/domain/types'
 
 const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
+
+function addressMatchesTemplate(
+  value: Record<string, string>,
+  templateAddress: Record<string, string> | undefined,
+): boolean {
+  if (!templateAddress) return false
+  return ADDRESS_FIELDS.every(
+    (f) => (value[f] ?? '').trim() === (templateAddress[f] ?? '').trim(),
+  )
+}
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   role,
@@ -33,15 +44,30 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       ? envelopeFacade.senderTemplateId
       : envelopeFacade.recipientTemplateId
 
-  console.log('editingTemplateId', editingTemplateId)
+  const entriesForRole = useAppSelector((state) =>
+    role === 'sender'
+      ? state.addressBook?.senderEntries ?? []
+      : state.addressBook?.recipientEntries ?? [],
+  )
+  const templateEntry = editingTemplateId
+    ? entriesForRole.find((e) => e.id === editingTemplateId)
+    : null
+  const dataMatchesTemplate = addressMatchesTemplate(
+    value,
+    templateEntry?.address,
+  )
 
   const isSingleRecipientWithSavedTemplate =
     role === 'recipient' &&
     !recipientFacade.isEnabled &&
-    editingTemplateId != null
+    editingTemplateId != null &&
+    dataMatchesTemplate
 
   const isSenderWithSavedTemplate =
-    role === 'sender' && senderFacade.isEnabled && editingTemplateId != null
+    role === 'sender' &&
+    senderFacade.isEnabled &&
+    editingTemplateId != null &&
+    dataMatchesTemplate
 
   const recipientToggleChecked =
     role === 'recipient' && recipientFacade.isEnabled
