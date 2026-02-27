@@ -31,7 +31,9 @@ import { selectRecipientState } from '@envelope/recipient/infrastructure/selecto
 import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
+  incrementAddressBookReloadVersion,
 } from '@features/previewStrip/infrastructure/state'
+import { templateService } from '@entities/templates/domain/services/templateService'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
@@ -154,6 +156,76 @@ function* handleEnvelopeToolbarAction(
         yield put(addAddressTemplateRef({ type, id: templateId }))
       }
     }
+    return
+  }
+
+  if (
+    (section === 'savedAddress' ||
+      section === 'senderSavedAddress' ||
+      section === 'recipientSavedAddress') &&
+    key === 'delete'
+  ) {
+    const envelopeSelection: {
+      recipientTemplateId: string | null
+      senderTemplateId: string | null
+    } = yield select(
+      (s: {
+        envelopeSelection: {
+          recipientTemplateId: string | null
+          senderTemplateId: string | null
+        }
+      }) => s.envelopeSelection ?? { recipientTemplateId: null, senderTemplateId: null },
+    )
+
+    let type: 'sender' | 'recipient'
+    let templateId: string | null
+
+    if (section === 'senderSavedAddress') {
+      type = 'sender'
+      templateId = envelopeSelection.senderTemplateId
+    } else if (section === 'recipientSavedAddress') {
+      type = 'recipient'
+      templateId = envelopeSelection.recipientTemplateId
+    } else {
+      // section === 'savedAddress' — определяем по тому, какая ветка выбрана
+      type = envelopeSelection.recipientTemplateId != null ? 'recipient' : 'sender'
+      templateId =
+        envelopeSelection.recipientTemplateId ?? envelopeSelection.senderTemplateId
+    }
+
+    if (templateId != null) {
+      try {
+        const result: { success: boolean } = yield call(
+          [templateService, 'deleteAddressTemplate'],
+          type,
+          templateId,
+        )
+        if (result.success) {
+          // Удаляем из панели быстрого доступа, если шаблон там был
+          yield put(removeAddressTemplateRef({ type, id: templateId }))
+          // Перечитываем addressBook (useAddressBookList)
+          yield put(incrementAddressBookReloadVersion())
+
+          // Если после удаления шаблонов этого типа больше не осталось,
+          // сбрасываем templateId, иначе даём EnvelopeAddress самому выбрать fallback.
+          const remaining: { id: string }[] = yield call([
+            type === 'recipient' ? recipientAdapter : senderAdapter,
+            'getAll',
+          ])
+          if (!Array.isArray(remaining) || remaining.length === 0) {
+            if (type === 'recipient') {
+              yield put(setRecipientTemplateId(null))
+            } else {
+              yield put(setSenderTemplateId(null))
+            }
+          }
+        }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('Failed to delete saved address from toolbar:', e)
+      }
+    }
+
     return
   }
 
@@ -283,7 +355,8 @@ function* handleEnvelopeToolbarAction(
       }
     } else if (
       section === 'recipient' ||
-      section === 'recipientSavedAddress'
+      section === 'recipientSavedAddress' ||
+      section === 'recipients'
     ) {
       const recipientDraft: Record<string, string> | null = yield select(
         (s: { envelopeSelection?: { recipientDraft?: Record<string, string> | null } }) =>

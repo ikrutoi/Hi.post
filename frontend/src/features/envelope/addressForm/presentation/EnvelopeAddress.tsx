@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { Label } from './Label/Label'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
@@ -56,6 +56,28 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     value,
     templateEntry?.address,
   )
+
+  // Если текущий выбранный шаблон был удалён, но в адресной книге ещё есть записи,
+  // автоматически переключаемся на первый доступный шаблон и показываем его в SavedAddressView.
+  useEffect(() => {
+    if (editingTemplateId == null) return
+    if (templateEntry) return
+    if (!entriesForRole.length) return
+
+    const fallbackEntry = entriesForRole[0]
+
+    if (role === 'sender') {
+      envelopeFacade.selectSenderFromList(fallbackEntry)
+    } else {
+      envelopeFacade.selectRecipientFromList(fallbackEntry)
+    }
+  }, [
+    editingTemplateId,
+    templateEntry,
+    entriesForRole,
+    role,
+    envelopeFacade,
+  ])
 
   const isSingleRecipientWithSavedTemplate =
     role === 'recipient' &&

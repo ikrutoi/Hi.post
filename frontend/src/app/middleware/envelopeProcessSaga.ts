@@ -147,6 +147,10 @@ export function* processEnvelopeVisuals() {
           state: canApplyRecipients ? 'enabled' : 'disabled',
           options: {},
         },
+        addressPlus: {
+          state: 'enabled',
+          options: hasRecipientDraft ? { badgeDot: true } : { badgeDot: false },
+        },
       },
     }),
   )
