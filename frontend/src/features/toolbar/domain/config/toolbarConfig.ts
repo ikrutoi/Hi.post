@@ -32,8 +32,10 @@ import {
   RECIPIENT_SAVED_ADDRESS_TOOLBAR,
 } from '../types'
 import {
+  RECIPIENTS_SAVED_ADDRESS_TOOLBAR,
   SAVED_ADDRESS_KEYS,
   SENDER_SAVED_ADDRESS_TOOLBAR,
+  initialRecipientsSavedAddressToolbarState,
   initialSenderSavedAddressToolbarState,
 } from '../types/savedAddress.types'
 import { initialCardtextToolbarState } from '@cardtext/domain/types'
@@ -58,6 +60,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
       }
     },
   },
+
   cardtext: {
     keys: CARDTEXT_KEYS,
     initialState: initialCardtextToolbarState,
@@ -78,6 +81,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     toolbar: CARDTEXT_TOOLBAR,
     getBadges: (state: ToolbarState['cardtext']) => ({}),
   },
+
   sender: {
     keys: ENVELOPE_KEYS,
     initialState: initialSenderToolbarState,
@@ -93,11 +97,12 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'address',
     toolbar: SENDER_TOOLBAR,
   },
+
   recipient: {
     keys: ENVELOPE_KEYS,
     initialState: initialRecipientToolbarState,
     onAction: (key, section) => console.log('Recipient action', key, section),
-    group: 'address',
+    group: 'recipient',
     getBadges: (state: ToolbarState['recipient']) => {
       const addressListBadge = (state.addressList as any)?.options?.badge
       return {
@@ -107,6 +112,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     },
     toolbar: RECIPIENT_TOOLBAR,
   },
+
+  recipients: {
+    keys: RECIPIENTS_KEYS,
+    initialState: initialRecipientsToolbarState,
+    onAction: (key, section) => console.log('Recipients action', key, section),
+    group: 'recipients',
+    getBadges: (state: ToolbarState['recipients']) => ({}),
+    toolbar: RECIPIENTS_TOOLBAR,
+  },
+
   editorPie: {
     keys: EDITOR_PIE_KEYS,
     initialState: initialEditorPieToolbarState,
@@ -115,6 +130,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['editorPie']) => ({}),
     toolbar: EDITOR_PIE_TOOLBAR,
   },
+
   cardPanelOverlay: {
     keys: CARD_PANEL_OVERLAY_KEYS,
     initialState: initialCardPanelOverlayToolbarState,
@@ -124,6 +140,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['cardPanelOverlay']) => ({}),
     toolbar: CARD_PANEL_OVERLAY_TOOLBAR,
   },
+
   sectionEditorMenu: {
     keys: SECTION_EDITOR_MENU_KEYS,
     initialState: initialSectionEditorMenuToolbarState,
@@ -133,6 +150,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['sectionEditorMenu']) => ({}),
     toolbar: SECTION_EDITOR_MENU_TOOLBAR,
   },
+
   addressList: {
     keys: ADDRESS_LIST_KEYS,
     initialState: initialAddressListToolbarState,
@@ -141,14 +159,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['addressList']) => ({}),
     toolbar: ADDRESS_LIST_TOOLBAR,
   },
-  recipients: {
-    keys: RECIPIENTS_KEYS,
-    initialState: initialRecipientsToolbarState,
-    onAction: (key, section) => console.log('Recipients action', key, section),
-    group: 'recipients',
-    getBadges: (state: ToolbarState['recipients']) => ({}),
-    toolbar: RECIPIENTS_TOOLBAR,
-  },
+
   recipientFavorite: {
     keys: ADDRESS_FAVORITE_KEYS,
     initialState: initialRecipientFavoriteToolbarState,
@@ -159,6 +170,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['recipientFavorite']) => ({}),
     toolbar: ADDRESS_FAVORITE_TOOLBAR,
   },
+
   senderFavorite: {
     keys: ADDRESS_FAVORITE_KEYS,
     initialState: initialSenderFavoriteToolbarState,
@@ -169,6 +181,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['senderFavorite']) => ({}),
     toolbar: ADDRESS_FAVORITE_TOOLBAR,
   },
+
   senderSavedAddress: {
     keys: SAVED_ADDRESS_KEYS,
     initialState: initialSenderSavedAddressToolbarState,
@@ -179,8 +192,9 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['senderSavedAddress']) => ({}),
     toolbar: SENDER_SAVED_ADDRESS_TOOLBAR,
   },
+
   recipientSavedAddress: {
-    keys: ENVELOPE_KEYS,
+    keys: SAVED_ADDRESS_KEYS,
     initialState: initialRecipientSavedAddressToolbarState,
     onAction: (key, section, _editor, dispatch) => {
       dispatch({ type: 'toolbar/action', payload: { section, key } })
@@ -198,5 +212,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
       }
     },
     toolbar: RECIPIENT_SAVED_ADDRESS_TOOLBAR,
+  },
+
+  recipientsSavedAddress: {
+    keys: SAVED_ADDRESS_KEYS,
+    initialState: initialRecipientsSavedAddressToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'recipientsSavedAddress',
+    getBadges: (state: ToolbarState['recipientsSavedAddress']) => ({}),
+    toolbar: RECIPIENTS_SAVED_ADDRESS_TOOLBAR,
   },
 }

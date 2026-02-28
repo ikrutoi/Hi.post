@@ -21,18 +21,16 @@ import type {
   SectionEditorMenuKey,
   AddressListToolbarState,
   AddressListKey,
-  RecipientsToolbarState,
-  RecipientsKey,
   AddressFavoriteToolbarState,
   AddressFavoriteKey,
   SavedAddressToolbarState,
   SavedAddressKey,
 } from './index'
+import type { RecipientsToolbarState, RecipientsKey } from './envelope.types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
 export type IconOptions = {
   badge?: number | null
-  /** Синяя точка на иконке (например, есть черновик адреса) */
   badgeDot?: boolean
   orientation?: LayoutOrientation
 }
@@ -55,16 +53,17 @@ export const TOOLBAR_SECTIONS = [
   'cardtext',
   'sender',
   'recipient',
+  'recipients',
   'editorPie',
   'cardPanelOverlay',
   'sectionEditorMenu',
   'addressList',
-  'recipients',
   'recipientFavorite',
   'senderFavorite',
   'savedRecipientAddress',
   'senderSavedAddress',
   'recipientSavedAddress',
+  'recipientsSavedAddress',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -74,15 +73,16 @@ export type ToolbarState = {
   cardtext: CardtextToolbarState & { config: ToolbarGroup[] }
   sender: EnvelopeToolbarState & { config: ToolbarGroup[] }
   recipient: EnvelopeToolbarState & { config: ToolbarGroup[] }
+  recipients: EnvelopeToolbarState & { config: ToolbarGroup[] }
   editorPie: EditorPieToolbarState & { config: ToolbarGroup[] }
   cardPanelOverlay: CardPanelOverlayToolbarState & { config: ToolbarGroup[] }
   sectionEditorMenu: SectionEditorMenuToolbarState & { config: ToolbarGroup[] }
   addressList: AddressListToolbarState & { config: ToolbarGroup[] }
-  recipients: RecipientsToolbarState & { config: ToolbarGroup[] }
   recipientFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
   senderFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
-  recipientSavedAddress: EnvelopeToolbarState & { config: ToolbarGroup[] }
   senderSavedAddress: SavedAddressToolbarState & { config: ToolbarGroup[] }
+  recipientSavedAddress: SavedAddressToolbarState & { config: ToolbarGroup[] }
+  recipientsSavedAddress: SavedAddressToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -129,30 +129,35 @@ export type ToolbarSectionConfigMap = {
     AddressListKey,
     'addressList'
   >
-  recipients: BaseSectionConfig<
-    RecipientsToolbarState,
-    RecipientsKey,
-    'recipients'
-  >
   recipientFavorite: BaseSectionConfig<
     AddressFavoriteToolbarState,
     AddressFavoriteKey,
     'recipientFavorite'
+  >
+  recipients: BaseSectionConfig<
+    RecipientsToolbarState,
+    RecipientsKey,
+    'recipients'
   >
   senderFavorite: BaseSectionConfig<
     AddressFavoriteToolbarState,
     AddressFavoriteKey,
     'senderFavorite'
   >
-  recipientSavedAddress: BaseSectionConfig<
-    EnvelopeToolbarState,
-    EnvelopeKey,
-    'recipientSavedAddress'
-  >
   senderSavedAddress: BaseSectionConfig<
     SavedAddressToolbarState,
     SavedAddressKey,
     'senderSavedAddress'
+  >
+  recipientSavedAddress: BaseSectionConfig<
+    SavedAddressToolbarState,
+    SavedAddressKey,
+    'recipientSavedAddress'
+  >
+  recipientsSavedAddress: BaseSectionConfig<
+    SavedAddressToolbarState,
+    SavedAddressKey,
+    'recipientsSavedAddress'
   >
 }
 
@@ -164,20 +169,24 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
       ? EnvelopeKey
       : S extends 'recipient'
         ? EnvelopeKey
-        : S extends 'editorPie'
-          ? EditorPieKey
-          : S extends 'cardPanelOverlay'
-            ? CardPanelOverlayToolbarKey
-            : S extends 'sectionEditorMenu'
-              ? SectionEditorMenuKey
-              : S extends 'addressList'
-                ? AddressListKey
-                : S extends 'recipientFavorite'
-                  ? AddressFavoriteKey
-                  : S extends 'senderFavorite'
+        : S extends 'recipients'
+          ? RecipientsKey
+          : S extends 'editorPie'
+            ? EditorPieKey
+            : S extends 'cardPanelOverlay'
+              ? CardPanelOverlayToolbarKey
+              : S extends 'sectionEditorMenu'
+                ? SectionEditorMenuKey
+                : S extends 'addressList'
+                  ? AddressListKey
+                  : S extends 'recipientFavorite'
                     ? AddressFavoriteKey
-                    : S extends 'senderSavedAddress'
-                      ? SavedAddressKey
-                      : S extends 'recipientSavedAddress'
-                        ? EnvelopeKey
-                        : never
+                    : S extends 'senderFavorite'
+                      ? AddressFavoriteKey
+                      : S extends 'senderSavedAddress'
+                        ? SavedAddressKey
+                        : S extends 'recipientSavedAddress'
+                          ? SavedAddressKey
+                          : S extends 'recipientsSavedAddress'
+                            ? SavedAddressKey
+                            : never

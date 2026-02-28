@@ -23,8 +23,9 @@ export const CardPanel = () => {
   const { editorState } = useCardEditorFacade()
   const { state: stateCardPanel } = useCardPanelFacade()
   const { isPacked } = stateCardPanel
-  const { recipient } = useEnvelopeFacade()
-  console.log('recipient', recipient)
+  const { recipient, recipients } = useEnvelopeFacade()
+  // console.log('recipient', recipient)
+  // console.log('recipients', recipients)
   const { isPreviewOpen } = useCardFacade()
   const { meta } = useLayoutFacade()
   const { remSize, sizeMiniCard, sizeToolbarContour } = useSizeFacade()
