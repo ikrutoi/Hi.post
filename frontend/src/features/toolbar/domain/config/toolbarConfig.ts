@@ -28,16 +28,16 @@ import {
   ADDRESS_FAVORITE_TOOLBAR,
   initialSenderFavoriteToolbarState,
   initialRecipientFavoriteToolbarState,
-  initialRecipientSavedAddressToolbarState,
-  RECIPIENT_SAVED_ADDRESS_TOOLBAR,
+  initialRecipientViewToolbarState,
+  RECIPIENT_VIEW_TOOLBAR,
 } from '../types'
 import {
-  RECIPIENTS_SAVED_ADDRESS_TOOLBAR,
-  SAVED_ADDRESS_KEYS,
-  SENDER_SAVED_ADDRESS_TOOLBAR,
-  initialRecipientsSavedAddressToolbarState,
-  initialSenderSavedAddressToolbarState,
-} from '../types/savedAddress.types'
+  RECIPIENTS_VIEW_TOOLBAR,
+  VIEW_KEYS,
+  SENDER_VIEW_TOOLBAR,
+  initialRecipientsViewToolbarState,
+  initialSenderViewToolbarState,
+} from '../types/addressView.types'
 import { initialCardtextToolbarState } from '@cardtext/domain/types'
 import { cardtextToolbarController } from '@cardtext/application/controllers'
 
@@ -182,25 +182,25 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     toolbar: ADDRESS_FAVORITE_TOOLBAR,
   },
 
-  senderSavedAddress: {
-    keys: SAVED_ADDRESS_KEYS,
-    initialState: initialSenderSavedAddressToolbarState,
+  senderView: {
+    keys: VIEW_KEYS,
+    initialState: initialSenderViewToolbarState,
     onAction: (key, section, _editor, dispatch) => {
       dispatch({ type: 'toolbar/action', payload: { section, key } })
     },
-    group: 'senderSavedAddress',
-    getBadges: (state: ToolbarState['senderSavedAddress']) => ({}),
-    toolbar: SENDER_SAVED_ADDRESS_TOOLBAR,
+    group: 'senderView',
+    getBadges: (state: ToolbarState['senderView']) => ({}),
+    toolbar: SENDER_VIEW_TOOLBAR,
   },
 
-  recipientSavedAddress: {
-    keys: SAVED_ADDRESS_KEYS,
-    initialState: initialRecipientSavedAddressToolbarState,
+  recipientView: {
+    keys: VIEW_KEYS,
+    initialState: initialRecipientViewToolbarState,
     onAction: (key, section, _editor, dispatch) => {
       dispatch({ type: 'toolbar/action', payload: { section, key } })
     },
-    group: 'recipientSavedAddress',
-    getBadges: (state: ToolbarState['recipientSavedAddress']) => {
+    group: 'recipientView',
+    getBadges: (state: ToolbarState['recipientView']) => {
       const addressListBadge = (
         state.addressList as { options?: { badge?: number | null } }
       )?.options?.badge
@@ -211,17 +211,17 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
             : null,
       }
     },
-    toolbar: RECIPIENT_SAVED_ADDRESS_TOOLBAR,
+    toolbar: RECIPIENT_VIEW_TOOLBAR,
   },
 
-  recipientsSavedAddress: {
-    keys: SAVED_ADDRESS_KEYS,
-    initialState: initialRecipientsSavedAddressToolbarState,
+  recipientsView: {
+    keys: VIEW_KEYS,
+    initialState: initialRecipientsViewToolbarState,
     onAction: (key, section, _editor, dispatch) => {
       dispatch({ type: 'toolbar/action', payload: { section, key } })
     },
-    group: 'recipientsSavedAddress',
-    getBadges: (state: ToolbarState['recipientsSavedAddress']) => ({}),
-    toolbar: RECIPIENTS_SAVED_ADDRESS_TOOLBAR,
+    group: 'recipientsView',
+    getBadges: (state: ToolbarState['recipientsView']) => ({}),
+    toolbar: RECIPIENTS_VIEW_TOOLBAR,
   },
 }

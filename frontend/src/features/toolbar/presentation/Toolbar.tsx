@@ -72,7 +72,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     const buttonState = typeof rawData === 'string' ? rawData : rawData?.state
     let buttonStatus = currentIconState || buttonState
 
-    // apply: для sender, recipient, recipients, recipientSavedAddress, savedAddress — только state тулбара.
+    // apply: для sender, recipient, recipients, recipientView, savedAddress — только state тулбара.
     // Для cardphoto/cardtext — ещё disable, если уже применено.
     const isCardApply =
       key === 'apply' && (section === 'cardphoto' || section === 'cardtext')

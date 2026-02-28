@@ -122,8 +122,8 @@ function* handleEnvelopeToolbarAction(
 
   if (
     (section === 'savedAddress' ||
-      section === 'senderSavedAddress' ||
-      section === 'recipientSavedAddress') &&
+      section === 'senderView' ||
+      section === 'recipientView') &&
     key === 'favorite'
   ) {
     const envelopeSelection: {
@@ -161,8 +161,8 @@ function* handleEnvelopeToolbarAction(
 
   if (
     (section === 'savedAddress' ||
-      section === 'senderSavedAddress' ||
-      section === 'recipientSavedAddress') &&
+      section === 'senderView' ||
+      section === 'recipientView') &&
     key === 'delete'
   ) {
     const envelopeSelection: {
@@ -180,10 +180,10 @@ function* handleEnvelopeToolbarAction(
     let type: 'sender' | 'recipient'
     let templateId: string | null
 
-    if (section === 'senderSavedAddress') {
+    if (section === 'senderView') {
       type = 'sender'
       templateId = envelopeSelection.senderTemplateId
-    } else if (section === 'recipientSavedAddress') {
+    } else if (section === 'recipientView') {
       type = 'recipient'
       templateId = envelopeSelection.recipientTemplateId
     } else {
@@ -229,7 +229,7 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
-  if (section === 'senderSavedAddress' && key === 'edit') {
+  if (section === 'senderView' && key === 'edit') {
     const isEditMode: boolean = yield select(
       (s: {
         envelopeSelection?: { savedSenderAddressEditMode?: boolean }
@@ -242,7 +242,7 @@ function* handleEnvelopeToolbarAction(
       yield put(setRecipientSavedAddressEditMode(false))
       yield put(
         updateToolbarIcon({
-          section: 'senderSavedAddress',
+          section: 'senderView',
           key: 'edit',
           value: 'active',
         }),
@@ -250,7 +250,7 @@ function* handleEnvelopeToolbarAction(
       // Отключаем редактирование у получателя, если оно было активно
       yield put(
         updateToolbarIcon({
-          section: 'recipientSavedAddress',
+          section: 'recipientView',
           key: 'edit',
           value: 'enabled',
         }),
@@ -260,7 +260,7 @@ function* handleEnvelopeToolbarAction(
       yield put(setSenderSavedAddressEditMode(false))
       yield put(
         updateToolbarIcon({
-          section: 'senderSavedAddress',
+          section: 'senderView',
           key: 'edit',
           value: 'enabled',
         }),
@@ -270,7 +270,7 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
-  if (section === 'recipientSavedAddress' && key === 'edit') {
+  if (section === 'recipientView' && key === 'edit') {
     const isEditMode: boolean = yield select(
       (s: {
         envelopeSelection?: { savedRecipientAddressEditMode?: boolean }
@@ -283,7 +283,7 @@ function* handleEnvelopeToolbarAction(
       yield put(setSenderSavedAddressEditMode(false))
       yield put(
         updateToolbarIcon({
-          section: 'recipientSavedAddress',
+          section: 'recipientView',
           key: 'edit',
           value: 'active',
         }),
@@ -291,7 +291,7 @@ function* handleEnvelopeToolbarAction(
       // Отключаем редактирование у отправителя, если оно было активно
       yield put(
         updateToolbarIcon({
-          section: 'senderSavedAddress',
+          section: 'senderView',
           key: 'edit',
           value: 'enabled',
         }),
@@ -301,7 +301,7 @@ function* handleEnvelopeToolbarAction(
       yield put(setRecipientSavedAddressEditMode(false))
       yield put(
         updateToolbarIcon({
-          section: 'recipientSavedAddress',
+          section: 'recipientView',
           key: 'edit',
           value: 'enabled',
         }),
@@ -315,7 +315,7 @@ function* handleEnvelopeToolbarAction(
     section !== 'sender' &&
     section !== 'recipient' &&
     section !== 'recipients' &&
-    section !== 'recipientSavedAddress'
+    section !== 'recipientView'
   )
     return
 
@@ -355,7 +355,7 @@ function* handleEnvelopeToolbarAction(
       }
     } else if (
       section === 'recipient' ||
-      section === 'recipientSavedAddress' ||
+      section === 'recipientView' ||
       section === 'recipients'
     ) {
       const recipientDraft: Record<string, string> | null = yield select(
@@ -388,7 +388,7 @@ function* handleEnvelopeToolbarAction(
       const sender: SenderState = yield select(selectSenderState)
       if (sender.isComplete) yield put(setSenderApplied(true))
     }
-    if (section === 'recipient' || section === 'recipientSavedAddress') {
+    if (section === 'recipient' || section === 'recipientView') {
       const recipient: RecipientState = yield select(selectRecipientState)
       if (recipient.isComplete) {
         yield put(setRecipientMode('recipient'))
@@ -436,10 +436,10 @@ function* handleEnvelopeToolbarAction(
   if (key === 'addressList') {
     if (section === 'sender') {
       yield put(toggleSenderListPanel())
-    } else if (
+    } else     if (
       section === 'recipient' ||
       section === 'recipients' ||
-      section === 'recipientSavedAddress'
+      section === 'recipientView'
     ) {
       yield put(toggleRecipientListPanel())
     }

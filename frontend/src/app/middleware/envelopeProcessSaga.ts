@@ -210,13 +210,13 @@ export function* processEnvelopeVisuals() {
   // Обновляем favorite в тулбаре сохранённых адресов отправителя и получателя
   yield put(
     updateToolbarSection({
-      section: 'senderSavedAddress',
+      section: 'senderView',
       value: { favorite: { state: savedAddressFavoriteState } },
     }),
   )
   yield put(
     updateToolbarSection({
-      section: 'recipientSavedAddress',
+      section: 'recipientView',
       value: { favorite: { state: savedAddressFavoriteState } },
     }),
   )

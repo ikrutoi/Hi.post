@@ -88,8 +88,8 @@ export interface EnvelopeSectionConfig extends BaseSectionConfig<
   'sender' | 'recipient' | 'recipients'
 > {}
 
-// export interface RecipientSavedAddressSectionConfig extends BaseSectionConfig<
+// export interface RecipientAddressViewSectionConfig extends BaseSectionConfig<
 //   EnvelopeToolbarState,
 //   EnvelopeKey,
-//   'recipientSavedAddress'
+//   'recipientView'
 // > {}

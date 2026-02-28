@@ -23,8 +23,8 @@ import type {
   AddressListKey,
   AddressFavoriteToolbarState,
   AddressFavoriteKey,
-  SavedAddressToolbarState,
-  SavedAddressKey,
+  AddressViewToolbarState,
+  AddressViewKey,
 } from './index'
 import type { RecipientsToolbarState, RecipientsKey } from './envelope.types'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -61,9 +61,9 @@ export const TOOLBAR_SECTIONS = [
   'recipientFavorite',
   'senderFavorite',
   'savedRecipientAddress',
-  'senderSavedAddress',
-  'recipientSavedAddress',
-  'recipientsSavedAddress',
+  'senderView',
+  'recipientView',
+  'recipientsView',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -80,9 +80,9 @@ export type ToolbarState = {
   addressList: AddressListToolbarState & { config: ToolbarGroup[] }
   recipientFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
   senderFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
-  senderSavedAddress: SavedAddressToolbarState & { config: ToolbarGroup[] }
-  recipientSavedAddress: SavedAddressToolbarState & { config: ToolbarGroup[] }
-  recipientsSavedAddress: SavedAddressToolbarState & { config: ToolbarGroup[] }
+  senderView: AddressViewToolbarState & { config: ToolbarGroup[] }
+  recipientView: AddressViewToolbarState & { config: ToolbarGroup[] }
+  recipientsView: AddressViewToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -144,20 +144,20 @@ export type ToolbarSectionConfigMap = {
     AddressFavoriteKey,
     'senderFavorite'
   >
-  senderSavedAddress: BaseSectionConfig<
-    SavedAddressToolbarState,
-    SavedAddressKey,
-    'senderSavedAddress'
+  senderView: BaseSectionConfig<
+    AddressViewToolbarState,
+    AddressViewKey,
+    'senderView'
   >
-  recipientSavedAddress: BaseSectionConfig<
-    SavedAddressToolbarState,
-    SavedAddressKey,
-    'recipientSavedAddress'
+  recipientView: BaseSectionConfig<
+    AddressViewToolbarState,
+    AddressViewKey,
+    'recipientView'
   >
-  recipientsSavedAddress: BaseSectionConfig<
-    SavedAddressToolbarState,
-    SavedAddressKey,
-    'recipientsSavedAddress'
+  recipientsView: BaseSectionConfig<
+    AddressViewToolbarState,
+    AddressViewKey,
+    'recipientsView'
   >
 }
 
@@ -183,10 +183,10 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                     ? AddressFavoriteKey
                     : S extends 'senderFavorite'
                       ? AddressFavoriteKey
-                      : S extends 'senderSavedAddress'
-                        ? SavedAddressKey
-                        : S extends 'recipientSavedAddress'
-                          ? SavedAddressKey
-                          : S extends 'recipientsSavedAddress'
-                            ? SavedAddressKey
+                      : S extends 'senderView'
+                        ? AddressViewKey
+                        : S extends 'recipientView'
+                          ? AddressViewKey
+                          : S extends 'recipientsView'
+                            ? AddressViewKey
                             : never

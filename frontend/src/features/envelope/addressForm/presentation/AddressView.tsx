@@ -1,22 +1,34 @@
 import React, { FocusEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import type { AddressFields } from '@shared/config/constants'
-import styles from './SavedAddressView.module.scss'
+import styles from './AddressView.module.scss'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { updateRecipientField } from '@envelope/recipient/infrastructure/state'
 import { updateSenderField } from '@envelope/sender/infrastructure/state'
 import { toolbarAction } from '@toolbar/application/helpers'
 
-export type SavedAddressViewProps = {
-  role: 'recipient' | 'sender'
+type AddressViewRole = 'recipient' | 'sender'
+
+export type SenderViewProps = {
+  templateId: string
+  address: AddressFields
+}
+
+export type RecipientViewProps = {
+  templateId: string
+  address: AddressFields
+}
+
+type SingleAddressViewProps = {
+  role: AddressViewRole
   templateId: string
   address: AddressFields
 }
 
 type EditableRowKey = 'name' | 'street' | 'cityZip' | 'country'
 
-export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
+const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   role,
   templateId,
   address,
@@ -69,9 +81,6 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
     let input: HTMLInputElement | null = null
 
     if (activeRow === 'cityZip') {
-      // Входим в строку ZIP/CITY:
-      // - сверху вниз (street -> cityZip): фокус в ZIP
-      // - снизу вверх (country -> cityZip): фокус в CITY
       const fromBottom = prevActiveRow.current === 'country'
       const targetRef = fromBottom ? cityRef : zipRef
       input = targetRef.current
@@ -131,7 +140,7 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
     if (next && next.tagName === 'INPUT') return
 
     const section =
-      role === 'sender' ? 'senderSavedAddress' : 'recipientSavedAddress'
+      role === 'sender' ? 'senderView' : 'recipientView'
     dispatch(toolbarAction({ section, key: 'edit' } as any))
   }
 
@@ -217,9 +226,6 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
               value={address.zip}
               onChange={(e) => updateField('zip', e.target.value)}
               onKeyDown={(e) => {
-                // В пределах строки ZIP/CITY:
-                // ArrowRight и ArrowDown двигают фокус к городу,
-                // ArrowUp/Down для смены строки обрабатываются ниже.
                 if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                   e.preventDefault()
                   if (cityRef.current) {
@@ -229,7 +235,6 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
                   }
                   return
                 }
-                // Остальное (ArrowUp и т.п.) — обычная навигация по строкам
                 handleKeyDown('cityZip')(e)
               }}
               onBlur={handleBlur}
@@ -241,7 +246,6 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
               value={address.city}
               onChange={(e) => updateField('city', e.target.value)}
               onKeyDown={(e) => {
-                // ArrowLeft и ArrowUp возвращают фокус в ZIP в пределах строки.
                 if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
                   e.preventDefault()
                   if (zipRef.current) {
@@ -251,7 +255,6 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
                   }
                   return
                 }
-                // ArrowDown из города переходит на следующую строку (Country)
                 handleKeyDown('cityZip')(e)
               }}
               onBlur={handleBlur}
@@ -284,7 +287,7 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
       <div className={styles.savedAddressViewToolbar}>
         <Toolbar
           section={
-            role === 'sender' ? 'senderSavedAddress' : 'recipientSavedAddress'
+            role === 'sender' ? 'senderView' : 'recipientView'
           }
         />
       </div>
@@ -292,3 +295,11 @@ export const SavedAddressView: React.FC<SavedAddressViewProps> = ({
     </div>
   )
 }
+
+export const SenderView: React.FC<SenderViewProps> = (props) => (
+  <SingleAddressView {...props} role="sender" />
+)
+
+export const RecipientView: React.FC<RecipientViewProps> = (props) => (
+  <SingleAddressView {...props} role="recipient" />
+)

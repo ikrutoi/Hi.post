@@ -63,26 +63,23 @@ export const RecipientListPanel: React.FC<Props> = ({
       try {
         const result = await deleteTemplate(id)
         if (result.success) {
-          // Удаляем из панели быстрого доступа, если шаблон там был
           dispatch(removeAddressTemplateRef({ type: 'recipient', id }))
-          // Обновляем список адресов и шаблонов
           dispatch(incrementAddressBookReloadVersion())
           dispatch(incrementAddressTemplatesReloadVersion())
           onDelete(id)
         } else {
           // eslint-disable-next-line no-console
-          console.warn('Failed to delete recipient address template:', result.error)
+          console.warn(
+            'Failed to delete recipient address template:',
+            result.error,
+          )
         }
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn('Failed to delete recipient address template:', e)
       }
     },
-    [
-      deleteTemplate,
-      dispatch,
-      onDelete,
-    ],
+    [deleteTemplate, dispatch, onDelete],
   )
 
   return (

@@ -4,7 +4,7 @@ import { Label } from './Label/Label'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { AddressEntry } from '../../addressBook/presentation/AddressEntry'
-import { SavedAddressView } from './SavedAddressView'
+import { SenderView, RecipientView } from './AddressView'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useEnvelopeFacade } from '../../application/facades'
 import { useSenderFacade } from '../../sender/application/facades'
@@ -58,7 +58,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   )
 
   // Если текущий выбранный шаблон был удалён, но в адресной книге ещё есть записи,
-  // автоматически переключаемся на первый доступный шаблон и показываем его в SavedAddressView.
+  // автоматически переключаемся на первый доступный шаблон и показываем его в SenderView/RecipientView.
   useEffect(() => {
     if (editingTemplateId == null) return
     if (templateEntry) return
@@ -220,8 +220,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             </div>
 
             {isSenderWithSavedTemplate ? (
-              <SavedAddressView
-                role="sender"
+              <SenderView
                 templateId={editingTemplateId!}
                 address={value}
               />
@@ -282,7 +281,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                         ? 'recipients'
                         : ('recipient' as ToolbarSection)
                       // : isSingleRecipientWithSavedTemplate
-                      //   ? 'recipientSavedAddress'
+                      //   ? 'recipientView'
                       //   : ('recipient' as ToolbarSection)
                     }
                   />
@@ -318,8 +317,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 ))}
               </div>
             ) : isSingleRecipientWithSavedTemplate ? (
-              <SavedAddressView
-                role="recipient"
+              <RecipientView
                 templateId={editingTemplateId!}
                 address={value}
               />
