@@ -1,6 +1,5 @@
 import React from 'react'
 import clsx from 'clsx'
-import { IconDelete } from '@shared/ui/icons/IconDelete'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import styles from './AddressEntry.module.scss'
 import { getToolbarIcon } from '@/shared/utils/icons'
@@ -9,6 +8,8 @@ type Props = {
   entry: AddressBookEntry
   onSelect: (entry: AddressBookEntry) => void
   onDelete: (id: string) => void
+  /** 'delete' — удаление адреса (иконка корзины), 'removeFromList' — убрать из списка (иконка close/clear) */
+  deleteAction?: 'delete' | 'removeFromList'
   isStarred?: boolean
   isSelected?: boolean
   onToggleStar?: () => void
@@ -19,11 +20,15 @@ export const AddressEntry: React.FC<Props> = ({
   entry,
   onSelect,
   onDelete,
+  deleteAction = 'delete',
   isStarred = false,
   isSelected = false,
   onToggleStar,
   variant = 'recipient',
 }) => {
+  const isRemoveFromList = deleteAction === 'removeFromList'
+  const actionIconKey = isRemoveFromList ? 'clearInput' : 'delete'
+  const actionLabel = isRemoveFromList ? 'Remove from list' : 'Delete address'
   return (
     <div
       className={clsx(styles.root, variant === 'sender' && styles.rootSender)}
@@ -64,10 +69,10 @@ export const AddressEntry: React.FC<Props> = ({
           e.stopPropagation()
           onDelete(entry.id)
         }}
-        aria-label="Delete address"
-        title="Delete address"
+        aria-label={actionLabel}
+        title={actionLabel}
       >
-        {getToolbarIcon({ key: 'delete' })}
+        {getToolbarIcon({ key: actionIconKey })}
       </button>
     </div>
   )

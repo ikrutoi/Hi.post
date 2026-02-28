@@ -35,8 +35,10 @@ import {
   RECIPIENTS_VIEW_TOOLBAR,
   VIEW_KEYS,
   SENDER_VIEW_TOOLBAR,
+  ADDRESS_FORM_VIEW_TOOLBAR,
   initialRecipientsViewToolbarState,
   initialSenderViewToolbarState,
+  initialAddressFormViewToolbarState,
 } from '../types/addressView.types'
 import { initialCardtextToolbarState } from '@cardtext/domain/types'
 import { cardtextToolbarController } from '@cardtext/application/controllers'
@@ -223,5 +225,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'recipientsView',
     getBadges: (state: ToolbarState['recipientsView']) => ({}),
     toolbar: RECIPIENTS_VIEW_TOOLBAR,
+  },
+
+  addressFormView: {
+    keys: VIEW_KEYS,
+    initialState: initialAddressFormViewToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'addressFormView',
+    getBadges: (state: ToolbarState['addressFormView']) => ({}),
+    toolbar: ADDRESS_FORM_VIEW_TOOLBAR,
   },
 }

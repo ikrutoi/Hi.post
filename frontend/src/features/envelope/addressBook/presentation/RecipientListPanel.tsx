@@ -1,18 +1,9 @@
-import React, { useMemo, useCallback, useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import React, { useCallback } from 'react'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { IconX } from '@shared/ui/icons'
-import { closeRecipientListPanel } from '@envelope/infrastructure/state'
-import { useAddressBookList } from '@envelope/addressBook/application/controllers'
-import {
-  addAddressTemplateRef,
-  removeAddressTemplateRef,
-  incrementAddressTemplatesReloadVersion,
-  incrementAddressBookReloadVersion,
-} from '@features/previewStrip/infrastructure/state'
 import { AddressEntry } from './AddressEntry'
 import type { AddressBookEntry } from '../domain/types'
-import { useAddressTemplateActions } from '@entities/templates'
+import { useRecipientListPanelFacade } from '../../application/facades'
 import styles from './RecipientListPanel.module.scss'
 
 type Props = {
@@ -26,60 +17,17 @@ export const RecipientListPanel: React.FC<Props> = ({
   onDelete = () => {},
   selectedIds = [],
 }) => {
-  const dispatch = useAppDispatch()
-  const { delete: deleteTemplate } = useAddressTemplateActions('recipient')
-  const { entries } = useAddressBookList('recipient')
-  useEffect(() => {
-    dispatch(incrementAddressBookReloadVersion())
-  }, [dispatch])
-  const addressTemplateRefs = useAppSelector(
-    (state) => state.previewStripOrder.addressTemplateRefs,
-  )
+  const {
+    entries,
+    starredRecipientIds,
+    closePanel,
+    handleToggleStar,
+    handleDeleteEntry,
+  } = useRecipientListPanelFacade()
 
-  const starredRecipientIds = useMemo(
-    () =>
-      new Set(
-        addressTemplateRefs
-          .filter((r) => r.type === 'recipient')
-          .map((r) => r.id),
-      ),
-    [addressTemplateRefs],
-  )
-
-  const handleToggleStar = useCallback(
-    (id: string, currentlyStarred: boolean) => {
-      if (currentlyStarred) {
-        dispatch(removeAddressTemplateRef({ type: 'recipient', id }))
-      } else {
-        dispatch(addAddressTemplateRef({ type: 'recipient', id }))
-        dispatch(incrementAddressTemplatesReloadVersion())
-      }
-    },
-    [dispatch],
-  )
-
-  const handleDeleteEntry = useCallback(
-    async (id: string) => {
-      try {
-        const result = await deleteTemplate(id)
-        if (result.success) {
-          dispatch(removeAddressTemplateRef({ type: 'recipient', id }))
-          dispatch(incrementAddressBookReloadVersion())
-          dispatch(incrementAddressTemplatesReloadVersion())
-          onDelete(id)
-        } else {
-          // eslint-disable-next-line no-console
-          console.warn(
-            'Failed to delete recipient address template:',
-            result.error,
-          )
-        }
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn('Failed to delete recipient address template:', e)
-      }
-    },
-    [deleteTemplate, dispatch, onDelete],
+  const onDeleteEntry = useCallback(
+    (id: string) => handleDeleteEntry(id, onDelete),
+    [handleDeleteEntry, onDelete],
   )
 
   return (
@@ -91,7 +39,7 @@ export const RecipientListPanel: React.FC<Props> = ({
         <button
           type="button"
           className={styles.closeBtn}
-          onClick={() => dispatch(closeRecipientListPanel())}
+          onClick={closePanel}
           aria-label="Close address list"
         >
           <IconX />
@@ -106,7 +54,7 @@ export const RecipientListPanel: React.FC<Props> = ({
               key={entry.id}
               entry={entry}
               onSelect={onSelect}
-              onDelete={handleDeleteEntry}
+              onDelete={onDeleteEntry}
               isStarred={starredRecipientIds.has(entry.id)}
               isSelected={selectedIds.includes(entry.id)}
               onToggleStar={() =>

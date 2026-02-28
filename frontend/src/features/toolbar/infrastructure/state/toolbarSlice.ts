@@ -15,6 +15,7 @@ import {
   initialRecipientViewToolbarState,
   initialSenderViewToolbarState,
   initialRecipientsViewToolbarState,
+  initialAddressFormViewToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -45,6 +46,7 @@ const initialState: ToolbarState = {
   senderView: initialSenderViewToolbarState,
   recipientView: initialRecipientViewToolbarState,
   recipientsView: initialRecipientsViewToolbarState,
+  addressFormView: initialAddressFormViewToolbarState,
 }
 
 const toolbarSlice = createSlice({

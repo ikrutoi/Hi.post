@@ -36,10 +36,7 @@ export const initialRecipientViewToolbarState: AddressViewToolbarState = {
 export const RECIPIENTS_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipientsView',
-    icons: [
-      { key: 'edit', state: 'enabled' },
-      { key: 'listClose', state: 'enabled' },
-    ],
+    icons: [{ key: 'listClose', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -66,8 +63,21 @@ export const initialSenderViewToolbarState: AddressViewToolbarState = {
   config: [...SENDER_VIEW_TOOLBAR],
 }
 
+export const ADDRESS_FORM_VIEW_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'addressFormView',
+    icons: [{ key: 'listClose', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
+export const initialAddressFormViewToolbarState: AddressViewToolbarState = {
+  ...Object.fromEntries(flattenIcons(ADDRESS_FORM_VIEW_TOOLBAR)),
+  config: [...ADDRESS_FORM_VIEW_TOOLBAR],
+}
+
 export interface AddressViewSectionConfig extends BaseSectionConfig<
   AddressViewToolbarState,
   AddressViewKey,
-  'senderView' | 'recipientView' | 'recipientsView'
+  'senderView' | 'recipientView' | 'recipientsView' | 'addressFormView'
 > {}

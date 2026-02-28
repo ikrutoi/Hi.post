@@ -172,3 +172,13 @@
     text-align: right;
   }
 }
+
+.recipientsViewList {
+  display: flex;
+  flex-direction: column-reverse;
+  min-height: 0;
+
+  > *:first-child {
+    margin-bottom: 0;
+  }
+}

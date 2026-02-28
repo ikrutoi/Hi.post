@@ -3,8 +3,8 @@ import clsx from 'clsx'
 import { Label } from './Label/Label'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
-import { AddressEntry } from '../../addressBook/presentation/AddressEntry'
 import { SenderView, RecipientView } from './AddressView'
+import { RecipientsView } from './RecipientsView'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useEnvelopeFacade } from '../../application/facades'
 import { useSenderFacade } from '../../sender/application/facades'
@@ -46,8 +46,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const entriesForRole = useAppSelector((state) =>
     role === 'sender'
-      ? state.addressBook?.senderEntries ?? []
-      : state.addressBook?.recipientEntries ?? [],
+      ? (state.addressBook?.senderEntries ?? [])
+      : (state.addressBook?.recipientEntries ?? []),
   )
   const templateEntry = editingTemplateId
     ? entriesForRole.find((e) => e.id === editingTemplateId)
@@ -57,8 +57,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     templateEntry?.address,
   )
 
-  // Если текущий выбранный шаблон был удалён, но в адресной книге ещё есть записи,
-  // автоматически переключаемся на первый доступный шаблон и показываем его в SenderView/RecipientView.
   useEffect(() => {
     if (editingTemplateId == null) return
     if (templateEntry) return
@@ -71,13 +69,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     } else {
       envelopeFacade.selectRecipientFromList(fallbackEntry)
     }
-  }, [
-    editingTemplateId,
-    templateEntry,
-    entriesForRole,
-    role,
-    envelopeFacade,
-  ])
+  }, [editingTemplateId, templateEntry, entriesForRole, role, envelopeFacade])
 
   const isSingleRecipientWithSavedTemplate =
     role === 'recipient' &&
@@ -220,10 +212,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             </div>
 
             {isSenderWithSavedTemplate ? (
-              <SenderView
-                templateId={editingTemplateId!}
-                address={value}
-              />
+              <SenderView templateId={editingTemplateId!} address={value} />
             ) : (
               renderLabelFields(labelLayout, 'sender', roleLabel)
             )}
@@ -289,38 +278,18 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               </div>
 
               {!recipientFacade.isEnabled ? (
-                // <div className={styles.recipientLegendAndFavorite}>
-                //   <div
-                //     className={clsx(
-                //       styles.addressToolbarFavorite,
-                //       styles.addressToolbarFavoriteRecipient,
-                //     )}
-                //   >
-                //     <Toolbar section="recipientFavorite" />
-                //   </div>
-                // </div>
                 <span className={styles.addressLegendReplica}>Recipient</span>
               ) : (
                 <span className={styles.addressLegendReplica}>Recipients</span>
               )}
             </div>
             {recipientFacade.isEnabled ? (
-              <div className={styles.recipientsList}>
-                {envelopeFacade.recipientsDisplayList.map((entry) => (
-                  <AddressEntry
-                    key={entry.id}
-                    entry={entry}
-                    onSelect={() => {}}
-                    onDelete={handleRemoveRecipient}
-                    isSelected={false}
-                  />
-                ))}
-              </div>
-            ) : isSingleRecipientWithSavedTemplate ? (
-              <RecipientView
-                templateId={editingTemplateId!}
-                address={value}
+              <RecipientsView
+                entries={envelopeFacade.recipientsDisplayList}
+                onRemove={handleRemoveRecipient}
               />
+            ) : isSingleRecipientWithSavedTemplate ? (
+              <RecipientView templateId={editingTemplateId!} address={value} />
             ) : (
               renderLabelFields(labelLayout, 'recipient', 'Recipient')
             )}
