@@ -16,6 +16,8 @@ export type SenderState = {
   addressFormData: AddressFields
   addressFormIsComplete: boolean
   senderViewId: string | null
+  /** Сохраняем при открытии формы, восстанавливаем при отмене закрытия */
+  previousSenderViewId: string | null
   applied: string[]
   enabled: boolean
 }

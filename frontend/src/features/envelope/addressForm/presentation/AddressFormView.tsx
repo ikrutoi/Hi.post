@@ -76,7 +76,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     } else {
       dispatch(setRecipientDraft({ ...address }))
     }
-    dispatch(setAddressFormView({ show: false, role: null }))
+    dispatch(setAddressFormView({ show: false, role }))
     if (role === 'sender') {
       dispatch(setSenderView('senderView'))
     } else {

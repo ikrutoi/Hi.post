@@ -8,7 +8,6 @@ type Props = {
   entry: AddressBookEntry
   onSelect: (entry: AddressBookEntry) => void
   onDelete: (id: string) => void
-  /** 'delete' — удаление адреса (иконка корзины), 'removeFromList' — убрать из списка (иконка close/clear) */
   deleteAction?: 'delete' | 'removeFromList'
   isStarred?: boolean
   isSelected?: boolean

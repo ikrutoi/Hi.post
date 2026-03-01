@@ -1,28 +1,43 @@
 import { createSelector } from '@reduxjs/toolkit'
 import type { AddressBookEntry } from '../../addressBook/domain/types'
-import { selectSenderState } from '../../sender/infrastructure/selectors'
-import { selectRecipientState } from '../../recipient/infrastructure/selectors'
-import { selectRecipientEnabled } from '../../recipient/infrastructure/selectors'
-import { EnvelopeSessionRecord } from '../../domain/types'
+import {
+  selectSenderState,
+  selectSenderViewId,
+} from '../../sender/infrastructure/selectors'
+import {
+  selectRecipientState,
+  selectRecipientViewId,
+  selectRecipientEnabled,
+} from '../../recipient/infrastructure/selectors'
+import type { EnvelopeSessionRecord } from '../../domain/types'
+import type { RecipientState } from '../../recipient/domain/types'
+import type { AddressFields } from '@shared/config/constants'
 import { getMatchingEntryId } from '../../domain/helpers'
+
+const emptyAddressFields: AddressFields = {
+  name: '',
+  street: '',
+  city: '',
+  zip: '',
+  country: '',
+}
 
 const selectEnvelopeSelectionState = (state: {
   envelopeSelection: {
-    selectedRecipientIds: string[]
+    recipientsPendingIds: string[]
     recipientListPanelOpen: boolean
     senderListPanelOpen: boolean
-    recipientMode: EnvelopeSessionRecord['recipientMode']
-    recipientTemplateId: string | null
-    senderTemplateId: string | null
-    recipientDraft?: Record<string, string> | null
+    senderViewEditMode?: boolean
+    recipientViewEditMode?: boolean
     senderDraft?: Record<string, string> | null
+    recipientDraft?: Record<string, string> | null
     showAddressFormView?: boolean
     addressFormViewRole?: 'sender' | 'recipient' | null
   }
 }) => state.envelopeSelection
 
 const selectRecipientsListState = (state: {
-  envelopeRecipients: EnvelopeSessionRecord['recipients']
+  envelopeRecipients: RecipientState[]
 }) => state.envelopeRecipients ?? []
 
 const selectRecipientEntriesState = (state: {
@@ -33,9 +48,9 @@ const selectSenderEntriesState = (state: {
   addressBook?: { senderEntries: AddressBookEntry[] }
 }) => state.addressBook?.senderEntries ?? []
 
-export const selectSelectedRecipientIds = createSelector(
+export const selectRecipientsPendingIds = createSelector(
   [selectEnvelopeSelectionState],
-  (s) => s.selectedRecipientIds,
+  (s) => s.recipientsPendingIds,
 )
 
 export const selectRecipientListPanelOpen = createSelector(
@@ -49,19 +64,13 @@ export const selectSenderListPanelOpen = createSelector(
 )
 
 export const selectRecipientMode = createSelector(
-  [selectEnvelopeSelectionState],
-  (s) => s.recipientMode,
+  [selectRecipientState],
+  (recipient) => recipient.mode ?? 'recipient',
 )
 
-export const selectRecipientTemplateId = createSelector(
-  [selectEnvelopeSelectionState],
-  (s) => s.recipientTemplateId ?? null,
-)
+export const selectRecipientTemplateId = selectRecipientViewId
 
-export const selectSenderTemplateId = createSelector(
-  [selectEnvelopeSelectionState],
-  (s) => s.senderTemplateId ?? null,
-)
+export const selectSenderTemplateId = selectSenderViewId
 
 export const selectShowAddressFormView = createSelector(
   [selectEnvelopeSelectionState],
@@ -78,34 +87,49 @@ export const selectRecipientDraft = createSelector(
   (s) => s.recipientDraft ?? null,
 )
 
+export const selectSenderDraft = createSelector(
+  [selectEnvelopeSelectionState],
+  (s) => s.senderDraft ?? null,
+)
+
+export const selectSenderViewEditMode = createSelector(
+  [selectEnvelopeSelectionState],
+  (s) => s.senderViewEditMode ?? false,
+)
+
+export const selectRecipientViewEditMode = createSelector(
+  [selectEnvelopeSelectionState],
+  (s) => s.recipientViewEditMode ?? false,
+)
+
 export const selectRecipientsList = selectRecipientsListState
 
 export const selectRecipientEntries = selectRecipientEntriesState
 
 export const selectSelectedRecipientEntriesInOrder = createSelector(
-  [selectSelectedRecipientIds, selectRecipientEntriesState],
+  [selectRecipientsPendingIds, selectRecipientEntriesState],
   (ids, entries): AddressBookEntry[] =>
     ids
       .map((id) => entries.find((e) => e.id === id))
       .filter((e): e is AddressBookEntry => e != null),
 )
 
-export const selectListSelectedIds = createSelector(
+export const selectRecipientListPendingIds = createSelector(
   [
-    selectSelectedRecipientIds,
+    selectRecipientsPendingIds,
     selectRecipientState,
     selectRecipientEntriesState,
     selectRecipientEnabled,
   ],
-  (selectedRecipientIds, recipient, recipientEntries, recipientEnabled) => {
-    if (recipientEnabled) return selectedRecipientIds
-    const addressForMatch =
+  (recipientsPendingIds, recipient, recipientEntries, recipientEnabled) => {
+    if (recipientEnabled) return recipientsPendingIds ?? []
+    const addressForMatch: AddressFields =
       recipient.currentView === 'addressFormRecipientView'
         ? recipient.addressFormData
         : recipient.recipientViewId
-          ? (recipientEntries.find((e) => e.id === recipient.recipientViewId)
-              ?.address as import('@shared/config/constants').AddressFields) ?? {}
-          : {}
+          ? ((recipientEntries.find((e) => e.id === recipient.recipientViewId)
+              ?.address as AddressFields) ?? emptyAddressFields)
+          : emptyAddressFields
     const singleId = getMatchingEntryId(addressForMatch, recipientEntries)
     return singleId ? [singleId] : []
   },
@@ -140,13 +164,8 @@ export const selectRecipientsDisplayList = createSelector(
 )
 
 export const selectEnvelopeSessionRecord = createSelector(
-  [
-    selectSenderState,
-    selectRecipientState,
-    selectRecipientMode,
-    selectRecipientsListState,
-  ],
-  (sender, recipient, recipientMode, recipients): EnvelopeSessionRecord => {
+  [selectSenderState, selectRecipientState],
+  (sender, recipient): EnvelopeSessionRecord => {
     const senderApplied = (sender.applied?.length ?? 0) > 0
     const recipientApplied = (recipient.applied?.length ?? 0) > 0
     const isComplete = sender.enabled
@@ -156,8 +175,6 @@ export const selectEnvelopeSessionRecord = createSelector(
     return {
       sender,
       recipient,
-      recipients,
-      recipientMode,
       isComplete,
     }
   },

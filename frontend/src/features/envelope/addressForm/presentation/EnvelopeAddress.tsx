@@ -11,7 +11,6 @@ import { useRecipientFacade } from '../../recipient/application/facades'
 import { useAppSelector, useAppDispatch } from '@app/hooks'
 import { selectSenderView } from '../../sender/infrastructure/selectors'
 import { selectRecipientView } from '../../recipient/infrastructure/selectors'
-import { setAddressFormView } from '../../infrastructure/state'
 import { setSenderView } from '../../sender/infrastructure/state'
 import { setRecipientView } from '../../recipient/infrastructure/state'
 import styles from './EnvelopeAddress.module.scss'
@@ -94,12 +93,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientView = useAppSelector(selectRecipientView)
 
   const openAddressForm = (r: 'sender' | 'recipient') => {
-    dispatch(setAddressFormView({ show: true, role: r }))
+    envelopeFacade.setAddressFormViewState(true, r)
     if (r === 'sender') dispatch(setSenderView('addressFormSenderView'))
     else dispatch(setRecipientView('addressFormRecipientView'))
   }
-
-  const handleRemoveRecipient = envelopeFacade.removeRecipientFromList
 
   return (
     <form
@@ -259,8 +256,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               />
             ) : recipientFacade.isEnabled ? (
               <RecipientsView
-                entries={envelopeFacade.recipientsDisplayList}
-                onRemove={handleRemoveRecipient}
+                entries={recipientFacade.recipientsDisplayList}
+                onRemove={recipientFacade.removeFromList}
               />
             ) : isSingleRecipientWithSavedTemplate ? (
               <RecipientView templateId={editingTemplateId!} address={value} />

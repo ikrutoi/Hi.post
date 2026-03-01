@@ -22,10 +22,8 @@ import {
   selectEnvelopeSessionRecord,
   selectIsEnvelopeReady,
 } from '@envelope/infrastructure/selectors'
-import {
-  setRecipientMode,
-  clearRecipientsList,
-} from '@envelope/infrastructure/state'
+import { setRecipientMode } from '@envelope/recipient/infrastructure/state'
+import { clearRecipientsList } from '@envelope/infrastructure/state'
 import {
   selectIsDateComplete,
   selectSelectedDate,

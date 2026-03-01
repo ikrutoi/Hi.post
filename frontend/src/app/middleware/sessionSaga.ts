@@ -25,7 +25,7 @@ import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { setSizeCard } from '@layout/infrastructure/state'
 import {
   restoreRecipient,
-  setEnabled as setRecipientEnabled,
+  setRecipientMode,
 } from '@envelope/recipient/infrastructure/state'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
@@ -44,6 +44,8 @@ import {
 import {
   selectEnvelopeSessionRecord,
   selectIsEnvelopeReady,
+  selectRecipientMode,
+  selectRecipientsList,
 } from '@envelope/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
@@ -73,14 +75,22 @@ import {
 } from '@features/previewStrip/infrastructure/state'
 import type { PreviewStripOrderState } from '@features/previewStrip/infrastructure/state'
 import {
-  setSelectedRecipientIds,
-  setRecipientMode,
+  setRecipientsPendingIds,
   setRecipientsList,
-  setRecipientTemplateId,
-  setSenderTemplateId,
   toggleRecipientSelection,
-  clearRecipientSelection,
+  clearRecipientsPending,
 } from '@envelope/infrastructure/state'
+import {
+  setRecipientViewId,
+  setRecipientsViewIds,
+} from '@envelope/recipient/infrastructure/state'
+import { setSenderViewId } from '@envelope/sender/infrastructure/state'
+import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
+import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
+import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
+import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
+import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
+import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
 import type {
   CardtextSessionRecord,
@@ -131,6 +141,9 @@ export function* persistGlobalSession() {
     selectEnvelopeSessionRecord,
   )
 
+  const envelopeRecipients: import('@envelope/domain/types').RecipientState[] =
+    yield select(selectRecipientsList)
+
   const aroma: AromaState = yield select(selectAromaState)
 
   const date: DateState = yield select(selectDateState)
@@ -145,26 +158,15 @@ export function* persistGlobalSession() {
       state.previewStripOrder,
   )
 
-  const envelopeSelectionState: {
-    selectedRecipientIds: string[]
-    recipientMode: 'recipient' | 'recipients'
-    recipientTemplateId: string | null
-    senderTemplateId: string | null
-  } = yield select(
-    (state: {
-      envelopeSelection: {
-        selectedRecipientIds: string[]
-        recipientMode: 'recipient' | 'recipients'
-        recipientTemplateId: string | null
-        senderTemplateId: string | null
-      }
-    }) => ({
-      selectedRecipientIds: state.envelopeSelection?.selectedRecipientIds ?? [],
-      recipientMode: state.envelopeSelection?.recipientMode ?? 'recipient',
-      recipientTemplateId: state.envelopeSelection?.recipientTemplateId ?? null,
-      senderTemplateId: state.envelopeSelection?.senderTemplateId ?? null,
-    }),
+  const recipientsPendingIds: string[] = yield select(
+    (state: { envelopeSelection?: { recipientsPendingIds?: string[] } }) =>
+      state.envelopeSelection?.recipientsPendingIds ?? [],
   )
+  const recipientMode: 'recipient' | 'recipients' = yield select(
+    selectRecipientMode,
+  )
+  const recipientViewId: string | null = yield select(selectRecipientViewId)
+  const senderViewId: string | null = yield select(selectSenderViewId)
 
   // const newSessionData: SessionData = {
   //   id: 'current_session',
@@ -191,15 +193,15 @@ export function* persistGlobalSession() {
     sizeCard,
     previewStripOrder: previewStripOrder ?? null,
     envelopeSelection:
-      envelopeSelectionState.selectedRecipientIds.length > 0 ||
-      envelopeSelectionState.recipientMode !== 'recipient' ||
-      envelopeSelectionState.recipientTemplateId != null ||
-      envelopeSelectionState.senderTemplateId != null
+      recipientsPendingIds.length > 0 ||
+      recipientMode !== 'recipient' ||
+      recipientViewId != null ||
+      senderViewId != null
         ? {
-            selectedRecipientIds: envelopeSelectionState.selectedRecipientIds,
-            recipientMode: envelopeSelectionState.recipientMode,
-            recipientTemplateId: envelopeSelectionState.recipientTemplateId,
-            senderTemplateId: envelopeSelectionState.senderTemplateId,
+            recipientsPendingIds,
+            recipientMode,
+            recipientTemplateId: recipientViewId,
+            senderTemplateId: senderViewId,
           }
         : null,
     timestamp: Date.now(),
@@ -235,14 +237,85 @@ const SESSION_WATCH_ACTIONS = [
   removeCardtextTemplateId.type,
   addAddressTemplateRef.type,
   removeAddressTemplateRef.type,
-  setSelectedRecipientIds.type,
+  setRecipientsPendingIds.type,
   setRecipientMode.type,
-  setRecipientTemplateId.type,
-  setSenderTemplateId.type,
+  setRecipientViewId.type,
+  setSenderViewId.type,
   setRecipientsList.type,
+  setRecipientsViewIds.type,
   toggleRecipientSelection.type,
-  clearRecipientSelection.type,
+  clearRecipientsPending.type,
 ]
+
+function hasAddressData(data: Record<string, string>): boolean {
+  return Object.values(data).some((v) => (v ?? '').trim() !== '')
+}
+
+function* rehydrateEnvelopeSlicesFromTemplates() {
+  const sender: SenderState = yield select(selectSenderState)
+  const recipient: RecipientState = yield select(selectRecipientState)
+
+  if (sender.senderViewId != null && !hasAddressData(sender.addressFormData)) {
+    const record: { id: string; address?: Record<string, string> } | null =
+      yield call([senderAdapter, 'getById'], sender.senderViewId)
+    if (record?.address) {
+      const address = record.address as SenderState['addressFormData']
+      const isComplete = Object.values(address).every(
+        (v) => (v ?? '').trim() !== '',
+      )
+      yield put(
+        restoreSender({
+          addressFormData: address,
+          addressFormIsComplete: isComplete,
+          senderViewId: sender.senderViewId,
+          currentView: 'senderView',
+          applied: [],
+          enabled: true,
+        }),
+      )
+    }
+  }
+
+  if (
+    recipient.recipientViewId != null &&
+    !hasAddressData(recipient.addressFormData)
+  ) {
+    const record: { id: string; address?: Record<string, string> } | null =
+      yield call([recipientAdapter, 'getById'], recipient.recipientViewId)
+    if (record?.address) {
+      const address = record.address as RecipientState['addressFormData']
+      const isComplete = Object.values(address).every(
+        (v) => (v ?? '').trim() !== '',
+      )
+      yield put(
+        restoreRecipient({
+          addressFormData: address,
+          addressFormIsComplete: isComplete,
+          recipientViewId: recipient.recipientViewId,
+          currentView: 'recipientView',
+          recipientsViewIds: recipient.recipientsViewIds ?? [],
+          applied: [],
+          mode: recipient.mode,
+        }),
+      )
+    }
+  }
+
+  const recipients: RecipientState[] = yield select(selectRecipientsList)
+  if (
+    Array.isArray(recipients) &&
+    recipients.length > 0 &&
+    (recipient.recipientsViewIds?.length ?? 0) === 0
+  ) {
+    yield put(
+      setRecipientsViewIds(
+        recipients
+          .map((r) => r.recipientViewId)
+          .filter((id): id is string => id != null),
+      ),
+    )
+  }
+}
 
 export function* hydrateAppSession() {
   try {
@@ -256,7 +329,6 @@ export function* hydrateAppSession() {
     console.log('SESSION', session)
 
     if (session.cardphoto) {
-      console.log('SESSION_CARDPHOTO cardphoto', session.cardphoto)
       const { activeMetaId, cropIds, source, config, isComplete } =
         session.cardphoto
 
@@ -273,8 +345,6 @@ export function* hydrateAppSession() {
           : null,
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
       ])
-
-      console.log('SESSION userRec', userRec)
 
       const base: CardphotoBase = {
         stock: { image: hydrateMeta(stockRec?.image || null) },
@@ -295,10 +365,8 @@ export function* hydrateAppSession() {
       }
 
       let activeImage = base[source]?.image || base.stock.image
-      console.log('SESSION activeImage', activeImage)
 
       if (!activeImage) {
-        console.log('>>> Image missing, fetching emergency stock...')
         const emergencyRaw: ImageMeta = yield call(getRandomStockMeta)
         activeImage = hydrateMeta(emergencyRaw)
         if (activeImage) base.stock.image = activeImage
@@ -417,7 +485,7 @@ export function* hydrateAppSession() {
     }
 
     if (session.envelope) {
-      const { sender, recipient, recipientMode, recipients } = session.envelope
+      const { sender, recipient } = session.envelope
 
       if (sender) {
         yield put(restoreSender(sender))
@@ -425,43 +493,51 @@ export function* hydrateAppSession() {
 
       if (recipient) {
         yield put(restoreRecipient(recipient))
+        yield put(setRecipientMode(recipient.mode))
       }
 
-      if (recipientMode) {
-        yield put(setRecipientMode(recipientMode))
-        yield put(setRecipientEnabled(recipientMode === 'recipients'))
-      }
-
-      if (recipients?.length) {
-        yield put(setRecipientsList(recipients))
+      if (session.envelopeRecipients?.length) {
+        yield put(setRecipientsList(session.envelopeRecipients))
+        yield put(
+          setRecipientsViewIds(
+            session.envelopeRecipients
+              .map((r) => r.recipientViewId)
+              .filter((id): id is string => id != null),
+          ),
+        )
       }
 
       yield call(processEnvelopeVisuals)
     }
 
-    if (session.envelopeSelection?.selectedRecipientIds?.length) {
-      yield put(
-        setSelectedRecipientIds(session.envelopeSelection.selectedRecipientIds),
-      )
+    const listIds =
+      session.envelopeSelection?.recipientsPendingIds ??
+      (session.envelopeSelection as { selectedRecipientIds?: string[] })
+        ?.selectedRecipientIds
+    if (listIds?.length) {
+      yield put(setRecipientsPendingIds(listIds))
     }
     if (session.envelopeSelection?.recipientMode) {
-      const mode = session.envelopeSelection.recipientMode
-      yield put(setRecipientMode(mode))
-      yield put(setRecipientEnabled(mode === 'recipients'))
+      yield put(setRecipientMode(session.envelopeSelection.recipientMode))
     }
     if (session.envelopeSelection?.recipientTemplateId != null) {
-      yield put(setRecipientTemplateId(session.envelopeSelection.recipientTemplateId))
+      yield put(
+        setRecipientViewId(session.envelopeSelection.recipientTemplateId),
+      )
     }
     if (session.envelopeSelection?.senderTemplateId != null) {
-      yield put(setSenderTemplateId(session.envelopeSelection.senderTemplateId))
+      yield put(setSenderViewId(session.envelopeSelection.senderTemplateId))
     }
     if (session.envelopeSelection) {
       yield call(processEnvelopeVisuals)
     }
+
+    yield call(rehydrateEnvelopeSlicesFromTemplates)
+
     const multiWithIds =
       (session.envelopeSelection?.recipientMode === 'recipients' ||
-        session.envelope?.recipientMode === 'recipients') &&
-      (session.envelopeSelection?.selectedRecipientIds?.length ?? 0) > 0
+        session.envelope?.recipient?.mode === 'recipients') &&
+      (session.envelopeSelection?.recipientsPendingIds?.length ?? 0) > 0
     if (multiWithIds) {
       yield put(incrementAddressBookReloadVersion())
     }

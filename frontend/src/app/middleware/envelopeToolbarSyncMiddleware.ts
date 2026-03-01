@@ -1,5 +1,5 @@
 import type { Middleware } from '@reduxjs/toolkit'
-import { setRecipientMode } from '@envelope/infrastructure/state'
+import { setRecipientMode } from '@envelope/recipient/infrastructure/state'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
 
@@ -16,7 +16,7 @@ export const envelopeToolbarSyncMiddleware: Middleware =
     ) {
       const state = store.getState()
       const selectedIds =
-        state.envelopeSelection?.selectedRecipientIds ?? []
+        state.envelopeSelection?.recipientsPendingIds ?? []
       store.dispatch(
         updateToolbarSection({
           section: 'recipients',

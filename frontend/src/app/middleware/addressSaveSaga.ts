@@ -6,11 +6,9 @@ import { selectRecipientState } from '@envelope/recipient/infrastructure/selecto
 import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import { saveAddressRequested as recipientSaveRequested } from '@envelope/recipient/infrastructure/state'
 import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/infrastructure/state'
-import {
-  setRecipientTemplateId,
-  setSenderTemplateId,
-  addressSaveSuccess,
-} from '@envelope/infrastructure/state'
+import { setRecipientViewId } from '@envelope/recipient/infrastructure/state'
+import { setSenderViewId } from '@envelope/sender/infrastructure/state'
+import { addressSaveSuccess } from '@envelope/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
@@ -72,9 +70,9 @@ function* handleAddressSave(
         }),
       )
       if (role === 'recipient') {
-        yield put(setRecipientTemplateId(String(result.templateId)))
+        yield put(setRecipientViewId(String(result.templateId)))
       } else {
-        yield put(setSenderTemplateId(String(result.templateId)))
+        yield put(setSenderViewId(String(result.templateId)))
       }
       yield put(addressSaveSuccess(role))
       yield call(processEnvelopeVisuals)

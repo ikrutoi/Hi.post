@@ -4,6 +4,10 @@ import type { AddressFields } from '@shared/config/constants'
 import styles from './AddressView.module.scss'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import {
+  selectSenderViewEditMode,
+  selectRecipientViewEditMode,
+} from '@envelope/infrastructure/selectors'
 import { updateRecipientField } from '@envelope/recipient/infrastructure/state'
 import { updateSenderField } from '@envelope/sender/infrastructure/state'
 import { toolbarAction } from '@toolbar/application/helpers'
@@ -34,13 +38,10 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   address,
 }) => {
   const dispatch = useAppDispatch()
-  const isEditMode = useAppSelector((state: any) => {
-    const sel = state.envelopeSelection
-    if (!sel) return false
-    return role === 'sender'
-      ? sel.savedSenderAddressEditMode
-      : sel.savedRecipientAddressEditMode
-  })
+  const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
+  const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
+  const isEditMode =
+    role === 'sender' ? senderViewEditMode : recipientViewEditMode
 
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const prevActiveRow = useRef<EditableRowKey | null>(null)

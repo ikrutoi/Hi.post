@@ -1,16 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { initialSection } from '../../../addressForm/domain/models'
 import type { AddressFields } from '@shared/config/constants'
-import type { RecipientState, RecipientView } from '../../domain/types'
+import type {
+  RecipientState,
+  RecipientView,
+  RecipientMode,
+} from '../../domain/types'
 
 export const initialRecipient: RecipientState = {
   currentView: 'addressFormRecipientView',
   addressFormData: { ...initialSection.data },
   addressFormIsComplete: false,
   recipientViewId: null,
+  previousRecipientViewId: null,
   recipientsViewIds: [],
   applied: [],
-  enabled: false,
+  mode: 'recipient',
 }
 
 function isComplete(data: AddressFields): boolean {
@@ -40,8 +45,14 @@ const recipientSlice = createSlice({
     },
 
     setEnabled: (state, action: PayloadAction<boolean>) => {
-      state.enabled = action.payload
+      state.mode = action.payload ? 'recipients' : 'recipient'
       if (action.payload) state.currentView = 'recipientsView'
+      else state.currentView = 'recipientView'
+    },
+
+    setRecipientMode: (state, action: PayloadAction<RecipientMode>) => {
+      state.mode = action.payload
+      if (action.payload === 'recipients') state.currentView = 'recipientsView'
       else state.currentView = 'recipientView'
     },
 
@@ -63,6 +74,13 @@ const recipientSlice = createSlice({
       state.recipientViewId = action.payload
     },
 
+    setPreviousRecipientViewId: (
+      state,
+      action: PayloadAction<string | null>,
+    ) => {
+      state.previousRecipientViewId = action.payload
+    },
+
     setRecipientsViewIds: (state, action: PayloadAction<string[]>) => {
       state.recipientsViewIds = action.payload
     },
@@ -74,12 +92,14 @@ const recipientSlice = createSlice({
 export const {
   updateRecipientField,
   setEnabled,
+  setRecipientMode,
   restoreRecipient,
   clearRecipient,
   setRecipientAppliedIds,
   setRecipientApplied,
   setRecipientView,
   setRecipientViewId,
+  setPreviousRecipientViewId,
   setRecipientsViewIds,
   saveAddressRequested,
 } = recipientSlice.actions

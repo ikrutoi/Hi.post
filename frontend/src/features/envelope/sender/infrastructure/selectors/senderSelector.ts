@@ -39,5 +39,8 @@ export const selectIsSenderEnabled = (state: RootState): boolean =>
 export const selectSenderViewId = (state: RootState): string | null =>
   state.sender.senderViewId
 
+export const selectPreviousSenderViewId = (state: RootState): string | null =>
+  state.sender.previousSenderViewId
+
 export const selectSenderApplied = (state: RootState): string[] =>
   state.sender.applied ?? []

@@ -6,8 +6,6 @@ export type RecipientMode = 'recipient' | 'recipients'
 export interface EnvelopeSessionRecord {
   sender: SenderState
   recipient: RecipientState
-  recipients: RecipientState[]
-  recipientMode: RecipientMode
   isComplete: boolean
 }
 

@@ -4,6 +4,7 @@ import {
   clearRecipient,
   restoreRecipient,
   setRecipientView,
+  setRecipientMode,
 } from '@envelope/recipient/infrastructure/state'
 import {
   updateSenderField,
@@ -20,19 +21,26 @@ import {
   selectIsRecipientComplete,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
-  selectSelectedRecipientIds,
+  selectRecipientsPendingIds,
+  selectSenderDraft,
+  selectRecipientDraft,
 } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
-  setSelectedRecipientIds,
-  setRecipientMode,
-  setRecipientTemplateId,
-  setSenderTemplateId,
+  setRecipientsPendingIds,
   setSenderDraft,
   setRecipientDraft,
   clearSenderDraft,
   clearRecipientDraft,
 } from '@envelope/infrastructure/state'
+import { setSenderViewId } from '@envelope/sender/infrastructure/state'
+import {
+  setRecipientViewId,
+  setRecipientsViewIds,
+} from '@envelope/recipient/infrastructure/state'
+import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
+import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
+import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
   buildRecipientToolbarState,
   buildSenderToolbarState,
@@ -57,6 +65,22 @@ import type { RecipientState, SenderState } from '@envelope/domain/types'
 export function* processEnvelopeVisuals() {
   const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
+
+  const recipients: RecipientState[] = yield select(selectRecipientsList)
+  if (
+    Array.isArray(recipients) &&
+    recipients.length > 0 &&
+    (recipient.recipientsViewIds?.length ?? 0) === 0
+  ) {
+    yield put(
+      setRecipientsViewIds(
+        recipients
+          .map((r) => r.recipientViewId)
+          .filter((id): id is string => id != null),
+      ),
+    )
+  }
+
   const senderComplete: boolean = yield select(selectIsSenderComplete)
   const recipientComplete: boolean = yield select(selectIsRecipientComplete)
 
@@ -72,39 +96,39 @@ export function* processEnvelopeVisuals() {
   ])
 
   const addressTemplateRefs: { type: string; id: string }[] = yield select(
-    (s: { previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] } }) =>
-      s.previewStripOrder?.addressTemplateRefs ?? [],
+    (s: {
+      previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] }
+    }) => s.previewStripOrder?.addressTemplateRefs ?? [],
   )
   const senderMatchId =
-  sender.currentView === 'senderView' && sender.senderViewId
-    ? sender.senderViewId
-    : getMatchingEntryId(sender.addressFormData, senderList)
+    sender.currentView === 'senderView' && sender.senderViewId
+      ? sender.senderViewId
+      : getMatchingEntryId(sender.addressFormData, senderList)
   const recipientMatchId =
-  recipient.currentView === 'recipientView' && recipient.recipientViewId
-    ? recipient.recipientViewId
-    : getMatchingEntryId(recipient.addressFormData, recipientList)
+    recipient.currentView === 'recipientView' && recipient.recipientViewId
+      ? recipient.recipientViewId
+      : getMatchingEntryId(recipient.addressFormData, recipientList)
   const isSenderFavorite =
     senderMatchId != null &&
-    addressTemplateRefs.some((r) => r.type === 'sender' && r.id === senderMatchId)
+    addressTemplateRefs.some(
+      (r) => r.type === 'sender' && r.id === senderMatchId,
+    )
   const isRecipientFavorite =
     recipientMatchId != null &&
     addressTemplateRefs.some(
       (r) => r.type === 'recipient' && r.id === recipientMatchId,
     )
 
-  const envelopeSelection: {
-    senderDraft?: Record<string, string> | null
-    recipientDraft?: Record<string, string> | null
-  } = yield select(
-    (s: { envelopeSelection?: { senderDraft?: Record<string, string> | null; recipientDraft?: Record<string, string> | null } }) =>
-      s.envelopeSelection ?? {},
+  const senderDraft: Record<string, string> | null = yield select(
+    selectSenderDraft,
   )
-  const hasSenderDraft =
-    envelopeSelection.senderDraft != null &&
-    Object.keys(envelopeSelection.senderDraft).length > 0
-  const hasRecipientDraft =
-    envelopeSelection.recipientDraft != null &&
-    Object.keys(envelopeSelection.recipientDraft).length > 0
+  const recipientDraft: Record<string, string> | null = yield select(
+    selectRecipientDraft,
+  )
+  const hasDraftData = (draft: Record<string, string> | null | undefined) =>
+    draft != null && Object.values(draft).some((v) => (v ?? '').trim() !== '')
+  const hasSenderDraft = hasDraftData(senderDraft)
+  const hasRecipientDraft = hasDraftData(recipientDraft)
 
   const senderToolbar = buildSenderToolbarState({
     isComplete: senderComplete,
@@ -119,7 +143,10 @@ export function* processEnvelopeVisuals() {
     isComplete: recipientComplete,
     hasData: checkHasData(recipient.addressFormData),
     addressListCount: recipientList.length,
-    isCurrentAddressInList: isAddressInList(recipient.addressFormData, recipientList),
+    isCurrentAddressInList: isAddressInList(
+      recipient.addressFormData,
+      recipientList,
+    ),
     isCurrentAddressFavorite: isRecipientFavorite,
     hasDraft: hasRecipientDraft,
   })
@@ -148,15 +175,21 @@ export function* processEnvelopeVisuals() {
     }),
   )
 
-  const selectedRecipientIds: string[] = yield select(selectSelectedRecipientIds)
-  const isMultiMode = recipient.enabled
-  const isRecipientFormOpen = recipient.currentView === 'addressFormRecipientView'
+  const recipientsPendingIds: string[] = yield select(
+    selectRecipientsPendingIds,
+  )
+  const isMultiMode = recipient.mode === 'recipients'
+  const isRecipientFormOpen =
+    recipient.currentView === 'addressFormRecipientView'
   const canApplyRecipients =
-    isMultiMode && selectedRecipientIds.length >= 1
-  const recipientsApplyState =
-    isRecipientFormOpen
-      ? (recipientComplete ? 'enabled' : 'disabled')
-      : (canApplyRecipients ? 'enabled' : 'disabled')
+    isMultiMode && recipientsPendingIds.length >= 1
+  const recipientsApplyState = isRecipientFormOpen
+    ? recipientComplete
+      ? 'enabled'
+      : 'disabled'
+    : canApplyRecipients
+      ? 'enabled'
+      : 'disabled'
 
   yield put(
     updateToolbarSection({
@@ -198,36 +231,23 @@ export function* processEnvelopeVisuals() {
     }),
   )
 
-  const envelopeSelectionFull: {
-    recipientTemplateId: string | null
-    senderTemplateId: string | null
-  } = yield select(
-    (s: {
-      envelopeSelection: {
-        recipientTemplateId: string | null
-        senderTemplateId: string | null
-      }
-    }) => s.envelopeSelection ?? { recipientTemplateId: null, senderTemplateId: null },
-  )
+  const recipientViewId: string | null = yield select(selectRecipientViewId)
+  const senderViewId: string | null = yield select(selectSenderViewId)
   const isSavedAddressRecipientFavorite =
-    envelopeSelectionFull.recipientTemplateId != null &&
+    recipientViewId != null &&
     addressTemplateRefs.some(
-      (r) =>
-        r.type === 'recipient' &&
-        r.id === envelopeSelectionFull.recipientTemplateId,
+      (r) => r.type === 'recipient' && r.id === recipientViewId,
     )
   const isSavedAddressSenderFavorite =
-    envelopeSelectionFull.senderTemplateId != null &&
+    senderViewId != null &&
     addressTemplateRefs.some(
-      (r) =>
-        r.type === 'sender' && r.id === envelopeSelectionFull.senderTemplateId,
+      (r) => r.type === 'sender' && r.id === senderViewId,
     )
   const savedAddressFavoriteState =
     isSavedAddressRecipientFavorite || isSavedAddressSenderFavorite
       ? 'active'
       : 'enabled'
 
-  // Обновляем favorite в тулбаре сохранённых адресов отправителя и получателя
   yield put(
     updateToolbarSection({
       section: 'senderView',
@@ -255,10 +275,10 @@ export function* envelopeProcessSaga() {
   yield takeEvery(
     [
       toggleRecipientSelection.type,
-      setSelectedRecipientIds.type,
+      setRecipientsPendingIds.type,
       setRecipientMode.type,
-      setRecipientTemplateId.type,
-      setSenderTemplateId.type,
+      setRecipientViewId.type,
+      setSenderViewId.type,
       setSenderDraft.type,
       setRecipientDraft.type,
       clearSenderDraft.type,

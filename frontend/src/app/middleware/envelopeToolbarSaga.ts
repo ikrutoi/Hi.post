@@ -1,3 +1,4 @@
+import type { PayloadAction } from '@reduxjs/toolkit'
 import { takeLatest, takeEvery, put, select, call } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import {
@@ -5,6 +6,8 @@ import {
   restoreSender,
   setSenderApplied,
   setSenderView,
+  setSenderViewId,
+  setPreviousSenderViewId,
   saveAddressRequested as senderSaveRequested,
 } from '@envelope/sender/infrastructure/state'
 import {
@@ -12,19 +15,19 @@ import {
   setRecipientApplied,
   restoreRecipient,
   setRecipientView,
-  setEnabled as setRecipientEnabled,
+  setRecipientViewId,
+  setPreviousRecipientViewId,
+  setRecipientsViewIds,
+  setRecipientMode,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
 import {
   toggleRecipientListPanel,
   toggleSenderListPanel,
   setRecipientsList,
-  setRecipientMode,
-  setRecipientTemplateId,
-  setSenderTemplateId,
-  clearRecipientSelection,
-  setSenderSavedAddressEditMode,
-  setRecipientSavedAddressEditMode,
+  clearRecipientsPending,
+  setSenderViewEditMode,
+  setRecipientViewEditMode,
   clearSenderDraft,
   clearRecipientDraft,
   setAddressFormView,
@@ -32,14 +35,24 @@ import {
   setRecipientDraft,
   addressSaveSuccess,
 } from '@envelope/infrastructure/state'
-import { selectSelectedRecipientIds } from '@envelope/infrastructure/selectors'
+import {
+  selectRecipientsPendingIds,
+  selectAddressFormViewRole,
+  selectSenderViewEditMode,
+  selectRecipientViewEditMode,
+  selectSenderDraft,
+} from '@envelope/infrastructure/selectors'
 import {
   selectSenderState,
   selectIsSenderComplete,
+  selectSenderViewId,
+  selectPreviousSenderViewId,
 } from '@envelope/sender/infrastructure/selectors'
 import {
   selectRecipientState,
   selectIsRecipientComplete,
+  selectRecipientViewId,
+  selectPreviousRecipientViewId,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   addAddressTemplateRef,
@@ -60,6 +73,67 @@ function addressMatches(
   return fields.every(
     (f) => (data[f] ?? '').trim() === (address[f] ?? '').trim(),
   )
+}
+
+function* handleSetAddressFormViewSync(
+  action: PayloadAction<{ show: boolean; role: 'sender' | 'recipient' | null }>,
+) {
+  const { show, role } = action.payload
+  if (show && role === 'sender') {
+    const senderViewId: string | null = yield select(selectSenderViewId)
+    yield put(setPreviousSenderViewId(senderViewId))
+  } else if (show && role === 'recipient') {
+    const recipientViewId: string | null = yield select(selectRecipientViewId)
+    yield put(setPreviousRecipientViewId(recipientViewId))
+  } else if (!show && role === 'sender') {
+    const previous: string | null = yield select(selectPreviousSenderViewId)
+    yield put(setSenderViewId(previous))
+    yield put(setPreviousSenderViewId(null))
+    if (previous != null) {
+      const record: { id: string; address?: Record<string, string> } | null =
+        yield call([senderAdapter, 'getById'], previous)
+      if (record?.address) {
+        const address = record.address as SenderState['addressFormData']
+        const isComplete = Object.values(address).every(
+          (v) => (v ?? '').trim() !== '',
+        )
+        yield put(
+          restoreSender({
+            addressFormData: address,
+            addressFormIsComplete: isComplete,
+            senderViewId: previous,
+            currentView: 'senderView',
+            applied: [],
+            enabled: true,
+          }),
+        )
+      }
+    }
+  } else if (!show && role === 'recipient') {
+    const previous: string | null = yield select(selectPreviousRecipientViewId)
+    yield put(setRecipientViewId(previous))
+    yield put(setPreviousRecipientViewId(null))
+    if (previous != null) {
+      const record: { id: string; address?: Record<string, string> } | null =
+        yield call([recipientAdapter, 'getById'], previous)
+      if (record?.address) {
+        const address = record.address as RecipientState['addressFormData']
+        const isComplete = Object.values(address).every(
+          (v) => (v ?? '').trim() !== '',
+        )
+        yield put(
+          restoreRecipient({
+            addressFormData: address,
+            addressFormIsComplete: isComplete,
+            recipientViewId: previous,
+            currentView: 'recipientView',
+            applied: [],
+            enabled: false,
+          }),
+        )
+      }
+    }
+  }
 }
 
 function* handleEnvelopeToolbarAction(
@@ -141,17 +215,8 @@ function* handleEnvelopeToolbarAction(
       section === 'recipientView') &&
     key === 'favorite'
   ) {
-    const envelopeSelection: {
-      recipientTemplateId: string | null
-      senderTemplateId: string | null
-    } = yield select(
-      (s: {
-        envelopeSelection: {
-          recipientTemplateId: string | null
-          senderTemplateId: string | null
-        }
-      }) => s.envelopeSelection ?? { recipientTemplateId: null, senderTemplateId: null },
-    )
+    const recipientViewId: string | null = yield select(selectRecipientViewId)
+    const senderViewId: string | null = yield select(selectSenderViewId)
     const addressTemplateRefs: { type: string; id: string }[] = yield select(
       (s: {
         previewStripOrder: {
@@ -163,15 +228,13 @@ function* handleEnvelopeToolbarAction(
     let templateId: string | null
     if (section === 'senderView') {
       type = 'sender'
-      templateId = envelopeSelection.senderTemplateId
+      templateId = senderViewId
     } else if (section === 'recipientView') {
       type = 'recipient'
-      templateId = envelopeSelection.recipientTemplateId
+      templateId = recipientViewId
     } else {
-      // savedAddress — определяем по тому, какой шаблон выбран
-      templateId =
-        envelopeSelection.recipientTemplateId ?? envelopeSelection.senderTemplateId
-      type = envelopeSelection.recipientTemplateId != null ? 'recipient' : 'sender'
+      templateId = recipientViewId ?? senderViewId
+      type = recipientViewId != null ? 'recipient' : 'sender'
     }
     if (templateId != null) {
       const isInFavorites = addressTemplateRefs.some(
@@ -192,32 +255,21 @@ function* handleEnvelopeToolbarAction(
       section === 'recipientView') &&
     key === 'delete'
   ) {
-    const envelopeSelection: {
-      recipientTemplateId: string | null
-      senderTemplateId: string | null
-    } = yield select(
-      (s: {
-        envelopeSelection: {
-          recipientTemplateId: string | null
-          senderTemplateId: string | null
-        }
-      }) => s.envelopeSelection ?? { recipientTemplateId: null, senderTemplateId: null },
-    )
+    const recipientViewId: string | null = yield select(selectRecipientViewId)
+    const senderViewId: string | null = yield select(selectSenderViewId)
 
     let type: 'sender' | 'recipient'
     let templateId: string | null
 
     if (section === 'senderView') {
       type = 'sender'
-      templateId = envelopeSelection.senderTemplateId
+      templateId = senderViewId
     } else if (section === 'recipientView') {
       type = 'recipient'
-      templateId = envelopeSelection.recipientTemplateId
+      templateId = recipientViewId
     } else {
-      // section === 'savedAddress' — определяем по тому, какая ветка выбрана
-      type = envelopeSelection.recipientTemplateId != null ? 'recipient' : 'sender'
-      templateId =
-        envelopeSelection.recipientTemplateId ?? envelopeSelection.senderTemplateId
+      type = recipientViewId != null ? 'recipient' : 'sender'
+      templateId = recipientViewId ?? senderViewId
     }
 
     if (templateId != null) {
@@ -241,9 +293,9 @@ function* handleEnvelopeToolbarAction(
           ])
           if (!Array.isArray(remaining) || remaining.length === 0) {
             if (type === 'recipient') {
-              yield put(setRecipientTemplateId(null))
+              yield put(setRecipientViewId(null))
             } else {
-              yield put(setSenderTemplateId(null))
+              yield put(setSenderViewId(null))
             }
           }
         }
@@ -257,16 +309,12 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (section === 'senderView' && key === 'edit') {
-    const isEditMode: boolean = yield select(
-      (s: {
-        envelopeSelection?: { savedSenderAddressEditMode?: boolean }
-      }) => s.envelopeSelection?.savedSenderAddressEditMode ?? false,
-    )
+    const isEditMode: boolean = yield select(selectSenderViewEditMode)
 
     if (!isEditMode) {
       // Входим в режим редактирования сохранённого адреса отправителя
-      yield put(setSenderSavedAddressEditMode(true))
-      yield put(setRecipientSavedAddressEditMode(false))
+      yield put(setSenderViewEditMode(true))
+      yield put(setRecipientViewEditMode(false))
       yield put(
         updateToolbarIcon({
           section: 'senderView',
@@ -284,7 +332,7 @@ function* handleEnvelopeToolbarAction(
       )
     } else {
       // Выходим из режима редактирования
-      yield put(setSenderSavedAddressEditMode(false))
+      yield put(setSenderViewEditMode(false))
       yield put(
         updateToolbarIcon({
           section: 'senderView',
@@ -298,16 +346,12 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (section === 'recipientView' && key === 'edit') {
-    const isEditMode: boolean = yield select(
-      (s: {
-        envelopeSelection?: { savedRecipientAddressEditMode?: boolean }
-      }) => s.envelopeSelection?.savedRecipientAddressEditMode ?? false,
-    )
+    const isEditMode: boolean = yield select(selectRecipientViewEditMode)
 
     if (!isEditMode) {
       // Входим в режим редактирования сохранённого адреса получателя
-      yield put(setRecipientSavedAddressEditMode(true))
-      yield put(setSenderSavedAddressEditMode(false))
+      yield put(setRecipientViewEditMode(true))
+      yield put(setSenderViewEditMode(false))
       yield put(
         updateToolbarIcon({
           section: 'recipientView',
@@ -325,7 +369,7 @@ function* handleEnvelopeToolbarAction(
       )
     } else {
       // Выходим из режима редактирования
-      yield put(setRecipientSavedAddressEditMode(false))
+      yield put(setRecipientViewEditMode(false))
       yield put(
         updateToolbarIcon({
           section: 'recipientView',
@@ -352,11 +396,11 @@ function* handleEnvelopeToolbarAction(
 
   if (key === 'close') {
     if (section === 'sender') {
-      yield put(setSenderTemplateId(null))
+      yield put(setSenderViewId(null))
       yield put(clearSender())
       yield put(setSenderSource('form'))
     } else {
-      yield put(setRecipientTemplateId(null))
+      yield put(setRecipientViewId(null))
       yield put(clearRecipient())
       yield put(setRecipientSource('form'))
     }
@@ -367,8 +411,7 @@ function* handleEnvelopeToolbarAction(
       yield put(setAddressFormView({ show: true, role: 'sender' }))
       yield put(setSenderView('addressFormSenderView'))
       const senderDraft: Record<string, string> | null = yield select(
-        (s: { envelopeSelection?: { senderDraft?: Record<string, string> | null } }) =>
-          s.envelopeSelection?.senderDraft ?? null,
+        selectSenderDraft,
       )
       if (senderDraft != null && Object.keys(senderDraft).length > 0) {
         const isComplete = Object.values(senderDraft).every(
@@ -376,16 +419,16 @@ function* handleEnvelopeToolbarAction(
         )
         yield put(
           restoreSender({
-            data: senderDraft as import('@envelope/domain/types').SenderState['data'],
-            isComplete,
+            addressFormData: senderDraft as import('@envelope/domain/types').SenderState['addressFormData'],
+            addressFormIsComplete: isComplete,
             enabled: true,
-            applied: false,
+            applied: [],
           }),
         )
-        yield put(setSenderTemplateId(null))
+        yield put(setSenderViewId(null))
         yield put(clearSenderDraft())
       } else {
-        yield put(setSenderTemplateId(null))
+        yield put(setSenderViewId(null))
         yield put(clearSender())
       }
     } else if (
@@ -406,22 +449,22 @@ function* handleEnvelopeToolbarAction(
         )
         yield put(
           restoreRecipient({
-            data: recipientDraft as import('@envelope/domain/types').RecipientState['data'],
-            isComplete,
+            addressFormData: recipientDraft as import('@envelope/domain/types').RecipientState['addressFormData'],
+            addressFormIsComplete: isComplete,
             enabled: false,
-            applied: false,
+            applied: [],
           }),
         )
-        yield put(setRecipientTemplateId(null))
+        yield put(setRecipientViewId(null))
         yield put(clearRecipientDraft())
       } else {
-        yield put(setRecipientTemplateId(null))
+        yield put(setRecipientViewId(null))
         yield put(clearRecipient())
       }
       // Переключение Recipients/Recipient только по тумблеру: при открытии формы из
       // RecipientsView сохраняем режим и снова показываем форму.
       if (wasInRecipientsMode) {
-        yield put(setRecipientEnabled(true))
+        yield put(setRecipientMode('recipients'))
         yield put(setRecipientMode('recipients'))
         yield put(setRecipientView('addressFormRecipientView'))
       }
@@ -441,7 +484,7 @@ function* handleEnvelopeToolbarAction(
       }
     }
     if (section === 'recipients') {
-      const ids: string[] = yield select(selectSelectedRecipientIds)
+      const ids: string[] = yield select(selectRecipientsPendingIds)
       const list: RecipientState[] = []
       for (const id of ids) {
         const record: { id: string; address?: Record<string, string> } | null =
@@ -463,6 +506,11 @@ function* handleEnvelopeToolbarAction(
       }
       yield put(setRecipientMode('recipients'))
       yield put(setRecipientsList(list))
+      yield put(
+        setRecipientsViewIds(
+          list.map((r) => r.recipientViewId).filter((id): id is string => id != null),
+        ),
+      )
     }
   }
 
@@ -495,12 +543,14 @@ function* handleEnvelopeToolbarAction(
 
   if (key === 'listDelete' && section === 'recipients') {
     yield put(setRecipientsList([]))
-    yield put(clearRecipientSelection())
+    yield put(setRecipientsViewIds([]))
+    yield put(clearRecipientsPending())
   }
 
   if (key === 'listClose' && section === 'recipientsView') {
     yield put(setRecipientsList([]))
-    yield put(clearRecipientSelection())
+    yield put(setRecipientsViewIds([]))
+    yield put(clearRecipientsPending())
   }
 
   if (
@@ -515,13 +565,13 @@ function* handleEnvelopeToolbarAction(
       const recipient: RecipientState = yield select(selectRecipientState)
       yield put(setRecipientDraft({ ...recipient.addressFormData }))
     }
-    yield put(setAddressFormView({ show: false, role: null }))
+    yield put(setAddressFormView({ show: false, role }))
     if (role === 'sender') {
       yield put(setSenderView('senderView'))
     } else {
       const recipient: RecipientState = yield select(selectRecipientState)
       yield put(
-        setRecipientView(recipient.enabled ? 'recipientsView' : 'recipientView'),
+        setRecipientView(recipient.mode === 'recipients' ? 'recipientsView' : 'recipientView'),
       )
     }
   }
@@ -590,18 +640,21 @@ function* handleAddressSaveSuccess(
       s.envelopeSelection?.addressFormViewRole ?? null,
   )
   if (formViewRole !== role) return
-  yield put(setAddressFormView({ show: false, role: null }))
+  yield put(setAddressFormView({ show: false, role }))
   if (role === 'sender') {
+    yield put(setPreviousSenderViewId(null))
     yield put(setSenderView('senderView'))
   } else {
+    yield put(setPreviousRecipientViewId(null))
     const recipient: RecipientState = yield select(selectRecipientState)
     yield put(
-      setRecipientView(recipient.enabled ? 'recipientsView' : 'recipientView'),
+      setRecipientView(recipient.mode === 'recipients' ? 'recipientsView' : 'recipientView'),
     )
   }
 }
 
 export function* envelopeToolbarSaga() {
   yield takeLatest(toolbarAction.type, handleEnvelopeToolbarAction)
+  yield takeEvery(setAddressFormView.type, handleSetAddressFormViewSync)
   yield takeEvery(addressSaveSuccess.type, handleAddressSaveSuccess)
 }

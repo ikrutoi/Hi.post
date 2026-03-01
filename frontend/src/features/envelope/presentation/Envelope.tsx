@@ -6,7 +6,8 @@ import { i18n } from '@i18n/i18n'
 import { EnvelopeAddress } from '../addressForm/presentation'
 import { RecipientListPanel } from '../addressBook/presentation/RecipientListPanel'
 import { SenderListPanel } from '../addressBook/presentation/SenderListPanel'
-import { useEnvelopeFacade } from '../application/facades/useEnvelopeFacade'
+import { useRecipientFacade } from '../recipient/application/facades'
+import { useSenderFacade } from '../sender/application/facades'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -15,23 +16,19 @@ type EnvelopeProps = {
 
 export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const lang = getSafeLang(i18n.language)
-  const {
-    recipientListPanelOpen: showRecipientList,
-    senderListPanelOpen,
-    listSelectedIds,
-    senderSelectedId,
-    selectRecipientFromList,
-    selectSenderFromList,
-  } = useEnvelopeFacade()
+  const recipientFacade = useRecipientFacade()
+  const senderFacade = useSenderFacade()
+
+  console.log('recipientFacade', recipientFacade.state)
 
   return (
     <div className={styles.envelope}>
       <div className={styles.envelopeLeftSlot}>
-        {showRecipientList ? (
+        {recipientFacade.listPanelOpen ? (
           <div className={styles.recipientListPanelWrap}>
             <RecipientListPanel
-              onSelect={selectRecipientFromList}
-              selectedIds={listSelectedIds}
+              onSelect={recipientFacade.selectFromList}
+              selectedIds={recipientFacade.listSelectedIds}
             />
           </div>
         ) : (
@@ -49,11 +46,11 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         )}
       </div>
       <div className={styles.envelopeRightSlot}>
-        {senderListPanelOpen ? (
+        {senderFacade.listPanelOpen ? (
           <div className={styles.senderListPanelWrap}>
             <SenderListPanel
-              onSelect={selectSenderFromList}
-              selectedId={senderSelectedId}
+              onSelect={senderFacade.selectFromList}
+              selectedId={senderFacade.selectedId}
             />
           </div>
         ) : (

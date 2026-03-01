@@ -14,12 +14,15 @@ export type RecipientView =
   | 'recipientView'
   | 'recipientsView'
 
+export type RecipientMode = 'recipient' | 'recipients'
+
 export type RecipientState = {
   currentView: RecipientView
   addressFormData: AddressFields
   addressFormIsComplete: boolean
   recipientViewId: string | null
+  previousRecipientViewId: string | null
   recipientsViewIds: string[]
   applied: string[]
-  enabled: boolean
+  mode: RecipientMode
 }

@@ -8,6 +8,7 @@ export const initialSender: SenderState = {
   addressFormData: { ...initialSection.data },
   addressFormIsComplete: false,
   senderViewId: null,
+  previousSenderViewId: null,
   applied: [],
   enabled: true,
 }
@@ -57,6 +58,10 @@ const senderSlice = createSlice({
       state.senderViewId = action.payload
     },
 
+    setPreviousSenderViewId: (state, action: PayloadAction<string | null>) => {
+      state.previousSenderViewId = action.payload
+    },
+
     saveAddressRequested: () => {},
   },
 })
@@ -70,6 +75,7 @@ export const {
   setSenderApplied,
   setSenderView,
   setSenderViewId,
+  setPreviousSenderViewId,
   saveAddressRequested,
 } = senderSlice.actions
 export default senderSlice.reducer

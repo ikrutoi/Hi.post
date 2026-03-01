@@ -6,23 +6,28 @@ import {
   selectRecipientCompletedFields,
   selectRecipientEnabled,
   selectRecipientState,
+  selectRecipientView,
+  selectRecipientViewId,
+  selectRecipientDraft,
+  selectRecipientListPendingIds,
+  selectRecipientListPanelOpen,
+  selectRecipientsDisplayList,
 } from '../../infrastructure/selectors'
 import {
   clearRecipient,
   restoreRecipient,
   setEnabled,
   setRecipientView,
+  setRecipientViewId,
   updateRecipientField,
-} from '../../infrastructure/state'
-import {
-  selectRecipientTemplateId,
-  selectRecipientDraft,
-} from '@envelope/infrastructure/selectors'
-import {
   setRecipientMode,
   setRecipientDraft,
-} from '@envelope/infrastructure/state'
+  closeRecipientListPanel as closeRecipientListPanelAction,
+  toggleRecipientSelection,
+  removeRecipientAt,
+} from '../../infrastructure/state'
 import type { AddressField } from '@shared/config/constants'
+import { ADDRESS_FIELD_ORDER } from '@shared/config/constants'
 
 function hasAddressData(data: Record<string, string> | null | undefined): boolean {
   if (data == null) return false
@@ -37,8 +42,42 @@ export const useRecipientFacade = () => {
   const completedFields = useAppSelector(selectRecipientCompletedFields)
   const isComplete = useAppSelector(selectIsRecipientComplete)
   const isEnabled = useAppSelector(selectRecipientEnabled)
-  const recipientTemplateId = useAppSelector(selectRecipientTemplateId)
+  const recipientTemplateId = useAppSelector(selectRecipientViewId)
   const recipientDraft = useAppSelector(selectRecipientDraft)
+  const recipientView = useAppSelector(selectRecipientView)
+  const listSelectedIds = useAppSelector(selectRecipientListPendingIds)
+  const listPanelOpen = useAppSelector(selectRecipientListPanelOpen)
+  const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
+
+  const removeFromList = (id: string) => {
+    if (id.startsWith('recipient-')) {
+      const index = parseInt(id.replace('recipient-', ''), 10)
+      if (!Number.isNaN(index)) dispatch(removeRecipientAt(index))
+    } else {
+      dispatch(toggleRecipientSelection(id))
+    }
+  }
+
+  const addressEquals = (a: Record<string, string>, b: Record<string, string>) =>
+    ADDRESS_FIELD_ORDER.every((f) => (a[f] ?? '').trim() === (b[f] ?? '').trim())
+
+  const selectFromList = (entry: { id: string; address: Record<string, string> }) => {
+    if (isEnabled) {
+      dispatch(toggleRecipientSelection(entry.id))
+    } else {
+      if (recipientView === 'addressFormRecipientView') {
+        if (hasAddressData(state.addressFormData) && !addressEquals(state.addressFormData, entry.address)) {
+          dispatch(setRecipientDraft({ ...state.addressFormData }))
+        }
+      }
+      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(([field, value]) =>
+        dispatch(updateRecipientField({ field, value })),
+      )
+      dispatch(setRecipientViewId(entry.id))
+      dispatch(setRecipientView('recipientView'))
+      dispatch(closeRecipientListPanelAction())
+    }
+  }
 
   const update = (field: AddressField, value: string) =>
     dispatch(updateRecipientField({ field, value }))
@@ -67,7 +106,7 @@ export const useRecipientFacade = () => {
         restoreRecipient({
           addressFormData: recipientDraft as import('@envelope/domain/types').RecipientState['addressFormData'],
           addressFormIsComplete: draftComplete,
-          enabled: false,
+          mode: 'recipient',
           applied: [],
           currentView: 'addressFormRecipientView',
         }),
@@ -83,6 +122,12 @@ export const useRecipientFacade = () => {
     isComplete,
     isEnabled,
     layout: recipientLayout,
+
+    listPanelOpen,
+    listSelectedIds,
+    selectFromList,
+    recipientsDisplayList,
+    removeFromList,
 
     update,
     clear,

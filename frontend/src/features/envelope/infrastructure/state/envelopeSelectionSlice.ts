@@ -1,19 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { RecipientMode } from '../../domain/types'
 
 export type AddressDraft = Record<string, string> | null
 
 export interface EnvelopeSelectionState {
-  selectedRecipientIds: string[]
+  recipientsPendingIds: string[]
   recipientListPanelOpen: boolean
   senderListPanelOpen: boolean
-  recipientMode: RecipientMode
-  recipientTemplateId: string | null
-  senderTemplateId: string | null
-  previousRecipientTemplateId: string | null
-  previousSenderTemplateId: string | null
-  savedSenderAddressEditMode: boolean
-  savedRecipientAddressEditMode: boolean
+  senderViewEditMode: boolean
+  recipientViewEditMode: boolean
   senderDraft: AddressDraft
   recipientDraft: AddressDraft
   showAddressFormView: boolean
@@ -21,16 +15,11 @@ export interface EnvelopeSelectionState {
 }
 
 const initialState: EnvelopeSelectionState = {
-  selectedRecipientIds: [],
+  recipientsPendingIds: [],
   recipientListPanelOpen: false,
   senderListPanelOpen: false,
-  recipientMode: 'recipient',
-  recipientTemplateId: null,
-  senderTemplateId: null,
-  previousRecipientTemplateId: null,
-  previousSenderTemplateId: null,
-  savedSenderAddressEditMode: false,
-  savedRecipientAddressEditMode: false,
+  senderViewEditMode: false,
+  recipientViewEditMode: false,
   senderDraft: null,
   recipientDraft: null,
   showAddressFormView: false,
@@ -41,26 +30,22 @@ export const envelopeSelectionSlice = createSlice({
   name: 'envelopeSelection',
   initialState,
   reducers: {
-    setRecipientMode(state, action: PayloadAction<RecipientMode>) {
-      state.recipientMode = action.payload
-    },
-
     toggleRecipientSelection(state, action: PayloadAction<string>) {
       const id = action.payload
-      const idx = state.selectedRecipientIds.indexOf(id)
+      const idx = state.recipientsPendingIds.indexOf(id)
       if (idx === -1) {
-        state.selectedRecipientIds.push(id)
+        state.recipientsPendingIds.push(id)
       } else {
-        state.selectedRecipientIds.splice(idx, 1)
+        state.recipientsPendingIds.splice(idx, 1)
       }
     },
 
-    setSelectedRecipientIds(state, action: PayloadAction<string[]>) {
-      state.selectedRecipientIds = action.payload
+    setRecipientsPendingIds(state, action: PayloadAction<string[]>) {
+      state.recipientsPendingIds = action.payload
     },
 
-    clearRecipientSelection(state) {
-      state.selectedRecipientIds = []
+    clearRecipientsPending(state) {
+      state.recipientsPendingIds = []
     },
 
     toggleRecipientListPanel(state) {
@@ -79,20 +64,12 @@ export const envelopeSelectionSlice = createSlice({
       state.senderListPanelOpen = false
     },
 
-    setRecipientTemplateId(state, action: PayloadAction<string | null>) {
-      state.recipientTemplateId = action.payload
+    setSenderViewEditMode(state, action: PayloadAction<boolean>) {
+      state.senderViewEditMode = action.payload
     },
 
-    setSenderTemplateId(state, action: PayloadAction<string | null>) {
-      state.senderTemplateId = action.payload
-    },
-
-    setSenderSavedAddressEditMode(state, action: PayloadAction<boolean>) {
-      state.savedSenderAddressEditMode = action.payload
-    },
-
-    setRecipientSavedAddressEditMode(state, action: PayloadAction<boolean>) {
-      state.savedRecipientAddressEditMode = action.payload
+    setRecipientViewEditMode(state, action: PayloadAction<boolean>) {
+      state.recipientViewEditMode = action.payload
     },
 
     setSenderDraft(state, action: PayloadAction<AddressDraft>) {
@@ -118,55 +95,24 @@ export const envelopeSelectionSlice = createSlice({
         role: 'sender' | 'recipient' | null
       }>,
     ) {
-      const { show, role } = action.payload
-      if (show && role === 'recipient') {
-        state.previousRecipientTemplateId = state.recipientTemplateId
-      }
-      if (show && role === 'sender') {
-        state.previousSenderTemplateId = state.senderTemplateId
-      }
-      if (!show) {
-        const closingRole = state.addressFormViewRole
-        if (
-          closingRole === 'recipient' &&
-          state.previousRecipientTemplateId != null
-        ) {
-          state.recipientTemplateId = state.previousRecipientTemplateId
-          state.previousRecipientTemplateId = null
-        }
-        if (
-          closingRole === 'sender' &&
-          state.previousSenderTemplateId != null
-        ) {
-          state.senderTemplateId = state.previousSenderTemplateId
-          state.previousSenderTemplateId = null
-        }
-      }
       state.showAddressFormView = action.payload.show
       state.addressFormViewRole = action.payload.role
     },
 
-    addressSaveSuccess(state, action: PayloadAction<'sender' | 'recipient'>) {
-      if (action.payload === 'recipient')
-        state.previousRecipientTemplateId = null
-      else state.previousSenderTemplateId = null
-    },
+    addressSaveSuccess() {},
   },
 })
 
 export const {
-  setRecipientMode,
   toggleRecipientSelection,
-  setSelectedRecipientIds,
-  clearRecipientSelection,
+  setRecipientsPendingIds,
+  clearRecipientsPending,
   toggleRecipientListPanel,
   closeRecipientListPanel,
   toggleSenderListPanel,
   closeSenderListPanel,
-  setRecipientTemplateId,
-  setSenderTemplateId,
-  setSenderSavedAddressEditMode,
-  setRecipientSavedAddressEditMode,
+  setSenderViewEditMode,
+  setRecipientViewEditMode,
   setSenderDraft,
   setRecipientDraft,
   clearSenderDraft,
