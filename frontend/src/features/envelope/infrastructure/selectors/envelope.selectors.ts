@@ -14,6 +14,10 @@ const selectEnvelopeSelectionState = (state: {
     recipientMode: EnvelopeSessionRecord['recipientMode']
     recipientTemplateId: string | null
     senderTemplateId: string | null
+    recipientDraft?: Record<string, string> | null
+    senderDraft?: Record<string, string> | null
+    showAddressFormView?: boolean
+    addressFormViewRole?: 'sender' | 'recipient' | null
   }
 }) => state.envelopeSelection
 
@@ -59,6 +63,21 @@ export const selectSenderTemplateId = createSelector(
   (s) => s.senderTemplateId ?? null,
 )
 
+export const selectShowAddressFormView = createSelector(
+  [selectEnvelopeSelectionState],
+  (s) => s.showAddressFormView ?? false,
+)
+
+export const selectAddressFormViewRole = createSelector(
+  [selectEnvelopeSelectionState],
+  (s) => s.addressFormViewRole ?? null,
+)
+
+export const selectRecipientDraft = createSelector(
+  [selectEnvelopeSelectionState],
+  (s) => s.recipientDraft ?? null,
+)
+
 export const selectRecipientsList = selectRecipientsListState
 
 export const selectRecipientEntries = selectRecipientEntriesState
@@ -80,14 +99,24 @@ export const selectListSelectedIds = createSelector(
   ],
   (selectedRecipientIds, recipient, recipientEntries, recipientEnabled) => {
     if (recipientEnabled) return selectedRecipientIds
-    const singleId = getMatchingEntryId(recipient.data, recipientEntries)
+    const addressForMatch =
+      recipient.currentView === 'addressFormRecipientView'
+        ? recipient.addressFormData
+        : recipient.recipientViewId
+          ? (recipientEntries.find((e) => e.id === recipient.recipientViewId)
+              ?.address as import('@shared/config/constants').AddressFields) ?? {}
+          : {}
+    const singleId = getMatchingEntryId(addressForMatch, recipientEntries)
     return singleId ? [singleId] : []
   },
 )
 
 export const selectSenderSelectedId = createSelector(
   [selectSenderState, selectSenderEntriesState],
-  (sender, senderEntries) => getMatchingEntryId(sender.data, senderEntries),
+  (sender, senderEntries) =>
+    sender.currentView === 'senderView' && sender.senderViewId
+      ? sender.senderViewId
+      : getMatchingEntryId(sender.addressFormData, senderEntries),
 )
 
 export const selectRecipientsDisplayList = createSelector(
@@ -102,7 +131,7 @@ export const selectRecipientsDisplayList = createSelector(
       return envelopeRecipients.map((r, i) => ({
         id: `recipient-${i}`,
         role: 'recipient' as const,
-        address: { ...r.data },
+        address: { ...r.addressFormData },
         createdAt: new Date().toISOString(),
       }))
     }
@@ -118,9 +147,11 @@ export const selectEnvelopeSessionRecord = createSelector(
     selectRecipientsListState,
   ],
   (sender, recipient, recipientMode, recipients): EnvelopeSessionRecord => {
+    const senderApplied = (sender.applied?.length ?? 0) > 0
+    const recipientApplied = (recipient.applied?.length ?? 0) > 0
     const isComplete = sender.enabled
-      ? sender.applied && recipient.applied
-      : recipient.applied
+      ? senderApplied && recipientApplied
+      : recipientApplied
 
     return {
       sender,

@@ -2,9 +2,9 @@
 
 .label {
   display: block;
-  margin-top: 0.1rem;
-  font-size: 0.65rem;
-  font-weight: 600;
+  // margin-top: 0.05rem;
+  font-size: 0.55rem;
+  font-weight: 400;
   text-transform: uppercase;
   color: $color-inactive;
 }
@@ -23,12 +23,13 @@
 
 .labelInput {
   width: 100%;
-  padding: 0 0.3rem;
+  padding: 0 0.25rem;
   box-sizing: border-box;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 4100;
   color: $color-font-deepBlack;
-  background-color: $color-disabled;
+  // background-color: $color-disabled;
+  // background-color: #fff;
   border: 1px solid transparent;
   height: 1.5rem;
   border-radius: 4px;
@@ -38,13 +39,15 @@
 
 .labelInputSender {
   text-align: left;
-  background-color: #f0faf7;
+  // background-color: #f0faf7;
+  // background-color: #fff;
   border-color: #c5e5db;
 }
 
 .labelInputRecipient {
   text-align: right;
-  background-color: #faf7fc;
+  // background-color: #faf7fc;
+  // background-color: #fff;
   border-color: #e0d0eb;
 }
 

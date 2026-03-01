@@ -53,6 +53,7 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
             ref={ref}
             type="text"
             value={value}
+            aria-label={label}
             onChange={handleChange}
             onKeyDown={onKeyDown}
           />

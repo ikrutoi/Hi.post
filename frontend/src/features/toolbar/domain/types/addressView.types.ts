@@ -7,6 +7,8 @@ export const VIEW_KEYS = [
   'delete',
   'favorite',
   'listClose',
+  'listAdd',
+  'close',
 ] as const satisfies readonly IconKey[]
 
 export type AddressViewKey = (typeof VIEW_KEYS)[number]
@@ -63,21 +65,46 @@ export const initialSenderViewToolbarState: AddressViewToolbarState = {
   config: [...SENDER_VIEW_TOOLBAR],
 }
 
-export const ADDRESS_FORM_VIEW_TOOLBAR: ToolbarConfig = [
+export const ADDRESS_FORM_SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   {
-    group: 'addressFormView',
-    icons: [{ key: 'listClose', state: 'enabled' }],
+    group: 'addressFormSenderView',
+    icons: [
+      { key: 'listAdd', state: 'enabled' },
+      // { key: 'close', state: 'enabled' },
+    ],
     status: 'enabled',
   },
 ]
 
-export const initialAddressFormViewToolbarState: AddressViewToolbarState = {
-  ...Object.fromEntries(flattenIcons(ADDRESS_FORM_VIEW_TOOLBAR)),
-  config: [...ADDRESS_FORM_VIEW_TOOLBAR],
-}
+export const ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'addressFormRecipientView',
+    icons: [
+      { key: 'listAdd', state: 'enabled' },
+      // { key: 'close', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
+export const initialAddressFormSenderViewToolbarState: AddressViewToolbarState =
+  {
+    ...Object.fromEntries(flattenIcons(ADDRESS_FORM_SENDER_VIEW_TOOLBAR)),
+    config: [...ADDRESS_FORM_SENDER_VIEW_TOOLBAR],
+  }
+
+export const initialAddressFormRecipientViewToolbarState: AddressViewToolbarState =
+  {
+    ...Object.fromEntries(flattenIcons(ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR)),
+    config: [...ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR],
+  }
 
 export interface AddressViewSectionConfig extends BaseSectionConfig<
   AddressViewToolbarState,
   AddressViewKey,
-  'senderView' | 'recipientView' | 'recipientsView' | 'addressFormView'
+  | 'senderView'
+  | 'recipientView'
+  | 'recipientsView'
+  | 'addressFormSenderView'
+  | 'addressFormRecipientView'
 > {}

@@ -1,10 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RecipientState } from '@envelope/domain/types'
 
-/**
- * Список получателей в мульти-режиме.
- * Сохраняется в сессию (IndexedDB) и восстанавливается при гидрации.
- */
 const initialState: RecipientState[] = []
 
 export const envelopeRecipientsSlice = createSlice({

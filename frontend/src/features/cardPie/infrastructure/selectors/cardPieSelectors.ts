@@ -50,7 +50,7 @@ export const selectActiveCardFullData = createSelector(
     data: {
       cardphoto,
       cardtext,
-      recipient: envelope.isComplete ? envelope.recipient.data : null,
+      recipient: envelope.isComplete ? envelope.recipient.addressFormData : null,
       aroma,
       date,
     },

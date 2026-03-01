@@ -1,0 +1,96 @@
+@use '@styles/config/colors' as *;
+
+.addressFormViewContainer {
+  position: relative;
+  width: 100%;
+  height: min-content;
+  box-sizing: border-box;
+}
+
+.addressFormViewToolbar {
+  position: absolute;
+  top: -1.6rem;
+  left: 0;
+  width: 100%;
+  height: min-content;
+  display: flex;
+
+  &Sender {
+    padding-left: 1rem;
+    justify-content: flex-start;
+  }
+
+  &Recipient {
+    padding-right: 1rem;
+    justify-content: flex-end;
+  }
+}
+
+.addressFormView {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  width: 100%;
+  min-height: 0;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+.addressFormSenderView {
+  background-color: $color-envelope-sender-input;
+  border: 1px solid $color-envelope-sender-border;
+}
+
+.addressFormRecipientView {
+  background-color: $color-envelope-recipient-input;
+  border: 1px solid $color-envelope-recipient-border;
+}
+
+.labelGroup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 0.5rem;
+  margin-top: 0.05rem;
+}
+
+.closeBtn {
+  position: absolute;
+  top: -0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  padding: 0;
+  border: 1px solid $color-envelope-sender-border;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  color: $color-font-disabled;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+
+  &Recipient {
+    left: 1rem;
+    border-color: $color-envelope-recipient-border;
+  }
+
+  &Sender {
+    right: 1rem;
+    border-color: $color-envelope-sender-border;
+  }
+
+  svg {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+
+  &:hover {
+    color: $color-font-enabled-light;
+    // background-color: $color-disabled;
+  }
+}

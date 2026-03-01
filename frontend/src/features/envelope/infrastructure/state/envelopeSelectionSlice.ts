@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { RecipientMode } from '../../domain/types'
 
-/** Черновик адреса (несохранённый ввод) для возврата по addressPlus */
 export type AddressDraft = Record<string, string> | null
 
 export interface EnvelopeSelectionState {
@@ -11,12 +10,14 @@ export interface EnvelopeSelectionState {
   recipientMode: RecipientMode
   recipientTemplateId: string | null
   senderTemplateId: string | null
+  previousRecipientTemplateId: string | null
+  previousSenderTemplateId: string | null
   savedSenderAddressEditMode: boolean
   savedRecipientAddressEditMode: boolean
-  /** Черновик отправителя: сохраняется при выходе в другой контакт */
   senderDraft: AddressDraft
-  /** Черновик получателя */
   recipientDraft: AddressDraft
+  showAddressFormView: boolean
+  addressFormViewRole: 'sender' | 'recipient' | null
 }
 
 const initialState: EnvelopeSelectionState = {
@@ -26,10 +27,14 @@ const initialState: EnvelopeSelectionState = {
   recipientMode: 'recipient',
   recipientTemplateId: null,
   senderTemplateId: null,
+  previousRecipientTemplateId: null,
+  previousSenderTemplateId: null,
   savedSenderAddressEditMode: false,
   savedRecipientAddressEditMode: false,
   senderDraft: null,
   recipientDraft: null,
+  showAddressFormView: false,
+  addressFormViewRole: null,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -105,6 +110,47 @@ export const envelopeSelectionSlice = createSlice({
     clearRecipientDraft(state) {
       state.recipientDraft = null
     },
+
+    setAddressFormView(
+      state,
+      action: PayloadAction<{
+        show: boolean
+        role: 'sender' | 'recipient' | null
+      }>,
+    ) {
+      const { show, role } = action.payload
+      if (show && role === 'recipient') {
+        state.previousRecipientTemplateId = state.recipientTemplateId
+      }
+      if (show && role === 'sender') {
+        state.previousSenderTemplateId = state.senderTemplateId
+      }
+      if (!show) {
+        const closingRole = state.addressFormViewRole
+        if (
+          closingRole === 'recipient' &&
+          state.previousRecipientTemplateId != null
+        ) {
+          state.recipientTemplateId = state.previousRecipientTemplateId
+          state.previousRecipientTemplateId = null
+        }
+        if (
+          closingRole === 'sender' &&
+          state.previousSenderTemplateId != null
+        ) {
+          state.senderTemplateId = state.previousSenderTemplateId
+          state.previousSenderTemplateId = null
+        }
+      }
+      state.showAddressFormView = action.payload.show
+      state.addressFormViewRole = action.payload.role
+    },
+
+    addressSaveSuccess(state, action: PayloadAction<'sender' | 'recipient'>) {
+      if (action.payload === 'recipient')
+        state.previousRecipientTemplateId = null
+      else state.previousSenderTemplateId = null
+    },
   },
 })
 
@@ -125,6 +171,8 @@ export const {
   setRecipientDraft,
   clearSenderDraft,
   clearRecipientDraft,
+  setAddressFormView,
+  addressSaveSuccess,
 } = envelopeSelectionSlice.actions
 
 export default envelopeSelectionSlice.reducer

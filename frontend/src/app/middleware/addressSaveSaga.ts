@@ -9,6 +9,7 @@ import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/in
 import {
   setRecipientTemplateId,
   setSenderTemplateId,
+  addressSaveSuccess,
 } from '@envelope/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
@@ -44,8 +45,8 @@ function* handleAddressSave(
     const sender: SenderState = yield select(selectSenderState)
     const recipient: RecipientState = yield select(selectRecipientState)
 
-    const addressState = role === 'sender' ? sender : recipient
-    const addressData = addressState.data
+    const addressData =
+      role === 'sender' ? sender.addressFormData : recipient.addressFormData
 
     if (!isAddressComplete(addressData)) {
       console.warn('Address is not complete, cannot save')
@@ -75,6 +76,7 @@ function* handleAddressSave(
       } else {
         yield put(setSenderTemplateId(String(result.templateId)))
       }
+      yield put(addressSaveSuccess(role))
       yield call(processEnvelopeVisuals)
     } else {
       console.error('Failed to save address:', result.error)

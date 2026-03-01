@@ -9,17 +9,23 @@ import {
 } from '../../infrastructure/selectors'
 import {
   clearRecipient,
+  restoreRecipient,
   setEnabled,
+  setRecipientView,
   updateRecipientField,
 } from '../../infrastructure/state'
-import { selectRecipientTemplateId } from '@envelope/infrastructure/selectors'
+import {
+  selectRecipientTemplateId,
+  selectRecipientDraft,
+} from '@envelope/infrastructure/selectors'
 import {
   setRecipientMode,
   setRecipientDraft,
 } from '@envelope/infrastructure/state'
 import type { AddressField } from '@shared/config/constants'
 
-function hasAddressData(data: Record<string, string>): boolean {
+function hasAddressData(data: Record<string, string> | null | undefined): boolean {
+  if (data == null) return false
   return Object.values(data).some((v) => (v ?? '').trim() !== '')
 }
 
@@ -32,6 +38,7 @@ export const useRecipientFacade = () => {
   const isComplete = useAppSelector(selectIsRecipientComplete)
   const isEnabled = useAppSelector(selectRecipientEnabled)
   const recipientTemplateId = useAppSelector(selectRecipientTemplateId)
+  const recipientDraft = useAppSelector(selectRecipientDraft)
 
   const update = (field: AddressField, value: string) =>
     dispatch(updateRecipientField({ field, value }))
@@ -39,18 +46,34 @@ export const useRecipientFacade = () => {
   const clear = () => dispatch(clearRecipient())
   const toggleEnabled = () => {
     const nextEnabled = !isEnabled
-    // Сохраняем в черновик только данные из режима «создание/редактирование» (без шаблона).
-    // Если на экране сохранённый шаблон (recipientTemplateId != null), не перезаписываем черновик —
-    // иначе потеряем ранее введённые данные, которые уже лежат в draft.
     if (
       nextEnabled &&
-      hasAddressData(state.data) &&
+      hasAddressData(state.addressFormData) &&
       recipientTemplateId == null
     ) {
-      dispatch(setRecipientDraft({ ...state.data }))
+      dispatch(setRecipientDraft({ ...state.addressFormData }))
     }
     dispatch(setEnabled(nextEnabled))
     dispatch(setRecipientMode(nextEnabled ? 'recipients' : 'recipient'))
+    if (
+      !nextEnabled &&
+      recipientDraft != null &&
+      Object.keys(recipientDraft).length > 0
+    ) {
+      const draftComplete = Object.values(recipientDraft).every(
+        (v) => (v ?? '').trim() !== '',
+      )
+      dispatch(
+        restoreRecipient({
+          addressFormData: recipientDraft as import('@envelope/domain/types').RecipientState['addressFormData'],
+          addressFormIsComplete: draftComplete,
+          enabled: false,
+          applied: [],
+          currentView: 'addressFormRecipientView',
+        }),
+      )
+      dispatch(setRecipientView('addressFormRecipientView'))
+    }
   }
 
   return {

@@ -1,15 +1,19 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import clsx from 'clsx'
-import { Label } from './Label/Label'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { SenderView, RecipientView } from './AddressView'
 import { RecipientsView } from './RecipientsView'
-import { useEnvelopeAddress } from '../application/hooks'
+import { AddressFormView } from './AddressFormView'
 import { useEnvelopeFacade } from '../../application/facades'
 import { useSenderFacade } from '../../sender/application/facades'
 import { useRecipientFacade } from '../../recipient/application/facades'
-import { useAppSelector } from '@app/hooks'
+import { useAppSelector, useAppDispatch } from '@app/hooks'
+import { selectSenderView } from '../../sender/infrastructure/selectors'
+import { selectRecipientView } from '../../recipient/infrastructure/selectors'
+import { setAddressFormView } from '../../infrastructure/state'
+import { setSenderView } from '../../sender/infrastructure/state'
+import { setRecipientView } from '../../recipient/infrastructure/state'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import { ToolbarSection } from '@/features/toolbar/domain/types'
@@ -31,13 +35,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   roleLabel,
   lang,
 }) => {
-  const { labelLayout } = useEnvelopeAddress(role, lang)
   const envelopeFacade = useEnvelopeFacade()
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
   const facade = role === 'sender' ? senderFacade : recipientFacade
-  const { layout, update, address: value } = facade
-  const inputsRef = useRef<(HTMLInputElement | null)[]>([])
+  const { update, address: value } = facade
 
   const editingTemplateId =
     role === 'sender'
@@ -87,77 +89,17 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     role === 'recipient' && recipientFacade.isEnabled
   const recipientToggleDisabled = false
 
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    i: number,
-  ) => {
-    if (e.key === 'ArrowDown' || e.key === 'Enter') {
-      e.preventDefault()
-      inputsRef.current[i + 1]?.focus()
-    }
-    if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      inputsRef.current[i - 1]?.focus()
-    }
+  const dispatch = useAppDispatch()
+  const senderView = useAppSelector(selectSenderView)
+  const recipientView = useAppSelector(selectRecipientView)
+
+  const openAddressForm = (r: 'sender' | 'recipient') => {
+    dispatch(setAddressFormView({ show: true, role: r }))
+    if (r === 'sender') dispatch(setSenderView('addressFormSenderView'))
+    else dispatch(setRecipientView('addressFormRecipientView'))
   }
 
   const handleRemoveRecipient = envelopeFacade.removeRecipientFromList
-
-  let fieldIndex = 0
-
-  const renderLabelFields = (
-    layout: typeof labelLayout,
-    currentRole: 'sender' | 'recipient',
-    currentRoleLabel: string,
-  ) =>
-    layout.flatMap((item, i) => {
-      if (Array.isArray(item)) {
-        return (
-          <div
-            key={`group-${i}`}
-            className={clsx(
-              styles.labelGroup,
-              styles[`labelGroup${currentRoleLabel}`],
-            )}
-          >
-            {item.map((subItem, j) => {
-              const idx = fieldIndex++
-              return (
-                <Label
-                  key={`${subItem.key}-${i}-${j}`}
-                  ref={(el: HTMLInputElement | null) => {
-                    if (el) inputsRef.current[idx] = el
-                  }}
-                  role={currentRole}
-                  roleLabel={currentRoleLabel}
-                  label={subItem.label}
-                  field={subItem.key}
-                  value={value[subItem.key]}
-                  onValueChange={(field, val) => update(field, val)}
-                  onKeyDown={(e) => handleKeyDown(e, idx)}
-                />
-              )
-            })}
-          </div>
-        )
-      }
-      const idx = fieldIndex++
-      return (
-        <Label
-          key={`${item.key}-${i}`}
-          ref={(el: HTMLInputElement | null) => {
-            if (el) inputsRef.current[idx] = el
-          }}
-          role={currentRole}
-          roleLabel={currentRoleLabel}
-          label={item.label}
-          field={item.key}
-          value={value[item.key]}
-          onValueChange={(field, val) => update(field, val)}
-          onKeyDown={(e) => handleKeyDown(e, idx)}
-        />
-      )
-    })
 
   return (
     <form
@@ -213,8 +155,32 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
             {isSenderWithSavedTemplate ? (
               <SenderView templateId={editingTemplateId!} address={value} />
+            ) : senderView === 'addressFormSenderView' ? (
+              <AddressFormView
+                role="sender"
+                roleLabel={roleLabel}
+                address={value}
+                onFieldChange={update}
+                lang={lang}
+              />
             ) : (
-              renderLabelFields(labelLayout, 'sender', roleLabel)
+              <div
+                className={clsx(
+                  styles.addressFormPlaceholder,
+                  styles.addressFormPlaceholderSender,
+                )}
+              >
+                <button
+                  type="button"
+                  className={clsx(
+                    styles.addressFormPlaceholderBtn,
+                    styles.addressFormPlaceholderBtnSender,
+                  )}
+                  onClick={() => openAddressForm('sender')}
+                >
+                  Add sender address
+                </button>
+              </div>
             )}
           </fieldset>
         </div>
@@ -283,7 +249,15 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 <span className={styles.addressLegendReplica}>Recipients</span>
               )}
             </div>
-            {recipientFacade.isEnabled ? (
+            {recipientView === 'addressFormRecipientView' ? (
+              <AddressFormView
+                role="recipient"
+                roleLabel="Recipient"
+                address={value}
+                onFieldChange={update}
+                lang={lang}
+              />
+            ) : recipientFacade.isEnabled ? (
               <RecipientsView
                 entries={envelopeFacade.recipientsDisplayList}
                 onRemove={handleRemoveRecipient}
@@ -291,7 +265,23 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             ) : isSingleRecipientWithSavedTemplate ? (
               <RecipientView templateId={editingTemplateId!} address={value} />
             ) : (
-              renderLabelFields(labelLayout, 'recipient', 'Recipient')
+              <div
+                className={clsx(
+                  styles.addressFormPlaceholder,
+                  styles.addressFormPlaceholderRecipient,
+                )}
+              >
+                <button
+                  type="button"
+                  className={clsx(
+                    styles.addressFormPlaceholderBtn,
+                    styles.addressFormPlaceholderBtnRecipient,
+                  )}
+                  onClick={() => openAddressForm('recipient')}
+                >
+                  Add recipient address
+                </button>
+              </div>
             )}
           </fieldset>
         </div>

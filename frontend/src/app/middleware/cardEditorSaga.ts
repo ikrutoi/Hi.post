@@ -170,7 +170,8 @@ function* handleFullCopy(
   if (donor) {
     yield put(applyFinal(donor.cardphoto))
     yield put(setValue(donor.cardtext.content))
-    yield put(updateRecipientField(donor.envelope.recipient))
+    yield put(restoreSender(donor.envelope.sender))
+    yield put(restoreRecipient(donor.envelope.recipient))
     yield put(setAroma(donor.aroma))
     yield put(setDate(donor.date))
 
@@ -191,7 +192,8 @@ function* handleSectionCopy(action: ReturnType<typeof copySectionToProcessed>) {
         yield put(setValue(donor.cardtext.value))
         break
       case 'envelope':
-        yield put(updateRecipientField(donor.envelope.recipient.data))
+        yield put(restoreSender(donor.envelope.sender))
+        yield put(restoreRecipient(donor.envelope.recipient))
         break
       case 'aroma':
         yield put(setAroma(donor.aroma))

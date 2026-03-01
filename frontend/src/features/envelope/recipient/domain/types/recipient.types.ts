@@ -1,5 +1,6 @@
 import { byKey } from '../../../addressForm/domain/types'
 import type { AddressLayout } from '@envelope/addressForm/domain/types'
+import type { AddressFields } from '@shared/config/constants'
 
 export const recipientLayout: AddressLayout = [
   byKey.name,
@@ -7,3 +8,18 @@ export const recipientLayout: AddressLayout = [
   [byKey.zip, byKey.city],
   byKey.country,
 ]
+
+export type RecipientView =
+  | 'addressFormRecipientView'
+  | 'recipientView'
+  | 'recipientsView'
+
+export type RecipientState = {
+  currentView: RecipientView
+  addressFormData: AddressFields
+  addressFormIsComplete: boolean
+  recipientViewId: string | null
+  recipientsViewIds: string[]
+  applied: string[]
+  enabled: boolean
+}

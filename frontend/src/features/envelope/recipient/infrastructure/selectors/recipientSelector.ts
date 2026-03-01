@@ -1,31 +1,47 @@
 import { RootState } from '@app/state'
 import { createSelector } from '@reduxjs/toolkit'
 import type { AddressFields } from '@shared/config/constants'
-import type { RecipientState } from '@envelope/domain/types'
+import type { RecipientState, RecipientView } from '../../domain/types'
 
 export const selectRecipientState = (state: RootState): RecipientState =>
   state.recipient
 
-export const selectRecipientAddress = createSelector(
+export const selectRecipientView = (state: RootState): RecipientView =>
+  state.recipient.currentView ?? 'addressFormRecipientView'
+
+export const selectRecipientAddressFormData = createSelector(
   [selectRecipientState],
-  (recipient): Readonly<AddressFields> => recipient.data
+  (recipient): Readonly<AddressFields> => recipient.addressFormData,
 )
+
+export const selectRecipientAddress = selectRecipientAddressFormData
 
 export const selectRecipientField = (
   state: RootState,
-  field: keyof AddressFields
-): string => state.recipient.data[field]
+  field: keyof AddressFields,
+): string => state.recipient.addressFormData[field]
 
 export const selectRecipientCompletedFields = createSelector(
   [selectRecipientState],
   (recipient): (keyof AddressFields)[] =>
-    (Object.keys(recipient.data) as (keyof AddressFields)[]).filter(
-      (key) => recipient.data[key].trim() !== ''
-    )
+    (Object.keys(recipient.addressFormData) as (keyof AddressFields)[]).filter(
+      (key) => recipient.addressFormData[key].trim() !== '',
+    ),
 )
 
-export const selectIsRecipientComplete = (state: RootState): boolean =>
-  state.recipient.isComplete
+export const selectIsRecipientComplete = createSelector(
+  [selectRecipientState],
+  (recipient) => recipient.addressFormIsComplete,
+)
 
 export const selectRecipientEnabled = (state: RootState): boolean =>
   state.recipient.enabled
+
+export const selectRecipientViewId = (state: RootState): string | null =>
+  state.recipient.recipientViewId
+
+export const selectRecipientsViewIds = (state: RootState): string[] =>
+  state.recipient.recipientsViewIds ?? []
+
+export const selectRecipientApplied = (state: RootState): string[] =>
+  state.recipient.applied ?? []

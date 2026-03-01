@@ -257,8 +257,8 @@
 .toolbarSenderFavorite,
 .toolbarSenderView,
 .toolbarRecipientView,
-.toolbarRecipientsView,
-.toolbarAddressFormView {
+// .toolbarAddressFormView 
+.toolbarRecipientsView {
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
@@ -266,7 +266,9 @@
 }
 
 .toolbarSenderView,
-.toolbarRecipientView {
+.toolbarRecipientView,
+.toolbarAddressFormSenderView,
+.toolbarAddressFormRecipientView {
   .toolbarKey {
     width: 1.5rem;
     height: 1.5rem;

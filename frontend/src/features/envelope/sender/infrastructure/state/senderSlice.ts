@@ -1,15 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { initialSection } from '../../../addressForm/domain/models'
 import type { AddressFields } from '@shared/config/constants'
-import type { SenderState } from '@envelope/domain/types'
+import type { SenderState, SenderView } from '../../domain/types'
 
 export const initialSender: SenderState = {
-  ...initialSection,
+  currentView: 'addressFormSenderView',
+  addressFormData: { ...initialSection.data },
+  addressFormIsComplete: false,
+  senderViewId: null,
+  applied: [],
   enabled: true,
-  applied: false,
 }
 
-function recomputeComplete(data: AddressFields): boolean {
+function isComplete(data: AddressFields): boolean {
   return Object.values(data).every((val) => val.trim() !== '')
 }
 
@@ -21,26 +24,39 @@ const senderSlice = createSlice({
       state,
       action: PayloadAction<{ field: keyof AddressFields; value: string }>,
     ) => {
-      state.data[action.payload.field] = action.payload.value
-      state.isComplete = recomputeComplete(state.data)
-      state.applied = false
+      state.addressFormData[action.payload.field] = action.payload.value
+      state.addressFormIsComplete = isComplete(state.addressFormData)
     },
 
     setEnabled: (state, action: PayloadAction<boolean>) => {
       state.enabled = action.payload
     },
 
-    restoreSender: (state, action: PayloadAction<SenderState>) => {
-      return { ...action.payload, applied: action.payload.applied ?? false }
+    restoreSender: (state, action: PayloadAction<Partial<SenderState>>) => {
+      return {
+        ...initialSender,
+        ...action.payload,
+      }
     },
 
     clearSender: () => initialSender,
 
-    setSenderApplied: (state, action: PayloadAction<boolean>) => {
+    setSenderAppliedIds: (state, action: PayloadAction<string[]>) => {
       state.applied = action.payload
     },
 
-    /** Триггер сохранения адреса в базу шаблонов (при клике addressPlus) */
+    setSenderApplied: (state, action: PayloadAction<boolean>) => {
+      if (!action.payload) state.applied = []
+    },
+
+    setSenderView: (state, action: PayloadAction<SenderView>) => {
+      state.currentView = action.payload
+    },
+
+    setSenderViewId: (state, action: PayloadAction<string | null>) => {
+      state.senderViewId = action.payload
+    },
+
     saveAddressRequested: () => {},
   },
 })
@@ -50,7 +66,10 @@ export const {
   setEnabled,
   restoreSender,
   clearSender,
+  setSenderAppliedIds,
   setSenderApplied,
+  setSenderView,
+  setSenderViewId,
   saveAddressRequested,
 } = senderSlice.actions
 export default senderSlice.reducer

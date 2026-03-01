@@ -3,6 +3,7 @@ import {
   updateRecipientField,
   clearRecipient,
   restoreRecipient,
+  setRecipientView,
 } from '@envelope/recipient/infrastructure/state'
 import {
   updateSenderField,
@@ -10,8 +11,14 @@ import {
   clearSender,
   restoreSender,
 } from '@envelope/sender/infrastructure/state'
-import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
-import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectSenderState,
+  selectIsSenderComplete,
+} from '@envelope/sender/infrastructure/selectors'
+import {
+  selectRecipientState,
+  selectIsRecipientComplete,
+} from '@envelope/recipient/infrastructure/selectors'
 import {
   selectSelectedRecipientIds,
 } from '@envelope/infrastructure/selectors'
@@ -50,6 +57,8 @@ import type { RecipientState, SenderState } from '@envelope/domain/types'
 export function* processEnvelopeVisuals() {
   const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
+  const senderComplete: boolean = yield select(selectIsSenderComplete)
+  const recipientComplete: boolean = yield select(selectIsRecipientComplete)
 
   const checkHasData = (data: Record<string, string>) =>
     Object.values(data).some((v) => v.trim() !== '')
@@ -66,8 +75,14 @@ export function* processEnvelopeVisuals() {
     (s: { previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] } }) =>
       s.previewStripOrder?.addressTemplateRefs ?? [],
   )
-  const senderMatchId = getMatchingEntryId(sender.data, senderList)
-  const recipientMatchId = getMatchingEntryId(recipient.data, recipientList)
+  const senderMatchId =
+  sender.currentView === 'senderView' && sender.senderViewId
+    ? sender.senderViewId
+    : getMatchingEntryId(sender.addressFormData, senderList)
+  const recipientMatchId =
+  recipient.currentView === 'recipientView' && recipient.recipientViewId
+    ? recipient.recipientViewId
+    : getMatchingEntryId(recipient.addressFormData, recipientList)
   const isSenderFavorite =
     senderMatchId != null &&
     addressTemplateRefs.some((r) => r.type === 'sender' && r.id === senderMatchId)
@@ -92,19 +107,19 @@ export function* processEnvelopeVisuals() {
     Object.keys(envelopeSelection.recipientDraft).length > 0
 
   const senderToolbar = buildSenderToolbarState({
-    isComplete: sender.isComplete,
-    hasData: checkHasData(sender.data),
+    isComplete: senderComplete,
+    hasData: checkHasData(sender.addressFormData),
     addressListCount: senderList.length,
-    isCurrentAddressInList: isAddressInList(sender.data, senderList),
+    isCurrentAddressInList: isAddressInList(sender.addressFormData, senderList),
     isCurrentAddressFavorite: isSenderFavorite,
     hasDraft: hasSenderDraft,
   })
 
   const recipientToolbar = buildRecipientToolbarState({
-    isComplete: recipient.isComplete,
-    hasData: checkHasData(recipient.data),
+    isComplete: recipientComplete,
+    hasData: checkHasData(recipient.addressFormData),
     addressListCount: recipientList.length,
-    isCurrentAddressInList: isAddressInList(recipient.data, recipientList),
+    isCurrentAddressInList: isAddressInList(recipient.addressFormData, recipientList),
     isCurrentAddressFavorite: isRecipientFavorite,
     hasDraft: hasRecipientDraft,
   })
@@ -119,7 +134,7 @@ export function* processEnvelopeVisuals() {
       section: 'sender',
       key: 'apply',
       value: {
-        state: sender.isComplete ? 'enabled' : 'disabled',
+        state: senderComplete ? 'enabled' : 'disabled',
       },
     }),
   )
@@ -128,15 +143,20 @@ export function* processEnvelopeVisuals() {
       section: 'recipient',
       key: 'apply',
       value: {
-        state: recipient.isComplete ? 'enabled' : 'disabled',
+        state: recipientComplete ? 'enabled' : 'disabled',
       },
     }),
   )
 
   const selectedRecipientIds: string[] = yield select(selectSelectedRecipientIds)
   const isMultiMode = recipient.enabled
+  const isRecipientFormOpen = recipient.currentView === 'addressFormRecipientView'
   const canApplyRecipients =
     isMultiMode && selectedRecipientIds.length >= 1
+  const recipientsApplyState =
+    isRecipientFormOpen
+      ? (recipientComplete ? 'enabled' : 'disabled')
+      : (canApplyRecipients ? 'enabled' : 'disabled')
 
   yield put(
     updateToolbarSection({
@@ -144,7 +164,7 @@ export function* processEnvelopeVisuals() {
       value: {
         addressList: getAddressListToolbarFragment(recipientList.length),
         apply: {
-          state: canApplyRecipients ? 'enabled' : 'disabled',
+          state: recipientsApplyState,
           options: {},
         },
         addressPlus: {
@@ -155,12 +175,12 @@ export function* processEnvelopeVisuals() {
     }),
   )
 
-  const senderFavoriteState = !sender.isComplete
+  const senderFavoriteState = !senderComplete
     ? 'disabled'
     : isSenderFavorite
       ? 'active'
       : 'enabled'
-  const recipientFavoriteState = !recipient.isComplete
+  const recipientFavoriteState = !recipientComplete
     ? 'disabled'
     : isRecipientFavorite
       ? 'active'
@@ -243,6 +263,7 @@ export function* envelopeProcessSaga() {
       setRecipientDraft.type,
       clearSenderDraft.type,
       clearRecipientDraft.type,
+      setRecipientView.type,
     ],
     processEnvelopeVisuals,
   )

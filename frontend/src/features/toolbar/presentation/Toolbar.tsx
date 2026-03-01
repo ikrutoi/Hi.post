@@ -55,34 +55,37 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     ? { width: `${sizeToolbarContour.width}px` }
     : {}
 
+  const sectionState = state as Record<
+    IconKey,
+    { state: IconState; options?: IconOptions } | undefined
+  >
   const renderIcon = (
     key: IconKey,
     groupStatus: IconStateGroup,
     currentIconState?: IconState,
     iconOptions?: IconOptions,
   ) => {
-    const rawData = state[key] as
-      | { state: IconState; options?: IconOptions }
-      | undefined
-    const options = rawData && typeof rawData === 'object' && 'options' in rawData
-      ? rawData.options
-      : undefined
+    const rawData = sectionState[key]
+    const options =
+      rawData && typeof rawData === 'object' && 'options' in rawData
+        ? rawData.options
+        : undefined
     const mergedOptions = { ...iconOptions, ...options }
 
     const buttonState = typeof rawData === 'string' ? rawData : rawData?.state
     let buttonStatus = currentIconState || buttonState
 
-    // apply: для sender, recipient, recipients, recipientView, savedAddress — только state тулбара.
-    // Для cardphoto/cardtext — ещё disable, если уже применено.
     const isCardApply =
       key === 'apply' && (section === 'cardphoto' || section === 'cardtext')
     if (isCardApply && isAlreadyApplied) {
       buttonStatus = 'disabled'
     }
 
-    const orientation = mergedOptions?.orientation ?? rawData?.options?.orientation
+    const orientation =
+      mergedOptions?.orientation ?? rawData?.options?.orientation
     const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
-    const badgeDot = mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
+    const badgeDot =
+      mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
 
     return (
       <button
@@ -97,8 +100,6 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
         )}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
         onMouseDown={(e) => {
-          // Для отключённых кнопок предотвращаем дефолт,
-          // чтобы не забирать фокус у активного инпута, но не вызываем action.
           if (groupStatus === 'disabled' || buttonStatus === 'disabled') {
             e.preventDefault()
             return
@@ -120,7 +121,10 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           </span>
         )}
         {Boolean(badgeDot) && (
-          <span className={styles.toolbarBadgeDot} title="Вернуть к несохранённому адресу" />
+          <span
+            className={styles.toolbarBadgeDot}
+            title="Вернуть к несохранённому адресу"
+          />
         )}
       </button>
     )
