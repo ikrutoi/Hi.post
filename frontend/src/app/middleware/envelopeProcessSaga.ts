@@ -238,21 +238,23 @@ export function* processEnvelopeVisuals() {
     addressTemplateRefs.some(
       (r) => r.type === 'sender' && r.id === senderViewId,
     )
-  const savedAddressFavoriteState =
-    isSavedAddressRecipientFavorite || isSavedAddressSenderFavorite
-      ? 'active'
-      : 'enabled'
+  const senderViewFavoriteState = isSavedAddressSenderFavorite
+    ? 'active'
+    : 'enabled'
+  const recipientViewFavoriteState = isSavedAddressRecipientFavorite
+    ? 'active'
+    : 'enabled'
 
   yield put(
     updateToolbarSection({
       section: 'senderView',
-      value: { favorite: { state: savedAddressFavoriteState } },
+      value: { favorite: { state: senderViewFavoriteState } },
     }),
   )
   yield put(
     updateToolbarSection({
       section: 'recipientView',
-      value: { favorite: { state: savedAddressFavoriteState } },
+      value: { favorite: { state: recipientViewFavoriteState } },
     }),
   )
 }
