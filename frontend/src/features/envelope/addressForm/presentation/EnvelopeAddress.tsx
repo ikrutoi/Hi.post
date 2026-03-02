@@ -335,14 +335,22 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
       {role === 'recipient' && (
         <div className={styles.recipientToggle}>
-          <Toggle
-            label="Specify the recipient's address"
-            checked={recipientToggleChecked}
-            onChange={recipientFacade.toggleEnabled}
-            size="default"
-            variant="envelopeRecipient"
-            disabled={recipientToggleDisabled}
-          />
+          <div
+            className={clsx(
+              styles.recipientToggleGroup,
+              recipientToggleChecked && styles.recipientToggleGroupActive,
+            )}
+          >
+            <IconUsers className={styles.recipientToggleIcon} />
+            <Toggle
+              label=""
+              checked={recipientToggleChecked}
+              onChange={recipientFacade.toggleEnabled}
+              size="default"
+              variant="envelopeRecipient"
+              disabled={recipientToggleDisabled}
+            />
+          </div>
         </div>
       )}
     </form>
