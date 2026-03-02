@@ -6,9 +6,14 @@ import { selectRecipientState } from '@envelope/recipient/infrastructure/selecto
 import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import { saveAddressRequested as recipientSaveRequested } from '@envelope/recipient/infrastructure/state'
 import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/infrastructure/state'
-import { setRecipientViewId } from '@envelope/recipient/infrastructure/state'
+import {
+  setRecipientViewId,
+  setRecipientMode,
+  setRecipientView,
+  clearRecipientFormData,
+} from '@envelope/recipient/infrastructure/state'
 import { setSenderViewId } from '@envelope/sender/infrastructure/state'
-import { addressSaveSuccess } from '@envelope/infrastructure/state'
+import { addressSaveSuccess, setAddressFormView } from '@envelope/infrastructure/state'
 import { addAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
@@ -78,6 +83,10 @@ function* handleAddressSave(
       )
       if (role === 'recipient') {
         yield put(setRecipientViewId(String(result.templateId)))
+        yield put(setRecipientMode('recipient'))
+        yield put(setRecipientView('recipientView'))
+        yield put(setAddressFormView({ show: false, role: 'recipient' }))
+        yield put(clearRecipientFormData())
       } else {
         yield put(setSenderViewId(String(result.templateId)))
       }

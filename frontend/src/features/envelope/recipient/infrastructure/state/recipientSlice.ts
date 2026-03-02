@@ -63,6 +63,11 @@ const recipientSlice = createSlice({
       state.addressFormIsComplete = false
     },
 
+    clearRecipientFormData(state) {
+      state.addressFormData = { ...initialSection.data }
+      state.addressFormIsComplete = false
+    },
+
     setRecipientAppliedIds: (state, action: PayloadAction<string[]>) => {
       state.applied = action.payload
     },
@@ -94,6 +99,7 @@ export const {
   restoreRecipient,
   clearRecipient,
   resetRecipientForm,
+  clearRecipientFormData,
   setRecipientAppliedIds,
   setRecipientApplied,
   setRecipientView,

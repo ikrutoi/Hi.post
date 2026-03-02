@@ -58,14 +58,23 @@ function* syncAddressBookFromDb() {
       call([senderAdapter, 'getAll']),
       call([recipientAdapter, 'getAll']),
     ])
-    const senderEntries = Array.isArray(senderRaw)
-      ? senderRaw.map((r) => toAddressBookEntry(r as AddressTemplateItem, 'sender'))
+
+    const byLocalIdAsc = (a: { localId?: number }, b: { localId?: number }) =>
+      (a.localId ?? 0) - (b.localId ?? 0)
+
+    const senderSorted = Array.isArray(senderRaw)
+      ? [...senderRaw].sort(byLocalIdAsc)
       : []
-    const recipientEntries = Array.isArray(recipientRaw)
-      ? recipientRaw.map((r) =>
-          toAddressBookEntry(r as AddressTemplateItem, 'recipient'),
-        )
+    const recipientSorted = Array.isArray(recipientRaw)
+      ? [...recipientRaw].sort(byLocalIdAsc)
       : []
+
+    const senderEntries = senderSorted.map((r) =>
+      toAddressBookEntry(r as AddressTemplateItem, 'sender'),
+    )
+    const recipientEntries = recipientSorted.map((r) =>
+      toAddressBookEntry(r as AddressTemplateItem, 'recipient'),
+    )
 
     const senderChanged =
       !idsMatch(current.senderEntries, senderEntries)

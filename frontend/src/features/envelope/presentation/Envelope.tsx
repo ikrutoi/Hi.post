@@ -28,7 +28,13 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
           <div className={styles.recipientListPanelWrap}>
             <RecipientListPanel
               onSelect={recipientFacade.selectFromList}
-              selectedIds={recipientFacade.listSelectedIds}
+              selectedIds={
+                recipientFacade.isEnabled
+                  ? recipientFacade.listSelectedIds
+                  : recipientFacade.state.recipientViewId
+                    ? [recipientFacade.state.recipientViewId]
+                    : []
+              }
             />
           </div>
         ) : (

@@ -58,6 +58,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     templateEntry?.address,
   )
 
+  const dispatch = useAppDispatch()
+  const senderView = useAppSelector(selectSenderView)
+  const recipientView = useAppSelector(selectRecipientView)
+
   useEffect(() => {
     if (editingTemplateId == null) return
     if (templateEntry) return
@@ -78,6 +82,16 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     editingTemplateId != null &&
     dataMatchesTemplate
 
+  const hasRecipientAddressData =
+    role === 'recipient' &&
+    Object.values(value).some((v) => (v ?? '').trim() !== '')
+
+  const showSingleRecipientView =
+    role === 'recipient' &&
+    !recipientFacade.isEnabled &&
+    recipientView === 'recipientView' &&
+    (isSingleRecipientWithSavedTemplate || hasRecipientAddressData)
+
   const isSenderWithSavedTemplate =
     role === 'sender' &&
     senderFacade.isEnabled &&
@@ -87,10 +101,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientToggleChecked =
     role === 'recipient' && recipientFacade.isEnabled
   const recipientToggleDisabled = false
-
-  const dispatch = useAppDispatch()
-  const senderView = useAppSelector(selectSenderView)
-  const recipientView = useAppSelector(selectRecipientView)
 
   const openAddressForm = (r: 'sender' | 'recipient') => {
     envelopeFacade.setAddressFormViewState(true, r)
@@ -259,8 +269,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 entries={recipientFacade.recipientsDisplayList}
                 onRemove={recipientFacade.removeFromList}
               />
-            ) : isSingleRecipientWithSavedTemplate ? (
-              <RecipientView templateId={editingTemplateId!} address={value} />
+            ) : showSingleRecipientView ? (
+              <RecipientView
+                templateId={editingTemplateId ?? ''}
+                address={value}
+              />
             ) : (
               <div
                 className={clsx(

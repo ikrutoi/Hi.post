@@ -117,6 +117,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   const handleKeyDown =
     (row: EditableRowKey) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        const section =
+          role === 'sender' ? 'senderView' : 'recipientView'
+        dispatch(toolbarAction({ section, key: 'edit' } as any))
+        return
+      }
       if (e.key === 'ArrowDown') {
         e.preventDefault()
         moveFocus('down', row)
