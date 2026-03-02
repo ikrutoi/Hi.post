@@ -8,7 +8,7 @@
 
 | Источник | Что хранит | Кто использует |
 |----------|------------|----------------|
-| **envelopeSelectionSlice** | `recipientsPendingIds`, `recipientListPanelOpen`, `recipientDraft`, `recipientViewEditMode`, `senderListPanelOpen`, `senderViewEditMode`, `senderDraft`, `showAddressFormView`, `addressFormViewRole` | recipientSelector, envelope selectors, envelopeToolbarSaga, envelopeProcessSaga, sessionSaga, AddressView, useEnvelopeFacade |
+| **envelopeSelectionSlice** | `recipientsPendingIds`, `recipientListPanelOpen`, `recipientViewEditMode`, `senderListPanelOpen`, `senderViewEditMode`, `showAddressFormView`, `addressFormViewRole` | recipientSelector, envelope selectors, envelopeToolbarSaga, envelopeProcessSaga, sessionSaga, AddressView, useEnvelopeFacade |
 | **envelopeRecipientsSlice** | Список `RecipientState[]` (режим «несколько получателей») | recipientSelector, envelope selectors, sessionSaga, envelopeProcessSaga |
 
 ### Уже в фичах sender / recipient
@@ -27,12 +27,12 @@
 - **Список получателей в режиме «несколько»** — перенести `envelopeRecipients` в фичу recipient (например `recipient/infrastructure/state/recipientsListSlice.ts`). Слайс остаётся в root как `state.recipientsList` или оставить ключ `envelopeRecipients` для обратной совместиости, но владелец — фича recipient (селекторы/экшены через recipient).
 - **recipientMode** — не хранить в envelope; везде опираться на `recipient.mode` и экшен `setRecipientMode` из recipient slice.
 - **recipient-специфичный UI в envelopeSelection:**  
-  `recipientsPendingIds`, `recipientListPanelOpen`, `recipientDraft`, `recipientViewEditMode` — либо перенести в recipient (отдельный слайс «recipientSelection» / «recipientUI»), либо оставить в минимальном envelope (см. ниже).
+  `recipientsPendingIds`, `recipientListPanelOpen`, `recipientViewEditMode` — либо перенести в recipient (отдельный слайс «recipientSelection» / «recipientUI»), либо оставить в минимальном envelope (см. ниже).
 
 ### Перенести в **sender**
 
 - **sender-специфичный UI в envelopeSelection:**  
-  `senderListPanelOpen`, `senderDraft`, `senderViewEditMode` — либо в sender (слайс «senderSelection» / «senderUI»), либо в минимальном envelope.
+  `senderListPanelOpen`, `senderViewEditMode` — либо в sender (слайс «senderSelection» / «senderUI»), либо в минимальном envelope.
 
 ### Оставить в **минимальном слое envelope**
 
@@ -47,7 +47,7 @@
 
 ## Практические шаги
 
-1. **recipient:** завести слой состояния для списка получателей (если переносим `envelopeRecipients`) и при необходимости для `recipientsPendingIds` / `recipientListPanelOpen` / `recipientDraft` — селекторы и фасад получателя читают только из recipient.
+1. **recipient:** завести слой состояния для списка получателей (если переносим `envelopeRecipients`) и при необходимости для `recipientsPendingIds` / `recipientListPanelOpen` — селекторы и фасад получателя читают только из recipient.
 2. **sender:** аналогично — свой слайс для панели списка, черновика, saved edit mode; useSenderFacade и тулбар читают из sender.
 3. **envelope:** оставить только общее (например `showAddressFormView`, `addressFormViewRole`) и реэкспорт/координацию для session (EnvelopeSessionRecord = sender + recipient + isComplete). Селекторы envelope — только то, что нужно для сессии и для общего UI (какой роль формы открыт).
 

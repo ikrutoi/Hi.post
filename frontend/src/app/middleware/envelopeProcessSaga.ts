@@ -20,23 +20,16 @@ import {
   selectRecipientState,
   selectIsRecipientComplete,
 } from '@envelope/recipient/infrastructure/selectors'
-import {
-  selectRecipientsPendingIds,
-  selectSenderDraft,
-  selectRecipientDraft,
-} from '@envelope/infrastructure/selectors'
+import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
   setRecipientsPendingIds,
-  setSenderDraft,
-  setRecipientDraft,
-  clearSenderDraft,
-  clearRecipientDraft,
 } from '@envelope/infrastructure/state'
 import { setSenderViewId } from '@envelope/sender/infrastructure/state'
 import {
   setRecipientViewId,
   setRecipientsViewIds,
+  resetRecipientForm,
 } from '@envelope/recipient/infrastructure/state'
 import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
@@ -60,6 +53,8 @@ import {
   recipientTemplatesAdapter,
   senderTemplatesAdapter,
 } from '@db/adapters/templateAdapters'
+import type { RootState } from '@app/state'
+import type { AddressFields } from '@shared/config/constants'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 
 export function* processEnvelopeVisuals() {
@@ -67,6 +62,8 @@ export function* processEnvelopeVisuals() {
   const recipient: RecipientState = yield select(selectRecipientState)
 
   const recipients: RecipientState[] = yield select(selectRecipientsList)
+  const pendingIds: string[] = yield select(selectRecipientsPendingIds)
+
   if (
     Array.isArray(recipients) &&
     recipients.length > 0 &&
@@ -79,6 +76,12 @@ export function* processEnvelopeVisuals() {
           .filter((id): id is string => id != null),
       ),
     )
+  } else if (
+    recipient.mode === 'recipients' &&
+    Array.isArray(pendingIds) &&
+    pendingIds.length > 0
+  ) {
+    yield put(setRecipientsViewIds([...pendingIds]))
   }
 
   const senderComplete: boolean = yield select(selectIsSenderComplete)
@@ -119,16 +122,8 @@ export function* processEnvelopeVisuals() {
       (r) => r.type === 'recipient' && r.id === recipientMatchId,
     )
 
-  const senderDraft: Record<string, string> | null = yield select(
-    selectSenderDraft,
-  )
-  const recipientDraft: Record<string, string> | null = yield select(
-    selectRecipientDraft,
-  )
-  const hasDraftData = (draft: Record<string, string> | null | undefined) =>
-    draft != null && Object.values(draft).some((v) => (v ?? '').trim() !== '')
-  const hasSenderDraft = hasDraftData(senderDraft)
-  const hasRecipientDraft = hasDraftData(recipientDraft)
+  const hasSenderDraft = checkHasData(sender.addressFormData)
+  const hasRecipientDraft = checkHasData(recipient.addressFormData)
 
   const senderToolbar = buildSenderToolbarState({
     isComplete: senderComplete,
@@ -262,7 +257,35 @@ export function* processEnvelopeVisuals() {
   )
 }
 
+function* detachRecipientFromTemplateOnEdit(
+  action: ReturnType<typeof updateRecipientField>,
+) {
+  const recipient: RecipientState = yield select(selectRecipientState)
+  if (
+    recipient.currentView !== 'recipientView' ||
+    recipient.recipientViewId == null
+  ) {
+    return
+  }
+  const entries: Array<{ id: string; address?: Record<string, string> }> =
+    yield select((s: RootState) => s.addressBook?.recipientEntries ?? [])
+  const entry = entries.find((e) => e.id === recipient.recipientViewId)
+  if (!entry?.address) return
+  const addressFormData: AddressFields = {
+    ...entry.address,
+    [action.payload.field]: action.payload.value,
+  } as AddressFields
+  yield put(
+    restoreRecipient({
+      ...recipient,
+      addressFormData,
+      recipientViewId: null,
+    }),
+  )
+}
+
 export function* envelopeProcessSaga() {
+  yield takeEvery(updateRecipientField.type, detachRecipientFromTemplateOnEdit)
   yield takeEvery(updateRecipientField.type, processEnvelopeVisuals)
   yield takeEvery(updateSenderField.type, processEnvelopeVisuals)
   yield takeEvery(setEnabled.type, processEnvelopeVisuals)
@@ -279,11 +302,8 @@ export function* envelopeProcessSaga() {
       setRecipientMode.type,
       setRecipientViewId.type,
       setSenderViewId.type,
-      setSenderDraft.type,
-      setRecipientDraft.type,
-      clearSenderDraft.type,
-      clearRecipientDraft.type,
       setRecipientView.type,
+      resetRecipientForm.type,
     ],
     processEnvelopeVisuals,
   )

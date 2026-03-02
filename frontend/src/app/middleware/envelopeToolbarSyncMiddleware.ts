@@ -1,12 +1,10 @@
 import type { Middleware } from '@reduxjs/toolkit'
 import { setRecipientMode } from '@envelope/recipient/infrastructure/state'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
-import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
 
 /**
- * При переключении single → multi:
- * 1) Синхронно обновляет стейт Apply секции 'recipients' (чтобы не было мигания).
- * 2) Запускает подгрузку адресной книги, чтобы форма Пользователи и список адресов были актуальными.
+ * При переключении single → multi синхронно обновляет стейт Apply секции 'recipients'
+ * (чтобы не было мигания). Адресная книга уже подгружается при открытии секции Конверт.
  */
 export const envelopeToolbarSyncMiddleware: Middleware =
   (store) => (next) => (action) => {
@@ -28,7 +26,6 @@ export const envelopeToolbarSyncMiddleware: Middleware =
           },
         }),
       )
-      store.dispatch(incrementAddressBookReloadVersion())
     }
     return next(action)
   }

@@ -21,7 +21,6 @@ export type RecipientState = {
   addressFormData: AddressFields
   addressFormIsComplete: boolean
   recipientViewId: string | null
-  previousRecipientViewId: string | null
   recipientsViewIds: string[]
   applied: string[]
   mode: RecipientMode

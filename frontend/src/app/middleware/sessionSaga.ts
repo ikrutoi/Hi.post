@@ -71,7 +71,6 @@ import {
   removeCardtextTemplateId,
   addAddressTemplateRef,
   removeAddressTemplateRef,
-  incrementAddressBookReloadVersion,
 } from '@features/previewStrip/infrastructure/state'
 import type { PreviewStripOrderState } from '@features/previewStrip/infrastructure/state'
 import {
@@ -533,14 +532,6 @@ export function* hydrateAppSession() {
     }
 
     yield call(rehydrateEnvelopeSlicesFromTemplates)
-
-    const multiWithIds =
-      (session.envelopeSelection?.recipientMode === 'recipients' ||
-        session.envelope?.recipient?.mode === 'recipients') &&
-      (session.envelopeSelection?.recipientsPendingIds?.length ?? 0) > 0
-    if (multiWithIds) {
-      yield put(incrementAddressBookReloadVersion())
-    }
 
     if (session.aroma && session.aroma.selectedAroma) {
       yield put(setAroma(session.aroma.selectedAroma))

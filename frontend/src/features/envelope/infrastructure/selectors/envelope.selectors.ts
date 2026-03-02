@@ -29,8 +29,6 @@ const selectEnvelopeSelectionState = (state: {
     senderListPanelOpen: boolean
     senderViewEditMode?: boolean
     recipientViewEditMode?: boolean
-    senderDraft?: Record<string, string> | null
-    recipientDraft?: Record<string, string> | null
     showAddressFormView?: boolean
     addressFormViewRole?: 'sender' | 'recipient' | null
   }
@@ -80,16 +78,6 @@ export const selectShowAddressFormView = createSelector(
 export const selectAddressFormViewRole = createSelector(
   [selectEnvelopeSelectionState],
   (s) => s.addressFormViewRole ?? null,
-)
-
-export const selectRecipientDraft = createSelector(
-  [selectEnvelopeSelectionState],
-  (s) => s.recipientDraft ?? null,
-)
-
-export const selectSenderDraft = createSelector(
-  [selectEnvelopeSelectionState],
-  (s) => s.senderDraft ?? null,
 )
 
 export const selectSenderViewEditMode = createSelector(

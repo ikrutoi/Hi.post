@@ -9,7 +9,7 @@ import {
   selectSenderState,
   selectSenderView,
 } from '../../infrastructure/selectors'
-import { AddressField, ADDRESS_FIELD_ORDER } from '@/shared/config/constants'
+import { AddressField } from '@/shared/config/constants'
 import {
   clearSender,
   setEnabled,
@@ -21,15 +21,7 @@ import {
   selectSenderListPanelOpen,
   selectSenderSelectedId,
 } from '@envelope/infrastructure/selectors'
-import {
-  setSenderDraft,
-  closeSenderListPanel as closeSenderListPanelAction,
-} from '@envelope/infrastructure/state'
-
-function hasAddressData(data: Record<string, string> | null | undefined): boolean {
-  if (data == null) return false
-  return Object.values(data).some((v) => (v ?? '').trim() !== '')
-}
+import { closeSenderListPanel as closeSenderListPanelAction } from '@envelope/infrastructure/state'
 
 export const useSenderFacade = () => {
   const dispatch = useAppDispatch()
@@ -43,19 +35,8 @@ export const useSenderFacade = () => {
   const listPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const selectedId = useAppSelector(selectSenderSelectedId)
 
-  const addressEquals = useCallback(
-    (a: Record<string, string>, b: Record<string, string>) =>
-      ADDRESS_FIELD_ORDER.every((f) => (a[f] ?? '').trim() === (b[f] ?? '').trim()),
-    [],
-  )
-
   const selectFromList = useCallback(
     (entry: { id: string; address: Record<string, string> }) => {
-      if (senderView === 'addressFormSenderView') {
-        if (hasAddressData(state.addressFormData) && !addressEquals(state.addressFormData, entry.address)) {
-          dispatch(setSenderDraft({ ...state.addressFormData }))
-        }
-      }
       ;(Object.entries(entry.address) as [AddressField, string][]).forEach(([field, value]) =>
         dispatch(updateSenderField({ field, value })),
       )
@@ -63,7 +44,7 @@ export const useSenderFacade = () => {
       dispatch(setSenderView('senderView'))
       dispatch(closeSenderListPanelAction())
     },
-    [dispatch, senderView, state.addressFormData, addressEquals],
+    [dispatch],
   )
 
   const update = useCallback(

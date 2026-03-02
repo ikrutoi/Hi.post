@@ -4,7 +4,7 @@ import {
   selectSenderView,
 } from '../../sender/infrastructure/selectors'
 import {
-  selectRecipientAddress,
+  selectRecipientDisplayAddress,
   selectRecipientState,
   selectRecipientView,
 } from '../../recipient/infrastructure/selectors'
@@ -44,8 +44,6 @@ import {
   closeRecipientListPanel as closeRecipientListPanelAction,
   toggleSenderListPanel,
   closeSenderListPanel as closeSenderListPanelAction,
-  setSenderDraft,
-  setRecipientDraft,
   setAddressFormView,
 } from '../../infrastructure/state/envelopeSelectionSlice'
 import { setSenderViewId } from '../../sender/infrastructure/state'
@@ -65,7 +63,7 @@ export const useEnvelopeFacade = () => {
 
   const sender = useAppSelector(selectSenderState)
   const recipient = useAppSelector(selectRecipientState)
-  const addressRecipient = useAppSelector(selectRecipientAddress)
+  const addressRecipient = useAppSelector(selectRecipientDisplayAddress)
   const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
@@ -158,16 +156,6 @@ export const useEnvelopeFacade = () => {
     }
   }
 
-  const hasAddressData = (data: Record<string, string>) =>
-    Object.values(data).some((v) => (v ?? '').trim() !== '')
-  const addressEquals = (
-    a: Record<string, string>,
-    b: Record<string, string>,
-  ) =>
-    ADDRESS_FIELD_ORDER.every(
-      (f) => (a[f] ?? '').trim() === (b[f] ?? '').trim(),
-    )
-
   const selectRecipientFromList = (entry: {
     id: string
     address: Record<string, string>
@@ -175,20 +163,8 @@ export const useEnvelopeFacade = () => {
     if (recipient.mode === 'recipients') {
       dispatch(toggleRecipientSelection(entry.id))
     } else {
-      if (recipientView === 'addressFormRecipientView') {
-        if (
-          hasAddressData(recipient.addressFormData) &&
-          !addressEquals(recipient.addressFormData, entry.address)
-        ) {
-          dispatch(setRecipientDraft({ ...recipient.addressFormData }))
-        }
-      }
-      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-        ([field, value]) => dispatch(updateRecipientField({ field, value })),
-      )
       dispatch(setRecipientViewId(entry.id))
       dispatch(setRecipientView('recipientView'))
-      dispatch(closeRecipientListPanelAction())
     }
   }
 
@@ -196,14 +172,6 @@ export const useEnvelopeFacade = () => {
     id: string
     address: Record<string, string>
   }) => {
-    if (senderView === 'addressFormSenderView') {
-      if (
-        hasAddressData(sender.addressFormData) &&
-        !addressEquals(sender.addressFormData, entry.address)
-      ) {
-        dispatch(setSenderDraft({ ...sender.addressFormData }))
-      }
-    }
     ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
       ([field, value]) => dispatch(updateSenderField({ field, value })),
     )

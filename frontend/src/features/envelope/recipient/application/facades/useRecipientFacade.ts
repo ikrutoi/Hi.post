@@ -2,48 +2,39 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { recipientLayout } from '../../domain/types'
 import {
   selectIsRecipientComplete,
-  selectRecipientAddress,
+  selectRecipientDisplayAddress,
   selectRecipientCompletedFields,
   selectRecipientEnabled,
   selectRecipientState,
   selectRecipientView,
   selectRecipientViewId,
-  selectRecipientDraft,
+} from '../../infrastructure/selectors'
+import {
   selectRecipientListPendingIds,
   selectRecipientListPanelOpen,
   selectRecipientsDisplayList,
-} from '../../infrastructure/selectors'
+} from '@envelope/infrastructure/selectors'
 import {
   clearRecipient,
-  restoreRecipient,
   setEnabled,
   setRecipientView,
   setRecipientViewId,
   updateRecipientField,
   setRecipientMode,
-  setRecipientDraft,
-  closeRecipientListPanel as closeRecipientListPanelAction,
   toggleRecipientSelection,
   removeRecipientAt,
 } from '../../infrastructure/state'
 import type { AddressField } from '@shared/config/constants'
-import { ADDRESS_FIELD_ORDER } from '@shared/config/constants'
-
-function hasAddressData(data: Record<string, string> | null | undefined): boolean {
-  if (data == null) return false
-  return Object.values(data).some((v) => (v ?? '').trim() !== '')
-}
 
 export const useRecipientFacade = () => {
   const dispatch = useAppDispatch()
 
   const state = useAppSelector(selectRecipientState)
-  const address = useAppSelector(selectRecipientAddress)
+  const address = useAppSelector(selectRecipientDisplayAddress)
   const completedFields = useAppSelector(selectRecipientCompletedFields)
   const isComplete = useAppSelector(selectIsRecipientComplete)
   const isEnabled = useAppSelector(selectRecipientEnabled)
   const recipientTemplateId = useAppSelector(selectRecipientViewId)
-  const recipientDraft = useAppSelector(selectRecipientDraft)
   const recipientView = useAppSelector(selectRecipientView)
   const listSelectedIds = useAppSelector(selectRecipientListPendingIds)
   const listPanelOpen = useAppSelector(selectRecipientListPanelOpen)
@@ -58,24 +49,12 @@ export const useRecipientFacade = () => {
     }
   }
 
-  const addressEquals = (a: Record<string, string>, b: Record<string, string>) =>
-    ADDRESS_FIELD_ORDER.every((f) => (a[f] ?? '').trim() === (b[f] ?? '').trim())
-
   const selectFromList = (entry: { id: string; address: Record<string, string> }) => {
     if (isEnabled) {
       dispatch(toggleRecipientSelection(entry.id))
     } else {
-      if (recipientView === 'addressFormRecipientView') {
-        if (hasAddressData(state.addressFormData) && !addressEquals(state.addressFormData, entry.address)) {
-          dispatch(setRecipientDraft({ ...state.addressFormData }))
-        }
-      }
-      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(([field, value]) =>
-        dispatch(updateRecipientField({ field, value })),
-      )
       dispatch(setRecipientViewId(entry.id))
       dispatch(setRecipientView('recipientView'))
-      dispatch(closeRecipientListPanelAction())
     }
   }
 
@@ -85,34 +64,8 @@ export const useRecipientFacade = () => {
   const clear = () => dispatch(clearRecipient())
   const toggleEnabled = () => {
     const nextEnabled = !isEnabled
-    if (
-      nextEnabled &&
-      hasAddressData(state.addressFormData) &&
-      recipientTemplateId == null
-    ) {
-      dispatch(setRecipientDraft({ ...state.addressFormData }))
-    }
     dispatch(setEnabled(nextEnabled))
     dispatch(setRecipientMode(nextEnabled ? 'recipients' : 'recipient'))
-    if (
-      !nextEnabled &&
-      recipientDraft != null &&
-      Object.keys(recipientDraft).length > 0
-    ) {
-      const draftComplete = Object.values(recipientDraft).every(
-        (v) => (v ?? '').trim() !== '',
-      )
-      dispatch(
-        restoreRecipient({
-          addressFormData: recipientDraft as import('@envelope/domain/types').RecipientState['addressFormData'],
-          addressFormIsComplete: draftComplete,
-          mode: 'recipient',
-          applied: [],
-          currentView: 'addressFormRecipientView',
-        }),
-      )
-      dispatch(setRecipientView('addressFormRecipientView'))
-    }
   }
 
   return {

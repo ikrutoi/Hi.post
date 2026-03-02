@@ -9,8 +9,8 @@ import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/in
 import { setRecipientViewId } from '@envelope/recipient/infrastructure/state'
 import { setSenderViewId } from '@envelope/sender/infrastructure/state'
 import { addressSaveSuccess } from '@envelope/infrastructure/state'
+import { addAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
-import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
 
@@ -61,7 +61,14 @@ function* handleAddressSave(
     )
 
     if (result.success && result.templateId) {
-      yield put(incrementAddressBookReloadVersion())
+      yield put(
+        addAddressBookEntry({
+          id: String(result.templateId),
+          role,
+          address: cleanedAddress,
+          createdAt: new Date().toISOString(),
+        }),
+      )
       yield put(
         updateGroupStatus({
           section: role,

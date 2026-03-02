@@ -12,7 +12,6 @@ export const initialRecipient: RecipientState = {
   addressFormData: { ...initialSection.data },
   addressFormIsComplete: false,
   recipientViewId: null,
-  previousRecipientViewId: null,
   recipientsViewIds: [],
   applied: [],
   mode: 'recipient',
@@ -58,6 +57,12 @@ const recipientSlice = createSlice({
 
     clearRecipient: () => initialRecipient,
 
+    resetRecipientForm: (state) => {
+      state.currentView = 'addressFormRecipientView'
+      state.addressFormData = { ...initialSection.data }
+      state.addressFormIsComplete = false
+    },
+
     setRecipientAppliedIds: (state, action: PayloadAction<string[]>) => {
       state.applied = action.payload
     },
@@ -74,13 +79,6 @@ const recipientSlice = createSlice({
       state.recipientViewId = action.payload
     },
 
-    setPreviousRecipientViewId: (
-      state,
-      action: PayloadAction<string | null>,
-    ) => {
-      state.previousRecipientViewId = action.payload
-    },
-
     setRecipientsViewIds: (state, action: PayloadAction<string[]>) => {
       state.recipientsViewIds = action.payload
     },
@@ -95,11 +93,11 @@ export const {
   setRecipientMode,
   restoreRecipient,
   clearRecipient,
+  resetRecipientForm,
   setRecipientAppliedIds,
   setRecipientApplied,
   setRecipientView,
   setRecipientViewId,
-  setPreviousRecipientViewId,
   setRecipientsViewIds,
   saveAddressRequested,
 } = recipientSlice.actions

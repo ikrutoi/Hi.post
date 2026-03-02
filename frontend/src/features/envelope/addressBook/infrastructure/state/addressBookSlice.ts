@@ -27,8 +27,37 @@ export const addressBookSlice = createSlice({
       if (action.payload.recipient !== undefined)
         state.recipientEntries = action.payload.recipient
     },
+
+    addAddressBookEntry(state, action: PayloadAction<AddressBookEntry>) {
+      const entry = action.payload
+      if (entry.role === 'sender') {
+        if (!state.senderEntries.some((e) => e.id === entry.id)) {
+          state.senderEntries.push(entry)
+        }
+      } else {
+        if (!state.recipientEntries.some((e) => e.id === entry.id)) {
+          state.recipientEntries.push(entry)
+        }
+      }
+    },
+
+    removeAddressBookEntry(
+      state,
+      action: PayloadAction<{ id: string; role: 'sender' | 'recipient' }>,
+    ) {
+      const { id, role } = action.payload
+      if (role === 'sender') {
+        state.senderEntries = state.senderEntries.filter((e) => e.id !== id)
+      } else {
+        state.recipientEntries = state.recipientEntries.filter((e) => e.id !== id)
+      }
+    },
   },
 })
 
-export const { setAddressBookEntries } = addressBookSlice.actions
+export const {
+  setAddressBookEntries,
+  addAddressBookEntry,
+  removeAddressBookEntry,
+} = addressBookSlice.actions
 export default addressBookSlice.reducer

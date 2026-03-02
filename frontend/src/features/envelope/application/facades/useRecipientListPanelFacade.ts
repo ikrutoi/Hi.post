@@ -9,6 +9,7 @@ import {
   incrementAddressTemplatesReloadVersion,
   incrementAddressBookReloadVersion,
 } from '@features/previewStrip/infrastructure/state'
+import { removeAddressBookEntry } from '../../addressBook/infrastructure/state'
 
 export const useRecipientListPanelFacade = () => {
   const dispatch = useAppDispatch()
@@ -55,7 +56,7 @@ export const useRecipientListPanelFacade = () => {
         const result = await deleteTemplate(id)
         if (result.success) {
           dispatch(removeAddressTemplateRef({ type: 'recipient', id }))
-          dispatch(incrementAddressBookReloadVersion())
+          dispatch(removeAddressBookEntry({ id, role: 'recipient' }))
           dispatch(incrementAddressTemplatesReloadVersion())
           onDeleted?.(id)
         } else {

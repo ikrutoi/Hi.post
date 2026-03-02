@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-export type AddressDraft = Record<string, string> | null
-
+/**
+ * UI-состояние выбора конверта (панели, какая форма открыта).
+ * Данные формы адреса хранятся только в sender/recipient.addressFormData.
+ */
 export interface EnvelopeSelectionState {
   recipientsPendingIds: string[]
   recipientListPanelOpen: boolean
   senderListPanelOpen: boolean
   senderViewEditMode: boolean
   recipientViewEditMode: boolean
-  senderDraft: AddressDraft
-  recipientDraft: AddressDraft
   showAddressFormView: boolean
   addressFormViewRole: 'sender' | 'recipient' | null
 }
@@ -20,8 +20,6 @@ const initialState: EnvelopeSelectionState = {
   senderListPanelOpen: false,
   senderViewEditMode: false,
   recipientViewEditMode: false,
-  senderDraft: null,
-  recipientDraft: null,
   showAddressFormView: false,
   addressFormViewRole: null,
 }
@@ -72,22 +70,6 @@ export const envelopeSelectionSlice = createSlice({
       state.recipientViewEditMode = action.payload
     },
 
-    setSenderDraft(state, action: PayloadAction<AddressDraft>) {
-      state.senderDraft = action.payload
-    },
-
-    setRecipientDraft(state, action: PayloadAction<AddressDraft>) {
-      state.recipientDraft = action.payload
-    },
-
-    clearSenderDraft(state) {
-      state.senderDraft = null
-    },
-
-    clearRecipientDraft(state) {
-      state.recipientDraft = null
-    },
-
     setAddressFormView(
       state,
       action: PayloadAction<{
@@ -113,10 +95,6 @@ export const {
   closeSenderListPanel,
   setSenderViewEditMode,
   setRecipientViewEditMode,
-  setSenderDraft,
-  setRecipientDraft,
-  clearSenderDraft,
-  clearRecipientDraft,
   setAddressFormView,
   addressSaveSuccess,
 } = envelopeSelectionSlice.actions

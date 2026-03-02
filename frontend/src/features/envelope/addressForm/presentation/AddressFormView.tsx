@@ -5,11 +5,7 @@ import { Label } from './Label/Label'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectRecipientEnabled } from '@envelope/recipient/infrastructure/selectors'
-import {
-  setAddressFormView,
-  setSenderDraft,
-  setRecipientDraft,
-} from '@envelope/infrastructure/state'
+import { setAddressFormView } from '@envelope/infrastructure/state'
 import { setSenderView } from '@envelope/sender/infrastructure/state'
 import { setRecipientView } from '@envelope/recipient/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -71,11 +67,6 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   }, [dispatch, toolbarSection, isAddressComplete])
 
   const closeAddressForm = useCallback(() => {
-    if (role === 'sender') {
-      dispatch(setSenderDraft({ ...address }))
-    } else {
-      dispatch(setRecipientDraft({ ...address }))
-    }
     dispatch(setAddressFormView({ show: false, role }))
     if (role === 'sender') {
       dispatch(setSenderView('senderView'))
@@ -84,7 +75,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
         setRecipientView(recipientEnabled ? 'recipientsView' : 'recipientView'),
       )
     }
-  }, [dispatch, role, recipientEnabled, address])
+  }, [dispatch, role, recipientEnabled])
 
   const handleCloseClick = useCallback(
     (e: React.MouseEvent) => {
