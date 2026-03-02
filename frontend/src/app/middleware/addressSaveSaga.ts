@@ -12,7 +12,11 @@ import {
   setRecipientView,
   clearRecipientFormData,
 } from '@envelope/recipient/infrastructure/state'
-import { setSenderViewId } from '@envelope/sender/infrastructure/state'
+import {
+  setSenderViewId,
+  setSenderView,
+  clearSenderFormData,
+} from '@envelope/sender/infrastructure/state'
 import { addressSaveSuccess, setAddressFormView } from '@envelope/infrastructure/state'
 import { addAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
@@ -89,6 +93,9 @@ function* handleAddressSave(
         yield put(clearRecipientFormData())
       } else {
         yield put(setSenderViewId(String(result.templateId)))
+        yield put(setSenderView('senderView'))
+        yield put(setAddressFormView({ show: false, role: 'sender' }))
+        yield put(clearSenderFormData())
       }
       yield put(addressSaveSuccess(role))
       yield call(processEnvelopeVisuals)
