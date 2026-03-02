@@ -16,7 +16,11 @@ import { setRecipientView } from '../../recipient/infrastructure/state'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import { ToolbarSection } from '@/features/toolbar/domain/types'
-import { IconUser, IconUsers } from '@shared/ui/icons'
+import {
+  IconUserSender,
+  IconUserRecipient,
+  IconUsers,
+} from '@shared/ui/icons'
 
 const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
 
@@ -205,7 +209,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 }}
                 aria-label="Add sender address"
               >
-                <IconUser className={styles.addressFormPlaceholderIconBg} />
+                <IconUserSender className={styles.addressFormPlaceholderIconBg} />
               </div>
             )}
           </fieldset>
@@ -319,7 +323,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 {recipientFacade.isEnabled ? (
                   <IconUsers className={styles.addressFormPlaceholderIconBg} />
                 ) : (
-                  <IconUser className={styles.addressFormPlaceholderIconBg} />
+                  <IconUserRecipient
+                    className={styles.addressFormPlaceholderIconBg}
+                  />
                 )}
               </div>
             )}
