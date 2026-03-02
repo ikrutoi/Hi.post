@@ -151,22 +151,28 @@ export function* processEnvelopeVisuals() {
     updateToolbarSection({ section: 'recipient', value: recipientToolbar }),
   )
 
+  const isSenderEmptyForm =
+    sender.currentView === 'senderView' && sender.senderViewId == null
+  const isRecipientEmptyForm =
+    recipient.currentView === 'recipientView' &&
+    recipient.recipientViewId == null
+  const senderApplyState =
+    isSenderEmptyForm ? 'disabled' : senderComplete ? 'enabled' : 'disabled'
+  const recipientApplyState =
+    isRecipientEmptyForm ? 'disabled' : recipientComplete ? 'enabled' : 'disabled'
+
   yield put(
     updateToolbarIcon({
       section: 'sender',
       key: 'apply',
-      value: {
-        state: senderComplete ? 'enabled' : 'disabled',
-      },
+      value: { state: senderApplyState },
     }),
   )
   yield put(
     updateToolbarIcon({
       section: 'recipient',
       key: 'apply',
-      value: {
-        state: recipientComplete ? 'enabled' : 'disabled',
-      },
+      value: { state: recipientApplyState },
     }),
   )
 
@@ -178,13 +184,10 @@ export function* processEnvelopeVisuals() {
     recipient.currentView === 'addressFormRecipientView'
   const canApplyRecipients =
     isMultiMode && recipientsPendingIds.length >= 1
-  const recipientsApplyState = isRecipientFormOpen
-    ? recipientComplete
-      ? 'enabled'
-      : 'disabled'
-    : canApplyRecipients
-      ? 'enabled'
-      : 'disabled'
+  const isRecipientsEmptyForm =
+    isRecipientFormOpen && !recipientComplete
+  const recipientsApplyState =
+    isRecipientsEmptyForm || !canApplyRecipients ? 'disabled' : 'enabled'
 
   yield put(
     updateToolbarSection({

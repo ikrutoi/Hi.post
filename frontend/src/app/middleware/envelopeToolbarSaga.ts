@@ -6,6 +6,7 @@ import {
   setSenderApplied,
   setSenderView,
   setSenderViewId,
+  clearSenderFormData,
   saveAddressRequested as senderSaveRequested,
 } from '@envelope/sender/infrastructure/state'
 import {
@@ -16,6 +17,7 @@ import {
   setRecipientViewId,
   setRecipientsViewIds,
   setRecipientMode,
+  clearRecipientFormData,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
 import {
@@ -216,22 +218,22 @@ function* handleEnvelopeToolbarAction(
           templateId,
         )
         if (result.success) {
-          // Удаляем из панели быстрого доступа, если шаблон там был
           yield put(removeAddressTemplateRef({ type, id: templateId }))
           yield put(removeAddressBookEntry({ id: templateId, role: type }))
 
-          // Если после удаления шаблонов этого типа больше не осталось,
-          // сбрасываем templateId, иначе даём EnvelopeAddress самому выбрать fallback.
-          const remaining: { id: string }[] = yield call([
-            type === 'recipient' ? recipientAdapter : senderAdapter,
-            'getAll',
-          ])
-          if (!Array.isArray(remaining) || remaining.length === 0) {
-            if (type === 'recipient') {
-              yield put(setRecipientViewId(null))
-            } else {
-              yield put(setSenderViewId(null))
-            }
+          // После удаления всегда показываем пустой плейсхолдер (не переключаем на следующий адрес)
+          if (type === 'recipient') {
+            yield put(setRecipientViewEditMode(false))
+            yield put(setRecipientViewId(null))
+            yield put(setRecipientView('recipientView'))
+            yield put(setAddressFormView({ show: false, role: 'recipient' }))
+            yield put(clearRecipientFormData())
+          } else {
+            yield put(setSenderViewEditMode(false))
+            yield put(setSenderViewId(null))
+            yield put(setSenderView('senderView'))
+            yield put(setAddressFormView({ show: false, role: 'sender' }))
+            yield put(clearSenderFormData())
           }
         }
       } catch (e) {

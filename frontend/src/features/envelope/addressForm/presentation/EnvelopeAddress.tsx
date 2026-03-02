@@ -16,6 +16,7 @@ import { setRecipientView } from '../../recipient/infrastructure/state'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import { ToolbarSection } from '@/features/toolbar/domain/types'
+import { IconUser, IconUsers } from '@shared/ui/icons'
 
 const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
 
@@ -49,6 +50,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     role === 'sender'
       ? (state.addressBook?.senderEntries ?? [])
       : (state.addressBook?.recipientEntries ?? []),
+  )
+  const senderEntries = useAppSelector(
+    (state) => state.addressBook?.senderEntries ?? [],
+  )
+  const recipientEntries = useAppSelector(
+    (state) => state.addressBook?.recipientEntries ?? [],
   )
   const templateEntry = editingTemplateId
     ? entriesForRole.find((e) => e.id === editingTemplateId)
@@ -106,6 +113,16 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     envelopeFacade.setAddressFormViewState(true, r)
     if (r === 'sender') dispatch(setSenderView('addressFormSenderView'))
     else dispatch(setRecipientView('addressFormRecipientView'))
+  }
+
+  const handlePlaceholderClick = (r: 'sender' | 'recipient') => {
+    const entries = r === 'sender' ? senderEntries : recipientEntries
+    if (entries.length > 0) {
+      if (r === 'sender') envelopeFacade.toggleSenderListPanelOpen()
+      else envelopeFacade.toggleRecipientListPanelOpen()
+    } else {
+      openAddressForm(r)
+    }
   }
 
   return (
@@ -172,21 +189,23 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               />
             ) : (
               <div
+                role="button"
+                tabIndex={0}
                 className={clsx(
                   styles.addressFormPlaceholder,
                   styles.addressFormPlaceholderSender,
+                  styles.addressFormPlaceholderBg,
                 )}
+                onClick={() => handlePlaceholderClick('sender')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handlePlaceholderClick('sender')
+                  }
+                }}
+                aria-label="Add sender address"
               >
-                <button
-                  type="button"
-                  className={clsx(
-                    styles.addressFormPlaceholderBtn,
-                    styles.addressFormPlaceholderBtnSender,
-                  )}
-                  onClick={() => openAddressForm('sender')}
-                >
-                  Add sender address
-                </button>
+                <IconUser className={styles.addressFormPlaceholderIconBg} />
               </div>
             )}
           </fieldset>
@@ -264,7 +283,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 onFieldChange={update}
                 lang={lang}
               />
-            ) : recipientFacade.isEnabled ? (
+            ) : recipientFacade.isEnabled &&
+              recipientFacade.recipientsDisplayList.length > 0 ? (
               <RecipientsView
                 entries={recipientFacade.recipientsDisplayList}
                 onRemove={recipientFacade.removeFromList}
@@ -276,21 +296,31 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               />
             ) : (
               <div
+                role="button"
+                tabIndex={0}
                 className={clsx(
                   styles.addressFormPlaceholder,
                   styles.addressFormPlaceholderRecipient,
+                  styles.addressFormPlaceholderBg,
                 )}
+                onClick={() => handlePlaceholderClick('recipient')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handlePlaceholderClick('recipient')
+                  }
+                }}
+                aria-label={
+                  recipientFacade.isEnabled
+                    ? 'Add recipients'
+                    : 'Add recipient address'
+                }
               >
-                <button
-                  type="button"
-                  className={clsx(
-                    styles.addressFormPlaceholderBtn,
-                    styles.addressFormPlaceholderBtnRecipient,
-                  )}
-                  onClick={() => openAddressForm('recipient')}
-                >
-                  Add recipient address
-                </button>
+                {recipientFacade.isEnabled ? (
+                  <IconUsers className={styles.addressFormPlaceholderIconBg} />
+                ) : (
+                  <IconUser className={styles.addressFormPlaceholderIconBg} />
+                )}
               </div>
             )}
           </fieldset>

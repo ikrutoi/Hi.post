@@ -192,9 +192,10 @@
 
 .addressFormPlaceholder {
   padding: 0.5rem;
-  min-height: 2rem;
+  min-height: 4rem;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .addressFormPlaceholderSender {
@@ -205,25 +206,28 @@
   justify-content: flex-end;
 }
 
-.addressFormPlaceholderBtn {
-  padding: 0.35rem 0.6rem;
-  font-size: 0.85rem;
-  background: #fff;
-  border-radius: 4px;
-  cursor: pointer;
+.addressFormPlaceholderBg {
+  // cursor: pointer;
+  position: relative;
 
-  &Sender {
-    color: $color-envelope-sender-legend;
-    border: 1px solid $color-envelope-sender-border;
+  .addressFormPlaceholderIconBg {
+    width: 75%;
+    height: 75%;
+    min-width: 3rem;
+    min-height: 3rem;
+    flex-shrink: 0;
+    pointer-events: none;
   }
+}
 
-  &Recipient {
-    color: $color-envelope-recipient-legend;
-    border: 1px solid $color-envelope-recipient-border;
-  }
+.addressFormPlaceholderSender.addressFormPlaceholderBg
+  .addressFormPlaceholderIconBg {
+  color: $color-envelope-sender-legend;
+  opacity: 0.14;
+}
 
-  &:hover {
-    border-color: $color-envelope-sender-legend;
-    color: #333;
-  }
+.addressFormPlaceholderRecipient.addressFormPlaceholderBg
+  .addressFormPlaceholderIconBg {
+  color: $color-envelope-recipient-legend;
+  opacity: 0.14;
 }
