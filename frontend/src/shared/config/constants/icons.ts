@@ -59,6 +59,7 @@ export const ICON_KEYS = [
   'listDelete',
   'listClose',
   'listAdd',
+  'listApply',
   'saveSmall',
   'plusSmall',
   'fontFamily',

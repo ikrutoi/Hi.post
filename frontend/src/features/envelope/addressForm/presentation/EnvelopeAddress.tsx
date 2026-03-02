@@ -17,9 +17,10 @@ import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import { ToolbarSection } from '@/features/toolbar/domain/types'
 import {
-  IconUserSender,
+  IconUserSenderCentered,
   IconUserRecipient,
   IconUsers,
+  IconUserSender,
 } from '@shared/ui/icons'
 
 const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
@@ -141,13 +142,21 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     >
       {role === 'sender' && (
         <div className={styles.senderToggle}>
-          <Toggle
-            label="Specify the sender's address"
-            checked={senderFacade.isEnabled}
-            onChange={senderFacade.toggleEnabled}
-            size="default"
-            variant="envelopeSender"
-          />
+          <div
+            className={clsx(
+              styles.senderToggleGroup,
+              senderFacade.isEnabled && styles.senderToggleGroupActive,
+            )}
+          >
+            <Toggle
+              label=""
+              checked={senderFacade.isEnabled}
+              onChange={senderFacade.toggleEnabled}
+              size="default"
+              variant="envelopeSender"
+            />
+            <IconUserSenderCentered className={styles.senderToggleIcon} />
+          </div>
         </div>
       )}
 
@@ -209,7 +218,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 }}
                 aria-label="Add sender address"
               >
-                <IconUserSender className={styles.addressFormPlaceholderIconBg} />
+                <IconUserSender
+                  className={styles.addressFormPlaceholderIconBg}
+                />
               </div>
             )}
           </fieldset>

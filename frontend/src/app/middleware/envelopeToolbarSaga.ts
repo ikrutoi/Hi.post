@@ -55,6 +55,7 @@ import { templateService } from '@entities/templates/domain/services/templateSer
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
+import type { RootState } from '@app/state'
 
 function addressMatches(
   data: Record<string, string>,
@@ -78,6 +79,23 @@ function* handleEnvelopeToolbarAction(
   action: ReturnType<typeof toolbarAction>,
 ) {
   const { section, key } = action.payload
+
+  if (section === 'addressList' && key === 'listApply') {
+    const recipientListPanelOpen: boolean = yield select(
+      selectRecipientListPanelOpen as any,
+    )
+    if (!recipientListPanelOpen) return
+
+    const recipient: RecipientState = yield select(selectRecipientState)
+    if (recipient.mode !== 'recipients') return
+
+    const entries: { id: string }[] = yield select(
+      (s: RootState) => s.addressBook?.recipientEntries ?? [],
+    )
+    const allIds = entries.map((e) => e.id)
+    yield put(setRecipientsPendingIds(allIds))
+    return
+  }
 
   if (section === 'senderFavorite' && key === 'favorite') {
     const sender: SenderState = yield select(selectSenderState)

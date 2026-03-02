@@ -20,7 +20,11 @@ import {
   selectRecipientState,
   selectIsRecipientComplete,
 } from '@envelope/recipient/infrastructure/selectors'
-import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
+import {
+  selectRecipientsPendingIds,
+  selectRecipientListPanelOpen,
+  selectRecipientMode,
+} from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
   setRecipientsPendingIds,
@@ -55,7 +59,11 @@ import {
 } from '@db/adapters/templateAdapters'
 import type { RootState } from '@app/state'
 import type { AddressFields } from '@shared/config/constants'
-import type { RecipientState, SenderState } from '@envelope/domain/types'
+import type {
+  RecipientState,
+  SenderState,
+  RecipientMode,
+} from '@envelope/domain/types'
 
 export function* processEnvelopeVisuals() {
   const sender: SenderState = yield select(selectSenderState)
@@ -149,6 +157,27 @@ export function* processEnvelopeVisuals() {
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
   yield put(
     updateToolbarSection({ section: 'recipient', value: recipientToolbar }),
+  )
+
+  const recipientListPanelOpen: boolean = yield select(
+    selectRecipientListPanelOpen,
+  )
+  const recipientMode: RecipientMode = yield select(selectRecipientMode)
+  const listApplyState =
+    recipientListPanelOpen && recipientMode === 'recipients'
+      ? 'enabled'
+      : 'disabled'
+
+  yield put(
+    updateToolbarSection({
+      section: 'addressList',
+      value: {
+        listApply: {
+          state: listApplyState,
+          options: {},
+        },
+      },
+    }),
   )
 
   const isSenderEmptyForm =

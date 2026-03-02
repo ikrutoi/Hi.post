@@ -152,6 +152,7 @@ import {
   IconEdit,
   IconListDelete,
   IconListAddV2,
+  IconListApply,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -194,6 +195,8 @@ export function getIconByKey(
       return <IconListClose />
     case 'listAdd':
       return <IconListAdd />
+    case 'listApply':
+      return <IconListApply />
     case 'user':
       return <RiUserLine />
     case 'rotateLeft':
