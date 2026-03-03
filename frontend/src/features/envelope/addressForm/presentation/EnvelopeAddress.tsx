@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
-import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { SenderView, RecipientView } from './AddressView'
 import { RecipientsView } from './RecipientsView'
 import { AddressFormView } from './AddressFormView'
@@ -16,12 +15,7 @@ import { setRecipientView } from '../../recipient/infrastructure/state'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import { ToolbarSection } from '@/features/toolbar/domain/types'
-import {
-  IconUserSenderCentered,
-  IconUserRecipient,
-  IconUsers,
-  IconUserSender,
-} from '@shared/ui/icons'
+import { IconUserRecipient, IconUsers, IconUserSender } from '@shared/ui/icons'
 
 const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
 
@@ -110,10 +104,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     editingTemplateId != null &&
     dataMatchesTemplate
 
-  const recipientToggleChecked =
-    role === 'recipient' && recipientFacade.isEnabled
-  const recipientToggleDisabled = false
-
   const openAddressForm = (r: 'sender' | 'recipient') => {
     envelopeFacade.setAddressFormViewState(true, r)
     if (r === 'sender') dispatch(setSenderView('addressFormSenderView'))
@@ -140,26 +130,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       )}
       onSubmit={(e) => e.preventDefault()}
     >
-      {role === 'sender' && (
-        <div className={styles.senderToggle}>
-          <div
-            className={clsx(
-              styles.senderToggleGroup,
-              senderFacade.isEnabled && styles.senderToggleGroupActive,
-            )}
-          >
-            <Toggle
-              label=""
-              checked={senderFacade.isEnabled}
-              onChange={senderFacade.toggleEnabled}
-              size="default"
-              variant="envelopeSender"
-            />
-            <IconUserSenderCentered className={styles.senderToggleIcon} />
-          </div>
-        </div>
-      )}
-
       {senderFacade.isEnabled && role === 'sender' && (
         <div className={styles.addressFormSenderBody}>
           <fieldset
@@ -345,24 +315,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       )}
 
       {role === 'recipient' && (
-        <div className={styles.recipientToggle}>
-          <div
-            className={clsx(
-              styles.recipientToggleGroup,
-              recipientToggleChecked && styles.recipientToggleGroupActive,
-            )}
-          >
-            <IconUsers className={styles.recipientToggleIcon} />
-            <Toggle
-              label=""
-              checked={recipientToggleChecked}
-              onChange={recipientFacade.toggleEnabled}
-              size="default"
-              variant="envelopeRecipient"
-              disabled={recipientToggleDisabled}
-            />
-          </div>
-        </div>
+        <div className={styles.recipientToggleSpacer} />
       )}
     </form>
   )
