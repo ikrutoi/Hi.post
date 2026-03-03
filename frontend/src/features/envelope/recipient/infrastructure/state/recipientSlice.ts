@@ -5,7 +5,13 @@ import type {
   RecipientState,
   RecipientView,
   RecipientMode,
+  SortOptions,
 } from '../../domain/types'
+
+const DEFAULT_SORT_OPTIONS: SortOptions = {
+  sortedBy: 'name',
+  direction: 'asc',
+}
 
 function isFormDraftEmpty(data: AddressFields): boolean {
   return !Object.values(data).some((v) => (v ?? '').trim() !== '')
@@ -17,6 +23,7 @@ export const initialRecipient: RecipientState = {
   viewDraft: { ...initialSection.data },
   formIsComplete: false,
   formIsEmpty: true,
+  sortOptions: DEFAULT_SORT_OPTIONS,
   recipientViewId: null,
   recipientsViewIds: [],
   applied: [],
@@ -114,6 +121,11 @@ const recipientSlice = createSlice({
       state.recipientsViewIds = action.payload
     },
 
+    toggleRecipientSortDirection(state) {
+      state.sortOptions.direction =
+        state.sortOptions.direction === 'asc' ? 'desc' : 'asc'
+    },
+
     saveAddressRequested: () => {},
   },
 })
@@ -131,6 +143,7 @@ export const {
   setRecipientView,
   setRecipientViewId,
   setRecipientsViewIds,
+  toggleRecipientSortDirection,
   saveAddressRequested,
 } = recipientSlice.actions
 export default recipientSlice.reducer

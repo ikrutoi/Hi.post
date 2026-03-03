@@ -55,7 +55,7 @@ export const AddressEntry: React.FC<Props> = ({
         <div className={styles.info} onClick={() => onSelect(entry)}>
           {entry.label ? <strong>{entry.label}</strong> : null}
           <div>
-            {[entry.address.name, entry.address.city]
+            {[entry.address.name, entry.address.city, entry.address.country]
               .filter(Boolean)
               .join(', ') || '—'}
           </div>

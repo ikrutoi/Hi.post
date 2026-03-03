@@ -40,6 +40,19 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     section === 'cardtext' ? cardtextApplied : cardphotoApplied
   const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
 
+  const senderSortDirection = useAppSelector(
+    (state) => state.sender?.sortOptions?.direction ?? 'asc',
+  )
+  const recipientSortDirection = useAppSelector(
+    (state) => state.recipient?.sortOptions?.direction ?? 'asc',
+  )
+  const sortDirection =
+    section === 'addressListSender'
+      ? senderSortDirection
+      : section === 'addressListRecipient'
+        ? recipientSortDirection
+        : undefined
+
   useEffect(() => {
     if (groupRef.current) {
       const actualHeight = groupRef.current.offsetHeight
@@ -113,6 +126,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           key: key as IconKey,
           orientation: orientation as LayoutOrientation,
           step: fontSizeStep,
+          sortDirection: key === 'sortDown' ? sortDirection : undefined,
         })}
 
         {Boolean(badge && badge > 0) && (

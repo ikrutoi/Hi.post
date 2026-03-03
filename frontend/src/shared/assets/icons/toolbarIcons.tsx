@@ -153,6 +153,8 @@ import {
   IconListDelete,
   IconListAddV2,
   IconListApply,
+  IconSortUp,
+  IconSortDown,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -311,5 +313,9 @@ export function getIconByKey(
       return <IconEmpty />
     case 'edit':
       return <IconEdit />
+    case 'sortUp':
+      return <IconSortUp />
+    case 'sortDown':
+      return <IconSortDown />
   }
 }

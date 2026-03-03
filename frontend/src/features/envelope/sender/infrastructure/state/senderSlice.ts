@@ -1,7 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { initialSection } from '../../../addressForm/domain/models'
 import type { AddressFields } from '@shared/config/constants'
-import type { SenderState, SenderView } from '../../domain/types'
+import type {
+  SenderState,
+  SenderView,
+  SenderSortOptions,
+} from '../../domain/types'
+
+const DEFAULT_SENDER_SORT_OPTIONS: SenderSortOptions = {
+  sortedBy: 'name',
+  direction: 'asc',
+}
 
 function isFormDraftEmpty(data: AddressFields): boolean {
   return !Object.values(data).some((v) => (v ?? '').trim() !== '')
@@ -13,6 +22,7 @@ export const initialSender: SenderState = {
   viewDraft: { ...initialSection.data },
   formIsComplete: false,
   formIsEmpty: true,
+  sortOptions: DEFAULT_SENDER_SORT_OPTIONS,
   senderViewId: null,
   applied: [],
   enabled: true,
@@ -93,6 +103,7 @@ export const {
   setSenderView,
   setSenderViewId,
   clearSenderFormData,
+  toggleSenderSortDirection,
   saveAddressRequested,
 } = senderSlice.actions
 export default senderSlice.reducer

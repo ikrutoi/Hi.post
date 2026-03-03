@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useAddressBookList } from '../../addressBook/application/controllers'
 import { useAddressTemplateActions } from '@entities/templates'
 import { closeSenderListPanel } from '../../infrastructure/state'
+import { toggleSenderSortDirection } from '../../sender/infrastructure/state'
 import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
@@ -13,7 +14,7 @@ import { removeAddressBookEntry } from '../../addressBook/infrastructure/state'
 
 export const useSenderListPanelFacade = () => {
   const dispatch = useAppDispatch()
-  const { entries } = useAddressBookList('sender')
+  const { entries, sortOptions } = useAddressBookList('sender')
   const { delete: deleteTemplate } = useAddressTemplateActions('sender')
 
   const addressTemplateRefs = useAppSelector(
@@ -36,6 +37,10 @@ export const useSenderListPanelFacade = () => {
 
   const closePanel = useCallback(() => {
     dispatch(closeSenderListPanel())
+  }, [dispatch])
+
+  const toggleSortDirection = useCallback(() => {
+    dispatch(toggleSenderSortDirection())
   }, [dispatch])
 
   const handleToggleStar = useCallback(
@@ -76,8 +81,10 @@ export const useSenderListPanelFacade = () => {
 
   return {
     entries,
+    sortOptions,
     starredSenderIds,
     closePanel,
+    toggleSortDirection,
     handleToggleStar,
     handleDeleteEntry,
   }

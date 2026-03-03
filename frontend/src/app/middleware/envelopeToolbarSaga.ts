@@ -7,6 +7,7 @@ import {
   setSenderView,
   setSenderViewId,
   clearSenderFormData,
+  toggleSenderSortDirection,
   saveAddressRequested as senderSaveRequested,
 } from '@envelope/sender/infrastructure/state'
 import {
@@ -18,6 +19,7 @@ import {
   setRecipientsViewIds,
   setRecipientMode,
   clearRecipientFormData,
+  toggleRecipientSortDirection,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
 import {
@@ -80,6 +82,15 @@ function* handleEnvelopeToolbarAction(
   action: ReturnType<typeof toolbarAction>,
 ) {
   const { section, key } = action.payload
+
+  if (section === 'addressListSender' && key === 'sortDown') {
+    yield put(toggleSenderSortDirection())
+    return
+  }
+  if (section === 'addressListRecipient' && key === 'sortDown') {
+    yield put(toggleRecipientSortDirection())
+    return
+  }
 
   if (section === 'addressListRecipient' && key === 'listApply') {
     const recipientListPanelOpen: boolean = yield select(
@@ -456,6 +467,8 @@ function* handleEnvelopeToolbarAction(
             formIsComplete: Object.values(address).every(
               (v) => (v ?? '').trim() !== ''
             ),
+            formIsEmpty: true,
+            sortOptions: { sortedBy: 'name', direction: 'asc' },
             recipientViewId: id,
             recipientsViewIds: [],
             applied: [id],

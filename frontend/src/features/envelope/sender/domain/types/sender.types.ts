@@ -11,12 +11,23 @@ export const senderLayout: AddressLayout = [
 
 export type SenderView = 'addressFormSenderView' | 'senderView'
 
+export const SENDER_SORTED_BY = ['name', 'country', 'city', 'order'] as const
+export type SenderSortedBy = (typeof SENDER_SORTED_BY)[number]
+
+export type SenderSortDirection = 'asc' | 'desc'
+
+export type SenderSortOptions = {
+  sortedBy: SenderSortedBy
+  direction: SenderSortDirection
+}
+
 export type SenderState = {
   currentView: SenderView
   formDraft: AddressFields
   viewDraft: AddressFields
   formIsComplete: boolean
   formIsEmpty: boolean
+  sortOptions: SenderSortOptions
   senderViewId: string | null
   applied: string[]
   enabled: boolean

@@ -2,7 +2,20 @@ import { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 
-/** Массив в сторе: старые → новые (push). Для отображения отдаём с конца (новые сверху). */
+function sortEntriesByName(
+  entries: AddressBookEntry[],
+  direction: 'asc' | 'desc',
+): AddressBookEntry[] {
+  const sorted = [...entries].sort((a, b) =>
+    (a.address?.name ?? '').trim().localeCompare(
+      (b.address?.name ?? '').trim(),
+      undefined,
+      { sensitivity: 'base' },
+    ),
+  )
+  return direction === 'desc' ? sorted.reverse() : sorted
+}
+
 export const useAddressBookList = (role: 'sender' | 'recipient') => {
   const rawEntries: AddressBookEntry[] = useAppSelector((state) =>
     role === 'sender'
@@ -10,10 +23,16 @@ export const useAddressBookList = (role: 'sender' | 'recipient') => {
       : (state.addressBook?.recipientEntries ?? []),
   )
 
-  const entries = useMemo(
-    () => [...rawEntries].reverse(),
-    [rawEntries],
+  const sortOptions = useAppSelector((state) =>
+    role === 'sender'
+      ? state.sender?.sortOptions ?? { sortedBy: 'name', direction: 'asc' }
+      : state.recipient?.sortOptions ?? { sortedBy: 'name', direction: 'asc' },
   )
 
-  return { entries }
+  const entries = useMemo(
+    () => sortEntriesByName(rawEntries, sortOptions.direction),
+    [rawEntries, sortOptions.direction],
+  )
+
+  return { entries, sortOptions }
 }

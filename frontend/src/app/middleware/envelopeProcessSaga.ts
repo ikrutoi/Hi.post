@@ -158,7 +158,6 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasRecipientDraft,
     isAddressFormOpen: recipient.currentView === 'addressFormRecipientView',
     formIsEmpty: recipient.formIsEmpty ?? true,
-    isFormDraftEmptyNow: !checkHasData(recipient.formDraft),
   })
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
