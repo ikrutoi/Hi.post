@@ -75,7 +75,7 @@ export const selectRecipientViewId = (state: RootState): string | null =>
   state.recipient.recipientViewId
 
 export const selectRecipientsViewIds = (state: RootState): string[] =>
-  state.recipient.recipientsViewIds ?? []
+  state.recipient.recipientsViewIdsFirstList ?? []
 
 export const selectRecipientApplied = (state: RootState): string[] =>
   state.recipient.applied ?? []

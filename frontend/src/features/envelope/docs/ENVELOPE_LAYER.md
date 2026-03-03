@@ -14,7 +14,7 @@
 ### Уже в фичах sender / recipient
 
 - **sender:** `senderSlice` — данные отправителя, viewId, applied, enabled.
-- **recipient:** `recipientSlice` — данные получателя, recipientViewId, recipientsViewIds, **enabled** (= режим один/несколько).
+- **recipient:** `recipientSlice` — данные получателя, recipientViewId, recipientsViewIdsFirstList, **enabled** (= режим один/несколько).
 
 `recipient.mode` — источник правды для режима один/несколько (`'recipient' | 'recipients'`); `envelopeSelection.recipientMode` больше не используется.
 

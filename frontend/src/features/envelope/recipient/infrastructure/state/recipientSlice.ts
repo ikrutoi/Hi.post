@@ -6,6 +6,7 @@ import type {
   RecipientView,
   RecipientMode,
   SortOptions,
+  CurrentRecipientsList,
 } from '../../domain/types'
 
 const DEFAULT_SORT_OPTIONS: SortOptions = {
@@ -25,7 +26,9 @@ export const initialRecipient: RecipientState = {
   formIsEmpty: true,
   sortOptions: DEFAULT_SORT_OPTIONS,
   recipientViewId: null,
-  recipientsViewIds: [],
+  recipientsViewIdsFirstList: [],
+  recipientsViewIdsSecondList: [],
+  currentRecipientsList: 'first',
   applied: [],
   mode: 'recipient',
 }
@@ -118,7 +121,21 @@ const recipientSlice = createSlice({
     },
 
     setRecipientsViewIds: (state, action: PayloadAction<string[]>) => {
-      state.recipientsViewIds = action.payload
+      state.recipientsViewIdsFirstList = action.payload
+    },
+
+    setRecipientsViewIdsSecondList: (
+      state,
+      action: PayloadAction<string[]>,
+    ) => {
+      state.recipientsViewIdsSecondList = action.payload
+    },
+
+    setCurrentRecipientsList: (
+      state,
+      action: PayloadAction<CurrentRecipientsList>,
+    ) => {
+      state.currentRecipientsList = action.payload
     },
 
     toggleRecipientSortDirection(state) {
@@ -143,6 +160,8 @@ export const {
   setRecipientView,
   setRecipientViewId,
   setRecipientsViewIds,
+  setRecipientsViewIdsSecondList,
+  setCurrentRecipientsList,
   toggleRecipientSortDirection,
   saveAddressRequested,
 } = recipientSlice.actions

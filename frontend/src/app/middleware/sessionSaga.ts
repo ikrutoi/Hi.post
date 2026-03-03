@@ -292,7 +292,9 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           formIsComplete: isComplete,
           recipientViewId: recipient.recipientViewId,
           currentView: 'recipientView',
-          recipientsViewIds: recipient.recipientsViewIds ?? [],
+          recipientsViewIdsFirstList: recipient.recipientsViewIdsFirstList ?? [],
+          recipientsViewIdsSecondList: recipient.recipientsViewIdsSecondList ?? [],
+          currentRecipientsList: recipient.currentRecipientsList ?? 'first',
           applied: [],
           mode: recipient.mode,
         }),
@@ -304,7 +306,7 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
   if (
     Array.isArray(recipients) &&
     recipients.length > 0 &&
-    (recipient.recipientsViewIds?.length ?? 0) === 0
+    (recipient.recipientsViewIdsFirstList?.length ?? 0) === 0
   ) {
     yield put(
       setRecipientsViewIds(

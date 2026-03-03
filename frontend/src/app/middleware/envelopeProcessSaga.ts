@@ -38,6 +38,7 @@ import {
 import {
   setRecipientViewId,
   setRecipientsViewIds,
+  setRecipientsViewIdsSecondList,
   resetRecipientForm,
 } from '@envelope/recipient/infrastructure/state'
 import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
@@ -80,8 +81,9 @@ export function* processEnvelopeVisuals() {
   if (
     Array.isArray(recipients) &&
     recipients.length > 0 &&
-    (recipient.recipientsViewIds?.length ?? 0) === 0
+    (recipient.recipientsViewIdsFirstList?.length ?? 0) === 0
   ) {
+    // Инициализируем первый список id при наличии envelopeRecipients
     yield put(
       setRecipientsViewIds(
         recipients
@@ -94,7 +96,12 @@ export function* processEnvelopeVisuals() {
     Array.isArray(pendingIds) &&
     pendingIds.length > 0
   ) {
-    yield put(setRecipientsViewIds([...pendingIds]))
+    // В режиме «Получатели» синхронизируем активный список с временным UI-выбором
+    if (recipient.currentRecipientsList === 'first') {
+      yield put(setRecipientsViewIds([...pendingIds]))
+    } else {
+      yield put(setRecipientsViewIdsSecondList([...pendingIds]))
+    }
   }
 
   const senderComplete: boolean = yield select(selectIsSenderComplete)

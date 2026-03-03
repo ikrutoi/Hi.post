@@ -16,6 +16,8 @@ export type RecipientView =
 
 export type RecipientMode = 'recipient' | 'recipients'
 
+export type CurrentRecipientsList = 'first' | 'second'
+
 export const SORTED_BY = ['name', 'country', 'city', 'order'] as const
 export type SortedBy = (typeof SORTED_BY)[number]
 
@@ -31,12 +33,13 @@ export type RecipientState = {
   formDraft: AddressFields
   viewDraft: AddressFields
   formIsComplete: boolean
-  /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
   formIsEmpty: boolean
   sortOptions: SortOptions
   recipientViewId: string | null
-  recipientsViewIds: string[]
-  // recipientsViewFullList: boolean
+  recipientsViewIdsFirstList: string[]
+  recipientsViewIdsSecondList: string[]
+  /** Какой список получателей активен в режиме «Получатели» */
+  currentRecipientsList: CurrentRecipientsList
   applied: string[]
   mode: RecipientMode
 }

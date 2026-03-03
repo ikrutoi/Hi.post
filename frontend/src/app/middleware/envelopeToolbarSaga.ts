@@ -17,6 +17,8 @@ import {
   setRecipientView,
   setRecipientViewId,
   setRecipientsViewIds,
+  setRecipientsViewIdsSecondList,
+  setCurrentRecipientsList,
   setRecipientMode,
   clearRecipientFormData,
   toggleRecipientSortDirection,
@@ -26,6 +28,7 @@ import {
   toggleRecipientListPanel,
   toggleSenderListPanel,
   setRecipientsList,
+  setRecipientsPendingIds,
   clearRecipientsPending,
   setSenderViewEditMode,
   setRecipientViewEditMode,
@@ -34,6 +37,7 @@ import {
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientsPendingIds,
+  selectRecipientListPanelOpen,
   selectAddressFormViewRole,
   selectSenderViewEditMode,
   selectRecipientViewEditMode,
@@ -105,7 +109,26 @@ function* handleEnvelopeToolbarAction(
       (s: RootState) => s.addressBook?.recipientEntries ?? [],
     )
     const allIds = entries.map((e) => e.id)
-    yield put(setRecipientsPendingIds(allIds))
+
+    // Первый клик по listApply в первом списке и при пустом втором — «выбрать всё» как второй список
+    if (
+      recipient.currentRecipientsList === 'first' &&
+      (recipient.recipientsViewIdsSecondList?.length ?? 0) === 0
+    ) {
+      yield put(setRecipientsViewIdsSecondList(allIds))
+      yield put(setCurrentRecipientsList('second'))
+      yield put(setRecipientsPendingIds(allIds))
+      return
+    }
+
+    // Повторные клики — просто переключаемся между first/second и синхронизируем подсветку
+    if (recipient.currentRecipientsList === 'first') {
+      yield put(setCurrentRecipientsList('second'))
+      yield put(setRecipientsPendingIds(recipient.recipientsViewIdsSecondList))
+    } else {
+      yield put(setCurrentRecipientsList('first'))
+      yield put(setRecipientsPendingIds(recipient.recipientsViewIdsFirstList))
+    }
     return
   }
 
@@ -471,7 +494,9 @@ function* handleEnvelopeToolbarAction(
             formIsEmpty: true,
             sortOptions: { sortedBy: 'name', direction: 'asc' },
             recipientViewId: id,
-            recipientsViewIds: [],
+            recipientsViewIdsFirstList: [],
+            recipientsViewIdsSecondList: [],
+            currentRecipientsList: 'first',
             applied: [id],
             mode: 'recipient',
           })
