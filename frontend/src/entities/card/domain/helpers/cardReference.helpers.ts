@@ -21,9 +21,9 @@ export function createCardReferenceFromCard(
     preview: {
       cardphotoPreview: card.cardphoto.previewUrl,
       cardtextPreview: card.cardtext.plainText.substring(0, 100),
-      recipientPreview: formatAddressPreview(card.envelope.recipient.addressFormData),
+      recipientPreview: formatAddressPreview(card.envelope.recipient.viewDraft),
       senderPreview: card.envelope.sender.enabled
-        ? formatAddressPreview(card.envelope.sender.addressFormData)
+        ? formatAddressPreview(card.envelope.sender.viewDraft)
         : undefined,
       aromaPreview: card.aroma.name,
       datePreview: formatDatePreview(card.date),

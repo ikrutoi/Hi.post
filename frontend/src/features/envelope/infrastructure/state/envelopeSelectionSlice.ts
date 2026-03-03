@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 /**
  * UI-состояние выбора конверта (панели, какая форма открыта).
- * Данные формы адреса хранятся только в sender/recipient.addressFormData.
+ * Данные формы адреса хранятся только в sender/recipient.formDraft / sender/recipient.viewDraft.
  */
 export interface EnvelopeSelectionState {
   recipientsPendingIds: string[]

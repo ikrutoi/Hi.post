@@ -25,28 +25,42 @@ export type AddressRole = EnvelopeRole
 export const emptyEnvelope = {
   sender: {
     currentView: 'addressFormSenderView' as const,
-    addressFormData: {
+    formDraft: {
       name: '',
       street: '',
       zip: '',
       city: '',
       country: '',
     } as AddressFields,
-    addressFormIsComplete: false,
+    viewDraft: {
+      name: '',
+      street: '',
+      zip: '',
+      city: '',
+      country: '',
+    } as AddressFields,
+    formIsComplete: false,
     senderViewId: null,
     applied: [],
     enabled: true,
   } as SenderState,
   recipient: {
     currentView: 'addressFormRecipientView' as const,
-    addressFormData: {
+    formDraft: {
       name: '',
       street: '',
       zip: '',
       city: '',
       country: '',
     } as AddressFields,
-    addressFormIsComplete: false,
+    viewDraft: {
+      name: '',
+      street: '',
+      zip: '',
+      city: '',
+      country: '',
+    } as AddressFields,
+    formIsComplete: false,
     recipientViewId: null,
     recipientsViewIds: [],
     applied: [],

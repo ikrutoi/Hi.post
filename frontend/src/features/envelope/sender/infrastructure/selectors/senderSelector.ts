@@ -10,7 +10,12 @@ export const selectSenderView = (state: RootState): SenderView =>
 
 export const selectSenderAddressFormData = createSelector(
   [selectSenderState],
-  (sender): Readonly<AddressFields> => sender.addressFormData,
+  (sender): Readonly<AddressFields> => sender.viewDraft,
+)
+
+export const selectSenderFormDraft = createSelector(
+  [selectSenderState],
+  (sender): Readonly<AddressFields> => sender.formDraft,
 )
 
 export const selectSenderAddress = selectSenderAddressFormData
@@ -18,19 +23,19 @@ export const selectSenderAddress = selectSenderAddressFormData
 export const selectSenderField = (
   state: RootState,
   field: keyof AddressFields,
-): string => state.sender.addressFormData[field]
+): string => state.sender.viewDraft[field]
 
 export const selectSenderCompletedFields = createSelector(
   [selectSenderState],
   (sender): (keyof AddressFields)[] =>
-    (Object.keys(sender.addressFormData) as (keyof AddressFields)[]).filter(
-      (key) => sender.addressFormData[key].trim() !== '',
+    (Object.keys(sender.viewDraft) as (keyof AddressFields)[]).filter(
+      (key) => sender.viewDraft[key].trim() !== '',
     ),
 )
 
 export const selectIsSenderComplete = createSelector(
   [selectSenderState],
-  (sender) => sender.addressFormIsComplete,
+  (sender) => sender.formIsComplete,
 )
 
 export const selectIsSenderEnabled = (state: RootState): boolean =>
@@ -41,3 +46,6 @@ export const selectSenderViewId = (state: RootState): string | null =>
 
 export const selectSenderApplied = (state: RootState): string[] =>
   state.sender.applied ?? []
+
+export const selectSenderFormIsEmpty = (state: RootState): boolean =>
+  state.sender.formIsEmpty ?? true

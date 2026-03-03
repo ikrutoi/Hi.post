@@ -24,6 +24,8 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const recipientListOpen = recipientFacade.listPanelOpen
   const senderListOpen = senderFacade.listPanelOpen
 
+  console.log('recipient', recipientFacade.state)
+
   return (
     <div className={styles.envelope}>
       <div
@@ -94,46 +96,46 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
       </div>
 
       {!recipientListOpen && (
-      <div className={styles.envelopeSenderToggle}>
-        <div
-          className={clsx(
-            styles.envelopeSenderToggleGroup,
-            senderFacade.isEnabled && styles.envelopeSenderToggleGroupActive,
-          )}
-        >
-          <Toggle
-            label=""
-            checked={senderFacade.isEnabled}
-            onChange={senderFacade.toggleEnabled}
-            size="default"
-            variant="envelopeSender"
-          />
-          <IconUserSenderCentered
-            className={styles.envelopeSenderToggleIcon}
-          />
+        <div className={styles.envelopeSenderToggle}>
+          <div
+            className={clsx(
+              styles.envelopeSenderToggleGroup,
+              senderFacade.isEnabled && styles.envelopeSenderToggleGroupActive,
+            )}
+          >
+            <Toggle
+              label=""
+              checked={senderFacade.isEnabled}
+              onChange={senderFacade.toggleEnabled}
+              size="default"
+              variant="envelopeSender"
+            />
+            <IconUserSenderCentered
+              className={styles.envelopeSenderToggleIcon}
+            />
+          </div>
         </div>
-      </div>
       )}
 
       {!senderListOpen && (
-      <div className={styles.envelopeRecipientToggle}>
-        <div
-          className={clsx(
-            styles.envelopeRecipientToggleGroup,
-            recipientFacade.isEnabled &&
-              styles.envelopeRecipientToggleGroupActive,
-          )}
-        >
-          <IconUsers className={styles.envelopeRecipientToggleIcon} />
-          <Toggle
-            label=""
-            checked={recipientFacade.isEnabled}
-            onChange={recipientFacade.toggleEnabled}
-            size="default"
-            variant="envelopeRecipient"
-          />
+        <div className={styles.envelopeRecipientToggle}>
+          <div
+            className={clsx(
+              styles.envelopeRecipientToggleGroup,
+              recipientFacade.isEnabled &&
+                styles.envelopeRecipientToggleGroupActive,
+            )}
+          >
+            <IconUsers className={styles.envelopeRecipientToggleIcon} />
+            <Toggle
+              label=""
+              checked={recipientFacade.isEnabled}
+              onChange={recipientFacade.toggleEnabled}
+              size="default"
+              variant="envelopeRecipient"
+            />
+          </div>
         </div>
-      </div>
       )}
     </div>
   )

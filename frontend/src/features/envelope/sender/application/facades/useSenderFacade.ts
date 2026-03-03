@@ -8,6 +8,7 @@ import {
   selectSenderCompletedFields,
   selectSenderState,
   selectSenderView,
+  selectSenderFormDraft,
 } from '../../infrastructure/selectors'
 import { AddressField } from '@/shared/config/constants'
 import {
@@ -28,6 +29,7 @@ export const useSenderFacade = () => {
 
   const state = useAppSelector(selectSenderState)
   const address = useAppSelector(selectSenderAddress)
+  const formDraft = useAppSelector(selectSenderFormDraft)
   const completedFields = useAppSelector(selectSenderCompletedFields)
   const isComplete = useAppSelector(selectIsSenderComplete)
   const isEnabled = useAppSelector(selectIsSenderEnabled)
@@ -37,11 +39,13 @@ export const useSenderFacade = () => {
 
   const selectFromList = useCallback(
     (entry: { id: string; address: Record<string, string> }) => {
-      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(([field, value]) =>
-        dispatch(updateSenderField({ field, value })),
-      )
-      dispatch(setSenderViewId(entry.id))
+      // Сначала переключаемся в senderView, затем заполняем данные шаблона
       dispatch(setSenderView('senderView'))
+      dispatch(setSenderViewId(entry.id))
+      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
+        ([field, value]) =>
+          dispatch(updateSenderField({ field, value })),
+      )
       dispatch(closeSenderListPanelAction())
     },
     [dispatch],
@@ -63,6 +67,7 @@ export const useSenderFacade = () => {
   return {
     state,
     address,
+    formDraft,
     completedFields,
     isComplete,
     isEnabled,

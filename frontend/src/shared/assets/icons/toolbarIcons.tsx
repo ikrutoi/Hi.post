@@ -147,7 +147,7 @@ import {
   IconDeleteV2,
   IconDeleteV3,
   IconStar,
-  IconAddressPlus,
+  IconAddressAdd,
   IconEmpty,
   IconEdit,
   IconListDelete,
@@ -303,8 +303,8 @@ export function getIconByKey(
       return <IconSectionMenuDate />
     case 'favorite':
       return <IconStar />
-    case 'addressPlus':
-      return <IconAddressPlus />
+    case 'addressAdd':
+      return <IconAddressAdd />
     case 'search':
       return <TbSearch />
     case 'empty':

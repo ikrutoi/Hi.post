@@ -20,7 +20,9 @@
   flex-shrink: 0;
   color: $color-envelope-sender-legend;
   opacity: 0.5;
-  transition: opacity 0.2s ease, color 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
 }
 
 .senderToggleGroupActive .senderToggleIcon {
@@ -46,7 +48,9 @@
   flex-shrink: 0;
   color: $color-envelope-recipient-legend;
   opacity: 0.5;
-  transition: opacity 0.2s ease, color 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
 }
 
 .recipientToggleGroupActive .recipientToggleIcon {
@@ -257,6 +261,7 @@
     min-height: 3rem;
     flex-shrink: 0;
     pointer-events: none;
+    transition: opacity 0.2s ease;
   }
 }
 
@@ -266,8 +271,18 @@
   opacity: 0.14;
 }
 
+.addressFormPlaceholderSender.addressFormPlaceholderBg:hover
+  .addressFormPlaceholderIconBg {
+  opacity: 0.17;
+}
+
 .addressFormPlaceholderRecipient.addressFormPlaceholderBg
   .addressFormPlaceholderIconBg {
   color: $color-envelope-recipient-legend;
   opacity: 0.14;
+}
+
+.addressFormPlaceholderRecipient.addressFormPlaceholderBg:hover
+  .addressFormPlaceholderIconBg {
+  opacity: 0.17;
 }

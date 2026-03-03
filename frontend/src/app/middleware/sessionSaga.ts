@@ -254,42 +254,42 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
   const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
 
-  if (sender.senderViewId != null && !hasAddressData(sender.addressFormData)) {
+      if (sender.senderViewId != null && !hasAddressData(sender.viewDraft)) {
     const record: { id: string; address?: Record<string, string> } | null =
       yield call([senderAdapter, 'getById'], sender.senderViewId)
-    if (record?.address) {
-      const address = record.address as SenderState['addressFormData']
-      const isComplete = Object.values(address).every(
-        (v) => (v ?? '').trim() !== '',
-      )
-      yield put(
-        restoreSender({
-          addressFormData: address,
-          addressFormIsComplete: isComplete,
-          senderViewId: sender.senderViewId,
-          currentView: 'senderView',
-          applied: [],
-          enabled: true,
-        }),
-      )
-    }
+        if (record?.address) {
+          const address = record.address as SenderState['viewDraft']
+          const isComplete = Object.values(address).every(
+            (v) => (v ?? '').trim() !== '',
+          )
+          yield put(
+            restoreSender({
+              viewDraft: address,
+              formIsComplete: isComplete,
+              senderViewId: sender.senderViewId,
+              currentView: 'senderView',
+              applied: [],
+              enabled: true,
+            }),
+          )
+        }
   }
 
   if (
     recipient.recipientViewId != null &&
-    !hasAddressData(recipient.addressFormData)
+    !hasAddressData(recipient.viewDraft)
   ) {
     const record: { id: string; address?: Record<string, string> } | null =
       yield call([recipientAdapter, 'getById'], recipient.recipientViewId)
     if (record?.address) {
-      const address = record.address as RecipientState['addressFormData']
+      const address = record.address as RecipientState['viewDraft']
       const isComplete = Object.values(address).every(
         (v) => (v ?? '').trim() !== '',
       )
       yield put(
         restoreRecipient({
-          addressFormData: address,
-          addressFormIsComplete: isComplete,
+          viewDraft: address,
+          formIsComplete: isComplete,
           recipientViewId: recipient.recipientViewId,
           currentView: 'recipientView',
           recipientsViewIds: recipient.recipientsViewIds ?? [],

@@ -11,21 +11,40 @@ export const selectRecipientView = (state: RootState): RecipientView =>
 
 export const selectRecipientAddressFormData = createSelector(
   [selectRecipientState],
-  (recipient): Readonly<AddressFields> => recipient.addressFormData,
+  (recipient): Readonly<AddressFields> => recipient.viewDraft,
 )
 
-/** Адрес для отображения: в recipientView с шаблоном — из адресной книги по recipientViewId, иначе — addressFormData. */
+export const selectRecipientFormDraft = createSelector(
+  [selectRecipientState],
+  (recipient): Readonly<AddressFields> => recipient.formDraft,
+)
+
+/** Адрес для отображения:
+ * - в recipientView с шаблоном и в режиме просмотра — из адресной книги по recipientViewId
+ * - в режиме редактирования — из viewDraft.
+ */
 export const selectRecipientDisplayAddress = createSelector(
-  [selectRecipientState, (s: RootState) => s.addressBook?.recipientEntries ?? []],
-  (recipient, entries): Readonly<AddressFields> => {
+  [
+    selectRecipientState,
+    (s: RootState) => s.addressBook?.recipientEntries ?? [],
+    (s: RootState) => s.envelopeSelection?.recipientViewEditMode ?? false,
+  ],
+  (
+    recipient,
+    entries,
+    recipientViewEditMode,
+  ): Readonly<AddressFields> => {
     if (
+      !recipientViewEditMode &&
       recipient.currentView === 'recipientView' &&
       recipient.recipientViewId
     ) {
-      const entry = entries.find((e: { id: string }) => e.id === recipient.recipientViewId)
+      const entry = entries.find(
+        (e: { id: string }) => e.id === recipient.recipientViewId,
+      )
       if (entry?.address) return entry.address as AddressFields
     }
-    return recipient.addressFormData
+    return recipient.viewDraft
   },
 )
 
@@ -34,19 +53,19 @@ export const selectRecipientAddress = selectRecipientAddressFormData
 export const selectRecipientField = (
   state: RootState,
   field: keyof AddressFields,
-): string => state.recipient.addressFormData[field]
+): string => state.recipient.viewDraft[field]
 
 export const selectRecipientCompletedFields = createSelector(
   [selectRecipientState],
   (recipient): (keyof AddressFields)[] =>
-    (Object.keys(recipient.addressFormData) as (keyof AddressFields)[]).filter(
-      (key) => recipient.addressFormData[key].trim() !== '',
+    (Object.keys(recipient.viewDraft) as (keyof AddressFields)[]).filter(
+      (key) => recipient.viewDraft[key].trim() !== '',
     ),
 )
 
 export const selectIsRecipientComplete = createSelector(
   [selectRecipientState],
-  (recipient) => recipient.addressFormIsComplete,
+  (recipient) => recipient.formIsComplete,
 )
 
 export const selectRecipientEnabled = (state: RootState): boolean =>
@@ -60,3 +79,6 @@ export const selectRecipientsViewIds = (state: RootState): string[] =>
 
 export const selectRecipientApplied = (state: RootState): string[] =>
   state.recipient.applied ?? []
+
+export const selectRecipientFormIsEmpty = (state: RootState): boolean =>
+  state.recipient.formIsEmpty ?? true

@@ -7,10 +7,16 @@ import type {
   RecipientMode,
 } from '../../domain/types'
 
+function isFormDraftEmpty(data: AddressFields): boolean {
+  return !Object.values(data).some((v) => (v ?? '').trim() !== '')
+}
+
 export const initialRecipient: RecipientState = {
   currentView: 'addressFormRecipientView',
-  addressFormData: { ...initialSection.data },
-  addressFormIsComplete: false,
+  formDraft: { ...initialSection.data },
+  viewDraft: { ...initialSection.data },
+  formIsComplete: false,
+  formIsEmpty: true,
   recipientViewId: null,
   recipientsViewIds: [],
   applied: [],
@@ -29,8 +35,14 @@ const recipientSlice = createSlice({
       state,
       action: PayloadAction<{ field: keyof AddressFields; value: string }>,
     ) => {
-      state.addressFormData[action.payload.field] = action.payload.value
-      state.addressFormIsComplete = isComplete(state.addressFormData)
+      const { field, value } = action.payload
+      if (state.currentView === 'addressFormRecipientView') {
+        state.formDraft[field] = value
+        state.formIsComplete = isComplete(state.formDraft)
+      } else {
+        state.viewDraft[field] = value
+        state.formIsComplete = isComplete(state.viewDraft)
+      }
     },
 
     restoreRecipient: (
@@ -45,27 +57,37 @@ const recipientSlice = createSlice({
 
     setEnabled: (state, action: PayloadAction<boolean>) => {
       state.mode = action.payload ? 'recipients' : 'recipient'
-      if (action.payload) state.currentView = 'recipientsView'
-      else state.currentView = 'recipientView'
+      if (action.payload) {
+        state.currentView = 'recipientsView'
+      } else {
+        state.currentView = 'recipientView'
+      }
+      state.formIsEmpty = isFormDraftEmpty(state.formDraft)
     },
 
     setRecipientMode: (state, action: PayloadAction<RecipientMode>) => {
       state.mode = action.payload
-      if (action.payload === 'recipients') state.currentView = 'recipientsView'
-      else state.currentView = 'recipientView'
+      if (action.payload === 'recipients') {
+        state.currentView = 'recipientsView'
+      } else {
+        state.currentView = 'recipientView'
+      }
+      state.formIsEmpty = isFormDraftEmpty(state.formDraft)
     },
 
     clearRecipient: () => initialRecipient,
 
     resetRecipientForm: (state) => {
       state.currentView = 'addressFormRecipientView'
-      state.addressFormData = { ...initialSection.data }
-      state.addressFormIsComplete = false
+      state.formDraft = { ...initialSection.data }
+      state.formIsComplete = false
+      state.formIsEmpty = true
     },
 
     clearRecipientFormData(state) {
-      state.addressFormData = { ...initialSection.data }
-      state.addressFormIsComplete = false
+      state.formDraft = { ...initialSection.data }
+      state.formIsComplete = false
+      state.formIsEmpty = true
     },
 
     setRecipientAppliedIds: (state, action: PayloadAction<string[]>) => {
@@ -77,7 +99,11 @@ const recipientSlice = createSlice({
     },
 
     setRecipientView: (state, action: PayloadAction<RecipientView>) => {
-      state.currentView = action.payload
+      const nextView = action.payload
+      if (nextView !== 'addressFormRecipientView') {
+        state.formIsEmpty = isFormDraftEmpty(state.formDraft)
+      }
+      state.currentView = nextView
     },
 
     setRecipientViewId: (state, action: PayloadAction<string | null>) => {

@@ -69,7 +69,7 @@ export const ICON_KEYS = [
   'fontSizeMore',
   'fontSizeLess',
   'favorite',
-  'addressPlus',
+  'addressAdd',
   'clearInput',
   'search',
   'empty',

@@ -9,15 +9,29 @@ import {
   restoreEditorSession,
 } from '@entities/sectionEditorMenu/infrastructure/state'
 
-function idsMatch(
-  a: { id: string }[],
-  b: { id: string }[],
-): boolean {
+function entriesMatch(a: AddressBookEntry[], b: AddressBookEntry[]): boolean {
   if (a.length !== b.length) return false
-  const setA = new Set(a.map((e) => e.id))
-  const setB = new Set(b.map((e) => e.id))
-  if (setA.size !== setB.size) return false
-  for (const id of setA) if (!setB.has(id)) return false
+
+  const mapB = new Map(b.map((e) => [e.id, e]))
+
+  for (const entryA of a) {
+    const entryB = mapB.get(entryA.id)
+    if (!entryB) return false
+
+    const addrA = entryA.address
+    const addrB = entryB.address
+
+    if (
+      addrA.name !== addrB.name ||
+      addrA.street !== addrB.street ||
+      addrA.city !== addrB.city ||
+      addrA.zip !== addrB.zip ||
+      addrA.country !== addrB.country
+    ) {
+      return false
+    }
+  }
+
   return true
 }
 
@@ -44,9 +58,9 @@ function toAddressBookEntry(
 function* syncAddressBookFromDb() {
   try {
     const current: {
-      senderEntries: { id: string }[]
-      recipientEntries: { id: string }[]
-    } = yield select((s: { addressBook?: { senderEntries?: { id: string }[]; recipientEntries?: { id: string }[] } }) => ({
+      senderEntries: AddressBookEntry[]
+      recipientEntries: AddressBookEntry[]
+    } = yield select((s: { addressBook?: { senderEntries?: AddressBookEntry[]; recipientEntries?: AddressBookEntry[] } }) => ({
       senderEntries: s.addressBook?.senderEntries ?? [],
       recipientEntries: s.addressBook?.recipientEntries ?? [],
     }))
@@ -76,10 +90,11 @@ function* syncAddressBookFromDb() {
       toAddressBookEntry(r as AddressTemplateItem, 'recipient'),
     )
 
-    const senderChanged =
-      !idsMatch(current.senderEntries, senderEntries)
-    const recipientChanged =
-      !idsMatch(current.recipientEntries, recipientEntries)
+    const senderChanged = !entriesMatch(current.senderEntries, senderEntries)
+    const recipientChanged = !entriesMatch(
+      current.recipientEntries,
+      recipientEntries,
+    )
 
     if (senderChanged || recipientChanged) {
       yield put(

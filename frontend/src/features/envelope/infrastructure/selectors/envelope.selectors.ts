@@ -113,7 +113,7 @@ export const selectRecipientListPendingIds = createSelector(
     if (recipientEnabled) return recipientsPendingIds ?? []
     const addressForMatch: AddressFields =
       recipient.currentView === 'addressFormRecipientView'
-        ? recipient.addressFormData
+        ? recipient.formDraft
         : recipient.recipientViewId
           ? ((recipientEntries.find((e) => e.id === recipient.recipientViewId)
               ?.address as AddressFields) ?? emptyAddressFields)
@@ -128,7 +128,7 @@ export const selectSenderSelectedId = createSelector(
   (sender, senderEntries) =>
     sender.currentView === 'senderView' && sender.senderViewId
       ? sender.senderViewId
-      : getMatchingEntryId(sender.addressFormData, senderEntries),
+      : getMatchingEntryId(sender.viewDraft, senderEntries),
 )
 
 export const selectRecipientsDisplayList = createSelector(
@@ -143,7 +143,7 @@ export const selectRecipientsDisplayList = createSelector(
       return envelopeRecipients.map((r, i) => ({
         id: `recipient-${i}`,
         role: 'recipient' as const,
-        address: { ...r.addressFormData },
+        address: { ...r.viewDraft },
         createdAt: new Date().toISOString(),
       }))
     }

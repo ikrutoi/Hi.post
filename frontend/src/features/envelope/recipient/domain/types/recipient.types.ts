@@ -18,8 +18,10 @@ export type RecipientMode = 'recipient' | 'recipients'
 
 export type RecipientState = {
   currentView: RecipientView
-  addressFormData: AddressFields
-  addressFormIsComplete: boolean
+  formDraft: AddressFields
+  viewDraft: AddressFields
+  formIsComplete: boolean
+  formIsEmpty: boolean
   recipientViewId: string | null
   recipientsViewIds: string[]
   // recipientsViewFullList: boolean

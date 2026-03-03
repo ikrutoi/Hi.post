@@ -5,7 +5,7 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 export const ENVELOPE_KEYS = [
   'addressList',
   'apply',
-  'addressPlus',
+  'addressAdd',
   'listAdd',
   // 'listClose',
 ] as const satisfies readonly IconKey[]
@@ -23,7 +23,7 @@ export const SENDER_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'addressList', state: 'disabled' },
       { key: 'apply', state: 'disabled' },
-      { key: 'addressPlus', state: 'enabled' },
+      { key: 'addressAdd', state: 'enabled' },
       // { key: 'listAdd', state: 'disabled' },
     ],
     status: 'enabled',
@@ -41,7 +41,7 @@ export const RECIPIENT_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'addressList', state: 'disabled' },
       { key: 'apply', state: 'disabled' },
-      { key: 'addressPlus', state: 'enabled' },
+      { key: 'addressAdd', state: 'enabled' },
       // { key: 'listAdd', state: 'disabled' },
     ],
     status: 'enabled',
@@ -57,7 +57,7 @@ export const RECIPIENTS_KEYS = [
   'listClose',
   'addressList',
   'apply',
-  'addressPlus',
+  'addressAdd',
 ] as const satisfies readonly IconKey[]
 
 export type RecipientsKey = (typeof RECIPIENTS_KEYS)[number]
@@ -68,7 +68,7 @@ export const RECIPIENTS_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'addressList', state: 'disabled' },
       { key: 'apply', state: 'enabled' },
-      { key: 'addressPlus', state: 'enabled' },
+      { key: 'addressAdd', state: 'enabled' },
       // { key: 'listClose', state: 'enabled' },
     ],
     status: 'enabled',

@@ -47,13 +47,13 @@ export const selectActiveCardFullData = createSelector(
   ],
   (editor, cardtext, cardphoto, aroma, date, envelope) => ({
     ...editor,
-    data: {
-      cardphoto,
-      cardtext,
-      recipient: envelope.isComplete ? envelope.recipient.addressFormData : null,
-      aroma,
-      date,
-    },
+      data: {
+        cardphoto,
+        cardtext,
+        recipient: envelope.isComplete ? envelope.recipient.viewDraft : null,
+        aroma,
+        date,
+      },
   }),
 )
 

@@ -8,6 +8,7 @@ import {
   selectRecipientState,
   selectRecipientView,
   selectRecipientViewId,
+  selectRecipientFormDraft,
 } from '../../infrastructure/selectors'
 import {
   selectRecipientListPendingIds,
@@ -24,6 +25,7 @@ import {
   toggleRecipientSelection,
   removeRecipientAt,
 } from '../../infrastructure/state'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { AddressField } from '@shared/config/constants'
 
 export const useRecipientFacade = () => {
@@ -31,6 +33,7 @@ export const useRecipientFacade = () => {
 
   const state = useAppSelector(selectRecipientState)
   const address = useAppSelector(selectRecipientDisplayAddress)
+  const formDraft = useAppSelector(selectRecipientFormDraft)
   const completedFields = useAppSelector(selectRecipientCompletedFields)
   const isComplete = useAppSelector(selectIsRecipientComplete)
   const isEnabled = useAppSelector(selectRecipientEnabled)
@@ -66,11 +69,24 @@ export const useRecipientFacade = () => {
     const nextEnabled = !isEnabled
     dispatch(setEnabled(nextEnabled))
     dispatch(setRecipientMode(nextEnabled ? 'recipients' : 'recipient'))
+    // Синхронно обновляем apply, чтобы при переходе recipients→recipient не мигало disabled
+    if (!nextEnabled) {
+      dispatch(
+        updateToolbarIcon({
+          section: 'recipient',
+          key: 'apply',
+          value: {
+            state: recipientTemplateId ? 'enabled' : 'disabled',
+          },
+        }),
+      )
+    }
   }
 
   return {
     state,
     address,
+    formDraft,
     completedFields,
     isComplete,
     isEnabled,

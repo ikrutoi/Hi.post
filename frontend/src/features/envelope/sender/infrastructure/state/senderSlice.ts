@@ -3,10 +3,16 @@ import { initialSection } from '../../../addressForm/domain/models'
 import type { AddressFields } from '@shared/config/constants'
 import type { SenderState, SenderView } from '../../domain/types'
 
+function isFormDraftEmpty(data: AddressFields): boolean {
+  return !Object.values(data).some((v) => (v ?? '').trim() !== '')
+}
+
 export const initialSender: SenderState = {
   currentView: 'addressFormSenderView',
-  addressFormData: { ...initialSection.data },
-  addressFormIsComplete: false,
+  formDraft: { ...initialSection.data },
+  viewDraft: { ...initialSection.data },
+  formIsComplete: false,
+  formIsEmpty: true,
   senderViewId: null,
   applied: [],
   enabled: true,
@@ -24,8 +30,14 @@ const senderSlice = createSlice({
       state,
       action: PayloadAction<{ field: keyof AddressFields; value: string }>,
     ) => {
-      state.addressFormData[action.payload.field] = action.payload.value
-      state.addressFormIsComplete = isComplete(state.addressFormData)
+      const { field, value } = action.payload
+      if (state.currentView === 'addressFormSenderView') {
+        state.formDraft[field] = value
+        state.formIsComplete = isComplete(state.formDraft)
+      } else {
+        state.viewDraft[field] = value
+        state.formIsComplete = isComplete(state.viewDraft)
+      }
     },
 
     setEnabled: (state, action: PayloadAction<boolean>) => {
@@ -58,8 +70,9 @@ const senderSlice = createSlice({
     },
 
     clearSenderFormData(state) {
-      state.addressFormData = { ...initialSection.data }
-      state.addressFormIsComplete = false
+      state.formDraft = { ...initialSection.data }
+      state.formIsComplete = false
+      state.formIsEmpty = true
     },
 
     saveAddressRequested: () => {},

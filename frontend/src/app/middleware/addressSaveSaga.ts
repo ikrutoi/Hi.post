@@ -52,8 +52,9 @@ function* handleAddressSave(
     const sender: SenderState = yield select(selectSenderState)
     const recipient: RecipientState = yield select(selectRecipientState)
 
+    // Для сохранения нового адреса используем черновик формы
     const addressData =
-      role === 'sender' ? sender.addressFormData : recipient.addressFormData
+      role === 'sender' ? sender.formDraft : recipient.formDraft
 
     if (!isAddressComplete(addressData)) {
       console.warn('Address is not complete, cannot save')

@@ -49,6 +49,7 @@ import {
 import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
+  incrementAddressBookReloadVersion,
 } from '@features/previewStrip/infrastructure/state'
 import { removeAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
@@ -104,7 +105,7 @@ function* handleEnvelopeToolbarAction(
       'getAll',
     ])
     const match = Array.isArray(raw)
-      ? raw.find((r) => addressMatches(sender.addressFormData, r.address))
+      ? raw.find((r) => addressMatches(sender.viewDraft, r.address))
       : null
     const entryId = match ? String(match.id) : null
     const addressTemplateRefs: { type: string; id: string }[] = yield select(
@@ -137,7 +138,7 @@ function* handleEnvelopeToolbarAction(
       'getAll',
     ])
     const match = Array.isArray(raw)
-      ? raw.find((r) => addressMatches(recipient.addressFormData, r.address))
+      ? raw.find((r) => addressMatches(recipient.viewDraft, r.address))
       : null
     const entryId = match ? String(match.id) : null
     const addressTemplateRefs: { type: string; id: string }[] = yield select(
@@ -286,7 +287,31 @@ function* handleEnvelopeToolbarAction(
         }),
       )
     } else {
-      // Выходим из режима редактирования
+      // Выходим из режима редактирования: сохраняем изменения адреса
+      const sender: SenderState = yield select(selectSenderState)
+      const senderViewId: string | null = yield select(selectSenderViewId)
+
+      if (senderViewId != null) {
+        try {
+          const result: { success: boolean } = yield call(
+            [templateService, 'updateAddressTemplate'],
+            'sender',
+            senderViewId,
+            { address: sender.viewDraft },
+          )
+          if (result.success) {
+            // Перечитываем адресную книгу, чтобы список адресов отобразил обновлённый адрес
+            yield put(incrementAddressBookReloadVersion())
+          } else {
+            // eslint-disable-next-line no-console
+            console.warn('Failed to update sender address template')
+          }
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn('Error while updating sender address template:', e)
+        }
+      }
+
       yield put(setSenderViewEditMode(false))
       yield put(
         updateToolbarIcon({
@@ -323,7 +348,31 @@ function* handleEnvelopeToolbarAction(
         }),
       )
     } else {
-      // Выходим из режима редактирования
+      // Выходим из режима редактирования: сохраняем изменения адреса
+      const recipient: RecipientState = yield select(selectRecipientState)
+      const recipientViewId: string | null = yield select(selectRecipientViewId)
+
+      if (recipientViewId != null) {
+        try {
+          const result: { success: boolean } = yield call(
+            [templateService, 'updateAddressTemplate'],
+            'recipient',
+            recipientViewId,
+            { address: recipient.viewDraft },
+          )
+          if (result.success) {
+            // Перечитываем адресную книгу, чтобы список адресов отобразил обновлённый адрес
+            yield put(incrementAddressBookReloadVersion())
+          } else {
+            // eslint-disable-next-line no-console
+            console.warn('Failed to update recipient address template')
+          }
+        } catch (e) {
+          // eslint-disable-next-line no-console
+          console.warn('Error while updating recipient address template:', e)
+        }
+      }
+
       yield put(setRecipientViewEditMode(false))
       yield put(
         updateToolbarIcon({
@@ -360,7 +409,7 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
-  if (key === 'addressPlus') {
+  if (key === 'addressAdd') {
     if (section === 'sender') {
       yield put(setAddressFormView({ show: true, role: 'sender' }))
       yield put(setSenderView('addressFormSenderView'))
@@ -399,17 +448,18 @@ function* handleEnvelopeToolbarAction(
         const record: { id: string; address?: Record<string, string> } | null =
           yield call([recipientAdapter, 'getById'], id)
         if (record?.address) {
-          const address = record.address as RecipientState['addressFormData']
+          const address = record.address as RecipientState['viewDraft']
           list.push({
             currentView: 'recipientView',
-            addressFormData: address,
-            addressFormIsComplete: Object.values(address).every(
+            formDraft: address,
+            viewDraft: address,
+            formIsComplete: Object.values(address).every(
               (v) => (v ?? '').trim() !== ''
             ),
             recipientViewId: id,
             recipientsViewIds: [],
             applied: [id],
-            enabled: false,
+            mode: 'recipient',
           })
         }
       }
@@ -495,7 +545,7 @@ function* handleEnvelopeToolbarAction(
     const sender: SenderState = yield select(selectSenderState)
     const recipient: RecipientState = yield select(selectRecipientState)
     const addressData =
-      addressSection === 'sender' ? sender.addressFormData : recipient.addressFormData
+      addressSection === 'sender' ? sender.viewDraft : recipient.viewDraft
 
     const adapter =
       addressSection === 'sender' ? senderAdapter : recipientAdapter

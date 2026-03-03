@@ -166,7 +166,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               <AddressFormView
                 role="sender"
                 roleLabel={roleLabel}
-                address={value}
+                address={senderFacade.formDraft}
                 onFieldChange={update}
                 lang={lang}
               />
@@ -264,7 +264,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               <AddressFormView
                 role="recipient"
                 roleLabel="Recipient"
-                address={value}
+                address={recipientFacade.formDraft}
                 onFieldChange={update}
                 lang={lang}
               />
@@ -314,9 +314,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         </div>
       )}
 
-      {role === 'recipient' && (
-        <div className={styles.recipientToggleSpacer} />
-      )}
     </form>
   )
 }

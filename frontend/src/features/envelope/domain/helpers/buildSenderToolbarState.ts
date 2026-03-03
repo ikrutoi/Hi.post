@@ -7,6 +7,9 @@ export interface BuildSenderToolbarParams {
   isCurrentAddressInList: boolean
   isCurrentAddressFavorite: boolean
   hasDraft: boolean
+  isAddressFormOpen: boolean
+  /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
+  formIsEmpty: boolean
 }
 
 export const buildSenderToolbarState = ({
@@ -16,19 +19,23 @@ export const buildSenderToolbarState = ({
   isCurrentAddressInList,
   isCurrentAddressFavorite,
   hasDraft,
+  isAddressFormOpen,
+  formIsEmpty,
 }: BuildSenderToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
   for (const key of ENVELOPE_KEYS) {
     switch (key) {
-      case 'close':
-        state.close = hasData ? 'enabled' : 'disabled'
-        break
-      case 'addressPlus':
-        state.addressPlus = {
-          state: 'enabled',
-          options: hasDraft ? { badgeDot: true } : { badgeDot: false },
-        }
+      // case 'close':
+      //   state.close = hasData ? 'enabled' : 'disabled'
+      //   break
+      case 'addressAdd':
+        state.addressAdd = isAddressFormOpen
+          ? { state: 'disabled', options: { badgeDot: false } }
+          : {
+              state: 'enabled',
+              options: { badgeDot: !formIsEmpty },
+            }
         break
       case 'addressList':
         state.addressList = {
@@ -45,14 +52,12 @@ export const buildSenderToolbarState = ({
         }
         break
       case 'listAdd':
-        // Enabled только при заполненных полях и если адреса ещё нет в списке:
-        // сохраняет в шаблоны и присваивает id
         state.listAdd =
           isComplete && !isCurrentAddressInList ? 'enabled' : 'disabled'
         break
-      case 'listClose':
-        state.listClose = 'enabled'
-        break
+      // case 'listClose':
+      //   state.listClose = 'enabled'
+      //   break
       // case 'favorite':
       //   state.favorite = !isComplete
       //     ? 'disabled'

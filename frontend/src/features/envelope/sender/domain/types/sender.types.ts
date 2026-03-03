@@ -13,8 +13,13 @@ export type SenderView = 'addressFormSenderView' | 'senderView'
 
 export type SenderState = {
   currentView: SenderView
-  addressFormData: AddressFields
-  addressFormIsComplete: boolean
+  /** Черновик формы (addressFormSenderView) */
+  formDraft: AddressFields
+  /** Данные для просмотра/редактирования выбранного шаблона (senderView) */
+  viewDraft: AddressFields
+  formIsComplete: boolean
+  /** true = черновик формы пустой (при выходе из addressForm); для индикатора addressAdd */
+  formIsEmpty: boolean
   senderViewId: string | null
   applied: string[]
   enabled: boolean

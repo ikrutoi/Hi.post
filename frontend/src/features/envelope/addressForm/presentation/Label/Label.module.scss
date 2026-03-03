@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 
 .label {
+  position: relative;
   display: block;
   // margin-top: 0.05rem;
   font-size: 0.55rem;
@@ -9,16 +10,28 @@
   color: $color-inactive;
 }
 
+.labelText {
+  position: absolute;
+  top: 0.1rem;
+  font-weight: 500;
+}
+
 .labelRecipient {
   text-align: right;
+
+  .labelText {
+    right: 0.5rem;
+  }
+}
+
+.labelSender {
+  .labelText {
+    left: 0.5rem;
+  }
 }
 
 .labelSpacer {
   padding-left: 0.5rem;
-}
-
-.labelText {
-  font-weight: 500;
 }
 
 .labelInput {

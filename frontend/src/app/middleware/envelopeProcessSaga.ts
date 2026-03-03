@@ -114,11 +114,11 @@ export function* processEnvelopeVisuals() {
   const senderMatchId =
     sender.currentView === 'senderView' && sender.senderViewId
       ? sender.senderViewId
-      : getMatchingEntryId(sender.addressFormData, senderList)
+      : getMatchingEntryId(sender.viewDraft, senderList)
   const recipientMatchId =
     recipient.currentView === 'recipientView' && recipient.recipientViewId
       ? recipient.recipientViewId
-      : getMatchingEntryId(recipient.addressFormData, recipientList)
+      : getMatchingEntryId(recipient.viewDraft, recipientList)
   const isSenderFavorite =
     senderMatchId != null &&
     addressTemplateRefs.some(
@@ -130,28 +130,29 @@ export function* processEnvelopeVisuals() {
       (r) => r.type === 'recipient' && r.id === recipientMatchId,
     )
 
-  const hasSenderDraft = checkHasData(sender.addressFormData)
-  const hasRecipientDraft = checkHasData(recipient.addressFormData)
+  const hasSenderDraft = checkHasData(sender.viewDraft)
+  const hasRecipientDraft = checkHasData(recipient.viewDraft)
 
   const senderToolbar = buildSenderToolbarState({
     isComplete: senderComplete,
-    hasData: checkHasData(sender.addressFormData),
+    hasData: checkHasData(sender.viewDraft),
     addressListCount: senderList.length,
-    isCurrentAddressInList: isAddressInList(sender.addressFormData, senderList),
+    isCurrentAddressInList: isAddressInList(sender.viewDraft, senderList),
     isCurrentAddressFavorite: isSenderFavorite,
     hasDraft: hasSenderDraft,
+    isAddressFormOpen: sender.currentView === 'addressFormSenderView',
+    formIsEmpty: sender.formIsEmpty ?? true,
   })
 
   const recipientToolbar = buildRecipientToolbarState({
     isComplete: recipientComplete,
-    hasData: checkHasData(recipient.addressFormData),
+    hasData: checkHasData(recipient.viewDraft),
     addressListCount: recipientList.length,
-    isCurrentAddressInList: isAddressInList(
-      recipient.addressFormData,
-      recipientList,
-    ),
+    isCurrentAddressInList: isAddressInList(recipient.viewDraft, recipientList),
     isCurrentAddressFavorite: isRecipientFavorite,
     hasDraft: hasRecipientDraft,
+    isAddressFormOpen: recipient.currentView === 'addressFormRecipientView',
+    formIsEmpty: recipient.formIsEmpty ?? true,
   })
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
@@ -185,10 +186,24 @@ export function* processEnvelopeVisuals() {
   const isRecipientEmptyForm =
     recipient.currentView === 'recipientView' &&
     recipient.recipientViewId == null
+  // При выбранном адресе (id не null) — apply всегда enabled
   const senderApplyState =
-    isSenderEmptyForm ? 'disabled' : senderComplete ? 'enabled' : 'disabled'
+    sender.currentView === 'senderView' && sender.senderViewId != null
+      ? 'enabled'
+      : isSenderEmptyForm
+        ? 'disabled'
+        : senderComplete
+          ? 'enabled'
+          : 'disabled'
   const recipientApplyState =
-    isRecipientEmptyForm ? 'disabled' : recipientComplete ? 'enabled' : 'disabled'
+    recipient.currentView === 'recipientView' &&
+    recipient.recipientViewId != null
+      ? 'enabled'
+      : isRecipientEmptyForm
+        ? 'disabled'
+        : recipientComplete
+          ? 'enabled'
+          : 'disabled'
 
   yield put(
     updateToolbarIcon({
@@ -227,9 +242,11 @@ export function* processEnvelopeVisuals() {
           state: recipientsApplyState,
           options: {},
         },
-        addressPlus: {
-          state: 'enabled',
-          options: hasRecipientDraft ? { badgeDot: true } : { badgeDot: false },
+        addressAdd: {
+          state: isRecipientFormOpen ? 'disabled' : 'enabled',
+          options: isRecipientFormOpen
+            ? { badgeDot: false }
+            : { badgeDot: !(recipient.formIsEmpty ?? true) },
         },
       },
     }),
@@ -312,8 +329,7 @@ function* detachRecipientFromTemplateOnEdit(
   yield put(
     restoreRecipient({
       ...recipient,
-      addressFormData,
-      recipientViewId: null,
+      viewDraft: addressFormData,
     }),
   )
 }

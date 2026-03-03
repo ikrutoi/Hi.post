@@ -1,6 +1,5 @@
 import { ENVELOPE_KEYS, type EnvelopeToolbarState } from '@toolbar/domain/types'
 
-/** Общая логика addressList (state + badge) для recipient и recipients тулбаров */
 export const getAddressListToolbarFragment = (addressListCount: number) => ({
   state: addressListCount > 0 ? ('enabled' as const) : ('disabled' as const),
   options: {
@@ -15,6 +14,9 @@ export interface BuildRecipientToolbarParams {
   isCurrentAddressInList: boolean
   isCurrentAddressFavorite: boolean
   hasDraft: boolean
+  isAddressFormOpen: boolean
+  /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
+  formIsEmpty: boolean
 }
 
 export const buildRecipientToolbarState = ({
@@ -24,19 +26,23 @@ export const buildRecipientToolbarState = ({
   isCurrentAddressInList,
   isCurrentAddressFavorite,
   hasDraft,
+  isAddressFormOpen,
+  formIsEmpty,
 }: BuildRecipientToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
   for (const key of ENVELOPE_KEYS) {
     switch (key) {
-      case 'close':
-        state.close = hasData ? 'enabled' : 'disabled'
-        break
-      case 'addressPlus':
-        state.addressPlus = {
-          state: 'enabled',
-          options: hasDraft ? { badgeDot: true } : { badgeDot: false },
-        }
+      // case 'close':
+      //   state.close = hasData ? 'enabled' : 'disabled'
+      //   break
+      case 'addressAdd':
+        state.addressAdd = isAddressFormOpen
+          ? { state: 'disabled', options: { badgeDot: false } }
+          : {
+              state: 'enabled',
+              options: { badgeDot: !formIsEmpty },
+            }
         break
       case 'addressList':
         state.addressList = getAddressListToolbarFragment(addressListCount)
@@ -48,14 +54,12 @@ export const buildRecipientToolbarState = ({
         }
         break
       case 'listAdd':
-        // Enabled только при заполненных полях и если адреса ещё нет в списке:
-        // сохраняет в шаблоны и присваивает id
         state.listAdd =
           isComplete && !isCurrentAddressInList ? 'enabled' : 'disabled'
         break
-      case 'listClose':
-        state.listClose = 'enabled'
-        break
+      // case 'listClose':
+      //   state.listClose = 'enabled'
+      //   break
       // case 'favorite':
       //   state.favorite = !isComplete
       //     ? 'disabled'

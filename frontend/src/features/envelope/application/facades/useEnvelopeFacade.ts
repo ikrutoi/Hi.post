@@ -172,11 +172,12 @@ export const useEnvelopeFacade = () => {
     id: string
     address: Record<string, string>
   }) => {
+    // Сначала переключаемся в senderView, затем заполняем данные шаблона
+    dispatch(setSenderView('senderView'))
+    dispatch(setSenderViewId(entry.id))
     ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
       ([field, value]) => dispatch(updateSenderField({ field, value })),
     )
-    dispatch(setSenderViewId(entry.id))
-    dispatch(setSenderView('senderView'))
     dispatch(closeSenderListPanelAction())
   }
 
