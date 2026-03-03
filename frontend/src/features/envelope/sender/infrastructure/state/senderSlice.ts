@@ -89,6 +89,11 @@ const senderSlice = createSlice({
       state.formIsEmpty = true
     },
 
+    toggleSenderSortDirection(state) {
+      state.sortOptions.direction =
+        state.sortOptions.direction === 'asc' ? 'desc' : 'asc'
+    },
+
     saveAddressRequested: () => {},
   },
 })
