@@ -57,7 +57,8 @@ export const TOOLBAR_SECTIONS = [
   'editorPie',
   'cardPanelOverlay',
   'sectionEditorMenu',
-  'addressList',
+  'addressListSender',
+  'addressListRecipient',
   'recipientFavorite',
   'senderFavorite',
   'savedRecipientAddress',
@@ -79,7 +80,8 @@ export type ToolbarState = {
   editorPie: EditorPieToolbarState & { config: ToolbarGroup[] }
   cardPanelOverlay: CardPanelOverlayToolbarState & { config: ToolbarGroup[] }
   sectionEditorMenu: SectionEditorMenuToolbarState & { config: ToolbarGroup[] }
-  addressList: AddressListToolbarState & { config: ToolbarGroup[] }
+  addressListSender: AddressListToolbarState & { config: ToolbarGroup[] }
+  addressListRecipient: AddressListToolbarState & { config: ToolbarGroup[] }
   recipientFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
   senderFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
   senderView: AddressViewToolbarState & { config: ToolbarGroup[] }
@@ -128,10 +130,15 @@ export type ToolbarSectionConfigMap = {
     SectionEditorMenuKey,
     'sectionEditorMenu'
   >
-  addressList: BaseSectionConfig<
+  addressListSender: BaseSectionConfig<
     AddressListToolbarState,
     AddressListKey,
-    'addressList'
+    'addressListSender'
+  >
+  addressListRecipient: BaseSectionConfig<
+    AddressListToolbarState,
+    AddressListKey,
+    'addressListRecipient'
   >
   recipientFavorite: BaseSectionConfig<
     AddressFavoriteToolbarState,
@@ -191,9 +198,11 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
               ? CardPanelOverlayToolbarKey
               : S extends 'sectionEditorMenu'
                 ? SectionEditorMenuKey
-                : S extends 'addressList'
+                : S extends 'addressListSender'
                   ? AddressListKey
-                  : S extends 'recipientFavorite'
+                  : S extends 'addressListRecipient'
+                    ? AddressListKey
+                    : S extends 'recipientFavorite'
                     ? AddressFavoriteKey
                     : S extends 'senderFavorite'
                       ? AddressFavoriteKey

@@ -15,11 +15,18 @@ export interface AddressListToolbarState extends Record<string, any> {
   config: ToolbarConfig
 }
 
-export const ADDRESS_LIST_TOOLBAR: ToolbarConfig = [
+export const ADDRESS_LIST_SENDER_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'address',
+    icons: [{ key: 'listDelete', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
+export const ADDRESS_LIST_RECIPIENT_TOOLBAR: ToolbarConfig = [
   {
     group: 'address',
     icons: [
-      // { key: 'search', state: 'enabled' },
       { key: 'listApply', state: 'disabled' },
       { key: 'listDelete', state: 'enabled' },
     ],
@@ -27,13 +34,25 @@ export const ADDRESS_LIST_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const initialAddressListToolbarState: AddressListToolbarState = {
-  ...Object.fromEntries(flattenIcons(ADDRESS_LIST_TOOLBAR)),
-  config: [...ADDRESS_LIST_TOOLBAR],
+export const initialAddressListSenderToolbarState: AddressListToolbarState = {
+  ...Object.fromEntries(flattenIcons(ADDRESS_LIST_SENDER_TOOLBAR)),
+  config: [...ADDRESS_LIST_SENDER_TOOLBAR],
 }
 
-export interface AddressListConfig extends BaseSectionConfig<
+export const initialAddressListRecipientToolbarState: AddressListToolbarState =
+  {
+    ...Object.fromEntries(flattenIcons(ADDRESS_LIST_RECIPIENT_TOOLBAR)),
+    config: [...ADDRESS_LIST_RECIPIENT_TOOLBAR],
+  }
+
+export interface AddressListSenderConfig extends BaseSectionConfig<
   AddressListToolbarState,
   AddressListKey,
-  'addressList'
+  'addressListSender'
+> {}
+
+export interface AddressListRecipientConfig extends BaseSectionConfig<
+  AddressListToolbarState,
+  AddressListKey,
+  'addressListRecipient'
 > {}

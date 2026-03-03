@@ -19,8 +19,10 @@ import {
   RECIPIENT_TOOLBAR,
   CARD_PANEL_OVERLAY_TOOLBAR,
   ADDRESS_LIST_KEYS,
-  initialAddressListToolbarState,
-  ADDRESS_LIST_TOOLBAR,
+  initialAddressListSenderToolbarState,
+  initialAddressListRecipientToolbarState,
+  ADDRESS_LIST_SENDER_TOOLBAR,
+  ADDRESS_LIST_RECIPIENT_TOOLBAR,
   RECIPIENTS_KEYS,
   initialRecipientsToolbarState,
   RECIPIENTS_TOOLBAR,
@@ -155,13 +157,24 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     toolbar: SECTION_EDITOR_MENU_TOOLBAR,
   },
 
-  addressList: {
+  addressListSender: {
     keys: ADDRESS_LIST_KEYS,
-    initialState: initialAddressListToolbarState,
-    onAction: (key, section) => console.log('AddressList action', key, section),
+    initialState: initialAddressListSenderToolbarState,
+    onAction: (key, section) =>
+      console.log('AddressListSender action', key, section),
     group: 'address',
-    getBadges: (state: ToolbarState['addressList']) => ({}),
-    toolbar: ADDRESS_LIST_TOOLBAR,
+    getBadges: (state: ToolbarState['addressListSender']) => ({}),
+    toolbar: ADDRESS_LIST_SENDER_TOOLBAR,
+  },
+
+  addressListRecipient: {
+    keys: ADDRESS_LIST_KEYS,
+    initialState: initialAddressListRecipientToolbarState,
+    onAction: (key, section) =>
+      console.log('AddressListRecipient action', key, section),
+    group: 'address',
+    getBadges: (state: ToolbarState['addressListRecipient']) => ({}),
+    toolbar: ADDRESS_LIST_RECIPIENT_TOOLBAR,
   },
 
   recipientFavorite: {

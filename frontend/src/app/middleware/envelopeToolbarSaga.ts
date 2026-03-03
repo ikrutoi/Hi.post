@@ -81,7 +81,7 @@ function* handleEnvelopeToolbarAction(
 ) {
   const { section, key } = action.payload
 
-  if (section === 'addressList' && key === 'listApply') {
+  if (section === 'addressListRecipient' && key === 'listApply') {
     const recipientListPanelOpen: boolean = yield select(
       selectRecipientListPanelOpen as any,
     )

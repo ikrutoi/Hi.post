@@ -28,6 +28,8 @@ import {
 import {
   toggleRecipientSelection,
   setRecipientsPendingIds,
+  toggleRecipientListPanel,
+  closeRecipientListPanel,
 } from '@envelope/infrastructure/state'
 import {
   setSenderViewId,
@@ -175,7 +177,7 @@ export function* processEnvelopeVisuals() {
 
   yield put(
     updateToolbarSection({
-      section: 'addressList',
+      section: 'addressListRecipient',
       value: {
         listApply: {
           state: listApplyState,
@@ -359,6 +361,8 @@ export function* envelopeProcessSaga() {
       setSenderView.type,
       setRecipientView.type,
       resetRecipientForm.type,
+      toggleRecipientListPanel.type,
+      closeRecipientListPanel.type,
     ],
     processEnvelopeVisuals,
   )

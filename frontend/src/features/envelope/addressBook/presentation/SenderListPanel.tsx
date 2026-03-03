@@ -34,7 +34,7 @@ export const SenderListPanel: React.FC<Props> = ({
     <div className={styles.panel}>
       <div className={styles.header}>
         <div className={styles.headerToolbar}>
-          <Toolbar section="addressList" />
+          <Toolbar section="addressListSender" />
         </div>
         <button
           type="button"
