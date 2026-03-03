@@ -24,6 +24,7 @@ import {
   setRecipientMode,
   toggleRecipientSelection,
   removeRecipientAt,
+  closeRecipientListPanel,
 } from '../../infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { AddressField } from '@shared/config/constants'
@@ -58,6 +59,7 @@ export const useRecipientFacade = () => {
     } else {
       dispatch(setRecipientViewId(entry.id))
       dispatch(setRecipientView('recipientView'))
+      dispatch(closeRecipientListPanel())
     }
   }
 

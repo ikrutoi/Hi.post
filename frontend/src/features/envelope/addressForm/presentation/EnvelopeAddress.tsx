@@ -160,9 +160,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               </span>
             </div>
 
-            {isSenderWithSavedTemplate ? (
-              <SenderView templateId={editingTemplateId!} address={value} />
-            ) : senderView === 'addressFormSenderView' ? (
+            {senderView === 'addressFormSenderView' ? (
               <AddressFormView
                 role="sender"
                 roleLabel={roleLabel}
@@ -170,6 +168,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 onFieldChange={update}
                 lang={lang}
               />
+            ) : isSenderWithSavedTemplate ? (
+              <SenderView templateId={editingTemplateId!} address={value} />
             ) : (
               <div
                 role="button"

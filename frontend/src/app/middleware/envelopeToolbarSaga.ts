@@ -423,8 +423,9 @@ function* handleEnvelopeToolbarAction(
   if (key === 'addressAdd') {
     if (section === 'sender') {
       yield put(setAddressFormView({ show: true, role: 'sender' }))
+      yield put(clearSenderFormData())
       yield put(setSenderView('addressFormSenderView'))
-      yield put(setSenderViewId(null))
+      // senderViewId не обнуляем — при закрытии формы снова покажем SenderView с выбранным адресом
     } else if (
       section === 'recipient' ||
       section === 'recipientView' ||

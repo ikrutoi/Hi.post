@@ -58,7 +58,10 @@ export const useSenderFacade = () => {
   )
 
   const toggleEnabled = useCallback(
-    (enabled: boolean) => dispatch(setEnabled(enabled)),
+    (enabled: boolean) => {
+      dispatch(setEnabled(enabled))
+      if (!enabled) dispatch(closeSenderListPanelAction())
+    },
     [dispatch],
   )
 

@@ -57,11 +57,19 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     role === 'sender' ? 'addressFormSenderView' : 'addressFormRecipientView'
 
   useEffect(() => {
+    const applyOrListAddState = isAddressComplete ? 'enabled' : 'disabled'
     dispatch(
       updateToolbarIcon({
         section: toolbarSection,
         key: 'listAdd',
-        value: { state: isAddressComplete ? 'enabled' : 'disabled' },
+        value: { state: applyOrListAddState },
+      }),
+    )
+    dispatch(
+      updateToolbarIcon({
+        section: toolbarSection,
+        key: 'apply',
+        value: { state: applyOrListAddState, options: {} },
       }),
     )
   }, [dispatch, toolbarSection, isAddressComplete])
