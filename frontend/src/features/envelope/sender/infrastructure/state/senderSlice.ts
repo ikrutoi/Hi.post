@@ -8,7 +8,7 @@ function isFormDraftEmpty(data: AddressFields): boolean {
 }
 
 export const initialSender: SenderState = {
-  currentView: 'addressFormSenderView',
+  currentView: 'senderView',
   formDraft: { ...initialSection.data },
   viewDraft: { ...initialSection.data },
   formIsComplete: false,
@@ -62,7 +62,11 @@ const senderSlice = createSlice({
     },
 
     setSenderView: (state, action: PayloadAction<SenderView>) => {
-      state.currentView = action.payload
+      const nextView = action.payload
+      if (nextView !== 'addressFormSenderView') {
+        state.formIsEmpty = isFormDraftEmpty(state.formDraft)
+      }
+      state.currentView = nextView
     },
 
     setSenderViewId: (state, action: PayloadAction<string | null>) => {

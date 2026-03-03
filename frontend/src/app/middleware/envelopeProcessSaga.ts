@@ -29,7 +29,10 @@ import {
   toggleRecipientSelection,
   setRecipientsPendingIds,
 } from '@envelope/infrastructure/state'
-import { setSenderViewId } from '@envelope/sender/infrastructure/state'
+import {
+  setSenderViewId,
+  setSenderView,
+} from '@envelope/sender/infrastructure/state'
 import {
   setRecipientViewId,
   setRecipientsViewIds,
@@ -153,6 +156,7 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasRecipientDraft,
     isAddressFormOpen: recipient.currentView === 'addressFormRecipientView',
     formIsEmpty: recipient.formIsEmpty ?? true,
+    isFormDraftEmptyNow: !checkHasData(recipient.formDraft),
   })
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
@@ -352,6 +356,7 @@ export function* envelopeProcessSaga() {
       setRecipientMode.type,
       setRecipientViewId.type,
       setSenderViewId.type,
+      setSenderView.type,
       setRecipientView.type,
       resetRecipientForm.type,
     ],

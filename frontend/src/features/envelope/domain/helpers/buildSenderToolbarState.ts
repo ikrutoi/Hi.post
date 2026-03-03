@@ -32,10 +32,7 @@ export const buildSenderToolbarState = ({
       case 'addressAdd':
         state.addressAdd = isAddressFormOpen
           ? { state: 'disabled', options: { badgeDot: false } }
-          : {
-              state: 'enabled',
-              options: { badgeDot: !formIsEmpty },
-            }
+          : { state: 'enabled', options: { badgeDot: !formIsEmpty } }
         break
       case 'addressList':
         state.addressList = {

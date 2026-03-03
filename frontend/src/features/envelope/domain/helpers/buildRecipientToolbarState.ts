@@ -17,6 +17,8 @@ export interface BuildRecipientToolbarParams {
   isAddressFormOpen: boolean
   /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
   formIsEmpty: boolean
+  /** при открытой форме — форма сейчас пуста (по formDraft); при закрытой не используется */
+  isFormDraftEmptyNow?: boolean
 }
 
 export const buildRecipientToolbarState = ({
@@ -28,8 +30,11 @@ export const buildRecipientToolbarState = ({
   hasDraft,
   isAddressFormOpen,
   formIsEmpty,
+  isFormDraftEmptyNow,
 }: BuildRecipientToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
+  const formEmptyForAdd =
+    isAddressFormOpen ? (isFormDraftEmptyNow ?? formIsEmpty) : formIsEmpty
 
   for (const key of ENVELOPE_KEYS) {
     switch (key) {
@@ -38,11 +43,10 @@ export const buildRecipientToolbarState = ({
       //   break
       case 'addressAdd':
         state.addressAdd = isAddressFormOpen
-          ? { state: 'disabled', options: { badgeDot: false } }
-          : {
-              state: 'enabled',
-              options: { badgeDot: !formIsEmpty },
-            }
+          ? formEmptyForAdd
+            ? { state: 'enabled', options: { badgeDot: false } }
+            : { state: 'disabled', options: { badgeDot: true } }
+          : { state: 'enabled', options: { badgeDot: !formIsEmpty } }
         break
       case 'addressList':
         state.addressList = getAddressListToolbarFragment(addressListCount)
