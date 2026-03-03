@@ -57,8 +57,12 @@ export const useRecipientFacade = () => {
     if (isEnabled) {
       dispatch(toggleRecipientSelection(entry.id))
     } else {
-      dispatch(setRecipientViewId(entry.id))
       dispatch(setRecipientView('recipientView'))
+      dispatch(setRecipientViewId(entry.id))
+      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
+        ([field, value]) =>
+          dispatch(updateRecipientField({ field, value })),
+      )
       dispatch(closeRecipientListPanel())
     }
   }

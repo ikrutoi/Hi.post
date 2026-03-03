@@ -56,6 +56,7 @@ import {
   addAddressTemplateRef,
   removeAddressTemplateRef,
   incrementAddressBookReloadVersion,
+  incrementAddressTemplatesReloadVersion,
 } from '@features/previewStrip/infrastructure/state'
 import { removeAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
@@ -334,8 +335,8 @@ function* handleEnvelopeToolbarAction(
             { address: sender.viewDraft },
           )
           if (result.success) {
-            // Перечитываем адресную книгу, чтобы список адресов отобразил обновлённый адрес
             yield put(incrementAddressBookReloadVersion())
+            yield put(incrementAddressTemplatesReloadVersion())
           } else {
             // eslint-disable-next-line no-console
             console.warn('Failed to update sender address template')
@@ -395,8 +396,8 @@ function* handleEnvelopeToolbarAction(
             { address: recipient.viewDraft },
           )
           if (result.success) {
-            // Перечитываем адресную книгу, чтобы список адресов отобразил обновлённый адрес
             yield put(incrementAddressBookReloadVersion())
+            yield put(incrementAddressTemplatesReloadVersion())
           } else {
             // eslint-disable-next-line no-console
             console.warn('Failed to update recipient address template')
