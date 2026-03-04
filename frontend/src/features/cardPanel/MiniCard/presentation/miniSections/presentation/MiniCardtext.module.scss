@@ -9,15 +9,12 @@
   overflow: hidden;
   border-radius: 1rem;
   border: solid 1px $color-section-light;
-  box-shadow: 1px 2px 6px 3px rgba(0, 0, 0, 0.12);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  // border: solid 1px red;
 }
 
 .miniCardtext:hover,
 .miniCardtext.hovered {
-  border-color: $color-pie-cardtext-alpha;
-  box-shadow: 0 0 10px 4px $color-pie-cardtext-alpha;
+  border-color: rgba($color-toggle-active, 0.5);
 }
 
 .previewButton {

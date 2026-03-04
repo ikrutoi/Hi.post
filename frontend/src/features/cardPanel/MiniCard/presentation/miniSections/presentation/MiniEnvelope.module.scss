@@ -7,18 +7,16 @@
   padding: 0.4rem;
   height: 100%;
   width: 100%;
-  border: solid 1px $color-section-light;
   border-radius: 1rem;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(3, 1fr);
-  box-shadow: 1px 2px 6px 3px rgba(0, 0, 0, 0.12);
+  border: solid 1px $color-section-light;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .miniEnvelope:hover,
 .miniEnvelope.hovered {
-  border-color: $color-pie-envelope-alpha;
-  box-shadow: 0 0 10px 4px $color-pie-envelope-alpha;
+  border-color: rgba($color-toggle-active, 0.5);
 }
 
 .miniEnvelopeLogo {
@@ -28,7 +26,6 @@
   background-image: url('@data/img/logo-com.svg');
   background-repeat: no-repeat;
   background-size: contain;
-  // border: solid 1px red;
 }
 
 .miniEnvelopeMack {
@@ -41,8 +38,8 @@
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
-  mask-image: linear-gradient(to right, black 80%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  // mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  // -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
 }
 
 .miniEnvelopeName {

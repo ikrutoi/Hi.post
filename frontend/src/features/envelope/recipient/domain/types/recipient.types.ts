@@ -35,8 +35,8 @@ export type RecipientState = {
   formIsComplete: boolean
   formIsEmpty: boolean
   sortOptions: SortOptions
-  recipientsViewSortDirection: SortDirection
   recipientViewId: string | null
+  recipientsViewSortDirection: SortDirection
   recipientsViewIdsFirstList: string[]
   recipientsViewIdsSecondList: string[]
   currentRecipientsList: CurrentRecipientsList

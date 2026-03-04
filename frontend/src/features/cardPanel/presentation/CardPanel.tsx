@@ -85,14 +85,14 @@ export const CardPanel = () => {
               <Toolbar section="editorPie" />
             </div>
           </div>
-          <CardScroller
+          {/* <CardScroller
             value={localValueScroll}
             scrollIndex={null}
             maxMiniCardsCount={maxMiniCardsCount}
             deltaEnd={deltaEnd}
             handleChangeFromSliderCardsList={handleChangeFromSliderCardsList}
             onLetterClick={handleLetterClick}
-          />
+          /> */}
           <div className={styles.cardPanelMiniCards}>
             {sortedSections.map((section, i) => {
               const key = section as keyof typeof CARD_PANEL_SECTIONS_PRIORITY
