@@ -21,6 +21,7 @@ import {
   setCurrentRecipientsList,
   setRecipientMode,
   clearRecipientFormData,
+  clearRecipientViewDraft,
   toggleRecipientSortDirection,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
@@ -282,6 +283,7 @@ function* handleEnvelopeToolbarAction(
             yield put(setRecipientView('recipientView'))
             yield put(setAddressFormView({ show: false, role: 'recipient' }))
             yield put(clearRecipientFormData())
+            yield put(clearRecipientViewDraft())
           } else {
             yield put(setSenderViewEditMode(false))
             yield put(setSenderViewId(null))
@@ -619,6 +621,7 @@ function* handleEnvelopeToolbarAction(
       } else {
         yield put(addAddressTemplateRef({ type: addressSection, id: entryId }))
       }
+      yield put(incrementAddressTemplatesReloadVersion())
     }
   }
 }

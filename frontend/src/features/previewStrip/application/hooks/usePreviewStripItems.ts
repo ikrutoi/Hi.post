@@ -53,6 +53,15 @@ export function usePreviewStripItems(
     loadRecipientTemplates,
   ])
 
+  // При добавлении/удалении избранного в envelope перезагружаем шаблоны,
+  // чтобы новый сохранённый адрес сразу появился в полосе превью
+  useEffect(() => {
+    if (activeSection === 'envelope') {
+      loadSenderTemplates()
+      loadRecipientTemplates()
+    }
+  }, [activeSection, addressTemplateRefs, loadSenderTemplates, loadRecipientTemplates])
+
   const items = useMemo(() => {
     if (!activeSection) return []
 
