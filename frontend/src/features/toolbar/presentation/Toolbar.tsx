@@ -46,12 +46,19 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
   const recipientSortDirection = useAppSelector(
     (state) => state.recipient?.sortOptions?.direction ?? 'asc',
   )
+  const recipientsViewSortDirection = useAppSelector(
+    (state) => state.recipient?.recipientsViewSortDirection ?? 'asc',
+  )
   const sortDirection =
     section === 'addressListSender'
       ? senderSortDirection
       : section === 'addressListRecipient'
         ? recipientSortDirection
-        : undefined
+        : section === 'recipientsView'
+          ? recipientsViewSortDirection === 'asc'
+            ? 'desc'
+            : 'asc'
+          : undefined
 
   useEffect(() => {
     if (groupRef.current) {

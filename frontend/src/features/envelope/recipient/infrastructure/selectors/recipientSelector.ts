@@ -1,7 +1,29 @@
 import { RootState } from '@app/state'
 import { createSelector } from '@reduxjs/toolkit'
 import type { AddressFields } from '@shared/config/constants'
-import type { RecipientState, RecipientView } from '../../domain/types'
+import type { AddressBookEntry } from '../../../addressBook/domain/types'
+import type {
+  RecipientState,
+  RecipientView,
+  SortDirection,
+} from '../../domain/types'
+
+const selectEnvelopeRecipientsList = (state: RootState): RecipientState[] =>
+  state.envelopeRecipients ?? []
+
+const selectRecipientsPendingIds = (state: RootState): string[] =>
+  state.envelopeSelection?.recipientsPendingIds ?? []
+
+const selectRecipientEntriesState = (state: RootState): AddressBookEntry[] =>
+  state.addressBook?.recipientEntries ?? []
+
+const selectSelectedRecipientEntriesInOrder = createSelector(
+  [selectRecipientsPendingIds, selectRecipientEntriesState],
+  (ids, entries): AddressBookEntry[] =>
+    ids
+      .map((id) => entries.find((e) => e.id === id))
+      .filter((e): e is AddressBookEntry => e != null),
+)
 
 export const selectRecipientState = (state: RootState): RecipientState =>
   state.recipient
@@ -19,21 +41,13 @@ export const selectRecipientFormDraft = createSelector(
   (recipient): Readonly<AddressFields> => recipient.formDraft,
 )
 
-/** Адрес для отображения:
- * - в recipientView с шаблоном и в режиме просмотра — из адресной книги по recipientViewId
- * - в режиме редактирования — из viewDraft.
- */
 export const selectRecipientDisplayAddress = createSelector(
   [
     selectRecipientState,
     (s: RootState) => s.addressBook?.recipientEntries ?? [],
     (s: RootState) => s.envelopeSelection?.recipientViewEditMode ?? false,
   ],
-  (
-    recipient,
-    entries,
-    recipientViewEditMode,
-  ): Readonly<AddressFields> => {
+  (recipient, entries, recipientViewEditMode): Readonly<AddressFields> => {
     if (
       !recipientViewEditMode &&
       recipient.currentView === 'recipientView' &&
@@ -82,3 +96,54 @@ export const selectRecipientApplied = (state: RootState): string[] =>
 
 export const selectRecipientFormIsEmpty = (state: RootState): boolean =>
   state.recipient.formIsEmpty ?? true
+
+export const selectRecipientsViewSortDirection = createSelector(
+  [selectRecipientState],
+  (recipient): SortDirection => recipient?.recipientsViewSortDirection ?? 'asc',
+)
+
+const selectRecipientsViewSortDirectionRaw = (
+  state: RootState,
+): SortDirection => state.recipient?.recipientsViewSortDirection ?? 'asc'
+
+export const selectRecipientsDisplayList = createSelector(
+  [
+    selectEnvelopeRecipientsList,
+    selectRecipientsViewSortDirectionRaw,
+    selectSelectedRecipientEntriesInOrder,
+    selectRecipientEnabled,
+  ],
+  (
+    envelopeRecipients,
+    recipientsViewSortDirection,
+    selectedEntriesInOrder,
+    recipientEnabled,
+  ): AddressBookEntry[] => {
+    if (!recipientEnabled) return []
+
+    // Базовый список: либо внутренний envelopeRecipients, либо выбранные записи адресной книги.
+    const baseEntries: AddressBookEntry[] =
+      envelopeRecipients.length > 0
+        ? envelopeRecipients.map((r, i) => ({
+            id: `recipient-${i}`,
+            role: 'recipient' as const,
+            address: { ...r.viewDraft },
+            createdAt: new Date().toISOString(),
+          }))
+        : selectedEntriesInOrder
+
+    const direction = recipientsViewSortDirection
+    const sorted = [...baseEntries].sort((a, b) => {
+      const nameA = (a.address?.name ?? '').trim().toLowerCase()
+      const nameB = (b.address?.name ?? '').trim().toLowerCase()
+      const cmp = nameA.localeCompare(nameB, undefined, {
+        sensitivity: 'base',
+      })
+      if (direction === 'asc') return cmp
+      if (direction === 'desc') return -cmp
+      return cmp
+    })
+
+    return sorted
+  },
+)

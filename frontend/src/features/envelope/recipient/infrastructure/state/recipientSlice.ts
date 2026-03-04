@@ -25,6 +25,7 @@ export const initialRecipient: RecipientState = {
   formIsComplete: false,
   formIsEmpty: true,
   sortOptions: DEFAULT_SORT_OPTIONS,
+  recipientsViewSortDirection: 'asc',
   recipientViewId: null,
   recipientsViewIdsFirstList: [],
   recipientsViewIdsSecondList: [],
@@ -152,6 +153,11 @@ const recipientSlice = createSlice({
         state.sortOptions.direction === 'asc' ? 'desc' : 'asc'
     },
 
+    toggleRecipientsViewSortDirection(state) {
+      state.recipientsViewSortDirection =
+        state.recipientsViewSortDirection === 'asc' ? 'desc' : 'asc'
+    },
+
     saveAddressRequested: () => {},
   },
 })
@@ -173,6 +179,7 @@ export const {
   setRecipientsViewIdsSecondList,
   setCurrentRecipientsList,
   toggleRecipientSortDirection,
+  toggleRecipientsViewSortDirection,
   saveAddressRequested,
 } = recipientSlice.actions
 export default recipientSlice.reducer

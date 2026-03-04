@@ -131,26 +131,6 @@ export const selectSenderSelectedId = createSelector(
       : getMatchingEntryId(sender.viewDraft, senderEntries),
 )
 
-export const selectRecipientsDisplayList = createSelector(
-  [
-    selectRecipientsListState,
-    selectSelectedRecipientEntriesInOrder,
-    selectRecipientEnabled,
-  ],
-  (envelopeRecipients, selectedEntriesInOrder, recipientEnabled) => {
-    if (!recipientEnabled) return []
-    if (envelopeRecipients.length > 0) {
-      return envelopeRecipients.map((r, i) => ({
-        id: `recipient-${i}`,
-        role: 'recipient' as const,
-        address: { ...r.viewDraft },
-        createdAt: new Date().toISOString(),
-      }))
-    }
-    return selectedEntriesInOrder
-  },
-)
-
 export const selectEnvelopeSessionRecord = createSelector(
   [selectSenderState, selectRecipientState],
   (sender, recipient): EnvelopeSessionRecord => {

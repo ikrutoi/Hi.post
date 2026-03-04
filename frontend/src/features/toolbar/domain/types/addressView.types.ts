@@ -9,6 +9,8 @@ export const VIEW_KEYS = [
   'listClose',
   'listAdd',
   'close',
+  'sortUp',
+  'sortDown',
 ] as const satisfies readonly IconKey[]
 
 export type AddressViewKey = (typeof VIEW_KEYS)[number]
@@ -38,7 +40,10 @@ export const initialRecipientViewToolbarState: AddressViewToolbarState = {
 export const RECIPIENTS_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipientsView',
-    icons: [{ key: 'listClose', state: 'enabled' }],
+    icons: [
+      { key: 'sortDown', state: 'enabled' },
+      { key: 'listClose', state: 'enabled' },
+    ],
     status: 'enabled',
   },
 ]

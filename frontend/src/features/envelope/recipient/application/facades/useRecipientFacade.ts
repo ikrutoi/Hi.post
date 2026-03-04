@@ -9,11 +9,11 @@ import {
   selectRecipientView,
   selectRecipientViewId,
   selectRecipientFormDraft,
+  selectRecipientsDisplayList,
 } from '../../infrastructure/selectors'
 import {
   selectRecipientListPendingIds,
   selectRecipientListPanelOpen,
-  selectRecipientsDisplayList,
 } from '@envelope/infrastructure/selectors'
 import {
   clearRecipient,
@@ -53,15 +53,17 @@ export const useRecipientFacade = () => {
     }
   }
 
-  const selectFromList = (entry: { id: string; address: Record<string, string> }) => {
+  const selectFromList = (entry: {
+    id: string
+    address: Record<string, string>
+  }) => {
     if (isEnabled) {
       dispatch(toggleRecipientSelection(entry.id))
     } else {
       dispatch(setRecipientView('recipientView'))
       dispatch(setRecipientViewId(entry.id))
       ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-        ([field, value]) =>
-          dispatch(updateRecipientField({ field, value })),
+        ([field, value]) => dispatch(updateRecipientField({ field, value })),
       )
       dispatch(closeRecipientListPanel())
     }
@@ -75,7 +77,6 @@ export const useRecipientFacade = () => {
     const nextEnabled = !isEnabled
     dispatch(setEnabled(nextEnabled))
     dispatch(setRecipientMode(nextEnabled ? 'recipients' : 'recipient'))
-    // Синхронно обновляем apply, чтобы при переходе recipients→recipient не мигало disabled
     if (!nextEnabled) {
       dispatch(
         updateToolbarIcon({

@@ -35,10 +35,10 @@ export type RecipientState = {
   formIsComplete: boolean
   formIsEmpty: boolean
   sortOptions: SortOptions
+  recipientsViewSortDirection: SortDirection
   recipientViewId: string | null
   recipientsViewIdsFirstList: string[]
   recipientsViewIdsSecondList: string[]
-  /** Какой список получателей активен в режиме «Получатели» */
   currentRecipientsList: CurrentRecipientsList
   applied: string[]
   mode: RecipientMode

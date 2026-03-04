@@ -9,6 +9,9 @@ import {
   selectRecipientView,
 } from '../../recipient/infrastructure/selectors'
 import {
+  selectRecipientsDisplayList,
+} from '../../recipient/infrastructure/selectors'
+import {
   selectIsEnvelopeReady,
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
@@ -18,7 +21,6 @@ import {
   selectRecipientTemplateId,
   selectSenderTemplateId,
   selectSelectedRecipientEntriesInOrder,
-  selectRecipientsDisplayList,
   selectRecipientListPendingIds,
   selectSenderSelectedId,
   selectShowAddressFormView,

@@ -6,7 +6,7 @@ import {
 } from '../../infrastructure/state'
 import { toolbarAction } from '../helpers'
 import type { IconKey, IconStateGroup } from '@shared/config/constants'
-import type { ToolbarSection } from '../../domain/types'
+import type { ToolbarSection, ToolbarState } from '../../domain/types'
 
 export const useToolbarController = (section: ToolbarSection) => {
   const dispatch = useAppDispatch()
@@ -15,17 +15,32 @@ export const useToolbarController = (section: ToolbarSection) => {
     dispatch(toolbarAction({ section, key, payload }))
   }
 
-  const setGroupStatus = (groupName: string, status: IconStateGroup) => {
-    console.log('setGroup Controller')
-    dispatch(updateGroupStatus({ section, groupName, status }))
-  }
+  const setGroupStatus = (groupName: string, status: IconStateGroup) =>
+    dispatch(
+      updateGroupStatus({
+        section: section as keyof ToolbarState,
+        groupName,
+        status,
+      }),
+    )
 
   const setIconState = (key: IconKey, value: any) => {
-    dispatch(updateToolbarIcon({ section, key, value }))
+    dispatch(
+      updateToolbarIcon({
+        section: section as keyof ToolbarState,
+        key,
+        value,
+      }),
+    )
   }
 
   const updateSection = (value: any) => {
-    dispatch(updateToolbarSection({ section, value }))
+    dispatch(
+      updateToolbarSection({
+        section: section as keyof ToolbarState,
+        value,
+      }),
+    )
   }
 
   return {
