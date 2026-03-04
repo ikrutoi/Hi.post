@@ -120,8 +120,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     }
   }
 
-  console.log('recipientsDisplayList', recipientFacade.recipientsDisplayList)
-
   return (
     <form
       className={clsx(

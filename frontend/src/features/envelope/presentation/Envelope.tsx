@@ -24,8 +24,8 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const recipientListOpen = recipientFacade.listPanelOpen
   const senderListOpen = senderFacade.listPanelOpen
 
-  console.log('recipient', recipientFacade.state)
-  console.log('sender', senderFacade.state)
+  console.log('Envelope recipient', recipientFacade.state)
+  console.log('Envelope sender', senderFacade.state)
 
   return (
     <div className={styles.envelope}>

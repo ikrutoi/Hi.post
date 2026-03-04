@@ -4,6 +4,7 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import {
   clearSender,
   setSenderApplied,
+  setSenderAppliedIds,
   setSenderView,
   setSenderViewId,
   clearSenderFormData,
@@ -24,6 +25,7 @@ import {
   clearRecipientViewDraft,
   toggleRecipientSortDirection,
   toggleRecipientsViewSortDirection,
+  setRecipientAppliedIds,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
 import {
@@ -36,6 +38,8 @@ import {
   setRecipientViewEditMode,
   setAddressFormView,
   addressSaveSuccess,
+  removeRecipientAt,
+  removeRecipientFromListByIndex,
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientsPendingIds,
@@ -463,13 +467,21 @@ function* handleEnvelopeToolbarAction(
   if (key === 'apply') {
     if (section === 'sender') {
       const senderComplete: boolean = yield select(selectIsSenderComplete)
-      if (senderComplete) yield put(setSenderApplied(true))
+      if (senderComplete) {
+        const senderViewId: string | null = yield select(selectSenderViewId)
+        const appliedIds = senderViewId ? [senderViewId] : []
+        yield put(setSenderAppliedIds(appliedIds))
+      }
     }
-    if (section === 'recipient' || section === 'recipientView') {
+    if (section === 'recipient') {
       const recipientComplete: boolean = yield select(selectIsRecipientComplete)
       if (recipientComplete) {
         yield put(setRecipientMode('recipient'))
-        yield put(setRecipientApplied(true))
+        const recipientViewId: string | null = yield select(
+          selectRecipientViewId,
+        )
+        const appliedIds = recipientViewId ? [recipientViewId] : []
+        yield put(setRecipientAppliedIds(appliedIds))
       }
     }
     if (section === 'recipients') {
@@ -500,6 +512,7 @@ function* handleEnvelopeToolbarAction(
         }
       }
       yield put(setRecipientMode('recipients'))
+      yield put(setRecipientAppliedIds(ids))
       yield put(setRecipientsList(list))
       yield put(
         setRecipientsViewIds(
@@ -648,8 +661,31 @@ function* handleAddressSaveSuccess(
   }
 }
 
+function* handleRemoveRecipientFromListByIndex(
+  action: PayloadAction<number>,
+) {
+  const index = action.payload
+  const envelopeRecipients: RecipientState[] = yield select(
+    (s: RootState) => s.envelopeRecipients ?? [],
+  )
+  const item = envelopeRecipients[index]
+  const templateId = item?.recipientViewId ?? null
+  if (templateId == null) return
+  yield put(removeRecipientAt(index))
+  const firstList: string[] = yield select(
+    (s: RootState) => s.recipient?.recipientsViewIdsFirstList ?? [],
+  )
+  yield put(setRecipientsViewIds(firstList.filter((id) => id !== templateId)))
+  const pending: string[] = yield select(selectRecipientsPendingIds)
+  yield put(setRecipientsPendingIds(pending.filter((id) => id !== templateId)))
+}
+
 export function* envelopeToolbarSaga() {
   yield takeLatest(toolbarAction.type, handleEnvelopeToolbarAction)
+  yield takeEvery(
+    removeRecipientFromListByIndex.type,
+    handleRemoveRecipientFromListByIndex,
+  )
   yield takeEvery(setAddressFormView.type, handleSetAddressFormViewSync)
   yield takeEvery(addressSaveSuccess.type, handleAddressSaveSuccess)
 }

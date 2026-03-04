@@ -92,8 +92,6 @@ export const selectRecipientViewEditMode = createSelector(
 
 export const selectRecipientsList = selectRecipientsListState
 
-export const selectRecipientEntries = selectRecipientEntriesState
-
 export const selectSelectedRecipientEntriesInOrder = createSelector(
   [selectRecipientsPendingIds, selectRecipientEntriesState],
   (ids, entries): AddressBookEntry[] =>

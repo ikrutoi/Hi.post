@@ -72,6 +72,9 @@ const recipientSlice = createSlice({
         state.currentView = 'recipientsView'
       } else {
         state.currentView = 'recipientView'
+        if (state.applied?.length > 0) {
+          state.recipientViewId = state.applied[0]
+        }
       }
       state.formIsEmpty = isFormDraftEmpty(state.formDraft)
     },
@@ -82,6 +85,9 @@ const recipientSlice = createSlice({
         state.currentView = 'recipientsView'
       } else {
         state.currentView = 'recipientView'
+        if (state.applied?.length > 0) {
+          state.recipientViewId = state.applied[0]
+        }
       }
       state.formIsEmpty = isFormDraftEmpty(state.formDraft)
     },

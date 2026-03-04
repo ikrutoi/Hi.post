@@ -5,4 +5,5 @@ export {
   closeRecipientListPanel,
   toggleRecipientSelection,
   removeRecipientAt,
+  removeRecipientFromListByIndex,
 } from '@envelope/infrastructure/state'

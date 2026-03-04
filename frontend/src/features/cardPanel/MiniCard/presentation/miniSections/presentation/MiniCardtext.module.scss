@@ -14,7 +14,7 @@
 
 .miniCardtext:hover,
 .miniCardtext.hovered {
-  border-color: rgba($color-toggle-active, 0.5);
+  border-color: $color-toggle-active-hover;
 }
 
 .previewButton {

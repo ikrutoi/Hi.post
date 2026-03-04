@@ -19,6 +19,9 @@ export const envelopeRecipientsSlice = createSlice({
       if (i >= 0 && i < state.length) state.splice(i, 1)
     },
 
+    /** Только для саги: удалить получателя по индексу и синхронизировать recipientsViewIds + recipientsPendingIds. Редуктор не меняет state. */
+    removeRecipientFromListByIndex: (_state, _action: PayloadAction<number>) => {},
+
     clearRecipientsList: () => initialState,
   },
 })
@@ -27,6 +30,7 @@ export const {
   setRecipientsList,
   addRecipient,
   removeRecipientAt,
+  removeRecipientFromListByIndex,
   clearRecipientsList,
 } = envelopeRecipientsSlice.actions
 

@@ -21,11 +21,12 @@ export const CardPanel = () => {
   const [localValueScroll, setLocalValueScroll] = useState(0)
 
   const { editorState } = useCardEditorFacade()
+  console.log('editorState envelope', editorState.envelope)
   const { state: stateCardPanel } = useCardPanelFacade()
   const { isPacked } = stateCardPanel
-  const { recipient, recipients } = useEnvelopeFacade()
-  // console.log('recipient', recipient)
-  // console.log('recipients', recipients)
+  const { recipient, sender } = useEnvelopeFacade()
+  console.log('CardPanel recipient', recipient)
+  console.log('CardPanel sender', sender)
   const { isPreviewOpen } = useCardFacade()
   const { meta } = useLayoutFacade()
   const { remSize, sizeMiniCard, sizeToolbarContour } = useSizeFacade()

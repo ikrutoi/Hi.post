@@ -77,9 +77,20 @@ export const selectRecipientCompletedFields = createSelector(
     ),
 )
 
+const isAddressComplete = (address: Record<string, string> | undefined): boolean =>
+  !!address && Object.values(address).every((v) => (v ?? '').trim() !== '')
+
 export const selectIsRecipientComplete = createSelector(
-  [selectRecipientState],
-  (recipient) => recipient.formIsComplete,
+  [selectRecipientState, selectRecipientEntriesState],
+  (recipient, entries): boolean => {
+    if (recipient.mode === 'recipient' && recipient.recipientViewId) {
+      const entry = entries.find((e) => e.id === recipient.recipientViewId)
+      if (entry?.address && isAddressComplete(entry.address as Record<string, string>)) {
+        return true
+      }
+    }
+    return recipient.formIsComplete
+  },
 )
 
 export const selectRecipientEnabled = (state: RootState): boolean =>
