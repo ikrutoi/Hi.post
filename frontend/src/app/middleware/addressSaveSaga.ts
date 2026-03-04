@@ -16,12 +16,17 @@ import {
   setSenderViewId,
   setSenderView,
   clearSenderFormData,
+  updateSenderField,
 } from '@envelope/sender/infrastructure/state'
 import { addressSaveSuccess, setAddressFormView } from '@envelope/infrastructure/state'
 import { addAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
-import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
+import type {
+  AddressFields,
+  AddressField,
+  EnvelopeRole,
+} from '@shared/config/constants'
 
 function cleanupAddress(address: Record<string, string>): AddressFields {
   const cleanup = (text: string) => text.split(' ').filter(Boolean).join(' ')
@@ -97,6 +102,12 @@ function* handleAddressSave(
         yield put(setSenderView('senderView'))
         yield put(setAddressFormView({ show: false, role: 'sender' }))
         yield put(clearSenderFormData())
+        // Заполняем viewDraft сохранённым адресом, чтобы SenderView отобразил его (а не пустое поле)
+        for (const [field, value] of Object.entries(
+          cleanedAddress,
+        ) as [AddressField, string][]) {
+          yield put(updateSenderField({ field, value }))
+        }
       }
       yield put(addressSaveSuccess(role))
       yield call(processEnvelopeVisuals)
