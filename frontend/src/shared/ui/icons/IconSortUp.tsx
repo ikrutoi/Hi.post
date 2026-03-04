@@ -12,14 +12,9 @@ export const IconSortUp = (props: React.SVGProps<SVGSVGElement>) => (
     {...props}
   >
     <g id="Layer_1">
-      <path strokeWidth={130.208} d="m820 265 195-196 195 196m-195 948V69" />
+      <path strokeWidth={130.208} d="M68 236h471M68 640h471M68 1044h606" />
 
-      <g id="Lines">
-        <path
-          strokeWidth={130.208}
-          d="M68 443h375M68 829h500M68 1213h625M68 68h249"
-        />
-      </g>
+      <path strokeWidth={130.208} d="M808 438l202-202 203 202M1010 236v808" />
     </g>
   </svg>
 )
