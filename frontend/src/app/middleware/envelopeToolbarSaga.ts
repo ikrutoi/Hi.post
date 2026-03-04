@@ -210,9 +210,7 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (
-    (section === 'savedAddress' ||
-      section === 'senderView' ||
-      section === 'recipientView') &&
+    (section === 'senderView' || section === 'recipientView') &&
     key === 'favorite'
   ) {
     const recipientViewId: string | null = yield select(selectRecipientViewId)
@@ -250,9 +248,7 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (
-    (section === 'savedAddress' ||
-      section === 'senderView' ||
-      section === 'recipientView') &&
+    (section === 'senderView' || section === 'recipientView') &&
     key === 'delete'
   ) {
     const recipientViewId: string | null = yield select(selectRecipientViewId)
@@ -493,6 +489,7 @@ function* handleEnvelopeToolbarAction(
             ),
             formIsEmpty: true,
             sortOptions: { sortedBy: 'name', direction: 'asc' },
+            recipientsViewSortDirection: 'asc',
             recipientViewId: id,
             recipientsViewIdsFirstList: [],
             recipientsViewIdsSecondList: [],
