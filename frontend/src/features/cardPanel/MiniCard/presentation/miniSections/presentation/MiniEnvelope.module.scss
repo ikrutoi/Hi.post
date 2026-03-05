@@ -45,7 +45,7 @@
   }
 
   .miniEnvelopeCircle:nth-child(2) {
-    opacity: 0.115; // среднее между внешним (0.05) и внутренним (0.18) в режиме 2 адреса
+    opacity: 0.115;
   }
 }
 
@@ -88,45 +88,83 @@
   color: rgba($color-envelope-recipient-legend, 0.35);
 }
 
-.miniEnvelopeLogo {
-  grid-column: 1/2;
-  grid-row: 1/2;
-  width: 70%;
-  min-height: 1.2rem;
-  justify-self: center;
-  background-image: url('@data/img/logo-com.svg');
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  z-index: 1;
-}
-
-.miniEnvelopeMack {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .miniEnvelopeSingleContent {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  padding: inherit;
-  padding-top: 0.5rem;
-  padding-bottom: 0.6rem;
-  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  padding-left: 1rem;
+  padding-right: 0.25rem;
+  border-radius: 1rem;
 }
 
 .miniEnvelopeSingleContent .miniEnvelopeName {
-  flex: 1;
+  grid-column: 1/2;
+  grid-row: 2/3;
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-height: 0;
+  overflow: hidden;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
 }
 
-.miniEnvelopeSingleContent .miniEnvelopeCity {
-  flex-shrink: 0;
+.miniEnvelopeSingleContent .miniEnvelopeNameOverflow {
+  mask-image: linear-gradient(to right, black 0, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0,
+    black 85%,
+    transparent 100%
+  );
+}
+
+.miniEnvelopeSingleContent .miniEnvelopeNameInner {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.miniEnvelopeSingleContent .miniEnvelopeCountry {
+  grid-column: 1/2;
+  grid-row: 3/4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0 0 0.5rem 0;
+
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+
+  // border: solid 1px green;
+  // flex-shrink: 0;
+}
+
+.miniEnvelopeSingleContent .miniEnvelopeCountryOverflow {
+  mask-image: linear-gradient(to right, black 0, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0,
+    black 85%,
+    transparent 100%
+  );
+}
+
+.miniEnvelopeSingleContent .miniEnvelopeCountryInner {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
+  text-align: left;
+  white-space: nowrap;
 }
 
 .miniEnvelopeAddress {
@@ -138,21 +176,14 @@
   z-index: 1;
 }
 
-.miniEnvelopeName {
-  width: 100%;
-  font-weight: 700;
-  font-size: 1rem;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-  text-align: center;
-}
-
-.miniEnvelopeCity {
-  font-size: 0.8rem;
-  font-weight: 500;
-  opacity: 0.9;
-  letter-spacing: 0.02em;
-}
+// .miniEnvelopeName {
+//   width: 100%;
+//   font-weight: 700;
+//   font-size: 1rem;
+//   line-height: 1.2;
+//   letter-spacing: 0.02em;
+//   text-align: center;
+// }
 
 .miniEnvelopeCount {
   position: absolute;

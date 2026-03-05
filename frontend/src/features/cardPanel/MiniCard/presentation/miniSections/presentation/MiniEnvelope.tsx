@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import styles from './MiniEnvelope.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
@@ -15,6 +15,49 @@ export const MiniEnvelope: React.FC = () => {
   const isSingle = count === 1
   const { steps, isMany } = getEnvelopeCircleSteps(count)
   const stepsToRender = isSingle ? getEnvelopeCircleSteps(2).steps : steps
+
+  const nameWrapperRef = useRef<HTMLDivElement | null>(null)
+  const nameInnerRef = useRef<HTMLSpanElement | null>(null)
+  const [hasNameOverflow, setHasNameOverflow] = useState(false)
+
+  const countryWrapperRef = useRef<HTMLDivElement | null>(null)
+  const countryInnerRef = useRef<HTMLSpanElement | null>(null)
+  const [hasCountryOverflow, setHasCountryOverflow] = useState(false)
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (!isSingle) {
+        setHasNameOverflow(false)
+        setHasCountryOverflow(false)
+        return
+      }
+
+      if (nameWrapperRef.current && nameInnerRef.current) {
+        const wrapperWidth = nameWrapperRef.current.clientWidth
+        const innerWidth = nameInnerRef.current.scrollWidth
+
+        setHasNameOverflow(innerWidth > wrapperWidth + 1)
+      } else {
+        setHasNameOverflow(false)
+      }
+
+      if (countryWrapperRef.current && countryInnerRef.current) {
+        const wrapperWidth = countryWrapperRef.current.clientWidth
+        const innerWidth = countryInnerRef.current.scrollWidth
+
+        setHasCountryOverflow(innerWidth > wrapperWidth + 1)
+      } else {
+        setHasCountryOverflow(false)
+      }
+    }
+
+    checkOverflow()
+    window.addEventListener('resize', checkOverflow)
+
+    return () => {
+      window.removeEventListener('resize', checkOverflow)
+    }
+  }, [isSingle, addressRecipient.name, addressRecipient.country])
 
   return (
     <div
@@ -55,20 +98,31 @@ export const MiniEnvelope: React.FC = () => {
       {isSingle ? (
         <div className={styles.miniEnvelopeSingleContent}>
           <div
+            ref={nameWrapperRef}
             className={clsx(
               styles.miniEnvelopeAddress,
               styles.miniEnvelopeName,
+              hasNameOverflow && styles.miniEnvelopeNameOverflow,
             )}
           >
-            {addressRecipient.name}
+            <span ref={nameInnerRef} className={styles.miniEnvelopeNameInner}>
+              {addressRecipient.name}
+            </span>
           </div>
           <div
+            ref={countryWrapperRef}
             className={clsx(
               styles.miniEnvelopeAddress,
-              styles.miniEnvelopeCity,
+              styles.miniEnvelopeCountry,
+              hasCountryOverflow && styles.miniEnvelopeCountryOverflow,
             )}
           >
-            {addressRecipient.country}
+            <span
+              ref={countryInnerRef}
+              className={styles.miniEnvelopeCountryInner}
+            >
+              {addressRecipient.country}
+            </span>
           </div>
         </div>
       ) : (
