@@ -55,9 +55,7 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
       : section === 'addressListRecipient'
         ? recipientSortDirection
         : section === 'recipientsView'
-          ? recipientsViewSortDirection === 'asc'
-            ? 'desc'
-            : 'asc'
+          ? recipientsViewSortDirection
           : undefined
 
   useEffect(() => {

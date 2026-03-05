@@ -176,13 +176,13 @@
 
 .recipientsViewList {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
 
   > *:first-child {
-    margin-bottom: 0;
+    margin-top: 0;
   }
 }

@@ -21,6 +21,16 @@
   border-color: $color-toggle-active-hover;
 }
 
+.miniEnvelopeSender {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 50%;
+  border-radius: 0 0 100% 0;
+  background-color: $color-envelope-sender;
+}
+
 .miniEnvelopeCircles {
   position: absolute;
   inset: 0;
@@ -28,7 +38,6 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  z-index: 0;
   color: $color-envelope-recipient-legend;
 }
 
@@ -57,27 +66,6 @@
   border-radius: 50%;
   background-color: currentColor;
   transition: opacity 0.2s ease;
-}
-
-.miniEnvelopeRecipientIcon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 78%;
-  aspect-ratio: 1;
-  max-height: 78%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  z-index: 1;
-  transition: color 0.2s ease;
-
-  svg {
-    width: 48%;
-    height: 48%;
-  }
 }
 
 .miniEnvelopeRecipientIconSingle {
@@ -116,10 +104,6 @@
 .miniEnvelopeCount {
   grid-column: 1/2;
   grid-row: 2/3;
-  // position: absolute;
-  // top: 50%;
-  // left: 50%;
-  // transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -128,7 +112,6 @@
   line-height: 1;
   letter-spacing: -0.02em;
   color: $color-envelope-recipient-legend;
-  z-index: 1;
 }
 
 .miniEnvelopeSingleContent .miniEnvelopeNameOverflow {
@@ -164,9 +147,6 @@
   font-weight: 500;
   letter-spacing: 0.02em;
   color: $color-envelope-recipient-legend;
-
-  // border: solid 1px green;
-  // flex-shrink: 0;
 }
 
 .miniEnvelopeSingleContent .miniEnvelopeCountryOverflow {
@@ -194,17 +174,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  z-index: 1;
 }
-
-// .miniEnvelopeName {
-//   width: 100%;
-//   font-weight: 700;
-//   font-size: 1rem;
-//   line-height: 1.2;
-//   letter-spacing: 0.02em;
-//   text-align: center;
-// }
 
 .previewButton {
   @include preview-button-logic('.miniEnvelope');

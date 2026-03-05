@@ -6,4 +6,5 @@ export {
   toggleRecipientSelection,
   removeRecipientAt,
   removeRecipientFromListByIndex,
+  removeRecipientFromListById,
 } from '@envelope/infrastructure/state'

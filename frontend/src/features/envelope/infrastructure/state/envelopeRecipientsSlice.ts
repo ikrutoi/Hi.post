@@ -21,6 +21,8 @@ export const envelopeRecipientsSlice = createSlice({
 
     /** Только для саги: удалить получателя по индексу и синхронизировать recipientsViewIds + recipientsPendingIds. Редуктор не меняет state. */
     removeRecipientFromListByIndex: (_state, _action: PayloadAction<number>) => {},
+    /** Только для саги: удалить получателя по templateId (id из адресной книги). */
+    removeRecipientFromListById: (_state, _action: PayloadAction<string>) => {},
 
     clearRecipientsList: () => initialState,
   },
@@ -31,6 +33,7 @@ export const {
   addRecipient,
   removeRecipientAt,
   removeRecipientFromListByIndex,
+  removeRecipientFromListById,
   clearRecipientsList,
 } = envelopeRecipientsSlice.actions
 

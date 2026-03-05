@@ -71,6 +71,7 @@ const recipientSlice = createSlice({
       state.mode = action.payload ? 'recipients' : 'recipient'
       if (action.payload) {
         state.currentView = 'recipientsView'
+        state.recipientsViewSortDirection = 'asc'
       } else {
         state.currentView = 'recipientView'
       }
@@ -81,6 +82,7 @@ const recipientSlice = createSlice({
       state.mode = action.payload
       if (action.payload === 'recipients') {
         state.currentView = 'recipientsView'
+        state.recipientsViewSortDirection = 'asc'
       } else {
         state.currentView = 'recipientView'
       }

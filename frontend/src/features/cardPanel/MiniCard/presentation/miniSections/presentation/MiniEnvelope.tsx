@@ -5,12 +5,15 @@ import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import { useEnvelopeFacade } from '@envelope/application/facades'
 import { getEnvelopeCircleSteps } from './getEnvelopeCircleSteps'
+import { useSenderFacade } from '@/features/envelope/sender/application/facades'
 
 export const MiniEnvelope: React.FC = () => {
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('envelope')
   const { appliedRecipientAddress, cancelEnvelopeSelection, recipient } =
     useEnvelopeFacade()
+  const { state: senderState, isEnabled } = useSenderFacade()
+  console.log('isEnabled', isEnabled)
   const count = recipient.applied.length
   const isSingle = count === 1
   const { steps, isMany } = getEnvelopeCircleSteps(count)
@@ -140,6 +143,12 @@ export const MiniEnvelope: React.FC = () => {
       >
         {getToolbarIcon({ key: 'clearInput' })}
       </button>
+      {isEnabled && senderState.applied.length > 0 && (
+        <div className={styles.miniEnvelopeSender}>
+          {/* <span>55</span> */}
+          {/* <span>{senderState.viewDraft.name}</span> */}
+        </div>
+      )}
     </div>
   )
 }

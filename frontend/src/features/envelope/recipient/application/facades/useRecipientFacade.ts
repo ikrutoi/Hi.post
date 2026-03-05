@@ -24,6 +24,7 @@ import {
   setRecipientMode,
   toggleRecipientSelection,
   removeRecipientFromListByIndex,
+  removeRecipientFromListById,
   closeRecipientListPanel,
 } from '../../infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -49,6 +50,8 @@ export const useRecipientFacade = () => {
       const index = parseInt(id.replace('recipient-', ''), 10)
       if (!Number.isNaN(index))
         dispatch(removeRecipientFromListByIndex(index))
+    } else if (isEnabled) {
+      dispatch(removeRecipientFromListById(id))
     } else {
       dispatch(toggleRecipientSelection(id))
     }

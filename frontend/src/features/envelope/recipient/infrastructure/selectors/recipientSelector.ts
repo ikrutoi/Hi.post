@@ -139,30 +139,57 @@ const selectRecipientsViewSortDirectionRaw = (
   state: RootState,
 ): SortDirection => state.recipient?.recipientsViewSortDirection ?? 'asc'
 
-export const selectRecipientsDisplayList = createSelector(
+/** Id списка получателей для текущего вида (first или second). */
+const selectCurrentRecipientsViewIds = (state: RootState): string[] => {
+  const r = state.recipient
+  if (!r) return []
+  return r.currentRecipientsList === 'second'
+    ? (r.recipientsViewIdsSecondList ?? [])
+    : (r.recipientsViewIdsFirstList ?? [])
+}
+
+/** Записи для RecipientsView: по текущему списку id, адрес из envelope или адресной книги. */
+const selectRecipientsDisplayEntriesFromViewIds = createSelector(
   [
     selectEnvelopeRecipientsList,
-    selectRecipientsViewSortDirectionRaw,
-    selectSelectedRecipientEntriesInOrder,
-    selectRecipientEnabled,
+    selectRecipientEntriesState,
+    (s: RootState) => selectCurrentRecipientsViewIds(s),
   ],
   (
     envelopeRecipients,
+    recipientEntries,
+    viewIds,
+  ): AddressBookEntry[] =>
+    viewIds.flatMap((templateId) => {
+      const fromEnvelope = envelopeRecipients.find(
+        (r) => r.recipientViewId === templateId,
+      )
+      const fromBook = recipientEntries.find((e) => e.id === templateId)
+      const address = fromEnvelope?.viewDraft ?? fromBook?.address
+      if (!address) return []
+      return [
+        {
+          id: templateId,
+          role: 'recipient' as const,
+          address: { ...address },
+          createdAt: fromBook?.createdAt ?? new Date().toISOString(),
+        } as AddressBookEntry,
+      ]
+    }),
+)
+
+export const selectRecipientsDisplayList = createSelector(
+  [
+    selectRecipientsDisplayEntriesFromViewIds,
+    selectRecipientsViewSortDirectionRaw,
+    selectRecipientEnabled,
+  ],
+  (
+    baseEntries,
     recipientsViewSortDirection,
-    selectedEntriesInOrder,
     recipientEnabled,
   ): AddressBookEntry[] => {
     if (!recipientEnabled) return []
-
-    const baseEntries: AddressBookEntry[] =
-      envelopeRecipients.length > 0
-        ? envelopeRecipients.map((r, i) => ({
-            id: `recipient-${i}`,
-            role: 'recipient' as const,
-            address: { ...r.viewDraft },
-            createdAt: new Date().toISOString(),
-          }))
-        : selectedEntriesInOrder
 
     const direction = recipientsViewSortDirection
     const sorted = [...baseEntries].sort((a, b) => {

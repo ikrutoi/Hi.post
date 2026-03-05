@@ -43,6 +43,8 @@ import {
   addressSaveSuccess,
   removeRecipientAt,
   removeRecipientFromListByIndex,
+  removeRecipientFromListById,
+  toggleRecipientSelection,
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientsPendingIds,
@@ -496,7 +498,11 @@ function* handleEnvelopeToolbarAction(
       }
     }
     if (section === 'recipients') {
-      const ids: string[] = yield select(selectRecipientsPendingIds)
+      const recipient: RecipientState = yield select(selectRecipientState)
+      const ids: string[] =
+        recipient.currentRecipientsList === 'second'
+          ? (recipient.recipientsViewIdsSecondList ?? [])
+          : (recipient.recipientsViewIdsFirstList ?? [])
       const list: RecipientState[] = []
       for (const id of ids) {
         const record: { id: string; address?: Record<string, string> } | null =
@@ -677,22 +683,40 @@ function* handleRemoveRecipientFromListByIndex(
   action: PayloadAction<number>,
 ) {
   const index = action.payload
+  const recipient: RecipientState = yield select(selectRecipientState)
+  const viewList: string[] =
+    recipient.currentRecipientsList === 'second'
+      ? (recipient.recipientsViewIdsSecondList ?? [])
+      : (recipient.recipientsViewIdsFirstList ?? [])
+  const templateId = viewList[index] ?? null
+  if (templateId == null) return
+
   const envelopeRecipients: RecipientState[] = yield select(
     (s: RootState) => s.envelopeRecipients ?? [],
   )
-  const item = envelopeRecipients[index]
-  const templateId = item?.recipientViewId ?? null
-  if (templateId == null) return
-  yield put(removeRecipientAt(index))
-  yield put(removeAppliedAt(index))
-  const applied: string[] = yield select((s: RootState) => s.recipient?.applied ?? [])
-  if (applied.length === 0) {
+  const envelopeIndex = envelopeRecipients.findIndex(
+    (r) => r.recipientViewId === templateId,
+  )
+  if (envelopeIndex >= 0) {
+    yield put(removeRecipientAt(envelopeIndex))
+  }
+  const applied: string[] = yield select(
+    (s: RootState) => s.recipient?.applied ?? [],
+  )
+  const appliedIndex = applied.indexOf(templateId)
+  if (appliedIndex >= 0) {
+    yield put(removeAppliedAt(appliedIndex))
+  }
+  const appliedAfter: string[] = yield select(
+    (s: RootState) => s.recipient?.applied ?? [],
+  )
+  if (appliedAfter.length === 0) {
     yield put(setRecipientAppliedData(null))
-  } else if (applied.length === 1) {
+  } else if (appliedAfter.length === 1) {
     const list: RecipientState[] = yield select(
       (s: RootState) => s.envelopeRecipients ?? [],
     )
-    const entry = list.find((r) => r.recipientViewId === applied[0])
+    const entry = list.find((r) => r.recipientViewId === appliedAfter[0])
     if (entry?.viewDraft) {
       yield put(setRecipientAppliedData(entry.viewDraft))
     }
@@ -701,8 +725,83 @@ function* handleRemoveRecipientFromListByIndex(
     (s: RootState) => s.recipient?.recipientsViewIdsFirstList ?? [],
   )
   yield put(setRecipientsViewIds(firstList.filter((id) => id !== templateId)))
+  if (recipient.currentRecipientsList === 'second') {
+    const secondList: string[] = yield select(
+      (s: RootState) => s.recipient?.recipientsViewIdsSecondList ?? [],
+    )
+    yield put(
+      setRecipientsViewIdsSecondList(
+        secondList.filter((id) => id !== templateId),
+      ),
+    )
+  }
   const pending: string[] = yield select(selectRecipientsPendingIds)
   yield put(setRecipientsPendingIds(pending.filter((id) => id !== templateId)))
+}
+
+function* handleRemoveRecipientFromListById(
+  action: PayloadAction<string>,
+) {
+  const templateId = action.payload
+  if (!templateId) return
+  const recipient: RecipientState = yield select(selectRecipientState)
+  const envelopeRecipients: RecipientState[] = yield select(
+    (s: RootState) => s.envelopeRecipients ?? [],
+  )
+  const envelopeIndex = envelopeRecipients.findIndex(
+    (r) => r.recipientViewId === templateId,
+  )
+  if (envelopeIndex >= 0) {
+    yield put(removeRecipientAt(envelopeIndex))
+  }
+  const applied: string[] = yield select(
+    (s: RootState) => s.recipient?.applied ?? [],
+  )
+  const appliedIndex = applied.indexOf(templateId)
+  if (appliedIndex >= 0) {
+    yield put(removeAppliedAt(appliedIndex))
+  }
+  const appliedAfter: string[] = yield select(
+    (s: RootState) => s.recipient?.applied ?? [],
+  )
+  if (appliedAfter.length === 0) {
+    yield put(setRecipientAppliedData(null))
+  } else if (appliedAfter.length === 1) {
+    const list: RecipientState[] = yield select(
+      (s: RootState) => s.envelopeRecipients ?? [],
+    )
+    const entry = list.find((r) => r.recipientViewId === appliedAfter[0])
+    if (entry?.viewDraft) {
+      yield put(setRecipientAppliedData(entry.viewDraft))
+    }
+  }
+  const firstList: string[] = yield select(
+    (s: RootState) => s.recipient?.recipientsViewIdsFirstList ?? [],
+  )
+  yield put(setRecipientsViewIds(firstList.filter((id) => id !== templateId)))
+  if (recipient.currentRecipientsList === 'second') {
+    const secondList: string[] = yield select(
+      (s: RootState) => s.recipient?.recipientsViewIdsSecondList ?? [],
+    )
+    yield put(
+      setRecipientsViewIdsSecondList(
+        secondList.filter((id) => id !== templateId),
+      ),
+    )
+  }
+  const pending: string[] = yield select(selectRecipientsPendingIds)
+  yield put(setRecipientsPendingIds(pending.filter((id) => id !== templateId)))
+}
+
+function* syncRecipientsViewIdsFromPending() {
+  const recipient: RecipientState = yield select(selectRecipientState)
+  if (recipient.mode !== 'recipients') return
+  const pendingIds: string[] = yield select(selectRecipientsPendingIds)
+  if (recipient.currentRecipientsList === 'second') {
+    yield put(setRecipientsViewIdsSecondList(pendingIds))
+  } else {
+    yield put(setRecipientsViewIds(pendingIds))
+  }
 }
 
 export function* envelopeToolbarSaga() {
@@ -711,6 +810,14 @@ export function* envelopeToolbarSaga() {
     removeRecipientFromListByIndex.type,
     handleRemoveRecipientFromListByIndex,
   )
+  yield takeEvery(
+    removeRecipientFromListById.type,
+    handleRemoveRecipientFromListById,
+  )
   yield takeEvery(setAddressFormView.type, handleSetAddressFormViewSync)
   yield takeEvery(addressSaveSuccess.type, handleAddressSaveSuccess)
+  yield takeEvery(
+    [setRecipientsPendingIds.type, toggleRecipientSelection.type],
+    syncRecipientsViewIdsFromPending,
+  )
 }

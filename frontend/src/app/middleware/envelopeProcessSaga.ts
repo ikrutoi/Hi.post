@@ -30,16 +30,23 @@ import {
   setRecipientsPendingIds,
   toggleRecipientListPanel,
   closeRecipientListPanel,
+  removeRecipientAt,
 } from '@envelope/infrastructure/state'
 import {
   setSenderViewId,
   setSenderView,
+  setSenderAppliedIds,
+  setSenderApplied,
 } from '@envelope/sender/infrastructure/state'
 import {
   setRecipientViewId,
   setRecipientsViewIds,
   setRecipientsViewIdsSecondList,
   resetRecipientForm,
+  removeAppliedAt,
+  setRecipientAppliedWithData,
+  setRecipientAppliedIds,
+  setRecipientApplied,
 } from '@envelope/recipient/infrastructure/state'
 import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
@@ -91,18 +98,10 @@ export function* processEnvelopeVisuals() {
           .filter((id): id is string => id != null),
       ),
     )
-  } else if (
-    recipient.mode === 'recipients' &&
-    Array.isArray(pendingIds) &&
-    pendingIds.length > 0
-  ) {
-    // В режиме «Получатели» синхронизируем активный список с временным UI-выбором
-    if (recipient.currentRecipientsList === 'first') {
-      yield put(setRecipientsViewIds([...pendingIds]))
-    } else {
-      yield put(setRecipientsViewIdsSecondList([...pendingIds]))
-    }
   }
+  // Не перезаписываем recipientsViewIdsFirstList/SecondList из pendingIds:
+  // списки first/second обновляются только при Apply, иначе applied получает
+  // лишние id (на 1 больше), т.к. pendingIds может отличаться от отображаемого списка.
 
   const senderComplete: boolean = yield select(selectIsSenderComplete)
   const recipientComplete: boolean = yield select(selectIsRecipientComplete)
@@ -198,18 +197,31 @@ export function* processEnvelopeVisuals() {
   const isRecipientEmptyForm =
     recipient.currentView === 'recipientView' &&
     recipient.recipientViewId == null
-  // При выбранном адресе (id не null) — apply всегда enabled
-  const senderApplyState =
-    sender.currentView === 'senderView' && sender.senderViewId != null
+
+  const senderAlreadyApplied =
+    sender.currentView === 'senderView' &&
+    sender.senderViewId != null &&
+    (sender.applied?.length ?? 0) === 1 &&
+    sender.applied[0] === sender.senderViewId
+  const recipientAlreadyApplied =
+    recipient.currentView === 'recipientView' &&
+    recipient.recipientViewId != null &&
+    (recipient.applied?.length ?? 0) === 1 &&
+    recipient.applied[0] === recipient.recipientViewId
+
+  const senderApplyState = senderAlreadyApplied
+    ? 'disabled'
+    : sender.currentView === 'senderView' && sender.senderViewId != null
       ? 'enabled'
       : isSenderEmptyForm
         ? 'disabled'
         : senderComplete
           ? 'enabled'
           : 'disabled'
-  const recipientApplyState =
-    recipient.currentView === 'recipientView' &&
-    recipient.recipientViewId != null
+  const recipientApplyState = recipientAlreadyApplied
+    ? 'disabled'
+    : recipient.currentView === 'recipientView' &&
+        recipient.recipientViewId != null
       ? 'enabled'
       : isRecipientEmptyForm
         ? 'disabled'
@@ -242,8 +254,20 @@ export function* processEnvelopeVisuals() {
     isMultiMode && recipientsPendingIds.length >= 1
   const isRecipientsEmptyForm =
     isRecipientFormOpen && !recipientComplete
+  const recipientsViewIds =
+    recipient.currentRecipientsList === 'second'
+      ? (recipient.recipientsViewIdsSecondList ?? [])
+      : (recipient.recipientsViewIdsFirstList ?? [])
+  const appliedIds = recipient.applied ?? []
+  const recipientsViewIdsEqual =
+    appliedIds.length === recipientsViewIds.length &&
+    appliedIds.length > 0 &&
+    appliedIds.every((id) => recipientsViewIds.includes(id)) &&
+    recipientsViewIds.every((id) => appliedIds.includes(id))
   const recipientsApplyState =
-    isRecipientsEmptyForm || !canApplyRecipients ? 'disabled' : 'enabled'
+    isRecipientsEmptyForm || !canApplyRecipients || recipientsViewIdsEqual
+      ? 'disabled'
+      : 'enabled'
 
   yield put(
     updateToolbarSection({
@@ -357,6 +381,11 @@ export function* envelopeProcessSaga() {
   yield takeEvery(restoreRecipient.type, processEnvelopeVisuals)
   yield takeEvery(addAddressTemplateRef.type, processEnvelopeVisuals)
   yield takeEvery(removeAddressTemplateRef.type, processEnvelopeVisuals)
+  yield takeEvery(setSenderAppliedIds.type, processEnvelopeVisuals)
+  yield takeEvery(setSenderApplied.type, processEnvelopeVisuals)
+  yield takeEvery(setRecipientAppliedWithData.type, processEnvelopeVisuals)
+  yield takeEvery(setRecipientAppliedIds.type, processEnvelopeVisuals)
+  yield takeEvery(setRecipientApplied.type, processEnvelopeVisuals)
   yield takeEvery(
     [
       toggleRecipientSelection.type,
@@ -369,6 +398,9 @@ export function* envelopeProcessSaga() {
       resetRecipientForm.type,
       toggleRecipientListPanel.type,
       closeRecipientListPanel.type,
+      removeRecipientAt.type,
+      removeAppliedAt.type,
+      setRecipientsViewIds.type,
     ],
     processEnvelopeVisuals,
   )
