@@ -176,9 +176,11 @@ export function* processEnvelopeVisuals() {
   )
   const recipientMode: RecipientMode = yield select(selectRecipientMode)
   const listApplyState =
-    recipientListPanelOpen && recipientMode === 'recipients'
-      ? 'enabled'
-      : 'disabled'
+    !(recipientListPanelOpen && recipientMode === 'recipients')
+      ? 'disabled'
+      : recipient.currentRecipientsList === 'second'
+        ? 'active'
+        : 'enabled'
 
   yield put(
     updateToolbarSection({

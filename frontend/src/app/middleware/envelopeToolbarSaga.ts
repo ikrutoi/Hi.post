@@ -28,7 +28,6 @@ import {
   setRecipientAppliedIds,
   setRecipientAppliedWithData,
   setRecipientAppliedData,
-  removeAppliedAt,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
 import {
@@ -41,7 +40,6 @@ import {
   setRecipientViewEditMode,
   setAddressFormView,
   addressSaveSuccess,
-  removeRecipientAt,
   removeRecipientFromListByIndex,
   removeRecipientFromListById,
   toggleRecipientSelection,
@@ -691,36 +689,7 @@ function* handleRemoveRecipientFromListByIndex(
   const templateId = viewList[index] ?? null
   if (templateId == null) return
 
-  const envelopeRecipients: RecipientState[] = yield select(
-    (s: RootState) => s.envelopeRecipients ?? [],
-  )
-  const envelopeIndex = envelopeRecipients.findIndex(
-    (r) => r.recipientViewId === templateId,
-  )
-  if (envelopeIndex >= 0) {
-    yield put(removeRecipientAt(envelopeIndex))
-  }
-  const applied: string[] = yield select(
-    (s: RootState) => s.recipient?.applied ?? [],
-  )
-  const appliedIndex = applied.indexOf(templateId)
-  if (appliedIndex >= 0) {
-    yield put(removeAppliedAt(appliedIndex))
-  }
-  const appliedAfter: string[] = yield select(
-    (s: RootState) => s.recipient?.applied ?? [],
-  )
-  if (appliedAfter.length === 0) {
-    yield put(setRecipientAppliedData(null))
-  } else if (appliedAfter.length === 1) {
-    const list: RecipientState[] = yield select(
-      (s: RootState) => s.envelopeRecipients ?? [],
-    )
-    const entry = list.find((r) => r.recipientViewId === appliedAfter[0])
-    if (entry?.viewDraft) {
-      yield put(setRecipientAppliedData(entry.viewDraft))
-    }
-  }
+  // Меняем только текущий список (view) и pending; applied — только по нажатию Apply
   const firstList: string[] = yield select(
     (s: RootState) => s.recipient?.recipientsViewIdsFirstList ?? [],
   )
@@ -745,36 +714,8 @@ function* handleRemoveRecipientFromListById(
   const templateId = action.payload
   if (!templateId) return
   const recipient: RecipientState = yield select(selectRecipientState)
-  const envelopeRecipients: RecipientState[] = yield select(
-    (s: RootState) => s.envelopeRecipients ?? [],
-  )
-  const envelopeIndex = envelopeRecipients.findIndex(
-    (r) => r.recipientViewId === templateId,
-  )
-  if (envelopeIndex >= 0) {
-    yield put(removeRecipientAt(envelopeIndex))
-  }
-  const applied: string[] = yield select(
-    (s: RootState) => s.recipient?.applied ?? [],
-  )
-  const appliedIndex = applied.indexOf(templateId)
-  if (appliedIndex >= 0) {
-    yield put(removeAppliedAt(appliedIndex))
-  }
-  const appliedAfter: string[] = yield select(
-    (s: RootState) => s.recipient?.applied ?? [],
-  )
-  if (appliedAfter.length === 0) {
-    yield put(setRecipientAppliedData(null))
-  } else if (appliedAfter.length === 1) {
-    const list: RecipientState[] = yield select(
-      (s: RootState) => s.envelopeRecipients ?? [],
-    )
-    const entry = list.find((r) => r.recipientViewId === appliedAfter[0])
-    if (entry?.viewDraft) {
-      yield put(setRecipientAppliedData(entry.viewDraft))
-    }
-  }
+
+  // Меняем только текущий список (view) и pending; applied — только по нажатию Apply
   const firstList: string[] = yield select(
     (s: RootState) => s.recipient?.recipientsViewIdsFirstList ?? [],
   )

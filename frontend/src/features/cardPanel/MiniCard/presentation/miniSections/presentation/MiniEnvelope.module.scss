@@ -54,7 +54,8 @@
   }
 
   .miniEnvelopeCircle:nth-child(2) {
-    opacity: 0.115;
+    background-color: $color-envelope-recipient;
+    opacity: 1;
   }
 }
 
@@ -68,13 +69,13 @@
   transition: opacity 0.2s ease;
 }
 
-.miniEnvelopeRecipientIconSingle {
-  color: rgba($color-envelope-recipient-legend, 0.28);
-}
+// .miniEnvelopeRecipientIconSingle {
+//   color: rgba($color-envelope-recipient-legend, 0.28);
+// }
 
-.miniEnvelopeRecipientIconMultiple {
-  color: rgba($color-envelope-recipient-legend, 0.35);
-}
+// .miniEnvelopeRecipientIconMultiple {
+//   color: rgba($color-envelope-recipient-legend, 0.35);
+// }
 
 .miniEnvelopeSingleContent {
   position: absolute;
