@@ -5,6 +5,7 @@ import {
 } from '../../sender/infrastructure/selectors'
 import {
   selectRecipientDisplayAddress,
+  selectAppliedRecipientDisplayAddress,
   selectRecipientState,
   selectRecipientView,
 } from '../../recipient/infrastructure/selectors'
@@ -66,6 +67,9 @@ export const useEnvelopeFacade = () => {
   const sender = useAppSelector(selectSenderState)
   const recipient = useAppSelector(selectRecipientState)
   const addressRecipient = useAppSelector(selectRecipientDisplayAddress)
+  const appliedRecipientAddress = useAppSelector(
+    selectAppliedRecipientDisplayAddress,
+  )
   const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
@@ -174,7 +178,6 @@ export const useEnvelopeFacade = () => {
     id: string
     address: Record<string, string>
   }) => {
-    // Сначала переключаемся в senderView, затем заполняем данные шаблона
     dispatch(setSenderView('senderView'))
     dispatch(setSenderViewId(entry.id))
     ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
@@ -202,6 +205,7 @@ export const useEnvelopeFacade = () => {
     sender,
     recipient,
     addressRecipient,
+    appliedRecipientAddress,
     isEnvelopeComplete,
     addressFields: ADDRESS_FIELD_ORDER,
     isSenderVisible: sender.enabled,

@@ -99,7 +99,8 @@
   border-radius: 1rem;
 }
 
-.miniEnvelopeSingleContent .miniEnvelopeName {
+.miniEnvelopeSingleContent .miniEnvelopeName,
+.miniEnvelopeCount {
   grid-column: 1/2;
   grid-row: 2/3;
   display: flex;
@@ -107,8 +108,27 @@
   overflow: hidden;
   font-weight: 700;
   font-size: 1rem;
+  color: $color-envelope-recipient-legend;
   line-height: 1.2;
   letter-spacing: 0.02em;
+}
+
+.miniEnvelopeCount {
+  grid-column: 1/2;
+  grid-row: 2/3;
+  // position: absolute;
+  // top: 50%;
+  // left: 50%;
+  // transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: $color-envelope-recipient-legend;
+  z-index: 1;
 }
 
 .miniEnvelopeSingleContent .miniEnvelopeNameOverflow {
@@ -143,6 +163,7 @@
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.02em;
+  color: $color-envelope-recipient-legend;
 
   // border: solid 1px green;
   // flex-shrink: 0;
@@ -184,28 +205,6 @@
 //   letter-spacing: 0.02em;
 //   text-align: center;
 // }
-
-.miniEnvelopeCount {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  color: $color-envelope-recipient-legend;
-  z-index: 1;
-
-  &Label {
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-}
 
 .previewButton {
   @include preview-button-logic('.miniEnvelope');

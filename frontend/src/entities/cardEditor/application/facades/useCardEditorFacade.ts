@@ -23,7 +23,6 @@ export const useCardEditorFacade = () => {
   const isCompleted = useAppSelector(selectIsCardEditorCompleted)
   const hoveredSection = useAppSelector(selectHoveredSection)
 
-  /** Закрытие мини-секции: фото/текст/конверт — снять Apply; аромат/дата — сбросить выбор */
   const removeSection = (section: CardSection) => {
     switch (section) {
       case 'date':

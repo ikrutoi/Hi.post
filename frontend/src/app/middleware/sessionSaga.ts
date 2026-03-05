@@ -254,25 +254,25 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
   const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
 
-      if (sender.senderViewId != null && !hasAddressData(sender.viewDraft)) {
+  if (sender.senderViewId != null && !hasAddressData(sender.viewDraft)) {
     const record: { id: string; address?: Record<string, string> } | null =
       yield call([senderAdapter, 'getById'], sender.senderViewId)
-        if (record?.address) {
-          const address = record.address as SenderState['viewDraft']
-          const isComplete = Object.values(address).every(
-            (v) => (v ?? '').trim() !== '',
-          )
-          yield put(
-            restoreSender({
-              viewDraft: address,
-              formIsComplete: isComplete,
-              senderViewId: sender.senderViewId,
-              currentView: 'senderView',
-              applied: [],
-              enabled: true,
-            }),
-          )
-        }
+    if (record?.address) {
+      const address = record.address as SenderState['viewDraft']
+      const isComplete = Object.values(address).every(
+        (v) => (v ?? '').trim() !== '',
+      )
+      yield put(
+        restoreSender({
+          viewDraft: address,
+          formIsComplete: isComplete,
+          senderViewId: sender.senderViewId,
+          currentView: 'senderView',
+          applied: sender.applied ?? [],
+          enabled: true,
+        }),
+      )
+    }
   }
 
   if (
@@ -293,9 +293,11 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           recipientViewId: recipient.recipientViewId,
           currentView: 'recipientView',
           recipientsViewIdsFirstList: recipient.recipientsViewIdsFirstList ?? [],
-          recipientsViewIdsSecondList: recipient.recipientsViewIdsSecondList ?? [],
+          recipientsViewIdsSecondList:
+            recipient.recipientsViewIdsSecondList ?? [],
           currentRecipientsList: recipient.currentRecipientsList ?? 'first',
-          applied: [],
+          applied: recipient.applied ?? [],
+          appliedData: recipient.appliedData ?? null,
           mode: recipient.mode,
         }),
       )
@@ -534,6 +536,7 @@ export function* hydrateAppSession() {
     }
 
     yield call(rehydrateEnvelopeSlicesFromTemplates)
+    yield call(syncEnvelopeStatus)
 
     if (session.aroma && session.aroma.selectedAroma) {
       yield put(setAroma(session.aroma.selectedAroma))
@@ -558,9 +561,6 @@ export function* hydrateAppSession() {
 
     if (session.cardtext) {
       yield call(syncCardtextStatus)
-    }
-    if (session.envelope) {
-      yield call(syncEnvelopeStatus)
     }
   } catch (e) {
     console.error('Session hydration failed', e)

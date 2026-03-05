@@ -9,7 +9,7 @@ import { getEnvelopeCircleSteps } from './getEnvelopeCircleSteps'
 export const MiniEnvelope: React.FC = () => {
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('envelope')
-  const { addressRecipient, cancelEnvelopeSelection, recipient } =
+  const { appliedRecipientAddress, cancelEnvelopeSelection, recipient } =
     useEnvelopeFacade()
   const count = recipient.applied.length
   const isSingle = count === 1
@@ -57,7 +57,7 @@ export const MiniEnvelope: React.FC = () => {
     return () => {
       window.removeEventListener('resize', checkOverflow)
     }
-  }, [isSingle, addressRecipient.name, addressRecipient.country])
+  }, [isSingle, appliedRecipientAddress.name, appliedRecipientAddress.country])
 
   return (
     <div
@@ -106,7 +106,7 @@ export const MiniEnvelope: React.FC = () => {
             )}
           >
             <span ref={nameInnerRef} className={styles.miniEnvelopeNameInner}>
-              {addressRecipient.name}
+              {appliedRecipientAddress.name}
             </span>
           </div>
           <div
@@ -121,14 +121,13 @@ export const MiniEnvelope: React.FC = () => {
               ref={countryInnerRef}
               className={styles.miniEnvelopeCountryInner}
             >
-              {addressRecipient.country}
+              {appliedRecipientAddress.country}
             </span>
           </div>
         </div>
       ) : (
         <div className={styles.miniEnvelopeCount}>
           <span>{recipient.applied.length}</span>
-          {/* <span className={styles.miniEnvelopeCountLabel}>recipients</span> */}
         </div>
       )}
       <button

@@ -26,6 +26,9 @@ import {
   toggleRecipientSortDirection,
   toggleRecipientsViewSortDirection,
   setRecipientAppliedIds,
+  setRecipientAppliedWithData,
+  setRecipientAppliedData,
+  removeAppliedAt,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
 import {
@@ -57,6 +60,7 @@ import {
   selectRecipientState,
   selectIsRecipientComplete,
   selectRecipientViewId,
+  selectRecipientDisplayAddress,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   addAddressTemplateRef,
@@ -476,12 +480,19 @@ function* handleEnvelopeToolbarAction(
     if (section === 'recipient') {
       const recipientComplete: boolean = yield select(selectIsRecipientComplete)
       if (recipientComplete) {
-        yield put(setRecipientMode('recipient'))
+        // Read current selection BEFORE setRecipientMode, otherwise reducer overwrites recipientViewId with old applied[0]
         const recipientViewId: string | null = yield select(
           selectRecipientViewId,
         )
+        const displayAddress: Readonly<Record<string, string>> = yield select(
+          selectRecipientDisplayAddress,
+        )
         const appliedIds = recipientViewId ? [recipientViewId] : []
-        yield put(setRecipientAppliedIds(appliedIds))
+        const data = appliedIds.length
+          ? [{ ...displayAddress }]
+          : []
+        yield put(setRecipientAppliedWithData({ ids: appliedIds, data }))
+        yield put(setRecipientMode('recipient'))
       }
     }
     if (section === 'recipients') {
@@ -512,7 +523,8 @@ function* handleEnvelopeToolbarAction(
         }
       }
       yield put(setRecipientMode('recipients'))
-      yield put(setRecipientAppliedIds(ids))
+      const appliedData = list.map((r) => ({ ...r.viewDraft }))
+      yield put(setRecipientAppliedWithData({ ids, data: appliedData }))
       yield put(setRecipientsList(list))
       yield put(
         setRecipientsViewIds(
@@ -672,6 +684,19 @@ function* handleRemoveRecipientFromListByIndex(
   const templateId = item?.recipientViewId ?? null
   if (templateId == null) return
   yield put(removeRecipientAt(index))
+  yield put(removeAppliedAt(index))
+  const applied: string[] = yield select((s: RootState) => s.recipient?.applied ?? [])
+  if (applied.length === 0) {
+    yield put(setRecipientAppliedData(null))
+  } else if (applied.length === 1) {
+    const list: RecipientState[] = yield select(
+      (s: RootState) => s.envelopeRecipients ?? [],
+    )
+    const entry = list.find((r) => r.recipientViewId === applied[0])
+    if (entry?.viewDraft) {
+      yield put(setRecipientAppliedData(entry.viewDraft))
+    }
+  }
   const firstList: string[] = yield select(
     (s: RootState) => s.recipient?.recipientsViewIdsFirstList ?? [],
   )

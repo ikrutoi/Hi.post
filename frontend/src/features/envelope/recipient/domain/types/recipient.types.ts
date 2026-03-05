@@ -41,5 +41,6 @@ export type RecipientState = {
   recipientsViewIdsSecondList: string[]
   currentRecipientsList: CurrentRecipientsList
   applied: string[]
+  appliedData: AddressFields | null
   mode: RecipientMode
 }

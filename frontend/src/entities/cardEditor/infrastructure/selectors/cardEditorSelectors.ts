@@ -1,22 +1,41 @@
 import { RootState } from '@app/state'
+import { createSelector } from '@reduxjs/toolkit'
 import type { CardSection } from '@shared/config/constants'
 import type { CardEditorState } from '../../domain/types'
+import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 
-export const selectCardEditorState = (state: RootState): CardEditorState =>
-  state.cardEditor
+/** Editor state with envelope.isComplete derived from sender/recipient (single source of truth). */
+export const selectCardEditorState = createSelector(
+  [(state: RootState) => state.cardEditor, selectIsEnvelopeReady],
+  (editor, envelopeReady): CardEditorState => ({
+    ...editor,
+    envelope: { ...editor.envelope, isComplete: envelopeReady },
+  }),
+)
 
 export const selectCardEditorId = (state: RootState): string =>
   state.cardEditor.id
 
-export const selectIsCardEditorCompleted = (state: RootState): boolean =>
-  state.cardEditor.isCompleted
+export const selectIsCardEditorCompleted = createSelector(
+  [
+    (state: RootState) => state.cardEditor,
+    selectIsEnvelopeReady,
+  ],
+  (editor, envelopeReady): boolean =>
+    editor.cardphoto.isComplete &&
+    editor.cardtext.isComplete &&
+    envelopeReady &&
+    editor.aroma.isComplete &&
+    editor.date.isComplete,
+)
 
 export const selectSectionComplete = (
   state: RootState,
   section: CardSection,
-): boolean => state.cardEditor[section].isComplete
-
-import { createSelector } from '@reduxjs/toolkit'
+): boolean =>
+  section === 'envelope'
+    ? selectIsEnvelopeReady(state)
+    : state.cardEditor[section].isComplete
 
 export const selectPieProgress = createSelector(
   [selectCardEditorState],
@@ -36,7 +55,12 @@ export const selectPieProgress = createSelector(
         aroma: editor.aroma.isComplete,
         date: editor.date.isComplete,
       },
-      isAllComplete: editor.isCompleted,
+      isAllComplete:
+        editor.cardphoto.isComplete &&
+        editor.cardtext.isComplete &&
+        editor.envelope.isComplete &&
+        editor.aroma.isComplete &&
+        editor.date.isComplete,
       isRainbowActive: editor.isRainbowActive,
       isRainbowStopping: editor.isRainbowStopping,
       progress: completedCount,

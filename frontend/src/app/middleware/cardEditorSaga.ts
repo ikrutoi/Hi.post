@@ -8,6 +8,9 @@ import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
   updateRecipientField,
   setRecipientApplied,
+  setRecipientAppliedWithData,
+  removeAppliedAt,
+  setRecipientAppliedData,
   restoreRecipient,
   clearRecipient,
 } from '@envelope/recipient/infrastructure/state'
@@ -15,6 +18,7 @@ import {
   updateSenderField,
   setEnabled,
   setSenderApplied,
+  setSenderAppliedIds,
   restoreSender,
   clearSender,
 } from '@envelope/sender/infrastructure/state'
@@ -225,7 +229,11 @@ export function* cardEditorSaga() {
       updateRecipientField.type,
       setEnabled.type,
       setSenderApplied.type,
+      setSenderAppliedIds.type,
       setRecipientApplied.type,
+      setRecipientAppliedWithData.type,
+      removeAppliedAt.type,
+      setRecipientAppliedData.type,
     ],
     syncEnvelopeStatus,
   )

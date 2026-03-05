@@ -1,6 +1,7 @@
 import { RootState } from '@app/state'
 import { createSelector } from '@reduxjs/toolkit'
 import type { AddressFields } from '@shared/config/constants'
+import { initialSection } from '../../../addressForm/domain/models'
 import type { AddressBookEntry } from '../../../addressBook/domain/types'
 import type {
   RecipientState,
@@ -77,7 +78,9 @@ export const selectRecipientCompletedFields = createSelector(
     ),
 )
 
-const isAddressComplete = (address: Record<string, string> | undefined): boolean =>
+const isAddressComplete = (
+  address: Record<string, string> | undefined,
+): boolean =>
   !!address && Object.values(address).every((v) => (v ?? '').trim() !== '')
 
 export const selectIsRecipientComplete = createSelector(
@@ -85,7 +88,10 @@ export const selectIsRecipientComplete = createSelector(
   (recipient, entries): boolean => {
     if (recipient.mode === 'recipient' && recipient.recipientViewId) {
       const entry = entries.find((e) => e.id === recipient.recipientViewId)
-      if (entry?.address && isAddressComplete(entry.address as Record<string, string>)) {
+      if (
+        entry?.address &&
+        isAddressComplete(entry.address as Record<string, string>)
+      ) {
         return true
       }
     }
@@ -104,6 +110,22 @@ export const selectRecipientsViewIds = (state: RootState): string[] =>
 
 export const selectRecipientApplied = (state: RootState): string[] =>
   state.recipient.applied ?? []
+
+export const selectAppliedRecipientDisplayAddress = createSelector(
+  [
+    selectRecipientState,
+    (s: RootState) => s.addressBook?.recipientEntries ?? [],
+  ],
+  (recipient, entries): Readonly<AddressFields> => {
+    if (recipient.appliedData != null) return recipient.appliedData
+    const appliedId = recipient.applied?.[0]
+    if (appliedId) {
+      const entry = entries.find((e: { id: string }) => e.id === appliedId)
+      if (entry?.address) return entry.address as AddressFields
+    }
+    return { ...initialSection.data }
+  },
+)
 
 export const selectRecipientFormIsEmpty = (state: RootState): boolean =>
   state.recipient.formIsEmpty ?? true
@@ -132,7 +154,6 @@ export const selectRecipientsDisplayList = createSelector(
   ): AddressBookEntry[] => {
     if (!recipientEnabled) return []
 
-    // Базовый список: либо внутренний envelopeRecipients, либо выбранные записи адресной книги.
     const baseEntries: AddressBookEntry[] =
       envelopeRecipients.length > 0
         ? envelopeRecipients.map((r, i) => ({

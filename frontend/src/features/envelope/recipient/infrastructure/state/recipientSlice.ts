@@ -31,6 +31,7 @@ export const initialRecipient: RecipientState = {
   recipientsViewIdsSecondList: [],
   currentRecipientsList: 'first',
   applied: [],
+  appliedData: null,
   mode: 'recipient',
 }
 
@@ -72,9 +73,6 @@ const recipientSlice = createSlice({
         state.currentView = 'recipientsView'
       } else {
         state.currentView = 'recipientView'
-        if (state.applied?.length > 0) {
-          state.recipientViewId = state.applied[0]
-        }
       }
       state.formIsEmpty = isFormDraftEmpty(state.formDraft)
     },
@@ -85,9 +83,6 @@ const recipientSlice = createSlice({
         state.currentView = 'recipientsView'
       } else {
         state.currentView = 'recipientView'
-        if (state.applied?.length > 0) {
-          state.recipientViewId = state.applied[0]
-        }
       }
       state.formIsEmpty = isFormDraftEmpty(state.formDraft)
     },
@@ -120,8 +115,35 @@ const recipientSlice = createSlice({
       state.applied = action.payload
     },
 
+    setRecipientAppliedWithData: (
+      state,
+      action: PayloadAction<{ ids: string[]; data: AddressFields[] }>,
+    ) => {
+      state.applied = action.payload.ids
+      state.appliedData =
+        action.payload.data.length === 1 ? action.payload.data[0] : null
+    },
+
     setRecipientApplied: (state, action: PayloadAction<boolean>) => {
-      if (!action.payload) state.applied = []
+      if (!action.payload) {
+        state.applied = []
+        state.appliedData = null
+      }
+    },
+
+    setRecipientAppliedData: (
+      state,
+      action: PayloadAction<AddressFields | null>,
+    ) => {
+      state.appliedData = action.payload
+    },
+
+    removeAppliedAt: (state, action: PayloadAction<number>) => {
+      const i = action.payload
+      if (i >= 0 && i < state.applied.length) {
+        state.applied.splice(i, 1)
+        if (state.applied.length !== 1) state.appliedData = null
+      }
     },
 
     setRecipientView: (state, action: PayloadAction<RecipientView>) => {
@@ -178,7 +200,10 @@ export const {
   clearRecipientFormData,
   clearRecipientViewDraft,
   setRecipientAppliedIds,
+  setRecipientAppliedWithData,
   setRecipientApplied,
+  setRecipientAppliedData,
+  removeAppliedAt,
   setRecipientView,
   setRecipientViewId,
   setRecipientsViewIds,
