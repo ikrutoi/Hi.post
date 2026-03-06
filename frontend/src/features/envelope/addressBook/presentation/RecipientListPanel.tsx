@@ -67,12 +67,17 @@ export const RecipientListPanel: React.FC<Props> = ({
         const next = Math.max(focusedIndex - 1, 0)
         setFocusedIndex(next)
         if (!isRecipientsMode) onSelect(entries[next])
-      } else if (isRecipientsMode && e.key === 'Enter') {
+      } else if (e.key === 'Enter') {
         e.preventDefault()
-        onSelect(entries[focusedIndex])
+        if (isRecipientsMode) {
+          onSelect(entries[focusedIndex])
+        } else {
+          const entry = entries[focusedIndex]
+          handleToggleStar(entry.id, starredRecipientIds.has(entry.id))
+        }
       }
     },
-    [entries, focusedIndex, onSelect, isRecipientsMode],
+    [entries, focusedIndex, onSelect, isRecipientsMode, handleToggleStar, starredRecipientIds],
   )
 
   return (

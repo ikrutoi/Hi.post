@@ -59,9 +59,13 @@ export const SenderListPanel: React.FC<Props> = ({
         const next = Math.max(focusedIndex - 1, 0)
         setFocusedIndex(next)
         onSelect(entries[next])
+      } else if (e.key === 'Enter') {
+        e.preventDefault()
+        const entry = entries[focusedIndex]
+        handleToggleStar(entry.id, starredSenderIds.has(entry.id))
       }
     },
-    [entries, focusedIndex, onSelect],
+    [entries, focusedIndex, onSelect, handleToggleStar, starredSenderIds],
   )
 
   return (
