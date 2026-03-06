@@ -212,7 +212,7 @@ export function* processEnvelopeVisuals() {
     recipient.applied[0] === recipient.recipientViewId
 
   const senderApplyState = senderAlreadyApplied
-    ? 'disabled'
+    ? 'selected'
     : sender.currentView === 'senderView' && sender.senderViewId != null
       ? 'enabled'
       : isSenderEmptyForm
@@ -221,7 +221,7 @@ export function* processEnvelopeVisuals() {
           ? 'enabled'
           : 'disabled'
   const recipientApplyState = recipientAlreadyApplied
-    ? 'disabled'
+    ? 'selected'
     : recipient.currentView === 'recipientView' &&
         recipient.recipientViewId != null
       ? 'enabled'
@@ -267,9 +267,11 @@ export function* processEnvelopeVisuals() {
     appliedIds.every((id) => recipientsViewIds.includes(id)) &&
     recipientsViewIds.every((id) => appliedIds.includes(id))
   const recipientsApplyState =
-    isRecipientsEmptyForm || !canApplyRecipients || recipientsViewIdsEqual
+    isRecipientsEmptyForm || !canApplyRecipients
       ? 'disabled'
-      : 'enabled'
+      : recipientsViewIdsEqual
+        ? 'selected'
+        : 'enabled'
 
   yield put(
     updateToolbarSection({

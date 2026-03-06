@@ -4,6 +4,7 @@ export const stateColors: Record<IconState, string> = {
   disabled: 'hsl(0, 0%, 64%)',
   enabled: 'hsl(0, 0%, 28%)',
   active: 'hsl(200, 100%, 40%)',
+  selected: 'hsl(138, 56%, 42%)',
 }
 
 export const hoverColor = 'hsl(200, 100%, 48%)'

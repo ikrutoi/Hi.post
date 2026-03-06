@@ -80,7 +80,7 @@ export const ICON_KEYS = [
 
 export type IconKey = (typeof ICON_KEYS)[number]
 
-export const ICON_STATE = ['disabled', 'enabled', 'active']
+export const ICON_STATE = ['disabled', 'enabled', 'active', 'selected']
 
 export type IconState = (typeof ICON_STATE)[number]
 

@@ -35,6 +35,11 @@
       color: $color-font-active;
     }
 
+    &Selected {
+      color: $color-font-selected;
+      cursor: default;
+    }
+
     &Active:hover {
       background-color: $color-enabled;
     }

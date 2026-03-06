@@ -396,7 +396,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
           allSectionsFilled && styles.pieCenterButtonEnabled,
         )}
         disabled={!allSectionsFilled}
-        aria-label="Добавить в корзину"
+        aria-label="Add to cart"
       >
         <span className={styles.pieCenterIcon}>
           {getToolbarIcon({ key: 'addCart' })}

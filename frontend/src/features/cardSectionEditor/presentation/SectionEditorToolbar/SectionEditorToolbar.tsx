@@ -62,7 +62,6 @@ export const SectionEditorToolbar: React.FC = () => {
         dispatch(removeCardtextTemplateId(item.templateId))
         await reloadPreviewStrip()
       } else if (item.kind === 'address') {
-        // Только снять из избранного (полоса быстрого доступа), контакт в адресной книге не удаляем
         dispatch(
           removeAddressTemplateRef({
             type: item.addressType,

@@ -5,7 +5,6 @@
   // flex-direction: column;
   width: 100vw;
   height: 100vh;
-  // border: solid 1px red;
 
   &Header {
     grid-column: 1/2;
@@ -29,9 +28,10 @@
     grid-template-rows: 2fr 7fr;
     justify-items: center;
     padding-right: 1rem;
-    padding-bottom: 0.4rem;
+    // padding-bottom: 0.4rem;
     padding-left: 1rem;
     overflow: hidden;
+    // border: solid 1px red;
   }
 
   // &__additional-menu {

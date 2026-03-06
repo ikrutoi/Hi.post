@@ -14,10 +14,10 @@ export const CardSectionEditor: React.FC = () => {
     <div className={clsx(styles.cardSectionEditor)}>
       <div
         className={clsx(styles.editorToolbar)}
-        style={{
-          // width: `${sizeToolbarContour.width}px`,
-          height: `${sizeToolbarContour.height}px`,
-        }}
+        // style={{
+        //   // width: `${sizeToolbarContour.width}px`,
+        //   height: `${sizeToolbarContour.height}px`,
+        // }}
       >
         <SectionEditorToolbar />
       </div>
