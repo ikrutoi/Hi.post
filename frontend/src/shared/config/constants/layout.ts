@@ -10,7 +10,7 @@ export const CARD_SCALE_CONFIG = {
   heightMm: 100,
   minAllowedDpi: 100,
   maxAllowedDpi: 300,
-  maxPreviewToolbarRight: 9,
+  maxPreviewToolbarRight: 11,
 } as const
 
 export type CardScaleConfig = typeof CARD_SCALE_CONFIG

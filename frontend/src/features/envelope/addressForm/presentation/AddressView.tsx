@@ -8,6 +8,10 @@ import {
   selectSenderViewEditMode,
   selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
+import {
+  setSenderViewEditMode,
+  setRecipientViewEditMode,
+} from '@envelope/infrastructure/state'
 import { updateRecipientField } from '@envelope/recipient/infrastructure/state'
 import { updateSenderField } from '@envelope/sender/infrastructure/state'
 import { toolbarAction } from '@toolbar/application/helpers'
@@ -117,6 +121,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   const handleKeyDown =
     (row: EditableRowKey) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        dispatch(
+          role === 'sender' ? setSenderViewEditMode(false) : setRecipientViewEditMode(false),
+        )
+        return
+      }
       if (e.key === 'Enter') {
         e.preventDefault()
         const section =

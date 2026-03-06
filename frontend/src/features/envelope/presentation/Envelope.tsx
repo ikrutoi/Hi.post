@@ -24,14 +24,14 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const recipientListOpen = recipientFacade.listPanelOpen
   const senderListOpen = senderFacade.listPanelOpen
 
-  console.log('Envelope recipient', recipientFacade.state)
-  console.log('Envelope sender', senderFacade.state)
+  // console.log('Envelope recipient', recipientFacade.state)
+  // console.log('Envelope sender', senderFacade.state)
 
   return (
     <div className={styles.envelope}>
       <div
         className={clsx(
-          styles.envelopeLeftSlot,
+          styles.envelopeTopSlot,
           recipientListOpen && styles.envelopeLeftSlotFullHeight,
         )}
       >
@@ -52,6 +52,9 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         ) : (
           <>
             <div className={styles.envelopeLogo} />
+            <div className={styles.envelopeMark}>
+              <Mark />
+            </div>
             <div
               className={clsx(
                 styles.envelopeSection,
@@ -65,7 +68,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
       </div>
       <div
         className={clsx(
-          styles.envelopeRightSlot,
+          styles.envelopeBottomSlot,
           senderListOpen && styles.envelopeRightSlotFullHeight,
         )}
       >
@@ -78,9 +81,9 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
           </div>
         ) : (
           <>
-            <div className={styles.envelopeMark}>
+            {/* <div className={styles.envelopeMark}>
               <Mark />
-            </div>
+            </div> */}
             <div
               className={clsx(
                 styles.envelopeSection,
