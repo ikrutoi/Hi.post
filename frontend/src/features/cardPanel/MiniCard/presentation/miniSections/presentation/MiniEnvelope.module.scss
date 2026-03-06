@@ -7,18 +7,12 @@
   padding: 0.5rem 0.5rem 0.6rem;
   height: 100%;
   width: 100%;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   grid-template-columns: 1fr;
   grid-template-rows: auto 1fr auto;
   row-gap: 0.15rem;
-  border: solid 1px $color-section-light;
   overflow: hidden;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.miniEnvelope:hover,
-.miniEnvelope.hovered {
-  border-color: $color-toggle-active-hover;
 }
 
 .miniEnvelopeSender {
@@ -66,7 +60,10 @@
   transform: translate(50%, 50%);
   border-radius: 50%;
   background-color: currentColor;
-  transition: width 0.2s ease, max-height 0.2s ease, opacity 0.2s ease;
+  transition:
+    width 0.2s ease,
+    max-height 0.2s ease,
+    opacity 0.2s ease;
 }
 
 // .miniEnvelopeRecipientIconSingle {

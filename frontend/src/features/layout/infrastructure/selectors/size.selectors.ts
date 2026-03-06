@@ -53,11 +53,13 @@ export const selectSizeItemCalendar = createSelector(
   },
 )
 
+const AROMA_TILE_SCALE = 0.82
+
 export const selectSizeItemAroma = createSelector(
   [selectSizeCard, selectRemSize],
   (sizeCard, remSize): SizeBox => {
     const baseHeight = sizeCard.height
-    const side = (baseHeight - 3 * remSize) / 4
+    const side = ((baseHeight - 3 * remSize) / 4) * AROMA_TILE_SCALE
 
     return {
       width: side,

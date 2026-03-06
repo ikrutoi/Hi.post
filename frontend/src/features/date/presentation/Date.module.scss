@@ -16,8 +16,8 @@
   padding: 1rem;
   box-sizing: border-box;
   border: 1px solid $color-section-light;
-  border-radius: 0.35rem;
-  box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.05);
+  border-radius: 0.75rem;
+  box-shadow: $shadow-card;
   background-color: $color-base;
   transition:
     border-color 0.2s ease,

@@ -2,20 +2,36 @@
 
 .aroma {
   position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.form {
+  position: relative;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  // margin: 2rem;
   gap: 1rem;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  border: 1px solid $color-section-light;
+  border-radius: 0.75rem;
+  box-shadow: $shadow-card;
+  background-color: $color-base;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 
-  &__card {
-    flex: 0 1 calc(33.333% - 1rem);
-    box-sizing: border-box;
+  &:focus {
+    outline: none;
   }
+}
 
-  &--submitted {
-    opacity: 0.6;
-    pointer-events: none;
-  }
+.formSubmitted {
+  opacity: 0.6;
+  pointer-events: none;
 }

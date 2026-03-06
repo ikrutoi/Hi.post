@@ -38,7 +38,7 @@ export const AromaTile: React.FC<AromaTileProps> = ({
       <img
         className={styles.tileImage}
         alt={aromaItem.name}
-        style={{ height: `${0.65 * sizeItemAroma.height}px` }}
+        style={{ height: `${0.55 * sizeItemAroma.height}px` }}
         src={imageSrc}
       />
       <span className={styles.tileName}>{aromaItem.name}</span>

@@ -2,18 +2,10 @@
 @use '@shared/assets/styles/mixins' as *;
 
 .miniCardphoto {
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   object-fit: cover;
   overflow: hidden;
-  transition: opacity 150ms ease-in-out;
-  border-radius: 1rem;
-  border: solid 1px $color-section-light;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.miniCardphoto:hover,
-.miniCardphoto.hovered {
-  border-color: $color-toggle-active-hover;
 }
 
 .previewButton {
