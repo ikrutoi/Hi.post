@@ -46,6 +46,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
                     ? [recipientFacade.state.recipientViewId]
                     : []
               }
+              isRecipientsMode={recipientFacade.isEnabled}
             />
           </div>
         ) : (

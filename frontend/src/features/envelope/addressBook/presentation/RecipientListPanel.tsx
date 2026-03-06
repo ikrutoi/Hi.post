@@ -10,12 +10,14 @@ type Props = {
   onSelect: (entry: AddressBookEntry) => void
   onDelete?: (id: string) => void
   selectedIds?: string[]
+  isRecipientsMode?: boolean
 }
 
 export const RecipientListPanel: React.FC<Props> = ({
   onSelect,
   onDelete = () => {},
   selectedIds = [],
+  isRecipientsMode = false,
 }) => {
   const {
     entries,
@@ -26,15 +28,21 @@ export const RecipientListPanel: React.FC<Props> = ({
   } = useRecipientListPanelFacade()
 
   const listRef = useRef<HTMLDivElement>(null)
+  const entriesRef = useRef<typeof entries | null>(null)
   const [focusedIndex, setFocusedIndex] = useState(0)
 
   useEffect(() => {
-    const selectedIndex = entries.findIndex((e) =>
-      selectedIds.includes(e.id),
-    )
-    setFocusedIndex(selectedIndex >= 0 ? selectedIndex : 0)
+    const entriesChanged = entriesRef.current !== entries
+    entriesRef.current = entries
+
+    if (isRecipientsMode) {
+      if (entriesChanged) setFocusedIndex(0)
+    } else {
+      const selectedIndex = entries.findIndex((e) => selectedIds.includes(e.id))
+      setFocusedIndex(selectedIndex >= 0 ? selectedIndex : 0)
+    }
     listRef.current?.focus()
-  }, [entries.length, entries, selectedIds])
+  }, [entries.length, entries, selectedIds, isRecipientsMode])
 
   useEffect(() => {
     const el = listRef.current?.querySelector(`[data-index="${focusedIndex}"]`)
@@ -53,15 +61,18 @@ export const RecipientListPanel: React.FC<Props> = ({
         e.preventDefault()
         const next = Math.min(focusedIndex + 1, entries.length - 1)
         setFocusedIndex(next)
-        onSelect(entries[next])
+        if (!isRecipientsMode) onSelect(entries[next])
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
         const next = Math.max(focusedIndex - 1, 0)
         setFocusedIndex(next)
-        onSelect(entries[next])
+        if (!isRecipientsMode) onSelect(entries[next])
+      } else if (isRecipientsMode && e.key === 'Enter') {
+        e.preventDefault()
+        onSelect(entries[focusedIndex])
       }
     },
-    [entries, focusedIndex, onSelect],
+    [entries, focusedIndex, onSelect, isRecipientsMode],
   )
 
   return (
