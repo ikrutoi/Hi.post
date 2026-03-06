@@ -11,6 +11,7 @@ type Props = {
   deleteAction?: 'delete' | 'removeFromList'
   isStarred?: boolean
   isSelected?: boolean
+  isFocused?: boolean
   onToggleStar?: () => void
   variant?: 'sender' | 'recipient'
 }
@@ -22,6 +23,7 @@ export const AddressEntry: React.FC<Props> = ({
   deleteAction = 'delete',
   isStarred = false,
   isSelected = false,
+  isFocused = false,
   onToggleStar,
   variant = 'recipient',
 }) => {
@@ -32,6 +34,7 @@ export const AddressEntry: React.FC<Props> = ({
     <div
       className={clsx(styles.root, variant === 'sender' && styles.rootSender)}
       data-selected={isSelected ? 'true' : undefined}
+      data-focused={isFocused ? 'true' : undefined}
       data-no-star={!onToggleStar ? 'true' : undefined}
     >
       {onToggleStar && (

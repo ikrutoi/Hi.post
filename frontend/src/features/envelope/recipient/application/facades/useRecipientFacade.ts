@@ -25,7 +25,6 @@ import {
   toggleRecipientSelection,
   removeRecipientFromListByIndex,
   removeRecipientFromListById,
-  closeRecipientListPanel,
 } from '../../infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { AddressField } from '@shared/config/constants'
@@ -69,7 +68,6 @@ export const useRecipientFacade = () => {
       ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
         ([field, value]) => dispatch(updateRecipientField({ field, value })),
       )
-      dispatch(closeRecipientListPanel())
     }
   }
 

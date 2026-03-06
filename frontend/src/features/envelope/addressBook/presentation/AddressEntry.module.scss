@@ -14,7 +14,8 @@
     background-color 0.15s ease,
     border-color 0.15s ease;
 
-  &:hover {
+  &:hover,
+  &[data-focused='true'] {
     background-color: darken($color-envelope-recipient-input, 2%);
   }
 
@@ -40,7 +41,8 @@
   background-color: $color-envelope-sender-input;
   border-color: $color-envelope-sender-border;
 
-  &:hover {
+  &:hover,
+  &[data-focused='true'] {
     background-color: darken($color-envelope-sender-input, 2%);
   }
 
