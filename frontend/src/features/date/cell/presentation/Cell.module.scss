@@ -6,30 +6,19 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-end;
-  margin: 2px 0.75rem;
-  border: 1px solid $color-hover;
+  margin: 0.2rem 0.75rem;
+  border: 1px solid $color-section-light;
   border-radius: 1rem;
   cursor: pointer;
-  // width: 4rem;
-  // height: 4rem;
+  background-color: #fff;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
 
-  // aspect-ratio: 1;
-
-  &:hover {
-    border: 1px solid $color-hover;
+  &:hover:not(.disabled) {
+    border-color: $color-section-dark;
   }
-
-  // &:nth-last-child(-n + 7) {
-  //   border-bottom: none;
-  // }
-
-  // &:nth-child(7n + 1) {
-  //   border-left: none;
-  // }
-
-  // &:nth-child(7n) {
-  //   border-right: none;
-  // }
 }
 
 .dayNumber {
@@ -44,14 +33,16 @@
   margin-top: 0.2rem;
   margin-right: 0.2rem;
   z-index: 1;
-  // top: 0.1rem;
-  // right: 0.1rem;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(4px);
-  // color: #333;
+  background-color: $color-section-light;
+  border: 1px solid $color-section-dark;
+  color: $color-font-enabled;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   pointer-events: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .cellContent {
@@ -66,68 +57,87 @@
 
 .today {
   .dayNumber {
-    background-color: $color-enabled;
-    border: solid 1px $color-enabled;
+    background-color: $color-section-light-completed;
+    border-color: $color-section-dark-completed;
   }
 }
 
 .dispatch {
-  &:hover {
-    color: white;
+  background-color: $color-hover-bg;
+
+  &:hover:not(.disabled) {
+    color: $color-font-enabled;
   }
 
   .dayNumber {
     background-color: $color-active;
-    border: solid 1px $color-active;
-    color: $color-disabled;
+    border-color: $color-active;
+    color: #fff;
   }
 }
 
 .before,
 .after {
-  color: $color-font-disabled;
+  cursor: default;
+
+  .dayNumber {
+    background-color: $color-disabled;
+    color: $color-font-disabled;
+  }
 }
 
 .selected {
-  background-color: $color-active;
-  color: $color-disabled;
+  background-color: $color-hover-bg;
 }
 
 .current {
   .dayNumber {
-    font-weight: bold;
+    font-weight: 700;
   }
 
-  &:hover {
+  &:hover:not(.disabled):not(.cart) {
+    border-color: $color-section-dark-completed;
     color: $color-active;
-    border: 1px solid $color-section-dark-completed;
   }
 
   &.cart:hover {
-    color: black;
+    color: $color-font-enabled;
     cursor: default;
   }
 }
 
 .disabled {
-  border: 1px solid $color-enabled;
+  border-color: $color-disabled;
+  background-color: $color-disabled;
   color: $color-font-disabled;
   cursor: default;
 
+  .dayNumber {
+    background-color: $color-section-light;
+    border-color: $color-disabled;
+    color: $color-font-enabled-light;
+    box-shadow: none;
+  }
+
+  /* дни текущего месяца, но disabled — число как у обычных current */
+  &.current .dayNumber {
+    background-color: $color-section-light;
+    border-color: $color-section-dark;
+    color: $color-font-enabled;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
   &:hover {
-    border: 1px solid $color-enabled;
+    border-color: $color-section-light;
     color: $color-font-disabled;
-    // border: solid 1px red;s
+
+    .dayNumber {
+      color: $color-font-enabled-light;
+    }
+
+    &.current .dayNumber {
+      color: $color-font-enabled;
+    }
   }
 }
-
-// .cartCount {
-//   position: absolute;
-//   bottom: -0.5rem;
-//   right: -0.5rem;
-//   background-color: #007dd7;
-//   color: white;
-//   font-size: 0.75rem;
-//   padding: 0.2rem 0.4rem;
-//   border-radius: 1rem;
-// }

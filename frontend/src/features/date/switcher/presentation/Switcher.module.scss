@@ -3,6 +3,8 @@
 .switcher {
   display: flex;
   align-items: center;
-  background-color: $color-disabled;
+  background-color: $color-section-light-completed;
   border-radius: 2rem;
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease;
 }

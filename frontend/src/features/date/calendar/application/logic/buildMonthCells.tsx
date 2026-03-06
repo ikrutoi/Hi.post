@@ -64,6 +64,12 @@ export const buildMonthCells = ({
       day,
     })
 
+    // Use actual cell date for disabled check (before/after are prev/next month)
+    const cellDate = {
+      year: currentViewYear,
+      month: currentViewMonth,
+    }
+
     return (
       <Cell
         key={`${direction}-${day}`}
@@ -73,7 +79,7 @@ export const buildMonthCells = ({
         calendarViewDate={calendarViewDate}
         direction={direction}
         isToday={isToday}
-        isDisabledDate={isDisabledDate(day, calendarViewDate, currentDate)}
+        isDisabledDate={isDisabledDate(day, cellDate, currentDate)}
         isSelectedDate={isSelectedDate}
         onClickCell={handleClickCell}
       >

@@ -745,8 +745,38 @@ function* syncRecipientsViewIdsFromPending() {
   }
 }
 
+function* syncEditIconOnEditModeChange(
+  action: PayloadAction<boolean>,
+) {
+  const isEditMode = action.payload
+  if (isEditMode) return
+
+  if (action.type === setSenderViewEditMode.type) {
+    yield put(
+      updateToolbarIcon({
+        section: 'senderView',
+        key: 'edit',
+        value: 'enabled',
+      }),
+    )
+  }
+  if (action.type === setRecipientViewEditMode.type) {
+    yield put(
+      updateToolbarIcon({
+        section: 'recipientView',
+        key: 'edit',
+        value: 'enabled',
+      }),
+    )
+  }
+}
+
 export function* envelopeToolbarSaga() {
   yield takeLatest(toolbarAction.type, handleEnvelopeToolbarAction)
+  yield takeEvery(
+    [setSenderViewEditMode.type, setRecipientViewEditMode.type],
+    syncEditIconOnEditModeChange,
+  )
   yield takeEvery(
     removeRecipientFromListByIndex.type,
     handleRemoveRecipientFromListByIndex,

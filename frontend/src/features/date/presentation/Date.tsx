@@ -1,5 +1,4 @@
-import React, { useMemo } from 'react'
-import clsx from 'clsx'
+import React, { useCallback, useMemo } from 'react'
 import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
 import { Calendar } from '../calendar/presentation/Calendar'
@@ -37,6 +36,9 @@ export const Date: React.FC = () => {
     handleIncrementArrow,
     goToTodayDate,
     goToSelectedDate,
+    decrementMonth,
+    incrementMonth,
+    setCalendarViewDate,
   } = actionsSwitcher
   const { isCurrentMonth } = derivedSwitcher
 
@@ -49,9 +51,48 @@ export const Date: React.FC = () => {
     month: currentDate.month,
   }
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!lastViewedCalendarDate) return
+      const target = e.target as HTMLElement
+      if (target.closest('input') || target.closest('button')) return
+
+      const { year, month } = lastViewedCalendarDate
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault()
+          decrementMonth()
+          break
+        case 'ArrowRight':
+          e.preventDefault()
+          incrementMonth()
+          break
+        case 'ArrowUp':
+          e.preventDefault()
+          setCalendarViewDate({ year: year - 1, month })
+          break
+        case 'ArrowDown':
+          e.preventDefault()
+          setCalendarViewDate({ year: year + 1, month })
+          break
+      }
+    },
+    [
+      lastViewedCalendarDate,
+      decrementMonth,
+      incrementMonth,
+      setCalendarViewDate,
+    ],
+  )
+
   return (
     <div className={styles.date}>
-      <form className={styles.form}>
+      <form
+        className={styles.form}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        aria-label="Календарь: стрелки влево/вправо — месяц, вверх/вниз — год"
+      >
         <DateHeader
           currentDate={currentDate}
           calendarViewDate={calendarViewDate}
