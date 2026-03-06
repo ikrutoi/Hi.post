@@ -16,18 +16,36 @@
   border-radius: 0.75rem;
 }
 
+/* Только внутренняя белая таблетка, без внешней серой обводки */
 .firstDayToggle {
-  background-color: $color-section-light-completed;
-  color: $color-font-enabled;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   user-select: none;
-  padding: 0.5rem 1rem;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-  // transform 0.3s ease;
 }
 
-.firstDayToggle:hover {
-  background-color: $color-section-dark-completed;
-  // transform: scale(1.03);
+.firstDayToggleInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4rem;
+  height: 2.1rem;
+  padding: 0 0.75rem;
+  background-color: #fff;
+  border: 1px solid $color-section-dark;
+  border-radius: 1.5rem;
+  color: $color-font-enabled-light-hover;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.firstDayToggle:hover .firstDayToggleInner {
+  border-color: $color-hover-dark;
+  color: $color-font-enabled;
 }

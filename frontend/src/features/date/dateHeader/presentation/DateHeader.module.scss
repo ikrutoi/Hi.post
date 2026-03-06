@@ -52,6 +52,7 @@
 
 .headerCenter {
   display: flex;
+  align-items: center;
 }
 
 .arrowButton {
@@ -61,10 +62,10 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
-  background-color: $color-section-light-completed;
+  background-color: #fff;
+  border: 1px solid $color-section-light;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  // border: solid 1px aquamarine;
+  transition: border-color 0.2s ease;
 
   &Inactive {
     color: var(--text-secondary);
@@ -72,16 +73,14 @@
 }
 
 .arrowButton:hover {
-  background-color: $color-section-dark-completed;
+  border-color: $color-section-dark;
 }
 
 .switcher {
   display: flex;
   align-items: center;
-  border-radius: 0.3rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
-  // border: solid 1px red;
 }
 
 .iconArrow {

@@ -28,7 +28,11 @@ export const WeekdayHeaderCell: React.FC<WeekdayHeaderCellProps> = ({
       className={clsx(styles.cell, isFirstDay && styles.firstDayToggle)}
       onClick={isFirstDay ? handleClick : undefined}
     >
-      {weekday}
+      {isFirstDay ? (
+        <span className={styles.firstDayToggleInner}>{weekday}</span>
+      ) : (
+        weekday
+      )}
     </div>
   )
 }
