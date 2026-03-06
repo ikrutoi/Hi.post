@@ -246,9 +246,23 @@
 
 .toolbarSender {
   display: flex;
-  // justify-content: space-between;
   flex-direction: row-reverse;
-  // margin-right: 1rem;
+}
+
+// Фон иконок как у секции Envelope ($color-base)
+.toolbarSender,
+.toolbarRecipient,
+.toolbarRecipients,
+.toolbarSenderView,
+.toolbarRecipientView,
+.toolbarRecipientsView,
+.toolbarAddressFormSenderView,
+.toolbarAddressFormRecipientView,
+.toolbarAddressListSender,
+.toolbarAddressListRecipient {
+  .toolbarKey {
+    background-color: $color-base;
+  }
 }
 
 .toolbarCardphoto,
@@ -280,7 +294,7 @@
   }
 
   .toolbarKeyApplyEnabled {
-    background-color: white;
+    background-color: $color-base;
   }
 
   .toolbarKeyApplyEnabled:hover {

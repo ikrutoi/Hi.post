@@ -4,17 +4,19 @@
   --outline-hover: #{$color-toggle-active-hover};
   --envelope-text: #{$color-envelope-recipient-legend};
   --envelope-text-many: #{$color-toggle-active};
+  --pie-rect-fill: #{$color-base};
+  --pie-rect-fill-envelope: #{$color-envelope-recipient};
 
   position: absolute;
   right: 0;
   height: 100%;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   overflow: hidden;
-  border: solid 1px $color-section-light;
+  border: 1px solid $color-section-light;
   box-shadow: $shadow-card;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  // box-shadow: 1px 2px 6px 3px rgba(0, 0, 0, 0.12);
-  // box-shadow: 1px 1px 5px 3px rgba(34, 60, 80, 0.2);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .svg {
@@ -23,28 +25,16 @@
 }
 
 .rect {
-  fill: white;
+  fill: var(--pie-rect-fill);
 }
 
-.rectCardphoto {
-  fill: white;
-}
-.rectCardtext {
-  fill: white;
-}
 .rectEnvelope {
-  fill: $color-envelope-recipient;
+  fill: var(--pie-rect-fill-envelope);
 }
 
 .pieEnvelopeIconBg {
   color: $color-envelope-recipient-legend;
   opacity: 0.24;
-}
-.rectAroma {
-  fill: white;
-}
-.rectDate {
-  fill: white;
 }
 
 .pieTextBase {
@@ -75,8 +65,8 @@
 .pieOutlineOverlay {
   position: absolute;
   inset: 0;
-  border-radius: 1rem;
-  border: 1px solid $color-font-disabled;
+  border-radius: 0.75rem;
+  border: 1px solid $color-section-light;
   pointer-events: none;
   transition: border-color 0.2s ease;
 }

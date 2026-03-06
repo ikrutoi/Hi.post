@@ -64,7 +64,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="60 60 5000 5000"
+        viewBox="90 90 4940 4940"
         className={styles.svg}
         fillRule="evenodd"
         clipRule="evenodd"
@@ -90,6 +90,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                 width="2560"
                 height="2560"
                 className={clsx(styles.rect, styles.rectCardphoto)}
+                fill="var(--pie-rect-fill)"
               />
             )}
           </pattern>
@@ -108,6 +109,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                   width="2560"
                   height="3135"
                   className={clsx(styles.rect, styles.rectCardtext)}
+                  fill="var(--pie-rect-fill)"
                 />
                 <text
                   x="100"
@@ -140,6 +142,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                   width="2560"
                   height="3135"
                   className={clsx(styles.rect, styles.rectCardtext)}
+                  fill="var(--pie-rect-fill)"
                 />
                 <text x="100" y="600" fill="#064e3b" opacity="0.5">
                   <tspan>Hi...</tspan>
@@ -162,6 +165,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                   width="2560"
                   height="2560"
                   className={clsx(styles.rect, styles.rectEnvelope)}
+                  fill="var(--pie-rect-fill-envelope)"
                 />
                 <IconUsers
                   x="400"
@@ -191,6 +195,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                   width="2560"
                   height="2560"
                   className={clsx(styles.rect, styles.rectEnvelope)}
+                  fill="var(--pie-rect-fill-envelope)"
                 />
                 <IconUserRecipient
                   x="400"
@@ -219,6 +224,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                 width="2560"
                 height="2560"
                 className={clsx(styles.rect, styles.rectEnvelope)}
+                fill="var(--pie-rect-fill-envelope)"
               />
             )}
           </pattern>
@@ -237,6 +243,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                   width="2560"
                   height="2560"
                   className={clsx(styles.rect, styles.rectAroma)}
+                  fill="var(--pie-rect-fill)"
                 />
                 <image
                   href={aromaImageUrl}
@@ -252,6 +259,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                 width="2560"
                 height="2560"
                 className={clsx(styles.rect, styles.rectAroma)}
+                fill="var(--pie-rect-fill)"
               />
             )}
           </pattern>
@@ -270,6 +278,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                   width="2560"
                   height="3135"
                   className={clsx(styles.rect, styles.rectDate)}
+                  fill="var(--pie-rect-fill)"
                 />
                 <text
                   x="1280"
@@ -294,6 +303,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
                 width="2560"
                 height="3135"
                 className={clsx(styles.rect, styles.rectDate)}
+                fill="var(--pie-rect-fill)"
               />
             )}
           </pattern>

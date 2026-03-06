@@ -43,7 +43,7 @@
   color: $color-envelope-recipient-legend;
 
   .miniEnvelopeCircle:nth-child(1) {
-    background-color: #fff;
+    background-color: $color-base;
     opacity: 1;
   }
 
