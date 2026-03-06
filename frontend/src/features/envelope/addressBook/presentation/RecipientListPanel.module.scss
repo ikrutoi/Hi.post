@@ -54,25 +54,8 @@
 
   &:hover {
     color: $color-font-enabled-light;
-    background-color: $color-disabled;
   }
 }
-
-// .headerLabel {
-//   display: flex;
-//   padding: 0 0.5rem;
-//   background-color: #fff;
-//   // border: 1px solid blue;
-// }
-
-// .label {
-//   font-size: 0.9rem;
-//   padding-top: 4px;
-//   color: $color-envelope-recipient-legend;
-//   text-transform: uppercase;
-//   letter-spacing: 0.02em;
-//   // border: 1px solid red;s
-// }
 
 .list {
   flex: 1;

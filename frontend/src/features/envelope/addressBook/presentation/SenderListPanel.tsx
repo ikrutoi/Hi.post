@@ -48,6 +48,11 @@ export const SenderListPanel: React.FC<Props> = ({
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        closePanel()
+        return
+      }
       if (entries.length === 0) return
       if (e.key === 'ArrowDown') {
         e.preventDefault()
@@ -65,7 +70,7 @@ export const SenderListPanel: React.FC<Props> = ({
         handleToggleStar(entry.id, starredSenderIds.has(entry.id))
       }
     },
-    [entries, focusedIndex, onSelect, handleToggleStar, starredSenderIds],
+    [entries, focusedIndex, onSelect, handleToggleStar, starredSenderIds, closePanel],
   )
 
   return (

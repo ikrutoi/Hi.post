@@ -56,6 +56,11 @@ export const RecipientListPanel: React.FC<Props> = ({
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        closePanel()
+        return
+      }
       if (entries.length === 0) return
       if (e.key === 'ArrowDown') {
         e.preventDefault()
@@ -77,7 +82,15 @@ export const RecipientListPanel: React.FC<Props> = ({
         }
       }
     },
-    [entries, focusedIndex, onSelect, isRecipientsMode, handleToggleStar, starredRecipientIds],
+    [
+      entries,
+      focusedIndex,
+      onSelect,
+      isRecipientsMode,
+      handleToggleStar,
+      starredRecipientIds,
+      closePanel,
+    ],
   )
 
   return (
