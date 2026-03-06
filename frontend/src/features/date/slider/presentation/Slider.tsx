@@ -31,7 +31,8 @@ export const Slider: React.FC = () => {
     max: number,
   ) => {
     const percent = ((value - min) / (max - min)) * 100
-    const labelOffset = `calc(${percent}% + (${0.5 - percent / 100}rem))`
+    const paddingRem = 1.5
+    const labelOffset = `calc(${paddingRem}rem + (100% - ${paddingRem * 2}rem) * ${percent} / 100 + (${0.5 - percent / 100}rem))`
 
     const monthText =
       role === 'month'

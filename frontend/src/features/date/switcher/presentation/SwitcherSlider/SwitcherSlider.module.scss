@@ -12,6 +12,10 @@
   border: 1px solid $color-section-light;
   gap: 0.2rem;
   transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: $color-section-dark;
+  }
 }
 
 .slider {
@@ -23,6 +27,7 @@
   border-radius: 1.5rem;
   background-color: $color-base;
   border: 1px solid $color-section-dark;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: transform 0.25s ease;
   transform: translateX(0);
   pointer-events: none;

@@ -2,13 +2,16 @@
 
 $sliderThumbSize: 1rem;
 $sliderHeight: 2px;
-$sliderThumbShadow: $color-toggle-active;
+$sliderThumbActiveScale: 1.1;
+$sliderThumbHoverBg: hsl(0, 0%, 72%);
 
 .sliderContainer {
   position: relative;
   width: 100%;
   padding-top: 1rem;
-  // border: solid 1px green;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
 }
 
 .sliderLabel {
@@ -18,7 +21,7 @@ $sliderThumbShadow: $color-toggle-active;
   white-space: nowrap;
   transform: translateX(-50%);
   pointer-events: none;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   opacity: 1;
 
   transition: left 0.15s ease-out;
@@ -49,7 +52,7 @@ input[type='range'] {
   margin: 0;
   width: 100%;
   height: $sliderHeight;
-  background-color: $color-section-light-completed;
+  background-color: $color-section-dark;
   outline: none;
   transition: background-color 0.2s ease;
 
@@ -61,14 +64,14 @@ input[type='range'] {
   &:focus::-webkit-slider-thumb,
   &:focus::-moz-range-thumb,
   &:focus::-ms-thumb {
-    background-color: $color-section-dark-completed;
+    border-color: $sliderThumbHoverBg;
   }
 
   // WebKit (Chrome, Safari, Edge)
   &::-webkit-slider-runnable-track {
     width: 100%;
     height: $sliderHeight;
-    background-color: $color-section-light-completed;
+    background-color: $color-section-dark;
     transition: background-color 0.2s ease;
   }
 
@@ -77,36 +80,56 @@ input[type='range'] {
     appearance: none;
     width: $sliderThumbSize;
     height: $sliderThumbSize;
-    background-color: $color-section-light-completed;
+    background-color: #fff;
+    border: 2px solid $color-section-dark;
     border-radius: 50%;
     cursor: pointer;
     margin-top: calc(-0.5rem + 1px);
-    transition: background-color 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+    transform-origin: center center;
   }
 
   &:hover::-webkit-slider-thumb {
-    background-color: $color-section-dark-completed;
+    border-color: $sliderThumbHoverBg;
+  }
+
+  &:active::-webkit-slider-thumb {
+    transform: scale($sliderThumbActiveScale);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   }
 
   // Firefox
   &::-moz-range-track {
     width: 100%;
     height: $sliderHeight;
-    background-color: $color-section-light-completed;
+    background-color: $color-section-dark;
     transition: background-color 0.2s ease;
   }
 
   &::-moz-range-thumb {
     width: $sliderThumbSize;
     height: $sliderThumbSize;
-    background-color: $color-section-light-completed;
+    background-color: #fff;
+    border: 2px solid $color-section-dark;
     border-radius: 50%;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+    transform-origin: center center;
   }
 
   &:hover::-moz-range-thumb {
-    background-color: $color-section-dark-completed;
+    border-color: $sliderThumbHoverBg;
+  }
+
+  &:active::-moz-range-thumb {
+    transform: scale($sliderThumbActiveScale);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   }
 
   // IE / старый Edge
@@ -120,19 +143,29 @@ input[type='range'] {
   &::-ms-fill-lower,
   &::-ms-fill-upper {
     height: $sliderHeight;
-    background-color: $color-section-light-completed;
+    background-color: $color-section-dark;
   }
 
   &::-ms-thumb {
     width: $sliderThumbSize;
     height: $sliderThumbSize;
-    background-color: $color-section-light-completed;
+    background-color: #fff;
+    border: 2px solid $color-section-dark;
     border-radius: 50%;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+    transform-origin: center center;
   }
 
   &:hover::-ms-thumb {
-    background-color: $color-section-dark-completed;
+    border-color: $sliderThumbHoverBg;
+  }
+
+  &:active::-ms-thumb {
+    transform: scale($sliderThumbActiveScale);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   }
 }

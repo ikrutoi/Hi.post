@@ -42,7 +42,7 @@
   border: 1px solid $color-section-dark;
   color: $color-font-enabled;
   font-weight: 600;
-  // box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   pointer-events: none;
   transition:
     background-color 0.2s ease,
@@ -112,7 +112,7 @@
 }
 
 .disabled {
-  border-color: $color-disabled;
+  border-color: $color-hover;
   background-color: $color-disabled;
   color: $color-font-disabled;
   cursor: default;
