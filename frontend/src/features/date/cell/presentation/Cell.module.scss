@@ -76,7 +76,7 @@
 
   .dayNumber {
     background-color: $color-active;
-    border-color: $color-active;
+    border-color: $color-section-light;
     color: #fff;
   }
 }
@@ -84,6 +84,7 @@
 .before,
 .after {
   cursor: default;
+  background-color: $color-disabled-light;
 
   .dayNumber {
     background-color: $color-disabled;
