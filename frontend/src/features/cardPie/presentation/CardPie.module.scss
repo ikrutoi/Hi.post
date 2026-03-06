@@ -1,150 +1,126 @@
 @use '@styles/config/colors' as *;
 
 .hubContainer {
-  --pie-cardphoto: #{$color-pie-cardphoto-alpha};
-  --pie-cardtext: #{$color-pie-cardtext-alpha};
-  --pie-envelope: #{$color-pie-envelope-alpha};
-  --pie-aroma: #{$color-pie-aroma-alpha};
-  --pie-date: #{$color-pie-date-alpha};
+  --outline-hover: #{$color-toggle-active-hover};
+  --envelope-text: #{$color-envelope-recipient-legend};
+  --envelope-text-many: #{$color-toggle-active};
 
   position: absolute;
   right: 0;
   height: 100%;
   border-radius: 1rem;
-  z-index: 7;
+  overflow: hidden;
+  border: solid 1px $color-section-light;
+  box-shadow: 1px 2px 5px 1px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   // box-shadow: 1px 2px 6px 3px rgba(0, 0, 0, 0.12);
   // box-shadow: 1px 1px 5px 3px rgba(34, 60, 80, 0.2);
-  // border: solid 1px red;
+}
+
+.svg {
+  width: 100%;
+  height: 100%;
 }
 
 .rect {
   fill: white;
 }
 
-.bgInactive {
-  fill: $color-section-light;
-  transition: fill 0.3s ease;
+.rectCardphoto {
+  fill: white;
+}
+.rectCardtext {
+  fill: white;
+}
+.rectEnvelope {
+  fill: $color-envelope-recipient;
 }
 
-.bgCardphoto {
-  fill: url('#grad-cardphoto');
+.pieEnvelopeIconBg {
+  color: $color-envelope-recipient-legend;
+  opacity: 0.24;
 }
-.bgCardtext {
-  fill: url('#grad-cardtext');
+.rectAroma {
+  fill: white;
 }
-.bgEnvelope {
-  fill: url('#grad-envelope');
-}
-.bgAroma {
-  fill: url('#grad-aroma');
-}
-.bgDate {
-  fill: url('#grad-date');
+.rectDate {
+  fill: white;
 }
 
-.buttonStatus {
-  stroke: $color-hover;
-  stroke-width: 60;
-  transition: stroke 0.2s ease;
-
-  &.completed {
-    stroke: $color-inactive-light;
-    cursor: pointer;
-  }
-}
-
-.buttonStatusIcon {
-  opacity: 0.5;
-  transition:
-    opacity 0.2s ease,
-    filter 0.2s ease;
-
-  &.completed {
-    opacity: 1;
-    filter: brightness(0.85);
-    cursor: pointer;
-  }
-}
-
-.buttonStatusBkg {
-  fill: #ffffff;
-}
-
-.rainbowRotationWrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.conicGradient {
-  flex-shrink: 0;
-  width: 150%;
-  height: 150%;
-  background: conic-gradient(
-    from 0deg,
-    #ba6c9e,
-    #9b72cb,
-    #6f7ccf,
-    #4285f4,
-    #479a9a,
-    #4caf50,
-    #a0af49,
-    #f4af42,
-    #e78a59,
-    #d96570,
-    #ba6c9e
-  );
-
-  &.rotating {
-    animation: spin-only 3s linear infinite;
-  }
-
-  &.stopping {
-    animation: spin-only 3s linear 1 forwards;
-    animation-fill-mode: forwards;
-  }
-}
-
-@keyframes spin-only {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.svg {
-  width: 100%;
-  height: 100%;
-  // filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
-  // box-shadow: 1px 2px 6px 3px rgba(0, 0, 0, 0.12);
-  // border: solid 1px blue;
+.pieTextBase {
+  font-family: inherit;
 }
 
 .sector {
   cursor: pointer;
+  filter: grayscale(100%);
   transition:
     opacity 0.2s ease,
-    transform 0.2s ease,
-    filter 0.2s ease,
-    stroke 0.2s ease;
-  stroke: $color-font-disabled;
-  stroke-width: 20;
+    filter 0.2s ease;
 
-  &.active {
-    filter: brightness(1.2) drop-shadow(0 0 15px rgba(255, 255, 255, 0.6));
-    stroke: $color-font-disabled;
-    stroke-width: 40;
-    transform: scale(1.02);
-    transform-origin: center;
+  &.sectorEmpty {
+    cursor: default;
   }
 }
 
-.sector:hover,
-.sector.hovered {
-  filter: brightness(1.1);
-  opacity: 0.9;
+.sector:hover:not(.sectorEmpty),
+.sector.hovered:not(.sectorEmpty) {
+  filter: none;
+}
+
+.pieAllComplete .sector {
+  filter: none;
+}
+
+.pieOutlineOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  border: 1px solid $color-font-disabled;
+  pointer-events: none;
+  transition: border-color 0.2s ease;
+}
+
+.pieCenterButton {
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.75rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  border: solid 2px $color-section-dark;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: default;
+
+  &:disabled {
+    pointer-events: none;
+  }
+}
+
+.pieCenterButtonEnabled {
+  cursor: pointer;
+}
+
+.pieCenterIcon {
+  color: $color-font-disabled;
+  transition: transform 0.3s ease;
+
+  svg {
+    fill: currentColor;
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
+.pieCenterButtonEnabled .pieCenterIcon {
+  color: $color-font-enabled;
+}
+
+.pieCenterButtonEnabled:hover .pieCenterIcon {
+  transform: scale(1.1);
 }

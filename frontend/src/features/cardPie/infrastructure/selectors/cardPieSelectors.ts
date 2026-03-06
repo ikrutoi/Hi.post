@@ -45,16 +45,22 @@ export const selectActiveCardFullData = createSelector(
     selectSelectedDate,
     selectEnvelopeSessionRecord,
   ],
-  (editor, cardtext, cardphoto, aroma, date, envelope) => ({
-    ...editor,
+  (editor, cardtext, cardphoto, aroma, date, envelope) => {
+    const recipientCount = envelope.recipient?.applied?.length ?? 0
+
+    return {
+      ...editor,
       data: {
         cardphoto,
         cardtext,
-        recipient: envelope.isComplete ? envelope.recipient.viewDraft : null,
+        // Для пирога: если один получатель — рисуем его адрес, иначе показываем только счётчик
+        recipient: recipientCount === 1 ? envelope.recipient.viewDraft : null,
+        recipientCount,
         aroma,
         date,
       },
-  }),
+    }
+  },
 )
 
 export const selectCardFromArchive = createSelector(
