@@ -1,6 +1,5 @@
 import React from 'react'
 import clsx from 'clsx'
-import { useSizeFacade } from '@layout/application/facades'
 import styles from './Cell.module.scss'
 import type {
   SelectedDispatchDate,
@@ -36,8 +35,6 @@ export const Cell: React.FC<CellProps> = ({
   onClickCell,
   children,
 }) => {
-  const { sizeItemCalendar } = useSizeFacade()
-
   const dynamicClass = clsx(
     styles.cell,
     isToday && styles.today,
@@ -62,10 +59,6 @@ export const Cell: React.FC<CellProps> = ({
 
   return (
     <div
-      style={{
-        width: `${sizeItemCalendar.width}px`,
-        height: `${sizeItemCalendar.height}px`,
-      }}
       className={dynamicClass}
       onClick={handleClick}
     >
