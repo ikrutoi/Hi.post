@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   width: 100%;
   height: 100%;
 }
@@ -21,11 +21,11 @@
   }
 }
 
-// Область: секция всегда по центру в одном месте; левый сайдбар (при наличии) — absolute, не сдвигает секцию
+// Область: секция прижата к правому краю; левый сайдбар (при наличии) — absolute, не сдвигает секцию
 .editorArea {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
 }
 

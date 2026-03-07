@@ -131,18 +131,36 @@
   position: absolute;
   right: -1.1rem;
   height: 100%;
-  // width: min-content;
   display: flex;
   justify-content: flex-end;
-  // z-index: 8;
-  // border: solid 1px blue;
 
   .toolbarGroup {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     height: 100%;
-    // width: min-content;
+  }
+
+  .toolbarKey {
+    width: 2rem;
+    height: 2rem;
+    margin: 0.25rem 0;
+    box-sizing: border-box;
+    padding: 0.4rem;
+    border-radius: 0.7rem;
+    background-color: $color-app-inner;
+
+    > * {
+      transform: scale(0.75);
+    }
+
+    &:hover:not(:disabled) {
+      background-color: $color-enabled;
+    }
+
+    &:disabled:hover {
+      background-color: $color-app-inner;
+    }
   }
 }
 
@@ -280,7 +298,6 @@
 .toolbarCardtext,
 .toolbarSender,
 .toolbarRecipient,
-.toolbarEditorPie,
 .toolbarAddressListSender,
 .toolbarAddressListRecipient,
 .toolbarRecipients,

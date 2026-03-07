@@ -6,20 +6,21 @@
   height: 100%;
   margin: 0 auto;
   border-radius: 1rem;
-  scroll-behavior: smooth;
-  // border: solid 1px purple;
+  border: 1px solid $color-section-light;
+  overflow: hidden;
 
-  &Content {
-    position: relative;
+  &Block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin-left: auto;
-    margin-right: auto;
+    flex-shrink: 0;
     // border: solid 1px blue;
   }
 
-  &Main {
+  &Content {
     position: relative;
-    width: 100%;
-    // border: solid 1px green;
+    flex-shrink: 0;
   }
 
   &PreviewSlot {
@@ -32,30 +33,19 @@
   }
 
   &Pie {
-    position: absolute;
-    // display: flex;
-    // justify-content: flex-end;
-    left: 0;
+    position: relative;
+    flex-shrink: 0;
     z-index: 6;
     border-radius: 1rem;
-    // width: 100%;
-    // height: 100%;
   }
 
-  .pieToolbar {
-    position: absolute;
-    right: -2rem;
+  &PieToolbar {
+    flex-shrink: 0;
     width: 2rem;
-    height: 100%;
     display: flex;
     border-radius: 0 1rem 1rem 0;
-    // flex-direction: column;
     justify-content: flex-end;
-    // align-items: end;
-    // z-index: 8;
-    border-top: solid 1px $color-section-dark;
-    border-right: solid 1px $color-section-dark;
-    border-bottom: solid 1px $color-section-dark;
+    z-index: 6;
   }
 
   &Filter {
@@ -79,20 +69,16 @@
     border-radius: 1rem;
     display: flex;
     align-items: center;
-    border: solid 1px red;
+    // border: solid 1px red;
   }
 
   &MiniCards {
-    position: absolute;
+    position: relative;
     width: 100%;
     height: 100%;
     border-radius: 1rem;
-    background-size: contain;
     display: flex;
-    // justify-content: flex-end;
     align-items: center;
-    // z-index: 7;
-    // border: solid 1px red;
 
     &Full {
       box-shadow: 0 0 6px 3px rgba(255, 89, 0, 0.6);

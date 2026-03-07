@@ -14,6 +14,7 @@ import {
   useToolbarClickReset,
   useViewportInit,
 } from '@layout/application/hooks'
+import { useCardFacade } from '@entities/card/application/facades'
 import { useRecordSizeCard } from '@shared/hooks'
 import styles from './App.module.scss'
 
@@ -26,13 +27,10 @@ const App = () => {
 
   const { viewFlags, state: stateCardPanel } = useCardPanelFacade()
   const isTemplateMode = viewFlags.isTemplateMode
+  const { isPreviewOpen } = useCardFacade()
   const { sizeMiniCard, sizeToolbarContour } = useSizeFacade()
   const { meta } = useLayoutFacade()
 
-  const standardWidth =
-    sizeToolbarContour?.width != null && sizeMiniCard?.height != null
-      ? sizeToolbarContour.width + sizeMiniCard.height
-      : undefined
   const panelContentWidth =
     sizeToolbarContour?.width != null ? sizeToolbarContour.width : undefined
   const previewSlotWidth = sizeMiniCard?.height ?? 0
@@ -57,40 +55,29 @@ const App = () => {
             <SectionEditorSidebar />
           </div>
           <main ref={mainRef} className={styles.appMain}>
-        <div
-          ref={cardPanelRef}
-          className={clsx(styles.mainCardPanel)}
-          style={{
-            width:
-              standardWidth != null
-                ? isTemplateMode
-                  ? '100%'
-                  : `${standardWidth}px`
-                : undefined,
-          }}
-        >
-          {isTemplateMode ? (
-            <CardPanelTemplatesView
-              activeTemplate={stateCardPanel.activeTemplate}
-              sizeMiniCard={sizeMiniCard ?? {}}
-              panelContentWidth={panelContentWidth}
-              previewSlotWidth={previewSlotWidth}
-              deltaEnd={meta.deltaEnd}
-              maxMiniCardsCount={meta.maxMiniCardsCount}
-            />
-          ) : (
-            <CardPanel />
-          )}
-        </div>
-        <div
-          ref={formRef}
-          className={clsx(styles.mainForm)}
-          style={{
-            width: standardWidth != null ? `${standardWidth}px` : undefined,
-          }}
-        >
-          <CardSectionEditor />
-        </div>
+            <div className={styles.appMainContent}>
+              <div ref={cardPanelRef} className={clsx(styles.mainCardPanel)}>
+                {isTemplateMode ? (
+                  <CardPanelTemplatesView
+                    activeTemplate={stateCardPanel.activeTemplate}
+                    sizeMiniCard={sizeMiniCard ?? {}}
+                    panelContentWidth={panelContentWidth}
+                    previewSlotWidth={isPreviewOpen ? previewSlotWidth : 0}
+                    deltaEnd={meta.deltaEnd}
+                    maxMiniCardsCount={meta.maxMiniCardsCount}
+                  />
+                ) : (
+                  <CardPanel />
+                )}
+              </div>
+              <div ref={formRef} className={clsx(styles.mainForm)}>
+                <CardSectionEditor />
+              </div>
+            </div>
+            <aside
+              className={styles.appMainAside}
+              aria-label="Templates"
+            ></aside>
           </main>
           <div className={styles.appRightSidebar}>
             <SectionEditorRightSidebar />

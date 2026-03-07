@@ -1,3 +1,4 @@
+export * from './getAppMainGridColumns'
 export * from './getSizeMiniCard'
 export * from './getMaxMiniCardsCount'
 export * from './getSizeCard'

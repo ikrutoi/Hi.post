@@ -1,4 +1,3 @@
-import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { roundTo } from '../../helpers'
 import type { SizeCard } from '@layout/domain/types'
 
@@ -7,11 +6,10 @@ export interface SplitHeightResult {
   sectionEditorHeight: number
 }
 
-export const getSizeMiniCard = (size: { width: number; height: number }) => {
-  // const rawWidth = size.width * CARD_SCALE_CONFIG.scaleMiniCard
-  // const rawHeight = rawWidth / CARD_SCALE_CONFIG.aspectRatio
+const MINI_CARD_HEIGHT_RATIO = 0.75
 
-  const resultSide = size.height * 0.6
+export const getSizeMiniCard = (size: { width: number; height: number }) => {
+  const resultSide = size.height * MINI_CARD_HEIGHT_RATIO
 
   return {
     width: roundTo.nearest(resultSide),
