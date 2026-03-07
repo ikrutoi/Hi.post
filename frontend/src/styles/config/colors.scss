@@ -85,18 +85,21 @@ $color-envelope-recipient-input-border: #e0d0eb;
 
 $color-envelope-sender-input-focus: #fff;
 
-// Мягкая тень в стиле Copilot (минимализм)
-$shadow-card: 0 2px 8px rgba(0, 0, 0, 0.04);
+$shadow-card: 0 2px 10px rgba(0, 0, 0, 0.07);
 
-// Окно приложения: внешний фон и центральная подложка
 $color-app-frame: #ededee;
 $color-app-substrate-border: #cccccc;
-$shadow-app-substrate: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+$shadow-app-substrate:
+  0 4px 20px rgba(0, 0, 0, 0.08),
+  0 2px 8px rgba(0, 0, 0, 0.04);
 
-// Слой-полоса: слева иконки секций, сверху хедер, справа/снизу 0.35rem
 $color-app-strip: #efeae7;
 $color-app-header: #efeae7;
 $color-app-inner: #f8f4f1;
 $color-app-sidebar-icon: #55524f;
 $color-app-sidebar-icon-active: #a16a45;
 $color-app-sidebar-icon-hover: #e3dedb;
+
+$toolbar-sidebar-key-size: 2.4rem;
+$toolbar-sidebar-icon-scale: 0.74;
+$toolbar-sidebar-icon-scale-thematic: 0.68;

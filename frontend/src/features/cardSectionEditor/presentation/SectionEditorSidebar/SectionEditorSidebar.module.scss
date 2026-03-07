@@ -7,11 +7,75 @@
   justify-content: flex-start;
   height: 100%;
   padding: 0.35rem 0 0.5rem 0;
-  gap: 0.5rem;
+  gap: 0;
+  min-height: 0;
 
-  // Тулбар в сайдбаре не absolute (в редакторе карточки у него position: absolute)
-  > div {
+  // Тулбар в сайдбаре не absolute
+  > div:first-of-type {
     position: static;
     left: auto;
+  }
+}
+
+// Разделитель под иконкой «Дата»: не на всю ширину
+.sidebarDivider {
+  width: 60%;
+  margin: 0.25rem 0 0.35rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+// Тулбар Фото/Текст под разделителем — вертикальное расположение иконок, фон как в сайдбаре
+.sidebarSectionToolbar {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+
+  button {
+    box-sizing: border-box;
+    padding: 0.5rem;
+    background-color: $color-app-strip !important;
+    width: $toolbar-sidebar-key-size !important;
+    height: $toolbar-sidebar-key-size !important;
+
+    &:hover {
+      background-color: $color-app-sidebar-icon-hover !important;
+    }
+
+    > * {
+      transform: scale($toolbar-sidebar-icon-scale-thematic);
+    }
+  }
+
+  // Индикатор размера шрифта (Текст): вертикально, наполнение шариков вверх
+  :global([class*='stepWrapperContainer']) {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  // Корневой div тулбара — колонка, расстояние между группами
+  > div {
+    position: static !important;
+    left: auto;
+    top: auto;
+    width: 100% !important;
+    max-width: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    gap: 0.45rem;
+  }
+
+  // Группы тулбара и кнопки внутри — колонка, расстояние между иконками
+  > div > div {
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    gap: 0.35rem;
   }
 }

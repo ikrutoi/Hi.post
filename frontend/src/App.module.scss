@@ -23,13 +23,13 @@
   overflow: hidden;
 }
 
-// Слой-полоса: слева иконки секций, сверху хедер, справа/снизу 0.35rem, фон #efeae7
+// Слой-полоса: слева иконки секций, сверху хедер, справа превью фаворитов
 .appControlStrip {
   flex: 1;
   min-height: 0;
   display: grid;
   grid-template-rows: auto 1fr;
-  grid-template-columns: 3.6rem 1fr;
+  grid-template-columns: 3.2rem 1fr 4rem;
   padding: 0 0.35rem 0.35rem 0;
   background-color: $color-app-strip;
   border-radius: 0.75rem;
@@ -45,7 +45,6 @@
   grid-column: 1;
   grid-row: 2;
   min-height: 0;
-  // место под иконки управления секциями
 }
 
 .appMain {
@@ -61,6 +60,12 @@
   overflow: hidden;
   background-color: $color-app-inner;
   border-radius: 0.75rem;
+}
+
+.appRightSidebar {
+  grid-column: 3;
+  grid-row: 2;
+  min-height: 0;
 }
 
 .mainCardPanel {

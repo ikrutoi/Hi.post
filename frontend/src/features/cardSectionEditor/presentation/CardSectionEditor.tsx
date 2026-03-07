@@ -12,23 +12,23 @@ export const CardSectionEditor: React.FC = () => {
 
   return (
     <div className={clsx(styles.cardSectionEditor)}>
-      <div
-        className={clsx(styles.editorToolbar)}
-        // style={{
-        //   // width: `${sizeToolbarContour.width}px`,
-        //   height: `${sizeToolbarContour.height}px`,
-        // }}
-      >
+      <div className={clsx(styles.editorToolbar)}>
         <SectionEditorToolbar />
       </div>
-      <div
-        className={clsx(styles.editorSection)}
-        style={{
-          width: `${width}px`,
-          height: `${sizeCard.height}px`,
-        }}
-      >
-        <CardSectionRenderer />
+      <div className={styles.editorArea}>
+        <div
+          className={styles.workZoneLeft}
+          style={{ height: `${sizeCard.height}px` }}
+        />
+        <div
+          className={clsx(styles.editorSection)}
+          style={{
+            width: `${width}px`,
+            height: `${sizeCard.height}px`,
+          }}
+        >
+          <CardSectionRenderer />
+        </div>
       </div>
     </div>
   )

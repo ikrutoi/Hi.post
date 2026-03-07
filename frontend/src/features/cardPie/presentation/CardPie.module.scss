@@ -4,13 +4,13 @@
   --outline-hover: #{$color-toggle-active-hover};
   --envelope-text: #{$color-envelope-recipient-legend};
   --envelope-text-many: #{$color-toggle-active};
-  --pie-rect-fill: #{$color-base};
+  --pie-rect-fill: #fff;
   --pie-rect-fill-envelope: #{$color-envelope-recipient};
 
   position: absolute;
   right: 0;
   height: 100%;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   overflow: hidden;
   border: 1px solid $color-section-light;
   box-shadow: $shadow-card;
@@ -65,7 +65,7 @@
 .pieOutlineOverlay {
   position: absolute;
   inset: 0;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   border: 1px solid $color-section-light;
   pointer-events: none;
   transition: border-color 0.2s ease;
@@ -75,7 +75,7 @@
   position: absolute;
   width: 2rem;
   height: 2rem;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

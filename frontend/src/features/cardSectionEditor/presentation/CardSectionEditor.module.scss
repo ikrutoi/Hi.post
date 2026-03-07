@@ -1,13 +1,12 @@
+@use '@styles/config/colors' as *;
+
 .cardSectionEditor {
   position: relative;
   display: flex;
-  // flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  // border: solid 1px orchid;
-  // background-color: rgba(255, 255, 255, 0);
 }
 
 .editorToolbar {
@@ -15,18 +14,34 @@
   width: 100%;
   height: 100%;
   margin-bottom: 1rem;
-  // display: flex;
-  // justify-content: center;
-  // align-items: center;
-  // border: solid 1px blue;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+// Область: слева сайдбар, отступ 4rem, справа рабочая секция (Cardphoto, Cardtext, …)
+.editorArea {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4rem;
+}
+
+// Доп. сайдбар слева от квадратной рабочей секции: белый фон, белый бордер 1px, внутри обводка 3px #efeae7
+.workZoneLeft {
+  flex-shrink: 0;
+  width: 3.2rem;
+  border-radius: 1rem;
+  border: 1px solid #fff;
+  background-color: #fff;
+  box-shadow: $shadow-card, inset 0 0 0 3px $color-app-strip;
 }
 
 .editorSection {
-  position: absolute;
-  // width: 200px;
-  // height: 200px;
+  flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  // border: solid 1px green;
 }

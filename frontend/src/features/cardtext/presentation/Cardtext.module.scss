@@ -10,8 +10,11 @@
 .cardtext {
   width: 100%;
   padding: 1rem;
-  box-shadow: 2px 1px 6px 3px rgba(34, 60, 80, 0.2);
-  border: 1px solid $color-section-dark;
+  box-sizing: border-box;
+  border: 1px solid $color-section-light;
+  border-radius: 0.5rem;
+  box-shadow: $shadow-card;
+  background-color: #fff;
 }
 
 // .cardtext__nav-container {

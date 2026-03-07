@@ -157,6 +157,10 @@
   // width: 100%;
   // border: solid 1px green;
 
+  .toolbarKey {
+    background-color: $color-app-inner;
+  }
+
   .toolbarGroupText {
     .toolbarKey {
       .toolbarIcon {
@@ -175,7 +179,7 @@
       margin: 0;
       width: max-content;
       cursor: default;
-      background-color: #ffffff;
+      background-color: $color-app-inner;
     }
 
     .toolbarKey:nth-child(5) {
@@ -207,9 +211,9 @@
   }
 
   .toolbarKey {
-    width: 2.4rem;
-    height: 2.4rem;
-    margin: 0.4rem 0;
+    width: $toolbar-sidebar-key-size;
+    height: $toolbar-sidebar-key-size;
+    margin: 0.2rem 0;
     padding: 0.5rem;
     border-radius: 0.9rem;
     background-color: $color-app-strip;
@@ -222,9 +226,8 @@
       background-color: $color-app-sidebar-icon-hover;
     }
 
-    // Иконка ~15–20% меньше при том же размере кнопки
     > * {
-      transform: scale(0.82);
+      transform: scale($toolbar-sidebar-icon-scale);
     }
   }
 
@@ -258,7 +261,6 @@
   flex-direction: row-reverse;
 }
 
-// Фон иконок как у секции Envelope ($color-base)
 .toolbarSender,
 .toolbarRecipient,
 .toolbarRecipients,
@@ -270,7 +272,7 @@
 .toolbarAddressListSender,
 .toolbarAddressListRecipient {
   .toolbarKey {
-    background-color: $color-base;
+    background-color: #fff;
   }
 }
 
@@ -303,7 +305,7 @@
   }
 
   .toolbarKeyApplyEnabled {
-    background-color: $color-base;
+    background-color: #fff;
   }
 
   .toolbarKeyApplyEnabled:hover {

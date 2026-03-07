@@ -7,6 +7,7 @@ import { CardPanel } from './features/cardPanel/presentation/CardPanel'
 import { CardPanelTemplatesView } from './features/cardPanel/presentation/CardPanelTemplatesView'
 import { CardSectionEditor } from './features/cardSectionEditor/presentation/CardSectionEditor'
 import { SectionEditorSidebar } from './features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
+import { SectionEditorRightSidebar } from './features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
 import {
   useLayoutInit,
@@ -91,6 +92,9 @@ const App = () => {
           <CardSectionEditor />
         </div>
           </main>
+          <div className={styles.appRightSidebar}>
+            <SectionEditorRightSidebar />
+          </div>
         </div>
       </div>
     </div>
