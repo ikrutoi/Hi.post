@@ -37,10 +37,14 @@
   }
 }
 
-// .miniCard:hover,
-// .miniCard.hovered {
-//   border-color: rgba($color-toggle-active, 0.5);
-// }
+.miniCardEmpty {
+  background-color: #efeae7;
+}
+
+.miniCard:hover,
+.miniCard.hovered {
+  border-color: rgba($color-toggle-active, 0.6);
+}
 
 .deleteMiniCard {
   position: absolute;

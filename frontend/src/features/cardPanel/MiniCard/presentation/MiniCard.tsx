@@ -15,6 +15,7 @@ interface MiniCardProps {
   zIndex: number
   position: number
   isPacked: boolean
+  isEmpty?: boolean
 }
 
 export const MiniCard: React.FC<MiniCardProps> = ({
@@ -23,6 +24,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   zIndex,
   position,
   isPacked,
+  isEmpty = false,
 }) => {
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
@@ -39,6 +41,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       className={clsx(
         styles.miniCard,
         styles[`miniCard${capitalize(section)}`],
+        isEmpty && styles.miniCardEmpty,
       )}
       style={{
         left: isPacked

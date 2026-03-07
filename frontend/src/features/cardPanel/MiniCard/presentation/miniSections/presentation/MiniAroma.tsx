@@ -30,17 +30,16 @@ export const MiniAroma: React.FC<MiniAromaProps> = () => {
         alt={selectedAroma.name}
         src={imageAroma}
       />
-      <button
+      {/* <button
         className={clsx(styles.previewButton, styles.previewButtonDelete)}
         aria-label="Delete section content"
         onClick={(e) => {
           e.stopPropagation()
           clearAroma()
-          // removeCropId(cropId)
         }}
       >
         {getToolbarIcon({ key: 'clearInput' })}
-      </button>
+      </button> */}
     </div>
   )
 }

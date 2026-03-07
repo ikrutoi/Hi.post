@@ -8,6 +8,7 @@
   border-radius: 1rem;
   border: 1px solid $color-section-light;
   overflow: hidden;
+  // border: solid 1px blue;
 
   &Block {
     display: flex;
@@ -15,7 +16,7 @@
     align-items: center;
     margin-left: auto;
     flex-shrink: 0;
-    // border: solid 1px blue;
+    // border: solid 1px red;
   }
 
   &Content {

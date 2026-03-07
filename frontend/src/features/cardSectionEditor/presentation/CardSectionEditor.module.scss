@@ -4,7 +4,8 @@
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  // justify-content: flex-end;
   width: 100%;
   height: 100%;
 }
@@ -21,7 +22,6 @@
   }
 }
 
-// Область: секция прижата к правому краю; левый сайдбар (при наличии) — absolute, не сдвигает секцию
 .editorArea {
   display: flex;
   flex-direction: row;
@@ -29,13 +29,11 @@
   align-items: center;
 }
 
-// Обёртка фиксированной ширины под секцию; сайдбар позиционируется относительно неё
 .editorAreaCenter {
   position: relative;
   flex-shrink: 0;
 }
 
-// Доп. сайдбар слева от секции: не в потоке, не сдвигает секцию
 .workZoneLeft {
   position: absolute;
   right: 100%;
@@ -45,7 +43,9 @@
   border-radius: 1rem;
   border: 1px solid #fff;
   background-color: #fff;
-  box-shadow: $shadow-card, inset 0 0 0 3px $color-app-strip;
+  box-shadow:
+    $shadow-card,
+    inset 0 0 0 3px $color-app-strip;
 }
 
 .editorSection {

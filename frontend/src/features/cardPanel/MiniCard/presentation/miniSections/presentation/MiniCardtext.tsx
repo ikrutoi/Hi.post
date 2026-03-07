@@ -34,7 +34,7 @@ export const MiniCardtext: React.FC = () => {
           onMouseLeave={() => setHovered(null)}
         />
       </Slate>
-      <button
+      {/* <button
         className={clsx(styles.previewButton, styles.previewButtonDelete)}
         aria-label="Delete section content"
         onClick={(e) => {
@@ -43,7 +43,7 @@ export const MiniCardtext: React.FC = () => {
         }}
       >
         {getToolbarIcon({ key: 'clearInput' })}
-      </button>
+      </button> */}
     </div>
   )
 }

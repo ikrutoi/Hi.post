@@ -133,7 +133,7 @@ export const MiniEnvelope: React.FC = () => {
           <span>{recipient.applied.length}</span>
         </div>
       )}
-      <button
+      {/* <button
         className={clsx(styles.previewButton, styles.previewButtonDelete)}
         aria-label="Cancel selection"
         onClick={(e) => {
@@ -142,7 +142,7 @@ export const MiniEnvelope: React.FC = () => {
         }}
       >
         {getToolbarIcon({ key: 'clearInput' })}
-      </button>
+      </button> */}
       {isEnabled && senderState.applied.length > 0 && (
         <div className={styles.miniEnvelopeSender}>
           {/* <span>55</span> */}

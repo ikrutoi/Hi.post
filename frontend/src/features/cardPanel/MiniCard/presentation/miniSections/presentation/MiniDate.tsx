@@ -30,7 +30,7 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
       <span className={styles.miniDateMonth}>
         {listOfMonthOfYear[selectedDate.month]}
       </span>
-      <button
+      {/* <button
         className={clsx(styles.previewButton, styles.previewButtonDelete)}
         aria-label="Delete section content"
         onClick={(e) => {
@@ -39,7 +39,7 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
         }}
       >
         {getToolbarIcon({ key: 'clearInput' })}
-      </button>
+      </button> */}
     </div>
   )
 }

@@ -1,0 +1,1 @@
+export { MiniSectionsSlot } from './MiniSectionsSlot'
