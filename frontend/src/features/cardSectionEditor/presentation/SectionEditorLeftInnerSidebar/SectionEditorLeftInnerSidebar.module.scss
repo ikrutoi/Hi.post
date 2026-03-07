@@ -1,0 +1,66 @@
+@use '@styles/config/colors' as *;
+
+.innerSidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0.35rem 0;
+
+  // Наружный размер кнопок меньше; SVG визуально того же размера (scale компенсирует)
+  $inner-key-size: 2rem;
+  $inner-icon-scale: $toolbar-sidebar-icon-scale-thematic * ($toolbar-sidebar-key-size / $inner-key-size);
+
+  button {
+    box-sizing: border-box;
+    padding: 0.35rem;
+    background-color: #fff !important;
+    width: $inner-key-size !important;
+    height: $inner-key-size !important;
+
+    &:hover {
+      background-color: $color-app-sidebar-icon-hover !important;
+    }
+
+    &:disabled:hover,
+    &[aria-disabled='true']:hover {
+      background-color: #fff !important;
+    }
+
+    > * {
+      transform: scale($inner-icon-scale);
+    }
+  }
+
+  // Индикатор размера шрифта (Текст): вертикально, наполнение шариков вверх
+  :global([class*='stepWrapperContainer']) {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  // Корневой div тулбара — колонка, расстояние между группами
+  > div {
+    position: static !important;
+    left: auto;
+    top: auto;
+    width: 100% !important;
+    max-width: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    gap: 0.45rem;
+  }
+
+  // Группы тулбара и кнопки внутри — колонка, расстояние между иконками
+  > div > div {
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    gap: 0.35rem;
+  }
+}

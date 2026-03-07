@@ -21,17 +21,26 @@
   }
 }
 
-// Область: слева сайдбар, отступ 4rem, справа рабочая секция (Cardphoto, Cardtext, …)
+// Область: секция всегда по центру в одном месте; левый сайдбар (при наличии) — absolute, не сдвигает секцию
 .editorArea {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   align-items: center;
-  gap: 4rem;
 }
 
-// Доп. сайдбар слева от квадратной рабочей секции: белый фон, белый бордер 1px, внутри обводка 3px #efeae7
-.workZoneLeft {
+// Обёртка фиксированной ширины под секцию; сайдбар позиционируется относительно неё
+.editorAreaCenter {
+  position: relative;
   flex-shrink: 0;
+}
+
+// Доп. сайдбар слева от секции: не в потоке, не сдвигает секцию
+.workZoneLeft {
+  position: absolute;
+  right: 100%;
+  margin-right: 4rem;
+  top: 0;
   width: 3.2rem;
   border-radius: 1rem;
   border: 1px solid #fff;
@@ -40,7 +49,7 @@
 }
 
 .editorSection {
-  flex-shrink: 0;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
