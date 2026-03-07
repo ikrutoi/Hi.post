@@ -1,38 +1,35 @@
-$color-disabled-light: hsl(0, 0%, 98%);
-$color-disabled: hsl(0, 0%, 96%);
-$color-enabled: hsl(0, 0%, 92%);
-$color-hover: hsl(0, 0%, 88%);
-$color-hover-dark: hsl(0, 0%, 80%);
-$color-toggle-active: hsl(207, 70%, 47%);
-$color-toggle-active-hover: rgba($color-toggle-active, 0.4);
-$color-logo-orange: hsl(28, 85%, 55%);
-$color-favorite-star: $color-logo-orange;
-$color-font-enabled: hsl(0, 0%, 11%);
-$color-font-enabled-light: hsl(0, 0%, 48%);
-$color-font-enabled-light-hover: hsl(0, 0%, 36%);
-$color-font-disabled: hsl(0, 0%, 65%);
-$color-font-active: hsl(204, 100%, 42%);
-$color-font-selected: hsl(138, 56%, 42%);
+// Copilot-inspired: warm off-white, muted beige, soft borders, minimal
+$color-base: #f8f7f5;
+$color-disabled-light: #f5f4f2;
+$color-disabled: #efebe9;
+$color-enabled: #e8e5e1;
+$color-hover: #e0ddda;
+$color-hover-dark: #d4d0cc;
+$color-section-light: #dcdad7;
+$color-section-dark: #cfccc8;
 
-$color-active: #007dd7;
-// $color-enabled: #333;
-// $color-hover: #007dd7;
-$color-hover-bg: rgba(0, 125, 215, 0.1);
+$color-toggle-active: hsl(24, 45%, 65%);
+$color-toggle-active-hover: rgba($color-toggle-active, 0.4);
+$color-logo-orange: hsl(24, 55%, 58%);
+$color-favorite-star: $color-logo-orange;
+$color-font-enabled: hsl(0, 0%, 14%);
+$color-font-enabled-light: hsl(0, 0%, 42%);
+$color-font-enabled-light-hover: hsl(0, 0%, 28%);
+$color-font-disabled: hsl(0, 0%, 58%);
+$color-font-active: hsl(24, 40%, 45%);
+$color-font-selected: hsl(138, 56%, 38%);
+
+$color-active: hsl(24, 45%, 55%);
+$color-hover-bg: rgba(245, 227, 213, 0.35);
 $color-transparent: transparent;
 
-$color-section-light: hsl(0, 0%, 90%);
-$color-section-dark: hsl(0, 0%, 80%);
+$color-section-light-completed: #f0e8e2;
+$color-section-dark-completed: #e5d9d0;
 
-$color-section-light-completed: hsl(211, 60%, 90%);
-$color-section-dark-completed: hsl(211, 60%, 83%);
-
-$color-active: hsl(211, 69%, 58%);
 $color-inactive: hsl(0, 0%, 48%);
-$color-inactive-light: hsl(0, 0%, 70%);
+$color-inactive-light: hsl(0, 0%, 65%);
 
-$color-base-completed: #cce3f5;
-
-$color-base: #f9f9f9;
+$color-base-completed: #f5e3d5;
 
 $color-indicator-hight: #4caf50;
 $color-indicator-medium: #ffc107;
@@ -88,5 +85,15 @@ $color-envelope-recipient-input-border: #e0d0eb;
 
 $color-envelope-sender-input-focus: #fff;
 
-// Единая тень для карточек (Date, Aroma, плитки ароматов, MiniCard)
-$shadow-card: 1px 2px 5px 1px rgba(0, 0, 0, 0.05);
+// Мягкая тень в стиле Copilot (минимализм)
+$shadow-card: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+// Окно приложения: внешний фон и центральная подложка
+$color-app-frame: #ededee;
+$color-app-substrate-border: #cccccc;
+$shadow-app-substrate: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+
+// Слой-полоса: слева иконки секций, сверху хедер, справа/снизу 0.35rem
+$color-app-strip: #efeae7;
+$color-app-header: #efeae7;
+$color-app-inner: #f8f4f1;

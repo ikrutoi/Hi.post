@@ -24,7 +24,7 @@
 
 .tileSelected,
 .tileSelected:hover {
-  background-color: rgba($color-pie-aroma, 0.08);
+  background-color: $color-disabled;
   border-color: $color-section-dark-completed;
 }
 

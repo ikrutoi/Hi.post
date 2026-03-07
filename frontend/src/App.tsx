@@ -46,10 +46,13 @@ const App = () => {
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
-      <div className={styles.appHeader}>
-        <Header />
-      </div>
-      <main ref={mainRef} className={styles.appMain}>
+      <div className={styles.appSubstrate}>
+        <div className={styles.appControlStrip}>
+          <div className={styles.appHeader}>
+            <Header />
+          </div>
+          <div className={styles.appSidebar} aria-hidden />
+          <main ref={mainRef} className={styles.appMain}>
         <div
           ref={cardPanelRef}
           className={clsx(styles.mainCardPanel)}
@@ -84,7 +87,9 @@ const App = () => {
         >
           <CardSectionEditor />
         </div>
-      </main>
+          </main>
+        </div>
+      </div>
     </div>
   )
 }
