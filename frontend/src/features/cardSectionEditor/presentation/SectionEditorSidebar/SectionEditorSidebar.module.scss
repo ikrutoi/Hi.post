@@ -1,0 +1,17 @@
+@use '@styles/config/colors' as *;
+
+.sectionEditorSidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  padding: 0.35rem 0 0.5rem 0;
+  gap: 0.5rem;
+
+  // Тулбар в сайдбаре не absolute (в редакторе карточки у него position: absolute)
+  > div {
+    position: static;
+    left: auto;
+  }
+}

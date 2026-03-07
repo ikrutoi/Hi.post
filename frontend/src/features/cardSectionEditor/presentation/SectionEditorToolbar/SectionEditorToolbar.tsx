@@ -101,8 +101,6 @@ export const SectionEditorToolbar: React.FC = () => {
 
   return (
     <div className={styles.sectionEditorToolbar}>
-      <Toolbar section="sectionEditorMenu" />
-
       {(activeSection === 'cardphoto' || activeSection === 'cardtext') && (
         <Toolbar section={activeSection} />
       )}

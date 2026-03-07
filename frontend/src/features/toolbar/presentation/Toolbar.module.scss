@@ -196,8 +196,8 @@
   position: absolute;
   left: -1.2rem;
   display: flex;
-  align-items: center;
-  height: 100%;
+  align-items: flex-start;
+  height: auto;
   width: auto;
   // border: solid 1px red;
 
@@ -209,18 +209,27 @@
   .toolbarKey {
     width: 2.4rem;
     height: 2.4rem;
-    margin: 1rem 0;
+    margin: 0.4rem 0;
     padding: 0.5rem;
     border-radius: 0.9rem;
-    background-color: white;
-    border: solid 1px $color-section-dark;
+    background-color: $color-app-strip;
+    color: $color-app-sidebar-icon;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
+
+    &:hover {
+      background-color: $color-app-sidebar-icon-hover;
+    }
+
+    // Иконка ~15–20% меньше при том же размере кнопки
+    > * {
+      transform: scale(0.82);
+    }
   }
 
-  &Active {
-    color: $color-font-active;
+  .toolbarKeyActive {
+    color: $color-app-sidebar-icon-active;
   }
 
   .toolbarIcon {

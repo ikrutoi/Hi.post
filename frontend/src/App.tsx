@@ -6,6 +6,7 @@ import { useCardPanelFacade } from './features/cardPanel/application/facades'
 import { CardPanel } from './features/cardPanel/presentation/CardPanel'
 import { CardPanelTemplatesView } from './features/cardPanel/presentation/CardPanelTemplatesView'
 import { CardSectionEditor } from './features/cardSectionEditor/presentation/CardSectionEditor'
+import { SectionEditorSidebar } from './features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
 import {
   useLayoutInit,
@@ -51,7 +52,9 @@ const App = () => {
           <div className={styles.appHeader}>
             <Header />
           </div>
-          <div className={styles.appSidebar} aria-hidden />
+          <div className={styles.appSidebar}>
+            <SectionEditorSidebar />
+          </div>
           <main ref={mainRef} className={styles.appMain}>
         <div
           ref={cardPanelRef}
