@@ -1,15 +1,15 @@
 import React from 'react'
 import clsx from 'clsx'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
-import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { SectionEditorToolbar } from './SectionEditorToolbar/SectionEditorToolbar'
 import { SectionEditorLeftInnerSidebar } from './SectionEditorLeftInnerSidebar/SectionEditorLeftInnerSidebar'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
 import styles from './CardSectionEditor.module.scss'
 
 export const CardSectionEditor: React.FC = () => {
-  const { sizeCard, sizeToolbarContour } = useSizeFacade()
+  const { sizeCard } = useSizeFacade()
   const { activeSection } = useSectionMenuFacade()
   const showLeftInnerSidebar =
     activeSection === 'cardphoto' || activeSection === 'cardtext'

@@ -5,8 +5,7 @@
   min-height: 2rem;
   border-radius: 1rem;
   border: 1px solid #fff;
-  // background-color: #fff;
-  background-color: $color-app-strip;
+  background-color: $color-app-inner-light;
   box-shadow:
     $shadow-card,
     inset 0 0 0 3px $color-app-strip;
@@ -27,4 +26,5 @@
   flex-shrink: 0;
   overflow: hidden;
   border-radius: 0.75rem;
+  box-shadow: $shadow-card;
 }

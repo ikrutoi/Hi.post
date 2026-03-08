@@ -9,7 +9,11 @@
   background-color: #fff;
   user-select: none;
   cursor: pointer;
-  box-shadow: $shadow-card;
+  // box-shadow: $shadow-card;
+  // $shadow-app-substrate:
+  // 0 4px 20px rgba(0, 0, 0, 0.08),
+  //  2px 8px 0 rgba(0, 0, 0, 0.04);
+
   border: 1px solid $color-section-light;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   // border: solid 1px green;
@@ -38,7 +42,8 @@
 }
 
 .miniCardEmpty {
-  background-color: #efeae7;
+  background-color: #fff;
+  // background-color: #efeae7;
 }
 
 .miniCard:hover,

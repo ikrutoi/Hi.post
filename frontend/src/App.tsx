@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { Header } from './features/header/presentation/Header'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from './features/cardSectionEditor/presentation/CardSectionEditor'
+import { CardPie } from './features/cardPie/presentation/CardPie'
 import { SectionEditorSidebar } from './features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from './features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
@@ -11,6 +12,7 @@ import {
   useToolbarClickReset,
   useViewportInit,
 } from '@layout/application/hooks'
+import { useSizeFacade } from '@layout/application/facades'
 import { useRecordSizeCard } from '@shared/hooks'
 import styles from './App.module.scss'
 
@@ -25,6 +27,9 @@ const App = () => {
   useLayoutInit()
   useViewportInit()
   useRecordSizeCard(formRef, cardPanelRef)
+  const { sizeCard } = useSizeFacade()
+  const sectionSize =
+    sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width / 6 : null
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
 
@@ -39,7 +44,16 @@ const App = () => {
             <SectionEditorSidebar />
           </div>
           <main ref={mainRef} className={styles.appMain}>
-            <div className={styles.appMainContent}>
+            <div className={styles.appMainContentLeft}>
+              <div className={styles.appMainContentLeftPieSlot}>
+                {sectionSize != null && (
+                  <div className={styles.appMainContentLeftPieWrap}>
+                    <CardPie status="processed" fillContainer />
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className={styles.appMainContentCenter}>
               <div className={clsx(styles.mainCardPanel)}>
                 <MiniSectionsSlot ref={cardPanelRef} />
               </div>
@@ -47,10 +61,11 @@ const App = () => {
                 <CardSectionEditor />
               </div>
             </div>
-            <aside
+            <div className={styles.appMainContentRight}></div>
+            {/* <aside
               className={styles.appMainAside}
               aria-label="Templates"
-            ></aside>
+            ></aside> */}
           </main>
           <div className={styles.appRightSidebar}>
             <SectionEditorRightSidebar />

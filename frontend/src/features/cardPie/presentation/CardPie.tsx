@@ -11,11 +11,18 @@ import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
 import styles from './CardPie.module.scss'
 
-const STROKE_WIDTH = 23.6221
-const SECTOR_STROKE = '#999'
+const STROKE_WIDTH = 9.99216
+const SECTOR_STROKE = '#b3b3b3'
 
-export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
-  const { data, sections, handleSectorClick } = useCardPieFacade(status, id)
+export const CardPie: React.FC<CardPieProps> = ({
+  status,
+  id,
+  fillContainer = false,
+}) => {
+  const { data, sections, handleSectorClick, isReady } = useCardPieFacade(
+    status,
+    id,
+  )
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
 
@@ -44,30 +51,33 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
   }
   const handleMouseLeave = () => setHovered(null)
 
-  const allSectionsFilled =
-    sections.cardphoto &&
-    sections.cardtext &&
-    sections.envelope &&
-    sections.aroma &&
-    sections.date
+  const allSectionsFilled = isReady
 
   return (
     <div
       className={clsx(
         styles.hubContainer,
         allSectionsFilled && styles.pieAllComplete,
+        fillContainer && styles.hubContainerFill,
       )}
-      style={{
-        height: `${sizeMiniCard.height}px`,
-        width: `${sizeMiniCard.height}px`,
-      }}
+      style={
+        fillContainer
+          ? undefined
+          : {
+              height: `${sizeMiniCard.height}px`,
+              width: `${sizeMiniCard.height}px`,
+            }
+      }
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="90 90 4940 4940"
+        viewBox="0 0 5120 5120"
         className={styles.svg}
         fillRule="evenodd"
         clipRule="evenodd"
+        imageRendering="optimizeQuality"
+        shapeRendering="geometricPrecision"
+        textRendering="geometricPrecision"
       >
         <defs>
           <pattern
@@ -75,8 +85,8 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             patternUnits="userSpaceOnUse"
             width="2560"
             height="2560"
-            x="1280"
-            y="2560"
+            x="0"
+            y="0"
           >
             {photoUrl ? (
               <image
@@ -321,8 +331,24 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             fill="url(#photo-fill)"
             stroke={SECTOR_STROKE}
             strokeWidth={STROKE_WIDTH}
-            d="m2560 2560 1647 2535H913z"
+            d="m2560 2560 1657 2550H903z"
             onClick={() => handleSectorClick('cardphoto')}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          />
+          <path
+            id="date"
+            data-section="date"
+            className={clsx(
+              styles.sector,
+              !sections.date && styles.sectorEmpty,
+              hoveredSection === 'date' && styles.hovered,
+            )}
+            fill="url(#date-fill)"
+            stroke={SECTOR_STROKE}
+            strokeWidth={STROKE_WIDTH}
+            d="M4217 5110 2560 2560l2550-573v3123z"
+            onClick={() => handleSectorClick('date')}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           />
@@ -337,7 +363,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             fill="url(#cardtext-fill)"
             stroke={SECTOR_STROKE}
             strokeWidth={STROKE_WIDTH}
-            d="m913 5095 1647-2535L25 1991v2347c0 417 340 757 757 757z"
+            d="M10 1987v3123h893l1657-2550z"
             onClick={() => handleSectorClick('cardtext')}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -353,7 +379,7 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             fill="url(#envelope-fill)"
             stroke={SECTOR_STROKE}
             strokeWidth={STROKE_WIDTH}
-            d="M2560 25H782C365 25 25 365 25 782v1209l2535 569z"
+            d="M2560 2560 10 1987V10h2550z"
             onClick={() => handleSectorClick('envelope')}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -369,24 +395,8 @@ export const CardPie: React.FC<CardPieProps> = ({ status, id }) => {
             fill="url(#aroma-fill)"
             stroke={SECTOR_STROKE}
             strokeWidth={STROKE_WIDTH}
-            d="M5095 1991V782c0-417-340-757-757-757H2560v2535z"
+            d="M2560 2560V10h2550v1977z"
             onClick={() => handleSectorClick('aroma')}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          />
-          <path
-            id="date"
-            data-section="date"
-            className={clsx(
-              styles.sector,
-              !sections.date && styles.sectorEmpty,
-              hoveredSection === 'date' && styles.hovered,
-            )}
-            fill="url(#date-fill)"
-            stroke={SECTOR_STROKE}
-            strokeWidth={STROKE_WIDTH}
-            d="m5095 1991-2535 569 1647 2535h131c417 0 757-340 757-757z"
-            onClick={() => handleSectorClick('date')}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           />
