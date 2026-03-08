@@ -95,12 +95,12 @@ function* handleAddressSave(
         yield put(setRecipientViewId(String(result.templateId)))
         yield put(setRecipientMode('recipient'))
         yield put(setRecipientView('recipientView'))
-        yield put(setAddressFormView({ show: false, role: 'recipient' }))
+        yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearRecipientFormData())
       } else {
         yield put(setSenderViewId(String(result.templateId)))
         yield put(setSenderView('senderView'))
-        yield put(setAddressFormView({ show: false, role: 'sender' }))
+        yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearSenderFormData())
         // Заполняем viewDraft сохранённым адресом, чтобы SenderView отобразил его (а не пустое поле)
         for (const [field, value] of Object.entries(

@@ -75,7 +75,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   }, [dispatch, toolbarSection, isAddressComplete])
 
   const closeAddressForm = useCallback(() => {
-    dispatch(setAddressFormView({ show: false, role }))
+    dispatch(setAddressFormView({ show: false, role: null }))
     if (role === 'sender') {
       dispatch(setSenderView('senderView'))
     } else {

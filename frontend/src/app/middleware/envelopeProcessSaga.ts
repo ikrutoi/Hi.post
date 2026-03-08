@@ -26,6 +26,9 @@ import {
   selectSenderListPanelOpen,
   selectActiveAddressList,
   selectRecipientMode,
+  selectAddressFormViewRole,
+  selectSenderViewEditMode,
+  selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
@@ -33,6 +36,9 @@ import {
   setActiveAddressList,
   closeAddressList,
   removeRecipientAt,
+  setAddressFormView,
+  setSenderViewEditMode,
+  setRecipientViewEditMode,
 } from '@envelope/infrastructure/state'
 import {
   setSenderViewId,
@@ -235,7 +241,17 @@ export function* processEnvelopeVisuals() {
     (recipient.applied?.length ?? 0) === 1 &&
     recipient.applied[0] === recipient.recipientViewId
 
-  const senderApplyState = senderAlreadyApplied
+  const addressFormViewRole: 'sender' | 'recipient' | null = yield select(
+    selectAddressFormViewRole,
+  )
+  const isAddressFormOpen =
+    addressFormViewRole === 'sender' || addressFormViewRole === 'recipient'
+  const senderViewEditMode: boolean = yield select(selectSenderViewEditMode)
+  const recipientViewEditMode: boolean = yield select(
+    selectRecipientViewEditMode,
+  )
+
+  let senderApplyState = senderAlreadyApplied
     ? 'selected'
     : sender.currentView === 'senderView' && sender.senderViewId != null
       ? 'enabled'
@@ -244,7 +260,7 @@ export function* processEnvelopeVisuals() {
         : senderComplete
           ? 'enabled'
           : 'disabled'
-  const recipientApplyState = recipientAlreadyApplied
+  let recipientApplyState = recipientAlreadyApplied
     ? 'selected'
     : recipient.currentView === 'recipientView' &&
         recipient.recipientViewId != null
@@ -254,6 +270,15 @@ export function* processEnvelopeVisuals() {
         : recipientComplete
           ? 'enabled'
           : 'disabled'
+
+  if (isAddressFormOpen) {
+    if (addressFormViewRole === 'sender')
+      senderApplyState = senderViewEditMode ? 'disabled' : 'enabled'
+    if (addressFormViewRole === 'recipient')
+      recipientApplyState = recipientViewEditMode ? 'disabled' : 'enabled'
+  }
+  if (senderViewEditMode) senderApplyState = 'disabled'
+  if (recipientViewEditMode) recipientApplyState = 'disabled'
 
   yield put(
     updateToolbarIcon({
@@ -288,12 +313,18 @@ export function* processEnvelopeVisuals() {
     appliedIds.length > 0 &&
     appliedIds.every((id) => recipientsViewIds.includes(id)) &&
     recipientsViewIds.every((id) => appliedIds.includes(id))
-  const recipientsApplyState =
+  let recipientsApplyState =
     isRecipientsEmptyForm || !canApplyRecipients
       ? 'disabled'
       : recipientsViewIdsEqual
         ? 'selected'
         : 'enabled'
+  if (isAddressFormOpen && addressFormViewRole === 'recipient') {
+    recipientsApplyState = recipientViewEditMode ? 'disabled' : 'enabled'
+  }
+  if (recipientsViewIds.length === 0) {
+    recipientsApplyState = 'disabled'
+  }
 
   yield put(
     updateToolbarSection({
@@ -427,6 +458,9 @@ export function* envelopeProcessSaga() {
       removeRecipientAt.type,
       removeAppliedAt.type,
       setRecipientsViewIds.type,
+      setAddressFormView.type,
+      setSenderViewEditMode.type,
+      setRecipientViewEditMode.type,
     ],
     processEnvelopeVisuals,
   )

@@ -321,14 +321,14 @@ function* handleEnvelopeToolbarAction(
             yield put(setRecipientViewEditMode(false))
             yield put(setRecipientViewId(null))
             yield put(setRecipientView('recipientView'))
-            yield put(setAddressFormView({ show: false, role: 'recipient' }))
+            yield put(setAddressFormView({ show: false, role: null }))
             yield put(clearRecipientFormData())
             yield put(clearRecipientViewDraft())
           } else {
             yield put(setSenderViewEditMode(false))
             yield put(setSenderViewId(null))
             yield put(setSenderView('senderView'))
-            yield put(setAddressFormView({ show: false, role: 'sender' }))
+            yield put(setAddressFormView({ show: false, role: null }))
             yield put(clearSenderFormData())
           }
         }
@@ -615,7 +615,7 @@ function* handleEnvelopeToolbarAction(
       section === 'addressFormRecipientView')
   ) {
     const role = section === 'addressFormSenderView' ? 'sender' : 'recipient'
-    yield put(setAddressFormView({ show: false, role }))
+    yield put(setAddressFormView({ show: false, role: null }))
     if (role === 'sender') {
       yield put(setSenderView('senderView'))
     } else {
@@ -684,7 +684,7 @@ function* handleAddressSaveSuccess(
     }) => s.envelopeSelection?.addressFormViewRole ?? null,
   )
   if (formViewRole !== role) return
-  yield put(setAddressFormView({ show: false, role }))
+  yield put(setAddressFormView({ show: false, role: null }))
   if (role === 'sender') {
     yield put(setSenderView('senderView'))
   } else {
