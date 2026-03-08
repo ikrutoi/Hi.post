@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useAddressBookList } from '../../addressBook/application/controllers'
 import { useAddressTemplateActions } from '@entities/templates'
-import { closeRecipientListPanel } from '../../infrastructure/state'
+import { closeAddressList } from '../../infrastructure/state'
 import { toggleRecipientSortDirection } from '../../recipient/infrastructure/state'
 import {
   addAddressTemplateRef,
@@ -36,7 +36,7 @@ export const useRecipientListPanelFacade = () => {
   }, [dispatch])
 
   const closePanel = useCallback(() => {
-    dispatch(closeRecipientListPanel())
+    dispatch(closeAddressList())
   }, [dispatch])
 
   const toggleSortDirection = useCallback(() => {

@@ -22,8 +22,19 @@ import type {
 import { LayoutOrientation } from '@layout/domain/types'
 import styles from './Toolbar.module.scss'
 
-export const Toolbar = ({ section }: { section: ToolbarSection }) => {
-  const { state, groups, actions: toolbarActions } = useToolbarFacade(section)
+export const Toolbar = ({
+  section,
+  stateOverride,
+}: {
+  section: ToolbarSection
+  stateOverride?: Record<string, unknown>
+}) => {
+  const {
+    state: storeState,
+    groups,
+    actions: toolbarActions,
+  } = useToolbarFacade(section)
+  const state = stateOverride ?? storeState
   const { onAction } = toolbarActions
 
   const { fontSizeStep } = useCardtextFacade()
@@ -32,7 +43,8 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
 
   const { sizeToolbarContour, sectionMenuHeight, setSectionMenuHeight } =
     useSizeFacade()
-  // console.log('TOOLBAR section', section)
+  console.log('TOOLBAR section', section)
+  console.log('TOOLBAR state', state)
 
   const cardphotoApplied = useAppSelector(selectIsCurrentCropApplied)
   const cardtextApplied = useAppSelector(selectCardtextIsComplete)
@@ -91,7 +103,8 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
     const mergedOptions = { ...iconOptions, ...options }
 
     const buttonState = typeof rawData === 'string' ? rawData : rawData?.state
-    let buttonStatus = currentIconState || buttonState
+    // Приоритет у состояния из секции (state/store), иначе — из конфига группы
+    let buttonStatus = buttonState ?? currentIconState
 
     const isCardApply =
       key === 'apply' && (section === 'cardphoto' || section === 'cardtext')
@@ -116,6 +129,8 @@ export const Toolbar = ({ section }: { section: ToolbarSection }) => {
           styles[`toolbarKey${capitalize(key)}${capitalize(buttonStatus)}`],
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
+        data-icon-key={key}
+        data-icon-state={buttonStatus}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
         onMouseDown={(e) => {
           if (groupStatus === 'disabled' || buttonStatus === 'disabled') {

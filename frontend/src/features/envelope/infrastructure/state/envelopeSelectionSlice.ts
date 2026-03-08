@@ -1,7 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { AddressBookMode } from '../../addressBook/domain/types'
 
 export interface EnvelopeSelectionState {
   recipientsPendingIds: string[]
+  activeAddressList: AddressBookMode | null
   recipientListPanelOpen: boolean
   senderListPanelOpen: boolean
   senderViewEditMode: boolean
@@ -12,6 +14,7 @@ export interface EnvelopeSelectionState {
 
 const initialState: EnvelopeSelectionState = {
   recipientsPendingIds: [],
+  activeAddressList: null,
   recipientListPanelOpen: false,
   senderListPanelOpen: false,
   senderViewEditMode: false,
@@ -42,20 +45,18 @@ export const envelopeSelectionSlice = createSlice({
       state.recipientsPendingIds = []
     },
 
-    toggleRecipientListPanel(state) {
-      state.recipientListPanelOpen = !state.recipientListPanelOpen
+    setActiveAddressList(state, action: PayloadAction<AddressBookMode | null>) {
+      const mode = action.payload
+      state.activeAddressList = mode
+      state.senderListPanelOpen = mode === 'sender'
+      state.recipientListPanelOpen =
+        mode === 'recipient' || mode === 'recipients'
     },
 
-    closeRecipientListPanel(state) {
-      state.recipientListPanelOpen = false
-    },
-
-    toggleSenderListPanel(state) {
-      state.senderListPanelOpen = !state.senderListPanelOpen
-    },
-
-    closeSenderListPanel(state) {
+    closeAddressList(state) {
+      state.activeAddressList = null
       state.senderListPanelOpen = false
+      state.recipientListPanelOpen = false
     },
 
     setSenderViewEditMode(state, action: PayloadAction<boolean>) {
@@ -85,10 +86,8 @@ export const {
   toggleRecipientSelection,
   setRecipientsPendingIds,
   clearRecipientsPending,
-  toggleRecipientListPanel,
-  closeRecipientListPanel,
-  toggleSenderListPanel,
-  closeSenderListPanel,
+  setActiveAddressList,
+  closeAddressList,
   setSenderViewEditMode,
   setRecipientViewEditMode,
   setAddressFormView,

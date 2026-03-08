@@ -19,10 +19,11 @@ import {
   updateSenderField,
 } from '../../infrastructure/state'
 import {
+  selectActiveAddressList,
   selectSenderListPanelOpen,
   selectSenderSelectedId,
 } from '@envelope/infrastructure/selectors'
-import { closeSenderListPanel as closeSenderListPanelAction } from '@envelope/infrastructure/state'
+import { closeAddressList } from '@envelope/infrastructure/state'
 
 export const useSenderFacade = () => {
   const dispatch = useAppDispatch()
@@ -34,6 +35,7 @@ export const useSenderFacade = () => {
   const isComplete = useAppSelector(selectIsSenderComplete)
   const isEnabled = useAppSelector(selectIsSenderEnabled)
   const senderView = useAppSelector(selectSenderView)
+  const activeAddressList = useAppSelector(selectActiveAddressList)
   const listPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const selectedId = useAppSelector(selectSenderSelectedId)
 
@@ -58,9 +60,10 @@ export const useSenderFacade = () => {
   const toggleEnabled = useCallback(
     (enabled: boolean) => {
       dispatch(setEnabled(enabled))
-      if (!enabled) dispatch(closeSenderListPanelAction())
+      // Закрываем только список отправителя, список получателей не трогаем
+      if (!enabled && activeAddressList === 'sender') dispatch(closeAddressList())
     },
-    [dispatch],
+    [dispatch, activeAddressList],
   )
 
   const clear = useCallback(() => dispatch(clearSender()), [dispatch])

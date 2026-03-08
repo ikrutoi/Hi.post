@@ -9,14 +9,13 @@ import {
   selectRecipientState,
   selectRecipientView,
 } from '../../recipient/infrastructure/selectors'
-import {
-  selectRecipientsDisplayList,
-} from '../../recipient/infrastructure/selectors'
+import { selectRecipientsDisplayList } from '../../recipient/infrastructure/selectors'
 import {
   selectIsEnvelopeReady,
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
+  selectActiveAddressList,
   selectRecipientMode,
   selectRecipientsList,
   selectRecipientTemplateId,
@@ -43,10 +42,8 @@ import {
   toggleRecipientSelection,
   setRecipientsPendingIds,
   clearRecipientsPending,
-  toggleRecipientListPanel,
-  closeRecipientListPanel as closeRecipientListPanelAction,
-  toggleSenderListPanel,
-  closeSenderListPanel as closeSenderListPanelAction,
+  setActiveAddressList,
+  closeAddressList,
   setAddressFormView,
 } from '../../infrastructure/state/envelopeSelectionSlice'
 import { setSenderViewId } from '../../sender/infrastructure/state'
@@ -74,6 +71,7 @@ export const useEnvelopeFacade = () => {
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
+  const activeAddressList = useAppSelector(selectActiveAddressList)
   const recipientMode = useAppSelector(selectRecipientMode)
   const listSelectedIds = useAppSelector(selectRecipientListPendingIds)
   const senderSelectedId = useAppSelector(selectSenderSelectedId)
@@ -146,11 +144,18 @@ export const useEnvelopeFacade = () => {
   }
 
   const toggleRecipientListPanelOpen = () => {
-    dispatch(toggleRecipientListPanel())
+    const listOpen =
+      activeAddressList === 'recipient' || activeAddressList === 'recipients'
+    const next = listOpen
+      ? null
+      : recipientMode === 'recipients'
+        ? 'recipients'
+        : 'recipient'
+    dispatch(setActiveAddressList(next))
   }
 
   const closeRecipientListPanel = () => {
-    dispatch(closeRecipientListPanelAction())
+    dispatch(closeAddressList())
   }
 
   const removeRecipientFromList = (id: string) => {
@@ -183,15 +188,16 @@ export const useEnvelopeFacade = () => {
     ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
       ([field, value]) => dispatch(updateSenderField({ field, value })),
     )
-    dispatch(closeSenderListPanelAction())
+    dispatch(closeAddressList())
   }
 
   const toggleSenderListPanelOpen = () => {
-    dispatch(toggleSenderListPanel())
+    const next = activeAddressList === 'sender' ? null : 'sender'
+    dispatch(setActiveAddressList(next))
   }
 
   const closeSenderListPanel = () => {
-    dispatch(closeSenderListPanelAction())
+    dispatch(closeAddressList())
   }
 
   const setAddressFormViewState = (
@@ -223,6 +229,7 @@ export const useEnvelopeFacade = () => {
     recipientsDisplayList,
     showAddressFormView,
     addressFormViewRole,
+    activeAddressList,
 
     handleFieldChange,
     toggleSenderEnabled,

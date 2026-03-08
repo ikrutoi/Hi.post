@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
+import type { RootState } from '@app/state'
 import type { AddressBookEntry } from '../../addressBook/domain/types'
 import {
   selectSenderState,
@@ -12,7 +13,10 @@ import {
 import type { EnvelopeSessionRecord } from '../../domain/types'
 import type { RecipientState } from '../../recipient/domain/types'
 import type { AddressFields } from '@shared/config/constants'
-import { getMatchingEntryId } from '../../domain/helpers'
+import {
+  getMatchingEntryId,
+  getAddressListToolbarFragment,
+} from '../../domain/helpers'
 
 const emptyAddressFields: AddressFields = {
   name: '',
@@ -25,6 +29,7 @@ const emptyAddressFields: AddressFields = {
 const selectEnvelopeSelectionState = (state: {
   envelopeSelection: {
     recipientsPendingIds: string[]
+    activeAddressList?: 'sender' | 'recipient' | 'recipients' | null
     recipientListPanelOpen: boolean
     senderListPanelOpen: boolean
     senderViewEditMode?: boolean
@@ -59,6 +64,11 @@ export const selectRecipientListPanelOpen = createSelector(
 export const selectSenderListPanelOpen = createSelector(
   [selectEnvelopeSelectionState],
   (s) => s.senderListPanelOpen,
+)
+
+export const selectActiveAddressList = createSelector(
+  [selectEnvelopeSelectionState],
+  (s) => s.activeAddressList ?? null,
 )
 
 export const selectRecipientMode = createSelector(
@@ -149,4 +159,26 @@ export const selectEnvelopeSessionRecord = createSelector(
 export const selectIsEnvelopeReady = createSelector(
   [selectEnvelopeSessionRecord],
   (envelope) => envelope.isComplete,
+)
+
+export const selectRecipientsToolbarStateWithLiveAddressList = createSelector(
+  [
+    (s: RootState) => s.toolbar?.recipients ?? {},
+    (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
+    (s: RootState) => s.addressBook?.recipientEntries?.length ?? 0,
+  ],
+  (base, activeAddressList, recipientCount) => {
+    // Список открыт: либо уже 'recipients', либо переход с 'recipient' (без мигания иконки)
+    const listOpen =
+      activeAddressList === 'recipient' || activeAddressList === 'recipients'
+    const addressList = listOpen
+      ? {
+          state: 'active' as const,
+          options: {
+            badge: recipientCount > 0 ? recipientCount : null,
+          },
+        }
+      : getAddressListToolbarFragment(recipientCount)
+    return { ...base, addressList }
+  },
 )

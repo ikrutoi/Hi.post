@@ -1,14 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { AddressBookEntry } from '../../domain/types'
+import type { AddressBookEntry, AddressBookMode } from '../../domain/types'
 
 export interface AddressBookState {
   senderEntries: AddressBookEntry[]
   recipientEntries: AddressBookEntry[]
+  mode: AddressBookMode | null
 }
 
 const initialState: AddressBookState = {
   senderEntries: [],
   recipientEntries: [],
+  mode: null,
 }
 
 export const addressBookSlice = createSlice({
@@ -49,8 +51,14 @@ export const addressBookSlice = createSlice({
       if (role === 'sender') {
         state.senderEntries = state.senderEntries.filter((e) => e.id !== id)
       } else {
-        state.recipientEntries = state.recipientEntries.filter((e) => e.id !== id)
+        state.recipientEntries = state.recipientEntries.filter(
+          (e) => e.id !== id,
+        )
       }
+    },
+
+    setAddressBookMode(state, action: PayloadAction<AddressBookMode | null>) {
+      state.mode = action.payload
     },
   },
 })
@@ -59,5 +67,6 @@ export const {
   setAddressBookEntries,
   addAddressBookEntry,
   removeAddressBookEntry,
+  setAddressBookMode,
 } = addressBookSlice.actions
 export default addressBookSlice.reducer

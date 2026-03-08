@@ -13,7 +13,6 @@ export const MiniEnvelope: React.FC = () => {
   const { appliedRecipientAddress, cancelEnvelopeSelection, recipient } =
     useEnvelopeFacade()
   const { state: senderState, isEnabled } = useSenderFacade()
-  console.log('isEnabled', isEnabled)
   const count = recipient.applied.length
   const isSingle = count === 1
   const { steps, isMany } = getEnvelopeCircleSteps(count)

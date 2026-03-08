@@ -17,6 +17,8 @@ export interface BuildRecipientToolbarParams {
   isAddressFormOpen: boolean
   /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
   formIsEmpty: boolean
+  /** список адресов получателя открыт — иконка addressList в active */
+  recipientListPanelOpen?: boolean
 }
 
 export const buildRecipientToolbarState = ({
@@ -28,6 +30,7 @@ export const buildRecipientToolbarState = ({
   hasDraft,
   isAddressFormOpen,
   formIsEmpty,
+  recipientListPanelOpen = false,
 }: BuildRecipientToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
@@ -42,7 +45,9 @@ export const buildRecipientToolbarState = ({
           : { state: 'enabled', options: { badgeDot: !formIsEmpty } }
         break
       case 'addressList':
-        state.addressList = getAddressListToolbarFragment(addressListCount)
+        state.addressList = recipientListPanelOpen
+          ? { state: 'active' as const, options: { badge: addressListCount > 0 ? addressListCount : null } }
+          : getAddressListToolbarFragment(addressListCount)
         break
       case 'apply':
         state.apply = {

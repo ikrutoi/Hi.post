@@ -14,6 +14,8 @@ import {
 } from '@layout/application/hooks'
 import { useSizeFacade } from '@layout/application/facades'
 import { useRecordSizeCard } from '@shared/hooks'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import styles from './App.module.scss'
 
 const App = () => {
@@ -32,6 +34,7 @@ const App = () => {
     sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width / 6 : null
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
+  const { activeSection } = useSectionMenuFacade()
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
@@ -61,7 +64,9 @@ const App = () => {
                 <CardSectionEditor />
               </div>
             </div>
-            <div className={styles.appMainContentRight}></div>
+            <div className={styles.appMainContentRight}>
+              {activeSection === 'envelope' && <EnvelopeRightSlot />}
+            </div>
             {/* <aside
               className={styles.appMainAside}
               aria-label="Templates"

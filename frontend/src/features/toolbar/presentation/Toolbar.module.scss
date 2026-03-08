@@ -291,6 +291,10 @@
   .toolbarKey {
     background-color: #fff;
   }
+
+  .toolbarKeyActive {
+    color: $color-font-active;
+  }
 }
 
 .toolbarCardphoto,

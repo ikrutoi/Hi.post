@@ -73,7 +73,7 @@ $color-pie-date-alpha: rgba($color-pie-date, 0.4);
 
 $color-envelope-sender: #e8f5f0;
 $color-envelope-recipient: #f0e8f5;
-$color-envelope-recipient-light: lighten($color-envelope-recipient, 0.5%);
+$color-envelope-recipient-light: lighten($color-envelope-recipient, 1%);
 $color-envelope-sender-border: #c5e5db;
 $color-envelope-recipient-border: #e0d0eb;
 $color-envelope-sender-legend: #1a4d3a;
@@ -97,7 +97,7 @@ $shadow-app-substrate:
 $color-app-strip: #efeae7;
 $color-app-header: #efeae7;
 $color-app-inner: #f8f4f1;
-$color-app-inner-light: lighten($color-app-inner, 2.5%);
+$color-app-inner-light: lighten($color-app-inner, 3%);
 $color-app-sidebar-icon: #55524f;
 $color-app-sidebar-icon-active: #a16a45;
 $color-app-sidebar-icon-hover: #e3dedb;

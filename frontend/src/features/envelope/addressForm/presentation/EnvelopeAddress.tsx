@@ -10,6 +10,7 @@ import { useRecipientFacade } from '../../recipient/application/facades'
 import { useAppSelector, useAppDispatch } from '@app/hooks'
 import { selectSenderView } from '../../sender/infrastructure/selectors'
 import { selectRecipientView } from '../../recipient/infrastructure/selectors'
+import { selectRecipientsToolbarStateWithLiveAddressList } from '../../infrastructure/selectors'
 import { setSenderView } from '../../sender/infrastructure/state'
 import { setRecipientView } from '../../recipient/infrastructure/state'
 import styles from './EnvelopeAddress.module.scss'
@@ -67,6 +68,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const dispatch = useAppDispatch()
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
+  const recipientsToolbarStateWithLiveAddressList = useAppSelector(
+    selectRecipientsToolbarStateWithLiveAddressList,
+  )
 
   useEffect(() => {
     if (editingTemplateId == null) return
@@ -249,6 +253,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                       // : isSingleRecipientWithSavedTemplate
                       //   ? 'recipientView'
                       //   : ('recipient' as ToolbarSection)
+                    }
+                    stateOverride={
+                      recipientFacade.isEnabled
+                        ? recipientsToolbarStateWithLiveAddressList
+                        : undefined
                     }
                   />
                 </div>

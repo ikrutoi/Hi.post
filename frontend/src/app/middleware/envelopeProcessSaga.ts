@@ -23,13 +23,15 @@ import {
 import {
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
+  selectSenderListPanelOpen,
+  selectActiveAddressList,
   selectRecipientMode,
 } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
   setRecipientsPendingIds,
-  toggleRecipientListPanel,
-  closeRecipientListPanel,
+  setActiveAddressList,
+  closeAddressList,
   removeRecipientAt,
 } from '@envelope/infrastructure/state'
 import {
@@ -90,7 +92,6 @@ export function* processEnvelopeVisuals() {
     recipients.length > 0 &&
     (recipient.recipientsViewIdsFirstList?.length ?? 0) === 0
   ) {
-    // Инициализируем первый список id при наличии envelopeRecipients
     yield put(
       setRecipientsViewIds(
         recipients
@@ -99,9 +100,6 @@ export function* processEnvelopeVisuals() {
       ),
     )
   }
-  // Не перезаписываем recipientsViewIdsFirstList/SecondList из pendingIds:
-  // списки first/second обновляются только при Apply, иначе applied получает
-  // лишние id (на 1 больше), т.к. pendingIds может отличаться от отображаемого списка.
 
   const senderComplete: boolean = yield select(selectIsSenderComplete)
   const recipientComplete: boolean = yield select(selectIsRecipientComplete)
@@ -144,6 +142,11 @@ export function* processEnvelopeVisuals() {
   const hasSenderDraft = checkHasData(sender.viewDraft)
   const hasRecipientDraft = checkHasData(recipient.viewDraft)
 
+  const senderListPanelOpen: boolean = yield select(selectSenderListPanelOpen)
+  const recipientListPanelOpenForToolbar: boolean = yield select(
+    selectRecipientListPanelOpen,
+  )
+
   const senderToolbar = buildSenderToolbarState({
     isComplete: senderComplete,
     hasData: checkHasData(sender.viewDraft),
@@ -153,7 +156,20 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasSenderDraft,
     isAddressFormOpen: sender.currentView === 'addressFormSenderView',
     formIsEmpty: sender.formIsEmpty ?? true,
+    senderListPanelOpen,
   })
+
+  const activeAddressList: 'sender' | 'recipient' | 'recipients' | null =
+    yield select(selectActiveAddressList)
+  const recipientListAddressList =
+    activeAddressList === 'recipient' || activeAddressList === 'recipients'
+      ? {
+          state: 'active' as const,
+          options: {
+            badge: recipientList.length > 0 ? recipientList.length : null,
+          },
+        }
+      : getAddressListToolbarFragment(recipientList.length)
 
   const recipientToolbar = buildRecipientToolbarState({
     isComplete: recipientComplete,
@@ -164,23 +180,31 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasRecipientDraft,
     isAddressFormOpen: recipient.currentView === 'addressFormRecipientView',
     formIsEmpty: recipient.formIsEmpty ?? true,
+    recipientListPanelOpen: recipientListPanelOpenForToolbar,
   })
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
   yield put(
-    updateToolbarSection({ section: 'recipient', value: recipientToolbar }),
+    updateToolbarSection({
+      section: 'recipient',
+      value: { ...recipientToolbar, addressList: recipientListAddressList },
+    }),
+  )
+  yield put(
+    updateToolbarSection({
+      section: 'recipients',
+      value: { addressList: recipientListAddressList },
+    }),
   )
 
-  const recipientListPanelOpen: boolean = yield select(
-    selectRecipientListPanelOpen,
-  )
   const recipientMode: RecipientMode = yield select(selectRecipientMode)
-  const listApplyState =
-    !(recipientListPanelOpen && recipientMode === 'recipients')
-      ? 'disabled'
-      : recipient.currentRecipientsList === 'second'
-        ? 'active'
-        : 'enabled'
+  const listApplyState = !(
+    recipientListPanelOpenForToolbar && recipientMode === 'recipients'
+  )
+    ? 'disabled'
+    : recipient.currentRecipientsList === 'second'
+      ? 'active'
+      : 'enabled'
 
   yield put(
     updateToolbarSection({
@@ -252,10 +276,8 @@ export function* processEnvelopeVisuals() {
   const isMultiMode = recipient.mode === 'recipients'
   const isRecipientFormOpen =
     recipient.currentView === 'addressFormRecipientView'
-  const canApplyRecipients =
-    isMultiMode && recipientsPendingIds.length >= 1
-  const isRecipientsEmptyForm =
-    isRecipientFormOpen && !recipientComplete
+  const canApplyRecipients = isMultiMode && recipientsPendingIds.length >= 1
+  const isRecipientsEmptyForm = isRecipientFormOpen && !recipientComplete
   const recipientsViewIds =
     recipient.currentRecipientsList === 'second'
       ? (recipient.recipientsViewIdsSecondList ?? [])
@@ -400,8 +422,8 @@ export function* envelopeProcessSaga() {
       setSenderView.type,
       setRecipientView.type,
       resetRecipientForm.type,
-      toggleRecipientListPanel.type,
-      closeRecipientListPanel.type,
+      setActiveAddressList.type,
+      closeAddressList.type,
       removeRecipientAt.type,
       removeAppliedAt.type,
       setRecipientsViewIds.type,
