@@ -3,16 +3,10 @@ import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { Label } from './Label/Label'
 import { useEnvelopeAddress } from '../application/hooks'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { selectRecipientEnabled } from '@envelope/recipient/infrastructure/selectors'
-import { setAddressFormView } from '@envelope/infrastructure/state'
-import { setSenderView } from '@envelope/sender/infrastructure/state'
-import { setRecipientView } from '@envelope/recipient/infrastructure/state'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { useEnvelopeFacade } from '../../application/facades/useEnvelopeFacade'
 import type { AddressFields } from '@shared/config/constants'
 import type { Lang } from '@i18n/types'
 import styles from './AddressFormView.module.scss'
-import addressViewStyles from './AddressView.module.scss'
 import { IconX } from '@/shared/ui/icons'
 
 export type AddressFormViewProps = {
@@ -30,26 +24,18 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   onFieldChange,
   lang,
 }) => {
-  const dispatch = useAppDispatch()
+  const {
+    closeAddressForm,
+    syncAddressFormToolbar,
+    showAddressFormCloseButton,
+  } = useEnvelopeFacade()
   const { labelLayout } = useEnvelopeAddress(role, lang)
   const inputsRef = useRef<(HTMLInputElement | null)[]>([])
 
-  const senderEntriesCount = useAppSelector(
-    (state: { addressBook?: { senderEntries?: unknown[] } }) =>
-      state.addressBook?.senderEntries?.length ?? 0,
-  )
-  const recipientEntriesCount = useAppSelector(
-    (state: { addressBook?: { recipientEntries?: unknown[] } }) =>
-      state.addressBook?.recipientEntries?.length ?? 0,
-  )
-  const showCloseBtn =
-    role === 'sender' ? senderEntriesCount > 0 : recipientEntriesCount > 0
-
-  const recipientEnabled = useAppSelector(selectRecipientEnabled)
+  const showCloseBtn = showAddressFormCloseButton(role)
 
   const isAddressComplete = useMemo(
-    () =>
-      Object.values(address).every((v) => (v ?? '').trim() !== ''),
+    () => Object.values(address).every((v) => (v ?? '').trim() !== ''),
     [address],
   )
 
@@ -57,41 +43,20 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     role === 'sender' ? 'addressFormSenderView' : 'addressFormRecipientView'
 
   useEffect(() => {
-    const applyOrListAddState = isAddressComplete ? 'enabled' : 'disabled'
-    dispatch(
-      updateToolbarIcon({
-        section: toolbarSection,
-        key: 'listAdd',
-        value: { state: applyOrListAddState },
-      }),
-    )
-    dispatch(
-      updateToolbarIcon({
-        section: toolbarSection,
-        key: 'apply',
-        value: { state: applyOrListAddState, options: {} },
-      }),
-    )
-  }, [dispatch, toolbarSection, isAddressComplete])
+    syncAddressFormToolbar(toolbarSection, isAddressComplete)
+  }, [syncAddressFormToolbar, toolbarSection, isAddressComplete])
 
-  const closeAddressForm = useCallback(() => {
-    dispatch(setAddressFormView({ show: false, role: null }))
-    if (role === 'sender') {
-      dispatch(setSenderView('senderView'))
-    } else {
-      dispatch(
-        setRecipientView(recipientEnabled ? 'recipientsView' : 'recipientView'),
-      )
-    }
-  }, [dispatch, role, recipientEnabled])
+  const handleCloseAddressForm = useCallback(() => {
+    closeAddressForm(role)
+  }, [closeAddressForm, role])
 
   const handleCloseClick = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      closeAddressForm()
+      handleCloseAddressForm()
     },
-    [closeAddressForm],
+    [handleCloseAddressForm],
   )
 
   // const handleCloseKeyDown = useCallback(

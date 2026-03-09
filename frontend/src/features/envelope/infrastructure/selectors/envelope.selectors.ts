@@ -51,6 +51,26 @@ const selectSenderEntriesState = (state: {
   addressBook?: { senderEntries: AddressBookEntry[] }
 }) => state.addressBook?.senderEntries ?? []
 
+export const selectSenderEntriesCount = createSelector(
+  [selectSenderEntriesState],
+  (entries) => entries.length,
+)
+
+export const selectRecipientEntriesCount = createSelector(
+  [selectRecipientEntriesState],
+  (entries) => entries.length,
+)
+
+export const selectShowAddressFormCloseButton = createSelector(
+  [
+    selectSenderEntriesCount,
+    selectRecipientEntriesCount,
+  ],
+  (senderCount, recipientCount) =>
+    (role: 'sender' | 'recipient') =>
+      role === 'sender' ? senderCount > 0 : recipientCount > 0,
+)
+
 export const selectRecipientsPendingIds = createSelector(
   [selectEnvelopeSelectionState],
   (s) => s.recipientsPendingIds,

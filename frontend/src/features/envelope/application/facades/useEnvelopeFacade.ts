@@ -25,6 +25,7 @@ import {
   selectSenderSelectedId,
   selectShowAddressFormView,
   selectAddressFormViewRole,
+  selectShowAddressFormCloseButton,
 } from '../../infrastructure/selectors'
 import {
   updateRecipientField,
@@ -57,6 +58,8 @@ import {
   type AddressField,
   type EnvelopeRole,
 } from '@shared/config/constants'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { selectRecipientEnabled } from '../../recipient/infrastructure/selectors'
 
 export const useEnvelopeFacade = () => {
   const dispatch = useAppDispatch()
@@ -86,6 +89,10 @@ export const useEnvelopeFacade = () => {
   const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
   const showAddressFormView = useAppSelector(selectShowAddressFormView)
   const addressFormViewRole = useAppSelector(selectAddressFormViewRole)
+  const showAddressFormCloseButton = useAppSelector(
+    selectShowAddressFormCloseButton,
+  )
+  const recipientEnabled = useAppSelector(selectRecipientEnabled)
 
   const handleFieldChange = (
     role: EnvelopeRole,
@@ -207,6 +214,38 @@ export const useEnvelopeFacade = () => {
     dispatch(setAddressFormView({ show, role }))
   }
 
+  const closeAddressForm = (role: 'sender' | 'recipient') => {
+    dispatch(setAddressFormView({ show: false, role: null }))
+    if (role === 'sender') {
+      dispatch(setSenderView('senderView'))
+    } else {
+      dispatch(
+        setRecipientView(recipientEnabled ? 'recipientsView' : 'recipientView'),
+      )
+    }
+  }
+
+  const syncAddressFormToolbar = (
+    section: 'addressFormSenderView' | 'addressFormRecipientView',
+    isAddressComplete: boolean,
+  ) => {
+    const state = isAddressComplete ? 'enabled' : 'disabled'
+    dispatch(
+      updateToolbarIcon({
+        section,
+        key: 'listAdd',
+        value: { state },
+      }),
+    )
+    dispatch(
+      updateToolbarIcon({
+        section,
+        key: 'apply',
+        value: { state, options: {} },
+      }),
+    )
+  }
+
   return {
     sender,
     recipient,
@@ -248,5 +287,8 @@ export const useEnvelopeFacade = () => {
     toggleSenderListPanelOpen,
     closeSenderListPanel,
     setAddressFormViewState,
+    closeAddressForm,
+    syncAddressFormToolbar,
+    showAddressFormCloseButton,
   }
 }
