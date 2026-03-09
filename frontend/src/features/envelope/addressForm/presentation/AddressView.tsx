@@ -49,6 +49,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const prevActiveRow = useRef<EditableRowKey | null>(null)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   const nameRef = useRef<HTMLInputElement | null>(null)
   const streetRef = useRef<HTMLInputElement | null>(null)
@@ -74,6 +75,18 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       setActiveRow('name')
     }
   }, [isEditMode, activeRow])
+
+  useEffect(() => {
+    if (!isEditMode) return
+    const section = role === 'sender' ? 'senderView' : 'recipientView'
+    const handleMouseDown = (e: MouseEvent) => {
+      const target = e.target as Node
+      if (containerRef.current?.contains(target)) return
+      dispatch(toolbarAction({ section, key: 'edit' } as any))
+    }
+    document.addEventListener('mousedown', handleMouseDown, true)
+    return () => document.removeEventListener('mousedown', handleMouseDown, true)
+  }, [isEditMode, role, dispatch])
 
   useEffect(() => {
     if (!isEditMode) return
@@ -156,7 +169,9 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
     const next = e.relatedTarget as HTMLElement | null
-    if (next && next.tagName === 'INPUT') return
+    // Don't toggle on unmount or when focus is lost to document (e.g. Strict Mode remount)
+    if (!next) return
+    if (next.tagName === 'INPUT') return
 
     const section =
       role === 'sender' ? 'senderView' : 'recipientView'
@@ -302,7 +317,10 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   )
 
   return (
-    <div className={styles.savedAddressViewContainer}>
+    <div
+      ref={containerRef}
+      className={styles.savedAddressViewContainer}
+    >
       <div className={styles.savedAddressViewToolbar}>
         <Toolbar
           section={
