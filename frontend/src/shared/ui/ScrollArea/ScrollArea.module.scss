@@ -1,0 +1,57 @@
+@use '@styles/config/colors' as *;
+
+.scrollArea {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.scrollAreaContent {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+  box-sizing: border-box;
+
+  // Hide native scrollbars
+  scrollbar-width: none; // Firefox
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+.scrollbarTrack {
+  position: absolute;
+  top: 0;
+  right: -1px;
+  bottom: 0;
+  width: 8px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.scrollbarThumb {
+  position: absolute;
+  top: 0;
+  width: 6px;
+  border-radius: 999px;
+  background-color: $color-scroll-thumb;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: $color-scroll-thumb-hover;
+  }
+}
+
+.scrollbarHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+

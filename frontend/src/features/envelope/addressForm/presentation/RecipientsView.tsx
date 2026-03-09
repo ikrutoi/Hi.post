@@ -3,6 +3,7 @@ import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { AddressEntry } from '../../addressBook/presentation/AddressEntry'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import styles from './AddressView.module.scss'
+import { ScrollArea } from '@/shared/ui/ScrollArea/ScrollArea'
 
 export type RecipientsViewProps = {
   entries: AddressBookEntry[]
@@ -20,18 +21,20 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
           <Toolbar section="recipientsView" />
         </div>
       )}
-      <div className={styles.recipientsViewList}>
-        {entries.map((entry) => (
-          <AddressEntry
-            key={entry.id}
-            entry={entry}
-            onSelect={() => {}}
-            onDelete={onRemove}
-            deleteAction="removeFromList"
-            isSelected={false}
-          />
-        ))}
-      </div>
+      <ScrollArea>
+        <div className={styles.recipientsViewList}>
+          {entries.map((entry) => (
+            <AddressEntry
+              key={entry.id}
+              entry={entry}
+              onSelect={() => {}}
+              onDelete={onRemove}
+              deleteAction="removeFromList"
+              isSelected={false}
+            />
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   )
 }
