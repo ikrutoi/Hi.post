@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { IconX } from '@shared/ui/icons'
+import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { AddressEntry } from './AddressEntry'
 import type { AddressBookEntry } from '../domain/types'
 import { useRecipientListPanelFacade } from '../../application/facades'
@@ -28,6 +29,12 @@ export const RecipientListPanel: React.FC<Props> = ({
   } = useRecipientListPanelFacade()
 
   const listRef = useRef<HTMLDivElement>(null)
+  const scrollbarTrackRef = useRef<HTMLDivElement>(null)
+  const [scrollbarTrackReady, setScrollbarTrackReady] = useState(false)
+  const setScrollbarTrackRef = useCallback((el: HTMLDivElement | null) => {
+    ;(scrollbarTrackRef as React.MutableRefObject<HTMLDivElement | null>).current = el
+    if (el) setScrollbarTrackReady(true)
+  }, [])
   const entriesRef = useRef<typeof entries | null>(null)
   const [focusedIndex, setFocusedIndex] = useState(0)
 
@@ -109,33 +116,43 @@ export const RecipientListPanel: React.FC<Props> = ({
         </button>
       </div>
       <div
-        ref={listRef}
-        className={styles.list}
-        tabIndex={0}
-        role="listbox"
-        aria-label="Address list"
-        onKeyDown={handleKeyDown}
+        ref={setScrollbarTrackRef}
+        className={styles.panelScrollTrack}
+        aria-hidden
+      />
+      <ScrollArea
+        className={styles.listScrollArea}
+        scrollbarPortalTarget={scrollbarTrackReady ? scrollbarTrackRef : undefined}
       >
-        {entries.length === 0 ? (
-          <p className={styles.empty}>No saved addresses</p>
-        ) : (
-          entries.map((entry, index) => (
-            <div key={entry.id} data-index={index} role="option">
-              <AddressEntry
-                entry={entry}
-                onSelect={onSelect}
-                onDelete={onDeleteEntry}
-                isStarred={starredRecipientIds.has(entry.id)}
-                isSelected={selectedIds.includes(entry.id)}
-                isFocused={focusedIndex === index}
-                onToggleStar={() =>
-                  handleToggleStar(entry.id, starredRecipientIds.has(entry.id))
-                }
-              />
-            </div>
-          ))
-        )}
-      </div>
+        <div
+          ref={listRef}
+          className={styles.list}
+          tabIndex={0}
+          role="listbox"
+          aria-label="Address list"
+          onKeyDown={handleKeyDown}
+        >
+          {entries.length === 0 ? (
+            <p className={styles.empty}>No saved addresses</p>
+          ) : (
+            entries.map((entry, index) => (
+              <div key={entry.id} data-index={index} role="option">
+                <AddressEntry
+                  entry={entry}
+                  onSelect={onSelect}
+                  onDelete={onDeleteEntry}
+                  isStarred={starredRecipientIds.has(entry.id)}
+                  isSelected={selectedIds.includes(entry.id)}
+                  isFocused={focusedIndex === index}
+                  onToggleStar={() =>
+                    handleToggleStar(entry.id, starredRecipientIds.has(entry.id))
+                  }
+                />
+              </div>
+            ))
+          )}
+        </div>
+      </ScrollArea>
     </div>
   )
 }
