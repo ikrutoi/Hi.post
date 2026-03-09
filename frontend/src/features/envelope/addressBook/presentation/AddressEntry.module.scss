@@ -26,7 +26,6 @@
     padding-left: calc(2rem - 1px);
   }
 
-  /* Без звёздочки (форма RECIPIENTS) — меньше отступ слева */
   &[data-no-star='true'] {
     padding-left: 0.5rem;
   }
@@ -36,7 +35,6 @@
   }
 }
 
-/* Мятная стилистика для списка отправителей */
 .rootSender {
   background-color: $color-envelope-sender-input;
   border-color: $color-envelope-sender-border;
@@ -159,7 +157,7 @@
   }
 
   svg {
-    width: 0.85rem;
-    height: 0.85rem;
+    width: 0.75rem;
+    height: 0.75rem;
   }
 }

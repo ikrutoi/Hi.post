@@ -26,9 +26,6 @@ import {
   selectSenderListPanelOpen,
   selectActiveAddressList,
   selectRecipientMode,
-  selectAddressFormViewRole,
-  selectSenderViewEditMode,
-  selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
@@ -37,8 +34,6 @@ import {
   closeAddressList,
   removeRecipientAt,
   setAddressFormView,
-  setSenderViewEditMode,
-  setRecipientViewEditMode,
 } from '@envelope/infrastructure/state'
 import {
   setSenderViewId,
@@ -241,16 +236,6 @@ export function* processEnvelopeVisuals() {
     (recipient.applied?.length ?? 0) === 1 &&
     recipient.applied[0] === recipient.recipientViewId
 
-  const addressFormViewRole: 'sender' | 'recipient' | null = yield select(
-    selectAddressFormViewRole,
-  )
-  const isAddressFormOpen =
-    addressFormViewRole === 'sender' || addressFormViewRole === 'recipient'
-  const senderViewEditMode: boolean = yield select(selectSenderViewEditMode)
-  const recipientViewEditMode: boolean = yield select(
-    selectRecipientViewEditMode,
-  )
-
   let senderApplyState = senderAlreadyApplied
     ? 'selected'
     : sender.currentView === 'senderView' && sender.senderViewId != null
@@ -271,14 +256,12 @@ export function* processEnvelopeVisuals() {
           ? 'enabled'
           : 'disabled'
 
-  if (isAddressFormOpen) {
-    if (addressFormViewRole === 'sender')
-      senderApplyState = senderViewEditMode ? 'disabled' : 'enabled'
-    if (addressFormViewRole === 'recipient')
-      recipientApplyState = recipientViewEditMode ? 'disabled' : 'enabled'
-  }
-  if (senderViewEditMode) senderApplyState = 'disabled'
-  if (recipientViewEditMode) recipientApplyState = 'disabled'
+  if (sender.currentView === 'addressFormSenderView') senderApplyState = 'disabled'
+  if (
+    recipient.currentView === 'addressFormRecipientView' &&
+    recipient.mode === 'recipient'
+  )
+    recipientApplyState = 'disabled'
 
   yield put(
     updateToolbarIcon({
@@ -319,8 +302,11 @@ export function* processEnvelopeVisuals() {
       : recipientsViewIdsEqual
         ? 'selected'
         : 'enabled'
-  if (isAddressFormOpen && addressFormViewRole === 'recipient') {
-    recipientsApplyState = recipientViewEditMode ? 'disabled' : 'enabled'
+  if (
+    recipient.currentView === 'addressFormRecipientView' &&
+    recipient.mode === 'recipients'
+  ) {
+    recipientsApplyState = 'disabled'
   }
   if (recipientsViewIds.length === 0) {
     recipientsApplyState = 'disabled'
@@ -459,8 +445,6 @@ export function* envelopeProcessSaga() {
       removeAppliedAt.type,
       setRecipientsViewIds.type,
       setAddressFormView.type,
-      setSenderViewEditMode.type,
-      setRecipientViewEditMode.type,
     ],
     processEnvelopeVisuals,
   )

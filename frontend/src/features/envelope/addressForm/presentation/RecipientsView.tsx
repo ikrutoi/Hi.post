@@ -8,11 +8,14 @@ import { ScrollArea } from '@/shared/ui/ScrollArea/ScrollArea'
 export type RecipientsViewProps = {
   entries: AddressBookEntry[]
   onRemove: (id: string) => void
+  /** Optional ref to render the scrollbar track into (e.g. fieldset) so it spans full height */
+  scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
 }
 
 export const RecipientsView: React.FC<RecipientsViewProps> = ({
   entries,
   onRemove,
+  scrollbarPortalTarget,
 }) => {
   return (
     <div className={styles.savedAddressViewContainer}>
@@ -21,7 +24,7 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
           <Toolbar section="recipientsView" />
         </div>
       )}
-      <ScrollArea>
+      <ScrollArea scrollbarPortalTarget={scrollbarPortalTarget}>
         <div className={styles.recipientsViewList}>
           {entries.map((entry) => (
             <AddressEntry

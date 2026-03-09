@@ -1,4 +1,11 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react'
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useLayoutEffect,
+} from 'react'
+import { createPortal } from 'react-dom'
 import clsx from 'clsx'
 import styles from './ScrollArea.module.scss'
 
@@ -6,12 +13,15 @@ type ScrollAreaProps = {
   children: React.ReactNode
   className?: string
   contentClassName?: string
+  /** When set, the scrollbar track is rendered into this element (e.g. fieldset) so it spans its full height */
+  scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
 }
 
 export const ScrollArea: React.FC<ScrollAreaProps> = ({
   children,
   className,
   contentClassName,
+  scrollbarPortalTarget,
 }) => {
   const contentRef = useRef<HTMLDivElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
@@ -113,28 +123,38 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
 
   const showThumb = thumbHeight > 0
 
-  return (
-    <div className={clsx(styles.scrollArea, className)}>
+  const trackElement = (
+    <div ref={trackRef} className={styles.scrollbarTrack}>
       <div
-        ref={contentRef}
-        className={clsx(styles.scrollAreaContent, contentClassName)}
-      >
-        {children}
-      </div>
-      <div ref={trackRef} className={styles.scrollbarTrack}>
-        <div
-          className={clsx(
-            styles.scrollbarThumb,
-            !showThumb && styles.scrollbarHidden,
-          )}
-          style={{
-            height: thumbHeight,
-            top: thumbTop,
-          }}
-          onMouseDown={handleThumbMouseDown}
-        />
-      </div>
+        className={clsx(
+          styles.scrollbarThumb,
+          !showThumb && styles.scrollbarHidden,
+        )}
+        style={{
+          height: thumbHeight,
+          top: thumbTop,
+        }}
+        onMouseDown={handleThumbMouseDown}
+      />
     </div>
+  )
+
+  const usePortal = scrollbarPortalTarget?.current != null
+
+  return (
+    <>
+      <div className={clsx(styles.scrollArea, className)}>
+        <div
+          ref={contentRef}
+          className={clsx(styles.scrollAreaContent, contentClassName)}
+        >
+          {children}
+        </div>
+        {!usePortal && trackElement}
+      </div>
+      {usePortal &&
+        createPortal(trackElement, scrollbarPortalTarget.current)}
+    </>
   )
 }
 

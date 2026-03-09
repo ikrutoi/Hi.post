@@ -4,11 +4,12 @@
   position: relative;
   width: 100%;
   max-height: 90%;
-  margin-top: auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
   box-sizing: border-box;
+  /* Used by RecipientsView to size viewport to whole rows (1.5rem entry + 0.25rem margin) */
+  --recipient-row-height: 1.75rem;
 }
 
 .savedAddressViewToolbar {
@@ -174,6 +175,13 @@
   }
 }
 
+.recipientsViewListWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100%;
+}
+
 .recipientsViewList {
   display: flex;
   flex-direction: column;
@@ -181,7 +189,7 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 0.55rem;
+  padding-right: calc(0.25rem + 8px);
   box-sizing: border-box;
   // border: 1px solid red;
 

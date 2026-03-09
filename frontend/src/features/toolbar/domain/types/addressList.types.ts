@@ -19,10 +19,12 @@ export interface AddressListToolbarState extends Record<string, any> {
 export const ADDRESS_LIST_SENDER_TOOLBAR: ToolbarConfig = [
   {
     group: 'address',
-    icons: [
-      { key: 'sortDown', state: 'enabled' },
-      { key: 'listDelete', state: 'enabled' },
-    ],
+    icons: [{ key: 'sortDown', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'listDelete', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -31,10 +33,14 @@ export const ADDRESS_LIST_RECIPIENT_TOOLBAR: ToolbarConfig = [
   {
     group: 'address',
     icons: [
-      { key: 'listApply', state: 'disabled' },
       { key: 'sortDown', state: 'enabled' },
-      { key: 'listDelete', state: 'enabled' },
+      { key: 'listApply', state: 'disabled' },
     ],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'listDelete', state: 'enabled' }],
     status: 'enabled',
   },
 ]

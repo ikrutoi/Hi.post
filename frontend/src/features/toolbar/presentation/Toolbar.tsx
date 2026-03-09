@@ -103,7 +103,6 @@ export const Toolbar = ({
     const mergedOptions = { ...iconOptions, ...options }
 
     const buttonState = typeof rawData === 'string' ? rawData : rawData?.state
-    // Приоритет у состояния из секции (state/store), иначе — из конфига группы
     let buttonStatus = buttonState ?? currentIconState
 
     const isCardApply =
@@ -157,7 +156,7 @@ export const Toolbar = ({
         {Boolean(badgeDot) && (
           <span
             className={styles.toolbarBadgeDot}
-            title="Вернуть к несохранённому адресу"
+            title="Return to unsaved address"
           />
         )}
       </button>

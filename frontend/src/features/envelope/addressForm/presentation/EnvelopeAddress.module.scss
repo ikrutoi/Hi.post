@@ -69,6 +69,8 @@
 
 .recipientFieldsetMulti {
   padding-right: 0;
+  padding-bottom: 0.35rem;
+  // overflow: hidden;
 }
 
 .addressLegendReplicaContainer {
@@ -291,4 +293,15 @@
 .addressFormPlaceholderRecipient.addressFormPlaceholderBg:hover
   .addressFormPlaceholderIconBg {
   opacity: 0.17;
+}
+
+.recipientFieldsetContainerScroll {
+  position: absolute;
+  top: calc(0.5rem + 3px);
+  right: 2px;
+  width: 0.75rem;
+  height: calc(100% - 0.5rem - 4px);
+  border-radius: 0 0.75rem 0.75rem 0;
+  overflow: hidden;
+  z-index: 1;
 }

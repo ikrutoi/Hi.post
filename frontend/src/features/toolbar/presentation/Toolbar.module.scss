@@ -295,14 +295,20 @@
   .toolbarKeyActive {
     color: $color-font-active;
   }
+
+  .toolbarKeyApplyEnabled {
+    background-color: $color-section-light-completed;
+  }
+
+  .toolbarKeyApplyEnabled:hover {
+    background-color: $color-section-dark-completed;
+  }
 }
 
 .toolbarCardphoto,
 .toolbarCardtext,
 .toolbarSender,
 .toolbarRecipient,
-.toolbarAddressListSender,
-.toolbarAddressListRecipient,
 .toolbarRecipients,
 .toolbarRecipientFavorite,
 .toolbarSenderFavorite,
@@ -318,7 +324,9 @@
 .toolbarRecipientView,
 .toolbarAddressFormSenderView,
 .toolbarAddressFormRecipientView,
-.toolbarRecipientsView {
+.toolbarRecipientsView,
+.toolbarAddressListSender,
+.toolbarAddressListRecipient {
   .toolbarKey {
     width: 1.5rem;
     height: 1.5rem;
@@ -331,4 +339,34 @@
   .toolbarKeyApplyEnabled:hover {
     background-color: $color-enabled;
   }
+}
+
+.toolbarAddressListRecipient,
+.toolbarAddressListSender {
+  width: 100%;
+  justify-content: space-between;
+  margin-left: 1rem;
+  margin-right: 2rem;
+}
+
+.toolbarSenderView,
+.toolbarRecipientView,
+.toolbarRecipientsView {
+  width: 100%;
+  justify-content: space-between;
+  margin-left: 1rem;
+}
+
+.toolbarSenderView,
+.toolbarRecipientView {
+  margin-right: 1rem;
+}
+
+.toolbarRecipientsView {
+  margin-right: 1.75rem;
+}
+
+.toolbarAddressListRecipient .toolbarGroupAddress,
+.toolbarAddressListRecipient .toolbarGroupActions {
+  // display: flex;
 }

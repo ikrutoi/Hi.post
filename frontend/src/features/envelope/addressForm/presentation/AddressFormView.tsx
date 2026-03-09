@@ -59,17 +59,6 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     [handleCloseAddressForm],
   )
 
-  // const handleCloseKeyDown = useCallback(
-  //   (e: React.KeyboardEvent) => {
-  //     if (e.key === 'Enter' || e.key === ' ') {
-  //       e.preventDefault()
-  //       e.stopPropagation()
-  //       closeAddressForm()
-  //     }
-  //   },
-  //   [closeAddressForm],
-  // )
-
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number,

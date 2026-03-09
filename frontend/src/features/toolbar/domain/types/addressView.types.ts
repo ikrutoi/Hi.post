@@ -22,10 +22,14 @@ export interface AddressViewToolbarState extends Record<string, any> {
 
 export const RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
   {
+    group: 'actions',
+    icons: [{ key: 'delete', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
     group: 'recipientView',
     icons: [
       { key: 'edit', state: 'enabled' },
-      { key: 'delete', state: 'enabled' },
       { key: 'favorite', state: 'enabled' },
     ],
     status: 'enabled',
@@ -40,10 +44,12 @@ export const initialRecipientViewToolbarState: AddressViewToolbarState = {
 export const RECIPIENTS_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipientsView',
-    icons: [
-      { key: 'sortDown', state: 'enabled' },
-      { key: 'listClose', state: 'enabled' },
-    ],
+    icons: [{ key: 'sortDown', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'listDelete', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -57,10 +63,14 @@ export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
     icons: [
-      { key: 'edit', state: 'enabled' },
-      { key: 'delete', state: 'enabled' },
       { key: 'favorite', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
     ],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'delete', state: 'enabled' }],
     status: 'enabled',
   },
 ]

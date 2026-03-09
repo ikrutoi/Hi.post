@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { SenderView, RecipientView } from './AddressView'
@@ -70,6 +70,18 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientView = useAppSelector(selectRecipientView)
   const recipientsToolbarStateWithLiveAddressList = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
+  )
+
+  const recipientFieldsetContainerScrollRef =
+    useRef<HTMLDivElement | null>(null)
+  const [recipientScrollContainerReady, setRecipientScrollContainerReady] =
+    useState(false)
+  const setRecipientFieldsetContainerScrollRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      recipientFieldsetContainerScrollRef.current = el
+      if (el) setRecipientScrollContainerReady(true)
+    },
+    [],
   )
 
   useEffect(() => {
@@ -203,6 +215,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
       {role === 'recipient' && (
         <div className={styles.addressFormRecipientBody}>
+          {recipientFacade.isEnabled && (
+            <div
+              ref={setRecipientFieldsetContainerScrollRef}
+              className={styles.recipientFieldsetContainerScroll}
+            />
+          )}
           <fieldset
             className={clsx(
               styles.addressFieldset,
@@ -282,6 +300,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               <RecipientsView
                 entries={recipientFacade.recipientsDisplayList}
                 onRemove={recipientFacade.removeFromList}
+                scrollbarPortalTarget={
+                  recipientScrollContainerReady
+                    ? recipientFieldsetContainerScrollRef
+                    : undefined
+                }
               />
             ) : showSingleRecipientView ? (
               <RecipientView
