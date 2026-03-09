@@ -1,7 +1,7 @@
 import type { AromaItem } from '../types/aroma.types'
 
 export const AROMA_LIST: AromaItem[] = [
-  { make: '0', name: 'No aroma', index: '00' },
+  { make: '0', name: 'No Aroma', index: '00' },
   { make: 'Nasomatto', name: 'Black Afgano', index: '10' },
   { make: 'Giorgio Armani', name: 'Acqua Di Gio Profondo', index: '11' },
   { make: 'Bvlgari', name: 'Man Terrae Essence', index: '12' },
