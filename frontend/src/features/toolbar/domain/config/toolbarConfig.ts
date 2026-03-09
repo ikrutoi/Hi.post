@@ -160,8 +160,9 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   addressListSender: {
     keys: ADDRESS_LIST_KEYS,
     initialState: initialAddressListSenderToolbarState,
-    onAction: (key, section) =>
-      console.log('AddressListSender action', key, section),
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
     group: 'address',
     getBadges: (state: ToolbarState['addressListSender']) => ({}),
     toolbar: ADDRESS_LIST_SENDER_TOOLBAR,
@@ -170,8 +171,9 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   addressListRecipient: {
     keys: ADDRESS_LIST_KEYS,
     initialState: initialAddressListRecipientToolbarState,
-    onAction: (key, section) =>
-      console.log('AddressListRecipient action', key, section),
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
     group: 'address',
     getBadges: (state: ToolbarState['addressListRecipient']) => ({}),
     toolbar: ADDRESS_LIST_RECIPIENT_TOOLBAR,

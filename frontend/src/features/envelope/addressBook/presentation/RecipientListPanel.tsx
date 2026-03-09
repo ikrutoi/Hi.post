@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { IconX } from '@shared/ui/icons'
+import { IconX, IconUsers } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { AddressEntry } from './AddressEntry'
 import type { AddressBookEntry } from '../domain/types'
@@ -103,9 +103,11 @@ export const RecipientListPanel: React.FC<Props> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <div className={styles.headerToolbar}>
-          <Toolbar section="addressListRecipient" />
-        </div>
+        {entries.length > 0 && (
+          <div className={styles.headerToolbar}>
+            <Toolbar section="addressListRecipient" />
+          </div>
+        )}
         <button
           type="button"
           className={styles.closeBtn}
@@ -133,7 +135,9 @@ export const RecipientListPanel: React.FC<Props> = ({
           onKeyDown={handleKeyDown}
         >
           {entries.length === 0 ? (
-            <p className={styles.empty}>No saved addresses</p>
+            <div className={styles.listEmpty} aria-hidden>
+              <IconUsers className={styles.listEmptyIcon} />
+            </div>
           ) : (
             entries.map((entry, index) => (
               <div key={entry.id} data-index={index} role="option">

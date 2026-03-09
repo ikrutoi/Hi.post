@@ -1,7 +1,7 @@
 import { ENVELOPE_KEYS, type EnvelopeToolbarState } from '@toolbar/domain/types'
 
 export const getAddressListToolbarFragment = (addressListCount: number) => ({
-  state: addressListCount > 0 ? ('enabled' as const) : ('disabled' as const),
+  state: 'enabled' as const,
   options: {
     badge: addressListCount > 0 ? addressListCount : null,
   },

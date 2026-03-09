@@ -227,6 +227,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               styles.addressFormRecipient,
               styles.recipientFieldsetContent,
               recipientFacade.isEnabled && styles.recipientFieldsetMulti,
+              recipientFacade.isEnabled &&
+                recipientView !== 'addressFormRecipientView' &&
+                recipientFacade.recipientsDisplayList.length > 0 &&
+                styles.recipientFieldsetWithList,
             )}
           >
             <legend

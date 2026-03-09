@@ -70,7 +70,10 @@ import {
   incrementAddressBookReloadVersion,
   incrementAddressTemplatesReloadVersion,
 } from '@features/previewStrip/infrastructure/state'
-import { removeAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
+import {
+  removeAddressBookEntry,
+  setAddressBookEntries,
+} from '@envelope/addressBook/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
@@ -111,6 +114,22 @@ function* handleEnvelopeToolbarAction(
   }
   if (section === 'addressListRecipient' && key === 'sortDown') {
     yield put(toggleRecipientSortDirection())
+    return
+  }
+
+  if (section === 'addressListSender' && key === 'listDelete') {
+    // Удаляем все адреса отправителя из IndexedDB и сразу очищаем список в состоянии
+    yield call([senderAdapter, 'clear'])
+    yield put(setAddressBookEntries({ sender: [] }))
+    yield call(syncAddressListIconsFromActive)
+    return
+  }
+
+  if (section === 'addressListRecipient' && key === 'listDelete') {
+    // Удаляем все адреса получателя из IndexedDB и сразу очищаем список в состоянии
+    yield call([recipientAdapter, 'clear'])
+    yield put(setAddressBookEntries({ recipient: [] }))
+    yield call(syncAddressListIconsFromActive)
     return
   }
 

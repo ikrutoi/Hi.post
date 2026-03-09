@@ -295,7 +295,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                   y="750"
                   textAnchor="middle"
                   strokeLinejoin="round"
-                  fill="hsl(207, 70%, 47%)"
+                  className={clsx(styles.pieTextBase, styles.pieTextDate)}
                 >
                   <tspan x="1280" dy="0" fontWeight="400" fontSize="550">
                     {date.year}

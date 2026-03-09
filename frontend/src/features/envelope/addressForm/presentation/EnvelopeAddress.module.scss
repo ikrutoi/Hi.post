@@ -68,9 +68,12 @@
 }
 
 .recipientFieldsetMulti {
-  padding-right: 0;
   padding-bottom: 0.35rem;
-  // overflow: hidden;
+  padding-right: 0.35rem;
+}
+
+.recipientFieldsetWithList {
+  padding-right: 0;
 }
 
 .addressLegendReplicaContainer {
@@ -263,10 +266,10 @@
   position: relative;
 
   .addressFormPlaceholderIconBg {
-    width: 75%;
-    height: 75%;
-    min-width: 3rem;
-    min-height: 3rem;
+    width: 82.5%;
+    height: 82.5%;
+    min-width: 3.3rem;
+    min-height: 3.3rem;
     flex-shrink: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;

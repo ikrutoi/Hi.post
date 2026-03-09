@@ -39,11 +39,7 @@ export const buildSenderToolbarState = ({
         break
       case 'addressList':
         state.addressList = {
-          state: senderListPanelOpen
-            ? 'active'
-            : addressListCount > 0
-              ? 'enabled'
-              : 'disabled',
+          state: senderListPanelOpen ? 'active' : 'enabled',
           options: {
             badge: addressListCount > 0 ? addressListCount : null,
           },

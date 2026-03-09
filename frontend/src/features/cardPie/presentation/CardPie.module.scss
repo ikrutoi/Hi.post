@@ -49,6 +49,10 @@
   font-family: inherit;
 }
 
+.pieTextDate {
+  fill: $color-font-active;
+}
+
 .sector {
   cursor: pointer;
   filter: grayscale(100%);

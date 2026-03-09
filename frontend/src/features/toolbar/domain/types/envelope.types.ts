@@ -39,7 +39,7 @@ export const RECIPIENT_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipient',
     icons: [
-      { key: 'addressList', state: 'disabled' },
+      { key: 'addressList', state: 'enabled' },
       { key: 'apply', state: 'disabled' },
       { key: 'addressAdd', state: 'enabled' },
       // { key: 'listAdd', state: 'disabled' },
@@ -66,7 +66,7 @@ export const RECIPIENTS_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipients',
     icons: [
-      { key: 'addressList', state: 'disabled' },
+      { key: 'addressList', state: 'enabled' },
       { key: 'apply', state: 'enabled' },
       { key: 'addressAdd', state: 'enabled' },
       // { key: 'listClose', state: 'enabled' },

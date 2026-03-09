@@ -10,6 +10,7 @@
   background-color: #fff;
   border: 1px solid $color-envelope-sender-border;
   border-radius: 0.75rem;
+  // border: solid 1px red;
 }
 
 .header {
@@ -33,6 +34,8 @@
   width: calc(100% - 1rem);
   display: flex;
   align-items: center;
+  z-index: 1;
+  // border: solid 1px blue;
 }
 
 .closeBtn {
@@ -85,7 +88,7 @@
 .list {
   flex: 1;
   min-height: 0;
-  padding: 0.75rem calc(0.25rem + 8px) 0.5rem 0.5rem;
+  padding: 0.9rem calc(0.25rem + 8px) 0.5rem 0.5rem;
   outline: none;
 
   &:focus {
@@ -93,9 +96,22 @@
   }
 }
 
-.empty {
-  margin: 0.5rem 0;
-  font-size: 0.85rem;
-  color: $color-font-enabled-light;
-  text-align: center;
+.listEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  padding: 0.5rem;
+}
+
+.listEmptyIcon {
+  width: 65%;
+  height: 65%;
+  min-width: 2.7rem;
+  min-height: 2.7rem;
+  flex-shrink: 0;
+  pointer-events: none;
+  color: $color-envelope-sender-legend;
+  opacity: 0.14;
 }
