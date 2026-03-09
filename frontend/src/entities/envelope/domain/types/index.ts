@@ -1,27 +1,18 @@
 import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 
-/**
- * Тип для хранения адреса в IndexedDB
- * Используется в адаптерах recipientTemplatesAdapter и senderTemplatesAdapter
- */
+export type ListStatus = 'notInList' | 'inList'
+
 export interface AddressTemplateItem {
-  /** Уникальный идентификатор (nanoid или число) */
   id: string
-  /** Локальный числовой идентификатор для совместимости */
   localId: number
-  /** Данные адреса */
   address: AddressFields
+  listStatus?: ListStatus
+  favorite: boolean | null
 }
 
-/**
- * Тип роли адреса (алиас для EnvelopeRole)
- */
 export type AddressRole = EnvelopeRole
 
-/**
- * Пустой конверт для сброса состояния
- */
 export const emptyEnvelope = {
   sender: {
     currentView: 'addressFormSenderView' as const,
@@ -66,10 +57,12 @@ export const emptyEnvelope = {
     formIsEmpty: true,
     sortOptions: { sortedBy: 'name', direction: 'asc' },
     recipientViewId: null,
+    recipientsViewSortDirection: 'asc',
     recipientsViewIdsFirstList: [],
     recipientsViewIdsSecondList: [],
     currentRecipientsList: 'first',
     applied: [],
+    appliedData: null,
     mode: 'recipient',
   } as RecipientState,
 }

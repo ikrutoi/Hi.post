@@ -1,3 +1,5 @@
+import type { ListStatus } from '@entities/envelope/domain/types'
+
 export const ADDRESS_BOOK_MODE = ['sender', 'recipient', 'recipients'] as const
 export type AddressBookMode = (typeof ADDRESS_BOOK_MODE)[number]
 
@@ -13,4 +15,7 @@ export interface AddressBookEntry {
   }
   label?: string
   createdAt: string
+  listStatus?: ListStatus
+  /** Звёздочка в списке; при notInList должна быть null */
+  favorite?: boolean | null
 }

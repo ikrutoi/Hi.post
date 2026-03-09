@@ -52,7 +52,15 @@ function toAddressBookEntry(
     },
     label: undefined,
     createdAt: new Date().toISOString(),
+    listStatus: item.listStatus,
+    favorite: item.favorite ?? null,
   }
+}
+
+/** В список быстрого доступа попадают только inList и старые записи без listStatus */
+function isInQuickAccessList(item: AddressTemplateItem): boolean {
+  const s = item.listStatus
+  return s === undefined || s === 'inList'
 }
 
 function* syncAddressBookFromDb() {
@@ -83,12 +91,12 @@ function* syncAddressBookFromDb() {
       ? [...recipientRaw].sort(byLocalIdAsc)
       : []
 
-    const senderEntries = senderSorted.map((r) =>
-      toAddressBookEntry(r as AddressTemplateItem, 'sender'),
-    )
-    const recipientEntries = recipientSorted.map((r) =>
-      toAddressBookEntry(r as AddressTemplateItem, 'recipient'),
-    )
+    const senderEntries = senderSorted
+      .filter((r) => isInQuickAccessList(r as AddressTemplateItem))
+      .map((r) => toAddressBookEntry(r as AddressTemplateItem, 'sender'))
+    const recipientEntries = recipientSorted
+      .filter((r) => isInQuickAccessList(r as AddressTemplateItem))
+      .map((r) => toAddressBookEntry(r as AddressTemplateItem, 'recipient'))
 
     const senderChanged = !entriesMatch(current.senderEntries, senderEntries)
     const recipientChanged = !entriesMatch(

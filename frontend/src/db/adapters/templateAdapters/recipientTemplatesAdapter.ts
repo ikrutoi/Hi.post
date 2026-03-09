@@ -8,6 +8,9 @@ export const recipientTemplatesAdapter: RecipientTemplatesAdapter = {
   ...base,
   addUniqueRecord: async (payload) => {
     const localId = (await base.getMaxLocalId()) + 1
-    await base.put({ localId, ...payload })
+    const listStatus = payload.listStatus ?? 'inList'
+    const favorite =
+      listStatus === 'notInList' ? null : (payload.favorite ?? false)
+    await base.put({ localId, listStatus, favorite, ...payload })
   },
 }
