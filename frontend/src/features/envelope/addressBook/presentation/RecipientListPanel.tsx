@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { IconX, IconUsers } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -28,6 +28,16 @@ export const RecipientListPanel: React.FC<Props> = ({
     handleDeleteEntry,
   } = useRecipientListPanelFacade()
 
+  const { favoriteEntries, restEntries, combinedEntries } = useMemo(() => {
+    const fav = entries.filter((e) => starredRecipientIds.has(e.id))
+    const rest = entries.filter((e) => !starredRecipientIds.has(e.id))
+    return {
+      favoriteEntries: fav,
+      restEntries: rest,
+      combinedEntries: [...fav, ...rest],
+    }
+  }, [entries, starredRecipientIds])
+
   const listRef = useRef<HTMLDivElement>(null)
   const scrollbarTrackRef = useRef<HTMLDivElement>(null)
   const [scrollbarTrackReady, setScrollbarTrackReady] = useState(false)
@@ -45,11 +55,13 @@ export const RecipientListPanel: React.FC<Props> = ({
     if (isRecipientsMode) {
       if (entriesChanged) setFocusedIndex(0)
     } else {
-      const selectedIndex = entries.findIndex((e) => selectedIds.includes(e.id))
+      const selectedIndex = combinedEntries.findIndex((e) =>
+        selectedIds.includes(e.id),
+      )
       setFocusedIndex(selectedIndex >= 0 ? selectedIndex : 0)
     }
     listRef.current?.focus()
-  }, [entries.length, entries, selectedIds, isRecipientsMode])
+  }, [combinedEntries, entries, selectedIds, isRecipientsMode])
 
   useEffect(() => {
     const el = listRef.current?.querySelector(`[data-index="${focusedIndex}"]`)
@@ -68,29 +80,29 @@ export const RecipientListPanel: React.FC<Props> = ({
         closePanel()
         return
       }
-      if (entries.length === 0) return
+      if (combinedEntries.length === 0) return
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        const next = Math.min(focusedIndex + 1, entries.length - 1)
+        const next = Math.min(focusedIndex + 1, combinedEntries.length - 1)
         setFocusedIndex(next)
-        if (!isRecipientsMode) onSelect(entries[next])
+        if (!isRecipientsMode) onSelect(combinedEntries[next])
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
         const next = Math.max(focusedIndex - 1, 0)
         setFocusedIndex(next)
-        if (!isRecipientsMode) onSelect(entries[next])
+        if (!isRecipientsMode) onSelect(combinedEntries[next])
       } else if (e.key === 'Enter') {
         e.preventDefault()
         if (isRecipientsMode) {
-          onSelect(entries[focusedIndex])
+          onSelect(combinedEntries[focusedIndex])
         } else {
-          const entry = entries[focusedIndex]
+          const entry = combinedEntries[focusedIndex]
           handleToggleStar(entry.id, starredRecipientIds.has(entry.id))
         }
       }
     },
     [
-      entries,
+      combinedEntries,
       focusedIndex,
       onSelect,
       isRecipientsMode,
@@ -103,7 +115,7 @@ export const RecipientListPanel: React.FC<Props> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        {entries.length > 0 && (
+        {combinedEntries.length > 0 && (
           <div className={styles.headerToolbar}>
             <Toolbar section="addressListRecipient" />
           </div>
@@ -134,26 +146,47 @@ export const RecipientListPanel: React.FC<Props> = ({
           aria-label="Address list"
           onKeyDown={handleKeyDown}
         >
-          {entries.length === 0 ? (
+          {combinedEntries.length === 0 ? (
             <div className={styles.listEmpty} aria-hidden>
               <IconUsers className={styles.listEmptyIcon} />
             </div>
           ) : (
-            entries.map((entry, index) => (
-              <div key={entry.id} data-index={index} role="option">
-                <AddressEntry
-                  entry={entry}
-                  onSelect={onSelect}
-                  onDelete={onDeleteEntry}
-                  isStarred={starredRecipientIds.has(entry.id)}
-                  isSelected={selectedIds.includes(entry.id)}
-                  isFocused={focusedIndex === index}
-                  onToggleStar={() =>
-                    handleToggleStar(entry.id, starredRecipientIds.has(entry.id))
-                  }
-                />
-              </div>
-            ))
+            <>
+              {favoriteEntries.map((entry, index) => (
+                <div key={entry.id} data-index={index} role="option">
+                  <AddressEntry
+                    entry={entry}
+                    onSelect={onSelect}
+                    onDelete={onDeleteEntry}
+                    onEdit={onSelect}
+                    isStarred
+                    isSelected={selectedIds.includes(entry.id)}
+                    isFocused={focusedIndex === index}
+                    onToggleStar={() => handleToggleStar(entry.id, true)}
+                  />
+                </div>
+              ))}
+              {favoriteEntries.length > 0 && (
+                <div className={styles.favoritesSeparator} aria-hidden />
+              )}
+              {restEntries.map((entry, index) => {
+                const dataIndex = favoriteEntries.length + index
+                return (
+                  <div key={entry.id} data-index={dataIndex} role="option">
+                    <AddressEntry
+                      entry={entry}
+                      onSelect={onSelect}
+                      onDelete={onDeleteEntry}
+                      onEdit={onSelect}
+                      isStarred={false}
+                      isSelected={selectedIds.includes(entry.id)}
+                      isFocused={focusedIndex === dataIndex}
+                      onToggleStar={() => handleToggleStar(entry.id, false)}
+                    />
+                  </div>
+                )
+              })}
+            </>
           )}
         </div>
       </ScrollArea>

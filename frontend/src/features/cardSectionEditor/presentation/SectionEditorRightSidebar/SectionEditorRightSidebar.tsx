@@ -88,8 +88,8 @@ export const SectionEditorRightSidebar: React.FC = () => {
   const showPreviewStrip =
     (activeSection === 'cardphoto' &&
       toolbarCardphotoState.crop.state !== 'active') ||
-    activeSection === 'cardtext' ||
-    activeSection === 'envelope'
+    activeSection === 'cardtext'
+  // Envelope: no right strip (favorites live in list top zone); slot reserved for future use
 
   if (!sizeCard || !showPreviewStrip) {
     return <div className={styles.sectionEditorRightSidebar} />

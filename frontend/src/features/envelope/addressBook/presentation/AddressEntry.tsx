@@ -9,6 +9,7 @@ type Props = {
   onSelect: (entry: AddressBookEntry) => void
   onDelete: (id: string) => void
   deleteAction?: 'delete' | 'removeFromList'
+  onEdit?: (entry: AddressBookEntry) => void
   isStarred?: boolean
   isSelected?: boolean
   isFocused?: boolean
@@ -21,6 +22,7 @@ export const AddressEntry: React.FC<Props> = ({
   onSelect,
   onDelete,
   deleteAction = 'delete',
+  onEdit,
   isStarred = false,
   isSelected = false,
   isFocused = false,
@@ -64,6 +66,20 @@ export const AddressEntry: React.FC<Props> = ({
           </div>
         </div>
       </div>
+      {onEdit && (
+        <button
+          type="button"
+          className={styles.editButton}
+          onClick={(e) => {
+            e.stopPropagation()
+            onEdit(entry)
+          }}
+          aria-label="Edit address"
+          title="Edit address"
+        >
+          {getToolbarIcon({ key: 'edit' })}
+        </button>
+      )}
       <button
         type="button"
         className={styles.deleteButton}
