@@ -50,6 +50,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const prevActiveRow = useRef<EditableRowKey | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const editModeOpenedAt = useRef<number>(0)
 
   const nameRef = useRef<HTMLInputElement | null>(null)
   const streetRef = useRef<HTMLInputElement | null>(null)
@@ -112,6 +113,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     }
 
     if (input) {
+      editModeOpenedAt.current = Date.now()
       const len = input.value.length
       input.focus()
       input.setSelectionRange(len, len)
@@ -172,6 +174,8 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     // Don't toggle on unmount or when focus is lost to document (e.g. Strict Mode remount)
     if (!next) return
     if (next.tagName === 'INPUT') return
+    // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
+    if (Date.now() - editModeOpenedAt.current < 200) return
 
     const section =
       role === 'sender' ? 'senderView' : 'recipientView'

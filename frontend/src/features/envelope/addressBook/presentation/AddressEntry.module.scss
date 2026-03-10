@@ -58,7 +58,7 @@
 }
 
 .field {
-  width: 100%;
+  width: 95%;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -69,10 +69,11 @@
 .info {
   flex: 1;
   min-width: 0;
+  // width: 70%;
   white-space: nowrap;
   overflow: hidden;
-  mask-image: linear-gradient(to right, black 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
 
   strong {
     font-size: 0.85rem;
@@ -179,7 +180,6 @@
   transition:
     opacity 0.15s ease,
     color 0.15s ease;
-  // background-color 0.15s ease;
 
   .root:hover & {
     opacity: 1;

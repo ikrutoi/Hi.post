@@ -90,9 +90,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     [],
   )
 
-  console.log('recipient state', recipientFacade.state)
-  console.log('sender state', senderFacade.state)
-
   useEffect(() => {
     if (editingTemplateId == null) return
     if (templateEntry) return
@@ -300,9 +297,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                       recipientFacade.isEnabled
                         ? 'recipients'
                         : ('recipient' as ToolbarSection)
-                      // : isSingleRecipientWithSavedTemplate
-                      //   ? 'recipientView'
-                      //   : ('recipient' as ToolbarSection)
                     }
                     stateOverride={
                       recipientFacade.isEnabled
