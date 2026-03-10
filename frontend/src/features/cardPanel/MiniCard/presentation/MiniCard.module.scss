@@ -42,8 +42,23 @@
 }
 
 .miniCardEmpty {
-  background-color: #fff;
-  // background-color: #efeae7;
+  background-color: $color-app-header;
+}
+
+.miniCardIconBg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0.14;
+
+  svg {
+    width: 3.6rem;
+    height: 3.6rem;
+    color: $color-app-sidebar-icon;
+  }
 }
 
 .miniCard:hover,

@@ -54,6 +54,11 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       }}
       onClick={() => changeSection(section)}
     >
+      {isEmpty && (
+        <div className={styles.miniCardIconBg}>
+          {getToolbarIcon({ key: section as any })}
+        </div>
+      )}
       {render({
         section,
       })}

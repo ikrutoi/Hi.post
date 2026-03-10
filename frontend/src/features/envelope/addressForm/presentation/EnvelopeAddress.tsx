@@ -321,7 +321,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 onFieldChange={update}
                 lang={lang}
               />
-            ) : recipientView === 'recipientView' ? (
+            ) : recipientView === 'recipientView' &&
+              (hasRecipientAddressData || isSingleRecipientWithSavedTemplate) ? (
               <RecipientView
                 templateId={editingTemplateId ?? ''}
                 address={value}

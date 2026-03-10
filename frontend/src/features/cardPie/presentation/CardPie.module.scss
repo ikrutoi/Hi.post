@@ -6,6 +6,7 @@
   --envelope-text-many: #{$color-toggle-active};
   --pie-rect-fill: #fff;
   --pie-rect-fill-envelope: #{$color-envelope-recipient-light};
+  --pie-rect-fill-empty: #{$color-app-header};
 
   position: absolute;
   right: 0;
@@ -40,6 +41,20 @@
   fill: var(--pie-rect-fill-envelope);
 }
 
+.rectEmpty {
+  fill: var(--pie-rect-fill-empty);
+}
+
+.pieSectorIconBg {
+  opacity: 0.14;
+  color: $color-app-sidebar-icon;
+
+  svg {
+    fill: none;
+    stroke: currentColor;
+  }
+}
+
 .pieEnvelopeIconBg {
   color: $color-envelope-recipient-legend;
   opacity: 0.24;
@@ -55,7 +70,6 @@
 
 .sector {
   cursor: pointer;
-  filter: grayscale(100%);
   transition:
     opacity 0.2s ease,
     filter 0.2s ease;
@@ -67,11 +81,9 @@
 
 .sector:hover:not(.sectorEmpty),
 .sector.hovered:not(.sectorEmpty) {
-  filter: none;
 }
 
 .hubContainer.pieAllComplete .sector {
-  filter: none;
 }
 
 .pieOutlineOverlay {

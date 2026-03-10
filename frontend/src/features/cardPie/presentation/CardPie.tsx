@@ -2,7 +2,15 @@ import React from 'react'
 import clsx from 'clsx'
 import { AROMA_IMAGES } from '@entities/aroma/domain/types'
 import listOfMonthOfYear from '@data/date/monthOfYear.json'
-import { IconUserRecipient, IconUsers } from '@shared/ui/icons'
+import {
+  IconUserRecipient,
+  IconUsers,
+  IconSectionMenuCardphoto,
+  IconSectionMenuCardtext,
+  IconSectionMenuEnvelopeV2,
+  IconSectionMenuAromaV2,
+  IconSectionMenuDate,
+} from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
@@ -13,6 +21,9 @@ import styles from './CardPie.module.scss'
 
 const STROKE_WIDTH = 9.99216
 const SECTOR_STROKE = '#b3b3b3'
+
+const PIE_EMPTY_ICON_SIZE = 1440
+const PIE_EMPTY_ICON_HALF = PIE_EMPTY_ICON_SIZE / 2
 
 export const CardPie: React.FC<CardPieProps> = ({
   status,
@@ -96,12 +107,26 @@ export const CardPie: React.FC<CardPieProps> = ({
                 preserveAspectRatio="xMidYMid slice"
               />
             ) : (
-              <rect
-                width="2560"
-                height="2560"
-                className={clsx(styles.rect, styles.rectCardphoto)}
-                fill="var(--pie-rect-fill)"
-              />
+              <>
+                <rect
+                  width="2560"
+                  height="2560"
+                  className={clsx(
+                    styles.rect,
+                    styles.rectCardphoto,
+                    styles.rectEmpty,
+                  )}
+                />
+                <g
+                  className={styles.pieSectorIconBg}
+                  transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                >
+                  <IconSectionMenuCardphoto
+                    width={PIE_EMPTY_ICON_SIZE}
+                    height={PIE_EMPTY_ICON_SIZE}
+                  />
+                </g>
+              </>
             )}
           </pattern>
 
@@ -151,9 +176,21 @@ export const CardPie: React.FC<CardPieProps> = ({
                 <rect
                   width="2560"
                   height="3135"
-                  className={clsx(styles.rect, styles.rectCardtext)}
-                  fill="var(--pie-rect-fill)"
+                  className={clsx(
+                    styles.rect,
+                    styles.rectCardtext,
+                    styles.rectEmpty,
+                  )}
                 />
+                <g
+                  className={styles.pieSectorIconBg}
+                  transform={`translate(1280, 1567.5) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                >
+                  <IconSectionMenuCardtext
+                    width={PIE_EMPTY_ICON_SIZE}
+                    height={PIE_EMPTY_ICON_SIZE}
+                  />
+                </g>
                 <text x="100" y="600" fill="#064e3b" opacity="0.5">
                   <tspan>Hi...</tspan>
                 </text>
@@ -230,12 +267,26 @@ export const CardPie: React.FC<CardPieProps> = ({
                 </text>
               </>
             ) : (
-              <rect
-                width="2560"
-                height="2560"
-                className={clsx(styles.rect, styles.rectEnvelope)}
-                fill="var(--pie-rect-fill-envelope)"
-              />
+              <>
+                <rect
+                  width="2560"
+                  height="2560"
+                  className={clsx(
+                    styles.rect,
+                    styles.rectEnvelope,
+                    styles.rectEmpty,
+                  )}
+                />
+                <g
+                  className={styles.pieSectorIconBg}
+                  transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                >
+                  <IconSectionMenuEnvelopeV2
+                    width={PIE_EMPTY_ICON_SIZE}
+                    height={PIE_EMPTY_ICON_SIZE}
+                  />
+                </g>
+              </>
             )}
           </pattern>
 
@@ -265,12 +316,26 @@ export const CardPie: React.FC<CardPieProps> = ({
                 />
               </>
             ) : (
-              <rect
-                width="2560"
-                height="2560"
-                className={clsx(styles.rect, styles.rectAroma)}
-                fill="var(--pie-rect-fill)"
-              />
+              <>
+                <rect
+                  width="2560"
+                  height="2560"
+                  className={clsx(
+                    styles.rect,
+                    styles.rectAroma,
+                    styles.rectEmpty,
+                  )}
+                />
+                <g
+                  className={styles.pieSectorIconBg}
+                  transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                >
+                  <IconSectionMenuAromaV2
+                    width={PIE_EMPTY_ICON_SIZE}
+                    height={PIE_EMPTY_ICON_SIZE}
+                  />
+                </g>
+              </>
             )}
           </pattern>
 
@@ -309,12 +374,26 @@ export const CardPie: React.FC<CardPieProps> = ({
                 </text>
               </>
             ) : (
-              <rect
-                width="2560"
-                height="3135"
-                className={clsx(styles.rect, styles.rectDate)}
-                fill="var(--pie-rect-fill)"
-              />
+              <>
+                <rect
+                  width="2560"
+                  height="3135"
+                  className={clsx(
+                    styles.rect,
+                    styles.rectDate,
+                    styles.rectEmpty,
+                  )}
+                />
+                <g
+                  className={styles.pieSectorIconBg}
+                  transform={`translate(1280, 1567.5) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                >
+                  <IconSectionMenuDate
+                    width={PIE_EMPTY_ICON_SIZE}
+                    height={PIE_EMPTY_ICON_SIZE}
+                  />
+                </g>
+              </>
             )}
           </pattern>
         </defs>
