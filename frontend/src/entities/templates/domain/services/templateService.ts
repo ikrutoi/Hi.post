@@ -88,9 +88,13 @@ export const templateService = {
       const localId = maxLocalId + 1
       const id = payload.id ?? payload.cardId ?? nanoid()
 
+      const listStatus = payload.listStatus ?? 'outList'
+      const favorite = listStatus === 'outList' ? null : false
       const templateData: Omit<AddressTemplateItem, 'localId'> = {
         id,
         address: payload.address,
+        listStatus,
+        favorite,
       }
 
       await adapter.addUniqueRecord(templateData)

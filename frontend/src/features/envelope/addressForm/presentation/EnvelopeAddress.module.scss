@@ -68,7 +68,8 @@
 }
 
 .recipientFieldsetMulti {
-  padding-bottom: 0.35rem;
+  /* Same bottom padding as .addressFieldset so placeholder icon aligns with single-recipient mode */
+  padding-bottom: 0.5rem;
   padding-right: 0.35rem;
 }
 
@@ -262,14 +263,12 @@
 }
 
 .addressFormPlaceholderBg {
-  // cursor: pointer;
   position: relative;
 
+  /* Fixed size so icon looks the same in Sender and Recipient despite different form heights */
   .addressFormPlaceholderIconBg {
-    width: 82.5%;
-    height: 82.5%;
-    min-width: 3.3rem;
-    min-height: 3.3rem;
+    width: 10rem;
+    height: 10rem;
     flex-shrink: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;

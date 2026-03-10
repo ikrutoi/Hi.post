@@ -1,5 +1,6 @@
 import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
 import type { TemplateBase, TemplateMetadata } from './template.types'
+import type { ListStatus } from '@entities/envelope/domain/types'
 
 export type AddressType = EnvelopeRole
 
@@ -15,6 +16,7 @@ export interface CreateAddressTemplatePayload {
   name?: string
   id?: string
   cardId?: string
+  listStatus?: ListStatus
 }
 
 export interface UpdateAddressTemplatePayload {

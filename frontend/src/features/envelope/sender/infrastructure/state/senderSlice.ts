@@ -6,6 +6,7 @@ import type {
   SenderView,
   SenderSortOptions,
 } from '../../domain/types'
+import type { ListStatus } from '@entities/envelope/domain/types'
 
 const DEFAULT_SENDER_SORT_OPTIONS: SenderSortOptions = {
   sortedBy: 'name',
@@ -94,7 +95,10 @@ const senderSlice = createSlice({
         state.sortOptions.direction === 'asc' ? 'desc' : 'asc'
     },
 
-    saveAddressRequested: () => {},
+    saveAddressRequested: (
+      _state,
+      _action: PayloadAction<{ listStatus?: ListStatus } | undefined>,
+    ) => {},
   },
 })
 

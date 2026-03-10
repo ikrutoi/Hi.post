@@ -72,8 +72,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     selectRecipientsToolbarStateWithLiveAddressList,
   )
 
-  const recipientFieldsetContainerScrollRef =
-    useRef<HTMLDivElement | null>(null)
+  const recipientFieldsetContainerScrollRef = useRef<HTMLDivElement | null>(
+    null,
+  )
   const [recipientScrollContainerReady, setRecipientScrollContainerReady] =
     useState(false)
   const setRecipientFieldsetContainerScrollRef = useCallback(

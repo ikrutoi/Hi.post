@@ -10,7 +10,7 @@ export const recipientTemplatesAdapter: RecipientTemplatesAdapter = {
     const localId = (await base.getMaxLocalId()) + 1
     const listStatus = payload.listStatus ?? 'inList'
     const favorite =
-      listStatus === 'notInList' ? null : (payload.favorite ?? false)
+      listStatus === 'outList' ? null : (payload.favorite ?? false)
     await base.put({ localId, listStatus, favorite, ...payload })
   },
 }

@@ -1,7 +1,7 @@
 import type { AddressFields, EnvelopeRole } from '@shared/config/constants'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 
-export type ListStatus = 'notInList' | 'inList'
+export type ListStatus = 'outList' | 'inList'
 
 export interface AddressTemplateItem {
   id: string

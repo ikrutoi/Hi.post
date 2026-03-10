@@ -27,6 +27,7 @@ import type {
   AddressField,
   EnvelopeRole,
 } from '@shared/config/constants'
+import type { ListStatus } from '@entities/envelope/domain/types'
 
 function cleanupAddress(address: Record<string, string>): AddressFields {
   const cleanup = (text: string) => text.split(' ').filter(Boolean).join(' ')
@@ -52,6 +53,9 @@ function* handleAddressSave(
   const role: EnvelopeRole = recipientSaveRequested.match(action)
     ? 'recipient'
     : 'sender'
+  const listStatus: ListStatus =
+    (action as { payload?: { listStatus?: ListStatus } }).payload?.listStatus ??
+    'inList'
 
   try {
     const sender: SenderState = yield select(selectSenderState)
@@ -72,18 +76,21 @@ function* handleAddressSave(
       templateService.createAddressTemplate({
         address: cleanedAddress,
         type: role,
+        listStatus,
       }),
     )
 
     if (result.success && result.templateId) {
-      yield put(
-        addAddressBookEntry({
-          id: String(result.templateId),
-          role,
-          address: cleanedAddress,
-          createdAt: new Date().toISOString(),
-        }),
-      )
+      if (listStatus === 'inList') {
+        yield put(
+          addAddressBookEntry({
+            id: String(result.templateId),
+            role,
+            address: cleanedAddress,
+            createdAt: new Date().toISOString(),
+          }),
+        )
+      }
       yield put(
         updateGroupStatus({
           section: role,

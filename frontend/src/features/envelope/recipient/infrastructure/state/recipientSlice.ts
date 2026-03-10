@@ -8,6 +8,7 @@ import type {
   SortOptions,
   CurrentRecipientsList,
 } from '../../domain/types'
+import type { ListStatus } from '@entities/envelope/domain/types'
 
 const DEFAULT_SORT_OPTIONS: SortOptions = {
   sortedBy: 'name',
@@ -188,7 +189,10 @@ const recipientSlice = createSlice({
         state.recipientsViewSortDirection === 'asc' ? 'desc' : 'asc'
     },
 
-    saveAddressRequested: () => {},
+    saveAddressRequested: (
+      _state,
+      _action: PayloadAction<{ listStatus?: ListStatus } | undefined>,
+    ) => {},
   },
 })
 

@@ -226,7 +226,8 @@ function* handleEnvelopeToolbarAction(
       }
     } else {
       const senderComplete: boolean = yield select(selectIsSenderComplete)
-      if (senderComplete) yield put(senderSaveRequested())
+      if (senderComplete)
+        yield put(senderSaveRequested({ listStatus: 'inList' }))
     }
     return
   }
@@ -261,7 +262,8 @@ function* handleEnvelopeToolbarAction(
       }
     } else {
       const recipientComplete: boolean = yield select(selectIsRecipientComplete)
-      if (recipientComplete) yield put(recipientSaveRequested())
+      if (recipientComplete)
+        yield put(recipientSaveRequested({ listStatus: 'inList' }))
     }
     return
   }
@@ -524,8 +526,11 @@ function* handleEnvelopeToolbarAction(
       const senderComplete: boolean = yield select(selectIsSenderComplete)
       if (senderComplete) {
         const senderViewId: string | null = yield select(selectSenderViewId)
-        const appliedIds = senderViewId ? [senderViewId] : []
-        yield put(setSenderAppliedIds(appliedIds))
+        if (senderViewId) {
+          yield put(setSenderAppliedIds([senderViewId]))
+        } else {
+          yield put(senderSaveRequested({ listStatus: 'outList' }))
+        }
       }
     }
     if (section === 'recipient') {
@@ -534,15 +539,16 @@ function* handleEnvelopeToolbarAction(
         const recipientViewId: string | null = yield select(
           selectRecipientViewId,
         )
-        const displayAddress: Readonly<Record<string, string>> = yield select(
-          selectRecipientDisplayAddress,
-        )
-        const appliedIds = recipientViewId ? [recipientViewId] : []
-        const data: AddressFields[] = appliedIds.length
-          ? [{ ...displayAddress } as AddressFields]
-          : []
-        yield put(setRecipientAppliedWithData({ ids: appliedIds, data }))
-        yield put(setRecipientMode('recipient'))
+        if (recipientViewId) {
+          const displayAddress: Readonly<Record<string, string>> = yield select(
+            selectRecipientDisplayAddress,
+          )
+          const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
+          yield put(setRecipientAppliedWithData({ ids: [recipientViewId], data }))
+          yield put(setRecipientMode('recipient'))
+        } else {
+          yield put(recipientSaveRequested({ listStatus: 'outList' }))
+        }
       }
     }
     if (section === 'recipients') {
@@ -594,10 +600,11 @@ function* handleEnvelopeToolbarAction(
   if (key === 'listAdd') {
     if (section === 'sender') {
       const senderComplete: boolean = yield select(selectIsSenderComplete)
-      if (senderComplete) yield put(senderSaveRequested())
+      if (senderComplete) yield put(senderSaveRequested({ listStatus: 'inList' }))
     } else if (section === 'recipient') {
       const recipientComplete: boolean = yield select(selectIsRecipientComplete)
-      if (recipientComplete) yield put(recipientSaveRequested())
+      if (recipientComplete)
+        yield put(recipientSaveRequested({ listStatus: 'inList' }))
     } else if (
       section === 'addressFormSenderView' ||
       section === 'addressFormRecipientView'
@@ -608,9 +615,9 @@ function* handleEnvelopeToolbarAction(
         section === 'addressFormSenderView' ? senderComplete : recipientComplete
       if (isComplete) {
         if (section === 'addressFormSenderView') {
-          yield put(senderSaveRequested())
+          yield put(senderSaveRequested({ listStatus: 'inList' }))
         } else {
-          yield put(recipientSaveRequested())
+          yield put(recipientSaveRequested({ listStatus: 'inList' }))
         }
       }
     }
