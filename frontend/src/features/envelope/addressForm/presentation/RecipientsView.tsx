@@ -9,12 +9,14 @@ export type RecipientsViewProps = {
   entries: AddressBookEntry[]
   onRemove: (id: string) => void
   scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
+  onEdit: (entry: AddressBookEntry) => void
 }
 
 export const RecipientsView: React.FC<RecipientsViewProps> = ({
   entries,
   onRemove,
   scrollbarPortalTarget,
+  onEdit,
 }) => {
   return (
     <div className={styles.savedAddressViewContainer}>
@@ -31,6 +33,7 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
               entry={entry}
               onSelect={() => {}}
               onDelete={onRemove}
+              onEdit={onEdit}
               deleteAction="removeFromList"
               isSelected={false}
             />

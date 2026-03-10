@@ -32,6 +32,19 @@ export const ADDRESS_LIST_SENDER_TOOLBAR: ToolbarConfig = [
 export const ADDRESS_LIST_RECIPIENT_TOOLBAR: ToolbarConfig = [
   {
     group: 'address',
+    icons: [{ key: 'sortDown', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'listDelete', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
+export const ADDRESS_LIST_RECIPIENTS_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'address',
     icons: [
       { key: 'sortDown', state: 'enabled' },
       { key: 'listApply', state: 'disabled' },
@@ -56,6 +69,12 @@ export const initialAddressListRecipientToolbarState: AddressListToolbarState =
     config: [...ADDRESS_LIST_RECIPIENT_TOOLBAR],
   }
 
+export const initialAddressListRecipientsToolbarState: AddressListToolbarState =
+  {
+    ...Object.fromEntries(flattenIcons(ADDRESS_LIST_RECIPIENTS_TOOLBAR)),
+    config: [...ADDRESS_LIST_RECIPIENTS_TOOLBAR],
+  }
+
 export interface AddressListSenderConfig extends BaseSectionConfig<
   AddressListToolbarState,
   AddressListKey,
@@ -66,4 +85,10 @@ export interface AddressListRecipientConfig extends BaseSectionConfig<
   AddressListToolbarState,
   AddressListKey,
   'addressListRecipient'
+> {}
+
+export interface AddressListRecipientsConfig extends BaseSectionConfig<
+  AddressListToolbarState,
+  AddressListKey,
+  'addressListRecipients'
 > {}

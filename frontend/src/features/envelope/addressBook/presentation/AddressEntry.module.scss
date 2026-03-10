@@ -28,6 +28,10 @@
   &[data-no-star='true'] {
     padding-left: 0.5rem;
   }
+
+  &[data-has-edit='true'] {
+    padding-right: 3.5rem;
+  }
 }
 
 .rootSender {

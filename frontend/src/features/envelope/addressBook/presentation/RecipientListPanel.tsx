@@ -117,7 +117,11 @@ export const RecipientListPanel: React.FC<Props> = ({
       <div className={styles.header}>
         {combinedEntries.length > 0 && (
           <div className={styles.headerToolbar}>
-            <Toolbar section="addressListRecipient" />
+            <Toolbar
+              section={
+                isRecipientsMode ? 'addressListRecipients' : 'addressListRecipient'
+              }
+            />
           </div>
         )}
         <button

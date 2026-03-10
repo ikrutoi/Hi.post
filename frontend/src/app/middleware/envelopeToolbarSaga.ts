@@ -62,6 +62,7 @@ import {
   selectRecipientState,
   selectIsRecipientComplete,
   selectRecipientViewId,
+  selectRecipientView,
   selectRecipientDisplayAddress,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
@@ -108,11 +109,14 @@ function* handleEnvelopeToolbarAction(
 ) {
   const { section, key } = action.payload
 
+  const isRecipientAddressListSection =
+    section === 'addressListRecipient' || section === 'addressListRecipients'
+
   if (section === 'addressListSender' && key === 'sortDown') {
     yield put(toggleSenderSortDirection())
     return
   }
-  if (section === 'addressListRecipient' && key === 'sortDown') {
+  if (isRecipientAddressListSection && key === 'sortDown') {
     yield put(toggleRecipientSortDirection())
     return
   }
@@ -125,7 +129,7 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
-  if (section === 'addressListRecipient' && key === 'listDelete') {
+  if (isRecipientAddressListSection && key === 'listDelete') {
     // Удаляем все адреса получателя из IndexedDB и сразу очищаем список в состоянии
     yield call([recipientAdapter, 'clear'])
     yield put(setAddressBookEntries({ recipient: [] }))
@@ -138,7 +142,7 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
-  if (section === 'addressListRecipient' && key === 'listApply') {
+  if (isRecipientAddressListSection && key === 'listApply') {
     const recipientListPanelOpen: boolean = yield select(
       selectRecipientListPanelOpen as any,
     )
@@ -799,6 +803,11 @@ function* syncEditIconOnEditModeChange(action: PayloadAction<boolean>) {
     )
   }
   if (action.type === setRecipientViewEditMode.type) {
+    const recipient: RecipientState = yield select(selectRecipientState)
+    const currentView: string = yield select(selectRecipientView)
+    if (recipient.mode === 'recipients' && currentView === 'recipientView') {
+      yield put(setRecipientView('recipientsView'))
+    }
     yield put(
       updateToolbarIcon({
         section: 'recipientView',

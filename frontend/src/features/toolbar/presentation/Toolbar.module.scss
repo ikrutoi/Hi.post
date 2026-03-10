@@ -326,7 +326,8 @@
 .toolbarAddressFormRecipientView,
 .toolbarRecipientsView,
 .toolbarAddressListSender,
-.toolbarAddressListRecipient {
+.toolbarAddressListRecipient,
+.toolbarAddressListRecipients {
   .toolbarKey {
     width: 1.5rem;
     height: 1.5rem;
@@ -342,7 +343,8 @@
 }
 
 .toolbarAddressListRecipient,
-.toolbarAddressListSender {
+.toolbarAddressListSender,
+.toolbarAddressListRecipients {
   width: 100%;
   justify-content: space-between;
   margin-left: 2rem;
@@ -363,7 +365,7 @@
 }
 
 .toolbarRecipientsView {
-  margin-right: 1.75rem;
+  margin-right: 0.65rem;
 }
 
 .toolbarAddressListRecipient .toolbarGroupAddress,

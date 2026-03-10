@@ -32,6 +32,8 @@ import {
   initialRecipientFavoriteToolbarState,
   initialRecipientViewToolbarState,
   RECIPIENT_VIEW_TOOLBAR,
+  initialAddressListRecipientsToolbarState,
+  ADDRESS_LIST_RECIPIENTS_TOOLBAR,
 } from '../types'
 import {
   RECIPIENTS_VIEW_TOOLBAR,
@@ -177,6 +179,17 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'address',
     getBadges: (state: ToolbarState['addressListRecipient']) => ({}),
     toolbar: ADDRESS_LIST_RECIPIENT_TOOLBAR,
+  },
+
+  addressListRecipients: {
+    keys: ADDRESS_LIST_KEYS,
+    initialState: initialAddressListRecipientsToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'address',
+    getBadges: (state: ToolbarState['addressListRecipients']) => ({}),
+    toolbar: ADDRESS_LIST_RECIPIENTS_TOOLBAR,
   },
 
   recipientFavorite: {

@@ -59,6 +59,7 @@ export const TOOLBAR_SECTIONS = [
   'sectionEditorMenu',
   'addressListSender',
   'addressListRecipient',
+  'addressListRecipients',
   'recipientFavorite',
   'senderFavorite',
   'savedRecipientAddress',
@@ -82,6 +83,7 @@ export type ToolbarState = {
   sectionEditorMenu: SectionEditorMenuToolbarState & { config: ToolbarGroup[] }
   addressListSender: AddressListToolbarState & { config: ToolbarGroup[] }
   addressListRecipient: AddressListToolbarState & { config: ToolbarGroup[] }
+  addressListRecipients: AddressListToolbarState & { config: ToolbarGroup[] }
   recipientFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
   senderFavorite: AddressFavoriteToolbarState & { config: ToolbarGroup[] }
   senderView: AddressViewToolbarState & { config: ToolbarGroup[] }
@@ -139,6 +141,11 @@ export type ToolbarSectionConfigMap = {
     AddressListToolbarState,
     AddressListKey,
     'addressListRecipient'
+  >
+  addressListRecipients: BaseSectionConfig<
+    AddressListToolbarState,
+    AddressListKey,
+    'addressListRecipients'
   >
   recipientFavorite: BaseSectionConfig<
     AddressFavoriteToolbarState,
@@ -202,18 +209,20 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                   ? AddressListKey
                   : S extends 'addressListRecipient'
                     ? AddressListKey
-                    : S extends 'recipientFavorite'
-                    ? AddressFavoriteKey
-                    : S extends 'senderFavorite'
-                      ? AddressFavoriteKey
-                      : S extends 'senderView'
-                        ? AddressViewKey
-                        : S extends 'recipientView'
-                          ? AddressViewKey
-                          : S extends 'recipientsView'
+                    : S extends 'addressListRecipients'
+                      ? AddressListKey
+                      : S extends 'recipientFavorite'
+                        ? AddressFavoriteKey
+                        : S extends 'senderFavorite'
+                          ? AddressFavoriteKey
+                          : S extends 'senderView'
                             ? AddressViewKey
-                            : S extends 'addressFormSenderView'
+                            : S extends 'recipientView'
                               ? AddressViewKey
-                              : S extends 'addressFormRecipientView'
+                              : S extends 'recipientsView'
                                 ? AddressViewKey
-                                : never
+                                : S extends 'addressFormSenderView'
+                                  ? AddressViewKey
+                                  : S extends 'addressFormRecipientView'
+                                    ? AddressViewKey
+                                    : never

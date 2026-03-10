@@ -46,6 +46,15 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     syncAddressFormToolbar(toolbarSection, isAddressComplete)
   }, [syncAddressFormToolbar, toolbarSection, isAddressComplete])
 
+  useEffect(() => {
+    const firstInput = inputsRef.current[0]
+    if (firstInput) {
+      const len = firstInput.value.length
+      firstInput.focus()
+      firstInput.setSelectionRange(len, len)
+    }
+  }, [])
+
   const handleCloseAddressForm = useCallback(() => {
     closeAddressForm(role)
   }, [closeAddressForm, role])

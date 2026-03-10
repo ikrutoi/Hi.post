@@ -12,10 +12,15 @@ import { selectSenderView } from '../../sender/infrastructure/selectors'
 import { selectRecipientView } from '../../recipient/infrastructure/selectors'
 import { selectRecipientsToolbarStateWithLiveAddressList } from '../../infrastructure/selectors'
 import { setSenderView } from '../../sender/infrastructure/state'
-import { setRecipientView } from '../../recipient/infrastructure/state'
+import {
+  setRecipientView,
+  setRecipientViewId,
+} from '../../recipient/infrastructure/state'
+import { setRecipientViewEditMode } from '@envelope/infrastructure/state'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import { ToolbarSection } from '@/features/toolbar/domain/types'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import { IconUserRecipient, IconUsers, IconUserSender } from '@shared/ui/icons'
 
 const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
@@ -134,6 +139,19 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     envelopeFacade.setAddressFormViewState(true, r)
     if (r === 'sender') dispatch(setSenderView('addressFormSenderView'))
     else dispatch(setRecipientView('addressFormRecipientView'))
+  }
+
+  const handleEditRecipientFromList = (entry: AddressBookEntry) => {
+    // В режиме «Пользователи» открываем универсальный RecipientView в режиме редактирования,
+    // тумблер не трогаем. После выхода из редактирования снова покажем RecipientsView.
+    dispatch(setRecipientViewId(entry.id))
+    ;(Object.entries(entry.address) as [keyof typeof value, string][]).forEach(
+      ([field, fieldValue]) => {
+        update(field as any, fieldValue)
+      },
+    )
+    dispatch(setRecipientView('recipientView'))
+    dispatch(setRecipientViewEditMode(true))
   }
 
   const handlePlaceholderClick = (r: 'sender' | 'recipient') => {
@@ -309,11 +327,17 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 onFieldChange={update}
                 lang={lang}
               />
+            ) : recipientView === 'recipientView' ? (
+              <RecipientView
+                templateId={editingTemplateId ?? ''}
+                address={value}
+              />
             ) : recipientFacade.isEnabled &&
               recipientFacade.recipientsDisplayList.length > 0 ? (
               <RecipientsView
                 entries={recipientFacade.recipientsDisplayList}
                 onRemove={recipientFacade.removeFromList}
+                onEdit={handleEditRecipientFromList}
                 scrollbarPortalTarget={
                   recipientScrollContainerReady
                     ? recipientFieldsetContainerScrollRef

@@ -38,6 +38,7 @@ export const AddressEntry: React.FC<Props> = ({
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-no-star={!onToggleStar ? 'true' : undefined}
+      data-has-edit={onEdit ? 'true' : undefined}
     >
       {onToggleStar && (
         <button

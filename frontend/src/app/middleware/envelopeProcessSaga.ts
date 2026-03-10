@@ -212,15 +212,23 @@ export function* processEnvelopeVisuals() {
       ? 'active'
       : 'enabled'
 
+  const addressListApplyValue = {
+    listApply: {
+      state: listApplyState,
+      options: {},
+    },
+  }
+
   yield put(
     updateToolbarSection({
       section: 'addressListRecipient',
-      value: {
-        listApply: {
-          state: listApplyState,
-          options: {},
-        },
-      },
+      value: addressListApplyValue,
+    }),
+  )
+  yield put(
+    updateToolbarSection({
+      section: 'addressListRecipients',
+      value: addressListApplyValue,
     }),
   )
 
