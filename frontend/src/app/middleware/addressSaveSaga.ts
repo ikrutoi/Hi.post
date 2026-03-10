@@ -114,26 +114,29 @@ function* handleAddressSave(
         ) as [AddressField, string][]) {
           yield put(updateRecipientField({ field, value }))
         }
-        // Для одиночного режима Recipient помечаем адрес как applied с локальными данными
-        yield put(
-          setRecipientAppliedWithData({
-            ids: [id],
-            data: [cleanedAddress],
-          }),
-        )
+        // Помечаем как applied только при Apply (outList), не при listAdd (inList)
+        if (listStatus === 'outList') {
+          yield put(
+            setRecipientAppliedWithData({
+              ids: [id],
+              data: [cleanedAddress],
+            }),
+          )
+        }
       } else {
         yield put(setSenderViewId(id))
         yield put(setSenderView('senderView'))
         yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearSenderFormData())
-        // Заполняем viewDraft сохранённым адресом, чтобы SenderView отобразил его (а не пустое поле)
         for (const [field, value] of Object.entries(
           cleanedAddress,
         ) as [AddressField, string][]) {
           yield put(updateSenderField({ field, value }))
         }
-        // После сохранения нового адреса через Apply помечаем его как applied
-        yield put(setSenderAppliedIds([id]))
+        // Помечаем как applied только при Apply (outList), не при listAdd (inList)
+        if (listStatus === 'outList') {
+          yield put(setSenderAppliedIds([id]))
+        }
       }
       yield put(addressSaveSuccess(role))
       yield call(processEnvelopeVisuals)

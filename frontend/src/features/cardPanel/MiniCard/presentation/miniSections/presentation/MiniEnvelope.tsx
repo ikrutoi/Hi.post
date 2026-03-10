@@ -18,10 +18,6 @@ export const MiniEnvelope: React.FC = () => {
   const { steps, isMany } = getEnvelopeCircleSteps(count)
   const stepsToRender = isSingle ? getEnvelopeCircleSteps(2).steps : steps
 
-  if (count === 0) {
-    return null
-  }
-
   const nameWrapperRef = useRef<HTMLDivElement | null>(null)
   const nameInnerRef = useRef<HTMLSpanElement | null>(null)
   const [hasNameOverflow, setHasNameOverflow] = useState(false)
@@ -64,6 +60,10 @@ export const MiniEnvelope: React.FC = () => {
       window.removeEventListener('resize', checkOverflow)
     }
   }, [isSingle, appliedRecipientAddress.name, appliedRecipientAddress.country])
+
+  if (count === 0) {
+    return null
+  }
 
   return (
     <div

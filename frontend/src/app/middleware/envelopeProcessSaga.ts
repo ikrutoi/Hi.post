@@ -243,11 +243,9 @@ export function* processEnvelopeVisuals() {
     sender.senderViewId != null &&
     (sender.applied?.length ?? 0) === 1 &&
     sender.applied[0] === sender.senderViewId
-  const recipientAlreadyApplied =
-    recipient.currentView === 'recipientView' &&
-    recipient.recipientViewId != null &&
-    (recipient.applied?.length ?? 0) === 1 &&
-    recipient.applied[0] === recipient.recipientViewId
+  // Один применённый адрес → всегда selected для секции recipient, чтобы при переключении
+  // Пользователи → Пользователь не мигало enabled (в store уже лежит selected).
+  const recipientAlreadyApplied = (recipient.applied?.length ?? 0) === 1
 
   let senderApplyState = senderAlreadyApplied
     ? 'selected'

@@ -50,6 +50,10 @@ export const Toolbar = ({
     section === 'cardtext' ? cardtextApplied : cardphotoApplied
   const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
 
+  const recipientAppliedLength = useAppSelector(
+    (state) => state.recipient?.applied?.length ?? 0,
+  )
+
   const senderSortDirection = useAppSelector(
     (state) => state.sender?.sortOptions?.direction ?? 'asc',
   )
@@ -107,6 +111,10 @@ export const Toolbar = ({
       key === 'apply' && (section === 'cardphoto' || section === 'cardtext')
     if (isCardApply && isAlreadyApplied) {
       buttonStatus = 'disabled'
+    }
+    const isRecipientApply = key === 'apply' && section === 'recipient'
+    if (isRecipientApply && recipientAppliedLength === 1) {
+      buttonStatus = 'selected'
     }
 
     const orientation =
