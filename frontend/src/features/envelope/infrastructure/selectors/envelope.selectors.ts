@@ -68,7 +68,7 @@ export const selectShowAddressFormCloseButton = createSelector(
   ],
   (senderCount, recipientCount) =>
     (role: 'sender' | 'recipient') =>
-      role === 'sender' ? senderCount > 0 : recipientCount > 0,
+      role === 'sender' ? senderCount >= 0 : recipientCount > 0,
 )
 
 export const selectRecipientsPendingIds = createSelector(
