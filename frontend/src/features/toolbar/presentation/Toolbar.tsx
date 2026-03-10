@@ -43,8 +43,6 @@ export const Toolbar = ({
 
   const { sizeToolbarContour, sectionMenuHeight, setSectionMenuHeight } =
     useSizeFacade()
-  console.log('TOOLBAR section', section)
-  console.log('TOOLBAR state', state)
 
   const cardphotoApplied = useAppSelector(selectIsCurrentCropApplied)
   const cardtextApplied = useAppSelector(selectCardtextIsComplete)

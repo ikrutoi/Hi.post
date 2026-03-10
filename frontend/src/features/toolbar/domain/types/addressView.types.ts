@@ -49,7 +49,7 @@ export const RECIPIENTS_VIEW_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'listDelete', state: 'enabled' }],
+    icons: [{ key: 'listClose', state: 'enabled' }],
     status: 'enabled',
   },
 ]

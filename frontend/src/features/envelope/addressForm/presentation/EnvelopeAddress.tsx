@@ -85,6 +85,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     [],
   )
 
+  console.log('recipient state', recipientFacade.state)
+  console.log('sender state', senderFacade.state)
+
   useEffect(() => {
     if (editingTemplateId == null) return
     if (templateEntry) return
@@ -115,11 +118,17 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     recipientView === 'recipientView' &&
     (isSingleRecipientWithSavedTemplate || hasRecipientAddressData)
 
+  const hasSenderAddressData =
+    role === 'sender' &&
+    Object.values(value).some((v) => (v ?? '').trim() !== '')
+
   const isSenderWithSavedTemplate =
     role === 'sender' &&
     senderFacade.isEnabled &&
     editingTemplateId != null &&
-    dataMatchesTemplate
+    (templateEntry
+      ? dataMatchesTemplate
+      : hasSenderAddressData)
 
   const openAddressForm = (r: 'sender' | 'recipient') => {
     envelopeFacade.setAddressFormViewState(true, r)

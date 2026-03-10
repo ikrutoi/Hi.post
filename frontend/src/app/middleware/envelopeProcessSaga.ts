@@ -116,6 +116,11 @@ export function* processEnvelopeVisuals() {
     call([recipientTemplatesAdapter, 'getAll']),
   ])
 
+  /** Badge shows only addresses with listStatus inList (or legacy without listStatus) */
+  const isInList = (item: { listStatus?: string }) => item.listStatus !== 'outList'
+  const senderInListCount = (senderList ?? []).filter(isInList).length
+  const recipientInListCount = (recipientList ?? []).filter(isInList).length
+
   const addressTemplateRefs: { type: string; id: string }[] = yield select(
     (s: {
       previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] }
@@ -151,7 +156,7 @@ export function* processEnvelopeVisuals() {
   const senderToolbar = buildSenderToolbarState({
     isComplete: senderComplete,
     hasData: checkHasData(sender.viewDraft),
-    addressListCount: senderList.length,
+    addressListCount: senderInListCount,
     isCurrentAddressInList: isAddressInList(sender.viewDraft, senderList),
     isCurrentAddressFavorite: isSenderFavorite,
     hasDraft: hasSenderDraft,
@@ -167,15 +172,15 @@ export function* processEnvelopeVisuals() {
       ? {
           state: 'active' as const,
           options: {
-            badge: recipientList.length > 0 ? recipientList.length : null,
+            badge: recipientInListCount > 0 ? recipientInListCount : null,
           },
         }
-      : getAddressListToolbarFragment(recipientList.length)
+      : getAddressListToolbarFragment(recipientInListCount)
 
   const recipientToolbar = buildRecipientToolbarState({
     isComplete: recipientComplete,
     hasData: checkHasData(recipient.viewDraft),
-    addressListCount: recipientList.length,
+    addressListCount: recipientInListCount,
     isCurrentAddressInList: isAddressInList(recipient.viewDraft, recipientList),
     isCurrentAddressFavorite: isRecipientFavorite,
     hasDraft: hasRecipientDraft,
@@ -256,10 +261,15 @@ export function* processEnvelopeVisuals() {
           ? 'enabled'
           : 'disabled'
 
-  if (sender.currentView === 'addressFormSenderView') senderApplyState = 'disabled'
+  if (
+    sender.currentView === 'addressFormSenderView' &&
+    !senderComplete
+  )
+    senderApplyState = 'disabled'
   if (
     recipient.currentView === 'addressFormRecipientView' &&
-    recipient.mode === 'recipient'
+    recipient.mode === 'recipient' &&
+    !recipientComplete
   )
     recipientApplyState = 'disabled'
 
@@ -304,7 +314,8 @@ export function* processEnvelopeVisuals() {
         : 'enabled'
   if (
     recipient.currentView === 'addressFormRecipientView' &&
-    recipient.mode === 'recipients'
+    recipient.mode === 'recipients' &&
+    !recipientComplete
   ) {
     recipientsApplyState = 'disabled'
   }
@@ -316,7 +327,7 @@ export function* processEnvelopeVisuals() {
     updateToolbarSection({
       section: 'recipients',
       value: {
-        addressList: getAddressListToolbarFragment(recipientList.length),
+        addressList: getAddressListToolbarFragment(recipientInListCount),
         apply: {
           state: recipientsApplyState,
           options: {},

@@ -4,19 +4,22 @@ import { templateService } from '@entities/templates/domain/services/templateSer
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { updateGroupStatus } from '@toolbar/infrastructure/state'
-import { saveAddressRequested as recipientSaveRequested } from '@envelope/recipient/infrastructure/state'
-import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/infrastructure/state'
 import {
+  saveAddressRequested as recipientSaveRequested,
   setRecipientViewId,
   setRecipientMode,
   setRecipientView,
   clearRecipientFormData,
+  updateRecipientField,
+  setRecipientAppliedWithData,
 } from '@envelope/recipient/infrastructure/state'
+import { saveAddressRequested as senderSaveRequested } from '@envelope/sender/infrastructure/state'
 import {
   setSenderViewId,
   setSenderView,
   clearSenderFormData,
   updateSenderField,
+  setSenderAppliedIds,
 } from '@envelope/sender/infrastructure/state'
 import { addressSaveSuccess, setAddressFormView } from '@envelope/infrastructure/state'
 import { addAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
@@ -98,14 +101,28 @@ function* handleAddressSave(
           status: 'enabled',
         }),
       )
+      const id = String(result.templateId)
       if (role === 'recipient') {
-        yield put(setRecipientViewId(String(result.templateId)))
+        yield put(setRecipientViewId(id))
         yield put(setRecipientMode('recipient'))
         yield put(setRecipientView('recipientView'))
         yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearRecipientFormData())
+        // Заполняем viewDraft сохранённым адресом, чтобы RecipientView отобразил его
+        for (const [field, value] of Object.entries(
+          cleanedAddress,
+        ) as [AddressField, string][]) {
+          yield put(updateRecipientField({ field, value }))
+        }
+        // Для одиночного режима Recipient помечаем адрес как applied с локальными данными
+        yield put(
+          setRecipientAppliedWithData({
+            ids: [id],
+            data: [cleanedAddress],
+          }),
+        )
       } else {
-        yield put(setSenderViewId(String(result.templateId)))
+        yield put(setSenderViewId(id))
         yield put(setSenderView('senderView'))
         yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearSenderFormData())
@@ -115,6 +132,8 @@ function* handleAddressSave(
         ) as [AddressField, string][]) {
           yield put(updateSenderField({ field, value }))
         }
+        // После сохранения нового адреса через Apply помечаем его как applied
+        yield put(setSenderAppliedIds([id]))
       }
       yield put(addressSaveSuccess(role))
       yield call(processEnvelopeVisuals)
