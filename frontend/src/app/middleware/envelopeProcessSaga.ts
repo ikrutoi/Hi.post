@@ -39,6 +39,7 @@ import {
   setSenderViewId,
   setSenderView,
   setSenderAppliedIds,
+  setSenderAppliedWithData,
   setSenderApplied,
 } from '@envelope/sender/infrastructure/state'
 import {
@@ -444,6 +445,7 @@ export function* envelopeProcessSaga() {
   yield takeEvery(addAddressTemplateRef.type, processEnvelopeVisuals)
   yield takeEvery(removeAddressTemplateRef.type, processEnvelopeVisuals)
   yield takeEvery(setSenderAppliedIds.type, processEnvelopeVisuals)
+  yield takeEvery(setSenderAppliedWithData.type, processEnvelopeVisuals)
   yield takeEvery(setSenderApplied.type, processEnvelopeVisuals)
   yield takeEvery(setRecipientAppliedWithData.type, processEnvelopeVisuals)
   yield takeEvery(setRecipientAppliedIds.type, processEnvelopeVisuals)

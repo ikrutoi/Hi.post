@@ -269,6 +269,7 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           senderViewId: sender.senderViewId,
           currentView: 'senderView',
           applied: sender.applied ?? [],
+          appliedData: sender.appliedData ?? null,
           enabled: true,
         }),
       )

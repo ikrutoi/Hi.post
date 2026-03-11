@@ -30,5 +30,6 @@ export type SenderState = {
   sortOptions: SenderSortOptions
   senderViewId: string | null
   applied: string[]
+  appliedData: AddressFields | null
   enabled: boolean
 }

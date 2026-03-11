@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectSenderState,
   selectSenderView,
+  selectAppliedSenderDisplayAddress,
 } from '../../sender/infrastructure/selectors'
 import {
   selectRecipientDisplayAddress,
@@ -69,6 +70,9 @@ export const useEnvelopeFacade = () => {
   const addressRecipient = useAppSelector(selectRecipientDisplayAddress)
   const appliedRecipientAddress = useAppSelector(
     selectAppliedRecipientDisplayAddress,
+  )
+  const appliedSenderAddress = useAppSelector(
+    selectAppliedSenderDisplayAddress,
   )
   const isEnvelopeComplete = useAppSelector(selectIsEnvelopeReady)
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
@@ -251,6 +255,7 @@ export const useEnvelopeFacade = () => {
     recipient,
     addressRecipient,
     appliedRecipientAddress,
+    appliedSenderAddress,
     isEnvelopeComplete,
     addressFields: ADDRESS_FIELD_ORDER,
     isSenderVisible: sender.enabled,

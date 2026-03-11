@@ -19,7 +19,7 @@ import {
   setSenderView,
   clearSenderFormData,
   updateSenderField,
-  setSenderAppliedIds,
+  setSenderAppliedWithData,
 } from '@envelope/sender/infrastructure/state'
 import { addressSaveSuccess, setAddressFormView } from '@envelope/infrastructure/state'
 import { addAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
@@ -131,7 +131,12 @@ function* handleAddressSave(
         ) as [AddressField, string][]) {
           yield put(updateSenderField({ field, value }))
         }
-        yield put(setSenderAppliedIds([id]))
+        yield put(
+          setSenderAppliedWithData({
+            ids: [id],
+            data: [cleanedAddress],
+          }),
+        )
       }
       yield put(addressSaveSuccess(role))
       yield call(processEnvelopeVisuals)

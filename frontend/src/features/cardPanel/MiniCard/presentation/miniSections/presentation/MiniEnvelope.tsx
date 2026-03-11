@@ -149,7 +149,9 @@ export const MiniEnvelope: React.FC = () => {
       {isEnabled && senderState.applied.length > 0 && (
         <div className={styles.miniEnvelopeSender}>
           {/* <span>55</span> */}
-          {/* <span>{senderState.viewDraft.name}</span> */}
+          <span className={styles.miniEnvelopeSenderName}>
+            {senderState.viewDraft.name}
+          </span>
         </div>
       )}
     </div>

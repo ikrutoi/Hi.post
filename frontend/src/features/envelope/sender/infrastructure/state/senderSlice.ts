@@ -26,6 +26,7 @@ export const initialSender: SenderState = {
   sortOptions: DEFAULT_SENDER_SORT_OPTIONS,
   senderViewId: null,
   applied: [],
+  appliedData: null,
   enabled: true,
 }
 
@@ -68,8 +69,27 @@ const senderSlice = createSlice({
       state.applied = action.payload
     },
 
+    setSenderAppliedWithData: (
+      state,
+      action: PayloadAction<{ ids: string[]; data: AddressFields[] }>,
+    ) => {
+      state.applied = action.payload.ids
+      state.appliedData =
+        action.payload.data.length === 1 ? action.payload.data[0] : null
+    },
+
     setSenderApplied: (state, action: PayloadAction<boolean>) => {
-      if (!action.payload) state.applied = []
+      if (!action.payload) {
+        state.applied = []
+        state.appliedData = null
+      }
+    },
+
+    setSenderAppliedData: (
+      state,
+      action: PayloadAction<AddressFields | null>,
+    ) => {
+      state.appliedData = action.payload
     },
 
     setSenderView: (state, action: PayloadAction<SenderView>) => {
@@ -108,7 +128,9 @@ export const {
   restoreSender,
   clearSender,
   setSenderAppliedIds,
+  setSenderAppliedWithData,
   setSenderApplied,
+  setSenderAppliedData,
   setSenderView,
   setSenderViewId,
   clearSenderFormData,

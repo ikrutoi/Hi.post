@@ -112,14 +112,24 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       input = map[activeRow].current
     }
 
-    if (input) {
-      editModeOpenedAt.current = Date.now()
-      const len = input.value.length
-      input.focus()
-      input.setSelectionRange(len, len)
-    }
-
     prevActiveRow.current = activeRow
+
+    const focusInput = (el: HTMLInputElement) => {
+      editModeOpenedAt.current = Date.now()
+      const len = el.value.length
+      el.focus()
+      el.setSelectionRange(len, len)
+    }
+    if (input) {
+      focusInput(input)
+    } else if (activeRow === 'name') {
+      // Ref может ещё не быть при смене view → edit в одном тике; фокус после layout
+      const raf = requestAnimationFrame(() => {
+        const el = nameRef.current
+        if (el) focusInput(el)
+      })
+      return () => cancelAnimationFrame(raf)
+    }
   }, [isEditMode, role, activeRow])
 
   const moveFocus = (direction: 'up' | 'down', current: EditableRowKey) => {

@@ -16,7 +16,10 @@ import {
   setRecipientView,
   setRecipientViewId,
 } from '../../recipient/infrastructure/state'
-import { setRecipientViewEditMode } from '@envelope/infrastructure/state'
+import {
+  setRecipientViewEditMode,
+} from '@envelope/infrastructure/state'
+import { selectSenderViewEditMode } from '@envelope/infrastructure/selectors'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import { ToolbarSection } from '@/features/toolbar/domain/types'
@@ -72,6 +75,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const dispatch = useAppDispatch()
   const senderView = useAppSelector(selectSenderView)
+  const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientView = useAppSelector(selectRecipientView)
   const recipientsToolbarStateWithLiveAddressList = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
@@ -132,7 +136,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     role === 'sender' &&
     senderFacade.isEnabled &&
     editingTemplateId != null &&
-    (templateEntry ? dataMatchesTemplate : hasSenderAddressData)
+    (templateEntry
+      ? dataMatchesTemplate || senderViewEditMode
+      : hasSenderAddressData)
 
   const openAddressForm = (r: 'sender' | 'recipient') => {
     envelopeFacade.setAddressFormViewState(true, r)

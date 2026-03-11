@@ -5,6 +5,7 @@ import {
   clearSender,
   setSenderApplied,
   setSenderAppliedIds,
+  setSenderAppliedWithData,
   setSenderView,
   setSenderViewId,
   clearSenderFormData,
@@ -57,6 +58,7 @@ import {
   selectSenderState,
   selectIsSenderComplete,
   selectSenderViewId,
+  selectSenderAddress,
 } from '@envelope/sender/infrastructure/selectors'
 import {
   selectRecipientState,
@@ -531,7 +533,11 @@ function* handleEnvelopeToolbarAction(
       // Здесь доверяем тулбару и не дублируем проверку formIsComplete.
       const senderViewId: string | null = yield select(selectSenderViewId)
       if (senderViewId) {
-        yield put(setSenderAppliedIds([senderViewId]))
+        const displayAddress: Readonly<Record<string, string>> = yield select(
+          selectSenderAddress,
+        )
+        const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
+        yield put(setSenderAppliedWithData({ ids: [senderViewId], data }))
       } else {
         yield put(senderSaveRequested({ listStatus: 'outList' }))
       }

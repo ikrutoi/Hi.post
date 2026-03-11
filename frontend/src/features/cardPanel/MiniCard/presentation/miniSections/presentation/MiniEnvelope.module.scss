@@ -23,6 +23,20 @@
   height: 50%;
   border-radius: 0 0 100% 0;
   background-color: $color-envelope-sender;
+  // border: 1px solid red;
+}
+
+.miniEnvelopeSenderName {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.25rem;
+  width: 100%;
+  height: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: $color-envelope-sender-legend;
+  // border: 1px solid blue;
 }
 
 .miniEnvelopeCircles {

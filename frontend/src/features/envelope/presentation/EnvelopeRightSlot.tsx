@@ -9,7 +9,15 @@ import {
   setRecipientViewId,
   updateRecipientField,
 } from '../recipient/infrastructure/state'
-import { setRecipientViewEditMode } from '../infrastructure/state'
+import {
+  setRecipientViewEditMode,
+  setSenderViewEditMode,
+} from '../infrastructure/state'
+import {
+  setSenderView,
+  setSenderViewId,
+  updateSenderField,
+} from '../sender/infrastructure/state'
 import type { AddressBookEntry } from '../addressBook/domain/types'
 import type { AddressField } from '@shared/config/constants'
 import styles from './EnvelopeRightSlot.module.scss'
@@ -32,6 +40,20 @@ export const EnvelopeRightSlot: React.FC = () => {
       )
       dispatch(setRecipientView('recipientView'))
       dispatch(setRecipientViewEditMode(true))
+    },
+    [dispatch],
+  )
+
+  const handleEditFromSenderList = useCallback(
+    (entry: AddressBookEntry) => {
+      dispatch(setSenderViewId(entry.id))
+      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
+        ([field, value]) => {
+          dispatch(updateSenderField({ field, value }))
+        },
+      )
+      dispatch(setSenderView('senderView'))
+      dispatch(setSenderViewEditMode(true))
     },
     [dispatch],
   )
@@ -60,6 +82,7 @@ export const EnvelopeRightSlot: React.FC = () => {
         <div className={styles.panelWrap}>
           <SenderListPanel
             onSelect={senderFacade.selectFromList}
+            onEdit={handleEditFromSenderList}
             selectedId={senderFacade.selectedId}
           />
         </div>
