@@ -527,32 +527,26 @@ function* handleEnvelopeToolbarAction(
 
   if (key === 'apply') {
     if (section === 'sender') {
-      const senderComplete: boolean = yield select(selectIsSenderComplete)
-      if (senderComplete) {
-        const senderViewId: string | null = yield select(selectSenderViewId)
-        if (senderViewId) {
-          yield put(setSenderAppliedIds([senderViewId]))
-        } else {
-          yield put(senderSaveRequested({ listStatus: 'outList' }))
-        }
+      // Статус apply (enabled/disabled) уже посчитан в envelopeProcessSaga.
+      // Здесь доверяем тулбару и не дублируем проверку formIsComplete.
+      const senderViewId: string | null = yield select(selectSenderViewId)
+      if (senderViewId) {
+        yield put(setSenderAppliedIds([senderViewId]))
+      } else {
+        yield put(senderSaveRequested({ listStatus: 'outList' }))
       }
     }
     if (section === 'recipient') {
-      const recipientComplete: boolean = yield select(selectIsRecipientComplete)
-      if (recipientComplete) {
-        const recipientViewId: string | null = yield select(
-          selectRecipientViewId,
+      const recipientViewId: string | null = yield select(selectRecipientViewId)
+      if (recipientViewId) {
+        const displayAddress: Readonly<Record<string, string>> = yield select(
+          selectRecipientDisplayAddress,
         )
-        if (recipientViewId) {
-          const displayAddress: Readonly<Record<string, string>> = yield select(
-            selectRecipientDisplayAddress,
-          )
-          const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
-          yield put(setRecipientAppliedWithData({ ids: [recipientViewId], data }))
-          yield put(setRecipientMode('recipient'))
-        } else {
-          yield put(recipientSaveRequested({ listStatus: 'outList' }))
-        }
+        const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
+        yield put(setRecipientAppliedWithData({ ids: [recipientViewId], data }))
+        yield put(setRecipientMode('recipient'))
+      } else {
+        yield put(recipientSaveRequested({ listStatus: 'outList' }))
       }
     }
     if (section === 'recipients') {

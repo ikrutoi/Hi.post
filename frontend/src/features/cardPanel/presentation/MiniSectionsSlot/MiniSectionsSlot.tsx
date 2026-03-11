@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react'
+import { useAppSelector } from '@app/hooks'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import { useCardPanelFacade } from '../../application/facades'
@@ -6,6 +7,7 @@ import { CARD_PANEL_SECTIONS_PRIORITY } from '../../domain/types'
 import type { CardPanelSection } from '../../domain/types'
 import { MiniCard } from '../../MiniCard/presentation/MiniCard'
 import styles from './MiniSectionsSlot.module.scss'
+import { selectRecipientApplied } from '@envelope/recipient/infrastructure/selectors'
 
 const PARTS_TOTAL = 6
 const GAP_PARTS = 1
@@ -24,6 +26,8 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
     const { editorState } = useCardEditorFacade()
     const { state: stateCardPanel } = useCardPanelFacade()
     const isPacked = stateCardPanel.isPacked
+    const recipientApplied = useAppSelector(selectRecipientApplied)
+    const hasRecipientApplied = (recipientApplied?.length ?? 0) > 0
 
     const totalWidth =
       sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width : null
@@ -60,6 +64,11 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
           >
             {SECTIONS_ORDER.map((section, i) => {
               const { index } = CARD_PANEL_SECTIONS_PRIORITY[section]
+              const isSectionComplete = editorState[section]?.isComplete
+              const isEmpty =
+                section === 'envelope'
+                  ? !isSectionComplete && !hasRecipientApplied
+                  : !isSectionComplete
               return (
                 <div
                   key={section}
@@ -75,7 +84,7 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
                     zIndex={index}
                     position={0}
                     isPacked={true}
-                    isEmpty={!editorState[section]?.isComplete}
+                      isEmpty={isEmpty}
                   />
                 </div>
               )

@@ -206,88 +206,110 @@ export const CardPie: React.FC<CardPieProps> = ({
             x="0"
             y="0"
           >
-            {hasManyRecipients ? (
-              <>
-                <rect
-                  width="2560"
-                  height="2560"
-                  className={clsx(styles.rect, styles.rectEnvelope)}
-                  fill="var(--pie-rect-fill-envelope)"
-                />
-                <IconUsers
-                  x="400"
-                  y="440"
-                  width="2200"
-                  height="2200"
-                  className={styles.pieEnvelopeIconBg}
-                />
-                <text
-                  x="1280"
-                  y="1400"
-                  textAnchor="middle"
-                  strokeLinejoin="round"
-                  fill="var(--envelope-text)"
-                >
-                  <tspan x="1280" dy="250" fontWeight="700" fontSize="1500">
-                    {recipientCount}
-                  </tspan>
-                  {/* <tspan x="1280" dy="650" fontWeight="500" fontSize="500">
+            {
+              // Показываем содержимое секции Конверт только когда envelope isComplete.
+              !sections.envelope ? (
+                <>
+                  <rect
+                    width="2560"
+                    height="2560"
+                    className={clsx(
+                      styles.rect,
+                      styles.rectEnvelope,
+                      styles.rectEmpty,
+                    )}
+                  />
+                  <g
+                    className={styles.pieSectorIconBg}
+                    transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                  >
+                    <IconSectionMenuEnvelopeV2
+                      width={PIE_EMPTY_ICON_SIZE}
+                      height={PIE_EMPTY_ICON_SIZE}
+                    />
+                  </g>
+                </>
+              ) : hasManyRecipients ? (
+                <>
+                  <rect
+                    width="2560"
+                    height="2560"
+                    className={styles.rect}
+                  />
+                  <IconUsers
+                    x="400"
+                    y="400"
+                    width="2200"
+                    height="2200"
+                    className={styles.pieEnvelopeIconBg}
+                  />
+                  <text
+                    x="1280"
+                    y="1400"
+                    textAnchor="middle"
+                    strokeLinejoin="round"
+                    fill="var(--envelope-text)"
+                  >
+                    <tspan x="1280" dy="250" fontWeight="700" fontSize="1500">
+                      {recipientCount}
+                    </tspan>
+                    {/* <tspan x="1280" dy="650" fontWeight="500" fontSize="500">
                     recipients
                   </tspan> */}
-                </text>
-              </>
-            ) : recipient ? (
-              <>
-                <rect
-                  width="2560"
-                  height="2560"
-                  className={clsx(styles.rect, styles.rectEnvelope)}
-                  fill="var(--pie-rect-fill-envelope)"
-                />
-                <IconUserRecipient
-                  x="400"
-                  y="440"
-                  width="2200"
-                  height="2200"
-                  className={styles.pieEnvelopeIconBg}
-                />
-                <text
-                  x="1280"
-                  y="1100"
-                  textAnchor="middle"
-                  strokeLinejoin="round"
-                  fill="var(--envelope-text)"
-                >
-                  <tspan x="1280" dy="0" fontWeight="600" fontSize="650">
-                    {recipient.name}
-                  </tspan>
-                  <tspan x="1280" dy="750" fontWeight="600" fontSize="400">
-                    {recipient.country ?? recipient.city}
-                  </tspan>
-                </text>
-              </>
-            ) : (
-              <>
-                <rect
-                  width="2560"
-                  height="2560"
-                  className={clsx(
-                    styles.rect,
-                    styles.rectEnvelope,
-                    styles.rectEmpty,
-                  )}
-                />
-                <g
-                  className={styles.pieSectorIconBg}
-                  transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
-                >
-                  <IconSectionMenuEnvelopeV2
-                    width={PIE_EMPTY_ICON_SIZE}
-                    height={PIE_EMPTY_ICON_SIZE}
+                  </text>
+                </>
+              ) : recipient ? (
+                <>
+                  <rect
+                    width="2560"
+                    height="2560"
+                    className={styles.rect}
                   />
-                </g>
-              </>
-            )}
+                  <IconUserRecipient
+                    x="400"
+                    y="440"
+                    width="2200"
+                    height="2200"
+                    className={styles.pieEnvelopeIconBg}
+                  />
+                  <text
+                    x="1280"
+                    y="1100"
+                    textAnchor="middle"
+                    strokeLinejoin="round"
+                    fill="var(--envelope-text)"
+                  >
+                    <tspan x="1280" dy="0" fontWeight="600" fontSize="650">
+                      {recipient.name}
+                    </tspan>
+                    <tspan x="1280" dy="750" fontWeight="600" fontSize="400">
+                      {recipient.country ?? recipient.city}
+                    </tspan>
+                  </text>
+                </>
+              ) : (
+                <>
+                  <rect
+                    width="2560"
+                    height="2560"
+                    className={clsx(
+                      styles.rect,
+                      styles.rectEnvelope,
+                      styles.rectEmpty,
+                    )}
+                  />
+                  <g
+                    className={styles.pieSectorIconBg}
+                    transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                  >
+                    <IconSectionMenuEnvelopeV2
+                      width={PIE_EMPTY_ICON_SIZE}
+                      height={PIE_EMPTY_ICON_SIZE}
+                    />
+                  </g>
+                </>
+              )
+            }
           </pattern>
 
           <pattern

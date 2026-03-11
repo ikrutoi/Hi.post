@@ -114,15 +114,13 @@ function* handleAddressSave(
         ) as [AddressField, string][]) {
           yield put(updateRecipientField({ field, value }))
         }
-        // Помечаем как applied только при Apply (outList), не при listAdd (inList)
-        if (listStatus === 'outList') {
-          yield put(
-            setRecipientAppliedWithData({
-              ids: [id],
-              data: [cleanedAddress],
-            }),
-          )
-        }
+        // Для одиночного режима Recipient помечаем адрес как applied с локальными данными
+        yield put(
+          setRecipientAppliedWithData({
+            ids: [id],
+            data: [cleanedAddress],
+          }),
+        )
       } else {
         yield put(setSenderViewId(id))
         yield put(setSenderView('senderView'))
@@ -133,10 +131,7 @@ function* handleAddressSave(
         ) as [AddressField, string][]) {
           yield put(updateSenderField({ field, value }))
         }
-        // Помечаем как applied только при Apply (outList), не при listAdd (inList)
-        if (listStatus === 'outList') {
-          yield put(setSenderAppliedIds([id]))
-        }
+        yield put(setSenderAppliedIds([id]))
       }
       yield put(addressSaveSuccess(role))
       yield call(processEnvelopeVisuals)

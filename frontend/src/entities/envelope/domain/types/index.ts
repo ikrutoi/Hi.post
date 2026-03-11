@@ -7,7 +7,7 @@ export interface AddressTemplateItem {
   id: string
   localId: number
   address: AddressFields
-  listStatus?: ListStatus
+  listStatus: ListStatus
   favorite: boolean | null
 }
 
