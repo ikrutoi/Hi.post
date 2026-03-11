@@ -1,0 +1,17 @@
+import React from 'react'
+
+export const IconLogo = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 5120 5120"
+    fillRule="evenodd"
+    clipRule="evenodd"
+    imageRendering="optimizeQuality"
+    shapeRendering="geometricPrecision"
+    textRendering="geometricPrecision"
+    fill="currentColor"
+    {...props}
+  >
+    <path d="M2560 26c106 0 210 6 313 19l-233 1882h-628L2245 45c103-13 208-19 315-19m930 176c940 371 1604 1287 1604 2358 0 1289-961 2353-2206 2513l332-2683zM2250 5076c-212-26-416-78-609-153l293-2368 629 1zm-1205-484C426 4130 26 3392 26 2560v-8l1273-2zM106 1925C305 1152 860 522 1586 220l-211 1706zm4136-300c516 7 565 406 539 639-27 233-237 661-772 612-510-46-497-646-377-883 121-237 294-334 610-368" />
+  </svg>
+)

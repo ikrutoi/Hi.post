@@ -16,6 +16,8 @@ export * from './IconDelete'
 export * from './IconSave'
 export * from './IconDownload'
 export * from './IconApply'
+export * from './IconLogo'
+export * from './IconLogoFull'
 export * from './IconClose'
 export * from './IconX'
 
