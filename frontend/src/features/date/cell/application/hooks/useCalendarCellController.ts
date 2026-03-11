@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
+import { useAppDispatch } from '@app/hooks'
 import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
+import { openDayPanel } from '../../../calendar/infrastructure/state/calendar.slice'
 import { useSwitcherFacade } from '../../../switcher/application/facades'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
 import type {
@@ -8,7 +10,19 @@ import type {
   MonthDirection,
   Switcher,
 } from '@entities/date/domain/types'
+import type { CardCalendarIndex } from '@entities/card/domain/types'
 import type { HandleCellClickParams } from '../../domain/types'
+
+function hasCards(dayData: CardCalendarIndex): boolean {
+  return (
+    !!dayData.processed ||
+    dayData.cart.length > 0 ||
+    dayData.ready.length > 0 ||
+    dayData.sent.length > 0 ||
+    dayData.delivered.length > 0 ||
+    dayData.error.length > 0
+  )
+}
 
 interface UseCalendarCellControllerParams {
   triggerFlash: (part: Switcher) => void
@@ -17,6 +31,7 @@ interface UseCalendarCellControllerParams {
 export const useCalendarCellController = ({
   triggerFlash,
 }: UseCalendarCellControllerParams) => {
+  const dispatch = useAppDispatch()
   const { selectedDate, chooseDate } = useDateFacade()
 
   const { state: stateCalendar } = useCalendarFacade()
@@ -41,9 +56,9 @@ export const useCalendarCellController = ({
     dayAfter,
     calendarViewDate,
     direction,
+    dateKey,
+    dayData,
   }: HandleCellClickParams) => {
-    const dayValue = dayCurrent ?? dayBefore ?? dayAfter
-
     if (
       direction === 'current' &&
       !isDisabledDate &&
@@ -57,6 +72,9 @@ export const useCalendarCellController = ({
         day: dayCurrent,
       }
       chooseDate(dispatchDate)
+      if (dateKey && dayData && hasCards(dayData)) {
+        dispatch(openDayPanel({ dateKey, dayData }))
+      }
     }
 
     if (direction === 'before') {

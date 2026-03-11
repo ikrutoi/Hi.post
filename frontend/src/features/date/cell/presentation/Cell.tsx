@@ -20,7 +20,7 @@ interface CellProps {
   isSelectedDate?: boolean
   selectedDispatchDate?: SelectedDispatchDate
   onClickCell: (params: HandleCellClickParams) => void
-  /** Данные дня (CardCalendarIndex) для передачи в обработчик клика. */
+  dateKey?: string
   dayData?: CardCalendarIndex | null
   children?: React.ReactNode
 }
@@ -35,6 +35,7 @@ export const Cell: React.FC<CellProps> = ({
   isDisabledDate,
   isSelectedDate,
   onClickCell,
+  dateKey,
   dayData,
   children,
 }) => {
@@ -56,15 +57,13 @@ export const Cell: React.FC<CellProps> = ({
       dayAfter,
       calendarViewDate,
       direction,
+      dateKey,
       dayData,
     })
   }
 
   return (
-    <div
-      className={dynamicClass}
-      onClick={handleClick}
-    >
+    <div className={dynamicClass} onClick={handleClick}>
       <span className={styles.dayNumber}>
         {dayCurrent ?? dayBefore ?? dayAfter}
       </span>

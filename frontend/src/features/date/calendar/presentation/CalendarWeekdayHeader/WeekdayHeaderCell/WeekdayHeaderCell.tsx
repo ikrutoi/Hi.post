@@ -9,6 +9,7 @@ interface WeekdayHeaderCellProps {
   isFirstDay?: boolean
   firstDayTitle?: FirstDay
   handleFirstDay?: (day: FirstDay) => void
+  onWeekdayClick?: (weekday: DaysOfWeek) => void
 }
 
 export const WeekdayHeaderCell: React.FC<WeekdayHeaderCellProps> = ({
@@ -16,17 +17,32 @@ export const WeekdayHeaderCell: React.FC<WeekdayHeaderCellProps> = ({
   isFirstDay = false,
   firstDayTitle,
   handleFirstDay,
+  onWeekdayClick,
 }) => {
   const handleClick = () => {
     if (isFirstDay && handleFirstDay && firstDayTitle) {
       handleFirstDay(firstDayTitle === 'Sun' ? 'Mon' : 'Sun')
+    } else if (onWeekdayClick) {
+      onWeekdayClick(weekday)
     }
   }
 
+  const hasClick = (isFirstDay && handleFirstDay) || onWeekdayClick
+
   return (
     <div
-      className={clsx(styles.cell, isFirstDay && styles.firstDayToggle)}
-      onClick={isFirstDay ? handleClick : undefined}
+      className={clsx(
+        styles.cell,
+        isFirstDay && styles.firstDayToggle,
+        onWeekdayClick && !isFirstDay && styles.weekdayClickable,
+      )}
+      onClick={hasClick ? handleClick : undefined}
+      role={onWeekdayClick && !isFirstDay ? 'button' : undefined}
+      aria-label={
+        onWeekdayClick && !isFirstDay
+          ? `Open or close cards panel (${weekday})`
+          : undefined
+      }
     >
       {isFirstDay ? (
         <span className={styles.firstDayToggleInner}>{weekday}</span>

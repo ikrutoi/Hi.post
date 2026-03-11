@@ -75,6 +75,7 @@ export const buildMonthCells = ({
         isDisabledDate={isDisabledDate(day, cellDate, currentDate)}
         isSelectedDate={isSelectedDate}
         onClickCell={handleClickCell}
+        dateKey={dateKey}
         dayData={dayData}
       >
         {dayData && <CardPreview data={dayData} />}

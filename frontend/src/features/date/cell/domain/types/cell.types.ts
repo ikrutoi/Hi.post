@@ -11,6 +11,6 @@ export interface HandleCellClickParams {
   isDisabledDate?: boolean
   calendarViewDate: CalendarViewDate
   direction: MonthDirection
-  /** Данные дня из cardsMap (превью по статусам) — для обработчика клика при необходимости. */
+  dateKey?: string
   dayData?: CardCalendarIndex | null
 }

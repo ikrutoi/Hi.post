@@ -49,3 +49,13 @@
   border-color: $color-hover-dark;
   color: $color-font-enabled;
 }
+
+.weekdayClickable {
+  cursor: pointer;
+  border-radius: 0.75rem;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-font-enabled;
+  }
+}
