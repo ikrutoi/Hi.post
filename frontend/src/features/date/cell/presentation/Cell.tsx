@@ -6,7 +6,7 @@ import type {
   CalendarViewDate,
   MonthDirection,
 } from '@entities/date/domain/types'
-import type { CartItem } from '@entities/cart/domain/types'
+import type { CardCalendarIndex } from '@entities/card/domain/types'
 import type { HandleCellClickParams } from '../domain/types'
 
 interface CellProps {
@@ -20,6 +20,8 @@ interface CellProps {
   isSelectedDate?: boolean
   selectedDispatchDate?: SelectedDispatchDate
   onClickCell: (params: HandleCellClickParams) => void
+  /** Данные дня (CardCalendarIndex) для передачи в обработчик клика. */
+  dayData?: CardCalendarIndex | null
   children?: React.ReactNode
 }
 
@@ -33,6 +35,7 @@ export const Cell: React.FC<CellProps> = ({
   isDisabledDate,
   isSelectedDate,
   onClickCell,
+  dayData,
   children,
 }) => {
   const dynamicClass = clsx(
@@ -53,7 +56,7 @@ export const Cell: React.FC<CellProps> = ({
       dayAfter,
       calendarViewDate,
       direction,
-      // cartItem,
+      dayData,
     })
   }
 

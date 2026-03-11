@@ -1,5 +1,5 @@
 import type { Template } from '@shared/config/constants'
-import type { StoreMap } from '@db/types'
+import type { StoreMap, TemplateStoreMap } from '@db/types'
 
 export type CardEditorTemplateMap = Partial<
   Record<'cardphoto' | 'cardtext' | 'sender' | 'recipient', string>
@@ -11,9 +11,9 @@ export type TemplateDataMap = {
   cardtext: StoreMap['cardtext']
   sender: StoreMap['sender']
   recipient: StoreMap['recipient']
-  cart: StoreMap['cart']
-  drafts: StoreMap['drafts']
-  sent: StoreMap['sent']
+  cart: TemplateStoreMap['cart']
+  drafts: TemplateStoreMap['drafts']
+  sent: TemplateStoreMap['sent']
 }
 
 export type DataFor<T extends Template> = TemplateDataMap[T]

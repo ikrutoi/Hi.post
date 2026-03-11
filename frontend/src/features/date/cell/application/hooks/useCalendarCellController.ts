@@ -3,22 +3,12 @@ import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
 import { useSwitcherFacade } from '../../../switcher/application/facades'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
-import type { CartItem } from '@entities/cart/domain/types'
 import type {
   CalendarViewDate,
   MonthDirection,
   Switcher,
 } from '@entities/date/domain/types'
-
-interface HandleCellClickParams {
-  isDisabledDate?: boolean
-  dayBefore?: number
-  dayCurrent?: number
-  dayAfter?: number
-  calendarViewDate?: CalendarViewDate
-  direction: MonthDirection
-  // cartItem?: CartItem
-}
+import type { HandleCellClickParams } from '../../domain/types'
 
 interface UseCalendarCellControllerParams {
   triggerFlash: (part: Switcher) => void

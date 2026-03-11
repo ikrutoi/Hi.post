@@ -10,9 +10,7 @@ export const storeAdapters: {
   cardtext: StoreAdapter<StoreMap['cardtext']>
   sender: StoreAdapter<StoreMap['sender']>
   recipient: StoreAdapter<StoreMap['recipient']>
-  cart: StoreAdapter<StoreMap['cart']>
-  drafts: StoreAdapter<StoreMap['drafts']>
-  sent: StoreAdapter<StoreMap['sent']>
+  cards: StoreAdapter<StoreMap['cards']>
   session: StoreAdapter<StoreMap['session']>
   workingCard: StoreAdapter<StoreMap['workingCard']>
 } = {
@@ -23,9 +21,7 @@ export const storeAdapters: {
   cardtext: createStoreAdapter<StoreMap['cardtext']>('cardtext'),
   sender: createStoreAdapter<StoreMap['sender']>('sender'),
   recipient: createStoreAdapter<StoreMap['recipient']>('recipient'),
-  cart: createStoreAdapter<StoreMap['cart']>('cart'),
-  drafts: createStoreAdapter<StoreMap['drafts']>('drafts'),
-  sent: createStoreAdapter<StoreMap['sent']>('sent'),
+  cards: createStoreAdapter<StoreMap['cards']>('cards'),
   session: createStoreAdapter<StoreMap['session']>('session'),
   workingCard: createStoreAdapter<StoreMap['workingCard']>('workingCard'),
 }

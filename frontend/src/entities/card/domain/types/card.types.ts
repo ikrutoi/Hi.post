@@ -47,6 +47,8 @@ export interface CalendarCardItem {
   status: CardStatus
 }
 
+export type CalendarPreviewCache = Record<string, string>
+
 export interface CardCalendarIndex {
   processed: CalendarCardItem | null
   cart: CalendarCardItem[]
@@ -59,6 +61,7 @@ export interface CardCalendarIndex {
 export interface CardState {
   cards: Card[]
   calendarIndex: CardCalendarIndex
+  calendarPreviewCache: CalendarPreviewCache
   activeSection: CardSection | null
   isReady: boolean
   previewCardId: string | null

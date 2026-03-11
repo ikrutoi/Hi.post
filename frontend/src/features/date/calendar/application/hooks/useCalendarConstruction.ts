@@ -1,14 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { getCurrentDate } from '@shared/utils/date'
 import {
   getDaysInPreviousMonth,
   getDaysInCurrentMonth,
   getFirstDayOfWeekFromDispatch,
-  shiftMonth,
 } from '../../utils'
 import { buildMonthCells } from '../logic'
-import { cartAdapter } from '@db/adapters/storeAdapters'
 import { useCalendarCellController } from '@date/cell/application/hooks'
 import type {
   DispatchDate,
@@ -16,10 +14,8 @@ import type {
   CalendarViewDate,
   Switcher,
 } from '@entities/date/domain/types'
-import type { CartItem } from '@entities/cart/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
-import { CardCalendarIndex } from '@/entities/card/domain/types'
 
 interface UseCalendarConstructionParams {
   selectedDate: SelectedDispatchDate
@@ -38,19 +34,7 @@ export const useCalendarConstruction = ({
   chooseDate,
   triggerFlash,
 }: UseCalendarConstructionParams) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
   const cardsMap = useAppSelector(selectCardsByDateMap)
-
-  // console.log('USE_CALENDAR_CONSTRUCTION cardsMap', cardsMap)
-
-  useEffect(() => {
-    const loadCartItems = async () => {
-      const items = await cartAdapter.getAll()
-      setCartItems(items)
-    }
-    loadCartItems()
-  }, [])
-
   const { year, month } = calendarViewDate
 
   const daysInPrevMonth = getDaysInPreviousMonth(year, month)
@@ -92,7 +76,6 @@ export const useCalendarConstruction = ({
     currentDate,
     handleClickCell,
     chooseDate,
-    cartItems,
     cardsMap,
   })
 
@@ -114,7 +97,7 @@ export const useCalendarConstruction = ({
       selectedDate,
       chooseDate,
       handleClickCell,
-      cartItems,
+      cardsMap,
       firstDayOfWeek,
     ],
   )

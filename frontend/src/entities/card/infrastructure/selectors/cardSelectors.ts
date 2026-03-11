@@ -22,6 +22,16 @@ export const selectAllCards = (state: RootState) => selectCardState(state).cards
 export const selectCalendarIndex = (state: RootState) =>
   selectCardState(state).calendarIndex
 
+export const selectCalendarPreviewCache = (state: RootState) =>
+  selectCardState(state).calendarPreviewCache
+
+/** URL для отображения превью в ячейке: из кэша (мгновенно) или fallback на исходный previewUrl. */
+export const selectCalendarPreviewDisplayUrl = (cardId: string) =>
+  createSelector(
+    [selectCalendarPreviewCache, () => cardId],
+    (cache, id) => cache[id] ?? null,
+  )
+
 export const selectCardById = (id: string) => (state: RootState) =>
   state.card.cards.find((card) => card.id === id)
 

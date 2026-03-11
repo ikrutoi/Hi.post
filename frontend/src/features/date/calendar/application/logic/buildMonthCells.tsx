@@ -8,13 +8,9 @@ import type {
   CalendarViewDate,
   DispatchDate,
 } from '@entities/date/domain/types'
-import type { CartItem } from '@entities/cart/domain/types'
 import type { MonthDirection } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
-import {
-  CalendarCardItem,
-  CardCalendarIndex,
-} from '@entities/card/domain/types'
+import type { CardCalendarIndex } from '@entities/card/domain/types'
 
 interface BuildMonthCellsParams {
   days: number[]
@@ -24,7 +20,6 @@ interface BuildMonthCellsParams {
   currentDate: { day: number; month: number; year: number }
   handleClickCell: (params: HandleCellClickParams) => void
   chooseDate?: (date: DispatchDate) => void
-  cartItems?: CartItem[]
   cardsMap: Record<string, CardCalendarIndex>
 }
 
@@ -36,7 +31,6 @@ export const buildMonthCells = ({
   currentDate,
   handleClickCell,
   chooseDate,
-  cartItems,
   cardsMap,
 }: BuildMonthCellsParams) => {
   if (!calendarViewDate) return []
@@ -51,7 +45,6 @@ export const buildMonthCells = ({
   return days.map((day) => {
     const dateKey = `${currentViewYear}-${currentViewMonth}-${day}`
     const dayData = cardsMap[dateKey]
-    console.log('dayData', dayData)
 
     const isToday =
       day === currentDate.day &&
@@ -82,6 +75,7 @@ export const buildMonthCells = ({
         isDisabledDate={isDisabledDate(day, cellDate, currentDate)}
         isSelectedDate={isSelectedDate}
         onClickCell={handleClickCell}
+        dayData={dayData}
       >
         {dayData && <CardPreview data={dayData} />}
       </Cell>

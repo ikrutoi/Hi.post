@@ -13,6 +13,7 @@ const initialState: CardState = {
     delivered: [],
     error: [],
   },
+  calendarPreviewCache: {},
   activeSection: null,
   isReady: false,
   previewCardId: null,
@@ -111,6 +112,24 @@ export const cardSlice = createSlice({
       state.calendarIndex.processed = null
       state.isReady = false
     },
+
+    setCalendarPreviewCached: (
+      state,
+      action: PayloadAction<{ cardId: string; blobUrl: string }>,
+    ) => {
+      state.calendarPreviewCache[action.payload.cardId] = action.payload.blobUrl
+    },
+
+    clearCalendarPreviewCache: (
+      state,
+      action: PayloadAction<string | undefined>,
+    ) => {
+      if (action.payload != null) {
+        delete state.calendarPreviewCache[action.payload]
+      } else {
+        state.calendarPreviewCache = {}
+      }
+    },
   },
 })
 
@@ -124,11 +143,19 @@ export const {
   copyFullCardToProcessed,
   copySectionToProcessed,
   clearProcessed,
+  setCalendarPreviewCached,
+  clearCalendarPreviewCache,
 } = cardSlice.actions
 
 export default cardSlice.reducer
 
+export const requestCalendarPreview = createAction<{
+  cardId: string
+  previewUrl: string
+}>('card/requestCalendarPreview')
+
 export const cardActions = {
   ...cardSlice.actions,
   requestFullCopy: createAction<string>('card/requestFullCopy'),
+  requestCalendarPreview,
 }

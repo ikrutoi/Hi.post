@@ -2,6 +2,7 @@ import type { ImageTemplateItem } from '@/features/cardphoto/domain/typesLayout'
 import type { CardtextTemplateItem } from '@cardtext/domain/types'
 import type { CardtextRecord } from '../types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
+import type { Card } from '@entities/card/domain/types'
 import type { CartItem } from '@entities/cart/domain/types'
 import type { DraftsItem } from '@entities/drafts/domain/types'
 import type { SentItem } from '@entities/sent/domain/types'
@@ -23,9 +24,7 @@ export interface StoreMap {
   cardtext: CardtextRecord
   sender: AddressTemplateItem
   recipient: AddressTemplateItem
-  cart: CartItem
-  drafts: DraftsItem
-  sent: SentItem
+  cards: Card[]
   session: SessionData
   workingCard: WorkingCardRecord
 }
