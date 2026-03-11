@@ -470,6 +470,25 @@ function* handleEnvelopeToolbarAction(
             if (recipient.applied?.[0] === recipientViewId) {
               yield put(setRecipientAppliedData(recipient.viewDraft))
             }
+            // Если получатель есть в списке envelopeRecipients (режим «Получатели»),
+            // синхронизируем его snapshot (viewDraft), чтобы RecipientsView показал обновлённый адрес.
+            const envelopeRecipients: RecipientState[] = yield select(
+              (state: RootState) => state.envelopeRecipients ?? [],
+            )
+            if (envelopeRecipients.length > 0) {
+              const nextList: RecipientState[] = envelopeRecipients.map((r) =>
+                r.recipientViewId === recipientViewId
+                  ? {
+                      ...r,
+                      viewDraft: recipient.viewDraft,
+                      formIsComplete: Object.values(
+                        recipient.viewDraft,
+                      ).every((v) => (v ?? '').trim() !== ''),
+                    }
+                  : r,
+              )
+              yield put(setRecipientsList(nextList))
+            }
           } else {
             // eslint-disable-next-line no-console
             console.warn('Failed to update recipient address template')
