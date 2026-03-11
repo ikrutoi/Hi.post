@@ -4,12 +4,12 @@
 .miniEnvelope {
   position: relative;
   display: grid;
-  padding: 0.5rem 0.5rem 0.6rem;
+  padding: 0.25rem;
   height: 100%;
   width: 100%;
   border-radius: 0.75rem;
   grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: repeat(3, 1fr);
   row-gap: 0.15rem;
   overflow: hidden;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -30,13 +30,31 @@
   position: absolute;
   top: 0.5rem;
   left: 0.25rem;
-  width: 100%;
-  height: 50%;
-  font-size: 0.75rem;
+  width: 80%;
+  height: 1.2rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+  overflow: hidden;
   color: $color-envelope-sender-legend;
   // border: 1px solid blue;
+}
+
+.miniEnvelopeSenderNameOverflow {
+  mask-image: linear-gradient(to right, black 0, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0,
+    black 85%,
+    transparent 100%
+  );
+}
+
+.miniEnvelopeSenderNameInner {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  white-space: nowrap;
 }
 
 .miniEnvelopeCircles {
@@ -88,37 +106,37 @@
 //   color: rgba($color-envelope-recipient-legend, 0.35);
 // }
 
-.miniEnvelopeSingleContent {
+.miniEnvelopeSingleContent,
+.miniEnvelopeCount {
+  grid-column: 1/2;
+  grid-row: 2/4;
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
   padding-left: 1rem;
-  padding-right: 0.25rem;
-  border-radius: 1rem;
+  padding-top: 0.75rem;
 }
 
 .miniEnvelopeSingleContent .miniEnvelopeName,
 .miniEnvelopeCount {
-  grid-column: 1/2;
-  grid-row: 2/3;
-  display: flex;
-  align-items: center;
   overflow: hidden;
   font-weight: 700;
   font-size: 1rem;
   color: $color-envelope-recipient-legend;
   line-height: 1.2;
   letter-spacing: 0.02em;
+  z-index: 2;
 }
 
 .miniEnvelopeCount {
   grid-column: 1/2;
   grid-row: 2/3;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  align-items: flex-end;
+  justify-content: center;
   font-weight: 700;
   font-size: 1.5rem;
   line-height: 1;
@@ -152,6 +170,7 @@
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
+  margin-bottom: 0.25rem;
   overflow: hidden;
   border-radius: 0 0 0.5rem 0;
 

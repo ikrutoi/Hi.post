@@ -6,6 +6,7 @@ import {
   setSenderApplied,
   setSenderAppliedIds,
   setSenderAppliedWithData,
+  setSenderAppliedData,
   setSenderView,
   setSenderViewId,
   clearSenderFormData,
@@ -403,6 +404,10 @@ function* handleEnvelopeToolbarAction(
           if (result.success) {
             yield put(incrementAddressBookReloadVersion())
             yield put(incrementAddressTemplatesReloadVersion())
+            // Обновляем appliedData, чтобы MiniEnvelope показывал актуальное имя после редактирования
+            if (sender.applied?.[0] === senderViewId) {
+              yield put(setSenderAppliedData(sender.viewDraft))
+            }
           } else {
             // eslint-disable-next-line no-console
             console.warn('Failed to update sender address template')
@@ -461,6 +466,10 @@ function* handleEnvelopeToolbarAction(
           if (result.success) {
             yield put(incrementAddressBookReloadVersion())
             yield put(incrementAddressTemplatesReloadVersion())
+            // Обновляем appliedData, чтобы MiniEnvelope показывал актуальное имя после редактирования
+            if (recipient.applied?.[0] === recipientViewId) {
+              yield put(setRecipientAppliedData(recipient.viewDraft))
+            }
           } else {
             // eslint-disable-next-line no-console
             console.warn('Failed to update recipient address template')

@@ -11,6 +11,7 @@ import {
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { selectSelectedDate } from '@date/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@features/envelope/infrastructure/selectors'
+import { selectAppliedRecipientDisplayAddress } from '@envelope/recipient/infrastructure/selectors'
 
 export const selectPieDataByContext = createSelector(
   [
@@ -44,8 +45,9 @@ export const selectActiveCardFullData = createSelector(
     selectSelectedAroma,
     selectSelectedDate,
     selectEnvelopeSessionRecord,
+    selectAppliedRecipientDisplayAddress,
   ],
-  (editor, cardtext, cardphoto, aroma, date, envelope) => {
+  (editor, cardtext, cardphoto, aroma, date, envelope, appliedRecipient) => {
     const recipientCount = envelope.recipient?.applied?.length ?? 0
 
     return {
@@ -53,8 +55,9 @@ export const selectActiveCardFullData = createSelector(
       data: {
         cardphoto,
         cardtext,
-        // Для пирога: если один получатель — рисуем его адрес, иначе показываем только счётчик
-        recipient: recipientCount === 1 ? envelope.recipient.viewDraft : null,
+        // Для пирога: если один получатель — рисуем применённый адрес (appliedData),
+        // иначе показываем только счётчик
+        recipient: recipientCount === 1 ? appliedRecipient : null,
         recipientCount,
         aroma,
         date,

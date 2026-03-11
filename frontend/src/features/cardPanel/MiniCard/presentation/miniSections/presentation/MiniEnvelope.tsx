@@ -147,12 +147,16 @@ export const MiniEnvelope: React.FC = () => {
         {getToolbarIcon({ key: 'clearInput' })}
       </button> */}
       {isEnabled && senderState.applied.length > 0 && (
-        <div className={styles.miniEnvelopeSender}>
-          {/* <span>55</span> */}
+        <>
+          <div className={styles.miniEnvelopeSender}></div>
           <span className={styles.miniEnvelopeSenderName}>
-            {senderState.viewDraft.name}
+            <span className={styles.miniEnvelopeSenderNameOverflow}>
+              <span className={styles.miniEnvelopeSenderNameInner}>
+                {senderState.appliedData?.name}
+              </span>
+            </span>
           </span>
-        </div>
+        </>
       )}
     </div>
   )
