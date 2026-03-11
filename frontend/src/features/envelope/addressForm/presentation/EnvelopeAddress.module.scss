@@ -96,8 +96,64 @@
   justify-content: space-between;
 }
 
-.addressToolbar {
+.addressToolbarSender {
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  transform: translateY(-50%);
   width: min-content;
+  // border: solid 1px red;
+}
+
+.envelopeSenderToolbarIconContainer {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  padding: 0.5rem;
+  transform: translateY(-50%);
+  background-color: #fff;
+}
+
+.envelopeSenderToolbarIcon {
+  width: 1.6rem;
+  height: 1.6rem;
+  color: $color-envelope-sender-legend;
+  opacity: 0.5;
+  transition: color 0.2s ease;
+}
+
+.addressToolbarRecipient {
+  position: absolute;
+  top: 0;
+  left: 1rem;
+  transform: translateY(-50%);
+  width: min-content;
+}
+
+.envelopeRecipientToolbarIconContainer {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding: 0.5rem;
+  transform: translateY(-50%);
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0 0.25rem 0 0.5rem;
+  box-sizing: border-box;
+  // border: solid 1px blue;
+}
+
+.envelopeRecipientToolbarIcon {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex-shrink: 0;
+  color: $color-envelope-recipient-legend;
+  opacity: 0.5;
+  transition: color 0.2s ease;
 }
 
 .addressFormRecipientBody,
@@ -152,18 +208,20 @@
 }
 
 .addressLegendSender {
-  align-self: flex-end;
-  text-align: right;
-  margin-right: 0.65rem;
-  color: $color-envelope-sender-legend;
-  background-color: #fff;
+  position: absolute;
+  color: transparent;
+  z-index: -1;
+  // align-self: flex-end;
+  // text-align: right;
+  // margin-right: 0.65rem;
+  // color: $color-envelope-sender-legend;
+  // background-color: #fff;
 }
 
 .addressLegendRecipient {
-  text-align: right;
-  margin-right: 0.65rem;
-  color: $color-envelope-recipient-legend;
-  background-color: #fff;
+  position: absolute;
+  color: transparent;
+  z-index: -1;
 }
 
 .addressLegendReplica {

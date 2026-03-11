@@ -16,15 +16,18 @@ import {
   setRecipientView,
   setRecipientViewId,
 } from '../../recipient/infrastructure/state'
-import {
-  setRecipientViewEditMode,
-} from '@envelope/infrastructure/state'
+import { setRecipientViewEditMode } from '@envelope/infrastructure/state'
 import { selectSenderViewEditMode } from '@envelope/infrastructure/selectors'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import { ToolbarSection } from '@/features/toolbar/domain/types'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import { IconUserRecipient, IconUsers, IconUserSender } from '@shared/ui/icons'
+import {
+  IconUserRecipient,
+  IconUsers,
+  IconUserSender,
+  IconUserSenderCentered,
+} from '@shared/ui/icons'
 
 const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
 
@@ -147,8 +150,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   }
 
   const handleEditRecipientFromList = (entry: AddressBookEntry) => {
-    // В режиме «Пользователи» открываем универсальный RecipientView в режиме редактирования,
-    // тумблер не трогаем. После выхода из редактирования снова покажем RecipientsView.
     dispatch(setRecipientViewId(entry.id))
     ;(Object.entries(entry.address) as [keyof typeof value, string][]).forEach(
       ([field, fieldValue]) => {
@@ -189,24 +190,18 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             >
               {roleLabel}
             </legend>
-
             <div
               className={clsx(
-                styles.addressLegendReplicaContainer,
-                styles.addressLegendReplicaContainerSender,
+                styles.addressToolbar,
+                styles.addressToolbarSender,
               )}
             >
-              <div
-                className={clsx(
-                  styles.addressToolbar,
-                  styles.addressToolbarSender,
-                )}
-              >
-                <Toolbar section="sender" />
-              </div>
-              <span className={clsx(styles.addressLegendReplica)}>
-                {roleLabel}
-              </span>
+              <Toolbar section="sender" />
+            </div>
+            <div className={styles.envelopeSenderToolbarIconContainer}>
+              <IconUserSenderCentered
+                className={styles.envelopeSenderToolbarIcon}
+              />
             </div>
 
             {senderView === 'addressFormSenderView' ? (
@@ -273,52 +268,41 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 recipientFacade.isEnabled && styles.addressLegendMulti,
               )}
             >
+              {recipientFacade.isEnabled ? 'Recipients' : 'Recipient'}
+            </legend>
+            <div
+              className={clsx(
+                styles.addressToolbar,
+                styles.addressToolbarRecipient,
+              )}
+            >
+              <Toolbar
+                section={
+                  recipientFacade.isEnabled
+                    ? 'recipients'
+                    : ('recipient' as ToolbarSection)
+                }
+                stateOverride={
+                  recipientFacade.isEnabled
+                    ? recipientsToolbarStateWithLiveAddressList
+                    : undefined
+                }
+              />
+            </div>
+            <div className={styles.envelopeRecipientToolbarIconContainer}>
               {recipientFacade.isEnabled ? (
                 <>
-                  {envelopeFacade.selectedRecipientEntriesInOrder.length >
-                    0 && (
+                  {envelopeFacade.selectedRecipientEntriesInOrder.length > 0 && (
                     <span className={styles.recipientsCountBadge}>
                       {envelopeFacade.selectedRecipientEntriesInOrder.length}
                     </span>
                   )}
-                  Recipients
+                  <IconUsers className={styles.envelopeRecipientToolbarIcon} />
                 </>
               ) : (
-                'Recipient'
-              )}
-            </legend>
-            <div
-              className={clsx(
-                styles.addressLegendReplicaContainer,
-                styles.addressLegendReplicaContainerRecipient,
-              )}
-            >
-              <div className={clsx(styles.addressToolbarDouble)}>
-                <div
-                  className={clsx(
-                    styles.addressToolbar,
-                    styles.addressToolbarRecipient,
-                  )}
-                >
-                  <Toolbar
-                    section={
-                      recipientFacade.isEnabled
-                        ? 'recipients'
-                        : ('recipient' as ToolbarSection)
-                    }
-                    stateOverride={
-                      recipientFacade.isEnabled
-                        ? recipientsToolbarStateWithLiveAddressList
-                        : undefined
-                    }
-                  />
-                </div>
-              </div>
-
-              {!recipientFacade.isEnabled ? (
-                <span className={styles.addressLegendReplica}>Recipient</span>
-              ) : (
-                <span className={styles.addressLegendReplica}>Recipients</span>
+                <IconUserRecipient
+                  className={styles.envelopeRecipientToolbarIcon}
+                />
               )}
             </div>
             {recipientView === 'addressFormRecipientView' ? (
