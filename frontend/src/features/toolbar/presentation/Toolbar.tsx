@@ -78,7 +78,7 @@ export const Toolbar = ({
     }
   }, [section, groups, sectionMenuHeight, setSectionMenuHeight])
 
-  const sectionsWithFixedWidth = ['cardphoto', 'cardtext']
+  const sectionsWithFixedWidth = ['cardphoto']
   const toolbarStyle = sectionsWithFixedWidth.includes(section)
     ? { width: `${sizeToolbarContour.width}px` }
     : {}

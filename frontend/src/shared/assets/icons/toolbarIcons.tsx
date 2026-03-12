@@ -96,6 +96,7 @@ import {
   IconSectionMenuDate,
   IconCardphotoTemplates,
   IconCardtextTemplates,
+  IconCardtextPlus,
   IconAddressTemplates,
   IconAddressList,
   IconCardPlus,
@@ -292,6 +293,8 @@ export function getIconByKey(
       return <BsCardText />
     case 'textList':
       return <IconCardtextTemplates />
+    case 'cardtextPlus':
+      return <IconCardtextPlus />
     case 'photoTemplates':
       return <IconCardphotoTemplates />
     case 'cardphoto':

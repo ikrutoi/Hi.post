@@ -60,6 +60,7 @@
   overflow: hidden;
   background-color: $color-app-inner;
   border-radius: 0.75rem;
+  // border: 1px solid red;
 }
 
 .appMainContentCenter {
@@ -68,7 +69,7 @@
   min-height: 0;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: minmax(0, 2fr) minmax(0, 9fr);
+  grid-template-rows: minmax(0, 2fr) auto minmax(0, 9fr);
   justify-items: end;
   align-content: stretch;
   // border: solid 1px purple;
@@ -140,6 +141,7 @@
   min-height: 0;
   width: 100%;
   padding-top: 1rem;
+  margin-bottom: 0;
   display: flex;
   justify-content: center;
   align-items: stretch;
@@ -147,11 +149,23 @@
 }
 
 .mainForm {
-  grid-row: 2 / 3;
+  grid-row: 3 / 4;
   grid-column: 1 / -1;
   min-height: 0;
   width: 100%;
   display: flex;
   overflow: visible;
   // justify-content: flex-end;
+}
+
+.mainCardSectionToolbar {
+  grid-row: 2 / 3;
+  grid-column: 1 / -1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3rem; // высота строки тулбара
+  margin: 0 0 0.5rem; // вплотную к верхнему бордеру центра, с небольшим зазором до редактора
 }

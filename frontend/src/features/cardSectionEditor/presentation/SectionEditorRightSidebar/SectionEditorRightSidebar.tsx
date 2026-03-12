@@ -86,9 +86,9 @@ export const SectionEditorRightSidebar: React.FC = () => {
   )
 
   const showPreviewStrip =
-    (activeSection === 'cardphoto' &&
-      toolbarCardphotoState.crop.state !== 'active') ||
-    activeSection === 'cardtext'
+    activeSection === 'cardphoto' &&
+    toolbarCardphotoState.crop.state !== 'active'
+  // Cardtext: right sidebar strip with favorite texts disabled for now
   // Envelope: no right strip (favorites live in list top zone); slot reserved for future use
 
   if (!sizeCard || !showPreviewStrip) {

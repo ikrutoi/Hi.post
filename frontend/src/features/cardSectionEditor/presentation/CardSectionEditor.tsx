@@ -6,6 +6,7 @@ import { SectionEditorLeftInnerSidebar } from './SectionEditorLeftInnerSidebar/S
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
+import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './CardSectionEditor.module.scss'
 
 export const CardSectionEditor: React.FC = () => {
@@ -17,9 +18,9 @@ export const CardSectionEditor: React.FC = () => {
 
   return (
     <div className={clsx(styles.cardSectionEditor)}>
-      <div className={clsx(styles.editorToolbar)}>
+      {/* <div className={clsx(styles.editorToolbar)}>
         <SectionEditorToolbar />
-      </div>
+      </div> */}
       <div className={styles.editorArea}>
         <div
           className={styles.editorAreaCenter}
@@ -28,14 +29,19 @@ export const CardSectionEditor: React.FC = () => {
             height: `${sizeCard.height}px`,
           }}
         >
-          {showLeftInnerSidebar && (
+          {activeSection === 'cardtext' && (
+            <div className={styles.cardtextToolbarTop}>
+              <Toolbar section="cardtext" />
+            </div>
+          )}
+          {/* {showLeftInnerSidebar && (
             <div
               className={styles.workZoneLeft}
               style={{ height: `${sizeCard.height}px` }}
             >
               <SectionEditorLeftInnerSidebar />
             </div>
-          )}
+          )} */}
           <div
             className={clsx(styles.editorSection)}
             style={{

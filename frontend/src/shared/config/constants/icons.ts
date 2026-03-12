@@ -53,6 +53,7 @@ export const ICON_KEYS = [
   'addressList',
   'cardphoto',
   'cardtext',
+  'cardtextPlus',
   'envelope',
   'aroma',
   'date',

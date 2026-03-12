@@ -8,7 +8,7 @@
   padding-top: 1.9rem;
   min-height: 0;
   background-color: #fff;
-  border: 1px solid $color-envelope-recipient-border;
+  border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
 }
 
@@ -24,7 +24,7 @@
 
 .headerTitle {
   font-size: 0.85rem;
-  color: $color-envelope-recipient-legend;
+  color: $color-app-strip;
 }
 
 .closeBtn {
@@ -37,7 +37,7 @@
   width: 1.4rem;
   height: 1.4rem;
   padding: 0;
-  border: 1px solid $color-envelope-recipient-border;
+  border: 1px solid $color-app-strip;
   border-radius: 0.55rem;
   background-color: #fff;
   color: $color-font-disabled;
@@ -93,12 +93,12 @@
 }
 
 .listEmptyIcon {
-  width: 65%;
-  height: 65%;
+  width: 45%;
+  height: 45%;
   min-width: 2.7rem;
   min-height: 2.7rem;
   flex-shrink: 0;
   pointer-events: none;
-  color: $color-envelope-recipient-legend;
-  opacity: 0.14;
+  color: $color-app-inner;
+  // opacity: 0.75;
 }

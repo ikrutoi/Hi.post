@@ -1,0 +1,17 @@
+@use '@styles/config/colors' as *;
+
+.cardSectionToolbar {
+  width: 100%;
+  min-height: 0;
+  padding: 0 1rem 0.35rem;
+  box-sizing: border-box;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+
+  // Фон и постоянные границы оставляем на контейнере App; здесь только выравнивание иконок
+}
+

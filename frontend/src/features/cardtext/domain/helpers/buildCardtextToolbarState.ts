@@ -35,6 +35,9 @@ export const buildCardtextToolbarState = (
       case 'listCardtext':
         state.listCardtext = 'enabled'
         break
+      case 'cardtextPlus':
+        state.cardtextPlus = 'enabled'
+        break
       // case 'color':
       //   state.color = 'enabled'
       //   break
@@ -61,6 +64,9 @@ export const buildCardtextToolbarState = (
         break
       case 'listAdd':
         state.listAdd = 'disabled'
+        break
+      case 'empty':
+        state.empty = 'disabled'
         break
       default:
         const exhaustiveCheck: never = key

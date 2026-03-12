@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { Header } from './features/header/presentation/Header'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from './features/cardSectionEditor/presentation/CardSectionEditor'
+import { CardSectionToolbar } from './features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { CardPie } from './features/cardPie/presentation/CardPie'
 import { SectionEditorSidebar } from './features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from './features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
@@ -61,6 +62,9 @@ const App = () => {
             <div className={styles.appMainContentCenter}>
               <div className={clsx(styles.mainCardPanel)}>
                 <MiniSectionsSlot ref={cardPanelRef} />
+              </div>
+              <div className={styles.mainCardSectionToolbar}>
+                <CardSectionToolbar />
               </div>
               <div ref={formRef} className={clsx(styles.mainForm)}>
                 <CardSectionEditor />

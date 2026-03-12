@@ -20,8 +20,8 @@ export const Header: React.FC<HeaderProps> = ({
         [styles.shadow]: hasShadow,
       })}
     >
-      <HeaderLogo />
-      <HeaderActions />
+      {/* <HeaderLogo />
+      <HeaderActions /> */}
     </header>
   )
 }

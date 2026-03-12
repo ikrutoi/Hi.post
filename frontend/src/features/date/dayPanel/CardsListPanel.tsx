@@ -1,10 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useAppDispatch } from '@app/hooks'
-import { IconX, IconUsers } from '@shared/ui/icons'
+import {
+  IconX,
+  IconSectionMenuCardphoto,
+  IconCardphotoTemplates,
+} from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { CardEntry } from './CardEntry'
-import type { CalendarCardItem, CardCalendarIndex } from '@entities/card/domain/types'
+import type {
+  CalendarCardItem,
+  CardCalendarIndex,
+} from '@entities/card/domain/types'
 import styles from './CardsListPanel.module.scss'
 
 type Props = {
@@ -50,14 +57,21 @@ export const CardsListPanel: React.FC<Props> = ({
   useEffect(() => {
     entries.forEach((item) => {
       if (item.previewUrl) {
-        dispatch(requestCalendarPreview({ cardId: item.cardId, previewUrl: item.previewUrl }))
+        dispatch(
+          requestCalendarPreview({
+            cardId: item.cardId,
+            previewUrl: item.previewUrl,
+          }),
+        )
       }
     })
   }, [dateKey, entries, dispatch])
   const scrollbarTrackRef = useRef<HTMLDivElement>(null)
   const [scrollbarTrackReady, setScrollbarTrackReady] = useState(false)
   const setScrollbarTrackRef = useCallback((el: HTMLDivElement | null) => {
-    ;(scrollbarTrackRef as React.MutableRefObject<HTMLDivElement | null>).current = el
+    ;(
+      scrollbarTrackRef as React.MutableRefObject<HTMLDivElement | null>
+    ).current = el
     if (el) setScrollbarTrackReady(true)
   }, [])
   const [focusedIndex, setFocusedIndex] = useState(0)
@@ -113,7 +127,9 @@ export const CardsListPanel: React.FC<Props> = ({
       />
       <ScrollArea
         className={styles.listScrollArea}
-        scrollbarPortalTarget={scrollbarTrackReady ? scrollbarTrackRef : undefined}
+        scrollbarPortalTarget={
+          scrollbarTrackReady ? scrollbarTrackRef : undefined
+        }
       >
         <div
           ref={listRef}
@@ -125,7 +141,7 @@ export const CardsListPanel: React.FC<Props> = ({
         >
           {entries.length === 0 ? (
             <div className={styles.listEmpty} aria-hidden>
-              <IconUsers className={styles.listEmptyIcon} />
+              <IconCardphotoTemplates className={styles.listEmptyIcon} />
             </div>
           ) : (
             entries.map((item, index) => (

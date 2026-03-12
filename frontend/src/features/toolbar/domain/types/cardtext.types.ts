@@ -21,6 +21,8 @@ export const CARDTEXT_KEYS = [
   'listAdd',
   'favorite',
   'listCardtext',
+  'cardtextPlus',
+  'empty',
 ] as const
 
 export type CardtextKey = (typeof CARDTEXT_KEYS)[number]
@@ -38,10 +40,12 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
     group: 'ui',
     icons: [
       { key: 'apply', state: 'enabled' },
-      { key: 'close', state: 'disabled' },
-      { key: 'favorite', state: 'disabled' },
-      { key: 'listAdd', state: 'disabled' },
+      { key: 'cardtextPlus', state: 'enabled' },
       { key: 'listCardtext', state: 'enabled' },
+      { key: 'empty', state: 'disabled' },
+      { key: 'favorite', state: 'disabled' },
+      { key: 'close', state: 'disabled' },
+      { key: 'listAdd', state: 'disabled' },
     ],
     status: 'enabled',
   },
