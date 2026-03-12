@@ -12,7 +12,7 @@ import type {
   CardtextSessionRecord,
 } from '../../domain/types'
 
-const initialState: CardtextState = {
+const initialState: CardtextState & { isListPanelOpen?: boolean } = {
   assetId: null,
   value: [
     {
@@ -31,6 +31,8 @@ const initialState: CardtextState = {
   isComplete: false,
   cardtextLines: 15,
   resetToken: 0,
+  // UI-only flag: whether cardtext list panel (templates) is open.
+  isListPanelOpen: false,
 }
 
 export const cardtextSlice = createSlice({
@@ -131,6 +133,11 @@ export const cardtextSlice = createSlice({
     restoreCardtext(state, action: PayloadAction<CardtextValue>) {
       state.value = action.payload
     },
+
+    setCardtextListPanelOpen(state, action: PayloadAction<boolean>) {
+      // ignore type extension, runtime state carries UI flag
+      ;(state as any).isListPanelOpen = action.payload
+    },
   },
 })
 
@@ -148,6 +155,7 @@ export const {
   clearText,
   restoreCardtext,
   restoreFontSize,
+  setCardtextListPanelOpen,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

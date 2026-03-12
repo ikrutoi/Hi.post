@@ -16,9 +16,12 @@ export const buildCardtextToolbarState = (
 
   for (const key of CARDTEXT_KEYS) {
     switch (key) {
-      case 'cardOrientation':
-        state.cardOrientation = 'enabled'
+      case 'favorite':
+        state.favorite = 'enabled'
         break
+      // case 'cardOrientation':
+      //   state.cardOrientation = 'enabled'
+      //   break
       case 'fontFamily':
         state.fontFamily = 'enabled'
         break
@@ -28,6 +31,9 @@ export const buildCardtextToolbarState = (
         state.fontSizeIndicator = 'enabled'
       case 'fontSizeMore':
         state.fontSizeMore = 'enabled'
+        break
+      case 'listCardtext':
+        state.listCardtext = 'enabled'
         break
       // case 'color':
       //   state.color = 'enabled'
@@ -53,8 +59,8 @@ export const buildCardtextToolbarState = (
       case 'close':
         state.close = hasContent ? 'enabled' : 'disabled'
         break
-      case 'textList':
-        state.textTemplates = 'disabled'
+      case 'listAdd':
+        state.listAdd = 'disabled'
         break
       default:
         const exhaustiveCheck: never = key

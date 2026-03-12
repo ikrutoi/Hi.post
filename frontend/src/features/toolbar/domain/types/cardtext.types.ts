@@ -5,7 +5,7 @@ export const CARDTEXT_KEYS = [
   // 'italic',
   // 'bold',
   // 'underline',
-  'cardOrientation',
+  // 'cardOrientation',
   'fontFamily',
   'fontSizeLess',
   'fontSizeIndicator',
@@ -18,7 +18,9 @@ export const CARDTEXT_KEYS = [
   'apply',
   'close',
   'save',
-  'textList',
+  'listAdd',
+  'favorite',
+  'listCardtext',
 ] as const
 
 export type CardtextKey = (typeof CARDTEXT_KEYS)[number]
@@ -33,31 +35,32 @@ export type TextAlignKey = (typeof TEXT_ALIGN_KEYS)[number]
 
 export const CARDTEXT_TOOLBAR: ToolbarConfig = [
   {
-    group: 'text',
-    icons: [
-      {
-        key: 'cardOrientation',
-        state: 'disabled',
-        options: { orientation: 'landscape' },
-      },
-      { key: 'fontFamily', state: 'enabled' },
-      { key: 'fontSizeLess', state: 'enabled' },
-      { key: 'fontSizeIndicator', state: 'enabled' },
-      { key: 'fontSizeMore', state: 'enabled' },
-      { key: 'left', state: 'enabled' },
-      { key: 'center', state: 'enabled' },
-      { key: 'right', state: 'enabled' },
-      { key: 'justify', state: 'enabled' },
-    ],
-    status: 'enabled',
-  },
-  {
     group: 'ui',
     icons: [
       { key: 'apply', state: 'enabled' },
       { key: 'close', state: 'disabled' },
-      { key: 'save', state: 'disabled' },
-      { key: 'textList', state: 'disabled' },
+      { key: 'favorite', state: 'disabled' },
+      { key: 'listAdd', state: 'disabled' },
+      { key: 'listCardtext', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'text',
+    icons: [
+      // {
+      //   key: 'cardOrientation',
+      //   state: 'disabled',
+      //   options: { orientation: 'landscape' },
+      // },
+      { key: 'fontFamily', state: 'enabled' },
+      { key: 'fontSizeMore', state: 'enabled' },
+      { key: 'fontSizeIndicator', state: 'enabled' },
+      { key: 'fontSizeLess', state: 'enabled' },
+      { key: 'left', state: 'enabled' },
+      { key: 'center', state: 'enabled' },
+      { key: 'right', state: 'enabled' },
+      { key: 'justify', state: 'enabled' },
     ],
     status: 'enabled',
   },

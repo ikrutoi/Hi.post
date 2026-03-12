@@ -1,8 +1,6 @@
 import React from 'react'
 
-export const IconSectionMenuCardtext = (
-  props: React.SVGProps<SVGSVGElement>
-) => (
+export const IconListCardtext = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -19,9 +17,13 @@ export const IconSectionMenuCardtext = (
     strokeLinejoin="round"
     {...props}
   >
-    <path d="M57 187c1-72 58-130 130-130h906c72 0 130 58 130 130v906c0 72-58 129-130 129l-906 1c-72-1-129-58-129-130z" />
-    <path d="M820 640H320" />
-    <path d="M881 375H319" />
-    <path d="M962 905H318" />
+    <path
+      strokeWidth={107.498}
+      d="M314 161v-2c0-56 45-101 101-101h706c56 0 101 45 101 101v706c0 56-45 101-101 101h-2"
+    />
+    <path d="M57 415c0-56 45-101 101-101h708c55 0 101 45 101 101v707c0 56-46 101-101 101H158c-56 0-101-45-101-101z" />
+    <path d="M649 769H258" />
+    <path d="M696 562H258" />
+    <path d="M760 976H257" />
   </svg>
 )

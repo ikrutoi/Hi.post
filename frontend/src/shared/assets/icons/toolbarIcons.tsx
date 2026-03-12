@@ -155,6 +155,7 @@ import {
   IconListApply,
   IconSortUp,
   IconSortDown,
+  IconListCardtext,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -199,6 +200,8 @@ export function getIconByKey(
       return <IconListAdd />
     case 'listApply':
       return <IconListApply />
+    case 'listCardtext':
+      return <IconListCardtext />
     case 'user':
       return <RiUserLine />
     case 'rotateLeft':

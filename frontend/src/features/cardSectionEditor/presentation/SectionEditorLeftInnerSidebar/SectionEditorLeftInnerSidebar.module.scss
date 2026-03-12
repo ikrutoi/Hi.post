@@ -9,46 +9,51 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  padding: 0.35rem 0;
+  padding: 0.35rem 0.25rem 0.35rem 0;
+  border-radius: 0.5rem 0 0 0.5rem;
+  background-color: $color-app-strip;
+  // border: solid 1px red;
 
-  // Наружный размер кнопок меньше; SVG визуально того же размера (scale компенсирует)
   $inner-key-size: 2rem;
-  $inner-icon-scale: $toolbar-sidebar-icon-scale-thematic * ($toolbar-sidebar-key-size / $inner-key-size);
+  $inner-icon-scale: $toolbar-sidebar-icon-scale-thematic *
+    ($toolbar-sidebar-key-size / $inner-key-size);
 
   button {
     box-sizing: border-box;
     padding: 0.35rem;
-    background-color: #fff !important;
-    width: $inner-key-size !important;
-    height: $inner-key-size !important;
-
-    &:hover {
-      background-color: $color-app-sidebar-icon-hover !important;
-    }
-
-    &:disabled:hover,
-    &[aria-disabled='true']:hover {
-      background-color: #fff !important;
-    }
 
     > * {
       transform: scale($inner-icon-scale);
     }
   }
 
-  // Индикатор размера шрифта (Текст): вертикально, наполнение шариков вверх
+  :global(.toolbarCardphoto .toolbarKey),
+  :global(.toolbarCardtext .toolbarKey) {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+
+    &:hover {
+      background-color: transparent;
+    }
+
+    &:disabled:hover,
+    &[aria-disabled='true']:hover {
+      background-color: transparent;
+    }
+  }
+
   :global([class*='stepWrapperContainer']) {
     flex-direction: column-reverse;
     align-items: center;
     gap: 0.2rem;
   }
 
-  // Корневой div тулбара — колонка, расстояние между группами
   > div {
-    position: static !important;
+    position: static;
     left: auto;
     top: auto;
-    width: 100% !important;
+    width: 100%;
     max-width: 100%;
     flex-direction: column;
     align-items: center;
@@ -56,7 +61,6 @@
     gap: 0.45rem;
   }
 
-  // Группы тулбара и кнопки внутри — колонка, расстояние между иконками
   > div > div {
     flex-direction: column;
     align-items: center;

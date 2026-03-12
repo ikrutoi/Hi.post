@@ -23,6 +23,7 @@
 }
 
 .editorArea {
+  position: relative;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
@@ -38,15 +39,14 @@
 .workZoneLeft {
   position: absolute;
   right: 100%;
-  margin-right: 4rem;
+  margin-right: -0.5rem;
   top: 0;
-  width: 3.2rem;
-  border-radius: 1rem;
-  border: 1px solid #fff;
-  background-color: #fff;
-  box-shadow:
-    $shadow-card,
-    inset 0 0 0 3px $color-app-strip;
+  width: 3.6rem;
+  // border-radius: 1rem;
+  // border: none;
+  // background-color: transparent;
+  // box-shadow: none;
+  // border: solid 1px blue;
 }
 
 .editorSection {

@@ -17,6 +17,7 @@ import { useRecordSizeCard } from '@shared/hooks'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
+import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
 import styles from './App.module.scss'
 
 const App = () => {
@@ -68,6 +69,7 @@ const App = () => {
             <div className={styles.appMainContentRight}>
               {activeSection === 'envelope' && <EnvelopeRightSlot />}
               {activeSection === 'date' && <DateRightSlot />}
+              {activeSection === 'cardtext' && <CardtextRightSlot />}
             </div>
             {/* <aside
               className={styles.appMainAside}
