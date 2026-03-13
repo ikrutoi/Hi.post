@@ -9,7 +9,7 @@ export const useCardtextStore = () => {
   const loadFromTemplate = useCallback(
     async (id: string): Promise<SlateNode[] | null> => {
       const record = await cardtextTemplatesAdapter.getById(id)
-      return record?.state.text ?? null
+      return record?.state.value ?? null
     },
     []
   )
@@ -34,7 +34,7 @@ export const useCardtextStore = () => {
           ...record,
           state: {
             ...record.state,
-            text: converted,
+            value: converted,
           },
         })
       }

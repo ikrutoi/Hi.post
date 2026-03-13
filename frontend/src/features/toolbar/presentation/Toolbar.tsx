@@ -20,6 +20,7 @@ import type {
   IconStateGroup,
 } from '@shared/config/constants'
 import { LayoutOrientation } from '@layout/domain/types'
+import { CardtextAlignButton } from './CardtextAlignButton'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({
@@ -114,6 +115,22 @@ export const Toolbar = ({
     const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
+
+    if (section === 'cardtext' && key === 'left') {
+      return (
+        <CardtextAlignButton
+          key={key}
+          className={clsx(
+            styles.toolbarKey,
+            styles[`toolbarKey${capitalize(buttonStatus)}`],
+            styles[`toolbarKey${capitalize(key)}`],
+            styles[`toolbarKey${capitalize(key)}${capitalize(buttonStatus)}`],
+            groupStatus === 'disabled' && styles.toolbarKeyDisabled,
+          )}
+          disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
+        />
+      )
+    }
 
     return (
       <button

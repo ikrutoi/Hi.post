@@ -231,10 +231,11 @@ export const templateService = {
       const templateData: CardtextTemplateItem = {
         id,
         state: {
-          text: payload.value,
+          value: payload.value,
           style: payload.style,
           plainText: payload.plainText,
           cardtextLines: payload.cardtextLines,
+          applied: null,
         },
       }
 
@@ -269,7 +270,7 @@ export const templateService = {
         ...record,
         state: {
           ...record.state,
-          text: payload.value ?? record.state?.text,
+          value: payload.value ?? record.state?.value,
           style: payload.style
             ? { ...record.state?.style, ...payload.style }
             : record.state?.style,

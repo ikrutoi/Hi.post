@@ -28,6 +28,7 @@ const initialState: CardtextState & { isListPanelOpen?: boolean } = {
     align: 'left',
   },
   plainText: '',
+  applied: null,
   isComplete: false,
   cardtextLines: 15,
   resetToken: 0,
@@ -57,7 +58,11 @@ export const cardtextSlice = createSlice({
         .join('\n')
 
       const hasText = state.plainText.trim().length > 0
-      // isComplete выставляется только по нажатию Apply (setComplete), не по наличию текста
+      // При любом изменении текста считаем секцию «не применённой»,
+      // чтобы кнопка Apply снова стала доступной.
+      if (hasText) {
+        state.isComplete = false
+      }
       if (!hasText) state.assetId = null
     },
 

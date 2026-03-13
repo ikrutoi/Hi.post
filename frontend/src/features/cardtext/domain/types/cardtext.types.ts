@@ -42,8 +42,6 @@ export type QuoteElement = {
   children: CardtextTextNode[]
 }
 
-// export type CardtextBlock = ParagraphElement | HeadingElement | QuoteElement
-
 export type CardtextBlock = {
   type: 'paragraph' | 'heading' | 'quote'
   align: TextAlign
@@ -91,24 +89,6 @@ export interface CardtextStyle {
   align: TextAlign
 }
 
-// export interface CardtextState {
-//   assetId: string | null
-//   value: CardtextValue
-//   style: CardtextStyle
-//   plainText: string
-//   isComplete: boolean
-//   cardtextLines: number
-//   resetToken: number
-// }
-
-// export interface CardtextBase {
-//   assetId: string | null
-//   value: CardtextValue
-//   style: CardtextStyle
-//   plainText: string
-//   cardtextLines: number
-// }
-
 export interface CardtextSessionRecord extends Omit<CardtextRecord, 'id'> {
   assetId: string | null
 }
@@ -118,18 +98,7 @@ export interface CardtextState extends CardtextSessionRecord {
   resetToken: number
 }
 
-/**
- * Тип для хранения шаблона текста карточки в IndexedDB
- * Используется в адаптере cardtextTemplatesAdapter
- */
 export interface CardtextTemplateItem {
-  /** Уникальный идентификатор (nanoid или число) */
   id: string
-  /** Состояние текста карточки */
-  state: {
-    text: CardtextValue
-    style: CardtextStyle
-    plainText: string
-    cardtextLines: number
-  }
+  state: Omit<CardtextRecord, 'id'>
 }

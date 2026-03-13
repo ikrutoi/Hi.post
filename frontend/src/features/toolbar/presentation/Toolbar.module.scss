@@ -10,7 +10,7 @@
     margin: 0 0.3rem;
     padding: 0.35rem;
     background-color: white;
-    border-radius: 0.7rem;
+    border-radius: 0.6rem;
     background-color: white;
     transition:
       color 0.15s ease,
@@ -209,6 +209,101 @@
   }
 }
 
+.toolbarAlignWrapper {
+  position: relative;
+  // border: solid 1px blue;
+
+  .toolbarKey {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // width: 1.6rem;
+    // height: 1.6rem;
+    margin: 0.2rem;
+    border-radius: 0.5rem;
+    // background-color: $color-app-inner;
+    cursor: pointer;
+    // color: $color-font-enabled;
+  }
+}
+
+.toolbarAlignMenu {
+  position: absolute;
+  top: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  padding: 0.2rem;
+  border-radius: 0.65rem;
+  background-color: $color-app-inner;
+  box-shadow: $shadow-card;
+  border: 1px solid $color-app-substrate-border;
+  // box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.toolbarAlignMenuItem {
+  // border: none;
+  // background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem;
+  cursor: pointer;
+  color: $color-font-enabled;
+  width: 1.6rem;
+  height: 1.6rem;
+  // width: max-content;
+  // margin: 0.35rem;
+  border-radius: 0.6rem;
+  margin-top: 0.1rem;
+  margin-bottom: 0.1rem;
+  // border: solid 1px blue;
+
+  .toolbarIcon {
+    // padding: 0.25rem;
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  &:hover {
+    background-color: $color-app-sidebar-icon-hover;
+  }
+}
+
+.toolbarAlignMenuItemActive {
+  color: $color-font-active;
+}
+
+.toolbarCardtext {
+  .toolbarKeyApplyEnabled {
+    background-color: $color-section-light-completed;
+    color: $color-font-active;
+    border: 1px solid $color-toggle-active;
+  }
+
+  .toolbarKeyApplyEnabled:hover {
+    background-color: $color-section-dark-completed;
+    color: $color-font-active;
+    border-color: $color-toggle-active;
+  }
+}
+
+.toolbarCardphoto {
+  .toolbarKeyApplyEnabled {
+    background-color: $color-section-light-completed;
+    color: $color-font-active;
+    border: 1px solid $color-toggle-active;
+  }
+
+  .toolbarKeyApplyEnabled:hover {
+    background-color: $color-section-dark-completed;
+    color: $color-font-active;
+    border-color: $color-toggle-active;
+  }
+}
+
 // .toolbarCardtext {
 //   top: -4rem;
 // }
@@ -301,10 +396,14 @@
 
   .toolbarKeyApplyEnabled {
     background-color: $color-section-light-completed;
+    color: $color-font-active;
+    border: 1px solid $color-toggle-active;
   }
 
   .toolbarKeyApplyEnabled:hover {
     background-color: $color-section-dark-completed;
+    color: $color-font-active;
+    border-color: $color-toggle-active;
   }
 }
 
@@ -329,13 +428,17 @@
 .toolbarSenderFavorite,
 .toolbarSenderView,
 .toolbarRecipientView {
+  display: flex;
+  align-items: center;
   .toolbarKey {
-    // padding: 0rem;
-    // margin: 0.2rem;
-    // border: solid 1px red;
     width: 1.6rem;
     height: 1.6rem;
   }
+}
+
+.toolbarCardtext .toolbarGroupText {
+  display: flex;
+  align-items: center;
 }
 
 .toolbarCardtext .toolbarKeyFontSizeIndicator {

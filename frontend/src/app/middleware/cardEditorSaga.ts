@@ -277,6 +277,7 @@ export function* cardEditorSaga() {
   yield takeEvery(syncProcessedRequest.type, checkAndSyncProcessedCard)
 
   yield takeEvery([setValue.type, setComplete.type], syncCardtextStatus)
+  yield takeEvery(setValue.type, syncCardtextToolbar)
   yield takeEvery(clearText.type, syncCardtextReset)
 
   yield takeEvery([applyFinal.type, clearApply.type], syncCardphotoStatus)

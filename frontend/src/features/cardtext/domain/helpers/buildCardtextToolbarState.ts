@@ -63,7 +63,7 @@ export const buildCardtextToolbarState = (
         state.close = hasContent ? 'enabled' : 'disabled'
         break
       case 'listAdd':
-        state.listAdd = 'disabled'
+        state.listAdd = hasContent ? 'enabled' : 'disabled'
         break
       case 'empty':
         state.empty = 'disabled'

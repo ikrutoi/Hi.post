@@ -8,6 +8,7 @@ export interface CardtextRecord {
   style: CardtextStyle
   plainText: string
   cardtextLines: number
+  applied: string | null
 }
 
 export interface CardtextAdapter extends StoreAdapter<CardtextRecord> {

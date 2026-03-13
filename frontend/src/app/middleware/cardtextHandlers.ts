@@ -101,6 +101,7 @@ export function* syncCardtextToAssets() {
     style: session.style,
     plainText: session.plainText,
     cardtextLines: session.cardtextLines,
+    applied: session.applied ?? null,
   }
 
   yield call([storeAdapters.cardtext, 'put'], record)

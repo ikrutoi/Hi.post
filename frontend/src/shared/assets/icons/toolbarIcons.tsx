@@ -128,10 +128,7 @@ import {
   IconListAdd,
   IconDeleteSmall,
   IconPlus,
-  IconAlignLeft,
-  IconAlignRight,
-  IconAlignCenter,
-  IconAlignJustify,
+  IconAlignLeftV3,
   IconBold,
   IconItalic,
   IconFontFamily,
@@ -268,14 +265,7 @@ export function getIconByKey(
     case 'color':
       return <RiFontColor />
     case 'left':
-      return <IconSectionMenuCardtext />
-    // return <IconAlignLeft />
-    case 'center':
-      return <IconAlignCenterV3 />
-    case 'right':
-      return <IconAlignRightV3 />
-    case 'justify':
-      return <IconAlignJustifyV3 />
+      return <IconAlignLeftV3 />
     case 'plus':
       return <FiPlus />
     case 'arrowsOut':
@@ -329,4 +319,7 @@ export function getIconByKey(
     case 'sortDown':
       return <IconSortDown />
   }
+
+  // Fallback: empty placeholder to satisfy exhaustiveness
+  return <></>
 }
