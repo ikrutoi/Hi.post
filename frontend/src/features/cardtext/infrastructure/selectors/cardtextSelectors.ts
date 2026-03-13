@@ -32,13 +32,11 @@ export const selectFontFamily = (state: RootState): string =>
 export const selectFontColor = (state: RootState): string =>
   state.cardtext.style.color
 
-export const selectCardtextSessionRecord = (state: RootState): CardtextStyle =>
-  state.cardtext.style
-
 export const selectCardtextSessionData = createSelector(
   [(state: RootState) => state.cardtext],
   (cardtext): CardtextSessionRecord => {
-    const { assetId, value, style, plainText, cardtextLines } = cardtext
-    return { assetId, value, style, plainText, cardtextLines }
+    const { assetId, value, style, plainText, cardtextLines, applied } =
+      cardtext
+    return { assetId, value, style, plainText, cardtextLines, applied }
   },
 )

@@ -116,18 +116,25 @@ export const Toolbar = ({
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
 
+    const visualStatus =
+      section === 'cardtext' && key === 'left' ? 'enabled' : buttonStatus
+
     if (section === 'cardtext' && key === 'left') {
       return (
         <CardtextAlignButton
           key={key}
           className={clsx(
             styles.toolbarKey,
-            styles[`toolbarKey${capitalize(buttonStatus)}`],
+            styles[`toolbarKey${capitalize(visualStatus ?? 'enabled')}`],
             styles[`toolbarKey${capitalize(key)}`],
-            styles[`toolbarKey${capitalize(key)}${capitalize(buttonStatus)}`],
+            styles[
+              `toolbarKey${capitalize(key)}${capitalize(
+                visualStatus ?? 'enabled',
+              )}`
+            ],
             groupStatus === 'disabled' && styles.toolbarKeyDisabled,
           )}
-          disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
+          disabled={groupStatus === 'disabled'}
         />
       )
     }
@@ -138,9 +145,13 @@ export const Toolbar = ({
         type="button"
         className={clsx(
           styles.toolbarKey,
-          styles[`toolbarKey${capitalize(buttonStatus)}`],
+          styles[`toolbarKey${capitalize(buttonStatus ?? 'enabled')}`],
           styles[`toolbarKey${capitalize(key)}`],
-          styles[`toolbarKey${capitalize(key)}${capitalize(buttonStatus)}`],
+          styles[
+            `toolbarKey${capitalize(key)}${capitalize(
+              buttonStatus ?? 'enabled',
+            )}`
+          ],
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
         data-icon-key={key}

@@ -13,7 +13,7 @@ import { useSizeFacade } from '@layout/application/facades'
 export const useMiniCardtext = () => {
   const editor = useMemo(() => withReact(createEditor()), [])
 
-  const { value, cardtextLines } = useSelector(
+  const { value, cardtextLines, applied } = useSelector(
     (state: RootState) => state.cardtext,
   )
 
@@ -38,5 +38,8 @@ export const useMiniCardtext = () => {
         textAlign: 'left' as const,
       }
 
-  return { editor, value, style }
+  // Показываем текст в мини-версии только если есть применённый вариант.
+  const hasApplied = applied != null
+
+  return { editor, value, style, hasApplied }
 }

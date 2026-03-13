@@ -71,6 +71,10 @@ export const cardtextSlice = createSlice({
         ...block,
         align: action.payload,
       }))
+      // Синхронизируем стиль по умолчанию и пересоздаём редактор,
+      // чтобы выравнивание отобразилось для уже набранного текста.
+      state.style.align = action.payload
+      state.resetToken += 1
     },
 
     restoreCardtextSession(

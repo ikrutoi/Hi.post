@@ -2,9 +2,14 @@ import React from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCardtextStyle } from '@cardtext/infrastructure/selectors'
-import { setTextStyle } from '@cardtext/infrastructure/state'
+import { setAlign, setTextStyle } from '@cardtext/infrastructure/state'
 import type { TextAlign } from '@cardtext/domain/types'
-import { IconAlignLeftV3, IconAlignCenterV3, IconAlignRightV3, IconAlignJustifyV3 } from '@shared/ui/icons'
+import {
+  IconAlignLeftV3,
+  IconAlignCenterV3,
+  IconAlignRightV3,
+  IconAlignJustifyV3,
+} from '@shared/ui/icons'
 import styles from './Toolbar.module.scss'
 
 interface CardtextAlignButtonProps {
@@ -35,6 +40,8 @@ export const CardtextAlignButton: React.FC<CardtextAlignButtonProps> = ({
   }
 
   const handleSelect = (value: TextAlign) => {
+    // Обновляем выравнивание существующего текста и стили по умолчанию.
+    dispatch(setAlign(value))
     dispatch(setTextStyle({ align: value }))
     setOpen(false)
   }

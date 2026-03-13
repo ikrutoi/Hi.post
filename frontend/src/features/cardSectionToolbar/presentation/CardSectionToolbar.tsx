@@ -8,10 +8,7 @@ export const CardSectionToolbar: React.FC = () => {
 
   return (
     <div className={styles.cardSectionToolbar}>
-      {/* Внешний бар пока без иконок; иконки для cardtext рендерим внутри CardSectionEditor */}
       {activeSection === 'cardphoto' && <Toolbar section="cardphoto" />}
     </div>
   )
 }
-
-

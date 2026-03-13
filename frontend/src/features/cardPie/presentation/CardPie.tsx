@@ -38,7 +38,8 @@ export const CardPie: React.FC<CardPieProps> = ({
   const { setHovered, hoveredSection } = useCardEditorFacade()
 
   const cardData = data?.data
-  const valueCardtext = cardData?.cardtext?.value || []
+  const hasAppliedCardtext = cardData?.cardtext?.applied != null
+  const valueCardtext = hasAppliedCardtext ? cardData?.cardtext?.value || [] : []
   const previewLines = valueCardtext
     .slice(0, 6)
     .map((block) => {

@@ -63,9 +63,9 @@ const App = () => {
               <div className={clsx(styles.mainCardPanel)}>
                 <MiniSectionsSlot ref={cardPanelRef} />
               </div>
-              <div className={styles.mainCardSectionToolbar}>
+              {/* <div className={styles.mainCardSectionToolbar}>
                 <CardSectionToolbar />
-              </div>
+              </div> */}
               <div ref={formRef} className={clsx(styles.mainForm)}>
                 <CardSectionEditor />
               </div>

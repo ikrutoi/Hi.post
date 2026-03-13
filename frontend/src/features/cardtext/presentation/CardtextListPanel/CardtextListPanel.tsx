@@ -8,7 +8,6 @@ type Props = {
 }
 
 export const CardtextListPanel: React.FC<Props> = ({ onClose }) => {
-  // Пока нет базы текстовых шаблонов, просто показываем пустое состояние
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
@@ -24,7 +23,11 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose }) => {
       </div>
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
-        <div className={styles.list} tabIndex={0} aria-label="Cardtext templates list">
+        <div
+          className={styles.list}
+          tabIndex={0}
+          aria-label="Cardtext templates list"
+        >
           <div className={styles.listEmpty} aria-hidden>
             <IconListCardtext className={styles.listEmptyIcon} />
           </div>
@@ -33,4 +36,3 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose }) => {
     </div>
   )
 }
-
