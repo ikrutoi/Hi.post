@@ -1,16 +1,11 @@
 import React from 'react'
 
 export const IconSectionMenuCardtext = (
-  props: React.SVGProps<SVGSVGElement>
+  props: React.SVGProps<SVGSVGElement>,
 ) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
-    fillRule="evenodd"
-    clipRule="evenodd"
-    imageRendering="optimizeQuality"
-    shapeRendering="geometricPrecision"
-    textRendering="geometricPrecision"
     viewBox="0 0 1280 1280"
     fill="none"
     stroke="currentColor"
@@ -20,8 +15,8 @@ export const IconSectionMenuCardtext = (
     {...props}
   >
     <path d="M57 187c1-72 58-130 130-130h906c72 0 130 58 130 130v906c0 72-58 129-130 129l-906 1c-72-1-129-58-129-130z" />
-    <path d="M820 640H320" />
-    <path d="M881 375H319" />
+    <path d="M769 640H319" />
+    <path d="M864 375H319" />
     <path d="M962 905H318" />
   </svg>
 )

@@ -47,7 +47,6 @@ export const ICON_KEYS = [
   'addDrafts',
   'cards',
   'cardUser',
-  'cardText',
   'textList',
   'photoTemplates',
   'addressList',

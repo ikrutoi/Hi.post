@@ -43,6 +43,45 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
       { key: 'cardtextPlus', state: 'enabled' },
       { key: 'listCardtext', state: 'enabled' },
       { key: 'empty', state: 'disabled' },
+      // { key: 'favorite', state: 'disabled' },
+      // { key: 'close', state: 'disabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'text',
+    icons: [
+      // {
+      //   key: 'cardOrientation',
+      //   state: 'disabled',
+      //   options: { orientation: 'landscape' },
+      // },
+      { key: 'fontFamily', state: 'enabled' },
+      { key: 'fontSizeLess', state: 'enabled' },
+      { key: 'fontSizeIndicator', state: 'enabled' },
+      { key: 'fontSizeMore', state: 'enabled' },
+      { key: 'left', state: 'enabled' },
+      { key: 'center', state: 'enabled' },
+      { key: 'right', state: 'enabled' },
+      { key: 'justify', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'save',
+    icons: [{ key: 'listAdd', state: 'disabled' }],
+    status: 'enabled',
+  },
+]
+
+export const CARDTEXT_SAVE_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'ui',
+    icons: [
+      { key: 'apply', state: 'enabled' },
+      { key: 'cardtextPlus', state: 'enabled' },
+      { key: 'listCardtext', state: 'enabled' },
+      { key: 'empty', state: 'disabled' },
       { key: 'favorite', state: 'disabled' },
       { key: 'close', state: 'disabled' },
       { key: 'listAdd', state: 'disabled' },
@@ -58,9 +97,9 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
       //   options: { orientation: 'landscape' },
       // },
       { key: 'fontFamily', state: 'enabled' },
-      { key: 'fontSizeMore', state: 'enabled' },
-      { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeLess', state: 'enabled' },
+      { key: 'fontSizeIndicator', state: 'enabled' },
+      { key: 'fontSizeMore', state: 'enabled' },
       { key: 'left', state: 'enabled' },
       { key: 'center', state: 'enabled' },
       { key: 'right', state: 'enabled' },
@@ -69,7 +108,6 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
     status: 'enabled',
   },
 ]
-
 export const initialCardtextToolbarState: CardtextToolbarState = {
   ...Object.fromEntries(flattenIcons(CARDTEXT_TOOLBAR)),
   config: [...CARDTEXT_TOOLBAR],

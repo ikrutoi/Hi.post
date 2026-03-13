@@ -157,6 +157,12 @@ import {
   IconSortUp,
   IconSortDown,
   IconListCardtext,
+  IconFontSizeLessV3,
+  IconFontSizeMoreV3,
+  IconFontFamilyV3,
+  IconAlignRightV3,
+  IconAlignCenterV3,
+  IconAlignJustifyV3,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -250,25 +256,26 @@ export function getIconByKey(
     case 'fontSizePlus':
       return <IconFontSizePlusV3 />
     case 'fontSizeMore':
-      return <IconFontSizeMore />
+      return <IconFontSizeMoreV3 />
     case 'fontSizeMinus':
       return <IconFontSizeMinusV3 />
     case 'fontSizeLess':
-      return <IconFontSizeLess />
+      return <IconFontSizeLessV3 />
     case 'fontFamily':
-      return <IconFontFamily />
+      return <IconFontFamilyV3 />
     case 'fontSizeIndicator':
       return <FontSizeIndicator currentStep={currentStep ?? 3} />
     case 'color':
       return <RiFontColor />
     case 'left':
-      return <IconAlignLeft />
+      return <IconSectionMenuCardtext />
+    // return <IconAlignLeft />
     case 'center':
-      return <IconAlignCenter />
+      return <IconAlignCenterV3 />
     case 'right':
-      return <IconAlignRight />
+      return <IconAlignRightV3 />
     case 'justify':
-      return <IconAlignJustify />
+      return <IconAlignJustifyV3 />
     case 'plus':
       return <FiPlus />
     case 'arrowsOut':
@@ -289,8 +296,6 @@ export function getIconByKey(
       return <IconAddressList />
     case 'addressList':
       return <IconAddressTemplates />
-    case 'cardText':
-      return <BsCardText />
     case 'textList':
       return <IconCardtextTemplates />
     case 'cardtextPlus':

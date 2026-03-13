@@ -8,6 +8,7 @@
   .toolbarKey {
     position: relative;
     margin: 0 0.3rem;
+    padding: 0.35rem;
     background-color: white;
     border-radius: 0.7rem;
     background-color: white;
@@ -146,7 +147,7 @@
     height: 2rem;
     margin: 0.25rem 0;
     box-sizing: border-box;
-    padding: 0.4rem;
+    padding: 0.25rem;
     border-radius: 0.7rem;
     background-color: $color-app-inner;
 
@@ -189,16 +190,17 @@
     }
 
     .toolbarKey:nth-child(3) {
+      margin: 0;
       margin-right: 0;
+      width: auto;
+      min-width: 0;
+      cursor: default;
+      background-color: $color-app-inner;
     }
 
     .toolbarKey:nth-child(4) {
-      // display: flex;
-      // align-items: center;
-      margin: 0;
-      width: max-content;
-      cursor: default;
-      background-color: $color-app-inner;
+      margin-left: 0;
+      flex-shrink: 0;
     }
 
     .toolbarKey:nth-child(5) {
@@ -258,9 +260,9 @@
   }
 }
 
-.toolbarAddressFavorite {
-  border: solid 1px red;
-}
+// .toolbarAddressFavorite {
+//   border: solid 1px red;
+// }
 
 // .toolbarRecipient {
 //   display: flex;
@@ -328,8 +330,23 @@
 .toolbarSenderView,
 .toolbarRecipientView {
   .toolbarKey {
+    // padding: 0rem;
+    // margin: 0.2rem;
+    // border: solid 1px red;
     width: 1.6rem;
     height: 1.6rem;
+  }
+}
+
+.toolbarCardtext .toolbarKeyFontSizeIndicator {
+  width: auto;
+  // cursor: default;
+  padding: 0;
+  margin-left: 0;
+
+  &:hover {
+    background-color: $color-app-inner;
+    cursor: default;
   }
 }
 
