@@ -48,9 +48,6 @@
     border-left-color: $color-toggle-active;
   }
 
-  .info strong {
-    color: $color-envelope-sender-legend;
-  }
 }
 
 .rootSender .star[data-starred='true'] {
@@ -69,15 +66,15 @@
 .info {
   flex: 1;
   min-width: 0;
-  // width: 70%;
   white-space: nowrap;
   overflow: hidden;
   mask-image: linear-gradient(to right, black 90%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
 
   strong {
-    font-size: 0.85rem;
-    color: $color-envelope-recipient-legend;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: $color-font-enabled;
   }
 
   strong::after {

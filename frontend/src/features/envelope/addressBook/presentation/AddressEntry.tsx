@@ -59,11 +59,17 @@ export const AddressEntry: React.FC<Props> = ({
       )}
       <div className={styles.field}>
         <div className={styles.info} onClick={() => onSelect(entry)}>
-          {entry.label ? <strong>{entry.label}</strong> : null}
+          <strong>
+            {entry.label ?? (entry.address.name || '—')}
+          </strong>
           <div>
-            {[entry.address.name, entry.address.city, entry.address.country]
-              .filter(Boolean)
-              .join(', ') || '—'}
+            {entry.label
+              ? [entry.address.name, entry.address.city, entry.address.country]
+                  .filter(Boolean)
+                  .join(', ') || '—'
+              : [entry.address.city, entry.address.country]
+                  .filter(Boolean)
+                  .join(', ') || '—'}
           </div>
         </div>
       </div>

@@ -4,6 +4,8 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { CropPreview } from './CropPreview'
 import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
+import { useCardtextTemplates } from '@entities/templates/application/hooks/useTemplates'
+import { updateToolbarIcon } from '../infrastructure/state'
 import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -30,6 +32,7 @@ export const Toolbar = ({
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
 }) => {
+  const dispatch = useAppDispatch()
   const {
     state: storeState,
     groups,
@@ -39,6 +42,20 @@ export const Toolbar = ({
   const { onAction } = toolbarActions
 
   const { fontSizeStep } = useCardtextFacade()
+  const { templates: cardtextTemplates } = useCardtextTemplates()
+
+  useEffect(() => {
+    if (section === 'cardtext') {
+      const count = cardtextTemplates.length
+      dispatch(
+        updateToolbarIcon({
+          section: 'cardtext',
+          key: 'listCardtext',
+          value: { options: { badge: count > 0 ? count : null } },
+        }),
+      )
+    }
+  }, [section, cardtextTemplates.length, dispatch])
 
   const groupRef = useRef<HTMLDivElement>(null)
 

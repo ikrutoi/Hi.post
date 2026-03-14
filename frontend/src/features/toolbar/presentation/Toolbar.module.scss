@@ -460,7 +460,8 @@
 .toolbarRecipientsView,
 .toolbarAddressListSender,
 .toolbarAddressListRecipient,
-.toolbarAddressListRecipients {
+.toolbarAddressListRecipients,
+.toolbarCardtextList {
   .toolbarKey {
     width: 1.5rem;
     height: 1.5rem;
@@ -482,6 +483,13 @@
   justify-content: space-between;
   margin-left: 2rem;
   margin-right: -2px;
+}
+
+.toolbarCardtextList {
+  width: 100%;
+  justify-content: space-between;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .toolbarSenderView,

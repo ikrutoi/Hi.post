@@ -15,6 +15,7 @@ import type {
 const initialState: CardtextState & {
   isListPanelOpen?: boolean
   isSaveTemplateModalOpen?: boolean
+  cardtextTemplatesInvalidated?: boolean
 } = {
   assetId: null,
   value: [
@@ -38,6 +39,7 @@ const initialState: CardtextState & {
   resetToken: 0,
   isListPanelOpen: false,
   isSaveTemplateModalOpen: false,
+  cardtextTemplatesInvalidated: false,
 }
 
 export const cardtextSlice = createSlice({
@@ -156,6 +158,10 @@ export const cardtextSlice = createSlice({
     setCardtextSaveTemplateModalOpen(state, action: PayloadAction<boolean>) {
       ;(state as any).isSaveTemplateModalOpen = action.payload
     },
+
+    setCardtextTemplatesInvalidated(state, action: PayloadAction<boolean>) {
+      ;(state as any).cardtextTemplatesInvalidated = action.payload
+    },
   },
 })
 
@@ -176,6 +182,7 @@ export const {
   restoreFontSize,
   setCardtextListPanelOpen,
   setCardtextSaveTemplateModalOpen,
+  setCardtextTemplatesInvalidated,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

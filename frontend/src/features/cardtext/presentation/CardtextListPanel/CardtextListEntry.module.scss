@@ -6,8 +6,8 @@
   min-height: 1.5rem;
   padding: 0 2rem 0 0.5rem;
   box-sizing: border-box;
-  background-color: $color-envelope-recipient-input;
-  border: 1px solid $color-envelope-recipient-border;
+  background-color: $color-app-inner;
+  border: 1px solid $color-app-strip;
   border-radius: 4px;
   user-select: none;
   transition:
@@ -16,12 +16,17 @@
 
   &:hover,
   &[data-focused='true'] {
-    background-color: darken($color-envelope-recipient-input, 2%);
+    background-color: $color-app-strip;
   }
 
   &[data-selected='true'] {
-    background-color: darken($color-envelope-recipient-input, 2%);
+    background-color: $color-app-sidebar-icon-hover;
+    border-left: 1px solid $color-toggle-active;
     box-shadow: -2px 0 0 0 $color-toggle-active;
+  }
+
+  &[data-has-edit='true'] {
+    padding-right: 3.5rem;
   }
 }
 
@@ -30,7 +35,7 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  min-height: 1.5rem;
+  height: 1.5rem;
   box-sizing: border-box;
 }
 
@@ -41,11 +46,12 @@
   overflow: hidden;
   mask-image: linear-gradient(to right, black 90%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
-  cursor: pointer;
+  cursor: default;
 
   strong {
-    font-size: 0.85rem;
-    color: $color-envelope-recipient-legend;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: $color-font-enabled;
   }
 
   strong::after {
@@ -58,6 +64,41 @@
     display: inline;
     font-size: 0.8rem;
     color: $color-font-enabled-light;
+  }
+}
+
+.editButton {
+  position: absolute;
+  right: 2.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  color: $color-font-disabled;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
+
+  .root:hover & {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  svg {
+    width: 0.75rem;
+    height: 0.75rem;
   }
 }
 

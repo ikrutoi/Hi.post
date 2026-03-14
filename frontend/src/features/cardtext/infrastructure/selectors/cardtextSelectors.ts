@@ -11,6 +11,9 @@ export const selectCardtextState = (state: RootState) => state.cardtext
 export const selectCardtextSaveTemplateModalOpen = (state: RootState): boolean =>
   (state.cardtext as { isSaveTemplateModalOpen?: boolean }).isSaveTemplateModalOpen ?? false
 
+export const selectCardtextTemplatesInvalidated = (state: RootState): boolean =>
+  (state.cardtext as { cardtextTemplatesInvalidated?: boolean }).cardtextTemplatesInvalidated ?? false
+
 export const selectCardtextValue = (state: RootState): CardtextValue =>
   state.cardtext.value
 

@@ -1,7 +1,10 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconX, IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { selectCardtextTemplatesInvalidated } from '@cardtext/infrastructure/selectors'
+import { setCardtextTemplatesInvalidated } from '@cardtext/infrastructure/state'
 import { useCardtextTemplates } from '@entities/templates/application/hooks/useTemplates'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import type { CardtextTemplate } from '@entities/templates/domain/types/cardtextTemplate.types'
@@ -14,9 +17,20 @@ type Props = {
 }
 
 export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
+  const dispatch = useAppDispatch()
   const { templates, isLoading, reload } = useCardtextTemplates()
   const { deleteCardtextTemplate } = useTemplateActions()
+  const templatesInvalidated = useAppSelector(
+    selectCardtextTemplatesInvalidated,
+  )
   const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (templatesInvalidated) {
+      reload()
+      dispatch(setCardtextTemplatesInvalidated(false))
+    }
+  }, [templatesInvalidated, reload, dispatch])
 
   const handleSelect = useCallback(
     (entry: CardtextTemplate) => {
@@ -38,7 +52,9 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <span className={styles.headerTitle}>Text templates</span>
+        <div className={styles.headerToolbar}>
+          <Toolbar section="cardtextList" />
+        </div>
         <button
           type="button"
           className={styles.closeBtn}
@@ -47,9 +63,6 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
         >
           <IconX />
         </button>
-      </div>
-      <div className={styles.toolbarWrap}>
-        <Toolbar section="cardtextList" />
       </div>
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
@@ -71,6 +84,7 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                 entry={entry}
                 onSelect={handleSelect}
                 onDelete={handleDelete}
+                onEdit={handleSelect}
                 isSelected={selectedId === entry.id}
               />
             ))}

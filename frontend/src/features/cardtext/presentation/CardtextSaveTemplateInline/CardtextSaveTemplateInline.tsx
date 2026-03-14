@@ -4,7 +4,10 @@ import {
   selectCardtextSaveTemplateModalOpen,
   selectCardtextState,
 } from '@cardtext/infrastructure/selectors'
-import { setCardtextSaveTemplateModalOpen } from '@cardtext/infrastructure/state'
+import {
+  setCardtextSaveTemplateModalOpen,
+  setCardtextTemplatesInvalidated,
+} from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import { useCardtextTemplates } from '@entities/templates/application/hooks/useTemplates'
 import { getToolbarIcon } from '@/shared/utils/icons'
@@ -24,7 +27,8 @@ export const CardtextSaveTemplateInline: React.FC = () => {
   const cardtextState = useAppSelector(selectCardtextState)
   const dispatch = useAppDispatch()
   const { createCardtextTemplate } = useTemplateActions()
-  const { templates: cardtextTemplates } = useCardtextTemplates()
+  const { templates: cardtextTemplates, reload: reloadCardtextTemplates } =
+    useCardtextTemplates()
   const [title, setTitle] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -63,6 +67,8 @@ export const CardtextSaveTemplateInline: React.FC = () => {
           cardtextLines: cardtextState.cardtextLines,
           title: uniqueTitle,
         })
+        await reloadCardtextTemplates()
+        dispatch(setCardtextTemplatesInvalidated(true))
         close()
       } finally {
         setIsSubmitting(false)
@@ -76,6 +82,8 @@ export const CardtextSaveTemplateInline: React.FC = () => {
       cardtextState.cardtextLines,
       title,
       existingTitles,
+      reloadCardtextTemplates,
+      dispatch,
       close,
       isSubmitting,
     ],
