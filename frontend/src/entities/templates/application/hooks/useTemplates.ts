@@ -1,4 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import {
+  selectCardtextTemplatesListItems,
+  selectCardtextTemplatesListLoading,
+} from '@cardtext/infrastructure/selectors'
+import { loadCardtextTemplatesRequest } from '@cardtext/infrastructure/state'
 import { templateService } from '../../domain/services/templateService'
 import type { AddressTemplate } from '../../domain/types/addressTemplate.types'
 import type { CardtextTemplate } from '../../domain/types/cardtextTemplate.types'
@@ -12,11 +18,6 @@ export const useTemplates = () => {
   const [senderTemplates, setSenderTemplates] = useState<AddressTemplate[]>([])
   const [isLoadingRecipients, setIsLoadingRecipients] = useState(false)
   const [isLoadingSenders, setIsLoadingSenders] = useState(false)
-
-  const [cardtextTemplates, setCardtextTemplates] = useState<
-    CardtextTemplate[]
-  >([])
-  const [isLoadingCardtext, setIsLoadingCardtext] = useState(false)
 
   const [userImageTemplates, setUserImageTemplates] = useState<
     CardphotoTemplate[]
@@ -55,18 +56,6 @@ export const useTemplates = () => {
     await Promise.all([loadRecipientTemplates(), loadSenderTemplates()])
   }, [loadRecipientTemplates, loadSenderTemplates])
 
-  const loadCardtextTemplates = useCallback(async () => {
-    setIsLoadingCardtext(true)
-    try {
-      const templates = await templateService.getCardtextTemplates()
-      setCardtextTemplates(templates)
-    } catch (error) {
-      console.error('Failed to load cardtext templates:', error)
-    } finally {
-      setIsLoadingCardtext(false)
-    }
-  }, [])
-
   const loadUserImageTemplates = useCallback(async () => {
     setIsLoadingUserImages(true)
     try {
@@ -96,12 +85,8 @@ export const useTemplates = () => {
   }, [loadUserImageTemplates, loadStockImageTemplates])
 
   const loadAllTemplates = useCallback(async () => {
-    await Promise.all([
-      loadAddressTemplates(),
-      loadCardtextTemplates(),
-      loadImageTemplates(),
-    ])
-  }, [loadAddressTemplates, loadCardtextTemplates, loadImageTemplates])
+    await Promise.all([loadAddressTemplates(), loadImageTemplates()])
+  }, [loadAddressTemplates, loadImageTemplates])
 
   return {
     recipientTemplates,
@@ -111,10 +96,6 @@ export const useTemplates = () => {
     loadRecipientTemplates,
     loadSenderTemplates,
     loadAddressTemplates,
-
-    cardtextTemplates,
-    isLoadingCardtext,
-    loadCardtextTemplates,
 
     userImageTemplates,
     stockImageTemplates,
@@ -156,17 +137,16 @@ export const useAddressTemplates = (type: AddressType) => {
 }
 
 export const useCardtextTemplates = () => {
-  const { cardtextTemplates, isLoadingCardtext, loadCardtextTemplates } =
-    useTemplates()
-
-  useEffect(() => {
-    loadCardtextTemplates()
-  }, [loadCardtextTemplates])
+  const dispatch = useAppDispatch()
+  const templates = useAppSelector(selectCardtextTemplatesListItems)
+  const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
 
   return {
-    templates: cardtextTemplates,
-    isLoading: isLoadingCardtext,
-    reload: loadCardtextTemplates,
+    templates,
+    isLoading,
+    reload: useCallback(() => {
+      dispatch(loadCardtextTemplatesRequest())
+    }, [dispatch]),
   }
 }
 

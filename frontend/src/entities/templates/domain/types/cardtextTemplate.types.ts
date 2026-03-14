@@ -18,7 +18,6 @@ export interface CreateCardtextTemplatePayload {
   title?: string
   name?: string
   favorite?: boolean | null
-  /** Опционально: свой id (иначе будет сгенерирован nanoid()) */
   id?: string
 }
 

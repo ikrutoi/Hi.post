@@ -1,11 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconX, IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { selectCardtextTemplatesInvalidated } from '@cardtext/infrastructure/selectors'
-import { setCardtextTemplatesInvalidated } from '@cardtext/infrastructure/state'
-import { useCardtextTemplates } from '@entities/templates/application/hooks/useTemplates'
+import {
+  selectCardtextTemplatesListItems,
+  selectCardtextTemplatesListLoading,
+  selectCurrentCardtextTemplateId,
+} from '@cardtext/infrastructure/selectors'
+import {
+  setFavorite,
+  loadCardtextTemplatesRequest,
+} from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import type { CardtextTemplate } from '@entities/templates/domain/types/cardtextTemplate.types'
 import { CardtextListEntry } from './CardtextListEntry'
@@ -18,19 +24,11 @@ type Props = {
 
 export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const dispatch = useAppDispatch()
-  const { templates, isLoading, reload } = useCardtextTemplates()
+  const templates = useAppSelector(selectCardtextTemplatesListItems)
+  const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
   const { deleteCardtextTemplate, updateCardtextTemplate } = useTemplateActions()
-  const templatesInvalidated = useAppSelector(
-    selectCardtextTemplatesInvalidated,
-  )
+  const currentTemplateId = useAppSelector(selectCurrentCardtextTemplateId)
   const [selectedId, setSelectedId] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (templatesInvalidated) {
-      reload()
-      dispatch(setCardtextTemplatesInvalidated(false))
-    }
-  }, [templatesInvalidated, reload, dispatch])
 
   const handleSelect = useCallback(
     (entry: CardtextTemplate) => {
@@ -44,18 +42,21 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
     async (id: string) => {
       await deleteCardtextTemplate(id)
       if (selectedId === id) setSelectedId(null)
-      reload()
+      dispatch(loadCardtextTemplatesRequest())
     },
-    [deleteCardtextTemplate, selectedId, reload],
+    [deleteCardtextTemplate, selectedId, dispatch],
   )
 
   const handleToggleStar = useCallback(
     async (entry: CardtextTemplate) => {
       const next = entry.favorite === true ? false : true
       await updateCardtextTemplate(entry.id, { favorite: next })
-      reload()
+      if (currentTemplateId === entry.id) {
+        dispatch(setFavorite(next))
+      }
+      dispatch(loadCardtextTemplatesRequest())
     },
-    [updateCardtextTemplate, reload],
+    [updateCardtextTemplate, currentTemplateId, dispatch],
   )
 
   return (

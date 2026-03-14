@@ -1,6 +1,8 @@
 import { useMemo, useCallback, useEffect } from 'react'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCropIds } from '@cardphoto/infrastructure/selectors'
+import { selectCardtextTemplatesListItems } from '@cardtext/infrastructure/selectors'
+import { loadCardtextTemplatesRequest } from '@cardtext/infrastructure/state'
 import { useTemplates } from '@entities/templates/application/hooks'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import type { CardSection } from '@shared/config/constants'
@@ -29,18 +31,18 @@ export function usePreviewStripItems(
     addressTemplateRefs,
     addressTemplatesReloadVersion,
   } = useAppSelector(selectPreviewStripOrder)
+  const dispatch = useAppDispatch()
+  const cardtextTemplates = useAppSelector(selectCardtextTemplatesListItems)
   const {
     senderTemplates,
     recipientTemplates,
-    cardtextTemplates,
     loadSenderTemplates,
     loadRecipientTemplates,
-    loadCardtextTemplates,
   } = useTemplates()
 
   useEffect(() => {
     if (activeSection === 'cardtext') {
-      loadCardtextTemplates()
+      dispatch(loadCardtextTemplatesRequest())
     } else if (activeSection === 'envelope') {
       loadSenderTemplates()
       loadRecipientTemplates()
@@ -48,7 +50,7 @@ export function usePreviewStripItems(
   }, [
     activeSection,
     addressTemplatesReloadVersion,
-    loadCardtextTemplates,
+    dispatch,
     loadSenderTemplates,
     loadRecipientTemplates,
   ])
@@ -76,11 +78,12 @@ export function usePreviewStripItems(
     }
 
     if (activeSection === 'cardtext') {
-      const byId = new Map(cardtextTemplates.map((t) => [t.id, t]))
+      const list = cardtextTemplates ?? []
+      const byId = new Map(list.map((t) => [t.id, t]))
       const orderedIds =
         cardtextTemplateIds.length > 0
           ? cardtextTemplateIds.filter((id) => byId.has(id))
-          : [...cardtextTemplates]
+          : [...list]
               .sort((a, b) => (b.updatedAt ?? 0) - (a.updatedAt ?? 0))
               .map((t) => t.id)
       const idsNewestFirst = [...orderedIds].reverse().slice(0, MAX_ITEMS)
@@ -138,7 +141,7 @@ export function usePreviewStripItems(
   const reload = useCallback(async () => {
     if (activeSection === 'cardphoto') return
     if (activeSection === 'cardtext') {
-      await loadCardtextTemplates()
+      dispatch(loadCardtextTemplatesRequest())
       return
     }
     if (activeSection === 'envelope') {
@@ -146,7 +149,7 @@ export function usePreviewStripItems(
     }
   }, [
     activeSection,
-    loadCardtextTemplates,
+    dispatch,
     loadSenderTemplates,
     loadRecipientTemplates,
   ])

@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
-  selectCardtextSaveTemplateModalOpen,
+  selectCardtextAddTemplateOpen,
   selectCardtextState,
+  selectCardtextTemplatesListItems,
 } from '@cardtext/infrastructure/selectors'
 import {
-  setCardtextSaveTemplateModalOpen,
-  setCardtextTemplatesInvalidated,
+  setCardtextAddTemplateOpen,
+  cardtextTemplateAdded,
   setCardtextShowViewMode,
 } from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
-import { useCardtextTemplates } from '@entities/templates/application/hooks/useTemplates'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import { IconX } from '@shared/ui/icons'
 import styles from './CardtextSaveTemplateInline.module.scss'
@@ -24,12 +24,11 @@ function getUniqueTitle(baseTitle: string, existingTitles: Set<string>): string 
 }
 
 export const CardtextSaveTemplateInline: React.FC = () => {
-  const isOpen = useAppSelector(selectCardtextSaveTemplateModalOpen)
+  const isOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const cardtextState = useAppSelector(selectCardtextState)
+  const cardtextTemplates = useAppSelector(selectCardtextTemplatesListItems)
   const dispatch = useAppDispatch()
   const { createCardtextTemplate } = useTemplateActions()
-  const { templates: cardtextTemplates, reload: reloadCardtextTemplates } =
-    useCardtextTemplates()
   const [title, setTitle] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -40,7 +39,7 @@ export const CardtextSaveTemplateInline: React.FC = () => {
   )
 
   const close = useCallback(() => {
-    dispatch(setCardtextSaveTemplateModalOpen(false))
+    dispatch(setCardtextAddTemplateOpen(false))
     setTitle('')
   }, [dispatch])
 
@@ -68,8 +67,7 @@ export const CardtextSaveTemplateInline: React.FC = () => {
           cardtextLines: cardtextState.cardtextLines,
           title: uniqueTitle,
         })
-        await reloadCardtextTemplates()
-        dispatch(setCardtextTemplatesInvalidated(true))
+        dispatch(cardtextTemplateAdded())
         dispatch(setCardtextShowViewMode(true))
         close()
       } finally {
@@ -84,7 +82,6 @@ export const CardtextSaveTemplateInline: React.FC = () => {
       cardtextState.cardtextLines,
       title,
       existingTitles,
-      reloadCardtextTemplates,
       dispatch,
       close,
       isSubmitting,

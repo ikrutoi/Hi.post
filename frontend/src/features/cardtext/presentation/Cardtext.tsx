@@ -3,6 +3,7 @@ import { useAppSelector } from '@app/hooks'
 import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
 import { useSizeFacade } from '@layout/application/facades'
+import { useCardtextFacade } from '../application/facades/useCardtextFacade'
 import {
   selectCardtextShowViewMode,
   selectCardtextValue,
@@ -23,6 +24,8 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const value = useAppSelector(selectCardtextValue)
   const style = useAppSelector(selectCardtextStyle)
   const title = useAppSelector(selectCardtextTitle)
+  const { state } = useCardtextFacade()
+  console.log('Cardtext state', state)
 
   const formRef = useRef<HTMLDivElement>(null)
   const titleTextRef = useRef<HTMLSpanElement>(null)

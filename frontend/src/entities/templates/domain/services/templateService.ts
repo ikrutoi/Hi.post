@@ -177,47 +177,51 @@ export const templateService = {
     const records = await cardtextTemplatesAdapter.getAll()
     const now = Date.now()
 
-    return records.map((record) => ({
+    return records.map((record) => {
+      const state = record.state ?? (record as any)
+      return {
       id: record.id,
       localId: Number.parseInt(record.id, 10) || 0,
-      value: record.state?.value || [],
-      style: record.state?.style || {
+      value: state?.value || [],
+      style: state?.style || {
         fontFamily: '',
         fontSizeStep: 0,
         color: 'deepBlack',
         align: 'left',
       },
-      title: record.state?.title ?? '',
-      plainText: record.state?.plainText || '',
-      cardtextLines: record.state?.cardtextLines || 0,
-      favorite: record.state?.favorite ?? null,
+      title: state?.title ?? '',
+      plainText: state?.plainText || '',
+      cardtextLines: state?.cardtextLines || 0,
+      favorite: state?.favorite ?? (record as any).favorite ?? null,
       createdAt: now,
       updatedAt: now,
       serverId: null,
       syncedAt: null,
       isDirty: false,
-    }))
+    }
+    })
   },
 
   async getCardtextTemplateById(id: string): Promise<CardtextTemplate | null> {
     const record = await cardtextTemplatesAdapter.getById(id)
     if (!record) return null
 
+    const state = record.state ?? (record as any)
     const now = Date.now()
     return {
       id: record.id,
       localId: Number.parseInt(record.id, 10) || 0,
-      value: record.state?.value || [],
-      style: record.state?.style || {
+      value: state?.value || [],
+      style: state?.style || {
         fontFamily: '',
         fontSizeStep: 0,
         color: 'deepBlack',
         align: 'left',
       },
-      title: record.state?.title ?? '',
-      plainText: record.state?.plainText || '',
-      cardtextLines: record.state?.cardtextLines || 0,
-      favorite: record.state?.favorite ?? null,
+      title: state?.title ?? '',
+      plainText: state?.plainText || '',
+      cardtextLines: state?.cardtextLines || 0,
+      favorite: state?.favorite ?? (record as any).favorite ?? null,
       createdAt: now,
       updatedAt: now,
       serverId: null,
@@ -272,22 +276,23 @@ export const templateService = {
         }
       }
 
+      const existingState = record.state ?? (record as any)
       const updatedRecord: CardtextTemplateItem = {
-        ...record,
+        id: record.id,
         state: {
-          ...record.state,
-          value: payload.value ?? record.state?.value,
+          value: payload.value ?? existingState?.value,
           style: payload.style
-            ? { ...record.state?.style, ...payload.style }
-            : record.state?.style,
+            ? { ...existingState?.style, ...payload.style }
+            : existingState?.style,
           title:
-            payload.title ?? payload.name ?? record.state?.title ?? '',
-          plainText: payload.plainText ?? record.state?.plainText,
-          cardtextLines: payload.cardtextLines ?? record.state?.cardtextLines,
+            payload.title ?? payload.name ?? existingState?.title ?? '',
+          plainText: payload.plainText ?? existingState?.plainText,
+          cardtextLines: payload.cardtextLines ?? existingState?.cardtextLines,
+          applied: existingState?.applied ?? null,
           favorite:
             payload.favorite !== undefined
               ? payload.favorite
-              : (record.state?.favorite ?? null),
+              : (existingState?.favorite ?? null),
         },
       }
 

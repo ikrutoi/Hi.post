@@ -8,7 +8,7 @@ import type { RootState } from '@app/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   setCardtextListPanelOpen,
-  setCardtextSaveTemplateModalOpen,
+  setCardtextAddTemplateOpen,
   setCardtextFocusRequested,
   setCardtextShowViewMode,
 } from '@cardtext/infrastructure/state'
@@ -60,7 +60,7 @@ export function* handleCardtextToolbarAction(
     }
 
     case 'listAdd':
-      yield put(setCardtextSaveTemplateModalOpen(true))
+      yield put(setCardtextAddTemplateOpen(true))
       break
 
     case 'cardtextAdd': {

@@ -1,15 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
-  selectCardtextSaveTemplateModalOpen,
+  selectCardtextAddTemplateOpen,
   selectCardtextState,
 } from '@cardtext/infrastructure/selectors'
-import { setCardtextSaveTemplateModalOpen } from '@cardtext/infrastructure/state'
+import {
+  setCardtextAddTemplateOpen,
+  cardtextTemplateAdded,
+} from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import styles from './CardtextSaveTemplateModal.module.scss'
 
 export const CardtextSaveTemplateModal: React.FC = () => {
-  const isOpen = useAppSelector(selectCardtextSaveTemplateModalOpen)
+  const isOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const cardtextState = useAppSelector(selectCardtextState)
   const dispatch = useAppDispatch()
   const { createCardtextTemplate } = useTemplateActions()
@@ -17,7 +20,7 @@ export const CardtextSaveTemplateModal: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const close = useCallback(() => {
-    dispatch(setCardtextSaveTemplateModalOpen(false))
+    dispatch(setCardtextAddTemplateOpen(false))
     setTitle('')
   }, [dispatch])
 
@@ -38,6 +41,7 @@ export const CardtextSaveTemplateModal: React.FC = () => {
           cardtextLines: cardtextState.cardtextLines,
           title: title.trim() || 'Без названия',
         })
+        dispatch(cardtextTemplateAdded())
         close()
       } finally {
         setIsSubmitting(false)
@@ -52,6 +56,7 @@ export const CardtextSaveTemplateModal: React.FC = () => {
       title,
       close,
       isSubmitting,
+      dispatch,
     ],
   )
 

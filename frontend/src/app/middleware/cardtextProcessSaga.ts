@@ -10,7 +10,16 @@ import {
 } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { selectFontSizeStep } from '@cardtext/infrastructure/selectors'
-import { setTextStyle } from '@cardtext/infrastructure/state'
+import {
+  setTextStyle,
+  cardtextTemplateAdded,
+  loadCardtextTemplatesRequest,
+  setCardtextTemplatesListLoading,
+  loadCardtextTemplatesSuccess,
+  loadCardtextTemplatesFailure,
+  setCardtextListPanelOpen,
+} from '@cardtext/infrastructure/state'
+import { templateService } from '@entities/templates/domain/services/templateService'
 import {
   selectActiveSource,
   selectCardOrientation,
@@ -80,12 +89,29 @@ export function* watchCardphotoOrientation(): SagaIterator {
   )
 }
 
+function* loadCardtextTemplatesSaga(): SagaIterator {
+  yield put(setCardtextTemplatesListLoading(true))
+  try {
+    const templates: Awaited<ReturnType<typeof templateService.getCardtextTemplates>> =
+      yield call([templateService, 'getCardtextTemplates'])
+    yield put(loadCardtextTemplatesSuccess(templates))
+  } catch {
+    yield put(loadCardtextTemplatesFailure())
+  }
+}
+
 export function* cardtextProcessSaga(): SagaIterator {
   yield call(syncFontSizeButtonsStatus)
 
   yield all([
     takeLatest(toolbarAction.type, handleCardtextToolbarAction),
-
+    takeEvery(loadCardtextTemplatesRequest.type, loadCardtextTemplatesSaga),
+    takeEvery(cardtextTemplateAdded.type, loadCardtextTemplatesSaga),
+    takeEvery(setCardtextListPanelOpen.type, function* (
+      action: ReturnType<typeof setCardtextListPanelOpen>,
+    ) {
+      if (action.payload) yield put(loadCardtextTemplatesRequest())
+    }),
     fork(watchFontSizeChanges),
     fork(watchCardphotoOrientation),
   ])

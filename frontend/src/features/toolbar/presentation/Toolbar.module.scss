@@ -372,14 +372,33 @@
 .toolbarAddressFormSenderView,
 .toolbarAddressFormRecipientView,
 .toolbarAddressListSender,
-.toolbarAddressListRecipient,
-.toolbarCardtextView {
+.toolbarAddressListRecipient {
   .toolbarKey {
     background-color: #fff;
   }
+}
 
+.toolbarSender,
+.toolbarRecipient,
+.toolbarRecipients,
+.toolbarSenderView,
+.toolbarRecipientView,
+.toolbarRecipientsView,
+.toolbarAddressFormSenderView,
+.toolbarAddressFormRecipientView,
+.toolbarAddressListSender,
+.toolbarAddressListRecipient,
+.toolbarCardtextView {
   .toolbarKeyActive {
     color: $color-font-active;
+  }
+
+  .toolbarKeyFavoriteActive {
+    color: $color-favorite-star;
+
+    svg {
+      fill: $color-favorite-star;
+    }
   }
 
   .toolbarKeyApplyEnabled {

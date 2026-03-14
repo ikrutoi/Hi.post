@@ -3,12 +3,12 @@ import { cardtextAdapter } from '../adapters/storeAdapters'
 
 export const useCardtextStorage = (editor: Editor) => {
   const loadTemplateById = async (id: number) => {
-    const record = await cardtextAdapter.getById(id)
-    if (!record) return null
+    const record = await cardtextAdapter.getById(String(id))
+    if (!record?.state?.value) return null
 
     clearEditor()
-    Transforms.insertNodes(editor, record.text)
-    return record.text
+    Transforms.insertNodes(editor, record.state.value)
+    return record.state.value
   }
 
   const saveTemplate = async (nodes: Node[]) => {

@@ -89,7 +89,7 @@ import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
 import type {
-  CardtextSessionRecord,
+  CardtextTemplateContent,
   CardtextStyle,
 } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
@@ -106,9 +106,7 @@ import {
   setTextStyle,
   setAlign,
   clearText,
-  restoreCardtext,
   restoreCardtextSession,
-  setAssetId,
   setCardtextShowViewMode,
 } from '@cardtext/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
@@ -119,18 +117,12 @@ import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { getRandomStockMeta } from './cardphotoHistorySaga'
 import { CardSection } from '@shared/config/constants'
 
-import { CardtextRecord } from '@/db/types'
-
 export function* persistGlobalSession() {
-  const cardtextId: string | null = yield select(
-    (state) => state.cardtext.assetId,
-  )
-
   const cardphoto: CardphotoSessionRecord | null = yield select(
     selectCardphotoSessionRecord,
   )
 
-  const cardtext: CardtextSessionRecord | null = yield select(
+  const cardtext: SessionData['cardtext'] = yield select(
     selectCardtextSessionData,
   )
 

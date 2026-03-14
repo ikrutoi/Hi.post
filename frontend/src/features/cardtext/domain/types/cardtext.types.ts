@@ -1,6 +1,5 @@
 import { BaseEditor } from 'slate'
 import { ReactEditor } from 'slate-react'
-import type { CardtextRecord } from '@db/types'
 
 export type CardtextTextNode = {
   text: string
@@ -74,14 +73,6 @@ export const initialCardtextValue: CardtextValue = [
   },
 ]
 
-// export type CardtextSessionRecord = {
-//   assetId: string | null
-//   value: CardtextValue
-//   style: CardtextStyle
-//   plainText: string
-//   cardtextLines: number
-// }
-
 export interface CardtextStyle {
   fontFamily: string
   fontSizeStep: number
@@ -89,16 +80,25 @@ export interface CardtextStyle {
   align: TextAlign
 }
 
-export interface CardtextSessionRecord extends Omit<CardtextRecord, 'id'> {
-  assetId: string | null
-}
-
-export interface CardtextState extends CardtextSessionRecord {
-  isComplete: boolean
-  resetToken: number
+export interface CardtextTemplateContent {
+  value: CardtextValue
+  title: string
+  style: CardtextStyle
+  plainText: string
+  cardtextLines: number
+  applied: string | null
+  favorite: boolean | null
 }
 
 export interface CardtextTemplateItem {
   id: string
-  state: Omit<CardtextRecord, 'id'>
+  state: CardtextTemplateContent
 }
+
+export interface CardtextState extends CardtextTemplateContent {
+  currentTemplateId: string | null
+  isComplete: boolean
+  resetToken: number
+}
+
+export type CardtextRecord = CardtextTemplateContent & { id: string }

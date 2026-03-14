@@ -17,6 +17,7 @@ import {
 import {
   selectCardtextIsComplete,
   selectCardtextPlainText,
+  selectCardtextFavorite,
 } from '@cardtext/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
@@ -68,6 +69,7 @@ export const Toolbar = ({
   const cardphotoApplied = useAppSelector(selectIsCurrentCropApplied)
   const cardtextApplied = useAppSelector(selectCardtextIsComplete)
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
+  const cardtextFavorite = useAppSelector(selectCardtextFavorite)
   const isAlreadyApplied =
     section === 'cardtext' || section === 'cardtextView'
       ? cardtextApplied
@@ -76,6 +78,18 @@ export const Toolbar = ({
   const cardtextEmpty =
     (section === 'cardtext' || section === 'cardtextView') &&
     !(cardtextPlainText?.trim?.() ?? '').length
+
+  useEffect(() => {
+    if (section === 'cardtextView') {
+      dispatch(
+        updateToolbarIcon({
+          section: 'cardtextView',
+          key: 'favorite',
+          value: { state: cardtextFavorite ? 'active' : 'enabled' },
+        }),
+      )
+    }
+  }, [section, cardtextFavorite, dispatch])
 
   const senderSortDirection = useAppSelector(
     (state) => state.sender?.sortOptions?.direction ?? 'asc',
@@ -139,6 +153,13 @@ export const Toolbar = ({
       cardtextEmpty
     ) {
       buttonStatus = 'disabled'
+    }
+    if (
+      section === 'cardtextView' &&
+      key === 'favorite' &&
+      cardtextFavorite
+    ) {
+      buttonStatus = 'active'
     }
 
     const orientation =

@@ -1,25 +1,29 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import {
-  EMPTY_PARAGRAPH,
-  DEFAULT_CARDTEXT_LINES,
-  initialCardtextValue,
-} from '../../domain/types'
+import { initialCardtextValue } from '../../domain/types'
 import type {
   CardtextValue,
   CardtextState,
   CardtextStyle,
   CardtextBlock,
-  CardtextSessionRecord,
+  CardtextTemplateContent,
 } from '../../domain/types'
+import type { CardtextTemplate } from '@entities/templates/domain/types/cardtextTemplate.types'
 
-const initialState: CardtextState & {
-  isListPanelOpen?: boolean
-  isSaveTemplateModalOpen?: boolean
-  cardtextTemplatesInvalidated?: boolean
-  showCardtextView?: boolean
-  requestCardtextFocus?: boolean
-} = {
-  assetId: null,
+interface CardtextUIState {
+  isListPanelOpen: boolean
+  isAddTemplateOpen: boolean
+  showCardtextView: boolean
+  requestCardtextFocus: boolean
+}
+
+export interface CardtextTemplatesListState {
+  items: CardtextTemplate[]
+  isLoading: boolean
+}
+
+const initialState: CardtextState &
+  CardtextUIState & { templatesList: CardtextTemplatesListState } = {
+  currentTemplateId: null,
   value: [
     {
       type: 'paragraph',
@@ -41,42 +45,35 @@ const initialState: CardtextState & {
   cardtextLines: 15,
   resetToken: 0,
   isListPanelOpen: false,
-  isSaveTemplateModalOpen: false,
-  cardtextTemplatesInvalidated: false,
+  isAddTemplateOpen: false,
   showCardtextView: false,
   requestCardtextFocus: false,
+  templatesList: {
+    items: [],
+    isLoading: false,
+  },
 }
 
 export const cardtextSlice = createSlice({
   name: 'cardtext',
   initialState,
   reducers: {
-    setTextStyle(state, action: PayloadAction<Partial<CardtextStyle>>) {
-      state.style = {
-        ...state.style,
-        ...action.payload,
-      }
-    },
-
-    setAssetId(state, action: PayloadAction<string | null>) {
-      state.assetId = action.payload
-    },
-
     setValue(state, action: PayloadAction<CardtextValue>) {
       state.value = action.payload
       state.plainText = action.payload
         .map((block) => block.children.map((child) => child.text).join(' '))
         .join('\n')
-
       const hasText = state.plainText.trim().length > 0
-      if (hasText) {
-        state.isComplete = false
-      }
-      if (!hasText) state.assetId = null
+      if (hasText) state.isComplete = false
+      if (!hasText) state.currentTemplateId = null
+    },
+
+    setTextStyle(state, action: PayloadAction<Partial<CardtextStyle>>) {
+      state.style = { ...state.style, ...action.payload }
     },
 
     setAlign(state, action: PayloadAction<CardtextBlock['align']>) {
-      state.value = state.value.map((block) => ({
+      state.value = state.value.map((block: CardtextBlock) => ({
         ...block,
         align: action.payload,
       }))
@@ -84,56 +81,20 @@ export const cardtextSlice = createSlice({
       state.resetToken += 1
     },
 
-    restoreCardtextSession(
-      state,
-      action: PayloadAction<CardtextSessionRecord>,
-    ) {
-      const { value, style, title, plainText, cardtextLines } = action.payload
-
-      if (value) state.value = value
-      if (style) state.style = style
-      if (title !== undefined) state.title = title
-      if (plainText !== undefined) state.plainText = plainText
-      if (cardtextLines !== undefined) state.cardtextLines = cardtextLines
-
-      state.isComplete = state.plainText.trim().length > 0
-      state.resetToken += 1
-    },
-
-    // setValue(state, action: PayloadAction<CardtextValue>) {
-    //   state.value = action.payload
-    //   state.plainText = action.payload
-    //     .map((block) => block.children.map((child) => child.text).join(' '))
-    //     .join('\n')
-    //   state.isComplete = state.plainText.trim().length > 0
-    // },
-
     setFontSizeStep(state, action: PayloadAction<number>) {
       state.style.fontSizeStep = action.payload
-    },
-
-    setPlainText(state, action: PayloadAction<string>) {
-      state.plainText = action.payload
-    },
-
-    setComplete(state, action: PayloadAction<boolean>) {
-      state.isComplete = action.payload
-    },
-
-    setCardtextLines(state, action: PayloadAction<number>) {
-      state.cardtextLines = action.payload
     },
 
     setTitle(state, action: PayloadAction<string>) {
       state.title = action.payload
     },
 
-    initCardtext(state, action: PayloadAction<CardtextValue>) {
-      state.value = action.payload
-      state.plainText = action.payload
-        .map((block) => block.children.map((child) => child.text).join(' '))
-        .join('\n')
-      state.isComplete = state.plainText.trim().length > 0
+    setComplete(state, action: PayloadAction<boolean>) {
+      state.isComplete = action.payload
+    },
+
+    setFavorite(state, action: PayloadAction<boolean | null>) {
+      state.favorite = action.payload
     },
 
     clearText(state) {
@@ -143,59 +104,92 @@ export const cardtextSlice = createSlice({
       }))
       state.plainText = ''
       state.isComplete = false
-      state.assetId = null
+      state.currentTemplateId = null
       state.resetToken += 1
     },
 
-    restoreFontSize(state, action: PayloadAction<number>) {
-      state.style.fontSizeStep = action.payload
+    setCurrentCardtextTemplateId(state, action: PayloadAction<string | null>) {
+      state.currentTemplateId = action.payload
     },
 
-    restoreCardtext(state, action: PayloadAction<CardtextValue>) {
-      state.value = action.payload
+    restoreCardtextSession(
+      state,
+      action: PayloadAction<
+        CardtextTemplateContent & { templateId?: string | null }
+      >,
+    ) {
+      const {
+        value,
+        style,
+        title,
+        plainText,
+        cardtextLines,
+        favorite,
+        templateId,
+      } = action.payload
+      if (value) state.value = value
+      if (style) state.style = style
+      if (title !== undefined) state.title = title
+      if (plainText !== undefined) state.plainText = plainText
+      if (cardtextLines !== undefined) state.cardtextLines = cardtextLines
+      if (favorite !== undefined) state.favorite = favorite
+      if (templateId !== undefined) state.currentTemplateId = templateId
+      state.isComplete = state.plainText.trim().length > 0
+      state.resetToken += 1
     },
 
+    // —— UI ——
     setCardtextListPanelOpen(state, action: PayloadAction<boolean>) {
-      // ignore type extension, runtime state carries UI flag
-      ;(state as any).isListPanelOpen = action.payload
+      state.isListPanelOpen = action.payload
     },
 
-    setCardtextSaveTemplateModalOpen(state, action: PayloadAction<boolean>) {
-      ;(state as any).isSaveTemplateModalOpen = action.payload
+    setCardtextAddTemplateOpen(state, action: PayloadAction<boolean>) {
+      state.isAddTemplateOpen = action.payload
     },
 
-    setCardtextTemplatesInvalidated(state, action: PayloadAction<boolean>) {
-      ;(state as any).cardtextTemplatesInvalidated = action.payload
+    cardtextTemplateAdded() {},
+
+    loadCardtextTemplatesRequest() {},
+    setCardtextTemplatesListLoading(state, action: PayloadAction<boolean>) {
+      state.templatesList.isLoading = action.payload
+    },
+    loadCardtextTemplatesSuccess(state, action: PayloadAction<CardtextTemplate[]>) {
+      state.templatesList.items = action.payload
+      state.templatesList.isLoading = false
+    },
+    loadCardtextTemplatesFailure(state) {
+      state.templatesList.isLoading = false
     },
 
     setCardtextShowViewMode(state, action: PayloadAction<boolean>) {
-      ;(state as any).showCardtextView = action.payload
+      state.showCardtextView = action.payload
+      if (!action.payload) state.currentTemplateId = null
     },
 
     setCardtextFocusRequested(state, action: PayloadAction<boolean>) {
-      ;(state as any).requestCardtextFocus = action.payload
+      state.requestCardtextFocus = action.payload
     },
   },
 })
 
 export const {
   setValue,
-  setAssetId,
-  setFontSizeStep,
-  setAlign,
   setTextStyle,
-  restoreCardtextSession,
-  setPlainText,
-  setComplete,
-  setCardtextLines,
+  setAlign,
+  setFontSizeStep,
   setTitle,
-  initCardtext,
+  setComplete,
+  setFavorite,
   clearText,
-  restoreCardtext,
-  restoreFontSize,
+  setCurrentCardtextTemplateId,
+  restoreCardtextSession,
   setCardtextListPanelOpen,
-  setCardtextSaveTemplateModalOpen,
-  setCardtextTemplatesInvalidated,
+  setCardtextAddTemplateOpen,
+  cardtextTemplateAdded,
+  loadCardtextTemplatesRequest,
+  setCardtextTemplatesListLoading,
+  loadCardtextTemplatesSuccess,
+  loadCardtextTemplatesFailure,
   setCardtextShowViewMode,
   setCardtextFocusRequested,
 } = cardtextSlice.actions

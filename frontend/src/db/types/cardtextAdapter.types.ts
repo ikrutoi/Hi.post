@@ -1,18 +1,8 @@
-import { CardtextStyle, CardtextValue } from '@/features/cardtext/domain/types'
 import type { StoreAdapter } from './storeAdapter.types'
+import type { CardtextTemplateItem } from '@cardtext/domain/types'
 import type { Node as SlateNode } from 'slate'
 
-export interface CardtextRecord {
-  id: string
-  value: CardtextValue
-  title: string
-  style: CardtextStyle
-  plainText: string
-  cardtextLines: number
-  applied: string | null
-  favorite: boolean | null
-}
-
-export interface CardtextAdapter extends StoreAdapter<CardtextRecord> {
-  addUniqueRecord(text: SlateNode[]): Promise<void>
+/** Адаптер store "cardtext". Типы сущности — в @cardtext/domain/types. */
+export interface CardtextAdapter extends StoreAdapter<CardtextTemplateItem> {
+  addUniqueRecord(nodes: SlateNode[]): Promise<void>
 }
