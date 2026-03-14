@@ -30,6 +30,8 @@ export const CardPie: React.FC<CardPieProps> = ({
   id,
   fillContainer = false,
 }) => {
+  const photoFillId = React.useId().replace(/:/g, '')
+  const photoEmptyFillId = React.useId().replace(/:/g, '')
   const { data, sections, handleSectorClick, isReady } = useCardPieFacade(
     status,
     id,
@@ -39,7 +41,9 @@ export const CardPie: React.FC<CardPieProps> = ({
 
   const cardData = data?.data
   const hasAppliedCardtext = cardData?.cardtext?.applied != null
-  const valueCardtext = hasAppliedCardtext ? cardData?.cardtext?.value || [] : []
+  const valueCardtext = hasAppliedCardtext
+    ? cardData?.cardtext?.value || []
+    : []
   const previewLines = valueCardtext
     .slice(0, 6)
     .map((block) => {
@@ -47,7 +51,9 @@ export const CardPie: React.FC<CardPieProps> = ({
       return fullLineText.split(/\s+/).filter(Boolean).slice(0, 4).join(' ')
     })
     .filter((line) => line.length > 0)
-  const photoUrl = cardData?.cardphoto.previewUrl
+  const photoUrl = sections.cardphoto
+    ? (cardData?.cardphoto?.previewUrl ?? null)
+    : null
   const aromaIndex = cardData?.aroma?.index
   const aromaImageUrl = aromaIndex ? AROMA_IMAGES[aromaIndex] : null
   const recipient = cardData?.recipient ? cardData?.recipient : null
@@ -92,43 +98,52 @@ export const CardPie: React.FC<CardPieProps> = ({
         textRendering="geometricPrecision"
       >
         <defs>
+          {sections.cardphoto && photoUrl && (
+            <pattern
+              id={photoFillId}
+              patternUnits="objectBoundingBox"
+              patternContentUnits="objectBoundingBox"
+              x="0"
+              y="0"
+              width="1"
+              height="1"
+            >
+              <image
+                href={photoUrl}
+                x="0"
+                y="0"
+                width="1"
+                height="1"
+                preserveAspectRatio="xMidYMid slice"
+              />
+            </pattern>
+          )}
           <pattern
-            id="photo-fill"
+            id={photoEmptyFillId}
             patternUnits="userSpaceOnUse"
             width="2560"
             height="2560"
-            x="0"
-            y="0"
+            x="1280"
+            y="320"
           >
-            {photoUrl ? (
-              <image
-                href={photoUrl}
-                width="2560"
-                height="2560"
-                preserveAspectRatio="xMidYMid slice"
+            <rect
+              width="2560"
+              height="2560"
+              className={clsx(
+                styles.rect,
+                styles.rectCardphoto,
+                styles.rectEmpty,
+              )}
+            />
+            <g
+              className={styles.pieSectorIconBg}
+              transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+            >
+              <IconSectionMenuCardphoto
+                width={PIE_EMPTY_ICON_SIZE}
+                height={PIE_EMPTY_ICON_SIZE}
               />
-            ) : (
-              <>
-                <rect
-                  width="2560"
-                  height="2560"
-                  className={clsx(
-                    styles.rect,
-                    styles.rectCardphoto,
-                    styles.rectEmpty,
-                  )}
-                />
-                <g
-                  className={styles.pieSectorIconBg}
-                  transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
-                >
-                  <IconSectionMenuCardphoto
-                    width={PIE_EMPTY_ICON_SIZE}
-                    height={PIE_EMPTY_ICON_SIZE}
-                  />
-                </g>
-              </>
-            )}
+            </g>
           </pattern>
 
           <pattern
@@ -416,7 +431,11 @@ export const CardPie: React.FC<CardPieProps> = ({
               !sections.cardphoto && styles.sectorEmpty,
               hoveredSection === 'cardphoto' && styles.hovered,
             )}
-            fill="url(#photo-fill)"
+            fill={
+              sections.cardphoto && photoUrl
+                ? `url(#${photoFillId})`
+                : `url(#${photoEmptyFillId})`
+            }
             stroke={SECTOR_STROKE}
             strokeWidth={STROKE_WIDTH}
             d="m2560 2560 1657 2550H903z"

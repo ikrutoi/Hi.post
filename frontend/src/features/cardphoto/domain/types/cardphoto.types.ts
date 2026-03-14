@@ -136,6 +136,7 @@ export interface CardphotoState {
   cropIds: string[]
   activeSource: ImageSource | null
   currentConfig: WorkingConfig | null
+  appended: string | null
 }
 
 export interface PreviewItem {

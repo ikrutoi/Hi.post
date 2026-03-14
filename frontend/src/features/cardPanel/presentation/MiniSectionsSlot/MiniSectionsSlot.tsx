@@ -8,6 +8,7 @@ import type { CardPanelSection } from '../../domain/types'
 import { MiniCard } from '../../MiniCard/presentation/MiniCard'
 import styles from './MiniSectionsSlot.module.scss'
 import { selectRecipientApplied } from '@envelope/recipient/infrastructure/selectors'
+import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 
 const PARTS_TOTAL = 6
 const GAP_PARTS = 1
@@ -28,6 +29,7 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
     const isPacked = stateCardPanel.isPacked
     const recipientApplied = useAppSelector(selectRecipientApplied)
     const hasRecipientApplied = (recipientApplied?.length ?? 0) > 0
+    const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
 
     const totalWidth =
       sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width : null
@@ -64,7 +66,10 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
           >
             {SECTIONS_ORDER.map((section, i) => {
               const { index } = CARD_PANEL_SECTIONS_PRIORITY[section]
-              const isSectionComplete = editorState[section]?.isComplete
+              const isSectionComplete =
+                section === 'cardphoto'
+                  ? cardphotoIsComplete
+                  : editorState[section]?.isComplete
               const isEmpty =
                 section === 'envelope'
                   ? !isSectionComplete && !hasRecipientApplied

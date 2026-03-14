@@ -2,16 +2,28 @@ import React from 'react'
 import { useAppSelector } from '@app/hooks'
 import clsx from 'clsx'
 import styles from './MiniCardphoto.module.scss'
-import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
+import cardStyles from '../../MiniCard.module.scss'
+import { selectCardphotoMiniPreview } from '@cardphoto/infrastructure/selectors'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import { getToolbarIcon } from '@/shared/utils/icons'
 
 export const MiniCardphoto = () => {
-  const photoPreview = useAppSelector(selectCardphotoPreview)
+  const photoPreview = useAppSelector(selectCardphotoMiniPreview)
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('cardphoto')
 
-  if (!photoPreview?.previewUrl) return null
+  if (!photoPreview?.previewUrl) {
+    return (
+      <div
+        className={clsx(cardStyles.miniCard, cardStyles.miniCardEmpty)}
+        style={{ position: 'absolute', inset: 0 }}
+      >
+        <div className={cardStyles.miniCardIconBg}>
+          {getToolbarIcon({ key: 'cardphoto' })}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div

@@ -32,6 +32,7 @@ const initialState: CardphotoSliceState = {
     cropIds: [],
     activeSource: null,
     currentConfig: null,
+    appended: null,
   },
   isComplete: false,
 }
@@ -85,7 +86,7 @@ export const cardphotoSlice = createSlice({
       }>,
     ) {
       // console.log('>>HYDRATE')
-      const { base, config, activeSource, cropIds, cropCount, isComplete } =
+      const { base, config, activeSource, cropIds, cropCount } =
         action.payload
 
       if (state.state) {
@@ -99,6 +100,7 @@ export const cardphotoSlice = createSlice({
           cropIds,
           activeSource,
           currentConfig: config,
+          appended: state.state.appended ?? null,
         }
       } else {
         state.state = {
@@ -111,9 +113,10 @@ export const cardphotoSlice = createSlice({
           cropIds,
           activeSource,
           currentConfig: config,
+          appended: null,
         }
       }
-      state.isComplete = isComplete
+      state.isComplete = !!state.state.base.apply?.image
     },
 
     setBaseImage(
@@ -202,6 +205,7 @@ export const cardphotoSlice = createSlice({
     clearApply(state) {
       if (!state.state) return
       state.state.base.apply.image = null
+      state.state.appended = null
       state.isComplete = false
     },
 
@@ -210,6 +214,7 @@ export const cardphotoSlice = createSlice({
       state.state.operations = []
       state.state.activeIndex = -1
       state.state.base.apply.image = null
+      state.state.appended = null
       state.state.currentConfig = null
       state.isComplete = false
     },
@@ -236,6 +241,7 @@ export const cardphotoSlice = createSlice({
       state.state.operations = []
       state.state.activeIndex = -1
       state.state.base.apply.image = null
+      state.state.appended = null
       state.state.currentConfig = workingConfig
       state.isComplete = false
     },
@@ -328,15 +334,15 @@ export const cardphotoSlice = createSlice({
 
     restoreSession(state, action: PayloadAction<CardphotoSessionRecord>) {
       if (state.state) {
-        const { source, config, apply, isComplete, cropIds, activeMetaId } =
+        const { source, config, apply, cropIds, activeMetaId } =
           action.payload
 
-        state.isComplete = isComplete
+        state.state.base.apply.image = apply
+        state.state.appended = null
+        state.isComplete = !!apply
         state.state.activeSource = source
         state.state.cropIds = cropIds || []
         state.state.cropCount = (cropIds || []).length
-
-        state.state.base.apply.image = apply
 
         if (config) {
           state.state.currentConfig = {

@@ -23,6 +23,11 @@
     background-color: transparent;
   }
 
+  &Cardphoto {
+    padding: 0;
+    background-color: transparent;
+  }
+
   &Value {
     flex: 1;
     display: flex;
@@ -41,7 +46,7 @@
   }
 }
 
-.miniCardEmpty {
+.miniCard.miniCardEmpty {
   background-color: $color-app-header;
 }
 

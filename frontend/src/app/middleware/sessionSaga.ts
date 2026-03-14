@@ -324,8 +324,6 @@ export function* hydrateAppSession() {
 
     if (!session) return
 
-    console.log('SESSION', session)
-
     if (session.cardphoto) {
       const { activeMetaId, cropIds, source, config, isComplete } =
         session.cardphoto
@@ -470,8 +468,6 @@ export function* hydrateAppSession() {
           isComplete: !!applyImg,
         }),
       )
-
-      console.log(`>>> Recovered from DB! Active Source: ${autoSource}`)
     }
 
     if (session.cardtext) {

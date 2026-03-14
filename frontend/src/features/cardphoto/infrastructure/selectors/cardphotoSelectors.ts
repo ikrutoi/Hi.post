@@ -18,11 +18,14 @@ import { cardEditorReducer } from '@/entities/cardEditor/infrastructure/state'
 
 export const selectCardphotoSlice = (state: RootState) => state.cardphoto
 
+/** Заглушка: при true селектор всегда возвращает false (картинка не лезет). Потом разобраться. */
+const CARDPHOTO_IS_COMPLETE_STUB = true
+
 export const selectCardphotoState = (state: RootState): CardphotoState | null =>
   state.cardphoto.state
 
 export const selectCardphotoIsComplete = (state: RootState): boolean =>
-  state.cardphoto.isComplete
+  CARDPHOTO_IS_COMPLETE_STUB ? false : state.cardphoto.isComplete
 
 export const selectStockImage = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.base.stock.image || null
@@ -219,12 +222,31 @@ export const selectCardphotoPreview = createSelector(
   ],
   (id, registry, isComplete) => {
     const asset = id ? registry[id] : null
+    const previewUrl =
+      isComplete && asset
+        ? asset.thumbUrl || asset.url || null
+        : null
 
     return {
-      previewUrl: asset?.thumbUrl || asset?.url || null,
-      isComplete: isComplete,
+      previewUrl,
+      isComplete,
       id: id || 'empty',
     }
+  },
+)
+
+/** Preview for mini section: only when user has chosen an image (appended). */
+export const selectCardphotoMiniPreview = createSelector(
+  [
+    (state: RootState) => state.cardphoto.state?.appended ?? null,
+    (state: RootState) => state.assetRegistry.images,
+  ],
+  (appendedId, registry) => {
+    if (!appendedId) return null
+    const asset = registry[appendedId]
+    const previewUrl = asset?.thumbUrl || asset?.url || null
+    if (!previewUrl) return null
+    return { previewUrl, id: appendedId }
   },
 )
 

@@ -1,4 +1,4 @@
-import { takeEvery, put, select, call } from 'redux-saga/effects'
+import { takeEvery, put, select, call, fork } from 'redux-saga/effects'
 import {
   setSectionComplete,
   clearSection,
@@ -44,7 +44,14 @@ import {
   selectCardtextState,
 } from '@cardtext/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
-import { applyFinal, clearApply } from '@cardphoto/infrastructure/state'
+import {
+  applyFinal,
+  clearApply,
+  reset,
+  resetCropLayers,
+  hydrateEditor,
+  restoreSession,
+} from '@cardphoto/infrastructure/state'
 import {
   selectCardphotoIsComplete,
   selectCardphotoState,
@@ -219,6 +226,9 @@ function* handleStatusToDrafts(
 }
 
 export function* cardEditorSaga() {
+  yield fork(syncCardphotoStatus)
+  yield fork(syncCardtextStatus)
+
   yield takeEvery(setDate.type, syncDateSet)
   yield takeEvery(clearDate.type, syncDateClear)
 
@@ -280,5 +290,15 @@ export function* cardEditorSaga() {
   yield takeEvery(setValue.type, syncCardtextToolbar)
   yield takeEvery(clearText.type, syncCardtextReset)
 
-  yield takeEvery([applyFinal.type, clearApply.type], syncCardphotoStatus)
+  yield takeEvery(
+  [
+    applyFinal.type,
+    clearApply.type,
+    reset.type,
+    resetCropLayers.type,
+    hydrateEditor.type,
+    restoreSession.type,
+  ],
+  syncCardphotoStatus,
+)
 }

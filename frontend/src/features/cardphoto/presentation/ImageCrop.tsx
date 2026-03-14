@@ -43,9 +43,6 @@ export const ImageCrop = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
   const { registry, getAssetById } = useAssetRegistryFacade()
 
-  console.count('ImageCrop Render')
-  // console.log('ImageCrop assetRegistry', registry)
-
   const { state: iconState } = useToolbarFacade('cardphoto')
 
   const { sizeCard } = useSizeFacade()
@@ -60,7 +57,6 @@ export const ImageCrop = () => {
   )
 
   useEffect(() => {
-    console.log('ImageCrop USE_EFFECT_init')
     init()
   }, [])
 
