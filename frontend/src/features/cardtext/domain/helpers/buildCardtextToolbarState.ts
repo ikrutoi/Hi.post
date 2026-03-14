@@ -68,6 +68,9 @@ export const buildCardtextToolbarState = (
       case 'empty':
         state.empty = 'disabled'
         break
+      case 'edit':
+        state.edit = 'enabled'
+        break
       default:
         const exhaustiveCheck: never = key
         throw new Error(`Unhandled key: ${exhaustiveCheck}`)

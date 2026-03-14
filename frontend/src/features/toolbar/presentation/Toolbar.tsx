@@ -14,7 +14,10 @@ import {
   selectAppliedImage,
   selectIsCurrentCropApplied,
 } from '@/features/cardphoto/infrastructure/selectors'
-import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
+import {
+  selectCardtextIsComplete,
+  selectCardtextPlainText,
+} from '@cardtext/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
@@ -45,11 +48,11 @@ export const Toolbar = ({
   const { templates: cardtextTemplates } = useCardtextTemplates()
 
   useEffect(() => {
-    if (section === 'cardtext') {
+    if (section === 'cardtext' || section === 'cardtextView') {
       const count = cardtextTemplates.length
       dispatch(
         updateToolbarIcon({
-          section: 'cardtext',
+          section,
           key: 'listCardtext',
           value: { options: { badge: count > 0 ? count : null } },
         }),
@@ -64,9 +67,15 @@ export const Toolbar = ({
 
   const cardphotoApplied = useAppSelector(selectIsCurrentCropApplied)
   const cardtextApplied = useAppSelector(selectCardtextIsComplete)
+  const cardtextPlainText = useAppSelector(selectCardtextPlainText)
   const isAlreadyApplied =
-    section === 'cardtext' ? cardtextApplied : cardphotoApplied
+    section === 'cardtext' || section === 'cardtextView'
+      ? cardtextApplied
+      : cardphotoApplied
   const appliedStatus = isAlreadyApplied ? 'disabled' : 'enabled'
+  const cardtextEmpty =
+    (section === 'cardtext' || section === 'cardtextView') &&
+    !(cardtextPlainText?.trim?.() ?? '').length
 
   const senderSortDirection = useAppSelector(
     (state) => state.sender?.sortOptions?.direction ?? 'asc',
@@ -121,9 +130,14 @@ export const Toolbar = ({
     const buttonState = typeof rawData === 'string' ? rawData : rawData?.state
     let buttonStatus = buttonState ?? currentIconState
 
-    const isCardApply =
-      key === 'apply' && (section === 'cardphoto' || section === 'cardtext')
-    if (isCardApply && isAlreadyApplied) {
+    if (key === 'apply' && section === 'cardphoto' && isAlreadyApplied) {
+      buttonStatus = 'disabled'
+    }
+    if (
+      key === 'apply' &&
+      (section === 'cardtext' || section === 'cardtextView') &&
+      cardtextEmpty
+    ) {
       buttonStatus = 'disabled'
     }
 

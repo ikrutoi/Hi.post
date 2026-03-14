@@ -166,6 +166,7 @@
 }
 
 .toolbarCardtext,
+.toolbarCardtextView,
 .toolbarCardphoto {
   // position: absolute;
   // left: 0;
@@ -290,20 +291,6 @@
   }
 }
 
-.toolbarCardphoto {
-  .toolbarKeyApplyEnabled {
-    background-color: $color-section-light-completed;
-    color: $color-font-active;
-    border: 1px solid $color-toggle-active;
-  }
-
-  .toolbarKeyApplyEnabled:hover {
-    background-color: $color-section-dark-completed;
-    color: $color-font-active;
-    border-color: $color-toggle-active;
-  }
-}
-
 // .toolbarCardtext {
 //   top: -4rem;
 // }
@@ -385,7 +372,8 @@
 .toolbarAddressFormSenderView,
 .toolbarAddressFormRecipientView,
 .toolbarAddressListSender,
-.toolbarAddressListRecipient {
+.toolbarAddressListRecipient,
+.toolbarCardtextView {
   .toolbarKey {
     background-color: #fff;
   }
@@ -421,6 +409,7 @@
 
 // .toolbarCardphoto,
 .toolbarCardtext,
+.toolbarCardtextView,
 .toolbarSender,
 .toolbarRecipient,
 .toolbarRecipients,

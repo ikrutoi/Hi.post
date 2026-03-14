@@ -10,6 +10,7 @@ import {
   setCardtextListPanelOpen,
   setCardtextSaveTemplateModalOpen,
   setCardtextFocusRequested,
+  setCardtextShowViewMode,
 } from '@cardtext/infrastructure/state'
 import { selectCardtextValue, selectCardtextShowViewMode } from '@cardtext/infrastructure/selectors'
 
@@ -17,26 +18,31 @@ export function* handleCardtextToolbarAction(
   action: ReturnType<typeof toolbarAction>,
 ): SagaIterator {
   const { section, key, payload: editor } = action.payload
-  if (section !== 'cardtext') return
-  // if (section !== 'cardtext' || !editor) return
+  const isCardtextSection = section === 'cardtext' || section === 'cardtextView'
+  if (!isCardtextSection) return
 
   switch (key) {
     case 'apply':
       yield put(setComplete(true))
       break
 
+    case 'edit':
+      if (section === 'cardtextView') {
+        yield put(setCardtextShowViewMode(false))
+      }
+      break
+
     case 'fontSizeLess':
-      yield call(changeFontSizeStep, editor, 'less')
+      if (section === 'cardtext') yield call(changeFontSizeStep, editor, 'less')
       break
 
     case 'fontSizeMore':
-      yield call(changeFontSizeStep, editor, 'more')
+      if (section === 'cardtext') yield call(changeFontSizeStep, editor, 'more')
       break
 
     case 'listCardtext': {
-      // Toggle icon state between 'active' and 'enabled' so UI reflects open/closed list panel.
       const current: any = (yield select(
-        (state: RootState) => state.toolbar.cardtext.listCardtext,
+        (state: RootState) => state.toolbar[section].listCardtext,
       )) as any
       const isActive =
         current?.state === 'active' || current === 'active'
@@ -44,12 +50,11 @@ export function* handleCardtextToolbarAction(
 
       yield put(
         updateToolbarIcon({
-          section: 'cardtext',
+          section,
           key: 'listCardtext',
           value: nextState,
         }),
       )
-      // Sync list panel visibility with icon state
       yield put(setCardtextListPanelOpen(!isActive))
       break
     }

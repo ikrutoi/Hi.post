@@ -37,6 +37,8 @@ import {
   CARDTEXT_LIST_KEYS,
   initialCardtextListToolbarState,
   CARDTEXT_LIST_TOOLBAR,
+  CARDTEXT_VIEW_TOOLBAR,
+  initialCardtextViewToolbarState,
 } from '../types'
 import {
   RECIPIENTS_VIEW_TOOLBAR,
@@ -291,5 +293,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'cardtextList',
     getBadges: (state: ToolbarState['cardtextList']) => ({}),
     toolbar: CARDTEXT_LIST_TOOLBAR,
+  },
+
+  cardtextView: {
+    keys: CARDTEXT_KEYS,
+    initialState: initialCardtextViewToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'cardtextView',
+    getBadges: (state: ToolbarState['cardtextView']) => ({}),
+    toolbar: CARDTEXT_VIEW_TOOLBAR,
   },
 }

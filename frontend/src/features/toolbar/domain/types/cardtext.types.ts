@@ -23,6 +23,7 @@ export const CARDTEXT_KEYS = [
   'listCardtext',
   'cardtextAdd',
   'empty',
+  'edit',
 ] as const
 
 export type CardtextKey = (typeof CARDTEXT_KEYS)[number]
@@ -42,20 +43,12 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
       { key: 'apply', state: 'enabled' },
       { key: 'cardtextAdd', state: 'enabled' },
       { key: 'listCardtext', state: 'enabled' },
-      { key: 'empty', state: 'disabled' },
-      // { key: 'favorite', state: 'disabled' },
-      // { key: 'close', state: 'disabled' },
     ],
     status: 'enabled',
   },
   {
     group: 'text',
     icons: [
-      // {
-      //   key: 'cardOrientation',
-      //   state: 'disabled',
-      //   options: { orientation: 'landscape' },
-      // },
       { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeMore', state: 'enabled' },
@@ -71,44 +64,38 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const CARDTEXT_SAVE_TOOLBAR: ToolbarConfig = [
+export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'ui',
     icons: [
       { key: 'apply', state: 'enabled' },
       { key: 'cardtextAdd', state: 'enabled' },
       { key: 'listCardtext', state: 'enabled' },
-      { key: 'empty', state: 'disabled' },
-      { key: 'favorite', state: 'disabled' },
-      { key: 'close', state: 'disabled' },
-      { key: 'listAdd', state: 'disabled' },
     ],
     status: 'enabled',
   },
   {
-    group: 'text',
+    group: 'view',
     icons: [
-      // {
-      //   key: 'cardOrientation',
-      //   state: 'disabled',
-      //   options: { orientation: 'landscape' },
-      // },
-      { key: 'fontFamily', state: 'enabled' },
-      { key: 'fontSizeLess', state: 'enabled' },
-      { key: 'fontSizeIndicator', state: 'enabled' },
-      { key: 'fontSizeMore', state: 'enabled' },
-      { key: 'left', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+      { key: 'favorite', state: 'enabled' },
     ],
     status: 'enabled',
   },
 ]
+
 export const initialCardtextToolbarState: CardtextToolbarState = {
   ...Object.fromEntries(flattenIcons(CARDTEXT_TOOLBAR)),
   config: [...CARDTEXT_TOOLBAR],
 }
 
+export const initialCardtextViewToolbarState: CardtextToolbarState = {
+  ...Object.fromEntries(flattenIcons(CARDTEXT_VIEW_TOOLBAR)),
+  config: [...CARDTEXT_VIEW_TOOLBAR],
+}
+
 export interface CardtextSectionConfig extends BaseSectionConfig<
   CardtextToolbarState,
   CardtextKey,
-  'cardtext'
+  'cardtext' | 'cardtextView'
 > {}
