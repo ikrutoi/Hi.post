@@ -180,13 +180,14 @@ export const templateService = {
     return records.map((record) => ({
       id: record.id,
       localId: Number.parseInt(record.id, 10) || 0,
-      value: record.state?.text || [],
+      value: record.state?.value || [],
       style: record.state?.style || {
         fontFamily: '',
         fontSizeStep: 0,
         color: 'deepBlack',
         align: 'left',
       },
+      title: record.state?.title ?? '',
       plainText: record.state?.plainText || '',
       cardtextLines: record.state?.cardtextLines || 0,
       createdAt: now,
@@ -205,13 +206,14 @@ export const templateService = {
     return {
       id: record.id,
       localId: Number.parseInt(record.id, 10) || 0,
-      value: record.state?.text || [],
+      value: record.state?.value || [],
       style: record.state?.style || {
         fontFamily: '',
         fontSizeStep: 0,
         color: 'deepBlack',
         align: 'left',
       },
+      title: record.state?.title ?? '',
       plainText: record.state?.plainText || '',
       cardtextLines: record.state?.cardtextLines || 0,
       createdAt: now,
@@ -233,6 +235,7 @@ export const templateService = {
         state: {
           value: payload.value,
           style: payload.style,
+          title: payload.title ?? payload.name ?? '',
           plainText: payload.plainText,
           cardtextLines: payload.cardtextLines,
           applied: null,
@@ -274,6 +277,8 @@ export const templateService = {
           style: payload.style
             ? { ...record.state?.style, ...payload.style }
             : record.state?.style,
+          title:
+            payload.title ?? payload.name ?? record.state?.title ?? '',
           plainText: payload.plainText ?? record.state?.plainText,
           cardtextLines: payload.cardtextLines ?? record.state?.cardtextLines,
         },

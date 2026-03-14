@@ -27,6 +27,11 @@
   color: $color-app-strip;
 }
 
+.toolbarWrap {
+  flex-shrink: 0;
+  padding: 0 0.5rem 0.25rem;
+}
+
 .closeBtn {
   position: absolute;
   top: -0.9rem;

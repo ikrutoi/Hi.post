@@ -25,6 +25,8 @@ import type {
   AddressFavoriteKey,
   AddressViewToolbarState,
   AddressViewKey,
+  CardtextListToolbarState,
+  CardtextListKey,
 } from './index'
 import type { RecipientsToolbarState, RecipientsKey } from './envelope.types'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -68,6 +70,7 @@ export const TOOLBAR_SECTIONS = [
   'recipientsView',
   'addressFormSenderView',
   'addressFormRecipientView',
+  'cardtextList',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -91,6 +94,7 @@ export type ToolbarState = {
   recipientsView: AddressViewToolbarState & { config: ToolbarGroup[] }
   addressFormSenderView: AddressViewToolbarState & { config: ToolbarGroup[] }
   addressFormRecipientView: AddressViewToolbarState & { config: ToolbarGroup[] }
+  cardtextList: CardtextListToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -187,6 +191,11 @@ export type ToolbarSectionConfigMap = {
     AddressViewKey,
     'addressFormRecipientView'
   >
+  cardtextList: BaseSectionConfig<
+    CardtextListToolbarState,
+    CardtextListKey,
+    'cardtextList'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -225,4 +234,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                   ? AddressViewKey
                                   : S extends 'addressFormRecipientView'
                                     ? AddressViewKey
-                                    : never
+                                    : S extends 'cardtextList'
+                                      ? CardtextListKey
+                                      : never

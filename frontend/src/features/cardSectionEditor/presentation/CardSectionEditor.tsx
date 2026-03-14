@@ -7,6 +7,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { useSizeFacade } from '@layout/application/facades'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
+import { CardtextSaveTemplateInline } from '@cardtext/presentation/CardtextSaveTemplateInline/CardtextSaveTemplateInline'
 import styles from './CardSectionEditor.module.scss'
 
 export const CardSectionEditor: React.FC = () => {
@@ -31,7 +32,10 @@ export const CardSectionEditor: React.FC = () => {
         >
           {activeSection === 'cardtext' && (
             <div className={styles.cardtextToolbarTop}>
-              <Toolbar section="cardtext" />
+              <div className={styles.cardtextToolbarRow}>
+                <Toolbar section="cardtext" />
+              </div>
+              <CardtextSaveTemplateInline />
             </div>
           )}
           {/* {showLeftInnerSidebar && (
@@ -43,7 +47,7 @@ export const CardSectionEditor: React.FC = () => {
             </div>
           )} */}
           <div
-            className={clsx(styles.editorSection)}
+            className={styles.editorSection}
             style={{
               width: `${width}px`,
               height: `${sizeCard.height}px`,

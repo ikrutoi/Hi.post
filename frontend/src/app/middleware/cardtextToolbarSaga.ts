@@ -6,7 +6,10 @@ import { changeFontSizeStep } from './cardtextHandlers'
 import { syncCardOrientationStatus } from './cardtextProcessSaga'
 import type { RootState } from '@app/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
+import {
+  setCardtextListPanelOpen,
+  setCardtextSaveTemplateModalOpen,
+} from '@cardtext/infrastructure/state'
 
 export function* handleCardtextToolbarAction(
   action: ReturnType<typeof toolbarAction>,
@@ -48,6 +51,10 @@ export function* handleCardtextToolbarAction(
       yield put(setCardtextListPanelOpen(!isActive))
       break
     }
+
+    case 'listAdd':
+      yield put(setCardtextSaveTemplateModalOpen(true))
+      break
   }
 }
 

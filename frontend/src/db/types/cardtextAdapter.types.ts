@@ -5,6 +5,7 @@ import type { Node as SlateNode } from 'slate'
 export interface CardtextRecord {
   id: string
   value: CardtextValue
+  title: string
   style: CardtextStyle
   plainText: string
   cardtextLines: number

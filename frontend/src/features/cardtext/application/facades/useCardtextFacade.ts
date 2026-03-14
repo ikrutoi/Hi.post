@@ -3,7 +3,12 @@ import { Transforms, Editor, Element as SlateElement } from 'slate'
 import { createEditor } from 'slate'
 import { withReact } from 'slate-react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { setValue, clearText, setTextStyle } from '../../infrastructure/state'
+import {
+  setValue,
+  clearText,
+  setTextStyle,
+  setTitle,
+} from '../../infrastructure/state'
 import { initialCardtextValue } from '../../domain/types'
 import type {
   CardtextValue,
@@ -12,6 +17,7 @@ import type {
 } from '../../domain/types'
 import {
   selectCardtextValue,
+  selectCardtextTitle,
   selectFontSizeStep,
 } from '../../infrastructure/selectors'
 
@@ -22,6 +28,7 @@ export const useCardtextFacade = () => {
   const editor = React.useMemo(() => withReact(createEditor()), [])
 
   const value = useAppSelector(selectCardtextValue)
+  const title = useAppSelector(selectCardtextTitle)
   const fontSizeStep = useAppSelector(selectFontSizeStep)
   const resetToken = useAppSelector((state) => state.cardtext.resetToken)
 
@@ -64,6 +71,13 @@ export const useCardtextFacade = () => {
     [dispatch],
   )
 
+  const setTitleHandler = React.useCallback(
+    (newTitle: string) => {
+      dispatch(setTitle(newTitle))
+    },
+    [dispatch],
+  )
+
   const changeFontSize = React.useCallback(
     (direction: 'more' | 'less') => {
       let nextStep = fontSizeStep
@@ -85,11 +99,13 @@ export const useCardtextFacade = () => {
   return {
     editor,
     value,
+    title,
     resetToken,
     fontSizeStep,
     editorRef: React.useRef<HTMLDivElement>(null),
     editableRef: React.useRef<HTMLDivElement>(null),
     setValue: setValueHandler,
+    setTitle: setTitleHandler,
     reset,
     applyAlign,
     updateStyle,

@@ -97,20 +97,24 @@
 
 .pieCenterButton {
   position: absolute;
-  width: 2rem;
-  height: 2rem;
+  width: 1.9rem;
+  height: 1.9rem;
   border-radius: 0.75rem;
   top: 50%;
   left: 50%;
-  padding-top: 0.1rem;
+  padding: 0.05rem 0 0 0;
   transform: translate(-50%, -50%);
-  background-color: #ffffff;
+  background-color: $color-app-inner;
   border: solid 1.5px $color-section-dark;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: auto;
+  color: $color-font-disabled;
   cursor: default;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 
   &:disabled {
     pointer-events: none;
@@ -122,20 +126,21 @@
 }
 
 .pieCenterIcon {
-  color: $color-font-disabled;
   transition: transform 0.3s ease;
 
   svg {
     fill: currentColor;
-    width: 1.2rem;
-    height: 1.2rem;
+    width: 1.1rem;
+    height: 1.1rem;
   }
 }
 
 .pieCenterButtonEnabled .pieCenterIcon {
-  color: $color-font-enabled;
+  color: $color-app-sidebar-icon-active;
+  border-color: $color-app-sidebar-icon-active;
+  // cursor: pointer;
 }
 
-.pieCenterButtonEnabled:hover .pieCenterIcon {
-  transform: scale(1.1);
-}
+// .pieCenterButtonEnabled:hover .pieCenterIcon {
+//   transform: scale(1.1);
+// }

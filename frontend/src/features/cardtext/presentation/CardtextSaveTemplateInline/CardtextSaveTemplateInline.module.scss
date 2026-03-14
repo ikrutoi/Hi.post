@@ -1,0 +1,84 @@
+@use '@styles/config/colors' as *;
+
+.strip {
+  position: absolute;
+  top: calc(110% + 0.25rem);
+  right: 0.25rem;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+  min-width: 70%;
+  border-radius: 0.65rem;
+  background-color: $color-app-inner;
+  box-shadow: $shadow-card;
+  border: 1px solid $color-app-substrate-border;
+  z-index: 10;
+}
+
+.form {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 1.35rem;
+  padding: 0 0.5rem;
+  font-size: 0.8rem;
+  border: 1px solid $color-app-strip;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  color: $color-font-enabled;
+  background: #fff;
+
+  &:focus {
+    outline: none;
+    border-color: $color-toggle-active;
+  }
+
+  &:disabled {
+    background: $color-disabled-light;
+    cursor: not-allowed;
+  }
+}
+
+.confirmBtn,
+.cancelBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: $color-font-enabled;
+  cursor: pointer;
+  transition:
+    // color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    // color: $color-font-enabled-light-hover;
+    background: $color-app-sidebar-icon-hover;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  svg {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+}
+
+// .confirmBtn:hover:not(:disabled) {
+//   color: $color-toggle-active;
+// }

@@ -229,7 +229,7 @@
 
 .toolbarAlignMenu {
   position: absolute;
-  top: 110%;
+  top: calc(110% + 0.25rem);
   left: 50%;
   transform: translateX(-50%);
   display: flex;

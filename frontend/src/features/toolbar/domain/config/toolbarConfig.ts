@@ -34,6 +34,9 @@ import {
   RECIPIENT_VIEW_TOOLBAR,
   initialAddressListRecipientsToolbarState,
   ADDRESS_LIST_RECIPIENTS_TOOLBAR,
+  CARDTEXT_LIST_KEYS,
+  initialCardtextListToolbarState,
+  CARDTEXT_LIST_TOOLBAR,
 } from '../types'
 import {
   RECIPIENTS_VIEW_TOOLBAR,
@@ -267,6 +270,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     getBadges: (state: ToolbarState['addressFormSenderView']) => ({}),
     toolbar: ADDRESS_FORM_SENDER_VIEW_TOOLBAR,
   },
+
   addressFormRecipientView: {
     keys: VIEW_KEYS,
     initialState: initialAddressFormRecipientViewToolbarState,
@@ -276,5 +280,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'addressFormRecipientView',
     getBadges: (state: ToolbarState['addressFormRecipientView']) => ({}),
     toolbar: ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR,
+  },
+
+  cardtextList: {
+    keys: CARDTEXT_LIST_KEYS,
+    initialState: initialCardtextListToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'cardtextList',
+    getBadges: (state: ToolbarState['cardtextList']) => ({}),
+    toolbar: CARDTEXT_LIST_TOOLBAR,
   },
 }

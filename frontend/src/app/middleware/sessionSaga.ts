@@ -29,16 +29,12 @@ import {
 } from '@envelope/recipient/infrastructure/state'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
-import {
-  syncCardtextToAssets,
-  syncCardtextToolbarVisuals,
-} from './cardtextHandlers'
+import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
 import { syncCardOrientationStatus } from './cardtextProcessSaga'
 import {
   selectCardtextPlainText,
   selectCardtextSessionData,
-  selectCardtextSessionRecord,
   selectCardtextStyle,
 } from '@cardtext/infrastructure/selectors'
 import {
@@ -569,14 +565,8 @@ export function* hydrateAppSession() {
 }
 
 export function* watchSessionChanges() {
-  yield takeLatest(SESSION_WATCH_ACTIONS, function* (action: any) {
+  yield takeLatest(SESSION_WATCH_ACTIONS, function* () {
     yield delay(900)
-
-    const textActions = [setValue.type, setTextStyle.type, setAlign.type]
-    if (textActions.includes(action.type)) {
-      yield call(syncCardtextToAssets)
-    }
-
     yield call(persistGlobalSession)
   })
 }

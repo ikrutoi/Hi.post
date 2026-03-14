@@ -12,7 +12,10 @@ import type {
   CardtextSessionRecord,
 } from '../../domain/types'
 
-const initialState: CardtextState & { isListPanelOpen?: boolean } = {
+const initialState: CardtextState & {
+  isListPanelOpen?: boolean
+  isSaveTemplateModalOpen?: boolean
+} = {
   assetId: null,
   value: [
     {
@@ -27,13 +30,14 @@ const initialState: CardtextState & { isListPanelOpen?: boolean } = {
     color: 'blue',
     align: 'left',
   },
+  title: '',
   plainText: '',
   applied: null,
   isComplete: false,
   cardtextLines: 15,
   resetToken: 0,
-  // UI-only flag: whether cardtext list panel (templates) is open.
   isListPanelOpen: false,
+  isSaveTemplateModalOpen: false,
 }
 
 export const cardtextSlice = createSlice({
@@ -58,8 +62,6 @@ export const cardtextSlice = createSlice({
         .join('\n')
 
       const hasText = state.plainText.trim().length > 0
-      // При любом изменении текста считаем секцию «не применённой»,
-      // чтобы кнопка Apply снова стала доступной.
       if (hasText) {
         state.isComplete = false
       }
@@ -71,8 +73,6 @@ export const cardtextSlice = createSlice({
         ...block,
         align: action.payload,
       }))
-      // Синхронизируем стиль по умолчанию и пересоздаём редактор,
-      // чтобы выравнивание отобразилось для уже набранного текста.
       state.style.align = action.payload
       state.resetToken += 1
     },
@@ -81,10 +81,11 @@ export const cardtextSlice = createSlice({
       state,
       action: PayloadAction<CardtextSessionRecord>,
     ) {
-      const { value, style, plainText, cardtextLines } = action.payload
+      const { value, style, title, plainText, cardtextLines } = action.payload
 
       if (value) state.value = value
       if (style) state.style = style
+      if (title !== undefined) state.title = title
       if (plainText !== undefined) state.plainText = plainText
       if (cardtextLines !== undefined) state.cardtextLines = cardtextLines
 
@@ -114,6 +115,10 @@ export const cardtextSlice = createSlice({
 
     setCardtextLines(state, action: PayloadAction<number>) {
       state.cardtextLines = action.payload
+    },
+
+    setTitle(state, action: PayloadAction<string>) {
+      state.title = action.payload
     },
 
     initCardtext(state, action: PayloadAction<CardtextValue>) {
@@ -147,6 +152,10 @@ export const cardtextSlice = createSlice({
       // ignore type extension, runtime state carries UI flag
       ;(state as any).isListPanelOpen = action.payload
     },
+
+    setCardtextSaveTemplateModalOpen(state, action: PayloadAction<boolean>) {
+      ;(state as any).isSaveTemplateModalOpen = action.payload
+    },
   },
 })
 
@@ -160,11 +169,13 @@ export const {
   setPlainText,
   setComplete,
   setCardtextLines,
+  setTitle,
   initCardtext,
   clearText,
   restoreCardtext,
   restoreFontSize,
   setCardtextListPanelOpen,
+  setCardtextSaveTemplateModalOpen,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

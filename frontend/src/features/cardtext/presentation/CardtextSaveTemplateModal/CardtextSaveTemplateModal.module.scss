@@ -1,0 +1,111 @@
+@use '@styles/config/colors' as *;
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.panel {
+  background: #fff;
+  border-radius: 0.75rem;
+  border: 1px solid $color-app-strip;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 1.25rem 1.5rem;
+  min-width: 280px;
+  max-width: 90vw;
+}
+
+.title {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $color-font-enabled;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  color: $color-font-enabled-light;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid $color-app-strip;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: $color-font-enabled;
+
+  &::placeholder {
+    color: $color-font-disabled;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-toggle-active;
+  }
+
+  &:disabled {
+    background: $color-disabled-light;
+    cursor: not-allowed;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.cancelBtn {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  border: 1px solid $color-app-strip;
+  border-radius: 6px;
+  background: #fff;
+  color: $color-font-enabled-light;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    color: $color-font-enabled;
+    border-color: $color-hover-dark;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.submitBtn {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 6px;
+  background: $color-toggle-active;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: darken($color-toggle-active, 6%);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
