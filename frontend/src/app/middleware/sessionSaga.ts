@@ -532,13 +532,13 @@ export function* hydrateAppSession() {
     yield call(rehydrateEnvelopeSlicesFromTemplates)
     yield call(syncEnvelopeStatus)
 
-    if (session.aroma && session.aroma.selectedAroma) {
-      yield put(setAroma(session.aroma.selectedAroma))
-    }
-
-    if (session.date && session.date.selectedDate) {
-      yield put(setDate(session.date.selectedDate))
-    }
+    // Aroma and date are not restored on reload so mini sections stay empty after refresh
+    // if (session.aroma && session.aroma.selectedAroma) {
+    //   yield put(setAroma(session.aroma.selectedAroma))
+    // }
+    // if (session.date && session.date.selectedDate) {
+    //   yield put(setDate(session.date.selectedDate))
+    // }
 
     if (session.sizeCard) {
       yield put(setSizeCard(session.sizeCard))

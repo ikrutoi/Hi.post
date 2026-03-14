@@ -19,8 +19,9 @@ import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
 import styles from './CardPie.module.scss'
 
-const STROKE_WIDTH = 9.99216
+const STROKE_WIDTH = 23.6221
 const SECTOR_STROKE = '#b3b3b3'
+const SECTOR_BG_STROKE = '#e53935' // red, for temporary -bg placement rects
 
 const PIE_EMPTY_ICON_SIZE = 1440
 const PIE_EMPTY_ICON_HALF = PIE_EMPTY_ICON_SIZE / 2
@@ -89,6 +90,9 @@ export const CardPie: React.FC<CardPieProps> = ({
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
+        xmlSpace="preserve"
+        width="512"
+        height="512"
         viewBox="0 0 5120 5120"
         className={styles.svg}
         fillRule="evenodd"
@@ -123,11 +127,11 @@ export const CardPie: React.FC<CardPieProps> = ({
             patternUnits="userSpaceOnUse"
             width="2560"
             height="2560"
-            x="1280"
-            y="320"
+            x="1580"
+            y="560"
           >
             <rect
-              width="2560"
+              width="3200"
               height="2560"
               className={clsx(
                 styles.rect,
@@ -150,9 +154,9 @@ export const CardPie: React.FC<CardPieProps> = ({
             id="cardtext-fill"
             patternUnits="userSpaceOnUse"
             width="2560"
-            height="3135"
-            x="0"
-            y="2000"
+            height="2560"
+            x="-420"
+            y="-680"
           >
             {previewLines.length > 0 ? (
               <>
@@ -207,9 +211,9 @@ export const CardPie: React.FC<CardPieProps> = ({
                     height={PIE_EMPTY_ICON_SIZE}
                   />
                 </g>
-                <text x="100" y="600" fill="#064e3b" opacity="0.5">
+                {/* <text x="100" y="600" fill="#064e3b" opacity="0.5">
                   <tspan>Hi...</tspan>
-                </text>
+                </text> */}
               </>
             )}
           </pattern>
@@ -219,8 +223,8 @@ export const CardPie: React.FC<CardPieProps> = ({
             patternUnits="userSpaceOnUse"
             width="2560"
             height="2560"
-            x="0"
-            y="0"
+            x="-60"
+            y="-70"
           >
             {!sections.envelope ? (
               <>
@@ -319,8 +323,8 @@ export const CardPie: React.FC<CardPieProps> = ({
             patternUnits="userSpaceOnUse"
             width="2560"
             height="2560"
-            x="2560"
-            y="2560"
+            x="2150"
+            y="-430"
           >
             {aromaImageUrl ? (
               <>
@@ -367,9 +371,9 @@ export const CardPie: React.FC<CardPieProps> = ({
             id="date-fill"
             patternUnits="userSpaceOnUse"
             width="2560"
-            height="3135"
-            x="0"
-            y="2000"
+            height="2560"
+            x="580"
+            y="1260"
           >
             {date ? (
               <>
@@ -422,7 +426,7 @@ export const CardPie: React.FC<CardPieProps> = ({
           </pattern>
         </defs>
 
-        <g>
+        <g id="Слой_x0020_1">
           <path
             id="cardphoto"
             data-section="cardphoto"
@@ -438,24 +442,8 @@ export const CardPie: React.FC<CardPieProps> = ({
             }
             stroke={SECTOR_STROKE}
             strokeWidth={STROKE_WIDTH}
-            d="m2560 2560 1657 2550H903z"
+            d="M5110 5110H1261l1299-2550z"
             onClick={() => handleSectorClick('cardphoto')}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          />
-          <path
-            id="date"
-            data-section="date"
-            className={clsx(
-              styles.sector,
-              !sections.date && styles.sectorEmpty,
-              hoveredSection === 'date' && styles.hovered,
-            )}
-            fill="url(#date-fill)"
-            stroke={SECTOR_STROKE}
-            strokeWidth={STROKE_WIDTH}
-            d="M4217 5110 2560 2560l2550-573v3123z"
-            onClick={() => handleSectorClick('date')}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           />
@@ -470,8 +458,24 @@ export const CardPie: React.FC<CardPieProps> = ({
             fill="url(#cardtext-fill)"
             stroke={SECTOR_STROKE}
             strokeWidth={STROKE_WIDTH}
-            d="M10 1987v3123h893l1657-2550z"
+            d="M1261 5110H10V2156l2550 404z"
             onClick={() => handleSectorClick('cardtext')}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          />
+          <path
+            id="date"
+            data-section="date"
+            className={clsx(
+              styles.sector,
+              !sections.date && styles.sectorEmpty,
+              hoveredSection === 'date' && styles.hovered,
+            )}
+            fill="url(#date-fill)"
+            stroke={SECTOR_STROKE}
+            strokeWidth={STROKE_WIDTH}
+            d="M5110 5110 2560 2560l2550-1299z"
+            onClick={() => handleSectorClick('date')}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           />
@@ -486,7 +490,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             fill="url(#envelope-fill)"
             stroke={SECTOR_STROKE}
             strokeWidth={STROKE_WIDTH}
-            d="M2560 2560 10 1987V10h2550z"
+            d="M10 2156V10h2146l404 2550z"
             onClick={() => handleSectorClick('envelope')}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -502,11 +506,53 @@ export const CardPie: React.FC<CardPieProps> = ({
             fill="url(#aroma-fill)"
             stroke={SECTOR_STROKE}
             strokeWidth={STROKE_WIDTH}
-            d="M2560 2560V10h2550v1977z"
+            d="M5110 1261 2560 2560 2156 10h2954z"
             onClick={() => handleSectorClick('aroma')}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           />
+
+          {/* Temporary bg rects on top, red stroke; remove once icons are positioned */}
+          {/* <path
+            id="cardphoto-bg"
+            className={styles.sectorBg}
+            fill="none"
+            stroke={SECTOR_BG_STROKE}
+            strokeWidth={STROKE_WIDTH}
+            d="M2182 3762h1350v1350H2182z"
+          /> */}
+          {/* <path
+            id="envelope-bg"
+            className={styles.sectorBg}
+            fill="none"
+            stroke={SECTOR_BG_STROKE}
+            strokeWidth={STROKE_WIDTH}
+            d="M542 541h1350v1350H542z"
+          /> */}
+          {/* <path
+            id="date-bg"
+            className={styles.sectorBg}
+            fill="none"
+            stroke={SECTOR_BG_STROKE}
+            strokeWidth={STROKE_WIDTH}
+            d="M3762 2182h1350v1350H3762z"
+          /> */}
+          {/* <path
+            id="cardtext-bg"
+            className={styles.sectorBg}
+            fill="none"
+            stroke={SECTOR_BG_STROKE}
+            strokeWidth={STROKE_WIDTH}
+            d="M192 2748h1350v1350H192z"
+          /> */}
+          {/* <path
+            id="aroma-bg"
+            className={styles.sectorBg}
+            fill="none"
+            stroke={SECTOR_BG_STROKE}
+            strokeWidth={STROKE_WIDTH}
+            d="M2748 192h1350v1350H2748z"
+          /> */}
         </g>
       </svg>
       <div

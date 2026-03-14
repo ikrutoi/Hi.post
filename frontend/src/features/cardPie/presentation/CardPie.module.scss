@@ -68,6 +68,12 @@
   fill: $color-font-active;
 }
 
+// Temporary: bg rects for icon placement; remove with -bg paths in CardPie.tsx
+.sectorBg {
+  fill: none;
+  pointer-events: none; // clicks pass through to sectors below
+}
+
 .sector {
   cursor: pointer;
   transition:
