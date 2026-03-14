@@ -21,7 +21,7 @@ export const CARDTEXT_KEYS = [
   'listAdd',
   'favorite',
   'listCardtext',
-  'cardtextPlus',
+  'cardtextAdd',
   'empty',
 ] as const
 
@@ -40,7 +40,7 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
     group: 'ui',
     icons: [
       { key: 'apply', state: 'enabled' },
-      { key: 'cardtextPlus', state: 'enabled' },
+      { key: 'cardtextAdd', state: 'enabled' },
       { key: 'listCardtext', state: 'enabled' },
       { key: 'empty', state: 'disabled' },
       // { key: 'favorite', state: 'disabled' },
@@ -56,10 +56,10 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
       //   state: 'disabled',
       //   options: { orientation: 'landscape' },
       // },
-      { key: 'fontFamily', state: 'enabled' },
       { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeMore', state: 'enabled' },
+      { key: 'fontFamily', state: 'enabled' },
       { key: 'left', state: 'enabled' },
     ],
     status: 'enabled',
@@ -76,7 +76,7 @@ export const CARDTEXT_SAVE_TOOLBAR: ToolbarConfig = [
     group: 'ui',
     icons: [
       { key: 'apply', state: 'enabled' },
-      { key: 'cardtextPlus', state: 'enabled' },
+      { key: 'cardtextAdd', state: 'enabled' },
       { key: 'listCardtext', state: 'enabled' },
       { key: 'empty', state: 'disabled' },
       { key: 'favorite', state: 'disabled' },

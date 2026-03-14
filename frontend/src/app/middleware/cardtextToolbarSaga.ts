@@ -9,7 +9,9 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   setCardtextListPanelOpen,
   setCardtextSaveTemplateModalOpen,
+  setCardtextFocusRequested,
 } from '@cardtext/infrastructure/state'
+import { selectCardtextValue, selectCardtextShowViewMode } from '@cardtext/infrastructure/selectors'
 
 export function* handleCardtextToolbarAction(
   action: ReturnType<typeof toolbarAction>,
@@ -55,6 +57,20 @@ export function* handleCardtextToolbarAction(
     case 'listAdd':
       yield put(setCardtextSaveTemplateModalOpen(true))
       break
+
+    case 'cardtextAdd': {
+      const value: any = yield select(selectCardtextValue)
+      const showViewMode: boolean = yield select(selectCardtextShowViewMode)
+      const isEmpty =
+        !showViewMode &&
+        (!value?.length ||
+          (value.length === 1 &&
+            !(value[0]?.children?.map((c: any) => c?.text).join('') ?? '').trim()))
+      if (isEmpty) {
+        yield put(setCardtextFocusRequested(true))
+      }
+      break
+    }
   }
 }
 

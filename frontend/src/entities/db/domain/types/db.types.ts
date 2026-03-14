@@ -21,6 +21,8 @@ export interface SessionData {
   id: string
   cardphoto: CardphotoSessionRecord | null
   cardtext: CardtextSessionRecord | null
+  /** When true, cardtext is shown in preview (CardtextView) instead of editor. */
+  cardtextShowViewMode?: boolean
   envelope: EnvelopeSessionRecord | null
   /** Список получателей (режим «несколько»), сохраняется отдельно от envelope. */
   envelopeRecipients?: RecipientState[] | null

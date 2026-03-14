@@ -16,6 +16,7 @@ import type {
   TextAlign,
 } from '../../domain/types'
 import {
+  selectCardtextState,
   selectCardtextValue,
   selectCardtextTitle,
   selectFontSizeStep,
@@ -27,10 +28,11 @@ export const useCardtextFacade = () => {
   const dispatch = useAppDispatch()
   const editor = React.useMemo(() => withReact(createEditor()), [])
 
+  const state = useAppSelector(selectCardtextState)
   const value = useAppSelector(selectCardtextValue)
   const title = useAppSelector(selectCardtextTitle)
   const fontSizeStep = useAppSelector(selectFontSizeStep)
-  const resetToken = useAppSelector((state) => state.cardtext.resetToken)
+  const resetToken = useAppSelector((s) => s.cardtext.resetToken)
 
   const setValueHandler = React.useCallback(
     (newValue: CardtextValue) => {
@@ -97,6 +99,7 @@ export const useCardtextFacade = () => {
   }, [dispatch, fontSizeStep])
 
   return {
+    state,
     editor,
     value,
     title,

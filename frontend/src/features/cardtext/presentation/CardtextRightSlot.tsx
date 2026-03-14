@@ -1,7 +1,12 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { setCardtextListPanelOpen } from '@cardtext/infrastructure/state'
+import {
+  setCardtextListPanelOpen,
+  setCardtextShowViewMode,
+  restoreCardtextSession,
+} from '@cardtext/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import type { CardtextTemplate } from '@entities/templates/domain/types/cardtextTemplate.types'
 import { CardtextListPanel } from './CardtextListPanel/CardtextListPanel'
 import styles from './CardtextRightSlot.module.scss'
 
@@ -11,9 +16,7 @@ export const CardtextRightSlot: React.FC = () => {
     (state) => (state.cardtext as any).isListPanelOpen === true,
   )
 
-  if (!isOpen) return null
-
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     dispatch(setCardtextListPanelOpen(false))
     dispatch(
       updateToolbarIcon({
@@ -22,12 +25,33 @@ export const CardtextRightSlot: React.FC = () => {
         value: 'enabled',
       }),
     )
-  }
+  }, [dispatch])
+
+  const handleSelectTemplate = useCallback(
+    (entry: CardtextTemplate) => {
+      dispatch(
+        restoreCardtextSession({
+          assetId: null,
+          value: entry.value,
+          style: entry.style,
+          title: entry.title,
+          plainText: entry.plainText,
+          cardtextLines: entry.cardtextLines,
+          applied: null,
+          favorite: entry.favorite ?? null,
+        }),
+      )
+      dispatch(setCardtextShowViewMode(true))
+    },
+    [dispatch],
+  )
+
+  if (!isOpen) return null
 
   return (
     <div className={styles.root}>
       <div className={styles.panelWrap}>
-        <CardtextListPanel onClose={handleClose} />
+        <CardtextListPanel onClose={handleClose} onSelect={handleSelectTemplate} />
       </div>
     </div>
   )

@@ -7,6 +7,7 @@ import {
 import {
   setCardtextSaveTemplateModalOpen,
   setCardtextTemplatesInvalidated,
+  setCardtextShowViewMode,
 } from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import { useCardtextTemplates } from '@entities/templates/application/hooks/useTemplates'
@@ -69,6 +70,7 @@ export const CardtextSaveTemplateInline: React.FC = () => {
         })
         await reloadCardtextTemplates()
         dispatch(setCardtextTemplatesInvalidated(true))
+        dispatch(setCardtextShowViewMode(true))
         close()
       } finally {
         setIsSubmitting(false)

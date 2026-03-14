@@ -16,6 +16,8 @@ const initialState: CardtextState & {
   isListPanelOpen?: boolean
   isSaveTemplateModalOpen?: boolean
   cardtextTemplatesInvalidated?: boolean
+  showCardtextView?: boolean
+  requestCardtextFocus?: boolean
 } = {
   assetId: null,
   value: [
@@ -28,18 +30,21 @@ const initialState: CardtextState & {
   style: {
     fontFamily: 'Roboto',
     fontSizeStep: 3,
-    color: 'blue',
+    color: 'deepBlack',
     align: 'left',
   },
   title: '',
   plainText: '',
   applied: null,
+  favorite: null,
   isComplete: false,
   cardtextLines: 15,
   resetToken: 0,
   isListPanelOpen: false,
   isSaveTemplateModalOpen: false,
   cardtextTemplatesInvalidated: false,
+  showCardtextView: false,
+  requestCardtextFocus: false,
 }
 
 export const cardtextSlice = createSlice({
@@ -162,6 +167,14 @@ export const cardtextSlice = createSlice({
     setCardtextTemplatesInvalidated(state, action: PayloadAction<boolean>) {
       ;(state as any).cardtextTemplatesInvalidated = action.payload
     },
+
+    setCardtextShowViewMode(state, action: PayloadAction<boolean>) {
+      ;(state as any).showCardtextView = action.payload
+    },
+
+    setCardtextFocusRequested(state, action: PayloadAction<boolean>) {
+      ;(state as any).requestCardtextFocus = action.payload
+    },
   },
 })
 
@@ -183,6 +196,8 @@ export const {
   setCardtextListPanelOpen,
   setCardtextSaveTemplateModalOpen,
   setCardtextTemplatesInvalidated,
+  setCardtextShowViewMode,
+  setCardtextFocusRequested,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

@@ -17,6 +17,38 @@
   background-color: #fff;
 }
 
+.cardtextViewWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  // overflow: hidden;
+}
+
+.cardtextViewTitle {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  transform: translateY(-50%);
+  z-index: 1;
+  padding: 0.25rem 0.5rem;
+  background-color: #fff;
+  font-size: 0.8rem;
+  color: $color-font-enabled;
+  border-radius: 0.25rem;
+  max-width: 60%;
+}
+
+.cardtextViewTitleText {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.cardtextViewTitleTextFade {
+  mask-image: linear-gradient(to right, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
+}
+
 // .cardtext__nav-container {
 //   position: absolute;
 //   top: -2.4rem;

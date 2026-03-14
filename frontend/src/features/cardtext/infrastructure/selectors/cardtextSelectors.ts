@@ -14,6 +14,12 @@ export const selectCardtextSaveTemplateModalOpen = (state: RootState): boolean =
 export const selectCardtextTemplatesInvalidated = (state: RootState): boolean =>
   (state.cardtext as { cardtextTemplatesInvalidated?: boolean }).cardtextTemplatesInvalidated ?? false
 
+export const selectCardtextShowViewMode = (state: RootState): boolean =>
+  (state.cardtext as { showCardtextView?: boolean }).showCardtextView ?? false
+
+export const selectCardtextFocusRequested = (state: RootState): boolean =>
+  (state.cardtext as { requestCardtextFocus?: boolean }).requestCardtextFocus ?? false
+
 export const selectCardtextValue = (state: RootState): CardtextValue =>
   state.cardtext.value
 
@@ -44,8 +50,8 @@ export const selectFontColor = (state: RootState): string =>
 export const selectCardtextSessionData = createSelector(
   [(state: RootState) => state.cardtext],
   (cardtext): CardtextSessionRecord => {
-    const { assetId, value, style, title, plainText, cardtextLines, applied } =
+    const { assetId, value, style, title, plainText, cardtextLines, applied, favorite } =
       cardtext
-    return { assetId, value, style, title, plainText, cardtextLines, applied }
+    return { assetId, value, style, title, plainText, cardtextLines, applied, favorite }
   },
 )

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const IconCardtextPlus = (props: React.SVGProps<SVGSVGElement>) => (
+export const IconCardtextAdd = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlSpace="preserve"
@@ -27,4 +27,3 @@ export const IconCardtextPlus = (props: React.SVGProps<SVGSVGElement>) => (
     </g>
   </svg>
 )
-
