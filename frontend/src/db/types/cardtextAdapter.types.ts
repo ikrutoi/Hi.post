@@ -10,6 +10,7 @@ export interface CardtextRecord {
   plainText: string
   cardtextLines: number
   applied: string | null
+  favorite: boolean | null
 }
 
 export interface CardtextAdapter extends StoreAdapter<CardtextRecord> {

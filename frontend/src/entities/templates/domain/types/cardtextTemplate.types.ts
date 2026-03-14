@@ -7,6 +7,7 @@ export interface CardtextTemplate extends TemplateBase, TemplateMetadata {
   title: string
   plainText: string
   cardtextLines: number
+  favorite: boolean | null
 }
 
 export interface CreateCardtextTemplatePayload {
@@ -16,6 +17,7 @@ export interface CreateCardtextTemplatePayload {
   cardtextLines: number
   title?: string
   name?: string
+  favorite?: boolean | null
   /** Опционально: свой id (иначе будет сгенерирован nanoid()) */
   id?: string
 }
@@ -27,4 +29,5 @@ export interface UpdateCardtextTemplatePayload {
   cardtextLines?: number
   title?: string
   name?: string
+  favorite?: boolean | null
 }

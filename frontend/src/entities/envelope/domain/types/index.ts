@@ -35,6 +35,7 @@ export const emptyEnvelope = {
     sortOptions: { sortedBy: 'name', direction: 'asc' },
     senderViewId: null,
     applied: [],
+    appliedData: null,
     enabled: true,
   } as SenderState,
   recipient: {

@@ -190,6 +190,7 @@ export const templateService = {
       title: record.state?.title ?? '',
       plainText: record.state?.plainText || '',
       cardtextLines: record.state?.cardtextLines || 0,
+      favorite: record.state?.favorite ?? null,
       createdAt: now,
       updatedAt: now,
       serverId: null,
@@ -216,6 +217,7 @@ export const templateService = {
       title: record.state?.title ?? '',
       plainText: record.state?.plainText || '',
       cardtextLines: record.state?.cardtextLines || 0,
+      favorite: record.state?.favorite ?? null,
       createdAt: now,
       updatedAt: now,
       serverId: null,
@@ -239,6 +241,7 @@ export const templateService = {
           plainText: payload.plainText,
           cardtextLines: payload.cardtextLines,
           applied: null,
+          favorite: payload.favorite ?? null,
         },
       }
 
@@ -281,6 +284,10 @@ export const templateService = {
             payload.title ?? payload.name ?? record.state?.title ?? '',
           plainText: payload.plainText ?? record.state?.plainText,
           cardtextLines: payload.cardtextLines ?? record.state?.cardtextLines,
+          favorite:
+            payload.favorite !== undefined
+              ? payload.favorite
+              : (record.state?.favorite ?? null),
         },
       }
 

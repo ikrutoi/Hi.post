@@ -19,7 +19,7 @@ type Props = {
 export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const dispatch = useAppDispatch()
   const { templates, isLoading, reload } = useCardtextTemplates()
-  const { deleteCardtextTemplate } = useTemplateActions()
+  const { deleteCardtextTemplate, updateCardtextTemplate } = useTemplateActions()
   const templatesInvalidated = useAppSelector(
     selectCardtextTemplatesInvalidated,
   )
@@ -47,6 +47,15 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
       reload()
     },
     [deleteCardtextTemplate, selectedId, reload],
+  )
+
+  const handleToggleStar = useCallback(
+    async (entry: CardtextTemplate) => {
+      const next = entry.favorite === true ? false : true
+      await updateCardtextTemplate(entry.id, { favorite: next })
+      reload()
+    },
+    [updateCardtextTemplate, reload],
   )
 
   return (
@@ -85,6 +94,8 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                 onSelect={handleSelect}
                 onDelete={handleDelete}
                 onEdit={handleSelect}
+                isStarred={entry.favorite === true}
+                onToggleStar={() => handleToggleStar(entry)}
                 isSelected={selectedId === entry.id}
               />
             ))}
