@@ -34,7 +34,7 @@ export const CardtextSaveTemplateInline: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const existingTitles = useMemo(
-    () => new Set(cardtextTemplates.map((t) => t.title)),
+    () => new Set((cardtextTemplates ?? []).map((t) => t.title)),
     [cardtextTemplates],
   )
 

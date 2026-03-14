@@ -4,10 +4,10 @@ import {
   setCardtextListPanelOpen,
   setCardtextShowViewMode,
   restoreCardtextSession,
-  setCurrentCardtextTemplateId,
+  setCardtextAssetId,
 } from '@cardtext/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import type { CardtextTemplate } from '@entities/templates/domain/types/cardtextTemplate.types'
+import type { CardtextTemplate } from '@cardtext/domain/types'
 import { CardtextListPanel } from './CardtextListPanel/CardtextListPanel'
 import styles from './CardtextRightSlot.module.scss'
 
@@ -30,10 +30,10 @@ export const CardtextRightSlot: React.FC = () => {
 
   const handleSelectTemplate = useCallback(
     (entry: CardtextTemplate) => {
-      dispatch(setCurrentCardtextTemplateId(entry.id))
+      dispatch(setCardtextAssetId(entry.id))
       dispatch(
         restoreCardtextSession({
-          templateId: entry.id,
+          assetId: entry.id,
           value: entry.value,
           style: entry.style,
           title: entry.title,

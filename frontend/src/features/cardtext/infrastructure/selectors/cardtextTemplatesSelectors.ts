@@ -1,0 +1,12 @@
+import { RootState } from '@app/state'
+import type { CardtextTemplate } from '../../domain/templates/types'
+
+export const selectCardtextAddTemplateOpen = (state: RootState): boolean =>
+  state.cardtext.isAddTemplateOpen ?? false
+
+export const selectCardtextTemplatesListItems = (
+  state: RootState,
+): CardtextTemplate[] | null => state.cardtext.templatesList ?? null
+
+export const selectCardtextTemplatesListLoading = (state: RootState): boolean =>
+  state.cardtext.templatesList === null

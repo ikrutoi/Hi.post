@@ -16,6 +16,7 @@ import type {
   CardtextTemplate,
   CreateCardtextTemplatePayload,
   UpdateCardtextTemplatePayload,
+  CardtextTemplateItemShape,
 } from '../types/cardtextTemplate.types'
 import type {
   CardphotoTemplate,
@@ -25,7 +26,6 @@ import type {
 } from '../types/cardphotoTemplate.types'
 import type { TemplateOperationResult } from '../types/template.types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
-import type { CardtextTemplateItem } from '@cardtext/domain/types'
 import type { ImageTemplateItem } from '@cardphoto/domain/typesLayout'
 
 export const templateService = {
@@ -181,7 +181,7 @@ export const templateService = {
       const state = record.state ?? (record as any)
       return {
       id: record.id,
-      localId: Number.parseInt(record.id, 10) || 0,
+      localId: record.localId ?? (Number.parseInt(record.id, 10) || 0),
       value: state?.value || [],
       style: state?.style || {
         fontFamily: '',
@@ -210,7 +210,7 @@ export const templateService = {
     const now = Date.now()
     return {
       id: record.id,
-      localId: Number.parseInt(record.id, 10) || 0,
+      localId: record.localId ?? (Number.parseInt(record.id, 10) || 0),
       value: state?.value || [],
       style: state?.style || {
         fontFamily: '',
@@ -236,7 +236,7 @@ export const templateService = {
     try {
       const id = payload.id ?? nanoid()
 
-      const templateData: CardtextTemplateItem = {
+      const templateData: Omit<CardtextTemplateItemShape, 'localId'> = {
         id,
         state: {
           value: payload.value,
@@ -277,8 +277,10 @@ export const templateService = {
       }
 
       const existingState = record.state ?? (record as any)
-      const updatedRecord: CardtextTemplateItem = {
+      const updatedRecord: CardtextTemplateItemShape = {
         id: record.id,
+        localId:
+          record.localId ?? (Number.parseInt(record.id, 10) || 0),
         state: {
           value: payload.value ?? existingState?.value,
           style: payload.style

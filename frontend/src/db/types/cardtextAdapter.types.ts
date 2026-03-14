@@ -1,8 +1,7 @@
 import type { StoreAdapter } from './storeAdapter.types'
-import type { CardtextTemplateItem } from '@cardtext/domain/types'
-import type { Node as SlateNode } from 'slate'
+import type { CardtextTemplateItemShape } from '@entities/templates/domain/types'
 
-/** Адаптер store "cardtext". Типы сущности — в @cardtext/domain/types. */
-export interface CardtextAdapter extends StoreAdapter<CardtextTemplateItem> {
-  addUniqueRecord(nodes: SlateNode[]): Promise<void>
+/** Nodes are Slate nodes; typed as unknown[] here to avoid importing slate in db/types (prevents 500 when loading templateService). */
+export interface CardtextAdapter extends StoreAdapter<CardtextTemplateItemShape> {
+  addUniqueRecord(nodes: unknown[]): Promise<void>
 }

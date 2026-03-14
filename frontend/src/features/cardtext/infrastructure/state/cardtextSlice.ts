@@ -1,62 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { initialCardtextValue } from '../../domain/types'
+import { initialCardtextState } from '../../domain/types'
+import { initialCardtextValue } from '../../domain/editor/types'
 import type {
   CardtextValue,
-  CardtextState,
   CardtextStyle,
   CardtextBlock,
   CardtextTemplateContent,
-} from '../../domain/types'
-import type { CardtextTemplate } from '@entities/templates/domain/types/cardtextTemplate.types'
+} from '../../domain/editor/types'
+import type { CardtextTemplate } from '../../domain/templates/types'
 
-interface CardtextUIState {
-  isListPanelOpen: boolean
-  isAddTemplateOpen: boolean
-  showCardtextView: boolean
-  requestCardtextFocus: boolean
-}
-
-export interface CardtextTemplatesListState {
-  items: CardtextTemplate[]
-  isLoading: boolean
-}
-
-const initialState: CardtextState &
-  CardtextUIState & { templatesList: CardtextTemplatesListState } = {
-  currentTemplateId: null,
-  value: [
-    {
-      type: 'paragraph',
-      align: 'left',
-      children: [{ text: '' }],
-    },
-  ],
-  style: {
-    fontFamily: 'Roboto',
-    fontSizeStep: 3,
-    color: 'deepBlack',
-    align: 'left',
-  },
-  title: '',
-  plainText: '',
-  applied: null,
-  favorite: null,
-  isComplete: false,
-  cardtextLines: 15,
-  resetToken: 0,
-  isListPanelOpen: false,
-  isAddTemplateOpen: false,
-  showCardtextView: false,
-  requestCardtextFocus: false,
-  templatesList: {
-    items: [],
-    isLoading: false,
-  },
-}
+export type { CardtextTemplatesListState } from '../../domain/templates/types'
 
 export const cardtextSlice = createSlice({
   name: 'cardtext',
-  initialState,
+  initialState: initialCardtextState,
   reducers: {
     setValue(state, action: PayloadAction<CardtextValue>) {
       state.value = action.payload
@@ -65,7 +22,7 @@ export const cardtextSlice = createSlice({
         .join('\n')
       const hasText = state.plainText.trim().length > 0
       if (hasText) state.isComplete = false
-      if (!hasText) state.currentTemplateId = null
+      if (!hasText) state.assetId = null
     },
 
     setTextStyle(state, action: PayloadAction<Partial<CardtextStyle>>) {
@@ -104,18 +61,18 @@ export const cardtextSlice = createSlice({
       }))
       state.plainText = ''
       state.isComplete = false
-      state.currentTemplateId = null
+      state.assetId = null
       state.resetToken += 1
     },
 
-    setCurrentCardtextTemplateId(state, action: PayloadAction<string | null>) {
-      state.currentTemplateId = action.payload
+    setCardtextAssetId(state, action: PayloadAction<string | null>) {
+      state.assetId = action.payload
     },
 
     restoreCardtextSession(
       state,
       action: PayloadAction<
-        CardtextTemplateContent & { templateId?: string | null }
+        CardtextTemplateContent & { assetId?: string | null }
       >,
     ) {
       const {
@@ -125,7 +82,7 @@ export const cardtextSlice = createSlice({
         plainText,
         cardtextLines,
         favorite,
-        templateId,
+        assetId,
       } = action.payload
       if (value) state.value = value
       if (style) state.style = style
@@ -133,7 +90,7 @@ export const cardtextSlice = createSlice({
       if (plainText !== undefined) state.plainText = plainText
       if (cardtextLines !== undefined) state.cardtextLines = cardtextLines
       if (favorite !== undefined) state.favorite = favorite
-      if (templateId !== undefined) state.currentTemplateId = templateId
+      if (assetId !== undefined) state.assetId = assetId
       state.isComplete = state.plainText.trim().length > 0
       state.resetToken += 1
     },
@@ -149,21 +106,19 @@ export const cardtextSlice = createSlice({
 
     cardtextTemplateAdded() {},
 
-    loadCardtextTemplatesRequest() {},
-    setCardtextTemplatesListLoading(state, action: PayloadAction<boolean>) {
-      state.templatesList.isLoading = action.payload
+    loadCardtextTemplatesRequest(state) {
+      state.templatesList = null
     },
     loadCardtextTemplatesSuccess(state, action: PayloadAction<CardtextTemplate[]>) {
-      state.templatesList.items = action.payload
-      state.templatesList.isLoading = false
+      state.templatesList = action.payload
     },
     loadCardtextTemplatesFailure(state) {
-      state.templatesList.isLoading = false
+      state.templatesList = []
     },
 
     setCardtextShowViewMode(state, action: PayloadAction<boolean>) {
       state.showCardtextView = action.payload
-      if (!action.payload) state.currentTemplateId = null
+      if (!action.payload) state.assetId = null
     },
 
     setCardtextFocusRequested(state, action: PayloadAction<boolean>) {
@@ -181,13 +136,12 @@ export const {
   setComplete,
   setFavorite,
   clearText,
-  setCurrentCardtextTemplateId,
+  setCardtextAssetId,
   restoreCardtextSession,
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
   cardtextTemplateAdded,
   loadCardtextTemplatesRequest,
-  setCardtextTemplatesListLoading,
   loadCardtextTemplatesSuccess,
   loadCardtextTemplatesFailure,
   setCardtextShowViewMode,

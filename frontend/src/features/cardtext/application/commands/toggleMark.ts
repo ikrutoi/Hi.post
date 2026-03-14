@@ -1,12 +1,10 @@
 import { Editor, Text, Range, Transforms } from 'slate'
 import { ReactEditor } from 'slate-react'
 import { useToolbarFacade } from '@toolbar/application/facades'
-import type {
-  CardtextTextNode,
-  MarkFormat,
-  CardtextBlock,
-} from '../../domain/types'
+import type { CardtextTextNode, CardtextBlock } from '../../domain/types'
 import type { CardtextToolbarState, CardtextKey } from '@toolbar/domain/types'
+
+type MarkFormat = 'bold' | 'italic' | 'underline'
 
 export const toggleMark = (editor: Editor, format: MarkFormat) => {
   const isActive = isMarkActive(editor, format)

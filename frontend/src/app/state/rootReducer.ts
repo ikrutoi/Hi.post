@@ -19,7 +19,6 @@ import {
 } from '@cardphoto/infrastructure/state'
 
 import { cardtextReducer } from '@cardtext/infrastructure/state'
-import { cardtextToolbarReducer } from '@cardtext/infrastructure/state'
 
 // import { envelopeReducer } from '@envelope/infrastructure/state'
 import {
@@ -76,7 +75,6 @@ export const rootReducer = combineReducers({
   cardphotoCrop: cardphotoCropReducer,
 
   cardtext: cardtextReducer,
-  cardtextToolbar: cardtextToolbarReducer,
 
   // envelope: envelopeReducer,
   envelopeSelection: envelopeSelectionReducer,

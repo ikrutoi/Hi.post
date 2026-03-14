@@ -6,14 +6,14 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
-  selectCurrentCardtextTemplateId,
+  selectCardtextAssetId,
 } from '@cardtext/infrastructure/selectors'
 import {
   setFavorite,
   loadCardtextTemplatesRequest,
 } from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
-import type { CardtextTemplate } from '@entities/templates/domain/types/cardtextTemplate.types'
+import type { CardtextTemplate } from '@cardtext/domain/types'
 import { CardtextListEntry } from './CardtextListEntry'
 import styles from './CardtextListPanel.module.scss'
 
@@ -24,10 +24,11 @@ type Props = {
 
 export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const dispatch = useAppDispatch()
-  const templates = useAppSelector(selectCardtextTemplatesListItems)
+  const items = useAppSelector(selectCardtextTemplatesListItems)
+  const templates = items ?? []
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
   const { deleteCardtextTemplate, updateCardtextTemplate } = useTemplateActions()
-  const currentTemplateId = useAppSelector(selectCurrentCardtextTemplateId)
+  const assetId = useAppSelector(selectCardtextAssetId)
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const handleSelect = useCallback(
@@ -51,12 +52,12 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
     async (entry: CardtextTemplate) => {
       const next = entry.favorite === true ? false : true
       await updateCardtextTemplate(entry.id, { favorite: next })
-      if (currentTemplateId === entry.id) {
+      if (assetId === entry.id) {
         dispatch(setFavorite(next))
       }
       dispatch(loadCardtextTemplatesRequest())
     },
-    [updateCardtextTemplate, currentTemplateId, dispatch],
+    [updateCardtextTemplate, assetId, dispatch],
   )
 
   return (

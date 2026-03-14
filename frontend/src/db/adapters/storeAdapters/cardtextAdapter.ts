@@ -1,6 +1,6 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
 import type { StoreMap, CardtextAdapter } from '@db/types'
-import type { CardtextTemplateItem } from '@cardtext/domain/types'
+import type { CardtextTemplateItemShape } from '@entities/templates/domain/types'
 import type { Node as SlateNode } from 'slate'
 
 const base = createStoreAdapter<StoreMap['cardtext']>('cardtext')
@@ -25,11 +25,13 @@ export const cardtextAdapter: CardtextAdapter = {
   ...base,
   addUniqueRecord: async (nodes: SlateNode[]) => {
     const maxId = await base.getMaxLocalId()
-    const id = String(maxId + 1)
+    const localId = maxId + 1
+    const id = String(localId)
     const value = nodes as any
     const plainText = nodesToPlainText(nodes)
-    const item: CardtextTemplateItem = {
+    const item: CardtextTemplateItemShape = {
       id,
+      localId,
       state: {
         value,
         title: '',

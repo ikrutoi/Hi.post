@@ -8,7 +8,7 @@ import {
 import { selectCardOrientation } from '@layout/infrastructure/selectors'
 import { setTextStyle } from '@cardtext/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { CARDTEXT_CONFIG } from '@cardtext/domain/types'
+import { CARDTEXT_CONFIG, STEP_TO_PX } from '@cardtext/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
 export function* changeFontSizeStep(

@@ -1,5 +1,5 @@
 import type { ImageTemplateItem } from '@/features/cardphoto/domain/typesLayout'
-import type { CardtextTemplateItem } from './cardtextAdapter.types'
+import type { CardtextTemplateItemShape } from '@entities/templates/domain/types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { Card } from '@entities/card/domain/types'
 import type { CartItem } from '@entities/cart/domain/types'
@@ -20,7 +20,7 @@ export interface StoreMap {
   userImages: ImageRecord
   cropImages: ImageMeta & { id: string }
   applyImage: ImageRecord
-  cardtext: CardtextTemplateItem
+  cardtext: CardtextTemplateItemShape
   sender: AddressTemplateItem
   recipient: AddressTemplateItem
   cards: Card[]
@@ -32,7 +32,7 @@ export interface TemplateStoreMap {
   stockImages: ImageRecord
   userImages: ImageRecord
   cropImages: ImageMeta & { id: string }
-  cardtext: CardtextTemplateItem
+  cardtext: CardtextTemplateItemShape
   sender: AddressTemplateItem
   recipient: AddressTemplateItem
   cart: CartItem

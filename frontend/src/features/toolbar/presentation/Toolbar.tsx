@@ -50,7 +50,7 @@ export const Toolbar = ({
 
   useEffect(() => {
     if (section === 'cardtext' || section === 'cardtextView') {
-      const count = cardtextTemplates.length
+      const count = (cardtextTemplates ?? []).length
       dispatch(
         updateToolbarIcon({
           section,
@@ -59,7 +59,7 @@ export const Toolbar = ({
         }),
       )
     }
-  }, [section, cardtextTemplates.length, dispatch])
+  }, [section, cardtextTemplates, dispatch])
 
   const groupRef = useRef<HTMLDivElement>(null)
 

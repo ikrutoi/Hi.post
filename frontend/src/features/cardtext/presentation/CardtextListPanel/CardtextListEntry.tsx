@@ -1,5 +1,5 @@
 import React from 'react'
-import type { CardtextTemplate } from '@entities/templates/domain/types/cardtextTemplate.types'
+import type { CardtextTemplate } from '@cardtext/domain/types'
 import styles from './CardtextListEntry.module.scss'
 import { getToolbarIcon } from '@/shared/utils/icons'
 

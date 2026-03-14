@@ -46,6 +46,7 @@ import {
   removeRecipientFromListById,
   toggleRecipientSelection,
 } from '@envelope/infrastructure/state'
+import { setAddressBookMode } from '@envelope/addressBook/infrastructure/state'
 import {
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
@@ -79,7 +80,10 @@ import {
   setAddressBookEntries,
 } from '@envelope/addressBook/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import {
+  updateToolbarIcon,
+  updateToolbarSection,
+} from '@toolbar/infrastructure/state'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import { getAddressListToolbarFragment } from '@envelope/domain/helpers'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
@@ -102,10 +106,7 @@ function* handleSetAddressFormViewSync(
     show: boolean
     role: 'sender' | 'recipient' | null
   }>,
-) {
-  // currentView и recipientViewId/senderViewId не сбрасываются при открытии формы,
-  // при закрытии компонент сам выставляет view — восстанавливать id не нужно.
-}
+) {}
 
 function* handleEnvelopeToolbarAction(
   action: ReturnType<typeof toolbarAction>,
@@ -125,7 +126,6 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (section === 'addressListSender' && key === 'listDelete') {
-    // Удаляем все адреса отправителя из IndexedDB и сразу очищаем список в состоянии
     yield call([senderAdapter, 'clear'])
     yield put(setAddressBookEntries({ sender: [] }))
     yield call(syncAddressListIconsFromActive)
@@ -133,7 +133,6 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (isRecipientAddressListSection && key === 'listDelete') {
-    // Удаляем все адреса получателя из IndexedDB и сразу очищаем список в состоянии
     yield call([recipientAdapter, 'clear'])
     yield put(setAddressBookEntries({ recipient: [] }))
     yield call(syncAddressListIconsFromActive)
@@ -404,7 +403,6 @@ function* handleEnvelopeToolbarAction(
           if (result.success) {
             yield put(incrementAddressBookReloadVersion())
             yield put(incrementAddressTemplatesReloadVersion())
-            // Обновляем appliedData, чтобы MiniEnvelope показывал актуальное имя после редактирования
             if (sender.applied?.[0] === senderViewId) {
               yield put(setSenderAppliedData(sender.viewDraft))
             }
@@ -466,12 +464,9 @@ function* handleEnvelopeToolbarAction(
           if (result.success) {
             yield put(incrementAddressBookReloadVersion())
             yield put(incrementAddressTemplatesReloadVersion())
-            // Обновляем appliedData, чтобы MiniEnvelope показывал актуальное имя после редактирования
             if (recipient.applied?.[0] === recipientViewId) {
               yield put(setRecipientAppliedData(recipient.viewDraft))
             }
-            // Если получатель есть в списке envelopeRecipients (режим «Получатели»),
-            // синхронизируем его snapshot (viewDraft), чтобы RecipientsView показал обновлённый адрес.
             const envelopeRecipients: RecipientState[] = yield select(
               (state: RootState) => state.envelopeRecipients ?? [],
             )
@@ -481,9 +476,9 @@ function* handleEnvelopeToolbarAction(
                   ? {
                       ...r,
                       viewDraft: recipient.viewDraft,
-                      formIsComplete: Object.values(
-                        recipient.viewDraft,
-                      ).every((v) => (v ?? '').trim() !== ''),
+                      formIsComplete: Object.values(recipient.viewDraft).every(
+                        (v) => (v ?? '').trim() !== '',
+                      ),
                     }
                   : r,
               )
@@ -557,13 +552,10 @@ function* handleEnvelopeToolbarAction(
 
   if (key === 'apply') {
     if (section === 'sender') {
-      // Статус apply (enabled/disabled) уже посчитан в envelopeProcessSaga.
-      // Здесь доверяем тулбару и не дублируем проверку formIsComplete.
       const senderViewId: string | null = yield select(selectSenderViewId)
       if (senderViewId) {
-        const displayAddress: Readonly<Record<string, string>> = yield select(
-          selectSenderAddress,
-        )
+        const displayAddress: Readonly<Record<string, string>> =
+          yield select(selectSenderAddress)
         const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
         yield put(setSenderAppliedWithData({ ids: [senderViewId], data }))
       } else {
@@ -632,7 +624,8 @@ function* handleEnvelopeToolbarAction(
   if (key === 'listAdd') {
     if (section === 'sender') {
       const senderComplete: boolean = yield select(selectIsSenderComplete)
-      if (senderComplete) yield put(senderSaveRequested({ listStatus: 'inList' }))
+      if (senderComplete)
+        yield put(senderSaveRequested({ listStatus: 'inList' }))
     } else if (section === 'recipient') {
       const recipientComplete: boolean = yield select(selectIsRecipientComplete)
       if (recipientComplete)
@@ -817,6 +810,58 @@ function* syncRecipientsViewIdsFromPending() {
   }
 }
 
+function* syncRecipientModeWithActiveList(
+  action: PayloadAction<'recipient' | 'recipients'>,
+) {
+  if (action.payload === 'recipient' || action.payload === 'recipients') {
+    yield put(setActiveAddressList(action.payload))
+  }
+}
+
+function* syncAddressBookModeFromActive() {
+  const active: 'sender' | 'recipient' | 'recipients' | null = yield select(
+    selectActiveAddressList,
+  )
+  yield put(setAddressBookMode(active))
+}
+
+function* syncRecipientsSectionOnRecipientMode(
+  action: PayloadAction<'recipient' | 'recipients'>,
+) {
+  if (action.payload !== 'recipients') return
+  const activeAddressList: string | null = yield select(selectActiveAddressList)
+  const selectedIds: string[] = yield select(
+    (s: RootState) => s.envelopeSelection?.recipientsPendingIds ?? [],
+  )
+  const recipientCount: number = yield select(
+    (s: RootState) => s.addressBook?.recipientEntries?.length ?? 0,
+  )
+  const listOpen = activeAddressList === 'recipients'
+  const addressListValue = listOpen
+    ? {
+        state: 'active' as const,
+        options: { badge: recipientCount > 0 ? recipientCount : null },
+      }
+    : {
+        state: (recipientCount > 0 ? 'enabled' : 'disabled') as
+          | 'enabled'
+          | 'disabled',
+        options: { badge: recipientCount > 0 ? recipientCount : null },
+      }
+  yield put(
+    updateToolbarSection({
+      section: 'recipients',
+      value: {
+        apply: {
+          state: selectedIds.length >= 1 ? 'enabled' : 'disabled',
+          options: {},
+        },
+        addressList: addressListValue,
+      },
+    }),
+  )
+}
+
 function* syncEditIconOnEditModeChange(action: PayloadAction<boolean>) {
   const isEditMode = action.payload
   if (isEditMode) return
@@ -948,7 +993,11 @@ export function* envelopeToolbarSaga() {
     [setRecipientsPendingIds.type, toggleRecipientSelection.type],
     syncRecipientsViewIdsFromPending,
   )
-  yield takeEvery(setActiveAddressList.type, syncAddressListIconsFromActive)
+  yield takeEvery(setRecipientMode.type, syncRecipientModeWithActiveList)
+  yield takeEvery(setRecipientMode.type, syncRecipientsSectionOnRecipientMode)
   yield takeEvery(setRecipientMode.type, syncAddressListIconsFromActive)
+  yield takeEvery(setActiveAddressList.type, syncAddressListIconsFromActive)
+  yield takeEvery(setActiveAddressList.type, syncAddressBookModeFromActive)
   yield takeEvery(closeAddressList.type, syncAddressListIconsFromActive)
+  yield takeEvery(closeAddressList.type, syncAddressBookModeFromActive)
 }

@@ -20,7 +20,7 @@ export interface SessionEnvelopeSelection {
 export interface SessionData {
   id: string
   cardphoto: CardphotoSessionRecord | null
-  cardtext: (CardtextTemplateContent & { templateId: string | null }) | null
+  cardtext: (CardtextTemplateContent & { assetId: string | null }) | null
   /** When true, cardtext is shown in preview (CardtextView) instead of editor. */
   cardtextShowViewMode?: boolean
   envelope: EnvelopeSessionRecord | null

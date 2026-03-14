@@ -1,5 +1,5 @@
 import type { CardphotoTemplate } from '@entities/templates'
-import type { CardtextTemplate } from '@entities/templates'
+import type { CardtextTemplate } from '@cardtext/domain/types'
 import type { AddressTemplate } from '@entities/templates'
 
 export const TEMPLATE_STRIP_SECTIONS = [

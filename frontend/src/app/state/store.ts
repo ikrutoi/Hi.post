@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit'
 import createSagaMiddleware from 'redux-saga'
 import { rootReducer } from './rootReducer'
 import { authListenerMiddleware } from '@middleware/authListener'
-import { envelopeToolbarSyncMiddleware } from '@app/middleware/envelopeToolbarSyncMiddleware'
 import { rootSaga } from './rootSaga'
 
 const sagaMiddleware = createSagaMiddleware()
@@ -12,7 +11,6 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false })
       .prepend(authListenerMiddleware.middleware)
-      .prepend(envelopeToolbarSyncMiddleware)
       .concat(sagaMiddleware),
 })
 

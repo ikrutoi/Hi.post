@@ -9,6 +9,8 @@ import type {
 
 const selectToolbarBase = (state: RootState) => state.toolbar
 
+export const selectCardtextToolbar = (state: RootState) => state.toolbar.cardtext
+
 export const selectToolbarSectionState = <S extends ToolbarSection>(
   section: S
 ) =>

@@ -7,7 +7,7 @@ import {
 import { loadCardtextTemplatesRequest } from '@cardtext/infrastructure/state'
 import { templateService } from '../../domain/services/templateService'
 import type { AddressTemplate } from '../../domain/types/addressTemplate.types'
-import type { CardtextTemplate } from '../../domain/types/cardtextTemplate.types'
+import type { CardtextTemplate } from '@cardtext/domain/types'
 import type { CardphotoTemplate } from '../../domain/types/cardphotoTemplate.types'
 import type { AddressType, ImageSourceType } from '../../domain/types'
 

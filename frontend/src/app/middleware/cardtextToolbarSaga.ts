@@ -3,7 +3,6 @@ import { call, put, select } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { setComplete } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
-import { syncCardOrientationStatus } from './cardtextProcessSaga'
 import type { RootState } from '@app/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
@@ -12,7 +11,10 @@ import {
   setCardtextFocusRequested,
   setCardtextShowViewMode,
 } from '@cardtext/infrastructure/state'
-import { selectCardtextValue, selectCardtextShowViewMode } from '@cardtext/infrastructure/selectors'
+import {
+  selectCardtextValue,
+  selectCardtextShowViewMode,
+} from '@cardtext/infrastructure/selectors'
 
 export function* handleCardtextToolbarAction(
   action: ReturnType<typeof toolbarAction>,
@@ -78,11 +80,3 @@ export function* handleCardtextToolbarAction(
     }
   }
 }
-
-// function applyFontSize(editor: Editor, size: number) {
-//   Transforms.setNodes(
-//     editor,
-//     { fontSize: size },
-//     { match: (n) => Text.isText(n), split: true },
-//   )
-// }

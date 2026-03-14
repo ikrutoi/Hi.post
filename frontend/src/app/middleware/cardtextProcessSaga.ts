@@ -12,9 +12,9 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import { selectFontSizeStep } from '@cardtext/infrastructure/selectors'
 import {
   setTextStyle,
+  setAlign,
   cardtextTemplateAdded,
   loadCardtextTemplatesRequest,
-  setCardtextTemplatesListLoading,
   loadCardtextTemplatesSuccess,
   loadCardtextTemplatesFailure,
   setCardtextListPanelOpen,
@@ -35,6 +35,25 @@ import { CARDTEXT_CONFIG } from '@cardtext/domain/types'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { ImageSource } from '@cardphoto/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
+import type { CardtextTemplate, TextAlign } from '@cardtext/domain/types'
+
+function* syncCardtextAlignIcons(
+  action: { payload: TextAlign },
+): SagaIterator {
+  const align = action.payload
+  const alignKeys = ['left', 'center', 'right', 'justify'] as const
+  for (const section of ['cardtext', 'cardtextView'] as const) {
+    for (const key of alignKeys) {
+      yield put(
+        updateToolbarIcon({
+          section,
+          key,
+          value: key === align ? 'active' : 'enabled',
+        }),
+      )
+    }
+  }
+}
 
 export function* syncFontSizeButtonsStatus(): SagaIterator {
   const currentStep: number = yield select(selectFontSizeStep)
@@ -90,11 +109,10 @@ export function* watchCardphotoOrientation(): SagaIterator {
 }
 
 function* loadCardtextTemplatesSaga(): SagaIterator {
-  yield put(setCardtextTemplatesListLoading(true))
   try {
     const templates: Awaited<ReturnType<typeof templateService.getCardtextTemplates>> =
       yield call([templateService, 'getCardtextTemplates'])
-    yield put(loadCardtextTemplatesSuccess(templates))
+    yield put(loadCardtextTemplatesSuccess(templates as CardtextTemplate[]))
   } catch {
     yield put(loadCardtextTemplatesFailure())
   }
@@ -105,6 +123,7 @@ export function* cardtextProcessSaga(): SagaIterator {
 
   yield all([
     takeLatest(toolbarAction.type, handleCardtextToolbarAction),
+    takeEvery(setAlign.type, syncCardtextAlignIcons),
     takeEvery(loadCardtextTemplatesRequest.type, loadCardtextTemplatesSaga),
     takeEvery(cardtextTemplateAdded.type, loadCardtextTemplatesSaga),
     takeEvery(setCardtextListPanelOpen.type, function* (

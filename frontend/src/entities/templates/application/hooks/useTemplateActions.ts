@@ -9,7 +9,7 @@ import type {
 import type {
   CreateCardtextTemplatePayload,
   UpdateCardtextTemplatePayload,
-} from '../../domain/types/cardtextTemplate.types'
+} from '@cardtext/domain/types'
 import type {
   CreateCardphotoTemplatePayload,
   UpdateCardphotoTemplatePayload,

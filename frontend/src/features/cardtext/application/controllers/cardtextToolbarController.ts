@@ -2,7 +2,7 @@ import { Editor, Transforms } from 'slate'
 import { Element as SlateElement } from 'slate'
 import type { ReactEditor } from 'slate-react'
 import type { AppDispatch } from '@app/state'
-import { updateCardtextToolbarState } from '../../infrastructure/state'
+import { setAlign } from '../../infrastructure/state'
 
 export const cardtextToolbarController = {
   setAlign(
@@ -23,13 +23,6 @@ export const cardtextToolbarController = {
       },
     )
 
-    dispatch(
-      updateCardtextToolbarState({
-        left: value === 'left' ? 'active' : 'enabled',
-        center: value === 'center' ? 'active' : 'enabled',
-        right: value === 'right' ? 'active' : 'enabled',
-        justify: value === 'justify' ? 'active' : 'enabled',
-      }),
-    )
+    dispatch(setAlign(value))
   },
 }

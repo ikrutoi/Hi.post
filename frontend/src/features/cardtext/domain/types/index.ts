@@ -1,4 +1,6 @@
 export * from './cardtext.types'
+export * from '../editor/types'
+export * from '../templates/types'
 export * from './cardEditor.types'
-export * from './constants'
+export * from '../editor/constants'
 export * from './cardtextInitial.types'

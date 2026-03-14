@@ -42,7 +42,6 @@ export interface CreateCardphotoTemplatePayload {
   theme?: string
   name?: string
   imageBlob?: Blob
-  /** Опционально: свой id (иначе будет сгенерирован nanoid()) */
   id?: string
   visibility?: TemplateVisibility
   monetizationEnabled?: boolean

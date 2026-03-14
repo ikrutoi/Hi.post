@@ -1,18 +1,45 @@
-import type { CardtextStyle, CardtextValue } from '@cardtext/domain/types'
-import type { TemplateBase, TemplateMetadata } from './template.types'
+export interface CardtextStyleShape {
+  fontFamily: string
+  fontSizeStep: number
+  color: string
+  align: string
+}
 
-export interface CardtextTemplate extends TemplateBase, TemplateMetadata {
-  value: CardtextValue
-  style: CardtextStyle
+export interface CardtextTemplateContentShape {
+  value: unknown[]
+  title: string
+  style: CardtextStyleShape
+  plainText: string
+  cardtextLines: number
+  applied: null
+  favorite: boolean | null
+}
+
+export interface CardtextTemplateItemShape {
+  id: string
+  localId: number
+  state: CardtextTemplateContentShape
+}
+
+export interface CardtextTemplate {
+  id: string
+  localId: number
+  value: unknown[]
+  style: CardtextStyleShape
   title: string
   plainText: string
   cardtextLines: number
   favorite: boolean | null
+  createdAt?: number
+  updatedAt?: number
+  serverId?: string | null
+  syncedAt?: number | null
+  isDirty?: boolean
 }
 
 export interface CreateCardtextTemplatePayload {
-  value: CardtextValue
-  style: CardtextStyle
+  value: unknown[]
+  style: CardtextStyleShape
   plainText: string
   cardtextLines: number
   title?: string
@@ -22,8 +49,8 @@ export interface CreateCardtextTemplatePayload {
 }
 
 export interface UpdateCardtextTemplatePayload {
-  value?: CardtextValue
-  style?: Partial<CardtextStyle>
+  value?: unknown[]
+  style?: Partial<CardtextStyleShape>
   plainText?: string
   cardtextLines?: number
   title?: string
