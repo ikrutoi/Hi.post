@@ -177,7 +177,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                   style={{ fontStyle: 'italic' }}
                 >
                   {previewLines.map((line, i) => {
-                    const currentOpacity = Math.max(1 - i * 0.12, 0.4)
+                    const currentOpacity = Math.max(1 - i * 0.1, 0.4)
                     return (
                       <tspan
                         key={i}
@@ -340,7 +340,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                   href={aromaImageUrl}
                   width="2560"
                   height="2560"
-                  x="200"
+                  x="180"
                   y="250"
                   preserveAspectRatio="xMidYMid meet"
                 />

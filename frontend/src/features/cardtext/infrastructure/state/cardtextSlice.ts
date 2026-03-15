@@ -116,6 +116,10 @@ export const cardtextSlice = createSlice({
       state.isAddTemplateOpen = action.payload
     },
 
+    setCardtextEditTitleOpen(state, action: PayloadAction<boolean>) {
+      state.isEditTitleOpen = action.payload
+    },
+
     cardtextTemplateAdded() {},
 
     loadCardtextTemplatesRequest(state) {
@@ -140,6 +144,17 @@ export const cardtextSlice = createSlice({
       if (!Array.isArray(state.templatesList)) return
       const idx = state.templatesList.findIndex((t) => t.id === id)
       if (idx !== -1) state.templatesList[idx] = { ...state.templatesList[idx], favorite }
+    },
+
+    /** Обновить только title у шаблона в списке */
+    updateCardtextTemplateTitleInList(
+      state,
+      action: PayloadAction<{ id: string; title: string }>,
+    ) {
+      const { id, title } = action.payload
+      if (!Array.isArray(state.templatesList)) return
+      const idx = state.templatesList.findIndex((t) => t.id === id)
+      if (idx !== -1) state.templatesList[idx] = { ...state.templatesList[idx], title }
     },
 
     setCardtextShowViewMode(state, action: PayloadAction<boolean>) {
@@ -167,11 +182,13 @@ export const {
   restoreCardtextSession,
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
+  setCardtextEditTitleOpen,
   cardtextTemplateAdded,
   loadCardtextTemplatesRequest,
   loadCardtextTemplatesSuccess,
   loadCardtextTemplatesFailure,
   updateCardtextTemplateFavoriteInList,
+  updateCardtextTemplateTitleInList,
   setCardtextShowViewMode,
   setCardtextFocusRequested,
 } = cardtextSlice.actions

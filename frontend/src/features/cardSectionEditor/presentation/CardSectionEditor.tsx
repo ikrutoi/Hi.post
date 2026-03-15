@@ -9,6 +9,7 @@ import { useSizeFacade } from '@layout/application/facades'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import { CardtextSaveTemplateInline } from '@cardtext/presentation/CardtextSaveTemplateInline/CardtextSaveTemplateInline'
+import { CardtextEditTitleInline } from '@cardtext/presentation/CardtextEditTitleInline/CardtextEditTitleInline'
 import { selectCardtextShowViewMode } from '@cardtext/infrastructure/selectors'
 import styles from './CardSectionEditor.module.scss'
 
@@ -40,7 +41,11 @@ export const CardSectionEditor: React.FC = () => {
               <div className={styles.cardtextToolbarRow}>
                 <Toolbar section={cardtextToolbarSection} />
               </div>
-              {!cardtextShowViewMode && <CardtextSaveTemplateInline />}
+              {cardtextShowViewMode ? (
+                <CardtextEditTitleInline />
+              ) : (
+                <CardtextSaveTemplateInline />
+              )}
             </div>
           )}
           {/* {showLeftInnerSidebar && (

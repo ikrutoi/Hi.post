@@ -55,6 +55,7 @@ export type CardtextTemplatesListState = CardtextTemplate[] | null
 export interface CardtextTemplatesUIState {
   isListPanelOpen: boolean
   isAddTemplateOpen: boolean
+  isEditTitleOpen: boolean
   /** true пока идёт загрузка списка; список не обнуляется, чтобы не моргал бэдж */
   templatesListLoading: boolean
 }
@@ -64,6 +65,7 @@ export const initialCardtextTemplatesState: CardtextTemplatesUIState & {
 } = {
   isListPanelOpen: false,
   isAddTemplateOpen: false,
+  isEditTitleOpen: false,
   templatesListLoading: false,
   templatesList: null,
 }

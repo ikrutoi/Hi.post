@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useRef, useState } from 'react'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
 import { useSizeFacade } from '@layout/application/facades'
@@ -10,6 +10,7 @@ import {
   selectCardtextStyle,
   selectCardtextTitle,
 } from '../infrastructure/selectors'
+import { setCardtextEditTitleOpen } from '../infrastructure/state'
 import styles from './Cardtext.module.scss'
 
 const TITLE_MAX_WIDTH_RATIO = 0.6
@@ -19,6 +20,7 @@ interface CardtextProps {
 }
 
 export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
+  const dispatch = useAppDispatch()
   const { sizeCard } = useSizeFacade()
   const showViewMode = useAppSelector(selectCardtextShowViewMode)
   const value = useAppSelector(selectCardtextValue)
@@ -30,6 +32,10 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const formRef = useRef<HTMLDivElement>(null)
   const titleTextRef = useRef<HTMLSpanElement>(null)
   const [titleOverflows, setTitleOverflows] = useState(false)
+
+  const handleEditTitle = () => {
+    dispatch(setCardtextEditTitleOpen(true))
+  }
 
   useLayoutEffect(() => {
     if (!showViewMode || !title.trim()) {
@@ -57,7 +63,13 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
         {showViewMode ? (
           <div className={styles.cardtextViewWrap}>
             {title.trim() ? (
-              <div className={styles.cardtextViewTitle} aria-hidden>
+              <button
+                type="button"
+                className={styles.cardtextViewTitle}
+                onClick={handleEditTitle}
+                aria-label="Change template name"
+                title="Change template name"
+              >
                 <span
                   ref={titleTextRef}
                   className={
@@ -65,10 +77,11 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
                       ? `${styles.cardtextViewTitleText} ${styles.cardtextViewTitleTextFade}`
                       : styles.cardtextViewTitleText
                   }
+                  aria-hidden
                 >
                   {title}
                 </span>
-              </div>
+              </button>
             ) : null}
             <CardtextView value={value} style={style} />
           </div>

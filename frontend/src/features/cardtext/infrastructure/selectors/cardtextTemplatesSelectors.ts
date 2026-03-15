@@ -4,6 +4,9 @@ import type { CardtextTemplate } from '../../domain/templates/types'
 export const selectCardtextAddTemplateOpen = (state: RootState): boolean =>
   state.cardtext.isAddTemplateOpen ?? false
 
+export const selectCardtextEditTitleOpen = (state: RootState): boolean =>
+  state.cardtext.isEditTitleOpen ?? false
+
 export const selectCardtextTemplatesListItems = (
   state: RootState,
 ): CardtextTemplate[] | null => state.cardtext.templatesList ?? null

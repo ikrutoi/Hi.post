@@ -30,16 +30,32 @@
   right: 1rem;
   transform: translateY(-50%);
   z-index: 1;
+  display: flex;
+  align-items: center;
   padding: 0.25rem 0.5rem;
-  background-color: #fff;
+  margin: 0;
+  max-width: 60%;
   font-size: 0.8rem;
   color: $color-font-disabled;
-  border-radius: 0.25rem;
-  max-width: 60%;
+  background-color: #fff;
+  border: none;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: $color-app-strip;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-font-enabled-light;
+    outline-offset: 2px;
+  }
 }
 
 .cardtextViewTitleText {
   display: block;
+  min-width: 0;
   overflow: hidden;
   white-space: nowrap;
 }
