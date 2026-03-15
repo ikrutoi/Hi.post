@@ -38,6 +38,9 @@ export const selectCardtextFavorite = (state: RootState): boolean =>
 export const selectCardtextAssetId = (state: RootState): string | null =>
   state.cardtext.assetId ?? null
 
+export const selectCardtextApplied = (state: RootState): string | null =>
+  state.cardtext.applied ?? null
+
 export const selectFontSizeStep = (state: RootState): number =>
   state.cardtext.style.fontSizeStep
 

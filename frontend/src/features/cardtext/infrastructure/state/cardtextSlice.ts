@@ -102,6 +102,17 @@ export const cardtextSlice = createSlice({
       if (favorite !== undefined) state.favorite = favorite
       if (assetId !== undefined) state.assetId = assetId
       if (applied !== undefined) state.applied = applied
+      // Если plainText пустой, но value есть — вычислить из value (тулбар apply и др.)
+      if (
+        state.plainText.trim() === '' &&
+        state.value?.length > 0
+      ) {
+        state.plainText = state.value
+          .map((block: CardtextBlock) =>
+            block.children.map((ch: { text?: string }) => ch?.text ?? '').join(' ')
+          )
+          .join('\n')
+      }
       // isComplete только при явном Apply; при восстановлении/выборе шаблона — по payload или false
       state.isComplete = isComplete ?? false
       state.resetToken += 1
@@ -118,6 +129,11 @@ export const cardtextSlice = createSlice({
 
     setCardtextEditTitleOpen(state, action: PayloadAction<boolean>) {
       state.isEditTitleOpen = action.payload
+    },
+
+    toggleCardtextListSortDirection(state) {
+      state.cardtextListSortDirection =
+        state.cardtextListSortDirection === 'asc' ? 'desc' : 'asc'
     },
 
     cardtextTemplateAdded() {},
@@ -183,6 +199,7 @@ export const {
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
   setCardtextEditTitleOpen,
+  toggleCardtextListSortDirection,
   cardtextTemplateAdded,
   loadCardtextTemplatesRequest,
   loadCardtextTemplatesSuccess,

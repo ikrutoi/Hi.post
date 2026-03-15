@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconX, IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -7,6 +7,7 @@ import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
   selectCardtextAssetId,
+  selectCardtextListSortDirection,
 } from '@cardtext/infrastructure/selectors'
 import {
   setFavorite,
@@ -23,10 +24,26 @@ type Props = {
   onSelect?: (entry: CardtextTemplate) => void
 }
 
+function sortTemplatesByTitle(
+  list: CardtextTemplate[],
+  direction: 'asc' | 'desc',
+): CardtextTemplate[] {
+  const sorted = [...list].sort((a, b) =>
+    (a.title ?? '').trim().localeCompare((b.title ?? '').trim(), undefined, {
+      sensitivity: 'base',
+    }),
+  )
+  return direction === 'desc' ? sorted.reverse() : sorted
+}
+
 export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const dispatch = useAppDispatch()
   const items = useAppSelector(selectCardtextTemplatesListItems)
-  const templates = items ?? []
+  const sortDirection = useAppSelector(selectCardtextListSortDirection)
+  const templates = useMemo(
+    () => sortTemplatesByTitle(items ?? [], sortDirection),
+    [items, sortDirection],
+  )
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
   const { deleteCardtextTemplate, updateCardtextTemplate } = useTemplateActions()
   const assetId = useAppSelector(selectCardtextAssetId)

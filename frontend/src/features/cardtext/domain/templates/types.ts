@@ -52,10 +52,13 @@ export interface UpdateCardtextTemplatePayload {
 /** null = не загружено / идёт загрузка (ленивая загрузка без отдельного флага). */
 export type CardtextTemplatesListState = CardtextTemplate[] | null
 
+export type CardtextListSortDirection = 'asc' | 'desc'
+
 export interface CardtextTemplatesUIState {
   isListPanelOpen: boolean
   isAddTemplateOpen: boolean
   isEditTitleOpen: boolean
+  cardtextListSortDirection: CardtextListSortDirection
   /** true пока идёт загрузка списка; список не обнуляется, чтобы не моргал бэдж */
   templatesListLoading: boolean
 }
@@ -66,6 +69,7 @@ export const initialCardtextTemplatesState: CardtextTemplatesUIState & {
   isListPanelOpen: false,
   isAddTemplateOpen: false,
   isEditTitleOpen: false,
+  cardtextListSortDirection: 'asc',
   templatesListLoading: false,
   templatesList: null,
 }

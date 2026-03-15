@@ -130,7 +130,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             width="5120"
             height="5120"
             x="320"
-            y="1850"
+            y="1780"
           >
             <rect
               width="5120"

@@ -18,6 +18,9 @@ import {
   selectCardtextIsComplete,
   selectCardtextPlainText,
   selectCardtextFavorite,
+  selectCardtextListSortDirection,
+  selectCardtextAssetId,
+  selectCardtextApplied,
 } from '@cardtext/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
@@ -70,6 +73,12 @@ export const Toolbar = ({
   const cardtextApplied = useAppSelector(selectCardtextIsComplete)
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
   const cardtextFavorite = useAppSelector(selectCardtextFavorite)
+  const cardtextAssetId = useAppSelector(selectCardtextAssetId)
+  const cardtextAppliedId = useAppSelector(selectCardtextApplied)
+  const isCardtextCurrentTemplateApplied =
+    cardtextAssetId != null &&
+    cardtextAppliedId != null &&
+    cardtextAssetId === cardtextAppliedId
   const isAlreadyApplied =
     section === 'cardtext' || section === 'cardtextView'
       ? cardtextApplied
@@ -100,6 +109,7 @@ export const Toolbar = ({
   const recipientsViewSortDirection = useAppSelector(
     (state) => state.recipient?.recipientsViewSortDirection ?? 'asc',
   )
+  const cardtextListSortDirection = useAppSelector(selectCardtextListSortDirection)
   const sortDirection =
     section === 'addressListSender'
       ? senderSortDirection
@@ -107,7 +117,9 @@ export const Toolbar = ({
         ? recipientSortDirection
         : section === 'recipientsView'
           ? recipientsViewSortDirection
-          : undefined
+          : section === 'cardtextList'
+            ? cardtextListSortDirection
+            : undefined
 
   useEffect(() => {
     if (groupRef.current) {
@@ -149,10 +161,12 @@ export const Toolbar = ({
     }
     if (
       key === 'apply' &&
-      (section === 'cardtext' || section === 'cardtextView') &&
-      cardtextEmpty
+      (section === 'cardtext' || section === 'cardtextView')
     ) {
-      buttonStatus = 'disabled'
+      buttonStatus =
+        cardtextEmpty || isCardtextCurrentTemplateApplied
+          ? 'disabled'
+          : 'enabled'
     }
     if (
       section === 'cardtextView' &&

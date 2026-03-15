@@ -82,6 +82,8 @@ export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'edit', state: 'enabled' },
       { key: 'favorite', state: 'enabled' },
+      // { key: 'empty', state: 'enabled' },
+      // { key: 'delete', state: 'enabled' },
     ],
     status: 'enabled',
   },

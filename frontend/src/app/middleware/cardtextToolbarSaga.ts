@@ -15,6 +15,7 @@ import {
   setCardtextAddTemplateOpen,
   setCardtextFocusRequested,
   setCardtextShowViewMode,
+  toggleCardtextListSortDirection,
 } from '@cardtext/infrastructure/state'
 import {
   selectCardtextValue,
@@ -27,6 +28,12 @@ export function* handleCardtextToolbarAction(
   action: ReturnType<typeof toolbarAction>,
 ): SagaIterator {
   const { section, key, payload: editor } = action.payload
+
+  if (section === 'cardtextList' && key === 'sortDown') {
+    yield put(toggleCardtextListSortDirection())
+    return
+  }
+
   const isCardtextSection = section === 'cardtext' || section === 'cardtextView'
   if (!isCardtextSection) return
 
