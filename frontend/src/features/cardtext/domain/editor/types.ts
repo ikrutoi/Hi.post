@@ -57,12 +57,16 @@ export const initialCardtextValue: CardtextValue = [
   { type: 'paragraph', align: 'left', children: [{ text: '' }] },
 ]
 
-// ——— Style & template content (store shape) ———
 export interface CardtextStyle {
   fontFamily: string
   fontSizeStep: number
   color: TextColor
   align: TextAlign
+}
+
+export interface CardtextAppliedData {
+  value: CardtextValue
+  style: CardtextStyle
 }
 
 export interface CardtextTemplateContent {
@@ -75,9 +79,9 @@ export interface CardtextTemplateContent {
   favorite: boolean | null
 }
 
-// ——— Editor state & UI ———
 export interface CardtextState extends CardtextTemplateContent {
   assetId: string | null
+  appliedData: CardtextAppliedData | null
   isComplete: boolean
   resetToken: number
 }
@@ -87,22 +91,24 @@ export interface CardtextEditorUIState {
   requestCardtextFocus: boolean
 }
 
-export const initialCardtextEditorState: CardtextState & CardtextEditorUIState = {
-  assetId: null,
-  value: initialCardtextValue,
-  style: {
-    fontFamily: 'Roboto',
-    fontSizeStep: 3,
-    color: 'deepBlack',
-    align: 'left',
-  },
-  title: '',
-  plainText: '',
-  applied: null,
-  favorite: null,
-  isComplete: false,
-  cardtextLines: 15,
-  resetToken: 0,
-  showCardtextView: false,
-  requestCardtextFocus: false,
-}
+export const initialCardtextEditorState: CardtextState & CardtextEditorUIState =
+  {
+    assetId: null,
+    value: initialCardtextValue,
+    style: {
+      fontFamily: 'Roboto',
+      fontSizeStep: 3,
+      color: 'deepBlack',
+      align: 'left',
+    },
+    title: '',
+    plainText: '',
+    applied: null,
+    appliedData: null,
+    favorite: null,
+    isComplete: false,
+    cardtextLines: 15,
+    resetToken: 0,
+    showCardtextView: false,
+    requestCardtextFocus: false,
+  }

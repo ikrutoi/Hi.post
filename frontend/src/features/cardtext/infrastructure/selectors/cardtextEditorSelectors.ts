@@ -3,6 +3,7 @@ import type {
   CardtextValue,
   CardtextStyle,
   CardtextTemplateContent,
+  CardtextAppliedData,
 } from '../../domain/editor/types'
 import { createSelector } from '@reduxjs/toolkit'
 
@@ -41,6 +42,10 @@ export const selectCardtextAssetId = (state: RootState): string | null =>
 export const selectCardtextApplied = (state: RootState): string | null =>
   state.cardtext.applied ?? null
 
+export const selectCardtextAppliedData = (
+  state: RootState,
+): CardtextAppliedData | null => state.cardtext.appliedData ?? null
+
 export const selectFontSizeStep = (state: RootState): number =>
   state.cardtext.style.fontSizeStep
 
@@ -52,9 +57,24 @@ export const selectFontColor = (state: RootState): string =>
 
 export const selectCardtextSessionData = createSelector(
   [(state: RootState) => state.cardtext],
-  (cardtext): CardtextTemplateContent & { assetId: string | null; isComplete: boolean } => {
-    const { value, style, title, plainText, cardtextLines, applied, favorite, isComplete } =
-      cardtext
+  (
+    cardtext,
+  ): CardtextTemplateContent & {
+    assetId: string | null
+    isComplete: boolean
+    appliedData: CardtextAppliedData | null
+  } => {
+    const {
+      value,
+      style,
+      title,
+      plainText,
+      cardtextLines,
+      applied,
+      appliedData,
+      favorite,
+      isComplete,
+    } = cardtext
     return {
       assetId: cardtext.assetId ?? null,
       value,
@@ -63,6 +83,7 @@ export const selectCardtextSessionData = createSelector(
       plainText,
       cardtextLines,
       applied,
+      appliedData: appliedData ?? null,
       favorite,
       isComplete,
     }

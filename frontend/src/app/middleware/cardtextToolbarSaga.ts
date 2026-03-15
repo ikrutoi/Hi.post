@@ -4,6 +4,7 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import {
   setComplete,
   setApplied,
+  setAppliedData,
   setFavorite,
   updateCardtextTemplateFavoriteInList,
 } from '@cardtext/infrastructure/state'
@@ -16,9 +17,11 @@ import {
   setCardtextFocusRequested,
   setCardtextShowViewMode,
   toggleCardtextListSortDirection,
+  clearText,
 } from '@cardtext/infrastructure/state'
 import {
   selectCardtextValue,
+  selectCardtextStyle,
   selectCardtextShowViewMode,
   selectCardtextAssetId,
 } from '@cardtext/infrastructure/selectors'
@@ -40,7 +43,14 @@ export function* handleCardtextToolbarAction(
   switch (key) {
     case 'apply': {
       const assetId: string | null = yield select(selectCardtextAssetId)
+      const value: ReturnType<typeof selectCardtextValue> = yield select(
+        selectCardtextValue,
+      )
+      const style: ReturnType<typeof selectCardtextStyle> = yield select(
+        selectCardtextStyle,
+      )
       yield put(setApplied(assetId ?? null))
+      yield put(setAppliedData({ value: value ?? [], style }))
       yield put(setComplete(true))
       break
     }
@@ -103,6 +113,12 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'cardtextAdd': {
+      if (section === 'cardtextView') {
+        yield put(clearText())
+        yield put(setCardtextShowViewMode(false))
+        yield put(setCardtextFocusRequested(true))
+        break
+      }
       const value: any = yield select(selectCardtextValue)
       const showViewMode: boolean = yield select(selectCardtextShowViewMode)
       const isEmpty =

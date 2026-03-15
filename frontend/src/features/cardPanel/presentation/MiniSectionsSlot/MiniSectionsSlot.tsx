@@ -9,6 +9,7 @@ import { MiniCard } from '../../MiniCard/presentation/MiniCard'
 import styles from './MiniSectionsSlot.module.scss'
 import { selectRecipientApplied } from '@envelope/recipient/infrastructure/selectors'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
+import { selectCardtextApplied } from '@cardtext/infrastructure/selectors'
 
 const PARTS_TOTAL = 6
 const GAP_PARTS = 1
@@ -30,6 +31,8 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
     const recipientApplied = useAppSelector(selectRecipientApplied)
     const hasRecipientApplied = (recipientApplied?.length ?? 0) > 0
     const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
+    const cardtextApplied = useAppSelector(selectCardtextApplied)
+    const hasCardtextApplied = cardtextApplied != null && cardtextApplied !== ''
 
     const totalWidth =
       sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width : null
@@ -69,7 +72,9 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
               const isSectionComplete =
                 section === 'cardphoto'
                   ? cardphotoIsComplete
-                  : editorState[section]?.isComplete
+                  : section === 'cardtext'
+                    ? hasCardtextApplied
+                    : editorState[section]?.isComplete
               const isEmpty =
                 section === 'envelope'
                   ? !isSectionComplete && !hasRecipientApplied

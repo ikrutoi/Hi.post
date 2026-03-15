@@ -43,7 +43,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   const cardData = data?.data
   const hasAppliedCardtext = cardData?.cardtext?.applied != null
   const valueCardtext = hasAppliedCardtext
-    ? cardData?.cardtext?.value || []
+    ? (cardData?.cardtext?.appliedData?.value ?? cardData?.cardtext?.value ?? [])
     : []
   const previewLines = valueCardtext
     .slice(0, 8)
@@ -52,7 +52,10 @@ export const CardPie: React.FC<CardPieProps> = ({
       return fullLineText.split(/\s+/).filter(Boolean).slice(0, 4).join(' ')
     })
     .filter((line) => line.length > 0)
-  const cardtextColorKey = cardData?.cardtext?.style?.color ?? 'forestGreen'
+  const cardtextColorKey =
+    cardData?.cardtext?.appliedData?.style?.color ??
+    cardData?.cardtext?.style?.color ??
+    'forestGreen'
   const cardtextFillVar = `var(--color-font-${cardtextColorKey})`
   const photoUrl = sections.cardphoto
     ? (cardData?.cardphoto?.previewUrl ?? null)

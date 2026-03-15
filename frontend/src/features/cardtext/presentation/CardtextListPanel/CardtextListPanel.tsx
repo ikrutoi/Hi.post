@@ -40,10 +40,14 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const dispatch = useAppDispatch()
   const items = useAppSelector(selectCardtextTemplatesListItems)
   const sortDirection = useAppSelector(selectCardtextListSortDirection)
-  const templates = useMemo(
-    () => sortTemplatesByTitle(items ?? [], sortDirection),
-    [items, sortDirection],
-  )
+  const templates = useMemo(() => {
+    const list = items ?? []
+    const favorite = list.filter((e) => e.favorite === true)
+    const rest = list.filter((e) => e.favorite !== true)
+    const favoriteSorted = sortTemplatesByTitle(favorite, sortDirection)
+    const restSorted = sortTemplatesByTitle(rest, sortDirection)
+    return [...favoriteSorted, ...restSorted]
+  }, [items, sortDirection])
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
   const { deleteCardtextTemplate, updateCardtextTemplate } = useTemplateActions()
   const assetId = useAppSelector(selectCardtextAssetId)

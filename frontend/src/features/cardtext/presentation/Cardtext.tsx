@@ -9,6 +9,7 @@ import {
   selectCardtextValue,
   selectCardtextStyle,
   selectCardtextTitle,
+  selectCardtextAssetId,
 } from '../infrastructure/selectors'
 import { setCardtextEditTitleOpen } from '../infrastructure/state'
 import styles from './Cardtext.module.scss'
@@ -26,6 +27,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const value = useAppSelector(selectCardtextValue)
   const style = useAppSelector(selectCardtextStyle)
   const title = useAppSelector(selectCardtextTitle)
+  const assetId = useAppSelector(selectCardtextAssetId)
   const { state } = useCardtextFacade()
   console.log('Cardtext state', state)
 
@@ -83,7 +85,11 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
                 </span>
               </button>
             ) : null}
-            <CardtextView value={value} style={style} />
+            <CardtextView
+              key={assetId ?? 'no-template'}
+              value={value}
+              style={style}
+            />
           </div>
         ) : (
           <CardEditor />

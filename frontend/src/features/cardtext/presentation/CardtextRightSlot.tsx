@@ -39,7 +39,6 @@ export const CardtextRightSlot: React.FC = () => {
           title: entry.title,
           plainText: entry.plainText,
           cardtextLines: entry.cardtextLines,
-          applied: null,
           favorite: entry.favorite ?? null,
         }),
       )

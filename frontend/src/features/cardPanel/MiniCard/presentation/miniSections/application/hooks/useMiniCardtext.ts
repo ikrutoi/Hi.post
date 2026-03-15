@@ -13,15 +13,15 @@ import { useSizeFacade } from '@layout/application/facades'
 export const useMiniCardtext = () => {
   const editor = useMemo(() => withReact(createEditor()), [])
 
-  const { value, cardtextLines, applied, style: cardtextStyle } = useSelector(
-    (state: RootState) => state.cardtext,
-  )
+  const { value, cardtextLines, applied, appliedData, style: cardtextStyle } =
+    useSelector((state: RootState) => state.cardtext)
+  const displayValue = applied != null && appliedData?.value ? appliedData.value : value
+  const displayStyle = applied != null && appliedData?.style ? appliedData.style : cardtextStyle
 
   const { sizeMiniCard } = useSizeFacade()
 
-  const colorKey = cardtextStyle?.color ?? 'deepBlack'
-  const colorVar = `var(--color-font-${colorKey})`
-
+  const colorKeyDisplay = displayStyle?.color ?? 'deepBlack'
+  const colorVarDisplay = `var(--color-font-${colorKeyDisplay})`
   const style = sizeMiniCard?.height
     ? (() => {
         const result = calculateEditorLayout({
@@ -32,19 +32,19 @@ export const useMiniCardtext = () => {
         return {
           fontSize: `${result.fontSize}px`,
           lineHeight: `${result.lineHeight}px`,
-          textAlign: 'left' as const,
-          color: colorVar,
+          textAlign: (displayStyle?.align ?? 'left') as const,
+          color: colorVarDisplay,
         }
       })()
     : {
         fontSize: '12px',
         lineHeight: '16px',
-        textAlign: 'left' as const,
-        color: colorVar,
+        textAlign: (displayStyle?.align ?? 'left') as const,
+        color: colorVarDisplay,
       }
 
   // Показываем текст в мини-версии только если есть применённый вариант.
   const hasApplied = applied != null
 
-  return { editor, value, style, hasApplied }
+  return { editor, value: displayValue, style, hasApplied }
 }

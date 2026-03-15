@@ -6,6 +6,7 @@ import type {
   CardtextStyle,
   CardtextBlock,
   CardtextTemplateContent,
+  CardtextAppliedData,
 } from '../../domain/editor/types'
 import type { CardtextTemplate } from '../../domain/templates/types'
 
@@ -24,6 +25,7 @@ export const cardtextSlice = createSlice({
       if (hasText) {
         state.isComplete = false
         state.applied = null
+        state.appliedData = null
       }
       if (!hasText) state.assetId = null
     },
@@ -55,6 +57,11 @@ export const cardtextSlice = createSlice({
 
     setApplied(state, action: PayloadAction<string | null>) {
       state.applied = action.payload
+      if (!action.payload) state.appliedData = null
+    },
+
+    setAppliedData(state, action: PayloadAction<CardtextAppliedData | null>) {
+      state.appliedData = action.payload
     },
 
     setFavorite(state, action: PayloadAction<boolean | null>) {
@@ -69,6 +76,7 @@ export const cardtextSlice = createSlice({
       state.plainText = ''
       state.isComplete = false
       state.applied = null
+      state.appliedData = null
       state.assetId = null
       state.resetToken += 1
     },
@@ -80,7 +88,11 @@ export const cardtextSlice = createSlice({
     restoreCardtextSession(
       state,
       action: PayloadAction<
-        CardtextTemplateContent & { assetId?: string | null; isComplete?: boolean }
+        CardtextTemplateContent & {
+          assetId?: string | null
+          isComplete?: boolean
+          appliedData?: CardtextAppliedData | null
+        }
       >,
     ) {
       const {
@@ -93,6 +105,7 @@ export const cardtextSlice = createSlice({
         assetId,
         isComplete,
         applied,
+        appliedData,
       } = action.payload
       if (value) state.value = value
       if (style) state.style = style
@@ -102,6 +115,7 @@ export const cardtextSlice = createSlice({
       if (favorite !== undefined) state.favorite = favorite
       if (assetId !== undefined) state.assetId = assetId
       if (applied !== undefined) state.applied = applied
+      if (appliedData !== undefined) state.appliedData = appliedData
       // Если plainText пустой, но value есть — вычислить из value (тулбар apply и др.)
       if (
         state.plainText.trim() === '' &&
@@ -192,6 +206,7 @@ export const {
   setTitle,
   setComplete,
   setApplied,
+  setAppliedData,
   setFavorite,
   clearText,
   setCardtextAssetId,
