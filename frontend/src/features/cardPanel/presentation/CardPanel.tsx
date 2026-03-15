@@ -42,6 +42,12 @@ export const CardPanel = () => {
         }}
       >
         <div
+          className={styles.cardPanelPieToolbar}
+          style={{ height: `${sizeMiniCard.height}px` }}
+        >
+          <Toolbar section="editorPie" />
+        </div>
+        <div
           className={styles.cardPanelPie}
           style={{
             height: `${sizeMiniCard.height}px`,
@@ -49,12 +55,6 @@ export const CardPanel = () => {
           }}
         >
           <CardPie status="processed" />
-        </div>
-        <div
-          className={styles.cardPanelPieToolbar}
-          style={{ height: `${sizeMiniCard.height}px` }}
-        >
-          <Toolbar section="editorPie" />
         </div>
         <div
           className={styles.cardPanelContent}

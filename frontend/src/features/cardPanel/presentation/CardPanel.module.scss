@@ -38,15 +38,16 @@
     flex-shrink: 0;
     z-index: 6;
     border-radius: 1rem;
+    margin-left: 2rem;
   }
 
   &PieToolbar {
     flex-shrink: 0;
-    width: 2rem;
     display: flex;
-    border-radius: 0 1rem 1rem 0;
-    justify-content: flex-end;
-    z-index: 6;
+    align-items: center;
+    justify-content: center;
+    // z-index: 6;
+    // border: solid 1px red;
   }
 
   &Filter {

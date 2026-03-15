@@ -5,6 +5,7 @@ import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSections
 import { CardSectionEditor } from './features/cardSectionEditor/presentation/CardSectionEditor'
 import { CardSectionToolbar } from './features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { CardPie } from './features/cardPie/presentation/CardPie'
+import { Toolbar } from './features/toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from './features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from './features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
@@ -53,8 +54,13 @@ const App = () => {
             <div className={styles.appMainContentLeft}>
               <div className={styles.appMainContentLeftPieSlot}>
                 {sectionSize != null && (
-                  <div className={styles.appMainContentLeftPieWrap}>
-                    <CardPie status="processed" fillContainer />
+                  <div className={styles.appMainContentLeftPieRow}>
+                    <div className={styles.appMainContentLeftPieToolbar}>
+                      <Toolbar section="editorPie" />
+                    </div>
+                    <div className={styles.appMainContentLeftPieWrap}>
+                      <CardPie status="processed" fillContainer />
+                    </div>
                   </div>
                 )}
               </div>
