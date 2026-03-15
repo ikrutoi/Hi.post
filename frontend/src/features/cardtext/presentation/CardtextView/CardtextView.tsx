@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import clsx from 'clsx'
 import { Slate, Editable, withReact } from 'slate-react'
 import { createEditor, Descendant } from 'slate'
 import { STEP_TO_PX } from '../../domain/types'
@@ -7,11 +8,11 @@ import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
 import styles from './CardtextView.module.scss'
 
-const TEXT_COLOR_MAP: Record<string, string> = {
-  deepBlack: '#1a1a1b',
-  blue: '#1e3a8a',
-  burgundy: '#741b47',
-  forestGreen: '#064e3b',
+const COLOR_CLASS_MAP: Record<string, keyof typeof styles> = {
+  deepBlack: 'colorDeepBlack',
+  blue: 'colorBlue',
+  burgundy: 'colorBurgundy',
+  forestGreen: 'colorForestGreen',
 }
 
 type Props = {
@@ -31,7 +32,8 @@ export const CardtextView: React.FC<Props> = ({ value, style, contentKey }) => {
   const fontSizeStep = style?.fontSizeStep ?? 3
   const currentPxSize = STEP_TO_PX[fontSizeStep - 1] ?? 16
   const lineHeight = Math.round(currentPxSize * 1.5)
-  const color = TEXT_COLOR_MAP.deepBlack
+  const colorKey = style?.color ?? 'deepBlack'
+  const colorClass = styles[COLOR_CLASS_MAP[colorKey] ?? 'colorDeepBlack']
   const initialValue = (
     value?.length
       ? value
@@ -40,11 +42,10 @@ export const CardtextView: React.FC<Props> = ({ value, style, contentKey }) => {
 
   return (
     <div
-      className={styles.viewContainer}
+      className={clsx(styles.viewContainer, colorClass)}
       style={{
         fontSize: `${currentPxSize}px`,
         lineHeight: `${lineHeight}px`,
-        color,
         textAlign: style?.align ?? 'left',
       }}
     >

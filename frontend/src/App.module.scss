@@ -1,5 +1,13 @@
 @use '@styles/config/colors' as *;
 
+// Цвета текста карточки — единый источник (colors.scss), для TS/SVG через var()
+:root {
+  --color-font-deepBlack: #{$color-font-deepBlack};
+  --color-font-blue: #{$color-font-blue};
+  --color-font-burgundy: #{$color-font-burgundy};
+  --color-font-forestGreen: #{$color-font-forestGreen};
+}
+
 .app {
   width: 100vw;
   height: 100vh;

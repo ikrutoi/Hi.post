@@ -52,6 +52,8 @@ export const CardPie: React.FC<CardPieProps> = ({
       return fullLineText.split(/\s+/).filter(Boolean).slice(0, 4).join(' ')
     })
     .filter((line) => line.length > 0)
+  const cardtextColorKey = cardData?.cardtext?.style?.color ?? 'forestGreen'
+  const cardtextFillVar = `var(--color-font-${cardtextColorKey})`
   const photoUrl = sections.cardphoto
     ? (cardData?.cardphoto?.previewUrl ?? null)
     : null
@@ -171,7 +173,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                   y="1780"
                   textAnchor="start"
                   className={styles.pieTextBase}
-                  fill="#064e3b"
+                  fill={cardtextFillVar}
                   style={{ fontStyle: 'italic' }}
                 >
                   {previewLines.map((line, i) => {
