@@ -125,14 +125,14 @@ export const CardPie: React.FC<CardPieProps> = ({
           <pattern
             id={photoEmptyFillId}
             patternUnits="userSpaceOnUse"
-            width="2560"
-            height="2560"
-            x="1580"
-            y="560"
+            width="5120"
+            height="5120"
+            x="320"
+            y="1850"
           >
             <rect
-              width="3200"
-              height="2560"
+              width="5120"
+              height="5120"
               className={clsx(
                 styles.rect,
                 styles.rectCardphoto,
@@ -141,7 +141,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             />
             <g
               className={styles.pieSectorIconBg}
-              transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+              transform={`translate(2560, 2560) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
             >
               <IconSectionMenuCardphoto
                 width={PIE_EMPTY_ICON_SIZE}
@@ -338,8 +338,8 @@ export const CardPie: React.FC<CardPieProps> = ({
                   href={aromaImageUrl}
                   width="2560"
                   height="2560"
-                  x="0"
-                  y="256"
+                  x="200"
+                  y="250"
                   preserveAspectRatio="xMidYMid meet"
                 />
               </>
@@ -370,33 +370,33 @@ export const CardPie: React.FC<CardPieProps> = ({
           <pattern
             id="date-fill"
             patternUnits="userSpaceOnUse"
-            width="2560"
-            height="2560"
-            x="580"
-            y="1260"
+            width="5120"
+            height="5120"
+            x="3150"
+            y="1280"
           >
             {date ? (
               <>
                 <rect
-                  width="2560"
+                  width="3135"
                   height="3135"
                   className={clsx(styles.rect, styles.rectDate)}
                   fill="var(--pie-rect-fill)"
                 />
                 <text
-                  x="1280"
-                  y="750"
+                  x="0"
+                  y="920"
                   textAnchor="middle"
                   strokeLinejoin="round"
                   className={clsx(styles.pieTextBase, styles.pieTextDate)}
                 >
-                  <tspan x="1280" dy="0" fontWeight="400" fontSize="550">
+                  <tspan x="1100" dy="0" fontWeight="400" fontSize="550">
                     {date.year}
                   </tspan>
-                  <tspan x="1280" dy="1250" fontWeight="600" fontSize="1400">
+                  <tspan x="1100" dy="1250" fontWeight="600" fontSize="1400">
                     {date.day}
                   </tspan>
-                  <tspan x="1280" dy="600" fontSize="550">
+                  <tspan x="1100" dy="600" fontSize="550">
                     {listOfMonthOfYear[date.month]}
                   </tspan>
                 </text>
@@ -404,8 +404,8 @@ export const CardPie: React.FC<CardPieProps> = ({
             ) : (
               <>
                 <rect
-                  width="2560"
-                  height="3135"
+                  width="5120"
+                  height="5120"
                   className={clsx(
                     styles.rect,
                     styles.rectDate,

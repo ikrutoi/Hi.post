@@ -17,9 +17,7 @@ type LabelProps = {
 export const Label = forwardRef<HTMLInputElement, LabelProps>(
   ({ role, roleLabel, label, field, value, onValueChange, onKeyDown }, ref) => {
     const handleChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-      const raw = e.target.value
-      const sanitized = field === 'zip' ? raw.replace(/\D/g, '') : raw
-      onValueChange(field, sanitized)
+      onValueChange(field, e.target.value)
     }
 
     const handleClear = () => {

@@ -75,6 +75,7 @@ import {
   setRecipientsList,
   toggleRecipientSelection,
   clearRecipientsPending,
+  closeAddressList,
 } from '@envelope/infrastructure/state'
 import {
   setRecipientViewId,
@@ -531,6 +532,9 @@ export function* hydrateAppSession() {
 
     yield call(rehydrateEnvelopeSlicesFromTemplates)
     yield call(syncEnvelopeStatus)
+
+    // При перезагрузке панели списков (Получатель / Отправитель) всегда скрыты
+    yield put(closeAddressList())
 
     // Aroma and date are not restored on reload so mini sections stay empty after refresh
     // if (session.aroma && session.aroma.selectedAroma) {

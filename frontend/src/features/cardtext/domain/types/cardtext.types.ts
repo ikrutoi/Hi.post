@@ -9,13 +9,10 @@ import {
   type CardtextTemplatesUIState,
 } from '../templates/types'
 
-/** Обратная совместимость: объединённый UI (редактор + шаблоны). */
 export type CardtextUIState = CardtextEditorUIState & CardtextTemplatesUIState
 
 export interface CardtextSliceState
-  extends CardtextState,
-    CardtextEditorUIState,
-    CardtextTemplatesUIState {
+  extends CardtextState, CardtextEditorUIState, CardtextTemplatesUIState {
   templatesList: CardtextTemplatesListState
 }
 

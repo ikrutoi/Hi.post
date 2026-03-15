@@ -11,6 +11,7 @@ export const VIEW_KEYS = [
   'close',
   'sortUp',
   'sortDown',
+  'apply',
 ] as const satisfies readonly IconKey[]
 
 export type AddressViewKey = (typeof VIEW_KEYS)[number]
@@ -83,7 +84,10 @@ export const initialSenderViewToolbarState: AddressViewToolbarState = {
 export const ADDRESS_FORM_SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'addressFormSenderView',
-    icons: [{ key: 'listAdd', state: 'enabled' }],
+    icons: [
+      { key: 'apply', state: 'enabled' },
+      { key: 'listAdd', state: 'enabled' },
+    ],
     status: 'enabled',
   },
 ]
@@ -91,7 +95,10 @@ export const ADDRESS_FORM_SENDER_VIEW_TOOLBAR: ToolbarConfig = [
 export const ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'addressFormRecipientView',
-    icons: [{ key: 'listAdd', state: 'enabled' }],
+    icons: [
+      { key: 'listAdd', state: 'enabled' },
+      { key: 'apply', state: 'enabled' },
+    ],
     status: 'enabled',
   },
 ]

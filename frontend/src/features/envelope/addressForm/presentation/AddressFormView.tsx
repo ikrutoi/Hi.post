@@ -31,6 +31,9 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   } = useEnvelopeFacade()
   const { labelLayout } = useEnvelopeAddress(role, lang)
   const inputsRef = useRef<(HTMLInputElement | null)[]>([])
+  const setInputRef = useCallback((el: HTMLInputElement | null, index: number) => {
+    if (el) inputsRef.current[index] = el
+  }, [])
 
   const showCloseBtn = showAddressFormCloseButton(role)
 
@@ -42,17 +45,24 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   const toolbarSection =
     role === 'sender' ? 'addressFormSenderView' : 'addressFormRecipientView'
 
+  // Defer toolbar sync so it doesn't run in the same tick as field update and cause focus loss
   useEffect(() => {
-    syncAddressFormToolbar(toolbarSection, isAddressComplete)
+    const id = requestAnimationFrame(() => {
+      syncAddressFormToolbar(toolbarSection, isAddressComplete)
+    })
+    return () => cancelAnimationFrame(id)
   }, [syncAddressFormToolbar, toolbarSection, isAddressComplete])
 
+  // Only auto-focus first input on mount when nothing in the form is focused (avoid stealing focus on remount)
   useEffect(() => {
     const firstInput = inputsRef.current[0]
-    if (firstInput) {
-      const len = firstInput.value.length
-      firstInput.focus()
-      firstInput.setSelectionRange(len, len)
-    }
+    if (!firstInput) return
+    const container = firstInput.closest('[class*="addressFormViewContainer"]')
+    const active = document.activeElement as Node | null
+    if (active && container?.contains(active)) return
+    const len = firstInput.value.length
+    firstInput.focus()
+    firstInput.setSelectionRange(len, len)
   }, [])
 
   const handleCloseAddressForm = useCallback(() => {
@@ -95,9 +105,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
             return (
               <Label
                 key={`${subItem.key}-${i}-${j}`}
-                ref={(el: HTMLInputElement | null) => {
-                  if (el) inputsRef.current[idx] = el
-                }}
+                ref={(el: HTMLInputElement | null) => setInputRef(el, idx)}
                 role={role}
                 roleLabel={roleLabel}
                 label={subItem.label}
@@ -115,9 +123,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     return (
       <Label
         key={`${item.key}-${i}`}
-        ref={(el: HTMLInputElement | null) => {
-          if (el) inputsRef.current[idx] = el
-        }}
+        ref={(el: HTMLInputElement | null) => setInputRef(el, idx)}
         role={role}
         roleLabel={roleLabel}
         label={item.label}

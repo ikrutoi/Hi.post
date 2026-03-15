@@ -17,24 +17,26 @@ const TEXT_COLOR_MAP: Record<string, string> = {
 type Props = {
   value: CardtextValue
   style: CardtextStyle
-  /** Optional: use when showing a specific template so key is stable per template */
   contentKey?: string
 }
 
-export const CardtextView: React.FC<Props> = ({
-  value,
-  style,
-  contentKey,
-}) => {
-  const slateKey = contentKey ?? (value?.length ? String(value.length) + (value[0]?.children?.[0]?.text ?? '') : 'empty')
+export const CardtextView: React.FC<Props> = ({ value, style, contentKey }) => {
+  const slateKey =
+    contentKey ??
+    (value?.length
+      ? String(value.length) + (value[0]?.children?.[0]?.text ?? '')
+      : 'empty')
   const editor = useMemo(() => withReact(createEditor()), [slateKey])
 
   const fontSizeStep = style?.fontSizeStep ?? 3
   const currentPxSize = STEP_TO_PX[fontSizeStep - 1] ?? 16
   const lineHeight = Math.round(currentPxSize * 1.5)
-  // Same as editor default: deepBlack (ignore template's saved color for consistent preview)
   const color = TEXT_COLOR_MAP.deepBlack
-  const initialValue = (value?.length ? value : [{ type: 'paragraph', align: 'left', children: [{ text: '' }] }]) as Descendant[]
+  const initialValue = (
+    value?.length
+      ? value
+      : [{ type: 'paragraph', align: 'left', children: [{ text: '' }] }]
+  ) as Descendant[]
 
   return (
     <div

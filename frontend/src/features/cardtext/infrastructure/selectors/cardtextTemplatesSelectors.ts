@@ -9,4 +9,4 @@ export const selectCardtextTemplatesListItems = (
 ): CardtextTemplate[] | null => state.cardtext.templatesList ?? null
 
 export const selectCardtextTemplatesListLoading = (state: RootState): boolean =>
-  state.cardtext.templatesList === null
+  state.cardtext.templatesListLoading === true

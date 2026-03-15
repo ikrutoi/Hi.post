@@ -1,7 +1,11 @@
 import { SagaIterator } from 'redux-saga'
 import { call, put, select } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { setComplete } from '@cardtext/infrastructure/state'
+import {
+  setComplete,
+  setFavorite,
+  updateCardtextTemplateFavoriteInList,
+} from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
 import type { RootState } from '@app/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -14,7 +18,9 @@ import {
 import {
   selectCardtextValue,
   selectCardtextShowViewMode,
+  selectCardtextAssetId,
 } from '@cardtext/infrastructure/selectors'
+import { templateService } from '@entities/templates/domain/services/templateService'
 
 export function* handleCardtextToolbarAction(
   action: ReturnType<typeof toolbarAction>,
@@ -31,6 +37,26 @@ export function* handleCardtextToolbarAction(
     case 'edit':
       if (section === 'cardtextView') {
         yield put(setCardtextShowViewMode(false))
+      }
+      break
+
+    case 'favorite':
+      if (section === 'cardtextView') {
+        const assetId: string | null = yield select(selectCardtextAssetId)
+        if (!assetId) break
+        const favorite: boolean | null = yield select(
+          (s: RootState) => s.cardtext.favorite,
+        )
+        const next = favorite === true ? false : true
+        const result = yield call(
+          templateService.updateCardtextTemplate,
+          assetId,
+          { favorite: next },
+        )
+        if (result?.success) {
+          yield put(setFavorite(next))
+          yield put(updateCardtextTemplateFavoriteInList({ id: assetId, favorite: next }))
+        }
       }
       break
 

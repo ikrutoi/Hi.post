@@ -107,13 +107,27 @@ export const cardtextSlice = createSlice({
     cardtextTemplateAdded() {},
 
     loadCardtextTemplatesRequest(state) {
-      state.templatesList = null
+      state.templatesListLoading = true
+      // не обнуляем templatesList — бэдж listCardtext не моргает при обновлении
     },
     loadCardtextTemplatesSuccess(state, action: PayloadAction<CardtextTemplate[]>) {
       state.templatesList = action.payload
+      state.templatesListLoading = false
     },
     loadCardtextTemplatesFailure(state) {
+      state.templatesListLoading = false
       state.templatesList = []
+    },
+
+    /** Обновить только favorite у шаблона в списке (без перезапроса — строка не моргает) */
+    updateCardtextTemplateFavoriteInList(
+      state,
+      action: PayloadAction<{ id: string; favorite: boolean }>,
+    ) {
+      const { id, favorite } = action.payload
+      if (!Array.isArray(state.templatesList)) return
+      const idx = state.templatesList.findIndex((t) => t.id === id)
+      if (idx !== -1) state.templatesList[idx] = { ...state.templatesList[idx], favorite }
     },
 
     setCardtextShowViewMode(state, action: PayloadAction<boolean>) {
@@ -144,6 +158,7 @@ export const {
   loadCardtextTemplatesRequest,
   loadCardtextTemplatesSuccess,
   loadCardtextTemplatesFailure,
+  updateCardtextTemplateFavoriteInList,
   setCardtextShowViewMode,
   setCardtextFocusRequested,
 } = cardtextSlice.actions

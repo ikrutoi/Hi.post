@@ -11,6 +11,7 @@ import {
 import {
   setFavorite,
   loadCardtextTemplatesRequest,
+  updateCardtextTemplateFavoriteInList,
 } from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import type { CardtextTemplate } from '@cardtext/domain/types'
@@ -52,10 +53,10 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
     async (entry: CardtextTemplate) => {
       const next = entry.favorite === true ? false : true
       await updateCardtextTemplate(entry.id, { favorite: next })
+      dispatch(updateCardtextTemplateFavoriteInList({ id: entry.id, favorite: next }))
       if (assetId === entry.id) {
         dispatch(setFavorite(next))
       }
-      dispatch(loadCardtextTemplatesRequest())
     },
     [updateCardtextTemplate, assetId, dispatch],
   )

@@ -206,6 +206,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
             {senderView === 'addressFormSenderView' ? (
               <AddressFormView
+                key="addressFormSenderView"
                 role="sender"
                 roleLabel={roleLabel}
                 address={senderFacade.formDraft}
@@ -307,6 +308,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             </div>
             {recipientView === 'addressFormRecipientView' ? (
               <AddressFormView
+                key="addressFormRecipientView"
                 role="recipient"
                 roleLabel="Recipient"
                 address={recipientFacade.formDraft}
