@@ -59,7 +59,10 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'save',
-    icons: [{ key: 'listAdd', state: 'disabled' }],
+    icons: [
+      { key: 'apply', state: 'enabled' },
+      { key: 'listAdd', state: 'disabled' },
+    ],
     status: 'enabled',
   },
 ]

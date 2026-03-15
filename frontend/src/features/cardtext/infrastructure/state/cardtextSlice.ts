@@ -21,7 +21,10 @@ export const cardtextSlice = createSlice({
         .map((block) => block.children.map((child) => child.text).join(' '))
         .join('\n')
       const hasText = state.plainText.trim().length > 0
-      if (hasText) state.isComplete = false
+      if (hasText) {
+        state.isComplete = false
+        state.applied = null
+      }
       if (!hasText) state.assetId = null
     },
 
@@ -50,6 +53,10 @@ export const cardtextSlice = createSlice({
       state.isComplete = action.payload
     },
 
+    setApplied(state, action: PayloadAction<string | null>) {
+      state.applied = action.payload
+    },
+
     setFavorite(state, action: PayloadAction<boolean | null>) {
       state.favorite = action.payload
     },
@@ -61,6 +68,7 @@ export const cardtextSlice = createSlice({
       }))
       state.plainText = ''
       state.isComplete = false
+      state.applied = null
       state.assetId = null
       state.resetToken += 1
     },
@@ -72,7 +80,7 @@ export const cardtextSlice = createSlice({
     restoreCardtextSession(
       state,
       action: PayloadAction<
-        CardtextTemplateContent & { assetId?: string | null }
+        CardtextTemplateContent & { assetId?: string | null; isComplete?: boolean }
       >,
     ) {
       const {
@@ -83,6 +91,8 @@ export const cardtextSlice = createSlice({
         cardtextLines,
         favorite,
         assetId,
+        isComplete,
+        applied,
       } = action.payload
       if (value) state.value = value
       if (style) state.style = style
@@ -91,7 +101,9 @@ export const cardtextSlice = createSlice({
       if (cardtextLines !== undefined) state.cardtextLines = cardtextLines
       if (favorite !== undefined) state.favorite = favorite
       if (assetId !== undefined) state.assetId = assetId
-      state.isComplete = state.plainText.trim().length > 0
+      if (applied !== undefined) state.applied = applied
+      // isComplete только при явном Apply; при восстановлении/выборе шаблона — по payload или false
+      state.isComplete = isComplete ?? false
       state.resetToken += 1
     },
 
@@ -148,6 +160,7 @@ export const {
   setFontSizeStep,
   setTitle,
   setComplete,
+  setApplied,
   setFavorite,
   clearText,
   setCardtextAssetId,

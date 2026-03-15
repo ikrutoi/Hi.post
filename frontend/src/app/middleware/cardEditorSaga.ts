@@ -38,7 +38,7 @@ import {
   selectSelectedAroma,
   selectIsAromaComplete,
 } from '@aroma/infrastructure/selectors'
-import { setValue, setComplete, clearText } from '@cardtext/infrastructure/state'
+import { setValue, setComplete, setApplied, clearText } from '@cardtext/infrastructure/state'
 import {
   selectCardtextIsComplete,
   selectCardtextState,
@@ -117,9 +117,17 @@ function* syncCardtextReset() {
   yield put(clearSection('cardtext'))
 }
 
-function* syncCardtextToolbar(action: ReturnType<typeof setValue>) {
-  const toolbarState = buildCardtextToolbarState(action.payload)
+function* syncCardtextToolbar() {
+  const cardtext: ReturnType<typeof selectCardtextState> = yield select(
+    selectCardtextState,
+  )
+  const toolbarState = buildCardtextToolbarState(cardtext.value, {
+    applied: cardtext.applied,
+  })
   yield put(updateToolbarSection({ section: 'cardtext', value: toolbarState }))
+  yield put(
+    updateToolbarSection({ section: 'cardtextView', value: toolbarState }),
+  )
 }
 
 export function* syncCardphotoStatus() {
@@ -287,7 +295,10 @@ export function* cardEditorSaga() {
   yield takeEvery(syncProcessedRequest.type, checkAndSyncProcessedCard)
 
   yield takeEvery([setValue.type, setComplete.type], syncCardtextStatus)
-  yield takeEvery(setValue.type, syncCardtextToolbar)
+  yield takeEvery(
+    [setValue.type, setComplete.type, setApplied.type],
+    syncCardtextToolbar,
+  )
   yield takeEvery(clearText.type, syncCardtextReset)
 
   yield takeEvery(

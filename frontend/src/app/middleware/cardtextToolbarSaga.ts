@@ -3,6 +3,7 @@ import { call, put, select } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import {
   setComplete,
+  setApplied,
   setFavorite,
   updateCardtextTemplateFavoriteInList,
 } from '@cardtext/infrastructure/state'
@@ -30,9 +31,12 @@ export function* handleCardtextToolbarAction(
   if (!isCardtextSection) return
 
   switch (key) {
-    case 'apply':
+    case 'apply': {
+      const assetId: string | null = yield select(selectCardtextAssetId)
+      yield put(setApplied(assetId ?? null))
       yield put(setComplete(true))
       break
+    }
 
     case 'edit':
       if (section === 'cardtextView') {

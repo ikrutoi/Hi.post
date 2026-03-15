@@ -49,8 +49,8 @@ export const selectFontColor = (state: RootState): string =>
 
 export const selectCardtextSessionData = createSelector(
   [(state: RootState) => state.cardtext],
-  (cardtext): CardtextTemplateContent & { assetId: string | null } => {
-    const { value, style, title, plainText, cardtextLines, applied, favorite } =
+  (cardtext): CardtextTemplateContent & { assetId: string | null; isComplete: boolean } => {
+    const { value, style, title, plainText, cardtextLines, applied, favorite, isComplete } =
       cardtext
     return {
       assetId: cardtext.assetId ?? null,
@@ -61,6 +61,7 @@ export const selectCardtextSessionData = createSelector(
       cardtextLines,
       applied,
       favorite,
+      isComplete,
     }
   },
 )

@@ -19,7 +19,7 @@ import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
 import styles from './CardPie.module.scss'
 
-const STROKE_WIDTH = 23.6221
+const STROKE_WIDTH = 22
 const SECTOR_STROKE = '#b3b3b3'
 const SECTOR_BG_STROKE = '#e53935' // red, for temporary -bg placement rects
 
@@ -46,7 +46,7 @@ export const CardPie: React.FC<CardPieProps> = ({
     ? cardData?.cardtext?.value || []
     : []
   const previewLines = valueCardtext
-    .slice(0, 6)
+    .slice(0, 8)
     .map((block) => {
       const fullLineText = block.children.map((child) => child.text).join('')
       return fullLineText.split(/\s+/).filter(Boolean).slice(0, 4).join(' ')
@@ -153,33 +153,33 @@ export const CardPie: React.FC<CardPieProps> = ({
           <pattern
             id="cardtext-fill"
             patternUnits="userSpaceOnUse"
-            width="2560"
-            height="2560"
-            x="-420"
-            y="-680"
+            width="5120"
+            height="5120"
+            x="3440"
+            y="860"
           >
             {previewLines.length > 0 ? (
               <>
                 <rect
-                  width="2560"
-                  height="3135"
+                  width="5120"
+                  height="5120"
                   className={clsx(styles.rect, styles.rectCardtext)}
                   fill="var(--pie-rect-fill)"
                 />
                 <text
-                  x="100"
-                  y="400"
+                  x="200"
+                  y="1780"
                   textAnchor="start"
                   className={styles.pieTextBase}
                   fill="#064e3b"
                   style={{ fontStyle: 'italic' }}
                 >
                   {previewLines.map((line, i) => {
-                    const currentOpacity = Math.max(1 - i * 0.15, 0.4)
+                    const currentOpacity = Math.max(1 - i * 0.12, 0.4)
                     return (
                       <tspan
                         key={i}
-                        x="100"
+                        x="1800"
                         dy={i === 0 ? 0 : 500}
                         fontWeight="400"
                         fontSize={350 - i * 5}
@@ -194,8 +194,8 @@ export const CardPie: React.FC<CardPieProps> = ({
             ) : (
               <>
                 <rect
-                  width="2560"
-                  height="3135"
+                  width="5120"
+                  height="5120"
                   className={clsx(
                     styles.rect,
                     styles.rectCardtext,
@@ -204,7 +204,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                 />
                 <g
                   className={styles.pieSectorIconBg}
-                  transform={`translate(1280, 1567.5) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                  transform={`translate(2560, 2560) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
                 >
                   <IconSectionMenuCardtext
                     width={PIE_EMPTY_ICON_SIZE}
@@ -372,31 +372,31 @@ export const CardPie: React.FC<CardPieProps> = ({
             patternUnits="userSpaceOnUse"
             width="5120"
             height="5120"
-            x="3150"
-            y="1280"
+            x="1840"
+            y="280"
           >
             {date ? (
               <>
                 <rect
-                  width="3135"
-                  height="3135"
+                  width="5120"
+                  height="5120"
                   className={clsx(styles.rect, styles.rectDate)}
                   fill="var(--pie-rect-fill)"
                 />
                 <text
-                  x="0"
-                  y="920"
+                  x="2560"
+                  y="2050"
                   textAnchor="middle"
                   strokeLinejoin="round"
                   className={clsx(styles.pieTextBase, styles.pieTextDate)}
                 >
-                  <tspan x="1100" dy="0" fontWeight="400" fontSize="550">
+                  <tspan x="2280" dy="0" fontWeight="400" fontSize="550">
                     {date.year}
                   </tspan>
-                  <tspan x="1100" dy="1250" fontWeight="600" fontSize="1400">
+                  <tspan x="2280" dy="1250" fontWeight="600" fontSize="1400">
                     {date.day}
                   </tspan>
-                  <tspan x="1100" dy="600" fontSize="550">
+                  <tspan x="2280" dy="600" fontSize="550">
                     {listOfMonthOfYear[date.month]}
                   </tspan>
                 </text>
@@ -414,7 +414,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                 />
                 <g
                   className={styles.pieSectorIconBg}
-                  transform={`translate(1280, 1567.5) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                  transform={`translate(2560, 2560) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
                 >
                   <IconSectionMenuDate
                     width={PIE_EMPTY_ICON_SIZE}
@@ -426,7 +426,7 @@ export const CardPie: React.FC<CardPieProps> = ({
           </pattern>
         </defs>
 
-        <g id="Слой_x0020_1">
+        <g id="x0020_1">
           <path
             id="cardphoto"
             data-section="cardphoto"
