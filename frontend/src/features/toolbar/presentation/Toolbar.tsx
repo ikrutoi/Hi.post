@@ -159,14 +159,23 @@ export const Toolbar = ({
     if (key === 'apply' && section === 'cardphoto' && isAlreadyApplied) {
       buttonStatus = 'disabled'
     }
-    if (
-      key === 'apply' &&
-      (section === 'cardtext' || section === 'cardtextView')
-    ) {
-      buttonStatus =
-        cardtextEmpty || isCardtextCurrentTemplateApplied
-          ? 'disabled'
-          : 'enabled'
+    if (key === 'apply' && section === 'cardtext') {
+      if (cardtextEmpty) {
+        buttonStatus = 'disabled'
+      } else if (isCardtextCurrentTemplateApplied) {
+        buttonStatus = 'selected'
+      } else {
+        buttonStatus = 'enabled'
+      }
+    }
+    if (key === 'apply' && section === 'cardtextView') {
+      if (cardtextEmpty) {
+        buttonStatus = 'disabled'
+      } else if (isCardtextCurrentTemplateApplied) {
+        buttonStatus = 'selected'
+      } else {
+        buttonStatus = 'enabled'
+      }
     }
     if (
       section === 'cardtextView' &&

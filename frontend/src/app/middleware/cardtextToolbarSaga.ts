@@ -59,6 +59,18 @@ export function* handleCardtextToolbarAction(
     case 'edit':
       if (section === 'cardtextView') {
         yield put(setCardtextCurrentView('cardtextEditor'))
+      } else if (section === 'cardtextEditor') {
+        const assetId: string | null = yield select(selectCardtextAssetId)
+        const value: ReturnType<typeof selectCardtextValue> = yield select(
+          selectCardtextValue,
+        )
+        const style: ReturnType<typeof selectCardtextStyle> = yield select(
+          selectCardtextStyle,
+        )
+        yield put(setApplied(assetId ?? null))
+        yield put(setAppliedData({ value: value ?? [], style }))
+        yield put(setComplete(true))
+        yield put(setCardtextCurrentView('cardtextView'))
       }
       break
 

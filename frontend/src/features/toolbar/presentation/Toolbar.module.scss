@@ -370,6 +370,12 @@
   }
 }
 
+.toolbarCardtext {
+  .toolbarKey {
+    background-color: $color-app-inner;
+  }
+}
+
 .toolbarSender,
 .toolbarRecipient,
 .toolbarRecipients,
@@ -433,12 +439,6 @@
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
-  }
-}
-
-.toolbarCardtext {
-  .toolbarKey {
-    background-color: $color-app-inner;
   }
 }
 

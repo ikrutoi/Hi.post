@@ -160,6 +160,7 @@ import {
   IconAlignRightV3,
   IconAlignCenterV3,
   IconAlignJustifyV3,
+  IconApplyBold,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -193,7 +194,7 @@ export function getIconByKey(
     case 'download':
       return <IconDownloadV2 />
     case 'apply':
-      return <IconApply />
+      return <IconApplyBold />
     case 'close':
       return <IconClose />
     case 'listDelete':
@@ -203,7 +204,7 @@ export function getIconByKey(
     case 'listAdd':
       return <IconListAdd />
     case 'listApply':
-      return <IconListApply />
+      return <IconApplyBold />
     case 'listCardtext':
       return <IconListCardtext />
     case 'user':

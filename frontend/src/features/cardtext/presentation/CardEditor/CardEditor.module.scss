@@ -4,11 +4,12 @@
   position: relative;
   height: 100%;
   border-radius: 0.5rem;
-  background-color: $color-app-inner;
+  background-color: $color-cardtext-input;
+  padding: 0.5rem;
   // padding: 1rem 0;
   // box-sizing: border-box;
   // border: solid 1px $color-section-dark;
-  border: solid 1px $color-app-strip;
+  border: solid 1px $color-cardtext-input-border;
 }
 
 .closeBtn {

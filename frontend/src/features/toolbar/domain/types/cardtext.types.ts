@@ -47,19 +47,11 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
 ]
 
 export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [
-  // {
-  //   group: 'editor',
-  //   icons: [
-  //     { key: 'apply', state: 'enabled' },
-  //     { key: 'listAdd', state: 'enabled' },
-  //     { key: 'close', state: 'enabled' },
-  //   ],
-  //   status: 'enabled',
-  // },
   {
     group: 'font',
     icons: [
-      { key: 'edit', state: 'enabled' },
+      { key: 'edit', state: 'active' },
+      { key: 'empty', state: 'enabled' },
       { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeMore', state: 'enabled' },
@@ -72,22 +64,14 @@ export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [
 
 export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
   {
-    group: 'view',
+    group: 'font',
     icons: [
       { key: 'edit', state: 'enabled' },
       { key: 'favorite', state: 'enabled' },
     ],
     status: 'enabled',
   },
-  // {
-  //   group: 'view',
-  //   icons: [
-  //     { key: 'apply', state: 'enabled' },
-  //     { key: 'cardtextAdd', state: 'enabled' },
-  //     { key: 'listCardtext', state: 'enabled' },
-  //   ],
-  //   status: 'enabled',
-  // },
+
   {
     group: 'view',
     icons: [
