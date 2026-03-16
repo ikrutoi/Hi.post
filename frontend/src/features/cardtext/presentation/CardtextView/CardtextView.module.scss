@@ -11,8 +11,9 @@
   user-select: text;
   cursor: default;
   border-radius: 0.5rem;
-  background-color: $color-app-inner;
-  border: 1px solid $color-app-header;
+  background-color: $color-cardtext-input;
+  // border: 1px solid $color-app-header;
+  border: 1px solid $color-cardtext-input-border;
   // box-shadow: $shadow-card;
 }
 

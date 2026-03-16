@@ -69,7 +69,9 @@ const App = () => {
               className={styles.appMainContentCenter}
               style={
                 sizeCard?.width != null
-                  ? ({ '--card-width': `${sizeCard.width}px` } as React.CSSProperties)
+                  ? ({
+                      '--card-width': `${sizeCard.width}px`,
+                    } as React.CSSProperties)
                   : undefined
               }
             >
@@ -80,7 +82,6 @@ const App = () => {
                 <CardSectionToolbar />
               </div>
               <div ref={formRef} className={clsx(styles.mainForm)}>
-                {/* <div className={styles.mainFormToolbar}></div> */}
                 <CardSectionEditor />
               </div>
             </div>

@@ -1,11 +1,15 @@
 @use '@styles/config/colors' as *;
 
 .cardSectionToolbar {
-  // height: 2.2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
   // border: solid 1px red;
 }
 
 .cardSectionToolbarHeader {
-  height: 2rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
   // border: solid 1px blue;
 }
