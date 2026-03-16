@@ -7,7 +7,6 @@ import { SectionEditorLeftInnerSidebar } from './SectionEditorLeftInnerSidebar/S
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
-import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import { CardtextSaveTemplateInline } from '@cardtext/presentation/CardtextSaveTemplateInline/CardtextSaveTemplateInline'
 import { CardtextEditTitleInline } from '@cardtext/presentation/CardtextEditTitleInline/CardtextEditTitleInline'
 import { selectCardtextShowViewMode } from '@cardtext/infrastructure/selectors'
@@ -20,8 +19,6 @@ export const CardSectionEditor: React.FC = () => {
   const showLeftInnerSidebar =
     activeSection === 'cardphoto' || activeSection === 'cardtext'
   const width = sizeCard.height * CARD_SCALE_CONFIG.aspectRatio
-  const cardtextToolbarSection =
-    activeSection === 'cardtext' && cardtextShowViewMode ? 'cardtextView' : 'cardtext'
 
   return (
     <div className={clsx(styles.cardSectionEditor)}>
@@ -38,9 +35,6 @@ export const CardSectionEditor: React.FC = () => {
         >
           {activeSection === 'cardtext' && (
             <div className={styles.cardtextToolbarTop}>
-              <div className={styles.cardtextToolbarRow}>
-                <Toolbar section={cardtextToolbarSection} />
-              </div>
               {cardtextShowViewMode ? (
                 <CardtextEditTitleInline />
               ) : (

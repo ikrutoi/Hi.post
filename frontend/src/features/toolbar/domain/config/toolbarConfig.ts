@@ -55,6 +55,10 @@ import { initialCardtextToolbarState } from '@cardtext/domain/types'
 import { cardtextToolbarController } from '@cardtext/application/controllers'
 
 import type { ToolbarState, ToolbarSectionConfigMap } from '../types'
+import {
+  CARDTEXT_EDITOR_TOOLBAR,
+  initialCardtextEditorToolbarState,
+} from '../types/cardtext.types'
 
 export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardphoto: {
@@ -304,5 +308,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'cardtextView',
     getBadges: (state: ToolbarState['cardtextView']) => ({}),
     toolbar: CARDTEXT_VIEW_TOOLBAR,
+  },
+
+  cardtextEditor: {
+    keys: CARDTEXT_KEYS,
+    initialState: initialCardtextEditorToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'cardtextEditor',
+    getBadges: (state: ToolbarState['cardtextEditor']) => ({}),
+    toolbar: CARDTEXT_EDITOR_TOOLBAR,
   },
 }

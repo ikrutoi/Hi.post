@@ -35,7 +35,8 @@ export const selectCardphotoOrientationIcon = createSelector(
 export const selectToolbarGroups = <S extends ToolbarSection>(section: S) =>
   createSelector(
     [selectToolbarBase],
-    (toolbar): ToolbarGroup[] => toolbar[section].config
+    (toolbar): ToolbarGroup[] =>
+      (toolbar[section] as ToolbarState[S] | undefined)?.config ?? []
   )
 
 export const selectToolbarGroupStatus = <S extends ToolbarSection>(

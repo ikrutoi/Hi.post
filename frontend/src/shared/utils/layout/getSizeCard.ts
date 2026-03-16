@@ -6,7 +6,7 @@ export const getSizeCard = (
   sizeForm: { width: number; height: number },
   remSize: number,
 ) => {
-  const rawHeight = sizeForm.height - 3 * remSize
+  const rawHeight = sizeForm.height
   const rawWidth = rawHeight * CARD_SCALE_CONFIG.aspectRatio
 
   return {

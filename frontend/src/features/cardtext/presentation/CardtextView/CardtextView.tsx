@@ -19,9 +19,21 @@ type Props = {
   value: CardtextValue
   style: CardtextStyle
   contentKey?: string
+  title?: string
+  onTitleClick?: () => void
+  titleOverflows?: boolean
+  titleRef?: React.RefObject<HTMLSpanElement | null>
 }
 
-export const CardtextView: React.FC<Props> = ({ value, style, contentKey }) => {
+export const CardtextView: React.FC<Props> = ({
+  value,
+  style,
+  contentKey,
+  title,
+  onTitleClick,
+  titleOverflows,
+  titleRef,
+}) => {
   const slateKey =
     contentKey ??
     (value?.length
@@ -49,6 +61,27 @@ export const CardtextView: React.FC<Props> = ({ value, style, contentKey }) => {
         textAlign: style?.align ?? 'left',
       }}
     >
+      {title?.trim() && onTitleClick && (
+        <button
+          type="button"
+          className={styles.viewTitle}
+          onClick={onTitleClick}
+          aria-label="Change template name"
+          title="Change template name"
+        >
+          <span
+            ref={titleRef}
+            className={
+              titleOverflows
+                ? `${styles.viewTitleText} ${styles.viewTitleTextFade}`
+                : styles.viewTitleText
+            }
+            aria-hidden
+          >
+            {title}
+          </span>
+        </button>
+      )}
       <Slate editor={editor} initialValue={initialValue}>
         <Editable
           readOnly

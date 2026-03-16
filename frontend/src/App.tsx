@@ -65,14 +65,22 @@ const App = () => {
                 )}
               </div>
             </div>
-            <div className={styles.appMainContentCenter}>
+            <div
+              className={styles.appMainContentCenter}
+              style={
+                sizeCard?.width != null
+                  ? ({ '--card-width': `${sizeCard.width}px` } as React.CSSProperties)
+                  : undefined
+              }
+            >
               <div className={clsx(styles.mainCardPanel)}>
                 <MiniSectionsSlot ref={cardPanelRef} />
               </div>
-              {/* <div className={styles.mainCardSectionToolbar}>
+              <div className={styles.mainCardSectionToolbar}>
                 <CardSectionToolbar />
-              </div> */}
+              </div>
               <div ref={formRef} className={clsx(styles.mainForm)}>
+                {/* <div className={styles.mainFormToolbar}></div> */}
                 <CardSectionEditor />
               </div>
             </div>

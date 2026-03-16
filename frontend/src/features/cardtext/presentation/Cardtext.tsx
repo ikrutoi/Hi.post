@@ -12,6 +12,7 @@ import {
   selectCardtextAssetId,
 } from '../infrastructure/selectors'
 import { setCardtextEditTitleOpen } from '../infrastructure/state'
+import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 
 const TITLE_MAX_WIDTH_RATIO = 0.6
@@ -64,32 +65,20 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
       >
         {showViewMode ? (
           <div className={styles.cardtextViewWrap}>
-            {title.trim() ? (
-              <button
-                type="button"
-                className={styles.cardtextViewTitle}
-                onClick={handleEditTitle}
-                aria-label="Change template name"
-                title="Change template name"
-              >
-                <span
-                  ref={titleTextRef}
-                  className={
-                    titleOverflows
-                      ? `${styles.cardtextViewTitleText} ${styles.cardtextViewTitleTextFade}`
-                      : styles.cardtextViewTitleText
-                  }
-                  aria-hidden
-                >
-                  {title}
-                </span>
-              </button>
-            ) : null}
-            <CardtextView
-              key={assetId ?? 'no-template'}
-              value={value}
-              style={style}
-            />
+            <div className={styles.cardtextToolbarRow}>
+              <Toolbar section="cardtextView" />
+            </div>
+            <div className={styles.cardtextViewContent}>
+              <CardtextView
+                key={assetId ?? 'no-template'}
+                value={value}
+                style={style}
+                title={title}
+                onTitleClick={handleEditTitle}
+                titleOverflows={titleOverflows}
+                titleRef={titleTextRef}
+              />
+            </div>
           </div>
         ) : (
           <CardEditor />

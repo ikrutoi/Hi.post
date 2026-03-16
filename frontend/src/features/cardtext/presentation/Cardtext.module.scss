@@ -9,7 +9,7 @@
 
 .cardtext {
   width: 100%;
-  padding: 1rem;
+  padding: 0 0.35rem 0.35rem 0.35rem;
   box-sizing: border-box;
   border: 1px solid $color-section-light;
   border-radius: 0.5rem;
@@ -21,53 +21,22 @@
   position: relative;
   width: 100%;
   height: 100%;
+  // border: solid 1px red;
   // overflow: hidden;
 }
 
-.cardtextViewTitle {
-  position: absolute;
-  top: 0;
-  right: 1rem;
-  transform: translateY(-50%);
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  padding: 0.25rem 0.5rem;
-  margin: 0;
-  max-width: 60%;
-  font-size: 0.8rem;
-  color: $color-font-disabled;
+.cardtextToolbarRow {
+  padding: 0.15rem;
   background-color: #fff;
-  border: none;
-  border-radius: 0.35rem;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-
-  &:hover {
-    background-color: $color-app-strip;
-  }
-
-  &:focus-visible {
-    outline: 2px solid $color-font-enabled-light;
-    outline-offset: 2px;
-  }
+  // border: solid 1px blue;
 }
 
-.cardtextViewTitleText {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
+.cardtextViewContent {
+  position: relative;
+  height: calc(100% - 2.2rem + 0.3rem);
+  // overflow: hidden;
+  border-radius: 0.5rem;
+  // padding: 0.15rem;
+  // background-color: #fff;
+  // border: solid 1px blue;
 }
-
-.cardtextViewTitleTextFade {
-  mask-image: linear-gradient(to right, black 70%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
-}
-
-// .cardtext__nav-container {
-//   position: absolute;
-//   top: -2.4rem;
-//   left: 1.2rem;
-//   width: calc(100% - 2.4rem);
-// }

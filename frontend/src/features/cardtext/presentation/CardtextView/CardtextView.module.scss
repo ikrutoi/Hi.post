@@ -1,17 +1,60 @@
 @use '@styles/config/colors' as *;
 
 .viewContainer {
+  position: relative;
   width: 100%;
   height: 100%;
+  // margin-top: 1rem;
   padding: 1rem;
   box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden;
   user-select: text;
   cursor: default;
   border-radius: 0.5rem;
-  background-color: #fff;
-  border: 1px solid $color-section-light;
+  background-color: $color-app-inner;
+  border: 1px solid $color-app-header;
   // box-shadow: $shadow-card;
+}
+
+.viewTitle {
+  position: absolute;
+  top: 1rem;
+  right: 0.25rem;
+  transform: translateY(-50%);
+  // z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  margin: 0;
+  max-width: 60%;
+  font-size: 0.8rem;
+  color: $color-font-disabled;
+  background-color: #fff;
+  border: none;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: $color-app-strip;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-font-enabled-light;
+    outline-offset: 2px;
+  }
+}
+
+.viewTitleText {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.viewTitleTextFade {
+  mask-image: linear-gradient(to right, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
 }
 
 .colorDeepBlack {

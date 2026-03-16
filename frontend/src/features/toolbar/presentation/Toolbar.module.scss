@@ -3,7 +3,7 @@
 .toolbar {
   width: auto;
   display: flex;
-  // border: solid 1px green;
+  // border: solid 1px red;
   // position: relative;
   .toolbarKey {
     position: relative;
@@ -176,7 +176,9 @@
   justify-content: space-between;
   // padding: 0 3rem;
   height: 100%;
-  // border: solid 1px green;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  // border: solid 1px blue;
 
   .toolbarKey {
     background-color: $color-app-inner;
@@ -207,6 +209,37 @@
     .toolbarKey:nth-child(5) {
       margin-left: 0;
     }
+  }
+}
+
+.toolbarCardtextView {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  .toolbarKey {
+    background-color: #fff;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .toolbarGroupText {
+    .toolbarKey:nth-child(3) {
+      background-color: #fff;
+    }
+  }
+
+  // .toolbarIcon {
+  // }
+}
+
+.toolbarCardtext .toolbarKeyFontSizeIndicator {
+  width: auto;
+  // cursor: default;
+  padding: 0;
+  margin-left: 0;
+
+  &:hover {
+    background-color: $color-app-inner;
+    cursor: default;
   }
 }
 
@@ -428,7 +461,6 @@
 
 // .toolbarCardphoto,
 .toolbarCardtext,
-.toolbarCardtextView,
 .toolbarSender,
 .toolbarRecipient,
 .toolbarRecipients,
@@ -444,24 +476,17 @@
   }
 }
 
-.toolbarCardtext .toolbarGroupText {
-  display: flex;
-  align-items: center;
-}
+// .toolbarCardtext {
+//   border: solid 1px red;
+// }
 
-.toolbarCardtext .toolbarKeyFontSizeIndicator {
-  width: auto;
-  // cursor: default;
-  padding: 0;
-  margin-left: 0;
-
-  &:hover {
-    background-color: $color-app-inner;
-    cursor: default;
-  }
-}
+// .toolbarCardtext .toolbarGroupText {
+//   display: flex;
+//   align-items: center;
+// }
 
 .toolbarSenderView,
+// .toolbarCardtextView,
 .toolbarRecipientView,
 .toolbarAddressFormSenderView,
 .toolbarAddressFormRecipientView,

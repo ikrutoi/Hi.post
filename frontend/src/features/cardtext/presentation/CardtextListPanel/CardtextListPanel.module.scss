@@ -89,6 +89,12 @@
   }
 }
 
+.favoritesSeparator {
+  min-height: 0.25rem;
+  margin-bottom: 0.25rem;
+  flex-shrink: 0;
+}
+
 .listEmpty {
   display: flex;
   align-items: center;

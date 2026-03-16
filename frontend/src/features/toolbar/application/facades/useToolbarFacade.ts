@@ -47,7 +47,10 @@ export function useToolbarFacade<S extends ToolbarSection>(section: S) {
     },
 
     extra: {
-      orientation: 'orientation' in state ? (state as any).orientation : null,
+      orientation:
+        state && typeof state === 'object' && 'orientation' in state
+          ? (state as any).orientation
+          : null,
     },
   }
 }

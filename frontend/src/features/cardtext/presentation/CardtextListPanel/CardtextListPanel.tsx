@@ -40,13 +40,17 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const dispatch = useAppDispatch()
   const items = useAppSelector(selectCardtextTemplatesListItems)
   const sortDirection = useAppSelector(selectCardtextListSortDirection)
-  const templates = useMemo(() => {
+  const { favoriteTemplates, restTemplates, combinedTemplates } = useMemo(() => {
     const list = items ?? []
     const favorite = list.filter((e) => e.favorite === true)
     const rest = list.filter((e) => e.favorite !== true)
     const favoriteSorted = sortTemplatesByTitle(favorite, sortDirection)
     const restSorted = sortTemplatesByTitle(rest, sortDirection)
-    return [...favoriteSorted, ...restSorted]
+    return {
+      favoriteTemplates: favoriteSorted,
+      restTemplates: restSorted,
+      combinedTemplates: [...favoriteSorted, ...restSorted],
+    }
   }, [items, sortDirection])
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
   const { deleteCardtextTemplate, updateCardtextTemplate } = useTemplateActions()
@@ -104,25 +108,43 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
           tabIndex={0}
           aria-label="Cardtext templates list"
         >
-          {!isLoading && templates.length === 0 && (
+          {!isLoading && combinedTemplates.length === 0 && (
             <div className={styles.listEmpty} aria-hidden>
               <IconListCardtext className={styles.listEmptyIcon} />
             </div>
           )}
           {!isLoading &&
-            templates.length > 0 &&
-            templates.map((entry) => (
-              <CardtextListEntry
-                key={entry.id}
-                entry={entry}
-                onSelect={handleSelect}
-                onDelete={handleDelete}
-                onEdit={handleSelect}
-                isStarred={entry.favorite === true}
-                onToggleStar={() => handleToggleStar(entry)}
-                isSelected={selectedId === entry.id}
-              />
-            ))}
+            combinedTemplates.length > 0 && (
+              <>
+                {favoriteTemplates.map((entry) => (
+                  <CardtextListEntry
+                    key={entry.id}
+                    entry={entry}
+                    onSelect={handleSelect}
+                    onDelete={handleDelete}
+                    onEdit={handleSelect}
+                    isStarred
+                    onToggleStar={() => handleToggleStar(entry)}
+                    isSelected={selectedId === entry.id}
+                  />
+                ))}
+                {favoriteTemplates.length > 0 && (
+                  <div className={styles.favoritesSeparator} aria-hidden />
+                )}
+                {restTemplates.map((entry) => (
+                  <CardtextListEntry
+                    key={entry.id}
+                    entry={entry}
+                    onSelect={handleSelect}
+                    onDelete={handleDelete}
+                    onEdit={handleSelect}
+                    isStarred={false}
+                    onToggleStar={() => handleToggleStar(entry)}
+                    isSelected={selectedId === entry.id}
+                  />
+                ))}
+              </>
+            )}
         </div>
       </ScrollArea>
     </div>
