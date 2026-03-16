@@ -9,7 +9,7 @@
 
 .cardtext {
   width: 100%;
-  padding: 0 0.35rem 0.35rem 0.35rem;
+  padding: 0.35rem;
   box-sizing: border-box;
   border: 1px solid $color-section-light;
   border-radius: 0.5rem;
@@ -24,22 +24,24 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  // border: solid 1px red;ы
+  border-radius: 0.5rem;
   // overflow: hidden;
 }
 
 .cardtextToolbarRow {
-  padding: 0.15rem 0;
+  flex: 0 0 2rem;
+  min-height: 2rem;
+  display: flex;
+  align-items: center;
+  padding: 0 0;
   background-color: #fff;
-  // border: solid 1px blue;ы
+  // border: solid 1px blue;
 }
 
 .cardtextViewContent {
+  flex: 1;
+  min-height: 0;
   position: relative;
-  height: calc(100% - 2rem + 0.3rem);
-  // overflow: hidden;
   border-radius: 0.5rem;
-  // padding: 0.15rem;
-  // background-color: #fff;
-  // border: solid 1px blue;
+  // overflow: hidden;
 }

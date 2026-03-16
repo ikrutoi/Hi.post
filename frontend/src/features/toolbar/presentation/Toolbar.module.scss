@@ -379,7 +379,8 @@
 .toolbarAddressFormSenderView,
 .toolbarAddressFormRecipientView,
 .toolbarAddressListSender,
-.toolbarAddressListRecipient {
+.toolbarAddressListRecipient,
+.toolbarCardtext {
   .toolbarKeyActive {
     color: $color-font-active;
   }
@@ -428,9 +429,16 @@
 .toolbarRecipientView {
   display: flex;
   align-items: center;
+
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
+  }
+}
+
+.toolbarCardtext {
+  .toolbarKey {
+    background-color: $color-app-inner;
   }
 }
 
@@ -444,7 +452,6 @@
 // }
 
 .toolbarSenderView,
-// .toolbarCardtextView,
 .toolbarRecipientView,
 .toolbarAddressFormSenderView,
 .toolbarAddressFormRecipientView,

@@ -1,30 +1,26 @@
 import React from 'react'
 import clsx from 'clsx'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
-import { useAppSelector } from '@app/hooks'
 import { SectionEditorToolbar } from './SectionEditorToolbar/SectionEditorToolbar'
 import { SectionEditorLeftInnerSidebar } from './SectionEditorLeftInnerSidebar/SectionEditorLeftInnerSidebar'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
+import { useCardtextFacade } from '@cardtext/application/facades'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
 import { CardtextSaveTemplateInline } from '@cardtext/presentation/CardtextSaveTemplateInline/CardtextSaveTemplateInline'
 import { CardtextEditTitleInline } from '@cardtext/presentation/CardtextEditTitleInline/CardtextEditTitleInline'
-import { selectCardtextShowViewMode } from '@cardtext/infrastructure/selectors'
 import styles from './CardSectionEditor.module.scss'
 
 export const CardSectionEditor: React.FC = () => {
   const { sizeCard } = useSizeFacade()
   const { activeSection } = useSectionMenuFacade()
-  const cardtextShowViewMode = useAppSelector(selectCardtextShowViewMode)
+  const { currentView: cardtextCurrentView } = useCardtextFacade()
   const showLeftInnerSidebar =
     activeSection === 'cardphoto' || activeSection === 'cardtext'
   const width = sizeCard.height * CARD_SCALE_CONFIG.aspectRatio
 
   return (
     <div className={clsx(styles.cardSectionEditor)}>
-      {/* <div className={clsx(styles.editorToolbar)}>
-        <SectionEditorToolbar />
-      </div> */}
       <div className={styles.editorArea}>
         <div
           className={styles.editorAreaCenter}
@@ -35,7 +31,7 @@ export const CardSectionEditor: React.FC = () => {
         >
           {activeSection === 'cardtext' && (
             <div className={styles.cardtextToolbarTop}>
-              {cardtextShowViewMode ? (
+              {cardtextCurrentView === 'cardtextView' ? (
                 <CardtextEditTitleInline />
               ) : (
                 <CardtextSaveTemplateInline />
