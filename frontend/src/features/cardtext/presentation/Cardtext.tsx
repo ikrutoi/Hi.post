@@ -1,17 +1,8 @@
 import React, { useLayoutEffect, useRef, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardtextFacade } from '../application/facades/useCardtextFacade'
-import {
-  selectCardtextShowViewMode,
-  selectCardtextValue,
-  selectCardtextStyle,
-  selectCardtextTitle,
-  selectCardtextAssetId,
-} from '../infrastructure/selectors'
-import { setCardtextEditTitleOpen } from '../infrastructure/state'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 
@@ -22,26 +13,22 @@ interface CardtextProps {
 }
 
 export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
-  const dispatch = useAppDispatch()
   const { sizeCard } = useSizeFacade()
-  const showViewMode = useAppSelector(selectCardtextShowViewMode)
-  const value = useAppSelector(selectCardtextValue)
-  const style = useAppSelector(selectCardtextStyle)
-  const title = useAppSelector(selectCardtextTitle)
-  const assetId = useAppSelector(selectCardtextAssetId)
-  const { state } = useCardtextFacade()
-  console.log('Cardtext state', state)
+  const { state, currentView, value, style, title, assetId, openEditTitle } =
+    useCardtextFacade()
 
   const formRef = useRef<HTMLDivElement>(null)
   const titleTextRef = useRef<HTMLSpanElement>(null)
   const [titleOverflows, setTitleOverflows] = useState(false)
 
   const handleEditTitle = () => {
-    dispatch(setCardtextEditTitleOpen(true))
+    openEditTitle()
   }
 
+  console.log('Cardtext state', state)
+
   useLayoutEffect(() => {
-    if (!showViewMode || !title.trim()) {
+    if (currentView !== 'cardtextView' || !title.trim()) {
       setTitleOverflows(false)
       return
     }
@@ -51,7 +38,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
     const formWidth = form.offsetWidth
     const maxTitleWidth = formWidth * TITLE_MAX_WIDTH_RATIO
     setTitleOverflows(textEl.scrollWidth > maxTitleWidth)
-  }, [showViewMode, title, sizeCard.width])
+  }, [currentView, title, sizeCard.width])
 
   return (
     <div className={styles.cardtextContainer}>
@@ -63,12 +50,12 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
           height: `${sizeCard.height}px`,
         }}
       >
-        {showViewMode ? (
-          <div className={styles.cardtextViewWrap}>
-            <div className={styles.cardtextToolbarRow}>
-              <Toolbar section="cardtextView" />
-            </div>
-            <div className={styles.cardtextViewContent}>
+        <div className={styles.cardtextViewWrap}>
+          <div className={styles.cardtextToolbarRow}>
+            <Toolbar section={currentView} />
+          </div>
+          <div className={styles.cardtextViewContent}>
+            {currentView === 'cardtextView' ? (
               <CardtextView
                 key={assetId ?? 'no-template'}
                 value={value}
@@ -78,11 +65,11 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
                 titleOverflows={titleOverflows}
                 titleRef={titleTextRef}
               />
-            </div>
+            ) : (
+              <CardEditor />
+            )}
           </div>
-        ) : (
-          <CardEditor />
-        )}
+        </div>
       </div>
     </div>
   )

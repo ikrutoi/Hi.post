@@ -108,7 +108,7 @@ import {
   setAlign,
   clearText,
   restoreCardtextSession,
-  setCardtextShowViewMode,
+  setCardtextCurrentView,
 } from '@cardtext/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
@@ -226,7 +226,7 @@ const SESSION_WATCH_ACTIONS = [
   setTextStyle.type,
   setAlign.type,
   clearText.type,
-  setCardtextShowViewMode.type,
+  setCardtextCurrentView.type,
   addCardtextTemplateId.type,
   removeCardtextTemplateId.type,
   addAddressTemplateRef.type,
@@ -474,7 +474,7 @@ export function* hydrateAppSession() {
     if (session.cardtext) {
       yield put(restoreCardtextSession(session.cardtext))
       if (session.cardtextShowViewMode) {
-        yield put(setCardtextShowViewMode(true))
+        yield put(setCardtextCurrentView('cardtextView'))
       }
     }
 

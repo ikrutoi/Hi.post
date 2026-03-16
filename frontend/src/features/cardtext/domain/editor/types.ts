@@ -86,8 +86,10 @@ export interface CardtextState extends CardtextTemplateContent {
   resetToken: number
 }
 
+export type CardtextCurrentView = 'cardtextView' | 'cardtextEditor'
+
 export interface CardtextEditorUIState {
-  showCardtextView: boolean
+  currentView: CardtextCurrentView
   requestCardtextFocus: boolean
 }
 
@@ -109,6 +111,6 @@ export const initialCardtextEditorState: CardtextState & CardtextEditorUIState =
     isComplete: false,
     cardtextLines: 15,
     resetToken: 0,
-    showCardtextView: false,
+    currentView: 'cardtextEditor',
     requestCardtextFocus: false,
   }

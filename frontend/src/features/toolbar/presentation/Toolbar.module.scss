@@ -167,6 +167,7 @@
 
 .toolbarCardtext,
 .toolbarCardtextView,
+.toolbarCardtextEditor,
 .toolbarCardphoto {
   // position: absolute;
   // left: 0;
@@ -212,7 +213,8 @@
   }
 }
 
-.toolbarCardtextView {
+.toolbarCardtextView,
+.toolbarCardtextEditor {
   padding-left: 1rem;
   padding-right: 1rem;
   .toolbarKey {
@@ -231,7 +233,7 @@
   // }
 }
 
-.toolbarCardtext .toolbarKeyFontSizeIndicator {
+.toolbarCardtextEditor .toolbarKeyFontSizeIndicator {
   width: auto;
   // cursor: default;
   padding: 0;
@@ -420,8 +422,7 @@
 .toolbarAddressFormSenderView,
 .toolbarAddressFormRecipientView,
 .toolbarAddressListSender,
-.toolbarAddressListRecipient,
-.toolbarCardtextView {
+.toolbarAddressListRecipient {
   .toolbarKeyActive {
     color: $color-font-active;
   }

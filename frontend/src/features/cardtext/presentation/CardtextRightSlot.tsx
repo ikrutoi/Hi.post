@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   setCardtextListPanelOpen,
-  setCardtextShowViewMode,
+  setCardtextCurrentView,
   restoreCardtextSession,
   setCardtextAssetId,
 } from '@cardtext/infrastructure/state'
@@ -42,7 +42,7 @@ export const CardtextRightSlot: React.FC = () => {
           favorite: entry.favorite ?? null,
         }),
       )
-      dispatch(setCardtextShowViewMode(true))
+      dispatch(setCardtextCurrentView('cardtextView'))
     },
     [dispatch],
   )

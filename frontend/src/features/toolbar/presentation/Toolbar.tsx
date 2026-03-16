@@ -260,9 +260,9 @@ export const Toolbar = ({
       className={clsx(styles.toolbar, styles[`toolbar${capitalize(section)}`])}
       style={toolbarStyle}
     >
-      {groups.map((group: ToolbarGroup) => (
+      {groups.map((group: ToolbarGroup, idx) => (
         <div
-          key={group.group}
+          key={`${group.group}-${idx}`}
           ref={section === 'sectionEditorMenu' ? groupRef : undefined}
           className={clsx(
             styles.toolbarGroup,

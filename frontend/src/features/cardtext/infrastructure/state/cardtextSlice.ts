@@ -7,6 +7,7 @@ import type {
   CardtextBlock,
   CardtextTemplateContent,
   CardtextAppliedData,
+  CardtextCurrentView,
 } from '../../domain/editor/types'
 import type { CardtextTemplate } from '../../domain/templates/types'
 
@@ -116,18 +117,15 @@ export const cardtextSlice = createSlice({
       if (assetId !== undefined) state.assetId = assetId
       if (applied !== undefined) state.applied = applied
       if (appliedData !== undefined) state.appliedData = appliedData
-      // Если plainText пустой, но value есть — вычислить из value (тулбар apply и др.)
-      if (
-        state.plainText.trim() === '' &&
-        state.value?.length > 0
-      ) {
+      if (state.plainText.trim() === '' && state.value?.length > 0) {
         state.plainText = state.value
           .map((block: CardtextBlock) =>
-            block.children.map((ch: { text?: string }) => ch?.text ?? '').join(' ')
+            block.children
+              .map((ch: { text?: string }) => ch?.text ?? '')
+              .join(' '),
           )
           .join('\n')
       }
-      // isComplete только при явном Apply; при восстановлении/выборе шаблона — по payload или false
       state.isComplete = isComplete ?? false
       state.resetToken += 1
     },
@@ -154,9 +152,11 @@ export const cardtextSlice = createSlice({
 
     loadCardtextTemplatesRequest(state) {
       state.templatesListLoading = true
-      // не обнуляем templatesList — бэдж listCardtext не моргает при обновлении
     },
-    loadCardtextTemplatesSuccess(state, action: PayloadAction<CardtextTemplate[]>) {
+    loadCardtextTemplatesSuccess(
+      state,
+      action: PayloadAction<CardtextTemplate[]>,
+    ) {
       state.templatesList = action.payload
       state.templatesListLoading = false
     },
@@ -165,7 +165,6 @@ export const cardtextSlice = createSlice({
       state.templatesList = []
     },
 
-    /** Обновить только favorite у шаблона в списке (без перезапроса — строка не моргает) */
     updateCardtextTemplateFavoriteInList(
       state,
       action: PayloadAction<{ id: string; favorite: boolean }>,
@@ -173,10 +172,10 @@ export const cardtextSlice = createSlice({
       const { id, favorite } = action.payload
       if (!Array.isArray(state.templatesList)) return
       const idx = state.templatesList.findIndex((t) => t.id === id)
-      if (idx !== -1) state.templatesList[idx] = { ...state.templatesList[idx], favorite }
+      if (idx !== -1)
+        state.templatesList[idx] = { ...state.templatesList[idx], favorite }
     },
 
-    /** Обновить только title у шаблона в списке */
     updateCardtextTemplateTitleInList(
       state,
       action: PayloadAction<{ id: string; title: string }>,
@@ -184,12 +183,13 @@ export const cardtextSlice = createSlice({
       const { id, title } = action.payload
       if (!Array.isArray(state.templatesList)) return
       const idx = state.templatesList.findIndex((t) => t.id === id)
-      if (idx !== -1) state.templatesList[idx] = { ...state.templatesList[idx], title }
+      if (idx !== -1)
+        state.templatesList[idx] = { ...state.templatesList[idx], title }
     },
 
-    setCardtextShowViewMode(state, action: PayloadAction<boolean>) {
-      state.showCardtextView = action.payload
-      if (!action.payload) state.assetId = null
+    setCardtextCurrentView(state, action: PayloadAction<CardtextCurrentView>) {
+      state.currentView = action.payload
+      if (action.payload === 'cardtextEditor') state.assetId = null
     },
 
     setCardtextFocusRequested(state, action: PayloadAction<boolean>) {
@@ -221,7 +221,7 @@ export const {
   loadCardtextTemplatesFailure,
   updateCardtextTemplateFavoriteInList,
   updateCardtextTemplateTitleInList,
-  setCardtextShowViewMode,
+  setCardtextCurrentView,
   setCardtextFocusRequested,
 } = cardtextSlice.actions
 

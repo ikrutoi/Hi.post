@@ -4,13 +4,18 @@ import type {
   CardtextStyle,
   CardtextTemplateContent,
   CardtextAppliedData,
+  CardtextCurrentView,
 } from '../../domain/editor/types'
 import { createSelector } from '@reduxjs/toolkit'
 
 export const selectCardtextState = (state: RootState) => state.cardtext
 
+export const selectCardtextCurrentView = (
+  state: RootState,
+): CardtextCurrentView => state.cardtext.currentView ?? 'cardtextEditor'
+
 export const selectCardtextShowViewMode = (state: RootState): boolean =>
-  state.cardtext.showCardtextView ?? false
+  selectCardtextCurrentView(state) === 'cardtextView'
 
 export const selectCardtextFocusRequested = (state: RootState): boolean =>
   state.cardtext.requestCardtextFocus ?? false

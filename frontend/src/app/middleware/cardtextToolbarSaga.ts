@@ -15,7 +15,7 @@ import {
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
   setCardtextFocusRequested,
-  setCardtextShowViewMode,
+  setCardtextCurrentView,
   toggleCardtextListSortDirection,
   clearText,
 } from '@cardtext/infrastructure/state'
@@ -57,7 +57,7 @@ export function* handleCardtextToolbarAction(
 
     case 'edit':
       if (section === 'cardtextView') {
-        yield put(setCardtextShowViewMode(false))
+        yield put(setCardtextCurrentView('cardtextEditor'))
       }
       break
 
@@ -115,7 +115,7 @@ export function* handleCardtextToolbarAction(
     case 'cardtextAdd': {
       if (section === 'cardtextView') {
         yield put(clearText())
-        yield put(setCardtextShowViewMode(false))
+        yield put(setCardtextCurrentView('cardtextEditor'))
         yield put(setCardtextFocusRequested(true))
         break
       }

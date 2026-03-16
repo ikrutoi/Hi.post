@@ -8,6 +8,7 @@ import {
   clearText,
   setTextStyle,
   setTitle,
+  setCardtextEditTitleOpen,
 } from '../../infrastructure/state'
 import { initialCardtextValue } from '../../domain/types'
 import type {
@@ -19,6 +20,8 @@ import {
   selectCardtextState,
   selectCardtextValue,
   selectCardtextTitle,
+  selectCardtextStyle,
+  selectCardtextAssetId,
   selectFontSizeStep,
 } from '../../infrastructure/selectors'
 
@@ -31,6 +34,8 @@ export const useCardtextFacade = () => {
   const state = useAppSelector(selectCardtextState)
   const value = useAppSelector(selectCardtextValue)
   const title = useAppSelector(selectCardtextTitle)
+  const style = useAppSelector(selectCardtextStyle)
+  const assetId = useAppSelector(selectCardtextAssetId)
   const fontSizeStep = useAppSelector(selectFontSizeStep)
   const resetToken = useAppSelector((s) => s.cardtext.resetToken)
 
@@ -98,11 +103,18 @@ export const useCardtextFacade = () => {
     }
   }, [dispatch, fontSizeStep])
 
+  const openEditTitle = React.useCallback(() => {
+    dispatch(setCardtextEditTitleOpen(true))
+  }, [dispatch])
+
   return {
     state,
+    currentView: state.currentView,
     editor,
     value,
     title,
+    style,
+    assetId,
     resetToken,
     fontSizeStep,
     editorRef: React.useRef<HTMLDivElement>(null),
@@ -114,5 +126,6 @@ export const useCardtextFacade = () => {
     updateStyle,
     changeFontSize,
     decreaseFontSize,
+    openEditTitle,
   }
 }

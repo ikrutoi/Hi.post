@@ -1,11 +1,13 @@
 @use '@styles/config/colors' as *;
 
 .editor {
+  position: relative;
   height: 100%;
-  // border-radius: 1.2rem;
+  border-radius: 0.5rem;
   // padding: 1rem 0;
   // box-sizing: border-box;
   // border: solid 1px $color-section-dark;
+  border: solid 1px green;
 }
 
 .editorArea {

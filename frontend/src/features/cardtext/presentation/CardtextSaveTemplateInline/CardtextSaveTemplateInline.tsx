@@ -8,7 +8,7 @@ import {
 import {
   setCardtextAddTemplateOpen,
   cardtextTemplateAdded,
-  setCardtextShowViewMode,
+  setCardtextCurrentView,
 } from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import { getToolbarIcon } from '@/shared/utils/icons'
@@ -68,7 +68,7 @@ export const CardtextSaveTemplateInline: React.FC = () => {
           title: uniqueTitle,
         })
         dispatch(cardtextTemplateAdded())
-        dispatch(setCardtextShowViewMode(true))
+        dispatch(setCardtextCurrentView('cardtextView'))
         close()
       } finally {
         setIsSubmitting(false)
