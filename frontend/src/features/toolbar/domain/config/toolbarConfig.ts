@@ -313,8 +313,18 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardtextEditor: {
     keys: CARDTEXT_KEYS,
     initialState: initialCardtextEditorToolbarState,
-    onAction: (key, section, _editor, dispatch) => {
-      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    onAction: (key, section, editor, dispatch) => {
+      switch (key) {
+        case 'left':
+        case 'center':
+        case 'right':
+        case 'justify':
+          cardtextToolbarController.setAlign(editor, dispatch, key as any)
+          break
+        default:
+          dispatch({ type: 'toolbar/action', payload: { section, key, payload: editor } })
+          break
+      }
     },
     group: 'cardtextEditor',
     getBadges: (state: ToolbarState['cardtextEditor']) => ({}),

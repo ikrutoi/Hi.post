@@ -35,6 +35,7 @@ export const CardtextAlignButton: React.FC<CardtextAlignButtonProps> = ({
 
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     if (disabled) return
     setOpen((prev) => !prev)
   }
@@ -73,7 +74,7 @@ export const CardtextAlignButton: React.FC<CardtextAlignButtonProps> = ({
         data-icon-key="left"
         data-icon-state={disabled ? 'disabled' : 'enabled'}
         disabled={disabled}
-        onMouseDown={handleToggle}
+        onClick={handleToggle}
       >
         <ActiveIcon className={styles.toolbarIcon} />
       </button>

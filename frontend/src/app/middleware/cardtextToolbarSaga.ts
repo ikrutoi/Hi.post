@@ -37,7 +37,8 @@ export function* handleCardtextToolbarAction(
     return
   }
 
-  const isCardtextSection = section === 'cardtext' || section === 'cardtextView'
+  const isCardtextSection =
+    section === 'cardtext' || section === 'cardtextView' || section === 'cardtextEditor'
   if (!isCardtextSection) return
 
   switch (key) {
@@ -82,11 +83,15 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'fontSizeLess':
-      if (section === 'cardtext') yield call(changeFontSizeStep, editor, 'less')
+      if (section === 'cardtext' || section === 'cardtextEditor') {
+        yield call(changeFontSizeStep, editor, 'less')
+      }
       break
 
     case 'fontSizeMore':
-      if (section === 'cardtext') yield call(changeFontSizeStep, editor, 'more')
+      if (section === 'cardtext' || section === 'cardtextEditor') {
+        yield call(changeFontSizeStep, editor, 'more')
+      }
       break
 
     case 'listCardtext': {

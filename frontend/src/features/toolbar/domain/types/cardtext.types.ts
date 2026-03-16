@@ -2,9 +2,6 @@ import { flattenIcons } from '../helpers'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const CARDTEXT_KEYS = [
-  // 'italic',
-  // 'bold',
-  // 'underline',
   // 'cardOrientation',
   'fontFamily',
   'fontSizeLess',
@@ -24,6 +21,7 @@ export const CARDTEXT_KEYS = [
   'cardtextAdd',
   'empty',
   'edit',
+  // 'delete',
 ] as const
 
 export type CardtextKey = (typeof CARDTEXT_KEYS)[number]
@@ -49,20 +47,23 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
 ]
 
 export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [
+  // {
+  //   group: 'editor',
+  //   icons: [
+  //     { key: 'apply', state: 'enabled' },
+  //     { key: 'listAdd', state: 'enabled' },
+  //     { key: 'close', state: 'enabled' },
+  //   ],
+  //   status: 'enabled',
+  // },
   {
-    group: 'editor',
+    group: 'font',
     icons: [
-      { key: 'apply', state: 'enabled' },
-      { key: 'cardtextAdd', state: 'enabled' },
-      { key: 'listCardtext', state: 'enabled' },
-    ],
-    status: 'enabled',
-  },
-  {
-    group: 'save',
-    icons: [
-      // { key: 'apply', state: 'enabled' },
-      { key: 'listAdd', state: 'disabled' },
+      { key: 'fontSizeLess', state: 'enabled' },
+      { key: 'fontSizeIndicator', state: 'enabled' },
+      { key: 'fontSizeMore', state: 'enabled' },
+      { key: 'fontFamily', state: 'enabled' },
+      { key: 'left', state: 'enabled' },
     ],
     status: 'enabled',
   },

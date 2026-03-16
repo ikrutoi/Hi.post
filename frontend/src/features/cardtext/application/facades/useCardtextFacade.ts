@@ -9,6 +9,7 @@ import {
   setTextStyle,
   setTitle,
   setCardtextEditTitleOpen,
+  setCardtextCurrentView,
 } from '../../infrastructure/state'
 import { initialCardtextValue } from '../../domain/types'
 import type {
@@ -16,6 +17,7 @@ import type {
   CardtextStyle,
   TextAlign,
 } from '../../domain/types'
+import type { CardtextCurrentView } from '../../domain/editor/types'
 import {
   selectCardtextState,
   selectCardtextValue,
@@ -107,6 +109,13 @@ export const useCardtextFacade = () => {
     dispatch(setCardtextEditTitleOpen(true))
   }, [dispatch])
 
+  const setCurrentView = React.useCallback(
+    (view: CardtextCurrentView) => {
+      dispatch(setCardtextCurrentView(view))
+    },
+    [dispatch],
+  )
+
   return {
     state,
     currentView: state.currentView,
@@ -127,5 +136,6 @@ export const useCardtextFacade = () => {
     changeFontSize,
     decreaseFontSize,
     openEditTitle,
+    setCurrentView,
   }
 }

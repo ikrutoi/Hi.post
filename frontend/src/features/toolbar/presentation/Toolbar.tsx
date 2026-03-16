@@ -183,9 +183,11 @@ export const Toolbar = ({
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
 
     const visualStatus =
-      section === 'cardtext' && key === 'left' ? 'enabled' : buttonStatus
+      (section === 'cardtext' || section === 'cardtextEditor') && key === 'left'
+        ? 'enabled'
+        : buttonStatus
 
-    if (section === 'cardtext' && key === 'left') {
+    if ((section === 'cardtext' || section === 'cardtextEditor') && key === 'left') {
       return (
         <CardtextAlignButton
           key={key}
