@@ -16,6 +16,7 @@ import {
   setCardtextAddTemplateOpen,
   setCardtextFocusRequested,
   setCardtextCurrentView,
+  setCardtextAssetId,
   toggleCardtextListSortDirection,
   clearText,
 } from '@cardtext/infrastructure/state'
@@ -24,6 +25,7 @@ import {
   selectCardtextStyle,
   selectCardtextShowViewMode,
   selectCardtextAssetId,
+  selectCardtextFavorite,
 } from '@cardtext/infrastructure/selectors'
 import { templateService } from '@entities/templates/domain/services/templateService'
 
@@ -78,10 +80,8 @@ export function* handleCardtextToolbarAction(
       if (section === 'cardtextView') {
         const assetId: string | null = yield select(selectCardtextAssetId)
         if (!assetId) break
-        const favorite: boolean | null = yield select(
-          (s: RootState) => s.cardtext.favorite,
-        )
-        const next = favorite === true ? false : true
+        const favorite: boolean = yield select(selectCardtextFavorite)
+        const next = !favorite
         const result = yield call(
           templateService.updateCardtextTemplate,
           assetId,
@@ -132,6 +132,7 @@ export function* handleCardtextToolbarAction(
     case 'cardtextAdd': {
       if (section === 'cardtextView') {
         yield put(clearText())
+        yield put(setCardtextAssetId(null))
         yield put(setCardtextCurrentView('cardtextEditor'))
         yield put(setCardtextFocusRequested(true))
         break

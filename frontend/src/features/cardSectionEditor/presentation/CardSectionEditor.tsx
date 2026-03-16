@@ -15,8 +15,6 @@ export const CardSectionEditor: React.FC = () => {
   const { sizeCard } = useSizeFacade()
   const { activeSection } = useSectionMenuFacade()
   const { currentView: cardtextCurrentView } = useCardtextFacade()
-  const showLeftInnerSidebar =
-    activeSection === 'cardphoto' || activeSection === 'cardtext'
   const width = sizeCard.height * CARD_SCALE_CONFIG.aspectRatio
 
   return (

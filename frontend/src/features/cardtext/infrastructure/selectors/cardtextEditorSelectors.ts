@@ -38,8 +38,15 @@ export const selectCardtextStyle = (state: RootState): CardtextStyle =>
 export const selectCardtextTitle = (state: RootState): string =>
   state.cardtext.title
 
-export const selectCardtextFavorite = (state: RootState): boolean =>
-  state.cardtext.favorite === true
+/** Для открытого шаблона (есть assetId) берём favorite из списка шаблонов, чтобы тулбар cardtextView и список всегда совпадали. */
+export const selectCardtextFavorite = (state: RootState): boolean => {
+  const { assetId, favorite, templatesList } = state.cardtext
+  if (assetId != null && Array.isArray(templatesList)) {
+    const entry = templatesList.find((t: { id?: string }) => t.id === assetId)
+    if (entry != null) return (entry as { favorite?: boolean | null }).favorite === true
+  }
+  return favorite === true
+}
 
 export const selectCardtextAssetId = (state: RootState): string | null =>
   state.cardtext.assetId ?? null
