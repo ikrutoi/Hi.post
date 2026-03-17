@@ -5,7 +5,14 @@ import {
   setCardtextCurrentView,
   restoreCardtextSession,
   setCardtextAssetId,
+  setCreateDraft,
 } from '@cardtext/infrastructure/state'
+import {
+  selectCardtextCurrentView,
+  selectCardtextSessionData,
+  selectCardtextAssetId,
+} from '@cardtext/infrastructure/selectors'
+import type { CardtextCreateDraft } from '@cardtext/domain/editor/types'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardtextTemplate } from '@cardtext/domain/types'
 import { CardtextListPanel } from './CardtextListPanel/CardtextListPanel'
@@ -16,6 +23,9 @@ export const CardtextRightSlot: React.FC = () => {
   const isOpen = useAppSelector(
     (state) => (state.cardtext as any).isListPanelOpen === true,
   )
+  const currentView = useAppSelector(selectCardtextCurrentView)
+  const currentAssetId = useAppSelector(selectCardtextAssetId)
+  const session = useAppSelector(selectCardtextSessionData)
 
   const handleClose = useCallback(() => {
     dispatch(setCardtextListPanelOpen(false))
@@ -30,6 +40,21 @@ export const CardtextRightSlot: React.FC = () => {
 
   const handleSelectTemplate = useCallback(
     (entry: CardtextTemplate) => {
+      // Если сейчас открыт редактор в режиме создания (assetId == null),
+      // то перед переключением на сохранённый шаблон сохраняем текущий текст как createDraft.
+      if (
+        currentView === 'cardtextEditor' &&
+        (currentAssetId == null || currentAssetId === null)
+      ) {
+        const draft: CardtextCreateDraft = {
+          value: session.value ?? [],
+          style: session.style,
+          plainText: session.plainText,
+          cardtextLines: session.cardtextLines,
+        }
+        dispatch(setCreateDraft(draft))
+      }
+
       dispatch(setCardtextAssetId(entry.id))
       dispatch(
         restoreCardtextSession({
@@ -44,7 +69,7 @@ export const CardtextRightSlot: React.FC = () => {
       )
       dispatch(setCardtextCurrentView('cardtextView'))
     },
-    [dispatch],
+    [dispatch, currentView, currentAssetId, session],
   )
 
   if (!isOpen) return null

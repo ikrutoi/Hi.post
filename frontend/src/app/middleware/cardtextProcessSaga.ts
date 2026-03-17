@@ -268,6 +268,7 @@ export function* cardtextProcessSaga(): SagaIterator {
       ): SagaIterator {
         yield* maybePersistCreateDraftOnExitView(action)
         yield* syncCardtextCreateDraftIndicator()
+        yield* syncCardtextAddButtonStatus()
       },
     ),
     takeEvery(
