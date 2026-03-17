@@ -56,7 +56,11 @@ export const buildCardtextToolbarState = (
         state.justify = firstBlock.align === 'justify' ? 'active' : 'enabled'
         break
       case 'apply':
-        state.apply = isApplied ? 'disabled' : hasContent ? 'enabled' : 'disabled'
+        state.apply = isApplied
+          ? 'disabled'
+          : hasContent
+            ? 'enabled'
+            : 'disabled'
         break
       case 'save':
         state.save = hasContent ? 'enabled' : 'disabled'
@@ -72,6 +76,9 @@ export const buildCardtextToolbarState = (
         break
       case 'edit':
         state.edit = 'enabled'
+        break
+      case 'colorPicker':
+        state.colorPicker = 'enabled'
         break
       default:
         const exhaustiveCheck: never = key

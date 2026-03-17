@@ -30,6 +30,7 @@ import type {
 } from '@shared/config/constants'
 import { LayoutOrientation } from '@layout/domain/types'
 import { CardtextAlignButton } from './CardtextAlignButton'
+import { CardtextColorButton } from './CardtextColorButton'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({
@@ -195,6 +196,26 @@ export const Toolbar = ({
       (section === 'cardtext' || section === 'cardtextEditor') && key === 'left'
         ? 'enabled'
         : buttonStatus
+
+    if (section === 'cardtextEditor' && key === 'colorPicker') {
+      return (
+        <CardtextColorButton
+          key={key}
+          className={clsx(
+            styles.toolbarKey,
+            styles[`toolbarKey${capitalize(buttonStatus ?? 'enabled')}`],
+            styles[`toolbarKey${capitalize(key)}`],
+            styles[
+              `toolbarKey${capitalize(key)}${capitalize(
+                buttonStatus ?? 'enabled',
+              )}`
+            ],
+            groupStatus === 'disabled' && styles.toolbarKeyDisabled,
+          )}
+          disabled={groupStatus === 'disabled' || buttonStatus === 'disabled'}
+        />
+      )
+    }
 
     if ((section === 'cardtext' || section === 'cardtextEditor') && key === 'left') {
       return (

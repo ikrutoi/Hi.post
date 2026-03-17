@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useCallback } from 'react'
 import { Slate, Editable, ReactEditor } from 'slate-react'
 import { Editor, Transforms, Range, Descendant } from 'slate'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
@@ -28,6 +28,7 @@ export const CardEditor: React.FC = () => {
   const {
     fontSizeStep,
     editor,
+    style,
     value,
     editorRef,
     editableRef,
@@ -39,6 +40,15 @@ export const CardEditor: React.FC = () => {
 
   const currentPxSize = STEP_TO_PX[fontSizeStep - 1] || 16
   const currentLineHeight = Math.round(currentPxSize * 1.5)
+
+  const defaultTextColorMap: Record<string, string> = {
+    deepBlack: '#1a1a1b',
+    blue: '#1e3a8a',
+    burgundy: '#741b47',
+    forestGreen: '#064e3b',
+  }
+  const defaultTextColor =
+    defaultTextColorMap[style.color as string] ?? defaultTextColorMap.deepBlack
 
   useInitSelection(editor)
 
@@ -88,6 +98,30 @@ export const CardEditor: React.FC = () => {
   }, [value, fontSizeStep, decreaseFontSize, editorRef])
 
   const isEmpty = useMemo(() => isEmptyValue(value), [value])
+
+  const renderLeafWithColor = useCallback(
+    (leafProps: {
+      attributes: any
+      children: React.ReactNode
+      leaf: any
+    }) => {
+      const { attributes, children, leaf } = leafProps
+      let spanStyle: React.CSSProperties = {}
+
+      if (leaf.italic) spanStyle.fontStyle = 'italic'
+      if (leaf.bold) spanStyle.fontWeight = 'bold'
+      if (leaf.underline) spanStyle.textDecoration = 'underline'
+      spanStyle.color = leaf.color || defaultTextColor
+      if (leaf.fontSize) spanStyle.fontSize = `${leaf.fontSize}px`
+
+      return (
+        <span {...attributes} style={spanStyle}>
+          {children}
+        </span>
+      )
+    },
+    [defaultTextColor],
+  )
 
   return (
     <div className={styles.editor}>
@@ -146,7 +180,7 @@ export const CardEditor: React.FC = () => {
               fontSize: `${currentPxSize}px`,
             }}
             placeholder=""
-            renderLeaf={renderLeaf}
+            renderLeaf={renderLeafWithColor}
             renderElement={renderElement}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}

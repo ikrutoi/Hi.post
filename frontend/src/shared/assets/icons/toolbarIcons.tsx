@@ -161,6 +161,7 @@ import {
   IconAlignCenterV3,
   IconAlignJustifyV3,
   IconApplyBold,
+  IconColor,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -319,6 +320,8 @@ export function getIconByKey(
       return <IconSortUp />
     case 'sortDown':
       return <IconSortDown />
+    case 'colorPicker':
+      return <IconColor />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

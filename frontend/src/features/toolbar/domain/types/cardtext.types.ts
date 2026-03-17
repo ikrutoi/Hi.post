@@ -21,6 +21,7 @@ export const CARDTEXT_KEYS = [
   'cardtextAdd',
   'empty',
   'edit',
+  'colorPicker',
   // 'delete',
 ] as const
 
@@ -56,6 +57,7 @@ export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [
       { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeMore', state: 'enabled' },
       { key: 'fontFamily', state: 'enabled' },
+      { key: 'colorPicker', state: 'enabled' },
       { key: 'left', state: 'enabled' },
     ],
     status: 'enabled',
