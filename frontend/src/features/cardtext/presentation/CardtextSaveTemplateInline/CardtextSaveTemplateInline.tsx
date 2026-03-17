@@ -34,6 +34,7 @@ export const CardtextSaveTemplateInline: React.FC = () => {
   const [title, setTitle] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const stripRef = useRef<HTMLDivElement>(null)
 
   const existingTitles = useMemo(
     () => new Set((cardtextTemplates ?? []).map((t) => t.title)),
@@ -46,11 +47,32 @@ export const CardtextSaveTemplateInline: React.FC = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (isOpen) {
-      setTitle('')
-      setTimeout(() => inputRef.current?.focus(), 0)
+    if (!isOpen) return
+
+    setTitle('')
+    const focusTimer = setTimeout(() => inputRef.current?.focus(), 0)
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node | null
+      if (!stripRef.current || !target) return
+      if (stripRef.current.contains(target)) return
+      // Игнорируем клик по иконке listAdd в тулбаре cardtextCreate,
+      // чтобы тоггл работал только через сагу, а не через обработчик outside.
+      const listAddButton = (event.target as HTMLElement | null)?.closest(
+        '[data-icon-key="listAdd"]',
+      )
+      if (listAddButton) return
+      // Клик за пределами полоски сохранения — закрываем форму.
+      close()
     }
-  }, [isOpen])
+
+    document.addEventListener('mousedown', handleClickOutside, true)
+
+    return () => {
+      clearTimeout(focusTimer)
+      document.removeEventListener('mousedown', handleClickOutside, true)
+    }
+  }, [isOpen, close])
 
   const canSubmit = title.trim().length > 0
 
@@ -103,7 +125,12 @@ export const CardtextSaveTemplateInline: React.FC = () => {
   if (!isOpen) return null
 
   return (
-    <div className={styles.strip} role="region" aria-label="Save template">
+    <div
+      ref={stripRef}
+      className={styles.strip}
+      role="region"
+      aria-label="Save template"
+    >
       <form onSubmit={handleSubmit} className={styles.form}>
         <input
           ref={inputRef}

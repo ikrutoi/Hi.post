@@ -158,6 +158,16 @@
   }
 }
 
+.toolbarCardtextCreate {
+  width: 60%;
+
+  // Когда группа шрифта для create-режима отключена через updateGroupStatus,
+  // полностью скрываем её, чтобы не мешалась над формой сохранения title.
+  .toolbarGroupDisabled {
+    display: none;
+  }
+}
+
 .toolbarAlignWrapper,
 .toolbarColorWrapper {
   position: relative;

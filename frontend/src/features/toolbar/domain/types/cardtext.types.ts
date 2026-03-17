@@ -48,10 +48,15 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
 
 export const CARDTEXT_CREATE_TOOLBAR: ToolbarConfig = [
   {
+    group: 'create',
+    icons: [{ key: 'listAdd', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
     group: 'font',
     icons: [
-      { key: 'listAdd', state: 'disabled' },
-      { key: 'empty', state: 'disabled' },
+      // { key: 'listAdd', state: 'disabled' },
+      // { key: 'empty', state: 'disabled' },
       { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeMore', state: 'enabled' },

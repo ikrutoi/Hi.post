@@ -2,16 +2,18 @@
 
 .strip {
   position: absolute;
-  top: 2.45rem;
+  top: 3.65rem;
   right: 15%;
   display: flex;
   align-items: center;
   padding: 0.2rem;
   min-width: 70%;
   border-radius: 0.65rem;
-  background-color: $color-app-inner;
-  box-shadow: $shadow-card;
-  border: 1px solid $color-app-substrate-border;
+  background-color: #fff;
+  // background-color: $color-cardtext-input;
+  background-color: darken($color-cardtext-input, 2%);
+  // box-shadow: $shadow-card;
+  border: 1px solid $color-cardtext-input-border;
   z-index: 10;
 }
 
@@ -37,7 +39,7 @@
 
   &:focus {
     outline: none;
-    border-color: $color-toggle-active;
+    border-color: $color-app-substrate-border;
   }
 
   &:disabled {

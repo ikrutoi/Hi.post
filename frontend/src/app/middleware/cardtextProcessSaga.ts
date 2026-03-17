@@ -28,6 +28,7 @@ import {
   clearCreateReturnSnapshot,
   restoreCardtextSession,
   setCardtextCurrentView,
+  setCardtextAddTemplateOpen,
 } from '@cardtext/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import {
@@ -40,7 +41,7 @@ import {
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { handleCardtextToolbarAction } from './cardtextToolbarSaga'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { updateToolbarIcon, updateGroupStatus } from '@toolbar/infrastructure/state'
 import { CARDTEXT_CONFIG } from '@cardtext/domain/types'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { ImageSource } from '@cardphoto/domain/types'
@@ -267,6 +268,25 @@ export function* cardtextProcessSaga(): SagaIterator {
       ): SagaIterator {
         yield* maybePersistCreateDraftOnExitView(action)
         yield* syncCardtextCreateDraftIndicator()
+      },
+    ),
+    takeEvery(
+      setCardtextAddTemplateOpen.type,
+      function* (
+        action: ReturnType<typeof setCardtextAddTemplateOpen>,
+      ): SagaIterator {
+        const isOpen = action.payload
+        // Скрываем/выключаем группу шрифта и в режиме создания, и в редакторе,
+        // пока открыта полоса сохранения шаблона.
+        for (const section of ['cardtextCreate', 'cardtextEditor'] as const) {
+          yield put(
+            updateGroupStatus({
+              section,
+              groupName: 'font',
+              status: isOpen ? 'disabled' : 'enabled',
+            }),
+          )
+        }
       },
     ),
   ])

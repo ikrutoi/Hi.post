@@ -167,9 +167,13 @@ export function* handleCardtextToolbarAction(
       break
     }
 
-    case 'listAdd':
-      yield put(setCardtextAddTemplateOpen(true))
+    case 'listAdd': {
+      const isOpen: boolean = yield select(
+        (state: RootState) => state.cardtext.isAddTemplateOpen ?? false,
+      )
+      yield put(setCardtextAddTemplateOpen(!isOpen))
       break
+    }
 
     case 'cardtextAdd': {
       if (section === 'cardtext' || section === 'cardtextView') {

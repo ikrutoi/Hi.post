@@ -240,8 +240,6 @@ export const cardtextSlice = createSlice({
 
     setCardtextCurrentView(state, action: PayloadAction<CardtextCurrentView>) {
       state.currentView = action.payload
-      // Не обнуляем assetId при входе в редактор, чтобы после сохранения в cardtextView
-      // оставался текущий шаблон и работал клик по «фаворит».
     },
 
     setCardtextFocusRequested(state, action: PayloadAction<boolean>) {
