@@ -7,6 +7,7 @@ import { useAppSelector } from '@app/hooks'
 import { selectCardtextAssetId } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
+import viewStyles from './CardtextView/CardtextView.module.scss'
 
 const TITLE_MAX_WIDTH_RATIO = 0.6
 
@@ -65,15 +66,34 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
           </div>
           <div className={styles.cardtextViewContent}>
             {currentView === 'cardtextView' ? (
-              <CardtextView
-                key={assetId ?? 'no-template'}
-                value={value}
-                style={style}
-                title={title}
-                onTitleClick={handleEditTitle}
-                titleOverflows={titleOverflows}
-                titleRef={titleTextRef}
-              />
+              <>
+                {title.trim() && (
+                  <button
+                    type="button"
+                    className={viewStyles.viewTitle}
+                    onClick={handleEditTitle}
+                    aria-label="Change template name"
+                    title="Change template name"
+                  >
+                    <span
+                      ref={titleTextRef}
+                      className={
+                        titleOverflows
+                          ? `${viewStyles.viewTitleText} ${viewStyles.viewTitleTextFade}`
+                          : viewStyles.viewTitleText
+                      }
+                      aria-hidden
+                    >
+                      {title}
+                    </span>
+                  </button>
+                )}
+                <CardtextView
+                  key={assetId ?? 'no-template'}
+                  value={value}
+                  style={style}
+                />
+              </>
             ) : (
               <CardEditor />
             )}

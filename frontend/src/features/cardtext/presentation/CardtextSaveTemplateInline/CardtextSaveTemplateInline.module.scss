@@ -2,8 +2,8 @@
 
 .strip {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 2.45rem;
+  right: 15%;
   display: flex;
   align-items: center;
   padding: 0.2rem;
@@ -64,7 +64,7 @@
     background-color 0.15s ease;
 
   &:hover:not(:disabled) {
-    // color: $color-font-enabled-light-hover;
+    // color: $color-enabled;
     background: $color-app-sidebar-icon-hover;
   }
 

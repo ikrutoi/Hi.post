@@ -51,7 +51,7 @@ export const CARDTEXT_CREATE_TOOLBAR: ToolbarConfig = [
     group: 'font',
     icons: [
       { key: 'listAdd', state: 'disabled' },
-      { key: 'empty', state: 'enabled' },
+      { key: 'empty', state: 'disabled' },
       { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeMore', state: 'enabled' },
@@ -68,7 +68,7 @@ export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [
     group: 'font',
     icons: [
       { key: 'edit', state: 'active' },
-      { key: 'empty', state: 'enabled' },
+      { key: 'empty', state: 'disabled' },
       { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeMore', state: 'enabled' },

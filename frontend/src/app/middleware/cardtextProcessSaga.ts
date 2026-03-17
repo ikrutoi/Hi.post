@@ -50,8 +50,10 @@ import {
   selectCardtextCreateDraft,
   selectCardtextCreateReturnSnapshot,
   selectCardtextSessionData,
+  selectCardtextCurrentView,
+  selectCardtextAssetId,
+  selectCardtextAddTemplateOpen,
 } from '@cardtext/infrastructure/selectors'
-import { selectCardtextAddTemplateOpen } from '@cardtext/infrastructure/selectors'
 import type { CardtextCreateDraft } from '@cardtext/domain/editor/types'
 
 function* syncCardtextAlignIcons(
@@ -100,7 +102,22 @@ export function* watchFontSizeChanges(): SagaIterator {
 export function* syncCardtextAddButtonStatus(): SagaIterator {
   const plainText: string = yield select(selectCardtextPlainText)
   const hasText = (plainText?.trim?.() ?? '').length > 0
-  // cardtextAdd никогда не выключаем — только показываем badgeDot (см. syncCardtextCreateDraftIndicator)
+  const currentView: ReturnType<typeof selectCardtextCurrentView> = yield select(
+    selectCardtextCurrentView,
+  )
+  const assetId: string | null = yield select(selectCardtextAssetId)
+
+  const isCreateModeOpen =
+    currentView === 'cardtextEditor' && (assetId == null || assetId === null)
+
+  // cardtextAdd: disabled только когда открыт cardtextEditor в режиме создания
+  yield put(
+    updateToolbarIcon({
+      section: 'cardtext',
+      key: 'cardtextAdd',
+      value: isCreateModeOpen ? 'disabled' : 'enabled',
+    }),
+  )
 
   // cardtextCreate: enable "save template" only when text exists
   yield put(
@@ -120,11 +137,20 @@ function* syncCardtextCreateDraftIndicator(): SagaIterator {
   const draft: ReturnType<typeof selectCardtextCreateDraft> = yield select(
     selectCardtextCreateDraft,
   )
+  const currentView: ReturnType<typeof selectCardtextCurrentView> = yield select(
+    selectCardtextCurrentView,
+  )
+  const assetId: string | null = yield select(selectCardtextAssetId)
+  const isCreateModeOpen =
+    currentView === 'cardtextEditor' && (assetId == null || assetId === null)
+
   yield put(
     updateToolbarIcon({
       section: 'cardtext',
       key: 'cardtextAdd',
-      value: { options: { badgeDot: draft != null } },
+      value: {
+        options: { badgeDot: !isCreateModeOpen && draft != null },
+      },
     }),
   )
 }
@@ -234,6 +260,14 @@ export function* cardtextProcessSaga(): SagaIterator {
       [setCreateDraft.type, clearCreateDraft.type, restoreCreateDraft.type],
       syncCardtextAddButtonStatus,
     ),
-    takeEvery(setCardtextCurrentView.type, maybePersistCreateDraftOnExitView),
+    takeEvery(
+      setCardtextCurrentView.type,
+      function* (
+        action: ReturnType<typeof setCardtextCurrentView>,
+      ): SagaIterator {
+        yield* maybePersistCreateDraftOnExitView(action)
+        yield* syncCardtextCreateDraftIndicator()
+      },
+    ),
   ])
 }
