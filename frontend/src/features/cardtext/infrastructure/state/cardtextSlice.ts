@@ -23,11 +23,6 @@ export const cardtextSlice = createSlice({
         .map((block) => block.children.map((child) => child.text).join(' '))
         .join('\n')
       const hasText = state.plainText.trim().length > 0
-      if (hasText) {
-        state.isComplete = false
-        state.applied = null
-        state.appliedData = null
-      }
       if (!hasText) state.assetId = null
     },
 

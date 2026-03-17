@@ -71,6 +71,7 @@ export const TOOLBAR_SECTIONS = [
   'addressFormSenderView',
   'addressFormRecipientView',
   'cardtextList',
+  'cardtextCreate',
   'cardtextEditor',
   'cardtextView',
 ] as const
@@ -98,6 +99,7 @@ export type ToolbarState = {
   addressFormRecipientView: AddressViewToolbarState & { config: ToolbarGroup[] }
   cardtextList: CardtextListToolbarState & { config: ToolbarGroup[] }
   cardtextView: CardtextToolbarState & { config: ToolbarGroup[] }
+  cardtextCreate: CardtextToolbarState & { config: ToolbarGroup[] }
   cardtextEditor: CardtextToolbarState & { config: ToolbarGroup[] }
 }
 
@@ -200,6 +202,11 @@ export type ToolbarSectionConfigMap = {
     CardtextListKey,
     'cardtextList'
   >
+  cardtextCreate: BaseSectionConfig<
+    CardtextToolbarState,
+    CardtextKey,
+    'cardtextCreate'
+  >
   cardtextEditor: BaseSectionConfig<
     CardtextToolbarState,
     CardtextKey,
@@ -250,8 +257,10 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                     ? AddressViewKey
                                     : S extends 'cardtextList'
                                       ? CardtextListKey
-                                      : S extends 'cardtextEditor'
+                                      : S extends 'cardtextCreate'
                                         ? CardtextKey
-                                        : S extends 'cardtextView'
+                                        : S extends 'cardtextEditor'
                                           ? CardtextKey
-                                          : never
+                                          : S extends 'cardtextView'
+                                            ? CardtextKey
+                                            : never

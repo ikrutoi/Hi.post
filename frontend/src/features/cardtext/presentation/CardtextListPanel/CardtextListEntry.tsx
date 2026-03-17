@@ -24,6 +24,14 @@ export const CardtextListEntry: React.FC<Props> = ({
   isSelected = false,
   isFocused = false,
 }) => {
+  const colorMap: Record<CardtextTemplate['style']['color'], string> = {
+    deepBlack: '#1a1a1b',
+    blue: '#1e3a8a',
+    burgundy: '#741b47',
+    forestGreen: '#064e3b',
+  }
+  const previewColor = colorMap[entry.style.color] ?? colorMap.deepBlack
+
   return (
     <div
       className={styles.root}
@@ -50,7 +58,7 @@ export const CardtextListEntry: React.FC<Props> = ({
       <div className={styles.field}>
         <div className={styles.info} onClick={() => onSelect(entry)}>
           {entry.title ? <strong>{entry.title}</strong> : null}
-          <div>
+          <div style={{ color: previewColor }}>
             {entry.plainText
               ? entry.plainText.trim().slice(0, 80) +
                 (entry.plainText.length > 80 ? '…' : '')

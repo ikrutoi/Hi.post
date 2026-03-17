@@ -57,6 +57,8 @@ import { cardtextToolbarController } from '@cardtext/application/controllers'
 import type { ToolbarState, ToolbarSectionConfigMap } from '../types'
 import {
   CARDTEXT_EDITOR_TOOLBAR,
+  CARDTEXT_CREATE_TOOLBAR,
+  initialCardtextCreateToolbarState,
   initialCardtextEditorToolbarState,
 } from '../types/cardtext.types'
 
@@ -322,12 +324,26 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
           cardtextToolbarController.setAlign(editor, dispatch, key as any)
           break
         default:
-          dispatch({ type: 'toolbar/action', payload: { section, key, payload: editor } })
+          dispatch({
+            type: 'toolbar/action',
+            payload: { section, key, payload: editor },
+          })
           break
       }
     },
     group: 'cardtextEditor',
     getBadges: (state: ToolbarState['cardtextEditor']) => ({}),
     toolbar: CARDTEXT_EDITOR_TOOLBAR,
+  },
+
+  cardtextCreate: {
+    keys: CARDTEXT_KEYS,
+    initialState: initialCardtextCreateToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'cardtextCreate',
+    getBadges: (state: ToolbarState['cardtextCreate']) => ({}),
+    toolbar: CARDTEXT_CREATE_TOOLBAR,
   },
 }

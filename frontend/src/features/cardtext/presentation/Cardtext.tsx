@@ -3,6 +3,8 @@ import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardtextFacade } from '../application/facades/useCardtextFacade'
+import { useAppSelector } from '@app/hooks'
+import { selectCardtextAssetId } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 
@@ -16,6 +18,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const { sizeCard } = useSizeFacade()
   const { state, currentView, value, style, title, assetId, openEditTitle } =
     useCardtextFacade()
+  const currentAssetId = useAppSelector(selectCardtextAssetId)
 
   const formRef = useRef<HTMLDivElement>(null)
   const titleTextRef = useRef<HTMLSpanElement>(null)
@@ -52,7 +55,13 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
       >
         <div className={styles.cardtextViewWrap}>
           <div className={styles.cardtextToolbarRow}>
-            <Toolbar section={currentView} />
+            <Toolbar
+              section={
+                currentView === 'cardtextEditor' && currentAssetId == null
+                  ? 'cardtextCreate'
+                  : currentView
+              }
+            />
           </div>
           <div className={styles.cardtextViewContent}>
             {currentView === 'cardtextView' ? (

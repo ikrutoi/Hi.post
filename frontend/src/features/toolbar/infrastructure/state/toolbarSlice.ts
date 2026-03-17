@@ -22,6 +22,7 @@ import {
   initialCardtextListToolbarState,
   initialCardtextViewToolbarState,
   initialCardtextEditorToolbarState,
+  initialCardtextCreateToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -59,6 +60,7 @@ const initialState: ToolbarState = {
   cardtextList: initialCardtextListToolbarState,
   cardtextView: initialCardtextViewToolbarState,
   cardtextEditor: initialCardtextEditorToolbarState,
+  cardtextCreate: initialCardtextCreateToolbarState,
 }
 
 const toolbarSlice = createSlice({

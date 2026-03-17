@@ -9,10 +9,14 @@ import {
   takeLatest,
 } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { selectFontSizeStep } from '@cardtext/infrastructure/selectors'
+import {
+  selectFontSizeStep,
+  selectCardtextPlainText,
+} from '@cardtext/infrastructure/selectors'
 import {
   setTextStyle,
   setAlign,
+  setValue,
   cardtextTemplateAdded,
   loadCardtextTemplatesRequest,
   loadCardtextTemplatesSuccess,
@@ -80,6 +84,32 @@ export function* watchFontSizeChanges(): SagaIterator {
   yield takeEvery(setTextStyle.type, syncFontSizeButtonsStatus)
 }
 
+export function* syncCardtextAddButtonStatus(): SagaIterator {
+  const plainText: string = yield select(selectCardtextPlainText)
+  const hasText = (plainText?.trim?.() ?? '').length > 0
+  // cardtext: enable "create template" only when text exists
+  yield put(
+    updateToolbarIcon({
+      section: 'cardtext',
+      key: 'cardtextAdd',
+      value: hasText ? 'enabled' : 'disabled',
+    }),
+  )
+
+  // cardtextCreate: enable "save template" only when text exists
+  yield put(
+    updateToolbarIcon({
+      section: 'cardtextCreate',
+      key: 'listAdd',
+      value: hasText ? 'enabled' : 'disabled',
+    }),
+  )
+}
+
+export function* watchCardtextValueChanges(): SagaIterator {
+  yield takeEvery([setValue.type, setTextStyle.type], syncCardtextAddButtonStatus)
+}
+
 export function* syncCardOrientationStatus(): SagaIterator {
   const cardphotoSource: ImageSource = yield select(selectActiveSource)
   const cardOrientation: LayoutOrientation = yield select(selectCardOrientation)
@@ -120,6 +150,7 @@ function* loadCardtextTemplatesSaga(): SagaIterator {
 
 export function* cardtextProcessSaga(): SagaIterator {
   yield call(syncFontSizeButtonsStatus)
+  yield call(syncCardtextAddButtonStatus)
 
   yield all([
     takeLatest(toolbarAction.type, handleCardtextToolbarAction),
@@ -132,6 +163,7 @@ export function* cardtextProcessSaga(): SagaIterator {
       if (action.payload) yield put(loadCardtextTemplatesRequest())
     }),
     fork(watchFontSizeChanges),
+    fork(watchCardtextValueChanges),
     fork(watchCardphotoOrientation),
   ])
 }

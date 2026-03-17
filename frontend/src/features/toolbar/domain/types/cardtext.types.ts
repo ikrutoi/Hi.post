@@ -7,7 +7,6 @@ export const CARDTEXT_KEYS = [
   'fontSizeLess',
   'fontSizeIndicator',
   'fontSizeMore',
-  // 'color',
   'left',
   'center',
   'right',
@@ -47,6 +46,23 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
   },
 ]
 
+export const CARDTEXT_CREATE_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'font',
+    icons: [
+      { key: 'listAdd', state: 'disabled' },
+      { key: 'empty', state: 'enabled' },
+      { key: 'fontSizeLess', state: 'enabled' },
+      { key: 'fontSizeIndicator', state: 'enabled' },
+      { key: 'fontSizeMore', state: 'enabled' },
+      { key: 'fontFamily', state: 'enabled' },
+      { key: 'colorPicker', state: 'enabled' },
+      { key: 'left', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
 export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [
   {
     group: 'font',
@@ -76,12 +92,7 @@ export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
 
   {
     group: 'view',
-    icons: [
-      // { key: 'edit', state: 'enabled' },
-      // { key: 'favorite', state: 'enabled' },
-      // { key: 'empty', state: 'enabled' },
-      { key: 'delete', state: 'enabled' },
-    ],
+    icons: [{ key: 'delete', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -89,6 +100,11 @@ export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
 export const initialCardtextToolbarState: CardtextToolbarState = {
   ...Object.fromEntries(flattenIcons(CARDTEXT_TOOLBAR)),
   config: [...CARDTEXT_TOOLBAR],
+}
+
+export const initialCardtextCreateToolbarState: CardtextToolbarState = {
+  ...Object.fromEntries(flattenIcons(CARDTEXT_CREATE_TOOLBAR)),
+  config: [...CARDTEXT_CREATE_TOOLBAR],
 }
 
 export const initialCardtextEditorToolbarState: CardtextToolbarState = {
@@ -104,5 +120,5 @@ export const initialCardtextViewToolbarState: CardtextToolbarState = {
 export interface CardtextSectionConfig extends BaseSectionConfig<
   CardtextToolbarState,
   CardtextKey,
-  'cardtext' | 'cardtextEditor' | 'cardtextView'
+  'cardtext' | 'cardtextEditor' | 'cardtextView' | 'cardtextCreate'
 > {}

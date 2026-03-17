@@ -100,17 +100,13 @@ export const CardEditor: React.FC = () => {
   const isEmpty = useMemo(() => isEmptyValue(value), [value])
 
   const renderLeafWithColor = useCallback(
-    (leafProps: {
-      attributes: any
-      children: React.ReactNode
-      leaf: any
-    }) => {
+    (leafProps: { attributes: any; children: React.ReactNode; leaf: any }) => {
       const { attributes, children, leaf } = leafProps
       let spanStyle: React.CSSProperties = {}
 
-      if (leaf.italic) spanStyle.fontStyle = 'italic'
-      if (leaf.bold) spanStyle.fontWeight = 'bold'
-      if (leaf.underline) spanStyle.textDecoration = 'underline'
+      // if (leaf.italic) spanStyle.fontStyle = 'italic'
+      // if (leaf.bold) spanStyle.fontWeight = 'bold'
+      // if (leaf.underline) spanStyle.textDecoration = 'underline'
       spanStyle.color = leaf.color || defaultTextColor
       if (leaf.fontSize) spanStyle.fontSize = `${leaf.fontSize}px`
 

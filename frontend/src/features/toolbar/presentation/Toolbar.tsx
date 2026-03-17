@@ -193,11 +193,14 @@ export const Toolbar = ({
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
 
     const visualStatus =
-      (section === 'cardtext' || section === 'cardtextEditor') && key === 'left'
+      (section === 'cardtext' ||
+        section === 'cardtextEditor' ||
+        section === 'cardtextCreate') &&
+      key === 'left'
         ? 'enabled'
         : buttonStatus
 
-    if (section === 'cardtextEditor' && key === 'colorPicker') {
+    if ((section === 'cardtextEditor' || section === 'cardtextCreate') && key === 'colorPicker') {
       return (
         <CardtextColorButton
           key={key}
@@ -217,7 +220,12 @@ export const Toolbar = ({
       )
     }
 
-    if ((section === 'cardtext' || section === 'cardtextEditor') && key === 'left') {
+    if (
+      (section === 'cardtext' ||
+        section === 'cardtextEditor' ||
+        section === 'cardtextCreate') &&
+      key === 'left'
+    ) {
       return (
         <CardtextAlignButton
           key={key}

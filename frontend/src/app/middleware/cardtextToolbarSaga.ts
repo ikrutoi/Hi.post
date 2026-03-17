@@ -18,8 +18,9 @@ import {
   setCardtextCurrentView,
   setCardtextAssetId,
   toggleCardtextListSortDirection,
-  clearText,
+  setValue,
 } from '@cardtext/infrastructure/state'
+import { initialCardtextValue } from '@cardtext/domain/editor/types'
 import {
   selectCardtextValue,
   selectCardtextStyle,
@@ -95,13 +96,21 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'fontSizeLess':
-      if (section === 'cardtext' || section === 'cardtextEditor') {
+      if (
+        section === 'cardtext' ||
+        section === 'cardtextEditor' ||
+        section === 'cardtextCreate'
+      ) {
         yield call(changeFontSizeStep, editor, 'less')
       }
       break
 
     case 'fontSizeMore':
-      if (section === 'cardtext' || section === 'cardtextEditor') {
+      if (
+        section === 'cardtext' ||
+        section === 'cardtextEditor' ||
+        section === 'cardtextCreate'
+      ) {
         yield call(changeFontSizeStep, editor, 'more')
       }
       break
@@ -130,8 +139,8 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'cardtextAdd': {
-      if (section === 'cardtextView') {
-        yield put(clearText())
+      if (section === 'cardtext' || section === 'cardtextView') {
+        yield put(setValue(initialCardtextValue as any))
         yield put(setCardtextAssetId(null))
         yield put(setCardtextCurrentView('cardtextEditor'))
         yield put(setCardtextFocusRequested(true))
