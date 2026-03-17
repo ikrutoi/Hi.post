@@ -182,6 +182,30 @@ export const cardtextSlice = createSlice({
         state.templatesList[idx] = { ...state.templatesList[idx], title }
     },
 
+    updateCardtextTemplateContentInList(
+      state,
+      action: PayloadAction<{
+        id: string
+        value: CardtextValue
+        style: CardtextStyle
+        plainText: string
+        cardtextLines: number
+      }>,
+    ) {
+      const { id, value, style, plainText, cardtextLines } = action.payload
+      if (!Array.isArray(state.templatesList)) return
+      const idx = state.templatesList.findIndex((t) => t.id === id)
+      if (idx !== -1) {
+        state.templatesList[idx] = {
+          ...state.templatesList[idx],
+          value,
+          style,
+          plainText,
+          cardtextLines,
+        }
+      }
+    },
+
     setCardtextCurrentView(state, action: PayloadAction<CardtextCurrentView>) {
       state.currentView = action.payload
       // Не обнуляем assetId при входе в редактор, чтобы после сохранения в cardtextView
@@ -217,6 +241,7 @@ export const {
   loadCardtextTemplatesFailure,
   updateCardtextTemplateFavoriteInList,
   updateCardtextTemplateTitleInList,
+  updateCardtextTemplateContentInList,
   setCardtextCurrentView,
   setCardtextFocusRequested,
 } = cardtextSlice.actions

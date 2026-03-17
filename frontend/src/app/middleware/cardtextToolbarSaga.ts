@@ -7,6 +7,7 @@ import {
   setAppliedData,
   setFavorite,
   updateCardtextTemplateFavoriteInList,
+  updateCardtextTemplateContentInList,
 } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
 import type { RootState } from '@app/state'
@@ -27,6 +28,8 @@ import {
   selectCardtextShowViewMode,
   selectCardtextAssetId,
   selectCardtextFavorite,
+  selectCardtextPlainText,
+  selectCardtextLines,
 } from '@cardtext/infrastructure/selectors'
 import { templateService } from '@entities/templates/domain/services/templateService'
 
@@ -41,7 +44,10 @@ export function* handleCardtextToolbarAction(
   }
 
   const isCardtextSection =
-    section === 'cardtext' || section === 'cardtextView' || section === 'cardtextEditor'
+    section === 'cardtext' ||
+    section === 'cardtextView' ||
+    section === 'cardtextEditor' ||
+    section === 'cardtextCreate'
   if (!isCardtextSection) return
 
   switch (key) {
@@ -70,6 +76,29 @@ export function* handleCardtextToolbarAction(
         const style: ReturnType<typeof selectCardtextStyle> = yield select(
           selectCardtextStyle,
         )
+        const plainText: string = yield select(selectCardtextPlainText)
+        const cardtextLines: number = yield select(selectCardtextLines)
+
+        // If we are editing an existing template, persist changes on exit
+        if (assetId) {
+          const result = yield call(
+            templateService.updateCardtextTemplate,
+            assetId,
+            { value, style, plainText, cardtextLines },
+          )
+          if (result?.success) {
+            yield put(
+              updateCardtextTemplateContentInList({
+                id: assetId,
+                value: value ?? [],
+                style,
+                plainText,
+                cardtextLines,
+              }),
+            )
+          }
+        }
+
         yield put(setApplied(assetId ?? null))
         yield put(setAppliedData({ value: value ?? [], style }))
         yield put(setComplete(true))
