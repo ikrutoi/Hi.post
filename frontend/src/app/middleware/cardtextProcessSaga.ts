@@ -22,6 +22,12 @@ import {
   loadCardtextTemplatesSuccess,
   loadCardtextTemplatesFailure,
   setCardtextListPanelOpen,
+  setCreateDraft,
+  clearCreateDraft,
+  restoreCreateDraft,
+  clearCreateReturnSnapshot,
+  restoreCardtextSession,
+  setCardtextCurrentView,
 } from '@cardtext/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import {
@@ -40,6 +46,13 @@ import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { ImageSource } from '@cardphoto/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 import type { CardtextTemplate, TextAlign } from '@cardtext/domain/types'
+import {
+  selectCardtextCreateDraft,
+  selectCardtextCreateReturnSnapshot,
+  selectCardtextSessionData,
+} from '@cardtext/infrastructure/selectors'
+import { selectCardtextAddTemplateOpen } from '@cardtext/infrastructure/selectors'
+import type { CardtextCreateDraft } from '@cardtext/domain/editor/types'
 
 function* syncCardtextAlignIcons(
   action: { payload: TextAlign },
@@ -87,14 +100,7 @@ export function* watchFontSizeChanges(): SagaIterator {
 export function* syncCardtextAddButtonStatus(): SagaIterator {
   const plainText: string = yield select(selectCardtextPlainText)
   const hasText = (plainText?.trim?.() ?? '').length > 0
-  // cardtext: enable "create template" only when text exists
-  yield put(
-    updateToolbarIcon({
-      section: 'cardtext',
-      key: 'cardtextAdd',
-      value: hasText ? 'enabled' : 'disabled',
-    }),
-  )
+  // cardtextAdd никогда не выключаем — только показываем badgeDot (см. syncCardtextCreateDraftIndicator)
 
   // cardtextCreate: enable "save template" only when text exists
   yield put(
@@ -108,6 +114,60 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
 
 export function* watchCardtextValueChanges(): SagaIterator {
   yield takeEvery([setValue.type, setTextStyle.type], syncCardtextAddButtonStatus)
+}
+
+function* syncCardtextCreateDraftIndicator(): SagaIterator {
+  const draft: ReturnType<typeof selectCardtextCreateDraft> = yield select(
+    selectCardtextCreateDraft,
+  )
+  yield put(
+    updateToolbarIcon({
+      section: 'cardtext',
+      key: 'cardtextAdd',
+      value: { options: { badgeDot: draft != null } },
+    }),
+  )
+}
+
+function* maybePersistCreateDraftOnExitView(
+  action: ReturnType<typeof setCardtextCurrentView>,
+): SagaIterator {
+  const nextView = action.payload
+  if (nextView !== 'cardtextView') return
+
+  const isSaveTemplateOpen: boolean = yield select(selectCardtextAddTemplateOpen)
+  // Если сейчас открыт inline-сейв шаблона — это "осознанное действие", черновик не пишем.
+  if (isSaveTemplateOpen) return
+
+  const session: ReturnType<typeof selectCardtextSessionData> = yield select(
+    selectCardtextSessionData,
+  )
+  const assetId = session.assetId
+  // Черновик нужен только для режима создания (assetId == null).
+  if (assetId != null) return
+
+  const plainText = session.plainText ?? ''
+  const hasText = plainText.trim().length > 0
+  if (!hasText) {
+    yield put(clearCreateDraft())
+    return
+  }
+
+  const draft: CardtextCreateDraft = {
+    value: session.value ?? [],
+    style: session.style,
+    plainText: session.plainText,
+    cardtextLines: session.cardtextLines,
+  }
+  yield put(setCreateDraft(draft))
+
+  // Если мы заходили в create из выбранного шаблона — возвращаем отображение назад.
+  const returnSnapshot: ReturnType<typeof selectCardtextCreateReturnSnapshot> =
+    yield select(selectCardtextCreateReturnSnapshot)
+  if (returnSnapshot != null) {
+    yield put(restoreCardtextSession(returnSnapshot))
+    yield put(clearCreateReturnSnapshot())
+  }
 }
 
 export function* syncCardOrientationStatus(): SagaIterator {
@@ -151,6 +211,7 @@ function* loadCardtextTemplatesSaga(): SagaIterator {
 export function* cardtextProcessSaga(): SagaIterator {
   yield call(syncFontSizeButtonsStatus)
   yield call(syncCardtextAddButtonStatus)
+  yield call(syncCardtextCreateDraftIndicator)
 
   yield all([
     takeLatest(toolbarAction.type, handleCardtextToolbarAction),
@@ -165,5 +226,14 @@ export function* cardtextProcessSaga(): SagaIterator {
     fork(watchFontSizeChanges),
     fork(watchCardtextValueChanges),
     fork(watchCardphotoOrientation),
+    takeEvery(
+      [setCreateDraft.type, clearCreateDraft.type, restoreCreateDraft.type],
+      syncCardtextCreateDraftIndicator,
+    ),
+    takeEvery(
+      [setCreateDraft.type, clearCreateDraft.type, restoreCreateDraft.type],
+      syncCardtextAddButtonStatus,
+    ),
+    takeEvery(setCardtextCurrentView.type, maybePersistCreateDraftOnExitView),
   ])
 }

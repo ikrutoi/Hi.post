@@ -20,6 +20,8 @@ import {
   setCardtextAssetId,
   toggleCardtextListSortDirection,
   setValue,
+  restoreCreateDraft,
+  setCreateReturnSnapshot,
 } from '@cardtext/infrastructure/state'
 import { initialCardtextValue } from '@cardtext/domain/editor/types'
 import {
@@ -30,6 +32,8 @@ import {
   selectCardtextFavorite,
   selectCardtextPlainText,
   selectCardtextLines,
+  selectCardtextCreateDraft,
+  selectCardtextSessionData,
 } from '@cardtext/infrastructure/selectors'
 import { templateService } from '@entities/templates/domain/services/templateService'
 
@@ -169,7 +173,18 @@ export function* handleCardtextToolbarAction(
 
     case 'cardtextAdd': {
       if (section === 'cardtext' || section === 'cardtextView') {
-        yield put(setValue(initialCardtextValue as any))
+        yield put(setCardtextAddTemplateOpen(false))
+        const snapshot: ReturnType<typeof selectCardtextSessionData> =
+          yield select(selectCardtextSessionData)
+        yield put(setCreateReturnSnapshot(snapshot))
+        const draft: ReturnType<typeof selectCardtextCreateDraft> = yield select(
+          selectCardtextCreateDraft,
+        )
+        if (draft) {
+          yield put(restoreCreateDraft(draft))
+        } else {
+          yield put(setValue(initialCardtextValue as any))
+        }
         yield put(setCardtextAssetId(null))
         yield put(setCardtextCurrentView('cardtextEditor'))
         yield put(setCardtextFocusRequested(true))

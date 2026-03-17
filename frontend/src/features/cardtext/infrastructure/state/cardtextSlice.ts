@@ -8,6 +8,8 @@ import type {
   CardtextTemplateContent,
   CardtextAppliedData,
   CardtextCurrentView,
+  CardtextCreateDraft,
+  CardtextCreateReturnSnapshot,
 } from '../../domain/editor/types'
 import type { CardtextTemplate } from '../../domain/templates/types'
 
@@ -79,6 +81,36 @@ export const cardtextSlice = createSlice({
 
     setCardtextAssetId(state, action: PayloadAction<string | null>) {
       state.assetId = action.payload
+    },
+
+    setCreateDraft(state, action: PayloadAction<CardtextCreateDraft | null>) {
+      state.createDraft = action.payload
+    },
+
+    clearCreateDraft(state) {
+      state.createDraft = null
+    },
+
+    restoreCreateDraft(state, action: PayloadAction<CardtextCreateDraft>) {
+      const { value, style, plainText, cardtextLines } = action.payload
+      state.value = value
+      state.style = style
+      state.plainText = plainText
+      state.cardtextLines = cardtextLines
+      state.title = ''
+      state.assetId = null
+      state.resetToken += 1
+    },
+
+    setCreateReturnSnapshot(
+      state,
+      action: PayloadAction<CardtextCreateReturnSnapshot | null>,
+    ) {
+      state.createReturnSnapshot = action.payload
+    },
+
+    clearCreateReturnSnapshot(state) {
+      state.createReturnSnapshot = null
     },
 
     restoreCardtextSession(
@@ -230,6 +262,11 @@ export const {
   setFavorite,
   clearText,
   setCardtextAssetId,
+  setCreateDraft,
+  clearCreateDraft,
+  restoreCreateDraft,
+  setCreateReturnSnapshot,
+  clearCreateReturnSnapshot,
   restoreCardtextSession,
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,

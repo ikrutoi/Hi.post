@@ -69,6 +69,17 @@ export interface CardtextAppliedData {
   style: CardtextStyle
 }
 
+export type CardtextCreateDraft = Pick<
+  CardtextTemplateContent,
+  'value' | 'style' | 'plainText' | 'cardtextLines'
+>
+
+export type CardtextCreateReturnSnapshot = CardtextTemplateContent & {
+  assetId: string | null
+  isComplete: boolean
+  appliedData: CardtextAppliedData | null
+}
+
 export interface CardtextTemplateContent {
   value: CardtextValue
   title: string
@@ -91,6 +102,8 @@ export type CardtextCurrentView = 'cardtextView' | 'cardtextEditor'
 export interface CardtextEditorUIState {
   currentView: CardtextCurrentView
   requestCardtextFocus: boolean
+  createDraft: CardtextCreateDraft | null
+  createReturnSnapshot: CardtextCreateReturnSnapshot | null
 }
 
 export const initialCardtextEditorState: CardtextState & CardtextEditorUIState =
@@ -113,4 +126,6 @@ export const initialCardtextEditorState: CardtextState & CardtextEditorUIState =
     resetToken: 0,
     currentView: 'cardtextEditor',
     requestCardtextFocus: false,
+    createDraft: null,
+    createReturnSnapshot: null,
   }

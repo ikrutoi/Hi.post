@@ -5,6 +5,8 @@ import type {
   CardtextTemplateContent,
   CardtextAppliedData,
   CardtextCurrentView,
+  CardtextCreateDraft,
+  CardtextCreateReturnSnapshot,
 } from '../../domain/editor/types'
 import { createSelector } from '@reduxjs/toolkit'
 
@@ -19,6 +21,14 @@ export const selectCardtextShowViewMode = (state: RootState): boolean =>
 
 export const selectCardtextFocusRequested = (state: RootState): boolean =>
   state.cardtext.requestCardtextFocus ?? false
+
+export const selectCardtextCreateDraft = (
+  state: RootState,
+): CardtextCreateDraft | null => state.cardtext.createDraft ?? null
+
+export const selectCardtextCreateReturnSnapshot = (
+  state: RootState,
+): CardtextCreateReturnSnapshot | null => state.cardtext.createReturnSnapshot ?? null
 
 export const selectCardtextValue = (state: RootState): CardtextValue =>
   state.cardtext.value

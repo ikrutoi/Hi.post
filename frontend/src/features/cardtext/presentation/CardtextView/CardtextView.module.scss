@@ -7,7 +7,7 @@
   // margin-top: 1rem;
   padding: 0.5rem;
   box-sizing: border-box;
-  overflow: hidden;
+  // overflow: hidden;
   user-select: text;
   cursor: default;
   border-radius: 0.5rem;
@@ -19,8 +19,8 @@
 
 .viewTitle {
   position: absolute;
-  top: 1rem;
-  right: 0.25rem;
+  top: -3.75rem;
+  right: -0.35rem;
   transform: translateY(-50%);
   // z-index: 1;
   display: flex;
@@ -30,7 +30,7 @@
   max-width: 60%;
   font-size: 0.8rem;
   color: $color-font-disabled;
-  background-color: #fff;
+  // background-color: #fff;
   border: none;
   border-radius: 0.35rem;
   cursor: pointer;
