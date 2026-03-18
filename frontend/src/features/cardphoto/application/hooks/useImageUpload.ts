@@ -10,7 +10,7 @@ export const useImageUpload = (
   onLoading: () => void,
 ) => {
   const { sizeCard } = useSizeFacade()
-  console.log('USE_IMAGE_UPLOAD')
+  // console.log('USE_IMAGE_UPLOAD')
 
   return useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

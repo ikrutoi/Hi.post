@@ -21,12 +21,19 @@ export function* handleSectionEditorMenuToolbarAction(
   if (section === 'sectionEditorMenu') {
     yield put(setActiveSection(key))
 
-    yield call(syncSectionMenuVisuals, key)
-
     // if (key === 'cardtext') {
     //   yield call(syncCardtextToolbarVisuals)
     // }
   }
+}
+
+function* handleSectionEditorMenuActiveSectionChange(
+  action: PayloadAction<SectionEditorMenuKey>,
+) {
+  // Мини-карточки меняют только activeSection.
+  // Чтобы в Toolbar (sectionEditorMenu) подсветка переключалась,
+  // синхронизируем визуальный state иконок при любом изменении activeSection.
+  yield call(syncSectionMenuVisuals, action.payload)
 }
 
 // export function* handleSectionEditorMenuToolbarAction2(
@@ -106,4 +113,5 @@ export function* handleSectionEditorMenuToolbarAction(
 
 export function* sectionEditorMenuSaga() {
   yield takeEvery(toolbarAction.type, handleSectionEditorMenuToolbarAction)
+  yield takeEvery(setActiveSection.type, handleSectionEditorMenuActiveSectionChange)
 }

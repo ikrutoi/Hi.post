@@ -50,7 +50,8 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const isAddTemplateOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const cardtextTemplates = useAppSelector(selectCardtextTemplatesListItems)
   const dispatch = useAppDispatch()
-  const { createCardtextTemplate, updateCardtextTemplate } = useTemplateActions()
+  const { createCardtextTemplate, updateCardtextTemplate } =
+    useTemplateActions()
 
   const formRef = useRef<HTMLDivElement>(null)
   const titleInputRef = useRef<HTMLInputElement>(null)
@@ -70,7 +71,6 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
     el.setSelectionRange(len, len)
   }, [isEditingTitle])
 
-  // create title mode: открываем инлайн-редактор сразу, но с пустым значением
   useEffect(() => {
     if (!isAddTemplateOpen) return
     setDraftTitle('')
@@ -85,7 +85,6 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
       if (!titleStripRef.current || !target) return
       if (titleStripRef.current.contains(target)) return
 
-      // Игнорируем клик по иконке listAdd — тоггл должен закрывать/открывать форму сам.
       const listAddButton = (event.target as HTMLElement | null)?.closest(
         '[data-icon-key="listAdd"]',
       )
@@ -124,7 +123,9 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
     setIsSubmittingTitle(true)
     try {
       if (isAddTemplateOpen) {
-        const existingTitles = new Set((cardtextTemplates ?? []).map((t) => t.title))
+        const existingTitles = new Set(
+          (cardtextTemplates ?? []).map((t) => t.title),
+        )
         const uniqueTitle = getUniqueTitle(next, existingTitles)
 
         const result = await createCardtextTemplate({
@@ -149,7 +150,9 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
         const result = await updateCardtextTemplate(assetId, { title: next })
         if (result.success) {
           dispatch(setTitle(next))
-          dispatch(updateCardtextTemplateTitleInList({ id: assetId, title: next }))
+          dispatch(
+            updateCardtextTemplateTitleInList({ id: assetId, title: next }),
+          )
         }
       }
     } finally {

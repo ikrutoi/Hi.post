@@ -94,7 +94,7 @@ import {
   IconSectionMenuAroma,
   IconSectionMenuAromaV2,
   IconSectionMenuDate,
-  IconCardphotoTemplates,
+  IconListCardphotoV2,
   IconCardtextTemplates,
   IconCardtextAdd,
   IconAddressTemplates,
@@ -162,6 +162,8 @@ import {
   IconAlignJustifyV3,
   IconApplyBold,
   IconColor,
+  IconCardphotoAdd,
+  IconListCardphoto,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -235,7 +237,7 @@ export function getIconByKey(
     case 'cropCheck':
       return <IconCropCheck />
     case 'cropHistory':
-      return <IconCardphotoTemplates />
+      return <IconListCardphotoV2 />
     case 'cropFull':
       return <IconCropFull />
     case 'cropDelete':
@@ -292,10 +294,12 @@ export function getIconByKey(
       return <IconCardtextTemplates />
     case 'cardtextAdd':
       return <IconCardtextAdd />
-    case 'photoTemplates':
-      return <IconCardphotoTemplates />
+    case 'listCardphoto':
+      return <IconListCardphoto />
     case 'cardphoto':
       return <IconSectionMenuCardphoto />
+    case 'cardphotoAdd':
+      return <IconCardphotoAdd />
     case 'cardtext':
       return <IconSectionMenuCardtext />
     case 'envelope':

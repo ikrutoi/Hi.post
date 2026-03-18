@@ -17,3 +17,8 @@ export const selectNeedsCrop = createSelector(
   [selectCardphotoUi],
   (ui) => ui.needsCrop
 )
+
+export const selectIsListPanelOpen = createSelector(
+  [selectCardphotoUi],
+  (ui) => ui.isListPanelOpen
+)

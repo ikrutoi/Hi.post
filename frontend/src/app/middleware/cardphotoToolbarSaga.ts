@@ -20,10 +20,12 @@ import {
   setProcessedImage,
   markLoaded,
   markLoading,
+  setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
 import {
   selectCardphotoState,
   selectIsProcessedMode,
+  selectIsListPanelOpen,
 } from '@cardphoto/infrastructure/selectors'
 import {
   handleCropAction,
@@ -52,7 +54,7 @@ import { onDownloadClick } from './cardphotoProcessSaga'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import {
   updateToolbarSection,
-  // updateToolbarIcon,
+  updateToolbarIcon,
   // updateGroupStatus,
 } from '@toolbar/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
@@ -103,6 +105,21 @@ export function* handleCardphotoToolbarAction(
   }
 
   switch (key) {
+    case 'listCardphoto': {
+      const isOpen: boolean = yield select(selectIsListPanelOpen)
+      const nextState = isOpen ? 'enabled' : 'active'
+
+      yield put(
+        updateToolbarIcon({
+          section: 'cardphoto',
+          key: 'listCardphoto',
+          value: nextState,
+        }),
+      )
+      yield put(setCardphotoListPanelOpen(!isOpen))
+      break
+    }
+
     case 'deleteList':
       yield call(handleClearAllCropsSaga)
       break
@@ -211,11 +228,14 @@ export function* handleCardphotoToolbarAction1(
 
 export function* syncToolbarContext() {
   const state: CardphotoState = yield select((s) => s.cardphoto.state)
-  const toolbarState: CardphotoToolbarState = yield select(
+  const toolbarState: CardphotoToolbarState | undefined = yield select(
     selectToolbarSectionState('cardphoto'),
   )
 
-  if (!state || toolbarState.crop.state === 'active') return
+  // При первом рендере/подключении тулбара section может быть ещё не инициализирован,
+  // поэтому `toolbarState`/`toolbarState.crop` могут быть undefined.
+  if (!state || !toolbarState?.crop) return
+  if (toolbarState.crop.state === 'active') return
 
   const { activeSource, cropCount } = state
   // console.log('syncToolbarContext + cropCount', cropCount)

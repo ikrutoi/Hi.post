@@ -4,12 +4,14 @@ export interface CardphotoUiState {
   shouldOpenFileDialog: boolean
   isLoading: boolean
   needsCrop: boolean
+  isListPanelOpen: boolean
 }
 
 const initialUiState: CardphotoUiState = {
   shouldOpenFileDialog: false,
   isLoading: false,
   needsCrop: false,
+  isListPanelOpen: false,
 }
 
 export const cardphotoUiSlice = createSlice({
@@ -41,6 +43,10 @@ export const cardphotoUiSlice = createSlice({
     setNeedsCrop(state, action: PayloadAction<boolean>) {
       state.needsCrop = action.payload
     },
+
+    setCardphotoListPanelOpen(state, action: PayloadAction<boolean>) {
+      state.isListPanelOpen = action.payload
+    },
   },
 })
 
@@ -51,6 +57,7 @@ export const {
   markLoading,
   markLoaded,
   setNeedsCrop,
+  setCardphotoListPanelOpen,
 } = cardphotoUiSlice.actions
 
 export default cardphotoUiSlice.reducer

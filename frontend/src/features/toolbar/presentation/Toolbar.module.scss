@@ -161,8 +161,6 @@
 .toolbarCardtextCreate {
   width: 60%;
 
-  // Когда группа шрифта для create-режима отключена через updateGroupStatus,
-  // полностью скрываем её, чтобы не мешалась над формой сохранения title.
   .toolbarGroupDisabled {
     display: none;
   }
@@ -285,7 +283,8 @@
   }
 }
 
-.toolbarCardtext {
+.toolbarCardtext,
+.toolbarCardphoto {
   .toolbarKey {
     background-color: $color-app-inner;
   }
@@ -301,7 +300,8 @@
 .toolbarAddressFormRecipientView,
 .toolbarAddressListSender,
 .toolbarAddressListRecipient,
-.toolbarCardtext {
+.toolbarCardtext,
+.toolbarCardphoto {
   .toolbarKeyActive {
     color: $color-font-active;
   }
@@ -327,7 +327,7 @@
   }
 }
 
-// .toolbarCardphoto,
+.toolbarCardphoto,
 .toolbarCardtext,
 .toolbarSender,
 .toolbarRecipient,

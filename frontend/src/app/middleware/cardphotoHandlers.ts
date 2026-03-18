@@ -82,6 +82,8 @@ export function* handleCropAction() {
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config) return
 
+  if (!toolbarState?.crop) return
+
   const isActivating = toolbarState.crop.state === 'enabled'
 
   if (isActivating) {
@@ -148,7 +150,11 @@ export function* syncCropFullIcon(params?: {
     selectToolbarSectionState('cardphoto'),
   )
 
-  const currentStatus = params?.forceActive ? 'active' : toolbarState.crop.state
+  if (!toolbarState?.crop) return
+
+  const currentStatus = params?.forceActive
+    ? 'active'
+    : toolbarState.crop.state
 
   if (currentStatus !== 'active') return
 
@@ -226,7 +232,11 @@ export function* handleCardOrientation(): SagaIterator {
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config) return
 
-  const toolbarState = yield select(selectToolbarSectionState('cardphoto'))
+  const toolbarState: CardphotoToolbarState = yield select(
+    selectToolbarSectionState('cardphoto'),
+  )
+  if (!toolbarState?.crop) return
+
   const isCropActive = toolbarState.crop.state === 'active'
 
   const originalImage: ImageMeta = yield select(selectActiveImage)
@@ -636,7 +646,7 @@ export function* handleBackToOriginalSaga() {
       selectToolbarSectionState('cardphoto'),
     )
 
-    if (toolbarState.crop.state === 'active') {
+    if (toolbarState?.crop?.state === 'active') {
       yield call(updateCropToolbarState, 'enabled', toolbarState)
     }
     console.log('HANDLE_BACK')

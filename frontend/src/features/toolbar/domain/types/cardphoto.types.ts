@@ -33,7 +33,16 @@ export interface BaseToolbarState extends Record<string, any> {
 
 export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
   {
-    group: 'photo',
+    group: 'cardphoto',
+    icons: [
+      { key: 'apply', state: 'enabled' },
+      { key: 'cardphotoAdd', state: 'enabled' },
+      { key: 'listCardphoto', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'edit',
     icons: [
       {
         key: 'cardOrientation',
@@ -49,20 +58,40 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
+  // {
+  //   group: 'ui',
+  //   icons: [
+  //     { key: 'apply', state: 'enabled' },
+  //     { key: 'download', state: 'enabled' },
+  //     { key: 'close', state: 'disabled' },
+  //   ],
+  //   status: 'enabled',
+  // },
+  // {
+  //   group: 'processed',
+  //   icons: [
+  //     { key: 'listApply', state: 'disabled' },
+  //     { key: 'listDelete', state: 'disabled' },
+  //   ],
+  //   status: 'enabled',
+  // },
+]
+
+export const CARDPHOTO_EDITOR_TOOLBAR: ToolbarConfig = [
   {
-    group: 'ui',
+    group: 'editor',
     icons: [
-      { key: 'apply', state: 'enabled' },
-      { key: 'download', state: 'enabled' },
-      { key: 'close', state: 'disabled' },
-    ],
-    status: 'enabled',
-  },
-  {
-    group: 'processed',
-    icons: [
-      { key: 'listApply', state: 'disabled' },
-      { key: 'listDelete', state: 'disabled' },
+      {
+        key: 'cardOrientation',
+        state: 'disabled',
+        options: { orientation: 'landscape' },
+      },
+      { key: 'imageRotateLeft', state: 'disabled' },
+      { key: 'imageRotateRight', state: 'disabled' },
+      { key: 'crop', state: 'disabled' },
+      { key: 'cropFull', state: 'disabled' },
+      { key: 'cropCheck', state: 'disabled' },
+      { key: 'imageReset', state: 'disabled' },
     ],
     status: 'enabled',
   },
@@ -73,8 +102,13 @@ export const initialCardphotoToolbarState: CardphotoToolbarState = {
   config: [...CARDPHOTO_TOOLBAR],
 }
 
+export const initialCardphotoEditorToolbarState: CardphotoToolbarState = {
+  ...Object.fromEntries(flattenIcons(CARDPHOTO_EDITOR_TOOLBAR)),
+  config: [...CARDPHOTO_EDITOR_TOOLBAR],
+}
+
 export interface CardphotoSectionConfig extends BaseSectionConfig<
   CardphotoToolbarState,
   CardphotoKey,
-  'cardphoto'
+  'cardphoto' | 'cardphotoEditor'
 > {}

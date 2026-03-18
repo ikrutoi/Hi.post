@@ -3,7 +3,7 @@ import { useAppDispatch } from '@app/hooks'
 import {
   IconX,
   IconSectionMenuCardphoto,
-  IconCardphotoTemplates,
+  IconListCardphotoV2,
 } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
@@ -141,7 +141,7 @@ export const CardsListPanel: React.FC<Props> = ({
         >
           {entries.length === 0 ? (
             <div className={styles.listEmpty} aria-hidden>
-              <IconCardphotoTemplates className={styles.listEmptyIcon} />
+              <IconListCardphotoV2 className={styles.listEmptyIcon} />
             </div>
           ) : (
             entries.map((item, index) => (

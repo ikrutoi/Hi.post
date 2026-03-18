@@ -9,6 +9,7 @@ import { useCardtextFacade } from '@cardtext/application/facades'
 import { useAppSelector } from '@app/hooks'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
 import { CardtextEditTitleInline } from '@cardtext/presentation/CardtextEditTitleInline/CardtextEditTitleInline'
+import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './CardSectionEditor.module.scss'
 
 export const CardSectionEditor: React.FC = () => {
@@ -34,6 +35,11 @@ export const CardSectionEditor: React.FC = () => {
               ) : null}
             </div>
           )}
+          {/* {activeSection === 'cardphoto' && (
+            <div className={styles.cardphotoToolbarTop}>
+              <Toolbar section="cardphoto" />
+            </div>
+          )} */}
           {/* {showLeftInnerSidebar && (
             <div
               className={styles.workZoneLeft}

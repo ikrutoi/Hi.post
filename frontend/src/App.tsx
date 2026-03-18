@@ -20,6 +20,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
+import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import styles from './App.module.scss'
 
 const App = () => {
@@ -89,6 +90,7 @@ const App = () => {
               {activeSection === 'envelope' && <EnvelopeRightSlot />}
               {activeSection === 'date' && <DateRightSlot />}
               {activeSection === 'cardtext' && <CardtextRightSlot />}
+              {activeSection === 'cardphoto' && <CardphotoRightSlot />}
             </div>
             {/* <aside
               className={styles.appMainAside}
