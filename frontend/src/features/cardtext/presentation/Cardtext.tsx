@@ -1,4 +1,5 @@
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import clsx from 'clsx'
 import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
 import { useSizeFacade } from '@layout/application/facades'
@@ -8,8 +9,11 @@ import { selectCardtextAssetId } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
-
-const TITLE_MAX_WIDTH_RATIO = 0.6
+import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
+import { useAppDispatch } from '@app/hooks'
+import { setTitle, updateCardtextTemplateTitleInList } from '@cardtext/infrastructure/state'
+import { getToolbarIcon } from '@/shared/utils/icons'
+import { IconX } from '@shared/ui/icons'
 
 interface CardtextProps {
   styleLeft: number
@@ -17,32 +21,51 @@ interface CardtextProps {
 
 export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const { sizeCard } = useSizeFacade()
-  const { state, currentView, value, style, title, assetId, openEditTitle } =
-    useCardtextFacade()
+  const { state, currentView, value, style, title, assetId } = useCardtextFacade()
   const currentAssetId = useAppSelector(selectCardtextAssetId)
+  const dispatch = useAppDispatch()
+  const { updateCardtextTemplate } = useTemplateActions()
 
   const formRef = useRef<HTMLDivElement>(null)
-  const titleTextRef = useRef<HTMLSpanElement>(null)
-  const [titleOverflows, setTitleOverflows] = useState(false)
-
-  const handleEditTitle = () => {
-    openEditTitle()
-  }
+  const titleInputRef = useRef<HTMLInputElement>(null)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [draftTitle, setDraftTitle] = useState('')
 
   console.log('Cardtext state', state)
 
-  useLayoutEffect(() => {
-    if (currentView !== 'cardtextView' || !title.trim()) {
-      setTitleOverflows(false)
+  useEffect(() => {
+    if (!isEditingTitle) return
+    const el = titleInputRef.current
+    if (!el) return
+    el.focus()
+    const len = el.value.length
+    el.setSelectionRange(len, len)
+  }, [isEditingTitle])
+
+  const startEditTitle = () => {
+    if (!title.trim()) return
+    setDraftTitle(title)
+    setIsEditingTitle(true)
+  }
+
+  const cancelEditTitle = () => {
+    setDraftTitle('')
+    setIsEditingTitle(false)
+  }
+
+  const commitEditTitle = async () => {
+    const next = draftTitle.trim()
+    if (!next || !assetId) {
+      cancelEditTitle()
       return
     }
-    const form = formRef.current
-    const textEl = titleTextRef.current
-    if (!form || !textEl) return
-    const formWidth = form.offsetWidth
-    const maxTitleWidth = formWidth * TITLE_MAX_WIDTH_RATIO
-    setTitleOverflows(textEl.scrollWidth > maxTitleWidth)
-  }, [currentView, title, sizeCard.width])
+    const result = await updateCardtextTemplate(assetId, { title: next })
+    if (result.success) {
+      dispatch(setTitle(next))
+      dispatch(updateCardtextTemplateTitleInList({ id: assetId, title: next }))
+    }
+    cancelEditTitle()
+  }
 
   return (
     <div className={styles.cardtextContainer}>
@@ -67,27 +90,68 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
           <div className={styles.cardtextViewContent}>
             {currentView === 'cardtextView' ? (
               <>
-                {title.trim() && (
-                  <button
-                    type="button"
-                    className={viewStyles.viewTitle}
-                    onClick={handleEditTitle}
-                    aria-label="Change template name"
-                    title="Change template name"
-                  >
-                    <span
-                      ref={titleTextRef}
-                      className={
-                        titleOverflows
-                          ? `${viewStyles.viewTitleText} ${viewStyles.viewTitleTextFade}`
-                          : viewStyles.viewTitleText
-                      }
-                      aria-hidden
+                {title.trim() &&
+                  (isEditingTitle ? (
+                    <div
+                      className={clsx(
+                        viewStyles.viewTitle,
+                        viewStyles.viewTitleEditing,
+                      )}
                     >
-                      {title}
-                    </span>
-                  </button>
-                )}
+                      <input
+                        ref={titleInputRef}
+                        type="text"
+                        className={viewStyles.viewTitleEditingInput}
+                        value={draftTitle}
+                        onChange={(e) => setDraftTitle(e.target.value)}
+                        onBlur={() => void commitEditTitle()}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') {
+                            e.preventDefault()
+                            cancelEditTitle()
+                          }
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            void commitEditTitle()
+                          }
+                        }}
+                        aria-label="Template name"
+                        title="Edit template name"
+                      />
+                      <button
+                        type="button"
+                        className={viewStyles.viewTitleEditingBtn}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => void commitEditTitle()}
+                        aria-label="Save title"
+                        title="Save"
+                      >
+                        {getToolbarIcon({ key: 'apply' })}
+                      </button>
+                      <button
+                        type="button"
+                        className={viewStyles.viewTitleEditingBtn}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={cancelEditTitle}
+                        aria-label="Cancel editing title"
+                        title="Cancel"
+                      >
+                        <IconX />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className={viewStyles.viewTitle}
+                      onClick={startEditTitle}
+                      aria-label="Edit template name"
+                      title="Edit template name"
+                    >
+                      <span className={viewStyles.viewTitleText} aria-hidden>
+                        {title}
+                      </span>
+                    </button>
+                  ))}
                 <CardtextView
                   key={assetId ?? 'no-template'}
                   value={value}

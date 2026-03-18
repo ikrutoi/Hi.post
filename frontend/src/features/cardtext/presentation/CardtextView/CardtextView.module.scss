@@ -8,7 +8,7 @@
   padding: 0.5rem;
   box-sizing: border-box;
   overflow: hidden;
-  user-select: text;
+  user-select: none;
   cursor: default;
   border-radius: 0.5rem;
   background-color: $color-cardtext-input;
@@ -27,7 +27,7 @@
   align-items: center;
   padding: 0.25rem 0.5rem;
   margin: 0;
-  max-width: 60%;
+  max-width: 70%;
   font-size: 0.8rem;
   color: $color-font-disabled;
   background-color: #fff;
@@ -35,7 +35,10 @@
   // border: none;
   border-radius: 0.35rem;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border 0.15s ease;
+  user-select: none;
 
   &:hover {
     color: $color-font-enabled-light;
@@ -43,8 +46,9 @@
   }
 
   &:focus-visible {
-    outline: 2px solid $color-font-enabled-light;
-    outline-offset: 2px;
+    // outline: 2px solid $color-font-enabled-light;
+    // outline-offset: 2px;
+    border: solid 1px $color-toggle-active;
   }
 }
 
@@ -58,6 +62,59 @@
 .viewTitleTextFade {
   mask-image: linear-gradient(to right, black 70%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
+}
+
+.viewTitleEditing {
+  width: 70%;
+  color: $color-font-active;
+  cursor: text;
+  user-select: text;
+  outline: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border: solid 1px $color-toggle-active;
+  gap: 0.9rem;
+
+  &:hover {
+    color: $color-font-active;
+  }
+}
+
+.viewTitleEditingInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+.viewTitleEditingBtn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border: none;
+  border-radius: 50%;
+  color: $color-font-disabled;
+  cursor: pointer;
+  background: transparent;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
 }
 
 .colorDeepBlack {
