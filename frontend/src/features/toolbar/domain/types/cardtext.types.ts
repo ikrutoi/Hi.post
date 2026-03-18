@@ -55,8 +55,6 @@ export const CARDTEXT_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'font',
     icons: [
-      // { key: 'listAdd', state: 'disabled' },
-      // { key: 'empty', state: 'disabled' },
       { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeMore', state: 'enabled' },

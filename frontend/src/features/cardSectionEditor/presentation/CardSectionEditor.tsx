@@ -7,9 +7,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useAppSelector } from '@app/hooks'
-import { selectCardtextAddTemplateOpen } from '@cardtext/infrastructure/selectors'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
-import { CardtextSaveTemplateInline } from '@cardtext/presentation/CardtextSaveTemplateInline/CardtextSaveTemplateInline'
 import { CardtextEditTitleInline } from '@cardtext/presentation/CardtextEditTitleInline/CardtextEditTitleInline'
 import styles from './CardSectionEditor.module.scss'
 
@@ -17,7 +15,6 @@ export const CardSectionEditor: React.FC = () => {
   const { sizeCard } = useSizeFacade()
   const { activeSection } = useSectionMenuFacade()
   const { currentView: cardtextCurrentView } = useCardtextFacade()
-  const isAddTemplateOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const width = sizeCard.height * CARD_SCALE_CONFIG.aspectRatio
 
   return (
@@ -34,8 +31,6 @@ export const CardSectionEditor: React.FC = () => {
             <div className={styles.cardtextToolbarTop}>
               {cardtextCurrentView === 'cardtextView' ? (
                 <CardtextEditTitleInline />
-              ) : isAddTemplateOpen ? (
-                <CardtextSaveTemplateInline />
               ) : null}
             </div>
           )}

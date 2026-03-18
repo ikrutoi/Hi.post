@@ -13,7 +13,7 @@ import {
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import { IconX } from '@shared/ui/icons'
-import styles from '../CardtextSaveTemplateInline/CardtextSaveTemplateInline.module.scss'
+import styles from './CardtextEditTitleInline.module.scss'
 
 export const CardtextEditTitleInline: React.FC = () => {
   const isOpen = useAppSelector(selectCardtextEditTitleOpen)

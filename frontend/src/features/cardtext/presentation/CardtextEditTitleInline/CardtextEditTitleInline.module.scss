@@ -61,12 +61,9 @@
   background: transparent;
   color: $color-font-enabled;
   cursor: pointer;
-  transition:
-    // color 0.15s ease,
-    background-color 0.15s ease;
+  transition: background-color 0.15s ease;
 
   &:hover:not(:disabled) {
-    // color: $color-enabled;
     background: $color-app-sidebar-icon-hover;
   }
 
@@ -81,6 +78,3 @@
   }
 }
 
-// .confirmBtn:hover:not(:disabled) {
-//   color: $color-toggle-active;
-// }
