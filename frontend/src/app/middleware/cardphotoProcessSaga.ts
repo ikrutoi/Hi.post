@@ -72,6 +72,7 @@ import type {
 } from '@cardphoto/domain/types'
 import type { SizeCard, LayoutOrientation } from '@layout/domain/types'
 import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
+import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 
 export function* onDownloadClick(): SagaIterator {
   yield put(
@@ -130,10 +131,10 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     )
 
     const imageRecord: ImageRecord = {
-      id: 'current_user_image',
+      id: CURRENT_EDITOR_IMAGE_ID,
       image: imageMeta,
     }
-    yield call([storeAdapters.userImages, 'put'], imageRecord)
+    yield call([storeAdapters.editorImages, 'put'], imageRecord)
 
     const serializableMeta = prepareForRedux(imageMeta)
     const serializableConfig = prepareConfigForRedux(config)

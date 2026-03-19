@@ -30,6 +30,7 @@ import type {
   CardphotoBase,
   ImageSource,
 } from '@cardphoto/domain/types'
+import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import type { SizeCard } from '@layout/domain/types'
 
 export function getRandomStockMeta(): ImageMeta {
@@ -44,8 +45,8 @@ function* initCardphotoSaga() {
   const cropCount = allCrops.length
   const cropIds = allCrops.map((c) => c.id)
   const savedUserImg: ImageMeta | null = yield call(
-    storeAdapters.userImages.getById,
-    'current',
+    storeAdapters.editorImages.getById,
+    CURRENT_EDITOR_IMAGE_ID,
   )
 
   if (!activeSource) return

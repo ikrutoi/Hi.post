@@ -4,8 +4,6 @@ import {
   selectCardphotoSteps,
   selectCurrentStepIndex,
   selectCurrentStep,
-  selectCanUndo,
-  selectCanRedo,
 } from '../../infrastructure/selectorsLayout'
 import type { CardphotoItem } from '../../domain/typesLayout'
 
@@ -15,20 +13,6 @@ export function useCardphotoSteps() {
   const steps = useAppSelector(selectCardphotoSteps)
   const currentStepIndex = useAppSelector(selectCurrentStepIndex)
   const currentStep = useAppSelector(selectCurrentStep)
-  const canUndo = useAppSelector(selectCanUndo)
-  const canRedo = useAppSelector(selectCanRedo)
-
-  const undo = () => {
-    if (canUndo) {
-      dispatch(cardphotoStepsActions.undo())
-    }
-  }
-
-  const redo = () => {
-    if (canRedo) {
-      dispatch(cardphotoStepsActions.redo())
-    }
-  }
 
   const pushStep = (newStep: CardphotoItem) => {
     dispatch(cardphotoStepsActions.pushStep(newStep))
@@ -51,12 +35,8 @@ export function useCardphotoSteps() {
       steps,
       currentStepIndex,
       currentStep,
-      canUndo,
-      canRedo,
     },
     actions: {
-      undo,
-      redo,
       pushStep,
       resetSteps,
       setSteps,

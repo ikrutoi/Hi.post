@@ -5,12 +5,9 @@ import {
   // initStockImage,
   uploadUserImage,
   addOperation,
-  undo,
-  redo,
   applyFinal,
   reset,
   cancelSelection,
-  setOrientation,
   uploadImageReady,
   selectCropFromHistory,
 } from '../../infrastructure/state'
@@ -24,8 +21,6 @@ import {
   selectActiveIndex,
   selectActiveOperation,
   selectCurrentConfig,
-  selectCardOrientation,
-  selectCropOrientation,
   selectLastOperationReason,
   selectCardSize,
   selectCropQuality,
@@ -38,8 +33,6 @@ import type {
   CardphotoOperation,
   WorkingConfig,
 } from '../../domain/types'
-import type { LayoutOrientation } from '@layout/domain/types'
-
 export const useCardphotoController = () => {
   const dispatch = useAppDispatch()
 
@@ -57,8 +50,6 @@ export const useCardphotoController = () => {
   const activeImage = useSelector(selectActiveImage)
   const processedMode = useSelector(selectIsProcessedMode)
 
-  const cardOrientation = useSelector(selectCardOrientation)
-  const cropOrientation = useSelector(selectCropOrientation)
   const lastOperationReason = useSelector(selectLastOperationReason)
   const cardSize = useSelector(selectCardSize)
 
@@ -68,16 +59,11 @@ export const useCardphotoController = () => {
   //   dispatch(initStockImage(payload))
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
   const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
-  const undoOp = () => dispatch(undo())
-  const redoOp = () => dispatch(redo())
   const apply = (meta: ImageMeta) => dispatch(applyFinal(meta))
   const resetAll = () => dispatch(reset())
   const cancel = () => dispatch(cancelSelection())
   const cropFromHistory = (cropId: string) =>
     dispatch(selectCropFromHistory(cropId))
-  const rotateCard = (orientation: LayoutOrientation) =>
-    dispatch(setOrientation(orientation))
-
   return {
     state,
     isComplete,
@@ -88,8 +74,6 @@ export const useCardphotoController = () => {
     activeIndex,
     activeOperation,
     currentConfig,
-    cardOrientation,
-    cropOrientation,
     lastOperationReason,
     cardSize,
     quality,
@@ -102,12 +86,9 @@ export const useCardphotoController = () => {
     // setStockImage,
     setUserImage,
     addOp,
-    undoOp,
-    redoOp,
     apply,
     resetAll,
     cancel,
-    rotateCard,
     cropFromHistory,
   }
 }

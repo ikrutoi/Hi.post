@@ -1,13 +1,7 @@
 import { CardStatus } from '@/entities/card/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
-export const IMAGE_SOURCE = ['stock', 'user', 'processed', 'apply'] as const
-export type ImageSource = (typeof IMAGE_SOURCE)[number]
-
-export interface GalleryItem extends ImageMeta {
-  orientation: LayoutOrientation
-  previewUrl?: string
-}
+export type ImageSource = 'stock' | 'user' | 'processed' | 'apply'
 
 export interface CardphotoBase {
   stock: { image: ImageMeta | null }
@@ -21,6 +15,7 @@ export interface ImageRecord {
   image: ImageMeta
 }
 
+/** Matches layout `SizeCard` when used as the working card in editor config. */
 export interface CardLayer {
   width: number
   height: number
@@ -28,9 +23,8 @@ export interface CardLayer {
   orientation: LayoutOrientation
 }
 
-export type ImageRotation = 0 | 90 | 180 | 270
-
 export type QualityLevel = 'high' | 'medium' | 'low'
+
 export interface ImageData {
   blob?: Blob
   url: string
@@ -46,19 +40,19 @@ export interface ImageMeta {
   thumbnail?: ImageData
   width: number
   height: number
-  imageAspectRatio: number
   isCropped: boolean
   timestamp: number
   parentImageId?: string
-  orientation: LayoutOrientation
-  rotation: ImageRotation
+  orientation?: LayoutOrientation
+  rotation?: number
+  imageAspectRatio?: number
 }
 
 export interface ImageLayer {
   meta: ImageMeta
   left: number
   top: number
-  rotation: ImageRotation
+  rotation: number
 }
 
 export interface CropMeta {
@@ -96,36 +90,20 @@ export interface CardphotoSessionRecord {
   appliedImageUrl: string | null
 }
 
+export type CardphotoOperationReason =
+  | 'reset'
+  | 'cropFull'
+  | 'rotateCard'
+  | 'rotateImage'
+  | 'applyCrop'
+  | 'rebuild'
+
 export type CardphotoOperation = {
   type: 'operation'
   payload: {
     config: WorkingConfig
-    reason?:
-      | 'crop'
-      | 'rotateCard'
-      | 'rotateImage'
-      | 'moveCrop'
-      | 'initStockImage'
-      | 'uploadUser'
-      | 'applyFinal'
-      | 'resetCrop'
-      | 'cropFull'
-      | 'initCrop'
-      | 'initUserImage'
-      | 'activateCrop'
-      | 'applyCrop'
-      | 'init'
-      | 'rebuild_by_orientation'
-      | 'rebuild'
-      | 'rotateCard'
-      | 'reset'
+    reason?: CardphotoOperationReason
   }
-}
-
-type ImageAsset = {
-  id: string
-  fullUrl: string
-  thumbUrl: string
 }
 
 export interface CardphotoState {
@@ -143,52 +121,4 @@ export interface PreviewItem {
   item: { previewUrl: string }
   status: CardStatus
   cardId: string
-}
-
-// ----------------------
-
-export const IMAGE_OPERATION_TYPE = ['initial', 'crop', 'apply'] as const
-export type ImageOperationType = (typeof IMAGE_OPERATION_TYPE)[number]
-
-export type ImageOperation =
-  | { type: 'initial'; payload?: undefined }
-  | {
-      type: 'crop'
-      payload: { area: CropLayer }
-    }
-  | {
-      type: 'apply'
-      payload: {
-        snapshot: WorkingConfig
-        orientation: LayoutOrientation
-      }
-    }
-
-export interface ImageHistory {
-  original: ImageMeta
-  operations: ImageOperation[]
-  activeIndex: number
-  workingConfig: WorkingConfig
-  lastApplied: WorkingConfig | null
-  finalImage: ImageMeta | null
-}
-
-// ----------------------
-
-export interface UserImageLimit {
-  maxCount: number
-}
-
-export interface CardSize {
-  width: number
-  height: number
-}
-
-export interface ImageThumbnail {
-  id: string
-  source: ImageSource
-  role: 'thumbnail'
-  url: string
-  width: number
-  height: number
 }

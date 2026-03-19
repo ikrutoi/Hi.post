@@ -11,8 +11,6 @@ import type {
   ImageSource,
   CardphotoSessionRecord,
 } from '../../domain/types'
-import type { LayoutOrientation } from '@layout/domain/types'
-
 export interface CardphotoSliceState {
   state: CardphotoState
   isComplete: boolean
@@ -85,9 +83,7 @@ export const cardphotoSlice = createSlice({
         isComplete: boolean
       }>,
     ) {
-      // console.log('>>HYDRATE')
-      const { base, config, activeSource, cropIds, cropCount } =
-        action.payload
+      const { base, config, activeSource, cropIds, cropCount } = action.payload
 
       if (state.state) {
         state.state = {
@@ -128,9 +124,7 @@ export const cardphotoSlice = createSlice({
       state.state.base[target].image = image
     },
 
-    uploadUserImage(state, action: PayloadAction<ImageMeta>) {
-      console.log('>>>uploadUserImage<<<<<<< payload', action.payload)
-    },
+    uploadUserImage(state, action: PayloadAction<ImageMeta>) {},
 
     // addOperation(state, action: PayloadAction<CardphotoOperation>) {
     //   pushOperation(
@@ -149,59 +143,12 @@ export const cardphotoSlice = createSlice({
       }
     },
 
-    undo(state) {
-      if (!state.state) return
-      if (state.state.activeIndex <= 0) return
-      state.state.activeIndex -= 1
-
-      state.state.currentConfig =
-        state.state.operations[state.state.activeIndex]?.payload.config ?? null
-    },
-
-    redo(state) {
-      if (!state.state) return
-      if (state.state.activeIndex >= state.state.operations.length - 1) return
-      state.state.activeIndex += 1
-
-      state.state.currentConfig =
-        state.state.operations[state.state.activeIndex]?.payload.config ?? null
-    },
-
-    setOrientation(state, action: PayloadAction<LayoutOrientation>) {
-      if (!state.state || !state.state.currentConfig) return
-
-      const newConfig: WorkingConfig = {
-        ...state.state.currentConfig,
-        card: {
-          ...state.state.currentConfig.card,
-          orientation: action.payload,
-        },
-      }
-
-      const op: CardphotoOperation = {
-        type: 'operation',
-        payload: {
-          config: newConfig,
-          reason: 'rotateCard',
-        },
-      }
-
-      state.state.operations = state.state.operations.slice(
-        0,
-        state.state.activeIndex + 1,
-      )
-      state.state.operations.push(op)
-      state.state.activeIndex = state.state.operations.length - 1
-      state.state.currentConfig = newConfig
-    },
-
     applyFinal(state, action: PayloadAction<ImageMeta>) {
       if (!state.state) return
       state.state.base.apply.image = action.payload
       state.isComplete = !!action.payload
     },
 
-    /** Снять Apply: секция перестаёт быть complete, контент (кропы и т.д.) не удаляется */
     clearApply(state) {
       if (!state.state) return
       state.state.base.apply.image = null
@@ -334,8 +281,7 @@ export const cardphotoSlice = createSlice({
 
     restoreSession(state, action: PayloadAction<CardphotoSessionRecord>) {
       if (state.state) {
-        const { source, config, apply, cropIds, activeMetaId } =
-          action.payload
+        const { source, config, apply, cropIds, activeMetaId } = action.payload
 
         state.state.base.apply.image = apply
         state.state.appended = null
@@ -363,32 +309,6 @@ export const cardphotoSlice = createSlice({
         }
       }
     },
-
-    // restoreSession(state, action: PayloadAction<CardphotoSessionRecord>) {
-    //   if (state.state) {
-    //     const { source, config, apply, isComplete, cropIds } = action.payload
-
-    //     state.state.activeSource = source
-
-    //     state.isComplete = isComplete
-
-    //     state.state.base.apply.image = apply
-
-    //     state.state.cropIds = cropIds || []
-    //     state.state.cropCount = (cropIds || []).length
-
-    //     state.state.currentConfig = {
-    //       card: config.card,
-    //       crop: config.crop,
-    //       image: {
-    //         ...config.image,
-    //         meta:
-    //           (config.image as any).meta ||
-    //           ({ id: config.image.metaId } as ImageMeta),
-    //       },
-    //     }
-    //   }
-    // },
   },
 })
 
@@ -400,9 +320,6 @@ export const {
   setBaseImage,
   uploadUserImage,
   addOperation,
-  undo,
-  redo,
-  setOrientation,
   applyFinal,
   clearApply,
   reset,

@@ -5,6 +5,4 @@ export {
   selectCardphotoSteps,
   selectCurrentStepIndex,
   selectCurrentStep,
-  selectCanUndo,
-  selectCanRedo,
 } from './cardphotoSteps.selectors'

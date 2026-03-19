@@ -31,14 +31,10 @@ import {
   setCardtextAddTemplateOpen,
 } from '@cardtext/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
-import {
-  selectActiveSource,
-  selectCardOrientation,
-} from '@cardphoto/infrastructure/selectors'
-import {
-  setOrientation,
-  setActiveSource,
-} from '@cardphoto/infrastructure/state'
+import { selectActiveSource } from '@cardphoto/infrastructure/selectors'
+import { setActiveSource } from '@cardphoto/infrastructure/state'
+import { selectCardOrientation } from '@layout/infrastructure/selectors'
+import { setCardOrientation, setSizeCard } from '@layout/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { handleCardtextToolbarAction } from './cardtextToolbarSaga'
 import { updateToolbarIcon, updateGroupStatus } from '@toolbar/infrastructure/state'
@@ -220,7 +216,12 @@ export function* syncCardOrientationStatus(): SagaIterator {
 
 export function* watchCardphotoOrientation(): SagaIterator {
   yield takeEvery(
-    [setOrientation.type, setActiveSource.type, toolbarAction.type],
+    [
+      setActiveSource.type,
+      toolbarAction.type,
+      setCardOrientation.type,
+      setSizeCard.type,
+    ],
     syncCardOrientationStatus,
   )
 }

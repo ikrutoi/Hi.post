@@ -44,13 +44,13 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'edit',
     icons: [
-      {
-        key: 'cardOrientation',
-        state: 'disabled',
-        options: { orientation: 'landscape' },
-      },
-      { key: 'imageRotateLeft', state: 'disabled' },
-      { key: 'imageRotateRight', state: 'disabled' },
+      // {
+      //   key: 'cardOrientation',
+      //   state: 'disabled',
+      //   options: { orientation: 'landscape' },
+      // },
+      // { key: 'imageRotateLeft', state: 'disabled' },
+      // { key: 'imageRotateRight', state: 'disabled' },
       { key: 'crop', state: 'disabled' },
       { key: 'cropFull', state: 'disabled' },
       { key: 'cropCheck', state: 'disabled' },

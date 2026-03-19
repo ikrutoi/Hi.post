@@ -3,8 +3,6 @@ import {
   selectCardphotoSteps,
   selectCurrentStepIndex,
   selectCurrentStep,
-  selectCanUndo,
-  selectCanRedo,
 } from '../../infrastructure/selectorsLayout'
 import { useCardphotoSteps } from '../hooksLayer'
 
@@ -14,8 +12,6 @@ export const cardphotoStepsFacade = {
     selectCardphotoSteps,
     selectCurrentStepIndex,
     selectCurrentStep,
-    selectCanUndo,
-    selectCanRedo,
   },
   use: useCardphotoSteps,
 }

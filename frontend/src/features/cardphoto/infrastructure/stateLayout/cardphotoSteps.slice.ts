@@ -15,16 +15,6 @@ export const cardphotoStepsSlice = createSlice({
       state.steps = newSteps
       state.currentStepIndex = newSteps.length - 1
     },
-    undo(state) {
-      if (state.currentStepIndex > 0) {
-        state.currentStepIndex -= 1
-      }
-    },
-    redo(state) {
-      if (state.currentStepIndex < state.steps.length - 1) {
-        state.currentStepIndex += 1
-      }
-    },
     setSteps(state, action: PayloadAction<CardphotoItem[]>) {
       state.steps = action.payload
       state.currentStepIndex =

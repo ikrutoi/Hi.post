@@ -69,6 +69,7 @@ import type {
   ImageSource,
   ImageRecord,
 } from '@cardphoto/domain/types'
+import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import { prepareForRedux } from './cardphotoHelpers'
 import { persistGlobalSession } from './sessionSaga'
 import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
@@ -527,7 +528,7 @@ export function* handleDeleteImageSaga(
         yield fork(rebuildConfigFromMeta, stockImage, 'stock')
       }
     } else if (source === 'user') {
-      yield call(storeAdapters.userImages.deleteById, 'current')
+      yield call(storeAdapters.editorImages.deleteById, CURRENT_EDITOR_IMAGE_ID)
       yield put(removeUserImage())
 
       if (state.cropIds.length > 0) {

@@ -7,7 +7,6 @@ import {
   hydrateEditor,
   initCardphoto,
   setActiveSource,
-  setOrientation,
   restoreSession,
   applyFinal,
   addCropId,
@@ -102,6 +101,7 @@ import type {
   WorkingConfig,
   ImageSource,
 } from '@cardphoto/domain/types'
+import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import {
   setValue,
   setTextStyle,
@@ -214,7 +214,6 @@ const SESSION_WATCH_ACTIONS = [
   // cardtextSlice.actions.setFontFamily.type,
   addOperation.type,
   initCardphoto.type,
-  setOrientation.type,
   setActiveSource.type,
   addCropId.type,
   applyFinal.type,
@@ -336,7 +335,7 @@ export function* hydrateAppSession() {
         { image: ImageMeta } | null,
       ] = yield all([
         call([storeAdapters.stockImages, 'getById'], 'current_stock_image'),
-        call([storeAdapters.userImages, 'getById'], 'current_user_image'),
+        call([storeAdapters.editorImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
         activeMetaId
           ? call([storeAdapters.cropImages, 'getById'], activeMetaId)
           : null,
@@ -424,7 +423,7 @@ export function* hydrateAppSession() {
         SizeCard,
       ] = yield all([
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
-        call([storeAdapters.userImages, 'getById'], 'current_user_image'),
+        call([storeAdapters.editorImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
         call([storeAdapters.cropImages, 'getAll']),
         select(selectSizeCard),
       ])

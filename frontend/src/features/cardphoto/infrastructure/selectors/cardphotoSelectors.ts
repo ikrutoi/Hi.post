@@ -9,12 +9,11 @@ import type {
   ImageMeta,
   CardphotoBase,
   QualityLevel,
-  GalleryItem,
   ImageSource,
   CardphotoSessionRecord,
 } from '../../domain/types'
-import type { LayoutOrientation } from '@layout/domain/types'
 import { cardEditorReducer } from '@/entities/cardEditor/infrastructure/state'
+import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 
 export const selectCardphotoSlice = (state: RootState) => state.cardphoto
 
@@ -54,16 +53,8 @@ export const selectCurrentConfig = (state: RootState): WorkingConfig | null => {
 export const selectCurrentImageMeta = (state: RootState): ImageMeta | null =>
   selectCurrentConfig(state)?.image?.meta ?? null
 
-export const selectCardOrientation = (state: RootState): LayoutOrientation =>
-  state.cardphoto.state?.currentConfig?.card.orientation ?? 'landscape'
-
 export const selectCropIds = (state: RootState): string[] =>
   state.cardphoto.state?.cropIds ?? []
-
-export const selectCropOrientation = (state: RootState): LayoutOrientation =>
-  state.cardphoto.state?.currentConfig?.crop?.orientation ??
-  state.cardphoto.state?.currentConfig?.card.orientation ??
-  'landscape'
 
 export const selectIsCurrentCropApplied = (state: RootState): boolean => {
   const cp = state.cardphoto.state
@@ -89,11 +80,10 @@ const selectCurrentCard = (state: RootState) =>
   state.cardphoto.state?.currentConfig?.card
 
 export const selectCardSize = createSelector([selectCurrentCard], (card) => {
-  if (!card) return { width: 0, height: 0, orientation: 'landscape' }
+  if (!card) return { width: 0, height: 0 }
   return {
     width: card.width,
     height: card.height,
-    orientation: card.orientation,
   }
 })
 
@@ -188,7 +178,7 @@ export const selectCardphotoSessionRecord = createSelector(
 
     const activeMetaId =
       activeSource === 'user'
-        ? 'current_user_image'
+        ? CURRENT_EDITOR_IMAGE_ID
         : activeSource === 'apply'
           ? 'current_apply_image'
           : config.image.meta.id
