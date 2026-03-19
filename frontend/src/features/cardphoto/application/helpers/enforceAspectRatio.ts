@@ -5,7 +5,7 @@ import type { CropLayer, ImageLayer } from '../../domain/types'
 export function enforceAspectRatio1(
   crop: CropLayer,
   imageLayer: ImageLayer,
-  orientation: LayoutOrientation
+  _orientation: LayoutOrientation
 ): CropLayer {
   const adjusted: CropLayer = {
     ...crop,
@@ -21,30 +21,19 @@ export function enforceAspectRatio1(
   const maxRight = imageLayer.left + imageLayer.meta.width
   const maxBottom = imageLayer.top + imageLayer.meta.height
 
-  if (orientation === 'portrait') {
-    adjusted.meta.height = imageLayer.meta.height
-    adjusted.meta.width = roundTo(imageLayer.meta.height / aspectRatio, 2)
-    if (adjusted.x + adjusted.meta.width > maxRight) {
-      adjusted.meta.width = maxRight - adjusted.x
-      adjusted.meta.height = Math.round(adjusted.meta.width * aspectRatio)
-    }
+  // Cardphoto always uses square card sizes, so orientation does not affect
+  // aspect fit logic. We keep one unified path to simplify code.
+  adjusted.meta.width = imageLayer.meta.width
+  adjusted.meta.height = roundTo(imageLayer.meta.width / aspectRatio, 2)
 
-    if (adjusted.y + adjusted.meta.height > maxBottom) {
-      adjusted.meta.height = maxBottom - adjusted.y
-      adjusted.meta.width = Math.round(adjusted.meta.height / aspectRatio)
-    }
-  } else {
-    adjusted.meta.width = imageLayer.meta.width
-    adjusted.meta.height = roundTo(imageLayer.meta.width / aspectRatio, 2)
-    if (adjusted.y + adjusted.meta.height > maxBottom) {
-      adjusted.meta.height = maxBottom - adjusted.y
-      adjusted.meta.width = roundTo(adjusted.meta.height * aspectRatio, 2)
-    }
+  if (adjusted.y + adjusted.meta.height > maxBottom) {
+    adjusted.meta.height = maxBottom - adjusted.y
+    adjusted.meta.width = roundTo(adjusted.meta.height * aspectRatio, 2)
+  }
 
-    if (adjusted.x + adjusted.meta.width > maxRight) {
-      adjusted.meta.width = maxRight - adjusted.x
-      adjusted.meta.height = roundTo(adjusted.meta.width / aspectRatio, 2)
-    }
+  if (adjusted.x + adjusted.meta.width > maxRight) {
+    adjusted.meta.width = maxRight - adjusted.x
+    adjusted.meta.height = roundTo(adjusted.meta.width / aspectRatio, 2)
   }
 
   return adjusted
@@ -53,17 +42,11 @@ export function enforceAspectRatio1(
 export function enforceAspectRatio(
   crop: CropLayer,
   imageLayer: ImageLayer,
-  orientation: LayoutOrientation
+  _orientation: LayoutOrientation
 ): CropLayer {
   const adjusted = { ...crop, meta: { ...crop.meta } }
 
-  let targetRatio = adjusted.meta.aspectRatio
-
-  if (orientation === 'portrait' && targetRatio > 1) {
-    targetRatio = 1 / targetRatio
-  } else if (orientation === 'landscape' && targetRatio < 1) {
-    targetRatio = 1 / targetRatio
-  }
+  const targetRatio = adjusted.meta.aspectRatio
 
   const currentRatio = adjusted.meta.width / adjusted.meta.height
   if (Math.abs(currentRatio - targetRatio) < 0.001) {

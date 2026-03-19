@@ -206,40 +206,9 @@ export function* rebuildConfigFromMeta(
 
     const currentCard: SizeCard = yield select(selectSizeCard)
 
-    let targetOrientation: LayoutOrientation
-    if (forceOrientation) {
-      targetOrientation = forceOrientation
-    } else {
-      targetOrientation = meta.orientation
-        ? meta.orientation
-        : meta.imageAspectRatio >= 1
-          ? 'landscape'
-          : 'portrait'
-    }
-
-    if (currentCard.orientation !== targetOrientation) {
-      const cardBaseRatio =
-        currentCard.aspectRatio > 1
-          ? currentCard.aspectRatio
-          : roundTo(1 / currentCard.aspectRatio, 3)
-
-      const finalRatio =
-        targetOrientation === 'landscape'
-          ? cardBaseRatio
-          : roundTo(1 / cardBaseRatio, 3)
-
-      const newWidth = Math.round(currentCard.height * finalRatio)
-
-      yield put(
-        setSizeCard({
-          orientation: targetOrientation,
-          width: newWidth,
-          height: currentCard.height,
-          aspectRatio: finalRatio,
-        }),
-      )
-      yield delay(32)
-    }
+    // Cardphoto cards are square (125x125mm), so we never switch layout orientation here.
+    // Keep `forceOrientation` for backward compatibility with older call sites.
+    void forceOrientation
 
     const newRotation = rotation ?? meta.rotation ?? 0
 
@@ -256,7 +225,8 @@ export function* rebuildConfigFromMeta(
     if (source === 'user') {
       const newOriginalMeta = {
         ...meta,
-        orientation: targetOrientation,
+        // orientation doesn't affect square calculations anymore
+        orientation: meta.orientation ?? 'landscape',
         rotation: newRotation,
       }
 
@@ -270,7 +240,7 @@ export function* rebuildConfigFromMeta(
         type: 'operation',
         payload: {
           config: prepareConfigForRedux(newConfig),
-          reason: forceOrientation ? 'rotateCard' : 'rebuild',
+          reason: 'rebuild',
         },
       }),
     )

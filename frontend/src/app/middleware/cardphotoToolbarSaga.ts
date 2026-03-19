@@ -30,7 +30,6 @@ import {
 import {
   handleCropAction,
   // handleCropCheckAction,
-  handleCardOrientation,
   handleImageRotate,
   handleCropFullAction,
   syncCropFullIcon,
@@ -94,15 +93,7 @@ export function* handleCardphotoToolbarAction(
 ): SagaIterator {
   const { section, key, payload: editor } = action.payload
 
-  if (section !== 'cardphoto' && key !== 'cardOrientation') return
-
-  if (key === 'cardOrientation') {
-    yield call(handleCardOrientation)
-    if (section === 'cardtext') {
-      yield call(syncCardtextToolbarVisuals)
-    }
-    return
-  }
+  if (section !== 'cardphoto') return
 
   switch (key) {
     case 'listCardphoto': {
@@ -177,10 +168,9 @@ export function* handleCardphotoToolbarAction1(
   action: ReturnType<typeof toolbarAction>,
 ): SagaIterator {
   const { section, key } = action.payload
-  const isCardOrientationCall = key === 'cardOrientation'
   const isCardphotoSection = section === 'cardphoto'
 
-  if (!isCardphotoSection && !isCardOrientationCall) return
+  if (!isCardphotoSection) return
 
   switch (key) {
     case 'deleteList':
@@ -215,9 +205,6 @@ export function* handleCardphotoToolbarAction1(
       break
     case 'cropHistory':
       yield call(handleCropGalleryAction)
-      break
-    case 'cardOrientation':
-      yield call(handleCardOrientation)
       break
     case 'imageRotateLeft':
     case 'imageRotateRight':

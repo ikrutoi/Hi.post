@@ -1,15 +1,12 @@
 import { nanoid } from 'nanoid'
 import { useCallback } from 'react'
 import { roundTo } from '@shared/utils/layout'
-import { selectSizeCard } from '@layout/infrastructure/selectors'
-import { useSizeFacade } from '@layout/application/facades/useSizeFacade'
 import type { ImageMeta } from '../../domain/types'
 
 export const useImageUpload = (
   onUpload: (meta: ImageMeta) => void,
   onLoading: () => void,
 ) => {
-  const { sizeCard } = useSizeFacade()
   // console.log('USE_IMAGE_UPLOAD')
 
   return useCallback(
@@ -33,7 +30,8 @@ export const useImageUpload = (
           width,
           height,
           imageAspectRatio,
-          orientation: sizeCard.orientation,
+          // Cardphoto is square (125x125mm), so orientation is no longer used.
+          orientation: 'landscape',
           rotation: 0,
           isCropped: false,
           timestamp: Date.now(),

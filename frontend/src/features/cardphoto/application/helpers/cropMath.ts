@@ -166,10 +166,8 @@ export const checkIsCropFull = (config: WorkingConfig): boolean => {
     ? roundTo(1 / image.meta.imageAspectRatio, 3)
     : image.meta.imageAspectRatio
 
-  const targetAR =
-    card.orientation === 'portrait'
-      ? roundTo(1 / card.aspectRatio, 3)
-      : card.aspectRatio
+  // Cardphoto is always square, so orientation does not affect "full crop" checks.
+  const targetAR = card.aspectRatio
 
   let maxWidth = 0
   let maxHeight = 0

@@ -9,8 +9,6 @@ type Props = {
 }
 
 export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
-  const isEmpty = true
-
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
@@ -33,11 +31,9 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
           tabIndex={0}
           aria-label="Cardphoto templates list"
         >
-          {isEmpty && (
-            <div className={styles.listEmpty} aria-hidden>
-              <CardphotoPreviewEmptyGrid />
-            </div>
-          )}
+          <div className={styles.listEmpty} aria-hidden>
+            <CardphotoPreviewEmptyGrid />
+          </div>
         </div>
       </ScrollArea>
     </div>

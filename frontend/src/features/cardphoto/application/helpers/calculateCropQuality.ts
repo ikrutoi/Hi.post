@@ -11,7 +11,7 @@ import type {
   QualityLevel,
 } from '../../domain/types'
 
-const { minAllowedDpi, maxAllowedDpi, widthMm, heightMm } = CARD_SCALE_CONFIG
+const { minAllowedDpi, maxAllowedDpi, widthMm } = CARD_SCALE_CONFIG
 
 const calculateSteppedProgress = (currentDpi: number) => {
   const min = minAllowedDpi
@@ -29,8 +29,10 @@ export const calculateCropQuality = (
   originalImage: ImageMeta,
   orientation: LayoutOrientation,
 ) => {
-  const isCardOrientation = orientation === 'landscape'
-  const inches = isCardOrientation ? widthMm / 25.4 : heightMm / 25.4
+  // Cardphoto is always square, so orientation doesn't affect DPI/quality.
+  // Keep `orientation` only for backward compatibility with existing call sites.
+  void orientation
+  const inches = widthMm / 25.4
 
   const isSideOrientation = image.rotation === 90 || image.rotation === 270
 
@@ -64,9 +66,8 @@ export const calculateCropQuality1 = (
 ) => {
   console.log('calculateCropQuality+ crop/image', crop, image)
   console.log('calculateCropQuality++ originalImage', originalImage)
-  const isCardOrientation = orientation === 'landscape'
-  const inches = isCardOrientation ? widthMm / 25.4 : heightMm / 25.4
-  // const inches = widthMm / 25.4
+  void orientation
+  const inches = widthMm / 25.4
 
   const isSideOrientation = image.rotation === 90 || image.rotation === 270
   const originalReferenceWidth = isSideOrientation

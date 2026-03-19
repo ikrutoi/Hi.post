@@ -595,22 +595,7 @@ export function* syncQualitySaga() {
 }
 
 export function* handleCropGalleryAction() {
-  const sizeCard: SizeCard = yield select(selectSizeCard)
-  const newOrientation: LayoutOrientation =
-    sizeCard.orientation === 'portrait' ? 'landscape' : 'portrait'
-
-  const viewportSize: ViewportSizeState = yield select(selectViewportSize)
-  const viewportHeight = viewportSize?.height ?? sizeCard.height
-
-  yield put(setCardOrientation({ orientation: newOrientation, viewportHeight }))
-
-  yield put(
-    updateToolbarIcon({
-      section: 'cardphoto',
-      key: 'orientation',
-      value: newOrientation,
-    }),
-  )
+  // Cardphoto cards are square; crop gallery should not toggle layout orientation.
 }
 
 export function* handleBackToOriginalSaga() {
