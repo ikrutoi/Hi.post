@@ -3,7 +3,6 @@ import type {
   ImageMeta,
   WorkingConfig,
   CardphotoState,
-  CardphotoOperation,
   CardphotoBase,
   ImageLayer,
   CropLayer,
@@ -24,8 +23,6 @@ const initialState: CardphotoSliceState = {
       apply: { image: null },
       processed: { image: null },
     },
-    operations: [],
-    activeIndex: -1,
     cropCount: 0,
     cropIds: [],
     activeSource: null,
@@ -88,10 +85,6 @@ export const cardphotoSlice = createSlice({
       if (state.state) {
         state.state = {
           base,
-          operations: [
-            { type: 'operation', payload: { config, reason: 'reset' } },
-          ],
-          activeIndex: 0,
           cropCount,
           cropIds,
           activeSource,
@@ -101,10 +94,6 @@ export const cardphotoSlice = createSlice({
       } else {
         state.state = {
           base,
-          operations: [
-            { type: 'operation', payload: { config, reason: 'reset' } },
-          ],
-          activeIndex: 0,
           cropCount,
           cropIds,
           activeSource,
@@ -134,12 +123,9 @@ export const cardphotoSlice = createSlice({
     //   )
     // },
 
-    addOperation(state, action: PayloadAction<CardphotoOperation>) {
+    commitWorkingConfig(state, action: PayloadAction<WorkingConfig>) {
       if (state.state) {
-        state.state.currentConfig = action.payload.payload.config
-
-        state.state.operations = []
-        state.state.activeIndex = -1
+        state.state.currentConfig = action.payload
       }
     },
 
@@ -158,8 +144,6 @@ export const cardphotoSlice = createSlice({
 
     reset(state) {
       if (!state.state) return
-      state.state.operations = []
-      state.state.activeIndex = -1
       state.state.base.apply.image = null
       state.state.appended = null
       state.state.currentConfig = null
@@ -185,8 +169,6 @@ export const cardphotoSlice = createSlice({
         crop: cropLayer,
       }
 
-      state.state.operations = []
-      state.state.activeIndex = -1
       state.state.base.apply.image = null
       state.state.appended = null
       state.state.currentConfig = workingConfig
@@ -319,7 +301,7 @@ export const {
   selectCropFromHistory,
   setBaseImage,
   uploadUserImage,
-  addOperation,
+  commitWorkingConfig,
   applyFinal,
   clearApply,
   reset,

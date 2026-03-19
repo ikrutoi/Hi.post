@@ -4,7 +4,6 @@ import { roundTo } from '@shared/utils/layout'
 import { checkIsCropFull } from '../../application/helpers'
 import type {
   CardphotoState,
-  CardphotoOperation,
   WorkingConfig,
   ImageMeta,
   CardphotoBase,
@@ -35,17 +34,6 @@ export const selectUserImage = (state: RootState): ImageMeta | null =>
 export const selectAppliedImage = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.base.apply.image || null
 
-export const selectOperations = (state: RootState): CardphotoOperation[] =>
-  state.cardphoto.state?.operations ?? []
-
-export const selectActiveIndex = (state: RootState): number =>
-  state.cardphoto.state?.activeIndex ?? -1
-
-export const selectActiveOperation = createSelector(
-  [selectOperations, selectActiveIndex],
-  (operations, index) => (index >= 0 ? (operations[index] ?? null) : null),
-)
-
 export const selectCurrentConfig = (state: RootState): WorkingConfig | null => {
   return state.cardphoto.state?.currentConfig ?? null
 }
@@ -66,14 +54,6 @@ export const selectIsCurrentCropApplied = (state: RootState): boolean => {
   if (!currentImg || !appliedImg) return false
 
   return currentImg.id === appliedImg.id
-}
-
-export const selectLastOperationReason = (state: RootState): string | null => {
-  const cardState = state.cardphoto.state
-  if (!cardState) return null
-
-  const activeOp = cardState.operations[cardState.activeIndex]
-  return activeOp?.payload.reason ?? null
 }
 
 const selectCurrentCard = (state: RootState) =>

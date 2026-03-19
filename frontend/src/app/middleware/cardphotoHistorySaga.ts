@@ -24,7 +24,6 @@ import {
 import type {
   ImageMeta,
   CardphotoState,
-  CardphotoOperation,
   WorkingConfig,
   CardLayer,
   CardphotoBase,

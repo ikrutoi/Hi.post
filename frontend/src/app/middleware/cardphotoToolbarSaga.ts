@@ -13,7 +13,7 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { RootState } from '@app/state'
 import {
-  addOperation,
+  commitWorkingConfig,
   resetCardphoto,
   setActiveSource,
   hydrateEditor,
@@ -65,7 +65,7 @@ import type {
 import { SizeCard } from '@layout/domain/types'
 
 export function* watchCropChanges(): SagaIterator {
-  yield takeLatest(addOperation.type, function* (): SagaIterator {
+  yield takeLatest(commitWorkingConfig.type, function* (): SagaIterator {
     yield call(syncCropFullIcon)
 
     const state = (yield select((s) => s.cardphoto)) as CardphotoState
@@ -417,7 +417,7 @@ export function* watchToolbarContext() {
     [
       hydrateEditor.type,
       setActiveSource.type,
-      addOperation.type,
+      commitWorkingConfig.type,
       resetCardphoto.type,
       setProcessedImage.type,
       markLoaded.type,

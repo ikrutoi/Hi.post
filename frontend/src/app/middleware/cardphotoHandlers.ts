@@ -5,7 +5,7 @@ import type { SagaIterator } from 'redux-saga'
 import { RootState } from '../state'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
-  addOperation,
+  commitWorkingConfig,
   applyFinal,
   type CardphotoSliceState,
   markLoading,
@@ -61,7 +61,6 @@ import type {
   WorkingConfig,
   ImageMeta,
   ImageLayer,
-  CardphotoOperation,
   CardLayer,
   CardphotoState,
   ImageRotation,
@@ -128,15 +127,7 @@ export function* handleCropFullAction(): SagaIterator {
     },
   }
 
-  const op: CardphotoOperation = {
-    type: 'operation',
-    payload: {
-      config: prepareConfigForRedux(newConfig),
-      reason: 'cropFull',
-    },
-  }
-
-  yield put(addOperation(op))
+  yield put(commitWorkingConfig(prepareConfigForRedux(newConfig)))
 }
 
 export function* syncCropFullIcon(params?: {
@@ -221,12 +212,7 @@ export function* handleImageLayerUpdate() {
   //   crop: newCropLayer,
   // }
 
-  const op: CardphotoOperation = {
-    type: 'operation',
-    payload: { config: newConfig, reason: 'rotateCard' },
-  }
-
-  yield put(addOperation(op))
+  // `rebuildConfigFromMeta` already updates `currentConfig` via `commitWorkingConfig`.
 }
 
 export function* handleCardOrientation(): SagaIterator {
@@ -265,15 +251,10 @@ export function* handleCardOrientation(): SagaIterator {
     newOrientation,
   )
 
-  const op: CardphotoOperation = {
-    type: 'operation',
-    payload: { config: newConfig, reason: 'rotateCard' },
-  }
-
   // console.log('handleCardOrientation newCardLayer', newCardLayer)
 
   // yield put(setSizeCard(newConfig.card))
-  yield put(addOperation(op))
+  // `rebuildConfigFromMeta` already updates `currentConfig` via `commitWorkingConfig`.
 
   yield put(
     updateToolbarIcon({
@@ -333,15 +314,7 @@ export function* handleImageRotate(
 
   console.log('handleImageRotate config', config)
 
-  const op: CardphotoOperation = {
-    type: 'operation',
-    payload: {
-      config,
-      reason: 'rotateImage',
-    },
-  }
-
-  yield put(addOperation(op))
+  // `rebuildConfigFromMeta` already updates `currentConfig` via `commitWorkingConfig`.
 }
 
 export function* handleCropConfirm(): SagaIterator {
@@ -436,12 +409,7 @@ export function* handleCropConfirm(): SagaIterator {
       'processed',
     )
 
-    yield put(
-      addOperation({
-        type: 'operation',
-        payload: { config: newConfig, reason: 'applyCrop' },
-      }),
-    )
+    // `rebuildConfigFromMeta` already commits `currentConfig` via `commitWorkingConfig`.
 
     yield put(
       updateToolbarIcon({

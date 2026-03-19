@@ -90,26 +90,8 @@ export interface CardphotoSessionRecord {
   appliedImageUrl: string | null
 }
 
-export type CardphotoOperationReason =
-  | 'reset'
-  | 'cropFull'
-  | 'rotateCard'
-  | 'rotateImage'
-  | 'applyCrop'
-  | 'rebuild'
-
-export type CardphotoOperation = {
-  type: 'operation'
-  payload: {
-    config: WorkingConfig
-    reason?: CardphotoOperationReason
-  }
-}
-
 export interface CardphotoState {
   base: CardphotoBase
-  operations: CardphotoOperation[]
-  activeIndex: number
   cropCount: number
   cropIds: string[]
   activeSource: ImageSource | null

@@ -5,7 +5,6 @@ import {
   initCardphoto,
   // initStockImage,
   uploadUserImage,
-  addOperation,
   applyFinal,
   reset,
   cancelSelection,
@@ -21,12 +20,8 @@ import {
   selectUserImage,
   // selectGalleryImage,
   selectAppliedImage,
-  selectOperations,
-  selectActiveIndex,
-  selectActiveOperation,
   selectActiveSource,
   selectCurrentConfig,
-  selectLastOperationReason,
   selectCardSize,
   selectCropQuality,
   selectCropQualityProgress,
@@ -41,7 +36,6 @@ import type {
   ImageMeta,
   ImageLayer,
   CropLayer,
-  CardphotoOperation,
   CardphotoState,
   WorkingConfig,
   QualityLevel,
@@ -55,12 +49,8 @@ export interface CardphotoFacade {
     userImage: ImageMeta | null
     // galleryImage: ImageMeta | null
     appliedImage: ImageMeta | null
-    operations: CardphotoOperation[]
-    activeIndex: number
-    activeOperation: CardphotoOperation | null
     activeSource: ImageSource | null
     currentConfig: WorkingConfig | null
-    lastOperationReason: string | null
     cardSize: { width: number; height: number }
     quality: QualityLevel
     qualityProgress: number
@@ -74,7 +64,6 @@ export interface CardphotoFacade {
     uploadImage: (meta: ImageMeta) => void
     // setStockImage: (payload: { meta: ImageMeta; config: WorkingConfig }) => void
     setUserImage: (meta: ImageMeta) => void
-    addOp: (op: CardphotoOperation) => void
     apply: (meta: ImageMeta) => void
     resetAll: () => void
     cancel: () => void
@@ -96,12 +85,8 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const stockImage = useSelector(selectStockImage)
   const userImage = useSelector(selectUserImage)
   const appliedImage = useSelector(selectAppliedImage)
-  const operations = useSelector(selectOperations)
-  const activeIndex = useSelector(selectActiveIndex)
-  const activeOperation = useSelector(selectActiveOperation)
   const activeSource = useSelector(selectActiveSource)
   const currentConfig = useSelector(selectCurrentConfig)
-  const lastOperationReason = useSelector(selectLastOperationReason)
   const cardSize = useSelector(selectCardSize)
   const quality = useSelector(selectCropQuality)
   const qualityProgress = useSelector(selectCropQualityProgress)
@@ -116,12 +101,8 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       stockImage,
       userImage,
       appliedImage,
-      operations,
-      activeIndex,
-      activeOperation,
       activeSource,
       currentConfig,
-      lastOperationReason,
       cardSize,
       quality,
       qualityProgress,
@@ -135,12 +116,8 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       stockImage,
       userImage,
       appliedImage,
-      operations,
-      activeIndex,
-      activeOperation,
       activeSource,
       currentConfig,
-      lastOperationReason,
       cardSize,
       quality,
       qualityProgress,
@@ -155,7 +132,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       init: () => dispatch(initCardphoto()),
       uploadImage: (meta: ImageMeta) => dispatch(uploadImageReady(meta)),
       setUserImage: (meta: ImageMeta) => dispatch(uploadUserImage(meta)),
-      addOp: (op: CardphotoOperation) => dispatch(addOperation(op)),
       apply: (meta: ImageMeta) => dispatch(applyFinal(meta)),
       resetAll: () => dispatch(reset()),
       cancel: () => dispatch(cancelSelection()),

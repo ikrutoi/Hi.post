@@ -4,7 +4,6 @@ import {
   initCardphoto,
   // initStockImage,
   uploadUserImage,
-  addOperation,
   applyFinal,
   reset,
   cancelSelection,
@@ -17,11 +16,7 @@ import {
   selectStockImage,
   selectUserImage,
   selectAppliedImage,
-  selectOperations,
-  selectActiveIndex,
-  selectActiveOperation,
   selectCurrentConfig,
-  selectLastOperationReason,
   selectCardSize,
   selectCropQuality,
   selectCropQualityProgress,
@@ -30,7 +25,6 @@ import {
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
-  CardphotoOperation,
   WorkingConfig,
 } from '../../domain/types'
 export const useCardphotoController = () => {
@@ -41,16 +35,12 @@ export const useCardphotoController = () => {
   const stockImage = useSelector(selectStockImage)
   const userImage = useSelector(selectUserImage)
   const appliedImage = useSelector(selectAppliedImage)
-  const operations = useSelector(selectOperations)
-  const activeIndex = useSelector(selectActiveIndex)
-  const activeOperation = useSelector(selectActiveOperation)
   const currentConfig = useSelector(selectCurrentConfig)
   const quality = useSelector(selectCropQuality)
   const qualityProgress = useSelector(selectCropQualityProgress)
   const activeImage = useSelector(selectActiveImage)
   const processedMode = useSelector(selectIsProcessedMode)
 
-  const lastOperationReason = useSelector(selectLastOperationReason)
   const cardSize = useSelector(selectCardSize)
 
   const init = () => dispatch(initCardphoto())
@@ -58,7 +48,6 @@ export const useCardphotoController = () => {
   // const setStockImage = (payload: { meta: ImageMeta; config: WorkingConfig }) =>
   //   dispatch(initStockImage(payload))
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
-  const addOp = (op: CardphotoOperation) => dispatch(addOperation(op))
   const apply = (meta: ImageMeta) => dispatch(applyFinal(meta))
   const resetAll = () => dispatch(reset())
   const cancel = () => dispatch(cancelSelection())
@@ -70,11 +59,7 @@ export const useCardphotoController = () => {
     stockImage,
     userImage,
     appliedImage,
-    operations,
-    activeIndex,
-    activeOperation,
     currentConfig,
-    lastOperationReason,
     cardSize,
     quality,
     qualityProgress,
@@ -85,7 +70,6 @@ export const useCardphotoController = () => {
     uploadImage,
     // setStockImage,
     setUserImage,
-    addOp,
     apply,
     resetAll,
     cancel,

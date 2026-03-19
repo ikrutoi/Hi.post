@@ -21,7 +21,7 @@ import {
   markLoaded,
   setNeedsCrop,
   resetCropLayers,
-  addOperation,
+  commitWorkingConfig,
   setBaseImage,
   uploadImageReady,
   hydrateEditor,
@@ -62,7 +62,6 @@ import type {
   ImageMeta,
   CardLayer,
   WorkingConfig,
-  CardphotoOperation,
   CardphotoState,
   CardphotoBase,
   ImageSource,
@@ -236,15 +235,7 @@ export function* rebuildConfigFromMeta(
       yield put(setBaseImage({ target: 'user', image: serializableMeta }))
     }
 
-    yield put(
-      addOperation({
-        type: 'operation',
-        payload: {
-          config: prepareConfigForRedux(newConfig),
-          reason: 'rebuild',
-        },
-      }),
-    )
+    yield put(commitWorkingConfig(prepareConfigForRedux(newConfig)))
 
     yield fork(persistGlobalSession)
 

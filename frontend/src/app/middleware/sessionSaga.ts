@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { selectCardphotoSessionRecord } from '@cardphoto/infrastructure/selectors'
 import {
-  addOperation,
+  commitWorkingConfig,
   hydrateEditor,
   initCardphoto,
   setActiveSource,
@@ -212,7 +212,7 @@ const SESSION_WATCH_ACTIONS = [
   clearRecipient.type,
   clearSender.type,
   // cardtextSlice.actions.setFontFamily.type,
-  addOperation.type,
+  commitWorkingConfig.type,
   initCardphoto.type,
   setActiveSource.type,
   addCropId.type,
