@@ -17,7 +17,7 @@ import type { WorkingCardRecord } from '@entities/card/domain/types'
 
 export interface StoreMap {
   stockImages: ImageRecord
-  editorImages: ImageRecord
+  userImages: ImageRecord
   cardphotoImages: ImageMeta & { id: string }
   applyImage: ImageRecord
   cardtext: CardtextTemplateItemShape
@@ -30,7 +30,7 @@ export interface StoreMap {
 
 export interface TemplateStoreMap {
   stockImages: ImageRecord
-  editorImages: ImageRecord
+  userImages: ImageRecord
   cardphotoImages: ImageMeta & { id: string }
   cardtext: CardtextTemplateItemShape
   sender: AddressTemplateItem

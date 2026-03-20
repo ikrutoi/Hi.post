@@ -7,7 +7,7 @@ export type CardEditorTemplateMap = Partial<
 
 export type TemplateDataMap = {
   stockImages: unknown
-  editorImages: StoreMap['editorImages']
+  userImages: StoreMap['userImages']
   cardtext: StoreMap['cardtext']
   sender: StoreMap['sender']
   recipient: StoreMap['recipient']

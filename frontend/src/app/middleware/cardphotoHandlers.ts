@@ -496,7 +496,7 @@ export function* handleDeleteImageSaga(
         yield fork(rebuildConfigFromMeta, stockImage, 'stock')
       }
     } else if (source === 'user') {
-      yield call(storeAdapters.editorImages.deleteById, CURRENT_EDITOR_IMAGE_ID)
+      yield call(storeAdapters.userImages.deleteById, CURRENT_EDITOR_IMAGE_ID)
       yield put(removeUserImage())
 
       if (state.cropIds.length > 0) {

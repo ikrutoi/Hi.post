@@ -335,7 +335,7 @@ export function* hydrateAppSession() {
         { image: ImageMeta } | null,
       ] = yield all([
         call([storeAdapters.stockImages, 'getById'], 'current_stock_image'),
-        call([storeAdapters.editorImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
+        call([storeAdapters.userImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
         activeMetaId
           ? call([storeAdapters.cardphotoImages, 'getById'], activeMetaId)
           : null,
@@ -426,7 +426,7 @@ export function* hydrateAppSession() {
         SizeCard,
       ] = yield all([
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
-        call([storeAdapters.editorImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
+        call([storeAdapters.userImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
         call([storeAdapters.cardphotoImages, 'getAll']),
         select(selectSizeCard),
       ])

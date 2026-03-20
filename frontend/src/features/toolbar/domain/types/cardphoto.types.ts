@@ -80,7 +80,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
 export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'create',
-    icons: [{ key: 'listAdd', state: 'enabled' }],
+    icons: [{ key: 'listAdd', state: 'disabled' }],
     status: 'enabled',
   },
   {

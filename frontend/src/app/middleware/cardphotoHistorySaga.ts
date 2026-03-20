@@ -44,7 +44,7 @@ function* initCardphotoSaga() {
   const cropCount = allCrops.length
   const cropIds = allCrops.map((c) => c.id)
   const savedUserImg: ImageMeta | null = yield call(
-    storeAdapters.editorImages.getById,
+    storeAdapters.userImages.getById,
     CURRENT_EDITOR_IMAGE_ID,
   )
 
