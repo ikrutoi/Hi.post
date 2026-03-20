@@ -93,6 +93,18 @@ export function* handleCardphotoToolbarAction(
 ): SagaIterator {
   const { section, key, payload: editor } = action.payload
 
+  // Upload / pick image — same flow as legacy `download` (opens hidden file input via `openFileDialog`).
+  if (key === 'cardphotoAdd') {
+    if (
+      section === 'cardphoto' ||
+      section === 'cardphotoCreate' ||
+      section === 'cardphotoEditor'
+    ) {
+      yield call(onDownloadClick)
+    }
+    return
+  }
+
   if (section !== 'cardphoto') return
 
   switch (key) {
@@ -168,6 +180,18 @@ export function* handleCardphotoToolbarAction1(
   action: ReturnType<typeof toolbarAction>,
 ): SagaIterator {
   const { section, key } = action.payload
+
+  if (key === 'cardphotoAdd') {
+    if (
+      section === 'cardphoto' ||
+      section === 'cardphotoCreate' ||
+      section === 'cardphotoEditor'
+    ) {
+      yield call(onDownloadClick)
+    }
+    return
+  }
+
   const isCardphotoSection = section === 'cardphoto'
 
   if (!isCardphotoSection) return
@@ -219,10 +243,9 @@ export function* syncToolbarContext() {
     selectToolbarSectionState('cardphoto'),
   )
 
-  // При первом рендере/подключении тулбара section может быть ещё не инициализирован,
-  // поэтому `toolbarState`/`toolbarState.crop` могут быть undefined.
-  if (!state || !toolbarState?.crop) return
-  if (toolbarState.crop.state === 'active') return
+  // `crop` может отсутствовать в конфиге `cardphoto` (только иконки списка) — синхронизацию всё равно выполняем.
+  if (!state) return
+  if (toolbarState?.crop?.state === 'active') return
 
   const { activeSource, cropCount } = state
   // console.log('syncToolbarContext + cropCount', cropCount)
@@ -248,6 +271,7 @@ export function* syncToolbarContext() {
         apply: { state: 'enabled' },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
+        cardphotoAdd: { state: 'enabled' },
         cropHistory: {
           state: hasCrops ? 'enabled' : 'disabled',
           options: { badge: cropCount },
@@ -272,6 +296,7 @@ export function* syncToolbarContext() {
         apply: { state: 'enabled' },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
+        cardphotoAdd: { state: 'enabled' },
         cropHistory: {
           state: hasCrops ? 'enabled' : 'disabled',
           options: { badge: cropCount },
@@ -296,6 +321,7 @@ export function* syncToolbarContext() {
         apply: { state: 'disabled' },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
+        cardphotoAdd: { state: 'enabled' },
         cropHistory: {
           state: hasCrops ? 'enabled' : 'disabled',
           options: { badge: cropCount },
@@ -321,6 +347,7 @@ export function* syncToolbarContext() {
         apply: { state: 'enabled' },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
+        cardphotoAdd: { state: 'enabled' },
         cropHistory: {
           state: hasCrops ? 'enabled' : 'disabled',
           options: { badge: cropCount },
@@ -335,6 +362,16 @@ export function* syncToolbarContext() {
     updateToolbarSection({
       section: 'cardphoto',
       value: sectionUpdate,
+    }),
+  )
+
+  yield put(
+    updateToolbarSection({
+      section: 'cardphotoCreate',
+      value: {
+        cardphotoAdd: (sectionUpdate as { cardphotoAdd?: { state: string } })
+          .cardphotoAdd,
+      },
     }),
   )
 }

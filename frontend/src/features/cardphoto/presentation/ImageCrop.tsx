@@ -60,14 +60,6 @@ export const ImageCrop = () => {
     init()
   }, [])
 
-  if (!activeImage) return
-  const asset = getAssetById(activeImage?.id)
-
-  const src = asset?.url || null
-  const alt = activeImage?.id
-
-  const imageLayer = currentConfig?.image || null
-
   const { inputRef, trackCancel } = useFileDialog()
 
   useEffect(() => {
@@ -83,7 +75,12 @@ export const ImageCrop = () => {
     cardphotoUiActions.markLoading,
   )
 
-  const shouldShowImage = !!src && activeImage
+  const asset = activeImage ? getAssetById(activeImage.id) : null
+  const src = asset?.url || null
+  const alt = activeImage?.id
+  const imageLayer = currentConfig?.image ?? null
+
+  const shouldShowImage = !!src && !!activeImage
 
   const imageStyle: React.CSSProperties | undefined = imageLayer
     ? {
@@ -98,12 +95,15 @@ export const ImageCrop = () => {
       }
     : undefined
 
-  if (!imageLayer) return
+  const maskStyle: React.CSSProperties | undefined =
+    imageLayer && imageStyle
+      ? {
+          ...imageStyle,
+          overflow: 'hidden',
+        }
+      : undefined
 
-  const maskStyle: React.CSSProperties = {
-    ...imageStyle,
-    overflow: 'hidden',
-  }
+  const showCropUi = !!activeImage && !!imageLayer
 
   // console.log('ImageCrop +++++5')
 
@@ -120,6 +120,7 @@ export const ImageCrop = () => {
         onChange={handleFileChange}
       />
 
+      {showCropUi ? (
       <div
         key={containerKey}
         // key={src}
@@ -180,6 +181,7 @@ export const ImageCrop = () => {
             </>
           )}
       </div>
+      ) : null}
     </div>
   )
 }

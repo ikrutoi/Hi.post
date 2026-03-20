@@ -11,7 +11,7 @@ export const useCardphotoToolbarUI = (section: ToolbarSection) => {
   if (!TOOLBAR_SECTIONS.includes(section)) return null
 
   const { state, actions } = useToolbarFacade('cardphoto')
-  const { crop, download } = state as CardphotoToolbarState
+  const { crop, download, cardphotoAdd } = state as CardphotoToolbarState
 
   const buttonIconRefs = useRef<Record<string, HTMLButtonElement | null>>({})
 
@@ -64,6 +64,10 @@ export const useCardphotoToolbarUI = (section: ToolbarSection) => {
 
     if (btnType === 'download' && state.download !== 'disabled') {
       actions.updateKey('download', 'enabled')
+    }
+
+    if (btnType === 'cardphotoAdd' && state.cardphotoAdd !== 'disabled') {
+      actions.updateKey('cardphotoAdd', 'enabled')
     }
 
     if (btnType === 'crop' && crop === 'enabled') {

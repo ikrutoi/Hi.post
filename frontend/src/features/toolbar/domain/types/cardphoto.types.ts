@@ -11,6 +11,7 @@ export const CARDPHOTO_KEYS = [
   'cropCheck',
   // 'cropDelete',
   'apply',
+  'cardphotoAdd',
   'download',
   'close',
   // 'save',
@@ -80,7 +81,10 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
 export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'create',
-    icons: [{ key: 'listAdd', state: 'disabled' }],
+    icons: [
+      // { key: 'cardphotoAdd', state: 'enabled' },
+      { key: 'listAdd', state: 'disabled' },
+    ],
     status: 'enabled',
   },
   {

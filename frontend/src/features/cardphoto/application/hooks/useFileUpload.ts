@@ -1,6 +1,6 @@
 export const useFileUpload = (dispatch: any, section: string) => {
   return (key: string) => {
-    if (key === 'download') {
+    if (key === 'download' || key === 'cardphotoAdd') {
       const input = document.createElement('input')
       input.type = 'file'
       input.accept = 'image/*'
