@@ -24,6 +24,8 @@ import {
   initialCardtextEditorToolbarState,
   initialCardtextCreateToolbarState,
   initialCardphotoEditorToolbarState,
+  initialCardphotoViewToolbarState,
+  initialCardphotoCreateToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -41,7 +43,9 @@ import type {
 
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
+  cardphotoCreate: initialCardphotoCreateToolbarState,
   cardphotoEditor: initialCardphotoEditorToolbarState,
+  cardphotoView: initialCardphotoViewToolbarState,
   cardtext: initialCardtextToolbarState,
   sender: initialSenderToolbarState,
   recipient: initialRecipientToolbarState,

@@ -10,8 +10,27 @@
   user-select: none;
   cursor: default;
   border-radius: 0.5rem;
-  background-color: $color-cardtext-input;
-  border: 1px solid $color-cardtext-input-border;
+  background-color: $color-cardphoto-input;
+  border: 1px solid $color-cardphoto-input-border;
+}
+
+.emptyPlaceholderIcon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: $color-section-light;
+  opacity: 0.35;
+  z-index: 1;
+
+  svg {
+    width: 40%;
+    height: auto;
+    max-height: 60%;
+    object-fit: contain;
+  }
 }
 
 .photo {
@@ -22,4 +41,11 @@
   object-position: center;
   user-select: none;
   pointer-events: none;
+}
+
+.editorSlot {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
 }

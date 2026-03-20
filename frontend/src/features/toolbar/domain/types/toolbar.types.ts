@@ -52,7 +52,9 @@ export type ToolbarConfig = ToolbarGroup[]
 
 export const TOOLBAR_SECTIONS = [
   'cardphoto',
+  'cardphotoCreate',
   'cardphotoEditor',
+  'cardphotoView',
   'cardtext',
   'sender',
   'recipient',
@@ -81,7 +83,9 @@ export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
 
 export type ToolbarState = {
   cardphoto: CardphotoToolbarState & { config: ToolbarGroup[] }
+  cardphotoCreate: CardphotoToolbarState & { config: ToolbarGroup[] }
   cardphotoEditor: CardphotoToolbarState & { config: ToolbarGroup[] }
+  cardphotoView: CardphotoToolbarState & { config: ToolbarGroup[] }
   cardtext: CardtextToolbarState & { config: ToolbarGroup[] }
   sender: EnvelopeToolbarState & { config: ToolbarGroup[] }
   recipient: EnvelopeToolbarState & { config: ToolbarGroup[] }
@@ -130,10 +134,20 @@ export interface BaseSectionConfig<
 
 export type ToolbarSectionConfigMap = {
   cardphoto: BaseSectionConfig<CardphotoToolbarState, CardphotoKey, 'cardphoto'>
+  cardphotoCreate: BaseSectionConfig<
+    CardphotoToolbarState,
+    CardphotoKey,
+    'cardphotoCreate'
+  >
   cardphotoEditor: BaseSectionConfig<
     CardphotoToolbarState,
     CardphotoKey,
     'cardphotoEditor'
+  >
+  cardphotoView: BaseSectionConfig<
+    CardphotoToolbarState,
+    CardphotoKey,
+    'cardphotoView'
   >
   cardtext: BaseSectionConfig<CardtextToolbarState, CardtextKey, 'cardtext'>
   sender: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'sender'>
@@ -228,48 +242,52 @@ export type ToolbarSectionConfigMap = {
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
   ? CardphotoKey
-  : S extends 'cardphotoEditor'
+  : S extends 'cardphotoCreate'
     ? CardphotoKey
-    : S extends 'cardtext'
-      ? CardtextKey
-      : S extends 'sender'
-        ? EnvelopeKey
-        : S extends 'recipient'
-          ? EnvelopeKey
-          : S extends 'recipients'
-            ? RecipientsKey
-            : S extends 'editorPie'
-              ? EditorPieKey
-              : S extends 'cardPanelOverlay'
-                ? CardPanelOverlayToolbarKey
-                : S extends 'sectionEditorMenu'
-                  ? SectionEditorMenuKey
-                  : S extends 'addressListSender'
-                    ? AddressListKey
-                    : S extends 'addressListRecipient'
-                      ? AddressListKey
-                      : S extends 'addressListRecipients'
+    : S extends 'cardphotoEditor'
+      ? CardphotoKey
+      : S extends 'cardphotoView'
+        ? CardphotoKey
+        : S extends 'cardtext'
+          ? CardtextKey
+          : S extends 'sender'
+            ? EnvelopeKey
+            : S extends 'recipient'
+              ? EnvelopeKey
+              : S extends 'recipients'
+                ? RecipientsKey
+                : S extends 'editorPie'
+                  ? EditorPieKey
+                  : S extends 'cardPanelOverlay'
+                    ? CardPanelOverlayToolbarKey
+                    : S extends 'sectionEditorMenu'
+                      ? SectionEditorMenuKey
+                      : S extends 'addressListSender'
                         ? AddressListKey
-                        : S extends 'recipientFavorite'
-                          ? AddressFavoriteKey
-                          : S extends 'senderFavorite'
-                            ? AddressFavoriteKey
-                            : S extends 'senderView'
-                              ? AddressViewKey
-                              : S extends 'recipientView'
-                                ? AddressViewKey
-                                : S extends 'recipientsView'
+                        : S extends 'addressListRecipient'
+                          ? AddressListKey
+                          : S extends 'addressListRecipients'
+                            ? AddressListKey
+                            : S extends 'recipientFavorite'
+                              ? AddressFavoriteKey
+                              : S extends 'senderFavorite'
+                                ? AddressFavoriteKey
+                                : S extends 'senderView'
                                   ? AddressViewKey
-                                  : S extends 'addressFormSenderView'
+                                  : S extends 'recipientView'
                                     ? AddressViewKey
-                                    : S extends 'addressFormRecipientView'
+                                    : S extends 'recipientsView'
                                       ? AddressViewKey
-                                      : S extends 'cardtextList'
-                                        ? CardtextListKey
-                                        : S extends 'cardtextCreate'
-                                          ? CardtextKey
-                                          : S extends 'cardtextEditor'
-                                            ? CardtextKey
-                                            : S extends 'cardtextView'
+                                      : S extends 'addressFormSenderView'
+                                        ? AddressViewKey
+                                        : S extends 'addressFormRecipientView'
+                                          ? AddressViewKey
+                                          : S extends 'cardtextList'
+                                            ? CardtextListKey
+                                            : S extends 'cardtextCreate'
                                               ? CardtextKey
-                                              : never
+                                              : S extends 'cardtextEditor'
+                                                ? CardtextKey
+                                                : S extends 'cardtextView'
+                                                  ? CardtextKey
+                                                  : never

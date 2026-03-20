@@ -77,6 +77,26 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
   // },
 ]
 
+export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'create',
+    icons: [{ key: 'listAdd', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'font',
+    icons: [
+      { key: 'imageRotateLeft', state: 'disabled' },
+      { key: 'imageRotateRight', state: 'disabled' },
+      { key: 'crop', state: 'disabled' },
+      { key: 'cropFull', state: 'disabled' },
+      { key: 'cropCheck', state: 'disabled' },
+      { key: 'imageReset', state: 'disabled' },
+    ],
+    status: 'enabled',
+  },
+]
+
 export const CARDPHOTO_EDITOR_TOOLBAR: ToolbarConfig = [
   {
     group: 'editor',
@@ -95,11 +115,43 @@ export const CARDPHOTO_EDITOR_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
+  // {
+  //   group: 'view',
+  //   icons: [{ key: 'delete', state: 'disabled' }],
+  //   status: 'enabled',
+  // },
+]
+
+export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'editor',
+    icons: [
+      { key: 'edit', state: 'enabled' },
+      { key: 'favorite', state: 'enabled' },
+    ],
+    status: 'enabled',
+  },
+
+  {
+    group: 'view',
+    icons: [{ key: 'delete', state: 'enabled' }],
+    status: 'enabled',
+  },
 ]
 
 export const initialCardphotoToolbarState: CardphotoToolbarState = {
   ...Object.fromEntries(flattenIcons(CARDPHOTO_TOOLBAR)),
   config: [...CARDPHOTO_TOOLBAR],
+}
+
+export const initialCardphotoCreateToolbarState: CardphotoToolbarState = {
+  ...Object.fromEntries(flattenIcons(CARDPHOTO_CREATE_TOOLBAR)),
+  config: [...CARDPHOTO_CREATE_TOOLBAR],
+}
+
+export const initialCardphotoViewToolbarState: CardphotoToolbarState = {
+  ...Object.fromEntries(flattenIcons(CARDPHOTO_VIEW_TOOLBAR)),
+  config: [...CARDPHOTO_VIEW_TOOLBAR],
 }
 
 export const initialCardphotoEditorToolbarState: CardphotoToolbarState = {
@@ -110,5 +162,5 @@ export const initialCardphotoEditorToolbarState: CardphotoToolbarState = {
 export interface CardphotoSectionConfig extends BaseSectionConfig<
   CardphotoToolbarState,
   CardphotoKey,
-  'cardphoto' | 'cardphotoEditor'
+  'cardphoto' | 'cardphotoEditor' | 'cardphotoView' | 'cardphotoCreate'
 > {}

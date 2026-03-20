@@ -128,6 +128,9 @@
   }
 }
 
+.toolbarCardphotoEditor,
+.toolbarCardphotoCreate,
+.toolbarCardphotoView,
 .toolbarCardtextView,
 .toolbarCardtextEditor,
 .toolbarCardtextCreate {
@@ -158,7 +161,8 @@
   }
 }
 
-.toolbarCardtextCreate {
+.toolbarCardtextCreate,
+.toolbarCardphotoCreate {
   width: 60%;
 
   .toolbarGroupDisabled {

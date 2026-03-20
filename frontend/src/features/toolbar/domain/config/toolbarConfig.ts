@@ -39,6 +39,12 @@ import {
   CARDTEXT_LIST_TOOLBAR,
   CARDTEXT_VIEW_TOOLBAR,
   initialCardtextViewToolbarState,
+  CARDPHOTO_EDITOR_TOOLBAR,
+  initialCardphotoEditorToolbarState,
+  CARDPHOTO_VIEW_TOOLBAR,
+  initialCardphotoViewToolbarState,
+  CARDPHOTO_CREATE_TOOLBAR,
+  initialCardphotoCreateToolbarState,
 } from '../types'
 import {
   RECIPIENTS_VIEW_TOOLBAR,
@@ -78,6 +84,37 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
         cropHistory: count > 0 ? count : null,
       }
     },
+  },
+
+  cardphotoCreate: {
+    keys: CARDPHOTO_KEYS,
+    initialState: initialCardphotoCreateToolbarState,
+    onAction: (key, section, editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'create',
+    toolbar: CARDPHOTO_CREATE_TOOLBAR,
+  },
+
+  cardphotoView: {
+    keys: CARDPHOTO_KEYS,
+    initialState: initialCardphotoViewToolbarState,
+    onAction: (key, section, editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'view',
+    toolbar: CARDPHOTO_VIEW_TOOLBAR,
+  },
+
+  cardphotoEditor: {
+    keys: CARDPHOTO_KEYS,
+    initialState: initialCardphotoEditorToolbarState,
+    onAction: (key, section, editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'editor',
+    toolbar: CARDPHOTO_EDITOR_TOOLBAR,
+    getBadges: (state: ToolbarState['cardphotoEditor']) => ({}),
   },
 
   cardtext: {
