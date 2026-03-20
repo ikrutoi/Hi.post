@@ -1,0 +1,25 @@
+@use '@styles/config/colors' as *;
+
+.viewContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 1rem 0.5rem 0.5rem 0.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+  border-radius: 0.5rem;
+  background-color: $color-cardtext-input;
+  border: 1px solid $color-cardtext-input-border;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+  pointer-events: none;
+}

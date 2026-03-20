@@ -41,23 +41,23 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
-  {
-    group: 'edit',
-    icons: [
-      // {
-      //   key: 'cardOrientation',
-      //   state: 'disabled',
-      //   options: { orientation: 'landscape' },
-      // },
-      // { key: 'imageRotateLeft', state: 'disabled' },
-      // { key: 'imageRotateRight', state: 'disabled' },
-      { key: 'crop', state: 'disabled' },
-      { key: 'cropFull', state: 'disabled' },
-      { key: 'cropCheck', state: 'disabled' },
-      { key: 'imageReset', state: 'disabled' },
-    ],
-    status: 'enabled',
-  },
+  // {
+  //   group: 'edit',
+  //   icons: [
+  //     // {
+  //     //   key: 'cardOrientation',
+  //     //   state: 'disabled',
+  //     //   options: { orientation: 'landscape' },
+  //     // },
+  //     // { key: 'imageRotateLeft', state: 'disabled' },
+  //     { key: 'imageRotateRight', state: 'disabled' },
+  //     { key: 'crop', state: 'disabled' },
+  //     { key: 'cropFull', state: 'disabled' },
+  //     { key: 'cropCheck', state: 'disabled' },
+  //     { key: 'imageReset', state: 'disabled' },
+  //   ],
+  //   status: 'enabled',
+  // },
   // {
   //   group: 'ui',
   //   icons: [
@@ -81,11 +81,11 @@ export const CARDPHOTO_EDITOR_TOOLBAR: ToolbarConfig = [
   {
     group: 'editor',
     icons: [
-      {
-        key: 'cardOrientation',
-        state: 'disabled',
-        options: { orientation: 'landscape' },
-      },
+      // {
+      //   key: 'cardOrientation',
+      //   state: 'disabled',
+      //   options: { orientation: 'landscape' },
+      // },
       { key: 'imageRotateLeft', state: 'disabled' },
       { key: 'imageRotateRight', state: 'disabled' },
       { key: 'crop', state: 'disabled' },

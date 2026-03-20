@@ -21,8 +21,8 @@ export function useToolbarFacade<S extends ToolbarSection>(section: S) {
   const groups = useSelector(selectToolbarGroups(section))
   const businessState = useSelector((state: any) => state[section]?.state)
 
-  const config = TOOLBAR_CONFIG[section] as ToolbarSectionConfigMap[S]
-  const badges = config.getBadges?.({ ...state, ...businessState }) ?? {}
+  const config = TOOLBAR_CONFIG[section] as ToolbarSectionConfigMap[S] | undefined
+  const badges = config?.getBadges?.({ ...state, ...businessState }) ?? {}
 
   const handleAction = (key: IconKey, editor?: ReactEditor) => {
     onAction(key as ToolbarKeyFor<S>, editor)
@@ -31,7 +31,7 @@ export function useToolbarFacade<S extends ToolbarSection>(section: S) {
   return {
     state,
     groups,
-    config,
+    config: (config ?? ({} as ToolbarSectionConfigMap[S])),
     badges,
     // state: {
     //   state,

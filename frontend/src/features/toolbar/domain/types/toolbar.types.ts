@@ -81,6 +81,7 @@ export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
 
 export type ToolbarState = {
   cardphoto: CardphotoToolbarState & { config: ToolbarGroup[] }
+  cardphotoEditor: CardphotoToolbarState & { config: ToolbarGroup[] }
   cardtext: CardtextToolbarState & { config: ToolbarGroup[] }
   sender: EnvelopeToolbarState & { config: ToolbarGroup[] }
   recipient: EnvelopeToolbarState & { config: ToolbarGroup[] }
