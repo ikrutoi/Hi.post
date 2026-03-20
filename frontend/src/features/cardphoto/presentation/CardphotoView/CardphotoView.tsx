@@ -1,34 +1,32 @@
 import React from 'react'
 import clsx from 'clsx'
+import { useAppSelector } from '@app/hooks'
+import { selectActiveImage } from '@cardphoto/infrastructure/selectors'
 import styles from './CardphotoView.module.scss'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
-import { ImageCrop } from '../ImageCrop'
+import { CardphotoStage } from '../CardphotoStage'
 
 type Props = {
-  previewUrl: string | null
   className?: string
 }
 
-export const CardphotoView: React.FC<Props> = ({ previewUrl, className }) => {
+/**
+ * Оболочка области превью: плейсхолдер без активного фото и сцена редактирования (файл + кроп).
+ */
+export const CardphotoView: React.FC<Props> = ({ className }) => {
+  const activeImage = useAppSelector(selectActiveImage)
+  const showEmptyPlaceholder = !activeImage
+
   return (
     <div className={clsx(styles.viewContainer, className)}>
-      <div className={styles.fileDialogHost} aria-hidden>
-        <ImageCrop />
+      <div className={styles.stageRoot}>
+        <CardphotoStage />
       </div>
-      {!previewUrl ? (
-        <>
-          <div className={styles.emptyPlaceholderIcon} aria-hidden>
-            <IconSectionMenuCardphoto />
-          </div>
-        </>
-      ) : (
-        <img
-          className={styles.photo}
-          src={previewUrl}
-          alt="Card photo preview"
-          draggable={false}
-        />
-      )}
+      {showEmptyPlaceholder ? (
+        <div className={styles.emptyPlaceholderIcon} aria-hidden>
+          <IconSectionMenuCardphoto />
+        </div>
+      ) : null}
     </div>
   )
 }

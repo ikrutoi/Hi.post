@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
-import { useSelector } from 'react-redux'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   initCardphoto,
   uploadUserImage,
-  // addOperation,
 } from '../infrastructure/state'
 import {
   selectActiveImage,
@@ -15,21 +13,23 @@ import {
 import { CropArea } from './CropArea'
 import { CropOverlay } from './CropOverlay'
 import { useSizeFacade } from '@layout/application/facades'
-import {
-  useCardphotoFacade,
-  useCardphotoUiFacade,
-} from '../application/facades'
+import { useCardphotoUiFacade } from '../application/facades'
 import { useToolbarFacade } from '@toolbar/application/facades'
 import {
   useImageUpload,
   useFileDialog,
   useCropState,
 } from '../application/hooks'
-import styles from './ImageCrop.module.scss'
+import styles from './CardphotoStage.module.scss'
 import { ImageMeta } from '../domain/types'
 import { useAssetRegistryFacade } from '@entities/assetRegistry/application/facade/assetRegistryFacade'
 
-export const ImageCrop = () => {
+/**
+ * Единая сцена фото на открытке: скрытый выбор файла (toolbar `cardphotoAdd` / `download`),
+ * отрисовка изображения по `currentConfig` и UI кропа.
+ * Раньше компонент назывался `ImageCrop` — по смыслу это не только кроп.
+ */
+export const CardphotoStage = () => {
   const dispatch = useAppDispatch()
   const activeSource = useAppSelector(selectActiveSource)
   const activeImage = useAppSelector(selectActiveImage)
@@ -41,9 +41,10 @@ export const ImageCrop = () => {
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
     useCardphotoUiFacade()
   const { shouldOpenFileDialog } = cardphotoUiState
-  const { registry, getAssetById } = useAssetRegistryFacade()
+  const { getAssetById } = useAssetRegistryFacade()
 
   const { state: iconState } = useToolbarFacade('cardphoto')
+  const cropToolbarState = iconState.crop?.state ?? 'disabled'
 
   const { sizeCard } = useSizeFacade()
 
@@ -52,7 +53,7 @@ export const ImageCrop = () => {
   const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeSource}`
 
   const [tempCrop, setTempCrop] = useCropState(
-    iconState.crop.state,
+    cropToolbarState,
     currentConfig?.crop ?? null,
   )
 
@@ -105,13 +106,8 @@ export const ImageCrop = () => {
 
   const showCropUi = !!activeImage && !!imageLayer
 
-  // console.log('ImageCrop +++++5')
-
   return (
-    <div
-      className={styles.imageCrop}
-      // style={{ width: `${sizeCard.width}px`, height: `${sizeCard.height}px` }}
-    >
+    <div className={styles.cardphotoStage}>
       <input
         type="file"
         accept="image/*"
@@ -121,66 +117,56 @@ export const ImageCrop = () => {
       />
 
       {showCropUi ? (
-      <div
-        key={containerKey}
-        // key={src}
-        className={styles.cropContainer}
-        style={{
-          width: `${sizeCard.width}px`,
-          height: `${sizeCard.height}px`,
-        }}
-      >
-        {shouldShowImage && imageLayer && src && (
-          <>
-            <img
-              key={src}
-              src={src}
-              alt={alt}
-              onLoad={() => setLoaded(true)}
-              className={clsx(
-                styles.cropImage,
-                loaded ? styles.fadeInVisible : styles.fadeIn,
-              )}
-              style={imageStyle}
-            />
-            {tempCrop && iconState.crop.state === 'active' && activeImage && (
-              <div className={styles.cropMask} style={maskStyle}>
-                <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
-              </div>
-            )}
-          </>
-        )}
-        {loaded &&
-          imageLayer &&
-          iconState.crop.state === 'active' &&
-          tempCrop &&
-          activeImage && (
+        <div
+          key={containerKey}
+          className={styles.cropContainer}
+          style={{
+            width: `${sizeCard.width}px`,
+            height: `${sizeCard.height}px`,
+          }}
+        >
+          {shouldShowImage && imageLayer && src && (
             <>
-              {activeImage && (
-                <CropArea
-                  cropLayer={tempCrop}
-                  imageLayer={imageLayer}
-                  orientation={sizeCard.orientation}
-                  originalImage={activeImage}
-                  onChange={(newCrop) => {
-                    setTempCrop(newCrop)
-                  }}
-                  // onCommit={(finalCrop) => {
-                  //   addOp({
-                  //     type: 'operation',
-                  //     payload: {
-                  //       config: {
-                  //         ...currentConfig!,
-                  //         crop: finalCrop,
-                  //       },
-                  //     },
-                  //   })
-                  // }}
-                />
-              )}
+              <img
+                key={src}
+                src={src}
+                alt={alt}
+                onLoad={() => setLoaded(true)}
+                className={clsx(
+                  styles.cropImage,
+                  loaded ? styles.fadeInVisible : styles.fadeIn,
+                )}
+                style={imageStyle}
+              />
+              {tempCrop &&
+                cropToolbarState === 'active' &&
+                activeImage && (
+                  <div className={styles.cropMask} style={maskStyle}>
+                    <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
+                  </div>
+                )}
             </>
           )}
-      </div>
+          {loaded &&
+            imageLayer &&
+            cropToolbarState === 'active' &&
+            tempCrop &&
+            activeImage && (
+              <>
+                {activeImage && (
+                  <CropArea
+                    cropLayer={tempCrop}
+                    imageLayer={imageLayer}
+                    orientation={sizeCard.orientation}
+                    originalImage={activeImage}
+                    onChange={(newCrop) => {
+                      setTempCrop(newCrop)
+                    }}
+                  />
+                )}
+              </>
+            )}
+        </div>
       ) : null}
     </div>
   )

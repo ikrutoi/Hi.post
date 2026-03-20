@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 
-.imageCrop {
+// Корневой блок: скрытый file input, контейнер превью и кропа в рамке открытки.
+.cardphotoStage {
   position: relative;
   display: flex;
   justify-content: center;
@@ -10,18 +11,9 @@
   height: 100%;
   border-radius: 0.5rem;
   overflow: hidden;
-
-  input {
-    position: absolute;
-    width: 0;
-    height: 0;
-    bottom: 0;
-    opacity: 0;
-    pointer-events: 'none';
-  }
 }
 
-.imageCropQuality {
+.cardphotoStageQuality {
   position: absolute;
   right: -2rem;
   width: 4px;
@@ -30,11 +22,24 @@
   z-index: 1;
 }
 
+.imageInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  bottom: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .cropContainer {
   position: relative;
   user-select: none;
   overflow: 'hidden';
   // pointerEvents: 'none';
+}
+
+.cropMask {
+  position: absolute;
 }
 
 .cropImage {
