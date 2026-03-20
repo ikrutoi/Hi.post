@@ -1,9 +1,9 @@
-import type { StoreMap } from '@/db/types/storeMap.types'
-
-const storeNames: (keyof StoreMap)[] = [
+// Object store names in IndexedDB are not always identical to keys in `StoreMap` types.
+// Keep this as `string[]` to avoid type-level coupling to those internal names.
+const storeNames: string[] = [
   'stockImages',
   'userImages',
-  'cropImages',
+  'cardphotoImages',
   'applyImage',
   'cardtext',
   'sender',

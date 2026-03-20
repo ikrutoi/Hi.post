@@ -351,8 +351,8 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
       (state) => state.cardphoto.state?.base.apply.image?.url,
     )
 
-    const cropRecord: ImageMeta | null = yield call(
-      [storeAdapters.cropImages, storeAdapters.cropImages.getById],
+      const cropRecord: ImageMeta | null = yield call(
+      [storeAdapters.cardphotoImages, storeAdapters.cardphotoImages.getById],
       cropId,
     )
 

@@ -1,7 +1,23 @@
 import { CardStatus } from '@/entities/card/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
-export type ImageSource = 'stock' | 'user' | 'processed' | 'apply'
+/**
+ * Origin of the underlying photo, not the processing stage.
+ * Used in `ImageMeta.source`.
+ */
+export type ImageSource = 'stock' | 'user'
+
+/**
+ * Stage/visibility of a photo variant.
+ * Used in `ImageMeta.status`.
+ */
+export type ImageStatus = 'processed' | 'outLine' | 'inLine'
+
+/**
+ * UI/editor mode used across the current editor flow.
+ * This is *not* `ImageMeta.source`.
+ */
+export type ActiveImageSource = 'stock' | 'user' | 'processed' | 'apply'
 
 export interface CardphotoBase {
   stock: { image: ImageMeta | null }
@@ -20,7 +36,7 @@ export interface CardLayer {
   width: number
   height: number
   aspectRatio: number
-  orientation: LayoutOrientation
+  // orientation: LayoutOrientation
 }
 
 export type QualityLevel = 'high' | 'medium' | 'low'
@@ -35,6 +51,7 @@ export interface ImageData {
 export interface ImageMeta {
   id: string
   source: ImageSource
+  status: ImageStatus
   url: string
   full: ImageData
   thumbnail?: ImageData
@@ -43,7 +60,7 @@ export interface ImageMeta {
   isCropped: boolean
   timestamp: number
   parentImageId?: string
-  orientation?: LayoutOrientation
+  // orientation?: LayoutOrientation
   rotation?: number
   imageAspectRatio?: number
 }
@@ -67,7 +84,7 @@ export interface CropLayer {
   meta: CropMeta
   x: number
   y: number
-  orientation: LayoutOrientation
+  // orientation: LayoutOrientation
 }
 
 export interface WorkingConfig {
@@ -77,7 +94,7 @@ export interface WorkingConfig {
 }
 
 export interface CardphotoSessionRecord {
-  source: ImageSource
+  source: ActiveImageSource
   activeMetaId: string
   cropIds: string[]
   config: {
@@ -94,7 +111,7 @@ export interface CardphotoState {
   base: CardphotoBase
   cropCount: number
   cropIds: string[]
-  activeSource: ImageSource | null
+  activeSource: ActiveImageSource | null
   currentConfig: WorkingConfig | null
   appended: string | null
 }

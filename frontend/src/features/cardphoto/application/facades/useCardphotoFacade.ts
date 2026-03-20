@@ -39,7 +39,7 @@ import type {
   CardphotoState,
   WorkingConfig,
   QualityLevel,
-  ImageSource,
+  ActiveImageSource,
 } from '../../domain/types'
 export interface CardphotoFacade {
   state: {
@@ -49,7 +49,7 @@ export interface CardphotoFacade {
     userImage: ImageMeta | null
     // galleryImage: ImageMeta | null
     appliedImage: ImageMeta | null
-    activeSource: ImageSource | null
+    activeSource: ActiveImageSource | null
     currentConfig: WorkingConfig | null
     cardSize: { width: number; height: number }
     quality: QualityLevel

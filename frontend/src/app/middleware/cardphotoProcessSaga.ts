@@ -64,7 +64,7 @@ import type {
   WorkingConfig,
   CardphotoState,
   CardphotoBase,
-  ImageSource,
+  ActiveImageSource,
   ImageRotation,
   CardphotoSessionRecord,
   ImageRecord,
@@ -195,7 +195,7 @@ function* onCancelFileDialog(): SagaIterator {
 
 export function* rebuildConfigFromMeta(
   meta: ImageMeta,
-  source: ImageSource,
+  source: ActiveImageSource,
   forceOrientation?: LayoutOrientation,
   rotation?: ImageRotation,
 ) {
@@ -250,7 +250,7 @@ export function* onDeleteCropSaga(action: PayloadAction<string>): SagaIterator {
     const cropId = action.payload
 
     yield call(
-      [storeAdapters.cropImages, storeAdapters.cropImages.deleteById],
+      [storeAdapters.cardphotoImages, storeAdapters.cardphotoImages.deleteById],
       cropId,
     )
   } catch (error) {

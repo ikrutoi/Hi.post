@@ -37,6 +37,7 @@ export const useImageMetaLoader = (src: string) => {
       const meta: ImageMeta = {
         id: `user-img-${Date.now()}`,
         source: 'user',
+        status: 'processed',
         url: src,
         width: img.naturalWidth,
         height: img.naturalHeight,

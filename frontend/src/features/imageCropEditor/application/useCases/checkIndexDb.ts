@@ -6,7 +6,7 @@ import { addIndexDb } from '@store/slices/layoutSlice'
 export const checkIndexDb = async (dispatch: AppDispatch) => {
   const stockAdapter =
     createStoreAdapter<StoreMap['stockImages']>('stockImages')
-  const userAdapter = createStoreAdapter<StoreMap['userImages']>('userImages')
+  const userAdapter = createStoreAdapter<StoreMap['editorImages']>('userImages')
 
   const stockImages = await stockAdapter.getAll()
   const userImages = await userAdapter.getAll()

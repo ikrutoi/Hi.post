@@ -99,7 +99,7 @@ import type {
   CardphotoSessionRecord,
   ImageMeta,
   WorkingConfig,
-  ImageSource,
+  ActiveImageSource,
 } from '@cardphoto/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import {
@@ -337,7 +337,7 @@ export function* hydrateAppSession() {
         call([storeAdapters.stockImages, 'getById'], 'current_stock_image'),
         call([storeAdapters.editorImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
         activeMetaId
-          ? call([storeAdapters.cropImages, 'getById'], activeMetaId)
+          ? call([storeAdapters.cardphotoImages, 'getById'], activeMetaId)
           : null,
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
       ])
@@ -349,12 +349,15 @@ export function* hydrateAppSession() {
         apply: { image: hydrateMeta(applyRec?.image || null) },
       }
 
-      const cropCount: number = yield call([storeAdapters.cropImages, 'count'])
+      const cropCount: number = yield call([
+        storeAdapters.cardphotoImages,
+        'count',
+      ])
       let finalCropIds = cropIds || []
 
       if (cropCount > 0 && finalCropIds.length !== cropCount) {
         const allCrops: ImageMeta[] = yield call([
-          storeAdapters.cropImages,
+          storeAdapters.cardphotoImages,
           'getAll',
         ])
         finalCropIds = allCrops.map((c) => c.id)
@@ -397,7 +400,7 @@ export function* hydrateAppSession() {
       }
 
       const allCrops: ImageMeta[] = yield call([
-        storeAdapters.cropImages,
+        storeAdapters.cardphotoImages,
         'getAll',
       ])
 
@@ -424,7 +427,7 @@ export function* hydrateAppSession() {
       ] = yield all([
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
         call([storeAdapters.editorImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
-        call([storeAdapters.cropImages, 'getAll']),
+        call([storeAdapters.cardphotoImages, 'getAll']),
         select(selectSizeCard),
       ])
 
@@ -441,7 +444,7 @@ export function* hydrateAppSession() {
         stock: { image: stockImg },
       }
 
-      let autoSource: ImageSource = 'stock'
+      let autoSource: ActiveImageSource = 'stock'
       if (applyImg) autoSource = 'apply'
       else if (userImg) autoSource = 'user'
       else if (lastCrop) autoSource = 'processed'

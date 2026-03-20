@@ -8,7 +8,7 @@ import type {
   ImageMeta,
   CardphotoBase,
   QualityLevel,
-  ImageSource,
+  ActiveImageSource,
   CardphotoSessionRecord,
 } from '../../domain/types'
 import { cardEditorReducer } from '@/entities/cardEditor/infrastructure/state'
@@ -99,7 +99,9 @@ export const selectCropQuality = (state: RootState): QualityLevel =>
 export const selectCropQualityProgress = (state: RootState): number =>
   state.cardphoto.state?.currentConfig?.crop?.meta?.qualityProgress ?? 0
 
-export const selectActiveSource = (state: RootState): ImageSource | null => {
+export const selectActiveSource = (
+  state: RootState,
+): ActiveImageSource | null => {
   const cardState = state.cardphoto.state
   if (!cardState) return null
   return cardState.activeSource || null

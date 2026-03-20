@@ -40,7 +40,7 @@ export function getRandomStockMeta(): ImageMeta {
 function* initCardphotoSaga() {
   const state: CardphotoState = yield select(selectCardphotoState)
   const activeSource = state.activeSource
-  const allCrops: ImageMeta[] = yield call(storeAdapters.cropImages.getAll)
+  const allCrops: ImageMeta[] = yield call(storeAdapters.cardphotoImages.getAll)
   const cropCount = allCrops.length
   const cropIds = allCrops.map((c) => c.id)
   const savedUserImg: ImageMeta | null = yield call(

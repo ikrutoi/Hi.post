@@ -65,7 +65,7 @@ import type {
   CardphotoState,
   ImageRotation,
   CropLayer,
-  ImageSource,
+  ActiveImageSource,
   ImageRecord,
 } from '@cardphoto/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
@@ -369,7 +369,8 @@ export function* handleCropConfirm(): SagaIterator {
 
     const finalImageMeta: ImageMeta = {
       id,
-      source: 'processed',
+      source: config.image.meta.source,
+      status: 'processed',
       url: fullUrl,
       width: realCrop.meta.width,
       height: realCrop.meta.height,
@@ -389,13 +390,12 @@ export function* handleCropConfirm(): SagaIterator {
       isCropped: true,
       timestamp: Date.now(),
       parentImageId: config.image.meta.id,
-      orientation: config.card.orientation,
       rotation: 0,
     }
 
     // console.log('handleCropConfirm finalImageMeta', finalImageMeta)
 
-    yield call(storeAdapters.cropImages.put, finalImageMeta)
+    yield call(storeAdapters.cardphotoImages.put, finalImageMeta)
 
     const reduxMeta = prepareForRedux(finalImageMeta)
     yield put(setProcessedImage(reduxMeta))
@@ -450,7 +450,7 @@ export function* handleCropConfirm(): SagaIterator {
 
 export function* handleDeleteImageSaga(
   id: string | undefined,
-  source: ImageSource | null,
+  source: ActiveImageSource | null,
 ) {
   try {
     const state: CardphotoState = yield select(selectCardphotoState)
@@ -459,7 +459,7 @@ export function* handleDeleteImageSaga(
     if (source === 'processed' && id) {
       const currentIndex = state.cropIds.indexOf(id)
 
-      yield call(storeAdapters.cropImages.deleteById, id)
+      yield call(storeAdapters.cardphotoImages.deleteById, id)
 
       const remainingIds = state.cropIds.filter((cropId) => cropId !== id)
 
@@ -473,7 +473,7 @@ export function* handleDeleteImageSaga(
         const nextId = remainingIds[nextIdx]
 
         const nextCrop: ImageMeta = yield call(
-          storeAdapters.cropImages.getById,
+          storeAdapters.cardphotoImages.getById,
           nextId,
         )
 
@@ -502,7 +502,7 @@ export function* handleDeleteImageSaga(
       if (state.cropIds.length > 0) {
         const lastId = state.cropIds[state.cropIds.length - 1]
         const lastCrop: ImageMeta = yield call(
-          storeAdapters.cropImages.getById,
+          storeAdapters.cardphotoImages.getById,
           lastId,
         )
         if (lastCrop) {
@@ -534,7 +534,7 @@ export function* handleClearAllCropsSaga() {
   console.log('handleClearAll')
   try {
     yield put(markLoading())
-    yield call(storeAdapters.cropImages.clear)
+    yield call(storeAdapters.cardphotoImages.clear)
     yield put(clearAllCrops())
     yield fork(syncToolbarContext)
 
@@ -576,7 +576,7 @@ export function* handleBackToOriginalSaga() {
 
   console.log('BACK_SAGA state', state)
 
-  let nextSource: ImageSource | null = null
+  let nextSource: ActiveImageSource | null = null
   let nextMeta = null
 
   if (activeSource === 'processed') {
@@ -645,7 +645,7 @@ export function* handleApplyAction() {
         const adapter =
           currentSource === 'stock'
             ? storeAdapters.stockImages
-            : storeAdapters.cropImages
+            : storeAdapters.cardphotoImages
 
         const fullRecord: ImageMeta | null = yield call(
           [adapter, 'getById'],
@@ -680,7 +680,8 @@ export function* handleApplyAction() {
             ...currentImageMeta.thumbnail!,
             url: finalThumb || '',
           },
-          source: 'apply',
+          source: currentImageMeta.source,
+          status: 'outLine',
         }
 
         const wrapper: ImageRecord = {
@@ -711,7 +712,7 @@ export function* handleApplyAction2() {
       const adapter =
         currentSource === 'stock'
           ? storeAdapters.stockImages
-          : storeAdapters.cropImages
+            : storeAdapters.cardphotoImages
 
       const fullRecord: ImageMeta | null = yield call(
         [adapter, 'getById'],
@@ -729,7 +730,8 @@ export function* handleApplyAction2() {
           ...fullRecord,
           url: applyUrl,
           thumbnail: thumbnail,
-          source: 'apply',
+          source: fullRecord.source,
+          status: 'outLine',
         }
 
         const wrapper: ImageRecord = {

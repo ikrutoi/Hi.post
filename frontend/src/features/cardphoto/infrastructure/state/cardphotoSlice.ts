@@ -7,7 +7,7 @@ import type {
   ImageLayer,
   CropLayer,
   CardLayer,
-  ImageSource,
+  ActiveImageSource,
   CardphotoSessionRecord,
 } from '../../domain/types'
 export interface CardphotoSliceState {
@@ -74,7 +74,7 @@ export const cardphotoSlice = createSlice({
       action: PayloadAction<{
         base: CardphotoBase
         config: WorkingConfig
-        activeSource: ImageSource
+        activeSource: ActiveImageSource
         cropIds: string[]
         cropCount: number
         isComplete: boolean
@@ -175,7 +175,7 @@ export const cardphotoSlice = createSlice({
       state.isComplete = false
     },
 
-    setActiveSource(state, action: PayloadAction<ImageSource>) {
+    setActiveSource(state, action: PayloadAction<ActiveImageSource>) {
       if (state.state) {
         state.state.activeSource = action.payload
       }
@@ -201,7 +201,7 @@ export const cardphotoSlice = createSlice({
 
     setInitialSessionState(
       state,
-      action: PayloadAction<{ config: WorkingConfig; source: ImageSource }>,
+      action: PayloadAction<{ config: WorkingConfig; source: ActiveImageSource }>,
     ) {
       if (state.state) {
         state.state.currentConfig = action.payload.config

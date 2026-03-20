@@ -26,12 +26,11 @@ export const useImageUpload = (
         const imageMeta: ImageMeta = {
           id: nanoid(),
           source: 'user',
+          status: 'processed',
           url: objectUrl,
           width,
           height,
           imageAspectRatio,
-          // Cardphoto is square (125x125mm), so orientation is no longer used.
-          orientation: 'landscape',
           rotation: 0,
           isCropped: false,
           timestamp: Date.now(),

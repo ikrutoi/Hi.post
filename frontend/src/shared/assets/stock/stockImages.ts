@@ -13,6 +13,7 @@ export const STOCK_IMAGES: ImageMeta[] = Object.entries(modules).map(
     return {
       id: `stock-${fileName}`,
       source: 'stock',
+      status: 'processed',
       url: (mod as { default: string }).default,
       width,
       height,

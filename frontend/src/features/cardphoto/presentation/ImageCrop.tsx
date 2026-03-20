@@ -26,7 +26,7 @@ import {
   useCropState,
 } from '../application/hooks'
 import styles from './ImageCrop.module.scss'
-import { ImageMeta, ImageSource } from '../domain/types'
+import { ImageMeta } from '../domain/types'
 import { useAssetRegistryFacade } from '@entities/assetRegistry/application/facade/assetRegistryFacade'
 
 export const ImageCrop = () => {

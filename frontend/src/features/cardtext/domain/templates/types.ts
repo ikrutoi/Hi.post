@@ -48,8 +48,6 @@ export interface UpdateCardtextTemplatePayload {
   favorite?: boolean | null
 }
 
-// ——— Templates list & UI ———
-/** null = не загружено / идёт загрузка (ленивая загрузка без отдельного флага). */
 export type CardtextTemplatesListState = CardtextTemplate[] | null
 
 export type CardtextListSortDirection = 'asc' | 'desc'
@@ -59,7 +57,6 @@ export interface CardtextTemplatesUIState {
   isAddTemplateOpen: boolean
   isEditTitleOpen: boolean
   cardtextListSortDirection: CardtextListSortDirection
-  /** true пока идёт загрузка списка; список не обнуляется, чтобы не моргал бэдж */
   templatesListLoading: boolean
 }
 
