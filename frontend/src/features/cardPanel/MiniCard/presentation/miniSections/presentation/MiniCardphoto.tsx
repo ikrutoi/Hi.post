@@ -15,7 +15,12 @@ export const MiniCardphoto = () => {
   if (!photoPreview?.previewUrl) {
     return (
       <div
-        className={clsx(cardStyles.miniCard, cardStyles.miniCardEmpty)}
+        className={clsx(
+          cardStyles.miniCard,
+          cardStyles.miniCardEmpty,
+          // Same section class as parent `MiniCard` so `MiniCard.module.scss` empty tints apply
+          cardStyles.miniCardCardphoto,
+        )}
         style={{ position: 'absolute', inset: 0 }}
       >
         <div className={cardStyles.miniCardIconBg}>

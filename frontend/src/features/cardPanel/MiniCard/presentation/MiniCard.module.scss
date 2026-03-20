@@ -46,8 +46,32 @@
   }
 }
 
-.miniCard.miniCardEmpty {
-  background-color: $color-app-header;
+// Incomplete mini section (`isEmpty` in MiniCard ≈ `!isComplete` in MiniSectionsSlot).
+// Section-tinted experiment — matches `colors.scss` input palettes.
+.miniCard.miniCardEmpty.miniCardCardphoto {
+  background-color: $color-cardphoto-input;
+  border-color: $color-cardphoto-input-border;
+}
+
+.miniCard.miniCardEmpty.miniCardCardtext {
+  background-color: $color-cardtext-input;
+  border-color: $color-cardtext-input-border;
+}
+
+// Envelope mini: use sender palette (mint), per product choice.
+.miniCard.miniCardEmpty.miniCardEnvelope {
+  background-color: $color-envelope-sender-input;
+  border-color: $color-envelope-sender-input-border;
+}
+
+.miniCard.miniCardEmpty.miniCardAroma {
+  background-color: $color-aroma-input;
+  border-color: $color-aroma-input-border;
+}
+
+.miniCard.miniCardEmpty.miniCardDate {
+  background-color: $color-date-input;
+  border-color: $color-date-input-border;
 }
 
 .miniCardIconBg {

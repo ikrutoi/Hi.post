@@ -6,6 +6,7 @@
   --envelope-text-many: #{$color-toggle-active};
   --pie-rect-fill: #fff;
   --pie-rect-fill-envelope: #{$color-envelope-recipient-light};
+  // Fallback if a sector misses section classes (should not happen for empty patterns)
   --pie-rect-fill-empty: #{$color-app-header};
 
   position: absolute;
@@ -43,6 +44,28 @@
 
 .rectEmpty {
   fill: var(--pie-rect-fill-empty);
+}
+
+// Empty pie sectors — same input palette as MiniCard / `colors.scss`
+.rect.rectCardphoto.rectEmpty {
+  fill: $color-cardphoto-input;
+}
+
+.rect.rectCardtext.rectEmpty {
+  fill: $color-cardtext-input;
+}
+
+// Envelope empty sector: sender mint (same as MiniCard envelope experiment)
+.rect.rectEnvelope.rectEmpty {
+  fill: $color-envelope-sender-input;
+}
+
+.rect.rectAroma.rectEmpty {
+  fill: $color-aroma-input;
+}
+
+.rect.rectDate.rectEmpty {
+  fill: $color-date-input;
 }
 
 .pieSectorIconBg {

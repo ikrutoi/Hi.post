@@ -10,13 +10,12 @@ import clsx from 'clsx'
 import { getToolbarIcon } from '@shared/utils/icons'
 
 export const MiniCardtext: React.FC = () => {
-  const { editor, value, style, hasApplied } = useMiniCardtext()
+  const { editor, value, style, shouldShowMiniText } = useMiniCardtext()
   const { reset } = useCardtextFacade()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('cardtext')
 
-  // Ничего не рендерим, пока текст не применён (нет applied).
-  if (!hasApplied) {
+  if (!shouldShowMiniText) {
     return null
   }
 

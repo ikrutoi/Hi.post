@@ -13,10 +13,23 @@ import { useSizeFacade } from '@layout/application/facades'
 export const useMiniCardtext = () => {
   const editor = useMemo(() => withReact(createEditor()), [])
 
-  const { value, cardtextLines, applied, appliedData, style: cardtextStyle } =
-    useSelector((state: RootState) => state.cardtext)
-  const displayValue = applied != null && appliedData?.value ? appliedData.value : value
-  const displayStyle = applied != null && appliedData?.style ? appliedData.style : cardtextStyle
+  const {
+    value,
+    cardtextLines,
+    applied,
+    appliedData,
+    style: cardtextStyle,
+    plainText,
+  } = useSelector((state: RootState) => state.cardtext)
+
+  // Treat empty string like "not applied" — must match MiniSectionsSlot (`applied !== ''`).
+  const hasAppliedId = applied != null && applied !== ''
+  const hasDraftText = (plainText ?? '').trim().length > 0
+
+  const displayValue =
+    hasAppliedId && appliedData?.value ? appliedData.value : value
+  const displayStyle =
+    hasAppliedId && appliedData?.style ? appliedData.style : cardtextStyle
 
   const { sizeMiniCard } = useSizeFacade()
 
@@ -43,8 +56,8 @@ export const useMiniCardtext = () => {
         color: colorVarDisplay,
       }
 
-  // Показываем текст в мини-версии только если есть применённый вариант.
-  const hasApplied = applied != null
+  // Mini preview: applied id set, or non-empty draft (editor not yet applied).
+  const shouldShowMiniText = hasAppliedId || hasDraftText
 
-  return { editor, value: displayValue, style, hasApplied }
+  return { editor, value: displayValue, style, shouldShowMiniText }
 }
