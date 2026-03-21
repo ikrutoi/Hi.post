@@ -10,9 +10,6 @@ type Props = {
   className?: string
 }
 
-/**
- * Оболочка области превью: плейсхолдер без активного фото и сцена редактирования (файл + кроп).
- */
 export const CardphotoView: React.FC<Props> = ({ className }) => {
   const activeImage = useAppSelector(selectActiveImage)
   const showEmptyPlaceholder = !activeImage
