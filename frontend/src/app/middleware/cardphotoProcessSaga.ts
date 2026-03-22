@@ -28,6 +28,10 @@ import {
   selectCropFromHistory,
   removeCropId,
   setCardphotoPhotoStageRect,
+  resetCardphoto,
+  initCardphoto,
+  bumpCardphotoInlineTemplateList,
+  clearAllCrops,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
@@ -317,6 +321,36 @@ function* watchCardphotoPhotoStageRect(): SagaIterator {
   })
 }
 
+/** Бейдж `listCardphoto` на тулбаре cardphoto — число картинок в IndexedDB со статусом inLine. */
+function* refreshCardphotoListCardphotoBadge(): SagaIterator {
+  try {
+    const all: ImageMeta[] = yield call(storeAdapters.cardphotoImages.getAll)
+    const n = all.filter((x) => x.status === 'inLine').length
+    yield put(
+      updateToolbarIcon({
+        section: 'cardphoto',
+        key: 'listCardphoto',
+        value: { options: { badge: n > 0 ? n : null } },
+      }),
+    )
+  } catch (e) {
+    console.error('refreshCardphotoListCardphotoBadge', e)
+  }
+}
+
+function* watchCardphotoInLineBadge(): SagaIterator {
+  yield takeEvery(
+    [
+      bumpCardphotoInlineTemplateList.type,
+      hydrateEditor.type,
+      resetCardphoto.type,
+      initCardphoto.type,
+      clearAllCrops.type,
+    ],
+    refreshCardphotoListCardphotoBadge,
+  )
+}
+
 export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
@@ -327,6 +361,7 @@ export function* cardphotoProcessSaga(): SagaIterator {
     fork(watchCropChanges),
     fork(watchToolbarContext),
     fork(watchCardphotoPhotoStageRect),
+    fork(watchCardphotoInLineBadge),
     /** RO не шлёт событие, если px размер стейджа тот же — после commit конфиг мог остаться от sizeCard. */
     takeEvery(commitWorkingConfig.type, ensureCardphotoCardMatchesStageRect),
 

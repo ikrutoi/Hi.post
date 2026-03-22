@@ -5,6 +5,8 @@ export interface CardphotoUiState {
   isLoading: boolean
   needsCrop: boolean
   isListPanelOpen: boolean
+  /** Инкремент при изменении списка inLine-шаблонов (панель перечитывает IndexedDB). */
+  inlineTemplateListRevision: number
 }
 
 const initialUiState: CardphotoUiState = {
@@ -12,6 +14,7 @@ const initialUiState: CardphotoUiState = {
   isLoading: false,
   needsCrop: false,
   isListPanelOpen: false,
+  inlineTemplateListRevision: 0,
 }
 
 export const cardphotoUiSlice = createSlice({
@@ -47,6 +50,10 @@ export const cardphotoUiSlice = createSlice({
     setCardphotoListPanelOpen(state, action: PayloadAction<boolean>) {
       state.isListPanelOpen = action.payload
     },
+
+    bumpCardphotoInlineTemplateList(state) {
+      state.inlineTemplateListRevision += 1
+    },
   },
 })
 
@@ -58,6 +65,7 @@ export const {
   markLoaded,
   setNeedsCrop,
   setCardphotoListPanelOpen,
+  bumpCardphotoInlineTemplateList,
 } = cardphotoUiSlice.actions
 
 export default cardphotoUiSlice.reducer

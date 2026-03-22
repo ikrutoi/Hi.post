@@ -16,6 +16,7 @@ import {
   removeUserImage,
   setActiveSource,
   hydrateEditor,
+  bumpCardphotoInlineTemplateList,
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
@@ -483,6 +484,31 @@ export function* handleCropConfirm(): SagaIterator {
   }
 }
 
+/** listAdd на cardphotoProcessed: в IndexedDB статус processed → inLine, превью в списке шаблонов. */
+export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
+  const state: CardphotoState | null = yield select(selectCardphotoState)
+  const id = state?.base.processed.image?.id
+  if (!id) return
+  if (state.base.processed.image?.status === 'inLine') return
+
+  const record: ImageMeta | null = yield call(
+    [storeAdapters.cardphotoImages, 'getById'],
+    id,
+  )
+  if (!record) return
+  if (record.status === 'inLine') return
+
+  const updated: ImageMeta = {
+    ...record,
+    status: 'inLine',
+  }
+
+  yield call(storeAdapters.cardphotoImages.put, updated as ImageMeta & { id: string })
+
+  yield put(setProcessedImage(prepareForRedux(updated)))
+  yield put(bumpCardphotoInlineTemplateList())
+}
+
 // function* rebuildConfigFromMeta(meta: ImageMeta) {
 //   const card: CardLayer = yield select(selectSizeCard)
 //   const imageLayer = fitImageToCard(meta, card, 0, true)
@@ -511,6 +537,7 @@ export function* handleDeleteImageSaga(
       const currentIndex = state.cropIds.indexOf(id)
 
       yield call(storeAdapters.cardphotoImages.deleteById, id)
+      yield put(bumpCardphotoInlineTemplateList())
 
       const remainingIds = state.cropIds.filter((cropId) => cropId !== id)
 

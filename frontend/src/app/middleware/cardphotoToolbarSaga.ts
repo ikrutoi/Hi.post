@@ -41,6 +41,7 @@ import {
   handleDeleteImageSaga,
   handleBackToOriginalSaga,
   handleApplyAction,
+  handlePromoteProcessedToInlineSaga,
 } from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { prepareForRedux } from './cardphotoHelpers'
@@ -208,6 +209,14 @@ export function* handleCardphotoToolbarAction(
     case 'apply':
       yield call(handleApplyAction)
       break
+
+    case 'listAdd': {
+      if (section === 'cardphotoProcessed') {
+        yield call(handlePromoteProcessedToInlineSaga)
+      }
+      break
+    }
+
     default:
       break
   }
@@ -286,6 +295,7 @@ function pickCardphotoProcessedToolbarPatch(
     'cropQualityIndicator',
     'imageReset',
     'close',
+    'listAdd',
   ] as const
   return Object.fromEntries(
     keys
@@ -323,6 +333,8 @@ export function* syncToolbarContext() {
   const isUserImage = !!state.base.user.image
   const hasStockImage = !!state.base.stock.image
   const hasProcessedImage = !!state.base.processed.image
+  const isProcessedInLine =
+    state.base.processed.image?.status === 'inLine'
   const sizeCard: SizeCard = yield select(selectSizeCard)
 
   switch (activeSource) {
@@ -405,6 +417,10 @@ export function* syncToolbarContext() {
         },
         saveList: { state: hasCrops ? 'enabled' : 'disabled' },
         deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
+        listAdd: {
+          state:
+            hasProcessedImage && !isProcessedInLine ? 'enabled' : 'disabled',
+        },
       }
       break
 

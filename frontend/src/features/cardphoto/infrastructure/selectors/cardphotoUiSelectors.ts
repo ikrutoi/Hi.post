@@ -22,3 +22,8 @@ export const selectIsListPanelOpen = createSelector(
   [selectCardphotoUi],
   (ui) => ui.isListPanelOpen
 )
+
+export const selectCardphotoInlineTemplateListRevision = createSelector(
+  [selectCardphotoUi],
+  (ui) => ui.inlineTemplateListRevision
+)
