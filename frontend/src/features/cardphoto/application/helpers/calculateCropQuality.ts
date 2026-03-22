@@ -1,15 +1,6 @@
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
-import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
-import { useCardphotoController } from '@cardphoto/application/controllers'
-import { roundTo } from '@shared/utils/layout'
 import type { LayoutOrientation } from '@layout/domain/types'
-import type {
-  CropLayer,
-  ImageLayer,
-  ImageMeta,
-  CropMeta,
-  QualityLevel,
-} from '../../domain/types'
+import type { CropMeta, ImageLayer, ImageMeta } from '../../domain/types'
 
 const { minAllowedDpi, maxAllowedDpi, widthMm } = CARD_SCALE_CONFIG
 
@@ -29,8 +20,6 @@ export const calculateCropQuality = (
   originalImage: ImageMeta,
   orientation: LayoutOrientation,
 ) => {
-  // Cardphoto is always square, so orientation doesn't affect DPI/quality.
-  // Keep `orientation` only for backward compatibility with existing call sites.
   void orientation
   const inches = widthMm / 25.4
 
@@ -44,83 +33,26 @@ export const calculateCropQuality = (
 
   const dpi = Math.round(realCropWidthPx / inches)
 
-  const quality: QualityLevel =
-    dpi >= maxAllowedDpi ? 'high' : dpi >= 150 ? 'medium' : 'low'
-
   const rawProgress = calculateSteppedProgress(dpi)
-  const qualityProgress = Math.max(0, Math.min(100, rawProgress))
+  const clamped = Math.max(0, Math.min(100, rawProgress))
+  const qualityProgress = Number.isFinite(clamped) ? clamped : 0
+  const safeDpi = Number.isFinite(dpi) ? dpi : 0
+  const safeScale = Number.isFinite(scale) ? scale : 1
 
   return {
-    quality,
     qualityProgress,
-    dpi,
-    scale,
+    dpi: safeDpi,
+    scale: safeScale,
   }
 }
 
-export const calculateCropQuality1 = (
-  crop: CropMeta,
-  image: ImageLayer,
-  originalImage: ImageMeta,
-  orientation: LayoutOrientation,
-) => {
-  console.log('calculateCropQuality+ crop/image', crop, image)
-  console.log('calculateCropQuality++ originalImage', originalImage)
-  void orientation
-  const inches = widthMm / 25.4
-
-  const isSideOrientation = image.rotation === 90 || image.rotation === 270
-  const originalReferenceWidth = isSideOrientation
-    ? originalImage.height
-    : originalImage.width
-
-  const scale = roundTo(
-    originalReferenceWidth / Math.max(1, image.meta.width),
-    3,
-  )
-
-  console.log(
-    'calculateCropQuality+++ originalReferenceWidth',
-    originalReferenceWidth,
-  )
-  console.log('calculateCropQuality+++ crop.width / scale', crop.width, scale)
-  const realCropWidthPx = crop.width * scale
-
-  const dpi = Math.round(realCropWidthPx / inches)
-
-  const quality: QualityLevel =
-    dpi >= maxAllowedDpi ? 'high' : dpi >= 150 ? 'medium' : 'low'
-
-  const rawProgress = calculateSteppedProgress(dpi)
-
-  const qualityProgress = Math.max(0, Math.min(100, rawProgress))
-  console.log('calculateCropQuality++++ qualityProgress', qualityProgress)
-
-  return {
-    quality,
-    qualityProgress,
-    dpi,
-    scale,
-  }
-}
-
-export const dispatchQualityUpdate = (
-  progress: number,
-  quality: QualityLevel,
-) => {
-  // console.log('dispatchQuality', progress)
+export const dispatchQualityUpdate = (progress: number) => {
   window.dispatchEvent(
     new CustomEvent('crop-quality-change', {
-      detail: { progress, quality },
+      detail: { progress },
     }),
   )
 }
-
-// export const getQualityColor = (progress: number) => {
-//   if (progress > 70) return '#4CAF50'
-//   if (progress > 30) return '#FFC107'
-//   return '#F44336'
-// }
 
 export const getQualityColor = (progress: number) => {
   const colors = {

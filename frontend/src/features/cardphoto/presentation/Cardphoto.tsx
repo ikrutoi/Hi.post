@@ -5,9 +5,9 @@ import { CardphotoView } from './CardphotoView/CardphotoView'
 import styles from './Cardphoto.module.scss'
 
 export const Cardphoto = () => {
-  const { activeImage } = useCardphotoFacade()
+  const { activeImage, cropQualityProgress } = useCardphotoFacade()
   const hasLoadedPhoto = Boolean(activeImage)
-  // console.log('cardphoto state', state)
+  console.log('cardphoto cropQualityProgress', cropQualityProgress)
 
   return (
     <div className={styles.cardphoto}>

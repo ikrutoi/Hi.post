@@ -24,6 +24,7 @@ import {
   setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
 import {
+  selectActiveImage,
   selectCardphotoState,
   selectIsProcessedMode,
   selectIsListPanelOpen,
@@ -91,16 +92,18 @@ export function* watchCropChanges(): SagaIterator {
         (s) => s.cardphoto,
       )) as CardphotoSliceState
       const config = slice.state?.currentConfig
+      /** Не `config.image.meta`: там width/height уже под отображение на сцене; для DPI нужен оригинал из base. */
+      const originalImage: ImageMeta | null = yield select(selectActiveImage)
 
-      if (config?.crop && config?.image?.meta) {
-        const { quality, qualityProgress } = calculateCropQuality(
+      if (config?.crop && config?.image && originalImage) {
+        const { qualityProgress } = calculateCropQuality(
           config.crop.meta,
           config.image,
-          config.image.meta,
+          originalImage,
           config.card.orientation,
         )
 
-        yield call(dispatchQualityUpdate, qualityProgress, quality)
+        dispatchQualityUpdate(qualityProgress)
 
         const color = getQualityColor(qualityProgress)
         document.documentElement.style.setProperty('--crop-handle-color', color)

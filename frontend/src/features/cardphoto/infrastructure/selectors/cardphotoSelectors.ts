@@ -9,7 +9,6 @@ import type {
   ImageMeta,
   CardLayer,
   CardphotoBase,
-  QualityLevel,
   ActiveImageSource,
   CardphotoSessionRecord,
 } from '../../domain/types'
@@ -18,7 +17,6 @@ import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 
 export const selectCardphotoSlice = (state: RootState) => state.cardphoto
 
-/** Заглушка: при true селектор всегда возвращает false (картинка не лезет). Потом разобраться. */
 const CARDPHOTO_IS_COMPLETE_STUB = true
 
 export const selectCardphotoState = (state: RootState): CardphotoState | null =>
@@ -40,14 +38,9 @@ export const selectCurrentConfig = (state: RootState): WorkingConfig | null => {
   return state.cardphoto.state?.currentConfig ?? null
 }
 
-/** Measured `.cardphotoStage` box (see `setCardphotoPhotoStageRect`). */
 export const selectCardphotoPhotoStageRect = (state: RootState) =>
   state.cardphoto.state?.photoStageRect ?? null
 
-/**
- * Card layer for cardphoto math: pixel size from the real editor stage when measured,
- * otherwise falls back to global layout `SizeCard` (legacy form-based sizing).
- */
 export const selectCardphotoWorkingCardLayer = createSelector(
   [selectSizeCard, selectCardphotoPhotoStageRect],
   (layoutCard, rect): CardLayer => {
@@ -111,14 +104,9 @@ export const selectIsCropFull = createSelector(
   [selectCurrentConfig],
   (config) => {
     if (!config?.crop) return false
-    // Must match `checkIsCropFull` (AND both dimensions vs max-in-card), not width OR height —
-    // otherwise a smaller crop that still spans full image width stays "full" and cropFull stays disabled.
     return checkIsCropFull(config)
   },
 )
-
-export const selectCropQuality = (state: RootState): QualityLevel =>
-  state.cardphoto.state?.currentConfig?.crop?.meta?.quality ?? 'low'
 
 export const selectCropQualityProgress = (state: RootState): number =>
   state.cardphoto.state?.currentConfig?.crop?.meta?.qualityProgress ?? 0
@@ -219,9 +207,7 @@ export const selectCardphotoPreview = createSelector(
   (id, registry, isComplete) => {
     const asset = id ? registry[id] : null
     const previewUrl =
-      isComplete && asset
-        ? asset.thumbUrl || asset.url || null
-        : null
+      isComplete && asset ? asset.thumbUrl || asset.url || null : null
 
     return {
       previewUrl,
@@ -231,7 +217,6 @@ export const selectCardphotoPreview = createSelector(
   },
 )
 
-/** Preview for mini section: only when user has chosen an image (appended). */
 export const selectCardphotoMiniPreview = createSelector(
   [
     (state: RootState) => state.cardphoto.state?.appended ?? null,

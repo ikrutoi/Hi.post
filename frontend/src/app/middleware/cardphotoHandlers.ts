@@ -112,7 +112,7 @@ export function* handleCropFullAction(): SagaIterator {
   const rawFullCrop = createFullCropLayer(image, card)
   const fullCrop = applyBounds(rawFullCrop, image, card.orientation)
 
-  const { quality, qualityProgress } = calculateCropQuality(
+  const { qualityProgress } = calculateCropQuality(
     fullCrop.meta,
     image,
     originalImage,
@@ -125,7 +125,6 @@ export function* handleCropFullAction(): SagaIterator {
       ...fullCrop,
       meta: {
         ...fullCrop.meta,
-        quality,
         qualityProgress,
       },
     },
@@ -551,17 +550,18 @@ export function* handleClearAllCropsSaga() {
 export function* syncQualitySaga() {
   const state: CardphotoState = yield select((s) => s.cardphoto)
   const config = state.currentConfig
+  const originalImage: ImageMeta | null = yield select(selectActiveImage)
 
   console.log('syncQualitySaga')
 
-  if (config?.crop && config?.image) {
-    const { qualityProgress, quality } = calculateCropQuality(
+  if (config?.crop && config?.image && originalImage) {
+    const { qualityProgress } = calculateCropQuality(
       config.crop.meta,
       config.image,
-      config.image.meta,
+      originalImage,
       config.card.orientation,
     )
-    dispatchQualityUpdate(qualityProgress, quality)
+    dispatchQualityUpdate(qualityProgress)
   }
 }
 

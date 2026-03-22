@@ -42,8 +42,6 @@ export interface CardLayer {
   orientation: LayoutOrientation
 }
 
-export type QualityLevel = 'high' | 'medium' | 'low'
-
 export interface ImageData {
   blob?: Blob
   url: string
@@ -79,7 +77,6 @@ export interface CropMeta {
   width: number
   height: number
   aspectRatio: number
-  quality: QualityLevel
   qualityProgress: number
 }
 

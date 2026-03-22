@@ -18,7 +18,6 @@ import {
   selectAppliedImage,
   selectCurrentConfig,
   selectCardSize,
-  selectCropQuality,
   selectCropQualityProgress,
   selectActiveImage,
   selectIsProcessedMode,
@@ -37,7 +36,6 @@ export const useCardphotoController = () => {
   const userImage = useSelector(selectUserImage)
   const appliedImage = useSelector(selectAppliedImage)
   const currentConfig = useSelector(selectCurrentConfig)
-  const quality = useSelector(selectCropQuality)
   const qualityProgress = useSelector(selectCropQualityProgress)
   const activeImage = useSelector(selectActiveImage)
   const processedMode = useSelector(selectIsProcessedMode)
@@ -64,7 +62,6 @@ export const useCardphotoController = () => {
     appliedImage,
     currentConfig,
     cardSize,
-    quality,
     qualityProgress,
     activeImage,
     processedMode,

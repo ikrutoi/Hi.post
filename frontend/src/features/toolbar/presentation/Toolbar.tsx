@@ -31,6 +31,7 @@ import type {
 import { LayoutOrientation } from '@layout/domain/types'
 import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
+import { CropQualityDots } from './CropQualityDots'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({
@@ -199,6 +200,33 @@ export const Toolbar = ({
       key === 'left'
         ? 'enabled'
         : buttonStatus
+
+    if (
+      (section === 'cardphotoEditor' || section === 'cardphotoCreate') &&
+      key === 'cropQualityIndicator'
+    ) {
+      const qualityDisabled =
+        groupStatus === 'disabled' || buttonStatus === 'disabled'
+      return (
+        <div
+          key={key}
+          className={clsx(
+            styles.toolbarKey,
+            styles.toolbarKeyCropQualityIndicator,
+            styles[`toolbarKey${capitalize(key)}`],
+            styles[
+              `toolbarKey${capitalize(key)}${capitalize(
+                buttonStatus ?? 'enabled',
+              )}`
+            ],
+            qualityDisabled && styles.toolbarKeyDisabled,
+          )}
+          aria-disabled={qualityDisabled}
+        >
+          <CropQualityDots disabled={qualityDisabled} />
+        </div>
+      )
+    }
 
     if ((section === 'cardtextEditor' || section === 'cardtextCreate') && key === 'colorPicker') {
       return (

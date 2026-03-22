@@ -191,16 +191,16 @@ export const CardphotoStage = () => {
                     imageLayer={imageLayer}
                     orientation={sizeCard.orientation}
                     originalImage={activeImage}
-                    onChange={(newCrop) => {
-                      setTempCrop(newCrop)
-                      // Merge into latest Redux config (avoid stale closure) so crop + sagas stay in sync.
+                    onPreviewChange={(newCrop) => setTempCrop(newCrop)}
+                    onCommit={(finalCrop) => {
+                      setTempCrop(finalCrop)
                       const cfg = selectCurrentConfig(store.getState())
                       if (cfg) {
                         dispatch(
                           commitWorkingConfig(
                             prepareConfigForRedux({
                               ...cfg,
-                              crop: newCrop,
+                              crop: finalCrop,
                             }),
                           ),
                         )

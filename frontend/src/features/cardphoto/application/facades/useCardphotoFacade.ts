@@ -22,7 +22,6 @@ import {
   selectActiveSource,
   selectCurrentConfig,
   selectCardSize,
-  selectCropQuality,
   selectCropQualityProgress,
   selectActiveImage,
   selectIsProcessedMode,
@@ -34,13 +33,10 @@ import type {
   CropLayer,
   CardphotoState,
   WorkingConfig,
-  QualityLevel,
   ActiveImageSource,
 } from '../../domain/types'
 
-/** Плоский возврат: состояние и экшены без вложенных `state` / `actions`. */
 export type CardphotoFacade = {
-  /** Полное состояние редактора фото (`cardphoto.state` в Redux). */
   cardphotoSession: CardphotoState | null
   isComplete: boolean
   stockImage: ImageMeta | null
@@ -50,7 +46,6 @@ export type CardphotoFacade = {
   currentConfig: WorkingConfig | null
   cardWidth: number
   cardHeight: number
-  cropQuality: QualityLevel
   cropQualityProgress: number
   activeImage: ImageMeta | null
   isProcessedMode: boolean
@@ -82,7 +77,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const activeSource = useSelector(selectActiveSource)
   const currentConfig = useSelector(selectCurrentConfig)
   const { width: cardWidth, height: cardHeight } = useSelector(selectCardSize)
-  const cropQuality = useSelector(selectCropQuality)
   const cropQualityProgress = useSelector(selectCropQualityProgress)
   const activeImage = useSelector(selectActiveImage)
   const isProcessedMode = useSelector(selectIsProcessedMode)
@@ -131,7 +125,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       currentConfig,
       cardWidth,
       cardHeight,
-      cropQuality,
       cropQualityProgress,
       activeImage,
       isProcessedMode,
@@ -156,7 +149,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       currentConfig,
       cardWidth,
       cardHeight,
-      cropQuality,
       cropQualityProgress,
       activeImage,
       isProcessedMode,

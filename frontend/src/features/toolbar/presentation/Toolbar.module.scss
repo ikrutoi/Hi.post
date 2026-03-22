@@ -159,10 +159,33 @@
       cursor: default;
     }
   }
+
+  .toolbarKeyCropQualityIndicator {
+    display: flex;
+    align-items: center;
+    width: auto;
+    min-width: 4.5rem;
+    padding: 0 0.15rem;
+    margin-left: 0;
+    margin-right: 0;
+    pointer-events: none;
+    // border: 1px solid red;
+
+    &:hover {
+      background-color: #fff;
+      cursor: default;
+    }
+  }
 }
 
 .toolbarCardphotoEditor,
 .toolbarCardphotoCreate {
+  // IconCropCheck: рамка + галочка внутри viewBox — визуально легче и «меньше» соседних crop/rotate; чуть увеличиваем SVG.
+  :global(button[data-icon-key='cropCheck']) svg {
+    transform: scale(1.075);
+    transform-origin: center center;
+  }
+
   // ring via box-shadow so border-box width/height aren’t eaten by a real border (keeps icon size)
   .toolbarKeyCropCheckEnabled {
     background-color: $color-section-light-completed;

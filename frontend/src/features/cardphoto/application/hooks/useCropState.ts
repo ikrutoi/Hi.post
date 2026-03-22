@@ -2,6 +2,23 @@ import { useEffect, useState } from 'react'
 import type { CropLayer } from '../../domain/types'
 import type { IconState } from '@shared/config/constants'
 
+/** Сравнение без учёта ссылки: при каждом commit в Redux приходит новый объект с теми же числами. */
+function cropLayersEqual(
+  a: CropLayer | null,
+  b: CropLayer | null,
+): boolean {
+  if (a === b) return true
+  if (!a || !b) return false
+  return (
+    a.x === b.x &&
+    a.y === b.y &&
+    a.meta.width === b.meta.width &&
+    a.meta.height === b.meta.height &&
+    a.meta.aspectRatio === b.meta.aspectRatio &&
+    a.meta.qualityProgress === b.meta.qualityProgress
+  )
+}
+
 export function useCropState(
   toolbarStateCrop: IconState,
   currentConfigCrop: CropLayer | null,
@@ -13,7 +30,10 @@ export function useCropState(
     if (toolbarStateCrop !== 'active') {
       setTempCrop(null)
     } else {
-      setTempCrop(currentConfigCrop)
+      setTempCrop((prev) => {
+        if (cropLayersEqual(prev, currentConfigCrop)) return prev
+        return currentConfigCrop
+      })
     }
   }, [toolbarStateCrop, currentConfigCrop])
 

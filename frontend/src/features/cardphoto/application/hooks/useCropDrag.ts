@@ -8,8 +8,8 @@ export const useCropDrag = (
   imageLayer: ImageLayer,
   setTempCrop: (c: CropLayer) => void,
   setLast: (c: CropLayer) => void,
-  onChange: (c: CropLayer) => void,
-  // onCommit: (c: CropLayer) => void,
+  onPreviewChange: (c: CropLayer) => void,
+  onCommit: (c: CropLayer) => void,
   begin: () => void,
   end: () => void,
   attach: any,
@@ -19,8 +19,11 @@ export const useCropDrag = (
   return (startX: number, startY: number) => {
     begin()
 
-    const initialCropX = tempCrop.x
-    const initialCropY = tempCrop.y
+    const snapshot = { ...tempCrop, meta: { ...tempCrop.meta } }
+    setLast(snapshot)
+
+    const initialCropX = snapshot.x
+    const initialCropY = snapshot.y
 
     const move = (clientX: number, clientY: number) => {
       if (!imageLayer) return
@@ -32,7 +35,7 @@ export const useCropDrag = (
       const targetY = initialCropY + dy
 
       const next = applyBounds(
-        { ...tempCrop, x: targetX, y: targetY },
+        { ...snapshot, x: targetX, y: targetY },
         imageLayer,
         orientation,
       )
@@ -47,12 +50,12 @@ export const useCropDrag = (
 
       setTempCrop(next)
       setLast(next)
-      onChange(next)
+      onPreviewChange(next)
     }
 
     const finish = () => {
+      onCommit(lastCropRef.current)
       end()
-      // onCommit(lastCropRef.current)
       detach()
     }
 

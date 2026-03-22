@@ -8,8 +8,8 @@ export const useCropResize = (
   imageLayer: ImageLayer,
   setTempCrop: (c: CropLayer) => void,
   setLast: (c: CropLayer) => void,
-  onChange: (c: CropLayer) => void,
-  // onCommit: (c: CropLayer) => void,
+  onPreviewChange: (c: CropLayer) => void,
+  onCommit: (c: CropLayer) => void,
   begin: () => void,
   end: () => void,
   attach: (
@@ -42,6 +42,7 @@ export const useCropResize = (
     const safeMinWidth = (minAllowedDpi * inches) / scale
 
     const startState = { ...tempCrop, meta: { ...tempCrop.meta } }
+    setLast(startState)
 
     const move = (clientX: number, clientY: number) => {
       const dx = clientX - startX
@@ -58,18 +59,24 @@ export const useCropResize = (
         safeMinWidth,
       )
 
-      dispatchQualityUpdate(next.meta.qualityProgress, next.meta.quality)
-      const color = getQualityColor(next.meta.qualityProgress)
-      document.documentElement.style.setProperty('--crop-handle-color', color)
+      const p = Math.max(
+        0,
+        Math.min(100, Number(next.meta.qualityProgress) || 0),
+      )
+      dispatchQualityUpdate(p)
+      document.documentElement.style.setProperty(
+        '--crop-handle-color',
+        getQualityColor(p),
+      )
 
       setTempCrop(next)
       setLast(next)
-      onChange(next)
+      onPreviewChange(next)
     }
 
     const finish = () => {
+      onCommit(lastCropRef.current)
       end()
-      // onCommit(lastCropRef.current)
       if (detachRef) detachRef()
     }
 

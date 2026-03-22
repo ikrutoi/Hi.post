@@ -7,6 +7,7 @@ export const CARDPHOTO_KEYS = [
   'imageRotateRight',
   'imageReset',
   'crop',
+  'cropQualityIndicator',
   'cropFull',
   'cropCheck',
   // 'cropDelete',
@@ -109,21 +110,18 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
 export const CARDPHOTO_EDITOR_TOOLBAR: ToolbarConfig = [
   {
     group: 'editor',
-    icons: [
-      // { key: 'cardphotoAdd', state: 'enabled' },
-      { key: 'listAdd', state: 'disabled' },
-    ],
+    icons: [{ key: 'listAdd', state: 'disabled' }],
     status: 'enabled',
   },
   {
-    group: 'font',
+    group: 'crop',
     icons: [
-      // { key: 'imageRotateLeft', state: 'disabled' },
       { key: 'cropCheck', state: 'disabled' },
       { key: 'imageRotateRight', state: 'enabled' },
       { key: 'crop', state: 'enabled' },
       { key: 'cropFull', state: 'disabled' },
-      // { key: 'imageReset', state: 'disabled' },
+      { key: 'empty', state: 'disabled' },
+      { key: 'cropQualityIndicator', state: 'disabled' },
     ],
     status: 'enabled',
   },

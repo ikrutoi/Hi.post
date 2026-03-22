@@ -1,4 +1,4 @@
-import { CropLayer, QualityLevel } from '../../domain/types'
+import { CropLayer } from '../../domain/types'
 
 export const getCroppedImg = async (
   imageElement: HTMLImageElement,
@@ -119,10 +119,4 @@ export const calculateDPI = (
 ): number => {
   const inches = cardWidthMm / 25.4
   return Math.round(cropWidthPx / inches)
-}
-
-export const getQualityLevel = (dpi: number): QualityLevel => {
-  if (dpi >= 300) return 'high'
-  if (dpi >= 150) return 'medium'
-  return 'low'
 }

@@ -64,7 +64,6 @@ export function createInitialCropLayer(
       width: 0,
       height: 0,
       aspectRatio: card.aspectRatio,
-      quality: 'low',
       qualityProgress: 0,
     },
     orientation: card.orientation,
@@ -104,7 +103,6 @@ export function createInitialCropLayer(
     card.orientation,
   )
 
-  crop.meta.quality = qualityData.quality
   crop.meta.qualityProgress = qualityData.qualityProgress
 
   return crop
@@ -146,7 +144,6 @@ export function createFullCropLayer(
       width: finalWidth,
       height: finalHeight,
       aspectRatio: card.aspectRatio,
-      quality: 'low',
       qualityProgress: 0,
     },
     orientation: card.orientation,

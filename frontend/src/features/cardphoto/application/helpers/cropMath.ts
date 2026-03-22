@@ -7,7 +7,6 @@ import type {
   CropLayer,
   CropMeta,
   ImageLayer,
-  QualityLevel,
   ImageMeta,
   WorkingConfig,
 } from '../../domain/types'
@@ -110,8 +109,11 @@ export const updateCrop = (
     newHeight = newWidth / ar
   }
 
-  const { quality, qualityProgress } = calculateCropQuality(
-    { ...startCrop.meta, ...startCrop.meta, width: newWidth } as CropMeta,
+  const w = roundTo(newWidth, 2)
+  const h = roundTo(newHeight, 2)
+
+  const { qualityProgress } = calculateCropQuality(
+    { ...startCrop.meta, width: w, height: h },
     imageLayer,
     imageMeta,
     orientation,
@@ -129,9 +131,8 @@ export const updateCrop = (
     y: roundTo(newY, 2),
     meta: {
       ...startCrop.meta,
-      width: roundTo(newWidth, 2),
-      height: roundTo(newHeight, 2),
-      quality,
+      width: w,
+      height: h,
       qualityProgress,
     },
   }
@@ -194,7 +195,6 @@ export const checkIsCropFull = (config: WorkingConfig): boolean => {
       width: finalWidth,
       height: finalHeight,
       aspectRatio: card.aspectRatio,
-      quality: 'low',
       qualityProgress: 0,
     },
     orientation: card.orientation,

@@ -7,11 +7,7 @@ import {
   useCropDrag,
   useCropResize,
 } from '../application/hooks'
-import {
-  getQualityColor,
-  calculateCropQuality,
-  dispatchQualityUpdate,
-} from '../application/helpers'
+import { getQualityColor } from '../application/helpers'
 import type { ImageLayer, CropLayer, ImageMeta } from '../domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
@@ -20,8 +16,10 @@ interface CropAreaProps {
   imageLayer: ImageLayer
   orientation: LayoutOrientation
   originalImage: ImageMeta
-  onChange: (newCrop: CropLayer) => void
-  // onCommit: (finalCrop: CropLayer) => void
+  /** Только локальный превью (оверлей + стейт), без Redux — иначе лаг Redux откатывает кроп. */
+  onPreviewChange: (newCrop: CropLayer) => void
+  /** Один раз в конце жеста (mouseup / touchend). */
+  onCommit: (finalCrop: CropLayer) => void
 }
 
 export const CropArea: React.FC<CropAreaProps> = ({
@@ -29,8 +27,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
   imageLayer,
   orientation,
   originalImage,
-  onChange,
-  // onCommit,
+  onPreviewChange,
+  onCommit,
 }) => {
   const [tempCrop, setTempCrop] = useState<CropLayer>(cropLayer)
   const { interactingRef, lastCropRef, begin, end, setLast } =
@@ -42,8 +40,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
     imageLayer,
     setTempCrop,
     setLast,
-    onChange,
-    // onCommit,
+    onPreviewChange,
+    onCommit,
     begin,
     end,
     attach,
@@ -56,8 +54,8 @@ export const CropArea: React.FC<CropAreaProps> = ({
     imageLayer,
     setTempCrop,
     setLast,
-    onChange,
-    // onCommit,
+    onPreviewChange,
+    onCommit,
     begin,
     end,
     attach,
@@ -72,6 +70,29 @@ export const CropArea: React.FC<CropAreaProps> = ({
       setLast(cropLayer)
     }
   }, [cropLayer])
+
+  /**
+   * Цвет ручек по qualityProgress (как шкала индикатора).
+   * Во время drag/resize цвет задаёт только useCropResize (синхронно в pointermove);
+   * иначе этот эффект после ре-рендера перезаписывал бы CSS var устаревшим progress → мигание/красный.
+   */
+  useEffect(() => {
+    if (interactingRef.current) return
+    const p = Math.max(
+      0,
+      Math.min(100, tempCrop.meta.qualityProgress ?? 0),
+    )
+    document.documentElement.style.setProperty(
+      '--crop-handle-color',
+      getQualityColor(p),
+    )
+  }, [tempCrop.meta.qualityProgress])
+
+  useEffect(() => {
+    return () => {
+      document.documentElement.style.removeProperty('--crop-handle-color')
+    }
+  }, [])
 
   return (
     <div

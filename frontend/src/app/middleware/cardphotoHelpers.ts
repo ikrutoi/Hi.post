@@ -20,7 +20,11 @@ interface UpdateCropOptions {
   isFull?: boolean
 }
 
-const CARDPHOTO_TOOLBAR_SECTIONS = ['cardphoto', 'cardphotoEditor'] as const
+const CARDPHOTO_TOOLBAR_SECTIONS = [
+  'cardphoto',
+  'cardphotoEditor',
+  'cardphotoCreate',
+] as const
 
 export function* updateCropToolbarState(
   newCrop: 'active' | 'enabled',
@@ -31,6 +35,9 @@ export function* updateCropToolbarState(
 
   const newCropFull =
     newCrop === 'active' ? (isFull ? 'disabled' : 'enabled') : 'disabled'
+
+  const newCropQualityIndicator =
+    newCrop === 'active' ? 'enabled' : 'disabled'
 
   const newCropCheck =
     newCrop === 'active'
@@ -50,6 +57,13 @@ export function* updateCropToolbarState(
         section,
         key: 'cropFull',
         value: newCropFull,
+      }),
+    )
+    yield put(
+      updateToolbarIcon({
+        section,
+        key: 'cropQualityIndicator',
+        value: newCropQualityIndicator,
       }),
     )
     yield put(
