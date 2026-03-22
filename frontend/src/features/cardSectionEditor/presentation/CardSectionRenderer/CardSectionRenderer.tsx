@@ -28,7 +28,7 @@ export const CardSectionRenderer = () => {
       ref={sectionRef}
       className={clsx(
         styles.cardSectionRenderer,
-        styles[`cardSectionRenderer${capitalize(sizeCard.orientation)}`],
+        // styles[`cardSectionRenderer${capitalize(sizeCard.orientation)}`],
       )}
       // style={{
       //   width: `${currentWidth}px`,

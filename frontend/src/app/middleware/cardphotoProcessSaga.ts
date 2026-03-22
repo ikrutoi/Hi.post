@@ -25,7 +25,6 @@ import {
   setBaseImage,
   uploadImageReady,
   hydrateEditor,
-  clearCurrentConfig,
   selectCropFromHistory,
   removeCropId,
   setCardphotoPhotoStageRect,
@@ -222,9 +221,11 @@ export function* rebuildConfigFromMeta(
   rotation?: ImageRotation,
 ) {
   try {
-    // console.log('REBUILD+ meta', meta)
-    yield put(clearCurrentConfig())
-    yield delay(16)
+    // Не вызываем clearCurrentConfig + delay: иначе в CardphotoStage на мгновение
+    // пропадает imageLayer → unmount .cropContainer → стейдж схлопывается →
+    // ResizeObserver шлёт null/small rect → selectCardphotoWorkingCardLayer падает на
+    // sizeCard вместо реальных пикселей стейджа (cropCheck / processed выглядят «сломанными»
+    // до перезагрузки).
 
     // Cardphoto cards are square (125x125mm), so we never switch layout orientation here.
     // Keep `forceOrientation` for backward compatibility with older call sites.
@@ -283,31 +284,36 @@ export function* onDeleteCropSaga(action: PayloadAction<string>): SagaIterator {
   }
 }
 
+/** Если в конфиге размеры card не совпадают с измеренным стейджем — пересобрать fit (например после cropCheck). */
+function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
+  const rect: { width: number; height: number } | null = yield select(
+    selectCardphotoPhotoStageRect,
+  )
+  if (!rect || rect.width < 2 || rect.height < 2) return
+
+  const state: CardphotoState | null = yield select(selectCardphotoState)
+  if (!state?.activeSource || !state.currentConfig?.image) return
+
+  const current = state.currentConfig.card
+  if (
+    Math.abs(current.width - rect.width) < 0.5 &&
+    Math.abs(current.height - rect.height) < 0.5
+  ) {
+    return
+  }
+
+  const meta = state.base[state.activeSource]?.image
+  if (!meta) return
+
+  const rot = state.currentConfig.image.rotation ?? 0
+  yield call(rebuildConfigFromMeta, meta, state.activeSource, undefined, rot)
+}
+
 /** When the real editor stage resizes, refit image/crop to measured pixels (not global SizeCard). */
 function* watchCardphotoPhotoStageRect(): SagaIterator {
   yield takeLatest(setCardphotoPhotoStageRect.type, function* (): SagaIterator {
-    yield delay(100)
-    const rect: { width: number; height: number } | null = yield select(
-      selectCardphotoPhotoStageRect,
-    )
-    if (!rect || rect.width < 2 || rect.height < 2) return
-
-    const state: CardphotoState | null = yield select(selectCardphotoState)
-    if (!state?.activeSource || !state.currentConfig?.image) return
-
-    const current = state.currentConfig.card
-    if (
-      Math.abs(current.width - rect.width) < 0.5 &&
-      Math.abs(current.height - rect.height) < 0.5
-    ) {
-      return
-    }
-
-    const meta = state.base[state.activeSource]?.image
-    if (!meta) return
-
-    const rot = state.currentConfig.image.rotation ?? 0
-    yield call(rebuildConfigFromMeta, meta, state.activeSource, undefined, rot)
+    yield delay(0)
+    yield call(ensureCardphotoCardMatchesStageRect)
   })
 }
 
@@ -321,6 +327,8 @@ export function* cardphotoProcessSaga(): SagaIterator {
     fork(watchCropChanges),
     fork(watchToolbarContext),
     fork(watchCardphotoPhotoStageRect),
+    /** RO не шлёт событие, если px размер стейджа тот же — после commit конфиг мог остаться от sizeCard. */
+    takeEvery(commitWorkingConfig.type, ensureCardphotoCardMatchesStageRect),
 
     takeLatest(uploadUserImage.type, onUploadImageReadySaga),
     takeEvery(cancelFileDialog.type, onCancelFileDialog),

@@ -9,6 +9,35 @@ import type {
   ImageRotation,
 } from '../../domain/types'
 
+/** Целые px + центрирование через floor — убирает субпиксельный зазор у бордера (589×588.406 → 589×589 при квадратной карте). */
+function alignImageLayerToPixelGrid(
+  card: CardLayer,
+  imgWidth: number,
+  imgHeight: number,
+): { imgWidth: number; imgHeight: number; offsetX: number; offsetY: number } {
+  const cw = Math.max(1, Math.round(card.width))
+  const ch = Math.max(1, Math.round(card.height))
+  let iw = Math.max(1, Math.round(imgWidth))
+  let ih = Math.max(1, Math.round(imgHeight))
+
+  iw = Math.min(iw, cw)
+  ih = Math.min(ih, ch)
+
+  // Один пиксель «letterbox»: при полном заполнении по одной оси добиваем вторую до ch/cw (микроискажение AR).
+  if (iw === cw && ih === ch - 1) {
+    ih = ch
+  } else if (ih === ch && iw === cw - 1) {
+    iw = cw
+  }
+
+  return {
+    imgWidth: iw,
+    imgHeight: ih,
+    offsetX: Math.floor((cw - iw) / 2),
+    offsetY: Math.floor((ch - ih) / 2),
+  }
+}
+
 export function fitImageToCard(
   originalMeta: ImageMeta,
   card: CardLayer,
@@ -20,22 +49,40 @@ export function fitImageToCard(
   const targetWidth = isRotated ? originalMeta.height : originalMeta.width
   const targetHeight = isRotated ? originalMeta.width : originalMeta.height
 
-  const scale = Math.min(card.width / targetWidth, card.height / targetHeight)
+  const scaleW = card.width / targetWidth
+  const scaleH = card.height / targetHeight
+  const scale = Math.min(scaleW, scaleH)
 
-  const imgWidth = roundTo(originalMeta.width * scale, 2)
-  const imgHeight = roundTo(originalMeta.height * scale, 2)
+  let imgWidth = roundTo(originalMeta.width * scale, 2)
+  let imgHeight = roundTo(originalMeta.height * scale, 2)
 
-  const visualCenterX = card.width / 2
-  const visualCenterY = card.height / 2
+  // Snap to exact card edge when that axis is the limiting constraint.
+  // Otherwise float + roundTo(..., 2) can leave a 1px gap at the bottom (or top) vs .cardphotoViewContent border.
+  if (!isRotated) {
+    const eps = 1e-4
+    if (Math.abs(scale - scaleW) < eps) {
+      imgWidth = roundTo(card.width, 2)
+      imgHeight = roundTo(
+        originalMeta.height * (imgWidth / originalMeta.width),
+        2,
+      )
+    } else if (Math.abs(scale - scaleH) < eps) {
+      imgHeight = roundTo(card.height, 2)
+      imgWidth = roundTo(
+        originalMeta.width * (imgHeight / originalMeta.height),
+        2,
+      )
+    }
+  }
 
-  const offsetX = roundTo(visualCenterX - imgWidth / 2, 2)
-  const offsetY = roundTo(visualCenterY - imgHeight / 2, 2)
+  const { imgWidth: pxW, imgHeight: pxH, offsetX, offsetY } =
+    alignImageLayerToPixelGrid(card, imgWidth, imgHeight)
 
   return {
     meta: {
       ...originalMeta,
-      width: imgWidth,
-      height: imgHeight,
+      width: pxW,
+      height: pxH,
       isCropped,
       orientation: card.orientation,
     },

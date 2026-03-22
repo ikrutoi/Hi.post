@@ -63,6 +63,16 @@ export const CardphotoStage = () => {
 
   const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeSource}`
 
+  /** После любого commit конфига — реальные px стейджа (RO не срабатывает, если размер DOM не изменился). */
+  useLayoutEffect(() => {
+    const el = stageRef.current
+    if (!el || !currentConfig) return
+    const w = el.clientWidth
+    const h = el.clientHeight
+    if (w < 2 || h < 2) return
+    dispatch(setCardphotoPhotoStageRect({ width: w, height: h }))
+  }, [dispatch, currentConfig])
+
   useLayoutEffect(() => {
     const el = stageRef.current
     if (!el) return
@@ -70,8 +80,10 @@ export const CardphotoStage = () => {
     const publish = () => {
       const w = el.clientWidth
       const h = el.clientHeight
+      // Не затираем rect при кратковременном нулевом размере: при `clearCurrentConfig`
+      // в saga `showCropUi` на один кадр false → пустой стейдж → иначе в Redux уходит
+      // null и fit идёт по глобальному sizeCard (картинка крупнее стейджа + зазор у бордера).
       if (w < 2 || h < 2) {
-        dispatch(setCardphotoPhotoStageRect(null))
         return
       }
       dispatch(setCardphotoPhotoStageRect({ width: w, height: h }))
@@ -83,7 +95,7 @@ export const CardphotoStage = () => {
 
     return () => {
       ro.disconnect()
-      dispatch(setCardphotoPhotoStageRect(null))
+      // Не сбрасываем rect: Strict Mode двойной mount обнулял бы rect → saga видела null → sizeCard.
     }
   }, [dispatch])
 

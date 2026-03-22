@@ -8,11 +8,8 @@ const photoToolbarSection = (isProcessed: boolean) =>
   isProcessed ? 'cardphotoProcessed' : 'cardphotoCreate'
 
 export const Cardphoto = () => {
-  const { activeImage, cropQualityProgress, isProcessedMode } =
-    useCardphotoFacade()
+  const { activeImage, isProcessedMode } = useCardphotoFacade()
   const hasLoadedPhoto = Boolean(activeImage)
-  console.log('cardphoto cropQualityProgress', cropQualityProgress)
-  console.log('cardphoto activeImage', activeImage)
 
   return (
     <div className={styles.cardphoto}>

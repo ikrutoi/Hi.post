@@ -27,7 +27,6 @@
   flex-direction: column;
   justify-content: flex-end;
   border-radius: 0.5rem;
-  // border: solid 1px red;
 }
 
 .cardphotoToolbarRow {
@@ -46,4 +45,7 @@
   min-height: 0;
   position: relative;
   border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid $color-cardphoto-input-border;
+  // border: solid 1px red;
 }

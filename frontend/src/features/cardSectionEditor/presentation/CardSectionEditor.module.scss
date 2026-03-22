@@ -49,6 +49,7 @@
   flex-direction: row;
   justify-content: flex-end;
   align-items: flex-start;
+  // border: solid 1px green;
 }
 
 .editorAreaCenter {
@@ -66,7 +67,6 @@
   // border: none;
   // background-color: transparent;
   // box-shadow: none;
-  // border: solid 1px blue;
 }
 
 .editorSection {
@@ -74,4 +74,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  // border: solid 1px blue;
 }
