@@ -30,8 +30,7 @@ export const selectSizeToolbarContour = createSelector(
 
     const height = size.height + 6 * remSize
     const width =
-      size.height * CARD_SCALE_CONFIG.aspectRatio +
-      12 * CARD_SCALE_CONFIG.aspectRatio * remSize
+      size.width + 12 * CARD_SCALE_CONFIG.aspectRatio * remSize
 
     return {
       width: roundTo(width),

@@ -23,7 +23,7 @@ import {
   initialCardtextViewToolbarState,
   initialCardtextEditorToolbarState,
   initialCardtextCreateToolbarState,
-  initialCardphotoEditorToolbarState,
+  initialCardphotoProcessedToolbarState,
   initialCardphotoViewToolbarState,
   initialCardphotoCreateToolbarState,
 } from '../../domain/types'
@@ -44,7 +44,7 @@ import type {
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
   cardphotoCreate: initialCardphotoCreateToolbarState,
-  cardphotoEditor: initialCardphotoEditorToolbarState,
+  cardphotoProcessed: initialCardphotoProcessedToolbarState,
   cardphotoView: initialCardphotoViewToolbarState,
   cardtext: initialCardtextToolbarState,
   sender: initialSenderToolbarState,

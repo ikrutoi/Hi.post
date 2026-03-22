@@ -102,27 +102,27 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const CARDPHOTO_EDITOR_TOOLBAR: ToolbarConfig = [
+export const CARDPHOTO_PROCESSED_TOOLBAR: ToolbarConfig = [
   {
-    group: 'editor',
-    icons: [{ key: 'listAdd', state: 'disabled' }],
+    group: 'processed',
+    icons: [{ key: 'listAdd', state: 'enabled' }],
     status: 'enabled',
   },
-  {
-    group: 'crop',
-    icons: [
-      { key: 'cropCheck', state: 'disabled' },
-      { key: 'imageRotateRight', state: 'enabled' },
-      { key: 'crop', state: 'enabled' },
-      { key: 'cropFull', state: 'disabled' },
-      { key: 'empty', state: 'disabled' },
-      { key: 'cropQualityIndicator', state: 'disabled' },
-    ],
-    status: 'enabled',
-  },
+  // {
+  //   group: 'crop',
+  //   icons: [
+  //     { key: 'cropCheck', state: 'disabled' },
+  //     { key: 'imageRotateRight', state: 'enabled' },
+  //     { key: 'crop', state: 'enabled' },
+  //     { key: 'cropFull', state: 'disabled' },
+  //     { key: 'empty', state: 'disabled' },
+  //     { key: 'cropQualityIndicator', state: 'disabled' },
+  //   ],
+  //   status: 'enabled',
+  // },
   {
     group: 'close',
-    icons: [{ key: 'close', state: 'enabled' }],
+    icons: [{ key: 'delete', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -159,13 +159,13 @@ export const initialCardphotoViewToolbarState: CardphotoToolbarState = {
   config: [...CARDPHOTO_VIEW_TOOLBAR],
 }
 
-export const initialCardphotoEditorToolbarState: CardphotoToolbarState = {
-  ...Object.fromEntries(flattenIcons(CARDPHOTO_EDITOR_TOOLBAR)),
-  config: [...CARDPHOTO_EDITOR_TOOLBAR],
+export const initialCardphotoProcessedToolbarState: CardphotoToolbarState = {
+  ...Object.fromEntries(flattenIcons(CARDPHOTO_PROCESSED_TOOLBAR)),
+  config: [...CARDPHOTO_PROCESSED_TOOLBAR],
 }
 
 export interface CardphotoSectionConfig extends BaseSectionConfig<
   CardphotoToolbarState,
   CardphotoKey,
-  'cardphoto' | 'cardphotoEditor' | 'cardphotoView' | 'cardphotoCreate'
+  'cardphoto' | 'cardphotoProcessed' | 'cardphotoView' | 'cardphotoCreate'
 > {}

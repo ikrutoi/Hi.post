@@ -2,7 +2,6 @@ import React, { useRef, useLayoutEffect, useState } from 'react'
 import clsx from 'clsx'
 import { capitalize } from '@shared/utils/helpers'
 import { renderCardSection } from '../../application/helpers/renderCardSection'
-import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import styles from './CardSectionRenderer.module.scss'
@@ -20,13 +19,9 @@ export const CardSectionRenderer = () => {
       const { left } = sectionRef.current.getBoundingClientRect()
       setSectionLeft(left)
     }
-  }, [sizeCard?.height])
+  }, [sizeCard?.height, sizeCard?.width])
 
   if (!sizeCard?.height) return null
-
-  const currentWidth = Number(
-    (sizeCard.height * CARD_SCALE_CONFIG.aspectRatio).toFixed(2),
-  )
 
   return (
     <div

@@ -122,7 +122,7 @@ export function* handleCardphotoToolbarAction(
     if (
       section === 'cardphoto' ||
       section === 'cardphotoCreate' ||
-      section === 'cardphotoEditor'
+      section === 'cardphotoProcessed'
     ) {
       yield call(onDownloadClick)
     }
@@ -139,7 +139,7 @@ export function* handleCardphotoToolbarAction(
 
   const isCardphotoEditingSection =
     section === 'cardphoto' ||
-    section === 'cardphotoEditor' ||
+    section === 'cardphotoProcessed' ||
     section === 'cardphotoCreate'
 
   if (!isCardphotoEditingSection) return
@@ -222,7 +222,7 @@ export function* handleCardphotoToolbarAction1(
     if (
       section === 'cardphoto' ||
       section === 'cardphotoCreate' ||
-      section === 'cardphotoEditor'
+      section === 'cardphotoProcessed'
     ) {
       yield call(onDownloadClick)
     }
@@ -274,7 +274,7 @@ export function* handleCardphotoToolbarAction1(
   }
 }
 
-function pickCardphotoEditorToolbarPatch(
+function pickCardphotoProcessedToolbarPatch(
   sectionUpdate: Record<string, unknown>,
 ): Record<string, unknown> {
   const keys = [
@@ -299,18 +299,18 @@ export function* syncToolbarContext() {
   const toolbarCardphoto: CardphotoToolbarState | undefined = yield select(
     selectToolbarSectionState('cardphoto'),
   )
-  const toolbarEditor: CardphotoToolbarState | undefined = yield select(
-    selectToolbarSectionState('cardphotoEditor'),
+  const toolbarProcessed: CardphotoToolbarState | undefined = yield select(
+    selectToolbarSectionState('cardphotoProcessed'),
   )
   const toolbarCreate: CardphotoToolbarState | undefined = yield select(
     selectToolbarSectionState('cardphotoCreate'),
   )
 
-  // `crop` может отсутствовать в конфиге `cardphoto` — проверяем editor / create.
+  // `crop` может отсутствовать в конфиге `cardphoto` — проверяем processed / create.
   if (!state) return
   if (
     toolbarCardphoto?.crop?.state === 'active' ||
-    toolbarEditor?.crop?.state === 'active' ||
+    toolbarProcessed?.crop?.state === 'active' ||
     toolbarCreate?.crop?.state === 'active'
   )
     return
@@ -441,7 +441,7 @@ export function* syncToolbarContext() {
     }),
   )
 
-  const cropToolbarPatch = pickCardphotoEditorToolbarPatch(
+  const cropToolbarPatch = pickCardphotoProcessedToolbarPatch(
     sectionUpdate as Record<string, unknown>,
   )
   const su = sectionUpdate as {
@@ -462,8 +462,11 @@ export function* syncToolbarContext() {
 
   yield put(
     updateToolbarSection({
-      section: 'cardphotoEditor',
-      value: cropToolbarPatch,
+      section: 'cardphotoProcessed',
+      value: {
+        ...cropToolbarPatch,
+        ...(su.close != null ? { delete: su.close } : {}),
+      },
     }),
   )
 }

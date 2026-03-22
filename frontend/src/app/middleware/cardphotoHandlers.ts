@@ -25,6 +25,7 @@ import {
   selectActiveImage,
   selectActiveSource,
   selectIsCropFull,
+  selectIsProcessedMode,
 } from '@cardphoto/infrastructure/selectors'
 import { applyBounds } from '@cardphoto/application/helpers'
 import {
@@ -76,18 +77,32 @@ import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { ImageAsset } from '@/entities/assetRegistry/domain/types'
 import { selectAssetById } from '@/entities/assetRegistry/infrastructure/selectors/assetRegistrySelectors'
 
-/** Тулбар с crop (экран создания — cardphotoCreate, иначе editor / cardphoto). */
+/**
+ * Тулбар с crop: на экране результата (processed) — cardphotoProcessed, иначе cardphotoCreate.
+ */
 export function* selectCardphotoCropToolbarState(): SagaIterator<
   CardphotoToolbarState | undefined
 > {
+  const isProcessed: boolean = yield select(selectIsProcessedMode)
+  if (isProcessed) {
+    const processed = (yield select(
+      selectToolbarSectionState('cardphotoProcessed'),
+    )) as CardphotoToolbarState | undefined
+    if (processed?.crop) return processed
+  } else {
+    const create = (yield select(
+      selectToolbarSectionState('cardphotoCreate'),
+    )) as CardphotoToolbarState | undefined
+    if (create?.crop) return create
+  }
+  const processed = (yield select(
+    selectToolbarSectionState('cardphotoProcessed'),
+  )) as CardphotoToolbarState | undefined
+  if (processed?.crop) return processed
   const create = (yield select(
     selectToolbarSectionState('cardphotoCreate'),
   )) as CardphotoToolbarState | undefined
   if (create?.crop) return create
-  const editor = (yield select(
-    selectToolbarSectionState('cardphotoEditor'),
-  )) as CardphotoToolbarState | undefined
-  if (editor?.crop) return editor
   return (yield select(
     selectToolbarSectionState('cardphoto'),
   )) as CardphotoToolbarState | undefined

@@ -22,7 +22,7 @@ interface UpdateCropOptions {
 
 const CARDPHOTO_TOOLBAR_SECTIONS = [
   'cardphoto',
-  'cardphotoEditor',
+  'cardphotoProcessed',
   'cardphotoCreate',
 ] as const
 
@@ -80,7 +80,7 @@ export function* updateCropToolbarState(
         value: newClose,
       }),
     )
-    if (section === 'cardphotoCreate') {
+    if (section === 'cardphotoCreate' || section === 'cardphotoProcessed') {
       yield put(
         updateToolbarIcon({
           section,

@@ -7,7 +7,7 @@ export const getSizeCard = (
   remSize: number,
 ) => {
   const rawHeight = sizeForm.height
-  const rawWidth = rawHeight * CARD_SCALE_CONFIG.aspectRatio
+  const rawWidth = rawHeight * CARD_SCALE_CONFIG.aspectRatio - 2 * remSize
 
   return {
     width: roundTo.nearest(rawWidth),

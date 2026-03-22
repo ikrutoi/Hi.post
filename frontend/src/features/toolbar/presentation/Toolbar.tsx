@@ -202,7 +202,7 @@ export const Toolbar = ({
         : buttonStatus
 
     if (
-      (section === 'cardphotoEditor' || section === 'cardphotoCreate') &&
+      (section === 'cardphotoProcessed' || section === 'cardphotoCreate') &&
       key === 'cropQualityIndicator'
     ) {
       const qualityDisabled =

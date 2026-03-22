@@ -53,7 +53,7 @@ export type ToolbarConfig = ToolbarGroup[]
 export const TOOLBAR_SECTIONS = [
   'cardphoto',
   'cardphotoCreate',
-  'cardphotoEditor',
+  'cardphotoProcessed',
   'cardphotoView',
   'cardtext',
   'sender',
@@ -84,7 +84,7 @@ export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
 export type ToolbarState = {
   cardphoto: CardphotoToolbarState & { config: ToolbarGroup[] }
   cardphotoCreate: CardphotoToolbarState & { config: ToolbarGroup[] }
-  cardphotoEditor: CardphotoToolbarState & { config: ToolbarGroup[] }
+  cardphotoProcessed: CardphotoToolbarState & { config: ToolbarGroup[] }
   cardphotoView: CardphotoToolbarState & { config: ToolbarGroup[] }
   cardtext: CardtextToolbarState & { config: ToolbarGroup[] }
   sender: EnvelopeToolbarState & { config: ToolbarGroup[] }
@@ -139,10 +139,10 @@ export type ToolbarSectionConfigMap = {
     CardphotoKey,
     'cardphotoCreate'
   >
-  cardphotoEditor: BaseSectionConfig<
+  cardphotoProcessed: BaseSectionConfig<
     CardphotoToolbarState,
     CardphotoKey,
-    'cardphotoEditor'
+    'cardphotoProcessed'
   >
   cardphotoView: BaseSectionConfig<
     CardphotoToolbarState,
@@ -244,7 +244,7 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
   ? CardphotoKey
   : S extends 'cardphotoCreate'
     ? CardphotoKey
-    : S extends 'cardphotoEditor'
+    : S extends 'cardphotoProcessed'
       ? CardphotoKey
       : S extends 'cardphotoView'
         ? CardphotoKey

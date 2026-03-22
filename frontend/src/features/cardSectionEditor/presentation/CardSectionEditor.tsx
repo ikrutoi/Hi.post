@@ -1,6 +1,5 @@
 import React from 'react'
 import clsx from 'clsx'
-import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { SectionEditorToolbar } from './SectionEditorToolbar/SectionEditorToolbar'
 import { SectionEditorLeftInnerSidebar } from './SectionEditorLeftInnerSidebar/SectionEditorLeftInnerSidebar'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
@@ -16,7 +15,7 @@ export const CardSectionEditor: React.FC = () => {
   const { sizeCard } = useSizeFacade()
   const { activeSection } = useSectionMenuFacade()
   const { currentView: cardtextCurrentView } = useCardtextFacade()
-  const width = sizeCard.height * CARD_SCALE_CONFIG.aspectRatio
+  const width = sizeCard.width
 
   return (
     <div className={clsx(styles.cardSectionEditor)}>

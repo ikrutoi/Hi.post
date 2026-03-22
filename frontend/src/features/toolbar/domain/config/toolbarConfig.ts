@@ -39,8 +39,8 @@ import {
   CARDTEXT_LIST_TOOLBAR,
   CARDTEXT_VIEW_TOOLBAR,
   initialCardtextViewToolbarState,
-  CARDPHOTO_EDITOR_TOOLBAR,
-  initialCardphotoEditorToolbarState,
+  CARDPHOTO_PROCESSED_TOOLBAR,
+  initialCardphotoProcessedToolbarState,
   CARDPHOTO_VIEW_TOOLBAR,
   initialCardphotoViewToolbarState,
   CARDPHOTO_CREATE_TOOLBAR,
@@ -106,15 +106,15 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     toolbar: CARDPHOTO_VIEW_TOOLBAR,
   },
 
-  cardphotoEditor: {
+  cardphotoProcessed: {
     keys: CARDPHOTO_KEYS,
-    initialState: initialCardphotoEditorToolbarState,
+    initialState: initialCardphotoProcessedToolbarState,
     onAction: (key, section, editor, dispatch) => {
       dispatch({ type: 'toolbar/action', payload: { section, key } })
     },
-    group: 'editor',
-    toolbar: CARDPHOTO_EDITOR_TOOLBAR,
-    getBadges: (state: ToolbarState['cardphotoEditor']) => ({}),
+    group: 'processed',
+    toolbar: CARDPHOTO_PROCESSED_TOOLBAR,
+    getBadges: (state: ToolbarState['cardphotoProcessed']) => ({}),
   },
 
   cardtext: {

@@ -13,6 +13,7 @@ import {
   selectActiveImage,
   selectCurrentConfig,
   selectActiveSource,
+  selectIsProcessedMode,
 } from '../infrastructure/selectors'
 import { CropArea } from './CropArea'
 import { CropOverlay } from './CropOverlay'
@@ -48,7 +49,11 @@ export const CardphotoStage = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
   const { getAssetById } = useAssetRegistryFacade()
 
-  const { state: iconState } = useToolbarFacade('cardphotoCreate')
+  const isProcessedMode = useAppSelector(selectIsProcessedMode)
+  const photoToolbarSection = isProcessedMode
+    ? 'cardphotoProcessed'
+    : 'cardphotoCreate'
+  const { state: iconState } = useToolbarFacade(photoToolbarSection)
   const cropToolbarState = iconState?.crop?.state ?? 'disabled'
 
   const { sizeCard } = useSizeFacade()
