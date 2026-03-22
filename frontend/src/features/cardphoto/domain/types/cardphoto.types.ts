@@ -63,6 +63,8 @@ export interface ImageMeta {
   parentImageId?: string
   rotation?: number
   imageAspectRatio?: number
+  /** Шаблон в списке inLine: избранное (IndexedDB). */
+  favorite?: boolean
 }
 
 export interface ImageLayer {

@@ -7,6 +7,7 @@ export * from './IconSectionMenuAromaV2'
 export * from './IconSectionMenuDate'
 
 export * from './IconListCardphoto'
+export * from './IconMoreVertical'
 export * from './IconDensity'
 export * from './IconCardphotoAdd'
 export * from './IconListCardphotoV2'

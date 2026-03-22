@@ -1,21 +1,26 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { IconX, IconListCardphoto } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { storeAdapters } from '@db/adapters/storeAdapters'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectCardphotoInlineTemplateListRevision,
   selectCardphotoListTemplateGridCols,
 } from '@cardphoto/infrastructure/selectors'
+import { bumpCardphotoInlineTemplateList } from '@cardphoto/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { ImageMeta } from '@cardphoto/domain/types'
+import { CardphotoListThumb } from './CardphotoListThumb'
 import styles from './CardphotoListPanel.module.scss'
 
 type Props = {
   onClose: () => void
 }
 
-type Row = { id: string; src: string }
+/** При 6–7 колонках — меню «⋯» вместо двух кнопок на hover. */
+const COMPACT_ACTIONS_FROM_COLS = 6
+
+type Row = { id: string; src: string; favorite: boolean }
 
 /** Сначала Blob из IndexedDB — сохранённые `blob:` в url часто уже отозваны и не грузятся. */
 function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
@@ -46,9 +51,12 @@ function remToPx(rem: number): number {
 }
 
 export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
+  const dispatch = useAppDispatch()
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
+  const compactActions = columns >= COMPACT_ACTIONS_FROM_COLS
   const [rows, setRows] = useState<Row[]>([])
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const objectUrlsRef = useRef<string[]>([])
 
   const listContentRef = useRef<HTMLDivElement | null>(null)
@@ -95,7 +103,11 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
         const { src, revoke } = buildThumbSrc(meta)
         if (!src) continue
         if (revoke) created.push(src)
-        nextRows.push({ id: meta.id, src })
+        nextRows.push({
+          id: meta.id,
+          src,
+          favorite: meta.favorite === true,
+        })
       }
 
       if (cancelled) {
@@ -115,6 +127,44 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
       objectUrlsRef.current = []
     }
   }, [listRevision])
+
+  useEffect(() => {
+    if (!openMenuId) return
+    const onDocDown = (e: MouseEvent) => {
+      const el = e.target as HTMLElement | null
+      if (!el) return
+      const thumb = el.closest(`[data-cardphoto-thumb="${openMenuId}"]`)
+      if (!thumb) setOpenMenuId(null)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenMenuId(null)
+    }
+    document.addEventListener('mousedown', onDocDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDocDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [openMenuId])
+
+  const handleFavorite = useCallback(async (id: string) => {
+    const meta = await storeAdapters.cardphotoImages.getById(id)
+    if (!meta) return
+    await storeAdapters.cardphotoImages.put({
+      ...meta,
+      favorite: !meta.favorite,
+    })
+    dispatch(bumpCardphotoInlineTemplateList())
+  }, [dispatch])
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      await storeAdapters.cardphotoImages.deleteById(id)
+      dispatch(bumpCardphotoInlineTemplateList())
+      setOpenMenuId((x) => (x === id ? null : x))
+    },
+    [dispatch],
+  )
 
   return (
     <div className={styles.panel}>
@@ -154,23 +204,21 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
                 }}
               >
                 {rows.map((row) => (
-                  <div
+                  <CardphotoListThumb
                     key={row.id}
-                    className={styles.thumbCell}
-                    style={{
-                      width: cellPx,
-                      height: cellPx,
-                    }}
-                  >
-                    <img
-                      className={styles.thumbImg}
-                      src={row.src}
-                      alt=""
-                      width={cellPx}
-                      height={cellPx}
-                      decoding="async"
-                    />
-                  </div>
+                    id={row.id}
+                    src={row.src}
+                    cellPx={cellPx}
+                    favorite={row.favorite}
+                    compactActions={compactActions}
+                    menuOpen={openMenuId === row.id}
+                    onToggleMenu={() =>
+                      setOpenMenuId((x) => (x === row.id ? null : row.id))
+                    }
+                    onCloseMenu={() => setOpenMenuId(null)}
+                    onFavorite={() => handleFavorite(row.id)}
+                    onDelete={() => handleDelete(row.id)}
+                  />
                 ))}
               </div>
             )}
