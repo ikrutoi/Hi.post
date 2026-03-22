@@ -34,33 +34,44 @@ function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
 }
 
 const COLUMNS = 5
-const GAP_PX = 8
 const MIN_CELL_PX = 28
+
+function remToPx(rem: number): number {
+  const root = document.documentElement
+  const fs = parseFloat(getComputedStyle(root).fontSize || '16')
+  return rem * (Number.isFinite(fs) ? fs : 16)
+}
 
 export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
   const [rows, setRows] = useState<Row[]>([])
   const objectUrlsRef = useRef<string[]>([])
 
-  const listMeasureRef = useRef<HTMLDivElement | null>(null)
+  const listContentRef = useRef<HTMLDivElement | null>(null)
+  const thumbGridRef = useRef<HTMLDivElement | null>(null)
   const [cellPx, setCellPx] = useState(56)
 
   useLayoutEffect(() => {
-    const el = listMeasureRef.current
-    if (!el) return
+    const contentEl = listContentRef.current
+    if (!contentEl) return
 
     const update = () => {
-      const w = el.clientWidth
+      const w = contentEl.clientWidth
       if (!Number.isFinite(w) || w <= 1) return
-      const cell = Math.floor((w - (COLUMNS - 1) * GAP_PX) / COLUMNS)
+      const gridEl = thumbGridRef.current
+      const gapPx = gridEl
+        ? parseFloat(getComputedStyle(gridEl).columnGap)
+        : remToPx(0.5)
+      const gap = Number.isFinite(gapPx) ? gapPx : remToPx(0.5)
+      const cell = Math.floor((w - (COLUMNS - 1) * gap) / COLUMNS)
       setCellPx(Math.max(MIN_CELL_PX, cell))
     }
 
     update()
     const ro = new ResizeObserver(() => update())
-    ro.observe(el)
+    ro.observe(contentEl)
     return () => ro.disconnect()
-  }, [])
+  }, [rows.length])
 
   useEffect(() => {
     let cancelled = false
@@ -119,44 +130,45 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
 
       <ScrollArea className={styles.listScrollArea}>
         <div
-          ref={listMeasureRef}
           className={styles.list}
           tabIndex={0}
           aria-label="Cardphoto templates list"
         >
-          {rows.length === 0 ? (
-            <div className={styles.listEmpty} aria-hidden>
-              <IconListCardphoto className={styles.listEmptyIcon} />
-            </div>
-          ) : (
-            <div
-              className={styles.thumbGrid}
-              style={{
-                gridTemplateColumns: `repeat(${COLUMNS}, ${cellPx}px)`,
-                gap: `${GAP_PX}px`,
-              }}
-            >
-              {rows.map((row) => (
-                <div
-                  key={row.id}
-                  className={styles.thumbCell}
-                  style={{
-                    width: cellPx,
-                    height: cellPx,
-                  }}
-                >
-                  <img
-                    className={styles.thumbImg}
-                    src={row.src}
-                    alt=""
-                    width={cellPx}
-                    height={cellPx}
-                    decoding="async"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
+          <div ref={listContentRef} className={styles.listContent}>
+            {rows.length === 0 ? (
+              <div className={styles.listEmpty} aria-hidden>
+                <IconListCardphoto className={styles.listEmptyIcon} />
+              </div>
+            ) : (
+              <div
+                ref={thumbGridRef}
+                className={styles.thumbGrid}
+                style={{
+                  gridTemplateColumns: `repeat(${COLUMNS}, ${cellPx}px)`,
+                }}
+              >
+                {rows.map((row) => (
+                  <div
+                    key={row.id}
+                    className={styles.thumbCell}
+                    style={{
+                      width: cellPx,
+                      height: cellPx,
+                    }}
+                  >
+                    <img
+                      className={styles.thumbImg}
+                      src={row.src}
+                      alt=""
+                      width={cellPx}
+                      height={cellPx}
+                      decoding="async"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </ScrollArea>
     </div>

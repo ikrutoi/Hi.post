@@ -76,12 +76,19 @@
 .list {
   flex: 1;
   min-height: 0;
-  padding: 0 calc(0.25rem + 8px) 0.5rem 0.5rem;
+  /* Контент списка: слева 0.5rem, справа 0.75rem (под скролл/край панели) */
+  padding: 0 0.75rem 0.5rem 0.5rem;
   outline: none;
 
   &:focus {
     outline: none;
   }
+}
+
+/** Ширина для ResizeObserver: контентная ширина под сетку (без горизонтального padding `.list`). */
+.listContent {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Как в CardtextListPanel: пустой список — только иконка */
@@ -110,6 +117,7 @@
   padding: 0.25rem 0;
   justify-content: start;
   box-sizing: border-box;
+  gap: 0.5rem;
 }
 
 .thumbCell {

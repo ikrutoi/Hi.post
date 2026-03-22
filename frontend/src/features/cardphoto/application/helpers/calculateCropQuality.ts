@@ -54,22 +54,27 @@ export const dispatchQualityUpdate = (progress: number) => {
   )
 }
 
+/** Линейный градиент 0–100%: красный → жёлтый → зелёный. */
 export const getQualityColor = (progress: number) => {
+  const p = Math.max(0, Math.min(100, progress))
+
   const colors = {
-    red: { r: 244, g: 67, b: 54 },
-    yellow: { r: 255, g: 193, b: 7 },
-    green: { r: 76, g: 175, b: 80 },
+    red: { r: 198, g: 28, b: 36 },
+    yellow: { r: 255, g: 200, b: 14 },
+    green: { r: 46, g: 184, b: 72 },
   }
 
-  let r, g, b
+  let r: number
+  let g: number
+  let b: number
 
-  if (progress <= 50) {
-    const ratio = progress / 50
+  if (p <= 50) {
+    const ratio = p / 50
     r = Math.round(colors.red.r + (colors.yellow.r - colors.red.r) * ratio)
     g = Math.round(colors.red.g + (colors.yellow.g - colors.red.g) * ratio)
     b = Math.round(colors.red.b + (colors.yellow.b - colors.red.b) * ratio)
   } else {
-    const ratio = (progress - 50) / 50
+    const ratio = (p - 50) / 50
     r = Math.round(colors.yellow.r + (colors.green.r - colors.yellow.r) * ratio)
     g = Math.round(colors.yellow.g + (colors.green.g - colors.yellow.g) * ratio)
     b = Math.round(colors.yellow.b + (colors.green.b - colors.yellow.b) * ratio)
