@@ -345,20 +345,38 @@ export function* handleImageRotate(
   // `rebuildConfigFromMeta` уже кладёт конфиг через `commitWorkingConfig`.
 }
 
+/** URL для растрового кропа: meta.url, затем full.url, затем активный снимок из base (как на стейдже через asset). */
+function resolveImageUrlForCrop(
+  state: CardphotoState,
+  config: WorkingConfig,
+): string | null {
+  const meta = config.image?.meta
+  if (!meta) return null
+  const top = meta.url?.trim()
+  if (top) return top
+  const fromFull = meta.full?.url?.trim()
+  if (fromFull) return fromFull
+  const src = state.activeSource
+  if (src) {
+    const baseImg = state.base[src]?.image
+    const u = baseImg?.url?.trim()
+    if (u) return u
+  }
+  return null
+}
+
 export function* handleCropConfirm(): SagaIterator {
   const state: CardphotoState = yield select(selectCardphotoState)
   const config = state.currentConfig
   const thumbConfigSize = 360
 
-  if (!config || !config.crop || !config.image.meta.url) return
+  const imageUrl = config ? resolveImageUrlForCrop(state, config) : null
+  if (!config || !config.crop || !imageUrl) return
 
   try {
     yield put(markLoading())
 
-    const img: HTMLImageElement = yield call(
-      loadAsyncImage,
-      config.image.meta.url,
-    )
+    const img: HTMLImageElement = yield call(loadAsyncImage, imageUrl)
 
     const scaleX = img.naturalWidth / config.image.meta.width
     const scaleY = img.naturalHeight / config.image.meta.height
@@ -411,8 +429,53 @@ export function* handleCropConfirm(): SagaIterator {
       rotation: 0,
     }
 
-    // Только сохранение в IndexedDB (`cardphotoImages`). Без Redux cropIds / processed / ребилда UI — новая логика.
     yield call(storeAdapters.cardphotoImages.put, finalImageMeta)
+
+    const oldProcessedUrl: string | undefined = yield select(
+      (s: RootState) => s.cardphoto.state?.base.processed.image?.url,
+    )
+    const appliedUrl: string | undefined = yield select(
+      (s: RootState) => s.cardphoto.state?.base.apply.image?.url,
+    )
+    const stBefore: CardphotoState | null = yield select(selectCardphotoState)
+    const stillInUse =
+      oldProcessedUrl &&
+      [
+        stBefore?.base.user.image?.url,
+        stBefore?.base.apply.image?.url,
+        stBefore?.base.stock.image?.url,
+      ].includes(oldProcessedUrl)
+
+    if (
+      oldProcessedUrl?.startsWith('blob:') &&
+      oldProcessedUrl !== appliedUrl &&
+      !stillInUse
+    ) {
+      URL.revokeObjectURL(oldProcessedUrl)
+    }
+
+    const serializable = prepareForRedux({
+      ...finalImageMeta,
+      url: fullUrl,
+    })
+
+    yield put(
+      setAsset({
+        id: serializable.id,
+        url: serializable.url,
+        thumbUrl: serializable.thumbnail?.url || serializable.url,
+      }),
+    )
+
+    /** Снять `crop: active` до commit, иначе `syncToolbarContext` делает early return и не обновит тулбары. */
+    const toolbarBefore: CardphotoToolbarState | undefined =
+      yield* selectCardphotoCropToolbarState()
+    if (toolbarBefore) {
+      yield call(updateCropToolbarState, 'enabled', toolbarBefore)
+    }
+
+    yield put(setProcessedImage(serializable))
+    yield call(rebuildConfigFromMeta, serializable, 'processed')
   } catch (error) {
     console.error('Error crop:', error)
   } finally {

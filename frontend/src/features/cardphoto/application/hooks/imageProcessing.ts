@@ -106,7 +106,10 @@ export const getCroppedImg1 = async (
 export const loadAsyncImage = (url: string): Promise<HTMLImageElement> => {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    img.crossOrigin = 'anonymous'
+    // `crossOrigin = 'anonymous'` on blob:/data: URLs breaks loading in several browsers → cropCheck silently fails.
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      img.crossOrigin = 'anonymous'
+    }
     img.onload = () => resolve(img)
     img.onerror = reject
     img.src = url
