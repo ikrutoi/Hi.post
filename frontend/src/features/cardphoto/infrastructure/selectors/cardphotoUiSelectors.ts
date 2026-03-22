@@ -27,3 +27,8 @@ export const selectCardphotoInlineTemplateListRevision = createSelector(
   [selectCardphotoUi],
   (ui) => ui.inlineTemplateListRevision
 )
+
+export const selectCardphotoListTemplateGridCols = createSelector(
+  [selectCardphotoUi],
+  (ui) => ui.listTemplateGridCols ?? 5
+)

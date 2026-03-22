@@ -13,6 +13,7 @@ import { capitalize } from '@/shared/utils/helpers'
 import {
   selectAppliedImage,
   selectIsCurrentCropApplied,
+  selectCardphotoListTemplateGridCols,
 } from '@/features/cardphoto/infrastructure/selectors'
 import {
   selectCardtextIsComplete,
@@ -112,6 +113,9 @@ export const Toolbar = ({
     (state) => state.recipient?.recipientsViewSortDirection ?? 'asc',
   )
   const cardtextListSortDirection = useAppSelector(selectCardtextListSortDirection)
+  const cardphotoListTemplateGridCols = useAppSelector(
+    selectCardphotoListTemplateGridCols,
+  )
   const sortDirection =
     section === 'addressListSender'
       ? senderSortDirection
@@ -306,6 +310,10 @@ export const Toolbar = ({
           orientation: orientation as LayoutOrientation,
           step: fontSizeStep,
           sortDirection: key === 'sortDown' ? sortDirection : undefined,
+          listTemplateDensityCols:
+            section === 'cardphotoList' && key === 'density'
+              ? cardphotoListTemplateGridCols
+              : undefined,
         })}
 
         {Boolean(badge && badge > 0) && (

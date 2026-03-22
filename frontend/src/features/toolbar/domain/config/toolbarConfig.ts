@@ -45,6 +45,9 @@ import {
   initialCardphotoViewToolbarState,
   CARDPHOTO_CREATE_TOOLBAR,
   initialCardphotoCreateToolbarState,
+  CARDPHOTO_LIST_TOOLBAR,
+  CARDPHOTO_LIST_KEYS,
+  initialCardphotoListToolbarState,
 } from '../types'
 import {
   RECIPIENTS_VIEW_TOOLBAR,
@@ -115,6 +118,17 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'processed',
     toolbar: CARDPHOTO_PROCESSED_TOOLBAR,
     getBadges: (state: ToolbarState['cardphotoProcessed']) => ({}),
+  },
+
+  cardphotoList: {
+    keys: CARDPHOTO_LIST_KEYS,
+    initialState: initialCardphotoListToolbarState,
+    onAction: (key, section, editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'cardphotoList',
+    toolbar: CARDPHOTO_LIST_TOOLBAR,
+    getBadges: (state: ToolbarState['cardphotoList']) => ({}),
   },
 
   cardtext: {

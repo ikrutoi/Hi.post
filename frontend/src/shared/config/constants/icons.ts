@@ -81,6 +81,7 @@ export const ICON_KEYS = [
   'sortUp',
   'sortDown',
   'colorPicker',
+  'density',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

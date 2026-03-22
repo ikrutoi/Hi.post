@@ -1,5 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+/** Число колонок превью в панели списка шаблонов cardphoto (4–7). */
+export type CardphotoListTemplateGridCols = 4 | 5 | 6 | 7
+
 export interface CardphotoUiState {
   shouldOpenFileDialog: boolean
   isLoading: boolean
@@ -7,6 +10,8 @@ export interface CardphotoUiState {
   isListPanelOpen: boolean
   /** Инкремент при изменении списка inLine-шаблонов (панель перечитывает IndexedDB). */
   inlineTemplateListRevision: number
+  /** Плотность сетки в панели списка шаблонов фото. */
+  listTemplateGridCols: CardphotoListTemplateGridCols
 }
 
 const initialUiState: CardphotoUiState = {
@@ -15,6 +20,7 @@ const initialUiState: CardphotoUiState = {
   needsCrop: false,
   isListPanelOpen: false,
   inlineTemplateListRevision: 0,
+  listTemplateGridCols: 5,
 }
 
 export const cardphotoUiSlice = createSlice({
@@ -54,6 +60,20 @@ export const cardphotoUiSlice = createSlice({
     bumpCardphotoInlineTemplateList(state) {
       state.inlineTemplateListRevision += 1
     },
+
+    cycleListTemplateGridCols(state) {
+      const order: CardphotoListTemplateGridCols[] = [4, 5, 6, 7]
+      const i = order.indexOf(state.listTemplateGridCols)
+      const next = order[(i >= 0 ? i + 1 : 1) % order.length]
+      state.listTemplateGridCols = next
+    },
+
+    setListTemplateGridCols(
+      state,
+      action: PayloadAction<CardphotoListTemplateGridCols>,
+    ) {
+      state.listTemplateGridCols = action.payload
+    },
   },
 })
 
@@ -66,6 +86,8 @@ export const {
   setNeedsCrop,
   setCardphotoListPanelOpen,
   bumpCardphotoInlineTemplateList,
+  cycleListTemplateGridCols,
+  setListTemplateGridCols,
 } = cardphotoUiSlice.actions
 
 export default cardphotoUiSlice.reducer

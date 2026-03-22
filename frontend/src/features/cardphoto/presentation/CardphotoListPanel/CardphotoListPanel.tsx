@@ -3,7 +3,11 @@ import { IconX, IconListCardphoto } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { useAppSelector } from '@app/hooks'
-import { selectCardphotoInlineTemplateListRevision } from '@cardphoto/infrastructure/selectors'
+import {
+  selectCardphotoInlineTemplateListRevision,
+  selectCardphotoListTemplateGridCols,
+} from '@cardphoto/infrastructure/selectors'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import styles from './CardphotoListPanel.module.scss'
 
@@ -33,7 +37,6 @@ function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
   return { src: '', revoke: false }
 }
 
-const COLUMNS = 5
 const MIN_CELL_PX = 28
 
 function remToPx(rem: number): number {
@@ -44,6 +47,7 @@ function remToPx(rem: number): number {
 
 export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
+  const columns = useAppSelector(selectCardphotoListTemplateGridCols)
   const [rows, setRows] = useState<Row[]>([])
   const objectUrlsRef = useRef<string[]>([])
 
@@ -63,7 +67,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
         ? parseFloat(getComputedStyle(gridEl).columnGap)
         : remToPx(0.5)
       const gap = Number.isFinite(gapPx) ? gapPx : remToPx(0.5)
-      const cell = Math.floor((w - (COLUMNS - 1) * gap) / COLUMNS)
+      const cell = Math.floor((w - (columns - 1) * gap) / columns)
       setCellPx(Math.max(MIN_CELL_PX, cell))
     }
 
@@ -71,7 +75,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
     const ro = new ResizeObserver(() => update())
     ro.observe(contentEl)
     return () => ro.disconnect()
-  }, [rows.length])
+  }, [rows.length, columns])
 
   useEffect(() => {
     let cancelled = false
@@ -115,7 +119,9 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <div className={styles.headerToolbar} />
+        <div className={styles.headerToolbar}>
+          <Toolbar section="cardphotoList" />
+        </div>
         <button
           type="button"
           className={styles.closeBtn}
@@ -144,7 +150,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
                 ref={thumbGridRef}
                 className={styles.thumbGrid}
                 style={{
-                  gridTemplateColumns: `repeat(${COLUMNS}, ${cellPx}px)`,
+                  gridTemplateColumns: `repeat(${columns}, ${cellPx}px)`,
                 }}
               >
                 {rows.map((row) => (

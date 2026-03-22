@@ -22,6 +22,8 @@ import {
   markLoaded,
   markLoading,
   setCardphotoListPanelOpen,
+  bumpCardphotoInlineTemplateList,
+  cycleListTemplateGridCols,
 } from '@cardphoto/infrastructure/state'
 import {
   selectActiveImage,
@@ -67,6 +69,24 @@ import type {
 } from '@cardphoto/domain/types'
 import { SizeCard } from '@layout/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
+
+/** Удалить все шаблоны со статусом inLine из IndexedDB (кнопка списка). */
+function* handleDeleteAllCardphotoInlineTemplatesSaga(): SagaIterator {
+  try {
+    const all: ImageMeta[] = yield call(storeAdapters.cardphotoImages.getAll)
+    for (const meta of all) {
+      if (meta.status === 'inLine') {
+        yield call(
+          [storeAdapters.cardphotoImages, 'deleteById'] as const,
+          meta.id,
+        )
+      }
+    }
+    yield put(bumpCardphotoInlineTemplateList())
+  } catch (e) {
+    console.error('handleDeleteAllCardphotoInlineTemplatesSaga', e)
+  }
+}
 
 /** Закрытие экрана создания: убрать загруженное фото и кропы, вернуть пустую форму. */
 function* handleCloseCardphotoCreateSaga(): SagaIterator {
@@ -135,6 +155,18 @@ export function* handleCardphotoToolbarAction(
     (key === 'close' || key === 'delete')
   ) {
     yield call(handleCloseCardphotoCreateSaga)
+    return
+  }
+
+  if (section === 'cardphotoList') {
+    if (key === 'listDelete') {
+      yield call(handleDeleteAllCardphotoInlineTemplatesSaga)
+      return
+    }
+    if (key === 'density') {
+      yield put(cycleListTemplateGridCols())
+      return
+    }
     return
   }
 

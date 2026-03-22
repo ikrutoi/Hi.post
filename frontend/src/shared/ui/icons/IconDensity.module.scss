@@ -1,0 +1,31 @@
+@use '@styles/config/colors' as *;
+
+/**
+ * Неактивные сегменты: по умолчанию светло-серые; при hover на кнопке тулбара
+ * переопределяются через --density-inactive-* (белые на сером фоне).
+ */
+.svg {
+  display: block;
+  overflow: visible;
+  --density-inactive-fill: #e6e6e6;
+  --density-inactive-stroke: #bdbdbd;
+  --density-active-fill: #{$color-app-sidebar-icon-active};
+  --density-active-stroke: #6e4a32;
+}
+
+.segmentInactive,
+.segmentActive {
+  transition:
+    fill 0.15s ease,
+    stroke 0.15s ease;
+}
+
+.segmentInactive {
+  fill: var(--density-inactive-fill);
+  stroke: var(--density-inactive-stroke);
+}
+
+.segmentActive {
+  fill: var(--density-active-fill);
+  stroke: var(--density-active-stroke);
+}

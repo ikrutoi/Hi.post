@@ -397,7 +397,8 @@
 .toolbarAddressListSender,
 .toolbarAddressListRecipient,
 .toolbarAddressListRecipients,
-.toolbarCardtextList {
+.toolbarCardtextList,
+.toolbarCardphotoList {
   .toolbarKey {
     width: 1.5rem;
     height: 1.5rem;
@@ -431,7 +432,8 @@
 .toolbarAddressListRecipient,
 .toolbarAddressListSender,
 .toolbarAddressListRecipients,
-.toolbarCardtextList {
+.toolbarCardtextList,
+.toolbarCardphotoList {
   width: 100%;
   justify-content: space-between;
   margin-left: 2rem;
@@ -458,4 +460,15 @@
 .toolbarAddressListRecipient .toolbarGroupAddress,
 .toolbarAddressListRecipient .toolbarGroupActions {
   display: flex;
+}
+
+.toolbarCardphotoList .toolbarGroupCardphotoList,
+.toolbarCardphotoList .toolbarGroupActions {
+  display: flex;
+}
+
+/** Hover кнопки density: неактивные полоски SVG — белые на $color-enabled. */
+.toolbarCardphotoList .toolbarKeyDensityEnabled:hover svg {
+  --density-inactive-fill: #fff;
+  --density-inactive-stroke: #fff;
 }
