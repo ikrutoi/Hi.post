@@ -5,13 +5,13 @@ import listOfMonthOfYear from '@data/date/monthOfYear.json'
 import {
   IconUserRecipient,
   IconUsers,
+  IconLogo,
   IconSectionMenuCardphoto,
   IconSectionMenuCardtext,
   IconSectionMenuEnvelopeV2,
   IconSectionMenuAromaV2,
   IconSectionMenuDate,
 } from '@shared/ui/icons'
-import { getToolbarIcon } from '@shared/utils/icons'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
@@ -550,13 +550,18 @@ export const CardPie: React.FC<CardPieProps> = ({
         type="button"
         className={clsx(
           styles.pieCenterButton,
-          allSectionsFilled && styles.pieCenterButtonEnabled,
+          allSectionsFilled && styles.pieCenterButtonActive,
         )}
         disabled={!allSectionsFilled}
-        aria-label="Add to cart"
+        aria-label="Hi.post"
       >
-        <span className={styles.pieCenterIcon}>
-          {getToolbarIcon({ key: 'addCart' })}
+        <span
+          className={clsx(
+            styles.pieCenterIcon,
+            allSectionsFilled && styles.pieCenterIconBrand,
+          )}
+        >
+          <IconLogo aria-hidden />
         </span>
       </button>
     </div>

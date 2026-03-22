@@ -107,12 +107,12 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
   const isCreateModeOpen =
     currentView === 'cardtextEditor' && (assetId == null || assetId === null)
 
-  // cardtextAdd: disabled только когда открыт cardtextEditor в режиме создания
+  // cardtextAdd: при пустой форме (в т.ч. режим создания) — enabled; disabled только если в редакторе создания уже есть текст.
   yield put(
     updateToolbarIcon({
       section: 'cardtext',
       key: 'cardtextAdd',
-      value: isCreateModeOpen ? 'disabled' : 'enabled',
+      value: isCreateModeOpen && hasText ? 'disabled' : 'enabled',
     }),
   )
 
