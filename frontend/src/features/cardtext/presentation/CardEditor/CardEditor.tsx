@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react'
+import React, { useEffect, useCallback, useMemo, useState } from 'react'
+import clsx from 'clsx'
 import { Slate, Editable, ReactEditor } from 'slate-react'
 import { Editor, Transforms, Range, Descendant } from 'slate'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
@@ -9,18 +10,10 @@ import { useInitSelection } from '../../application/hooks'
 import { STEP_TO_PX } from '../../domain/types'
 import { selectCardtextFocusRequested } from '../../infrastructure/selectors'
 import { setCardtextFocusRequested } from '../../infrastructure/state'
-import { IconSectionMenuCardtext, IconX } from '@shared/ui/icons'
+import { IconSectionMenuCardtext } from '@shared/ui/icons'
+import { isEmptyCardtextValue } from '../../domain/helpers'
 import styles from './CardEditor.module.scss'
 import type { CardtextValue } from '../../domain/types'
-
-function isEmptyValue(value: CardtextValue): boolean {
-  if (!value?.length) return true
-  if (value.length > 1) return false
-  const block = value[0]
-  const text =
-    block?.children?.map((c) => (c as { text?: string }).text).join('') ?? ''
-  return text.trim() === ''
-}
 
 export const CardEditor: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -35,7 +28,6 @@ export const CardEditor: React.FC = () => {
     resetToken,
     setValue,
     decreaseFontSize,
-    setCurrentView,
   } = useCardtextFacade()
 
   const currentPxSize = STEP_TO_PX[fontSizeStep - 1] || 16
@@ -54,6 +46,8 @@ export const CardEditor: React.FC = () => {
 
   const lastSelectionRef = React.useRef<any>(null)
   const [isFocused, setIsFocused] = useState(false)
+
+  const isEmpty = useMemo(() => isEmptyCardtextValue(value), [value])
 
   useEffect(() => {
     if (!requestFocus) return
@@ -97,8 +91,6 @@ export const CardEditor: React.FC = () => {
     }
   }, [value, fontSizeStep, decreaseFontSize, editorRef])
 
-  const isEmpty = useMemo(() => isEmptyValue(value), [value])
-
   const renderLeafWithColor = useCallback(
     (leafProps: { attributes: any; children: React.ReactNode; leaf: any }) => {
       const { attributes, children, leaf } = leafProps
@@ -121,6 +113,17 @@ export const CardEditor: React.FC = () => {
 
   return (
     <div className={styles.editor}>
+      {isEmpty ? (
+        <div
+          className={clsx(
+            styles.editorPlaceholderIcon,
+            isFocused && styles.editorPlaceholderIconHidden,
+          )}
+          aria-hidden
+        >
+          <IconSectionMenuCardtext />
+        </div>
+      ) : null}
       {/* <button
         type="button"
         className={styles.closeBtn}
@@ -154,11 +157,6 @@ export const CardEditor: React.FC = () => {
         }}
         tabIndex={0}
       >
-        {isEmpty && !isFocused && (
-          <div className={styles.editorPlaceholderIcon} aria-hidden>
-            <IconSectionMenuCardtext />
-          </div>
-        )}
         <Slate
           key={resetToken}
           editor={editor}

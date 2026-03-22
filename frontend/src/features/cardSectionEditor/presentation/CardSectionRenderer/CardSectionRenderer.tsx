@@ -8,9 +8,7 @@ import styles from './CardSectionRenderer.module.scss'
 
 export const CardSectionRenderer = () => {
   const { activeSection } = useSectionMenuFacade()
-
   const { sizeCard } = useSizeFacade()
-
   const sectionRef = useRef<HTMLDivElement>(null)
   const [sectionLeft, setSectionLeft] = useState<number>(0)
 

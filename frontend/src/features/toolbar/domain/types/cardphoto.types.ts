@@ -37,7 +37,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'cardphoto',
     icons: [
-      { key: 'apply', state: 'enabled' },
+      { key: 'apply', state: 'disabled' },
       { key: 'cardphotoAdd', state: 'enabled' },
       { key: 'listCardphoto', state: 'enabled' },
     ],

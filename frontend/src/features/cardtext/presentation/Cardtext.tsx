@@ -26,6 +26,7 @@ import {
 } from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import { IconX } from '@shared/ui/icons'
+import { isEmptyCardtextValue } from '@cardtext/domain/helpers'
 
 interface CardtextProps {
   styleLeft: number
@@ -164,6 +165,20 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
 
   const forceEditingTitle = isAddTemplateOpen || isEditingTitle
 
+  /** Новый шаблон без текста: без тулбара cardtextCreate (только иконка-плейсхолдер). */
+  const isCreateNewEmpty =
+    currentView === 'cardtextEditor' &&
+    currentAssetId == null &&
+    isEmptyCardtextValue(value) &&
+    !isAddTemplateOpen
+
+  const showCardtextToolbarRow = !isCreateNewEmpty
+
+  const toolbarSection =
+    currentView === 'cardtextEditor' && currentAssetId == null
+      ? 'cardtextCreate'
+      : currentView
+
   return (
     <div className={styles.cardtextContainer}>
       <div
@@ -175,14 +190,16 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
         }}
       >
         <div className={styles.cardtextViewWrap}>
-          <div className={styles.cardtextToolbarRow}>
-            <Toolbar
-              section={
-                currentView === 'cardtextEditor' && currentAssetId == null
-                  ? 'cardtextCreate'
-                  : currentView
-              }
-            />
+          <div
+            className={clsx(
+              styles.cardtextToolbarRow,
+              !showCardtextToolbarRow && styles.cardtextToolbarRowEmpty,
+            )}
+            aria-hidden={showCardtextToolbarRow ? undefined : true}
+          >
+            {showCardtextToolbarRow ? (
+              <Toolbar section={toolbarSection} />
+            ) : null}
           </div>
           <div className={styles.cardtextViewContent}>
             {(title.trim() || isAddTemplateOpen) && (

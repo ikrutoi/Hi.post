@@ -10,7 +10,6 @@ import {
   type CardphotoSliceState,
   markLoading,
   markLoaded,
-  addCropId,
   setProcessedImage,
   removeCropId,
   clearAllCrops,
@@ -361,8 +360,6 @@ export function* handleCropConfirm(): SagaIterator {
       config.image.meta.url,
     )
 
-    console.log('HANDLE_CROP_CONFIRM img', img)
-
     const scaleX = img.naturalWidth / config.image.meta.width
     const scaleY = img.naturalHeight / config.image.meta.height
 
@@ -387,14 +384,6 @@ export function* handleCropConfirm(): SagaIterator {
     const fullUrl = URL.createObjectURL(full)
     const thumbUrl = URL.createObjectURL(thumb)
     const id = nanoid()
-
-    yield put(
-      setAsset({
-        id,
-        url: fullUrl,
-        thumbUrl: thumbUrl,
-      }),
-    )
 
     const finalImageMeta: ImageMeta = {
       id,
@@ -422,27 +411,8 @@ export function* handleCropConfirm(): SagaIterator {
       rotation: 0,
     }
 
-    // console.log('handleCropConfirm finalImageMeta', finalImageMeta)
-
+    // Только сохранение в IndexedDB (`cardphotoImages`). Без Redux cropIds / processed / ребилда UI — новая логика.
     yield call(storeAdapters.cardphotoImages.put, finalImageMeta)
-
-    const reduxMeta = prepareForRedux(finalImageMeta)
-    yield put(setProcessedImage(reduxMeta))
-    // yield put(applyFinal(reduxMeta))
-    yield put(addCropId(id))
-
-    console.log('HANDLE_CROP')
-    yield call(rebuildConfigFromMeta, reduxMeta, 'processed')
-
-    // `rebuildConfigFromMeta` already commits `currentConfig` via `commitWorkingConfig`.
-
-    // syncToolbarContext раньше не применялся, пока crop === 'active'; плюс раньше здесь ошибочно включали crop.
-    const tb: CardphotoToolbarState | undefined =
-      yield* selectCardphotoCropToolbarState()
-    if (tb?.crop?.state === 'active') {
-      yield call(updateCropToolbarState, 'enabled', tb)
-    }
-    yield call(syncToolbarContext)
   } catch (error) {
     console.error('Error crop:', error)
   } finally {

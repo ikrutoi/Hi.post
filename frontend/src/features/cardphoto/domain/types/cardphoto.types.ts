@@ -58,12 +58,9 @@ export interface ImageMeta {
   thumbnail?: ImageData
   width: number
   height: number
-  /** true после cropCheck / для пресетов; в `ImageLayer.meta` дублируется из meta при fit. */
   isCropped: boolean
   timestamp: number
-  /** id исходного `ImageMeta` до cropCheck; только у кропа из редактора — повторный кроп отключён. */
   parentImageId?: string
-  // orientation?: LayoutOrientation
   rotation?: number
   imageAspectRatio?: number
 }
@@ -116,7 +113,6 @@ export interface CardphotoState {
   activeSource: ActiveImageSource | null
   currentConfig: WorkingConfig | null
   appended: string | null
-  /** Measured `.cardphotoStage` (crop area). When set, sagas use this instead of global layout SizeCard. */
   photoStageRect: CardphotoPhotoStageRect | null
 }
 

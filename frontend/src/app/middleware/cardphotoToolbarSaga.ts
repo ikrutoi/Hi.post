@@ -321,9 +321,39 @@ export function* syncToolbarContext() {
 
   let sectionUpdate = {}
   const isUserImage = !!state.base.user.image
+  const hasStockImage = !!state.base.stock.image
+  const hasProcessedImage = !!state.base.processed.image
   const sizeCard: SizeCard = yield select(selectSizeCard)
 
   switch (activeSource) {
+    /** Нет выбранного источника — пустая форма; apply только при наличии stock/processed превью. */
+    case null:
+      sectionUpdate = {
+        cardOrientation: {
+          state: 'disabled',
+          options: { orientation: sizeCard.orientation },
+        },
+        imageRotateLeft: { state: 'disabled' },
+        imageRotateRight: { state: 'disabled' },
+        crop: { state: 'disabled' },
+        cropFull: { state: 'disabled' },
+        cropCheck: { state: 'disabled' },
+        cropQualityIndicator: { state: 'disabled' },
+        imageReset: { state: 'disabled' },
+
+        apply: { state: 'disabled' },
+        close: { state: 'disabled' },
+        download: { state: 'enabled' },
+        cardphotoAdd: { state: 'enabled' },
+        cropHistory: {
+          state: hasCrops ? 'enabled' : 'disabled',
+          options: { badge: cropCount },
+        },
+        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
+        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
+      }
+      break
+
     case 'apply':
       sectionUpdate = {
         cardOrientation: {
@@ -365,7 +395,7 @@ export function* syncToolbarContext() {
         cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: 'enabled' },
 
-        apply: { state: 'enabled' },
+        apply: { state: hasProcessedImage ? 'enabled' : 'disabled' },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
@@ -406,7 +436,6 @@ export function* syncToolbarContext() {
       break
 
     case 'stock':
-    default:
       sectionUpdate = {
         cardOrientation: {
           state: 'disabled',
@@ -420,7 +449,33 @@ export function* syncToolbarContext() {
         cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: isUserImage ? 'enabled' : 'disabled' },
 
-        apply: { state: 'enabled' },
+        apply: { state: hasStockImage ? 'enabled' : 'disabled' },
+        close: { state: 'disabled' },
+        download: { state: 'enabled' },
+        cardphotoAdd: { state: 'enabled' },
+        cropHistory: {
+          state: hasCrops ? 'enabled' : 'disabled',
+          options: { badge: cropCount },
+        },
+        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
+        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
+      }
+      break
+
+    default:
+      sectionUpdate = {
+        cardOrientation: {
+          state: 'disabled',
+          options: { orientation: sizeCard.orientation },
+        },
+        imageRotateLeft: { state: 'disabled' },
+        imageRotateRight: { state: 'disabled' },
+        crop: { state: 'disabled' },
+        cropFull: { state: 'disabled' },
+        cropCheck: { state: 'disabled' },
+        cropQualityIndicator: { state: 'disabled' },
+        imageReset: { state: 'disabled' },
+        apply: { state: 'disabled' },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
