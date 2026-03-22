@@ -467,7 +467,7 @@
   display: flex;
 }
 
-/** Hover кнопки density: неактивные полоски SVG — белые на $color-enabled. */
+/** Hover: серые полоски density → белые на фоне $color-enabled. */
 .toolbarCardphotoList .toolbarKeyDensityEnabled:hover svg {
   --density-inactive-fill: #fff;
   --density-inactive-stroke: #fff;
