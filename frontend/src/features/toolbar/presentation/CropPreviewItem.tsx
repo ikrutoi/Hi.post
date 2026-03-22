@@ -9,8 +9,7 @@ export const CropPreviewItem = React.memo(({ cropId }: { cropId: string }) => {
   const { getAssetById } = useAssetRegistryFacade()
   const asset = getAssetById(cropId)
 
-  const { actions: cardphotoActions } = useCardphotoFacade()
-  const { cropFromHistory, removeCropId } = cardphotoActions
+  const { cropFromHistory, removeCropId } = useCardphotoFacade()
 
   if (!asset) return <div className={styles.loader} />
 

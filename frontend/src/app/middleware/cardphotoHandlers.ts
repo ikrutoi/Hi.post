@@ -1,4 +1,4 @@
-import { call, delay, put, select, fork, takeLatest } from 'redux-saga/effects'
+import { call, put, select, fork, takeLatest } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { nanoid } from 'nanoid'
 import type { SagaIterator } from 'redux-saga'
@@ -23,6 +23,7 @@ import {
   selectCurrentConfig,
   selectCardphotoState,
   selectActiveImage,
+  selectActiveSource,
   selectIsCropFull,
 } from '@cardphoto/infrastructure/selectors'
 import { applyBounds } from '@cardphoto/application/helpers'
@@ -76,9 +77,12 @@ import { ImageAsset } from '@/entities/assetRegistry/domain/types'
 import { selectAssetById } from '@/entities/assetRegistry/infrastructure/selectors/assetRegistrySelectors'
 
 export function* handleCropAction() {
-  const toolbarState: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto'),
+  let toolbarState: CardphotoToolbarState | undefined = yield select(
+    selectToolbarSectionState('cardphotoEditor'),
   )
+  if (!toolbarState?.crop) {
+    toolbarState = yield select(selectToolbarSectionState('cardphoto'))
+  }
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config) return
 
@@ -134,13 +138,12 @@ export function* syncCropFullIcon(params?: {
   forceActive?: boolean
   customConfig?: WorkingConfig
 }): SagaIterator {
-  if (!params) {
-    yield delay(0)
-  }
-
-  const toolbarState: CardphotoToolbarState = yield select(
-    selectToolbarSectionState('cardphoto'),
+  let toolbarState: CardphotoToolbarState | undefined = yield select(
+    selectToolbarSectionState('cardphotoEditor'),
   )
+  if (!toolbarState?.crop) {
+    toolbarState = yield select(selectToolbarSectionState('cardphoto'))
+  }
 
   if (!toolbarState?.crop) return
 
@@ -303,18 +306,17 @@ export function* handleImageRotate(
       ? rotateRight(currentRotation)
       : rotateLeft(currentRotation)
 
-  console.log('HANDLE_IMAGE')
-  const config: WorkingConfig = yield call(
+  const activeSource = (yield select(selectActiveSource)) ?? 'user'
+
+  yield call(
     rebuildConfigFromMeta,
     originalImage,
-    'user',
+    activeSource,
     undefined,
     nextRotation,
   )
 
-  console.log('handleImageRotate config', config)
-
-  // `rebuildConfigFromMeta` already updates `currentConfig` via `commitWorkingConfig`.
+  // `rebuildConfigFromMeta` уже кладёт конфиг через `commitWorkingConfig`.
 }
 
 export function* handleCropConfirm(): SagaIterator {

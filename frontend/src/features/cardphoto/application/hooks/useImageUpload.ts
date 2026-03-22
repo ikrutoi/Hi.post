@@ -41,7 +41,6 @@ export const useImageUpload = (
             height: height,
           },
         }
-        console.log('Inside Hook:', imageMeta.full.blob)
         onUpload(imageMeta)
       }
       img.src = objectUrl

@@ -1,19 +1,21 @@
 import { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { setAsset, clearRegistry } from '../../infrastructure/state'
-import {
-  selectAssetById,
-  selectAssetRegistry,
-} from '../../infrastructure/selectors'
+import { selectAssetRegistry } from '../../infrastructure/selectors'
 import { ImageAsset } from '../../domain/types'
 
 export const useAssetRegistryFacade = () => {
   const dispatch = useAppDispatch()
   const registry = useAppSelector(selectAssetRegistry)
 
-  const getAssetById = (id: string | null) => {
-    return useAppSelector((state) => selectAssetById(state, id))
-  }
+  /** Обычная функция (без хуков): иначе условный вызов ломает порядок хуков в родителе. */
+  const getAssetById = useCallback(
+    (id: string | null): ImageAsset | null => {
+      if (!id) return null
+      return registry[id] ?? null
+    },
+    [registry],
+  )
 
   const registerAsset = useCallback(
     (asset: ImageAsset) => {

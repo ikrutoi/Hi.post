@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
+import { useStore } from 'react-redux'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import type { RootState } from '@app/state/store'
 import {
   initCardphoto,
   uploadUserImage,
+  commitWorkingConfig,
+  setCardphotoPhotoStageRect,
 } from '../infrastructure/state'
 import {
   selectActiveImage,
@@ -23,19 +27,20 @@ import {
 import styles from './CardphotoStage.module.scss'
 import { ImageMeta } from '../domain/types'
 import { useAssetRegistryFacade } from '@entities/assetRegistry/application/facade/assetRegistryFacade'
+import {
+  prepareForRedux,
+  prepareConfigForRedux,
+} from '@app/middleware/cardphotoHelpers'
 
-/**
- * Единая сцена фото на открытке: скрытый выбор файла (toolbar `cardphotoAdd` / `download`),
- * отрисовка изображения по `currentConfig` и UI кропа.
- * Раньше компонент назывался `ImageCrop` — по смыслу это не только кроп.
- */
 export const CardphotoStage = () => {
   const dispatch = useAppDispatch()
+  const store = useStore<RootState>()
   const activeSource = useAppSelector(selectActiveSource)
   const activeImage = useAppSelector(selectActiveImage)
   const currentConfig = useAppSelector(selectCurrentConfig)
 
   const init = () => dispatch(initCardphoto())
+  /** Keep `full.blob` so the saga does not depend on fetch(blob:) (revoked / missing URLs). */
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
 
   const { state: cardphotoUiState, actions: cardphotoUiActions } =
@@ -43,14 +48,39 @@ export const CardphotoStage = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
   const { getAssetById } = useAssetRegistryFacade()
 
-  const { state: iconState } = useToolbarFacade('cardphoto')
-  const cropToolbarState = iconState.crop?.state ?? 'disabled'
+  const { state: iconState } = useToolbarFacade('cardphotoEditor')
+  const cropToolbarState = iconState?.crop?.state ?? 'disabled'
 
   const { sizeCard } = useSizeFacade()
 
   const [loaded, setLoaded] = useState(false)
+  const stageRef = useRef<HTMLDivElement>(null)
 
   const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeSource}`
+
+  useLayoutEffect(() => {
+    const el = stageRef.current
+    if (!el) return
+
+    const publish = () => {
+      const w = el.clientWidth
+      const h = el.clientHeight
+      if (w < 2 || h < 2) {
+        dispatch(setCardphotoPhotoStageRect(null))
+        return
+      }
+      dispatch(setCardphotoPhotoStageRect({ width: w, height: h }))
+    }
+
+    publish()
+    const ro = new ResizeObserver(publish)
+    ro.observe(el)
+
+    return () => {
+      ro.disconnect()
+      dispatch(setCardphotoPhotoStageRect(null))
+    }
+  }, [dispatch])
 
   const [tempCrop, setTempCrop] = useCropState(
     cropToolbarState,
@@ -60,6 +90,10 @@ export const CardphotoStage = () => {
   useEffect(() => {
     init()
   }, [])
+
+  useEffect(() => {
+    if (!activeImage) setLoaded(false)
+  }, [activeImage])
 
   const { inputRef, trackCancel } = useFileDialog()
 
@@ -76,8 +110,8 @@ export const CardphotoStage = () => {
     cardphotoUiActions.markLoading,
   )
 
-  const asset = activeImage ? getAssetById(activeImage.id) : null
-  const src = asset?.url || null
+  const asset = getAssetById(activeImage?.id ?? null)
+  const src = asset?.url || activeImage?.url || null
   const alt = activeImage?.id
   const imageLayer = currentConfig?.image ?? null
 
@@ -107,7 +141,7 @@ export const CardphotoStage = () => {
   const showCropUi = !!activeImage && !!imageLayer
 
   return (
-    <div className={styles.cardphotoStage}>
+    <div ref={stageRef} className={styles.cardphotoStage}>
       <input
         type="file"
         accept="image/*"
@@ -120,10 +154,10 @@ export const CardphotoStage = () => {
         <div
           key={containerKey}
           className={styles.cropContainer}
-          style={{
-            width: `${sizeCard.width}px`,
-            height: `${sizeCard.height}px`,
-          }}
+          // style={{
+          //   width: `${sizeCard?.width ?? 0}px`,
+          //   height: `${sizeCard?.height ?? 0}px`,
+          // }}
         >
           {shouldShowImage && imageLayer && src && (
             <>
@@ -138,13 +172,11 @@ export const CardphotoStage = () => {
                 )}
                 style={imageStyle}
               />
-              {tempCrop &&
-                cropToolbarState === 'active' &&
-                activeImage && (
-                  <div className={styles.cropMask} style={maskStyle}>
-                    <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
-                  </div>
-                )}
+              {tempCrop && cropToolbarState === 'active' && activeImage && (
+                <div className={styles.cropMask} style={maskStyle}>
+                  <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
+                </div>
+              )}
             </>
           )}
           {loaded &&
@@ -161,6 +193,18 @@ export const CardphotoStage = () => {
                     originalImage={activeImage}
                     onChange={(newCrop) => {
                       setTempCrop(newCrop)
+                      // Merge into latest Redux config (avoid stale closure) so crop + sagas stay in sync.
+                      const cfg = selectCurrentConfig(store.getState())
+                      if (cfg) {
+                        dispatch(
+                          commitWorkingConfig(
+                            prepareConfigForRedux({
+                              ...cfg,
+                              crop: newCrop,
+                            }),
+                          ),
+                        )
+                      }
                     }}
                   />
                 )}

@@ -64,6 +64,11 @@ export const CARDTEXT_CREATE_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
+  {
+    group: 'close',
+    icons: [{ key: 'close', state: 'disabled' }],
+    status: 'enabled',
+  },
 ]
 
 export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [

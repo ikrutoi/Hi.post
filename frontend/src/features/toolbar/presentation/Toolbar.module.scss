@@ -161,9 +161,24 @@
   }
 }
 
-.toolbarCardtextCreate,
+.toolbarCardphotoEditor,
 .toolbarCardphotoCreate {
-  width: 60%;
+  // ring via box-shadow so border-box width/height aren’t eaten by a real border (keeps icon size)
+  .toolbarKeyCropCheckEnabled {
+    background-color: $color-section-light-completed;
+    color: $color-font-active;
+    box-shadow: 0 0 0 1px $color-toggle-active;
+  }
+
+  .toolbarKeyCropCheckEnabled:hover {
+    background-color: $color-section-dark-completed;
+    color: $color-font-active;
+    box-shadow: 0 0 0 1px $color-toggle-active;
+  }
+}
+
+.toolbarCardtextCreate {
+  // width: 60%;
 
   .toolbarGroupDisabled {
     display: none;
@@ -318,16 +333,18 @@
     }
   }
 
-  .toolbarKeyApplyEnabled {
+  .toolbarKeyApplyEnabled,
+  .toolbarKeyCropCheckEnabled {
     background-color: $color-section-light-completed;
     color: $color-font-active;
-    border: 1px solid $color-toggle-active;
+    box-shadow: 0 0 0 1px $color-toggle-active;
   }
 
-  .toolbarKeyApplyEnabled:hover {
+  .toolbarKeyApplyEnabled:hover,
+  .toolbarKeyCropCheckEnabled:hover {
     background-color: $color-section-dark-completed;
     color: $color-font-active;
-    border-color: $color-toggle-active;
+    box-shadow: 0 0 0 1px $color-toggle-active;
   }
 }
 

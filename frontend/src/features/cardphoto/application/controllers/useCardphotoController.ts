@@ -27,6 +27,7 @@ import type {
   ImageMeta,
   WorkingConfig,
 } from '../../domain/types'
+import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
 export const useCardphotoController = () => {
   const dispatch = useAppDispatch()
 
@@ -44,11 +45,13 @@ export const useCardphotoController = () => {
   const cardSize = useSelector(selectCardSize)
 
   const init = () => dispatch(initCardphoto())
-  const uploadImage = (meta: ImageMeta) => dispatch(uploadImageReady(meta))
+  const uploadImage = (meta: ImageMeta) =>
+    dispatch(uploadImageReady(prepareForRedux(meta)))
   // const setStockImage = (payload: { meta: ImageMeta; config: WorkingConfig }) =>
   //   dispatch(initStockImage(payload))
   const setUserImage = (meta: ImageMeta) => dispatch(uploadUserImage(meta))
-  const apply = (meta: ImageMeta) => dispatch(applyFinal(meta))
+  const apply = (meta: ImageMeta) =>
+    dispatch(applyFinal(prepareForRedux(meta)))
   const resetAll = () => dispatch(reset())
   const cancel = () => dispatch(cancelSelection())
   const cropFromHistory = (cropId: string) =>

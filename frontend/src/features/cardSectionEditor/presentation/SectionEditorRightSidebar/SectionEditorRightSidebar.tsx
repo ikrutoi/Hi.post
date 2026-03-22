@@ -29,7 +29,7 @@ export const SectionEditorRightSidebar: React.FC = () => {
   const sender = useAppSelector(selectSenderState)
   const { items: previewStripItems, reload: reloadPreviewStrip } =
     usePreviewStripItems(activeSection)
-  const { actions: cardphotoActions } = useCardphotoFacade()
+  const { removeCropId: removeCardphotoCropId } = useCardphotoFacade()
   const { deleteCardtextTemplate } = useTemplateActions()
   const { selectSenderFromList, selectRecipientFromList, toggleSenderEnabled } =
     useEnvelopeFacade()
@@ -59,7 +59,7 @@ export const SectionEditorRightSidebar: React.FC = () => {
   const handleDeletePreviewItem = useCallback(
     async (item: PreviewStripItem) => {
       if (item.kind === 'cardphoto') {
-        cardphotoActions.removeCropId(item.imageId)
+        removeCardphotoCropId(item.imageId)
       } else if (item.kind === 'cardtext') {
         await deleteCardtextTemplate(item.templateId)
         dispatch(removeCardtextTemplateId(item.templateId))
@@ -77,8 +77,8 @@ export const SectionEditorRightSidebar: React.FC = () => {
     },
     [
       dispatch,
+      removeCardphotoCropId,
       sender.enabled,
-      cardphotoActions,
       deleteCardtextTemplate,
       reloadPreviewStrip,
       toggleSenderEnabled,

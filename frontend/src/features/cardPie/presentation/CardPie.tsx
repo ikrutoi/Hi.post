@@ -268,12 +268,12 @@ export const CardPie: React.FC<CardPieProps> = ({
               </>
             ) : hasManyRecipients ? (
               <>
-                <rect width="2560" height="2560" className={styles.rect} />
+                <rect width="5120" height="5120" className={styles.rect} />
                 <IconUsers
                   x="0"
                   y="300"
-                  width="2200"
-                  height="2200"
+                  width="2560"
+                  height="2560"
                   className={styles.pieEnvelopeIconBg}
                 />
                 <text
@@ -290,12 +290,12 @@ export const CardPie: React.FC<CardPieProps> = ({
               </>
             ) : recipient ? (
               <>
-                <rect width="2560" height="2560" className={styles.rect} />
+                <rect width="5120" height="5120" className={styles.rect} />
                 <IconUserRecipient
                   x="0"
                   y="300"
-                  width="2200"
-                  height="2200"
+                  width="2560"
+                  height="2560"
                   className={styles.pieEnvelopeIconBg}
                 />
                 <text

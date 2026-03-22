@@ -121,7 +121,7 @@ export const CardEditor: React.FC = () => {
 
   return (
     <div className={styles.editor}>
-      <button
+      {/* <button
         type="button"
         className={styles.closeBtn}
         onClick={() => {
@@ -131,7 +131,7 @@ export const CardEditor: React.FC = () => {
         aria-label="Close text editor"
       >
         <IconX />
-      </button>
+      </button> */}
       <div
         className={styles.editorArea}
         ref={editorRef}

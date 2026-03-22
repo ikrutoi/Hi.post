@@ -3,7 +3,7 @@ import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 
 // export const useActiveImageUrl = () => {
-//   const { state: cardphotoState } = useCardphotoFacade()
+//   const { cardphotoSession, activeImage } = useCardphotoFacade()
 //   // console.log('USE_MINI_CARDPHOTO state', cardphotoState)
 //   const { appliedImage } = cardphotoState
 

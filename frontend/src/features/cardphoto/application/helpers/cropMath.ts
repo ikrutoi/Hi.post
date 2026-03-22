@@ -158,30 +158,53 @@ export const clampDragWithinImage = (
   return { x: newX, y: newY }
 }
 
+/**
+ * Same geometry as `createFullCropLayer` + `applyBounds` (see handleCropFullAction).
+ * Implemented here (not via import from imageFit) to avoid a helpers ↔ imageFit cycle.
+ */
 export const checkIsCropFull = (config: WorkingConfig): boolean => {
   const { image, card, crop } = config
+  if (!crop) return false
+
   const isRotated = image.rotation === 90 || image.rotation === 270
-
-  const currentVisualAR = isRotated
-    ? roundTo(1 / image.meta.imageAspectRatio, 3)
-    : image.meta.imageAspectRatio
-
-  // Cardphoto is always square, so orientation does not affect "full crop" checks.
+  const vWidth = isRotated ? image.meta.height : image.meta.width
+  const vHeight = isRotated ? image.meta.width : image.meta.height
+  const currentVisualAR = vWidth / vHeight
   const targetAR = card.aspectRatio
 
-  let maxWidth = 0
-  let maxHeight = 0
-
+  let finalWidth = 0
+  let finalHeight = 0
   if (currentVisualAR > targetAR) {
-    maxHeight = image.meta.height
-    maxWidth = roundTo(maxHeight * targetAR, 2)
+    finalHeight = vHeight
+    finalWidth = roundTo(finalHeight * targetAR, 2)
   } else {
-    maxWidth = image.meta.width
-    maxHeight = roundTo(maxWidth / targetAR, 2)
+    finalWidth = vWidth
+    finalHeight = roundTo(finalWidth / targetAR, 2)
   }
 
-  const isFullWidth = Math.abs(crop.meta.width - maxWidth) < 2
-  const isFullHeight = Math.abs(crop.meta.height - maxHeight) < 2
+  const visualCenterX = image.left + image.meta.width / 2
+  const visualCenterY = image.top + image.meta.height / 2
+  const x = roundTo(visualCenterX - finalWidth / 2, 2)
+  const y = roundTo(visualCenterY - finalHeight / 2, 2)
 
-  return isFullWidth && isFullHeight
+  const rawFull: CropLayer = {
+    x,
+    y,
+    meta: {
+      width: finalWidth,
+      height: finalHeight,
+      aspectRatio: card.aspectRatio,
+      quality: 'low',
+      qualityProgress: 0,
+    },
+    orientation: card.orientation,
+  }
+
+  const full = applyBounds(rawFull, image, card.orientation)
+  const eps = 2
+
+  return (
+    Math.abs(crop.meta.width - full.meta.width) < eps &&
+    Math.abs(crop.meta.height - full.meta.height) < eps
+  )
 }

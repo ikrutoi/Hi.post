@@ -2,10 +2,12 @@ import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import { roundTo } from '@shared/utils/layout'
 import { checkIsCropFull } from '../../application/helpers'
+import { selectSizeCard } from '@layout/infrastructure/selectors'
 import type {
   CardphotoState,
   WorkingConfig,
   ImageMeta,
+  CardLayer,
   CardphotoBase,
   QualityLevel,
   ActiveImageSource,
@@ -37,6 +39,36 @@ export const selectAppliedImage = (state: RootState): ImageMeta | null =>
 export const selectCurrentConfig = (state: RootState): WorkingConfig | null => {
   return state.cardphoto.state?.currentConfig ?? null
 }
+
+/** Measured `.cardphotoStage` box (see `setCardphotoPhotoStageRect`). */
+export const selectCardphotoPhotoStageRect = (state: RootState) =>
+  state.cardphoto.state?.photoStageRect ?? null
+
+/**
+ * Card layer for cardphoto math: pixel size from the real editor stage when measured,
+ * otherwise falls back to global layout `SizeCard` (legacy form-based sizing).
+ */
+export const selectCardphotoWorkingCardLayer = createSelector(
+  [selectSizeCard, selectCardphotoPhotoStageRect],
+  (layoutCard, rect): CardLayer => {
+    const orientation = layoutCard.orientation ?? 'landscape'
+    const aspectRatio = layoutCard.aspectRatio
+    if (rect && rect.width > 1 && rect.height > 1) {
+      return {
+        width: rect.width,
+        height: rect.height,
+        aspectRatio,
+        orientation,
+      }
+    }
+    return {
+      width: layoutCard.width,
+      height: layoutCard.height,
+      aspectRatio,
+      orientation,
+    }
+  },
+)
 
 export const selectCurrentImageMeta = (state: RootState): ImageMeta | null =>
   selectCurrentConfig(state)?.image?.meta ?? null
@@ -78,18 +110,10 @@ export const selectBaseImageByTarget = (
 export const selectIsCropFull = createSelector(
   [selectCurrentConfig],
   (config) => {
-    if (!config) return false
-    const { crop, image } = config
-
-    const isRotated = image.rotation === 90 || image.rotation === 270
-
-    const vWidth = isRotated ? image.meta.height : image.meta.width
-    const vHeight = isRotated ? image.meta.width : image.meta.height
-
-    const isFullWidth = Math.abs(crop.meta.width - vWidth) < 0.5
-    const isFullHeight = Math.abs(crop.meta.height - vHeight) < 0.5
-
-    return isFullWidth || isFullHeight
+    if (!config?.crop) return false
+    // Must match `checkIsCropFull` (AND both dimensions vs max-in-card), not width OR height —
+    // otherwise a smaller crop that still spans full image width stays "full" and cropFull stays disabled.
+    return checkIsCropFull(config)
   },
 )
 

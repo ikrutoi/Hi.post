@@ -28,13 +28,17 @@ import {
   clearCurrentConfig,
   selectCropFromHistory,
   removeCropId,
+  setCardphotoPhotoStageRect,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
-import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
+import {
+  selectCardphotoState,
+  selectCardphotoWorkingCardLayer,
+  selectCardphotoPhotoStageRect,
+} from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { setSizeCard } from '@layout/infrastructure/state'
-import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { roundTo } from '@shared/utils/layout'
 import {
   updateToolbarSection,
@@ -69,7 +73,7 @@ import type {
   CardphotoSessionRecord,
   ImageRecord,
 } from '@cardphoto/domain/types'
-import type { SizeCard, LayoutOrientation } from '@layout/domain/types'
+import type { LayoutOrientation } from '@layout/domain/types'
 import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 
@@ -109,9 +113,27 @@ export function* onDownloadClick(): SagaIterator {
 
 function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   try {
-    const imageMeta = action.payload
-    // const cardLayer: CardLayer = yield select(selectSizeCard)
-    // console.log('onUploadImage')
+    let imageMeta = action.payload
+    // Prefer `full.blob` (kept on upload). Fallback: fetch blob: URL (may fail if revoked).
+    if (!imageMeta.full?.blob && imageMeta.url?.startsWith('blob:')) {
+      try {
+        const blob: Blob = yield call(async () => {
+          const res = await fetch(imageMeta.url)
+          if (!res.ok) {
+            throw new Error(`blob fetch ${res.status}`)
+          }
+          return res.blob()
+        })
+        imageMeta = {
+          ...imageMeta,
+          full: { ...imageMeta.full, blob },
+        }
+      } catch (e) {
+        console.error('uploadUserImage: cannot read blob URL (revoked or invalid)', e)
+        yield put(markLoaded())
+        return
+      }
+    }
 
     yield put(
       setAsset({
@@ -204,15 +226,13 @@ export function* rebuildConfigFromMeta(
     yield put(clearCurrentConfig())
     yield delay(16)
 
-    const currentCard: SizeCard = yield select(selectSizeCard)
-
     // Cardphoto cards are square (125x125mm), so we never switch layout orientation here.
     // Keep `forceOrientation` for backward compatibility with older call sites.
     void forceOrientation
 
     const newRotation = rotation ?? meta.rotation ?? 0
 
-    const updatedCard: CardLayer = yield select(selectSizeCard)
+    const updatedCard: CardLayer = yield select(selectCardphotoWorkingCardLayer)
     const imageLayer = fitImageToCard(meta, updatedCard, newRotation, false)
     const cropLayer = createInitialCropLayer(imageLayer, updatedCard, meta)
 
@@ -258,6 +278,34 @@ export function* onDeleteCropSaga(action: PayloadAction<string>): SagaIterator {
   }
 }
 
+/** When the real editor stage resizes, refit image/crop to measured pixels (not global SizeCard). */
+function* watchCardphotoPhotoStageRect(): SagaIterator {
+  yield takeLatest(setCardphotoPhotoStageRect.type, function* (): SagaIterator {
+    yield delay(100)
+    const rect: { width: number; height: number } | null = yield select(
+      selectCardphotoPhotoStageRect,
+    )
+    if (!rect || rect.width < 2 || rect.height < 2) return
+
+    const state: CardphotoState | null = yield select(selectCardphotoState)
+    if (!state?.activeSource || !state.currentConfig?.image) return
+
+    const current = state.currentConfig.card
+    if (
+      Math.abs(current.width - rect.width) < 0.5 &&
+      Math.abs(current.height - rect.height) < 0.5
+    ) {
+      return
+    }
+
+    const meta = state.base[state.activeSource]?.image
+    if (!meta) return
+
+    const rot = state.currentConfig.image.rotation ?? 0
+    yield call(rebuildConfigFromMeta, meta, state.activeSource, undefined, rot)
+  })
+}
+
 export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
@@ -267,6 +315,7 @@ export function* cardphotoProcessSaga(): SagaIterator {
 
     fork(watchCropChanges),
     fork(watchToolbarContext),
+    fork(watchCardphotoPhotoStageRect),
 
     takeLatest(uploadUserImage.type, onUploadImageReadySaga),
     takeEvery(cancelFileDialog.type, onCancelFileDialog),

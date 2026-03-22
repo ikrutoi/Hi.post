@@ -1,6 +1,5 @@
 import {
   call,
-  takeLatest,
   all,
   fork,
   select,
@@ -9,6 +8,8 @@ import {
 } from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
+import type { WorkingConfig } from '@cardphoto/domain/types'
+import type { CardphotoSliceState } from '@cardphoto/infrastructure/state/cardphotoSlice'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { RootState } from '@app/state'
@@ -63,29 +64,49 @@ import type {
   ImageMeta,
 } from '@cardphoto/domain/types'
 import { SizeCard } from '@layout/domain/types'
+import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
+
+/** Закрытие экрана создания: убрать загруженное фото и кропы, вернуть пустую форму. */
+function* handleCloseCardphotoCreateSaga(): SagaIterator {
+  try {
+    yield call([storeAdapters.userImages, 'deleteById'], CURRENT_EDITOR_IMAGE_ID)
+    yield call([storeAdapters.cardphotoImages, 'clear'])
+    yield put(resetCardphoto())
+    yield put(markLoaded())
+    yield fork(syncToolbarContext)
+  } catch (error) {
+    console.error('Close cardphoto create failed:', error)
+  }
+}
 
 export function* watchCropChanges(): SagaIterator {
-  yield takeLatest(commitWorkingConfig.type, function* (): SagaIterator {
-    yield call(syncCropFullIcon)
+  // takeEvery (not takeLatest): takeLatest cancels mid-flight and may skip updateToolbarIcon for cropFull.
+  yield takeEvery(
+    commitWorkingConfig.type,
+    function* (action: PayloadAction<WorkingConfig>): SagaIterator {
+      // isFull must follow this exact payload (same config the reducer just applied).
+      yield call(syncCropFullIcon, { customConfig: action.payload })
 
-    const state = (yield select((s) => s.cardphoto)) as CardphotoState
+      const slice = (yield select(
+        (s) => s.cardphoto,
+      )) as CardphotoSliceState
+      const config = slice.state?.currentConfig
 
-    const config = state.currentConfig
+      if (config?.crop && config?.image?.meta) {
+        const { quality, qualityProgress } = calculateCropQuality(
+          config.crop.meta,
+          config.image,
+          config.image.meta,
+          config.card.orientation,
+        )
 
-    if (config?.crop && config?.image?.meta) {
-      const { quality, qualityProgress } = calculateCropQuality(
-        config.crop.meta,
-        config.image,
-        config.image.meta,
-        config.card.orientation,
-      )
+        yield call(dispatchQualityUpdate, qualityProgress, quality)
 
-      yield call(dispatchQualityUpdate, qualityProgress, quality)
-
-      const color = getQualityColor(qualityProgress)
-      document.documentElement.style.setProperty('--crop-handle-color', color)
-    }
-  })
+        const color = getQualityColor(qualityProgress)
+        document.documentElement.style.setProperty('--crop-handle-color', color)
+      }
+    },
+  )
 }
 
 export function* handleCardphotoToolbarAction(
@@ -105,7 +126,15 @@ export function* handleCardphotoToolbarAction(
     return
   }
 
-  if (section !== 'cardphoto') return
+  if (key === 'close' && section === 'cardphotoCreate') {
+    yield call(handleCloseCardphotoCreateSaga)
+    return
+  }
+
+  const isCardphotoEditingSection =
+    section === 'cardphoto' || section === 'cardphotoEditor'
+
+  if (!isCardphotoEditingSection) return
 
   switch (key) {
     case 'listCardphoto': {
@@ -237,15 +266,41 @@ export function* handleCardphotoToolbarAction1(
   }
 }
 
+function pickCardphotoEditorToolbarPatch(
+  sectionUpdate: Record<string, unknown>,
+): Record<string, unknown> {
+  const keys = [
+    'imageRotateLeft',
+    'imageRotateRight',
+    'crop',
+    'cropFull',
+    'cropCheck',
+    'imageReset',
+    'close',
+  ] as const
+  return Object.fromEntries(
+    keys
+      .filter((k) => sectionUpdate[k] !== undefined)
+      .map((k) => [k, sectionUpdate[k]]),
+  )
+}
+
 export function* syncToolbarContext() {
   const state: CardphotoState = yield select((s) => s.cardphoto.state)
-  const toolbarState: CardphotoToolbarState | undefined = yield select(
+  const toolbarCardphoto: CardphotoToolbarState | undefined = yield select(
     selectToolbarSectionState('cardphoto'),
   )
+  const toolbarEditor: CardphotoToolbarState | undefined = yield select(
+    selectToolbarSectionState('cardphotoEditor'),
+  )
 
-  // `crop` может отсутствовать в конфиге `cardphoto` (только иконки списка) — синхронизацию всё равно выполняем.
+  // `crop` может отсутствовать в конфиге `cardphoto` — проверяем и editor.
   if (!state) return
-  if (toolbarState?.crop?.state === 'active') return
+  if (
+    toolbarCardphoto?.crop?.state === 'active' ||
+    toolbarEditor?.crop?.state === 'active'
+  )
+    return
 
   const { activeSource, cropCount } = state
   // console.log('syncToolbarContext + cropCount', cropCount)
@@ -374,6 +429,15 @@ export function* syncToolbarContext() {
       },
     }),
   )
+
+  yield put(
+    updateToolbarSection({
+      section: 'cardphotoEditor',
+      value: pickCardphotoEditorToolbarPatch(
+        sectionUpdate as Record<string, unknown>,
+      ),
+    }),
+  )
 }
 
 const selectCurrentProcessedUrl = (state: RootState) =>
@@ -394,7 +458,22 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
     )
 
     if (cropRecord) {
-      if (oldUrl?.startsWith('blob:') && oldUrl !== appliedUrl) {
+      const cardState = (yield select(
+        (s: RootState) => s.cardphoto.state,
+      )) as CardphotoState | null
+      const stillInUse =
+        oldUrl &&
+        [
+          cardState?.base.user.image?.url,
+          cardState?.base.apply.image?.url,
+          cardState?.base.stock.image?.url,
+        ].includes(oldUrl)
+
+      if (
+        oldUrl?.startsWith('blob:') &&
+        oldUrl !== appliedUrl &&
+        !stillInUse
+      ) {
         URL.revokeObjectURL(oldUrl)
       }
 

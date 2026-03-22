@@ -90,13 +90,18 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'font',
     icons: [
-      { key: 'imageRotateLeft', state: 'disabled' },
+      // { key: 'imageRotateLeft', state: 'disabled' },
       { key: 'imageRotateRight', state: 'disabled' },
       { key: 'crop', state: 'disabled' },
       { key: 'cropFull', state: 'disabled' },
       { key: 'cropCheck', state: 'disabled' },
       { key: 'imageReset', state: 'disabled' },
     ],
+    status: 'enabled',
+  },
+  {
+    group: 'close',
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -105,25 +110,28 @@ export const CARDPHOTO_EDITOR_TOOLBAR: ToolbarConfig = [
   {
     group: 'editor',
     icons: [
-      // {
-      //   key: 'cardOrientation',
-      //   state: 'disabled',
-      //   options: { orientation: 'landscape' },
-      // },
-      { key: 'imageRotateLeft', state: 'disabled' },
-      { key: 'imageRotateRight', state: 'disabled' },
-      { key: 'crop', state: 'disabled' },
-      { key: 'cropFull', state: 'disabled' },
-      { key: 'cropCheck', state: 'disabled' },
-      { key: 'imageReset', state: 'disabled' },
+      // { key: 'cardphotoAdd', state: 'enabled' },
+      { key: 'listAdd', state: 'disabled' },
     ],
     status: 'enabled',
   },
-  // {
-  //   group: 'view',
-  //   icons: [{ key: 'delete', state: 'disabled' }],
-  //   status: 'enabled',
-  // },
+  {
+    group: 'font',
+    icons: [
+      // { key: 'imageRotateLeft', state: 'disabled' },
+      { key: 'cropCheck', state: 'disabled' },
+      { key: 'imageRotateRight', state: 'enabled' },
+      { key: 'crop', state: 'enabled' },
+      { key: 'cropFull', state: 'disabled' },
+      // { key: 'imageReset', state: 'disabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'close',
+    icons: [{ key: 'close', state: 'enabled' }],
+    status: 'enabled',
+  },
 ]
 
 export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [

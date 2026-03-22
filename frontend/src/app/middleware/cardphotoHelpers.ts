@@ -11,8 +11,6 @@ import type {
   CardphotoSessionRecord,
   CardphotoBase,
 } from '@cardphoto/domain/types'
-import { SizeCard } from '@/features/layout/domain/types'
-import { selectSizeCard } from '@/features/layout/infrastructure/selectors'
 import { getRandomStockMeta } from './cardphotoHistorySaga'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { ImageAsset } from '@/entities/assetRegistry/domain/types'
@@ -22,63 +20,66 @@ interface UpdateCropOptions {
   isFull?: boolean
 }
 
+const CARDPHOTO_TOOLBAR_SECTIONS = ['cardphoto', 'cardphotoEditor'] as const
+
 export function* updateCropToolbarState(
   newCrop: 'active' | 'enabled',
   state: CardphotoToolbarState,
   options: UpdateCropOptions = {},
 ) {
-  yield put(
-    updateToolbarIcon({ section: 'cardphoto', key: 'crop', value: newCrop }),
-  )
-
-  const newSave =
-    newCrop === 'active'
-      ? 'disabled'
-      : state.save.state === 'disabled'
-        ? 'enabled'
-        : state.save.state
-
-  yield put(
-    updateToolbarIcon({ section: 'cardphoto', key: 'save', value: newSave }),
-  )
-
   const { isFull = false } = options
 
   const newCropFull =
     newCrop === 'active' ? (isFull ? 'disabled' : 'enabled') : 'disabled'
 
-  yield put(
-    updateToolbarIcon({
-      section: 'cardphoto',
-      key: 'cropFull',
-      value: newCropFull,
-    }),
-  )
-
   const newCropCheck =
     newCrop === 'active'
       ? 'enabled'
-      : state.cropCheck.state === 'enabled'
+      : state.cropCheck?.state === 'enabled'
         ? 'disabled'
-        : state.cropCheck.state
-
-  yield put(
-    updateToolbarIcon({
-      section: 'cardphoto',
-      key: 'cropCheck',
-      value: newCropCheck,
-    }),
-  )
+        : (state.cropCheck?.state ?? 'disabled')
 
   const newClose = newCrop === 'active' ? 'disabled' : 'enabled'
 
-  yield put(
-    updateToolbarIcon({
-      section: 'cardphoto',
-      key: 'close',
-      value: newClose,
-    }),
-  )
+  for (const section of CARDPHOTO_TOOLBAR_SECTIONS) {
+    yield put(
+      updateToolbarIcon({ section, key: 'crop', value: newCrop }),
+    )
+    yield put(
+      updateToolbarIcon({
+        section,
+        key: 'cropFull',
+        value: newCropFull,
+      }),
+    )
+    yield put(
+      updateToolbarIcon({
+        section,
+        key: 'cropCheck',
+        value: newCropCheck,
+      }),
+    )
+    yield put(
+      updateToolbarIcon({
+        section,
+        key: 'close',
+        value: newClose,
+      }),
+    )
+  }
+
+  if (state.save) {
+    const newSave =
+      newCrop === 'active'
+        ? 'disabled'
+        : state.save.state === 'disabled'
+          ? 'enabled'
+          : state.save.state
+
+    yield put(
+      updateToolbarIcon({ section: 'cardphoto', key: 'save', value: newSave }),
+    )
+  }
 
   const newSaveList = newCrop === 'active' ? 'disabled' : 'enabled'
 
@@ -99,13 +100,19 @@ export function* updateCropToolbarState(
   )
 }
 
-export const prepareForRedux = (meta: ImageMeta): ImageMeta => ({
-  ...meta,
-  full: { ...meta.full, blob: undefined },
-  thumbnail: meta.thumbnail
-    ? { ...meta.thumbnail, blob: undefined }
-    : undefined,
-})
+/** Убирает Blob/File из meta для Redux (serializable middleware). */
+export const prepareForRedux = (meta: ImageMeta): ImageMeta => {
+  const { blob: _fullBlob, ...fullRest } = meta.full
+  const thumbnail = meta.thumbnail
+    ? (({ blob: _tb, ...tr }) => tr)(meta.thumbnail)
+    : undefined
+
+  return {
+    ...meta,
+    full: fullRest as ImageMeta['full'],
+    thumbnail: thumbnail as ImageMeta['thumbnail'],
+  }
+}
 
 export const prepareConfigForRedux = (
   config: WorkingConfig,

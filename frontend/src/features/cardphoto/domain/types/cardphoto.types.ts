@@ -1,6 +1,9 @@
 import { CardStatus } from '@/entities/card/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
+/** Pixel box of the cardphoto editor stage (DOM), used as WorkingConfig.card when present. */
+export type CardphotoPhotoStageRect = { width: number; height: number }
+
 /**
  * Origin of the underlying photo, not the processing stage.
  * Used in `ImageMeta.source`.
@@ -31,12 +34,12 @@ export interface ImageRecord {
   image: ImageMeta
 }
 
-/** Matches layout `SizeCard` when used as the working card in editor config. */
+/** Working “card” in editor math: pixel size + aspect; orientation from layout for crop helpers. */
 export interface CardLayer {
   width: number
   height: number
   aspectRatio: number
-  // orientation: LayoutOrientation
+  orientation: LayoutOrientation
 }
 
 export type QualityLevel = 'high' | 'medium' | 'low'
@@ -114,6 +117,8 @@ export interface CardphotoState {
   activeSource: ActiveImageSource | null
   currentConfig: WorkingConfig | null
   appended: string | null
+  /** Measured `.cardphotoStage` (crop area). When set, sagas use this instead of global layout SizeCard. */
+  photoStageRect: CardphotoPhotoStageRect | null
 }
 
 export interface PreviewItem {

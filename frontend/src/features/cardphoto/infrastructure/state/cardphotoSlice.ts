@@ -9,6 +9,7 @@ import type {
   CardLayer,
   ActiveImageSource,
   CardphotoSessionRecord,
+  CardphotoPhotoStageRect,
 } from '../../domain/types'
 export interface CardphotoSliceState {
   state: CardphotoState
@@ -28,6 +29,7 @@ const initialState: CardphotoSliceState = {
     activeSource: null,
     currentConfig: null,
     appended: null,
+    photoStageRect: null,
   },
   isComplete: false,
 }
@@ -82,14 +84,23 @@ export const cardphotoSlice = createSlice({
     ) {
       const { base, config, activeSource, cropIds, cropCount } = action.payload
 
+      const normalizedConfig: WorkingConfig = {
+        ...config,
+        card: {
+          ...config.card,
+          orientation: config.card.orientation ?? 'landscape',
+        },
+      }
+
       if (state.state) {
         state.state = {
           base,
           cropCount,
           cropIds,
           activeSource,
-          currentConfig: config,
+          currentConfig: normalizedConfig,
           appended: state.state.appended ?? null,
+          photoStageRect: null,
         }
       } else {
         state.state = {
@@ -97,8 +108,9 @@ export const cardphotoSlice = createSlice({
           cropCount,
           cropIds,
           activeSource,
-          currentConfig: config,
+          currentConfig: normalizedConfig,
           appended: null,
+          photoStageRect: null,
         }
       }
       state.isComplete = !!state.state.base.apply?.image
@@ -126,6 +138,15 @@ export const cardphotoSlice = createSlice({
     commitWorkingConfig(state, action: PayloadAction<WorkingConfig>) {
       if (state.state) {
         state.state.currentConfig = action.payload
+      }
+    },
+
+    setCardphotoPhotoStageRect(
+      state,
+      action: PayloadAction<CardphotoPhotoStageRect | null>,
+    ) {
+      if (state.state) {
+        state.state.photoStageRect = action.payload
       }
     },
 
@@ -204,7 +225,14 @@ export const cardphotoSlice = createSlice({
       action: PayloadAction<{ config: WorkingConfig; source: ActiveImageSource }>,
     ) {
       if (state.state) {
-        state.state.currentConfig = action.payload.config
+        const cfg = action.payload.config
+        state.state.currentConfig = {
+          ...cfg,
+          card: {
+            ...cfg.card,
+            orientation: cfg.card.orientation ?? 'landscape',
+          },
+        }
       }
     },
 
@@ -265,6 +293,7 @@ export const cardphotoSlice = createSlice({
       if (state.state) {
         const { source, config, apply, cropIds, activeMetaId } = action.payload
 
+        state.state.photoStageRect = null
         state.state.base.apply.image = apply
         state.state.appended = null
         state.isComplete = !!apply
@@ -274,7 +303,10 @@ export const cardphotoSlice = createSlice({
 
         if (config) {
           state.state.currentConfig = {
-            card: config.card,
+            card: {
+              ...config.card,
+              orientation: config.card.orientation ?? 'landscape',
+            },
             crop: config.crop,
             image: {
               left: config.image.left,
@@ -302,6 +334,7 @@ export const {
   setBaseImage,
   uploadUserImage,
   commitWorkingConfig,
+  setCardphotoPhotoStageRect,
   applyFinal,
   clearApply,
   reset,

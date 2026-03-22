@@ -1,9 +1,8 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { useAppDispatch } from '@/store/hooks'
 import {
   initCardphoto,
-  // initStockImage,
   uploadUserImage,
   applyFinal,
   reset,
@@ -13,12 +12,12 @@ import {
   selectCropFromHistory,
   removeCropId as deleteCropId,
 } from '../../infrastructure/state'
+import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
 import {
   selectCardphotoState,
   selectCardphotoIsComplete,
   selectStockImage,
   selectUserImage,
-  // selectGalleryImage,
   selectAppliedImage,
   selectActiveSource,
   selectCurrentConfig,
@@ -28,9 +27,6 @@ import {
   selectActiveImage,
   selectIsProcessedMode,
   selectCropIds,
-  selectCardphotoSessionRecord,
-
-  // selectCropIdsReversed,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
@@ -41,107 +37,139 @@ import type {
   QualityLevel,
   ActiveImageSource,
 } from '../../domain/types'
-export interface CardphotoFacade {
-  state: {
-    state: CardphotoState | null
-    isComplete: boolean
-    stockImage: ImageMeta | null
-    userImage: ImageMeta | null
-    // galleryImage: ImageMeta | null
-    appliedImage: ImageMeta | null
-    activeSource: ActiveImageSource | null
-    currentConfig: WorkingConfig | null
-    cardSize: { width: number; height: number }
-    quality: QualityLevel
-    qualityProgress: number
-    activeImage: ImageMeta | null
-    processedMode: boolean
-    cropIds: string[]
-    // cropIdsReversed: string[]
-  }
-  actions: {
-    init: () => void
-    uploadImage: (meta: ImageMeta) => void
-    // setStockImage: (payload: { meta: ImageMeta; config: WorkingConfig }) => void
-    setUserImage: (meta: ImageMeta) => void
-    apply: (meta: ImageMeta) => void
-    resetAll: () => void
-    cancel: () => void
-    resetLayers: (payload: {
-      imageLayer: ImageLayer
-      cropLayer: CropLayer
-      card: WorkingConfig['card']
-    }) => void
-    cropFromHistory: (cropId: string) => void
-    removeCropId: (cropId: string) => void
-  }
+
+/** Плоский возврат: состояние и экшены без вложенных `state` / `actions`. */
+export type CardphotoFacade = {
+  /** Полное состояние редактора фото (`cardphoto.state` в Redux). */
+  cardphotoSession: CardphotoState | null
+  isComplete: boolean
+  stockImage: ImageMeta | null
+  userImage: ImageMeta | null
+  appliedImage: ImageMeta | null
+  activeSource: ActiveImageSource | null
+  currentConfig: WorkingConfig | null
+  cardWidth: number
+  cardHeight: number
+  cropQuality: QualityLevel
+  cropQualityProgress: number
+  activeImage: ImageMeta | null
+  isProcessedMode: boolean
+  cropIds: string[]
+
+  init: () => void
+  uploadImage: (meta: ImageMeta) => void
+  setUserImage: (meta: ImageMeta) => void
+  apply: (meta: ImageMeta) => void
+  resetAll: () => void
+  cancel: () => void
+  resetLayers: (payload: {
+    imageLayer: ImageLayer
+    cropLayer: CropLayer
+    card: WorkingConfig['card']
+  }) => void
+  cropFromHistory: (cropId: string) => void
+  removeCropId: (cropId: string) => void
 }
 
 export const useCardphotoFacade = (): CardphotoFacade => {
   const dispatch = useAppDispatch()
 
-  const stateRaw = useSelector(selectCardphotoState)
+  const cardphotoSession = useSelector(selectCardphotoState)
   const isComplete = useSelector(selectCardphotoIsComplete)
   const stockImage = useSelector(selectStockImage)
   const userImage = useSelector(selectUserImage)
   const appliedImage = useSelector(selectAppliedImage)
   const activeSource = useSelector(selectActiveSource)
   const currentConfig = useSelector(selectCurrentConfig)
-  const cardSize = useSelector(selectCardSize)
-  const quality = useSelector(selectCropQuality)
-  const qualityProgress = useSelector(selectCropQualityProgress)
+  const { width: cardWidth, height: cardHeight } = useSelector(selectCardSize)
+  const cropQuality = useSelector(selectCropQuality)
+  const cropQualityProgress = useSelector(selectCropQualityProgress)
   const activeImage = useSelector(selectActiveImage)
-  const processedMode = useSelector(selectIsProcessedMode)
+  const isProcessedMode = useSelector(selectIsProcessedMode)
   const cropIds = useSelector(selectCropIds)
 
-  const state = useMemo(
-    () => ({
-      state: stateRaw,
-      isComplete,
-      stockImage,
-      userImage,
-      appliedImage,
-      activeSource,
-      currentConfig,
-      cardSize,
-      quality,
-      qualityProgress,
-      activeImage,
-      processedMode,
-      cropIds,
-    }),
-    [
-      stateRaw,
-      isComplete,
-      stockImage,
-      userImage,
-      appliedImage,
-      activeSource,
-      currentConfig,
-      cardSize,
-      quality,
-      qualityProgress,
-      activeImage,
-      processedMode,
-      cropIds,
-    ],
+  const init = useCallback(() => dispatch(initCardphoto()), [dispatch])
+  const uploadImage = useCallback(
+    (meta: ImageMeta) => dispatch(uploadImageReady(prepareForRedux(meta))),
+    [dispatch],
   )
-
-  const actions = useMemo(
-    () => ({
-      init: () => dispatch(initCardphoto()),
-      uploadImage: (meta: ImageMeta) => dispatch(uploadImageReady(meta)),
-      setUserImage: (meta: ImageMeta) => dispatch(uploadUserImage(meta)),
-      apply: (meta: ImageMeta) => dispatch(applyFinal(meta)),
-      resetAll: () => dispatch(reset()),
-      cancel: () => dispatch(cancelSelection()),
-      resetLayers: (payload: any) => dispatch(resetCropLayers(payload)),
-      cropFromHistory: (cropId: string) =>
-        dispatch(selectCropFromHistory(cropId)),
-      removeCropId: (cropId: string) => dispatch(deleteCropId(cropId)),
-    }),
+  const setUserImage = useCallback(
+    (meta: ImageMeta) => dispatch(uploadUserImage(meta)),
+    [dispatch],
+  )
+  const apply = useCallback(
+    (meta: ImageMeta) => dispatch(applyFinal(prepareForRedux(meta))),
+    [dispatch],
+  )
+  const resetAll = useCallback(() => dispatch(reset()), [dispatch])
+  const cancel = useCallback(() => dispatch(cancelSelection()), [dispatch])
+  const resetLayers = useCallback(
+    (payload: {
+      imageLayer: ImageLayer
+      cropLayer: CropLayer
+      card: WorkingConfig['card']
+    }) => dispatch(resetCropLayers(payload)),
+    [dispatch],
+  )
+  const cropFromHistory = useCallback(
+    (cropId: string) => dispatch(selectCropFromHistory(cropId)),
+    [dispatch],
+  )
+  const removeCropId = useCallback(
+    (cropId: string) => dispatch(deleteCropId(cropId)),
     [dispatch],
   )
 
-  return { state, actions }
+  return useMemo(
+    () => ({
+      cardphotoSession,
+      isComplete,
+      stockImage,
+      userImage,
+      appliedImage,
+      activeSource,
+      currentConfig,
+      cardWidth,
+      cardHeight,
+      cropQuality,
+      cropQualityProgress,
+      activeImage,
+      isProcessedMode,
+      cropIds,
+      init,
+      uploadImage,
+      setUserImage,
+      apply,
+      resetAll,
+      cancel,
+      resetLayers,
+      cropFromHistory,
+      removeCropId,
+    }),
+    [
+      cardphotoSession,
+      isComplete,
+      stockImage,
+      userImage,
+      appliedImage,
+      activeSource,
+      currentConfig,
+      cardWidth,
+      cardHeight,
+      cropQuality,
+      cropQualityProgress,
+      activeImage,
+      isProcessedMode,
+      cropIds,
+      init,
+      uploadImage,
+      setUserImage,
+      apply,
+      resetAll,
+      cancel,
+      resetLayers,
+      cropFromHistory,
+      removeCropId,
+    ],
+  )
 }
