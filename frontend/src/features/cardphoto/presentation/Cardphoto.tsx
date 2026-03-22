@@ -8,12 +8,13 @@ export const Cardphoto = () => {
   const { activeImage, cropQualityProgress } = useCardphotoFacade()
   const hasLoadedPhoto = Boolean(activeImage)
   console.log('cardphoto cropQualityProgress', cropQualityProgress)
+  console.log('cardphoto activeImage', activeImage)
 
   return (
     <div className={styles.cardphoto}>
       <div className={styles.cardphotoViewWrap}>
         <div className={styles.cardphotoToolbarRow}>
-          {hasLoadedPhoto ? <Toolbar section="cardphotoEditor" /> : null}
+          {hasLoadedPhoto ? <Toolbar section="cardphotoCreate" /> : null}
         </div>
         <div className={styles.cardphotoViewContent}>
           <CardphotoView />

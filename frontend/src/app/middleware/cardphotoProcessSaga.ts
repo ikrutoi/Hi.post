@@ -233,7 +233,12 @@ export function* rebuildConfigFromMeta(
     const newRotation = rotation ?? meta.rotation ?? 0
 
     const updatedCard: CardLayer = yield select(selectCardphotoWorkingCardLayer)
-    const imageLayer = fitImageToCard(meta, updatedCard, newRotation, false)
+    const imageLayer = fitImageToCard(
+      meta,
+      updatedCard,
+      newRotation,
+      meta.isCropped ?? false,
+    )
     const cropLayer = createInitialCropLayer(imageLayer, updatedCard, meta)
 
     const newConfig: WorkingConfig = {

@@ -81,28 +81,23 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
 
 export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   {
-    group: 'create',
-    icons: [
-      // { key: 'cardphotoAdd', state: 'enabled' },
-      { key: 'listAdd', state: 'disabled' },
-    ],
+    group: 'crop',
+    icons: [{ key: 'cropCheck', state: 'disabled' }],
     status: 'enabled',
   },
   {
-    group: 'font',
+    group: 'quality',
     icons: [
-      // { key: 'imageRotateLeft', state: 'disabled' },
-      { key: 'imageRotateRight', state: 'disabled' },
-      { key: 'crop', state: 'disabled' },
+      { key: 'crop', state: 'enabled' },
+      { key: 'cropQualityIndicator', state: 'disabled' },
+      { key: 'imageRotateRight', state: 'enabled' },
       { key: 'cropFull', state: 'disabled' },
-      { key: 'cropCheck', state: 'disabled' },
-      { key: 'imageReset', state: 'disabled' },
     ],
     status: 'enabled',
   },
   {
     group: 'close',
-    icons: [{ key: 'close', state: 'enabled' }],
+    icons: [{ key: 'delete', state: 'enabled' }],
     status: 'enabled',
   },
 ]

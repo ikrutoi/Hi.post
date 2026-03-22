@@ -58,8 +58,10 @@ export interface ImageMeta {
   thumbnail?: ImageData
   width: number
   height: number
+  /** true после cropCheck / для пресетов; в `ImageLayer.meta` дублируется из meta при fit. */
   isCropped: boolean
   timestamp: number
+  /** id исходного `ImageMeta` до cropCheck; только у кропа из редактора — повторный кроп отключён. */
   parentImageId?: string
   // orientation?: LayoutOrientation
   rotation?: number

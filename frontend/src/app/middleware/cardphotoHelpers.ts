@@ -80,6 +80,15 @@ export function* updateCropToolbarState(
         value: newClose,
       }),
     )
+    if (section === 'cardphotoCreate') {
+      yield put(
+        updateToolbarIcon({
+          section,
+          key: 'delete',
+          value: newClose,
+        }),
+      )
+    }
   }
 
   if (state.save) {

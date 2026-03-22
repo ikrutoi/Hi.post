@@ -48,7 +48,7 @@ export const CardphotoStage = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
   const { getAssetById } = useAssetRegistryFacade()
 
-  const { state: iconState } = useToolbarFacade('cardphotoEditor')
+  const { state: iconState } = useToolbarFacade('cardphotoCreate')
   const cropToolbarState = iconState?.crop?.state ?? 'disabled'
 
   const { sizeCard } = useSizeFacade()

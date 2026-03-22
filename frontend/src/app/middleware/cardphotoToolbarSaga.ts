@@ -129,13 +129,18 @@ export function* handleCardphotoToolbarAction(
     return
   }
 
-  if (key === 'close' && section === 'cardphotoCreate') {
+  if (
+    section === 'cardphotoCreate' &&
+    (key === 'close' || key === 'delete')
+  ) {
     yield call(handleCloseCardphotoCreateSaga)
     return
   }
 
   const isCardphotoEditingSection =
-    section === 'cardphoto' || section === 'cardphotoEditor'
+    section === 'cardphoto' ||
+    section === 'cardphotoEditor' ||
+    section === 'cardphotoCreate'
 
   if (!isCardphotoEditingSection) return
 
@@ -278,6 +283,7 @@ function pickCardphotoEditorToolbarPatch(
     'crop',
     'cropFull',
     'cropCheck',
+    'cropQualityIndicator',
     'imageReset',
     'close',
   ] as const
@@ -296,12 +302,16 @@ export function* syncToolbarContext() {
   const toolbarEditor: CardphotoToolbarState | undefined = yield select(
     selectToolbarSectionState('cardphotoEditor'),
   )
+  const toolbarCreate: CardphotoToolbarState | undefined = yield select(
+    selectToolbarSectionState('cardphotoCreate'),
+  )
 
-  // `crop` может отсутствовать в конфиге `cardphoto` — проверяем и editor.
+  // `crop` может отсутствовать в конфиге `cardphoto` — проверяем editor / create.
   if (!state) return
   if (
     toolbarCardphoto?.crop?.state === 'active' ||
-    toolbarEditor?.crop?.state === 'active'
+    toolbarEditor?.crop?.state === 'active' ||
+    toolbarCreate?.crop?.state === 'active'
   )
     return
 
@@ -324,6 +334,8 @@ export function* syncToolbarContext() {
         imageRotateRight: { state: 'disabled' },
         crop: { state: 'disabled' },
         cropFull: { state: 'disabled' },
+        cropCheck: { state: 'disabled' },
+        cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: 'enabled' },
 
         apply: { state: 'enabled' },
@@ -349,6 +361,8 @@ export function* syncToolbarContext() {
         imageRotateRight: { state: 'disabled' },
         crop: { state: 'disabled' },
         cropFull: { state: 'disabled' },
+        cropCheck: { state: 'disabled' },
+        cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: 'enabled' },
 
         apply: { state: 'enabled' },
@@ -374,6 +388,8 @@ export function* syncToolbarContext() {
         imageRotateRight: { state: 'enabled' },
         crop: { state: 'enabled' },
         cropFull: { state: 'disabled' },
+        cropCheck: { state: 'disabled' },
+        cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: 'enabled' },
 
         apply: { state: 'disabled' },
@@ -400,6 +416,8 @@ export function* syncToolbarContext() {
         imageRotateRight: { state: 'disabled' },
         crop: { state: 'disabled' },
         cropFull: { state: 'disabled' },
+        cropCheck: { state: 'disabled' },
+        cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: isUserImage ? 'enabled' : 'disabled' },
 
         apply: { state: 'enabled' },
@@ -423,12 +441,21 @@ export function* syncToolbarContext() {
     }),
   )
 
+  const cropToolbarPatch = pickCardphotoEditorToolbarPatch(
+    sectionUpdate as Record<string, unknown>,
+  )
+  const su = sectionUpdate as {
+    cardphotoAdd?: { state: string }
+    close?: { state: string }
+  }
+
   yield put(
     updateToolbarSection({
       section: 'cardphotoCreate',
       value: {
-        cardphotoAdd: (sectionUpdate as { cardphotoAdd?: { state: string } })
-          .cardphotoAdd,
+        ...cropToolbarPatch,
+        ...(su.cardphotoAdd != null ? { cardphotoAdd: su.cardphotoAdd } : {}),
+        ...(su.close != null ? { delete: su.close } : {}),
       },
     }),
   )
@@ -436,9 +463,7 @@ export function* syncToolbarContext() {
   yield put(
     updateToolbarSection({
       section: 'cardphotoEditor',
-      value: pickCardphotoEditorToolbarPatch(
-        sectionUpdate as Record<string, unknown>,
-      ),
+      value: cropToolbarPatch,
     }),
   )
 }

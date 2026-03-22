@@ -76,13 +76,30 @@ import { setAsset } from '@/entities/assetRegistry/infrastructure/state'
 import { ImageAsset } from '@/entities/assetRegistry/domain/types'
 import { selectAssetById } from '@/entities/assetRegistry/infrastructure/selectors/assetRegistrySelectors'
 
-export function* handleCropAction() {
-  let toolbarState: CardphotoToolbarState | undefined = yield select(
+/** Тулбар с crop (экран создания — cardphotoCreate, иначе editor / cardphoto). */
+export function* selectCardphotoCropToolbarState(): SagaIterator<
+  CardphotoToolbarState | undefined
+> {
+  const create = (yield select(
+    selectToolbarSectionState('cardphotoCreate'),
+  )) as CardphotoToolbarState | undefined
+  if (create?.crop) return create
+  const editor = (yield select(
     selectToolbarSectionState('cardphotoEditor'),
-  )
-  if (!toolbarState?.crop) {
-    toolbarState = yield select(selectToolbarSectionState('cardphoto'))
-  }
+  )) as CardphotoToolbarState | undefined
+  if (editor?.crop) return editor
+  return (yield select(
+    selectToolbarSectionState('cardphoto'),
+  )) as CardphotoToolbarState | undefined
+}
+
+export function* handleCropAction() {
+  /** Результат cropCheck: нельзя открыть кроп поверх уже сохранённого кропа из редактора. */
+  const activeMeta: ImageMeta | null = yield select(selectActiveImage)
+  if (activeMeta?.parentImageId) return
+
+  const toolbarState: CardphotoToolbarState | undefined =
+    yield* selectCardphotoCropToolbarState()
   const config: WorkingConfig | null = yield select(selectCurrentConfig)
   if (!config) return
 
@@ -137,12 +154,8 @@ export function* syncCropFullIcon(params?: {
   forceActive?: boolean
   customConfig?: WorkingConfig
 }): SagaIterator {
-  let toolbarState: CardphotoToolbarState | undefined = yield select(
-    selectToolbarSectionState('cardphotoEditor'),
-  )
-  if (!toolbarState?.crop) {
-    toolbarState = yield select(selectToolbarSectionState('cardphoto'))
-  }
+  const toolbarState: CardphotoToolbarState | undefined =
+    yield* selectCardphotoCropToolbarState()
 
   if (!toolbarState?.crop) return
 
@@ -404,28 +417,17 @@ export function* handleCropConfirm(): SagaIterator {
     yield put(addCropId(id))
 
     console.log('HANDLE_CROP')
-    const newConfig: WorkingConfig = yield call(
-      rebuildConfigFromMeta,
-      reduxMeta,
-      'processed',
-    )
+    yield call(rebuildConfigFromMeta, reduxMeta, 'processed')
 
     // `rebuildConfigFromMeta` already commits `currentConfig` via `commitWorkingConfig`.
 
-    yield put(
-      updateToolbarIcon({
-        section: 'cardphoto',
-        key: 'crop',
-        value: 'enabled',
-      }),
-    )
-    yield put(
-      updateToolbarIcon({
-        section: 'cardphoto',
-        key: 'cropCheck',
-        value: 'disabled',
-      }),
-    )
+    // syncToolbarContext раньше не применялся, пока crop === 'active'; плюс раньше здесь ошибочно включали crop.
+    const tb: CardphotoToolbarState | undefined =
+      yield* selectCardphotoCropToolbarState()
+    if (tb?.crop?.state === 'active') {
+      yield call(updateCropToolbarState, 'enabled', tb)
+    }
+    yield call(syncToolbarContext)
   } catch (error) {
     console.error('Error crop:', error)
   } finally {
