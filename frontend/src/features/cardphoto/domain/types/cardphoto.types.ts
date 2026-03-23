@@ -96,7 +96,7 @@ export interface CardphotoState {
   base: CardphotoBase
   activeSource: ActiveImageSource | null
   currentConfig: WorkingConfig | null
-  appended: string | null
+  applied: string | null
   photoStageRect: CardphotoPhotoStageRect | null
 }
 

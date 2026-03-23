@@ -26,7 +26,7 @@ const initialState: CardphotoSliceState = {
     },
     activeSource: null,
     currentConfig: null,
-    appended: null,
+    applied: null,
     photoStageRect: null,
   },
   isComplete: false,
@@ -91,7 +91,7 @@ export const cardphotoSlice = createSlice({
           base,
           activeSource,
           currentConfig: normalizedConfig,
-          appended: state.state.appended ?? null,
+          applied: state.state.applied ?? null,
           photoStageRect: null,
         }
       } else {
@@ -99,7 +99,7 @@ export const cardphotoSlice = createSlice({
           base,
           activeSource,
           currentConfig: normalizedConfig,
-          appended: null,
+          applied: null,
           photoStageRect: null,
         }
       }
@@ -143,20 +143,21 @@ export const cardphotoSlice = createSlice({
     applyFinal(state, action: PayloadAction<ImageMeta>) {
       if (!state.state) return
       state.state.base.apply.image = action.payload
+      state.state.applied = action.payload?.id ?? null
       state.isComplete = !!action.payload
     },
 
     clearApply(state) {
       if (!state.state) return
       state.state.base.apply.image = null
-      state.state.appended = null
+      state.state.applied = null
       state.isComplete = false
     },
 
     reset(state) {
       if (!state.state) return
       state.state.base.apply.image = null
-      state.state.appended = null
+      state.state.applied = null
       state.state.currentConfig = null
       state.isComplete = false
     },
@@ -181,7 +182,7 @@ export const cardphotoSlice = createSlice({
       }
 
       state.state.base.apply.image = null
-      state.state.appended = null
+      state.state.applied = null
       state.state.currentConfig = workingConfig
       state.isComplete = false
     },
@@ -255,7 +256,7 @@ export const cardphotoSlice = createSlice({
 
         state.state.photoStageRect = null
         state.state.base.apply.image = apply
-        state.state.appended = null
+        state.state.applied = apply?.id ?? null
         state.isComplete = !!apply
         state.state.activeSource = source
 

@@ -17,7 +17,8 @@ import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 
 export const selectCardphotoSlice = (state: RootState) => state.cardphoto
 
-const CARDPHOTO_IS_COMPLETE_STUB = true
+// Don't use stub: `applyFinal` updates `cardphoto.isComplete`.
+const CARDPHOTO_IS_COMPLETE_STUB = false
 
 export const selectCardphotoState = (state: RootState): CardphotoState | null =>
   state.cardphoto.state
@@ -211,15 +212,15 @@ export const selectCardphotoPreview = createSelector(
 
 export const selectCardphotoMiniPreview = createSelector(
   [
-    (state: RootState) => state.cardphoto.state?.appended ?? null,
+    (state: RootState) => state.cardphoto.state?.applied ?? null,
     (state: RootState) => state.assetRegistry.images,
   ],
-  (appendedId, registry) => {
-    if (!appendedId) return null
-    const asset = registry[appendedId]
+  (appliedId, registry) => {
+    if (!appliedId) return null
+    const asset = registry[appliedId]
     const previewUrl = asset?.thumbUrl || asset?.url || null
     if (!previewUrl) return null
-    return { previewUrl, id: appendedId }
+    return { previewUrl, id: appliedId }
   },
 )
 
