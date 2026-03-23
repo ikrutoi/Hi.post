@@ -23,7 +23,9 @@ import {
   selectCardtextListSortDirection,
   selectCardtextAssetId,
   selectCardtextApplied,
+  selectCardtextTemplatesListLoading,
 } from '@cardtext/infrastructure/selectors'
+import { loadCardtextTemplatesRequest } from '@cardtext/infrastructure/state'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
@@ -54,19 +56,37 @@ export const Toolbar = ({
 
   const { fontSizeStep } = useCardtextFacade()
   const { templates: cardtextTemplates } = useCardtextTemplates()
+  const cardtextTemplatesLoading = useAppSelector(
+    selectCardtextTemplatesListLoading,
+  )
+  const cardtextTemplatesCount = (cardtextTemplates ?? []).length
 
   useEffect(() => {
     if (section === 'cardtext' || section === 'cardtextView') {
-      const count = (cardtextTemplates ?? []).length
       dispatch(
         updateToolbarIcon({
           section,
           key: 'listCardtext',
-          value: { options: { badge: count > 0 ? count : null } },
+          value: { options: { badge: cardtextTemplatesCount > 0 ? cardtextTemplatesCount : null } },
         }),
       )
     }
-  }, [section, cardtextTemplates, dispatch])
+  }, [section, cardtextTemplatesCount, dispatch])
+
+  useEffect(() => {
+    // Badge in `Toolbar section="cardtext"` depends on templates list data.
+    // Templates are usually loaded when the list panel opens; but for UX we load them
+    // earlier so the badge is correct immediately after entering the cardtext section.
+    if (section !== 'cardtext') return
+    if (cardtextTemplatesLoading) return
+    if (cardtextTemplatesCount > 0) return
+    dispatch(loadCardtextTemplatesRequest())
+  }, [
+    section,
+    cardtextTemplatesLoading,
+    cardtextTemplatesCount,
+    dispatch,
+  ])
 
   const groupRef = useRef<HTMLDivElement>(null)
 

@@ -23,6 +23,7 @@ import {
   resetCropLayers,
   commitWorkingConfig,
   setBaseImage,
+  setProcessedImage,
   uploadImageReady,
   hydrateEditor,
   selectCropFromHistory,
@@ -32,6 +33,7 @@ import {
   initCardphoto,
   bumpCardphotoInlineTemplateList,
   clearAllCrops,
+  selectInLineTemplate,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
@@ -275,6 +277,28 @@ export function* rebuildConfigFromMeta(
   }
 }
 
+function* onSelectInLineTemplateSaga(action: PayloadAction<string>): SagaIterator {
+  try {
+    const id = action.payload
+    const record: ImageMeta | null = yield call(
+      [storeAdapters.cardphotoImages, 'getById'] as const,
+      id,
+    )
+    if (!record) return
+
+    // In list we show `inLine` templates; keep this explicit.
+    if (record.status !== 'inLine') return
+
+    // 1) Switch active image to `processed` so `CardphotoView` can render it.
+    yield put(setProcessedImage(prepareForRedux(record)))
+
+    // 2) Refit image + (re)build crop layer based on selected meta.
+    yield call(rebuildConfigFromMeta, record, 'processed')
+  } catch (e) {
+    console.error('onSelectInLineTemplateSaga', e)
+  }
+}
+
 export function* onDeleteCropSaga(action: PayloadAction<string>): SagaIterator {
   try {
     const cropId = action.payload
@@ -354,6 +378,7 @@ function* watchCardphotoInLineBadge(): SagaIterator {
 export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
+    takeLatest(selectInLineTemplate.type, onSelectInLineTemplateSaga),
 
     takeEvery(selectCropFromHistory.type, onSelectCropFromHistorySaga),
     takeEvery(removeCropId.type, onDeleteCropSaga),

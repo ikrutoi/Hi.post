@@ -27,9 +27,11 @@ import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
 
 type Props = {
   onClose: () => void
+  onSelectTemplate: (id: string) => void | Promise<void>
 }
 
 type Row = { id: string; src: string; favorite: boolean }
+type Placeholder = null
 
 function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
   if (meta.thumbnail?.blob instanceof Blob) {
@@ -58,7 +60,7 @@ function remToPx(rem: number): number {
   return rem * (Number.isFinite(fs) ? fs : 16)
 }
 
-export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
+export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate }) => {
   const dispatch = useAppDispatch()
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
@@ -136,6 +138,19 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
     }
   }, [listRevision])
 
+  // Split favorites / non-favorites without mixing in a single row.
+  // Also pad favorites with placeholders so the first non-favorite starts on a new grid row.
+  const favoriteRows = rows.filter((r) => r.favorite === true)
+  const nonFavoriteRows = rows.filter((r) => r.favorite !== true)
+  const favoritePaddingCount =
+    (columns - (favoriteRows.length % columns)) % columns
+
+  const displayRows: Array<Row | Placeholder> = [
+    ...favoriteRows,
+    ...new Array(favoritePaddingCount).fill(null),
+    ...nonFavoriteRows,
+  ]
+
   const handleFavorite = useCallback(
     async (id: string) => {
       const meta = await storeAdapters.cardphotoImages.getById(id)
@@ -203,17 +218,28 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
                   gridTemplateColumns: `repeat(${columns}, ${cellPx}px)`,
                 }}
               >
-                {rows.map((row) => (
-                  <CardphotoListThumb
-                    key={row.id}
-                    id={row.id}
-                    src={row.src}
-                    cellPx={cellPx}
-                    favorite={row.favorite}
-                    onFavorite={() => handleFavorite(row.id)}
-                    onDelete={() => handleDelete(row.id)}
-                  />
-                ))}
+                {displayRows.map((row, idx) =>
+                  row ? (
+                    <CardphotoListThumb
+                      key={row.id}
+                      id={row.id}
+                      src={row.src}
+                      cellPx={cellPx}
+                      favorite={row.favorite}
+                      onFavorite={() => handleFavorite(row.id)}
+                      onDelete={() => handleDelete(row.id)}
+                      onSelect={() => onSelectTemplate(row.id)}
+                    />
+                  ) : (
+                    <div
+                      // Placeholder to keep favorites aligned to whole grid rows.
+                      key={`empty-${idx}`}
+                      className={styles.thumbPlaceholder}
+                      style={{ width: cellPx, height: cellPx }}
+                      aria-hidden
+                    />
+                  ),
+                )}
               </div>
             )}
           </div>

@@ -10,6 +10,7 @@ type Props = {
   favorite: boolean
   onFavorite: () => void | Promise<void>
   onDelete: () => void | Promise<void>
+  onSelect: () => void | Promise<void>
 }
 
 function btnSize(cell: number) {
@@ -36,6 +37,7 @@ export const CardphotoListThumb: React.FC<Props> = ({
   favorite,
   onFavorite,
   onDelete,
+  onSelect,
 }) => {
   const bp = btnSize(cellPx)
   const ip = iconSize(cellPx)
@@ -61,11 +63,16 @@ export const CardphotoListThumb: React.FC<Props> = ({
     void Promise.resolve(onDelete())
   }
 
+  const runSelect = () => {
+    void Promise.resolve(onSelect())
+  }
+
   return (
     <div
       className={styles.thumbCell}
       data-cardphoto-thumb={id}
       style={{ width: cellPx, height: cellPx }}
+      onClick={runSelect}
     >
       <img
         className={styles.thumbImg}

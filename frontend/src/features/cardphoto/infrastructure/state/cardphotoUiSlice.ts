@@ -74,6 +74,12 @@ export const cardphotoUiSlice = createSlice({
     ) {
       state.listTemplateGridCols = action.payload
     },
+
+    /**
+     * Triggers loading + switching an inLine template into `cardphotoView`.
+     * Actual state updates happen in saga (setProcessedImage + rebuildConfigFromMeta).
+     */
+    selectInLineTemplate: (_state, _action: PayloadAction<string>) => {},
   },
 })
 
@@ -88,6 +94,7 @@ export const {
   bumpCardphotoInlineTemplateList,
   cycleListTemplateGridCols,
   setListTemplateGridCols,
+  selectInLineTemplate,
 } = cardphotoUiSlice.actions
 
 export default cardphotoUiSlice.reducer

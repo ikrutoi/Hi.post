@@ -9,6 +9,7 @@ import {
   selectCardtextAddTemplateOpen,
   selectCardtextAssetId,
   selectCardtextTemplatesListItems,
+  selectCardtextTemplatesListLoading,
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
@@ -22,6 +23,7 @@ import {
   setCardtextAddTemplateOpen,
   setCardtextCurrentView,
   setTitle,
+  loadCardtextTemplatesRequest,
   updateCardtextTemplateTitleInList,
 } from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
@@ -50,6 +52,9 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const currentAssetId = useAppSelector(selectCardtextAssetId)
   const isAddTemplateOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const cardtextTemplates = useAppSelector(selectCardtextTemplatesListItems)
+  const cardtextTemplatesLoading = useAppSelector(
+    selectCardtextTemplatesListLoading,
+  )
   const dispatch = useAppDispatch()
   const { createCardtextTemplate, updateCardtextTemplate } =
     useTemplateActions()
@@ -178,6 +183,16 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
     currentView === 'cardtextEditor' && currentAssetId == null
       ? 'cardtextCreate'
       : currentView
+
+  // Ensure `listCardtext` badge count is available immediately when entering `cardtext`.
+  // Previously templates were loaded only when opening the list panel.
+  useEffect(() => {
+    const count = cardtextTemplates?.length ?? 0
+    if (toolbarSection !== 'cardtext') return
+    if (cardtextTemplatesLoading) return
+    if (count > 0) return
+    dispatch(loadCardtextTemplatesRequest())
+  }, [toolbarSection, cardtextTemplatesLoading, dispatch, cardtextTemplates])
 
   return (
     <div className={styles.cardtextContainer}>

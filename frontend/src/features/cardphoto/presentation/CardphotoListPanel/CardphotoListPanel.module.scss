@@ -118,3 +118,8 @@
   box-sizing: border-box;
   gap: 0.5rem;
 }
+
+.thumbPlaceholder {
+  visibility: hidden;
+  pointer-events: none;
+}

@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   setCardphotoListPanelOpen,
+  selectInLineTemplate,
 } from '@cardphoto/infrastructure/state'
 import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { CardphotoListPanel } from './CardphotoListPanel/CardphotoListPanel'
@@ -23,12 +24,22 @@ export const CardphotoRightSlot: React.FC = () => {
     )
   }, [dispatch])
 
+  const handleSelectTemplate = useCallback(
+    (id: string) => {
+      dispatch(selectInLineTemplate(id))
+    },
+    [dispatch],
+  )
+
   if (!isOpen) return null
 
   return (
     <div className={styles.root}>
       <div className={styles.panelWrap}>
-        <CardphotoListPanel onClose={handleClose} />
+        <CardphotoListPanel
+          onClose={handleClose}
+          onSelectTemplate={handleSelectTemplate}
+        />
       </div>
     </div>
   )
