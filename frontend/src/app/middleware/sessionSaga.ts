@@ -523,13 +523,13 @@ export function* hydrateAppSession() {
     // При перезагрузке панели списков (Получатель / Отправитель) всегда скрыты
     yield put(closeAddressList())
 
-    // Aroma and date are not restored on reload so mini sections stay empty after refresh
-    // if (session.aroma && session.aroma.selectedAroma) {
-    //   yield put(setAroma(session.aroma.selectedAroma))
-    // }
-    // if (session.date && session.date.selectedDate) {
-    //   yield put(setDate(session.date.selectedDate))
-    // }
+    // Restore aroma and date after reload (so mini sections + CardPie update).
+    if (session.aroma && session.aroma.selectedAroma) {
+      yield put(setAroma(session.aroma.selectedAroma))
+    }
+    if (session.date && session.date.selectedDate) {
+      yield put(setDate(session.date.selectedDate))
+    }
 
     if (session.sizeCard) {
       yield put(setSizeCard(session.sizeCard))
