@@ -20,6 +20,7 @@ import {
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
   selectCardphotoAssetConfig,
+  selectCardphotoAssetToolbar,
   selectCardphotoState,
   selectActiveImage,
   selectActiveSource,
@@ -64,6 +65,7 @@ import type {
   ImageLayer,
   CardLayer,
   CardphotoState,
+  CardphotoAssetToolbar,
   ImageRotation,
   CropLayer,
   ActiveImageSource,
@@ -77,11 +79,23 @@ import { ImageAsset } from '@/entities/assetRegistry/domain/types'
 import { selectAssetById } from '@/entities/assetRegistry/infrastructure/selectors/assetRegistrySelectors'
 
 /**
- * Тулбар с crop: на экране результата (processed) — cardphotoProcessed, иначе cardphotoCreate.
+ * Тулбар с crop: следует `assetToolbar` (view → нет crop в этой секции, fallback ниже).
  */
 export function* selectCardphotoCropToolbarState(): SagaIterator<
   CardphotoToolbarState | undefined
 > {
+  const variant: CardphotoAssetToolbar = yield select(selectCardphotoAssetToolbar)
+  if (variant === 'cardphotoProcessed') {
+    const processed = (yield select(
+      selectToolbarSectionState('cardphotoProcessed'),
+    )) as CardphotoToolbarState | undefined
+    if (processed?.crop) return processed
+  } else if (variant === 'cardphotoCreate') {
+    const create = (yield select(
+      selectToolbarSectionState('cardphotoCreate'),
+    )) as CardphotoToolbarState | undefined
+    if (create?.crop) return create
+  }
   const isProcessed: boolean = yield select(selectIsProcessedMode)
   if (isProcessed) {
     const processed = (yield select(
@@ -727,7 +741,6 @@ export function* handleApplyAction() {
 
         yield call([storeAdapters.applyImage, 'put'], wrapper)
         yield put(applyFinal(prepareForRedux(appliedMeta)))
-        yield put(setActiveSource('apply'))
       }
     } catch (error) {
       console.error('Apply error:', error)
@@ -778,7 +791,6 @@ export function* handleApplyAction2() {
         yield call([storeAdapters.applyImage, 'put'], wrapper)
 
         yield put(applyFinal(prepareForRedux(appliedMeta)))
-        yield put(setActiveSource('apply'))
 
         console.log('Apply saved with thumbnail:', !!thumbnail)
       }

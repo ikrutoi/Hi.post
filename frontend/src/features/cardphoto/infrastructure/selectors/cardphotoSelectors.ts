@@ -5,6 +5,7 @@ import { checkIsCropFull } from '../../application/helpers'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import type {
   CardphotoState,
+  CardphotoAssetToolbar,
   WorkingConfig,
   ImageMeta,
   CardLayer,
@@ -48,6 +49,11 @@ export const selectCardphotoAssetData = (state: RootState): ImageMeta | null =>
 
 export const selectCardphotoAssetConfig = (state: RootState): WorkingConfig | null =>
   state.cardphoto.state?.assetConfig ?? null
+
+/** Toolbar section for the active cardphoto asset (kept in Redux with the rest of session state). */
+export const selectCardphotoAssetToolbar = (
+  state: RootState,
+): CardphotoAssetToolbar => state.cardphoto.state?.assetToolbar ?? null
 
 export const selectCardphotoImageStageRect = (state: RootState) =>
   state.cardphoto.state?.imageStageRect ?? null

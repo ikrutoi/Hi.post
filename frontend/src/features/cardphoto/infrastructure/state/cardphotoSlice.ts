@@ -11,8 +11,13 @@ import type {
   CardphotoSessionRecord,
   CardphotoImageStageRect,
 } from '../../domain/types'
+import { computeCardphotoAssetToolbar } from '../../application/helpers/computeCardphotoAssetToolbar'
 
 /** Editor focus: same meta as active `base` slot (parallel to legacy `assetImage`). */
+function syncAssetToolbar(draft: CardphotoState) {
+  draft.assetToolbar = computeCardphotoAssetToolbar(draft)
+}
+
 function syncAssetDataFromActiveSource(draft: CardphotoState) {
   const img =
     draft.activeSource != null
@@ -20,6 +25,7 @@ function syncAssetDataFromActiveSource(draft: CardphotoState) {
       : null
   draft.assetImage = img
   draft.assetData = img
+  syncAssetToolbar(draft)
 }
 
 function syncAppliedDataFromBase(draft: CardphotoState) {
@@ -43,6 +49,7 @@ const initialState: CardphotoSliceState = {
     assetData: null,
     appliedData: null,
     assetConfig: null,
+    assetToolbar: null,
     applied: null,
     imageStageRect: null,
   },
@@ -111,6 +118,7 @@ export const cardphotoSlice = createSlice({
           assetData: null,
           appliedData: null,
           assetConfig: normalizedConfig,
+          assetToolbar: null,
           applied: state.state.applied ?? null,
           imageStageRect: null,
         }
@@ -124,6 +132,7 @@ export const cardphotoSlice = createSlice({
           assetData: null,
           appliedData: null,
           assetConfig: normalizedConfig,
+          assetToolbar: null,
           applied: null,
           imageStageRect: null,
         }
@@ -140,13 +149,10 @@ export const cardphotoSlice = createSlice({
       if (!state.state) return
       const { target, image } = action.payload
       state.state.base[target].image = image
-      if (state.state.activeSource === target) {
-        state.state.assetImage = image ?? null
-        state.state.assetData = image ?? null
-      }
       if (target === 'apply') {
         syncAppliedDataFromBase(state.state)
       }
+      syncAssetDataFromActiveSource(state.state)
     },
 
     uploadUserImage(state, action: PayloadAction<ImageMeta>) {},
@@ -202,6 +208,7 @@ export const cardphotoSlice = createSlice({
       state.state.assetData = null
       state.state.appliedData = null
       state.isComplete = false
+      syncAssetToolbar(state.state)
     },
 
     cancelSelection: () => initialState,
@@ -268,8 +275,7 @@ export const cardphotoSlice = createSlice({
       if (state.state) {
         state.state.base.processed.image = action.payload
         state.state.activeSource = 'processed'
-        state.state.assetImage = action.payload
-        state.state.assetData = action.payload
+        syncAssetDataFromActiveSource(state.state)
       }
     },
 
@@ -347,6 +353,7 @@ export const cardphotoSlice = createSlice({
               : null
         state.state.assetImage = nextAsset
         state.state.assetData = nextAsset
+        syncAssetToolbar(state.state)
       }
     },
   },

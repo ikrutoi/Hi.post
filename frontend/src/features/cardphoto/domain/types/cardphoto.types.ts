@@ -10,6 +10,12 @@ export type ImageStatus = 'processed' | 'outLine' | 'inLine'
 
 export type ActiveImageSource = 'stock' | 'user' | 'processed' | 'apply'
 
+export type CardphotoAssetToolbar =
+  | 'cardphotoCreate'
+  | 'cardphotoProcessed'
+  | 'cardphotoView'
+  | null
+
 export interface CardphotoBase {
   stock: { image: ImageMeta | null }
   user: { image: ImageMeta | null }
@@ -71,7 +77,6 @@ export interface CropLayer {
   meta: CropMeta
   x: number
   y: number
-  // orientation: LayoutOrientation
 }
 
 export interface WorkingConfig {
@@ -101,8 +106,8 @@ export interface CardphotoState {
   imageStageRect: CardphotoImageStageRect | null
   appliedData: ImageMeta | null
   assetData: ImageMeta | null
-  /** Editor working config: card + image layer + crop. */
   assetConfig: WorkingConfig | null
+  assetToolbar: CardphotoAssetToolbar
 }
 
 export interface PreviewItemForCalendar {

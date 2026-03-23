@@ -23,12 +23,14 @@ import {
   selectCropQualityProgress,
   selectActiveImage,
   selectIsProcessedMode,
+  selectCardphotoAssetToolbar,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
   ImageLayer,
   CropLayer,
   CardphotoState,
+  CardphotoAssetToolbar,
   WorkingConfig,
   ActiveImageSource,
 } from '../../domain/types'
@@ -46,6 +48,8 @@ export type CardphotoFacade = {
   cropQualityProgress: number
   activeImage: ImageMeta | null
   isProcessedMode: boolean
+  /** Toolbar section for the active asset (Redux `assetToolbar`). */
+  assetToolbar: CardphotoAssetToolbar
 
   init: () => void
   uploadImage: (meta: ImageMeta) => void
@@ -74,6 +78,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const cropQualityProgress = useSelector(selectCropQualityProgress)
   const activeImage = useSelector(selectActiveImage)
   const isProcessedMode = useSelector(selectIsProcessedMode)
+  const assetToolbar = useSelector(selectCardphotoAssetToolbar)
 
   const init = useCallback(() => dispatch(initCardphoto()), [dispatch])
   const uploadImage = useCallback(
@@ -112,6 +117,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       cropQualityProgress,
       activeImage,
       isProcessedMode,
+      assetToolbar,
       init,
       uploadImage,
       setUserImage,
@@ -133,6 +139,7 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       cropQualityProgress,
       activeImage,
       isProcessedMode,
+      assetToolbar,
       init,
       uploadImage,
       setUserImage,

@@ -20,6 +20,7 @@ import {
   selectCropQualityProgress,
   selectActiveImage,
   selectIsProcessedMode,
+  selectCardphotoAssetToolbar,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
@@ -38,6 +39,7 @@ export const useCardphotoController = () => {
   const qualityProgress = useSelector(selectCropQualityProgress)
   const activeImage = useSelector(selectActiveImage)
   const processedMode = useSelector(selectIsProcessedMode)
+  const assetToolbar = useSelector(selectCardphotoAssetToolbar)
 
   const cardSize = useSelector(selectCardSize)
 
@@ -62,6 +64,7 @@ export const useCardphotoController = () => {
     qualityProgress,
     activeImage,
     processedMode,
+    assetToolbar,
 
     init,
     uploadImage,

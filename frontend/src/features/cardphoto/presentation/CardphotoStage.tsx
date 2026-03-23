@@ -13,7 +13,7 @@ import {
   selectActiveImage,
   selectCardphotoAssetConfig,
   selectActiveSource,
-  selectIsProcessedMode,
+  selectCardphotoAssetToolbar,
 } from '../infrastructure/selectors'
 import { CropArea } from './CropArea'
 import { CropOverlay } from './CropOverlay'
@@ -49,14 +49,9 @@ export const CardphotoStage = () => {
   const { shouldOpenFileDialog } = cardphotoUiState
   const { getAssetById } = useAssetRegistryFacade()
 
-  const isProcessedMode = useAppSelector(selectIsProcessedMode)
-  /** `apply` uses `outLine` meta; pair with `activeSource === 'apply'` for view toolbar. */
-  const photoToolbarSection =
-    activeImage?.status === 'inLine' || activeSource === 'apply'
-      ? 'cardphotoView'
-      : isProcessedMode
-        ? 'cardphotoProcessed'
-        : 'cardphotoCreate'
+  const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
+  /** Stage crop UI follows the same toolbar section as the header (`assetToolbar` in Redux). */
+  const photoToolbarSection = assetToolbar ?? 'cardphotoCreate'
   const { state: iconState } = useToolbarFacade(photoToolbarSection)
   const cropToolbarState = iconState?.crop?.state ?? 'disabled'
 
