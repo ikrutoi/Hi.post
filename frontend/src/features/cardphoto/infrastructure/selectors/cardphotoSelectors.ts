@@ -193,14 +193,24 @@ export const selectCardphotoSessionRecord = createSelector(
 
 export const selectCardphotoPreview = createSelector(
   [
-    (state: RootState) => state.cardphoto.state?.base.apply.image?.id,
+    (state: RootState) => state.cardphoto.state?.base.apply.image ?? null,
     (state: RootState) => state.assetRegistry.images,
     selectCardphotoIsComplete,
   ],
-  (id, registry, isComplete) => {
+  (applyImage, registry, isComplete) => {
+    const id = applyImage?.id
     const asset = id ? registry[id] : null
+
+    // `applyFinal` меняет редакторный state сразу, а assetRegistry может обновиться чуть позже.
+    // Поэтому fallback берём из самого `applyImage`.
     const previewUrl =
-      isComplete && asset ? asset.thumbUrl || asset.url || null : null
+      isComplete
+        ? asset?.thumbUrl ||
+          asset?.url ||
+          applyImage?.thumbnail?.url ||
+          applyImage?.url ||
+          null
+        : null
 
     return {
       previewUrl,
@@ -212,15 +222,21 @@ export const selectCardphotoPreview = createSelector(
 
 export const selectCardphotoMiniPreview = createSelector(
   [
-    (state: RootState) => state.cardphoto.state?.applied ?? null,
+    (state: RootState) => state.cardphoto.state?.base.apply.image ?? null,
     (state: RootState) => state.assetRegistry.images,
   ],
-  (appliedId, registry) => {
-    if (!appliedId) return null
-    const asset = registry[appliedId]
-    const previewUrl = asset?.thumbUrl || asset?.url || null
+  (applyImage, registry) => {
+    if (!applyImage) return null
+    const id = applyImage.id
+    const asset = registry[id]
+    const previewUrl =
+      asset?.thumbUrl ||
+      asset?.url ||
+      applyImage.thumbnail?.url ||
+      applyImage.url ||
+      null
     if (!previewUrl) return null
-    return { previewUrl, id: appliedId }
+    return { previewUrl, id }
   },
 )
 
