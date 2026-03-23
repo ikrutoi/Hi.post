@@ -12,11 +12,18 @@ import type {
   CardphotoImageStageRect,
 } from '../../domain/types'
 
-function syncAssetImageFromActiveSource(draft: CardphotoState) {
-  draft.assetImage =
+/** Editor focus: same meta as active `base` slot (parallel to legacy `assetImage`). */
+function syncAssetDataFromActiveSource(draft: CardphotoState) {
+  const img =
     draft.activeSource != null
       ? (draft.base[draft.activeSource]?.image ?? null)
       : null
+  draft.assetImage = img
+  draft.assetData = img
+}
+
+function syncAppliedDataFromBase(draft: CardphotoState) {
+  draft.appliedData = draft.base.apply.image ?? null
 }
 export interface CardphotoSliceState {
   state: CardphotoState
@@ -33,7 +40,9 @@ const initialState: CardphotoSliceState = {
     },
     activeSource: null,
     assetImage: null,
-    currentConfig: null,
+    assetData: null,
+    appliedData: null,
+    assetConfig: null,
     applied: null,
     imageStageRect: null,
   },
@@ -62,7 +71,7 @@ const initialState: CardphotoSliceState = {
 //   }
 
 //   s.activeIndex = s.operations.length - 1
-//   s.currentConfig = config
+//   s.assetConfig = config
 // }
 
 export const cardphotoSlice = createSlice({
@@ -99,21 +108,27 @@ export const cardphotoSlice = createSlice({
           base,
           activeSource,
           assetImage: null,
-          currentConfig: normalizedConfig,
+          assetData: null,
+          appliedData: null,
+          assetConfig: normalizedConfig,
           applied: state.state.applied ?? null,
           imageStageRect: null,
         }
-        syncAssetImageFromActiveSource(state.state)
+        syncAssetDataFromActiveSource(state.state)
+        syncAppliedDataFromBase(state.state)
       } else {
         state.state = {
           base,
           activeSource,
           assetImage: null,
-          currentConfig: normalizedConfig,
+          assetData: null,
+          appliedData: null,
+          assetConfig: normalizedConfig,
           applied: null,
           imageStageRect: null,
         }
-        syncAssetImageFromActiveSource(state.state)
+        syncAssetDataFromActiveSource(state.state)
+        syncAppliedDataFromBase(state.state)
       }
       state.isComplete = !!state.state.base.apply?.image
     },
@@ -127,6 +142,10 @@ export const cardphotoSlice = createSlice({
       state.state.base[target].image = image
       if (state.state.activeSource === target) {
         state.state.assetImage = image ?? null
+        state.state.assetData = image ?? null
+      }
+      if (target === 'apply') {
+        syncAppliedDataFromBase(state.state)
       }
     },
 
@@ -142,7 +161,7 @@ export const cardphotoSlice = createSlice({
 
     commitWorkingConfig(state, action: PayloadAction<WorkingConfig>) {
       if (state.state) {
-        state.state.currentConfig = action.payload
+        state.state.assetConfig = action.payload
       }
     },
 
@@ -159,6 +178,9 @@ export const cardphotoSlice = createSlice({
       if (!state.state) return
       state.state.base.apply.image = action.payload
       state.state.applied = action.payload?.id ?? null
+      state.state.appliedData = action.payload
+      state.state.assetImage = action.payload
+      state.state.assetData = action.payload
       state.isComplete = !!action.payload
     },
 
@@ -166,16 +188,19 @@ export const cardphotoSlice = createSlice({
       if (!state.state) return
       state.state.base.apply.image = null
       state.state.applied = null
+      state.state.appliedData = null
       state.isComplete = false
-      syncAssetImageFromActiveSource(state.state)
+      syncAssetDataFromActiveSource(state.state)
     },
 
     reset(state) {
       if (!state.state) return
       state.state.base.apply.image = null
       state.state.applied = null
-      state.state.currentConfig = null
+      state.state.assetConfig = null
       state.state.assetImage = null
+      state.state.assetData = null
+      state.state.appliedData = null
       state.isComplete = false
     },
 
@@ -200,15 +225,16 @@ export const cardphotoSlice = createSlice({
 
       state.state.base.apply.image = null
       state.state.applied = null
-      state.state.currentConfig = workingConfig
+      state.state.assetConfig = workingConfig
+      state.state.appliedData = null
       state.isComplete = false
-      syncAssetImageFromActiveSource(state.state)
+      syncAssetDataFromActiveSource(state.state)
     },
 
     setActiveSource(state, action: PayloadAction<ActiveImageSource>) {
       if (state.state) {
         state.state.activeSource = action.payload
-        syncAssetImageFromActiveSource(state.state)
+        syncAssetDataFromActiveSource(state.state)
       }
     },
 
@@ -218,7 +244,7 @@ export const cardphotoSlice = createSlice({
     ) {
       if (state.state) {
         const cfg = action.payload.config
-        state.state.currentConfig = {
+        state.state.assetConfig = {
           ...cfg,
           card: {
             ...cfg.card,
@@ -243,6 +269,7 @@ export const cardphotoSlice = createSlice({
         state.state.base.processed.image = action.payload
         state.state.activeSource = 'processed'
         state.state.assetImage = action.payload
+        state.state.assetData = action.payload
       }
     },
 
@@ -255,7 +282,7 @@ export const cardphotoSlice = createSlice({
             : state.state.base.stock.image
               ? 'stock'
               : null
-          syncAssetImageFromActiveSource(state.state)
+          syncAssetDataFromActiveSource(state.state)
         }
       }
     },
@@ -265,14 +292,14 @@ export const cardphotoSlice = createSlice({
       if (cp) {
         cp.base.user.image = null
         if (cp.activeSource === 'user') {
-          syncAssetImageFromActiveSource(cp)
+          syncAssetDataFromActiveSource(cp)
         }
       }
     },
 
     clearCurrentConfig(state) {
       if (state.state) {
-        state.state.currentConfig = null
+        state.state.assetConfig = null
       }
     },
 
@@ -283,13 +310,14 @@ export const cardphotoSlice = createSlice({
         state.state.imageStageRect = null
         state.state.base.apply.image = apply
         state.state.applied = apply?.id ?? null
+        state.state.appliedData = apply
         state.isComplete = !!apply
         state.state.activeSource = source
         const metaFromConfig = (config?.image as { meta?: ImageMeta } | undefined)
           ?.meta
 
         if (config) {
-          state.state.currentConfig = {
+          state.state.assetConfig = {
             card: {
               ...config.card,
               orientation: config.card.orientation ?? 'landscape',
@@ -310,13 +338,15 @@ export const cardphotoSlice = createSlice({
         }
 
         const metaAfter =
-          state.state.currentConfig?.image?.meta ?? metaFromConfig
-        state.state.assetImage =
+          state.state.assetConfig?.image?.meta ?? metaFromConfig
+        const nextAsset =
           source === 'apply' && apply
             ? apply
             : metaAfter?.id
               ? metaAfter
               : null
+        state.state.assetImage = nextAsset
+        state.state.assetData = nextAsset
       }
     },
   },

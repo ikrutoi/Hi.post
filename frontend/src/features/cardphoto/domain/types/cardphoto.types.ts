@@ -97,9 +97,12 @@ export interface CardphotoState {
   base: CardphotoBase
   activeSource: ActiveImageSource | null
   assetImage: ImageMeta | null
-  currentConfig: WorkingConfig | null
   applied: string | null
   imageStageRect: CardphotoImageStageRect | null
+  appliedData: ImageMeta | null
+  assetData: ImageMeta | null
+  /** Editor working config: card + image layer + crop. */
+  assetConfig: WorkingConfig | null
 }
 
 export interface PreviewItemForCalendar {

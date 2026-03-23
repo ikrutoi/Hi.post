@@ -11,7 +11,7 @@ import {
 } from '../infrastructure/state'
 import {
   selectActiveImage,
-  selectCurrentConfig,
+  selectCardphotoAssetConfig,
   selectActiveSource,
   selectIsProcessedMode,
 } from '../infrastructure/selectors'
@@ -38,7 +38,7 @@ export const CardphotoStage = () => {
   const store = useStore<RootState>()
   const activeSource = useAppSelector(selectActiveSource)
   const activeImage = useAppSelector(selectActiveImage)
-  const currentConfig = useAppSelector(selectCurrentConfig)
+  const assetConfig = useAppSelector(selectCardphotoAssetConfig)
 
   const init = () => dispatch(initCardphoto())
   /** Keep `full.blob` so the saga does not depend on fetch(blob:) (revoked / missing URLs). */
@@ -70,12 +70,12 @@ export const CardphotoStage = () => {
   /** После любого commit конфига — реальные px стейджа (RO не срабатывает, если размер DOM не изменился). */
   useLayoutEffect(() => {
     const el = stageRef.current
-    if (!el || !currentConfig) return
+    if (!el || !assetConfig) return
     const w = el.clientWidth
     const h = el.clientHeight
     if (w < 2 || h < 2) return
     dispatch(setCardphotoImageStageRect({ width: w, height: h }))
-  }, [dispatch, currentConfig])
+  }, [dispatch, assetConfig])
 
   useLayoutEffect(() => {
     const el = stageRef.current
@@ -105,7 +105,7 @@ export const CardphotoStage = () => {
 
   const [tempCrop, setTempCrop] = useCropState(
     cropToolbarState,
-    currentConfig?.crop ?? null,
+    assetConfig?.crop ?? null,
   )
 
   useEffect(() => {
@@ -134,7 +134,7 @@ export const CardphotoStage = () => {
   const asset = getAssetById(activeImage?.id ?? null)
   const src = asset?.url || activeImage?.url || null
   const alt = activeImage?.id
-  const imageLayer = currentConfig?.image ?? null
+  const imageLayer = assetConfig?.image ?? null
 
   const shouldShowImage = !!src && !!activeImage
 
@@ -215,7 +215,7 @@ export const CardphotoStage = () => {
                     onPreviewChange={(newCrop) => setTempCrop(newCrop)}
                     onCommit={(finalCrop) => {
                       setTempCrop(finalCrop)
-                      const cfg = selectCurrentConfig(store.getState())
+                      const cfg = selectCardphotoAssetConfig(store.getState())
                       if (cfg) {
                         dispatch(
                           commitWorkingConfig(

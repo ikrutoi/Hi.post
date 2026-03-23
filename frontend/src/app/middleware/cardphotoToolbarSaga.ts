@@ -148,7 +148,7 @@ export function* watchCropChanges(): SagaIterator {
       const slice = (yield select(
         (s) => s.cardphoto,
       )) as CardphotoSliceState
-      const config = slice.state?.currentConfig
+      const config = slice.state?.assetConfig
       /** Не `config.image.meta`: там width/height уже под отображение на сцене; для DPI нужен оригинал из base. */
       const originalImage: ImageMeta | null = yield select(selectActiveImage)
 

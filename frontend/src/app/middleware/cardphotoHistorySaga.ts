@@ -9,7 +9,6 @@ import {
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
   selectCardphotoState,
-  selectCurrentConfig,
   selectActiveSource,
 } from '@cardphoto/infrastructure/selectors'
 import { selectSizeCard } from '@layout/infrastructure/selectors'

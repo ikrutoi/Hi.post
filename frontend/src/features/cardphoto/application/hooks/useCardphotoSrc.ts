@@ -10,7 +10,7 @@ export function useCardphotoSrc(state: CardphotoState | null) {
     const userImg = state.base.user.image
     const stockImg = state.base.stock.image
     // const galleryImg = state.base.gallery.image
-    const configImg = state.currentConfig?.image.meta
+    const configImg = state.assetConfig?.image.meta
 
     if (userImg && (!configImg || configImg.source !== 'user')) {
       // console.log('*1')
@@ -35,8 +35,8 @@ export function useCardphotoSrc(state: CardphotoState | null) {
 
     return { src: placeholderImage, alt: 'Placeholder' }
   }, [
-    state?.currentConfig?.image.meta.url,
-    state?.currentConfig?.image.meta.source,
+    state?.assetConfig?.image.meta.url,
+    state?.assetConfig?.image.meta.source,
     state?.base.user.image?.url,
     state?.base.stock.image?.url,
     // state?.base.gallery.image?.url,

@@ -38,9 +38,16 @@ export const selectUserImage = (state: RootState): ImageMeta | null =>
 export const selectAppliedImage = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.base.apply.image || null
 
-export const selectCurrentConfig = (state: RootState): WorkingConfig | null => {
-  return state.cardphoto.state?.currentConfig ?? null
-}
+/** Target field; during migration mirrors `selectAppliedImage` / `base.apply.image`. */
+export const selectCardphotoAppliedData = (state: RootState): ImageMeta | null =>
+  state.cardphoto.state?.appliedData ?? null
+
+/** Target field; during migration mirrors active slot / `selectCardphotoAssetImage`. */
+export const selectCardphotoAssetData = (state: RootState): ImageMeta | null =>
+  state.cardphoto.state?.assetData ?? null
+
+export const selectCardphotoAssetConfig = (state: RootState): WorkingConfig | null =>
+  state.cardphoto.state?.assetConfig ?? null
 
 export const selectCardphotoImageStageRect = (state: RootState) =>
   state.cardphoto.state?.imageStageRect ?? null
@@ -68,13 +75,13 @@ export const selectCardphotoWorkingCardLayer = createSelector(
 )
 
 export const selectCurrentImageMeta = (state: RootState): ImageMeta | null =>
-  selectCurrentConfig(state)?.image?.meta ?? null
+  selectCardphotoAssetConfig(state)?.image?.meta ?? null
 
 export const selectIsCurrentCropApplied = (state: RootState): boolean => {
   const cp = state.cardphoto.state
   if (!cp) return false
 
-  const currentImg = cp.currentConfig?.image.meta
+  const currentImg = cp.assetConfig?.image.meta
   const appliedImg = cp.base.apply.image
 
   if (!currentImg || !appliedImg) return false
@@ -83,7 +90,7 @@ export const selectIsCurrentCropApplied = (state: RootState): boolean => {
 }
 
 const selectCurrentCard = (state: RootState) =>
-  state.cardphoto.state?.currentConfig?.card
+  state.cardphoto.state?.assetConfig?.card
 
 export const selectCardSize = createSelector([selectCurrentCard], (card) => {
   if (!card) return { width: 0, height: 0 }
@@ -102,7 +109,7 @@ export const selectBaseImageByTarget = (
 }
 
 export const selectIsCropFull = createSelector(
-  [selectCurrentConfig],
+  [selectCardphotoAssetConfig],
   (config) => {
     if (!config?.crop) return false
     return checkIsCropFull(config)
@@ -110,7 +117,7 @@ export const selectIsCropFull = createSelector(
 )
 
 export const selectCropQualityProgress = (state: RootState): number =>
-  state.cardphoto.state?.currentConfig?.crop?.meta?.qualityProgress ?? 0
+  state.cardphoto.state?.assetConfig?.crop?.meta?.qualityProgress ?? 0
 
 export const selectActiveSource = (
   state: RootState,
@@ -128,7 +135,7 @@ export const selectActiveImage = (state: RootState): ImageMeta | null => {
   return base[activeSource]?.image || null
 }
 
-/** Convenience: {@link selectCardphotoAssetImage}()?.id ?? null */
+/** `assetImage?.id ?? null` */
 export const selectCardphotoAssetId = (state: RootState): string | null =>
   state.cardphoto.state?.assetImage?.id ?? null
 
@@ -137,7 +144,7 @@ export const selectCardphotoAssetImage = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.assetImage ?? null
 
 /**
- * Working image meta: prefer fresh copy from `base` by `assetImage.id`, then `assetImage`, else {@link selectActiveImage}.
+ * Working image meta: prefer fresh copy from `base` by `assetImage.id`, then `assetImage`, else `selectActiveImage`.
  */
 export const selectWorkingImageMeta = (state: RootState): ImageMeta | null => {
   const cp = state.cardphoto.state
@@ -194,9 +201,9 @@ export const selectCardphotoSessionRecord = createSelector(
     selectAppliedImage,
   ],
   (s, isComplete, appliedImage): CardphotoSessionRecord | null => {
-    if (!s || !s.activeSource || !s.currentConfig) return null
+    if (!s || !s.activeSource || !s.assetConfig) return null
 
-    const { activeSource, currentConfig: config } = s
+    const { activeSource, assetConfig: config } = s
 
     const activeMetaId =
       activeSource === 'user'

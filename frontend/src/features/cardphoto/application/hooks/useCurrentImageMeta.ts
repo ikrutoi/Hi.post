@@ -9,7 +9,7 @@ export function useCurrentImageMeta(
 
     const userImg = state.base.user.image
     const stockImg = state.base.stock.image
-    const configImg = state.currentConfig?.image.meta
+    const configImg = state.assetConfig?.image.meta
     // const galleryImg = state.base.gallery.image
 
     if (configImg?.source === 'user' && userImg) {
@@ -26,7 +26,7 @@ export function useCurrentImageMeta(
 
     return stockImg || null
   }, [
-    state?.currentConfig?.image.meta.id,
+    state?.assetConfig?.image.meta.id,
     state?.base.user.image?.id,
     state?.base.stock.image?.id,
   ])

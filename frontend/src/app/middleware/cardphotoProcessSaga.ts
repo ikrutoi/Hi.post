@@ -324,9 +324,9 @@ function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
   if (!rect || rect.width < 2 || rect.height < 2) return
 
   const state: CardphotoState | null = yield select(selectCardphotoState)
-  if (!state?.activeSource || !state.currentConfig?.image) return
+  if (!state?.activeSource || !state.assetConfig?.image) return
 
-  const current = state.currentConfig.card
+  const current = state.assetConfig.card
   if (
     Math.abs(current.width - rect.width) < 0.5 &&
     Math.abs(current.height - rect.height) < 0.5
@@ -337,7 +337,7 @@ function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
   const meta = state.base[state.activeSource]?.image
   if (!meta) return
 
-  const rot = state.currentConfig.image.rotation ?? 0
+  const rot = state.assetConfig.image.rotation ?? 0
   yield call(rebuildConfigFromMeta, meta, state.activeSource, undefined, rot)
 }
 

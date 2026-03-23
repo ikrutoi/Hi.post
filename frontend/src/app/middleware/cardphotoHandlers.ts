@@ -19,7 +19,7 @@ import {
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
-  selectCurrentConfig,
+  selectCardphotoAssetConfig,
   selectCardphotoState,
   selectActiveImage,
   selectActiveSource,
@@ -114,7 +114,7 @@ export function* handleCropAction() {
 
   const toolbarState: CardphotoToolbarState | undefined =
     yield* selectCardphotoCropToolbarState()
-  const config: WorkingConfig | null = yield select(selectCurrentConfig)
+  const config: WorkingConfig | null = yield select(selectCardphotoAssetConfig)
   if (!config) return
 
   if (!toolbarState?.crop) return
@@ -135,10 +135,10 @@ export function* handleCropAction() {
 
 export function* handleCropFullAction(): SagaIterator {
   const state = (yield select(selectCardphotoState)) as CardphotoState
-  if (!state?.currentConfig) return
+  if (!state?.assetConfig) return
   const originalImage: ImageMeta = yield select(selectActiveImage)
 
-  const { image, card } = state.currentConfig
+  const { image, card } = state.assetConfig
 
   const rawFullCrop = createFullCropLayer(image, card)
   const fullCrop = applyBounds(rawFullCrop, image, card.orientation)
@@ -151,7 +151,7 @@ export function* handleCropFullAction(): SagaIterator {
   )
 
   const newConfig: WorkingConfig = {
-    ...state.currentConfig,
+    ...state.assetConfig,
     crop: {
       ...fullCrop,
       meta: {
@@ -212,7 +212,7 @@ export function* handleOrientationAction() {
 
 export function* handleImageLayerUpdate() {
   // const sizeCard: SizeCard = yield select(selectSizeCard)
-  const config: WorkingConfig | null = yield select(selectCurrentConfig)
+  const config: WorkingConfig | null = yield select(selectCardphotoAssetConfig)
   // const originalImage: ImageMeta = yield select(selectActiveImage)
 
   if (!config || !config.image?.meta) return
@@ -241,11 +241,11 @@ export function* handleImageLayerUpdate() {
   //   crop: newCropLayer,
   // }
 
-  // `rebuildConfigFromMeta` already updates `currentConfig` via `commitWorkingConfig`.
+  // `rebuildConfigFromMeta` already updates `assetConfig` via `commitWorkingConfig`.
 }
 
 export function* handleCardOrientation(): SagaIterator {
-  const config: WorkingConfig | null = yield select(selectCurrentConfig)
+  const config: WorkingConfig | null = yield select(selectCardphotoAssetConfig)
   if (!config) return
 
   const toolbarState: CardphotoToolbarState = yield select(
@@ -283,7 +283,7 @@ export function* handleCardOrientation(): SagaIterator {
   // console.log('handleCardOrientation newCardLayer', newCardLayer)
 
   // yield put(setSizeCard(newConfig.card))
-  // `rebuildConfigFromMeta` already updates `currentConfig` via `commitWorkingConfig`.
+  // `rebuildConfigFromMeta` already updates `assetConfig` via `commitWorkingConfig`.
 
   yield put(
     updateToolbarIcon({
@@ -324,9 +324,9 @@ export function* handleImageRotate(
   const state = yield select(selectCardphotoState)
   const originalImage: ImageMeta = yield select(selectActiveImage)
 
-  if (!state?.currentConfig || !originalImage) return
+  if (!state?.assetConfig || !originalImage) return
 
-  const currentRotation = state.currentConfig.image.rotation ?? 0
+  const currentRotation = state.assetConfig.image.rotation ?? 0
   const nextRotation =
     key === 'imageRotateRight'
       ? rotateRight(currentRotation)
@@ -342,7 +342,7 @@ export function* handleImageRotate(
     nextRotation,
   )
 
-  // `rebuildConfigFromMeta` уже кладёт конфиг через `commitWorkingConfig`.
+  // `rebuildConfigFromMeta` уже кладёт конфиг в `assetConfig` через `commitWorkingConfig`.
 }
 
 /** URL для растрового кропа: meta.url, затем full.url, затем активный снимок из base (как на стейдже через asset). */
@@ -367,7 +367,7 @@ function resolveImageUrlForCrop(
 
 export function* handleCropConfirm(): SagaIterator {
   const state: CardphotoState = yield select(selectCardphotoState)
-  const config = state.currentConfig
+  const config = state.assetConfig
   const thumbConfigSize = 360
 
   const imageUrl = config ? resolveImageUrlForCrop(state, config) : null
@@ -583,7 +583,7 @@ export function* handleClearAllCropsSaga() {
 
 export function* syncQualitySaga() {
   const state: CardphotoState = yield select((s) => s.cardphoto)
-  const config = state.currentConfig
+  const config = state.assetConfig
   const originalImage: ImageMeta | null = yield select(selectActiveImage)
 
   console.log('syncQualitySaga')
