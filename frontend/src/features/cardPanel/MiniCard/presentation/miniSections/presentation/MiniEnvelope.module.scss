@@ -210,3 +210,26 @@
 .previewButton {
   @include preview-button-logic('.miniEnvelope');
 }
+
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 1px solid $color-envelope-sender-input-border;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  color: $color-envelope-sender-input-border;
+  cursor: pointer;
+  z-index: 4;
+
+  svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}

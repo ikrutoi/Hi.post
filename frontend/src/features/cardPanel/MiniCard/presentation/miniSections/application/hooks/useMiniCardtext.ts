@@ -19,12 +19,10 @@ export const useMiniCardtext = () => {
     applied,
     appliedData,
     style: cardtextStyle,
-    plainText,
   } = useSelector((state: RootState) => state.cardtext)
 
   // Treat empty string like "not applied" — must match MiniSectionsSlot (`applied !== ''`).
   const hasAppliedId = applied != null && applied !== ''
-  const hasDraftText = (plainText ?? '').trim().length > 0
 
   const displayValue =
     hasAppliedId && appliedData?.value ? appliedData.value : value
@@ -56,8 +54,8 @@ export const useMiniCardtext = () => {
         color: colorVarDisplay,
       }
 
-  // Mini preview: applied id set, or non-empty draft (editor not yet applied).
-  const shouldShowMiniText = hasAppliedId || hasDraftText
+  // Show mini text only for applied content.
+  const shouldShowMiniText = hasAppliedId
 
   return { editor, value: displayValue, style, shouldShowMiniText }
 }

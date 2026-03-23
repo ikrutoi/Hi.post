@@ -1,7 +1,8 @@
 import { CardStatus } from '@/entities/card/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
-export type CardphotoPhotoStageRect = { width: number; height: number }
+/** Measured editor stage in CSS px (not persisted in session). */
+export type CardphotoImageStageRect = { width: number; height: number }
 
 export type ImageSource = 'stock' | 'user'
 
@@ -95,12 +96,13 @@ export interface CardphotoSessionRecord {
 export interface CardphotoState {
   base: CardphotoBase
   activeSource: ActiveImageSource | null
+  assetImage: ImageMeta | null
   currentConfig: WorkingConfig | null
   applied: string | null
-  photoStageRect: CardphotoPhotoStageRect | null
+  imageStageRect: CardphotoImageStageRect | null
 }
 
-export interface PreviewItem {
+export interface PreviewItemForCalendar {
   item: { previewUrl: string }
   status: CardStatus
   cardId: string

@@ -37,15 +37,6 @@ export const MiniCardphoto = () => {
         // onMouseEnter={() => setHovered('cardphoto')}
         // onMouseLeave={() => setHovered(null)}
       />
-      {/* <button
-        className={clsx(styles.previewButton, styles.previewButtonDelete)}
-        aria-label="Delete section content"
-        onClick={(e) => {
-          e.stopPropagation()
-        }}
-      >
-        {getToolbarIcon({ key: 'clearInput' })}
-      </button> */}
     </div>
   )
 }

@@ -26,11 +26,12 @@ import {
   setProcessedImage,
   uploadImageReady,
   hydrateEditor,
-  setCardphotoPhotoStageRect,
+  setCardphotoImageStageRect,
   resetCardphoto,
   initCardphoto,
   bumpCardphotoInlineTemplateList,
   clearAllCrops,
+  clearApply,
   selectInLineTemplate,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
@@ -38,7 +39,7 @@ import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
 import {
   selectCardphotoState,
   selectCardphotoWorkingCardLayer,
-  selectCardphotoPhotoStageRect,
+  selectCardphotoImageStageRect,
 } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { setSizeCard } from '@layout/infrastructure/state'
@@ -307,10 +308,18 @@ export function* onDeleteCropSaga(action: PayloadAction<string>): SagaIterator {
   }
 }
 
+function* onClearApplySaga(): SagaIterator {
+  try {
+    yield call([storeAdapters.applyImage, 'deleteById'], 'current_apply_image')
+  } catch (error) {
+    console.error('Failed to clear apply image from DB:', error)
+  }
+}
+
 /** Если в конфиге размеры card не совпадают с измеренным стейджем — пересобрать fit (например после cropCheck). */
 function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
   const rect: { width: number; height: number } | null = yield select(
-    selectCardphotoPhotoStageRect,
+    selectCardphotoImageStageRect,
   )
   if (!rect || rect.width < 2 || rect.height < 2) return
 
@@ -333,8 +342,8 @@ function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
 }
 
 /** When the real editor stage resizes, refit image/crop to measured pixels (not global SizeCard). */
-function* watchCardphotoPhotoStageRect(): SagaIterator {
-  yield takeLatest(setCardphotoPhotoStageRect.type, function* (): SagaIterator {
+function* watchCardphotoImageStageRect(): SagaIterator {
+  yield takeLatest(setCardphotoImageStageRect.type, function* (): SagaIterator {
     yield delay(0)
     yield call(ensureCardphotoCardMatchesStageRect)
   })
@@ -374,10 +383,11 @@ export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
     takeLatest(selectInLineTemplate.type, onSelectInLineTemplateSaga),
+    takeEvery(clearApply.type, onClearApplySaga),
 
     fork(watchCropChanges),
     fork(watchToolbarContext),
-    fork(watchCardphotoPhotoStageRect),
+    fork(watchCardphotoImageStageRect),
     fork(watchCardphotoInLineBadge),
     /** RO не шлёт событие, если px размер стейджа тот же — после commit конфиг мог остаться от sizeCard. */
     takeEvery(commitWorkingConfig.type, ensureCardphotoCardMatchesStageRect),

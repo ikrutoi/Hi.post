@@ -12,8 +12,13 @@ import { clearDate } from '@date/infrastructure/state'
 import { clear as clearAroma } from '@aroma/infrastructure/state'
 import { setSenderApplied } from '@envelope/sender/infrastructure/state'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
-import { setComplete } from '@cardtext/infrastructure/state'
-import { clearApply } from '@cardphoto/infrastructure/state'
+import {
+  setComplete as setCardtextComplete,
+  setApplied as setCardtextApplied,
+  setAppliedData as setCardtextAppliedData,
+} from '@cardtext/infrastructure/state'
+import { clearApply, setActiveSource } from '@cardphoto/infrastructure/state'
+import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 
 export const useCardEditorFacade = () => {
   const dispatch = useAppDispatch()
@@ -22,6 +27,7 @@ export const useCardEditorFacade = () => {
   const editorId = useAppSelector(selectCardEditorId)
   const isCompleted = useAppSelector(selectIsCardEditorCompleted)
   const hoveredSection = useAppSelector(selectHoveredSection)
+  const cardphotoState = useAppSelector(selectCardphotoState)
 
   const removeSection = (section: CardSection) => {
     switch (section) {
@@ -36,10 +42,21 @@ export const useCardEditorFacade = () => {
         dispatch(setRecipientApplied(false))
         break
       case 'cardtext':
-        dispatch(setComplete(false))
+        // Keep editor text, only clear "applied" state for mini section and toolbar.
+        dispatch(setCardtextComplete(false))
+        dispatch(setCardtextApplied(null))
+        dispatch(setCardtextAppliedData(null))
         break
       case 'cardphoto':
         dispatch(clearApply())
+        if (cardphotoState?.activeSource === 'apply') {
+          const nextSource = cardphotoState.base.processed.image
+            ? 'processed'
+            : cardphotoState.base.user.image
+              ? 'user'
+              : 'stock'
+          dispatch(setActiveSource(nextSource))
+        }
         break
     }
   }

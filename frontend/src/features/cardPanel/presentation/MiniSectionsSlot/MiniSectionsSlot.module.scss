@@ -24,7 +24,8 @@
 .cell {
   position: relative;
   flex-shrink: 0;
-  overflow: hidden;
+  // Allow clear button to stick out beyond mini-card corner.
+  overflow: visible;
   border-radius: 0.75rem;
   box-shadow: $shadow-card;
 }

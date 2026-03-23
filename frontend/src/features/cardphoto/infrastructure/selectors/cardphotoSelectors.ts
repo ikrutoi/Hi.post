@@ -11,7 +11,10 @@ import type {
   CardphotoBase,
   ActiveImageSource,
   CardphotoSessionRecord,
+  ImageSource,
+  ImageStatus,
 } from '../../domain/types'
+import { findImageMetaByIdInBase } from '../../application/helpers/resolveImageMetaInBase'
 import { cardEditorReducer } from '@/entities/cardEditor/infrastructure/state'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 
@@ -39,11 +42,11 @@ export const selectCurrentConfig = (state: RootState): WorkingConfig | null => {
   return state.cardphoto.state?.currentConfig ?? null
 }
 
-export const selectCardphotoPhotoStageRect = (state: RootState) =>
-  state.cardphoto.state?.photoStageRect ?? null
+export const selectCardphotoImageStageRect = (state: RootState) =>
+  state.cardphoto.state?.imageStageRect ?? null
 
 export const selectCardphotoWorkingCardLayer = createSelector(
-  [selectSizeCard, selectCardphotoPhotoStageRect],
+  [selectSizeCard, selectCardphotoImageStageRect],
   (layoutCard, rect): CardLayer => {
     const orientation = layoutCard.orientation ?? 'landscape'
     const aspectRatio = layoutCard.aspectRatio
@@ -123,6 +126,37 @@ export const selectActiveImage = (state: RootState): ImageMeta | null => {
 
   const { activeSource, base } = cp
   return base[activeSource]?.image || null
+}
+
+/** Convenience: {@link selectCardphotoAssetImage}()?.id ?? null */
+export const selectCardphotoAssetId = (state: RootState): string | null =>
+  state.cardphoto.state?.assetImage?.id ?? null
+
+/** Full meta for the image in focus (same object as in a `base` slot when synced). */
+export const selectCardphotoAssetImage = (state: RootState): ImageMeta | null =>
+  state.cardphoto.state?.assetImage ?? null
+
+/**
+ * Working image meta: prefer fresh copy from `base` by `assetImage.id`, then `assetImage`, else {@link selectActiveImage}.
+ */
+export const selectWorkingImageMeta = (state: RootState): ImageMeta | null => {
+  const cp = state.cardphoto.state
+  if (!cp) return null
+  const id = cp.assetImage?.id
+  if (id) {
+    const fromBase = findImageMetaByIdInBase(cp.base, id)
+    if (fromBase) return fromBase
+  }
+  if (cp.assetImage) return cp.assetImage
+  return selectActiveImage(state)
+}
+
+export const selectWorkingImageSourceAndStatus = (
+  state: RootState,
+): { source: ImageSource; status: ImageStatus } | null => {
+  const meta = selectWorkingImageMeta(state)
+  if (!meta) return null
+  return { source: meta.source, status: meta.status }
 }
 
 export const selectActiveImage1 = (state: RootState): ImageMeta | null => {

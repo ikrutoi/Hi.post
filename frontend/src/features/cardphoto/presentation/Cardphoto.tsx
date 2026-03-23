@@ -1,22 +1,28 @@
 import React from 'react'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
+import type { ActiveImageSource } from '@cardphoto/domain/types'
 import { CardphotoView } from './CardphotoView/CardphotoView'
 import styles from './Cardphoto.module.scss'
 
+/**
+ * After apply, saga sets `activeSource` to `apply` and image `status` to `outLine`
+ * (see handleApplyAction). Relying only on `inLine` would wrongly show cardphotoCreate.
+ */
 const photoToolbarSection = (
   isProcessed: boolean,
-  isInlineProcessed: boolean,
+  isInlineView: boolean,
+  activeSource: ActiveImageSource | null,
 ) => {
+  if (isInlineView || activeSource === 'apply') return 'cardphotoView'
   if (!isProcessed) return 'cardphotoCreate'
-  return isInlineProcessed ? 'cardphotoView' : 'cardphotoProcessed'
+  return 'cardphotoProcessed'
 }
 
 export const Cardphoto = () => {
-  const { activeImage, isProcessedMode } = useCardphotoFacade()
+  const { activeImage, isProcessedMode, activeSource } = useCardphotoFacade()
   const hasLoadedPhoto = Boolean(activeImage)
-  const isInlineProcessed =
-    isProcessedMode && activeImage?.status === 'inLine'
+  const isInlineView = activeImage?.status === 'inLine'
 
   return (
     <div className={styles.cardphoto}>
@@ -24,7 +30,11 @@ export const Cardphoto = () => {
         <div className={styles.cardphotoToolbarRow}>
           {hasLoadedPhoto ? (
             <Toolbar
-              section={photoToolbarSection(isProcessedMode, isInlineProcessed)}
+              section={photoToolbarSection(
+                isProcessedMode,
+                isInlineView,
+                activeSource,
+              )}
             />
           ) : null}
         </div>

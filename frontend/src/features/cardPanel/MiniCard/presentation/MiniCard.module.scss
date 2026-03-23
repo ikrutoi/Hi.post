@@ -14,7 +14,7 @@
   // 0 4px 20px rgba(0, 0, 0, 0.08),
   //  2px 8px 0 rgba(0, 0, 0, 0.04);
 
-  border: 1px solid $color-section-light;
+  border: 1px solid $color-app-substrate-border;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   // border: solid 1px green;
 
@@ -117,6 +117,30 @@
   // background-color: rgba($color-section-light, 0.6);
   margin: 0.2rem;
   border-radius: 0.6rem;
+}
+
+.miniClearButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(calc(50% - 0.1rem), calc(-50% + 0.1rem)); // half outside + shifted left/down
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  border: 1px solid $color-app-substrate-border;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  z-index: 6;
+  color: $color-font-enabled;
+
+  svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
 }
 
 .miniCard:hover .deleteMiniCard {

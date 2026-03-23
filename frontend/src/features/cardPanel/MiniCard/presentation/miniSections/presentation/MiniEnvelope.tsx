@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import styles from './MiniEnvelope.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
-import { getToolbarIcon } from '@/shared/utils/icons'
 import { useEnvelopeFacade } from '@envelope/application/facades'
 import { getEnvelopeCircleSteps } from './getEnvelopeCircleSteps'
 import { useSenderFacade } from '@/features/envelope/sender/application/facades'
@@ -10,8 +9,7 @@ import { useSenderFacade } from '@/features/envelope/sender/application/facades'
 export const MiniEnvelope: React.FC = () => {
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('envelope')
-  const { appliedRecipientAddress, cancelEnvelopeSelection, recipient } =
-    useEnvelopeFacade()
+  const { appliedRecipientAddress, recipient } = useEnvelopeFacade()
   const { state: senderState, isEnabled } = useSenderFacade()
   const count = recipient.applied.length
   const isSingle = count === 1
@@ -136,16 +134,6 @@ export const MiniEnvelope: React.FC = () => {
           <span>{recipient.applied.length}</span>
         </div>
       )}
-      {/* <button
-        className={clsx(styles.previewButton, styles.previewButtonDelete)}
-        aria-label="Cancel selection"
-        onClick={(e) => {
-          e.stopPropagation()
-          cancelEnvelopeSelection()
-        }}
-      >
-        {getToolbarIcon({ key: 'clearInput' })}
-      </button> */}
       {isEnabled && senderState.applied.length > 0 && (
         <>
           <div className={styles.miniEnvelopeSender}></div>

@@ -8,6 +8,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import styles from './MiniCard.module.scss'
 import type { CardSection } from '@shared/config/constants'
 import type { SizeCard } from '@layout/domain/types'
+import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 
 interface MiniCardProps {
   section: CardSection
@@ -30,10 +31,13 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const miniCardRef = useRef<HTMLDivElement>(null)
 
   const { changeSection } = useSectionMenuFacade()
+  const { editorState, removeSection } = useCardEditorFacade()
 
   const { render } = useMiniCardRender()
 
-  const handleDeleteMiniCard = () => {}
+  const showClearButton = !!editorState
+    ? (editorState as any)?.[section]?.isComplete === true
+    : false
 
   return (
     <div
@@ -63,6 +67,20 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       {render({
         section,
       })}
+
+      {showClearButton && (
+        <button
+          type="button"
+          className={styles.miniClearButton}
+          aria-label={`Clear ${section}`}
+          onClick={(e) => {
+            e.stopPropagation()
+            removeSection(section)
+          }}
+        >
+          {getToolbarIcon({ key: 'clearInput' })}
+        </button>
+      )}
 
       {/* <button
         className={clsx(styles.previewButton, styles.previewButtonDelete)}

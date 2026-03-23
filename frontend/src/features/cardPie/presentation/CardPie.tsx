@@ -19,18 +19,13 @@ import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
 import styles from './CardPie.module.scss'
 
-// Совпадает с макетом SVG (stroke-width ≈ 23.62 в user space 5120)
 const STROKE_WIDTH = 24
 const SECTOR_STROKE = '#b3b3b3'
-const SECTOR_BG_STROKE = '#e53935' // red, for temporary -bg placement rects
 
-/** Центры секторов по вспом. прямоугольникам -bg в viewBox 5120 (для pattern x/y). */
 const PATTERN = {
-  /** 5120×5120, иконка/фон вокруг (2560, 2560) */
   cardphoto5120: { x: -1343, y: -1344 },
   cardtext5120: { x: 863, y: -1693 },
   date5120: { x: -1693, y: 863 },
-  /** 2560×2560, контент вокруг (1280, 1280) */
   envelope2560: { x: 3120, y: 1577 },
   aroma2560: { x: 1577, y: 3120 },
 } as const
@@ -49,6 +44,9 @@ export const CardPie: React.FC<CardPieProps> = ({
     status,
     id,
   )
+  console.log('data', data)
+  console.log('sections', sections)
+  console.log('isReady', isReady)
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
 

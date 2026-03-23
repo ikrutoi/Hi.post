@@ -184,8 +184,8 @@ export const Toolbar = ({
     const buttonState = typeof rawData === 'string' ? rawData : rawData?.state
     let buttonStatus = buttonState ?? currentIconState
 
-    if (key === 'apply' && section === 'cardphoto' && isAlreadyApplied) {
-      buttonStatus = 'disabled'
+    if (key === 'apply' && section === 'cardphoto') {
+      buttonStatus = isAlreadyApplied ? 'selected' : buttonStatus
     }
     if (key === 'apply' && section === 'cardtext') {
       if (cardtextEmpty) {

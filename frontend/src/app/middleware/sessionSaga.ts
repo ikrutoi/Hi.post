@@ -9,6 +9,7 @@ import {
   setActiveSource,
   restoreSession,
   applyFinal,
+  clearApply,
 } from '@cardphoto/infrastructure/state'
 import {
   updateRecipientField,
@@ -218,6 +219,7 @@ const SESSION_WATCH_ACTIONS = [
   initCardphoto.type,
   setActiveSource.type,
   applyFinal.type,
+  clearApply.type,
   hydrateEditor.type,
   setAroma.type,
   clearAroma.type,
@@ -329,7 +331,7 @@ export function* hydrateAppSession() {
     if (!session) return
 
     if (session.cardphoto) {
-      const { activeMetaId, source, config, isComplete } = session.cardphoto
+      const { activeMetaId, source, config, isComplete, apply } = session.cardphoto
 
       const [stockRec, userRec, rawProcess, applyRec]: [
         { image: ImageMeta } | null,
@@ -349,7 +351,9 @@ export function* hydrateAppSession() {
         stock: { image: hydrateMeta(stockRec?.image || null) },
         user: { image: hydrateMeta(userRec?.image || null) },
         processed: { image: hydrateMeta(rawProcess) },
-        apply: { image: hydrateMeta(applyRec?.image || null) },
+        // Session is the source of truth for applied state.
+        // Fallback to DB record only when session field is absent.
+        apply: { image: hydrateMeta(apply ?? (applyRec?.image || null)) },
       }
 
       let activeImage = base[source]?.image || base.stock.image

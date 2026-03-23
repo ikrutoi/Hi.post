@@ -1,17 +1,14 @@
 import React from 'react'
 import { Slate, Editable } from 'slate-react'
 import { useMiniCardtext } from '../application/hooks'
-import { useCardtextFacade } from '@cardtext/application/facades'
 import { renderLeaf } from '@cardtext/presentation/renderLeaf'
 import { renderElement } from '@cardtext/presentation/renderElement'
 import styles from './MiniCardtext.module.scss'
-import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import clsx from 'clsx'
-import { getToolbarIcon } from '@shared/utils/icons'
+import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 
 export const MiniCardtext: React.FC = () => {
   const { editor, value, style, shouldShowMiniText } = useMiniCardtext()
-  const { reset } = useCardtextFacade()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('cardtext')
 
@@ -38,16 +35,6 @@ export const MiniCardtext: React.FC = () => {
           onMouseLeave={() => setHovered(null)}
         />
       </Slate>
-      {/* <button
-        className={clsx(styles.previewButton, styles.previewButtonDelete)}
-        aria-label="Delete section content"
-        onClick={(e) => {
-          e.stopPropagation()
-          reset()
-        }}
-      >
-        {getToolbarIcon({ key: 'clearInput' })}
-      </button> */}
     </div>
   )
 }

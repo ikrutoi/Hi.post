@@ -7,7 +7,7 @@ import {
   initCardphoto,
   uploadUserImage,
   commitWorkingConfig,
-  setCardphotoPhotoStageRect,
+  setCardphotoImageStageRect,
 } from '../infrastructure/state'
 import {
   selectActiveImage,
@@ -50,8 +50,9 @@ export const CardphotoStage = () => {
   const { getAssetById } = useAssetRegistryFacade()
 
   const isProcessedMode = useAppSelector(selectIsProcessedMode)
+  /** `apply` uses `outLine` meta; pair with `activeSource === 'apply'` for view toolbar. */
   const photoToolbarSection =
-    isProcessedMode && activeImage?.status === 'inLine'
+    activeImage?.status === 'inLine' || activeSource === 'apply'
       ? 'cardphotoView'
       : isProcessedMode
         ? 'cardphotoProcessed'
@@ -73,7 +74,7 @@ export const CardphotoStage = () => {
     const w = el.clientWidth
     const h = el.clientHeight
     if (w < 2 || h < 2) return
-    dispatch(setCardphotoPhotoStageRect({ width: w, height: h }))
+    dispatch(setCardphotoImageStageRect({ width: w, height: h }))
   }, [dispatch, currentConfig])
 
   useLayoutEffect(() => {
@@ -89,7 +90,7 @@ export const CardphotoStage = () => {
       if (w < 2 || h < 2) {
         return
       }
-      dispatch(setCardphotoPhotoStageRect({ width: w, height: h }))
+      dispatch(setCardphotoImageStageRect({ width: w, height: h }))
     }
 
     publish()
