@@ -26,8 +26,6 @@ import {
   setProcessedImage,
   uploadImageReady,
   hydrateEditor,
-  selectCropFromHistory,
-  removeCropId,
   setCardphotoPhotoStageRect,
   resetCardphoto,
   initCardphoto,
@@ -63,7 +61,6 @@ import {
   // watchCropToolbarStatus,
   // watchCropHistory,
   watchToolbarContext,
-  onSelectCropFromHistorySaga,
 } from './cardphotoToolbarSaga'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -175,8 +172,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
         base,
         config: serializableConfig,
         activeSource: 'user',
-        cropCount: state.cropCount || 0,
-        cropIds: state.cropIds || [],
         isComplete,
       }),
     )
@@ -379,9 +374,6 @@ export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
     takeLatest(selectInLineTemplate.type, onSelectInLineTemplateSaga),
-
-    takeEvery(selectCropFromHistory.type, onSelectCropFromHistorySaga),
-    takeEvery(removeCropId.type, onDeleteCropSaga),
 
     fork(watchCropChanges),
     fork(watchToolbarContext),

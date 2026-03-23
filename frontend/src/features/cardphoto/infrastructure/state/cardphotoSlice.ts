@@ -24,8 +24,6 @@ const initialState: CardphotoSliceState = {
       apply: { image: null },
       processed: { image: null },
     },
-    cropCount: 0,
-    cropIds: [],
     activeSource: null,
     currentConfig: null,
     appended: null,
@@ -69,20 +67,16 @@ export const cardphotoSlice = createSlice({
 
     resetCardphoto: () => initialState,
 
-    selectCropFromHistory(state, action: PayloadAction<string>) {},
-
     hydrateEditor(
       state,
       action: PayloadAction<{
         base: CardphotoBase
         config: WorkingConfig
         activeSource: ActiveImageSource
-        cropIds: string[]
-        cropCount: number
         isComplete: boolean
       }>,
     ) {
-      const { base, config, activeSource, cropIds, cropCount } = action.payload
+      const { base, config, activeSource } = action.payload
 
       const normalizedConfig: WorkingConfig = {
         ...config,
@@ -95,8 +89,6 @@ export const cardphotoSlice = createSlice({
       if (state.state) {
         state.state = {
           base,
-          cropCount,
-          cropIds,
           activeSource,
           currentConfig: normalizedConfig,
           appended: state.state.appended ?? null,
@@ -105,8 +97,6 @@ export const cardphotoSlice = createSlice({
       } else {
         state.state = {
           base,
-          cropCount,
-          cropIds,
           activeSource,
           currentConfig: normalizedConfig,
           appended: null,
@@ -202,24 +192,6 @@ export const cardphotoSlice = createSlice({
       }
     },
 
-    addCropId(state, action: PayloadAction<string>) {
-      if (state.state) {
-        if (!state.state.cropIds) state.state.cropIds = []
-
-        const { cropIds } = state.state
-
-        if (!cropIds.includes(action.payload)) {
-          cropIds.push(action.payload)
-
-          // if (cropIds.length > 10) {
-          //   cropIds.shift()
-          // }
-
-          // state.state.cropCount = cropIds.length
-        }
-      }
-    },
-
     setInitialSessionState(
       state,
       action: PayloadAction<{ config: WorkingConfig; source: ActiveImageSource }>,
@@ -255,12 +227,13 @@ export const cardphotoSlice = createSlice({
 
     clearAllCrops(state) {
       if (state.state) {
-        state.state.cropIds = []
-        // state.state.cropCount = 0
-
         if (state.state.activeSource === 'processed') {
-          state.state.activeSource = 'user'
           state.state.base.processed.image = null
+          state.state.activeSource = state.state.base.user.image
+            ? 'user'
+            : state.state.base.stock.image
+              ? 'stock'
+              : null
         }
       }
     },
@@ -268,19 +241,6 @@ export const cardphotoSlice = createSlice({
     removeUserImage(state) {
       const cp = state.state
       if (cp) cp.base.user.image = null
-    },
-
-    removeCropId(state, action: PayloadAction<string>) {
-      const cp = state.state
-      if (!cp) return
-      const targetId = action.payload
-
-      cp.cropIds = cp.cropIds.filter((id) => id !== targetId)
-      cp.cropCount = cp.cropIds.length
-
-      if (cp.base.processed.image?.id === targetId) {
-        cp.base.processed.image = null
-      }
     },
 
     clearCurrentConfig(state) {
@@ -291,15 +251,13 @@ export const cardphotoSlice = createSlice({
 
     restoreSession(state, action: PayloadAction<CardphotoSessionRecord>) {
       if (state.state) {
-        const { source, config, apply, cropIds, activeMetaId } = action.payload
+        const { source, config, apply, activeMetaId } = action.payload
 
         state.state.photoStageRect = null
         state.state.base.apply.image = apply
         state.state.appended = null
         state.isComplete = !!apply
         state.state.activeSource = source
-        state.state.cropIds = cropIds || []
-        state.state.cropCount = (cropIds || []).length
 
         if (config) {
           state.state.currentConfig = {
@@ -330,7 +288,6 @@ export const {
   initCardphoto,
   uploadImageReady,
   resetCardphoto,
-  selectCropFromHistory,
   setBaseImage,
   uploadUserImage,
   commitWorkingConfig,
@@ -341,11 +298,9 @@ export const {
   cancelSelection,
   resetCropLayers,
   setActiveSource,
-  addCropId,
   setInitialSessionState,
   setProcessedImage,
   hydrateEditor,
-  removeCropId,
   clearAllCrops,
   removeUserImage,
   clearCurrentConfig,

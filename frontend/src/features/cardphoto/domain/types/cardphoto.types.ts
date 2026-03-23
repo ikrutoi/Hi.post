@@ -1,25 +1,12 @@
 import { CardStatus } from '@/entities/card/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
-/** Pixel box of the cardphoto editor stage (DOM), used as WorkingConfig.card when present. */
 export type CardphotoPhotoStageRect = { width: number; height: number }
 
-/**
- * Origin of the underlying photo, not the processing stage.
- * Used in `ImageMeta.source`.
- */
 export type ImageSource = 'stock' | 'user'
 
-/**
- * Stage/visibility of a photo variant.
- * Used in `ImageMeta.status`.
- */
 export type ImageStatus = 'processed' | 'outLine' | 'inLine'
 
-/**
- * UI/editor mode used across the current editor flow.
- * This is *not* `ImageMeta.source`.
- */
 export type ActiveImageSource = 'stock' | 'user' | 'processed' | 'apply'
 
 export interface CardphotoBase {
@@ -34,7 +21,6 @@ export interface ImageRecord {
   image: ImageMeta
 }
 
-/** Working “card” in editor math: pixel size + aspect; orientation from layout for crop helpers. */
 export interface CardLayer {
   width: number
   height: number
@@ -63,7 +49,6 @@ export interface ImageMeta {
   parentImageId?: string
   rotation?: number
   imageAspectRatio?: number
-  /** Шаблон в списке inLine: избранное (IndexedDB). */
   favorite?: boolean
 }
 
@@ -97,7 +82,6 @@ export interface WorkingConfig {
 export interface CardphotoSessionRecord {
   source: ActiveImageSource
   activeMetaId: string
-  cropIds: string[]
   config: {
     card: CardLayer
     image: Omit<ImageLayer, 'meta'> & { metaId: string }
@@ -110,8 +94,6 @@ export interface CardphotoSessionRecord {
 
 export interface CardphotoState {
   base: CardphotoBase
-  cropCount: number
-  cropIds: string[]
   activeSource: ActiveImageSource | null
   currentConfig: WorkingConfig | null
   appended: string | null

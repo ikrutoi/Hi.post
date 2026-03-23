@@ -42,7 +42,6 @@ import {
   handleCropFullAction,
   syncCropFullIcon,
   handleCropConfirm,
-  handleCropGalleryAction,
   handleClearAllCropsSaga,
   handleDeleteImageSaga,
   handleBackToOriginalSaga,
@@ -304,10 +303,6 @@ export function* handleCardphotoToolbarAction(
       yield call(handleCropFullAction)
       break
 
-    case 'cropHistory':
-      yield call(handleCropGalleryAction)
-      break
-
     case 'imageRotateLeft':
     case 'imageRotateRight':
       yield call(handleImageRotate, key)
@@ -380,9 +375,6 @@ export function* handleCardphotoToolbarAction1(
     case 'cropFull':
       yield call(handleCropFullAction)
       break
-    case 'cropHistory':
-      yield call(handleCropGalleryAction)
-      break
     case 'imageRotateLeft':
     case 'imageRotateRight':
       yield call(handleImageRotate, key)
@@ -432,9 +424,12 @@ export function* syncToolbarContext() {
   )
     return
 
-  const { activeSource, cropCount } = state
-  // console.log('syncToolbarContext + cropCount', cropCount)
-  const hasCrops = cropCount > 0
+  const { activeSource } = state
+  // We no longer track crop history in Redux state.
+  // Enable list actions based on `listCardphoto` badge (= number of `inLine` templates).
+  const badgeCount =
+    (toolbarCardphoto as any)?.listCardphoto?.options?.badge ?? null
+  const hasTemplates = typeof badgeCount === 'number' ? badgeCount > 0 : false
 
   let sectionUpdate = {}
   const isUserImage = !!state.base.user.image
@@ -464,12 +459,8 @@ export function* syncToolbarContext() {
         close: { state: 'disabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
-        cropHistory: {
-          state: hasCrops ? 'enabled' : 'disabled',
-          options: { badge: cropCount },
-        },
-        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
+        saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
 
@@ -491,12 +482,8 @@ export function* syncToolbarContext() {
         close: { state: 'enabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
-        cropHistory: {
-          state: hasCrops ? 'enabled' : 'disabled',
-          options: { badge: cropCount },
-        },
-        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
+        saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
 
@@ -518,12 +505,8 @@ export function* syncToolbarContext() {
         close: { state: 'enabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
-        cropHistory: {
-          state: hasCrops ? 'enabled' : 'disabled',
-          options: { badge: cropCount },
-        },
-        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
+        saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listAdd: {
           state:
             hasProcessedImage && !isProcessedInLine ? 'enabled' : 'disabled',
@@ -549,12 +532,8 @@ export function* syncToolbarContext() {
         close: { state: 'enabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
-        cropHistory: {
-          state: hasCrops ? 'enabled' : 'disabled',
-          options: { badge: cropCount },
-        },
-        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
+        saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
 
@@ -576,12 +555,8 @@ export function* syncToolbarContext() {
         close: { state: 'disabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
-        cropHistory: {
-          state: hasCrops ? 'enabled' : 'disabled',
-          options: { badge: cropCount },
-        },
-        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
+        saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
 
@@ -602,12 +577,8 @@ export function* syncToolbarContext() {
         close: { state: 'disabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
-        cropHistory: {
-          state: hasCrops ? 'enabled' : 'disabled',
-          options: { badge: cropCount },
-        },
-        saveList: { state: hasCrops ? 'enabled' : 'disabled' },
-        deleteList: { state: hasCrops ? 'enabled' : 'disabled' },
+        saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
   }

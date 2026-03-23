@@ -17,7 +17,6 @@ export const CARDPHOTO_KEYS = [
   'close',
   // 'save',
   // 'photoTemplates',
-  'cropHistory',
   'listDelete',
   'listApply',
 ] as const

@@ -5,7 +5,6 @@ import { useToolbarFacade } from '@toolbar/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import styles from './SectionEditorToolbar.module.scss'
 import { CropQualityIndicator } from '@cardSectionToolbar/presentation/CropQualityIndicator'
-// import { CropPreview } from '@/features/toolbar/presentation/CropPreview'
 
 export const SectionEditorToolbar: React.FC = () => {
   const { activeSection } = useSectionMenuFacade()
@@ -37,22 +36,6 @@ export const SectionEditorToolbar: React.FC = () => {
         </div>
       )}
 
-      {/* {activeSection === 'cardphoto' &&
-        toolbarCardphotoState.crop.state !== 'active' && (
-          <div
-            className={clsx(
-              styles.sectionEditorToolbarRight,
-              styles.sectionEditorToolbarRightCropPreview,
-            )}
-            style={{
-              height: `${sizeCard.height}px`,
-              display: 'flex',
-              alignItems: 'center',
-            }}
-          >
-            <CropPreview variant="panel" />
-          </div>
-        )} */}
     </div>
   )
 }

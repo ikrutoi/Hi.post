@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { CropPreview } from './CropPreview'
 import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useCardtextTemplates } from '@entities/templates/application/hooks/useTemplates'
@@ -381,9 +380,6 @@ export const Toolbar = ({
           )}
         </div>
       ))}
-      {/* {section === 'cardphoto' && state.crop.state !== 'active' && (
-        <CropPreview />
-      )} */}
     </div>
   )
 }

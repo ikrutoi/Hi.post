@@ -66,9 +66,6 @@ export const selectCardphotoWorkingCardLayer = createSelector(
 export const selectCurrentImageMeta = (state: RootState): ImageMeta | null =>
   selectCurrentConfig(state)?.image?.meta ?? null
 
-export const selectCropIds = (state: RootState): string[] =>
-  state.cardphoto.state?.cropIds ?? []
-
 export const selectIsCurrentCropApplied = (state: RootState): boolean => {
   const cp = state.cardphoto.state
   if (!cp) return false
@@ -152,9 +149,6 @@ export const selectActiveImage1 = (state: RootState): ImageMeta | null => {
   return base.processed.image || base.user.image || base.stock.image || null
 }
 
-export const selectCardphotoCropIds = (state: RootState): string[] =>
-  state.cardphoto.state?.cropIds || []
-
 export const selectIsProcessedMode = (state: RootState): boolean =>
   state.cardphoto.state?.activeSource === 'processed'
 
@@ -163,9 +157,8 @@ export const selectCardphotoSessionRecord = createSelector(
     (state: RootState) => state.cardphoto.state,
     selectCardphotoIsComplete,
     selectAppliedImage,
-    selectCardphotoCropIds,
   ],
-  (s, isComplete, appliedImage, cropIds): CardphotoSessionRecord | null => {
+  (s, isComplete, appliedImage): CardphotoSessionRecord | null => {
     if (!s || !s.activeSource || !s.currentConfig) return null
 
     const { activeSource, currentConfig: config } = s
@@ -181,7 +174,6 @@ export const selectCardphotoSessionRecord = createSelector(
       appliedImageUrl: appliedImage?.url || null,
       source: activeSource,
       activeMetaId,
-      cropIds: cropIds,
       config: {
         card: config.card,
         image: {

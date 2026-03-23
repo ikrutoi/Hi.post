@@ -39,16 +39,7 @@ export function getRandomStockMeta(): ImageMeta {
 
 function* initCardphotoSaga() {
   const state: CardphotoState = yield select(selectCardphotoState)
-  const activeSource = state.activeSource
-  const allCrops: ImageMeta[] = yield call(storeAdapters.cardphotoImages.getAll)
-  const cropCount = allCrops.length
-  const cropIds = allCrops.map((c) => c.id)
-  const savedUserImg: ImageMeta | null = yield call(
-    storeAdapters.userImages.getById,
-    CURRENT_EDITOR_IMAGE_ID,
-  )
-
-  if (!activeSource) return
+  const activeSource = state.activeSource ?? 'stock'
   // if (state.operations.length > 1) return
 
   console.log('>>>INIT_CARDPHOTO base-0', state)
@@ -64,9 +55,8 @@ function* initCardphotoSaga() {
   if (!base.stock.image) return
 
   // let activeSource: ImageSource = 'stock'
-  const initialImageMeta: ImageMeta | null = activeSource
-    ? base[activeSource].image
-    : base.stock.image
+  const initialImageMeta: ImageMeta | null =
+    base[activeSource].image ?? base.stock.image
 
   if (!initialImageMeta) return
 
@@ -114,14 +104,20 @@ function* initCardphotoSaga() {
   //   sizeCard.orientation,
   // )
 
+  const config: WorkingConfig | null = yield call(
+    rebuildConfigFromMeta,
+    initialImageMeta,
+    activeSource,
+  )
+  if (!config) return
+
   console.log('>>>INIT_CARDPHOTO source>>> HYDRATE source', activeSource)
   yield put(
     hydrateEditor({
       base,
       config,
       activeSource,
-      cropIds,
-      cropCount,
+      isComplete: !!base.apply.image,
     }),
   )
 }

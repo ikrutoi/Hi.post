@@ -94,7 +94,6 @@ import {
   IconSectionMenuAroma,
   IconSectionMenuAromaV2,
   IconSectionMenuDate,
-  IconListCardphotoV2,
   IconCardtextTemplates,
   IconCardtextAdd,
   IconAddressTemplates,
@@ -236,8 +235,6 @@ export function getIconByKey(
       return <IconCrop />
     case 'cropCheck':
       return <IconCropCheck />
-    case 'cropHistory':
-      return <IconListCardphotoV2 />
     case 'cropFull':
       return <IconCropFull />
     case 'cropDelete':

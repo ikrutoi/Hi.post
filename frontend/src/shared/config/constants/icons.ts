@@ -16,7 +16,6 @@ export const ICON_KEYS = [
   'crop',
   'cropQualityIndicator',
   'cropCheck',
-  'cropHistory',
   'cropFull',
   'cropRotate',
   'cropDelete',

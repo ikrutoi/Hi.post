@@ -8,7 +8,6 @@ import {
   reset,
   cancelSelection,
   uploadImageReady,
-  selectCropFromHistory,
 } from '../../infrastructure/state'
 import {
   selectCardphotoState,
@@ -52,8 +51,6 @@ export const useCardphotoController = () => {
     dispatch(applyFinal(prepareForRedux(meta)))
   const resetAll = () => dispatch(reset())
   const cancel = () => dispatch(cancelSelection())
-  const cropFromHistory = (cropId: string) =>
-    dispatch(selectCropFromHistory(cropId))
   return {
     state,
     isComplete,
@@ -73,6 +70,5 @@ export const useCardphotoController = () => {
     apply,
     resetAll,
     cancel,
-    cropFromHistory,
   }
 }

@@ -9,7 +9,6 @@ import {
   setActiveSource,
   restoreSession,
   applyFinal,
-  addCropId,
 } from '@cardphoto/infrastructure/state'
 import {
   updateRecipientField,
@@ -215,7 +214,6 @@ const SESSION_WATCH_ACTIONS = [
   commitWorkingConfig.type,
   initCardphoto.type,
   setActiveSource.type,
-  addCropId.type,
   applyFinal.type,
   hydrateEditor.type,
   setAroma.type,
@@ -325,8 +323,7 @@ export function* hydrateAppSession() {
     if (!session) return
 
     if (session.cardphoto) {
-      const { activeMetaId, cropIds, source, config, isComplete } =
-        session.cardphoto
+      const { activeMetaId, source, config, isComplete } = session.cardphoto
 
       const [stockRec, userRec, rawProcess, applyRec]: [
         { image: ImageMeta } | null,
@@ -347,20 +344,6 @@ export function* hydrateAppSession() {
         user: { image: hydrateMeta(userRec?.image || null) },
         processed: { image: hydrateMeta(rawProcess) },
         apply: { image: hydrateMeta(applyRec?.image || null) },
-      }
-
-      const cropCount: number = yield call([
-        storeAdapters.cardphotoImages,
-        'count',
-      ])
-      let finalCropIds = cropIds || []
-
-      if (cropCount > 0 && finalCropIds.length !== cropCount) {
-        const allCrops: ImageMeta[] = yield call([
-          storeAdapters.cardphotoImages,
-          'getAll',
-        ])
-        finalCropIds = allCrops.map((c) => c.id)
       }
 
       let activeImage = base[source]?.image || base.stock.image
@@ -411,8 +394,6 @@ export function* hydrateAppSession() {
           base,
           config: calculatedConfig,
           activeSource: source,
-          cropIds: finalCropIds || [],
-          cropCount,
           isComplete,
         }),
       )
@@ -466,8 +447,6 @@ export function* hydrateAppSession() {
           base,
           config,
           activeSource: autoSource,
-          cropIds: allCrops.map((c) => c.id),
-          cropCount: allCrops.length,
           isComplete: !!applyImg,
         }),
       )

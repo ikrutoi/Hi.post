@@ -9,8 +9,6 @@ import {
   cancelSelection,
   resetCropLayers,
   uploadImageReady,
-  selectCropFromHistory,
-  removeCropId as deleteCropId,
 } from '../../infrastructure/state'
 import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
 import {
@@ -25,7 +23,6 @@ import {
   selectCropQualityProgress,
   selectActiveImage,
   selectIsProcessedMode,
-  selectCropIds,
 } from '../../infrastructure/selectors'
 import type {
   ImageMeta,
@@ -49,7 +46,6 @@ export type CardphotoFacade = {
   cropQualityProgress: number
   activeImage: ImageMeta | null
   isProcessedMode: boolean
-  cropIds: string[]
 
   init: () => void
   uploadImage: (meta: ImageMeta) => void
@@ -62,8 +58,6 @@ export type CardphotoFacade = {
     cropLayer: CropLayer
     card: WorkingConfig['card']
   }) => void
-  cropFromHistory: (cropId: string) => void
-  removeCropId: (cropId: string) => void
 }
 
 export const useCardphotoFacade = (): CardphotoFacade => {
@@ -80,7 +74,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const cropQualityProgress = useSelector(selectCropQualityProgress)
   const activeImage = useSelector(selectActiveImage)
   const isProcessedMode = useSelector(selectIsProcessedMode)
-  const cropIds = useSelector(selectCropIds)
 
   const init = useCallback(() => dispatch(initCardphoto()), [dispatch])
   const uploadImage = useCallback(
@@ -105,15 +98,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
     }) => dispatch(resetCropLayers(payload)),
     [dispatch],
   )
-  const cropFromHistory = useCallback(
-    (cropId: string) => dispatch(selectCropFromHistory(cropId)),
-    [dispatch],
-  )
-  const removeCropId = useCallback(
-    (cropId: string) => dispatch(deleteCropId(cropId)),
-    [dispatch],
-  )
-
   return useMemo(
     () => ({
       cardphotoSession,
@@ -128,7 +112,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       cropQualityProgress,
       activeImage,
       isProcessedMode,
-      cropIds,
       init,
       uploadImage,
       setUserImage,
@@ -136,8 +119,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       resetAll,
       cancel,
       resetLayers,
-      cropFromHistory,
-      removeCropId,
     }),
     [
       cardphotoSession,
@@ -152,7 +133,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       cropQualityProgress,
       activeImage,
       isProcessedMode,
-      cropIds,
       init,
       uploadImage,
       setUserImage,
@@ -160,8 +140,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       resetAll,
       cancel,
       resetLayers,
-      cropFromHistory,
-      removeCropId,
     ],
   )
 }

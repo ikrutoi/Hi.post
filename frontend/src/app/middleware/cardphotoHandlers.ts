@@ -11,7 +11,6 @@ import {
   markLoading,
   markLoaded,
   setProcessedImage,
-  removeCropId,
   clearAllCrops,
   removeUserImage,
   setActiveSource,
@@ -534,71 +533,29 @@ export function* handleDeleteImageSaga(
     const stockImage = state.base.stock.image
 
     if (source === 'processed' && id) {
-      const currentIndex = state.cropIds.indexOf(id)
-
       yield call(storeAdapters.cardphotoImages.deleteById, id)
       yield put(bumpCardphotoInlineTemplateList())
+      // Crop history removed: after deleting processed template,
+      // switch back to `user` (if exists) or to `stock`.
+      yield put(clearAllCrops())
 
-      const remainingIds = state.cropIds.filter((cropId) => cropId !== id)
+      const nextMeta = state.base.user.image ?? stockImage
+      const nextSource: ActiveImageSource | null = state.base.user.image
+        ? 'user'
+        : stockImage
+          ? 'stock'
+          : null
 
-      yield put(removeCropId(id))
-
-      if (remainingIds.length > 0) {
-        const nextIdx =
-          currentIndex < remainingIds.length
-            ? currentIndex
-            : remainingIds.length - 1
-        const nextId = remainingIds[nextIdx]
-
-        const nextCrop: ImageMeta = yield call(
-          storeAdapters.cardphotoImages.getById,
-          nextId,
-        )
-
-        if (nextCrop) {
-          const freshUrl = nextCrop.full?.blob
-            ? URL.createObjectURL(nextCrop.full.blob)
-            : nextCrop.url
-
-          const serializable = prepareForRedux({ ...nextCrop, url: freshUrl })
-
-          yield put(setProcessedImage(serializable))
-          yield put(setActiveSource('processed'))
-          yield fork(rebuildConfigFromMeta, serializable, 'processed')
-        }
-      } else if (state.base.user.image) {
-        yield put(setActiveSource('user'))
-        yield fork(rebuildConfigFromMeta, state.base.user.image, 'user')
-      } else if (stockImage) {
-        yield put(setActiveSource('stock'))
-        yield fork(rebuildConfigFromMeta, stockImage, 'stock')
+      if (nextMeta && nextSource) {
+        yield fork(rebuildConfigFromMeta, nextMeta, nextSource)
       }
     } else if (source === 'user') {
       yield call(storeAdapters.userImages.deleteById, CURRENT_EDITOR_IMAGE_ID)
       yield put(removeUserImage())
 
-      if (state.cropIds.length > 0) {
-        const lastId = state.cropIds[state.cropIds.length - 1]
-        const lastCrop: ImageMeta = yield call(
-          storeAdapters.cardphotoImages.getById,
-          lastId,
-        )
-        if (lastCrop) {
-          const serializable = prepareForRedux({
-            ...lastCrop,
-            url: lastCrop.full?.blob
-              ? URL.createObjectURL(lastCrop.full.blob)
-              : lastCrop.url,
-          })
-          yield put(setProcessedImage(serializable))
-          yield put(setActiveSource('processed'))
-          yield fork(rebuildConfigFromMeta, serializable, 'processed')
-        }
-      } else {
-        if (stockImage) {
-          yield put(setActiveSource('stock'))
-          yield fork(rebuildConfigFromMeta, stockImage, 'stock')
-        }
+      if (stockImage) {
+        yield put(setActiveSource('stock'))
+        yield fork(rebuildConfigFromMeta, stockImage, 'stock')
       }
     }
 
