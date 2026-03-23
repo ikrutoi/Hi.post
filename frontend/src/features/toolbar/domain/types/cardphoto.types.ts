@@ -106,20 +106,9 @@ export const CARDPHOTO_PROCESSED_TOOLBAR: ToolbarConfig = [
   {
     group: 'processed',
     icons: [{ key: 'listAdd', state: 'enabled' }],
+
     status: 'enabled',
   },
-  // {
-  //   group: 'crop',
-  //   icons: [
-  //     { key: 'cropCheck', state: 'disabled' },
-  //     { key: 'imageRotateRight', state: 'enabled' },
-  //     { key: 'crop', state: 'enabled' },
-  //     { key: 'cropFull', state: 'disabled' },
-  //     { key: 'empty', state: 'disabled' },
-  //     { key: 'cropQualityIndicator', state: 'disabled' },
-  //   ],
-  //   status: 'enabled',
-  // },
   {
     group: 'close',
     icons: [{ key: 'delete', state: 'enabled' }],
@@ -129,16 +118,12 @@ export const CARDPHOTO_PROCESSED_TOOLBAR: ToolbarConfig = [
 
 export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
   {
-    group: 'editor',
-    icons: [
-      { key: 'edit', state: 'enabled' },
-      { key: 'favorite', state: 'enabled' },
-    ],
+    group: 'base',
+    icons: [{ key: 'favorite', state: 'enabled' }],
     status: 'enabled',
   },
-
   {
-    group: 'view',
+    group: 'close',
     icons: [{ key: 'delete', state: 'enabled' }],
     status: 'enabled',
   },

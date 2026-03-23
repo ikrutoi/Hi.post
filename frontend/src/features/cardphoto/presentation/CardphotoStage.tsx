@@ -50,9 +50,12 @@ export const CardphotoStage = () => {
   const { getAssetById } = useAssetRegistryFacade()
 
   const isProcessedMode = useAppSelector(selectIsProcessedMode)
-  const photoToolbarSection = isProcessedMode
-    ? 'cardphotoProcessed'
-    : 'cardphotoCreate'
+  const photoToolbarSection =
+    isProcessedMode && activeImage?.status === 'inLine'
+      ? 'cardphotoView'
+      : isProcessedMode
+        ? 'cardphotoProcessed'
+        : 'cardphotoCreate'
   const { state: iconState } = useToolbarFacade(photoToolbarSection)
   const cropToolbarState = iconState?.crop?.state ?? 'disabled'
 

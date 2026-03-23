@@ -13,6 +13,7 @@ const storeNames: string[] = [
   'sent',
   'session',
   'workingCard',
+  'uiPreferences',
 ]
 
 export const storesSchema = storeNames.map((name) => ({

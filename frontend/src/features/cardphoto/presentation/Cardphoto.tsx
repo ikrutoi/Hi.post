@@ -4,19 +4,28 @@ import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { CardphotoView } from './CardphotoView/CardphotoView'
 import styles from './Cardphoto.module.scss'
 
-const photoToolbarSection = (isProcessed: boolean) =>
-  isProcessed ? 'cardphotoProcessed' : 'cardphotoCreate'
+const photoToolbarSection = (
+  isProcessed: boolean,
+  isInlineProcessed: boolean,
+) => {
+  if (!isProcessed) return 'cardphotoCreate'
+  return isInlineProcessed ? 'cardphotoView' : 'cardphotoProcessed'
+}
 
 export const Cardphoto = () => {
   const { activeImage, isProcessedMode } = useCardphotoFacade()
   const hasLoadedPhoto = Boolean(activeImage)
+  const isInlineProcessed =
+    isProcessedMode && activeImage?.status === 'inLine'
 
   return (
     <div className={styles.cardphoto}>
       <div className={styles.cardphotoViewWrap}>
         <div className={styles.cardphotoToolbarRow}>
           {hasLoadedPhoto ? (
-            <Toolbar section={photoToolbarSection(isProcessedMode)} />
+            <Toolbar
+              section={photoToolbarSection(isProcessedMode, isInlineProcessed)}
+            />
           ) : null}
         </div>
         <div className={styles.cardphotoViewContent}>

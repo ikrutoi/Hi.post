@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { IconX, IconListCardphoto } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { storeAdapters } from '@db/adapters/storeAdapters'
@@ -6,23 +12,25 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectCardphotoInlineTemplateListRevision,
   selectCardphotoListTemplateGridCols,
+  selectActiveImage,
+  selectActiveSource,
 } from '@cardphoto/infrastructure/selectors'
-import { bumpCardphotoInlineTemplateList } from '@cardphoto/infrastructure/state'
+import {
+  bumpCardphotoInlineTemplateList,
+  setBaseImage,
+} from '@cardphoto/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { CardphotoListThumb } from './CardphotoListThumb'
 import styles from './CardphotoListPanel.module.scss'
+import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
 
 type Props = {
   onClose: () => void
 }
 
-/** При 6–7 колонках — меню «⋯» вместо двух кнопок на hover. */
-const COMPACT_ACTIONS_FROM_COLS = 6
-
 type Row = { id: string; src: string; favorite: boolean }
 
-/** Сначала Blob из IndexedDB — сохранённые `blob:` в url часто уже отозваны и не грузятся. */
 function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
   if (meta.thumbnail?.blob instanceof Blob) {
     return { src: URL.createObjectURL(meta.thumbnail.blob), revoke: true }
@@ -54,9 +62,9 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
   const dispatch = useAppDispatch()
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
-  const compactActions = columns >= COMPACT_ACTIONS_FROM_COLS
+  const activeImage = useAppSelector(selectActiveImage)
+  const activeSource = useAppSelector(selectActiveSource)
   const [rows, setRows] = useState<Row[]>([])
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
   const objectUrlsRef = useRef<string[]>([])
 
   const listContentRef = useRef<HTMLDivElement | null>(null)
@@ -128,40 +136,32 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
     }
   }, [listRevision])
 
-  useEffect(() => {
-    if (!openMenuId) return
-    const onDocDown = (e: MouseEvent) => {
-      const el = e.target as HTMLElement | null
-      if (!el) return
-      const thumb = el.closest(`[data-cardphoto-thumb="${openMenuId}"]`)
-      if (!thumb) setOpenMenuId(null)
-    }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpenMenuId(null)
-    }
-    document.addEventListener('mousedown', onDocDown)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('mousedown', onDocDown)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [openMenuId])
+  const handleFavorite = useCallback(
+    async (id: string) => {
+      const meta = await storeAdapters.cardphotoImages.getById(id)
+      if (!meta) return
+      const nextFavorite = meta.favorite !== true
+      const updated: ImageMeta = { ...meta, favorite: nextFavorite }
+      await storeAdapters.cardphotoImages.put(updated)
 
-  const handleFavorite = useCallback(async (id: string) => {
-    const meta = await storeAdapters.cardphotoImages.getById(id)
-    if (!meta) return
-    await storeAdapters.cardphotoImages.put({
-      ...meta,
-      favorite: !meta.favorite,
-    })
-    dispatch(bumpCardphotoInlineTemplateList())
-  }, [dispatch])
+      // If the same image is currently opened in `cardphotoView` — keep toolbar in sync.
+      if (activeSource && activeImage?.id === id) {
+        dispatch(
+          setBaseImage({
+            target: activeSource,
+            image: prepareForRedux(updated),
+          }),
+        )
+      }
+      dispatch(bumpCardphotoInlineTemplateList())
+    },
+    [activeImage?.id, activeSource, dispatch],
+  )
 
   const handleDelete = useCallback(
     async (id: string) => {
       await storeAdapters.cardphotoImages.deleteById(id)
       dispatch(bumpCardphotoInlineTemplateList())
-      setOpenMenuId((x) => (x === id ? null : x))
     },
     [dispatch],
   )
@@ -210,12 +210,6 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose }) => {
                     src={row.src}
                     cellPx={cellPx}
                     favorite={row.favorite}
-                    compactActions={compactActions}
-                    menuOpen={openMenuId === row.id}
-                    onToggleMenu={() =>
-                      setOpenMenuId((x) => (x === row.id ? null : row.id))
-                    }
-                    onCloseMenu={() => setOpenMenuId(null)}
                     onFavorite={() => handleFavorite(row.id)}
                     onDelete={() => handleDelete(row.id)}
                   />

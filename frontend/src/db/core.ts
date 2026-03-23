@@ -6,7 +6,7 @@ let dbInstance: IDBPDatabase | undefined
 
 export const getDatabase = async () => {
   if (!dbInstance) {
-    dbInstance = await openDB('AppDB', 10, {
+    dbInstance = await openDB('AppDB', 11, {
       upgrade(db, oldVersion) {
         // This project occasionally does schema rewrites; old data can be dropped safely.
         if (db.objectStoreNames.contains('cropImages')) {

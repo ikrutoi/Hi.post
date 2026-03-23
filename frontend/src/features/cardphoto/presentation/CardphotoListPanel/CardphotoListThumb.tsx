@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { IconStar, IconDelete, IconMoreVertical } from '@shared/ui/icons'
+import { IconDelete } from '@shared/ui/icons'
 import styles from './CardphotoListThumb.module.scss'
 
 type Props = {
@@ -8,10 +8,6 @@ type Props = {
   src: string
   cellPx: number
   favorite: boolean
-  compactActions: boolean
-  menuOpen: boolean
-  onToggleMenu: () => void
-  onCloseMenu: () => void
   onFavorite: () => void | Promise<void>
   onDelete: () => void | Promise<void>
 }
@@ -24,15 +20,20 @@ function iconSize(cell: number) {
   return Math.min(12, Math.max(9, Math.round(cell * 0.18)))
 }
 
+function starShiftPx(cell: number) {
+  // Keep baseline position for largest previews; shift as cells get smaller.
+  const maxCell = 96
+  const minCell = 28
+  const clamped = Math.max(minCell, Math.min(maxCell, cell))
+  const t = (maxCell - clamped) / (maxCell - minCell)
+  return Math.round(t * 6)
+}
+
 export const CardphotoListThumb: React.FC<Props> = ({
   id,
   src,
   cellPx,
   favorite,
-  compactActions,
-  menuOpen,
-  onToggleMenu,
-  onCloseMenu,
   onFavorite,
   onDelete,
 }) => {
@@ -45,26 +46,25 @@ export const CardphotoListThumb: React.FC<Props> = ({
     minHeight: bp,
   }
   const iconStyle: React.CSSProperties = { width: ip, height: ip }
+  const shift = starShiftPx(cellPx)
+  const starStyle: React.CSSProperties = {
+    transform: `translate(${-shift}px, ${-shift}px)`,
+  }
 
   const runFavorite = (e: React.MouseEvent) => {
     e.stopPropagation()
-    void Promise.resolve(onFavorite()).then(() => {
-      if (compactActions) onCloseMenu()
-    })
+    void Promise.resolve(onFavorite())
   }
 
   const runDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
-    void Promise.resolve(onDelete()).then(() => {
-      if (compactActions) onCloseMenu()
-    })
+    void Promise.resolve(onDelete())
   }
 
   return (
     <div
       className={styles.thumbCell}
       data-cardphoto-thumb={id}
-      data-menu-open={menuOpen ? 'true' : undefined}
       style={{ width: cellPx, height: cellPx }}
     >
       <img
@@ -75,88 +75,29 @@ export const CardphotoListThumb: React.FC<Props> = ({
         height={cellPx}
         decoding="async"
       />
-      <div
-        className={clsx(
-          styles.thumbOverlay,
-          compactActions && styles.thumbOverlayCompact,
-        )}
-      >
-        {!compactActions && (
-          <div className={styles.thumbActionsColumn}>
-            <button
-              type="button"
-              className={clsx(styles.thumbActionBtn, styles.thumbActionFavorite)}
-              data-active={favorite ? true : undefined}
-              style={actionBtnStyle}
-              onClick={runFavorite}
-              aria-label={favorite ? 'Убрать из избранного' : 'В избранное'}
-              title={favorite ? 'Убрать из избранного' : 'В избранное'}
-            >
-              <IconStar style={iconStyle} />
-            </button>
-            <button
-              type="button"
-              className={clsx(styles.thumbActionBtn, styles.thumbActionDelete)}
-              style={actionBtnStyle}
-              onClick={runDelete}
-              aria-label="Удалить шаблон"
-              title="Удалить"
-            >
-              <IconDelete style={iconStyle} />
-            </button>
-          </div>
-        )}
-        {compactActions && (
-          <div className={styles.thumbMenuWrap}>
-            <button
-              type="button"
-              className={styles.thumbActionBtn}
-              style={actionBtnStyle}
-              onClick={(e) => {
-                e.stopPropagation()
-                onToggleMenu()
-              }}
-              aria-expanded={menuOpen}
-              aria-haspopup="true"
-              aria-label="Действия с шаблоном"
-              title="Действия"
-            >
-              <IconMoreVertical style={iconStyle} />
-            </button>
-            {menuOpen && (
-              <div className={styles.thumbMenuPopover} role="menu">
-                <button
-                  type="button"
-                  role="menuitem"
-                  className={clsx(
-                    styles.thumbMenuItem,
-                    styles.thumbActionFavorite,
-                  )}
-                  data-active={favorite ? true : undefined}
-                  style={actionBtnStyle}
-                  onClick={runFavorite}
-                  aria-label={favorite ? 'Убрать из избранного' : 'В избранное'}
-                >
-                  <IconStar style={iconStyle} />
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className={clsx(
-                    styles.thumbMenuItem,
-                    styles.thumbActionDelete,
-                  )}
-                  style={actionBtnStyle}
-                  onClick={runDelete}
-                  aria-label="Удалить шаблон"
-                >
-                  <IconDelete style={iconStyle} />
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+      <div className={styles.thumbOverlay}>
+        <button
+          type="button"
+          className={clsx(styles.thumbActionBtn, styles.thumbActionDelete)}
+          style={actionBtnStyle}
+          onClick={runDelete}
+          aria-label="Delete template"
+          title="Delete"
+        >
+          <IconDelete style={iconStyle} />
+        </button>
       </div>
+      <button
+        type="button"
+        className={styles.thumbStar}
+        style={starStyle}
+        data-starred={favorite ? 'true' : undefined}
+        onClick={runFavorite}
+        aria-label={favorite ? 'Remove from favorites' : 'Add to favorites'}
+        title={favorite ? 'Remove from favorites' : 'Add to favorites'}
+      >
+        ★
+      </button>
     </div>
   )
 }

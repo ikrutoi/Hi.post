@@ -14,6 +14,12 @@ import type {
 } from '@cardphoto/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
 import type { WorkingCardRecord } from '@entities/card/domain/types'
+import type { CardphotoListTemplateGridCols } from '@cardphoto/infrastructure/state/cardphotoUiSlice'
+
+export interface UiPreferencesRecord {
+  id: 'cardphotoList'
+  cardphotoListTemplateGridCols: CardphotoListTemplateGridCols
+}
 
 export interface StoreMap {
   stockImages: ImageRecord
@@ -26,6 +32,7 @@ export interface StoreMap {
   cards: Card[]
   session: SessionData
   workingCard: WorkingCardRecord
+  uiPreferences: UiPreferencesRecord
 }
 
 export interface TemplateStoreMap {

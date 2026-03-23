@@ -13,6 +13,7 @@ import { capitalize } from '@/shared/utils/helpers'
 import {
   selectAppliedImage,
   selectIsCurrentCropApplied,
+  selectActiveImage,
   selectCardphotoListTemplateGridCols,
 } from '@/features/cardphoto/infrastructure/selectors'
 import {
@@ -76,6 +77,8 @@ export const Toolbar = ({
   const cardtextApplied = useAppSelector(selectCardtextIsComplete)
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
   const cardtextFavorite = useAppSelector(selectCardtextFavorite)
+  const cardphotoActiveImage = useAppSelector(selectActiveImage)
+  const cardphotoFavorite = cardphotoActiveImage?.favorite === true
   const cardtextAssetId = useAppSelector(selectCardtextAssetId)
   const cardtextAppliedId = useAppSelector(selectCardtextApplied)
   const isCardtextCurrentTemplateApplied =
@@ -187,6 +190,13 @@ export const Toolbar = ({
       section === 'cardtextView' &&
       key === 'favorite' &&
       cardtextFavorite
+    ) {
+      buttonStatus = 'active'
+    }
+    if (
+      section === 'cardphotoView' &&
+      key === 'favorite' &&
+      cardphotoFavorite
     ) {
       buttonStatus = 'active'
     }

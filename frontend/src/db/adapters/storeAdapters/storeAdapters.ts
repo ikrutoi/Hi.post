@@ -13,6 +13,7 @@ export const storeAdapters: {
   cards: StoreAdapter<StoreMap['cards']>
   session: StoreAdapter<StoreMap['session']>
   workingCard: StoreAdapter<StoreMap['workingCard']>
+  uiPreferences: StoreAdapter<StoreMap['uiPreferences']>
 } = {
   stockImages: createStoreAdapter<StoreMap['stockImages']>('stockImages'),
   userImages: createStoreAdapter<StoreMap['userImages']>('userImages'),
@@ -24,4 +25,5 @@ export const storeAdapters: {
   cards: createStoreAdapter<StoreMap['cards']>('cards'),
   session: createStoreAdapter<StoreMap['session']>('session'),
   workingCard: createStoreAdapter<StoreMap['workingCard']>('workingCard'),
+  uiPreferences: createStoreAdapter<StoreMap['uiPreferences']>('uiPreferences'),
 }

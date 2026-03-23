@@ -21,10 +21,8 @@ export interface SessionData {
   id: string
   cardphoto: CardphotoSessionRecord | null
   cardtext: (CardtextTemplateContent & { assetId: string | null }) | null
-  /** When true, cardtext is shown in preview (CardtextView) instead of editor. */
   cardtextShowViewMode?: boolean
   envelope: EnvelopeSessionRecord | null
-  /** Список получателей (режим «несколько»), сохраняется отдельно от envelope. */
   envelopeRecipients?: RecipientState[] | null
   aroma: AromaState | null
   date: DateState | null

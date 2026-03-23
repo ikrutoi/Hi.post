@@ -19,15 +19,19 @@ import {
   setActiveSource,
   hydrateEditor,
   setProcessedImage,
+  setBaseImage,
   markLoaded,
   markLoading,
   setCardphotoListPanelOpen,
   bumpCardphotoInlineTemplateList,
   cycleListTemplateGridCols,
+  setListTemplateGridCols,
 } from '@cardphoto/infrastructure/state'
 import {
   selectActiveImage,
+  selectCardphotoListTemplateGridCols,
   selectCardphotoState,
+  selectActiveSource,
   selectIsProcessedMode,
   selectIsListPanelOpen,
 } from '@cardphoto/infrastructure/selectors'
@@ -69,6 +73,9 @@ import type {
 } from '@cardphoto/domain/types'
 import { SizeCard } from '@layout/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
+import type { UiPreferencesRecord } from '@db/types/storeMap.types'
+
+const CARDPHOTO_LIST_PREF_ID: UiPreferencesRecord['id'] = 'cardphotoList'
 
 /** Удалить все шаблоны со статусом inLine из IndexedDB (кнопка списка). */
 function* handleDeleteAllCardphotoInlineTemplatesSaga(): SagaIterator {
@@ -85,6 +92,36 @@ function* handleDeleteAllCardphotoInlineTemplatesSaga(): SagaIterator {
     yield put(bumpCardphotoInlineTemplateList())
   } catch (e) {
     console.error('handleDeleteAllCardphotoInlineTemplatesSaga', e)
+  }
+}
+
+function* hydrateCardphotoListDensityFromDbSaga(): SagaIterator {
+  try {
+    const pref: UiPreferencesRecord | null = yield call(
+      [storeAdapters.uiPreferences, 'getById'] as const,
+      CARDPHOTO_LIST_PREF_ID,
+    )
+    const cols = pref?.cardphotoListTemplateGridCols
+    if (cols === 4 || cols === 5 || cols === 6 || cols === 7) {
+      yield put(setListTemplateGridCols(cols))
+    }
+  } catch (e) {
+    console.error('hydrateCardphotoListDensityFromDbSaga', e)
+  }
+}
+
+function* persistCardphotoListDensityToDbSaga(): SagaIterator {
+  try {
+    const cols: 4 | 5 | 6 | 7 = yield select(
+      selectCardphotoListTemplateGridCols,
+    )
+    const payload: UiPreferencesRecord = {
+      id: CARDPHOTO_LIST_PREF_ID,
+      cardphotoListTemplateGridCols: cols,
+    }
+    yield call([storeAdapters.uiPreferences, 'put'] as const, payload)
+  } catch (e) {
+    console.error('persistCardphotoListDensityToDbSaga', e)
   }
 }
 
@@ -165,8 +202,43 @@ export function* handleCardphotoToolbarAction(
     }
     if (key === 'density') {
       yield put(cycleListTemplateGridCols())
+      yield call(persistCardphotoListDensityToDbSaga)
       return
     }
+    return
+  }
+
+  if (section === 'cardphotoView' && key === 'favorite') {
+    const activeImage: ImageMeta | null = yield select(selectActiveImage)
+    if (!activeImage?.id) return
+
+    const record: ImageMeta | null = yield call(
+      [storeAdapters.cardphotoImages, 'getById'] as const,
+      activeImage.id,
+    )
+    if (!record) return
+
+    const nextFavorite = record.favorite !== true
+    const updated: ImageMeta = { ...record, favorite: nextFavorite }
+
+    yield call(
+      [storeAdapters.cardphotoImages, 'put'] as const,
+      updated as ImageMeta & { id: string },
+    )
+
+    const activeSource: ReturnType<typeof selectActiveSource> =
+      yield select(selectActiveSource)
+    if (activeSource) {
+      yield put(
+        setBaseImage({
+          target: activeSource,
+          image: prepareForRedux(updated),
+        }),
+      )
+    }
+
+    // Ensure list thumbs + toolbar favorite are consistent without reload.
+    yield put(bumpCardphotoInlineTemplateList())
     return
   }
 
@@ -180,6 +252,9 @@ export function* handleCardphotoToolbarAction(
   switch (key) {
     case 'listCardphoto': {
       const isOpen: boolean = yield select(selectIsListPanelOpen)
+      if (!isOpen) {
+        yield call(hydrateCardphotoListDensityFromDbSaga)
+      }
       const nextState = isOpen ? 'enabled' : 'active'
 
       yield put(
