@@ -631,10 +631,6 @@ export function* handleBackToOriginalSaga() {
 
 export function* handleApplyAction() {
   const state: CardphotoState = yield select(selectCardphotoState)
-  const currentSource = deriveActiveSource(state)
-
-  if (currentSource !== 'processed') return
-
   const currentImageMeta = state.assetData
 
   if (currentImageMeta) {
@@ -647,8 +643,15 @@ export function* handleApplyAction() {
       let finalThumb = asset?.thumbUrl
 
       if (!asset) {
+        const adapter =
+          currentImageMeta.source === 'user'
+            ? storeAdapters.userImages
+            : currentImageMeta.source === 'stock'
+              ? storeAdapters.stockImages
+              : storeAdapters.cardphotoImages
+
         const fullRecord: ImageMeta | null = yield call(
-          [storeAdapters.cardphotoImages, 'getById'],
+          [adapter, 'getById'],
           currentImageMeta.id,
         )
 
@@ -676,12 +679,13 @@ export function* handleApplyAction() {
         const appliedMeta: ImageMeta = {
           ...currentImageMeta,
           url: finalUrl,
-          thumbnail: {
-            ...currentImageMeta.thumbnail!,
-            url: finalThumb || '',
-          },
+          thumbnail: currentImageMeta.thumbnail
+            ? {
+                ...currentImageMeta.thumbnail,
+                url: finalThumb || '',
+              }
+            : undefined,
           source: currentImageMeta.source,
-          status: 'outLine',
         }
 
         const wrapper: ImageRecord = {
@@ -724,7 +728,6 @@ export function* handleApplyAction2() {
           url: applyUrl,
           thumbnail: thumbnail,
           source: fullRecord.source,
-          status: 'outLine',
         }
 
         const wrapper: ImageRecord = {

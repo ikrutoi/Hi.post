@@ -174,9 +174,6 @@ export const cardphotoSlice = createSlice({
       if (!state.state) return
       state.state.appliedData = null
       state.isComplete = false
-      if (deriveActiveSource(state.state) === 'apply') {
-        state.state.assetData = null
-      }
     },
 
     reset(state) {

@@ -50,9 +50,6 @@ export const useCardEditorFacade = () => {
         break
       case 'cardphoto':
         dispatch(clearApply())
-        if (deriveActiveSource(cardphotoState) === 'apply') {
-          dispatch(setAssetData(cardphotoState.userOriginalData))
-        }
         break
     }
   }

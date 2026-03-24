@@ -7,6 +7,8 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { RootState } from '@app/state'
 import {
+  applyFinal,
+  clearApply,
   commitWorkingConfig,
   resetCardphoto,
   hydrateEditor,
@@ -409,6 +411,10 @@ export function* syncToolbarContext() {
   const hasTemplates = typeof badgeCount === 'number' ? badgeCount > 0 : false
 
   let sectionUpdate = {}
+  const assetId = state.assetData?.id ?? null
+  const appliedId = state.appliedData?.id ?? null
+  const isCurrentApplied = !!assetId && !!appliedId && assetId === appliedId
+  const applyState = !assetId ? 'disabled' : isCurrentApplied ? 'active' : 'enabled'
   const isUserImage = !!state.userOriginalData
   const hasStockImage = false
   const hasProcessedImage = state.assetData?.status === 'processed'
@@ -424,7 +430,7 @@ export function* syncToolbarContext() {
         cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: 'disabled' },
 
-        apply: { state: 'disabled' },
+        apply: { state: applyState },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
@@ -443,7 +449,7 @@ export function* syncToolbarContext() {
         cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: 'enabled' },
 
-        apply: { state: 'enabled' },
+        apply: { state: applyState },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
@@ -462,7 +468,7 @@ export function* syncToolbarContext() {
         cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: 'enabled' },
 
-        apply: { state: hasProcessedImage ? 'enabled' : 'disabled' },
+        apply: { state: applyState },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
@@ -485,7 +491,7 @@ export function* syncToolbarContext() {
         cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: 'enabled' },
 
-        apply: { state: 'disabled' },
+        apply: { state: applyState },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
@@ -504,7 +510,7 @@ export function* syncToolbarContext() {
         cropQualityIndicator: { state: 'disabled' },
         imageReset: { state: isUserImage ? 'enabled' : 'disabled' },
 
-        apply: { state: hasStockImage ? 'enabled' : 'disabled' },
+        apply: { state: applyState },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
@@ -625,6 +631,8 @@ export function* watchToolbarContext() {
   yield takeEvery(
     [
       hydrateEditor.type,
+      applyFinal.type,
+      clearApply.type,
       commitWorkingConfig.type,
       resetCardphoto.type,
       setProcessedImage.type,

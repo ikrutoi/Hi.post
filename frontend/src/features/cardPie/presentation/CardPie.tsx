@@ -44,9 +44,6 @@ export const CardPie: React.FC<CardPieProps> = ({
     status,
     id,
   )
-  console.log('data', data)
-  console.log('sections', sections)
-  console.log('isReady', isReady)
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
 
