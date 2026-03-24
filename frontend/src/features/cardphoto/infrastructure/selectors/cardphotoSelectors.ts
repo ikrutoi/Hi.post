@@ -2,6 +2,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import { roundTo } from '@shared/utils/layout'
 import { checkIsCropFull } from '../../application/helpers'
+import { computeCardphotoAssetToolbar } from '../../application/helpers/computeCardphotoAssetToolbar'
 import { deriveActiveSource } from '../../application/helpers/deriveActiveSource'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import type {
@@ -10,7 +11,6 @@ import type {
   WorkingConfig,
   ImageMeta,
   CardLayer,
-  CardphotoBase,
   ActiveImageSource,
   CardphotoSessionRecord,
 } from '../../domain/types'
@@ -46,19 +46,14 @@ export const selectCardphotoIsComplete = (state: RootState): boolean =>
   CARDPHOTO_IS_COMPLETE_STUB ? false : state.cardphoto.isComplete
 
 export const selectStockImage = (state: RootState): ImageMeta | null =>
-  state.cardphoto.state?.base.stock.image || null
+  null
 
 export const selectUserImage = (state: RootState): ImageMeta | null =>
-  state.cardphoto.state?.userOriginalData ??
-  state.cardphoto.state?.base.user.image ??
-  null
+  state.cardphoto.state?.userOriginalData ?? null
 
 export const selectAppliedImage = (state: RootState): ImageMeta | null =>
-  state.cardphoto.state?.appliedData ??
-  state.cardphoto.state?.base.apply.image ??
-  null
+  state.cardphoto.state?.appliedData ?? null
 
-/** Target field; during migration mirrors `selectAppliedImage` / `base.apply.image`. */
 export const selectCardphotoAppliedData = (state: RootState): ImageMeta | null =>
   state.cardphoto.state?.appliedData ?? null
 
@@ -68,10 +63,11 @@ export const selectCardphotoAssetData = (state: RootState): ImageMeta | null =>
 export const selectCardphotoAssetConfig = (state: RootState): WorkingConfig | null =>
   state.cardphoto.state?.assetConfig ?? null
 
-/** Toolbar section for the active cardphoto asset (kept in Redux with the rest of session state). */
+/** Toolbar section derived from the current active asset. */
 export const selectCardphotoAssetToolbar = (
   state: RootState,
-): CardphotoAssetToolbar => state.cardphoto.state?.assetToolbar ?? null
+): CardphotoAssetToolbar =>
+  state.cardphoto.state ? computeCardphotoAssetToolbar(state.cardphoto.state) : null
 
 export const selectCardphotoImageStageRect = (state: RootState) =>
   state.cardphoto.state?.imageStageRect ?? null
@@ -106,7 +102,7 @@ export const selectIsCurrentCropApplied = (state: RootState): boolean => {
   if (!cp) return false
 
   const currentImg = cp.assetConfig?.image.meta
-  const appliedImg = cp.appliedData ?? cp.base.apply.image
+  const appliedImg = cp.appliedData
 
   if (!currentImg || !appliedImg) return false
 
@@ -123,14 +119,6 @@ export const selectCardSize = createSelector([selectCurrentCard], (card) => {
     height: card.height,
   }
 })
-
-export const selectBaseImageByTarget = (
-  state: RootState,
-  target: keyof CardphotoBase,
-): ImageMeta | null => {
-  const base = state.cardphoto.state?.base
-  return base?.[target]?.image ?? null
-}
 
 export const selectIsCropFull = createSelector(
   [selectCardphotoAssetConfig],
@@ -152,9 +140,7 @@ export const selectActiveSource = (
 export const selectActiveImage = (state: RootState): ImageMeta | null => {
   const cp = state.cardphoto.state
   if (!cp) return null
-  if (cp.assetData) return cp.assetData
-  const activeSource = deriveActiveSource(cp)
-  return activeSource ? (cp.base[activeSource]?.image ?? null) : null
+  return cp.assetData
 }
 
 export const selectIsProcessedMode = (state: RootState): boolean =>
@@ -179,7 +165,7 @@ export const selectCardphotoSessionRecord = createSelector(
           : config.image.meta.id
 
     return {
-      assetConfigLight: {
+      assetConfig: {
         card: config.card,
         image: {
           left: config.image.left,
@@ -189,11 +175,9 @@ export const selectCardphotoSessionRecord = createSelector(
         },
         crop: config.crop,
       },
-      appliedDataLight: toLightImageMeta(appliedImage),
-      assetDataLight: toLightImageMeta(s.assetData),
-      userOriginalData: toLightImageMeta(
-        s.userOriginalData ?? s.base.user.image,
-      ),
+      appliedData: toLightImageMeta(appliedImage),
+      assetData: toLightImageMeta(s.assetData),
+      userOriginalData: toLightImageMeta(s.userOriginalData),
     }
   },
 )
@@ -201,9 +185,7 @@ export const selectCardphotoSessionRecord = createSelector(
 export const selectCardphotoPreview = createSelector(
   [
     (state: RootState) =>
-      state.cardphoto.state?.appliedData ??
-      state.cardphoto.state?.base.apply.image ??
-      null,
+      state.cardphoto.state?.appliedData ?? null,
     (state: RootState) => state.assetRegistry.images,
     selectCardphotoIsComplete,
   ],
@@ -233,9 +215,7 @@ export const selectCardphotoPreview = createSelector(
 export const selectCardphotoMiniPreview = createSelector(
   [
     (state: RootState) =>
-      state.cardphoto.state?.appliedData ??
-      state.cardphoto.state?.base.apply.image ??
-      null,
+      state.cardphoto.state?.appliedData ?? null,
     (state: RootState) => state.assetRegistry.images,
   ],
   (applyImage, registry) => {
@@ -255,11 +235,12 @@ export const selectCardphotoMiniPreview = createSelector(
 
 export const selectCropById = createSelector(
   [
-    (state: RootState) => state.cardphoto.state?.base.processed.image,
     (state: RootState) =>
-      state.cardphoto.state?.appliedData ??
-      state.cardphoto.state?.base.apply.image ??
-      null,
+      state.cardphoto.state?.assetData?.status === 'processed'
+        ? state.cardphoto.state?.assetData
+        : null,
+    (state: RootState) =>
+      state.cardphoto.state?.appliedData ?? null,
     (state: RootState, cropId: string) => cropId,
   ],
   (processed, applied, cropId) => {

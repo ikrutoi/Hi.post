@@ -13,7 +13,7 @@ import {
   setProcessedImage,
   clearAllCrops,
   removeUserImage,
-  setActiveSource,
+  setAssetData,
   hydrateEditor,
   bumpCardphotoInlineTemplateList,
 } from '@cardphoto/infrastructure/state'
@@ -340,12 +340,10 @@ function resolveImageUrlForCrop(
   if (top) return top
   const fromFull = meta.full?.url?.trim()
   if (fromFull) return fromFull
-  const src = deriveActiveSource(state)
-  if (src) {
-    const baseImg = state.base[src]?.image
-    const u = baseImg?.url?.trim()
-    if (u) return u
-  }
+  const activeUrl = state.assetData?.url?.trim()
+  if (activeUrl) return activeUrl
+  const originalUrl = state.userOriginalData?.url?.trim()
+  if (originalUrl) return originalUrl
   return null
 }
 
@@ -416,23 +414,19 @@ export function* handleCropConfirm(): SagaIterator {
     yield call(storeAdapters.cardphotoImages.put, finalImageMeta)
 
     const oldProcessedUrl: string | undefined = yield select(
-      (s: RootState) => s.cardphoto.state?.base.processed.image?.url,
+      (s: RootState) =>
+        s.cardphoto.state?.assetData?.status === 'processed'
+          ? s.cardphoto.state?.assetData?.url
+          : undefined,
     )
     const appliedUrl: string | undefined = yield select(
-      (s: RootState) =>
-        s.cardphoto.state?.appliedData?.url ??
-        s.cardphoto.state?.base.apply.image?.url,
+      (s: RootState) => s.cardphoto.state?.appliedData?.url,
     )
     const stBefore: CardphotoState | null = yield select(selectCardphotoState)
-    const userUrl =
-      stBefore?.userOriginalData?.url ?? stBefore?.base.user.image?.url
-    const appliedCurrentUrl =
-      stBefore?.appliedData?.url ?? stBefore?.base.apply.image?.url
+    const userUrl = stBefore?.userOriginalData?.url
+    const appliedCurrentUrl = stBefore?.appliedData?.url
     const stillInUse =
-      oldProcessedUrl &&
-      [userUrl, appliedCurrentUrl, stBefore?.base.stock.image?.url].includes(
-        oldProcessedUrl,
-      )
+      oldProcessedUrl && [userUrl, appliedCurrentUrl].includes(oldProcessedUrl)
 
     if (
       oldProcessedUrl?.startsWith('blob:') &&
@@ -473,9 +467,10 @@ export function* handleCropConfirm(): SagaIterator {
 
 export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
   const state: CardphotoState | null = yield select(selectCardphotoState)
-  const id = state?.base.processed.image?.id
+  if (!state) return
+  const id = state?.assetData?.status === 'processed' ? state.assetData.id : null
   if (!id) return
-  if (state.base.processed.image?.status === 'inLine') return
+  if (state.assetData?.status === 'inLine') return
 
   const record: ImageMeta | null = yield call(
     [storeAdapters.cardphotoImages, 'getById'],
@@ -520,8 +515,7 @@ export function* handleDeleteImageSaga(
 ) {
   try {
     const state: CardphotoState = yield select(selectCardphotoState)
-    const stockImage = state.base.stock.image
-    const userImage = state.userOriginalData ?? state.base.user.image
+    const userImage = state.userOriginalData
 
     if (source === 'processed' && id) {
       yield call(storeAdapters.cardphotoImages.deleteById, id)
@@ -530,12 +524,8 @@ export function* handleDeleteImageSaga(
       // switch back to `user` (if exists) or to `stock`.
       yield put(clearAllCrops())
 
-      const nextMeta = userImage ?? stockImage
-      const nextSource: ActiveImageSource | null = userImage
-        ? 'user'
-        : stockImage
-          ? 'stock'
-          : null
+      const nextMeta = userImage
+      const nextSource: ActiveImageSource | null = userImage ? 'user' : null
 
       if (nextMeta && nextSource) {
         yield fork(rebuildConfigFromMeta, nextMeta, nextSource)
@@ -543,11 +533,7 @@ export function* handleDeleteImageSaga(
     } else if (source === 'user') {
       yield call(storeAdapters.userImages.deleteById, CURRENT_EDITOR_IMAGE_ID)
       yield put(removeUserImage())
-
-      if (stockImage) {
-        yield put(setActiveSource('stock'))
-        yield fork(rebuildConfigFromMeta, stockImage, 'stock')
-      }
+      yield put(setAssetData(null))
     }
 
     yield fork(syncToolbarContext)
@@ -596,10 +582,9 @@ export function* handleCropGalleryAction() {
 
 export function* handleBackToOriginalSaga() {
   const state: CardphotoState = yield select(selectCardphotoState)
-  const userMeta = state.userOriginalData ?? state.base.user.image
-  const stockMeta = state.base.stock.image
+  const userMeta = state.userOriginalData
   const activeSource = deriveActiveSource(state)
-  const isComplete = !!(state.appliedData ?? state.base.apply.image)
+  const isComplete = !!state.appliedData
 
   console.log('BACK_SAGA state', state)
 
@@ -610,16 +595,10 @@ export function* handleBackToOriginalSaga() {
     if (userMeta) {
       nextSource = 'user'
       nextMeta = userMeta
-    } else {
-      nextSource = 'stock'
-      nextMeta = stockMeta
     }
   } else if (activeSource === 'user') {
-    nextSource = 'stock'
-    nextMeta = stockMeta
-  } else if (activeSource === 'stock' && userMeta) {
-    nextSource = 'user'
-    nextMeta = userMeta
+    nextSource = null
+    nextMeta = null
   }
 
   if (nextSource && nextMeta) {
@@ -654,9 +633,9 @@ export function* handleApplyAction() {
   const state: CardphotoState = yield select(selectCardphotoState)
   const currentSource = deriveActiveSource(state)
 
-  if (currentSource !== 'processed' && currentSource !== 'stock') return
+  if (currentSource !== 'processed') return
 
-  const currentImageMeta = state.base[currentSource].image
+  const currentImageMeta = state.assetData
 
   if (currentImageMeta) {
     try {
@@ -668,13 +647,8 @@ export function* handleApplyAction() {
       let finalThumb = asset?.thumbUrl
 
       if (!asset) {
-        const adapter =
-          currentSource === 'stock'
-            ? storeAdapters.stockImages
-            : storeAdapters.cardphotoImages
-
         const fullRecord: ImageMeta | null = yield call(
-          [adapter, 'getById'],
+          [storeAdapters.cardphotoImages, 'getById'],
           currentImageMeta.id,
         )
 
@@ -727,19 +701,14 @@ export function* handleApplyAction() {
 export function* handleApplyAction2() {
   const state: CardphotoState = yield select(selectCardphotoState)
   const currentSource = deriveActiveSource(state)
-  if (currentSource !== 'processed' && currentSource !== 'stock') return
+  if (currentSource !== 'processed') return
 
-  const currentImageMeta = state.base[currentSource].image
+  const currentImageMeta = state.assetData
 
   if (currentImageMeta) {
     try {
-      const adapter =
-        currentSource === 'stock'
-          ? storeAdapters.stockImages
-          : storeAdapters.cardphotoImages
-
       const fullRecord: ImageMeta | null = yield call(
-        [adapter, 'getById'],
+        [storeAdapters.cardphotoImages, 'getById'],
         currentImageMeta.id,
       )
 

@@ -6,7 +6,6 @@ import {
   commitWorkingConfig,
   hydrateEditor,
   initCardphoto,
-  setActiveSource,
   restoreSession,
   applyFinal,
   clearApply,
@@ -94,7 +93,6 @@ import type {
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type {
   ImageRecord,
-  CardphotoBase,
   CardphotoSessionRecord,
   ImageMeta,
   WorkingConfig,
@@ -226,7 +224,6 @@ const SESSION_WATCH_ACTIONS = [
   // cardtextSlice.actions.setFontFamily.type,
   commitWorkingConfig.type,
   initCardphoto.type,
-  setActiveSource.type,
   applyFinal.type,
   clearApply.type,
   hydrateEditor.type,
@@ -341,14 +338,14 @@ export function* hydrateAppSession() {
 
     if (session.cardphoto) {
       const {
-        assetConfigLight,
-        appliedDataLight,
-        assetDataLight,
+        assetConfig,
+        appliedData,
+        assetData,
         userOriginalData,
       } = session.cardphoto
-      const applied = appliedDataLight
+      const applied = appliedData
       const resolvedActiveMetaId =
-        assetDataLight?.id || assetConfigLight.image.metaId || ''
+        assetData?.id || assetConfig.image.metaId || ''
 
       const [stockRec, userRec, rawProcess, applyRec]: [
         { image: ImageMeta } | null,
@@ -364,23 +361,17 @@ export function* hydrateAppSession() {
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
       ])
 
-      const base: CardphotoBase = {
-        stock: { image: hydrateMeta(stockRec?.image || null) },
-        user: {
-          image: hydrateMeta(userOriginalData ?? userRec?.image ?? null),
-        },
-        processed: { image: hydrateMeta(rawProcess) },
-        // Session is the source of truth for applied state.
-        // Fallback to DB record only when session field is absent.
-        apply: { image: hydrateMeta(applied ?? (applyRec?.image || null)) },
-      }
+      const stockMeta = hydrateMeta(stockRec?.image || null)
+      const userMeta = hydrateMeta(userOriginalData ?? userRec?.image ?? null)
+      const processedMeta = hydrateMeta(rawProcess)
+      const appliedMeta = hydrateMeta(applied ?? (applyRec?.image || null))
 
       const activeImage =
-        assetDataLight ??
+        assetData ??
         applied ??
-        base.user.image ??
-        base.processed.image ??
-        base.stock.image ??
+        userMeta ??
+        processedMeta ??
+        stockMeta ??
         null
 
       if (!activeImage) return
@@ -394,7 +385,7 @@ export function* hydrateAppSession() {
         rebuildConfigFromMeta,
         activeImage,
         source,
-        assetConfigLight.card.orientation,
+        assetConfig.card.orientation,
       )
 
       if (source === 'user') {
@@ -402,11 +393,11 @@ export function* hydrateAppSession() {
           ...calculatedConfig,
           image: {
             ...calculatedConfig.image,
-            left: assetConfigLight.image.left,
-            top: assetConfigLight.image.top,
-            rotation: assetConfigLight.image.rotation,
+            left: assetConfig.image.left,
+            top: assetConfig.image.top,
+            rotation: assetConfig.image.rotation,
           },
-          crop: assetConfigLight.crop,
+          crop: assetConfig.crop,
         }
       } else {
         finalConfig = calculatedConfig
@@ -417,15 +408,24 @@ export function* hydrateAppSession() {
         'getAll',
       ])
 
-      yield call(fuelAssetRegistry, base, allCrops)
+      yield call(
+        fuelAssetRegistry,
+        {
+          stock: stockMeta,
+          user: userMeta,
+          processed: processedMeta,
+          applied: appliedMeta,
+        },
+        allCrops,
+      )
 
       yield put(
         hydrateEditor({
           config: calculatedConfig,
           isComplete: !!applied,
           appliedData: applied,
-          assetData: assetDataLight ?? activeImage,
-          userOriginalData: userOriginalData ?? base.user.image ?? null,
+          assetData: assetData ?? activeImage,
+          userOriginalData: userOriginalData ?? userMeta ?? null,
         }),
       )
 
@@ -447,13 +447,6 @@ export function* hydrateAppSession() {
       const userImg = hydrateMeta(rawUserRec?.image || null)
       const lastCrop = hydrateMeta(allCrops[allCrops.length - 1] || null)
 
-      const base: CardphotoBase = {
-        apply: { image: applyImg },
-        user: { image: userImg },
-        processed: { image: lastCrop },
-        stock: { image: null },
-      }
-
       let autoSource: ActiveImageSource | null = null
       if (applyImg) autoSource = 'apply'
       else if (userImg) autoSource = 'user'
@@ -461,7 +454,12 @@ export function* hydrateAppSession() {
 
       if (!autoSource) return
 
-      const activeImage = base[autoSource].image
+      const activeImage =
+        autoSource === 'apply'
+          ? applyImg
+          : autoSource === 'user'
+            ? userImg
+            : lastCrop
       if (!activeImage) return
 
       const config: WorkingConfig = yield call(
@@ -471,7 +469,16 @@ export function* hydrateAppSession() {
         activeImage.orientation,
       )
 
-      yield call(fuelAssetRegistry, base, allCrops)
+      yield call(
+        fuelAssetRegistry,
+        {
+          stock: null,
+          user: userImg,
+          processed: lastCrop,
+          applied: applyImg,
+        },
+        allCrops,
+      )
 
       yield put(
         hydrateEditor({

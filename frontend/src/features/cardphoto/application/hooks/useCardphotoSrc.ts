@@ -7,38 +7,32 @@ export function useCardphotoSrc(state: CardphotoState | null) {
   return useMemo(() => {
     if (!state) return { src: placeholderImage, alt: 'Placeholder' }
 
-    const userImg = state.base.user.image
-    const stockImg = state.base.stock.image
-    // const galleryImg = state.base.gallery.image
+    const activeImg = state.assetData
+    const appliedImg = state.appliedData
+    const userImg = state.userOriginalData
     const configImg = state.assetConfig?.image.meta
 
-    if (userImg && (!configImg || configImg.source !== 'user')) {
-      // console.log('*1')
-      return { src: userImg.url, alt: userImg.id }
+    if (activeImg?.url) {
+      return { src: activeImg.url, alt: activeImg.id }
     }
 
     if (configImg?.url) {
-      // console.log('*2')
       return { src: configImg.url, alt: configImg.id }
     }
 
+    if (appliedImg?.url) {
+      return { src: appliedImg.url, alt: appliedImg.id }
+    }
+
     if (userImg) {
-      // console.log('*3')
       return { src: userImg.url, alt: userImg.id }
     }
 
-    if (stockImg) {
-      // console.log('*4')
-      return { src: stockImg.url, alt: stockImg.id }
-    }
-    // console.log('*5')
-
     return { src: placeholderImage, alt: 'Placeholder' }
   }, [
+    state?.assetData?.url,
     state?.assetConfig?.image.meta.url,
-    state?.assetConfig?.image.meta.source,
-    state?.base.user.image?.url,
-    state?.base.stock.image?.url,
-    // state?.base.gallery.image?.url,
+    state?.appliedData?.url,
+    state?.userOriginalData?.url,
   ])
 }

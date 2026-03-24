@@ -9,7 +9,6 @@ import type {
   WorkingConfig,
   ImageSource,
   CardphotoSessionRecord,
-  CardphotoBase,
 } from '@cardphoto/domain/types'
 import { getRandomStockMeta } from './cardphotoHistorySaga'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
@@ -174,7 +173,15 @@ export const hydrateMeta = (meta: ImageMeta | null): ImageMeta | null => {
   }
 }
 
-export function* fuelAssetRegistry(base: CardphotoBase, allCrops: ImageMeta[]) {
+export function* fuelAssetRegistry(
+  core: {
+    user: ImageMeta | null
+    applied: ImageMeta | null
+    processed: ImageMeta | null
+    stock: ImageMeta | null
+  },
+  allCrops: ImageMeta[],
+) {
   const assets: ImageAsset[] = []
 
   const processMeta = (meta: ImageMeta | null) => {
@@ -186,10 +193,10 @@ export function* fuelAssetRegistry(base: CardphotoBase, allCrops: ImageMeta[]) {
     assets.push({ id: meta.id, url, thumbUrl })
   }
 
-  processMeta(base.stock.image)
-  processMeta(base.user.image)
-  processMeta(base.apply.image)
-  processMeta(base.processed.image)
+  processMeta(core.stock)
+  processMeta(core.user)
+  processMeta(core.applied)
+  processMeta(core.processed)
 
   allCrops.forEach(processMeta)
 

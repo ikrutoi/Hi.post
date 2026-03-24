@@ -22,7 +22,7 @@ import {
   setNeedsCrop,
   resetCropLayers,
   commitWorkingConfig,
-  setBaseImage,
+  setUserOriginalData,
   setProcessedImage,
   uploadImageReady,
   hydrateEditor,
@@ -71,9 +71,7 @@ import type {
   CardLayer,
   WorkingConfig,
   CardphotoState,
-  CardphotoBase,
   ActiveImageSource,
-  CardphotoSessionRecord,
   ImageRecord,
 } from '@cardphoto/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -147,7 +145,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     )
 
     const state: CardphotoState = yield select(selectCardphotoState)
-    const isComplete = !!(state.appliedData ?? state.base.apply.image)
+    const isComplete = !!state.appliedData
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       imageMeta,
@@ -163,16 +161,12 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     const serializableMeta = prepareForRedux(imageMeta)
     const serializableConfig = prepareConfigForRedux(config)
 
-    const base: CardphotoBase = {
-      ...state.base,
-      user: { image: serializableMeta },
-    }
-
     yield put(
       hydrateEditor({
-        base,
         config: serializableConfig,
         isComplete,
+        assetData: serializableMeta,
+        userOriginalData: serializableMeta,
       }),
     )
   } catch (error) {
@@ -257,7 +251,7 @@ export function* rebuildConfigFromMeta(
 
       const serializableMeta = prepareForRedux(newOriginalMeta)
 
-      yield put(setBaseImage({ target: 'user', image: serializableMeta }))
+      yield put(setUserOriginalData(serializableMeta))
     }
 
     yield put(commitWorkingConfig(prepareConfigForRedux(newConfig)))
@@ -332,7 +326,7 @@ function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
     return
   }
 
-  const meta = state.assetData ?? state.base[activeSource]?.image
+  const meta = state.assetData
   if (!meta) return
 
   const rot = state.assetConfig.image.rotation ?? 0

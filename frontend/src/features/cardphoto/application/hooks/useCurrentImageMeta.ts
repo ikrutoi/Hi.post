@@ -7,27 +7,10 @@ export function useCurrentImageMeta(
   return useMemo(() => {
     if (!state) return null
 
-    const userImg = state.base.user.image
-    const stockImg = state.base.stock.image
-    const configImg = state.assetConfig?.image.meta
-    // const galleryImg = state.base.gallery.image
-
-    if (configImg?.source === 'user' && userImg) {
-      return userImg
-    }
-
-    if (configImg?.source === 'stock' && stockImg) {
-      return stockImg
-    }
-
-    if (userImg) return userImg
-
-    // if (galleryImg) return { src: galleryImg.url, alt: galleryImg.id }
-
-    return stockImg || null
+    return state.assetData ?? state.appliedData ?? state.userOriginalData ?? null
   }, [
-    state?.assetConfig?.image.meta.id,
-    state?.base.user.image?.id,
-    state?.base.stock.image?.id,
+    state?.assetData?.id,
+    state?.appliedData?.id,
+    state?.userOriginalData?.id,
   ])
 }

@@ -9,10 +9,9 @@ import { RootState } from '@app/state'
 import {
   commitWorkingConfig,
   resetCardphoto,
-  setActiveSource,
   hydrateEditor,
+  setAssetData,
   setProcessedImage,
-  setBaseImage,
   markLoaded,
   markLoading,
   setCardphotoListPanelOpen,
@@ -212,14 +211,8 @@ export function* handleCardphotoToolbarAction(
     )
 
     const cardState: CardphotoState = yield select(selectCardphotoState)
-    const activeSource = deriveActiveSource(cardState)
-    if (activeSource) {
-      yield put(
-        setBaseImage({
-          target: activeSource,
-          image: prepareForRedux(updated),
-        }),
-      )
+    if (cardState?.assetData?.id === updated.id) {
+      yield put(setAssetData(prepareForRedux(updated)))
     }
 
     // Ensure list thumbs + toolbar favorite are consistent without reload.
@@ -261,10 +254,9 @@ export function* handleCardphotoToolbarAction(
       const state: CardphotoState = yield select(selectCardphotoState)
       const activeSource = deriveActiveSource(state)
       const isProcessed = activeSource === 'processed'
-
       const currentImageId = isProcessed
-        ? state.base.processed.image?.id
-        : (state.userOriginalData ?? state.base.user.image)?.id
+        ? state.assetData?.id
+        : state.userOriginalData?.id
 
       yield call(handleDeleteImageSaga, currentImageId, activeSource)
       break
@@ -417,10 +409,10 @@ export function* syncToolbarContext() {
   const hasTemplates = typeof badgeCount === 'number' ? badgeCount > 0 : false
 
   let sectionUpdate = {}
-  const isUserImage = !!(state.userOriginalData ?? state.base.user.image)
-  const hasStockImage = !!state.base.stock.image
-  const hasProcessedImage = !!state.base.processed.image
-  const isProcessedInLine = state.base.processed.image?.status === 'inLine'
+  const isUserImage = !!state.userOriginalData
+  const hasStockImage = false
+  const hasProcessedImage = state.assetData?.status === 'processed'
+  const isProcessedInLine = state.assetData?.status === 'inLine'
   switch (activeSource) {
     case null:
       sectionUpdate = {
@@ -578,7 +570,9 @@ export function* syncToolbarContext() {
 }
 
 const selectCurrentProcessedUrl = (state: RootState) =>
-  state.cardphoto.state?.base.processed.image?.url
+  state.cardphoto.state?.assetData?.status === 'processed'
+    ? state.cardphoto.state?.assetData?.url
+    : undefined
 
 export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
   try {
@@ -587,8 +581,7 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
     const oldUrl: string | undefined = yield select(selectCurrentProcessedUrl)
     const appliedUrl: string | undefined = yield select(
       (state) =>
-        state.cardphoto.state?.appliedData?.url ??
-        state.cardphoto.state?.base.apply.image?.url,
+        state.cardphoto.state?.appliedData?.url,
     )
 
     const cropRecord: ImageMeta | null = yield call(
@@ -603,9 +596,8 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
       const stillInUse =
         oldUrl &&
         [
-          cardState?.userOriginalData?.url ?? cardState?.base.user.image?.url,
-          cardState?.appliedData?.url ?? cardState?.base.apply.image?.url,
-          cardState?.base.stock.image?.url,
+          cardState?.userOriginalData?.url,
+          cardState?.appliedData?.url,
         ].includes(oldUrl)
 
       if (oldUrl?.startsWith('blob:') && oldUrl !== appliedUrl && !stillInUse) {
@@ -633,7 +625,6 @@ export function* watchToolbarContext() {
   yield takeEvery(
     [
       hydrateEditor.type,
-      setActiveSource.type,
       commitWorkingConfig.type,
       resetCardphoto.type,
       setProcessedImage.type,

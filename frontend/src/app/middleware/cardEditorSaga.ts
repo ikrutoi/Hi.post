@@ -159,7 +159,7 @@ function* checkAndSyncProcessedCard() {
 
   console.log('CHECK_AND_SYNC_PROCESSED photo', cardphoto)
 
-  const appliedPhoto = cardphoto.appliedData ?? cardphoto.base.apply.image
+  const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
 
   const processedCard: Card = {

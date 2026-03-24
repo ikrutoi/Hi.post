@@ -33,7 +33,7 @@ export function* handleClearSectionSaga(
 
 export function* checkAndSyncProcessedCard() {
   const data: FullCardData = yield select(selectActiveCardFullData)
-  const appliedPhoto = data.cardphoto.appliedData ?? data.cardphoto.base.apply.image
+  const appliedPhoto = data.cardphoto.appliedData
 
   if (!appliedPhoto) return
 

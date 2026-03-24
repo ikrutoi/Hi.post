@@ -13,11 +13,10 @@ import {
   selectCardphotoInlineTemplateListRevision,
   selectCardphotoListTemplateGridCols,
   selectActiveImage,
-  selectActiveSource,
 } from '@cardphoto/infrastructure/selectors'
 import {
   bumpCardphotoInlineTemplateList,
-  setBaseImage,
+  setAssetData,
 } from '@cardphoto/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import type { ImageMeta } from '@cardphoto/domain/types'
@@ -65,7 +64,6 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
   const activeImage = useAppSelector(selectActiveImage)
-  const activeSource = useAppSelector(selectActiveSource)
   const [rows, setRows] = useState<Row[]>([])
   const objectUrlsRef = useRef<string[]>([])
 
@@ -159,18 +157,13 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
       const updated: ImageMeta = { ...meta, favorite: nextFavorite }
       await storeAdapters.cardphotoImages.put(updated)
 
-      // If the same image is currently opened in `cardphotoView` — keep toolbar in sync.
-      if (activeSource && activeImage?.id === id) {
-        dispatch(
-          setBaseImage({
-            target: activeSource,
-            image: prepareForRedux(updated),
-          }),
-        )
+      // If the same image is currently opened — keep toolbar in sync.
+      if (activeImage?.id === id) {
+        dispatch(setAssetData(prepareForRedux(updated)))
       }
       dispatch(bumpCardphotoInlineTemplateList())
     },
-    [activeImage?.id, activeSource, dispatch],
+    [activeImage?.id, dispatch],
   )
 
   const handleDelete = useCallback(

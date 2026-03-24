@@ -50,7 +50,7 @@ export const CardphotoStage = () => {
   const { getAssetById } = useAssetRegistryFacade()
 
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
-  /** Stage crop UI follows the same toolbar section as the header (`assetToolbar` in Redux). */
+  /** Stage crop UI follows the same derived toolbar section as the header. */
   const photoToolbarSection = assetToolbar ?? 'cardphotoCreate'
   const { state: iconState } = useToolbarFacade(photoToolbarSection)
   const cropToolbarState = iconState?.crop?.state ?? 'disabled'

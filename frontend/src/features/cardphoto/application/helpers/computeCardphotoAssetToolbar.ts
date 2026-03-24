@@ -10,7 +10,7 @@ export function computeCardphotoAssetToolbar(
 ): CardphotoAssetToolbar {
   const src = deriveActiveSource(s)
   if (src == null) return null
-  const img = s.assetData ?? s.base[src]?.image ?? null
+  const img = s.assetData
   if (!img) return null
   if (img.status === 'inLine' || src === 'apply') return 'cardphotoView'
   if (src === 'processed') return 'cardphotoProcessed'

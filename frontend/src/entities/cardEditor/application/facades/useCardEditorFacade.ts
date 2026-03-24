@@ -17,7 +17,7 @@ import {
   setApplied as setCardtextApplied,
   setAppliedData as setCardtextAppliedData,
 } from '@cardtext/infrastructure/state'
-import { clearApply, setActiveSource } from '@cardphoto/infrastructure/state'
+import { clearApply, setAssetData } from '@cardphoto/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { deriveActiveSource } from '@cardphoto/application/helpers'
 
@@ -51,12 +51,7 @@ export const useCardEditorFacade = () => {
       case 'cardphoto':
         dispatch(clearApply())
         if (deriveActiveSource(cardphotoState) === 'apply') {
-          const nextSource = cardphotoState.base.processed.image
-            ? 'processed'
-            : cardphotoState.base.user.image
-              ? 'user'
-              : 'stock'
-          dispatch(setActiveSource(nextSource))
+          dispatch(setAssetData(cardphotoState.userOriginalData))
         }
         break
     }

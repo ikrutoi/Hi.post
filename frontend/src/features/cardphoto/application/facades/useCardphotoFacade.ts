@@ -45,7 +45,7 @@ export type CardphotoFacade = {
   cropQualityProgress: number
   activeImage: ImageMeta | null
   isProcessedMode: boolean
-  /** Toolbar section for the active asset (Redux `assetToolbar`). */
+  /** Toolbar section for the active asset (derived selector). */
   assetToolbar: CardphotoAssetToolbar
 
   init: () => void
