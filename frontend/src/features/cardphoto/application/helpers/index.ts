@@ -1,5 +1,5 @@
 export * from './computeCardphotoAssetToolbar'
-export * from './deriveActiveSource'
+export * from './syncUserOriginal'
 export * from './validateImageSize'
 export * from './calculateInitialCrop'
 export * from './calculateCropPosition'

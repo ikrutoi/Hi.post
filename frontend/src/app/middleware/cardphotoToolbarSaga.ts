@@ -47,7 +47,6 @@ import {
   getQualityColor,
   dispatchQualityUpdate,
   calculateCropQuality,
-  deriveActiveSource,
 } from '@cardphoto/application/helpers'
 import { onDownloadClick } from './cardphotoProcessSaga'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
@@ -64,6 +63,8 @@ import type {
 } from '@cardphoto/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
+
+type ToolbarAssetKind = 'none' | 'apply' | 'processed' | 'user' | 'stock'
 
 const CARDPHOTO_LIST_PREF_ID: UiPreferencesRecord['id'] = 'cardphotoList'
 
@@ -253,14 +254,7 @@ export function* handleCardphotoToolbarAction(
       break
 
     case 'close': {
-      const state: CardphotoState = yield select(selectCardphotoState)
-      const activeSource = deriveActiveSource(state)
-      const isProcessed = activeSource === 'processed'
-      const currentImageId = isProcessed
-        ? state.assetData?.id
-        : state.userOriginalData?.id
-
-      yield call(handleDeleteImageSaga, currentImageId, activeSource)
+      yield call(handleDeleteImageSaga)
       break
     }
 
@@ -403,7 +397,27 @@ export function* syncToolbarContext() {
   )
     return
 
-  const activeSource = deriveActiveSource(state)
+  const assetForToolbar = state.assetData
+  const appliedForToolbar = state.appliedData
+  let toolbarAssetKind: ToolbarAssetKind = 'none'
+  if (!assetForToolbar) {
+    toolbarAssetKind = 'none'
+  } else if (
+    assetForToolbar.id &&
+    appliedForToolbar?.id &&
+    assetForToolbar.id === appliedForToolbar.id
+  ) {
+    toolbarAssetKind = 'apply'
+  } else if (assetForToolbar.status === 'processed') {
+    toolbarAssetKind = 'processed'
+  } else if (
+    assetForToolbar.source === 'user' ||
+    assetForToolbar.source === 'original'
+  ) {
+    toolbarAssetKind = 'user'
+  } else if (assetForToolbar.source === 'stock') {
+    toolbarAssetKind = 'stock'
+  }
   // We no longer track crop history in Redux state.
   // Enable list actions based on `listCardphoto` badge (= number of `inLine` templates).
   const badgeCount =
@@ -419,8 +433,8 @@ export function* syncToolbarContext() {
   const hasStockImage = false
   const hasProcessedImage = state.assetData?.status === 'processed'
   const isProcessedInLine = state.assetData?.status === 'inLine'
-  switch (activeSource) {
-    case null:
+  switch (toolbarAssetKind) {
+    case 'none':
       sectionUpdate = {
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
@@ -620,7 +634,7 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
       })
 
       yield put(setProcessedImage(serializable))
-      yield call(rebuildConfigFromMeta, serializable, 'processed')
+      yield call(rebuildConfigFromMeta, serializable, false)
     }
   } catch (error) {
     console.error('Select crop history error:', error)

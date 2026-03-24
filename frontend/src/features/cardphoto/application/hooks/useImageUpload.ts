@@ -25,7 +25,7 @@ export const useImageUpload = (
 
         const imageMeta: ImageMeta = {
           id: nanoid(),
-          source: 'user',
+          source: 'original',
           status: 'processed',
           url: objectUrl,
           width,

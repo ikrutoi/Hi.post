@@ -12,7 +12,6 @@ import {
 import {
   selectActiveImage,
   selectCardphotoAssetConfig,
-  selectActiveSource,
   selectCardphotoAssetToolbar,
 } from '../infrastructure/selectors'
 import { CropArea } from './CropArea'
@@ -36,7 +35,6 @@ import {
 export const CardphotoStage = () => {
   const dispatch = useAppDispatch()
   const store = useStore<RootState>()
-  const activeSource = useAppSelector(selectActiveSource)
   const activeImage = useAppSelector(selectActiveImage)
   const assetConfig = useAppSelector(selectCardphotoAssetConfig)
 
@@ -60,7 +58,7 @@ export const CardphotoStage = () => {
   const [loaded, setLoaded] = useState(false)
   const stageRef = useRef<HTMLDivElement>(null)
 
-  const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeSource}`
+  const containerKey = `${activeImage?.id}_${sizeCard.orientation}_${activeImage?.status}_${activeImage?.source}`
 
   /** После любого commit конфига — реальные px стейджа (RO не срабатывает, если размер DOM не изменился). */
   useLayoutEffect(() => {

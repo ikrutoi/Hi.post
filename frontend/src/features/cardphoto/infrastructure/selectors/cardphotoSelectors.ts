@@ -3,7 +3,6 @@ import { RootState } from '@app/state'
 import { roundTo } from '@shared/utils/layout'
 import { checkIsCropFull } from '../../application/helpers'
 import { computeCardphotoAssetToolbar } from '../../application/helpers/computeCardphotoAssetToolbar'
-import { deriveActiveSource } from '../../application/helpers/deriveActiveSource'
 import { selectSizeCard } from '@layout/infrastructure/selectors'
 import type {
   CardphotoState,
@@ -11,10 +10,8 @@ import type {
   WorkingConfig,
   ImageMeta,
   CardLayer,
-  ActiveImageSource,
   CardphotoSessionRecord,
 } from '../../domain/types'
-import { cardEditorReducer } from '@/entities/cardEditor/infrastructure/state'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 
 function toLightImageMeta(meta: ImageMeta | null): ImageMeta | null {
@@ -131,12 +128,6 @@ export const selectIsCropFull = createSelector(
 export const selectCropQualityProgress = (state: RootState): number =>
   state.cardphoto.state?.assetConfig?.crop?.meta?.qualityProgress ?? 0
 
-export const selectActiveSource = (
-  state: RootState,
-): ActiveImageSource | null => {
-  return deriveActiveSource(state.cardphoto.state)
-}
-
 export const selectActiveImage = (state: RootState): ImageMeta | null => {
   const cp = state.cardphoto.state
   if (!cp) return null
@@ -144,7 +135,7 @@ export const selectActiveImage = (state: RootState): ImageMeta | null => {
 }
 
 export const selectIsProcessedMode = (state: RootState): boolean =>
-  deriveActiveSource(state.cardphoto.state) === 'processed'
+  state.cardphoto.state?.assetData?.status === 'processed'
 
 export const selectCardphotoSessionRecord = createSelector(
   [
@@ -152,16 +143,19 @@ export const selectCardphotoSessionRecord = createSelector(
     selectAppliedImage,
   ],
   (s, appliedImage): CardphotoSessionRecord | null => {
-    const activeSource = deriveActiveSource(s)
-    if (!s || !activeSource || !s.assetConfig) return null
+    if (!s?.assetData || !s.assetConfig) return null
 
     const { assetConfig: config } = s
+    const asset = s.assetData
+    const applied = appliedImage
+    const isApply = !!(asset.id && applied?.id && asset.id === applied.id)
 
-    const activeMetaId =
-      activeSource === 'user'
-        ? CURRENT_EDITOR_IMAGE_ID
-        : activeSource === 'apply'
-          ? 'current_apply_image'
+    const activeMetaId = isApply
+      ? 'current_apply_image'
+      : asset.status === 'processed'
+        ? config.image.meta.id
+        : asset.source === 'user' || asset.source === 'original'
+          ? CURRENT_EDITOR_IMAGE_ID
           : config.image.meta.id
 
     return {

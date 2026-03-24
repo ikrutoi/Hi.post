@@ -1,14 +1,11 @@
 import { CardStatus } from '@/entities/card/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
 
-/** Measured editor stage in CSS px (not persisted in session). */
 export type CardphotoImageStageRect = { width: number; height: number }
 
-export type ImageSource = 'stock' | 'user'
+export type ImageSource = 'stock' | 'user' | 'original'
 
 export type ImageStatus = 'processed' | 'outLine' | 'inLine'
-
-export type ActiveImageSource = 'stock' | 'user' | 'processed' | 'apply'
 
 export type CardphotoAssetToolbar =
   | 'cardphotoCreate'

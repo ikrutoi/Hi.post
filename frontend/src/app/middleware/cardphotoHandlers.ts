@@ -26,7 +26,11 @@ import {
   selectIsCropFull,
   selectIsProcessedMode,
 } from '@cardphoto/infrastructure/selectors'
-import { applyBounds, deriveActiveSource } from '@cardphoto/application/helpers'
+import {
+  shouldSyncUserOriginalForState,
+  shouldSyncUserOriginalOnRebuild,
+} from '@cardphoto/application/helpers'
+import { applyBounds } from '@cardphoto/application/helpers/cropMath'
 import {
   prepareConfigForRedux,
   updateCropToolbarState,
@@ -63,7 +67,6 @@ import type {
   CardphotoState,
   CardphotoAssetToolbar,
   CropLayer,
-  ActiveImageSource,
   ImageRecord,
 } from '@cardphoto/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
@@ -201,14 +204,21 @@ export function* syncCropFullIcon(params?: {
 export function* handleImageLayerUpdate() {
   // const sizeCard: SizeCard = yield select(selectSizeCard)
   const config: WorkingConfig | null = yield select(selectCardphotoAssetConfig)
+  const cp: CardphotoState | null = yield select(selectCardphotoState)
   // const originalImage: ImageMeta = yield select(selectActiveImage)
 
   if (!config || !config.image?.meta) return
 
+  const meta = config.image.meta
+  const syncUserOriginal = shouldSyncUserOriginalOnRebuild(
+    meta,
+    cp?.appliedData ?? null,
+  )
+
   const newConfig: WorkingConfig = yield call(
     rebuildConfigFromMeta,
-    config.image.meta,
-    'user',
+    meta,
+    syncUserOriginal,
   )
 
   // const newImageLayer: ImageLayer = fitImageToCard(
@@ -319,12 +329,12 @@ export function* handleImageRotate(
       ? rotateRight(currentRotation)
       : rotateLeft(currentRotation)
 
-  const activeSource = deriveActiveSource(state) ?? 'user'
+  const syncUserOriginal = shouldSyncUserOriginalForState(state)
 
   yield call(
     rebuildConfigFromMeta,
     originalImage,
-    activeSource,
+    syncUserOriginal,
     undefined,
     nextRotation,
   )
@@ -457,7 +467,7 @@ export function* handleCropConfirm(): SagaIterator {
     }
 
     yield put(setProcessedImage(serializable))
-    yield call(rebuildConfigFromMeta, serializable, 'processed')
+    yield call(rebuildConfigFromMeta, serializable, false)
   } catch (error) {
     console.error('Error crop:', error)
   } finally {
@@ -509,28 +519,32 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
 //   )
 // }
 
-export function* handleDeleteImageSaga(
-  id: string | undefined,
-  source: ActiveImageSource | null,
-) {
+export function* handleDeleteImageSaga() {
   try {
     const state: CardphotoState = yield select(selectCardphotoState)
-    const userImage = state.userOriginalData
+    if (!state) return
 
-    if (source === 'processed' && id) {
-      yield call(storeAdapters.cardphotoImages.deleteById, id)
+    const asset = state.assetData
+    const applied = state.appliedData
+    const userImage = state.userOriginalData
+    const isApply = !!(asset?.id && applied?.id && asset.id === applied.id)
+    const isUserSlot =
+      !!asset &&
+      !isApply &&
+      asset.status !== 'processed' &&
+      (asset.source === 'user' || asset.source === 'original')
+
+    if (asset?.status === 'processed' && asset.id) {
+      yield call(storeAdapters.cardphotoImages.deleteById, asset.id)
       yield put(bumpCardphotoInlineTemplateList())
       // Crop history removed: after deleting processed template,
       // switch back to `user` (if exists) or to `stock`.
       yield put(clearAllCrops())
 
-      const nextMeta = userImage
-      const nextSource: ActiveImageSource | null = userImage ? 'user' : null
-
-      if (nextMeta && nextSource) {
-        yield fork(rebuildConfigFromMeta, nextMeta, nextSource)
+      if (userImage) {
+        yield fork(rebuildConfigFromMeta, userImage, true)
       }
-    } else if (source === 'user') {
+    } else if (isUserSlot) {
       yield call(storeAdapters.userImages.deleteById, CURRENT_EDITOR_IMAGE_ID)
       yield put(removeUserImage())
       yield put(setAssetData(null))
@@ -583,25 +597,17 @@ export function* handleCropGalleryAction() {
 export function* handleBackToOriginalSaga() {
   const state: CardphotoState = yield select(selectCardphotoState)
   const userMeta = state.userOriginalData
-  const activeSource = deriveActiveSource(state)
   const isComplete = !!state.appliedData
 
   console.log('BACK_SAGA state', state)
 
-  let nextSource: ActiveImageSource | null = null
-  let nextMeta = null
+  let nextMeta: ImageMeta | null = null
 
-  if (activeSource === 'processed') {
-    if (userMeta) {
-      nextSource = 'user'
-      nextMeta = userMeta
-    }
-  } else if (activeSource === 'user') {
-    nextSource = null
-    nextMeta = null
+  if (state.assetData?.status === 'processed' && userMeta) {
+    nextMeta = userMeta
   }
 
-  if (nextSource && nextMeta) {
+  if (nextMeta) {
     const toolbarState: CardphotoToolbarState = yield select(
       selectToolbarSectionState('cardphoto'),
     )
@@ -613,7 +619,7 @@ export function* handleBackToOriginalSaga() {
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       nextMeta,
-      nextSource,
+      true,
       undefined,
     )
 
@@ -644,7 +650,8 @@ export function* handleApplyAction() {
 
       if (!asset) {
         const adapter =
-          currentImageMeta.source === 'user'
+          currentImageMeta.source === 'user' ||
+          currentImageMeta.source === 'original'
             ? storeAdapters.userImages
             : currentImageMeta.source === 'stock'
               ? storeAdapters.stockImages
@@ -704,8 +711,7 @@ export function* handleApplyAction() {
 
 export function* handleApplyAction2() {
   const state: CardphotoState = yield select(selectCardphotoState)
-  const currentSource = deriveActiveSource(state)
-  if (currentSource !== 'processed') return
+  if (state.assetData?.status !== 'processed') return
 
   const currentImageMeta = state.assetData
 

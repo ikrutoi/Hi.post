@@ -42,7 +42,7 @@ import {
   selectCardphotoImageStageRect,
 } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
-import { deriveActiveSource } from '@cardphoto/application/helpers'
+import { shouldSyncUserOriginalForState } from '@cardphoto/application/helpers'
 import { setSizeCard } from '@layout/infrastructure/state'
 import { roundTo } from '@shared/utils/layout'
 import {
@@ -71,7 +71,6 @@ import type {
   CardLayer,
   WorkingConfig,
   CardphotoState,
-  ActiveImageSource,
   ImageRecord,
 } from '@cardphoto/domain/types'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -149,7 +148,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       imageMeta,
-      'user',
+      true,
     )
 
     const imageRecord: ImageRecord = {
@@ -211,7 +210,7 @@ function* onCancelFileDialog(): SagaIterator {
 
 export function* rebuildConfigFromMeta(
   meta: ImageMeta,
-  source: ActiveImageSource,
+  syncUserOriginal: boolean,
   forceOrientation?: LayoutOrientation,
   rotation?: number,
 ) {
@@ -243,7 +242,7 @@ export function* rebuildConfigFromMeta(
       crop: cropLayer,
     }
 
-    if (source === 'user') {
+    if (syncUserOriginal) {
       const newOriginalMeta = {
         ...meta,
         rotation: newRotation,
@@ -280,7 +279,7 @@ function* onSelectInLineTemplateSaga(action: PayloadAction<string>): SagaIterato
     yield put(setProcessedImage(prepareForRedux(record)))
 
     // 2) Refit image + (re)build crop layer based on selected meta.
-    yield call(rebuildConfigFromMeta, record, 'processed')
+    yield call(rebuildConfigFromMeta, record, false)
   } catch (e) {
     console.error('onSelectInLineTemplateSaga', e)
   }
@@ -315,8 +314,7 @@ function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
   if (!rect || rect.width < 2 || rect.height < 2) return
 
   const state: CardphotoState | null = yield select(selectCardphotoState)
-  const activeSource = deriveActiveSource(state)
-  if (!state || !activeSource || !state.assetConfig?.image) return
+  if (!state || !state.assetConfig?.image) return
 
   const current = state.assetConfig.card
   if (
@@ -330,7 +328,8 @@ function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
   if (!meta) return
 
   const rot = state.assetConfig.image.rotation ?? 0
-  yield call(rebuildConfigFromMeta, meta, activeSource, undefined, rot)
+  const syncUserOriginal = shouldSyncUserOriginalForState(state)
+  yield call(rebuildConfigFromMeta, meta, syncUserOriginal, undefined, rot)
 }
 
 /** When the real editor stage resizes, refit image/crop to measured pixels (not global SizeCard). */

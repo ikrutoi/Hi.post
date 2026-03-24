@@ -9,7 +9,7 @@ import type {
   CardphotoSessionRecord,
   CardphotoImageStageRect,
 } from '../../domain/types'
-import { deriveActiveSource } from '../../application/helpers/deriveActiveSource'
+import { shouldSyncUserOriginalOnRebuild } from '../../application/helpers/syncUserOriginal'
 
 function toLightImageMeta(meta: ImageMeta | null): ImageMeta | null {
   if (!meta) return null
@@ -243,7 +243,7 @@ export const cardphotoSlice = createSlice({
 
     clearAllCrops(state) {
       if (state.state) {
-        if (deriveActiveSource(state.state) === 'processed') {
+        if (state.state.assetData?.status === 'processed') {
           state.state.assetData = state.state.userOriginalData ?? null
         }
       }
@@ -253,7 +253,7 @@ export const cardphotoSlice = createSlice({
       const cp = state.state
       if (cp) {
         cp.userOriginalData = null
-        if (deriveActiveSource(cp) === 'user') {
+        if (shouldSyncUserOriginalOnRebuild(cp.assetData, cp.appliedData)) {
           cp.assetData = null
         }
       }

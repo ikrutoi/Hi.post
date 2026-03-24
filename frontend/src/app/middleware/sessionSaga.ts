@@ -96,7 +96,6 @@ import type {
   CardphotoSessionRecord,
   ImageMeta,
   WorkingConfig,
-  ActiveImageSource,
 } from '@cardphoto/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import {
@@ -116,17 +115,7 @@ import type { AromaState } from '@entities/aroma/domain/types'
 import type { DateState } from '@entities/date/domain/types'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { CardSection } from '@shared/config/constants'
-
-function deriveSourceFromMeta(
-  asset: ImageMeta | null,
-  applied: ImageMeta | null,
-): ActiveImageSource | null {
-  if (asset?.id && applied?.id && asset.id === applied.id) return 'apply'
-  if (asset?.status === 'processed') return 'processed'
-  if (asset?.source === 'user') return 'user'
-  if (asset?.source === 'stock') return 'stock'
-  return null
-}
+import { shouldSyncUserOriginalOnRebuild } from '@cardphoto/application/helpers'
 
 export function* persistGlobalSession() {
   const cardphoto: CardphotoSessionRecord | null = yield select(
@@ -375,7 +364,10 @@ export function* hydrateAppSession() {
         null
 
       if (!activeImage) return
-      const source = deriveSourceFromMeta(activeImage, applied) ?? 'stock'
+      const syncUserOriginal = shouldSyncUserOriginalOnRebuild(
+        activeImage,
+        applied,
+      )
 
       // const sizeCard: SizeCard = yield select(selectSizeCard)
 
@@ -384,11 +376,11 @@ export function* hydrateAppSession() {
       const calculatedConfig: WorkingConfig = yield call(
         rebuildConfigFromMeta,
         activeImage,
-        source,
+        syncUserOriginal,
         assetConfig.card.orientation,
       )
 
-      if (source === 'user') {
+      if (syncUserOriginal) {
         finalConfig = {
           ...calculatedConfig,
           image: {
@@ -447,26 +439,29 @@ export function* hydrateAppSession() {
       const userImg = hydrateMeta(rawUserRec?.image || null)
       const lastCrop = hydrateMeta(allCrops[allCrops.length - 1] || null)
 
-      let autoSource: ActiveImageSource | null = null
-      if (applyImg) autoSource = 'apply'
-      else if (userImg) autoSource = 'user'
-      else if (lastCrop) autoSource = 'processed'
+      type Bootstrap = 'apply' | 'user' | 'processed'
+      let bootstrap: Bootstrap | null = null
+      if (applyImg) bootstrap = 'apply'
+      else if (userImg) bootstrap = 'user'
+      else if (lastCrop) bootstrap = 'processed'
 
-      if (!autoSource) return
+      if (!bootstrap) return
 
       const activeImage =
-        autoSource === 'apply'
+        bootstrap === 'apply'
           ? applyImg
-          : autoSource === 'user'
+          : bootstrap === 'user'
             ? userImg
             : lastCrop
       if (!activeImage) return
 
+      const syncUserOriginal = bootstrap === 'user'
+
       const config: WorkingConfig = yield call(
         rebuildConfigFromMeta,
         activeImage,
-        autoSource,
-        activeImage.orientation,
+        syncUserOriginal,
+        sizeCard.orientation,
       )
 
       yield call(

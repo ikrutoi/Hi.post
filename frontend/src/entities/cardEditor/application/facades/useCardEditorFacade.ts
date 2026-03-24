@@ -17,9 +17,7 @@ import {
   setApplied as setCardtextApplied,
   setAppliedData as setCardtextAppliedData,
 } from '@cardtext/infrastructure/state'
-import { clearApply, setAssetData } from '@cardphoto/infrastructure/state'
-import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
-import { deriveActiveSource } from '@cardphoto/application/helpers'
+import { clearApply } from '@cardphoto/infrastructure/state'
 
 export const useCardEditorFacade = () => {
   const dispatch = useAppDispatch()
@@ -28,7 +26,6 @@ export const useCardEditorFacade = () => {
   const editorId = useAppSelector(selectCardEditorId)
   const isCompleted = useAppSelector(selectIsCardEditorCompleted)
   const hoveredSection = useAppSelector(selectHoveredSection)
-  const cardphotoState = useAppSelector(selectCardphotoState)
 
   const removeSection = (section: CardSection) => {
     switch (section) {
