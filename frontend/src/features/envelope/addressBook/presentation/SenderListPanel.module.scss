@@ -20,6 +20,8 @@
   top: 0.15rem;
   width: calc(100% - 0.75rem - 8px);
   height: 1.75rem;
+  border-bottom: 1px solid $color-cardphoto-input-border;
+  box-sizing: border-box;
   // display: flex;
   // justify-content: space-between;
   // align-items: center;
@@ -93,7 +95,7 @@
 .list {
   flex: 1;
   min-height: 0;
-  padding: 0 calc(0.25rem + 8px) 0.5rem 0.5rem;
+  padding: 0.5rem calc(0.25rem + 8px) 0.5rem 0.5rem;
   outline: none;
 
   &:focus {

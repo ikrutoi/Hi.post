@@ -78,7 +78,7 @@
 .list {
   flex: 1;
   min-height: 0;
-  padding: 0.25rem 0.75rem 0.5rem 0.5rem;
+  padding: calc(0.25rem + 0.5rem) 0.75rem 0.5rem 0.5rem;
   outline: none;
 
   &:focus {
