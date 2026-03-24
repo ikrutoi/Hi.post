@@ -5,7 +5,6 @@ import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/sta
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
-import { syncCardOrientationStatus } from './cardtextProcessSaga'
 import type {
   SectionEditorMenuToolbarState,
   SectionEditorMenuKey,

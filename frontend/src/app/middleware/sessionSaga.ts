@@ -30,7 +30,6 @@ import { restoreSender } from '@envelope/sender/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
-import { syncCardOrientationStatus } from './cardtextProcessSaga'
 import {
   selectCardtextPlainText,
   selectCardtextSessionData,
@@ -118,8 +117,18 @@ import type { SizeCard } from '@layout/domain/types'
 import type { AromaState } from '@entities/aroma/domain/types'
 import type { DateState } from '@entities/date/domain/types'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
-import { getRandomStockMeta } from './cardphotoHistorySaga'
 import { CardSection } from '@shared/config/constants'
+
+function deriveSourceFromMeta(
+  asset: ImageMeta | null,
+  applied: ImageMeta | null,
+): ActiveImageSource | null {
+  if (asset?.id && applied?.id && asset.id === applied.id) return 'apply'
+  if (asset?.status === 'processed') return 'processed'
+  if (asset?.source === 'user') return 'user'
+  if (asset?.source === 'stock') return 'stock'
+  return null
+}
 
 export function* persistGlobalSession() {
   const cardphoto: CardphotoSessionRecord | null = yield select(
@@ -331,7 +340,15 @@ export function* hydrateAppSession() {
     if (!session) return
 
     if (session.cardphoto) {
-      const { activeMetaId, source, config, isComplete, apply } = session.cardphoto
+      const {
+        assetConfigLight,
+        appliedDataLight,
+        assetDataLight,
+        userOriginalData,
+      } = session.cardphoto
+      const applied = appliedDataLight
+      const resolvedActiveMetaId =
+        assetDataLight?.id || assetConfigLight.image.metaId || ''
 
       const [stockRec, userRec, rawProcess, applyRec]: [
         { image: ImageMeta } | null,
@@ -341,30 +358,33 @@ export function* hydrateAppSession() {
       ] = yield all([
         call([storeAdapters.stockImages, 'getById'], 'current_stock_image'),
         call([storeAdapters.userImages, 'getById'], CURRENT_EDITOR_IMAGE_ID),
-        activeMetaId
-          ? call([storeAdapters.cardphotoImages, 'getById'], activeMetaId)
+        resolvedActiveMetaId
+          ? call([storeAdapters.cardphotoImages, 'getById'], resolvedActiveMetaId)
           : null,
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
       ])
 
       const base: CardphotoBase = {
         stock: { image: hydrateMeta(stockRec?.image || null) },
-        user: { image: hydrateMeta(userRec?.image || null) },
+        user: {
+          image: hydrateMeta(userOriginalData ?? userRec?.image ?? null),
+        },
         processed: { image: hydrateMeta(rawProcess) },
         // Session is the source of truth for applied state.
         // Fallback to DB record only when session field is absent.
-        apply: { image: hydrateMeta(apply ?? (applyRec?.image || null)) },
+        apply: { image: hydrateMeta(applied ?? (applyRec?.image || null)) },
       }
 
-      let activeImage = base[source]?.image || base.stock.image
-
-      if (!activeImage) {
-        const emergencyRaw: ImageMeta = yield call(getRandomStockMeta)
-        activeImage = hydrateMeta(emergencyRaw)
-        if (activeImage) base.stock.image = activeImage
-      }
+      const activeImage =
+        assetDataLight ??
+        applied ??
+        base.user.image ??
+        base.processed.image ??
+        base.stock.image ??
+        null
 
       if (!activeImage) return
+      const source = deriveSourceFromMeta(activeImage, applied) ?? 'stock'
 
       // const sizeCard: SizeCard = yield select(selectSizeCard)
 
@@ -374,19 +394,19 @@ export function* hydrateAppSession() {
         rebuildConfigFromMeta,
         activeImage,
         source,
-        config.card.orientation,
+        assetConfigLight.card.orientation,
       )
 
-      if (source === 'user' && config) {
+      if (source === 'user') {
         finalConfig = {
           ...calculatedConfig,
           image: {
             ...calculatedConfig.image,
-            left: config.image.left,
-            top: config.image.top,
-            rotation: config.image.rotation,
+            left: assetConfigLight.image.left,
+            top: assetConfigLight.image.top,
+            rotation: assetConfigLight.image.rotation,
           },
-          crop: config.crop,
+          crop: assetConfigLight.crop,
         }
       } else {
         finalConfig = calculatedConfig
@@ -401,10 +421,11 @@ export function* hydrateAppSession() {
 
       yield put(
         hydrateEditor({
-          base,
           config: calculatedConfig,
-          activeSource: source,
-          isComplete,
+          isComplete: !!applied,
+          appliedData: applied,
+          assetData: assetDataLight ?? activeImage,
+          userOriginalData: userOriginalData ?? base.user.image ?? null,
         }),
       )
 
@@ -425,22 +446,22 @@ export function* hydrateAppSession() {
       const applyImg = hydrateMeta(rawApplyRec?.image || null)
       const userImg = hydrateMeta(rawUserRec?.image || null)
       const lastCrop = hydrateMeta(allCrops[allCrops.length - 1] || null)
-      const stockRaw: ImageMeta = yield call(getRandomStockMeta)
-      const stockImg = hydrateMeta(stockRaw)
 
       const base: CardphotoBase = {
         apply: { image: applyImg },
         user: { image: userImg },
         processed: { image: lastCrop },
-        stock: { image: stockImg },
+        stock: { image: null },
       }
 
-      let autoSource: ActiveImageSource = 'stock'
+      let autoSource: ActiveImageSource | null = null
       if (applyImg) autoSource = 'apply'
       else if (userImg) autoSource = 'user'
       else if (lastCrop) autoSource = 'processed'
 
-      const activeImage = base[autoSource].image || stockImg
+      if (!autoSource) return
+
+      const activeImage = base[autoSource].image
       if (!activeImage) return
 
       const config: WorkingConfig = yield call(
@@ -454,10 +475,11 @@ export function* hydrateAppSession() {
 
       yield put(
         hydrateEditor({
-          base,
           config,
-          activeSource: autoSource,
           isComplete: !!applyImg,
+          appliedData: applyImg,
+          assetData: activeImage,
+          userOriginalData: userImg ?? null,
         }),
       )
     }

@@ -26,7 +26,6 @@ export const ICON_KEYS = [
   'imageReset',
   'cardHorizontal',
   'cardVertical',
-  'cardOrientation',
   'undo',
   'reset',
   'bold',

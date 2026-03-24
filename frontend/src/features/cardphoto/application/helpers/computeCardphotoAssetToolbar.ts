@@ -1,4 +1,5 @@
 import type { CardphotoAssetToolbar, CardphotoState } from '../../domain/types'
+import { deriveActiveSource } from './deriveActiveSource'
 
 /**
  * Derives which cardphoto toolbar section matches the active slot + image meta.
@@ -7,9 +8,9 @@ import type { CardphotoAssetToolbar, CardphotoState } from '../../domain/types'
 export function computeCardphotoAssetToolbar(
   s: CardphotoState,
 ): CardphotoAssetToolbar {
-  const src = s.activeSource
+  const src = deriveActiveSource(s)
   if (src == null) return null
-  const img = s.base[src]?.image ?? null
+  const img = s.assetData ?? s.base[src]?.image ?? null
   if (!img) return null
   if (img.status === 'inLine' || src === 'apply') return 'cardphotoView'
   if (src === 'processed') return 'cardphotoProcessed'

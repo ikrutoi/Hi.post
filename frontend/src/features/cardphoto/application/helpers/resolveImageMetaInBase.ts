@@ -8,7 +8,7 @@ const BASE_LOOKUP_ORDER: (keyof CardphotoBase)[] = [
 ]
 
 /**
- * Find `ImageMeta` in `base` whose `id` matches (e.g. same id as `assetImage.id`).
+ * Find `ImageMeta` in `base` whose `id` matches.
  */
 export function findImageMetaByIdInBase(
   base: CardphotoBase,

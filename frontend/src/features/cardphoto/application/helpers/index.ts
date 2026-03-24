@@ -1,4 +1,5 @@
 export * from './computeCardphotoAssetToolbar'
+export * from './deriveActiveSource'
 export * from './resolveImageMetaInBase'
 export * from './validateImageSize'
 export * from './calculateInitialCrop'

@@ -120,7 +120,6 @@ import {
   IconCardHorizontal,
   IconCardVerticalV2,
   IconCardHorizontalV2,
-  IconCardDynamic,
   IconImageReset,
   IconListClose,
   IconDownloadV2,
@@ -165,7 +164,6 @@ import {
   IconListCardphoto,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
-import type { LayoutOrientation } from '@layout/domain/types'
 
 // export const toolbarIcons = Object.fromEntries(
 //   ICON_KEYS.map((key) => [key, getIconByKey(key)]),
@@ -173,7 +171,6 @@ import type { LayoutOrientation } from '@layout/domain/types'
 
 export function getIconByKey(
   key: IconKey,
-  orientation?: LayoutOrientation,
   currentStep?: number,
 ): JSX.Element {
   switch (key) {
@@ -225,8 +222,6 @@ export function getIconByKey(
       return <IconCardHorizontalV2 />
     case 'cardVertical':
       return <IconCardVerticalV2 />
-    case 'cardOrientation':
-      return <IconCardDynamic orientation={orientation ?? 'landscape'} />
     case 'undo':
       return <IconUndo />
     case 'edit':

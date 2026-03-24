@@ -42,6 +42,7 @@ import {
   selectCardphotoImageStageRect,
 } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
+import { deriveActiveSource } from '@cardphoto/application/helpers'
 import { setSizeCard } from '@layout/infrastructure/state'
 import { roundTo } from '@shared/utils/layout'
 import {
@@ -72,7 +73,6 @@ import type {
   CardphotoState,
   CardphotoBase,
   ActiveImageSource,
-  ImageRotation,
   CardphotoSessionRecord,
   ImageRecord,
 } from '@cardphoto/domain/types'
@@ -147,7 +147,7 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
     )
 
     const state: CardphotoState = yield select(selectCardphotoState)
-    const isComplete = !!state.base.apply.image
+    const isComplete = !!(state.appliedData ?? state.base.apply.image)
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       imageMeta,
@@ -172,7 +172,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
       hydrateEditor({
         base,
         config: serializableConfig,
-        activeSource: 'user',
         isComplete,
       }),
     )
@@ -220,7 +219,7 @@ export function* rebuildConfigFromMeta(
   meta: ImageMeta,
   source: ActiveImageSource,
   forceOrientation?: LayoutOrientation,
-  rotation?: ImageRotation,
+  rotation?: number,
 ) {
   try {
     // Не вызываем clearCurrentConfig + delay: иначе в CardphotoStage на мгновение
@@ -253,8 +252,6 @@ export function* rebuildConfigFromMeta(
     if (source === 'user') {
       const newOriginalMeta = {
         ...meta,
-        // orientation doesn't affect square calculations anymore
-        orientation: meta.orientation ?? 'landscape',
         rotation: newRotation,
       }
 
@@ -324,7 +321,8 @@ function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
   if (!rect || rect.width < 2 || rect.height < 2) return
 
   const state: CardphotoState | null = yield select(selectCardphotoState)
-  if (!state?.activeSource || !state.assetConfig?.image) return
+  const activeSource = deriveActiveSource(state)
+  if (!state || !activeSource || !state.assetConfig?.image) return
 
   const current = state.assetConfig.card
   if (
@@ -334,11 +332,11 @@ function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
     return
   }
 
-  const meta = state.base[state.activeSource]?.image
+  const meta = state.assetData ?? state.base[activeSource]?.image
   if (!meta) return
 
   const rot = state.assetConfig.image.rotation ?? 0
-  yield call(rebuildConfigFromMeta, meta, state.activeSource, undefined, rot)
+  yield call(rebuildConfigFromMeta, meta, activeSource, undefined, rot)
 }
 
 /** When the real editor stage resizes, refit image/crop to measured pixels (not global SizeCard). */

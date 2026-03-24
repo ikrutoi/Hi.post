@@ -2,7 +2,6 @@ import { flattenIcons } from '../helpers'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
 export const CARDPHOTO_KEYS = [
-  'cardOrientation',
   'imageRotateLeft',
   'imageRotateRight',
   'imageReset',

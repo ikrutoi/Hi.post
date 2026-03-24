@@ -19,6 +19,7 @@ import {
 } from '@cardtext/infrastructure/state'
 import { clearApply, setActiveSource } from '@cardphoto/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
+import { deriveActiveSource } from '@cardphoto/application/helpers'
 
 export const useCardEditorFacade = () => {
   const dispatch = useAppDispatch()
@@ -49,7 +50,7 @@ export const useCardEditorFacade = () => {
         break
       case 'cardphoto':
         dispatch(clearApply())
-        if (cardphotoState?.activeSource === 'apply') {
+        if (deriveActiveSource(cardphotoState) === 'apply') {
           const nextSource = cardphotoState.base.processed.image
             ? 'processed'
             : cardphotoState.base.user.image

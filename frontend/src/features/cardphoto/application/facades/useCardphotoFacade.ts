@@ -17,7 +17,6 @@ import {
   selectStockImage,
   selectUserImage,
   selectAppliedImage,
-  selectActiveSource,
   selectCardphotoAssetConfig,
   selectCardSize,
   selectCropQualityProgress,
@@ -32,7 +31,6 @@ import type {
   CardphotoState,
   CardphotoAssetToolbar,
   WorkingConfig,
-  ActiveImageSource,
 } from '../../domain/types'
 
 export type CardphotoFacade = {
@@ -41,7 +39,6 @@ export type CardphotoFacade = {
   stockImage: ImageMeta | null
   userImage: ImageMeta | null
   appliedImage: ImageMeta | null
-  activeSource: ActiveImageSource | null
   assetConfig: WorkingConfig | null
   cardWidth: number
   cardHeight: number
@@ -72,7 +69,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
   const stockImage = useSelector(selectStockImage)
   const userImage = useSelector(selectUserImage)
   const appliedImage = useSelector(selectAppliedImage)
-  const activeSource = useSelector(selectActiveSource)
   const assetConfig = useSelector(selectCardphotoAssetConfig)
   const { width: cardWidth, height: cardHeight } = useSelector(selectCardSize)
   const cropQualityProgress = useSelector(selectCropQualityProgress)
@@ -110,7 +106,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       stockImage,
       userImage,
       appliedImage,
-      activeSource,
       assetConfig,
       cardWidth,
       cardHeight,
@@ -132,7 +127,6 @@ export const useCardphotoFacade = (): CardphotoFacade => {
       stockImage,
       userImage,
       appliedImage,
-      activeSource,
       assetConfig,
       cardWidth,
       cardHeight,

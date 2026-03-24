@@ -33,13 +33,14 @@ export function* handleClearSectionSaga(
 
 export function* checkAndSyncProcessedCard() {
   const data: FullCardData = yield select(selectActiveCardFullData)
+  const appliedPhoto = data.cardphoto.appliedData ?? data.cardphoto.base.apply.image
 
-  if (!data.cardphoto.base.apply.image) return
+  if (!appliedPhoto) return
 
   const processedCard: Card = {
     id: data.id,
     status: 'processed',
-    thumbnailUrl: data.cardphoto.base.apply.image.thumbnail?.url || '',
+    thumbnailUrl: appliedPhoto.thumbnail?.url || '',
     ...data,
     meta: {
       createdAt: Date.now(),

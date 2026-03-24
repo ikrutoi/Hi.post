@@ -1,11 +1,4 @@
-import {
-  call,
-  all,
-  fork,
-  select,
-  put,
-  takeEvery,
-} from 'redux-saga/effects'
+import { call, all, fork, select, put, takeEvery } from 'redux-saga/effects'
 import { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import type { WorkingConfig } from '@cardphoto/domain/types'
@@ -31,8 +24,6 @@ import {
   selectActiveImage,
   selectCardphotoListTemplateGridCols,
   selectCardphotoState,
-  selectActiveSource,
-  selectIsProcessedMode,
   selectIsListPanelOpen,
 } from '@cardphoto/infrastructure/selectors'
 import {
@@ -50,12 +41,12 @@ import {
 } from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { prepareForRedux } from './cardphotoHelpers'
-import { selectSizeCard } from '@layout/infrastructure/selectors'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
   getQualityColor,
   dispatchQualityUpdate,
   calculateCropQuality,
+  deriveActiveSource,
 } from '@cardphoto/application/helpers'
 import { onDownloadClick } from './cardphotoProcessSaga'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
@@ -70,13 +61,11 @@ import type {
   ImageSource,
   ImageMeta,
 } from '@cardphoto/domain/types'
-import { SizeCard } from '@layout/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
 
 const CARDPHOTO_LIST_PREF_ID: UiPreferencesRecord['id'] = 'cardphotoList'
 
-/** Удалить все шаблоны со статусом inLine из IndexedDB (кнопка списка). */
 function* handleDeleteAllCardphotoInlineTemplatesSaga(): SagaIterator {
   try {
     const all: ImageMeta[] = yield call(storeAdapters.cardphotoImages.getAll)
@@ -124,10 +113,12 @@ function* persistCardphotoListDensityToDbSaga(): SagaIterator {
   }
 }
 
-/** Закрытие экрана создания: убрать загруженное фото и кропы, вернуть пустую форму. */
 function* handleCloseCardphotoCreateSaga(): SagaIterator {
   try {
-    yield call([storeAdapters.userImages, 'deleteById'], CURRENT_EDITOR_IMAGE_ID)
+    yield call(
+      [storeAdapters.userImages, 'deleteById'],
+      CURRENT_EDITOR_IMAGE_ID,
+    )
     yield call([storeAdapters.cardphotoImages, 'clear'])
     yield put(resetCardphoto())
     yield put(markLoaded())
@@ -145,9 +136,7 @@ export function* watchCropChanges(): SagaIterator {
       // isFull must follow this exact payload (same config the reducer just applied).
       yield call(syncCropFullIcon, { customConfig: action.payload })
 
-      const slice = (yield select(
-        (s) => s.cardphoto,
-      )) as CardphotoSliceState
+      const slice = (yield select((s) => s.cardphoto)) as CardphotoSliceState
       const config = slice.state?.assetConfig
       /** Не `config.image.meta`: там width/height уже под отображение на сцене; для DPI нужен оригинал из base. */
       const originalImage: ImageMeta | null = yield select(selectActiveImage)
@@ -186,10 +175,7 @@ export function* handleCardphotoToolbarAction(
     return
   }
 
-  if (
-    section === 'cardphotoCreate' &&
-    (key === 'close' || key === 'delete')
-  ) {
+  if (section === 'cardphotoCreate' && (key === 'close' || key === 'delete')) {
     yield call(handleCloseCardphotoCreateSaga)
     return
   }
@@ -225,8 +211,8 @@ export function* handleCardphotoToolbarAction(
       updated as ImageMeta & { id: string },
     )
 
-    const activeSource: ReturnType<typeof selectActiveSource> =
-      yield select(selectActiveSource)
+    const cardState: CardphotoState = yield select(selectCardphotoState)
+    const activeSource = deriveActiveSource(cardState)
     if (activeSource) {
       yield put(
         setBaseImage({
@@ -267,19 +253,20 @@ export function* handleCardphotoToolbarAction(
       break
     }
 
-    case 'deleteList':
+    case 'listDelete':
       yield call(handleClearAllCropsSaga)
       break
 
     case 'close': {
       const state: CardphotoState = yield select(selectCardphotoState)
-      const isProcessed: boolean = yield select(selectIsProcessedMode)
+      const activeSource = deriveActiveSource(state)
+      const isProcessed = activeSource === 'processed'
 
       const currentImageId = isProcessed
         ? state.base.processed.image?.id
-        : state.base.user.image?.id
+        : (state.userOriginalData ?? state.base.user.image)?.id
 
-      yield call(handleDeleteImageSaga, currentImageId, state.activeSource)
+      yield call(handleDeleteImageSaga, currentImageId, activeSource)
       break
     }
 
@@ -324,63 +311,62 @@ export function* handleCardphotoToolbarAction(
   }
 }
 
-export function* handleCardphotoToolbarAction1(
-  action: ReturnType<typeof toolbarAction>,
-): SagaIterator {
-  const { section, key } = action.payload
+// export function* handleCardphotoToolbarAction1(
+//   action: ReturnType<typeof toolbarAction>,
+// ): SagaIterator {
+//   const { section, key } = action.payload
 
-  if (key === 'cardphotoAdd') {
-    if (
-      section === 'cardphoto' ||
-      section === 'cardphotoCreate' ||
-      section === 'cardphotoProcessed'
-    ) {
-      yield call(onDownloadClick)
-    }
-    return
-  }
+//   if (key === 'cardphotoAdd') {
+//     if (
+//       section === 'cardphoto' ||
+//       section === 'cardphotoCreate' ||
+//       section === 'cardphotoProcessed'
+//     ) {
+//       yield call(onDownloadClick)
+//     }
+//     return
+//   }
 
-  const isCardphotoSection = section === 'cardphoto'
+//   const isCardphotoSection = section === 'cardphoto'
 
-  if (!isCardphotoSection) return
+//   if (!isCardphotoSection) return
 
-  switch (key) {
-    case 'deleteList':
-      yield call(handleClearAllCropsSaga)
-      break
-    case 'close':
-      const state: CardphotoState = yield select(selectCardphotoState)
-      const isProcessed: boolean = yield select(selectIsProcessedMode)
+//   switch (key) {
+//     case 'deleteList':
+//       yield call(handleClearAllCropsSaga)
+//       break
+//     case 'close':
+//       const state: CardphotoState = yield select(selectCardphotoState)
+//       const isProcessed: boolean = yield select(selectIsProcessedMode)
 
-      console.log(state.base.stock.image)
+//       console.log(state.base.stock.image)
 
-      const currentImageId = isProcessed
-        ? state.base.processed.image?.id
-        : state.base.user.image?.id
+//       const currentImageId = isProcessed
+//         ? state.base.processed.image?.id
+//         : (state.userOriginalData ?? state.base.user.image)?.id
 
-      yield call(handleDeleteImageSaga, currentImageId, state.activeSource)
-      break
-    case 'download':
-      yield call(onDownloadClick)
-      break
-    case 'imageReset':
-      yield call(handleBackToOriginalSaga)
-      break
-    case 'crop':
-      yield* handleCropAction()
-      break
-    case 'cropCheck':
-      yield call(handleCropConfirm)
-      break
-    case 'cropFull':
-      yield call(handleCropFullAction)
-      break
-    case 'imageRotateLeft':
-    case 'imageRotateRight':
-      yield call(handleImageRotate, key)
-      break
-  }
-}
+//       break
+//     case 'download':
+//       yield call(onDownloadClick)
+//       break
+//     case 'imageReset':
+//       yield call(handleBackToOriginalSaga)
+//       break
+//     case 'crop':
+//       yield* handleCropAction()
+//       break
+//     case 'cropCheck':
+//       yield call(handleCropConfirm)
+//       break
+//     case 'cropFull':
+//       yield call(handleCropFullAction)
+//       break
+//     case 'imageRotateLeft':
+//     case 'imageRotateRight':
+//       yield call(handleImageRotate, key)
+//       break
+//   }
+// }
 
 function pickCardphotoProcessedToolbarPatch(
   sectionUpdate: Record<string, unknown>,
@@ -415,7 +401,6 @@ export function* syncToolbarContext() {
     selectToolbarSectionState('cardphotoCreate'),
   )
 
-  // `crop` может отсутствовать в конфиге `cardphoto` — проверяем processed / create.
   if (!state) return
   if (
     toolbarCardphoto?.crop?.state === 'active' ||
@@ -424,7 +409,7 @@ export function* syncToolbarContext() {
   )
     return
 
-  const { activeSource } = state
+  const activeSource = deriveActiveSource(state)
   // We no longer track crop history in Redux state.
   // Enable list actions based on `listCardphoto` badge (= number of `inLine` templates).
   const badgeCount =
@@ -432,21 +417,13 @@ export function* syncToolbarContext() {
   const hasTemplates = typeof badgeCount === 'number' ? badgeCount > 0 : false
 
   let sectionUpdate = {}
-  const isUserImage = !!state.base.user.image
+  const isUserImage = !!(state.userOriginalData ?? state.base.user.image)
   const hasStockImage = !!state.base.stock.image
   const hasProcessedImage = !!state.base.processed.image
-  const isProcessedInLine =
-    state.base.processed.image?.status === 'inLine'
-  const sizeCard: SizeCard = yield select(selectSizeCard)
-
+  const isProcessedInLine = state.base.processed.image?.status === 'inLine'
   switch (activeSource) {
-    /** Нет выбранного источника — пустая форма; apply только при наличии stock/processed превью. */
     case null:
       sectionUpdate = {
-        cardOrientation: {
-          state: 'disabled',
-          options: { orientation: sizeCard.orientation },
-        },
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
         crop: { state: 'disabled' },
@@ -460,16 +437,12 @@ export function* syncToolbarContext() {
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
-        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
 
     case 'apply':
       sectionUpdate = {
-        cardOrientation: {
-          state: 'disabled',
-          options: { orientation: sizeCard.orientation },
-        },
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
         crop: { state: 'disabled' },
@@ -483,16 +456,12 @@ export function* syncToolbarContext() {
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
-        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
 
     case 'processed':
       sectionUpdate = {
-        cardOrientation: {
-          state: 'disabled',
-          options: { orientation: sizeCard.orientation },
-        },
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
         crop: { state: 'disabled' },
@@ -506,7 +475,7 @@ export function* syncToolbarContext() {
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
-        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
         listAdd: {
           state:
             hasProcessedImage && !isProcessedInLine ? 'enabled' : 'disabled',
@@ -516,10 +485,6 @@ export function* syncToolbarContext() {
 
     case 'user':
       sectionUpdate = {
-        cardOrientation: {
-          state: 'enabled',
-          options: { orientation: sizeCard.orientation },
-        },
         imageRotateLeft: { state: 'enabled' },
         imageRotateRight: { state: 'enabled' },
         crop: { state: 'enabled' },
@@ -533,16 +498,12 @@ export function* syncToolbarContext() {
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
-        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
 
     case 'stock':
       sectionUpdate = {
-        cardOrientation: {
-          state: 'disabled',
-          options: { orientation: sizeCard.orientation },
-        },
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
         crop: { state: 'disabled' },
@@ -556,16 +517,12 @@ export function* syncToolbarContext() {
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
-        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
 
     default:
       sectionUpdate = {
-        cardOrientation: {
-          state: 'disabled',
-          options: { orientation: sizeCard.orientation },
-        },
         imageRotateLeft: { state: 'disabled' },
         imageRotateRight: { state: 'disabled' },
         crop: { state: 'disabled' },
@@ -578,7 +535,7 @@ export function* syncToolbarContext() {
         download: { state: 'enabled' },
         cardphotoAdd: { state: 'enabled' },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
-        deleteList: { state: hasTemplates ? 'enabled' : 'disabled' },
+        listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
       break
   }
@@ -629,10 +586,12 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
 
     const oldUrl: string | undefined = yield select(selectCurrentProcessedUrl)
     const appliedUrl: string | undefined = yield select(
-      (state) => state.cardphoto.state?.base.apply.image?.url,
+      (state) =>
+        state.cardphoto.state?.appliedData?.url ??
+        state.cardphoto.state?.base.apply.image?.url,
     )
 
-      const cropRecord: ImageMeta | null = yield call(
+    const cropRecord: ImageMeta | null = yield call(
       [storeAdapters.cardphotoImages, storeAdapters.cardphotoImages.getById],
       cropId,
     )
@@ -644,16 +603,12 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
       const stillInUse =
         oldUrl &&
         [
-          cardState?.base.user.image?.url,
-          cardState?.base.apply.image?.url,
+          cardState?.userOriginalData?.url ?? cardState?.base.user.image?.url,
+          cardState?.appliedData?.url ?? cardState?.base.apply.image?.url,
           cardState?.base.stock.image?.url,
         ].includes(oldUrl)
 
-      if (
-        oldUrl?.startsWith('blob:') &&
-        oldUrl !== appliedUrl &&
-        !stillInUse
-      ) {
+      if (oldUrl?.startsWith('blob:') && oldUrl !== appliedUrl && !stillInUse) {
         URL.revokeObjectURL(oldUrl)
       }
 
@@ -673,40 +628,6 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
     console.error('Select crop history error:', error)
   }
 }
-
-// export function* onSelectCropFromHistorySaga1(action: PayloadAction<string>) {
-//   try {
-//     const cropId = action.payload
-
-//     const oldUrl: string | undefined = yield select(selectCurrentProcessedUrl)
-
-//     const cropRecord: ImageMeta | null = yield call(
-//       [storeAdapters.cropImages, storeAdapters.cropImages.getById],
-//       cropId,
-//     )
-
-//     if (cropRecord) {
-//       if (oldUrl?.startsWith('blob:')) {
-//         URL.revokeObjectURL(oldUrl)
-//       }
-
-//       const currentUrl = cropRecord.full?.blob
-//         ? URL.createObjectURL(cropRecord.full.blob)
-//         : cropRecord.url
-
-//       const serializable = prepareForRedux({
-//         ...cropRecord,
-//         url: currentUrl,
-//       })
-
-//       yield put(setProcessedImage(serializable))
-
-//       yield call(rebuildConfigFromMeta, serializable, 'processed')
-//     }
-//   } catch (error) {
-//     console.error('Select crop history error:', error)
-//   }
-// }
 
 export function* watchToolbarContext() {
   yield takeEvery(

@@ -159,12 +159,13 @@ function* checkAndSyncProcessedCard() {
 
   console.log('CHECK_AND_SYNC_PROCESSED photo', cardphoto)
 
-  if (!cardphoto.base.apply.image) return
+  const appliedPhoto = cardphoto.appliedData ?? cardphoto.base.apply.image
+  if (!appliedPhoto) return
 
   const processedCard: Card = {
-    id: cardphoto.base.apply.image.id,
+    id: appliedPhoto.id,
     status: 'processed',
-    thumbnailUrl: cardphoto.base.apply.image.thumbnail?.url || '',
+    thumbnailUrl: appliedPhoto.thumbnail?.url || '',
     cardphoto,
     cardtext,
     envelope,
@@ -205,7 +206,9 @@ function* handleSectionCopy(action: ReturnType<typeof copySectionToProcessed>) {
   if (donor) {
     switch (section) {
       case 'cardphoto':
-        yield put(applyFinal(donor.cardphoto.base.apply.image))
+        if (donor.cardphoto.appliedData) {
+          yield put(applyFinal(donor.cardphoto.appliedData))
+        }
         break
       case 'cardtext':
         yield put(setValue(donor.cardtext.value))

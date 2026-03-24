@@ -86,26 +86,22 @@ export interface WorkingConfig {
 }
 
 export interface CardphotoSessionRecord {
-  source: ActiveImageSource
-  activeMetaId: string
-  config: {
+  assetConfigLight: {
     card: CardLayer
     image: Omit<ImageLayer, 'meta'> & { metaId: string }
     crop: CropLayer
   }
-  apply: ImageMeta | null
-  isComplete: boolean
-  appliedImageUrl: string | null
+  appliedDataLight: ImageMeta | null
+  assetDataLight: ImageMeta | null
+  userOriginalData: ImageMeta | null
 }
 
 export interface CardphotoState {
   base: CardphotoBase
-  activeSource: ActiveImageSource | null
-  assetImage: ImageMeta | null
-  applied: string | null
   imageStageRect: CardphotoImageStageRect | null
   appliedData: ImageMeta | null
   assetData: ImageMeta | null
+  userOriginalData: ImageMeta | null
   assetConfig: WorkingConfig | null
   assetToolbar: CardphotoAssetToolbar
 }

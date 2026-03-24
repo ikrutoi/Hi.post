@@ -2,9 +2,8 @@ import { cloneElement } from 'react'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { getIconByKey } from '@shared/assets/icons'
 import { IconKey } from '@shared/config/constants'
-import { IconCardDynamic, IconDensity, IconSortDirection } from '@shared/ui/icons'
+import { IconDensity, IconSortDirection } from '@shared/ui/icons'
 import type { JSX } from 'react'
-import type { LayoutOrientation } from '@layout/domain/types'
 
 export type SortDirection = 'asc' | 'desc'
 
@@ -15,7 +14,6 @@ export const getToolbarIcon = ({
   className,
   color,
   style = {},
-  orientation,
   step,
   sortDirection,
   listTemplateDensityCols,
@@ -24,7 +22,6 @@ export const getToolbarIcon = ({
   className?: string
   color?: string
   style?: React.CSSProperties
-  orientation?: LayoutOrientation
   step?: number
   sortDirection?: SortDirection
   /** Активный режим плотности сетки в панели списка шаблонов cardphoto. */
@@ -33,15 +30,6 @@ export const getToolbarIcon = ({
   const iconProps = {
     className,
     style: { ...(color && { color }), ...style },
-  }
-
-  if (key === 'cardOrientation') {
-    return (
-      <IconCardDynamic
-        orientation={orientation ?? 'landscape'}
-        {...iconProps}
-      />
-    )
   }
 
   if (key === 'fontSizeIndicator') {

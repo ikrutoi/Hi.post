@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 
 .root {
+  cursor: default;
   height: 100%;
   min-height: 2rem;
   border-radius: 1rem;
