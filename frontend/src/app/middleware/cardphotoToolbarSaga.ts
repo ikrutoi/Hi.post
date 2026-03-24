@@ -408,12 +408,12 @@ export function* syncToolbarContext() {
     assetForToolbar.id === appliedForToolbar.id
   ) {
     toolbarAssetKind = 'apply'
+  } else if (assetForToolbar.source === 'original') {
+    // Same controls as user slot (crop/rotate); apply stays off until a real template exists.
+    toolbarAssetKind = 'user'
   } else if (assetForToolbar.status === 'processed') {
     toolbarAssetKind = 'processed'
-  } else if (
-    assetForToolbar.source === 'user' ||
-    assetForToolbar.source === 'original'
-  ) {
+  } else if (assetForToolbar.source === 'user') {
     toolbarAssetKind = 'user'
   } else if (assetForToolbar.source === 'stock') {
     toolbarAssetKind = 'stock'
@@ -428,7 +428,14 @@ export function* syncToolbarContext() {
   const assetId = state.assetData?.id ?? null
   const appliedId = state.appliedData?.id ?? null
   const isCurrentApplied = !!assetId && !!appliedId && assetId === appliedId
-  const applyState = !assetId ? 'disabled' : isCurrentApplied ? 'active' : 'enabled'
+  const isOriginalUpload = state.assetData?.source === 'original'
+  const applyState = isOriginalUpload
+    ? 'disabled'
+    : !assetId
+      ? 'disabled'
+      : isCurrentApplied
+        ? 'active'
+        : 'enabled'
   const isUserImage = !!state.userOriginalData
   const hasStockImage = false
   const hasProcessedImage = state.assetData?.status === 'processed'

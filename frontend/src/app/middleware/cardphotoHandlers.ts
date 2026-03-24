@@ -395,9 +395,14 @@ export function* handleCropConfirm(): SagaIterator {
     const thumbUrl = URL.createObjectURL(thumb)
     const id = nanoid()
 
+    const sourceAfterCrop =
+      config.image.meta.source === 'original'
+        ? 'user'
+        : config.image.meta.source
+
     const finalImageMeta: ImageMeta = {
       id,
-      source: config.image.meta.source,
+      source: sourceAfterCrop,
       status: 'processed',
       url: fullUrl,
       width: realCrop.meta.width,

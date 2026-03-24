@@ -5,6 +5,7 @@ import { selectActiveImage } from '@cardphoto/infrastructure/selectors'
 import styles from './CardphotoView.module.scss'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { CardphotoStage } from '../CardphotoStage'
+import { useCardphotoFacade } from '../../application/facades'
 
 type Props = {
   className?: string
@@ -13,6 +14,8 @@ type Props = {
 export const CardphotoView: React.FC<Props> = ({ className }) => {
   const activeImage = useAppSelector(selectActiveImage)
   const showEmptyPlaceholder = !activeImage
+  const { cardphotoSession } = useCardphotoFacade()
+  console.log('cardphotoSession', cardphotoSession)
 
   return (
     <div className={clsx(styles.viewContainer, className)}>
