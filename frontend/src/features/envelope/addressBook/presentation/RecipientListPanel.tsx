@@ -181,7 +181,11 @@ export const RecipientListPanel: React.FC<Props> = ({
                 </div>
               ))}
               {favoriteEntries.length > 0 && (
-                <div className={styles.favoritesSeparator} aria-hidden />
+                <div
+                  className={styles.favoritesSeparator}
+                  data-favorites-group-end
+                  aria-hidden
+                />
               )}
               {restEntries.map((entry, index) => {
                 const dataIndex = favoriteEntries.length + index

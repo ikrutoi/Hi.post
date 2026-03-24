@@ -89,12 +89,16 @@
   &:focus {
     outline: none;
   }
+
+  /* Row `margin-bottom` + separator was ~0.75rem; drop margin before gap so 0.5rem is exact. */
+  > *:has(+ [data-favorites-group-end]) {
+    margin-bottom: 0;
+  }
 }
 
 .favoritesSeparator {
-  min-height: 0.25rem;
-  margin-bottom: 0.25rem;
   flex-shrink: 0;
+  min-height: 0.5rem;
 }
 
 .listEmpty {

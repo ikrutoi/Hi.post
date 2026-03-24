@@ -129,7 +129,11 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                   />
                 ))}
                 {favoriteTemplates.length > 0 && (
-                  <div className={styles.favoritesSeparator} aria-hidden />
+                  <div
+                    className={styles.favoritesSeparator}
+                    data-favorites-group-end
+                    aria-hidden
+                  />
                 )}
                 {restTemplates.map((entry) => (
                   <CardtextListEntry
