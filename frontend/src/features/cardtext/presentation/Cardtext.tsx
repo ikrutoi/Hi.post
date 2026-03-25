@@ -7,9 +7,10 @@ import { useCardtextFacade } from '../application/facades/useCardtextFacade'
 import { useAppSelector } from '@app/hooks'
 import {
   selectCardtextAddTemplateOpen,
-  selectCardtextAssetId,
+  selectCardtextId,
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
+  selectCardtextCreateReturnSnapshot,
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
@@ -47,14 +48,22 @@ function getUniqueTitle(
 
 export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const { sizeCard } = useSizeFacade()
-  const { state, currentView, value, style, title, assetId } =
-    useCardtextFacade()
-  const currentAssetId = useAppSelector(selectCardtextAssetId)
+  const {
+    currentView,
+    value,
+    style,
+    title,
+    id,
+    plainText,
+    cardtextLines,
+  } = useCardtextFacade()
+  const currentTemplateId = useAppSelector(selectCardtextId)
   const isAddTemplateOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const cardtextTemplates = useAppSelector(selectCardtextTemplatesListItems)
   const cardtextTemplatesLoading = useAppSelector(
     selectCardtextTemplatesListLoading,
   )
+  const createReturnSnapshot = useAppSelector(selectCardtextCreateReturnSnapshot)
   const dispatch = useAppDispatch()
   const { createCardtextTemplate, updateCardtextTemplate } =
     useTemplateActions()
@@ -65,8 +74,6 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
   const [isSubmittingTitle, setIsSubmittingTitle] = useState(false)
-
-  console.log('Cardtext state', state)
 
   useEffect(() => {
     if (!isEditingTitle) return
@@ -135,10 +142,10 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
         const uniqueTitle = getUniqueTitle(next, existingTitles)
 
         const result = await createCardtextTemplate({
-          value: state.value ?? [],
-          style: state.style,
-          plainText: state.plainText,
-          cardtextLines: state.cardtextLines,
+          value: value ?? [],
+          style,
+          plainText,
+          cardtextLines,
           title: uniqueTitle,
         })
 
@@ -149,15 +156,15 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
           dispatch(setCardtextCurrentView('cardtextView'))
         }
       } else {
-        if (!assetId) {
+        if (!id) {
           cancelEditTitle()
           return
         }
-        const result = await updateCardtextTemplate(assetId, { title: next })
+        const result = await updateCardtextTemplate(id, { title: next })
         if (result.success) {
           dispatch(setTitle(next))
           dispatch(
-            updateCardtextTemplateTitleInList({ id: assetId, title: next }),
+            updateCardtextTemplateTitleInList({ id, title: next }),
           )
         }
       }
@@ -171,16 +178,16 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const forceEditingTitle = isAddTemplateOpen || isEditingTitle
 
   const toolbarSection =
-    currentView === 'cardtextEditor' && currentAssetId == null
+    currentView === 'cardtextEditor' && currentTemplateId == null
       ? 'cardtextCreate'
       : currentView
 
   const isCreateNewEmpty =
     currentView === 'cardtextEditor' &&
-    currentAssetId == null &&
+    currentTemplateId == null &&
     isEmptyCardtextValue(value) &&
     !isAddTemplateOpen &&
-    !state.createReturnSnapshot
+    !createReturnSnapshot
 
   const showCardtextToolbarRow = !isCreateNewEmpty
 
@@ -293,7 +300,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
 
             {currentView === 'cardtextView' ? (
               <CardtextView
-                key={assetId ?? 'no-template'}
+                key={id ?? 'no-template'}
                 value={value}
                 style={style}
               />

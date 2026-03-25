@@ -4,8 +4,6 @@ export interface TemplateBase {
   serverId?: string | null
   syncedAt?: number | null
   isDirty?: boolean
-  createdAt: number
-  updatedAt: number
 }
 
 export interface TemplateMetadata {

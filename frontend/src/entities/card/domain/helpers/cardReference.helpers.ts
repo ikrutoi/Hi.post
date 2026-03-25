@@ -20,7 +20,10 @@ export function createCardReferenceFromCard(
     thumbnailUrl: card.thumbnailUrl,
     preview: {
       cardphotoPreview: card.cardphoto.previewUrl,
-      cardtextPreview: card.cardtext.plainText.substring(0, 100),
+      cardtextPreview: (card.cardtext.assetData?.plainText ?? '').substring(
+        0,
+        100,
+      ),
       recipientPreview: formatAddressPreview(card.envelope.recipient.viewDraft),
       senderPreview: card.envelope.sender.enabled
         ? formatAddressPreview(card.envelope.sender.viewDraft)

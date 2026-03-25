@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectCardtextEditTitleOpen,
-  selectCardtextAssetId,
+  selectCardtextId,
   selectCardtextTitle,
 } from '@cardtext/infrastructure/selectors'
 import {
@@ -17,7 +17,7 @@ import styles from './CardtextEditTitleInline.module.scss'
 
 export const CardtextEditTitleInline: React.FC = () => {
   const isOpen = useAppSelector(selectCardtextEditTitleOpen)
-  const assetId = useAppSelector(selectCardtextAssetId)
+  const templateId = useAppSelector(selectCardtextId)
   const currentTitle = useAppSelector(selectCardtextTitle)
   const dispatch = useAppDispatch()
   const { updateCardtextTemplate } = useTemplateActions()
@@ -37,26 +37,33 @@ export const CardtextEditTitleInline: React.FC = () => {
     }
   }, [isOpen, currentTitle])
 
-  const canSubmit = title.trim().length > 0 && assetId != null
+  const canSubmit = title.trim().length > 0 && templateId != null
 
   const handleSubmit = useCallback(
     async (e?: React.FormEvent) => {
       e?.preventDefault()
       const newTitle = title.trim()
-      if (isSubmitting || !newTitle || !assetId) return
+      if (isSubmitting || !newTitle || !templateId) return
       setIsSubmitting(true)
       try {
-        const result = await updateCardtextTemplate(assetId, { title: newTitle })
+        const result = await updateCardtextTemplate(templateId, {
+          title: newTitle,
+        })
         if (result.success) {
           dispatch(setTitle(newTitle))
-          dispatch(updateCardtextTemplateTitleInList({ id: assetId, title: newTitle }))
+          dispatch(
+            updateCardtextTemplateTitleInList({
+              id: templateId,
+              title: newTitle,
+            }),
+          )
           close()
         }
       } finally {
         setIsSubmitting(false)
       }
     },
-    [updateCardtextTemplate, assetId, title, dispatch, close, isSubmitting],
+    [updateCardtextTemplate, templateId, title, dispatch, close, isSubmitting],
   )
 
   const handleKeyDown = useCallback(

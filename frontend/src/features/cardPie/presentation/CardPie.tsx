@@ -51,11 +51,9 @@ export const CardPie: React.FC<CardPieProps> = ({
   const { actions: editorPieActions } = useToolbarFacade('editorPie')
 
   const cardData = data?.data
-  const hasAppliedCardtext = cardData?.cardtext?.applied != null
+  const hasAppliedCardtext = cardData?.cardtext?.status === 'processed'
   const valueCardtext = hasAppliedCardtext
-    ? (cardData?.cardtext?.appliedData?.value ??
-      cardData?.cardtext?.value ??
-      [])
+    ? (cardData?.cardtext?.value ?? [])
     : []
   const previewLines = valueCardtext
     .slice(0, 8)
@@ -65,9 +63,7 @@ export const CardPie: React.FC<CardPieProps> = ({
     })
     .filter((line) => line.length > 0)
   const cardtextColorKey =
-    cardData?.cardtext?.appliedData?.style?.color ??
-    cardData?.cardtext?.style?.color ??
-    'forestGreen'
+    cardData?.cardtext?.style?.color ?? 'forestGreen'
   const cardtextFillVar = `var(--color-font-${cardtextColorKey})`
   const photoUrl = sections.cardphoto
     ? (cardData?.cardphoto?.previewUrl ?? null)

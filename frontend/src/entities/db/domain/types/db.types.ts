@@ -1,5 +1,5 @@
 import type { CardphotoSessionRecord } from '@cardphoto/domain/types'
-import type { CardtextTemplateContent } from '@cardtext/domain/types'
+import type { CardtextContent } from '@cardtext/domain/types'
 import type {
   EnvelopeSessionRecord,
   RecipientState,
@@ -20,7 +20,7 @@ export interface SessionEnvelopeSelection {
 export interface SessionData {
   id: string
   cardphoto: CardphotoSessionRecord | null
-  cardtext: (CardtextTemplateContent & { assetId: string | null }) | null
+  cardtext: CardtextContent | null
   cardtextShowViewMode?: boolean
   envelope: EnvelopeSessionRecord | null
   envelopeRecipients?: RecipientState[] | null

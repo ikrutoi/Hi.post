@@ -20,8 +20,7 @@ import {
   selectCardtextPlainText,
   selectCardtextFavorite,
   selectCardtextListSortDirection,
-  selectCardtextAssetId,
-  selectCardtextApplied,
+  selectCardtextId,
   selectCardtextTemplatesListLoading,
 } from '@cardtext/infrastructure/selectors'
 import { loadCardtextTemplatesRequest } from '@cardtext/infrastructure/state'
@@ -102,12 +101,9 @@ export const Toolbar = ({
   const cardtextFavorite = useAppSelector(selectCardtextFavorite)
   const cardphotoActiveImage = useAppSelector(selectActiveImage)
   const cardphotoFavorite = cardphotoActiveImage?.favorite === true
-  const cardtextAssetId = useAppSelector(selectCardtextAssetId)
-  const cardtextAppliedId = useAppSelector(selectCardtextApplied)
+  const cardtextTemplateId = useAppSelector(selectCardtextId)
   const isCardtextCurrentTemplateApplied =
-    cardtextAssetId != null &&
-    cardtextAppliedId != null &&
-    cardtextAssetId === cardtextAppliedId
+    cardtextApplied && cardtextTemplateId != null
   const isAlreadyApplied =
     section === 'cardtext' || section === 'cardtextView'
       ? cardtextApplied

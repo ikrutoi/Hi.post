@@ -1,6 +1,5 @@
 export * from './template.types'
 export * from './addressTemplate.types'
-export * from './cardtextTemplate.types'
 export * from './monetization.types'
 
 // Re-export types for convenience

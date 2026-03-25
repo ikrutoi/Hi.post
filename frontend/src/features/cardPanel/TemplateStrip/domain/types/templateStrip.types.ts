@@ -1,4 +1,4 @@
-import type { CardtextTemplate } from '@cardtext/domain/types'
+import type { CardtextContent } from '@cardtext/domain/types'
 import type { AddressTemplate } from '@entities/templates'
 
 export const TEMPLATE_STRIP_SECTIONS = [
@@ -21,7 +21,7 @@ export interface TemplateStripScrollIndex {
 }
 
 export type TemplateStripItem =
-  | { section: 'cardtext'; template: CardtextTemplate }
+  | { section: 'cardtext'; template: CardtextContent }
   | { section: 'sender'; template: AddressTemplate }
   | { section: 'recipient'; template: AddressTemplate }
 

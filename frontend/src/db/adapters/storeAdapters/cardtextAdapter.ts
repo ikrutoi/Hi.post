@@ -1,6 +1,6 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
 import type { StoreMap, CardtextAdapter } from '@db/types'
-import type { CardtextTemplateItemShape } from '@entities/templates/domain/types'
+import type { CardtextContent } from '@cardtext/domain/types'
 import type { Node as SlateNode } from 'slate'
 
 const base = createStoreAdapter<StoreMap['cardtext']>('cardtext')
@@ -28,21 +28,17 @@ export const cardtextAdapter: CardtextAdapter = {
     const id = String(now)
     const value = nodes as any
     const plainText = nodesToPlainText(nodes)
-    const item: CardtextTemplateItemShape = {
+    const item: CardtextContent = {
       id,
-      state: {
-        value,
-        title: '',
-        style: defaultStyle,
-        plainText,
-        cardtextLines: 15,
-        applied: null,
-        favorite: null,
-      },
+      value,
+      title: '',
+      style: defaultStyle,
+      plainText,
+      cardtextLines: 15,
       status: 'inLine',
-      createdAt: now,
-      updatedAt: now,
+      favorite: null,
+      timestamp: now,
     }
-    await base.put(item)
+    await base.put(item as CardtextContent & { id: string })
   },
 }

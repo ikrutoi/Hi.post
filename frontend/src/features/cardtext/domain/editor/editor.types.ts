@@ -6,6 +6,12 @@ export type CardtextTextNode = {
   text: string
 }
 
+export type CardtextListSortDirection = 'asc' | 'desc'
+
+export type CardtextTemplatesListState = CardtextContent[] | null
+
+export type CardtextStatus = 'processed' | 'outLine' | 'inLine'
+
 export type TextAlign = 'left' | 'center' | 'right' | 'justify'
 
 export const TEXT_COLOR = [
@@ -64,52 +70,33 @@ export interface CardtextStyle {
   align: TextAlign
 }
 
-export interface CardtextAppliedData {
-  value: CardtextValue
-  style: CardtextStyle
-}
-
 export type CardtextCreateDraft = Pick<
-  CardtextTemplateContent,
-  'value' | 'style' | 'plainText' | 'cardtextLines'
+  CardtextContent,
+  'value' | 'style' | 'plainText' | 'cardtextLines' | 'timestamp'
 >
 
-export type CardtextCreateReturnSnapshot = CardtextTemplateContent & {
-  assetId: string | null
-  isComplete: boolean
-  appliedData: CardtextAppliedData | null
-}
+export type CardtextCreateReturnSnapshot = CardtextContent
 
-export interface CardtextTemplateContent {
+export interface CardtextContent {
+  id: string | null
+  status: CardtextStatus
   value: CardtextValue
   title: string
   style: CardtextStyle
   plainText: string
   cardtextLines: number
-  applied: string | null
   favorite: boolean | null
+  timestamp: number
 }
 
-export interface CardtextState extends CardtextTemplateContent {
-  assetId: string | null
-  appliedData: CardtextAppliedData | null
-  isComplete: boolean
-  resetToken: number
-}
-
-export type CardtextCurrentView = 'cardtextView' | 'cardtextEditor'
-
-export interface CardtextEditorUIState {
-  currentView: CardtextCurrentView
-  requestCardtextFocus: boolean
-  createDraft: CardtextCreateDraft | null
-  createReturnSnapshot: CardtextCreateReturnSnapshot | null
-}
-
-export const initialCardtextEditorState: CardtextState & CardtextEditorUIState =
-  {
-    assetId: null,
-    value: initialCardtextValue,
+/** Стартовое содержимое слоя `assetData` (редактор / сохранённая сессия). */
+export function createInitialCardtextContent(): CardtextContent {
+  return {
+    id: null,
+    value: initialCardtextValue.map((b) => ({
+      ...b,
+      children: b.children.map((c) => ({ ...c })),
+    })),
     style: {
       fontFamily: 'Roboto',
       fontSizeStep: 3,
@@ -118,14 +105,51 @@ export const initialCardtextEditorState: CardtextState & CardtextEditorUIState =
     },
     title: '',
     plainText: '',
-    applied: null,
-    appliedData: null,
     favorite: null,
-    isComplete: false,
+    timestamp: 0,
+    status: 'inLine',
     cardtextLines: 15,
+  }
+}
+
+export interface CardtextState {
+  assetData: CardtextContent | null
+  appendedData: CardtextContent | null
+  createDraft: CardtextCreateDraft | null
+  resetToken: number
+}
+
+export type CreateCardtextPayload = Pick<
+  CardtextContent,
+  'value' | 'style' | 'plainText' | 'cardtextLines'
+> & {
+  title?: string
+  favorite?: boolean | null
+  id?: string
+}
+
+export type UpdateCardtextPayload = Omit<
+  Partial<CardtextContent>,
+  'style' | 'timestamp' | 'status' | 'id'
+> & {
+  style?: Partial<CardtextStyle>
+}
+
+export type CardtextCurrentView = 'cardtextView' | 'cardtextEditor'
+
+export interface CardtextEditorUIState {
+  currentView: CardtextCurrentView
+  requestCardtextFocus: boolean
+  createReturnSnapshot: CardtextCreateReturnSnapshot | null
+}
+
+export const initialCardtextEditorState: CardtextState & CardtextEditorUIState =
+  {
+    assetData: createInitialCardtextContent(),
+    appendedData: null,
+    createDraft: null,
     resetToken: 0,
     currentView: 'cardtextEditor',
     requestCardtextFocus: false,
-    createDraft: null,
     createReturnSnapshot: null,
   }

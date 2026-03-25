@@ -4,17 +4,17 @@ import {
   setCardtextListPanelOpen,
   setCardtextCurrentView,
   restoreCardtextSession,
-  setCardtextAssetId,
+  setCardtextId,
   setCreateDraft,
 } from '@cardtext/infrastructure/state'
 import {
   selectCardtextCurrentView,
   selectCardtextSessionData,
-  selectCardtextAssetId,
+  selectCardtextId,
 } from '@cardtext/infrastructure/selectors'
 import type { CardtextCreateDraft } from '@/features/cardtext/domain/editor/editor.types'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import type { CardtextTemplate } from '@cardtext/domain/types'
+import type { CardtextContent } from '@cardtext/domain/types'
 import { CardtextListPanel } from './CardtextListPanel/CardtextListPanel'
 import styles from './CardtextRightSlot.module.scss'
 
@@ -24,7 +24,7 @@ export const CardtextRightSlot: React.FC = () => {
     (state) => (state.cardtext as any).isListPanelOpen === true,
   )
   const currentView = useAppSelector(selectCardtextCurrentView)
-  const currentAssetId = useAppSelector(selectCardtextAssetId)
+  const currentTemplateId = useAppSelector(selectCardtextId)
   const session = useAppSelector(selectCardtextSessionData)
 
   const handleClose = useCallback(() => {
@@ -39,37 +39,40 @@ export const CardtextRightSlot: React.FC = () => {
   }, [dispatch])
 
   const handleSelectTemplate = useCallback(
-    (entry: CardtextTemplate) => {
-      // Если сейчас открыт редактор в режиме создания (assetId == null),
+    (entry: CardtextContent) => {
+      // Если сейчас открыт редактор в режиме создания (id шаблона == null),
       // то перед переключением на сохранённый шаблон сохраняем текущий текст как createDraft.
       if (
         currentView === 'cardtextEditor' &&
-        (currentAssetId == null || currentAssetId === null)
+        (currentTemplateId == null || currentTemplateId === null)
       ) {
         const draft: CardtextCreateDraft = {
           value: session.value ?? [],
           style: session.style,
           plainText: session.plainText,
           cardtextLines: session.cardtextLines,
+          timestamp: session.timestamp,
         }
         dispatch(setCreateDraft(draft))
       }
 
-      dispatch(setCardtextAssetId(entry.id))
+      dispatch(setCardtextId(entry.id))
       dispatch(
         restoreCardtextSession({
-          assetId: entry.id,
+          id: entry.id,
           value: entry.value,
           style: entry.style,
           title: entry.title,
           plainText: entry.plainText,
           cardtextLines: entry.cardtextLines,
           favorite: entry.favorite ?? null,
+          timestamp: entry.timestamp,
+          status: entry.status ?? 'inLine',
         }),
       )
       dispatch(setCardtextCurrentView('cardtextView'))
     },
-    [dispatch, currentView, currentAssetId, session],
+    [dispatch, currentView, currentTemplateId, session],
   )
 
   if (!isOpen) return null

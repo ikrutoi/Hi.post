@@ -1,5 +1,5 @@
 import { RootState } from '@app/state'
-import type { CardtextTemplate } from '../../domain/templates/types'
+import type { CardtextContent } from '../../domain/editor/editor.types'
 
 export const selectCardtextAddTemplateOpen = (state: RootState): boolean =>
   state.cardtext.isAddTemplateOpen ?? false
@@ -13,7 +13,7 @@ export const selectCardtextListSortDirection = (
 
 export const selectCardtextTemplatesListItems = (
   state: RootState,
-): CardtextTemplate[] | null => state.cardtext.templatesList ?? null
+): CardtextContent[] | null => state.cardtext.templatesList ?? null
 
 export const selectCardtextTemplatesListLoading = (state: RootState): boolean =>
   state.cardtext.templatesListLoading === true

@@ -23,8 +23,10 @@ import {
   selectCardtextValue,
   selectCardtextTitle,
   selectCardtextStyle,
-  selectCardtextAssetId,
+  selectCardtextId,
   selectFontSizeStep,
+  selectCardtextPlainText,
+  selectCardtextLines,
 } from '../../infrastructure/selectors'
 
 const MAX_FONT_STEP = 6
@@ -37,8 +39,10 @@ export const useCardtextFacade = () => {
   const value = useAppSelector(selectCardtextValue)
   const title = useAppSelector(selectCardtextTitle)
   const style = useAppSelector(selectCardtextStyle)
-  const assetId = useAppSelector(selectCardtextAssetId)
+  const id = useAppSelector(selectCardtextId)
   const fontSizeStep = useAppSelector(selectFontSizeStep)
+  const plainText = useAppSelector(selectCardtextPlainText)
+  const cardtextLines = useAppSelector(selectCardtextLines)
   const resetToken = useAppSelector((s) => s.cardtext.resetToken)
 
   const setValueHandler = React.useCallback(
@@ -122,7 +126,9 @@ export const useCardtextFacade = () => {
     value,
     title,
     style,
-    assetId,
+    id,
+    plainText,
+    cardtextLines,
     resetToken,
     fontSizeStep,
     editorRef: React.useRef<HTMLDivElement>(null),

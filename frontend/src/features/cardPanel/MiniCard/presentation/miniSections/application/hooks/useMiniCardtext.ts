@@ -6,28 +6,29 @@ import type { RootState } from '@app/state'
 import {
   DEFAULT_CARDTEXT_LINES,
   FONT_SIZE_COEFFICIENT_MINICARD,
+  type TextAlign,
 } from '@cardtext/domain/types'
 import { calculateEditorLayout } from '@cardtext/application/helpers'
 import { useSizeFacade } from '@layout/application/facades'
+import {
+  selectCardtextValue,
+  selectCardtextLines,
+  selectCardtextStatus,
+  selectCardtextPlainText,
+  selectCardtextStyle,
+} from '@cardtext/infrastructure/selectors'
 
 export const useMiniCardtext = () => {
   const editor = useMemo(() => withReact(createEditor()), [])
 
-  const {
-    value,
-    cardtextLines,
-    applied,
-    appliedData,
-    style: cardtextStyle,
-  } = useSelector((state: RootState) => state.cardtext)
+  const value = useSelector(selectCardtextValue)
+  const cardtextLines = useSelector(selectCardtextLines)
+  const status = useSelector(selectCardtextStatus)
+  const plainText = useSelector(selectCardtextPlainText)
+  const cardtextStyle = useSelector(selectCardtextStyle)
 
-  // Treat empty string like "not applied" — must match MiniSectionsSlot (`applied !== ''`).
-  const hasAppliedId = applied != null && applied !== ''
-
-  const displayValue =
-    hasAppliedId && appliedData?.value ? appliedData.value : value
-  const displayStyle =
-    hasAppliedId && appliedData?.style ? appliedData.style : cardtextStyle
+  const displayValue = value
+  const displayStyle = cardtextStyle
 
   const { sizeMiniCard } = useSizeFacade()
 
@@ -43,19 +44,19 @@ export const useMiniCardtext = () => {
         return {
           fontSize: `${result.fontSize}px`,
           lineHeight: `${result.lineHeight}px`,
-          textAlign: (displayStyle?.align ?? 'left') as const,
+          textAlign: (displayStyle?.align ?? 'left') as TextAlign,
           color: colorVarDisplay,
         }
       })()
     : {
         fontSize: '12px',
         lineHeight: '16px',
-        textAlign: (displayStyle?.align ?? 'left') as const,
+        textAlign: (displayStyle?.align ?? 'left') as TextAlign,
         color: colorVarDisplay,
       }
 
-  // Show mini text only for applied content.
-  const shouldShowMiniText = hasAppliedId
+  const shouldShowMiniText =
+    status === 'processed' && (plainText?.trim?.() ?? '').length > 0
 
   return { editor, value: displayValue, style, shouldShowMiniText }
 }

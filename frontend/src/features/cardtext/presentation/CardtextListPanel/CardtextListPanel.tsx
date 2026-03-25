@@ -6,7 +6,7 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
-  selectCardtextAssetId,
+  selectCardtextId,
   selectCardtextListSortDirection,
 } from '@cardtext/infrastructure/selectors'
 import {
@@ -15,19 +15,19 @@ import {
   updateCardtextTemplateFavoriteInList,
 } from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
-import type { CardtextTemplate } from '@cardtext/domain/types'
+import type { CardtextContent } from '@cardtext/domain/types'
 import { CardtextListEntry } from './CardtextListEntry'
 import styles from './CardtextListPanel.module.scss'
 
 type Props = {
   onClose: () => void
-  onSelect?: (entry: CardtextTemplate) => void
+  onSelect?: (entry: CardtextContent) => void
 }
 
 function sortTemplatesByTitle(
-  list: CardtextTemplate[],
+  list: CardtextContent[],
   direction: 'asc' | 'desc',
-): CardtextTemplate[] {
+): CardtextContent[] {
   const sorted = [...list].sort((a, b) =>
     (a.title ?? '').trim().localeCompare((b.title ?? '').trim(), undefined, {
       sensitivity: 'base',
@@ -54,11 +54,11 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   }, [items, sortDirection])
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
   const { deleteCardtextTemplate, updateCardtextTemplate } = useTemplateActions()
-  const assetId = useAppSelector(selectCardtextAssetId)
+  const selectedTemplateId = useAppSelector(selectCardtextId)
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const handleSelect = useCallback(
-    (entry: CardtextTemplate) => {
+    (entry: CardtextContent) => {
       setSelectedId(entry.id)
       onSelect?.(entry)
     },
@@ -75,15 +75,16 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   )
 
   const handleToggleStar = useCallback(
-    async (entry: CardtextTemplate) => {
+    async (entry: CardtextContent) => {
+      if (entry.id == null) return
       const next = entry.favorite === true ? false : true
       await updateCardtextTemplate(entry.id, { favorite: next })
       dispatch(updateCardtextTemplateFavoriteInList({ id: entry.id, favorite: next }))
-      if (assetId === entry.id) {
+      if (selectedTemplateId === entry.id) {
         dispatch(setFavorite(next))
       }
     },
-    [updateCardtextTemplate, assetId, dispatch],
+    [updateCardtextTemplate, selectedTemplateId, dispatch],
   )
 
   return (

@@ -1,13 +1,13 @@
 import React from 'react'
-import type { CardtextTemplate } from '@cardtext/domain/types'
+import type { CardtextContent } from '@cardtext/domain/types'
 import styles from './CardtextListEntry.module.scss'
 import { getToolbarIcon } from '@/shared/utils/icons'
 
 type Props = {
-  entry: CardtextTemplate
-  onSelect: (entry: CardtextTemplate) => void
+  entry: CardtextContent
+  onSelect: (entry: CardtextContent) => void
   onDelete: (id: string) => void
-  onEdit?: (entry: CardtextTemplate) => void
+  onEdit?: (entry: CardtextContent) => void
   isStarred?: boolean
   onToggleStar?: () => void
   isSelected?: boolean
@@ -24,7 +24,7 @@ export const CardtextListEntry: React.FC<Props> = ({
   isSelected = false,
   isFocused = false,
 }) => {
-  const colorMap: Record<CardtextTemplate['style']['color'], string> = {
+  const colorMap: Record<CardtextContent['style']['color'], string> = {
     deepBlack: '#1a1a1b',
     blue: '#1e3a8a',
     burgundy: '#741b47',
@@ -85,7 +85,7 @@ export const CardtextListEntry: React.FC<Props> = ({
         className={styles.deleteButton}
         onClick={(e) => {
           e.stopPropagation()
-          onDelete(entry.id)
+          if (entry.id != null) onDelete(entry.id)
         }}
         aria-label="Delete template"
         title="Delete template"

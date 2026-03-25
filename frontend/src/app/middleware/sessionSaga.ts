@@ -87,7 +87,7 @@ import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
 import type {
-  CardtextTemplateContent,
+  CardtextContent,
   CardtextStyle,
 } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
@@ -103,9 +103,7 @@ import {
   setTextStyle,
   setAlign,
   clearText,
-  setComplete,
-  setApplied,
-  setAppliedData,
+  setStatus as setCardtextStatus,
   restoreCardtextSession,
   setCardtextCurrentView,
 } from '@cardtext/infrastructure/state'
@@ -224,9 +222,7 @@ const SESSION_WATCH_ACTIONS = [
   setAlign.type,
   clearText.type,
   setCardtextCurrentView.type,
-  setComplete.type,
-  setApplied.type,
-  setAppliedData.type,
+  setCardtextStatus.type,
   addCardtextTemplateId.type,
   removeCardtextTemplateId.type,
   addAddressTemplateRef.type,

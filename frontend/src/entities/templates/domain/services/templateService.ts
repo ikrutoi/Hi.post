@@ -11,13 +11,99 @@ import type {
   AddressType,
 } from '../types/addressTemplate.types'
 import type {
-  CardtextTemplate,
-  CreateCardtextTemplatePayload,
-  UpdateCardtextTemplatePayload,
-  CardtextTemplateItemShape,
-} from '../types/cardtextTemplate.types'
+  CreateCardtextPayload,
+  UpdateCardtextPayload,
+  CardtextContent,
+  CardtextStatus,
+  CardtextStyle,
+  CardtextValue,
+} from '@cardtext/domain/types'
 import type { TemplateOperationResult } from '../types/template.types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
+import { isEmptyCardtextValue } from '@cardtext/domain/helpers/isEmptyCardtextValue'
+
+function defaultCardtextStyleFallback(): CardtextStyle {
+  return {
+    fontFamily: '',
+    fontSizeStep: 0,
+    color: 'deepBlack',
+    align: 'left',
+  }
+}
+
+/** Нормализация сохранённого `state` шаблона (в т.ч. миграция с `applied` / `appliedData`). */
+function cardtextContentFromPersistedState(raw: unknown, now: number) {
+  const s = (raw && typeof raw === 'object' ? raw : {}) as Record<
+    string,
+    unknown
+  >
+  const legacyApplied = s.applied as string | null | undefined
+  const legacyAppliedData = s.appliedData as
+    | { value: CardtextValue; style: CardtextStyle }
+    | null
+    | undefined
+  const legacyAssetData = s.assetData as
+    | { value: CardtextValue; style: CardtextStyle }
+    | null
+    | undefined
+  const legacyComplete = s.isComplete as boolean | undefined
+
+  let value = (s.value as CardtextValue) || []
+  let style = (s.style as CardtextStyle) || defaultCardtextStyleFallback()
+
+  if (isEmptyCardtextValue(value) && legacyAppliedData?.value) {
+    value = legacyAppliedData.value
+    style = { ...style, ...legacyAppliedData.style }
+  } else if (isEmptyCardtextValue(value) && legacyAssetData?.value) {
+    value = legacyAssetData.value
+    style = { ...style, ...legacyAssetData.style }
+  }
+
+  let status =
+    (s.status as CardtextStatus | undefined) ??
+    (s.assetStatus as CardtextStatus | undefined) ??
+    'inLine'
+
+  if (
+    s.status === undefined &&
+    s.assetStatus === undefined &&
+    (legacyComplete === true ||
+      (legacyApplied != null && legacyApplied !== ''))
+  ) {
+    status = 'processed'
+  }
+
+  return {
+    id: (s.id as string | null | undefined) ?? null,
+    value,
+    style,
+    title: (s.title as string) ?? '',
+    plainText: (s.plainText as string) || '',
+    cardtextLines: (s.cardtextLines as number) || 0,
+    favorite: (s.favorite as boolean | null | undefined) ?? null,
+    timestamp: typeof s.timestamp === 'number' ? s.timestamp : now,
+    status,
+  }
+}
+
+/** Одна запись стора `cardtext`: плоский `CardtextContent` или legacy `{ id, state, status? }`. */
+function readCardtextStoreRecord(record: unknown, now: number): CardtextContent {
+  const r = (record && typeof record === 'object' ? record : {}) as Record<
+    string,
+    unknown
+  >
+  const nested = r.state
+  const inner =
+    nested != null && typeof nested === 'object' ? nested : r
+  const content = cardtextContentFromPersistedState(inner, now)
+  const topId = r.id != null ? String(r.id) : null
+  const rowStatus = r.status as CardtextStatus | undefined
+  return {
+    ...content,
+    id: topId ?? content.id,
+    status: rowStatus ?? content.status,
+  }
+}
 
 export const templateService = {
   async getAddressTemplates(type: AddressType): Promise<AddressTemplate[]> {
@@ -25,7 +111,6 @@ export const templateService = {
       type === 'recipient' ? recipientTemplatesAdapter : senderTemplatesAdapter
 
     const records = await adapter.getAll()
-    const now = Date.now()
 
     return records.map((record) => ({
       id: record.id,
@@ -33,8 +118,6 @@ export const templateService = {
       address: record.address,
       type,
       cardId: record.id,
-      createdAt: now,
-      updatedAt: now,
       serverId: null,
       syncedAt: null,
       isDirty: false,
@@ -51,15 +134,12 @@ export const templateService = {
     const record = await adapter.getById(id)
     if (!record) return null
 
-    const now = Date.now()
     return {
       id: record.id,
       localId: record.localId,
       address: record.address,
       type,
       cardId: record.id,
-      createdAt: now,
-      updatedAt: now,
       serverId: null,
       syncedAt: null,
       isDirty: false,
@@ -164,84 +244,48 @@ export const templateService = {
     }
   },
 
-  async getCardtextTemplates(): Promise<CardtextTemplate[]> {
+  async getCardtextTemplates(): Promise<CardtextContent[]> {
     const records = await cardtextTemplatesAdapter.getAll()
     const now = Date.now()
 
     return records.map((record) => {
-      const state = record.state ?? (record as any)
+      const content = readCardtextStoreRecord(record, now)
       return {
-      id: record.id,
-      value: state?.value || [],
-      style: state?.style || {
-        fontFamily: '',
-        fontSizeStep: 0,
-        color: 'deepBlack',
-        align: 'left',
-      },
-      title: state?.title ?? '',
-      plainText: state?.plainText || '',
-      cardtextLines: state?.cardtextLines || 0,
-      favorite: state?.favorite ?? (record as any).favorite ?? null,
-      status: record.status ?? 'inLine',
-      createdAt: record.createdAt ?? now,
-      updatedAt: record.updatedAt ?? now,
-      serverId: null,
-      syncedAt: null,
-      isDirty: false,
-    }
+        ...content,
+        favorite: content.favorite ?? (record as { favorite?: boolean | null }).favorite ?? null,
+      }
     })
   },
 
-  async getCardtextTemplateById(id: string): Promise<CardtextTemplate | null> {
+  async getCardtextTemplateById(id: string): Promise<CardtextContent | null> {
     const record = await cardtextTemplatesAdapter.getById(id)
     if (!record) return null
 
-    const state = record.state ?? (record as any)
     const now = Date.now()
+    const content = readCardtextStoreRecord(record, now)
     return {
-      id: record.id,
-      value: state?.value || [],
-      style: state?.style || {
-        fontFamily: '',
-        fontSizeStep: 0,
-        color: 'deepBlack',
-        align: 'left',
-      },
-      title: state?.title ?? '',
-      plainText: state?.plainText || '',
-      cardtextLines: state?.cardtextLines || 0,
-      favorite: state?.favorite ?? (record as any).favorite ?? null,
-      status: record.status ?? 'inLine',
-      createdAt: record.createdAt ?? now,
-      updatedAt: record.updatedAt ?? now,
-      serverId: null,
-      syncedAt: null,
-      isDirty: false,
+      ...content,
+      favorite: content.favorite ?? (record as { favorite?: boolean | null }).favorite ?? null,
     }
   },
 
   async createCardtextTemplate(
-    payload: CreateCardtextTemplatePayload,
+    payload: CreateCardtextPayload,
   ): Promise<TemplateOperationResult> {
     try {
       const id = payload.id ?? nanoid()
       const now = Date.now()
 
-      const templateData: CardtextTemplateItemShape = {
+      const templateData: CardtextContent = {
         id,
-        state: {
-          value: payload.value,
-          style: payload.style,
-          title: payload.title ?? payload.name ?? '',
-          plainText: payload.plainText,
-          cardtextLines: payload.cardtextLines,
-          applied: null,
-          favorite: payload.favorite ?? null,
-        },
+        value: payload.value,
+        style: payload.style,
+        title: payload.title ?? '',
+        plainText: payload.plainText,
+        cardtextLines: payload.cardtextLines,
         status: 'inLine',
-        createdAt: now,
-        updatedAt: now,
+        favorite: payload.favorite ?? null,
+        timestamp: now,
       }
 
       await cardtextTemplatesAdapter.addTemplate(templateData)
@@ -260,7 +304,7 @@ export const templateService = {
 
   async updateCardtextTemplate(
     id: string,
-    payload: UpdateCardtextTemplatePayload,
+    payload: UpdateCardtextPayload,
   ): Promise<TemplateOperationResult> {
     try {
       const record = await cardtextTemplatesAdapter.getById(id)
@@ -271,31 +315,28 @@ export const templateService = {
         }
       }
 
-      const existingState = record.state ?? (record as any)
       const now = Date.now()
-      const updatedRecord: CardtextTemplateItemShape = {
-        id: record.id,
-        status: record.status ?? 'inLine',
-        createdAt: record.createdAt,
-        updatedAt: now,
-        state: {
-          value: payload.value ?? existingState?.value,
-          style: payload.style
-            ? { ...existingState?.style, ...payload.style }
-            : existingState?.style,
-          title:
-            payload.title ?? payload.name ?? existingState?.title ?? '',
-          plainText: payload.plainText ?? existingState?.plainText,
-          cardtextLines: payload.cardtextLines ?? existingState?.cardtextLines,
-          applied: existingState?.applied ?? null,
-          favorite:
-            payload.favorite !== undefined
-              ? payload.favorite
-              : (existingState?.favorite ?? null),
-        },
+      const prev = readCardtextStoreRecord(record, now)
+      const birth = typeof prev.timestamp === 'number' ? prev.timestamp : now
+      const updatedRecord: CardtextContent = {
+        ...prev,
+        id: String(record.id),
+        value: payload.value ?? prev.value,
+        style: payload.style
+          ? { ...prev.style, ...payload.style }
+          : prev.style,
+        title: payload.title ?? prev.title ?? '',
+        plainText: payload.plainText ?? prev.plainText,
+        cardtextLines: payload.cardtextLines ?? prev.cardtextLines,
+        status: prev.status,
+        favorite:
+          payload.favorite !== undefined ? payload.favorite : prev.favorite,
+        timestamp: birth,
       }
 
-      await cardtextTemplatesAdapter.put(updatedRecord)
+      await cardtextTemplatesAdapter.put(
+        updatedRecord as CardtextContent & { id: string },
+      )
 
       return {
         success: true,

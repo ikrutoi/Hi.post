@@ -1,86 +1,119 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { initialCardtextState } from '../../domain/types'
-import { initialCardtextValue } from '../../domain/editor/editor.types'
-import type {
-  CardtextValue,
-  CardtextStyle,
-  CardtextBlock,
-  CardtextTemplateContent,
-  CardtextAppliedData,
-  CardtextCurrentView,
-  CardtextCreateDraft,
-  CardtextCreateReturnSnapshot,
+import { createSlice, PayloadAction, type WritableDraft } from '@reduxjs/toolkit'
+import {
+  initialCardtextEditorState,
+  initialCardtextValue,
+  createInitialCardtextContent,
+  type CardtextState,
+  type CardtextEditorUIState,
+  type CardtextValue,
+  type CardtextStyle,
+  type CardtextBlock,
+  type CardtextContent,
+  type CardtextStatus,
+  type CardtextCurrentView,
+  type CardtextCreateDraft,
+  type CardtextCreateReturnSnapshot,
+  CardtextListSortDirection,
+  CardtextTemplatesListState,
 } from '../../domain/editor/editor.types'
-import type { CardtextTemplate } from '../../domain/templates/types'
+import { isEmptyCardtextValue } from '@cardtext/domain/helpers/isEmptyCardtextValue'
 
-export type { CardtextTemplatesListState } from '../../domain/templates/types'
+export interface CardtextTemplatesUIState {
+  isListPanelOpen: boolean
+  isAddTemplateOpen: boolean
+  isEditTitleOpen: boolean
+  cardtextListSortDirection: CardtextListSortDirection
+  templatesListLoading: boolean
+}
+
+export interface CardtextSliceState
+  extends CardtextState, CardtextEditorUIState, CardtextTemplatesUIState {
+  templatesList: CardtextTemplatesListState
+}
+
+const initialCardtextTemplatesState: Pick<
+  CardtextSliceState,
+  keyof CardtextTemplatesUIState | 'templatesList'
+> = {
+  isListPanelOpen: false,
+  isAddTemplateOpen: false,
+  isEditTitleOpen: false,
+  cardtextListSortDirection: 'asc',
+  templatesListLoading: false,
+  templatesList: null,
+}
+
+export const initialCardtextState: CardtextSliceState = {
+  ...initialCardtextEditorState,
+  ...initialCardtextTemplatesState,
+}
+
+function ensureAsset(
+  state: WritableDraft<CardtextSliceState>,
+): WritableDraft<CardtextContent> {
+  if (state.assetData === null) {
+    state.assetData = createInitialCardtextContent()
+  }
+  return state.assetData as WritableDraft<CardtextContent>
+}
 
 export const cardtextSlice = createSlice({
   name: 'cardtext',
   initialState: initialCardtextState,
   reducers: {
     setValue(state, action: PayloadAction<CardtextValue>) {
-      state.value = action.payload
-      state.plainText = action.payload
+      const ad = ensureAsset(state)
+      ad.value = action.payload
+      ad.plainText = action.payload
         .map((block) => block.children.map((child) => child.text).join(' '))
         .join('\n')
-      const hasText = state.plainText.trim().length > 0
-      if (!hasText) state.assetId = null
+      const hasText = ad.plainText.trim().length > 0
+      if (!hasText) ad.id = null
+      if (ad.status === 'processed') ad.status = 'inLine'
     },
 
     setTextStyle(state, action: PayloadAction<Partial<CardtextStyle>>) {
-      state.style = { ...state.style, ...action.payload }
+      const ad = ensureAsset(state)
+      ad.style = { ...ad.style, ...action.payload }
+      if (ad.status === 'processed') ad.status = 'inLine'
     },
 
     setAlign(state, action: PayloadAction<CardtextBlock['align']>) {
-      state.value = state.value.map((block: CardtextBlock) => ({
+      const ad = ensureAsset(state)
+      ad.value = ad.value.map((block: CardtextBlock) => ({
         ...block,
         align: action.payload,
       }))
-      state.style.align = action.payload
+      ad.style.align = action.payload
       state.resetToken += 1
+      if (ad.status === 'processed') ad.status = 'inLine'
     },
 
     setFontSizeStep(state, action: PayloadAction<number>) {
-      state.style.fontSizeStep = action.payload
+      const ad = ensureAsset(state)
+      ad.style.fontSizeStep = action.payload
+      if (ad.status === 'processed') ad.status = 'inLine'
     },
 
     setTitle(state, action: PayloadAction<string>) {
-      state.title = action.payload
+      ensureAsset(state).title = action.payload
     },
 
-    setComplete(state, action: PayloadAction<boolean>) {
-      state.isComplete = action.payload
-    },
-
-    setApplied(state, action: PayloadAction<string | null>) {
-      state.applied = action.payload
-      if (!action.payload) state.appliedData = null
-    },
-
-    setAppliedData(state, action: PayloadAction<CardtextAppliedData | null>) {
-      state.appliedData = action.payload
+    setStatus(state, action: PayloadAction<CardtextStatus>) {
+      ensureAsset(state).status = action.payload
     },
 
     setFavorite(state, action: PayloadAction<boolean | null>) {
-      state.favorite = action.payload
+      ensureAsset(state).favorite = action.payload
     },
 
     clearText(state) {
-      state.value = initialCardtextValue.map((b) => ({
-        ...b,
-        children: b.children.map((c) => ({ ...c })),
-      }))
-      state.plainText = ''
-      state.isComplete = false
-      state.applied = null
-      state.appliedData = null
-      state.assetId = null
+      state.assetData = createInitialCardtextContent()
       state.resetToken += 1
     },
 
-    setCardtextAssetId(state, action: PayloadAction<string | null>) {
-      state.assetId = action.payload
+    setCardtextId(state, action: PayloadAction<string | null>) {
+      ensureAsset(state).id = action.payload
     },
 
     setCreateDraft(state, action: PayloadAction<CardtextCreateDraft | null>) {
@@ -92,13 +125,17 @@ export const cardtextSlice = createSlice({
     },
 
     restoreCreateDraft(state, action: PayloadAction<CardtextCreateDraft>) {
-      const { value, style, plainText, cardtextLines } = action.payload
-      state.value = value
-      state.style = style
-      state.plainText = plainText
-      state.cardtextLines = cardtextLines
-      state.title = ''
-      state.assetId = null
+      const { value, style, plainText, cardtextLines, timestamp } =
+        action.payload
+      const ad = ensureAsset(state)
+      ad.value = value
+      ad.style = style
+      ad.plainText = plainText
+      ad.cardtextLines = cardtextLines
+      ad.timestamp = timestamp
+      ad.title = ''
+      ad.id = null
+      ad.status = 'inLine'
       state.resetToken += 1
     },
 
@@ -116,13 +153,23 @@ export const cardtextSlice = createSlice({
     restoreCardtextSession(
       state,
       action: PayloadAction<
-        CardtextTemplateContent & {
+        Partial<CardtextContent> & {
+          /** @deprecated старые сессии */
           assetId?: string | null
           isComplete?: boolean
-          appliedData?: CardtextAppliedData | null
+          applied?: string | null
+          appliedData?: { value: CardtextValue; style: CardtextStyle } | null
+          assetData?: { value: CardtextValue; style: CardtextStyle } | null
         }
       >,
     ) {
+      const p = action.payload as Partial<CardtextContent> & {
+        assetId?: string | null
+        isComplete?: boolean
+        applied?: string | null
+        appliedData?: { value: CardtextValue; style: CardtextStyle } | null
+        assetData?: { value: CardtextValue; style: CardtextStyle } | null
+      }
       const {
         value,
         style,
@@ -130,22 +177,54 @@ export const cardtextSlice = createSlice({
         plainText,
         cardtextLines,
         favorite,
-        assetId,
-        isComplete,
-        applied,
-        appliedData,
-      } = action.payload
-      if (value) state.value = value
-      if (style) state.style = style
-      if (title !== undefined) state.title = title
-      if (plainText !== undefined) state.plainText = plainText
-      if (cardtextLines !== undefined) state.cardtextLines = cardtextLines
-      if (favorite !== undefined) state.favorite = favorite
-      if (assetId !== undefined) state.assetId = assetId
-      if (applied !== undefined) state.applied = applied
-      if (appliedData !== undefined) state.appliedData = appliedData
-      if (state.plainText.trim() === '' && state.value?.length > 0) {
-        state.plainText = state.value
+        timestamp,
+        id,
+      } = p
+      const legacyAssetId = p.assetId
+      const legacyApplied = p.applied
+      const legacyAppliedData = p.appliedData
+      const legacyAssetData = p.assetData
+      const legacyComplete = p.isComplete
+
+      const ad = ensureAsset(state)
+
+      if (value !== undefined && value !== null) ad.value = value
+      if (style !== undefined && style !== null) ad.style = style
+
+      if (isEmptyCardtextValue(ad.value) && legacyAppliedData?.value) {
+        ad.value = legacyAppliedData.value
+        ad.style = { ...ad.style, ...legacyAppliedData.style }
+      } else if (isEmptyCardtextValue(ad.value) && legacyAssetData?.value) {
+        ad.value = legacyAssetData.value
+        ad.style = { ...ad.style, ...legacyAssetData.style }
+      }
+
+      if (title !== undefined) ad.title = title
+      if (plainText !== undefined) ad.plainText = plainText
+      if (cardtextLines !== undefined) ad.cardtextLines = cardtextLines
+      if (favorite !== undefined) ad.favorite = favorite
+      if (timestamp !== undefined) ad.timestamp = timestamp
+      if (id !== undefined) ad.id = id
+      else if (legacyAssetId !== undefined) ad.id = legacyAssetId
+
+      const derivedProcessed =
+        legacyComplete === true ||
+        (legacyApplied != null && legacyApplied !== '')
+
+      const legacyAssetStatus = (p as { assetStatus?: CardtextStatus })
+        .assetStatus
+      if ('status' in p && p.status !== undefined) {
+        ad.status = p.status
+      } else if (legacyAssetStatus !== undefined) {
+        ad.status = legacyAssetStatus
+      } else if (derivedProcessed) {
+        ad.status = 'processed'
+      } else {
+        ad.status = 'inLine'
+      }
+
+      if (ad.plainText.trim() === '' && ad.value?.length > 0) {
+        ad.plainText = ad.value
           .map((block: CardtextBlock) =>
             block.children
               .map((ch: { text?: string }) => ch?.text ?? '')
@@ -153,7 +232,6 @@ export const cardtextSlice = createSlice({
           )
           .join('\n')
       }
-      state.isComplete = isComplete ?? false
       state.resetToken += 1
     },
 
@@ -182,7 +260,7 @@ export const cardtextSlice = createSlice({
     },
     loadCardtextTemplatesSuccess(
       state,
-      action: PayloadAction<CardtextTemplate[]>,
+      action: PayloadAction<CardtextContent[]>,
     ) {
       state.templatesList = action.payload
       state.templatesListLoading = false
@@ -216,7 +294,7 @@ export const cardtextSlice = createSlice({
         state.templatesList[idx] = { ...state.templatesList[idx], title }
     },
 
-    updateCardtextTemplateContentInList(
+    updateCardtextContentInList(
       state,
       action: PayloadAction<{
         id: string
@@ -256,12 +334,10 @@ export const {
   setAlign,
   setFontSizeStep,
   setTitle,
-  setComplete,
-  setApplied,
-  setAppliedData,
+  setStatus,
   setFavorite,
   clearText,
-  setCardtextAssetId,
+  setCardtextId,
   setCreateDraft,
   clearCreateDraft,
   restoreCreateDraft,
@@ -278,7 +354,7 @@ export const {
   loadCardtextTemplatesFailure,
   updateCardtextTemplateFavoriteInList,
   updateCardtextTemplateTitleInList,
-  updateCardtextTemplateContentInList,
+  updateCardtextContentInList,
   setCardtextCurrentView,
   setCardtextFocusRequested,
 } = cardtextSlice.actions

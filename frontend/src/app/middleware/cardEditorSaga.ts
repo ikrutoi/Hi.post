@@ -38,10 +38,18 @@ import {
   selectSelectedAroma,
   selectIsAromaComplete,
 } from '@aroma/infrastructure/selectors'
-import { setValue, setComplete, setApplied, clearText } from '@cardtext/infrastructure/state'
+import {
+  setValue,
+  setStatus as setCardtextStatus,
+  clearText,
+  setTextStyle,
+  setAlign,
+  setFontSizeStep,
+} from '@cardtext/infrastructure/state'
 import {
   selectCardtextIsComplete,
   selectCardtextState,
+  selectCardtextValue,
 } from '@cardtext/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import {
@@ -74,6 +82,7 @@ import {
 import type { DispatchDate } from '@entities/date'
 import type { CardphotoState } from '@cardphoto/domain/types'
 import type { CardtextState } from '@cardtext/domain/types'
+import { initialCardtextValue } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { Card } from '@entities/card/domain/types'
 import type { AromaItem, AromaState } from '@entities/aroma'
@@ -118,11 +127,11 @@ function* syncCardtextReset() {
 }
 
 function* syncCardtextToolbar() {
-  const cardtext: ReturnType<typeof selectCardtextState> = yield select(
-    selectCardtextState,
-  )
-  const toolbarState = buildCardtextToolbarState(cardtext.value, {
-    applied: cardtext.applied,
+  const value: ReturnType<typeof selectCardtextValue> =
+    yield select(selectCardtextValue)
+  const assetProcessed: boolean = yield select(selectCardtextIsComplete)
+  const toolbarState = buildCardtextToolbarState(value, {
+    assetProcessed,
   })
   yield put(updateToolbarSection({ section: 'cardtext', value: toolbarState }))
   yield put(
@@ -189,7 +198,9 @@ function* handleFullCopy(
 
   if (donor) {
     yield put(applyFinal(donor.cardphoto))
-    yield put(setValue(donor.cardtext.content))
+    yield put(
+      setValue(donor.cardtext.assetData?.value ?? initialCardtextValue),
+    )
     yield put(restoreSender(donor.envelope.sender))
     yield put(restoreRecipient(donor.envelope.recipient))
     yield put(setAroma(donor.aroma))
@@ -211,7 +222,9 @@ function* handleSectionCopy(action: ReturnType<typeof copySectionToProcessed>) {
         }
         break
       case 'cardtext':
-        yield put(setValue(donor.cardtext.value))
+        yield put(
+          setValue(donor.cardtext.assetData?.value ?? initialCardtextValue),
+        )
         break
       case 'envelope':
         yield put(restoreSender(donor.envelope.sender))
@@ -288,6 +301,7 @@ export function* cardEditorSaga() {
       clearApply.type,
       setValue.type,
       clearText.type,
+      setCardtextStatus.type,
       updateRecipientField.type,
       setAroma.type,
       clearAroma.type,
@@ -303,11 +317,15 @@ export function* cardEditorSaga() {
 
   yield takeEvery(syncProcessedRequest.type, checkAndSyncProcessedCard)
 
-  yield takeEvery([setValue.type, setComplete.type], syncCardtextStatus)
-  yield takeEvery(
-    [setValue.type, setComplete.type, setApplied.type],
-    syncCardtextToolbar,
-  )
+  const cardtextToolbarRelated = [
+    setValue.type,
+    setCardtextStatus.type,
+    setTextStyle.type,
+    setAlign.type,
+    setFontSizeStep.type,
+  ] as const
+  yield takeEvery([...cardtextToolbarRelated], syncCardtextStatus)
+  yield takeEvery([...cardtextToolbarRelated], syncCardtextToolbar)
   yield takeEvery(clearText.type, syncCardtextReset)
 
   yield takeEvery(

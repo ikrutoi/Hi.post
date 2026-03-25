@@ -2,11 +2,14 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { createEditor } from 'slate'
 import { withReact } from 'slate-react'
-import type { RootState } from '@app/state'
 import {
   DEFAULT_CARDTEXT_LINES,
   FONT_SIZE_COEFFICIENT_MINICARD,
 } from '@cardtext/domain/types'
+import {
+  selectCardtextValue,
+  selectCardtextLines,
+} from '@cardtext/infrastructure/selectors'
 import { calculateEditorLayout } from '@cardtext/application/helpers'
 import { useLayoutFacade } from '@layout/application/facades'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
@@ -14,9 +17,8 @@ import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 export const useMiniCardtextScale = () => {
   const editor = useMemo(() => withReact(createEditor()), [])
 
-  const { value, cardtextLines } = useSelector(
-    (state: RootState) => state.cardtext
-  )
+  const value = useSelector(selectCardtextValue)
+  const cardtextLines = useSelector(selectCardtextLines)
 
   const { size } = useLayoutFacade()
   const { sizeCard, sizeMiniCard } = size

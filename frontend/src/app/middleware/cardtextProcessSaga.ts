@@ -38,13 +38,13 @@ import {
   updateGroupStatus,
 } from '@toolbar/infrastructure/state'
 import { CARDTEXT_CONFIG } from '@cardtext/domain/types'
-import type { CardtextTemplate, TextAlign } from '@cardtext/domain/types'
+import type { CardtextContent, TextAlign } from '@cardtext/domain/types'
 import {
   selectCardtextCreateDraft,
   selectCardtextCreateReturnSnapshot,
   selectCardtextSessionData,
   selectCardtextCurrentView,
-  selectCardtextAssetId,
+  selectCardtextId,
   selectCardtextAddTemplateOpen,
 } from '@cardtext/infrastructure/selectors'
 import type { CardtextCreateDraft } from '@/features/cardtext/domain/editor/editor.types'
@@ -97,10 +97,11 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
   const hasText = (plainText?.trim?.() ?? '').length > 0
   const currentView: ReturnType<typeof selectCardtextCurrentView> =
     yield select(selectCardtextCurrentView)
-  const assetId: string | null = yield select(selectCardtextAssetId)
+  const templateId: string | null = yield select(selectCardtextId)
 
   const isCreateModeOpen =
-    currentView === 'cardtextEditor' && (assetId == null || assetId === null)
+    currentView === 'cardtextEditor' &&
+    (templateId == null || templateId === null)
 
   yield put(
     updateToolbarIcon({
@@ -132,9 +133,10 @@ function* syncCardtextCreateDraftIndicator(): SagaIterator {
   )
   const currentView: ReturnType<typeof selectCardtextCurrentView> =
     yield select(selectCardtextCurrentView)
-  const assetId: string | null = yield select(selectCardtextAssetId)
+  const templateId: string | null = yield select(selectCardtextId)
   const isCreateModeOpen =
-    currentView === 'cardtextEditor' && (assetId == null || assetId === null)
+    currentView === 'cardtextEditor' &&
+    (templateId == null || templateId === null)
 
   yield put(
     updateToolbarIcon({
@@ -162,9 +164,10 @@ function* maybePersistCreateDraftOnExitView(
   const session: ReturnType<typeof selectCardtextSessionData> = yield select(
     selectCardtextSessionData,
   )
-  const assetId = session.assetId
-  // Черновик нужен только для режима создания (assetId == null).
-  if (assetId != null) return
+  const templateId =
+    session.id ?? (session as { assetId?: string | null }).assetId ?? null
+  // Черновик нужен только для режима создания (шаблон не выбран).
+  if (templateId != null) return
 
   const plainText = session.plainText ?? ''
   const hasText = plainText.trim().length > 0
@@ -178,6 +181,7 @@ function* maybePersistCreateDraftOnExitView(
     style: session.style,
     plainText: session.plainText,
     cardtextLines: session.cardtextLines,
+    timestamp: session.timestamp,
   }
   yield put(setCreateDraft(draft))
 
@@ -195,7 +199,7 @@ function* loadCardtextTemplatesSaga(): SagaIterator {
     const templates: Awaited<
       ReturnType<typeof templateService.getCardtextTemplates>
     > = yield call([templateService, 'getCardtextTemplates'])
-    yield put(loadCardtextTemplatesSuccess(templates as CardtextTemplate[]))
+    yield put(loadCardtextTemplatesSuccess(templates))
   } catch {
     yield put(loadCardtextTemplatesFailure())
   }

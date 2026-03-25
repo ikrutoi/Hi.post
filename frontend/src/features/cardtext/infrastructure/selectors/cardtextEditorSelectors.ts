@@ -1,12 +1,12 @@
 import { RootState } from '@app/state'
-import type {
-  CardtextValue,
-  CardtextStyle,
-  CardtextTemplateContent,
-  CardtextAppliedData,
-  CardtextCurrentView,
-  CardtextCreateDraft,
-  CardtextCreateReturnSnapshot,
+import {
+  createInitialCardtextContent,
+  type CardtextValue,
+  type CardtextStyle,
+  type CardtextContent,
+  type CardtextCurrentView,
+  type CardtextCreateDraft,
+  type CardtextCreateReturnSnapshot,
 } from '../../domain/editor/editor.types'
 import { createSelector } from '@reduxjs/toolkit'
 
@@ -24,7 +24,7 @@ export const selectCardtextFocusRequested = (state: RootState): boolean =>
 
 export const selectCardtextCreateDraft = (
   state: RootState,
-): CardtextCreateDraft | null => state.cardtext.createDraft ?? null
+): CardtextCreateDraft | null => state.cardtext.createDraft
 
 export const selectCardtextCreateReturnSnapshot = (
   state: RootState,
@@ -32,83 +32,64 @@ export const selectCardtextCreateReturnSnapshot = (
   state.cardtext.createReturnSnapshot ?? null
 
 export const selectCardtextValue = (state: RootState): CardtextValue =>
-  state.cardtext.value
+  state.cardtext.assetData?.value ?? createInitialCardtextContent().value
 
 export const selectCardtextPlainText = (state: RootState): string =>
-  state.cardtext.plainText
+  state.cardtext.assetData?.plainText ?? ''
 
 export const selectCardtextIsComplete = (state: RootState): boolean =>
-  state.cardtext.isComplete
+  state.cardtext.assetData?.status === 'processed'
 
 export const selectCardtextLines = (state: RootState): number =>
-  state.cardtext.cardtextLines
+  state.cardtext.assetData?.cardtextLines ??
+  createInitialCardtextContent().cardtextLines
 
 export const selectCardtextStyle = (state: RootState): CardtextStyle =>
-  state.cardtext.style
+  state.cardtext.assetData?.style ?? createInitialCardtextContent().style
 
 export const selectCardtextTitle = (state: RootState): string =>
-  state.cardtext.title
+  state.cardtext.assetData?.title ?? ''
 
 export const selectCardtextFavorite = (state: RootState): boolean => {
-  const { assetId, favorite, templatesList } = state.cardtext
-  if (assetId != null && Array.isArray(templatesList)) {
-    const entry = templatesList.find((t: { id?: string }) => t.id === assetId)
-    if (entry != null)
-      return (entry as { favorite?: boolean | null }).favorite === true
+  const { assetData, templatesList } = state.cardtext
+  const id = assetData?.id ?? null
+  const favorite = assetData?.favorite ?? null
+  if (id != null && Array.isArray(templatesList)) {
+    const entry = templatesList.find((t: CardtextContent) => t.id === id)
+    if (entry != null) return entry.favorite === true
   }
   return favorite === true
 }
 
-export const selectCardtextAssetId = (state: RootState): string | null =>
-  state.cardtext.assetId ?? null
+export const selectCardtextId = (state: RootState): string | null =>
+  state.cardtext.assetData?.id ?? null
 
-export const selectCardtextApplied = (state: RootState): string | null =>
-  state.cardtext.applied ?? null
-
-export const selectCardtextAppliedData = (
-  state: RootState,
-): CardtextAppliedData | null => state.cardtext.appliedData ?? null
+export const selectCardtextStatus = (state: RootState) =>
+  state.cardtext.assetData?.status ?? 'inLine'
 
 export const selectFontSizeStep = (state: RootState): number =>
-  state.cardtext.style.fontSizeStep
+  state.cardtext.assetData?.style.fontSizeStep ??
+  createInitialCardtextContent().style.fontSizeStep
 
 export const selectFontFamily = (state: RootState): string =>
-  state.cardtext.style.fontFamily
+  state.cardtext.assetData?.style.fontFamily ??
+  createInitialCardtextContent().style.fontFamily
 
 export const selectFontColor = (state: RootState): string =>
-  state.cardtext.style.color
+  state.cardtext.assetData?.style.color ??
+  createInitialCardtextContent().style.color
 
 export const selectCardtextSessionData = createSelector(
-  [(state: RootState) => state.cardtext],
-  (
-    cardtext,
-  ): CardtextTemplateContent & {
-    assetId: string | null
-    isComplete: boolean
-    appliedData: CardtextAppliedData | null
-  } => {
-    const {
-      value,
-      style,
-      title,
-      plainText,
-      cardtextLines,
-      applied,
-      appliedData,
-      favorite,
-      isComplete,
-    } = cardtext
+  [(state: RootState) => state.cardtext.assetData],
+  (asset): CardtextContent => {
+    if (asset == null) return createInitialCardtextContent()
     return {
-      assetId: cardtext.assetId ?? null,
-      value,
-      style,
-      title,
-      plainText,
-      cardtextLines,
-      applied,
-      appliedData: appliedData ?? null,
-      favorite,
-      isComplete,
+      ...asset,
+      value: asset.value.map((b) => ({
+        ...b,
+        children: b.children.map((c) => ({ ...c })),
+      })),
+      style: { ...asset.style },
     }
   },
 )

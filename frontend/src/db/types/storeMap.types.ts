@@ -1,4 +1,4 @@
-import type { CardtextTemplateItemShape } from '@entities/templates/domain/types'
+import type { CardtextContent } from '@cardtext/domain/types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { Card } from '@entities/card/domain/types'
 import type { CartItem } from '@entities/cart/domain/types'
@@ -25,7 +25,7 @@ export interface StoreMap {
   userImages: ImageRecord
   cardphotoImages: ImageMeta & { id: string }
   applyImage: ImageRecord
-  cardtext: CardtextTemplateItemShape
+  cardtext: CardtextContent
   sender: AddressTemplateItem
   recipient: AddressTemplateItem
   cards: Card[]
@@ -38,7 +38,7 @@ export interface TemplateStoreMap {
   stockImages: ImageRecord
   userImages: ImageRecord
   cardphotoImages: ImageMeta & { id: string }
-  cardtext: CardtextTemplateItemShape
+  cardtext: CardtextContent
   sender: AddressTemplateItem
   recipient: AddressTemplateItem
   cart: CartItem

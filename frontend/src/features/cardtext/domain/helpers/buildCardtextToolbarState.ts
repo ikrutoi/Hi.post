@@ -3,7 +3,7 @@ import type { CardtextValue } from '../types'
 
 export const buildCardtextToolbarState = (
   value: CardtextValue,
-  options?: { applied?: string | null },
+  options?: { assetProcessed?: boolean },
 ): CardtextToolbarState => {
   const firstBlock = value[0]
   const firstLeaf = firstBlock?.children?.[0] ?? {}
@@ -14,7 +14,7 @@ export const buildCardtextToolbarState = (
     .map((block) => block.children.map((ch) => ch.text).join(''))
     .join('')
   const hasContent = plainText.trim().length > 0
-  const isApplied = options?.applied != null && options.applied !== ''
+  const isApplied = options?.assetProcessed === true
 
   for (const key of CARDTEXT_KEYS) {
     switch (key) {

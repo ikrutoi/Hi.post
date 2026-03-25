@@ -1,16 +1,12 @@
 import type { StoreAdapter } from '../../types/storeAdapter.types'
-import type {
-  CardtextTemplateItemShape,
-} from '@entities/templates/domain/types'
+import type { CardtextContent } from '@cardtext/domain/types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { CartItem } from '@entities/cart/domain/types'
 import type { DraftsItem } from '@entities/drafts/domain/types'
 import type { SentItem } from '@entities/sent/domain/types'
 
-export interface CardtextTemplatesAdapter extends StoreAdapter<CardtextTemplateItemShape> {
-  addTemplate(
-    template: Omit<CardtextTemplateItemShape, 'id'> & { id?: string },
-  ): Promise<void>
+export interface CardtextTemplatesAdapter extends StoreAdapter<CardtextContent> {
+  addTemplate(template: CardtextContent): Promise<void>
 }
 
 export interface SenderTemplatesAdapter extends StoreAdapter<AddressTemplateItem> {

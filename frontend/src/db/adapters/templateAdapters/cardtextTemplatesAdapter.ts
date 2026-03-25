@@ -1,8 +1,8 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import type { CardtextTemplateItemShape } from '@entities/templates/domain/types'
+import type { CardtextContent } from '@cardtext/domain/types'
 import type { CardtextTemplatesAdapter } from './templatesStoreAdapters'
 
-const base = createStoreAdapter<CardtextTemplateItemShape>('cardtext')
+const base = createStoreAdapter<CardtextContent>('cardtext')
 
 export const cardtextTemplatesAdapter: CardtextTemplatesAdapter = {
   ...base,
@@ -11,6 +11,6 @@ export const cardtextTemplatesAdapter: CardtextTemplatesAdapter = {
       template.id && String(template.id).trim() !== ''
         ? String(template.id)
         : String(Date.now())
-    await base.put({ ...template, id } as CardtextTemplateItemShape & { id: string })
+    await base.put({ ...template, id } as CardtextContent & { id: string })
   },
 }

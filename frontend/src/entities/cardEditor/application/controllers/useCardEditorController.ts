@@ -12,7 +12,7 @@ import { clearDate } from '@date/infrastructure/state'
 import { clear as clearAroma } from '@aroma/infrastructure/state'
 import { setSenderApplied } from '@envelope/sender/infrastructure/state'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
-import { setComplete } from '@cardtext/infrastructure/state'
+import { setStatus } from '@cardtext/infrastructure/state'
 import { clearApply } from '@cardphoto/infrastructure/state'
 
 export const useCardEditorController = () => {
@@ -37,7 +37,7 @@ export const useCardEditorController = () => {
         dispatch(setRecipientApplied(false))
         break
       case 'cardtext':
-        dispatch(setComplete(false))
+        dispatch(setStatus('inLine'))
         break
       case 'cardphoto':
         dispatch(clearApply())

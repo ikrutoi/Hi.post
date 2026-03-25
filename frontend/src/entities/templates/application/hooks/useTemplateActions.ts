@@ -7,8 +7,8 @@ import type {
   UpdateAddressTemplatePayload,
 } from '../../domain/types/addressTemplate.types'
 import type {
-  CreateCardtextTemplatePayload,
-  UpdateCardtextTemplatePayload,
+  CreateCardtextPayload,
+  UpdateCardtextPayload,
 } from '@cardtext/domain/types'
 import type { AddressType } from '../../domain/types'
 import type { TemplateOperationResult } from '../../domain/types/template.types'
@@ -48,7 +48,7 @@ export const useTemplateActions = () => {
 
   const createCardtextTemplate = useCallback(
     async (
-      payload: CreateCardtextTemplatePayload,
+      payload: CreateCardtextPayload,
     ): Promise<TemplateOperationResult> => {
       const result = await templateService.createCardtextTemplate(payload)
       if (result.success && result.templateId) {
@@ -62,7 +62,7 @@ export const useTemplateActions = () => {
   const updateCardtextTemplate = useCallback(
     async (
       id: string,
-      payload: UpdateCardtextTemplatePayload,
+      payload: UpdateCardtextPayload,
     ): Promise<TemplateOperationResult> => {
       return await templateService.updateCardtextTemplate(id, payload)
     },

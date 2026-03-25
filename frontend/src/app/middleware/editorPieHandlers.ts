@@ -5,11 +5,7 @@ import { clearDate } from '@date/infrastructure/state'
 import { clear as clearAroma } from '@aroma/infrastructure/state'
 import { setSenderApplied } from '@envelope/sender/infrastructure/state'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
-import {
-  setComplete as setCardtextComplete,
-  setApplied as setCardtextApplied,
-  setAppliedData as setCardtextAppliedData,
-} from '@cardtext/infrastructure/state'
+import { setStatus as setCardtextStatus } from '@cardtext/infrastructure/state'
 import { clearApply } from '@cardphoto/infrastructure/state'
 
 export function handleAddDraftsAction() {
@@ -23,8 +19,6 @@ export function* handleClearAllMiniSectionsAction(): SagaIterator {
   yield put(clearAroma())
   yield put(setSenderApplied(false))
   yield put(setRecipientApplied(false))
-  yield put(setCardtextComplete(false))
-  yield put(setCardtextApplied(null))
-  yield put(setCardtextAppliedData(null))
+  yield put(setCardtextStatus('inLine'))
   yield put(clearApply())
 }

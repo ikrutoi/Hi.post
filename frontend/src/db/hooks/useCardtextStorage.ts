@@ -4,11 +4,11 @@ import { cardtextAdapter } from '../adapters/storeAdapters'
 export const useCardtextStorage = (editor: Editor) => {
   const loadTemplateById = async (id: number) => {
     const record = await cardtextAdapter.getById(String(id))
-    if (!record?.state?.value) return null
+    if (!record?.value) return null
 
     clearEditor()
-    Transforms.insertNodes(editor, record.state.value)
-    return record.state.value
+    Transforms.insertNodes(editor, record.value)
+    return record.value
   }
 
   const saveTemplate = async (nodes: Node[]) => {

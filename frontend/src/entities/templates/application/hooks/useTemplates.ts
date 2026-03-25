@@ -7,7 +7,6 @@ import {
 import { loadCardtextTemplatesRequest } from '@cardtext/infrastructure/state'
 import { templateService } from '../../domain/services/templateService'
 import type { AddressTemplate } from '../../domain/types/addressTemplate.types'
-import type { CardtextTemplate } from '@cardtext/domain/types'
 import type { AddressType } from '../../domain/types'
 
 export const useTemplates = () => {
