@@ -17,7 +17,7 @@ import type {
   CardtextStyle,
   TextAlign,
 } from '../../domain/types'
-import type { CardtextCurrentView } from '../../domain/editor/types'
+import type { CardtextCurrentView } from '../../domain/editor/editor.types'
 import {
   selectCardtextState,
   selectCardtextValue,
@@ -64,8 +64,7 @@ export const useCardtextFacade = () => {
         editor,
         { align },
         {
-          match: (n) =>
-            SlateElement.isElement(n) && Editor.isBlock(editor, n),
+          match: (n) => SlateElement.isElement(n) && Editor.isBlock(editor, n),
         },
       )
       dispatch(setTextStyle({ align }))

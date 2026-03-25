@@ -10,11 +10,7 @@ import type {
   CreateCardtextTemplatePayload,
   UpdateCardtextTemplatePayload,
 } from '@cardtext/domain/types'
-import type {
-  CreateCardphotoTemplatePayload,
-  UpdateCardphotoTemplatePayload,
-} from '../../domain/types/cardphotoTemplate.types'
-import type { AddressType, ImageSourceType } from '../../domain/types'
+import type { AddressType } from '../../domain/types'
 import type { TemplateOperationResult } from '../../domain/types/template.types'
 
 export const useTemplateActions = () => {
@@ -80,36 +76,6 @@ export const useTemplateActions = () => {
     [],
   )
 
-  const createCardphotoTemplate = useCallback(
-    async (
-      payload: CreateCardphotoTemplatePayload,
-    ): Promise<TemplateOperationResult> => {
-      return await templateService.createCardphotoTemplate(payload)
-    },
-    [],
-  )
-
-  const updateCardphotoTemplate = useCallback(
-    async (
-      source: ImageSourceType,
-      id: number | string,
-      payload: UpdateCardphotoTemplatePayload,
-    ): Promise<TemplateOperationResult> => {
-      return await templateService.updateCardphotoTemplate(source, id, payload)
-    },
-    [],
-  )
-
-  const deleteCardphotoTemplate = useCallback(
-    async (
-      source: ImageSourceType,
-      id: number | string,
-    ): Promise<TemplateOperationResult> => {
-      return await templateService.deleteCardphotoTemplate(source, id)
-    },
-    [],
-  )
-
   return {
     createAddressTemplate,
     updateAddressTemplate,
@@ -118,10 +84,6 @@ export const useTemplateActions = () => {
     createCardtextTemplate,
     updateCardtextTemplate,
     deleteCardtextTemplate,
-
-    createCardphotoTemplate,
-    updateCardphotoTemplate,
-    deleteCardphotoTemplate,
   }
 }
 
@@ -151,41 +113,6 @@ export const useAddressTemplateActions = (type: AddressType) => {
       return await deleteAddressTemplate(type, id)
     },
     [deleteAddressTemplate, type],
-  )
-
-  return {
-    create,
-    update,
-    delete: remove,
-  }
-}
-
-export const useCardphotoTemplateActions = (source: ImageSourceType) => {
-  const {
-    createCardphotoTemplate,
-    updateCardphotoTemplate,
-    deleteCardphotoTemplate,
-  } = useTemplateActions()
-
-  const create = useCallback(
-    async (payload: Omit<CreateCardphotoTemplatePayload, 'source'>) => {
-      return await createCardphotoTemplate({ ...payload, source })
-    },
-    [createCardphotoTemplate, source],
-  )
-
-  const update = useCallback(
-    async (id: number | string, payload: UpdateCardphotoTemplatePayload) => {
-      return await updateCardphotoTemplate(source, id, payload)
-    },
-    [updateCardphotoTemplate, source],
-  )
-
-  const remove = useCallback(
-    async (id: number | string) => {
-      return await deleteCardphotoTemplate(source, id)
-    },
-    [deleteCardphotoTemplate, source],
   )
 
   return {

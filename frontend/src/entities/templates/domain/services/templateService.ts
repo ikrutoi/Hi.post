@@ -3,8 +3,6 @@ import {
   recipientTemplatesAdapter,
   senderTemplatesAdapter,
   cardtextTemplatesAdapter,
-  userImagesTemplatesAdapter,
-  stockImagesTemplatesAdapter,
 } from '@db/adapters/templateAdapters'
 import type {
   AddressTemplate,
@@ -18,15 +16,8 @@ import type {
   UpdateCardtextTemplatePayload,
   CardtextTemplateItemShape,
 } from '../types/cardtextTemplate.types'
-import type {
-  CardphotoTemplate,
-  CreateCardphotoTemplatePayload,
-  UpdateCardphotoTemplatePayload,
-  ImageSourceType,
-} from '../types/cardphotoTemplate.types'
 import type { TemplateOperationResult } from '../types/template.types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
-import type { ImageTemplateItem } from '@cardphoto/domain/typesLayout'
 
 export const templateService = {
   async getAddressTemplates(type: AddressType): Promise<AddressTemplate[]> {
@@ -181,7 +172,6 @@ export const templateService = {
       const state = record.state ?? (record as any)
       return {
       id: record.id,
-      localId: record.localId ?? (Number.parseInt(record.id, 10) || 0),
       value: state?.value || [],
       style: state?.style || {
         fontFamily: '',
@@ -193,8 +183,9 @@ export const templateService = {
       plainText: state?.plainText || '',
       cardtextLines: state?.cardtextLines || 0,
       favorite: state?.favorite ?? (record as any).favorite ?? null,
-      createdAt: now,
-      updatedAt: now,
+      status: record.status ?? 'inLine',
+      createdAt: record.createdAt ?? now,
+      updatedAt: record.updatedAt ?? now,
       serverId: null,
       syncedAt: null,
       isDirty: false,
@@ -210,7 +201,6 @@ export const templateService = {
     const now = Date.now()
     return {
       id: record.id,
-      localId: record.localId ?? (Number.parseInt(record.id, 10) || 0),
       value: state?.value || [],
       style: state?.style || {
         fontFamily: '',
@@ -222,8 +212,9 @@ export const templateService = {
       plainText: state?.plainText || '',
       cardtextLines: state?.cardtextLines || 0,
       favorite: state?.favorite ?? (record as any).favorite ?? null,
-      createdAt: now,
-      updatedAt: now,
+      status: record.status ?? 'inLine',
+      createdAt: record.createdAt ?? now,
+      updatedAt: record.updatedAt ?? now,
       serverId: null,
       syncedAt: null,
       isDirty: false,
@@ -235,8 +226,9 @@ export const templateService = {
   ): Promise<TemplateOperationResult> {
     try {
       const id = payload.id ?? nanoid()
+      const now = Date.now()
 
-      const templateData: Omit<CardtextTemplateItemShape, 'localId'> = {
+      const templateData: CardtextTemplateItemShape = {
         id,
         state: {
           value: payload.value,
@@ -247,6 +239,9 @@ export const templateService = {
           applied: null,
           favorite: payload.favorite ?? null,
         },
+        status: 'inLine',
+        createdAt: now,
+        updatedAt: now,
       }
 
       await cardtextTemplatesAdapter.addTemplate(templateData)
@@ -277,10 +272,12 @@ export const templateService = {
       }
 
       const existingState = record.state ?? (record as any)
+      const now = Date.now()
       const updatedRecord: CardtextTemplateItemShape = {
         id: record.id,
-        localId:
-          record.localId ?? (Number.parseInt(record.id, 10) || 0),
+        status: record.status ?? 'inLine',
+        createdAt: record.createdAt,
+        updatedAt: now,
         state: {
           value: payload.value ?? existingState?.value,
           style: payload.style
@@ -315,185 +312,6 @@ export const templateService = {
   async deleteCardtextTemplate(id: string): Promise<TemplateOperationResult> {
     try {
       await cardtextTemplatesAdapter.deleteById(id)
-
-      return {
-        success: true,
-        templateId: id,
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }
-    }
-  },
-
-  async getCardphotoTemplates(
-    source: ImageSourceType,
-  ): Promise<CardphotoTemplate[]> {
-    const adapter =
-      source === 'user'
-        ? userImagesTemplatesAdapter
-        : stockImagesTemplatesAdapter
-
-    const records = await adapter.getAll()
-    const now = Date.now()
-
-    return records.map((record) => ({
-      id: record.id,
-      localId: record.localId,
-      image: record.image as any,
-      source,
-      theme: record.theme,
-      imageBlob: record.image,
-      createdAt: now,
-      updatedAt: now,
-      serverId: null,
-      syncedAt: null,
-      isDirty: false,
-      userId: '',
-      visibility: 'private' as const,
-      isPublic: false,
-      isModerated: false,
-      isApproved: false,
-      monetization: {
-        enabled: false,
-        totalEarnings: 0,
-        totalUses: 0,
-      },
-      stats: {
-        views: 0,
-        uses: 0,
-      },
-    }))
-  },
-
-  async getCardphotoTemplateById(
-    source: ImageSourceType,
-    id: number | string,
-  ): Promise<CardphotoTemplate | null> {
-    const adapter =
-      source === 'user'
-        ? userImagesTemplatesAdapter
-        : stockImagesTemplatesAdapter
-
-    const record = await adapter.getById(id)
-    if (!record) return null
-
-    const now = Date.now()
-    return {
-      id: record.id,
-      localId: record.localId,
-      image: record.image as any,
-      source,
-      theme: record.theme,
-      imageBlob: record.image,
-      createdAt: now,
-      updatedAt: now,
-      serverId: null,
-      syncedAt: null,
-      isDirty: false,
-      userId: '',
-      visibility: 'private' as const,
-      isPublic: false,
-      isModerated: false,
-      isApproved: false,
-      monetization: {
-        enabled: false,
-        totalEarnings: 0,
-        totalUses: 0,
-      },
-      stats: {
-        views: 0,
-        uses: 0,
-      },
-    }
-  },
-
-  async createCardphotoTemplate(
-    payload: CreateCardphotoTemplatePayload,
-  ): Promise<TemplateOperationResult> {
-    try {
-      const adapter =
-        payload.source === 'user'
-          ? userImagesTemplatesAdapter
-          : stockImagesTemplatesAdapter
-
-      const maxLocalId = await adapter.getMaxLocalId()
-      const localId = maxLocalId + 1
-      const id = payload.id ?? nanoid()
-
-      const templateData: ImageTemplateItem = {
-        localId,
-        id,
-        image: payload.imageBlob || new Blob(),
-        theme: payload.theme || '',
-      }
-
-      await adapter.addTemplate(templateData)
-
-      return {
-        success: true,
-        templateId: id,
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }
-    }
-  },
-
-  async updateCardphotoTemplate(
-    source: ImageSourceType,
-    id: number | string,
-    payload: UpdateCardphotoTemplatePayload,
-  ): Promise<TemplateOperationResult> {
-    try {
-      const adapter =
-        source === 'user'
-          ? userImagesTemplatesAdapter
-          : stockImagesTemplatesAdapter
-
-      const record = await adapter.getById(id)
-      if (!record) {
-        return {
-          success: false,
-          error: 'Template not found',
-        }
-      }
-
-      const updatedRecord: ImageTemplateItem = {
-        ...record,
-        image: payload.imageBlob ?? record.image,
-        theme: payload.theme ?? record.theme,
-      }
-
-      await adapter.put(updatedRecord as ImageTemplateItem & { id: string })
-
-      return {
-        success: true,
-        templateId: id,
-      }
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      }
-    }
-  },
-
-  async deleteCardphotoTemplate(
-    source: ImageSourceType,
-    id: number | string,
-  ): Promise<TemplateOperationResult> {
-    try {
-      const adapter =
-        source === 'user'
-          ? userImagesTemplatesAdapter
-          : stockImagesTemplatesAdapter
-
-      await adapter.deleteById(id)
 
       return {
         success: true,

@@ -12,7 +12,7 @@ import {
   selectCardtextSessionData,
   selectCardtextAssetId,
 } from '@cardtext/infrastructure/selectors'
-import type { CardtextCreateDraft } from '@cardtext/domain/editor/types'
+import type { CardtextCreateDraft } from '@/features/cardtext/domain/editor/editor.types'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardtextTemplate } from '@cardtext/domain/types'
 import { CardtextListPanel } from './CardtextListPanel/CardtextListPanel'
@@ -77,9 +77,11 @@ export const CardtextRightSlot: React.FC = () => {
   return (
     <div className={styles.root}>
       <div className={styles.panelWrap}>
-        <CardtextListPanel onClose={handleClose} onSelect={handleSelectTemplate} />
+        <CardtextListPanel
+          onClose={handleClose}
+          onSelect={handleSelectTemplate}
+        />
       </div>
     </div>
   )
 }
-

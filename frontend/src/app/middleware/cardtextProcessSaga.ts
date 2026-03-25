@@ -47,7 +47,7 @@ import {
   selectCardtextAssetId,
   selectCardtextAddTemplateOpen,
 } from '@cardtext/infrastructure/selectors'
-import type { CardtextCreateDraft } from '@cardtext/domain/editor/types'
+import type { CardtextCreateDraft } from '@/features/cardtext/domain/editor/editor.types'
 
 function* syncCardtextAlignIcons(
   action: ReturnType<typeof setAlign>,

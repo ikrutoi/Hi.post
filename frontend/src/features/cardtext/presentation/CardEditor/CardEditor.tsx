@@ -11,6 +11,7 @@ import { STEP_TO_PX } from '../../domain/types'
 import { selectCardtextFocusRequested } from '../../infrastructure/selectors'
 import { setCardtextFocusRequested } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
+import { IconX } from '@shared/ui/icons'
 import { isEmptyCardtextValue } from '../../domain/helpers'
 import styles from './CardEditor.module.scss'
 import type { CardtextValue } from '../../domain/types'
@@ -27,6 +28,7 @@ export const CardEditor: React.FC = () => {
     editableRef,
     resetToken,
     setValue,
+    setCurrentView,
     decreaseFontSize,
   } = useCardtextFacade()
 
@@ -124,7 +126,7 @@ export const CardEditor: React.FC = () => {
           <IconSectionMenuCardtext />
         </div>
       ) : null}
-      {/* <button
+      <button
         type="button"
         className={styles.closeBtn}
         onClick={() => {
@@ -134,7 +136,7 @@ export const CardEditor: React.FC = () => {
         aria-label="Close text editor"
       >
         <IconX />
-      </button> */}
+      </button>
       <div
         className={styles.editorArea}
         ref={editorRef}

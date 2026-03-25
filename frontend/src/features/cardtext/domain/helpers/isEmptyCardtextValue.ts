@@ -1,4 +1,4 @@
-import type { CardtextValue } from '../editor/types'
+import type { CardtextValue } from '../editor/editor.types'
 
 export function isEmptyCardtextValue(value: CardtextValue): boolean {
   if (!value?.length) return true

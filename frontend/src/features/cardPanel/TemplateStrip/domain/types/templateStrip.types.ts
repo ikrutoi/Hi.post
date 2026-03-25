@@ -1,9 +1,7 @@
-import type { CardphotoTemplate } from '@entities/templates'
 import type { CardtextTemplate } from '@cardtext/domain/types'
 import type { AddressTemplate } from '@entities/templates'
 
 export const TEMPLATE_STRIP_SECTIONS = [
-  'cardphoto',
   'cardtext',
   'sender',
   'recipient',
@@ -23,7 +21,6 @@ export interface TemplateStripScrollIndex {
 }
 
 export type TemplateStripItem =
-  | { section: 'cardphoto'; template: CardphotoTemplate }
   | { section: 'cardtext'; template: CardtextTemplate }
   | { section: 'sender'; template: AddressTemplate }
   | { section: 'recipient'; template: AddressTemplate }

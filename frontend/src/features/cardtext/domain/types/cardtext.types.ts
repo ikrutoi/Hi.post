@@ -2,7 +2,7 @@ import {
   initialCardtextEditorState,
   type CardtextState,
   type CardtextEditorUIState,
-} from '../editor/types'
+} from '../editor/editor.types'
 import {
   initialCardtextTemplatesState,
   type CardtextTemplatesListState,

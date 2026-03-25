@@ -90,14 +90,3 @@ export async function getDuplicateFlags(card: CardItem): Promise<{
     save: result.drafts.aroma.length === 0,
   }
 }
-
-export async function getDuplicateSummary(card: CardItem): Promise<{
-  cart: boolean
-  drafts: boolean
-}> {
-  const result = await checkForDuplicateCards(card)
-  return {
-    cart: result.cart.aroma.length > 0,
-    drafts: result.drafts.aroma.length > 0,
-  }
-}

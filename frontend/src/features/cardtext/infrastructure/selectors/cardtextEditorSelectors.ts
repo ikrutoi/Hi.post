@@ -7,7 +7,7 @@ import type {
   CardtextCurrentView,
   CardtextCreateDraft,
   CardtextCreateReturnSnapshot,
-} from '../../domain/editor/types'
+} from '../../domain/editor/editor.types'
 import { createSelector } from '@reduxjs/toolkit'
 
 export const selectCardtextState = (state: RootState) => state.cardtext
@@ -28,7 +28,8 @@ export const selectCardtextCreateDraft = (
 
 export const selectCardtextCreateReturnSnapshot = (
   state: RootState,
-): CardtextCreateReturnSnapshot | null => state.cardtext.createReturnSnapshot ?? null
+): CardtextCreateReturnSnapshot | null =>
+  state.cardtext.createReturnSnapshot ?? null
 
 export const selectCardtextValue = (state: RootState): CardtextValue =>
   state.cardtext.value
@@ -48,12 +49,12 @@ export const selectCardtextStyle = (state: RootState): CardtextStyle =>
 export const selectCardtextTitle = (state: RootState): string =>
   state.cardtext.title
 
-/** Для открытого шаблона (есть assetId) берём favorite из списка шаблонов, чтобы тулбар cardtextView и список всегда совпадали. */
 export const selectCardtextFavorite = (state: RootState): boolean => {
   const { assetId, favorite, templatesList } = state.cardtext
   if (assetId != null && Array.isArray(templatesList)) {
     const entry = templatesList.find((t: { id?: string }) => t.id === assetId)
-    if (entry != null) return (entry as { favorite?: boolean | null }).favorite === true
+    if (entry != null)
+      return (entry as { favorite?: boolean | null }).favorite === true
   }
   return favorite === true
 }

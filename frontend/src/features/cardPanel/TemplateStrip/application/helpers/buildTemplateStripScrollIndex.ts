@@ -21,10 +21,6 @@ function getFirstLetter(item: TemplateStripItem): string {
           : ''
       return str[0]?.toUpperCase() ?? ''
     }
-    case 'cardphoto':
-      return (
-        (item.template.theme ?? item.template.id ?? '')[0]?.toUpperCase() ?? ''
-      )
     default:
       return ''
   }

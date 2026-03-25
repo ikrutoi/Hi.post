@@ -35,8 +35,8 @@ export const resetCardSection = async (
 
     case 'cardphoto':
       await Promise.all([
-        imageAdapter.stockImages.deleteByLocalId('miniImage'),
-        imageAdapter.userImages.deleteByLocalId('miniImage'),
+        imageAdapter.stockImages.deleteById('miniImage'),
+        imageAdapter.userImages.deleteById('miniImage'),
       ])
       update
       dispatch(

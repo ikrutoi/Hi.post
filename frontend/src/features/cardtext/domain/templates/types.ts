@@ -2,24 +2,25 @@ import type {
   CardtextValue,
   CardtextStyle,
   CardtextTemplateContent,
-} from '../editor/types'
+} from '../editor/editor.types'
 
 // ——— Template DTOs (list item, API) ———
 export interface CardtextTemplateItem {
   id: string
-  localId: number
   state: CardtextTemplateContent
 }
 
+export type CardtextTemplateStatus = 'processed' | 'outLine' | 'inLine'
+
 export interface CardtextTemplate {
   id: string
-  localId: number
   value: CardtextValue
   style: CardtextStyle
   title: string
   plainText: string
   cardtextLines: number
   favorite: boolean | null
+  status?: CardtextTemplateStatus
   createdAt?: number
   updatedAt?: number
   serverId?: string | null

@@ -58,10 +58,14 @@ export const Toolbar = ({
   const cardtextTemplatesLoading = useAppSelector(
     selectCardtextTemplatesListLoading,
   )
-  const cardtextTemplatesCount = (cardtextTemplates ?? []).length
+  const cardtextTemplatesCount = Array.isArray(cardtextTemplates)
+    ? cardtextTemplates.length
+    : null
 
   useEffect(() => {
     if (section === 'cardtext' || section === 'cardtextView') {
+      // Avoid wiping badge while templates are still unknown (null) during async load.
+      if (cardtextTemplatesCount == null) return
       dispatch(
         updateToolbarIcon({
           section,

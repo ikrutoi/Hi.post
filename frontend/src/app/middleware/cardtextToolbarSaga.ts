@@ -6,6 +6,7 @@ import {
   setApplied,
   setAppliedData,
   setFavorite,
+  loadCardtextTemplatesRequest,
   updateCardtextTemplateFavoriteInList,
   updateCardtextTemplateContentInList,
 } from '@cardtext/infrastructure/state'
@@ -23,7 +24,7 @@ import {
   restoreCreateDraft,
   setCreateReturnSnapshot,
 } from '@cardtext/infrastructure/state'
-import { initialCardtextValue } from '@cardtext/domain/editor/types'
+import { initialCardtextValue } from '@/features/cardtext/domain/editor/editor.types'
 import {
   selectCardtextValue,
   selectCardtextStyle,
@@ -57,12 +58,10 @@ export function* handleCardtextToolbarAction(
   switch (key) {
     case 'apply': {
       const assetId: string | null = yield select(selectCardtextAssetId)
-      const value: ReturnType<typeof selectCardtextValue> = yield select(
-        selectCardtextValue,
-      )
-      const style: ReturnType<typeof selectCardtextStyle> = yield select(
-        selectCardtextStyle,
-      )
+      const value: ReturnType<typeof selectCardtextValue> =
+        yield select(selectCardtextValue)
+      const style: ReturnType<typeof selectCardtextStyle> =
+        yield select(selectCardtextStyle)
       yield put(setApplied(assetId ?? null))
       yield put(setAppliedData({ value: value ?? [], style }))
       yield put(setComplete(true))
@@ -74,12 +73,10 @@ export function* handleCardtextToolbarAction(
         yield put(setCardtextCurrentView('cardtextEditor'))
       } else if (section === 'cardtextEditor') {
         const assetId: string | null = yield select(selectCardtextAssetId)
-        const value: ReturnType<typeof selectCardtextValue> = yield select(
-          selectCardtextValue,
-        )
-        const style: ReturnType<typeof selectCardtextStyle> = yield select(
-          selectCardtextStyle,
-        )
+        const value: ReturnType<typeof selectCardtextValue> =
+          yield select(selectCardtextValue)
+        const style: ReturnType<typeof selectCardtextStyle> =
+          yield select(selectCardtextStyle)
         const plainText: string = yield select(selectCardtextPlainText)
         const cardtextLines: number = yield select(selectCardtextLines)
 
@@ -123,7 +120,12 @@ export function* handleCardtextToolbarAction(
         )
         if (result?.success) {
           yield put(setFavorite(next))
-          yield put(updateCardtextTemplateFavoriteInList({ id: assetId, favorite: next }))
+          yield put(
+            updateCardtextTemplateFavoriteInList({
+              id: assetId,
+              favorite: next,
+            }),
+          )
         }
       }
       break
@@ -152,9 +154,9 @@ export function* handleCardtextToolbarAction(
       const current: any = (yield select(
         (state: RootState) => state.toolbar[section].listCardtext,
       )) as any
-      const isActive =
-        current?.state === 'active' || current === 'active'
+      const isActive = current?.state === 'active' || current === 'active'
       const nextState = isActive ? 'enabled' : 'active'
+      const nextOpen = !isActive
 
       yield put(
         updateToolbarIcon({
@@ -163,7 +165,12 @@ export function* handleCardtextToolbarAction(
           value: nextState,
         }),
       )
-      yield put(setCardtextListPanelOpen(!isActive))
+      yield put(setCardtextListPanelOpen(nextOpen))
+      // Ensure badge count is immediately consistent when list opens.
+      // This also avoids “badge disappears” after list toggle due to async state updates.
+      if (nextOpen) {
+        yield put(loadCardtextTemplatesRequest())
+      }
       break
     }
 
@@ -181,9 +188,8 @@ export function* handleCardtextToolbarAction(
         const snapshot: ReturnType<typeof selectCardtextSessionData> =
           yield select(selectCardtextSessionData)
         yield put(setCreateReturnSnapshot(snapshot))
-        const draft: ReturnType<typeof selectCardtextCreateDraft> = yield select(
-          selectCardtextCreateDraft,
-        )
+        const draft: ReturnType<typeof selectCardtextCreateDraft> =
+          yield select(selectCardtextCreateDraft)
         if (draft) {
           yield put(restoreCreateDraft(draft))
         } else {
@@ -192,6 +198,10 @@ export function* handleCardtextToolbarAction(
         yield put(setCardtextAssetId(null))
         yield put(setCardtextCurrentView('cardtextEditor'))
         yield put(setCardtextFocusRequested(true))
+        // Keep list badge consistent after entering "new template" mode.
+        // Some flows can temporarily make `templatesList` look empty/null
+        // before the UI updates, so we re-fetch.
+        yield put(loadCardtextTemplatesRequest())
         break
       }
       const value: any = yield select(selectCardtextValue)
@@ -200,7 +210,9 @@ export function* handleCardtextToolbarAction(
         !showViewMode &&
         (!value?.length ||
           (value.length === 1 &&
-            !(value[0]?.children?.map((c: any) => c?.text).join('') ?? '').trim()))
+            !(
+              value[0]?.children?.map((c: any) => c?.text).join('') ?? ''
+            ).trim()))
       if (isEmpty) {
         yield put(setCardtextFocusRequested(true))
       }

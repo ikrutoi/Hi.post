@@ -1,4 +1,3 @@
-import type { ImageTemplateItem } from '@/features/cardphoto/domain/typesLayout'
 import type { CardtextTemplateItemShape } from '@entities/templates/domain/types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { Card } from '@entities/card/domain/types'

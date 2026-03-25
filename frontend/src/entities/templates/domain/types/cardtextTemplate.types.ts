@@ -15,15 +15,18 @@ export interface CardtextTemplateContentShape {
   favorite: boolean | null
 }
 
+export type CardtextTemplateStatus = 'processed' | 'outLine' | 'inLine'
+
 export interface CardtextTemplateItemShape {
   id: string
-  localId: number
   state: CardtextTemplateContentShape
+  status?: CardtextTemplateStatus
+  createdAt?: number
+  updatedAt?: number
 }
 
 export interface CardtextTemplate {
   id: string
-  localId: number
   value: unknown[]
   style: CardtextStyleShape
   title: string

@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCardtextStyle } from '@cardtext/infrastructure/selectors'
 import { setTextStyle } from '@cardtext/infrastructure/state'
-import type { TextColor } from '@cardtext/domain/editor/types'
+import type { TextColor } from '@/features/cardtext/domain/editor/editor.types'
 import { IconColor } from '@shared/ui/icons'
 import styles from './Toolbar.module.scss'
 
@@ -99,4 +99,3 @@ export const CardtextColorButton: React.FC<CardtextColorButtonProps> = ({
     </div>
   )
 }
-

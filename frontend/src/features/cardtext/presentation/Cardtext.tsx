@@ -170,29 +170,27 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
 
   const forceEditingTitle = isAddTemplateOpen || isEditingTitle
 
-  /** Новый шаблон без текста: без тулбара cardtextCreate (только иконка-плейсхолдер). */
-  const isCreateNewEmpty =
-    currentView === 'cardtextEditor' &&
-    currentAssetId == null &&
-    isEmptyCardtextValue(value) &&
-    !isAddTemplateOpen
-
-  const showCardtextToolbarRow = !isCreateNewEmpty
-
   const toolbarSection =
     currentView === 'cardtextEditor' && currentAssetId == null
       ? 'cardtextCreate'
       : currentView
 
-  // Ensure `listCardtext` badge count is available immediately when entering `cardtext`.
-  // Previously templates were loaded only when opening the list panel.
+  const isCreateNewEmpty =
+    currentView === 'cardtextEditor' &&
+    currentAssetId == null &&
+    isEmptyCardtextValue(value) &&
+    !isAddTemplateOpen &&
+    !state.createReturnSnapshot
+
+  const showCardtextToolbarRow = !isCreateNewEmpty
+
   useEffect(() => {
-    const count = cardtextTemplates?.length ?? 0
-    if (toolbarSection !== 'cardtext') return
     if (cardtextTemplatesLoading) return
-    if (count > 0) return
+    // Only request when templates are still unknown (`null`).
+    // If server returns empty list, we keep badge hidden without re-fetching.
+    if (cardtextTemplates != null) return
     dispatch(loadCardtextTemplatesRequest())
-  }, [toolbarSection, cardtextTemplatesLoading, dispatch, cardtextTemplates])
+  }, [cardtextTemplatesLoading, dispatch, cardtextTemplates])
 
   return (
     <div className={styles.cardtextContainer}>

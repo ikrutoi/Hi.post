@@ -24,14 +24,12 @@ const defaultStyle = {
 export const cardtextAdapter: CardtextAdapter = {
   ...base,
   addUniqueRecord: async (nodes: SlateNode[]) => {
-    const maxId = await base.getMaxLocalId()
-    const localId = maxId + 1
-    const id = String(localId)
+    const now = Date.now()
+    const id = String(now)
     const value = nodes as any
     const plainText = nodesToPlainText(nodes)
     const item: CardtextTemplateItemShape = {
       id,
-      localId,
       state: {
         value,
         title: '',
@@ -41,6 +39,9 @@ export const cardtextAdapter: CardtextAdapter = {
         applied: null,
         favorite: null,
       },
+      status: 'inLine',
+      createdAt: now,
+      updatedAt: now,
     }
     await base.put(item)
   },

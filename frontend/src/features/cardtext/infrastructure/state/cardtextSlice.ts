@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { initialCardtextState } from '../../domain/types'
-import { initialCardtextValue } from '../../domain/editor/types'
+import { initialCardtextValue } from '../../domain/editor/editor.types'
 import type {
   CardtextValue,
   CardtextStyle,
@@ -10,7 +10,7 @@ import type {
   CardtextCurrentView,
   CardtextCreateDraft,
   CardtextCreateReturnSnapshot,
-} from '../../domain/editor/types'
+} from '../../domain/editor/editor.types'
 import type { CardtextTemplate } from '../../domain/templates/types'
 
 export type { CardtextTemplatesListState } from '../../domain/templates/types'
@@ -189,7 +189,9 @@ export const cardtextSlice = createSlice({
     },
     loadCardtextTemplatesFailure(state) {
       state.templatesListLoading = false
-      state.templatesList = []
+      // Don't wipe already loaded templates on failure.
+      // This prevents UI badges (like `listCardtext`) from disappearing forever
+      // after a transient load error.
     },
 
     updateCardtextTemplateFavoriteInList(

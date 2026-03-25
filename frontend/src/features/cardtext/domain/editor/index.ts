@@ -1,2 +1,2 @@
-export * from './types'
+export * from './editor.types'
 export * from './constants'
