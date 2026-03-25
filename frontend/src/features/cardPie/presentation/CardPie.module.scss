@@ -13,7 +13,7 @@
   right: 0;
   height: 100%;
   border-radius: 0.5rem;
-  overflow: hidden;
+  overflow: visible;
   // border: 1px solid $color-section-light;
   box-shadow: $shadow-card;
   // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
@@ -27,6 +27,18 @@
     inset: 0;
     right: unset;
   }
+}
+
+.pieContent {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+  position: relative;
+}
+
+.pieContent svg {
+  display: block;
 }
 
 .svg {
@@ -97,7 +109,7 @@
 }
 
 .sector {
-  cursor: pointer;
+  cursor: default;
   transition:
     opacity 0.2s ease,
     filter 0.2s ease;
@@ -105,13 +117,6 @@
   &.sectorEmpty {
     cursor: default;
   }
-}
-
-.sector:hover:not(.sectorEmpty),
-.sector.hovered:not(.sectorEmpty) {
-}
-
-.hubContainer.pieAllComplete .sector {
 }
 
 .pieOutlineOverlay {
@@ -176,4 +181,97 @@ $pie-center-logo-size: 1.5rem;
 
 .pieCenterIconBrand {
   color: var(--logo-color, #008aed);
+}
+
+.pieFavoriteButton {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.35rem;
+  right: auto;
+  transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: 700;
+  color: $color-font-enabled-light;
+  background: none;
+  transition: color 0.15s ease;
+  z-index: 1;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+}
+
+.pieFavoriteStarOuter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(2.5px, 2.5px);
+  font-size: calc(1rem + 6px);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 0;
+  pointer-events: none;
+  color: #fff;
+}
+
+.pieFavoriteStarInner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translate(2.5px, 2.5px);
+  line-height: 1;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
+  color: inherit;
+}
+
+.pieCloseButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(
+    calc(50% - 0.25rem),
+    calc(-50% + 0.25rem)
+  ); // half outside + shifted left/down
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  border: 1px solid $color-app-substrate-border;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  z-index: 6;
+  color: $color-font-enabled;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
 }

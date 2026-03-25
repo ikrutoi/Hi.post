@@ -1,6 +1,5 @@
 import React from 'react'
 import { CARD_SECTIONS } from '@shared/config/constants'
-import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { CardPie } from '../../cardPie/presentation/CardPie'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import { useCardFacade } from '@entities/card/application/facades'
@@ -41,12 +40,6 @@ export const CardPanel = () => {
           height: `${sizeMiniCard.height}px`,
         }}
       >
-        <div
-          className={styles.cardPanelPieToolbar}
-          style={{ height: `${sizeMiniCard.height}px` }}
-        >
-          <Toolbar section="editorPie" />
-        </div>
         <div
           className={styles.cardPanelPie}
           style={{

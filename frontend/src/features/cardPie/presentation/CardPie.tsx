@@ -15,6 +15,8 @@ import {
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
+import { useToolbarFacade } from '@toolbar/application/facades'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
 import styles from './CardPie.module.scss'
@@ -46,6 +48,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   )
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
+  const { actions: editorPieActions } = useToolbarFacade('editorPie')
 
   const cardData = data?.data
   const hasAppliedCardtext = cardData?.cardtext?.applied != null
@@ -85,6 +88,16 @@ export const CardPie: React.FC<CardPieProps> = ({
   const handleMouseLeave = () => setHovered(null)
 
   const allSectionsFilled = isReady
+  const hasAnySectionFilled = Object.values(sections).some(Boolean)
+  const showCloseButton = hasAnySectionFilled
+  const hasAllOtherSectionsFilled =
+    sections.cardphoto &&
+    sections.cardtext &&
+    sections.envelope &&
+    sections.aroma
+
+  const showFavoriteButton =
+    allSectionsFilled || (!sections.date && Boolean(hasAllOtherSectionsFilled))
 
   return (
     <div
@@ -102,19 +115,54 @@ export const CardPie: React.FC<CardPieProps> = ({
             }
       }
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        xmlSpace="preserve"
-        width="512"
-        height="512"
-        viewBox="0 0 5120 5120"
-        className={styles.svg}
-        fillRule="evenodd"
-        clipRule="evenodd"
-        imageRendering="optimizeQuality"
-        shapeRendering="geometricPrecision"
-        textRendering="geometricPrecision"
-      >
+      {showFavoriteButton && (
+        <button
+          type="button"
+          className={styles.pieFavoriteButton}
+          aria-label="Favorite"
+          title="Favorite"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            if (!allSectionsFilled) return
+            editorPieActions.onAction('favorite')
+          }}
+        >
+          <span className={styles.pieFavoriteStarOuter}>★</span>
+          <span className={styles.pieFavoriteStarInner}>★</span>
+        </button>
+      )}
+
+      {showCloseButton && (
+        <button
+          type="button"
+          className={styles.pieCloseButton}
+          aria-label="Close"
+          title="Close"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            editorPieActions.onAction('close')
+          }}
+        >
+          {getToolbarIcon({ key: 'clearInput' })}
+        </button>
+      )}
+
+      <div className={styles.pieContent}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlSpace="preserve"
+          width="512"
+          height="512"
+          viewBox="0 0 5120 5120"
+          className={styles.svg}
+          fillRule="evenodd"
+          clipRule="evenodd"
+          imageRendering="optimizeQuality"
+          shapeRendering="geometricPrecision"
+          textRendering="geometricPrecision"
+        >
         <defs>
           {sections.cardphoto && photoUrl && (
             <pattern
@@ -533,7 +581,8 @@ export const CardPie: React.FC<CardPieProps> = ({
           {/* <path id="date-bg" className={styles.sectorBg} fill="none" stroke={SECTOR_BG_STROKE} strokeWidth={STROKE_WIDTH} d="M192 2748h1350v1350H192z" /> */}
           {/* <path id="cardtext-bg" className={styles.sectorBg} fill="none" stroke={SECTOR_BG_STROKE} strokeWidth={STROKE_WIDTH} d="M2748 192h1350v1350H2748z" /> */}
         </g>
-      </svg>
+        </svg>
+      </div>
       <div
         className={clsx(
           styles.pieOutlineOverlay,
