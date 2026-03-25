@@ -76,13 +76,13 @@ export const selectCardsByDateMap = createSelector(
       }
     })
 
-    if (activeDate && photoPreview) {
+    if (activeDate && photoPreview?.previewUrl) {
       const entry = getEntry(activeDate)
 
       entry.processed = {
         cardId: 'current_session',
         date: activeDate,
-        previewUrl: photoPreview.previewUrl || '',
+        previewUrl: photoPreview.previewUrl,
         status: 'processed',
       }
     }

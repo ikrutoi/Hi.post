@@ -64,6 +64,7 @@
   .dayNumber {
     background-color: $color-section-light-completed;
     border-color: $color-section-dark-completed;
+    color: $color-app-sidebar-icon-active;
   }
 }
 
@@ -89,6 +90,10 @@
   .dayNumber {
     background-color: $color-disabled;
     color: $color-font-disabled;
+  }
+
+  &.today .dayNumber {
+    color: $color-app-sidebar-icon-active;
   }
 }
 
@@ -131,6 +136,10 @@
     color: $color-font-enabled;
     font-weight: 700;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  &.current.today .dayNumber {
+    color: $color-app-sidebar-icon-active;
   }
 
   &:hover {

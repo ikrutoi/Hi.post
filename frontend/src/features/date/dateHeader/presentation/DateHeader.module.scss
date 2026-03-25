@@ -7,6 +7,7 @@
   align-items: center;
   margin: 0 0 0.75rem 0;
   padding: 0 0 0.5rem 0;
+  // border: 1px solid red;
 }
 
 .headerSide {
@@ -21,7 +22,7 @@
 
 .todaySelected {
   display: flex;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   user-select: none;
 
   &Disabled {
@@ -37,7 +38,7 @@
 
 .selected {
   display: flex;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   justify-content: flex-end;
   color: $color-active;
 }

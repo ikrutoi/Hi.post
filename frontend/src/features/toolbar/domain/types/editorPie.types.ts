@@ -1,7 +1,7 @@
 import { flattenIcons } from '../helpers'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
-export const EDITOR_PIE_KEYS = ['favorite', 'delete'] as const
+export const EDITOR_PIE_KEYS = ['favorite', 'close'] as const
 
 export type EditorPieKey = (typeof EDITOR_PIE_KEYS)[number]
 

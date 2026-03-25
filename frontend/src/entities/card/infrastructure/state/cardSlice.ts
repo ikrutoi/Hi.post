@@ -26,6 +26,9 @@ export const cardSlice = createSlice({
     setCardReadyStatus: (state, action: PayloadAction<boolean>) => {
       state.isReady = action.payload
       if (!action.payload) {
+        const id = state.calendarIndex.processed?.cardId
+        if (id) delete state.calendarPreviewCache[id]
+        delete state.calendarPreviewCache['current_session']
         state.calendarIndex.processed = null
       }
     },
@@ -109,6 +112,9 @@ export const cardSlice = createSlice({
     },
 
     clearProcessed: (state) => {
+      const id = state.calendarIndex.processed?.cardId
+      if (id) delete state.calendarPreviewCache[id]
+      delete state.calendarPreviewCache['current_session']
       state.calendarIndex.processed = null
       state.isReady = false
     },

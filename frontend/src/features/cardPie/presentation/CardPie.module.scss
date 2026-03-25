@@ -123,9 +123,7 @@
   transition: border-color 0.2s ease;
 }
 
-$pie-center-logo-size: 1.5rem; // как в сайдбаре
-
-// Круглая кнопка: на 2px выше и шире логотипа.
+$pie-center-logo-size: 1.5rem;
 .pieCenterButton {
   position: absolute;
   top: 50%;
@@ -151,7 +149,6 @@ $pie-center-logo-size: 1.5rem; // как в сайдбаре
     cursor: default;
   }
 
-  // Все секции заполнены — синий логотип и явный pointer (сильнее базового default).
   &.pieCenterButtonActive {
     cursor: pointer;
 
@@ -168,7 +165,6 @@ $pie-center-logo-size: 1.5rem; // как в сайдбаре
   flex-shrink: 0;
   width: $pie-center-logo-size;
   height: $pie-center-logo-size;
-  // Мягче, чем sidebar-icon: как граница субстрата.
   color: $color-app-substrate-border;
 
   svg {

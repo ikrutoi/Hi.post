@@ -23,11 +23,19 @@ export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
     <div
       className={styles.segmented}
       role="tablist"
-      aria-label="Режим листания: месяц или год"
+      aria-label="Scroll mode: month or year"
     >
       <div
-        className={clsx(styles.slider, {
-          [styles.sliderRight]: !isMonth,
+        className={clsx(styles.bg, styles.bgMonth, {
+          [styles.bgActive]: isMonth,
+          [styles.bgInactive]: !isMonth,
+        })}
+        aria-hidden
+      />
+      <div
+        className={clsx(styles.bg, styles.bgYear, {
+          [styles.bgActive]: !isMonth,
+          [styles.bgInactive]: isMonth,
         })}
         aria-hidden
       />
@@ -35,7 +43,7 @@ export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
         type="button"
         role="tab"
         aria-selected={isMonth}
-        aria-label="Листать по месяцам"
+        aria-label="Browse by month"
         className={clsx(styles.segment, styles.segmentMonth, {
           [styles.segmentActive]: isMonth,
         })}
@@ -49,7 +57,7 @@ export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
         type="button"
         role="tab"
         aria-selected={!isMonth}
-        aria-label="Листать по годам"
+        aria-label="Browse by year"
         className={clsx(styles.segment, styles.segmentYear, {
           [styles.segmentActive]: !isMonth,
         })}

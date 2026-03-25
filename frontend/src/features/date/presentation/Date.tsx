@@ -91,7 +91,7 @@ export const Date: React.FC = () => {
         className={styles.form}
         onKeyDown={handleKeyDown}
         tabIndex={0}
-        aria-label="Календарь: стрелки влево/вправо — месяц, вверх/вниз — год"
+        aria-label="Calendar: left/right arrows - month, up/down - year"
       >
         <DateHeader
           currentDate={currentDate}

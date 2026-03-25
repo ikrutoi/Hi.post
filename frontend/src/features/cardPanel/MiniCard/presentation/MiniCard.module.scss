@@ -4,7 +4,7 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   box-sizing: border-box;
   background-color: #fff;
   user-select: none;
@@ -46,8 +46,6 @@
   }
 }
 
-// Incomplete mini section (`isEmpty` in MiniCard ≈ `!isComplete` in MiniSectionsSlot).
-// Section-tinted experiment — matches `colors.scss` input palettes.
 .miniCard.miniCardEmpty.miniCardCardphoto {
   background-color: $color-cardphoto-input;
   border-color: $color-cardphoto-input-border;
@@ -58,7 +56,6 @@
   border-color: $color-cardtext-input-border;
 }
 
-// Envelope mini: use sender palette (mint), per product choice.
 .miniCard.miniCardEmpty.miniCardEnvelope {
   background-color: $color-envelope-sender-input;
   border-color: $color-envelope-sender-input-border;
@@ -116,14 +113,17 @@
   color: $color-font-disabled;
   // background-color: rgba($color-section-light, 0.6);
   margin: 0.2rem;
-  border-radius: 0.6rem;
+  border-radius: 0.5rem;
 }
 
 .miniClearButton {
   position: absolute;
   top: 0;
   right: 0;
-  transform: translate(calc(50% - 0.1rem), calc(-50% + 0.1rem)); // half outside + shifted left/down
+  transform: translate(
+    calc(50% - 0.1rem),
+    calc(-50% + 0.1rem)
+  ); // half outside + shifted left/down
   width: 1.1rem;
   height: 1.1rem;
   border-radius: 50%;

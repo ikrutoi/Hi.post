@@ -283,10 +283,16 @@ export function* cardEditorSaga() {
   yield takeEvery(
     [
       setDate.type,
+      clearDate.type,
       applyFinal.type,
+      clearApply.type,
       setValue.type,
+      clearText.type,
       updateRecipientField.type,
       setAroma.type,
+      clearAroma.type,
+      clearSender.type,
+      clearRecipient.type,
     ],
     handleSectionChange,
   )
