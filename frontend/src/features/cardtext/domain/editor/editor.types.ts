@@ -75,8 +75,6 @@ export type CardtextCreateDraft = Pick<
   'value' | 'style' | 'plainText' | 'cardtextLines' | 'timestamp'
 >
 
-export type CardtextCreateReturnSnapshot = CardtextContent
-
 export interface CardtextContent {
   id: string | null
   status: CardtextStatus
@@ -89,7 +87,6 @@ export interface CardtextContent {
   timestamp: number
 }
 
-/** Стартовое содержимое слоя `assetData` (редактор / сохранённая сессия). */
 export function createInitialCardtextContent(): CardtextContent {
   return {
     id: null,
@@ -112,11 +109,16 @@ export function createInitialCardtextContent(): CardtextContent {
   }
 }
 
+export type CardtextSource = 'draft' | 'view'
+
 export interface CardtextState {
   assetData: CardtextContent | null
-  appendedData: CardtextContent | null
-  createDraft: CardtextCreateDraft | null
+  presetData: CardtextContent | null
+  appliedData: CardtextContent | null
+  draftData: CardtextCreateDraft | null
   resetToken: number
+  source: CardtextSource
+  isDraftFocus: boolean
 }
 
 export type CreateCardtextPayload = Pick<
@@ -135,21 +137,12 @@ export type UpdateCardtextPayload = Omit<
   style?: Partial<CardtextStyle>
 }
 
-export type CardtextCurrentView = 'cardtextView' | 'cardtextEditor'
-
-export interface CardtextEditorUIState {
-  currentView: CardtextCurrentView
-  requestCardtextFocus: boolean
-  createReturnSnapshot: CardtextCreateReturnSnapshot | null
+export const initialCardtextEditorState: CardtextState = {
+  assetData: createInitialCardtextContent(),
+  presetData: null,
+  appliedData: null,
+  draftData: null,
+  resetToken: 0,
+  source: 'draft',
+  isDraftFocus: false,
 }
-
-export const initialCardtextEditorState: CardtextState & CardtextEditorUIState =
-  {
-    assetData: createInitialCardtextContent(),
-    appendedData: null,
-    createDraft: null,
-    resetToken: 0,
-    currentView: 'cardtextEditor',
-    requestCardtextFocus: false,
-    createReturnSnapshot: null,
-  }

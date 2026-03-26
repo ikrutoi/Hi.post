@@ -9,7 +9,7 @@ import {
   setTextStyle,
   setTitle,
   setCardtextEditTitleOpen,
-  setCardtextCurrentView,
+  setCardtextSource,
 } from '../../infrastructure/state'
 import { initialCardtextValue } from '../../domain/types'
 import type {
@@ -17,7 +17,7 @@ import type {
   CardtextStyle,
   TextAlign,
 } from '../../domain/types'
-import type { CardtextCurrentView } from '../../domain/editor/editor.types'
+import type { CardtextSource } from '../../domain/editor/editor.types'
 import {
   selectCardtextState,
   selectCardtextValue,
@@ -113,15 +113,15 @@ export const useCardtextFacade = () => {
   }, [dispatch])
 
   const setCurrentView = React.useCallback(
-    (view: CardtextCurrentView) => {
-      dispatch(setCardtextCurrentView(view))
+    (source: CardtextSource) => {
+      dispatch(setCardtextSource(source))
     },
     [dispatch],
   )
 
   return {
     state,
-    currentView: state.currentView,
+    currentView: state.source,
     editor,
     value,
     title,

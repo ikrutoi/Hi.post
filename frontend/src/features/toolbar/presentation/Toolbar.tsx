@@ -102,8 +102,7 @@ export const Toolbar = ({
   const cardphotoActiveImage = useAppSelector(selectActiveImage)
   const cardphotoFavorite = cardphotoActiveImage?.favorite === true
   const cardtextTemplateId = useAppSelector(selectCardtextId)
-  const isCardtextCurrentTemplateApplied =
-    cardtextApplied && cardtextTemplateId != null
+  const isCardtextCurrentTemplateApplied = cardtextApplied
   const isAlreadyApplied =
     section === 'cardtext' || section === 'cardtextView'
       ? cardtextApplied

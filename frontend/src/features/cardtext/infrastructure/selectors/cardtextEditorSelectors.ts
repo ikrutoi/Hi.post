@@ -4,32 +4,26 @@ import {
   type CardtextValue,
   type CardtextStyle,
   type CardtextContent,
-  type CardtextCurrentView,
+  type CardtextSource,
   type CardtextCreateDraft,
-  type CardtextCreateReturnSnapshot,
 } from '../../domain/editor/editor.types'
 import { createSelector } from '@reduxjs/toolkit'
 
 export const selectCardtextState = (state: RootState) => state.cardtext
 
-export const selectCardtextCurrentView = (
+export const selectCardtextSource = (
   state: RootState,
-): CardtextCurrentView => state.cardtext.currentView ?? 'cardtextEditor'
+): CardtextSource => state.cardtext.source ?? 'draft'
 
 export const selectCardtextShowViewMode = (state: RootState): boolean =>
-  selectCardtextCurrentView(state) === 'cardtextView'
+  selectCardtextSource(state) === 'view'
 
-export const selectCardtextFocusRequested = (state: RootState): boolean =>
-  state.cardtext.requestCardtextFocus ?? false
+export const selectIsDraftFocus = (state: RootState): boolean =>
+  state.cardtext.isDraftFocus === true
 
-export const selectCardtextCreateDraft = (
+export const selectCardtextDraftData = (
   state: RootState,
-): CardtextCreateDraft | null => state.cardtext.createDraft
-
-export const selectCardtextCreateReturnSnapshot = (
-  state: RootState,
-): CardtextCreateReturnSnapshot | null =>
-  state.cardtext.createReturnSnapshot ?? null
+): CardtextCreateDraft | null => state.cardtext.draftData
 
 export const selectCardtextValue = (state: RootState): CardtextValue =>
   state.cardtext.assetData?.value ?? createInitialCardtextContent().value
@@ -38,7 +32,7 @@ export const selectCardtextPlainText = (state: RootState): string =>
   state.cardtext.assetData?.plainText ?? ''
 
 export const selectCardtextIsComplete = (state: RootState): boolean =>
-  state.cardtext.assetData?.status === 'processed'
+  state.cardtext.appliedData != null
 
 export const selectCardtextLines = (state: RootState): number =>
   state.cardtext.assetData?.cardtextLines ??
@@ -65,7 +59,9 @@ export const selectCardtextId = (state: RootState): string | null =>
   state.cardtext.assetData?.id ?? null
 
 export const selectCardtextStatus = (state: RootState) =>
-  state.cardtext.assetData?.status ?? 'inLine'
+  state.cardtext.appliedData?.status ??
+  state.cardtext.assetData?.status ??
+  'inLine'
 
 export const selectFontSizeStep = (state: RootState): number =>
   state.cardtext.assetData?.style.fontSizeStep ??

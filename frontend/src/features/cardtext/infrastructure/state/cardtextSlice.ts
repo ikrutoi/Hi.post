@@ -4,15 +4,13 @@ import {
   initialCardtextValue,
   createInitialCardtextContent,
   type CardtextState,
-  type CardtextEditorUIState,
   type CardtextValue,
   type CardtextStyle,
   type CardtextBlock,
   type CardtextContent,
   type CardtextStatus,
-  type CardtextCurrentView,
+  type CardtextSource,
   type CardtextCreateDraft,
-  type CardtextCreateReturnSnapshot,
   CardtextListSortDirection,
   CardtextTemplatesListState,
 } from '../../domain/editor/editor.types'
@@ -27,7 +25,7 @@ export interface CardtextTemplatesUIState {
 }
 
 export interface CardtextSliceState
-  extends CardtextState, CardtextEditorUIState, CardtextTemplatesUIState {
+  extends CardtextState, CardtextTemplatesUIState {
   templatesList: CardtextTemplatesListState
 }
 
@@ -109,6 +107,7 @@ export const cardtextSlice = createSlice({
 
     clearText(state) {
       state.assetData = createInitialCardtextContent()
+      state.appliedData = null
       state.resetToken += 1
     },
 
@@ -116,15 +115,29 @@ export const cardtextSlice = createSlice({
       ensureAsset(state).id = action.payload
     },
 
-    setCreateDraft(state, action: PayloadAction<CardtextCreateDraft | null>) {
-      state.createDraft = action.payload
+    setCardtextPresetData(
+      state,
+      action: PayloadAction<CardtextContent | null>,
+    ) {
+      state.presetData = action.payload
     },
 
-    clearCreateDraft(state) {
-      state.createDraft = null
+    setCardtextAppliedData(
+      state,
+      action: PayloadAction<CardtextContent | null>,
+    ) {
+      state.appliedData = action.payload
     },
 
-    restoreCreateDraft(state, action: PayloadAction<CardtextCreateDraft>) {
+    setDraftData(state, action: PayloadAction<CardtextCreateDraft | null>) {
+      state.draftData = action.payload
+    },
+
+    clearDraftData(state) {
+      state.draftData = null
+    },
+
+    restoreDraftData(state, action: PayloadAction<CardtextCreateDraft>) {
       const { value, style, plainText, cardtextLines, timestamp } =
         action.payload
       const ad = ensureAsset(state)
@@ -137,17 +150,6 @@ export const cardtextSlice = createSlice({
       ad.id = null
       ad.status = 'inLine'
       state.resetToken += 1
-    },
-
-    setCreateReturnSnapshot(
-      state,
-      action: PayloadAction<CardtextCreateReturnSnapshot | null>,
-    ) {
-      state.createReturnSnapshot = action.payload
-    },
-
-    clearCreateReturnSnapshot(state) {
-      state.createReturnSnapshot = null
     },
 
     restoreCardtextSession(
@@ -318,12 +320,12 @@ export const cardtextSlice = createSlice({
       }
     },
 
-    setCardtextCurrentView(state, action: PayloadAction<CardtextCurrentView>) {
-      state.currentView = action.payload
+    setCardtextSource(state, action: PayloadAction<CardtextSource>) {
+      state.source = action.payload
     },
 
-    setCardtextFocusRequested(state, action: PayloadAction<boolean>) {
-      state.requestCardtextFocus = action.payload
+    setDraftFocus(state, action: PayloadAction<boolean>) {
+      state.isDraftFocus = action.payload
     },
   },
 })
@@ -338,11 +340,11 @@ export const {
   setFavorite,
   clearText,
   setCardtextId,
-  setCreateDraft,
-  clearCreateDraft,
-  restoreCreateDraft,
-  setCreateReturnSnapshot,
-  clearCreateReturnSnapshot,
+  setCardtextPresetData,
+  setCardtextAppliedData,
+  setDraftData,
+  clearDraftData,
+  restoreDraftData,
   restoreCardtextSession,
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
@@ -355,8 +357,8 @@ export const {
   updateCardtextTemplateFavoriteInList,
   updateCardtextTemplateTitleInList,
   updateCardtextContentInList,
-  setCardtextCurrentView,
-  setCardtextFocusRequested,
+  setCardtextSource,
+  setDraftFocus,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

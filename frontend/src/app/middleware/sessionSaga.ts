@@ -31,6 +31,7 @@ import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
 import {
   selectCardtextPlainText,
+  selectCardtextDraftData,
   selectCardtextSessionData,
   selectCardtextStyle,
   selectCardtextShowViewMode,
@@ -103,9 +104,10 @@ import {
   setTextStyle,
   setAlign,
   clearText,
+  setDraftData,
   setStatus as setCardtextStatus,
   restoreCardtextSession,
-  setCardtextCurrentView,
+  setCardtextSource,
 } from '@cardtext/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
@@ -122,6 +124,9 @@ export function* persistGlobalSession() {
 
   const cardtext: SessionData['cardtext'] = yield select(
     selectCardtextSessionData,
+  )
+  const cardtextCreateDraft: SessionData['cardtextCreateDraft'] = yield select(
+    selectCardtextDraftData,
   )
 
   const envelope: EnvelopeSessionRecord | null = yield select(
@@ -175,6 +180,7 @@ export function* persistGlobalSession() {
     id: 'current_session',
     cardphoto,
     cardtext,
+    cardtextCreateDraft,
     cardtextShowViewMode: cardtextShowViewMode || undefined,
     envelope,
     aroma,
@@ -221,7 +227,8 @@ const SESSION_WATCH_ACTIONS = [
   setTextStyle.type,
   setAlign.type,
   clearText.type,
-  setCardtextCurrentView.type,
+  setDraftData.type,
+  setCardtextSource.type,
   setCardtextStatus.type,
   addCardtextTemplateId.type,
   removeCardtextTemplateId.type,
@@ -485,8 +492,18 @@ export function* hydrateAppSession() {
     if (session.cardtext) {
       yield put(restoreCardtextSession(session.cardtext))
       if (session.cardtextShowViewMode) {
-        yield put(setCardtextCurrentView('cardtextView'))
+        yield put(setCardtextSource('view'))
       }
+    }
+    // In create mode `session.cardtext` already holds current editor content.
+    // Avoid duplicating the same payload in both assetData and draftData.
+    const restoredInCreateMode =
+      !session.cardtextShowViewMode &&
+      (session.cardtext?.id ?? null) == null
+    if (restoredInCreateMode) {
+      yield put(setDraftData(null))
+    } else {
+      yield put(setDraftData(session.cardtextCreateDraft ?? null))
     }
 
     if (session.previewStripOrder) {

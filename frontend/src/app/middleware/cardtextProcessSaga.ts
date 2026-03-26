@@ -22,12 +22,11 @@ import {
   loadCardtextTemplatesSuccess,
   loadCardtextTemplatesFailure,
   setCardtextListPanelOpen,
-  setCreateDraft,
-  clearCreateDraft,
-  restoreCreateDraft,
-  clearCreateReturnSnapshot,
+  setDraftData,
+  clearDraftData,
+  restoreDraftData,
   restoreCardtextSession,
-  setCardtextCurrentView,
+  setCardtextSource,
   setCardtextAddTemplateOpen,
 } from '@cardtext/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
@@ -40,10 +39,9 @@ import {
 import { CARDTEXT_CONFIG } from '@cardtext/domain/types'
 import type { CardtextContent, TextAlign } from '@cardtext/domain/types'
 import {
-  selectCardtextCreateDraft,
-  selectCardtextCreateReturnSnapshot,
+  selectCardtextDraftData,
   selectCardtextSessionData,
-  selectCardtextCurrentView,
+  selectCardtextSource,
   selectCardtextId,
   selectCardtextAddTemplateOpen,
 } from '@cardtext/infrastructure/selectors'
@@ -95,12 +93,12 @@ export function* watchFontSizeChanges(): SagaIterator {
 export function* syncCardtextAddButtonStatus(): SagaIterator {
   const plainText: string = yield select(selectCardtextPlainText)
   const hasText = (plainText?.trim?.() ?? '').length > 0
-  const currentView: ReturnType<typeof selectCardtextCurrentView> =
-    yield select(selectCardtextCurrentView)
+  const source: ReturnType<typeof selectCardtextSource> =
+    yield select(selectCardtextSource)
   const templateId: string | null = yield select(selectCardtextId)
 
   const isCreateModeOpen =
-    currentView === 'cardtextEditor' &&
+    source === 'draft' &&
     (templateId == null || templateId === null)
 
   yield put(
@@ -128,14 +126,14 @@ export function* watchCardtextValueChanges(): SagaIterator {
 }
 
 function* syncCardtextCreateDraftIndicator(): SagaIterator {
-  const draft: ReturnType<typeof selectCardtextCreateDraft> = yield select(
-    selectCardtextCreateDraft,
+  const draft: ReturnType<typeof selectCardtextDraftData> = yield select(
+    selectCardtextDraftData,
   )
-  const currentView: ReturnType<typeof selectCardtextCurrentView> =
-    yield select(selectCardtextCurrentView)
+  const source: ReturnType<typeof selectCardtextSource> =
+    yield select(selectCardtextSource)
   const templateId: string | null = yield select(selectCardtextId)
   const isCreateModeOpen =
-    currentView === 'cardtextEditor' &&
+    source === 'draft' &&
     (templateId == null || templateId === null)
 
   yield put(
@@ -150,10 +148,10 @@ function* syncCardtextCreateDraftIndicator(): SagaIterator {
 }
 
 function* maybePersistCreateDraftOnExitView(
-  action: ReturnType<typeof setCardtextCurrentView>,
+  action: ReturnType<typeof setCardtextSource>,
 ): SagaIterator {
-  const nextView = action.payload
-  if (nextView !== 'cardtextView') return
+  const nextSource = action.payload
+  if (nextSource !== 'view') return
 
   const isSaveTemplateOpen: boolean = yield select(
     selectCardtextAddTemplateOpen,
@@ -172,7 +170,7 @@ function* maybePersistCreateDraftOnExitView(
   const plainText = session.plainText ?? ''
   const hasText = plainText.trim().length > 0
   if (!hasText) {
-    yield put(clearCreateDraft())
+    yield put(clearDraftData())
     return
   }
 
@@ -183,14 +181,14 @@ function* maybePersistCreateDraftOnExitView(
     cardtextLines: session.cardtextLines,
     timestamp: session.timestamp,
   }
-  yield put(setCreateDraft(draft))
+  yield put(setDraftData(draft))
 
-  // Если мы заходили в create из выбранного шаблона — возвращаем отображение назад.
-  const returnSnapshot: ReturnType<typeof selectCardtextCreateReturnSnapshot> =
-    yield select(selectCardtextCreateReturnSnapshot)
-  if (returnSnapshot != null) {
-    yield put(restoreCardtextSession(returnSnapshot))
-    yield put(clearCreateReturnSnapshot())
+  // If we entered create from a selected preset, restore that preset back into view.
+  const presetData = (yield select(
+    (s) => (s.cardtext as { presetData?: CardtextContent | null }).presetData,
+  )) as CardtextContent | null
+  if (presetData != null) {
+    yield put(restoreCardtextSession(presetData))
   }
 }
 
@@ -224,17 +222,17 @@ export function* cardtextProcessSaga(): SagaIterator {
     fork(watchFontSizeChanges),
     fork(watchCardtextValueChanges),
     takeEvery(
-      [setCreateDraft.type, clearCreateDraft.type, restoreCreateDraft.type],
+      [setDraftData.type, clearDraftData.type, restoreDraftData.type],
       syncCardtextCreateDraftIndicator,
     ),
     takeEvery(
-      [setCreateDraft.type, clearCreateDraft.type, restoreCreateDraft.type],
+      [setDraftData.type, clearDraftData.type, restoreDraftData.type],
       syncCardtextAddButtonStatus,
     ),
     takeEvery(
-      setCardtextCurrentView.type,
+      setCardtextSource.type,
       function* (
-        action: ReturnType<typeof setCardtextCurrentView>,
+        action: ReturnType<typeof setCardtextSource>,
       ): SagaIterator {
         yield call(maybePersistCreateDraftOnExitView, action)
         yield call(syncCardtextCreateDraftIndicator)

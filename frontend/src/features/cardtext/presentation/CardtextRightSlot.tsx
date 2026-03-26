@@ -2,13 +2,15 @@ import React, { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   setCardtextListPanelOpen,
-  setCardtextCurrentView,
+  setCardtextSource,
   restoreCardtextSession,
   setCardtextId,
-  setCreateDraft,
+  setCardtextPresetData,
+  setDraftData,
+  setCardtextAppliedData,
 } from '@cardtext/infrastructure/state'
 import {
-  selectCardtextCurrentView,
+  selectCardtextSource,
   selectCardtextSessionData,
   selectCardtextId,
 } from '@cardtext/infrastructure/selectors'
@@ -23,7 +25,7 @@ export const CardtextRightSlot: React.FC = () => {
   const isOpen = useAppSelector(
     (state) => (state.cardtext as any).isListPanelOpen === true,
   )
-  const currentView = useAppSelector(selectCardtextCurrentView)
+  const source = useAppSelector(selectCardtextSource)
   const currentTemplateId = useAppSelector(selectCardtextId)
   const session = useAppSelector(selectCardtextSessionData)
 
@@ -41,9 +43,9 @@ export const CardtextRightSlot: React.FC = () => {
   const handleSelectTemplate = useCallback(
     (entry: CardtextContent) => {
       // Если сейчас открыт редактор в режиме создания (id шаблона == null),
-      // то перед переключением на сохранённый шаблон сохраняем текущий текст как createDraft.
+      // то перед переключением на сохранённый пресет сохраняем текущий текст как draftData.
       if (
-        currentView === 'cardtextEditor' &&
+        source === 'draft' &&
         (currentTemplateId == null || currentTemplateId === null)
       ) {
         const draft: CardtextCreateDraft = {
@@ -53,10 +55,15 @@ export const CardtextRightSlot: React.FC = () => {
           cardtextLines: session.cardtextLines,
           timestamp: session.timestamp,
         }
-        dispatch(setCreateDraft(draft))
+        dispatch(setDraftData(draft))
       }
 
       dispatch(setCardtextId(entry.id))
+      // Store the selected preset snapshot so we can reason about "previous selection"
+      // separately from the current editor content.
+      dispatch(setCardtextPresetData(entry))
+      // Selecting another text/template starts editing again, so "applied" state must be cleared.
+      dispatch(setCardtextAppliedData(null))
       dispatch(
         restoreCardtextSession({
           id: entry.id,
@@ -70,9 +77,9 @@ export const CardtextRightSlot: React.FC = () => {
           status: entry.status ?? 'inLine',
         }),
       )
-      dispatch(setCardtextCurrentView('cardtextView'))
+      dispatch(setCardtextSource('view'))
     },
-    [dispatch, currentView, currentTemplateId, session],
+    [dispatch, source, currentTemplateId, session],
   )
 
   if (!isOpen) return null

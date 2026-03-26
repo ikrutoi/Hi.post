@@ -10,7 +10,6 @@ import {
   selectCardtextId,
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
-  selectCardtextCreateReturnSnapshot,
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
@@ -19,10 +18,9 @@ import { useTemplateActions } from '@entities/templates/application/hooks/useTem
 import { useAppDispatch } from '@app/hooks'
 import {
   cardtextTemplateAdded,
-  clearCreateDraft,
-  clearCreateReturnSnapshot,
+  clearDraftData,
   setCardtextAddTemplateOpen,
-  setCardtextCurrentView,
+  setCardtextSource,
   setTitle,
   loadCardtextTemplatesRequest,
   updateCardtextTemplateTitleInList,
@@ -63,7 +61,6 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const cardtextTemplatesLoading = useAppSelector(
     selectCardtextTemplatesListLoading,
   )
-  const createReturnSnapshot = useAppSelector(selectCardtextCreateReturnSnapshot)
   const dispatch = useAppDispatch()
   const { createCardtextTemplate, updateCardtextTemplate } =
     useTemplateActions()
@@ -151,9 +148,8 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
 
         if (result.success) {
           dispatch(cardtextTemplateAdded())
-          dispatch(clearCreateDraft())
-          dispatch(clearCreateReturnSnapshot())
-          dispatch(setCardtextCurrentView('cardtextView'))
+          dispatch(clearDraftData())
+          dispatch(setCardtextSource('view'))
         }
       } else {
         if (!id) {
@@ -163,9 +159,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
         const result = await updateCardtextTemplate(id, { title: next })
         if (result.success) {
           dispatch(setTitle(next))
-          dispatch(
-            updateCardtextTemplateTitleInList({ id, title: next }),
-          )
+          dispatch(updateCardtextTemplateTitleInList({ id, title: next }))
         }
       }
     } finally {
@@ -178,16 +172,17 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const forceEditingTitle = isAddTemplateOpen || isEditingTitle
 
   const toolbarSection =
-    currentView === 'cardtextEditor' && currentTemplateId == null
+    currentView === 'draft' && currentTemplateId == null
       ? 'cardtextCreate'
-      : currentView
+      : currentView === 'view'
+        ? 'cardtextView'
+        : 'cardtextEditor'
 
   const isCreateNewEmpty =
-    currentView === 'cardtextEditor' &&
+    currentView === 'draft' &&
     currentTemplateId == null &&
     isEmptyCardtextValue(value) &&
-    !isAddTemplateOpen &&
-    !createReturnSnapshot
+    !isAddTemplateOpen
 
   const showCardtextToolbarRow = !isCreateNewEmpty
 
@@ -281,7 +276,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
                     </button>
                   </div>
                 ) : (
-                  currentView === 'cardtextView' && (
+                  currentView === 'view' && (
                     <button
                       type="button"
                       className={viewStyles.viewTitle}
@@ -298,7 +293,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
               </>
             )}
 
-            {currentView === 'cardtextView' ? (
+            {currentView === 'view' ? (
               <CardtextView
                 key={id ?? 'no-template'}
                 value={value}

@@ -14,13 +14,14 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
-  setCardtextFocusRequested,
-  setCardtextCurrentView,
+  setDraftFocus,
+  setCardtextSource,
   setCardtextId,
+  setCardtextAppliedData,
   toggleCardtextListSortDirection,
   setValue,
-  restoreCreateDraft,
-  setCreateReturnSnapshot,
+  restoreDraftData,
+  setCardtextPresetData,
 } from '@cardtext/infrastructure/state'
 import { initialCardtextValue } from '@/features/cardtext/domain/editor/editor.types'
 import {
@@ -31,7 +32,7 @@ import {
   selectCardtextFavorite,
   selectCardtextPlainText,
   selectCardtextLines,
-  selectCardtextCreateDraft,
+  selectCardtextDraftData,
   selectCardtextSessionData,
 } from '@cardtext/infrastructure/selectors'
 import { templateService } from '@entities/templates/domain/services/templateService'
@@ -55,13 +56,26 @@ export function* handleCardtextToolbarAction(
 
   switch (key) {
     case 'apply': {
+      // Apply means "processed state for the card": copy current editor content
+      // into `appliedData` and mark section complete via `selectCardtextIsComplete`.
+      const { assetData } = yield select((s: RootState) => s.cardtext)
+      if (assetData == null) break
+
+      const applied = {
+        ...assetData,
+        status: 'processed' as const,
+      }
+
+      yield put(setCardtextAppliedData(applied))
+      // Keep legacy status in sync (some UI still relies on it).
       yield put(setStatus('processed'))
+      yield put(setCardtextSource('view'))
       break
     }
 
     case 'edit':
       if (section === 'cardtextView') {
-        yield put(setCardtextCurrentView('cardtextEditor'))
+        yield put(setCardtextSource('draft'))
       } else if (section === 'cardtextEditor') {
         const templateId: string | null = yield select(selectCardtextId)
         const value: ReturnType<typeof selectCardtextValue> =
@@ -92,7 +106,7 @@ export function* handleCardtextToolbarAction(
         }
 
         yield put(setStatus('processed'))
-        yield put(setCardtextCurrentView('cardtextView'))
+        yield put(setCardtextSource('view'))
       }
       break
 
@@ -174,19 +188,24 @@ export function* handleCardtextToolbarAction(
     case 'cardtextAdd': {
       if (section === 'cardtext' || section === 'cardtextView') {
         yield put(setCardtextAddTemplateOpen(false))
+        // Starting a new editor session should clear any previously applied state.
+        yield put(setCardtextAppliedData(null))
         const snapshot: ReturnType<typeof selectCardtextSessionData> =
           yield select(selectCardtextSessionData)
-        yield put(setCreateReturnSnapshot(snapshot))
-        const draft: ReturnType<typeof selectCardtextCreateDraft> =
-          yield select(selectCardtextCreateDraft)
+        // Preserve "return target" when leaving a selected preset for create mode.
+        if (snapshot?.id != null) {
+          yield put(setCardtextPresetData(snapshot))
+        }
+        const draft: ReturnType<typeof selectCardtextDraftData> =
+          yield select(selectCardtextDraftData)
         if (draft) {
-          yield put(restoreCreateDraft(draft))
+          yield put(restoreDraftData(draft))
         } else {
           yield put(setValue(initialCardtextValue as any))
         }
         yield put(setCardtextId(null))
-        yield put(setCardtextCurrentView('cardtextEditor'))
-        yield put(setCardtextFocusRequested(true))
+        yield put(setCardtextSource('draft'))
+        yield put(setDraftFocus(true))
         // Keep list badge consistent after entering "new template" mode.
         // Some flows can temporarily make `templatesList` look empty/null
         // before the UI updates, so we re-fetch.
@@ -203,7 +222,7 @@ export function* handleCardtextToolbarAction(
               value[0]?.children?.map((c: any) => c?.text).join('') ?? ''
             ).trim()))
       if (isEmpty) {
-        yield put(setCardtextFocusRequested(true))
+        yield put(setDraftFocus(true))
       }
       break
     }

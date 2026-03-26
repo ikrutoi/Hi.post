@@ -8,8 +8,8 @@ import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
 import { useInitSelection } from '../../application/hooks'
 import { STEP_TO_PX } from '../../domain/types'
-import { selectCardtextFocusRequested } from '../../infrastructure/selectors'
-import { setCardtextFocusRequested } from '../../infrastructure/state'
+import { selectIsDraftFocus } from '../../infrastructure/selectors'
+import { setDraftFocus } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
 import { IconX } from '@shared/ui/icons'
 import { isEmptyCardtextValue } from '../../domain/helpers'
@@ -18,7 +18,7 @@ import type { CardtextValue } from '../../domain/types'
 
 export const CardEditor: React.FC = () => {
   const dispatch = useAppDispatch()
-  const requestFocus = useAppSelector(selectCardtextFocusRequested)
+  const requestFocus = useAppSelector(selectIsDraftFocus)
   const {
     fontSizeStep,
     editor,
@@ -61,7 +61,7 @@ export const CardEditor: React.FC = () => {
       if (end) Transforms.select(editor, { anchor: end, focus: end })
       ReactEditor.focus(editor)
       setIsFocused(true)
-      dispatch(setCardtextFocusRequested(false))
+      dispatch(setDraftFocus(false))
     }, 0)
     return () => clearTimeout(id)
   }, [requestFocus, dispatch, editor])
@@ -130,8 +130,8 @@ export const CardEditor: React.FC = () => {
         type="button"
         className={styles.closeBtn}
         onClick={() => {
-          dispatch(setCardtextFocusRequested(false))
-          setCurrentView('cardtextView')
+          dispatch(setDraftFocus(false))
+          setCurrentView('view')
         }}
         aria-label="Close text editor"
       >
