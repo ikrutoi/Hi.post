@@ -10,7 +10,7 @@ export type CardtextListSortDirection = 'asc' | 'desc'
 
 export type CardtextTemplatesListState = CardtextContent[] | null
 
-export type CardtextStatus = 'processed' | 'outLine' | 'inLine'
+export type CardtextStatus = 'draft' | 'processed' | 'outLine' | 'inLine'
 
 export type TextAlign = 'left' | 'center' | 'right' | 'justify'
 
@@ -104,12 +104,10 @@ export function createInitialCardtextContent(): CardtextContent {
     plainText: '',
     favorite: null,
     timestamp: 0,
-    status: 'inLine',
+    status: 'draft',
     cardtextLines: 15,
   }
 }
-
-export type CardtextSource = 'draft' | 'view'
 
 export interface CardtextState {
   assetData: CardtextContent | null
@@ -117,7 +115,6 @@ export interface CardtextState {
   appliedData: CardtextContent | null
   draftData: CardtextCreateDraft | null
   resetToken: number
-  source: CardtextSource
   isDraftFocus: boolean
 }
 
@@ -128,6 +125,7 @@ export type CreateCardtextPayload = Pick<
   title?: string
   favorite?: boolean | null
   id?: string
+  status?: CardtextStatus
 }
 
 export type UpdateCardtextPayload = Omit<
@@ -143,6 +141,5 @@ export const initialCardtextEditorState: CardtextState = {
   appliedData: null,
   draftData: null,
   resetToken: 0,
-  source: 'draft',
   isDraftFocus: false,
 }

@@ -3,7 +3,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import { CardStatus } from '@entities/card/domain/types'
 import { selectCardEditorState } from '@entities/cardEditor/infrastructure/selectors'
-import { selectCardtextSessionData } from '@cardtext/infrastructure/selectors'
+import { selectCardtextAppliedSessionData } from '@cardtext/infrastructure/selectors'
 import {
   selectCardphotoPreview,
   selectCardphotoSessionRecord,
@@ -40,7 +40,7 @@ export const selectPieDataByContext = createSelector(
 export const selectActiveCardFullData = createSelector(
   [
     selectCardEditorState,
-    selectCardtextSessionData,
+    selectCardtextAppliedSessionData,
     selectCardphotoPreview,
     selectSelectedAroma,
     selectSelectedDate,

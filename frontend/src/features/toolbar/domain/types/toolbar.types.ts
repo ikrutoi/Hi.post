@@ -80,6 +80,7 @@ export const TOOLBAR_SECTIONS = [
   'cardtextCreate',
   'cardtextEditor',
   'cardtextView',
+  'cardtextProcessed',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -111,6 +112,7 @@ export type ToolbarState = {
   cardtextView: CardtextToolbarState & { config: ToolbarGroup[] }
   cardtextCreate: CardtextToolbarState & { config: ToolbarGroup[] }
   cardtextEditor: CardtextToolbarState & { config: ToolbarGroup[] }
+  cardtextProcessed: CardtextToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -247,6 +249,11 @@ export type ToolbarSectionConfigMap = {
     CardtextKey,
     'cardtextView'
   >
+  cardtextProcessed: BaseSectionConfig<
+    CardtextToolbarState,
+    CardtextKey,
+    'cardtextProcessed'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -301,4 +308,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                   ? CardtextKey
                                                   : S extends 'cardtextView'
                                                     ? CardtextKey
-                                                    : never
+                                                    : S extends 'cardtextProcessed'
+                                                      ? CardtextKey
+                                                      : never

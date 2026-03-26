@@ -80,6 +80,9 @@ export const buildCardtextToolbarState = (
       case 'colorPicker':
         state.colorPicker = 'enabled'
         break
+      case 'cardtextCheck':
+        state.cardtextCheck = hasContent ? 'enabled' : 'disabled'
+        break
       default:
         const exhaustiveCheck: never = key
         throw new Error(`Unhandled key: ${exhaustiveCheck}`)

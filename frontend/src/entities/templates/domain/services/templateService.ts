@@ -106,6 +106,95 @@ function readCardtextStoreRecord(record: unknown, now: number): CardtextContent 
 }
 
 export const templateService = {
+  async hasCardtextTemplateByStatus(
+    status: 'draft' | 'processed',
+  ): Promise<boolean> {
+    const records = await cardtextTemplatesAdapter.getAll()
+    const now = Date.now()
+    return records.some((record) => {
+      const content = readCardtextStoreRecord(record, now)
+      return content.status === status
+    })
+  },
+
+  async getSingleCardtextByStatus(
+    status: 'draft' | 'processed',
+  ): Promise<CardtextContent | null> {
+    const records = await cardtextTemplatesAdapter.getAll()
+    const now = Date.now()
+    const byStatus = records
+      .map((record) => readCardtextStoreRecord(record, now))
+      .filter((item) => item.status === status)
+      .sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))
+    return byStatus[0] ?? null
+  },
+
+  async upsertSingleCardtextByStatus(
+    status: 'draft' | 'processed',
+    payload: CreateCardtextPayload,
+  ): Promise<TemplateOperationResult> {
+    try {
+      const records = await cardtextTemplatesAdapter.getAll()
+      const now = Date.now()
+      const byStatus = records
+        .map((record) => readCardtextStoreRecord(record, now))
+        .filter((item) => item.status === status && item.id != null) as Array<
+        CardtextContent & { id: string }
+      >
+
+      const [primary, ...duplicates] = byStatus.sort(
+        (a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0),
+      )
+
+      if (primary) {
+        const updated: UpdateCardtextPayload = {
+          value: payload.value,
+          style: payload.style,
+          plainText: payload.plainText,
+          cardtextLines: payload.cardtextLines,
+          title: payload.title,
+          favorite: payload.favorite,
+        }
+        const result = await this.updateCardtextTemplate(primary.id, updated)
+        if (!result.success) return result
+
+        for (const dup of duplicates) {
+          await cardtextTemplatesAdapter.deleteById(dup.id)
+        }
+
+        return {
+          success: true,
+          templateId: primary.id,
+        }
+      }
+
+      return await this.createCardtextTemplate({
+        ...payload,
+        status,
+      })
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    }
+  },
+
+  async deleteSingleCardtextByStatus(
+    status: 'draft' | 'processed',
+  ): Promise<void> {
+    const records = await cardtextTemplatesAdapter.getAll()
+    const now = Date.now()
+    const byStatus = records
+      .map((record) => readCardtextStoreRecord(record, now))
+      .filter((item) => item.status === status && item.id != null) as Array<
+      CardtextContent & { id: string }
+    >
+    for (const item of byStatus) {
+      await cardtextTemplatesAdapter.deleteById(item.id)
+    }
+  },
+
   async getAddressTemplates(type: AddressType): Promise<AddressTemplate[]> {
     const adapter =
       type === 'recipient' ? recipientTemplatesAdapter : senderTemplatesAdapter
@@ -248,13 +337,18 @@ export const templateService = {
     const records = await cardtextTemplatesAdapter.getAll()
     const now = Date.now()
 
-    return records.map((record) => {
-      const content = readCardtextStoreRecord(record, now)
-      return {
-        ...content,
-        favorite: content.favorite ?? (record as { favorite?: boolean | null }).favorite ?? null,
-      }
-    })
+    return records
+      .map((record) => {
+        const content = readCardtextStoreRecord(record, now)
+        return {
+          ...content,
+          favorite:
+            content.favorite ??
+            (record as { favorite?: boolean | null }).favorite ??
+            null,
+        }
+      })
+      .filter((item) => item.status === 'inLine')
   },
 
   async getCardtextTemplateById(id: string): Promise<CardtextContent | null> {
@@ -283,7 +377,7 @@ export const templateService = {
         title: payload.title ?? '',
         plainText: payload.plainText,
         cardtextLines: payload.cardtextLines,
-        status: 'inLine',
+        status: payload.status ?? 'inLine',
         favorite: payload.favorite ?? null,
         timestamp: now,
       }
@@ -364,5 +458,9 @@ export const templateService = {
         error: error instanceof Error ? error.message : 'Unknown error',
       }
     }
+  },
+
+  async hasProcessedCardtextTemplate(): Promise<boolean> {
+    return this.hasCardtextTemplateByStatus('processed')
   },
 }

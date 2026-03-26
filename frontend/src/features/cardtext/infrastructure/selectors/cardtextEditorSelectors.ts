@@ -4,7 +4,6 @@ import {
   type CardtextValue,
   type CardtextStyle,
   type CardtextContent,
-  type CardtextSource,
   type CardtextCreateDraft,
 } from '../../domain/editor/editor.types'
 import { createSelector } from '@reduxjs/toolkit'
@@ -13,7 +12,8 @@ export const selectCardtextState = (state: RootState) => state.cardtext
 
 export const selectCardtextSource = (
   state: RootState,
-): CardtextSource => state.cardtext.source ?? 'draft'
+): 'draft' | 'view' =>
+  state.cardtext.assetData?.status === 'draft' ? 'draft' : 'view'
 
 export const selectCardtextShowViewMode = (state: RootState): boolean =>
   selectCardtextSource(state) === 'view'
@@ -86,6 +86,21 @@ export const selectCardtextSessionData = createSelector(
         children: b.children.map((c) => ({ ...c })),
       })),
       style: { ...asset.style },
+    }
+  },
+)
+
+export const selectCardtextAppliedSessionData = createSelector(
+  [(state: RootState) => state.cardtext.appliedData],
+  (applied): CardtextContent => {
+    if (applied == null) return createInitialCardtextContent()
+    return {
+      ...applied,
+      value: applied.value.map((b) => ({
+        ...b,
+        children: b.children.map((c) => ({ ...c })),
+      })),
+      style: { ...applied.style },
     }
   },
 )

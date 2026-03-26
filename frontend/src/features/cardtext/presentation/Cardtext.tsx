@@ -8,6 +8,7 @@ import { useAppSelector } from '@app/hooks'
 import {
   selectCardtextAddTemplateOpen,
   selectCardtextId,
+  selectCardtextStatus,
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
 } from '@cardtext/infrastructure/selectors'
@@ -20,7 +21,7 @@ import {
   cardtextTemplateAdded,
   clearDraftData,
   setCardtextAddTemplateOpen,
-  setCardtextSource,
+  setStatus,
   setTitle,
   loadCardtextTemplatesRequest,
   updateCardtextTemplateTitleInList,
@@ -47,6 +48,7 @@ function getUniqueTitle(
 export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const { sizeCard } = useSizeFacade()
   const {
+    state,
     currentView,
     value,
     style,
@@ -55,7 +57,9 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
     plainText,
     cardtextLines,
   } = useCardtextFacade()
+  console.log('Cardtext state', state)
   const currentTemplateId = useAppSelector(selectCardtextId)
+  const cardtextStatus = useAppSelector(selectCardtextStatus)
   const isAddTemplateOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const cardtextTemplates = useAppSelector(selectCardtextTemplatesListItems)
   const cardtextTemplatesLoading = useAppSelector(
@@ -149,7 +153,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
         if (result.success) {
           dispatch(cardtextTemplateAdded())
           dispatch(clearDraftData())
-          dispatch(setCardtextSource('view'))
+          dispatch(setStatus('inLine'))
         }
       } else {
         if (!id) {
@@ -172,7 +176,9 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const forceEditingTitle = isAddTemplateOpen || isEditingTitle
 
   const toolbarSection =
-    currentView === 'draft' && currentTemplateId == null
+    cardtextStatus === 'processed'
+      ? 'cardtextProcessed'
+      : currentView === 'draft' && currentTemplateId == null
       ? 'cardtextCreate'
       : currentView === 'view'
         ? 'cardtextView'

@@ -162,6 +162,7 @@ import {
   IconColor,
   IconCardphotoAdd,
   IconListCardphoto,
+  IconCardtextCheck,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 
@@ -169,10 +170,7 @@ import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 //   ICON_KEYS.map((key) => [key, getIconByKey(key)]),
 // ) as Record<IconKey, JSX.Element>
 
-export function getIconByKey(
-  key: IconKey,
-  currentStep?: number,
-): JSX.Element {
+export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
   switch (key) {
     case 'save':
       return <IconSave />
@@ -294,6 +292,8 @@ export function getIconByKey(
       return <IconCardphotoAdd />
     case 'cardtext':
       return <IconSectionMenuCardtext />
+    case 'cardtextCheck':
+      return <IconCardtextCheck />
     case 'envelope':
       return <IconSectionMenuEnvelopeV2 />
     case 'aroma':

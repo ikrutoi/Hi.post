@@ -15,15 +15,14 @@ import {
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
   setDraftFocus,
-  setCardtextSource,
   setCardtextId,
+  clearDraftData,
   setCardtextAppliedData,
   toggleCardtextListSortDirection,
-  setValue,
-  restoreDraftData,
+  clearText,
   setCardtextPresetData,
+  restoreCardtextSession,
 } from '@cardtext/infrastructure/state'
-import { initialCardtextValue } from '@/features/cardtext/domain/editor/editor.types'
 import {
   selectCardtextValue,
   selectCardtextStyle,
@@ -32,7 +31,6 @@ import {
   selectCardtextFavorite,
   selectCardtextPlainText,
   selectCardtextLines,
-  selectCardtextDraftData,
   selectCardtextSessionData,
 } from '@cardtext/infrastructure/selectors'
 import { templateService } from '@entities/templates/domain/services/templateService'
@@ -51,7 +49,8 @@ export function* handleCardtextToolbarAction(
     section === 'cardtext' ||
     section === 'cardtextView' ||
     section === 'cardtextEditor' ||
-    section === 'cardtextCreate'
+    section === 'cardtextCreate' ||
+    section === 'cardtextProcessed'
   if (!isCardtextSection) return
 
   switch (key) {
@@ -69,13 +68,51 @@ export function* handleCardtextToolbarAction(
       yield put(setCardtextAppliedData(applied))
       // Keep legacy status in sync (some UI still relies on it).
       yield put(setStatus('processed'))
-      yield put(setCardtextSource('view'))
+      break
+    }
+
+    case 'cardtextCheck': {
+      const value: ReturnType<typeof selectCardtextValue> =
+        yield select(selectCardtextValue)
+      const style: ReturnType<typeof selectCardtextStyle> =
+        yield select(selectCardtextStyle)
+      const plainText: string = yield select(selectCardtextPlainText)
+      const cardtextLines: number = yield select(selectCardtextLines)
+      const { assetData } = (yield select((s: RootState) => s.cardtext)) as {
+        assetData?: { title?: string; favorite?: boolean | null } | null
+      }
+
+      const hasText = (plainText?.trim?.() ?? '').length > 0
+      if (!hasText) break
+
+      const result: { success?: boolean; templateId?: string } = yield call(
+        [templateService, 'upsertSingleCardtextByStatus'],
+        'processed',
+        {
+          value,
+          style,
+          plainText,
+          cardtextLines,
+          title: assetData?.title ?? '',
+          favorite: assetData?.favorite ?? null,
+          status: 'processed',
+        },
+      )
+
+      if (result?.success && result.templateId) {
+        const templateId = String(result.templateId)
+        yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
+        yield put(clearDraftData())
+        yield put(setCardtextId(templateId))
+        yield put(setStatus('processed'))
+        yield put(loadCardtextTemplatesRequest())
+      }
       break
     }
 
     case 'edit':
       if (section === 'cardtextView') {
-        yield put(setCardtextSource('draft'))
+        yield put(setStatus('draft'))
       } else if (section === 'cardtextEditor') {
         const templateId: string | null = yield select(selectCardtextId)
         const value: ReturnType<typeof selectCardtextValue> =
@@ -106,7 +143,6 @@ export function* handleCardtextToolbarAction(
         }
 
         yield put(setStatus('processed'))
-        yield put(setCardtextSource('view'))
       }
       break
 
@@ -133,6 +169,16 @@ export function* handleCardtextToolbarAction(
       }
       break
 
+    case 'delete':
+      if (section === 'cardtextProcessed') {
+        yield call([templateService, 'deleteSingleCardtextByStatus'], 'processed')
+        yield put(setCardtextAppliedData(null))
+        yield put(setCardtextId(null))
+        yield put(clearText())
+        yield put(setStatus('inLine'))
+      }
+      break
+
     case 'fontSizeLess':
       if (
         section === 'cardtext' ||
@@ -154,18 +200,21 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'listCardtext': {
+      const targetSection = 'cardtext' as const
       const current: any = (yield select(
-        (state: RootState) => state.toolbar[section].listCardtext,
+        (state: RootState) => state.toolbar[targetSection].listCardtext,
       )) as any
       const isActive = current?.state === 'active' || current === 'active'
       const nextState = isActive ? 'enabled' : 'active'
       const nextOpen = !isActive
+      const currentOptions =
+        current && typeof current === 'object' ? current.options : undefined
 
       yield put(
         updateToolbarIcon({
-          section,
+          section: targetSection,
           key: 'listCardtext',
-          value: nextState,
+          value: { state: nextState, options: currentOptions },
         }),
       )
       yield put(setCardtextListPanelOpen(nextOpen))
@@ -188,6 +237,20 @@ export function* handleCardtextToolbarAction(
     case 'cardtextAdd': {
       if (section === 'cardtext' || section === 'cardtextView') {
         yield put(setCardtextAddTemplateOpen(false))
+        const processed: ReturnType<typeof templateService.getSingleCardtextByStatus> =
+          yield call([templateService, 'getSingleCardtextByStatus'], 'processed')
+        if (processed != null) {
+          yield put(restoreCardtextSession(processed))
+          // Opening saved processed text via cardtextAdd should not auto-apply it
+          // to postcard completion state.
+          yield put(setCardtextAppliedData(null))
+          if (processed.id != null) {
+            yield put(setCardtextId(String(processed.id)))
+          }
+          yield put(setStatus('processed'))
+          yield put(setDraftFocus(false))
+          break
+        }
         // Starting a new editor session should clear any previously applied state.
         yield put(setCardtextAppliedData(null))
         const snapshot: ReturnType<typeof selectCardtextSessionData> =
@@ -196,15 +259,22 @@ export function* handleCardtextToolbarAction(
         if (snapshot?.id != null) {
           yield put(setCardtextPresetData(snapshot))
         }
-        const draft: ReturnType<typeof selectCardtextDraftData> =
-          yield select(selectCardtextDraftData)
-        if (draft) {
-          yield put(restoreDraftData(draft))
+        const draftFromDb: ReturnType<typeof templateService.getSingleCardtextByStatus> =
+          yield call([templateService, 'getSingleCardtextByStatus'], 'draft')
+        if (draftFromDb != null) {
+          yield put(
+            restoreCardtextSession({
+              ...draftFromDb,
+              id: null,
+              status: 'draft',
+            }),
+          )
         } else {
-          yield put(setValue(initialCardtextValue as any))
+          // Reset full editor payload (including title/favorite/etc.)
+          yield put(clearText())
         }
         yield put(setCardtextId(null))
-        yield put(setCardtextSource('draft'))
+        yield put(setStatus('draft'))
         yield put(setDraftFocus(true))
         // Keep list badge consistent after entering "new template" mode.
         // Some flows can temporarily make `templatesList` look empty/null

@@ -14,8 +14,8 @@ type Props = {
 export const CardphotoView: React.FC<Props> = ({ className }) => {
   const activeImage = useAppSelector(selectActiveImage)
   const showEmptyPlaceholder = !activeImage
-  const { cardphotoSession } = useCardphotoFacade()
-  console.log('cardphotoSession', cardphotoSession)
+  // const { cardphotoSession } = useCardphotoFacade()
+  // console.log('cardphotoSession', cardphotoSession)
 
   return (
     <div className={clsx(styles.viewContainer, className)}>

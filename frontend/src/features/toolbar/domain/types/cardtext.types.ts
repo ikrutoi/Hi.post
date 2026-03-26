@@ -21,6 +21,7 @@ export const CARDTEXT_KEYS = [
   'empty',
   'edit',
   'colorPicker',
+  'cardtextCheck',
   // 'delete',
 ] as const
 
@@ -49,7 +50,7 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
 export const CARDTEXT_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'create',
-    icons: [{ key: 'listAdd', state: 'enabled' }],
+    icons: [{ key: 'cardtextCheck', state: 'enabled' }],
     status: 'enabled',
   },
   {
@@ -61,12 +62,17 @@ export const CARDTEXT_CREATE_TOOLBAR: ToolbarConfig = [
       { key: 'fontFamily', state: 'enabled' },
       { key: 'colorPicker', state: 'enabled' },
       { key: 'left', state: 'enabled' },
+      { key: 'empty', state: 'disabled' },
+      { key: 'close', state: 'disabled' },
     ],
     status: 'enabled',
   },
   {
     group: 'close',
-    icons: [{ key: 'close', state: 'disabled' }],
+    icons: [
+      // { key: 'close', state: 'disabled' },
+      { key: 'empty', state: 'disabled' },
+    ],
     status: 'enabled',
   },
 ]
@@ -84,6 +90,24 @@ export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [
       { key: 'colorPicker', state: 'enabled' },
       { key: 'left', state: 'enabled' },
     ],
+    status: 'enabled',
+  },
+]
+
+export const CARDTEXT_PROCESSED_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'processed',
+    icons: [
+      { key: 'listAdd', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
+
+    status: 'enabled',
+  },
+
+  {
+    group: 'view',
+    icons: [{ key: 'delete', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -125,8 +149,17 @@ export const initialCardtextViewToolbarState: CardtextToolbarState = {
   config: [...CARDTEXT_VIEW_TOOLBAR],
 }
 
+export const initialCardtextProcessedToolbarState: CardtextToolbarState = {
+  ...Object.fromEntries(flattenIcons(CARDTEXT_PROCESSED_TOOLBAR)),
+  config: [...CARDTEXT_PROCESSED_TOOLBAR],
+}
+
 export interface CardtextSectionConfig extends BaseSectionConfig<
   CardtextToolbarState,
   CardtextKey,
-  'cardtext' | 'cardtextEditor' | 'cardtextView' | 'cardtextCreate'
+  | 'cardtext'
+  | 'cardtextEditor'
+  | 'cardtextView'
+  | 'cardtextCreate'
+  | 'cardtextProcessed'
 > {}

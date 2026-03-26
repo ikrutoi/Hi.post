@@ -9,7 +9,6 @@ import {
   type CardtextBlock,
   type CardtextContent,
   type CardtextStatus,
-  type CardtextSource,
   type CardtextCreateDraft,
   CardtextListSortDirection,
   CardtextTemplatesListState,
@@ -67,13 +66,13 @@ export const cardtextSlice = createSlice({
         .join('\n')
       const hasText = ad.plainText.trim().length > 0
       if (!hasText) ad.id = null
-      if (ad.status === 'processed') ad.status = 'inLine'
+      if (ad.status === 'processed') ad.status = 'draft'
     },
 
     setTextStyle(state, action: PayloadAction<Partial<CardtextStyle>>) {
       const ad = ensureAsset(state)
       ad.style = { ...ad.style, ...action.payload }
-      if (ad.status === 'processed') ad.status = 'inLine'
+      if (ad.status === 'processed') ad.status = 'draft'
     },
 
     setAlign(state, action: PayloadAction<CardtextBlock['align']>) {
@@ -84,13 +83,13 @@ export const cardtextSlice = createSlice({
       }))
       ad.style.align = action.payload
       state.resetToken += 1
-      if (ad.status === 'processed') ad.status = 'inLine'
+      if (ad.status === 'processed') ad.status = 'draft'
     },
 
     setFontSizeStep(state, action: PayloadAction<number>) {
       const ad = ensureAsset(state)
       ad.style.fontSizeStep = action.payload
-      if (ad.status === 'processed') ad.status = 'inLine'
+      if (ad.status === 'processed') ad.status = 'draft'
     },
 
     setTitle(state, action: PayloadAction<string>) {
@@ -148,7 +147,7 @@ export const cardtextSlice = createSlice({
       ad.timestamp = timestamp
       ad.title = ''
       ad.id = null
-      ad.status = 'inLine'
+      ad.status = 'draft'
       state.resetToken += 1
     },
 
@@ -320,10 +319,6 @@ export const cardtextSlice = createSlice({
       }
     },
 
-    setCardtextSource(state, action: PayloadAction<CardtextSource>) {
-      state.source = action.payload
-    },
-
     setDraftFocus(state, action: PayloadAction<boolean>) {
       state.isDraftFocus = action.payload
     },
@@ -357,7 +352,6 @@ export const {
   updateCardtextTemplateFavoriteInList,
   updateCardtextTemplateTitleInList,
   updateCardtextContentInList,
-  setCardtextSource,
   setDraftFocus,
 } = cardtextSlice.actions
 

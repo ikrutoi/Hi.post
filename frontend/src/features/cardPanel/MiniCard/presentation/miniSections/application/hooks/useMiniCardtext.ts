@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { createEditor } from 'slate'
 import { withReact } from 'slate-react'
-import type { RootState } from '@app/state'
 import {
   DEFAULT_CARDTEXT_LINES,
   FONT_SIZE_COEFFICIENT_MINICARD,
@@ -11,24 +10,23 @@ import {
 import { calculateEditorLayout } from '@cardtext/application/helpers'
 import { useSizeFacade } from '@layout/application/facades'
 import {
-  selectCardtextValue,
-  selectCardtextLines,
-  selectCardtextStatus,
-  selectCardtextPlainText,
-  selectCardtextStyle,
+  selectCardtextIsComplete,
 } from '@cardtext/infrastructure/selectors'
+import { createInitialCardtextContent } from '@cardtext/domain/editor/editor.types'
+import type { RootState } from '@app/state'
 
 export const useMiniCardtext = () => {
   const editor = useMemo(() => withReact(createEditor()), [])
+  const isComplete = useSelector(selectCardtextIsComplete)
+  const appliedData = useSelector(
+    (state: RootState) => state.cardtext.appliedData,
+  )
+  const fallback = createInitialCardtextContent()
 
-  const value = useSelector(selectCardtextValue)
-  const cardtextLines = useSelector(selectCardtextLines)
-  const status = useSelector(selectCardtextStatus)
-  const plainText = useSelector(selectCardtextPlainText)
-  const cardtextStyle = useSelector(selectCardtextStyle)
-
-  const displayValue = value
-  const displayStyle = cardtextStyle
+  const displayValue = appliedData?.value ?? fallback.value
+  const displayStyle = appliedData?.style ?? fallback.style
+  const plainText = appliedData?.plainText ?? ''
+  const cardtextLines = appliedData?.cardtextLines ?? fallback.cardtextLines
 
   const { sizeMiniCard } = useSizeFacade()
 
@@ -55,8 +53,7 @@ export const useMiniCardtext = () => {
         color: colorVarDisplay,
       }
 
-  const shouldShowMiniText =
-    status === 'processed' && (plainText?.trim?.() ?? '').length > 0
+  const shouldShowMiniText = isComplete && (plainText?.trim?.() ?? '').length > 0
 
   return { editor, value: displayValue, style, shouldShowMiniText }
 }

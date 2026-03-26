@@ -2,7 +2,6 @@ import React, { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   setCardtextListPanelOpen,
-  setCardtextSource,
   restoreCardtextSession,
   setCardtextId,
   setCardtextPresetData,
@@ -77,7 +76,6 @@ export const CardtextRightSlot: React.FC = () => {
           status: entry.status ?? 'inLine',
         }),
       )
-      dispatch(setCardtextSource('view'))
     },
     [dispatch, source, currentTemplateId, session],
   )

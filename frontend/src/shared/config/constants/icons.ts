@@ -52,6 +52,7 @@ export const ICON_KEYS = [
   'cardphoto',
   'cardtext',
   'cardtextAdd',
+  'cardtextCheck',
   'cardphotoAdd',
   'envelope',
   'aroma',

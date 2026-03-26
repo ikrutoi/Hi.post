@@ -133,7 +133,8 @@
 .toolbarCardphotoView,
 .toolbarCardtextView,
 .toolbarCardtextEditor,
-.toolbarCardtextCreate {
+.toolbarCardtextCreate,
+.toolbarCardtextProcessed {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -178,15 +179,12 @@
   }
 }
 
-// cropCheck: усиленная подсветка только на экране processed; на cardphotoCreate — как обычная иконка (apply и т.д.).
 .toolbarCardphotoProcessed {
-  // IconCropCheck: рамка + галочка внутри viewBox — визуально легче и «меньше» соседних crop/rotate; чуть увеличиваем SVG.
   :global(button[data-icon-key='cropCheck']) svg {
     transform: scale(1.075);
     transform-origin: center center;
   }
 
-  // ring via box-shadow so border-box width/height aren’t eaten by a real border (keeps icon size)
   .toolbarKeyCropCheckEnabled {
     background-color: $color-section-light-completed;
     color: $color-font-active;

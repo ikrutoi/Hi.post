@@ -62,12 +62,16 @@ export const Toolbar = ({
     : null
 
   useEffect(() => {
-    if (section === 'cardtext' || section === 'cardtextView') {
+    if (
+      section === 'cardtext' ||
+      section === 'cardtextView' ||
+      section === 'cardtextProcessed'
+    ) {
       // Avoid wiping badge while templates are still unknown (null) during async load.
       if (cardtextTemplatesCount == null) return
       dispatch(
         updateToolbarIcon({
-          section,
+          section: 'cardtext',
           key: 'listCardtext',
           value: { options: { badge: cardtextTemplatesCount > 0 ? cardtextTemplatesCount : null } },
         }),
@@ -79,7 +83,7 @@ export const Toolbar = ({
     // Badge in `Toolbar section="cardtext"` depends on templates list data.
     // Templates are usually loaded when the list panel opens; but for UX we load them
     // earlier so the badge is correct immediately after entering the cardtext section.
-    if (section !== 'cardtext') return
+    if (section !== 'cardtext' && section !== 'cardtextProcessed') return
     if (cardtextTemplatesLoading) return
     if (cardtextTemplatesCount > 0) return
     dispatch(loadCardtextTemplatesRequest())

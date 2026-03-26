@@ -107,7 +107,6 @@ import {
   setDraftData,
   setStatus as setCardtextStatus,
   restoreCardtextSession,
-  setCardtextSource,
 } from '@cardtext/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
@@ -228,7 +227,6 @@ const SESSION_WATCH_ACTIONS = [
   setAlign.type,
   clearText.type,
   setDraftData.type,
-  setCardtextSource.type,
   setCardtextStatus.type,
   addCardtextTemplateId.type,
   removeCardtextTemplateId.type,
@@ -492,7 +490,7 @@ export function* hydrateAppSession() {
     if (session.cardtext) {
       yield put(restoreCardtextSession(session.cardtext))
       if (session.cardtextShowViewMode) {
-        yield put(setCardtextSource('view'))
+        yield put(setCardtextStatus('inLine'))
       }
     }
     // In create mode `session.cardtext` already holds current editor content.
