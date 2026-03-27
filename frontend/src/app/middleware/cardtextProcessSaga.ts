@@ -45,7 +45,6 @@ import {
   selectCardtextId,
   selectCardtextAddTemplateOpen,
 } from '@cardtext/infrastructure/selectors'
-import type { CardtextCreateDraft } from '@/features/cardtext/domain/editor/editor.types'
 
 function* syncCardtextAlignIcons(
   action: ReturnType<typeof setAlign>,
@@ -273,11 +272,15 @@ function* maybePersistCreateDraftOnExitView(
     return
   }
 
-  const draft: CardtextCreateDraft = {
+  const draft: CardtextContent = {
+    id: null,
+    status: 'draft',
     value: session.value ?? [],
     style: session.style,
+    title: session.title ?? '',
     plainText: session.plainText,
     cardtextLines: session.cardtextLines,
+    favorite: session.favorite ?? null,
     timestamp: session.timestamp,
   }
   yield put(setDraftData(draft))
@@ -351,6 +354,10 @@ export function* cardtextProcessSaga(): SagaIterator {
         action: ReturnType<typeof setStatus>,
       ): SagaIterator {
         yield call(maybePersistCreateDraftOnExitView, action)
+        if (action.payload === 'processed') {
+          // Re-check DB after successful commit flow to avoid race with toolbarAction.
+          yield call(syncCardtextProcessedBadge)
+        }
         yield call(syncCardtextCreateDraftIndicator)
         yield call(syncCardtextAddButtonStatus)
       },

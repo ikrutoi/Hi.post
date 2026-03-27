@@ -70,10 +70,7 @@ export interface CardtextStyle {
   align: TextAlign
 }
 
-export type CardtextCreateDraft = Pick<
-  CardtextContent,
-  'value' | 'style' | 'plainText' | 'cardtextLines' | 'timestamp'
->
+export type CardtextCreateDraft = CardtextContent
 
 export interface CardtextContent {
   id: string | null
@@ -113,7 +110,7 @@ export interface CardtextState {
   assetData: CardtextContent | null
   presetData: CardtextContent | null
   appliedData: CardtextContent | null
-  draftData: CardtextCreateDraft | null
+  draftData: CardtextContent | null
   resetToken: number
   isDraftFocus: boolean
 }

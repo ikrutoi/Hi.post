@@ -13,7 +13,6 @@ import {
   selectCardtextSessionData,
   selectCardtextId,
 } from '@cardtext/infrastructure/selectors'
-import type { CardtextCreateDraft } from '@/features/cardtext/domain/editor/editor.types'
 import type { CardtextContent } from '@cardtext/domain/types'
 import { CardtextListPanel } from './CardtextListPanel/CardtextListPanel'
 import styles from './CardtextRightSlot.module.scss'
@@ -39,11 +38,15 @@ export const CardtextRightSlot: React.FC = () => {
         source === 'draft' &&
         (currentTemplateId == null || currentTemplateId === null)
       ) {
-        const draft: CardtextCreateDraft = {
+        const draft: CardtextContent = {
+          id: null,
+          status: 'draft',
           value: session.value ?? [],
           style: session.style,
+          title: session.title ?? '',
           plainText: session.plainText,
           cardtextLines: session.cardtextLines,
+          favorite: session.favorite ?? null,
           timestamp: session.timestamp,
         }
         dispatch(setDraftData(draft))

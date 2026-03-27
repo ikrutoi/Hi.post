@@ -128,7 +128,7 @@ export const cardtextSlice = createSlice({
       state.appliedData = action.payload
     },
 
-    setDraftData(state, action: PayloadAction<CardtextCreateDraft | null>) {
+    setDraftData(state, action: PayloadAction<CardtextContent | null>) {
       state.draftData = action.payload
     },
 
@@ -136,8 +136,8 @@ export const cardtextSlice = createSlice({
       state.draftData = null
     },
 
-    restoreDraftData(state, action: PayloadAction<CardtextCreateDraft>) {
-      const { value, style, plainText, cardtextLines, timestamp } =
+    restoreDraftData(state, action: PayloadAction<CardtextContent>) {
+      const { value, style, plainText, cardtextLines, timestamp, title, favorite } =
         action.payload
       const ad = ensureAsset(state)
       ad.value = value
@@ -145,7 +145,8 @@ export const cardtextSlice = createSlice({
       ad.plainText = plainText
       ad.cardtextLines = cardtextLines
       ad.timestamp = timestamp
-      ad.title = ''
+      ad.title = title ?? ''
+      ad.favorite = favorite ?? null
       ad.id = null
       ad.status = 'draft'
       state.resetToken += 1

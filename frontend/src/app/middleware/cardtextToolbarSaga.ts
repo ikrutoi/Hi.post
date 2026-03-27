@@ -112,6 +112,13 @@ export function* handleCardtextToolbarAction(
     case 'edit':
       if (section === 'cardtextView') {
         yield put(setStatus('draft'))
+      } else if (section === 'cardtextProcessed') {
+        // Edit from processed mode should open create editor flow
+        // with current text content.
+        yield put(setCardtextAppliedData(null))
+        yield put(setCardtextId(null))
+        yield put(setStatus('draft'))
+        yield put(setDraftFocus(true))
       } else if (section === 'cardtextEditor') {
         const templateId: string | null = yield select(selectCardtextId)
         const value: ReturnType<typeof selectCardtextValue> =
