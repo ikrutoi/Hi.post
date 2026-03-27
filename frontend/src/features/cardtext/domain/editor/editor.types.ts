@@ -127,7 +127,7 @@ export type CreateCardtextPayload = Pick<
 
 export type UpdateCardtextPayload = Omit<
   Partial<CardtextContent>,
-  'style' | 'timestamp' | 'status' | 'id'
+  'style' | 'timestamp' | 'id'
 > & {
   style?: Partial<CardtextStyle>
 }

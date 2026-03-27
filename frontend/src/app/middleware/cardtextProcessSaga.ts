@@ -330,7 +330,11 @@ export function* cardtextProcessSaga(): SagaIterator {
     takeEvery(setAlign.type, syncCardtextAlignIcons),
     takeEvery(loadCardtextTemplatesRequest.type, loadCardtextTemplatesSaga),
     takeEvery(loadCardtextTemplatesSuccess.type, syncCardtextListBadge),
-    takeEvery(cardtextTemplateAdded.type, loadCardtextTemplatesSaga),
+    takeEvery(cardtextTemplateAdded.type, function* (): SagaIterator {
+      yield call(loadCardtextTemplatesSaga)
+      yield call(syncCardtextProcessedBadge)
+      yield call(syncCardtextCreateDraftIndicator)
+    }),
     takeEvery(
       setCardtextListPanelOpen.type,
       function* (action: ReturnType<typeof setCardtextListPanelOpen>) {

@@ -422,7 +422,7 @@ export const templateService = {
         title: payload.title ?? prev.title ?? '',
         plainText: payload.plainText ?? prev.plainText,
         cardtextLines: payload.cardtextLines ?? prev.cardtextLines,
-        status: prev.status,
+        status: payload.status ?? prev.status,
         favorite:
           payload.favorite !== undefined ? payload.favorite : prev.favorite,
         timestamp: birth,

@@ -21,6 +21,7 @@ import {
   cardtextTemplateAdded,
   clearDraftData,
   setCardtextAddTemplateOpen,
+  setCardtextId,
   setStatus,
   setTitle,
   loadCardtextTemplatesRequest,
@@ -141,18 +142,24 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
           (cardtextTemplates ?? []).map((t) => t.title),
         )
         const uniqueTitle = getUniqueTitle(next, existingTitles)
-
-        const result = await createCardtextTemplate({
-          value: value ?? [],
-          style,
-          plainText,
-          cardtextLines,
-          title: uniqueTitle,
-        })
+        const result =
+          cardtextStatus === 'processed' && id
+            ? await updateCardtextTemplate(id, {
+                title: uniqueTitle,
+                status: 'inLine',
+              })
+            : await createCardtextTemplate({
+                value: value ?? [],
+                style,
+                plainText,
+                cardtextLines,
+                title: uniqueTitle,
+              })
 
         if (result.success) {
           dispatch(cardtextTemplateAdded())
           dispatch(clearDraftData())
+          dispatch(setCardtextId(null))
           dispatch(setStatus('inLine'))
         }
       } else {
