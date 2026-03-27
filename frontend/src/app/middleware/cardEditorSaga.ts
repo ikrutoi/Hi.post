@@ -130,9 +130,23 @@ function* syncCardtextToolbar() {
   const value: ReturnType<typeof selectCardtextValue> =
     yield select(selectCardtextValue)
   const assetProcessed: boolean = yield select(selectCardtextIsComplete)
+  const isListOpen: boolean = yield select(
+    (state: RootState) => state.cardtext.isListPanelOpen === true,
+  )
+  const currentListIcon = yield select(
+    (state: RootState) => state.toolbar.cardtext.listCardtext as any,
+  )
+  const currentListOptions =
+    currentListIcon && typeof currentListIcon === 'object'
+      ? currentListIcon.options
+      : undefined
   const toolbarState = buildCardtextToolbarState(value, {
     assetProcessed,
   })
+  toolbarState.listCardtext = {
+    state: isListOpen ? 'active' : 'enabled',
+    options: currentListOptions,
+  }
   yield put(updateToolbarSection({ section: 'cardtext', value: toolbarState }))
   yield put(
     updateToolbarSection({ section: 'cardtextView', value: toolbarState }),

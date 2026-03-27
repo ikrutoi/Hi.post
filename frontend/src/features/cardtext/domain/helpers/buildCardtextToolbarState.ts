@@ -1,4 +1,4 @@
-import { CARDTEXT_KEYS, type CardtextToolbarState } from '@toolbar/domain/types'
+import type { CardtextToolbarState } from '@toolbar/domain/types'
 import type { CardtextValue } from '../types'
 
 export const buildCardtextToolbarState = (
@@ -6,9 +6,7 @@ export const buildCardtextToolbarState = (
   options?: { assetProcessed?: boolean },
 ): CardtextToolbarState => {
   const firstBlock = value[0]
-  const firstLeaf = firstBlock?.children?.[0] ?? {}
-
-  const state = {} as CardtextToolbarState
+  const state = {} as Partial<CardtextToolbarState>
 
   const plainText = value
     .map((block) => block.children.map((ch) => ch.text).join(''))
@@ -16,78 +14,14 @@ export const buildCardtextToolbarState = (
   const hasContent = plainText.trim().length > 0
   const isApplied = options?.assetProcessed === true
 
-  for (const key of CARDTEXT_KEYS) {
-    switch (key) {
-      case 'favorite':
-        state.favorite = 'enabled'
-        break
-      // case 'cardOrientation':
-      //   state.cardOrientation = 'enabled'
-      //   break
-      case 'fontFamily':
-        state.fontFamily = 'enabled'
-        break
-      case 'fontSizeLess':
-        state.fontSizeLess = 'enabled'
-      case 'fontSizeIndicator':
-        state.fontSizeIndicator = 'enabled'
-      case 'fontSizeMore':
-        state.fontSizeMore = 'enabled'
-        break
-      case 'listCardtext':
-        state.listCardtext = 'enabled'
-        break
-      case 'cardtextAdd':
-        state.cardtextAdd = 'enabled'
-        break
-      // case 'color':
-      //   state.color = 'enabled'
-      //   break
-      case 'left':
-        state.left = firstBlock.align === 'left' ? 'active' : 'enabled'
-        break
-      case 'center':
-        state.center = firstBlock.align === 'center' ? 'active' : 'enabled'
-        break
-      case 'right':
-        state.right = firstBlock.align === 'right' ? 'active' : 'enabled'
-        break
-      case 'justify':
-        state.justify = firstBlock.align === 'justify' ? 'active' : 'enabled'
-        break
-      case 'apply':
-        state.apply = isApplied
-          ? 'disabled'
-          : hasContent
-            ? 'enabled'
-            : 'disabled'
-        break
-      case 'save':
-        state.save = hasContent ? 'enabled' : 'disabled'
-        break
-      case 'close':
-        state.close = hasContent ? 'enabled' : 'disabled'
-        break
-      case 'listAdd':
-        state.listAdd = hasContent ? 'enabled' : 'disabled'
-        break
-      case 'empty':
-        state.empty = 'disabled'
-        break
-      case 'edit':
-        state.edit = 'enabled'
-        break
-      case 'colorPicker':
-        state.colorPicker = 'enabled'
-        break
-      case 'cardtextCheck':
-        state.cardtextCheck = hasContent ? 'enabled' : 'disabled'
-        break
-      default:
-        const exhaustiveCheck: never = key
-        throw new Error(`Unhandled key: ${exhaustiveCheck}`)
-    }
-  }
+  // Keep this helper intentionally small: only derive states
+  // that are strictly text-content based.
+  state.left = firstBlock?.align === 'left' ? 'active' : 'enabled'
+  state.center = firstBlock?.align === 'center' ? 'active' : 'enabled'
+  state.right = firstBlock?.align === 'right' ? 'active' : 'enabled'
+  state.justify = firstBlock?.align === 'justify' ? 'active' : 'enabled'
+  state.apply = isApplied ? 'disabled' : hasContent ? 'enabled' : 'disabled'
+  state.cardtextCheck = hasContent ? 'enabled' : 'disabled'
 
-  return state
+  return state as CardtextToolbarState
 }

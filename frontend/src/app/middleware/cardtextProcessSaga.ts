@@ -202,6 +202,50 @@ function* syncCardtextProcessedBadge(): SagaIterator {
   )
 }
 
+function* syncCardtextListBadge(): SagaIterator {
+  const templates = (yield select(
+    (state: any) => state.cardtext?.templatesList,
+  )) as Array<unknown> | null
+  // Keep previous badge while list is still unknown (null).
+  if (templates == null) return
+  const count = templates.length
+  const current: any = yield select(
+    (state: any) => state.toolbar.cardtext?.listCardtext,
+  )
+  const currentOptions =
+    current && typeof current === 'object' ? current.options ?? {} : {}
+  yield put(
+    updateToolbarIcon({
+      section: 'cardtext',
+      key: 'listCardtext',
+      value: {
+        options: { ...currentOptions, badge: count > 0 ? count : null },
+      },
+    }),
+  )
+}
+
+function* syncCardtextListToggleIcon(): SagaIterator {
+  const isOpen = (yield select(
+    (state: any) => state.cardtext?.isListPanelOpen === true,
+  )) as boolean
+  const current: any = yield select(
+    (state: any) => state.toolbar.cardtext?.listCardtext,
+  )
+  const currentOptions =
+    current && typeof current === 'object' ? current.options ?? {} : {}
+  yield put(
+    updateToolbarIcon({
+      section: 'cardtext',
+      key: 'listCardtext',
+      value: {
+        state: isOpen ? 'active' : 'enabled',
+        options: currentOptions,
+      },
+    }),
+  )
+}
+
 function* maybePersistCreateDraftOnExitView(
   action: ReturnType<typeof setStatus>,
 ): SagaIterator {
@@ -263,6 +307,8 @@ export function* cardtextProcessSaga(): SagaIterator {
   yield call(syncCardtextAddButtonStatus)
   yield call(syncCardtextCreateDraftIndicator)
   yield call(syncCardtextProcessedBadge)
+  yield call(syncCardtextListBadge)
+  yield call(syncCardtextListToggleIcon)
 
   yield all([
     takeLatest(toolbarAction.type, handleCardtextToolbarAction),
@@ -280,10 +326,12 @@ export function* cardtextProcessSaga(): SagaIterator {
     }),
     takeEvery(setAlign.type, syncCardtextAlignIcons),
     takeEvery(loadCardtextTemplatesRequest.type, loadCardtextTemplatesSaga),
+    takeEvery(loadCardtextTemplatesSuccess.type, syncCardtextListBadge),
     takeEvery(cardtextTemplateAdded.type, loadCardtextTemplatesSaga),
     takeEvery(
       setCardtextListPanelOpen.type,
       function* (action: ReturnType<typeof setCardtextListPanelOpen>) {
+        yield call(syncCardtextListToggleIcon)
         if (action.payload) yield put(loadCardtextTemplatesRequest())
       },
     ),

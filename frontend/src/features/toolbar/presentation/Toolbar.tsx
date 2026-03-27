@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useAppSelector } from '@app/hooks'
 import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
-import { useCardtextTemplates } from '@entities/templates/application/hooks/useTemplates'
-import { updateToolbarIcon } from '../infrastructure/state'
 import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -21,16 +19,13 @@ import {
   selectCardtextFavorite,
   selectCardtextListSortDirection,
   selectCardtextId,
-  selectCardtextTemplatesListLoading,
 } from '@cardtext/infrastructure/selectors'
-import { loadCardtextTemplatesRequest } from '@cardtext/infrastructure/state'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
   IconState,
   IconStateGroup,
 } from '@shared/config/constants'
-import { LayoutOrientation } from '@layout/domain/types'
 import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
 import { CropQualityDots } from './CropQualityDots'
@@ -43,7 +38,6 @@ export const Toolbar = ({
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
 }) => {
-  const dispatch = useAppDispatch()
   const {
     state: storeState,
     groups,
@@ -53,46 +47,6 @@ export const Toolbar = ({
   const { onAction } = toolbarActions
 
   const { fontSizeStep } = useCardtextFacade()
-  const { templates: cardtextTemplates } = useCardtextTemplates()
-  const cardtextTemplatesLoading = useAppSelector(
-    selectCardtextTemplatesListLoading,
-  )
-  const cardtextTemplatesCount = Array.isArray(cardtextTemplates)
-    ? cardtextTemplates.length
-    : null
-
-  useEffect(() => {
-    if (
-      section === 'cardtext' ||
-      section === 'cardtextView' ||
-      section === 'cardtextProcessed'
-    ) {
-      // Avoid wiping badge while templates are still unknown (null) during async load.
-      if (cardtextTemplatesCount == null) return
-      dispatch(
-        updateToolbarIcon({
-          section: 'cardtext',
-          key: 'listCardtext',
-          value: { options: { badge: cardtextTemplatesCount > 0 ? cardtextTemplatesCount : null } },
-        }),
-      )
-    }
-  }, [section, cardtextTemplatesCount, dispatch])
-
-  useEffect(() => {
-    // Badge in `Toolbar section="cardtext"` depends on templates list data.
-    // Templates are usually loaded when the list panel opens; but for UX we load them
-    // earlier so the badge is correct immediately after entering the cardtext section.
-    if (section !== 'cardtext' && section !== 'cardtextProcessed') return
-    if (cardtextTemplatesLoading) return
-    if (cardtextTemplatesCount > 0) return
-    dispatch(loadCardtextTemplatesRequest())
-  }, [
-    section,
-    cardtextTemplatesLoading,
-    cardtextTemplatesCount,
-    dispatch,
-  ])
 
   const groupRef = useRef<HTMLDivElement>(null)
 
@@ -115,18 +69,6 @@ export const Toolbar = ({
   const cardtextEmpty =
     (section === 'cardtext' || section === 'cardtextView') &&
     !(cardtextPlainText?.trim?.() ?? '').length
-
-  useEffect(() => {
-    if (section === 'cardtextView') {
-      dispatch(
-        updateToolbarIcon({
-          section: 'cardtextView',
-          key: 'favorite',
-          value: { state: cardtextFavorite ? 'active' : 'enabled' },
-        }),
-      )
-    }
-  }, [section, cardtextFavorite, dispatch])
 
   const senderSortDirection = useAppSelector(
     (state) => state.sender?.sortOptions?.direction ?? 'asc',
@@ -223,8 +165,6 @@ export const Toolbar = ({
       buttonStatus = 'active'
     }
 
-    const orientation =
-      mergedOptions?.orientation ?? rawData?.options?.orientation
     const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
@@ -339,7 +279,6 @@ export const Toolbar = ({
       >
         {getToolbarIcon({
           key: key as IconKey,
-          orientation: orientation as LayoutOrientation,
           step: fontSizeStep,
           sortDirection: key === 'sortDown' ? sortDirection : undefined,
           listTemplateDensityCols:

@@ -10,7 +10,6 @@ import {
 } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
 import type { RootState } from '@app/state'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
@@ -200,26 +199,10 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'listCardtext': {
-      const targetSection = 'cardtext' as const
-      const current: any = (yield select(
-        (state: RootState) => state.toolbar[targetSection].listCardtext,
-      )) as any
-      const isActive = current?.state === 'active' || current === 'active'
-      const nextState = isActive ? 'enabled' : 'active'
-      const nextOpen = !isActive
-      const currentOptions =
-        current && typeof current === 'object' ? current.options : undefined
-
-      yield put(
-        updateToolbarIcon({
-          section: targetSection,
-          key: 'listCardtext',
-          value: { state: nextState, options: currentOptions },
-        }),
+      const nextOpen: boolean = yield select(
+        (state: RootState) => !(state.cardtext.isListPanelOpen === true),
       )
       yield put(setCardtextListPanelOpen(nextOpen))
-      // Ensure badge count is immediately consistent when list opens.
-      // This also avoids “badge disappears” after list toggle due to async state updates.
       if (nextOpen) {
         yield put(loadCardtextTemplatesRequest())
       }

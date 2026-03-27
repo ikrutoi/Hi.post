@@ -14,7 +14,6 @@ import {
   selectCardtextId,
 } from '@cardtext/infrastructure/selectors'
 import type { CardtextCreateDraft } from '@/features/cardtext/domain/editor/editor.types'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardtextContent } from '@cardtext/domain/types'
 import { CardtextListPanel } from './CardtextListPanel/CardtextListPanel'
 import styles from './CardtextRightSlot.module.scss'
@@ -30,13 +29,6 @@ export const CardtextRightSlot: React.FC = () => {
 
   const handleClose = useCallback(() => {
     dispatch(setCardtextListPanelOpen(false))
-    dispatch(
-      updateToolbarIcon({
-        section: 'cardtext',
-        key: 'listCardtext',
-        value: 'enabled',
-      }),
-    )
   }, [dispatch])
 
   const handleSelectTemplate = useCallback(
