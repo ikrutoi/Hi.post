@@ -25,6 +25,7 @@ import {
   setDraftData,
   clearDraftData,
   restoreDraftData,
+  restoreCardtextEditorSession,
   restoreCardtextSession,
   setStatus,
   setCardtextAddTemplateOpen,
@@ -314,17 +315,22 @@ export function* cardtextProcessSaga(): SagaIterator {
   yield call(syncCardtextListToggleIcon)
 
   yield all([
-    takeLatest(toolbarAction.type, handleCardtextToolbarAction),
-    takeEvery(toolbarAction.type, function* (
+    takeLatest(toolbarAction.type, function* toolbarActionWithDependentBadges(
       action: ReturnType<typeof toolbarAction>,
     ): SagaIterator {
+      // Сначала полностью обрабатываем действие (в т.ч. IndexedDB), и только
+      // потом пересчитываем бэджи — иначе apply (processed→outLine) успевает
+      // прочитать БД до commit и бэдж «1» залипает.
+      yield call(handleCardtextToolbarAction, action)
       const { key, section } = action.payload
       if (
         key === 'cardtextCheck' ||
+        key === 'apply' ||
         (key === 'delete' &&
           (section === 'cardtextView' || section === 'cardtextProcessed'))
       ) {
         yield call(syncCardtextProcessedBadge)
+        yield call(syncCardtextCreateDraftIndicator)
       }
     }),
     takeEvery(setAlign.type, syncCardtextAlignIcons),
@@ -345,7 +351,12 @@ export function* cardtextProcessSaga(): SagaIterator {
     fork(watchFontSizeChanges),
     fork(watchCardtextValueChanges),
     takeEvery(
-      [setDraftData.type, clearDraftData.type, restoreDraftData.type],
+      [
+        setDraftData.type,
+        clearDraftData.type,
+        restoreDraftData.type,
+        restoreCardtextEditorSession.type,
+      ],
       function* (): SagaIterator {
         yield call(syncDraftRecordWithDb)
         yield call(syncCardtextCreateDraftIndicator)

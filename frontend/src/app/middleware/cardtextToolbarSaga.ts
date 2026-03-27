@@ -25,7 +25,6 @@ import {
 import {
   selectCardtextValue,
   selectCardtextStyle,
-  selectCardtextShowViewMode,
   selectCardtextId,
   selectCardtextFavorite,
   selectCardtextPlainText,
@@ -54,18 +53,67 @@ export function* handleCardtextToolbarAction(
 
   switch (key) {
     case 'apply': {
-      // Apply means "processed state for the card": copy current editor content
-      // into `appliedData` and mark section complete via `selectCardtextIsComplete`.
+      // Apply: положить текущий текст на открытку (`appliedData`) и выставить статусы.
+      // Сохранённый «processed» в БД при этом переводим в `outLine` (не путать с шаблонами inLine).
       const { assetData } = yield select((s: RootState) => s.cardtext)
       if (assetData == null) break
 
-      const applied = {
-        ...assetData,
-        status: 'processed' as const,
+      const value: ReturnType<typeof selectCardtextValue> =
+        yield select(selectCardtextValue)
+      const style: ReturnType<typeof selectCardtextStyle> =
+        yield select(selectCardtextStyle)
+      const plainText: string = yield select(selectCardtextPlainText)
+      const cardtextLines: number = yield select(selectCardtextLines)
+
+      if (assetData.status === 'processed') {
+        let templateId: string | null = assetData.id
+        if (templateId == null) {
+          const fromDb =
+            yield call([templateService, 'getSingleCardtextByStatus'], 'processed')
+          templateId = fromDb?.id != null ? String(fromDb.id) : null
+        }
+
+        if (templateId != null) {
+          const result: { success?: boolean } = yield call(
+            [templateService, 'updateCardtextTemplate'],
+            templateId,
+            {
+              value,
+              style,
+              plainText,
+              cardtextLines,
+              title: assetData.title ?? '',
+              favorite: assetData.favorite ?? null,
+              status: 'outLine',
+            },
+          )
+          if (!result?.success) break
+        }
+
+        const next = {
+          ...assetData,
+          value,
+          style,
+          plainText,
+          cardtextLines,
+          status: 'outLine' as const,
+          id: templateId ?? assetData.id,
+        }
+        yield put(setCardtextAppliedData(next))
+        yield put(restoreCardtextSession(next))
+        yield put(loadCardtextTemplatesRequest())
+        break
       }
 
+      const applied = {
+        ...assetData,
+        value,
+        style,
+        plainText,
+        cardtextLines,
+        status: 'processed' as const,
+      }
       yield put(setCardtextAppliedData(applied))
-      // Keep legacy status in sync (some UI still relies on it).
       yield put(setStatus('processed'))
       break
     }
@@ -273,9 +321,11 @@ export function* handleCardtextToolbarAction(
         break
       }
       const value: any = yield select(selectCardtextValue)
-      const showViewMode: boolean = yield select(selectCardtextShowViewMode)
+      const isAssetDraft: boolean = yield select(
+        (s: RootState) => s.cardtext.assetData?.status === 'draft',
+      )
       const isEmpty =
-        !showViewMode &&
+        isAssetDraft &&
         (!value?.length ||
           (value.length === 1 &&
             !(

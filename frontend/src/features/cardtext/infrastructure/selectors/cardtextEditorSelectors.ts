@@ -5,6 +5,7 @@ import {
   type CardtextStyle,
   type CardtextContent,
   type CardtextCreateDraft,
+  type CardtextEditorSessionSnapshot,
 } from '../../domain/editor/editor.types'
 import { createSelector } from '@reduxjs/toolkit'
 
@@ -14,9 +15,6 @@ export const selectCardtextSource = (
   state: RootState,
 ): 'draft' | 'view' =>
   state.cardtext.assetData?.status === 'draft' ? 'draft' : 'view'
-
-export const selectCardtextShowViewMode = (state: RootState): boolean =>
-  selectCardtextSource(state) === 'view'
 
 export const selectIsDraftFocus = (state: RootState): boolean =>
   state.cardtext.isDraftFocus === true
@@ -90,6 +88,21 @@ export const selectCardtextSessionData = createSelector(
   },
 )
 
+export const selectCardtextPresetSessionData = createSelector(
+  [(state: RootState) => state.cardtext.presetData],
+  (preset): CardtextContent | null => {
+    if (preset == null) return null
+    return {
+      ...preset,
+      value: preset.value.map((b) => ({
+        ...b,
+        children: b.children.map((c) => ({ ...c })),
+      })),
+      style: { ...preset.style },
+    }
+  },
+)
+
 export const selectCardtextAppliedSessionData = createSelector(
   [(state: RootState) => state.cardtext.appliedData],
   (applied): CardtextContent => {
@@ -103,4 +116,38 @@ export const selectCardtextAppliedSessionData = createSelector(
       style: { ...applied.style },
     }
   },
+)
+
+function cloneCardtextBranchNullable(
+  c: CardtextContent | null,
+): CardtextContent | null {
+  if (c == null) return null
+  return {
+    ...c,
+    value: c.value.map((b) => ({
+      ...b,
+      children: b.children.map((ch) => ({ ...ch })),
+    })),
+    style: { ...c.style },
+  }
+}
+
+export const selectCardtextEditorSessionSnapshot = createSelector(
+  [
+    (state: RootState) => state.cardtext.assetData,
+    (state: RootState) => state.cardtext.presetData,
+    (state: RootState) => state.cardtext.appliedData,
+    (state: RootState) => state.cardtext.draftData,
+  ],
+  (
+    assetData,
+    presetData,
+    appliedData,
+    draftData,
+  ): CardtextEditorSessionSnapshot => ({
+    assetData: cloneCardtextBranchNullable(assetData),
+    presetData: cloneCardtextBranchNullable(presetData),
+    appliedData: cloneCardtextBranchNullable(appliedData),
+    draftData: cloneCardtextBranchNullable(draftData),
+  }),
 )

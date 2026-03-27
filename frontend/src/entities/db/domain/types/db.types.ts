@@ -1,5 +1,9 @@
 import type { CardphotoSessionRecord } from '@cardphoto/domain/types'
-import type { CardtextContent, CardtextCreateDraft } from '@cardtext/domain/types'
+import type {
+  CardtextContent,
+  CardtextCreateDraft,
+  CardtextEditorSessionSnapshot,
+} from '@cardtext/domain/types'
 import type {
   EnvelopeSessionRecord,
   RecipientState,
@@ -20,9 +24,12 @@ export interface SessionEnvelopeSelection {
 export interface SessionData {
   id: string
   cardphoto: CardphotoSessionRecord | null
-  cardtext: CardtextContent | null
+  /** assetData, presetData, appliedData, draftData — см. CardtextState. */
+  cardtextEditor?: CardtextEditorSessionSnapshot | null
+  /** @deprecated старые сессии; читать только при отсутствии cardtextEditor */
+  cardtext?: CardtextContent | null
+  cardtextPresetData?: CardtextContent | null
   cardtextCreateDraft?: CardtextCreateDraft | null
-  cardtextShowViewMode?: boolean
   envelope: EnvelopeSessionRecord | null
   envelopeRecipients?: RecipientState[] | null
   aroma: AromaState | null

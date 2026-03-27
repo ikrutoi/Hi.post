@@ -27,6 +27,7 @@ import {
   loadCardtextTemplatesRequest,
   updateCardtextTemplateTitleInList,
 } from '@cardtext/infrastructure/state'
+import { templateService } from '@entities/templates/domain/services/templateService'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import { IconX } from '@shared/ui/icons'
 import { isEmptyCardtextValue } from '@cardtext/domain/helpers'
@@ -142,9 +143,18 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
           (cardtextTemplates ?? []).map((t) => t.title),
         )
         const uniqueTitle = getUniqueTitle(next, existingTitles)
+        const processedFromDb =
+          await templateService.getSingleCardtextByStatus('processed')
+        const processedId =
+          (cardtextStatus === 'processed' && id) ||
+          (processedFromDb?.id != null ? String(processedFromDb.id) : null)
         const result =
-          cardtextStatus === 'processed' && id
-            ? await updateCardtextTemplate(id, {
+          processedId != null
+            ? await updateCardtextTemplate(processedId, {
+                value: value ?? [],
+                style,
+                plainText,
+                cardtextLines,
                 title: uniqueTitle,
                 status: 'inLine',
               })

@@ -115,6 +115,13 @@ export interface CardtextState {
   isDraftFocus: boolean
 }
 
+export interface CardtextEditorSessionSnapshot {
+  assetData: CardtextContent | null
+  presetData: CardtextContent | null
+  appliedData: CardtextContent | null
+  draftData: CardtextContent | null
+}
+
 export type CreateCardtextPayload = Pick<
   CardtextContent,
   'value' | 'style' | 'plainText' | 'cardtextLines'

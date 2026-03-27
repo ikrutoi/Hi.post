@@ -45,6 +45,8 @@ import {
   setTextStyle,
   setAlign,
   setFontSizeStep,
+  restoreCardtextSession,
+  setCardtextAppliedData,
 } from '@cardtext/infrastructure/state'
 import {
   selectCardtextIsComplete,
@@ -337,6 +339,8 @@ export function* cardEditorSaga() {
     setTextStyle.type,
     setAlign.type,
     setFontSizeStep.type,
+    restoreCardtextSession.type,
+    setCardtextAppliedData.type,
   ] as const
   yield takeEvery([...cardtextToolbarRelated], syncCardtextStatus)
   yield takeEvery([...cardtextToolbarRelated], syncCardtextToolbar)

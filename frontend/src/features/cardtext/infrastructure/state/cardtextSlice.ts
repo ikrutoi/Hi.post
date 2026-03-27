@@ -10,6 +10,7 @@ import {
   type CardtextContent,
   type CardtextStatus,
   type CardtextCreateDraft,
+  type CardtextEditorSessionSnapshot,
   CardtextListSortDirection,
   CardtextTemplatesListState,
 } from '../../domain/editor/editor.types'
@@ -52,6 +53,17 @@ function ensureAsset(
     state.assetData = createInitialCardtextContent()
   }
   return state.assetData as WritableDraft<CardtextContent>
+}
+
+function cloneCardtextBranch(c: CardtextContent): CardtextContent {
+  return {
+    ...c,
+    value: c.value.map((b) => ({
+      ...b,
+      children: b.children.map((ch) => ({ ...ch })),
+    })),
+    style: { ...c.style },
+  }
 }
 
 export const cardtextSlice = createSlice({
@@ -149,6 +161,24 @@ export const cardtextSlice = createSlice({
       ad.favorite = favorite ?? null
       ad.id = null
       ad.status = 'draft'
+      state.resetToken += 1
+    },
+
+    restoreCardtextEditorSession(
+      state,
+      action: PayloadAction<CardtextEditorSessionSnapshot>,
+    ) {
+      const { assetData, presetData, appliedData, draftData } = action.payload
+      state.assetData =
+        assetData == null
+          ? createInitialCardtextContent()
+          : cloneCardtextBranch(assetData)
+      state.presetData =
+        presetData == null ? null : cloneCardtextBranch(presetData)
+      state.appliedData =
+        appliedData == null ? null : cloneCardtextBranch(appliedData)
+      state.draftData =
+        draftData == null ? null : cloneCardtextBranch(draftData)
       state.resetToken += 1
     },
 
@@ -341,6 +371,7 @@ export const {
   setDraftData,
   clearDraftData,
   restoreDraftData,
+  restoreCardtextEditorSession,
   restoreCardtextSession,
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,

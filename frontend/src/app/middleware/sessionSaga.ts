@@ -31,10 +31,8 @@ import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
 import {
   selectCardtextPlainText,
-  selectCardtextDraftData,
-  selectCardtextSessionData,
   selectCardtextStyle,
-  selectCardtextShowViewMode,
+  selectCardtextEditorSessionSnapshot,
 } from '@cardtext/infrastructure/selectors'
 import {
   selectEnvelopeSessionRecord,
@@ -87,10 +85,7 @@ import { selectRecipientState } from '@envelope/recipient/infrastructure/selecto
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
-import type {
-  CardtextContent,
-  CardtextStyle,
-} from '@cardtext/domain/types'
+import type { CardtextStyle } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type {
   ImageRecord,
@@ -105,7 +100,10 @@ import {
   setAlign,
   clearText,
   setDraftData,
+  setCardtextPresetData,
+  setCardtextAppliedData,
   setStatus as setCardtextStatus,
+  restoreCardtextEditorSession,
   restoreCardtextSession,
 } from '@cardtext/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
@@ -121,11 +119,8 @@ export function* persistGlobalSession() {
     selectCardphotoSessionRecord,
   )
 
-  const cardtext: SessionData['cardtext'] = yield select(
-    selectCardtextSessionData,
-  )
-  const cardtextCreateDraft: SessionData['cardtextCreateDraft'] = yield select(
-    selectCardtextDraftData,
+  const cardtextEditor: SessionData['cardtextEditor'] = yield select(
+    selectCardtextEditorSessionSnapshot,
   )
 
   const envelope: EnvelopeSessionRecord | null = yield select(
@@ -173,14 +168,10 @@ export function* persistGlobalSession() {
   //   timestamp: Date.now(),
   // }
 
-  const cardtextShowViewMode: boolean = yield select(selectCardtextShowViewMode)
-
   const sessionData: SessionData = {
     id: 'current_session',
     cardphoto,
-    cardtext,
-    cardtextCreateDraft,
-    cardtextShowViewMode: cardtextShowViewMode || undefined,
+    cardtextEditor: cardtextEditor ?? null,
     envelope,
     aroma,
     date,
@@ -227,6 +218,8 @@ const SESSION_WATCH_ACTIONS = [
   setAlign.type,
   clearText.type,
   setDraftData.type,
+  setCardtextPresetData.type,
+  setCardtextAppliedData.type,
   setCardtextStatus.type,
   addCardtextTemplateId.type,
   removeCardtextTemplateId.type,
@@ -487,21 +480,21 @@ export function* hydrateAppSession() {
       )
     }
 
-    if (session.cardtext) {
+    if (session.cardtextEditor != null) {
+      yield put(restoreCardtextEditorSession(session.cardtextEditor))
+    } else if (session.cardtext) {
       yield put(restoreCardtextSession(session.cardtext))
-      if (session.cardtextShowViewMode) {
-        yield put(setCardtextStatus('inLine'))
+      if (session.cardtextPresetData !== undefined) {
+        yield put(setCardtextPresetData(session.cardtextPresetData))
       }
-    }
-    // In create mode `session.cardtext` already holds current editor content.
-    // Avoid duplicating the same payload in both assetData and draftData.
-    const restoredInCreateMode =
-      !session.cardtextShowViewMode &&
-      (session.cardtext?.id ?? null) == null
-    if (restoredInCreateMode) {
-      yield put(setDraftData(null))
-    } else {
-      yield put(setDraftData(session.cardtextCreateDraft ?? null))
+      const restoredInCreateMode =
+        session.cardtext.status === 'draft' &&
+        (session.cardtext.id ?? null) == null
+      if (restoredInCreateMode) {
+        yield put(setDraftData(null))
+      } else {
+        yield put(setDraftData(session.cardtextCreateDraft ?? null))
+      }
     }
 
     if (session.previewStripOrder) {
@@ -583,7 +576,7 @@ export function* hydrateAppSession() {
       }
     }
 
-    if (session.cardtext) {
+    if (session.cardtextEditor != null || session.cardtext) {
       yield call(syncCardtextStatus)
     }
   } catch (e) {
