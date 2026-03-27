@@ -4,7 +4,7 @@
   position: relative;
   margin-bottom: 0.25rem;
   min-height: 1.5rem;
-  padding: 0 2rem 0 1.75rem;
+  padding: 0 0.5rem 0 1.75rem;
   box-sizing: border-box;
   background-color: $color-cardtext-input;
   border: 1px solid $color-cardtext-input-border;
@@ -26,10 +26,6 @@
 
   &[data-no-star='true'] {
     padding-left: 0.5rem;
-  }
-
-  &[data-has-edit='true'] {
-    padding-right: 3.5rem;
   }
 }
 
@@ -65,7 +61,7 @@
 }
 
 .field {
-  width: 95%;
+  width: 100%;
   min-width: 0;
   display: flex;
   align-items: center;
@@ -100,72 +96,3 @@
   }
 }
 
-.editButton {
-  position: absolute;
-  right: 2.2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  // background: #fff;
-  border: none;
-  border-radius: 50%;
-  color: $color-font-disabled;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s ease,
-    color 0.15s ease;
-
-  .root:hover & {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
-
-  svg {
-    width: 0.75rem;
-    height: 0.75rem;
-  }
-}
-
-.deleteButton {
-  position: absolute;
-  right: 0.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  // background: #fff;
-  border: none;
-  border-radius: 50%;
-  color: $color-font-disabled;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s ease,
-    color 0.15s ease;
-
-  .root:hover & {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
-
-  svg {
-    width: 0.75rem;
-    height: 0.75rem;
-  }
-}

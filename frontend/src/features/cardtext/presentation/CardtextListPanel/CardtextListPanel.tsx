@@ -53,7 +53,7 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
     }
   }, [items, sortDirection])
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
-  const { deleteCardtextTemplate, updateCardtextTemplate } = useTemplateActions()
+  const { updateCardtextTemplate } = useTemplateActions()
   const selectedTemplateId = useAppSelector(selectCardtextId)
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
@@ -63,15 +63,6 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
       onSelect?.(entry)
     },
     [onSelect],
-  )
-
-  const handleDelete = useCallback(
-    async (id: string) => {
-      await deleteCardtextTemplate(id)
-      if (selectedId === id) setSelectedId(null)
-      dispatch(loadCardtextTemplatesRequest())
-    },
-    [deleteCardtextTemplate, selectedId, dispatch],
   )
 
   const handleToggleStar = useCallback(
@@ -122,8 +113,6 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                     key={entry.id}
                     entry={entry}
                     onSelect={handleSelect}
-                    onDelete={handleDelete}
-                    onEdit={handleSelect}
                     isStarred
                     onToggleStar={() => handleToggleStar(entry)}
                     isSelected={selectedId === entry.id}
@@ -141,8 +130,6 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                     key={entry.id}
                     entry={entry}
                     onSelect={handleSelect}
-                    onDelete={handleDelete}
-                    onEdit={handleSelect}
                     isStarred={false}
                     onToggleStar={() => handleToggleStar(entry)}
                     isSelected={selectedId === entry.id}

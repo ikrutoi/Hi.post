@@ -1,13 +1,10 @@
 import React from 'react'
 import type { CardtextContent } from '@cardtext/domain/types'
 import styles from './CardtextListEntry.module.scss'
-import { getToolbarIcon } from '@/shared/utils/icons'
 
 type Props = {
   entry: CardtextContent
   onSelect: (entry: CardtextContent) => void
-  onDelete: (id: string) => void
-  onEdit?: (entry: CardtextContent) => void
   isStarred?: boolean
   onToggleStar?: () => void
   isSelected?: boolean
@@ -17,8 +14,6 @@ type Props = {
 export const CardtextListEntry: React.FC<Props> = ({
   entry,
   onSelect,
-  onDelete,
-  onEdit,
   isStarred = false,
   onToggleStar,
   isSelected = false,
@@ -37,7 +32,6 @@ export const CardtextListEntry: React.FC<Props> = ({
       className={styles.root}
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
-      data-has-edit={onEdit ? 'true' : undefined}
       data-no-star={!onToggleStar ? 'true' : undefined}
     >
       {onToggleStar && (
@@ -66,32 +60,6 @@ export const CardtextListEntry: React.FC<Props> = ({
           </div>
         </div>
       </div>
-      {onEdit && (
-        <button
-          type="button"
-          className={styles.editButton}
-          onClick={(e) => {
-            e.stopPropagation()
-            onEdit(entry)
-          }}
-          aria-label="Edit template"
-          title="Edit template"
-        >
-          {getToolbarIcon({ key: 'edit' })}
-        </button>
-      )}
-      <button
-        type="button"
-        className={styles.deleteButton}
-        onClick={(e) => {
-          e.stopPropagation()
-          if (entry.id != null) onDelete(entry.id)
-        }}
-        aria-label="Delete template"
-        title="Delete template"
-      >
-        {getToolbarIcon({ key: 'delete' })}
-      </button>
     </div>
   )
 }

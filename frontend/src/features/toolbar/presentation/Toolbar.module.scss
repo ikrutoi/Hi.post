@@ -435,7 +435,7 @@
   width: 100%;
   justify-content: space-between;
   margin-left: 2rem;
-  margin-right: -2px;
+  margin-right: 1rem;
 }
 
 .toolbarSenderView,
@@ -465,7 +465,6 @@
   display: flex;
 }
 
-/** Hover: серые полоски density → белые на фоне $color-enabled. */
 .toolbarCardphotoList .toolbarKeyDensityEnabled:hover svg {
   --density-inactive-fill: #fff;
   --density-inactive-stroke: #fff;
