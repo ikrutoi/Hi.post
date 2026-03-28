@@ -17,6 +17,7 @@ import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
 import { useToolbarFacade } from '@toolbar/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
+import { CARDTEXT_APPLIED_DISPLAY_STATUSES } from '@cardtext/domain/editor/editor.types'
 import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
 import styles from './CardPie.module.scss'
@@ -51,7 +52,10 @@ export const CardPie: React.FC<CardPieProps> = ({
   const { actions: editorPieActions } = useToolbarFacade('editorPie')
 
   const cardData = data?.data
-  const hasAppliedCardtext = cardData?.cardtext?.status === 'processed'
+  const cardtextStatus = cardData?.cardtext?.status
+  const hasAppliedCardtext =
+    cardtextStatus != null &&
+    CARDTEXT_APPLIED_DISPLAY_STATUSES.has(cardtextStatus)
   const valueCardtext = hasAppliedCardtext
     ? (cardData?.cardtext?.value ?? [])
     : []

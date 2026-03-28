@@ -9,10 +9,9 @@ import {
   type CardtextStatus,
   type CardtextCreateDraft,
   type CardtextEditorSessionSnapshot,
+  CARDTEXT_APPLIED_DISPLAY_STATUSES,
 } from '../../domain/editor/editor.types'
 
-const STATUSES_WHERE_APPLY_MATCHES_BY_ID: ReadonlySet<CardtextStatus> =
-  new Set(['processed', 'inLine', 'outLine'])
 import { createSelector } from '@reduxjs/toolkit'
 
 const fallbackCardtextSessionContent: CardtextContent =
@@ -96,7 +95,7 @@ export const selectCardtextAssetMatchesApplied = (
   const applied = state.cardtext.appliedData
   const asset = state.cardtext.assetData
   if (applied == null || asset == null) return false
-  if (!STATUSES_WHERE_APPLY_MATCHES_BY_ID.has(asset.status)) return false
+  if (!CARDTEXT_APPLIED_DISPLAY_STATUSES.has(asset.status)) return false
   const aid = asset.id
   const pid = applied.id
   if (aid == null || pid == null) return false

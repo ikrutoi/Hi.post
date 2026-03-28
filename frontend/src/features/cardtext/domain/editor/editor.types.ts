@@ -12,6 +12,14 @@ export type CardtextTemplatesListState = CardtextContent[] | null
 
 export type CardtextStatus = 'draft' | 'processed' | 'outLine' | 'inLine'
 
+/**
+ * `appliedData` in these states is the text committed to the postcard (Apply).
+ * CardPie and similar UI must use this set — not `processed` alone — because
+ * re-applying a DB `processed` row moves the snapshot to `outLine`.
+ */
+export const CARDTEXT_APPLIED_DISPLAY_STATUSES: ReadonlySet<CardtextStatus> =
+  new Set(['processed', 'inLine', 'outLine'])
+
 export type TextAlign = 'left' | 'center' | 'right' | 'justify'
 
 export const TEXT_COLOR = [
