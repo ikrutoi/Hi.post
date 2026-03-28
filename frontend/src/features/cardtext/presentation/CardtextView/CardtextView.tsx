@@ -19,12 +19,15 @@ type Props = {
   value: CardtextValue
   style: CardtextStyle
   contentKey?: string
+  /** Tighter top padding when the floating title strip is in edit mode */
+  titleStripEditing?: boolean
 }
 
 export const CardtextView: React.FC<Props> = ({
   value,
   style,
   contentKey,
+  titleStripEditing,
 }) => {
   const slateKey =
     contentKey ??
@@ -46,7 +49,11 @@ export const CardtextView: React.FC<Props> = ({
 
   return (
     <div
-      className={clsx(styles.viewContainer, colorClass)}
+      className={clsx(
+        styles.viewContainer,
+        titleStripEditing && styles.viewContainerTitleStripEditing,
+        colorClass,
+      )}
       style={{
         fontSize: `${currentPxSize}px`,
         lineHeight: `${lineHeight}px`,

@@ -29,7 +29,6 @@ import {
 } from '@cardtext/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import { getToolbarIcon } from '@/shared/utils/icons'
-import { IconX } from '@shared/ui/icons'
 import { isEmptyCardtextValue } from '@cardtext/domain/helpers'
 
 interface CardtextProps {
@@ -130,8 +129,16 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   }
 
   const commitEditTitle = async () => {
+    if (isSubmittingTitle) return
+
     const next = draftTitle.trim().slice(0, 60)
-    if (!next || isSubmittingTitle) {
+
+    if (!next) {
+      cancelEditTitle()
+      return
+    }
+
+    if (!isAddTemplateOpen && next === title.trim()) {
       cancelEditTitle()
       return
     }
@@ -280,22 +287,11 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
                       className={viewStyles.viewTitleEditingBtn}
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => void commitEditTitle()}
-                      aria-label="Save title"
-                      title="Save"
+                      aria-label="Save and close"
+                      title="Save and close"
                       disabled={isSubmittingTitle}
                     >
-                      {getToolbarIcon({ key: 'apply' })}
-                    </button>
-                    <button
-                      type="button"
-                      className={viewStyles.viewTitleEditingBtn}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={cancelEditTitle}
-                      aria-label="Cancel editing title"
-                      title="Cancel"
-                      disabled={isSubmittingTitle}
-                    >
-                      <IconX />
+                      {getToolbarIcon({ key: 'applyLight' })}
                     </button>
                   </div>
                 ) : (
@@ -321,9 +317,10 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
                 key={id ?? 'no-template'}
                 value={value}
                 style={style}
+                titleStripEditing={forceEditingTitle}
               />
             ) : (
-              <CardEditor />
+              <CardEditor titleStripEditing={forceEditingTitle} />
             )}
           </div>
         </div>

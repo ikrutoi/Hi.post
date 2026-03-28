@@ -19,6 +19,10 @@
   border: solid 1px $color-cardtext-input-border;
 }
 
+.editorTitleStripEditing {
+  padding-top: 0.65rem;
+}
+
 .editorPlaceholderIcon {
   @include section-empty-placeholder-icon;
   z-index: 0;

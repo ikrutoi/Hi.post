@@ -163,6 +163,7 @@ import {
   IconCardphotoAdd,
   IconListCardphoto,
   IconCardtextCheck,
+  IconApplyLight,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 
@@ -192,6 +193,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconDownloadV2 />
     case 'apply':
       return <IconApplyBold />
+    case 'applyLight':
+      return <IconApplyLight />
     case 'close':
       return <IconClose />
     case 'listDelete':

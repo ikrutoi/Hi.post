@@ -16,7 +16,14 @@ import { isEmptyCardtextValue } from '../../domain/helpers'
 import styles from './CardEditor.module.scss'
 import type { CardtextValue } from '../../domain/types'
 
-export const CardEditor: React.FC = () => {
+type CardEditorProps = {
+  /** Tighter top padding when the floating title strip is in edit mode (e.g. save template) */
+  titleStripEditing?: boolean
+}
+
+export const CardEditor: React.FC<CardEditorProps> = ({
+  titleStripEditing,
+}) => {
   const dispatch = useAppDispatch()
   const requestFocus = useAppSelector(selectIsDraftFocus)
   const {
@@ -114,7 +121,12 @@ export const CardEditor: React.FC = () => {
   )
 
   return (
-    <div className={styles.editor}>
+    <div
+      className={clsx(
+        styles.editor,
+        titleStripEditing && styles.editorTitleStripEditing,
+      )}
+    >
       {isEmpty ? (
         <div
           className={clsx(

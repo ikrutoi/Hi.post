@@ -97,7 +97,7 @@ export const CardtextEditTitleInline: React.FC = () => {
           aria-label="Save"
           title="Save"
         >
-          {getToolbarIcon({ key: 'apply' })}
+          {getToolbarIcon({ key: 'applyLight' })}
         </button>
         <button
           type="button"
