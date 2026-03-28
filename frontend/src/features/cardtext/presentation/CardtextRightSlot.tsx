@@ -6,7 +6,6 @@ import {
   setCardtextId,
   setCardtextPresetData,
   setDraftData,
-  setCardtextAppliedData,
 } from '@cardtext/infrastructure/state'
 import {
   selectCardtextSource,
@@ -56,8 +55,7 @@ export const CardtextRightSlot: React.FC = () => {
       // Store the selected preset snapshot so we can reason about "previous selection"
       // separately from the current editor content.
       dispatch(setCardtextPresetData(entry))
-      // Selecting another text/template starts editing again, so "applied" state must be cleared.
-      dispatch(setCardtextAppliedData(null))
+      // Keep appliedData: it is what is on the postcard; list pick only changes the editor asset.
       dispatch(
         restoreCardtextSession({
           id: entry.id,

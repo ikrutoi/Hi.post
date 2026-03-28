@@ -12,7 +12,7 @@ import { clearDate } from '@date/infrastructure/state'
 import { clear as clearAroma } from '@aroma/infrastructure/state'
 import { setSenderApplied } from '@envelope/sender/infrastructure/state'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
-import { setStatus as setCardtextStatus } from '@cardtext/infrastructure/state'
+import { setCardtextAppliedData } from '@cardtext/infrastructure/state'
 import { clearApply } from '@cardphoto/infrastructure/state'
 
 export const useCardEditorFacade = () => {
@@ -36,8 +36,7 @@ export const useCardEditorFacade = () => {
         dispatch(setRecipientApplied(false))
         break
       case 'cardtext':
-        // Keep editor text, only clear "applied" state for mini section and toolbar.
-        dispatch(setCardtextStatus('inLine'))
+        dispatch(setCardtextAppliedData(null))
         break
       case 'cardphoto':
         dispatch(clearApply())
