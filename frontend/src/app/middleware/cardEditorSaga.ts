@@ -49,6 +49,7 @@ import {
   setCardtextAppliedData,
 } from '@cardtext/infrastructure/state'
 import {
+  selectCardtextAssetMatchesApplied,
   selectCardtextIsComplete,
   selectCardtextState,
   selectCardtextValue,
@@ -131,7 +132,9 @@ function* syncCardtextReset() {
 function* syncCardtextToolbar() {
   const value: ReturnType<typeof selectCardtextValue> =
     yield select(selectCardtextValue)
-  const assetProcessed: boolean = yield select(selectCardtextIsComplete)
+  const assetMatchesApplied: boolean = yield select(
+    selectCardtextAssetMatchesApplied,
+  )
   const isListOpen: boolean = yield select(
     (state: RootState) => state.cardtext.isListPanelOpen === true,
   )
@@ -143,7 +146,7 @@ function* syncCardtextToolbar() {
       ? currentListIcon.options
       : undefined
   const toolbarState = buildCardtextToolbarState(value, {
-    assetProcessed,
+    assetProcessed: assetMatchesApplied,
   })
   toolbarState.listCardtext = {
     state: isListOpen ? 'active' : 'enabled',

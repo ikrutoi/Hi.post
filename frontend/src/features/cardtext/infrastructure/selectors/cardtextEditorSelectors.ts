@@ -4,9 +4,13 @@ import {
   type CardtextValue,
   type CardtextStyle,
   type CardtextContent,
+  type CardtextStatus,
   type CardtextCreateDraft,
   type CardtextEditorSessionSnapshot,
 } from '../../domain/editor/editor.types'
+
+const STATUSES_WHERE_APPLY_MATCHES_BY_ID: ReadonlySet<CardtextStatus> =
+  new Set(['processed', 'inLine', 'outLine'])
 import { createSelector } from '@reduxjs/toolkit'
 
 export const selectCardtextState = (state: RootState) => state.cardtext
@@ -56,10 +60,35 @@ export const selectCardtextFavorite = (state: RootState): boolean => {
 export const selectCardtextId = (state: RootState): string | null =>
   state.cardtext.assetData?.id ?? null
 
+/** Current editor `assetData` status (toolbar routing, processed-slot checks). */
+export const selectCardtextAssetStatus = (state: RootState): CardtextStatus =>
+  state.cardtext.assetData?.status ?? 'inLine'
+
+/**
+ * Merged “display” status: applied snapshot first, then asset.
+ * Prefer `selectCardtextAssetStatus` when the UI must reflect the active editor row.
+ */
 export const selectCardtextStatus = (state: RootState) =>
   state.cardtext.appliedData?.status ??
   state.cardtext.assetData?.status ??
   'inLine'
+
+/**
+ * Same template id on asset and appliedData for processed / inLine / outLine —
+ * Apply is “already on postcard”; otherwise enable Apply even if appliedData exists.
+ */
+export const selectCardtextAssetMatchesApplied = (
+  state: RootState,
+): boolean => {
+  const applied = state.cardtext.appliedData
+  const asset = state.cardtext.assetData
+  if (applied == null || asset == null) return false
+  if (!STATUSES_WHERE_APPLY_MATCHES_BY_ID.has(asset.status)) return false
+  const aid = asset.id
+  const pid = applied.id
+  if (aid == null || pid == null) return false
+  return String(aid) === String(pid)
+}
 
 export const selectFontSizeStep = (state: RootState): number =>
   state.cardtext.assetData?.style.fontSizeStep ??

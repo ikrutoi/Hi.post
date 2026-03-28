@@ -7,8 +7,8 @@ import { useCardtextFacade } from '../application/facades/useCardtextFacade'
 import { useAppSelector } from '@app/hooks'
 import {
   selectCardtextAddTemplateOpen,
+  selectCardtextAssetStatus,
   selectCardtextId,
-  selectCardtextStatus,
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
 } from '@cardtext/infrastructure/selectors'
@@ -60,7 +60,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   } = useCardtextFacade()
   console.log('Cardtext state', state)
   const currentTemplateId = useAppSelector(selectCardtextId)
-  const cardtextStatus = useAppSelector(selectCardtextStatus)
+  const cardtextAssetStatus = useAppSelector(selectCardtextAssetStatus)
   const isAddTemplateOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const cardtextTemplates = useAppSelector(selectCardtextTemplatesListItems)
   const cardtextTemplatesLoading = useAppSelector(
@@ -153,7 +153,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
         const processedFromDb =
           await templateService.getSingleCardtextByStatus('processed')
         const processedId =
-          (cardtextStatus === 'processed' && id) ||
+          (cardtextAssetStatus === 'processed' && id) ||
           (processedFromDb?.id != null ? String(processedFromDb.id) : null)
         const result =
           processedId != null
@@ -200,7 +200,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const forceEditingTitle = isAddTemplateOpen || isEditingTitle
 
   const toolbarSection =
-    cardtextStatus === 'processed'
+    cardtextAssetStatus === 'processed'
       ? 'cardtextProcessed'
       : currentView === 'draft' && currentTemplateId == null
       ? 'cardtextCreate'

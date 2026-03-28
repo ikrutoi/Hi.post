@@ -19,6 +19,7 @@ import {
   setCardtextAppliedData,
   toggleCardtextListSortDirection,
   clearText,
+  resetCardtextAssetToEmptyDraft,
   setCardtextPresetData,
   restoreCardtextSession,
 } from '@cardtext/infrastructure/state'
@@ -55,6 +56,7 @@ export function* handleCardtextToolbarAction(
     case 'apply': {
       // Apply: положить текущий текст на открытку (`appliedData`) и выставить статусы.
       // Сохранённый «processed» в БД при этом переводим в `outLine` (не путать с шаблонами inLine).
+      // Шаблоны inLine/outLine с открытки не переводим в processed — статус сохраняем.
       const { assetData } = yield select((s: RootState) => s.cardtext)
       if (assetData == null) break
 
@@ -105,16 +107,21 @@ export function* handleCardtextToolbarAction(
         break
       }
 
+      const nextStatus =
+        assetData.status === 'inLine' || assetData.status === 'outLine'
+          ? assetData.status
+          : ('processed' as const)
+
       const applied = {
         ...assetData,
         value,
         style,
         plainText,
         cardtextLines,
-        status: 'processed' as const,
+        status: nextStatus,
       }
       yield put(setCardtextAppliedData(applied))
-      yield put(setStatus('processed'))
+      yield put(setStatus(nextStatus))
       break
     }
 
@@ -279,9 +286,6 @@ export function* handleCardtextToolbarAction(
           yield call([templateService, 'getSingleCardtextByStatus'], 'processed')
         if (processed != null) {
           yield put(restoreCardtextSession(processed))
-          // Opening saved processed text via cardtextAdd should not auto-apply it
-          // to postcard completion state.
-          yield put(setCardtextAppliedData(null))
           if (processed.id != null) {
             yield put(setCardtextId(String(processed.id)))
           }
@@ -289,8 +293,6 @@ export function* handleCardtextToolbarAction(
           yield put(setDraftFocus(false))
           break
         }
-        // Starting a new editor session should clear any previously applied state.
-        yield put(setCardtextAppliedData(null))
         const snapshot: ReturnType<typeof selectCardtextSessionData> =
           yield select(selectCardtextSessionData)
         // Preserve "return target" when leaving a selected preset for create mode.
@@ -308,8 +310,7 @@ export function* handleCardtextToolbarAction(
             }),
           )
         } else {
-          // Reset full editor payload (including title/favorite/etc.)
-          yield put(clearText())
+          yield put(resetCardtextAssetToEmptyDraft())
         }
         yield put(setCardtextId(null))
         yield put(setStatus('draft'))

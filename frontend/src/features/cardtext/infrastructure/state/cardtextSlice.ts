@@ -122,6 +122,12 @@ export const cardtextSlice = createSlice({
       state.resetToken += 1
     },
 
+    /** Empty draft in the editor; keep appliedData (text already on the postcard). */
+    resetCardtextAssetToEmptyDraft(state) {
+      state.assetData = createInitialCardtextContent()
+      state.resetToken += 1
+    },
+
     setCardtextId(state, action: PayloadAction<string | null>) {
       ensureAsset(state).id = action.payload
     },
@@ -365,6 +371,7 @@ export const {
   setStatus,
   setFavorite,
   clearText,
+  resetCardtextAssetToEmptyDraft,
   setCardtextId,
   setCardtextPresetData,
   setCardtextAppliedData,

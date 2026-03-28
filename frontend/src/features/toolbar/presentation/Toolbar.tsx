@@ -14,11 +14,11 @@ import {
   selectCardphotoListTemplateGridCols,
 } from '@/features/cardphoto/infrastructure/selectors'
 import {
+  selectCardtextAssetMatchesApplied,
   selectCardtextIsComplete,
   selectCardtextPlainText,
   selectCardtextFavorite,
   selectCardtextListSortDirection,
-  selectCardtextId,
 } from '@cardtext/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
@@ -55,12 +55,14 @@ export const Toolbar = ({
 
   const cardphotoApplied = useAppSelector(selectIsCurrentCropApplied)
   const cardtextApplied = useAppSelector(selectCardtextIsComplete)
+  const cardtextAssetMatchesApplied = useAppSelector(
+    selectCardtextAssetMatchesApplied,
+  )
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
   const cardtextFavorite = useAppSelector(selectCardtextFavorite)
   const cardphotoActiveImage = useAppSelector(selectActiveImage)
   const cardphotoFavorite = cardphotoActiveImage?.favorite === true
-  const cardtextTemplateId = useAppSelector(selectCardtextId)
-  const isCardtextCurrentTemplateApplied = cardtextApplied
+  const isCardtextCurrentTemplateApplied = cardtextAssetMatchesApplied
   const isAlreadyApplied =
     section === 'cardtext' || section === 'cardtextView'
       ? cardtextApplied
