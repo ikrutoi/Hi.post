@@ -9,7 +9,11 @@ import { renderElement } from '../renderElement'
 import { useInitSelection } from '../../application/hooks'
 import { STEP_TO_PX } from '../../domain/types'
 import { selectIsDraftFocus } from '../../infrastructure/selectors'
-import { setDraftFocus, setCardtextDraftEngaged } from '../../infrastructure/state'
+import {
+  setDraftFocus,
+  setCardtextDraftEngaged,
+  resetCardtextAssetToEmptyDraft,
+} from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
 import { IconX } from '@shared/ui/icons'
 import { isEmptyCardtextValue } from '../../domain/helpers'
@@ -28,6 +32,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   const dispatch = useAppDispatch()
   const requestFocus = useAppSelector(selectIsDraftFocus)
   const cardtextAssetData = useAppSelector((s) => s.cardtext.assetData)
+  const cardtextPresetData = useAppSelector((s) => s.cardtext.presetData)
   const isDraftEngaged = useAppSelector((s) => s.cardtext.isCardtextDraftEngaged)
   const {
     fontSizeStep,
@@ -120,9 +125,17 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       dispatch(setCardtextDraftEngaged(false))
       return
     }
+    if (
+      cardtextPresetData == null &&
+      cardtextAssetData.status === 'draft'
+    ) {
+      dispatch(resetCardtextAssetToEmptyDraft())
+      return
+    }
     setCurrentView('view')
   }, [
     cardtextAssetData,
+    cardtextPresetData,
     dispatch,
     setCurrentView,
   ])

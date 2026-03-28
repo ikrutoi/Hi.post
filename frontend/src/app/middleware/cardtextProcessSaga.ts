@@ -29,8 +29,11 @@ import {
   restoreCardtextSession,
   setStatus,
   setCardtextAddTemplateOpen,
+  setCardtextDraftEngaged,
+  resetCardtextAssetToEmptyDraft,
 } from '@cardtext/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
+import type { RootState } from '@app/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { handleCardtextToolbarAction } from './cardtextToolbarSaga'
 import {
@@ -46,6 +49,7 @@ import {
   selectCardtextId,
   selectCardtextAddTemplateOpen,
 } from '@cardtext/infrastructure/selectors'
+import { isCardtextDraftContentEmpty } from '@cardtext/domain/helpers/isCardtextDraftContentEmpty'
 
 function* syncCardtextAlignIcons(
   action: ReturnType<typeof setAlign>,
@@ -96,16 +100,26 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
   const source: ReturnType<typeof selectCardtextSource> =
     yield select(selectCardtextSource)
   const templateId: string | null = yield select(selectCardtextId)
+  const isDraftEngaged: boolean = yield select(
+    (s: RootState) => s.cardtext.isCardtextDraftEngaged === true,
+  )
+  const hasAssetSession: boolean = yield select(
+    (s: RootState) => s.cardtext.assetData != null,
+  )
 
   const isCreateModeOpen =
     source === 'draft' &&
     (templateId == null || templateId === null)
 
+  const createEditorOpenForTyping =
+    isCreateModeOpen &&
+    (hasText || isDraftEngaged || hasAssetSession)
+
   yield put(
     updateToolbarIcon({
       section: 'cardtext',
       key: 'cardtextAdd',
-      value: isCreateModeOpen && hasText ? 'disabled' : 'enabled',
+      value: createEditorOpenForTyping ? 'disabled' : 'enabled',
     }),
   )
 
@@ -132,6 +146,14 @@ function* syncCardtextCreateDraftIndicator(): SagaIterator {
   const isCreateModeOpen =
     source === 'draft' &&
     (templateId == null || templateId === null)
+  const assetNull: boolean = yield select(
+    (s: RootState) => s.cardtext.assetData == null,
+  )
+  const draftInRedux: ReturnType<typeof selectCardtextDraftData> =
+    yield select(selectCardtextDraftData)
+  const hasReduxDraft =
+    draftInRedux != null && !isCardtextDraftContentEmpty(draftInRedux)
+
   const current: any = yield select(
     (state: any) => state.toolbar.cardtext?.cardtextAdd,
   )
@@ -145,8 +167,11 @@ function* syncCardtextCreateDraftIndicator(): SagaIterator {
     [templateService, 'hasCardtextTemplateByStatus'],
     'draft',
   )
+  /** Dot when a draft exists (DB or Redux) and we are not “in editor” with materialized asset. */
   const shouldShowDraftDot =
-    !isCreateModeOpen && hasDraft && !hasProcessed
+    !hasProcessed &&
+    (hasDraft || hasReduxDraft) &&
+    (!isCreateModeOpen || assetNull)
 
   yield put(
     updateToolbarIcon({
@@ -350,6 +375,17 @@ export function* cardtextProcessSaga(): SagaIterator {
     ),
     fork(watchFontSizeChanges),
     fork(watchCardtextValueChanges),
+    takeEvery(
+      [
+        setCardtextDraftEngaged.type,
+        resetCardtextAssetToEmptyDraft.type,
+        restoreCardtextSession.type,
+      ],
+      function* (): SagaIterator {
+        yield call(syncCardtextAddButtonStatus)
+        yield call(syncCardtextCreateDraftIndicator)
+      },
+    ),
     takeEvery(
       [
         setDraftData.type,
