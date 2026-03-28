@@ -15,6 +15,7 @@ import {
   CardtextTemplatesListState,
 } from '../../domain/editor/editor.types'
 import { isEmptyCardtextValue } from '@cardtext/domain/helpers/isEmptyCardtextValue'
+import { isCardtextDraftContentEmpty } from '@cardtext/domain/helpers/isCardtextDraftContentEmpty'
 
 export interface CardtextTemplatesUIState {
   isListPanelOpen: boolean
@@ -141,6 +142,9 @@ export const cardtextSlice = createSlice({
       }
       state.assetData = null
       state.isCardtextDraftEngaged = false
+      if (isCardtextDraftContentEmpty(state.draftData)) {
+        state.draftData = null
+      }
       state.resetToken += 1
     },
 
@@ -163,7 +167,9 @@ export const cardtextSlice = createSlice({
     },
 
     setDraftData(state, action: PayloadAction<CardtextContent | null>) {
-      state.draftData = action.payload
+      const p = action.payload
+      state.draftData =
+        p == null || isCardtextDraftContentEmpty(p) ? null : p
     },
 
     clearDraftData(state) {
@@ -199,7 +205,9 @@ export const cardtextSlice = createSlice({
       state.appliedData =
         appliedData == null ? null : cloneCardtextBranch(appliedData)
       state.draftData =
-        draftData == null ? null : cloneCardtextBranch(draftData)
+        draftData == null || isCardtextDraftContentEmpty(draftData)
+          ? null
+          : cloneCardtextBranch(draftData)
       state.isCardtextDraftEngaged = false
       state.resetToken += 1
     },
