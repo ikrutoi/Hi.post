@@ -22,6 +22,7 @@ import {
   resetCardtextAssetToEmptyDraft,
   setCardtextPresetData,
   restoreCardtextSession,
+  setCardtextDraftEngaged,
 } from '@cardtext/infrastructure/state'
 import {
   selectCardtextValue,
@@ -309,11 +310,12 @@ export function* handleCardtextToolbarAction(
               status: 'draft',
             }),
           )
+          yield put(setCardtextId(null))
+          yield put(setStatus('draft'))
         } else {
           yield put(resetCardtextAssetToEmptyDraft())
         }
-        yield put(setCardtextId(null))
-        yield put(setStatus('draft'))
+        yield put(setCardtextDraftEngaged(true))
         yield put(setDraftFocus(true))
         // Keep list badge consistent after entering "new template" mode.
         // Some flows can temporarily make `templatesList` look empty/null
@@ -323,7 +325,9 @@ export function* handleCardtextToolbarAction(
       }
       const value: any = yield select(selectCardtextValue)
       const isAssetDraft: boolean = yield select(
-        (s: RootState) => s.cardtext.assetData?.status === 'draft',
+        (s: RootState) =>
+          s.cardtext.assetData == null ||
+          s.cardtext.assetData.status === 'draft',
       )
       const isEmpty =
         isAssetDraft &&
@@ -333,6 +337,7 @@ export function* handleCardtextToolbarAction(
               value[0]?.children?.map((c: any) => c?.text).join('') ?? ''
             ).trim()))
       if (isEmpty) {
+        yield put(setCardtextDraftEngaged(true))
         yield put(setDraftFocus(true))
       }
       break

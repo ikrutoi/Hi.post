@@ -119,12 +119,28 @@ export const cardtextSlice = createSlice({
     clearText(state) {
       state.assetData = createInitialCardtextContent()
       state.appliedData = null
+      state.isCardtextDraftEngaged = false
       state.resetToken += 1
     },
 
-    /** Empty draft in the editor; keep appliedData (text already on the postcard). */
+    /**
+     * No active asset session (`assetData === null`). Editor shows defaults from selectors;
+     * `appliedData` unchanged. Next edit dispatches use `ensureAsset` to materialize content.
+     * If `assetData.id` and `presetData.id` are the same template, clears `presetData` too
+     * (e.g. close editor for the preset you came from).
+     */
     resetCardtextAssetToEmptyDraft(state) {
-      state.assetData = createInitialCardtextContent()
+      const assetId = state.assetData?.id ?? null
+      const presetId = state.presetData?.id ?? null
+      if (
+        assetId != null &&
+        presetId != null &&
+        String(assetId) === String(presetId)
+      ) {
+        state.presetData = null
+      }
+      state.assetData = null
+      state.isCardtextDraftEngaged = false
       state.resetToken += 1
     },
 
@@ -168,6 +184,7 @@ export const cardtextSlice = createSlice({
       ad.id = null
       ad.status = 'draft'
       state.resetToken += 1
+      state.isCardtextDraftEngaged = false
     },
 
     restoreCardtextEditorSession(
@@ -176,15 +193,14 @@ export const cardtextSlice = createSlice({
     ) {
       const { assetData, presetData, appliedData, draftData } = action.payload
       state.assetData =
-        assetData == null
-          ? createInitialCardtextContent()
-          : cloneCardtextBranch(assetData)
+        assetData == null ? null : cloneCardtextBranch(assetData)
       state.presetData =
         presetData == null ? null : cloneCardtextBranch(presetData)
       state.appliedData =
         appliedData == null ? null : cloneCardtextBranch(appliedData)
       state.draftData =
         draftData == null ? null : cloneCardtextBranch(draftData)
+      state.isCardtextDraftEngaged = false
       state.resetToken += 1
     },
 
@@ -270,6 +286,7 @@ export const cardtextSlice = createSlice({
           )
           .join('\n')
       }
+      state.isCardtextDraftEngaged = false
       state.resetToken += 1
     },
 
@@ -359,6 +376,10 @@ export const cardtextSlice = createSlice({
     setDraftFocus(state, action: PayloadAction<boolean>) {
       state.isDraftFocus = action.payload
     },
+
+    setCardtextDraftEngaged(state, action: PayloadAction<boolean>) {
+      state.isCardtextDraftEngaged = action.payload
+    },
   },
 })
 
@@ -392,6 +413,7 @@ export const {
   updateCardtextTemplateTitleInList,
   updateCardtextContentInList,
   setDraftFocus,
+  setCardtextDraftEngaged,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
@@ -24,6 +24,8 @@ import {
   setCardtextId,
   setStatus,
   setTitle,
+  setDraftFocus,
+  resetCardtextAssetToEmptyDraft,
   loadCardtextTemplatesRequest,
   updateCardtextTemplateTitleInList,
 } from '@cardtext/infrastructure/state'
@@ -69,6 +71,13 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const dispatch = useAppDispatch()
   const { createCardtextTemplate, updateCardtextTemplate } =
     useTemplateActions()
+
+  const handleViewClose = useCallback(() => {
+    dispatch(resetCardtextAssetToEmptyDraft())
+    // Do not request draft focus: autofocus hides the empty-state placeholder icon
+    // and pulls the caret into the field right after close.
+    dispatch(setDraftFocus(false))
+  }, [dispatch])
 
   const formRef = useRef<HTMLDivElement>(null)
   const titleInputRef = useRef<HTMLInputElement>(null)
@@ -208,13 +217,16 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
         ? 'cardtextView'
         : 'cardtextEditor'
 
-  const isCreateNewEmpty =
+  /** Empty create row: hide toolbar until user engages (click draft / cardtextAdd) or
+   * there is a materialized empty asset in the store. */
+  const hideEmptyCreateToolbar =
     currentView === 'draft' &&
     currentTemplateId == null &&
     isEmptyCardtextValue(value) &&
-    !isAddTemplateOpen
+    !isAddTemplateOpen &&
+    (state.assetData != null || !state.isCardtextDraftEngaged)
 
-  const showCardtextToolbarRow = !isCreateNewEmpty
+  const showCardtextToolbarRow = !hideEmptyCreateToolbar
 
   useEffect(() => {
     if (cardtextTemplatesLoading) return
@@ -318,6 +330,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
                 value={value}
                 style={style}
                 titleStripEditing={forceEditingTitle}
+                onClose={handleViewClose}
               />
             ) : (
               <CardEditor titleStripEditing={forceEditingTitle} />

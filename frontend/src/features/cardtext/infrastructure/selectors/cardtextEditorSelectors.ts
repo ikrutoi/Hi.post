@@ -1,6 +1,8 @@
 import { RootState } from '@app/state'
 import {
   createInitialCardtextContent,
+  defaultCardtextStyle,
+  initialCardtextValue,
   type CardtextValue,
   type CardtextStyle,
   type CardtextContent,
@@ -13,12 +15,20 @@ const STATUSES_WHERE_APPLY_MATCHES_BY_ID: ReadonlySet<CardtextStatus> =
   new Set(['processed', 'inLine', 'outLine'])
 import { createSelector } from '@reduxjs/toolkit'
 
+const fallbackCardtextSessionContent: CardtextContent =
+  createInitialCardtextContent()
+
+const DEFAULT_CARDTEXT_LINES = fallbackCardtextSessionContent.cardtextLines
+
 export const selectCardtextState = (state: RootState) => state.cardtext
 
 export const selectCardtextSource = (
   state: RootState,
 ): 'draft' | 'view' =>
-  state.cardtext.assetData?.status === 'draft' ? 'draft' : 'view'
+  state.cardtext.assetData == null ||
+  state.cardtext.assetData.status === 'draft'
+    ? 'draft'
+    : 'view'
 
 export const selectIsDraftFocus = (state: RootState): boolean =>
   state.cardtext.isDraftFocus === true
@@ -27,8 +37,10 @@ export const selectCardtextDraftData = (
   state: RootState,
 ): CardtextCreateDraft | null => state.cardtext.draftData
 
-export const selectCardtextValue = (state: RootState): CardtextValue =>
-  state.cardtext.assetData?.value ?? createInitialCardtextContent().value
+export const selectCardtextValue = createSelector(
+  [(state: RootState) => state.cardtext.assetData],
+  (asset): CardtextValue => asset?.value ?? initialCardtextValue,
+)
 
 export const selectCardtextPlainText = (state: RootState): string =>
   state.cardtext.assetData?.plainText ?? ''
@@ -37,11 +49,12 @@ export const selectCardtextIsComplete = (state: RootState): boolean =>
   state.cardtext.appliedData != null
 
 export const selectCardtextLines = (state: RootState): number =>
-  state.cardtext.assetData?.cardtextLines ??
-  createInitialCardtextContent().cardtextLines
+  state.cardtext.assetData?.cardtextLines ?? DEFAULT_CARDTEXT_LINES
 
-export const selectCardtextStyle = (state: RootState): CardtextStyle =>
-  state.cardtext.assetData?.style ?? createInitialCardtextContent().style
+export const selectCardtextStyle = createSelector(
+  [(state: RootState) => state.cardtext.assetData],
+  (asset): CardtextStyle => asset?.style ?? defaultCardtextStyle,
+)
 
 export const selectCardtextTitle = (state: RootState): string =>
   state.cardtext.assetData?.title ?? ''
@@ -91,21 +104,20 @@ export const selectCardtextAssetMatchesApplied = (
 }
 
 export const selectFontSizeStep = (state: RootState): number =>
-  state.cardtext.assetData?.style.fontSizeStep ??
-  createInitialCardtextContent().style.fontSizeStep
+  state.cardtext.assetData?.style?.fontSizeStep ??
+  defaultCardtextStyle.fontSizeStep
 
 export const selectFontFamily = (state: RootState): string =>
-  state.cardtext.assetData?.style.fontFamily ??
-  createInitialCardtextContent().style.fontFamily
+  state.cardtext.assetData?.style?.fontFamily ??
+  defaultCardtextStyle.fontFamily
 
 export const selectFontColor = (state: RootState): string =>
-  state.cardtext.assetData?.style.color ??
-  createInitialCardtextContent().style.color
+  state.cardtext.assetData?.style?.color ?? defaultCardtextStyle.color
 
 export const selectCardtextSessionData = createSelector(
   [(state: RootState) => state.cardtext.assetData],
   (asset): CardtextContent => {
-    if (asset == null) return createInitialCardtextContent()
+    if (asset == null) return fallbackCardtextSessionContent
     return {
       ...asset,
       value: asset.value.map((b) => ({

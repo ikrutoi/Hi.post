@@ -120,7 +120,10 @@ export const useCardtextFacade = () => {
 
   return {
     state,
-    currentView: state.assetData?.status === 'draft' ? 'draft' : 'view',
+    currentView:
+      state.assetData == null || state.assetData.status === 'draft'
+        ? 'draft'
+        : 'view',
     editor,
     value,
     title,

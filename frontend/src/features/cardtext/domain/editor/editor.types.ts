@@ -70,6 +70,14 @@ export interface CardtextStyle {
   align: TextAlign
 }
 
+/** Stable defaults for selectors when `assetData` is null (avoid new references each run). */
+export const defaultCardtextStyle: CardtextStyle = {
+  fontFamily: 'Roboto',
+  fontSizeStep: 3,
+  color: 'deepBlack',
+  align: 'left',
+}
+
 export type CardtextCreateDraft = CardtextContent
 
 export interface CardtextContent {
@@ -91,12 +99,7 @@ export function createInitialCardtextContent(): CardtextContent {
       ...b,
       children: b.children.map((c) => ({ ...c })),
     })),
-    style: {
-      fontFamily: 'Roboto',
-      fontSizeStep: 3,
-      color: 'deepBlack',
-      align: 'left',
-    },
+    style: { ...defaultCardtextStyle },
     title: '',
     plainText: '',
     favorite: null,
@@ -113,6 +116,11 @@ export interface CardtextState {
   draftData: CardtextContent | null
   resetToken: number
   isDraftFocus: boolean
+  /**
+   * After clearing `assetData`, hide `cardtextCreate` until the user clicks the draft
+   * surface or uses `cardtextAdd`; then show toolbar and allow programmatic focus.
+   */
+  isCardtextDraftEngaged: boolean
 }
 
 export interface CardtextEditorSessionSnapshot {
@@ -140,10 +148,11 @@ export type UpdateCardtextPayload = Omit<
 }
 
 export const initialCardtextEditorState: CardtextState = {
-  assetData: createInitialCardtextContent(),
+  assetData: null,
   presetData: null,
   appliedData: null,
   draftData: null,
   resetToken: 0,
   isDraftFocus: false,
+  isCardtextDraftEngaged: false,
 }

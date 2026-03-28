@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo, useState } from 'react'
+import React, { useEffect, useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { Slate, Editable, ReactEditor } from 'slate-react'
 import { Editor, Transforms, Range, Descendant } from 'slate'
@@ -9,11 +9,12 @@ import { renderElement } from '../renderElement'
 import { useInitSelection } from '../../application/hooks'
 import { STEP_TO_PX } from '../../domain/types'
 import { selectIsDraftFocus } from '../../infrastructure/selectors'
-import { setDraftFocus } from '../../infrastructure/state'
+import { setDraftFocus, setCardtextDraftEngaged } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
 import { IconX } from '@shared/ui/icons'
 import { isEmptyCardtextValue } from '../../domain/helpers'
 import styles from './CardEditor.module.scss'
+import viewStyles from '../CardtextView/CardtextView.module.scss'
 import type { CardtextValue } from '../../domain/types'
 
 type CardEditorProps = {
@@ -26,6 +27,8 @@ export const CardEditor: React.FC<CardEditorProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const requestFocus = useAppSelector(selectIsDraftFocus)
+  const cardtextAssetData = useAppSelector((s) => s.cardtext.assetData)
+  const isDraftEngaged = useAppSelector((s) => s.cardtext.isCardtextDraftEngaged)
   const {
     fontSizeStep,
     editor,
@@ -54,9 +57,10 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   useInitSelection(editor)
 
   const lastSelectionRef = React.useRef<any>(null)
-  const [isFocused, setIsFocused] = useState(false)
 
   const isEmpty = useMemo(() => isEmptyCardtextValue(value), [value])
+  /** Placeholder only before the user engages the empty create surface (click / cardtextAdd). */
+  const showEmptyPlaceholder = isEmpty && !isDraftEngaged
 
   useEffect(() => {
     if (!requestFocus) return
@@ -67,13 +71,16 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       const end = Editor.end(editor, [])
       if (end) Transforms.select(editor, { anchor: end, focus: end })
       ReactEditor.focus(editor)
-      setIsFocused(true)
       dispatch(setDraftFocus(false))
     }, 0)
     return () => clearTimeout(id)
   }, [requestFocus, dispatch, editor])
 
   const handleClickEditorArea = () => {
+    if (cardtextAssetData == null) {
+      dispatch(setCardtextDraftEngaged(true))
+      dispatch(setDraftFocus(true))
+    }
     if (!editableRef.current) return
     editableRef.current.focus()
 
@@ -90,6 +97,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   }
 
   useEffect(() => {
+    if (cardtextAssetData == null) return
     const container = editorRef.current
     if (!container) return
 
@@ -98,7 +106,26 @@ export const CardEditor: React.FC<CardEditorProps> = ({
     if (isOverflown && fontSizeStep > 1) {
       decreaseFontSize()
     }
-  }, [value, fontSizeStep, decreaseFontSize, editorRef])
+  }, [
+    value,
+    fontSizeStep,
+    decreaseFontSize,
+    editorRef,
+    cardtextAssetData,
+  ])
+
+  const handleEditorClose = useCallback(() => {
+    dispatch(setDraftFocus(false))
+    if (cardtextAssetData == null) {
+      dispatch(setCardtextDraftEngaged(false))
+      return
+    }
+    setCurrentView('view')
+  }, [
+    cardtextAssetData,
+    dispatch,
+    setCurrentView,
+  ])
 
   const renderLeafWithColor = useCallback(
     (leafProps: { attributes: any; children: React.ReactNode; leaf: any }) => {
@@ -127,28 +154,32 @@ export const CardEditor: React.FC<CardEditorProps> = ({
         titleStripEditing && styles.editorTitleStripEditing,
       )}
     >
-      {isEmpty ? (
+      {showEmptyPlaceholder ? (
         <div
-          className={clsx(
-            styles.editorPlaceholderIcon,
-            isFocused && styles.editorPlaceholderIconHidden,
-          )}
+          className={styles.editorPlaceholderIcon}
           aria-hidden
+          role="presentation"
+          onClick={(e) => {
+            e.stopPropagation()
+            handleClickEditorArea()
+          }}
         >
           <IconSectionMenuCardtext />
         </div>
       ) : null}
-      <button
-        type="button"
-        className={styles.closeBtn}
-        onClick={() => {
-          dispatch(setDraftFocus(false))
-          setCurrentView('view')
-        }}
-        aria-label="Close text editor"
-      >
-        <IconX />
-      </button>
+      {(cardtextAssetData != null || isDraftEngaged) ? (
+        <button
+          type="button"
+          className={viewStyles.viewCloseBtn}
+          onClick={handleEditorClose}
+          aria-label="Close text editor"
+          title={
+            cardtextAssetData == null ? 'Close' : 'Back to text view'
+          }
+        >
+          <IconX />
+        </button>
+      ) : null}
       <div
         className={styles.editorArea}
         ref={editorRef}
@@ -176,8 +207,16 @@ export const CardEditor: React.FC<CardEditorProps> = ({
           editor={editor}
           initialValue={value as Descendant[]}
           onChange={(newValue: Descendant[]) => {
-            setValue(newValue as CardtextValue)
-            // forceUpdateToolbar()
+            const next = newValue as CardtextValue
+            // Slate fires onChange on mount; skip syncing empty doc while there is
+            // no asset session — otherwise setValue → ensureAsset recreates assetData.
+            if (
+              cardtextAssetData == null &&
+              isEmptyCardtextValue(next)
+            ) {
+              return
+            }
+            setValue(next)
           }}
         >
           <Editable
@@ -190,8 +229,12 @@ export const CardEditor: React.FC<CardEditorProps> = ({
             placeholder=""
             renderLeaf={renderLeafWithColor}
             renderElement={renderElement}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            onFocus={() => {
+              if (cardtextAssetData == null) {
+                dispatch(setCardtextDraftEngaged(true))
+                dispatch(setDraftFocus(true))
+              }
+            }}
             onSelect={() => {
               if (editor.selection) {
                 lastSelectionRef.current = editor.selection

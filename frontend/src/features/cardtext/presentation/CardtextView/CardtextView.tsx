@@ -6,6 +6,7 @@ import { STEP_TO_PX } from '../../domain/types'
 import type { CardtextValue, CardtextStyle } from '../../domain/types'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
+import { IconX } from '@shared/ui/icons'
 import styles from './CardtextView.module.scss'
 
 const COLOR_CLASS_MAP: Record<string, keyof typeof styles> = {
@@ -21,6 +22,8 @@ type Props = {
   contentKey?: string
   /** Tighter top padding when the floating title strip is in edit mode */
   titleStripEditing?: boolean
+  /** Same control as CardEditor close — e.g. switch to draft editor */
+  onClose?: () => void
 }
 
 export const CardtextView: React.FC<Props> = ({
@@ -28,6 +31,7 @@ export const CardtextView: React.FC<Props> = ({
   style,
   contentKey,
   titleStripEditing,
+  onClose,
 }) => {
   const slateKey =
     contentKey ??
@@ -60,14 +64,27 @@ export const CardtextView: React.FC<Props> = ({
         textAlign: style?.align ?? 'left',
       }}
     >
-      <Slate editor={editor} initialValue={initialValue}>
-        <Editable
-          readOnly
-          renderLeaf={renderLeaf}
-          renderElement={renderElement}
-          className={styles.viewEditable}
-        />
-      </Slate>
+      {onClose ? (
+        <button
+          type="button"
+          className={styles.viewCloseBtn}
+          onClick={onClose}
+          aria-label="Close text view"
+          title="Edit text"
+        >
+          <IconX />
+        </button>
+      ) : null}
+      <div className={styles.viewBody}>
+        <Slate editor={editor} initialValue={initialValue}>
+          <Editable
+            readOnly
+            renderLeaf={renderLeaf}
+            renderElement={renderElement}
+            className={styles.viewEditable}
+          />
+        </Slate>
+      </div>
     </div>
   )
 }
