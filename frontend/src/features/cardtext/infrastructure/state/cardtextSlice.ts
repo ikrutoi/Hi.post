@@ -110,7 +110,8 @@ export const cardtextSlice = createSlice({
     },
 
     setStatus(state, action: PayloadAction<CardtextStatus>) {
-      ensureAsset(state).status = action.payload
+      if (state.assetData === null) return
+      state.assetData.status = action.payload
     },
 
     setFavorite(state, action: PayloadAction<boolean | null>) {
@@ -118,7 +119,7 @@ export const cardtextSlice = createSlice({
     },
 
     clearText(state) {
-      state.assetData = createInitialCardtextContent()
+      state.assetData = null
       state.appliedData = null
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false

@@ -74,12 +74,52 @@ export function* handleCardtextToolbarAction(
         yield select(selectCardtextStyle)
       const plainText: string = yield select(selectCardtextPlainText)
       const cardtextLines: number = yield select(selectCardtextLines)
-      const { assetData } = (yield select((s: RootState) => s.cardtext)) as {
-        assetData?: { title?: string; favorite?: boolean | null } | null
-      }
+      const { assetData } = yield select((s: RootState) => s.cardtext)
+      const templateIdFromSelect: string | null =
+        yield select(selectCardtextId)
 
       const hasText = (plainText?.trim?.() ?? '').length > 0
       if (!hasText) break
+
+      const postcardSt = assetData?.status
+      if (postcardSt === 'inLine' || postcardSt === 'outLine') {
+        const id =
+          assetData?.id != null
+            ? String(assetData.id)
+            : templateIdFromSelect != null
+              ? String(templateIdFromSelect)
+              : null
+        if (id == null) break
+
+        const result: { success?: boolean } = yield call(
+          [templateService, 'updateCardtextTemplate'],
+          id,
+          {
+            value,
+            style,
+            plainText,
+            cardtextLines,
+            title: assetData?.title ?? '',
+            favorite: assetData?.favorite ?? null,
+          },
+        )
+        if (result?.success) {
+          yield put(
+            updateCardtextContentInList({
+              id,
+              value: value ?? [],
+              style,
+              plainText,
+              cardtextLines,
+            }),
+          )
+          yield put(setCardtextViewEditMode(false))
+          yield put(setDraftEngaged(false))
+          yield put(setStatus(postcardSt))
+          yield put(loadCardtextTemplatesRequest())
+        }
+        break
+      }
 
       const result: { success?: boolean; templateId?: string } = yield call(
         [templateService, 'upsertSingleCardtextByStatus'],
@@ -189,7 +229,8 @@ export function* handleCardtextToolbarAction(
         yield put(setCardtextAppliedData(null))
         yield put(setCardtextId(null))
         yield put(clearText())
-        yield put(setStatus('inLine'))
+        // После clearText assetData = null; setStatus не материализует — восстанавливаем пустой inLine на открытке.
+        yield put(restoreCardtextSession({ status: 'inLine', id: null }))
       }
       break
 

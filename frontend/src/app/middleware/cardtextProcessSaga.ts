@@ -103,17 +103,15 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
   const isDraftEngaged: boolean = yield select(
     (s: RootState) => s.cardtext.isDraftEngaged === true,
   )
-  const hasAssetSession: boolean = yield select(
-    (s: RootState) => s.cardtext.assetData != null,
-  )
 
   const isCreateModeOpen =
     source === 'draft' &&
     (templateId == null || templateId === null)
 
+  // Не используем assetData != null: пустой asset может быть материализован
+  // при первом рендере, а плейсхолдер ещё показывается — cardtextAdd должен оставаться enabled.
   const createEditorOpenForTyping =
-    isCreateModeOpen &&
-    (hasText || isDraftEngaged || hasAssetSession)
+    isCreateModeOpen && (hasText || isDraftEngaged)
 
   yield put(
     updateToolbarIcon({

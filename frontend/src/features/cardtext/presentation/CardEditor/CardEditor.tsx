@@ -13,6 +13,8 @@ import {
   setDraftFocus,
   setDraftEngaged,
   resetCardtextAssetToEmptyDraft,
+  setCardtextViewEditMode,
+  setStatus,
 } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
 import { IconX } from '@shared/ui/icons'
@@ -132,7 +134,14 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       dispatch(resetCardtextAssetToEmptyDraft())
       return
     }
-    setCurrentView('view')
+    // Редактирование с открытки: сбрасываем флаг, иначе selectCardtextSource остаётся draft и тулбар cardtextCreate.
+    dispatch(setCardtextViewEditMode(false))
+    const st = cardtextAssetData.status
+    if (st === 'inLine' || st === 'outLine') {
+      dispatch(setStatus(st))
+    } else {
+      setCurrentView('view')
+    }
   }, [
     cardtextAssetData,
     cardtextPresetData,
@@ -221,8 +230,11 @@ export const CardEditor: React.FC<CardEditorProps> = ({
           initialValue={value as Descendant[]}
           onChange={(newValue: Descendant[]) => {
             const next = newValue as CardtextValue
-            // Slate fires onChange on mount; skip syncing empty doc while there is
-            // no asset session — otherwise setValue → ensureAsset recreates assetData.
+            // Пока нет сессии и пользователь не «вовлёк» редактор — не пишем в Redux
+            // (Slate даёт onChange при маунте/нормализации → иначе ensureAsset создаёт пустой assetData).
+            if (cardtextAssetData == null && !isDraftEngaged) {
+              return
+            }
             if (
               cardtextAssetData == null &&
               isEmptyCardtextValue(next)
