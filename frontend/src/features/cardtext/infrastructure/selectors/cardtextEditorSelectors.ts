@@ -13,6 +13,10 @@ import {
 } from '../../domain/editor/editor.types'
 
 import { createSelector } from '@reduxjs/toolkit'
+import {
+  deriveCardtextInteractionMode,
+  type CardtextInteractionMode,
+} from '../../domain/cardtextInteractionMode'
 
 const fallbackCardtextSessionContent: CardtextContent =
   createInitialCardtextContent()
@@ -76,6 +80,28 @@ export const selectCardtextId = (state: RootState): string | null =>
 /** Current editor `assetData` status (toolbar routing, processed-slot checks). */
 export const selectCardtextAssetStatus = (state: RootState): CardtextStatus =>
   state.cardtext.assetData?.status ?? 'inLine'
+
+/** Один производный режим для тулбара cardtext и ветвлений в саге. */
+export const selectCardtextInteractionMode = createSelector(
+  [
+    selectCardtextAssetStatus,
+    selectCardtextSource,
+    selectCardtextId,
+    (state: RootState) => state.cardtext.isCardtextViewEditMode === true,
+  ],
+  (
+    cardtextAssetStatus,
+    currentView,
+    currentTemplateId,
+    isCardtextViewEditMode,
+  ): CardtextInteractionMode =>
+    deriveCardtextInteractionMode({
+      cardtextAssetStatus,
+      currentView,
+      currentTemplateId,
+      isCardtextViewEditMode,
+    }),
+)
 
 /**
  * Merged “display” status: applied snapshot first, then asset.

@@ -26,6 +26,7 @@ import {
   selectFontSizeStep,
   selectCardtextPlainText,
   selectCardtextLines,
+  selectCardtextInteractionMode,
 } from '../../infrastructure/selectors'
 
 const MAX_FONT_STEP = 6
@@ -42,6 +43,7 @@ export const useCardtextFacade = () => {
   const fontSizeStep = useAppSelector(selectFontSizeStep)
   const plainText = useAppSelector(selectCardtextPlainText)
   const cardtextLines = useAppSelector(selectCardtextLines)
+  const interactionMode = useAppSelector(selectCardtextInteractionMode)
   const resetToken = useAppSelector((s) => s.cardtext.resetToken)
 
   const setValueHandler = React.useCallback(
@@ -120,6 +122,7 @@ export const useCardtextFacade = () => {
 
   return {
     state,
+    interactionMode,
     currentView:
       state.assetData == null ||
       state.assetData.status === 'draft' ||

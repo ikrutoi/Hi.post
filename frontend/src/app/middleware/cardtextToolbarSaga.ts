@@ -22,7 +22,7 @@ import {
   resetCardtextAssetToEmptyDraft,
   setCardtextPresetData,
   restoreCardtextSession,
-  setCardtextDraftEngaged,
+  setDraftEngaged,
   setCardtextViewEditMode,
 } from '@cardtext/infrastructure/state'
 import {
@@ -33,7 +33,10 @@ import {
   selectCardtextPlainText,
   selectCardtextLines,
   selectCardtextSessionData,
+  selectCardtextInteractionMode,
 } from '@cardtext/infrastructure/selectors'
+import type { CardtextInteractionMode } from '@cardtext/domain/cardtextInteractionMode'
+import { applyCardtextFromToolbar } from './cardtextToolbarApplySaga'
 import { templateService } from '@entities/templates/domain/services/templateService'
 
 export function* handleCardtextToolbarAction(
@@ -54,78 +57,13 @@ export function* handleCardtextToolbarAction(
     section === 'cardtextProcessed'
   if (!isCardtextSection) return
 
+  const interactionMode: CardtextInteractionMode =
+    action.payload.cardtextInteractionMode ??
+    (yield select(selectCardtextInteractionMode))
+
   switch (key) {
     case 'apply': {
-      // Apply: положить текущий текст на открытку (`appliedData`) и выставить статусы.
-      // Сохранённый «processed» в БД при этом переводим в `outLine` (не путать с шаблонами inLine).
-      // Шаблоны inLine/outLine с открытки не переводим в processed — статус сохраняем.
-      const { assetData } = yield select((s: RootState) => s.cardtext)
-      if (assetData == null) break
-
-      const value: ReturnType<typeof selectCardtextValue> =
-        yield select(selectCardtextValue)
-      const style: ReturnType<typeof selectCardtextStyle> =
-        yield select(selectCardtextStyle)
-      const plainText: string = yield select(selectCardtextPlainText)
-      const cardtextLines: number = yield select(selectCardtextLines)
-
-      if (assetData.status === 'processed') {
-        let templateId: string | null = assetData.id
-        if (templateId == null) {
-          const fromDb =
-            yield call([templateService, 'getSingleCardtextByStatus'], 'processed')
-          templateId = fromDb?.id != null ? String(fromDb.id) : null
-        }
-
-        if (templateId != null) {
-          const result: { success?: boolean } = yield call(
-            [templateService, 'updateCardtextTemplate'],
-            templateId,
-            {
-              value,
-              style,
-              plainText,
-              cardtextLines,
-              title: assetData.title ?? '',
-              favorite: assetData.favorite ?? null,
-              status: 'outLine',
-            },
-          )
-          if (!result?.success) break
-        }
-
-        const next = {
-          ...assetData,
-          value,
-          style,
-          plainText,
-          cardtextLines,
-          status: 'outLine' as const,
-          id: templateId ?? assetData.id,
-        }
-        yield put(setCardtextAppliedData(next))
-        yield put(restoreCardtextSession(next))
-        yield put(setCardtextViewEditMode(false))
-        yield put(loadCardtextTemplatesRequest())
-        break
-      }
-
-      const nextStatus =
-        assetData.status === 'inLine' || assetData.status === 'outLine'
-          ? assetData.status
-          : ('processed' as const)
-
-      const applied = {
-        ...assetData,
-        value,
-        style,
-        plainText,
-        cardtextLines,
-        status: nextStatus,
-      }
-      yield put(setCardtextAppliedData(applied))
-      yield put(setStatus(nextStatus))
-      yield put(setCardtextViewEditMode(false))
+      yield call(applyCardtextFromToolbar, action)
       break
     }
 
@@ -169,7 +107,7 @@ export function* handleCardtextToolbarAction(
     }
 
     case 'edit':
-      if (section === 'cardtextView') {
+      if (interactionMode === 'postcardTemplateView') {
         const { assetData: editAsset } = yield select(
           (s: RootState) => s.cardtext,
         )
@@ -180,7 +118,7 @@ export function* handleCardtextToolbarAction(
           yield put(setCardtextViewEditMode(false))
           yield put(setStatus('draft'))
         }
-      } else if (section === 'cardtextProcessed') {
+      } else if (interactionMode === 'processedSlot') {
         // Edit from processed mode should open create editor flow
         // with current text content.
         yield put(setCardtextViewEditMode(false))
@@ -188,7 +126,7 @@ export function* handleCardtextToolbarAction(
         yield put(setCardtextId(null))
         yield put(setStatus('draft'))
         yield put(setDraftFocus(true))
-      } else if (section === 'cardtextEditor') {
+      } else if (interactionMode === 'editTemplate') {
         const templateId: string | null = yield select(selectCardtextId)
         const value: ReturnType<typeof selectCardtextValue> =
           yield select(selectCardtextValue)
@@ -223,7 +161,7 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'favorite':
-      if (section === 'cardtextView') {
+      if (interactionMode === 'postcardTemplateView') {
         const templateId: string | null = yield select(selectCardtextId)
         if (!templateId) break
         const favorite: boolean = yield select(selectCardtextFavorite)
@@ -246,7 +184,7 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'delete':
-      if (section === 'cardtextProcessed') {
+      if (interactionMode === 'processedSlot') {
         yield call([templateService, 'deleteSingleCardtextByStatus'], 'processed')
         yield put(setCardtextAppliedData(null))
         yield put(setCardtextId(null))
@@ -329,7 +267,7 @@ export function* handleCardtextToolbarAction(
         } else {
           yield put(resetCardtextAssetToEmptyDraft())
         }
-        yield put(setCardtextDraftEngaged(true))
+        yield put(setDraftEngaged(true))
         yield put(setDraftFocus(true))
         // Keep list badge consistent after entering "new template" mode.
         // Some flows can temporarily make `templatesList` look empty/null
@@ -351,7 +289,7 @@ export function* handleCardtextToolbarAction(
               value[0]?.children?.map((c: any) => c?.text).join('') ?? ''
             ).trim()))
       if (isEmpty) {
-        yield put(setCardtextDraftEngaged(true))
+        yield put(setDraftEngaged(true))
         yield put(setDraftFocus(true))
       }
       break

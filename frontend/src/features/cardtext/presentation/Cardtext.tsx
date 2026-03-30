@@ -34,9 +34,17 @@ interface CardtextProps {
 
 export const Cardtext: React.FC<CardtextProps> = ({ styleLeft: _styleLeft }) => {
   const { sizeCard } = useSizeFacade()
-  const { state, value, style, title, id, plainText, cardtextLines } =
-    useCardtextFacade()
-  console.log('Cardtext state', state)
+  const {
+    state,
+    interactionMode,
+    value,
+    style,
+    title,
+    id,
+    plainText,
+    cardtextLines,
+  } = useCardtextFacade()
+  console.log('Cardtext state', state, { interactionMode })
 
   const currentView = useAppSelector(selectCardtextSource)
   const currentTemplateId = useAppSelector(selectCardtextId)
@@ -90,7 +98,7 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft: _styleLeft }) => 
     isAddTemplateOpen,
     cardtext: {
       assetData: state.assetData,
-      isCardtextDraftEngaged: state.isCardtextDraftEngaged,
+      isDraftEngaged: state.isDraftEngaged,
     },
   })
 

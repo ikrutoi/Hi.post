@@ -11,7 +11,7 @@ import { STEP_TO_PX } from '../../domain/types'
 import { selectIsDraftFocus } from '../../infrastructure/selectors'
 import {
   setDraftFocus,
-  setCardtextDraftEngaged,
+  setDraftEngaged,
   resetCardtextAssetToEmptyDraft,
 } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
@@ -33,7 +33,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   const requestFocus = useAppSelector(selectIsDraftFocus)
   const cardtextAssetData = useAppSelector((s) => s.cardtext.assetData)
   const cardtextPresetData = useAppSelector((s) => s.cardtext.presetData)
-  const isDraftEngaged = useAppSelector((s) => s.cardtext.isCardtextDraftEngaged)
+  const isDraftEngaged = useAppSelector((s) => s.cardtext.isDraftEngaged)
   const {
     fontSizeStep,
     editor,
@@ -83,7 +83,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
 
   const handleClickEditorArea = () => {
     if (cardtextAssetData == null) {
-      dispatch(setCardtextDraftEngaged(true))
+      dispatch(setDraftEngaged(true))
       dispatch(setDraftFocus(true))
     }
     if (!editableRef.current) return
@@ -122,7 +122,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   const handleEditorClose = useCallback(() => {
     dispatch(setDraftFocus(false))
     if (cardtextAssetData == null) {
-      dispatch(setCardtextDraftEngaged(false))
+      dispatch(setDraftEngaged(false))
       return
     }
     if (
@@ -244,7 +244,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
             renderElement={renderElement}
             onFocus={() => {
               if (cardtextAssetData == null) {
-                dispatch(setCardtextDraftEngaged(true))
+                dispatch(setDraftEngaged(true))
                 dispatch(setDraftFocus(true))
               }
             }}

@@ -1,34 +1,42 @@
-import type {
-  CardtextState,
-  CardtextStatus,
-  CardtextValue,
-} from '@cardtext/domain/editor/editor.types'
+import type { CardtextState, CardtextValue } from '@cardtext/domain/editor/editor.types'
+import {
+  deriveCardtextInteractionMode,
+  type CardtextInteractionMode,
+  type DeriveCardtextInteractionModeInput,
+} from '@cardtext/domain/cardtextInteractionMode'
 import { isEmptyCardtextValue } from '@cardtext/domain/helpers'
 import type { ToolbarSection } from '@toolbar/domain/types'
 
-export function resolveCardtextToolbarSection(input: {
-  cardtextAssetStatus: CardtextStatus
-  currentView: 'draft' | 'view'
-  currentTemplateId: string | null
-  isCardtextViewEditMode?: boolean
-}): ToolbarSection {
-  const {
-    cardtextAssetStatus,
-    currentView,
-    currentTemplateId,
-    isCardtextViewEditMode,
-  } = input
-  if (cardtextAssetStatus === 'processed') return 'cardtextProcessed'
-  if (
-    isCardtextViewEditMode === true &&
-    (cardtextAssetStatus === 'inLine' || cardtextAssetStatus === 'outLine')
-  ) {
-    return 'cardtextCreate'
+export function cardtextToolbarSectionFromMode(
+  mode: CardtextInteractionMode,
+): ToolbarSection {
+  switch (mode) {
+    case 'processedSlot':
+      return 'cardtextProcessed'
+    case 'postcardTemplateView':
+      return 'cardtextView'
+    case 'createEmpty':
+    case 'editFromPostcardView':
+      return 'cardtextCreate'
+    case 'editTemplate':
+      return 'cardtextEditor'
+    default: {
+      const _exhaustive: never = mode
+      return _exhaustive
+    }
   }
-  if (currentView === 'draft' && currentTemplateId == null)
-    return 'cardtextCreate'
-  if (currentView === 'view') return 'cardtextView'
-  return 'cardtextEditor'
+}
+
+export function resolveCardtextInteractionMode(
+  input: DeriveCardtextInteractionModeInput,
+): CardtextInteractionMode {
+  return deriveCardtextInteractionMode(input)
+}
+
+export function resolveCardtextToolbarSection(
+  input: DeriveCardtextInteractionModeInput,
+): ToolbarSection {
+  return cardtextToolbarSectionFromMode(deriveCardtextInteractionMode(input))
 }
 
 /**
@@ -40,7 +48,7 @@ export function shouldHideEmptyCreateToolbar(input: {
   currentTemplateId: string | null
   value: CardtextValue
   isAddTemplateOpen: boolean
-  cardtext: Pick<CardtextState, 'assetData' | 'isCardtextDraftEngaged'>
+  cardtext: Pick<CardtextState, 'assetData' | 'isDraftEngaged'>
 }): boolean {
   const {
     currentView,
@@ -54,6 +62,6 @@ export function shouldHideEmptyCreateToolbar(input: {
     currentTemplateId == null &&
     isEmptyCardtextValue(value) &&
     !isAddTemplateOpen &&
-    (cardtext.assetData != null || !cardtext.isCardtextDraftEngaged)
+    (cardtext.assetData != null || !cardtext.isDraftEngaged)
   )
 }

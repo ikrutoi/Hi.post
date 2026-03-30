@@ -12,13 +12,11 @@ export type CardtextTemplatesListState = CardtextContent[] | null
 
 export type CardtextStatus = 'draft' | 'processed' | 'outLine' | 'inLine'
 
-/**
- * `appliedData` in these states is the text committed to the postcard (Apply).
- * CardPie and similar UI must use this set — not `processed` alone — because
- * re-applying a DB `processed` row moves the snapshot to `outLine`.
- */
 export const CARDTEXT_APPLIED_DISPLAY_STATUSES: ReadonlySet<CardtextStatus> =
   new Set(['processed', 'inLine', 'outLine'])
+
+export const CARDTEXT_POSTCARD_LOCKED_STATUSES: ReadonlySet<CardtextStatus> =
+  new Set(['inLine', 'outLine'])
 
 export type TextAlign = 'left' | 'center' | 'right' | 'justify'
 
@@ -78,7 +76,6 @@ export interface CardtextStyle {
   align: TextAlign
 }
 
-/** Stable defaults for selectors when `assetData` is null (avoid new references each run). */
 export const defaultCardtextStyle: CardtextStyle = {
   fontFamily: 'Roboto',
   fontSizeStep: 3,
@@ -124,11 +121,8 @@ export interface CardtextState {
   draftData: CardtextContent | null
   resetToken: number
   isDraftFocus: boolean
-  /**
-   * After clearing `assetData`, hide `cardtextCreate` until the user clicks the draft
-   * surface or uses `cardtextAdd`; then show toolbar and allow programmatic focus.
-   */
-  isCardtextDraftEngaged: boolean
+  isDraftEngaged: boolean
+  isCardtextViewEditMode: boolean
 }
 
 export interface CardtextEditorSessionSnapshot {
@@ -136,6 +130,7 @@ export interface CardtextEditorSessionSnapshot {
   presetData: CardtextContent | null
   appliedData: CardtextContent | null
   draftData: CardtextContent | null
+  isCardtextViewEditMode?: boolean
 }
 
 export type CreateCardtextPayload = Pick<
@@ -162,5 +157,6 @@ export const initialCardtextEditorState: CardtextState = {
   draftData: null,
   resetToken: 0,
   isDraftFocus: false,
-  isCardtextDraftEngaged: false,
+  isDraftEngaged: false,
+  isCardtextViewEditMode: false,
 }

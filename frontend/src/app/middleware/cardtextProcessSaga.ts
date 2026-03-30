@@ -29,7 +29,7 @@ import {
   restoreCardtextSession,
   setStatus,
   setCardtextAddTemplateOpen,
-  setCardtextDraftEngaged,
+  setDraftEngaged,
   resetCardtextAssetToEmptyDraft,
 } from '@cardtext/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
@@ -101,7 +101,7 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
     yield select(selectCardtextSource)
   const templateId: string | null = yield select(selectCardtextId)
   const isDraftEngaged: boolean = yield select(
-    (s: RootState) => s.cardtext.isCardtextDraftEngaged === true,
+    (s: RootState) => s.cardtext.isDraftEngaged === true,
   )
   const hasAssetSession: boolean = yield select(
     (s: RootState) => s.cardtext.assetData != null,
@@ -377,7 +377,7 @@ export function* cardtextProcessSaga(): SagaIterator {
     fork(watchCardtextValueChanges),
     takeEvery(
       [
-        setCardtextDraftEngaged.type,
+        setDraftEngaged.type,
         resetCardtextAssetToEmptyDraft.type,
         restoreCardtextSession.type,
       ],

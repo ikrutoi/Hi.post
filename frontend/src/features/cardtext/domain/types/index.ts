@@ -1,4 +1,5 @@
 export * from '../editor/editor.types'
+export * from '../cardtextInteractionMode'
 export * from './cardEditor.types'
 export * from '../editor/constants'
 export * from './cardtextInitial.types'
