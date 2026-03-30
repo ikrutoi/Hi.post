@@ -79,16 +79,29 @@ export const CARDTEXT_CREATE_TOOLBAR: ToolbarConfig = [
 
 export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [
   {
+    group: 'editor',
+    icons: [{ key: 'cardtextCheck', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
     group: 'font',
     icons: [
-      { key: 'edit', state: 'active' },
-      { key: 'empty', state: 'disabled' },
       { key: 'fontSizeLess', state: 'enabled' },
       { key: 'fontSizeIndicator', state: 'enabled' },
       { key: 'fontSizeMore', state: 'enabled' },
       { key: 'fontFamily', state: 'enabled' },
       { key: 'colorPicker', state: 'enabled' },
       { key: 'left', state: 'enabled' },
+      // { key: 'empty', state: 'disabled' },
+      // { key: 'close', state: 'disabled' },
+    ],
+    status: 'enabled',
+  },
+  {
+    group: 'close',
+    icons: [
+      // { key: 'close', state: 'disabled' },
+      { key: 'empty', state: 'disabled' },
     ],
     status: 'enabled',
   },

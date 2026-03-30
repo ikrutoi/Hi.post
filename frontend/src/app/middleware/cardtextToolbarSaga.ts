@@ -23,6 +23,7 @@ import {
   setCardtextPresetData,
   restoreCardtextSession,
   setCardtextDraftEngaged,
+  setCardtextViewEditMode,
 } from '@cardtext/infrastructure/state'
 import {
   selectCardtextValue,
@@ -104,6 +105,7 @@ export function* handleCardtextToolbarAction(
         }
         yield put(setCardtextAppliedData(next))
         yield put(restoreCardtextSession(next))
+        yield put(setCardtextViewEditMode(false))
         yield put(loadCardtextTemplatesRequest())
         break
       }
@@ -123,6 +125,7 @@ export function* handleCardtextToolbarAction(
       }
       yield put(setCardtextAppliedData(applied))
       yield put(setStatus(nextStatus))
+      yield put(setCardtextViewEditMode(false))
       break
     }
 
@@ -167,10 +170,20 @@ export function* handleCardtextToolbarAction(
 
     case 'edit':
       if (section === 'cardtextView') {
-        yield put(setStatus('draft'))
+        const { assetData: editAsset } = yield select(
+          (s: RootState) => s.cardtext,
+        )
+        const st = editAsset?.status
+        if (st === 'inLine' || st === 'outLine') {
+          yield put(setCardtextViewEditMode(true))
+        } else {
+          yield put(setCardtextViewEditMode(false))
+          yield put(setStatus('draft'))
+        }
       } else if (section === 'cardtextProcessed') {
         // Edit from processed mode should open create editor flow
         // with current text content.
+        yield put(setCardtextViewEditMode(false))
         yield put(setCardtextAppliedData(null))
         yield put(setCardtextId(null))
         yield put(setStatus('draft'))
@@ -205,6 +218,7 @@ export function* handleCardtextToolbarAction(
         }
 
         yield put(setStatus('processed'))
+        yield put(setCardtextViewEditMode(false))
       }
       break
 

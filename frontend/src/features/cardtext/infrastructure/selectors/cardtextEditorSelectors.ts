@@ -25,7 +25,8 @@ export const selectCardtextSource = (
   state: RootState,
 ): 'draft' | 'view' =>
   state.cardtext.assetData == null ||
-  state.cardtext.assetData.status === 'draft'
+  state.cardtext.assetData.status === 'draft' ||
+  state.cardtext.isCardtextViewEditMode === true
     ? 'draft'
     : 'view'
 
@@ -178,16 +179,19 @@ export const selectCardtextEditorSessionSnapshot = createSelector(
     (state: RootState) => state.cardtext.presetData,
     (state: RootState) => state.cardtext.appliedData,
     (state: RootState) => state.cardtext.draftData,
+    (state: RootState) => state.cardtext.isCardtextViewEditMode,
   ],
   (
     assetData,
     presetData,
     appliedData,
     draftData,
+    isCardtextViewEditMode,
   ): CardtextEditorSessionSnapshot => ({
     assetData: cloneCardtextBranchNullable(assetData),
     presetData: cloneCardtextBranchNullable(presetData),
     appliedData: cloneCardtextBranchNullable(appliedData),
     draftData: cloneCardtextBranchNullable(draftData),
+    isCardtextViewEditMode,
   }),
 )

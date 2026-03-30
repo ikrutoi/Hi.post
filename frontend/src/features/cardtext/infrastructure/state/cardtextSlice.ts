@@ -121,6 +121,7 @@ export const cardtextSlice = createSlice({
       state.assetData = createInitialCardtextContent()
       state.appliedData = null
       state.isCardtextDraftEngaged = false
+      state.isCardtextViewEditMode = false
       state.resetToken += 1
     },
 
@@ -142,6 +143,7 @@ export const cardtextSlice = createSlice({
       }
       state.assetData = null
       state.isCardtextDraftEngaged = false
+      state.isCardtextViewEditMode = false
       if (isCardtextDraftContentEmpty(state.draftData)) {
         state.draftData = null
       }
@@ -191,13 +193,20 @@ export const cardtextSlice = createSlice({
       ad.status = 'draft'
       state.resetToken += 1
       state.isCardtextDraftEngaged = false
+      state.isCardtextViewEditMode = false
     },
 
     restoreCardtextEditorSession(
       state,
       action: PayloadAction<CardtextEditorSessionSnapshot>,
     ) {
-      const { assetData, presetData, appliedData, draftData } = action.payload
+      const {
+        assetData,
+        presetData,
+        appliedData,
+        draftData,
+        isCardtextViewEditMode,
+      } = action.payload
       state.assetData =
         assetData == null ? null : cloneCardtextBranch(assetData)
       state.presetData =
@@ -209,6 +218,7 @@ export const cardtextSlice = createSlice({
           ? null
           : cloneCardtextBranch(draftData)
       state.isCardtextDraftEngaged = false
+      state.isCardtextViewEditMode = isCardtextViewEditMode ?? false
       state.resetToken += 1
     },
 
@@ -295,6 +305,7 @@ export const cardtextSlice = createSlice({
           .join('\n')
       }
       state.isCardtextDraftEngaged = false
+      state.isCardtextViewEditMode = false
       state.resetToken += 1
     },
 
@@ -388,6 +399,10 @@ export const cardtextSlice = createSlice({
     setCardtextDraftEngaged(state, action: PayloadAction<boolean>) {
       state.isCardtextDraftEngaged = action.payload
     },
+
+    setCardtextViewEditMode(state, action: PayloadAction<boolean>) {
+      state.isCardtextViewEditMode = action.payload
+    },
   },
 })
 
@@ -422,6 +437,7 @@ export const {
   updateCardtextContentInList,
   setDraftFocus,
   setCardtextDraftEngaged,
+  setCardtextViewEditMode,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

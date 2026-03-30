@@ -29,7 +29,7 @@ export const CardSectionEditor: React.FC = () => {
         >
           {activeSection === 'cardtext' && (
             <div className={styles.cardtextToolbarTop}>
-              {cardtextCurrentView === 'cardtextView' ? (
+              {cardtextCurrentView === 'view' ? (
                 <CardtextEditTitleInline />
               ) : null}
             </div>

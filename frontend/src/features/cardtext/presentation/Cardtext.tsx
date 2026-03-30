@@ -1,66 +1,44 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback } from 'react'
 import clsx from 'clsx'
 import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardtextFacade } from '../application/facades/useCardtextFacade'
+import {
+  useCardtextTitleStrip,
+  useLoadCardtextTemplatesWhenUnknown,
+} from '../application/hooks'
+import {
+  resolveCardtextToolbarSection,
+  shouldHideEmptyCreateToolbar,
+} from '../application/helpers'
 import { useAppSelector } from '@app/hooks'
 import {
   selectCardtextAddTemplateOpen,
   selectCardtextAssetStatus,
   selectCardtextId,
+  selectCardtextSource,
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
 } from '@cardtext/infrastructure/selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
-import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import { useAppDispatch } from '@app/hooks'
-import {
-  cardtextTemplateAdded,
-  clearDraftData,
-  setCardtextAddTemplateOpen,
-  setCardtextId,
-  setStatus,
-  setTitle,
-  setDraftFocus,
-  resetCardtextAssetToEmptyDraft,
-  loadCardtextTemplatesRequest,
-  updateCardtextTemplateTitleInList,
-} from '@cardtext/infrastructure/state'
-import { templateService } from '@entities/templates/domain/services/templateService'
+import { setDraftFocus, resetCardtextAssetToEmptyDraft } from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
-import { isEmptyCardtextValue } from '@cardtext/domain/helpers'
 
 interface CardtextProps {
   styleLeft: number
 }
 
-function getUniqueTitle(
-  baseTitle: string,
-  existingTitles: Set<string>,
-): string {
-  if (!baseTitle) return baseTitle
-  if (!existingTitles.has(baseTitle)) return baseTitle
-  let n = 1
-  while (existingTitles.has(`${baseTitle} (${n})`)) n++
-  return `${baseTitle} (${n})`
-}
-
-export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
+export const Cardtext: React.FC<CardtextProps> = ({ styleLeft: _styleLeft }) => {
   const { sizeCard } = useSizeFacade()
-  const {
-    state,
-    currentView,
-    value,
-    style,
-    title,
-    id,
-    plainText,
-    cardtextLines,
-  } = useCardtextFacade()
+  const { state, value, style, title, id, plainText, cardtextLines } =
+    useCardtextFacade()
   console.log('Cardtext state', state)
+
+  const currentView = useAppSelector(selectCardtextSource)
   const currentTemplateId = useAppSelector(selectCardtextId)
   const cardtextAssetStatus = useAppSelector(selectCardtextAssetStatus)
   const isAddTemplateOpen = useAppSelector(selectCardtextAddTemplateOpen)
@@ -68,178 +46,61 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft }) => {
   const cardtextTemplatesLoading = useAppSelector(
     selectCardtextTemplatesListLoading,
   )
+
   const dispatch = useAppDispatch()
-  const { createCardtextTemplate, updateCardtextTemplate } =
-    useTemplateActions()
 
   const handleViewClose = useCallback(() => {
     dispatch(resetCardtextAssetToEmptyDraft())
-    // Do not request draft focus: autofocus hides the empty-state placeholder icon
-    // and pulls the caret into the field right after close.
     dispatch(setDraftFocus(false))
   }, [dispatch])
 
-  const formRef = useRef<HTMLDivElement>(null)
-  const titleInputRef = useRef<HTMLInputElement>(null)
-  const titleStripRef = useRef<HTMLDivElement>(null)
-  const [isEditingTitle, setIsEditingTitle] = useState(false)
-  const [draftTitle, setDraftTitle] = useState('')
-  const [isSubmittingTitle, setIsSubmittingTitle] = useState(false)
+  const {
+    titleInputRef,
+    titleStripRef,
+    draftTitle,
+    setDraftTitle,
+    isSubmittingTitle,
+    forceEditingTitle,
+    startEditTitle,
+    cancelEditTitle,
+    commitEditTitle,
+  } = useCardtextTitleStrip({
+    title,
+    id,
+    value,
+    style,
+    plainText,
+    cardtextLines,
+    cardtextAssetStatus,
+    isAddTemplateOpen,
+    cardtextTemplates,
+  })
 
-  useEffect(() => {
-    if (!isEditingTitle) return
-    const el = titleInputRef.current
-    if (!el) return
-    el.focus()
-    const len = el.value.length
-    el.setSelectionRange(len, len)
-  }, [isEditingTitle])
+  const toolbarSection = resolveCardtextToolbarSection({
+    cardtextAssetStatus,
+    currentView,
+    currentTemplateId,
+    isCardtextViewEditMode: state.isCardtextViewEditMode,
+  })
 
-  useEffect(() => {
-    if (!isAddTemplateOpen) return
-    setDraftTitle('')
-    setIsEditingTitle(true)
-  }, [isAddTemplateOpen])
-
-  useEffect(() => {
-    if (!isAddTemplateOpen || !isEditingTitle) return
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node | null
-      if (!titleStripRef.current || !target) return
-      if (titleStripRef.current.contains(target)) return
-
-      const listAddButton = (event.target as HTMLElement | null)?.closest(
-        '[data-icon-key="listAdd"]',
-      )
-      if (listAddButton) return
-
-      cancelEditTitle()
-    }
-
-    document.addEventListener('mousedown', handleClickOutside, true)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside, true)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAddTemplateOpen, isEditingTitle])
-
-  const startEditTitle = () => {
-    if (isAddTemplateOpen) return
-    if (!title.trim()) return
-    setDraftTitle(title)
-    setIsEditingTitle(true)
-  }
-
-  const cancelEditTitle = () => {
-    setDraftTitle('')
-    setIsEditingTitle(false)
-    if (isAddTemplateOpen) dispatch(setCardtextAddTemplateOpen(false))
-  }
-
-  const commitEditTitle = async () => {
-    if (isSubmittingTitle) return
-
-    const next = draftTitle.trim().slice(0, 60)
-
-    if (!next) {
-      cancelEditTitle()
-      return
-    }
-
-    if (!isAddTemplateOpen && next === title.trim()) {
-      cancelEditTitle()
-      return
-    }
-
-    setIsSubmittingTitle(true)
-    try {
-      if (isAddTemplateOpen) {
-        const existingTitles = new Set(
-          (cardtextTemplates ?? []).map((t) => t.title),
-        )
-        const uniqueTitle = getUniqueTitle(next, existingTitles)
-        const processedFromDb =
-          await templateService.getSingleCardtextByStatus('processed')
-        const processedId =
-          (cardtextAssetStatus === 'processed' && id) ||
-          (processedFromDb?.id != null ? String(processedFromDb.id) : null)
-        const result =
-          processedId != null
-            ? await updateCardtextTemplate(processedId, {
-                value: value ?? [],
-                style,
-                plainText,
-                cardtextLines,
-                title: uniqueTitle,
-                status: 'inLine',
-              })
-            : await createCardtextTemplate({
-                value: value ?? [],
-                style,
-                plainText,
-                cardtextLines,
-                title: uniqueTitle,
-              })
-
-        if (result.success) {
-          dispatch(cardtextTemplateAdded())
-          dispatch(clearDraftData())
-          dispatch(setCardtextId(null))
-          dispatch(setStatus('inLine'))
-        }
-      } else {
-        if (!id) {
-          cancelEditTitle()
-          return
-        }
-        const result = await updateCardtextTemplate(id, { title: next })
-        if (result.success) {
-          dispatch(setTitle(next))
-          dispatch(updateCardtextTemplateTitleInList({ id, title: next }))
-        }
-      }
-    } finally {
-      setIsSubmittingTitle(false)
-    }
-
-    cancelEditTitle()
-  }
-
-  const forceEditingTitle = isAddTemplateOpen || isEditingTitle
-
-  const toolbarSection =
-    cardtextAssetStatus === 'processed'
-      ? 'cardtextProcessed'
-      : currentView === 'draft' && currentTemplateId == null
-      ? 'cardtextCreate'
-      : currentView === 'view'
-        ? 'cardtextView'
-        : 'cardtextEditor'
-
-  /** Empty create row: hide toolbar until user engages (click draft / cardtextAdd) or
-   * there is a materialized empty asset in the store. */
-  const hideEmptyCreateToolbar =
-    currentView === 'draft' &&
-    currentTemplateId == null &&
-    isEmptyCardtextValue(value) &&
-    !isAddTemplateOpen &&
-    (state.assetData != null || !state.isCardtextDraftEngaged)
+  const hideEmptyCreateToolbar = shouldHideEmptyCreateToolbar({
+    currentView,
+    currentTemplateId,
+    value,
+    isAddTemplateOpen,
+    cardtext: {
+      assetData: state.assetData,
+      isCardtextDraftEngaged: state.isCardtextDraftEngaged,
+    },
+  })
 
   const showCardtextToolbarRow = !hideEmptyCreateToolbar
 
-  useEffect(() => {
-    if (cardtextTemplatesLoading) return
-    // Only request when templates are still unknown (`null`).
-    // If server returns empty list, we keep badge hidden without re-fetching.
-    if (cardtextTemplates != null) return
-    dispatch(loadCardtextTemplatesRequest())
-  }, [cardtextTemplatesLoading, dispatch, cardtextTemplates])
+  useLoadCardtextTemplatesWhenUnknown(cardtextTemplatesLoading, cardtextTemplates)
 
   return (
     <div className={styles.cardtextContainer}>
       <div
-        ref={formRef}
         className={styles.cardtext}
         style={{
           width: `${sizeCard.width}px`,
