@@ -10,34 +10,35 @@ export const AromaTile: React.FC<AromaTileProps> = ({
   onSelectAroma,
 }) => {
   const imageSrc = getAromaImage(aromaItem.index)
-  const isSelected =
-    selectedAroma?.make === aromaItem.make &&
-    selectedAroma?.name === aromaItem.name
+  const isSelected = selectedAroma?.index === aromaItem.index
 
   const handleClick = () => {
     onSelectAroma(aromaItem)
   }
+
+  const label =
+    aromaItem.make === '0'
+      ? 'No Aroma'
+      : aromaItem.make || aromaItem.name
+        ? `${aromaItem.make} — ${aromaItem.name}`
+        : 'Empty slot'
 
   return (
     <button
       className={clsx(styles.tile, { [styles.tileSelected]: isSelected })}
       type="submit"
       onClick={handleClick}
+      aria-label={label}
     >
-      <span className={styles.tileLabelWrap}>
-        <span className={styles.tileMake}>
-          {aromaItem.make === '0' ? 'No Aroma' : aromaItem.make}
-        </span>
-        <span className={styles.tileName}>
-          {aromaItem.make === '0' ? 'No Aroma' : aromaItem.name}
-        </span>
-      </span>
       <span className={styles.tileImageWrap}>
-        <img
-          className={styles.tileImage}
-          alt={aromaItem.name}
-          src={imageSrc}
-        />
+        {imageSrc ? (
+          <img
+            className={styles.tileImage}
+            alt=""
+            draggable={false}
+            src={imageSrc}
+          />
+        ) : null}
       </span>
     </button>
   )

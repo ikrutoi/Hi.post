@@ -53,7 +53,7 @@ export const selectSizeItemCalendar = createSelector(
 )
 
 const AROMA_TILE_SCALE = 1
-const AROMA_GRID_SIZE = 5
+const AROMA_GRID_SIZE = 3
 
 export const selectSizeItemAroma = createSelector(
   [selectSizeCard, selectRemSize],
