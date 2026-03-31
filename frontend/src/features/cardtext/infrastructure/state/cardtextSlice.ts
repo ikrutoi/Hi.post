@@ -129,19 +129,10 @@ export const cardtextSlice = createSlice({
     /**
      * No active asset session (`assetData === null`). Editor shows defaults from selectors;
      * `appliedData` unchanged. Next edit dispatches use `ensureAsset` to materialize content.
-     * If `assetData.id` and `presetData.id` are the same template, clears `presetData` too
-     * (e.g. close editor for the preset you came from).
+     * `presetData` is not touched — it tracks the last template picked from the list until
+     * the user replaces it or session restore overwrites it.
      */
     resetCardtextAssetToEmptyDraft(state) {
-      const assetId = state.assetData?.id ?? null
-      const presetId = state.presetData?.id ?? null
-      if (
-        assetId != null &&
-        presetId != null &&
-        String(assetId) === String(presetId)
-      ) {
-        state.presetData = null
-      }
       state.assetData = null
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false

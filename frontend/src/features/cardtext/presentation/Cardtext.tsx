@@ -25,7 +25,11 @@ import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
 import { useAppDispatch } from '@app/hooks'
-import { setDraftFocus, resetCardtextAssetToEmptyDraft } from '@cardtext/infrastructure/state'
+import {
+  setDraftFocus,
+  resetCardtextAssetToEmptyDraft,
+  restoreCardtextSession,
+} from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
 
 interface CardtextProps {
@@ -36,7 +40,6 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft: _styleLeft }) => 
   const { sizeCard } = useSizeFacade()
   const {
     state,
-    interactionMode,
     value,
     style,
     title,
@@ -44,7 +47,6 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft: _styleLeft }) => 
     plainText,
     cardtextLines,
   } = useCardtextFacade()
-  console.log('Cardtext state', state, { interactionMode })
 
   const currentView = useAppSelector(selectCardtextSource)
   const currentTemplateId = useAppSelector(selectCardtextId)
@@ -58,9 +60,20 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft: _styleLeft }) => 
   const dispatch = useAppDispatch()
 
   const handleViewClose = useCallback(() => {
+    const assetId = state.assetData?.id ?? null
+    const presetId = state.presetData?.id ?? null
+    if (
+      state.presetData != null &&
+      presetId != null &&
+      String(assetId) !== String(presetId)
+    ) {
+      dispatch(restoreCardtextSession(state.presetData))
+      dispatch(setDraftFocus(false))
+      return
+    }
     dispatch(resetCardtextAssetToEmptyDraft())
     dispatch(setDraftFocus(false))
-  }, [dispatch])
+  }, [dispatch, state.assetData?.id, state.presetData])
 
   const {
     titleInputRef,

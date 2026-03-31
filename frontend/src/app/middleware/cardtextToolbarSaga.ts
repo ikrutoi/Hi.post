@@ -20,7 +20,6 @@ import {
   toggleCardtextListSortDirection,
   clearText,
   resetCardtextAssetToEmptyDraft,
-  setCardtextPresetData,
   restoreCardtextSession,
   setDraftEngaged,
   setCardtextViewEditMode,
@@ -32,7 +31,6 @@ import {
   selectCardtextFavorite,
   selectCardtextPlainText,
   selectCardtextLines,
-  selectCardtextSessionData,
   selectCardtextInteractionMode,
 } from '@cardtext/infrastructure/selectors'
 import type { CardtextInteractionMode } from '@cardtext/domain/cardtextInteractionMode'
@@ -229,8 +227,9 @@ export function* handleCardtextToolbarAction(
         yield put(setCardtextAppliedData(null))
         yield put(setCardtextId(null))
         yield put(clearText())
-        // После clearText assetData = null; setStatus не материализует — восстанавливаем пустой inLine на открытке.
-        yield put(restoreCardtextSession({ status: 'inLine', id: null }))
+        // Не вызываем restoreCardtextSession: иначе появляется материализованный asset со статусом
+        // inLine/view → открывается CardtextView вместо редактора с плейсхолдером (createEmpty).
+        // Слот на открытке для селекторов остаётся inLine по умолчанию при assetData === null.
       }
       break
 
@@ -286,12 +285,6 @@ export function* handleCardtextToolbarAction(
           yield put(setStatus('processed'))
           yield put(setDraftFocus(false))
           break
-        }
-        const snapshot: ReturnType<typeof selectCardtextSessionData> =
-          yield select(selectCardtextSessionData)
-        // Preserve "return target" when leaving a selected preset for create mode.
-        if (snapshot?.id != null) {
-          yield put(setCardtextPresetData(snapshot))
         }
         const draftFromDb: ReturnType<typeof templateService.getSingleCardtextByStatus> =
           yield call([templateService, 'getSingleCardtextByStatus'], 'draft')

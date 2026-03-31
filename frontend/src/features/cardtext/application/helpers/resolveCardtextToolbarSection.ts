@@ -40,8 +40,9 @@ export function resolveCardtextToolbarSection(
 }
 
 /**
- * Пустая строка создания: не показываем тулбар, пока пользователь не «вовлёк» редактор
- * или не появился материализованный пустой asset.
+ * Пустая строка создания: не показываем тулбар только в «холодном» плейсхолдере —
+ * нет сессии и пользователь ещё не вовлёк редактор. Если редактор уже открыт
+ * (isDraftEngaged или есть assetData), пустой текст не должен прятать cardtextCreate.
  */
 export function shouldHideEmptyCreateToolbar(input: {
   currentView: 'draft' | 'view'
@@ -62,6 +63,7 @@ export function shouldHideEmptyCreateToolbar(input: {
     currentTemplateId == null &&
     isEmptyCardtextValue(value) &&
     !isAddTemplateOpen &&
-    (cardtext.assetData != null || !cardtext.isDraftEngaged)
+    cardtext.assetData == null &&
+    !cardtext.isDraftEngaged
   )
 }

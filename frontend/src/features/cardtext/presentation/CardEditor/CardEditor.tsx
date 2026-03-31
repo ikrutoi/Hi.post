@@ -15,13 +15,15 @@ import {
   resetCardtextAssetToEmptyDraft,
   setCardtextViewEditMode,
   setStatus,
+  restoreCardtextSession,
+  setDraftData,
 } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
 import { IconX } from '@shared/ui/icons'
 import { isEmptyCardtextValue } from '../../domain/helpers'
 import styles from './CardEditor.module.scss'
 import viewStyles from '../CardtextView/CardtextView.module.scss'
-import type { CardtextValue } from '../../domain/types'
+import type { CardtextContent, CardtextValue } from '../../domain/types'
 
 type CardEditorProps = {
   /** Tighter top padding when the floating title strip is in edit mode (e.g. save template) */
@@ -127,10 +129,43 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       dispatch(setDraftEngaged(false))
       return
     }
+
+    const persistCurrentEditorAsDraftData = () => {
+      const plain = (cardtextAssetData.plainText ?? '').trim()
+      if (!plain.length) return
+      const draft: CardtextContent = {
+        id: null,
+        status: 'draft',
+        value: cardtextAssetData.value.map((b) => ({
+          ...b,
+          children: b.children.map((c) => ({ ...c })),
+        })),
+        style: { ...cardtextAssetData.style },
+        title: cardtextAssetData.title ?? '',
+        plainText: cardtextAssetData.plainText,
+        cardtextLines: cardtextAssetData.cardtextLines,
+        favorite: cardtextAssetData.favorite ?? null,
+        timestamp: cardtextAssetData.timestamp,
+      }
+      dispatch(setDraftData(draft))
+    }
+
+    const assetId = cardtextAssetData.id ?? null
+    const presetId = cardtextPresetData?.id ?? null
+    if (
+      cardtextPresetData != null &&
+      presetId != null &&
+      String(assetId) !== String(presetId)
+    ) {
+      persistCurrentEditorAsDraftData()
+      dispatch(restoreCardtextSession(cardtextPresetData))
+      return
+    }
     if (
       cardtextPresetData == null &&
       cardtextAssetData.status === 'draft'
     ) {
+      persistCurrentEditorAsDraftData()
       dispatch(resetCardtextAssetToEmptyDraft())
       return
     }
