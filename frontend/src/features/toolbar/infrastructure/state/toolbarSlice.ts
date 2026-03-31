@@ -21,8 +21,7 @@ import {
   initialAddressFormRecipientViewToolbarState,
   initialCardtextListToolbarState,
   initialCardtextViewToolbarState,
-  initialCardtextEditorToolbarState,
-  initialCardtextCreateToolbarState,
+  initialCardtextComposerToolbarState,
   initialCardphotoProcessedToolbarState,
   initialCardphotoViewToolbarState,
   initialCardphotoCreateToolbarState,
@@ -68,8 +67,8 @@ const initialState: ToolbarState = {
   addressFormRecipientView: initialAddressFormRecipientViewToolbarState,
   cardtextList: initialCardtextListToolbarState,
   cardtextView: initialCardtextViewToolbarState,
-  cardtextEditor: initialCardtextEditorToolbarState,
-  cardtextCreate: initialCardtextCreateToolbarState,
+  cardtextEditor: initialCardtextComposerToolbarState,
+  cardtextCreate: initialCardtextComposerToolbarState,
   cardtextProcessed: initialCardtextProcessedToolbarState,
 }
 

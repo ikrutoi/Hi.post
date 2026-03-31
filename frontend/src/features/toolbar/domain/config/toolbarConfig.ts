@@ -65,10 +65,8 @@ import { cardtextToolbarController } from '@cardtext/application/controllers'
 
 import type { ToolbarState, ToolbarSectionConfigMap } from '../types'
 import {
-  CARDTEXT_EDITOR_TOOLBAR,
-  CARDTEXT_CREATE_TOOLBAR,
-  initialCardtextCreateToolbarState,
-  initialCardtextEditorToolbarState,
+  CARDTEXT_COMPOSER_TOOLBAR,
+  initialCardtextComposerToolbarState,
   CARDTEXT_PROCESSED_TOOLBAR,
   initialCardtextProcessedToolbarState,
 } from '../types/cardtext.types'
@@ -372,7 +370,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
 
   cardtextEditor: {
     keys: CARDTEXT_KEYS,
-    initialState: initialCardtextEditorToolbarState,
+    initialState: initialCardtextComposerToolbarState,
     onAction: (key, section, editor, dispatch) => {
       switch (key) {
         case 'left':
@@ -391,17 +389,17 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     },
     group: 'cardtextEditor',
     getBadges: (state: ToolbarState['cardtextEditor']) => ({}),
-    toolbar: CARDTEXT_EDITOR_TOOLBAR,
+    toolbar: CARDTEXT_COMPOSER_TOOLBAR,
   },
 
   cardtextCreate: {
     keys: CARDTEXT_KEYS,
-    initialState: initialCardtextCreateToolbarState,
+    initialState: initialCardtextComposerToolbarState,
     onAction: (key, section, _editor, dispatch) => {
       dispatch({ type: 'toolbar/action', payload: { section, key } })
     },
     group: 'cardtextCreate',
     getBadges: (state: ToolbarState['cardtextCreate']) => ({}),
-    toolbar: CARDTEXT_CREATE_TOOLBAR,
+    toolbar: CARDTEXT_COMPOSER_TOOLBAR,
   },
 }

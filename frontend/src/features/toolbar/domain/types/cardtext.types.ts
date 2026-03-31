@@ -47,39 +47,9 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const CARDTEXT_CREATE_TOOLBAR: ToolbarConfig = [
+export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
   {
     group: 'create',
-    icons: [{ key: 'cardtextCheck', state: 'enabled' }],
-    status: 'enabled',
-  },
-  {
-    group: 'font',
-    icons: [
-      { key: 'fontSizeLess', state: 'enabled' },
-      { key: 'fontSizeIndicator', state: 'enabled' },
-      { key: 'fontSizeMore', state: 'enabled' },
-      { key: 'fontFamily', state: 'enabled' },
-      { key: 'colorPicker', state: 'enabled' },
-      { key: 'left', state: 'enabled' },
-      // { key: 'empty', state: 'disabled' },
-      // { key: 'close', state: 'disabled' },
-    ],
-    status: 'enabled',
-  },
-  {
-    group: 'close',
-    icons: [
-      // { key: 'close', state: 'disabled' },
-      { key: 'empty', state: 'disabled' },
-    ],
-    status: 'enabled',
-  },
-]
-
-export const CARDTEXT_EDITOR_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'editor',
     icons: [{ key: 'cardtextCheck', state: 'enabled' }],
     status: 'enabled',
   },
@@ -148,14 +118,9 @@ export const initialCardtextToolbarState: CardtextToolbarState = {
   config: [...CARDTEXT_TOOLBAR],
 }
 
-export const initialCardtextCreateToolbarState: CardtextToolbarState = {
-  ...Object.fromEntries(flattenIcons(CARDTEXT_CREATE_TOOLBAR)),
-  config: [...CARDTEXT_CREATE_TOOLBAR],
-}
-
-export const initialCardtextEditorToolbarState: CardtextToolbarState = {
-  ...Object.fromEntries(flattenIcons(CARDTEXT_EDITOR_TOOLBAR)),
-  config: [...CARDTEXT_EDITOR_TOOLBAR],
+export const initialCardtextComposerToolbarState: CardtextToolbarState = {
+  ...Object.fromEntries(flattenIcons(CARDTEXT_COMPOSER_TOOLBAR)),
+  config: [...CARDTEXT_COMPOSER_TOOLBAR],
 }
 
 export const initialCardtextViewToolbarState: CardtextToolbarState = {
