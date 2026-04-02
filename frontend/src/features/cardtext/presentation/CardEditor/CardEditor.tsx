@@ -16,7 +16,6 @@ import {
   setCardtextViewEditMode,
   setStatus,
   restoreCardtextSession,
-  setDraftData,
   setCardtextAppliedData,
 } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
@@ -24,7 +23,7 @@ import { IconX } from '@shared/ui/icons'
 import { isEmptyCardtextValue } from '../../domain/helpers'
 import styles from './CardEditor.module.scss'
 import viewStyles from '../CardtextView/CardtextView.module.scss'
-import type { CardtextContent, CardtextValue } from '../../domain/types'
+import type { CardtextValue } from '../../domain/types'
 
 type CardEditorProps = {
   /** Tighter top padding when the floating title strip is in edit mode (e.g. save template) */
@@ -132,26 +131,6 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       return
     }
 
-    const persistCurrentEditorAsDraftData = () => {
-      const plain = (cardtextAssetData.plainText ?? '').trim()
-      if (!plain.length) return
-      const draft: CardtextContent = {
-        id: null,
-        status: 'draft',
-        value: cardtextAssetData.value.map((b) => ({
-          ...b,
-          children: b.children.map((c) => ({ ...c })),
-        })),
-        style: { ...cardtextAssetData.style },
-        title: cardtextAssetData.title ?? '',
-        plainText: cardtextAssetData.plainText,
-        cardtextLines: cardtextAssetData.cardtextLines,
-        favorite: cardtextAssetData.favorite ?? null,
-        timestamp: cardtextAssetData.timestamp,
-      }
-      dispatch(setDraftData(draft))
-    }
-
     if (
       cardtextAppliedData != null &&
       cardtextAppliedData.status === 'processed' &&
@@ -173,31 +152,33 @@ export const CardEditor: React.FC<CardEditorProps> = ({
 
     const assetId = cardtextAssetData.id ?? null
     const presetId = cardtextPresetData?.id ?? null
+    const st = cardtextAssetData.status
+
+    if (st === 'inLine' || st === 'outLine') {
+      dispatch(setCardtextViewEditMode(false))
+      if (cardtextPresetData != null) {
+        dispatch(restoreCardtextSession(cardtextPresetData))
+      } else {
+        dispatch(setStatus(st))
+      }
+      return
+    }
+
     if (
       cardtextPresetData != null &&
       presetId != null &&
       String(assetId) !== String(presetId)
     ) {
-      persistCurrentEditorAsDraftData()
       dispatch(restoreCardtextSession(cardtextPresetData))
       return
     }
-    if (
-      cardtextPresetData == null &&
-      cardtextAssetData.status === 'draft'
-    ) {
-      persistCurrentEditorAsDraftData()
+    if (cardtextPresetData == null && cardtextAssetData.status === 'draft') {
       dispatch(resetCardtextAssetToEmptyDraft())
       return
     }
     // Редактирование с открытки: сбрасываем флаг, иначе selectCardtextSource остаётся draft и тулбар cardtextCreate.
     dispatch(setCardtextViewEditMode(false))
-    const st = cardtextAssetData.status
-    if (st === 'inLine' || st === 'outLine') {
-      dispatch(setStatus(st))
-    } else {
-      setCurrentView('view')
-    }
+    setCurrentView('view')
   }, [
     cardtextAppliedData,
     cardtextAssetData,
