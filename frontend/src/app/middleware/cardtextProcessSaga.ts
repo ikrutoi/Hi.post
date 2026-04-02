@@ -28,6 +28,7 @@ import {
   restoreCardtextEditorSession,
   restoreCardtextSession,
   setStatus,
+  setCardtextId,
   setCardtextAddTemplateOpen,
   setDraftEngaged,
   resetCardtextAssetToEmptyDraft,

@@ -17,6 +17,7 @@ import {
   setStatus,
   restoreCardtextSession,
   setDraftData,
+  setCardtextAppliedData,
 } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
 import { IconX } from '@shared/ui/icons'
@@ -36,6 +37,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   const dispatch = useAppDispatch()
   const requestFocus = useAppSelector(selectIsDraftFocus)
   const cardtextAssetData = useAppSelector((s) => s.cardtext.assetData)
+  const cardtextAppliedData = useAppSelector((s) => s.cardtext.appliedData)
   const cardtextPresetData = useAppSelector((s) => s.cardtext.presetData)
   const isDraftEngaged = useAppSelector((s) => s.cardtext.isDraftEngaged)
   const {
@@ -150,6 +152,25 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       dispatch(setDraftData(draft))
     }
 
+    if (
+      cardtextAppliedData != null &&
+      cardtextAppliedData.status === 'processed' &&
+      cardtextAssetData.status === 'draft'
+    ) {
+      dispatch(
+        restoreCardtextSession({
+          ...cardtextAppliedData,
+          value: cardtextAppliedData.value.map((b) => ({
+            ...b,
+            children: b.children.map((c) => ({ ...c })),
+          })),
+          style: { ...cardtextAppliedData.style },
+        }),
+      )
+      dispatch(setCardtextAppliedData(null))
+      return
+    }
+
     const assetId = cardtextAssetData.id ?? null
     const presetId = cardtextPresetData?.id ?? null
     if (
@@ -178,6 +199,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       setCurrentView('view')
     }
   }, [
+    cardtextAppliedData,
     cardtextAssetData,
     cardtextPresetData,
     dispatch,

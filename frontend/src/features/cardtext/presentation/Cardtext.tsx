@@ -27,8 +27,9 @@ import viewStyles from './CardtextView/CardtextView.module.scss'
 import { useAppDispatch } from '@app/hooks'
 import {
   setDraftFocus,
-  resetCardtextAssetToEmptyDraft,
   restoreCardtextSession,
+  resetCardtextAssetToEmptyDraft,
+  setCardtextPresetData,
 } from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
 
@@ -36,17 +37,12 @@ interface CardtextProps {
   styleLeft: number
 }
 
-export const Cardtext: React.FC<CardtextProps> = ({ styleLeft: _styleLeft }) => {
+export const Cardtext: React.FC<CardtextProps> = ({
+  styleLeft: _styleLeft,
+}) => {
   const { sizeCard } = useSizeFacade()
-  const {
-    state,
-    value,
-    style,
-    title,
-    id,
-    plainText,
-    cardtextLines,
-  } = useCardtextFacade()
+  const { state, value, style, title, id, plainText, cardtextLines } =
+    useCardtextFacade()
 
   const currentView = useAppSelector(selectCardtextSource)
   const currentTemplateId = useAppSelector(selectCardtextId)
@@ -57,23 +53,39 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft: _styleLeft }) => 
     selectCardtextTemplatesListLoading,
   )
 
+  console.log('CARDTEXT STATE', state)
+
   const dispatch = useAppDispatch()
 
   const handleViewClose = useCallback(() => {
+    dispatch(setDraftFocus(false))
+
     const assetId = state.assetData?.id ?? null
     const presetId = state.presetData?.id ?? null
-    if (
-      state.presetData != null &&
+    const st = state.assetData?.status
+    const isListTemplate = st === 'inLine' || st === 'outLine'
+    const presetMatchesView =
+      assetId != null &&
       presetId != null &&
-      String(assetId) !== String(presetId)
-    ) {
+      String(assetId) === String(presetId)
+
+    if (isListTemplate && presetMatchesView) {
+      dispatch(setCardtextPresetData(null))
+      dispatch(resetCardtextAssetToEmptyDraft())
+      return
+    }
+
+    if (state.presetData != null) {
       dispatch(restoreCardtextSession(state.presetData))
-      dispatch(setDraftFocus(false))
       return
     }
     dispatch(resetCardtextAssetToEmptyDraft())
-    dispatch(setDraftFocus(false))
-  }, [dispatch, state.assetData?.id, state.presetData])
+  }, [
+    dispatch,
+    state.assetData?.id,
+    state.assetData?.status,
+    state.presetData,
+  ])
 
   const {
     titleInputRef,
@@ -117,7 +129,10 @@ export const Cardtext: React.FC<CardtextProps> = ({ styleLeft: _styleLeft }) => 
 
   const showCardtextToolbarRow = !hideEmptyCreateToolbar
 
-  useLoadCardtextTemplatesWhenUnknown(cardtextTemplatesLoading, cardtextTemplates)
+  useLoadCardtextTemplatesWhenUnknown(
+    cardtextTemplatesLoading,
+    cardtextTemplates,
+  )
 
   return (
     <div className={styles.cardtextContainer}>

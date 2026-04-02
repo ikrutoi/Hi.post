@@ -395,6 +395,7 @@ export const cardtextSlice = createSlice({
     setCardtextViewEditMode(state, action: PayloadAction<boolean>) {
       state.isCardtextViewEditMode = action.payload
     },
+
   },
 })
 

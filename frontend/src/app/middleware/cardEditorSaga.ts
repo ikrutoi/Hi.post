@@ -1,3 +1,4 @@
+import type { SagaIterator } from 'redux-saga'
 import { takeEvery, put, select, call, fork } from 'redux-saga/effects'
 import {
   setSectionComplete,
@@ -82,6 +83,7 @@ import {
   setProcessedCard,
   syncProcessedRequest,
 } from '@entities/card/infrastructure/state'
+import type { RootState } from '@app/state'
 import type { DispatchDate } from '@entities/date'
 import type { CardphotoState } from '@cardphoto/domain/types'
 import type { CardtextState } from '@cardtext/domain/types'
@@ -129,7 +131,7 @@ function* syncCardtextReset() {
   yield put(clearSection('cardtext'))
 }
 
-function* syncCardtextToolbar() {
+function* syncCardtextToolbar(): SagaIterator {
   const value: ReturnType<typeof selectCardtextValue> =
     yield select(selectCardtextValue)
   const assetMatchesApplied: boolean = yield select(
@@ -185,8 +187,6 @@ function* checkAndSyncProcessedCard() {
   const calendarDate: DispatchDate = yield select(selectSelectedDate)
   const aroma: AromaItem = yield select(selectSelectedAroma)
 
-  console.log('CHECK_AND_SYNC_PROCESSED photo', cardphoto)
-
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
 
@@ -205,7 +205,6 @@ function* checkAndSyncProcessedCard() {
     },
   }
 
-  console.log('CHECK_AND_SYNC_PROCESSED processedCard', processedCard)
   yield put(setProcessedCard(processedCard))
 }
 
@@ -216,10 +215,12 @@ function* handleFullCopy(
   const donor: Card | undefined = yield select(selectCardById(donorId))
 
   if (donor) {
-    yield put(applyFinal(donor.cardphoto))
-    yield put(
-      setValue(donor.cardtext.assetData?.value ?? initialCardtextValue),
-    )
+    const donorPhoto =
+      donor.cardphoto.appliedData ?? donor.cardphoto.assetData ?? null
+    if (donorPhoto) {
+      yield put(applyFinal(donorPhoto))
+    }
+    yield put(setValue(donor.cardtext.assetData?.value ?? initialCardtextValue))
     yield put(restoreSender(donor.envelope.sender))
     yield put(restoreRecipient(donor.envelope.recipient))
     yield put(setAroma(donor.aroma))
@@ -283,14 +284,14 @@ export function* cardEditorSaga() {
       updateSenderField.type,
       updateRecipientField.type,
       setEnabled.type,
-  setSenderApplied.type,
-  setSenderAppliedIds.type,
-  setSenderAppliedWithData.type,
-  setSenderAppliedData.type,
-  setRecipientApplied.type,
-  setRecipientAppliedWithData.type,
-  removeAppliedAt.type,
-  setRecipientAppliedData.type,
+      setSenderApplied.type,
+      setSenderAppliedIds.type,
+      setSenderAppliedWithData.type,
+      setSenderAppliedData.type,
+      setRecipientApplied.type,
+      setRecipientAppliedWithData.type,
+      removeAppliedAt.type,
+      setRecipientAppliedData.type,
     ],
     syncEnvelopeStatus,
   )
@@ -304,13 +305,14 @@ export function* cardEditorSaga() {
     syncEnvelopeClear,
   )
 
-  yield takeEvery(setRecipientMode.type, function* (
-    action: ReturnType<typeof setRecipientMode>,
-  ) {
-    if (action.payload === 'recipient') {
-      yield put(clearRecipientsList())
-    }
-  })
+  yield takeEvery(
+    setRecipientMode.type,
+    function* (action: ReturnType<typeof setRecipientMode>) {
+      if (action.payload === 'recipient') {
+        yield put(clearRecipientsList())
+      }
+    },
+  )
 
   yield takeEvery(
     [
@@ -350,14 +352,14 @@ export function* cardEditorSaga() {
   yield takeEvery(clearText.type, syncCardtextReset)
 
   yield takeEvery(
-  [
-    applyFinal.type,
-    clearApply.type,
-    reset.type,
-    resetCropLayers.type,
-    hydrateEditor.type,
-    restoreSession.type,
-  ],
-  syncCardphotoStatus,
-)
+    [
+      applyFinal.type,
+      clearApply.type,
+      reset.type,
+      resetCropLayers.type,
+      hydrateEditor.type,
+      restoreSession.type,
+    ],
+    syncCardphotoStatus,
+  )
 }

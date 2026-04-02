@@ -34,8 +34,20 @@ import {
   selectCardtextInteractionMode,
 } from '@cardtext/infrastructure/selectors'
 import type { CardtextInteractionMode } from '@cardtext/domain/cardtextInteractionMode'
+import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
 import { applyCardtextFromToolbar } from './cardtextToolbarApplySaga'
 import { templateService } from '@entities/templates/domain/services/templateService'
+
+function cloneCardtextBranch(c: CardtextContent): CardtextContent {
+  return {
+    ...c,
+    value: c.value.map((b) => ({
+      ...b,
+      children: b.children.map((ch) => ({ ...ch })),
+    })),
+    style: { ...c.style },
+  }
+}
 
 export function* handleCardtextToolbarAction(
   action: ReturnType<typeof toolbarAction>,
@@ -139,6 +151,7 @@ export function* handleCardtextToolbarAction(
         yield put(clearDraftData())
         yield put(setCardtextId(templateId))
         yield put(setStatus('processed'))
+        yield put(setCardtextAppliedData(null))
         yield put(loadCardtextTemplatesRequest())
       }
       break
@@ -160,7 +173,18 @@ export function* handleCardtextToolbarAction(
         // Edit from processed mode should open create editor flow
         // with current text content.
         yield put(setCardtextViewEditMode(false))
-        yield put(setCardtextAppliedData(null))
+        const { assetData: slotAsset } = yield select(
+          (s: RootState) => s.cardtext,
+        )
+        if (
+          slotAsset != null &&
+          slotAsset.status === 'processed' &&
+          slotAsset.id != null
+        ) {
+          yield put(setCardtextAppliedData(cloneCardtextBranch(slotAsset)))
+        } else {
+          yield put(setCardtextAppliedData(null))
+        }
         yield put(setCardtextId(null))
         yield put(setStatus('draft'))
         yield put(setDraftFocus(true))
