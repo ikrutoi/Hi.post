@@ -18,7 +18,6 @@ import {
   clearDraftData,
   setCardtextAppliedData,
   toggleCardtextListSortDirection,
-  clearText,
   resetCardtextAssetToEmptyDraft,
   restoreCardtextSession,
   setDraftEngaged,
@@ -151,7 +150,6 @@ export function* handleCardtextToolbarAction(
         yield put(clearDraftData())
         yield put(setCardtextId(templateId))
         yield put(setStatus('processed'))
-        yield put(setCardtextAppliedData(null))
         yield put(loadCardtextTemplatesRequest())
       }
       break
@@ -248,12 +246,14 @@ export function* handleCardtextToolbarAction(
     case 'delete':
       if (interactionMode === 'processedSlot') {
         yield call([templateService, 'deleteSingleCardtextByStatus'], 'processed')
-        yield put(setCardtextAppliedData(null))
-        yield put(setCardtextId(null))
-        yield put(clearText())
-        // Не вызываем restoreCardtextSession: иначе появляется материализованный asset со статусом
-        // inLine/view → открывается CardtextView вместо редактора с плейсхолдером (createEmpty).
-        // Слот на открытке для селекторов остаётся inLine по умолчанию при assetData === null.
+        const presetData: CardtextContent | null = yield select(
+          (s: RootState) => s.cardtext.presetData,
+        )
+        if (presetData != null) {
+          yield put(restoreCardtextSession(presetData))
+        } else {
+          yield put(resetCardtextAssetToEmptyDraft())
+        }
       }
       break
 
