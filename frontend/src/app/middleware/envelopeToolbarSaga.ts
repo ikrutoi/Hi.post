@@ -813,8 +813,18 @@ function* syncRecipientsViewIdsFromPending() {
 function* syncRecipientModeWithActiveList(
   action: PayloadAction<'recipient' | 'recipients'>,
 ) {
-  if (action.payload === 'recipient' || action.payload === 'recipients') {
-    yield put(setActiveAddressList(action.payload))
+  const active: 'sender' | 'recipient' | 'recipients' | null =
+    yield select(selectActiveAddressList)
+
+  if (action.payload === 'recipients') {
+    if (active === 'recipient') {
+      yield put(closeAddressList())
+    }
+    return
+  }
+
+  if (action.payload === 'recipient' && active === 'recipients') {
+    yield put(closeAddressList())
   }
 }
 

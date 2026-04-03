@@ -9,6 +9,8 @@ import styles from './MiniCard.module.scss'
 import type { CardSection } from '@shared/config/constants'
 import type { SizeCard } from '@layout/domain/types'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
+import { useAppSelector } from '@app/hooks'
+import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
 
 interface MiniCardProps {
   section: CardSection
@@ -32,11 +34,14 @@ export const MiniCard: React.FC<MiniCardProps> = ({
 
   const { changeSection } = useSectionMenuFacade()
   const { editorState, removeSection } = useCardEditorFacade()
+  const hasEnvelopeApplied = useAppSelector(selectHasEnvelopeAppliedContent)
 
   const { render } = useMiniCardRender()
 
   const showClearButton = !!editorState
-    ? (editorState as any)?.[section]?.isComplete === true
+    ? section === 'envelope'
+      ? hasEnvelopeApplied
+      : (editorState as any)?.[section]?.isComplete === true
     : false
 
   return (

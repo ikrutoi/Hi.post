@@ -181,6 +181,13 @@ export const selectIsEnvelopeReady = createSelector(
   (envelope) => envelope.isComplete,
 )
 
+/** True if mini-card / clear control should allow clearing envelope (any applied address). */
+export const selectHasEnvelopeAppliedContent = createSelector(
+  [selectSenderState, selectRecipientState],
+  (sender, recipient) =>
+    (sender.applied?.length ?? 0) > 0 || (recipient.applied?.length ?? 0) > 0,
+)
+
 export const selectRecipientsToolbarStateWithLiveAddressList = createSelector(
   [
     (s: RootState) => s.toolbar?.recipients ?? {},

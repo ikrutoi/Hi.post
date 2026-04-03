@@ -12,6 +12,8 @@ export const MiniEnvelope: React.FC = () => {
   const { appliedRecipientAddress, recipient } = useEnvelopeFacade()
   const { state: senderState, isEnabled } = useSenderFacade()
   const count = recipient.applied.length
+  const hasSenderApplied = isEnabled && senderState.applied.length > 0
+  const showMini = count > 0 || hasSenderApplied
   const isSingle = count === 1
   const { steps, isMany } = getEnvelopeCircleSteps(count)
   const stepsToRender = isSingle ? getEnvelopeCircleSteps(2).steps : steps
@@ -59,7 +61,7 @@ export const MiniEnvelope: React.FC = () => {
     }
   }, [isSingle, appliedRecipientAddress.name, appliedRecipientAddress.country])
 
-  if (count === 0) {
+  if (!showMini) {
     return null
   }
 
@@ -99,42 +101,43 @@ export const MiniEnvelope: React.FC = () => {
         </div>
       )}
       {/* <div className={styles.miniEnvelopeLogo} /> */}
-      {isSingle ? (
-        <div className={styles.miniEnvelopeSingleContent}>
-          <div
-            ref={nameWrapperRef}
-            className={clsx(
-              styles.miniEnvelopeAddress,
-              styles.miniEnvelopeName,
-              hasNameOverflow && styles.miniEnvelopeNameOverflow,
-            )}
-          >
-            <span ref={nameInnerRef} className={styles.miniEnvelopeNameInner}>
-              {appliedRecipientAddress.name}
-            </span>
-          </div>
-          <div
-            ref={countryWrapperRef}
-            className={clsx(
-              styles.miniEnvelopeAddress,
-              styles.miniEnvelopeCountry,
-              hasCountryOverflow && styles.miniEnvelopeCountryOverflow,
-            )}
-          >
-            <span
-              ref={countryInnerRef}
-              className={styles.miniEnvelopeCountryInner}
+      {count > 0 &&
+        (isSingle ? (
+          <div className={styles.miniEnvelopeSingleContent}>
+            <div
+              ref={nameWrapperRef}
+              className={clsx(
+                styles.miniEnvelopeAddress,
+                styles.miniEnvelopeName,
+                hasNameOverflow && styles.miniEnvelopeNameOverflow,
+              )}
             >
-              {appliedRecipientAddress.country}
-            </span>
+              <span ref={nameInnerRef} className={styles.miniEnvelopeNameInner}>
+                {appliedRecipientAddress.name}
+              </span>
+            </div>
+            <div
+              ref={countryWrapperRef}
+              className={clsx(
+                styles.miniEnvelopeAddress,
+                styles.miniEnvelopeCountry,
+                hasCountryOverflow && styles.miniEnvelopeCountryOverflow,
+              )}
+            >
+              <span
+                ref={countryInnerRef}
+                className={styles.miniEnvelopeCountryInner}
+              >
+                {appliedRecipientAddress.country}
+              </span>
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className={styles.miniEnvelopeCount}>
-          <span>{recipient.applied.length}</span>
-        </div>
-      )}
-      {isEnabled && senderState.applied.length > 0 && (
+        ) : (
+          <div className={styles.miniEnvelopeCount}>
+            <span>{recipient.applied.length}</span>
+          </div>
+        ))}
+      {hasSenderApplied && (
         <>
           <div className={styles.miniEnvelopeSender}></div>
           <span className={styles.miniEnvelopeSenderName}>
