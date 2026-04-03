@@ -6,11 +6,13 @@ export type DispatchDate = {
 
 export type SelectedDispatchDate = DispatchDate | null
 
-/** Первый день недели в календаре (настройка MON/SUN). */
+export type DispatchDateList = DispatchDate[]
+
 export type FirstDayOfWeekPreference = 'Sun' | 'Mon'
 
 export interface DateState {
   selectedDate: SelectedDispatchDate
+  selectedDates: DispatchDateList
   isComplete: boolean
   firstDayOfWeek: FirstDayOfWeekPreference
 }

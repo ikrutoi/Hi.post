@@ -1,4 +1,10 @@
-import { VisibleCalendarDate } from '@entities/date/domain/types'
+import type {
+  DispatchDate,
+  DispatchDateList,
+  VisibleCalendarDate,
+} from '@entities/date/domain/types'
+
+export type { DispatchDate, DispatchDateList }
 
 export interface SwitcherPosition {
   position: VisibleCalendarDate

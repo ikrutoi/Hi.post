@@ -1,4 +1,3 @@
-import React from 'react'
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import { CardStatus } from '@entities/card/domain/types'
@@ -9,7 +8,7 @@ import {
   selectCardphotoSessionRecord,
 } from '@cardphoto/infrastructure/selectors'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
-import { selectSelectedDate } from '@date/infrastructure/selectors'
+import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@features/envelope/infrastructure/selectors'
 import { selectAppliedRecipientDisplayAddress } from '@envelope/recipient/infrastructure/selectors'
 
@@ -43,12 +42,13 @@ export const selectActiveCardFullData = createSelector(
     selectCardtextAppliedSessionData,
     selectCardphotoPreview,
     selectSelectedAroma,
-    selectSelectedDate,
+    selectMergedDispatchDates,
     selectEnvelopeSessionRecord,
     selectAppliedRecipientDisplayAddress,
   ],
-  (editor, cardtext, cardphoto, aroma, date, envelope, appliedRecipient) => {
+  (editor, cardtext, cardphoto, aroma, dates, envelope, appliedRecipient) => {
     const recipientCount = envelope.recipient?.applied?.length ?? 0
+    const date = dates[0] ?? null
 
     return {
       ...editor,
@@ -61,6 +61,7 @@ export const selectActiveCardFullData = createSelector(
         recipientCount,
         aroma,
         date,
+        dates,
       },
     }
   },

@@ -14,6 +14,26 @@
   border-radius: 0.5rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
+  &Many {
+    flex-direction: row;
+    gap: 0.2rem;
+    color: $color-pie-date;
+  }
+
+  &ManyIcon {
+    width: 1.35rem;
+    height: 1.35rem;
+    flex-shrink: 0;
+    opacity: 0.85;
+  }
+
+  &ManyCount {
+    font-size: 1.35rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
   &Day {
     font-size: 2.4rem;
     line-height: 2.2rem;

@@ -4,7 +4,12 @@ import {
   setSectionComplete,
   clearSection,
 } from '@entities/cardEditor/infrastructure/state'
-import { setDate, clearDate } from '@date/infrastructure/state'
+import {
+  setDate,
+  setSelectedDates,
+  clearDate,
+  hydrateDateFromSession,
+} from '@date/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
   updateRecipientField,
@@ -34,6 +39,7 @@ import { clearRecipientsList } from '@envelope/infrastructure/state'
 import {
   selectIsDateComplete,
   selectSelectedDate,
+  selectSelectedDates,
 } from '@date/infrastructure/selectors'
 import {
   selectSelectedAroma,
@@ -184,11 +190,21 @@ function* checkAndSyncProcessedCard() {
   const envelope: EnvelopeSessionRecord = yield select(
     selectEnvelopeSessionRecord,
   )
-  const calendarDate: DispatchDate = yield select(selectSelectedDate)
+  const selectedDateOnly: DispatchDate | null = yield select(selectSelectedDate)
+  const selectedDatesMulti: DispatchDate[] = yield select(selectSelectedDates)
   const aroma: AromaItem = yield select(selectSelectedAroma)
 
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
+
+  const mergedDates =
+    selectedDatesMulti.length > 0
+      ? selectedDatesMulti
+      : selectedDateOnly
+        ? [selectedDateOnly]
+        : []
+  const calendarDate = mergedDates[0]
+  if (calendarDate == null) return
 
   const processedCard: Card = {
     id: appliedPhoto.id,
@@ -199,6 +215,7 @@ function* checkAndSyncProcessedCard() {
     envelope,
     aroma,
     date: calendarDate,
+    dates: mergedDates.length > 1 ? mergedDates : undefined,
     meta: {
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -225,6 +242,7 @@ function* handleFullCopy(
     yield put(restoreRecipient(donor.envelope.recipient))
     yield put(setAroma(donor.aroma))
     yield put(setDate(donor.date))
+    yield put(setSelectedDates(donor.dates ?? []))
 
     yield put(setPreviewCardId(null))
   }
@@ -273,7 +291,10 @@ export function* cardEditorSaga() {
   yield fork(syncCardphotoStatus)
   yield fork(syncCardtextStatus)
 
-  yield takeEvery(setDate.type, syncDateSet)
+  yield takeEvery(
+    [setDate.type, setSelectedDates.type, hydrateDateFromSession.type],
+    syncDateSet,
+  )
   yield takeEvery(clearDate.type, syncDateClear)
 
   yield takeEvery(setAroma.type, syncAromaSet)
@@ -317,6 +338,8 @@ export function* cardEditorSaga() {
   yield takeEvery(
     [
       setDate.type,
+      setSelectedDates.type,
+      hydrateDateFromSession.type,
       clearDate.type,
       applyFinal.type,
       clearApply.type,

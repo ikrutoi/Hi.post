@@ -11,7 +11,9 @@ import {
   IconSectionMenuEnvelopeV2,
   IconSectionMenuAromaV2,
   IconSectionMenuDate,
+  IconCalendarMulti,
 } from '@shared/ui/icons'
+import type { DispatchDate } from '@entities/date'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
@@ -79,7 +81,14 @@ export const CardPie: React.FC<CardPieProps> = ({
     (cardData as any)?.recipientCount ?? (recipient ? 1 : 0)
   const isSingleRecipient = recipientCount === 1
   const hasManyRecipients = recipientCount > 1
-  const date = cardData?.date
+  const date = cardData?.date ?? null
+  const dates: DispatchDate[] =
+    (cardData as { dates?: DispatchDate[] } | undefined)?.dates?.length
+      ? ((cardData as { dates: DispatchDate[] }).dates ?? [])
+      : date
+        ? [date]
+        : []
+  const hasManyDates = dates.length > 1
 
   const handleMouseEnter = (e: React.MouseEvent<SVGPathElement>) => {
     const sectionId = e.currentTarget.dataset.section as CardSection
@@ -437,7 +446,34 @@ export const CardPie: React.FC<CardPieProps> = ({
               x={PATTERN.date5120.x}
               y={PATTERN.date5120.y}
             >
-              {date ? (
+              {hasManyDates ? (
+                <>
+                  <rect
+                    width="5120"
+                    height="5120"
+                    className={clsx(styles.rect, styles.rectDate)}
+                    fill="var(--pie-rect-fill)"
+                  />
+                  <IconCalendarMulti
+                    x="400"
+                    y="600"
+                    width="2200"
+                    height="2200"
+                    className={styles.pieEnvelopeIconBg}
+                  />
+                  <text
+                    x="2560"
+                    y="3200"
+                    textAnchor="middle"
+                    strokeLinejoin="round"
+                    className={clsx(styles.pieTextBase, styles.pieTextDate)}
+                  >
+                    <tspan x="2560" dy="0" fontWeight="700" fontSize="1500">
+                      {dates.length}
+                    </tspan>
+                  </text>
+                </>
+              ) : date ? (
                 <>
                   <rect
                     width="5120"

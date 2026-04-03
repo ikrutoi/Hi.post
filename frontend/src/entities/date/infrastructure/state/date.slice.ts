@@ -1,7 +1,9 @@
-import { DateState } from '../../domain/types'
+import type { DateState } from '../../domain/types'
 
+/** Согласовано с `features/date/infrastructure/state/dateSlice` (редактор). */
 export const initialState: DateState = {
-  year: null,
-  month: null,
-  day: null,
+  selectedDate: null,
+  selectedDates: [],
+  isComplete: false,
+  firstDayOfWeek: 'Sun',
 }

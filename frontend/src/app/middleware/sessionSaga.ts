@@ -52,7 +52,12 @@ import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/
 import { selectAromaState } from '@aroma/infrastructure/selectors'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import { selectDateState } from '@date/infrastructure/selectors'
-import { setDate, setFirstDayOfWeek } from '@date/infrastructure/state'
+import {
+  setDate,
+  setSelectedDates,
+  setFirstDayOfWeek,
+  hydrateDateFromSession,
+} from '@date/infrastructure/state'
 import {
   syncCardphotoStatus,
   syncCardtextStatus,
@@ -213,6 +218,8 @@ const SESSION_WATCH_ACTIONS = [
   setAroma.type,
   clearAroma.type,
   setDate.type,
+  setSelectedDates.type,
+  hydrateDateFromSession.type,
   setFirstDayOfWeek.type,
   setValue.type,
   setTextStyle.type,
@@ -561,13 +568,14 @@ export function* hydrateAppSession() {
       yield put(setAroma(session.aroma.selectedAroma))
     }
     if (session.date) {
-      if (session.date.selectedDate) {
-        yield put(setDate(session.date.selectedDate))
-      }
-      const fd = session.date.firstDayOfWeek
-      if (fd === 'Sun' || fd === 'Mon') {
-        yield put(setFirstDayOfWeek(fd))
-      }
+      yield put(
+        hydrateDateFromSession({
+          selectedDate: session.date.selectedDate ?? null,
+          selectedDates: session.date.selectedDates ?? [],
+          isComplete: session.date.isComplete ?? false,
+          firstDayOfWeek: session.date.firstDayOfWeek ?? 'Sun',
+        }),
+      )
     }
 
     if (session.sizeCard) {

@@ -818,13 +818,13 @@ function* syncRecipientModeWithActiveList(
 
   if (action.payload === 'recipients') {
     if (active === 'recipient') {
-      yield put(closeAddressList())
+      yield put(setActiveAddressList('recipients'))
     }
     return
   }
 
   if (action.payload === 'recipient' && active === 'recipients') {
-    yield put(closeAddressList())
+    yield put(setActiveAddressList('recipient'))
   }
 }
 
