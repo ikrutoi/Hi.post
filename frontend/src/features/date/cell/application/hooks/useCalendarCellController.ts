@@ -34,8 +34,7 @@ export const useCalendarCellController = ({
   const dispatch = useAppDispatch()
   const { selectedDate, chooseDate } = useDateFacade()
 
-  const { state: stateCalendar } = useCalendarFacade()
-  const { lastViewedCalendarDate } = stateCalendar
+  const { lastViewedCalendarDate } = useCalendarFacade()
 
   const { state: stateSwitcher, actions: actionsSwitcher } = useSwitcherFacade()
   const { position } = stateSwitcher

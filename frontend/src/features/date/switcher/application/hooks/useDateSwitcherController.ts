@@ -19,9 +19,7 @@ export const useDateSwitcherController = ({
   const { state: stateSwitcher } = useSwitcherFacade()
   const { position } = stateSwitcher
 
-  const { state: stateCalendar, actions: actionsCalendar } = useCalendarFacade()
-  const { lastViewedCalendarDate } = stateCalendar
-  const { setCalendarViewDate } = actionsCalendar
+  const { lastViewedCalendarDate, setCalendarViewDate } = useCalendarFacade()
 
   const goToTodayDate = () => {
     if (!lastViewedCalendarDate) return

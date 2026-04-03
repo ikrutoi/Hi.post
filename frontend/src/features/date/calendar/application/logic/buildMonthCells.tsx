@@ -1,13 +1,8 @@
 import { Cell } from '@date/cell/presentation/Cell'
 import { CardPreview } from '@features/date/cardPreview/presentation/CardPreview'
-import { CartDatePreview } from '../../presentation/CalendarWeekdayHeader/CartDatePreview/CartDatePreview'
-import { isSameDate, shiftMonth } from '../helpers'
+import { shiftMonth } from '../helpers'
 import { isDisabledDate } from '@entities/date/utils'
-import type {
-  SelectedDispatchDate,
-  CalendarViewDate,
-  DispatchDate,
-} from '@entities/date/domain/types'
+import type { CalendarViewDate, DispatchDate } from '@entities/date/domain/types'
 import type { MonthDirection } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
@@ -16,7 +11,7 @@ interface BuildMonthCellsParams {
   days: number[]
   direction: MonthDirection
   calendarViewDate: CalendarViewDate
-  selectedDate: SelectedDispatchDate
+  highlightDates: DispatchDate[]
   currentDate: { day: number; month: number; year: number }
   handleClickCell: (params: HandleCellClickParams) => void
   chooseDate?: (date: DispatchDate) => void
@@ -27,15 +22,13 @@ export const buildMonthCells = ({
   days,
   direction,
   calendarViewDate,
-  selectedDate,
+  highlightDates,
   currentDate,
   handleClickCell,
   chooseDate,
   cardsMap,
 }: BuildMonthCellsParams) => {
   if (!calendarViewDate) return []
-
-  const { year: viewYear, month: viewMonth } = calendarViewDate
 
   const { year: currentViewYear, month: currentViewMonth } = shiftMonth(
     calendarViewDate,
@@ -51,11 +44,12 @@ export const buildMonthCells = ({
       currentViewMonth === currentDate.month &&
       currentViewYear === currentDate.year
 
-    const isSelectedDate = isSameDate(direction, selectedDate, {
-      year: viewYear,
-      month: viewMonth,
-      day,
-    })
+    const isSelectedDate = highlightDates.some(
+      (d) =>
+        d.year === currentViewYear &&
+        d.month === currentViewMonth &&
+        d.day === day,
+    )
 
     // Use actual cell date for disabled check (before/after are prev/next month)
     const cellDate = {

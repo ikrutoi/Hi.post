@@ -8,17 +8,12 @@ import {
 } from '../../utils'
 import { buildMonthCells } from '../logic'
 import { useCalendarCellController } from '@date/cell/application/hooks'
-import type {
-  DispatchDate,
-  SelectedDispatchDate,
-  CalendarViewDate,
-  Switcher,
-} from '@entities/date/domain/types'
+import type { DispatchDate, CalendarViewDate, Switcher } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
+import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 
 interface UseCalendarConstructionParams {
-  selectedDate: SelectedDispatchDate
   firstDayOfWeek: 'Sun' | 'Mon'
   calendarViewDate: CalendarViewDate
   chooseDate: (date: DispatchDate) => void
@@ -28,13 +23,13 @@ interface UseCalendarConstructionParams {
 const currentDate = getCurrentDate()
 
 export const useCalendarConstruction = ({
-  selectedDate,
   firstDayOfWeek,
   calendarViewDate,
   chooseDate,
   triggerFlash,
 }: UseCalendarConstructionParams) => {
   const cardsMap = useAppSelector(selectCardsByDateMap)
+  const highlightDates = useAppSelector(selectMergedDispatchDates)
   const { year, month } = calendarViewDate
 
   const daysInPrevMonth = getDaysInPreviousMonth(year, month)
@@ -62,7 +57,7 @@ export const useCalendarConstruction = ({
     days: prevDays,
     direction: 'before',
     calendarViewDate,
-    selectedDate,
+    highlightDates,
     currentDate,
     handleClickCell,
     cardsMap,
@@ -72,7 +67,7 @@ export const useCalendarConstruction = ({
     days: currDays,
     direction: 'current',
     calendarViewDate,
-    selectedDate,
+    highlightDates,
     currentDate,
     handleClickCell,
     chooseDate,
@@ -83,7 +78,7 @@ export const useCalendarConstruction = ({
     days: nextDays,
     direction: 'after',
     calendarViewDate,
-    selectedDate,
+    highlightDates,
     currentDate,
     handleClickCell,
     cardsMap,
@@ -94,7 +89,7 @@ export const useCalendarConstruction = ({
     [
       year,
       month,
-      selectedDate,
+      highlightDates,
       chooseDate,
       handleClickCell,
       cardsMap,

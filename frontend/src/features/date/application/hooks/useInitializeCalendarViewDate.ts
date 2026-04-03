@@ -6,9 +6,7 @@ import { getInitialCalendarDate } from '@shared/utils/date'
 export const useInitializeCalendarViewDate = () => {
   const { selectedDate } = useDateFacade()
 
-  const { state: stateCalendar, actions: actionsCalendar } = useCalendarFacade()
-  const { lastViewedCalendarDate } = stateCalendar
-  const { setCalendarViewDate } = actionsCalendar
+  const { lastViewedCalendarDate, setCalendarViewDate } = useCalendarFacade()
 
   const initialized = useRef(false)
 

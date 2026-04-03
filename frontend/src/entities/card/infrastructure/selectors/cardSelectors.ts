@@ -10,7 +10,7 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import {
   selectIsDateComplete,
-  selectSelectedDate,
+  selectMergedDispatchDates,
 } from '@date/infrastructure/selectors'
 import { DispatchDate } from '@entities/date'
 import { CardSection } from '@shared/config/constants'
@@ -41,8 +41,8 @@ export const selectPreviewCard = createSelector(
 )
 
 export const selectCardsByDateMap = createSelector(
-  [selectCalendarIndex, selectCardphotoPreview, selectSelectedDate],
-  (index, photoPreview, activeDate) => {
+  [selectCalendarIndex, selectCardphotoPreview, selectMergedDispatchDates],
+  (index, photoPreview, activeDates) => {
     const map: Record<string, CardCalendarIndex> = {}
 
     const getEntry = (date: DispatchDate) => {
@@ -76,14 +76,15 @@ export const selectCardsByDateMap = createSelector(
       }
     })
 
-    if (activeDate && photoPreview?.previewUrl) {
-      const entry = getEntry(activeDate)
-
-      entry.processed = {
-        cardId: 'current_session',
-        date: activeDate,
-        previewUrl: photoPreview.previewUrl,
-        status: 'processed',
+    if (photoPreview?.previewUrl) {
+      for (const activeDate of activeDates) {
+        const entry = getEntry(activeDate)
+        entry.processed = {
+          cardId: 'current_session',
+          date: activeDate,
+          previewUrl: photoPreview.previewUrl,
+          status: 'processed',
+        }
       }
     }
 

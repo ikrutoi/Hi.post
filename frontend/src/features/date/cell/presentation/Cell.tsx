@@ -49,21 +49,25 @@ export const Cell: React.FC<CellProps> = ({
     isSelectedDate && styles.dispatch,
   )
 
-  const handleClick = () => {
-    onClickCell({
-      isDisabledDate,
-      dayBefore,
-      dayCurrent,
-      dayAfter,
-      calendarViewDate,
-      direction,
-      dateKey,
-      dayData,
-    })
+  const clickParams: HandleCellClickParams = {
+    isDisabledDate,
+    dayBefore,
+    dayCurrent,
+    dayAfter,
+    calendarViewDate,
+    direction,
+    dateKey,
+    dayData,
+  }
+
+  /** Capture: превью в ячейке вызывает stopPropagation — иначе второй клик не доходит до ячейки (мульти-тоггл). */
+  const handleClickCapture = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onClickCell(clickParams)
   }
 
   return (
-    <div className={dynamicClass} onClick={handleClick}>
+    <div className={dynamicClass} onClickCapture={handleClickCapture}>
       <span className={styles.dayNumber}>
         {dayCurrent ?? dayBefore ?? dayAfter}
       </span>

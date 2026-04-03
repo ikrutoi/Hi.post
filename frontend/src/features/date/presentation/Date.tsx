@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
@@ -23,12 +23,18 @@ export const Date: React.FC = () => {
   const currentDate = useMemo(() => getCurrentDate(), [])
   const { flashParts, triggerFlash } = useFlashEffect()
 
-  const { selectedDate, chooseDate } = useDateFacade()
+  const {
+    selectedDate,
+    selectedDates,
+    chooseDate,
+    isMultiDateMode,
+    toggleMultiDateMode,
+  } = useDateFacade()
 
+  console.log('date', selectedDates)
   // const { sizeItemCalendar } = useSizeFacade()
 
-  const { state: stateCalendar } = useCalendarFacade()
-  const { lastViewedCalendarDate } = stateCalendar
+  const { lastViewedCalendarDate } = useCalendarFacade()
 
   useInitializeCalendarViewDate()
 
@@ -46,8 +52,6 @@ export const Date: React.FC = () => {
   const { isCurrentMonth } = derivedSwitcher
 
   const formattedSelectedDate = useFormattedSelectedDate()
-
-  const [isDateToggleOn, setIsDateToggleOn] = useState(false)
 
   useAutoActivateDateSection()
 
@@ -116,7 +120,6 @@ export const Date: React.FC = () => {
 
         <div className={styles.calendar}>
           <Calendar
-            selectedDate={selectedDate}
             calendarViewDate={calendarViewDate}
             chooseDate={chooseDate}
             triggerFlash={triggerFlash}
@@ -127,14 +130,14 @@ export const Date: React.FC = () => {
           <div
             className={clsx(
               styles.dateBottomToggleGroup,
-              isDateToggleOn && styles.dateBottomToggleGroupActive,
+              isMultiDateMode && styles.dateBottomToggleGroupActive,
             )}
           >
             <IconCalendarMulti className={styles.dateBottomToggleIcon} />
             <Toggle
               label=""
-              checked={isDateToggleOn}
-              onChange={setIsDateToggleOn}
+              checked={isMultiDateMode}
+              onChange={toggleMultiDateMode}
               size="default"
               variant="date"
             />

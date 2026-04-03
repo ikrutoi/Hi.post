@@ -12,21 +12,18 @@ import { useCalendarConstruction } from '../application/hooks'
 import styles from './Calendar.module.scss'
 import type {
   DispatchDate,
-  SelectedDispatchDate,
   CalendarViewDate,
   DaysOfWeek,
   Switcher,
 } from '@entities/date/domain/types'
 
 interface CalendarProps {
-  selectedDate: SelectedDispatchDate
   calendarViewDate: CalendarViewDate
   chooseDate: (date: DispatchDate) => void
   triggerFlash: (part: Switcher) => void
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
-  selectedDate,
   calendarViewDate,
   chooseDate,
   triggerFlash,
@@ -64,12 +61,10 @@ export const Calendar: React.FC<CalendarProps> = ({
   )
 
   const calendarCells = useCalendarConstruction({
-    selectedDate,
     firstDayOfWeek,
     calendarViewDate,
     chooseDate,
     triggerFlash,
-    // handleClickCell,
   })
 
   return (

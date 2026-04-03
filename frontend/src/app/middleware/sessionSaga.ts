@@ -54,7 +54,9 @@ import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import { selectDateState } from '@date/infrastructure/selectors'
 import {
   setDate,
+  pickDispatchDate,
   setSelectedDates,
+  setMultiDateMode,
   setFirstDayOfWeek,
   hydrateDateFromSession,
 } from '@date/infrastructure/state'
@@ -218,7 +220,9 @@ const SESSION_WATCH_ACTIONS = [
   setAroma.type,
   clearAroma.type,
   setDate.type,
+  pickDispatchDate.type,
   setSelectedDates.type,
+  setMultiDateMode.type,
   hydrateDateFromSession.type,
   setFirstDayOfWeek.type,
   setValue.type,
@@ -572,8 +576,11 @@ export function* hydrateAppSession() {
         hydrateDateFromSession({
           selectedDate: session.date.selectedDate ?? null,
           selectedDates: session.date.selectedDates ?? [],
+          isMultiDateMode: session.date.isMultiDateMode ?? false,
           isComplete: session.date.isComplete ?? false,
           firstDayOfWeek: session.date.firstDayOfWeek ?? 'Sun',
+          cachedSingleDate: session.date.cachedSingleDate ?? null,
+          cachedMultiDates: session.date.cachedMultiDates ?? [],
         }),
       )
     }

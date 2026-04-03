@@ -8,8 +8,7 @@ import type {
 } from '@entities/date/domain/types'
 
 export const useCalendarViewDate = () => {
-  const { actions: actionsCalendar } = useCalendarFacade()
-  const { setCalendarViewDate } = actionsCalendar
+  const { setCalendarViewDate } = useCalendarFacade()
 
   const currentDate = getCurrentDate()
   const [viewDate, setViewDate] = useState<CalendarViewDate>({

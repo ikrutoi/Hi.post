@@ -7,6 +7,7 @@ import {
 import {
   setDate,
   setSelectedDates,
+  setMultiDateMode,
   clearDate,
   hydrateDateFromSession,
 } from '@date/infrastructure/state'
@@ -38,8 +39,7 @@ import { setRecipientMode } from '@envelope/recipient/infrastructure/state'
 import { clearRecipientsList } from '@envelope/infrastructure/state'
 import {
   selectIsDateComplete,
-  selectSelectedDate,
-  selectSelectedDates,
+  selectMergedDispatchDates,
 } from '@date/infrastructure/selectors'
 import {
   selectSelectedAroma,
@@ -190,19 +190,11 @@ function* checkAndSyncProcessedCard() {
   const envelope: EnvelopeSessionRecord = yield select(
     selectEnvelopeSessionRecord,
   )
-  const selectedDateOnly: DispatchDate | null = yield select(selectSelectedDate)
-  const selectedDatesMulti: DispatchDate[] = yield select(selectSelectedDates)
+  const mergedDates: DispatchDate[] = yield select(selectMergedDispatchDates)
   const aroma: AromaItem = yield select(selectSelectedAroma)
 
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
-
-  const mergedDates =
-    selectedDatesMulti.length > 0
-      ? selectedDatesMulti
-      : selectedDateOnly
-        ? [selectedDateOnly]
-        : []
   const calendarDate = mergedDates[0]
   if (calendarDate == null) return
 
@@ -339,6 +331,7 @@ export function* cardEditorSaga() {
     [
       setDate.type,
       setSelectedDates.type,
+      setMultiDateMode.type,
       hydrateDateFromSession.type,
       clearDate.type,
       applyFinal.type,

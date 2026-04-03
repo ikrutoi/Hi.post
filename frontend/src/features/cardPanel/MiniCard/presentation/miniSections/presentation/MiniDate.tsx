@@ -4,54 +4,76 @@ import { useDateFacade } from '@date/application/facades'
 import listOfMonthOfYear from '@/data/date/monthOfYear.json'
 import styles from './MiniDate.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
-import { IconCalendarMulti } from '@shared/ui/icons'
+import { getDateMultiCircleSteps } from './getEnvelopeCircleSteps'
 
 interface MiniDateProps {}
 
 export const MiniDate: React.FC<MiniDateProps> = () => {
-  const { selectedDate, mergedDispatchDates } = useDateFacade()
+  const { selectedDate, mergedDispatchDates, isMultiDateMode } = useDateFacade()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('date')
   const count = mergedDispatchDates.length
 
   if (count === 0) return null
 
-  if (count > 1) {
+  const showSingleLayout = !isMultiDateMode || count === 1
+
+  if (showSingleLayout) {
+    const d = selectedDate ?? mergedDispatchDates[0]
+    if (!d) return null
+
     return (
       <div
         className={clsx(
           styles.miniDate,
-          styles.miniDateMany,
           styles.visible,
           isHovered && styles.hovered,
         )}
         onMouseEnter={() => setHovered('date')}
         onMouseLeave={() => setHovered(null)}
       >
-        <IconCalendarMulti className={styles.miniDateManyIcon} />
-        <span className={styles.miniDateManyCount}>{count}</span>
+        <span className={styles.miniDateYear}>{d.year}</span>
+        <span className={styles.miniDateDay}>{d.day}</span>
+        <span className={styles.miniDateMonth}>
+          {listOfMonthOfYear[d.month]}
+        </span>
       </div>
     )
   }
 
-  const d = selectedDate ?? mergedDispatchDates[0]
-  if (!d) return null
+  const circleCount = Math.min(count, 10)
+  const { steps } = getDateMultiCircleSteps(circleCount)
 
   return (
     <div
       className={clsx(
         styles.miniDate,
+        styles.miniDateManyCircles,
         styles.visible,
         isHovered && styles.hovered,
       )}
       onMouseEnter={() => setHovered('date')}
       onMouseLeave={() => setHovered(null)}
     >
-      <span className={styles.miniDateYear}>{d.year}</span>
-      <span className={styles.miniDateDay}>{d.day}</span>
-      <span className={styles.miniDateMonth}>
-        {listOfMonthOfYear[d.month]}
-      </span>
+      {steps.length > 0 && (
+        <div className={styles.miniDateCircles} aria-hidden>
+          {steps.map((step, i) => (
+            <span
+              key={i}
+              className={styles.miniDateCircle}
+              style={{
+                width: `${step.sizePercent}%`,
+                maxHeight: `${step.sizePercent}%`,
+                aspectRatio: 1,
+                opacity: step.opacity,
+              }}
+            />
+          ))}
+        </div>
+      )}
+      <div className={styles.miniDateCount}>
+        <span>{count}</span>
+      </div>
     </div>
   )
 }

@@ -13,6 +13,21 @@ export const ENVELOPE_CIRCLE_PALETTE = {
   singleOpacity: 0.08,
 } as const
 
+/** Видны на светлом `$color-date-input`; та же геометрия, что у конверта. */
+export const DATE_MULTI_CIRCLE_PALETTE = {
+  opacityMin: 0.22,
+  opacityMax: 0.78,
+  singleSizePercent: 72,
+  singleOpacity: 0.4,
+} as const
+
+export type CirclePalette = {
+  opacityMin: number
+  opacityMax: number
+  singleSizePercent: number
+  singleOpacity: number
+}
+
 export const ENVELOPE_CIRCLE_COUNT = {
   min: 1,
   max: 10,
@@ -24,13 +39,10 @@ export type EnvelopeCircleStep = {
   opacity: number
 }
 
-/**
- * Returns circle steps for the given recipient count.
- * - 1: one circle (single)
- * - 2–10: n circles, sizes and opacities interpolated (outer light → inner dark)
- * - 11+: same as 10 (10 circles, same color)
- */
-export function getEnvelopeCircleSteps(count: number): {
+function getCircleStepsForPalette(
+  count: number,
+  palette: CirclePalette,
+): {
   steps: EnvelopeCircleStep[]
   isMany: boolean
 } {
@@ -44,15 +56,15 @@ export function getEnvelopeCircleSteps(count: number): {
     return {
       steps: [
         {
-          sizePercent: ENVELOPE_CIRCLE_PALETTE.singleSizePercent,
-          opacity: ENVELOPE_CIRCLE_PALETTE.singleOpacity,
+          sizePercent: palette.singleSizePercent,
+          opacity: palette.singleOpacity,
         },
       ],
       isMany: false,
     }
   }
 
-  const { opacityMin, opacityMax } = ENVELOPE_CIRCLE_PALETTE
+  const { opacityMin, opacityMax } = palette
   const sizeOuterPercent = getSizeOuterForDiagonal()
   const radiusOuter = sizeOuterPercent / 2
   const steps: EnvelopeCircleStep[] = []
@@ -68,4 +80,24 @@ export function getEnvelopeCircleSteps(count: number): {
   }
 
   return { steps, isMany: false }
+}
+
+/**
+ * Returns circle steps for the given recipient count.
+ * - 1: one circle (single)
+ * - 2–10: n circles, sizes and opacities interpolated (outer light → inner dark)
+ * - 11+: same as 10 (10 circles, same color)
+ */
+export function getEnvelopeCircleSteps(count: number): {
+  steps: EnvelopeCircleStep[]
+  isMany: boolean
+} {
+  return getCircleStepsForPalette(count, ENVELOPE_CIRCLE_PALETTE)
+}
+
+export function getDateMultiCircleSteps(count: number): {
+  steps: EnvelopeCircleStep[]
+  isMany: boolean
+} {
+  return getCircleStepsForPalette(count, DATE_MULTI_CIRCLE_PALETTE)
 }

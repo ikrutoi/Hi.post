@@ -15,12 +15,19 @@ export const selectSelectedDate = (state: RootState): SelectedDispatchDate =>
 export const selectSelectedDates = (state: RootState): DispatchDate[] =>
   state.date.selectedDates
 
-/** Для мини-карточки и CardPie: приоритет мульти-списка, иначе одиночная дата. */
+export const selectIsMultiDateMode = (state: RootState): boolean =>
+  state.date.isMultiDateMode
+
+/** Для мини-карточки и CardPie: несколько дат только при включённом multi и непустом списке. */
 export const selectMergedDispatchDates = createSelector(
-  [selectSelectedDate, selectSelectedDates],
-  (single, list): DispatchDate[] => {
-    if (list.length > 0) return list
-    return single ? [single] : []
+  [
+    selectSelectedDate,
+    selectSelectedDates,
+    selectIsMultiDateMode,
+  ],
+  (single, list, multi): DispatchDate[] => {
+    if (!multi) return single ? [single] : []
+    return list
   },
 )
 

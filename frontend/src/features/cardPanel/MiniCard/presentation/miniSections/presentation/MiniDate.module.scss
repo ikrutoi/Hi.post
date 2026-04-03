@@ -14,24 +14,56 @@
   border-radius: 0.5rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-  &Many {
-    flex-direction: row;
-    gap: 0.2rem;
-    color: $color-pie-date;
+  &ManyCircles {
+    display: grid;
+    padding: 0.25rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, 1fr);
+    row-gap: 0.15rem;
+    overflow: hidden;
+    background-color: $color-date-input;
+    color: darken($color-date-input-border, 34%);
   }
 
-  &ManyIcon {
-    width: 1.35rem;
-    height: 1.35rem;
-    flex-shrink: 0;
-    opacity: 0.85;
+  &Circles {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    color: darken($color-date-input-border, 34%);
   }
 
-  &ManyCount {
-    font-size: 1.35rem;
-    line-height: 1;
+  &Circle {
+    position: absolute;
+    bottom: 3%;
+    right: 3%;
+    transform: translate(50%, 50%);
+    border-radius: 50%;
+    background-color: currentColor;
+    transition:
+      width 0.2s ease,
+      max-height 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  &Count {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding-bottom: 0.15rem;
+    padding-right: 0.35rem;
     font-weight: 700;
-    letter-spacing: -0.03em;
+    font-size: 1.5rem;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: $color-font-active;
+    z-index: 2;
   }
 
   &Day {

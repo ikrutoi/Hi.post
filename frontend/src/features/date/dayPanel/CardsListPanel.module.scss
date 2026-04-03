@@ -24,7 +24,8 @@
 
 .headerTitle {
   font-size: 0.85rem;
-  color: $color-app-strip;
+  font-weight: 600;
+  color: $color-font-enabled;
 }
 
 .closeBtn {
@@ -99,6 +100,6 @@
   min-height: 2.7rem;
   flex-shrink: 0;
   pointer-events: none;
-  color: $color-app-inner;
+  color: mix($color-date-input-border, $color-font-enabled-light, 55%);
   // opacity: 0.75;
 }

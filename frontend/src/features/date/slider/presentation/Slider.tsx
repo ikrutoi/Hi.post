@@ -8,9 +8,7 @@ import styles from './Slider.module.scss'
 import type { DatePart } from '@entities/date/domain/types'
 
 export const Slider: React.FC = () => {
-  const { state: stateCalendar, actions: actionsCalendar } = useCalendarFacade()
-  const { lastViewedCalendarDate } = stateCalendar
-  const { setCalendarViewDate } = actionsCalendar
+  const { lastViewedCalendarDate, setCalendarViewDate } = useCalendarFacade()
 
   const { state: stateSwitcher } = useSwitcherFacade()
   const { position } = stateSwitcher

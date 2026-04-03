@@ -13,8 +13,11 @@ export type FirstDayOfWeekPreference = 'Sun' | 'Mon'
 export interface DateState {
   selectedDate: SelectedDispatchDate
   selectedDates: DispatchDateList
+  isMultiDateMode: boolean
   isComplete: boolean
   firstDayOfWeek: FirstDayOfWeekPreference
+  cachedSingleDate: SelectedDispatchDate
+  cachedMultiDates: DispatchDateList
 }
 
 export type CardDispatchDate = DispatchDate | null

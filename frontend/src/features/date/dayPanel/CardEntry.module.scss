@@ -9,8 +9,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: $color-envelope-recipient-input;
-  border: 1px solid $color-envelope-recipient-border;
+  background-color: #fff;
+  border: 1px solid $color-date-input-border;
   border-radius: 4px;
   user-select: none;
   cursor: pointer;
@@ -20,12 +20,12 @@
 
   &:hover,
   &[data-focused='true'] {
-    background-color: darken($color-envelope-recipient-input, 2%);
+    background-color: $color-date-input;
   }
 
   &[data-selected='true'] {
-    background-color: darken($color-envelope-recipient-input, 2%);
-    box-shadow: -2px 0 0 0 $color-toggle-active;
+    background-color: $color-date-input;
+    box-shadow: -2px 0 0 0 darken($color-date-input-border, 28%);
   }
 }
 
@@ -77,5 +77,5 @@
 
 .statusLabel {
   font-size: 0.8rem;
-  color: $color-envelope-recipient-legend;
+  color: $color-font-enabled;
 }

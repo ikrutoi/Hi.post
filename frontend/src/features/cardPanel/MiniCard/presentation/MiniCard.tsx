@@ -11,6 +11,7 @@ import type { SizeCard } from '@layout/domain/types'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { useAppSelector } from '@app/hooks'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
+import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 
 interface MiniCardProps {
   section: CardSection
@@ -35,13 +36,16 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const { changeSection } = useSectionMenuFacade()
   const { editorState, removeSection } = useCardEditorFacade()
   const hasEnvelopeApplied = useAppSelector(selectHasEnvelopeAppliedContent)
+  const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
 
   const { render } = useMiniCardRender()
 
   const showClearButton = !!editorState
     ? section === 'envelope'
       ? hasEnvelopeApplied
-      : (editorState as any)?.[section]?.isComplete === true
+      : section === 'date'
+        ? mergedDispatchDates.length > 0
+        : (editorState as any)?.[section]?.isComplete === true
     : false
 
   return (

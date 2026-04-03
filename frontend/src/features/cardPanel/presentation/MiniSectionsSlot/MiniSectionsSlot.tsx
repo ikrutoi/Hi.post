@@ -9,6 +9,7 @@ import { MiniCard } from '../../MiniCard/presentation/MiniCard'
 import styles from './MiniSectionsSlot.module.scss'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
+import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 
 const PARTS_TOTAL = 6
 const GAP_PARTS = 1
@@ -29,6 +30,7 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
     const isPacked = stateCardPanel.isPacked
     const hasEnvelopeApplied = useAppSelector(selectHasEnvelopeAppliedContent)
     const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
+    const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
 
     const totalWidth =
       sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width : null
@@ -72,9 +74,11 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
                     ? editorState.cardtext?.isComplete
                     : editorState[section]?.isComplete
               const isEmpty =
-                section === 'envelope'
-                  ? !isSectionComplete && !hasEnvelopeApplied
-                  : !isSectionComplete
+                section === 'date'
+                  ? mergedDispatchDates.length === 0
+                  : section === 'envelope'
+                    ? !isSectionComplete && !hasEnvelopeApplied
+                    : !isSectionComplete
               return (
                 <div
                   key={section}

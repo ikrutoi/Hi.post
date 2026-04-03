@@ -4,6 +4,9 @@ import type { DateState } from '../../domain/types'
 export const initialState: DateState = {
   selectedDate: null,
   selectedDates: [],
+  isMultiDateMode: false,
   isComplete: false,
   firstDayOfWeek: 'Sun',
+  cachedSingleDate: null,
+  cachedMultiDates: [],
 }
