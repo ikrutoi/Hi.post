@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import styles from './MiniEnvelope.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { useEnvelopeFacade } from '@envelope/application/facades'
-import { getEnvelopeCircleSteps } from './getEnvelopeCircleSteps'
+import { getEnvelopeRecipientCircleSteps } from './concentricCircleSteps'
 import { useSenderFacade } from '@/features/envelope/sender/application/facades'
 
 export const MiniEnvelope: React.FC = () => {
@@ -15,8 +15,10 @@ export const MiniEnvelope: React.FC = () => {
   const hasSenderApplied = isEnabled && senderState.applied.length > 0
   const showMini = count > 0 || hasSenderApplied
   const isSingle = count === 1
-  const { steps, isMany } = getEnvelopeCircleSteps(count)
-  const stepsToRender = isSingle ? getEnvelopeCircleSteps(2).steps : steps
+  const { steps, isMany } = getEnvelopeRecipientCircleSteps(count)
+  const stepsToRender = isSingle
+    ? getEnvelopeRecipientCircleSteps(2).steps
+    : steps
 
   const nameWrapperRef = useRef<HTMLDivElement | null>(null)
   const nameInnerRef = useRef<HTMLSpanElement | null>(null)

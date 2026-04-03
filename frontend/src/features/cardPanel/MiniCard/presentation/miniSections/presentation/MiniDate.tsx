@@ -4,7 +4,7 @@ import { useDateFacade } from '@date/application/facades'
 import listOfMonthOfYear from '@/data/date/monthOfYear.json'
 import styles from './MiniDate.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
-import { getDateMultiCircleSteps } from './getEnvelopeCircleSteps'
+import { getDateMultiMiniCircleSteps } from './concentricCircleSteps'
 
 interface MiniDateProps {}
 
@@ -42,7 +42,7 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
   }
 
   const circleCount = Math.min(count, 10)
-  const { steps } = getDateMultiCircleSteps(circleCount)
+  const { steps } = getDateMultiMiniCircleSteps(circleCount)
 
   return (
     <div
