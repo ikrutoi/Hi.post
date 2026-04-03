@@ -7,7 +7,12 @@ type ToggleProps = {
   checked: boolean
   onChange: (value: boolean) => void
   size?: 'small' | 'default' | 'large'
-  variant?: 'default' | 'envelope' | 'envelopeSender' | 'envelopeRecipient'
+  variant?:
+    | 'default'
+    | 'envelope'
+    | 'envelopeSender'
+    | 'envelopeRecipient'
+    | 'date'
   disabled?: boolean
 }
 
@@ -27,6 +32,7 @@ export const Toggle: React.FC<ToggleProps> = ({
         variant === 'envelope' && styles.toggleEnvelope,
         variant === 'envelopeSender' && styles.toggleEnvelopeSender,
         variant === 'envelopeRecipient' && styles.toggleEnvelopeRecipient,
+        variant === 'date' && styles.toggleDate,
         disabled && styles.toggleDisabled,
       )}
     >

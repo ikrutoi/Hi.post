@@ -1,5 +1,9 @@
 import { RootState } from '@app/state'
-import { DateState, SelectedDispatchDate } from '@entities/date/domain/types'
+import {
+  DateState,
+  FirstDayOfWeekPreference,
+  SelectedDispatchDate,
+} from '@entities/date/domain/types'
 
 export const selectDateState = (state: RootState): DateState => state.date
 
@@ -8,3 +12,7 @@ export const selectSelectedDate = (state: RootState): SelectedDispatchDate =>
 
 export const selectIsDateComplete = (state: RootState): boolean =>
   state.date.isComplete
+
+export const selectFirstDayOfWeek = (
+  state: RootState,
+): FirstDayOfWeekPreference => state.date.firstDayOfWeek

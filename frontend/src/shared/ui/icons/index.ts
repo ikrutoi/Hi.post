@@ -5,6 +5,7 @@ export * from './IconSectionMenuEnvelopeV2'
 export * from './IconSectionMenuAroma'
 export * from './IconSectionMenuAromaV2'
 export * from './IconSectionMenuDate'
+export * from './IconCalendarMulti'
 
 export * from './IconListCardphoto'
 export * from './IconMoreVertical'

@@ -164,6 +164,7 @@ import {
   IconListCardphoto,
   IconCardtextCheck,
   IconApplyLight,
+  IconCalendarMulti,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 
@@ -321,6 +322,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconSortDown />
     case 'colorPicker':
       return <IconColor />
+    case 'calendarMulti':
+      return <IconCalendarMulti />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

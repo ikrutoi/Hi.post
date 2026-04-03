@@ -1,10 +1,12 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { CalendarWeekdayHeader } from './CalendarWeekdayHeader/CalendarWeekdayHeader'
 import {
   daysOfWeekStartFromMon,
   daysOfWeekStartFromSun,
 } from '@entities/date/constants'
+import { setFirstDayOfWeek } from '@date/infrastructure/state'
+import { selectFirstDayOfWeek } from '@date/infrastructure/selectors'
 import { closeDayPanel, openDayPanel, EMPTY_DAY_DATA } from '../infrastructure/state/calendar.slice'
 import { useCalendarConstruction } from '../application/hooks'
 import styles from './Calendar.module.scss'
@@ -29,21 +31,19 @@ export const Calendar: React.FC<CalendarProps> = ({
   chooseDate,
   triggerFlash,
 }) => {
-  const [firstDayOfWeek, setFirstDayOfWeek] = useState<'Sun' | 'Mon'>('Sun')
-  const [daysOfWeek, setDaysOfWeek] = useState<DaysOfWeek[]>(
-    daysOfWeekStartFromSun,
-  )
-
-  // const { sizeItemCalendar } = useSizeFacade()
-
   const dispatch = useAppDispatch()
+  const firstDayOfWeek = useAppSelector(selectFirstDayOfWeek)
+  const daysOfWeek = useMemo<DaysOfWeek[]>(
+    () =>
+      firstDayOfWeek === 'Sun'
+        ? daysOfWeekStartFromSun
+        : daysOfWeekStartFromMon,
+    [firstDayOfWeek],
+  )
   const openDayPanelState = useAppSelector((state) => state.calendar.openDayPanel)
 
   const handleFirstDay = (firstDay: 'Sun' | 'Mon') => {
-    setFirstDayOfWeek(firstDay)
-    setDaysOfWeek(
-      firstDay === 'Sun' ? daysOfWeekStartFromSun : daysOfWeekStartFromMon,
-    )
+    dispatch(setFirstDayOfWeek(firstDay))
   }
 
   const handleWeekdayClick = useCallback(

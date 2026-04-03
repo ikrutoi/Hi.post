@@ -1,24 +1,32 @@
-import img100_01 from '../../assets/100_01.png'
-import img101_01 from '../../assets/101_01.png'
-import img102_01 from '../../assets/102_01.png'
-import img103_01 from '../../assets/103_01.png'
+import img100_02 from '../../assets/100_02.png'
 import img111_01 from '../../assets/111_01.png'
 import img112_01 from '../../assets/112_01.png'
+import img113_02 from '../../assets/113_02.png'
+import img114_01 from '../../assets/114_01.png'
+import img115_01 from '../../assets/115_01.png'
+import img100_22 from '../../assets/100_22.png'
+import img111_22 from '../../assets/111_22.png'
+import img112_22 from '../../assets/112_22.png'
+import img113_22 from '../../assets/113_22.png'
+import img114_22 from '../../assets/114_22.png'
+import img115_22 from '../../assets/115_22.png'
 
 export const AROMA_IMAGES: Partial<Record<string, string>> = {
-  '100_01': img100_01,
-  '111_01': img111_01,
-  '112_01': img112_01,
-  '102_01': img102_01,
-  '103_01': img103_01,
+  '100_22': img100_22,
+  '111_22': img111_22,
+  '112_22': img112_22,
+  '113_22': img113_22,
+  '114_22': img114_22,
+  '115_22': img115_22,
 }
 
 export const aromaIndexes = [
-  '100_01',
-  '111_01',
-  '112_01',
-  '102_01',
-  '103_01',
+  '100_22',
+  '113_22',
+  '114_22',
+  '115_22',
+  '111_22',
+  '112_22',
   '__e1',
   '__e2',
   '__e3',

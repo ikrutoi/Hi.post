@@ -175,6 +175,8 @@ export const Cardtext: React.FC<CardtextProps> = ({
                       onChange={(e) => setDraftTitle(e.target.value)}
                       onBlur={() => {
                         if (isAddTemplateOpen) cancelEditTitle()
+                        else if (cardtextAssetStatus === 'inLine')
+                          cancelEditTitle()
                         else void commitEditTitle()
                       }}
                       onKeyDown={(e) => {
@@ -184,7 +186,8 @@ export const Cardtext: React.FC<CardtextProps> = ({
                         }
                         if (e.key === 'Enter') {
                           e.preventDefault()
-                          void commitEditTitle()
+                          if (cardtextAssetStatus !== 'inLine')
+                            void commitEditTitle()
                         }
                       }}
                       disabled={isSubmittingTitle}

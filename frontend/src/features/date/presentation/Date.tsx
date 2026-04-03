@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
+import clsx from 'clsx'
 import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
 import { Calendar } from '../calendar/presentation/Calendar'
@@ -13,6 +14,8 @@ import {
   useAutoActivateDateSection,
 } from '../application/hooks'
 import { useFlashEffect } from '@shared/hooks'
+import { Toggle } from '@shared/ui/Toggle/Toggle'
+import { IconCalendarMulti } from '@shared/ui/icons'
 import styles from './Date.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 
@@ -43,6 +46,8 @@ export const Date: React.FC = () => {
   const { isCurrentMonth } = derivedSwitcher
 
   const formattedSelectedDate = useFormattedSelectedDate()
+
+  const [isDateToggleOn, setIsDateToggleOn] = useState(false)
 
   useAutoActivateDateSection()
 
@@ -116,6 +121,24 @@ export const Date: React.FC = () => {
             chooseDate={chooseDate}
             triggerFlash={triggerFlash}
           />
+        </div>
+
+        <div className={styles.dateBottomToggle}>
+          <div
+            className={clsx(
+              styles.dateBottomToggleGroup,
+              isDateToggleOn && styles.dateBottomToggleGroupActive,
+            )}
+          >
+            <IconCalendarMulti className={styles.dateBottomToggleIcon} />
+            <Toggle
+              label=""
+              checked={isDateToggleOn}
+              onChange={setIsDateToggleOn}
+              size="default"
+              variant="date"
+            />
+          </div>
         </div>
       </form>
     </div>
