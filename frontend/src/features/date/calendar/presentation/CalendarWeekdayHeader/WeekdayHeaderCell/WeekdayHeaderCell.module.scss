@@ -6,7 +6,7 @@
   align-items: center;
   color: $color-font-enabled-light-hover;
   user-select: none;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: bold;
   margin: 0.2rem 0.75rem;
   text-transform: uppercase;
@@ -16,7 +16,6 @@
   border-radius: 0.75rem;
 }
 
-/* Только внутренняя белая таблетка, без внешней серой обводки */
 .firstDayToggle {
   display: flex;
   align-items: center;
@@ -30,13 +29,13 @@
   align-items: center;
   justify-content: center;
   min-width: 4rem;
-  height: 2.1rem;
-  padding: 0 0.75rem;
+  height: 2rem;
+  padding: 0.12rem 0.75rem 0 0.75rem;
   background-color: #fff;
   border: 1px solid $color-section-dark;
   border-radius: 1.5rem;
   color: $color-font-enabled-light-hover;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   line-height: 1.1;
   text-transform: uppercase;

@@ -5,8 +5,8 @@
   grid-template-columns: 1fr auto 1fr;
   justify-content: space-between;
   align-items: center;
-  margin: 0 0 0.75rem 0;
-  padding: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem 0;
+  padding: 0 0 0.3rem 0;
   // border: 1px solid red;
 }
 
@@ -23,6 +23,7 @@
 .todaySelected {
   display: flex;
   font-size: 0.8rem;
+  line-height: 1.2;
   user-select: none;
 
   &Disabled {
@@ -39,6 +40,7 @@
 .selected {
   display: flex;
   font-size: 0.8rem;
+  line-height: 1.2;
   justify-content: flex-end;
   color: $color-active;
 }
@@ -60,8 +62,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.1rem;
+  height: 2.1rem;
   border-radius: 50%;
   background-color: #fff;
   border: 1px solid $color-section-light;
@@ -80,14 +82,14 @@
 .switcher {
   display: flex;
   align-items: center;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+  margin-left: 0.4rem;
+  margin-right: 0.4rem;
 }
 
 .iconArrow {
   color: $color-font-enabled-light;
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1.05rem;
+  height: 1.05rem;
   background-color: transparent;
   transition:
     color 0.3s ease,
@@ -102,7 +104,8 @@
 }
 
 .iconTitle {
-  width: 1.1rem;
-  height: 1.1rem;
-  margin: 0 0.5rem;
+  width: 0.95rem;
+  height: 0.95rem;
+  flex-shrink: 0;
+  margin: 0 0.35rem;
 }
