@@ -30,6 +30,7 @@ export const DateListPanel: React.FC<Props> = ({
   onSelectEntry,
 }) => {
   const hasRows = entries.length > 0
+  const listContentKey = entries.map((e) => e.id).join('|')
 
   return (
     <div className={styles.panel}>
@@ -49,6 +50,7 @@ export const DateListPanel: React.FC<Props> = ({
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div
+          key={listContentKey}
           className={styles.list}
           tabIndex={0}
           aria-label="Dispatch date list"

@@ -7,9 +7,11 @@ import {
 } from '@date/calendar/infrastructure/state'
 import { selectIsDateListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import {
+  selectCachedMultiDates,
   selectCachedSingleDate,
   selectIsMultiDateMode,
-  selectMergedDispatchDates,
+  selectSelectedDate,
+  selectSelectedDates,
 } from '@date/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
@@ -27,15 +29,13 @@ function formatDispatchDateLabel(d: DispatchDate): string {
   })
 }
 
-function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
-  return a.year === b.year && a.month === b.month && a.day === b.day
-}
-
 export const DateRightSlot: React.FC = () => {
   const dispatch = useAppDispatch()
   const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
   const dateListOpen = useAppSelector(selectIsDateListPanelOpen)
-  const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
+  const selectedDate = useAppSelector(selectSelectedDate)
+  const selectedDates = useAppSelector(selectSelectedDates)
+  const cachedMultiDates = useAppSelector(selectCachedMultiDates)
   const isMultiDateMode = useAppSelector(selectIsMultiDateMode)
   const cachedSingleDate = useAppSelector(selectCachedSingleDate)
   const { previewUrl } = useAppSelector(selectCardphotoPreview)
@@ -44,37 +44,45 @@ export const DateRightSlot: React.FC = () => {
     const preview = previewUrl ?? null
     const status = 'processed' as const
 
-    const activeRows: DateListPanelItem[] = mergedDispatchDates.map(
-      (d, index) => ({
-        id: `${d.year}-${d.month}-${d.day}-m-${index}`,
-        dateLabel: formatDispatchDateLabel(d),
-        previewUrl: preview,
-        previewStatus: status,
-      }),
-    )
-
-    if (
-      !isMultiDateMode ||
-      !cachedSingleDate ||
-      mergedDispatchDates.some((d) => sameDispatchDate(d, cachedSingleDate))
-    ) {
-      return activeRows
-    }
-
-    const d = cachedSingleDate
-    const inactiveRow: DateListPanelItem = {
-      id: `${d.year}-${d.month}-${d.day}-cached-single`,
+    const row = (
+      d: DispatchDate,
+      idSuffix: string,
+      variant?: 'inactive',
+    ): DateListPanelItem => ({
+      id: `${d.year}-${d.month}-${d.day}-${idSuffix}`,
       dateLabel: formatDispatchDateLabel(d),
       previewUrl: preview,
       previewStatus: status,
-      variant: 'inactive',
+      variant,
+    })
+
+    const entries: DateListPanelItem[] = []
+
+    if (isMultiDateMode) {
+      // Одиночная дата (до включения multi) всегда отдельной disabled-строкой, даже если ту же дату добавили в мульти.
+      if (cachedSingleDate) {
+        entries.push(row(cachedSingleDate, 'cached-single', 'inactive'))
+      }
+      selectedDates.forEach((d, i) => {
+        entries.push(row(d, `m-${i}`))
+      })
+    } else {
+      if (selectedDate) {
+        entries.push(row(selectedDate, 'single'))
+      }
+      // Все запомненные мульти-даты отдельными disabled-строками, даже если совпадают с текущей одиночной.
+      cachedMultiDates.forEach((d, i) => {
+        entries.push(row(d, `cached-m-${i}`, 'inactive'))
+      })
     }
 
-    return [inactiveRow, ...activeRows]
+    return entries
   }, [
-    mergedDispatchDates,
     isMultiDateMode,
+    selectedDate,
+    selectedDates,
     cachedSingleDate,
+    cachedMultiDates,
     previewUrl,
   ])
 
@@ -89,6 +97,7 @@ export const DateRightSlot: React.FC = () => {
     )
   }, [dispatch])
 
+  // Панель дня (CardsListPanel): шапка — дата/cards, не тулбар dateList. Имеет приоритет над списком дат.
   if (openDayPanel) {
     return (
       <div className={styles.root}>

@@ -16,10 +16,12 @@
   position: absolute;
   left: 0.5rem;
   top: 0.15rem;
+  z-index: 2;
   width: calc(100% - 0.75rem - 8px);
   height: 1.75rem;
   border-bottom: 1px solid $color-cardphoto-input-border;
   box-sizing: border-box;
+  background-color: #fff;
 }
 
 .headerToolbar {

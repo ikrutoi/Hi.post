@@ -21,6 +21,9 @@ export const selectIsMultiDateMode = (state: RootState): boolean =>
 export const selectCachedSingleDate = (state: RootState): SelectedDispatchDate =>
   state.date.cachedSingleDate
 
+export const selectCachedMultiDates = (state: RootState): DispatchDate[] =>
+  state.date.cachedMultiDates
+
 /** Для мини-карточки и CardPie: несколько дат только при включённом multi и непустом списке. */
 export const selectMergedDispatchDates = createSelector(
   [
@@ -30,7 +33,8 @@ export const selectMergedDispatchDates = createSelector(
   ],
   (single, list, multi): DispatchDate[] => {
     if (!multi) return single ? [single] : []
-    return list
+    // Copy so consumers never share the live `selectedDates` reference (avoids stale memo edges).
+    return [...list]
   },
 )
 

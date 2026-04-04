@@ -7,6 +7,7 @@ import { useSwitcherFacade } from '../../../switcher/application/facades'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
 import type {
   CalendarViewDate,
+  DispatchDate,
   MonthDirection,
   Switcher,
 } from '@entities/date/domain/types'
@@ -24,6 +25,10 @@ function hasCards(dayData: CardCalendarIndex): boolean {
   )
 }
 
+function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
+  return a.year === b.year && a.month === b.month && a.day === b.day
+}
+
 interface UseCalendarCellControllerParams {
   triggerFlash: (part: Switcher) => void
 }
@@ -32,7 +37,12 @@ export const useCalendarCellController = ({
   triggerFlash,
 }: UseCalendarCellControllerParams) => {
   const dispatch = useAppDispatch()
-  const { selectedDate, chooseDate } = useDateFacade()
+  const {
+    selectedDate,
+    selectedDates,
+    isMultiDateMode,
+    chooseDate,
+  } = useDateFacade()
 
   const { lastViewedCalendarDate } = useCalendarFacade()
 
@@ -70,8 +80,20 @@ export const useCalendarCellController = ({
         month: calendarViewDate.month,
         day: dayCurrent,
       }
+      const clickRemovesSelection = isMultiDateMode
+        ? selectedDates.some((d) => sameDispatchDate(d, dispatchDate))
+        : Boolean(
+            selectedDate && sameDispatchDate(selectedDate, dispatchDate),
+          )
+
       chooseDate(dispatchDate)
-      if (dateKey && dayData && hasCards(dayData)) {
+
+      if (
+        !clickRemovesSelection &&
+        dateKey &&
+        dayData &&
+        hasCards(dayData)
+      ) {
         dispatch(openDayPanel({ dateKey, dayData }))
       }
     }
