@@ -20,30 +20,24 @@ export type ConcentricCircleStep = {
 
 export type ConcentricCircleStepsResult = {
   steps: ConcentricCircleStep[]
-  /** Зарезервировано под будущую разметку; сейчас всегда `false`. */
   isMany: boolean
 }
 
-/** Пресет: мини-конверт, несколько получателей (как раньше ENVELOPE_CIRCLE_PALETTE). */
-export const miniCardCirclePaletteEnvelopeRecipients: ConcentricCirclePalette = {
+export const miniCardCirclePaletteEnvelopeRecipients: ConcentricCirclePalette =
+  {
+    opacityMin: 0.05,
+    opacityMax: 0.18,
+    singleSizePercent: 72,
+    singleOpacity: 0.08,
+  }
+
+export const miniCardCirclePaletteDateMulti: ConcentricCirclePalette = {
   opacityMin: 0.05,
   opacityMax: 0.18,
   singleSizePercent: 72,
-  singleOpacity: 0.08,
+  singleOpacity: 0.1,
 }
 
-/** Пресет: мини-дата, мульти-дни на светлом фоне поля даты. */
-export const miniCardCirclePaletteDateMulti: ConcentricCirclePalette = {
-  opacityMin: 0.22,
-  opacityMax: 0.78,
-  singleSizePercent: 72,
-  singleOpacity: 0.4,
-}
-
-/**
- * Вложенные круги в углу мини-карточки (геометрия общая для конверта и даты).
- * @param count число элементов (1 или 2…MAX); при count > MAX используется MAX колец.
- */
 export function getConcentricCircleSteps(
   count: number,
   palette: ConcentricCirclePalette,
@@ -87,11 +81,20 @@ export function getConcentricCircleSteps(
 export function getEnvelopeRecipientCircleSteps(
   count: number,
 ): ConcentricCircleStepsResult {
-  return getConcentricCircleSteps(count, miniCardCirclePaletteEnvelopeRecipients)
+  return getConcentricCircleSteps(
+    count,
+    miniCardCirclePaletteEnvelopeRecipients,
+  )
 }
 
 export function getDateMultiMiniCircleSteps(
   count: number,
 ): ConcentricCircleStepsResult {
-  return getConcentricCircleSteps(count, miniCardCirclePaletteDateMulti)
+  if (count === 1) {
+    return getConcentricCircleSteps(2, miniCardCirclePaletteDateMulti)
+  }
+  return getConcentricCircleSteps(
+    Math.min(count, MAX_CONCENTRIC_CIRCLES),
+    miniCardCirclePaletteDateMulti,
+  )
 }

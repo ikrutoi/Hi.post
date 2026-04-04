@@ -16,9 +16,9 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
 
   if (count === 0) return null
 
-  const showSingleLayout = !isMultiDateMode || count === 1
+  const showTextLayout = !isMultiDateMode
 
-  if (showSingleLayout) {
+  if (showTextLayout) {
     const d = selectedDate ?? mergedDispatchDates[0]
     if (!d) return null
 
@@ -43,6 +43,10 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
 
   const circleCount = Math.min(count, 10)
   const { steps } = getDateMultiMiniCircleSteps(circleCount)
+  const isSingleMulti = count === 1
+  const oneMultiDate = isSingleMulti
+    ? (selectedDate ?? mergedDispatchDates[0])
+    : null
 
   return (
     <div
@@ -56,7 +60,14 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
       onMouseLeave={() => setHovered(null)}
     >
       {steps.length > 0 && (
-        <div className={styles.miniDateCircles} aria-hidden>
+        <div
+          key={isSingleMulti ? 'single' : 'multi'}
+          className={clsx(
+            styles.miniDateCircles,
+            isSingleMulti && styles.miniDateSingleCircles,
+          )}
+          aria-hidden
+        >
           {steps.map((step, i) => (
             <span
               key={i}
@@ -65,15 +76,25 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
                 width: `${step.sizePercent}%`,
                 maxHeight: `${step.sizePercent}%`,
                 aspectRatio: 1,
-                opacity: step.opacity,
+                ...(isSingleMulti ? {} : { opacity: step.opacity }),
               }}
             />
           ))}
         </div>
       )}
-      <div className={styles.miniDateCount}>
-        <span>{count}</span>
-      </div>
+      {isSingleMulti && oneMultiDate ? (
+        <div className={styles.miniDateOneDateInMulti}>
+          <span className={styles.miniDateYear}>{oneMultiDate.year}</span>
+          <span className={styles.miniDateDay}>{oneMultiDate.day}</span>
+          <span className={styles.miniDateMonth}>
+            {listOfMonthOfYear[oneMultiDate.month]}
+          </span>
+        </div>
+      ) : (
+        <div className={styles.miniDateCount}>
+          <span>{count}</span>
+        </div>
+      )}
     </div>
   )
 }
