@@ -1,0 +1,210 @@
+@use '@styles/config/colors' as *;
+
+.root {
+  position: relative;
+  margin-bottom: 0.25rem;
+  min-height: 2.5rem;
+  padding: 1px 0.5rem 1px 1.75rem;
+  box-sizing: border-box;
+  background-color: $color-date-input;
+  border: 1px solid $color-date-input-border;
+  border-radius: 4px;
+  user-select: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+
+  &[data-no-star='true'] {
+    padding-left: 0.5rem;
+  }
+
+  &[data-inactive='true'] {
+    opacity: 0.78;
+    background-color: mix($color-date-input, #f5f5f5, 40%);
+    border-color: mix($color-date-input-border, #e0e0e0, 55%);
+
+    .thumb {
+      background-color: mix($color-section-light, #eee, 50%);
+    }
+
+    .dateLine {
+      color: $color-font-disabled;
+    }
+
+    .detailLine {
+      color: mix($color-date-multi, $color-font-disabled, 35%);
+    }
+  }
+
+  &:hover,
+  &[data-focused='true'] {
+    background-color: darken($color-date-input, 2%);
+
+    &[data-inactive='true'] {
+      background-color: mix(darken($color-date-input, 2%), #f0f0f0, 45%);
+    }
+  }
+
+  &[data-selected='true'] {
+    background-color: darken($color-date-input, 4%);
+    box-shadow: -2px 0 0 0 $color-date-multi;
+
+    &[data-inactive='true'] {
+      box-shadow: -2px 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
+    }
+  }
+
+  &[data-clickable='true'] {
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-date-input-border;
+      outline-offset: 1px;
+    }
+  }
+}
+
+.star {
+  position: absolute;
+  left: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 1.15em;
+  height: 1.15em;
+  border-radius: 50%;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  color: $color-font-disabled;
+  background: none;
+  transition: color 0.15s ease;
+  z-index: 1;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  &[data-starred='true'] {
+    color: $color-favorite-star;
+  }
+}
+
+.body {
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+  width: 100%;
+  min-width: 0;
+  min-height: calc(2.5rem - 2px);
+}
+
+.statusIndicator {
+  flex-shrink: 0;
+  align-self: center;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  border: solid 1px #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+
+  &.processed {
+    background-color: $color-preview-indicator-processed;
+  }
+
+  &.cart {
+    background-color: $color-preview-indicator-cart;
+  }
+
+  &.ready {
+    background-color: $color-preview-indicator-ready;
+  }
+
+  &.sent {
+    background-color: $color-preview-indicator-sent;
+  }
+
+  &.delivered {
+    background-color: $color-preview-indicator-delivered;
+  }
+
+  &.error {
+    background-color: $color-preview-indicator-error;
+  }
+
+  &.drafts {
+    background-color: mix($color-preview-indicator-processed, #fff, 72%);
+  }
+}
+
+.root[data-inactive='true'] .statusIndicator {
+  opacity: 0.72;
+}
+
+.thumb {
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 2.35rem;
+  min-height: 0;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $color-section-light;
+  border: 1px solid mix($color-date-input-border, transparent, 65%);
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  gap: 0.08rem;
+}
+
+.dateLine {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: $color-font-enabled;
+  line-height: 1.25;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  // mask-image: linear-gradient(to right, black 88%, transparent 100%);
+  // -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
+}
+
+.detailLine {
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: $color-date-multi;
+  line-height: 1.2;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  // mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  // -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}

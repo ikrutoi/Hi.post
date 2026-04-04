@@ -53,7 +53,7 @@ export const Cardtext: React.FC<CardtextProps> = ({
     selectCardtextTemplatesListLoading,
   )
 
-  console.log('CARDTEXT STATE', state)
+  // console.log('CARDTEXT STATE', state)
 
   const dispatch = useAppDispatch()
 
@@ -80,12 +80,7 @@ export const Cardtext: React.FC<CardtextProps> = ({
       return
     }
     dispatch(resetCardtextAssetToEmptyDraft())
-  }, [
-    dispatch,
-    state.assetData?.id,
-    state.assetData?.status,
-    state.presetData,
-  ])
+  }, [dispatch, state.assetData?.id, state.assetData?.status, state.presetData])
 
   const {
     titleInputRef,
