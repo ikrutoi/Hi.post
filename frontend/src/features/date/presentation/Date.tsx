@@ -105,7 +105,9 @@ export const Date: React.FC = () => {
         <DateHeader
           currentDate={currentDate}
           calendarViewDate={calendarViewDate}
-          formattedSelectedDate={formattedSelectedDate}
+          formattedSelectedDate={
+            isMultiDateMode ? null : formattedSelectedDate
+          }
           isCurrentMonth={isCurrentMonth}
           onDecrement={handleDecrementArrow}
           onIncrement={handleIncrementArrow}

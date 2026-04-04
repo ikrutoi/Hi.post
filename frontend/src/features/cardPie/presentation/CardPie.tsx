@@ -82,12 +82,13 @@ export const CardPie: React.FC<CardPieProps> = ({
   const isSingleRecipient = recipientCount === 1
   const hasManyRecipients = recipientCount > 1
   const date = cardData?.date ?? null
-  const dates: DispatchDate[] =
-    (cardData as { dates?: DispatchDate[] } | undefined)?.dates?.length
-      ? ((cardData as { dates: DispatchDate[] }).dates ?? [])
-      : date
-        ? [date]
-        : []
+  const dates: DispatchDate[] = (
+    cardData as { dates?: DispatchDate[] } | undefined
+  )?.dates?.length
+    ? ((cardData as { dates: DispatchDate[] }).dates ?? [])
+    : date
+      ? [date]
+      : []
   const hasManyDates = dates.length > 1
 
   const handleMouseEnter = (e: React.MouseEvent<SVGPathElement>) => {
@@ -455,8 +456,8 @@ export const CardPie: React.FC<CardPieProps> = ({
                     fill="var(--pie-rect-fill)"
                   />
                   <IconCalendarMulti
-                    x="400"
-                    y="600"
+                    x="1450"
+                    y="1600"
                     width="2200"
                     height="2200"
                     className={styles.pieEnvelopeIconBg}
