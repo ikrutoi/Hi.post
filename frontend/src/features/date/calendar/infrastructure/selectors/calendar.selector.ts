@@ -4,3 +4,10 @@ import type { CalendarViewDate } from '@entities/date/domain/types'
 export const selectLastCalendarViewDate = (
   state: RootState
 ): CalendarViewDate => state.calendar.lastViewedCalendarDate
+
+export const selectIsDateListPanelOpen = (state: RootState): boolean =>
+  state.calendar.dateListPanelOpen
+
+export const selectDateListSortDirection = (
+  state: RootState,
+): 'asc' | 'desc' => state.calendar.dateListSortDirection ?? 'asc'

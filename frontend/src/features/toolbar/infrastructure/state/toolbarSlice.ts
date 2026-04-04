@@ -27,6 +27,8 @@ import {
   initialCardphotoCreateToolbarState,
   initialCardphotoListToolbarState,
   initialCardtextProcessedToolbarState,
+  initialDateToolbarState,
+  initialDateListToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -41,7 +43,6 @@ import type {
   IconState,
   UpdateIconPayloadValue,
 } from '@shared/config/constants'
-
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
   cardphotoCreate: initialCardphotoCreateToolbarState,
@@ -70,6 +71,8 @@ const initialState: ToolbarState = {
   cardtextEditor: initialCardtextComposerToolbarState,
   cardtextCreate: initialCardtextComposerToolbarState,
   cardtextProcessed: initialCardtextProcessedToolbarState,
+  date: initialDateToolbarState,
+  dateList: initialDateListToolbarState,
 }
 
 const toolbarSlice = createSlice({

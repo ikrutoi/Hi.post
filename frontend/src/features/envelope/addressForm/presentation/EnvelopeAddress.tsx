@@ -97,9 +97,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     [],
   )
 
-  console.log('recipient state', recipientFacade.state)
-  console.log('sender state', senderFacade.state)
-  console.log('envelope state', envelopeFacade.isEnvelopeComplete)
+  // console.log('recipient state', recipientFacade.state)
+  // console.log('sender state', senderFacade.state)
+  // console.log('envelope state', envelopeFacade.isEnvelopeComplete)
 
   useEffect(() => {
     if (editingTemplateId == null) return
@@ -293,7 +293,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             <div className={styles.envelopeRecipientToolbarIconContainer}>
               {recipientFacade.isEnabled ? (
                 <>
-                  {envelopeFacade.selectedRecipientEntriesInOrder.length > 0 && (
+                  {envelopeFacade.selectedRecipientEntriesInOrder.length >
+                    0 && (
                     <span className={styles.recipientsCountBadge}>
                       {envelopeFacade.selectedRecipientEntriesInOrder.length}
                     </span>

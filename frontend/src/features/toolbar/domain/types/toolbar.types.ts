@@ -32,6 +32,8 @@ import type {
 } from './index'
 import type { RecipientsToolbarState, RecipientsKey } from './envelope.types'
 import type { LayoutOrientation } from '@layout/domain/types'
+import { DateKey, DateToolbarState } from './date'
+import { DateListKey, DateListToolbarState } from './dateList.types'
 
 export type IconOptions = {
   badge?: number | null
@@ -81,6 +83,8 @@ export const TOOLBAR_SECTIONS = [
   'cardtextEditor',
   'cardtextView',
   'cardtextProcessed',
+  'date',
+  'dateList',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -113,6 +117,8 @@ export type ToolbarState = {
   cardtextCreate: CardtextToolbarState & { config: ToolbarGroup[] }
   cardtextEditor: CardtextToolbarState & { config: ToolbarGroup[] }
   cardtextProcessed: CardtextToolbarState & { config: ToolbarGroup[] }
+  date: DateToolbarState & { config: ToolbarGroup[] }
+  dateList: DateListToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -254,6 +260,8 @@ export type ToolbarSectionConfigMap = {
     CardtextKey,
     'cardtextProcessed'
   >
+  date: BaseSectionConfig<DateToolbarState, DateKey, 'date'>
+  dateList: BaseSectionConfig<DateListToolbarState, DateListKey, 'dateList'>
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -310,4 +318,8 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                     ? CardtextKey
                                                     : S extends 'cardtextProcessed'
                                                       ? CardtextKey
-                                                      : never
+                                                      : S extends 'date'
+                                                        ? DateKey
+                                                        : S extends 'dateList'
+                                                          ? DateListKey
+                                                          : never

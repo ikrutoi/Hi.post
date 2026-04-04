@@ -328,7 +328,8 @@
 }
 
 .toolbarCardtext,
-.toolbarCardphoto {
+.toolbarCardphoto,
+.toolbarDate {
   .toolbarKey {
     background-color: $color-app-inner;
   }
@@ -345,7 +346,8 @@
 .toolbarAddressListSender,
 .toolbarAddressListRecipient,
 .toolbarCardtext,
-.toolbarCardphoto {
+.toolbarCardphoto,
+.toolbarDate {
   .toolbarKeyActive {
     color: $color-font-active;
   }
@@ -381,7 +383,8 @@
 .toolbarRecipientFavorite,
 .toolbarSenderFavorite,
 .toolbarSenderView,
-.toolbarRecipientView {
+.toolbarRecipientView,
+.toolbarDate {
   display: flex;
   align-items: center;
 
@@ -400,7 +403,8 @@
 .toolbarAddressListRecipient,
 .toolbarAddressListRecipients,
 .toolbarCardtextList,
-.toolbarCardphotoList {
+.toolbarCardphotoList,
+.toolbarDateList {
   .toolbarKey {
     width: 1.5rem;
     height: 1.5rem;
@@ -435,7 +439,8 @@
 .toolbarAddressListSender,
 .toolbarAddressListRecipients,
 .toolbarCardtextList,
-.toolbarCardphotoList {
+.toolbarCardphotoList,
+.toolbarDateList {
   width: 100%;
   justify-content: space-between;
   margin-left: 2rem;
@@ -466,6 +471,11 @@
 
 .toolbarCardphotoList .toolbarGroupCardphotoList,
 .toolbarCardphotoList .toolbarGroupActions {
+  display: flex;
+}
+
+.toolbarDateList .toolbarGroupDateList,
+.toolbarDateList .toolbarGroupActions {
   display: flex;
 }
 

@@ -20,6 +20,7 @@ import {
   selectCardtextFavorite,
   selectCardtextListSortDirection,
 } from '@cardtext/infrastructure/selectors'
+import { selectDateListSortDirection } from '@date/calendar/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
@@ -82,6 +83,7 @@ export const Toolbar = ({
     (state) => state.recipient?.recipientsViewSortDirection ?? 'asc',
   )
   const cardtextListSortDirection = useAppSelector(selectCardtextListSortDirection)
+  const dateListSortDirection = useAppSelector(selectDateListSortDirection)
   const cardphotoListTemplateGridCols = useAppSelector(
     selectCardphotoListTemplateGridCols,
   )
@@ -94,7 +96,9 @@ export const Toolbar = ({
           ? recipientsViewSortDirection
           : section === 'cardtextList'
             ? cardtextListSortDirection
-            : undefined
+            : section === 'dateList'
+              ? dateListSortDirection
+              : undefined
 
   useEffect(() => {
     if (groupRef.current) {

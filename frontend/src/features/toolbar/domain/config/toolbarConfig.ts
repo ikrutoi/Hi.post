@@ -70,6 +70,12 @@ import {
   CARDTEXT_PROCESSED_TOOLBAR,
   initialCardtextProcessedToolbarState,
 } from '../types/cardtext.types'
+import { DATE_KEYS, DATE_TOOLBAR, initialDateToolbarState } from '../types/date'
+import {
+  DATE_LIST_KEYS,
+  DATE_LIST_TOOLBAR,
+  initialDateListToolbarState,
+} from '../types/dateList.types'
 
 export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardphoto: {
@@ -401,5 +407,27 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'cardtextCreate',
     getBadges: (state: ToolbarState['cardtextCreate']) => ({}),
     toolbar: CARDTEXT_COMPOSER_TOOLBAR,
+  },
+
+  date: {
+    keys: DATE_KEYS,
+    initialState: initialDateToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'date',
+    getBadges: (state: ToolbarState['date']) => ({}),
+    toolbar: DATE_TOOLBAR,
+  },
+
+  dateList: {
+    keys: DATE_LIST_KEYS,
+    initialState: initialDateListToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'dateList',
+    getBadges: (state: ToolbarState['dateList']) => ({}),
+    toolbar: DATE_LIST_TOOLBAR,
   },
 }

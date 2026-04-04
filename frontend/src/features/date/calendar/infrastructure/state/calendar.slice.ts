@@ -23,6 +23,10 @@ export type DayPanelPayload = {
 type CalendarState = {
   lastViewedCalendarDate: CalendarViewDate
   openDayPanel: DayPanelPayload | null
+  /** Правая панель «Список» по тулбару даты (listDate). */
+  dateListPanelOpen: boolean
+  /** Сортировка списка дат (тулбар dateList). */
+  dateListSortDirection: 'asc' | 'desc'
 }
 
 const now = getCurrentDate()
@@ -33,6 +37,8 @@ const initialState: CalendarState = {
     month: now.month,
   },
   openDayPanel: null,
+  dateListPanelOpen: false,
+  dateListSortDirection: 'asc',
 }
 
 const calendarSlice = createSlice({
@@ -47,13 +53,29 @@ const calendarSlice = createSlice({
     },
     openDayPanel(state, action: PayloadAction<DayPanelPayload>) {
       state.openDayPanel = action.payload
+      state.dateListPanelOpen = false
     },
     closeDayPanel(state) {
       state.openDayPanel = null
     },
+    setDateListPanelOpen(state, action: PayloadAction<boolean>) {
+      state.dateListPanelOpen = action.payload
+      if (action.payload) {
+        state.openDayPanel = null
+      }
+    },
+    toggleDateListSortDirection(state) {
+      state.dateListSortDirection =
+        state.dateListSortDirection === 'asc' ? 'desc' : 'asc'
+    },
   },
 })
 
-export const { updateLastViewedCalendarDate, openDayPanel, closeDayPanel } =
-  calendarSlice.actions
+export const {
+  updateLastViewedCalendarDate,
+  openDayPanel,
+  closeDayPanel,
+  setDateListPanelOpen,
+  toggleDateListSortDirection,
+} = calendarSlice.actions
 export default calendarSlice.reducer
