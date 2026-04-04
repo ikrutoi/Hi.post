@@ -18,6 +18,9 @@ export const selectSelectedDates = (state: RootState): DispatchDate[] =>
 export const selectIsMultiDateMode = (state: RootState): boolean =>
   state.date.isMultiDateMode
 
+export const selectCachedSingleDate = (state: RootState): SelectedDispatchDate =>
+  state.date.cachedSingleDate
+
 /** Для мини-карточки и CardPie: несколько дат только при включённом multi и непустом списке. */
 export const selectMergedDispatchDates = createSelector(
   [

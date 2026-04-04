@@ -41,7 +41,7 @@ export const DateListPanel: React.FC<Props> = ({
           type="button"
           className={styles.closeBtn}
           onClick={onClose}
-          aria-label="Закрыть список дат"
+          aria-label="Close date list"
         >
           <IconX />
         </button>
@@ -51,7 +51,7 @@ export const DateListPanel: React.FC<Props> = ({
         <div
           className={styles.list}
           tabIndex={0}
-          aria-label="Список дат отправки"
+          aria-label="Dispatch date list"
         >
           {hasRows ? (
             entries.map((item) => (
@@ -63,7 +63,9 @@ export const DateListPanel: React.FC<Props> = ({
                 variant={item.variant}
                 previewStatus={item.previewStatus}
                 onSelect={
-                  onSelectEntry ? () => onSelectEntry(item.id) : undefined
+                  onSelectEntry && item.variant !== 'inactive'
+                    ? () => onSelectEntry(item.id)
+                    : undefined
                 }
               />
             ))

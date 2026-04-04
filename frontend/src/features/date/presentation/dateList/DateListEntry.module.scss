@@ -152,6 +152,10 @@
   opacity: 0.72;
 }
 
+.root[data-inactive='true'] .thumbImg {
+  filter: grayscale(1);
+}
+
 .thumb {
   flex-shrink: 0;
   align-self: stretch;

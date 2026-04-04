@@ -6,7 +6,11 @@ import {
   setDateListPanelOpen,
 } from '@date/calendar/infrastructure/state'
 import { selectIsDateListPanelOpen } from '@date/calendar/infrastructure/selectors'
-import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import {
+  selectCachedSingleDate,
+  selectIsMultiDateMode,
+  selectMergedDispatchDates,
+} from '@date/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import { CardsListPanel } from '../dayPanel/CardsListPanel'
@@ -15,12 +19,16 @@ import type { DateListPanelItem } from './DateListPanel'
 import styles from './DateRightSlot.module.scss'
 
 function formatDispatchDateLabel(d: DispatchDate): string {
-  const date = new Date(d.year, d.month - 1, d.day)
-  return date.toLocaleDateString(undefined, {
+  const date = new Date(d.year, d.month, d.day)
+  return date.toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   })
+}
+
+function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
+  return a.year === b.year && a.month === b.month && a.day === b.day
 }
 
 export const DateRightSlot: React.FC = () => {
@@ -28,18 +36,47 @@ export const DateRightSlot: React.FC = () => {
   const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
   const dateListOpen = useAppSelector(selectIsDateListPanelOpen)
   const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
+  const isMultiDateMode = useAppSelector(selectIsMultiDateMode)
+  const cachedSingleDate = useAppSelector(selectCachedSingleDate)
   const { previewUrl } = useAppSelector(selectCardphotoPreview)
 
-  const dateListEntries: DateListPanelItem[] = useMemo(
-    () =>
-      mergedDispatchDates.map((d, index) => ({
-        id: `${d.year}-${d.month}-${d.day}-${index}`,
+  const dateListEntries: DateListPanelItem[] = useMemo(() => {
+    const preview = previewUrl ?? null
+    const status = 'processed' as const
+
+    const activeRows: DateListPanelItem[] = mergedDispatchDates.map(
+      (d, index) => ({
+        id: `${d.year}-${d.month}-${d.day}-m-${index}`,
         dateLabel: formatDispatchDateLabel(d),
-        previewUrl: previewUrl ?? null,
-        previewStatus: 'processed' as const,
-      })),
-    [mergedDispatchDates, previewUrl],
-  )
+        previewUrl: preview,
+        previewStatus: status,
+      }),
+    )
+
+    if (
+      !isMultiDateMode ||
+      !cachedSingleDate ||
+      mergedDispatchDates.some((d) => sameDispatchDate(d, cachedSingleDate))
+    ) {
+      return activeRows
+    }
+
+    const d = cachedSingleDate
+    const inactiveRow: DateListPanelItem = {
+      id: `${d.year}-${d.month}-${d.day}-cached-single`,
+      dateLabel: formatDispatchDateLabel(d),
+      previewUrl: preview,
+      previewStatus: status,
+      variant: 'inactive',
+    }
+
+    return [inactiveRow, ...activeRows]
+  }, [
+    mergedDispatchDates,
+    isMultiDateMode,
+    cachedSingleDate,
+    previewUrl,
+  ])
 
   const handleCloseList = useCallback(() => {
     dispatch(setDateListPanelOpen(false))
