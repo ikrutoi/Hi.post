@@ -16,7 +16,6 @@ export type DateListPanelItem = {
   detailLine?: string
   variant?: DateListEntryVariant
   previewStatus?: CardStatus
-  /** Удаление строки из списка (см. DateListEntry). */
   onDelete?: () => void
 }
 

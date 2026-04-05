@@ -31,7 +31,7 @@ const PATTERN = {
   cardphoto5120: { x: -1343, y: -1344 },
   cardtext5120: { x: 863, y: -1693 },
   date5120: { x: -1693, y: 863 },
-  envelope2560: { x: 3120, y: 1577 },
+  envelope2560: { x: 2800, y: 1577 },
   aroma2560: { x: 1300, y: 2750 },
 } as const
 
@@ -358,10 +358,10 @@ export const CardPie: React.FC<CardPieProps> = ({
                     strokeLinejoin="round"
                     fill="var(--envelope-text)"
                   >
-                    <tspan x="600" dy="0" fontWeight="600" fontSize="650">
+                    <tspan x="1200" dy="0" fontWeight="600" fontSize="650">
                       {recipient.name}
                     </tspan>
-                    <tspan x="600" dy="750" fontWeight="600" fontSize="400">
+                    <tspan x="1200" dy="750" fontWeight="600" fontSize="400">
                       {recipient.country ?? recipient.city}
                     </tspan>
                   </text>

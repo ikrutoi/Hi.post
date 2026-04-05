@@ -82,7 +82,12 @@ const App = () => {
                 <CardSectionEditor />
               </div>
             </div>
-            <div className={styles.appMainContentRight}>
+            <div
+              className={clsx(
+                styles.appMainContentRight,
+                activeSection === 'date' && styles.appMainContentRightDate,
+              )}
+            >
               {activeSection === 'envelope' && <EnvelopeRightSlot />}
               {activeSection === 'date' && <DateRightSlot />}
               {activeSection === 'cardtext' && <CardtextRightSlot />}
