@@ -1,8 +1,8 @@
 import type { RootState } from '@app/state'
-import type { CartAmount, CartItem } from '@entities/cart/domain/types'
+import type { CartAmount, Postcard } from '@entities/cart/domain/types'
 
 export const selectCartAmount = (state: RootState): CartAmount => {
-  const items: CartItem[] = state.cart.items
+  const items: Postcard[] = state.cart.items
 
   const total = items.reduce((sum, item) => {
     const price = parseFloat(item.price)

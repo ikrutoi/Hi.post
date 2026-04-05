@@ -1,3 +1,5 @@
+// Устаревший черновик. Актуальные типы корзины: `@entities/cart/domain/types` (`Postcard`, `Cart`, …).
+
 // import { DispatchDate } from '@entities/date/domain/types'
 
 // export interface CartItem {

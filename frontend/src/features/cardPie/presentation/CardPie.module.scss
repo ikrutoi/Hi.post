@@ -203,7 +203,9 @@ $pie-center-logo-size: 1.5rem;
   font-weight: 700;
   color: $color-font-enabled-light;
   background: none;
-  transition: color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    filter 0.15s ease;
   z-index: 1;
 
   &:focus-visible {
@@ -212,6 +214,17 @@ $pie-center-logo-size: 1.5rem;
 
   &:hover {
     color: $color-font-enabled-light-hover;
+  }
+}
+
+/** Показана только когда canFavoritePie — «включённый» вид избранного. */
+.pieFavoriteButtonLit {
+  color: $color-favorite-star;
+  filter: drop-shadow(0 0 4px rgba($color-favorite-star, 0.45));
+
+  &:hover {
+    color: $color-favorite;
+    filter: drop-shadow(0 0 6px rgba($color-favorite-star, 0.55));
   }
 }
 

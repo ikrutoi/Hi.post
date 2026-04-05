@@ -1,7 +1,7 @@
-import type { Cart } from '../../domain/types/cart.types'
-import { toDispatchDate } from './dateAdapter'
+import type { Cart } from '@entities/cart/domain/types'
 
-interface RawCartItem {
+/** Сырой ряд ответа API до сборки в `Postcard` с полным `Card`. */
+interface RawPostcardRow {
   id: number | string
   preview: string
   recipientName: string
@@ -9,20 +9,22 @@ interface RawCartItem {
   price: number
 }
 
+/**
+ * Заготовка под синхронизацию с бэком.
+ * `toCartState` должен собирать полноценные `Postcard` (включая вложенный `Card`).
+ */
 export const cartApiAdapter = {
-  async getAll(): Promise<RawCartItem[]> {
+  async getAll(): Promise<RawPostcardRow[]> {
     const response = await fetch('/api/cart')
     const data = await response.json()
     return data
   },
 
-  toCart(rawItems: RawCartItem[]): Cart {
-    return rawItems.map((item) => ({
-      id: item.id.toString(),
-      preview: item.preview,
-      recipientName: item.recipientName,
-      date: toDispatchDate(item.date),
-      price: item.price,
-    }))
+  toCartState(_rawItems: RawPostcardRow[]): Cart {
+    void _rawItems
+    return {
+      items: [],
+      amount: { value: 0, currency: 'BYN' },
+    }
   },
 }

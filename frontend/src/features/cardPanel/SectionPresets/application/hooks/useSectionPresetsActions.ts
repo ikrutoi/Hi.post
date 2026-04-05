@@ -3,14 +3,14 @@ import { addressService } from '../services/addressService'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useEnvelopeFacade } from '@envelope/application/facades'
-import type { CartItem } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/cart/domain/types'
 import type { Template } from '@shared/config/constants'
 
 type PresetAction = 'save' | 'remove'
 
 export const useSectionPresetsActions = (
   template: Template,
-  cart: CartItem[],
+  cart: Postcard[],
   getMemoryCards: (source: Template) => Promise<void>
 ) => {
   // const { setUiState } = useEnvelopeFacade()

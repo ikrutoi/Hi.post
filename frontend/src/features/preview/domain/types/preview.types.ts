@@ -1,8 +1,8 @@
-import type { CartItem } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/cart/domain/types'
 import type { SizeCard } from '@layout/domain/types'
 
 export type UseCardphotoPreviewOptions = {
-  items: CartItem[]
+  items: Postcard[]
   size?: SizeCard
-  onPreviewReady?: (updated: CartItem) => void
+  onPreviewReady?: (updated: Postcard) => void
 }

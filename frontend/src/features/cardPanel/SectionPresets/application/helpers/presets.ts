@@ -1,9 +1,9 @@
 import { processPresetsCards } from './processPresetsCards'
-import type { CartItem } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/cart/domain/types'
 
 export function preparePresets(
-  records: CartItem[],
-  getName: (card: CartItem) => string
+  records: Postcard[],
+  getName: (record: Postcard) => string
 ) {
   const { sortedRecords, letterIndexList } = processPresetsCards(
     records,

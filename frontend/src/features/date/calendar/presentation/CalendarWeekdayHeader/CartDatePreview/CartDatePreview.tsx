@@ -1,11 +1,11 @@
 import React from 'react'
 import clsx from 'clsx'
-import type { CartItem } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/cart/domain/types'
 import styles from './CartDatePreview.module.scss'
 
 interface CartDatePreviewProps {
   day: number
-  cartItem: CartItem
+  postcard: Postcard
   countCartCards: number
   handleImageCartDateClick: (evt: React.MouseEvent, day: number) => void
   handleCellCartDateClick: () => void
@@ -13,7 +13,7 @@ interface CartDatePreviewProps {
 
 export const CartDatePreview: React.FC<CartDatePreviewProps> = ({
   day,
-  cartItem,
+  postcard,
   countCartCards,
   handleImageCartDateClick,
   handleCellCartDateClick,
@@ -26,7 +26,7 @@ export const CartDatePreview: React.FC<CartDatePreviewProps> = ({
       {/* <img
         className={styles.img}
         alt="cart-day"
-        src={cartItem.card.cardphoto.data.preview?.blob ?? ''}
+        src={postcard.card.cardphoto.data.preview?.blob ?? ''}
         onClick={(evt) => handleImageCartDateClick(evt, day)}
       /> */}
       {countCartCards > 1 && (

@@ -31,6 +31,31 @@ function toLightImageMeta(meta: ImageMeta | null): ImageMeta | null {
   }
 }
 
+/** Blob:-URL не переживают перезагрузку; в сессию кладём пустые строки, восстановление — из IDB по id. */
+function stripEphemeralBlobUrls(meta: ImageMeta | null): ImageMeta | null {
+  if (!meta) return null
+  const wipe = (u: string | undefined) =>
+    u && u.startsWith('blob:') ? '' : (u ?? '')
+  return {
+    ...meta,
+    url: wipe(meta.url),
+    full: {
+      ...meta.full,
+      url: wipe(meta.full?.url) || wipe(meta.url),
+    },
+    thumbnail: meta.thumbnail
+      ? {
+          ...meta.thumbnail,
+          url: wipe(meta.thumbnail.url),
+        }
+      : undefined,
+  }
+}
+
+function toPersistedSessionImageMeta(meta: ImageMeta | null): ImageMeta | null {
+  return stripEphemeralBlobUrls(toLightImageMeta(meta))
+}
+
 export const selectCardphotoSlice = (state: RootState) => state.cardphoto
 
 // Don't use stub: `applyFinal` updates `cardphoto.isComplete`.
@@ -169,9 +194,9 @@ export const selectCardphotoSessionRecord = createSelector(
         },
         crop: config.crop,
       },
-      appliedData: toLightImageMeta(appliedImage),
-      assetData: toLightImageMeta(s.assetData),
-      userOriginalData: toLightImageMeta(s.userOriginalData),
+      appliedData: toPersistedSessionImageMeta(appliedImage),
+      assetData: toPersistedSessionImageMeta(s.assetData),
+      userOriginalData: toPersistedSessionImageMeta(s.userOriginalData),
     }
   },
 )

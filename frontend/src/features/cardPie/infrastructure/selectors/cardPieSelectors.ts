@@ -25,7 +25,7 @@ export const selectPieDataByContext = createSelector(
 
     let cardBase = null
     if (id) {
-      // if (status === 'cart') cardBase = selectCartItemById(state, id)
+      // if (status === 'cart') cardBase = selectPostcardById(state, id)
       // if (status === 'sent') cardBase = selectHistoryItemById(state, id)
       // Добавь сюда 'drafts' или 'templates', когда они появятся
     }

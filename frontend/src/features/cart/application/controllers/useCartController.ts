@@ -9,7 +9,7 @@ import {
   selectCartAmount,
   selectCartCount,
 } from '../../infrastructure/selectors'
-import type { CartItem } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/cart/domain/types'
 
 export const useCartController = () => {
   const dispatch = useAppDispatch()
@@ -17,9 +17,9 @@ export const useCartController = () => {
   const amount = useAppSelector(selectCartAmount)
   const count = useAppSelector(selectCartCount)
 
-  const addCartItem = (item: CartItem) => dispatch(addItem(item))
-  const removeCartItem = (localId: number) => dispatch(removeItem(localId))
-  const updateCartItem = (item: CartItem) => dispatch(updateItem(item))
+  const addPostcard = (item: Postcard) => dispatch(addItem(item))
+  const removePostcard = (localId: number) => dispatch(removeItem(localId))
+  const updatePostcard = (item: Postcard) => dispatch(updateItem(item))
   const clearCartItems = () => dispatch(clearCart())
 
   return {
@@ -28,9 +28,9 @@ export const useCartController = () => {
       count,
     },
     actions: {
-      addCartItem,
-      removeCartItem,
-      updateCartItem,
+      addPostcard,
+      removePostcard,
+      updatePostcard,
       clearCartItems,
     },
   }

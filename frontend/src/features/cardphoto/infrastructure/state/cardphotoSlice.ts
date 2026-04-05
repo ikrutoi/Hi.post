@@ -89,7 +89,13 @@ export const cardphotoSlice = createSlice({
         userOriginalData?: ImageMeta | null
       }>,
     ) {
-      const { config, appliedData, assetData, userOriginalData } = action.payload
+      const {
+        config,
+        isComplete: isCompletePayload,
+        appliedData,
+        assetData,
+        userOriginalData,
+      } = action.payload
 
       const normalizedConfig: WorkingConfig = {
         ...config,
@@ -125,7 +131,10 @@ export const cardphotoSlice = createSlice({
       if (userOriginalData !== undefined) {
         state.state.userOriginalData = userOriginalData
       }
-      state.isComplete = !!state.state.appliedData
+      state.isComplete =
+        typeof isCompletePayload === 'boolean'
+          ? isCompletePayload
+          : !!state.state.appliedData
     },
 
     uploadUserImage(state, action: PayloadAction<ImageMeta>) {},

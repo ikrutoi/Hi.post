@@ -43,6 +43,7 @@ import {
 } from '@cardphoto/application/helpers'
 import { setSizeCard } from '@layout/infrastructure/state'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
+import { collectReferencedBlobUrls } from './blobUrlRevokeGuards'
 import {
   selectSizeCard,
 } from '@layout/infrastructure/selectors'
@@ -434,22 +435,6 @@ export function* handleCropConfirm(): SagaIterator {
           ? s.cardphoto.state?.assetData?.url
           : undefined,
     )
-    const appliedUrl: string | undefined = yield select(
-      (s: RootState) => s.cardphoto.state?.appliedData?.url,
-    )
-    const stBefore: CardphotoState | null = yield select(selectCardphotoState)
-    const userUrl = stBefore?.userOriginalData?.url
-    const appliedCurrentUrl = stBefore?.appliedData?.url
-    const stillInUse =
-      oldProcessedUrl && [userUrl, appliedCurrentUrl].includes(oldProcessedUrl)
-
-    if (
-      oldProcessedUrl?.startsWith('blob:') &&
-      oldProcessedUrl !== appliedUrl &&
-      !stillInUse
-    ) {
-      URL.revokeObjectURL(oldProcessedUrl)
-    }
 
     const serializable = prepareForRedux({
       ...finalImageMeta,
@@ -473,6 +458,21 @@ export function* handleCropConfirm(): SagaIterator {
 
     yield put(setProcessedImage(serializable))
     yield call(rebuildConfigFromMeta, serializable, false)
+
+    const rootAfter: RootState = yield select((s: RootState) => s)
+    const stillReferenced = collectReferencedBlobUrls({
+      cardphoto: rootAfter.cardphoto.state,
+      cards: rootAfter.card.cards,
+      cartItems: rootAfter.cart.items,
+      assetRegistryImages: rootAfter.assetRegistry.images,
+      calendarPreviewCache: rootAfter.card.calendarPreviewCache,
+    })
+    if (
+      oldProcessedUrl?.startsWith('blob:') &&
+      !stillReferenced.has(oldProcessedUrl)
+    ) {
+      URL.revokeObjectURL(oldProcessedUrl)
+    }
   } catch (error) {
     console.error('Error crop:', error)
   } finally {

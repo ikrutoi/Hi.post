@@ -9,7 +9,7 @@ import {
   selectCartAmount,
   selectCartCount,
 } from '../../infrastructure/selectors'
-import type { CartItem } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/cart/domain/types'
 
 export const useCartFacade = () => {
   const dispatch = useAppDispatch()
@@ -23,9 +23,9 @@ export const useCartFacade = () => {
       count,
     },
     actions: {
-      addItem: (item: CartItem) => dispatch(addItem(item)),
+      addItem: (item: Postcard) => dispatch(addItem(item)),
       removeItem: (localId: number) => dispatch(removeItem(localId)),
-      updateItem: (item: CartItem) => dispatch(updateItem(item)),
+      updateItem: (item: Postcard) => dispatch(updateItem(item)),
       clearCart: () => dispatch(clearCart()),
     },
   }

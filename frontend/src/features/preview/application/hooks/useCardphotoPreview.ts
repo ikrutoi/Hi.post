@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { generateCardphotoPreview } from './generateCardphotoPreview'
 import { useLayoutFacade } from '@layout/application/facades'
-import type { CartItem } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/cart/domain/types'
 import type { UseCardphotoPreviewOptions } from '../../domain/types'
 
 export const useCardphotoPreview = (options: UseCardphotoPreviewOptions) => {
@@ -23,7 +23,7 @@ export const useCardphotoPreview = (options: UseCardphotoPreviewOptions) => {
             previewSize
           )
 
-          const updated: CartItem = {
+          const updated: Postcard = {
             ...item,
             card: {
               ...item.card,

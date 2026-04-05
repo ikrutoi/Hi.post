@@ -47,6 +47,7 @@ import {
   setAlign,
   setFontSizeStep,
   restoreCardtextSession,
+  restoreCardtextEditorSession,
   setCardtextAppliedData,
 } from '@cardtext/infrastructure/state'
 import {
@@ -319,6 +320,7 @@ export function* cardEditorSaga() {
     setAlign.type,
     setFontSizeStep.type,
     restoreCardtextSession.type,
+    restoreCardtextEditorSession.type,
     setCardtextAppliedData.type,
   ] as const
   yield takeEvery([...cardtextToolbarRelated], syncCardtextStatus)

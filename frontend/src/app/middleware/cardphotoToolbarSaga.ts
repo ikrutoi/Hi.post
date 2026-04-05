@@ -42,6 +42,7 @@ import {
 } from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { prepareForRedux } from './cardphotoHelpers'
+import { collectReferencedBlobUrls } from './blobUrlRevokeGuards'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
   getQualityColor,
@@ -606,10 +607,6 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
     const cropId = action.payload
 
     const oldUrl: string | undefined = yield select(selectCurrentProcessedUrl)
-    const appliedUrl: string | undefined = yield select(
-      (state) =>
-        state.cardphoto.state?.appliedData?.url,
-    )
 
     const cropRecord: ImageMeta | null = yield call(
       [storeAdapters.cardphotoImages, storeAdapters.cardphotoImages.getById],
@@ -617,20 +614,6 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
     )
 
     if (cropRecord) {
-      const cardState = (yield select(
-        (s: RootState) => s.cardphoto.state,
-      )) as CardphotoState | null
-      const stillInUse =
-        oldUrl &&
-        [
-          cardState?.userOriginalData?.url,
-          cardState?.appliedData?.url,
-        ].includes(oldUrl)
-
-      if (oldUrl?.startsWith('blob:') && oldUrl !== appliedUrl && !stillInUse) {
-        URL.revokeObjectURL(oldUrl)
-      }
-
       const currentUrl = cropRecord.full?.blob
         ? URL.createObjectURL(cropRecord.full.blob)
         : cropRecord.url
@@ -642,6 +625,18 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
 
       yield put(setProcessedImage(serializable))
       yield call(rebuildConfigFromMeta, serializable, false)
+
+      const rootAfter: RootState = yield select((s: RootState) => s)
+      const stillReferenced = collectReferencedBlobUrls({
+        cardphoto: rootAfter.cardphoto.state,
+        cards: rootAfter.card.cards,
+        cartItems: rootAfter.cart.items,
+        assetRegistryImages: rootAfter.assetRegistry.images,
+        calendarPreviewCache: rootAfter.card.calendarPreviewCache,
+      })
+      if (oldUrl?.startsWith('blob:') && !stillReferenced.has(oldUrl)) {
+        URL.revokeObjectURL(oldUrl)
+      }
     }
   } catch (error) {
     console.error('Select crop history error:', error)

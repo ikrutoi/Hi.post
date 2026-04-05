@@ -3,28 +3,54 @@ import { createSelector } from '@reduxjs/toolkit'
 import type { CardSection } from '@shared/config/constants'
 import type { CardEditorState } from '../../domain/types'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
+import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
+import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
+import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
+import { selectIsDateComplete } from '@date/infrastructure/selectors'
 
-/** Editor state with envelope.isComplete derived from sender/recipient (single source of truth). */
+/**
+ * Editor UI state with per-section `isComplete` aligned to the same sources as
+ * `selectIsCardReady` (not the raw `cardEditor` mirror), so CardPie and tooling
+ * stay in sync when sagas omit `setSectionComplete`.
+ */
 export const selectCardEditorState = createSelector(
-  [(state: RootState) => state.cardEditor, selectIsEnvelopeReady],
-  (editor, envelopeReady): CardEditorState => ({
+  [
+    (state: RootState) => state.cardEditor,
+    selectIsEnvelopeReady,
+    selectCardphotoIsComplete,
+    selectCardtextIsComplete,
+    selectIsAromaComplete,
+    selectIsDateComplete,
+  ],
+  (
+    editor,
+    envelopeReady,
+    cardphoto,
+    cardtext,
+    aroma,
+    date,
+  ): CardEditorState => ({
     ...editor,
+    cardphoto: { ...editor.cardphoto, isComplete: cardphoto },
+    cardtext: { ...editor.cardtext, isComplete: cardtext },
     envelope: { ...editor.envelope, isComplete: envelopeReady },
+    aroma: { ...editor.aroma, isComplete: aroma },
+    date: { ...editor.date, isComplete: date },
   }),
 )
 
 export const selectCardEditorId = (state: RootState): string =>
   state.cardEditor.id
 
+export const selectPieFavorite = (state: RootState): boolean =>
+  state.cardEditor.pieFavorite
+
 export const selectIsCardEditorCompleted = createSelector(
-  [
-    (state: RootState) => state.cardEditor,
-    selectIsEnvelopeReady,
-  ],
-  (editor, envelopeReady): boolean =>
+  [selectCardEditorState],
+  (editor): boolean =>
     editor.cardphoto.isComplete &&
     editor.cardtext.isComplete &&
-    envelopeReady &&
+    editor.envelope.isComplete &&
     editor.aroma.isComplete &&
     editor.date.isComplete,
 )
@@ -32,10 +58,22 @@ export const selectIsCardEditorCompleted = createSelector(
 export const selectSectionComplete = (
   state: RootState,
   section: CardSection,
-): boolean =>
-  section === 'envelope'
-    ? selectIsEnvelopeReady(state)
-    : state.cardEditor[section].isComplete
+): boolean => {
+  switch (section) {
+    case 'envelope':
+      return selectIsEnvelopeReady(state)
+    case 'cardphoto':
+      return selectCardphotoIsComplete(state)
+    case 'cardtext':
+      return selectCardtextIsComplete(state)
+    case 'aroma':
+      return selectIsAromaComplete(state)
+    case 'date':
+      return selectIsDateComplete(state)
+    default:
+      return false
+  }
+}
 
 export const selectPieProgress = createSelector(
   [selectCardEditorState],

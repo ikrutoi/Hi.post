@@ -146,12 +146,37 @@ export const prepareConfigForRedux = (
   },
 })
 
+const isDeadBlobUrl = (u: string | null | undefined): boolean =>
+  typeof u === 'string' && u.startsWith('blob:')
+
+/**
+ * Восстанавливает meta после перезагрузки: в сессии в IndexedDB часто лежат только строки
+ * `blob:...` без Blob — после reload они невалидны (net::ERR_FILE_NOT_FOUND).
+ */
 export const hydrateMeta = (meta: ImageMeta | null): ImageMeta | null => {
   if (!meta) return null
 
   const blob = meta.full?.blob || (meta as any).blob
 
-  const activeUrl = blob instanceof Blob ? URL.createObjectURL(blob) : meta.url
+  let activeUrl: string
+  if (blob instanceof Blob) {
+    activeUrl = URL.createObjectURL(blob)
+  } else if (isDeadBlobUrl(meta.url)) {
+    return null
+  } else {
+    activeUrl = meta.url
+  }
+
+  let thumbUrl: string
+  if (meta.thumbnail?.blob instanceof Blob) {
+    thumbUrl = URL.createObjectURL(meta.thumbnail.blob)
+  } else if (isDeadBlobUrl(meta.thumbnail?.url)) {
+    thumbUrl = ''
+  } else {
+    thumbUrl = meta.thumbnail?.url || ''
+  }
+
+  if (!String(activeUrl).trim() && !String(thumbUrl).trim()) return null
 
   return {
     ...meta,
@@ -164,13 +189,44 @@ export const hydrateMeta = (meta: ImageMeta | null): ImageMeta | null => {
     thumbnail: meta.thumbnail
       ? {
           ...meta.thumbnail,
-          url: meta.thumbnail.blob
-            ? URL.createObjectURL(meta.thumbnail.blob)
-            : meta.thumbnail.url || '',
+          url: thumbUrl,
           blob: undefined,
         }
       : undefined,
   }
+}
+
+/**
+ * Слияние meta из сессии (без Blob, возможны мёртвые blob:-строки) и записи из IDB с бинарными данными.
+ */
+export const hydrateSessionImageMeta = (
+  persisted: ImageMeta | null | undefined,
+  fromIdb: ImageMeta | null | undefined,
+): ImageMeta | null => {
+  if (fromIdb && persisted?.id && fromIdb.id === persisted.id) {
+    return hydrateMeta(fromIdb)
+  }
+  return hydrateMeta(persisted ?? null) ?? hydrateMeta(fromIdb ?? null)
+}
+
+export type IdbImageMetaSources = {
+  cropOrProcessed: ImageMeta | null
+  apply: ImageMeta | null
+  user: ImageMeta | null
+  stock: ImageMeta | null
+}
+
+/** Meta в IndexedDB по id: кропы в cardphotoImages, apply/user/stock — в своих таблицах. */
+export function findIdbImageMetaById(
+  id: string | null | undefined,
+  src: IdbImageMetaSources,
+): ImageMeta | null {
+  if (!id) return null
+  if (src.cropOrProcessed?.id === id) return src.cropOrProcessed
+  if (src.apply?.id === id) return src.apply
+  if (src.user?.id === id) return src.user
+  if (src.stock?.id === id) return src.stock
+  return null
 }
 
 export function* fuelAssetRegistry(
@@ -185,12 +241,11 @@ export function* fuelAssetRegistry(
   const assets: ImageAsset[] = []
 
   const processMeta = (meta: ImageMeta | null) => {
-    if (!meta) return
-    const url = meta.full?.blob ? URL.createObjectURL(meta.full.blob) : meta.url
-    const thumbUrl = meta.thumbnail?.blob
-      ? URL.createObjectURL(meta.thumbnail.blob)
-      : meta.thumbnail?.url || ''
-    assets.push({ id: meta.id, url, thumbUrl })
+    const hydrated = hydrateMeta(meta)
+    if (!hydrated) return
+    const url = hydrated.url
+    const thumbUrl = hydrated.thumbnail?.url || hydrated.url
+    assets.push({ id: hydrated.id, url, thumbUrl })
   }
 
   processMeta(core.stock)

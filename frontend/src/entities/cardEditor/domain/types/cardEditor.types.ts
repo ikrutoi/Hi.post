@@ -8,6 +8,8 @@ export type CardEditorState = {
   aroma: { isComplete: boolean }
   date: { isComplete: boolean }
   isCompleted: boolean
+  /** CardPie: пользователь отметил текущую открытку в избранном (переключатель). */
+  pieFavorite: boolean
   isRainbowActive: boolean
   isRainbowStopping: boolean
   hoveredSection: CardSection | null

@@ -44,10 +44,15 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   prepareForRedux,
   hydrateMeta,
+  hydrateSessionImageMeta,
+  findIdbImageMetaById,
   fuelAssetRegistry,
+  type IdbImageMetaSources,
 } from './cardphotoHelpers'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { restoreEditorSession } from '@entities/sectionEditorMenu/infrastructure/state'
+import { setPieFavorite, togglePieFavorite } from '@entities/cardEditor/infrastructure/state'
+import type { RootState } from '@app/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectAromaState } from '@aroma/infrastructure/selectors'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
@@ -161,6 +166,10 @@ export function* persistGlobalSession() {
   const recipientViewId: string | null = yield select(selectRecipientViewId)
   const senderViewId: string | null = yield select(selectSenderViewId)
 
+  const pieFavorite: boolean = yield select(
+    (s: RootState) => s.cardEditor.pieFavorite,
+  )
+
   // const newSessionData: SessionData = {
   //   id: 'current_session',
   //   assets: {
@@ -197,6 +206,7 @@ export function* persistGlobalSession() {
             senderTemplateId: senderViewId,
           }
         : null,
+    pieFavorite,
     timestamp: Date.now(),
   }
 
@@ -245,6 +255,8 @@ const SESSION_WATCH_ACTIONS = [
   setRecipientsViewIds.type,
   toggleRecipientSelection.type,
   clearRecipientsPending.type,
+  togglePieFavorite.type,
+  setPieFavorite.type,
 ]
 
 function hasAddressData(data: Record<string, string>): boolean {
@@ -339,8 +351,13 @@ export function* hydrateAppSession() {
         userOriginalData,
       } = session.cardphoto
       const applied = appliedData
+      const metaIdFromConfig =
+        assetConfig.image.metaId &&
+        assetConfig.image.metaId !== 'current_apply_image'
+          ? assetConfig.image.metaId
+          : ''
       const resolvedActiveMetaId =
-        assetData?.id || assetConfig.image.metaId || ''
+        assetData?.id || appliedData?.id || metaIdFromConfig || ''
 
       const [stockRec, userRec, rawProcess, applyRec]: [
         { image: ImageMeta } | null,
@@ -356,23 +373,59 @@ export function* hydrateAppSession() {
         call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
       ])
 
-      const stockMeta = hydrateMeta(stockRec?.image || null)
-      const userMeta = hydrateMeta(userOriginalData ?? userRec?.image ?? null)
+      const stockImageMeta = stockRec?.image ?? null
+      const userImageMeta = userRec?.image ?? null
+      const applyImageMeta = applyRec?.image ?? null
+
+      const idbById: IdbImageMetaSources = {
+        cropOrProcessed: rawProcess,
+        apply: applyImageMeta,
+        user: userImageMeta,
+        stock: stockImageMeta,
+      }
+
+      const stockMeta = hydrateMeta(stockImageMeta)
+      const assetIdb = findIdbImageMetaById(assetData?.id, idbById)
+      const assetResolved =
+        assetIdb != null
+          ? hydrateMeta(assetIdb)
+          : hydrateSessionImageMeta(assetData, rawProcess)
+
+      const appliedIdb = findIdbImageMetaById(applied?.id, idbById)
+      const appliedResolved =
+        appliedIdb != null
+          ? hydrateMeta(appliedIdb)
+          : hydrateSessionImageMeta(applied, applyImageMeta)
+
+      const appliedSameAsProcessedAsset =
+        !!applied?.id &&
+        !!assetResolved?.id &&
+        applied.id === assetResolved.id &&
+        assetResolved.status === 'processed'
+
+      const finalApplied =
+        appliedResolved ??
+        (appliedSameAsProcessedAsset ? assetResolved : null)
+
+      const userIdb = findIdbImageMetaById(userOriginalData?.id, idbById)
+      const userResolved =
+        userIdb != null
+          ? hydrateMeta(userIdb)
+          : hydrateSessionImageMeta(userOriginalData, userImageMeta)
+
       const processedMeta = hydrateMeta(rawProcess)
-      const appliedMeta = hydrateMeta(applied ?? (applyRec?.image || null))
 
       const activeImage =
-        assetData ??
-        applied ??
-        userMeta ??
-        processedMeta ??
+        assetResolved ??
+        appliedResolved ??
+        userResolved ??
         stockMeta ??
         null
 
       if (!activeImage) return
       const syncUserOriginal = shouldSyncUserOriginalOnRebuild(
         activeImage,
-        applied,
+        applied ?? applyRec?.image ?? null,
       )
 
       // const sizeCard: SizeCard = yield select(selectSizeCard)
@@ -410,20 +463,20 @@ export function* hydrateAppSession() {
         fuelAssetRegistry,
         {
           stock: stockMeta,
-          user: userMeta,
+          user: userResolved,
           processed: processedMeta,
-          applied: appliedMeta,
+          applied: finalApplied,
         },
         allCrops,
       )
 
       yield put(
         hydrateEditor({
-          config: calculatedConfig,
-          isComplete: !!applied,
-          appliedData: applied,
-          assetData: assetData ?? activeImage,
-          userOriginalData: userOriginalData ?? userMeta ?? null,
+          config: finalConfig,
+          isComplete: !!finalApplied,
+          appliedData: finalApplied,
+          assetData: assetResolved ?? activeImage,
+          userOriginalData: userResolved,
         }),
       )
 
@@ -602,6 +655,8 @@ export function* hydrateAppSession() {
     if (session.cardtextEditor != null || session.cardtext) {
       yield call(syncCardtextStatus)
     }
+
+    yield put(setPieFavorite(session.pieFavorite === true))
   } catch (e) {
     console.error('Session hydration failed', e)
   }

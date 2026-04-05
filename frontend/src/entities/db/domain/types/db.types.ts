@@ -38,5 +38,7 @@ export interface SessionData {
   sizeCard: SizeCard
   previewStripOrder: PreviewStripOrderState | null
   envelopeSelection?: SessionEnvelopeSelection | null
+  /** CardPie: избранное текущей открытки в редакторе. */
+  pieFavorite?: boolean
   timestamp: number
 }
