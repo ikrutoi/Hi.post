@@ -34,6 +34,7 @@ import type { RecipientsToolbarState, RecipientsKey } from './envelope.types'
 import type { LayoutOrientation } from '@layout/domain/types'
 import { DateKey, DateToolbarState } from './date'
 import { DateListKey, DateListToolbarState } from './dateList.types'
+import { RightSidebarKey, RightSidebarToolbarState } from './rightSidebar.types'
 
 export type IconOptions = {
   badge?: number | null
@@ -85,6 +86,7 @@ export const TOOLBAR_SECTIONS = [
   'cardtextProcessed',
   'date',
   'dateList',
+  'rightSidebar',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -119,6 +121,7 @@ export type ToolbarState = {
   cardtextProcessed: CardtextToolbarState & { config: ToolbarGroup[] }
   date: DateToolbarState & { config: ToolbarGroup[] }
   dateList: DateListToolbarState & { config: ToolbarGroup[] }
+  rightSidebar: RightSidebarToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -262,6 +265,11 @@ export type ToolbarSectionConfigMap = {
   >
   date: BaseSectionConfig<DateToolbarState, DateKey, 'date'>
   dateList: BaseSectionConfig<DateListToolbarState, DateListKey, 'dateList'>
+  rightSidebar: BaseSectionConfig<
+    RightSidebarToolbarState,
+    RightSidebarKey,
+    'rightSidebar'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -322,4 +330,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                         ? DateKey
                                                         : S extends 'dateList'
                                                           ? DateListKey
-                                                          : never
+                                                          : S extends 'rightSidebar'
+                                                            ? RightSidebarKey
+                                                            : never

@@ -18,6 +18,7 @@ import {
   selectSelectedDates,
 } from '@date/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
+import { selectFirstProcessedCardThumbnailUrl } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import { CardsListPanel } from '../dayPanel/CardsListPanel'
 import { DateListPanel } from './DateListPanel'
@@ -45,10 +46,12 @@ export const DateRightSlot: React.FC = () => {
   const cachedMultiDates = useAppSelector(selectCachedMultiDates)
   const isMultiDateMode = useAppSelector(selectIsMultiDateMode)
   const cachedSingleDate = useAppSelector(selectCachedSingleDate)
-  const { previewUrl } = useAppSelector(selectCardphotoPreview)
+  const { previewUrl: cardphotoPreviewUrl } = useAppSelector(selectCardphotoPreview)
+  const processedThumbFallback = useAppSelector(selectFirstProcessedCardThumbnailUrl)
+  const listPreviewUrl = cardphotoPreviewUrl ?? processedThumbFallback ?? null
 
   const dateListEntries: DateListPanelItem[] = useMemo(() => {
-    const preview = previewUrl ?? null
+    const preview = listPreviewUrl
     const status = 'processed' as const
 
     const row = (
@@ -105,7 +108,7 @@ export const DateRightSlot: React.FC = () => {
     selectedDates,
     cachedSingleDate,
     cachedMultiDates,
-    previewUrl,
+    listPreviewUrl,
   ])
 
   const handleCloseList = useCallback(() => {

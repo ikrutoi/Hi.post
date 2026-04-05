@@ -2,6 +2,8 @@ const CIRCLE_CENTER_OFFSET = 0.03
 
 const MAX_CONCENTRIC_CIRCLES = 10
 
+const DATE_MINI_MULTI_OUTER_DIAMETER_SCALE = 1.07
+
 function getOuterSizePercentForDiagonal(): number {
   return 2 * (1 - CIRCLE_CENTER_OFFSET) * Math.SQRT2 * 100
 }
@@ -41,6 +43,7 @@ export const miniCardCirclePaletteDateMulti: ConcentricCirclePalette = {
 export function getConcentricCircleSteps(
   count: number,
   palette: ConcentricCirclePalette,
+  outerDiameterScale = 1,
 ): ConcentricCircleStepsResult {
   if (count < 1) {
     return { steps: [], isMany: false }
@@ -61,7 +64,7 @@ export function getConcentricCircleSteps(
   }
 
   const { opacityMin, opacityMax } = palette
-  const sizeOuterPercent = getOuterSizePercentForDiagonal()
+  const sizeOuterPercent = getOuterSizePercentForDiagonal() * outerDiameterScale
   const radiusOuter = sizeOuterPercent / 2
   const steps: ConcentricCircleStep[] = []
 
@@ -91,10 +94,15 @@ export function getDateMultiMiniCircleSteps(
   count: number,
 ): ConcentricCircleStepsResult {
   if (count === 1) {
-    return getConcentricCircleSteps(2, miniCardCirclePaletteDateMulti)
+    return getConcentricCircleSteps(
+      2,
+      miniCardCirclePaletteDateMulti,
+      DATE_MINI_MULTI_OUTER_DIAMETER_SCALE,
+    )
   }
   return getConcentricCircleSteps(
     Math.min(count, MAX_CONCENTRIC_CIRCLES),
     miniCardCirclePaletteDateMulti,
+    DATE_MINI_MULTI_OUTER_DIAMETER_SCALE,
   )
 }

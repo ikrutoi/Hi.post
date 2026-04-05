@@ -11,9 +11,6 @@ import {
 import {
   MdDeleteOutline,
   MdOutlineDeleteForever,
-  MdOutlineShoppingCart,
-  MdAddShoppingCart,
-  MdOutlineAddShoppingCart,
   MdOutlineDrafts,
   MdFormatBold,
   MdFormatItalic,
@@ -59,7 +56,6 @@ import {
   FaRegIdCard,
   FaRegAddressCard,
   FaEnvelopeOpen,
-  FaEnvelope,
   FaRegStar,
   FaEnvelopeOpenText,
 } from 'react-icons/fa'
@@ -166,6 +162,9 @@ import {
   IconApplyLight,
   IconCalendarMulti,
   IconListDate,
+  IconCart,
+  IconCartAdd,
+  IconUserLogin,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 
@@ -271,10 +270,6 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <HiArrowsPointingOut />
     case 'arrowsIn':
       return <HiArrowsPointingIn />
-    case 'cart':
-      return <FaEnvelope />
-    case 'addCart':
-      return <MdOutlineAddShoppingCart />
     case 'drafts':
       return <FaEnvelopeOpen />
     case 'addDrafts':
@@ -307,8 +302,6 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconSectionMenuAromaV2 />
     case 'date':
       return <IconSectionMenuDate />
-    case 'date':
-      return <IconSectionMenuDate />
     case 'favorite':
       return <IconStar />
     case 'addressAdd':
@@ -327,6 +320,12 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconColor />
     case 'calendarMulti':
       return <IconCalendarMulti />
+    case 'cart':
+      return <IconCart />
+    case 'addCart':
+      return <IconCartAdd />
+    case 'userLogin':
+      return <IconUserLogin />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

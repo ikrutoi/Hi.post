@@ -19,6 +19,17 @@ export const selectCardState = (state: RootState) => state.card
 
 export const selectAllCards = (state: RootState) => selectCardState(state).cards
 
+/** Первое непустое превью среди синхронизированных processed-карточек (список дат, fallback). */
+export const selectFirstProcessedCardThumbnailUrl = createSelector(
+  [selectAllCards],
+  (cards) => {
+    for (const c of cards) {
+      if (c.status === 'processed' && c.thumbnailUrl) return c.thumbnailUrl
+    }
+    return null
+  },
+)
+
 export const selectCalendarIndex = (state: RootState) =>
   selectCardState(state).calendarIndex
 

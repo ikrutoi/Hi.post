@@ -1,9 +1,16 @@
 import React from 'react'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
 import styles from './SectionEditorRightSidebar.module.scss'
 
-/**
- * Правая колонка редактора (ширина как у левой). Превью перенесены в панели секций.
- */
 export const SectionEditorRightSidebar: React.FC = () => {
-  return <div className={styles.sectionEditorRightSidebar} aria-hidden />
+  return (
+    <aside
+      className={styles.sectionEditorRightSidebar}
+      aria-label="Profile, Cart, and Favorites"
+    >
+      <div className={styles.toolbarSlot}>
+        <Toolbar section="rightSidebar" />
+      </div>
+    </aside>
+  )
 }

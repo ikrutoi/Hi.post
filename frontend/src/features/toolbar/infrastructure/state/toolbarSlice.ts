@@ -43,6 +43,7 @@ import type {
   IconState,
   UpdateIconPayloadValue,
 } from '@shared/config/constants'
+import { initialRightSidebarToolbarState } from '../../domain/types/rightSidebar.types'
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
   cardphotoCreate: initialCardphotoCreateToolbarState,
@@ -73,6 +74,7 @@ const initialState: ToolbarState = {
   cardtextProcessed: initialCardtextProcessedToolbarState,
   date: initialDateToolbarState,
   dateList: initialDateListToolbarState,
+  rightSidebar: initialRightSidebarToolbarState,
 }
 
 const toolbarSlice = createSlice({

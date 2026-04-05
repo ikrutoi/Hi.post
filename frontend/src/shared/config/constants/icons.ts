@@ -84,6 +84,9 @@ export const ICON_KEYS = [
   'colorPicker',
   'density',
   'calendarMulti',
+  'cart',
+  'addCart',
+  'userLogin',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

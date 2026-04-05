@@ -282,7 +282,7 @@
     width: $toolbar-sidebar-key-size;
     height: $toolbar-sidebar-key-size;
     margin: 0.2rem 0;
-    border-radius: 0.9rem;
+    border-radius: 0.75rem;
     background-color: $color-app-strip;
     color: $color-app-sidebar-icon;
     transition:
@@ -432,6 +432,39 @@
     width: 1.6rem;
     height: 1.6rem;
     background-color: $color-app-inner;
+  }
+}
+
+.toolbarRightSidebar {
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
+  .toolbarGroupRightSidebar {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    width: 100%;
+  }
+
+  .toolbarKey {
+    margin: 0;
+    width: 2.2rem;
+    height: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    background-color: $color-app-strip;
+    color: $color-app-sidebar-icon;
+
+    svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+    &:hover {
+      background-color: $color-app-sidebar-icon-hover;
+    }
   }
 }
 

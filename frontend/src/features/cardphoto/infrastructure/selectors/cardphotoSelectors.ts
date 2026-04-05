@@ -187,14 +187,14 @@ export const selectCardphotoPreview = createSelector(
     const id = applyImage?.id
     const asset = id ? registry[id] : null
 
-    // `applyFinal` меняет редакторный state сразу, а assetRegistry может обновиться чуть позже.
-    // Поэтому fallback берём из самого `applyImage`.
+    // `applyFinal` обновляет `appliedData` раньше, чем assetRegistry; в реестре могут остаться
+    // старые blob: — тогда превью ломается (картинка пропадает, в src остаётся «мертвая» ссылка).
     const previewUrl =
       isComplete
-        ? asset?.thumbUrl ||
-          asset?.url ||
-          applyImage?.thumbnail?.url ||
+        ? applyImage?.thumbnail?.url ||
           applyImage?.url ||
+          asset?.thumbUrl ||
+          asset?.url ||
           null
         : null
 
@@ -217,10 +217,10 @@ export const selectCardphotoMiniPreview = createSelector(
     const id = applyImage.id
     const asset = registry[id]
     const previewUrl =
-      asset?.thumbUrl ||
-      asset?.url ||
       applyImage.thumbnail?.url ||
       applyImage.url ||
+      asset?.thumbUrl ||
+      asset?.url ||
       null
     if (!previewUrl) return null
     return { previewUrl, id }
