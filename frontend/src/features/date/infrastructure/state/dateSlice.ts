@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { nanoid } from 'nanoid'
 import type {
   DateState,
   DispatchDate,
@@ -9,6 +10,7 @@ const initialState: DateState = {
   selectedDate: null,
   selectedDates: [],
   isMultiDateMode: false,
+  multiGroupId: null,
   isComplete: false,
   firstDayOfWeek: 'Sun',
   cachedSingleDate: null,
@@ -71,6 +73,7 @@ export const dateSlice = createSlice({
       state.selectedDate = null
       state.selectedDates = []
       state.isMultiDateMode = false
+      state.multiGroupId = null
       state.isComplete = false
       state.cachedSingleDate = null
       state.cachedMultiDates = []
@@ -86,11 +89,13 @@ export const dateSlice = createSlice({
             : null
         state.isComplete = state.selectedDates.length > 0
         state.isMultiDateMode = true
+        state.multiGroupId = nanoid()
         return
       }
       state.cachedMultiDates = state.selectedDates.map((d) => ({ ...d }))
       state.selectedDates = []
       state.selectedDate = state.cachedSingleDate
+      state.multiGroupId = null
       if (state.selectedDate == null && state.cachedMultiDates.length > 0) {
         state.selectedDate = { ...state.cachedMultiDates[0] }
       }
@@ -117,6 +122,12 @@ export const dateSlice = createSlice({
               s.selectedDates.length > 0
             ? s.selectedDates.map((d) => ({ ...d }))
             : []
+      state.multiGroupId =
+        s.multiGroupId != null
+          ? s.multiGroupId
+          : (s.isMultiDateMode ?? false)
+            ? nanoid()
+            : null
     },
   },
 })

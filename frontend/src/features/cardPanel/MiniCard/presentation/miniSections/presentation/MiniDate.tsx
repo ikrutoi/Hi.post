@@ -61,7 +61,6 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
     >
       {steps.length > 0 && (
         <div
-          key={isSingleMulti ? 'single' : 'multi'}
           className={clsx(
             styles.miniDateCircles,
             isSingleMulti && styles.miniDateSingleCircles,

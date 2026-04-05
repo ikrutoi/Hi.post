@@ -14,6 +14,8 @@ export interface DateState {
   selectedDate: SelectedDispatchDate
   selectedDates: DispatchDateList
   isMultiDateMode: boolean
+  /** Id группы клонов; задаётся при включении multi, сбрасывается при выходе в single / clearDate. */
+  multiGroupId: string | null
   isComplete: boolean
   firstDayOfWeek: FirstDayOfWeekPreference
   cachedSingleDate: SelectedDispatchDate

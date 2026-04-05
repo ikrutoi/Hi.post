@@ -82,13 +82,13 @@ export const CardPie: React.FC<CardPieProps> = ({
   const isSingleRecipient = recipientCount === 1
   const hasManyRecipients = recipientCount > 1
   const date = cardData?.date ?? null
-  const dates: DispatchDate[] = (
-    cardData as { dates?: DispatchDate[] } | undefined
-  )?.dates?.length
-    ? ((cardData as { dates: DispatchDate[] }).dates ?? [])
-    : date
-      ? [date]
-      : []
+  const mergedFromEditor = cardData?.dates
+  const dates: DispatchDate[] =
+    Array.isArray(mergedFromEditor) && mergedFromEditor.length > 0
+      ? mergedFromEditor
+      : date
+        ? [date]
+        : []
   const hasManyDates = dates.length > 1
 
   const handleMouseEnter = (e: React.MouseEvent<SVGPathElement>) => {

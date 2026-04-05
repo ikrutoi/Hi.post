@@ -577,6 +577,7 @@ export function* hydrateAppSession() {
           selectedDate: session.date.selectedDate ?? null,
           selectedDates: session.date.selectedDates ?? [],
           isMultiDateMode: session.date.isMultiDateMode ?? false,
+          multiGroupId: session.date.multiGroupId ?? null,
           isComplete: session.date.isComplete ?? false,
           firstDayOfWeek: session.date.firstDayOfWeek ?? 'Sun',
           cachedSingleDate: session.date.cachedSingleDate ?? null,

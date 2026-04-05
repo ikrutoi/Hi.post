@@ -18,6 +18,9 @@ export const selectSelectedDates = (state: RootState): DispatchDate[] =>
 export const selectIsMultiDateMode = (state: RootState): boolean =>
   state.date.isMultiDateMode
 
+export const selectMultiGroupId = (state: RootState): string | null =>
+  state.date.multiGroupId
+
 export const selectCachedSingleDate = (state: RootState): SelectedDispatchDate =>
   state.date.cachedSingleDate
 

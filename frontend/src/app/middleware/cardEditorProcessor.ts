@@ -1,5 +1,5 @@
-import { takeEvery, put, select, call } from 'redux-saga/effects'
-import { setProcessedCard } from '@entities/card/infrastructure/state'
+import { put } from 'redux-saga/effects'
+import { reset } from '@cardphoto/infrastructure/state'
 import { clearSender } from '@envelope/sender/infrastructure/state'
 import { clearRecipient } from '@envelope/recipient/infrastructure/state'
 import { clearText } from '@cardtext/infrastructure/state'
@@ -7,6 +7,9 @@ import { clearAroma } from '@entities/aroma/infrastructure/state/aroma.slice'
 import { clearDate } from '@date/infrastructure/state'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { CardSection } from '@shared/config/constants'
+import { checkAndSyncProcessedCard } from './syncProcessedCard'
+
+export { checkAndSyncProcessedCard }
 
 export function* handleClearSectionSaga(
   action: PayloadAction<CardSection | 'all'>,
@@ -23,30 +26,10 @@ export function* handleClearSectionSaga(
     yield put(clearText())
   }
   if (section === 'all' || section === 'cardphoto') {
-    yield put(resetPhotoEditor())
+    yield put(reset())
   }
   if (section === 'all' || section === 'envelope') {
     yield put(clearSender())
     yield put(clearRecipient())
   }
-}
-
-export function* checkAndSyncProcessedCard() {
-  const data: FullCardData = yield select(selectActiveCardFullData)
-  const appliedPhoto = data.cardphoto.appliedData
-
-  if (!appliedPhoto) return
-
-  const processedCard: Card = {
-    id: data.id,
-    status: 'processed',
-    thumbnailUrl: appliedPhoto.thumbnail?.url || '',
-    ...data,
-    meta: {
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    },
-  }
-
-  yield put(setProcessedCard(processedCard))
 }

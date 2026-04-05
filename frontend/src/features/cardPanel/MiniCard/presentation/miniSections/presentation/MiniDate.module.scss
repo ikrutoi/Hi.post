@@ -12,7 +12,10 @@
   justify-content: center;
   height: 100%;
   border-radius: 0.5rem;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  // Не transition: all — иначе при смене single/multi анимируется вёрстка и счётчик «прыгает».
+  transition:
+    color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   &ManyCircles {
     display: grid;
@@ -26,6 +29,8 @@
   }
 
   &Circles {
+    grid-column: 1;
+    grid-row: 1 / -1;
     position: absolute;
     inset: 0;
     display: flex;
@@ -62,16 +67,18 @@
   }
 
   &Count {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
+    // На всю сетку, иначе inset:0 относится к средней строке repeat(3,1fr) и даёт скачок при первом layout.
+    grid-column: 1;
+    grid-row: 1 / -1;
     position: absolute;
     inset: 0;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     justify-content: center;
-    height: 100%;
+    box-sizing: border-box;
     padding-left: 1rem;
+    padding-right: 0.35rem;
     padding-top: 0.75rem;
     overflow: hidden;
     font-weight: 700;
@@ -83,6 +90,8 @@
   }
 
   &OneDateInMulti {
+    grid-column: 1;
+    grid-row: 1 / -1;
     position: absolute;
     inset: 0;
     display: flex;

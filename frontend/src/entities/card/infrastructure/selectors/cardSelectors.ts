@@ -41,8 +41,13 @@ export const selectPreviewCard = createSelector(
 )
 
 export const selectCardsByDateMap = createSelector(
-  [selectCalendarIndex, selectCardphotoPreview, selectMergedDispatchDates],
-  (index, photoPreview, activeDates) => {
+  [
+    selectCalendarIndex,
+    selectAllCards,
+    selectCardphotoPreview,
+    selectMergedDispatchDates,
+  ],
+  (index, allCards, photoPreview, activeDates) => {
     const map: Record<string, CardCalendarIndex> = {}
 
     const getEntry = (date: DispatchDate) => {
@@ -62,19 +67,28 @@ export const selectCardsByDateMap = createSelector(
 
     Object.keys(index).forEach((k) => {
       const key = k as keyof CardCalendarIndex
+      if (key === 'processed') return
       const data = index[key]
       if (!data) return
 
       if (Array.isArray(data)) {
         data.forEach((item) => {
           const entry = getEntry(item.date)
-          if (key !== 'processed') (entry[key] as CalendarCardItem[]).push(item)
+          ;(entry[key] as CalendarCardItem[]).push(item)
         })
-      } else {
-        const entry = getEntry(data.date)
-        entry.processed = data
       }
     })
+
+    for (const card of allCards) {
+      if (card.status !== 'processed') continue
+      const entry = getEntry(card.date)
+      entry.processed = {
+        cardId: card.id,
+        date: card.date,
+        previewUrl: card.thumbnailUrl,
+        status: card.status,
+      }
+    }
 
     if (photoPreview?.previewUrl) {
       for (const activeDate of activeDates) {

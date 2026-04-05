@@ -31,16 +31,10 @@ import {
   restoreSender,
   clearSender,
 } from '@envelope/sender/infrastructure/state'
-import {
-  selectEnvelopeSessionRecord,
-  selectIsEnvelopeReady,
-} from '@envelope/infrastructure/selectors'
+import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { setRecipientMode } from '@envelope/recipient/infrastructure/state'
 import { clearRecipientsList } from '@envelope/infrastructure/state'
-import {
-  selectIsDateComplete,
-  selectMergedDispatchDates,
-} from '@date/infrastructure/selectors'
+import { selectIsDateComplete } from '@date/infrastructure/selectors'
 import {
   selectSelectedAroma,
   selectIsAromaComplete,
@@ -86,17 +80,14 @@ import {
   clearProcessed,
   copySectionToProcessed,
   setPreviewCardId,
-  setProcessedCard,
   syncProcessedRequest,
 } from '@entities/card/infrastructure/state'
 import type { RootState } from '@app/state'
-import type { DispatchDate } from '@entities/date'
 import type { CardphotoState } from '@cardphoto/domain/types'
 import type { CardtextState } from '@cardtext/domain/types'
 import { initialCardtextValue } from '@cardtext/domain/types'
-import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { Card } from '@entities/card/domain/types'
-import type { AromaItem, AromaState } from '@entities/aroma'
+import { checkAndSyncProcessedCard } from './syncProcessedCard'
 
 function* syncDateSet() {
   const dateComplete: boolean = yield select(selectIsDateComplete)
@@ -184,39 +175,6 @@ function* handleSectionChange() {
   }
 }
 
-function* checkAndSyncProcessedCard() {
-  const cardphoto: CardphotoState = yield select(selectCardphotoState)
-  const cardtext: CardtextState = yield select(selectCardtextState)
-  const envelope: EnvelopeSessionRecord = yield select(
-    selectEnvelopeSessionRecord,
-  )
-  const mergedDates: DispatchDate[] = yield select(selectMergedDispatchDates)
-  const aroma: AromaItem = yield select(selectSelectedAroma)
-
-  const appliedPhoto = cardphoto.appliedData
-  if (!appliedPhoto) return
-  const calendarDate = mergedDates[0]
-  if (calendarDate == null) return
-
-  const processedCard: Card = {
-    id: appliedPhoto.id,
-    status: 'processed',
-    thumbnailUrl: appliedPhoto.thumbnail?.url || '',
-    cardphoto,
-    cardtext,
-    envelope,
-    aroma,
-    date: calendarDate,
-    dates: mergedDates.length > 1 ? mergedDates : undefined,
-    meta: {
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    },
-  }
-
-  yield put(setProcessedCard(processedCard))
-}
-
 function* handleFullCopy(
   action: ReturnType<typeof cardActions.requestFullCopy>,
 ) {
@@ -234,7 +192,7 @@ function* handleFullCopy(
     yield put(restoreRecipient(donor.envelope.recipient))
     yield put(setAroma(donor.aroma))
     yield put(setDate(donor.date))
-    yield put(setSelectedDates(donor.dates ?? []))
+    yield put(setSelectedDates([]))
 
     yield put(setPreviewCardId(null))
   }

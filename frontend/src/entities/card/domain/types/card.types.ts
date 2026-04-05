@@ -29,8 +29,7 @@ export interface Card {
   envelope: EnvelopeSessionRecord
   aroma: AromaItem
   date: DispatchDate
-  /** Несколько дат открытки; если не задано — считается только `date`. */
-  dates?: DispatchDate[]
+  multiGroupId?: string | null
 
   meta: {
     localId?: number

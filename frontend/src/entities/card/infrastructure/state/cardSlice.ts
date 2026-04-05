@@ -2,6 +2,34 @@ import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { rebuildIndex } from '../helpers'
 import type { Card, CardState, CardStatus } from '../../domain/types'
 import { CardSection } from '@/shared/config/constants'
+import type { Draft } from '@reduxjs/toolkit'
+
+function clearProcessedPreviewEntries(state: Draft<CardState>) {
+  for (const c of state.cards) {
+    if (c.status === 'processed') {
+      delete state.calendarPreviewCache[c.id]
+    }
+  }
+  delete state.calendarPreviewCache['current_session']
+}
+
+function applyProcessedCards(state: Draft<CardState>, next: Card[]) {
+  clearProcessedPreviewEntries(state)
+  state.cards = state.cards.filter((c) => c.status !== 'processed')
+  for (const card of next) {
+    state.cards.push(card)
+  }
+  state.calendarIndex.processed =
+    next.length === 0
+      ? null
+      : {
+          cardId: next[0].id,
+          date: next[0].date,
+          previewUrl: next[0].thumbnailUrl,
+          status: 'processed',
+        }
+  state.isReady = next.length > 0
+}
 
 const initialState: CardState = {
   cards: [],
@@ -26,9 +54,8 @@ export const cardSlice = createSlice({
     setCardReadyStatus: (state, action: PayloadAction<boolean>) => {
       state.isReady = action.payload
       if (!action.payload) {
-        const id = state.calendarIndex.processed?.cardId
-        if (id) delete state.calendarPreviewCache[id]
-        delete state.calendarPreviewCache['current_session']
+        clearProcessedPreviewEntries(state)
+        state.cards = state.cards.filter((c) => c.status !== 'processed')
         state.calendarIndex.processed = null
       }
     },
@@ -40,17 +67,11 @@ export const cardSlice = createSlice({
     },
 
     setProcessedCard: (state, action: PayloadAction<Card>) => {
-      const index = state.cards.findIndex((c) => c.id === action.payload.id)
-      if (index !== -1) state.cards[index] = action.payload
-      else state.cards.push(action.payload)
+      applyProcessedCards(state, [action.payload])
+    },
 
-      state.calendarIndex.processed = {
-        cardId: action.payload.id,
-        date: action.payload.date,
-        previewUrl: action.payload.thumbnailUrl,
-        status: action.payload.status,
-      }
-      state.isReady = true
+    setProcessedCardsFromEditor: (state, action: PayloadAction<Card[]>) => {
+      applyProcessedCards(state, action.payload)
     },
 
     changeStatus: (
@@ -78,14 +99,16 @@ export const cardSlice = createSlice({
 
     copyFullCardToProcessed: (state, action: PayloadAction<string>) => {
       const donor = state.cards.find((c) => c.id === action.payload)
-      const currentProcessed = state.cards.find((c) => c.status === 'processed')
+      const processedCards = state.cards.filter((c) => c.status === 'processed')
 
-      if (donor && currentProcessed) {
-        currentProcessed.cardphoto = { ...donor.cardphoto }
-        currentProcessed.cardtext = { ...donor.cardtext }
-        currentProcessed.envelope = { ...donor.envelope }
-        currentProcessed.aroma = { ...donor.aroma }
-        currentProcessed.thumbnailUrl = donor.thumbnailUrl
+      if (donor && processedCards.length > 0) {
+        for (const currentProcessed of processedCards) {
+          currentProcessed.cardphoto = { ...donor.cardphoto }
+          currentProcessed.cardtext = { ...donor.cardtext }
+          currentProcessed.envelope = { ...donor.envelope }
+          currentProcessed.aroma = { ...donor.aroma }
+          currentProcessed.thumbnailUrl = donor.thumbnailUrl
+        }
 
         state.previewCardId = null
       }
@@ -99,22 +122,23 @@ export const cardSlice = createSlice({
       }>,
     ) => {
       const donor = state.cards.find((c) => c.id === action.payload.donorId)
-      const currentProcessed = state.cards.find((c) => c.status === 'processed')
+      const processedCards = state.cards.filter((c) => c.status === 'processed')
 
-      if (donor && currentProcessed) {
-        ;(currentProcessed as any)[action.payload.section] =
-          donor[action.payload.section]
+      if (donor && processedCards.length > 0) {
+        for (const currentProcessed of processedCards) {
+          ;(currentProcessed as any)[action.payload.section] =
+            donor[action.payload.section]
 
-        if (action.payload.section === 'cardphoto') {
-          currentProcessed.thumbnailUrl = donor.thumbnailUrl
+          if (action.payload.section === 'cardphoto') {
+            currentProcessed.thumbnailUrl = donor.thumbnailUrl
+          }
         }
       }
     },
 
     clearProcessed: (state) => {
-      const id = state.calendarIndex.processed?.cardId
-      if (id) delete state.calendarPreviewCache[id]
-      delete state.calendarPreviewCache['current_session']
+      clearProcessedPreviewEntries(state)
+      state.cards = state.cards.filter((c) => c.status !== 'processed')
       state.calendarIndex.processed = null
       state.isReady = false
     },
@@ -144,6 +168,7 @@ export const {
   syncProcessedRequest,
   openSection,
   setProcessedCard,
+  setProcessedCardsFromEditor,
   changeStatus,
   setPreviewCardId,
   copyFullCardToProcessed,
