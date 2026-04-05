@@ -1,1 +1,4 @@
 node_modules
+
+# Frontend build output (генерируется `npm run build` в frontend/)
+frontend/dist
