@@ -5,6 +5,10 @@ import {
   closeDayPanel,
   setDateListPanelOpen,
 } from '@date/calendar/infrastructure/state'
+import {
+  pickDispatchDate,
+  setSelectedDates,
+} from '@date/infrastructure/state'
 import { selectIsDateListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import {
   selectCachedMultiDates,
@@ -29,6 +33,9 @@ function formatDispatchDateLabel(d: DispatchDate): string {
   })
 }
 
+const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
+  a.year === b.year && a.month === b.month && a.day === b.day
+
 export const DateRightSlot: React.FC = () => {
   const dispatch = useAppDispatch()
   const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
@@ -48,12 +55,14 @@ export const DateRightSlot: React.FC = () => {
       d: DispatchDate,
       idSuffix: string,
       variant?: 'inactive',
+      onDelete?: () => void,
     ): DateListPanelItem => ({
       id: `${d.year}-${d.month}-${d.day}-${idSuffix}`,
       dateLabel: formatDispatchDateLabel(d),
       previewUrl: preview,
       previewStatus: status,
       variant,
+      onDelete,
     })
 
     const entries: DateListPanelItem[] = []
@@ -64,11 +73,23 @@ export const DateRightSlot: React.FC = () => {
         entries.push(row(cachedSingleDate, 'cached-single', 'inactive'))
       }
       selectedDates.forEach((d, i) => {
-        entries.push(row(d, `m-${i}`))
+        entries.push(
+          row(d, `m-${i}`, undefined, () => {
+            dispatch(
+              setSelectedDates(
+                selectedDates.filter((x) => !sameDispatchDate(x, d)),
+              ),
+            )
+          }),
+        )
       })
     } else {
       if (selectedDate) {
-        entries.push(row(selectedDate, 'single'))
+        entries.push(
+          row(selectedDate, 'single', undefined, () => {
+            dispatch(pickDispatchDate(selectedDate))
+          }),
+        )
       }
       // Все запомненные мульти-даты отдельными disabled-строками, даже если совпадают с текущей одиночной.
       cachedMultiDates.forEach((d, i) => {
@@ -78,6 +99,7 @@ export const DateRightSlot: React.FC = () => {
 
     return entries
   }, [
+    dispatch,
     isMultiDateMode,
     selectedDate,
     selectedDates,

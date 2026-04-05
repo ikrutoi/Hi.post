@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import type { CardStatus } from '@entities/card/domain/types'
+import { getToolbarIcon } from '@/shared/utils/icons'
 import styles from './DateListEntry.module.scss'
 
 export type DateListEntryVariant = 'default' | 'inactive'
@@ -17,6 +18,8 @@ export type DateListEntryProps = {
   /** Цветной индикатор как у превью в календаре (перед миниатюрой). */
   previewStatus?: CardStatus
   onSelect?: () => void
+  /** Удаление строки (как в адресной книге: кнопка видна при hover по строке). */
+  onDelete?: () => void
   isStarred?: boolean
   onToggleStar?: () => void
   isSelected?: boolean
@@ -30,6 +33,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
   variant = 'default',
   previewStatus,
   onSelect,
+  onDelete,
   isStarred = false,
   onToggleStar,
   isSelected = false,
@@ -48,6 +52,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
       data-no-star={!onToggleStar ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
+      data-has-delete={onDelete ? 'true' : undefined}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-label={interactive ? labelForAria : undefined}
@@ -99,6 +104,20 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
           ) : null}
         </div>
       </div>
+      {onDelete ? (
+        <button
+          type="button"
+          className={styles.deleteButton}
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+          aria-label="Удалить дату из списка"
+          title="Удалить дату из списка"
+        >
+          {getToolbarIcon({ key: 'delete' })}
+        </button>
+      ) : null}
     </div>
   )
 }

@@ -16,6 +16,8 @@ export type DateListPanelItem = {
   detailLine?: string
   variant?: DateListEntryVariant
   previewStatus?: CardStatus
+  /** Удаление строки из списка (см. DateListEntry). */
+  onDelete?: () => void
 }
 
 type Props = {
@@ -69,6 +71,7 @@ export const DateListPanel: React.FC<Props> = ({
                     ? () => onSelectEntry(item.id)
                     : undefined
                 }
+                onDelete={item.onDelete}
               />
             ))
           ) : (
