@@ -1,5 +1,6 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import type { TemplateStoreMap, SenderTemplatesAdapter } from '@/db/types'
+import type { TemplateStoreMap } from '@/db/types'
+import type { SenderTemplatesAdapter } from './templatesStoreAdapters'
 
 const base = createStoreAdapter<TemplateStoreMap['sender']>('sender')
 
@@ -10,6 +11,6 @@ export const senderTemplatesAdapter: SenderTemplatesAdapter = {
     const listStatus = payload.listStatus ?? 'inList'
     const favorite =
       listStatus === 'outList' ? null : (payload.favorite ?? false)
-    await base.put({ localId, listStatus, favorite, ...payload })
+    await base.put({ ...payload, localId, listStatus, favorite })
   },
 }

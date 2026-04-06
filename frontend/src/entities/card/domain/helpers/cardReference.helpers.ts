@@ -1,25 +1,36 @@
-import type { CardReference, CardPreview, CardTemplateReferences } from '../types/cardReference.types'
+import type {
+  CardReference,
+  CardPreview,
+  CardTemplateReferences,
+} from '../types/cardReference.types'
 import type { Card } from '../types/card.types'
 import type { AromaImageIndex } from '@entities/aroma/domain/types'
 
-/**
- * Создать CardReference из полной Card
- * Используется при сохранении открытки на бэкенд
- */
+function cardphotoPreviewFromCard(card: Card): string {
+  if (card.thumbnailUrl) return card.thumbnailUrl
+  const meta = card.cardphoto.appliedData ?? card.cardphoto.assetData
+  return (
+    meta?.thumbnail?.url ||
+    meta?.full?.url ||
+    meta?.url ||
+    ''
+  )
+}
+
 export function createCardReferenceFromCard(
   card: Card,
   templateRefs: CardTemplateReferences,
 ): CardReference {
   return {
     id: card.id,
-    userId: '', // Будет заполнено из контекста пользователя
+    userId: '',
     status: card.status,
     templates: templateRefs,
     aromaId: card.aroma.index,
     date: card.date,
     thumbnailUrl: card.thumbnailUrl,
     preview: {
-      cardphotoPreview: card.cardphoto.previewUrl,
+      cardphotoPreview: cardphotoPreviewFromCard(card),
       cardtextPreview: (card.cardtext.assetData?.plainText ?? '').substring(
         0,
         100,
@@ -39,9 +50,6 @@ export function createCardReferenceFromCard(
   }
 }
 
-/**
- * Форматировать адрес для превью
- */
 function formatAddressPreview(address: Record<string, string>): string {
   const parts: string[] = []
   if (address.name) parts.push(address.name)
@@ -49,17 +57,10 @@ function formatAddressPreview(address: Record<string, string>): string {
   return parts.join(', ')
 }
 
-/**
- * Форматировать дату для превью
- */
 function formatDatePreview(date: any): string {
-  // TODO: Реализовать форматирование даты
   return String(date)
 }
 
-/**
- * Создать пустые ссылки на шаблоны
- */
 export function createEmptyTemplateReferences(): CardTemplateReferences {
   return {
     cardphotoId: null,
@@ -69,9 +70,6 @@ export function createEmptyTemplateReferences(): CardTemplateReferences {
   }
 }
 
-/**
- * Проверить, заполнены ли все обязательные шаблоны
- */
 export function areTemplatesComplete(refs: CardTemplateReferences): boolean {
   return (
     refs.cardphotoId !== null &&

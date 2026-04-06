@@ -1,4 +1,4 @@
-import type { Cart } from '@entities/cart/domain/types'
+import type { Cart } from '@cart/domain/types'
 
 /** Сырой ряд ответа API до сборки в `Postcard` с полным `Card`. */
 interface RawPostcardRow {

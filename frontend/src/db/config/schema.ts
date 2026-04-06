@@ -1,5 +1,3 @@
-// Object store names in IndexedDB are not always identical to keys in `StoreMap` types.
-// Keep this as `string[]` to avoid type-level coupling to those internal names.
 const storeNames: string[] = [
   'stockImages',
   'userImages',
@@ -10,7 +8,6 @@ const storeNames: string[] = [
   'recipient',
   'cart',
   'drafts',
-  'sent',
   'session',
   'workingCard',
   'uiPreferences',

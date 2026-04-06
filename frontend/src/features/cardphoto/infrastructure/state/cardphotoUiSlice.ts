@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-/** Число колонок превью в панели списка шаблонов cardphoto (4–7). */
 export type CardphotoListTemplateGridCols = 4 | 5 | 6 | 7
 
 export interface CardphotoUiState {
@@ -8,9 +7,7 @@ export interface CardphotoUiState {
   isLoading: boolean
   needsCrop: boolean
   isListPanelOpen: boolean
-  /** Инкремент при изменении списка inLine-шаблонов (панель перечитывает IndexedDB). */
   inlineTemplateListRevision: number
-  /** Плотность сетки в панели списка шаблонов фото. */
   listTemplateGridCols: CardphotoListTemplateGridCols
 }
 
@@ -75,10 +72,6 @@ export const cardphotoUiSlice = createSlice({
       state.listTemplateGridCols = action.payload
     },
 
-    /**
-     * Triggers loading + switching an inLine template into `cardphotoView`.
-     * Actual state updates happen in saga (setProcessedImage + rebuildConfigFromMeta).
-     */
     selectInLineTemplate: (_state, _action: PayloadAction<string>) => {},
   },
 })

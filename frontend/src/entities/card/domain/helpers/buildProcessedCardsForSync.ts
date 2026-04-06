@@ -12,10 +12,6 @@ export function buildProcessedCardId(
   return `${photoAssetId}__${d.year}-${d.month}-${d.day}`
 }
 
-/**
- * Одна карточка в редакторе (один набор секций); в multi-date — несколько лёгких
- * `Card` с разными `id` и одним `multiGroupId`.
- */
 export function buildProcessedCardsForSync(opts: {
   appliedPhotoId: string
   thumbnailUrl: string

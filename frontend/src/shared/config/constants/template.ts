@@ -6,7 +6,6 @@ export const TEMPLATES = [
   'recipient',
   'cart',
   'drafts',
-  'sent',
 ] as const
 
 export type Template = (typeof TEMPLATES)[number]

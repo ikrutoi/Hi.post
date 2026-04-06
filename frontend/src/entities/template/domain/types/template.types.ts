@@ -13,7 +13,6 @@ export type TemplateDataMap = {
   recipient: StoreMap['recipient']
   cart: TemplateStoreMap['cart']
   drafts: TemplateStoreMap['drafts']
-  sent: TemplateStoreMap['sent']
 }
 
 export type DataFor<T extends Template> = TemplateDataMap[T]

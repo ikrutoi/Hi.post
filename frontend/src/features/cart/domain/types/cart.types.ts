@@ -1,34 +1,11 @@
-// Устаревший черновик. Актуально: `Postcard` — `@entities/postcard`; агрегат корзины — `@entities/cart/domain/types` (`Cart`, `CartAmount`).
+import type { Postcard } from '@entities/postcard'
 
-// import { DispatchDate } from '@entities/date/domain/types'
+export type CartAmount = {
+  value: number
+  currency: string
+}
 
-// export interface CartItem {
-//   localId: number
-//   id: string
-//   preview: string
-//   recipientName: string
-//   date: DispatchDate
-//   price: number
-// }
-
-// export interface Cart {
-//   items: CartItem[]
-//   totalPrice: number
-//   currency: string
-// }
-
-// export interface CartDayItem {
-//   id: string
-//   date: DispatchDate
-//   img: string
-//   title?: string
-//   preview?: string
-//   recipientName?: string
-//   price?: number
-// }
-
-// export interface CartState {
-//   items: CartItem[]
-//   totalPrice: number
-//   isLoading: boolean
-// }
+export type Cart = {
+  items: Postcard[]
+  amount: CartAmount
+}

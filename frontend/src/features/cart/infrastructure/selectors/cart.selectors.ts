@@ -1,5 +1,5 @@
 import type { RootState } from '@app/state'
-import type { CartAmount } from '@entities/cart/domain/types'
+import type { CartAmount } from '@cart/domain/types'
 import type { Postcard } from '@entities/postcard'
 
 export const selectCartAmount = (state: RootState): CartAmount => {

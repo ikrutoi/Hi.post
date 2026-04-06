@@ -10,6 +10,6 @@ export const senderAdapter: SenderAdapter = {
     const listStatus = payload.listStatus ?? 'inList'
     const favorite =
       listStatus === 'outList' ? null : (payload.favorite ?? false)
-    await base.put({ localId, listStatus, favorite, ...payload })
+    await base.put({ ...payload, localId, listStatus, favorite })
   },
 }
