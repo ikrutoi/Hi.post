@@ -8,7 +8,9 @@ export const rebuildIndex = (state: CardState) => {
   state.calendarIndex.error = []
 
   state.cards.forEach((card) => {
-    if (card.status === 'drafts' || card.status === 'processed') return
+    if (card.status === 'processed' || card.status === 'favorite') {
+      return
+    }
 
     const item: CalendarCardItem = {
       cardId: card.id,

@@ -1,9 +1,10 @@
 import { createStoreAdapter } from '../factory/createStoreAdapter'
 import { normalizePostcardRecord, type Postcard } from '@entities/postcard'
 
-const base = createStoreAdapter<Postcard>('cart')
+const base = createStoreAdapter<Postcard>('postcards')
 
-export const cartAdapter = {
+/** Canonical store for all user postcards (from cart onward); one row per postcard. */
+export const postcardsAdapter = {
   ...base,
   getAll: async () => (await base.getAll()).map(normalizePostcardRecord),
   getById: async (id: IDBValidKey) => {

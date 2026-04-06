@@ -1,16 +1,14 @@
 import type { AppDispatch } from '@app/state'
-import { cartAdapter, draftsAdapter } from '@db/adapters/storeAdapters'
+import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import { setShoppingCards } from '@store/slices/layoutSlice'
 import type { StatusType } from '../../domain/types'
 
 export const fetchHeaderStatus = async (
   dispatch: AppDispatch
 ): Promise<{ status: StatusType; cartCount: number; draftsCount: number }> => {
-  const cart = await cartAdapter.getAll()
-  const drafts = await draftsAdapter.getAll()
-
-  const cartCount = cart.length || 0
-  const draftsCount = drafts.length || 0
+  const stored = await postcardsAdapter.getAll()
+  const cartCount = stored.filter((p) => p.card.status === 'cart').length
+  const draftsCount = stored.filter((p) => p.card.status === 'favorite').length
 
   dispatch(setShoppingCards(Boolean(cartCount)))
 

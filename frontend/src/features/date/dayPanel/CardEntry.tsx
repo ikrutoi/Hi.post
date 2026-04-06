@@ -19,7 +19,7 @@ const STATUS_LABEL: Record<CalendarCardItem['status'], string> = {
   sent: 'Sent',
   delivered: 'Delivered',
   error: 'Error',
-  drafts: 'Draft',
+  favorite: 'Favorite',
 }
 
 export const CardEntry: React.FC<Props> = ({

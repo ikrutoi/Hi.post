@@ -81,7 +81,7 @@ export const selectCardFromArchive = createSelector(
         return null
       case 'sent':
         return null
-      case 'drafts':
+      case 'favorite':
         return null
       default:
         return null

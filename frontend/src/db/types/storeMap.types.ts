@@ -1,6 +1,6 @@
 import type { CardtextContent } from '@cardtext/domain/types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
-import type { DraftsItem } from '@entities/drafts/domain/types'
+import type { Postcard } from '@entities/postcard'
 import type { ImageMeta, ImageRecord } from '@cardphoto/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
 import type { WorkingCardRecord } from '@entities/card/domain/types'
@@ -19,7 +19,7 @@ export interface StoreMap {
   cardtext: CardtextContent
   sender: AddressTemplateItem
   recipient: AddressTemplateItem
-  drafts: DraftsItem
+  postcards: Postcard
   session: SessionData
   workingCard: WorkingCardRecord
   uiPreferences: UiPreferencesRecord

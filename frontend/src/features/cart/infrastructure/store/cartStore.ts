@@ -1,13 +1,12 @@
-import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import { normalizePostcardRecord, type Postcard } from '@entities/postcard'
+import type { Postcard } from '@entities/postcard'
+import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
 
-const base = createStoreAdapter<Postcard>('cart')
-
+/** Корзина в IDB: те же строки, что в `postcards`, с `card.status === 'cart'`. */
 export const cartStore = {
-  ...base,
-  getAll: async () => (await base.getAll()).map(normalizePostcardRecord),
+  getAll: async (): Promise<Postcard[]> =>
+    (await postcardsAdapter.getAll()).filter((p) => p.card.status === 'cart'),
   getById: async (id: IDBValidKey) => {
-    const r = await base.getById(id)
-    return r ? normalizePostcardRecord(r) : null
+    const r = await postcardsAdapter.getById(id)
+    return r && r.card.status === 'cart' ? r : null
   },
 }

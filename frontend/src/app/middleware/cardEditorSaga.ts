@@ -226,10 +226,10 @@ function* handleSectionCopy(action: ReturnType<typeof copySectionToProcessed>) {
   }
 }
 
-function* handleStatusToDrafts(
+function* handleStatusClearDateForNonDispatch(
   action: ReturnType<typeof cardActions.changeStatus>,
 ) {
-  if (action.payload.newStatus === 'drafts') {
+  if (action.payload.newStatus === 'favorite') {
     yield put(clearDate())
 
     yield put(setSectionComplete({ section: 'date', isComplete: false }))
@@ -307,7 +307,7 @@ export function* cardEditorSaga() {
     handleSectionChange,
   )
 
-  yield takeEvery(changeStatus.type, handleStatusToDrafts)
+  yield takeEvery(changeStatus.type, handleStatusClearDateForNonDispatch)
   yield takeEvery(cardActions.requestFullCopy.type, handleFullCopy)
   yield takeEvery(copySectionToProcessed.type, handleSectionCopy)
 

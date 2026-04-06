@@ -25,7 +25,7 @@ export const useCardPieFacade = (status: CardStatus, id?: string) => {
     useAppSelector(selectPieProgress)
 
   const currentData = status === 'processed' ? activeData : archiveData
-  const isEditable = ['processed', 'drafts', 'error'].includes(status)
+  const isEditable = ['processed', 'favorite', 'error'].includes(status)
 
   return {
     sections,

@@ -1,13 +1,17 @@
 import { openDB, IDBPTransaction } from 'idb'
 import type { IDBPDatabase } from 'idb'
 import { storesSchema } from '@db/config/schema'
+import {
+  migrateLegacyCartDraftsToPostcards,
+  POSTCARDS_IDB_MIGRATION_VERSION,
+} from '@db/migrations/migrateLegacyCartDraftsToPostcards'
 
 let dbInstance: IDBPDatabase | undefined
 
 export const getDatabase = async () => {
   if (!dbInstance) {
-    dbInstance = await openDB('AppDB', 12, {
-      upgrade(db, oldVersion) {
+    dbInstance = await openDB('AppDB', POSTCARDS_IDB_MIGRATION_VERSION, {
+      async upgrade(db, oldVersion, _newVersion, transaction) {
         if (db.objectStoreNames.contains('cropImages')) {
           db.deleteObjectStore('cropImages')
         }
@@ -22,6 +26,11 @@ export const getDatabase = async () => {
             db.createObjectStore(name, { keyPath })
           }
         })
+        await migrateLegacyCartDraftsToPostcards(
+          db,
+          transaction as IDBPTransaction<unknown, string[], 'versionchange'>,
+          oldVersion,
+        )
       },
     })
   }

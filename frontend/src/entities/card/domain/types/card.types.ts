@@ -11,7 +11,7 @@ export const CARD_STATUSES = [
   'processed',
   'cart',
   'ready',
-  'drafts',
+  'favorite',
   'sent',
   'delivered',
   'error',

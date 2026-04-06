@@ -1,9 +1,9 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import type { StoreMap } from '@/db/types'
+import type { DraftsItem } from '@entities/drafts/domain/types'
 import { normalizeDraftsItemRecord } from '@entities/drafts/domain/types'
 import type { DraftsTemplatesAdapter } from './templatesStoreAdapters'
 
-const base = createStoreAdapter<StoreMap['drafts']>('draftsTemplates')
+const base = createStoreAdapter<DraftsItem>('draftsTemplates')
 
 export const draftsTemplatesAdapter: DraftsTemplatesAdapter = {
   ...base,
