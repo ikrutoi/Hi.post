@@ -1,4 +1,13 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import type { Postcard } from '@entities/postcard'
+import { normalizePostcardRecord, type Postcard } from '@entities/postcard'
 
-export const cartStore = createStoreAdapter<Postcard>('cart')
+const base = createStoreAdapter<Postcard>('cart')
+
+export const cartStore = {
+  ...base,
+  getAll: async () => (await base.getAll()).map(normalizePostcardRecord),
+  getById: async (id: IDBValidKey) => {
+    const r = await base.getById(id)
+    return r ? normalizePostcardRecord(r) : null
+  },
+}

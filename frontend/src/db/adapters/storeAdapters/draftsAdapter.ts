@@ -1,4 +1,16 @@
 import { createStoreAdapter } from '../factory'
-import type { DraftsItem } from '@entities/drafts/domain/types'
+import {
+  normalizeDraftsItemRecord,
+  type DraftsItem,
+} from '@entities/drafts/domain/types'
 
-export const draftsAdapter = createStoreAdapter<DraftsItem>('drafts')
+const base = createStoreAdapter<DraftsItem>('drafts')
+
+export const draftsAdapter = {
+  ...base,
+  getAll: async () => (await base.getAll()).map(normalizeDraftsItemRecord),
+  getById: async (id: IDBValidKey) => {
+    const r = await base.getById(id)
+    return r ? normalizeDraftsItemRecord(r) : null
+  },
+}

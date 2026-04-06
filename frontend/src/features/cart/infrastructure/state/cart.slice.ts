@@ -19,12 +19,12 @@ const cartSlice = createSlice({
     },
     removeItem(state, action: PayloadAction<number>) {
       state.items = state.items.filter(
-        (item) => item.LocalId !== action.payload,
+        (item) => item.localId !== action.payload,
       )
     },
     updateItem(state, action: PayloadAction<Postcard>) {
       const index = state.items.findIndex(
-        (item) => item.LocalId === action.payload.LocalId,
+        (item) => item.localId === action.payload.localId,
       )
       if (index !== -1) {
         state.items[index] = action.payload

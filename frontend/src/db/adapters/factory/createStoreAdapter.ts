@@ -1,5 +1,6 @@
 import { getDatabase, handleTransactionPromise } from '@db/core'
 import type { StoreAdapter } from '@/db/types'
+import { LEGACY_LOCAL_ID_PROPERTY } from '@shared/config/legacyIndexedDb'
 
 export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
   const getAll = async (): Promise<T[]> => {
@@ -34,9 +35,11 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
 
   const getMaxLocalId = async (): Promise<number> => {
     const all = await getAll()
-    const localIds = (all as { localId?: number; id?: string | number }[])
+    const localIds = (all as Record<string, unknown>[])
       .map((r) => {
         if (typeof r.localId === 'number') return r.localId
+        const legacy = r[LEGACY_LOCAL_ID_PROPERTY]
+        if (typeof legacy === 'number') return legacy
         if (typeof r.id === 'number') return r.id
         if (typeof r.id === 'string') {
           const numId = Number.parseInt(r.id, 10)
