@@ -1,4 +1,4 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import type { CartPostcard } from '../../domain/types/cart.types'
+import type { Postcard } from '@entities/postcard'
 
-export const cartStore = createStoreAdapter<CartPostcard>('cart')
+export const cartStore = createStoreAdapter<Postcard>('cart')

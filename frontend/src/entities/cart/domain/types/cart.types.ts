@@ -1,10 +1,4 @@
-import type { Card } from '@entities/card/domain/types'
-
-export interface Postcard {
-  LocalId: number
-  price: string
-  card: Card
-}
+import type { Postcard } from '@entities/postcard'
 
 export type CartAmount = {
   value: number
@@ -14,9 +8,4 @@ export type CartAmount = {
 export type Cart = {
   items: Postcard[]
   amount: CartAmount
-}
-
-export interface PostcardsDaySummary {
-  postcard: Postcard
-  count: number
 }

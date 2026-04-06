@@ -1,7 +1,7 @@
 import type { CardtextContent } from '@cardtext/domain/types'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { Card } from '@entities/card/domain/types'
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 import type { DraftsItem } from '@entities/drafts/domain/types'
 import type { SentItem } from '@entities/sent/domain/types'
 import type {

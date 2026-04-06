@@ -1,5 +1,5 @@
 import { PresetLetterItem } from '../../domain/types'
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 
 export const processPresetsCards = (
   records: Postcard[],

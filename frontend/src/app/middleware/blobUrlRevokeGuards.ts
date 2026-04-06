@@ -1,5 +1,5 @@
 import type { Card } from '@entities/card/domain/types'
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 import type { ImageAsset } from '@entities/assetRegistry/domain/types'
 import type { CardphotoState, ImageMeta } from '@cardphoto/domain/types'
 

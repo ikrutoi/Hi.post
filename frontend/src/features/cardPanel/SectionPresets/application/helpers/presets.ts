@@ -1,5 +1,5 @@
 import { processPresetsCards } from './processPresetsCards'
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 
 export function preparePresets(
   records: Postcard[],

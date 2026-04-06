@@ -3,7 +3,7 @@ import { addressService } from '../services/addressService'
 import { useLayoutFacade } from '@layout/application/facades'
 import { useLayoutNavFacade } from '@layoutNav/application/facades'
 import { useEnvelopeFacade } from '@envelope/application/facades'
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 import type { Template } from '@shared/config/constants'
 
 type PresetAction = 'save' | 'remove'

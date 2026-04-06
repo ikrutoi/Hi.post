@@ -1,4 +1,4 @@
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 
 export const changeCartDay = (
   day: number,

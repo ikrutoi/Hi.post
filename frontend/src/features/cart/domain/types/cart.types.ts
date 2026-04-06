@@ -1,4 +1,4 @@
-// Устаревший черновик. Актуальные типы корзины: `@entities/cart/domain/types` (`Postcard`, `Cart`, …).
+// Устаревший черновик. Актуально: `Postcard` — `@entities/postcard`; агрегат корзины — `@entities/cart/domain/types` (`Cart`, `CartAmount`).
 
 // import { DispatchDate } from '@entities/date/domain/types'
 

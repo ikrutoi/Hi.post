@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 import styles from './CartDatePreview.module.scss'
 
 interface CartDatePreviewProps {

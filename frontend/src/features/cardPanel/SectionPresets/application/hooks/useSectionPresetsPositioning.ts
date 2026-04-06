@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useLayoutFacade } from '@layout/application/facades'
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 import type { PresetLetterItem } from '../../domain/types'
 
 export const useSectionPresetsPositioning = (

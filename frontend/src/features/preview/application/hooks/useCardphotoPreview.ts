@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { generateCardphotoPreview } from './generateCardphotoPreview'
 import { useLayoutFacade } from '@layout/application/facades'
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 import type { UseCardphotoPreviewOptions } from '../../domain/types'
 
 export const useCardphotoPreview = (options: UseCardphotoPreviewOptions) => {

@@ -9,7 +9,7 @@ import {
   selectCartAmount,
   selectCartCount,
 } from '../../infrastructure/selectors'
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 
 export const useCartController = () => {
   const dispatch = useAppDispatch()

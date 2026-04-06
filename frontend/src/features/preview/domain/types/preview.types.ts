@@ -1,4 +1,4 @@
-import type { Postcard } from '@entities/cart/domain/types'
+import type { Postcard } from '@entities/postcard'
 import type { SizeCard } from '@layout/domain/types'
 
 export type UseCardphotoPreviewOptions = {
