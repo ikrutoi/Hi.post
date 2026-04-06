@@ -12,7 +12,11 @@ import {
 import { CardSection } from '@/shared/config/constants'
 import { clearRainbow } from '@/entities/cardEditor/infrastructure/state'
 
-export const useCardPieFacade = (status: CardStatus, id?: string) => {
+export const useCardPieFacade = (
+  isProcessed: boolean,
+  status: CardStatus | undefined,
+  id?: string,
+) => {
   const dispatch = useAppDispatch()
 
   // const activeData = useAppSelector(selectCardEditorState)
@@ -24,8 +28,9 @@ export const useCardPieFacade = (status: CardStatus, id?: string) => {
   const { sections, isRainbowActive, isRainbowStopping, isAllComplete } =
     useAppSelector(selectPieProgress)
 
-  const currentData = status === 'processed' ? activeData : archiveData
-  const isEditable = ['processed', 'favorite', 'error'].includes(status)
+  const currentData = isProcessed ? activeData : archiveData
+  const isEditable =
+    isProcessed || status === 'favorite' || status === 'error'
 
   return {
     sections,

@@ -16,6 +16,7 @@ export type DateListPanelItem = {
   detailLine?: string
   variant?: DateListEntryVariant
   previewStatus?: CardStatus
+  previewIsProcessed?: boolean
   onDelete?: () => void
 }
 
@@ -65,6 +66,7 @@ export const DateListPanel: React.FC<Props> = ({
                 detailLine={item.detailLine}
                 variant={item.variant}
                 previewStatus={item.previewStatus}
+                previewIsProcessed={item.previewIsProcessed}
                 onSelect={
                   onSelectEntry && item.variant !== 'inactive'
                     ? () => onSelectEntry(item.id)

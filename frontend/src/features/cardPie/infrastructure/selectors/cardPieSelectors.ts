@@ -15,11 +15,12 @@ import { selectAppliedRecipientDisplayAddress } from '@envelope/recipient/infras
 export const selectPieDataByContext = createSelector(
   [
     (state: RootState) => state,
-    (_state, status: CardStatus) => status,
-    (_state, _status, id?: string) => id,
+    (_state, isProcessed: boolean) => isProcessed,
+    (_state, _isProcessed, status?: CardStatus) => status,
+    (_state, _isProcessed, _status, id?: string) => id,
   ],
-  (state, status, id) => {
-    if (status === 'processed') {
+  (state, isProcessed, status, id) => {
+    if (isProcessed) {
       return selectCardEditorState(state)
     }
 

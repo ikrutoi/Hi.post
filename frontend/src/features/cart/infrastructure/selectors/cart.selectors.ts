@@ -2,6 +2,9 @@ import type { RootState } from '@app/state'
 import type { CartAmount } from '@cart/domain/types'
 import type { Postcard } from '@entities/postcard'
 
+export const selectCartItems = (state: RootState): Postcard[] =>
+  state.cart.items
+
 export const selectCartAmount = (state: RootState): CartAmount => {
   const items: Postcard[] = state.cart.items
 

@@ -41,6 +41,7 @@ const PIE_EMPTY_ICON_SIZE = 1440
 const PIE_EMPTY_ICON_HALF = PIE_EMPTY_ICON_SIZE / 2
 
 export const CardPie: React.FC<CardPieProps> = ({
+  isProcessed = false,
   status,
   id,
   fillContainer = false,
@@ -48,6 +49,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   const photoFillId = React.useId().replace(/:/g, '')
   const photoEmptyFillId = React.useId().replace(/:/g, '')
   const { data, sections, handleSectorClick, isReady } = useCardPieFacade(
+    isProcessed,
     status,
     id,
   )

@@ -27,7 +27,8 @@ export const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
         <div className={styles.previewWrapper}>
           <CardPreviewItem
             item={processed}
-            status="processed"
+            status={processed.status}
+            isProcessed={processed.isProcessed}
             cardId={processed.cardId}
           />
         </div>
@@ -39,6 +40,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
             key={item.cardId}
             item={item}
             status={item.status}
+            isProcessed={item.isProcessed}
             cardId={item.cardId}
           />
         ))}

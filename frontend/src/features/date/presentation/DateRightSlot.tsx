@@ -52,7 +52,6 @@ export const DateRightSlot: React.FC = () => {
 
   const dateListEntries: DateListPanelItem[] = useMemo(() => {
     const preview = listPreviewUrl
-    const status = 'processed' as const
 
     const row = (
       d: DispatchDate,
@@ -63,7 +62,7 @@ export const DateRightSlot: React.FC = () => {
       id: `${d.year}-${d.month}-${d.day}-${idSuffix}`,
       dateLabel: formatDispatchDateLabel(d),
       previewUrl: preview,
-      previewStatus: status,
+      previewIsProcessed: true,
       variant,
       onDelete,
     })

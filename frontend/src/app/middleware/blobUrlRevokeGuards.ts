@@ -1,3 +1,4 @@
+import type { Card } from '@entities/card/domain/types'
 import type { Postcard } from '@entities/postcard'
 import type { ImageAsset } from '@entities/assetRegistry/domain/types'
 import type { CardphotoState, ImageMeta } from '@cardphoto/domain/types'
@@ -60,14 +61,14 @@ function addCartPostcardBlobs(
 
 export type BlobUrlRevokeGuardSnapshot = {
   cardphoto: CardphotoState | null | undefined
-  cards: readonly Postcard[] | undefined
+  cards: readonly Card[] | undefined
   cartItems?: readonly Postcard[]
   assetRegistryImages?: Record<string, ImageAsset>
   calendarPreviewCache?: Record<string, string>
 }
 
 /**
- * Все blob:-URL, на которые ещё есть ссылки в стейте (редактор, все `Postcard` в `card.cards`,
+ * Все blob:-URL, на которые ещё есть ссылки в стейте (редактор, все `Card` в `card.cards`,
  * реестр изображений, кэш превью календаря). Перед revoke URL должен отсутствовать здесь.
  *
  * Реестр важен: при новом кропе `setAsset` кладёт новый id, старые `ImageAsset` с теми же
@@ -77,8 +78,7 @@ export function collectReferencedBlobUrls(snap: BlobUrlRevokeGuardSnapshot): Set
   const s = new Set<string>()
   addCardphotoStateBlobs(snap.cardphoto, s)
   if (snap.cards) {
-    for (const p of snap.cards) {
-      const c = p.card
+    for (const c of snap.cards) {
       if (c.thumbnailUrl?.startsWith('blob:')) s.add(c.thumbnailUrl)
       addCardphotoStateBlobs(c.cardphoto, s)
     }

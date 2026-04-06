@@ -56,7 +56,7 @@ const App = () => {
                 {sectionSize != null && (
                   <div className={styles.appMainContentLeftPieRow}>
                     <div className={styles.appMainContentLeftPieWrap}>
-                      <CardPie status="processed" fillContainer />
+                      <CardPie isProcessed fillContainer />
                     </div>
                   </div>
                 )}

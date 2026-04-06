@@ -3,10 +3,7 @@ import type { CardtextState } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { AromaItem } from '@entities/aroma/domain/types'
 import type { DispatchDate } from '@entities/date'
-import type {
-  CardStatus,
-  Postcard,
-} from '@entities/postcard/domain/types/postcard.types'
+import type { CardStatus } from '@entities/postcard/domain/types/postcard.types'
 import { CardSection } from '@shared/config/constants'
 
 export * from './cardReference.types'
@@ -15,6 +12,7 @@ export interface Card {
   id: string
   multiGroupId?: string | null
   thumbnailUrl: string
+  isProcessed?: boolean
 
   cardphoto: CardphotoState
   cardtext: CardtextState
@@ -30,6 +28,8 @@ export interface CalendarCardItem {
   date: DispatchDate
   previewUrl: string
   status: CardStatus
+  /** Слот синхронизированной сессии редактора (см. `Card.isProcessed`). */
+  isProcessed?: boolean
 }
 
 export type CalendarPreviewCache = Record<string, string>
@@ -44,7 +44,7 @@ export interface CardCalendarIndex {
 }
 
 export interface CardState {
-  cards: Postcard[]
+  cards: Card[]
   calendarIndex: CardCalendarIndex
   calendarPreviewCache: CalendarPreviewCache
   activeSection: CardSection | null

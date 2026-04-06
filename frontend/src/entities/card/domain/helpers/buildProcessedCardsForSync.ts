@@ -4,8 +4,6 @@ import type { CardphotoState } from '@cardphoto/domain/types'
 import type { CardtextState } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { Card } from '../types'
-import type { Postcard } from '@entities/postcard'
-import { makeSessionPostcardLocalId } from '@entities/postcard'
 
 export function buildProcessedCardId(
   photoAssetId: string,
@@ -43,6 +41,7 @@ function buildInnerCard(opts: {
     aroma,
     date,
     multiGroupId,
+    isProcessed: true,
   }
 }
 
@@ -56,8 +55,7 @@ export function buildProcessedCardsForSync(opts: {
   cardtext: CardtextState
   envelope: EnvelopeSessionRecord
   aroma: AromaItem
-  now: number
-}): Postcard[] {
+}): Card[] {
   const {
     appliedPhotoId,
     thumbnailUrl,
@@ -68,7 +66,6 @@ export function buildProcessedCardsForSync(opts: {
     cardtext,
     envelope,
     aroma,
-    now,
   } = opts
 
   if (mergedDates.length === 0) return []
@@ -79,33 +76,21 @@ export function buildProcessedCardsForSync(opts: {
   if (!multiBatch) {
     const d = mergedDates[0]
     return [
-      {
-        localId: makeSessionPostcardLocalId(0),
-        price: '',
-        status: 'processed',
-        createdAt: now,
-        updatedAt: now,
-        card: buildInnerCard({
-          id: appliedPhotoId,
-          thumbnailUrl,
-          multiGroupId: null,
-          cardphoto,
-          cardtext,
-          envelope,
-          aroma,
-          date: d,
-        }),
-      },
+      buildInnerCard({
+        id: appliedPhotoId,
+        thumbnailUrl,
+        multiGroupId: null,
+        cardphoto,
+        cardtext,
+        envelope,
+        aroma,
+        date: d,
+      }),
     ]
   }
 
-  return mergedDates.map((d, i) => ({
-    localId: makeSessionPostcardLocalId(i),
-    price: '',
-    status: 'processed' as const,
-    createdAt: now,
-    updatedAt: now,
-    card: buildInnerCard({
+  return mergedDates.map((d) =>
+    buildInnerCard({
       id: buildProcessedCardId(appliedPhotoId, d),
       thumbnailUrl,
       multiGroupId,
@@ -115,5 +100,5 @@ export function buildProcessedCardsForSync(opts: {
       aroma,
       date: d,
     }),
-  }))
+  )
 }

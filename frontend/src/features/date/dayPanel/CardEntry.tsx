@@ -13,7 +13,6 @@ type Props = {
 }
 
 const STATUS_LABEL: Record<CalendarCardItem['status'], string> = {
-  processed: 'In progress',
   cart: 'Cart',
   ready: 'Ready',
   sent: 'Sent',
@@ -56,7 +55,7 @@ export const CardEntry: React.FC<Props> = ({
           />
         ) : null}
       </div>
-      {item.status !== 'processed' ? (
+      {!item.isProcessed ? (
         <>
           <span
             className={clsx(styles.indicator, styles[item.status])}

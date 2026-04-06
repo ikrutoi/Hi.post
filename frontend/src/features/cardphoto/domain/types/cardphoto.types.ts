@@ -95,7 +95,9 @@ export interface CardphotoState {
 }
 
 export interface PreviewItemForCalendar {
-  item: { previewUrl: string }
+  item: { previewUrl: string; cardId: string }
   status: CardStatus
+  /** Слот сессии редактора — без цветного индикатора. */
+  isProcessed?: boolean
   cardId: string
 }

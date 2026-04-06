@@ -47,7 +47,7 @@ export const CardPanel = () => {
             width: `${sizeMiniCard.height}px`,
           }}
         >
-          <CardPie status="processed" />
+          <CardPie isProcessed />
         </div>
         <div
           className={styles.cardPanelContent}

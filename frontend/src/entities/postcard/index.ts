@@ -7,5 +7,4 @@ export type {
 export {
   normalizePostcardRecord,
   CARD_STATUSES,
-  makeSessionPostcardLocalId,
 } from './domain/types/postcard.types'

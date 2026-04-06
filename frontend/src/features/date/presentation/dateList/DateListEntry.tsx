@@ -17,6 +17,8 @@ export type DateListEntryProps = {
   variant?: DateListEntryVariant
   /** Цветной индикатор как у превью в календаре (перед миниатюрой). */
   previewStatus?: CardStatus
+  /** Сессия редактора — индикатор по статусу не показываем. */
+  previewIsProcessed?: boolean
   onSelect?: () => void
   /** Удаление строки (как в адресной книге: кнопка видна при hover по строке). */
   onDelete?: () => void
@@ -32,6 +34,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
   detailLine,
   variant = 'default',
   previewStatus,
+  previewIsProcessed,
   onSelect,
   onDelete,
   isStarred = false,
@@ -86,7 +89,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
         </button>
       ) : null}
       <div className={styles.body}>
-        {previewStatus && previewStatus !== 'processed' ? (
+        {previewStatus && !previewIsProcessed ? (
           <span
             className={clsx(styles.statusIndicator, styles[previewStatus])}
             aria-hidden

@@ -32,7 +32,6 @@ export function* checkAndSyncProcessedCard(): SagaIterator {
   if (!appliedPhoto) return
   if (mergedDates.length === 0) return
 
-  const now = Date.now()
   const processedCards = buildProcessedCardsForSync({
     appliedPhotoId: appliedPhoto.id,
     thumbnailUrl: appliedPhoto.thumbnail?.url || '',
@@ -43,7 +42,6 @@ export function* checkAndSyncProcessedCard(): SagaIterator {
     cardtext,
     envelope,
     aroma,
-    now,
   })
 
   yield put(setProcessedCardsFromEditor(processedCards))

@@ -11,6 +11,7 @@ import { PreviewItemForCalendar } from '@cardphoto/domain/types'
 export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   item,
   status,
+  isProcessed,
   cardId,
 }) => {
   const { openPreview } = useCardFacade()
@@ -46,7 +47,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
       ) : (
         <div className={styles.previewImage} aria-hidden />
       )}
-      {status !== 'processed' ? (
+      {!isProcessed ? (
         <span className={clsx(styles.previewIndicator, styles[status])} />
       ) : null}
     </div>
