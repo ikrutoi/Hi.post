@@ -6,7 +6,6 @@ import { CalendarCardItem } from '@entities/card/domain/types'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import styles from './CardPreviewItem.module.scss'
-import type { CardStatus } from '@entities/card/domain/types'
 import { PreviewItemForCalendar } from '@cardphoto/domain/types'
 
 export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
@@ -47,7 +46,9 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
       ) : (
         <div className={styles.previewImage} aria-hidden />
       )}
-      <span className={clsx(styles.previewIndicator, styles[status])}></span>
+      {status !== 'processed' ? (
+        <span className={clsx(styles.previewIndicator, styles[status])} />
+      ) : null}
     </div>
   )
 }

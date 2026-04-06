@@ -56,13 +56,17 @@ export const CardEntry: React.FC<Props> = ({
           />
         ) : null}
       </div>
-      <span
-        className={clsx(styles.indicator, styles[item.status])}
-        aria-hidden
-      />
-      <span className={styles.statusLabel}>
-        {STATUS_LABEL[item.status]}
-      </span>
+      {item.status !== 'processed' ? (
+        <>
+          <span
+            className={clsx(styles.indicator, styles[item.status])}
+            aria-hidden
+          />
+          <span className={styles.statusLabel}>
+            {STATUS_LABEL[item.status]}
+          </span>
+        </>
+      ) : null}
     </div>
   )
 }

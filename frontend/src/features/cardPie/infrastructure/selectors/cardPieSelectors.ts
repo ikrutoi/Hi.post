@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
-import { CardStatus } from '@entities/card/domain/types'
+import type { CardStatus } from '@entities/postcard'
 import { selectCardEditorState } from '@entities/cardEditor/infrastructure/selectors'
 import { selectCardtextAppliedSessionData } from '@cardtext/infrastructure/selectors'
 import {

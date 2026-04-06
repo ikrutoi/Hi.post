@@ -7,8 +7,8 @@ export const fetchHeaderStatus = async (
   dispatch: AppDispatch
 ): Promise<{ status: StatusType; cartCount: number; draftsCount: number }> => {
   const stored = await postcardsAdapter.getAll()
-  const cartCount = stored.filter((p) => p.card.status === 'cart').length
-  const draftsCount = stored.filter((p) => p.card.status === 'favorite').length
+  const cartCount = stored.filter((p) => p.status === 'cart').length
+  const draftsCount = stored.filter((p) => p.status === 'favorite').length
 
   dispatch(setShoppingCards(Boolean(cartCount)))
 

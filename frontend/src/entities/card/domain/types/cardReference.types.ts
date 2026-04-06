@@ -1,4 +1,4 @@
-import type { CardStatus } from './card.types'
+import type { CardStatus } from '@entities/postcard/domain/types/postcard.types'
 import type { AromaImageIndex } from '@entities/aroma/domain/types'
 import type { DispatchDate } from '@entities/date'
 

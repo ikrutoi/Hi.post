@@ -4,7 +4,7 @@ import type {
   CardTemplateReferences,
 } from '../types/cardReference.types'
 import type { Card } from '../types/card.types'
-import type { AromaImageIndex } from '@entities/aroma/domain/types'
+import type { Postcard } from '@entities/postcard'
 
 function cardphotoPreviewFromCard(card: Card): string {
   if (card.thumbnailUrl) return card.thumbnailUrl
@@ -17,14 +17,15 @@ function cardphotoPreviewFromCard(card: Card): string {
   )
 }
 
-export function createCardReferenceFromCard(
-  card: Card,
+export function createCardReferenceFromPostcard(
+  postcard: Postcard,
   templateRefs: CardTemplateReferences,
 ): CardReference {
+  const card = postcard.card
   return {
     id: card.id,
     userId: '',
-    status: card.status,
+    status: postcard.status,
     templates: templateRefs,
     aromaId: card.aroma.index,
     date: card.date,
@@ -43,9 +44,9 @@ export function createCardReferenceFromCard(
       datePreview: formatDatePreview(card.date),
     },
     meta: {
-      price: card.meta.price,
-      createdAt: card.meta.createdAt,
-      updatedAt: card.meta.updatedAt,
+      price: postcard.price,
+      createdAt: postcard.createdAt,
+      updatedAt: postcard.updatedAt,
     },
   }
 }
@@ -57,7 +58,7 @@ function formatAddressPreview(address: Record<string, string>): string {
   return parts.join(', ')
 }
 
-function formatDatePreview(date: any): string {
+function formatDatePreview(date: unknown): string {
   return String(date)
 }
 

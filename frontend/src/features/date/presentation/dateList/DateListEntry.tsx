@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import type { CardStatus } from '@entities/card/domain/types'
+import type { CardStatus } from '@entities/postcard'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import styles from './DateListEntry.module.scss'
 
@@ -86,7 +86,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
         </button>
       ) : null}
       <div className={styles.body}>
-        {previewStatus ? (
+        {previewStatus && previewStatus !== 'processed' ? (
           <span
             className={clsx(styles.statusIndicator, styles[previewStatus])}
             aria-hidden

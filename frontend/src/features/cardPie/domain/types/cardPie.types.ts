@@ -1,4 +1,4 @@
-import { CardStatus } from '@entities/card/domain/types'
+import type { CardStatus } from '@entities/postcard'
 
 export interface CardPieProps {
   status: CardStatus

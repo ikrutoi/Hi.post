@@ -1,27 +1,19 @@
 import type { CardphotoState } from '@cardphoto/domain/types'
 import type { CardtextState } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
-import type { AromaItem, AromaState } from '@entities/aroma/domain/types'
+import type { AromaItem } from '@entities/aroma/domain/types'
 import type { DispatchDate } from '@entities/date'
+import type {
+  CardStatus,
+  Postcard,
+} from '@entities/postcard/domain/types/postcard.types'
 import { CardSection } from '@shared/config/constants'
 
 export * from './cardReference.types'
 
-export const CARD_STATUSES = [
-  'processed',
-  'cart',
-  'ready',
-  'favorite',
-  'sent',
-  'delivered',
-  'error',
-] as const
-
-export type CardStatus = (typeof CARD_STATUSES)[number]
-
 export interface Card {
   id: string
-  status: CardStatus
+  multiGroupId?: string | null
   thumbnailUrl: string
 
   cardphoto: CardphotoState
@@ -29,14 +21,6 @@ export interface Card {
   envelope: EnvelopeSessionRecord
   aroma: AromaItem
   date: DispatchDate
-  multiGroupId?: string | null
-
-  meta: {
-    localId?: number
-    price?: string
-    createdAt: number
-    updatedAt: number
-  }
 }
 
 export type CardsByDateMap = Record<string, Card[]>
@@ -60,7 +44,7 @@ export interface CardCalendarIndex {
 }
 
 export interface CardState {
-  cards: Card[]
+  cards: Postcard[]
   calendarIndex: CardCalendarIndex
   calendarPreviewCache: CalendarPreviewCache
   activeSection: CardSection | null

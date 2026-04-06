@@ -6,7 +6,7 @@ import {
   DateListEntry,
   type DateListEntryVariant,
 } from './dateList/DateListEntry'
-import type { CardStatus } from '@entities/card/domain/types'
+import type { CardStatus } from '@entities/postcard'
 import styles from './DateListPanel.module.scss'
 
 export type DateListPanelItem = {

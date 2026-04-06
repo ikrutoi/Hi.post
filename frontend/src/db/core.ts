@@ -1,16 +1,17 @@
 import { openDB, IDBPTransaction } from 'idb'
 import type { IDBPDatabase } from 'idb'
 import { storesSchema } from '@db/config/schema'
+import { migrateLegacyCartDraftsToPostcards } from '@db/migrations/migrateLegacyCartDraftsToPostcards'
 import {
-  migrateLegacyCartDraftsToPostcards,
-  POSTCARDS_IDB_MIGRATION_VERSION,
-} from '@db/migrations/migrateLegacyCartDraftsToPostcards'
+  migratePostcardsToCanonicalShape,
+  APP_DB_VERSION,
+} from '@db/migrations/migratePostcardsCanonicalV15'
 
 let dbInstance: IDBPDatabase | undefined
 
 export const getDatabase = async () => {
   if (!dbInstance) {
-    dbInstance = await openDB('AppDB', POSTCARDS_IDB_MIGRATION_VERSION, {
+    dbInstance = await openDB('AppDB', APP_DB_VERSION, {
       async upgrade(db, oldVersion, _newVersion, transaction) {
         if (db.objectStoreNames.contains('cropImages')) {
           db.deleteObjectStore('cropImages')
@@ -26,11 +27,13 @@ export const getDatabase = async () => {
             db.createObjectStore(name, { keyPath })
           }
         })
-        await migrateLegacyCartDraftsToPostcards(
-          db,
-          transaction as IDBPTransaction<unknown, string[], 'versionchange'>,
-          oldVersion,
-        )
+        const versionChangeTx = transaction as IDBPTransaction<
+          unknown,
+          string[],
+          'versionchange'
+        >
+        await migrateLegacyCartDraftsToPostcards(db, versionChangeTx, oldVersion)
+        await migratePostcardsToCanonicalShape(db, versionChangeTx, oldVersion)
       },
     })
   }

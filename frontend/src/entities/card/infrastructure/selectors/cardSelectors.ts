@@ -22,9 +22,10 @@ export const selectAllCards = (state: RootState) => selectCardState(state).cards
 /** Первое непустое превью среди синхронизированных processed-карточек (список дат, fallback). */
 export const selectFirstProcessedCardThumbnailUrl = createSelector(
   [selectAllCards],
-  (cards) => {
-    for (const c of cards) {
-      if (c.status === 'processed' && c.thumbnailUrl) return c.thumbnailUrl
+  (postcards) => {
+    for (const p of postcards) {
+      if (p.status === 'processed' && p.card.thumbnailUrl)
+        return p.card.thumbnailUrl
     }
     return null
   },
@@ -44,11 +45,14 @@ export const selectCalendarPreviewDisplayUrl = (cardId: string) =>
   )
 
 export const selectCardById = (id: string) => (state: RootState) =>
-  state.card.cards.find((card) => card.id === id)
+  state.card.cards.find((p) => p.card.id === id)?.card
 
 export const selectPreviewCard = createSelector(
   [selectAllCards, (state: RootState) => state.card.previewCardId],
-  (cards, previewId) => cards.find((c) => c.id === previewId) || null,
+  (postcards, previewId) => {
+    if (!previewId) return null
+    return postcards.find((p) => p.card.id === previewId)?.card ?? null
+  },
 )
 
 export const selectCardsByDateMap = createSelector(
@@ -58,7 +62,7 @@ export const selectCardsByDateMap = createSelector(
     selectCardphotoPreview,
     selectMergedDispatchDates,
   ],
-  (index, allCards, photoPreview, activeDates) => {
+  (index, allPostcards, photoPreview, activeDates) => {
     const map: Record<string, CardCalendarIndex> = {}
 
     const getEntry = (date: DispatchDate) => {
@@ -90,14 +94,15 @@ export const selectCardsByDateMap = createSelector(
       }
     })
 
-    for (const card of allCards) {
-      if (card.status !== 'processed') continue
+    for (const p of allPostcards) {
+      if (p.status !== 'processed') continue
+      const card = p.card
       const entry = getEntry(card.date)
       entry.processed = {
         cardId: card.id,
         date: card.date,
         previewUrl: card.thumbnailUrl,
-        status: card.status,
+        status: 'processed',
       }
     }
 

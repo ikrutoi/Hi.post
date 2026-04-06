@@ -7,19 +7,20 @@ export const rebuildIndex = (state: CardState) => {
   state.calendarIndex.delivered = []
   state.calendarIndex.error = []
 
-  state.cards.forEach((card) => {
-    if (card.status === 'processed' || card.status === 'favorite') {
+  state.cards.forEach((postcard) => {
+    if (postcard.status === 'processed' || postcard.status === 'favorite') {
       return
     }
 
+    const card = postcard.card
     const item: CalendarCardItem = {
       cardId: card.id,
       date: card.date,
       previewUrl: card.thumbnailUrl,
-      status: card.status,
+      status: postcard.status,
     }
 
-    switch (card.status) {
+    switch (postcard.status) {
       case 'cart':
         state.calendarIndex.cart.push(item)
         break

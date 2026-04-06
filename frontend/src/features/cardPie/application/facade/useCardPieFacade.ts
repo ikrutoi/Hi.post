@@ -1,6 +1,6 @@
 import { setActiveSection } from '@/entities/sectionEditorMenu/infrastructure/state'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { CardStatus } from '@entities/card/domain/types'
+import type { CardStatus } from '@entities/postcard'
 import {
   selectCardEditorState,
   selectPieProgress,

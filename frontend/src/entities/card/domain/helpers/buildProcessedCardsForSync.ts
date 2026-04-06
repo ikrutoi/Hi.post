@@ -4,12 +4,46 @@ import type { CardphotoState } from '@cardphoto/domain/types'
 import type { CardtextState } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { Card } from '../types'
+import type { Postcard } from '@entities/postcard'
+import { makeSessionPostcardLocalId } from '@entities/postcard'
 
 export function buildProcessedCardId(
   photoAssetId: string,
   d: DispatchDate,
 ): string {
   return `${photoAssetId}__${d.year}-${d.month}-${d.day}`
+}
+
+function buildInnerCard(opts: {
+  id: string
+  thumbnailUrl: string
+  multiGroupId: string | null
+  cardphoto: CardphotoState
+  cardtext: CardtextState
+  envelope: EnvelopeSessionRecord
+  aroma: AromaItem
+  date: DispatchDate
+}): Card {
+  const {
+    id,
+    thumbnailUrl,
+    multiGroupId,
+    cardphoto,
+    cardtext,
+    envelope,
+    aroma,
+    date,
+  } = opts
+  return {
+    id,
+    thumbnailUrl,
+    cardphoto,
+    cardtext,
+    envelope,
+    aroma,
+    date,
+    multiGroupId,
+  }
 }
 
 export function buildProcessedCardsForSync(opts: {
@@ -23,7 +57,7 @@ export function buildProcessedCardsForSync(opts: {
   envelope: EnvelopeSessionRecord
   aroma: AromaItem
   now: number
-}): Card[] {
+}): Postcard[] {
   const {
     appliedPhotoId,
     thumbnailUrl,
@@ -39,8 +73,6 @@ export function buildProcessedCardsForSync(opts: {
 
   if (mergedDates.length === 0) return []
 
-  const sharedMeta = { createdAt: now, updatedAt: now }
-
   const multiBatch =
     isMultiDateMode && mergedDates.length > 1 && multiGroupId != null
 
@@ -48,30 +80,40 @@ export function buildProcessedCardsForSync(opts: {
     const d = mergedDates[0]
     return [
       {
-        id: appliedPhotoId,
+        localId: makeSessionPostcardLocalId(0),
+        price: '',
         status: 'processed',
-        thumbnailUrl,
-        cardphoto,
-        cardtext,
-        envelope,
-        aroma,
-        date: d,
-        multiGroupId: null,
-        meta: sharedMeta,
+        createdAt: now,
+        updatedAt: now,
+        card: buildInnerCard({
+          id: appliedPhotoId,
+          thumbnailUrl,
+          multiGroupId: null,
+          cardphoto,
+          cardtext,
+          envelope,
+          aroma,
+          date: d,
+        }),
       },
     ]
   }
 
-  return mergedDates.map((d) => ({
-    id: buildProcessedCardId(appliedPhotoId, d),
+  return mergedDates.map((d, i) => ({
+    localId: makeSessionPostcardLocalId(i),
+    price: '',
     status: 'processed' as const,
-    thumbnailUrl,
-    cardphoto,
-    cardtext,
-    envelope,
-    aroma,
-    date: d,
-    multiGroupId,
-    meta: { ...sharedMeta },
+    createdAt: now,
+    updatedAt: now,
+    card: buildInnerCard({
+      id: buildProcessedCardId(appliedPhotoId, d),
+      thumbnailUrl,
+      multiGroupId,
+      cardphoto,
+      cardtext,
+      envelope,
+      aroma,
+      date: d,
+    }),
   }))
 }

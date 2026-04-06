@@ -1,6 +1,6 @@
 import type { IDBPDatabase, IDBPTransaction } from 'idb'
 import type { Card } from '@entities/card/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { Postcard, CardStatus, PostcardRecordMeta } from '@entities/postcard'
 import { normalizePostcardRecord } from '@entities/postcard'
 import type { DraftsItem } from '@entities/drafts/domain/types'
 import { normalizeDraftsItemRecord } from '@entities/drafts/domain/types'
@@ -8,6 +8,11 @@ import { normalizeDraftsItemRecord } from '@entities/drafts/domain/types'
 const MIGRATION_TARGET_VERSION = 14
 
 type VersionChangeTx = IDBPTransaction<unknown, string[], 'versionchange'>
+
+type LegacyCardFields = Card & {
+  status?: string
+  meta?: Partial<PostcardRecordMeta>
+}
 
 function postcardWithId(p: Postcard, explicitId?: string): Postcard & { id: string } {
   const id = explicitId ?? p.card.id
@@ -22,14 +27,25 @@ function migrateCartRow(row: unknown): Postcard & { id: string } {
 
 function migrateDraftsRow(row: unknown): Postcard & { id: string } {
   const d = normalizeDraftsItemRecord(row as DraftsItem)
-  let card: Card = { ...d.card }
-  const st = card.status as string
-  if (st === 'drafts' || (st !== 'favorite' && st !== 'cart')) {
-    card = { ...card, status: 'favorite' }
-  }
+  const inner = d.card as LegacyCardFields
+  const st = inner.status
+  const status: CardStatus =
+    st === 'cart' ? 'cart' : st === 'favorite' ? 'favorite' : 'favorite'
+
+  const m = inner.meta
+  const now = Date.now()
+  const createdAt = m?.createdAt ?? now
+  const updatedAt = m?.updatedAt ?? createdAt
+
+  const { status: _st, meta: _meta, ...cardFields } = inner
+  const card = cardFields as Card
+
   const postcard: Postcard = {
     localId: d.localId,
-    price: card.meta?.price ?? '',
+    price: m?.price ?? '',
+    status,
+    createdAt,
+    updatedAt,
     card,
   }
   return postcardWithId(postcard)
@@ -78,4 +94,3 @@ export async function migrateLegacyCartDraftsToPostcards(
   }
 }
 
-export const POSTCARDS_IDB_MIGRATION_VERSION = MIGRATION_TARGET_VERSION

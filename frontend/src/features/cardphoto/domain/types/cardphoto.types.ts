@@ -1,4 +1,4 @@
-import { CardStatus } from '@/entities/card/domain/types'
+import type { CardStatus } from '@entities/postcard'
 import type { LayoutOrientation } from '@layout/domain/types'
 
 export type CardphotoImageStageRect = { width: number; height: number }
