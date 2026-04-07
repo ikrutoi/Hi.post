@@ -125,8 +125,14 @@ import type { DateState } from '@entities/date/domain/types'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { CardSection } from '@shared/config/constants'
 import { shouldSyncUserOriginalOnRebuild } from '@cardphoto/application/helpers'
+import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 
 export function* persistGlobalSession() {
+  const existingSession: SessionData | null = yield call(
+    [storeAdapters.session, 'getById'],
+    'current_session',
+  )
+
   const cardphoto: CardphotoSessionRecord | null = yield select(
     selectCardphotoSessionRecord,
   )
@@ -207,6 +213,7 @@ export function* persistGlobalSession() {
           }
         : null,
     pieFavorite,
+    favoritePostcardLocalId: existingSession?.favoritePostcardLocalId ?? null,
     timestamp: Date.now(),
   }
 
@@ -336,6 +343,8 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
 
 export function* hydrateAppSession() {
   try {
+    yield call(refreshRightSidebarBadgesFromPostcards)
+
     const session: SessionData | null = yield call(
       [storeAdapters.session, 'getById'],
       'current_session',

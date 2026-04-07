@@ -10,7 +10,10 @@ import {
   handleClearAllMiniSectionsAction,
 } from './editorPieHandlers'
 import { EditorPieKey, ToolbarSection } from '@/features/toolbar/domain/types'
-import { createPostcardsFromEditor } from './postcardCreateSaga'
+import {
+  createPostcardsFromEditor,
+  removeFavoritePostcardsFromEditor,
+} from './postcardCreateSaga'
 
 export function* handleEditorPieToolbarAction(
   action: PayloadAction<{ section: ToolbarSection; key: EditorPieKey }>,
@@ -18,6 +21,13 @@ export function* handleEditorPieToolbarAction(
   const { section, key } = action.payload
   if (section !== 'editorPie') return
   switch (key) {
+    case 'addCart': {
+      const { isAllComplete } = yield select(selectPieProgress)
+      if (!isAllComplete) break
+      yield call(createPostcardsFromEditor, 'cart')
+      break
+    }
+
     case 'addDrafts':
       yield call(handleAddDraftsAction)
       break
@@ -39,6 +49,8 @@ export function* handleEditorPieToolbarAction(
       )
       if (!pieFavorite) {
         yield call(createPostcardsFromEditor, 'favorite')
+      } else {
+        yield call(removeFavoritePostcardsFromEditor)
       }
       yield put(togglePieFavorite())
       break

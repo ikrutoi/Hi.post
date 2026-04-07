@@ -1,8 +1,9 @@
 import type { SagaIterator } from 'redux-saga'
 import { call, put, select, takeLatest } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
-import { postcardsAdapter } from '@db/adapters/storeAdapters'
+import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
 import { addItem } from '@cart/infrastructure/state'
+import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@envelope/infrastructure/selectors'
@@ -17,8 +18,23 @@ import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { DispatchDate } from '@entities/date'
 import type { AromaItem } from '@entities/aroma/domain/types'
 import type { CardStatus, Postcard } from '@entities/postcard'
+import type { SessionData } from '@entities/db/domain/types'
 
 type CreateTarget = 'favorite' | 'cart'
+
+function* setSessionFavoritePostcardLocalId(
+  favoritePostcardLocalId: number | null,
+): SagaIterator {
+  const currentSession: SessionData | null = yield call(
+    [storeAdapters.session, 'getById'],
+    'current_session',
+  )
+  if (!currentSession) return
+  yield call([storeAdapters.session, 'put'], {
+    ...currentSession,
+    favoritePostcardLocalId,
+  })
+}
 
 function buildBaseCard(opts: {
   id: string
@@ -47,16 +63,44 @@ function buildPostcardFingerprint(input: {
   card: Postcard['card']
 }): string {
   const { status, card } = input
+  const cardphoto = card.cardphoto as Partial<CardphotoState> | undefined
+  const cardtext = card.cardtext as Partial<CardtextState> | undefined
+  const envelope = card.envelope as Partial<EnvelopeSessionRecord> | undefined
+  const aroma = card.aroma as Partial<AromaItem> | undefined
+
+  const appliedData = cardphoto?.appliedData as
+    | {
+        id?: string
+        previewUrl?: string
+        thumbnail?: { url?: string } | null
+      }
+    | null
+    | undefined
+
   return JSON.stringify({
     status,
-    // Keep only domain-significant payload, without record ids/timestamps.
+    // Keep only stable domain-significant payload (reload-safe).
     card: {
       thumbnailUrl: card.thumbnailUrl ?? '',
       date: card.date ?? null,
-      cardphoto: card.cardphoto ?? null,
-      cardtext: card.cardtext ?? null,
-      envelope: card.envelope ?? null,
-      aroma: card.aroma ?? null,
+      cardphoto: {
+        appliedId: appliedData?.id ?? null,
+        appliedPreviewUrl: appliedData?.previewUrl ?? null,
+        appliedThumbUrl: appliedData?.thumbnail?.url ?? null,
+      },
+      cardtext: {
+        id: cardtext?.id ?? null,
+        status: cardtext?.status ?? null,
+        value: cardtext?.value ?? null,
+        style: cardtext?.style ?? null,
+      },
+      envelope: {
+        sender: envelope?.sender ?? null,
+        recipient: envelope?.recipient ?? null,
+      },
+      aroma: {
+        index: aroma?.index ?? null,
+      },
     },
   })
 }
@@ -110,7 +154,20 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
       status,
       card: candidateCard,
     })
-    if (existingFingerprints.has(fingerprint)) continue
+    if (existingFingerprints.has(fingerprint)) {
+      if (status === 'favorite') {
+        const existingFavorite = existingRows.find(
+          (row) =>
+            row.status === 'favorite' &&
+            buildPostcardFingerprint({ status: row.status, card: row.card }) ===
+              fingerprint,
+        )
+        if (existingFavorite) {
+          yield call(setSessionFavoritePostcardLocalId, existingFavorite.localId)
+        }
+      }
+      continue
+    }
 
     maxLocalId += 1
     const localId = maxLocalId
@@ -127,10 +184,45 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
     }
     yield call([postcardsAdapter, 'addRecordWithId'], localId, postcard)
     existingFingerprints.add(fingerprint)
+    if (status === 'favorite') {
+      yield call(setSessionFavoritePostcardLocalId, localId)
+    }
     if (status === 'cart') {
       yield put(addItem(postcard))
     }
   }
+
+  yield call(refreshRightSidebarBadgesFromPostcards)
+}
+
+export function* removeFavoritePostcardsFromEditor(): SagaIterator {
+  const currentSession: SessionData | null = yield call(
+    [storeAdapters.session, 'getById'],
+    'current_session',
+  )
+  const favoriteId = currentSession?.favoritePostcardLocalId ?? null
+  if (favoriteId != null) {
+    // In canonical postcards store keyPath is `id`; for these rows it matches localId.
+    yield call([postcardsAdapter, 'deleteById'], favoriteId)
+  }
+  yield call(setSessionFavoritePostcardLocalId, null)
+
+  yield call(refreshRightSidebarBadgesFromPostcards)
+}
+
+export function* refreshRightSidebarBadgesFromPostcards(): SagaIterator {
+  const allRows: Postcard[] = yield call([postcardsAdapter, 'getAll'])
+  const cartCount = allRows.filter((row) => row.status === 'cart').length
+  const favoriteCount = allRows.filter((row) => row.status === 'favorite').length
+  yield put(
+    updateToolbarSection({
+      section: 'rightSidebar',
+      value: {
+        cart: { options: { badge: cartCount > 0 ? cartCount : null } },
+        favorite: { options: { badge: favoriteCount > 0 ? favoriteCount : null } },
+      },
+    }),
+  )
 }
 
 function* handleAddCartToolbarAction(

@@ -431,6 +431,9 @@
   }
 
   .toolbarKey {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 1.8rem;
     height: 1.8rem;
     background-color: $color-app-inner;
@@ -483,6 +486,17 @@
     &:hover {
       background-color: $color-app-sidebar-icon-hover;
     }
+  }
+
+  // Right sidebar badges: slightly less outside (left/down from previous position).
+  .toolbarBadge {
+    top: -1px;
+    right: -1px;
+  }
+
+  .toolbarBadgeDot {
+    top: 4px;
+    right: 4px;
   }
 }
 

@@ -124,11 +124,13 @@ function* handleRainbowLogic() {
     : pieFavorite
       ? 'active'
       : 'enabled'
+  const addCartToolbarState = isAllComplete ? 'enabled' : 'disabled'
 
   yield put(
     updateToolbarSection({
       section: 'editorPie',
       value: {
+        addCart: addCartToolbarState,
         favorite: favoriteToolbarState,
       },
     }),

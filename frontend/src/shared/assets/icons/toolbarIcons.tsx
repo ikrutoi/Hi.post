@@ -163,8 +163,9 @@ import {
   IconCalendarMulti,
   IconListDate,
   IconCart,
-  IconCartAdd,
+  IconAddCart,
   IconUserLogin,
+  IconCartV2,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 
@@ -323,7 +324,7 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
     case 'cart':
       return <IconCart />
     case 'addCart':
-      return <IconCartAdd />
+      return <IconAddCart />
     case 'userLogin':
       return <IconUserLogin />
   }
