@@ -26,10 +26,9 @@ export const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
   const primaryItem: CalendarCardItem | null =
     firstPipeline ?? processed ?? null
 
-  const badgeCount =
-    firstPipeline != null
-      ? Math.max(0, pipelineCount - 1) + (processed ? 1 : 0)
-      : 0
+  /** Всего слотов на день на превью; xN — полное число (не «минус видимая»). */
+  const totalOnDay = pipelineCount + (processed ? 1 : 0)
+  const badgeCount = totalOnDay > 1 ? totalOnDay : 0
 
   return (
     <div className={styles.cardPreviewContainer}>
@@ -42,14 +41,13 @@ export const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
             isProcessed={primaryItem.isProcessed}
             cardId={primaryItem.cardId}
           />
+          {badgeCount > 0 ? (
+            <span className={styles.extraCount} aria-hidden>
+              x{badgeCount}
+            </span>
+          ) : null}
         </div>
       )}
-
-      <div className={styles.list}>
-        {badgeCount > 0 && (
-          <span className={styles.badge}>+{badgeCount}</span>
-        )}
-      </div>
     </div>
   )
 }

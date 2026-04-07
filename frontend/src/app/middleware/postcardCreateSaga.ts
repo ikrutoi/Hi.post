@@ -10,6 +10,7 @@ import {
   selectMergedDispatchDates,
   selectIsMultiDateMode,
 } from '@date/infrastructure/selectors'
+import { clearDate } from '@date/infrastructure/state'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import type { CardphotoState } from '@cardphoto/domain/types'
@@ -230,6 +231,7 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
 
   let maxLocalId: number = yield call([postcardsAdapter, 'getMaxLocalId'])
   const now = Date.now()
+  let didAddToCart = false
 
   for (const date of dates) {
     for (const envelopeVariant of recipientVariants) {
@@ -281,6 +283,7 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
       if (status === 'cart') {
         existingCartDedupeKeys.add(buildCartDuplicateKey(postcard.card))
         yield put(addItem(postcard))
+        didAddToCart = true
       } else {
         existingFingerprints.add(
           buildPostcardFingerprint({ status, card: postcard.card }),
@@ -288,6 +291,10 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
         yield call(setSessionFavoritePostcardLocalId, localId)
       }
     }
+  }
+
+  if (target === 'cart' && didAddToCart) {
+    yield put(clearDate())
   }
 
   yield call(refreshRightSidebarBadgesFromPostcards)
