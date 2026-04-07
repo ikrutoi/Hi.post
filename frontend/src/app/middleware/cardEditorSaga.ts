@@ -10,6 +10,7 @@ import {
   setMultiDateMode,
   clearDate,
   hydrateDateFromSession,
+  pickDispatchDate,
 } from '@date/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
@@ -243,7 +244,12 @@ export function* cardEditorSaga() {
   yield fork(syncCardtextStatus)
 
   yield takeEvery(
-    [setDate.type, setSelectedDates.type, hydrateDateFromSession.type],
+    [
+      setDate.type,
+      setSelectedDates.type,
+      pickDispatchDate.type,
+      hydrateDateFromSession.type,
+    ],
     syncDateSet,
   )
   yield takeEvery(clearDate.type, syncDateClear)
@@ -290,6 +296,7 @@ export function* cardEditorSaga() {
     [
       setDate.type,
       setSelectedDates.type,
+      pickDispatchDate.type,
       setMultiDateMode.type,
       hydrateDateFromSession.type,
       clearDate.type,
