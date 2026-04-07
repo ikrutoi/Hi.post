@@ -145,7 +145,7 @@ export const CardsListPanel: React.FC<Props> = ({
             </div>
           ) : (
             entries.map((item, index) => (
-              <div key={item.cardId} data-index={index} role="option">
+              <div key={item.rowKey} data-index={index} role="option">
                 <CardEntry
                   item={item}
                   isFocused={focusedIndex === index}

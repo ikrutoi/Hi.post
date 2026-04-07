@@ -49,6 +49,8 @@ export const dateSlice = createSlice({
         if (state.selectedDates.length === 0) {
           state.selectedDate = null
           state.isComplete = false
+          // Иначе после выхода из multi снова подставится старая одиночная дата из кэша.
+          state.cachedSingleDate = null
         } else {
           state.selectedDate =
             state.selectedDates[state.selectedDates.length - 1]
@@ -62,11 +64,15 @@ export const dateSlice = createSlice({
       state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
     },
     setSelectedDates(state, action: PayloadAction<DispatchDate[]>) {
+      const prevLen = state.selectedDates.length
       state.selectedDates = action.payload
       state.isComplete =
         action.payload.length > 0 || state.selectedDate != null
       if (state.isMultiDateMode) {
         state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
+        if (action.payload.length === 0 && prevLen > 0) {
+          state.cachedSingleDate = null
+        }
       }
     },
     clearDate(state) {
@@ -82,7 +88,12 @@ export const dateSlice = createSlice({
       const enabled = action.payload
       if (enabled) {
         state.cachedSingleDate = state.selectedDate
-        state.selectedDates = state.cachedMultiDates.map((d) => ({ ...d }))
+        // Не подмешивать старый cachedMultiDates, если в одиночном не было выбранной даты —
+        // иначе «левые» даты подсвечиваются и при возврате в одиночный срабатывает fallback.
+        state.selectedDates =
+          state.selectedDate == null
+            ? []
+            : state.cachedMultiDates.map((d) => ({ ...d }))
         state.selectedDate =
           state.selectedDates.length > 0
             ? { ...state.selectedDates[state.selectedDates.length - 1] }

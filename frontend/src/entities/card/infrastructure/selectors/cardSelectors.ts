@@ -60,14 +60,22 @@ export const selectPreviewCard = createSelector(
   },
 )
 
-function postcardToCalendarItem(p: Postcard): CalendarCardItem {
+const sameDispatchDateKey = (a: DispatchDate, b: DispatchDate) =>
+  a.year === b.year && a.month === b.month && a.day === b.day
+
+function postcardToCalendarItem(
+  p: Postcard,
+  /** Стабильный уникальный индекс слота в проходе (дубликаты в Redux cart / повторы localId). */
+  listSlotIndex: number,
+): CalendarCardItem {
   const c = p.card
   return {
     cardId: c.id,
+    rowKey: `postcard:${listSlotIndex}:${p.localId}:${p.status}`,
     date: c.date,
     previewUrl: c.thumbnailUrl,
     status: p.status,
-    isProcessed: Boolean(c.isProcessed),
+    isProcessed: false,
   }
 }
 
@@ -80,6 +88,9 @@ export const selectCardsByDateMap = createSelector(
   ],
   (allCards: Card[], cartItems: Postcard[], photoPreview, activeDates) => {
     const map: Record<string, CardCalendarIndex> = {}
+
+    const isActiveEditorDate = (d: DispatchDate) =>
+      activeDates.some((a) => sameDispatchDateKey(a, d))
 
     const getEntry = (date: DispatchDate) => {
       const key = `${date.year}-${date.month}-${date.day}`
@@ -96,9 +107,11 @@ export const selectCardsByDateMap = createSelector(
       return map[key]
     }
 
+    let postcardListSlot = 0
     for (const p of cartItems) {
       if (p.status === 'favorite' || p.status === 'processed') continue
-      const item = postcardToCalendarItem(p)
+      const item = postcardToCalendarItem(p, postcardListSlot)
+      postcardListSlot += 1
       const entry = getEntry(item.date)
       switch (p.status) {
         case 'cart':
@@ -121,9 +134,11 @@ export const selectCardsByDateMap = createSelector(
 
     for (const card of allCards) {
       if (!card.isProcessed) continue
+      if (!isActiveEditorDate(card.date)) continue
       const entry = getEntry(card.date)
       entry.processed = {
         cardId: card.id,
+        rowKey: `editor-card:${card.id}`,
         date: card.date,
         previewUrl: card.thumbnailUrl,
         status: 'cart',
@@ -134,8 +149,10 @@ export const selectCardsByDateMap = createSelector(
     if (photoPreview?.previewUrl) {
       for (const activeDate of activeDates) {
         const entry = getEntry(activeDate)
+        const dk = `${activeDate.year}-${activeDate.month}-${activeDate.day}`
         entry.processed = {
           cardId: 'current_session',
+          rowKey: `live-session:${dk}`,
           date: activeDate,
           previewUrl: photoPreview.previewUrl,
           status: 'cart',

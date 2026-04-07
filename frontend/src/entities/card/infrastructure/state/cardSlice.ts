@@ -25,6 +25,7 @@ function applyProcessedCards(state: Draft<CardState>, next: Card[]) {
       ? null
       : {
           cardId: next[0].id,
+          rowKey: `editor-card:${next[0].id}`,
           date: next[0].date,
           previewUrl: next[0].thumbnailUrl,
           status: 'cart',

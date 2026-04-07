@@ -17,34 +17,38 @@ interface CardPreviewProps {
 export const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
   const { processed, cart, ready, sent, delivered, error } = data
 
-  const otherCards = [...cart, ...ready, ...sent, ...delivered, ...error]
-  const visibleOthers = otherCards.slice(0, 2)
-  const extraCount = otherCards.length - visibleOthers.length
+  /** Открытки из воронки (IDB / корзина и т.д.), не черновик редактора. */
+  const pipelineCards = [...cart, ...ready, ...sent, ...delivered, ...error]
+  const pipelineCount = pipelineCards.length
+  const firstPipeline = pipelineCount > 0 ? pipelineCards[0] : null
+
+  // Если на день есть и postcard, и рабочая — в основном слоте первая из postcard.
+  const primaryItem: CalendarCardItem | null =
+    firstPipeline ?? processed ?? null
+
+  const badgeCount =
+    firstPipeline != null
+      ? Math.max(0, pipelineCount - 1) + (processed ? 1 : 0)
+      : 0
 
   return (
     <div className={styles.cardPreviewContainer}>
-      {processed && (
+      {primaryItem && (
         <div className={styles.previewWrapper}>
           <CardPreviewItem
-            item={processed}
-            status={processed.status}
-            isProcessed={processed.isProcessed}
-            cardId={processed.cardId}
+            key={primaryItem.rowKey}
+            item={primaryItem}
+            status={primaryItem.status}
+            isProcessed={primaryItem.isProcessed}
+            cardId={primaryItem.cardId}
           />
         </div>
       )}
 
       <div className={styles.list}>
-        {visibleOthers.map((item) => (
-          <CardPreviewItem
-            key={item.cardId}
-            item={item}
-            status={item.status}
-            isProcessed={item.isProcessed}
-            cardId={item.cardId}
-          />
-        ))}
-        {extraCount > 0 && <span className={styles.badge}>+{extraCount}</span>}
+        {badgeCount > 0 && (
+          <span className={styles.badge}>+{badgeCount}</span>
+        )}
       </div>
     </div>
   )
