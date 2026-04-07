@@ -13,6 +13,7 @@ import {
   addressSaveSaga,
   cardPanelToolbarSaga,
   watchDateToolbar,
+  postcardCreateSaga,
 } from '../middleware'
 
 export function* rootSaga() {
@@ -36,5 +37,6 @@ export function* rootSaga() {
     fork(sectionEditorMenuSaga),
     fork(cardPanelToolbarSaga),
     fork(watchDateToolbar),
+    fork(postcardCreateSaga),
   ])
 }

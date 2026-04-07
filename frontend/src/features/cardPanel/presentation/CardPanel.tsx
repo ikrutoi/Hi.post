@@ -7,6 +7,7 @@ import { useEnvelopeFacade } from '@envelope/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardPanelFacade } from '../application/facades'
 import { MiniCard } from '../MiniCard/presentation/MiniCard'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { getSortedSections } from '../application/helpers'
 import { CARD_PANEL_SECTIONS_PRIORITY } from '../domain/types'
 import styles from './CardPanel.module.scss'
@@ -48,6 +49,15 @@ export const CardPanel = () => {
           }}
         >
           <CardPie isProcessed />
+        </div>
+        <div
+          className={styles.cardPanelPieToolbar}
+          style={{
+            width: `${toolbarWidthPx}px`,
+            height: `${sizeMiniCard.height}px`,
+          }}
+        >
+          <Toolbar section="editorPie" />
         </div>
         <div
           className={styles.cardPanelContent}

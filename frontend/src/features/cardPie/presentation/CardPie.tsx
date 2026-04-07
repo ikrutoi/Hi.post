@@ -15,9 +15,7 @@ import {
 } from '@shared/ui/icons'
 import type { DispatchDate } from '@entities/date'
 import { useSizeFacade } from '@layout/application/facades'
-import { useAppSelector } from '@app/hooks'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
-import { selectPieFavorite } from '@/entities/cardEditor/infrastructure/selectors'
 import { CardSection } from '@shared/config/constants'
 import { useToolbarFacade } from '@toolbar/application/facades'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -56,7 +54,6 @@ export const CardPie: React.FC<CardPieProps> = ({
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
   const { actions: editorPieActions } = useToolbarFacade('editorPie')
-  const isPieFavorite = useAppSelector(selectPieFavorite)
 
   const cardData = data?.data
   const cardtextStatus = cardData?.cardtext?.status
@@ -105,19 +102,6 @@ export const CardPie: React.FC<CardPieProps> = ({
   const allSectionsFilled = isReady
   const hasAnySectionFilled = Object.values(sections).some(Boolean)
   const showCloseButton = hasAnySectionFilled
-  const hasAllOtherSectionsFilled =
-    sections.cardphoto &&
-    sections.cardtext &&
-    sections.envelope &&
-    sections.aroma
-
-  /**
-   * Избранное (иконка «горит»): готовы фото, текст, конверт и аромат.
-   * Дата опциональна — при полном комплекте из пяти секций четыре базовые уже true.
-   */
-  const canFavoritePie = hasAllOtherSectionsFilled
-  const showFavoriteButton = canFavoritePie
-
   return (
     <div
       className={clsx(
@@ -134,32 +118,6 @@ export const CardPie: React.FC<CardPieProps> = ({
             }
       }
     >
-      {showFavoriteButton && (
-        <button
-          type="button"
-          className={clsx(
-            styles.pieFavoriteButton,
-            isPieFavorite && styles.pieFavoriteButtonLit,
-          )}
-          aria-label={
-            isPieFavorite ? 'Remove postcard from favorites' : 'Add postcard to favorites'
-          }
-          aria-pressed={isPieFavorite}
-          title={
-            isPieFavorite ? 'Remove from favorites' : 'Add to favorites'
-          }
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            if (!canFavoritePie) return
-            editorPieActions.onAction('favorite')
-          }}
-        >
-          <span className={styles.pieFavoriteStarOuter}>★</span>
-          <span className={styles.pieFavoriteStarInner}>★</span>
-        </button>
-      )}
-
       {showCloseButton && (
         <button
           type="button"
@@ -175,7 +133,6 @@ export const CardPie: React.FC<CardPieProps> = ({
           {getToolbarIcon({ key: 'clearInput' })}
         </button>
       )}
-
       <div className={styles.pieContent}>
         <svg
           xmlns="http://www.w3.org/2000/svg"

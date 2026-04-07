@@ -3,12 +3,14 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { togglePieFavorite } from '@entities/cardEditor/infrastructure/state'
+import type { RootState } from '@app/state'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import {
   handleAddDraftsAction,
   handleClearAllMiniSectionsAction,
 } from './editorPieHandlers'
 import { EditorPieKey, ToolbarSection } from '@/features/toolbar/domain/types'
+import { createPostcardsFromEditor } from './postcardCreateSaga'
 
 export function* handleEditorPieToolbarAction(
   action: PayloadAction<{ section: ToolbarSection; key: EditorPieKey }>,
@@ -32,6 +34,12 @@ export function* handleEditorPieToolbarAction(
         sections.envelope &&
         sections.aroma
       if (!canToggle) break
+      const pieFavorite: boolean = yield select(
+        (s: RootState) => s.cardEditor.pieFavorite,
+      )
+      if (!pieFavorite) {
+        yield call(createPostcardsFromEditor, 'favorite')
+      }
       yield put(togglePieFavorite())
       break
     }
