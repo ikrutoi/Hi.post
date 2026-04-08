@@ -7,20 +7,13 @@ import styles from './DateListEntry.module.scss'
 export type DateListEntryVariant = 'default' | 'inactive'
 
 export type DateListEntryProps = {
-  /** Подпись даты (отправки, планируемой и т.д.) — сразу после превью. */
   dateLabel: string
-  /** URL превью открытки; без URL показывается плейсхолдер. */
   previewUrl?: string | null
-  /** Доп. строка: страна, имя, статус «отправлено» и т.п. (под сортировки позже). */
   detailLine?: string
-  /** Неактивные строки (напр. одиночная дата в режиме мульти) — приглушённый вид. */
   variant?: DateListEntryVariant
-  /** Цветной индикатор как у превью в календаре (перед миниатюрой). */
   previewStatus?: CardStatus
-  /** Сессия редактора — индикатор по статусу не показываем. */
   previewIsProcessed?: boolean
   onSelect?: () => void
-  /** Удаление строки (как в адресной книге: кнопка видна при hover по строке). */
   onDelete?: () => void
   isStarred?: boolean
   onToggleStar?: () => void
@@ -43,9 +36,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
-  const labelForAria = detailLine
-    ? `${dateLabel}, ${detailLine}`
-    : dateLabel
+  const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
 
   return (
     <div

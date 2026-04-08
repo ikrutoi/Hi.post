@@ -1,17 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useAppDispatch } from '@app/hooks'
-import {
-  IconX,
-  IconSectionMenuCardphoto,
-  IconListCardphotoV2,
-} from '@shared/ui/icons'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { IconX, IconListCardphotoV2 } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
-import { CardEntry } from './CardEntry'
+import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import type {
   CalendarCardItem,
   CardCalendarIndex,
 } from '@entities/card/domain/types'
+import { DateListEntry } from '@features/date/presentation/dateList/DateListEntry'
 import styles from './CardsListPanel.module.scss'
 
 type Props = {
@@ -42,6 +39,31 @@ function flattenDayData(dayData: CardCalendarIndex): CalendarCardItem[] {
   list.push(...dayData.delivered)
   list.push(...dayData.error)
   return list
+}
+
+function formatStatusLabel(item: CalendarCardItem): string {
+  if (item.isProcessed) return 'Processed'
+  return item.status.charAt(0).toUpperCase() + item.status.slice(1)
+}
+
+const DayPanelDateListEntry: React.FC<{
+  item: CalendarCardItem
+  isFocused: boolean
+  onSelect: (entry: CalendarCardItem) => void
+}> = ({ item, isFocused, onSelect }) => {
+  const displayUrl = useAppSelector(selectCalendarPreviewDisplayUrl(item.cardId))
+
+  return (
+    <DateListEntry
+      dateLabel={item.cardId}
+      previewUrl={displayUrl ?? item.previewUrl}
+      detailLine={formatStatusLabel(item)}
+      previewStatus={item.status}
+      previewIsProcessed={item.isProcessed}
+      isFocused={isFocused}
+      onSelect={() => onSelect(item)}
+    />
+  )
 }
 
 export const CardsListPanel: React.FC<Props> = ({
@@ -146,7 +168,7 @@ export const CardsListPanel: React.FC<Props> = ({
           ) : (
             entries.map((item, index) => (
               <div key={item.rowKey} data-index={index} role="option">
-                <CardEntry
+                <DayPanelDateListEntry
                   item={item}
                   isFocused={focusedIndex === index}
                   onSelect={(entry) => {
