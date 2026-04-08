@@ -1,27 +1,31 @@
 @use '@styles/config/colors' as *;
 
 .root {
-  flex: 1;
+  flex: 0 0 50%;
+  width: 50%;
   min-width: 0;
+  max-width: 50%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
 }
 
 .row {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.95rem;
-  max-width: 100%;
+  width: 100%;
+  min-width: 0;
+  column-gap: 0.35rem;
 }
 
 .item {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
   min-width: 0;
+  justify-self: center;
 }
 
 .icon {
