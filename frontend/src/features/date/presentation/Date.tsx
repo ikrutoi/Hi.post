@@ -16,6 +16,7 @@ import {
 import { useFlashEffect } from '@shared/hooks'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { IconCalendarMulti } from '@shared/ui/icons'
+import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import styles from './Date.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 
@@ -129,6 +130,7 @@ export const Date: React.FC = () => {
         </div>
 
         <div className={styles.dateBottomToggle}>
+          <PostcardStatusLegend />
           <div
             className={clsx(
               styles.dateBottomToggleGroup,

@@ -46,17 +46,20 @@
 
 .dateBottomToggle {
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   flex-shrink: 0;
   margin-top: 0.75rem;
   padding-top: 0.25rem;
+  min-width: 0;
 }
 
 .dateBottomToggleGroup {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .dateBottomToggleIcon {
