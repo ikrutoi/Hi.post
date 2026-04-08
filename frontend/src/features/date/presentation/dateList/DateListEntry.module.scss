@@ -118,10 +118,10 @@
 .statusIndicator {
   flex-shrink: 0;
   align-self: center;
-  width: 0.7rem;
-  height: 0.7rem;
+  width: 0.55rem;
+  height: 0.55rem;
   border-radius: 50%;
-  border: solid 1px #fff;
+  // border: solid 1px #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
 
   &.processed {
@@ -153,6 +153,12 @@
   }
 }
 
+.statusIndicatorSpacer {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
 .root[data-inactive='true'] .statusIndicator {
   opacity: 0.72;
 }
@@ -166,7 +172,7 @@
   align-self: stretch;
   width: 2.35rem;
   min-height: 0;
-  border-radius: 3px;
+  border-radius: 0.25rem;
   overflow: hidden;
   display: flex;
   align-items: center;

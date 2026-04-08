@@ -25,7 +25,6 @@ export type CardsByDateMap = Record<string, Card[]>
 
 export interface CalendarCardItem {
   cardId: string
-  /** Уникальный ключ для списков React (processed + cart могут делить один cardId). */
   rowKey: string
   date: DispatchDate
   previewUrl: string

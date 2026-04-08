@@ -72,9 +72,9 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
             onToggleStar()
           }}
           aria-label={
-            isStarred ? 'Убрать из избранного' : 'Добавить в избранное'
+            isStarred ? 'Remove from favorites' : 'Add to favorites'
           }
-          title={isStarred ? 'Убрать из избранного' : 'Добавить в избранное'}
+          title={isStarred ? 'Remove from favorites' : 'Add to favorites'}
         >
           ★
         </button>
@@ -85,7 +85,12 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
             className={clsx(styles.statusIndicator, styles[previewStatus])}
             aria-hidden
           />
-        ) : null}
+        ) : (
+          <span
+            className={clsx(styles.statusIndicator, styles.statusIndicatorSpacer)}
+            aria-hidden
+          />
+        )}
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
             <img src={previewUrl} alt="" className={styles.thumbImg} />
@@ -106,8 +111,8 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
             e.stopPropagation()
             onDelete()
           }}
-          aria-label="Удалить дату из списка"
-          title="Удалить дату из списка"
+          aria-label="Remove date from list"
+          title="Remove date from list"
         >
           {getToolbarIcon({ key: 'delete' })}
         </button>

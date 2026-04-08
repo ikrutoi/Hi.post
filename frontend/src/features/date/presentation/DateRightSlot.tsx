@@ -18,8 +18,12 @@ import {
   selectSelectedDates,
 } from '@date/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
-import { selectFirstProcessedCardThumbnailUrl } from '@entities/card/infrastructure/selectors'
+import {
+  selectCardsByDateMap,
+  selectFirstProcessedCardThumbnailUrl,
+} from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
+import type { CalendarCardItem } from '@entities/card/domain/types'
 import { CardsListPanel } from '../dayPanel/CardsListPanel'
 import { DateListPanel } from './DateListPanel'
 import type { DateListPanelItem } from './DateListPanel'
@@ -37,6 +41,11 @@ function formatDispatchDateLabel(d: DispatchDate): string {
 const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
   a.year === b.year && a.month === b.month && a.day === b.day
 
+function formatCardStatusLabel(item: CalendarCardItem): string {
+  if (item.isProcessed) return 'Processed'
+  return item.status.charAt(0).toUpperCase() + item.status.slice(1)
+}
+
 export const DateRightSlot: React.FC = () => {
   const dispatch = useAppDispatch()
   const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
@@ -46,6 +55,7 @@ export const DateRightSlot: React.FC = () => {
   const cachedMultiDates = useAppSelector(selectCachedMultiDates)
   const isMultiDateMode = useAppSelector(selectIsMultiDateMode)
   const cachedSingleDate = useAppSelector(selectCachedSingleDate)
+  const cardsByDateMap = useAppSelector(selectCardsByDateMap)
   const { previewUrl: cardphotoPreviewUrl } = useAppSelector(selectCardphotoPreview)
   const processedThumbFallback = useAppSelector(selectFirstProcessedCardThumbnailUrl)
   const listPreviewUrl = cardphotoPreviewUrl ?? processedThumbFallback ?? null
@@ -99,6 +109,28 @@ export const DateRightSlot: React.FC = () => {
       })
     }
 
+    const postcardItems: CalendarCardItem[] = []
+    Object.values(cardsByDateMap).forEach((day) => {
+      postcardItems.push(
+        ...day.cart,
+        ...day.ready,
+        ...day.sent,
+        ...day.delivered,
+        ...day.error,
+      )
+    })
+
+    postcardItems.forEach((item, i) => {
+      entries.push({
+        id: `postcard-${item.rowKey}-${i}`,
+        dateLabel: formatDispatchDateLabel(item.date),
+        previewUrl: item.previewUrl,
+        detailLine: formatCardStatusLabel(item),
+        previewStatus: item.status,
+        previewIsProcessed: item.isProcessed,
+      })
+    })
+
     return entries
   }, [
     dispatch,
@@ -107,6 +139,7 @@ export const DateRightSlot: React.FC = () => {
     selectedDates,
     cachedSingleDate,
     cachedMultiDates,
+    cardsByDateMap,
     listPreviewUrl,
   ])
 

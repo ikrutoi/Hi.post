@@ -1,5 +1,14 @@
 import React from 'react'
-import { IconX, IconListDate } from '@shared/ui/icons'
+import {
+  IconX,
+  IconListDate,
+  IconCart,
+  IconPostcardSend,
+  IconPostcardReady,
+  IconPostcardDelivered,
+  IconPostcardError,
+} from '@shared/ui/icons'
+import clsx from 'clsx'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import {
@@ -82,6 +91,32 @@ export const DateListPanel: React.FC<Props> = ({
           )}
         </div>
       </ScrollArea>
+      <div className={styles.footer} aria-label="Postcard status legend">
+        <div className={styles.footerLegend} aria-hidden>
+          <div className={styles.footerLegendItem}>
+            <span className={clsx(styles.statusIndicator, styles.cart)} />
+            <IconCart className={styles.footerLegendIcon} />
+          </div>
+          <div className={styles.footerLegendItem}>
+            <span className={clsx(styles.statusIndicator, styles.ready)} />
+            <IconPostcardReady className={styles.footerLegendIcon} />
+          </div>
+          <div className={styles.footerLegendItem}>
+            <span className={clsx(styles.statusIndicator, styles.sent)} />
+            <IconPostcardSend
+              className={clsx(styles.footerLegendIcon, styles.footerLegendIconSend)}
+            />
+          </div>
+          <div className={styles.footerLegendItem}>
+            <span className={clsx(styles.statusIndicator, styles.delivered)} />
+            <IconPostcardDelivered className={styles.footerLegendIcon} />
+          </div>
+          <div className={styles.footerLegendItem}>
+            <span className={clsx(styles.statusIndicator, styles.error)} />
+            <IconPostcardError className={styles.footerLegendIcon} />
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

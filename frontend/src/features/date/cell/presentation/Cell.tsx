@@ -39,6 +39,15 @@ export const Cell: React.FC<CellProps> = ({
   dayData,
   children,
 }) => {
+  const hasPostcards = Boolean(
+    dayData &&
+      (dayData.cart.length ||
+        dayData.ready.length ||
+        dayData.sent.length ||
+        dayData.delivered.length ||
+        dayData.error.length),
+  )
+
   const dynamicClass = clsx(
     styles.cell,
     isToday && styles.today,
@@ -47,6 +56,7 @@ export const Cell: React.FC<CellProps> = ({
     dayAfter != null && styles.after,
     dayCurrent != null && styles.current,
     isSelectedDate && styles.dispatch,
+    hasPostcards && styles.withPostcards,
   )
 
   const clickParams: HandleCellClickParams = {
