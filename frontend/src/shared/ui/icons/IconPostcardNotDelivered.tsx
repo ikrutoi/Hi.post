@@ -14,8 +14,8 @@ export const IconPostcardNotDelivered = (
   >
     <path
       strokeWidth={107.498}
-      d="M463 289 694 57l528 528h-117v410c0 65-52 117-116 118m0 0H717m208-824L694 57 167 585h117"
+      d="M463 289 694 57l528 528h-117v410c0 65-52 117-116 118m0 0H765m160-824L694 57 236 515"
     />
-    <path strokeWidth={106.666} d="M515 765 60 1220M515 1220 60 765" />
+    <path strokeWidth={106.666} d="M560 720 60 1220M560 1220 60 720" />
   </svg>
 )

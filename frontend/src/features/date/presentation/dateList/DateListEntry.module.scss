@@ -118,8 +118,6 @@
   }
 
   &[data-clickable='true'] {
-    cursor: pointer;
-
     &:focus {
       outline: none;
     }
@@ -312,7 +310,7 @@
   }
 
   svg {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.9rem;
+    height: 0.9rem;
   }
 }

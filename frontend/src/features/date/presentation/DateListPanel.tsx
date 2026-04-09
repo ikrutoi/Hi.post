@@ -10,11 +10,13 @@ import {
   type DateListEntryVariant,
 } from './dateList/DateListEntry'
 import type { CardStatus } from '@entities/postcard'
+import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './DateListPanel.module.scss'
 
 export type DateListPanelItem = {
   id: string
   cardId?: string
+  sourceDate?: DispatchDate
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
@@ -27,7 +29,7 @@ export type DateListPanelItem = {
 type Props = {
   onClose: () => void
   entries?: DateListPanelItem[]
-  onSelectEntry?: (id: string) => void
+  onSelectEntry?: (item: DateListPanelItem) => void
 }
 
 const isBlobUrl = (url: string | null | undefined): boolean =>
@@ -35,7 +37,7 @@ const isBlobUrl = (url: string | null | undefined): boolean =>
 
 const DateListPanelRow: React.FC<{
   item: DateListPanelItem
-  onSelectEntry?: (id: string) => void
+  onSelectEntry?: (item: DateListPanelItem) => void
 }> = ({ item, onSelectEntry }) => {
   const dispatch = useAppDispatch()
   const cachedUrl = useAppSelector(
@@ -70,7 +72,7 @@ const DateListPanelRow: React.FC<{
       previewIsProcessed={item.previewIsProcessed}
       onSelect={
         onSelectEntry && item.variant !== 'inactive'
-          ? () => onSelectEntry(item.id)
+          ? () => onSelectEntry(item)
           : undefined
       }
       onDelete={item.onDelete}

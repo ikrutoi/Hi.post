@@ -1,12 +1,11 @@
 import React, { useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import {
+  updateLastViewedCalendarDate,
   setDateListPanelOpen,
 } from '@date/calendar/infrastructure/state'
 import { pickDispatchDate, setSelectedDates } from '@date/infrastructure/state'
-import { removeItem } from '@cart/infrastructure/state'
 import { selectIsDateListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import {
   selectCachedMultiDates,
@@ -22,7 +21,6 @@ import {
 } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { CalendarCardItem, CardCalendarIndex } from '@entities/card/domain/types'
-import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import { DateListPanel } from './DateListPanel'
 import type { DateListPanelItem } from './DateListPanel'
 import styles from './DateRightSlot.module.scss'
@@ -50,13 +48,6 @@ function flattenDayData(dayData: CardCalendarIndex): CalendarCardItem[] {
   return list
 }
 
-function getLocalIdFromCardId(cardId: string): number | null {
-  const parts = cardId.split('__')
-  if (parts.length < 2) return null
-  const localId = Number(parts[parts.length - 1])
-  return Number.isFinite(localId) ? localId : null
-}
-
 export const DateRightSlot: React.FC = () => {
   const dispatch = useAppDispatch()
   const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
@@ -75,49 +66,17 @@ export const DateRightSlot: React.FC = () => {
   )
   const listPreviewUrl = cardphotoPreviewUrl ?? processedThumbFallback ?? null
 
-  const handleDeleteCartPostcard = useCallback(
-    async (cardId: string) => {
-      const localId = getLocalIdFromCardId(cardId)
-      if (localId == null) return
-
-      await postcardsAdapter.deleteById(localId)
-      dispatch(removeItem(localId))
-
-      const allRows = await postcardsAdapter.getAll()
-      const cartCount = allRows.filter((row) => row.status === 'cart').length
-      const favoriteCount = allRows.filter(
-        (row) => row.status === 'favorite',
-      ).length
-
-      dispatch(
-        updateToolbarSection({
-          section: 'rightSidebar',
-          value: {
-            cart: { options: { badge: cartCount > 0 ? cartCount : null } },
-            favorite: { options: { badge: favoriteCount > 0 ? favoriteCount : null } },
-          },
-        }),
-      )
-    },
-    [dispatch],
-  )
-
   const dateListEntries: DateListPanelItem[] = useMemo(() => {
     if (openDayPanel) {
       return flattenDayData(openDayPanel.dayData).map((item, i) => ({
         id: `day-panel-${openDayPanel.dateKey}-${item.rowKey}-${i}`,
         cardId: item.cardId,
+        sourceDate: item.date,
         dateLabel: formatDispatchDateLabel(item.date),
         previewUrl: item.previewUrl,
         detailLine: undefined,
         previewStatus: item.status,
         previewIsProcessed: item.isProcessed,
-        onDelete:
-          item.status === 'cart'
-            ? () => {
-                void handleDeleteCartPostcard(item.cardId)
-              }
-            : undefined,
       }))
     }
 
@@ -130,6 +89,7 @@ export const DateRightSlot: React.FC = () => {
       onDelete?: () => void,
     ): DateListPanelItem => ({
       id: `${d.year}-${d.month}-${d.day}-${idSuffix}`,
+      sourceDate: d,
       dateLabel: formatDispatchDateLabel(d),
       previewUrl: preview,
       previewIsProcessed: true,
@@ -182,17 +142,12 @@ export const DateRightSlot: React.FC = () => {
       entries.push({
         id: `postcard-${item.rowKey}-${i}`,
         cardId: item.cardId,
+        sourceDate: item.date,
         dateLabel: formatDispatchDateLabel(item.date),
         previewUrl: item.previewUrl,
         detailLine: undefined,
         previewStatus: item.status,
         previewIsProcessed: item.isProcessed,
-        onDelete:
-          item.status === 'cart'
-            ? () => {
-                void handleDeleteCartPostcard(item.cardId)
-              }
-            : undefined,
       })
     })
 
@@ -207,7 +162,6 @@ export const DateRightSlot: React.FC = () => {
     cachedMultiDates,
     cardsByDateMap,
     listPreviewUrl,
-    handleDeleteCartPostcard,
   ])
 
   const handleCloseList = useCallback(() => {
@@ -221,11 +175,28 @@ export const DateRightSlot: React.FC = () => {
     )
   }, [dispatch])
 
+  const handleSelectEntry = useCallback(
+    (item: DateListPanelItem) => {
+      if (!item.sourceDate) return
+      dispatch(
+        updateLastViewedCalendarDate({
+          year: item.sourceDate.year,
+          month: item.sourceDate.month,
+        }),
+      )
+    },
+    [dispatch],
+  )
+
   if (dateListOpen || openDayPanel) {
     return (
       <div className={styles.root}>
         <div className={styles.panelWrap}>
-          <DateListPanel onClose={handleCloseList} entries={dateListEntries} />
+          <DateListPanel
+            onClose={handleCloseList}
+            entries={dateListEntries}
+            onSelectEntry={handleSelectEntry}
+          />
         </div>
       </div>
     )

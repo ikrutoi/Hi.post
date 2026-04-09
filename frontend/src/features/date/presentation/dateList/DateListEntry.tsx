@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import type { CardStatus } from '@entities/postcard'
-import { getToolbarIcon } from '@/shared/utils/icons'
+import { IconX } from '@shared/ui/icons'
 import styles from './DateListEntry.module.scss'
 
 export type DateListEntryVariant = 'default' | 'inactive'
@@ -121,7 +121,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
           aria-label="Remove date from list"
           title="Remove date from list"
         >
-          {getToolbarIcon({ key: 'delete' })}
+          <IconX />
         </button>
       ) : null}
     </div>
