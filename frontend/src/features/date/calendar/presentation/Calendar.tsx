@@ -37,7 +37,9 @@ export const Calendar: React.FC<CalendarProps> = ({
         : daysOfWeekStartFromMon,
     [firstDayOfWeek],
   )
-  const openDayPanelState = useAppSelector((state) => state.calendar.openDayPanel)
+  const openDayPanelState = useAppSelector(
+    (state) => state.calendar.openDayPanel,
+  )
 
   const handleFirstDay = (firstDay: 'Sun' | 'Mon') => {
     dispatch(setFirstDayOfWeek(firstDay))
@@ -45,8 +47,6 @@ export const Calendar: React.FC<CalendarProps> = ({
 
   const handleWeekdayClick = useCallback(
     (weekday: DaysOfWeek) => {
-      // Закрываем только панель, открытую с заголовка этого дня недели (старая заглушка с preview/EMPTY).
-      // Открытие агрегата по дню недели — отдельная задача; пустая панель перекрывала список дат и выглядела как «дата + строка без тулбара».
       if (openDayPanelState?.openedByWeekday === weekday) {
         dispatch(closeDayPanel())
       }

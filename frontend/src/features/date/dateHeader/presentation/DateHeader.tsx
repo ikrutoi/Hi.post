@@ -77,14 +77,14 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
         </div>
       </div>
 
-      <div className={styles.headerSide}>
+      {/* <div className={styles.headerSide}>
         {formattedSelectedDate ? (
           <div className={styles.selected} onClick={onGoToSelected}>
             {formattedSelectedDate}
             <LuCalendarArrowUp className={styles.iconTitle} />
           </div>
         ) : null}
-      </div>
+      </div> */}
     </div>
   )
 }

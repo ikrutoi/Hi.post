@@ -13,7 +13,6 @@ type ScrollAreaProps = {
   children: React.ReactNode
   className?: string
   contentClassName?: string
-  /** When set, the scrollbar track is rendered into this element (e.g. fieldset) so it spans its full height */
   scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
 }
 
@@ -47,15 +46,10 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
       return
     }
 
-    const height = Math.max(
-      20,
-      (clientHeight / scrollHeight) * trackHeight,
-    )
+    const height = Math.max(20, (clientHeight / scrollHeight) * trackHeight)
     const maxTop = trackHeight - height
     const top =
-      maxTop <= 0
-        ? 0
-        : (scrollTop / (scrollHeight - clientHeight)) * maxTop
+      maxTop <= 0 ? 0 : (scrollTop / (scrollHeight - clientHeight)) * maxTop
 
     setThumbHeight(height)
     setThumbTop(top)
@@ -104,9 +98,7 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
       const delta = moveEvent.clientY - startY
       const nextTopRaw = startTop + delta
       const nextTop =
-        maxTop <= 0
-          ? 0
-          : Math.min(Math.max(0, nextTopRaw), maxTop)
+        maxTop <= 0 ? 0 : Math.min(Math.max(0, nextTopRaw), maxTop)
       const ratio = maxTop > 0 ? nextTop / maxTop : 0
       el.scrollTop = ratio * maxScroll
       updateThumb()
@@ -139,7 +131,8 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
     </div>
   )
 
-  const usePortal = scrollbarPortalTarget?.current != null
+  const portalTarget = scrollbarPortalTarget?.current ?? null
+  const usePortal = portalTarget != null
 
   return (
     <>
@@ -152,9 +145,7 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
         </div>
         {!usePortal && trackElement}
       </div>
-      {usePortal &&
-        createPortal(trackElement, scrollbarPortalTarget.current)}
+      {usePortal && createPortal(trackElement, portalTarget)}
     </>
   )
 }
-

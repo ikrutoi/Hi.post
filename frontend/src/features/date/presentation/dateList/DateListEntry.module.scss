@@ -42,18 +42,75 @@
     }
   }
 
+  &[data-preview-status='cart'] {
+    background-color: $color-preview-row-cart;
+    border-color: mix($color-preview-indicator-cart, #fff, 60%);
+  }
+
+  &[data-preview-status='ready'] {
+    background-color: $color-preview-row-ready;
+    border-color: mix($color-preview-indicator-ready, #fff, 60%);
+  }
+
+  &[data-preview-status='sent'] {
+    background-color: $color-preview-row-sent;
+    border-color: mix($color-preview-indicator-sent, #fff, 60%);
+  }
+
+  &[data-preview-status='delivered'] {
+    background-color: $color-preview-row-delivered;
+    border-color: mix($color-preview-indicator-delivered, #fff, 60%);
+  }
+
+  &[data-preview-status='error'] {
+    background-color: $color-preview-row-error;
+    border-color: mix($color-preview-indicator-error, #fff, 60%);
+  }
+
   &:hover,
   &[data-focused='true'] {
     background-color: darken($color-date-input, 2%);
 
+    &[data-preview-status='cart'] {
+      background-color: darken($color-preview-row-cart, 2%);
+    }
+    &[data-preview-status='ready'] {
+      background-color: darken($color-preview-row-ready, 2%);
+    }
+    &[data-preview-status='sent'] {
+      background-color: darken($color-preview-row-sent, 2%);
+    }
+    &[data-preview-status='delivered'] {
+      background-color: darken($color-preview-row-delivered, 2%);
+    }
+    &[data-preview-status='error'] {
+      background-color: darken($color-preview-row-error, 2%);
+    }
+
     &[data-inactive='true'] {
-      background-color: mix(darken($color-date-input, 2%), #f0f0f0, 45%);
+      background-color: mix($color-date-input, #f5f5f5, 40%);
     }
   }
 
   &[data-selected='true'] {
     background-color: darken($color-date-input, 4%);
     box-shadow: -2px 0 0 0 $color-date-multi;
+
+    &[data-preview-status='cart'] {
+      background-color: darken($color-preview-row-cart, 4%);
+    }
+    &[data-preview-status='ready'] {
+      background-color: darken($color-preview-row-ready, 4%);
+    }
+    &[data-preview-status='sent'] {
+      background-color: darken($color-preview-row-sent, 4%);
+    }
+    &[data-preview-status='delivered'] {
+      background-color: darken($color-preview-row-delivered, 4%);
+    }
+    &[data-preview-status='error'] {
+      background-color: darken($color-preview-row-error, 4%);
+    }
 
     &[data-inactive='true'] {
       box-shadow: -2px 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);

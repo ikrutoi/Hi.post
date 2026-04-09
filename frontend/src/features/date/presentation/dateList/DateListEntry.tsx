@@ -43,6 +43,9 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
   return (
     <div
       className={styles.root}
+      data-preview-status={
+        previewStatus && !previewIsProcessed ? previewStatus : undefined
+      }
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-no-star={!onToggleStar ? 'true' : undefined}
