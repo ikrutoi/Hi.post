@@ -24,6 +24,7 @@ import type { AddressFields } from '@shared/config/constants'
 import type { DispatchDate } from '@entities/date'
 import type { AromaItem } from '@entities/aroma/domain/types'
 import type { CardStatus, Postcard } from '@entities/postcard'
+import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import type { SessionData } from '@entities/db/domain/types'
 
 type CreateTarget = 'favorite' | 'cart'
@@ -271,6 +272,7 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
       const postcard: Postcard = {
         localId,
         price: '',
+        date: date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
         createdAt: now,
         updatedAt: now,
         status,

@@ -16,8 +16,6 @@ export type DateListEntryProps = {
   previewIsProcessed?: boolean
   onSelect?: () => void
   onDelete?: () => void
-  isStarred?: boolean
-  onToggleStar?: () => void
   isSelected?: boolean
   isFocused?: boolean
 }
@@ -32,13 +30,12 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
   previewIsProcessed,
   onSelect,
   onDelete,
-  isStarred = false,
-  onToggleStar,
   isSelected = false,
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
   const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
+  const dateLineText = detailLine ? `${dateLabel} - ${detailLine}` : dateLabel
 
   return (
     <div
@@ -48,7 +45,6 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
       }
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
-      data-no-star={!onToggleStar ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
       data-has-delete={onDelete ? 'true' : undefined}
@@ -67,23 +63,6 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
           : undefined
       }
     >
-      {onToggleStar ? (
-        <button
-          type="button"
-          className={styles.star}
-          data-starred={isStarred ? 'true' : undefined}
-          onClick={(e) => {
-            e.stopPropagation()
-            onToggleStar()
-          }}
-          aria-label={
-            isStarred ? 'Remove from favorites' : 'Add to favorites'
-          }
-          title={isStarred ? 'Remove from favorites' : 'Add to favorites'}
-        >
-          ★
-        </button>
-      ) : null}
       <div className={styles.body}>
         {showStatusIndicator ? (
           previewStatus && !previewIsProcessed ? (
@@ -93,7 +72,10 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
             />
           ) : (
             <span
-              className={clsx(styles.statusIndicator, styles.statusIndicatorSpacer)}
+              className={clsx(
+                styles.statusIndicator,
+                styles.statusIndicatorSpacer,
+              )}
               aria-hidden
             />
           )
@@ -104,10 +86,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
           ) : null}
         </div>
         <div className={styles.meta}>
-          <div className={styles.dateLine}>{dateLabel}</div>
-          {detailLine ? (
-            <div className={styles.detailLine}>{detailLine}</div>
-          ) : null}
+          <div className={styles.dateLine}>{dateLineText}</div>
         </div>
       </div>
       {onDelete ? (

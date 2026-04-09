@@ -1,3 +1,4 @@
+import { DispatchDate } from '@/entities/date'
 import type { Card } from '@entities/card/domain/types'
 import { LEGACY_LOCAL_ID_PROPERTY } from '@shared/config/legacyIndexedDb'
 
@@ -11,6 +12,23 @@ export const CARD_STATUSES = [
 ] as const
 
 export type CardStatus = (typeof CARD_STATUSES)[number]
+
+/** Cart rows always have a real date; favorites use `null` in the editor card — stored as this placeholder on the postcard row. */
+export const POSTCARD_DISPATCH_DATE_FALLBACK: DispatchDate = {
+  year: 0,
+  month: 0,
+  day: 0,
+}
+
+function isDispatchDateShape(v: unknown): v is DispatchDate {
+  if (v == null || typeof v !== 'object') return false
+  const o = v as Record<string, unknown>
+  return (
+    typeof o.year === 'number' &&
+    typeof o.month === 'number' &&
+    typeof o.day === 'number'
+  )
+}
 
 function stripLegacyStatusFromCard(card: Card): Card {
   if (!('status' in (card as object))) return card
@@ -35,6 +53,15 @@ export interface PostcardRecordMeta {
   price: string
   createdAt: number
   updatedAt: number
+  date: DispatchDate
+}
+
+export interface PostcardRefs {
+  cardphoto: string
+  cardtext: string
+  sender: string
+  recipient: string
+  aroma: string
 }
 
 export interface Postcard extends PostcardRecordMeta {
@@ -99,9 +126,18 @@ export function normalizePostcardRecord(raw: Postcard): Postcard {
 
   const price = String(row.price ?? legacyMeta?.price ?? '')
 
+  const date: DispatchDate = isDispatchDateShape(row.date)
+    ? row.date
+    : isDispatchDateShape(legacyMeta?.date)
+      ? legacyMeta.date
+      : isDispatchDateShape(card.date)
+        ? card.date
+        : POSTCARD_DISPATCH_DATE_FALLBACK
+
   const next: Postcard = {
     localId,
     price,
+    date,
     status,
     createdAt,
     updatedAt,

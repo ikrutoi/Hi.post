@@ -1,6 +1,11 @@
 import type { IDBPDatabase, IDBPTransaction } from 'idb'
 import type { Card } from '@entities/card/domain/types'
-import type { Postcard, CardStatus, PostcardRecordMeta } from '@entities/postcard'
+import {
+  POSTCARD_DISPATCH_DATE_FALLBACK,
+  type Postcard,
+  type CardStatus,
+  type PostcardRecordMeta,
+} from '@entities/postcard'
 import { normalizePostcardRecord } from '@entities/postcard'
 import type { DraftsItem } from '@entities/drafts/domain/types'
 import { normalizeDraftsItemRecord } from '@entities/drafts/domain/types'
@@ -43,6 +48,7 @@ function migrateDraftsRow(row: unknown): Postcard & { id: string } {
   const postcard: Postcard = {
     localId: d.localId,
     price: m?.price ?? '',
+    date: card.date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
     status,
     createdAt,
     updatedAt,

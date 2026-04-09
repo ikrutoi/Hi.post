@@ -6,6 +6,7 @@ import {
   setDateListPanelOpen,
 } from '@date/calendar/infrastructure/state'
 import { pickDispatchDate, setSelectedDates } from '@date/infrastructure/state'
+import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectIsDateListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import {
   selectCachedMultiDates,
@@ -20,7 +21,11 @@ import {
   selectFirstProcessedCardThumbnailUrl,
 } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
-import type { CalendarCardItem, CardCalendarIndex } from '@entities/card/domain/types'
+import type {
+  CalendarCardItem,
+  CardCalendarIndex,
+} from '@entities/card/domain/types'
+import type { Postcard } from '@entities/postcard'
 import { DateListPanel } from './DateListPanel'
 import type { DateListPanelItem } from './DateListPanel'
 import styles from './DateRightSlot.module.scss'
@@ -48,6 +53,30 @@ function flattenDayData(dayData: CardCalendarIndex): CalendarCardItem[] {
   return list
 }
 
+function formatRecipientLine(
+  postcard: Postcard | undefined,
+): string | undefined {
+  console.log('postcard', postcard)
+  const recipient = postcard?.card?.envelope?.recipient as
+    | {
+        appliedData?: { name?: string; country?: string } | null
+        viewDraft?: { name?: string; country?: string }
+        formDraft?: { name?: string; country?: string }
+      }
+    | undefined
+
+  const source =
+    recipient?.appliedData ??
+    recipient?.viewDraft ??
+    recipient?.formDraft ??
+    null
+  const name = String(source?.name ?? '').trim()
+  const country = String(source?.country ?? '').trim()
+
+  if (name && country) return `${name}, ${country}`
+  return name || country || undefined
+}
+
 export const DateRightSlot: React.FC = () => {
   const dispatch = useAppDispatch()
   const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
@@ -58,6 +87,7 @@ export const DateRightSlot: React.FC = () => {
   const isMultiDateMode = useAppSelector(selectIsMultiDateMode)
   const cachedSingleDate = useAppSelector(selectCachedSingleDate)
   const cardsByDateMap = useAppSelector(selectCardsByDateMap)
+  const cartItems = useAppSelector(selectCartItems)
   const { previewUrl: cardphotoPreviewUrl } = useAppSelector(
     selectCardphotoPreview,
   )
@@ -65,16 +95,25 @@ export const DateRightSlot: React.FC = () => {
     selectFirstProcessedCardThumbnailUrl,
   )
   const listPreviewUrl = cardphotoPreviewUrl ?? processedThumbFallback ?? null
+  const postcardByCardId = useMemo(
+    () =>
+      new Map(
+        cartItems
+          .filter((p) => p.status !== 'favorite')
+          .map((p) => [p.card.id, p] as const),
+      ),
+    [cartItems],
+  )
 
   const dateListEntries: DateListPanelItem[] = useMemo(() => {
     if (openDayPanel) {
       return flattenDayData(openDayPanel.dayData).map((item, i) => ({
+        detailLine: formatRecipientLine(postcardByCardId.get(item.cardId)),
         id: `day-panel-${openDayPanel.dateKey}-${item.rowKey}-${i}`,
         cardId: item.cardId,
         sourceDate: item.date,
         dateLabel: formatDispatchDateLabel(item.date),
         previewUrl: item.previewUrl,
-        detailLine: undefined,
         previewStatus: item.status,
         previewIsProcessed: item.isProcessed,
       }))
@@ -145,7 +184,7 @@ export const DateRightSlot: React.FC = () => {
         sourceDate: item.date,
         dateLabel: formatDispatchDateLabel(item.date),
         previewUrl: item.previewUrl,
-        detailLine: undefined,
+        detailLine: formatRecipientLine(postcardByCardId.get(item.cardId)),
         previewStatus: item.status,
         previewIsProcessed: item.isProcessed,
       })
@@ -161,6 +200,7 @@ export const DateRightSlot: React.FC = () => {
     cachedSingleDate,
     cachedMultiDates,
     cardsByDateMap,
+    postcardByCardId,
     listPreviewUrl,
   ])
 
