@@ -18,6 +18,9 @@ type Props = {
   onSelectCard?: (item: CalendarCardItem) => void
 }
 
+const isBlobUrl = (url: string | null | undefined): boolean =>
+  typeof url === 'string' && url.startsWith('blob:')
+
 function formatDateKey(dateKey: string): string {
   if (dateKey === 'preview') return 'Cards'
   const [y, m, d] = dateKey.split('-').map(Number)
@@ -52,11 +55,12 @@ const DayPanelDateListEntry: React.FC<{
   onSelect: (entry: CalendarCardItem) => void
 }> = ({ item, isFocused, onSelect }) => {
   const displayUrl = useAppSelector(selectCalendarPreviewDisplayUrl(item.cardId))
+  const safeFallbackUrl = isBlobUrl(item.previewUrl) ? null : item.previewUrl
 
   return (
     <DateListEntry
       dateLabel={item.cardId}
-      previewUrl={displayUrl ?? item.previewUrl}
+      previewUrl={displayUrl ?? safeFallbackUrl}
       detailLine={formatStatusLabel(item)}
       previewStatus={item.status}
       previewIsProcessed={item.isProcessed}

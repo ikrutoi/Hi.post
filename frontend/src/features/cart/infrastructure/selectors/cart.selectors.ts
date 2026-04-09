@@ -6,7 +6,9 @@ export const selectCartItems = (state: RootState): Postcard[] =>
   state.cart.items
 
 export const selectCartAmount = (state: RootState): CartAmount => {
-  const items: Postcard[] = state.cart.items
+  const items: Postcard[] = state.cart.items.filter(
+    (item) => item.status === 'cart',
+  )
 
   const total = items.reduce((sum, item) => {
     const price = parseFloat(item.price)
@@ -20,4 +22,4 @@ export const selectCartAmount = (state: RootState): CartAmount => {
 }
 
 export const selectCartCount = (state: RootState): number =>
-  state.cart.items.length
+  state.cart.items.filter((item) => item.status === 'cart').length

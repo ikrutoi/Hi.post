@@ -1,6 +1,6 @@
 import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects'
 import { nanoid } from 'nanoid'
-import { storeAdapters } from '@db/adapters/storeAdapters'
+import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
 import { selectCardphotoSessionRecord } from '@cardphoto/infrastructure/selectors'
 import {
   commitWorkingConfig,
@@ -95,8 +95,10 @@ import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
+import { setItems } from '@cart/infrastructure/state'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
+import type { Postcard } from '@entities/postcard'
 import type { CardtextStyle } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type {
@@ -343,6 +345,9 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
 
 export function* hydrateAppSession() {
   try {
+    const postcards: Postcard[] = yield call([postcardsAdapter, 'getAll'])
+    yield put(setItems(postcards.filter((row) => row.status !== 'favorite')))
+
     yield call(refreshRightSidebarBadgesFromPostcards)
 
     const session: SessionData | null = yield call(

@@ -14,6 +14,9 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
+    setItems(state, action: PayloadAction<Postcard[]>) {
+      state.items = action.payload
+    },
     addItem(state, action: PayloadAction<Postcard>) {
       state.items.push(action.payload)
     },
@@ -37,5 +40,6 @@ const cartSlice = createSlice({
   },
 })
 
-export const { addItem, removeItem, updateItem, clearCart } = cartSlice.actions
+export const { setItems, addItem, removeItem, updateItem, clearCart } =
+  cartSlice.actions
 export default cartSlice.reducer

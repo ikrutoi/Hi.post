@@ -8,6 +8,9 @@ import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/s
 import styles from './CardPreviewItem.module.scss'
 import { PreviewItemForCalendar } from '@cardphoto/domain/types'
 
+const isBlobUrl = (url: string | null | undefined): boolean =>
+  typeof url === 'string' && url.startsWith('blob:')
+
 export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   item,
   status,
@@ -34,7 +37,8 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
     }
   }
 
-  const displayUrl = cachedUrl ?? item.previewUrl
+  const safeFallbackUrl = isBlobUrl(item.previewUrl) ? null : item.previewUrl
+  const displayUrl = cachedUrl ?? safeFallbackUrl
 
   return (
     <div className={styles.previewItem} onClick={handlePreviewClick}>

@@ -6,14 +6,12 @@ import {
   IconPostcardReady,
   IconPostcardDelivered,
   IconPostcardError,
+  IconPostcardNotDelivered,
 } from '@shared/ui/icons'
 import styles from './PostcardStatusLegend.module.scss'
 
 export const PostcardStatusLegend: React.FC = () => (
-  <div
-    className={styles.root}
-    aria-label="Postcard status colors in calendar"
-  >
+  <div className={styles.root} aria-label="Postcard status colors in calendar">
     <div className={styles.row} aria-hidden>
       <div className={styles.item}>
         <span className={clsx(styles.dot, styles.cart)} />
@@ -33,7 +31,7 @@ export const PostcardStatusLegend: React.FC = () => (
       </div>
       <div className={styles.item}>
         <span className={clsx(styles.dot, styles.error)} />
-        <IconPostcardError className={styles.icon} />
+        <IconPostcardNotDelivered className={styles.icon} />
       </div>
     </div>
   </div>

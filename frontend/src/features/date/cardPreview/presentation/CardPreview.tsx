@@ -20,11 +20,14 @@ export const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
   /** Открытки из воронки (IDB / корзина и т.д.), не черновик редактора. */
   const pipelineCards = [...cart, ...ready, ...sent, ...delivered, ...error]
   const pipelineCount = pipelineCards.length
+  const firstPipelineWithPreview =
+    pipelineCards.find((item) => Boolean(item.previewUrl)) ?? null
   const firstPipeline = pipelineCount > 0 ? pipelineCards[0] : null
 
-  // Если на день есть и postcard, и рабочая — в основном слоте первая из postcard.
+  // Если на день есть и postcard, и рабочая — приоритет у postcard c превью.
+  // Это защищает от дней, где первая карточка в статусе без thumbnailUrl.
   const primaryItem: CalendarCardItem | null =
-    firstPipeline ?? processed ?? null
+    firstPipelineWithPreview ?? firstPipeline ?? processed ?? null
 
   /** Всего слотов на день на превью; xN — полное число (не «минус видимая»). */
   const totalOnDay = pipelineCount + (processed ? 1 : 0)
