@@ -55,7 +55,10 @@ const DayPanelDateListEntry: React.FC<{
   onSelect: (entry: CalendarCardItem) => void
 }> = ({ item, isFocused, onSelect }) => {
   const displayUrl = useAppSelector(selectCalendarPreviewDisplayUrl(item.cardId))
-  const safeFallbackUrl = isBlobUrl(item.previewUrl) ? null : item.previewUrl
+  const allowBlobFallback =
+    item.cardId === 'current_session' || Boolean(item.isProcessed)
+  const safeFallbackUrl =
+    isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
 
   return (
     <DateListEntry

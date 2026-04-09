@@ -60,6 +60,7 @@ import { selectDateState } from '@date/infrastructure/selectors'
 import {
   setDate,
   pickDispatchDate,
+  clearDate,
   setSelectedDates,
   setMultiDateMode,
   setFirstDayOfWeek,
@@ -240,6 +241,7 @@ const SESSION_WATCH_ACTIONS = [
   clearAroma.type,
   setDate.type,
   pickDispatchDate.type,
+  clearDate.type,
   setSelectedDates.type,
   setMultiDateMode.type,
   hydrateDateFromSession.type,

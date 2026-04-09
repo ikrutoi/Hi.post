@@ -148,6 +148,8 @@
 }
 
 .appMainContentRight {
+  position: relative;
+  z-index: 5;
   grid-column: 11 / -1;
   grid-row: 1 / -1;
   min-height: 0;
@@ -162,6 +164,7 @@
 .appMainContentRightDate {
   grid-row: 3 / -1;
   margin-top: 0;
+  z-index: 6;
 }
 
 // .appMainAside {

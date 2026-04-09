@@ -41,11 +41,6 @@ function formatDispatchDateLabel(d: DispatchDate): string {
 const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
   a.year === b.year && a.month === b.month && a.day === b.day
 
-function formatCardStatusLabel(item: CalendarCardItem): string {
-  if (item.isProcessed) return 'Processed'
-  return item.status.charAt(0).toUpperCase() + item.status.slice(1)
-}
-
 export const DateRightSlot: React.FC = () => {
   const dispatch = useAppDispatch()
   const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
@@ -123,9 +118,10 @@ export const DateRightSlot: React.FC = () => {
     postcardItems.forEach((item, i) => {
       entries.push({
         id: `postcard-${item.rowKey}-${i}`,
+        cardId: item.cardId,
         dateLabel: formatDispatchDateLabel(item.date),
         previewUrl: item.previewUrl,
-        detailLine: formatCardStatusLabel(item),
+        detailLine: undefined,
         previewStatus: item.status,
         previewIsProcessed: item.isProcessed,
       })

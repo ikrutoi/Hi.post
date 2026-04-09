@@ -10,6 +10,7 @@ export type DateListEntryProps = {
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
+  showStatusIndicator?: boolean
   variant?: DateListEntryVariant
   previewStatus?: CardStatus
   previewIsProcessed?: boolean
@@ -25,6 +26,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
   dateLabel,
   previewUrl,
   detailLine,
+  showStatusIndicator = true,
   variant = 'default',
   previewStatus,
   previewIsProcessed,
@@ -80,17 +82,19 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
         </button>
       ) : null}
       <div className={styles.body}>
-        {previewStatus && !previewIsProcessed ? (
-          <span
-            className={clsx(styles.statusIndicator, styles[previewStatus])}
-            aria-hidden
-          />
-        ) : (
-          <span
-            className={clsx(styles.statusIndicator, styles.statusIndicatorSpacer)}
-            aria-hidden
-          />
-        )}
+        {showStatusIndicator ? (
+          previewStatus && !previewIsProcessed ? (
+            <span
+              className={clsx(styles.statusIndicator, styles[previewStatus])}
+              aria-hidden
+            />
+          ) : (
+            <span
+              className={clsx(styles.statusIndicator, styles.statusIndicatorSpacer)}
+              aria-hidden
+            />
+          )
+        ) : null}
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
             <img src={previewUrl} alt="" className={styles.thumbImg} />
