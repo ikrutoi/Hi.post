@@ -102,6 +102,7 @@ export const DateListPanel: React.FC<Props> = ({
         >
           <IconX />
         </button>
+        {/* <div className={styles.headerToolbarIndicator} /> */}
       </div>
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>

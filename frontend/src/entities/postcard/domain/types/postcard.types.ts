@@ -13,7 +13,6 @@ export const CARD_STATUSES = [
 
 export type CardStatus = (typeof CARD_STATUSES)[number]
 
-/** Cart rows always have a real date; favorites use `null` in the editor card — stored as this placeholder on the postcard row. */
 export const POSTCARD_DISPATCH_DATE_FALLBACK: DispatchDate = {
   year: 0,
   month: 0,

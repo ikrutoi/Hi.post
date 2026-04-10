@@ -52,19 +52,30 @@ const App = () => {
             <SectionEditorSidebar />
           </div>
           <main ref={mainRef} className={styles.appMain}>
-            <div className={styles.appMainContentLeft}>
-              <div className={styles.appMainContentLeftPieSlot}>
-                {sectionSize != null && (
-                  <div className={styles.appMainContentLeftPieRow}>
-                    <div className={styles.appMainContentLeftPieWrap}>
-                      <CardPie isProcessed fillContainer />
-                    </div>
-                    <div className={styles.appMainContentLeftPieToolbar}>
-                      <Toolbar section="editorPie" />
-                    </div>
+            {/* <div className={styles.appMainContentLeft}> */}
+            <div className={styles.appMainContentLeftPieSlot}>
+              {sectionSize != null && (
+                <div className={styles.appMainContentLeftPieRow}>
+                  <div className={styles.appMainContentLeftPieWrap}>
+                    <CardPie isProcessed fillContainer />
                   </div>
-                )}
-              </div>
+                  <div className={styles.appMainContentLeftPieToolbar}>
+                    <Toolbar section="editorPie" />
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* </div> */}
+            <div
+              className={clsx(
+                styles.appMainContentLeft,
+                // activeSection === 'date' && styles.appMainContentRightDate,
+              )}
+            >
+              {activeSection === 'envelope' && <EnvelopeRightSlot />}
+              {activeSection === 'date' && <DateRightSlot />}
+              {activeSection === 'cardtext' && <CardtextRightSlot />}
+              {activeSection === 'cardphoto' && <CardphotoRightSlot />}
             </div>
             <div
               className={styles.appMainContentCenter}
@@ -86,21 +97,29 @@ const App = () => {
                 <CardSectionEditor />
               </div>
             </div>
-            <div
+            <div className={styles.appMainContentRightPieSlot}>
+              {sectionSize != null && (
+                <div className={styles.appMainContentRightPieRow}>
+                  <div className={styles.appMainContentRightPieWrap}>
+                    <CardPie isProcessed fillContainer />
+                  </div>
+                  {/* <div className={styles.appMainContentRightPieToolbar}>
+                    <Toolbar section="editorPie" />
+                  </div> */}
+                </div>
+              )}
+            </div>
+            {/* <div
               className={clsx(
                 styles.appMainContentRight,
-                activeSection === 'date' && styles.appMainContentRightDate,
+                // activeSection === 'date' && styles.appMainContentRightDate,
               )}
             >
               {activeSection === 'envelope' && <EnvelopeRightSlot />}
               {activeSection === 'date' && <DateRightSlot />}
               {activeSection === 'cardtext' && <CardtextRightSlot />}
               {activeSection === 'cardphoto' && <CardphotoRightSlot />}
-            </div>
-            {/* <aside
-              className={styles.appMainAside}
-              aria-label="Templates"
-            ></aside> */}
+            </div> */}
           </main>
           <div className={styles.appRightSidebar}>
             <SectionEditorRightSidebar />

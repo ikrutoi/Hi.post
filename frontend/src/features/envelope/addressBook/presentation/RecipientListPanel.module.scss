@@ -47,8 +47,8 @@
 
 .closeBtn {
   position: absolute;
-  top: -0.9rem;
-  left: -1.2rem;
+  top: -0.8rem;
+  right: -1.4rem;
   // top: -0.9rem;
   display: flex;
   align-items: center;
@@ -57,7 +57,7 @@
   height: 1.4rem;
   padding: 0;
   border: 1px solid $color-app-strip;
-  border-radius: 0.55rem;
+  border-radius: 50%;
   background-color: #fff;
   color: $color-font-disabled;
   cursor: pointer;

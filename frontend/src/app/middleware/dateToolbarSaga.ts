@@ -21,7 +21,6 @@ function* handleDateListToolbarAction(
   }
 
   if (key === 'listDelete') {
-    // Заглушка: очистка списка дат — позже (история / корзина).
     return
   }
 }
@@ -45,7 +44,6 @@ function* handleDateToolbarAction(
   )
 }
 
-/** При открытии панели дня сбрасываем состояние кнопки listDate (панель списка уже закрыта редьюсером). */
 function* syncListDateIconOnDayPanelOpen(): SagaIterator {
   yield put(
     updateToolbarIcon({
