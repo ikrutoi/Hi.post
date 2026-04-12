@@ -106,11 +106,8 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
   )
 
   const isCreateModeOpen =
-    source === 'draft' &&
-    (templateId == null || templateId === null)
+    source === 'draft' && (templateId == null || templateId === null)
 
-  // Не используем assetData != null: пустой asset может быть материализован
-  // при первом рендере, а плейсхолдер ещё показывается — cardtextAdd должен оставаться enabled.
   const createEditorOpenForTyping =
     isCreateModeOpen && (hasText || isDraftEngaged)
 
@@ -143,13 +140,13 @@ function* syncCardtextCreateDraftIndicator(): SagaIterator {
     yield select(selectCardtextSource)
   const templateId: string | null = yield select(selectCardtextId)
   const isCreateModeOpen =
-    source === 'draft' &&
-    (templateId == null || templateId === null)
+    source === 'draft' && (templateId == null || templateId === null)
   const assetNull: boolean = yield select(
     (s: RootState) => s.cardtext.assetData == null,
   )
-  const draftInRedux: ReturnType<typeof selectCardtextDraftData> =
-    yield select(selectCardtextDraftData)
+  const draftInRedux: ReturnType<typeof selectCardtextDraftData> = yield select(
+    selectCardtextDraftData,
+  )
   const hasReduxDraft =
     draftInRedux != null && !isCardtextDraftContentEmpty(draftInRedux)
 
@@ -157,7 +154,7 @@ function* syncCardtextCreateDraftIndicator(): SagaIterator {
     (state: any) => state.toolbar.cardtext?.cardtextAdd,
   )
   const currentOptions =
-    current && typeof current === 'object' ? current.options ?? {} : {}
+    current && typeof current === 'object' ? (current.options ?? {}) : {}
   const hasProcessed: boolean = yield call(
     [templateService, 'hasCardtextTemplateByStatus'],
     'processed',
@@ -166,7 +163,6 @@ function* syncCardtextCreateDraftIndicator(): SagaIterator {
     [templateService, 'hasCardtextTemplateByStatus'],
     'draft',
   )
-  /** Dot when a draft exists (DB or Redux) and we are not “in editor” with materialized asset. */
   const shouldShowDraftDot =
     !hasProcessed &&
     (hasDraft || hasReduxDraft) &&
@@ -207,14 +203,15 @@ function* syncDraftRecordWithDb(): SagaIterator {
 }
 
 function* syncCardtextProcessedBadge(): SagaIterator {
-  const hasProcessed: boolean = yield call(
-    [templateService, 'hasProcessedCardtextTemplate'],
-  )
+  const hasProcessed: boolean = yield call([
+    templateService,
+    'hasProcessedCardtextTemplate',
+  ])
   const current: any = yield select(
     (state: any) => state.toolbar.cardtext?.cardtextAdd,
   )
   const currentOptions =
-    current && typeof current === 'object' ? current.options ?? {} : {}
+    current && typeof current === 'object' ? (current.options ?? {}) : {}
   yield put(
     updateToolbarIcon({
       section: 'cardtext',
@@ -237,7 +234,7 @@ function* syncCardtextListBadge(): SagaIterator {
     (state: any) => state.toolbar.cardtext?.listCardtext,
   )
   const currentOptions =
-    current && typeof current === 'object' ? current.options ?? {} : {}
+    current && typeof current === 'object' ? (current.options ?? {}) : {}
   yield put(
     updateToolbarIcon({
       section: 'cardtext',
@@ -257,7 +254,7 @@ function* syncCardtextListToggleIcon(): SagaIterator {
     (state: any) => state.toolbar.cardtext?.listCardtext,
   )
   const currentOptions =
-    current && typeof current === 'object' ? current.options ?? {} : {}
+    current && typeof current === 'object' ? (current.options ?? {}) : {}
   yield put(
     updateToolbarIcon({
       section: 'cardtext',
@@ -279,7 +276,6 @@ function* maybePersistCreateDraftOnExitView(
   const isSaveTemplateOpen: boolean = yield select(
     selectCardtextAddTemplateOpen,
   )
-  // Если сейчас открыт inline-сейв шаблона — это "осознанное действие", черновик не пишем.
   if (isSaveTemplateOpen) return
 
   const session: ReturnType<typeof selectCardtextSessionData> = yield select(
@@ -287,7 +283,6 @@ function* maybePersistCreateDraftOnExitView(
   )
   const templateId =
     session.id ?? (session as { assetId?: string | null }).assetId ?? null
-  // Черновик нужен только для режима создания (шаблон не выбран).
   if (templateId != null) return
 
   const plainText = session.plainText ?? ''
@@ -310,7 +305,6 @@ function* maybePersistCreateDraftOnExitView(
   }
   yield put(setDraftData(draft))
 
-  // If we entered create from a selected preset, restore that preset back into view.
   const presetData = (yield select(
     (s) => (s.cardtext as { presetData?: CardtextContent | null }).presetData,
   )) as CardtextContent | null
@@ -339,24 +333,24 @@ export function* cardtextProcessSaga(): SagaIterator {
   yield call(syncCardtextListToggleIcon)
 
   yield all([
-    takeLatest(toolbarAction.type, function* toolbarActionWithDependentBadges(
-      action: ReturnType<typeof toolbarAction>,
-    ): SagaIterator {
-      // Сначала полностью обрабатываем действие (в т.ч. IndexedDB), и только
-      // потом пересчитываем бэджи — иначе apply (processed→outLine) успевает
-      // прочитать БД до commit и бэдж «1» залипает.
-      yield call(handleCardtextToolbarAction, action)
-      const { key, section } = action.payload
-      if (
-        key === 'cardtextCheck' ||
-        key === 'apply' ||
-        (key === 'delete' &&
-          (section === 'cardtextView' || section === 'cardtextProcessed'))
-      ) {
-        yield call(syncCardtextProcessedBadge)
-        yield call(syncCardtextCreateDraftIndicator)
-      }
-    }),
+    takeLatest(
+      toolbarAction.type,
+      function* toolbarActionWithDependentBadges(
+        action: ReturnType<typeof toolbarAction>,
+      ): SagaIterator {
+        yield call(handleCardtextToolbarAction, action)
+        const { key, section } = action.payload
+        if (
+          key === 'cardtextCheck' ||
+          key === 'apply' ||
+          (key === 'delete' &&
+            (section === 'cardtextView' || section === 'cardtextProcessed'))
+        ) {
+          yield call(syncCardtextProcessedBadge)
+          yield call(syncCardtextCreateDraftIndicator)
+        }
+      },
+    ),
     takeEvery(setAlign.type, syncCardtextAlignIcons),
     takeEvery(loadCardtextTemplatesRequest.type, loadCardtextTemplatesSaga),
     takeEvery(loadCardtextTemplatesSuccess.type, syncCardtextListBadge),
@@ -400,12 +394,9 @@ export function* cardtextProcessSaga(): SagaIterator {
     ),
     takeEvery(
       setStatus.type,
-      function* (
-        action: ReturnType<typeof setStatus>,
-      ): SagaIterator {
+      function* (action: ReturnType<typeof setStatus>): SagaIterator {
         yield call(maybePersistCreateDraftOnExitView, action)
         if (action.payload === 'processed') {
-          // Re-check DB after successful commit flow to avoid race with toolbarAction.
           yield call(syncCardtextProcessedBadge)
         }
         yield call(syncCardtextCreateDraftIndicator)
@@ -418,8 +409,6 @@ export function* cardtextProcessSaga(): SagaIterator {
         action: ReturnType<typeof setCardtextAddTemplateOpen>,
       ): SagaIterator {
         const isOpen = action.payload
-        // Скрываем/выключаем группу шрифта и в режиме создания, и в редакторе,
-        // пока открыта полоса сохранения шаблона.
         for (const section of ['cardtextCreate', 'cardtextEditor'] as const) {
           yield put(
             updateGroupStatus({

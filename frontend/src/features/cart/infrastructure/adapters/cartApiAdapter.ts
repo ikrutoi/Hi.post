@@ -1,6 +1,5 @@
 import type { Cart } from '@cart/domain/types'
 
-/** Сырой ряд ответа API до сборки в `Postcard` с полным `Card`. */
 interface RawPostcardRow {
   id: number | string
   preview: string
@@ -9,10 +8,6 @@ interface RawPostcardRow {
   price: number
 }
 
-/**
- * Заготовка под синхронизацию с бэком.
- * `toCartState` должен собирать полноценные `Postcard` (включая вложенный `Card`).
- */
 export const cartApiAdapter = {
   async getAll(): Promise<RawPostcardRow[]> {
     const response = await fetch('/api/cart')

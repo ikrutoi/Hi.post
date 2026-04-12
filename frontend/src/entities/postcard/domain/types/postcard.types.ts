@@ -2,16 +2,32 @@ import { DispatchDate } from '@/entities/date'
 import type { Card } from '@entities/card/domain/types'
 import { LEGACY_LOCAL_ID_PROPERTY } from '@shared/config/legacyIndexedDb'
 
-export const CARD_STATUSES = [
+export const POSTCARD_STATUSES = [
   'cart',
   'ready',
-  'favorite',
+  // 'favorite',
   'sent',
   'delivered',
   'error',
 ] as const
 
-export type CardStatus = (typeof CARD_STATUSES)[number]
+export type PostcardStatus = (typeof POSTCARD_STATUSES)[number]
+
+export type PostcardStatuses = {
+  cart: boolean
+  ready: boolean
+  sent: boolean
+  delivered: boolean
+  error: boolean
+}
+
+export type PostcardStatusesCount = {
+  cart: number | null
+  ready: number | null
+  sent: number | null
+  delivered: number | null
+  error: number | null
+}
 
 export const POSTCARD_DISPATCH_DATE_FALLBACK: DispatchDate = {
   year: 0,
@@ -64,7 +80,7 @@ export interface PostcardRefs {
 }
 
 export interface Postcard extends PostcardRecordMeta {
-  status: CardStatus
+  status: PostcardStatus
   card: Card
 }
 
@@ -92,14 +108,14 @@ export function normalizePostcardRecord(raw: Postcard): Postcard {
       ? rawCard.status
       : undefined
 
-  const coercePipelineStatus = (raw: string | undefined): CardStatus => {
+  const coercePipelineStatus = (raw: string | undefined): PostcardStatus => {
     if (raw == null || raw === '' || raw === 'processed') return 'cart'
-    return (CARD_STATUSES as readonly string[]).includes(raw)
-      ? (raw as CardStatus)
+    return (POSTCARD_STATUSES as readonly string[]).includes(raw)
+      ? (raw as PostcardStatus)
       : 'cart'
   }
 
-  const status: CardStatus = coercePipelineStatus(
+  const status: PostcardStatus = coercePipelineStatus(
     ((row.status as string | undefined) ?? liftedFromNested) as
       | string
       | undefined,

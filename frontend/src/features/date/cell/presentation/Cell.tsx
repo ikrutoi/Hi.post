@@ -41,11 +41,11 @@ export const Cell: React.FC<CellProps> = ({
 }) => {
   const hasPostcards = Boolean(
     dayData &&
-      (dayData.cart.length ||
-        dayData.ready.length ||
-        dayData.sent.length ||
-        dayData.delivered.length ||
-        dayData.error.length),
+    (dayData.cart.length ||
+      dayData.ready.length ||
+      dayData.sent.length ||
+      dayData.delivered.length ||
+      dayData.error.length),
   )
 
   const dynamicClass = clsx(
@@ -70,7 +70,6 @@ export const Cell: React.FC<CellProps> = ({
     dayData,
   }
 
-  /** Capture: превью в ячейке вызывает stopPropagation — иначе второй клик не доходит до ячейки (мульти-тоггл). */
   const handleClickCapture = (e: React.MouseEvent) => {
     e.stopPropagation()
     onClickCell(clickParams)

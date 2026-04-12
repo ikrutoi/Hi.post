@@ -10,7 +10,7 @@ export const EDITOR_PIE_TOOLBAR: ToolbarConfig = [
     group: 'main',
     icons: [
       { key: 'addCart', state: 'enabled' },
-      { key: 'favorite', state: 'enabled' },
+      // { key: 'favorite', state: 'enabled' },
     ],
     status: 'enabled',
   },

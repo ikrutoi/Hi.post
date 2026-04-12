@@ -129,7 +129,10 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
           full: { ...imageMeta.full, blob },
         }
       } catch (e) {
-        console.error('uploadUserImage: cannot read blob URL (revoked or invalid)', e)
+        console.error(
+          'uploadUserImage: cannot read blob URL (revoked or invalid)',
+          e,
+        )
         yield put(markLoaded())
         return
       }
@@ -215,14 +218,6 @@ export function* rebuildConfigFromMeta(
   rotation?: number,
 ) {
   try {
-    // Не вызываем clearCurrentConfig + delay: иначе в CardphotoStage на мгновение
-    // пропадает imageLayer → unmount .cropContainer → стейдж схлопывается →
-    // ResizeObserver шлёт null/small rect → selectCardphotoWorkingCardLayer падает на
-    // sizeCard вместо реальных пикселей стейджа (cropCheck / processed выглядят «сломанными»
-    // до перезагрузки).
-
-    // Cardphoto cards are square (125x125mm), so we never switch layout orientation here.
-    // Keep `forceOrientation` for backward compatibility with older call sites.
     void forceOrientation
 
     const newRotation = rotation ?? meta.rotation ?? 0
@@ -263,7 +258,9 @@ export function* rebuildConfigFromMeta(
   }
 }
 
-function* onSelectInLineTemplateSaga(action: PayloadAction<string>): SagaIterator {
+function* onSelectInLineTemplateSaga(
+  action: PayloadAction<string>,
+): SagaIterator {
   try {
     const id = action.payload
     const record: ImageMeta | null = yield call(
@@ -272,13 +269,10 @@ function* onSelectInLineTemplateSaga(action: PayloadAction<string>): SagaIterato
     )
     if (!record) return
 
-    // In list we show `inLine` templates; keep this explicit.
     if (record.status !== 'inLine') return
 
-    // 1) Switch active image to `processed` so `CardphotoView` can render it.
     yield put(setProcessedImage(prepareForRedux(record)))
 
-    // 2) Refit image + (re)build crop layer based on selected meta.
     yield call(rebuildConfigFromMeta, record, false)
   } catch (e) {
     console.error('onSelectInLineTemplateSaga', e)
@@ -306,7 +300,6 @@ function* onClearApplySaga(): SagaIterator {
   }
 }
 
-/** Если в конфиге размеры card не совпадают с измеренным стейджем — пересобрать fit (например после cropCheck). */
 function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
   const rect: { width: number; height: number } | null = yield select(
     selectCardphotoImageStageRect,
@@ -332,7 +325,6 @@ function* ensureCardphotoCardMatchesStageRect(): SagaIterator {
   yield call(rebuildConfigFromMeta, meta, syncUserOriginal, undefined, rot)
 }
 
-/** When the real editor stage resizes, refit image/crop to measured pixels (not global SizeCard). */
 function* watchCardphotoImageStageRect(): SagaIterator {
   yield takeLatest(setCardphotoImageStageRect.type, function* (): SagaIterator {
     yield delay(0)
@@ -340,7 +332,6 @@ function* watchCardphotoImageStageRect(): SagaIterator {
   })
 }
 
-/** Бейдж `listCardphoto` на тулбаре cardphoto — число картинок в IndexedDB со статусом inLine. */
 function* refreshCardphotoListCardphotoBadge(): SagaIterator {
   try {
     const all: ImageMeta[] = yield call(storeAdapters.cardphotoImages.getAll)
@@ -380,7 +371,6 @@ export function* cardphotoProcessSaga(): SagaIterator {
     fork(watchToolbarContext),
     fork(watchCardphotoImageStageRect),
     fork(watchCardphotoInLineBadge),
-    /** RO не шлёт событие, если px размер стейджа тот же — после commit конфиг мог остаться от sizeCard. */
     takeEvery(commitWorkingConfig.type, ensureCardphotoCardMatchesStageRect),
 
     takeLatest(uploadUserImage.type, onUploadImageReadySaga),

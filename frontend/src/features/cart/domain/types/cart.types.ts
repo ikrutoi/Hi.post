@@ -8,4 +8,5 @@ export type CartAmount = {
 export type Cart = {
   items: Postcard[]
   amount: CartAmount
+  isActive: boolean
 }

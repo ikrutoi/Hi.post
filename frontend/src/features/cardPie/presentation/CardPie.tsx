@@ -43,6 +43,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   status,
   id,
   fillContainer = false,
+  station = 'left',
 }) => {
   const photoFillId = React.useId().replace(/:/g, '')
   const photoEmptyFillId = React.useId().replace(/:/g, '')
@@ -622,7 +623,13 @@ export const CardPie: React.FC<CardPieProps> = ({
             allSectionsFilled && styles.pieCenterIconBrand,
           )}
         >
-          <IconLogo aria-hidden />
+          {station === 'left' ? (
+            <IconLogo aria-hidden />
+          ) : (
+            <span
+              className={clsx(styles.pieCenterIndicator, styles[status ?? ''])}
+            ></span>
+          )}
         </span>
       </button>
     </div>

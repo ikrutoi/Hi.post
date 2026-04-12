@@ -87,6 +87,12 @@ export const ICON_KEYS = [
   'cart',
   'addCart',
   'userLogin',
+  'postcardReady',
+  'postcardSend',
+  'postcardDelivered',
+  // 'postcardError',
+  'postcardNotDelivered',
+  'postcardIndicator',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

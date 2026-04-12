@@ -32,7 +32,7 @@ export const Date: React.FC = () => {
     toggleMultiDateMode,
   } = useDateFacade()
 
-  console.log('date', selectedDates)
+  // console.log('date', selectedDates)
   // const { sizeItemCalendar } = useSizeFacade()
 
   const { lastViewedCalendarDate } = useCalendarFacade()
@@ -106,9 +106,7 @@ export const Date: React.FC = () => {
         <DateHeader
           currentDate={currentDate}
           calendarViewDate={calendarViewDate}
-          formattedSelectedDate={
-            isMultiDateMode ? null : formattedSelectedDate
-          }
+          formattedSelectedDate={isMultiDateMode ? null : formattedSelectedDate}
           isCurrentMonth={isCurrentMonth}
           onDecrement={handleDecrementArrow}
           onIncrement={handleIncrementArrow}
@@ -130,7 +128,9 @@ export const Date: React.FC = () => {
         </div>
 
         <div className={styles.dateBottomToggle}>
-          <PostcardStatusLegend />
+          <div className={styles.dateBottomToggleIndicators}>
+            <PostcardStatusLegend spot="calendar" />
+          </div>
           <div
             className={clsx(
               styles.dateBottomToggleGroup,

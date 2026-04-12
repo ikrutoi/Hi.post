@@ -7,6 +7,7 @@ export const SECTION_EDITOR_MENU_KEYS = [
   'envelope',
   'aroma',
   'date',
+  // 'cart',
 ] as const
 
 export type SectionEditorMenuKey = (typeof SECTION_EDITOR_MENU_KEYS)[number]

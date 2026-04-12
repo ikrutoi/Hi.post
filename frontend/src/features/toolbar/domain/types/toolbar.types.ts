@@ -35,6 +35,7 @@ import type { LayoutOrientation } from '@layout/domain/types'
 import { DateKey, DateToolbarState } from './date'
 import { DateListKey, DateListToolbarState } from './dateList.types'
 import { RightSidebarKey, RightSidebarToolbarState } from './rightSidebar.types'
+import { CartListKey, CartListToolbarState } from './cartList.types'
 
 export type IconOptions = {
   badge?: number | null
@@ -86,6 +87,8 @@ export const TOOLBAR_SECTIONS = [
   'cardtextProcessed',
   'date',
   'dateList',
+  'dateListIndicators',
+  'cartList',
   'rightSidebar',
 ] as const
 
@@ -121,6 +124,8 @@ export type ToolbarState = {
   cardtextProcessed: CardtextToolbarState & { config: ToolbarGroup[] }
   date: DateToolbarState & { config: ToolbarGroup[] }
   dateList: DateListToolbarState & { config: ToolbarGroup[] }
+  dateListIndicators: DateListToolbarState & { config: ToolbarGroup[] }
+  cartList: CartListToolbarState & { config: ToolbarGroup[] }
   rightSidebar: RightSidebarToolbarState & { config: ToolbarGroup[] }
 }
 
@@ -264,7 +269,17 @@ export type ToolbarSectionConfigMap = {
     'cardtextProcessed'
   >
   date: BaseSectionConfig<DateToolbarState, DateKey, 'date'>
+
   dateList: BaseSectionConfig<DateListToolbarState, DateListKey, 'dateList'>
+
+  dateListIndicators: BaseSectionConfig<
+    DateListToolbarState,
+    DateListKey,
+    'dateListIndicators'
+  >
+
+  cartList: BaseSectionConfig<CartListToolbarState, CartListKey, 'cartList'>
+
   rightSidebar: BaseSectionConfig<
     RightSidebarToolbarState,
     RightSidebarKey,
@@ -330,6 +345,10 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                         ? DateKey
                                                         : S extends 'dateList'
                                                           ? DateListKey
-                                                          : S extends 'rightSidebar'
-                                                            ? RightSidebarKey
-                                                            : never
+                                                          : S extends 'dateListIndicators'
+                                                            ? DateListKey
+                                                            : S extends 'cartList'
+                                                              ? CartListKey
+                                                              : S extends 'rightSidebar'
+                                                                ? RightSidebarKey
+                                                                : never

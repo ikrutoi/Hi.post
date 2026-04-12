@@ -38,7 +38,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   }
 
   const allowBlobFallback =
-    item.cardId === 'current_session' || Boolean(item.isProcessed)
+    item.cardId === 'current_session' || Boolean(isProcessed)
   const safeFallbackUrl =
     isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
   const displayUrl = cachedUrl ?? safeFallbackUrl

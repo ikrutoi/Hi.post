@@ -166,8 +166,13 @@ import {
   IconAddCart,
   IconUserLogin,
   IconCartV2,
+  IconPostcardNotDelivered,
+  IconPostcardDelivered,
+  IconPostcardSend,
+  IconPostcardReady,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
+import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
 
 // export const toolbarIcons = Object.fromEntries(
 //   ICON_KEYS.map((key) => [key, getIconByKey(key)]),
@@ -261,6 +266,18 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconFontFamilyV3 />
     case 'fontSizeIndicator':
       return <FontSizeIndicator currentStep={currentStep ?? 3} />
+    case 'postcardIndicator':
+      return (
+        <PostcardIndicator
+          statuses={{
+            cart: true,
+            ready: true,
+            sent: true,
+            delivered: true,
+            error: true,
+          }}
+        />
+      )
     case 'color':
       return <RiFontColor />
     case 'left':
@@ -327,6 +344,14 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconAddCart />
     case 'userLogin':
       return <IconUserLogin />
+    case 'postcardReady':
+      return <IconPostcardReady />
+    case 'postcardSend':
+      return <IconPostcardSend />
+    case 'postcardDelivered':
+      return <IconPostcardDelivered />
+    case 'postcardNotDelivered':
+      return <IconPostcardNotDelivered />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

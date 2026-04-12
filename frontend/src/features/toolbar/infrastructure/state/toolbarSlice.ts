@@ -29,6 +29,7 @@ import {
   initialCardtextProcessedToolbarState,
   initialDateToolbarState,
   initialDateListToolbarState,
+  initialDateListIndicatorsToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -44,6 +45,7 @@ import type {
   UpdateIconPayloadValue,
 } from '@shared/config/constants'
 import { initialRightSidebarToolbarState } from '../../domain/types/rightSidebar.types'
+import { initialCartListToolbarState } from '../../domain/types/cartList.types'
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
   cardphotoCreate: initialCardphotoCreateToolbarState,
@@ -74,6 +76,8 @@ const initialState: ToolbarState = {
   cardtextProcessed: initialCardtextProcessedToolbarState,
   date: initialDateToolbarState,
   dateList: initialDateListToolbarState,
+  dateListIndicators: initialDateListIndicatorsToolbarState,
+  cartList: initialCartListToolbarState,
   rightSidebar: initialRightSidebarToolbarState,
 }
 

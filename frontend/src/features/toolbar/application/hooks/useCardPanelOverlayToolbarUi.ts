@@ -14,13 +14,6 @@ export const useCardPanelOverlayToolbarUI = (section: ToolbarSection) => {
   const handleClickButton = () => {
     console.log('handleClickButton')
   }
-  // const handleClickButton = (
-  //   evt: MouseEvent<HTMLButtonElement>,
-  //   btn: string
-  // ) => {
-  //   // Реализуй логику обработки кнопок для cardPanel
-  //   actions.updateKey(btn, 'active')
-  // }
 
   const handleMouseLeave = () => {
     console.log('handleMouseLeave')

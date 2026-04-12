@@ -8,12 +8,16 @@ const initialState: Cart = {
     value: 0,
     currency: 'BYN',
   },
+  isActive: false,
 }
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
+    setCartListPanelOpen(state, action: PayloadAction<boolean>) {
+      state.isActive = action.payload
+    },
     setItems(state, action: PayloadAction<Postcard[]>) {
       state.items = action.payload
     },
@@ -40,6 +44,12 @@ const cartSlice = createSlice({
   },
 })
 
-export const { setItems, addItem, removeItem, updateItem, clearCart } =
-  cartSlice.actions
+export const {
+  setCartListPanelOpen,
+  setItems,
+  addItem,
+  removeItem,
+  updateItem,
+  clearCart,
+} = cartSlice.actions
 export default cartSlice.reducer

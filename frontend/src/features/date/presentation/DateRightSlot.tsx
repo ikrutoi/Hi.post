@@ -56,7 +56,7 @@ function flattenDayData(dayData: CardCalendarIndex): CalendarCardItem[] {
 function formatRecipientLine(
   postcard: Postcard | undefined,
 ): string | undefined {
-  console.log('postcard', postcard)
+  // console.log('postcard', postcard)
   const recipient = postcard?.card?.envelope?.recipient as
     | {
         appliedData?: { name?: string; country?: string } | null
@@ -99,7 +99,7 @@ export const DateRightSlot: React.FC = () => {
     () =>
       new Map(
         cartItems
-          .filter((p) => p.status !== 'favorite')
+          .filter((p) => p.status !== 'cart')
           .map((p) => [p.card.id, p] as const),
       ),
     [cartItems],

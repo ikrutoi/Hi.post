@@ -6,8 +6,13 @@ import {
   openDayPanel,
   setDateListPanelOpen,
   toggleDateListSortDirection,
+  setPostcardStatuses,
 } from '@date/calendar/infrastructure/state'
-import { selectIsDateListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import {
+  selectIsDateListPanelOpen,
+  selectPostcardStatuses,
+} from '@date/calendar/infrastructure/selectors'
+import { PostcardStatuses } from '@/entities/postcard/domain/types'
 
 function* handleDateListToolbarAction(
   action: ReturnType<typeof toolbarAction>,
@@ -54,10 +59,18 @@ function* syncListDateIconOnDayPanelOpen(): SagaIterator {
   )
 }
 
+function* syncPostcardStatuses(): SagaIterator {
+  const postcardStatuses: PostcardStatuses = yield select(
+    selectPostcardStatuses,
+  )
+  yield put(setPostcardStatuses(postcardStatuses))
+}
+
 export function* watchDateToolbar(): SagaIterator {
   yield all([
     takeEvery(toolbarAction.type, handleDateToolbarAction),
     takeEvery(toolbarAction.type, handleDateListToolbarAction),
     takeEvery(openDayPanel.type, syncListDateIconOnDayPanelOpen),
+    takeEvery(setPostcardStatuses.type, syncPostcardStatuses),
   ])
 }

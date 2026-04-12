@@ -5,6 +5,10 @@ import type {
   DispatchDate,
   FirstDayOfWeekPreference,
 } from '@entities/date/domain/types'
+import {
+  PostcardStatuses,
+  PostcardStatusesCount,
+} from '@/entities/postcard/domain/types'
 
 const initialState: DateState = {
   selectedDate: null,
@@ -29,6 +33,7 @@ export const dateSlice = createSlice({
       state.selectedDates = []
       state.isComplete = true
     },
+
     pickDispatchDate(state, action: PayloadAction<DispatchDate>) {
       const d = action.payload
       if (!state.isMultiDateMode) {
@@ -49,7 +54,6 @@ export const dateSlice = createSlice({
         if (state.selectedDates.length === 0) {
           state.selectedDate = null
           state.isComplete = false
-          // Иначе после выхода из multi снова подставится старая одиночная дата из кэша.
           state.cachedSingleDate = null
         } else {
           state.selectedDate =
@@ -63,11 +67,11 @@ export const dateSlice = createSlice({
       }
       state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
     },
+
     setSelectedDates(state, action: PayloadAction<DispatchDate[]>) {
       const prevLen = state.selectedDates.length
       state.selectedDates = action.payload
-      state.isComplete =
-        action.payload.length > 0 || state.selectedDate != null
+      state.isComplete = action.payload.length > 0 || state.selectedDate != null
       if (state.isMultiDateMode) {
         state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
         if (action.payload.length === 0 && prevLen > 0) {
@@ -75,6 +79,7 @@ export const dateSlice = createSlice({
         }
       }
     },
+
     clearDate(state) {
       state.selectedDate = null
       state.selectedDates = []
@@ -84,12 +89,11 @@ export const dateSlice = createSlice({
       state.cachedSingleDate = null
       state.cachedMultiDates = []
     },
+
     setMultiDateMode(state, action: PayloadAction<boolean>) {
       const enabled = action.payload
       if (enabled) {
         state.cachedSingleDate = state.selectedDate
-        // Не подмешивать старый cachedMultiDates, если в одиночном не было выбранной даты —
-        // иначе «левые» даты подсвечиваются и при возврате в одиночный срабатывает fallback.
         state.selectedDates =
           state.selectedDate == null
             ? []
@@ -113,18 +117,24 @@ export const dateSlice = createSlice({
       state.isComplete = state.selectedDate != null
       state.isMultiDateMode = false
     },
+
     setFirstDayOfWeek(state, action: PayloadAction<FirstDayOfWeekPreference>) {
       state.firstDayOfWeek = action.payload
     },
+
     hydrateDateFromSession(state, action: PayloadAction<DateState>) {
       const s = action.payload
       state.selectedDate = s.selectedDate ?? null
-      state.selectedDates = Array.isArray(s.selectedDates) ? s.selectedDates : []
+      state.selectedDates = Array.isArray(s.selectedDates)
+        ? s.selectedDates
+        : []
       state.isMultiDateMode = s.isMultiDateMode ?? false
       state.isComplete = s.isComplete ?? false
       state.firstDayOfWeek = s.firstDayOfWeek ?? 'Sun'
       state.cachedSingleDate = s.cachedSingleDate ?? null
-      const fromCache = Array.isArray(s.cachedMultiDates) ? s.cachedMultiDates : []
+      const fromCache = Array.isArray(s.cachedMultiDates)
+        ? s.cachedMultiDates
+        : []
       state.cachedMultiDates =
         fromCache.length > 0
           ? fromCache

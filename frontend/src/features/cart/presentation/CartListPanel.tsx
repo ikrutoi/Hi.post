@@ -1,44 +1,53 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { IconX, IconListDate } from '@shared/ui/icons'
+import { IconX, IconListDate, IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { useCartFacade } from '../application/facades'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
-import {
-  DateListEntry,
-  type DateListEntryVariant,
-} from './dateList/DateListEntry'
-import type { CardStatus } from '@entities/postcard'
+import { CartListEntry, type CartListEntryVariant } from './CartListEntry'
+import type { PostcardStatus, Postcard } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
-import styles from './DateListPanel.module.scss'
-import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
+import styles from './CartListPanel.module.scss'
+import {
+  CardCalendarIndex,
+  CalendarCardItem,
+} from '@/entities/card/domain/types'
+// import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 
-export type DateListPanelItem = {
+export type CartListPanelItem = {
   id: string
   cardId?: string
-  sourceDate?: DispatchDate
+  sourceDate?: Postcard
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
-  variant?: DateListEntryVariant
-  previewStatus?: CardStatus
+  variant?: CartListEntryVariant
+  previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
   onDelete?: () => void
 }
 
 type Props = {
-  onClose: () => void
-  entries?: DateListPanelItem[]
-  onSelectEntry?: (item: DateListPanelItem) => void
+  entries?: CartListPanelItem[]
+  onSelectEntry?: (item: CartListPanelItem) => void
 }
 
 const isBlobUrl = (url: string | null | undefined): boolean =>
   typeof url === 'string' && url.startsWith('blob:')
 
-const DateListPanelRow: React.FC<{
-  item: DateListPanelItem
-  onSelectEntry?: (item: DateListPanelItem) => void
+function flattenCartList(dayData: CardCalendarIndex): CalendarCardItem[] {
+  const list: CalendarCardItem[] = []
+  if (dayData.processed) list.push(dayData.processed)
+  list.push(...dayData.cart)
+
+  return list
+}
+
+const CartListPanelRow: React.FC<{
+  item: CartListPanelItem
+  onSelectEntry?: (item: CartListPanelItem) => void
 }> = ({ item, onSelectEntry }) => {
   const dispatch = useAppDispatch()
   const cachedUrl = useAppSelector(
@@ -63,7 +72,7 @@ const DateListPanelRow: React.FC<{
   const displayUrl = cachedUrl ?? safeFallbackUrl
 
   return (
-    <DateListEntry
+    <CartListEntry
       key={item.id}
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
@@ -81,24 +90,28 @@ const DateListPanelRow: React.FC<{
   )
 }
 
-export const DateListPanel: React.FC<Props> = ({
-  onClose,
+export const CartListPanel: React.FC<Props> = ({
   entries = [],
   onSelectEntry,
 }) => {
+  const { listPanelOpen, setCartListPanelOpen } = useCartFacade()
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
+
+  const handleCloseList = useCallback(() => {
+    setCartListPanelOpen(false)
+  }, [listPanelOpen])
 
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
         <div className={styles.headerToolbar}>
-          <Toolbar section="dateList" />
+          <Toolbar section="cartList" />
         </div>
         <button
           type="button"
           className={styles.closeBtn}
-          onClick={onClose}
+          onClick={handleCloseList}
           aria-label="Close date list"
         >
           <IconX />
@@ -113,9 +126,10 @@ export const DateListPanel: React.FC<Props> = ({
           tabIndex={0}
           aria-label="Dispatch date list"
         >
-          {hasRows ? (
+          <CartListEntry />
+          {/* {hasRows ? (
             entries.map((item) => (
-              <DateListPanelRow
+              <CartListPanelRow
                 key={item.id}
                 item={item}
                 onSelectEntry={onSelectEntry}
@@ -123,18 +137,18 @@ export const DateListPanel: React.FC<Props> = ({
             ))
           ) : (
             <div className={styles.listEmpty} aria-hidden>
-              <IconListDate className={styles.listEmptyIcon} />
+              <IconCart className={styles.listEmptyIcon} />
             </div>
-          )}
+          )} */}
         </div>
       </ScrollArea>
-      {hasRows && (
+      {/* {hasRows && (
         <div className={styles.indicators}>
           <div className={styles.indicatorsInner}>
             <PostcardStatusLegend spot="dateList" />
           </div>
         </div>
-      )}
+      )} */}
     </div>
   )
 }

@@ -1,18 +1,5 @@
 import type { CardtextStatus } from './editor/editor.types'
 
-/**
- * Единый «смысловой» режим cardtext для UI и саг (вместо связки из нескольких флагов).
- *
- * Золотая таблица (при неизменных правилах derive):
- *
- * | processed в asset        | processedSlot
- * | view + inLine/outLine + view-edit | editFromPostcardView
- * | draft + нет id шаблона | createEmpty
- * | view (остальное)       | postcardTemplateView
- * | иначе (черновик с id)  | editTemplate
- *
- * Отображение в ToolbarSection задаётся в `cardtextToolbarSectionFromMode` (application/helpers).
- */
 export type CardtextInteractionMode =
   | 'processedSlot'
   | 'postcardTemplateView'
@@ -22,7 +9,6 @@ export type CardtextInteractionMode =
 
 export type DeriveCardtextInteractionModeInput = {
   cardtextAssetStatus: CardtextStatus
-  /** draft: редактор / создание; view: просмотр на открытке */
   currentView: 'draft' | 'view'
   currentTemplateId: string | null
   isCardtextViewEditMode?: boolean

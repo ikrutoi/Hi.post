@@ -219,7 +219,6 @@ export function* handleCardphotoToolbarAction(
       yield put(setAssetData(prepareForRedux(updated)))
     }
 
-    // Ensure list thumbs + toolbar favorite are consistent without reload.
     yield put(bumpCardphotoInlineTemplateList())
     return
   }
@@ -300,63 +299,6 @@ export function* handleCardphotoToolbarAction(
   }
 }
 
-// export function* handleCardphotoToolbarAction1(
-//   action: ReturnType<typeof toolbarAction>,
-// ): SagaIterator {
-//   const { section, key } = action.payload
-
-//   if (key === 'cardphotoAdd') {
-//     if (
-//       section === 'cardphoto' ||
-//       section === 'cardphotoCreate' ||
-//       section === 'cardphotoProcessed'
-//     ) {
-//       yield call(onDownloadClick)
-//     }
-//     return
-//   }
-
-//   const isCardphotoSection = section === 'cardphoto'
-
-//   if (!isCardphotoSection) return
-
-//   switch (key) {
-//     case 'deleteList':
-//       yield call(handleClearAllCropsSaga)
-//       break
-//     case 'close':
-//       const state: CardphotoState = yield select(selectCardphotoState)
-//       const isProcessed: boolean = yield select(selectIsProcessedMode)
-
-//       console.log(state.base.stock.image)
-
-//       const currentImageId = isProcessed
-//         ? state.base.processed.image?.id
-//         : (state.userOriginalData ?? state.base.user.image)?.id
-
-//       break
-//     case 'download':
-//       yield call(onDownloadClick)
-//       break
-//     case 'imageReset':
-//       yield call(handleBackToOriginalSaga)
-//       break
-//     case 'crop':
-//       yield* handleCropAction()
-//       break
-//     case 'cropCheck':
-//       yield call(handleCropConfirm)
-//       break
-//     case 'cropFull':
-//       yield call(handleCropFullAction)
-//       break
-//     case 'imageRotateLeft':
-//     case 'imageRotateRight':
-//       yield call(handleImageRotate, key)
-//       break
-//   }
-// }
-
 function pickCardphotoProcessedToolbarPatch(
   sectionUpdate: Record<string, unknown>,
 ): Record<string, unknown> {
@@ -410,7 +352,6 @@ export function* syncToolbarContext() {
   ) {
     toolbarAssetKind = 'apply'
   } else if (assetForToolbar.source === 'original') {
-    // Same controls as user slot (crop/rotate); apply stays off until a real template exists.
     toolbarAssetKind = 'user'
   } else if (assetForToolbar.status === 'processed') {
     toolbarAssetKind = 'processed'
@@ -419,8 +360,6 @@ export function* syncToolbarContext() {
   } else if (assetForToolbar.source === 'stock') {
     toolbarAssetKind = 'stock'
   }
-  // We no longer track crop history in Redux state.
-  // Enable list actions based on `listCardphoto` badge (= number of `inLine` templates).
   const badgeCount =
     (toolbarCardphoto as any)?.listCardphoto?.options?.badge ?? null
   const hasTemplates = typeof badgeCount === 'number' ? badgeCount > 0 : false

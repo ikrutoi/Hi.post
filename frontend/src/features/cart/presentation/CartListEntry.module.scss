@@ -1,0 +1,281 @@
+@use '@styles/config/colors' as *;
+
+.root {
+  position: relative;
+  margin-bottom: 0.25rem;
+  min-height: 2.5rem;
+  padding: 1px 0.5rem 1px 0.5rem;
+  box-sizing: border-box;
+  background-color: $color-date-input;
+  border: 1px solid $color-date-input-border;
+  border-radius: 4px;
+  user-select: none;
+  // border: solid 1px blue;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+
+  &[data-has-delete='true'] {
+    padding-right: 2rem;
+  }
+
+  &[data-inactive='true'] {
+    opacity: 0.78;
+    background-color: mix($color-date-input, #f5f5f5, 40%);
+    border-color: mix($color-date-input-border, #e0e0e0, 55%);
+
+    // .thumb {
+    //   background-color: mix($color-section-light, #eee, 50%);
+    // }
+
+    .dateLine {
+      color: $color-font-disabled;
+    }
+
+    .detailLine {
+      color: mix($color-date-multi, $color-font-disabled, 35%);
+    }
+  }
+
+  // &[data-preview-status='cart'] {
+  //   background-color: $color-preview-row-cart;
+  //   border-color: mix($color-preview-indicator-cart, #fff, 60%);
+  // }
+
+  // &[data-preview-status='ready'] {
+  //   background-color: $color-preview-row-ready;
+  //   border-color: mix($color-preview-indicator-ready, #fff, 60%);
+  // }
+
+  // &[data-preview-status='sent'] {
+  //   background-color: $color-preview-row-sent;
+  //   border-color: mix($color-preview-indicator-sent, #fff, 60%);
+  // }
+
+  // &[data-preview-status='delivered'] {
+  //   background-color: $color-preview-row-delivered;
+  //   border-color: mix($color-preview-indicator-delivered, #fff, 60%);
+  // }
+
+  // &[data-preview-status='error'] {
+  //   background-color: $color-preview-row-error;
+  //   border-color: mix($color-preview-indicator-error, #fff, 60%);
+  // }
+
+  &:hover,
+  // &[data-focused='true'] {
+  //   background-color: darken($color-date-input, 2%);
+
+  //   &[data-preview-status='cart'] {
+  //     background-color: darken($color-preview-row-cart, 2%);
+  //   }
+  //   &[data-preview-status='ready'] {
+  //     background-color: darken($color-preview-row-ready, 2%);
+  //   }
+  //   &[data-preview-status='sent'] {
+  //     background-color: darken($color-preview-row-sent, 2%);
+  //   }
+  //   &[data-preview-status='delivered'] {
+  //     background-color: darken($color-preview-row-delivered, 2%);
+  //   }
+  //   &[data-preview-status='error'] {
+  //     background-color: darken($color-preview-row-error, 2%);
+  //   }
+
+  //   &[data-inactive='true'] {
+  //     background-color: mix($color-date-input, #f5f5f5, 40%);
+  //   }
+  // }
+
+  &[data-selected='true'] {
+    background-color: darken($color-date-input, 4%);
+    box-shadow: -2px 0 0 0 $color-date-multi;
+
+    // &[data-preview-status='cart'] {
+    //   background-color: darken($color-preview-row-cart, 4%);
+    // }
+    // &[data-preview-status='ready'] {
+    //   background-color: darken($color-preview-row-ready, 4%);
+    // }
+    // &[data-preview-status='sent'] {
+    //   background-color: darken($color-preview-row-sent, 4%);
+    // }
+    // &[data-preview-status='delivered'] {
+    //   background-color: darken($color-preview-row-delivered, 4%);
+    // }
+    // &[data-preview-status='error'] {
+    //   background-color: darken($color-preview-row-error, 4%);
+    // }
+
+    &[data-inactive='true'] {
+      box-shadow: -2px 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
+    }
+  }
+
+  &[data-clickable='true'] {
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-date-input-border;
+      outline-offset: 1px;
+    }
+  }
+}
+
+.body {
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+  width: 100%;
+  min-width: 0;
+  min-height: calc(2.5rem - 2px);
+}
+
+// .statusIndicator {
+//   flex-shrink: 0;
+//   align-self: center;
+//   width: 0.55rem;
+//   height: 0.55rem;
+//   border-radius: 50%;
+//   // border: solid 1px #fff;
+//   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+
+//   &.processed {
+//     background-color: $color-preview-indicator-processed;
+//   }
+
+//   &.cart {
+//     background-color: $color-preview-indicator-cart;
+//   }
+
+//   &.ready {
+//     background-color: $color-preview-indicator-ready;
+//   }
+
+//   &.sent {
+//     background-color: $color-preview-indicator-sent;
+//   }
+
+//   &.delivered {
+//     background-color: $color-preview-indicator-delivered;
+//   }
+
+//   &.error {
+//     background-color: $color-preview-indicator-error;
+//   }
+
+//   &.drafts {
+//     background-color: mix($color-preview-indicator-processed, #fff, 72%);
+//   }
+// }
+
+// .statusIndicatorSpacer {
+//   border: none;
+//   background: transparent;
+//   box-shadow: none;
+// }
+
+.root[data-inactive='true'] .statusIndicator {
+  opacity: 0.72;
+}
+
+.root[data-inactive='true'] .thumbImg {
+  filter: grayscale(1);
+}
+
+.thumb {
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 2.35rem;
+  min-height: 0;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: $color-section-light;
+  border: 1px solid mix($color-date-input-border, transparent, 65%);
+}
+
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  gap: 0.08rem;
+  // border: solid 1px blue;
+}
+
+.dateLine {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: $color-font-enabled;
+  line-height: 1.25;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  // mask-image: linear-gradient(to right, black 88%, transparent 100%);
+  // -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
+}
+
+.detailLine {
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: $color-date-multi;
+  line-height: 1.2;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  // mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  // -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+.deleteButton {
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border: none;
+  border-radius: 50%;
+  color: $color-font-disabled;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
+  z-index: 1;
+
+  .root:hover &,
+  .root:focus-within & {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+}

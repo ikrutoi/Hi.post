@@ -4,6 +4,7 @@ import { Header } from './features/header/presentation/Header'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
+import { CartListPanel } from './features/cart/presentation/CartListPanel'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
@@ -17,6 +18,7 @@ import {
 import { useSizeFacade } from '@layout/application/facades'
 import { useRecordSizeCard } from '@shared/hooks'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import { useCartFacade } from './features/cart/application/facades/useCartFacade'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
@@ -40,6 +42,7 @@ const App = () => {
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
+  const { listPanelOpen } = useCartFacade()
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
@@ -57,7 +60,7 @@ const App = () => {
               {sectionSize != null && (
                 <div className={styles.appMainContentLeftPieRow}>
                   <div className={styles.appMainContentLeftPieWrap}>
-                    <CardPie isProcessed fillContainer />
+                    <CardPie isProcessed fillContainer station="left" />
                   </div>
                   <div className={styles.appMainContentLeftPieToolbar}>
                     <Toolbar section="editorPie" />
@@ -101,7 +104,7 @@ const App = () => {
               {sectionSize != null && (
                 <div className={styles.appMainContentRightPieRow}>
                   <div className={styles.appMainContentRightPieWrap}>
-                    <CardPie isProcessed fillContainer />
+                    <CardPie isProcessed fillContainer station="right" />
                   </div>
                   {/* <div className={styles.appMainContentRightPieToolbar}>
                     <Toolbar section="editorPie" />
@@ -109,17 +112,17 @@ const App = () => {
                 </div>
               )}
             </div>
-            {/* <div
+            <div
               className={clsx(
                 styles.appMainContentRight,
                 // activeSection === 'date' && styles.appMainContentRightDate,
               )}
             >
-              {activeSection === 'envelope' && <EnvelopeRightSlot />}
-              {activeSection === 'date' && <DateRightSlot />}
-              {activeSection === 'cardtext' && <CardtextRightSlot />}
-              {activeSection === 'cardphoto' && <CardphotoRightSlot />}
-            </div> */}
+              {/* {activeSection === 'envelope' && <EnvelopeRightSlot />} */}
+              {listPanelOpen && <CartListPanel />}
+              {/* {activeSection === 'cardtext' && <CardtextRightSlot />} */}
+              {/* {activeSection === 'cardphoto' && <CardphotoRightSlot />} */}
+            </div>
           </main>
           <div className={styles.appRightSidebar}>
             <SectionEditorRightSidebar />

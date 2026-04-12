@@ -6,10 +6,11 @@
   flex-direction: column;
   height: 100%;
   padding-top: 1.9rem;
-  min-height: 0;
+  // min-height: 0;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
+  // border: solid 1px red;
 }
 
 .header {
@@ -83,6 +84,7 @@
   min-height: 0;
   padding: 0.5rem calc(0.25rem + 8px) 0.5rem 0.5rem;
   outline: none;
+  // border: solid 1px red;
 
   &:focus {
     outline: none;

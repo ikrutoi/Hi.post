@@ -77,3 +77,13 @@
 .dateBottomToggleGroupActive .dateBottomToggleIcon {
   opacity: 1;
 }
+
+.dateBottomToggleIndicators {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 50%;
+  width: 50%;
+  min-width: 0;
+  max-width: 50%;
+}
