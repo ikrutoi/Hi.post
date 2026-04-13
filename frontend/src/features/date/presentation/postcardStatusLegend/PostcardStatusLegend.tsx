@@ -18,7 +18,8 @@ import { setPostcardStatusesCount } from '../../calendar/infrastructure/state'
 
 export const PostcardStatusLegend: React.FC<{
   spot: 'calendar' | 'dateList'
-}> = ({ spot }) => {
+  isHistoryMode: boolean
+}> = ({ spot, isHistoryMode }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
   const handlePostcardStatusClick = (status: PostcardStatus) => {
@@ -30,40 +31,58 @@ export const PostcardStatusLegend: React.FC<{
 
   return (
     <div
-      className={clsx(styles.root, styles[`root-${spot}`])}
-      aria-label="Postcard status colors in calendar"
+      className={clsx(
+        styles.root,
+        styles[`root-${spot}`],
+        isHistoryMode && styles.rootActive,
+      )}
+      aria-label={
+        isHistoryMode
+          ? 'Postcard status colors in history'
+          : 'Postcard status colors in calendar'
+      }
     >
       <div className={styles.row} aria-hidden>
         <div
-          className={styles.item}
+          className={clsx(styles.item, {
+            [styles.active]: postcardStatuses.cart,
+          })}
           onClick={() => handlePostcardStatusClick('cart')}
         >
           <span className={clsx(styles.dot, styles.cart)} />
           <IconCart className={styles.icon} />
         </div>
         <div
-          className={styles.item}
+          className={clsx(styles.item, {
+            [styles.active]: postcardStatuses.ready,
+          })}
           onClick={() => handlePostcardStatusClick('ready')}
         >
           <span className={clsx(styles.dot, styles.ready)} />
           <IconPostcardReady className={styles.icon} />
         </div>
         <div
-          className={styles.item}
+          className={clsx(styles.item, {
+            [styles.active]: postcardStatuses.sent,
+          })}
           onClick={() => handlePostcardStatusClick('sent')}
         >
           <span className={clsx(styles.dot, styles.sent)} />
           <IconPostcardSend className={clsx(styles.icon, styles.iconSend)} />
         </div>
         <div
-          className={styles.item}
+          className={clsx(styles.item, {
+            [styles.active]: postcardStatuses.delivered,
+          })}
           onClick={() => handlePostcardStatusClick('delivered')}
         >
           <span className={clsx(styles.dot, styles.delivered)} />
           <IconPostcardDelivered className={styles.icon} />
         </div>
         <div
-          className={styles.item}
+          className={clsx(styles.item, {
+            [styles.active]: postcardStatuses.error,
+          })}
           onClick={() => handlePostcardStatusClick('error')}
         >
           <span className={clsx(styles.dot, styles.error)} />

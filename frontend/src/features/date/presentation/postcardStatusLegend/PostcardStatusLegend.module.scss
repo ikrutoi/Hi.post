@@ -18,14 +18,24 @@
       width: 1rem;
       height: 1rem;
     }
+
+    .iconSend {
+      width: 1.25rem;
+    }
   }
 
   &.root-dateList {
     .item {
+      &.active {
+        .icon {
+          color: $color-app-sidebar-icon-active;
+        }
+      }
+
       border-radius: 0.5rem;
       background-color: #fff;
       padding: 0.25rem;
-      // border: solid 1px green;
+      transition: background-color 0.15s ease;
 
       &:hover {
         cursor: pointer;
@@ -33,10 +43,18 @@
       }
     }
 
+    &.active {
+      background-color: $color-enabled;
+    }
+
     .icon {
       width: 0.85rem;
       height: 0.85rem;
-      color: $color-app-sidebar-icon-active;
+      color: $color-font-enabled;
+    }
+
+    .iconSend {
+      width: 1.07rem;
     }
   }
 }
@@ -77,22 +95,70 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
 }
 
-.cart {
-  background-color: $color-preview-indicator-cart;
+// .cart {
+//   background-color: $color-preview-indicator-cart;
+// }
+
+// .ready {
+//   background-color: $color-preview-indicator-ready;
+// }
+
+// .sent {
+//   background-color: $color-preview-indicator-sent;
+// }
+
+// .delivered {
+//   background-color: $color-preview-indicator-delivered;
+// }
+
+// .error {
+//   background-color: $color-preview-indicator-error;
+// }
+
+.root-calendar {
+  .cart {
+    background-color: $color-font-disabled;
+  }
+
+  .ready {
+    background-color: $color-font-disabled;
+  }
+
+  .sent {
+    background-color: $color-font-disabled;
+  }
+
+  .delivered {
+    background-color: $color-font-disabled;
+  }
+
+  .error {
+    background-color: $color-font-disabled;
+  }
+
+  .icon {
+    color: $color-font-disabled;
+  }
 }
 
-.ready {
-  background-color: $color-preview-indicator-ready;
-}
+.root-calendar.rootActive {
+  .cart {
+    background-color: $color-preview-indicator-cart;
+  }
 
-.sent {
-  background-color: $color-preview-indicator-sent;
-}
+  .ready {
+    background-color: $color-preview-indicator-ready;
+  }
 
-.delivered {
-  background-color: $color-preview-indicator-delivered;
-}
+  .sent {
+    background-color: $color-preview-indicator-sent;
+  }
 
-.error {
-  background-color: $color-preview-indicator-error;
+  .delivered {
+    background-color: $color-preview-indicator-delivered;
+  }
+
+  .error {
+    background-color: $color-preview-indicator-error;
+  }
 }

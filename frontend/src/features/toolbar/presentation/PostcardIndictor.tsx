@@ -1,67 +1,36 @@
 import React from 'react'
 import clsx from 'clsx'
-import { IconCircleV2 } from '@shared/ui/icons'
-import { CARDTEXT_CONFIG } from '@cardtext/domain/types'
-import { PostcardStatuses } from '@entities/postcard/domain/types'
+import { useCalendarFacade } from '@/features/date/calendar/application/facades/useCalendarFacade'
 import styles from './PostcardIndicator.module.scss'
 
-export interface PostcardIndicatorProps {
-  statuses: PostcardStatuses
-}
+export const PostcardIndicator: React.FC = () => {
+  const { postcardStatuses } = useCalendarFacade()
 
-export const PostcardIndicator: React.FC<PostcardIndicatorProps> = ({
-  statuses,
-}) => {
   return (
     <div className={styles.postcardIndicatorContainer}>
-      {statuses.cart && (
+      {postcardStatuses.cart && (
         <span
-          // key={status.cart}
-          className={clsx(styles.postcardIndicator, styles.cart, {
-            // [styles.active]: isCurrent,
-            // [styles.filled]: isFilled,
-            // [styles.empty]: isEmpty,
-          })}
+          className={clsx(styles.postcardIndicator, styles.cart, {})}
         ></span>
       )}
-      {statuses.ready && (
+      {postcardStatuses.ready && (
         <span
-          // key={status}
-          className={clsx(styles.postcardIndicator, styles.ready, {
-            // [styles.active]: isCurrent,
-            // [styles.filled]: isFilled,
-            // [styles.empty]: isEmpty,
-          })}
+          className={clsx(styles.postcardIndicator, styles.ready, {})}
         ></span>
       )}
-      {statuses.sent && (
+      {postcardStatuses.sent && (
         <span
-          // key={status}
-          className={clsx(styles.postcardIndicator, styles.sent, {
-            // [styles.active]: isCurrent,
-            // [styles.filled]: isFilled,
-            // [styles.empty]: isEmpty,
-          })}
+          className={clsx(styles.postcardIndicator, styles.sent, {})}
         ></span>
       )}
-      {statuses.delivered && (
+      {postcardStatuses.delivered && (
         <span
-          // key={status}
-          className={clsx(styles.postcardIndicator, styles.delivered, {
-            // [styles.active]: isCurrent,
-            // [styles.filled]: isFilled,
-            // [styles.empty]: isEmpty,
-          })}
+          className={clsx(styles.postcardIndicator, styles.delivered, {})}
         ></span>
       )}
-      {statuses.error && (
+      {postcardStatuses.error && (
         <span
-          // key={status}
-          className={clsx(styles.postcardIndicator, styles.error, {
-            // [styles.active]: isCurrent,
-            // [styles.filled]: isFilled,
-            // [styles.empty]: isEmpty,
-          })}
+          className={clsx(styles.postcardIndicator, styles.error, {})}
         ></span>
       )}
     </div>

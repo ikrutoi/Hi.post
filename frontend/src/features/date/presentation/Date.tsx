@@ -15,7 +15,7 @@ import {
 } from '../application/hooks'
 import { useFlashEffect } from '@shared/hooks'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
-import { IconCalendarMulti } from '@shared/ui/icons'
+import { IconCalendarHistory, IconCalendarMulti } from '@shared/ui/icons'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import styles from './Date.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'
@@ -27,9 +27,11 @@ export const Date: React.FC = () => {
   const {
     selectedDate,
     selectedDates,
+    isHistoryMode,
     chooseDate,
     isMultiDateMode,
     toggleMultiDateMode,
+    toggleHistoryMode,
   } = useDateFacade()
 
   // console.log('date', selectedDates)
@@ -128,13 +130,43 @@ export const Date: React.FC = () => {
         </div>
 
         <div className={styles.dateBottomToggle}>
-          <div className={styles.dateBottomToggleIndicators}>
-            <PostcardStatusLegend spot="calendar" />
+          <div
+            className={clsx(
+              styles.dateBottomToggleGroup,
+              styles.dateBottomToggleGroupHistory,
+              isHistoryMode && styles.dateBottomToggleGroupHistoryActive,
+            )}
+          >
+            <Toggle
+              label=""
+              checked={isHistoryMode}
+              onChange={toggleHistoryMode}
+              size="default"
+              variant="dateHistory"
+            />
+            <IconCalendarHistory
+              className={clsx(
+                styles.dateBottomToggleIcon,
+                styles.dateBottomToggleIconHistory,
+              )}
+            />
+          </div>
+          <div
+            className={clsx(
+              styles.dateBottomToggleIndicators,
+              isHistoryMode && styles.dateBottomToggleIndicatorsActive,
+            )}
+          >
+            <PostcardStatusLegend
+              spot="calendar"
+              isHistoryMode={isHistoryMode}
+            />
           </div>
           <div
             className={clsx(
               styles.dateBottomToggleGroup,
-              isMultiDateMode && styles.dateBottomToggleGroupActive,
+              styles.dateBottomToggleGroupMulti,
+              isMultiDateMode && styles.dateBottomToggleGroupMultiActive,
             )}
           >
             <IconCalendarMulti className={styles.dateBottomToggleIcon} />
@@ -143,7 +175,7 @@ export const Date: React.FC = () => {
               checked={isMultiDateMode}
               onChange={toggleMultiDateMode}
               size="default"
-              variant="date"
+              variant="dateMulti"
             />
           </div>
         </div>

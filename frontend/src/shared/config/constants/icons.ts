@@ -93,6 +93,7 @@ export const ICON_KEYS = [
   // 'postcardError',
   'postcardNotDelivered',
   'postcardIndicator',
+  'calendarHistory',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

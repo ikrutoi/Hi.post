@@ -54,6 +54,7 @@
   margin-top: 0.75rem;
   padding-top: 0.25rem;
   min-width: 0;
+  // border: solid 1px red;
 }
 
 .dateBottomToggleGroup {
@@ -74,7 +75,11 @@
     color 0.2s ease;
 }
 
-.dateBottomToggleGroupActive .dateBottomToggleIcon {
+.dateBottomToggleGroupHistoryActive .dateBottomToggleIcon {
+  opacity: 1;
+}
+
+.dateBottomToggleGroupMultiActive .dateBottomToggleIcon {
   opacity: 1;
 }
 

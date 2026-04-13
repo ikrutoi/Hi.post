@@ -12,7 +12,9 @@ type ToggleProps = {
     | 'envelope'
     | 'envelopeSender'
     | 'envelopeRecipient'
-    | 'date'
+    // | 'date'
+    | 'dateHistory'
+    | 'dateMulti'
   disabled?: boolean
 }
 
@@ -32,7 +34,9 @@ export const Toggle: React.FC<ToggleProps> = ({
         variant === 'envelope' && styles.toggleEnvelope,
         variant === 'envelopeSender' && styles.toggleEnvelopeSender,
         variant === 'envelopeRecipient' && styles.toggleEnvelopeRecipient,
-        variant === 'date' && styles.toggleDate,
+        // variant === 'date' && styles.toggleDate,
+        variant === 'dateHistory' && styles.toggleDateHistory,
+        variant === 'dateMulti' && styles.toggleDateMulti,
         disabled && styles.toggleDisabled,
       )}
     >

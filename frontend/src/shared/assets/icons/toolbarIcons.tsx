@@ -267,17 +267,7 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
     case 'fontSizeIndicator':
       return <FontSizeIndicator currentStep={currentStep ?? 3} />
     case 'postcardIndicator':
-      return (
-        <PostcardIndicator
-          statuses={{
-            cart: true,
-            ready: true,
-            sent: true,
-            delivered: true,
-            error: true,
-          }}
-        />
-      )
+      return <PostcardIndicator />
     case 'color':
       return <RiFontColor />
     case 'left':

@@ -58,7 +58,6 @@
   }
 }
 
-/* Тумблер в цветах отправителя (мята) — сразу видно, что относится к форме отправителя */
 .toggleEnvelopeSender {
   .toggleSlider {
     box-shadow: 0 0 0 1px rgba(26, 77, 58, 0.15);
@@ -78,7 +77,6 @@
   }
 }
 
-/* Тумблер в цветах получателя (лаванда) — зеркально: текст слева, переключатель справа */
 .toggleEnvelopeRecipient {
   flex-direction: row-reverse;
 
@@ -100,7 +98,8 @@
   }
 }
 
-.toggleDate {
+.toggleDateMulti,
+.toggleDateHistory {
   .toggleSlider {
     box-shadow: 0 0 0 1px rgba(39, 99, 235, 0.12);
 

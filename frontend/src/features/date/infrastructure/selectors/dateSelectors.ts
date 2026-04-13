@@ -42,3 +42,6 @@ export const selectIsDateComplete = (state: RootState): boolean =>
 export const selectFirstDayOfWeek = (
   state: RootState,
 ): FirstDayOfWeekPreference => state.date.firstDayOfWeek
+
+export const selectIsHistoryMode = (state: RootState): boolean =>
+  state.date.isHistoryMode

@@ -59,18 +59,18 @@ function* syncListDateIconOnDayPanelOpen(): SagaIterator {
   )
 }
 
-function* syncPostcardStatuses(): SagaIterator {
-  const postcardStatuses: PostcardStatuses = yield select(
-    selectPostcardStatuses,
-  )
-  yield put(setPostcardStatuses(postcardStatuses))
-}
+// function* syncPostcardStatuses(
+//   action: ReturnType<typeof setPostcardStatuses>,
+// ): SagaIterator {
+//   console.log('syncPostcardStatuses', action.payload)
+//   // yield put(setPostcardStatuses(action.payload))
+// }
 
 export function* watchDateToolbar(): SagaIterator {
   yield all([
     takeEvery(toolbarAction.type, handleDateToolbarAction),
     takeEvery(toolbarAction.type, handleDateListToolbarAction),
     takeEvery(openDayPanel.type, syncListDateIconOnDayPanelOpen),
-    takeEvery(setPostcardStatuses.type, syncPostcardStatuses),
+    // takeEvery(setPostcardStatuses.type, syncPostcardStatuses),
   ])
 }

@@ -5,6 +5,7 @@ import {
   setSelectedDates,
   setMultiDateMode,
   clearDate,
+  setHistoryMode,
 } from '../../infrastructure/state'
 import {
   selectSelectedDate,
@@ -12,6 +13,7 @@ import {
   selectMergedDispatchDates,
   selectIsMultiDateMode,
   selectIsDateComplete,
+  selectIsHistoryMode,
 } from '../../infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 
@@ -21,6 +23,7 @@ export const useDateFacade = () => {
   const selectedDates = useAppSelector(selectSelectedDates)
   const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
   const isMultiDateMode = useAppSelector(selectIsMultiDateMode)
+  const isHistoryMode = useAppSelector(selectIsHistoryMode)
   const isDateComplete = useAppSelector(selectIsDateComplete)
 
   const chooseDate = (date: DispatchDate) => {
@@ -35,6 +38,10 @@ export const useDateFacade = () => {
     dispatch(setMultiDateMode(enabled))
   }
 
+  const toggleHistoryMode = (enabled: boolean) => {
+    dispatch(setHistoryMode(enabled))
+  }
+
   const clear = () => {
     dispatch(clearDate())
   }
@@ -45,10 +52,12 @@ export const useDateFacade = () => {
     mergedDispatchDates,
     isMultiDateMode,
     isDateComplete,
+    isHistoryMode,
     format: 'DD.MM.YYYY',
     chooseDate,
     setManyDates,
     toggleMultiDateMode,
+    toggleHistoryMode,
     clear,
   }
 }

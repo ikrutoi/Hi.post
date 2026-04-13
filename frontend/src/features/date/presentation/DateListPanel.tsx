@@ -9,10 +9,11 @@ import {
   DateListEntry,
   type DateListEntryVariant,
 } from './dateList/DateListEntry'
-import type { CardStatus } from '@entities/postcard'
+import type { PostcardStatus } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './DateListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
+import { useDateFacade } from '../application/facades/useDateFacade'
 
 export type DateListPanelItem = {
   id: string
@@ -22,7 +23,7 @@ export type DateListPanelItem = {
   previewUrl?: string | null
   detailLine?: string
   variant?: DateListEntryVariant
-  previewStatus?: CardStatus
+  previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
   onDelete?: () => void
 }
@@ -86,6 +87,7 @@ export const DateListPanel: React.FC<Props> = ({
   entries = [],
   onSelectEntry,
 }) => {
+  const { isHistoryMode } = useDateFacade()
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
 
@@ -131,7 +133,10 @@ export const DateListPanel: React.FC<Props> = ({
       {hasRows && (
         <div className={styles.indicators}>
           <div className={styles.indicatorsInner}>
-            <PostcardStatusLegend spot="dateList" />
+            <PostcardStatusLegend
+              spot="dateList"
+              isHistoryMode={isHistoryMode}
+            />
           </div>
         </div>
       )}
