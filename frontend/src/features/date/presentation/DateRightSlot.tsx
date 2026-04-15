@@ -77,7 +77,9 @@ function formatRecipientLine(
   return name || country || undefined
 }
 
-export const DateRightSlot: React.FC = () => {
+export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
+  section,
+}) => {
   const dispatch = useAppDispatch()
   const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
   const dateListOpen = useAppSelector(selectIsDateListPanelOpen)
@@ -236,6 +238,7 @@ export const DateRightSlot: React.FC = () => {
             onClose={handleCloseList}
             entries={dateListEntries}
             onSelectEntry={handleSelectEntry}
+            section={section}
           />
         </div>
       </div>

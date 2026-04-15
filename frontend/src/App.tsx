@@ -76,7 +76,10 @@ const App = () => {
               )}
             >
               {activeSection === 'envelope' && <EnvelopeRightSlot />}
-              {activeSection === 'date' && <DateRightSlot />}
+              {activeSection === 'date' && <DateRightSlot section="date" />}
+              {activeSection === 'history' && (
+                <DateRightSlot section="history" />
+              )}
               {activeSection === 'cardtext' && <CardtextRightSlot />}
               {activeSection === 'cardphoto' && <CardphotoRightSlot />}
             </div>

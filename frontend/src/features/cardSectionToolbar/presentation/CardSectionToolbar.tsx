@@ -10,6 +10,7 @@ export const CardSectionToolbar: React.FC = () => {
     <div className={styles.cardSectionToolbar}>
       {activeSection === 'cardphoto' && <Toolbar section="cardphoto" />}
       {activeSection === 'date' && <Toolbar section="date" />}
+      {activeSection === 'history' && <Toolbar section="history" />}
       {activeSection === 'cardtext' && (
         <div className={styles.cardSectionToolbarHeader}>
           <Toolbar section="cardtext" />

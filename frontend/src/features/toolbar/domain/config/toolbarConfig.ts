@@ -72,10 +72,8 @@ import {
 } from '../types/cardtext.types'
 import { DATE_KEYS, DATE_TOOLBAR, initialDateToolbarState } from '../types/date'
 import {
-  DATE_LIST_INDICATORS_TOOLBAR,
   DATE_LIST_KEYS,
   DATE_LIST_TOOLBAR,
-  initialDateListIndicatorsToolbarState,
   initialDateListToolbarState,
 } from '../types/dateList.types'
 import {
@@ -93,6 +91,13 @@ import {
   HISTORY_TOOLBAR,
   initialHistoryToolbarState,
 } from '../types/history.types'
+import {
+  HISTORY_LIST_INDICATORS_TOOLBAR,
+  HISTORY_LIST_KEYS,
+  HISTORY_LIST_TOOLBAR,
+  initialHistoryListIndicatorsToolbarState,
+  initialHistoryListToolbarState,
+} from '../types/historyList.types'
 
 export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardphoto: {
@@ -459,15 +464,26 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     toolbar: RIGHT_SIDEBAR_TOOLBAR,
   },
 
-  dateListIndicators: {
-    keys: DATE_LIST_KEYS,
-    initialState: initialDateListIndicatorsToolbarState,
+  historyList: {
+    keys: HISTORY_LIST_KEYS,
+    initialState: initialHistoryListToolbarState,
     onAction: (key, section, _editor, dispatch) => {
       dispatch({ type: 'toolbar/action', payload: { section, key } })
     },
-    group: 'dateListIndicators',
-    getBadges: (state: ToolbarState['dateListIndicators']) => ({}),
-    toolbar: DATE_LIST_INDICATORS_TOOLBAR,
+    group: 'historyList',
+    getBadges: (state: ToolbarState['historyList']) => ({}),
+    toolbar: HISTORY_LIST_TOOLBAR,
+  },
+
+  historyListIndicators: {
+    keys: HISTORY_LIST_KEYS,
+    initialState: initialHistoryListIndicatorsToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'historyListIndicators',
+    getBadges: (state: ToolbarState['historyListIndicators']) => ({}),
+    toolbar: HISTORY_LIST_INDICATORS_TOOLBAR,
   },
 
   cartList: {

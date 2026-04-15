@@ -32,6 +32,7 @@ type Props = {
   onClose: () => void
   entries?: DateListPanelItem[]
   onSelectEntry?: (item: DateListPanelItem) => void
+  section: 'date' | 'history'
 }
 
 const isBlobUrl = (url: string | null | undefined): boolean =>
@@ -86,6 +87,7 @@ export const DateListPanel: React.FC<Props> = ({
   onClose,
   entries = [],
   onSelectEntry,
+  section,
 }) => {
   // const { isHistoryMode } = useDateFacade()
   const hasRows = entries.length > 0
@@ -95,7 +97,7 @@ export const DateListPanel: React.FC<Props> = ({
     <div className={styles.panel}>
       <div className={styles.header}>
         <div className={styles.headerToolbar}>
-          <Toolbar section="dateList" />
+          <Toolbar section={section === 'date' ? 'dateList' : 'historyList'} />
         </div>
         <button
           type="button"
@@ -130,7 +132,7 @@ export const DateListPanel: React.FC<Props> = ({
           )}
         </div>
       </ScrollArea>
-      {hasRows && (
+      {section === 'history' && hasRows && (
         <div className={styles.indicators}>
           <div className={styles.indicatorsInner}>
             <PostcardStatusLegend

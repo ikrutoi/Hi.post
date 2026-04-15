@@ -6,7 +6,8 @@
   width: 100%;
   align-items: center;
   user-select: none;
-  padding: 0.25rem;
+  padding: 0 0.25rem;
+  // border: solid 1px red;
 }
 
 .postcardIndicator {
@@ -16,6 +17,14 @@
   border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
 }
+
+// .postcardIndicatorContainer:hover {
+//   background-color: red;
+//   cursor: default;
+//   box-shadow: none;
+//   border-radius: 0;
+//   color: $color-font-enabled;
+// }
 
 .postcardIndicatorContainer {
   .cart {

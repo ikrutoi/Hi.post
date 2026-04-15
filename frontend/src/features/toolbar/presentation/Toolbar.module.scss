@@ -334,7 +334,8 @@
 
 .toolbarCardtext,
 .toolbarCardphoto,
-.toolbarDate {
+.toolbarDate,
+.toolbarHistory {
   .toolbarKey {
     background-color: $color-app-inner;
   }
@@ -352,7 +353,8 @@
 .toolbarAddressListRecipient,
 .toolbarCardtext,
 .toolbarCardphoto,
-.toolbarDate {
+.toolbarDate,
+.toolbarHistory {
   .toolbarKeyActive {
     color: $color-font-active;
   }
@@ -389,7 +391,8 @@
 .toolbarSenderFavorite,
 .toolbarSenderView,
 .toolbarRecipientView,
-.toolbarDate {
+.toolbarDate,
+.toolbarHistory {
   display: flex;
   align-items: center;
 
@@ -410,6 +413,7 @@
 .toolbarCardtextList,
 .toolbarCardphotoList,
 .toolbarDateList,
+.toolbarHistoryList,
 .toolbarCartList {
   .toolbarKey {
     width: 1.5rem;
@@ -435,6 +439,7 @@
     box-shadow: none;
     border-radius: 0;
     color: $color-font-enabled;
+    // border: solid 1px red;
   }
 
   .toolbarKeyPostcardIndicator:hover {
@@ -531,7 +536,8 @@
 .toolbarAddressListRecipients,
 .toolbarCardtextList,
 .toolbarCardphotoList,
-.toolbarDateList {
+.toolbarDateList,
+.toolbarHistoryList {
   width: 100%;
   justify-content: space-between;
   margin-left: 1rem;

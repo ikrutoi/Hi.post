@@ -29,7 +29,6 @@ import {
   initialCardtextProcessedToolbarState,
   initialDateToolbarState,
   initialDateListToolbarState,
-  initialDateListIndicatorsToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -47,6 +46,10 @@ import type {
 import { initialRightSidebarToolbarState } from '../../domain/types/rightSidebar.types'
 import { initialCartListToolbarState } from '../../domain/types/cartList.types'
 import { initialHistoryToolbarState } from '../../domain/types/history.types'
+import {
+  initialHistoryListIndicatorsToolbarState,
+  initialHistoryListToolbarState,
+} from '../../domain/types/historyList.types'
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
   cardphotoCreate: initialCardphotoCreateToolbarState,
@@ -55,6 +58,8 @@ const initialState: ToolbarState = {
   cardphotoList: initialCardphotoListToolbarState,
   cardtext: initialCardtextToolbarState,
   history: initialHistoryToolbarState,
+  historyList: initialHistoryListToolbarState,
+  historyListIndicators: initialHistoryListIndicatorsToolbarState,
   sender: initialSenderToolbarState,
   recipient: initialRecipientToolbarState,
   editorPie: initialEditorPieToolbarState,
@@ -78,7 +83,6 @@ const initialState: ToolbarState = {
   cardtextProcessed: initialCardtextProcessedToolbarState,
   date: initialDateToolbarState,
   dateList: initialDateListToolbarState,
-  dateListIndicators: initialDateListIndicatorsToolbarState,
   cartList: initialCartListToolbarState,
   rightSidebar: initialRightSidebarToolbarState,
 }
