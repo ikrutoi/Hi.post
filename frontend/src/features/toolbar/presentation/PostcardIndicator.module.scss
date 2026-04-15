@@ -15,20 +15,48 @@
   margin: 0.25rem;
   border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+}
 
-  &.cart {
+.postcardIndicatorContainer {
+  .cart {
+    background-color: $color-font-disabled;
+  }
+
+  .ready {
+    background-color: $color-font-disabled;
+  }
+
+  .sent {
+    background-color: $color-font-disabled;
+  }
+
+  .delivered {
+    background-color: $color-font-disabled;
+  }
+
+  .error {
+    background-color: $color-font-disabled;
+  }
+
+  .icon {
+    color: $color-font-disabled;
+  }
+}
+
+.postcardIndicatorContainer.historyMode {
+  .cart {
     background-color: $color-preview-indicator-cart;
   }
-  &.ready {
+  .ready {
     background-color: $color-preview-indicator-ready;
   }
-  &.sent {
+  .sent {
     background-color: $color-preview-indicator-sent;
   }
-  &.delivered {
+  .delivered {
     background-color: $color-preview-indicator-delivered;
   }
-  &.error {
+  .error {
     background-color: $color-preview-indicator-error;
   }
 }

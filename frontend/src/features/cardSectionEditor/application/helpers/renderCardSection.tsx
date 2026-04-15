@@ -11,7 +11,7 @@ export const renderCardSection = (
   options: {
     sectionLeft: number
     sectionRef: RefObject<HTMLDivElement | null>
-  }
+  },
 ) => {
   const { sectionLeft, sectionRef } = options
 
@@ -25,7 +25,9 @@ export const renderCardSection = (
     case 'aroma':
       return <Aroma />
     case 'date':
-      return <Date />
+      return <Date section="date" />
+    case 'history':
+      return <Date section="history" />
     default:
       return null
   }

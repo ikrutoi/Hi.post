@@ -46,6 +46,7 @@ import type {
 } from '@shared/config/constants'
 import { initialRightSidebarToolbarState } from '../../domain/types/rightSidebar.types'
 import { initialCartListToolbarState } from '../../domain/types/cartList.types'
+import { initialHistoryToolbarState } from '../../domain/types/history.types'
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
   cardphotoCreate: initialCardphotoCreateToolbarState,
@@ -53,6 +54,7 @@ const initialState: ToolbarState = {
   cardphotoView: initialCardphotoViewToolbarState,
   cardphotoList: initialCardphotoListToolbarState,
   cardtext: initialCardtextToolbarState,
+  history: initialHistoryToolbarState,
   sender: initialSenderToolbarState,
   recipient: initialRecipientToolbarState,
   editorPie: initialEditorPieToolbarState,

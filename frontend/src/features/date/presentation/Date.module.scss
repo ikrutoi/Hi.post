@@ -47,14 +47,19 @@
 .dateBottomToggle {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  // justify-content: space-between;
   gap: 0.75rem;
   flex-shrink: 0;
   width: 100%;
   margin-top: 0.75rem;
-  padding-top: 0.25rem;
+  // padding-top: 0.25rem;
   min-width: 0;
-  // border: solid 1px red;
+
+  &Multi {
+    margin-left: 0.5rem;
+    // border: solid 1px red;
+  }
 }
 
 .dateBottomToggleGroup {
@@ -91,4 +96,5 @@
   width: 50%;
   min-width: 0;
   max-width: 50%;
+  height: 1.25rem;
 }

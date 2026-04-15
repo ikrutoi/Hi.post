@@ -305,6 +305,11 @@
   .toolbarIcon {
     margin: 0.4rem;
   }
+
+  .toolbarKeyHistory {
+    margin-top: 1rem;
+    // border-top: solid 1px $color-app-substrate-border;
+  }
 }
 
 .toolbarSender {
@@ -526,10 +531,16 @@
 .toolbarAddressListRecipients,
 .toolbarCardtextList,
 .toolbarCardphotoList,
-.toolbarDateList,
-.toolbarCartList {
+.toolbarDateList {
   width: 100%;
   justify-content: space-between;
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.toolbarCartList {
+  width: 100%;
+  justify-content: flex-end;
   margin-left: 1rem;
   margin-right: 1rem;
 }

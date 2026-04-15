@@ -82,7 +82,9 @@ export const Toolbar = ({
   const recipientsViewSortDirection = useAppSelector(
     (state) => state.recipient?.recipientsViewSortDirection ?? 'asc',
   )
-  const cardtextListSortDirection = useAppSelector(selectCardtextListSortDirection)
+  const cardtextListSortDirection = useAppSelector(
+    selectCardtextListSortDirection,
+  )
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
   const cardphotoListTemplateGridCols = useAppSelector(
     selectCardphotoListTemplateGridCols,
@@ -156,11 +158,7 @@ export const Toolbar = ({
         buttonStatus = 'enabled'
       }
     }
-    if (
-      section === 'cardtextView' &&
-      key === 'favorite' &&
-      cardtextFavorite
-    ) {
+    if (section === 'cardtextView' && key === 'favorite' && cardtextFavorite) {
       buttonStatus = 'active'
     }
     if (
@@ -210,7 +208,10 @@ export const Toolbar = ({
       )
     }
 
-    if ((section === 'cardtextEditor' || section === 'cardtextCreate') && key === 'colorPicker') {
+    if (
+      (section === 'cardtextEditor' || section === 'cardtextCreate') &&
+      key === 'colorPicker'
+    ) {
       return (
         <CardtextColorButton
           key={key}

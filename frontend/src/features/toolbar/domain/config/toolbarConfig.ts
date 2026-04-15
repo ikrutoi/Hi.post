@@ -88,6 +88,11 @@ import {
   CART_LIST_TOOLBAR,
   initialCartListToolbarState,
 } from '../types/cartList.types'
+import {
+  HISTORY_KEYS,
+  HISTORY_TOOLBAR,
+  initialHistoryToolbarState,
+} from '../types/history.types'
 
 export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardphoto: {
@@ -474,5 +479,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'cartList',
     getBadges: (state: ToolbarState['cartList']) => ({}),
     toolbar: CART_LIST_TOOLBAR,
+  },
+
+  history: {
+    keys: HISTORY_KEYS,
+    initialState: initialHistoryToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'history',
+    getBadges: (state: ToolbarState['history']) => ({}),
+    toolbar: HISTORY_TOOLBAR,
   },
 }

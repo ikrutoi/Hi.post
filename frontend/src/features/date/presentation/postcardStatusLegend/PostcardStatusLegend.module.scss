@@ -26,11 +26,11 @@
 
   &.root-dateList {
     .item {
-      &.active {
-        .icon {
-          color: $color-app-sidebar-icon-active;
-        }
-      }
+      // &.active {
+      //   .icon {
+      //     color: $color-app-sidebar-icon-active;
+      //   }
+      // }
 
       border-radius: 0.5rem;
       background-color: #fff;
@@ -50,7 +50,7 @@
     .icon {
       width: 0.85rem;
       height: 0.85rem;
-      color: $color-font-enabled;
+      // color: $color-font-enabled;
     }
 
     .iconSend {
@@ -77,10 +77,10 @@
   justify-self: center;
 }
 
-.icon {
-  flex-shrink: 0;
-  color: $color-font-enabled-light;
-}
+// .icon {
+//   flex-shrink: 0;
+//   color: $color-font-enabled-light;
+// }
 
 .iconSend {
   width: auto;
@@ -115,33 +115,35 @@
 //   background-color: $color-preview-indicator-error;
 // }
 
-.root-calendar {
-  .cart {
-    background-color: $color-font-disabled;
-  }
+// .root-calendar,
+// .root-dateList {
+//   .cart {
+//     background-color: $color-font-disabled;
+//   }
 
-  .ready {
-    background-color: $color-font-disabled;
-  }
+//   .ready {
+//     background-color: $color-font-disabled;
+//   }
 
-  .sent {
-    background-color: $color-font-disabled;
-  }
+//   .sent {
+//     background-color: $color-font-disabled;
+//   }
 
-  .delivered {
-    background-color: $color-font-disabled;
-  }
+//   .delivered {
+//     background-color: $color-font-disabled;
+//   }
 
-  .error {
-    background-color: $color-font-disabled;
-  }
+//   .error {
+//     background-color: $color-font-disabled;
+//   }
 
-  .icon {
-    color: $color-font-disabled;
-  }
-}
+//   .icon {
+//     color: $color-font-disabled;
+//   }
+// }
 
-.root-calendar.rootActive {
+.root-calendar,
+.root-dateList {
   .cart {
     background-color: $color-preview-indicator-cart;
   }
@@ -160,5 +162,25 @@
 
   .error {
     background-color: $color-preview-indicator-error;
+  }
+}
+
+.root-calendar {
+  .item {
+    // &.active {
+    .icon {
+      color: $color-font-disabled;
+    }
+    // }
+  }
+}
+
+.root-dateList {
+  .item {
+    // &.active {
+    .icon {
+      color: $color-app-sidebar-icon-active;
+    }
+    // }
   }
 }

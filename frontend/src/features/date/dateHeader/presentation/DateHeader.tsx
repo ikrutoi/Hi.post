@@ -10,6 +10,7 @@ import type {
   CalendarViewDate,
   Switcher as typeSwitcher,
 } from '@entities/date/domain/types'
+import { IconCalendarReturn } from '@/shared/ui/icons'
 
 interface DateHeaderProps {
   currentDate: {
@@ -55,7 +56,7 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
             cursor: isCurrentMonth() ? 'default' : 'pointer',
           }}
         >
-          <LuCalendar className={styles.iconTitle} />
+          <IconCalendarReturn className={styles.iconTitle} />
           {`${currentDate.year} ${MONTH_NAMES[currentDate.month]} ${currentDate.day}`}
         </div>
       </div>

@@ -87,7 +87,7 @@ export const DateListPanel: React.FC<Props> = ({
   entries = [],
   onSelectEntry,
 }) => {
-  const { isHistoryMode } = useDateFacade()
+  // const { isHistoryMode } = useDateFacade()
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
 
@@ -135,7 +135,7 @@ export const DateListPanel: React.FC<Props> = ({
           <div className={styles.indicatorsInner}>
             <PostcardStatusLegend
               spot="dateList"
-              isHistoryMode={isHistoryMode}
+              // isHistoryMode={isHistoryMode}
             />
           </div>
         </div>

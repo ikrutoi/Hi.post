@@ -15,7 +15,7 @@ export interface DateState {
   selectedDates: DispatchDateList
   isMultiDateMode: boolean
   multiGroupId: string | null
-  isHistoryMode: boolean
+  // isHistoryMode: boolean
   isComplete: boolean
   firstDayOfWeek: FirstDayOfWeekPreference
   cachedSingleDate: SelectedDispatchDate

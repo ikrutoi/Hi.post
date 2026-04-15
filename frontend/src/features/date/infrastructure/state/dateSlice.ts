@@ -15,7 +15,7 @@ const initialState: DateState = {
   selectedDates: [],
   isMultiDateMode: false,
   multiGroupId: null,
-  isHistoryMode: false,
+  // isHistoryMode: false,
   isComplete: false,
   firstDayOfWeek: 'Sun',
   cachedSingleDate: null,
@@ -152,9 +152,9 @@ export const dateSlice = createSlice({
             : null
     },
 
-    setHistoryMode(state, action: PayloadAction<boolean>) {
-      state.isHistoryMode = action.payload
-    },
+    // setHistoryMode(state, action: PayloadAction<boolean>) {
+    //   state.isHistoryMode = action.payload
+    // },
   },
 })
 
@@ -166,6 +166,6 @@ export const {
   setMultiDateMode,
   setFirstDayOfWeek,
   hydrateDateFromSession,
-  setHistoryMode,
+  // setHistoryMode,
 } = dateSlice.actions
 export default dateSlice.reducer

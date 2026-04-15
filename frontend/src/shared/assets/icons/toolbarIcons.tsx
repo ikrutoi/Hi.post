@@ -170,6 +170,9 @@ import {
   IconPostcardDelivered,
   IconPostcardSend,
   IconPostcardReady,
+  IconHistory,
+  IconListHistory,
+  IconCalendarReturn,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -342,6 +345,12 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconPostcardDelivered />
     case 'postcardNotDelivered':
       return <IconPostcardNotDelivered />
+    case 'history':
+      return <IconHistory />
+    case 'listHistory':
+      return <IconListHistory />
+    case 'calendarReturn':
+      return <IconCalendarReturn />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

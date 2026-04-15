@@ -36,6 +36,7 @@ import { DateKey, DateToolbarState } from './date'
 import { DateListKey, DateListToolbarState } from './dateList.types'
 import { RightSidebarKey, RightSidebarToolbarState } from './rightSidebar.types'
 import { CartListKey, CartListToolbarState } from './cartList.types'
+import { HistoryKey, HistoryToolbarState } from './history.types'
 
 export type IconOptions = {
   badge?: number | null
@@ -63,6 +64,7 @@ export const TOOLBAR_SECTIONS = [
   'cardphotoView',
   'cardphotoList',
   'cardtext',
+  'history',
   'sender',
   'recipient',
   'recipients',
@@ -101,6 +103,7 @@ export type ToolbarState = {
   cardphotoView: CardphotoToolbarState & { config: ToolbarGroup[] }
   cardtext: CardtextToolbarState & { config: ToolbarGroup[] }
   cardphotoList: CardphotoListToolbarState & { config: ToolbarGroup[] }
+  history: HistoryToolbarState & { config: ToolbarGroup[] }
   sender: EnvelopeToolbarState & { config: ToolbarGroup[] }
   recipient: EnvelopeToolbarState & { config: ToolbarGroup[] }
   recipients: EnvelopeToolbarState & { config: ToolbarGroup[] }
@@ -285,6 +288,8 @@ export type ToolbarSectionConfigMap = {
     RightSidebarKey,
     'rightSidebar'
   >
+
+  history: BaseSectionConfig<HistoryToolbarState, HistoryKey, 'history'>
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -349,6 +354,8 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                             ? DateListKey
                                                             : S extends 'cartList'
                                                               ? CartListKey
-                                                              : S extends 'rightSidebar'
-                                                                ? RightSidebarKey
-                                                                : never
+                                                              : S extends 'history'
+                                                                ? HistoryKey
+                                                                : S extends 'rightSidebar'
+                                                                  ? RightSidebarKey
+                                                                  : never

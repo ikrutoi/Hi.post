@@ -7,6 +7,7 @@ export const SECTION_EDITOR_MENU_KEYS = [
   'envelope',
   'aroma',
   'date',
+  'history',
   // 'cart',
 ] as const
 
@@ -20,9 +21,14 @@ export interface SectionEditorMenuToolbarState extends Record<string, any> {
 export const SECTION_EDITOR_MENU_TOOLBAR: ToolbarConfig = [
   {
     group: 'menu',
-    icons: ['cardphoto', 'cardtext', 'envelope', 'aroma', 'date'].map(
-      (key) => ({ key: key as SectionEditorMenuKey, state: 'enabled' }),
-    ),
+    icons: [
+      'cardphoto',
+      'cardtext',
+      'envelope',
+      'aroma',
+      'date',
+      'history',
+    ].map((key) => ({ key: key as SectionEditorMenuKey, state: 'enabled' })),
     status: 'enabled',
   },
 ]

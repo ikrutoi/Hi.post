@@ -15,11 +15,11 @@ export interface CartListToolbarState extends Record<string, any> {
 }
 
 export const CART_LIST_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'cartList',
-    icons: [{ key: 'sortDown', state: 'enabled' }],
-    status: 'enabled',
-  },
+  // {
+  //   group: 'cartList',
+  //   icons: [{ key: 'sortDown', state: 'enabled' }],
+  //   status: 'enabled',
+  // },
   {
     group: 'actions',
     icons: [{ key: 'listDelete', state: 'enabled' }],

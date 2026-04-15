@@ -18,8 +18,8 @@ import { setPostcardStatusesCount } from '../../calendar/infrastructure/state'
 
 export const PostcardStatusLegend: React.FC<{
   spot: 'calendar' | 'dateList'
-  isHistoryMode: boolean
-}> = ({ spot, isHistoryMode }) => {
+  // isHistoryMode: boolean
+}> = ({ spot }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
   const handlePostcardStatusClick = (status: PostcardStatus) => {
@@ -34,12 +34,13 @@ export const PostcardStatusLegend: React.FC<{
       className={clsx(
         styles.root,
         styles[`root-${spot}`],
-        isHistoryMode && styles.rootActive,
+        // isHistoryMode && styles.rootActive,
       )}
       aria-label={
-        isHistoryMode
-          ? 'Postcard status colors in history'
-          : 'Postcard status colors in calendar'
+        // isHistoryMode
+        // ? 'Postcard status colors in history'
+        // : 'Postcard status colors in calendar'
+        'Postcard status colors'
       }
     >
       <div className={styles.row} aria-hidden>

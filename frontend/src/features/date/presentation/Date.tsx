@@ -15,23 +15,25 @@ import {
 } from '../application/hooks'
 import { useFlashEffect } from '@shared/hooks'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
-import { IconCalendarHistory, IconCalendarMulti } from '@shared/ui/icons'
+import { IconHistory, IconCalendarMulti } from '@shared/ui/icons'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import styles from './Date.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 
-export const Date: React.FC = () => {
+export const Date: React.FC<{ section: 'date' | 'history' }> = ({
+  section,
+}) => {
   const currentDate = useMemo(() => getCurrentDate(), [])
   const { flashParts, triggerFlash } = useFlashEffect()
 
   const {
     selectedDate,
     selectedDates,
-    isHistoryMode,
+    // isHistoryMode,
     chooseDate,
     isMultiDateMode,
     toggleMultiDateMode,
-    toggleHistoryMode,
+    // toggleHistoryMode,
   } = useDateFacade()
 
   // console.log('date', selectedDates)
@@ -129,56 +131,73 @@ export const Date: React.FC = () => {
           />
         </div>
 
-        <div className={styles.dateBottomToggle}>
+        {section === 'history' && (
           <div
             className={clsx(
-              styles.dateBottomToggleGroup,
-              styles.dateBottomToggleGroupHistory,
-              isHistoryMode && styles.dateBottomToggleGroupHistoryActive,
+              styles.dateBottomToggle,
+              styles.dateBottomToggleHistory,
             )}
           >
-            <Toggle
-              label=""
-              checked={isHistoryMode}
-              onChange={toggleHistoryMode}
-              size="default"
-              variant="dateHistory"
-            />
-            <IconCalendarHistory
+            {/* <div
               className={clsx(
-                styles.dateBottomToggleIcon,
-                styles.dateBottomToggleIconHistory,
+                styles.dateBottomToggleGroup,
+                styles.dateBottomToggleGroupHistory,
+                isHistoryMode && styles.dateBottomToggleGroupHistoryActive,
               )}
-            />
+            >
+              <Toggle
+                label=""
+                checked={isHistoryMode}
+                onChange={toggleHistoryMode}
+                size="default"
+                variant="dateHistory"
+              />
+              <IconHistory
+                className={clsx(
+                  styles.dateBottomToggleIcon,
+                  styles.dateBottomToggleIconHistory,
+                )}
+              />
+            </div> */}
+            <div
+              className={clsx(
+                styles.dateBottomToggleIndicators,
+                // isHistoryMode && styles.dateBottomToggleIndicatorsActive,
+              )}
+            >
+              <PostcardStatusLegend
+                spot="calendar"
+                // isHistoryMode={isHistoryMode}
+              />
+            </div>
           </div>
+        )}
+
+        {section === 'date' && (
           <div
             className={clsx(
-              styles.dateBottomToggleIndicators,
-              isHistoryMode && styles.dateBottomToggleIndicatorsActive,
+              styles.dateBottomToggle,
+              styles.dateBottomToggleMulti,
             )}
           >
-            <PostcardStatusLegend
-              spot="calendar"
-              isHistoryMode={isHistoryMode}
-            />
+            <div
+              className={clsx(
+                styles.dateBottomToggleGroup,
+                styles.dateBottomToggleGroupMulti,
+                isMultiDateMode && styles.dateBottomToggleGroupMultiActive,
+              )}
+            >
+              <Toggle
+                label=""
+                checked={isMultiDateMode}
+                onChange={toggleMultiDateMode}
+                size="default"
+                variant="dateMulti"
+              />
+              <IconCalendarMulti className={styles.dateBottomToggleIcon} />
+            </div>
           </div>
-          <div
-            className={clsx(
-              styles.dateBottomToggleGroup,
-              styles.dateBottomToggleGroupMulti,
-              isMultiDateMode && styles.dateBottomToggleGroupMultiActive,
-            )}
-          >
-            <IconCalendarMulti className={styles.dateBottomToggleIcon} />
-            <Toggle
-              label=""
-              checked={isMultiDateMode}
-              onChange={toggleMultiDateMode}
-              size="default"
-              variant="dateMulti"
-            />
-          </div>
-        </div>
+        )}
       </form>
     </div>
   )
