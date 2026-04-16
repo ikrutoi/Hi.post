@@ -27,6 +27,8 @@ import type {
 } from '@entities/card/domain/types'
 import type { Postcard } from '@entities/postcard'
 import { DateListPanel } from './DateListPanel'
+import { HistoryListPanel } from './HistoryListPanel'
+import { useCalendarFacade } from '@date/calendar/application/facades/useCalendarFacade'
 import type { DateListPanelItem } from './DateListPanel'
 import styles from './DateRightSlot.module.scss'
 
@@ -81,8 +83,10 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
   section,
 }) => {
   const dispatch = useAppDispatch()
+  const calendarFacade = useCalendarFacade()
+  const { dateListPanelOpen, historyListPanelOpen } = calendarFacade
   const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
-  const dateListOpen = useAppSelector(selectIsDateListPanelOpen)
+  // const dateListOpen = useAppSelector(selectIsDateListPanelOpen)
   const selectedDate = useAppSelector(selectSelectedDate)
   const selectedDates = useAppSelector(selectSelectedDates)
   const cachedMultiDates = useAppSelector(selectCachedMultiDates)
@@ -230,16 +234,24 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     [dispatch],
   )
 
-  if (dateListOpen || openDayPanel) {
+  if (dateListPanelOpen || historyListPanelOpen) {
     return (
       <div className={styles.root}>
         <div className={styles.panelWrap}>
-          <DateListPanel
-            onClose={handleCloseList}
-            entries={dateListEntries}
-            onSelectEntry={handleSelectEntry}
-            section={section}
-          />
+          {section === 'date' && dateListPanelOpen && (
+            <DateListPanel
+              onClose={handleCloseList}
+              entries={dateListEntries}
+              onSelectEntry={handleSelectEntry}
+            />
+          )}
+          {section === 'history' && historyListPanelOpen && (
+            <HistoryListPanel
+              onClose={handleCloseList}
+              entries={dateListEntries}
+              onSelectEntry={handleSelectEntry}
+            />
+          )}
         </div>
       </div>
     )

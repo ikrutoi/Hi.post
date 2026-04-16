@@ -16,6 +16,8 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   status,
   isProcessed,
   cardId,
+  isHistory,
+  isSelectedDate,
 }) => {
   const { openPreview } = useCardFacade()
   const cachedUrl = useAppSelector(selectCalendarPreviewDisplayUrl(item.cardId))
@@ -24,7 +26,10 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   useEffect(() => {
     if (!cachedUrl && item.previewUrl) {
       dispatch(
-        requestCalendarPreview({ cardId: item.cardId, previewUrl: item.previewUrl }),
+        requestCalendarPreview({
+          cardId: item.cardId,
+          previewUrl: item.previewUrl,
+        }),
       )
     }
   }, [cachedUrl, item.cardId, item.previewUrl, dispatch])
@@ -44,7 +49,17 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   const displayUrl = cachedUrl ?? safeFallbackUrl
 
   return (
-    <div className={styles.previewItem} onClick={handlePreviewClick}>
+    <div
+      className={clsx(
+        styles.previewItem,
+        isHistory
+          ? styles.previewItemHistory
+          : isSelectedDate
+            ? styles.previewItemSelected
+            : styles.previewItemDate,
+      )}
+      onClick={handlePreviewClick}
+    >
       {displayUrl ? (
         <img
           src={displayUrl}
@@ -54,7 +69,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
       ) : (
         <div className={styles.previewImage} aria-hidden />
       )}
-      {!isProcessed ? (
+      {!isProcessed && isHistory ? (
         <span className={clsx(styles.previewIndicator, styles[status])} />
       ) : null}
     </div>

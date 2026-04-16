@@ -1,4 +1,4 @@
-import type { CardStatus } from '@entities/postcard'
+import type { PostcardStatus } from '@entities/postcard'
 import type { LayoutOrientation } from '@layout/domain/types'
 
 export type CardphotoImageStageRect = { width: number; height: number }
@@ -96,8 +96,9 @@ export interface CardphotoState {
 
 export interface PreviewItemForCalendar {
   item: { previewUrl: string; cardId: string }
-  status: CardStatus
-  /** Слот сессии редактора — без цветного индикатора. */
+  status: PostcardStatus
   isProcessed?: boolean
   cardId: string
+  isHistory?: boolean
+  isSelectedDate?: boolean
 }

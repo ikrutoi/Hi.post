@@ -2,7 +2,11 @@ import { Cell } from '@date/cell/presentation/Cell'
 import { CardPreview } from '@features/date/cardPreview/presentation/CardPreview'
 import { shiftMonth } from '../helpers'
 import { isDisabledDate } from '@entities/date/utils'
-import type { CalendarViewDate, DispatchDate } from '@entities/date/domain/types'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import type {
+  CalendarViewDate,
+  DispatchDate,
+} from '@entities/date/domain/types'
 import type { MonthDirection } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
@@ -28,6 +32,7 @@ export const buildMonthCells = ({
   chooseDate,
   cardsMap,
 }: BuildMonthCellsParams) => {
+  const { activeSection } = useSectionMenuFacade()
   if (!calendarViewDate) return []
 
   const { year: currentViewYear, month: currentViewMonth } = shiftMonth(
@@ -51,7 +56,6 @@ export const buildMonthCells = ({
         d.day === day,
     )
 
-    // Use actual cell date for disabled check (before/after are prev/next month)
     const cellDate = {
       year: currentViewYear,
       month: currentViewMonth,
@@ -72,7 +76,13 @@ export const buildMonthCells = ({
         dateKey={dateKey}
         dayData={dayData}
       >
-        {dayData && <CardPreview data={dayData} />}
+        {dayData && (
+          <CardPreview
+            data={dayData}
+            section={activeSection}
+            isSelectedDate={isSelectedDate}
+          />
+        )}
       </Cell>
     )
   })

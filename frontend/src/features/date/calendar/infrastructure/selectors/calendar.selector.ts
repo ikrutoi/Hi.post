@@ -12,6 +12,9 @@ export const selectLastCalendarViewDate = (
 export const selectIsDateListPanelOpen = (state: RootState): boolean =>
   state.calendar.dateListPanelOpen
 
+export const selectIsHistoryListPanelOpen = (state: RootState): boolean =>
+  state.calendar.historyListPanelOpen
+
 export const selectDateListSortDirection = (state: RootState): 'asc' | 'desc' =>
   state.calendar.dateListSortDirection ?? 'asc'
 

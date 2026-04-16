@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { DateState } from '@features/date/types'
+import type { DateState } from '@entities/date/domain/types'
 
 type CardText = {
   text: {

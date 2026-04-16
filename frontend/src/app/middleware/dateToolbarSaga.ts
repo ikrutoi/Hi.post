@@ -4,11 +4,13 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   openDayPanel,
+  // setHistoryListPanelOpen,
   setDateListPanelOpen,
   toggleDateListSortDirection,
   setPostcardStatuses,
 } from '@date/calendar/infrastructure/state'
 import {
+  // selectIsHistoryListPanelOpen,
   selectIsDateListPanelOpen,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'

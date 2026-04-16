@@ -20,6 +20,8 @@ const initialState: DateState = {
   firstDayOfWeek: 'Sun',
   cachedSingleDate: null,
   cachedMultiDates: [],
+  // historyListPanelOpen: false,
+  // dateListPanelOpen: false,
 }
 
 const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
@@ -152,6 +154,14 @@ export const dateSlice = createSlice({
             : null
     },
 
+    // setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {
+    //   state.historyListPanelOpen = action.payload
+    // },
+
+    // setDateListPanelOpen(state, action: PayloadAction<boolean>) {
+    //   state.dateListPanelOpen = action.payload
+    // },
+
     // setHistoryMode(state, action: PayloadAction<boolean>) {
     //   state.isHistoryMode = action.payload
     // },
@@ -166,6 +176,8 @@ export const {
   setMultiDateMode,
   setFirstDayOfWeek,
   hydrateDateFromSession,
+  // setHistoryListPanelOpen,
+  // setDateListPanelOpen,
   // setHistoryMode,
 } = dateSlice.actions
 export default dateSlice.reducer

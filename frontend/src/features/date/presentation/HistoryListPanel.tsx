@@ -5,24 +5,23 @@ import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
-import {
-  DateListEntry,
-  type DateListEntryVariant,
-} from './dateList/DateListEntry'
+import { type HistoryListEntryVariant } from './historyList/HistoryListEntry'
 import type { PostcardStatus } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './DateListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { useDateFacade } from '../application/facades/useDateFacade'
+import { DateListPanelItem } from './DateListPanel'
+import { HistoryListEntry } from './historyList/HistoryListEntry'
 
-export type DateListPanelItem = {
+export type HistoryListPanelItem = {
   id: string
   cardId?: string
   sourceDate?: DispatchDate
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
-  variant?: DateListEntryVariant
+  variant?: HistoryListEntryVariant
   previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
   onDelete?: () => void
@@ -30,8 +29,8 @@ export type DateListPanelItem = {
 
 type Props = {
   onClose: () => void
-  entries?: DateListPanelItem[]
-  onSelectEntry?: (item: DateListPanelItem) => void
+  entries?: HistoryListPanelItem[]
+  onSelectEntry?: (item: HistoryListPanelItem) => void
   // section: 'date' | 'history'
 }
 
@@ -65,7 +64,7 @@ const DateListPanelRow: React.FC<{
   const displayUrl = cachedUrl ?? safeFallbackUrl
 
   return (
-    <DateListEntry
+    <HistoryListEntry
       key={item.id}
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
@@ -83,7 +82,7 @@ const DateListPanelRow: React.FC<{
   )
 }
 
-export const DateListPanel: React.FC<Props> = ({
+export const HistoryListPanel: React.FC<Props> = ({
   onClose,
   entries = [],
   onSelectEntry,
@@ -97,7 +96,7 @@ export const DateListPanel: React.FC<Props> = ({
     <div className={styles.panel}>
       <div className={styles.header}>
         <div className={styles.headerToolbar}>
-          <Toolbar section="dateList" />
+          <Toolbar section="historyList" />
         </div>
         <button
           type="button"
@@ -132,16 +131,16 @@ export const DateListPanel: React.FC<Props> = ({
           )}
         </div>
       </ScrollArea>
-      {/* {section === 'history' && hasRows && (
+      {hasRows && (
         <div className={styles.indicators}>
           <div className={styles.indicatorsInner}>
             <PostcardStatusLegend
-              spot="dateList"
+              spot="historyList"
               // isHistoryMode={isHistoryMode}
             />
           </div>
         </div>
-      )} */}
+      )}
     </div>
   )
 }

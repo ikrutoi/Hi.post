@@ -43,5 +43,8 @@ export const selectFirstDayOfWeek = (
   state: RootState,
 ): FirstDayOfWeekPreference => state.date.firstDayOfWeek
 
-// export const selectIsHistoryMode = (state: RootState): boolean =>
-//   state.date.isHistoryMode
+// export const selectIsHistoryListPanelOpen = (state: RootState): boolean =>
+//   state.date.historyListPanelOpen
+
+// export const selectIsDateListPanelOpen = (state: RootState): boolean =>
+//   state.date.dateListPanelOpen

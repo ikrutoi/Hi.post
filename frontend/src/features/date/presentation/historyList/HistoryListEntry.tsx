@@ -2,16 +2,16 @@ import React from 'react'
 import clsx from 'clsx'
 import type { PostcardStatus } from '@entities/postcard'
 import { IconX } from '@shared/ui/icons'
-import styles from './DateListEntry.module.scss'
+import styles from './HistoryListEntry.module.scss'
 
-export type DateListEntryVariant = 'default' | 'inactive'
+export type HistoryListEntryVariant = 'default' | 'inactive'
 
-export type DateListEntryProps = {
+export type HistoryListEntryProps = {
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
   showStatusIndicator?: boolean
-  variant?: DateListEntryVariant
+  variant?: HistoryListEntryVariant
   previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
   onSelect?: () => void
@@ -20,7 +20,7 @@ export type DateListEntryProps = {
   isFocused?: boolean
 }
 
-export const DateListEntry: React.FC<DateListEntryProps> = ({
+export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
   dateLabel,
   previewUrl,
   detailLine,

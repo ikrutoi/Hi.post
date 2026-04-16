@@ -4,12 +4,12 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   openDayPanel,
-  setDateListPanelOpen,
+  setHistoryListPanelOpen,
   toggleDateListSortDirection,
   setPostcardStatuses,
 } from '@date/calendar/infrastructure/state'
 import {
-  selectIsDateListPanelOpen,
+  selectIsHistoryListPanelOpen,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
 import { PostcardStatuses } from '@/entities/postcard/domain/types'
@@ -38,10 +38,10 @@ function* handleHistoryToolbarAction(
   const { section, key } = action.payload
   if (section !== 'history' || key !== 'listHistory') return
 
-  const listOpen: boolean = yield select(selectIsDateListPanelOpen)
+  const listOpen: boolean = yield select(selectIsHistoryListPanelOpen)
   const nextOpen = !listOpen
 
-  yield put(setDateListPanelOpen(nextOpen))
+  yield put(setHistoryListPanelOpen(nextOpen))
   yield put(
     updateToolbarIcon({
       section: 'history',

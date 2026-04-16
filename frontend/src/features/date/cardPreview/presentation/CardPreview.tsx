@@ -2,6 +2,7 @@ import React from 'react'
 import { CardPreviewItem } from './CardPreviewItem'
 import styles from './CardPreview.module.scss'
 import { CalendarCardItem } from '@entities/card/domain/types'
+import { CardSection } from '@/shared/config/constants'
 
 interface CardPreviewProps {
   data: {
@@ -12,24 +13,27 @@ interface CardPreviewProps {
     delivered: CalendarCardItem[]
     error: CalendarCardItem[]
   }
+  section: CardSection | null
+  isSelectedDate: boolean
 }
 
-export const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
+export const CardPreview: React.FC<CardPreviewProps> = ({
+  data,
+  section,
+  isSelectedDate,
+}) => {
   const { processed, cart, ready, sent, delivered, error } = data
 
-  /** Открытки из воронки (IDB / корзина и т.д.), не черновик редактора. */
+  const isHistory = section === 'history'
   const pipelineCards = [...cart, ...ready, ...sent, ...delivered, ...error]
   const pipelineCount = pipelineCards.length
   const firstPipelineWithPreview =
     pipelineCards.find((item) => Boolean(item.previewUrl)) ?? null
   const firstPipeline = pipelineCount > 0 ? pipelineCards[0] : null
 
-  // Если на день есть и postcard, и рабочая — приоритет у postcard c превью.
-  // Это защищает от дней, где первая карточка в статусе без thumbnailUrl.
   const primaryItem: CalendarCardItem | null =
     firstPipelineWithPreview ?? firstPipeline ?? processed ?? null
 
-  /** Всего слотов на день на превью; xN — полное число (не «минус видимая»). */
   const totalOnDay = pipelineCount + (processed ? 1 : 0)
   const badgeCount = totalOnDay > 1 ? totalOnDay : 0
 
@@ -43,6 +47,8 @@ export const CardPreview: React.FC<CardPreviewProps> = ({ data }) => {
             status={primaryItem.status}
             isProcessed={primaryItem.isProcessed}
             cardId={primaryItem.cardId}
+            isHistory={isHistory}
+            isSelectedDate={isSelectedDate}
           />
           {badgeCount > 0 ? (
             <span className={styles.extraCount} aria-hidden>

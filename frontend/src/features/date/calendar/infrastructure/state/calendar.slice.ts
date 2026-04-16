@@ -25,8 +25,9 @@ export type DayPanelPayload = {
 
 type CalendarState = {
   lastViewedCalendarDate: CalendarViewDate
-  openDayPanel: DayPanelPayload | null
+  historyListPanelOpen: boolean
   dateListPanelOpen: boolean
+  openDayPanel: DayPanelPayload | null
   dateListSortDirection: 'asc' | 'desc'
   postcardStatusesCount: PostcardStatusesCount
   postcardStatuses: PostcardStatuses
@@ -39,8 +40,9 @@ const initialState: CalendarState = {
     year: now.year,
     month: now.month,
   },
-  openDayPanel: null,
   dateListPanelOpen: false,
+  historyListPanelOpen: false,
+  openDayPanel: null,
   dateListSortDirection: 'asc',
   postcardStatusesCount: {
     cart: null,
@@ -101,6 +103,10 @@ const calendarSlice = createSlice({
       console.log('setPostcardStatuses', action.payload)
       state.postcardStatuses = action.payload
     },
+
+    setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {
+      state.historyListPanelOpen = action.payload
+    },
   },
 })
 
@@ -112,5 +118,6 @@ export const {
   toggleDateListSortDirection,
   setPostcardStatusesCount,
   setPostcardStatuses,
+  setHistoryListPanelOpen,
 } = calendarSlice.actions
 export default calendarSlice.reducer

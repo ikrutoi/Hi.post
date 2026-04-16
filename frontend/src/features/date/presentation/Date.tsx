@@ -15,7 +15,7 @@ import {
 } from '../application/hooks'
 import { useFlashEffect } from '@shared/hooks'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
-import { IconHistory, IconCalendarMulti } from '@shared/ui/icons'
+import { IconCalendarMulti } from '@shared/ui/icons'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import styles from './Date.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'

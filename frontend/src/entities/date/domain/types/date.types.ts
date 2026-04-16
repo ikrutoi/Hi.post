@@ -20,6 +20,8 @@ export interface DateState {
   firstDayOfWeek: FirstDayOfWeekPreference
   cachedSingleDate: SelectedDispatchDate
   cachedMultiDates: DispatchDateList
+  // historyListPanelOpen: boolean
+  // dateListPanelOpen: boolean
 }
 
 export type CardDispatchDate = DispatchDate | null

@@ -17,7 +17,7 @@ import {
 import { setPostcardStatusesCount } from '../../calendar/infrastructure/state'
 
 export const PostcardStatusLegend: React.FC<{
-  spot: 'calendar' | 'dateList'
+  spot: 'calendar' | 'historyList'
   // isHistoryMode: boolean
 }> = ({ spot }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()

@@ -37,19 +37,10 @@ export const useCalendarCellController = ({
   triggerFlash,
 }: UseCalendarCellControllerParams) => {
   const dispatch = useAppDispatch()
-  const {
-    selectedDate,
-    selectedDates,
-    isMultiDateMode,
-    chooseDate,
-  } = useDateFacade()
+  const { selectedDate, selectedDates, isMultiDateMode, chooseDate } =
+    useDateFacade()
 
   const { lastViewedCalendarDate } = useCalendarFacade()
-
-  const { state: stateSwitcher, actions: actionsSwitcher } = useSwitcherFacade()
-  const { position } = stateSwitcher
-  const { changePosition } = actionsSwitcher
-
   const { actions: actionsSwitcherController } = useDateSwitcherController()
   const { decrementMonth, incrementMonth } = actionsSwitcherController
 
@@ -82,18 +73,11 @@ export const useCalendarCellController = ({
       }
       const clickRemovesSelection = isMultiDateMode
         ? selectedDates.some((d) => sameDispatchDate(d, dispatchDate))
-        : Boolean(
-            selectedDate && sameDispatchDate(selectedDate, dispatchDate),
-          )
+        : Boolean(selectedDate && sameDispatchDate(selectedDate, dispatchDate))
 
       chooseDate(dispatchDate)
 
-      if (
-        !clickRemovesSelection &&
-        dateKey &&
-        dayData &&
-        hasCards(dayData)
-      ) {
+      if (!clickRemovesSelection && dateKey && dayData && hasCards(dayData)) {
         dispatch(openDayPanel({ dateKey, dayData }))
       }
     }
