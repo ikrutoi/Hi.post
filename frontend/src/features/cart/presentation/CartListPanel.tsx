@@ -126,8 +126,8 @@ export const CartListPanel: React.FC<Props> = ({
           tabIndex={0}
           aria-label="Dispatch date list"
         >
-          <CartListEntry />
-          {/* {hasRows ? (
+          {/* <CartListEntry /> */}
+          {hasRows ? (
             entries.map((item) => (
               <CartListPanelRow
                 key={item.id}
@@ -139,7 +139,7 @@ export const CartListPanel: React.FC<Props> = ({
             <div className={styles.listEmpty} aria-hidden>
               <IconCart className={styles.listEmptyIcon} />
             </div>
-          )} */}
+          )}
         </div>
       </ScrollArea>
       {/* {hasRows && (

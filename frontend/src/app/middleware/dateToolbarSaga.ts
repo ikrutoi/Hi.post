@@ -20,9 +20,10 @@ function* handleDateListToolbarAction(
   action: ReturnType<typeof toolbarAction>,
 ): SagaIterator {
   const { section, key } = action.payload
-  if (section !== 'dateList') return
+  // console.log('handleDateListToolbarAction', section, key)
+  if (section !== 'date') return
 
-  if (key === 'sortDown') {
+  if (key === 'listDate') {
     yield put(toggleDateListSortDirection())
     return
   }
@@ -36,7 +37,7 @@ function* handleDateToolbarAction(
   action: ReturnType<typeof toolbarAction>,
 ): SagaIterator {
   const { section, key } = action.payload
-  if (section !== 'date' || key !== 'listDate') return
+  if (section !== 'date') return
 
   const listOpen: boolean = yield select(selectIsDateListPanelOpen)
   const nextOpen = !listOpen

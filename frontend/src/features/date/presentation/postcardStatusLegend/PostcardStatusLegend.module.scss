@@ -95,92 +95,76 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
 }
 
-// .cart {
-//   background-color: $color-preview-indicator-cart;
-// }
+.root-historyList.rootEmpty {
+  .dotCart {
+    background-color: $color-font-disabled;
+  }
 
-// .ready {
-//   background-color: $color-preview-indicator-ready;
-// }
+  .dotReady {
+    background-color: $color-font-disabled;
+  }
 
-// .sent {
-//   background-color: $color-preview-indicator-sent;
-// }
+  .dotSent {
+    background-color: $color-font-disabled;
+  }
 
-// .delivered {
-//   background-color: $color-preview-indicator-delivered;
-// }
+  .dotDelivered {
+    background-color: $color-font-disabled;
+  }
 
-// .error {
-//   background-color: $color-preview-indicator-error;
-// }
+  .dotError {
+    background-color: $color-font-disabled;
+  }
 
-// .root-calendar,
-// .root-historyList {
-//   .cart {
-//     background-color: $color-font-disabled;
-//   }
-
-//   .ready {
-//     background-color: $color-font-disabled;
-//   }
-
-//   .sent {
-//     background-color: $color-font-disabled;
-//   }
-
-//   .delivered {
-//     background-color: $color-font-disabled;
-//   }
-
-//   .error {
-//     background-color: $color-font-disabled;
-//   }
-
-//   .icon {
-//     color: $color-font-disabled;
-//   }
-// }
+  .icon {
+    color: $color-font-disabled;
+  }
+}
 
 .root-calendar,
 .root-historyList {
-  .cart {
+  .dotCart {
     background-color: $color-preview-indicator-cart;
   }
 
-  .ready {
+  .dotReady {
     background-color: $color-preview-indicator-ready;
   }
 
-  .sent {
+  .dotSent {
     background-color: $color-preview-indicator-sent;
   }
 
-  .delivered {
+  .dotDelivered {
     background-color: $color-preview-indicator-delivered;
   }
 
-  .error {
+  .dotError {
     background-color: $color-preview-indicator-error;
   }
 }
 
 .root-calendar {
   .item {
-    // &.active {
     .icon {
       color: $color-font-disabled;
     }
-    // }
+  }
+}
+
+.root-calendar,
+.root-historyList {
+  .item.inactive {
+    .icon {
+      color: $color-font-disabled;
+    }
   }
 }
 
 .root-historyList {
-  .item {
-    // &.active {
+  .item.active {
     .icon {
       color: $color-app-sidebar-icon-active;
     }
-    // }
   }
 }

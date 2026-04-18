@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import type { CardStatus } from '@entities/postcard'
+import type { PostcardStatus } from '@entities/postcard/domain/types/postcard.types'
 import { IconX } from '@shared/ui/icons'
 import styles from './CartListEntry.module.scss'
 
@@ -12,7 +12,7 @@ export type CartListEntryProps = {
   detailLine?: string
   showStatusIndicator?: boolean
   variant?: CartListEntryVariant
-  previewStatus?: CardStatus
+  previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
   onSelect?: () => void
   onDelete?: () => void

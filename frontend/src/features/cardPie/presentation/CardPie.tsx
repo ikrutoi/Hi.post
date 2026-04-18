@@ -12,6 +12,8 @@ import {
   IconSectionMenuAromaV2,
   IconSectionMenuDate,
   IconCalendarMulti,
+  IconDateBkg,
+  IconUsersV3,
 } from '@shared/ui/icons'
 import type { DispatchDate } from '@entities/date'
 import { useSizeFacade } from '@layout/application/facades'
@@ -31,7 +33,7 @@ const PATTERN = {
   cardphoto5120: { x: -1343, y: -1344 },
   cardtext5120: { x: 863, y: -1693 },
   date5120: { x: -1693, y: 863 },
-  envelope2560: { x: 2800, y: 1577 },
+  envelope2560: { x: 2800, y: 1280 },
   aroma2560: { x: 1300, y: 2750 },
 } as const
 
@@ -297,11 +299,11 @@ export const CardPie: React.FC<CardPieProps> = ({
               ) : hasManyRecipients ? (
                 <>
                   <rect width="5120" height="5120" className={styles.rect} />
-                  <IconUsers
+                  <IconUsersV3
                     x="0"
-                    y="300"
-                    width="2560"
-                    height="2560"
+                    y="-200"
+                    width="4000"
+                    height="4000"
                     className={styles.pieEnvelopeIconBg}
                   />
                   <text
@@ -430,11 +432,11 @@ export const CardPie: React.FC<CardPieProps> = ({
                     className={clsx(styles.rect, styles.rectDate)}
                     fill="var(--pie-rect-fill)"
                   />
-                  <IconCalendarMulti
-                    x="1450"
-                    y="1600"
-                    width="2200"
-                    height="2200"
+                  <IconDateBkg
+                    x="1300"
+                    y="1050"
+                    width="3400"
+                    height="3400"
                     className={styles.pieEnvelopeIconBg}
                   />
                   <text

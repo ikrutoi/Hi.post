@@ -5,7 +5,6 @@ const strokeRound = {
   strokeLinejoin: 'round' as const,
 }
 
-/** Корзина (тележка). */
 export const IconCart = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +22,7 @@ export const IconCart = (props: React.SVGProps<SVGSVGElement>) => (
       stroke="currentColor"
       strokeWidth={107.498}
       {...strokeRound}
-      d="M892 878v2c0 43-35 78-78 78H268c-43 0-78-35-78-78V334m0 0c0-43-35-78-78-78h-2"
+      d="M814 958H268c-43 0-78-35-78-78V334m0 0c0-43-35-78-78-78h-2m704 702h77M59 256h51"
     />
     <circle cx={344} cy={1168} r={104} fill="currentColor" />
     <circle cx={737} cy={1168} r={104} fill="currentColor" />

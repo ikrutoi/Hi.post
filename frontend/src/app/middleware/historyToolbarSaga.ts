@@ -20,8 +20,6 @@ function* handleHistoryListToolbarAction(
   const { section, key } = action.payload
   if (section !== 'history' || key !== 'listHistory') return
 
-  console.log('handleHistoryListToolbarAction', section, key)
-
   // if (key === 'sortDown') {
   //   yield put(toggleDateListSortDirection())
   //   return

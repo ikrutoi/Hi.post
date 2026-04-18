@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { IconX, IconListDate } from '@shared/ui/icons'
+import { IconX, IconListDate, IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
@@ -8,11 +8,12 @@ import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/s
 import { type HistoryListEntryVariant } from './historyList/HistoryListEntry'
 import type { PostcardStatus } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
-import styles from './DateListPanel.module.scss'
+import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { useDateFacade } from '../application/facades/useDateFacade'
 import { DateListPanelItem } from './DateListPanel'
 import { HistoryListEntry } from './historyList/HistoryListEntry'
+import clsx from 'clsx'
 
 export type HistoryListPanelItem = {
   id: string
@@ -126,21 +127,19 @@ export const HistoryListPanel: React.FC<Props> = ({
             ))
           ) : (
             <div className={styles.listEmpty} aria-hidden>
-              <IconListDate className={styles.listEmptyIcon} />
+              <IconHistory className={styles.listEmptyIcon} />
             </div>
           )}
         </div>
       </ScrollArea>
-      {hasRows && (
-        <div className={styles.indicators}>
-          <div className={styles.indicatorsInner}>
-            <PostcardStatusLegend
-              spot="historyList"
-              // isHistoryMode={isHistoryMode}
-            />
-          </div>
+      <div className={clsx(styles.indicators)}>
+        <div className={styles.indicatorsInner}>
+          <PostcardStatusLegend
+            spot="historyList"
+            // isHistoryMode={isHistoryMode}
+          />
         </div>
-      )}
+      </div>
     </div>
   )
 }

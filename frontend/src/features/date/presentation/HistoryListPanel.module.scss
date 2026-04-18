@@ -1,0 +1,120 @@
+@use '@styles/config/colors' as *;
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 1.9rem;
+  min-height: 0;
+  background-color: #fff;
+  border: 1px solid $color-app-strip;
+  border-radius: 0.75rem;
+}
+
+.header {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.15rem;
+  z-index: 2;
+  width: calc(100% - 0.75rem - 8px);
+  height: 1.75rem;
+  border-bottom: 1px solid $color-cardphoto-input-border;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.headerToolbar {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.closeBtn {
+  position: absolute;
+  top: -0.8rem;
+  right: -1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+  border: 1px solid $color-app-strip;
+  border-radius: 50%;
+  background-color: #fff;
+  color: $color-font-disabled;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  &:hover {
+    color: $color-font-enabled-light;
+  }
+}
+
+.panelScrollTrack {
+  position: absolute;
+  top: calc(0.5rem + 3px);
+  right: 2px;
+  width: 0.75rem;
+  height: calc(100% - 0.5rem - 4px);
+  border-radius: 0 0.75rem 0.75rem 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.listScrollArea {
+  flex: 1;
+  min-height: 0;
+  // border: solid 1px blue;
+}
+
+.list {
+  flex: 1;
+  min-height: 0;
+  padding: 0.5rem calc(0.25rem + 8px) 0.5rem 0.5rem;
+  outline: none;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.listEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  padding: 0.5rem;
+}
+
+.listEmptyIcon {
+  width: 55%;
+  height: 55%;
+  min-width: 2.7rem;
+  min-height: 2.7rem;
+  flex-shrink: 0;
+  pointer-events: none;
+  color: $color-app-inner;
+}
+
+.indicators {
+  position: absolute;
+  bottom: 0;
+  right: 0.5rem;
+  height: 1.75rem;
+  padding-top: 0.15rem;
+  border-top: 1px solid $color-cardphoto-input-border;
+  z-index: 2;
+  width: calc(100% - 0.75rem - 8px);
+}

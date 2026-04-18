@@ -14,33 +14,35 @@ import img116_22 from '../../assets/116_22.png'
 import img117_22 from '../../assets/117_22.png'
 import img118_22 from '../../assets/118_22.png'
 import img119_22 from '../../assets/119_22.png'
+import img120_22 from '../../assets/120_22.png'
+import img121_22 from '../../assets/121_22.png'
+import img122_22 from '../../assets/122_22.png'
+import img123_22 from '../../assets/123_22.png'
+import img124_22 from '../../assets/124_22.png'
+import img125_22 from '../../assets/125_22.png'
 
 export const AROMA_IMAGES: Partial<Record<string, string>> = {
-  '100_22': img100_22,
-  '111_22': img111_22,
-  '112_22': img112_22,
-  '113_22': img113_22,
-  '114_22': img114_22,
-  '115_22': img115_22,
-  '116_22': img116_22,
-  '117_22': img117_22,
-  '118_22': img118_22,
-  '119_22': img119_22,
+  empty: img100_22,
+  '01': img115_22,
+  '02': img116_22,
+  '03': img122_22,
+  '04': img123_22,
+  '05': img112_22,
+  '06': img121_22,
+  '07': img117_22,
+  '08': img125_22,
 }
 
 export const aromaIndexes = [
-  '100_22',
-  '113_22',
-  '114_22',
-  '115_22',
-  '111_22',
-  '112_22',
-  '116_22',
-  '117_22',
-  '118_22',
-  '119_22',
-  '__e5',
-  '__e6',
+  'empty',
+  '01',
+  '02',
+  '03',
+  '04',
+  '05',
+  '06',
+  '07',
+  '08',
 ] as const
 
 export type AromaImageIndex = (typeof aromaIndexes)[number]
