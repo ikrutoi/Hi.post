@@ -49,12 +49,14 @@ export const buildMonthCells = ({
       currentViewMonth === currentDate.month &&
       currentViewYear === currentDate.year
 
-    const isSelectedDate = highlightDates.some(
-      (d) =>
-        d.year === currentViewYear &&
-        d.month === currentViewMonth &&
-        d.day === day,
-    )
+    const isSelectedDate =
+      activeSection !== 'history' &&
+      highlightDates.some(
+        (d) =>
+          d.year === currentViewYear &&
+          d.month === currentViewMonth &&
+          d.day === day,
+      )
 
     const cellDate = {
       year: currentViewYear,

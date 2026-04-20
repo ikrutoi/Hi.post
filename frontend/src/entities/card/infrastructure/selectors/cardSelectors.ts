@@ -85,9 +85,17 @@ export const selectCardsByDateMap = createSelector(
     selectCartItems,
     selectCardphotoPreview,
     selectMergedDispatchDates,
+    (state: RootState) => state.sectionEditorMenu.activeSection,
   ],
-  (allCards: Card[], cartItems: Postcard[], photoPreview, activeDates) => {
+  (
+    allCards: Card[],
+    cartItems: Postcard[],
+    photoPreview,
+    activeDates,
+    editorMenuActiveSection,
+  ) => {
     const map: Record<string, CardCalendarIndex> = {}
+    const showOnlyPersistedPostcards = editorMenuActiveSection === 'history'
 
     const isActiveEditorDate = (d: DispatchDate) =>
       activeDates.some((a) => sameDispatchDateKey(a, d))
@@ -132,31 +140,33 @@ export const selectCardsByDateMap = createSelector(
       }
     }
 
-    for (const card of allCards) {
-      if (!card.isProcessed) continue
-      if (!isActiveEditorDate(card.date)) continue
-      const entry = getEntry(card.date)
-      entry.processed = {
-        cardId: card.id,
-        rowKey: `editor-card:${card.id}`,
-        date: card.date,
-        previewUrl: card.thumbnailUrl,
-        status: 'cart',
-        isProcessed: true,
-      }
-    }
-
-    if (photoPreview?.previewUrl) {
-      for (const activeDate of activeDates) {
-        const entry = getEntry(activeDate)
-        const dk = `${activeDate.year}-${activeDate.month}-${activeDate.day}`
+    if (!showOnlyPersistedPostcards) {
+      for (const card of allCards) {
+        if (!card.isProcessed) continue
+        if (!isActiveEditorDate(card.date)) continue
+        const entry = getEntry(card.date)
         entry.processed = {
-          cardId: 'current_session',
-          rowKey: `live-session:${dk}`,
-          date: activeDate,
-          previewUrl: photoPreview.previewUrl,
+          cardId: card.id,
+          rowKey: `editor-card:${card.id}`,
+          date: card.date,
+          previewUrl: card.thumbnailUrl,
           status: 'cart',
           isProcessed: true,
+        }
+      }
+
+      if (photoPreview?.previewUrl) {
+        for (const activeDate of activeDates) {
+          const entry = getEntry(activeDate)
+          const dk = `${activeDate.year}-${activeDate.month}-${activeDate.day}`
+          entry.processed = {
+            cardId: 'current_session',
+            rowKey: `live-session:${dk}`,
+            date: activeDate,
+            previewUrl: photoPreview.previewUrl,
+            status: 'cart',
+            isProcessed: true,
+          }
         }
       }
     }
