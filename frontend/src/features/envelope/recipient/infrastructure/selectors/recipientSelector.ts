@@ -148,6 +148,36 @@ const selectCurrentRecipientsViewIds = (state: RootState): string[] => {
     : (r.recipientsViewIdsFirstList ?? [])
 }
 
+/** Записи по выбранным pending id (порядок selection), адрес из envelope или адресной книги. */
+export const selectRecipientsPendingResolvedEntries = createSelector(
+  [
+    selectEnvelopeRecipientsList,
+    selectRecipientEntriesState,
+    selectRecipientsPendingIds,
+  ],
+  (
+    envelopeRecipients,
+    recipientEntries,
+    pendingIds,
+  ): AddressBookEntry[] =>
+    pendingIds.flatMap((templateId) => {
+      const fromEnvelope = envelopeRecipients.find(
+        (r) => r.recipientViewId === templateId,
+      )
+      const fromBook = recipientEntries.find((e) => e.id === templateId)
+      const address = fromEnvelope?.viewDraft ?? fromBook?.address
+      if (!address) return []
+      return [
+        {
+          id: templateId,
+          role: 'recipient' as const,
+          address: { ...address },
+          createdAt: fromBook?.createdAt ?? new Date().toISOString(),
+        } as AddressBookEntry,
+      ]
+    }),
+)
+
 /** Записи для RecipientsView: по текущему списку id, адрес из envelope или адресной книги. */
 const selectRecipientsDisplayEntriesFromViewIds = createSelector(
   [
