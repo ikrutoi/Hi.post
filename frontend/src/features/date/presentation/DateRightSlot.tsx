@@ -32,6 +32,7 @@ import { selectSelectedRecipientEntriesInOrder } from '@envelope/infrastructure/
 import { DateListPanel } from './DateListPanel'
 import { HistoryListPanel, type HistoryListPanelItem } from './HistoryListPanel'
 import { useCalendarFacade } from '@date/calendar/application/facades/useCalendarFacade'
+import { selectPostcardStatuses } from '@date/calendar/infrastructure/selectors'
 import type { DateListPanelItem } from './DateListPanel'
 import styles from './DateRightSlot.module.scss'
 
@@ -112,6 +113,7 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
   const selectedRecipientEntriesInOrder = useAppSelector(
     selectSelectedRecipientEntriesInOrder,
   )
+  const postcardStatuses = useAppSelector(selectPostcardStatuses)
   const { previewUrl: cardphotoPreviewUrl } = useAppSelector(
     selectCardphotoPreview,
   )
@@ -264,8 +266,7 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     listPreviewUrl,
   ])
 
-  const historyListEntries: HistoryListPanelItem[] = useMemo(() => {
-    const entries: HistoryListPanelItem[] = []
+  const { historyListEntries, historyUnderlyingPostcardCount } = useMemo(() => {
     const postcardItems: CalendarCardItem[] = []
     Object.values(cardsByDateMap).forEach((day) => {
       postcardItems.push(
@@ -276,7 +277,9 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
         ...day.error,
       )
     })
+    const entries: HistoryListPanelItem[] = []
     postcardItems.forEach((item, i) => {
+      if (!postcardStatuses[item.status]) return
       entries.push({
         id: `history-postcard-${item.rowKey}-${i}`,
         cardId: item.cardId,
@@ -288,8 +291,11 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
         previewIsProcessed: item.isProcessed,
       })
     })
-    return entries
-  }, [cardsByDateMap, resolveRecipientDetailLine])
+    return {
+      historyListEntries: entries,
+      historyUnderlyingPostcardCount: postcardItems.length,
+    }
+  }, [cardsByDateMap, postcardStatuses, resolveRecipientDetailLine])
 
   const handleCloseList = useCallback(() => {
     dispatch(setDateListPanelOpen(false))
@@ -331,6 +337,7 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
               onClose={handleCloseList}
               entries={historyListEntries}
               onSelectEntry={handleSelectEntry}
+              hasUnderlyingHistoryEntries={historyUnderlyingPostcardCount > 0}
             />
           )}
         </div>

@@ -31,6 +31,8 @@ type Props = {
   onClose: () => void
   entries?: HistoryListPanelItem[]
   onSelectEntry?: (item: HistoryListPanelItem) => void
+  /** True if postcards exist before status filter (keeps legend colors when list is filtered empty). */
+  hasUnderlyingHistoryEntries?: boolean
   // section: 'date' | 'history'
 }
 
@@ -86,11 +88,16 @@ export const HistoryListPanel: React.FC<Props> = ({
   onClose,
   entries = [],
   onSelectEntry,
+  hasUnderlyingHistoryEntries,
   // section,
 }) => {
   // const { isHistoryMode } = useDateFacade()
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
+  const legendTreatAsEmpty =
+    hasUnderlyingHistoryEntries === undefined
+      ? !hasRows
+      : !hasUnderlyingHistoryEntries
 
   return (
     <div className={styles.panel}>
@@ -135,7 +142,7 @@ export const HistoryListPanel: React.FC<Props> = ({
         <div className={styles.indicatorsInner}>
           <PostcardStatusLegend
             spot="historyList"
-            isHistoryEmpty={!hasRows}
+            isHistoryEmpty={legendTreatAsEmpty}
             // isHistoryMode={isHistoryMode}
           />
         </div>
