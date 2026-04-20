@@ -7,7 +7,6 @@ import {
 } from '@date/calendar/infrastructure/state'
 import { pickDispatchDate, setSelectedDates } from '@date/infrastructure/state'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import { selectIsDateListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import {
   selectCachedMultiDates,
   selectCachedSingleDate,
@@ -16,15 +15,22 @@ import {
   selectSelectedDates,
 } from '@date/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
-import { selectFirstProcessedCardThumbnailUrl } from '@entities/card/infrastructure/selectors'
+import {
+  selectCardsByDateMap,
+  selectFirstProcessedCardThumbnailUrl,
+} from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type {
   CalendarCardItem,
   CardCalendarIndex,
 } from '@entities/card/domain/types'
 import type { Postcard } from '@entities/postcard'
+import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
+import type { RecipientState } from '@envelope/recipient/domain/types'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
+import { selectSelectedRecipientEntriesInOrder } from '@envelope/infrastructure/selectors'
 import { DateListPanel } from './DateListPanel'
-import { HistoryListPanel } from './HistoryListPanel'
+import { HistoryListPanel, type HistoryListPanelItem } from './HistoryListPanel'
 import { useCalendarFacade } from '@date/calendar/application/facades/useCalendarFacade'
 import type { DateListPanelItem } from './DateListPanel'
 import styles from './DateRightSlot.module.scss'
@@ -52,28 +58,39 @@ function flattenDayData(dayData: CardCalendarIndex): CalendarCardItem[] {
   return list
 }
 
-function formatRecipientLine(
-  postcard: Postcard | undefined,
+/** Name + country (or city if country empty), from envelope recipient layers. */
+function formatRecipientDetailFromLayers(
+  recipient: RecipientState | undefined,
 ): string | undefined {
-  // console.log('postcard', postcard)
-  const recipient = postcard?.card?.envelope?.recipient as
-    | {
-        appliedData?: { name?: string; country?: string } | null
-        viewDraft?: { name?: string; country?: string }
-        formDraft?: { name?: string; country?: string }
-      }
-    | undefined
-
+  if (!recipient) return undefined
   const source =
-    recipient?.appliedData ??
-    recipient?.viewDraft ??
-    recipient?.formDraft ??
+    recipient.appliedData ??
+    recipient.viewDraft ??
+    recipient.formDraft ??
     null
   const name = String(source?.name ?? '').trim()
   const country = String(source?.country ?? '').trim()
+  const city = String(source?.city ?? '').trim()
+  const region = country || city
+  if (name && region) return `${name}, ${region}`
+  return name || region || undefined
+}
 
-  if (name && country) return `${name}, ${country}`
-  return name || country || undefined
+function formatRecipientLine(postcard: Postcard | undefined): string | undefined {
+  return formatRecipientDetailFromLayers(postcard?.card?.envelope?.recipient)
+}
+
+function formatDetailLineFromAddressBookEntry(
+  entry: AddressBookEntry,
+): string | undefined {
+  const addr = entry.address
+  if (!addr) return undefined
+  const name = String(addr.name ?? '').trim()
+  const country = String(addr.country ?? '').trim()
+  const city = String(addr.city ?? '').trim()
+  const region = country || city
+  if (name && region) return `${name}, ${region}`
+  return name || region || undefined
 }
 
 export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
@@ -89,7 +106,12 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
   const cachedMultiDates = useAppSelector(selectCachedMultiDates)
   const isMultiDateMode = useAppSelector(selectIsMultiDateMode)
   const cachedSingleDate = useAppSelector(selectCachedSingleDate)
+  const cardsByDateMap = useAppSelector(selectCardsByDateMap)
   const cartItems = useAppSelector(selectCartItems)
+  const recipientState = useAppSelector(selectRecipientState)
+  const selectedRecipientEntriesInOrder = useAppSelector(
+    selectSelectedRecipientEntriesInOrder,
+  )
   const { previewUrl: cardphotoPreviewUrl } = useAppSelector(
     selectCardphotoPreview,
   )
@@ -98,19 +120,40 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
   )
   const listPreviewUrl = cardphotoPreviewUrl ?? processedThumbFallback ?? null
   const postcardByCardId = useMemo(
-    () =>
-      new Map(
-        cartItems
-          .filter((p) => p.status !== 'cart')
-          .map((p) => [p.card.id, p] as const),
-      ),
+    () => new Map(cartItems.map((p) => [p.card.id, p] as const)),
     [cartItems],
   )
+
+  const sessionRecipientDetail = useMemo(() => {
+    const cartDraft = cartItems.find((p) => p.status === 'cart')
+    const fromPostcard = formatRecipientLine(cartDraft)
+    if (fromPostcard) return fromPostcard
+    return formatRecipientDetailFromLayers(recipientState)
+  }, [cartItems, recipientState])
+
+  const resolveRecipientDetailLine = useCallback(
+    (cardId: string): string | undefined => {
+      if (cardId === 'current_session') return sessionRecipientDetail
+      return formatRecipientLine(postcardByCardId.get(cardId))
+    },
+    [sessionRecipientDetail, postcardByCardId],
+  )
+
+  /** One slot per selected address-book recipient; otherwise a single session line. */
+  const recipientSlots = useMemo(() => {
+    if (selectedRecipientEntriesInOrder.length > 0) {
+      return selectedRecipientEntriesInOrder.map((e) => ({
+        key: e.id,
+        detailLine: formatDetailLineFromAddressBookEntry(e),
+      }))
+    }
+    return [{ key: 'session', detailLine: sessionRecipientDetail }]
+  }, [selectedRecipientEntriesInOrder, sessionRecipientDetail])
 
   const dateListEntries: DateListPanelItem[] = useMemo(() => {
     if (openDayPanel) {
       return flattenDayData(openDayPanel.dayData).map((item, i) => ({
-        detailLine: formatRecipientLine(postcardByCardId.get(item.cardId)),
+        detailLine: resolveRecipientDetailLine(item.cardId),
         id: `day-panel-${openDayPanel.dateKey}-${item.rowKey}-${i}`,
         cardId: item.cardId,
         sourceDate: item.date,
@@ -128,10 +171,12 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
       idSuffix: string,
       variant?: 'inactive',
       onDelete?: () => void,
+      recipientDetailLine?: string | null,
     ): DateListPanelItem => ({
       id: `${d.year}-${d.month}-${d.day}-${idSuffix}`,
       sourceDate: d,
       dateLabel: formatDispatchDateLabel(d),
+      detailLine: recipientDetailLine ?? sessionRecipientDetail ?? undefined,
       previewUrl: preview,
       previewIsProcessed: true,
       variant,
@@ -142,29 +187,65 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
 
     if (isMultiDateMode) {
       if (cachedSingleDate) {
-        entries.push(row(cachedSingleDate, 'cached-single', 'inactive'))
+        recipientSlots.forEach((slot, ri) => {
+          entries.push(
+            row(
+              cachedSingleDate,
+              `cached-single-rcpt-${slot.key}-${ri}`,
+              'inactive',
+              undefined,
+              slot.detailLine,
+            ),
+          )
+        })
       }
       selectedDates.forEach((d, i) => {
-        entries.push(
-          row(d, `m-${i}`, undefined, () => {
-            dispatch(
-              setSelectedDates(
-                selectedDates.filter((x) => !sameDispatchDate(x, d)),
-              ),
-            )
-          }),
-        )
+        recipientSlots.forEach((slot, ri) => {
+          entries.push(
+            row(
+              d,
+              `m-${i}-rcpt-${slot.key}-${ri}`,
+              undefined,
+              () => {
+                dispatch(
+                  setSelectedDates(
+                    selectedDates.filter((x) => !sameDispatchDate(x, d)),
+                  ),
+                )
+              },
+              slot.detailLine,
+            ),
+          )
+        })
       })
     } else {
       if (selectedDate) {
-        entries.push(
-          row(selectedDate, 'single', undefined, () => {
-            dispatch(pickDispatchDate(selectedDate))
-          }),
-        )
+        recipientSlots.forEach((slot, ri) => {
+          entries.push(
+            row(
+              selectedDate,
+              `single-rcpt-${slot.key}-${ri}`,
+              undefined,
+              () => {
+                dispatch(pickDispatchDate(selectedDate))
+              },
+              slot.detailLine,
+            ),
+          )
+        })
       }
       cachedMultiDates.forEach((d, i) => {
-        entries.push(row(d, `cached-m-${i}`, 'inactive'))
+        recipientSlots.forEach((slot, ri) => {
+          entries.push(
+            row(
+              d,
+              `cached-m-${i}-rcpt-${slot.key}-${ri}`,
+              'inactive',
+              undefined,
+              slot.detailLine,
+            ),
+          )
+        })
       })
     }
 
@@ -177,9 +258,38 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     selectedDates,
     cachedSingleDate,
     cachedMultiDates,
-    postcardByCardId,
+    sessionRecipientDetail,
+    recipientSlots,
+    resolveRecipientDetailLine,
     listPreviewUrl,
   ])
+
+  const historyListEntries: HistoryListPanelItem[] = useMemo(() => {
+    const entries: HistoryListPanelItem[] = []
+    const postcardItems: CalendarCardItem[] = []
+    Object.values(cardsByDateMap).forEach((day) => {
+      postcardItems.push(
+        ...day.cart,
+        ...day.ready,
+        ...day.sent,
+        ...day.delivered,
+        ...day.error,
+      )
+    })
+    postcardItems.forEach((item, i) => {
+      entries.push({
+        id: `history-postcard-${item.rowKey}-${i}`,
+        cardId: item.cardId,
+        sourceDate: item.date,
+        dateLabel: formatDispatchDateLabel(item.date),
+        previewUrl: item.previewUrl,
+        detailLine: resolveRecipientDetailLine(item.cardId),
+        previewStatus: item.status,
+        previewIsProcessed: item.isProcessed,
+      })
+    })
+    return entries
+  }, [cardsByDateMap, resolveRecipientDetailLine])
 
   const handleCloseList = useCallback(() => {
     dispatch(setDateListPanelOpen(false))
@@ -219,7 +329,7 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
           {section === 'history' && historyListPanelOpen && (
             <HistoryListPanel
               onClose={handleCloseList}
-              entries={dateListEntries}
+              entries={historyListEntries}
               onSelectEntry={handleSelectEntry}
             />
           )}

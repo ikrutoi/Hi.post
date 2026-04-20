@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { IconX, IconListDate, IconHistory } from '@shared/ui/icons'
+import { IconX, IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
@@ -11,7 +11,6 @@ import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { useDateFacade } from '../application/facades/useDateFacade'
-import { DateListPanelItem } from './DateListPanel'
 import { HistoryListEntry } from './historyList/HistoryListEntry'
 import clsx from 'clsx'
 
@@ -38,9 +37,9 @@ type Props = {
 const isBlobUrl = (url: string | null | undefined): boolean =>
   typeof url === 'string' && url.startsWith('blob:')
 
-const DateListPanelRow: React.FC<{
-  item: DateListPanelItem
-  onSelectEntry?: (item: DateListPanelItem) => void
+const HistoryListPanelRow: React.FC<{
+  item: HistoryListPanelItem
+  onSelectEntry?: (item: HistoryListPanelItem) => void
 }> = ({ item, onSelectEntry }) => {
   const dispatch = useAppDispatch()
   const cachedUrl = useAppSelector(
@@ -119,7 +118,7 @@ export const HistoryListPanel: React.FC<Props> = ({
         >
           {hasRows ? (
             entries.map((item) => (
-              <DateListPanelRow
+              <HistoryListPanelRow
                 key={item.id}
                 item={item}
                 onSelectEntry={onSelectEntry}
@@ -136,6 +135,7 @@ export const HistoryListPanel: React.FC<Props> = ({
         <div className={styles.indicatorsInner}>
           <PostcardStatusLegend
             spot="historyList"
+            isHistoryEmpty={!hasRows}
             // isHistoryMode={isHistoryMode}
           />
         </div>
