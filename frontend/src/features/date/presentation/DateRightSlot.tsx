@@ -16,10 +16,7 @@ import {
   selectSelectedDates,
 } from '@date/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
-import {
-  selectCardsByDateMap,
-  selectFirstProcessedCardThumbnailUrl,
-} from '@entities/card/infrastructure/selectors'
+import { selectFirstProcessedCardThumbnailUrl } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type {
   CalendarCardItem,
@@ -92,7 +89,6 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
   const cachedMultiDates = useAppSelector(selectCachedMultiDates)
   const isMultiDateMode = useAppSelector(selectIsMultiDateMode)
   const cachedSingleDate = useAppSelector(selectCachedSingleDate)
-  const cardsByDateMap = useAppSelector(selectCardsByDateMap)
   const cartItems = useAppSelector(selectCartItems)
   const { previewUrl: cardphotoPreviewUrl } = useAppSelector(
     selectCardphotoPreview,
@@ -172,30 +168,6 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
       })
     }
 
-    const postcardItems: CalendarCardItem[] = []
-    Object.values(cardsByDateMap).forEach((day) => {
-      postcardItems.push(
-        ...day.cart,
-        ...day.ready,
-        ...day.sent,
-        ...day.delivered,
-        ...day.error,
-      )
-    })
-
-    postcardItems.forEach((item, i) => {
-      entries.push({
-        id: `postcard-${item.rowKey}-${i}`,
-        cardId: item.cardId,
-        sourceDate: item.date,
-        dateLabel: formatDispatchDateLabel(item.date),
-        previewUrl: item.previewUrl,
-        detailLine: formatRecipientLine(postcardByCardId.get(item.cardId)),
-        previewStatus: item.status,
-        previewIsProcessed: item.isProcessed,
-      })
-    })
-
     return entries
   }, [
     dispatch,
@@ -205,7 +177,6 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     selectedDates,
     cachedSingleDate,
     cachedMultiDates,
-    cardsByDateMap,
     postcardByCardId,
     listPreviewUrl,
   ])

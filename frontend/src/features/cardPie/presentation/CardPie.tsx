@@ -472,7 +472,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                     <tspan x="2780" dy="1250" fontWeight="600" fontSize="1400">
                       {date.day}
                     </tspan>
-                    <tspan x="2780" dy="600" fontSize="550">
+                    <tspan x="2780" dy="700" fontSize="550">
                       {listOfMonthOfYear[date.month]}
                     </tspan>
                   </text>
