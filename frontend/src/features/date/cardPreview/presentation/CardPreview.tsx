@@ -100,8 +100,19 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     countForRecipientBadge > 1
       ? countForRecipientBadge
       : 1
-  const badgeNumeric =
-    recipientFactor > 1 ? Math.max(totalOnDay, recipientFactor) : totalOnDay
+
+  const useActiveBranchesOnlyForBadge =
+    !isHistory &&
+    isSelectedDate &&
+    Boolean(calendarDispatchDate) &&
+    recipientEnabled &&
+    recipientBranchSlotKeys.length > 1
+
+  const badgeNumeric = useActiveBranchesOnlyForBadge
+    ? effectiveRecipientCount
+    : recipientFactor > 1
+      ? Math.max(totalOnDay, recipientFactor)
+      : totalOnDay
   const badgeCount = badgeNumeric > 1 ? badgeNumeric : 0
   /** В режиме Дата счётчик только для выбранного дня; для приглушённого превью из pipeline не показываем. */
   const showExtraCountBadge =

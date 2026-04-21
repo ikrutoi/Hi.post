@@ -10,7 +10,6 @@ import {
   setSelectedDates,
   excludeDispatchBranch,
 } from '@date/infrastructure/state'
-import { removeItem } from '@cart/infrastructure/state'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import {
   selectCachedMultiDates,
@@ -402,7 +401,6 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
               `m-${i}-rcpt-${slot.key}-${ri}`,
               undefined,
               () => {
-                if (cartP) dispatch(removeItem(cartP.localId))
                 dispatch(excludeDispatchBranch({ branchKey }))
                 const nextExcluded = new Set(excludedDispatchBranchSet)
                 nextExcluded.add(branchKey)
@@ -441,7 +439,6 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
               `single-rcpt-${slot.key}-${ri}`,
               undefined,
               () => {
-                if (cartP) dispatch(removeItem(cartP.localId))
                 dispatch(excludeDispatchBranch({ branchKey }))
                 const nextExcluded = new Set(excludedDispatchBranchSet)
                 nextExcluded.add(branchKey)
