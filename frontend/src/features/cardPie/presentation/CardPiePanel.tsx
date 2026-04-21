@@ -52,8 +52,6 @@ const CardPiePanelRow: React.FC<{
       previewUrl={displayUrl}
       detailLine={item.detailLine}
       variant={item.variant}
-      previewStatus={item.previewStatus}
-      previewIsProcessed={item.previewIsProcessed}
       onSelect={
         onSelectEntry && item.variant !== 'inactive'
           ? () => onSelectEntry(item)

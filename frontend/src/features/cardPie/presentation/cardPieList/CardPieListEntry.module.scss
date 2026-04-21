@@ -4,7 +4,7 @@
   position: relative;
   margin-bottom: 0.25rem;
   min-height: 2.5rem;
-  padding: 1px 0.5rem 1px 0.5rem;
+  padding: 1px 0.5rem 1px 0.35rem;
   box-sizing: border-box;
   background-color: $color-date-input;
   border: 1px solid $color-date-input-border;
@@ -37,50 +37,9 @@
     }
   }
 
-  &[data-preview-status='cart'] {
-    background-color: $color-preview-row-cart;
-    border-color: mix($color-preview-indicator-cart, #fff, 60%);
-  }
-
-  &[data-preview-status='ready'] {
-    background-color: $color-preview-row-ready;
-    border-color: mix($color-preview-indicator-ready, #fff, 60%);
-  }
-
-  &[data-preview-status='sent'] {
-    background-color: $color-preview-row-sent;
-    border-color: mix($color-preview-indicator-sent, #fff, 60%);
-  }
-
-  &[data-preview-status='delivered'] {
-    background-color: $color-preview-row-delivered;
-    border-color: mix($color-preview-indicator-delivered, #fff, 60%);
-  }
-
-  &[data-preview-status='error'] {
-    background-color: $color-preview-row-error;
-    border-color: mix($color-preview-indicator-error, #fff, 60%);
-  }
-
   &:hover,
   &[data-focused='true'] {
     background-color: darken($color-date-input, 2%);
-
-    &[data-preview-status='cart'] {
-      background-color: darken($color-preview-row-cart, 2%);
-    }
-    &[data-preview-status='ready'] {
-      background-color: darken($color-preview-row-ready, 2%);
-    }
-    &[data-preview-status='sent'] {
-      background-color: darken($color-preview-row-sent, 2%);
-    }
-    &[data-preview-status='delivered'] {
-      background-color: darken($color-preview-row-delivered, 2%);
-    }
-    &[data-preview-status='error'] {
-      background-color: darken($color-preview-row-error, 2%);
-    }
 
     &[data-inactive='true'] {
       background-color: mix($color-date-input, #f5f5f5, 40%);
@@ -90,22 +49,6 @@
   &[data-selected='true'] {
     background-color: darken($color-date-input, 4%);
     box-shadow: -2px 0 0 0 $color-date-multi;
-
-    &[data-preview-status='cart'] {
-      background-color: darken($color-preview-row-cart, 4%);
-    }
-    &[data-preview-status='ready'] {
-      background-color: darken($color-preview-row-ready, 4%);
-    }
-    &[data-preview-status='sent'] {
-      background-color: darken($color-preview-row-sent, 4%);
-    }
-    &[data-preview-status='delivered'] {
-      background-color: darken($color-preview-row-delivered, 4%);
-    }
-    &[data-preview-status='error'] {
-      background-color: darken($color-preview-row-error, 4%);
-    }
 
     &[data-inactive='true'] {
       box-shadow: -2px 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
@@ -133,55 +76,55 @@
   min-height: calc(2.5rem - 2px);
 }
 
-.statusIndicator {
+.favoriteSlot {
   flex-shrink: 0;
   align-self: center;
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
-
-  &.processed {
-    background-color: $color-preview-indicator-processed;
-  }
-
-  &.cart {
-    background-color: $color-preview-indicator-cart;
-  }
-
-  &.ready {
-    background-color: $color-preview-indicator-ready;
-  }
-
-  &.sent {
-    background-color: $color-preview-indicator-sent;
-  }
-
-  &.delivered {
-    background-color: $color-preview-indicator-delivered;
-  }
-
-  &.error {
-    background-color: $color-preview-indicator-error;
-  }
-
-  &.drafts {
-    background-color: mix($color-preview-indicator-processed, #fff, 72%);
-  }
-}
-
-.statusIndicatorSpacer {
-  border: none;
-  background: transparent;
-  box-shadow: none;
-}
-
-.root[data-inactive='true'] .statusIndicator {
-  opacity: 0.72;
+  width: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .root[data-inactive='true'] .thumbImg {
   filter: grayscale(1);
+}
+
+.star,
+.starStatic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  font-size: 1rem;
+  width: 1.15em;
+  height: 1.15em;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  border-radius: 50%;
+  color: $color-font-disabled;
+  box-sizing: border-box;
+}
+
+.star {
+  border: none;
+  cursor: pointer;
+  background: none;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  &[data-starred='true'] {
+    color: $color-favorite-star;
+  }
+}
+
+.starStatic {
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
 }
 
 .thumb {

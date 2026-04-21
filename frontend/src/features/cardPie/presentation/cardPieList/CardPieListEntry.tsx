@@ -1,6 +1,4 @@
 import React from 'react'
-import clsx from 'clsx'
-import type { PostcardStatus } from '@entities/postcard'
 import { IconX } from '@shared/ui/icons'
 import styles from './CardPieListEntry.module.scss'
 
@@ -10,28 +8,26 @@ export type CardPieListEntryProps = {
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
-  showStatusIndicator?: boolean
   variant?: CardPieListEntryVariant
-  previewStatus?: PostcardStatus
-  previewIsProcessed?: boolean
   onSelect?: () => void
   onDelete?: () => void
   isSelected?: boolean
   isFocused?: boolean
+  isStarred?: boolean
+  onToggleStar?: () => void
 }
 
 export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   dateLabel,
   previewUrl,
   detailLine,
-  showStatusIndicator = true,
   variant = 'default',
-  previewStatus,
-  previewIsProcessed,
   onSelect,
   onDelete,
   isSelected = false,
   isFocused = false,
+  isStarred = false,
+  onToggleStar,
 }) => {
   const interactive = Boolean(onSelect)
   const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
@@ -40,9 +36,6 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   return (
     <div
       className={styles.root}
-      data-preview-status={
-        previewStatus && !previewIsProcessed ? previewStatus : undefined
-      }
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
@@ -64,22 +57,31 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
       }
     >
       <div className={styles.body}>
-        {showStatusIndicator ? (
-          previewStatus && !previewIsProcessed ? (
-            <span
-              className={clsx(styles.statusIndicator, styles[previewStatus])}
-              aria-hidden
-            />
+        <div className={styles.favoriteSlot}>
+          {onToggleStar ? (
+            <button
+              type="button"
+              className={styles.star}
+              data-starred={isStarred ? 'true' : undefined}
+              onClick={(e) => {
+                e.stopPropagation()
+                onToggleStar()
+              }}
+              aria-label={
+                isStarred ? 'Remove from quick access' : 'Add to quick access'
+              }
+              title={
+                isStarred ? 'Remove from quick access' : 'Add to quick access'
+              }
+            >
+              ★
+            </button>
           ) : (
-            <span
-              className={clsx(
-                styles.statusIndicator,
-                styles.statusIndicatorSpacer,
-              )}
-              aria-hidden
-            />
-          )
-        ) : null}
+            <span className={styles.starStatic} aria-hidden>
+              ★
+            </span>
+          )}
+        </div>
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
             <img src={previewUrl} alt="" className={styles.thumbImg} />

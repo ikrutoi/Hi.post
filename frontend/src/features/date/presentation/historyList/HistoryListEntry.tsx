@@ -65,20 +65,22 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
     >
       <div className={styles.body}>
         {showStatusIndicator ? (
-          previewStatus && !previewIsProcessed ? (
-            <span
-              className={clsx(styles.statusIndicator, styles[previewStatus])}
-              aria-hidden
-            />
-          ) : (
-            <span
-              className={clsx(
-                styles.statusIndicator,
-                styles.statusIndicatorSpacer,
-              )}
-              aria-hidden
-            />
-          )
+          <div className={styles.statusIndicatorSlot}>
+            {previewStatus && !previewIsProcessed ? (
+              <span
+                className={clsx(styles.statusIndicator, styles[previewStatus])}
+                aria-hidden
+              />
+            ) : (
+              <span
+                className={clsx(
+                  styles.statusIndicator,
+                  styles.statusIndicatorSpacer,
+                )}
+                aria-hidden
+              />
+            )}
+          </div>
         ) : null}
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
@@ -95,7 +97,7 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
           className={styles.deleteButton}
           onClick={(e) => {
             e.stopPropagation()
-            onDelete()
+            onDelete?.()
           }}
           aria-label="Remove date from list"
           title="Remove date from list"
