@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconX, IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { type HistoryListEntryVariant } from './historyList/HistoryListEntry'
@@ -103,7 +104,10 @@ export const HistoryListPanel: React.FC<Props> = ({
     <div className={styles.panel}>
       <div className={styles.header}>
         <div className={styles.headerToolbar}>
-          <Toolbar section="historyList" />
+          <ListPanelHeaderWithLead
+            leadIconKey="listHistory"
+            toolbar={<Toolbar section="historyList" />}
+          />
         </div>
         <button
           type="button"

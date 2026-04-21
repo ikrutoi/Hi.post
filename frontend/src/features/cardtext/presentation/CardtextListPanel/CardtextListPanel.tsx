@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconX, IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
 import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
@@ -82,7 +83,10 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
     <div className={styles.panel}>
       <div className={styles.header}>
         <div className={styles.headerToolbar}>
-          <Toolbar section="cardtextList" />
+          <ListPanelHeaderWithLead
+            leadIconKey="listCardtext"
+            toolbar={<Toolbar section="cardtextList" />}
+          />
         </div>
         <button
           type="button"

@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconX, IconListDate } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import {
@@ -97,7 +98,10 @@ export const DateListPanel: React.FC<Props> = ({
     <div className={styles.panel}>
       <div className={styles.header}>
         <div className={styles.headerToolbar}>
-          <Toolbar section="dateList" />
+          <ListPanelHeaderWithLead
+            leadIconKey="listDate"
+            toolbar={<Toolbar section="dateList" />}
+          />
         </div>
         <button
           type="button"

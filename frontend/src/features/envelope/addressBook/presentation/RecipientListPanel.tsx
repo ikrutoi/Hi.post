@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
 import { IconX, IconUsers } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { AddressEntry } from './AddressEntry'
@@ -125,15 +126,22 @@ export const RecipientListPanel: React.FC<Props> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        {combinedEntries.length > 0 && (
-          <div className={styles.headerToolbar}>
-            <Toolbar
-              section={
-                isRecipientsMode ? 'addressListRecipients' : 'addressListRecipient'
-              }
-            />
-          </div>
-        )}
+        <div className={styles.headerToolbar}>
+          <ListPanelHeaderWithLead
+            leadIconKey="addressList"
+            toolbar={
+              combinedEntries.length > 0 ? (
+                <Toolbar
+                  section={
+                    isRecipientsMode
+                      ? 'addressListRecipients'
+                      : 'addressListRecipient'
+                  }
+                />
+              ) : null
+            }
+          />
+        </div>
         <button
           type="button"
           className={styles.closeBtn}

@@ -19,6 +19,7 @@ import {
   setAssetData,
 } from '@cardphoto/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { CardphotoListThumb } from './CardphotoListThumb'
 import styles from './CardphotoListPanel.module.scss'
@@ -178,7 +179,10 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
     <div className={styles.panel}>
       <div className={styles.header}>
         <div className={styles.headerToolbar}>
-          <Toolbar section="cardphotoList" />
+          <ListPanelHeaderWithLead
+            leadIconKey="listCardphoto"
+            toolbar={<Toolbar section="cardphotoList" />}
+          />
         </div>
         <button
           type="button"

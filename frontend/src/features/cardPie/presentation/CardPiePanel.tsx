@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconX, IconListCardPie } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { CardPieListEntry } from './cardPieList/CardPieListEntry'
@@ -75,7 +76,10 @@ export const CardPiePanel: React.FC<Props> = ({
     <div className={styles.panel}>
       <div className={styles.header}>
         <div className={styles.headerToolbar}>
-          <Toolbar section="cardPieList" />
+          <ListPanelHeaderWithLead
+            leadIconKey="listCardPie"
+            toolbar={<Toolbar section="cardPieList" />}
+          />
         </div>
         <button
           type="button"
