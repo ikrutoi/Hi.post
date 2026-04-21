@@ -10,11 +10,8 @@ import {
   DateListEntry,
   type DateListEntryVariant,
 } from './dateList/DateListEntry'
-import type { PostcardStatus } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './DateListPanel.module.scss'
-import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
-import { useDateFacade } from '../application/facades/useDateFacade'
 
 export type DateListPanelItem = {
   id: string
@@ -24,7 +21,6 @@ export type DateListPanelItem = {
   previewUrl?: string | null
   detailLine?: string
   variant?: DateListEntryVariant
-  previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
   onDelete?: () => void
 }
@@ -72,8 +68,6 @@ const DateListPanelRow: React.FC<{
       previewUrl={displayUrl}
       detailLine={item.detailLine}
       variant={item.variant}
-      previewStatus={item.previewStatus}
-      previewIsProcessed={item.previewIsProcessed}
       onSelect={
         onSelectEntry && item.variant !== 'inactive'
           ? () => onSelectEntry(item)
