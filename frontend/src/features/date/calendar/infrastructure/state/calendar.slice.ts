@@ -88,6 +88,7 @@ const calendarSlice = createSlice({
       if (action.payload) {
         state.openDayPanel = null
         state.cardPieListPanelOpen = false
+        state.historyListPanelOpen = false
       }
     },
 
@@ -95,6 +96,7 @@ const calendarSlice = createSlice({
       state.cardPieListPanelOpen = action.payload
       if (action.payload) {
         state.dateListPanelOpen = false
+        state.historyListPanelOpen = false
         state.openDayPanel = null
       }
     },
@@ -124,7 +126,9 @@ const calendarSlice = createSlice({
     setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {
       state.historyListPanelOpen = action.payload
       if (action.payload) {
+        state.dateListPanelOpen = false
         state.cardPieListPanelOpen = false
+        state.openDayPanel = null
       }
     },
   },
