@@ -12,11 +12,17 @@ export const selectLastCalendarViewDate = (
 export const selectIsDateListPanelOpen = (state: RootState): boolean =>
   state.calendar.dateListPanelOpen
 
+export const selectIsCardPieListPanelOpen = (state: RootState): boolean =>
+  state.calendar.cardPieListPanelOpen
+
 export const selectIsHistoryListPanelOpen = (state: RootState): boolean =>
   state.calendar.historyListPanelOpen
 
 export const selectDateListSortDirection = (state: RootState): 'asc' | 'desc' =>
   state.calendar.dateListSortDirection ?? 'asc'
+
+export const selectCardPieListSortDirection = (state: RootState): 'asc' | 'desc' =>
+  state.calendar.cardPieListSortDirection ?? 'asc'
 
 export const selectPostcardStatusesCount = (
   state: RootState,

@@ -34,6 +34,7 @@ import type { RecipientsToolbarState, RecipientsKey } from './envelope.types'
 import type { LayoutOrientation } from '@layout/domain/types'
 import { DateKey, DateToolbarState } from './date'
 import { DateListKey, DateListToolbarState } from './dateList.types'
+import { CardPieListKey, CardPieListToolbarState } from './cardPieList.types'
 import { RightSidebarKey, RightSidebarToolbarState } from './rightSidebar.types'
 import { CartListKey, CartListToolbarState } from './cartList.types'
 import { HistoryKey, HistoryToolbarState } from './history.types'
@@ -90,6 +91,7 @@ export const TOOLBAR_SECTIONS = [
   'cardtextProcessed',
   'date',
   'dateList',
+  'cardPieList',
   'historyList',
   'historyListIndicators',
   'cartList',
@@ -129,6 +131,7 @@ export type ToolbarState = {
   cardtextProcessed: CardtextToolbarState & { config: ToolbarGroup[] }
   date: DateToolbarState & { config: ToolbarGroup[] }
   dateList: DateListToolbarState & { config: ToolbarGroup[] }
+  cardPieList: CardPieListToolbarState & { config: ToolbarGroup[] }
   historyList: HistoryListToolbarState & { config: ToolbarGroup[] }
   historyListIndicators: HistoryListToolbarState & { config: ToolbarGroup[] }
   cartList: CartListToolbarState & { config: ToolbarGroup[] }
@@ -278,6 +281,12 @@ export type ToolbarSectionConfigMap = {
 
   dateList: BaseSectionConfig<DateListToolbarState, DateListKey, 'dateList'>
 
+  cardPieList: BaseSectionConfig<
+    CardPieListToolbarState,
+    CardPieListKey,
+    'cardPieList'
+  >
+
   historyList: BaseSectionConfig<
     HistoryListToolbarState,
     HistoryListKey,
@@ -359,14 +368,16 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                         ? DateKey
                                                         : S extends 'dateList'
                                                           ? DateListKey
-                                                          : S extends 'historyList'
-                                                            ? HistoryListKey
-                                                            : S extends 'historyListIndicators'
+                                                          : S extends 'cardPieList'
+                                                            ? CardPieListKey
+                                                            : S extends 'historyList'
                                                               ? HistoryListKey
-                                                              : S extends 'cartList'
-                                                                ? CartListKey
-                                                                : S extends 'history'
-                                                                  ? HistoryKey
-                                                                  : S extends 'rightSidebar'
-                                                                    ? RightSidebarKey
-                                                                    : never
+                                                              : S extends 'historyListIndicators'
+                                                                ? HistoryListKey
+                                                                : S extends 'cartList'
+                                                                  ? CartListKey
+                                                                  : S extends 'history'
+                                                                    ? HistoryKey
+                                                                    : S extends 'rightSidebar'
+                                                                      ? RightSidebarKey
+                                                                      : never

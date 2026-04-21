@@ -77,6 +77,11 @@ import {
   initialDateListToolbarState,
 } from '../types/dateList.types'
 import {
+  CARD_PIE_LIST_KEYS,
+  CARD_PIE_LIST_TOOLBAR,
+  initialCardPieListToolbarState,
+} from '../types/cardPieList.types'
+import {
   initialRightSidebarToolbarState,
   RIGHT_SIDEBAR_KEYS,
   RIGHT_SIDEBAR_TOOLBAR,
@@ -451,6 +456,17 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'dateList',
     getBadges: (state: ToolbarState['dateList']) => ({}),
     toolbar: DATE_LIST_TOOLBAR,
+  },
+
+  cardPieList: {
+    keys: CARD_PIE_LIST_KEYS,
+    initialState: initialCardPieListToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'cardPieList',
+    getBadges: (state: ToolbarState['cardPieList']) => ({}),
+    toolbar: CARD_PIE_LIST_TOOLBAR,
   },
 
   rightSidebar: {

@@ -1,11 +1,14 @@
 import React, { useRef, useState } from 'react'
 import clsx from 'clsx'
+import { useAppSelector } from '@app/hooks'
+import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { Header } from './features/header/presentation/Header'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { CartListPanel } from './features/cart/presentation/CartListPanel'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
+import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
@@ -43,6 +46,7 @@ const App = () => {
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
   const { listPanelOpen } = useCartFacade()
+  const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
@@ -82,6 +86,7 @@ const App = () => {
               )}
               {activeSection === 'cardtext' && <CardtextRightSlot />}
               {activeSection === 'cardphoto' && <CardphotoRightSlot />}
+              {cardPieListPanelOpen && <CardPieLeftSlot />}
             </div>
             <div
               className={styles.appMainContentCenter}

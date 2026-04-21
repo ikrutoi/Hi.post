@@ -29,6 +29,7 @@ import {
   initialCardtextProcessedToolbarState,
   initialDateToolbarState,
   initialDateListToolbarState,
+  initialCardPieListToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -83,6 +84,7 @@ const initialState: ToolbarState = {
   cardtextProcessed: initialCardtextProcessedToolbarState,
   date: initialDateToolbarState,
   dateList: initialDateListToolbarState,
+  cardPieList: initialCardPieListToolbarState,
   cartList: initialCartListToolbarState,
   rightSidebar: initialRightSidebarToolbarState,
 }

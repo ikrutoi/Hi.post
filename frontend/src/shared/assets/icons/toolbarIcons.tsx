@@ -173,6 +173,7 @@ import {
   IconHistory,
   IconListHistory,
   IconCalendarReturn,
+  IconListCardPie,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -217,6 +218,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconApplyBold />
     case 'listCardtext':
       return <IconListCardtext />
+    case 'listCardPie':
+      return <IconListCardPie />
     case 'user':
       return <RiUserLine />
     case 'rotateLeft':

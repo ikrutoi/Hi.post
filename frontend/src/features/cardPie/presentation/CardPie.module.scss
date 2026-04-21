@@ -283,33 +283,3 @@ $pie-center-logo-size: 1.5rem;
   color: inherit;
 }
 
-.pieCloseButton {
-  position: absolute;
-  top: 0;
-  right: 0;
-  transform: translate(
-    calc(50% - 0.25rem),
-    calc(-50% + 0.25rem)
-  ); // half outside + shifted left/down
-  width: 1.4rem;
-  height: 1.4rem;
-  border-radius: 50%;
-  border: 1px solid $color-app-substrate-border;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  z-index: 6;
-  color: $color-font-enabled;
-
-  &:focus-visible {
-    outline: none;
-  }
-
-  svg {
-    width: 0.9rem;
-    height: 0.9rem;
-  }
-}

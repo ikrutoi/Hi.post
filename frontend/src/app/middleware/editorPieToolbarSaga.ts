@@ -2,6 +2,9 @@ import { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { setCardPieListPanelOpen } from '@date/calendar/infrastructure/state'
+import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { togglePieFavorite } from '@entities/cardEditor/infrastructure/state'
 import type { RootState } from '@app/state'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
@@ -21,6 +24,20 @@ export function* handleEditorPieToolbarAction(
   const { section, key } = action.payload
   if (section !== 'editorPie') return
   switch (key) {
+    case 'listCardPie': {
+      const listOpen: boolean = yield select(selectIsCardPieListPanelOpen)
+      const nextOpen = !listOpen
+      yield put(setCardPieListPanelOpen(nextOpen))
+      yield put(
+        updateToolbarIcon({
+          section: 'editorPie',
+          key: 'listCardPie',
+          value: nextOpen ? 'active' : 'enabled',
+        }),
+      )
+      break
+    }
+
     case 'addCart': {
       const { isAllComplete } = yield select(selectPieProgress)
       if (!isAllComplete) break

@@ -27,8 +27,10 @@ type CalendarState = {
   lastViewedCalendarDate: CalendarViewDate
   historyListPanelOpen: boolean
   dateListPanelOpen: boolean
+  cardPieListPanelOpen: boolean
   openDayPanel: DayPanelPayload | null
   dateListSortDirection: 'asc' | 'desc'
+  cardPieListSortDirection: 'asc' | 'desc'
   postcardStatusesCount: PostcardStatusesCount
   postcardStatuses: PostcardStatuses
 }
@@ -41,9 +43,11 @@ const initialState: CalendarState = {
     month: now.month,
   },
   dateListPanelOpen: false,
+  cardPieListPanelOpen: false,
   historyListPanelOpen: false,
   openDayPanel: null,
   dateListSortDirection: 'asc',
+  cardPieListSortDirection: 'asc',
   postcardStatusesCount: {
     cart: null,
     ready: null,
@@ -83,12 +87,26 @@ const calendarSlice = createSlice({
       state.dateListPanelOpen = action.payload
       if (action.payload) {
         state.openDayPanel = null
+        state.cardPieListPanelOpen = false
+      }
+    },
+
+    setCardPieListPanelOpen(state, action: PayloadAction<boolean>) {
+      state.cardPieListPanelOpen = action.payload
+      if (action.payload) {
+        state.dateListPanelOpen = false
+        state.openDayPanel = null
       }
     },
 
     toggleDateListSortDirection(state) {
       state.dateListSortDirection =
         state.dateListSortDirection === 'asc' ? 'desc' : 'asc'
+    },
+
+    toggleCardPieListSortDirection(state) {
+      state.cardPieListSortDirection =
+        state.cardPieListSortDirection === 'asc' ? 'desc' : 'asc'
     },
 
     setPostcardStatusesCount(
@@ -105,6 +123,9 @@ const calendarSlice = createSlice({
 
     setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {
       state.historyListPanelOpen = action.payload
+      if (action.payload) {
+        state.cardPieListPanelOpen = false
+      }
     },
   },
 })
@@ -114,7 +135,9 @@ export const {
   openDayPanel,
   closeDayPanel,
   setDateListPanelOpen,
+  setCardPieListPanelOpen,
   toggleDateListSortDirection,
+  toggleCardPieListSortDirection,
   setPostcardStatusesCount,
   setPostcardStatuses,
   setHistoryListPanelOpen,

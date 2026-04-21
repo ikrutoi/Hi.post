@@ -65,6 +65,7 @@ export const ICON_KEYS = [
   'listCardtext',
   'listCardphoto',
   'listDate',
+  'listCardPie',
   'saveSmall',
   'plusSmall',
   'fontFamily',

@@ -19,8 +19,6 @@ import type { DispatchDate } from '@entities/date'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
-import { useToolbarFacade } from '@toolbar/application/facades'
-import { getToolbarIcon } from '@shared/utils/icons'
 import { CARDTEXT_APPLIED_DISPLAY_STATUSES } from '@cardtext/domain/editor/editor.types'
 import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
@@ -56,7 +54,6 @@ export const CardPie: React.FC<CardPieProps> = ({
   )
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
-  const { actions: editorPieActions } = useToolbarFacade('editorPie')
 
   const cardData = data?.data
   const cardtextStatus = cardData?.cardtext?.status
@@ -103,8 +100,6 @@ export const CardPie: React.FC<CardPieProps> = ({
   const handleMouseLeave = () => setHovered(null)
 
   const allSectionsFilled = isReady
-  const hasAnySectionFilled = Object.values(sections).some(Boolean)
-  const showCloseButton = hasAnySectionFilled
   return (
     <div
       className={clsx(
@@ -121,21 +116,6 @@ export const CardPie: React.FC<CardPieProps> = ({
             }
       }
     >
-      {showCloseButton && (
-        <button
-          type="button"
-          className={styles.pieCloseButton}
-          aria-label="Close"
-          title="Close"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            editorPieActions.onAction('close')
-          }}
-        >
-          {getToolbarIcon({ key: 'clearInput' })}
-        </button>
-      )}
       <div className={styles.pieContent}>
         <svg
           xmlns="http://www.w3.org/2000/svg"

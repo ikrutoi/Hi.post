@@ -47,6 +47,15 @@ function* handleHistoryToolbarAction(
       value: nextOpen ? 'active' : 'enabled',
     }),
   )
+  if (nextOpen) {
+    yield put(
+      updateToolbarIcon({
+        section: 'editorPie',
+        key: 'listCardPie',
+        value: 'enabled',
+      }),
+    )
+  }
 }
 
 function* syncListHistoryIconOnDayPanelOpen(): SagaIterator {
