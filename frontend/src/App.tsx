@@ -9,6 +9,7 @@ import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/Ca
 import { CartListPanel } from './features/cart/presentation/CartListPanel'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
+import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
@@ -59,6 +60,7 @@ const App = () => {
             <SectionEditorSidebar />
           </div>
           <main ref={mainRef} className={styles.appMain}>
+            <EditorPieListCardPieBadgeSync />
             {/* <div className={styles.appMainContentLeft}> */}
             <div className={styles.appMainContentLeftPieSlot}>
               {sectionSize != null && (

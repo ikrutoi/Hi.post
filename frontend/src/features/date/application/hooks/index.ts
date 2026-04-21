@@ -3,3 +3,4 @@ export { useDateSwitcherController } from '../../switcher/application/hooks/useD
 export { useInitializeCalendarViewDate } from './useInitializeCalendarViewDate'
 export { useFormattedSelectedDate } from './useFormattedSelectedDate'
 export { useAutoActivateDateSection } from './useAutoActivateDateSection'
+export { useDispatchPlanListEntries } from './useDispatchPlanListEntries'

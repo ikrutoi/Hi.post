@@ -5,37 +5,22 @@ import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
-import {
-  CardPieListEntry,
-  type CardPieListEntryVariant,
-} from './cardPieList/CardPieListEntry'
-import type { PostcardStatus } from '@entities/postcard'
+import { CardPieListEntry } from './cardPieList/CardPieListEntry'
+import type { DateListPanelItem } from '@date/presentation/DateListPanel'
 import styles from './CardPiePanel.module.scss'
-
-export type CardPiePanelItem = {
-  id: string
-  cardId?: string
-  dateLabel: string
-  previewUrl?: string | null
-  detailLine?: string
-  variant?: CardPieListEntryVariant
-  previewStatus?: PostcardStatus
-  previewIsProcessed?: boolean
-  onDelete?: () => void
-}
 
 type Props = {
   onClose: () => void
-  entries?: CardPiePanelItem[]
-  onSelectEntry?: (item: CardPiePanelItem) => void
+  entries?: DateListPanelItem[]
+  onSelectEntry?: (item: DateListPanelItem) => void
 }
 
 const isBlobUrl = (url: string | null | undefined): boolean =>
   typeof url === 'string' && url.startsWith('blob:')
 
 const CardPiePanelRow: React.FC<{
-  item: CardPiePanelItem
-  onSelectEntry?: (item: CardPiePanelItem) => void
+  item: DateListPanelItem
+  onSelectEntry?: (item: DateListPanelItem) => void
 }> = ({ item, onSelectEntry }) => {
   const dispatch = useAppDispatch()
   const cachedUrl = useAppSelector(

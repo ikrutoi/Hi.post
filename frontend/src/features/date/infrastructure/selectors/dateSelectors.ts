@@ -1,6 +1,8 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import type { DispatchDate } from '@entities/date/domain/types'
+import type { CardCalendarIndex } from '@entities/card/domain/types'
+import type { CalendarCardItem } from '@entities/card/domain/types'
 import {
   DateState,
   FirstDayOfWeekPreference,
@@ -55,6 +57,60 @@ export const selectRecipientBranchSlotKeys = createSelector(
     if (recipientEnabled && pendingIds.length > 0) return pendingIds
     if (selectedEntries.length > 0) return selectedEntries.map((e) => e.id)
     return ['session']
+  },
+)
+
+function dispatchDateKey(d: DispatchDate): string {
+  return `${d.year}-${d.month}-${d.day}`
+}
+
+function flattenOpenDayPanelItems(dayData: CardCalendarIndex): CalendarCardItem[] {
+  const list: CalendarCardItem[] = []
+  if (dayData.processed) list.push(dayData.processed)
+  list.push(...dayData.cart)
+  list.push(...dayData.ready)
+  list.push(...dayData.sent)
+  list.push(...dayData.delivered)
+  list.push(...dayData.error)
+  return list
+}
+
+/**
+ * Число строк в CardPie list panel — как `useDispatchPlanListEntries({ activeModeOnly: true })`:
+ * день из openDayPanel, иначе только активный режим (multi: выбранные даты × ветки; single: выбранная дата × ветки).
+ */
+export const selectCardPieListPanelRowCount = createSelector(
+  [
+    (s: RootState) => s.calendar.openDayPanel,
+    selectIsMultiDateMode,
+    selectSelectedDates,
+    selectSelectedDate,
+    selectExcludedDispatchBranchSet,
+    selectRecipientBranchSlotKeys,
+  ],
+  (openDayPanel, isMulti, selectedDates, selectedDate, excluded, slotKeys) => {
+    if (openDayPanel) {
+      return flattenOpenDayPanelItems(openDayPanel.dayData).length
+    }
+    if (isMulti) {
+      let c = 0
+      for (const d of selectedDates) {
+        const dk = dispatchDateKey(d)
+        for (const slotKey of slotKeys) {
+          if (!excluded.has(`${dk}|${slotKey}`)) c += 1
+        }
+      }
+      return c
+    }
+    if (selectedDate) {
+      const dk = dispatchDateKey(selectedDate)
+      let c = 0
+      for (const slotKey of slotKeys) {
+        if (!excluded.has(`${dk}|${slotKey}`)) c += 1
+      }
+      return c
+    }
+    return 0
   },
 )
 
