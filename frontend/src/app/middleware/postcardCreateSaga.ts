@@ -26,8 +26,23 @@ import type { AromaItem } from '@entities/aroma/domain/types'
 import type { CardStatus, Postcard } from '@entities/postcard'
 import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import type { SessionData } from '@entities/db/domain/types'
+import { selectExcludedDispatchBranchSet } from '@date/infrastructure/selectors'
 
 type CreateTarget = 'favorite' | 'cart'
+
+const dispatchDateKeyForBranch = (d: DispatchDate) =>
+  `${d.year}-${d.month}-${d.day}`
+
+function recipientBranchKeyFromEnvelope(
+  envelopeVariant: EnvelopeSessionRecord,
+): string {
+  const r = envelopeVariant.recipient
+  if (!r) return 'session'
+  const applied = r.applied ?? []
+  if (applied.length > 0) return applied[0] ?? 'session'
+  if (r.recipientViewId) return r.recipientViewId
+  return 'session'
+}
 
 function* setSessionFavoritePostcardLocalId(
   favoritePostcardLocalId: number | null,
@@ -215,6 +230,10 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
         })
       : [envelope]
 
+  const excludedDispatchBranches: Set<string> = yield select(
+    selectExcludedDispatchBranchSet,
+  )
+
   const existingRows: Postcard[] = yield call([postcardsAdapter, 'getAll'])
   const existingFingerprints = new Set(
     existingRows.map((row) =>
@@ -236,6 +255,15 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
 
   for (const date of dates) {
     for (const envelopeVariant of recipientVariants) {
+      if (
+        status === 'cart' &&
+        date != null &&
+        excludedDispatchBranches.has(
+          `${dispatchDateKeyForBranch(date)}|${recipientBranchKeyFromEnvelope(envelopeVariant)}`,
+        )
+      ) {
+        continue
+      }
       const candidateCard = buildBaseCard({
         id: `${appliedPhoto.id}__candidate`,
         thumbnailUrl: appliedPhoto.thumbnail?.url ?? '',

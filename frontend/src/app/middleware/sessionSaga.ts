@@ -65,6 +65,7 @@ import {
   setMultiDateMode,
   setFirstDayOfWeek,
   hydrateDateFromSession,
+  excludeDispatchBranch,
 } from '@date/infrastructure/state'
 import {
   syncCardphotoStatus,
@@ -245,6 +246,7 @@ const SESSION_WATCH_ACTIONS = [
   setSelectedDates.type,
   setMultiDateMode.type,
   hydrateDateFromSession.type,
+  excludeDispatchBranch.type,
   setFirstDayOfWeek.type,
   setValue.type,
   setTextStyle.type,
@@ -651,6 +653,8 @@ export function* hydrateAppSession() {
           firstDayOfWeek: session.date.firstDayOfWeek ?? 'Sun',
           cachedSingleDate: session.date.cachedSingleDate ?? null,
           cachedMultiDates: session.date.cachedMultiDates ?? [],
+          excludedDispatchBranches:
+            session.date.excludedDispatchBranches ?? [],
         }),
       )
     }

@@ -10,4 +10,5 @@ export const initialState: DateState = {
   firstDayOfWeek: 'Sun',
   cachedSingleDate: null,
   cachedMultiDates: [],
+  excludedDispatchBranches: [],
 }

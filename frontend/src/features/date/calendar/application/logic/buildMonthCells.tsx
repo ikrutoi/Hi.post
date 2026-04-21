@@ -83,6 +83,11 @@ export const buildMonthCells = ({
             data={dayData}
             section={activeSection}
             isSelectedDate={isSelectedDate}
+            calendarDispatchDate={{
+              year: currentViewYear,
+              month: currentViewMonth,
+              day,
+            }}
           />
         )}
       </Cell>

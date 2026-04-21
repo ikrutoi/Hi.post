@@ -73,7 +73,6 @@ const calendarSlice = createSlice({
 
     openDayPanel(state, action: PayloadAction<DayPanelPayload>) {
       state.openDayPanel = action.payload
-      state.dateListPanelOpen = false
     },
 
     closeDayPanel(state) {

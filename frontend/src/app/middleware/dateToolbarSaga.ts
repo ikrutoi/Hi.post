@@ -53,11 +53,12 @@ function* handleDateToolbarAction(
 }
 
 function* syncListDateIconOnDayPanelOpen(): SagaIterator {
+  const listOpen: boolean = yield select(selectIsDateListPanelOpen)
   yield put(
     updateToolbarIcon({
       section: 'date',
       key: 'listDate',
-      value: 'enabled',
+      value: listOpen ? 'active' : 'enabled',
     }),
   )
 }

@@ -5,7 +5,12 @@ import {
   updateLastViewedCalendarDate,
   setDateListPanelOpen,
 } from '@date/calendar/infrastructure/state'
-import { pickDispatchDate, setSelectedDates } from '@date/infrastructure/state'
+import {
+  pickDispatchDate,
+  setSelectedDates,
+  excludeDispatchBranch,
+} from '@date/infrastructure/state'
+import { removeItem } from '@cart/infrastructure/state'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import {
   selectCachedMultiDates,
@@ -13,6 +18,7 @@ import {
   selectIsMultiDateMode,
   selectSelectedDate,
   selectSelectedDates,
+  selectExcludedDispatchBranchSet,
 } from '@date/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import {
@@ -103,6 +109,36 @@ function formatRecipientLine(postcard: Postcard | undefined): string | undefined
   return formatRecipientDetailFromLayers(postcard?.card?.envelope?.recipient)
 }
 
+/**
+ * Подпись получателя для открытки в корзине: по applied[0] из адресной книги или envelopeRecipients,
+ * иначе слои на карточке. Иначе при multi все варианты показывают один viewDraft редактора.
+ */
+function formatPostcardRecipientDetail(
+  postcard: Postcard | undefined,
+  recipientEntries: AddressBookEntry[],
+  envelopeRecipients: RecipientState[],
+): string | undefined {
+  if (!postcard) return undefined
+  const r = postcard.card?.envelope?.recipient
+  if (!r) return undefined
+  const appliedId = r.applied?.[0]
+  if (appliedId) {
+    const bookEntry = recipientEntries.find((e) => e.id === appliedId)
+    if (bookEntry) {
+      const line = formatDetailLineFromAddressBookEntry(bookEntry)
+      if (line) return line
+    }
+    const envRow = envelopeRecipients.find(
+      (row) => row.recipientViewId === appliedId,
+    )
+    if (envRow) {
+      const line = formatRecipientDetailFromLayers(envRow)
+      if (line) return line
+    }
+  }
+  return formatRecipientLine(postcard)
+}
+
 function formatDetailLineFromAddressBookEntry(
   entry: AddressBookEntry,
 ): string | undefined {
@@ -146,6 +182,7 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     (s) => s.addressBook?.recipientEntries ?? [],
   )
   const postcardStatuses = useAppSelector(selectPostcardStatuses)
+  const excludedDispatchBranchSet = useAppSelector(selectExcludedDispatchBranchSet)
   const { previewUrl: cardphotoPreviewUrl } = useAppSelector(
     selectCardphotoPreview,
   )
@@ -167,6 +204,18 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
       if (!rk) continue
       const key = `${dispatchDateKey(p.card.date)}|${rk}`
       if (!m.has(key)) m.set(key, p)
+    }
+    return m
+  }, [cartItems])
+
+  /** Первая открытка корзины по id получателя (любая дата) — подпись, если нет совпадения по дате. */
+  const cartPostcardByRecipientId = useMemo(() => {
+    const m = new Map<string, Postcard>()
+    for (const p of cartItems) {
+      if (p.status !== 'cart') continue
+      const rk = postcardRecipientTemplateId(p)
+      if (!rk || m.has(rk)) continue
+      m.set(rk, p)
     }
     return m
   }, [cartItems])
@@ -194,20 +243,11 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
   const recipientSlots = useMemo(() => {
     if (recipientEnabled && recipientsPendingIds.length > 0) {
       return recipientsPendingIds.map((id) => {
-        const fromResolved = recipientsPendingResolvedEntries.find(
-          (e) => e.id === id,
-        )
-        if (fromResolved) {
+        const fromBook = recipientEntries.find((e) => e.id === id)
+        if (fromBook) {
           return {
             key: id,
-            detailLine: formatDetailLineFromAddressBookEntry(fromResolved),
-          }
-        }
-        const fromDisplay = recipientsDisplayList.find((e) => e.id === id)
-        if (fromDisplay) {
-          return {
-            key: id,
-            detailLine: formatDetailLineFromAddressBookEntry(fromDisplay),
+            detailLine: formatDetailLineFromAddressBookEntry(fromBook),
           }
         }
         const fromEnv = envelopeRecipients.find((r) => r.recipientViewId === id)
@@ -217,12 +257,32 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
             detailLine: formatRecipientDetailFromLayers(fromEnv),
           }
         }
-        const fromBook = recipientEntries.find((e) => e.id === id)
-        if (fromBook) {
+        const fromDisplay = recipientsDisplayList.find((e) => e.id === id)
+        if (fromDisplay) {
           return {
             key: id,
-            detailLine: formatDetailLineFromAddressBookEntry(fromBook),
+            detailLine: formatDetailLineFromAddressBookEntry(fromDisplay),
           }
+        }
+        const fromResolved = recipientsPendingResolvedEntries.find(
+          (e) => e.id === id,
+        )
+        if (fromResolved) {
+          return {
+            key: id,
+            detailLine: formatDetailLineFromAddressBookEntry(fromResolved),
+          }
+        }
+        const cartForRecipient = cartPostcardByRecipientId.get(id)
+        const lineFromCart = cartForRecipient
+          ? formatPostcardRecipientDetail(
+              cartForRecipient,
+              recipientEntries,
+              envelopeRecipients,
+            )
+          : undefined
+        if (lineFromCart) {
+          return { key: id, detailLine: lineFromCart }
         }
         return { key: id, detailLine: undefined }
       })
@@ -241,6 +301,7 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     recipientsDisplayList,
     envelopeRecipients,
     recipientEntries,
+    cartPostcardByRecipientId,
     selectedRecipientEntriesInOrder,
     sessionRecipientDetail,
   ])
@@ -254,8 +315,8 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
         sourceDate: item.date,
         dateLabel: formatDispatchDateLabel(item.date),
         previewUrl: item.previewUrl,
-        previewStatus: item.status,
-        previewIsProcessed: item.isProcessed,
+        /** Секция Дата: без индикатора статуса пайплайна (как у строк плана в `row`), не в стиле History. */
+        previewIsProcessed: true,
       }))
     }
 
@@ -268,15 +329,30 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
       cartPostcard?: Postcard,
     ): DateListPanelItem => {
       const fromCart = cartPostcard
-      const previewUrl = fromCart?.card.thumbnailUrl || listPreviewUrl
+      /** Список дат отражает план отправки текущего редактора — превью как у рабочей открытки, не снимок из корзины. */
+      const previewUrl =
+        listPreviewUrl ?? fromCart?.card.thumbnailUrl ?? undefined
       const cardId =
-        fromCart?.card.id ??
-        (previewUrl ? 'current_session' : undefined)
+        listPreviewUrl != null && listPreviewUrl !== ''
+          ? 'current_session'
+          : fromCart?.card.id ??
+            (previewUrl ? 'current_session' : undefined)
+      const fromCartDetailLine = fromCart
+        ? formatPostcardRecipientDetail(
+            fromCart,
+            recipientEntries,
+            envelopeRecipients,
+          )
+        : undefined
       return {
         id: `${d.year}-${d.month}-${d.day}-${idSuffix}`,
         sourceDate: d,
         dateLabel: formatDispatchDateLabel(d),
-        detailLine: recipientDetailLine ?? sessionRecipientDetail ?? undefined,
+        detailLine:
+          fromCartDetailLine ??
+          recipientDetailLine ??
+          sessionRecipientDetail ??
+          undefined,
         previewUrl,
         cardId,
         previewIsProcessed: true,
@@ -290,6 +366,8 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     if (isMultiDateMode) {
       if (cachedSingleDate) {
         recipientSlots.forEach((slot, ri) => {
+          const branchKey = `${dispatchDateKey(cachedSingleDate)}|${slot.key}`
+          if (excludedDispatchBranchSet.has(branchKey)) return
           const cartP =
             slot.key !== 'session'
               ? cartPostcardByDateKeyAndRecipient.get(
@@ -310,6 +388,8 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
       }
       selectedDates.forEach((d, i) => {
         recipientSlots.forEach((slot, ri) => {
+          const branchKey = `${dispatchDateKey(d)}|${slot.key}`
+          if (excludedDispatchBranchSet.has(branchKey)) return
           const cartP =
             slot.key !== 'session'
               ? cartPostcardByDateKeyAndRecipient.get(
@@ -322,11 +402,21 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
               `m-${i}-rcpt-${slot.key}-${ri}`,
               undefined,
               () => {
-                dispatch(
-                  setSelectedDates(
-                    selectedDates.filter((x) => !sameDispatchDate(x, d)),
-                  ),
+                if (cartP) dispatch(removeItem(cartP.localId))
+                dispatch(excludeDispatchBranch({ branchKey }))
+                const nextExcluded = new Set(excludedDispatchBranchSet)
+                nextExcluded.add(branchKey)
+                const anyLeftThisDate = recipientSlots.some(
+                  (s) =>
+                    !nextExcluded.has(`${dispatchDateKey(d)}|${s.key}`),
                 )
+                if (!anyLeftThisDate) {
+                  dispatch(
+                    setSelectedDates(
+                      selectedDates.filter((x) => !sameDispatchDate(x, d)),
+                    ),
+                  )
+                }
               },
               slot.detailLine,
               cartP,
@@ -337,6 +427,8 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     } else {
       if (selectedDate) {
         recipientSlots.forEach((slot, ri) => {
+          const branchKey = `${dispatchDateKey(selectedDate)}|${slot.key}`
+          if (excludedDispatchBranchSet.has(branchKey)) return
           const cartP =
             slot.key !== 'session'
               ? cartPostcardByDateKeyAndRecipient.get(
@@ -349,7 +441,19 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
               `single-rcpt-${slot.key}-${ri}`,
               undefined,
               () => {
-                dispatch(pickDispatchDate(selectedDate))
+                if (cartP) dispatch(removeItem(cartP.localId))
+                dispatch(excludeDispatchBranch({ branchKey }))
+                const nextExcluded = new Set(excludedDispatchBranchSet)
+                nextExcluded.add(branchKey)
+                const anyLeftThisDate = recipientSlots.some(
+                  (s) =>
+                    !nextExcluded.has(
+                      `${dispatchDateKey(selectedDate)}|${s.key}`,
+                    ),
+                )
+                if (!anyLeftThisDate) {
+                  dispatch(pickDispatchDate(selectedDate))
+                }
               },
               slot.detailLine,
               cartP,
@@ -359,6 +463,8 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
       }
       cachedMultiDates.forEach((d, i) => {
         recipientSlots.forEach((slot, ri) => {
+          const branchKey = `${dispatchDateKey(d)}|${slot.key}`
+          if (excludedDispatchBranchSet.has(branchKey)) return
           const cartP =
             slot.key !== 'session'
               ? cartPostcardByDateKeyAndRecipient.get(
@@ -393,6 +499,9 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     resolveRecipientDetailLine,
     listPreviewUrl,
     cartPostcardByDateKeyAndRecipient,
+    recipientEntries,
+    envelopeRecipients,
+    excludedDispatchBranchSet,
   ])
 
   const { historyListEntries, historyUnderlyingPostcardCount } = useMemo(() => {

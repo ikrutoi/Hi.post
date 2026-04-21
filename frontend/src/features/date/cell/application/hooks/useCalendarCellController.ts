@@ -1,8 +1,12 @@
 import { useEffect } from 'react'
-import { useAppDispatch } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
-import { openDayPanel } from '../../../calendar/infrastructure/state/calendar.slice'
+import {
+  closeDayPanel,
+  openDayPanel,
+} from '../../../calendar/infrastructure/state/calendar.slice'
+import { selectIsDateListPanelOpen } from '../../../calendar/infrastructure/selectors/calendar.selector'
 import { useSwitcherFacade } from '../../../switcher/application/facades'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
 import type {
@@ -37,6 +41,7 @@ export const useCalendarCellController = ({
   triggerFlash,
 }: UseCalendarCellControllerParams) => {
   const dispatch = useAppDispatch()
+  const dateListPanelOpen = useAppSelector(selectIsDateListPanelOpen)
   const { selectedDate, selectedDates, isMultiDateMode, chooseDate } =
     useDateFacade()
 
@@ -77,8 +82,21 @@ export const useCalendarCellController = ({
 
       chooseDate(dispatchDate)
 
-      if (!clickRemovesSelection && dateKey && dayData && hasCards(dayData)) {
+      /**
+       * Список дат открыт — показываем только план (слоты × даты), без drill-down по пайплайну дня
+       * (иначе одна строка из корзины, превью корзины и «залипание» при клике на день без карт).
+       */
+      if (dateListPanelOpen) {
+        dispatch(closeDayPanel())
+      } else if (
+        !clickRemovesSelection &&
+        dateKey &&
+        dayData &&
+        hasCards(dayData)
+      ) {
         dispatch(openDayPanel({ dateKey, dayData }))
+      } else {
+        dispatch(closeDayPanel())
       }
     }
 

@@ -97,8 +97,8 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
             e.stopPropagation()
             onDelete()
           }}
-          aria-label="Remove date from list"
-          title="Remove date from list"
+          aria-label="Remove this postcard from the list"
+          title="Remove this postcard from the list"
         >
           <IconX />
         </button>

@@ -20,6 +20,11 @@ export interface DateState {
   firstDayOfWeek: FirstDayOfWeekPreference
   cachedSingleDate: SelectedDispatchDate
   cachedMultiDates: DispatchDateList
+  /**
+   * Ветки отправки «дата|ключ получателя», убранные из списка дат (не весь день).
+   * Ключ даты: `${year}-${month}-${day}` как в `dispatchDateKey` редактора.
+   */
+  excludedDispatchBranches: string[]
   // historyListPanelOpen: boolean
   // dateListPanelOpen: boolean
 }

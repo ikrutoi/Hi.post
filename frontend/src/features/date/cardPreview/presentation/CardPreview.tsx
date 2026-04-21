@@ -1,11 +1,20 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
 import { selectRecipientEnabled } from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectExcludedDispatchBranchSet,
+  selectRecipientBranchSlotKeys,
+} from '@date/infrastructure/selectors'
 import { CardPreviewItem } from './CardPreviewItem'
 import styles from './CardPreview.module.scss'
 import { CalendarCardItem } from '@entities/card/domain/types'
+import type { DispatchDate } from '@entities/date/domain/types'
 import { CardSection } from '@/shared/config/constants'
+
+function dispatchDateKey(d: DispatchDate): string {
+  return `${d.year}-${d.month}-${d.day}`
+}
 
 interface CardPreviewProps {
   data: {
@@ -18,15 +27,20 @@ interface CardPreviewProps {
   }
   section: CardSection | null
   isSelectedDate: boolean
+  /** День ячейки календаря — для бейджа числа веток с учётом excludeDispatchBranch. */
+  calendarDispatchDate?: DispatchDate
 }
 
 export const CardPreview: React.FC<CardPreviewProps> = ({
   data,
   section,
   isSelectedDate,
+  calendarDispatchDate,
 }) => {
   const recipientEnabled = useAppSelector(selectRecipientEnabled)
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
+  const recipientBranchSlotKeys = useAppSelector(selectRecipientBranchSlotKeys)
+  const excludedDispatchBranchSet = useAppSelector(selectExcludedDispatchBranchSet)
   const { processed, cart, ready, sent, delivered, error } = data
 
   const isHistory = section === 'history'
@@ -49,11 +63,42 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
 
   const totalOnDay = pipelineCount + (processed ? 1 : 0)
   const pendingRecipientCount = recipientsPendingIds.length
+
+  const effectiveRecipientCount = useMemo(() => {
+    if (
+      isHistory ||
+      !recipientEnabled ||
+      !isSelectedDate ||
+      !calendarDispatchDate
+    ) {
+      return pendingRecipientCount
+    }
+    const dk = dispatchDateKey(calendarDispatchDate)
+    const active = recipientBranchSlotKeys.filter(
+      (k) => !excludedDispatchBranchSet.has(`${dk}|${k}`),
+    ).length
+    if (active > 0) return active
+    return pendingRecipientCount > 0 ? pendingRecipientCount : 0
+  }, [
+    isHistory,
+    recipientEnabled,
+    isSelectedDate,
+    calendarDispatchDate,
+    recipientBranchSlotKeys,
+    excludedDispatchBranchSet,
+    pendingRecipientCount,
+  ])
+
+  const countForRecipientBadge =
+    isSelectedDate && !isHistory && recipientEnabled && calendarDispatchDate
+      ? effectiveRecipientCount
+      : pendingRecipientCount
+
   const recipientFactor =
     !isHistory &&
     recipientEnabled &&
-    pendingRecipientCount > 1
-      ? pendingRecipientCount
+    countForRecipientBadge > 1
+      ? countForRecipientBadge
       : 1
   const badgeNumeric =
     recipientFactor > 1 ? Math.max(totalOnDay, recipientFactor) : totalOnDay

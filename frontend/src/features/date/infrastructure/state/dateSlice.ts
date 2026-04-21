@@ -5,10 +5,6 @@ import type {
   DispatchDate,
   FirstDayOfWeekPreference,
 } from '@entities/date/domain/types'
-import {
-  PostcardStatuses,
-  PostcardStatusesCount,
-} from '@/entities/postcard/domain/types'
 
 const initialState: DateState = {
   selectedDate: null,
@@ -20,12 +16,25 @@ const initialState: DateState = {
   firstDayOfWeek: 'Sun',
   cachedSingleDate: null,
   cachedMultiDates: [],
+  excludedDispatchBranches: [],
   // historyListPanelOpen: false,
   // dateListPanelOpen: false,
 }
 
 const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
   a.year === b.year && a.month === b.month && a.day === b.day
+
+const dispatchDateKey = (d: DispatchDate) =>
+  `${d.year}-${d.month}-${d.day}`
+
+/** Оставить только ветки, чья дата всё ещё в списке выбранных дней отправки. */
+function pruneExcludedDispatchBranches(state: DateState, dates: DispatchDate[]) {
+  const allowed = new Set(dates.map(dispatchDateKey))
+  state.excludedDispatchBranches = state.excludedDispatchBranches.filter((k) => {
+    const datePart = k.split('|')[0] ?? ''
+    return allowed.has(datePart)
+  })
+}
 
 export const dateSlice = createSlice({
   name: 'date',
@@ -35,6 +44,7 @@ export const dateSlice = createSlice({
       state.selectedDate = action.payload
       state.selectedDates = []
       state.isComplete = true
+      state.excludedDispatchBranches = []
     },
 
     pickDispatchDate(state, action: PayloadAction<DispatchDate>) {
@@ -44,10 +54,15 @@ export const dateSlice = createSlice({
           state.selectedDate = null
           state.selectedDates = []
           state.isComplete = false
+          const prefix = `${dispatchDateKey(d)}|`
+          state.excludedDispatchBranches = state.excludedDispatchBranches.filter(
+            (k) => !k.startsWith(prefix),
+          )
         } else {
           state.selectedDate = d
           state.selectedDates = []
           state.isComplete = true
+          state.excludedDispatchBranches = []
         }
         return
       }
@@ -69,6 +84,7 @@ export const dateSlice = createSlice({
         state.isComplete = true
       }
       state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
+      pruneExcludedDispatchBranches(state, state.selectedDates)
     },
 
     setSelectedDates(state, action: PayloadAction<DispatchDate[]>) {
@@ -80,6 +96,7 @@ export const dateSlice = createSlice({
         if (action.payload.length === 0 && prevLen > 0) {
           state.cachedSingleDate = null
         }
+        pruneExcludedDispatchBranches(state, action.payload)
       }
     },
 
@@ -91,11 +108,13 @@ export const dateSlice = createSlice({
       state.isComplete = false
       state.cachedSingleDate = null
       state.cachedMultiDates = []
+      state.excludedDispatchBranches = []
     },
 
     setMultiDateMode(state, action: PayloadAction<boolean>) {
       const enabled = action.payload
       if (enabled) {
+        state.excludedDispatchBranches = []
         state.cachedSingleDate = state.selectedDate
         state.selectedDates =
           state.selectedDate == null
@@ -110,6 +129,7 @@ export const dateSlice = createSlice({
         state.multiGroupId = nanoid()
         return
       }
+      state.excludedDispatchBranches = []
       state.cachedMultiDates = state.selectedDates.map((d) => ({ ...d }))
       state.selectedDates = []
       state.selectedDate = state.cachedSingleDate
@@ -119,6 +139,13 @@ export const dateSlice = createSlice({
       }
       state.isComplete = state.selectedDate != null
       state.isMultiDateMode = false
+    },
+
+    excludeDispatchBranch(state, action: PayloadAction<{ branchKey: string }>) {
+      const { branchKey } = action.payload
+      if (!state.excludedDispatchBranches.includes(branchKey)) {
+        state.excludedDispatchBranches.push(branchKey)
+      }
     },
 
     setFirstDayOfWeek(state, action: PayloadAction<FirstDayOfWeekPreference>) {
@@ -152,6 +179,20 @@ export const dateSlice = createSlice({
           : (s.isMultiDateMode ?? false)
             ? nanoid()
             : null
+      const hydratedMulti = s.isMultiDateMode ?? false
+      const datesForPrune: DispatchDate[] = hydratedMulti
+        ? state.selectedDates
+        : state.selectedDate
+          ? [state.selectedDate]
+          : []
+      const allowed = new Set(datesForPrune.map(dispatchDateKey))
+      const rawExcluded = Array.isArray(s.excludedDispatchBranches)
+        ? s.excludedDispatchBranches
+        : []
+      state.excludedDispatchBranches = rawExcluded.filter((k) => {
+        const datePart = k.split('|')[0] ?? ''
+        return allowed.has(datePart)
+      })
     },
 
     // setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {
@@ -176,6 +217,7 @@ export const {
   setMultiDateMode,
   setFirstDayOfWeek,
   hydrateDateFromSession,
+  excludeDispatchBranch,
   // setHistoryListPanelOpen,
   // setDateListPanelOpen,
   // setHistoryMode,
