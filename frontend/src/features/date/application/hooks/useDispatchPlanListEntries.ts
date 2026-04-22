@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   pickDispatchDate,
@@ -17,10 +17,6 @@ import {
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import { selectFirstProcessedCardThumbnailUrl } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
-import type {
-  CalendarCardItem,
-  CardCalendarIndex,
-} from '@entities/card/domain/types'
 import type { Postcard } from '@entities/postcard'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
@@ -54,6 +50,16 @@ const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
 const dispatchDateKey = (d: DispatchDate) =>
   `${d.year}-${d.month}-${d.day}`
 
+/** Отрицательное — a раньше b; положительное — a позже b. */
+function compareDispatchDateChronological(
+  a: DispatchDate,
+  b: DispatchDate,
+): number {
+  if (a.year !== b.year) return a.year - b.year
+  if (a.month !== b.month) return a.month - b.month
+  return a.day - b.day
+}
+
 function postcardRecipientTemplateId(p: Postcard): string | null {
   const r = p.card?.envelope?.recipient
   if (!r) return null
@@ -63,17 +69,6 @@ function postcardRecipientTemplateId(p: Postcard): string | null {
   return null
 }
 
-function flattenDayData(dayData: CardCalendarIndex): CalendarCardItem[] {
-  const list: CalendarCardItem[] = []
-  if (dayData.processed) list.push(dayData.processed)
-  list.push(...dayData.cart)
-  list.push(...dayData.ready)
-  list.push(...dayData.sent)
-  list.push(...dayData.delivered)
-  list.push(...dayData.error)
-  return list
-}
-
 export type UseDispatchPlanListEntriesOptions = {
   /**
    * `false`: same rows as Date list (multi + inactive cached single; single + inactive cached multi).
@@ -81,6 +76,11 @@ export type UseDispatchPlanListEntriesOptions = {
    * no inactive cached rows from the other mode.
    */
   activeModeOnly: boolean
+  /**
+   * Сортировка по дате: `asc` — более ранняя дата выше; `desc` — наоборот.
+   * Стабильная сортировка: при равной дате сохраняется порядок веток получателя.
+   */
+  listSortDirection?: 'asc' | 'desc'
 }
 
 /**
@@ -89,9 +89,8 @@ export type UseDispatchPlanListEntriesOptions = {
 export function useDispatchPlanListEntries(
   options: UseDispatchPlanListEntriesOptions,
 ): DateListPanelItem[] {
-  const { activeModeOnly } = options
+  const { activeModeOnly, listSortDirection = 'asc' } = options
   const dispatch = useAppDispatch()
-  const openDayPanel = useAppSelector((state) => state.calendar.openDayPanel)
   const selectedDate = useAppSelector(selectSelectedDate)
   const selectedDates = useAppSelector(selectSelectedDates)
   const cachedMultiDates = useAppSelector(selectCachedMultiDates)
@@ -115,10 +114,6 @@ export function useDispatchPlanListEntries(
     selectFirstProcessedCardThumbnailUrl,
   )
   const listPreviewUrl = cardphotoPreviewUrl ?? processedThumbFallback ?? null
-  const postcardByCardId = useMemo(
-    () => new Map(cartItems.map((p) => [p.card.id, p] as const)),
-    [cartItems],
-  )
 
   const cartPostcardByDateKeyAndRecipient = useMemo(() => {
     const m = new Map<string, Postcard>()
@@ -158,28 +153,6 @@ export function useDispatchPlanListEntries(
       envelopeRecipients,
     )
   }, [cartItems, recipientState, recipientEntries, envelopeRecipients])
-
-  const resolveRecipientDetailLine = useCallback(
-    (cardId: string): string | undefined => {
-      if (cardId === 'current_session') {
-        return hasCommittedSessionRecipient(recipientState)
-          ? sessionRecipientDetail
-          : undefined
-      }
-      return formatRecipientLine(
-        postcardByCardId.get(cardId),
-        recipientEntries,
-        envelopeRecipients,
-      )
-    },
-    [
-      sessionRecipientDetail,
-      postcardByCardId,
-      recipientEntries,
-      envelopeRecipients,
-      recipientState,
-    ],
-  )
 
   /**
    * Ветки списка дат / плана: только закреплённый выбор в `recipient.applied` / `appliedData`.
@@ -246,18 +219,6 @@ export function useDispatchPlanListEntries(
   ])
 
   return useMemo(() => {
-    if (openDayPanel) {
-      return flattenDayData(openDayPanel.dayData).map((item, i) => ({
-        detailLine: resolveRecipientDetailLine(item.cardId),
-        id: `day-panel-${openDayPanel.dateKey}-${item.rowKey}-${i}`,
-        cardId: item.cardId,
-        sourceDate: item.date,
-        dateLabel: formatDispatchDateLabel(item.date),
-        previewUrl: item.previewUrl,
-        previewIsProcessed: true,
-      }))
-    }
-
     const row = (
       d: DispatchDate,
       idSuffix: string,
@@ -267,13 +228,11 @@ export function useDispatchPlanListEntries(
       cartPostcard?: Postcard,
     ): DateListPanelItem => {
       const fromCart = cartPostcard
-      const previewUrl =
-        listPreviewUrl ?? fromCart?.card.thumbnailUrl ?? undefined
-      const cardId =
+      /** Только сессия (cardphoto / processed), без превью из корзины по дате. */
+      const hasSessionListPreview =
         listPreviewUrl != null && listPreviewUrl !== ''
-          ? 'current_session'
-          : fromCart?.card.id ??
-            (previewUrl ? 'current_session' : undefined)
+      const previewUrl = hasSessionListPreview ? listPreviewUrl : undefined
+      const cardId = hasSessionListPreview ? 'current_session' : undefined
       const fromCartDetailLine =
         fromCart && hasCommittedSessionRecipient(recipientState)
           ? formatPostcardRecipientDetail(
@@ -431,20 +390,25 @@ export function useDispatchPlanListEntries(
       } else {
         appendSingleBlock(false)
       }
-      return entries
-    }
-
-    if (isMultiDateMode) {
+    } else if (isMultiDateMode) {
       appendMultiBlock(true)
     } else {
       appendSingleBlock(true)
     }
 
+    const dir = listSortDirection === 'asc' ? 1 : -1
+    entries.sort((x, y) => {
+      const a = x.sourceDate
+      const b = y.sourceDate
+      if (!a || !b) return 0
+      return dir * compareDispatchDateChronological(a, b)
+    })
+
     return entries
   }, [
     activeModeOnly,
+    listSortDirection,
     dispatch,
-    openDayPanel,
     isMultiDateMode,
     selectedDate,
     selectedDates,
@@ -452,7 +416,6 @@ export function useDispatchPlanListEntries(
     cachedMultiDates,
     sessionRecipientDetail,
     recipientSlots,
-    resolveRecipientDetailLine,
     listPreviewUrl,
     cartPostcardByDateKeyAndRecipient,
     recipientEntries,

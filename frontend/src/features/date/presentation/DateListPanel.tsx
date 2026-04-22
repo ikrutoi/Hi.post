@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { selectDateListSortDirection } from '@date/calendar/infrastructure/selectors'
 import { useDispatchPlanListEntries } from '../application/hooks/useDispatchPlanListEntries'
 import { IconX, IconListDate } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -81,7 +82,11 @@ export const DateListPanel: React.FC<Props> = ({
   onClose,
   onSelectEntry,
 }) => {
-  const entries = useDispatchPlanListEntries({ activeModeOnly: true })
+  const listSortDirection = useAppSelector(selectDateListSortDirection)
+  const entries = useDispatchPlanListEntries({
+    activeModeOnly: true,
+    listSortDirection,
+  })
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
 

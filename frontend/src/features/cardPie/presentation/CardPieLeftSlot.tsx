@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react'
-import { useAppDispatch } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { selectCardPieListSortDirection } from '@date/calendar/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   updateLastViewedCalendarDate,
@@ -12,7 +13,11 @@ import styles from './CardPieLeftSlot.module.scss'
 
 export const CardPieLeftSlot: React.FC = () => {
   const dispatch = useAppDispatch()
-  const entries = useDispatchPlanListEntries({ activeModeOnly: true })
+  const listSortDirection = useAppSelector(selectCardPieListSortDirection)
+  const entries = useDispatchPlanListEntries({
+    activeModeOnly: true,
+    listSortDirection,
+  })
 
   const handleCloseList = useCallback(() => {
     dispatch(setCardPieListPanelOpen(false))

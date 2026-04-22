@@ -117,11 +117,16 @@ function* closeOtherListPanels(action: {
     return
   }
 
-  if (!openingDate) yield put(setDateListPanelOpen(false))
+  /** Date list и cardphoto list не гасим друг друга — у каждой секции своё «запомненное» открытие. */
+  if (!openingDate && !openingCardphoto) {
+    yield put(setDateListPanelOpen(false))
+  }
   if (!openingHistory) yield put(setHistoryListPanelOpen(false))
   if (!openingCardPie) yield put(setCardPieListPanelOpen(false))
 
-  if (!openingCardphoto) yield put(setCardphotoListPanelOpen(false))
+  if (!openingCardphoto && !openingDate) {
+    yield put(setCardphotoListPanelOpen(false))
+  }
   if (!openingCardtext) yield put(setCardtextListPanelOpen(false))
 
   if (!openingAddressList) yield put(closeAddressList())
