@@ -194,7 +194,6 @@ function* handleFullCopy(
     yield put(restoreRecipient(donor.envelope.recipient))
     yield put(setAroma(donor.aroma))
     yield put(setDate(donor.date))
-    yield put(setSelectedDates([]))
 
     yield put(setPreviewCardId(null))
   }

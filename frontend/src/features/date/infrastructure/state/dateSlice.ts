@@ -9,8 +9,8 @@ import type {
 const initialState: DateState = {
   selectedDate: null,
   selectedDates: [],
-  isMultiDateMode: false,
-  multiGroupId: null,
+  isMultiDateMode: true,
+  multiGroupId: nanoid(),
   // isHistoryMode: false,
   isComplete: false,
   firstDayOfWeek: 'Sun',
@@ -41,31 +41,16 @@ export const dateSlice = createSlice({
   initialState,
   reducers: {
     setDate(state, action: PayloadAction<DispatchDate>) {
-      state.selectedDate = action.payload
-      state.selectedDates = []
+      const d = action.payload
+      state.selectedDate = d
+      state.selectedDates = [{ ...d }]
       state.isComplete = true
       state.excludedDispatchBranches = []
+      state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
     },
 
     pickDispatchDate(state, action: PayloadAction<DispatchDate>) {
       const d = action.payload
-      if (!state.isMultiDateMode) {
-        if (state.selectedDate && sameDispatchDate(state.selectedDate, d)) {
-          state.selectedDate = null
-          state.selectedDates = []
-          state.isComplete = false
-          const prefix = `${dispatchDateKey(d)}|`
-          state.excludedDispatchBranches = state.excludedDispatchBranches.filter(
-            (k) => !k.startsWith(prefix),
-          )
-        } else {
-          state.selectedDate = d
-          state.selectedDates = []
-          state.isComplete = true
-          state.excludedDispatchBranches = []
-        }
-        return
-      }
       const idx = state.selectedDates.findIndex((x) => sameDispatchDate(x, d))
       if (idx >= 0) {
         state.selectedDates.splice(idx, 1)
@@ -90,21 +75,27 @@ export const dateSlice = createSlice({
     setSelectedDates(state, action: PayloadAction<DispatchDate[]>) {
       const prevLen = state.selectedDates.length
       state.selectedDates = action.payload
-      state.isComplete = action.payload.length > 0 || state.selectedDate != null
-      if (state.isMultiDateMode) {
-        state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
-        if (action.payload.length === 0 && prevLen > 0) {
-          state.cachedSingleDate = null
+      if (action.payload.length > 0) {
+        state.selectedDate = {
+          ...action.payload[action.payload.length - 1],
         }
-        pruneExcludedDispatchBranches(state, action.payload)
+        state.isComplete = true
+      } else {
+        state.selectedDate = null
+        state.isComplete = false
       }
+      state.cachedMultiDates = state.selectedDates.map((x) => ({ ...x }))
+      if (action.payload.length === 0 && prevLen > 0) {
+        state.cachedSingleDate = null
+      }
+      pruneExcludedDispatchBranches(state, action.payload)
     },
 
     clearDate(state) {
       state.selectedDate = null
       state.selectedDates = []
-      state.isMultiDateMode = false
-      state.multiGroupId = null
+      state.isMultiDateMode = true
+      state.multiGroupId = nanoid()
       state.isComplete = false
       state.cachedSingleDate = null
       state.cachedMultiDates = []
@@ -112,33 +103,22 @@ export const dateSlice = createSlice({
     },
 
     setMultiDateMode(state, action: PayloadAction<boolean>) {
-      const enabled = action.payload
-      if (enabled) {
-        state.excludedDispatchBranches = []
-        state.cachedSingleDate = state.selectedDate
-        state.selectedDates =
-          state.selectedDate == null
-            ? []
-            : state.cachedMultiDates.map((d) => ({ ...d }))
-        state.selectedDate =
-          state.selectedDates.length > 0
-            ? { ...state.selectedDates[state.selectedDates.length - 1] }
-            : null
-        state.isComplete = state.selectedDates.length > 0
-        state.isMultiDateMode = true
-        state.multiGroupId = nanoid()
+      if (!action.payload) {
         return
       }
       state.excludedDispatchBranches = []
-      state.cachedMultiDates = state.selectedDates.map((d) => ({ ...d }))
-      state.selectedDates = []
-      state.selectedDate = state.cachedSingleDate
-      state.multiGroupId = null
-      if (state.selectedDate == null && state.cachedMultiDates.length > 0) {
-        state.selectedDate = { ...state.cachedMultiDates[0] }
-      }
-      state.isComplete = state.selectedDate != null
-      state.isMultiDateMode = false
+      state.cachedSingleDate = state.selectedDate
+      state.selectedDates =
+        state.selectedDate == null
+          ? []
+          : state.cachedMultiDates.map((d) => ({ ...d }))
+      state.selectedDate =
+        state.selectedDates.length > 0
+          ? { ...state.selectedDates[state.selectedDates.length - 1] }
+          : null
+      state.isComplete = state.selectedDates.length > 0
+      state.isMultiDateMode = true
+      state.multiGroupId = nanoid()
     },
 
     excludeDispatchBranch(state, action: PayloadAction<{ branchKey: string }>) {
@@ -193,6 +173,26 @@ export const dateSlice = createSlice({
         const datePart = k.split('|')[0] ?? ''
         return allowed.has(datePart)
       })
+
+      state.isMultiDateMode = true
+      if (state.selectedDates.length === 0 && state.selectedDate != null) {
+        state.selectedDates = [{ ...state.selectedDate }]
+      }
+      if (state.selectedDate == null && state.selectedDates.length > 0) {
+        state.selectedDate = {
+          ...state.selectedDates[state.selectedDates.length - 1],
+        }
+      }
+      if (state.multiGroupId == null) {
+        state.multiGroupId = nanoid()
+      }
+      const allowedMulti = new Set(state.selectedDates.map(dispatchDateKey))
+      state.excludedDispatchBranches = state.excludedDispatchBranches.filter(
+        (k) => {
+          const datePart = k.split('|')[0] ?? ''
+          return allowedMulti.has(datePart)
+        },
+      )
     },
 
     // setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {

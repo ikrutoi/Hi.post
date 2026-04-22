@@ -10,12 +10,9 @@ import { useCalendarFacade } from '../calendar/application/facades'
 import { useDateSwitcherController } from '../application/hooks'
 import {
   useInitializeCalendarViewDate,
-  useFormattedSelectedDate,
   useAutoActivateDateSection,
 } from '../application/hooks'
 import { useFlashEffect } from '@shared/hooks'
-import { Toggle } from '@shared/ui/Toggle/Toggle'
-import { IconCalendarMulti } from '@shared/ui/icons'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import styles from './Date.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'
@@ -27,12 +24,8 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
   const { flashParts, triggerFlash } = useFlashEffect()
 
   const {
-    selectedDate,
-    selectedDates,
     // isHistoryMode,
     chooseDate,
-    isMultiDateMode,
-    toggleMultiDateMode,
     // toggleHistoryMode,
   } = useDateFacade()
 
@@ -55,8 +48,6 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
     setCalendarViewDate,
   } = actionsSwitcher
   const { isCurrentMonth } = derivedSwitcher
-
-  const formattedSelectedDate = useFormattedSelectedDate()
 
   useAutoActivateDateSection()
 
@@ -110,7 +101,7 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
         <DateHeader
           currentDate={currentDate}
           calendarViewDate={calendarViewDate}
-          formattedSelectedDate={isMultiDateMode ? null : formattedSelectedDate}
+          formattedSelectedDate={null}
           isCurrentMonth={isCurrentMonth}
           onDecrement={handleDecrementArrow}
           onIncrement={handleIncrementArrow}
@@ -173,31 +164,6 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
           </div>
         )}
 
-        {section === 'date' && (
-          <div
-            className={clsx(
-              styles.dateBottomToggle,
-              styles.dateBottomToggleMulti,
-            )}
-          >
-            <div
-              className={clsx(
-                styles.dateBottomToggleGroup,
-                styles.dateBottomToggleGroupMulti,
-                isMultiDateMode && styles.dateBottomToggleGroupMultiActive,
-              )}
-            >
-              <Toggle
-                label=""
-                checked={isMultiDateMode}
-                onChange={toggleMultiDateMode}
-                size="default"
-                variant="dateMulti"
-              />
-              <IconCalendarMulti className={styles.dateBottomToggleIcon} />
-            </div>
-          </div>
-        )}
       </form>
     </div>
   )

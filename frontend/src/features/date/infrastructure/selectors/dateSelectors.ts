@@ -114,6 +114,9 @@ export const selectCardPieListPanelRowCount = createSelector(
   },
 )
 
+/** Бейдж listDate в тулбаре секции «Дата»: только активный режим (`activeModeOnly: true`). */
+export const selectDateListToolbarBadgeCount = selectCardPieListPanelRowCount
+
 export const selectMergedDispatchDates = createSelector(
   [selectSelectedDate, selectSelectedDates, selectIsMultiDateMode],
   (single, list, multi): DispatchDate[] => {

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useDispatchPlanListEntries } from '../application/hooks/useDispatchPlanListEntries'
 import { IconX, IconListDate } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -27,9 +28,7 @@ export type DateListPanelItem = {
 
 type Props = {
   onClose: () => void
-  entries?: DateListPanelItem[]
   onSelectEntry?: (item: DateListPanelItem) => void
-  // section: 'date' | 'history'
 }
 
 const isBlobUrl = (url: string | null | undefined): boolean =>
@@ -80,11 +79,9 @@ const DateListPanelRow: React.FC<{
 
 export const DateListPanel: React.FC<Props> = ({
   onClose,
-  entries = [],
   onSelectEntry,
-  // section,
 }) => {
-  // const { isHistoryMode } = useDateFacade()
+  const entries = useDispatchPlanListEntries({ activeModeOnly: true })
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
 

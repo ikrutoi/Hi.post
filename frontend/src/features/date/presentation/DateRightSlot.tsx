@@ -16,7 +16,6 @@ import { DateListPanel, type DateListPanelItem } from './DateListPanel'
 import { HistoryListPanel, type HistoryListPanelItem } from './HistoryListPanel'
 import { useCalendarFacade } from '@date/calendar/application/facades/useCalendarFacade'
 import { selectPostcardStatuses } from '@date/calendar/infrastructure/selectors'
-import { useDispatchPlanListEntries } from '../application/hooks/useDispatchPlanListEntries'
 import styles from './DateRightSlot.module.scss'
 
 function formatDispatchDateLabel(d: DispatchDate): string {
@@ -80,8 +79,6 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
     [sessionRecipientDetail, postcardByCardId],
   )
 
-  const dateListEntries = useDispatchPlanListEntries({ activeModeOnly: false })
-
   const { historyListEntries, historyUnderlyingPostcardCount } = useMemo(() => {
     const postcardItems: CalendarCardItem[] = []
     Object.values(cardsByDateMap).forEach((day) => {
@@ -144,7 +141,6 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
           {section === 'date' && dateListPanelOpen && (
             <DateListPanel
               onClose={handleCloseList}
-              entries={dateListEntries}
               onSelectEntry={handleSelectEntry}
             />
           )}

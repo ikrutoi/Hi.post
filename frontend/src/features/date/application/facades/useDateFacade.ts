@@ -1,9 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
-  setDate,
   pickDispatchDate,
   setSelectedDates,
-  setMultiDateMode,
   clearDate,
   // setHistoryMode,
 } from '../../infrastructure/state'
@@ -34,10 +32,6 @@ export const useDateFacade = () => {
     dispatch(setSelectedDates(dates))
   }
 
-  const toggleMultiDateMode = (enabled: boolean) => {
-    dispatch(setMultiDateMode(enabled))
-  }
-
   // const toggleHistoryMode = (enabled: boolean) => {
   //   dispatch(setHistoryMode(enabled))
   // }
@@ -56,7 +50,6 @@ export const useDateFacade = () => {
     format: 'DD.MM.YYYY',
     chooseDate,
     setManyDates,
-    toggleMultiDateMode,
     // toggleHistoryMode,
     clear,
   }
