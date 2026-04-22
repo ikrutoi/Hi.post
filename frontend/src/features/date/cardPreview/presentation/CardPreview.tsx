@@ -31,6 +31,8 @@ interface CardPreviewProps {
   isSelectedDate: boolean
   /** День ячейки календаря — для бейджа числа веток с учётом excludeDispatchBranch. */
   calendarDispatchDate?: DispatchDate
+  /** Маркер для Cell: hover скрывает плейсхолдер и показывает стрелку соседнего месяца. */
+  adjacentSessionPlaceholderNavSwap?: boolean
 }
 
 export const CardPreview: React.FC<CardPreviewProps> = ({
@@ -38,6 +40,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   section,
   isSelectedDate,
   calendarDispatchDate,
+  adjacentSessionPlaceholderNavSwap = false,
 }) => {
   const recipientEnabled = useAppSelector(selectRecipientEnabled)
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
@@ -153,7 +156,13 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
         </div>
       ) : showEmptySessionPlaceholder ? (
         <div className={styles.previewWrapper}>
-          <div className={styles.miniCardphotoPlaceholder} aria-hidden>
+          <div
+            className={styles.miniCardphotoPlaceholder}
+            aria-hidden
+            data-calendar-session-placeholder={
+              adjacentSessionPlaceholderNavSwap ? 'true' : undefined
+            }
+          >
             {getToolbarIcon({ key: 'cardphoto' })}
           </div>
         </div>

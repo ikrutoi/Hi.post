@@ -1,8 +1,14 @@
+import { useAppSelector } from '@app/hooks'
+import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import { Cell } from '@date/cell/presentation/Cell'
 import { CardPreview } from '@features/date/cardPreview/presentation/CardPreview'
 import { shiftMonth } from '../helpers'
 import { isDisabledDate } from '@entities/date/utils'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import {
+  shouldAdjacentMonthDimCardphotoPreview,
+  shouldAdjacentSessionPlaceholderNavSwap,
+} from './adjacentSessionPlaceholderNavSwap'
 import type {
   CalendarViewDate,
   DispatchDate,
@@ -33,6 +39,7 @@ export const buildMonthCells = ({
   cardsMap,
 }: BuildMonthCellsParams) => {
   const { activeSection } = useSectionMenuFacade()
+  const photoPreview = useAppSelector(selectCardphotoPreview)
   if (!calendarViewDate) return []
 
   const { year: currentViewYear, month: currentViewMonth } = shiftMonth(
@@ -63,6 +70,22 @@ export const buildMonthCells = ({
       month: currentViewMonth,
     }
 
+    const adjacentSessionPlaceholderNavSwap =
+      shouldAdjacentSessionPlaceholderNavSwap({
+        direction,
+        isSelectedDate,
+        activeSection,
+        dayData,
+        photoPreview,
+      })
+
+    const adjacentMonthCardphotoDim = shouldAdjacentMonthDimCardphotoPreview({
+      direction,
+      isSelectedDate,
+      activeSection,
+      photoPreview,
+    })
+
     return (
       <Cell
         key={`${direction}-${day}`}
@@ -77,6 +100,8 @@ export const buildMonthCells = ({
         onClickCell={handleClickCell}
         dateKey={dateKey}
         dayData={dayData}
+        adjacentSessionPlaceholderNavSwap={adjacentSessionPlaceholderNavSwap}
+        adjacentMonthCardphotoDim={adjacentMonthCardphotoDim}
       >
         {dayData && (
           <CardPreview
@@ -88,6 +113,7 @@ export const buildMonthCells = ({
               month: currentViewMonth,
               day,
             }}
+            adjacentSessionPlaceholderNavSwap={adjacentSessionPlaceholderNavSwap}
           />
         )}
       </Cell>

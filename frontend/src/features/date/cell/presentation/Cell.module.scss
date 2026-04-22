@@ -84,6 +84,30 @@
   flex-shrink: 0;
 }
 
+/* Плейсхолдер + стрелка: по hover показываем стрелку, фон плейсхолдера не трогаем — гасим только svg. */
+.cell[data-adjacent-session-nav-swap='true'] {
+  .navArrowWrap {
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+
+  &:hover .navArrowWrap {
+    opacity: 1;
+  }
+
+  .cellContent :global([data-calendar-session-placeholder] svg) {
+    transition: opacity 0.18s ease;
+  }
+
+  &:hover .cellContent :global([data-calendar-session-placeholder] svg) {
+    opacity: 0;
+  }
+}
+
+.cell[data-adjacent-cardphoto-dim='true'] .cellContent {
+  opacity: 0.6;
+}
+
 .title {
   cursor: default;
   user-select: none;

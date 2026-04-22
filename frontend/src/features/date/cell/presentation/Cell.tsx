@@ -23,6 +23,10 @@ interface CellProps {
   onClickCell: (params: HandleCellClickParams) => void
   dateKey?: string
   dayData?: CardCalendarIndex | null
+  /** Соседний месяц + только плейсхолдер cardphoto: стрелка по hover вместо наложения. */
+  adjacentSessionPlaceholderNavSwap?: boolean
+  /** Соседний месяц + выбрана картинка cardphoto: превью с пониженной непрозрачностью. */
+  adjacentMonthCardphotoDim?: boolean
   children?: React.ReactNode
 }
 
@@ -38,6 +42,8 @@ export const Cell: React.FC<CellProps> = ({
   onClickCell,
   dateKey,
   dayData,
+  adjacentSessionPlaceholderNavSwap = false,
+  adjacentMonthCardphotoDim = false,
   children,
 }) => {
   const hasPostcards = Boolean(
@@ -77,7 +83,16 @@ export const Cell: React.FC<CellProps> = ({
   }
 
   return (
-    <div className={dynamicClass} onClickCapture={handleClickCapture}>
+    <div
+      className={dynamicClass}
+      onClickCapture={handleClickCapture}
+      data-adjacent-session-nav-swap={
+        adjacentSessionPlaceholderNavSwap ? 'true' : undefined
+      }
+      data-adjacent-cardphoto-dim={
+        adjacentMonthCardphotoDim ? 'true' : undefined
+      }
+    >
       <span className={styles.dayNumber}>
         {dayCurrent ?? dayBefore ?? dayAfter}
       </span>
