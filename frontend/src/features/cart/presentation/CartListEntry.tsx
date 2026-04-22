@@ -1,6 +1,4 @@
 import React from 'react'
-import clsx from 'clsx'
-import type { PostcardStatus } from '@entities/postcard/domain/types/postcard.types'
 import { IconX } from '@shared/ui/icons'
 import styles from './CartListEntry.module.scss'
 
@@ -10,10 +8,7 @@ export type CartListEntryProps = {
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
-  showStatusIndicator?: boolean
   variant?: CartListEntryVariant
-  previewStatus?: PostcardStatus
-  previewIsProcessed?: boolean
   onSelect?: () => void
   onDelete?: () => void
   isSelected?: boolean
@@ -24,10 +19,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   dateLabel,
   previewUrl,
   detailLine,
-  showStatusIndicator = true,
   variant = 'default',
-  previewStatus,
-  previewIsProcessed,
   onSelect,
   onDelete,
   isSelected = false,
@@ -40,9 +32,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   return (
     <div
       className={styles.root}
-      data-preview-status={
-        previewStatus && !previewIsProcessed ? previewStatus : undefined
-      }
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
@@ -64,22 +53,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       }
     >
       <div className={styles.body}>
-        {showStatusIndicator ? (
-          previewStatus && !previewIsProcessed ? (
-            <span
-              className={clsx(styles.statusIndicator, styles[previewStatus])}
-              aria-hidden
-            />
-          ) : (
-            <span
-              className={clsx(
-                styles.statusIndicator,
-                styles.statusIndicatorSpacer,
-              )}
-              aria-hidden
-            />
-          )
-        ) : null}
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
             <img src={previewUrl} alt="" className={styles.thumbImg} />
