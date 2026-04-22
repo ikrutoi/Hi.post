@@ -35,12 +35,18 @@ export function shouldAdjacentSessionPlaceholderNavSwap(params: {
       ? processed
       : null
 
+  const noSessionCardphotoImage = !photoPreview?.previewUrl
+
   const primaryItem =
-    workingSlotForSelectedDay ??
-    firstPipelineWithPreview ??
-    firstPipeline ??
-    processed ??
-    null
+    activeSection !== 'history' &&
+    isSelectedDate &&
+    noSessionCardphotoImage
+      ? workingSlotForSelectedDay ?? null
+      : workingSlotForSelectedDay ??
+        firstPipelineWithPreview ??
+        firstPipeline ??
+        processed ??
+        null
 
   return !primaryItem
 }

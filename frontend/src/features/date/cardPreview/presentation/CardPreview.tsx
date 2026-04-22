@@ -66,12 +66,17 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const workingSlotForSelectedDay =
     !isHistory && isSelectedDate && processed ? processed : null
 
+  /** Нет картинки в cardphoto: в ячейке выбранного дня — плейсхолдер cardphoto, а не превью из корзины. */
+  const noSessionCardphotoImage = !photoPreview?.previewUrl
+
   const primaryItem: CalendarCardItem | null =
-    workingSlotForSelectedDay ??
-    firstPipelineWithPreview ??
-    firstPipeline ??
-    processed ??
-    null
+    !isHistory && isSelectedDate && noSessionCardphotoImage
+      ? workingSlotForSelectedDay ?? null
+      : workingSlotForSelectedDay ??
+        firstPipelineWithPreview ??
+        firstPipeline ??
+        processed ??
+        null
 
   const pendingRecipientCount = recipientsPendingIds.length
 
