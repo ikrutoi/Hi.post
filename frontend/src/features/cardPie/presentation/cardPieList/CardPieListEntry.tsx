@@ -1,5 +1,6 @@
 import React from 'react'
 import { IconX } from '@shared/ui/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './CardPieListEntry.module.scss'
 
 export type CardPieListEntryVariant = 'default' | 'inactive'
@@ -85,7 +86,11 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
             <img src={previewUrl} alt="" className={styles.thumbImg} />
-          ) : null}
+          ) : (
+            <div className={styles.thumbPlaceholder}>
+              {getToolbarIcon({ key: 'cardphoto' })}
+            </div>
+          )}
         </div>
         <div className={styles.meta}>
           <div className={styles.dateLine}>{dateLineText}</div>

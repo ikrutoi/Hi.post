@@ -8,11 +8,7 @@ import {
   FirstDayOfWeekPreference,
   SelectedDispatchDate,
 } from '@entities/date/domain/types'
-import {
-  selectRecipientsPendingIds,
-  selectSelectedRecipientEntriesInOrder,
-} from '@envelope/infrastructure/selectors'
-import { selectRecipientEnabled } from '@envelope/recipient/infrastructure/selectors'
+import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 
 export const selectDateState = (state: RootState): DateState => state.date
 
@@ -45,17 +41,15 @@ export const selectExcludedDispatchBranchSet = createSelector(
 )
 
 /**
- * Ключи веток получателя для списка дат / бейджа календаря (как `recipientSlots` в DateRightSlot).
+ * Ключи веток получателя для списка дат / бейджа — как `recipientSlots` в `useDispatchPlanListEntries`
+ * (только `recipient.applied` / `appliedData`, без «зависших» pending из envelope selection).
  */
 export const selectRecipientBranchSlotKeys = createSelector(
-  [
-    selectRecipientEnabled,
-    selectRecipientsPendingIds,
-    selectSelectedRecipientEntriesInOrder,
-  ],
-  (recipientEnabled, pendingIds, selectedEntries): string[] => {
-    if (recipientEnabled && pendingIds.length > 0) return pendingIds
-    if (selectedEntries.length > 0) return selectedEntries.map((e) => e.id)
+  [selectRecipientState],
+  (recipient): string[] => {
+    const applied = recipient.applied ?? []
+    if (applied.length > 0) return [...applied]
+    if (recipient.appliedData != null) return ['session']
     return ['session']
   },
 )

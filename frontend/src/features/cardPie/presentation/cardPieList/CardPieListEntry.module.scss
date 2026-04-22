@@ -132,6 +132,7 @@ $list-entry-border: darken($list-entry-surface, 4%);
 }
 
 .thumb {
+  position: relative;
   flex-shrink: 0;
   align-self: stretch;
   width: 2.35rem;
@@ -143,6 +144,30 @@ $list-entry-border: darken($list-entry-surface, 4%);
   justify-content: center;
   background-color: $color-app-inner;
   border: 1px solid mix($list-entry-border, transparent, 58%);
+}
+
+/* Как DateListEntry: плейсхолдер cardphoto без превью. */
+.thumbPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background-color: $color-cardphoto-input;
+  border-radius: inherit;
+  pointer-events: none;
+
+  :global(svg) {
+    width: 75%;
+    height: 75%;
+    max-width: 75%;
+    max-height: 75%;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    color: $color-app-sidebar-icon;
+    opacity: 0.14;
+  }
 }
 
 .thumbImg {

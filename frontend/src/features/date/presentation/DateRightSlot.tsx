@@ -9,9 +9,13 @@ import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { CalendarCardItem } from '@entities/card/domain/types'
-import type { Postcard } from '@entities/postcard'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
-import type { RecipientState } from '@envelope/recipient/domain/types'
+import { selectRecipientsList } from '@envelope/infrastructure/selectors'
+import {
+  formatRecipientDetailFromLayers,
+  formatRecipientLine,
+  hasCommittedSessionRecipient,
+} from '@date/application/helpers/formatRecipientPlanDetailLine'
 import { DateListPanel, type DateListPanelItem } from './DateListPanel'
 import { HistoryListPanel, type HistoryListPanelItem } from './HistoryListPanel'
 import { useCalendarFacade } from '@date/calendar/application/facades/useCalendarFacade'
@@ -27,28 +31,6 @@ function formatDispatchDateLabel(d: DispatchDate): string {
   })
 }
 
-/** Name + country (or city if country empty), from envelope recipient layers. */
-function formatRecipientDetailFromLayers(
-  recipient: RecipientState | undefined,
-): string | undefined {
-  if (!recipient) return undefined
-  const source =
-    recipient.appliedData ??
-    recipient.viewDraft ??
-    recipient.formDraft ??
-    null
-  const name = String(source?.name ?? '').trim()
-  const country = String(source?.country ?? '').trim()
-  const city = String(source?.city ?? '').trim()
-  const region = country || city
-  if (name && region) return `${name}, ${region}`
-  return name || region || undefined
-}
-
-function formatRecipientLine(postcard: Postcard | undefined): string | undefined {
-  return formatRecipientDetailFromLayers(postcard?.card?.envelope?.recipient)
-}
-
 export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
   section,
 }) => {
@@ -58,6 +40,10 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
   const cardsByDateMap = useAppSelector(selectCardsByDateMap)
   const cartItems = useAppSelector(selectCartItems)
   const recipientState = useAppSelector(selectRecipientState)
+  const envelopeRecipients = useAppSelector(selectRecipientsList)
+  const recipientEntries = useAppSelector(
+    (s) => s.addressBook?.recipientEntries ?? [],
+  )
   const postcardStatuses = useAppSelector(selectPostcardStatuses)
   const postcardByCardId = useMemo(
     () => new Map(cartItems.map((p) => [p.card.id, p] as const)),
@@ -65,18 +51,41 @@ export const DateRightSlot: React.FC<{ section: 'date' | 'history' }> = ({
   )
 
   const sessionRecipientDetail = useMemo(() => {
+    if (!hasCommittedSessionRecipient(recipientState)) return undefined
     const cartDraft = cartItems.find((p) => p.status === 'cart')
-    const fromPostcard = formatRecipientLine(cartDraft)
+    const fromPostcard = formatRecipientLine(
+      cartDraft,
+      recipientEntries,
+      envelopeRecipients,
+    )
     if (fromPostcard) return fromPostcard
-    return formatRecipientDetailFromLayers(recipientState)
-  }, [cartItems, recipientState])
+    return formatRecipientDetailFromLayers(
+      recipientState,
+      recipientEntries,
+      envelopeRecipients,
+    )
+  }, [cartItems, recipientState, recipientEntries, envelopeRecipients])
 
   const resolveRecipientDetailLine = useCallback(
     (cardId: string): string | undefined => {
-      if (cardId === 'current_session') return sessionRecipientDetail
-      return formatRecipientLine(postcardByCardId.get(cardId))
+      if (cardId === 'current_session') {
+        return hasCommittedSessionRecipient(recipientState)
+          ? sessionRecipientDetail
+          : undefined
+      }
+      return formatRecipientLine(
+        postcardByCardId.get(cardId),
+        recipientEntries,
+        envelopeRecipients,
+      )
     },
-    [sessionRecipientDetail, postcardByCardId],
+    [
+      sessionRecipientDetail,
+      postcardByCardId,
+      recipientEntries,
+      envelopeRecipients,
+      recipientState,
+    ],
   )
 
   const { historyListEntries, historyUnderlyingPostcardCount } = useMemo(() => {

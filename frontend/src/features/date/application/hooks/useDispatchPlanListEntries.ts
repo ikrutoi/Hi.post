@@ -23,19 +23,21 @@ import type {
 } from '@entities/card/domain/types'
 import type { Postcard } from '@entities/postcard'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
-import type { RecipientState } from '@envelope/recipient/domain/types'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
+import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
-  selectRecipientsList,
-  selectRecipientsPendingIds,
-  selectSelectedRecipientEntriesInOrder,
-} from '@envelope/infrastructure/selectors'
-import {
-  selectRecipientEnabled,
   selectRecipientsDisplayList,
   selectRecipientsPendingResolvedEntries,
 } from '@envelope/recipient/infrastructure/selectors'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
+import {
+  formatDetailLineFromAddressBookEntry,
+  formatDetailLineFromAddressFields,
+  formatPostcardRecipientDetail,
+  formatRecipientDetailFromLayers,
+  formatRecipientLine,
+  hasCommittedSessionRecipient,
+} from '../helpers/formatRecipientPlanDetailLine'
 
 function formatDispatchDateLabel(d: DispatchDate): string {
   const date = new Date(d.year, d.month, d.day)
@@ -72,66 +74,6 @@ function flattenDayData(dayData: CardCalendarIndex): CalendarCardItem[] {
   return list
 }
 
-function formatRecipientDetailFromLayers(
-  recipient: RecipientState | undefined,
-): string | undefined {
-  if (!recipient) return undefined
-  const source =
-    recipient.appliedData ??
-    recipient.viewDraft ??
-    recipient.formDraft ??
-    null
-  const name = String(source?.name ?? '').trim()
-  const country = String(source?.country ?? '').trim()
-  const city = String(source?.city ?? '').trim()
-  const region = country || city
-  if (name && region) return `${name}, ${region}`
-  return name || region || undefined
-}
-
-function formatRecipientLine(postcard: Postcard | undefined): string | undefined {
-  return formatRecipientDetailFromLayers(postcard?.card?.envelope?.recipient)
-}
-
-function formatPostcardRecipientDetail(
-  postcard: Postcard | undefined,
-  recipientEntries: AddressBookEntry[],
-  envelopeRecipients: RecipientState[],
-): string | undefined {
-  if (!postcard) return undefined
-  const r = postcard.card?.envelope?.recipient
-  if (!r) return undefined
-  const appliedId = r.applied?.[0]
-  if (appliedId) {
-    const bookEntry = recipientEntries.find((e) => e.id === appliedId)
-    if (bookEntry) {
-      const line = formatDetailLineFromAddressBookEntry(bookEntry)
-      if (line) return line
-    }
-    const envRow = envelopeRecipients.find(
-      (row) => row.recipientViewId === appliedId,
-    )
-    if (envRow) {
-      const line = formatRecipientDetailFromLayers(envRow)
-      if (line) return line
-    }
-  }
-  return formatRecipientLine(postcard)
-}
-
-function formatDetailLineFromAddressBookEntry(
-  entry: AddressBookEntry,
-): string | undefined {
-  const addr = entry.address
-  if (!addr) return undefined
-  const name = String(addr.name ?? '').trim()
-  const country = String(addr.country ?? '').trim()
-  const city = String(addr.city ?? '').trim()
-  const region = country || city
-  if (name && region) return `${name}, ${region}`
-  return name || region || undefined
-}
-
 export type UseDispatchPlanListEntriesOptions = {
   /**
    * `false`: same rows as Date list (multi + inactive cached single; single + inactive cached multi).
@@ -157,11 +99,6 @@ export function useDispatchPlanListEntries(
   const cachedSingleDate = useAppSelector(selectCachedSingleDate)
   const cartItems = useAppSelector(selectCartItems)
   const recipientState = useAppSelector(selectRecipientState)
-  const selectedRecipientEntriesInOrder = useAppSelector(
-    selectSelectedRecipientEntriesInOrder,
-  )
-  const recipientEnabled = useAppSelector(selectRecipientEnabled)
-  const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
   const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
   const recipientsPendingResolvedEntries = useAppSelector(
     selectRecipientsPendingResolvedEntries,
@@ -207,83 +144,104 @@ export function useDispatchPlanListEntries(
   }, [cartItems])
 
   const sessionRecipientDetail = useMemo(() => {
+    if (!hasCommittedSessionRecipient(recipientState)) return undefined
     const cartDraft = cartItems.find((p) => p.status === 'cart')
-    const fromPostcard = formatRecipientLine(cartDraft)
+    const fromPostcard = formatRecipientLine(
+      cartDraft,
+      recipientEntries,
+      envelopeRecipients,
+    )
     if (fromPostcard) return fromPostcard
-    return formatRecipientDetailFromLayers(recipientState)
-  }, [cartItems, recipientState])
+    return formatRecipientDetailFromLayers(
+      recipientState,
+      recipientEntries,
+      envelopeRecipients,
+    )
+  }, [cartItems, recipientState, recipientEntries, envelopeRecipients])
 
   const resolveRecipientDetailLine = useCallback(
     (cardId: string): string | undefined => {
-      if (cardId === 'current_session') return sessionRecipientDetail
-      return formatRecipientLine(postcardByCardId.get(cardId))
+      if (cardId === 'current_session') {
+        return hasCommittedSessionRecipient(recipientState)
+          ? sessionRecipientDetail
+          : undefined
+      }
+      return formatRecipientLine(
+        postcardByCardId.get(cardId),
+        recipientEntries,
+        envelopeRecipients,
+      )
     },
-    [sessionRecipientDetail, postcardByCardId],
+    [
+      sessionRecipientDetail,
+      postcardByCardId,
+      recipientEntries,
+      envelopeRecipients,
+      recipientState,
+    ],
   )
 
+  /**
+   * Ветки списка дат / плана: только закреплённый выбор в `recipient.applied` / `appliedData`.
+   * Не опираться на `recipientsPendingIds` / выбранные строки книги без apply — иначе после
+   * сброса получателя в конверте остаётся «чужая» подпись из pending.
+   */
   const recipientSlots = useMemo(() => {
-    if (recipientEnabled && recipientsPendingIds.length > 0) {
-      return recipientsPendingIds.map((id) => {
-        const fromBook = recipientEntries.find((e) => e.id === id)
-        if (fromBook) {
-          return {
-            key: id,
-            detailLine: formatDetailLineFromAddressBookEntry(fromBook),
-          }
-        }
-        const fromEnv = envelopeRecipients.find((r) => r.recipientViewId === id)
-        if (fromEnv) {
-          return {
-            key: id,
-            detailLine: formatRecipientDetailFromLayers(fromEnv),
-          }
-        }
-        const fromDisplay = recipientsDisplayList.find((e) => e.id === id)
-        if (fromDisplay) {
-          return {
-            key: id,
-            detailLine: formatDetailLineFromAddressBookEntry(fromDisplay),
-          }
-        }
-        const fromResolved = recipientsPendingResolvedEntries.find(
-          (e) => e.id === id,
+    const resolveBranchDetailLine = (id: string): string | undefined => {
+      const fromBook = recipientEntries.find((e) => e.id === id)
+      if (fromBook) return formatDetailLineFromAddressBookEntry(fromBook)
+      const fromEnv = envelopeRecipients.find((r) => r.recipientViewId === id)
+      if (fromEnv) {
+        return formatRecipientDetailFromLayers(
+          fromEnv,
+          recipientEntries,
+          envelopeRecipients,
+          { useDraftWhenNoApplied: true },
         )
-        if (fromResolved) {
-          return {
-            key: id,
-            detailLine: formatDetailLineFromAddressBookEntry(fromResolved),
-          }
-        }
-        const cartForRecipient = cartPostcardByRecipientId.get(id)
-        const lineFromCart = cartForRecipient
-          ? formatPostcardRecipientDetail(
-              cartForRecipient,
-              recipientEntries,
-              envelopeRecipients,
-            )
-          : undefined
-        if (lineFromCart) {
-          return { key: id, detailLine: lineFromCart }
-        }
-        return { key: id, detailLine: undefined }
-      })
+      }
+      const fromDisplay = recipientsDisplayList.find((e) => e.id === id)
+      if (fromDisplay) return formatDetailLineFromAddressBookEntry(fromDisplay)
+      const fromResolved = recipientsPendingResolvedEntries.find(
+        (e) => e.id === id,
+      )
+      if (fromResolved) return formatDetailLineFromAddressBookEntry(fromResolved)
+      const cartForRecipient = cartPostcardByRecipientId.get(id)
+      if (cartForRecipient) {
+        return formatPostcardRecipientDetail(
+          cartForRecipient,
+          recipientEntries,
+          envelopeRecipients,
+        )
+      }
+      return undefined
     }
-    if (selectedRecipientEntriesInOrder.length > 0) {
-      return selectedRecipientEntriesInOrder.map((e) => ({
-        key: e.id,
-        detailLine: formatDetailLineFromAddressBookEntry(e),
+
+    const applied = recipientState.applied ?? []
+    if (applied.length > 0) {
+      return applied.map((id) => ({
+        key: id,
+        detailLine: resolveBranchDetailLine(id),
       }))
+    }
+    if (recipientState.appliedData != null) {
+      return [
+        {
+          key: 'session',
+          detailLine: formatDetailLineFromAddressFields(
+            recipientState.appliedData,
+          ),
+        },
+      ]
     }
     return [{ key: 'session', detailLine: sessionRecipientDetail }]
   }, [
-    recipientEnabled,
-    recipientsPendingIds,
+    recipientState.applied,
+    recipientState.appliedData,
     recipientsPendingResolvedEntries,
     recipientsDisplayList,
     envelopeRecipients,
     recipientEntries,
     cartPostcardByRecipientId,
-    selectedRecipientEntriesInOrder,
     sessionRecipientDetail,
   ])
 
@@ -316,13 +274,14 @@ export function useDispatchPlanListEntries(
           ? 'current_session'
           : fromCart?.card.id ??
             (previewUrl ? 'current_session' : undefined)
-      const fromCartDetailLine = fromCart
-        ? formatPostcardRecipientDetail(
-            fromCart,
-            recipientEntries,
-            envelopeRecipients,
-          )
-        : undefined
+      const fromCartDetailLine =
+        fromCart && hasCommittedSessionRecipient(recipientState)
+          ? formatPostcardRecipientDetail(
+              fromCart,
+              recipientEntries,
+              envelopeRecipients,
+            )
+          : undefined
       return {
         id: `${d.year}-${d.month}-${d.day}-${idSuffix}`,
         sourceDate: d,
@@ -499,5 +458,6 @@ export function useDispatchPlanListEntries(
     recipientEntries,
     envelopeRecipients,
     excludedDispatchBranchSet,
+    recipientState,
   ])
 }
