@@ -37,7 +37,7 @@
   border-radius: 50%;
   margin-top: 0.2rem;
   margin-right: 0.2rem;
-  z-index: 1;
+  z-index: 3;
   background-color: $color-section-light;
   border: 1px solid $color-section-dark;
   color: $color-font-enabled;
@@ -51,8 +51,37 @@
 }
 
 .cellContent {
+  z-index: 1;
   width: 100%;
+  min-height: 0;
+  flex: 1;
   display: flex;
+}
+
+.navArrowWrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 1px solid $color-section-light;
+  box-sizing: border-box;
+  cursor: default;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.navArrowIcon {
+  width: 1.05rem;
+  height: 1.05rem;
+  color: $color-font-enabled-light;
+  flex-shrink: 0;
 }
 
 .title {
@@ -94,6 +123,16 @@
 
   &.today .dayNumber {
     color: $color-app-sidebar-icon-active;
+  }
+}
+
+/* Выбранные дни соседних месяцев: бейдж как у .dispatch, не «приглушённый». */
+.before.dispatch,
+.after.dispatch {
+  .dayNumber {
+    background-color: $color-active;
+    border-color: $color-section-light;
+    color: #fff;
   }
 }
 

@@ -1,5 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import styles from './Cell.module.scss'
 import type {
   SelectedDispatchDate,
@@ -80,6 +81,16 @@ export const Cell: React.FC<CellProps> = ({
       <span className={styles.dayNumber}>
         {dayCurrent ?? dayBefore ?? dayAfter}
       </span>
+      {dayBefore != null ? (
+        <div className={styles.navArrowWrap} aria-hidden>
+          <FaChevronLeft className={styles.navArrowIcon} />
+        </div>
+      ) : null}
+      {dayAfter != null ? (
+        <div className={styles.navArrowWrap} aria-hidden>
+          <FaChevronRight className={styles.navArrowIcon} />
+        </div>
+      ) : null}
       <div className={styles.cellContent}>{children}</div>
     </div>
   )
