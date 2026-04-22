@@ -46,6 +46,12 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const isHistory = section === 'history'
   const pipelineCards = [...cart, ...ready, ...sent, ...delivered, ...error]
   const pipelineCount = pipelineCards.length
+  /** Для бейджа «×N» в секции «Дата» не считаем корзину — только отправка по конвейеру + processed. */
+  const nonCartPipeline = [...ready, ...sent, ...delivered, ...error]
+  const totalOnDayForBadge =
+    isHistory
+      ? pipelineCount + (processed ? 1 : 0)
+      : nonCartPipeline.length + (processed ? 1 : 0)
   const firstPipelineWithPreview =
     pipelineCards.find((item) => Boolean(item.previewUrl)) ?? null
   const firstPipeline = pipelineCount > 0 ? pipelineCards[0] : null
@@ -61,7 +67,6 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     processed ??
     null
 
-  const totalOnDay = pipelineCount + (processed ? 1 : 0)
   const pendingRecipientCount = recipientsPendingIds.length
 
   const effectiveRecipientCount = useMemo(() => {
@@ -111,8 +116,8 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const badgeNumeric = useActiveBranchesOnlyForBadge
     ? effectiveRecipientCount
     : recipientFactor > 1
-      ? Math.max(totalOnDay, recipientFactor)
-      : totalOnDay
+      ? Math.max(totalOnDayForBadge, recipientFactor)
+      : totalOnDayForBadge
   const badgeCount = badgeNumeric > 1 ? badgeNumeric : 0
   /** В режиме Дата счётчик только для выбранного дня; для приглушённого превью из pipeline не показываем. */
   const showExtraCountBadge =

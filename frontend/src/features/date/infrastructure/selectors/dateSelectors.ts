@@ -76,22 +76,18 @@ function flattenOpenDayPanelItems(dayData: CardCalendarIndex): CalendarCardItem[
 }
 
 /**
- * Число строк в CardPie list panel — как `useDispatchPlanListEntries({ activeModeOnly: true })`:
- * день из openDayPanel, иначе только активный режим (multi: выбранные даты × ветки; single: выбранная дата × ветки).
+ * Число строк плана отправки (даты × ветки) — как `useDispatchPlanListEntries({ activeModeOnly: true })`.
+ * Не зависит от `openDayPanel`: drill-down по дню не должен подменять счётчик списка дат / бейджа.
  */
-export const selectCardPieListPanelRowCount = createSelector(
+export const selectDateListPlanRowCount = createSelector(
   [
-    (s: RootState) => s.calendar.openDayPanel,
     selectIsMultiDateMode,
     selectSelectedDates,
     selectSelectedDate,
     selectExcludedDispatchBranchSet,
     selectRecipientBranchSlotKeys,
   ],
-  (openDayPanel, isMulti, selectedDates, selectedDate, excluded, slotKeys) => {
-    if (openDayPanel) {
-      return flattenOpenDayPanelItems(openDayPanel.dayData).length
-    }
+  (isMulti, selectedDates, selectedDate, excluded, slotKeys) => {
     if (isMulti) {
       let c = 0
       for (const d of selectedDates) {
@@ -114,8 +110,24 @@ export const selectCardPieListPanelRowCount = createSelector(
   },
 )
 
-/** Бейдж listDate в тулбаре секции «Дата»: только активный режим (`activeModeOnly: true`). */
-export const selectDateListToolbarBadgeCount = selectCardPieListPanelRowCount
+/**
+ * CardPie list badge: при drill-down по дню в календаре — число карточек в панели дня, иначе как план отправки.
+ */
+export const selectCardPieListPanelRowCount = createSelector(
+  [
+    (s: RootState) => s.calendar.openDayPanel,
+    selectDateListPlanRowCount,
+  ],
+  (openDayPanel, planRowCount) => {
+    if (openDayPanel) {
+      return flattenOpenDayPanelItems(openDayPanel.dayData).length
+    }
+    return planRowCount
+  },
+)
+
+/** Бейдж listDate в тулбаре секции «Дата». */
+export const selectDateListToolbarBadgeCount = selectDateListPlanRowCount
 
 export const selectMergedDispatchDates = createSelector(
   [selectSelectedDate, selectSelectedDates, selectIsMultiDateMode],

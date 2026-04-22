@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { useToolbarFacade } from '../application/facades'
@@ -24,8 +24,6 @@ import {
   selectDateListSortDirection,
   selectCardPieListSortDirection,
 } from '@date/calendar/infrastructure/selectors'
-import { selectDateListToolbarBadgeCount } from '@date/infrastructure/selectors'
-import type { RootState } from '@app/state'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
@@ -92,13 +90,6 @@ export const Toolbar = ({
   )
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
   const cardPieListSortDirection = useAppSelector(selectCardPieListSortDirection)
-  const dateListToolbarBadgeCount = useAppSelector(
-    useCallback(
-      (state: RootState) =>
-        section === 'date' ? selectDateListToolbarBadgeCount(state) : 0,
-      [section],
-    ),
-  )
   const cardphotoListTemplateGridCols = useAppSelector(
     selectCardphotoListTemplateGridCols,
   )
@@ -184,13 +175,7 @@ export const Toolbar = ({
       buttonStatus = 'active'
     }
 
-    const listDateToolbarBadge =
-      section === 'date' && key === 'listDate' ? dateListToolbarBadgeCount : 0
-
-    const badge =
-      listDateToolbarBadge > 0
-        ? listDateToolbarBadge
-        : mergedOptions?.badge ?? (rawData as any)?.options?.badge
+    const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
 

@@ -1,13 +1,16 @@
 @use '@styles/config/colors' as *;
 
+$list-entry-surface: mix($color-app-header, #fff, 88%);
+$list-entry-border: darken($list-entry-surface, 4%);
+
 .root {
   position: relative;
   margin-bottom: 0.25rem;
   min-height: 2.5rem;
   padding: 1px 0.5rem 1px 0.35rem;
   box-sizing: border-box;
-  background-color: $color-date-input;
-  border: 1px solid $color-date-input-border;
+  background-color: $list-entry-surface;
+  border: 1px solid $list-entry-border;
   border-radius: 4px;
   user-select: none;
   transition:
@@ -21,11 +24,11 @@
 
   &[data-inactive='true'] {
     opacity: 0.78;
-    background-color: mix($color-date-input, #f5f5f5, 40%);
-    border-color: mix($color-date-input-border, #e0e0e0, 55%);
+    background-color: mix($list-entry-surface, $color-app-inner, 45%);
+    border-color: mix($list-entry-border, $color-app-inner, 50%);
 
     .thumb {
-      background-color: mix($color-section-light, #eee, 50%);
+      background-color: mix($color-app-inner, #eee, 55%);
     }
 
     .dateLine {
@@ -39,15 +42,15 @@
 
   &:hover,
   &[data-focused='true'] {
-    background-color: darken($color-date-input, 2%);
+    background-color: darken($list-entry-surface, 1.5%);
 
     &[data-inactive='true'] {
-      background-color: mix($color-date-input, #f5f5f5, 40%);
+      background-color: mix($list-entry-surface, $color-app-inner, 55%);
     }
   }
 
   &[data-selected='true'] {
-    background-color: darken($color-date-input, 4%);
+    background-color: darken($list-entry-surface, 3%);
     box-shadow: -2px 0 0 0 $color-date-multi;
 
     &[data-inactive='true'] {
@@ -61,7 +64,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid $color-date-input-border;
+      outline: 2px solid
+        mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
       outline-offset: 1px;
     }
   }
@@ -137,8 +141,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $color-section-light;
-  border: 1px solid mix($color-date-input-border, transparent, 65%);
+  background-color: $color-app-inner;
+  border: 1px solid mix($list-entry-border, transparent, 58%);
 }
 
 .thumbImg {

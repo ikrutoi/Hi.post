@@ -1,13 +1,16 @@
 @use '@styles/config/colors' as *;
 
+$list-entry-surface: mix($color-app-header, #fff, 88%);
+$list-entry-border: darken($list-entry-surface, 4%);
+
 .root {
   position: relative;
   margin-bottom: 0.25rem;
   min-height: 2.5rem;
   padding: 1px 0.5rem 1px 0.35rem;
   box-sizing: border-box;
-  background-color: $color-app-header;
-  border: 1px solid darken($color-app-header, 7%);
+  background-color: $list-entry-surface;
+  border: 1px solid $list-entry-border;
   border-radius: 4px;
   user-select: none;
   transition:
@@ -21,8 +24,8 @@
 
   &[data-inactive='true'] {
     opacity: 0.78;
-    background-color: mix($color-app-header, $color-app-inner, 45%);
-    border-color: mix(darken($color-app-header, 7%), $color-app-inner, 50%);
+    background-color: mix($list-entry-surface, $color-app-inner, 45%);
+    border-color: mix($list-entry-border, $color-app-inner, 50%);
 
     .thumb {
       background-color: mix($color-app-inner, #eee, 55%);
@@ -39,15 +42,15 @@
 
   &:hover,
   &[data-focused='true'] {
-    background-color: darken($color-app-header, 2%);
+    background-color: darken($list-entry-surface, 1.5%);
 
     &[data-inactive='true'] {
-      background-color: mix($color-app-header, $color-app-inner, 55%);
+      background-color: mix($list-entry-surface, $color-app-inner, 55%);
     }
   }
 
   &[data-selected='true'] {
-    background-color: darken($color-app-header, 4%);
+    background-color: darken($list-entry-surface, 3%);
     box-shadow: -2px 0 0 0 $color-date-multi;
 
     &[data-inactive='true'] {
@@ -62,7 +65,7 @@
 
     &:focus-visible {
       outline: 2px solid
-        mix($color-app-header, $color-app-sidebar-icon-active, 55%);
+        mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
       outline-offset: 1px;
     }
   }
@@ -92,7 +95,7 @@
   align-items: center;
   justify-content: center;
   background-color: $color-app-inner;
-  border: 1px solid mix(darken($color-app-header, 7%), transparent, 65%);
+  border: 1px solid mix($list-entry-border, transparent, 58%);
 }
 
 .thumbImg {
