@@ -5,6 +5,7 @@ import { useCardFacade } from '@entities/card/application/facades'
 import { CalendarCardItem } from '@entities/card/domain/types'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
+import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './CardPreviewItem.module.scss'
 import { PreviewItemForCalendar } from '@cardphoto/domain/types'
 
@@ -47,6 +48,11 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   const safeFallbackUrl =
     isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
   const displayUrl = cachedUrl ?? safeFallbackUrl
+  const hasDisplayUrl =
+    typeof displayUrl === 'string' && displayUrl.trim().length > 0
+
+  const showCardphotoPlaceholder =
+    !isHistory && isSelectedDate && !hasDisplayUrl
 
   return (
     <div
@@ -60,12 +66,16 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
       )}
       onClick={handlePreviewClick}
     >
-      {displayUrl ? (
+      {hasDisplayUrl ? (
         <img
           src={displayUrl}
           alt="card thumb"
           className={styles.previewImage}
         />
+      ) : showCardphotoPlaceholder ? (
+        <div className={styles.miniCardphotoPlaceholder} aria-hidden>
+          {getToolbarIcon({ key: 'cardphoto' })}
+        </div>
       ) : (
         <div className={styles.previewImage} aria-hidden />
       )}

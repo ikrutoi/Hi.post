@@ -1,5 +1,7 @@
 import React, { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
+import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
 import { selectRecipientEnabled } from '@envelope/recipient/infrastructure/selectors'
 import {
@@ -41,6 +43,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
   const recipientBranchSlotKeys = useAppSelector(selectRecipientBranchSlotKeys)
   const excludedDispatchBranchSet = useAppSelector(selectExcludedDispatchBranchSet)
+  const photoPreview = useAppSelector(selectCardphotoPreview)
   const { processed, cart, ready, sent, delivered, error } = data
 
   const isHistory = section === 'history'
@@ -123,9 +126,15 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const showExtraCountBadge =
     badgeCount > 0 && (isHistory || isSelectedDate)
 
+  const showEmptySessionPlaceholder =
+    !isHistory &&
+    isSelectedDate &&
+    !primaryItem &&
+    !photoPreview?.previewUrl
+
   return (
     <div className={styles.cardPreviewContainer}>
-      {primaryItem && (
+      {primaryItem ? (
         <div className={styles.previewWrapper}>
           <CardPreviewItem
             key={primaryItem.rowKey}
@@ -142,7 +151,13 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             </span>
           ) : null}
         </div>
-      )}
+      ) : showEmptySessionPlaceholder ? (
+        <div className={styles.previewWrapper}>
+          <div className={styles.miniCardphotoPlaceholder} aria-hidden>
+            {getToolbarIcon({ key: 'cardphoto' })}
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

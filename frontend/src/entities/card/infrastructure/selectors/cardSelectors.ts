@@ -169,6 +169,10 @@ export const selectCardsByDateMap = createSelector(
           }
         }
       }
+
+      for (const activeDate of activeDates) {
+        getEntry(activeDate)
+      }
     }
 
     return map

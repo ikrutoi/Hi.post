@@ -1,5 +1,29 @@
 @use '@styles/config/colors' as *;
 
+/* Пустое превью cardphoto: фон как у пустой MiniCard, иконка — цвет сайдбара, 60% от ячейки. */
+.miniCardphotoPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  box-sizing: border-box;
+  background-color: $color-cardphoto-input;
+  border-radius: inherit;
+
+  :global(svg) {
+    width: 60%;
+    height: 60%;
+    max-width: 60%;
+    max-height: 60%;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    color: $color-app-sidebar-icon;
+    opacity: 0.14;
+  }
+}
+
 .cardPreviewContainer {
   position: absolute;
   inset: 0;
