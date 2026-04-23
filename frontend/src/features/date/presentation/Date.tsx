@@ -122,47 +122,23 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
           />
         </div>
 
-        {section === 'history' && (
-          <div
-            className={clsx(
-              styles.dateBottomToggle,
-              styles.dateBottomToggleHistory,
+        <div
+          className={clsx(
+            styles.dateBottomToggle,
+            styles.dateBottomToggleHistory,
+          )}
+        >
+          <div className={styles.dateBottomToggleIndicators}>
+            {section === 'history' ? (
+              <PostcardStatusLegend spot="calendar" isHistoryEmpty={false} />
+            ) : (
+              <div
+                className={styles.calendarDateFooterPlaceholder}
+                aria-hidden
+              />
             )}
-          >
-            {/* <div
-              className={clsx(
-                styles.dateBottomToggleGroup,
-                styles.dateBottomToggleGroupHistory,
-                isHistoryMode && styles.dateBottomToggleGroupHistoryActive,
-              )}
-            >
-              <Toggle
-                label=""
-                checked={isHistoryMode}
-                onChange={toggleHistoryMode}
-                size="default"
-                variant="dateHistory"
-              />
-              <IconHistory
-                className={clsx(
-                  styles.dateBottomToggleIcon,
-                  styles.dateBottomToggleIconHistory,
-                )}
-              />
-            </div> */}
-            <div
-              className={clsx(
-                styles.dateBottomToggleIndicators,
-                // isHistoryMode && styles.dateBottomToggleIndicatorsActive,
-              )}
-            >
-              <PostcardStatusLegend
-                spot="calendar"
-                // isHistoryMode={isHistoryMode}
-              />
-            </div>
           </div>
-        )}
+        </div>
 
       </form>
     </div>

@@ -135,8 +135,8 @@
   }
 }
 
-.before,
-.after {
+/* Дни соседних месяцев (dayBefore / dayAfter): один фон ячейки, в т.ч. при isDisabledDate. */
+.adjacentMonth {
   cursor: default;
   background-color: $color-disabled-light;
 
@@ -150,9 +150,7 @@
   }
 }
 
-/* Выбранные дни соседних месяцев: бейдж как у .dispatch, не «приглушённый». */
-.before.dispatch,
-.after.dispatch {
+.adjacentMonth.dispatch {
   .dayNumber {
     background-color: $color-active;
     border-color: $color-section-light;
@@ -186,6 +184,14 @@
   color: $color-font-disabled;
   cursor: default;
 
+  &.current {
+    background-color: $color-disabled-light;
+  }
+
+  &.current.dispatch {
+    background-color: $color-hover-bg;
+  }
+
   .dayNumber {
     background-color: $color-section-light;
     border-color: $color-disabled;
@@ -217,6 +223,10 @@
     //   color: $color-font-enabled;
     // }
   }
+}
+
+.adjacentMonth.disabled {
+  background-color: $color-disabled-light;
 }
 
 .withPostcards {

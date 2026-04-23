@@ -219,6 +219,8 @@ export function useDispatchPlanListEntries(
   ])
 
   return useMemo(() => {
+    const appliedRecipientCount = recipientState.applied?.length ?? 0
+
     const row = (
       d: DispatchDate,
       idSuffix: string,
@@ -226,6 +228,7 @@ export function useDispatchPlanListEntries(
       onDelete?: () => void,
       recipientDetailLine?: string | null,
       cartPostcard?: Postcard,
+      slotKey?: string,
     ): DateListPanelItem => {
       const fromCart = cartPostcard
       /** Только сессия (cardphoto / processed), без превью из корзины по дате. */
@@ -241,6 +244,14 @@ export function useDispatchPlanListEntries(
               envelopeRecipients,
             )
           : undefined
+      const sessionLineFallback =
+        appliedRecipientCount > 1 &&
+        slotKey != null &&
+        slotKey !== 'session' &&
+        !fromCartDetailLine &&
+        (recipientDetailLine == null || recipientDetailLine === '')
+          ? undefined
+          : sessionRecipientDetail
       return {
         id: `${d.year}-${d.month}-${d.day}-${idSuffix}`,
         sourceDate: d,
@@ -248,7 +259,7 @@ export function useDispatchPlanListEntries(
         detailLine:
           fromCartDetailLine ??
           recipientDetailLine ??
-          sessionRecipientDetail ??
+          sessionLineFallback ??
           undefined,
         previewUrl,
         cardId,
@@ -279,6 +290,7 @@ export function useDispatchPlanListEntries(
               undefined,
               slot.detailLine,
               cartP,
+              slot.key,
             ),
           )
         })
@@ -316,6 +328,7 @@ export function useDispatchPlanListEntries(
               },
               slot.detailLine,
               cartP,
+              slot.key,
             ),
           )
         })
@@ -354,6 +367,7 @@ export function useDispatchPlanListEntries(
               },
               slot.detailLine,
               cartP,
+              slot.key,
             ),
           )
         })
@@ -377,6 +391,7 @@ export function useDispatchPlanListEntries(
                 undefined,
                 slot.detailLine,
                 cartP,
+                slot.key,
               ),
             )
           })

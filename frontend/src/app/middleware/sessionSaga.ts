@@ -345,6 +345,65 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
       ),
     )
   }
+
+  const recipientNow: RecipientState = yield select(selectRecipientState)
+  const appliedIds = recipientNow.applied ?? []
+  const envelopeList: RecipientState[] =
+    (yield select(selectRecipientsList)) ?? []
+
+  if (recipientNow.mode === 'recipients' && appliedIds.length > 0) {
+    const byId = new Map(
+      envelopeList
+        .filter((r) => r.recipientViewId != null)
+        .map((r) => [r.recipientViewId as string, r]),
+    )
+    const nextOrdered: RecipientState[] = []
+    let changed = false
+
+    for (const id of appliedIds) {
+      let row = byId.get(id)
+      if (!row) {
+        const record: { id: string; address?: Record<string, string> } | null =
+          yield call([recipientAdapter, 'getById'], id)
+        if (record?.address) {
+          const address = record.address as RecipientState['viewDraft']
+          row = {
+            currentView: 'recipientView',
+            formDraft: address,
+            viewDraft: address,
+            formIsComplete: Object.values(address).every(
+              (v) => (v ?? '').trim() !== '',
+            ),
+            formIsEmpty: true,
+            sortOptions: { sortedBy: 'name', direction: 'asc' },
+            recipientsViewSortDirection: 'asc',
+            recipientViewId: id,
+            recipientsViewIdsFirstList: [],
+            recipientsViewIdsSecondList: [],
+            currentRecipientsList: 'first',
+            applied: [id],
+            appliedData: address,
+            mode: 'recipient',
+          }
+          changed = true
+        }
+      }
+      if (row) nextOrdered.push(row)
+    }
+
+    const prevKey = envelopeList.map((r) => r.recipientViewId).join('\u0000')
+    const nextKey = nextOrdered.map((r) => r.recipientViewId).join('\u0000')
+    if (nextOrdered.length > 0 && (changed || prevKey !== nextKey)) {
+      yield put(setRecipientsList(nextOrdered))
+      yield put(
+        setRecipientsViewIds(
+          nextOrdered
+            .map((r) => r.recipientViewId)
+            .filter((id): id is string => id != null),
+        ),
+      )
+    }
+  }
 }
 
 export function* hydrateAppSession() {
