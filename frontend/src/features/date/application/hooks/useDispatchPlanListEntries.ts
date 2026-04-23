@@ -50,6 +50,17 @@ const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
 const dispatchDateKey = (d: DispatchDate) =>
   `${d.year}-${d.month}-${d.day}`
 
+const DEFAULT_PLAN_PRICE_LINE = '6.00 USD'
+
+function listEntryPriceLine(cartPostcard: Postcard | undefined): string {
+  const raw = cartPostcard?.price?.trim()
+  if (raw) {
+    if (/\b(USD|EUR|GBP|RUB)\b|[€₽$]|руб/i.test(raw)) return raw
+    return `${raw} USD`
+  }
+  return DEFAULT_PLAN_PRICE_LINE
+}
+
 /** Отрицательное — a раньше b; положительное — a позже b. */
 function compareDispatchDateChronological(
   a: DispatchDate,
@@ -261,6 +272,7 @@ export function useDispatchPlanListEntries(
           recipientDetailLine ??
           sessionLineFallback ??
           undefined,
+        priceLine: listEntryPriceLine(fromCart),
         previewUrl,
         cardId,
         previewIsProcessed: true,

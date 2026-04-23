@@ -1,5 +1,4 @@
 import React from 'react'
-import { IconX } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CardPieListEntry.module.scss'
@@ -10,9 +9,9 @@ export type CardPieListEntryProps = {
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
+  priceLine?: string
   variant?: CardPieListEntryVariant
   onSelect?: () => void
-  onDelete?: () => void
   isSelected?: boolean
   isFocused?: boolean
   isStarred?: boolean
@@ -23,16 +22,21 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   dateLabel,
   previewUrl,
   detailLine,
+  priceLine,
   variant = 'default',
   onSelect,
-  onDelete,
   isSelected = false,
   isFocused = false,
   isStarred = false,
   onToggleStar,
 }) => {
   const interactive = Boolean(onSelect)
-  const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
+  const labelForAria = [
+    detailLine ? `${dateLabel}, ${detailLine}` : dateLabel,
+    priceLine,
+  ]
+    .filter(Boolean)
+    .join(', ')
   const recipientParts = parseListEntryRecipientDetail(detailLine)
 
   return (
@@ -42,7 +46,6 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
       data-focused={isFocused ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
-      data-has-delete={onDelete ? 'true' : undefined}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-label={interactive ? labelForAria : undefined}
@@ -111,21 +114,12 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
             </div>
           ) : null}
         </div>
+        {priceLine ? (
+          <div className={styles.priceLine} aria-label={`Price ${priceLine}`}>
+            {priceLine}
+          </div>
+        ) : null}
       </div>
-      {onDelete ? (
-        <button
-          type="button"
-          className={styles.deleteButton}
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete()
-          }}
-          aria-label="Remove this postcard from the list"
-          title="Remove this postcard from the list"
-        >
-          <IconX />
-        </button>
-      ) : null}
     </div>
   )
 }

@@ -22,6 +22,8 @@ export type DateListPanelItem = {
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
+  /** Стоимость строки для CardPie (и при необходимости других списков). */
+  priceLine?: string
   variant?: DateListEntryVariant
   previewIsProcessed?: boolean
   onDelete?: () => void

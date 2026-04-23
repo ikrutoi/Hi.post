@@ -51,13 +51,13 @@ const CardPiePanelRow: React.FC<{
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
       detailLine={item.detailLine}
+      priceLine={item.priceLine}
       variant={item.variant}
       onSelect={
         onSelectEntry && item.variant !== 'inactive'
           ? () => onSelectEntry(item)
           : undefined
       }
-      onDelete={item.onDelete}
     />
   )
 }

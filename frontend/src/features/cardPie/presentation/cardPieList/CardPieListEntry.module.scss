@@ -19,10 +19,6 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
     border-color 0.15s ease,
     opacity 0.15s ease;
 
-  &[data-has-delete='true'] {
-    padding-right: 2rem;
-  }
-
   &[data-inactive='true'] {
     opacity: 0.78;
     background-color: mix($list-entry-surface, $color-app-inner, 45%);
@@ -217,38 +213,23 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
   font-size: inherit;
 }
 
-.deleteButton {
-  position: absolute;
-  right: 0.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  border: none;
-  border-radius: 50%;
+.priceLine {
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: auto;
+  padding-left: 0.35rem;
+  max-width: 42%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  color: $color-font-enabled;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.root[data-inactive='true'] .priceLine {
   color: $color-font-disabled;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s ease,
-    color 0.15s ease;
-  z-index: 1;
-
-  .root:hover &,
-  .root:focus-within & {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
-
-  svg {
-    width: 0.9rem;
-    height: 0.9rem;
-  }
 }
