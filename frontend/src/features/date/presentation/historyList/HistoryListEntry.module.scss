@@ -3,7 +3,7 @@
 .root {
   position: relative;
   margin-bottom: 0.25rem;
-  min-height: 2.5rem;
+  min-height: 2.65rem;
   padding: 1px 0.5rem 1px 0.35rem;
   box-sizing: border-box;
   background-color: $color-date-input;
@@ -33,8 +33,8 @@
       color: $color-font-disabled;
     }
 
-    .detailLine {
-      color: mix($color-date-multi, $color-font-disabled, 35%);
+    .detailBlock {
+      color: $color-font-disabled;
     }
   }
 
@@ -131,7 +131,7 @@
   gap: 0.35rem;
   width: 100%;
   min-width: 0;
-  min-height: calc(2.5rem - 2px);
+  min-height: calc(2.65rem - 2px);
   // border: solid 1px blue;
 }
 
@@ -225,7 +225,7 @@
   align-items: flex-start;
   justify-content: center;
   text-align: left;
-  gap: 0.08rem;
+  gap: 0.1rem;
   // border: solid 1px blue;
 }
 
@@ -242,10 +242,11 @@
   // -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
 }
 
-.detailLine {
-  font-size: 0.65rem;
-  font-weight: 400;
-  color: $color-date-multi;
+.detailBlock {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: $color-font-enabled;
   line-height: 1.2;
   max-width: 100%;
   white-space: nowrap;
@@ -253,6 +254,12 @@
   text-overflow: ellipsis;
   // mask-image: linear-gradient(to right, black 85%, transparent 100%);
   // -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+.detailName,
+.detailRegion,
+.detailSep {
+  font-size: inherit;
 }
 
 .deleteButton {

@@ -1,5 +1,6 @@
 import React from 'react'
 import { IconX } from '@shared/ui/icons'
+import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CartListEntry.module.scss'
 
 export type CartListEntryVariant = 'default' | 'inactive'
@@ -27,7 +28,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
 }) => {
   const interactive = Boolean(onSelect)
   const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
-  const dateLineText = detailLine ? `${dateLabel} - ${detailLine}` : dateLabel
+  const recipientParts = parseListEntryRecipientDetail(detailLine)
 
   return (
     <div
@@ -59,7 +60,22 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
           ) : null}
         </div>
         <div className={styles.meta}>
-          <div className={styles.dateLine}>{dateLineText}</div>
+          <div className={styles.dateLine}>{dateLabel}</div>
+          {recipientParts ? (
+            <div className={styles.detailBlock}>
+              {recipientParts.region ? (
+                <>
+                  <span className={styles.detailName}>{recipientParts.name}</span>
+                  <span className={styles.detailSep}>, </span>
+                  <span className={styles.detailRegion}>
+                    {recipientParts.region}
+                  </span>
+                </>
+              ) : (
+                <span className={styles.detailName}>{recipientParts.name}</span>
+              )}
+            </div>
+          ) : null}
         </div>
       </div>
       {onDelete ? (

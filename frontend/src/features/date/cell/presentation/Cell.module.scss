@@ -66,8 +66,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.1rem;
-  height: 2.1rem;
+  width: 1.89rem;
+  height: 1.89rem;
   border-radius: 50%;
   background-color: transparent;
   border: 1px solid $color-section-light;
@@ -78,8 +78,8 @@
 }
 
 .navArrowIcon {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 0.945rem;
+  height: 0.945rem;
   color: $color-font-enabled-light;
   flex-shrink: 0;
 }
@@ -135,7 +135,6 @@
   }
 }
 
-/* Дни соседних месяцев (dayBefore / dayAfter): один фон ячейки, в т.ч. при isDisabledDate. */
 .adjacentMonth {
   cursor: default;
   background-color: $color-disabled-light;
