@@ -5,7 +5,10 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 export const CARD_PIE_LIST_KEYS = [
   'listDelete',
   'sortDown',
+  'addCart',
   'cart',
+  'favorite',
+  'delete',
   'postcardReady',
   'postcardSend',
   'postcardDelivered',

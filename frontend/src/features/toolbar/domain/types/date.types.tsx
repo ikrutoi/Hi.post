@@ -10,10 +10,6 @@ export interface DateToolbarState extends Record<string, any> {
   config: ToolbarConfig
 }
 
-export interface BaseToolbarState extends Record<string, any> {
-  config: ToolbarConfig
-}
-
 export const DATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'date',

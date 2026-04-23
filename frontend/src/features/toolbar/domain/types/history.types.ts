@@ -10,10 +10,6 @@ export interface HistoryToolbarState extends Record<string, any> {
   config: ToolbarConfig
 }
 
-export interface BaseToolbarState extends Record<string, any> {
-  config: ToolbarConfig
-}
-
 export const HISTORY_TOOLBAR: ToolbarConfig = [
   {
     group: 'history',

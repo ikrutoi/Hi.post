@@ -414,7 +414,8 @@
 .toolbarCardphotoList,
 .toolbarDateList,
 .toolbarHistoryList,
-.toolbarCartList {
+.toolbarCartList,
+.toolbarCardPieListEntry {
   .toolbarKey {
     width: 1.5rem;
     height: 1.5rem;
@@ -537,7 +538,8 @@
 .toolbarCardtextList,
 .toolbarCardphotoList,
 .toolbarDateList,
-.toolbarHistoryList {
+.toolbarHistoryList,
+.toolbarCardPieListEntry {
   width: 100%;
   justify-content: space-between;
   margin-left: 1rem;

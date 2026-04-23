@@ -70,7 +70,11 @@ import {
   CARDTEXT_PROCESSED_TOOLBAR,
   initialCardtextProcessedToolbarState,
 } from '../types/cardtext.types'
-import { DATE_KEYS, DATE_TOOLBAR, initialDateToolbarState } from '../types/date'
+import {
+  DATE_KEYS,
+  DATE_TOOLBAR,
+  initialDateToolbarState,
+} from '../types/date.types'
 import {
   DATE_LIST_KEYS,
   DATE_LIST_TOOLBAR,

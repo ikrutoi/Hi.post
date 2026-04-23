@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { useToolbarFacade } from '../application/facades'

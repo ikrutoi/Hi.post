@@ -32,7 +32,7 @@ import type {
 } from './index'
 import type { RecipientsToolbarState, RecipientsKey } from './envelope.types'
 import type { LayoutOrientation } from '@layout/domain/types'
-import { DateKey, DateToolbarState } from './date'
+import { DateKey, DateToolbarState } from './date.types'
 import { DateListKey, DateListToolbarState } from './dateList.types'
 import { CardPieListKey, CardPieListToolbarState } from './cardPieList.types'
 import { RightSidebarKey, RightSidebarToolbarState } from './rightSidebar.types'
@@ -371,13 +371,13 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                           : S extends 'cardPieList'
                                                             ? CardPieListKey
                                                             : S extends 'historyList'
-                                                              ? HistoryListKey
-                                                              : S extends 'historyListIndicators'
                                                                 ? HistoryListKey
-                                                                : S extends 'cartList'
-                                                                  ? CartListKey
-                                                                  : S extends 'history'
-                                                                    ? HistoryKey
-                                                                    : S extends 'rightSidebar'
-                                                                      ? RightSidebarKey
-                                                                      : never
+                                                                : S extends 'historyListIndicators'
+                                                                  ? HistoryListKey
+                                                                  : S extends 'cartList'
+                                                                    ? CartListKey
+                                                                    : S extends 'history'
+                                                                      ? HistoryKey
+                                                                      : S extends 'rightSidebar'
+                                                                        ? RightSidebarKey
+                                                                        : never

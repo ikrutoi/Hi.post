@@ -14,8 +14,7 @@ export type CardPieListEntryProps = {
   onSelect?: () => void
   isSelected?: boolean
   isFocused?: boolean
-  isStarred?: boolean
-  onToggleStar?: () => void
+  onAddCart?: () => void
 }
 
 export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
@@ -27,10 +26,10 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   onSelect,
   isSelected = false,
   isFocused = false,
-  isStarred = false,
-  onToggleStar,
+  onAddCart,
 }) => {
   const interactive = Boolean(onSelect)
+  const inactive = variant === 'inactive'
   const labelForAria = [
     detailLine ? `${dateLabel}, ${detailLine}` : dateLabel,
     priceLine,
@@ -63,27 +62,22 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
     >
       <div className={styles.body}>
         <div className={styles.favoriteSlot}>
-          {onToggleStar ? (
+          {onAddCart && !inactive ? (
             <button
               type="button"
-              className={styles.star}
-              data-starred={isStarred ? 'true' : undefined}
+              className={styles.addCartBtn}
               onClick={(e) => {
                 e.stopPropagation()
-                onToggleStar()
+                onAddCart()
               }}
-              aria-label={
-                isStarred ? 'Remove from quick access' : 'Add to quick access'
-              }
-              title={
-                isStarred ? 'Remove from quick access' : 'Add to quick access'
-              }
+              aria-label="Add to cart"
+              title="Add to cart"
             >
-              ★
+              {getToolbarIcon({ key: 'addCart' })}
             </button>
           ) : (
-            <span className={styles.starStatic} aria-hidden>
-              ★
+            <span className={styles.addCartStatic} aria-hidden>
+              {getToolbarIcon({ key: 'addCart' })}
             </span>
           )}
         </div>

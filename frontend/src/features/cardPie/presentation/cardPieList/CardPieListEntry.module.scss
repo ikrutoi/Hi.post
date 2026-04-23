@@ -1,5 +1,8 @@
 @use '@styles/config/colors' as *;
 
+$list-entry-row-height: 3rem;
+$list-entry-thumb-size: 2.75rem;
+
 $_list-entry-surface-base: mix($color-app-header, #fff, 88%);
 $list-entry-surface: mix($_list-entry-surface-base, #fff, 90%);
 $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
@@ -7,9 +10,9 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
 .root {
   position: relative;
   margin-bottom: 0.25rem;
-  min-height: 2.65rem;
-  padding: 1px 0.5rem 1px 0.35rem;
   box-sizing: border-box;
+  min-height: $list-entry-row-height;
+  padding: 1px 0.5rem 1px 0.35rem;
   background-color: $list-entry-surface;
   border: 1px solid $list-entry-border;
   border-radius: 4px;
@@ -74,65 +77,82 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
   gap: 0.35rem;
   width: 100%;
   min-width: 0;
-  min-height: calc(2.65rem - 2px);
+  min-height: calc(#{$list-entry-row-height} - 2px);
 }
 
 .favoriteSlot {
   flex-shrink: 0;
   align-self: center;
-  width: 1.25rem;
+  width: 1.35rem;
+  min-width: 1.35rem;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Как `.toolbarDate .toolbarKeyEnabled` / hover в Toolbar.module.scss */
+.addCartBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.12rem;
+  border: none;
+  border-radius: 0.35rem;
+  background: none;
+  cursor: pointer;
+  color: $color-font-enabled;
+  line-height: 1;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled;
+    background-color: $color-enabled;
+  }
+
+  :global(svg) {
+    width: 0.92rem;
+    height: 0.92rem;
+    flex-shrink: 0;
+    display: block;
+    color: $color-font-enabled;
+  }
+}
+
+.addCartStatic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-font-enabled;
+  pointer-events: none;
+
+  :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    display: block;
+    color: $color-font-enabled;
+  }
+}
+
+.root[data-inactive='true'] .addCartStatic {
+  color: $color-font-disabled;
+
+  :global(svg) {
+    color: $color-font-disabled;
+  }
 }
 
 .root[data-inactive='true'] .thumbImg {
   filter: grayscale(1);
 }
 
-.star,
-.starStatic {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  line-height: 1;
-  font-size: 1rem;
-  width: 1.15em;
-  height: 1.15em;
-  min-width: 1.25rem;
-  min-height: 1.25rem;
-  border-radius: 50%;
-  color: $color-font-disabled;
-  box-sizing: border-box;
-}
-
-.star {
-  border: none;
-  cursor: pointer;
-  background: none;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
-
-  &[data-starred='true'] {
-    color: $color-favorite-star;
-  }
-}
-
-.starStatic {
-  cursor: default;
-  pointer-events: none;
-  user-select: none;
-}
-
 .thumb {
   position: relative;
   flex-shrink: 0;
   align-self: stretch;
-  width: 2.35rem;
+  width: $list-entry-thumb-size;
   min-height: 0;
   border-radius: 0.25rem;
   overflow: hidden;
@@ -143,7 +163,6 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
   border: 1px solid mix($list-entry-border, transparent, 58%);
 }
 
-/* Как DateListEntry: плейсхолдер cardphoto без превью. */
 .thumbPlaceholder {
   position: absolute;
   inset: 0;

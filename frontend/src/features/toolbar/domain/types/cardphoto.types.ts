@@ -27,10 +27,6 @@ export interface CardphotoToolbarState extends Record<string, any> {
   config: ToolbarConfig
 }
 
-export interface BaseToolbarState extends Record<string, any> {
-  config: ToolbarConfig
-}
-
 export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'cardphoto',

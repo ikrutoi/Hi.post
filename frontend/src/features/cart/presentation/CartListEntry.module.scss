@@ -1,5 +1,8 @@
 @use '@styles/config/colors' as *;
 
+$list-entry-row-height: 3rem;
+$list-entry-thumb-size: 2.75rem;
+
 $_list-entry-surface-base: mix($color-app-header, #fff, 88%);
 $list-entry-surface: mix($_list-entry-surface-base, #fff, 90%);
 $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
@@ -7,7 +10,7 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
 .root {
   position: relative;
   margin-bottom: 0.25rem;
-  min-height: 2.65rem;
+  min-height: $list-entry-row-height;
   padding: 1px 0.5rem 1px 0.35rem;
   box-sizing: border-box;
   background-color: $list-entry-surface;
@@ -78,7 +81,7 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
   gap: 0.35rem;
   width: 100%;
   min-width: 0;
-  min-height: calc(2.65rem - 2px);
+  min-height: calc(#{$list-entry-row-height} - 2px);
 }
 
 .root[data-inactive='true'] .thumbImg {
@@ -88,7 +91,7 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
 .thumb {
   flex-shrink: 0;
   align-self: stretch;
-  width: 2.35rem;
+  width: $list-entry-thumb-size;
   min-height: 0;
   border-radius: 0.25rem;
   overflow: hidden;
