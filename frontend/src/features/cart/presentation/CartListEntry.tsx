@@ -9,6 +9,7 @@ export type CartListEntryProps = {
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
+  priceLine?: string
   variant?: CartListEntryVariant
   onSelect?: () => void
   onDelete?: () => void
@@ -20,6 +21,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   dateLabel,
   previewUrl,
   detailLine,
+  priceLine,
   variant = 'default',
   onSelect,
   onDelete,
@@ -27,7 +29,9 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
-  const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
+  const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
+    .filter(Boolean)
+    .join(', ')
   const recipientParts = parseListEntryRecipientDetail(detailLine)
 
   return (
@@ -77,6 +81,11 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
             </div>
           ) : null}
         </div>
+        {priceLine ? (
+          <div className={styles.priceLine} aria-label={`Price ${priceLine}`}>
+            {priceLine}
+          </div>
+        ) : null}
       </div>
       {onDelete ? (
         <button

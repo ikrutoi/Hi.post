@@ -13,4 +13,6 @@ export interface HandleCellClickParams {
   direction: MonthDirection
   dateKey?: string
   dayData?: CardCalendarIndex | null
+  /** Только клик по кнопке листания месяца (dayBefore/dayAfter), не по всей ячейке. */
+  triggerMonthNav?: boolean
 }

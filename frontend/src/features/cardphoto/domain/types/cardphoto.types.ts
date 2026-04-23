@@ -101,4 +101,6 @@ export interface PreviewItemForCalendar {
   cardId: string
   isHistory?: boolean
   isSelectedDate?: boolean
+  /** Ячейка соседнего месяца (край календаря) — превью без общего opacity. */
+  isAdjacentMonthEdge?: boolean
 }

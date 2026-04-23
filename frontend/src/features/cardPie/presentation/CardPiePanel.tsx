@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconX, IconListCardPie } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -6,6 +6,8 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
+import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
+import { toggleCartForDispatchBranch } from '@date/infrastructure/state'
 import { CardPieListEntry } from './cardPieList/CardPieListEntry'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
 import styles from './CardPiePanel.module.scss'
@@ -22,7 +24,8 @@ const isBlobUrl = (url: string | null | undefined): boolean =>
 const CardPiePanelRow: React.FC<{
   item: DateListPanelItem
   onSelectEntry?: (item: DateListPanelItem) => void
-}> = ({ item, onSelectEntry }) => {
+  canToggleCart?: boolean
+}> = ({ item, onSelectEntry, canToggleCart }) => {
   const dispatch = useAppDispatch()
   const cachedUrl = useAppSelector(
     selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
@@ -45,6 +48,15 @@ const CardPiePanelRow: React.FC<{
     isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
   const displayUrl = cachedUrl ?? safeFallbackUrl
 
+  const handleToggleCart = useCallback(() => {
+    if (item.dispatchBranchKey) {
+      dispatch(toggleCartForDispatchBranch({ branchKey: item.dispatchBranchKey }))
+    }
+  }, [dispatch, item.dispatchBranchKey])
+
+  const onAddCartFromList =
+    canToggleCart && item.dispatchBranchKey ? handleToggleCart : undefined
+
   return (
     <CardPieListEntry
       key={item.id}
@@ -58,6 +70,8 @@ const CardPiePanelRow: React.FC<{
           ? () => onSelectEntry(item)
           : undefined
       }
+      onAddCart={onAddCartFromList}
+      inCart={Boolean(item.cartPostcard)}
     />
   )
 }
@@ -67,6 +81,8 @@ export const CardPiePanel: React.FC<Props> = ({
   entries = [],
   onSelectEntry,
 }) => {
+  const { isAllComplete } = useAppSelector(selectPieProgress)
+
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
 
@@ -102,6 +118,7 @@ export const CardPiePanel: React.FC<Props> = ({
                 key={item.id}
                 item={item}
                 onSelectEntry={onSelectEntry}
+                canToggleCart={isAllComplete}
               />
             ))
           ) : (

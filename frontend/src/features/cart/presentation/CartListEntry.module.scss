@@ -3,9 +3,8 @@
 $list-entry-row-height: 3rem;
 $list-entry-thumb-size: 2.75rem;
 
-$_list-entry-surface-base: mix($color-app-header, #fff, 88%);
-$list-entry-surface: mix($_list-entry-surface-base, #fff, 90%);
-$list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
+$list-entry-surface: $color-cart-list-surface;
+$list-entry-border: $color-cart-list-border;
 
 .root {
   position: relative;
@@ -151,6 +150,27 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
 .detailRegion,
 .detailSep {
   font-size: inherit;
+}
+
+.priceLine {
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: auto;
+  padding-left: 0.35rem;
+  max-width: 42%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  color: $color-font-enabled;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.root[data-inactive='true'] .priceLine {
+  color: $color-font-disabled;
 }
 
 .deleteButton {

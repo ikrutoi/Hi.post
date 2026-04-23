@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '@styles/config/colors' as *;
 
 /* Пустое превью cardphoto: фон как у пустой MiniCard, иконка — цвет сайдбара, 60% от ячейки. */
@@ -44,6 +45,28 @@
 .previewItemDate {
   opacity: 0.5;
   filter: grayscale(1);
+}
+
+/** Превью из корзины в ячейке «Дата»: жёлтый полупрозрачный слой вместо ч/б. */
+.previewItemDateCart {
+  .previewImage {
+    opacity: 0.78;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    pointer-events: none;
+    background-color: color.change($color-preview-indicator-cart, $alpha: 0.36);
+  }
+}
+
+.previewItemAdjacentEdge {
+  opacity: 1;
+  filter: none;
 }
 
 .previewItemSelected {

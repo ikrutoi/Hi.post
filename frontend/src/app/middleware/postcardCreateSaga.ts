@@ -1,7 +1,8 @@
 import type { SagaIterator } from 'redux-saga'
+import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
 import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
-import { addItem } from '@cart/infrastructure/state'
+import { addItem, removeItem } from '@cart/infrastructure/state'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
@@ -27,22 +28,14 @@ import type { CardStatus, Postcard } from '@entities/postcard'
 import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import type { SessionData } from '@entities/db/domain/types'
 import { selectExcludedDispatchBranchSet } from '@date/infrastructure/selectors'
+import {
+  buildDispatchBranchKey,
+  dispatchBranchKeyFromPostcard,
+  parseDispatchBranchKey,
+} from '@date/domain/dispatchBranchKey'
+import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 
 type CreateTarget = 'favorite' | 'cart'
-
-const dispatchDateKeyForBranch = (d: DispatchDate) =>
-  `${d.year}-${d.month}-${d.day}`
-
-function recipientBranchKeyFromEnvelope(
-  envelopeVariant: EnvelopeSessionRecord,
-): string {
-  const r = envelopeVariant.recipient
-  if (!r) return 'session'
-  const applied = r.applied ?? []
-  if (applied.length > 0) return applied[0] ?? 'session'
-  if (r.recipientViewId) return r.recipientViewId
-  return 'session'
-}
 
 function* setSessionFavoritePostcardLocalId(
   favoritePostcardLocalId: number | null,
@@ -259,7 +252,7 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
         status === 'cart' &&
         date != null &&
         excludedDispatchBranches.has(
-          `${dispatchDateKeyForBranch(date)}|${recipientBranchKeyFromEnvelope(envelopeVariant)}`,
+          buildDispatchBranchKey(date, envelopeVariant),
         )
       ) {
         continue
@@ -342,6 +335,111 @@ export function* removeFavoritePostcardsFromEditor(): SagaIterator {
   }
   yield call(setSessionFavoritePostcardLocalId, null)
 
+  yield call(refreshRightSidebarBadgesFromPostcards)
+}
+
+export function* handleToggleCartForDispatchBranch(
+  action: PayloadAction<{ branchKey: string }>,
+): SagaIterator {
+  const { branchKey } = action.payload
+  const parsed = parseDispatchBranchKey(branchKey)
+  if (!parsed) return
+
+  const { isAllComplete } = yield select(selectPieProgress)
+  if (!isAllComplete) return
+
+  const allRows: Postcard[] = yield call([postcardsAdapter, 'getAll'])
+  const existing = allRows.find(
+    (row) =>
+      row.status === 'cart' &&
+      dispatchBranchKeyFromPostcard(row) === branchKey,
+  )
+  if (existing) {
+    yield call([postcardsAdapter, 'deleteById'], existing.localId)
+    yield put(removeItem(existing.localId))
+    yield call(refreshRightSidebarBadgesFromPostcards)
+    return
+  }
+
+  const cardphoto: CardphotoState = yield select(selectCardphotoState)
+  const cardtext: CardtextState = yield select(selectCardtextState)
+  const envelope: EnvelopeSessionRecord = yield select(
+    selectEnvelopeSessionRecord,
+  )
+  const aroma: AromaItem = yield select(selectSelectedAroma)
+
+  const appliedPhoto = cardphoto.appliedData
+  if (!appliedPhoto) return
+
+  const excludedDispatchBranches: Set<string> = yield select(
+    selectExcludedDispatchBranchSet,
+  )
+  if (excludedDispatchBranches.has(branchKey)) return
+
+  const recipientEntries: AddressBookEntry[] = yield select(
+    (s: { addressBook?: { recipientEntries?: AddressBookEntry[] } }) =>
+      s.addressBook?.recipientEntries ?? [],
+  )
+
+  const { date, recipientSlotKey } = parsed
+  const appliedRecipientIds = envelope.recipient?.applied ?? []
+  const useRecipientVariants =
+    envelope.recipient?.mode === 'recipients' &&
+    appliedRecipientIds.length > 0 &&
+    appliedRecipientIds.includes(recipientSlotKey)
+
+  const envelopeVariant: EnvelopeSessionRecord = useRecipientVariants
+    ? {
+        ...envelope,
+        recipient: {
+          ...envelope.recipient,
+          applied: [recipientSlotKey],
+          appliedData:
+            recipientEntries.find((e) => e.id === recipientSlotKey)?.address ??
+            null,
+        },
+      }
+    : envelope
+
+  const candidateCard = buildBaseCard({
+    id: `${appliedPhoto.id}__candidate`,
+    thumbnailUrl: appliedPhoto.thumbnail?.url ?? '',
+    cardphoto,
+    cardtext,
+    envelope: envelopeVariant,
+    aroma,
+    date,
+  })
+
+  const existingCartDedupeKeys = new Set(
+    allRows
+      .filter((row) => row.status === 'cart')
+      .map((row) => buildCartDuplicateKey(row.card)),
+  )
+  const cartKey = buildCartDuplicateKey(candidateCard)
+  if (existingCartDedupeKeys.has(cartKey)) {
+    yield call(refreshRightSidebarBadgesFromPostcards)
+    return
+  }
+
+  let maxLocalId: number = yield call([postcardsAdapter, 'getMaxLocalId'])
+  maxLocalId += 1
+  const localId = maxLocalId
+  const now = Date.now()
+  const postcard: Postcard = {
+    localId,
+    price: '',
+    date,
+    createdAt: now,
+    updatedAt: now,
+    status: 'cart',
+    card: {
+      ...candidateCard,
+      id: `${appliedPhoto.id}__${localId}`,
+    },
+  }
+  yield call([postcardsAdapter, 'addRecordWithId'], localId, postcard)
+  yield put(addItem(postcard))
   yield call(refreshRightSidebarBadgesFromPostcards)
 }
 

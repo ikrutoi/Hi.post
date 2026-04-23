@@ -20,12 +20,21 @@ import type { DispatchDate } from '@entities/date/domain/types'
 import type { Postcard } from '@entities/postcard'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import { selectRecipientsList } from '@envelope/infrastructure/selectors'
+import {
+  selectEnvelopeSessionRecord,
+  selectRecipientsList,
+} from '@envelope/infrastructure/selectors'
 import {
   selectRecipientsDisplayList,
   selectRecipientsPendingResolvedEntries,
 } from '@envelope/recipient/infrastructure/selectors'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
+import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
+import {
+  dispatchBranchKeyFromPostcard,
+  dispatchDateKeyFromDispatchDate,
+  recipientBranchKeyFromEnvelope,
+} from '@date/domain/dispatchBranchKey'
 import {
   formatDetailLineFromAddressBookEntry,
   formatDetailLineFromAddressFields,
@@ -46,20 +55,6 @@ function formatDispatchDateLabel(d: DispatchDate): string {
 
 const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
   a.year === b.year && a.month === b.month && a.day === b.day
-
-const dispatchDateKey = (d: DispatchDate) =>
-  `${d.year}-${d.month}-${d.day}`
-
-const DEFAULT_PLAN_PRICE_LINE = '6.00 USD'
-
-function listEntryPriceLine(cartPostcard: Postcard | undefined): string {
-  const raw = cartPostcard?.price?.trim()
-  if (raw) {
-    if (/\b(USD|EUR|GBP|RUB)\b|[€₽$]|руб/i.test(raw)) return raw
-    return `${raw} USD`
-  }
-  return DEFAULT_PLAN_PRICE_LINE
-}
 
 /** Отрицательное — a раньше b; положительное — a позже b. */
 function compareDispatchDateChronological(
@@ -118,6 +113,7 @@ export function useDispatchPlanListEntries(
     (s) => s.addressBook?.recipientEntries ?? [],
   )
   const excludedDispatchBranchSet = useAppSelector(selectExcludedDispatchBranchSet)
+  const envelopeRecord = useAppSelector(selectEnvelopeSessionRecord)
   const { previewUrl: cardphotoPreviewUrl } = useAppSelector(
     selectCardphotoPreview,
   )
@@ -126,14 +122,12 @@ export function useDispatchPlanListEntries(
   )
   const listPreviewUrl = cardphotoPreviewUrl ?? processedThumbFallback ?? null
 
-  const cartPostcardByDateKeyAndRecipient = useMemo(() => {
+  const cartPostcardByDispatchBranchKey = useMemo(() => {
     const m = new Map<string, Postcard>()
     for (const p of cartItems) {
       if (p.status !== 'cart') continue
-      const rk = postcardRecipientTemplateId(p)
-      if (!rk) continue
-      const key = `${dispatchDateKey(p.card.date)}|${rk}`
-      if (!m.has(key)) m.set(key, p)
+      const key = dispatchBranchKeyFromPostcard(p)
+      if (key && !m.has(key)) m.set(key, p)
     }
     return m
   }, [cartItems])
@@ -201,23 +195,32 @@ export function useDispatchPlanListEntries(
     }
 
     const applied = recipientState.applied ?? []
+    const sessionBranchKey = recipientBranchKeyFromEnvelope(envelopeRecord)
     if (applied.length > 0) {
       return applied.map((id) => ({
-        key: id,
+        branchKey: id,
         detailLine: resolveBranchDetailLine(id),
+        isSessionSlot: false,
       }))
     }
     if (recipientState.appliedData != null) {
       return [
         {
-          key: 'session',
+          branchKey: sessionBranchKey,
           detailLine: formatDetailLineFromAddressFields(
             recipientState.appliedData,
           ),
+          isSessionSlot: true,
         },
       ]
     }
-    return [{ key: 'session', detailLine: sessionRecipientDetail }]
+    return [
+      {
+        branchKey: sessionBranchKey,
+        detailLine: sessionRecipientDetail,
+        isSessionSlot: true,
+      },
+    ]
   }, [
     recipientState.applied,
     recipientState.appliedData,
@@ -227,6 +230,7 @@ export function useDispatchPlanListEntries(
     recipientEntries,
     cartPostcardByRecipientId,
     sessionRecipientDetail,
+    envelopeRecord,
   ])
 
   return useMemo(() => {
@@ -239,7 +243,8 @@ export function useDispatchPlanListEntries(
       onDelete?: () => void,
       recipientDetailLine?: string | null,
       cartPostcard?: Postcard,
-      slotKey?: string,
+      branchKey: string,
+      isSessionSlot?: boolean,
     ): DateListPanelItem => {
       const fromCart = cartPostcard
       /** Только сессия (cardphoto / processed), без превью из корзины по дате. */
@@ -257,8 +262,7 @@ export function useDispatchPlanListEntries(
           : undefined
       const sessionLineFallback =
         appliedRecipientCount > 1 &&
-        slotKey != null &&
-        slotKey !== 'session' &&
+        !isSessionSlot &&
         !fromCartDetailLine &&
         (recipientDetailLine == null || recipientDetailLine === '')
           ? undefined
@@ -278,6 +282,8 @@ export function useDispatchPlanListEntries(
         previewIsProcessed: true,
         variant,
         onDelete,
+        dispatchBranchKey: branchKey,
+        cartPostcard: fromCart,
       }
     }
 
@@ -286,41 +292,32 @@ export function useDispatchPlanListEntries(
     const appendMultiBlock = (includeInactiveCachedSingle: boolean) => {
       if (includeInactiveCachedSingle && cachedSingleDate) {
         recipientSlots.forEach((slot, ri) => {
-          const branchKey = `${dispatchDateKey(cachedSingleDate)}|${slot.key}`
+          const branchKey = `${dispatchDateKeyFromDispatchDate(cachedSingleDate)}|${slot.branchKey}`
           if (excludedDispatchBranchSet.has(branchKey)) return
-          const cartP =
-            slot.key !== 'session'
-              ? cartPostcardByDateKeyAndRecipient.get(
-                  `${dispatchDateKey(cachedSingleDate)}|${slot.key}`,
-                )
-              : undefined
+          const cartP = cartPostcardByDispatchBranchKey.get(branchKey)
           entries.push(
             row(
               cachedSingleDate,
-              `cached-single-rcpt-${slot.key}-${ri}`,
+              `cached-single-rcpt-${slot.branchKey}-${ri}`,
               'inactive',
               undefined,
               slot.detailLine,
               cartP,
-              slot.key,
+              branchKey,
+              slot.isSessionSlot,
             ),
           )
         })
       }
       selectedDates.forEach((d, i) => {
         recipientSlots.forEach((slot, ri) => {
-          const branchKey = `${dispatchDateKey(d)}|${slot.key}`
+          const branchKey = `${dispatchDateKeyFromDispatchDate(d)}|${slot.branchKey}`
           if (excludedDispatchBranchSet.has(branchKey)) return
-          const cartP =
-            slot.key !== 'session'
-              ? cartPostcardByDateKeyAndRecipient.get(
-                  `${dispatchDateKey(d)}|${slot.key}`,
-                )
-              : undefined
+          const cartP = cartPostcardByDispatchBranchKey.get(branchKey)
           entries.push(
             row(
               d,
-              `m-${i}-rcpt-${slot.key}-${ri}`,
+              `m-${i}-rcpt-${slot.branchKey}-${ri}`,
               undefined,
               () => {
                 dispatch(excludeDispatchBranch({ branchKey }))
@@ -328,7 +325,9 @@ export function useDispatchPlanListEntries(
                 nextExcluded.add(branchKey)
                 const anyLeftThisDate = recipientSlots.some(
                   (s) =>
-                    !nextExcluded.has(`${dispatchDateKey(d)}|${s.key}`),
+                    !nextExcluded.has(
+                      `${dispatchDateKeyFromDispatchDate(d)}|${s.branchKey}`,
+                    ),
                 )
                 if (!anyLeftThisDate) {
                   dispatch(
@@ -340,7 +339,8 @@ export function useDispatchPlanListEntries(
               },
               slot.detailLine,
               cartP,
-              slot.key,
+              branchKey,
+              slot.isSessionSlot,
             ),
           )
         })
@@ -350,18 +350,13 @@ export function useDispatchPlanListEntries(
     const appendSingleBlock = (includeInactiveCachedMulti: boolean) => {
       if (selectedDate) {
         recipientSlots.forEach((slot, ri) => {
-          const branchKey = `${dispatchDateKey(selectedDate)}|${slot.key}`
+          const branchKey = `${dispatchDateKeyFromDispatchDate(selectedDate)}|${slot.branchKey}`
           if (excludedDispatchBranchSet.has(branchKey)) return
-          const cartP =
-            slot.key !== 'session'
-              ? cartPostcardByDateKeyAndRecipient.get(
-                  `${dispatchDateKey(selectedDate)}|${slot.key}`,
-                )
-              : undefined
+          const cartP = cartPostcardByDispatchBranchKey.get(branchKey)
           entries.push(
             row(
               selectedDate,
-              `single-rcpt-${slot.key}-${ri}`,
+              `single-rcpt-${slot.branchKey}-${ri}`,
               undefined,
               () => {
                 dispatch(excludeDispatchBranch({ branchKey }))
@@ -370,7 +365,7 @@ export function useDispatchPlanListEntries(
                 const anyLeftThisDate = recipientSlots.some(
                   (s) =>
                     !nextExcluded.has(
-                      `${dispatchDateKey(selectedDate)}|${s.key}`,
+                      `${dispatchDateKeyFromDispatchDate(selectedDate)}|${s.branchKey}`,
                     ),
                 )
                 if (!anyLeftThisDate) {
@@ -379,7 +374,8 @@ export function useDispatchPlanListEntries(
               },
               slot.detailLine,
               cartP,
-              slot.key,
+              branchKey,
+              slot.isSessionSlot,
             ),
           )
         })
@@ -387,23 +383,19 @@ export function useDispatchPlanListEntries(
       if (includeInactiveCachedMulti) {
         cachedMultiDates.forEach((d, i) => {
           recipientSlots.forEach((slot, ri) => {
-            const branchKey = `${dispatchDateKey(d)}|${slot.key}`
+            const branchKey = `${dispatchDateKeyFromDispatchDate(d)}|${slot.branchKey}`
             if (excludedDispatchBranchSet.has(branchKey)) return
-            const cartP =
-              slot.key !== 'session'
-                ? cartPostcardByDateKeyAndRecipient.get(
-                    `${dispatchDateKey(d)}|${slot.key}`,
-                  )
-                : undefined
+            const cartP = cartPostcardByDispatchBranchKey.get(branchKey)
             entries.push(
               row(
                 d,
-                `cached-m-${i}-rcpt-${slot.key}-${ri}`,
+                `cached-m-${i}-rcpt-${slot.branchKey}-${ri}`,
                 'inactive',
                 undefined,
                 slot.detailLine,
                 cartP,
-                slot.key,
+                branchKey,
+                slot.isSessionSlot,
               ),
             )
           })
@@ -444,7 +436,7 @@ export function useDispatchPlanListEntries(
     sessionRecipientDetail,
     recipientSlots,
     listPreviewUrl,
-    cartPostcardByDateKeyAndRecipient,
+    cartPostcardByDispatchBranchKey,
     recipientEntries,
     envelopeRecipients,
     excludedDispatchBranchSet,

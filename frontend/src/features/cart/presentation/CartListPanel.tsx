@@ -8,6 +8,7 @@ import { useCartFacade } from '../application/facades'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
+import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
 import { CartListEntry, type CartListEntryVariant } from './CartListEntry'
 import type { Postcard } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
@@ -21,6 +22,7 @@ export type CartListPanelItem = {
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
+  priceLine?: string
   variant?: CartListEntryVariant
   previewIsProcessed?: boolean
   onDelete?: () => void
@@ -74,6 +76,7 @@ function cartPostcardsToEntries(postcards: Postcard[]): CartListPanelItem[] {
       dateLabel: formatDispatchDateLabel(p.date),
       previewUrl: p.card.thumbnailUrl ?? null,
       detailLine: formatRecipientLine(p),
+      priceLine: listEntryPriceLine(p),
       variant: 'default' as const,
       previewIsProcessed: Boolean(p.card.isProcessed),
     }))
@@ -111,6 +114,7 @@ const CartListPanelRow: React.FC<{
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
       detailLine={item.detailLine}
+      priceLine={item.priceLine ?? listEntryPriceLine(item.postcard)}
       variant={item.variant}
       onSelect={
         onSelectEntry && item.variant !== 'inactive'

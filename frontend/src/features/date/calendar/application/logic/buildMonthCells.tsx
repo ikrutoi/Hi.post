@@ -114,6 +114,8 @@ export const buildMonthCells = ({
               day,
             }}
             adjacentSessionPlaceholderNavSwap={adjacentSessionPlaceholderNavSwap}
+            adjacentMonthCardphotoDim={adjacentMonthCardphotoDim}
+            isAdjacentMonthEdge={direction !== 'current'}
           />
         )}
       </Cell>

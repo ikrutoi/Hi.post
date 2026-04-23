@@ -7,6 +7,7 @@ import {
   openDayPanel,
 } from '../../../calendar/infrastructure/state/calendar.slice'
 import { selectIsDateListPanelOpen } from '../../../calendar/infrastructure/selectors/calendar.selector'
+import { shiftMonth } from '../../../calendar/application/helpers'
 import { useSwitcherFacade } from '../../../switcher/application/facades'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
 import type {
@@ -63,6 +64,7 @@ export const useCalendarCellController = ({
     direction,
     dateKey,
     dayData,
+    triggerMonthNav,
   }: HandleCellClickParams) => {
     if (
       direction === 'current' &&
@@ -100,8 +102,42 @@ export const useCalendarCellController = ({
       }
     }
 
-    if (direction === 'before') {
-      // if (position) changePosition(null)
+    /** dayBefore / dayAfter: клик вне кнопки листания — как у дня текущего месяца (выбор / панель). */
+    if (
+      (direction === 'before' || direction === 'after') &&
+      triggerMonthNav !== true &&
+      !isDisabledDate &&
+      calendarViewDate?.year != null &&
+      calendarViewDate?.month != null
+    ) {
+      const day = dayBefore ?? dayAfter ?? null
+      if (day != null) {
+        const { year, month } = shiftMonth(calendarViewDate, direction)
+        const dispatchDate = { year, month, day }
+        const clickRemovesSelection = isMultiDateMode
+          ? selectedDates.some((d) => sameDispatchDate(d, dispatchDate))
+          : Boolean(
+              selectedDate && sameDispatchDate(selectedDate, dispatchDate),
+            )
+
+        chooseDate(dispatchDate)
+
+        if (dateListPanelOpen) {
+          dispatch(closeDayPanel())
+        } else if (
+          !clickRemovesSelection &&
+          dateKey &&
+          dayData &&
+          hasCards(dayData)
+        ) {
+          dispatch(openDayPanel({ dateKey, dayData }))
+        } else {
+          dispatch(closeDayPanel())
+        }
+      }
+    }
+
+    if (direction === 'before' && triggerMonthNav) {
       decrementMonth()
       triggerFlash('month')
       if (lastViewedCalendarDate?.month === 0) {
@@ -109,8 +145,7 @@ export const useCalendarCellController = ({
       }
     }
 
-    if (direction === 'after') {
-      // if (position) changePosition(null)
+    if (direction === 'after' && triggerMonthNav) {
       incrementMonth()
       triggerFlash('month')
       if (lastViewedCalendarDate?.month === 11) {

@@ -1,6 +1,7 @@
 import { SagaIterator } from 'redux-saga'
 import { all, takeLatest, select, put } from 'redux-saga/effects'
 import { handleEditorPieToolbarAction } from './editorPieToolbarSaga'
+import { handleToggleCartForDispatchBranch } from './postcardCreateSaga'
 import { toolbarAction } from '@/features/toolbar/application/helpers'
 import type { RootState } from '@app/state'
 import {
@@ -20,6 +21,7 @@ import {
   setMultiDateMode,
   clearDate,
   hydrateDateFromSession,
+  toggleCartForDispatchBranch,
 } from '@date/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
@@ -140,6 +142,10 @@ function* handleRainbowLogic() {
 export function* editorPieProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleEditorPieToolbarAction),
+    takeLatest(
+      toggleCartForDispatchBranch.type,
+      handleToggleCartForDispatchBranch,
+    ),
 
     takeLatest([...PIE_PROGRESS_SYNC_ACTIONS], handleRainbowLogic),
   ])

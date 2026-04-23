@@ -7,6 +7,10 @@ $_list-entry-surface-base: mix($color-app-header, #fff, 88%);
 $list-entry-surface: mix($_list-entry-surface-base, #fff, 90%);
 $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
 
+/** Совпадает со строками корзины (`$color-cart-list-*`). */
+$list-entry-row-linked-surface: $color-cart-list-surface;
+$list-entry-row-linked-border: $color-cart-list-border;
+
 .root {
   position: relative;
   margin-bottom: 0.25rem;
@@ -58,7 +62,24 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
     }
   }
 
+  &[data-in-cart='true']:not([data-inactive='true']) {
+    background-color: $list-entry-row-linked-surface;
+    border-color: $list-entry-row-linked-border;
+  }
+
+  &[data-in-cart='true']:not([data-inactive='true']):hover,
+  &[data-in-cart='true']:not([data-inactive='true'])[data-focused='true'] {
+    background-color: darken($list-entry-row-linked-surface, 1.5%);
+  }
+
+  &[data-in-cart='true'][data-selected='true']:not([data-inactive='true']) {
+    background-color: darken($list-entry-row-linked-surface, 3%);
+    box-shadow: -2px 0 0 0 $color-date-multi;
+  }
+
   &[data-clickable='true'] {
+    // cursor: pointer;
+
     &:focus {
       outline: none;
     }
@@ -81,6 +102,8 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
 }
 
 .favoriteSlot {
+  position: relative;
+  z-index: 2;
   flex-shrink: 0;
   align-self: center;
   width: 1.35rem;
@@ -90,7 +113,6 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
   justify-content: center;
 }
 
-/* Как `.toolbarDate .toolbarKeyEnabled` / hover в Toolbar.module.scss */
 .addCartBtn {
   display: inline-flex;
   align-items: center;
@@ -104,28 +126,18 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
   line-height: 1;
   transition:
     color 0.15s ease,
-    background-color 0.15s ease;
+    background-color 0.15s ease,
+    opacity 0.15s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     color: $color-font-enabled;
-    background-color: $color-enabled;
+    // background-color: $color-hover-dark;
   }
 
-  :global(svg) {
-    width: 0.92rem;
-    height: 0.92rem;
-    flex-shrink: 0;
-    display: block;
-    color: $color-font-enabled;
+  &:disabled {
+    cursor: default;
+    opacity: 0.55;
   }
-}
-
-.addCartStatic {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: $color-font-enabled;
-  pointer-events: none;
 
   :global(svg) {
     width: 1.1rem;
@@ -134,14 +146,14 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
     display: block;
     color: $color-font-enabled;
   }
-}
 
-.root[data-inactive='true'] .addCartStatic {
-  color: $color-font-disabled;
-
-  :global(svg) {
+  &:disabled :global(svg) {
     color: $color-font-disabled;
   }
+}
+
+.root[data-inactive='true'] .addCartBtn:disabled {
+  opacity: 0.45;
 }
 
 .root[data-inactive='true'] .thumbImg {

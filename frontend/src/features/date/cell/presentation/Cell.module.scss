@@ -1,4 +1,7 @@
+@use 'sass:color';
 @use '@styles/config/colors' as *;
+
+$cell-border-radius: 0.35rem;
 
 .cell {
   position: relative;
@@ -13,7 +16,7 @@
   margin: 0.2rem 0.75rem;
   justify-self: center;
   border: 1px solid $color-section-light;
-  border-radius: 0.35rem;
+  border-radius: $cell-border-radius;
   cursor: pointer;
   background-color: #fff;
   transition:
@@ -57,24 +60,43 @@
   flex: 1;
   display: flex;
 }
-
 .navArrowWrap {
   position: absolute;
-  left: 50%;
-  top: 50%;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.89rem;
-  height: 1.89rem;
-  border-radius: 50%;
+  box-sizing: border-box;
   background-color: transparent;
   border: 1px solid $color-section-light;
-  box-sizing: border-box;
   cursor: default;
   pointer-events: none;
-  transform: translate(-50%, -50%);
+}
+
+button.navArrowWrap {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  text-align: center;
+}
+
+.cell.adjacentMonth .navArrowWrap {
+  background-color: color.change($color-disabled-light, $alpha: 0.6);
+  transition: opacity 0.18s ease;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.navArrowAdjacent {
+  top: 27%;
+  left: 0;
+  right: 60%;
+  height: 73%;
+  border-bottom: none;
+  border-left: none;
+  border-radius: 0 $cell-border-radius 0 0;
 }
 
 .navArrowIcon {
@@ -84,7 +106,6 @@
   flex-shrink: 0;
 }
 
-/* Плейсхолдер + стрелка: по hover показываем стрелку, фон плейсхолдера не трогаем — гасим только svg. */
 .cell[data-adjacent-session-nav-swap='true'] {
   .navArrowWrap {
     opacity: 0;
@@ -102,10 +123,6 @@
   &:hover .cellContent :global([data-calendar-session-placeholder] svg) {
     opacity: 0;
   }
-}
-
-.cell[data-adjacent-cardphoto-dim='true'] .cellContent {
-  opacity: 0.6;
 }
 
 .title {
@@ -137,7 +154,7 @@
 
 .adjacentMonth {
   cursor: default;
-  background-color: $color-disabled-light;
+  background-color: #fff;
 
   .dayNumber {
     background-color: $color-disabled;
@@ -150,6 +167,8 @@
 }
 
 .adjacentMonth.dispatch {
+  background-color: $color-hover-bg;
+
   .dayNumber {
     background-color: $color-active;
     border-color: $color-section-light;
@@ -225,7 +244,7 @@
 }
 
 .adjacentMonth.disabled {
-  background-color: $color-disabled-light;
+  background-color: #fff;
 }
 
 .withPostcards {

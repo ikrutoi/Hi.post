@@ -128,6 +128,12 @@ export const dateSlice = createSlice({
       }
     },
 
+    /** Saga-only: переключение корзины по ветке плана (Card pie / список дат). */
+    toggleCartForDispatchBranch(
+      _state,
+      _action: PayloadAction<{ branchKey: string }>,
+    ) {},
+
     setFirstDayOfWeek(state, action: PayloadAction<FirstDayOfWeekPreference>) {
       state.firstDayOfWeek = action.payload
     },
@@ -218,6 +224,7 @@ export const {
   setFirstDayOfWeek,
   hydrateDateFromSession,
   excludeDispatchBranch,
+  toggleCartForDispatchBranch,
   // setHistoryListPanelOpen,
   // setDateListPanelOpen,
   // setHistoryMode,

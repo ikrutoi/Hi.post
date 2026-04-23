@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -33,6 +34,10 @@ interface CardPreviewProps {
   calendarDispatchDate?: DispatchDate
   /** Маркер для Cell: hover скрывает плейсхолдер и показывает стрелку соседнего месяца. */
   adjacentSessionPlaceholderNavSwap?: boolean
+  /** Соседний месяц + cardphoto в сессии — приглушить только блок превью, не всю ячейку. */
+  adjacentMonthCardphotoDim?: boolean
+  /** Ячейка dayBefore/dayAfter — превью без opacity как у невыбранного дня текущего месяца. */
+  isAdjacentMonthEdge?: boolean
 }
 
 export const CardPreview: React.FC<CardPreviewProps> = ({
@@ -41,6 +46,8 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   isSelectedDate,
   calendarDispatchDate,
   adjacentSessionPlaceholderNavSwap = false,
+  adjacentMonthCardphotoDim = false,
+  isAdjacentMonthEdge = false,
 }) => {
   const recipientEnabled = useAppSelector(selectRecipientEnabled)
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
@@ -141,7 +148,12 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !photoPreview?.previewUrl
 
   return (
-    <div className={styles.cardPreviewContainer}>
+    <div
+      className={clsx(
+        styles.cardPreviewContainer,
+        adjacentMonthCardphotoDim && styles.cardPreviewContainerDim,
+      )}
+    >
       {primaryItem ? (
         <div className={styles.previewWrapper}>
           <CardPreviewItem
@@ -152,6 +164,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             cardId={primaryItem.cardId}
             isHistory={isHistory}
             isSelectedDate={isSelectedDate}
+            isAdjacentMonthEdge={isAdjacentMonthEdge}
           />
           {showExtraCountBadge ? (
             <span className={styles.extraCount} aria-hidden>

@@ -76,7 +76,24 @@ export const Cell: React.FC<CellProps> = ({
     dayData,
   }
 
+  const isAdjacentNavCell = dayBefore != null || dayAfter != null
+
   const handleClickCapture = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onClickCell(clickParams)
+  }
+
+  const handleMonthNavClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    onClickCell({ ...clickParams, triggerMonthNav: true })
+  }
+
+  const handleAdjacentCellClickCapture = (e: React.MouseEvent) => {
+    const el = e.target as Element | null
+    if (el?.closest('[data-calendar-month-nav="true"]')) {
+      /** Не stopPropagation — иначе событие не дойдёт до onClick кнопки листания. */
+      return
+    }
     e.stopPropagation()
     onClickCell(clickParams)
   }
@@ -84,7 +101,9 @@ export const Cell: React.FC<CellProps> = ({
   return (
     <div
       className={dynamicClass}
-      onClickCapture={handleClickCapture}
+      onClickCapture={
+        isAdjacentNavCell ? handleAdjacentCellClickCapture : handleClickCapture
+      }
       data-adjacent-session-nav-swap={
         adjacentSessionPlaceholderNavSwap ? 'true' : undefined
       }
@@ -96,14 +115,26 @@ export const Cell: React.FC<CellProps> = ({
         {dayCurrent ?? dayBefore ?? dayAfter}
       </span>
       {dayBefore != null ? (
-        <div className={styles.navArrowWrap} aria-hidden>
-          <FaChevronLeft className={styles.navArrowIcon} />
-        </div>
+        <button
+          type="button"
+          className={clsx(styles.navArrowWrap, styles.navArrowAdjacent)}
+          data-calendar-month-nav="true"
+          onClick={handleMonthNavClick}
+          aria-label="Previous month"
+        >
+          <FaChevronLeft className={styles.navArrowIcon} aria-hidden />
+        </button>
       ) : null}
       {dayAfter != null ? (
-        <div className={styles.navArrowWrap} aria-hidden>
-          <FaChevronRight className={styles.navArrowIcon} />
-        </div>
+        <button
+          type="button"
+          className={clsx(styles.navArrowWrap, styles.navArrowAdjacent)}
+          data-calendar-month-nav="true"
+          onClick={handleMonthNavClick}
+          aria-label="Next month"
+        >
+          <FaChevronRight className={styles.navArrowIcon} aria-hidden />
+        </button>
       ) : null}
       <div className={styles.cellContent}>{children}</div>
     </div>
