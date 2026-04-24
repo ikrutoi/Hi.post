@@ -19,6 +19,8 @@ import {
   setActiveAddressList,
 } from '@envelope/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { setCartListPanelOpen } from '@cart/infrastructure/state'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 
 function* syncListPanelToolbarIcons(): SagaIterator {
   const dateOpen: boolean = yield select(selectIsDateListPanelOpen)
@@ -36,6 +38,15 @@ function* syncListPanelToolbarIcons(): SagaIterator {
       section: 'history',
       key: 'listHistory',
       value: historyOpen ? 'active' : 'enabled',
+    }),
+  )
+
+  const cartListOpen: boolean = yield select(selectCartListPanelOpen)
+  yield put(
+    updateToolbarIcon({
+      section: 'rightSidebar',
+      key: 'cart',
+      value: cartListOpen ? 'active' : 'enabled',
     }),
   )
 
@@ -97,6 +108,8 @@ function* closeOtherListPanels(action: {
     action.type === setDateListPanelOpen.type && action.payload === true
   const openingHistory =
     action.type === setHistoryListPanelOpen.type && action.payload === true
+  const openingCart =
+    action.type === setCartListPanelOpen.type && action.payload === true
   const openingCardPie =
     action.type === setCardPieListPanelOpen.type && action.payload === true
   const openingCardphoto =
@@ -112,7 +125,8 @@ function* closeOtherListPanels(action: {
     !openingCardPie &&
     !openingCardphoto &&
     !openingCardtext &&
-    !openingAddressList
+    !openingAddressList &&
+    !openingCart
   ) {
     return
   }
@@ -122,6 +136,7 @@ function* closeOtherListPanels(action: {
     yield put(setDateListPanelOpen(false))
   }
   if (!openingHistory) yield put(setHistoryListPanelOpen(false))
+  if (!openingCart) yield put(setCartListPanelOpen(false))
   if (!openingCardPie) yield put(setCardPieListPanelOpen(false))
 
   if (!openingCardphoto && !openingDate) {
@@ -138,6 +153,7 @@ export function* watchExclusiveListPanels(): SagaIterator {
   yield all([
     takeEvery(setDateListPanelOpen.type, closeOtherListPanels),
     takeEvery(setHistoryListPanelOpen.type, closeOtherListPanels),
+    takeEvery(setCartListPanelOpen.type, closeOtherListPanels),
     takeEvery(setCardPieListPanelOpen.type, closeOtherListPanels),
     takeEvery(setCardphotoListPanelOpen.type, closeOtherListPanels),
     takeEvery(setCardtextListPanelOpen.type, closeOtherListPanels),

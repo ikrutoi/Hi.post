@@ -29,6 +29,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { useCartFacade } from './features/cart/application/facades/useCartFacade'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
+import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
 import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import styles from './App.module.scss'
@@ -100,10 +101,7 @@ const App = () => {
               )}
             >
               {activeSection === 'envelope' && <EnvelopeRightSlot />}
-              {activeSection === 'date' && <DateRightSlot section="date" />}
-              {activeSection === 'history' && (
-                <DateRightSlot section="history" />
-              )}
+              {activeSection === 'date' && <DateRightSlot />}
               {activeSection === 'cardtext' && <CardtextRightSlot />}
               {activeSection === 'cardphoto' && <CardphotoRightSlot />}
               {cardPieListPanelOpen && <CardPieLeftSlot />}
@@ -155,6 +153,7 @@ const App = () => {
               {listPanelOpen && (
                 <CartListPanel onSelectEntry={handleCartListSelectEntry} />
               )}
+              <HistoryListRightSlot />
               {/* {activeSection === 'cardtext' && <CardtextRightSlot />} */}
               {/* {activeSection === 'cardphoto' && <CardphotoRightSlot />} */}
             </div>
