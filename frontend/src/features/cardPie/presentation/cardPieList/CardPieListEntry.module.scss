@@ -122,7 +122,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
   border-radius: 0.35rem;
   background: none;
   cursor: pointer;
-  color: $color-font-enabled;
+  color: $color-app-sidebar-icon;
   line-height: 1;
   transition:
     color 0.15s ease,
@@ -130,7 +130,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
     opacity 0.15s ease;
 
   &:hover:not(:disabled) {
-    color: $color-font-enabled;
+    color: $color-app-sidebar-icon;
     // background-color: $color-hover-dark;
   }
 
@@ -144,7 +144,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
     height: 1.1rem;
     flex-shrink: 0;
     display: block;
-    color: $color-font-enabled;
+    color: $color-app-sidebar-icon;
   }
 
   &:disabled :global(svg) {

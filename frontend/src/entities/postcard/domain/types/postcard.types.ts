@@ -13,6 +13,9 @@ export const POSTCARD_STATUSES = [
 
 export type PostcardStatus = (typeof POSTCARD_STATUSES)[number]
 
+/** Статус открытки в домене / UI (включая черновик избранного вне пайплайна). */
+export type CardStatus = PostcardStatus | 'favorite'
+
 export type PostcardStatuses = {
   cart: boolean
   ready: boolean

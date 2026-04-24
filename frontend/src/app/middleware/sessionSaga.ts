@@ -98,6 +98,10 @@ import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import { setItems } from '@cart/infrastructure/state'
+import {
+  refreshPostcardsCardphotoUrls,
+  postcardCardphotoNeedsPersist,
+} from './postcardCardphotoHydrate'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
 import type { Postcard } from '@entities/postcard'
@@ -408,7 +412,26 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
 
 export function* hydrateAppSession() {
   try {
-    const postcards: Postcard[] = yield call([postcardsAdapter, 'getAll'])
+    const rawPostcards: Postcard[] = yield call([postcardsAdapter, 'getAll'])
+    const postcards: Postcard[] = yield call(
+      refreshPostcardsCardphotoUrls,
+      rawPostcards,
+    )
+    for (let i = 0; i < postcards.length; i++) {
+      const next = postcards[i]
+      const prev = rawPostcards[i]
+      if (
+        prev &&
+        next &&
+        prev.localId === next.localId &&
+        postcardCardphotoNeedsPersist(prev, next)
+      ) {
+        yield call([postcardsAdapter, 'put'], {
+          ...next,
+          id: next.localId,
+        } as Postcard & { id: number })
+      }
+    }
     yield put(setItems(postcards.filter((row) => row.status !== 'favorite')))
 
     yield call(refreshRightSidebarBadgesFromPostcards)

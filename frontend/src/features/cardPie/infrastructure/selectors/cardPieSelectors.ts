@@ -3,10 +3,12 @@ import { RootState } from '@app/state'
 import type { CardStatus } from '@entities/postcard'
 import { selectCardEditorState } from '@entities/cardEditor/infrastructure/selectors'
 import { selectCardtextAppliedSessionData } from '@cardtext/infrastructure/selectors'
+import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import {
-  selectCardphotoPreview,
-  selectCardphotoSessionRecord,
-} from '@cardphoto/infrastructure/selectors'
+  buildCardPieInnerDataFromPostcard,
+  buildPieSectionFlagsFromInner,
+  isPostcardPieAllComplete,
+} from '../postcardCardPieViewModel'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@features/envelope/infrastructure/selectors'
@@ -68,24 +70,28 @@ export const selectActiveCardFullData = createSelector(
   },
 )
 
-export const selectCardFromArchive = createSelector(
+/** Превью «пирога» по строке корзины: `id` — `String(postcard.localId)`. */
+export const selectCartArchiveCardPieBundle = createSelector(
   [
-    (state: RootState) => state,
-    (_state, id?: string) => id,
-    (_state, _id, status?: CardStatus) => status,
+    (state: RootState) => state.cart.items,
+    (_state: RootState, id?: string) => id,
   ],
-  (state, id, status) => {
-    if (!id) return null
-
-    switch (status) {
-      case 'cart':
-        return null
-      case 'sent':
-        return null
-      case 'favorite':
-        return null
-      default:
-        return null
+  (items, id) => {
+    if (id == null || id === '') return null
+    const localId = Number(id)
+    if (Number.isNaN(localId)) return null
+    const postcard = items.find((p) => Number(p.localId) === localId)
+    if (!postcard || postcard.status !== 'cart') return null
+    const inner = buildCardPieInnerDataFromPostcard(postcard)
+    const sections = buildPieSectionFlagsFromInner(
+      inner,
+      Boolean(postcard.card.envelope?.isComplete),
+    )
+    return {
+      currentData: { data: inner },
+      sections,
+      isAllComplete: isPostcardPieAllComplete(sections),
     }
   },
 )
+

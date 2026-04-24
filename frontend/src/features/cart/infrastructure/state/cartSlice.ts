@@ -9,6 +9,7 @@ const initialState: Cart = {
     currency: 'BYN',
   },
   isActive: false,
+  listSelectedLocalId: null,
 }
 
 const cartSlice = createSlice({
@@ -17,6 +18,12 @@ const cartSlice = createSlice({
   reducers: {
     setCartListPanelOpen(state, action: PayloadAction<boolean>) {
       state.isActive = action.payload
+      if (!action.payload) {
+        state.listSelectedLocalId = null
+      }
+    },
+    setCartListSelectedLocalId(state, action: PayloadAction<number | null>) {
+      state.listSelectedLocalId = action.payload
     },
     setItems(state, action: PayloadAction<Postcard[]>) {
       state.items = action.payload
@@ -25,9 +32,11 @@ const cartSlice = createSlice({
       state.items.push(action.payload)
     },
     removeItem(state, action: PayloadAction<number>) {
-      state.items = state.items.filter(
-        (item) => item.localId !== action.payload,
-      )
+      const removed = action.payload
+      state.items = state.items.filter((item) => item.localId !== removed)
+      if (state.listSelectedLocalId === removed) {
+        state.listSelectedLocalId = null
+      }
     },
     updateItem(state, action: PayloadAction<Postcard>) {
       const index = state.items.findIndex(
@@ -40,12 +49,14 @@ const cartSlice = createSlice({
     clearCart(state) {
       state.items = []
       state.amount = { value: 0, currency: state.amount.currency }
+      state.listSelectedLocalId = null
     },
   },
 })
 
 export const {
   setCartListPanelOpen,
+  setCartListSelectedLocalId,
   setItems,
   addItem,
   removeItem,

@@ -5,6 +5,9 @@ import type { Postcard } from '@entities/postcard'
 export const selectCartListPanelOpen = (state: RootState): boolean =>
   state.cart.isActive
 
+export const selectCartListSelectedLocalId = (state: RootState): number | null =>
+  state.cart.listSelectedLocalId
+
 export const selectCartItems = (state: RootState): Postcard[] =>
   state.cart.items
 

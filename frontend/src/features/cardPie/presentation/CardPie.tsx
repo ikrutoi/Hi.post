@@ -45,8 +45,14 @@ export const CardPie: React.FC<CardPieProps> = ({
   fillContainer = false,
   station = 'left',
 }) => {
-  const photoFillId = React.useId().replace(/:/g, '')
-  const photoEmptyFillId = React.useId().replace(/:/g, '')
+  /** Уникальные id паттернов: на странице может быть несколько CardPie (редактор + превью корзины). */
+  const pieDefsUid = React.useId().replace(/:/g, '')
+  const photoFillId = `${pieDefsUid}-photo-apply`
+  const photoEmptyFillId = `${pieDefsUid}-photo-empty`
+  const cardtextFillId = `${pieDefsUid}-cardtext-fill`
+  const envelopeFillId = `${pieDefsUid}-envelope-fill`
+  const aromaFillId = `${pieDefsUid}-aroma-fill`
+  const dateFillId = `${pieDefsUid}-date-fill`
   const { data, sections, handleSectorClick, isReady } = useCardPieFacade(
     isProcessed,
     status,
@@ -180,7 +186,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             </pattern>
 
             <pattern
-              id="cardtext-fill"
+              id={cardtextFillId}
               patternUnits="userSpaceOnUse"
               width="5120"
               height="5120"
@@ -248,7 +254,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             </pattern>
 
             <pattern
-              id="envelope-fill"
+              id={envelopeFillId}
               patternUnits="userSpaceOnUse"
               width="5120"
               height="5120"
@@ -348,7 +354,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             </pattern>
 
             <pattern
-              id="aroma-fill"
+              id={aromaFillId}
               patternUnits="userSpaceOnUse"
               width="5120"
               height="5120"
@@ -397,7 +403,7 @@ export const CardPie: React.FC<CardPieProps> = ({
             </pattern>
 
             <pattern
-              id="date-fill"
+              id={dateFillId}
               patternUnits="userSpaceOnUse"
               width="5120"
               height="5120"
@@ -482,16 +488,16 @@ export const CardPie: React.FC<CardPieProps> = ({
             </pattern>
           </defs>
 
-          <g id="pie-layers">
+          <g id={`${pieDefsUid}-pie-layers`}>
             <path
-              id="aroma"
+              id={`${pieDefsUid}-sector-aroma`}
               data-section="aroma"
               className={clsx(
                 styles.sector,
                 !sections.aroma && styles.sectorEmpty,
                 hoveredSection === 'aroma' && styles.hovered,
               )}
-              fill="url(#aroma-fill)"
+              fill={`url(#${aromaFillId})`}
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
               d="M5110 5110H1261l1299-2550z"
@@ -500,14 +506,14 @@ export const CardPie: React.FC<CardPieProps> = ({
               onMouseLeave={handleMouseLeave}
             />
             <path
-              id="date"
+              id={`${pieDefsUid}-sector-date`}
               data-section="date"
               className={clsx(
                 styles.sector,
                 !sections.date && styles.sectorEmpty,
                 hoveredSection === 'date' && styles.hovered,
               )}
-              fill="url(#date-fill)"
+              fill={`url(#${dateFillId})`}
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
               d="M1261 5110H10V2156l2550 404z"
@@ -516,14 +522,14 @@ export const CardPie: React.FC<CardPieProps> = ({
               onMouseLeave={handleMouseLeave}
             />
             <path
-              id="envelope"
+              id={`${pieDefsUid}-sector-envelope`}
               data-section="envelope"
               className={clsx(
                 styles.sector,
                 !sections.envelope && styles.sectorEmpty,
                 hoveredSection === 'envelope' && styles.hovered,
               )}
-              fill="url(#envelope-fill)"
+              fill={`url(#${envelopeFillId})`}
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
               d="M5110 5110 2560 2560l2550-1299z"
@@ -532,7 +538,7 @@ export const CardPie: React.FC<CardPieProps> = ({
               onMouseLeave={handleMouseLeave}
             />
             <path
-              id="cardphoto"
+              id={`${pieDefsUid}-sector-cardphoto`}
               data-section="cardphoto"
               className={clsx(
                 styles.sector,
@@ -552,14 +558,14 @@ export const CardPie: React.FC<CardPieProps> = ({
               onMouseLeave={handleMouseLeave}
             />
             <path
-              id="cardtext"
+              id={`${pieDefsUid}-sector-cardtext`}
               data-section="cardtext"
               className={clsx(
                 styles.sector,
                 !sections.cardtext && styles.sectorEmpty,
                 hoveredSection === 'cardtext' && styles.hovered,
               )}
-              fill="url(#cardtext-fill)"
+              fill={`url(#${cardtextFillId})`}
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
               d="M5110 1261 2560 2560 2156 10h2954z"

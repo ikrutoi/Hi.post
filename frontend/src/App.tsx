@@ -47,7 +47,11 @@ const App = () => {
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
-  const { listPanelOpen } = useCartFacade()
+  const {
+    listPanelOpen,
+    listSelectedLocalId,
+    setCartListSelectedLocalId,
+  } = useCartFacade()
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
 
   return (
@@ -113,14 +117,21 @@ const App = () => {
               </div>
             </div>
             <div className={styles.appMainContentRightPieSlot}>
-              {sectionSize != null && (
+              {listPanelOpen && sectionSize != null && (
                 <div className={styles.appMainContentRightPieRow}>
                   <div className={styles.appMainContentRightPieWrap}>
-                    <CardPie isProcessed fillContainer station="right" />
+                    <CardPie
+                      isProcessed={false}
+                      status="cart"
+                      id={
+                        listSelectedLocalId != null
+                          ? String(listSelectedLocalId)
+                          : undefined
+                      }
+                      fillContainer
+                      station="right"
+                    />
                   </div>
-                  {/* <div className={styles.appMainContentRightPieToolbar}>
-                    <Toolbar section="editorPie" />
-                  </div> */}
                 </div>
               )}
             </div>
@@ -131,7 +142,14 @@ const App = () => {
               )}
             >
               {/* {activeSection === 'envelope' && <EnvelopeRightSlot />} */}
-              {listPanelOpen && <CartListPanel />}
+              {listPanelOpen && (
+                <CartListPanel
+                  onSelectEntry={(item) => {
+                    const lid = item.postcard?.localId
+                    if (lid != null) setCartListSelectedLocalId(lid)
+                  }}
+                />
+              )}
               {/* {activeSection === 'cardtext' && <CardtextRightSlot />} */}
               {/* {activeSection === 'cardphoto' && <CardphotoRightSlot />} */}
             </div>

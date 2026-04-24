@@ -1,16 +1,21 @@
 import { setActiveSection } from '@/entities/sectionEditorMenu/infrastructure/state'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import type { CardStatus } from '@entities/postcard'
-import {
-  selectCardEditorState,
-  selectPieProgress,
-} from '@entities/cardEditor/infrastructure/selectors'
+import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import {
   selectActiveCardFullData,
-  selectCardFromArchive,
+  selectCartArchiveCardPieBundle,
 } from '../../infrastructure/selectors'
 import { CardSection } from '@/shared/config/constants'
 import { clearRainbow } from '@/entities/cardEditor/infrastructure/state'
+
+const EMPTY_CART_PIE_SECTIONS = {
+  cardphoto: false,
+  cardtext: false,
+  envelope: false,
+  aroma: false,
+  date: false,
+} as const
 
 export const useCardPieFacade = (
   isProcessed: boolean,
@@ -19,16 +24,31 @@ export const useCardPieFacade = (
 ) => {
   const dispatch = useAppDispatch()
 
-  // const activeData = useAppSelector(selectCardEditorState)
   const activeData = useAppSelector(selectActiveCardFullData)
-  const archiveData = useAppSelector((state) =>
-    selectCardFromArchive(state, id, status),
+  const editorProgress = useAppSelector(selectPieProgress)
+  const isCartArchive = !isProcessed && status === 'cart'
+
+  const cartBundle = useAppSelector((state) =>
+    isCartArchive ? selectCartArchiveCardPieBundle(state, id) : null,
   )
 
-  const { sections, isRainbowActive, isRainbowStopping, isAllComplete } =
-    useAppSelector(selectPieProgress)
+  const currentData = isProcessed
+    ? activeData
+    : isCartArchive && cartBundle
+      ? cartBundle.currentData
+      : null
 
-  const currentData = isProcessed ? activeData : archiveData
+  const sections = isCartArchive
+    ? (cartBundle?.sections ?? EMPTY_CART_PIE_SECTIONS)
+    : editorProgress.sections
+
+  const isAllComplete = isCartArchive
+    ? (cartBundle?.isAllComplete ?? false)
+    : editorProgress.isAllComplete
+
+  const isRainbowActive = editorProgress.isRainbowActive
+  const isRainbowStopping = editorProgress.isRainbowStopping
+
   const isEditable =
     isProcessed || status === 'favorite' || status === 'error'
 
@@ -50,26 +70,3 @@ export const useCardPieFacade = (
     },
   }
 }
-
-// export const useCardPieFacade1 = (status: CardStatus, id?: string) => {
-//   const dispatch = useAppDispatch()
-
-//   const activeData = useAppSelector(selectActiveCardFullData)
-
-//   const archiveData = useAppSelector((state) =>
-//     selectCardFromArchive(state, id, status),
-//   )
-
-//   const currentData = status === 'processed' ? activeData : archiveData
-
-//   const isEditable = ['processed', 'drafts', 'error'].includes(status)
-
-//   return {
-//     data: currentData,
-//     isEditable,
-//     isReady: currentData?.isCompleted ?? false,
-//     handleSectorClick: (section: CardSection) => {
-//       if (status === 'processed') dispatch(setActiveSection(section))
-//     },
-//   }
-// }
