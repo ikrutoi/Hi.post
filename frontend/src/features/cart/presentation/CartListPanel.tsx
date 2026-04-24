@@ -85,7 +85,8 @@ function cartPostcardsToEntries(postcards: Postcard[]): CartListPanelItem[] {
 const CartListPanelRow: React.FC<{
   item: CartListPanelItem
   onSelectEntry?: (item: CartListPanelItem) => void
-}> = ({ item, onSelectEntry }) => {
+  isSelected?: boolean
+}> = ({ item, onSelectEntry, isSelected = false }) => {
   const dispatch = useAppDispatch()
   const cachedUrl = useAppSelector(
     selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
@@ -121,6 +122,7 @@ const CartListPanelRow: React.FC<{
           ? () => onSelectEntry(item)
           : undefined
       }
+      isSelected={isSelected}
       onDelete={item.onDelete}
     />
   )
@@ -131,7 +133,7 @@ export const CartListPanel: React.FC<Props> = ({
   onSelectEntry,
 }) => {
   const cartItems = useAppSelector(selectCartItems)
-  const { setCartListPanelOpen } = useCartFacade()
+  const { setCartListPanelOpen, listSelectedLocalId } = useCartFacade()
 
   const entriesFromStore = useMemo(
     () => cartPostcardsToEntries(cartItems),
@@ -178,6 +180,10 @@ export const CartListPanel: React.FC<Props> = ({
                 key={item.id}
                 item={item}
                 onSelectEntry={onSelectEntry}
+                isSelected={
+                  item.postcard?.localId != null &&
+                  item.postcard.localId === listSelectedLocalId
+                }
               />
             ))
           ) : (

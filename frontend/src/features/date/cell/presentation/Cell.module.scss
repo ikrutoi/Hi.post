@@ -268,3 +268,13 @@ button.navArrowWrap {
     }
   }
 }
+
+/** См. Cell.tsx: выбранный dispatch-день с cart — номер дня как у withPostcards, не коричневый dispatch. */
+.selectedDayWithCartBadge.dispatch .dayNumber,
+.selectedDayWithCartBadge.withPostcards.dispatch .dayNumber {
+  background-color: $color-section-light;
+  border-color: $color-section-dark;
+  color: $color-font-enabled;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}

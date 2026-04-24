@@ -55,6 +55,11 @@ export const Cell: React.FC<CellProps> = ({
       dayData.error.length),
   )
 
+  const hasCartOnDay = Boolean(dayData?.cart.length)
+  /** Выбранный день + открытка в корзине: бейдж числа без коричневого dispatch (индикатор остаётся на превью). */
+  const selectedDayWithCartBadge =
+    isSelectedDate && hasCartOnDay && styles.selectedDayWithCartBadge
+
   const dynamicClass = clsx(
     styles.cell,
     isToday && styles.today,
@@ -63,6 +68,7 @@ export const Cell: React.FC<CellProps> = ({
     dayCurrent != null && styles.current,
     isSelectedDate && styles.dispatch,
     hasPostcards && styles.withPostcards,
+    selectedDayWithCartBadge,
   )
 
   const clickParams: HandleCellClickParams = {

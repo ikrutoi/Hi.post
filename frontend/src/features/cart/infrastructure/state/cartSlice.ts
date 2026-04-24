@@ -18,9 +18,8 @@ const cartSlice = createSlice({
   reducers: {
     setCartListPanelOpen(state, action: PayloadAction<boolean>) {
       state.isActive = action.payload
-      if (!action.payload) {
-        state.listSelectedLocalId = null
-      }
+      /** Сброс выбора при открытии/закрытии: правый CardPie только после клика по строке. */
+      state.listSelectedLocalId = null
     },
     setCartListSelectedLocalId(state, action: PayloadAction<number | null>) {
       state.listSelectedLocalId = action.payload

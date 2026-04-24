@@ -87,6 +87,11 @@ export type UseDispatchPlanListEntriesOptions = {
    * Стабильная сортировка: при равной дате сохраняется порядок веток получателя.
    */
   listSortDirection?: 'asc' | 'desc'
+  /**
+   * Не показывать строки, для которых уже есть открытка в корзине (ветка `dispatchBranchKey`).
+   * Используется в Card pie: после addCart строка исчезает из списка.
+   */
+  hideBranchesInCart?: boolean
 }
 
 /**
@@ -95,7 +100,11 @@ export type UseDispatchPlanListEntriesOptions = {
 export function useDispatchPlanListEntries(
   options: UseDispatchPlanListEntriesOptions,
 ): DateListPanelItem[] {
-  const { activeModeOnly, listSortDirection = 'asc' } = options
+  const {
+    activeModeOnly,
+    listSortDirection = 'asc',
+    hideBranchesInCart = false,
+  } = options
   const dispatch = useAppDispatch()
   const selectedDate = useAppSelector(selectSelectedDate)
   const selectedDates = useAppSelector(selectSelectedDates)
@@ -295,6 +304,7 @@ export function useDispatchPlanListEntries(
           const branchKey = `${dispatchDateKeyFromDispatchDate(cachedSingleDate)}|${slot.branchKey}`
           if (excludedDispatchBranchSet.has(branchKey)) return
           const cartP = cartPostcardByDispatchBranchKey.get(branchKey)
+          if (hideBranchesInCart && cartP) return
           entries.push(
             row(
               cachedSingleDate,
@@ -314,6 +324,7 @@ export function useDispatchPlanListEntries(
           const branchKey = `${dispatchDateKeyFromDispatchDate(d)}|${slot.branchKey}`
           if (excludedDispatchBranchSet.has(branchKey)) return
           const cartP = cartPostcardByDispatchBranchKey.get(branchKey)
+          if (hideBranchesInCart && cartP) return
           entries.push(
             row(
               d,
@@ -353,6 +364,7 @@ export function useDispatchPlanListEntries(
           const branchKey = `${dispatchDateKeyFromDispatchDate(selectedDate)}|${slot.branchKey}`
           if (excludedDispatchBranchSet.has(branchKey)) return
           const cartP = cartPostcardByDispatchBranchKey.get(branchKey)
+          if (hideBranchesInCart && cartP) return
           entries.push(
             row(
               selectedDate,
@@ -386,6 +398,7 @@ export function useDispatchPlanListEntries(
             const branchKey = `${dispatchDateKeyFromDispatchDate(d)}|${slot.branchKey}`
             if (excludedDispatchBranchSet.has(branchKey)) return
             const cartP = cartPostcardByDispatchBranchKey.get(branchKey)
+            if (hideBranchesInCart && cartP) return
             entries.push(
               row(
                 d,
@@ -427,6 +440,7 @@ export function useDispatchPlanListEntries(
   }, [
     activeModeOnly,
     listSortDirection,
+    hideBranchesInCart,
     dispatch,
     isMultiDateMode,
     selectedDate,

@@ -65,12 +65,13 @@ $list-entry-border: $color-cart-list-border;
 
   &[data-selected='true'] {
     background-color: darken($list-entry-surface, 3%);
-    box-shadow: -2px 0 0 0 $color-date-multi;
+    box-shadow: -2px 0 0 0 $color-app-sidebar-icon-active;
     --semicircle-row-rest: #{darken($list-entry-surface, 3%)};
     --semicircle-row-hover: #{darken($list-entry-surface, 3%)};
 
     &[data-inactive='true'] {
-      box-shadow: -2px 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
+      box-shadow: -2px 0 0 0
+        mix($color-app-sidebar-icon-active, $color-font-disabled, 40%);
     }
   }
 

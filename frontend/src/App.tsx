@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
@@ -6,7 +6,10 @@ import { Header } from './features/header/presentation/Header'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
-import { CartListPanel } from './features/cart/presentation/CartListPanel'
+import {
+  CartListPanel,
+  type CartListPanelItem,
+} from './features/cart/presentation/CartListPanel'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
@@ -53,6 +56,15 @@ const App = () => {
     setCartListSelectedLocalId,
   } = useCartFacade()
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
+
+  const handleCartListSelectEntry = useCallback(
+    (item: CartListPanelItem) => {
+      const lid = item.postcard?.localId
+      if (lid == null) return
+      setCartListSelectedLocalId(listSelectedLocalId === lid ? null : lid)
+    },
+    [listSelectedLocalId, setCartListSelectedLocalId],
+  )
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
@@ -117,23 +129,21 @@ const App = () => {
               </div>
             </div>
             <div className={styles.appMainContentRightPieSlot}>
-              {listPanelOpen && sectionSize != null && (
-                <div className={styles.appMainContentRightPieRow}>
-                  <div className={styles.appMainContentRightPieWrap}>
-                    <CardPie
-                      isProcessed={false}
-                      status="cart"
-                      id={
-                        listSelectedLocalId != null
-                          ? String(listSelectedLocalId)
-                          : undefined
-                      }
-                      fillContainer
-                      station="right"
-                    />
+              {listPanelOpen &&
+                sectionSize != null &&
+                listSelectedLocalId != null && (
+                  <div className={styles.appMainContentRightPieRow}>
+                    <div className={styles.appMainContentRightPieWrap}>
+                      <CardPie
+                        isProcessed={false}
+                        status="cart"
+                        id={String(listSelectedLocalId)}
+                        fillContainer
+                        station="right"
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
             <div
               className={clsx(
@@ -143,12 +153,7 @@ const App = () => {
             >
               {/* {activeSection === 'envelope' && <EnvelopeRightSlot />} */}
               {listPanelOpen && (
-                <CartListPanel
-                  onSelectEntry={(item) => {
-                    const lid = item.postcard?.localId
-                    if (lid != null) setCartListSelectedLocalId(lid)
-                  }}
-                />
+                <CartListPanel onSelectEntry={handleCartListSelectEntry} />
               )}
               {/* {activeSection === 'cardtext' && <CardtextRightSlot />} */}
               {/* {activeSection === 'cardphoto' && <CardphotoRightSlot />} */}
