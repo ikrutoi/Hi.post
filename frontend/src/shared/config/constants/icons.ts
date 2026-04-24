@@ -98,6 +98,8 @@ export const ICON_KEYS = [
   'history',
   'listHistory',
   'calendarReturn',
+  'cardPieFavorite',
+  'postcardFavorite',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

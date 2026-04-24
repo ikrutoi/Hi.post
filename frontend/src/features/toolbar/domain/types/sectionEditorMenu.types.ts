@@ -7,6 +7,7 @@ export const SECTION_EDITOR_MENU_ICON_KEYS = [
   'envelope',
   'aroma',
   'date',
+  'cardPieFavorite',
 ] as const
 
 export const SECTION_EDITOR_MENU_KEYS = [
