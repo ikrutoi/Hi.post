@@ -89,17 +89,53 @@ button.navArrowWrap {
   cursor: pointer;
 }
 
+.cell.adjacentMonth .navArrowWrap.navArrowAdjacent {
+  background-color: transparent;
+}
+
+/**
+ * Четверть диска в нижнем левом углу: центр окружности — в вершине ячейки (как двойное зеркало
+ * от border-radius-четверти). Видимая область 55%×55%, прямые стороны вдоль левого и нижнего края.
+ */
 .navArrowAdjacent {
-  top: 27%;
+  top: auto;
+  right: auto;
   left: 0;
-  right: 60%;
-  height: 73%;
-  border-bottom: none;
-  border-left: none;
-  border-radius: 0 $cell-border-radius 0 0;
+  bottom: 0;
+  width: 55%;
+  height: 55%;
+  overflow: hidden;
+  border-radius: 0;
+  /** Без левого/нижнего контура — сектор примыкает к границе ячейки; линия только по дуге (::before). */
+  border: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+
+  .navArrowIcon {
+    transform: translate(-0.18rem, 0.14rem);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    bottom: 0;
+    width: 200%;
+    height: 200%;
+    box-sizing: border-box;
+    transform: translate(-50%, 50%);
+    border-radius: 50%;
+    border: 1px solid $color-section-light;
+    background-color: color.change($color-disabled-light, $alpha: 0.6);
+    pointer-events: none;
+  }
 }
 
 .navArrowIcon {
+  position: relative;
+  z-index: 1;
   width: 0.945rem;
   height: 0.945rem;
   color: $color-font-enabled-light;
