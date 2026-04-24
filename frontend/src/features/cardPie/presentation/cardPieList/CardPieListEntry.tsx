@@ -64,6 +64,20 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
           : undefined
       }
     >
+      <div
+        className={styles.semicircleDown}
+        aria-hidden
+        onClick={(e) => e.stopPropagation()}
+      >
+        {getToolbarIcon({ key: 'favorite' })}
+      </div>
+      <div
+        className={styles.semicircleUp}
+        aria-hidden
+        onClick={(e) => e.stopPropagation()}
+      >
+        {getToolbarIcon({ key: 'delete' })}
+      </div>
       <div className={styles.body}>
         <div className={styles.favoriteSlot}>
           <button
