@@ -21,14 +21,15 @@ $list-entry-border: $color-cart-list-border;
     border-color 0.15s ease,
     opacity 0.15s ease;
 
-  &[data-has-delete='true'] {
-    padding-right: 2rem;
-  }
+  --semicircle-row-rest: #{$list-entry-surface};
+  --semicircle-row-hover: #{darken($list-entry-surface, 1.5%)};
 
   &[data-inactive='true'] {
     opacity: 0.78;
     background-color: mix($list-entry-surface, $color-app-inner, 45%);
     border-color: mix($list-entry-border, $color-app-inner, 50%);
+    --semicircle-row-rest: #{mix($list-entry-surface, $color-app-inner, 45%)};
+    --semicircle-row-hover: #{mix($list-entry-surface, $color-app-inner, 55%)};
 
     .thumb {
       background-color: mix($color-app-inner, #eee, 55%);
@@ -40,6 +41,16 @@ $list-entry-border: $color-cart-list-border;
 
     .detailBlock {
       color: $color-font-disabled;
+    }
+
+    .semicircleDown,
+    .semicircleUp {
+      pointer-events: none;
+
+      &:hover {
+        cursor: default;
+        background-color: var(--semicircle-row-hover);
+      }
     }
   }
 
@@ -55,10 +66,17 @@ $list-entry-border: $color-cart-list-border;
   &[data-selected='true'] {
     background-color: darken($list-entry-surface, 3%);
     box-shadow: -2px 0 0 0 $color-date-multi;
+    --semicircle-row-rest: #{darken($list-entry-surface, 3%)};
+    --semicircle-row-hover: #{darken($list-entry-surface, 3%)};
 
     &[data-inactive='true'] {
       box-shadow: -2px 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
     }
+  }
+
+  &[data-selected='true'][data-inactive='true'] {
+    --semicircle-row-rest: #{mix($list-entry-surface, $color-app-inner, 45%)};
+    --semicircle-row-hover: #{mix($list-entry-surface, $color-app-inner, 55%)};
   }
 
   &[data-clickable='true'] {
@@ -71,6 +89,88 @@ $list-entry-border: $color-cart-list-border;
         mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
       outline-offset: 1px;
     }
+  }
+}
+
+.semicircleDown,
+.semicircleUp {
+  position: absolute;
+  z-index: 1;
+  height: 55%;
+  aspect-ratio: 2 / 1;
+  min-height: 0;
+  box-sizing: border-box;
+  background-color: var(--semicircle-row-hover);
+  border-style: solid;
+  border-width: 1px;
+  border-color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    cursor: pointer;
+    background-color: var(--semicircle-row-rest);
+  }
+
+  &:disabled:hover {
+    cursor: default;
+    background-color: var(--semicircle-row-hover);
+  }
+
+  :global(svg) {
+    width: 0.8rem;
+    height: 0.8rem;
+    flex-shrink: 0;
+    display: block;
+    align-self: center;
+    margin-block: auto;
+    color: $color-app-sidebar-icon;
+  }
+}
+
+button.semicircleUp {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  appearance: none;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 1;
+  }
+}
+
+.root[data-inactive='true'] .semicircleDown :global(svg),
+.root[data-inactive='true'] .semicircleUp :global(svg) {
+  color: $color-font-disabled;
+}
+
+.semicircleDown {
+  left: 70%;
+  top: 0;
+  border-radius: 0 0 9999px 9999px;
+  border-top: none;
+
+  :global(svg) {
+    transform: translateY(-0.15rem);
+  }
+}
+
+.semicircleUp {
+  left: 77%;
+  bottom: 0;
+  top: auto;
+  border-radius: 9999px 9999px 0 0;
+  border-bottom: none;
+
+  :global(svg) {
+    transform: translateY(0.15rem);
   }
 }
 
@@ -171,40 +271,4 @@ $list-entry-border: $color-cart-list-border;
 
 .root[data-inactive='true'] .priceLine {
   color: $color-font-disabled;
-}
-
-.deleteButton {
-  position: absolute;
-  right: 0.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  border: none;
-  border-radius: 50%;
-  color: $color-font-disabled;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s ease,
-    color 0.15s ease;
-  z-index: 1;
-
-  .root:hover &,
-  .root:focus-within & {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
-
-  svg {
-    width: 0.9rem;
-    height: 0.9rem;
-  }
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconX } from '@shared/ui/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CartListEntry.module.scss'
 
@@ -29,6 +29,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
+  const inactive = variant === 'inactive'
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
     .filter(Boolean)
     .join(', ')
@@ -41,7 +42,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       data-focused={isFocused ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
-      data-has-delete={onDelete ? 'true' : undefined}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-label={interactive ? labelForAria : undefined}
@@ -57,6 +57,36 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
           : undefined
       }
     >
+      <div
+        className={styles.semicircleDown}
+        aria-hidden
+        onClick={(e) => e.stopPropagation()}
+      >
+        {getToolbarIcon({ key: 'favorite' })}
+      </div>
+      {onDelete ? (
+        <button
+          type="button"
+          className={styles.semicircleUp}
+          aria-label={inactive ? undefined : 'Remove from cart'}
+          title={inactive ? undefined : 'Remove from cart'}
+          disabled={inactive}
+          onClick={(e) => {
+            e.stopPropagation()
+            if (!inactive) onDelete()
+          }}
+        >
+          {getToolbarIcon({ key: 'delete' })}
+        </button>
+      ) : (
+        <div
+          className={styles.semicircleUp}
+          aria-hidden
+          onClick={(e) => e.stopPropagation()}
+        >
+          {getToolbarIcon({ key: 'delete' })}
+        </div>
+      )}
       <div className={styles.body}>
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
@@ -87,20 +117,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
           </div>
         ) : null}
       </div>
-      {onDelete ? (
-        <button
-          type="button"
-          className={styles.deleteButton}
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete()
-          }}
-          aria-label="Remove date from list"
-          title="Remove date from list"
-        >
-          <IconX />
-        </button>
-      ) : null}
     </div>
   )
 }
