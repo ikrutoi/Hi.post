@@ -174,6 +174,7 @@ import {
   IconListHistory,
   IconCalendarReturn,
   IconListCardPie,
+  IconStarFilled,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -286,8 +287,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <HiArrowsPointingIn />
     case 'drafts':
       return <FaEnvelopeOpen />
-    case 'addDrafts':
-      return <IconStar />
+    // case 'addDrafts':
+    //   return <IconStar />
     case 'cards':
       return <PiCardsBold />
     case 'cardUser':
@@ -318,6 +319,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconSectionMenuDate />
     case 'favorite':
       return <IconStar />
+    case 'favoriteFilled':
+      return <IconStarFilled />
     case 'addressAdd':
       return <IconAddressAdd />
     case 'search':

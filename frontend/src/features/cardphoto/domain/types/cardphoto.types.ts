@@ -103,4 +103,6 @@ export interface PreviewItemForCalendar {
   isSelectedDate?: boolean
   /** Ячейка соседнего месяца (край календаря) — превью без общего opacity. */
   isAdjacentMonthEdge?: boolean
+  /** Секция «Дата»: на этот день есть открытки в корзине (реальные записи в `cart`). */
+  hasCartPostcardsOnDay?: boolean
 }

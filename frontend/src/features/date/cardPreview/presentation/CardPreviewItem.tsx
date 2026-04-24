@@ -20,6 +20,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   isHistory,
   isSelectedDate,
   isAdjacentMonthEdge = false,
+  hasCartPostcardsOnDay = false,
 }) => {
   const { openPreview } = useCardFacade()
   const cachedUrl = useAppSelector(selectCalendarPreviewDisplayUrl(item.cardId))
@@ -66,7 +67,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
             : isAdjacentMonthEdge
               ? styles.previewItemAdjacentEdge
               : status === 'cart'
-                ? styles.previewItemDateCart
+                ? styles.previewItemHistory
                 : styles.previewItemDate,
       )}
       onClick={handlePreviewClick}
@@ -84,8 +85,10 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
       ) : (
         <div className={styles.previewImage} aria-hidden />
       )}
-      {!isProcessed && isHistory ? (
+      {isHistory && !isProcessed ? (
         <span className={clsx(styles.previewIndicator, styles[status])} />
+      ) : hasCartPostcardsOnDay ? (
+        <span className={clsx(styles.previewIndicator, styles.cart)} />
       ) : null}
     </div>
   )

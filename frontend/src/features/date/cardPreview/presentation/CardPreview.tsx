@@ -165,6 +165,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             isHistory={isHistory}
             isSelectedDate={isSelectedDate}
             isAdjacentMonthEdge={isAdjacentMonthEdge}
+            hasCartPostcardsOnDay={!isHistory && cart.length > 0}
           />
           {showExtraCountBadge ? (
             <span className={styles.extraCount} aria-hidden>
