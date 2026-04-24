@@ -10,7 +10,16 @@ import type {
   AddressField,
 } from '@shared/config/constants'
 import type { CardItem } from '@entities/card/domain/types'
+import type { Postcard } from '@entities/postcard'
+import type { DraftsItem } from '@entities/drafts/domain/types'
 import type { DuplicateResult } from '../types'
+
+function templateSourceId(row: Postcard | DraftsItem): string {
+  if ('localId' in row && typeof row.localId === 'number') {
+    return String(row.localId)
+  }
+  return String((row as Postcard).id)
+}
 
 export async function checkForDuplicateCards(
   card: CardItem
@@ -35,7 +44,7 @@ export async function checkForDuplicateCards(
         card.aroma.name === sourceCard.aroma.name &&
         card.aroma.make === sourceCard.aroma.make
       ) {
-        result[source].aroma.push(sourceCard.id)
+        result[source].aroma.push(templateSourceId(sourceCard))
       }
 
       if (
@@ -45,7 +54,7 @@ export async function checkForDuplicateCards(
         card.date.month === sourceCard.date.month &&
         card.date.day === sourceCard.date.day
       ) {
-        result[source].date.push(sourceCard.id)
+        result[source].date.push(templateSourceId(sourceCard))
       }
 
       const envelopeRole: EnvelopeRole[] = ['sender', 'recipient']
@@ -57,7 +66,7 @@ export async function checkForDuplicateCards(
       )
 
       if (envelopeMatch) {
-        result[source].envelope.push(sourceCard.id)
+        result[source].envelope.push(templateSourceId(sourceCard))
       }
 
       if (
@@ -68,7 +77,7 @@ export async function checkForDuplicateCards(
             sourceCard.cardtext?.text[i]?.children[0]?.text
         )
       ) {
-        result[source].cardtext.push(sourceCard.id)
+        result[source].cardtext.push(templateSourceId(sourceCard))
       }
 
       // if (card.cardphoto?.size === sourceCard.cardphoto?.size) {

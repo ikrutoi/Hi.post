@@ -5,6 +5,8 @@ import type {
   SectionEditorMenuToolbarState,
   SectionEditorMenuKey,
 } from '@toolbar/domain/types'
+import type { RightSidebarToolbarState } from '@toolbar/domain/types/rightSidebar.types'
+import { RIGHT_SIDEBAR_KEYS } from '@toolbar/domain/types/rightSidebar.types'
 
 export function* syncSectionMenuVisuals(activeKey: SectionEditorMenuKey) {
   const section = 'sectionEditorMenu'
@@ -36,4 +38,55 @@ export function* syncSectionMenuVisuals(activeKey: SectionEditorMenuKey) {
   }
 
   yield put(updateToolbarSection({ section, value: newState }))
+}
+
+/** Подсветка иконки history в правом сайдбаре при активной секции «История». */
+export function* syncRightSidebarHistoryHighlight(
+  activeSection: SectionEditorMenuKey,
+) {
+  const section = 'rightSidebar'
+  const currentState: RightSidebarToolbarState = yield select(
+    selectToolbarSectionState(section),
+  )
+
+  const historyActive = activeSection === 'history'
+
+  const updatedFlatKeys = Object.fromEntries(
+    RIGHT_SIDEBAR_KEYS.map((iconKey) => {
+      const prev = currentState[iconKey] as
+        | { state: string; options?: Record<string, unknown> }
+        | undefined
+      const base = prev ?? { state: 'enabled', options: {} }
+      if (iconKey === 'history') {
+        return [
+          iconKey,
+          { ...base, state: historyActive ? 'active' : 'enabled' },
+        ] as const
+      }
+      return [iconKey, base] as const
+    }),
+  )
+
+  const updatedConfig = currentState.config.map((group) => ({
+    ...group,
+    icons: group.icons.map((icon) => ({
+      ...icon,
+      state:
+        icon.key === 'history'
+          ? historyActive
+            ? 'active'
+            : 'enabled'
+          : icon.state,
+    })),
+  }))
+
+  yield put(
+    updateToolbarSection({
+      section,
+      value: {
+        ...updatedFlatKeys,
+        config: updatedConfig,
+      },
+    }),
+  )
 }

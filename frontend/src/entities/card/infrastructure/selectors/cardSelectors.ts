@@ -65,13 +65,13 @@ const sameDispatchDateKey = (a: DispatchDate, b: DispatchDate) =>
 
 function postcardToCalendarItem(
   p: Postcard,
-  /** Стабильный уникальный индекс слота в проходе (дубликаты в Redux cart / повторы localId). */
+  /** Стабильный уникальный индекс слота в проходе (дубликаты в Redux cart / повторы id открытки). */
   listSlotIndex: number,
 ): CalendarCardItem {
   const c = p.card
   return {
     cardId: c.id,
-    rowKey: `postcard:${listSlotIndex}:${p.localId}:${p.status}`,
+    rowKey: `postcard:${listSlotIndex}:${p.id}:${p.status}`,
     date: c.date,
     previewUrl: c.thumbnailUrl,
     status: p.status,

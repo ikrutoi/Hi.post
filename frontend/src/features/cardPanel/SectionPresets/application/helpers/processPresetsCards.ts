@@ -11,7 +11,7 @@ export const processPresetsCards = (
 
   const letterIndexList = sortedRecords.map((record, i) => ({
     letter: getName(record)[0],
-    id: String(record.localId),
+    id: String(record.id),
     index: i,
   }))
 

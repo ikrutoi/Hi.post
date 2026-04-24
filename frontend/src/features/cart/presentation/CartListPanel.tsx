@@ -69,7 +69,7 @@ function cartPostcardsToEntries(postcards: Postcard[]): CartListPanelItem[] {
   return postcards
     .filter((p) => p.status === 'cart')
     .map((p) => ({
-      id: `cart-${p.localId}`,
+      id: `cart-${p.id}`,
       cardId: p.card.id,
       sourceDate: p.date,
       postcard: p,
@@ -181,8 +181,8 @@ export const CartListPanel: React.FC<Props> = ({
                 item={item}
                 onSelectEntry={onSelectEntry}
                 isSelected={
-                  item.postcard?.localId != null &&
-                  item.postcard.localId === listSelectedLocalId
+                  item.postcard?.id != null &&
+                  item.postcard.id === listSelectedLocalId
                 }
               />
             ))

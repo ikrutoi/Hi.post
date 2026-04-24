@@ -59,7 +59,7 @@ const App = () => {
 
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
-      const lid = item.postcard?.localId
+      const lid = item.postcard?.id
       if (lid == null) return
       setCartListSelectedLocalId(listSelectedLocalId === lid ? null : lid)
     },

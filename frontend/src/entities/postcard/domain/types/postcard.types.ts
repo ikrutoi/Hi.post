@@ -13,7 +13,6 @@ export const POSTCARD_STATUSES = [
 
 export type PostcardStatus = (typeof POSTCARD_STATUSES)[number]
 
-/** Статус открытки в домене / UI (включая черновик избранного вне пайплайна). */
 export type CardStatus = PostcardStatus | 'favorite'
 
 export type PostcardStatuses = {
@@ -67,7 +66,7 @@ function stripSessionFlagsFromCard(card: Card): Card {
 }
 
 export interface PostcardRecordMeta {
-  localId: number
+  id: number
   price: string
   createdAt: number
   updatedAt: number
@@ -83,7 +82,7 @@ export interface PostcardRefs {
 }
 
 export interface Postcard extends PostcardRecordMeta {
-  status: PostcardStatus
+  status: CardStatus
   card: Card
 }
 
@@ -92,15 +91,30 @@ export interface PostcardsDaySummary {
   count: number
 }
 
+function coercePostcardBodyId(
+  row: Postcard & Record<string, unknown>,
+  cardBase: Card,
+): number {
+  if (typeof row.id === 'number' && row.id > 0) return row.id
+  const legacyLocalId = row.localId
+  if (typeof legacyLocalId === 'number' && legacyLocalId > 0) {
+    return legacyLocalId
+  }
+  const legacy = row[LEGACY_LOCAL_ID_PROPERTY]
+  if (typeof legacy === 'number' && legacy > 0) return legacy
+  const idStr = typeof row.id === 'string' ? row.id : ''
+  if (/^\d+$/.test(idStr)) {
+    const n = Number.parseInt(idStr, 10)
+    if (n > 0) return n
+  }
+  const cid = typeof cardBase.id === 'string' ? cardBase.id : ''
+  const suffix = cid.match(/__(\d+)$/)
+  if (suffix) return Number.parseInt(suffix[1], 10)
+  return 0
+}
+
 export function normalizePostcardRecord(raw: Postcard): Postcard {
   const row = raw as Postcard & Record<string, unknown>
-  const legacy = row[LEGACY_LOCAL_ID_PROPERTY]
-  const localId =
-    typeof row.localId === 'number'
-      ? row.localId
-      : typeof legacy === 'number'
-        ? legacy
-        : 0
 
   const rawCard = row.card as
     | (Card & { status?: string; meta?: Partial<PostcardRecordMeta> })
@@ -132,6 +146,8 @@ export function normalizePostcardRecord(raw: Postcard): Postcard {
   card = stripLegacyMetaFromCard(card)
   card = stripSessionFlagsFromCard(card)
 
+  const id = coercePostcardBodyId(row, card)
+
   const now = Date.now()
   const createdAt =
     typeof row.createdAt === 'number'
@@ -153,7 +169,7 @@ export function normalizePostcardRecord(raw: Postcard): Postcard {
         : POSTCARD_DISPATCH_DATE_FALLBACK
 
   const next: Postcard = {
-    localId,
+    id,
     price,
     date,
     status,

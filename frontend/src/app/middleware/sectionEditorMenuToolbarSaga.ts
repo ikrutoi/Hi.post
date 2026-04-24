@@ -1,16 +1,12 @@
-import { takeEvery, put, select, call } from 'redux-saga/effects'
+import { takeEvery, put, call } from 'redux-saga/effects'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
-import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
-import { syncSectionMenuVisuals } from './sectionEditorMenuHandlers'
-import { updateToolbarSection } from '@toolbar/infrastructure/state'
-import type {
-  SectionEditorMenuToolbarState,
-  SectionEditorMenuKey,
-} from '@toolbar/domain/types'
-import type { CardSection } from '@shared/config/constants'
-import { fontFamily } from 'html2canvas/dist/types/css/property-descriptors/font-family'
+import type { SectionEditorMenuKey } from '@toolbar/domain/types'
+import {
+  syncSectionMenuVisuals,
+  syncRightSidebarHistoryHighlight,
+} from './sectionEditorMenuHandlers'
 
 export function* handleSectionEditorMenuToolbarAction(
   action: PayloadAction<{ section: string; key: SectionEditorMenuKey }>,
@@ -26,6 +22,7 @@ function* handleSectionEditorMenuActiveSectionChange(
   action: PayloadAction<SectionEditorMenuKey>,
 ) {
   yield call(syncSectionMenuVisuals, action.payload)
+  yield call(syncRightSidebarHistoryHighlight, action.payload)
 }
 
 export function* sectionEditorMenuSaga() {

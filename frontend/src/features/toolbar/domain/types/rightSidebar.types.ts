@@ -1,7 +1,12 @@
 import { flattenIcons } from '../helpers'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
-export const RIGHT_SIDEBAR_KEYS = ['userLogin', 'cart', 'favorite'] as const
+export const RIGHT_SIDEBAR_KEYS = [
+  'userLogin',
+  'cart',
+  'favorite',
+  'history',
+] as const
 
 export type RightSidebarKey = (typeof RIGHT_SIDEBAR_KEYS)[number]
 
@@ -17,6 +22,7 @@ export const RIGHT_SIDEBAR_TOOLBAR: ToolbarConfig = [
       { key: 'userLogin', state: 'enabled' },
       { key: 'cart', state: 'enabled' },
       { key: 'favorite', state: 'enabled' },
+      { key: 'history', state: 'enabled' },
     ],
     status: 'enabled',
   },

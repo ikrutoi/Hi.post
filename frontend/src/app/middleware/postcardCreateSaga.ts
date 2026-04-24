@@ -282,16 +282,16 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
                 fingerprint,
           )
           if (existingFavorite) {
-            yield call(setSessionFavoritePostcardLocalId, existingFavorite.localId)
+            yield call(setSessionFavoritePostcardLocalId, existingFavorite.id)
           }
           continue
         }
       }
 
       maxLocalId += 1
-      const localId = maxLocalId
+      const postcardId = maxLocalId
       const postcard: Postcard = {
-        localId,
+        id: postcardId,
         price: '',
         date: date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
         createdAt: now,
@@ -299,10 +299,15 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
         status,
         card: {
           ...candidateCard,
-          id: `${appliedPhoto.id}__${localId}`,
+          id: `${appliedPhoto.id}__${postcardId}`,
         },
       }
-      yield call([postcardsAdapter, 'addRecordWithId'], localId, postcard)
+      const { id: _postcardRowId, ...postcardForIdb } = postcard
+      yield call(
+        [postcardsAdapter, 'addRecordWithId'],
+        postcardId,
+        postcardForIdb as Omit<Postcard, 'id'>,
+      )
       if (status === 'cart') {
         existingCartDedupeKeys.add(buildCartDuplicateKey(postcard.card))
         yield put(addItem(postcard))
@@ -311,7 +316,7 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
         existingFingerprints.add(
           buildPostcardFingerprint({ status, card: postcard.card }),
         )
-        yield call(setSessionFavoritePostcardLocalId, localId)
+        yield call(setSessionFavoritePostcardLocalId, postcardId)
       }
     }
   }
@@ -330,7 +335,7 @@ export function* removeFavoritePostcardsFromEditor(): SagaIterator {
   )
   const favoriteId = currentSession?.favoritePostcardLocalId ?? null
   if (favoriteId != null) {
-    // In canonical postcards store keyPath is `id`; for these rows it matches localId.
+    // In canonical postcards store keyPath is `id`; for these rows it matches postcard.id.
     yield call([postcardsAdapter, 'deleteById'], favoriteId)
   }
   yield call(setSessionFavoritePostcardLocalId, null)
@@ -355,8 +360,8 @@ export function* handleToggleCartForDispatchBranch(
       dispatchBranchKeyFromPostcard(row) === branchKey,
   )
   if (existing) {
-    yield call([postcardsAdapter, 'deleteById'], existing.localId)
-    yield put(removeItem(existing.localId))
+    yield call([postcardsAdapter, 'deleteById'], existing.id)
+    yield put(removeItem(existing.id))
     yield call(refreshRightSidebarBadgesFromPostcards)
     return
   }
@@ -424,10 +429,10 @@ export function* handleToggleCartForDispatchBranch(
 
   let maxLocalId: number = yield call([postcardsAdapter, 'getMaxLocalId'])
   maxLocalId += 1
-  const localId = maxLocalId
+  const postcardId = maxLocalId
   const now = Date.now()
   const postcard: Postcard = {
-    localId,
+    id: postcardId,
     price: '',
     date,
     createdAt: now,
@@ -435,10 +440,15 @@ export function* handleToggleCartForDispatchBranch(
     status: 'cart',
     card: {
       ...candidateCard,
-      id: `${appliedPhoto.id}__${localId}`,
+      id: `${appliedPhoto.id}__${postcardId}`,
     },
   }
-  yield call([postcardsAdapter, 'addRecordWithId'], localId, postcard)
+  const { id: _postcardRowId, ...postcardForIdb } = postcard
+  yield call(
+    [postcardsAdapter, 'addRecordWithId'],
+    postcardId,
+    postcardForIdb as Omit<Postcard, 'id'>,
+  )
   yield put(addItem(postcard))
   yield call(refreshRightSidebarBadgesFromPostcards)
 }

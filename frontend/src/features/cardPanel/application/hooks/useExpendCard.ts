@@ -56,22 +56,24 @@ export function useExpendCard({
       const cardExpend = await adapter.getById(Number(expendCard.id))
       if (!cardExpend) return
 
+      const layers = cardExpend.card
+
       await Promise.all([
         userImagesAdapter.addRecordWithId('originalImage', {
-          image: cardExpend.cardphoto,
+          image: layers.cardphoto,
         }),
         userImagesAdapter.addRecordWithId('workingImage', {
-          image: cardExpend.cardphoto,
+          image: layers.cardphoto,
         }),
         userImagesAdapter.addRecordWithId('miniImage', {
-          image: cardExpend.cardphoto,
+          image: layers.cardphoto,
         }),
       ])
 
-      dispatch(addCardtext(cardExpend.cardtext))
-      dispatch(addEnvelope(cardExpend.envelope))
-      dispatch(addDate(cardExpend.date))
-      dispatch(addAroma(cardExpend.aroma))
+      dispatch(addCardtext(layers.cardtext))
+      dispatch(addEnvelope(layers.envelope))
+      dispatch(addDate(layers.date))
+      dispatch(addAroma(layers.aroma))
 
       dispatch(
         addChoiceSection({

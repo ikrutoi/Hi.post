@@ -31,7 +31,7 @@ const PATTERN = {
   cardphoto5120: { x: -1343, y: -1344 },
   cardtext5120: { x: 863, y: -1693 },
   date5120: { x: -1693, y: 863 },
-  envelope2560: { x: 2800, y: 1280 },
+  envelope2560: { x: 3100, y: 1580 },
   aroma2560: { x: 1300, y: 2750 },
 } as const
 
@@ -45,7 +45,6 @@ export const CardPie: React.FC<CardPieProps> = ({
   fillContainer = false,
   station = 'left',
 }) => {
-  /** Уникальные id паттернов: на странице может быть несколько CardPie (редактор + превью корзины). */
   const pieDefsUid = React.useId().replace(/:/g, '')
   const photoFillId = `${pieDefsUid}-photo-apply`
   const photoEmptyFillId = `${pieDefsUid}-photo-empty`
@@ -583,7 +582,14 @@ export const CardPie: React.FC<CardPieProps> = ({
               d="M2182 3725h1350v1350H2182z"
             /> */}
             {/* <path id="cardphoto-bg" className={styles.sectorBg} fill="none" stroke={SECTOR_STROKE} strokeWidth={STROKE_WIDTH} d="M542 541h1350v1350H542z" /> */}
-            {/* <path id="envelope-bg" className={styles.sectorBg} fill="none" stroke={SECTOR_STROKE} strokeWidth={STROKE_WIDTH} d="M3725 2182h1350v1350H3725z" /> */}
+            {/* <path
+              id="envelope-bg"
+              className={styles.sectorBg}
+              fill="none"
+              stroke={SECTOR_STROKE}
+              strokeWidth={STROKE_WIDTH}
+              d="M3725 2182h1350v1350H3725z"
+            /> */}
             {/* <path id="date-bg" className={styles.sectorBg} fill="none" stroke={SECTOR_STROKE} strokeWidth={STROKE_WIDTH} d="M192 2748h1350v1350H192z" /> */}
             {/* <path id="cardtext-bg" className={styles.sectorBg} fill="none" stroke={SECTOR_STROKE} strokeWidth={STROKE_WIDTH} d="M2748 192h1350v1350H2748z" /> */}
           </g>

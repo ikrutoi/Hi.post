@@ -423,12 +423,12 @@ export function* hydrateAppSession() {
       if (
         prev &&
         next &&
-        prev.localId === next.localId &&
+        prev.id === next.id &&
         postcardCardphotoNeedsPersist(prev, next)
       ) {
         yield call([postcardsAdapter, 'put'], {
           ...next,
-          id: next.localId,
+          id: next.id,
         } as Postcard & { id: number })
       }
     }

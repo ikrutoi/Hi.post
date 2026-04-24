@@ -37,10 +37,10 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     const all = await getAll()
     const localIds = (all as Record<string, unknown>[])
       .map((r) => {
+        if (typeof r.id === 'number' && r.id > 0) return r.id
         if (typeof r.localId === 'number') return r.localId
         const legacy = r[LEGACY_LOCAL_ID_PROPERTY]
         if (typeof legacy === 'number') return legacy
-        if (typeof r.id === 'number') return r.id
         if (typeof r.id === 'string') {
           const numId = Number.parseInt(r.id, 10)
           return Number.isNaN(numId) ? 0 : numId
@@ -56,7 +56,7 @@ export const createStoreAdapter = <T>(storeName: string): StoreAdapter<T> => {
     id: IDBValidKey,
     recordPayload: Omit<T, 'id'>,
   ): Promise<void> => {
-    await put({ id, ...recordPayload } as T & { id: IDBValidKey })
+    await put({ ...(recordPayload as object), id } as T & { id: IDBValidKey })
   }
 
   const clear = async (): Promise<void> => {
