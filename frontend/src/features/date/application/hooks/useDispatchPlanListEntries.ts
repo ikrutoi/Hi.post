@@ -15,6 +15,8 @@ import {
   selectExcludedDispatchBranchSet,
 } from '@date/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
+import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
+import { selectCardtextState } from '@cardtext/infrastructure/selectors'
 import { selectFirstProcessedCardThumbnailUrl } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { Postcard } from '@entities/postcard'
@@ -43,6 +45,8 @@ import {
   formatRecipientLine,
   hasCommittedSessionRecipient,
 } from '../helpers/formatRecipientPlanDetailLine'
+import type { CardPieRefs } from '@features/cardPie/domain/types'
+import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 
 function formatDispatchDateLabel(d: DispatchDate): string {
   const date = new Date(d.year, d.month, d.day)
@@ -123,6 +127,9 @@ export function useDispatchPlanListEntries(
   )
   const excludedDispatchBranchSet = useAppSelector(selectExcludedDispatchBranchSet)
   const envelopeRecord = useAppSelector(selectEnvelopeSessionRecord)
+  const cardphotoState = useAppSelector(selectCardphotoState)
+  const cardtextState = useAppSelector(selectCardtextState)
+  const selectedAroma = useAppSelector(selectSelectedAroma)
   const { previewUrl: cardphotoPreviewUrl } = useAppSelector(
     selectCardphotoPreview,
   )
@@ -276,6 +283,17 @@ export function useDispatchPlanListEntries(
         (recipientDetailLine == null || recipientDetailLine === '')
           ? undefined
           : sessionRecipientDetail
+      const recipientRef = branchKey.includes('|')
+        ? branchKey.split('|')[1] ?? 'session'
+        : 'session'
+      const cardPieRefs: CardPieRefs = {
+        cardphoto: String(cardphotoState?.appliedData?.id ?? ''),
+        cardtext: String(cardtextState?.id ?? ''),
+        sender: String(envelopeRecord?.sender?.senderViewId ?? 'session'),
+        recipient: String(recipientRef),
+        aroma: String(selectedAroma?.index ?? ''),
+      }
+
       return {
         id: `${d.year}-${d.month}-${d.day}-${idSuffix}`,
         sourceDate: d,
@@ -292,6 +310,7 @@ export function useDispatchPlanListEntries(
         variant,
         onDelete,
         dispatchBranchKey: branchKey,
+        cardPieRefs,
       }
     }
 
@@ -449,6 +468,10 @@ export function useDispatchPlanListEntries(
     sessionRecipientDetail,
     recipientSlots,
     listPreviewUrl,
+    cardphotoState?.appliedData?.id,
+    cardtextState?.id,
+    envelopeRecord?.sender?.senderViewId,
+    selectedAroma?.index,
     cartPostcardByDispatchBranchKey,
     recipientEntries,
     envelopeRecipients,

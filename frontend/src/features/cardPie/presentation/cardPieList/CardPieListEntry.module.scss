@@ -138,9 +138,12 @@ $list-entry-row-linked-border: $color-cart-list-border;
   transform: translateX(-50%);
   pointer-events: auto;
   transition: background-color 0.15s ease;
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  cursor: pointer;
 
   &:hover {
-    cursor: pointer;
     background-color: var(--semicircle-row-rest);
   }
 
@@ -153,6 +156,16 @@ $list-entry-row-linked-border: $color-cart-list-border;
     margin-block: auto;
     color: $color-app-sidebar-icon;
   }
+}
+
+.semicircleDown:disabled,
+.semicircleUp:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.root[data-favorite='true'] .semicircleDown :global(svg) {
+  color: $color-favorite-star;
 }
 
 .root[data-inactive='true'] .semicircleDown :global(svg),

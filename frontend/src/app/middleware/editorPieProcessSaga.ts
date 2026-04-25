@@ -10,7 +10,10 @@ import {
   setSectionComplete,
   startRainbow,
 } from '@entities/cardEditor/infrastructure/state'
-import { selectPieProgress } from '@/entities/cardEditor/infrastructure/selectors'
+import {
+  selectIsCardPieFavoriteReady,
+  selectPieProgress,
+} from '@/entities/cardEditor/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import {
   setDate,
@@ -99,8 +102,11 @@ const PIE_PROGRESS_SYNC_ACTIONS = [
 ] as const
 
 function* handleRainbowLogic() {
-  const { sections, isAllComplete, isRainbowActive } = yield select(
+  const { isAllComplete, isRainbowActive } = yield select(
     selectPieProgress,
+  )
+  const isCardPieFavoriteReady: boolean = yield select(
+    selectIsCardPieFavoriteReady,
   )
 
   if (isAllComplete && !isRainbowActive) {
@@ -109,10 +115,7 @@ function* handleRainbowLogic() {
     yield put(requestRainbowStop())
   }
 
-  const allRequiredComplete =
-    sections.cardphoto && sections.cardtext && sections.envelope && sections.aroma
-
-  const favoriteToolbarState = allRequiredComplete ? 'enabled' : 'disabled'
+  const favoriteToolbarState = isCardPieFavoriteReady ? 'enabled' : 'disabled'
   const addCartToolbarState = isAllComplete ? 'enabled' : 'disabled'
 
   yield put(

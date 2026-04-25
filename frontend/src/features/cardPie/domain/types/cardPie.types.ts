@@ -7,3 +7,16 @@ export interface CardPieProps {
   fillContainer?: boolean
   station?: 'left' | 'right'
 }
+
+export interface CardPieRefs {
+  cardphoto: string
+  cardtext: string
+  sender: string
+  recipient: string
+  aroma: string
+}
+
+export interface CardPieData {
+  localId: number
+  refs: CardPieRefs
+}

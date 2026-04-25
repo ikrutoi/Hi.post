@@ -103,6 +103,16 @@ export const selectPieProgress = createSelector(
   },
 )
 
+/** Ready for CardPie favorite save: all required sections except date. */
+export const selectIsCardPieFavoriteReady = createSelector(
+  [selectPieProgress],
+  (pie) =>
+    pie.sections.cardphoto &&
+    pie.sections.cardtext &&
+    pie.sections.envelope &&
+    pie.sections.aroma,
+)
+
 export const selectHoveredSection = (state: RootState) =>
   state.cardEditor.hoveredSection
 

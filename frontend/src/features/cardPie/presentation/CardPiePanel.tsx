@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconX, IconListCardPie } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -6,10 +6,18 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
-import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
+import {
+  selectIsCardPieFavoriteReady,
+  selectPieProgress,
+} from '@entities/cardEditor/infrastructure/selectors'
 import { toggleCartForDispatchBranch } from '@date/infrastructure/state'
 import { CardPieListEntry } from './cardPieList/CardPieListEntry'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
+import {
+  buildCardPieRefsKey,
+  listCardPieFavorites,
+  toggleCardPieFavoriteByRefs,
+} from '../application/services/cardPieFavoritesService'
 import styles from './CardPiePanel.module.scss'
 
 type Props = {
@@ -25,7 +33,17 @@ const CardPiePanelRow: React.FC<{
   item: DateListPanelItem
   onSelectEntry?: (item: DateListPanelItem) => void
   canToggleCart?: boolean
-}> = ({ item, onSelectEntry, canToggleCart }) => {
+  isFavorite?: boolean
+  canFavorite?: boolean
+  onToggleFavorite?: (item: DateListPanelItem) => void
+}> = ({
+  item,
+  onSelectEntry,
+  canToggleCart,
+  isFavorite = false,
+  canFavorite = false,
+  onToggleFavorite,
+}) => {
   const dispatch = useAppDispatch()
   const cachedUrl = useAppSelector(
     selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
@@ -71,6 +89,11 @@ const CardPiePanelRow: React.FC<{
           : undefined
       }
       onAddCart={onAddCartFromList}
+      isFavorite={isFavorite}
+      favoriteDisabled={!canFavorite}
+      onToggleFavorite={
+        canFavorite && onToggleFavorite ? () => onToggleFavorite(item) : undefined
+      }
     />
   )
 }
@@ -81,9 +104,46 @@ export const CardPiePanel: React.FC<Props> = ({
   onSelectEntry,
 }) => {
   const { isAllComplete } = useAppSelector(selectPieProgress)
+  const isCardPieFavoriteReady = useAppSelector(selectIsCardPieFavoriteReady)
+  const [favoriteKeys, setFavoriteKeys] = useState<Set<string>>(new Set())
 
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
+  const canFavorite = isCardPieFavoriteReady
+
+  useEffect(() => {
+    let cancelled = false
+    const load = async () => {
+      const all = await listCardPieFavorites()
+      if (cancelled) return
+      setFavoriteKeys(new Set(all.map((row) => buildCardPieRefsKey(row.refs))))
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const rowFavoriteById = useMemo(() => {
+    const m = new Map<string, boolean>()
+    entries.forEach((item) => {
+      if (!item.cardPieRefs) return
+      m.set(item.id, favoriteKeys.has(buildCardPieRefsKey(item.cardPieRefs)))
+    })
+    return m
+  }, [entries, favoriteKeys])
+
+  const handleToggleFavorite = useCallback(async (item: DateListPanelItem) => {
+    if (!item.cardPieRefs) return
+    const { isFavorite } = await toggleCardPieFavoriteByRefs(item.cardPieRefs)
+    const key = buildCardPieRefsKey(item.cardPieRefs)
+    setFavoriteKeys((prev) => {
+      const next = new Set(prev)
+      if (isFavorite) next.add(key)
+      else next.delete(key)
+      return next
+    })
+  }, [])
 
   return (
     <div className={styles.panel}>
@@ -118,6 +178,9 @@ export const CardPiePanel: React.FC<Props> = ({
                 item={item}
                 onSelectEntry={onSelectEntry}
                 canToggleCart={isAllComplete}
+                isFavorite={rowFavoriteById.get(item.id) === true}
+                canFavorite={canFavorite}
+                onToggleFavorite={handleToggleFavorite}
               />
             ))
           ) : (

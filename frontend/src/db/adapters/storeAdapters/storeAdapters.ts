@@ -2,6 +2,7 @@ import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
 import type { StoreMap } from '@/db/types'
 import type { StoreAdapter } from '../../types'
 import { postcardsAdapter } from './postcardsAdapter'
+import { cardPieFavoritesAdapter } from './cardPieFavoritesAdapter'
 
 export const storeAdapters: {
   stockImages: StoreAdapter<StoreMap['stockImages']>
@@ -12,6 +13,7 @@ export const storeAdapters: {
   sender: StoreAdapter<StoreMap['sender']>
   recipient: StoreAdapter<StoreMap['recipient']>
   postcards: StoreAdapter<StoreMap['postcards']>
+  cardPieFavorites: StoreAdapter<StoreMap['cardPieFavorites']>
   session: StoreAdapter<StoreMap['session']>
   workingCard: StoreAdapter<StoreMap['workingCard']>
   uiPreferences: StoreAdapter<StoreMap['uiPreferences']>
@@ -24,6 +26,7 @@ export const storeAdapters: {
   sender: createStoreAdapter<StoreMap['sender']>('sender'),
   recipient: createStoreAdapter<StoreMap['recipient']>('recipient'),
   postcards: postcardsAdapter,
+  cardPieFavorites: cardPieFavoritesAdapter,
   session: createStoreAdapter<StoreMap['session']>('session'),
   workingCard: createStoreAdapter<StoreMap['workingCard']>('workingCard'),
   uiPreferences: createStoreAdapter<StoreMap['uiPreferences']>('uiPreferences'),

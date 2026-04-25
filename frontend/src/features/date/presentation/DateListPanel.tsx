@@ -13,6 +13,7 @@ import {
   type DateListEntryVariant,
 } from './dateList/DateListEntry'
 import type { DispatchDate } from '@entities/date/domain/types'
+import type { CardPieRefs } from '@features/cardPie/domain/types'
 import styles from './DateListPanel.module.scss'
 
 export type DateListPanelItem = {
@@ -29,6 +30,8 @@ export type DateListPanelItem = {
   onDelete?: () => void
   /** Ключ ветки «дата|получатель» для корзины / toggle в Card pie. */
   dispatchBranchKey?: string
+  /** Ссылки на выбранные шаблоны для сохранения CardPie favorite. */
+  cardPieRefs?: CardPieRefs
 }
 
 type Props = {
