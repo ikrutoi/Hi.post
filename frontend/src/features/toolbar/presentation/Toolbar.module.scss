@@ -268,6 +268,7 @@
   position: absolute;
   left: -1.2rem;
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   height: auto;
   width: auto;
@@ -276,6 +277,7 @@
   .toolbarGroup {
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
   .toolbarKey {
