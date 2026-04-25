@@ -147,15 +147,24 @@ function* closeOtherListPanels(action: {
   if (openingHistory) {
     yield put(setCartListPanelOpen(false))
   }
-  /** Cart list в правом сайдбаре не делаем взаимоисключающим с sectionEditorMenu и card pie list. */
-  if (!openingCardPie) yield put(setCardPieListPanelOpen(false))
+  /**
+   * Открытие корзины (правый сайдбар) не закрывает левые списки:
+   * cardpie, cardphoto, cardtext, адреса — они остаются как были.
+   */
+  if (!openingCardPie && !openingCart) {
+    yield put(setCardPieListPanelOpen(false))
+  }
 
-  if (!openingCardphoto && !openingDate) {
+  if (!openingCardphoto && !openingDate && !openingCart) {
     yield put(setCardphotoListPanelOpen(false))
   }
-  if (!openingCardtext) yield put(setCardtextListPanelOpen(false))
+  if (!openingCardtext && !openingCart) {
+    yield put(setCardtextListPanelOpen(false))
+  }
 
-  if (!openingAddressList) yield put(closeAddressList())
+  if (!openingAddressList && !openingCart) {
+    yield put(closeAddressList())
+  }
 
   yield* syncListPanelToolbarIcons()
 }

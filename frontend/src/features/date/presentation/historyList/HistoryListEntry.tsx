@@ -65,27 +65,15 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
       }
     >
       <div className={styles.body}>
-        {showStatusIndicator ? (
-          <div className={styles.statusIndicatorSlot}>
-            {previewStatus && !previewIsProcessed ? (
-              <span
-                className={clsx(styles.statusIndicator, styles[previewStatus])}
-                aria-hidden
-              />
-            ) : (
-              <span
-                className={clsx(
-                  styles.statusIndicator,
-                  styles.statusIndicatorSpacer,
-                )}
-                aria-hidden
-              />
-            )}
-          </div>
-        ) : null}
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
             <img src={previewUrl} alt="" className={styles.thumbImg} />
+          ) : null}
+          {showStatusIndicator && previewStatus && !previewIsProcessed ? (
+            <span
+              className={clsx(styles.statusIndicator, styles[previewStatus])}
+              aria-hidden
+            />
           ) : null}
         </div>
         <div className={styles.meta}>

@@ -135,19 +135,11 @@
   // border: solid 1px blue;
 }
 
-.statusIndicatorSlot {
-  flex-shrink: 0;
-  align-self: center;
-  width: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  // border: solid 1px red;
-}
-
 .statusIndicator {
-  flex-shrink: 0;
-  align-self: center;
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  z-index: 1;
   width: 0.55rem;
   height: 0.55rem;
   border-radius: 50%;
@@ -183,12 +175,6 @@
   }
 }
 
-.statusIndicatorSpacer {
-  border: none;
-  background: transparent;
-  box-shadow: none;
-}
-
 .root[data-inactive='true'] .statusIndicator {
   opacity: 0.72;
 }
@@ -198,6 +184,7 @@
 }
 
 .thumb {
+  position: relative;
   flex-shrink: 0;
   align-self: stretch;
   width: 2.35rem;
@@ -212,6 +199,8 @@
 }
 
 .thumbImg {
+  position: relative;
+  z-index: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
