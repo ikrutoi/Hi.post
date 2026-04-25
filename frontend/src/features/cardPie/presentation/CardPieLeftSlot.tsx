@@ -18,6 +18,7 @@ export const CardPieLeftSlot: React.FC = () => {
     activeModeOnly: true,
     listSortDirection,
     hideBranchesInCart: true,
+    showUndatedWhenAnySectionSelected: true,
   })
 
   const handleCloseList = useCallback(() => {

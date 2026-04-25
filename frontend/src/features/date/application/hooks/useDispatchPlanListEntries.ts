@@ -96,6 +96,11 @@ export type UseDispatchPlanListEntriesOptions = {
    * Используется в Card pie: после addCart строка исчезает из списка.
    */
   hideBranchesInCart?: boolean
+  /**
+   * Для CardPie: если дата не выбрана, но заполнена хотя бы одна секция,
+   * показывать строку без даты и без цены.
+   */
+  showUndatedWhenAnySectionSelected?: boolean
 }
 
 /**
@@ -108,6 +113,7 @@ export function useDispatchPlanListEntries(
     activeModeOnly,
     listSortDirection = 'asc',
     hideBranchesInCart = false,
+    showUndatedWhenAnySectionSelected = false,
   } = options
   const dispatch = useAppDispatch()
   const selectedDate = useAppSelector(selectSelectedDate)
@@ -315,6 +321,13 @@ export function useDispatchPlanListEntries(
     }
 
     const entries: DateListPanelItem[] = []
+    const hasAnySectionSelected =
+      String(cardphotoState?.appliedData?.id ?? '') !== '' ||
+      String(cardtextState?.appliedData?.id ?? '') !== '' ||
+      String(envelopeRecord?.sender?.senderViewId ?? '') !== '' ||
+      (recipientState.applied?.length ?? 0) > 0 ||
+      recipientState.appliedData != null ||
+      selectedAroma != null
 
     const appendMultiBlock = (includeInactiveCachedSingle: boolean) => {
       if (includeInactiveCachedSingle && cachedSingleDate) {
@@ -446,6 +459,36 @@ export function useDispatchPlanListEntries(
       appendSingleBlock(true)
     }
 
+    if (
+      showUndatedWhenAnySectionSelected &&
+      entries.length === 0 &&
+      hasAnySectionSelected
+    ) {
+      recipientSlots.forEach((slot, ri) => {
+        const recipientRef = slot.branchKey.includes('|')
+          ? (slot.branchKey.split('|')[1] ?? 'session')
+          : 'session'
+        const cardPieRefs: CardPieRefs = {
+          cardphoto: String(cardphotoState?.appliedData?.id ?? ''),
+          cardtext: String(cardtextState?.appliedData?.id ?? ''),
+          sender: String(envelopeRecord?.sender?.senderViewId ?? 'session'),
+          recipient: String(recipientRef),
+          aroma: String(selectedAroma?.index ?? ''),
+        }
+        entries.push({
+          id: `undated-rcpt-${slot.branchKey}-${ri}`,
+          dateLabel: '',
+          detailLine: slot.detailLine,
+          priceLine: undefined,
+          previewUrl: listPreviewUrl ?? undefined,
+          cardId: listPreviewUrl ? 'current_session' : undefined,
+          previewIsProcessed: true,
+          dispatchBranchKey: undefined,
+          cardPieRefs,
+        })
+      })
+    }
+
     const dir = listSortDirection === 'asc' ? 1 : -1
     entries.sort((x, y) => {
       const a = x.sourceDate
@@ -472,6 +515,7 @@ export function useDispatchPlanListEntries(
     cardtextState?.appliedData?.id,
     envelopeRecord?.sender?.senderViewId,
     selectedAroma?.index,
+    showUndatedWhenAnySectionSelected,
     cartPostcardByDispatchBranchKey,
     recipientEntries,
     envelopeRecipients,

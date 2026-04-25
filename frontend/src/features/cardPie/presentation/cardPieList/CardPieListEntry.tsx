@@ -36,8 +36,9 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
 }) => {
   const interactive = Boolean(onSelect)
   const inactive = variant === 'inactive'
+  const hasDate = dateLabel.trim().length > 0
   const labelForAria = [
-    detailLine ? `${dateLabel}, ${detailLine}` : dateLabel,
+    detailLine ? (hasDate ? `${dateLabel}, ${detailLine}` : detailLine) : dateLabel,
     priceLine,
   ]
     .filter(Boolean)
@@ -117,7 +118,13 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
           )}
         </div>
         <div className={styles.meta}>
-          <div className={styles.dateLine}>{dateLabel}</div>
+          {hasDate ? (
+            <div className={styles.dateLine}>{dateLabel}</div>
+          ) : (
+            <div className={styles.dateLine} aria-hidden>
+              {'\u00A0'}
+            </div>
+          )}
           <div className={styles.detailBlock} aria-hidden={!recipientParts}>
             {recipientParts ? (
               recipientParts.region ? (
