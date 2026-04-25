@@ -1,10 +1,7 @@
 import React, { useCallback, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
-import {
-  selectIsCardPieFavoriteListPanelOpen,
-  selectIsCardPieListPanelOpen,
-} from '@date/calendar/infrastructure/selectors'
+import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { Header } from './features/header/presentation/Header'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
@@ -15,9 +12,7 @@ import {
 } from './features/cart/presentation/CartListPanel'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
-import { CardPieFavoriteLeftSlot } from '@features/cardPieFavorite/presentation/CardPieFavoriteLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
-import { CardPieFavoriteBadgeSync } from '@features/cardPie/presentation/CardPieFavoriteBadgeSync'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
@@ -62,9 +57,6 @@ const App = () => {
     setCartListSelectedLocalId,
   } = useCartFacade()
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
-  const cardPieFavoriteListPanelOpen = useAppSelector(
-    selectIsCardPieFavoriteListPanelOpen,
-  )
 
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
@@ -87,7 +79,6 @@ const App = () => {
           </div>
           <main ref={mainRef} className={styles.appMain}>
             <EditorPieListCardPieBadgeSync />
-            <CardPieFavoriteBadgeSync />
             <DateToolbarListDateBadgeSync />
             {/* <div className={styles.appMainContentLeft}> */}
             <div className={styles.appMainContentLeftPieSlot}>
@@ -114,7 +105,6 @@ const App = () => {
               {activeSection === 'cardtext' && <CardtextRightSlot />}
               {activeSection === 'cardphoto' && <CardphotoRightSlot />}
               {cardPieListPanelOpen && <CardPieLeftSlot />}
-              {cardPieFavoriteListPanelOpen && <CardPieFavoriteLeftSlot />}
             </div>
             <div
               className={styles.appMainContentCenter}

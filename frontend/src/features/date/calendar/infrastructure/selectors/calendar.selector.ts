@@ -15,10 +15,6 @@ export const selectIsDateListPanelOpen = (state: RootState): boolean =>
 export const selectIsCardPieListPanelOpen = (state: RootState): boolean =>
   state.calendar.cardPieListPanelOpen
 
-export const selectIsCardPieFavoriteListPanelOpen = (
-  state: RootState,
-): boolean => state.calendar.cardPieFavoriteListPanelOpen
-
 export const selectIsHistoryListPanelOpen = (state: RootState): boolean =>
   state.calendar.historyListPanelOpen
 

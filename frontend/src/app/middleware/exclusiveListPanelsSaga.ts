@@ -120,6 +120,13 @@ function* closeOtherListPanels(action: {
     action.type === setActiveAddressList.type && action.payload != null
 
   if (
+    action.type === setCartListPanelOpen.type &&
+    action.payload === false
+  ) {
+    yield* syncListPanelToolbarIcons()
+  }
+
+  if (
     !openingDate &&
     !openingHistory &&
     !openingCardPie &&
@@ -136,6 +143,10 @@ function* closeOtherListPanels(action: {
     yield put(setDateListPanelOpen(false))
   }
   if (!openingHistory) yield put(setHistoryListPanelOpen(false))
+  /** При открытии списка истории закрываем корзину (правый сайдбар). */
+  if (openingHistory) {
+    yield put(setCartListPanelOpen(false))
+  }
   /** Cart list в правом сайдбаре не делаем взаимоисключающим с sectionEditorMenu и card pie list. */
   if (!openingCardPie) yield put(setCardPieListPanelOpen(false))
 

@@ -5,7 +5,6 @@ import type {
   SectionEditorMenuToolbarState,
   SectionEditorMenuKey,
 } from '@toolbar/domain/types'
-import { SECTION_EDITOR_MENU_ADDITIONAL_KEYS } from '@toolbar/domain/types'
 import type { RightSidebarToolbarState } from '@toolbar/domain/types/rightSidebar.types'
 import { RIGHT_SIDEBAR_KEYS } from '@toolbar/domain/types/rightSidebar.types'
 
@@ -19,26 +18,17 @@ export function* syncSectionMenuVisuals(activeKey: SectionEditorMenuKey) {
   const updatedFlatKeys = Object.fromEntries(
     Object.keys(currentState)
       .filter((k) => k !== 'config')
-      .map((iconKey) => {
-        if (
-          (SECTION_EDITOR_MENU_ADDITIONAL_KEYS as readonly string[]).includes(iconKey)
-        ) {
-          return [iconKey, currentState[iconKey]]
-        }
-        return [iconKey, iconKey === activeKey ? 'active' : 'enabled']
-      }),
+      .map((iconKey) => [
+        iconKey,
+        iconKey === activeKey ? 'active' : 'enabled',
+      ]),
   )
 
   const updatedConfig = currentState.config.map((group) => ({
     ...group,
     icons: group.icons.map((icon) => ({
       ...icon,
-      state:
-        group.group === 'additional'
-          ? icon.state
-          : icon.key === activeKey
-            ? 'active'
-            : 'enabled',
+      state: icon.key === activeKey ? 'active' : 'enabled',
     })),
   }))
 

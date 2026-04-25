@@ -62,11 +62,6 @@ export default defineConfig({
       '@envelope': path.resolve(__dirname, 'src/features/envelope'),
       '@aroma': path.resolve(__dirname, 'src/features/aroma'),
       '@date': path.resolve(__dirname, 'src/features/date'),
-      '@cardPie': path.resolve(__dirname, 'src/features/cardPie'),
-      '@cardPieFavorite': path.resolve(
-        __dirname,
-        'src/features/cardPieFavorite',
-      ),
       '@history': path.resolve(__dirname, 'src/features/history'),
       '@toolbar': path.resolve(__dirname, 'src/features/toolbar'),
       '@preview': path.resolve(__dirname, 'src/features/preview'),

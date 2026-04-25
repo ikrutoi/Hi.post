@@ -268,7 +268,6 @@
   position: absolute;
   left: -1.2rem;
   display: flex;
-  flex-direction: column;
   align-items: flex-start;
   height: auto;
   width: auto;
@@ -277,7 +276,6 @@
   .toolbarGroup {
     display: flex;
     flex-direction: column;
-    width: 100%;
   }
 
   .toolbarKey {
@@ -311,10 +309,6 @@
   .toolbarKeyHistory {
     margin-top: 1rem;
     // border-top: solid 1px $color-app-substrate-border;
-  }
-
-  .toolbarKeyCardPieFavorite {
-    margin-top: 1rem;
   }
 
   // Keep badge size consistent with date/list toolbars (avoid icon scale shrinking it).

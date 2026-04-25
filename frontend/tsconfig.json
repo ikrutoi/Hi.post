@@ -43,8 +43,6 @@
       "@envelope/*": ["features/envelope/*"],
       "@aroma/*": ["features/aroma/*"],
       "@date/*": ["features/date/*"],
-      "@cardPie/*": ["features/cardPie/*"],
-      "@cardPieFavorite/*": ["features/cardPieFavorite/*"],
       "@history/*": ["features/history/*"],
       "@toolbar": ["features/toolbar/index.ts"],
       "@toolbar/*": ["features/toolbar/*"],

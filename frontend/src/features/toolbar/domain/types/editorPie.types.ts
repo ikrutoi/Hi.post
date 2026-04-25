@@ -1,17 +1,14 @@
 import { flattenIcons } from '../helpers'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
-export const EDITOR_PIE_KEYS = ['cardPieFavorite', 'listCardPie'] as const
+export const EDITOR_PIE_KEYS = ['listCardPie'] as const
 
 export type EditorPieKey = (typeof EDITOR_PIE_KEYS)[number]
 
 export const EDITOR_PIE_TOOLBAR: ToolbarConfig = [
   {
     group: 'main',
-    icons: [
-      { key: 'listCardPie', state: 'enabled' },
-      { key: 'cardPieFavorite', state: 'enabled' },
-    ],
+    icons: [{ key: 'listCardPie', state: 'enabled' }],
     status: 'enabled',
   },
 ]

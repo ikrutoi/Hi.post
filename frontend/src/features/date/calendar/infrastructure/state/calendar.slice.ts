@@ -28,7 +28,6 @@ type CalendarState = {
   historyListPanelOpen: boolean
   dateListPanelOpen: boolean
   cardPieListPanelOpen: boolean
-  cardPieFavoriteListPanelOpen: boolean
   openDayPanel: DayPanelPayload | null
   dateListSortDirection: 'asc' | 'desc'
   cardPieListSortDirection: 'asc' | 'desc'
@@ -45,7 +44,6 @@ const initialState: CalendarState = {
   },
   dateListPanelOpen: false,
   cardPieListPanelOpen: false,
-  cardPieFavoriteListPanelOpen: false,
   historyListPanelOpen: false,
   openDayPanel: null,
   dateListSortDirection: 'asc',
@@ -103,10 +101,6 @@ const calendarSlice = createSlice({
       }
     },
 
-    setCardPieFavoriteListPanelOpen(state, action: PayloadAction<boolean>) {
-      state.cardPieFavoriteListPanelOpen = action.payload
-    },
-
     toggleDateListSortDirection(state) {
       state.dateListSortDirection =
         state.dateListSortDirection === 'asc' ? 'desc' : 'asc'
@@ -146,7 +140,6 @@ export const {
   closeDayPanel,
   setDateListPanelOpen,
   setCardPieListPanelOpen,
-  setCardPieFavoriteListPanelOpen,
   toggleDateListSortDirection,
   toggleCardPieListSortDirection,
   setPostcardStatusesCount,

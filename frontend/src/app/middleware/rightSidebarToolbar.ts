@@ -31,17 +31,33 @@ export function* handleRightSidebarToolbarAction(
 
   if (section !== 'rightSidebar') return
 
-  yield* syncRightSidebarVisuals(key)
-
   if (key === 'cart') {
     const isCartActive: boolean = yield select(selectCartListPanelOpen)
-    if (isCartActive) {
-      yield put(setCartListPanelOpen(false))
-    } else {
-      yield put(setCartListPanelOpen(true))
+    const nextOpen = !isCartActive
+    yield put(setCartListPanelOpen(nextOpen))
+    yield put(
+      updateToolbarIcon({
+        section: 'rightSidebar',
+        key: 'cart',
+        value: nextOpen ? 'active' : 'enabled',
+      }),
+    )
+    if (nextOpen) {
+      for (const iconKey of RIGHT_SIDEBAR_KEYS) {
+        if (iconKey === 'cart') continue
+        yield put(
+          updateToolbarIcon({
+            section: 'rightSidebar',
+            key: iconKey,
+            value: 'enabled',
+          }),
+        )
+      }
     }
     return
   }
+
+  yield* syncRightSidebarVisuals(key)
 
   if (key === 'history') {
     yield put(setActiveSection('history'))
