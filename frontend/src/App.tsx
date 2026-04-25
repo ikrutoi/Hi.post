@@ -1,7 +1,11 @@
 import React, { useCallback, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
-import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import {
+  selectHistoryListSelectedLocalId,
+  selectIsCardPieListPanelOpen,
+  selectIsHistoryListPanelOpen,
+} from '@date/calendar/infrastructure/selectors'
 import { Header } from './features/header/presentation/Header'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
@@ -57,6 +61,17 @@ const App = () => {
     setCartListSelectedLocalId,
   } = useCartFacade()
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
+  const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
+  const historyListSelectedLocalId = useAppSelector(
+    selectHistoryListSelectedLocalId,
+  )
+
+  const rightListArchiveLocalId =
+    listPanelOpen && listSelectedLocalId != null
+      ? listSelectedLocalId
+      : historyListPanelOpen && historyListSelectedLocalId != null
+        ? historyListSelectedLocalId
+        : null
 
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
@@ -127,21 +142,19 @@ const App = () => {
               </div>
             </div>
             <div className={styles.appMainContentRightPieSlot}>
-              {listPanelOpen &&
-                sectionSize != null &&
-                listSelectedLocalId != null && (
-                  <div className={styles.appMainContentRightPieRow}>
-                    <div className={styles.appMainContentRightPieWrap}>
-                      <CardPie
-                        isProcessed={false}
-                        status="cart"
-                        id={String(listSelectedLocalId)}
-                        fillContainer
-                        station="right"
-                      />
-                    </div>
+              {sectionSize != null && rightListArchiveLocalId != null && (
+                <div className={styles.appMainContentRightPieRow}>
+                  <div className={styles.appMainContentRightPieWrap}>
+                    <CardPie
+                      isProcessed={false}
+                      status="cart"
+                      id={String(rightListArchiveLocalId)}
+                      fillContainer
+                      station="right"
+                    />
                   </div>
-                )}
+                </div>
+              )}
             </div>
             <div
               className={clsx(

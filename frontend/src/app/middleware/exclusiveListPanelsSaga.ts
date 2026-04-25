@@ -151,7 +151,7 @@ function* closeOtherListPanels(action: {
    * Открытие корзины (правый сайдбар) не закрывает левые списки:
    * cardpie, cardphoto, cardtext, адреса — они остаются как были.
    */
-  if (!openingCardPie && !openingCart) {
+  if (!openingCardPie && !openingCart && !openingHistory) {
     yield put(setCardPieListPanelOpen(false))
   }
 

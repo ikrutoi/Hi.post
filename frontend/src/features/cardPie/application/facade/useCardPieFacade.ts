@@ -19,30 +19,31 @@ const EMPTY_CART_PIE_SECTIONS = {
 
 export const useCardPieFacade = (
   isProcessed: boolean,
-  status: PostcardStatus | undefined,
+  _status: PostcardStatus | undefined,
   id?: string,
 ) => {
   const dispatch = useAppDispatch()
 
   const activeData = useAppSelector(selectActiveCardFullData)
   const editorProgress = useAppSelector(selectPieProgress)
-  const isCartArchive = !isProcessed && status === 'cart'
+  /** Правая колонка: пирог по открытке из `cart.items` (любой статус кроме processed). */
+  const isListArchivePie = !isProcessed && Boolean(id)
 
   const cartBundle = useAppSelector((state) =>
-    isCartArchive ? selectCartArchiveCardPieBundle(state, id) : null,
+    isListArchivePie ? selectCartArchiveCardPieBundle(state, id) : null,
   )
 
   const currentData = isProcessed
     ? activeData
-    : isCartArchive && cartBundle
+    : isListArchivePie && cartBundle
       ? cartBundle.currentData
       : null
 
-  const sections = isCartArchive
+  const sections = isListArchivePie
     ? (cartBundle?.sections ?? EMPTY_CART_PIE_SECTIONS)
     : editorProgress.sections
 
-  const isAllComplete = isCartArchive
+  const isAllComplete = isListArchivePie
     ? (cartBundle?.isAllComplete ?? false)
     : editorProgress.isAllComplete
 

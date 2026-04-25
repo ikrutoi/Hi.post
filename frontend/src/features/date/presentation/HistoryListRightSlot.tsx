@@ -4,11 +4,13 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   updateLastViewedCalendarDate,
   setHistoryListPanelOpen,
+  setHistoryListSelectedLocalId,
 } from '@date/calendar/infrastructure/state'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { CalendarCardItem } from '@entities/card/domain/types'
+import type { Postcard } from '@entities/postcard'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
@@ -18,7 +20,24 @@ import {
 } from '@date/application/helpers/formatRecipientPlanDetailLine'
 import { HistoryListPanel, type HistoryListPanelItem } from './HistoryListPanel'
 import { useCalendarFacade } from '@date/calendar/application/facades/useCalendarFacade'
-import { selectPostcardStatuses } from '@date/calendar/infrastructure/selectors'
+import {
+  selectHistoryListSelectedLocalId,
+  selectPostcardStatuses,
+} from '@date/calendar/infrastructure/selectors'
+function postcardLocalIdFromCalendarRow(
+  item: CalendarCardItem,
+  cartItems: Postcard[],
+): number | undefined {
+  if (!item.rowKey.startsWith('postcard:')) return undefined
+  const m = item.rowKey.match(
+    /^postcard:\d+:(.+):(cart|ready|sent|delivered|error)$/,
+  )
+  if (!m) return undefined
+  const postcardId = m[1]
+  const p = cartItems.find((x) => x.id === postcardId)
+  return p?.localId
+}
+
 function formatDispatchDateLabel(d: DispatchDate): string {
   const date = new Date(d.year, d.month, d.day)
   return date.toLocaleDateString('en-US', {
@@ -40,6 +59,9 @@ export const HistoryListRightSlot: React.FC = () => {
     (s) => s.addressBook?.recipientEntries ?? [],
   )
   const postcardStatuses = useAppSelector(selectPostcardStatuses)
+  const historyListSelectedLocalId = useAppSelector(
+    selectHistoryListSelectedLocalId,
+  )
   const postcardByCardId = useMemo(
     () => new Map(cartItems.map((p) => [p.card.id, p] as const)),
     [cartItems],
@@ -100,6 +122,7 @@ export const HistoryListRightSlot: React.FC = () => {
       entries.push({
         id: `history-postcard-${item.rowKey}-${i}`,
         cardId: item.cardId,
+        postcardLocalId: postcardLocalIdFromCalendarRow(item, cartItems),
         sourceDate: item.date,
         dateLabel: formatDispatchDateLabel(item.date),
         previewUrl: item.previewUrl,
@@ -112,7 +135,7 @@ export const HistoryListRightSlot: React.FC = () => {
       historyListEntries: entries,
       historyUnderlyingPostcardCount: postcardItems.length,
     }
-  }, [cardsByDateMap, postcardStatuses, resolveRecipientDetailLine])
+  }, [cardsByDateMap, cartItems, postcardStatuses, resolveRecipientDetailLine])
 
   const handleCloseList = useCallback(() => {
     dispatch(setHistoryListPanelOpen(false))
@@ -127,15 +150,23 @@ export const HistoryListRightSlot: React.FC = () => {
 
   const handleSelectEntry = useCallback(
     (item: HistoryListPanelItem) => {
-      if (!item.sourceDate) return
+      if (item.sourceDate) {
+        dispatch(
+          updateLastViewedCalendarDate({
+            year: item.sourceDate.year,
+            month: item.sourceDate.month,
+          }),
+        )
+      }
+      const lid = item.postcardLocalId
+      if (lid == null) return
       dispatch(
-        updateLastViewedCalendarDate({
-          year: item.sourceDate.year,
-          month: item.sourceDate.month,
-        }),
+        setHistoryListSelectedLocalId(
+          historyListSelectedLocalId === lid ? null : lid,
+        ),
       )
     },
-    [dispatch],
+    [dispatch, historyListSelectedLocalId],
   )
 
   if (!historyListPanelOpen) return null
@@ -144,6 +175,7 @@ export const HistoryListRightSlot: React.FC = () => {
     <HistoryListPanel
       onClose={handleCloseList}
       entries={historyListEntries}
+      listSelectedLocalId={historyListSelectedLocalId}
       onSelectEntry={handleSelectEntry}
       hasUnderlyingHistoryEntries={historyUnderlyingPostcardCount > 0}
     />

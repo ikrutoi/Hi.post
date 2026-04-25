@@ -18,6 +18,10 @@ export const selectIsCardPieListPanelOpen = (state: RootState): boolean =>
 export const selectIsHistoryListPanelOpen = (state: RootState): boolean =>
   state.calendar.historyListPanelOpen
 
+export const selectHistoryListSelectedLocalId = (
+  state: RootState,
+): number | null => state.calendar.historyListSelectedLocalId ?? null
+
 export const selectDateListSortDirection = (state: RootState): 'asc' | 'desc' =>
   state.calendar.dateListSortDirection ?? 'asc'
 

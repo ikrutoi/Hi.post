@@ -18,6 +18,8 @@ import clsx from 'clsx'
 export type HistoryListPanelItem = {
   id: string
   cardId?: string
+  /** Для строк из `cart.items` — переключение правого CardPie, как в корзине. */
+  postcardLocalId?: number
   sourceDate?: DispatchDate
   dateLabel: string
   previewUrl?: string | null
@@ -31,6 +33,8 @@ export type HistoryListPanelItem = {
 type Props = {
   onClose: () => void
   entries?: HistoryListPanelItem[]
+  /** Выбранная открытка для подсветки строки и правого CardPie. */
+  listSelectedLocalId?: number | null
   onSelectEntry?: (item: HistoryListPanelItem) => void
   /** True if postcards exist before status filter (keeps legend colors when list is filtered empty). */
   hasUnderlyingHistoryEntries?: boolean
@@ -42,8 +46,9 @@ const isBlobUrl = (url: string | null | undefined): boolean =>
 
 const HistoryListPanelRow: React.FC<{
   item: HistoryListPanelItem
+  listSelectedLocalId?: number | null
   onSelectEntry?: (item: HistoryListPanelItem) => void
-}> = ({ item, onSelectEntry }) => {
+}> = ({ item, listSelectedLocalId, onSelectEntry }) => {
   const dispatch = useAppDispatch()
   const cachedUrl = useAppSelector(
     selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
@@ -80,6 +85,10 @@ const HistoryListPanelRow: React.FC<{
           ? () => onSelectEntry(item)
           : undefined
       }
+      isSelected={
+        item.postcardLocalId != null &&
+        item.postcardLocalId === listSelectedLocalId
+      }
       onDelete={item.onDelete}
     />
   )
@@ -88,6 +97,7 @@ const HistoryListPanelRow: React.FC<{
 export const HistoryListPanel: React.FC<Props> = ({
   onClose,
   entries = [],
+  listSelectedLocalId = null,
   onSelectEntry,
   hasUnderlyingHistoryEntries,
   // section,
@@ -132,6 +142,7 @@ export const HistoryListPanel: React.FC<Props> = ({
               <HistoryListPanelRow
                 key={item.id}
                 item={item}
+                listSelectedLocalId={listSelectedLocalId}
                 onSelectEntry={onSelectEntry}
               />
             ))

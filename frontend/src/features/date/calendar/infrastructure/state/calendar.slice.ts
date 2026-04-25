@@ -26,6 +26,8 @@ export type DayPanelPayload = {
 type CalendarState = {
   lastViewedCalendarDate: CalendarViewDate
   historyListPanelOpen: boolean
+  /** Выбранная строка списка истории — правый CardPie по `localId` открытки. */
+  historyListSelectedLocalId: number | null
   dateListPanelOpen: boolean
   cardPieListPanelOpen: boolean
   openDayPanel: DayPanelPayload | null
@@ -45,6 +47,7 @@ const initialState: CalendarState = {
   dateListPanelOpen: false,
   cardPieListPanelOpen: false,
   historyListPanelOpen: false,
+  historyListSelectedLocalId: null,
   openDayPanel: null,
   dateListSortDirection: 'asc',
   cardPieListSortDirection: 'asc',
@@ -125,11 +128,15 @@ const calendarSlice = createSlice({
 
     setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {
       state.historyListPanelOpen = action.payload
+      state.historyListSelectedLocalId = null
       if (action.payload) {
         state.dateListPanelOpen = false
-        state.cardPieListPanelOpen = false
         state.openDayPanel = null
       }
+    },
+
+    setHistoryListSelectedLocalId(state, action: PayloadAction<number | null>) {
+      state.historyListSelectedLocalId = action.payload
     },
   },
 })
@@ -145,5 +152,6 @@ export const {
   setPostcardStatusesCount,
   setPostcardStatuses,
   setHistoryListPanelOpen,
+  setHistoryListSelectedLocalId,
 } = calendarSlice.actions
 export default calendarSlice.reducer
