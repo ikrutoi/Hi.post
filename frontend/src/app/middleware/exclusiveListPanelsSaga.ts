@@ -136,7 +136,7 @@ function* closeOtherListPanels(action: {
     yield put(setDateListPanelOpen(false))
   }
   if (!openingHistory) yield put(setHistoryListPanelOpen(false))
-  if (!openingCart) yield put(setCartListPanelOpen(false))
+  /** Cart list в правом сайдбаре не делаем взаимоисключающим с sectionEditorMenu и card pie list. */
   if (!openingCardPie) yield put(setCardPieListPanelOpen(false))
 
   if (!openingCardphoto && !openingDate) {

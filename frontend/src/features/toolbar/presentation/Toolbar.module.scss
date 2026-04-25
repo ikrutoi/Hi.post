@@ -316,6 +316,13 @@
   }
 }
 
+// .toolbarRightSidebar {
+//   .toolbarKeyActive {
+//     color: $color-app-sidebar-icon-active;
+//     background-color: $color-app-sidebar-icon-hover;
+//   }
+// }
+
 .toolbarSender {
   display: flex;
   flex-direction: row-reverse;
@@ -358,7 +365,8 @@
 .toolbarCardtext,
 .toolbarCardphoto,
 .toolbarDate,
-.toolbarHistory {
+.toolbarHistory,
+.toolbarRightSidebar {
   .toolbarKeyActive {
     color: $color-font-active;
   }
@@ -523,6 +531,11 @@
     &:hover {
       background-color: $color-app-sidebar-icon-hover;
     }
+  }
+
+  .toolbarKeyActive {
+    color: $color-app-sidebar-icon-active;
+    // background-color: $color-app-sidebar-icon-hover;
   }
 
   .toolbarBadge {
