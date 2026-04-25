@@ -314,6 +314,22 @@
   .toolbarKeyCardPieFavorite {
     margin-top: 1rem;
   }
+
+  // Keep badge size consistent with date/list toolbars (avoid icon scale shrinking it).
+  .toolbarBadge,
+  .toolbarBadgeDot {
+    transform: none;
+  }
+
+  .toolbarBadge {
+    top: -1px;
+    right: 1px;
+  }
+
+  .toolbarBadgeDot {
+    top: 3px;
+    right: 5px;
+  }
 }
 
 // .toolbarRightSidebar {

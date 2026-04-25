@@ -78,7 +78,7 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
           onToggleFavorite?.()
         }}
       >
-        {getToolbarIcon({ key: 'favorite' })}
+        {getToolbarIcon({ key: isFavorite ? 'favoriteFilled' : 'favorite' })}
       </button>
       <div
         className={styles.semicircleUp}
@@ -118,9 +118,9 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
         </div>
         <div className={styles.meta}>
           <div className={styles.dateLine}>{dateLabel}</div>
-          {recipientParts ? (
-            <div className={styles.detailBlock}>
-              {recipientParts.region ? (
+          <div className={styles.detailBlock} aria-hidden={!recipientParts}>
+            {recipientParts ? (
+              recipientParts.region ? (
                 <>
                   <span className={styles.detailName}>{recipientParts.name}</span>
                   <span className={styles.detailSep}>, </span>
@@ -130,9 +130,11 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
                 </>
               ) : (
                 <span className={styles.detailName}>{recipientParts.name}</span>
-              )}
-            </div>
-          ) : null}
+              )
+            ) : (
+              '\u00A0'
+            )}
+          </div>
         </div>
         {priceLine ? (
           <div className={styles.priceLine} aria-label={`Price ${priceLine}`}>

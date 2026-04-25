@@ -14,9 +14,9 @@ import { toggleCartForDispatchBranch } from '@date/infrastructure/state'
 import { CardPieListEntry } from './cardPieList/CardPieListEntry'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
 import {
+  addCardPieFavorite,
   buildCardPieRefsKey,
   listCardPieFavorites,
-  toggleCardPieFavoriteByRefs,
 } from '../application/services/cardPieFavoritesService'
 import styles from './CardPiePanel.module.scss'
 
@@ -133,14 +133,13 @@ export const CardPiePanel: React.FC<Props> = ({
     return m
   }, [entries, favoriteKeys])
 
-  const handleToggleFavorite = useCallback(async (item: DateListPanelItem) => {
+  const handleAddFavorite = useCallback(async (item: DateListPanelItem) => {
     if (!item.cardPieRefs) return
-    const { isFavorite } = await toggleCardPieFavoriteByRefs(item.cardPieRefs)
+    await addCardPieFavorite(item.cardPieRefs)
     const key = buildCardPieRefsKey(item.cardPieRefs)
     setFavoriteKeys((prev) => {
       const next = new Set(prev)
-      if (isFavorite) next.add(key)
-      else next.delete(key)
+      next.add(key)
       return next
     })
   }, [])
@@ -180,7 +179,7 @@ export const CardPiePanel: React.FC<Props> = ({
                 canToggleCart={isAllComplete}
                 isFavorite={rowFavoriteById.get(item.id) === true}
                 canFavorite={canFavorite}
-                onToggleFavorite={handleToggleFavorite}
+                onToggleFavorite={handleAddFavorite}
               />
             ))
           ) : (

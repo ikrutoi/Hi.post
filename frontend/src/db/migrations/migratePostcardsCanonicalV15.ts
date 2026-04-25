@@ -3,7 +3,7 @@ import type { Postcard } from '@entities/postcard'
 import { normalizePostcardRecord } from '@entities/postcard'
 
 /** Текущая версия AppDB (см. `openDB` в `db/core.ts`). */
-export const APP_DB_VERSION = 15
+export const APP_DB_VERSION = 16
 
 type VersionChangeTx = IDBPTransaction<unknown, string[], 'versionchange'>
 

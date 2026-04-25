@@ -16,7 +16,8 @@ export interface CardPieRefs {
   aroma: string
 }
 
-export interface CardPieData {
+export interface CardPieFavoriteTemplate {
+  id: string
   localId: number
   refs: CardPieRefs
 }

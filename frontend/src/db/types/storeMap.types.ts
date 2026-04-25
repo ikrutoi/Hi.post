@@ -5,7 +5,7 @@ import type { ImageMeta, ImageRecord } from '@cardphoto/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
 import type { WorkingCardRecord } from '@entities/card/domain/types'
 import type { CardphotoListTemplateGridCols } from '@cardphoto/infrastructure/state/cardphotoUiSlice'
-import type { CardPieData } from '@features/cardPie/domain/types'
+import type { CardPieFavoriteTemplate } from '@features/cardPie/domain/types'
 
 export interface UiPreferencesRecord {
   id: 'cardphotoList'
@@ -21,7 +21,7 @@ export interface StoreMap {
   sender: AddressTemplateItem
   recipient: AddressTemplateItem
   postcards: Postcard
-  cardPieFavorites: CardPieData
+  cardPieFavorites: CardPieFavoriteTemplate
   session: SessionData
   workingCard: WorkingCardRecord
   uiPreferences: UiPreferencesRecord

@@ -13,6 +13,7 @@ import {
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
+import { CardPieFavoriteBadgeSync } from '@features/cardPie/presentation/CardPieFavoriteBadgeSync'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
@@ -79,6 +80,7 @@ const App = () => {
           </div>
           <main ref={mainRef} className={styles.appMain}>
             <EditorPieListCardPieBadgeSync />
+            <CardPieFavoriteBadgeSync />
             <DateToolbarListDateBadgeSync />
             {/* <div className={styles.appMainContentLeft}> */}
             <div className={styles.appMainContentLeftPieSlot}>

@@ -4,7 +4,7 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 export const RIGHT_SIDEBAR_KEYS = [
   'userLogin',
   'cart',
-  'postcardFavorite',
+  // 'postcardFavorite',
   'history',
 ] as const
 
@@ -21,7 +21,7 @@ export const RIGHT_SIDEBAR_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'userLogin', state: 'enabled' },
       { key: 'cart', state: 'enabled' },
-      { key: 'postcardFavorite', state: 'enabled' },
+      // { key: 'postcardFavorite', state: 'enabled' },
       { key: 'history', state: 'enabled' },
     ],
     status: 'enabled',
