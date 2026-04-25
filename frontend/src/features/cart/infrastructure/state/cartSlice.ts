@@ -32,7 +32,7 @@ const cartSlice = createSlice({
     },
     removeItem(state, action: PayloadAction<number>) {
       const removed = action.payload
-      state.items = state.items.filter((item) => item.id !== removed)
+      state.items = state.items.filter((item) => item.localId !== removed)
       if (state.listSelectedLocalId === removed) {
         state.listSelectedLocalId = null
       }

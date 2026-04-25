@@ -66,7 +66,8 @@ function stripSessionFlagsFromCard(card: Card): Card {
 }
 
 export interface PostcardRecordMeta {
-  id: number
+  id: string
+  localId: number
   price: string
   createdAt: number
   updatedAt: number
@@ -113,6 +114,20 @@ function coercePostcardBodyId(
   return 0
 }
 
+function coercePostcardId(
+  row: Postcard & Record<string, unknown>,
+  cardBase: Card,
+  localId: number,
+): string {
+  if (typeof row.id === 'string' && row.id.trim().length > 0) return row.id
+  if (typeof cardBase.id === 'string' && cardBase.id.trim().length > 0) {
+    return cardBase.id
+  }
+  if (typeof row.id === 'number' && row.id > 0) return String(row.id)
+  if (localId > 0) return String(localId)
+  return 'unknown'
+}
+
 export function normalizePostcardRecord(raw: Postcard): Postcard {
   const row = raw as Postcard & Record<string, unknown>
 
@@ -146,7 +161,8 @@ export function normalizePostcardRecord(raw: Postcard): Postcard {
   card = stripLegacyMetaFromCard(card)
   card = stripSessionFlagsFromCard(card)
 
-  const id = coercePostcardBodyId(row, card)
+  const localId = coercePostcardBodyId(row, card)
+  const id = coercePostcardId(row, card, localId)
 
   const now = Date.now()
   const createdAt =
@@ -170,6 +186,7 @@ export function normalizePostcardRecord(raw: Postcard): Postcard {
 
   const next: Postcard = {
     id,
+    localId,
     price,
     date,
     status,

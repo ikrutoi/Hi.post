@@ -181,8 +181,8 @@ export const CartListPanel: React.FC<Props> = ({
                 item={item}
                 onSelectEntry={onSelectEntry}
                 isSelected={
-                  item.postcard?.id != null &&
-                  item.postcard.id === listSelectedLocalId
+                  item.postcard?.localId != null &&
+                  item.postcard.localId === listSelectedLocalId
                 }
               />
             ))

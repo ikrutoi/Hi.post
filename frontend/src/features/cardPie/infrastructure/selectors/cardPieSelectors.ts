@@ -70,7 +70,7 @@ export const selectActiveCardFullData = createSelector(
   },
 )
 
-/** Превью «пирога» по строке корзины: `id` — `String(postcard.id)`. */
+/** Превью «пирога» по строке корзины: `id` — `String(postcard.localId)`. */
 export const selectCartArchiveCardPieBundle = createSelector(
   [
     (state: RootState) => state.cart.items,
@@ -80,7 +80,7 @@ export const selectCartArchiveCardPieBundle = createSelector(
     if (id == null || id === '') return null
     const postcardNumericId = Number(id)
     if (Number.isNaN(postcardNumericId)) return null
-    const postcard = items.find((p) => Number(p.id) === postcardNumericId)
+    const postcard = items.find((p) => p.localId === postcardNumericId)
     if (!postcard || postcard.status !== 'cart') return null
     const inner = buildCardPieInnerDataFromPostcard(postcard)
     const sections = buildPieSectionFlagsFromInner(

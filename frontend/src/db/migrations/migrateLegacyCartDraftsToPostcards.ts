@@ -19,10 +19,10 @@ type LegacyCardFields = Card & {
   meta?: Partial<PostcardRecordMeta>
 }
 
-/** Строковый ключ IDB при первичной миграции в `postcards` (до канонического `id: number` на корне). */
+/** Строковый ключ IDB при первичной миграции в `postcards`. */
 function postcardWithId(p: Postcard, explicitId?: string): Postcard & { id: string } {
-  const rowKey = explicitId ?? p.card.id
-  return { ...p, id: rowKey } as unknown as Postcard & { id: string }
+  const rowKey = explicitId ?? p.id ?? p.card.id
+  return { ...p, id: rowKey } as Postcard & { id: string }
 }
 
 function migrateCartRow(row: unknown): Postcard & { id: string } {
@@ -47,7 +47,8 @@ function migrateDraftsRow(row: unknown): Postcard & { id: string } {
   const card = cardFields as Card
 
   const postcard = {
-    id: d.localId,
+    id: String(d.localId),
+    localId: d.localId,
     price: m?.price ?? '',
     date: card.date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
     status,

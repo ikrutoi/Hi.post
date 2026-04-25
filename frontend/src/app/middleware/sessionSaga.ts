@@ -429,7 +429,7 @@ export function* hydrateAppSession() {
         yield call([postcardsAdapter, 'put'], {
           ...next,
           id: next.id,
-        } as Postcard & { id: number })
+        } as Postcard & { id: string })
       }
     }
     yield put(setItems(postcards.filter((row) => row.status !== 'favorite')))
