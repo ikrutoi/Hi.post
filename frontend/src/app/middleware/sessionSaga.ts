@@ -51,8 +51,6 @@ import {
 } from './cardphotoHelpers'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { restoreEditorSession } from '@entities/sectionEditorMenu/infrastructure/state'
-import { setPieFavorite, togglePieFavorite } from '@entities/cardEditor/infrastructure/state'
-import type { RootState } from '@app/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { selectAromaState } from '@aroma/infrastructure/selectors'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
@@ -136,11 +134,6 @@ import { shouldSyncUserOriginalOnRebuild } from '@cardphoto/application/helpers'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 
 export function* persistGlobalSession() {
-  const existingSession: SessionData | null = yield call(
-    [storeAdapters.session, 'getById'],
-    'current_session',
-  )
-
   const cardphoto: CardphotoSessionRecord | null = yield select(
     selectCardphotoSessionRecord,
   )
@@ -180,10 +173,6 @@ export function* persistGlobalSession() {
   const recipientViewId: string | null = yield select(selectRecipientViewId)
   const senderViewId: string | null = yield select(selectSenderViewId)
 
-  const pieFavorite: boolean = yield select(
-    (s: RootState) => s.cardEditor.pieFavorite,
-  )
-
   // const newSessionData: SessionData = {
   //   id: 'current_session',
   //   assets: {
@@ -220,8 +209,6 @@ export function* persistGlobalSession() {
             senderTemplateId: senderViewId,
           }
         : null,
-    pieFavorite,
-    favoritePostcardLocalId: existingSession?.favoritePostcardLocalId ?? null,
     timestamp: Date.now(),
   }
 
@@ -272,8 +259,6 @@ const SESSION_WATCH_ACTIONS = [
   setRecipientsViewIds.type,
   toggleRecipientSelection.type,
   clearRecipientsPending.type,
-  togglePieFavorite.type,
-  setPieFavorite.type,
 ]
 
 function hasAddressData(data: Record<string, string>): boolean {
@@ -432,7 +417,7 @@ export function* hydrateAppSession() {
         } as Postcard & { id: string })
       }
     }
-    yield put(setItems(postcards.filter((row) => row.status !== 'favorite')))
+    yield put(setItems(postcards))
 
     yield call(refreshRightSidebarBadgesFromPostcards)
 
@@ -758,7 +743,6 @@ export function* hydrateAppSession() {
       yield call(syncCardtextStatus)
     }
 
-    yield put(setPieFavorite(session.pieFavorite === true))
   } catch (e) {
     console.error('Session hydration failed', e)
   }

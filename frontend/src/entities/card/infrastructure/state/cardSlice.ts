@@ -1,7 +1,7 @@
 import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { CardState } from '../../domain/types'
 import type { Card } from '../../domain/types'
-import type { CardStatus } from '@entities/postcard'
+import type { PostcardStatus } from '@entities/postcard'
 import { CardSection } from '@/shared/config/constants'
 import type { Draft } from '@reduxjs/toolkit'
 
@@ -77,12 +77,10 @@ export const cardSlice = createSlice({
       applyProcessedCards(state, action.payload)
     },
 
-    /**
-     * Воронка (Postcard) живёт в корзине / IDB. Экшен оставлен для саг (напр. favorite → сброс даты).
-     */
+    /** Воронка (Postcard) живёт в корзине / IDB. Экшен оставлен для саг. */
     changeStatus: (
       _state,
-      _action: PayloadAction<{ id: string; newStatus: CardStatus }>,
+      _action: PayloadAction<{ id: string; newStatus: PostcardStatus }>,
     ) => {},
 
     setPreviewCardId: (state, action: PayloadAction<string | null>) => {

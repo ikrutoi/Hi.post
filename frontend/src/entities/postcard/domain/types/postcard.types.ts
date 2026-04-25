@@ -5,15 +5,12 @@ import { LEGACY_LOCAL_ID_PROPERTY } from '@shared/config/legacyIndexedDb'
 export const POSTCARD_STATUSES = [
   'cart',
   'ready',
-  // 'favorite',
   'sent',
   'delivered',
   'error',
 ] as const
 
 export type PostcardStatus = (typeof POSTCARD_STATUSES)[number]
-
-export type CardStatus = PostcardStatus | 'favorite'
 
 export type PostcardStatuses = {
   cart: boolean
@@ -83,7 +80,7 @@ export interface PostcardRefs {
 }
 
 export interface Postcard extends PostcardRecordMeta {
-  status: CardStatus
+  status: PostcardStatus
   card: Card
 }
 

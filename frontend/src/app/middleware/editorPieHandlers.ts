@@ -2,7 +2,6 @@ import { put } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
 import {
   setHoveredSection,
-  setPieFavorite,
 } from '@entities/cardEditor/infrastructure/state'
 import { clearDate } from '@date/infrastructure/state'
 import { clear as clearAroma } from '@aroma/infrastructure/state'
@@ -18,7 +17,6 @@ export function handleAddDraftsAction() {
 /** Same effect as clearing each mini section via `useCardEditorFacade().removeSection`. */
 export function* handleClearAllMiniSectionsAction(): SagaIterator {
   yield put(setHoveredSection(null))
-  yield put(setPieFavorite(false))
   yield put(clearDate())
   yield put(clearAroma())
   yield put(setSenderApplied(false))

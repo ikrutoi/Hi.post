@@ -292,7 +292,6 @@ export function useDispatchPlanListEntries(
         variant,
         onDelete,
         dispatchBranchKey: branchKey,
-        cartPostcard: fromCart,
       }
     }
 

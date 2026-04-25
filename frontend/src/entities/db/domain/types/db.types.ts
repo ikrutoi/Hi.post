@@ -38,9 +38,5 @@ export interface SessionData {
   sizeCard: SizeCard
   previewStripOrder: PreviewStripOrderState | null
   envelopeSelection?: SessionEnvelopeSelection | null
-  /** CardPie: избранное текущей открытки в редакторе. */
-  pieFavorite?: boolean
-  /** LocalId favorite-postcard bound to current editor snapshot (toggle remove by id). */
-  favoritePostcardLocalId?: number | null
   timestamp: number
 }

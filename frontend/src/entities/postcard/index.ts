@@ -1,5 +1,4 @@
 export type {
-  CardStatus,
   Postcard,
   PostcardRecordMeta,
   PostcardsDaySummary,

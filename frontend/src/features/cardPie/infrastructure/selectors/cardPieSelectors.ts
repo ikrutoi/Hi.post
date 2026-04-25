@@ -1,6 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
-import type { CardStatus } from '@entities/postcard'
+import type { PostcardStatus } from '@entities/postcard'
 import { selectCardEditorState } from '@entities/cardEditor/infrastructure/selectors'
 import { selectCardtextAppliedSessionData } from '@cardtext/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
@@ -18,7 +18,7 @@ export const selectPieDataByContext = createSelector(
   [
     (state: RootState) => state,
     (_state, isProcessed: boolean) => isProcessed,
-    (_state, _isProcessed, status?: CardStatus) => status,
+    (_state, _isProcessed, status?: PostcardStatus) => status,
     (_state, _isProcessed, _status, id?: string) => id,
   ],
   (state, isProcessed, status, id) => {

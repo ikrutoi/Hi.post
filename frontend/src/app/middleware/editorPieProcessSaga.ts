@@ -3,15 +3,12 @@ import { all, takeLatest, select, put } from 'redux-saga/effects'
 import { handleEditorPieToolbarAction } from './editorPieToolbarSaga'
 import { handleToggleCartForDispatchBranch } from './postcardCreateSaga'
 import { toolbarAction } from '@/features/toolbar/application/helpers'
-import type { RootState } from '@app/state'
 import {
   clearSection,
   requestRainbowStop,
   resetEditor,
-  setPieFavorite,
   setSectionComplete,
   startRainbow,
-  togglePieFavorite,
 } from '@entities/cardEditor/infrastructure/state'
 import { selectPieProgress } from '@/entities/cardEditor/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
@@ -99,8 +96,6 @@ const PIE_PROGRESS_SYNC_ACTIONS = [
   clearRecipient.type,
   restoreSender.type,
   restoreRecipient.type,
-  togglePieFavorite.type,
-  setPieFavorite.type,
 ] as const
 
 function* handleRainbowLogic() {
@@ -117,15 +112,7 @@ function* handleRainbowLogic() {
   const allRequiredComplete =
     sections.cardphoto && sections.cardtext && sections.envelope && sections.aroma
 
-  const pieFavorite: boolean = yield select(
-    (s: RootState) => s.cardEditor.pieFavorite,
-  )
-
-  const favoriteToolbarState = !allRequiredComplete
-    ? 'disabled'
-    : pieFavorite
-      ? 'active'
-      : 'enabled'
+  const favoriteToolbarState = allRequiredComplete ? 'enabled' : 'disabled'
   const addCartToolbarState = isAllComplete ? 'enabled' : 'disabled'
 
   yield put(

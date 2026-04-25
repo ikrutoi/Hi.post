@@ -1,4 +1,4 @@
-import type { CardStatus } from '@entities/postcard/domain/types/postcard.types'
+import type { PostcardStatus } from '@entities/postcard/domain/types/postcard.types'
 import type { AromaImageIndex } from '@entities/aroma/domain/types'
 import type { DispatchDate } from '@entities/date'
 
@@ -47,7 +47,7 @@ export type ReplicaGroupId = string | null
 export interface CardReference {
   id: string
   userId: string
-  status: CardStatus
+  status: PostcardStatus
 
   templates: CardTemplateReferences
 
@@ -66,7 +66,7 @@ export interface CardReference {
 
 export interface CardListItem {
   id: string
-  status: CardStatus
+  status: PostcardStatus
   thumbnailUrl: string
   date: DispatchDate
   preview?: Partial<CardPreview>

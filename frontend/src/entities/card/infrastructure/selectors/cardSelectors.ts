@@ -117,7 +117,7 @@ export const selectCardsByDateMap = createSelector(
 
     let postcardListSlot = 0
     for (const p of cartItems) {
-      if (p.status === 'favorite' || p.status === 'processed') continue
+      if (p.status === 'processed') continue
       const item = postcardToCalendarItem(p, postcardListSlot)
       postcardListSlot += 1
       const entry = getEntry(item.date)

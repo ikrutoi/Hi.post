@@ -1,7 +1,7 @@
 import type { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
-import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
+import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import { addItem, removeItem } from '@cart/infrastructure/state'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
@@ -24,9 +24,8 @@ import type {
 import type { AddressFields } from '@shared/config/constants'
 import type { DispatchDate } from '@entities/date'
 import type { AromaItem } from '@entities/aroma/domain/types'
-import type { CardStatus, Postcard } from '@entities/postcard'
+import type { Postcard } from '@entities/postcard'
 import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
-import type { SessionData } from '@entities/db/domain/types'
 import { selectExcludedDispatchBranchSet } from '@date/infrastructure/selectors'
 import {
   buildDispatchBranchKey,
@@ -34,22 +33,6 @@ import {
   parseDispatchBranchKey,
 } from '@date/domain/dispatchBranchKey'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
-
-type CreateTarget = 'favorite' | 'cart'
-
-function* setSessionFavoritePostcardLocalId(
-  favoritePostcardLocalId: number | null,
-): SagaIterator {
-  const currentSession: SessionData | null = yield call(
-    [storeAdapters.session, 'getById'],
-    'current_session',
-  )
-  if (!currentSession) return
-  yield call([storeAdapters.session, 'put'], {
-    ...currentSession,
-    favoritePostcardLocalId,
-  })
-}
 
 function buildBaseCard(opts: {
   id: string
@@ -130,54 +113,7 @@ function buildCartDuplicateKey(card: Postcard['card']): string {
   })
 }
 
-function buildPostcardFingerprint(input: {
-  status: CardStatus
-  card: Postcard['card']
-}): string {
-  const { status, card } = input
-  const cardphoto = card.cardphoto as Partial<CardphotoState> | undefined
-  const cardtext = card.cardtext as Partial<CardtextState> | undefined
-  const envelope = card.envelope as Partial<EnvelopeSessionRecord> | undefined
-  const aroma = card.aroma as Partial<AromaItem> | undefined
-
-  const appliedData = cardphoto?.appliedData as
-    | {
-        id?: string
-        previewUrl?: string
-        thumbnail?: { url?: string } | null
-      }
-    | null
-    | undefined
-
-  return JSON.stringify({
-    status,
-    // Keep only stable domain-significant payload (reload-safe).
-    card: {
-      thumbnailUrl: card.thumbnailUrl ?? '',
-      date: card.date ?? null,
-      cardphoto: {
-        appliedId: appliedData?.id ?? null,
-        appliedPreviewUrl: appliedData?.previewUrl ?? null,
-        appliedThumbUrl: appliedData?.thumbnail?.url ?? null,
-      },
-      cardtext: {
-        id: cardtext?.id ?? null,
-        status: cardtext?.status ?? null,
-        value: cardtext?.value ?? null,
-        style: cardtext?.style ?? null,
-      },
-      envelope: {
-        sender: envelope?.sender ?? null,
-        recipient: envelope?.recipient ?? null,
-      },
-      aroma: {
-        index: aroma?.index ?? null,
-      },
-    },
-  })
-}
-
-export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
+export function* createPostcardsFromEditor(): SagaIterator {
   const cardphoto: CardphotoState = yield select(selectCardphotoState)
   const cardtext: CardtextState = yield select(selectCardtextState)
   const envelope: EnvelopeSessionRecord = yield select(
@@ -190,13 +126,8 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
 
-  const status: CardStatus = target === 'favorite' ? 'favorite' : 'cart'
   const dates: Array<DispatchDate | null> =
-    target === 'favorite'
-      ? [null]
-      : isMultiDateMode && mergedDates.length > 1
-        ? mergedDates
-        : mergedDates.slice(0, 1)
+    isMultiDateMode && mergedDates.length > 1 ? mergedDates : mergedDates.slice(0, 1)
   if (dates.length === 0) return
 
   const recipientEntries: AddressBookEntry[] = yield select(
@@ -205,7 +136,6 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
   )
   const appliedRecipientIds = envelope.recipient?.applied ?? []
   const recipientVariants: EnvelopeSessionRecord[] =
-    target === 'cart' &&
     envelope.recipient?.mode === 'recipients' &&
     appliedRecipientIds.length > 0
       ? appliedRecipientIds.map((recipientId) => {
@@ -228,14 +158,6 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
   )
 
   const existingRows: Postcard[] = yield call([postcardsAdapter, 'getAll'])
-  const existingFingerprints = new Set(
-    existingRows.map((row) =>
-      buildPostcardFingerprint({
-        status: row.status,
-        card: row.card,
-      }),
-    ),
-  )
   const existingCartDedupeKeys = new Set(
     existingRows
       .filter((row) => row.status === 'cart')
@@ -249,11 +171,8 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
   for (const date of dates) {
     for (const envelopeVariant of recipientVariants) {
       if (
-        status === 'cart' &&
         date != null &&
-        excludedDispatchBranches.has(
-          buildDispatchBranchKey(date, envelopeVariant),
-        )
+        excludedDispatchBranches.has(buildDispatchBranchKey(date, envelopeVariant))
       ) {
         continue
       }
@@ -266,27 +185,8 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
         aroma,
         date,
       })
-      if (status === 'cart') {
-        const cartKey = buildCartDuplicateKey(candidateCard)
-        if (existingCartDedupeKeys.has(cartKey)) continue
-      } else {
-        const fingerprint = buildPostcardFingerprint({
-          status,
-          card: candidateCard,
-        })
-        if (existingFingerprints.has(fingerprint)) {
-          const existingFavorite = existingRows.find(
-            (row) =>
-              row.status === 'favorite' &&
-              buildPostcardFingerprint({ status: row.status, card: row.card }) ===
-                fingerprint,
-          )
-          if (existingFavorite) {
-            yield call(setSessionFavoritePostcardLocalId, existingFavorite.localId)
-          }
-          continue
-        }
-      }
+      const cartKey = buildCartDuplicateKey(candidateCard)
+      if (existingCartDedupeKeys.has(cartKey)) continue
 
       maxLocalId += 1
       const postcardLocalId = maxLocalId
@@ -297,7 +197,7 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
         date: date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
         createdAt: now,
         updatedAt: now,
-        status,
+        status: 'cart',
         card: {
           ...candidateCard,
           id: `${appliedPhoto.id}__${postcardLocalId}`,
@@ -309,40 +209,15 @@ export function* createPostcardsFromEditor(target: CreateTarget): SagaIterator {
         postcard.id,
         postcardForIdb as Omit<Postcard, 'id'>,
       )
-      if (status === 'cart') {
-        existingCartDedupeKeys.add(buildCartDuplicateKey(postcard.card))
-        yield put(addItem(postcard))
-        didAddToCart = true
-      } else {
-        existingFingerprints.add(
-          buildPostcardFingerprint({ status, card: postcard.card }),
-        )
-        yield call(setSessionFavoritePostcardLocalId, postcard.localId)
-      }
+      existingCartDedupeKeys.add(buildCartDuplicateKey(postcard.card))
+      yield put(addItem(postcard))
+      didAddToCart = true
     }
   }
 
-  if (target === 'cart' && didAddToCart) {
+  if (didAddToCart) {
     yield put(clearDate())
   }
-
-  yield call(refreshRightSidebarBadgesFromPostcards)
-}
-
-export function* removeFavoritePostcardsFromEditor(): SagaIterator {
-  const currentSession: SessionData | null = yield call(
-    [storeAdapters.session, 'getById'],
-    'current_session',
-  )
-  const favoriteId = currentSession?.favoritePostcardLocalId ?? null
-  if (favoriteId != null) {
-    const allRows: Postcard[] = yield call([postcardsAdapter, 'getAll'])
-    const favoriteRow = allRows.find((row) => row.localId === favoriteId)
-    if (favoriteRow) {
-      yield call([postcardsAdapter, 'deleteById'], favoriteRow.id)
-    }
-  }
-  yield call(setSessionFavoritePostcardLocalId, null)
 
   yield call(refreshRightSidebarBadgesFromPostcards)
 }
@@ -461,13 +336,11 @@ export function* handleToggleCartForDispatchBranch(
 export function* refreshRightSidebarBadgesFromPostcards(): SagaIterator {
   const allRows: Postcard[] = yield call([postcardsAdapter, 'getAll'])
   const cartCount = allRows.filter((row) => row.status === 'cart').length
-  const favoriteCount = allRows.filter((row) => row.status === 'favorite').length
   yield put(
     updateToolbarSection({
       section: 'rightSidebar',
       value: {
         cart: { options: { badge: cartCount > 0 ? cartCount : null } },
-        favorite: { options: { badge: favoriteCount > 0 ? favoriteCount : null } },
       },
     }),
   )

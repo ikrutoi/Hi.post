@@ -13,7 +13,6 @@ import {
   type DateListEntryVariant,
 } from './dateList/DateListEntry'
 import type { DispatchDate } from '@entities/date/domain/types'
-import type { Postcard } from '@entities/postcard'
 import styles from './DateListPanel.module.scss'
 
 export type DateListPanelItem = {
@@ -30,8 +29,6 @@ export type DateListPanelItem = {
   onDelete?: () => void
   /** Ключ ветки «дата|получатель» для корзины / toggle в Card pie. */
   dispatchBranchKey?: string
-  /** Открытка в корзине для этой ветки, если уже добавлена. */
-  cartPostcard?: Postcard
 }
 
 type Props = {

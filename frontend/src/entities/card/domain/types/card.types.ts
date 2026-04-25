@@ -3,7 +3,7 @@ import type { CardtextState } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type { AromaItem } from '@entities/aroma/domain/types'
 import type { DispatchDate } from '@entities/date'
-import type { CardStatus } from '@entities/postcard/domain/types/postcard.types'
+import type { PostcardStatus } from '@entities/postcard/domain/types/postcard.types'
 import { CardSection } from '@shared/config/constants'
 
 export * from './cardReference.types'
@@ -28,7 +28,7 @@ export interface CalendarCardItem {
   rowKey: string
   date: DispatchDate
   previewUrl: string
-  status: CardStatus
+  status: PostcardStatus
   isProcessed?: boolean
 }
 

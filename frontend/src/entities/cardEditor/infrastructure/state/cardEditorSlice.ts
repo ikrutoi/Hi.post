@@ -11,7 +11,6 @@ const initialState: CardEditorState = {
   aroma: { isComplete: false },
   date: { isComplete: false },
   isCompleted: false,
-  pieFavorite: false,
   isRainbowActive: false,
   isRainbowStopping: false,
   hoveredSection: null,
@@ -38,14 +37,6 @@ export const cardEditorSlice = createSlice({
       state.isCompleted = allComplete
     },
 
-    setPieFavorite(state, action: PayloadAction<boolean>) {
-      state.pieFavorite = action.payload
-    },
-
-    togglePieFavorite(state) {
-      state.pieFavorite = !state.pieFavorite
-    },
-
     resetEditor(state) {
       state.id = nanoid()
       state.cardphoto.isComplete = false
@@ -54,7 +45,6 @@ export const cardEditorSlice = createSlice({
       state.aroma.isComplete = false
       state.date.isComplete = false
       state.isCompleted = false
-      state.pieFavorite = false
     },
 
     clearSection(state, action: PayloadAction<CardSection>) {
@@ -90,8 +80,6 @@ export const cardEditorSlice = createSlice({
 
 export const {
   setSectionComplete,
-  setPieFavorite,
-  togglePieFavorite,
   resetEditor,
   clearSection,
   startRainbow,

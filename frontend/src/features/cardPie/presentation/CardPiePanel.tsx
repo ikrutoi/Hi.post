@@ -71,7 +71,6 @@ const CardPiePanelRow: React.FC<{
           : undefined
       }
       onAddCart={onAddCartFromList}
-      inCart={Boolean(item.cartPostcard)}
     />
   )
 }

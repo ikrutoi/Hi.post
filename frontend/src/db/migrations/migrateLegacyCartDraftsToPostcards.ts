@@ -3,7 +3,7 @@ import type { Card } from '@entities/card/domain/types'
 import {
   POSTCARD_DISPATCH_DATE_FALLBACK,
   type Postcard,
-  type CardStatus,
+  type PostcardStatus,
   type PostcardRecordMeta,
 } from '@entities/postcard'
 import { normalizePostcardRecord } from '@entities/postcard'
@@ -35,7 +35,7 @@ function migrateDraftsRow(row: unknown): Postcard & { id: string } {
   const d = normalizeDraftsItemRecord(row as DraftsItem)
   const inner = d.card as LegacyCardFields
   const st = inner.status
-  const status: CardStatus =
+  const status: PostcardStatus =
     st === 'cart' ? 'cart' : st === 'favorite' ? 'favorite' : 'favorite'
 
   const m = inner.meta

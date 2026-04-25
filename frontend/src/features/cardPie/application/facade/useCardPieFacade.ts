@@ -1,6 +1,6 @@
 import { setActiveSection } from '@/entities/sectionEditorMenu/infrastructure/state'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import type { CardStatus } from '@entities/postcard'
+import type { PostcardStatus } from '@entities/postcard'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import {
   selectActiveCardFullData,
@@ -19,7 +19,7 @@ const EMPTY_CART_PIE_SECTIONS = {
 
 export const useCardPieFacade = (
   isProcessed: boolean,
-  status: CardStatus | undefined,
+  status: PostcardStatus | undefined,
   id?: string,
 ) => {
   const dispatch = useAppDispatch()
@@ -49,16 +49,12 @@ export const useCardPieFacade = (
   const isRainbowActive = editorProgress.isRainbowActive
   const isRainbowStopping = editorProgress.isRainbowStopping
 
-  const isEditable =
-    isProcessed || status === 'favorite' || status === 'error'
-
   return {
     sections,
     data: currentData,
     isRainbowActive,
     isRainbowStopping,
     isReady: isAllComplete,
-    isEditable,
 
     onIteration: () => {
       if (isRainbowStopping) {
@@ -66,7 +62,7 @@ export const useCardPieFacade = (
       }
     },
     handleSectorClick: (section: CardSection) => {
-      if (isEditable) dispatch(setActiveSection(section))
+      dispatch(setActiveSection(section))
     },
   }
 }

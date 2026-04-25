@@ -1,8 +1,8 @@
-import type { CardStatus } from '@entities/postcard'
+import type { PostcardStatus } from '@entities/postcard'
 
 export interface CardPieProps {
   isProcessed?: boolean
-  status?: CardStatus
+  status?: PostcardStatus
   id?: string
   fillContainer?: boolean
   station?: 'left' | 'right'

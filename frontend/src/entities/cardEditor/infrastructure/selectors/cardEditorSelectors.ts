@@ -42,9 +42,6 @@ export const selectCardEditorState = createSelector(
 export const selectCardEditorId = (state: RootState): string =>
   state.cardEditor.id
 
-export const selectPieFavorite = (state: RootState): boolean =>
-  state.cardEditor.pieFavorite
-
 export const selectIsCardEditorCompleted = createSelector(
   [selectCardEditorState],
   (editor): boolean =>

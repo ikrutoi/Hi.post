@@ -15,8 +15,6 @@ export type CardPieListEntryProps = {
   isSelected?: boolean
   isFocused?: boolean
   onAddCart?: () => void
-  /** Строка уже в корзине (toggle: повторный клик убирает). */
-  inCart?: boolean
 }
 
 export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
@@ -29,7 +27,6 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   isSelected = false,
   isFocused = false,
   onAddCart,
-  inCart = false,
 }) => {
   const interactive = Boolean(onSelect)
   const inactive = variant === 'inactive'
@@ -47,7 +44,6 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
-      data-in-cart={inCart && !inactive ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
@@ -89,21 +85,13 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
               onAddCart?.()
             }}
             aria-label={
-              onAddCart && !inactive
-                ? inCart
-                  ? 'Remove from cart'
-                  : 'Add to cart'
-                : undefined
+              onAddCart && !inactive ? 'Add to cart' : undefined
             }
             title={
-              onAddCart && !inactive
-                ? inCart
-                  ? 'Remove from cart'
-                  : 'Add to cart'
-                : undefined
+              onAddCart && !inactive ? 'Add to cart' : undefined
             }
           >
-            {getToolbarIcon({ key: inCart ? 'cart' : 'addCart' })}
+            {getToolbarIcon({ key: 'addCart' })}
           </button>
         </div>
         <div className={styles.thumb} aria-hidden>
