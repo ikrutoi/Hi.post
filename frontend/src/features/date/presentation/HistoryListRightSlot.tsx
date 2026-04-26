@@ -10,7 +10,7 @@ import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { CalendarCardItem } from '@entities/card/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { Postcard, PostcardStatus } from '@entities/postcard'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
@@ -105,37 +105,49 @@ export const HistoryListRightSlot: React.FC = () => {
     ],
   )
 
-  const { historyListEntries, historyUnderlyingPostcardCount } = useMemo(() => {
-    const postcardItems: CalendarCardItem[] = []
-    Object.values(cardsByDateMap).forEach((day) => {
-      postcardItems.push(
-        ...day.cart,
-        ...day.ready,
-        ...day.sent,
-        ...day.delivered,
-        ...day.error,
-      )
-    })
-    const entries: HistoryListPanelItem[] = []
-    postcardItems.forEach((item, i) => {
-      if (!postcardStatuses[item.status]) return
-      entries.push({
-        id: `history-postcard-${item.rowKey}-${i}`,
-        cardId: item.cardId,
-        postcardLocalId: postcardLocalIdFromCalendarRow(item, cartItems),
-        sourceDate: item.date,
-        dateLabel: formatDispatchDateLabel(item.date),
-        previewUrl: item.previewUrl,
-        detailLine: resolveRecipientDetailLine(item.cardId),
-        previewStatus: item.status,
-        previewIsProcessed: item.isProcessed,
+  const { historyListEntries, historyUnderlyingPostcardCount, legendStatusCounts } =
+    useMemo(() => {
+      const postcardItems: CalendarCardItem[] = []
+      Object.values(cardsByDateMap).forEach((day) => {
+        postcardItems.push(
+          ...day.cart,
+          ...day.ready,
+          ...day.sent,
+          ...day.delivered,
+          ...day.error,
+        )
       })
-    })
-    return {
-      historyListEntries: entries,
-      historyUnderlyingPostcardCount: postcardItems.length,
-    }
-  }, [cardsByDateMap, cartItems, postcardStatuses, resolveRecipientDetailLine])
+      const legendStatusCounts: Record<PostcardStatus, number> = {
+        cart: 0,
+        ready: 0,
+        sent: 0,
+        delivered: 0,
+        error: 0,
+      }
+      postcardItems.forEach((item) => {
+        legendStatusCounts[item.status] += 1
+      })
+      const entries: HistoryListPanelItem[] = []
+      postcardItems.forEach((item, i) => {
+        if (!postcardStatuses[item.status]) return
+        entries.push({
+          id: `history-postcard-${item.rowKey}-${i}`,
+          cardId: item.cardId,
+          postcardLocalId: postcardLocalIdFromCalendarRow(item, cartItems),
+          sourceDate: item.date,
+          dateLabel: formatDispatchDateLabel(item.date),
+          previewUrl: item.previewUrl,
+          detailLine: resolveRecipientDetailLine(item.cardId),
+          previewStatus: item.status,
+          previewIsProcessed: item.isProcessed,
+        })
+      })
+      return {
+        historyListEntries: entries,
+        historyUnderlyingPostcardCount: postcardItems.length,
+        legendStatusCounts,
+      }
+    }, [cardsByDateMap, cartItems, postcardStatuses, resolveRecipientDetailLine])
 
   const handleCloseList = useCallback(() => {
     dispatch(setHistoryListPanelOpen(false))
@@ -178,6 +190,7 @@ export const HistoryListRightSlot: React.FC = () => {
       listSelectedLocalId={historyListSelectedLocalId}
       onSelectEntry={handleSelectEntry}
       hasUnderlyingHistoryEntries={historyUnderlyingPostcardCount > 0}
+      legendStatusCounts={legendStatusCounts}
     />
   )
 }

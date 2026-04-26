@@ -38,6 +38,8 @@ type Props = {
   onSelectEntry?: (item: HistoryListPanelItem) => void
   /** True if postcards exist before status filter (keeps legend colors when list is filtered empty). */
   hasUnderlyingHistoryEntries?: boolean
+  /** Число открыток по статусу (до фильтра) — для бейджей в легенде. */
+  legendStatusCounts?: Record<PostcardStatus, number>
   // section: 'date' | 'history'
 }
 
@@ -100,6 +102,7 @@ export const HistoryListPanel: React.FC<Props> = ({
   listSelectedLocalId = null,
   onSelectEntry,
   hasUnderlyingHistoryEntries,
+  legendStatusCounts,
   // section,
 }) => {
   // const { isHistoryMode } = useDateFacade()
@@ -158,7 +161,7 @@ export const HistoryListPanel: React.FC<Props> = ({
           <PostcardStatusLegend
             spot="historyList"
             isHistoryEmpty={legendTreatAsEmpty}
-            // isHistoryMode={isHistoryMode}
+            statusCounts={legendStatusCounts}
           />
         </div>
       </div>

@@ -8,27 +8,19 @@ import {
 } from '../../../calendar/infrastructure/state/calendar.slice'
 import { selectIsDateListPanelOpen } from '../../../calendar/infrastructure/selectors/calendar.selector'
 import { shiftMonth } from '../../../calendar/application/helpers'
-import { useSwitcherFacade } from '../../../switcher/application/facades'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import type {
   CalendarViewDate,
   DispatchDate,
   MonthDirection,
   Switcher,
 } from '@entities/date/domain/types'
-import type { CardCalendarIndex } from '@entities/card/domain/types'
 import type { HandleCellClickParams } from '../../domain/types'
-
-function hasCards(dayData: CardCalendarIndex): boolean {
-  return (
-    !!dayData.processed ||
-    dayData.cart.length > 0 ||
-    dayData.ready.length > 0 ||
-    dayData.sent.length > 0 ||
-    dayData.delivered.length > 0 ||
-    dayData.error.length > 0
-  )
-}
+import {
+  calendarDayHasCards,
+  isEmptyCalendarDay,
+} from '../../domain/calendarDayContent'
 
 function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
   return a.year === b.year && a.month === b.month && a.day === b.day
@@ -47,6 +39,7 @@ export const useCalendarCellController = ({
     useDateFacade()
 
   const { lastViewedCalendarDate } = useCalendarFacade()
+  const { activeSection } = useSectionMenuFacade()
   const { actions: actionsSwitcherController } = useDateSwitcherController()
   const { decrementMonth, incrementMonth } = actionsSwitcherController
 
@@ -82,7 +75,13 @@ export const useCalendarCellController = ({
         ? selectedDates.some((d) => sameDispatchDate(d, dispatchDate))
         : Boolean(selectedDate && sameDispatchDate(selectedDate, dispatchDate))
 
-      chooseDate(dispatchDate)
+      /** В календаре истории пустой день не должен попадать в план отправки / CardPie. */
+      const skipDispatchPick =
+        activeSection === 'history' && isEmptyCalendarDay(dayData)
+
+      if (!skipDispatchPick) {
+        chooseDate(dispatchDate)
+      }
 
       /**
        * Список дат открыт — показываем только план (слоты × даты), без drill-down по пайплайну дня
@@ -91,10 +90,11 @@ export const useCalendarCellController = ({
       if (dateListPanelOpen) {
         dispatch(closeDayPanel())
       } else if (
+        !skipDispatchPick &&
         !clickRemovesSelection &&
         dateKey &&
         dayData &&
-        hasCards(dayData)
+        calendarDayHasCards(dayData)
       ) {
         dispatch(openDayPanel({ dateKey, dayData }))
       } else {
@@ -120,15 +120,21 @@ export const useCalendarCellController = ({
               selectedDate && sameDispatchDate(selectedDate, dispatchDate),
             )
 
-        chooseDate(dispatchDate)
+        const skipDispatchPick =
+          activeSection === 'history' && isEmptyCalendarDay(dayData)
+
+        if (!skipDispatchPick) {
+          chooseDate(dispatchDate)
+        }
 
         if (dateListPanelOpen) {
           dispatch(closeDayPanel())
         } else if (
+          !skipDispatchPick &&
           !clickRemovesSelection &&
           dateKey &&
           dayData &&
-          hasCards(dayData)
+          calendarDayHasCards(dayData)
         ) {
           dispatch(openDayPanel({ dateKey, dayData }))
         } else {

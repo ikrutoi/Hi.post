@@ -16,6 +16,7 @@ import type {
 import type { MonthDirection } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
+import { isEmptyCalendarDay } from '../../../cell/domain/calendarDayContent'
 
 interface BuildMonthCellsParams {
   days: number[]
@@ -86,6 +87,12 @@ export const buildMonthCells = ({
       photoPreview,
     })
 
+    const historyEmptyNoPreview =
+      activeSection === 'history' &&
+      direction === 'current' &&
+      isEmptyCalendarDay(dayData) &&
+      !isDisabledDate(day, cellDate, currentDate)
+
     return (
       <Cell
         key={`${direction}-${day}`}
@@ -102,6 +109,7 @@ export const buildMonthCells = ({
         dayData={dayData}
         adjacentSessionPlaceholderNavSwap={adjacentSessionPlaceholderNavSwap}
         adjacentMonthCardphotoDim={adjacentMonthCardphotoDim}
+        historyEmptyNoPreview={historyEmptyNoPreview}
       >
         {dayData && (
           <CardPreview

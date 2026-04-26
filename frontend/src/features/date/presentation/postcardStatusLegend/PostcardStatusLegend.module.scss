@@ -26,12 +26,6 @@
 
   &.root-historyList {
     .item {
-      // &.active {
-      //   .icon {
-      //     color: $color-app-sidebar-icon-active;
-      //   }
-      // }
-
       border-radius: 0.5rem;
       background-color: #fff;
       padding: 0.25rem;
@@ -99,6 +93,10 @@
 }
 
 .root-historyList.rootEmpty {
+  .count {
+    color: $color-font-disabled;
+  }
+
   .dotCart {
     background-color: $color-font-disabled;
   }
@@ -174,5 +172,20 @@
     .icon {
       color: $color-app-sidebar-icon-active;
     }
+  }
+
+  .count {
+    flex-shrink: 0;
+    margin-left: 0.05rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: $color-font-enabled-light;
+    user-select: none;
+  }
+
+  .item.inactive .count {
+    color: $color-font-disabled;
   }
 }

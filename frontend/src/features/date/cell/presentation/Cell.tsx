@@ -27,6 +27,8 @@ interface CellProps {
   adjacentSessionPlaceholderNavSwap?: boolean
   /** Соседний месяц + выбрана картинка cardphoto: превью с пониженной непрозрачностью. */
   adjacentMonthCardphotoDim?: boolean
+  /** Календарь истории: день без открыток — курсор как у неинтерактивной ячейки. */
+  historyEmptyNoPreview?: boolean
   children?: React.ReactNode
 }
 
@@ -44,6 +46,7 @@ export const Cell: React.FC<CellProps> = ({
   dayData,
   adjacentSessionPlaceholderNavSwap = false,
   adjacentMonthCardphotoDim = false,
+  historyEmptyNoPreview = false,
   children,
 }) => {
   const hasPostcards = Boolean(
@@ -62,6 +65,7 @@ export const Cell: React.FC<CellProps> = ({
 
   const dynamicClass = clsx(
     styles.cell,
+    historyEmptyNoPreview && styles.historyEmptyNoPreview,
     isToday && styles.today,
     isDisabledDate && styles.disabled,
     (dayBefore != null || dayAfter != null) && styles.adjacentMonth,

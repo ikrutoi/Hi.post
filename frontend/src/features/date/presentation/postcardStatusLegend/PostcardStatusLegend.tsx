@@ -5,22 +5,24 @@ import {
   IconPostcardSend,
   IconPostcardReady,
   IconPostcardDelivered,
-  IconPostcardError,
   IconPostcardNotDelivered,
 } from '@shared/ui/icons'
 import styles from './PostcardStatusLegend.module.scss'
 import { useCalendarFacade } from '../../calendar/application/facades/useCalendarFacade'
-import {
-  PostcardStatus,
-  PostcardStatuses,
-} from '@/entities/postcard/domain/types'
-import { setPostcardStatusesCount } from '../../calendar/infrastructure/state'
+import { PostcardStatus } from '@/entities/postcard/domain/types'
 
-export const PostcardStatusLegend: React.FC<{
+export type PostcardStatusLegendProps = {
   spot: 'calendar' | 'historyList'
   isHistoryEmpty: boolean
-  // isHistoryMode: boolean
-}> = ({ spot, isHistoryEmpty }) => {
+  /** Только для `historyList`: числа по статусам (все открытки до фильтра). */
+  statusCounts?: Record<PostcardStatus, number>
+}
+
+export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
+  spot,
+  isHistoryEmpty,
+  statusCounts,
+}) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
   const handlePostcardStatusClick = (status: PostcardStatus) => {
@@ -28,6 +30,17 @@ export const PostcardStatusLegend: React.FC<{
       ...postcardStatuses,
       [status]: !postcardStatuses[status],
     })
+  }
+
+  const statusCount = (status: PostcardStatus) => {
+    if (spot !== 'historyList' || statusCounts == null) return null
+    const n = statusCounts[status]
+    if (n <= 0) return null
+    return (
+      <span className={styles.count} aria-hidden>
+        {n}
+      </span>
+    )
   }
 
   return (
@@ -56,6 +69,7 @@ export const PostcardStatusLegend: React.FC<{
         >
           <span className={clsx(styles.dot, styles.dotCart)} />
           <IconCart className={styles.icon} />
+          {statusCount('cart')}
         </div>
         <div
           className={clsx(
@@ -67,6 +81,7 @@ export const PostcardStatusLegend: React.FC<{
         >
           <span className={clsx(styles.dot, styles.dotReady)} />
           <IconPostcardReady className={styles.icon} />
+          {statusCount('ready')}
         </div>
         <div
           className={clsx(
@@ -78,6 +93,7 @@ export const PostcardStatusLegend: React.FC<{
         >
           <span className={clsx(styles.dot, styles.dotSent)} />
           <IconPostcardSend className={clsx(styles.icon, styles.iconSend)} />
+          {statusCount('sent')}
         </div>
         <div
           className={clsx(
@@ -89,6 +105,7 @@ export const PostcardStatusLegend: React.FC<{
         >
           <span className={clsx(styles.dot, styles.dotDelivered)} />
           <IconPostcardDelivered className={styles.icon} />
+          {statusCount('delivered')}
         </div>
         <div
           className={clsx(
@@ -100,6 +117,7 @@ export const PostcardStatusLegend: React.FC<{
         >
           <span className={clsx(styles.dot, styles.dotError)} />
           <IconPostcardNotDelivered className={styles.icon} />
+          {statusCount('error')}
         </div>
       </div>
     </div>

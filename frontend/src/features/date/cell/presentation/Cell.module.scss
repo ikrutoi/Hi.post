@@ -27,6 +27,11 @@ $cell-border-radius: 0.35rem;
   &:hover:not(.disabled) {
     border-color: $color-section-dark;
   }
+
+  /** Календарь истории: день без превью открытки — не «рука». */
+  &.historyEmptyNoPreview {
+    cursor: default;
+  }
 }
 
 .dayNumber {
