@@ -15,9 +15,6 @@ export type CardPieListEntryProps = {
   isSelected?: boolean
   isFocused?: boolean
   onAddCart?: () => void
-  onToggleFavorite?: () => void
-  isFavorite?: boolean
-  favoriteDisabled?: boolean
 }
 
 export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
@@ -30,9 +27,6 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   isSelected = false,
   isFocused = false,
   onAddCart,
-  onToggleFavorite,
-  isFavorite = false,
-  favoriteDisabled = false,
 }) => {
   const interactive = Boolean(onSelect)
   const inactive = variant === 'inactive'
@@ -51,7 +45,6 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
-      data-favorite={isFavorite && !inactive ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
@@ -68,19 +61,6 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
           : undefined
       }
     >
-      <button
-        type="button"
-        className={styles.semicircleDown}
-        disabled={favoriteDisabled || inactive || !onToggleFavorite}
-        aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-        title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-        onClick={(e) => {
-          e.stopPropagation()
-          onToggleFavorite?.()
-        }}
-      >
-        {getToolbarIcon({ key: isFavorite ? 'favoriteFilled' : 'favorite' })}
-      </button>
       <div
         className={styles.semicircleUp}
         aria-hidden

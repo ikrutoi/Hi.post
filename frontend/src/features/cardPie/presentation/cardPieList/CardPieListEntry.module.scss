@@ -7,7 +7,6 @@ $_list-entry-surface-base: mix($color-app-header, #fff, 88%);
 $list-entry-surface: mix($_list-entry-surface-base, #fff, 90%);
 $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
 
-/** Совпадает со строками корзины (`$color-cart-list-*`). */
 $list-entry-row-linked-surface: $color-cart-list-surface;
 $list-entry-row-linked-border: $color-cart-list-border;
 
@@ -26,14 +25,15 @@ $list-entry-row-linked-border: $color-cart-list-border;
     border-color 0.15s ease,
     opacity 0.15s ease;
 
-  /** Фон строки в покое / при ховере строки — для полукруглых кнопок (инвертировано к ховеру на кнопке). */
   --semicircle-row-rest: #{$list-entry-surface};
   --semicircle-row-hover: #{darken($list-entry-surface, 1.5%)};
+  --entry-border: #{$list-entry-border};
 
   &[data-inactive='true'] {
     opacity: 0.78;
     background-color: mix($list-entry-surface, $color-app-inner, 45%);
     border-color: mix($list-entry-border, $color-app-inner, 50%);
+    --entry-border: #{mix($list-entry-border, $color-app-inner, 50%)};
     --semicircle-row-rest: #{mix($list-entry-surface, $color-app-inner, 45%)};
     --semicircle-row-hover: #{mix($list-entry-surface, $color-app-inner, 55%)};
 
@@ -49,13 +49,16 @@ $list-entry-row-linked-border: $color-cart-list-border;
       color: $color-font-disabled;
     }
 
-    .semicircleDown,
     .semicircleUp {
       pointer-events: none;
 
       &:hover {
         cursor: default;
-        background-color: var(--semicircle-row-hover);
+        background-color: color-mix(
+          in srgb,
+          var(--semicircle-row-hover) 86%,
+          #000 14%
+        );
       }
     }
   }
@@ -88,6 +91,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
   &[data-in-cart='true']:not([data-inactive='true']) {
     background-color: $list-entry-row-linked-surface;
     border-color: $list-entry-row-linked-border;
+    --entry-border: #{$list-entry-row-linked-border};
     --semicircle-row-rest: #{$list-entry-row-linked-surface};
     --semicircle-row-hover: #{darken($list-entry-row-linked-surface, 1.5%)};
   }
@@ -119,7 +123,6 @@ $list-entry-row-linked-border: $color-cart-list-border;
   }
 }
 
-.semicircleDown,
 .semicircleUp {
   position: absolute;
   z-index: 1;
@@ -127,10 +130,14 @@ $list-entry-row-linked-border: $color-cart-list-border;
   aspect-ratio: 2 / 1;
   min-height: 0;
   box-sizing: border-box;
-  background-color: var(--semicircle-row-hover);
+  background-color: color-mix(
+    in srgb,
+    var(--semicircle-row-hover) 86%,
+    #000 3%
+  );
   border-style: solid;
   border-width: 1px;
-  border-color: inherit;
+  border-color: color-mix(in srgb, var(--entry-border) 78%, #000 9%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,7 +151,11 @@ $list-entry-row-linked-border: $color-cart-list-border;
   cursor: pointer;
 
   &:hover {
-    background-color: var(--semicircle-row-rest);
+    background-color: color-mix(
+      in srgb,
+      var(--semicircle-row-rest) 86%,
+      #000 6%
+    );
   }
 
   :global(svg) {
@@ -158,34 +169,12 @@ $list-entry-row-linked-border: $color-cart-list-border;
   }
 }
 
-.semicircleDown:disabled,
-.semicircleUp:disabled {
-  cursor: default;
-  opacity: 0.65;
-}
-
-.root[data-favorite='true'] .semicircleDown :global(svg) {
-  color: $color-favorite-star;
-}
-
-.root[data-inactive='true'] .semicircleDown :global(svg),
 .root[data-inactive='true'] .semicircleUp :global(svg) {
   color: $color-font-disabled;
 }
 
-.semicircleDown {
-  left: 70%;
-  top: 0;
-  border-radius: 0 0 9999px 9999px;
-  border-top: none;
-
-  :global(svg) {
-    transform: translateY(-0.15rem);
-  }
-}
-
 .semicircleUp {
-  left: 77%;
+  left: 78%;
   bottom: 0;
   top: auto;
   border-radius: 9999px 9999px 0 0;

@@ -101,10 +101,14 @@ $list-entry-border: $color-cart-list-border;
   aspect-ratio: 2 / 1;
   min-height: 0;
   box-sizing: border-box;
-  background-color: var(--semicircle-row-hover);
+  background-color: color-mix(
+    in srgb,
+    var(--semicircle-row-hover) 88%,
+    #000 3%
+  );
   border-style: solid;
   border-width: 1px;
-  border-color: inherit;
+  border-color: color-mix(in srgb, var(--semicircle-row-hover) 88%, #000 9%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,12 +119,20 @@ $list-entry-border: $color-cart-list-border;
 
   &:hover {
     cursor: pointer;
-    background-color: var(--semicircle-row-rest);
+    background-color: color-mix(
+      in srgb,
+      var(--semicircle-row-hover) 88%,
+      #000 6%
+    );
   }
 
   &:disabled:hover {
     cursor: default;
-    background-color: var(--semicircle-row-hover);
+    background-color: color-mix(
+      in srgb,
+      var(--semicircle-row-hover) 88%,
+      #000 9%
+    );
   }
 
   :global(svg) {
@@ -153,7 +165,7 @@ button.semicircleUp {
 }
 
 .semicircleDown {
-  left: 70%;
+  left: 71%;
   top: 0;
   border-radius: 0 0 9999px 9999px;
   border-top: none;
@@ -164,7 +176,7 @@ button.semicircleUp {
 }
 
 .semicircleUp {
-  left: 77%;
+  left: 78%;
   bottom: 0;
   top: auto;
   border-radius: 9999px 9999px 0 0;
