@@ -44,6 +44,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   id,
   fillContainer = false,
   station = 'left',
+  rightListSource = null,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const photoFillId = `${pieDefsUid}-photo-apply`
@@ -52,11 +53,16 @@ export const CardPie: React.FC<CardPieProps> = ({
   const envelopeFillId = `${pieDefsUid}-envelope-fill`
   const aromaFillId = `${pieDefsUid}-aroma-fill`
   const dateFillId = `${pieDefsUid}-date-fill`
-  const { data, sections, handleSectorClick, isReady } = useCardPieFacade(
-    isProcessed,
-    status,
-    id,
-  )
+  const listArchiveSource =
+    station === 'right' && id ? rightListSource : null
+
+  const {
+    data,
+    sections,
+    handleSectorClick,
+    isReady,
+    listArchiveSource: listSourceFromFacade,
+  } = useCardPieFacade(isProcessed, status, id, listArchiveSource)
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
 
@@ -112,6 +118,9 @@ export const CardPie: React.FC<CardPieProps> = ({
         allSectionsFilled && styles.pieAllComplete,
         fillContainer && styles.hubContainerFill,
       )}
+      data-right-list-source={
+        station === 'right' ? listSourceFromFacade ?? undefined : undefined
+      }
       style={
         fillContainer
           ? undefined

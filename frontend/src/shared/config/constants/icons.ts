@@ -99,6 +99,7 @@ export const ICON_KEYS = [
   'listHistory',
   'calendarReturn',
   'cardPieFavorite',
+  'cardPieEdit',
   'postcardFavorite',
 ] as const
 

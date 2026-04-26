@@ -416,7 +416,8 @@
 .toolbarSenderView,
 .toolbarRecipientView,
 .toolbarDate,
-.toolbarHistory {
+.toolbarHistory,
+.toolbarPostcardPieCart {
   display: flex;
   align-items: center;
 
@@ -476,7 +477,8 @@
   }
 }
 
-.toolbarEditorPie {
+.toolbarEditorPie,
+.toolbarPostcardPieCart {
   position: relative;
   height: 100%;
 
@@ -567,25 +569,27 @@
 .toolbarCardtextList,
 .toolbarCardphotoList,
 .toolbarDateList,
-.toolbarCardPieListEntry {
-  width: 100%;
-  justify-content: space-between;
-  margin-left: 1rem;
-  margin-right: 1rem;
-}
-
-.toolbarHistoryList {
-  width: 100%;
-  justify-content: space-between;
-  margin-left: 0;
-  margin-right: 0;
-}
-
+.toolbarCardPieListEntry,
+.toolbarHistoryList,
 .toolbarCartList {
   width: 100%;
+  justify-content: space-between;
+  // margin-left: 1rem;
+  // margin-right: 1rem;
+}
+
+// .toolbarHistoryList {
+//   width: 100%;
+//   justify-content: space-between;
+//   margin-left: 0;
+//   margin-right: 0;
+// }
+
+.toolbarCartList {
+  // width: 100%;
   justify-content: flex-end;
-  margin-left: 1rem;
-  margin-right: 1rem;
+  // margin-left: 1rem;
+  // margin-right: 1rem;
 }
 
 .toolbarSenderView,

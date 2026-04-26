@@ -1,5 +1,4 @@
 import React from 'react'
-import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CartListEntry.module.scss'
 
@@ -30,6 +29,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
 }) => {
   const interactive = Boolean(onSelect)
   const inactive = variant === 'inactive'
+  void onDelete
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
     .filter(Boolean)
     .join(', ')
@@ -57,36 +57,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
           : undefined
       }
     >
-      <div
-        className={styles.semicircleDown}
-        aria-hidden
-        onClick={(e) => e.stopPropagation()}
-      >
-        {getToolbarIcon({ key: 'favorite' })}
-      </div>
-      {onDelete ? (
-        <button
-          type="button"
-          className={styles.semicircleUp}
-          aria-label={inactive ? undefined : 'Remove from cart'}
-          title={inactive ? undefined : 'Remove from cart'}
-          disabled={inactive}
-          onClick={(e) => {
-            e.stopPropagation()
-            if (!inactive) onDelete()
-          }}
-        >
-          {getToolbarIcon({ key: 'delete' })}
-        </button>
-      ) : (
-        <div
-          className={styles.semicircleUp}
-          aria-hidden
-          onClick={(e) => e.stopPropagation()}
-        >
-          {getToolbarIcon({ key: 'delete' })}
-        </div>
-      )}
+      {/* Temporary: delete icon/action removed from list entry; use CardPie toolbar */}
       <div className={styles.body}>
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (

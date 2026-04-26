@@ -39,6 +39,10 @@ import { RightSidebarKey, RightSidebarToolbarState } from './rightSidebar.types'
 import { CartListKey, CartListToolbarState } from './cartList.types'
 import { HistoryKey, HistoryToolbarState } from './history.types'
 import { HistoryListKey, HistoryListToolbarState } from './historyList.types'
+import {
+  PostcardPieCartKey,
+  PostcardPieCartToolbarState,
+} from './postcardPie.types'
 
 export type IconOptions = {
   badge?: number | null
@@ -96,6 +100,7 @@ export const TOOLBAR_SECTIONS = [
   'historyListIndicators',
   'cartList',
   'rightSidebar',
+  'postcardPieCart',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -136,6 +141,7 @@ export type ToolbarState = {
   historyListIndicators: HistoryListToolbarState & { config: ToolbarGroup[] }
   cartList: CartListToolbarState & { config: ToolbarGroup[] }
   rightSidebar: RightSidebarToolbarState & { config: ToolbarGroup[] }
+  postcardPieCart: PostcardPieCartToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -308,6 +314,12 @@ export type ToolbarSectionConfigMap = {
   >
 
   history: BaseSectionConfig<HistoryToolbarState, HistoryKey, 'history'>
+
+  postcardPieCart: BaseSectionConfig<
+    PostcardPieCartToolbarState,
+    PostcardPieCartKey,
+    'postcardPieCart'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -371,13 +383,15 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                           : S extends 'cardPieList'
                                                             ? CardPieListKey
                                                             : S extends 'historyList'
+                                                              ? HistoryListKey
+                                                              : S extends 'historyListIndicators'
                                                                 ? HistoryListKey
-                                                                : S extends 'historyListIndicators'
-                                                                  ? HistoryListKey
-                                                                  : S extends 'cartList'
-                                                                    ? CartListKey
-                                                                    : S extends 'history'
-                                                                      ? HistoryKey
-                                                                      : S extends 'rightSidebar'
-                                                                        ? RightSidebarKey
+                                                                : S extends 'cartList'
+                                                                  ? CartListKey
+                                                                  : S extends 'history'
+                                                                    ? HistoryKey
+                                                                    : S extends 'rightSidebar'
+                                                                      ? RightSidebarKey
+                                                                      : S extends 'postcardPieCart'
+                                                                        ? PostcardPieCartKey
                                                                         : never

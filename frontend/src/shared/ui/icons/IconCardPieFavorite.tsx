@@ -2,7 +2,6 @@ import React from 'react'
 
 const sw = 107.498
 
-/** Пирог секций редактора + звезда: сохранение макета из CardPie (не «избранное» в списке открыток). */
 export const IconCardPieFavorite = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

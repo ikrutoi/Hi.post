@@ -177,6 +177,7 @@ import {
   IconStarFilled,
   IconCardPieFavorite,
   IconPostcardFavorite,
+  IconCardPieEdit,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -361,6 +362,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconCalendarReturn />
     case 'cardPieFavorite':
       return <IconCardPieFavorite />
+    case 'cardPieEdit':
+      return <IconCardPieEdit />
     case 'postcardFavorite':
       return <IconPostcardFavorite />
   }

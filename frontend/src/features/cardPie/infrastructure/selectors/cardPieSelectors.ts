@@ -13,6 +13,7 @@ import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@features/envelope/infrastructure/selectors'
 import { selectAppliedRecipientDisplayAddress } from '@envelope/recipient/infrastructure/selectors'
+import type { CardPieRightListSource } from '../../domain/types'
 
 export const selectPieDataByContext = createSelector(
   [
@@ -70,13 +71,22 @@ export const selectActiveCardFullData = createSelector(
   },
 )
 
-/** Превью «пирога» по строке списка (корзина / история): `id` — `String(postcard.localId)`. */
-export const selectCartArchiveCardPieBundle = createSelector(
+/**
+ * Превью пирога по строке списка справа: `id` — `String(postcard.localId)`.
+ * `listSource` различает корзину и историю (данные пока из `cart.items` по `localId`;
+ * при расхождении моделей можно ветвить здесь).
+ */
+export const selectListArchiveCardPieBundle = createSelector(
   [
     (state: RootState) => state.cart.items,
     (_state: RootState, id?: string) => id,
+    (
+      _state: RootState,
+      _id?: string,
+      _listSource?: CardPieRightListSource | null,
+    ) => _listSource ?? null,
   ],
-  (items, id) => {
+  (items, id, _listSource) => {
     if (id == null || id === '') return null
     const postcardNumericId = Number(id)
     if (Number.isNaN(postcardNumericId)) return null
@@ -94,4 +104,10 @@ export const selectCartArchiveCardPieBundle = createSelector(
     }
   },
 )
+
+/** @deprecated Prefer `selectListArchiveCardPieBundle(state, id, source)`. */
+export const selectCartArchiveCardPieBundle = (
+  state: RootState,
+  id?: string,
+) => selectListArchiveCardPieBundle(state, id, 'cart')
 

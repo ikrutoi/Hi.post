@@ -43,7 +43,6 @@ $list-entry-border: $color-cart-list-border;
       color: $color-font-disabled;
     }
 
-    .semicircleDown,
     .semicircleUp {
       pointer-events: none;
 
@@ -93,7 +92,6 @@ $list-entry-border: $color-cart-list-border;
   }
 }
 
-.semicircleDown,
 .semicircleUp {
   position: absolute;
   z-index: 1;
@@ -159,20 +157,8 @@ button.semicircleUp {
   }
 }
 
-.root[data-inactive='true'] .semicircleDown :global(svg),
 .root[data-inactive='true'] .semicircleUp :global(svg) {
   color: $color-font-disabled;
-}
-
-.semicircleDown {
-  left: 71%;
-  top: 0;
-  border-radius: 0 0 9999px 9999px;
-  border-top: none;
-
-  :global(svg) {
-    transform: translateY(-0.15rem);
-  }
 }
 
 .semicircleUp {

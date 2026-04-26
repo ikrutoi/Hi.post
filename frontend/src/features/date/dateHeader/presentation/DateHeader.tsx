@@ -1,7 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
 import { MONTH_NAMES } from '@entities/date/constants'
-import { LuCalendar, LuCalendarArrowUp } from 'react-icons/lu'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { Switcher } from '../../switcher/presentation/Switcher'
 import { themeColors } from '@shared/config/theme/themeColors'
@@ -11,8 +10,11 @@ import type {
   Switcher as typeSwitcher,
 } from '@entities/date/domain/types'
 import { IconCalendarReturn } from '@/shared/ui/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 
 interface DateHeaderProps {
+  /** Active Date strip: calendar by dispatch date vs history archive. */
+  dateSection: 'date' | 'history'
   currentDate: {
     year: number
     month: number
@@ -30,34 +32,33 @@ interface DateHeaderProps {
 }
 
 export const DateHeader: React.FC<DateHeaderProps> = ({
+  dateSection,
   currentDate,
   calendarViewDate,
   // activeSwitcher,
-  formattedSelectedDate,
+  formattedSelectedDate: _formattedSelectedDate,
   isCurrentMonth,
   onDecrement,
   onIncrement,
   onGoToToday,
-  onGoToSelected,
+  onGoToSelected: _onGoToSelected,
   flashParts,
 }) => {
+  const modeIconKey = dateSection === 'history' ? 'history' : 'date'
+  const modeAriaLabel =
+    dateSection === 'history'
+      ? 'Calendar: history archive mode'
+      : 'Calendar: dispatch dates mode'
+
   return (
     <div className={styles.header}>
       <div className={styles.headerSide}>
         <div
-          className={clsx(styles.todaySelected, {
-            [styles.todaySelectedDisabled]: isCurrentMonth(),
-          })}
-          onClick={onGoToToday}
-          style={{
-            color: isCurrentMonth()
-              ? themeColors.color.font
-              : themeColors.color.font,
-            cursor: isCurrentMonth() ? 'default' : 'pointer',
-          }}
+          className={styles.dateSectionMode}
+          aria-label={modeAriaLabel}
+          data-icon-state="disabled"
         >
-          <IconCalendarReturn className={styles.iconTitle} />
-          {`${currentDate.year} ${MONTH_NAMES[currentDate.month]} ${currentDate.day}`}
+          {getToolbarIcon({ key: modeIconKey })}
         </div>
       </div>
 
@@ -78,14 +79,23 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
         </div>
       </div>
 
-      {/* <div className={styles.headerSide}>
-        {formattedSelectedDate ? (
-          <div className={styles.selected} onClick={onGoToSelected}>
-            {formattedSelectedDate}
-            <LuCalendarArrowUp className={styles.iconTitle} />
-          </div>
-        ) : null}
-      </div> */}
+      <div className={styles.headerSide}>
+        <div
+          className={clsx(styles.todaySelected, {
+            [styles.todaySelectedDisabled]: isCurrentMonth(),
+          })}
+          onClick={onGoToToday}
+          style={{
+            color: isCurrentMonth()
+              ? themeColors.color.font
+              : themeColors.color.font,
+            cursor: isCurrentMonth() ? 'default' : 'pointer',
+          }}
+        >
+          {`${currentDate.year} ${MONTH_NAMES[currentDate.month]} ${currentDate.day}`}
+          <IconCalendarReturn className={styles.iconTitle} />
+        </div>
+      </div>
     </div>
   )
 }

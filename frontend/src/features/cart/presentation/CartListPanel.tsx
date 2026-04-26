@@ -65,6 +65,21 @@ function formatRecipientLine(postcard: Postcard | undefined): string | undefined
   return name || region || undefined
 }
 
+/** Leading amount in a list price string (aligned with row `priceLine` / `listEntryPriceLine`). */
+function numericFromPriceLine(line: string): number {
+  const m = line.match(/[\d]+(?:[.,]\d+)?/)
+  if (!m) return 0
+  return parseFloat(m[0].replace(',', '.')) || 0
+}
+
+/** Text after the first number (e.g. `USD` from `6.00 USD`). */
+function currencySuffixFromPriceLine(line: string): string {
+  const m = line.match(/[\d]+(?:[.,]\d+)?/)
+  if (!m) return 'USD'
+  const tail = line.slice(line.indexOf(m[0]) + m[0].length).trim()
+  return tail || 'USD'
+}
+
 function cartPostcardsToEntries(postcards: Postcard[]): CartListPanelItem[] {
   return postcards
     .filter((p) => p.status === 'cart')
@@ -144,6 +159,22 @@ export const CartListPanel: React.FC<Props> = ({
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
 
+  const cartTotalDisplay = useMemo(() => {
+    if (entries.length === 0) {
+      const emptyLine = listEntryPriceLine(undefined)
+      return `0.00 ${currencySuffixFromPriceLine(emptyLine)}`
+    }
+    let sum = 0
+    for (const e of entries) {
+      const line = e.priceLine ?? listEntryPriceLine(e.postcard)
+      sum += numericFromPriceLine(line)
+    }
+    const suffix = currencySuffixFromPriceLine(
+      entries[0].priceLine ?? listEntryPriceLine(entries[0].postcard),
+    )
+    return `${sum.toFixed(2)} ${suffix}`
+  }, [entries])
+
   const handleCloseList = useCallback(() => {
     setCartListPanelOpen(false)
   }, [setCartListPanelOpen])
@@ -183,6 +214,13 @@ export const CartListPanel: React.FC<Props> = ({
           )}
         </div>
       </ScrollArea>
+      <footer
+        className={styles.footer}
+        aria-label={`Cart total ${cartTotalDisplay}`}
+      >
+        <span className={styles.footerLabel}>Total</span>
+        <span className={styles.footerAmount}>{cartTotalDisplay}</span>
+      </footer>
     </div>
   )
 }

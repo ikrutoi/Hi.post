@@ -1,11 +1,17 @@
 @use '@styles/config/colors' as *;
 
+$list-panel-stacked-band: 3.75rem;
+/* Matches `ListPanelStackedHeader` top row (lead + close), not the full stacked block. */
+$list-panel-header-lead-row: 1.75rem;
+$list-panel-scroll-inset: 0.35rem;
+
 .panel {
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-top: 3.75rem;
+  padding-top: $list-panel-stacked-band;
+  padding-bottom: $list-panel-header-lead-row;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
@@ -13,10 +19,10 @@
 
 .panelScrollTrack {
   position: absolute;
-  top: calc(3.75rem - 0.35rem);
+  top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
+  bottom: calc(#{$list-panel-header-lead-row} - #{$list-panel-scroll-inset});
   right: 2px;
   width: 0.75rem;
-  height: calc(100% - 3.75rem - 0.35rem);
   border-radius: 0 0.75rem 0.75rem 0;
   overflow: hidden;
   z-index: 1;
@@ -61,29 +67,42 @@
   color: $color-app-inner;
 }
 
-.indicators {
+/* Same height as the list header top row (lead icon strip), not the toolbar row below. */
+.footer {
   position: absolute;
+  left: 0.5rem;
   bottom: 0;
-  right: 0.5rem;
-  height: 1.75rem;
-  border-top: 1px solid $color-cardphoto-input-border;
   z-index: 2;
-  // flex: 0 0 50%;
-  width: calc(100% - 0.75rem - 8px);
-  // min-width: 0;
-  // max-width: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.indicatorsInner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  max-width: 100%;
-  // border: solid 1px red;
+  gap: 0.5rem;
+  width: calc(100% - 0.75rem - 8px);
+  height: $list-panel-header-lead-row;
+  padding: 0 0.35rem;
+  box-sizing: border-box;
+  border-top: 1px solid $color-cardphoto-input-border;
+  background-color: #fff;
+}
+
+.footerLabel {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: $color-font-enabled-light;
+  line-height: 1.2;
+}
+
+.footerAmount {
+  flex-shrink: 0;
+  max-width: 60%;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  color: $color-font-enabled;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

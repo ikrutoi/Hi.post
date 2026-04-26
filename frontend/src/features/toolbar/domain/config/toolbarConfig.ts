@@ -107,6 +107,11 @@ import {
   initialHistoryListIndicatorsToolbarState,
   initialHistoryListToolbarState,
 } from '../types/historyList.types'
+import {
+  initialPostcardPieCartToolbarState,
+  POSTCARD_PIE_CART_KEYS,
+  POSTCARD_PIE_CART_TOOLBAR,
+} from '../types/postcardPie.types'
 
 export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardphoto: {
@@ -526,5 +531,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'history',
     getBadges: (state: ToolbarState['history']) => ({}),
     toolbar: HISTORY_TOOLBAR,
+  },
+
+  postcardPieCart: {
+    keys: POSTCARD_PIE_CART_KEYS,
+    initialState: initialPostcardPieCartToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'postcardPieCart',
+    getBadges: (state: ToolbarState['postcardPieCart']) => ({}),
+    toolbar: POSTCARD_PIE_CART_TOOLBAR,
   },
 }

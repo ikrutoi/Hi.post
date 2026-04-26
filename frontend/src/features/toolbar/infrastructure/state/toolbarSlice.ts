@@ -51,6 +51,7 @@ import {
   initialHistoryListIndicatorsToolbarState,
   initialHistoryListToolbarState,
 } from '../../domain/types/historyList.types'
+import { initialPostcardPieCartToolbarState } from '../../domain/types/postcardPie.types'
 const initialState: ToolbarState = {
   cardphoto: initialCardphotoToolbarState,
   cardphotoCreate: initialCardphotoCreateToolbarState,
@@ -87,6 +88,7 @@ const initialState: ToolbarState = {
   cardPieList: initialCardPieListToolbarState,
   cartList: initialCartListToolbarState,
   rightSidebar: initialRightSidebarToolbarState,
+  postcardPieCart: initialPostcardPieCartToolbarState,
 }
 
 const toolbarSlice = createSlice({

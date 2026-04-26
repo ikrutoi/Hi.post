@@ -142,7 +142,8 @@
   // border: solid 1px blue;
 }
 
-.appMainContentLeftPieToolbar {
+.appMainContentLeftPieToolbar,
+.appMainContentRightPieToolbar {
   // flex: 0 0 auto;
   position: relative;
   display: flex;

@@ -99,6 +99,7 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
         aria-label="Calendar: left/right arrows - month, up/down - year"
       >
         <DateHeader
+          dateSection={section}
           currentDate={currentDate}
           calendarViewDate={calendarViewDate}
           formattedSelectedDate={null}

@@ -15,6 +15,28 @@
   // border: 1px solid red;
 }
 
+/* Decorative: same tone as list panel `headerLead`, slightly larger glyph. */
+.dateSectionMode {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  // width: 2.2rem;
+  // height: 2.2rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  border: 1px solid $color-section-dark;
+  background-color: $color-disabled-light;
+  color: $color-font-disabled;
+  pointer-events: none;
+
+  svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
 .headerSide:last-child {
   display: flex;
   justify-content: flex-end;

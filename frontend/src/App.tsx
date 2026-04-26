@@ -73,6 +73,13 @@ const App = () => {
         ? historyListSelectedLocalId
         : null
 
+  const rightListArchiveSource =
+    listPanelOpen && listSelectedLocalId != null
+      ? ('cart' as const)
+      : historyListPanelOpen && historyListSelectedLocalId != null
+        ? ('history' as const)
+        : null
+
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
       const lid = item.postcard?.localId
@@ -151,8 +158,14 @@ const App = () => {
                       id={String(rightListArchiveLocalId)}
                       fillContainer
                       station="right"
+                      rightListSource={rightListArchiveSource}
                     />
                   </div>
+                  {rightListArchiveSource === 'cart' && (
+                    <div className={styles.appMainContentRightPieToolbar}>
+                      <Toolbar section="postcardPieCart" />
+                    </div>
+                  )}
                 </div>
               )}
             </div>
