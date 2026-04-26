@@ -26,8 +26,8 @@ export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'historyList',
     icons: [
-      { key: 'sortDown', state: 'enabled' },
       { key: 'postcardIndicator', state: 'enabled' },
+      { key: 'sortDown', state: 'enabled' },
     ],
     status: 'enabled',
   },

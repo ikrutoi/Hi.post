@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import clsx from 'clsx'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
-import { IconX, IconUsers } from '@shared/ui/icons'
+import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
+import { IconUsers } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { AddressEntry } from './AddressEntry'
 import type { AddressBookEntry } from '../domain/types'
@@ -102,27 +103,22 @@ export const SenderListPanel: React.FC<Props> = ({
   )
 
   return (
-    <div className={styles.panel}>
-      <div className={styles.header}>
-        <div className={styles.headerToolbar}>
-          <ListPanelHeaderWithLead
-            leadIconKey="addressList"
-            toolbar={
-              combinedEntries.length > 0 ? (
-                <Toolbar section="addressListSender" />
-              ) : null
-            }
-          />
-        </div>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={closePanel}
-          aria-label="Close address list"
-        >
-          <IconX />
-        </button>
-      </div>
+    <div
+      className={clsx(
+        styles.panel,
+        combinedEntries.length > 0 && styles.panelToolbarBelow,
+      )}
+    >
+      <ListPanelStackedHeader
+        leadIconKey="addressList"
+        toolbar={
+          combinedEntries.length > 0 ? (
+            <Toolbar section="addressListSender" />
+          ) : null
+        }
+        onClose={closePanel}
+        closeAriaLabel="Close address list"
+      />
       <div
         ref={setScrollbarTrackRef}
         className={styles.panelScrollTrack}

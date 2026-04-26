@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { IconX, IconCart } from '@shared/ui/icons'
+import { IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
+import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { useCartFacade } from '../application/facades'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
@@ -150,22 +150,12 @@ export const CartListPanel: React.FC<Props> = ({
 
   return (
     <div className={styles.panel}>
-      <div className={styles.header}>
-        <div className={styles.headerToolbar}>
-          <ListPanelHeaderWithLead
-            leadIconKey="cart"
-            toolbar={<Toolbar section="cartList" />}
-          />
-        </div>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={handleCloseList}
-          aria-label="Close cart list"
-        >
-          <IconX />
-        </button>
-      </div>
+      <ListPanelStackedHeader
+        leadIconKey="cart"
+        toolbar={<Toolbar section="cartList" />}
+        onClose={handleCloseList}
+        closeAriaLabel="Close cart list"
+      />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div

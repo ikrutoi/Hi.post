@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { IconX, IconListCardtext } from '@shared/ui/icons'
+import { IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
+import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
@@ -81,22 +81,12 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
 
   return (
     <div className={styles.panel}>
-      <div className={styles.header}>
-        <div className={styles.headerToolbar}>
-          <ListPanelHeaderWithLead
-            leadIconKey="listCardtext"
-            toolbar={<Toolbar section="cardtextList" />}
-          />
-        </div>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={onClose}
-          aria-label="Close text templates list"
-        >
-          <IconX />
-        </button>
-      </div>
+      <ListPanelStackedHeader
+        leadIconKey="listCardtext"
+        toolbar={<Toolbar section="cardtextList" />}
+        onClose={onClose}
+        closeAriaLabel="Close text templates list"
+      />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { IconX, IconHistory } from '@shared/ui/icons'
+import { IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
+import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { type HistoryListEntryVariant } from './historyList/HistoryListEntry'
@@ -11,7 +11,6 @@ import type { PostcardStatus } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
-import { useDateFacade } from '../application/facades/useDateFacade'
 import { HistoryListEntry } from './historyList/HistoryListEntry'
 import clsx from 'clsx'
 
@@ -105,7 +104,6 @@ export const HistoryListPanel: React.FC<Props> = ({
   legendStatusCounts,
   // section,
 }) => {
-  // const { isHistoryMode } = useDateFacade()
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
   const legendTreatAsEmpty =
@@ -115,23 +113,12 @@ export const HistoryListPanel: React.FC<Props> = ({
 
   return (
     <div className={styles.panel}>
-      <div className={styles.header}>
-        <div className={styles.headerToolbar}>
-          <ListPanelHeaderWithLead
-            leadIconKey="listHistory"
-            toolbar={<Toolbar section="historyList" />}
-          />
-        </div>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={onClose}
-          aria-label="Close date list"
-        >
-          <IconX />
-        </button>
-        {/* <div className={styles.headerToolbarIndicator} /> */}
-      </div>
+      <ListPanelStackedHeader
+        leadIconKey="listHistory"
+        toolbar={<Toolbar section="historyList" />}
+        onClose={onClose}
+        closeAriaLabel="Close date list"
+      />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div

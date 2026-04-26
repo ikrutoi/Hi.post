@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/panelCloseButton' as *;
 
 .viewContainer {
   position: relative;
@@ -37,33 +38,11 @@
 }
 
 .viewCloseBtn {
+  @include panel-close-button;
   position: absolute;
   top: -0.65rem;
   right: 1rem;
   z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.3rem;
-  height: 1.3rem;
-  padding: 0;
-  border: 1px solid $color-app-strip;
-  border-radius: 0.5rem;
-  background-color: #fff;
-  color: $color-font-disabled;
-  cursor: pointer;
-  transition:
-    color 0.15s ease,
-    background-color 0.15s ease;
-
-  svg {
-    width: 0.85rem;
-    height: 0.85rem;
-  }
-
-  &:hover {
-    color: $color-font-enabled-light;
-  }
 }
 
 .viewTitle {

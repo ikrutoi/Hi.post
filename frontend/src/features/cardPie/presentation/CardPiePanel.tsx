@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { IconX, IconListCardPie } from '@shared/ui/icons'
+import { IconListCardPie } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
+import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
@@ -89,22 +89,12 @@ export const CardPiePanel: React.FC<Props> = ({
 
   return (
     <div className={styles.panel}>
-      <div className={styles.header}>
-        <div className={styles.headerToolbar}>
-          <ListPanelHeaderWithLead
-            leadIconKey="listCardPie"
-            toolbar={<Toolbar section="cardPieList" />}
-          />
-        </div>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={onClose}
-          aria-label="Close card pie list"
-        >
-          <IconX />
-        </button>
-      </div>
+      <ListPanelStackedHeader
+        leadIconKey="listCardPie"
+        toolbar={<Toolbar section="cardPieList" />}
+        onClose={onClose}
+        closeAriaLabel="Close card pie list"
+      />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div

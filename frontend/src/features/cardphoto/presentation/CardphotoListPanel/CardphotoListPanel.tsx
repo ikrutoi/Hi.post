@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { IconX, IconListCardphoto } from '@shared/ui/icons'
+import { IconListCardphoto } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
@@ -19,7 +19,7 @@ import {
   setAssetData,
 } from '@cardphoto/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
+import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { CardphotoListThumb } from './CardphotoListThumb'
 import styles from './CardphotoListPanel.module.scss'
@@ -177,22 +177,12 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
 
   return (
     <div className={styles.panel}>
-      <div className={styles.header}>
-        <div className={styles.headerToolbar}>
-          <ListPanelHeaderWithLead
-            leadIconKey="listCardphoto"
-            toolbar={<Toolbar section="cardphotoList" />}
-          />
-        </div>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={onClose}
-          aria-label="Close photo templates list"
-        >
-          <IconX />
-        </button>
-      </div>
+      <ListPanelStackedHeader
+        leadIconKey="listCardphoto"
+        toolbar={<Toolbar section="cardphotoList" />}
+        onClose={onClose}
+        closeAriaLabel="Close photo templates list"
+      />
 
       <div className={styles.panelScrollTrack} aria-hidden />
 

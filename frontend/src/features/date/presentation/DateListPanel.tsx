@@ -2,10 +2,10 @@ import React, { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectDateListSortDirection } from '@date/calendar/infrastructure/selectors'
 import { useDispatchPlanListEntries } from '../application/hooks/useDispatchPlanListEntries'
-import { IconX, IconListDate } from '@shared/ui/icons'
+import { IconListDate } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { ListPanelHeaderWithLead } from '@shared/ui/ListPanelHeaderWithLead/ListPanelHeaderWithLead'
+import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import {
@@ -99,23 +99,12 @@ export const DateListPanel: React.FC<Props> = ({
 
   return (
     <div className={styles.panel}>
-      <div className={styles.header}>
-        <div className={styles.headerToolbar}>
-          <ListPanelHeaderWithLead
-            leadIconKey="listDate"
-            toolbar={<Toolbar section="dateList" />}
-          />
-        </div>
-        <button
-          type="button"
-          className={styles.closeBtn}
-          onClick={onClose}
-          aria-label="Close date list"
-        >
-          <IconX />
-        </button>
-        {/* <div className={styles.headerToolbarIndicator} /> */}
-      </div>
+      <ListPanelStackedHeader
+        leadIconKey="listDate"
+        toolbar={<Toolbar section="dateList" />}
+        onClose={onClose}
+        closeAriaLabel="Close date list"
+      />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div

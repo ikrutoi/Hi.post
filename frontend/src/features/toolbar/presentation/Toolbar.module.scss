@@ -567,12 +567,18 @@
 .toolbarCardtextList,
 .toolbarCardphotoList,
 .toolbarDateList,
-.toolbarHistoryList,
 .toolbarCardPieListEntry {
   width: 100%;
   justify-content: space-between;
   margin-left: 1rem;
   margin-right: 1rem;
+}
+
+.toolbarHistoryList {
+  width: 100%;
+  justify-content: space-between;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .toolbarCartList {
