@@ -15,6 +15,7 @@ import {
 import {
   // selectIsHistoryListPanelOpen,
   selectIsDateListPanelOpen,
+  selectIsCardPieListPanelOpen,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
 import { PostcardStatuses } from '@/entities/postcard/domain/types'
@@ -41,19 +42,41 @@ function* handleDateToolbarAction(
 ): SagaIterator {
   const { section, key } = action.payload
   if (section !== 'date') return
-  if (key !== 'listDate') return
+  if (key === 'listDate') {
+    const listOpen: boolean = yield select(selectIsDateListPanelOpen)
+    const nextOpen = !listOpen
 
-  const listOpen: boolean = yield select(selectIsDateListPanelOpen)
-  const nextOpen = !listOpen
+    yield put(setDateListPanelOpen(nextOpen))
+    yield put(
+      updateToolbarIcon({
+        section: 'date',
+        key: 'listDate',
+        value: nextOpen ? 'active' : 'enabled',
+      }),
+    )
+    return
+  }
 
-  yield put(setDateListPanelOpen(nextOpen))
-  yield put(
-    updateToolbarIcon({
-      section: 'date',
-      key: 'listDate',
-      value: nextOpen ? 'active' : 'enabled',
-    }),
-  )
+  if (key === 'listCardPie') {
+    const listOpen: boolean = yield select(selectIsCardPieListPanelOpen)
+    const nextOpen = !listOpen
+
+    yield put(setCardPieListPanelOpen(nextOpen))
+    yield put(
+      updateToolbarIcon({
+        section: 'date',
+        key: 'listCardPie',
+        value: nextOpen ? 'active' : 'enabled',
+      }),
+    )
+    yield put(
+      updateToolbarIcon({
+        section: 'editorPie',
+        key: 'listCardPie',
+        value: nextOpen ? 'active' : 'enabled',
+      }),
+    )
+  }
 }
 
 function* syncListDateIconOnDayPanelOpen(): SagaIterator {
@@ -85,15 +108,6 @@ function* syncListIconsWhenOpeningExclusiveList(
       updateToolbarIcon({
         section: 'editorPie',
         key: 'listCardPie',
-        value: 'enabled',
-      }),
-    )
-  }
-  if (action.type === setCardPieListPanelOpen.type && action.payload) {
-    yield put(
-      updateToolbarIcon({
-        section: 'date',
-        key: 'listDate',
         value: 'enabled',
       }),
     )

@@ -56,6 +56,7 @@ const CardPiePanelRow: React.FC<{
 
   const onAddCartFromList =
     canToggleCart && item.dispatchBranchKey ? handleToggleCart : undefined
+  const onDeleteFromList = item.onDelete
 
   return (
     <CardPieListEntry
@@ -71,6 +72,7 @@ const CardPiePanelRow: React.FC<{
           : undefined
       }
       onAddCart={onAddCartFromList}
+      onDelete={onDeleteFromList}
     />
   )
 }

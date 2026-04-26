@@ -58,6 +58,13 @@ function* syncListPanelToolbarIcons(): SagaIterator {
       value: cardPieOpen ? 'active' : 'enabled',
     }),
   )
+  yield put(
+    updateToolbarIcon({
+      section: 'date',
+      key: 'listCardPie',
+      value: cardPieOpen ? 'active' : 'enabled',
+    }),
+  )
 
   const cardphotoOpen: boolean = yield select(selectIsListPanelOpen)
   const listCardphoto: unknown = yield select(

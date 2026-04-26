@@ -12,6 +12,7 @@ export type CardPieListEntryProps = {
   priceLine?: string
   variant?: CardPieListEntryVariant
   onSelect?: () => void
+  onDelete?: () => void
   isSelected?: boolean
   isFocused?: boolean
   onAddCart?: () => void
@@ -24,6 +25,7 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   priceLine,
   variant = 'default',
   onSelect,
+  onDelete,
   isSelected = false,
   isFocused = false,
   onAddCart,
@@ -61,13 +63,29 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
           : undefined
       }
     >
-      <div
-        className={styles.semicircleUp}
-        aria-hidden
-        onClick={(e) => e.stopPropagation()}
-      >
-        {getToolbarIcon({ key: 'delete' })}
-      </div>
+      {onDelete ? (
+        <button
+          type="button"
+          className={styles.semicircleUp}
+          aria-label={inactive ? undefined : 'Remove postcard row'}
+          title={inactive ? undefined : 'Remove postcard row'}
+          disabled={inactive}
+          onClick={(e) => {
+            e.stopPropagation()
+            if (!inactive) onDelete()
+          }}
+        >
+          {getToolbarIcon({ key: 'delete' })}
+        </button>
+      ) : (
+        <div
+          className={styles.semicircleUp}
+          aria-hidden
+          onClick={(e) => e.stopPropagation()}
+        >
+          {getToolbarIcon({ key: 'delete' })}
+        </div>
+      )}
       <div className={styles.body}>
         <div className={styles.favoriteSlot}>
           <button

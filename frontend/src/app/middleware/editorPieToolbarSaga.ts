@@ -30,6 +30,13 @@ export function* handleEditorPieToolbarAction(
           value: nextOpen ? 'active' : 'enabled',
         }),
       )
+      yield put(
+        updateToolbarIcon({
+          section: 'date',
+          key: 'listCardPie',
+          value: nextOpen ? 'active' : 'enabled',
+        }),
+      )
       break
     }
 

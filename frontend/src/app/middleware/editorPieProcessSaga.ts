@@ -11,7 +11,7 @@ import {
   startRainbow,
 } from '@entities/cardEditor/infrastructure/state'
 import { selectPieProgress } from '@/entities/cardEditor/infrastructure/selectors'
-import { updateToolbarSection } from '@toolbar/infrastructure/state'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   setDate,
   setSelectedDates,
@@ -111,11 +111,17 @@ function* handleRainbowLogic() {
   const listCardPieToolbarState = isAllComplete ? 'enabled' : 'disabled'
 
   yield put(
-    updateToolbarSection({
+    updateToolbarIcon({
       section: 'editorPie',
-      value: {
-        listCardPie: listCardPieToolbarState,
-      },
+      key: 'listCardPie',
+      value: listCardPieToolbarState,
+    }),
+  )
+  yield put(
+    updateToolbarIcon({
+      section: 'date',
+      key: 'listCardPie',
+      value: listCardPieToolbarState,
     }),
   )
 }

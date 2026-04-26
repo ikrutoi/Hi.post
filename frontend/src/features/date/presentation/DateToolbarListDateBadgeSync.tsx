@@ -1,15 +1,14 @@
 import React, { useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { selectDateListToolbarBadgeCount } from '@date/infrastructure/selectors'
+import { selectCardPieListPanelRowCount } from '@date/infrastructure/selectors'
 
 /**
- * Держит badge у `listDate` (секция date) в Redux — как EditorPieListCardPieBadgeSync,
- * чтобы счётчик обновлялся при смене дат даже когда DateListPanel размонтирован.
+ * Держит badge у `listCardPie` в секции `date` синхронно с `editorPie`.
  */
 export const DateToolbarListDateBadgeSync: React.FC = () => {
   const dispatch = useAppDispatch()
-  const count = useAppSelector(selectDateListToolbarBadgeCount)
+  const count = useAppSelector(selectCardPieListPanelRowCount)
   const prevCount = useRef<number | undefined>(undefined)
 
   useEffect(() => {
@@ -18,7 +17,7 @@ export const DateToolbarListDateBadgeSync: React.FC = () => {
     dispatch(
       updateToolbarIcon({
         section: 'date',
-        key: 'listDate',
+        key: 'listCardPie',
         value: {
           options: { badge: count > 0 ? count : null },
         },

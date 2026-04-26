@@ -30,6 +30,13 @@ export const CardPieLeftSlot: React.FC = () => {
         value: 'enabled',
       }),
     )
+    dispatch(
+      updateToolbarIcon({
+        section: 'date',
+        key: 'listCardPie',
+        value: 'enabled',
+      }),
+    )
   }, [dispatch])
 
   const handleSelectEntry = useCallback(
