@@ -1,7 +1,7 @@
 import { flattenIcons } from '../helpers'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
-export const DATE_KEYS = ['apply', 'listDate', 'listCardPie'] as const
+export const DATE_KEYS = ['apply', 'listDate', 'cardPie'] as const
 
 export type DateKey = (typeof DATE_KEYS)[number]
 
@@ -15,7 +15,8 @@ export const DATE_TOOLBAR: ToolbarConfig = [
     group: 'date',
     icons: [
       // { key: 'listDate', state: 'enabled' },
-      { key: 'listCardPie', state: 'enabled' },
+      // { key: 'listCardPie', state: 'enabled' },
+      { key: 'cardPie', state: 'enabled' },
     ],
     status: 'enabled',
   },

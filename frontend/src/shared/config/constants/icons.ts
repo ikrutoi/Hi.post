@@ -101,6 +101,8 @@ export const ICON_KEYS = [
   'cardPieFavorite',
   'cardPieEdit',
   'postcardFavorite',
+  'cardPieCopy',
+  'cardPie',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

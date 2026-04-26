@@ -166,6 +166,11 @@ const App = () => {
                       <Toolbar section="postcardPieCart" />
                     </div>
                   )}
+                  {rightListArchiveSource === 'history' && (
+                    <div className={styles.appMainContentRightPieToolbar}>
+                      <Toolbar section="postcardPieHistory" />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

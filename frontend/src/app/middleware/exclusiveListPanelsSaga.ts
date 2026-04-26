@@ -54,14 +54,14 @@ function* syncListPanelToolbarIcons(): SagaIterator {
   yield put(
     updateToolbarIcon({
       section: 'editorPie',
-      key: 'listCardPie',
+      key: 'cardPie',
       value: cardPieOpen ? 'active' : 'enabled',
     }),
   )
   yield put(
     updateToolbarIcon({
       section: 'date',
-      key: 'listCardPie',
+      key: 'cardPie',
       value: cardPieOpen ? 'active' : 'enabled',
     }),
   )

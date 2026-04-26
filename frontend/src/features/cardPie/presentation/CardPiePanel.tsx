@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { IconListCardPie } from '@shared/ui/icons'
+import { IconCardPie } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
@@ -90,7 +90,7 @@ export const CardPiePanel: React.FC<Props> = ({
   return (
     <div className={styles.panel}>
       <ListPanelStackedHeader
-        leadIconKey="listCardPie"
+        leadIconKey="cardPie"
         toolbar={<Toolbar section="cardPieList" />}
         onClose={onClose}
         closeAriaLabel="Close card pie list"
@@ -114,7 +114,7 @@ export const CardPiePanel: React.FC<Props> = ({
             ))
           ) : (
             <div className={styles.listEmpty} aria-hidden>
-              <IconListCardPie className={styles.listEmptyIcon} />
+              <IconCardPie className={styles.listEmptyIcon} />
             </div>
           )}
         </div>

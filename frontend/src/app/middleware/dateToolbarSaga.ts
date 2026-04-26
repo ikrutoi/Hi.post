@@ -57,7 +57,7 @@ function* handleDateToolbarAction(
     return
   }
 
-  if (key === 'listCardPie') {
+  if (key === 'cardPie') {
     const listOpen: boolean = yield select(selectIsCardPieListPanelOpen)
     const nextOpen = !listOpen
 
@@ -65,14 +65,14 @@ function* handleDateToolbarAction(
     yield put(
       updateToolbarIcon({
         section: 'date',
-        key: 'listCardPie',
+        key: 'cardPie',
         value: nextOpen ? 'active' : 'enabled',
       }),
     )
     yield put(
       updateToolbarIcon({
         section: 'editorPie',
-        key: 'listCardPie',
+        key: 'cardPie',
         value: nextOpen ? 'active' : 'enabled',
       }),
     )
@@ -107,7 +107,7 @@ function* syncListIconsWhenOpeningExclusiveList(
     yield put(
       updateToolbarIcon({
         section: 'editorPie',
-        key: 'listCardPie',
+        key: 'cardPie',
         value: 'enabled',
       }),
     )

@@ -42,6 +42,8 @@ import { HistoryListKey, HistoryListToolbarState } from './historyList.types'
 import {
   PostcardPieCartKey,
   PostcardPieCartToolbarState,
+  PostcardPieHistoryKey,
+  PostcardPieHistoryToolbarState,
 } from './postcardPie.types'
 
 export type IconOptions = {
@@ -101,6 +103,7 @@ export const TOOLBAR_SECTIONS = [
   'cartList',
   'rightSidebar',
   'postcardPieCart',
+  'postcardPieHistory',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -142,6 +145,9 @@ export type ToolbarState = {
   cartList: CartListToolbarState & { config: ToolbarGroup[] }
   rightSidebar: RightSidebarToolbarState & { config: ToolbarGroup[] }
   postcardPieCart: PostcardPieCartToolbarState & { config: ToolbarGroup[] }
+  postcardPieHistory: PostcardPieHistoryToolbarState & {
+    config: ToolbarGroup[]
+  }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -320,6 +326,12 @@ export type ToolbarSectionConfigMap = {
     PostcardPieCartKey,
     'postcardPieCart'
   >
+
+  postcardPieHistory: BaseSectionConfig<
+    PostcardPieHistoryToolbarState,
+    PostcardPieHistoryKey,
+    'postcardPieHistory'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -394,4 +406,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                                       ? RightSidebarKey
                                                                       : S extends 'postcardPieCart'
                                                                         ? PostcardPieCartKey
-                                                                        : never
+                                                                        : S extends 'postcardPieHistory'
+                                                                          ? PostcardPieHistoryKey
+                                                                          : never

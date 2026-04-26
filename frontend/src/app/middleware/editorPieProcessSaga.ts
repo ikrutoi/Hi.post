@@ -11,7 +11,6 @@ import {
   startRainbow,
 } from '@entities/cardEditor/infrastructure/state'
 import { selectPieProgress } from '@/entities/cardEditor/infrastructure/selectors'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   setDate,
   setSelectedDates,
@@ -107,23 +106,6 @@ function* handleRainbowLogic() {
   } else if (!isAllComplete && isRainbowActive) {
     yield put(requestRainbowStop())
   }
-
-  const listCardPieToolbarState = isAllComplete ? 'enabled' : 'disabled'
-
-  yield put(
-    updateToolbarIcon({
-      section: 'editorPie',
-      key: 'listCardPie',
-      value: listCardPieToolbarState,
-    }),
-  )
-  yield put(
-    updateToolbarIcon({
-      section: 'date',
-      key: 'listCardPie',
-      value: listCardPieToolbarState,
-    }),
-  )
 }
 
 export function* editorPieProcessSaga(): SagaIterator {

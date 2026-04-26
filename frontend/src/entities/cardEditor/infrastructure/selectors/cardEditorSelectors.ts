@@ -6,7 +6,10 @@ import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
-import { selectIsDateComplete } from '@date/infrastructure/selectors'
+import {
+  selectIsDateComplete,
+  selectCardPieListPanelRowCount,
+} from '@date/infrastructure/selectors'
 
 /**
  * Editor UI state with per-section `isComplete` aligned to the same sources as
@@ -101,6 +104,15 @@ export const selectPieProgress = createSelector(
       progress: completedCount,
     }
   },
+)
+
+/**
+ * Бейдж `cardPie` в тулбарах date / editorPie: число строк списка (план / день),
+ * но не меньше 1, если заполнена хотя бы одна секция открытки (без выбранной даты).
+ */
+export const selectCardPieToolbarBadgeCount = createSelector(
+  [selectCardPieListPanelRowCount, selectPieProgress],
+  (listRowCount, pie) => Math.max(listRowCount, pie.progress > 0 ? 1 : 0),
 )
 
 /** Ready for CardPie favorite save: all required sections except date. */

@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { selectCardPieListPanelRowCount } from '@date/infrastructure/selectors'
+import { selectCardPieToolbarBadgeCount } from '@entities/cardEditor/infrastructure/selectors'
 
 /**
- * Держит badge у `listCardPie` (editorPie) равным числу строк в CardPie list panel.
+ * Держит badge у `cardPie` (editorPie): строки списка или минимум 1 при любой заполненной секции.
  */
 export const EditorPieListCardPieBadgeSync: React.FC = () => {
   const dispatch = useAppDispatch()
-  const count = useAppSelector(selectCardPieListPanelRowCount)
+  const count = useAppSelector(selectCardPieToolbarBadgeCount)
   const prevCount = useRef<number | undefined>(undefined)
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export const EditorPieListCardPieBadgeSync: React.FC = () => {
     dispatch(
       updateToolbarIcon({
         section: 'editorPie',
-        key: 'listCardPie',
+        key: 'cardPie',
         value: {
           options: { badge: count > 0 ? count : null },
         },

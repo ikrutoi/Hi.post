@@ -5,6 +5,10 @@ export const POSTCARD_PIE_CART_KEYS = ['cardPieEdit', 'delete'] as const
 
 export type PostcardPieCartKey = (typeof POSTCARD_PIE_CART_KEYS)[number]
 
+export const POSTCARD_PIE_HISTORY_KEYS = ['cardPieCopy'] as const
+
+export type PostcardPieHistoryKey = (typeof POSTCARD_PIE_HISTORY_KEYS)[number]
+
 export const POSTCARD_PIE_CART_TOOLBAR: ToolbarConfig = [
   {
     group: 'main',
@@ -16,7 +20,20 @@ export const POSTCARD_PIE_CART_TOOLBAR: ToolbarConfig = [
   },
 ]
 
+export const POSTCARD_PIE_HISTORY_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'main',
+    icons: [{ key: 'cardPieCopy', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
 export interface PostcardPieCartToolbarState extends Record<string, any> {
+  [key: string]: any
+  config: ToolbarConfig
+}
+
+export interface PostcardPieHistoryToolbarState extends Record<string, any> {
   [key: string]: any
   config: ToolbarConfig
 }
@@ -26,8 +43,20 @@ export const initialPostcardPieCartToolbarState: PostcardPieCartToolbarState = {
   config: [...POSTCARD_PIE_CART_TOOLBAR],
 }
 
-export interface PostcardPieSectionConfig extends BaseSectionConfig<
+export const initialPostcardPieHistoryToolbarState: PostcardPieHistoryToolbarState =
+  {
+    ...Object.fromEntries(flattenIcons(POSTCARD_PIE_HISTORY_TOOLBAR)),
+    config: [...POSTCARD_PIE_HISTORY_TOOLBAR],
+  }
+
+export interface PostcardPieCartSectionConfig extends BaseSectionConfig<
   PostcardPieCartToolbarState,
   PostcardPieCartKey,
   'postcardPieCart'
+> {}
+
+export interface PostcardPieHistorySectionConfig extends BaseSectionConfig<
+  PostcardPieHistoryToolbarState,
+  PostcardPieHistoryKey,
+  'postcardPieHistory'
 > {}

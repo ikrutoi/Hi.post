@@ -47,6 +47,7 @@ import {
 } from '../helpers/formatRecipientPlanDetailLine'
 import type { CardPieRefs } from '@features/cardPie/domain/types'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
+import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 
 function formatDispatchDateLabel(d: DispatchDate): string {
   const date = new Date(d.year, d.month, d.day)
@@ -136,6 +137,7 @@ export function useDispatchPlanListEntries(
   const cardphotoState = useAppSelector(selectCardphotoState)
   const cardtextState = useAppSelector(selectCardtextState)
   const selectedAroma = useAppSelector(selectSelectedAroma)
+  const pieProgress = useAppSelector(selectPieProgress)
   const { previewUrl: cardphotoPreviewUrl } = useAppSelector(
     selectCardphotoPreview,
   )
@@ -321,13 +323,8 @@ export function useDispatchPlanListEntries(
     }
 
     const entries: DateListPanelItem[] = []
-    const hasAnySectionSelected =
-      String(cardphotoState?.appliedData?.id ?? '') !== '' ||
-      String(cardtextState?.appliedData?.id ?? '') !== '' ||
-      String(envelopeRecord?.sender?.senderViewId ?? '') !== '' ||
-      (recipientState.applied?.length ?? 0) > 0 ||
-      recipientState.appliedData != null ||
-      selectedAroma != null
+    /** Как у CardPie / бэджа: хотя бы одна секция считается заполненной по тем же правилам, что `selectPieProgress`. */
+    const hasAnySectionFilled = pieProgress.progress > 0
 
     const appendMultiBlock = (includeInactiveCachedSingle: boolean) => {
       if (includeInactiveCachedSingle && cachedSingleDate) {
@@ -462,7 +459,7 @@ export function useDispatchPlanListEntries(
     if (
       showUndatedWhenAnySectionSelected &&
       entries.length === 0 &&
-      hasAnySectionSelected
+      hasAnySectionFilled
     ) {
       recipientSlots.forEach((slot, ri) => {
         const recipientRef = slot.branchKey.includes('|')
@@ -515,6 +512,7 @@ export function useDispatchPlanListEntries(
     cardtextState?.appliedData?.id,
     envelopeRecord?.sender?.senderViewId,
     selectedAroma?.index,
+    pieProgress.progress,
     showUndatedWhenAnySectionSelected,
     cartPostcardByDispatchBranchKey,
     recipientEntries,

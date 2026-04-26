@@ -26,14 +26,14 @@ export const CardPieLeftSlot: React.FC = () => {
     dispatch(
       updateToolbarIcon({
         section: 'editorPie',
-        key: 'listCardPie',
+        key: 'cardPie',
         value: 'enabled',
       }),
     )
     dispatch(
       updateToolbarIcon({
         section: 'date',
-        key: 'listCardPie',
+        key: 'cardPie',
         value: 'enabled',
       }),
     )
