@@ -1,18 +1,22 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/miniSectionsSlotChrome' as *;
 
 .root {
-  cursor: default;
+  @include mini-sections-slot-chrome;
   height: 100%;
-  min-height: 2rem;
-  border-radius: 1rem;
-  border: 1px solid #fff;
-  background-color: $color-app-inner-light;
-  box-shadow:
-    $shadow-card,
-    inset 0 0 0 3px $color-app-strip;
+}
+
+.rootEmbedded {
+  height: 100%;
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  // border: solid 1px blue;
 }
 
 .strip {

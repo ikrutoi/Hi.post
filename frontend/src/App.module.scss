@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/miniSectionsSlotChrome' as *;
 
 :root {
   --color-font-deepBlack: #{$color-font-deepBlack};
@@ -83,14 +84,21 @@
   // border: solid 1px purple;
 }
 
-.appMainContentLeft {
-  grid-column: 1 / 5;
-  grid-row: 1 / -1;
-  min-height: 0;
-  display: grid;
-  grid-template-rows: 3fr 0.5fr 10fr;
-  grid-template-columns: 1fr;
-  // border: solid 1px green;
+.appMainContentCenter_mergedWithPie {
+  grid-row: 2 / -1;
+  grid-template-rows: auto 1fr;
+
+  .mainCardPanel {
+    display: none;
+  }
+
+  .mainCardSectionToolbar {
+    grid-row: 1 / 2;
+  }
+
+  .mainForm {
+    grid-row: 2 / 3;
+  }
 }
 
 .appMainContentRight {
@@ -104,27 +112,98 @@
 }
 
 .appMainContentLeftPieSlot {
+  --left-pie-slot-h-margin: 1rem;
   grid-row: 1 / 2;
   grid-column: 1 / 5;
   min-height: 0;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  margin-left: var(--left-pie-slot-h-margin);
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   // border: solid 1px blue;
 }
 
+.appMainContentLeftPieSlot_mergedWithCenter {
+  grid-column: 1 / 11;
+  // flex-start: merged chrome may be narrower than the slot (align right edge with card column).
+  align-items: flex-start;
+}
+
 .appMainContentRightPieSlot {
   grid-row: 1 / 2;
   grid-column: 11 / -1;
   min-height: 0;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   // border: solid 1px blue;
+}
+
+.appMainContentRightPieSlot_mergedWithCenter {
+  grid-column: 5 / -1;
+  align-items: stretch;
+}
+
+.mergedTopChrome {
+  @include mini-sections-slot-chrome;
+  // Mixin uses align-items: center — that prevents stretch height, so height: 100%
+  // inside the pie column stays cyclic and CardPie (fillContainer + absolute hub) collapses.
+  align-items: stretch;
+  box-sizing: border-box;
+  flex: 1;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 0.25rem 0.45rem;
+}
+
+// Width set inline from form.getBoundingClientRect().right − chrome.left (see App.tsx).
+.mergedTopChrome_measuredToForm {
+  max-width: 100%;
+  align-self: flex-start;
+}
+
+// Grows into space left of the mini strip; CardPie is centered in that band.
+.mergedTopChromePieRegion {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.mergedTopChromePie {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  min-width: min-content;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+
+  .appMainContentLeftPieRow,
+  .appMainContentRightPieRow {
+    width: auto;
+    height: 100%;
+  }
+}
+
+.mergedTopChromeMini {
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .appMainContentLeftPieRow,
@@ -139,7 +218,6 @@
   justify-content: center;
   align-items: center;
   // gap: 0.25rem;
-  // border: solid 1px blue;
 }
 
 .appMainContentLeftPieToolbar,
@@ -177,6 +255,7 @@
   grid-column: 1 / 5;
   grid-row: 3 / -1;
   min-height: 0;
+  background-color: $color-app-inner;
   // margin-top: 1rem;
   margin-left: 1rem;
   margin-bottom: 1rem;
@@ -229,14 +308,14 @@
   grid-column: 1 / -1;
   min-height: 0;
   width: var(--card-width, 100%);
-  padding-top: 1rem;
-  margin-bottom: 1rem;
+  // padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
   display: flex;
   justify-content: center;
   align-items: stretch;
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   overflow: hidden;
-  // border: solid 1px green;s
 }
 
 .mainCardSectionToolbar {
@@ -247,7 +326,7 @@
   // margin-top: 1rem;
   // height: 2rem;
   // display: flex;
-  // border: solid 1px green;
+  // border: solid 1px blue;
 }
 
 .mainForm {

@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import React, { forwardRef } from 'react'
 import { useAppSelector } from '@app/hooks'
 import { useSizeFacade } from '@layout/application/facades'
@@ -22,8 +23,13 @@ const SECTIONS_ORDER: CardPanelSection[] = [
   'date',
 ]
 
-export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
-  function MiniSectionsSlot(_, ref) {
+export type MiniSectionsSlotProps = {
+  /** When true, outer chrome is omitted — parent supplies one frame (e.g. merged with CardPie). */
+  embedded?: boolean
+}
+
+export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps>(
+  function MiniSectionsSlot({ embedded = false }, ref) {
     const { sizeCard } = useSizeFacade()
     const { editorState } = useCardEditorFacade()
     const { state: stateCardPanel } = useCardPanelFacade()
@@ -50,7 +56,7 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement>(
     return (
       <div
         ref={ref}
-        className={styles.root}
+        className={clsx(embedded ? styles.rootEmbedded : styles.root)}
         style={{
           width: totalWidth != null ? `${totalWidth}px` : undefined,
           minWidth: sizeCard?.width === 0 ? '8rem' : undefined,
