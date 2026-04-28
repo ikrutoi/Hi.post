@@ -381,54 +381,56 @@ const App = () => {
                   )}
                 </div>
               ) : (
-                showRightPieArchive && (
-                  <div
-                    className={clsx(
-                      styles.mergedTopChrome,
-                      styles.mergedTopChrome_transparentBorder,
-                    )}
-                  >
-                    <div className={styles.mergedTopChromePieRegion}>
-                      <div className={styles.appMainContentRightPieRow}>
-                        <div
-                          className={styles.appMainContentRightPieWrap}
-                          style={
-                            rightPieSizePx != null
-                              ? {
-                                  width: `${rightPieSizePx}px`,
-                                  height: `${rightPieSizePx}px`,
-                                  aspectRatio: 'auto',
-                                }
-                              : undefined
-                          }
-                        >
-                          <CardPie
-                            isProcessed={false}
-                            status="cart"
-                            id={String(rightListArchiveLocalId)}
-                            fillContainer
-                            station="right"
-                            rightListSource={rightListArchiveSource}
-                          />
-                        </div>
-                        {rightListArchiveSource === 'cart' && (
-                          <div className={styles.appMainContentRightPieToolbar}>
-                            <Toolbar
-                              section="postcardPieCart"
-                              onActionClick={handlePostcardPieCartToolbarAction}
-                              stateOverride={postcardPieCartToolbarStateOverride}
+                <div
+                  className={clsx(
+                    styles.mergedTopChrome,
+                    styles.mergedTopChrome_transparentBorder,
+                  )}
+                >
+                  <div className={styles.mergedTopChromePieRegion}>
+                    <div className={styles.appMainContentRightPieRow}>
+                      {showRightPieArchive && (
+                        <>
+                          <div
+                            className={styles.appMainContentRightPieWrap}
+                            style={
+                              rightPieSizePx != null
+                                ? {
+                                    width: `${rightPieSizePx}px`,
+                                    height: `${rightPieSizePx}px`,
+                                    aspectRatio: 'auto',
+                                  }
+                                : undefined
+                            }
+                          >
+                            <CardPie
+                              isProcessed={false}
+                              status="cart"
+                              id={String(rightListArchiveLocalId)}
+                              fillContainer
+                              station="right"
+                              rightListSource={rightListArchiveSource}
                             />
                           </div>
-                        )}
-                        {rightListArchiveSource === 'history' && (
-                          <div className={styles.appMainContentRightPieToolbar}>
-                            <Toolbar section="postcardPieHistory" />
-                          </div>
-                        )}
-                      </div>
+                          {rightListArchiveSource === 'cart' && (
+                            <div className={styles.appMainContentRightPieToolbar}>
+                              <Toolbar
+                                section="postcardPieCart"
+                                onActionClick={handlePostcardPieCartToolbarAction}
+                                stateOverride={postcardPieCartToolbarStateOverride}
+                              />
+                            </div>
+                          )}
+                          {rightListArchiveSource === 'history' && (
+                            <div className={styles.appMainContentRightPieToolbar}>
+                              <Toolbar section="postcardPieHistory" />
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
-                )
+                </div>
               )}
             </div>
             <div
