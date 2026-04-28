@@ -111,6 +111,8 @@ button.navArrowWrap {
   height: 55%;
   overflow: hidden;
   border-radius: 0;
+  /** Ограничиваем интерактивную область по форме сектора, а не квадрата 55%×55%. */
+  clip-path: circle(100% at 0 100%);
   /** Без левого/нижнего контура — сектор примыкает к границе ячейки; линия только по дуге (::before). */
   border: none;
   align-items: center;

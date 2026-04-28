@@ -31,11 +31,11 @@ export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
-  {
-    group: 'actions',
-    icons: [{ key: 'listDelete', state: 'enabled' }],
-    status: 'enabled',
-  },
+  // {
+  //   group: 'actions',
+  //   icons: [{ key: 'listDelete', state: 'enabled' }],
+  //   status: 'enabled',
+  // },
 ]
 
 export const HISTORY_LIST_INDICATORS_TOOLBAR: ToolbarConfig = [

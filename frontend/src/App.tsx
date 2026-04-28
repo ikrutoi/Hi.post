@@ -47,19 +47,27 @@ const App = () => {
   const formRef = useRef<HTMLDivElement>(null)
   const cardPanelRef = useRef<HTMLDivElement>(null)
   const mergedTopChromeRef = useRef<HTMLDivElement>(null)
+  const leftPieWrapRef = useRef<HTMLDivElement>(null)
   const [mergedTopChromeWidthPx, setMergedTopChromeWidthPx] = useState<
     number | null
   >(null)
+  const [leftPieSizePx, setLeftPieSizePx] = useState<number | null>(null)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
-  const [cardPanelPieMergeMode] = useState<CardPanelPieMergeMode>('left')
+  const [cardPanelPieMergeMode, setCardPanelPieMergeMode] =
+    useState<CardPanelPieMergeMode>('left')
 
   useAuthInit()
   useLayoutInit()
   useViewportInit()
   useRecordSizeCard(formRef, cardPanelRef)
-  const { sizeCard } = useSizeFacade()
+  const { sizeCard, remSize } = useSizeFacade()
   const sectionSize =
     sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width / 6 : null
+  const pieHeightInsetPx = (remSize || 16) * 0.5
+  const rightPieSizePx =
+    leftPieSizePx != null
+      ? Math.max(leftPieSizePx - pieHeightInsetPx, 0)
+      : null
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
@@ -96,25 +104,32 @@ const App = () => {
     sectionSize != null && rightListArchiveLocalId != null
 
   const syncMergedTopChromeToForm = useCallback(() => {
-    if (!mergeLeft) return
+    if (!mergeLeft && !mergeRight) return
     const form = formRef.current
     const chrome = mergedTopChromeRef.current
     if (!form || !chrome) return
-    const base =
-      form.getBoundingClientRect().right - chrome.getBoundingClientRect().left
-    // `width` is border-box; inner flex ends before outer right by padding + border on that side,
-    // so the mini strip sits inset — extend outer width so inner right lines up with the form.
+    const formRect = form.getBoundingClientRect()
+    const chromeRect = chrome.getBoundingClientRect()
+    const base = mergeLeft
+      ? formRect.right - chromeRect.left
+      : chromeRect.right - formRect.left
+    // `width` is border-box; inner flex ends before outer edge by padding + border on that side.
+    // Extend mirrored side so inner edge of merged chrome aligns with form edge.
     const cs = getComputedStyle(chrome)
-    const padRight = parseFloat(cs.paddingRight) || 0
-    const borderRight = parseFloat(cs.borderRightWidth) || 0
-    const w = base + padRight + borderRight
+    const padEdge = mergeLeft
+      ? parseFloat(cs.paddingRight) || 0
+      : parseFloat(cs.paddingLeft) || 0
+    const borderEdge = mergeLeft
+      ? parseFloat(cs.borderRightWidth) || 0
+      : parseFloat(cs.borderLeftWidth) || 0
+    const w = base + padEdge + borderEdge
     if (w > 0 && Number.isFinite(w)) {
       setMergedTopChromeWidthPx(Math.round(w))
     }
-  }, [mergeLeft])
+  }, [mergeLeft, mergeRight])
 
   useLayoutEffect(() => {
-    if (!mergeLeft) {
+    if (!mergeLeft && !mergeRight) {
       setMergedTopChromeWidthPx(null)
       return
     }
@@ -133,7 +148,30 @@ const App = () => {
       ro.disconnect()
       window.removeEventListener('resize', syncMergedTopChromeToForm)
     }
-  }, [mergeLeft, syncMergedTopChromeToForm, sizeCard?.width])
+  }, [mergeLeft, mergeRight, syncMergedTopChromeToForm, sizeCard?.width])
+
+  useLayoutEffect(() => {
+    const leftPieWrap = leftPieWrapRef.current
+    if (!leftPieWrap) return
+
+    const syncLeftPieSize = () => {
+      const rect = leftPieWrap.getBoundingClientRect()
+      const measured = Math.round(Math.min(rect.width, rect.height))
+      if (measured > 0 && Number.isFinite(measured)) {
+        setLeftPieSizePx(measured)
+      }
+    }
+
+    syncLeftPieSize()
+    const ro = new ResizeObserver(syncLeftPieSize)
+    ro.observe(leftPieWrap)
+    window.addEventListener('resize', syncLeftPieSize)
+
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', syncLeftPieSize)
+    }
+  }, [mergeLeft, sizeCard?.width, mergedTopChromeWidthPx])
 
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
@@ -143,6 +181,17 @@ const App = () => {
     },
     [listSelectedLocalId, setCartListSelectedLocalId],
   )
+
+  const handlePostcardPieCartToolbarAction = useCallback((key: string) => {
+    if (key === 'cardPieEdit') {
+      setCardPanelPieMergeMode((prev) => (prev === 'right' ? 'left' : 'right'))
+    }
+  }, [])
+
+  const postcardPieCartToolbarStateOverride =
+    cardPanelPieMergeMode === 'right'
+      ? { cardPieEdit: 'active' as const }
+      : { cardPieEdit: 'enabled' as const }
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
@@ -189,14 +238,15 @@ const App = () => {
                   }
                 >
                   <div className={styles.mergedTopChromePieRegion}>
-                    <div className={styles.mergedTopChromePie}>
-                      <div className={styles.appMainContentLeftPieRow}>
-                        <div className={styles.appMainContentLeftPieWrap}>
-                          <CardPie isProcessed fillContainer station="left" />
-                        </div>
-                        <div className={styles.appMainContentLeftPieToolbar}>
-                          <Toolbar section="editorPie" />
-                        </div>
+                    <div className={styles.appMainContentLeftPieRow}>
+                      <div
+                        ref={leftPieWrapRef}
+                        className={styles.appMainContentLeftPieWrap}
+                      >
+                        <CardPie isProcessed fillContainer station="left" />
+                      </div>
+                      <div className={styles.appMainContentLeftPieToolbar}>
+                        <Toolbar section="editorPie" />
                       </div>
                     </div>
                   </div>
@@ -206,12 +256,24 @@ const App = () => {
                 </div>
               ) : (
                 sectionSize != null && (
-                  <div className={styles.appMainContentLeftPieRow}>
-                    <div className={styles.appMainContentLeftPieWrap}>
-                      <CardPie isProcessed fillContainer station="left" />
-                    </div>
-                    <div className={styles.appMainContentLeftPieToolbar}>
-                      <Toolbar section="editorPie" />
+                  <div
+                    className={clsx(
+                      styles.mergedTopChrome,
+                      styles.mergedTopChrome_transparentBorder,
+                    )}
+                  >
+                    <div className={styles.mergedTopChromePieRegion}>
+                      <div className={styles.appMainContentLeftPieRow}>
+                        <div
+                          ref={leftPieWrapRef}
+                          className={styles.appMainContentLeftPieWrap}
+                        >
+                          <CardPie isProcessed fillContainer station="left" />
+                        </div>
+                        <div className={styles.appMainContentLeftPieToolbar}>
+                          <Toolbar section="editorPie" />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )
@@ -255,14 +317,42 @@ const App = () => {
               )}
             >
               {mergeRight ? (
-                <div className={styles.mergedTopChrome}>
-                  <div className={styles.mergedTopChromeMini}>
+                <div
+                  ref={mergedTopChromeRef}
+                  className={clsx(
+                    styles.mergedTopChrome,
+                    mergedTopChromeWidthPx != null &&
+                      styles.mergedTopChrome_measuredToFormRight,
+                  )}
+                  style={
+                    mergedTopChromeWidthPx != null
+                      ? { width: mergedTopChromeWidthPx }
+                      : undefined
+                  }
+                >
+                  <div
+                    className={clsx(
+                      styles.mergedTopChromeMini,
+                      styles.mergedTopChromeMini_leftPinned,
+                    )}
+                  >
                     <MiniSectionsSlot ref={cardPanelRef} embedded />
                   </div>
                   {showRightPieArchive && (
-                    <div className={styles.mergedTopChromePie}>
+                    <div className={styles.mergedTopChromePieRegion}>
                       <div className={styles.appMainContentRightPieRow}>
-                        <div className={styles.appMainContentRightPieWrap}>
+                        <div
+                          className={styles.appMainContentRightPieWrap}
+                          style={
+                            rightPieSizePx != null
+                              ? {
+                                  width: `${rightPieSizePx}px`,
+                                  height: `${rightPieSizePx}px`,
+                                  aspectRatio: 'auto',
+                                }
+                              : undefined
+                          }
+                        >
                           <CardPie
                             isProcessed={false}
                             status="cart"
@@ -274,7 +364,11 @@ const App = () => {
                         </div>
                         {rightListArchiveSource === 'cart' && (
                           <div className={styles.appMainContentRightPieToolbar}>
-                            <Toolbar section="postcardPieCart" />
+                            <Toolbar
+                              section="postcardPieCart"
+                              onActionClick={handlePostcardPieCartToolbarAction}
+                              stateOverride={postcardPieCartToolbarStateOverride}
+                            />
                           </div>
                         )}
                         {rightListArchiveSource === 'history' && (
@@ -288,27 +382,51 @@ const App = () => {
                 </div>
               ) : (
                 showRightPieArchive && (
-                  <div className={styles.appMainContentRightPieRow}>
-                    <div className={styles.appMainContentRightPieWrap}>
-                      <CardPie
-                        isProcessed={false}
-                        status="cart"
-                        id={String(rightListArchiveLocalId)}
-                        fillContainer
-                        station="right"
-                        rightListSource={rightListArchiveSource}
-                      />
+                  <div
+                    className={clsx(
+                      styles.mergedTopChrome,
+                      styles.mergedTopChrome_transparentBorder,
+                    )}
+                  >
+                    <div className={styles.mergedTopChromePieRegion}>
+                      <div className={styles.appMainContentRightPieRow}>
+                        <div
+                          className={styles.appMainContentRightPieWrap}
+                          style={
+                            rightPieSizePx != null
+                              ? {
+                                  width: `${rightPieSizePx}px`,
+                                  height: `${rightPieSizePx}px`,
+                                  aspectRatio: 'auto',
+                                }
+                              : undefined
+                          }
+                        >
+                          <CardPie
+                            isProcessed={false}
+                            status="cart"
+                            id={String(rightListArchiveLocalId)}
+                            fillContainer
+                            station="right"
+                            rightListSource={rightListArchiveSource}
+                          />
+                        </div>
+                        {rightListArchiveSource === 'cart' && (
+                          <div className={styles.appMainContentRightPieToolbar}>
+                            <Toolbar
+                              section="postcardPieCart"
+                              onActionClick={handlePostcardPieCartToolbarAction}
+                              stateOverride={postcardPieCartToolbarStateOverride}
+                            />
+                          </div>
+                        )}
+                        {rightListArchiveSource === 'history' && (
+                          <div className={styles.appMainContentRightPieToolbar}>
+                            <Toolbar section="postcardPieHistory" />
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    {rightListArchiveSource === 'cart' && (
-                      <div className={styles.appMainContentRightPieToolbar}>
-                        <Toolbar section="postcardPieCart" />
-                      </div>
-                    )}
-                    {rightListArchiveSource === 'history' && (
-                      <div className={styles.appMainContentRightPieToolbar}>
-                        <Toolbar section="postcardPieHistory" />
-                      </div>
-                    )}
                   </div>
                 )
               )}

@@ -38,9 +38,11 @@ import styles from './Toolbar.module.scss'
 export const Toolbar = ({
   section,
   stateOverride,
+  onActionClick,
 }: {
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
+  onActionClick?: (key: IconKey) => void
 }) => {
   const {
     state: storeState,
@@ -287,6 +289,7 @@ export const Toolbar = ({
           }
 
           e.preventDefault()
+          onActionClick?.(key as IconKey)
           onAction(key as IconKey)
         }}
       >

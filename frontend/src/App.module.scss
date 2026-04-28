@@ -166,10 +166,21 @@
   padding: 0.25rem 0.45rem;
 }
 
+.mergedTopChrome_transparentBorder {
+  border-color: transparent;
+  box-shadow: none;
+}
+
 // Width set inline from form.getBoundingClientRect().right − chrome.left (see App.tsx).
 .mergedTopChrome_measuredToForm {
   max-width: 100%;
   align-self: flex-start;
+}
+
+// Mirrored measured mode for right merge: keep measured width and pin to right.
+.mergedTopChrome_measuredToFormRight {
+  max-width: 100%;
+  align-self: flex-end;
 }
 
 // Grows into space left of the mini strip; CardPie is centered in that band.
@@ -180,17 +191,6 @@
   display: flex;
   align-items: stretch;
   justify-content: center;
-}
-
-.mergedTopChromePie {
-  flex: 0 0 auto;
-  flex-shrink: 0;
-  min-width: min-content;
-  min-height: 0;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-
   .appMainContentLeftPieRow,
   .appMainContentRightPieRow {
     width: auto;
@@ -204,6 +204,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.mergedTopChromeMini_leftPinned {
+  justify-content: flex-start;
 }
 
 .appMainContentLeftPieRow,
@@ -229,18 +233,15 @@
   justify-content: center;
   width: 2.4rem;
   height: calc(100% - 8px);
-  // border: solid 1px red;
 }
 
 .appMainContentLeftPieWrap,
 .appMainContentRightPieWrap {
   // flex: 0 0 auto;
-  height: calc(100% - 8px);
+  height: calc(100% - 0.5rem);
   // min-height: 0;
   aspect-ratio: 1;
   // max-width: 100%;
-  // margin-top: 4px;
-  // margin-bottom: 4px;
   position: relative;
   // display: flex;
   // align-items: center;
@@ -316,6 +317,7 @@
   align-items: stretch;
   border-radius: 1rem;
   overflow: hidden;
+  // border: solid 1px red;
 }
 
 .mainCardSectionToolbar {

@@ -291,6 +291,10 @@ export function useDispatchPlanListEntries(
         (recipientDetailLine == null || recipientDetailLine === '')
           ? undefined
           : sessionRecipientDetail
+      const trimmedRecipientDetail =
+        recipientDetailLine != null && recipientDetailLine.trim() !== ''
+          ? recipientDetailLine
+          : undefined
       const recipientRef = branchKey.includes('|')
         ? branchKey.split('|')[1] ?? 'session'
         : 'session'
@@ -308,7 +312,7 @@ export function useDispatchPlanListEntries(
         dateLabel: formatDispatchDateLabel(d),
         detailLine:
           fromCartDetailLine ??
-          recipientDetailLine ??
+          trimmedRecipientDetail ??
           sessionLineFallback ??
           undefined,
         priceLine: listEntryPriceLine(fromCart),
@@ -472,10 +476,14 @@ export function useDispatchPlanListEntries(
           recipient: String(recipientRef),
           aroma: String(selectedAroma?.index ?? ''),
         }
+        const undatedDetailLine =
+          slot.detailLine != null && slot.detailLine.trim() !== ''
+            ? slot.detailLine
+            : sessionRecipientDetail
         entries.push({
           id: `undated-rcpt-${slot.branchKey}-${ri}`,
           dateLabel: '',
-          detailLine: slot.detailLine,
+          detailLine: undatedDetailLine,
           priceLine: undefined,
           previewUrl: listPreviewUrl ?? undefined,
           cardId: listPreviewUrl ? 'current_session' : undefined,
