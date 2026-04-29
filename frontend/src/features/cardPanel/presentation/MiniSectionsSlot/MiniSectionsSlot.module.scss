@@ -9,6 +9,11 @@
   height: 100%;
 }
 
+.rootRightMode {
+  background-color: $color-cart-list-surface;
+  border-color: $color-cart-list-border;
+}
+
 .rootEmbedded {
   height: 100%;
   min-height: 0;

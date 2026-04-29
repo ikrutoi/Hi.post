@@ -26,10 +26,11 @@ const SECTIONS_ORDER: CardPanelSection[] = [
 export type MiniSectionsSlotProps = {
   /** When true, outer chrome is omitted — parent supplies one frame (e.g. merged with CardPie). */
   embedded?: boolean
+  rightModeActive?: boolean
 }
 
 export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps>(
-  function MiniSectionsSlot({ embedded = false }, ref) {
+  function MiniSectionsSlot({ embedded = false, rightModeActive = false }, ref) {
     const { sizeCard } = useSizeFacade()
     const { editorState } = useCardEditorFacade()
     const { state: stateCardPanel } = useCardPanelFacade()
@@ -56,7 +57,10 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
     return (
       <div
         ref={ref}
-        className={clsx(embedded ? styles.rootEmbedded : styles.root)}
+        className={clsx(
+          embedded ? styles.rootEmbedded : styles.root,
+          !embedded && rightModeActive && styles.rootRightMode,
+        )}
         style={{
           width:
             totalWidth != null ? `min(100%, ${totalWidth}px)` : '100%',

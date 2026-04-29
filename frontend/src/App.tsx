@@ -217,7 +217,10 @@ const App = () => {
                       : styles.mainCardPanelEntryLeft_inactive,
                   )}
                 ></div>
-                <MiniSectionsSlot ref={cardPanelRef} />
+                <MiniSectionsSlot
+                  ref={cardPanelRef}
+                  rightModeActive={activePieSide === 'right'}
+                />
                 <div
                   className={clsx(
                     styles.mainCardPanelEntryRight,
