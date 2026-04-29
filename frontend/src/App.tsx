@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import {
@@ -31,6 +31,7 @@ import { useSizeFacade } from '@layout/application/facades'
 import { useRecordSizeCard } from '@shared/hooks'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { useCartFacade } from './features/cart/application/facades/useCartFacade'
+import { selectCartItems } from '@cart/infrastructure/selectors'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
@@ -63,11 +64,25 @@ const App = () => {
   const { activeSection } = useSectionMenuFacade()
   const { listPanelOpen, listSelectedLocalId, setCartListSelectedLocalId } =
     useCartFacade()
+  const prevCartListPanelOpen = useRef(listPanelOpen)
+
+  useEffect(() => {
+    if (
+      prevCartListPanelOpen.current &&
+      !listPanelOpen &&
+      activePieSide === 'right'
+    ) {
+      setActivePieSide('left')
+    }
+    prevCartListPanelOpen.current = listPanelOpen
+  }, [listPanelOpen, activePieSide])
+
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const historyListSelectedLocalId = useAppSelector(
     selectHistoryListSelectedLocalId,
   )
+  const cartItems = useAppSelector(selectCartItems)
 
   const rightListArchiveLocalId =
     listPanelOpen && listSelectedLocalId != null
@@ -76,12 +91,25 @@ const App = () => {
         ? historyListSelectedLocalId
         : null
 
-  const rightListArchiveSource =
-    listPanelOpen && listSelectedLocalId != null
-      ? ('cart' as const)
-      : historyListPanelOpen && historyListSelectedLocalId != null
-        ? ('history' as const)
-        : null
+  /** History list rows still use cart toolbar when the postcard is still in `cart` status. */
+  const rightListArchiveSource = useMemo((): 'cart' | 'history' | null => {
+    if (listPanelOpen && listSelectedLocalId != null) {
+      return 'cart'
+    }
+    if (historyListPanelOpen && historyListSelectedLocalId != null) {
+      const postcard = cartItems.find(
+        (p) => p.localId === historyListSelectedLocalId,
+      )
+      return postcard?.status === 'cart' ? 'cart' : 'history'
+    }
+    return null
+  }, [
+    listPanelOpen,
+    listSelectedLocalId,
+    historyListPanelOpen,
+    historyListSelectedLocalId,
+    cartItems,
+  ])
 
   const rightListArchiveBundle = useAppSelector((state) =>
     rightListArchiveLocalId != null
@@ -104,8 +132,10 @@ const App = () => {
         activePieSide === 'right'
           ? (rightListArchiveBundle?.sections ?? null)
           : null,
+      mirrorTargetLocalId:
+        activePieSide === 'right' ? rightListArchiveLocalId : null,
     }),
-    [activePieSide, rightListArchiveBundle],
+    [activePieSide, rightListArchiveBundle, rightListArchiveLocalId],
   )
 
   const mergeLeft = false
@@ -234,40 +264,42 @@ const App = () => {
               {activeSection === 'cardphoto' && <CardphotoRightSlot />}
               {cardPieListPanelOpen && <CardPieLeftSlot />}
             </div>
-            <div className={styles.appMainTopCenterPanel}>
-              <div className={clsx(styles.mainCardPanel)}>
-                <div
-                  className={clsx(
-                    styles.mainCardPanelEntryLeft,
-                    activePieSide === 'left'
-                      ? styles.mainCardPanelEntryLeft_active
-                      : styles.mainCardPanelEntryLeft_inactive,
-                  )}
-                ></div>
-                <RightListArchiveMiniProvider value={centerStripMirrorValue}>
-                  <MiniSectionsSlot
-                    ref={cardPanelRef}
-                    rightModeActive={activePieSide === 'right'}
-                  />
-                </RightListArchiveMiniProvider>
-                <div
-                  className={clsx(
-                    styles.mainCardPanelEntryRight,
-                    activePieSide === 'right'
-                      ? styles.mainCardPanelEntryRight_active
-                      : styles.mainCardPanelEntryRight_inactive,
-                  )}
-                ></div>
+            <RightListArchiveMiniProvider value={centerStripMirrorValue}>
+              <div className={styles.rightListArchiveMiniSubtree}>
+                <div className={styles.appMainTopCenterPanel}>
+                  <div className={clsx(styles.mainCardPanel)}>
+                    <div
+                      className={clsx(
+                        styles.mainCardPanelEntryLeft,
+                        activePieSide === 'left'
+                          ? styles.mainCardPanelEntryLeft_active
+                          : styles.mainCardPanelEntryLeft_inactive,
+                      )}
+                    ></div>
+                    <MiniSectionsSlot
+                      ref={cardPanelRef}
+                      rightModeActive={activePieSide === 'right'}
+                    />
+                    <div
+                      className={clsx(
+                        styles.mainCardPanelEntryRight,
+                        activePieSide === 'right'
+                          ? styles.mainCardPanelEntryRight_active
+                          : styles.mainCardPanelEntryRight_inactive,
+                      )}
+                    ></div>
+                  </div>
+                </div>
+                <div className={clsx(styles.appMainContentCenter)}>
+                  <div className={styles.mainCardSectionToolbar}>
+                    <CardSectionToolbar />
+                  </div>
+                  <div ref={formRef} className={clsx(styles.mainForm)}>
+                    <CardSectionEditor />
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className={clsx(styles.appMainContentCenter)}>
-              <div className={styles.mainCardSectionToolbar}>
-                <CardSectionToolbar />
-              </div>
-              <div ref={formRef} className={clsx(styles.mainForm)}>
-                <CardSectionEditor />
-              </div>
-            </div>
+            </RightListArchiveMiniProvider>
             <div
               className={clsx(
                 styles.appMainContentRightPieSlot,

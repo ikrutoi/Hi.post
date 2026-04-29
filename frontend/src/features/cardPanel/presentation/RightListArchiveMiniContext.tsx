@@ -10,12 +10,15 @@ export type RightListArchiveMiniContextValue = {
   centerStripListMirrorEnabled: boolean
   mirrorInner: CardPieInnerData | null
   mirrorSectionFlags: CardPieSectionFlags | null
+  /** `localId` выбранной строки корзины/истории, когда активен правый пирог. */
+  mirrorTargetLocalId: number | null
 }
 
 const defaultValue: RightListArchiveMiniContextValue = {
   centerStripListMirrorEnabled: false,
   mirrorInner: null,
   mirrorSectionFlags: null,
+  mirrorTargetLocalId: null,
 }
 
 const RightListArchiveMiniContext =

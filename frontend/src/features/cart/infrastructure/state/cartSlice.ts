@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { Cart } from '@cart/domain/types'
 import type { Postcard } from '@entities/postcard'
+import type { AromaItem } from '@entities/aroma/domain/types'
 
 const initialState: Cart = {
   items: [],
@@ -45,6 +46,16 @@ const cartSlice = createSlice({
         state.items[index] = action.payload
       }
     },
+    setCartItemCardAroma(
+      state,
+      action: PayloadAction<{ localId: number; aroma: AromaItem }>,
+    ) {
+      const { localId, aroma } = action.payload
+      const item = state.items.find((i) => i.localId === localId)
+      if (item != null) {
+        item.card.aroma = { ...aroma }
+      }
+    },
     clearCart(state) {
       state.items = []
       state.amount = { value: 0, currency: state.amount.currency }
@@ -60,6 +71,7 @@ export const {
   addItem,
   removeItem,
   updateItem,
+  setCartItemCardAroma,
   clearCart,
 } = cartSlice.actions
 export default cartSlice.reducer

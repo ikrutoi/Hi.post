@@ -26,7 +26,7 @@ export const AromaTile: React.FC<AromaTileProps> = ({
   return (
     <button
       className={clsx(styles.tile, { [styles.tileSelected]: isSelected })}
-      type="submit"
+      type="button"
       onClick={handleClick}
       aria-label={label}
     >

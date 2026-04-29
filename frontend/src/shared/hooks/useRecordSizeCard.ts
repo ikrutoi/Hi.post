@@ -1,14 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useLayoutEffect } from 'react'
 import {
   getSizeMiniCard,
   getSizeCard,
-  // getSizeToolbarContour,
 } from '@shared/utils/layout'
-// import { useLayoutFacade } from '@layout/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
-import { getMaxMiniCardsCount } from '@shared/utils/layout'
-import { roundTo } from '@shared/helpers'
-import type { SizeCard } from '@layout/domain/types'
 
 export interface UseRecordSizeCardOptions {
   skipPanelMeasure?: boolean
@@ -23,62 +18,71 @@ export const useRecordSizeCard = (
     remSize,
     setSizeCard,
     setSizeMiniCard,
-    // setScale,
-    // setSizeToolbarContour,
   } = useSizeFacade()
   const skipPanelMeasure = options?.skipPanelMeasure ?? false
 
-  useEffect(() => {
-    const elementForm = formRef.current
-    const elementCardPanel = cardPanelRef.current
-    if (!elementForm || !elementCardPanel) return
+  useLayoutEffect(() => {
+    let cancelled = false
+    let resizeObserver: ResizeObserver | null = null
+    let rafId = 0
 
-    const updateSize = () => {
-      const widthForm = elementForm.clientWidth
-      const heightForm = elementForm.clientHeight
-      if (skipPanelMeasure) {
-        const currentRemSize = remSize ?? 16
+    const attach = (): boolean => {
+      const elementForm = formRef.current
+      const elementCardPanel = cardPanelRef.current
+      if (!elementForm || !elementCardPanel) return false
+
+      const updateSize = () => {
+        if (cancelled) return
+        const widthForm = elementForm.clientWidth
+        const heightForm = elementForm.clientHeight
+        if (skipPanelMeasure) {
+          const currentRemSize = remSize ?? 16
+          const resultSizeCard = getSizeCard(
+            { width: widthForm, height: heightForm },
+            currentRemSize,
+          )
+          setSizeCard(resultSizeCard)
+          return
+        }
+        const widthCardPanel = elementCardPanel.clientWidth
+        const heightCardPanel = elementCardPanel.clientHeight
+        const resultSizeMiniCard = getSizeMiniCard({
+          width: widthCardPanel,
+          height: heightCardPanel,
+        })
+        const currentRemSize = remSize ? remSize : 16
         const resultSizeCard = getSizeCard(
           { width: widthForm, height: heightForm },
           currentRemSize,
         )
+
+        setSizeMiniCard(resultSizeMiniCard)
         setSizeCard(resultSizeCard)
-        return
+
+        if (!remSize) return
       }
-      const widthCardPanel = elementCardPanel.clientWidth
-      const heightCardPanel = elementCardPanel.clientHeight
-      const resultSizeMiniCard = getSizeMiniCard({
-        width: widthCardPanel,
-        height: heightCardPanel,
-      })
-      const currentRemSize = remSize ? remSize : 16
-      const resultSizeCard = getSizeCard(
-        { width: widthForm, height: heightForm },
-        currentRemSize,
-      )
-      // const resultSizeToolbarContour = getSizeToolbarContour(
-      //   resultSizeCard,
-      //   currentRemSize,
-      // )
-      // const scale = roundTo.nearest(
-      //   resultSizeCard.width / resultSizeMiniCard.width,
-      // )
 
-      setSizeMiniCard(resultSizeMiniCard)
-      setSizeCard(resultSizeCard)
-      // setSizeToolbarContour(resultSizeToolbarContour)
-      // setScale(scale)
+      updateSize()
 
-      if (!remSize) return
+      resizeObserver = new ResizeObserver(() => updateSize())
+      resizeObserver.observe(elementForm)
+      resizeObserver.observe(elementCardPanel)
+      return true
     }
 
-    updateSize()
+    let attempts = 0
+    const tick = () => {
+      if (cancelled) return
+      if (attach()) return
+      if (++attempts > 60) return
+      rafId = requestAnimationFrame(tick)
+    }
+    tick()
 
-    const resizeObserver = new ResizeObserver(() => updateSize())
-    resizeObserver.observe(elementForm)
-
-    return () => resizeObserver.disconnect()
-  }, [skipPanelMeasure])
-
-  // return sizeMiniCard
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(rafId)
+      resizeObserver?.disconnect()
+    }
+  }, [remSize, skipPanelMeasure, setSizeCard, setSizeMiniCard])
 }
