@@ -4,12 +4,12 @@
 @mixin mini-sections-slot-chrome {
   cursor: default;
   min-height: 2rem;
-  border-radius: 1rem;
-  border: 1px solid #fff;
-  background-color: $color-app-inner;
-  box-shadow:
-    $shadow-card,
-    inset 0 0 0 3px $color-app-strip;
+  border-radius: 0.75rem;
+  // border: 1px solid #fff;
+  // background-color: $color-app-inner;
+  // box-shadow:
+  //   $shadow-card,
+  //   inset 0 0 0 3px $color-app-strip;
   display: flex;
   align-items: center;
   justify-content: center;

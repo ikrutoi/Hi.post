@@ -31,6 +31,7 @@
 
 .cell {
   position: relative;
+  z-index: 1;
   flex-shrink: 0;
   // Allow clear button to stick out beyond mini-card corner.
   overflow: visible;
