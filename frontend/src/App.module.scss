@@ -146,8 +146,8 @@
 }
 
 .appMainContentLeftPieSlot_inactive {
-  background-color: $color-app-inner;
-  border: 1px solid $color-app-inner;
+  background-color: transparent;
+  border-color: transparent;
 }
 
 .appMainContentLeftPieSlot_mergedWithCenter {
@@ -179,8 +179,10 @@
 }
 
 .appMainContentRightPieSlot_active {
-  background-color: transparent;
-  border-color: transparent;
+  background-color: #fff;
+  border-top: 1px solid $color-app-strip;
+  border-right: 1px solid $color-app-strip;
+  border-bottom: 1px solid $color-app-strip;
 }
 
 .appMainContentRightPieSlot_inactive {
@@ -337,9 +339,8 @@
 }
 
 .mainCardPanelEntryLeft_inactive {
-  background-color: $color-app-inner;
-  border-top: 1px solid $color-app-inner;
-  border-bottom: 1px solid $color-app-inner;
+  background-color: transparent;
+  border-color: transparent;
 }
 
 .mainCardPanelEntryRight {
@@ -353,8 +354,9 @@
 }
 
 .mainCardPanelEntryRight_active {
-  background-color: transparent;
-  border-color: transparent;
+  background-color: #fff;
+  border-top: 1px solid $color-app-strip;
+  border-bottom: 1px solid $color-app-strip;
 }
 
 .mainCardPanelEntryRight_inactive {

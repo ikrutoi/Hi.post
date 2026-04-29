@@ -98,7 +98,6 @@ const App = () => {
   }, [])
   const handleEditorPieToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
-    setActivePieSide((prev) => (prev === 'left' ? 'right' : 'left'))
   }, [])
   const postcardPieCartToolbarStateOverride = {
     cardPieEdit: 'enabled' as const,
@@ -157,6 +156,7 @@ const App = () => {
                         <Toolbar
                           section="editorPie"
                           onActionClick={handleEditorPieToolbarAction}
+                          mergedWithCenter={activePieSide === 'left'}
                         />
                       </div>
                     </div>
@@ -185,6 +185,7 @@ const App = () => {
                           <Toolbar
                             section="editorPie"
                             onActionClick={handleEditorPieToolbarAction}
+                            mergedWithCenter={activePieSide === 'left'}
                           />
                         </div>
                       </div>
