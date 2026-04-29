@@ -185,10 +185,10 @@
 }
 
 .appMainContentRightPieSlot_active {
-  background-color: $color-cart-list-surface;
-  border-top: 1px solid $color-cart-list-border;
-  border-right: 1px solid $color-cart-list-border;
-  border-bottom: 1px solid $color-cart-list-border;
+  background-color: #fff;
+  border-top: 1px solid $color-app-strip;
+  border-right: 1px solid $color-app-strip;
+  border-bottom: 1px solid $color-app-strip;
 }
 
 .appMainContentRightPieSlot_inactive {
@@ -366,9 +366,9 @@
 }
 
 .mainCardPanelEntryRight_active {
-  background-color: $color-cart-list-surface;
-  border-top: 1px solid $color-cart-list-border;
-  border-bottom: 1px solid $color-cart-list-border;
+  background-color: #fff;
+  border-top: 1px solid $color-app-strip;
+  border-bottom: 1px solid $color-app-strip;
 }
 
 .mainCardPanelEntryRight_inactive {
