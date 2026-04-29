@@ -12,6 +12,7 @@ import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { useAppSelector } from '@app/hooks'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 
 interface MiniCardProps {
   section: CardSection
@@ -32,6 +33,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
 }) => {
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
+  const { centerStripListMirrorEnabled } = useRightListArchiveMini()
 
   const { changeSection } = useSectionMenuFacade()
   const { editorState, removeSection } = useCardEditorFacade()
@@ -40,13 +42,15 @@ export const MiniCard: React.FC<MiniCardProps> = ({
 
   const { render } = useMiniCardRender()
 
-  const showClearButton = !!editorState
-    ? section === 'envelope'
-      ? hasEnvelopeApplied
-      : section === 'date'
-        ? mergedDispatchDates.length > 0
-        : (editorState as any)?.[section]?.isComplete === true
-    : false
+  const showClearButton =
+    !centerStripListMirrorEnabled &&
+    !!editorState
+      ? section === 'envelope'
+        ? hasEnvelopeApplied
+        : section === 'date'
+          ? mergedDispatchDates.length > 0
+          : (editorState as any)?.[section]?.isComplete === true
+      : false
 
   return (
     <div

@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import {
@@ -36,6 +36,8 @@ import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
 import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
+import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
+import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import styles from './App.module.scss'
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
@@ -80,6 +82,31 @@ const App = () => {
       : historyListPanelOpen && historyListSelectedLocalId != null
         ? ('history' as const)
         : null
+
+  const rightListArchiveBundle = useAppSelector((state) =>
+    rightListArchiveLocalId != null
+      ? selectListArchiveCardPieBundle(
+          state,
+          String(rightListArchiveLocalId),
+          rightListArchiveSource,
+        )
+      : null,
+  )
+
+  const centerStripMirrorValue = useMemo(
+    () => ({
+      centerStripListMirrorEnabled: activePieSide === 'right',
+      mirrorInner:
+        activePieSide === 'right'
+          ? (rightListArchiveBundle?.currentData?.data ?? null)
+          : null,
+      mirrorSectionFlags:
+        activePieSide === 'right'
+          ? (rightListArchiveBundle?.sections ?? null)
+          : null,
+    }),
+    [activePieSide, rightListArchiveBundle],
+  )
 
   const mergeLeft = false
   const mergeRight = false
@@ -217,10 +244,12 @@ const App = () => {
                       : styles.mainCardPanelEntryLeft_inactive,
                   )}
                 ></div>
-                <MiniSectionsSlot
-                  ref={cardPanelRef}
-                  rightModeActive={activePieSide === 'right'}
-                />
+                <RightListArchiveMiniProvider value={centerStripMirrorValue}>
+                  <MiniSectionsSlot
+                    ref={cardPanelRef}
+                    rightModeActive={activePieSide === 'right'}
+                  />
+                </RightListArchiveMiniProvider>
                 <div
                   className={clsx(
                     styles.mainCardPanelEntryRight,

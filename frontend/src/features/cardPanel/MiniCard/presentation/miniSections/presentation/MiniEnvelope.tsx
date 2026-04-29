@@ -5,20 +5,33 @@ import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { useEnvelopeFacade } from '@envelope/application/facades'
 import { getEnvelopeRecipientCircleSteps } from './concentricCircleSteps'
 import { useSenderFacade } from '@/features/envelope/sender/application/facades'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 
 export const MiniEnvelope: React.FC = () => {
+  const { centerStripListMirrorEnabled, mirrorInner } = useRightListArchiveMini()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('envelope')
   const { appliedRecipientAddress, recipient } = useEnvelopeFacade()
   const { state: senderState, isEnabled } = useSenderFacade()
-  const count = recipient.applied.length
-  const hasSenderApplied = isEnabled && senderState.applied.length > 0
-  const showMini = count > 0 || hasSenderApplied
+
+  const listInner =
+    centerStripListMirrorEnabled && mirrorInner != null ? mirrorInner : null
+
+  const count =
+    listInner != null ? listInner.recipientCount : recipient.applied.length
+  const hasSenderApplied =
+    listInner == null && isEnabled && senderState.applied.length > 0
+  const showMini = listInner != null ? count > 0 : count > 0 || hasSenderApplied
   const isSingle = count === 1
   const { steps, isMany } = getEnvelopeRecipientCircleSteps(count)
   const stepsToRender = isSingle
     ? getEnvelopeRecipientCircleSteps(2).steps
     : steps
+
+  const nameDisplay =
+    listInner?.recipient?.name ?? appliedRecipientAddress.name
+  const countryDisplay =
+    listInner?.recipient?.country ?? appliedRecipientAddress.country
 
   const nameWrapperRef = useRef<HTMLDivElement | null>(null)
   const nameInnerRef = useRef<HTMLSpanElement | null>(null)
@@ -61,7 +74,11 @@ export const MiniEnvelope: React.FC = () => {
     return () => {
       window.removeEventListener('resize', checkOverflow)
     }
-  }, [isSingle, appliedRecipientAddress.name, appliedRecipientAddress.country])
+  }, [isSingle, nameDisplay, countryDisplay])
+
+  if (centerStripListMirrorEnabled && mirrorInner == null) {
+    return null
+  }
 
   if (!showMini) {
     return null
@@ -102,7 +119,6 @@ export const MiniEnvelope: React.FC = () => {
           ))}
         </div>
       )}
-      {/* <div className={styles.miniEnvelopeLogo} /> */}
       {count > 0 &&
         (isSingle ? (
           <div className={styles.miniEnvelopeSingleContent}>
@@ -115,7 +131,7 @@ export const MiniEnvelope: React.FC = () => {
               )}
             >
               <span ref={nameInnerRef} className={styles.miniEnvelopeNameInner}>
-                {appliedRecipientAddress.name}
+                {nameDisplay}
               </span>
             </div>
             <div
@@ -130,13 +146,13 @@ export const MiniEnvelope: React.FC = () => {
                 ref={countryInnerRef}
                 className={styles.miniEnvelopeCountryInner}
               >
-                {appliedRecipientAddress.country}
+                {countryDisplay}
               </span>
             </div>
           </div>
         ) : (
           <div className={styles.miniEnvelopeCount}>
-            <span>{recipient.applied.length}</span>
+            <span>{count}</span>
           </div>
         ))}
       {hasSenderApplied && (

@@ -11,6 +11,7 @@ import styles from './MiniSectionsSlot.module.scss'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 
 const PARTS_TOTAL = 6
 const GAP_PARTS = 1
@@ -38,6 +39,10 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
     const hasEnvelopeApplied = useAppSelector(selectHasEnvelopeAppliedContent)
     const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
     const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
+    const {
+      centerStripListMirrorEnabled,
+      mirrorSectionFlags,
+    } = useRightListArchiveMini()
 
     const totalWidth =
       sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width : null
@@ -53,6 +58,11 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
             orientation: 'landscape' as const,
           }
         : null
+
+    const mirrorMinisFromRightPie =
+      rightModeActive &&
+      centerStripListMirrorEnabled &&
+      mirrorSectionFlags != null
 
     return (
       <div
@@ -84,12 +94,17 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
                   : section === 'cardtext'
                     ? editorState.cardtext?.isComplete
                     : editorState[section]?.isComplete
-              const isEmpty =
-                section === 'date'
-                  ? mergedDispatchDates.length === 0
-                  : section === 'envelope'
-                    ? !isSectionComplete && !hasEnvelopeApplied
-                    : !isSectionComplete
+              const isEmpty = mirrorMinisFromRightPie
+                ? !Boolean(mirrorSectionFlags[section])
+                : rightModeActive &&
+                    centerStripListMirrorEnabled &&
+                    mirrorSectionFlags == null
+                  ? true
+                  : section === 'date'
+                    ? mergedDispatchDates.length === 0
+                    : section === 'envelope'
+                      ? !isSectionComplete && !hasEnvelopeApplied
+                      : !isSectionComplete
               return (
                 <div
                   key={section}
@@ -105,7 +120,7 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
                     zIndex={index}
                     position={0}
                     isPacked={true}
-                      isEmpty={isEmpty}
+                    isEmpty={isEmpty}
                   />
                 </div>
               )
