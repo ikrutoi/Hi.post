@@ -3,7 +3,9 @@
 
 .root {
   @include mini-sections-slot-chrome;
-  background-color: $color-app-inner-light;
+  background-color: #fff;
+  border: 1px solid $color-app-strip;
+  box-shadow: none;
   height: 100%;
 }
 

@@ -48,7 +48,6 @@ const App = () => {
   const leftPieWrapRef = useRef<HTMLDivElement>(null)
   const [leftPieSizePx, setLeftPieSizePx] = useState<number | null>(null)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
-  const [mergedPieSide, setMergedPieSide] = useState<'left' | 'right'>('left')
 
   useAuthInit()
   useLayoutInit()
@@ -90,9 +89,9 @@ const App = () => {
         ? ('history' as const)
         : null
 
-  const mergeLeft = mergedPieSide === 'left'
-  const mergeRight = mergedPieSide === 'right'
-  const centerMergedWithPie = mergeLeft || mergeRight
+  const mergeLeft = false
+  const mergeRight = false
+  const centerMergedWithPie = false
   const showRightPieArchive =
     sectionSize != null && rightListArchiveLocalId != null
 
@@ -130,11 +129,9 @@ const App = () => {
 
   const handlePostcardPieCartToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit') return
-    setMergedPieSide((prev) => (prev === 'left' ? 'right' : 'left'))
   }, [])
   const handleEditorPieToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
-    setMergedPieSide((prev) => (prev === 'left' ? 'right' : 'left'))
   }, [])
   const postcardPieCartToolbarStateOverride = { cardPieEdit: 'enabled' as const }
 

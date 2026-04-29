@@ -12,7 +12,7 @@ import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/select
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 
-const PARTS_TOTAL = 5
+const PARTS_TOTAL = 6
 const GAP_PARTS = 1
 
 const SECTIONS_ORDER: CardPanelSection[] = [

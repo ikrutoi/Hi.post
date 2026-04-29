@@ -129,7 +129,7 @@
   align-items: flex-start;
 
   .mergedTopChrome {
-    background-color: $color-app-inner-light;
+    box-shadow: none;
   }
 }
 
@@ -152,7 +152,7 @@
   // border: solid 1px red;
 
   .mergedTopChrome {
-    background-color: $color-app-inner-light;
+    box-shadow: none;
   }
 }
 
@@ -305,7 +305,7 @@
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: stretch;
   border-radius: 1rem;
   overflow: hidden;
