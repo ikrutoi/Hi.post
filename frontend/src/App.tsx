@@ -278,7 +278,7 @@ const App = () => {
                               stateOverride={
                                 postcardPieCartToolbarStateOverride
                               }
-                              mergedWithCenter={false}
+                              mergedWithCenter={activePieSide === 'right'}
                             />
                           </div>
                         )}
@@ -325,7 +325,7 @@ const App = () => {
                                   stateOverride={
                                     postcardPieCartToolbarStateOverride
                                   }
-                                  mergedWithCenter={false}
+                                  mergedWithCenter={activePieSide === 'right'}
                                 />
                               </div>
                             )}

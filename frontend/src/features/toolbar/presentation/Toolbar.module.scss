@@ -516,13 +516,15 @@
 
 .toolbarPostcardPieCart.toolbarMergedWithCenter {
   .toolbarKey {
-    background-color: $color-app-inner-light;
+    background-color: #fff;
+    transition: background-color 0.15s ease;
   }
 }
 
 .toolbarEditorPie.toolbarMergedWithCenter {
   .toolbarKey {
     background-color: #fff;
+    transition: background-color 0.15s ease;
   }
 }
 

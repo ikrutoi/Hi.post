@@ -136,6 +136,9 @@
   border-top: 1px solid $color-app-strip;
   border-left: 1px solid $color-app-strip;
   border-bottom: 1px solid $color-app-strip;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .appMainContentLeftPieSlot_active {
@@ -175,6 +178,9 @@
   border-top: 1px solid $color-app-strip;
   border-right: 1px solid $color-app-strip;
   border-bottom: 1px solid $color-app-strip;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
   // border: solid 1px blue;
 }
 
@@ -330,6 +336,9 @@
   border-top: 1px solid $color-app-strip;
   border-bottom: 1px solid $color-app-strip;
   left: 0;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .mainCardPanelEntryLeft_active {
@@ -351,6 +360,9 @@
   border-top: 1px solid $color-app-strip;
   border-bottom: 1px solid $color-app-strip;
   right: 0;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .mainCardPanelEntryRight_active {
