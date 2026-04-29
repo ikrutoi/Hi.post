@@ -514,6 +514,12 @@
   }
 }
 
+.toolbarPostcardPieCart.toolbarMergedWithCenter {
+  .toolbarKey {
+    background-color: $color-app-inner-light;
+  }
+}
+
 .toolbarRightSidebar {
   flex-direction: column;
   align-items: center;

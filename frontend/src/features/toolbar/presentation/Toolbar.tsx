@@ -39,10 +39,12 @@ export const Toolbar = ({
   section,
   stateOverride,
   onActionClick,
+  mergedWithCenter = false,
 }: {
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
   onActionClick?: (key: IconKey) => void
+  mergedWithCenter?: boolean
 }) => {
   const {
     state: storeState,
@@ -320,7 +322,11 @@ export const Toolbar = ({
 
   return (
     <div
-      className={clsx(styles.toolbar, styles[`toolbar${capitalize(section)}`])}
+      className={clsx(
+        styles.toolbar,
+        styles[`toolbar${capitalize(section)}`],
+        mergedWithCenter && styles.toolbarMergedWithCenter,
+      )}
       style={toolbarStyle}
     >
       {groups.map((group: ToolbarGroup, idx) => (

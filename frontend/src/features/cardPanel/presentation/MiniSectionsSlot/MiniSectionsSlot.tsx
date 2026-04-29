@@ -12,7 +12,7 @@ import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/select
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 
-const PARTS_TOTAL = 6
+const PARTS_TOTAL = 5
 const GAP_PARTS = 1
 
 const SECTIONS_ORDER: CardPanelSection[] = [
@@ -58,7 +58,8 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
         ref={ref}
         className={clsx(embedded ? styles.rootEmbedded : styles.root)}
         style={{
-          width: totalWidth != null ? `${totalWidth}px` : undefined,
+          width:
+            totalWidth != null ? `min(100%, ${totalWidth}px)` : '100%',
           minWidth: sizeCard?.width === 0 ? '8rem' : undefined,
         }}
       >

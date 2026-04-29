@@ -39,8 +39,6 @@ import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import styles from './App.module.scss'
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
-type CardPanelPieMergeMode = 'none' | 'left' | 'right'
-
 const App = () => {
   const appRef = useRef<HTMLDivElement>(null)
   const mainRef = useRef<HTMLDivElement>(null)
@@ -48,13 +46,9 @@ const App = () => {
   const cardPanelRef = useRef<HTMLDivElement>(null)
   const mergedTopChromeRef = useRef<HTMLDivElement>(null)
   const leftPieWrapRef = useRef<HTMLDivElement>(null)
-  const [mergedTopChromeWidthPx, setMergedTopChromeWidthPx] = useState<
-    number | null
-  >(null)
   const [leftPieSizePx, setLeftPieSizePx] = useState<number | null>(null)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
-  const [cardPanelPieMergeMode, setCardPanelPieMergeMode] =
-    useState<CardPanelPieMergeMode>('left')
+  const [mergedPieSide, setMergedPieSide] = useState<'left' | 'right'>('left')
 
   useAuthInit()
   useLayoutInit()
@@ -96,59 +90,11 @@ const App = () => {
         ? ('history' as const)
         : null
 
-  const mergePie = cardPanelPieMergeMode
-  const mergeLeft = mergePie === 'left'
-  const mergeRight = mergePie === 'right'
+  const mergeLeft = mergedPieSide === 'left'
+  const mergeRight = mergedPieSide === 'right'
   const centerMergedWithPie = mergeLeft || mergeRight
   const showRightPieArchive =
     sectionSize != null && rightListArchiveLocalId != null
-
-  const syncMergedTopChromeToForm = useCallback(() => {
-    if (!mergeLeft && !mergeRight) return
-    const form = formRef.current
-    const chrome = mergedTopChromeRef.current
-    if (!form || !chrome) return
-    const formRect = form.getBoundingClientRect()
-    const chromeRect = chrome.getBoundingClientRect()
-    const base = mergeLeft
-      ? formRect.right - chromeRect.left
-      : chromeRect.right - formRect.left
-    // `width` is border-box; inner flex ends before outer edge by padding + border on that side.
-    // Extend mirrored side so inner edge of merged chrome aligns with form edge.
-    const cs = getComputedStyle(chrome)
-    const padEdge = mergeLeft
-      ? parseFloat(cs.paddingRight) || 0
-      : parseFloat(cs.paddingLeft) || 0
-    const borderEdge = mergeLeft
-      ? parseFloat(cs.borderRightWidth) || 0
-      : parseFloat(cs.borderLeftWidth) || 0
-    const w = base + padEdge + borderEdge
-    if (w > 0 && Number.isFinite(w)) {
-      setMergedTopChromeWidthPx(Math.round(w))
-    }
-  }, [mergeLeft, mergeRight])
-
-  useLayoutEffect(() => {
-    if (!mergeLeft && !mergeRight) {
-      setMergedTopChromeWidthPx(null)
-      return
-    }
-    syncMergedTopChromeToForm()
-    const ro = new ResizeObserver(() => {
-      syncMergedTopChromeToForm()
-    })
-    const form = formRef.current
-    const chrome = mergedTopChromeRef.current
-    const main = mainRef.current
-    if (form) ro.observe(form)
-    if (chrome) ro.observe(chrome)
-    if (main) ro.observe(main)
-    window.addEventListener('resize', syncMergedTopChromeToForm)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener('resize', syncMergedTopChromeToForm)
-    }
-  }, [mergeLeft, mergeRight, syncMergedTopChromeToForm, sizeCard?.width])
 
   useLayoutEffect(() => {
     const leftPieWrap = leftPieWrapRef.current
@@ -171,7 +117,7 @@ const App = () => {
       ro.disconnect()
       window.removeEventListener('resize', syncLeftPieSize)
     }
-  }, [mergeLeft, sizeCard?.width, mergedTopChromeWidthPx])
+  }, [mergeLeft, sizeCard?.width])
 
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
@@ -183,15 +129,14 @@ const App = () => {
   )
 
   const handlePostcardPieCartToolbarAction = useCallback((key: string) => {
-    if (key === 'cardPieEdit') {
-      setCardPanelPieMergeMode((prev) => (prev === 'right' ? 'left' : 'right'))
-    }
+    if (key !== 'cardPieEdit') return
+    setMergedPieSide((prev) => (prev === 'left' ? 'right' : 'left'))
   }, [])
-
-  const postcardPieCartToolbarStateOverride =
-    cardPanelPieMergeMode === 'right'
-      ? { cardPieEdit: 'active' as const }
-      : { cardPieEdit: 'enabled' as const }
+  const handleEditorPieToolbarAction = useCallback((key: string) => {
+    if (key !== 'cardPieEdit' && key !== 'cardPie') return
+    setMergedPieSide((prev) => (prev === 'left' ? 'right' : 'left'))
+  }, [])
+  const postcardPieCartToolbarStateOverride = { cardPieEdit: 'enabled' as const }
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
@@ -228,14 +173,8 @@ const App = () => {
                   ref={mergedTopChromeRef}
                   className={clsx(
                     styles.mergedTopChrome,
-                    mergedTopChromeWidthPx != null &&
-                      styles.mergedTopChrome_measuredToForm,
+                    mergeLeft && styles.mergedTopChrome_measuredToForm,
                   )}
-                  style={
-                    mergedTopChromeWidthPx != null
-                      ? { width: mergedTopChromeWidthPx }
-                      : undefined
-                  }
                 >
                   <div className={styles.mergedTopChromePieRegion}>
                     <div className={styles.appMainContentLeftPieRow}>
@@ -246,7 +185,10 @@ const App = () => {
                         <CardPie isProcessed fillContainer station="left" />
                       </div>
                       <div className={styles.appMainContentLeftPieToolbar}>
-                        <Toolbar section="editorPie" />
+                        <Toolbar
+                          section="editorPie"
+                          onActionClick={handleEditorPieToolbarAction}
+                        />
                       </div>
                     </div>
                   </div>
@@ -271,7 +213,10 @@ const App = () => {
                           <CardPie isProcessed fillContainer station="left" />
                         </div>
                         <div className={styles.appMainContentLeftPieToolbar}>
-                          <Toolbar section="editorPie" />
+                          <Toolbar
+                            section="editorPie"
+                            onActionClick={handleEditorPieToolbarAction}
+                          />
                         </div>
                       </div>
                     </div>
@@ -321,20 +266,11 @@ const App = () => {
                   ref={mergedTopChromeRef}
                   className={clsx(
                     styles.mergedTopChrome,
-                    mergedTopChromeWidthPx != null &&
-                      styles.mergedTopChrome_measuredToFormRight,
+                    mergeRight && styles.mergedTopChrome_measuredToFormRight,
                   )}
-                  style={
-                    mergedTopChromeWidthPx != null
-                      ? { width: mergedTopChromeWidthPx }
-                      : undefined
-                  }
                 >
                   <div
-                    className={clsx(
-                      styles.mergedTopChromeMini,
-                      styles.mergedTopChromeMini_leftPinned,
-                    )}
+                    className={styles.mergedTopChromeMini}
                   >
                     <MiniSectionsSlot ref={cardPanelRef} embedded />
                   </div>
@@ -368,6 +304,7 @@ const App = () => {
                               section="postcardPieCart"
                               onActionClick={handlePostcardPieCartToolbarAction}
                               stateOverride={postcardPieCartToolbarStateOverride}
+                              mergedWithCenter={centerMergedWithPie}
                             />
                           </div>
                         )}
@@ -418,6 +355,7 @@ const App = () => {
                                 section="postcardPieCart"
                                 onActionClick={handlePostcardPieCartToolbarAction}
                                 stateOverride={postcardPieCartToolbarStateOverride}
+                                mergedWithCenter={centerMergedWithPie}
                               />
                             </div>
                           )}
