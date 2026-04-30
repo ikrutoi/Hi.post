@@ -5,7 +5,6 @@ import {
   updateLastViewedCalendarDate,
   setHistoryListPanelOpen,
   setDateListPanelOpen,
-  setDateCalendarHistoryOverlay,
 } from '../../infrastructure/state'
 import {
   selectLastCalendarViewDate,
@@ -14,7 +13,6 @@ import {
   selectIsHistoryListPanelOpen,
   selectIsDateListPanelOpen,
   selectIsCardPieListPanelOpen,
-  selectDateCalendarHistoryOverlay,
 } from '../../infrastructure/selectors'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 import {
@@ -30,9 +28,6 @@ export const useCalendarFacade = () => {
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const dateListPanelOpen = useAppSelector(selectIsDateListPanelOpen)
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
-  const dateCalendarHistoryOverlay = useAppSelector(
-    selectDateCalendarHistoryOverlay,
-  )
   const setCalendarViewDate = (date: CalendarViewDate) => {
     dispatch(updateLastViewedCalendarDate(date))
   }
@@ -44,10 +39,7 @@ export const useCalendarFacade = () => {
     historyListPanelOpen,
     dateListPanelOpen,
     cardPieListPanelOpen,
-    dateCalendarHistoryOverlay,
     setCalendarViewDate,
-    setDateCalendarHistoryOverlay: (value: boolean) =>
-      dispatch(setDateCalendarHistoryOverlay(value)),
     setPostcardStatuses: (statuses: PostcardStatuses) =>
       dispatch(setPostcardStatuses(statuses)),
     setPostcardStatusesCount: (statusesCount: PostcardStatusesCount) =>

@@ -39,6 +39,3 @@ export const selectPostcardStatusesCount = (
 
 export const selectPostcardStatuses = (state: RootState): PostcardStatuses =>
   state.calendar.postcardStatuses
-
-export const selectDateCalendarHistoryOverlay = (state: RootState): boolean =>
-  state.calendar.dateCalendarHistoryOverlay

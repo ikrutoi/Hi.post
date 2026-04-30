@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
+import { useAppDispatch } from '@app/hooks'
+import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
 import { Calendar } from '../calendar/presentation/Calendar'
@@ -22,6 +24,7 @@ import type { CalendarViewDate } from '@entities/date/domain/types'
 export const Date: React.FC<{ section: 'date' | 'history' }> = ({
   section,
 }) => {
+  const dispatch = useAppDispatch()
   const currentDate = useMemo(() => getCurrentDate(), [])
   const { flashParts, triggerFlash } = useFlashEffect()
 
@@ -34,11 +37,14 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
   // console.log('date', selectedDates)
   // const { sizeItemCalendar } = useSizeFacade()
 
-  const {
-    lastViewedCalendarDate,
-    dateCalendarHistoryOverlay,
-    setDateCalendarHistoryOverlay,
-  } = useCalendarFacade()
+  const { lastViewedCalendarDate } = useCalendarFacade()
+
+  const handleCalendarModeToggle = useCallback(
+    (historyOn: boolean) => {
+      dispatch(setActiveSection(historyOn ? 'history' : 'date'))
+    },
+    [dispatch],
+  )
 
   useInitializeCalendarViewDate()
 
@@ -148,17 +154,17 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
             className={clsx(
               styles.dateBottomToggleGroup,
               styles.dateBottomToggleHistoryGroup,
-              dateCalendarHistoryOverlay &&
+              section === 'history' &&
                 styles.dateBottomToggleGroupHistoryActive,
             )}
             role="group"
-            aria-label="History overlay on calendar"
+            aria-label="Calendar: dispatch dates or history"
           >
             <IconHistory className={styles.dateBottomToggleIcon} aria-hidden />
             <Toggle
               label=""
-              checked={dateCalendarHistoryOverlay}
-              onChange={setDateCalendarHistoryOverlay}
+              checked={section === 'history'}
+              onChange={handleCalendarModeToggle}
               size="default"
               variant="dateHistory"
             />
