@@ -1,5 +1,6 @@
 import { DispatchDate } from '@/entities/date'
 import type { Card } from '@entities/card/domain/types'
+import { normalizeAromaItem } from '@entities/aroma/domain/types'
 import { LEGACY_LOCAL_ID_PROPERTY } from '@shared/config/legacyIndexedDb'
 
 export const POSTCARD_STATUSES = [
@@ -114,7 +115,7 @@ export function postcardRefsFromCard(card: Card): PostcardRefs {
     cardtext: cardtextId,
     sender: senderRef,
     recipient: recipientRef,
-    aroma: String(card.aroma?.index ?? ''),
+    aroma: String(normalizeAromaItem(card.aroma).index),
   }
 }
 

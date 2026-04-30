@@ -24,7 +24,10 @@ import type {
 } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 import type { DispatchDate } from '@entities/date'
-import type { AromaItem } from '@entities/aroma/domain/types'
+import {
+  normalizeAromaItem,
+  type AromaItem,
+} from '@entities/aroma/domain/types'
 import type { Card } from '@entities/card/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import {
@@ -160,7 +163,8 @@ export function* createPostcardsFromEditor(): SagaIterator {
   )
   const mergedDates: DispatchDate[] = yield select(selectMergedDispatchDates)
   const isMultiDateMode: boolean = yield select(selectIsMultiDateMode)
-  const aroma: AromaItem = yield select(selectSelectedAroma)
+  const selectedAromaRaw: AromaItem | null = yield select(selectSelectedAroma)
+  const aromaForRefs: AromaItem = normalizeAromaItem(selectedAromaRaw)
 
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
@@ -222,7 +226,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
         cardphoto,
         cardtext,
         envelope: envelopeVariant,
-        aroma,
+        aroma: aromaForRefs,
         date,
       })
       const cartKey = buildCartDuplicateKey(candidateCard)
@@ -237,6 +241,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
       const refs: PostcardRefs = {
         ...postcardRefsFromCard(finalCard),
         cardphoto: appliedCardphotoId,
+        aroma: String(aromaForRefs.index),
       }
       if (!hasRequiredPostcardRefs(refs, envelopeVariant)) continue
       const postcard: PostcardHydrated = {
@@ -297,7 +302,8 @@ export function* handleToggleCartForDispatchBranch(
   const envelope: EnvelopeSessionRecord = yield select(
     selectEnvelopeSessionRecord,
   )
-  const aroma: AromaItem = yield select(selectSelectedAroma)
+  const selectedAromaRaw: AromaItem | null = yield select(selectSelectedAroma)
+  const aromaForRefs: AromaItem = normalizeAromaItem(selectedAromaRaw)
 
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
@@ -339,7 +345,7 @@ export function* handleToggleCartForDispatchBranch(
     cardphoto,
     cardtext,
     envelope: envelopeVariant,
-    aroma,
+    aroma: aromaForRefs,
     date,
   })
 
@@ -365,6 +371,7 @@ export function* handleToggleCartForDispatchBranch(
   const refs: PostcardRefs = {
     ...postcardRefsFromCard(finalCard),
     cardphoto: appliedCardphotoId,
+    aroma: String(aromaForRefs.index),
   }
   if (!hasRequiredPostcardRefs(refs, envelopeVariant)) {
     yield call(refreshRightSidebarBadgesFromPostcards)
