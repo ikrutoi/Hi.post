@@ -6,7 +6,10 @@ import {
   closeDayPanel,
   openDayPanel,
 } from '../../../calendar/infrastructure/state/calendar.slice'
-import { selectIsDateListPanelOpen } from '../../../calendar/infrastructure/selectors/calendar.selector'
+import {
+  selectIsDateListPanelOpen,
+  selectOpenDayPanel,
+} from '../../../calendar/infrastructure/selectors/calendar.selector'
 import { shiftMonth } from '../../../calendar/application/helpers'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
@@ -17,10 +20,7 @@ import type {
   Switcher,
 } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../domain/types'
-import {
-  calendarDayHasCards,
-  isEmptyCalendarDay,
-} from '../../domain/calendarDayContent'
+import { calendarDayHasCards } from '../../domain/calendarDayContent'
 
 function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
   return a.year === b.year && a.month === b.month && a.day === b.day
@@ -35,6 +35,7 @@ export const useCalendarCellController = ({
 }: UseCalendarCellControllerParams) => {
   const dispatch = useAppDispatch()
   const dateListPanelOpen = useAppSelector(selectIsDateListPanelOpen)
+  const openDayPanelState = useAppSelector(selectOpenDayPanel)
   const { selectedDate, selectedDates, isMultiDateMode, chooseDate } =
     useDateFacade()
 
@@ -75,11 +76,10 @@ export const useCalendarCellController = ({
         ? selectedDates.some((d) => sameDispatchDate(d, dispatchDate))
         : Boolean(selectedDate && sameDispatchDate(selectedDate, dispatchDate))
 
-      /** В календаре истории пустой день не должен попадать в план отправки / CardPie. */
-      const skipDispatchPick =
-        activeSection === 'history' && isEmptyCalendarDay(dayData)
+      /** В секции History календарь только для просмотра / правого CardPie — дата отправки фабрики не меняем. */
+      const isHistorySection = activeSection === 'history'
 
-      if (!skipDispatchPick) {
+      if (!isHistorySection) {
         chooseDate(dispatchDate)
       }
 
@@ -90,13 +90,21 @@ export const useCalendarCellController = ({
       if (dateListPanelOpen) {
         dispatch(closeDayPanel())
       } else if (
-        !skipDispatchPick &&
-        !clickRemovesSelection &&
         dateKey &&
         dayData &&
         calendarDayHasCards(dayData)
       ) {
-        dispatch(openDayPanel({ dateKey, dayData }))
+        if (isHistorySection) {
+          if (openDayPanelState?.dateKey === dateKey) {
+            dispatch(closeDayPanel())
+          } else {
+            dispatch(openDayPanel({ dateKey, dayData }))
+          }
+        } else if (!clickRemovesSelection) {
+          dispatch(openDayPanel({ dateKey, dayData }))
+        } else {
+          dispatch(closeDayPanel())
+        }
       } else {
         dispatch(closeDayPanel())
       }
@@ -120,23 +128,30 @@ export const useCalendarCellController = ({
               selectedDate && sameDispatchDate(selectedDate, dispatchDate),
             )
 
-        const skipDispatchPick =
-          activeSection === 'history' && isEmptyCalendarDay(dayData)
+        const isHistorySection = activeSection === 'history'
 
-        if (!skipDispatchPick) {
+        if (!isHistorySection) {
           chooseDate(dispatchDate)
         }
 
         if (dateListPanelOpen) {
           dispatch(closeDayPanel())
         } else if (
-          !skipDispatchPick &&
-          !clickRemovesSelection &&
           dateKey &&
           dayData &&
           calendarDayHasCards(dayData)
         ) {
-          dispatch(openDayPanel({ dateKey, dayData }))
+          if (isHistorySection) {
+            if (openDayPanelState?.dateKey === dateKey) {
+              dispatch(closeDayPanel())
+            } else {
+              dispatch(openDayPanel({ dateKey, dayData }))
+            }
+          } else if (!clickRemovesSelection) {
+            dispatch(openDayPanel({ dateKey, dayData }))
+          } else {
+            dispatch(closeDayPanel())
+          }
         } else {
           dispatch(closeDayPanel())
         }

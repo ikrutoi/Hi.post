@@ -465,6 +465,20 @@ export function useDispatchPlanListEntries(
       entries.length === 0 &&
       hasAnySectionFilled
     ) {
+      /** Все ветки скрыты из‑за корзины (`hideBranchesInCart`) — в списке всё равно показываем выбранную дату. */
+      const fallbackDispatchDate: DispatchDate | null = !isMultiDateMode
+        ? selectedDate
+        : selectedDates.length === 1
+          ? (selectedDates[0] ?? null)
+          : selectedDates.length > 1
+            ? [...selectedDates].sort(compareDispatchDateChronological)[0] ??
+              null
+            : null
+      const fallbackDateLabel =
+        fallbackDispatchDate != null
+          ? formatDispatchDateLabel(fallbackDispatchDate)
+          : ''
+
       recipientSlots.forEach((slot, ri) => {
         const recipientRef = slot.branchKey.includes('|')
           ? (slot.branchKey.split('|')[1] ?? 'session')
@@ -482,7 +496,10 @@ export function useDispatchPlanListEntries(
             : sessionRecipientDetail
         entries.push({
           id: `undated-rcpt-${slot.branchKey}-${ri}`,
-          dateLabel: '',
+          ...(fallbackDispatchDate != null
+            ? { sourceDate: fallbackDispatchDate }
+            : {}),
+          dateLabel: fallbackDateLabel,
           detailLine: undatedDetailLine,
           priceLine: undefined,
           previewUrl: listPreviewUrl ?? undefined,

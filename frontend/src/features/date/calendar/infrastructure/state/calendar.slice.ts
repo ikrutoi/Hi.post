@@ -35,6 +35,11 @@ type CalendarState = {
   cardPieListSortDirection: 'asc' | 'desc'
   postcardStatusesCount: PostcardStatusesCount
   postcardStatuses: PostcardStatuses
+  /**
+   * Футер календаря (режим Дата): тумблер «история» — зарезервировано под отображение
+   * пайплайна на сетке дней; пока только UI-состояние.
+   */
+  dateCalendarHistoryOverlay: boolean
 }
 
 const now = getCurrentDate()
@@ -65,6 +70,7 @@ const initialState: CalendarState = {
     delivered: true,
     error: true,
   },
+  dateCalendarHistoryOverlay: false,
 }
 
 const calendarSlice = createSlice({
@@ -122,8 +128,11 @@ const calendarSlice = createSlice({
     },
 
     setPostcardStatuses(state, action: PayloadAction<PostcardStatuses>) {
-      console.log('setPostcardStatuses', action.payload)
       state.postcardStatuses = action.payload
+    },
+
+    setDateCalendarHistoryOverlay(state, action: PayloadAction<boolean>) {
+      state.dateCalendarHistoryOverlay = action.payload
     },
 
     setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {
@@ -151,6 +160,7 @@ export const {
   toggleCardPieListSortDirection,
   setPostcardStatusesCount,
   setPostcardStatuses,
+  setDateCalendarHistoryOverlay,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
 } = calendarSlice.actions

@@ -16,12 +16,18 @@ export type PostcardStatusLegendProps = {
   isHistoryEmpty: boolean
   /** Только для `historyList`: числа по статусам (все открытки до фильтра). */
   statusCounts?: Record<PostcardStatus, number>
+  /**
+   * Только `spot="calendar"`, секция Дата: те же индикаторы, но точки и иконки с opacity 0.5.
+   */
+  calendarDispatchDimmed?: boolean
 }
 
 export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
   spot,
   isHistoryEmpty,
   statusCounts,
+  calendarDispatchDimmed = false,
+  calendarFooterCompact = false,
 }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
@@ -49,7 +55,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
         styles.root,
         styles[`root-${spot}`],
         isHistoryEmpty && styles.rootEmpty,
-        // isHistoryMode && styles.rootActive,
+        spot === 'calendar' &&
+          calendarDispatchDimmed &&
+          styles.rootCalendarDimmed,
       )}
       aria-label={
         // isHistoryMode

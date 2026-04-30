@@ -4,6 +4,7 @@ import {
 } from '@/entities/postcard/domain/types'
 import type { RootState } from '@app/state'
 import type { CalendarViewDate } from '@entities/date/domain/types'
+import type { DayPanelPayload } from '../state/calendar.slice'
 
 export const selectLastCalendarViewDate = (
   state: RootState,
@@ -11,6 +12,10 @@ export const selectLastCalendarViewDate = (
 
 export const selectIsDateListPanelOpen = (state: RootState): boolean =>
   state.calendar.dateListPanelOpen
+
+export const selectOpenDayPanel = (
+  state: RootState,
+): DayPanelPayload | null => state.calendar.openDayPanel
 
 export const selectIsCardPieListPanelOpen = (state: RootState): boolean =>
   state.calendar.cardPieListPanelOpen
@@ -34,3 +39,6 @@ export const selectPostcardStatusesCount = (
 
 export const selectPostcardStatuses = (state: RootState): PostcardStatuses =>
   state.calendar.postcardStatuses
+
+export const selectDateCalendarHistoryOverlay = (state: RootState): boolean =>
+  state.calendar.dateCalendarHistoryOverlay

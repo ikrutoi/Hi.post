@@ -14,6 +14,8 @@ import {
 } from '../application/hooks'
 import { useFlashEffect } from '@shared/hooks'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
+import { Toggle } from '@shared/ui/Toggle/Toggle'
+import { IconHistory } from '@shared/ui/icons'
 import styles from './Date.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 
@@ -32,7 +34,11 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
   // console.log('date', selectedDates)
   // const { sizeItemCalendar } = useSizeFacade()
 
-  const { lastViewedCalendarDate } = useCalendarFacade()
+  const {
+    lastViewedCalendarDate,
+    dateCalendarHistoryOverlay,
+    setDateCalendarHistoryOverlay,
+  } = useCalendarFacade()
 
   useInitializeCalendarViewDate()
 
@@ -126,18 +132,36 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
         <div
           className={clsx(
             styles.dateBottomToggle,
-            styles.dateBottomToggleHistory,
+            section === 'history' && styles.dateBottomToggleHistory,
           )}
         >
-          <div className={styles.dateBottomToggleIndicators}>
-            {section === 'history' ? (
-              <PostcardStatusLegend spot="calendar" isHistoryEmpty={false} />
-            ) : (
-              <div
-                className={styles.calendarDateFooterPlaceholder}
-                aria-hidden
-              />
+          <div
+            className={styles.dateBottomToggleIndicators}
+          >
+            <PostcardStatusLegend
+              spot="calendar"
+              isHistoryEmpty={false}
+              calendarDispatchDimmed={section === 'date'}
+            />
+          </div>
+          <div
+            className={clsx(
+              styles.dateBottomToggleGroup,
+              styles.dateBottomToggleHistoryGroup,
+              dateCalendarHistoryOverlay &&
+                styles.dateBottomToggleGroupHistoryActive,
             )}
+            role="group"
+            aria-label="History overlay on calendar"
+          >
+            <IconHistory className={styles.dateBottomToggleIcon} aria-hidden />
+            <Toggle
+              label=""
+              checked={dateCalendarHistoryOverlay}
+              onChange={setDateCalendarHistoryOverlay}
+              size="default"
+              variant="dateHistory"
+            />
           </div>
         </div>
 
