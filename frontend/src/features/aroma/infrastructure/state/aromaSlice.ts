@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AromaState, AromaItem } from '@entities/aroma/domain/types'
+import { normalizeAromaItem } from '@entities/aroma/domain/types'
 
 const initialState: AromaState = {
   selectedAroma: null,
@@ -11,7 +12,7 @@ export const aromaSlice = createSlice({
   initialState,
   reducers: {
     setAroma(state, action: PayloadAction<AromaItem>) {
-      state.selectedAroma = action.payload
+      state.selectedAroma = normalizeAromaItem(action.payload)
       state.isComplete = true
     },
 

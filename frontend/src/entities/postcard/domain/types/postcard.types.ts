@@ -98,11 +98,13 @@ export function postcardRefsFromCard(card: Card): PostcardRefs {
         ? String(r.recipientViewId)
         : ''
   const senderRef =
-    s?.applied?.[0] != null
-      ? String(s.applied[0])
-      : s?.senderViewId != null
-        ? String(s.senderViewId)
-        : ''
+    s?.enabled === false
+      ? null
+      : s?.applied?.[0] != null
+        ? String(s.applied[0])
+        : s?.senderViewId != null
+          ? String(s.senderViewId)
+          : null
   const cardtextId =
     card.cardtext?.appliedData?.id ??
     card.cardtext?.assetData?.id ??

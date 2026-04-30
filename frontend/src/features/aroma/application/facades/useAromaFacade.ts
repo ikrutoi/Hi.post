@@ -1,4 +1,4 @@
-import { aromaIndexes } from '@entities/aroma/domain/types'
+import { aromaSlotOrder } from '@entities/aroma/domain/types'
 import { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { setAroma, clear } from '../../infrastructure/state'
@@ -28,7 +28,7 @@ export const useAromaFacade = () => {
   return {
     selectedAroma,
     isComplete,
-    aromaIndexes,
+    aromaSlotOrder,
 
     chooseAroma,
     clearAroma,

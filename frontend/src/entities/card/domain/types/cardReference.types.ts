@@ -1,12 +1,12 @@
 import type { PostcardStatus } from '@entities/postcard/domain/types/postcard.types'
-import type { AromaImageIndex } from '@entities/aroma/domain/types'
+import type { AromaSlot } from '@entities/aroma/domain/types'
 import type { DispatchDate } from '@entities/date'
 
 export interface WorkingCardRecord {
   id: string
   cardphotoId: string | null
   cardtextId: string | null
-  aromaId: AromaImageIndex
+  aromaId: AromaSlot
   date: DispatchDate
   senderId: string | null
   recipientIds: string[]
@@ -51,7 +51,7 @@ export interface CardReference {
 
   templates: CardTemplateReferences
 
-  aromaId: AromaImageIndex
+  aromaId: AromaSlot
   date: DispatchDate
 
   thumbnailUrl: string

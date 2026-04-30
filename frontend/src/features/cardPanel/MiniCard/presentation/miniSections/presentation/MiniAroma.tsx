@@ -30,7 +30,7 @@ export const MiniAroma: React.FC<MiniAromaProps> = () => {
       >
         <img
           className={styles.miniAromaImg}
-          alt={mirrorInner.aroma.name ?? ''}
+          alt={mirrorInner.aroma.index === 0 ? '' : `Aroma slot ${mirrorInner.aroma.index}`}
           src={imageAroma}
         />
       </div>
@@ -51,7 +51,9 @@ export const MiniAroma: React.FC<MiniAromaProps> = () => {
     >
       <img
         className={styles.miniAromaImg}
-        alt={selectedAroma.name}
+        alt={
+          selectedAroma.index === 0 ? '' : `Aroma slot ${selectedAroma.index}`
+        }
         src={imageAroma}
       />
     </div>

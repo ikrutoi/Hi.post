@@ -17,11 +17,7 @@ export const AromaTile: React.FC<AromaTileProps> = ({
   }
 
   const label =
-    aromaItem.make === '0'
-      ? 'No Aroma'
-      : aromaItem.make || aromaItem.name
-        ? `${aromaItem.make} — ${aromaItem.name}`
-        : 'Empty slot'
+    aromaItem.index === 0 ? 'No aroma' : `Aroma slot ${aromaItem.index}`
 
   return (
     <button

@@ -142,7 +142,7 @@ function hasRequiredPostcardRefs(
   const hasRecipient = refs.recipient.trim().length > 0
   const hasAroma = refs.aroma.trim().length > 0
   const senderRequired = envelope.sender?.enabled === true
-  const hasSender = refs.sender.trim().length > 0
+  const hasSender = (refs.sender ?? '').trim().length > 0
   return (
     hasCardphoto &&
     hasCardtext &&

@@ -40,7 +40,8 @@ export function createCardReferenceFromPostcard(
       senderPreview: card.envelope.sender.enabled
         ? formatAddressPreview(card.envelope.sender.viewDraft)
         : undefined,
-      aromaPreview: card.aroma.name,
+      aromaPreview:
+        card.aroma.index === 0 ? '' : `Slot ${card.aroma.index}`,
       datePreview: formatDatePreview(card.date),
     },
     meta: {

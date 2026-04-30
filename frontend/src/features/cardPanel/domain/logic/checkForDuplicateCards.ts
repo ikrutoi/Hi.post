@@ -46,8 +46,7 @@ export async function checkForDuplicateCards(
       if (
         card.aroma &&
         sc.aroma &&
-        card.aroma.name === sc.aroma.name &&
-        card.aroma.make === sc.aroma.make
+        card.aroma.index === sc.aroma.index
       ) {
         result[source].aroma.push(templateSourceId(sourceCard))
       }

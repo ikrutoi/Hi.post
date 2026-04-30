@@ -1,27 +1,3 @@
-import img100_02 from '../../assets/100_02.png'
-import img111_01 from '../../assets/111_01.png'
-import img112_01 from '../../assets/112_01.png'
-import img113_02 from '../../assets/113_02.png'
-import img114_01 from '../../assets/114_01.png'
-import img115_01 from '../../assets/115_01.png'
-import img100_22 from '../../assets/100_22.png'
-import img111_22 from '../../assets/111_22.png'
-import img112_22 from '../../assets/112_22.png'
-import img113_22 from '../../assets/113_22.png'
-import img114_22 from '../../assets/114_22.png'
-import img115_22 from '../../assets/115_22.png'
-import img116_22 from '../../assets/116_22.png'
-import img117_22 from '../../assets/117_22.png'
-import img118_22 from '../../assets/118_22.png'
-import img119_22 from '../../assets/119_22.png'
-import img120_22 from '../../assets/120_22.png'
-import img121_22 from '../../assets/121_22.png'
-import img122_22 from '../../assets/122_22.png'
-import img123_22 from '../../assets/123_22.png'
-import img124_22 from '../../assets/124_22.png'
-import img125_22 from '../../assets/125_22.png'
-import img126_22 from '../../assets/126_22.png'
-import img127_22 from '../../assets/127_22.png'
 import img100_11 from '../../assets/300_11.png'
 import img301_11 from '../../assets/301_11.png'
 import img302_11 from '../../assets/302_11.png'
@@ -31,43 +7,63 @@ import img305_11 from '../../assets/305_11.png'
 import img306_11 from '../../assets/306_11.png'
 import img307_11 from '../../assets/307_11.png'
 import img308_11 from '../../assets/308_11.png'
-import img309_11 from '../../assets/309_11.png'
 import img310_11 from '../../assets/310_11.png'
 
-export const AROMA_IMAGES: Partial<Record<string, string>> = {
-  empty: img100_11,
-  '01': img303_11,
-  '02': img308_11,
-  '03': img302_11,
-  '04': img307_11,
-  '05': img306_11,
-  '06': img305_11,
-  '07': img301_11,
-  '08': img310_11,
+/** Всего 9 ячеек: 0 — без аромата, 1…8 — выбранный слот (данные аромата на сервере). */
+export const AROMA_CELL_COUNT = 9 as const
+
+export const aromaSlotOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const
+
+export type AromaSlot = (typeof aromaSlotOrder)[number]
+
+export const AROMA_IMAGES: Record<AromaSlot, string> = {
+  0: img100_11,
+  1: img303_11,
+  2: img308_11,
+  3: img302_11,
+  4: img307_11,
+  5: img306_11,
+  6: img305_11,
+  7: img301_11,
+  8: img310_11,
 }
 
-export const aromaIndexes = [
-  'empty',
-  '01',
-  '02',
-  '03',
-  '04',
-  '05',
-  '06',
-  '07',
-  '08',
-] as const
-
-export type AromaImageIndex = (typeof aromaIndexes)[number]
-
 export interface AromaItem {
-  make: string
-  name: string
-  index: AromaImageIndex
-  category?: 'male' | 'female' | 'unisex'
+  index: AromaSlot
 }
 
 export interface AromaState {
   selectedAroma: AromaItem | null
   isComplete: boolean
+}
+
+const LEGACY_STRING_SLOT: Record<string, AromaSlot> = {
+  empty: 0,
+  '01': 1,
+  '02': 2,
+  '03': 3,
+  '04': 4,
+  '05': 5,
+  '06': 6,
+  '07': 7,
+  '08': 8,
+}
+
+/**
+ * Приводит значение из Redux / IndexedDB к текущему виду (раньше были строки `empty` / `01`… и поля make/name).
+ */
+export function normalizeAromaItem(raw: unknown): AromaItem {
+  if (raw == null || typeof raw !== 'object') return { index: 0 }
+  const o = raw as { index?: unknown; make?: unknown }
+  if (typeof o.index === 'number' && o.index >= 0 && o.index <= 8) {
+    return { index: o.index as AromaSlot }
+  }
+  if (typeof o.index === 'string') {
+    const key = o.index.trim()
+    if (key in LEGACY_STRING_SLOT) return { index: LEGACY_STRING_SLOT[key]! }
+    const n = Number.parseInt(key, 10)
+    if (!Number.isNaN(n) && n >= 0 && n <= 8) return { index: n as AromaSlot }
+  }
+  if (o.make === '0') return { index: 0 }
+  return { index: 0 }
 }

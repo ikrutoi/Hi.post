@@ -54,7 +54,7 @@ export const Aroma: React.FC = () => {
       >
         {AROMA_LIST.map((el, i) => (
           <AromaTile
-            key={`${el.name}-${i}`}
+            key={`aroma-${el.index}-${i}`}
             selectedAroma={tileHighlightAroma}
             aromaItem={el}
             onSelectAroma={handleClickAroma}
