@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react'
-import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -34,9 +33,7 @@ interface CardPreviewProps {
   calendarDispatchDate?: DispatchDate
   /** Маркер для Cell: hover скрывает плейсхолдер и показывает стрелку соседнего месяца. */
   adjacentSessionPlaceholderNavSwap?: boolean
-  /** Соседний месяц + cardphoto в сессии — приглушить только блок превью, не всю ячейку. */
-  adjacentMonthCardphotoDim?: boolean
-  /** Ячейка dayBefore/dayAfter — превью без opacity как у невыбранного дня текущего месяца. */
+  /** Ячейка dayBefore/dayAfter — стили превью как у края месяца, без dim невыбранного дня. */
   isAdjacentMonthEdge?: boolean
 }
 
@@ -46,7 +43,6 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   isSelectedDate,
   calendarDispatchDate,
   adjacentSessionPlaceholderNavSwap = false,
-  adjacentMonthCardphotoDim = false,
   isAdjacentMonthEdge = false,
 }) => {
   const recipientEnabled = useAppSelector(selectRecipientEnabled)
@@ -148,12 +144,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !photoPreview?.previewUrl
 
   return (
-    <div
-      className={clsx(
-        styles.cardPreviewContainer,
-        adjacentMonthCardphotoDim && styles.cardPreviewContainerDim,
-      )}
-    >
+    <div className={styles.cardPreviewContainer}>
       {primaryItem ? (
         <div className={styles.previewWrapper}>
           <CardPreviewItem

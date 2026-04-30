@@ -5,10 +5,7 @@ import { CardPreview } from '@features/date/cardPreview/presentation/CardPreview
 import { shiftMonth } from '../helpers'
 import { isDisabledDate } from '@entities/date/utils'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
-import {
-  shouldAdjacentMonthDimCardphotoPreview,
-  shouldAdjacentSessionPlaceholderNavSwap,
-} from './adjacentSessionPlaceholderNavSwap'
+import { shouldAdjacentSessionPlaceholderNavSwap } from './adjacentSessionPlaceholderNavSwap'
 import type {
   CalendarViewDate,
   DispatchDate,
@@ -80,13 +77,6 @@ export const buildMonthCells = ({
         photoPreview,
       })
 
-    const adjacentMonthCardphotoDim = shouldAdjacentMonthDimCardphotoPreview({
-      direction,
-      isSelectedDate,
-      activeSection,
-      photoPreview,
-    })
-
     const historyEmptyNoPreview =
       activeSection === 'history' &&
       direction === 'current' &&
@@ -108,7 +98,6 @@ export const buildMonthCells = ({
         dateKey={dateKey}
         dayData={dayData}
         adjacentSessionPlaceholderNavSwap={adjacentSessionPlaceholderNavSwap}
-        adjacentMonthCardphotoDim={adjacentMonthCardphotoDim}
         historyEmptyNoPreview={historyEmptyNoPreview}
       >
         {dayData && (
@@ -122,7 +111,6 @@ export const buildMonthCells = ({
               day,
             }}
             adjacentSessionPlaceholderNavSwap={adjacentSessionPlaceholderNavSwap}
-            adjacentMonthCardphotoDim={adjacentMonthCardphotoDim}
             isAdjacentMonthEdge={direction !== 'current'}
           />
         )}

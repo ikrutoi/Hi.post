@@ -50,17 +50,3 @@ export function shouldAdjacentSessionPlaceholderNavSwap(params: {
 
   return !primaryItem
 }
-
-/** dayBefore/dayAfter + выбранный день + в сессии выбрана картинка cardphoto — приглушить превью. */
-export function shouldAdjacentMonthDimCardphotoPreview(params: {
-  direction: MonthDirection
-  isSelectedDate: boolean
-  activeSection: CardSection | null | undefined
-  photoPreview: PhotoPreviewLike
-}): boolean {
-  const { direction, isSelectedDate, activeSection, photoPreview } = params
-  if (direction === 'current') return false
-  if (!isSelectedDate) return false
-  if (activeSection === 'history') return false
-  return Boolean(photoPreview?.previewUrl)
-}

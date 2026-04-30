@@ -25,8 +25,6 @@ interface CellProps {
   dayData?: CardCalendarIndex | null
   /** Соседний месяц + только плейсхолдер cardphoto: стрелка по hover вместо наложения. */
   adjacentSessionPlaceholderNavSwap?: boolean
-  /** Соседний месяц + выбрана картинка cardphoto: превью с пониженной непрозрачностью. */
-  adjacentMonthCardphotoDim?: boolean
   /** Календарь истории: день без открыток — курсор как у неинтерактивной ячейки. */
   historyEmptyNoPreview?: boolean
   children?: React.ReactNode
@@ -45,7 +43,6 @@ export const Cell: React.FC<CellProps> = ({
   dateKey,
   dayData,
   adjacentSessionPlaceholderNavSwap = false,
-  adjacentMonthCardphotoDim = false,
   historyEmptyNoPreview = false,
   children,
 }) => {
@@ -116,9 +113,6 @@ export const Cell: React.FC<CellProps> = ({
       }
       data-adjacent-session-nav-swap={
         adjacentSessionPlaceholderNavSwap ? 'true' : undefined
-      }
-      data-adjacent-cardphoto-dim={
-        adjacentMonthCardphotoDim ? 'true' : undefined
       }
     >
       <span className={styles.dayNumber}>
