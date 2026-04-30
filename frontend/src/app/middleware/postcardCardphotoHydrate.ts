@@ -1,4 +1,5 @@
-import type { Postcard } from '@entities/postcard'
+import type { Card } from '@entities/card/domain/types'
+import { postcardRefsFromCard, type PostcardHydrated } from '@entities/postcard'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { hydrateSessionImageMeta, prepareForRedux } from './cardphotoHelpers'
@@ -6,7 +7,7 @@ import { hydrateSessionImageMeta, prepareForRedux } from './cardphotoHelpers'
 const isDeadBlobUrl = (u: string | null | undefined): boolean =>
   typeof u === 'string' && u.startsWith('blob:')
 
-function cardphotoPreviewFingerprint(card: Postcard['card']): string {
+function cardphotoPreviewFingerprint(card: Card): string {
   const a = card.cardphoto?.appliedData
   return [
     a?.id ?? '',
@@ -27,12 +28,12 @@ async function loadCardphotoImageFromIdb(id: string): Promise<ImageMeta | null> 
  * Подтягиваем актуальные URL из IDB (как при гидрации редактора в sessionSaga).
  */
 export async function refreshPostcardsCardphotoUrls(
-  postcards: Postcard[],
-): Promise<Postcard[]> {
+  postcards: PostcardHydrated[],
+): Promise<PostcardHydrated[]> {
   return Promise.all(postcards.map(refreshOnePostcard))
 }
 
-async function refreshOnePostcard(p: Postcard): Promise<Postcard> {
+async function refreshOnePostcard(p: PostcardHydrated): Promise<PostcardHydrated> {
   const applied = p.card.cardphoto?.appliedData
   if (!applied?.id) return p
 
@@ -69,13 +70,14 @@ async function refreshOnePostcard(p: Postcard): Promise<Postcard> {
 
   return {
     ...p,
+    postcard: postcardRefsFromCard(nextCard),
     card: nextCard,
   }
 }
 
 export function postcardCardphotoNeedsPersist(
-  before: Postcard,
-  after: Postcard,
+  before: PostcardHydrated,
+  after: PostcardHydrated,
 ): boolean {
   return cardphotoPreviewFingerprint(before.card) !== cardphotoPreviewFingerprint(after.card)
 }

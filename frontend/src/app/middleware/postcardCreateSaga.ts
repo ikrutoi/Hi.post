@@ -1,7 +1,7 @@
 import type { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
-import { postcardsAdapter } from '@db/adapters/storeAdapters'
+import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
 import { addItem, removeItem } from '@cart/infrastructure/state'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
@@ -16,6 +16,7 @@ import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import type { CardphotoState } from '@cardphoto/domain/types'
 import type { CardtextState } from '@cardtext/domain/types'
+import type { ImageRecord } from '@cardphoto/domain/types'
 import type {
   EnvelopeSessionRecord,
   RecipientState,
@@ -24,8 +25,13 @@ import type {
 import type { AddressFields } from '@shared/config/constants'
 import type { DispatchDate } from '@entities/date'
 import type { AromaItem } from '@entities/aroma/domain/types'
-import type { Postcard } from '@entities/postcard'
-import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
+import type { Card } from '@entities/card/domain/types'
+import type { PostcardHydrated } from '@entities/postcard'
+import {
+  POSTCARD_DISPATCH_DATE_FALLBACK,
+  postcardRefsFromCard,
+  type PostcardRefs,
+} from '@entities/postcard'
 import { selectExcludedDispatchBranchSet } from '@date/infrastructure/selectors'
 import {
   buildDispatchBranchKey,
@@ -53,7 +59,7 @@ function buildBaseCard(opts: {
     envelope,
     aroma,
     date,
-  } as unknown as Postcard['card']
+  } as unknown as Card
 }
 
 function normalizeAddressForDedupe(
@@ -74,7 +80,7 @@ function normalizeAddressForDedupe(
 /**
  * Дубликат строки корзины без preview/blob URL — после reload старый fingerprint с URL не совпадал с IDB.
  */
-function buildCartDuplicateKey(card: Postcard['card']): string {
+function buildCartDuplicateKey(card: Card): string {
   const cardphoto = card.cardphoto as Partial<CardphotoState> | undefined
   const appliedPhotoId =
     (cardphoto?.appliedData as { id?: string } | undefined)?.id ?? null
@@ -87,15 +93,16 @@ function buildCartDuplicateKey(card: Postcard['card']): string {
 
   const recipientAppliedIds = [...(recipient?.applied ?? [])].sort().join('|')
   const senderAppliedIds = [...(sender?.applied ?? [])].sort().join('|')
+  const cardtextBranch = cardtext?.appliedData ?? cardtext?.assetData
 
   return JSON.stringify({
     photoId: appliedPhotoId,
     date: card.date ?? null,
     cardtext: {
-      id: cardtext?.id ?? null,
-      status: cardtext?.status ?? null,
-      value: cardtext?.value ?? null,
-      style: cardtext?.style ?? null,
+      id: cardtextBranch?.id ?? null,
+      status: cardtextBranch?.status ?? null,
+      value: cardtextBranch?.value ?? null,
+      style: cardtextBranch?.style ?? null,
     },
     recipient: {
       mode: recipient?.mode ?? null,
@@ -113,6 +120,38 @@ function buildCartDuplicateKey(card: Postcard['card']): string {
   })
 }
 
+function* resolveAppliedCardphotoId(
+  fallbackId: string,
+): Generator<unknown, string, ImageRecord | null> {
+  const applyRecord = yield call(
+    [storeAdapters.applyImage, 'getById'],
+    'current_apply_image',
+  )
+  const idFromApply = applyRecord?.image?.id
+  return typeof idFromApply === 'string' && idFromApply.length > 0
+    ? idFromApply
+    : fallbackId
+}
+
+function hasRequiredPostcardRefs(
+  refs: PostcardRefs,
+  envelope: EnvelopeSessionRecord,
+): boolean {
+  const hasCardphoto = refs.cardphoto.trim().length > 0
+  const hasCardtext = refs.cardtext.trim().length > 0
+  const hasRecipient = refs.recipient.trim().length > 0
+  const hasAroma = refs.aroma.trim().length > 0
+  const senderRequired = envelope.sender?.enabled === true
+  const hasSender = refs.sender.trim().length > 0
+  return (
+    hasCardphoto &&
+    hasCardtext &&
+    hasRecipient &&
+    hasAroma &&
+    (!senderRequired || hasSender)
+  )
+}
+
 export function* createPostcardsFromEditor(): SagaIterator {
   const cardphoto: CardphotoState = yield select(selectCardphotoState)
   const cardtext: CardtextState = yield select(selectCardtextState)
@@ -125,6 +164,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
 
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
+  const appliedCardphotoId: string = yield* resolveAppliedCardphotoId(appliedPhoto.id)
 
   const dates: Array<DispatchDate | null> =
     isMultiDateMode && mergedDates.length > 1 ? mergedDates : mergedDates.slice(0, 1)
@@ -157,7 +197,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
     selectExcludedDispatchBranchSet,
   )
 
-  const existingRows: Postcard[] = yield call([postcardsAdapter, 'getAll'])
+  const existingRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
   const existingCartDedupeKeys = new Set(
     existingRows
       .filter((row) => row.status === 'cart')
@@ -190,7 +230,16 @@ export function* createPostcardsFromEditor(): SagaIterator {
 
       maxLocalId += 1
       const postcardLocalId = maxLocalId
-      const postcard: Postcard = {
+      const finalCard: Card = {
+        ...candidateCard,
+        id: `${appliedPhoto.id}__${postcardLocalId}`,
+      }
+      const refs: PostcardRefs = {
+        ...postcardRefsFromCard(finalCard),
+        cardphoto: appliedCardphotoId,
+      }
+      if (!hasRequiredPostcardRefs(refs, envelopeVariant)) continue
+      const postcard: PostcardHydrated = {
         id: `${appliedPhoto.id}__${postcardLocalId}`,
         localId: postcardLocalId,
         price: '',
@@ -198,16 +247,14 @@ export function* createPostcardsFromEditor(): SagaIterator {
         createdAt: now,
         updatedAt: now,
         status: 'cart',
-        card: {
-          ...candidateCard,
-          id: `${appliedPhoto.id}__${postcardLocalId}`,
-        },
+        postcard: refs,
+        card: finalCard,
       }
       const { id: _postcardRowId, ...postcardForIdb } = postcard
       yield call(
         [postcardsAdapter, 'addRecordWithId'],
         postcard.id,
-        postcardForIdb as Omit<Postcard, 'id'>,
+        postcardForIdb as Omit<PostcardHydrated, 'id'>,
       )
       existingCartDedupeKeys.add(buildCartDuplicateKey(postcard.card))
       yield put(addItem(postcard))
@@ -232,7 +279,7 @@ export function* handleToggleCartForDispatchBranch(
   const { isAllComplete } = yield select(selectPieProgress)
   if (!isAllComplete) return
 
-  const allRows: Postcard[] = yield call([postcardsAdapter, 'getAll'])
+  const allRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
   const existing = allRows.find(
     (row) =>
       row.status === 'cart' &&
@@ -254,6 +301,7 @@ export function* handleToggleCartForDispatchBranch(
 
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
+  const appliedCardphotoId: string = yield* resolveAppliedCardphotoId(appliedPhoto.id)
 
   const excludedDispatchBranches: Set<string> = yield select(
     selectExcludedDispatchBranchSet,
@@ -310,7 +358,19 @@ export function* handleToggleCartForDispatchBranch(
   maxLocalId += 1
   const postcardLocalId = maxLocalId
   const now = Date.now()
-  const postcard: Postcard = {
+  const finalCard: Card = {
+    ...candidateCard,
+    id: `${appliedPhoto.id}__${postcardLocalId}`,
+  }
+  const refs: PostcardRefs = {
+    ...postcardRefsFromCard(finalCard),
+    cardphoto: appliedCardphotoId,
+  }
+  if (!hasRequiredPostcardRefs(refs, envelopeVariant)) {
+    yield call(refreshRightSidebarBadgesFromPostcards)
+    return
+  }
+  const postcard: PostcardHydrated = {
     id: `${appliedPhoto.id}__${postcardLocalId}`,
     localId: postcardLocalId,
     price: '',
@@ -318,23 +378,21 @@ export function* handleToggleCartForDispatchBranch(
     createdAt: now,
     updatedAt: now,
     status: 'cart',
-    card: {
-      ...candidateCard,
-      id: `${appliedPhoto.id}__${postcardLocalId}`,
-    },
+    postcard: refs,
+    card: finalCard,
   }
   const { id: _postcardRowId, ...postcardForIdb } = postcard
   yield call(
     [postcardsAdapter, 'addRecordWithId'],
     postcard.id,
-    postcardForIdb as Omit<Postcard, 'id'>,
+    postcardForIdb as Omit<PostcardHydrated, 'id'>,
   )
   yield put(addItem(postcard))
   yield call(refreshRightSidebarBadgesFromPostcards)
 }
 
 export function* refreshRightSidebarBadgesFromPostcards(): SagaIterator {
-  const allRows: Postcard[] = yield call([postcardsAdapter, 'getAll'])
+  const allRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
   const cartCount = allRows.filter((row) => row.status === 'cart').length
   yield put(
     updateToolbarSection({

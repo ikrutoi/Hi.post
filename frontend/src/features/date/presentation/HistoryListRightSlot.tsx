@@ -10,7 +10,7 @@ import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { CalendarCardItem } from '@entities/card/domain/types'
-import type { Postcard, PostcardStatus } from '@entities/postcard'
+import type { PostcardHydrated, PostcardStatus } from '@entities/postcard'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
@@ -26,7 +26,7 @@ import {
 } from '@date/calendar/infrastructure/selectors'
 function postcardLocalIdFromCalendarRow(
   item: CalendarCardItem,
-  cartItems: Postcard[],
+  cartItems: PostcardHydrated[],
 ): number | undefined {
   if (!item.rowKey.startsWith('postcard:')) return undefined
   const m = item.rowKey.match(

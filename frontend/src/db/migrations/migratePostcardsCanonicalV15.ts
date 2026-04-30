@@ -1,9 +1,9 @@
 import type { IDBPDatabase, IDBPTransaction } from 'idb'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import { normalizePostcardRecord } from '@entities/postcard'
 
 /** Текущая версия AppDB (см. `openDB` в `db/core.ts`). */
-export const APP_DB_VERSION = 16
+export const APP_DB_VERSION = 17
 
 type VersionChangeTx = IDBPTransaction<unknown, string[], 'versionchange'>
 
@@ -23,14 +23,14 @@ export async function migratePostcardsToCanonicalShape(
   const rows = await store.getAll()
 
   for (const row of rows) {
-    const r = row as Postcard & { id?: string }
+    const r = row as PostcardHydrated & { id?: string }
     const id = r.id ?? r.card?.id
     if (id == null) continue
 
-    const normalized = normalizePostcardRecord(r as Postcard)
+    const normalized = normalizePostcardRecord(r)
     await store.put({
       ...normalized,
       id: String(id),
-    } as Postcard & { id: string })
+    } as PostcardHydrated & { id: string })
   }
 }

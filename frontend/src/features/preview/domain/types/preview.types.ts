@@ -1,8 +1,8 @@
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import type { SizeCard } from '@layout/domain/types'
 
 export type UseCardphotoPreviewOptions = {
-  items: Postcard[]
+  items: PostcardHydrated[]
   size?: SizeCard
-  onPreviewReady?: (updated: Postcard) => void
+  onPreviewReady?: (updated: PostcardHydrated) => void
 }

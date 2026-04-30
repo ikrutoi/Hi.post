@@ -12,7 +12,7 @@ import {
   selectCartListPanelOpen,
   selectCartListSelectedLocalId,
 } from '../../infrastructure/selectors'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 
 export const useCartFacade = () => {
   const dispatch = useAppDispatch()
@@ -29,9 +29,9 @@ export const useCartFacade = () => {
       dispatch(setCartListPanelOpen(value)),
     setCartListSelectedLocalId: (value: number | null) =>
       dispatch(setCartListSelectedLocalId(value)),
-    addItem: (item: Postcard) => dispatch(addItem(item)),
+    addItem: (item: PostcardHydrated) => dispatch(addItem(item)),
     removeItem: (localId: number) => dispatch(removeItem(localId)),
-    updateItem: (item: Postcard) => dispatch(updateItem(item)),
+    updateItem: (item: PostcardHydrated) => dispatch(updateItem(item)),
     clearCart: () => dispatch(clearCart()),
   }
 }

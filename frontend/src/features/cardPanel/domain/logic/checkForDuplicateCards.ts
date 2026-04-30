@@ -9,20 +9,20 @@ import type {
   EnvelopeRole,
   AddressField,
 } from '@shared/config/constants'
-import type { CardItem } from '@entities/card/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { Card } from '@entities/card/domain/types'
+import type { PostcardHydrated } from '@entities/postcard'
 import type { DraftsItem } from '@entities/drafts/domain/types'
-import type { DuplicateResult } from '../types'
+import type { DuplicateResult } from '../types/duplicate.types'
 
-function templateSourceId(row: Postcard | DraftsItem): string {
+function templateSourceId(row: PostcardHydrated | DraftsItem): string {
   if ('localId' in row && typeof row.localId === 'number') {
     return String(row.localId)
   }
-  return String((row as Postcard).id)
+  return String((row as PostcardHydrated).id)
 }
 
 export async function checkForDuplicateCards(
-  card: CardItem
+  card: Card,
 ): Promise<DuplicateResult> {
   const sources = SOURCES
 
@@ -38,43 +38,52 @@ export async function checkForDuplicateCards(
 
   for (const source of sources) {
     for (const sourceCard of cards[source]) {
+      const sc =
+        'card' in sourceCard && (sourceCard as PostcardHydrated).card
+          ? (sourceCard as PostcardHydrated).card
+          : (sourceCard as unknown as Card)
+
       if (
         card.aroma &&
-        sourceCard.aroma &&
-        card.aroma.name === sourceCard.aroma.name &&
-        card.aroma.make === sourceCard.aroma.make
+        sc.aroma &&
+        card.aroma.name === sc.aroma.name &&
+        card.aroma.make === sc.aroma.make
       ) {
         result[source].aroma.push(templateSourceId(sourceCard))
       }
 
       if (
-        card.date?.isSelected &&
-        sourceCard.date?.isSelected &&
-        card.date.year === sourceCard.date.year &&
-        card.date.month === sourceCard.date.month &&
-        card.date.day === sourceCard.date.day
+        card.date &&
+        sc.date &&
+        card.date.year === sc.date.year &&
+        card.date.month === sc.date.month &&
+        card.date.day === sc.date.day
       ) {
         result[source].date.push(templateSourceId(sourceCard))
       }
 
       const envelopeRole: EnvelopeRole[] = ['sender', 'recipient']
-      const envelopeMatch = envelopeRole.every((role) =>
-        (Object.keys(card.envelope?.[role] || {}) as AddressField[]).every(
-          (key) =>
-            card.envelope?.[role]?.[key] === sourceCard.envelope?.[role]?.[key]
+      const envelopeMatch = envelopeRole.every((role) => {
+        const a = card.envelope?.[role] as Record<string, unknown> | undefined
+        const b = sc.envelope?.[role] as Record<string, unknown> | undefined
+        return (Object.keys(a ?? {}) as AddressField[]).every(
+          (key) => String(a?.[key] ?? '') === String(b?.[key] ?? ''),
         )
-      )
+      })
 
       if (envelopeMatch) {
         result[source].envelope.push(templateSourceId(sourceCard))
       }
 
+      const ctA = card.cardtext?.appliedData?.value ?? card.cardtext?.assetData?.value
+      const ctB = sc.cardtext?.appliedData?.value ?? sc.cardtext?.assetData?.value
       if (
-        card.cardtext?.text?.length === sourceCard.cardtext?.text?.length &&
-        card.cardtext?.text?.every(
-          (text, i) =>
-            text.children[0].text ===
-            sourceCard.cardtext?.text[i]?.children[0]?.text
+        ctA &&
+        ctB &&
+        ctA.length === ctB.length &&
+        ctA.every(
+          (block, i) =>
+            block.children[0]?.text === ctB[i]?.children[0]?.text,
         )
       ) {
         result[source].cardtext.push(templateSourceId(sourceCard))
@@ -89,7 +98,7 @@ export async function checkForDuplicateCards(
   return result
 }
 
-export async function getDuplicateFlags(card: CardItem): Promise<{
+export async function getDuplicateFlags(card: Card): Promise<{
   addedCart: boolean
   save: boolean
 }> {

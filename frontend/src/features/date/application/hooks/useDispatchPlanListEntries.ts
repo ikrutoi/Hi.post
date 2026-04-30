@@ -19,7 +19,7 @@ import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
 import { selectFirstProcessedCardThumbnailUrl } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import {
@@ -71,7 +71,7 @@ function compareDispatchDateChronological(
   return a.day - b.day
 }
 
-function postcardRecipientTemplateId(p: Postcard): string | null {
+function postcardRecipientTemplateId(p: PostcardHydrated): string | null {
   const r = p.card?.envelope?.recipient
   if (!r) return null
   const applied = r.applied ?? []
@@ -147,7 +147,7 @@ export function useDispatchPlanListEntries(
   const listPreviewUrl = cardphotoPreviewUrl ?? processedThumbFallback ?? null
 
   const cartPostcardByDispatchBranchKey = useMemo(() => {
-    const m = new Map<string, Postcard>()
+    const m = new Map<string, PostcardHydrated>()
     for (const p of cartItems) {
       if (p.status !== 'cart') continue
       const key = dispatchBranchKeyFromPostcard(p)
@@ -157,7 +157,7 @@ export function useDispatchPlanListEntries(
   }, [cartItems])
 
   const cartPostcardByRecipientId = useMemo(() => {
-    const m = new Map<string, Postcard>()
+    const m = new Map<string, PostcardHydrated>()
     for (const p of cartItems) {
       if (p.status !== 'cart') continue
       const rk = postcardRecipientTemplateId(p)
@@ -263,11 +263,11 @@ export function useDispatchPlanListEntries(
     const row = (
       d: DispatchDate,
       idSuffix: string,
+      branchKey: string,
       variant?: 'inactive',
       onDelete?: () => void,
       recipientDetailLine?: string | null,
-      cartPostcard?: Postcard,
-      branchKey: string,
+      cartPostcard?: PostcardHydrated,
       isSessionSlot?: boolean,
     ): DateListPanelItem => {
       const fromCart = cartPostcard
@@ -341,11 +341,11 @@ export function useDispatchPlanListEntries(
             row(
               cachedSingleDate,
               `cached-single-rcpt-${slot.branchKey}-${ri}`,
+              branchKey,
               'inactive',
               undefined,
               slot.detailLine,
               cartP,
-              branchKey,
               slot.isSessionSlot,
             ),
           )
@@ -361,6 +361,7 @@ export function useDispatchPlanListEntries(
             row(
               d,
               `m-${i}-rcpt-${slot.branchKey}-${ri}`,
+              branchKey,
               undefined,
               () => {
                 dispatch(excludeDispatchBranch({ branchKey }))
@@ -382,7 +383,6 @@ export function useDispatchPlanListEntries(
               },
               slot.detailLine,
               cartP,
-              branchKey,
               slot.isSessionSlot,
             ),
           )
@@ -401,6 +401,7 @@ export function useDispatchPlanListEntries(
             row(
               selectedDate,
               `single-rcpt-${slot.branchKey}-${ri}`,
+              branchKey,
               undefined,
               () => {
                 dispatch(excludeDispatchBranch({ branchKey }))
@@ -418,7 +419,6 @@ export function useDispatchPlanListEntries(
               },
               slot.detailLine,
               cartP,
-              branchKey,
               slot.isSessionSlot,
             ),
           )
@@ -435,11 +435,11 @@ export function useDispatchPlanListEntries(
               row(
                 d,
                 `cached-m-${i}-rcpt-${slot.branchKey}-${ri}`,
+                branchKey,
                 'inactive',
                 undefined,
                 slot.detailLine,
                 cartP,
-                branchKey,
                 slot.isSessionSlot,
               ),
             )

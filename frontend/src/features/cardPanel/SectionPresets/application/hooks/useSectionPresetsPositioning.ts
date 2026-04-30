@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { useLayoutFacade } from '@layout/application/facades'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import type { PresetLetterItem } from '../../domain/types'
 
 export const useSectionPresetsPositioning = (
-  cart: Postcard[],
+  cart: PostcardHydrated[],
   sizeMiniCard: { width: number; height: number },
   letterIndexList: PresetLetterItem[]
 ) => {

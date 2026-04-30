@@ -74,18 +74,50 @@ export interface PostcardRecordMeta {
 export interface PostcardRefs {
   cardphoto: string
   cardtext: string
-  sender: string
+  sender: string | null
   recipient: string
   aroma: string
 }
 
 export interface Postcard extends PostcardRecordMeta {
   status: PostcardStatus
-  card: Card
+  postcard: PostcardRefs
+}
+
+export type PostcardHydrated = Postcard & { card: Card }
+
+export function postcardRefsFromCard(card: Card): PostcardRefs {
+  const appliedPhotoId =
+    (card.cardphoto?.appliedData as { id?: string } | undefined)?.id ?? null
+  const r = card.envelope?.recipient
+  const s = card.envelope?.sender
+  const recipientRef =
+    r?.applied?.[0] != null
+      ? String(r.applied[0])
+      : r?.recipientViewId != null
+        ? String(r.recipientViewId)
+        : ''
+  const senderRef =
+    s?.applied?.[0] != null
+      ? String(s.applied[0])
+      : s?.senderViewId != null
+        ? String(s.senderViewId)
+        : ''
+  const cardtextId =
+    card.cardtext?.appliedData?.id ??
+    card.cardtext?.assetData?.id ??
+    ''
+  return {
+    cardphoto: appliedPhotoId ?? card.id,
+    cardtext: cardtextId,
+    sender: senderRef,
+    recipient: recipientRef,
+    aroma: String(card.aroma?.index ?? ''),
+  }
 }
 
 export interface PostcardsDaySummary {
-  postcard: Postcard
+  postcard: PostcardHydrated
   count: number
 }
 
@@ -125,8 +157,8 @@ function coercePostcardId(
   return 'unknown'
 }
 
-export function normalizePostcardRecord(raw: Postcard): Postcard {
-  const row = raw as Postcard & Record<string, unknown>
+export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
+  const row = raw as Postcard & Record<string, unknown> & { card?: Card }
 
   const rawCard = row.card as
     | (Card & { status?: string; meta?: Partial<PostcardRecordMeta> })
@@ -181,7 +213,10 @@ export function normalizePostcardRecord(raw: Postcard): Postcard {
         ? card.date
         : POSTCARD_DISPATCH_DATE_FALLBACK
 
-  const next: Postcard = {
+  const postcard: PostcardRefs =
+    row.postcard ?? postcardRefsFromCard(card)
+
+  const next: PostcardHydrated = {
     id,
     localId,
     price,
@@ -189,6 +224,7 @@ export function normalizePostcardRecord(raw: Postcard): Postcard {
     status,
     createdAt,
     updatedAt,
+    postcard,
     card,
   }
   return next

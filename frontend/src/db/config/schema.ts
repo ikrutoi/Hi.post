@@ -9,7 +9,6 @@ const storeSpecs = [
   { name: 'postcards', keyPath: 'id' as const },
   { name: 'cardPieFavorites', keyPath: 'localId' as const },
   { name: 'session', keyPath: 'id' as const },
-  { name: 'workingCard', keyPath: 'id' as const },
   { name: 'uiPreferences', keyPath: 'id' as const },
 ]
 

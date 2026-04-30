@@ -1,17 +1,21 @@
 import { PresetLetterItem } from '../../domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { SectionPresetRow } from './sectionPresetRow'
+import { sectionPresetRowId } from './sectionPresetRow'
 
 export const processPresetsCards = (
-  records: Postcard[],
-  getName: (record: Postcard) => string
-): { sortedRecords: Postcard[]; letterIndexList: PresetLetterItem[] } => {
+  records: SectionPresetRow[],
+  getName: (record: SectionPresetRow) => string
+): {
+  sortedRecords: SectionPresetRow[]
+  letterIndexList: PresetLetterItem[]
+} => {
   const sortedRecords = records.sort((a, b) =>
     getName(a).localeCompare(getName(b))
   )
 
   const letterIndexList = sortedRecords.map((record, i) => ({
     letter: getName(record)[0],
-    id: String(record.id),
+    id: sectionPresetRowId(record),
     index: i,
   }))
 

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { generateCardphotoPreview } from './generateCardphotoPreview'
 import { useLayoutFacade } from '@layout/application/facades'
-import type { Postcard } from '@entities/postcard'
+import { postcardRefsFromCard, type PostcardHydrated } from '@entities/postcard'
 import type { UseCardphotoPreviewOptions } from '../../domain/types'
 
 export const useCardphotoPreview = (options: UseCardphotoPreviewOptions) => {
@@ -14,27 +14,34 @@ export const useCardphotoPreview = (options: UseCardphotoPreviewOptions) => {
 
   useEffect(() => {
     sourceItems.forEach(async (item) => {
-      const photo = item.card.cardphoto
+      /** Legacy preset shape used `isComplete` + `data`; `CardphotoState` uses `appliedData`. */
+      const photo = item.card.cardphoto as unknown as {
+        isComplete?: boolean
+        data?: { preview?: unknown; url?: Blob }
+      }
 
-      if (photo.isComplete && !photo.data.preview) {
+      if (photo.isComplete && !photo.data?.preview && photo.data?.url) {
         try {
           const preview = await generateCardphotoPreview(
             photo.data.url,
-            previewSize
+            previewSize,
           )
 
-          const updated: Postcard = {
-            ...item,
-            card: {
-              ...item.card,
-              cardphoto: {
-                ...photo,
-                data: {
-                  ...photo.data,
-                  preview,
-                },
+          const nextCard = {
+            ...item.card,
+            cardphoto: {
+              ...(item.card.cardphoto as object),
+              ...photo,
+              data: {
+                ...photo.data,
+                preview,
               },
-            },
+            } as unknown as typeof item.card.cardphoto,
+          }
+          const updated: PostcardHydrated = {
+            ...item,
+            postcard: postcardRefsFromCard(nextCard),
+            card: nextCard,
           }
 
           options.onPreviewReady?.(updated)

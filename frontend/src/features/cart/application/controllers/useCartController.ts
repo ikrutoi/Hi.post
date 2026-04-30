@@ -9,7 +9,7 @@ import {
   selectCartAmount,
   selectCartCount,
 } from '../../infrastructure/selectors'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 
 export const useCartController = () => {
   const dispatch = useAppDispatch()
@@ -17,9 +17,9 @@ export const useCartController = () => {
   const amount = useAppSelector(selectCartAmount)
   const count = useAppSelector(selectCartCount)
 
-  const addPostcard = (item: Postcard) => dispatch(addItem(item))
+  const addPostcard = (item: PostcardHydrated) => dispatch(addItem(item))
   const removePostcard = (localId: number) => dispatch(removeItem(localId))
-  const updatePostcard = (item: Postcard) => dispatch(updateItem(item))
+  const updatePostcard = (item: PostcardHydrated) => dispatch(updateItem(item))
   const clearCartItems = () => dispatch(clearCart())
 
   return {

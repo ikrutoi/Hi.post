@@ -1,8 +1,11 @@
 import { createStoreAdapter } from '@db/adapters/factory/createStoreAdapter'
-import { normalizePostcardRecord, type Postcard } from '@entities/postcard'
+import {
+  normalizePostcardRecord,
+  type PostcardHydrated,
+} from '@entities/postcard'
 import type { CartTemplatesAdapter } from './templatesStoreAdapters'
 
-const base = createStoreAdapter<Postcard>('cartTemplates')
+const base = createStoreAdapter<PostcardHydrated>('cartTemplates')
 
 export const cartTemplatesAdapter: CartTemplatesAdapter = {
   ...base,

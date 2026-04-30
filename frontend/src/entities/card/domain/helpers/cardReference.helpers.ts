@@ -4,7 +4,7 @@ import type {
   CardTemplateReferences,
 } from '../types/cardReference.types'
 import type { Card } from '../types/card.types'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 
 function cardphotoPreviewFromCard(card: Card): string {
   if (card.thumbnailUrl) return card.thumbnailUrl
@@ -18,7 +18,7 @@ function cardphotoPreviewFromCard(card: Card): string {
 }
 
 export function createCardReferenceFromPostcard(
-  postcard: Postcard,
+  postcard: PostcardHydrated,
   templateRefs: CardTemplateReferences,
 ): CardReference {
   const card = postcard.card

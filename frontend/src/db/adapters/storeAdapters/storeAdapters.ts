@@ -15,7 +15,6 @@ export const storeAdapters: {
   postcards: StoreAdapter<StoreMap['postcards']>
   cardPieFavorites: StoreAdapter<StoreMap['cardPieFavorites']>
   session: StoreAdapter<StoreMap['session']>
-  workingCard: StoreAdapter<StoreMap['workingCard']>
   uiPreferences: StoreAdapter<StoreMap['uiPreferences']>
 } = {
   stockImages: createStoreAdapter<StoreMap['stockImages']>('stockImages'),
@@ -28,6 +27,5 @@ export const storeAdapters: {
   postcards: postcardsAdapter,
   cardPieFavorites: cardPieFavoritesAdapter,
   session: createStoreAdapter<StoreMap['session']>('session'),
-  workingCard: createStoreAdapter<StoreMap['workingCard']>('workingCard'),
   uiPreferences: createStoreAdapter<StoreMap['uiPreferences']>('uiPreferences'),
 }

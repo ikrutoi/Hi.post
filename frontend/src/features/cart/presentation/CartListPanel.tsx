@@ -10,7 +10,7 @@ import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
 import { CartListEntry, type CartListEntryVariant } from './CartListEntry'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './CartListPanel.module.scss'
 
@@ -18,7 +18,7 @@ export type CartListPanelItem = {
   id: string
   cardId?: string
   sourceDate?: DispatchDate
-  postcard?: Postcard
+  postcard?: PostcardHydrated
   dateLabel: string
   previewUrl?: string | null
   detailLine?: string
@@ -49,7 +49,9 @@ function formatDispatchDateLabel(d: DispatchDate): string {
   })
 }
 
-function formatRecipientLine(postcard: Postcard | undefined): string | undefined {
+function formatRecipientLine(
+  postcard: PostcardHydrated | undefined,
+): string | undefined {
   const recipient = postcard?.card?.envelope?.recipient
   if (!recipient) return undefined
   const source =
@@ -80,7 +82,7 @@ function currencySuffixFromPriceLine(line: string): string {
   return tail || 'USD'
 }
 
-function cartPostcardsToEntries(postcards: Postcard[]): CartListPanelItem[] {
+function cartPostcardsToEntries(postcards: PostcardHydrated[]): CartListPanelItem[] {
   return postcards
     .filter((p) => p.status === 'cart')
     .map((p) => ({

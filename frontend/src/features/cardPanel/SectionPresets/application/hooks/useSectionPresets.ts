@@ -12,8 +12,7 @@ import {
 
 import type { PresetLetterItem } from '../../domain/types'
 import type { Template } from '@shared/config/constants'
-
-type PresetItem = any
+import type { SectionPresetRow } from '../helpers/sectionPresetRow'
 
 export const useSectionPresets = (template: Template) => {
   const { state } = useLayoutNavFacade()
@@ -23,33 +22,43 @@ export const useSectionPresets = (template: Template) => {
     meta: { dateCartCards },
   } = useLayoutFacade()
 
-  const [sectionPresets, setSectionPresets] = useState<PresetItem[]>([])
+  const [sectionPresets, setSectionPresets] = useState<SectionPresetRow[]>([])
   const [letterIndexList, setFirstLetterList] = useState<PresetLetterItem[]>([])
 
   useEffect(() => {
     const load = async () => {
-      let records: PresetItem[] = []
-      let getName: (item: PresetItem) => string = () => ''
+      let records: SectionPresetRow[] = []
+      let getName = (_item: SectionPresetRow) => ''
 
       switch (template) {
         case 'recipient': {
           records = await recipientTemplatesAdapter.getAll()
-          getName = (item) => item.recipient?.name || ''
+          getName = (item) =>
+            'address' in item ? item.address?.name || '' : ''
           break
         }
         case 'sender': {
           records = await senderTemplatesAdapter.getAll()
-          getName = (item) => item.address?.name || ''
+          getName = (item) =>
+            'address' in item ? item.address?.name || '' : ''
           break
         }
         case 'cart': {
           records = await cartTemplatesAdapter.getAll()
-          getName = (item) => item.cart?.envelope.recipient.name || ''
+          getName = (item) => {
+            if (!('card' in item)) return ''
+            const r = item.card.envelope.recipient
+            return r.appliedData?.name ?? r.viewDraft?.name ?? ''
+          }
           break
         }
         case 'drafts': {
           records = await draftsTemplatesAdapter.getAll()
-          getName = (item) => item.drafts?.envelope.recipient.name || ''
+          getName = (item) => {
+            if (!('card' in item)) return ''
+            const r = item.card.envelope.recipient
+            return r.appliedData?.name ?? r.viewDraft?.name ?? ''
+          }
           break
         }
         // case 'date': {

@@ -1,6 +1,6 @@
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 
 export function dispatchDateKeyFromDispatchDate(d: DispatchDate): string {
@@ -25,7 +25,7 @@ export function buildDispatchBranchKey(
   return `${dispatchDateKeyFromDispatchDate(date)}|${recipientBranchKeyFromEnvelope(envelope)}`
 }
 
-export function dispatchBranchKeyFromPostcard(p: Postcard): string | null {
+export function dispatchBranchKeyFromPostcard(p: PostcardHydrated): string | null {
   const d = p.card.date as DispatchDate | undefined
   if (!d) return null
   if (

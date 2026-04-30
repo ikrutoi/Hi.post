@@ -1,7 +1,7 @@
 import type { AddressFields } from '@shared/config/constants'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import type { RecipientState } from '@envelope/recipient/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 
 export type FormatRecipientLayerOpts = {
   /** Для строки шаблона в конверте: показать черновик, если нет applied / appliedData. */
@@ -86,7 +86,7 @@ export function formatRecipientDetailFromLayers(
 }
 
 export function formatRecipientLine(
-  postcard: Postcard | undefined,
+  postcard: PostcardHydrated | undefined,
   recipientEntries: AddressBookEntry[],
   envelopeRecipients: RecipientState[],
 ): string | undefined {
@@ -98,7 +98,7 @@ export function formatRecipientLine(
 }
 
 export function formatPostcardRecipientDetail(
-  postcard: Postcard | undefined,
+  postcard: PostcardHydrated | undefined,
   recipientEntries: AddressBookEntry[],
   envelopeRecipients: RecipientState[],
 ): string | undefined {

@@ -19,7 +19,7 @@ import {
 import { DispatchDate } from '@entities/date'
 import { CardSection } from '@shared/config/constants'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 
 export const selectCardState = (state: RootState) => state.card
 
@@ -64,7 +64,7 @@ const sameDispatchDateKey = (a: DispatchDate, b: DispatchDate) =>
   a.year === b.year && a.month === b.month && a.day === b.day
 
 function postcardToCalendarItem(
-  p: Postcard,
+  p: PostcardHydrated,
   /** Стабильный уникальный индекс слота в проходе (дубликаты в Redux cart / повторы id открытки). */
   listSlotIndex: number,
 ): CalendarCardItem {
@@ -89,7 +89,7 @@ export const selectCardsByDateMap = createSelector(
   ],
   (
     allCards: Card[],
-    cartItems: Postcard[],
+    cartItems: PostcardHydrated[],
     photoPreview,
     activeDates,
     editorMenuActiveSection,

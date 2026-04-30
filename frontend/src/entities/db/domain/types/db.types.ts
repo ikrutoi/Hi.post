@@ -24,9 +24,7 @@ export interface SessionEnvelopeSelection {
 export interface SessionData {
   id: string
   cardphoto: CardphotoSessionRecord | null
-  /** assetData, presetData, appliedData, draftData — см. CardtextState. */
   cardtextEditor?: CardtextEditorSessionSnapshot | null
-  /** @deprecated старые сессии; читать только при отсутствии cardtextEditor */
   cardtext?: CardtextContent | null
   cardtextPresetData?: CardtextContent | null
   cardtextCreateDraft?: CardtextCreateDraft | null

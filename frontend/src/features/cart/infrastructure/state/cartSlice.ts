@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { Cart } from '@cart/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import type { AromaItem } from '@entities/aroma/domain/types'
 
 const initialState: Cart = {
@@ -25,10 +25,10 @@ const cartSlice = createSlice({
     setCartListSelectedLocalId(state, action: PayloadAction<number | null>) {
       state.listSelectedLocalId = action.payload
     },
-    setItems(state, action: PayloadAction<Postcard[]>) {
+    setItems(state, action: PayloadAction<PostcardHydrated[]>) {
       state.items = action.payload
     },
-    addItem(state, action: PayloadAction<Postcard>) {
+    addItem(state, action: PayloadAction<PostcardHydrated>) {
       state.items.push(action.payload)
     },
     removeItem(state, action: PayloadAction<number>) {
@@ -38,7 +38,7 @@ const cartSlice = createSlice({
         state.listSelectedLocalId = null
       }
     },
-    updateItem(state, action: PayloadAction<Postcard>) {
+    updateItem(state, action: PayloadAction<PostcardHydrated>) {
       const index = state.items.findIndex(
         (item) => item.id === action.payload.id,
       )
@@ -54,6 +54,7 @@ const cartSlice = createSlice({
       const item = state.items.find((i) => i.localId === localId)
       if (item != null) {
         item.card.aroma = { ...aroma }
+        item.postcard.aroma = String(aroma.index)
       }
     },
     clearCart(state) {

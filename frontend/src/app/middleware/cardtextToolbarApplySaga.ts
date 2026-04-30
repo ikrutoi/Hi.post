@@ -38,9 +38,21 @@ export function* applyCardtextFromToolbar(
   if (assetData.status === 'processed') {
     let templateId: string | null = assetData.id
     if (templateId == null) {
-      const fromDb =
-        yield call([templateService, 'getSingleCardtextByStatus'], 'processed')
-      templateId = fromDb?.id != null ? String(fromDb.id) : null
+      const upsert: { success?: boolean; templateId?: string } = yield call(
+        [templateService, 'upsertSingleCardtextByStatus'],
+        'processed',
+        {
+          value,
+          style,
+          plainText,
+          cardtextLines,
+          title: assetData.title ?? '',
+          favorite: assetData.favorite ?? null,
+          status: 'processed',
+        },
+      )
+      if (!upsert?.success || upsert.templateId == null) return
+      templateId = String(upsert.templateId)
     }
 
     if (templateId != null) {
@@ -81,8 +93,35 @@ export function* applyCardtextFromToolbar(
       ? assetData.status
       : ('processed' as const)
 
+  let appliedId: string | null = assetData.id
+  if (appliedId == null) {
+    const persisted: { success?: boolean; templateId?: string } =
+      nextStatus === 'processed'
+        ? yield call([templateService, 'upsertSingleCardtextByStatus'], 'processed', {
+            value,
+            style,
+            plainText,
+            cardtextLines,
+            title: assetData.title ?? '',
+            favorite: assetData.favorite ?? null,
+            status: 'processed',
+          })
+        : yield call([templateService, 'createCardtextTemplate'], {
+            value,
+            style,
+            plainText,
+            cardtextLines,
+            title: assetData.title ?? '',
+            favorite: assetData.favorite ?? null,
+            status: nextStatus,
+          })
+    if (!persisted?.success || persisted.templateId == null) return
+    appliedId = String(persisted.templateId)
+  }
+
   const applied = {
     ...assetData,
+    id: appliedId,
     value,
     style,
     plainText,

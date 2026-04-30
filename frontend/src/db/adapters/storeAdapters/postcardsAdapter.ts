@@ -1,7 +1,10 @@
 import { createStoreAdapter } from '../factory/createStoreAdapter'
-import { normalizePostcardRecord, type Postcard } from '@entities/postcard'
+import {
+  normalizePostcardRecord,
+  type PostcardHydrated,
+} from '@entities/postcard'
 
-const base = createStoreAdapter<Postcard>('postcards')
+const base = createStoreAdapter<PostcardHydrated>('postcards')
 
 /** Canonical store for all user postcards (from cart onward); one row per postcard. */
 export const postcardsAdapter = {

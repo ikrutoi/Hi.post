@@ -1,9 +1,9 @@
 import { processPresetsCards } from './processPresetsCards'
-import type { Postcard } from '@entities/postcard'
+import type { SectionPresetRow } from './sectionPresetRow'
 
 export function preparePresets(
-  records: Postcard[],
-  getName: (record: Postcard) => string
+  records: SectionPresetRow[],
+  getName: (record: SectionPresetRow) => string
 ) {
   const { sortedRecords, letterIndexList } = processPresetsCards(
     records,

@@ -4,30 +4,34 @@ import {
   senderTemplatesAdapter,
   recipientTemplatesAdapter,
 } from '@db/adapters/templateAdapters'
-import type { CardItem } from '@entities/card/domain/types'
-import type { CardMenuSection, Template } from '@shared/config/constants'
+import type { PostcardHydrated } from '@entities/postcard'
+import type { DraftsItem } from '@entities/drafts/domain/types'
+import type { Template } from '@shared/config/constants'
+import { sectionPresetRowId } from '../helpers/sectionPresetRow'
 
 export const presetService = {
-  saveBlank: async (card: CardItem) => {
-    if (card.id) {
-      await draftsTemplatesAdapter.addRecordWithId(card.id, {
-        envelope: card.cart?.envelope ?? card.drafts?.envelope!,
-        cardphoto: card.cart?.cardphoto ?? card.drafts?.cardphoto,
-        id: card.id,
-      })
-    }
+  saveBlank: async (row: PostcardHydrated | DraftsItem) => {
+    if (!('card' in row)) return
+    const id = sectionPresetRowId(row)
+    const { card } = row
+    const localId =
+      'postcard' in row ? row.localId : (row as DraftsItem).localId
+    await draftsTemplatesAdapter.addRecordWithId(id, {
+      localId,
+      card,
+    })
   },
 
-  deletePreset: async (template: Template, id: number) => {
+  deletePreset: async (template: Template, id: string | number) => {
     switch (template) {
       case 'cart':
-        return cartTemplatesAdapter.deleteById(id)
+        return cartTemplatesAdapter.deleteById(String(id))
       case 'drafts':
-        return draftsTemplatesAdapter.deleteById(id)
+        return draftsTemplatesAdapter.deleteById(String(id))
       case 'sender':
-        return senderTemplatesAdapter.deleteById(id)
+        return senderTemplatesAdapter.deleteById(String(id))
       case 'recipient':
-        return recipientTemplatesAdapter.deleteById(id)
+        return recipientTemplatesAdapter.deleteById(String(id))
     }
   },
 }

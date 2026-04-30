@@ -1,5 +1,5 @@
 import type { Card } from '@entities/card/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import type { ImageAsset } from '@entities/assetRegistry/domain/types'
 import type { CardphotoState, ImageMeta } from '@cardphoto/domain/types'
 
@@ -49,7 +49,7 @@ function addCalendarPreviewCacheBlobs(
 }
 
 function addCartPostcardBlobs(
-  items: readonly Postcard[] | undefined,
+  items: readonly PostcardHydrated[] | undefined,
   sink: Set<string>,
 ): void {
   if (!items) return
@@ -62,7 +62,7 @@ function addCartPostcardBlobs(
 export type BlobUrlRevokeGuardSnapshot = {
   cardphoto: CardphotoState | null | undefined
   cards: readonly Card[] | undefined
-  cartItems?: readonly Postcard[]
+  cartItems?: readonly PostcardHydrated[]
   assetRegistryImages?: Record<string, ImageAsset>
   calendarPreviewCache?: Record<string, string>
 }

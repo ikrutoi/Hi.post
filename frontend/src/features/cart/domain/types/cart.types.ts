@@ -1,4 +1,4 @@
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 
 export type CartAmount = {
   value: number
@@ -6,7 +6,7 @@ export type CartAmount = {
 }
 
 export type Cart = {
-  items: Postcard[]
+  items: PostcardHydrated[]
   amount: CartAmount
   isActive: boolean
   /** Выбранная строка списка корзины (превью пирога справа). */

@@ -1,6 +1,6 @@
 import type { RootState } from '@app/state'
 import type { CartAmount } from '@cart/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 
 export const selectCartListPanelOpen = (state: RootState): boolean =>
   state.cart.isActive
@@ -8,7 +8,7 @@ export const selectCartListPanelOpen = (state: RootState): boolean =>
 export const selectCartListSelectedLocalId = (state: RootState): number | null =>
   state.cart.listSelectedLocalId
 
-export const selectCartItems = (state: RootState): Postcard[] =>
+export const selectCartItems = (state: RootState): PostcardHydrated[] =>
   state.cart.items
 
 // export const selectCartAmount = (state: RootState): CartAmount => {

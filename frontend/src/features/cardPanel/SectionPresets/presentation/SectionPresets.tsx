@@ -12,6 +12,8 @@ import { PresetToolbar } from './PresetToolbar'
 import { PresetAddress } from './PresetAddress'
 import styles from './SectionPresets.module.scss'
 import type { Template } from '@shared/config/constants'
+import type { AddressTemplateItem } from '@entities/envelope/domain/types'
+import { sectionPresetRowId } from '../application/helpers/sectionPresetRow'
 // import type { InfoCardsList } from '../../CardScroller/domain/types'
 
 interface Props {
@@ -62,7 +64,7 @@ export const SectionPresets: React.FC<Props> = ({
   return (
     <div className={styles['section-presets']}>
       {sectionPresets.map((card, index) => (
-        <div key={card.id}>
+        <div key={sectionPresetRowId(card)}>
           <PresetCard
             card={card}
             index={index}
@@ -72,7 +74,9 @@ export const SectionPresets: React.FC<Props> = ({
             refs={{
               cardRef: (el) => (cardRefs.current[`card-${index}`] = el),
               filterRef: source.includes(selectedTemplate)
-                ? (el) => (filterRefs.current[`filter-${card.id}`] = el)
+                ? (el) =>
+                    (filterRefs.current[`filter-${sectionPresetRowId(card)}`] =
+                      el)
                 : undefined,
               spanNameRef:
                 selectedTemplate === 'recipient'
@@ -83,10 +87,11 @@ export const SectionPresets: React.FC<Props> = ({
           />
 
           {(selectedTemplate === 'sender' ||
-            selectedTemplate === 'recipient') && (
+            selectedTemplate === 'recipient') &&
+            'address' in card && (
             <PresetAddress
-              name={card.address.name}
-              country={card.address.country}
+              name={(card as AddressTemplateItem).address.name}
+              country={(card as AddressTemplateItem).address.country}
               section={selectedTemplate}
               spanRef={
                 selectedTemplate === 'recipient'
@@ -98,7 +103,7 @@ export const SectionPresets: React.FC<Props> = ({
 
           {source.includes(selectedTemplate) && (
             <PresetToolbar
-              cardId={card.id}
+              cardId={sectionPresetRowId(card)}
               buttons={['save', 'remove', 'addCart']}
               remSize={remSize}
               onClick={handleBtnCardClick}

@@ -1,11 +1,11 @@
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 
 export const changeCartDay = (
   day: number,
   month: number,
   year: number,
-  postcards: Postcard[] | null,
-): Postcard[] => {
+  postcards: PostcardHydrated[] | null,
+): PostcardHydrated[] => {
   return (
     postcards?.filter((item) => {
       const date = item.card.date

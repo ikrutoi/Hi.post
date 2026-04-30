@@ -1,5 +1,5 @@
-import type { Card } from '@entities/card'
-import type { Postcard } from '@entities/postcard'
+import type { Card } from '@entities/card/domain/types'
+import type { PostcardHydrated } from '@entities/postcard'
 import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import type { AddressFields } from '@shared/config/constants'
 import {
@@ -99,7 +99,7 @@ function recipientAppliedCount(recipient: RecipientState): number {
 }
 
 export function buildCardPieInnerDataFromPostcard(
-  postcard: Postcard,
+  postcard: PostcardHydrated,
 ): CardPieInnerData {
   const card = postcard.card
   const cardphoto = cardphotoPreviewFromCard(card)
@@ -145,7 +145,7 @@ export function buildPieSectionFlagsFromInner(
 }
 
 export function buildPieSectionFlagsFromPostcard(
-  postcard: Postcard,
+  postcard: PostcardHydrated,
 ): CardPieSectionFlags {
   const inner = buildCardPieInnerDataFromPostcard(postcard)
   return buildPieSectionFlagsFromInner(

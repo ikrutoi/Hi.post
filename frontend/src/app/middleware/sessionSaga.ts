@@ -102,7 +102,7 @@ import {
 } from './postcardCardphotoHydrate'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import type { CardtextStyle } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type {
@@ -397,8 +397,8 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
 
 export function* hydrateAppSession() {
   try {
-    const rawPostcards: Postcard[] = yield call([postcardsAdapter, 'getAll'])
-    const postcards: Postcard[] = yield call(
+    const rawPostcards: PostcardHydrated[] = yield call(postcardsAdapter.getAll)
+    const postcards: PostcardHydrated[] = yield call(
       refreshPostcardsCardphotoUrls,
       rawPostcards,
     )
@@ -411,10 +411,7 @@ export function* hydrateAppSession() {
         prev.id === next.id &&
         postcardCardphotoNeedsPersist(prev, next)
       ) {
-        yield call([postcardsAdapter, 'put'], {
-          ...next,
-          id: next.id,
-        } as Postcard & { id: string })
+        yield call(postcardsAdapter.put, next)
       }
     }
     yield put(setItems(postcards))

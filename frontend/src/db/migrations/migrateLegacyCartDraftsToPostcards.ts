@@ -2,11 +2,12 @@ import type { IDBPDatabase, IDBPTransaction } from 'idb'
 import type { Card } from '@entities/card/domain/types'
 import {
   POSTCARD_DISPATCH_DATE_FALLBACK,
-  type Postcard,
+  postcardRefsFromCard,
+  normalizePostcardRecord,
+  type PostcardHydrated,
   type PostcardStatus,
   type PostcardRecordMeta,
 } from '@entities/postcard'
-import { normalizePostcardRecord } from '@entities/postcard'
 import type { DraftsItem } from '@entities/drafts/domain/types'
 import { normalizeDraftsItemRecord } from '@entities/drafts/domain/types'
 
@@ -20,23 +21,25 @@ type LegacyCardFields = Card & {
 }
 
 /** Строковый ключ IDB при первичной миграции в `postcards`. */
-function postcardWithId(p: Postcard, explicitId?: string): Postcard & { id: string } {
+function postcardWithId(
+  p: PostcardHydrated,
+  explicitId?: string,
+): PostcardHydrated & { id: string } {
   const rowKey = explicitId ?? p.id ?? p.card.id
-  return { ...p, id: rowKey } as Postcard & { id: string }
+  return { ...p, id: rowKey } as PostcardHydrated & { id: string }
 }
 
-function migrateCartRow(row: unknown): Postcard & { id: string } {
-  const p = normalizePostcardRecord(row as Postcard)
+function migrateCartRow(row: unknown): PostcardHydrated & { id: string } {
+  const p = normalizePostcardRecord(row)
   const id = String((row as { id?: string }).id ?? p.card.id)
   return postcardWithId(p, id)
 }
 
-function migrateDraftsRow(row: unknown): Postcard & { id: string } {
+function migrateDraftsRow(row: unknown): PostcardHydrated & { id: string } {
   const d = normalizeDraftsItemRecord(row as DraftsItem)
   const inner = d.card as LegacyCardFields
   const st = inner.status
-  const status: PostcardStatus =
-    st === 'cart' ? 'cart' : st === 'favorite' ? 'favorite' : 'favorite'
+  const status: PostcardStatus = st === 'cart' ? 'cart' : 'cart'
 
   const m = inner.meta
   const now = Date.now()
@@ -46,7 +49,7 @@ function migrateDraftsRow(row: unknown): Postcard & { id: string } {
   const { status: _st, meta: _meta, ...cardFields } = inner
   const card = cardFields as Card
 
-  const postcard = {
+  const postcard: PostcardHydrated = {
     id: String(d.localId),
     localId: d.localId,
     price: m?.price ?? '',
@@ -54,8 +57,9 @@ function migrateDraftsRow(row: unknown): Postcard & { id: string } {
     status,
     createdAt,
     updatedAt,
+    postcard: postcardRefsFromCard(card),
     card,
-  } as Postcard
+  }
   return postcardWithId(postcard)
 }
 

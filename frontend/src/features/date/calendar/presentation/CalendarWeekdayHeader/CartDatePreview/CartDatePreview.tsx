@@ -1,11 +1,11 @@
 import React from 'react'
 import clsx from 'clsx'
-import type { Postcard } from '@entities/postcard'
+import type { PostcardHydrated } from '@entities/postcard'
 import styles from './CartDatePreview.module.scss'
 
 interface CartDatePreviewProps {
   day: number
-  postcard: Postcard
+  postcard: PostcardHydrated
   countCartCards: number
   handleImageCartDateClick: (evt: React.MouseEvent, day: number) => void
   handleCellCartDateClick: () => void

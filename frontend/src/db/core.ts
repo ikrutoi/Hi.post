@@ -22,6 +22,9 @@ export const getDatabase = async () => {
         if (db.objectStoreNames.contains('sent')) {
           db.deleteObjectStore('sent')
         }
+        if (oldVersion < 17 && db.objectStoreNames.contains('workingCard')) {
+          db.deleteObjectStore('workingCard')
+        }
         storesSchema.forEach(({ name, keyPath }) => {
           if (!db.objectStoreNames.contains(name)) {
             db.createObjectStore(name, { keyPath })
