@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectHistoryListSelectedLocalId,
   selectHistoryOpenDayPanelArchiveLocalId,
@@ -40,6 +40,11 @@ import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
 import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
 import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import {
+  closeDayPanel,
+  setHistoryListPanelOpen,
+} from '@date/calendar/infrastructure/state'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import styles from './App.module.scss'
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
@@ -61,6 +66,7 @@ const App = () => {
   const sectionSize =
     sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width / 6 : null
 
+  const dispatch = useAppDispatch()
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
   const prevActiveSectionRef = useRef(activeSection)
@@ -68,16 +74,31 @@ const App = () => {
     useCartFacade()
   const prevCartListPanelOpen = useRef(listPanelOpen)
 
-  /** Правый режим (мини-центр + правый CardPie): смена секции — обратно левый режим верхнего блока. */
+  /**
+   * Смена секции: уход с «История» — закрыть список истории и панель дня (как при переключении календаря в Дата).
+   * Правый режим (мини-центр + правый CardPie) при любой смене секции — снова левый режим.
+   */
   useEffect(() => {
-    if (
-      activePieSide === 'right' &&
-      prevActiveSectionRef.current !== activeSection
-    ) {
+    const prev = prevActiveSectionRef.current
+
+    if (prev === 'history' && activeSection !== 'history') {
+      dispatch(setHistoryListPanelOpen(false))
+      dispatch(closeDayPanel())
+      dispatch(
+        updateToolbarIcon({
+          section: 'history',
+          key: 'listHistory',
+          value: 'enabled',
+        }),
+      )
+    }
+
+    if (activePieSide === 'right' && prev !== activeSection) {
       setActivePieSide('left')
     }
+
     prevActiveSectionRef.current = activeSection
-  }, [activeSection, activePieSide])
+  }, [activeSection, activePieSide, dispatch])
 
   useEffect(() => {
     if (
