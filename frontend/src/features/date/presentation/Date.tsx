@@ -2,6 +2,11 @@ import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch } from '@app/hooks'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
+import {
+  closeDayPanel,
+  setHistoryListPanelOpen,
+} from '@date/calendar/infrastructure/state'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
 import { Calendar } from '../calendar/presentation/Calendar'
@@ -41,6 +46,17 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
 
   const handleCalendarModeToggle = useCallback(
     (historyOn: boolean) => {
+      if (!historyOn) {
+        dispatch(setHistoryListPanelOpen(false))
+        dispatch(closeDayPanel())
+        dispatch(
+          updateToolbarIcon({
+            section: 'history',
+            key: 'listHistory',
+            value: 'enabled',
+          }),
+        )
+      }
       dispatch(setActiveSection(historyOn ? 'history' : 'date'))
     },
     [dispatch],

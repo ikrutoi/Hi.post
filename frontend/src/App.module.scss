@@ -156,6 +156,11 @@
 .appMainContentLeftPieSlot_inactive {
   background-color: transparent;
   border-color: transparent;
+
+  /** Неактивный пирог: клики по секторам не уходят в редактор (активен правый блок). */
+  .appMainContentLeftPieWrap {
+    pointer-events: none;
+  }
 }
 
 .appMainContentLeftPieSlot_mergedWithCenter {
@@ -199,6 +204,10 @@
 .appMainContentRightPieSlot_inactive {
   background-color: transparent;
   border-color: transparent;
+
+  .appMainContentRightPieWrap {
+    pointer-events: none;
+  }
 }
 
 .appMainContentRightPieSlot_mergedWithCenter {

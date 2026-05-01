@@ -5,11 +5,18 @@ import { useCalendarFacade } from '../../../calendar/application/facades'
 import {
   closeDayPanel,
   openDayPanel,
+  setHistoryListPanelOpen,
+  setHistoryListSelectedLocalId,
 } from '../../../calendar/infrastructure/state/calendar.slice'
 import {
   selectIsDateListPanelOpen,
+  selectIsHistoryListPanelOpen,
   selectOpenDayPanel,
+  selectPostcardStatuses,
 } from '../../../calendar/infrastructure/selectors/calendar.selector'
+import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../../../calendar/infrastructure/historyOpenDayPanelPrimaryPostcard'
+import { selectCartItems } from '@cart/infrastructure/selectors'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { shiftMonth } from '../../../calendar/application/helpers'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
@@ -20,6 +27,7 @@ import type {
   Switcher,
 } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../domain/types'
+import type { CardCalendarIndex } from '@entities/card/domain/types'
 import { calendarDayHasCards } from '../../domain/calendarDayContent'
 
 function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
@@ -35,7 +43,10 @@ export const useCalendarCellController = ({
 }: UseCalendarCellControllerParams) => {
   const dispatch = useAppDispatch()
   const dateListPanelOpen = useAppSelector(selectIsDateListPanelOpen)
+  const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const openDayPanelState = useAppSelector(selectOpenDayPanel)
+  const cartItems = useAppSelector(selectCartItems)
+  const postcardStatuses = useAppSelector(selectPostcardStatuses)
   const { selectedDate, selectedDates, isMultiDateMode, chooseDate } =
     useDateFacade()
 
@@ -48,6 +59,31 @@ export const useCalendarCellController = ({
     if (selectedDate) {
     }
   }, [selectedDate])
+
+  const openHistoryDayPanelWithListHighlight = (
+    dateKey: string,
+    dayData: CardCalendarIndex,
+  ) => {
+    if (!historyListPanelOpen) {
+      dispatch(setHistoryListPanelOpen(true))
+      dispatch(
+        updateToolbarIcon({
+          section: 'history',
+          key: 'listHistory',
+          value: 'active',
+        }),
+      )
+    }
+    dispatch(openDayPanel({ dateKey, dayData }))
+    const primaryLid = getHistoryOpenDayPanelPrimaryPostcardLocalId(
+      dayData,
+      cartItems,
+      postcardStatuses,
+    )
+    if (primaryLid != null) {
+      dispatch(setHistoryListSelectedLocalId(primaryLid))
+    }
+  }
 
   const handleCellClickLogic = ({
     isDisabledDate,
@@ -89,7 +125,7 @@ export const useCalendarCellController = ({
           if (openDayPanelState?.dateKey === dateKey) {
             dispatch(closeDayPanel())
           } else {
-            dispatch(openDayPanel({ dateKey, dayData }))
+            openHistoryDayPanelWithListHighlight(dateKey, dayData)
           }
         } else if (!clickRemovesSelection) {
           dispatch(openDayPanel({ dateKey, dayData }))
@@ -131,7 +167,7 @@ export const useCalendarCellController = ({
             if (openDayPanelState?.dateKey === dateKey) {
               dispatch(closeDayPanel())
             } else {
-              dispatch(openDayPanel({ dateKey, dayData }))
+              openHistoryDayPanelWithListHighlight(dateKey, dayData)
             }
           } else if (!clickRemovesSelection) {
             dispatch(openDayPanel({ dateKey, dayData }))

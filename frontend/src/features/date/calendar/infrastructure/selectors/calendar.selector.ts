@@ -6,8 +6,7 @@ import type { RootState } from '@app/state'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 import { createSelector } from '@reduxjs/toolkit'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import { flattenOpenDayPanelItems } from '@date/infrastructure/selectors/dateSelectors'
-import { postcardLocalIdFromCalendarCardItem } from '../postcardLocalIdFromCalendarCardItem'
+import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
 import type { DayPanelPayload } from '../state/calendar.slice'
 
 export const selectLastCalendarViewDate = (
@@ -56,12 +55,10 @@ export const selectHistoryOpenDayPanelArchiveLocalId = createSelector(
   ],
   (openDayPanel, activeSection, cartItems, postcardStatuses) => {
     if (activeSection !== 'history' || openDayPanel == null) return null
-    const items = flattenOpenDayPanelItems(openDayPanel.dayData)
-    for (const item of items) {
-      if (!postcardStatuses[item.status]) continue
-      const lid = postcardLocalIdFromCalendarCardItem(item, cartItems)
-      if (lid != null) return lid
-    }
-    return null
+    return getHistoryOpenDayPanelPrimaryPostcardLocalId(
+      openDayPanel.dayData,
+      cartItems,
+      postcardStatuses,
+    )
   },
 )
