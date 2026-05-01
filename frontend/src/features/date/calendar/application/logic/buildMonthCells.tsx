@@ -13,7 +13,10 @@ import type {
 import type { MonthDirection } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
-import { isEmptyCalendarDay } from '../../../cell/domain/calendarDayContent'
+import {
+  calendarDayHasCards,
+  isEmptyCalendarDay,
+} from '../../../cell/domain/calendarDayContent'
 
 interface BuildMonthCellsParams {
   days: number[]
@@ -77,11 +80,27 @@ export const buildMonthCells = ({
         photoPreview,
       })
 
+    const isDisabled = isDisabledDate(day, cellDate, currentDate)
+
     const historyEmptyNoPreview =
       activeSection === 'history' &&
       direction === 'current' &&
       isEmptyCalendarDay(dayData) &&
-      !isDisabledDate(day, cellDate, currentDate)
+      !isDisabled
+
+    /** История: dayBefore/dayAfter с открытками на день — pointer. */
+    const historyAdjacentPointer =
+      activeSection === 'history' &&
+      direction !== 'current' &&
+      dayData != null &&
+      calendarDayHasCards(dayData) &&
+      !isDisabled
+
+    /** Дата: dayBefore/dayAfter не disabled — выбор даты / панель дня, pointer. */
+    const dateAdjacentPointer =
+      activeSection === 'date' && direction !== 'current' && !isDisabled
+
+    const adjacentMonthPointer = historyAdjacentPointer || dateAdjacentPointer
 
     return (
       <Cell
@@ -92,13 +111,14 @@ export const buildMonthCells = ({
         calendarViewDate={calendarViewDate}
         direction={direction}
         isToday={isToday}
-        isDisabledDate={isDisabledDate(day, cellDate, currentDate)}
+        isDisabledDate={isDisabled}
         isSelectedDate={isSelectedDate}
         onClickCell={handleClickCell}
         dateKey={dateKey}
         dayData={dayData}
         adjacentSessionPlaceholderNavSwap={adjacentSessionPlaceholderNavSwap}
         historyEmptyNoPreview={historyEmptyNoPreview}
+        adjacentMonthPointer={adjacentMonthPointer}
       >
         {dayData && (
           <CardPreview

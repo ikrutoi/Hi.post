@@ -32,6 +32,11 @@ $cell-border-radius: 0.35rem;
   &.historyEmptyNoPreview {
     cursor: default;
   }
+
+  /** Соседний месяц: режим Дата (не disabled) или История (есть открытки) — кликабельная ячейка. */
+  &.adjacentMonth.adjacentMonthPointer {
+    cursor: pointer;
+  }
 }
 
 .dayNumber {

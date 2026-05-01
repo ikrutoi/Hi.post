@@ -27,6 +27,8 @@ interface CellProps {
   adjacentSessionPlaceholderNavSwap?: boolean
   /** Календарь истории: день без открыток — курсор как у неинтерактивной ячейки. */
   historyEmptyNoPreview?: boolean
+  /** dayBefore/dayAfter: pointer поверх `.adjacentMonth` (дата: не disabled; история: есть открытки). */
+  adjacentMonthPointer?: boolean
   children?: React.ReactNode
 }
 
@@ -44,6 +46,7 @@ export const Cell: React.FC<CellProps> = ({
   dayData,
   adjacentSessionPlaceholderNavSwap = false,
   historyEmptyNoPreview = false,
+  adjacentMonthPointer = false,
   children,
 }) => {
   const hasPostcards = Boolean(
@@ -63,6 +66,7 @@ export const Cell: React.FC<CellProps> = ({
   const dynamicClass = clsx(
     styles.cell,
     historyEmptyNoPreview && styles.historyEmptyNoPreview,
+    adjacentMonthPointer && styles.adjacentMonthPointer,
     isToday && styles.today,
     isDisabledDate && styles.disabled,
     (dayBefore != null || dayAfter != null) && styles.adjacentMonth,
