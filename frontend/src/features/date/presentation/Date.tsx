@@ -132,6 +132,7 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
             calendarViewDate={calendarViewDate}
             chooseDate={chooseDate}
             triggerFlash={triggerFlash}
+            calendarVariant={section}
           />
         </div>
 
@@ -160,7 +161,13 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
             role="group"
             aria-label="Calendar: dispatch dates or history"
           >
-            <IconHistory className={styles.dateBottomToggleIcon} aria-hidden />
+            <IconHistory
+              className={clsx(
+                styles.dateBottomToggleIcon,
+                styles.dateBottomToggleHistoryIconShift,
+              )}
+              aria-hidden
+            />
             <Toggle
               label=""
               checked={section === 'history'}

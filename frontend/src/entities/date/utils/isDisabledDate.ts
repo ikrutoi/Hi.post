@@ -1,13 +1,22 @@
-import { CalendarViewDate } from '../domain/types'
+import type { CalendarViewDate, DispatchDate } from '../domain/types'
+
+export type OrderCalendarCurrentDate = {
+  year: number
+  month: number
+  day: number
+}
+
+export function isDispatchDateDisabledForOrder(
+  d: DispatchDate,
+  currentDate: OrderCalendarCurrentDate,
+): boolean {
+  return isDisabledDate(d.day, { year: d.year, month: d.month }, currentDate)
+}
 
 export const isDisabledDate = (
   day: number,
   calendarViewDate: CalendarViewDate,
-  currentDate: {
-    day: number
-    month: number
-    year: number
-  }
+  currentDate: OrderCalendarCurrentDate,
 ): boolean => {
   if (!calendarViewDate) return false
 

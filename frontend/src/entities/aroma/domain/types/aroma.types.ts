@@ -8,8 +8,8 @@ import img306_11 from '../../assets/306_11.png'
 import img307_11 from '../../assets/307_11.png'
 import img308_11 from '../../assets/308_11.png'
 import img310_11 from '../../assets/310_11.png'
+import img311_11 from '../../assets/311_11.png'
 
-/** Всего 9 ячеек: 0 — без аромата, 1…8 — выбранный слот (данные аромата на сервере). */
 export const AROMA_CELL_COUNT = 9 as const
 
 export const aromaSlotOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const
@@ -25,7 +25,7 @@ export const AROMA_IMAGES: Record<AromaSlot, string> = {
   5: img306_11,
   6: img305_11,
   7: img301_11,
-  8: img310_11,
+  8: img311_11,
 }
 
 export interface AromaItem {
@@ -49,9 +49,6 @@ const LEGACY_STRING_SLOT: Record<string, AromaSlot> = {
   '08': 8,
 }
 
-/**
- * Приводит значение из Redux / IndexedDB к текущему виду (раньше были строки `empty` / `01`… и поля make/name).
- */
 export function normalizeAromaItem(raw: unknown): AromaItem {
   if (raw == null || typeof raw !== 'object') return { index: 0 }
   const o = raw as { index?: unknown; make?: unknown }

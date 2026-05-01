@@ -286,8 +286,14 @@ button.navArrowWrap {
   }
 }
 
+/** dayBefore/dayAfter + disabled: тот же фон ячейки, что у `.disabled.current` (не белый как у обычного adjacent). */
 .adjacentMonth.disabled {
-  background-color: #fff;
+  background-color: $color-disabled-light;
+  border-color: $color-hover;
+}
+
+.adjacentMonth.dispatch.disabled {
+  background-color: $color-hover-bg;
 }
 
 .withPostcards {

@@ -76,24 +76,15 @@ export const useCalendarCellController = ({
         ? selectedDates.some((d) => sameDispatchDate(d, dispatchDate))
         : Boolean(selectedDate && sameDispatchDate(selectedDate, dispatchDate))
 
-      /** В секции History календарь только для просмотра / правого CardPie — дата отправки фабрики не меняем. */
       const isHistorySection = activeSection === 'history'
 
       if (!isHistorySection) {
         chooseDate(dispatchDate)
       }
 
-      /**
-       * Список дат открыт — показываем только план (слоты × даты), без drill-down по пайплайну дня
-       * (иначе одна строка из корзины, превью корзины и «залипание» при клике на день без карт).
-       */
       if (dateListPanelOpen) {
         dispatch(closeDayPanel())
-      } else if (
-        dateKey &&
-        dayData &&
-        calendarDayHasCards(dayData)
-      ) {
+      } else if (dateKey && dayData && calendarDayHasCards(dayData)) {
         if (isHistorySection) {
           if (openDayPanelState?.dateKey === dateKey) {
             dispatch(closeDayPanel())
@@ -110,7 +101,6 @@ export const useCalendarCellController = ({
       }
     }
 
-    /** dayBefore / dayAfter: клик вне кнопки листания — как у дня текущего месяца (выбор / панель). */
     if (
       (direction === 'before' || direction === 'after') &&
       triggerMonthNav !== true &&
@@ -136,11 +126,7 @@ export const useCalendarCellController = ({
 
         if (dateListPanelOpen) {
           dispatch(closeDayPanel())
-        } else if (
-          dateKey &&
-          dayData &&
-          calendarDayHasCards(dayData)
-        ) {
+        } else if (dateKey && dayData && calendarDayHasCards(dayData)) {
           if (isHistorySection) {
             if (openDayPanelState?.dateKey === dateKey) {
               dispatch(closeDayPanel())

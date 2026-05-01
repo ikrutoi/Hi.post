@@ -5,6 +5,8 @@ import type {
   DispatchDate,
   FirstDayOfWeekPreference,
 } from '@entities/date/domain/types'
+import { getCurrentDate } from '@shared/utils/date'
+import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
 const initialState: DateState = {
   selectedDate: null,
@@ -140,25 +142,52 @@ export const dateSlice = createSlice({
 
     hydrateDateFromSession(state, action: PayloadAction<DateState>) {
       const s = action.payload
-      state.selectedDate = s.selectedDate ?? null
-      state.selectedDates = Array.isArray(s.selectedDates)
+      const now = getCurrentDate()
+      const orderDisabled = (d: DispatchDate | null | undefined) =>
+        d != null && isDispatchDateDisabledForOrder(d, now)
+
+      const rawSelectedDates = Array.isArray(s.selectedDates)
         ? s.selectedDates
         : []
+      const selectedDatesFiltered = rawSelectedDates.filter((d) => !orderDisabled(d))
+
+      let selectedDateNext = s.selectedDate ?? null
+      if (orderDisabled(selectedDateNext)) {
+        selectedDateNext = null
+      }
+      if (selectedDateNext == null && selectedDatesFiltered.length > 0) {
+        selectedDateNext = {
+          ...selectedDatesFiltered[selectedDatesFiltered.length - 1],
+        }
+      }
+
+      state.selectedDate = selectedDateNext
+      state.selectedDates =
+        selectedDatesFiltered.length > 0
+          ? selectedDatesFiltered
+          : selectedDateNext != null
+            ? [{ ...selectedDateNext }]
+            : []
+
       state.isMultiDateMode = s.isMultiDateMode ?? false
-      state.isComplete = s.isComplete ?? false
+      const hasDispatchSelection =
+        state.selectedDates.length > 0 || state.selectedDate != null
+      state.isComplete = hasDispatchSelection && Boolean(s.isComplete)
       state.firstDayOfWeek = s.firstDayOfWeek ?? 'Sun'
-      state.cachedSingleDate = s.cachedSingleDate ?? null
+      state.cachedSingleDate =
+        s.cachedSingleDate != null && !orderDisabled(s.cachedSingleDate)
+          ? s.cachedSingleDate
+          : null
       const fromCache = Array.isArray(s.cachedMultiDates)
         ? s.cachedMultiDates
         : []
-      state.cachedMultiDates =
+      const baseCachedMulti =
         fromCache.length > 0
           ? fromCache
-          : (s.isMultiDateMode ?? false) &&
-              Array.isArray(s.selectedDates) &&
-              s.selectedDates.length > 0
-            ? s.selectedDates.map((d) => ({ ...d }))
+          : (s.isMultiDateMode ?? false) && rawSelectedDates.length > 0
+            ? rawSelectedDates.map((d) => ({ ...d }))
             : []
+      state.cachedMultiDates = baseCachedMulti.filter((d) => !orderDisabled(d))
       state.multiGroupId =
         s.multiGroupId != null
           ? s.multiGroupId
