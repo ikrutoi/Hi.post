@@ -63,9 +63,21 @@ const App = () => {
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
+  const prevActiveSectionRef = useRef(activeSection)
   const { listPanelOpen, listSelectedLocalId, setCartListSelectedLocalId } =
     useCartFacade()
   const prevCartListPanelOpen = useRef(listPanelOpen)
+
+  /** Правый режим (мини-центр + правый CardPie): смена секции — обратно левый режим верхнего блока. */
+  useEffect(() => {
+    if (
+      activePieSide === 'right' &&
+      prevActiveSectionRef.current !== activeSection
+    ) {
+      setActivePieSide('left')
+    }
+    prevActiveSectionRef.current = activeSection
+  }, [activeSection, activePieSide])
 
   useEffect(() => {
     if (
