@@ -17,7 +17,6 @@ export const CardPieLeftSlot: React.FC = () => {
   const entries = useDispatchPlanListEntries({
     activeModeOnly: true,
     listSortDirection,
-    hideBranchesInCart: true,
     showUndatedWhenAnySectionSelected: true,
   })
 

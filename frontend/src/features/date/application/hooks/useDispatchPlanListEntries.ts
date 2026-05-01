@@ -80,6 +80,15 @@ function postcardRecipientTemplateId(p: PostcardHydrated): string | null {
   return null
 }
 
+function thumbnailUrlFromCartPostcard(p: PostcardHydrated): string | undefined {
+  const c = p.card
+  const thumb = typeof c.thumbnailUrl === 'string' ? c.thumbnailUrl.trim() : ''
+  if (thumb !== '') return thumb
+  const meta = c.cardphoto?.appliedData ?? c.cardphoto?.assetData
+  const url = (meta?.thumbnail?.url || meta?.full?.url || meta?.url || '').trim()
+  return url !== '' ? url : undefined
+}
+
 export type UseDispatchPlanListEntriesOptions = {
   /**
    * `false`: same rows as Date list (multi + inactive cached single; single + inactive cached multi).
@@ -94,7 +103,7 @@ export type UseDispatchPlanListEntriesOptions = {
   listSortDirection?: 'asc' | 'desc'
   /**
    * Не показывать строки, для которых уже есть открытка в корзине (ветка `dispatchBranchKey`).
-   * Используется в Card pie: после addCart строка исчезает из списка.
+   * По умолчанию `false`: строка остаётся, с превью из корзины, если нет сессионного cardphoto.
    */
   hideBranchesInCart?: boolean
   /**
@@ -271,11 +280,20 @@ export function useDispatchPlanListEntries(
       isSessionSlot?: boolean,
     ): DateListPanelItem => {
       const fromCart = cartPostcard
-      /** Только сессия (cardphoto / processed), без превью из корзины по дате. */
+      const cartListPreviewUrl = fromCart
+        ? thumbnailUrlFromCartPostcard(fromCart)
+        : undefined
+      /** Сессия (cardphoto / processed); иначе превью открытки из корзины по этой ветке. */
       const hasSessionListPreview =
         listPreviewUrl != null && listPreviewUrl !== ''
-      const previewUrl = hasSessionListPreview ? listPreviewUrl : undefined
-      const cardId = hasSessionListPreview ? 'current_session' : undefined
+      const previewUrl = hasSessionListPreview
+        ? listPreviewUrl
+        : cartListPreviewUrl
+      const cardId = hasSessionListPreview
+        ? 'current_session'
+        : cartListPreviewUrl && fromCart
+          ? fromCart.id
+          : undefined
       const fromCartDetailLine =
         fromCart && hasCommittedSessionRecipient(recipientState)
           ? formatPostcardRecipientDetail(
@@ -465,7 +483,7 @@ export function useDispatchPlanListEntries(
       entries.length === 0 &&
       hasAnySectionFilled
     ) {
-      /** Все ветки скрыты из‑за корзины (`hideBranchesInCart`) — в списке всё равно показываем выбранную дату. */
+      /** План пустой (например все ветки скрыты) — показываем выбранную дату без ветки корзины. */
       const fallbackDispatchDate: DispatchDate | null = !isMultiDateMode
         ? selectedDate
         : selectedDates.length === 1

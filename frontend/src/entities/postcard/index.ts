@@ -12,3 +12,4 @@ export {
   POSTCARD_STATUSES,
   POSTCARD_DISPATCH_DATE_FALLBACK,
 } from './domain/types/postcard.types'
+export { anyPostcardReferencesCardtextTemplateId } from './domain/postcardReferencesCardtextTemplate'

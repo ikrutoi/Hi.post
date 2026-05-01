@@ -36,6 +36,13 @@ import type { CardtextInteractionMode } from '@cardtext/domain/cardtextInteracti
 import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
 import { applyCardtextFromToolbar } from './cardtextToolbarApplySaga'
 import { templateService } from '@entities/templates/domain/services/templateService'
+import type { TemplateOperationResult } from '@entities/templates/domain/types/template.types'
+import { selectCartItems } from '@cart/infrastructure/selectors'
+import {
+  anyPostcardReferencesCardtextTemplateId,
+  type PostcardHydrated,
+} from '@entities/postcard'
+import { addCardtextTemplateId } from '@features/previewStrip/infrastructure/state'
 
 function cloneCardtextBranch(c: CardtextContent): CardtextContent {
   return {
@@ -99,6 +106,35 @@ export function* handleCardtextToolbarAction(
               ? String(templateIdFromSelect)
               : null
         if (id == null) break
+
+        const cartItems: PostcardHydrated[] = yield select(selectCartItems)
+        const referencedByPostcard =
+          anyPostcardReferencesCardtextTemplateId(cartItems, id)
+
+        if (referencedByPostcard) {
+          const createResult: TemplateOperationResult = yield call(
+            [templateService, 'createCardtextTemplate'],
+            {
+              value,
+              style,
+              plainText,
+              cardtextLines,
+              title: assetData?.title ?? '',
+              favorite: assetData?.favorite ?? null,
+              status: postcardSt,
+            },
+          )
+          if (createResult.success && createResult.templateId) {
+            const newId = String(createResult.templateId)
+            yield put(addCardtextTemplateId(newId))
+            yield put(setCardtextId(newId))
+            yield put(setCardtextViewEditMode(false))
+            yield put(setDraftEngaged(false))
+            yield put(setStatus(postcardSt))
+            yield put(loadCardtextTemplatesRequest())
+          }
+          break
+        }
 
         const result: { success?: boolean } = yield call(
           [templateService, 'updateCardtextTemplate'],
