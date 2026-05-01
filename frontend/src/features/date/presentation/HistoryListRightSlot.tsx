@@ -24,19 +24,7 @@ import {
   selectHistoryListSelectedLocalId,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
-function postcardLocalIdFromCalendarRow(
-  item: CalendarCardItem,
-  cartItems: PostcardHydrated[],
-): number | undefined {
-  if (!item.rowKey.startsWith('postcard:')) return undefined
-  const m = item.rowKey.match(
-    /^postcard:\d+:(.+):(cart|ready|sent|delivered|error)$/,
-  )
-  if (!m) return undefined
-  const postcardId = m[1]
-  const p = cartItems.find((x) => x.id === postcardId)
-  return p?.localId
-}
+import { postcardLocalIdFromCalendarCardItem } from '@date/calendar/infrastructure/postcardLocalIdFromCalendarCardItem'
 
 function formatDispatchDateLabel(d: DispatchDate): string {
   const date = new Date(d.year, d.month, d.day)
@@ -133,7 +121,7 @@ export const HistoryListRightSlot: React.FC = () => {
         entries.push({
           id: `history-postcard-${item.rowKey}-${i}`,
           cardId: item.cardId,
-          postcardLocalId: postcardLocalIdFromCalendarRow(item, cartItems),
+          postcardLocalId: postcardLocalIdFromCalendarCardItem(item, cartItems),
           sourceDate: item.date,
           dateLabel: formatDispatchDateLabel(item.date),
           previewUrl: item.previewUrl,

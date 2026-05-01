@@ -4,6 +4,10 @@ import {
 } from '@/entities/postcard/domain/types'
 import type { RootState } from '@app/state'
 import type { CalendarViewDate } from '@entities/date/domain/types'
+import { createSelector } from '@reduxjs/toolkit'
+import { selectCartItems } from '@cart/infrastructure/selectors'
+import { flattenOpenDayPanelItems } from '@date/infrastructure/selectors/dateSelectors'
+import { postcardLocalIdFromCalendarCardItem } from '../postcardLocalIdFromCalendarCardItem'
 import type { DayPanelPayload } from '../state/calendar.slice'
 
 export const selectLastCalendarViewDate = (
@@ -39,3 +43,25 @@ export const selectPostcardStatusesCount = (
 
 export const selectPostcardStatuses = (state: RootState): PostcardStatuses =>
   state.calendar.postcardStatuses
+
+/**
+ * Секция «История» + открыта панель дня календаря: первый открытка-айтем дня для правого CardPie (`localId`).
+ */
+export const selectHistoryOpenDayPanelArchiveLocalId = createSelector(
+  [
+    (s: RootState) => s.calendar.openDayPanel,
+    (s: RootState) => s.sectionEditorMenu.activeSection,
+    selectCartItems,
+    selectPostcardStatuses,
+  ],
+  (openDayPanel, activeSection, cartItems, postcardStatuses) => {
+    if (activeSection !== 'history' || openDayPanel == null) return null
+    const items = flattenOpenDayPanelItems(openDayPanel.dayData)
+    for (const item of items) {
+      if (!postcardStatuses[item.status]) continue
+      const lid = postcardLocalIdFromCalendarCardItem(item, cartItems)
+      if (lid != null) return lid
+    }
+    return null
+  },
+)

@@ -58,7 +58,9 @@ function dispatchDateKey(d: DispatchDate): string {
   return `${d.year}-${d.month}-${d.day}`
 }
 
-function flattenOpenDayPanelItems(dayData: CardCalendarIndex): CalendarCardItem[] {
+export function flattenOpenDayPanelItems(
+  dayData: CardCalendarIndex,
+): CalendarCardItem[] {
   const list: CalendarCardItem[] = []
   if (dayData.processed) list.push(dayData.processed)
   list.push(...dayData.cart)

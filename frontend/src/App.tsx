@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import {
   selectHistoryListSelectedLocalId,
+  selectHistoryOpenDayPanelArchiveLocalId,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/selectors'
@@ -82,19 +83,30 @@ const App = () => {
   const historyListSelectedLocalId = useAppSelector(
     selectHistoryListSelectedLocalId,
   )
+  const historyOpenDayPanelArchiveLocalId = useAppSelector(
+    selectHistoryOpenDayPanelArchiveLocalId,
+  )
   const cartItems = useAppSelector(selectCartItems)
 
   const rightListArchiveLocalId =
     listPanelOpen && listSelectedLocalId != null
       ? listSelectedLocalId
-      : historyListPanelOpen && historyListSelectedLocalId != null
-        ? historyListSelectedLocalId
-        : null
+      : historyOpenDayPanelArchiveLocalId != null
+        ? historyOpenDayPanelArchiveLocalId
+        : historyListPanelOpen && historyListSelectedLocalId != null
+          ? historyListSelectedLocalId
+          : null
 
   /** History list rows still use cart toolbar when the postcard is still in `cart` status. */
   const rightListArchiveSource = useMemo((): 'cart' | 'history' | null => {
     if (listPanelOpen && listSelectedLocalId != null) {
       return 'cart'
+    }
+    if (historyOpenDayPanelArchiveLocalId != null) {
+      const postcard = cartItems.find(
+        (p) => p.localId === historyOpenDayPanelArchiveLocalId,
+      )
+      return postcard?.status === 'cart' ? 'cart' : 'history'
     }
     if (historyListPanelOpen && historyListSelectedLocalId != null) {
       const postcard = cartItems.find(
@@ -106,6 +118,7 @@ const App = () => {
   }, [
     listPanelOpen,
     listSelectedLocalId,
+    historyOpenDayPanelArchiveLocalId,
     historyListPanelOpen,
     historyListSelectedLocalId,
     cartItems,
