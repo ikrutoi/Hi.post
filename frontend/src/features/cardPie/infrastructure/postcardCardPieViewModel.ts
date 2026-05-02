@@ -16,6 +16,13 @@ export type CardPieInnerData = {
   cardtext: CardtextContent
   recipient: Readonly<AddressFields> | null
   recipientCount: number
+  /**
+   * Мини-конверт в режиме строки корзины/истории: бейдж отправителя из `card.envelope.sender`,
+   * без Redux `sender` slice (раньше в зеркале отправитель никогда не показывался).
+   */
+  senderBadgeShow: boolean
+  /** Подпись к бейджу: имя или «город, страна» из снимка адреса. */
+  senderDisplayName: string | null
   aroma: AromaItem | null
   date: DispatchDate | null
   dates: DispatchDate[]
@@ -98,6 +105,61 @@ function recipientAppliedCount(recipient: RecipientState): number {
   return 0
 }
 
+const ADDRESS_KEYS: (keyof AddressFields)[] = [
+  'name',
+  'street',
+  'city',
+  'zip',
+  'country',
+]
+
+function addressHasAnyField(
+  fields: Readonly<AddressFields> | null | undefined,
+): boolean {
+  if (fields == null) return false
+  return ADDRESS_KEYS.some(
+    (k) => String(fields[k] ?? '').trim().length > 0,
+  )
+}
+
+/** Одна строка для мини-бейджа отправителя (как раньше только `appliedData.name` в сессии). */
+function primarySenderDisplayLine(
+  fields: Readonly<AddressFields> | null | undefined,
+): string | null {
+  if (fields == null) return null
+  const name = String(fields.name ?? '').trim()
+  if (name.length > 0) return name
+  const city = String(fields.city ?? '').trim()
+  const country = String(fields.country ?? '').trim()
+  const region = [city, country].filter(Boolean).join(', ')
+  if (region.length > 0) return region
+  const street = String(fields.street ?? '').trim()
+  const zip = String(fields.zip ?? '').trim()
+  const tail = [street, zip].filter(Boolean).join(', ')
+  return tail.length > 0 ? tail : null
+}
+
+function senderMiniFromCard(card: Card): {
+  senderBadgeShow: boolean
+  senderDisplayName: string | null
+} {
+  const s = card.envelope?.sender
+  if (s == null || !s.enabled) {
+    return { senderBadgeShow: false, senderDisplayName: null }
+  }
+  const source =
+    s.appliedData ??
+    (s.applied.length > 0 ? s.viewDraft : null) ??
+    s.viewDraft ??
+    s.formDraft
+  const displayName = primarySenderDisplayLine(source)
+  const hasBookApply = s.applied.length > 0
+  const hasAppliedSnapshot = addressHasAnyField(s.appliedData)
+  const senderBadgeShow =
+    hasBookApply || hasAppliedSnapshot || addressHasAnyField(s.viewDraft) || addressHasAnyField(s.formDraft)
+  return { senderBadgeShow, senderDisplayName: displayName }
+}
+
 export function buildCardPieInnerDataFromPostcard(
   postcard: PostcardHydrated,
 ): CardPieInnerData {
@@ -106,6 +168,7 @@ export function buildCardPieInnerDataFromPostcard(
   const cardtext = cardtextContentForPie(card)
   const recipient = card.envelope.recipient
   const recipientCount = recipientAppliedCount(recipient)
+  const { senderBadgeShow, senderDisplayName } = senderMiniFromCard(card)
   const datesFromCard = (card as Card & { dates?: DispatchDate[] }).dates
   const dates: DispatchDate[] =
     Array.isArray(datesFromCard) && datesFromCard.length > 0
@@ -122,6 +185,8 @@ export function buildCardPieInnerDataFromPostcard(
     cardtext,
     recipient: recipientDisplayFields(recipient, recipientCount),
     recipientCount,
+    senderBadgeShow,
+    senderDisplayName,
     aroma: card.aroma ?? null,
     date,
     dates,

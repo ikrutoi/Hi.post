@@ -19,9 +19,13 @@ export const MiniEnvelope: React.FC = () => {
 
   const count =
     listInner != null ? listInner.recipientCount : recipient.applied.length
-  const hasSenderApplied =
-    listInner == null && isEnabled && senderState.applied.length > 0
-  const showMini = listInner != null ? count > 0 : count > 0 || hasSenderApplied
+  const hasSenderAppliedSession =
+    isEnabled && senderState.applied.length > 0
+  const senderBadgeFromList = listInner?.senderBadgeShow === true
+  const showMini =
+    listInner != null
+      ? count > 0 || senderBadgeFromList
+      : count > 0 || hasSenderAppliedSession
   const isSingle = count === 1
   const { steps, isMany } = getEnvelopeRecipientCircleSteps(count)
   const stepsToRender = isSingle
@@ -155,13 +159,15 @@ export const MiniEnvelope: React.FC = () => {
             <span>{count}</span>
           </div>
         ))}
-      {hasSenderApplied && (
+      {(listInner != null ? senderBadgeFromList : hasSenderAppliedSession) && (
         <>
           <div className={styles.miniEnvelopeSender}></div>
           <span className={styles.miniEnvelopeSenderName}>
             <span className={styles.miniEnvelopeSenderNameOverflow}>
               <span className={styles.miniEnvelopeSenderNameInner}>
-                {senderState.appliedData?.name}
+                {listInner != null
+                  ? (listInner.senderDisplayName ?? '')
+                  : senderState.appliedData?.name}
               </span>
             </span>
           </span>
