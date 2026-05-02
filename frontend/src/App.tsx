@@ -63,6 +63,8 @@ const App = () => {
     useState(false)
   const [rightPieCardtextPeekNoToolbar, setRightPieCardtextPeekNoToolbar] =
     useState(false)
+  const [rightPieEnvelopePeekNoToolbar, setRightPieEnvelopePeekNoToolbar] =
+    useState(false)
 
   useAuthInit()
   useLayoutInit()
@@ -178,12 +180,19 @@ const App = () => {
       if (activePieSide === 'left' && section === 'cardphoto') {
         setRightPieCardphotoPeekNoToolbar(true)
         setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
       } else if (activePieSide === 'left' && section === 'cardtext') {
         setRightPieCardtextPeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
+      } else if (activePieSide === 'left' && section === 'envelope') {
+        setRightPieEnvelopePeekNoToolbar(true)
+        setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
       } else {
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
       }
     },
     [activePieSide, dispatch],
@@ -195,6 +204,10 @@ const App = () => {
 
   const clearRightPieCardtextPeek = useCallback(() => {
     setRightPieCardtextPeekNoToolbar(false)
+  }, [])
+
+  const clearRightPieEnvelopePeek = useCallback(() => {
+    setRightPieEnvelopePeekNoToolbar(false)
   }, [])
 
   useEffect(() => {
@@ -210,15 +223,23 @@ const App = () => {
   }, [activeSection])
 
   useEffect(() => {
+    if (activeSection !== 'envelope') {
+      setRightPieEnvelopePeekNoToolbar(false)
+    }
+  }, [activeSection])
+
+  useEffect(() => {
     if (activePieSide === 'right') {
       setRightPieCardphotoPeekNoToolbar(false)
       setRightPieCardtextPeekNoToolbar(false)
+      setRightPieEnvelopePeekNoToolbar(false)
     }
   }, [activePieSide])
 
   useEffect(() => {
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
   }, [rightListArchiveLocalId])
 
   const centerStripMirrorValue = useMemo(
@@ -240,6 +261,8 @@ const App = () => {
       clearRightPieCardphotoPeek,
       rightPieCardtextPeekNoToolbar,
       clearRightPieCardtextPeek,
+      rightPieEnvelopePeekNoToolbar,
+      clearRightPieEnvelopePeek,
     }),
     [
       activePieSide,
@@ -250,6 +273,8 @@ const App = () => {
       clearRightPieCardphotoPeek,
       rightPieCardtextPeekNoToolbar,
       clearRightPieCardtextPeek,
+      rightPieEnvelopePeekNoToolbar,
+      clearRightPieEnvelopePeek,
     ],
   )
 
@@ -329,6 +354,7 @@ const App = () => {
                           onBeforeLeftPieSectorClick={() => {
                             setRightPieCardphotoPeekNoToolbar(false)
                             setRightPieCardtextPeekNoToolbar(false)
+                            setRightPieEnvelopePeekNoToolbar(false)
                           }}
                         />
                       </div>
@@ -366,6 +392,7 @@ const App = () => {
                             onBeforeLeftPieSectorClick={() => {
                               setRightPieCardphotoPeekNoToolbar(false)
                               setRightPieCardtextPeekNoToolbar(false)
+                              setRightPieEnvelopePeekNoToolbar(false)
                             }}
                           />
                         </div>
@@ -424,7 +451,8 @@ const App = () => {
                 <div className={clsx(styles.appMainContentCenter)}>
                   <div className={styles.mainCardSectionToolbar}>
                     {!rightPieCardphotoPeekNoToolbar &&
-                    !rightPieCardtextPeekNoToolbar ? (
+                    !rightPieCardtextPeekNoToolbar &&
+                    !rightPieEnvelopePeekNoToolbar ? (
                       <CardSectionToolbar />
                     ) : null}
                   </div>

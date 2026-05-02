@@ -1,0 +1,49 @@
+@use '@styles/config/colors' as *;
+
+.root {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.rootSender {
+  justify-content: flex-start;
+  padding-top: 0.15rem;
+}
+
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 100%;
+}
+
+.rootSender .lines {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.rootRecipient .lines {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.line {
+  font-size: 1.2rem;
+  line-height: 1.4;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.rootSender .line {
+  color: $color-envelope-sender-legend;
+}
+
+.rootRecipient .line {
+  color: $color-envelope-recipient-legend;
+}

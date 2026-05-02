@@ -26,6 +26,9 @@ export type RightListArchiveMiniContextValue = {
   /** Левый режим пирога: только текст строки справа, без тулбара cardtext. */
   rightPieCardtextPeekNoToolbar: boolean
   clearRightPieCardtextPeek: () => void
+  /** Левый режим пирога: конверт строки справа — без верхнего тулбара секции; футер без тумблеров. */
+  rightPieEnvelopePeekNoToolbar: boolean
+  clearRightPieEnvelopePeek: () => void
 }
 
 const defaultValue: RightListArchiveMiniContextValue = {
@@ -39,6 +42,8 @@ const defaultValue: RightListArchiveMiniContextValue = {
   clearRightPieCardphotoPeek: () => {},
   rightPieCardtextPeekNoToolbar: false,
   clearRightPieCardtextPeek: () => {},
+  rightPieEnvelopePeekNoToolbar: false,
+  clearRightPieEnvelopePeek: () => {},
 }
 
 const RightListArchiveMiniContext =

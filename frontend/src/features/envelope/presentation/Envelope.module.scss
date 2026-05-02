@@ -33,6 +33,15 @@
   align-items: flex-end;
 }
 
+/** В peek-режиме вместо тумблеров — пустое место той же высоты, чтобы сетка не прыгала. */
+.envelopeFooterSpacer {
+  display: flex;
+  align-items: flex-end;
+  min-height: 2.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .envelopeSenderToggleGroup {
   display: flex;
   align-items: center;
@@ -131,6 +140,14 @@
   grid-column: 4 / 5;
   position: relative;
   justify-content: flex-end;
+}
+
+/** Замена `<form>` в слотах отправитель/получатель для превью строки списка. */
+.envelopePeekBlock {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .envelopeSection {
