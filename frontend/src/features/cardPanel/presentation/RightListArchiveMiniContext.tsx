@@ -31,6 +31,8 @@ export type RightListArchiveMiniContextValue = {
   clearRightPieEnvelopePeek: () => void
   rightPieAromaPeekNoToolbar: boolean
   clearRightPieAromaPeek: () => void
+  rightPieDatePeekNoToolbar: boolean
+  clearRightPieDatePeek: () => void
 }
 
 const defaultValue: RightListArchiveMiniContextValue = {
@@ -48,6 +50,8 @@ const defaultValue: RightListArchiveMiniContextValue = {
   clearRightPieEnvelopePeek: () => {},
   rightPieAromaPeekNoToolbar: false,
   clearRightPieAromaPeek: () => {},
+  rightPieDatePeekNoToolbar: false,
+  clearRightPieDatePeek: () => {},
 }
 
 const RightListArchiveMiniContext =

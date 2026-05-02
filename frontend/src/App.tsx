@@ -67,6 +67,8 @@ const App = () => {
     useState(false)
   const [rightPieAromaPeekNoToolbar, setRightPieAromaPeekNoToolbar] =
     useState(false)
+  const [rightPieDatePeekNoToolbar, setRightPieDatePeekNoToolbar] =
+    useState(false)
 
   useAuthInit()
   useLayoutInit()
@@ -184,26 +186,37 @@ const App = () => {
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
       } else if (activePieSide === 'left' && section === 'cardtext') {
         setRightPieCardtextPeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
       } else if (activePieSide === 'left' && section === 'envelope') {
         setRightPieEnvelopePeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
       } else if (activePieSide === 'left' && section === 'aroma') {
         setRightPieAromaPeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
+      } else if (activePieSide === 'left' && section === 'date') {
+        setRightPieDatePeekNoToolbar(true)
+        setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
       } else {
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
       }
     },
     [activePieSide, dispatch],
@@ -223,6 +236,10 @@ const App = () => {
 
   const clearRightPieAromaPeek = useCallback(() => {
     setRightPieAromaPeekNoToolbar(false)
+  }, [])
+
+  const clearRightPieDatePeek = useCallback(() => {
+    setRightPieDatePeekNoToolbar(false)
   }, [])
 
   useEffect(() => {
@@ -250,11 +267,18 @@ const App = () => {
   }, [activeSection])
 
   useEffect(() => {
+    if (activeSection !== 'date') {
+      setRightPieDatePeekNoToolbar(false)
+    }
+  }, [activeSection])
+
+  useEffect(() => {
     if (activePieSide === 'right') {
       setRightPieCardphotoPeekNoToolbar(false)
       setRightPieCardtextPeekNoToolbar(false)
       setRightPieEnvelopePeekNoToolbar(false)
       setRightPieAromaPeekNoToolbar(false)
+      setRightPieDatePeekNoToolbar(false)
     }
   }, [activePieSide])
 
@@ -263,6 +287,7 @@ const App = () => {
     setRightPieCardtextPeekNoToolbar(false)
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
   }, [rightListArchiveLocalId])
 
   const centerStripMirrorValue = useMemo(
@@ -288,6 +313,8 @@ const App = () => {
       clearRightPieEnvelopePeek,
       rightPieAromaPeekNoToolbar,
       clearRightPieAromaPeek,
+      rightPieDatePeekNoToolbar,
+      clearRightPieDatePeek,
     }),
     [
       activePieSide,
@@ -302,6 +329,8 @@ const App = () => {
       clearRightPieEnvelopePeek,
       rightPieAromaPeekNoToolbar,
       clearRightPieAromaPeek,
+      rightPieDatePeekNoToolbar,
+      clearRightPieDatePeek,
     ],
   )
 
@@ -383,6 +412,7 @@ const App = () => {
                             setRightPieCardtextPeekNoToolbar(false)
                             setRightPieEnvelopePeekNoToolbar(false)
                             setRightPieAromaPeekNoToolbar(false)
+                            setRightPieDatePeekNoToolbar(false)
                           }}
                         />
                       </div>
@@ -422,6 +452,7 @@ const App = () => {
                               setRightPieCardtextPeekNoToolbar(false)
                               setRightPieEnvelopePeekNoToolbar(false)
                               setRightPieAromaPeekNoToolbar(false)
+                              setRightPieDatePeekNoToolbar(false)
                             }}
                           />
                         </div>
@@ -482,7 +513,8 @@ const App = () => {
                     {!rightPieCardphotoPeekNoToolbar &&
                     !rightPieCardtextPeekNoToolbar &&
                     !rightPieEnvelopePeekNoToolbar &&
-                    !rightPieAromaPeekNoToolbar ? (
+                    !rightPieAromaPeekNoToolbar &&
+                    !rightPieDatePeekNoToolbar ? (
                       <CardSectionToolbar />
                     ) : null}
                   </div>

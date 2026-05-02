@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
+import listOfMonthOfYear from '@data/date/monthOfYear.json'
 import { useAppDispatch } from '@app/hooks'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
@@ -24,12 +25,41 @@ import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegen
 import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { IconHistory } from '@shared/ui/icons'
 import styles from './Date.module.scss'
-import type { CalendarViewDate } from '@entities/date/domain/types'
+import type {
+  CalendarViewDate,
+  DispatchDate,
+} from '@entities/date/domain/types'
+import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+
+function isPeekDispatchDateFilled(d: DispatchDate | null | undefined): boolean {
+  if (d == null) return false
+  return !(
+    d.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&
+    d.month === POSTCARD_DISPATCH_DATE_FALLBACK.month &&
+    d.day === POSTCARD_DISPATCH_DATE_FALLBACK.day
+  )
+}
+
+function peekPrimaryDispatchDate(
+  inner: CardPieInnerData | null,
+): DispatchDate | null {
+  if (inner == null) return null
+  if (inner.dates.length > 0) {
+    const first = inner.dates[0]
+    if (isPeekDispatchDateFilled(first)) return first
+  }
+  if (isPeekDispatchDateFilled(inner.date)) return inner.date
+  return null
+}
 
 export const Date: React.FC<{ section: 'date' | 'history' }> = ({
   section,
 }) => {
   const dispatch = useAppDispatch()
+  const { rightPieDatePeekNoToolbar, listRowInner } =
+    useRightListArchiveMini()
   const currentDate = useMemo(() => getCurrentDate(), [])
   const { flashParts, triggerFlash } = useFlashEffect()
 
@@ -79,6 +109,14 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
 
   useAutoActivateDateSection()
 
+  const peekDispatchDate = useMemo(
+    () =>
+      rightPieDatePeekNoToolbar && section === 'date'
+        ? peekPrimaryDispatchDate(listRowInner)
+        : null,
+    [rightPieDatePeekNoToolbar, section, listRowInner],
+  )
+
   const calendarViewDate: CalendarViewDate = lastViewedCalendarDate ?? {
     year: currentDate.year,
     month: currentDate.month,
@@ -117,6 +155,29 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
       setCalendarViewDate,
     ],
   )
+
+  if (rightPieDatePeekNoToolbar && section === 'date') {
+    const d = peekDispatchDate
+    const monthLabel =
+      d != null &&
+      d.month >= 0 &&
+      d.month < (listOfMonthOfYear as readonly string[]).length
+        ? (listOfMonthOfYear as readonly string[])[d.month]
+        : ''
+    return (
+      <div className={styles.date}>
+        <div className={clsx(styles.form, styles.formPeek)}>
+          {d != null ? (
+            <div className={styles.peekDateStack}>
+              <div className={styles.peekYear}>{d.year}</div>
+              <div className={styles.peekDay}>{d.day}</div>
+              <div className={styles.peekMonth}>{monthLabel}</div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.date}>

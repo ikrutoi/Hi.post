@@ -29,6 +29,42 @@
   }
 }
 
+.formPeek {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+}
+
+.peekDateStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  text-align: center;
+  color: $color-font-active;
+}
+
+.peekYear {
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.peekDay {
+  font-size: clamp(6.5rem, 24vw, 11rem);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.peekMonth {
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
 .slider {
   display: flex;
   align-items: center;
