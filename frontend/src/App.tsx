@@ -182,6 +182,10 @@ const App = () => {
     [activePieSide, dispatch],
   )
 
+  const clearRightPieCardphotoPeek = useCallback(() => {
+    setRightPieCardphotoPeekNoToolbar(false)
+  }, [])
+
   useEffect(() => {
     if (activeSection !== 'cardphoto') {
       setRightPieCardphotoPeekNoToolbar(false)
@@ -213,6 +217,7 @@ const App = () => {
         activePieSide === 'right' ? rightListArchiveLocalId : null,
       listRowInner,
       rightPieCardphotoPeekNoToolbar,
+      clearRightPieCardphotoPeek,
     }),
     [
       activePieSide,
@@ -220,6 +225,7 @@ const App = () => {
       rightListArchiveLocalId,
       listRowInner,
       rightPieCardphotoPeekNoToolbar,
+      clearRightPieCardphotoPeek,
     ],
   )
 

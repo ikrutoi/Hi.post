@@ -19,6 +19,8 @@ export type RightListArchiveMiniContextValue = {
   listRowInner: CardPieInnerData | null
   /** Левый режим пирога: в фабрике показать только фото строки справа, без тулбара cardphoto. */
   rightPieCardphotoPeekNoToolbar: boolean
+  /** Выход из peek cardphoto (полный редактор + тулбары), напр. при клике по мини-секции. */
+  clearRightPieCardphotoPeek: () => void
 }
 
 const defaultValue: RightListArchiveMiniContextValue = {
@@ -28,6 +30,7 @@ const defaultValue: RightListArchiveMiniContextValue = {
   mirrorTargetLocalId: null,
   listRowInner: null,
   rightPieCardphotoPeekNoToolbar: false,
+  clearRightPieCardphotoPeek: () => {},
 }
 
 const RightListArchiveMiniContext =
