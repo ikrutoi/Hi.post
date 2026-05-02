@@ -14,13 +14,18 @@ export type RightListArchiveMiniContextValue = {
   mirrorTargetLocalId: number | null
   /**
    * Снимок строки списка справа, пока выбрана строка — даже при активном левом пироге
-   * (для peek cardphoto в фабрике без полного зеркала центра).
+   * (для peek cardphoto/cardtext в фабрике без полного зеркала центра).
    */
   listRowInner: CardPieInnerData | null
+  /** `localId` строки корзины/истории для ключей превью peek (при активном левом пироге). */
+  listRowLocalId: number | null
   /** Левый режим пирога: в фабрике показать только фото строки справа, без тулбара cardphoto. */
   rightPieCardphotoPeekNoToolbar: boolean
   /** Выход из peek cardphoto (полный редактор + тулбары), напр. при клике по мини-секции. */
   clearRightPieCardphotoPeek: () => void
+  /** Левый режим пирога: только текст строки справа, без тулбара cardtext. */
+  rightPieCardtextPeekNoToolbar: boolean
+  clearRightPieCardtextPeek: () => void
 }
 
 const defaultValue: RightListArchiveMiniContextValue = {
@@ -29,8 +34,11 @@ const defaultValue: RightListArchiveMiniContextValue = {
   mirrorSectionFlags: null,
   mirrorTargetLocalId: null,
   listRowInner: null,
+  listRowLocalId: null,
   rightPieCardphotoPeekNoToolbar: false,
   clearRightPieCardphotoPeek: () => {},
+  rightPieCardtextPeekNoToolbar: false,
+  clearRightPieCardtextPeek: () => {},
 }
 
 const RightListArchiveMiniContext =

@@ -33,8 +33,11 @@ export const MiniCard: React.FC<MiniCardProps> = ({
 }) => {
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
-  const { centerStripListMirrorEnabled, clearRightPieCardphotoPeek } =
-    useRightListArchiveMini()
+  const {
+    centerStripListMirrorEnabled,
+    clearRightPieCardphotoPeek,
+    clearRightPieCardtextPeek,
+  } = useRightListArchiveMini()
 
   const { changeSection } = useSectionMenuFacade()
   const { editorState, removeSection } = useCardEditorFacade()
@@ -74,6 +77,9 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       onClick={() => {
         if (section === 'cardphoto') {
           clearRightPieCardphotoPeek()
+        }
+        if (section === 'cardtext') {
+          clearRightPieCardtextPeek()
         }
         changeSection(section)
       }}

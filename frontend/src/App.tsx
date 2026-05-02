@@ -61,6 +61,8 @@ const App = () => {
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
   const [rightPieCardphotoPeekNoToolbar, setRightPieCardphotoPeekNoToolbar] =
     useState(false)
+  const [rightPieCardtextPeekNoToolbar, setRightPieCardtextPeekNoToolbar] =
+    useState(false)
 
   useAuthInit()
   useLayoutInit()
@@ -175,8 +177,13 @@ const App = () => {
       dispatch(setActiveSection(section))
       if (activePieSide === 'left' && section === 'cardphoto') {
         setRightPieCardphotoPeekNoToolbar(true)
+        setRightPieCardtextPeekNoToolbar(false)
+      } else if (activePieSide === 'left' && section === 'cardtext') {
+        setRightPieCardtextPeekNoToolbar(true)
+        setRightPieCardphotoPeekNoToolbar(false)
       } else {
         setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
       }
     },
     [activePieSide, dispatch],
@@ -186,6 +193,10 @@ const App = () => {
     setRightPieCardphotoPeekNoToolbar(false)
   }, [])
 
+  const clearRightPieCardtextPeek = useCallback(() => {
+    setRightPieCardtextPeekNoToolbar(false)
+  }, [])
+
   useEffect(() => {
     if (activeSection !== 'cardphoto') {
       setRightPieCardphotoPeekNoToolbar(false)
@@ -193,13 +204,21 @@ const App = () => {
   }, [activeSection])
 
   useEffect(() => {
+    if (activeSection !== 'cardtext') {
+      setRightPieCardtextPeekNoToolbar(false)
+    }
+  }, [activeSection])
+
+  useEffect(() => {
     if (activePieSide === 'right') {
       setRightPieCardphotoPeekNoToolbar(false)
+      setRightPieCardtextPeekNoToolbar(false)
     }
   }, [activePieSide])
 
   useEffect(() => {
     setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
   }, [rightListArchiveLocalId])
 
   const centerStripMirrorValue = useMemo(
@@ -216,8 +235,11 @@ const App = () => {
       mirrorTargetLocalId:
         activePieSide === 'right' ? rightListArchiveLocalId : null,
       listRowInner,
+      listRowLocalId: rightListArchiveLocalId,
       rightPieCardphotoPeekNoToolbar,
       clearRightPieCardphotoPeek,
+      rightPieCardtextPeekNoToolbar,
+      clearRightPieCardtextPeek,
     }),
     [
       activePieSide,
@@ -226,6 +248,8 @@ const App = () => {
       listRowInner,
       rightPieCardphotoPeekNoToolbar,
       clearRightPieCardphotoPeek,
+      rightPieCardtextPeekNoToolbar,
+      clearRightPieCardtextPeek,
     ],
   )
 
@@ -302,9 +326,10 @@ const App = () => {
                           isProcessed
                           fillContainer
                           station="left"
-                          onBeforeLeftPieSectorClick={() =>
+                          onBeforeLeftPieSectorClick={() => {
                             setRightPieCardphotoPeekNoToolbar(false)
-                          }
+                            setRightPieCardtextPeekNoToolbar(false)
+                          }}
                         />
                       </div>
                       <div className={styles.appMainContentLeftPieToolbar}>
@@ -338,9 +363,10 @@ const App = () => {
                             isProcessed
                             fillContainer
                             station="left"
-                            onBeforeLeftPieSectorClick={() =>
+                            onBeforeLeftPieSectorClick={() => {
                               setRightPieCardphotoPeekNoToolbar(false)
-                            }
+                              setRightPieCardtextPeekNoToolbar(false)
+                            }}
                           />
                         </div>
                         <div className={styles.appMainContentLeftPieToolbar}>
@@ -397,7 +423,8 @@ const App = () => {
                 </div>
                 <div className={clsx(styles.appMainContentCenter)}>
                   <div className={styles.mainCardSectionToolbar}>
-                    {!rightPieCardphotoPeekNoToolbar ? (
+                    {!rightPieCardphotoPeekNoToolbar &&
+                    !rightPieCardtextPeekNoToolbar ? (
                       <CardSectionToolbar />
                     ) : null}
                   </div>

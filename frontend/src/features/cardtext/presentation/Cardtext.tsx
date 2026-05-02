@@ -34,9 +34,57 @@ import {
   setCardtextPresetData,
 } from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
+import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 
 interface CardtextProps {
   styleLeft: number
+}
+
+/** Левый пирог + клик по cardtext в правом списке: только текст строки, без тулбара. */
+const CardtextListRowPeekPreview: React.FC<{
+  inner: CardPieInnerData
+  rowLocalId: number | null
+}> = ({ inner, rowLocalId }) => {
+  const { sizeCard } = useSizeFacade()
+  const ct = inner.cardtext
+  const fallback = createInitialCardtextContent()
+  const value = ct?.value ?? fallback.value
+  const style = ct?.style ?? fallback.style
+  const contentKey =
+    rowLocalId != null && ct?.id != null
+      ? `peek-${rowLocalId}-${ct.id}`
+      : rowLocalId != null
+        ? `peek-${rowLocalId}`
+        : 'peek-pending'
+
+  return (
+    <div className={styles.cardtextContainer}>
+      <div
+        className={styles.cardtext}
+        style={{
+          width: `${sizeCard.width}px`,
+          height: `${sizeCard.height}px`,
+        }}
+      >
+        <div className={styles.cardtextViewWrap}>
+          <div
+            className={clsx(
+              styles.cardtextToolbarRow,
+              styles.cardtextToolbarRowEmpty,
+            )}
+            aria-hidden
+          />
+          <div className={styles.cardtextViewContent}>
+            <CardtextView
+              contentKey={contentKey}
+              value={value}
+              style={style}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 /** Фабрика в режиме правого списка: текст из `mirrorInner`, не из слайса `cardtext` сессии. */
@@ -285,10 +333,24 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
 }
 
 export const Cardtext: React.FC<CardtextProps> = (props) => {
-  const { centerStripListMirrorEnabled } = useRightListArchiveMini()
+  const {
+    centerStripListMirrorEnabled,
+    rightPieCardtextPeekNoToolbar,
+    listRowInner,
+    listRowLocalId,
+  } = useRightListArchiveMini()
 
   if (centerStripListMirrorEnabled) {
     return <CardtextRightListMirror />
+  }
+
+  if (rightPieCardtextPeekNoToolbar && listRowInner != null) {
+    return (
+      <CardtextListRowPeekPreview
+        inner={listRowInner}
+        rowLocalId={listRowLocalId}
+      />
+    )
   }
 
   return <CardtextSessionEditor {...props} />
