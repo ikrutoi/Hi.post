@@ -1,10 +1,12 @@
 import React from 'react'
+import clsx from 'clsx'
 import { useAppDispatch } from '@app/hooks'
 import { AromaTile } from './AromaTile/AromaTile'
 import { AROMA_LIST } from '@entities/aroma/domain/constants'
 import { useAromaFacade } from '../application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { setCartItemCardAroma } from '@cart/infrastructure/state'
+import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import styles from './Aroma.module.scss'
 import type { AromaItem } from '@entities/aroma/domain/types'
 
@@ -15,6 +17,8 @@ export const Aroma: React.FC = () => {
     centerStripListMirrorEnabled,
     mirrorInner,
     mirrorTargetLocalId,
+    rightPieAromaPeekNoToolbar,
+    listRowInner,
   } = useRightListArchiveMini()
 
   /** In right list mode, highlight the tile that matches the open postcard on the right CardPie. */
@@ -44,6 +48,30 @@ export const Aroma: React.FC = () => {
       return
     }
     chooseAroma(aromaItem)
+  }
+
+  if (rightPieAromaPeekNoToolbar) {
+    const rowAroma = listRowInner?.aroma ?? null
+    const peekSrc =
+      rowAroma != null ? getAromaImage(rowAroma.index) : null
+    return (
+      <div className={styles.aroma}>
+        <div className={clsx(styles.form, styles.formPeek)}>
+          {peekSrc ? (
+            <img
+              className={styles.peekMask}
+              src={peekSrc}
+              alt={
+                rowAroma?.index === 0
+                  ? ''
+                  : `Aroma slot ${rowAroma?.index ?? ''}`
+              }
+              draggable={false}
+            />
+          ) : null}
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -38,6 +38,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
     clearRightPieCardphotoPeek,
     clearRightPieCardtextPeek,
     clearRightPieEnvelopePeek,
+    clearRightPieAromaPeek,
   } = useRightListArchiveMini()
 
   const { changeSection } = useSectionMenuFacade()
@@ -84,6 +85,9 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         }
         if (section === 'envelope') {
           clearRightPieEnvelopePeek()
+        }
+        if (section === 'aroma') {
+          clearRightPieAromaPeek()
         }
         changeSection(section)
       }}

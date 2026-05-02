@@ -65,6 +65,8 @@ const App = () => {
     useState(false)
   const [rightPieEnvelopePeekNoToolbar, setRightPieEnvelopePeekNoToolbar] =
     useState(false)
+  const [rightPieAromaPeekNoToolbar, setRightPieAromaPeekNoToolbar] =
+    useState(false)
 
   useAuthInit()
   useLayoutInit()
@@ -181,18 +183,27 @@ const App = () => {
         setRightPieCardphotoPeekNoToolbar(true)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
       } else if (activePieSide === 'left' && section === 'cardtext') {
         setRightPieCardtextPeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
       } else if (activePieSide === 'left' && section === 'envelope') {
         setRightPieEnvelopePeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
+      } else if (activePieSide === 'left' && section === 'aroma') {
+        setRightPieAromaPeekNoToolbar(true)
+        setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
       } else {
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
       }
     },
     [activePieSide, dispatch],
@@ -208,6 +219,10 @@ const App = () => {
 
   const clearRightPieEnvelopePeek = useCallback(() => {
     setRightPieEnvelopePeekNoToolbar(false)
+  }, [])
+
+  const clearRightPieAromaPeek = useCallback(() => {
+    setRightPieAromaPeekNoToolbar(false)
   }, [])
 
   useEffect(() => {
@@ -229,10 +244,17 @@ const App = () => {
   }, [activeSection])
 
   useEffect(() => {
+    if (activeSection !== 'aroma') {
+      setRightPieAromaPeekNoToolbar(false)
+    }
+  }, [activeSection])
+
+  useEffect(() => {
     if (activePieSide === 'right') {
       setRightPieCardphotoPeekNoToolbar(false)
       setRightPieCardtextPeekNoToolbar(false)
       setRightPieEnvelopePeekNoToolbar(false)
+      setRightPieAromaPeekNoToolbar(false)
     }
   }, [activePieSide])
 
@@ -240,6 +262,7 @@ const App = () => {
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
     setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
   }, [rightListArchiveLocalId])
 
   const centerStripMirrorValue = useMemo(
@@ -263,6 +286,8 @@ const App = () => {
       clearRightPieCardtextPeek,
       rightPieEnvelopePeekNoToolbar,
       clearRightPieEnvelopePeek,
+      rightPieAromaPeekNoToolbar,
+      clearRightPieAromaPeek,
     }),
     [
       activePieSide,
@@ -275,6 +300,8 @@ const App = () => {
       clearRightPieCardtextPeek,
       rightPieEnvelopePeekNoToolbar,
       clearRightPieEnvelopePeek,
+      rightPieAromaPeekNoToolbar,
+      clearRightPieAromaPeek,
     ],
   )
 
@@ -355,6 +382,7 @@ const App = () => {
                             setRightPieCardphotoPeekNoToolbar(false)
                             setRightPieCardtextPeekNoToolbar(false)
                             setRightPieEnvelopePeekNoToolbar(false)
+                            setRightPieAromaPeekNoToolbar(false)
                           }}
                         />
                       </div>
@@ -393,6 +421,7 @@ const App = () => {
                               setRightPieCardphotoPeekNoToolbar(false)
                               setRightPieCardtextPeekNoToolbar(false)
                               setRightPieEnvelopePeekNoToolbar(false)
+                              setRightPieAromaPeekNoToolbar(false)
                             }}
                           />
                         </div>
@@ -452,7 +481,8 @@ const App = () => {
                   <div className={styles.mainCardSectionToolbar}>
                     {!rightPieCardphotoPeekNoToolbar &&
                     !rightPieCardtextPeekNoToolbar &&
-                    !rightPieEnvelopePeekNoToolbar ? (
+                    !rightPieEnvelopePeekNoToolbar &&
+                    !rightPieAromaPeekNoToolbar ? (
                       <CardSectionToolbar />
                     ) : null}
                   </div>
