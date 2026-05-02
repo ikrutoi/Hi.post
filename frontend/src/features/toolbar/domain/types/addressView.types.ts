@@ -12,6 +12,7 @@ export const VIEW_KEYS = [
   'sortUp',
   'sortDown',
   'apply',
+  'addressCheck',
 ] as const satisfies readonly IconKey[]
 
 export type AddressViewKey = (typeof VIEW_KEYS)[number]
@@ -85,7 +86,7 @@ export const ADDRESS_FORM_SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'addressFormSenderView',
     icons: [
-      { key: 'apply', state: 'enabled' },
+      { key: 'addressCheck', state: 'enabled' },
       { key: 'listAdd', state: 'enabled' },
     ],
     status: 'enabled',
@@ -97,7 +98,7 @@ export const ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
     group: 'addressFormRecipientView',
     icons: [
       { key: 'listAdd', state: 'enabled' },
-      { key: 'apply', state: 'enabled' },
+      { key: 'addressCheck', state: 'enabled' },
     ],
     status: 'enabled',
   },

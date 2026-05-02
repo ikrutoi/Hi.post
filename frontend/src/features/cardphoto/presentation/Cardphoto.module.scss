@@ -53,3 +53,12 @@
   border: 1px solid $color-cardphoto-input-border;
   // border: solid 1px red;
 }
+
+/** Right list mirror: preview matches mini strip, not session `cardphoto` slice. */
+.mirrorPreview {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}

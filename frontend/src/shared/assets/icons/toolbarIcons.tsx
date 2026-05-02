@@ -180,6 +180,7 @@ import {
   IconCardPieEdit,
   IconCardPieCopy,
   IconCardPie,
+  IconAddressCheck,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -372,6 +373,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconCardPieCopy />
     case 'cardPie':
       return <IconCardPie />
+    case 'addressCheck':
+      return <IconAddressCheck />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

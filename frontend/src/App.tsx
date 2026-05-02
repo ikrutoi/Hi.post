@@ -76,7 +76,8 @@ const App = () => {
 
   /**
    * Смена секции: уход с «История» — закрыть список истории и панель дня (как при переключении календаря в Дата).
-   * Правый режим (мини-центр + правый CardPie) при любой смене секции — снова левый режим.
+   * Выход из правого CardPie — через явное переключение пирога или закрытие списка корзины (см. эффект ниже),
+   * а не при смене активной секции: иначе клик по мини-секции в центре сбрасывал бы правый режим и фабрику на левую открытку.
    */
   useEffect(() => {
     const prev = prevActiveSectionRef.current
@@ -93,12 +94,8 @@ const App = () => {
       )
     }
 
-    if (activePieSide === 'right' && prev !== activeSection) {
-      setActivePieSide('left')
-    }
-
     prevActiveSectionRef.current = activeSection
-  }, [activeSection, activePieSide, dispatch])
+  }, [activeSection, dispatch])
 
   useEffect(() => {
     if (

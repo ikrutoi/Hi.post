@@ -60,6 +60,10 @@ export function* handleRightSidebarToolbarAction(
   yield* syncRightSidebarVisuals(key)
 
   if (key === 'history') {
+    const cartListOpen: boolean = yield select(selectCartListPanelOpen)
+    if (cartListOpen) {
+      yield put(setCartListPanelOpen(false))
+    }
     yield put(setActiveSection('history'))
   }
 }
