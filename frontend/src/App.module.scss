@@ -205,9 +205,11 @@
   background-color: transparent;
   border-color: transparent;
 
-  .appMainContentRightPieWrap {
-    pointer-events: none;
-  }
+  /**
+   * Пирог справа остаётся кликабельным при активном левом режиме:
+   * секторы (например cardphoto) открывают peek в фабрике.
+   * Раньше здесь был `pointer-events: none` на wrap — клики не доходили до секторов.
+   */
 }
 
 .appMainContentRightPieSlot_mergedWithCenter {
@@ -395,6 +397,11 @@
   grid-column: 1 / -1;
   width: var(--card-width, 100%);
   padding-bottom: 0.25rem;
+  /**
+   * Совпадает с высотой `CardSectionToolbar` (2rem) + отступ снизу — слот не схлопывается,
+   * когда тулбар скрыт (peek cardphoto), чтобы фабрика не прыгала по вертикали.
+   */
+  min-height: calc(2rem + 0.25rem);
 }
 
 .mainForm {

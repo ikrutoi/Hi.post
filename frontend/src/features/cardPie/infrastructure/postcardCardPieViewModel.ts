@@ -12,16 +12,18 @@ import type { AromaItem } from '@entities/aroma/domain/types'
 import type { RecipientState } from '@envelope/recipient/domain/types'
 
 export type CardPieInnerData = {
-  cardphoto: { previewUrl: string | null; isComplete: boolean; id: string }
+  cardphoto: {
+    /** Мини-пирог / паттерн: сначала thumbnail. */
+    previewUrl: string | null
+    /** Полноразмерное отображение в фабрике (зеркало / peek). */
+    factoryDisplayUrl: string | null
+    isComplete: boolean
+    id: string
+  }
   cardtext: CardtextContent
   recipient: Readonly<AddressFields> | null
   recipientCount: number
-  /**
-   * Мини-конверт в режиме строки корзины/истории: бейдж отправителя из `card.envelope.sender`,
-   * без Redux `sender` slice (раньше в зеркале отправитель никогда не показывался).
-   */
   senderBadgeShow: boolean
-  /** Подпись к бейджу: имя или «город, страна» из снимка адреса. */
   senderDisplayName: string | null
   aroma: AromaItem | null
   date: DispatchDate | null
@@ -66,28 +68,42 @@ function recipientDisplayFields(
 ): Readonly<AddressFields> | null {
   if (recipientCount !== 1) return null
   const source =
-    recipient.appliedData ??
-    recipient.viewDraft ??
-    recipient.formDraft
+    recipient.appliedData ?? recipient.viewDraft ?? recipient.formDraft
   return source
 }
 
-function cardphotoPreviewFromCard(card: Card): {
+function cardphotoUrlsFromCard(card: Card): {
   previewUrl: string | null
+  factoryDisplayUrl: string | null
   isComplete: boolean
   id: string
 } {
   const applied = card.cardphoto?.appliedData
-  const url =
-    applied?.thumbnail?.url ||
-    applied?.url ||
-    (card.thumbnailUrl && typeof card.thumbnailUrl === 'string'
+  const thumb =
+    applied?.thumbnail?.url != null && String(applied.thumbnail.url).trim() !== ''
+      ? applied.thumbnail.url
+      : null
+  const main =
+    typeof applied?.url === 'string' && applied.url.trim() !== ''
+      ? applied.url
+      : null
+  const full =
+    applied?.full?.url != null && String(applied.full.url).trim() !== ''
+      ? applied.full.url
+      : null
+  const cardTn =
+    card.thumbnailUrl != null &&
+    typeof card.thumbnailUrl === 'string' &&
+    card.thumbnailUrl.trim() !== ''
       ? card.thumbnailUrl
-      : null) ||
-    null
-  const isComplete = Boolean(url)
+      : null
+
+  const previewUrl = thumb || main || full || cardTn || null
+  const factoryDisplayUrl = main || full || thumb || cardTn || null
+  const isComplete = Boolean(previewUrl)
   return {
-    previewUrl: url,
+    previewUrl,
+    factoryDisplayUrl,
     isComplete,
     id: applied?.id ?? card.id,
   }
@@ -117,12 +133,9 @@ function addressHasAnyField(
   fields: Readonly<AddressFields> | null | undefined,
 ): boolean {
   if (fields == null) return false
-  return ADDRESS_KEYS.some(
-    (k) => String(fields[k] ?? '').trim().length > 0,
-  )
+  return ADDRESS_KEYS.some((k) => String(fields[k] ?? '').trim().length > 0)
 }
 
-/** Одна строка для мини-бейджа отправителя (как раньше только `appliedData.name` в сессии). */
 function primarySenderDisplayLine(
   fields: Readonly<AddressFields> | null | undefined,
 ): string | null {
@@ -156,7 +169,10 @@ function senderMiniFromCard(card: Card): {
   const hasBookApply = s.applied.length > 0
   const hasAppliedSnapshot = addressHasAnyField(s.appliedData)
   const senderBadgeShow =
-    hasBookApply || hasAppliedSnapshot || addressHasAnyField(s.viewDraft) || addressHasAnyField(s.formDraft)
+    hasBookApply ||
+    hasAppliedSnapshot ||
+    addressHasAnyField(s.viewDraft) ||
+    addressHasAnyField(s.formDraft)
   return { senderBadgeShow, senderDisplayName: displayName }
 }
 
@@ -164,7 +180,7 @@ export function buildCardPieInnerDataFromPostcard(
   postcard: PostcardHydrated,
 ): CardPieInnerData {
   const card = postcard.card
-  const cardphoto = cardphotoPreviewFromCard(card)
+  const cardphoto = cardphotoUrlsFromCard(card)
   const cardtext = cardtextContentForPie(card)
   const recipient = card.envelope.recipient
   const recipientCount = recipientAppliedCount(recipient)

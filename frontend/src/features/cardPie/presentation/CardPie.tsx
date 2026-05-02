@@ -45,6 +45,8 @@ export const CardPie: React.FC<CardPieProps> = ({
   fillContainer = false,
   station = 'left',
   rightListSource = null,
+  onListArchiveSectorClick,
+  onBeforeLeftPieSectorClick,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const photoFillId = `${pieDefsUid}-photo-apply`
@@ -59,10 +61,19 @@ export const CardPie: React.FC<CardPieProps> = ({
   const {
     data,
     sections,
-    handleSectorClick,
+    handleSectorClick: defaultHandleSectorClick,
     isReady,
     listArchiveSource: listSourceFromFacade,
   } = useCardPieFacade(isProcessed, status, id, listArchiveSource)
+  const handleSectorClick =
+    station === 'right' && onListArchiveSectorClick != null
+      ? onListArchiveSectorClick
+      : (section: CardSection) => {
+          if (station === 'left') {
+            onBeforeLeftPieSectorClick?.()
+          }
+          defaultHandleSectorClick(section)
+        }
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
 

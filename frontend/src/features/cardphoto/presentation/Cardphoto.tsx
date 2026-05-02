@@ -7,10 +7,13 @@ import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import styles from './Cardphoto.module.scss'
 import viewStyles from './CardphotoView/CardphotoView.module.scss'
 
-/** Фабрика в режиме правого списка: данные из `mirrorInner`, не из слайса сессии левой открытки. */
-const CardphotoRightListMirror: React.FC = () => {
-  const { mirrorInner } = useRightListArchiveMini()
-  const url = mirrorInner?.cardphoto?.previewUrl
+import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+
+const CardphotoInnerPreviewOnly: React.FC<{
+  inner: CardPieInnerData | null
+}> = ({ inner }) => {
+  const url =
+    inner?.cardphoto?.factoryDisplayUrl ?? inner?.cardphoto?.previewUrl ?? null
   const hasPhoto = url != null && url !== ''
 
   return (
@@ -22,7 +25,7 @@ const CardphotoRightListMirror: React.FC = () => {
             <div className={viewStyles.stageRoot}>
               {hasPhoto ? (
                 <img
-                  key={mirrorInner?.cardphoto?.id ?? url}
+                  key={inner?.cardphoto?.id ?? url}
                   src={url}
                   alt=""
                   className={styles.mirrorPreview}
@@ -38,6 +41,12 @@ const CardphotoRightListMirror: React.FC = () => {
       </div>
     </div>
   )
+}
+
+/** Фабрика в режиме правого списка: данные из `mirrorInner`, не из слайса сессии левой открытки. */
+const CardphotoRightListMirror: React.FC = () => {
+  const { mirrorInner } = useRightListArchiveMini()
+  return <CardphotoInnerPreviewOnly inner={mirrorInner} />
 }
 
 const CardphotoSessionEditor: React.FC = () => {
@@ -60,10 +69,18 @@ const CardphotoSessionEditor: React.FC = () => {
 }
 
 export const Cardphoto: React.FC = () => {
-  const { centerStripListMirrorEnabled } = useRightListArchiveMini()
+  const {
+    centerStripListMirrorEnabled,
+    rightPieCardphotoPeekNoToolbar,
+    listRowInner,
+  } = useRightListArchiveMini()
 
   if (centerStripListMirrorEnabled) {
     return <CardphotoRightListMirror />
+  }
+
+  if (rightPieCardphotoPeekNoToolbar && listRowInner != null) {
+    return <CardphotoInnerPreviewOnly inner={listRowInner} />
   }
 
   return <CardphotoSessionEditor />

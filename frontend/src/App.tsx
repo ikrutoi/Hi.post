@@ -31,6 +31,8 @@ import {
 import { useSizeFacade } from '@layout/application/facades'
 import { useRecordSizeCard } from '@shared/hooks'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
+import type { CardSection } from '@shared/config/constants'
 import { useCartFacade } from './features/cart/application/facades/useCartFacade'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
@@ -57,6 +59,8 @@ const App = () => {
   const leftPieWrapRef = useRef<HTMLDivElement>(null)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
+  const [rightPieCardphotoPeekNoToolbar, setRightPieCardphotoPeekNoToolbar] =
+    useState(false)
 
   useAuthInit()
   useLayoutInit()
@@ -164,6 +168,36 @@ const App = () => {
       : null,
   )
 
+  const listRowInner = rightListArchiveBundle?.currentData?.data ?? null
+
+  const handleRightListPieSectorClick = useCallback(
+    (section: CardSection) => {
+      dispatch(setActiveSection(section))
+      if (activePieSide === 'left' && section === 'cardphoto') {
+        setRightPieCardphotoPeekNoToolbar(true)
+      } else {
+        setRightPieCardphotoPeekNoToolbar(false)
+      }
+    },
+    [activePieSide, dispatch],
+  )
+
+  useEffect(() => {
+    if (activeSection !== 'cardphoto') {
+      setRightPieCardphotoPeekNoToolbar(false)
+    }
+  }, [activeSection])
+
+  useEffect(() => {
+    if (activePieSide === 'right') {
+      setRightPieCardphotoPeekNoToolbar(false)
+    }
+  }, [activePieSide])
+
+  useEffect(() => {
+    setRightPieCardphotoPeekNoToolbar(false)
+  }, [rightListArchiveLocalId])
+
   const centerStripMirrorValue = useMemo(
     () => ({
       centerStripListMirrorEnabled: activePieSide === 'right',
@@ -177,8 +211,16 @@ const App = () => {
           : null,
       mirrorTargetLocalId:
         activePieSide === 'right' ? rightListArchiveLocalId : null,
+      listRowInner,
+      rightPieCardphotoPeekNoToolbar,
     }),
-    [activePieSide, rightListArchiveBundle, rightListArchiveLocalId],
+    [
+      activePieSide,
+      rightListArchiveBundle,
+      rightListArchiveLocalId,
+      listRowInner,
+      rightPieCardphotoPeekNoToolbar,
+    ],
   )
 
   const mergeLeft = false
@@ -250,7 +292,14 @@ const App = () => {
                         ref={leftPieWrapRef}
                         className={styles.appMainContentLeftPieWrap}
                       >
-                        <CardPie isProcessed fillContainer station="left" />
+                        <CardPie
+                          isProcessed
+                          fillContainer
+                          station="left"
+                          onBeforeLeftPieSectorClick={() =>
+                            setRightPieCardphotoPeekNoToolbar(false)
+                          }
+                        />
                       </div>
                       <div className={styles.appMainContentLeftPieToolbar}>
                         <Toolbar
@@ -279,7 +328,14 @@ const App = () => {
                           ref={leftPieWrapRef}
                           className={styles.appMainContentLeftPieWrap}
                         >
-                          <CardPie isProcessed fillContainer station="left" />
+                          <CardPie
+                            isProcessed
+                            fillContainer
+                            station="left"
+                            onBeforeLeftPieSectorClick={() =>
+                              setRightPieCardphotoPeekNoToolbar(false)
+                            }
+                          />
                         </div>
                         <div className={styles.appMainContentLeftPieToolbar}>
                           <Toolbar
@@ -335,7 +391,9 @@ const App = () => {
                 </div>
                 <div className={clsx(styles.appMainContentCenter)}>
                   <div className={styles.mainCardSectionToolbar}>
-                    <CardSectionToolbar />
+                    {!rightPieCardphotoPeekNoToolbar ? (
+                      <CardSectionToolbar />
+                    ) : null}
                   </div>
                   <div ref={formRef} className={clsx(styles.mainForm)}>
                     <CardSectionEditor />
@@ -375,6 +433,9 @@ const App = () => {
                             fillContainer
                             station="right"
                             rightListSource={rightListArchiveSource}
+                            onListArchiveSectorClick={
+                              handleRightListPieSectorClick
+                            }
                           />
                         </div>
                         {rightListArchiveSource === 'cart' && (
@@ -418,6 +479,9 @@ const App = () => {
                                 fillContainer
                                 station="right"
                                 rightListSource={rightListArchiveSource}
+                                onListArchiveSectorClick={
+                                  handleRightListPieSectorClick
+                                }
                               />
                             </div>
                             {rightListArchiveSource === 'cart' && (

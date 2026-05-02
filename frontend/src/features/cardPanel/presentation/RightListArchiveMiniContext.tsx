@@ -12,6 +12,13 @@ export type RightListArchiveMiniContextValue = {
   mirrorSectionFlags: CardPieSectionFlags | null
   /** `localId` выбранной строки корзины/истории, когда активен правый пирог. */
   mirrorTargetLocalId: number | null
+  /**
+   * Снимок строки списка справа, пока выбрана строка — даже при активном левом пироге
+   * (для peek cardphoto в фабрике без полного зеркала центра).
+   */
+  listRowInner: CardPieInnerData | null
+  /** Левый режим пирога: в фабрике показать только фото строки справа, без тулбара cardphoto. */
+  rightPieCardphotoPeekNoToolbar: boolean
 }
 
 const defaultValue: RightListArchiveMiniContextValue = {
@@ -19,6 +26,8 @@ const defaultValue: RightListArchiveMiniContextValue = {
   mirrorInner: null,
   mirrorSectionFlags: null,
   mirrorTargetLocalId: null,
+  listRowInner: null,
+  rightPieCardphotoPeekNoToolbar: false,
 }
 
 const RightListArchiveMiniContext =

@@ -59,8 +59,6 @@ export const selectActiveCardFullData = createSelector(
       data: {
         cardphoto,
         cardtext,
-        // Для пирога: если один получатель — рисуем применённый адрес (appliedData),
-        // иначе показываем только счётчик
         recipient: recipientCount === 1 ? appliedRecipient : null,
         recipientCount,
         aroma,
@@ -71,11 +69,6 @@ export const selectActiveCardFullData = createSelector(
   },
 )
 
-/**
- * Превью пирога по строке списка справа: `id` — `String(postcard.localId)`.
- * `listSource` различает корзину и историю (данные пока из `cart.items` по `localId`;
- * при расхождении моделей можно ветвить здесь).
- */
 export const selectListArchiveCardPieBundle = createSelector(
   [
     (state: RootState) => state.cart.items,
@@ -106,8 +99,5 @@ export const selectListArchiveCardPieBundle = createSelector(
 )
 
 /** @deprecated Prefer `selectListArchiveCardPieBundle(state, id, source)`. */
-export const selectCartArchiveCardPieBundle = (
-  state: RootState,
-  id?: string,
-) => selectListArchiveCardPieBundle(state, id, 'cart')
-
+export const selectCartArchiveCardPieBundle = (state: RootState, id?: string) =>
+  selectListArchiveCardPieBundle(state, id, 'cart')
