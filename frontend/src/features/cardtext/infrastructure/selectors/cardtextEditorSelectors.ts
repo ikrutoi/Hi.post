@@ -23,16 +23,61 @@ const fallbackCardtextSessionContent: CardtextContent =
 
 const DEFAULT_CARDTEXT_LINES = fallbackCardtextSessionContent.cardtextLines
 
+function cardtextValueHasUserText(value: CardtextValue | undefined | null): boolean {
+  if (value == null || value.length === 0) return false
+  return value.some((block) =>
+    (block.children ?? []).some(
+      (c) => String((c as { text?: string }).text ?? '').trim() !== '',
+    ),
+  )
+}
+
+/** Ветка для отображения в фабрике/мини: как в пироге — сначала applied, если в asset ещё нет текста. */
+function displayCardtextBranch(
+  asset: CardtextContent | null | undefined,
+  applied: CardtextContent | null | undefined,
+): CardtextContent | null {
+  if (asset != null && cardtextValueHasUserText(asset.value)) return asset
+  if (applied != null && cardtextValueHasUserText(applied.value)) return applied
+  return asset ?? applied ?? null
+}
+
+function cloneCardtextValue(value: CardtextValue): CardtextValue {
+  return value.map((b) => ({
+    ...b,
+    children: b.children.map((c) => ({ ...c })),
+  }))
+}
+
+/**
+ * Когда true — в фабрике берём только asset (черновик / заголовок в режиме правки).
+ * Отсутствие asset не считается «черновиком»: тогда merge с applied, как в левом пироге.
+ */
+function isCardtextEditorAssetOnlyMerge(state: RootState): boolean {
+  const { assetData, isCardtextViewEditMode } = state.cardtext
+  if (isCardtextViewEditMode === true) return true
+  return assetData != null && assetData.status === 'draft'
+}
+
 export const selectCardtextState = (state: RootState) => state.cardtext
 
 export const selectCardtextSource = (
   state: RootState,
-): 'draft' | 'view' =>
-  state.cardtext.assetData == null ||
-  state.cardtext.assetData.status === 'draft' ||
-  state.cardtext.isCardtextViewEditMode === true
-    ? 'draft'
-    : 'view'
+): 'draft' | 'view' => {
+  if (state.cardtext.isCardtextViewEditMode === true) return 'draft'
+  const { assetData, appliedData } = state.cardtext
+  if (assetData == null) {
+    if (
+      appliedData != null &&
+      cardtextValueHasUserText(appliedData.value)
+    ) {
+      return 'view'
+    }
+    return 'draft'
+  }
+  if (assetData.status === 'draft') return 'draft'
+  return 'view'
+}
 
 export const selectIsDraftFocus = (state: RootState): boolean =>
   state.cardtext.isDraftFocus === true
@@ -42,26 +87,63 @@ export const selectCardtextDraftData = (
 ): CardtextCreateDraft | null => state.cardtext.draftData
 
 export const selectCardtextValue = createSelector(
-  [(state: RootState) => state.cardtext.assetData],
-  (asset): CardtextValue => asset?.value ?? initialCardtextValue,
+  [
+    (state: RootState) => state.cardtext.assetData,
+    (state: RootState) => state.cardtext.appliedData,
+    isCardtextEditorAssetOnlyMerge,
+  ],
+  (asset, applied, isDraftLike): CardtextValue => {
+    if (isDraftLike) {
+      const v = asset?.value ?? initialCardtextValue
+      return cloneCardtextValue(v)
+    }
+    const branch = displayCardtextBranch(asset, applied)
+    if (branch == null) return initialCardtextValue
+    return cloneCardtextValue(branch.value)
+  },
 )
 
-export const selectCardtextPlainText = (state: RootState): string =>
-  state.cardtext.assetData?.plainText ?? ''
+export const selectCardtextPlainText = (state: RootState): string => {
+  const { assetData, appliedData } = state.cardtext
+  if (isCardtextEditorAssetOnlyMerge(state))
+    return assetData?.plainText ?? ''
+  const branch = displayCardtextBranch(assetData, appliedData)
+  return branch?.plainText ?? ''
+}
 
 export const selectCardtextIsComplete = (state: RootState): boolean =>
   state.cardtext.appliedData != null
 
-export const selectCardtextLines = (state: RootState): number =>
-  state.cardtext.assetData?.cardtextLines ?? DEFAULT_CARDTEXT_LINES
+export const selectCardtextLines = (state: RootState): number => {
+  const { assetData, appliedData } = state.cardtext
+  if (isCardtextEditorAssetOnlyMerge(state)) {
+    return assetData?.cardtextLines ?? DEFAULT_CARDTEXT_LINES
+  }
+  const branch = displayCardtextBranch(assetData, appliedData)
+  return branch?.cardtextLines ?? DEFAULT_CARDTEXT_LINES
+}
 
 export const selectCardtextStyle = createSelector(
-  [(state: RootState) => state.cardtext.assetData],
-  (asset): CardtextStyle => asset?.style ?? defaultCardtextStyle,
+  [
+    (state: RootState) => state.cardtext.assetData,
+    (state: RootState) => state.cardtext.appliedData,
+    isCardtextEditorAssetOnlyMerge,
+  ],
+  (asset, applied, isDraftLike): CardtextStyle => {
+    if (isDraftLike) {
+      return asset?.style ? { ...asset.style } : { ...defaultCardtextStyle }
+    }
+    const branch = displayCardtextBranch(asset, applied)
+    return branch?.style ? { ...branch.style } : { ...defaultCardtextStyle }
+  },
 )
 
-export const selectCardtextTitle = (state: RootState): string =>
-  state.cardtext.assetData?.title ?? ''
+export const selectCardtextTitle = (state: RootState): string => {
+  const { assetData, appliedData } = state.cardtext
+  if (isCardtextEditorAssetOnlyMerge(state)) return assetData?.title ?? ''
+  const branch = displayCardtextBranch(assetData, appliedData)
+  return branch?.title ?? ''
+}
 
 export const selectCardtextFavorite = (state: RootState): boolean => {
   const { assetData, templatesList } = state.cardtext
