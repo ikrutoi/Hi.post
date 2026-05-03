@@ -1,4 +1,8 @@
+@use 'sass:color';
 @use '@styles/config/colors' as *;
+
+/** Доля непрозрачности секторов «как в CardPie», без SVG — через conic-gradient. */
+$date-header-history-pie-alpha: 0.26;
 
 .header {
   display: grid;
@@ -45,6 +49,42 @@
 .dateSectionModeCart {
   border-color: $color-cart-list-border;
   background-color: $color-cart-list-surface;
+}
+
+/**
+ * Режим «История»: пять равных секторов (72°), порядок как в легенде статусов
+ * cart → ready → sent → delivered → error; цвета из индикаторов превью с alpha.
+ * Угол `from` при необходимости подкрутить под визуальное совпадение с CardPie.
+ */
+.dateSectionModeHistory {
+  position: relative;
+  background-color: transparent;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from -90deg at 50% 50%,
+      color.change($color-preview-indicator-cart, $alpha: $date-header-history-pie-alpha)
+        0deg 72deg,
+      color.change($color-preview-indicator-ready, $alpha: $date-header-history-pie-alpha)
+        72deg 144deg,
+      color.change($color-preview-indicator-sent, $alpha: $date-header-history-pie-alpha)
+        144deg 216deg,
+      color.change($color-preview-indicator-delivered, $alpha: $date-header-history-pie-alpha)
+        216deg 288deg,
+      color.change($color-preview-indicator-error, $alpha: $date-header-history-pie-alpha)
+        288deg 360deg
+    );
+  }
+
+  svg {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 .headerSide:last-child {
