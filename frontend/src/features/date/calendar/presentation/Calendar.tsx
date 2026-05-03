@@ -21,14 +21,12 @@ interface CalendarProps {
   calendarViewDate: CalendarViewDate
   chooseDate: (date: DispatchDate) => void
   triggerFlash: (part: Switcher) => void
-  calendarVariant: 'date' | 'history' | 'cart'
 }
 
 export const Calendar: React.FC<CalendarProps> = ({
   calendarViewDate,
   chooseDate,
   triggerFlash,
-  calendarVariant,
 }) => {
   const dispatch = useAppDispatch()
   const firstDayOfWeek = useAppSelector(selectFirstDayOfWeek)
@@ -61,7 +59,6 @@ export const Calendar: React.FC<CalendarProps> = ({
     calendarViewDate,
     chooseDate,
     triggerFlash,
-    calendarVariant,
   })
 
   return (

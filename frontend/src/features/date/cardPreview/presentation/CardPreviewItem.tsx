@@ -56,6 +56,26 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   const showCardphotoPlaceholder =
     !isHistory && isSelectedDate && !hasDisplayUrl
 
+  const dateDimmedMedia =
+    !isHistory &&
+    !isSelectedDate &&
+    !isAdjacentMonthEdge &&
+    status !== 'cart'
+
+  const mediaBlock = hasDisplayUrl ? (
+    <img
+      src={displayUrl}
+      alt="card thumb"
+      className={styles.previewImage}
+    />
+  ) : showCardphotoPlaceholder ? (
+    <div className={styles.miniCardphotoPlaceholder} aria-hidden>
+      {getToolbarIcon({ key: 'cardphoto' })}
+    </div>
+  ) : (
+    <div className={styles.previewImage} aria-hidden />
+  )
+
   return (
     <div
       className={clsx(
@@ -68,22 +88,14 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
               ? styles.previewItemAdjacentEdge
               : status === 'cart'
                 ? styles.previewItemHistory
-                : styles.previewItemDate,
+                : null,
       )}
       onClick={handlePreviewClick}
     >
-      {hasDisplayUrl ? (
-        <img
-          src={displayUrl}
-          alt="card thumb"
-          className={styles.previewImage}
-        />
-      ) : showCardphotoPlaceholder ? (
-        <div className={styles.miniCardphotoPlaceholder} aria-hidden>
-          {getToolbarIcon({ key: 'cardphoto' })}
-        </div>
+      {dateDimmedMedia ? (
+        <div className={styles.previewDateMedia}>{mediaBlock}</div>
       ) : (
-        <div className={styles.previewImage} aria-hidden />
+        mediaBlock
       )}
       {isHistory && !isProcessed ? (
         <span className={clsx(styles.previewIndicator, styles[status])} />

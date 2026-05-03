@@ -382,7 +382,8 @@
 .toolbarCardphoto,
 .toolbarDate,
 .toolbarHistory,
-.toolbarRightSidebar {
+.toolbarRightSidebar,
+.toolbarCart {
   .toolbarKeyActive {
     color: $color-font-active;
   }
@@ -420,7 +421,8 @@
 .toolbarSenderView,
 .toolbarRecipientView,
 .toolbarDate,
-.toolbarHistory {
+.toolbarHistory,
+.toolbarCart {
   display: flex;
   align-items: center;
 

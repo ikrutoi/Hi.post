@@ -41,7 +41,14 @@
   // }
 }
 
-.previewItemDate {
+.previewDateMedia {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: inherit;
   opacity: 0.5;
   filter: grayscale(1);
 }
@@ -83,6 +90,7 @@
   position: absolute;
   top: 0.26rem;
   left: 0.26rem;
+  z-index: 2;
   width: 0.64rem;
   height: 0.64rem;
   border-radius: 50%;

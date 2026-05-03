@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -9,6 +10,7 @@ import {
   selectRecipientBranchSlotKeys,
 } from '@date/infrastructure/selectors'
 import { CardPreviewItem } from './CardPreviewItem'
+import previewItemStyles from './CardPreviewItem.module.scss'
 import styles from './CardPreview.module.scss'
 import { CalendarCardItem } from '@entities/card/domain/types'
 import type { DispatchDate } from '@entities/date/domain/types'
@@ -56,13 +58,23 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const { processed, cart, ready, sent, delivered, error } = data
 
   const isHistory = section === 'history'
-  const isHistoryLike = isHistory || section === 'cart'
-  const pipelineCards = [...cart, ...ready, ...sent, ...delivered, ...error]
+  const isCartCalendar = section === 'cart'
+  const isHistoryLike = isHistory || isCartCalendar
+  /**
+   * Порядок для миниатюры: в «Дата» сначала конвейер, корзина в конце (жёлтый индикатор по `cart` отдельно).
+   * В «Истории» — прежний порядок; в полосе корзины — только `cart`.
+   */
+  const pipelineCards = isCartCalendar
+    ? [...cart]
+    : isHistory
+      ? [...cart, ...ready, ...sent, ...delivered, ...error]
+      : [...ready, ...sent, ...delivered, ...error, ...cart]
   const pipelineCount = pipelineCards.length
   /** Для бейджа «×N» в секции «Дата» не считаем корзину — только отправка по конвейеру + processed. */
   const nonCartPipeline = [...ready, ...sent, ...delivered, ...error]
-  const totalOnDayForBadge =
-    isHistoryLike
+  const totalOnDayForBadge = isCartCalendar
+    ? pipelineCount
+    : isHistoryLike
       ? pipelineCount + (processed ? 1 : 0)
       : nonCartPipeline.length + (processed ? 1 : 0)
   const firstPipelineWithPreview =
@@ -79,11 +91,23 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const primaryItem: CalendarCardItem | null =
     !isHistoryLike && isSelectedDate && noSessionCardphotoImage
       ? workingSlotForSelectedDay ?? null
-      : workingSlotForSelectedDay ??
-        firstPipelineWithPreview ??
-        firstPipeline ??
-        processed ??
-        null
+      : isCartCalendar
+        ? firstPipelineWithPreview ?? firstPipeline ?? null
+        : workingSlotForSelectedDay ??
+          firstPipelineWithPreview ??
+          firstPipeline ??
+          processed ??
+          null
+
+  /** В режиме «Дата» миниатюру из корзины не показываем — только жёлтый индикатор. */
+  const primaryItemForDisplay =
+    !isHistoryLike &&
+    !isCartCalendar &&
+    primaryItem &&
+    !primaryItem.isProcessed &&
+    primaryItem.status === 'cart'
+      ? null
+      : primaryItem
 
   const pendingRecipientCount = recipientsPendingIds.length
 
@@ -150,20 +174,24 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !primaryItem &&
     !photoPreview?.previewUrl
 
+  /** Режим «Дата» (не полоса корзины): на днях с открытками в корзине — жёлтый индикатор на превью. */
+  const showDateModeCartPresenceIndicator =
+    !isHistoryLike && !isCartCalendar && cart.length > 0
+
   return (
     <div className={styles.cardPreviewContainer}>
-      {primaryItem ? (
+      {primaryItemForDisplay ? (
         <div className={styles.previewWrapper}>
           <CardPreviewItem
-            key={primaryItem.rowKey}
-            item={primaryItem}
-            status={primaryItem.status}
-            isProcessed={primaryItem.isProcessed}
-            cardId={primaryItem.cardId}
+            key={primaryItemForDisplay.rowKey}
+            item={primaryItemForDisplay}
+            status={primaryItemForDisplay.status}
+            isProcessed={primaryItemForDisplay.isProcessed}
+            cardId={primaryItemForDisplay.cardId}
             isHistory={isHistoryLike}
             isSelectedDate={isSelectedDate}
             isAdjacentMonthEdge={isAdjacentMonthEdge}
-            hasCartPostcardsOnDay={!isHistoryLike && cart.length > 0}
+            hasCartPostcardsOnDay={showDateModeCartPresenceIndicator}
           />
           {showExtraCountBadge ? (
             <span className={styles.extraCount} aria-hidden>
@@ -182,6 +210,25 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
           >
             {getToolbarIcon({ key: 'cardphoto' })}
           </div>
+          {showDateModeCartPresenceIndicator ? (
+            <span
+              className={clsx(
+                previewItemStyles.previewIndicator,
+                previewItemStyles.cart,
+              )}
+              aria-hidden
+            />
+          ) : null}
+        </div>
+      ) : showDateModeCartPresenceIndicator ? (
+        <div className={styles.previewWrapper}>
+          <span
+            className={clsx(
+              previewItemStyles.previewIndicator,
+              previewItemStyles.cart,
+            )}
+            aria-hidden
+          />
         </div>
       ) : null}
     </div>

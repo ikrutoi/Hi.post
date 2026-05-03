@@ -44,10 +44,12 @@ export const buildMonthCells = ({
 }: BuildMonthCellsParams) => {
   const { activeSection } = useSectionMenuFacade()
   const photoPreview = useAppSelector(selectCardphotoPreview)
+  const isCartCalendarStrip =
+    activeSection === 'date' && cartListPanelOpen
   const cardPreviewSection: CardSection | 'cart' | null =
     activeSection === 'history'
       ? 'history'
-      : activeSection === 'date' && cartListPanelOpen
+      : isCartCalendarStrip
         ? 'cart'
         : activeSection
   if (!calendarViewDate) return []
@@ -129,6 +131,7 @@ export const buildMonthCells = ({
         adjacentSessionPlaceholderNavSwap={adjacentSessionPlaceholderNavSwap}
         historyEmptyNoPreview={historyEmptyNoPreview}
         adjacentMonthPointer={adjacentMonthPointer}
+        suppressDispatchSelectionStyle={isCartCalendarStrip}
       >
         {dayData && (
           <CardPreview

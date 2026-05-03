@@ -29,6 +29,11 @@ interface CellProps {
   historyEmptyNoPreview?: boolean
   /** dayBefore/dayAfter: pointer поверх `.adjacentMonth` (дата: не disabled; история: есть открытки). */
   adjacentMonthPointer?: boolean
+  /**
+   * Календарь в режиме «Корзина»: выбранные из фабрики dispatch-дни без фона dispatch
+   * и без отдельной стилизации номера дня (бейдж).
+   */
+  suppressDispatchSelectionStyle?: boolean
   children?: React.ReactNode
 }
 
@@ -47,6 +52,7 @@ export const Cell: React.FC<CellProps> = ({
   adjacentSessionPlaceholderNavSwap = false,
   historyEmptyNoPreview = false,
   adjacentMonthPointer = false,
+  suppressDispatchSelectionStyle = false,
   children,
 }) => {
   const hasPostcards = Boolean(
@@ -59,9 +65,12 @@ export const Cell: React.FC<CellProps> = ({
   )
 
   const hasCartOnDay = Boolean(dayData?.cart.length)
+  const showDispatchSelection =
+    Boolean(isSelectedDate) && !suppressDispatchSelectionStyle
+
   /** Выбранный день + открытка в корзине: бейдж числа без коричневого dispatch (индикатор остаётся на превью). */
   const selectedDayWithCartBadge =
-    isSelectedDate && hasCartOnDay && styles.selectedDayWithCartBadge
+    showDispatchSelection && hasCartOnDay && styles.selectedDayWithCartBadge
 
   const dynamicClass = clsx(
     styles.cell,
@@ -71,7 +80,7 @@ export const Cell: React.FC<CellProps> = ({
     isDisabledDate && styles.disabled,
     (dayBefore != null || dayAfter != null) && styles.adjacentMonth,
     dayCurrent != null && styles.current,
-    isSelectedDate && styles.dispatch,
+    showDispatchSelection && styles.dispatch,
     hasPostcards && styles.withPostcards,
     selectedDayWithCartBadge,
   )

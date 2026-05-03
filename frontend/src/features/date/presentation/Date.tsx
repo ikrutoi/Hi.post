@@ -1,7 +1,9 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import listOfMonthOfYear from '@data/date/monthOfYear.json'
-import { useAppDispatch } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
   closeDayPanel,
@@ -75,23 +77,62 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   // const { sizeItemCalendar } = useSizeFacade()
 
   const { lastViewedCalendarDate } = useCalendarFacade()
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
+  /** Футер: переход Корзина → История тумблером; при выключении истории вернуться в корзину, а не в «Дата» без панели. */
+  const returnToCartAfterHistoryToggleRef = useRef(false)
+
+  useEffect(() => {
+    if (section === 'date' && !cartListPanelOpen) {
+      returnToCartAfterHistoryToggleRef.current = false
+    }
+  }, [section, cartListPanelOpen])
+
+  /** Режим корзины на календаре подразумевает открытый CartListPanel; не дублируем `setCartListPanelOpen(true)`, если уже открыто (сброс выбора в slice). */
+  useEffect(() => {
+    if (section !== 'cart' || cartListPanelOpen) return
+    dispatch(setCartListPanelOpen(true))
+    dispatch(
+      updateToolbarIcon({
+        section: 'rightSidebar',
+        key: 'cart',
+        value: 'active',
+      }),
+    )
+  }, [section, cartListPanelOpen, dispatch])
 
   const handleCalendarModeToggle = useCallback(
     (historyOn: boolean) => {
-      if (!historyOn) {
-        dispatch(setHistoryListPanelOpen(false))
-        dispatch(closeDayPanel())
+      if (historyOn) {
+        returnToCartAfterHistoryToggleRef.current = section === 'cart'
+        dispatch(setActiveSection('history'))
+        return
+      }
+
+      dispatch(setHistoryListPanelOpen(false))
+      dispatch(closeDayPanel())
+      dispatch(
+        updateToolbarIcon({
+          section: 'history',
+          key: 'listHistory',
+          value: 'enabled',
+        }),
+      )
+
+      const backToCart = returnToCartAfterHistoryToggleRef.current
+      returnToCartAfterHistoryToggleRef.current = false
+      if (backToCart) {
+        dispatch(setCartListPanelOpen(true))
         dispatch(
           updateToolbarIcon({
-            section: 'history',
-            key: 'listHistory',
-            value: 'enabled',
+            section: 'rightSidebar',
+            key: 'cart',
+            value: 'active',
           }),
         )
       }
-      dispatch(setActiveSection(historyOn ? 'history' : 'date'))
+      dispatch(setActiveSection('date'))
     },
-    [dispatch],
+    [dispatch, section],
   )
 
   useInitializeCalendarViewDate()
@@ -215,7 +256,6 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
             calendarViewDate={calendarViewDate}
             chooseDate={chooseDate}
             triggerFlash={triggerFlash}
-            calendarVariant={section}
           />
         </div>
 
@@ -244,7 +284,11 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
                 styles.dateBottomToggleGroupHistoryActive,
             )}
             role="group"
-            aria-label="Calendar: dispatch dates or history"
+            aria-label={
+              section === 'cart' || section === 'history'
+                ? 'Calendar: cart list or history archive'
+                : 'Calendar: dispatch dates or history'
+            }
           >
             <IconHistory
               className={clsx(
