@@ -20,6 +20,8 @@ export type PostcardStatusLegendProps = {
    * Только `spot="calendar"`, секция Дата: те же индикаторы, но точки и иконки с opacity 0.5.
    */
   calendarDispatchDimmed?: boolean
+  /** Только `spot="calendar"`, секция Корзина: в футере только пункт Cart. */
+  calendarCartStripLegendOnly?: boolean
 }
 
 export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
@@ -27,6 +29,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
   isHistoryEmpty,
   statusCounts,
   calendarDispatchDimmed = false,
+  calendarCartStripLegendOnly = false,
 }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
@@ -56,6 +59,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
         isHistoryEmpty && styles.rootEmpty,
         spot === 'calendar' &&
           calendarDispatchDimmed &&
+          !calendarCartStripLegendOnly &&
           styles.rootCalendarDimmed,
       )}
       aria-label="Postcard status colors"
@@ -73,54 +77,77 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
           <IconCart className={styles.icon} />
           {statusCount('cart')}
         </div>
-        <div
-          className={clsx(
-            styles.item,
-            styles.ready,
-            postcardStatuses.ready ? styles.active : styles.inactive,
-          )}
-          onClick={() => handlePostcardStatusClick('ready')}
-        >
-          <span className={clsx(styles.dot, styles.dotReady)} />
-          <IconPostcardReady className={styles.icon} />
-          {statusCount('ready')}
-        </div>
-        <div
-          className={clsx(
-            styles.item,
-            styles.sent,
-            postcardStatuses.sent ? styles.active : styles.inactive,
-          )}
-          onClick={() => handlePostcardStatusClick('sent')}
-        >
-          <span className={clsx(styles.dot, styles.dotSent)} />
-          <IconPostcardSend className={clsx(styles.icon, styles.iconSend)} />
-          {statusCount('sent')}
-        </div>
-        <div
-          className={clsx(
-            styles.item,
-            styles.delivered,
-            postcardStatuses.delivered ? styles.active : styles.inactive,
-          )}
-          onClick={() => handlePostcardStatusClick('delivered')}
-        >
-          <span className={clsx(styles.dot, styles.dotDelivered)} />
-          <IconPostcardDelivered className={styles.icon} />
-          {statusCount('delivered')}
-        </div>
-        <div
-          className={clsx(
-            styles.item,
-            styles.error,
-            postcardStatuses.error ? styles.active : styles.inactive,
-          )}
-          onClick={() => handlePostcardStatusClick('error')}
-        >
-          <span className={clsx(styles.dot, styles.dotError)} />
-          <IconPostcardNotDelivered className={styles.icon} />
-          {statusCount('error')}
-        </div>
+        {spot === 'calendar' && calendarCartStripLegendOnly ? (
+          <>
+            {/** Та же сетка 5×1fr, что в «Истории» — Cart остаётся в той же ячейке, без скачков. */}
+            {[0, 1, 2, 3].map((i) => (
+              <div
+                key={`legend-phantom-${i}`}
+                className={clsx(
+                  styles.item,
+                  styles.ready,
+                  styles.inactive,
+                  styles.legendPhantom,
+                )}
+                aria-hidden
+              >
+                <span className={clsx(styles.dot, styles.dotReady)} />
+                <IconPostcardReady className={styles.icon} />
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <div
+              className={clsx(
+                styles.item,
+                styles.ready,
+                postcardStatuses.ready ? styles.active : styles.inactive,
+              )}
+              onClick={() => handlePostcardStatusClick('ready')}
+            >
+              <span className={clsx(styles.dot, styles.dotReady)} />
+              <IconPostcardReady className={styles.icon} />
+              {statusCount('ready')}
+            </div>
+            <div
+              className={clsx(
+                styles.item,
+                styles.sent,
+                postcardStatuses.sent ? styles.active : styles.inactive,
+              )}
+              onClick={() => handlePostcardStatusClick('sent')}
+            >
+              <span className={clsx(styles.dot, styles.dotSent)} />
+              <IconPostcardSend className={clsx(styles.icon, styles.iconSend)} />
+              {statusCount('sent')}
+            </div>
+            <div
+              className={clsx(
+                styles.item,
+                styles.delivered,
+                postcardStatuses.delivered ? styles.active : styles.inactive,
+              )}
+              onClick={() => handlePostcardStatusClick('delivered')}
+            >
+              <span className={clsx(styles.dot, styles.dotDelivered)} />
+              <IconPostcardDelivered className={styles.icon} />
+              {statusCount('delivered')}
+            </div>
+            <div
+              className={clsx(
+                styles.item,
+                styles.error,
+                postcardStatuses.error ? styles.active : styles.inactive,
+              )}
+              onClick={() => handlePostcardStatusClick('error')}
+            >
+              <span className={clsx(styles.dot, styles.dotError)} />
+              <IconPostcardNotDelivered className={styles.icon} />
+              {statusCount('error')}
+            </div>
+          </>
+        )}
       </div>
     </div>
   )

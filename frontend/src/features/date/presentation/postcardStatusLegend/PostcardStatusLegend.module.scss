@@ -69,6 +69,11 @@
   column-gap: 0.35rem;
 }
 
+/** Футер календаря: первая колонка с краю, как круг с иконкой режима в `DateHeader`. */
+.root-calendar .row {
+  justify-items: start;
+}
+
 .item {
   display: inline-flex;
   align-items: center;
@@ -76,6 +81,10 @@
   gap: 0.35rem;
   min-width: 0;
   justify-self: center;
+}
+
+.root-calendar .row .item {
+  justify-self: start;
 }
 
 // .icon {
@@ -195,4 +204,10 @@
   .item.inactive .count {
     color: $color-font-disabled;
   }
+}
+
+/** Скрытые ячейки сетки: те же размеры колонки, что у «Готово», без участия в hit-test. */
+.legendPhantom {
+  visibility: hidden;
+  pointer-events: none;
 }

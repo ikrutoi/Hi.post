@@ -262,7 +262,6 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
         <div
           className={clsx(
             styles.dateBottomToggle,
-            section === 'history' && styles.dateBottomToggleHistory,
             section === 'date' && styles.dateBottomToggleDateFooterHidden,
           )}
           aria-hidden={section === 'date'}
@@ -271,9 +270,8 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
             <PostcardStatusLegend
               spot="calendar"
               isHistoryEmpty={false}
-              calendarDispatchDimmed={
-                section === 'date' || section === 'cart'
-              }
+              calendarDispatchDimmed={section === 'date'}
+              calendarCartStripLegendOnly={section === 'cart'}
             />
           </div>
           <div
