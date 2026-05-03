@@ -85,17 +85,11 @@ const App = () => {
   const { listPanelOpen, listSelectedLocalId, setCartListSelectedLocalId } =
     useCartFacade()
   const prevCartListPanelOpen = useRef(listPanelOpen)
-  /** Чтобы при смене строки в том же списке (корзина / история) не сбрасывался peek упрощённой секции. */
   const prevListArchiveListContextRef = useRef<{
-    localId: string | null
+    localId: number | null
     source: 'cart' | 'history' | null
   }>({ localId: null, source: null })
 
-  /**
-   * Смена секции: уход с «История» — закрыть список истории и панель дня (как при переключении календаря в Дата).
-   * Выход из правого CardPie — через явное переключение пирога или закрытие списка корзины (см. эффект ниже),
-   * а не при смене активной секции: иначе клик по мини-секции в центре сбрасывал бы правый режим и фабрику на левую открытку.
-   */
   useEffect(() => {
     const prev = prevActiveSectionRef.current
 
@@ -144,10 +138,6 @@ const App = () => {
           ? historyListSelectedLocalId
           : null
 
-  /**
-   * Правый CardPie: тулбар корзины только из списка корзины.
-   * Календарь в режиме History (панель дня) и HistoryListPanel — всегда `postcardPieHistory`.
-   */
   const rightListArchiveSource = useMemo((): 'cart' | 'history' | null => {
     if (listPanelOpen && listSelectedLocalId != null) {
       return 'cart'
@@ -182,31 +172,34 @@ const App = () => {
   const handleRightListPieSectorClick = useCallback(
     (section: CardSection) => {
       dispatch(setActiveSection(section))
-      if (activePieSide === 'left' && section === 'cardphoto') {
+      /** Peek в центре — и при активном левом, и при активном правом списковом пироге. */
+      const peekFromListPie =
+        activePieSide === 'left' || activePieSide === 'right'
+      if (peekFromListPie && section === 'cardphoto') {
         setRightPieCardphotoPeekNoToolbar(true)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
-      } else if (activePieSide === 'left' && section === 'cardtext') {
+      } else if (peekFromListPie && section === 'cardtext') {
         setRightPieCardtextPeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
-      } else if (activePieSide === 'left' && section === 'envelope') {
+      } else if (peekFromListPie && section === 'envelope') {
         setRightPieEnvelopePeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
-      } else if (activePieSide === 'left' && section === 'aroma') {
+      } else if (peekFromListPie && section === 'aroma') {
         setRightPieAromaPeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
-      } else if (activePieSide === 'left' && section === 'date') {
+      } else if (peekFromListPie && section === 'date') {
         setRightPieDatePeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)

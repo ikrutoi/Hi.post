@@ -5,6 +5,7 @@ import { AromaTile } from './AromaTile/AromaTile'
 import { AROMA_LIST } from '@entities/aroma/domain/constants'
 import { useAromaFacade } from '../application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { setCartItemCardAroma } from '@cart/infrastructure/state'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import styles from './Aroma.module.scss'
@@ -55,22 +56,24 @@ export const Aroma: React.FC = () => {
     const peekSrc =
       rowAroma != null ? getAromaImage(rowAroma.index) : null
     return (
-      <div className={styles.aroma}>
-        <div className={clsx(styles.form, styles.formPeek)}>
-          {peekSrc ? (
-            <img
-              className={styles.peekMask}
-              src={peekSrc}
-              alt={
-                rowAroma?.index === 0
-                  ? ''
-                  : `Aroma slot ${rowAroma?.index ?? ''}`
-              }
-              draggable={false}
-            />
-          ) : null}
+      <NotebookPeekShell>
+        <div className={styles.aroma}>
+          <div className={clsx(styles.form, styles.formPeek)}>
+            {peekSrc ? (
+              <img
+                className={styles.peekMask}
+                src={peekSrc}
+                alt={
+                  rowAroma?.index === 0
+                    ? ''
+                    : `Aroma slot ${rowAroma?.index ?? ''}`
+                }
+                draggable={false}
+              />
+            ) : null}
+          </div>
         </div>
-      </div>
+      </NotebookPeekShell>
     )
   }
 

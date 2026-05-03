@@ -10,6 +10,7 @@ import { useRecipientFacade } from '../recipient/application/facades'
 import { useSenderFacade } from '../sender/application/facades'
 import { IconUserSenderCentered, IconUsers } from '@shared/ui/icons'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -22,7 +23,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const senderFacade = useSenderFacade()
   const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
 
-  return (
+  const body = (
     <div className={styles.envelope}>
       <div className={styles.envelopeTopSlot}>
         <div className={styles.envelopeLogo} />
@@ -111,5 +112,11 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         )}
       </div>
     </div>
+  )
+
+  return rightPieEnvelopePeekNoToolbar ? (
+    <NotebookPeekShell>{body}</NotebookPeekShell>
+  ) : (
+    body
   )
 }

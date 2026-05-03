@@ -35,6 +35,7 @@ import {
 } from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 
 interface CardtextProps {
   styleLeft: number
@@ -346,11 +347,15 @@ export const Cardtext: React.FC<CardtextProps> = (props) => {
 
   if (rightPieCardtextPeekNoToolbar && listRowInner != null) {
     return (
-      <CardtextListRowPeekPreview
-        key={listRowLocalId != null ? `peek-row-${listRowLocalId}` : 'peek-row'}
-        inner={listRowInner}
-        rowLocalId={listRowLocalId}
-      />
+      <NotebookPeekShell>
+        <CardtextListRowPeekPreview
+          key={
+            listRowLocalId != null ? `peek-row-${listRowLocalId}` : 'peek-row'
+          }
+          inner={listRowInner}
+          rowLocalId={listRowLocalId}
+        />
+      </NotebookPeekShell>
     )
   }
 

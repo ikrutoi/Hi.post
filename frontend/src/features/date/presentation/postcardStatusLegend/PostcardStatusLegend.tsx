@@ -20,7 +20,10 @@ export type PostcardStatusLegendProps = {
    * Только `spot="calendar"`, секция Дата: те же индикаторы, но точки и иконки с opacity 0.5.
    */
   calendarDispatchDimmed?: boolean
-  /** Только `spot="calendar"`, секция Корзина: в футере только пункт Cart. */
+  /**
+   * Только `spot="calendar"`, секции Дата и Корзина: в футере только пункт Cart
+   * (те же фантомные ячейки сетки, что в режиме корзины).
+   */
   calendarCartStripLegendOnly?: boolean
 }
 

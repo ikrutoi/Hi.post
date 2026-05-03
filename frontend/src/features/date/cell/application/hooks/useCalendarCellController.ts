@@ -1,21 +1,23 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
 import {
   closeDayPanel,
   openDayPanel,
+  setCardPieListPanelOpen,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
 } from '../../../calendar/infrastructure/state/calendar.slice'
 import {
+  selectIsCardPieListPanelOpen,
   selectIsDateListPanelOpen,
   selectIsHistoryListPanelOpen,
   selectOpenDayPanel,
   selectPostcardStatuses,
 } from '../../../calendar/infrastructure/selectors/calendar.selector'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../../../calendar/infrastructure/historyOpenDayPanelPrimaryPostcard'
-import { selectCartItems } from '@cart/infrastructure/selectors'
+import { selectCartItems, selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { shiftMonth } from '../../../calendar/application/helpers'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
@@ -46,12 +48,35 @@ export const useCalendarCellController = ({
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const openDayPanelState = useAppSelector(selectOpenDayPanel)
   const cartItems = useAppSelector(selectCartItems)
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
+  const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const postcardStatuses = useAppSelector(selectPostcardStatuses)
   const { selectedDate, selectedDates, isMultiDateMode, chooseDate } =
     useDateFacade()
 
   const { lastViewedCalendarDate } = useCalendarFacade()
   const { activeSection } = useSectionMenuFacade()
+
+  /** Режим «Дата» на полосе календаря: открыть список CardPie при выборе даты, если панель была закрыта. */
+  const maybeOpenCardPieListAfterDatePick = useCallback(
+    (clickRemovesSelection: boolean) => {
+      if (
+        activeSection !== 'date' ||
+        cartListPanelOpen ||
+        cardPieListPanelOpen ||
+        clickRemovesSelection
+      ) {
+        return
+      }
+      dispatch(setCardPieListPanelOpen(true))
+    },
+    [
+      activeSection,
+      cardPieListPanelOpen,
+      cartListPanelOpen,
+      dispatch,
+    ],
+  )
   const { actions: actionsSwitcherController } = useDateSwitcherController()
   const { decrementMonth, incrementMonth } = actionsSwitcherController
 
@@ -116,6 +141,7 @@ export const useCalendarCellController = ({
 
       if (!isHistorySection) {
         chooseDate(dispatchDate)
+        maybeOpenCardPieListAfterDatePick(clickRemovesSelection)
       }
 
       if (dateListPanelOpen) {
@@ -158,6 +184,7 @@ export const useCalendarCellController = ({
 
         if (!isHistorySection) {
           chooseDate(dispatchDate)
+          maybeOpenCardPieListAfterDatePick(clickRemovesSelection)
         }
 
         if (dateListPanelOpen) {

@@ -23,6 +23,7 @@ import {
   useAutoActivateDateSection,
 } from '../application/hooks'
 import { useFlashEffect } from '@shared/hooks'
+import { NotebookPeekShell } from './NotebookPeekShell'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { IconHistory } from '@shared/ui/icons'
@@ -31,6 +32,7 @@ import type {
   CalendarViewDate,
   DispatchDate,
 } from '@entities/date/domain/types'
+import type { DateStripSection } from './dateStripSection.types'
 import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
@@ -56,7 +58,7 @@ function peekPrimaryDispatchDate(
   return null
 }
 
-export type DateStripSection = 'date' | 'history' | 'cart'
+export type { DateStripSection } from './dateStripSection.types'
 
 export const Date: React.FC<{ section: DateStripSection }> = ({
   section,
@@ -204,27 +206,30 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
         : ''
     return (
       <div className={styles.date}>
-        <div className={clsx(styles.form, styles.formPeek)}>
-          {d != null ? (
-            <div className={styles.peekDateStack}>
-              <div className={styles.peekYear}>{d.year}</div>
-              <div className={styles.peekDay}>{d.day}</div>
-              <div className={styles.peekMonth}>{monthLabel}</div>
-            </div>
-          ) : null}
-        </div>
+        <NotebookPeekShell section={section}>
+          <div className={clsx(styles.form, styles.formPeek)}>
+            {d != null ? (
+              <div className={styles.peekDateStack}>
+                <div className={styles.peekYear}>{d.year}</div>
+                <div className={styles.peekDay}>{d.day}</div>
+                <div className={styles.peekMonth}>{monthLabel}</div>
+              </div>
+            ) : null}
+          </div>
+        </NotebookPeekShell>
       </div>
     )
   }
 
   return (
     <div className={styles.date}>
-      <form
-        className={styles.form}
-        onKeyDown={handleKeyDown}
-        tabIndex={0}
-        aria-label="Calendar: left/right arrows - month, up/down - year"
-      >
+      <NotebookPeekShell section={section}>
+        <form
+          className={styles.form}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          aria-label="Calendar: left/right arrows - month, up/down - year"
+        >
         <DateHeader
           dateSection={section}
           currentDate={currentDate}
@@ -250,28 +255,26 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
           />
         </div>
 
-        <div
-          className={clsx(
-            styles.dateBottomToggle,
-            section === 'date' && styles.dateBottomToggleDateFooterHidden,
-          )}
-          aria-hidden={section === 'date'}
-        >
+        <div className={styles.dateBottomToggle}>
           <div className={styles.dateBottomToggleIndicators}>
             <PostcardStatusLegend
               spot="calendar"
               isHistoryEmpty={false}
               calendarDispatchDimmed={section === 'date'}
-              calendarCartStripLegendOnly={section === 'cart'}
+              calendarCartStripLegendOnly={
+                section === 'date' || section === 'cart'
+              }
             />
           </div>
           <div
             className={clsx(
               styles.dateBottomToggleGroup,
               styles.dateBottomToggleHistoryGroup,
+              section === 'date' && styles.dateBottomToggleDateFooterHidden,
               section === 'history' &&
                 styles.dateBottomToggleGroupHistoryActive,
             )}
+            aria-hidden={section === 'date'}
             role="group"
             aria-label={
               section === 'cart' || section === 'history'
@@ -296,7 +299,8 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
           </div>
         </div>
 
-      </form>
+        </form>
+      </NotebookPeekShell>
     </div>
   )
 }

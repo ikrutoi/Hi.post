@@ -11,12 +11,16 @@ export type EnvelopePeekAddressBlockProps = {
   className?: string
 }
 
-function linesFromAddress(address: Readonly<AddressFields> | null): string[] {
+type PeekAddressLine = { text: string; isName: boolean }
+
+function addressLinesForPeek(
+  address: Readonly<AddressFields> | null,
+): PeekAddressLine[] {
   if (address == null) return []
-  const lines: string[] = []
+  const lines: PeekAddressLine[] = []
   for (const key of ADDRESS_FIELD_ORDER) {
     const v = String(address[key] ?? '').trim()
-    if (v !== '') lines.push(v)
+    if (v !== '') lines.push({ text: v, isName: key === 'name' })
   }
   return lines
 }
@@ -30,10 +34,10 @@ export const EnvelopePeekAddressBlock: React.FC<
     if (listRowInner == null) return []
     const { senderBadgeShow, sender, senderDisplayName } = listRowInner
     if (!senderBadgeShow) return []
-    const fromFields = linesFromAddress(sender)
+    const fromFields = addressLinesForPeek(sender)
     if (fromFields.length > 0) return fromFields
     const name = (senderDisplayName ?? '').trim()
-    return name ? [name] : []
+    return name ? [{ text: name, isName: true }] : []
   }, [listRowInner])
 
   const recipientLines = useMemo(() => {
@@ -41,11 +45,11 @@ export const EnvelopePeekAddressBlock: React.FC<
     const { recipient, recipientCount } = listRowInner
     if (recipientCount <= 0) return []
     if (recipientCount > 1) {
-      const single = linesFromAddress(recipient)
+      const single = addressLinesForPeek(recipient)
       if (single.length > 0) return single
-      return [`${recipientCount} recipients`]
+      return [{ text: `${recipientCount} recipients`, isName: false }]
     }
-    return linesFromAddress(recipient)
+    return addressLinesForPeek(recipient)
   }, [listRowInner])
 
   const lines = role === 'sender' ? senderLines : recipientLines
@@ -60,8 +64,11 @@ export const EnvelopePeekAddressBlock: React.FC<
     >
       <div className={styles.lines}>
         {lines.map((line, i) => (
-          <div key={i} className={styles.line}>
-            {line}
+          <div
+            key={i}
+            className={clsx(styles.line, line.isName && styles.lineName)}
+          >
+            {line.text}
           </div>
         ))}
       </div>

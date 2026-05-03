@@ -3,6 +3,7 @@ import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { CardphotoView } from './CardphotoView/CardphotoView'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import styles from './Cardphoto.module.scss'
 import viewStyles from './CardphotoView/CardphotoView.module.scss'
@@ -80,7 +81,11 @@ export const Cardphoto: React.FC = () => {
   }
 
   if (rightPieCardphotoPeekNoToolbar && listRowInner != null) {
-    return <CardphotoInnerPreviewOnly inner={listRowInner} />
+    return (
+      <NotebookPeekShell>
+        <CardphotoInnerPreviewOnly inner={listRowInner} />
+      </NotebookPeekShell>
+    )
   }
 
   return <CardphotoSessionEditor />
