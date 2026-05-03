@@ -16,6 +16,7 @@ import type {
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
 
 function stripCartFromCardsMap(
@@ -41,7 +42,7 @@ interface UseCalendarConstructionParams {
   calendarViewDate: CalendarViewDate
   chooseDate: (date: DispatchDate) => void
   triggerFlash: (part: Switcher) => void
-  calendarVariant: 'date' | 'history'
+  calendarVariant: 'date' | 'history' | 'cart'
 }
 
 const currentDate = getCurrentDate()
@@ -54,6 +55,7 @@ export const useCalendarConstruction = ({
   calendarVariant,
 }: UseCalendarConstructionParams) => {
   const cardsMapRaw = useAppSelector(selectCardsByDateMap)
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const cardsMap = useMemo(
     () =>
       calendarVariant === 'date'
@@ -93,6 +95,7 @@ export const useCalendarConstruction = ({
     currentDate,
     handleClickCell,
     cardsMap,
+    cartListPanelOpen,
   })
 
   const currentCells = buildMonthCells({
@@ -104,6 +107,7 @@ export const useCalendarConstruction = ({
     handleClickCell,
     chooseDate,
     cardsMap,
+    cartListPanelOpen,
   })
 
   const nextCells = buildMonthCells({
@@ -114,6 +118,7 @@ export const useCalendarConstruction = ({
     currentDate,
     handleClickCell,
     cardsMap,
+    cartListPanelOpen,
   })
 
   return useMemo(
@@ -127,6 +132,7 @@ export const useCalendarConstruction = ({
       cardsMap,
       firstDayOfWeek,
       calendarVariant,
+      cartListPanelOpen,
     ],
   )
 }

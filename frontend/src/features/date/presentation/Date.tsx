@@ -54,7 +54,9 @@ function peekPrimaryDispatchDate(
   return null
 }
 
-export const Date: React.FC<{ section: 'date' | 'history' }> = ({
+export type DateStripSection = 'date' | 'history' | 'cart'
+
+export const Date: React.FC<{ section: DateStripSection }> = ({
   section,
 }) => {
   const dispatch = useAppDispatch()
@@ -111,7 +113,8 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
 
   const peekDispatchDate = useMemo(
     () =>
-      rightPieDatePeekNoToolbar && section === 'date'
+      rightPieDatePeekNoToolbar &&
+      (section === 'date' || section === 'cart')
         ? peekPrimaryDispatchDate(listRowInner)
         : null,
     [rightPieDatePeekNoToolbar, section, listRowInner],
@@ -156,7 +159,10 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
     ],
   )
 
-  if (rightPieDatePeekNoToolbar && section === 'date') {
+  if (
+    rightPieDatePeekNoToolbar &&
+    (section === 'date' || section === 'cart')
+  ) {
     const d = peekDispatchDate
     const monthLabel =
       d != null &&
@@ -217,15 +223,17 @@ export const Date: React.FC<{ section: 'date' | 'history' }> = ({
           className={clsx(
             styles.dateBottomToggle,
             section === 'history' && styles.dateBottomToggleHistory,
+            section === 'date' && styles.dateBottomToggleDateFooterHidden,
           )}
+          aria-hidden={section === 'date'}
         >
-          <div
-            className={styles.dateBottomToggleIndicators}
-          >
+          <div className={styles.dateBottomToggleIndicators}>
             <PostcardStatusLegend
               spot="calendar"
               isHistoryEmpty={false}
-              calendarDispatchDimmed={section === 'date'}
+              calendarDispatchDimmed={
+                section === 'date' || section === 'cart'
+              }
             />
           </div>
           <div

@@ -96,6 +96,12 @@
   }
 }
 
+/** Режим «Дата»: футер без видимого содержимого, но с тем же габаритом — сетка дней не смещается. */
+.dateBottomToggleDateFooterHidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .dateBottomToggleGroup {
   display: flex;
   align-items: center;
@@ -151,6 +157,6 @@
  */
 .dateBottomToggleHistoryIconShift {
   display: block;
-  transform: translateX(-0.28rem);
+  transform: translateX(-0.42rem);
 }
 

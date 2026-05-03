@@ -21,7 +21,7 @@ interface CalendarProps {
   calendarViewDate: CalendarViewDate
   chooseDate: (date: DispatchDate) => void
   triggerFlash: (part: Switcher) => void
-  calendarVariant: 'date' | 'history'
+  calendarVariant: 'date' | 'history' | 'cart'
 }
 
 export const Calendar: React.FC<CalendarProps> = ({

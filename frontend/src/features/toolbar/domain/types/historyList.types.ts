@@ -25,17 +25,19 @@ export interface HistoryListToolbarState extends Record<string, any> {
 export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'historyList',
-    icons: [
-      { key: 'postcardIndicator', state: 'enabled' },
-      { key: 'sortDown', state: 'enabled' },
-    ],
+    icons: [{ key: 'sortDown', state: 'enabled' }],
     status: 'enabled',
   },
-  // {
-  //   group: 'actions',
-  //   icons: [{ key: 'listDelete', state: 'enabled' }],
-  //   status: 'enabled',
-  // },
+  {
+    group: 'indicators',
+    icons: [{ key: 'postcardIndicator', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'listDelete',
+    icons: [{ key: 'listDelete', state: 'enabled' }],
+    status: 'enabled',
+  },
 ]
 
 export const HISTORY_LIST_INDICATORS_TOOLBAR: ToolbarConfig = [

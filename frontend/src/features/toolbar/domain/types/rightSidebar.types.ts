@@ -6,6 +6,7 @@ export const RIGHT_SIDEBAR_KEYS = [
   'cart',
   // 'postcardFavorite',
   'history',
+  'listHistory',
 ] as const
 
 export type RightSidebarKey = (typeof RIGHT_SIDEBAR_KEYS)[number]
@@ -23,6 +24,7 @@ export const RIGHT_SIDEBAR_TOOLBAR: ToolbarConfig = [
       { key: 'cart', state: 'enabled' },
       // { key: 'postcardFavorite', state: 'enabled' },
       { key: 'history', state: 'enabled' },
+      // { key: 'listHistory', state: 'enabled' },
     ],
     status: 'enabled',
   },

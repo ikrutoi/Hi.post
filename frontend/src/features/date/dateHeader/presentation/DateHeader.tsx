@@ -13,8 +13,8 @@ import { IconCalendarReturn } from '@/shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 
 interface DateHeaderProps {
-  /** Active Date strip: calendar by dispatch date vs history archive. */
-  dateSection: 'date' | 'history'
+  /** Active Date strip: dispatch date, history archive, or cart list + calendar. */
+  dateSection: 'date' | 'history' | 'cart'
   currentDate: {
     year: number
     month: number
@@ -44,17 +44,27 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
   onGoToSelected: _onGoToSelected,
   flashParts,
 }) => {
-  const modeIconKey = dateSection === 'history' ? 'history' : 'date'
+  const modeIconKey =
+    dateSection === 'history'
+      ? 'history'
+      : dateSection === 'cart'
+        ? 'cart'
+        : 'date'
   const modeAriaLabel =
     dateSection === 'history'
       ? 'Calendar: history archive mode'
-      : 'Calendar: dispatch dates mode'
+      : dateSection === 'cart'
+        ? 'Calendar: cart mode'
+        : 'Calendar: dispatch dates mode'
 
   return (
     <div className={styles.header}>
       <div className={styles.headerSide}>
         <div
-          className={styles.dateSectionMode}
+          className={clsx(
+            styles.dateSectionMode,
+            dateSection === 'date' && styles.dateSectionModeDispatch,
+          )}
           aria-label={modeAriaLabel}
           data-icon-state="disabled"
         >

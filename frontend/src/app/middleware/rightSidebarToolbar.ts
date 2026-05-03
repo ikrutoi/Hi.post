@@ -35,6 +35,9 @@ export function* handleRightSidebarToolbarAction(
     const isCartActive: boolean = yield select(selectCartListPanelOpen)
     const nextOpen = !isCartActive
     yield put(setCartListPanelOpen(nextOpen))
+    if (nextOpen) {
+      yield put(setActiveSection('date'))
+    }
     yield put(
       updateToolbarIcon({
         section: 'rightSidebar',

@@ -14,12 +14,21 @@ export function shouldAdjacentSessionPlaceholderNavSwap(params: {
   activeSection: CardSection | null | undefined
   dayData: CardCalendarIndex | null | undefined
   photoPreview: PhotoPreviewLike
+  /** Cart list open on Date strip: calendar shows cart pipeline — like history for placeholder swap. */
+  cartListPanelOpen?: boolean
 }): boolean {
-  const { direction, isSelectedDate, activeSection, dayData, photoPreview } =
-    params
+  const {
+    direction,
+    isSelectedDate,
+    activeSection,
+    dayData,
+    photoPreview,
+    cartListPanelOpen = false,
+  } = params
   if (direction === 'current') return false
   if (!isSelectedDate) return false
   if (activeSection === 'history') return false
+  if (activeSection === 'date' && cartListPanelOpen) return false
   if (photoPreview?.previewUrl) return false
   if (!dayData) return false
 

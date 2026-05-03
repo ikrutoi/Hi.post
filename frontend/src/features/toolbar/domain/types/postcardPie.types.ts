@@ -11,9 +11,10 @@ export type PostcardPieHistoryKey = (typeof POSTCARD_PIE_HISTORY_KEYS)[number]
 
 export const POSTCARD_PIE_CART_TOOLBAR: ToolbarConfig = [
   {
-    group: 'main',
+    group: 'cardPieCart',
     icons: [
       { key: 'cardPieEdit', state: 'enabled' },
+      { key: 'cardPieCopy', state: 'enabled' },
       { key: 'delete', state: 'enabled' },
     ],
     status: 'enabled',
@@ -22,8 +23,11 @@ export const POSTCARD_PIE_CART_TOOLBAR: ToolbarConfig = [
 
 export const POSTCARD_PIE_HISTORY_TOOLBAR: ToolbarConfig = [
   {
-    group: 'main',
-    icons: [{ key: 'cardPieCopy', state: 'enabled' }],
+    group: 'cardPieHistory',
+    icons: [
+      { key: 'cardPieCopy', state: 'enabled' },
+      { key: 'delete', state: 'enabled' },
+    ],
     status: 'enabled',
   },
 ]

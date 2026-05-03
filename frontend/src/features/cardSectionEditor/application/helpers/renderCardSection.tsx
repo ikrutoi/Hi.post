@@ -11,9 +11,11 @@ export const renderCardSection = (
   options: {
     sectionLeft: number
     sectionRef: RefObject<HTMLDivElement | null>
+    /** Right cart list open: Date strip uses calendar Cart mode. */
+    cartListPanelOpen?: boolean
   },
 ) => {
-  const { sectionLeft, sectionRef } = options
+  const { sectionLeft, sectionRef, cartListPanelOpen = false } = options
 
   switch (section) {
     case 'cardphoto':
@@ -25,7 +27,7 @@ export const renderCardSection = (
     case 'aroma':
       return <Aroma />
     case 'date':
-      return <Date section="date" />
+      return <Date section={cartListPanelOpen ? 'cart' : 'date'} />
     case 'history':
       return <Date section="history" />
     default:

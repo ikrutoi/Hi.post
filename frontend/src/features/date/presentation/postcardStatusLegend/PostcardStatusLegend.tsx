@@ -27,7 +27,6 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
   isHistoryEmpty,
   statusCounts,
   calendarDispatchDimmed = false,
-  calendarFooterCompact = false,
 }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
@@ -59,12 +58,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
           calendarDispatchDimmed &&
           styles.rootCalendarDimmed,
       )}
-      aria-label={
-        // isHistoryMode
-        // ? 'Postcard status colors in history'
-        // : 'Postcard status colors in calendar'
-        'Postcard status colors'
-      }
+      aria-label="Postcard status colors"
     >
       <div className={styles.row} aria-hidden>
         <div

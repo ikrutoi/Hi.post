@@ -13,6 +13,7 @@ import type {
 import type { MonthDirection } from '@entities/date/domain/types'
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
+import type { CardSection } from '@shared/config/constants'
 import {
   calendarDayHasCards,
   isEmptyCalendarDay,
@@ -27,6 +28,7 @@ interface BuildMonthCellsParams {
   handleClickCell: (params: HandleCellClickParams) => void
   chooseDate?: (date: DispatchDate) => void
   cardsMap: Record<string, CardCalendarIndex>
+  cartListPanelOpen: boolean
 }
 
 export const buildMonthCells = ({
@@ -38,9 +40,16 @@ export const buildMonthCells = ({
   handleClickCell,
   chooseDate,
   cardsMap,
+  cartListPanelOpen,
 }: BuildMonthCellsParams) => {
   const { activeSection } = useSectionMenuFacade()
   const photoPreview = useAppSelector(selectCardphotoPreview)
+  const cardPreviewSection: CardSection | 'cart' | null =
+    activeSection === 'history'
+      ? 'history'
+      : activeSection === 'date' && cartListPanelOpen
+        ? 'cart'
+        : activeSection
   if (!calendarViewDate) return []
 
   const { year: currentViewYear, month: currentViewMonth } = shiftMonth(
@@ -78,6 +87,7 @@ export const buildMonthCells = ({
         activeSection,
         dayData,
         photoPreview,
+        cartListPanelOpen,
       })
 
     const isDisabled = isDisabledDate(day, cellDate, currentDate)
@@ -123,7 +133,7 @@ export const buildMonthCells = ({
         {dayData && (
           <CardPreview
             data={dayData}
-            section={activeSection}
+            section={cardPreviewSection}
             isSelectedDate={isSelectedDate}
             calendarDispatchDate={{
               year: currentViewYear,

@@ -48,6 +48,9 @@ import {
   CARDPHOTO_LIST_TOOLBAR,
   CARDPHOTO_LIST_KEYS,
   initialCardphotoListToolbarState,
+  CART_TOOLBAR,
+  initialCartToolbarState,
+  CART_KEYS,
 } from '../types'
 import {
   RECIPIENTS_VIEW_TOOLBAR,
@@ -556,5 +559,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'postcardPieHistory',
     getBadges: (state: ToolbarState['postcardPieHistory']) => ({}),
     toolbar: POSTCARD_PIE_HISTORY_TOOLBAR,
+  },
+
+  cart: {
+    keys: CART_KEYS,
+    initialState: initialCartToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'cart',
+    getBadges: (state: ToolbarState['cart']) => ({}),
+    toolbar: CART_TOOLBAR,
   },
 }

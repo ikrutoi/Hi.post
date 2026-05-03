@@ -139,22 +139,19 @@ const App = () => {
           ? historyListSelectedLocalId
           : null
 
-  /** History list rows still use cart toolbar when the postcard is still in `cart` status. */
+  /**
+   * Правый CardPie: тулбар корзины только из списка корзины.
+   * Календарь в режиме History (панель дня) и HistoryListPanel — всегда `postcardPieHistory`.
+   */
   const rightListArchiveSource = useMemo((): 'cart' | 'history' | null => {
     if (listPanelOpen && listSelectedLocalId != null) {
       return 'cart'
     }
     if (historyOpenDayPanelArchiveLocalId != null) {
-      const postcard = cartItems.find(
-        (p) => p.localId === historyOpenDayPanelArchiveLocalId,
-      )
-      return postcard?.status === 'cart' ? 'cart' : 'history'
+      return 'history'
     }
     if (historyListPanelOpen && historyListSelectedLocalId != null) {
-      const postcard = cartItems.find(
-        (p) => p.localId === historyListSelectedLocalId,
-      )
-      return postcard?.status === 'cart' ? 'cart' : 'history'
+      return 'history'
     }
     return null
   }, [
@@ -163,7 +160,6 @@ const App = () => {
     historyOpenDayPanelArchiveLocalId,
     historyListPanelOpen,
     historyListSelectedLocalId,
-    cartItems,
   ])
 
   const rightListArchiveBundle = useAppSelector((state) =>

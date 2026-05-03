@@ -37,6 +37,11 @@
   }
 }
 
+.dateSectionModeDispatch {
+  border-color: $color-date-input-border;
+  background-color: $color-date-input;
+}
+
 .headerSide:last-child {
   display: flex;
   justify-content: flex-end;

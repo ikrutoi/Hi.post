@@ -18,6 +18,9 @@ function dispatchDateKey(d: DispatchDate): string {
   return `${d.year}-${d.month}-${d.day}`
 }
 
+/** `cart` = Date strip while right cart list is open (calendar shows cart on days). */
+export type CardPreviewCalendarSection = CardSection | 'cart'
+
 interface CardPreviewProps {
   data: {
     processed: CalendarCardItem | null
@@ -27,7 +30,7 @@ interface CardPreviewProps {
     delivered: CalendarCardItem[]
     error: CalendarCardItem[]
   }
-  section: CardSection | null
+  section: CardPreviewCalendarSection | null
   isSelectedDate: boolean
   /** День ячейки календаря — для бейджа числа веток с учётом excludeDispatchBranch. */
   calendarDispatchDate?: DispatchDate
@@ -53,12 +56,13 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const { processed, cart, ready, sent, delivered, error } = data
 
   const isHistory = section === 'history'
+  const isHistoryLike = isHistory || section === 'cart'
   const pipelineCards = [...cart, ...ready, ...sent, ...delivered, ...error]
   const pipelineCount = pipelineCards.length
   /** Для бейджа «×N» в секции «Дата» не считаем корзину — только отправка по конвейеру + processed. */
   const nonCartPipeline = [...ready, ...sent, ...delivered, ...error]
   const totalOnDayForBadge =
-    isHistory
+    isHistoryLike
       ? pipelineCount + (processed ? 1 : 0)
       : nonCartPipeline.length + (processed ? 1 : 0)
   const firstPipelineWithPreview =
@@ -67,13 +71,13 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
 
   /** Выбранный день: показываем слот `processed` (редактор / current_session), а не превью посткарда из pipeline. */
   const workingSlotForSelectedDay =
-    !isHistory && isSelectedDate && processed ? processed : null
+    !isHistoryLike && isSelectedDate && processed ? processed : null
 
   /** Нет картинки в cardphoto: в ячейке выбранного дня — плейсхолдер cardphoto, а не превью из корзины. */
   const noSessionCardphotoImage = !photoPreview?.previewUrl
 
   const primaryItem: CalendarCardItem | null =
-    !isHistory && isSelectedDate && noSessionCardphotoImage
+    !isHistoryLike && isSelectedDate && noSessionCardphotoImage
       ? workingSlotForSelectedDay ?? null
       : workingSlotForSelectedDay ??
         firstPipelineWithPreview ??
@@ -85,7 +89,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
 
   const effectiveRecipientCount = useMemo(() => {
     if (
-      isHistory ||
+      isHistoryLike ||
       !recipientEnabled ||
       !isSelectedDate ||
       !calendarDispatchDate
@@ -99,7 +103,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     if (active > 0) return active
     return pendingRecipientCount > 0 ? pendingRecipientCount : 0
   }, [
-    isHistory,
+    isHistoryLike,
     recipientEnabled,
     isSelectedDate,
     calendarDispatchDate,
@@ -109,19 +113,22 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   ])
 
   const countForRecipientBadge =
-    isSelectedDate && !isHistory && recipientEnabled && calendarDispatchDate
+    isSelectedDate &&
+    !isHistoryLike &&
+    recipientEnabled &&
+    calendarDispatchDate
       ? effectiveRecipientCount
       : pendingRecipientCount
 
   const recipientFactor =
-    !isHistory &&
+    !isHistoryLike &&
     recipientEnabled &&
     countForRecipientBadge > 1
       ? countForRecipientBadge
       : 1
 
   const useActiveBranchesOnlyForBadge =
-    !isHistory &&
+    !isHistoryLike &&
     isSelectedDate &&
     Boolean(calendarDispatchDate) &&
     recipientEnabled &&
@@ -135,10 +142,10 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const badgeCount = badgeNumeric > 1 ? badgeNumeric : 0
   /** В режиме Дата счётчик только для выбранного дня; для приглушённого превью из pipeline не показываем. */
   const showExtraCountBadge =
-    badgeCount > 0 && (isHistory || isSelectedDate)
+    badgeCount > 0 && (isHistoryLike || isSelectedDate)
 
   const showEmptySessionPlaceholder =
-    !isHistory &&
+    !isHistoryLike &&
     isSelectedDate &&
     !primaryItem &&
     !photoPreview?.previewUrl
@@ -153,10 +160,10 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             status={primaryItem.status}
             isProcessed={primaryItem.isProcessed}
             cardId={primaryItem.cardId}
-            isHistory={isHistory}
+            isHistory={isHistoryLike}
             isSelectedDate={isSelectedDate}
             isAdjacentMonthEdge={isAdjacentMonthEdge}
-            hasCartPostcardsOnDay={!isHistory && cart.length > 0}
+            hasCartPostcardsOnDay={!isHistoryLike && cart.length > 0}
           />
           {showExtraCountBadge ? (
             <span className={styles.extraCount} aria-hidden>
