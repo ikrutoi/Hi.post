@@ -108,8 +108,20 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
           value: 'enabled',
         }),
       )
-      /** Выключение истории в футере календаря — в режим «Корзина», не в «Дата». */
-      dispatch(setActiveSection('cart'))
+      /**
+       * Выключение истории — календарь в режиме корзины: открыть список корзины и секцию «Дата»
+       * (`renderCardSection`: `date` + `cartListPanelOpen` → `<Date section="cart" />`).
+       * `setActiveSection('cart')` нельзя: такого кейса в `renderCardSection` нет — рендерится `null`.
+       */
+      dispatch(setCartListPanelOpen(true))
+      dispatch(
+        updateToolbarIcon({
+          section: 'rightSidebar',
+          key: 'cart',
+          value: 'active',
+        }),
+      )
+      dispatch(setActiveSection('date'))
     },
     [dispatch],
   )
