@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import clsx from 'clsx'
 import listOfMonthOfYear from '@data/date/monthOfYear.json'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
@@ -78,14 +78,6 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
 
   const { lastViewedCalendarDate } = useCalendarFacade()
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
-  /** Футер: переход Корзина → История тумблером; при выключении истории вернуться в корзину, а не в «Дата» без панели. */
-  const returnToCartAfterHistoryToggleRef = useRef(false)
-
-  useEffect(() => {
-    if (section === 'date' && !cartListPanelOpen) {
-      returnToCartAfterHistoryToggleRef.current = false
-    }
-  }, [section, cartListPanelOpen])
 
   /** Режим корзины на календаре подразумевает открытый CartListPanel; не дублируем `setCartListPanelOpen(true)`, если уже открыто (сброс выбора в slice). */
   useEffect(() => {
@@ -103,7 +95,6 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const handleCalendarModeToggle = useCallback(
     (historyOn: boolean) => {
       if (historyOn) {
-        returnToCartAfterHistoryToggleRef.current = section === 'cart'
         dispatch(setActiveSection('history'))
         return
       }
@@ -117,22 +108,10 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
           value: 'enabled',
         }),
       )
-
-      const backToCart = returnToCartAfterHistoryToggleRef.current
-      returnToCartAfterHistoryToggleRef.current = false
-      if (backToCart) {
-        dispatch(setCartListPanelOpen(true))
-        dispatch(
-          updateToolbarIcon({
-            section: 'rightSidebar',
-            key: 'cart',
-            value: 'active',
-          }),
-        )
-      }
-      dispatch(setActiveSection('date'))
+      /** Выключение истории в футере календаря — в режим «Корзина», не в «Дата». */
+      dispatch(setActiveSection('cart'))
     },
-    [dispatch, section],
+    [dispatch],
   )
 
   useInitializeCalendarViewDate()

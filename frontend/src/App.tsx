@@ -85,6 +85,11 @@ const App = () => {
   const { listPanelOpen, listSelectedLocalId, setCartListSelectedLocalId } =
     useCartFacade()
   const prevCartListPanelOpen = useRef(listPanelOpen)
+  /** Чтобы при смене строки в том же списке (корзина / история) не сбрасывался peek упрощённой секции. */
+  const prevListArchiveListContextRef = useRef<{
+    localId: string | null
+    source: 'cart' | 'history' | null
+  }>({ localId: null, source: null })
 
   /**
    * Смена секции: уход с «История» — закрыть список истории и панель дня (как при переключении календаря в Дата).
@@ -279,12 +284,30 @@ const App = () => {
   }, [activePieSide])
 
   useEffect(() => {
+    const localId = rightListArchiveLocalId
+    const source = rightListArchiveSource
+    const prev = prevListArchiveListContextRef.current
+
+    const onlySelectedRowChangedInSameList =
+      prev.source != null &&
+      source != null &&
+      prev.source === source &&
+      localId != null &&
+      prev.localId != null &&
+      prev.localId !== localId
+
+    prevListArchiveListContextRef.current = { localId, source }
+
+    if (onlySelectedRowChangedInSameList) {
+      return
+    }
+
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
-  }, [rightListArchiveLocalId])
+  }, [rightListArchiveLocalId, rightListArchiveSource])
 
   const centerStripMirrorValue = useMemo(
     () => ({

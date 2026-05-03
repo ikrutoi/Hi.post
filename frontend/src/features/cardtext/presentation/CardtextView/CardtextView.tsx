@@ -76,7 +76,8 @@ export const CardtextView: React.FC<Props> = ({
         </button>
       ) : null}
       <div className={styles.viewBody}>
-        <Slate editor={editor} initialValue={initialValue}>
+        {/** `initialValue` только при mount — без key Slate не подхватывает смену строки/данных при том же editor memo. */}
+        <Slate key={slateKey} editor={editor} initialValue={initialValue}>
           <Editable
             readOnly
             renderLeaf={renderLeaf}

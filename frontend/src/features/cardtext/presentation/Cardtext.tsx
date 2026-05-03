@@ -347,6 +347,7 @@ export const Cardtext: React.FC<CardtextProps> = (props) => {
   if (rightPieCardtextPeekNoToolbar && listRowInner != null) {
     return (
       <CardtextListRowPeekPreview
+        key={listRowLocalId != null ? `peek-row-${listRowLocalId}` : 'peek-row'}
         inner={listRowInner}
         rowLocalId={listRowLocalId}
       />
