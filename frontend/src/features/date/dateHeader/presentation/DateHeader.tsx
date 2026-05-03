@@ -64,6 +64,7 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
           className={clsx(
             styles.dateSectionMode,
             dateSection === 'date' && styles.dateSectionModeDispatch,
+            dateSection === 'cart' && styles.dateSectionModeCart,
           )}
           aria-label={modeAriaLabel}
           data-icon-state="disabled"

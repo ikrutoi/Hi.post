@@ -42,6 +42,11 @@
   background-color: $color-date-input;
 }
 
+.dateSectionModeCart {
+  border-color: $color-cart-list-border;
+  background-color: $color-cart-list-surface;
+}
+
 .headerSide:last-child {
   display: flex;
   justify-content: flex-end;

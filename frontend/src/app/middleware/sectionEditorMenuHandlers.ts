@@ -40,6 +40,39 @@ export function* syncSectionMenuVisuals(activeKey: SectionEditorMenuKey) {
   yield put(updateToolbarSection({ section, value: newState }))
 }
 
+/** Все пункты меню секций без активной иконки (например, открыта корзина справа поверх «Дата»). */
+export function* syncSectionMenuVisualsAllEnabled() {
+  const section = 'sectionEditorMenu'
+
+  const currentState: SectionEditorMenuToolbarState = yield select(
+    selectToolbarSectionState(section),
+  )
+
+  const updatedFlatKeys = Object.fromEntries(
+    Object.keys(currentState)
+      .filter((k) => k !== 'config')
+      .map((iconKey) => [iconKey, 'enabled']),
+  )
+
+  const updatedConfig = currentState.config.map((group) => ({
+    ...group,
+    icons: group.icons.map((icon) => ({
+      ...icon,
+      state: 'enabled' as const,
+    })),
+  }))
+
+  yield put(
+    updateToolbarSection({
+      section,
+      value: {
+        ...updatedFlatKeys,
+        config: updatedConfig,
+      },
+    }),
+  )
+}
+
 /** Подсветка иконки history в правом сайдбаре при активной секции «История». */
 export function* syncRightSidebarHistoryHighlight(
   activeSection: SectionEditorMenuKey,

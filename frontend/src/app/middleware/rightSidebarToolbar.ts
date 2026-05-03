@@ -1,10 +1,15 @@
-import { takeEvery, put, select } from 'redux-saga/effects'
+import { takeEvery, put, select, call } from 'redux-saga/effects'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import {
+  syncSectionMenuVisuals,
+  syncSectionMenuVisualsAllEnabled,
+} from './sectionEditorMenuHandlers'
 import {
   RIGHT_SIDEBAR_KEYS,
   type RightSidebarKey,
@@ -37,6 +42,13 @@ export function* handleRightSidebarToolbarAction(
     yield put(setCartListPanelOpen(nextOpen))
     if (nextOpen) {
       yield put(setActiveSection('date'))
+      /** `setActiveSection('date')` без смены Redux-секции не триггерит сагу — всё равно снимаем active с иконки «Дата» в меню. */
+      yield call(syncSectionMenuVisualsAllEnabled)
+    } else {
+      const activeSection = yield select(selectActiveSection)
+      if (activeSection != null) {
+        yield call(syncSectionMenuVisuals, activeSection)
+      }
     }
     yield put(
       updateToolbarIcon({
