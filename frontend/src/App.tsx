@@ -70,6 +70,7 @@ const App = () => {
     useState(false)
   const [rightPieDatePeekNoToolbar, setRightPieDatePeekNoToolbar] =
     useState(false)
+  const [cardPieStripFullSpan, setCardPieStripFullSpan] = useState(false)
 
   useAuthInit()
   useLayoutInit()
@@ -356,6 +357,17 @@ const App = () => {
 
   const mergeLeft = false
   const mergeRight = false
+
+  const showTopCardStripFullSpan =
+    cardPieStripFullSpan &&
+    sectionSize != null &&
+    rightListArchiveLocalId != null
+
+  useEffect(() => {
+    if (rightListArchiveLocalId == null) {
+      setCardPieStripFullSpan(false)
+    }
+  }, [rightListArchiveLocalId])
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
       const lid = item.postcard?.localId
@@ -366,8 +378,13 @@ const App = () => {
   )
 
   const handlePostcardPieCartToolbarAction = useCallback((key: string) => {
-    if (key !== 'cardPieEdit') return
-    setActivePieSide((prev) => (prev === 'left' ? 'right' : 'left'))
+    if (key === 'cardPieEdit') {
+      setActivePieSide((prev) => (prev === 'left' ? 'right' : 'left'))
+      return
+    }
+    if (key === 'cardPieCopy') {
+      setCardPieStripFullSpan((prev) => !prev)
+    }
   }, [])
   const handleEditorPieToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
@@ -397,6 +414,9 @@ const App = () => {
                 : undefined
             }
           >
+            {showTopCardStripFullSpan && (
+              <div className={styles.appMainTopRowBackdrop} aria-hidden />
+            )}
             <EditorPieListCardPieBadgeSync />
             <DateToolbarListDateBadgeSync />
             {/* <div className={styles.appMainContentLeft}> */}
@@ -589,7 +609,10 @@ const App = () => {
                               stateOverride={
                                 postcardPieCartToolbarStateOverride
                               }
-                              mergedWithCenter={activePieSide === 'right'}
+                              mergedWithCenter={
+                                activePieSide === 'right' ||
+                                showTopCardStripFullSpan
+                              }
                             />
                           </div>
                         )}
@@ -639,7 +662,10 @@ const App = () => {
                                   stateOverride={
                                     postcardPieCartToolbarStateOverride
                                   }
-                                  mergedWithCenter={activePieSide === 'right'}
+                                  mergedWithCenter={
+                                    activePieSide === 'right' ||
+                                    showTopCardStripFullSpan
+                                  }
                                 />
                               </div>
                             )}

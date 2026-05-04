@@ -138,8 +138,11 @@ export const useCalendarCellController = ({
         : Boolean(selectedDate && sameDispatchDate(selectedDate, dispatchDate))
 
       const isHistorySection = activeSection === 'history'
+      /** В режиме корзины (`cartListPanelOpen`) календарь только для навигации по дням — не трогаем dispatch-дату редактора / CardPie / список CardPiePanel. */
+      const applyDispatchDateSelection =
+        !isHistorySection && !cartListPanelOpen
 
-      if (!isHistorySection) {
+      if (applyDispatchDateSelection) {
         chooseDate(dispatchDate)
         maybeOpenCardPieListAfterDatePick(clickRemovesSelection)
       }
@@ -181,8 +184,10 @@ export const useCalendarCellController = ({
             )
 
         const isHistorySection = activeSection === 'history'
+        const applyDispatchDateSelection =
+          !isHistorySection && !cartListPanelOpen
 
-        if (!isHistorySection) {
+        if (applyDispatchDateSelection) {
           chooseDate(dispatchDate)
           maybeOpenCardPieListAfterDatePick(clickRemovesSelection)
         }

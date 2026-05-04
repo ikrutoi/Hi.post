@@ -1,7 +1,11 @@
 import { flattenIcons } from '../helpers'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
-export const POSTCARD_PIE_CART_KEYS = ['cardPieEdit', 'delete'] as const
+export const POSTCARD_PIE_CART_KEYS = [
+  'cardPieEdit',
+  'cardPieCopy',
+  'delete',
+] as const
 
 export type PostcardPieCartKey = (typeof POSTCARD_PIE_CART_KEYS)[number]
 

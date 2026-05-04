@@ -67,7 +67,6 @@ $tab-height: 1.05rem;
   transition: height 0.18s ease;
 }
 
-/** Режим Date / Cart / History — активная закладка выше на 50% (рост снизу, см. `.list`). */
 .tabActive {
   height: calc(#{$tab-height} * 1.5);
 }
@@ -105,10 +104,8 @@ $tab-height: 1.05rem;
     inset 0 1px 0 rgba(255, 255, 255, 0.32);
 }
 
-/** Колонка «закладки + контент» для peek и для полного календаря (см. Date.formWithNotebookTabs). */
 .notebookPeekShell {
   position: relative;
-  /** Как у `.date`: иначе `.track` с `z-index: -1` уходит за фон `.appMain` и закладки не видны. */
   z-index: 1;
   display: flex;
   flex-direction: column;
