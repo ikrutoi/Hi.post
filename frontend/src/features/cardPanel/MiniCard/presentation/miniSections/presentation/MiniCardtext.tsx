@@ -11,7 +11,7 @@ import clsx from 'clsx'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { useSizeFacade } from '@layout/application/facades'
-import { CARDTEXT_APPLIED_DISPLAY_STATUSES } from '@cardtext/domain/editor/editor.types'
+import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
 
 export const MiniCardtext: React.FC = () => {
   const { centerStripListMirrorEnabled, mirrorInner } = useRightListArchiveMini()
@@ -28,12 +28,7 @@ export const MiniCardtext: React.FC = () => {
   const ct = mirrorInner?.cardtext
 
   const shouldShowMiniText = usingMirror
-    ? Boolean(
-        ct &&
-          ct.status != null &&
-          CARDTEXT_APPLIED_DISPLAY_STATUSES.has(ct.status) &&
-          (ct.plainText?.trim?.() ?? '').length > 0,
-      )
+    ? Boolean(ct && cardtextHasRenderableContent(ct))
     : mini.shouldShowMiniText
 
   const value =

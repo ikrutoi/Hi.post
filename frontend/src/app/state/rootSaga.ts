@@ -17,6 +17,7 @@ import {
   rightSidebarToolbarSaga,
   watchHistoryToolbar,
   watchExclusiveListPanels,
+  watchApplyArchiveSection,
 } from '../middleware'
 
 export function* rootSaga() {
@@ -44,5 +45,6 @@ export function* rootSaga() {
     fork(watchDateToolbar),
     fork(watchHistoryToolbar),
     fork(watchExclusiveListPanels),
+    fork(watchApplyArchiveSection),
   ])
 }

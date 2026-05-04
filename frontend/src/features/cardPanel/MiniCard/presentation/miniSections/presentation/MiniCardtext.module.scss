@@ -28,8 +28,8 @@
   top: 0;
   right: 0;
   transform: translate(50%, -50%);
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 1.52rem;
+  height: 1.52rem;
   border: 1px solid $color-cardtext-input-border;
   border-radius: 50%;
   display: flex;
@@ -39,9 +39,15 @@
   color: $color-cardtext-input-border;
   cursor: pointer;
   z-index: 3;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.15s ease;
 
   svg {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.82rem;
+    height: 0.82rem;
+  }
+
+  &:hover {
+    background-color: $color-app-sidebar-icon-hover;
   }
 }

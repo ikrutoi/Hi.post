@@ -311,19 +311,27 @@ const App = () => {
     setRightPieDatePeekNoToolbar(false)
   }, [rightListArchiveLocalId, rightListArchiveSource])
 
-  const centerStripMirrorValue = useMemo(
-    () => ({
-      centerStripListMirrorEnabled: activePieSide === 'right',
-      mirrorInner:
-        activePieSide === 'right'
-          ? (rightListArchiveBundle?.currentData?.data ?? null)
-          : null,
-      mirrorSectionFlags:
-        activePieSide === 'right'
-          ? (rightListArchiveBundle?.sections ?? null)
-          : null,
-      mirrorTargetLocalId:
-        activePieSide === 'right' ? rightListArchiveLocalId : null,
+  const showTopCardStripFullSpan =
+    cardPieStripFullSpan &&
+    sectionSize != null &&
+    rightListArchiveLocalId != null
+
+  const centerStripMirrorValue = useMemo(() => {
+    /** Центральная полоса мини-секций показывает данные строки правого списка: активный правый пирог или режим cardPieCopy (общая подложка верхнего ряда). */
+    const stripMirrorsRightListPostcard =
+      activePieSide === 'right' || showTopCardStripFullSpan
+
+    return {
+      centerStripListMirrorEnabled: stripMirrorsRightListPostcard,
+      mirrorInner: stripMirrorsRightListPostcard
+        ? (rightListArchiveBundle?.currentData?.data ?? null)
+        : null,
+      mirrorSectionFlags: stripMirrorsRightListPostcard
+        ? (rightListArchiveBundle?.sections ?? null)
+        : null,
+      mirrorTargetLocalId: stripMirrorsRightListPostcard
+        ? rightListArchiveLocalId
+        : null,
       listRowInner,
       listRowLocalId: rightListArchiveLocalId,
       rightPieCardphotoPeekNoToolbar,
@@ -336,9 +344,10 @@ const App = () => {
       clearRightPieAromaPeek,
       rightPieDatePeekNoToolbar,
       clearRightPieDatePeek,
-    }),
-    [
+    }
+  }, [
       activePieSide,
+      showTopCardStripFullSpan,
       rightListArchiveBundle,
       rightListArchiveLocalId,
       listRowInner,
@@ -352,16 +361,10 @@ const App = () => {
       clearRightPieAromaPeek,
       rightPieDatePeekNoToolbar,
       clearRightPieDatePeek,
-    ],
-  )
+    ])
 
   const mergeLeft = false
   const mergeRight = false
-
-  const showTopCardStripFullSpan =
-    cardPieStripFullSpan &&
-    sectionSize != null &&
-    rightListArchiveLocalId != null
 
   useEffect(() => {
     if (rightListArchiveLocalId == null) {
@@ -389,9 +392,16 @@ const App = () => {
   const handleEditorPieToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
   }, [])
-  const postcardPieCartToolbarStateOverride = {
-    cardPieEdit: 'enabled' as const,
-  }
+  const postcardPieCartToolbarStateOverride = useMemo(
+    () =>
+      ({
+        cardPieEdit: 'enabled' as const,
+        ...(showTopCardStripFullSpan
+          ? { cardPieCopy: 'active' as const }
+          : {}),
+      }) satisfies Record<string, string>,
+    [showTopCardStripFullSpan],
+  )
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
@@ -466,7 +476,11 @@ const App = () => {
                     </div>
                   </div>
                   <div className={styles.mergedTopChromeMini}>
-                    <MiniSectionsSlot ref={cardPanelRef} embedded />
+                    <MiniSectionsSlot
+                      ref={cardPanelRef}
+                      embedded
+                      cardPieCopyStripActive={showTopCardStripFullSpan}
+                    />
                   </div>
                 </div>
               ) : (
@@ -537,6 +551,7 @@ const App = () => {
                     <MiniSectionsSlot
                       ref={cardPanelRef}
                       rightModeActive={activePieSide === 'right'}
+                      cardPieCopyStripActive={showTopCardStripFullSpan}
                     />
                     <div
                       className={clsx(
@@ -583,7 +598,11 @@ const App = () => {
                   )}
                 >
                   <div className={styles.mergedTopChromeMini}>
-                    <MiniSectionsSlot ref={cardPanelRef} embedded />
+                    <MiniSectionsSlot
+                      ref={cardPanelRef}
+                      embedded
+                      cardPieCopyStripActive={showTopCardStripFullSpan}
+                    />
                   </div>
                   {sectionSize != null && rightListArchiveLocalId != null && (
                     <div className={styles.mergedTopChromePieRegion}>

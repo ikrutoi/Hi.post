@@ -6,7 +6,7 @@ import type {
 
 /** Drives center-strip minis to mirror the right CardPie list row (cart/history). */
 export type RightListArchiveMiniContextValue = {
-  /** True only in right pie side mode while the center strip is wrapped in the provider. */
+  /** Center strip shows right-list postcard minis: active right pie or cardPieCopy top-row mode. */
   centerStripListMirrorEnabled: boolean
   mirrorInner: CardPieInnerData | null
   mirrorSectionFlags: CardPieSectionFlags | null

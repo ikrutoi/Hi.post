@@ -97,6 +97,22 @@ export interface CardtextContent {
   timestamp: number
 }
 
+/** Для превью / зеркала списка: есть текст в plainText или в узлах value (в т.ч. draft без applied). */
+export function cardtextHasRenderableContent(
+  ct: CardtextContent | null | undefined,
+): boolean {
+  if (ct == null) return false
+  if ((ct.plainText?.trim?.() ?? '').length > 0) return true
+  for (const block of ct.value ?? []) {
+    for (const child of block.children ?? []) {
+      if (String((child as CardtextTextNode).text ?? '').trim().length > 0) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 export function createInitialCardtextContent(): CardtextContent {
   return {
     id: null,

@@ -21,6 +21,10 @@ interface MiniCardProps {
   position: number
   isPacked: boolean
   isEmpty?: boolean
+  /** When true, do not render the section clear (×) control. */
+  hideClearButton?: boolean
+  /** Кнопка в том же углу, что и × (напр. apply при cardPieCopy) — рендерится внутри `.miniCard`. */
+  mirrorApplyCorner?: React.ReactNode
 }
 
 export const MiniCard: React.FC<MiniCardProps> = ({
@@ -30,6 +34,8 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   position,
   isPacked,
   isEmpty = false,
+  hideClearButton = false,
+  mirrorApplyCorner = null,
 }) => {
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
@@ -50,6 +56,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const { render } = useMiniCardRender()
 
   const showClearButton =
+    !hideClearButton &&
     !centerStripListMirrorEnabled &&
     !!editorState
       ? section === 'envelope'
@@ -105,10 +112,12 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         section,
       })}
 
+      {mirrorApplyCorner}
+
       {showClearButton && (
         <button
           type="button"
-          className={styles.miniClearButton}
+          className={styles.miniCardCornerButton}
           aria-label={`Clear ${section}`}
           onClick={(e) => {
             e.stopPropagation()

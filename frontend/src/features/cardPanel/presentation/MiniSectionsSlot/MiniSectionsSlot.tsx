@@ -1,17 +1,25 @@
 import clsx from 'clsx'
 import React, { forwardRef } from 'react'
-import { useAppSelector } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import { useCardPanelFacade } from '../../application/facades'
 import { CARD_PANEL_SECTIONS_PRIORITY } from '../../domain/types'
 import type { CardPanelSection } from '../../domain/types'
 import { MiniCard } from '../../MiniCard/presentation/MiniCard'
+import miniCardStyles from '../../MiniCard/presentation/MiniCard.module.scss'
 import styles from './MiniSectionsSlot.module.scss'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
+import { getToolbarIcon } from '@shared/utils/icons'
+import type {
+  CardPieInnerData,
+  CardPieSectionFlags,
+} from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 
 const PARTS_TOTAL = 6
 const GAP_PARTS = 1
@@ -28,10 +36,34 @@ export type MiniSectionsSlotProps = {
   /** When true, outer chrome is omitted — parent supplies one frame (e.g. merged with CardPie). */
   embedded?: boolean
   rightModeActive?: boolean
+  /**
+   * Режим верхней полосы cardPieCopy: скрыть × на мини-секциях и показать круглые «применить».
+   */
+  cardPieCopyStripActive?: boolean
+}
+
+function canApplyMirrorSection(
+  section: CardPanelSection,
+  mirrorInner: CardPieInnerData | null,
+  mirrorSectionFlags: CardPieSectionFlags | null,
+): boolean {
+  if (!mirrorInner || !mirrorSectionFlags) return false
+  if (section === 'cardtext') {
+    return cardtextHasRenderableContent(mirrorInner.cardtext)
+  }
+  return Boolean(mirrorSectionFlags[section])
 }
 
 export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps>(
-  function MiniSectionsSlot({ embedded = false, rightModeActive = false }, ref) {
+  function MiniSectionsSlot(
+    {
+      embedded = false,
+      rightModeActive = false,
+      cardPieCopyStripActive = false,
+    },
+    ref,
+  ) {
+    const dispatch = useAppDispatch()
     const { sizeCard } = useSizeFacade()
     const { editorState } = useCardEditorFacade()
     const { state: stateCardPanel } = useCardPanelFacade()
@@ -42,7 +74,14 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
     const {
       centerStripListMirrorEnabled,
       mirrorSectionFlags,
+      mirrorInner,
+      mirrorTargetLocalId,
     } = useRightListArchiveMini()
+
+    const showMirrorApplyButtons =
+      cardPieCopyStripActive &&
+      mirrorTargetLocalId != null &&
+      centerStripListMirrorEnabled
 
     const totalWidth =
       sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width : null
@@ -59,10 +98,9 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
           }
         : null
 
+    /** Данные строки правого списка в мини-секциях: достаточно флага контекста (правый пирог или cardPieCopy ряд). */
     const mirrorMinisFromRightPie =
-      rightModeActive &&
-      centerStripListMirrorEnabled &&
-      mirrorSectionFlags != null
+      centerStripListMirrorEnabled && mirrorSectionFlags != null
 
     return (
       <div
@@ -95,10 +133,10 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
                     ? editorState.cardtext?.isComplete
                     : editorState[section]?.isComplete
               const isEmpty = mirrorMinisFromRightPie
-                ? !Boolean(mirrorSectionFlags[section])
-                : rightModeActive &&
-                    centerStripListMirrorEnabled &&
-                    mirrorSectionFlags == null
+                ? section === 'cardtext'
+                  ? !cardtextHasRenderableContent(mirrorInner?.cardtext)
+                  : !Boolean(mirrorSectionFlags?.[section])
+                : centerStripListMirrorEnabled && mirrorSectionFlags == null
                   ? true
                   : section === 'date'
                     ? mergedDispatchDates.length === 0
@@ -121,6 +159,36 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
                     position={0}
                     isPacked={true}
                     isEmpty={isEmpty}
+                    hideClearButton={cardPieCopyStripActive}
+                    mirrorApplyCorner={
+                      showMirrorApplyButtons ? (
+                        <button
+                          type="button"
+                          className={miniCardStyles.miniCardCornerButton}
+                          disabled={
+                            !canApplyMirrorSection(
+                              section,
+                              mirrorInner,
+                              mirrorSectionFlags,
+                            )
+                          }
+                          aria-label={`Перенести «${section}» из выбранной открытки`}
+                          onMouseDown={(e) => e.stopPropagation()}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (mirrorTargetLocalId == null) return
+                            dispatch(
+                              applyArchiveSectionToEditorRequested({
+                                section,
+                                sourceLocalId: mirrorTargetLocalId,
+                              }),
+                            )
+                          }}
+                        >
+                          {getToolbarIcon({ key: 'applyLight' })}
+                        </button>
+                      ) : null
+                    }
                   />
                 </div>
               )
