@@ -97,6 +97,15 @@ export interface CardtextContent {
   timestamp: number
 }
 
+/** Рекурсивно: в сохранённых/серверных value иногда вложенные element-узлы, а не только `CardtextTextNode` в `children` блока. */
+function slateSubtreeHasNonEmptyText(node: unknown): boolean {
+  if (node == null || typeof node !== 'object') return false
+  const n = node as { text?: unknown; children?: unknown }
+  if (typeof n.text === 'string' && n.text.trim().length > 0) return true
+  if (!Array.isArray(n.children)) return false
+  return n.children.some(slateSubtreeHasNonEmptyText)
+}
+
 /** Для превью / зеркала списка: есть текст в plainText или в узлах value (в т.ч. draft без applied). */
 export function cardtextHasRenderableContent(
   ct: CardtextContent | null | undefined,
@@ -104,11 +113,7 @@ export function cardtextHasRenderableContent(
   if (ct == null) return false
   if ((ct.plainText?.trim?.() ?? '').length > 0) return true
   for (const block of ct.value ?? []) {
-    for (const child of block.children ?? []) {
-      if (String((child as CardtextTextNode).text ?? '').trim().length > 0) {
-        return true
-      }
-    }
+    if (slateSubtreeHasNonEmptyText(block)) return true
   }
   return false
 }

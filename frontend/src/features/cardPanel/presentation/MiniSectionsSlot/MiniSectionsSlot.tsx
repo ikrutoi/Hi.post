@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import React, { forwardRef } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useRemSize } from '@shared/helpers'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import { useCardPanelFacade } from '../../application/facades'
@@ -64,6 +65,7 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
     ref,
   ) {
     const dispatch = useAppDispatch()
+    const remSize = useRemSize()
     const { sizeCard } = useSizeFacade()
     const { editorState } = useCardEditorFacade()
     const { state: stateCardPanel } = useCardPanelFacade()
@@ -83,8 +85,14 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
       mirrorTargetLocalId != null &&
       centerStripListMirrorEnabled
 
-    const totalWidth =
+    const measuredCardWidth =
       sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width : null
+    /** Пока `sizeCard` ещё 0 до ResizeObserver, даём ширину полосы мини-секций (иначе при первом cardPieCopy ряд не монтируется). */
+    const totalWidth =
+      measuredCardWidth ??
+      (cardPieCopyStripActive && centerStripListMirrorEnabled
+        ? Math.round(remSize * 22)
+        : null)
     const sectionSize = totalWidth != null ? totalWidth / PARTS_TOTAL : null
     const gapSize =
       totalWidth != null ? (totalWidth * GAP_PARTS) / PARTS_TOTAL / 6 : null

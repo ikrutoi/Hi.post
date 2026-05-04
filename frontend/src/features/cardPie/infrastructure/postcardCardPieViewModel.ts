@@ -4,9 +4,11 @@ import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import type { AddressFields } from '@shared/config/constants'
 import {
   CARDTEXT_APPLIED_DISPLAY_STATUSES,
+  cardtextHasRenderableContent,
   createInitialCardtextContent,
   type CardtextContent,
 } from '@cardtext/domain/editor/editor.types'
+import { isCardtextDraftContentEmpty } from '@cardtext/domain/helpers/isCardtextDraftContentEmpty'
 import type { DispatchDate } from '@entities/date'
 import type { AromaItem } from '@entities/aroma/domain/types'
 import type { RecipientState } from '@envelope/recipient/domain/types'
@@ -50,17 +52,32 @@ function isFilledDispatchDate(d: DispatchDate | null | undefined): boolean {
 }
 
 function cardtextContentForPie(card: Card): CardtextContent {
-  const branch =
-    card.cardtext.appliedData ??
-    card.cardtext.assetData ??
+  const s = card.cardtext
+  const draftBranch =
+    s.draftData != null && !isCardtextDraftContentEmpty(s.draftData)
+      ? s.draftData
+      : null
+  const presetBranch =
+    s.presetData != null && !isCardtextDraftContentEmpty(s.presetData)
+      ? s.presetData
+      : null
+  /** Сначала ветка с реальным текстом (в т.ч. вложенный Slate), иначе прежний приоритет applied → asset → draft → preset. */
+  const picked =
+    [s.appliedData, s.assetData, draftBranch, presetBranch].find(
+      (b): b is CardtextContent => b != null && cardtextHasRenderableContent(b),
+    ) ??
+    s.appliedData ??
+    s.assetData ??
+    draftBranch ??
+    presetBranch ??
     createInitialCardtextContent()
   return {
-    ...branch,
-    value: branch.value.map((b) => ({
+    ...picked,
+    value: picked.value.map((b) => ({
       ...b,
       children: b.children.map((c) => ({ ...c })),
     })),
-    style: { ...branch.style },
+    style: { ...picked.style },
   }
 }
 

@@ -335,13 +335,14 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
 
 export const Cardtext: React.FC<CardtextProps> = (props) => {
   const {
+    activePieSide,
     centerStripListMirrorEnabled,
     rightPieCardtextPeekNoToolbar,
     listRowInner,
     listRowLocalId,
   } = useRightListArchiveMini()
 
-  if (centerStripListMirrorEnabled) {
+  if (centerStripListMirrorEnabled && activePieSide === 'right') {
     return <CardtextRightListMirror />
   }
 

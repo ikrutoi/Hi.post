@@ -11,6 +11,7 @@ const initialState: Cart = {
   },
   isActive: false,
   listSelectedLocalId: null,
+  cardPieCopyStripExpanded: false,
 }
 
 const cartSlice = createSlice({
@@ -21,6 +22,12 @@ const cartSlice = createSlice({
       state.isActive = action.payload
       /** Сброс выбора при открытии/закрытии: правый CardPie только после клика по строке. */
       state.listSelectedLocalId = null
+      if (!action.payload) {
+        state.cardPieCopyStripExpanded = false
+      }
+    },
+    setCardPieCopyStripExpanded(state, action: PayloadAction<boolean>) {
+      state.cardPieCopyStripExpanded = action.payload
     },
     setCartListSelectedLocalId(state, action: PayloadAction<number | null>) {
       state.listSelectedLocalId = action.payload
@@ -61,6 +68,7 @@ const cartSlice = createSlice({
       state.items = []
       state.amount = { value: 0, currency: state.amount.currency }
       state.listSelectedLocalId = null
+      state.cardPieCopyStripExpanded = false
     },
   },
 })
@@ -68,6 +76,7 @@ const cartSlice = createSlice({
 export const {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
+  setCardPieCopyStripExpanded,
   setItems,
   addItem,
   removeItem,

@@ -43,10 +43,6 @@ export const MiniCardtext: React.FC = () => {
       : mini.style
   const editor = mini.editor
 
-  if (centerStripListMirrorEnabled && mirrorInner == null) {
-    return null
-  }
-
   if (!shouldShowMiniText) {
     return null
   }

@@ -4,8 +4,12 @@ import type {
   CardPieSectionFlags,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 
+export type CardPieStationSide = 'left' | 'right'
+
 /** Drives center-strip minis to mirror the right CardPie list row (cart/history). */
 export type RightListArchiveMiniContextValue = {
+  /** Какой пирог «в фокусе» в шапке: влияет на то, показывает ли фабрика зеркало строки справа или сессию редактора. */
+  activePieSide: CardPieStationSide
   /** Center strip shows right-list postcard minis: active right pie or cardPieCopy top-row mode. */
   centerStripListMirrorEnabled: boolean
   mirrorInner: CardPieInnerData | null
@@ -36,6 +40,7 @@ export type RightListArchiveMiniContextValue = {
 }
 
 const defaultValue: RightListArchiveMiniContextValue = {
+  activePieSide: 'left',
   centerStripListMirrorEnabled: false,
   mirrorInner: null,
   mirrorSectionFlags: null,

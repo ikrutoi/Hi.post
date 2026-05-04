@@ -71,12 +71,14 @@ const CardphotoSessionEditor: React.FC = () => {
 
 export const Cardphoto: React.FC = () => {
   const {
+    activePieSide,
     centerStripListMirrorEnabled,
     rightPieCardphotoPeekNoToolbar,
     listRowInner,
   } = useRightListArchiveMini()
 
-  if (centerStripListMirrorEnabled) {
+  /** Зеркало в фабрике только при активном правом пироге; при cardPieCopy (левый пирог) — полный редактор сессии. */
+  if (centerStripListMirrorEnabled && activePieSide === 'right') {
     return <CardphotoRightListMirror />
   }
 

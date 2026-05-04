@@ -9,12 +9,18 @@ import {
 } from '@cardtext/domain/types'
 import { calculateEditorLayout } from '@cardtext/application/helpers'
 import { useSizeFacade } from '@layout/application/facades'
-import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import {
+  selectCardtextValue,
+  selectCardtextPlainText,
+  selectCardtextStyle,
+  selectCardtextLines,
+} from '@cardtext/infrastructure/selectors'
+import {
+  cardtextHasRenderableContent,
   createInitialCardtextContent,
+  type CardtextContent,
   type CardtextStyle,
 } from '@cardtext/domain/editor/editor.types'
-import type { RootState } from '@app/state'
 import type { CSSProperties } from 'react'
 
 export function buildMiniCardtextMiniSurfaceStyle(
@@ -48,16 +54,10 @@ export function buildMiniCardtextMiniSurfaceStyle(
 /** `editorMountKey` — отдельный экземпляр Slate при смене зеркала/строки списка. */
 export const useMiniCardtext = (editorMountKey = 'default') => {
   const editor = useMemo(() => withReact(createEditor()), [editorMountKey])
-  const isComplete = useSelector(selectCardtextIsComplete)
-  const appliedData = useSelector(
-    (state: RootState) => state.cardtext.appliedData,
-  )
-  const fallback = createInitialCardtextContent()
-
-  const displayValue = appliedData?.value ?? fallback.value
-  const displayStyle = appliedData?.style ?? fallback.style
-  const plainText = appliedData?.plainText ?? ''
-  const cardtextLines = appliedData?.cardtextLines ?? fallback.cardtextLines
+  const value = useSelector(selectCardtextValue)
+  const plainText = useSelector(selectCardtextPlainText)
+  const displayStyle = useSelector(selectCardtextStyle)
+  const cardtextLines = useSelector(selectCardtextLines)
 
   const { sizeMiniCard } = useSizeFacade()
 
@@ -67,8 +67,19 @@ export const useMiniCardtext = (editorMountKey = 'default') => {
     sizeMiniCard?.height,
   )
 
-  const shouldShowMiniText =
-    isComplete && (plainText?.trim?.() ?? '').length > 0
+  /** Та же ветка, что и в фабрике/левом пироге (`displayCardtextBranch` внутри селекторов). */
+  const sessionPreview = useMemo(
+    (): CardtextContent => ({
+      ...createInitialCardtextContent(),
+      value,
+      plainText,
+      style: displayStyle,
+      cardtextLines,
+    }),
+    [value, plainText, displayStyle, cardtextLines],
+  )
 
-  return { editor, value: displayValue, style, shouldShowMiniText }
+  const shouldShowMiniText = cardtextHasRenderableContent(sessionPreview)
+
+  return { editor, value, style, shouldShowMiniText }
 }

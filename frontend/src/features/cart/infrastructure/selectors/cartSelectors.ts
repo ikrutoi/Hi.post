@@ -29,3 +29,6 @@ export const selectCartItems = (state: RootState): PostcardHydrated[] =>
 
 export const selectCartCount = (state: RootState): number =>
   state.cart.items.filter((item) => item.status === 'cart').length
+
+export const selectCardPieCopyStripExpanded = (state: RootState): boolean =>
+  Boolean(state.cart.cardPieCopyStripExpanded)

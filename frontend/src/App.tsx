@@ -34,7 +34,11 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import type { CardSection } from '@shared/config/constants'
 import { useCartFacade } from './features/cart/application/facades/useCartFacade'
-import { selectCartItems } from '@cart/infrastructure/selectors'
+import {
+  selectCartItems,
+  selectCardPieCopyStripExpanded,
+} from '@cart/infrastructure/selectors'
+import { setCardPieCopyStripExpanded } from '@cart/infrastructure/state'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
@@ -70,7 +74,8 @@ const App = () => {
     useState(false)
   const [rightPieDatePeekNoToolbar, setRightPieDatePeekNoToolbar] =
     useState(false)
-  const [cardPieStripFullSpan, setCardPieStripFullSpan] = useState(false)
+
+  const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
 
   useAuthInit()
   useLayoutInit()
@@ -311,10 +316,9 @@ const App = () => {
     setRightPieDatePeekNoToolbar(false)
   }, [rightListArchiveLocalId, rightListArchiveSource])
 
+  /** Без ожидания `sectionSize`: до первого layout `sizeCard.width` ещё 0, иначе зеркало мини-секций (в т.ч. cardtext) не включается при первом cardPieCopy. */
   const showTopCardStripFullSpan =
-    cardPieStripFullSpan &&
-    sectionSize != null &&
-    rightListArchiveLocalId != null
+    cardPieCopyStripExpanded && rightListArchiveLocalId != null
 
   const centerStripMirrorValue = useMemo(() => {
     /** Центральная полоса мини-секций показывает данные строки правого списка: активный правый пирог или режим cardPieCopy (общая подложка верхнего ряда). */
@@ -322,6 +326,7 @@ const App = () => {
       activePieSide === 'right' || showTopCardStripFullSpan
 
     return {
+      activePieSide,
       centerStripListMirrorEnabled: stripMirrorsRightListPostcard,
       mirrorInner: stripMirrorsRightListPostcard
         ? (rightListArchiveBundle?.currentData?.data ?? null)
@@ -368,9 +373,9 @@ const App = () => {
 
   useEffect(() => {
     if (rightListArchiveLocalId == null) {
-      setCardPieStripFullSpan(false)
+      dispatch(setCardPieCopyStripExpanded(false))
     }
-  }, [rightListArchiveLocalId])
+  }, [rightListArchiveLocalId, dispatch])
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
       const lid = item.postcard?.localId
@@ -380,15 +385,18 @@ const App = () => {
     [listSelectedLocalId, setCartListSelectedLocalId],
   )
 
-  const handlePostcardPieCartToolbarAction = useCallback((key: string) => {
-    if (key === 'cardPieEdit') {
-      setActivePieSide((prev) => (prev === 'left' ? 'right' : 'left'))
-      return
-    }
-    if (key === 'cardPieCopy') {
-      setCardPieStripFullSpan((prev) => !prev)
-    }
-  }, [])
+  const handlePostcardPieCartToolbarAction = useCallback(
+    (key: string) => {
+      if (key === 'cardPieEdit') {
+        setActivePieSide((prev) => (prev === 'left' ? 'right' : 'left'))
+        return
+      }
+      if (key === 'cardPieCopy') {
+        dispatch(setCardPieCopyStripExpanded(!cardPieCopyStripExpanded))
+      }
+    },
+    [dispatch, cardPieCopyStripExpanded],
+  )
   const handleEditorPieToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
   }, [])
