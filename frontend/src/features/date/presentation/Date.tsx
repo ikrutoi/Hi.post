@@ -9,6 +9,7 @@ import {
   closeDayPanel,
   setHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/state'
+import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { getCurrentDate } from '@shared/utils/date'
 import { DateHeader } from '../dateHeader/presentation/DateHeader'
@@ -80,6 +81,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
 
   const { lastViewedCalendarDate } = useCalendarFacade()
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
+  const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
 
   /** Режим корзины на календаре подразумевает открытый CartListPanel; не дублируем `setCartListPanelOpen(true)`, если уже открыто (сброс выбора в slice). */
   useEffect(() => {
@@ -93,6 +95,19 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
       }),
     )
   }, [section, cartListPanelOpen, dispatch])
+
+  /** Режим истории на календаре — открытый HistoryListPanel (аналогично корзине при `section === 'cart'`). */
+  useEffect(() => {
+    if (section !== 'history' || historyListPanelOpen) return
+    dispatch(setHistoryListPanelOpen(true))
+    dispatch(
+      updateToolbarIcon({
+        section: 'history',
+        key: 'listHistory',
+        value: 'active',
+      }),
+    )
+  }, [section, historyListPanelOpen, dispatch])
 
   const handleCalendarModeToggle = useCallback(
     (historyOn: boolean) => {
@@ -148,7 +163,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const peekDispatchDate = useMemo(
     () =>
       rightPieDatePeekNoToolbar &&
-      (section === 'date' || section === 'cart')
+      (section === 'date' || section === 'cart' || section === 'history')
         ? peekPrimaryDispatchDate(listRowInner)
         : null,
     [rightPieDatePeekNoToolbar, section, listRowInner],
@@ -195,7 +210,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
 
   if (
     rightPieDatePeekNoToolbar &&
-    (section === 'date' || section === 'cart')
+    (section === 'date' || section === 'cart' || section === 'history')
   ) {
     const d = peekDispatchDate
     const monthLabel =

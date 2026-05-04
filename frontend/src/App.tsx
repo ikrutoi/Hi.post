@@ -47,6 +47,7 @@ import {
   setHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import styles from './App.module.scss'
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
@@ -94,15 +95,29 @@ const App = () => {
     const prev = prevActiveSectionRef.current
 
     if (prev === 'history' && activeSection !== 'history') {
-      dispatch(setHistoryListPanelOpen(false))
+      /**
+       * Клик по секторам правого CardPie (и по иконкам фабрики) ставит `activeSection` в
+       * cardphoto / cardtext / … — панель списка истории не закрываем (как не закрывается
+       * корзина при таком же переходе). Закрытие — через закладки Date/Cart, крестик списка
+       * или уход в не-фабричное состояние.
+       */
+      const switchedToFactorySection =
+        activeSection != null &&
+        (
+          SECTION_EDITOR_MENU_ICON_KEYS as readonly string[]
+        ).includes(activeSection)
+
+      if (!switchedToFactorySection) {
+        dispatch(setHistoryListPanelOpen(false))
+        dispatch(
+          updateToolbarIcon({
+            section: 'history',
+            key: 'listHistory',
+            value: 'enabled',
+          }),
+        )
+      }
       dispatch(closeDayPanel())
-      dispatch(
-        updateToolbarIcon({
-          section: 'history',
-          key: 'listHistory',
-          value: 'enabled',
-        }),
-      )
     }
 
     prevActiveSectionRef.current = activeSection

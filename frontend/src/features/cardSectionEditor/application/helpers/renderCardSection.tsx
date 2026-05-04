@@ -13,9 +13,19 @@ export const renderCardSection = (
     sectionRef: RefObject<HTMLDivElement | null>
     /** Right cart list open: Date strip uses calendar Cart mode. */
     cartListPanelOpen?: boolean
+    /** Right history list open: Date strip uses calendar History mode (как при корзине + пирог). */
+    historyListPanelOpen?: boolean
   },
 ) => {
-  const { sectionLeft, sectionRef, cartListPanelOpen = false } = options
+  const {
+    sectionLeft,
+    sectionRef,
+    cartListPanelOpen = false,
+    historyListPanelOpen = false,
+  } = options
+
+  const dateStripSection =
+    cartListPanelOpen ? 'cart' : historyListPanelOpen ? 'history' : 'date'
 
   switch (section) {
     case 'cardphoto':
@@ -27,7 +37,7 @@ export const renderCardSection = (
     case 'aroma':
       return <Aroma />
     case 'date':
-      return <Date section={cartListPanelOpen ? 'cart' : 'date'} />
+      return <Date section={dateStripSection} />
     case 'history':
       return <Date section="history" />
     default:
