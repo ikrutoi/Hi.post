@@ -266,37 +266,32 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
               }
             />
           </div>
-          <div
-            className={clsx(
-              styles.dateBottomToggleGroup,
-              styles.dateBottomToggleHistoryGroup,
-              section === 'date' && styles.dateBottomToggleDateFooterHidden,
-              section === 'history' &&
-                styles.dateBottomToggleGroupHistoryActive,
-            )}
-            aria-hidden={section === 'date'}
-            role="group"
-            aria-label={
-              section === 'cart' || section === 'history'
-                ? 'Calendar: cart list or history archive'
-                : 'Calendar: dispatch dates or history'
-            }
-          >
-            <IconHistory
+          {section === 'date' ? (
+            <div
               className={clsx(
-                styles.dateBottomToggleIcon,
-                styles.dateBottomToggleHistoryIconShift,
+                styles.dateBottomToggleGroup,
+                styles.dateBottomToggleHistoryGroup,
+                styles.dateBottomToggleDateFooterHidden,
               )}
               aria-hidden
-            />
-            <Toggle
-              label=""
-              checked={section === 'history'}
-              onChange={handleCalendarModeToggle}
-              size="default"
-              variant="dateHistory"
-            />
-          </div>
+              role="presentation"
+            >
+              <IconHistory
+                className={clsx(
+                  styles.dateBottomToggleIcon,
+                  styles.dateBottomToggleHistoryIconShift,
+                )}
+                aria-hidden
+              />
+              <Toggle
+                label=""
+                checked={false}
+                onChange={handleCalendarModeToggle}
+                size="default"
+                variant="dateHistory"
+              />
+            </div>
+          ) : null}
         </div>
 
         </form>
