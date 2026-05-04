@@ -95,17 +95,11 @@ const App = () => {
     const prev = prevActiveSectionRef.current
 
     if (prev === 'history' && activeSection !== 'history') {
-      /**
-       * Клик по секторам правого CardPie (и по иконкам фабрики) ставит `activeSection` в
-       * cardphoto / cardtext / … — панель списка истории не закрываем (как не закрывается
-       * корзина при таком же переходе). Закрытие — через закладки Date/Cart, крестик списка
-       * или уход в не-фабричное состояние.
-       */
       const switchedToFactorySection =
         activeSection != null &&
-        (
-          SECTION_EDITOR_MENU_ICON_KEYS as readonly string[]
-        ).includes(activeSection)
+        (SECTION_EDITOR_MENU_ICON_KEYS as readonly string[]).includes(
+          activeSection,
+        )
 
       if (!switchedToFactorySection) {
         dispatch(setHistoryListPanelOpen(false))
@@ -187,7 +181,6 @@ const App = () => {
   const handleRightListPieSectorClick = useCallback(
     (section: CardSection) => {
       dispatch(setActiveSection(section))
-      /** Peek в центре — и при активном левом, и при активном правом списковом пироге. */
       const peekFromListPie =
         activePieSide === 'left' || activePieSide === 'right'
       if (peekFromListPie && section === 'cardphoto') {
