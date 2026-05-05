@@ -466,9 +466,14 @@ const App = () => {
                 : undefined
             }
           >
-            {showTopCardStripFullSpan && (
-              <div className={styles.appMainTopRowBackdrop} aria-hidden />
-            )}
+            <div
+              className={clsx(
+                styles.appMainTopRowBackdrop,
+                showTopCardStripFullSpan &&
+                  styles.appMainTopRowBackdropActive,
+              )}
+              aria-hidden
+            />
             <EditorPieListCardPieBadgeSync />
             <DateToolbarListDateBadgeSync />
             {/* <div className={styles.appMainContentLeft}> */}

@@ -8,6 +8,10 @@
   border: 1px solid $color-app-strip;
   box-shadow: none;
   height: 100%;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .rootLeftPieMode {
@@ -31,32 +35,44 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
   // border: solid 1px blue;
 }
 
+// Toolbar is out of flow so the mini strip stays centered like without copy mode
+// (a flex row strip + toolbar widened the block and shifted the whole center panel).
 .copyRow {
+  position: relative;
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
   width: 100%;
   min-width: 0;
 }
 
-.stripWrap {
-  flex: 0 1 auto;
-  min-width: 0;
-  display: flex;
-  justify-content: center;
-}
-
 .panelMiniSectionsToolbar {
-  flex: 0 0 auto;
+  position: absolute;
+  right: -1.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 0.5rem;
+  animation: panelMiniSectionsToolbarFadeIn 0.15s ease;
+}
+
+@keyframes panelMiniSectionsToolbarFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .strip {

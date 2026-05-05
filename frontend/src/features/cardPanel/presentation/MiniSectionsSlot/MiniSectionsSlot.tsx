@@ -333,7 +333,7 @@ export const MiniSectionsSlot = forwardRef<
 
             return cardPieCopyStripActive ? (
               <div className={styles.copyRow}>
-                <div className={styles.stripWrap}>{miniStrip}</div>
+                {miniStrip}
                 <div className={styles.panelMiniSectionsToolbar}>
                   <Toolbar
                     section="panelMiniSections"

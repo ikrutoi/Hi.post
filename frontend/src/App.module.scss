@@ -96,6 +96,12 @@
   box-sizing: border-box;
   pointer-events: none;
   min-height: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.appMainTopRowBackdropActive {
+  opacity: 1;
 }
 
 .appMainTopCenterPanel {

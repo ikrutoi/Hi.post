@@ -434,12 +434,14 @@
 }
 
 .toolbarPanelMiniSections {
-  display: flex;
-  align-items: center;
   .toolbarKey {
-    width: 1.95rem;
-    height: 1.6rem;
-    // width: auto;
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+
+  svg {
+    width: 1.2rem;
+    height: 1.2rem;
   }
 }
 
@@ -553,7 +555,13 @@
 .toolbarEditorPie.toolbarMergedWithCenter {
   .toolbarKey {
     background-color: #fff;
-    transition: background-color 0.15s ease;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .toolbarKey:hover {
+    background-color: $color-app-sidebar-icon-hover;
   }
 }
 
