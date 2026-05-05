@@ -34,6 +34,31 @@
   // border: solid 1px blue;
 }
 
+.copyRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.stripWrap {
+  flex: 0 1 auto;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.panelMiniSectionsToolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+}
+
 .strip {
   display: flex;
   flex-direction: row;

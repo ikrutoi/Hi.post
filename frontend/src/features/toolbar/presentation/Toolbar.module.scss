@@ -423,14 +423,23 @@
 .toolbarRecipientView,
 .toolbarDate,
 .toolbarHistory,
-.toolbarCart,
-.toolbarPanelMiniSections {
+.toolbarCart {
   display: flex;
   align-items: center;
 
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
+  }
+}
+
+.toolbarPanelMiniSections {
+  display: flex;
+  align-items: center;
+  .toolbarKey {
+    width: 1.95rem;
+    height: 1.6rem;
+    // width: auto;
   }
 }
 
