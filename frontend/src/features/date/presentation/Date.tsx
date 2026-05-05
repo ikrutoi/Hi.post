@@ -65,7 +65,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   section,
 }) => {
   const dispatch = useAppDispatch()
-  const { rightPieDatePeekNoToolbar, listRowInner } =
+  const { rightPieDatePeekNoToolbar, listRowInner, listRowLocalId } =
     useRightListArchiveMini()
   const currentDate = useMemo(() => getCurrentDate(), [])
   const { flashParts, triggerFlash } = useFlashEffect()
@@ -166,7 +166,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
       (section === 'date' || section === 'cart' || section === 'history')
         ? peekPrimaryDispatchDate(listRowInner)
         : null,
-    [rightPieDatePeekNoToolbar, section, listRowInner],
+    [rightPieDatePeekNoToolbar, section, listRowInner, listRowLocalId],
   )
 
   const calendarViewDate: CalendarViewDate = lastViewedCalendarDate ?? {
@@ -222,7 +222,14 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     return (
       <div className={styles.date}>
         <NotebookPeekShell section={section}>
-          <div className={clsx(styles.form, styles.formPeek)}>
+          <div
+            key={
+              listRowLocalId != null
+                ? `peek-date-${listRowLocalId}`
+                : 'peek-date'
+            }
+            className={clsx(styles.form, styles.formPeek)}
+          >
             {d != null ? (
               <div className={styles.peekDateStack}>
                 <div className={styles.peekYear}>{d.year}</div>

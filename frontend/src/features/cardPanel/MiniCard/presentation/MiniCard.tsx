@@ -25,6 +25,8 @@ interface MiniCardProps {
   hideClearButton?: boolean
   /** Кнопка в том же углу, что и × (напр. apply при cardPieCopy) — рендерится внутри `.miniCard`. */
   mirrorApplyCorner?: React.ReactNode
+  peekToolbarOnMiniOpen?: boolean
+  onActivateSectionPeekNoToolbar?: (section: CardSection) => void
 }
 
 export const MiniCard: React.FC<MiniCardProps> = ({
@@ -36,6 +38,8 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   isEmpty = false,
   hideClearButton = false,
   mirrorApplyCorner = null,
+  peekToolbarOnMiniOpen = false,
+  onActivateSectionPeekNoToolbar,
 }) => {
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
@@ -101,6 +105,9 @@ export const MiniCard: React.FC<MiniCardProps> = ({
           clearRightPieDatePeek()
         }
         changeSection(section)
+        if (peekToolbarOnMiniOpen && onActivateSectionPeekNoToolbar != null) {
+          onActivateSectionPeekNoToolbar(section)
+        }
       }}
     >
       {isEmpty && (

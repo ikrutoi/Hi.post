@@ -20,6 +20,7 @@ export const Aroma: React.FC = () => {
     mirrorTargetLocalId,
     rightPieAromaPeekNoToolbar,
     listRowInner,
+    listRowLocalId,
   } = useRightListArchiveMini()
 
   /** In right list mode, highlight the tile that matches the open postcard on the right CardPie. */
@@ -57,7 +58,14 @@ export const Aroma: React.FC = () => {
       rowAroma != null ? getAromaImage(rowAroma.index) : null
     return (
       <NotebookPeekShell>
-        <div className={styles.aroma}>
+        <div
+          key={
+            listRowLocalId != null
+              ? `peek-aroma-${listRowLocalId}`
+              : 'peek-aroma'
+          }
+          className={styles.aroma}
+        >
           <div className={clsx(styles.form, styles.formPeek)}>
             {peekSrc ? (
               <img

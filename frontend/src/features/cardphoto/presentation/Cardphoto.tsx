@@ -46,8 +46,17 @@ const CardphotoInnerPreviewOnly: React.FC<{
 
 /** Фабрика в режиме правого списка: данные из `mirrorInner`, не из слайса сессии левой открытки. */
 const CardphotoRightListMirror: React.FC = () => {
-  const { mirrorInner } = useRightListArchiveMini()
-  return <CardphotoInnerPreviewOnly inner={mirrorInner} />
+  const { mirrorInner, mirrorTargetLocalId } = useRightListArchiveMini()
+  return (
+    <CardphotoInnerPreviewOnly
+      key={
+        mirrorTargetLocalId != null
+          ? `mirror-row-${mirrorTargetLocalId}`
+          : 'mirror-row'
+      }
+      inner={mirrorInner}
+    />
+  )
 }
 
 const CardphotoSessionEditor: React.FC = () => {
@@ -75,6 +84,7 @@ export const Cardphoto: React.FC = () => {
     centerStripListMirrorEnabled,
     rightPieCardphotoPeekNoToolbar,
     listRowInner,
+    listRowLocalId,
   } = useRightListArchiveMini()
 
   /** Зеркало в фабрике только при активном правом пироге; при cardPieCopy (левый пирог) — полный редактор сессии. */
@@ -85,7 +95,12 @@ export const Cardphoto: React.FC = () => {
   if (rightPieCardphotoPeekNoToolbar && listRowInner != null) {
     return (
       <NotebookPeekShell>
-        <CardphotoInnerPreviewOnly inner={listRowInner} />
+        <CardphotoInnerPreviewOnly
+          key={
+            listRowLocalId != null ? `peek-row-${listRowLocalId}` : 'peek-row'
+          }
+          inner={listRowInner}
+        />
       </NotebookPeekShell>
     )
   }

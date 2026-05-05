@@ -21,7 +21,8 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const lang = getSafeLang(i18n.language)
   const recipientFacade = useRecipientFacade()
   const senderFacade = useSenderFacade()
-  const { rightPieEnvelopePeekNoToolbar } = useRightListArchiveMini()
+  const { rightPieEnvelopePeekNoToolbar, listRowLocalId } =
+    useRightListArchiveMini()
 
   const body = (
     <div className={styles.envelope}>
@@ -35,6 +36,11 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         >
           {rightPieEnvelopePeekNoToolbar ? (
             <EnvelopePeekAddressBlock
+              key={
+                listRowLocalId != null
+                  ? `peek-env-sender-${listRowLocalId}`
+                  : 'peek-env-sender'
+              }
               role="sender"
               className={styles.envelopePeekBlock}
             />
@@ -52,6 +58,11 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         >
           {rightPieEnvelopePeekNoToolbar ? (
             <EnvelopePeekAddressBlock
+              key={
+                listRowLocalId != null
+                  ? `peek-env-recipient-${listRowLocalId}`
+                  : 'peek-env-recipient'
+              }
               role="recipient"
               className={styles.envelopePeekBlock}
             />

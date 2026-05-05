@@ -522,10 +522,18 @@
   }
 }
 
+.toolbarPostcardPieCart .toolbarKey[data-icon-key='cardPieCopy'] {
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
 .toolbarPostcardPieCart.toolbarMergedWithCenter {
   .toolbarKey {
     background-color: #fff;
-    transition: background-color 0.15s ease;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
   }
 
   .toolbarKey:hover {

@@ -32,7 +32,7 @@ import type {
   CardPieInnerData,
   CardPieSectionFlags,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
-import type { AddressFields } from '@shared/config/constants'
+import type { AddressFields, CardSection } from '@shared/config/constants'
 import type { DispatchDate } from '@entities/date'
 
 const PARTS_TOTAL = 6
@@ -50,6 +50,8 @@ export type MiniSectionsSlotProps = {
   embedded?: boolean
   rightModeActive?: boolean
   cardPieCopyStripActive?: boolean
+  /** CardPie Copy: open section with peek chrome (no `CardSectionToolbar`), same as list pie sectors. */
+  onActivateSectionPeekNoToolbar?: (section: CardSection) => void
 }
 
 function canApplyMirrorSection(
@@ -91,7 +93,12 @@ export const MiniSectionsSlot = forwardRef<
   HTMLDivElement,
   MiniSectionsSlotProps
 >(function MiniSectionsSlot(
-  { embedded = false, rightModeActive = false, cardPieCopyStripActive = false },
+  {
+    embedded = false,
+    rightModeActive = false,
+    cardPieCopyStripActive = false,
+    onActivateSectionPeekNoToolbar,
+  },
   ref,
 ) {
   const dispatch = useAppDispatch()
@@ -213,6 +220,13 @@ export const MiniSectionsSlot = forwardRef<
                     isPacked={true}
                     isEmpty={isEmpty}
                     hideClearButton={cardPieCopyStripActive}
+                    peekToolbarOnMiniOpen={
+                      cardPieCopyStripActive &&
+                      onActivateSectionPeekNoToolbar != null
+                    }
+                    onActivateSectionPeekNoToolbar={
+                      onActivateSectionPeekNoToolbar
+                    }
                     mirrorApplyCorner={
                       showMirrorApplyButtons ? (
                         <button

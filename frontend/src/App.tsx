@@ -186,36 +186,33 @@ const App = () => {
 
   const listRowInner = rightListArchiveBundle?.currentData?.data ?? null
 
-  const handleRightListPieSectorClick = useCallback(
+  const syncPeekChromeForOpenedSection = useCallback(
     (section: CardSection) => {
-      dispatch(setActiveSection(section))
-      const peekFromListPie =
-        activePieSide === 'left' || activePieSide === 'right'
-      if (peekFromListPie && section === 'cardphoto') {
+      if (section === 'cardphoto') {
         setRightPieCardphotoPeekNoToolbar(true)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
-      } else if (peekFromListPie && section === 'cardtext') {
+      } else if (section === 'cardtext') {
         setRightPieCardtextPeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
-      } else if (peekFromListPie && section === 'envelope') {
+      } else if (section === 'envelope') {
         setRightPieEnvelopePeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieAromaPeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
-      } else if (peekFromListPie && section === 'aroma') {
+      } else if (section === 'aroma') {
         setRightPieAromaPeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
         setRightPieEnvelopePeekNoToolbar(false)
         setRightPieDatePeekNoToolbar(false)
-      } else if (peekFromListPie && section === 'date') {
+      } else if (section === 'date') {
         setRightPieDatePeekNoToolbar(true)
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)
@@ -229,7 +226,15 @@ const App = () => {
         setRightPieDatePeekNoToolbar(false)
       }
     },
-    [activePieSide, dispatch],
+    [],
+  )
+
+  const handleRightListPieSectorClick = useCallback(
+    (section: CardSection) => {
+      dispatch(setActiveSection(section))
+      syncPeekChromeForOpenedSection(section)
+    },
+    [dispatch, syncPeekChromeForOpenedSection],
   )
 
   const clearRightPieCardphotoPeek = useCallback(() => {
@@ -408,19 +413,12 @@ const App = () => {
     () =>
       ({
         cardPieEdit:
-          activePieSide === 'right'
+          activePieSide === 'right' && !showTopCardStripFullSpan
             ? ('active' as const)
             : ('enabled' as const),
         ...(showTopCardStripFullSpan ? { cardPieCopy: 'active' as const } : {}),
       }) satisfies Record<string, string>,
     [activePieSide, showTopCardStripFullSpan],
-  )
-  const editorPieToolbarStateOverride = useMemo(
-    () =>
-      ({
-        ...(showTopCardStripFullSpan ? { cardPie: 'active' as const } : {}),
-      }) satisfies Record<string, string>,
-    [showTopCardStripFullSpan],
   )
 
   return (
@@ -490,7 +488,6 @@ const App = () => {
                         <Toolbar
                           section="editorPie"
                           onActionClick={handleEditorPieToolbarAction}
-                          stateOverride={editorPieToolbarStateOverride}
                           mergedWithCenter={activePieSide === 'left'}
                         />
                       </div>
@@ -501,6 +498,9 @@ const App = () => {
                       ref={cardPanelRef}
                       embedded
                       cardPieCopyStripActive={showTopCardStripFullSpan}
+                      onActivateSectionPeekNoToolbar={
+                        syncPeekChromeForOpenedSection
+                      }
                     />
                   </div>
                 </div>
@@ -535,7 +535,6 @@ const App = () => {
                           <Toolbar
                             section="editorPie"
                             onActionClick={handleEditorPieToolbarAction}
-                            stateOverride={editorPieToolbarStateOverride}
                             mergedWithCenter={activePieSide === 'left'}
                           />
                         </div>
@@ -574,6 +573,9 @@ const App = () => {
                       ref={cardPanelRef}
                       rightModeActive={activePieSide === 'right'}
                       cardPieCopyStripActive={showTopCardStripFullSpan}
+                      onActivateSectionPeekNoToolbar={
+                        syncPeekChromeForOpenedSection
+                      }
                     />
                     <div
                       className={clsx(
@@ -624,6 +626,9 @@ const App = () => {
                       ref={cardPanelRef}
                       embedded
                       cardPieCopyStripActive={showTopCardStripFullSpan}
+                      onActivateSectionPeekNoToolbar={
+                        syncPeekChromeForOpenedSection
+                      }
                     />
                   </div>
                   {sectionSize != null && rightListArchiveLocalId != null && (
