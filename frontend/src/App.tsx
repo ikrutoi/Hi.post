@@ -64,6 +64,11 @@ const App = () => {
   const leftPieWrapRef = useRef<HTMLDivElement>(null)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
+  /** After turning off cardPieCopy: switch to left pie and keep `cardPieEdit` enabled until clicked again. */
+  const [
+    suppressCardPieEditActiveAfterCopy,
+    setSuppressCardPieEditActiveAfterCopy,
+  ] = useState(false)
   const [rightPieCardphotoPeekNoToolbar, setRightPieCardphotoPeekNoToolbar] =
     useState(false)
   const [rightPieCardtextPeekNoToolbar, setRightPieCardtextPeekNoToolbar] =
@@ -326,6 +331,18 @@ const App = () => {
   const showTopCardStripFullSpan =
     cardPieCopyStripExpanded && rightListArchiveLocalId != null
 
+  const prevShowTopCardStripFullSpanRef = useRef(showTopCardStripFullSpan)
+  useEffect(() => {
+    if (
+      prevShowTopCardStripFullSpanRef.current &&
+      !showTopCardStripFullSpan
+    ) {
+      setSuppressCardPieEditActiveAfterCopy(true)
+      setActivePieSide('left')
+    }
+    prevShowTopCardStripFullSpanRef.current = showTopCardStripFullSpan
+  }, [showTopCardStripFullSpan])
+
   const centerStripMirrorValue = useMemo(() => {
     const stripMirrorsRightListPostcard =
       activePieSide === 'right' || showTopCardStripFullSpan
@@ -397,6 +414,7 @@ const App = () => {
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
       if (key === 'cardPieEdit') {
+        setSuppressCardPieEditActiveAfterCopy(false)
         setActivePieSide((prev) => (prev === 'left' ? 'right' : 'left'))
         return
       }
@@ -413,12 +431,18 @@ const App = () => {
     () =>
       ({
         cardPieEdit:
-          activePieSide === 'right' && !showTopCardStripFullSpan
+          !suppressCardPieEditActiveAfterCopy &&
+          activePieSide === 'right' &&
+          !showTopCardStripFullSpan
             ? ('active' as const)
             : ('enabled' as const),
         ...(showTopCardStripFullSpan ? { cardPieCopy: 'active' as const } : {}),
       }) satisfies Record<string, string>,
-    [activePieSide, showTopCardStripFullSpan],
+    [
+      activePieSide,
+      showTopCardStripFullSpan,
+      suppressCardPieEditActiveAfterCopy,
+    ],
   )
 
   return (
