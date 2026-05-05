@@ -15,10 +15,7 @@ import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure
 import { useSizeFacade } from '@layout/application/facades'
 import { MINI_CARD_HEIGHT_RATIO } from '@shared/utils/layout/getSizeMiniCard'
 import { useMiniStripCellSidePx } from '@cardPanel/presentation/MiniSectionsSlot/MiniStripCellSideContext'
-import {
-  cardtextHasRenderableContent,
-  cardtextValueForReadOnlyPreview,
-} from '@cardtext/domain/editor/editor.types'
+import { cardtextValueForReadOnlyPreview } from '@cardtext/domain/editor/editor.types'
 
 export const MiniCardtext: React.FC = () => {
   const stripCellSidePx = useMiniStripCellSidePx()
@@ -45,8 +42,9 @@ export const MiniCardtext: React.FC = () => {
   const usingMirror =
     centerStripListMirrorEnabled && rowMirrorInner != null
 
+  /** Include `mirrorTargetLocalId` so Slate/editor remount when the list row changes even if cardtext/cardphoto ids match. */
   const mirrorEditorKey = usingMirror
-    ? `mirror:${rowMirrorInner.cardtext?.id ?? 'x'}:${rowMirrorInner.cardphoto?.id ?? 'p'}`
+    ? `mirror:${mirrorTargetLocalId ?? 'na'}:${rowMirrorInner.cardtext?.id ?? 'x'}:${rowMirrorInner.cardphoto?.id ?? 'p'}`
     : 'editor'
   const mini = useMiniCardtext(mirrorEditorKey)
   const { sizeMiniCard } = useSizeFacade()
@@ -56,8 +54,17 @@ export const MiniCardtext: React.FC = () => {
   const ct = rowMirrorInner?.cardtext
 
   const shouldShowMiniText = usingMirror
-    ? Boolean(ct && cardtextHasRenderableContent(ct))
+    ? Boolean(rowMirrorInner?.cardtext)
     : mini.shouldShowMiniText
+
+  const mirrorSlateKey =
+    usingMirror && mirrorTargetLocalId != null && ct != null
+      ? `mini-ct-${mirrorTargetLocalId}-${ct.id ?? 'id'}-${ct.timestamp}`
+      : usingMirror && mirrorTargetLocalId != null
+        ? `mini-ct-${mirrorTargetLocalId}`
+        : usingMirror
+          ? 'mini-ct'
+          : null
 
   const mirrorLayoutHeightPx =
     stripCellSidePx != null && stripCellSidePx > 0
@@ -90,7 +97,11 @@ export const MiniCardtext: React.FC = () => {
         isHovered && styles.hovered,
       )}
     >
-      <Slate key={JSON.stringify(value)} editor={editor} initialValue={value}>
+      <Slate
+        key={mirrorSlateKey ?? JSON.stringify(value)}
+        editor={editor}
+        initialValue={value}
+      >
         <Editable
           readOnly
           className={styles.miniCardtextEditable}
