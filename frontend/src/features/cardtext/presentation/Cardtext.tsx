@@ -4,7 +4,10 @@ import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
 import { useSizeFacade } from '@layout/application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
-import { createInitialCardtextContent } from '@cardtext/domain/editor/editor.types'
+import {
+  createInitialCardtextContent,
+  cardtextValueForReadOnlyPreview,
+} from '@cardtext/domain/editor/editor.types'
 import { useCardtextFacade } from '../application/facades/useCardtextFacade'
 import {
   useCardtextTitleStrip,
@@ -49,7 +52,7 @@ const CardtextListRowPeekPreview: React.FC<{
   const { sizeCard } = useSizeFacade()
   const ct = inner.cardtext
   const fallback = createInitialCardtextContent()
-  const value = ct?.value ?? fallback.value
+  const value = cardtextValueForReadOnlyPreview(ct)
   const style = ct?.style ?? fallback.style
   const contentKey =
     rowLocalId != null && ct?.id != null
@@ -94,7 +97,9 @@ const CardtextRightListMirror: React.FC = () => {
   const { mirrorInner, mirrorTargetLocalId } = useRightListArchiveMini()
   const ct = mirrorInner?.cardtext
   const fallback = createInitialCardtextContent()
-  const value = ct?.value ?? fallback.value
+  const value = ct
+    ? cardtextValueForReadOnlyPreview(ct)
+    : fallback.value
   const style = ct?.style ?? fallback.style
   const contentKey =
     mirrorTargetLocalId != null && ct?.id != null

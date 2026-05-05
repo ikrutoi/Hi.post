@@ -337,6 +337,9 @@ const App = () => {
       mirrorTargetLocalId: stripMirrorsRightListPostcard
         ? rightListArchiveLocalId
         : null,
+      mirrorListArchiveSource: stripMirrorsRightListPostcard
+        ? rightListArchiveSource
+        : null,
       listRowInner,
       listRowLocalId: rightListArchiveLocalId,
       rightPieCardphotoPeekNoToolbar,
@@ -355,6 +358,7 @@ const App = () => {
       showTopCardStripFullSpan,
       rightListArchiveBundle,
       rightListArchiveLocalId,
+      rightListArchiveSource,
       listRowInner,
       rightPieCardphotoPeekNoToolbar,
       clearRightPieCardphotoPeek,

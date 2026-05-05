@@ -10,6 +10,7 @@ import type { CardPanelSection } from '../../domain/types'
 import { MiniCard } from '../../MiniCard/presentation/MiniCard'
 import miniCardStyles from '../../MiniCard/presentation/MiniCard.module.scss'
 import styles from './MiniSectionsSlot.module.scss'
+import { MiniStripCellSideProvider } from './MiniStripCellSideContext'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
@@ -124,15 +125,16 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
         }}
       >
         {sectionSize != null && gapSize != null && sizeMiniCard != null && (
-          <div
-            className={styles.strip}
-            style={{
-              paddingLeft: `${gapSize}px`,
-              paddingRight: `${gapSize}px`,
-              gap: `${gapSize}px`,
-            }}
-          >
-            {SECTIONS_ORDER.map((section, i) => {
+          <MiniStripCellSideProvider value={sectionSize}>
+            <div
+              className={styles.strip}
+              style={{
+                paddingLeft: `${gapSize}px`,
+                paddingRight: `${gapSize}px`,
+                gap: `${gapSize}px`,
+              }}
+            >
+              {SECTIONS_ORDER.map((section, i) => {
               const { index } = CARD_PANEL_SECTIONS_PRIORITY[section]
               const isSectionComplete =
                 section === 'cardphoto'
@@ -200,8 +202,9 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
                   />
                 </div>
               )
-            })}
-          </div>
+              })}
+            </div>
+          </MiniStripCellSideProvider>
         )}
       </div>
     )

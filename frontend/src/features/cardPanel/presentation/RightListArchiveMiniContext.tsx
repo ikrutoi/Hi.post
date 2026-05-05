@@ -3,6 +3,7 @@ import type {
   CardPieInnerData,
   CardPieSectionFlags,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import type { CardPieRightListSource } from '@features/cardPie/domain/types'
 
 export type CardPieStationSide = 'left' | 'right'
 
@@ -16,6 +17,8 @@ export type RightListArchiveMiniContextValue = {
   mirrorSectionFlags: CardPieSectionFlags | null
   /** `localId` выбранной строки корзины/истории, когда активен правый пирог. */
   mirrorTargetLocalId: number | null
+  /** Источник строки списка для селектора бандла (`cart` / `history`), когда зеркало полосы включено. */
+  mirrorListArchiveSource: CardPieRightListSource | null
   /**
    * Снимок строки списка справа, пока выбрана строка — даже при активном левом пироге
    * (для peek cardphoto/cardtext в фабрике без полного зеркала центра).
@@ -45,6 +48,7 @@ const defaultValue: RightListArchiveMiniContextValue = {
   mirrorInner: null,
   mirrorSectionFlags: null,
   mirrorTargetLocalId: null,
+  mirrorListArchiveSource: null,
   listRowInner: null,
   listRowLocalId: null,
   rightPieCardphotoPeekNoToolbar: false,

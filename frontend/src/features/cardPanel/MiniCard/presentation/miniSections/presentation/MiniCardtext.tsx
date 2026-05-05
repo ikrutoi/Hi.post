@@ -8,37 +8,72 @@ import { renderLeaf } from '@cardtext/presentation/renderLeaf'
 import { renderElement } from '@cardtext/presentation/renderElement'
 import styles from './MiniCardtext.module.scss'
 import clsx from 'clsx'
+import { useAppSelector } from '@app/hooks'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
 import { useSizeFacade } from '@layout/application/facades'
-import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
+import { MINI_CARD_HEIGHT_RATIO } from '@shared/utils/layout/getSizeMiniCard'
+import { useMiniStripCellSidePx } from '@cardPanel/presentation/MiniSectionsSlot/MiniStripCellSideContext'
+import {
+  cardtextHasRenderableContent,
+  cardtextValueForReadOnlyPreview,
+} from '@cardtext/domain/editor/editor.types'
 
 export const MiniCardtext: React.FC = () => {
-  const { centerStripListMirrorEnabled, mirrorInner } = useRightListArchiveMini()
+  const stripCellSidePx = useMiniStripCellSidePx()
+  const {
+    centerStripListMirrorEnabled,
+    mirrorInner,
+    mirrorTargetLocalId,
+    mirrorListArchiveSource,
+  } = useRightListArchiveMini()
+
+  const mirrorBundleRow = useAppSelector((state) =>
+    centerStripListMirrorEnabled && mirrorTargetLocalId != null
+      ? selectListArchiveCardPieBundle(
+          state,
+          String(mirrorTargetLocalId),
+          mirrorListArchiveSource ?? 'cart',
+        )
+      : null,
+  )
+
+  const rowMirrorInner =
+    mirrorInner ?? mirrorBundleRow?.currentData?.data ?? null
+
   const usingMirror =
-    centerStripListMirrorEnabled && mirrorInner != null
+    centerStripListMirrorEnabled && rowMirrorInner != null
+
   const mirrorEditorKey = usingMirror
-    ? `mirror:${mirrorInner.cardtext?.id ?? 'x'}:${mirrorInner.cardphoto?.id ?? 'p'}`
+    ? `mirror:${rowMirrorInner.cardtext?.id ?? 'x'}:${rowMirrorInner.cardphoto?.id ?? 'p'}`
     : 'editor'
   const mini = useMiniCardtext(mirrorEditorKey)
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('cardtext')
 
-  const ct = mirrorInner?.cardtext
+  const ct = rowMirrorInner?.cardtext
 
   const shouldShowMiniText = usingMirror
     ? Boolean(ct && cardtextHasRenderableContent(ct))
     : mini.shouldShowMiniText
 
+  const mirrorLayoutHeightPx =
+    stripCellSidePx != null && stripCellSidePx > 0
+      ? Math.round(stripCellSidePx * MINI_CARD_HEIGHT_RATIO)
+      : sizeMiniCard?.height
+
   const value =
-    usingMirror && ct ? (ct.value ?? mini.value) : mini.value
+    usingMirror && ct
+      ? cardtextValueForReadOnlyPreview(ct)
+      : mini.value
   const style =
     usingMirror && ct
       ? buildMiniCardtextMiniSurfaceStyle(
           ct.style,
           ct.cardtextLines ?? 15,
-          sizeMiniCard?.height,
+          mirrorLayoutHeightPx,
         )
       : mini.style
   const editor = mini.editor

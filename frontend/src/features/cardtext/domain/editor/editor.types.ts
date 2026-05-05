@@ -118,6 +118,35 @@ export function cardtextHasRenderableContent(
   return false
 }
 
+/**
+ * Значение для read-only Slate (мини-секция, зеркало списка): если в `value` нет текста,
+ * но `plainText` непустой — строим параграфы (иначе превью пустое при сохранённом plainText).
+ */
+export function cardtextValueForReadOnlyPreview(ct: CardtextContent): CardtextValue {
+  const rawBlocks = ct.value ?? []
+  for (const block of rawBlocks) {
+    if (slateSubtreeHasNonEmptyText(block)) {
+      return JSON.parse(JSON.stringify(rawBlocks)) as CardtextValue
+    }
+  }
+  const plain = ct.plainText?.trim() ?? ''
+  if (plain.length > 0) {
+    const align = (ct.style?.align ?? 'left') as TextAlign
+    return plain.split('\n').map((line) => ({
+      type: 'paragraph' as const,
+      align,
+      children: [{ text: line }],
+    }))
+  }
+  if (rawBlocks.length > 0) {
+    return JSON.parse(JSON.stringify(rawBlocks)) as CardtextValue
+  }
+  return initialCardtextValue.map((b) => ({
+    ...b,
+    children: b.children.map((c) => ({ ...c })),
+  }))
+}
+
 export function createInitialCardtextContent(): CardtextContent {
   return {
     id: null,

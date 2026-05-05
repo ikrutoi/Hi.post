@@ -6,7 +6,8 @@ export interface SplitHeightResult {
   sectionEditorHeight: number
 }
 
-const MINI_CARD_HEIGHT_RATIO = 0.75
+/** Доля высоты панели мини-секций, по которой считается квадрат превью в Redux `sizeMiniCard`. */
+export const MINI_CARD_HEIGHT_RATIO = 0.75
 
 export const getSizeMiniCard = (size: { width: number; height: number }) => {
   const resultSide = size.height * MINI_CARD_HEIGHT_RATIO
