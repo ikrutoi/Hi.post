@@ -31,6 +31,7 @@ import {
   initialDateListToolbarState,
   initialCardPieListToolbarState,
   initialCartToolbarState,
+  initialPanelMiniSectionsToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -95,6 +96,7 @@ const initialState: ToolbarState = {
   postcardPieCart: initialPostcardPieCartToolbarState,
   postcardPieHistory: initialPostcardPieHistoryToolbarState,
   cart: initialCartToolbarState,
+  panelMiniSections: initialPanelMiniSectionsToolbarState,
 }
 
 const toolbarSlice = createSlice({

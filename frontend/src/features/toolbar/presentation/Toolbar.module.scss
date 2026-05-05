@@ -383,7 +383,8 @@
 .toolbarDate,
 .toolbarHistory,
 .toolbarRightSidebar,
-.toolbarCart {
+.toolbarCart,
+.toolbarPanelMiniSections {
   .toolbarKeyActive {
     color: $color-font-active;
   }
@@ -422,7 +423,8 @@
 .toolbarRecipientView,
 .toolbarDate,
 .toolbarHistory,
-.toolbarCart {
+.toolbarCart,
+.toolbarPanelMiniSections {
   display: flex;
   align-items: center;
 

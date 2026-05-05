@@ -51,6 +51,9 @@ import {
   CART_TOOLBAR,
   initialCartToolbarState,
   CART_KEYS,
+  PANEL_MINI_SECTIONS_TOOLBAR,
+  initialPanelMiniSectionsToolbarState,
+  PANEL_MINI_SECTIONS_KEYS,
 } from '../types'
 import {
   RECIPIENTS_VIEW_TOOLBAR,
@@ -570,5 +573,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'cart',
     getBadges: (state: ToolbarState['cart']) => ({}),
     toolbar: CART_TOOLBAR,
+  },
+
+  panelMiniSections: {
+    keys: PANEL_MINI_SECTIONS_KEYS,
+    initialState: initialPanelMiniSectionsToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'panelMiniSections',
+    getBadges: (state: ToolbarState['panelMiniSections']) => ({}),
+    toolbar: PANEL_MINI_SECTIONS_TOOLBAR,
   },
 }

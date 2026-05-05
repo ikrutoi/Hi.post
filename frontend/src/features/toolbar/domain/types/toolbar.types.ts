@@ -31,6 +31,8 @@ import type {
   CardphotoListKey,
   CartToolbarState,
   CartKey,
+  PanelMiniSectionsToolbarState,
+  PanelMiniSectionsKey,
 } from './index'
 import type { RecipientsToolbarState, RecipientsKey } from './envelope.types'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -107,6 +109,7 @@ export const TOOLBAR_SECTIONS = [
   'postcardPieCart',
   'postcardPieHistory',
   'cart',
+  'panelMiniSections',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -152,6 +155,7 @@ export type ToolbarState = {
     config: ToolbarGroup[]
   }
   cart: CartToolbarState & { config: ToolbarGroup[] }
+  panelMiniSections: PanelMiniSectionsToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -338,6 +342,12 @@ export type ToolbarSectionConfigMap = {
   >
 
   cart: BaseSectionConfig<CartToolbarState, CartKey, 'cart'>
+
+  panelMiniSections: BaseSectionConfig<
+    PanelMiniSectionsToolbarState,
+    PanelMiniSectionsKey,
+    'panelMiniSections'
+  >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -416,4 +426,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                                           ? PostcardPieHistoryKey
                                                                           : S extends 'cart'
                                                                             ? CartKey
-                                                                            : never
+                                                                            : S extends 'panelMiniSections'
+                                                                              ? PanelMiniSectionsKey
+                                                                              : never

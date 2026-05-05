@@ -154,13 +154,11 @@ export const MiniSectionsSlot = forwardRef<
       ref={ref}
       className={clsx(
         embedded ? styles.rootEmbedded : styles.root,
-        !embedded && rightModeActive && styles.rootRightMode,
-        !embedded &&
-          rightModeActive &&
+        !embedded && !rightModeActive && styles.rootLeftPieMode,
+        rightModeActive &&
           cardPieCopyStripActive &&
           styles.rootRightCopyMode,
-        !embedded &&
-          !rightModeActive &&
+        !rightModeActive &&
           cardPieCopyStripActive &&
           styles.rootLeftCopyMode,
       )}

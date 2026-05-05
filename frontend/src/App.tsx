@@ -75,7 +75,9 @@ const App = () => {
   const [rightPieDatePeekNoToolbar, setRightPieDatePeekNoToolbar] =
     useState(false)
 
-  const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
+  const cardPieCopyStripExpanded = useAppSelector(
+    selectCardPieCopyStripExpanded,
+  )
 
   useAuthInit()
   useLayoutInit()
@@ -316,12 +318,10 @@ const App = () => {
     setRightPieDatePeekNoToolbar(false)
   }, [rightListArchiveLocalId, rightListArchiveSource])
 
-  /** Без ожидания `sectionSize`: до первого layout `sizeCard.width` ещё 0, иначе зеркало мини-секций (в т.ч. cardtext) не включается при первом cardPieCopy. */
   const showTopCardStripFullSpan =
     cardPieCopyStripExpanded && rightListArchiveLocalId != null
 
   const centerStripMirrorValue = useMemo(() => {
-    /** Центральная полоса мини-секций показывает данные строки правого списка: активный правый пирог или режим cardPieCopy (общая подложка верхнего ряда). */
     const stripMirrorsRightListPostcard =
       activePieSide === 'right' || showTopCardStripFullSpan
 
@@ -354,23 +354,23 @@ const App = () => {
       clearRightPieDatePeek,
     }
   }, [
-      activePieSide,
-      showTopCardStripFullSpan,
-      rightListArchiveBundle,
-      rightListArchiveLocalId,
-      rightListArchiveSource,
-      listRowInner,
-      rightPieCardphotoPeekNoToolbar,
-      clearRightPieCardphotoPeek,
-      rightPieCardtextPeekNoToolbar,
-      clearRightPieCardtextPeek,
-      rightPieEnvelopePeekNoToolbar,
-      clearRightPieEnvelopePeek,
-      rightPieAromaPeekNoToolbar,
-      clearRightPieAromaPeek,
-      rightPieDatePeekNoToolbar,
-      clearRightPieDatePeek,
-    ])
+    activePieSide,
+    showTopCardStripFullSpan,
+    rightListArchiveBundle,
+    rightListArchiveLocalId,
+    rightListArchiveSource,
+    listRowInner,
+    rightPieCardphotoPeekNoToolbar,
+    clearRightPieCardphotoPeek,
+    rightPieCardtextPeekNoToolbar,
+    clearRightPieCardtextPeek,
+    rightPieEnvelopePeekNoToolbar,
+    clearRightPieEnvelopePeek,
+    rightPieAromaPeekNoToolbar,
+    clearRightPieAromaPeek,
+    rightPieDatePeekNoToolbar,
+    clearRightPieDatePeek,
+  ])
 
   const mergeLeft = false
   const mergeRight = false
@@ -407,12 +407,20 @@ const App = () => {
   const postcardPieCartToolbarStateOverride = useMemo(
     () =>
       ({
-        cardPieEdit: activePieSide === 'right' ? ('active' as const) : ('enabled' as const),
-        ...(showTopCardStripFullSpan
-          ? { cardPieCopy: 'active' as const }
-          : {}),
+        cardPieEdit:
+          activePieSide === 'right'
+            ? ('active' as const)
+            : ('enabled' as const),
+        ...(showTopCardStripFullSpan ? { cardPieCopy: 'active' as const } : {}),
       }) satisfies Record<string, string>,
     [activePieSide, showTopCardStripFullSpan],
+  )
+  const editorPieToolbarStateOverride = useMemo(
+    () =>
+      ({
+        ...(showTopCardStripFullSpan ? { cardPie: 'active' as const } : {}),
+      }) satisfies Record<string, string>,
+    [showTopCardStripFullSpan],
   )
 
   return (
@@ -482,6 +490,7 @@ const App = () => {
                         <Toolbar
                           section="editorPie"
                           onActionClick={handleEditorPieToolbarAction}
+                          stateOverride={editorPieToolbarStateOverride}
                           mergedWithCenter={activePieSide === 'left'}
                         />
                       </div>
@@ -526,6 +535,7 @@ const App = () => {
                           <Toolbar
                             section="editorPie"
                             onActionClick={handleEditorPieToolbarAction}
+                            stateOverride={editorPieToolbarStateOverride}
                             mergedWithCenter={activePieSide === 'left'}
                           />
                         </div>
