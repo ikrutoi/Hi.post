@@ -407,12 +407,12 @@ const App = () => {
   const postcardPieCartToolbarStateOverride = useMemo(
     () =>
       ({
-        cardPieEdit: 'enabled' as const,
+        cardPieEdit: activePieSide === 'right' ? ('active' as const) : ('enabled' as const),
         ...(showTopCardStripFullSpan
           ? { cardPieCopy: 'active' as const }
           : {}),
       }) satisfies Record<string, string>,
-    [showTopCardStripFullSpan],
+    [activePieSide, showTopCardStripFullSpan],
   )
 
   return (
@@ -661,6 +661,8 @@ const App = () => {
                   className={clsx(
                     styles.mergedTopChrome,
                     styles.mergedTopChrome_transparentBorder,
+                    activePieSide === 'left' &&
+                      styles.mergedTopChrome_rightBorderBlue,
                   )}
                 >
                   <div className={styles.mergedTopChromePieRegion}>

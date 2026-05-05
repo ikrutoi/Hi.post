@@ -14,6 +14,16 @@ import { MiniStripCellSideProvider } from './MiniStripCellSideContext'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
 import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import { selectCardphotoAppliedData } from '@cardphoto/infrastructure/selectors'
+import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
+import { selectSelectedDates } from '@date/infrastructure/selectors'
+import { selectCardtextState } from '@cardtext/infrastructure/selectors'
+import {
+  selectAppliedRecipientDisplayAddress,
+} from '@envelope/recipient/infrastructure/selectors'
+import { selectAppliedSenderDisplayAddress } from '@envelope/sender/infrastructure/selectors'
+import { selectCartItems } from '@cart/infrastructure/selectors'
+// cspell:ignore Renderable
 import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
@@ -22,6 +32,8 @@ import type {
   CardPieInnerData,
   CardPieSectionFlags,
 } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import type { AddressFields } from '@shared/config/constants'
+import type { DispatchDate } from '@entities/date'
 
 const PARTS_TOTAL = 6
 const GAP_PARTS = 1
@@ -35,12 +47,8 @@ const SECTIONS_ORDER: CardPanelSection[] = [
 ]
 
 export type MiniSectionsSlotProps = {
-  /** When true, outer chrome is omitted — parent supplies one frame (e.g. merged with CardPie). */
   embedded?: boolean
   rightModeActive?: boolean
-  /**
-   * Режим верхней полосы cardPieCopy: скрыть × на мини-секциях и показать круглые «применить».
-   */
   cardPieCopyStripActive?: boolean
 }
 
@@ -56,85 +64,122 @@ function canApplyMirrorSection(
   return Boolean(mirrorSectionFlags[section])
 }
 
-export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps>(
-  function MiniSectionsSlot(
-    {
-      embedded = false,
-      rightModeActive = false,
-      cardPieCopyStripActive = false,
-    },
-    ref,
-  ) {
-    const dispatch = useAppDispatch()
-    const remSize = useRemSize()
-    const { sizeCard } = useSizeFacade()
-    const { editorState } = useCardEditorFacade()
-    const { state: stateCardPanel } = useCardPanelFacade()
-    const isPacked = stateCardPanel.isPacked
-    const hasEnvelopeApplied = useAppSelector(selectHasEnvelopeAppliedContent)
-    const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
-    const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
-    const {
-      centerStripListMirrorEnabled,
-      mirrorSectionFlags,
-      mirrorInner,
-      mirrorTargetLocalId,
-    } = useRightListArchiveMini()
+function sameAddress(
+  a: Readonly<AddressFields> | null | undefined,
+  b: Readonly<AddressFields> | null | undefined,
+): boolean {
+  if (a == null && b == null) return true
+  if (a == null || b == null) return false
+  return (
+    String(a.name ?? '') === String(b.name ?? '') &&
+    String(a.street ?? '') === String(b.street ?? '') &&
+    String(a.city ?? '') === String(b.city ?? '') &&
+    String(a.zip ?? '') === String(b.zip ?? '') &&
+    String(a.country ?? '') === String(b.country ?? '')
+  )
+}
 
-    const showMirrorApplyButtons =
-      cardPieCopyStripActive &&
-      mirrorTargetLocalId != null &&
-      centerStripListMirrorEnabled
+function sameDates(a: DispatchDate[], b: DispatchDate[]): boolean {
+  if (a.length !== b.length) return false
+  return a.every((d, i) => {
+    const x = b[i]
+    return d.year === x.year && d.month === x.month && d.day === x.day
+  })
+}
 
-    const measuredCardWidth =
-      sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width : null
-    /** Пока `sizeCard` ещё 0 до ResizeObserver, даём ширину полосы мини-секций (иначе при первом cardPieCopy ряд не монтируется). */
-    const totalWidth =
-      measuredCardWidth ??
-      (cardPieCopyStripActive && centerStripListMirrorEnabled
-        ? Math.round(remSize * 22)
-        : null)
-    const sectionSize = totalWidth != null ? totalWidth / PARTS_TOTAL : null
-    const gapSize =
-      totalWidth != null ? (totalWidth * GAP_PARTS) / PARTS_TOTAL / 6 : null
-    const sizeMiniCard =
-      sectionSize != null
-        ? {
-            width: sectionSize,
-            height: sectionSize,
-            aspectRatio: 1,
-            orientation: 'landscape' as const,
-          }
-        : null
+export const MiniSectionsSlot = forwardRef<
+  HTMLDivElement,
+  MiniSectionsSlotProps
+>(function MiniSectionsSlot(
+  { embedded = false, rightModeActive = false, cardPieCopyStripActive = false },
+  ref,
+) {
+  const dispatch = useAppDispatch()
+  const remSize = useRemSize()
+  const { sizeCard } = useSizeFacade()
+  const { editorState } = useCardEditorFacade()
+  const { state: stateCardPanel } = useCardPanelFacade()
+  const isPacked = stateCardPanel.isPacked
+  const hasEnvelopeApplied = useAppSelector(selectHasEnvelopeAppliedContent)
+  const cardphotoIsComplete = useAppSelector(selectCardphotoIsComplete)
+  const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
+  const cardphotoAppliedData = useAppSelector(selectCardphotoAppliedData)
+  const selectedAroma = useAppSelector(selectSelectedAroma)
+  const selectedDates = useAppSelector(selectSelectedDates)
+  const cardtextState = useAppSelector(selectCardtextState)
+  const appliedRecipientAddress = useAppSelector(selectAppliedRecipientDisplayAddress)
+  const appliedSenderAddress = useAppSelector(selectAppliedSenderDisplayAddress)
+  const cartItems = useAppSelector(selectCartItems)
+  const {
+    centerStripListMirrorEnabled,
+    mirrorSectionFlags,
+    mirrorInner,
+    mirrorTargetLocalId,
+  } = useRightListArchiveMini()
 
-    /** Данные строки правого списка в мини-секциях: достаточно флага контекста (правый пирог или cardPieCopy ряд). */
-    const mirrorMinisFromRightPie =
-      centerStripListMirrorEnabled && mirrorSectionFlags != null
+  const showMirrorApplyButtons =
+    cardPieCopyStripActive &&
+    mirrorTargetLocalId != null &&
+    centerStripListMirrorEnabled
 
-    return (
-      <div
-        ref={ref}
-        className={clsx(
-          embedded ? styles.rootEmbedded : styles.root,
-          !embedded && rightModeActive && styles.rootRightMode,
-        )}
-        style={{
-          width:
-            totalWidth != null ? `min(100%, ${totalWidth}px)` : '100%',
-          minWidth: sizeCard?.width === 0 ? '8rem' : undefined,
-        }}
-      >
-        {sectionSize != null && gapSize != null && sizeMiniCard != null && (
-          <MiniStripCellSideProvider value={sectionSize}>
-            <div
-              className={styles.strip}
-              style={{
-                paddingLeft: `${gapSize}px`,
-                paddingRight: `${gapSize}px`,
-                gap: `${gapSize}px`,
-              }}
-            >
-              {SECTIONS_ORDER.map((section, i) => {
+  const measuredCardWidth =
+    sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width : null
+  const totalWidth =
+    measuredCardWidth ??
+    (cardPieCopyStripActive && centerStripListMirrorEnabled
+      ? Math.round(remSize * 22)
+      : null)
+  const sectionSize = totalWidth != null ? totalWidth / PARTS_TOTAL : null
+  const gapSize =
+    totalWidth != null ? (totalWidth * GAP_PARTS) / PARTS_TOTAL / 6 : null
+  const sizeMiniCard =
+    sectionSize != null
+      ? {
+          width: sectionSize,
+          height: sectionSize,
+          aspectRatio: 1,
+          orientation: 'landscape' as const,
+        }
+      : null
+
+  const mirrorMinisFromRightPie =
+    centerStripListMirrorEnabled && mirrorSectionFlags != null
+  const sourcePostcard =
+    mirrorTargetLocalId != null
+      ? cartItems.find((p) => p.localId === mirrorTargetLocalId) ?? null
+      : null
+
+  return (
+    <div
+      ref={ref}
+      className={clsx(
+        embedded ? styles.rootEmbedded : styles.root,
+        !embedded && rightModeActive && styles.rootRightMode,
+        !embedded &&
+          rightModeActive &&
+          cardPieCopyStripActive &&
+          styles.rootRightCopyMode,
+        !embedded &&
+          !rightModeActive &&
+          cardPieCopyStripActive &&
+          styles.rootLeftCopyMode,
+      )}
+      style={{
+        width: totalWidth != null ? `min(100%, ${totalWidth}px)` : '100%',
+        minWidth: sizeCard?.width === 0 ? '8rem' : undefined,
+      }}
+    >
+      {sectionSize != null && gapSize != null && sizeMiniCard != null && (
+        <MiniStripCellSideProvider value={sectionSize}>
+          <div
+            className={styles.strip}
+            style={{
+              paddingLeft: `${gapSize}px`,
+              paddingRight: `${gapSize}px`,
+              gap: `${gapSize}px`,
+            }}
+          >
+            {SECTIONS_ORDER.map((section, i) => {
               const { index } = CARD_PANEL_SECTIONS_PRIORITY[section]
               const isSectionComplete =
                 section === 'cardphoto'
@@ -175,14 +220,64 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
                         <button
                           type="button"
                           className={miniCardStyles.miniCardCornerButton}
-                          disabled={
-                            !canApplyMirrorSection(
+                          disabled={(() => {
+                            const hasMirrorData = canApplyMirrorSection(
                               section,
                               mirrorInner,
                               mirrorSectionFlags,
                             )
-                          }
-                          aria-label={`Перенести «${section}» из выбранной открытки`}
+                            if (!hasMirrorData) return true
+
+                            if (section === 'cardphoto') {
+                              const sourceMeta =
+                                sourcePostcard?.card?.cardphoto?.appliedData ??
+                                sourcePostcard?.card?.cardphoto?.assetData ??
+                                null
+                              if (!sourceMeta) return true
+                              return sourceMeta.id === cardphotoAppliedData?.id
+                            }
+
+                            if (section === 'cardtext') {
+                              const src = mirrorInner?.cardtext
+                              const applied = cardtextState?.appliedData ?? null
+                              if (!src || !applied) return false
+                              if (src.id != null && applied.id != null) {
+                                return String(src.id) === String(applied.id)
+                              }
+                              return (
+                                src.plainText === applied.plainText &&
+                                src.cardtextLines === applied.cardtextLines
+                              )
+                            }
+
+                            if (section === 'envelope') {
+                              return (
+                                sameAddress(
+                                  mirrorInner?.recipient ?? null,
+                                  appliedRecipientAddress,
+                                ) &&
+                                sameAddress(
+                                  mirrorInner?.sender ?? null,
+                                  appliedSenderAddress,
+                                )
+                              )
+                            }
+
+                            if (section === 'aroma') {
+                              return (
+                                (mirrorInner?.aroma?.index ?? null) ===
+                                (selectedAroma?.index ?? null)
+                              )
+                            }
+
+                            if (section === 'date') {
+                              const srcDates = mirrorInner?.dates ?? []
+                              return sameDates(srcDates, selectedDates)
+                            }
+
+                            return false
+                          })()}
+                          aria-label={`Transfer "${section}" from selected postcard`}
                           onMouseDown={(e) => e.stopPropagation()}
                           onClick={(e) => {
                             e.stopPropagation()
@@ -202,11 +297,10 @@ export const MiniSectionsSlot = forwardRef<HTMLDivElement, MiniSectionsSlotProps
                   />
                 </div>
               )
-              })}
-            </div>
-          </MiniStripCellSideProvider>
-        )}
-      </div>
-    )
-  },
-)
+            })}
+          </div>
+        </MiniStripCellSideProvider>
+      )}
+    </div>
+  )
+})

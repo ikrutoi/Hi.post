@@ -249,6 +249,10 @@
   box-shadow: none;
 }
 
+.mergedTopChrome_rightBorderBlue {
+  border-right-color: $color-font-blue;
+}
+
 // Width set inline from form.getBoundingClientRect().right − chrome.left (see App.tsx).
 .mergedTopChrome_measuredToForm {
   max-width: 100%;
@@ -366,6 +370,7 @@
   background-color: #fff;
   border-top: 1px solid $color-app-strip;
   border-bottom: 1px solid $color-app-strip;
+  // background-color: aqua;
 }
 
 .mainCardPanelEntryLeft_inactive {
