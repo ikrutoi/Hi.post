@@ -332,6 +332,17 @@
   }
 }
 
+.toolbarSectionEditorMenuCardPieCopyLocked {
+  .toolbarKey {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .toolbarKey:hover {
+    background-color: $color-app-strip;
+  }
+}
+
 // .toolbarRightSidebar {
 //   .toolbarKeyActive {
 //     color: $color-app-sidebar-icon-active;

@@ -3,7 +3,10 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
-import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import {
+  selectCardPieCopyStripExpanded,
+  selectCartListPanelOpen,
+} from '@cart/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { setHistoryListPanelOpen } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -45,6 +48,9 @@ function* handleSectionEditorMenuActiveSectionChange(
 ) {
   const activeKey = action.payload
   const cartOpen: boolean = yield select(selectCartListPanelOpen)
+  const cardPieCopyStripExpanded: boolean = yield select(
+    selectCardPieCopyStripExpanded,
+  )
 
   if (activeKey === 'history') {
     yield put(setHistoryListPanelOpen(true))
@@ -57,7 +63,9 @@ function* handleSectionEditorMenuActiveSectionChange(
     )
   }
 
-  if (activeKey === 'date' && cartOpen) {
+  if (cardPieCopyStripExpanded) {
+    yield call(syncSectionMenuVisualsAllEnabled)
+  } else if (activeKey === 'date' && cartOpen) {
     yield call(syncSectionMenuVisualsAllEnabled)
   } else {
     yield call(syncSectionMenuVisuals, activeKey)

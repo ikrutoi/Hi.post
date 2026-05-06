@@ -5,6 +5,7 @@ import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
 import {
@@ -111,6 +112,10 @@ export const Toolbar = ({
               : section === 'cardPieList'
                 ? cardPieListSortDirection
                 : undefined
+
+  const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
+  const sectionEditorMenuLockedByCardPieCopy =
+    section === 'sectionEditorMenu' && cardPieCopyStripExpanded
 
   useEffect(() => {
     if (groupRef.current) {
@@ -285,7 +290,11 @@ export const Toolbar = ({
         data-icon-state={buttonStatus}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
         onMouseDown={(e) => {
-          if (groupStatus === 'disabled' || buttonStatus === 'disabled') {
+          if (
+            sectionEditorMenuLockedByCardPieCopy ||
+            groupStatus === 'disabled' ||
+            buttonStatus === 'disabled'
+          ) {
             e.preventDefault()
             return
           }
@@ -326,6 +335,8 @@ export const Toolbar = ({
         styles.toolbar,
         styles[`toolbar${capitalize(section)}`],
         mergedWithCenter && styles.toolbarMergedWithCenter,
+        sectionEditorMenuLockedByCardPieCopy &&
+          styles.toolbarSectionEditorMenuCardPieCopyLocked,
       )}
       style={toolbarStyle}
     >
