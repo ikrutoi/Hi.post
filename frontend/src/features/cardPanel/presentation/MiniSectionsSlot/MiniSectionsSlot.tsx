@@ -52,6 +52,7 @@ export type MiniSectionsSlotProps = {
   embedded?: boolean
   rightModeActive?: boolean
   cardPieCopyStripActive?: boolean
+  onPanelMiniSectionsToolbarAction?: (key: IconKey) => void
   /** CardPie Copy: open section with peek chrome (no `CardSectionToolbar`), same as list pie sectors. */
   onActivateSectionPeekNoToolbar?: (section: CardSection) => void
 }
@@ -99,6 +100,7 @@ export const MiniSectionsSlot = forwardRef<
     embedded = false,
     rightModeActive = false,
     cardPieCopyStripActive = false,
+    onPanelMiniSectionsToolbarAction,
     onActivateSectionPeekNoToolbar,
   },
   ref,
@@ -162,9 +164,14 @@ export const MiniSectionsSlot = forwardRef<
     (key: IconKey) => {
       if (key === 'cardPieCheck') {
         dispatch(setCardPieCopyStripExpanded(false))
+        return
       }
+      if (key === 'cardPieEdit') {
+        dispatch(setCardPieCopyStripExpanded(false))
+      }
+      onPanelMiniSectionsToolbarAction?.(key)
     },
-    [dispatch],
+    [dispatch, onPanelMiniSectionsToolbarAction],
   )
 
   return (

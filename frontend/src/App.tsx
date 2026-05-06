@@ -62,6 +62,7 @@ const App = () => {
   const cardPanelRef = useRef<HTMLDivElement>(null)
   const mergedTopChromeRef = useRef<HTMLDivElement>(null)
   const leftPieWrapRef = useRef<HTMLDivElement>(null)
+  const cardPieCopyClosedByEditRef = useRef(false)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
   /** After turning off cardPieCopy: switch to left pie and keep `cardPieEdit` enabled until clicked again. */
@@ -337,8 +338,14 @@ const App = () => {
       prevShowTopCardStripFullSpanRef.current &&
       !showTopCardStripFullSpan
     ) {
-      setSuppressCardPieEditActiveAfterCopy(true)
-      setActivePieSide('left')
+      if (cardPieCopyClosedByEditRef.current) {
+        cardPieCopyClosedByEditRef.current = false
+        setSuppressCardPieEditActiveAfterCopy(false)
+        setActivePieSide('right')
+      } else {
+        setSuppressCardPieEditActiveAfterCopy(true)
+        setActivePieSide('left')
+      }
     }
     prevShowTopCardStripFullSpanRef.current = showTopCardStripFullSpan
   }, [showTopCardStripFullSpan])
@@ -414,8 +421,12 @@ const App = () => {
   const handlePostcardPieCartToolbarAction = useCallback(
     (key: string) => {
       if (key === 'cardPieEdit') {
+        if (cardPieCopyStripExpanded) {
+          cardPieCopyClosedByEditRef.current = true
+          dispatch(setCardPieCopyStripExpanded(false))
+        }
         setSuppressCardPieEditActiveAfterCopy(false)
-        setActivePieSide((prev) => (prev === 'left' ? 'right' : 'left'))
+        setActivePieSide('right')
         return
       }
       if (key === 'cardPieCopy') {
@@ -426,6 +437,11 @@ const App = () => {
   )
   const handleEditorPieToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
+  }, [])
+  const handlePanelMiniSectionsToolbarAction = useCallback((key: string) => {
+    if (key !== 'cardPieEdit') return
+    setSuppressCardPieEditActiveAfterCopy(false)
+    setActivePieSide('right')
   }, [])
   const postcardPieCartToolbarStateOverride = useMemo(
     () =>
@@ -527,6 +543,9 @@ const App = () => {
                       ref={cardPanelRef}
                       embedded
                       cardPieCopyStripActive={showTopCardStripFullSpan}
+                      onPanelMiniSectionsToolbarAction={
+                        handlePanelMiniSectionsToolbarAction
+                      }
                       onActivateSectionPeekNoToolbar={
                         syncPeekChromeForOpenedSection
                       }
@@ -602,6 +621,9 @@ const App = () => {
                       ref={cardPanelRef}
                       rightModeActive={activePieSide === 'right'}
                       cardPieCopyStripActive={showTopCardStripFullSpan}
+                      onPanelMiniSectionsToolbarAction={
+                        handlePanelMiniSectionsToolbarAction
+                      }
                       onActivateSectionPeekNoToolbar={
                         syncPeekChromeForOpenedSection
                       }
