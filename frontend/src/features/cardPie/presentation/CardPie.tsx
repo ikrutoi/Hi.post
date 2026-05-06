@@ -47,6 +47,8 @@ export const CardPie: React.FC<CardPieProps> = ({
   rightListSource = null,
   onListArchiveSectorClick,
   onBeforeLeftPieSectorClick,
+  onLeftPieCenterClick,
+  leftPieCenterClickable = false,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const photoFillId = `${pieDefsUid}-photo-apply`
@@ -627,9 +629,17 @@ export const CardPie: React.FC<CardPieProps> = ({
         className={clsx(
           styles.pieCenterButton,
           allSectionsFilled && styles.pieCenterButtonActive,
+          station === 'left' &&
+            leftPieCenterClickable &&
+            styles.pieCenterButtonPointer,
         )}
-        disabled={!allSectionsFilled}
+        disabled={station === 'left' ? false : !allSectionsFilled}
         aria-label="Hi.post"
+        onClick={() => {
+          if (station === 'left') {
+            onLeftPieCenterClick?.()
+          }
+        }}
       >
         <span
           className={clsx(

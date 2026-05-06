@@ -19,6 +19,10 @@ export interface CardPieProps {
   onListArchiveSectorClick?: (section: CardSection) => void
   /** Левый пирог: вызвать перед сменой секции (сброс peek cardphoto со строки справа). */
   onBeforeLeftPieSectorClick?: () => void
+  /** Левый пирог: клик по центральной иконке (например, вернуть левый режим). */
+  onLeftPieCenterClick?: () => void
+  /** Левый пирог: показать pointer на центральной иконке. */
+  leftPieCenterClickable?: boolean
 }
 
 export interface CardPieRefs {

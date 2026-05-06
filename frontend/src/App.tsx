@@ -243,6 +243,25 @@ const App = () => {
     [dispatch, syncPeekChromeForOpenedSection],
   )
 
+  const handleBeforeLeftPieInteraction = useCallback(() => {
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
+    if (activePieSide === 'right') {
+      setSuppressCardPieEditActiveAfterCopy(true)
+      setActivePieSide('left')
+    }
+  }, [activePieSide])
+
+  const handleLeftPieCenterClick = useCallback(() => {
+    if (activePieSide === 'right') {
+      setSuppressCardPieEditActiveAfterCopy(true)
+      setActivePieSide('left')
+    }
+  }, [activePieSide])
+
   const clearRightPieCardphotoPeek = useCallback(() => {
     setRightPieCardphotoPeekNoToolbar(false)
   }, [])
@@ -551,13 +570,9 @@ const App = () => {
                           isProcessed
                           fillContainer
                           station="left"
-                          onBeforeLeftPieSectorClick={() => {
-                            setRightPieCardphotoPeekNoToolbar(false)
-                            setRightPieCardtextPeekNoToolbar(false)
-                            setRightPieEnvelopePeekNoToolbar(false)
-                            setRightPieAromaPeekNoToolbar(false)
-                            setRightPieDatePeekNoToolbar(false)
-                          }}
+                          onBeforeLeftPieSectorClick={handleBeforeLeftPieInteraction}
+                          onLeftPieCenterClick={handleLeftPieCenterClick}
+                          leftPieCenterClickable={activePieSide === 'right'}
                         />
                       </div>
                       <div className={styles.appMainContentLeftPieToolbar}>
@@ -603,13 +618,11 @@ const App = () => {
                             isProcessed
                             fillContainer
                             station="left"
-                            onBeforeLeftPieSectorClick={() => {
-                              setRightPieCardphotoPeekNoToolbar(false)
-                              setRightPieCardtextPeekNoToolbar(false)
-                              setRightPieEnvelopePeekNoToolbar(false)
-                              setRightPieAromaPeekNoToolbar(false)
-                              setRightPieDatePeekNoToolbar(false)
-                            }}
+                            onBeforeLeftPieSectorClick={
+                              handleBeforeLeftPieInteraction
+                            }
+                            onLeftPieCenterClick={handleLeftPieCenterClick}
+                            leftPieCenterClickable={activePieSide === 'right'}
                           />
                         </div>
                         <div className={styles.appMainContentLeftPieToolbar}>
