@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react'
 import clsx from 'clsx'
-import { useAppDispatch } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
@@ -21,6 +22,7 @@ type Props = {
  */
 export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
   const dispatch = useAppDispatch()
+  const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
 
   const goDate = useCallback(() => {
     dispatch(setHistoryListPanelOpen(false))
@@ -75,6 +77,10 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
     )
     dispatch(setActiveSection('history'))
   }, [dispatch])
+
+  if (cardPieCopyStripExpanded) {
+    return null
+  }
 
   return (
     <div className={styles.track}>

@@ -7,6 +7,11 @@
   // border: solid 1px red;
 }
 
+.cardSectionToolbarDisabled {
+  pointer-events: none;
+  cursor: default;
+}
+
 .cardSectionToolbarHeader {
   height: 100%;
   display: flex;
