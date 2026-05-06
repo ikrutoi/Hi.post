@@ -334,6 +334,24 @@ const App = () => {
 
   const prevShowTopCardStripFullSpanRef = useRef(showTopCardStripFullSpan)
   useEffect(() => {
+    const activeFactorySection =
+      activeSection === 'cardphoto' ||
+      activeSection === 'cardtext' ||
+      activeSection === 'envelope' ||
+      activeSection === 'aroma' ||
+      activeSection === 'date'
+        ? activeSection
+        : null
+
+    if (
+      !prevShowTopCardStripFullSpanRef.current &&
+      showTopCardStripFullSpan &&
+      activeFactorySection != null
+    ) {
+      // When entering copy mode from a regular factory section view,
+      // switch that section into simplified peek chrome.
+      syncPeekChromeForOpenedSection(activeFactorySection)
+    }
     if (
       prevShowTopCardStripFullSpanRef.current &&
       !showTopCardStripFullSpan
@@ -348,7 +366,7 @@ const App = () => {
       }
     }
     prevShowTopCardStripFullSpanRef.current = showTopCardStripFullSpan
-  }, [showTopCardStripFullSpan])
+  }, [showTopCardStripFullSpan, activeSection, syncPeekChromeForOpenedSection])
 
   const centerStripMirrorValue = useMemo(() => {
     const stripMirrorsRightListPostcard =
