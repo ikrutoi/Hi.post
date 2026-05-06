@@ -39,6 +39,7 @@ import {
 import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
+import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 
 interface CardtextProps {
   styleLeft: number
@@ -346,23 +347,23 @@ export const Cardtext: React.FC<CardtextProps> = (props) => {
     listRowInner,
     listRowLocalId,
   } = useRightListArchiveMini()
+  const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
 
   if (centerStripListMirrorEnabled && activePieSide === 'right') {
     return <CardtextRightListMirror />
   }
 
   if (rightPieCardtextPeekNoToolbar && listRowInner != null) {
-    return (
-      <NotebookPeekShell>
-        <CardtextListRowPeekPreview
-          key={
-            listRowLocalId != null ? `peek-row-${listRowLocalId}` : 'peek-row'
-          }
-          inner={listRowInner}
-          rowLocalId={listRowLocalId}
-        />
-      </NotebookPeekShell>
+    const peek = (
+      <CardtextListRowPeekPreview
+        key={
+          listRowLocalId != null ? `peek-row-${listRowLocalId}` : 'peek-row'
+        }
+        inner={listRowInner}
+        rowLocalId={listRowLocalId}
+      />
     )
+    return notebookTabsOuter ? peek : <NotebookPeekShell>{peek}</NotebookPeekShell>
   }
 
   return <CardtextSessionEditor {...props} />

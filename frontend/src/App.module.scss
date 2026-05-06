@@ -176,6 +176,12 @@
   border-color: transparent;
 }
 
+.appMainContentLeftPieSlot_copyLocked {
+  .appMainContentLeftPieWrap {
+    pointer-events: none;
+  }
+}
+
 .appMainContentLeftPieSlot_mergedWithCenter {
   grid-column: 1 / 11;
   // flex-start: merged chrome may be narrower than the slot (align right edge with card column).

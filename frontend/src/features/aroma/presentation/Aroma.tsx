@@ -6,12 +6,14 @@ import { AROMA_LIST } from '@entities/aroma/domain/constants'
 import { useAromaFacade } from '../application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
+import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { setCartItemCardAroma } from '@cart/infrastructure/state'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import styles from './Aroma.module.scss'
 import type { AromaItem } from '@entities/aroma/domain/types'
 
 export const Aroma: React.FC = () => {
+  const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const dispatch = useAppDispatch()
   const { selectedAroma, chooseAroma } = useAromaFacade()
   const {
@@ -56,33 +58,30 @@ export const Aroma: React.FC = () => {
     const rowAroma = listRowInner?.aroma ?? null
     const peekSrc =
       rowAroma != null ? getAromaImage(rowAroma.index) : null
-    return (
-      <NotebookPeekShell>
-        <div
-          key={
-            listRowLocalId != null
-              ? `peek-aroma-${listRowLocalId}`
-              : 'peek-aroma'
-          }
-          className={styles.aroma}
-        >
-          <div className={clsx(styles.form, styles.formPeek)}>
-            {peekSrc ? (
-              <img
-                className={styles.peekMask}
-                src={peekSrc}
-                alt={
-                  rowAroma?.index === 0
-                    ? ''
-                    : `Aroma slot ${rowAroma?.index ?? ''}`
-                }
-                draggable={false}
-              />
-            ) : null}
-          </div>
+    const peek = (
+      <div
+        key={
+          listRowLocalId != null ? `peek-aroma-${listRowLocalId}` : 'peek-aroma'
+        }
+        className={styles.aroma}
+      >
+        <div className={clsx(styles.form, styles.formPeek)}>
+          {peekSrc ? (
+            <img
+              className={styles.peekMask}
+              src={peekSrc}
+              alt={
+                rowAroma?.index === 0
+                  ? ''
+                  : `Aroma slot ${rowAroma?.index ?? ''}`
+              }
+              draggable={false}
+            />
+          ) : null}
         </div>
-      </NotebookPeekShell>
+      </div>
     )
+    return notebookTabsOuter ? peek : <NotebookPeekShell>{peek}</NotebookPeekShell>
   }
 
   return (

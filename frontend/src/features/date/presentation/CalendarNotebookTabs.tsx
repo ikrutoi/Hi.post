@@ -9,8 +9,18 @@ import {
   setHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
+import type { CardSection } from '@shared/config/constants'
 import styles from './CalendarNotebookTabs.module.scss'
 import type { DateStripSection } from './dateStripSection.types'
+
+/** Закладки гасим только на секциях карточки; «Дата» и «История» в сайдбаре оставляют полоску в рабочем режиме (в т.ч. после клика по 3-й закладке). */
+const STRIP_TABS_DIM_FOR_SIDEBAR_SECTIONS = new Set<CardSection>([
+  'cardphoto',
+  'cardtext',
+  'envelope',
+  'aroma',
+])
 
 type Props = {
   /** Какой режим полосы календаря активен — соответствующая закладка выше на 50%. */
@@ -23,6 +33,11 @@ type Props = {
 export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
   const dispatch = useAppDispatch()
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
+  const factorySidebarSection = useAppSelector(selectActiveSection)
+  /** На секциях карточки закладки без активной высоты; для «Дата» / «История» подсветка по режиму полосы. */
+  const stripTabsInactive =
+    factorySidebarSection != null &&
+    STRIP_TABS_DIM_FOR_SIDEBAR_SECTIONS.has(factorySidebarSection)
 
   const goDate = useCallback(() => {
     dispatch(setHistoryListPanelOpen(false))
@@ -82,17 +97,21 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
     return null
   }
 
+  const tab1Active = !stripTabsInactive && section === 'date'
+  const tab2Active = !stripTabsInactive && section === 'cart'
+  const tab3Active = !stripTabsInactive && section === 'history'
+
   return (
     <div className={styles.track}>
       <ul className={styles.list} role="tablist" aria-label="Calendar strip mode">
         <li
           role="tab"
-          aria-selected={section === 'date'}
+          aria-selected={tab1Active}
           tabIndex={0}
           className={clsx(
             styles.tab,
             styles.tab1,
-            section === 'date' && styles.tabActive,
+            tab1Active && styles.tabActive,
           )}
           onClick={goDate}
           onKeyDown={(e) => {
@@ -104,12 +123,12 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
         />
         <li
           role="tab"
-          aria-selected={section === 'cart'}
+          aria-selected={tab2Active}
           tabIndex={0}
           className={clsx(
             styles.tab,
             styles.tab2,
-            section === 'cart' && styles.tabActive,
+            tab2Active && styles.tabActive,
           )}
           onClick={goCart}
           onKeyDown={(e) => {
@@ -121,12 +140,12 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
         />
         <li
           role="tab"
-          aria-selected={section === 'history'}
+          aria-selected={tab3Active}
           tabIndex={0}
           className={clsx(
             styles.tab,
             styles.tab3,
-            section === 'history' && styles.tabActive,
+            tab3Active && styles.tabActive,
           )}
           onClick={goHistory}
           onKeyDown={(e) => {

@@ -37,6 +37,7 @@ import type { DateStripSection } from './dateStripSection.types'
 import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 
 function isPeekDispatchDateFilled(d: DispatchDate | null | undefined): boolean {
   if (d == null) return false
@@ -65,6 +66,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   section,
 }) => {
   const dispatch = useAppDispatch()
+  const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const { rightPieDatePeekNoToolbar, listRowInner, listRowLocalId } =
     useRightListArchiveMini()
   const currentDate = useMemo(() => getCurrentDate(), [])
@@ -219,33 +221,34 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
       d.month < (listOfMonthOfYear as readonly string[]).length
         ? (listOfMonthOfYear as readonly string[])[d.month]
         : ''
+    const peekBody = (
+      <div
+        key={
+          listRowLocalId != null ? `peek-date-${listRowLocalId}` : 'peek-date'
+        }
+        className={clsx(styles.form, styles.formPeek)}
+      >
+        {d != null ? (
+          <div className={styles.peekDateStack}>
+            <div className={styles.peekYear}>{d.year}</div>
+            <div className={styles.peekDay}>{d.day}</div>
+            <div className={styles.peekMonth}>{monthLabel}</div>
+          </div>
+        ) : null}
+      </div>
+    )
     return (
       <div className={styles.date}>
-        <NotebookPeekShell section={section}>
-          <div
-            key={
-              listRowLocalId != null
-                ? `peek-date-${listRowLocalId}`
-                : 'peek-date'
-            }
-            className={clsx(styles.form, styles.formPeek)}
-          >
-            {d != null ? (
-              <div className={styles.peekDateStack}>
-                <div className={styles.peekYear}>{d.year}</div>
-                <div className={styles.peekDay}>{d.day}</div>
-                <div className={styles.peekMonth}>{monthLabel}</div>
-              </div>
-            ) : null}
-          </div>
-        </NotebookPeekShell>
+        {notebookTabsOuter ? (
+          peekBody
+        ) : (
+          <NotebookPeekShell section={section}>{peekBody}</NotebookPeekShell>
+        )}
       </div>
     )
   }
 
-  return (
-    <div className={styles.date}>
-      <NotebookPeekShell section={section}>
+  const calendarBody = (
         <form
           className={styles.form}
           onKeyDown={handleKeyDown}
@@ -317,7 +320,15 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
         </div>
 
         </form>
-      </NotebookPeekShell>
+  )
+
+  return (
+    <div className={styles.date}>
+      {notebookTabsOuter ? (
+        calendarBody
+      ) : (
+        <NotebookPeekShell section={section}>{calendarBody}</NotebookPeekShell>
+      )}
     </div>
   )
 }

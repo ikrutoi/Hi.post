@@ -4,6 +4,7 @@ import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { CardphotoView } from './CardphotoView/CardphotoView'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
+import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import styles from './Cardphoto.module.scss'
 import viewStyles from './CardphotoView/CardphotoView.module.scss'
@@ -86,6 +87,7 @@ export const Cardphoto: React.FC = () => {
     listRowInner,
     listRowLocalId,
   } = useRightListArchiveMini()
+  const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
 
   /** Зеркало в фабрике только при активном правом пироге; при cardPieCopy (левый пирог) — полный редактор сессии. */
   if (centerStripListMirrorEnabled && activePieSide === 'right') {
@@ -93,16 +95,15 @@ export const Cardphoto: React.FC = () => {
   }
 
   if (rightPieCardphotoPeekNoToolbar && listRowInner != null) {
-    return (
-      <NotebookPeekShell>
-        <CardphotoInnerPreviewOnly
-          key={
-            listRowLocalId != null ? `peek-row-${listRowLocalId}` : 'peek-row'
-          }
-          inner={listRowInner}
-        />
-      </NotebookPeekShell>
+    const peek = (
+      <CardphotoInnerPreviewOnly
+        key={
+          listRowLocalId != null ? `peek-row-${listRowLocalId}` : 'peek-row'
+        }
+        inner={listRowInner}
+      />
     )
+    return notebookTabsOuter ? peek : <NotebookPeekShell>{peek}</NotebookPeekShell>
   }
 
   return <CardphotoSessionEditor />

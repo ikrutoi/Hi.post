@@ -547,6 +547,7 @@ const App = () => {
               className={clsx(
                 styles.appMainContentLeftPieSlot,
                 mergeLeft && styles.appMainContentLeftPieSlot_mergedWithCenter,
+                showTopCardStripFullSpan && styles.appMainContentLeftPieSlot_copyLocked,
                 activePieSide === 'left'
                   ? styles.appMainContentLeftPieSlot_active
                   : styles.appMainContentLeftPieSlot_inactive,
@@ -572,7 +573,9 @@ const App = () => {
                           station="left"
                           onBeforeLeftPieSectorClick={handleBeforeLeftPieInteraction}
                           onLeftPieCenterClick={handleLeftPieCenterClick}
-                          leftPieCenterClickable={activePieSide === 'right'}
+                          leftPieCenterClickable={
+                            activePieSide === 'right' && !showTopCardStripFullSpan
+                          }
                         />
                       </div>
                       <div className={styles.appMainContentLeftPieToolbar}>
@@ -622,7 +625,9 @@ const App = () => {
                               handleBeforeLeftPieInteraction
                             }
                             onLeftPieCenterClick={handleLeftPieCenterClick}
-                            leftPieCenterClickable={activePieSide === 'right'}
+                            leftPieCenterClickable={
+                              activePieSide === 'right' && !showTopCardStripFullSpan
+                            }
                           />
                         </div>
                         <div className={styles.appMainContentLeftPieToolbar}>

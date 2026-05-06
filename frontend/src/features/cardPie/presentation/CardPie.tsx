@@ -633,10 +633,13 @@ export const CardPie: React.FC<CardPieProps> = ({
             leftPieCenterClickable &&
             styles.pieCenterButtonPointer,
         )}
-        disabled={station === 'left' ? false : !allSectionsFilled}
+        disabled={station === 'left' ? !leftPieCenterClickable : !allSectionsFilled}
         aria-label="Hi.post"
+        onMouseDown={(e) => {
+          e.stopPropagation()
+        }}
         onClick={() => {
-          if (station === 'left') {
+          if (station === 'left' && leftPieCenterClickable) {
             onLeftPieCenterClick?.()
           }
         }}

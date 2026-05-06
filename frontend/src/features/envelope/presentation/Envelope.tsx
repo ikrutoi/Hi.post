@@ -11,6 +11,7 @@ import { useSenderFacade } from '../sender/application/facades'
 import { IconUserSenderCentered, IconUsers } from '@shared/ui/icons'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
+import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -18,6 +19,7 @@ type EnvelopeProps = {
 }
 
 export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
+  const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const lang = getSafeLang(i18n.language)
   const recipientFacade = useRecipientFacade()
   const senderFacade = useSenderFacade()
@@ -126,7 +128,11 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   )
 
   return rightPieEnvelopePeekNoToolbar ? (
-    <NotebookPeekShell>{body}</NotebookPeekShell>
+    notebookTabsOuter ? (
+      body
+    ) : (
+      <NotebookPeekShell>{body}</NotebookPeekShell>
+    )
   ) : (
     body
   )
