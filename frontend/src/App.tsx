@@ -424,6 +424,14 @@ const App = () => {
         if (cardPieCopyStripExpanded) {
           cardPieCopyClosedByEditRef.current = true
           dispatch(setCardPieCopyStripExpanded(false))
+          setSuppressCardPieEditActiveAfterCopy(false)
+          setActivePieSide('right')
+          return
+        }
+        if (activePieSide === 'right') {
+          setSuppressCardPieEditActiveAfterCopy(true)
+          setActivePieSide('left')
+          return
         }
         setSuppressCardPieEditActiveAfterCopy(false)
         setActivePieSide('right')
@@ -433,7 +441,7 @@ const App = () => {
         dispatch(setCardPieCopyStripExpanded(!cardPieCopyStripExpanded))
       }
     },
-    [dispatch, cardPieCopyStripExpanded],
+    [dispatch, cardPieCopyStripExpanded, activePieSide],
   )
   const handleEditorPieToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
@@ -533,7 +541,9 @@ const App = () => {
                         <Toolbar
                           section="editorPie"
                           onActionClick={handleEditorPieToolbarAction}
-                          mergedWithCenter={activePieSide === 'left'}
+                          mergedWithCenter={
+                            activePieSide === 'left' || showTopCardStripFullSpan
+                          }
                         />
                       </div>
                     </div>
@@ -583,7 +593,9 @@ const App = () => {
                           <Toolbar
                             section="editorPie"
                             onActionClick={handleEditorPieToolbarAction}
-                            mergedWithCenter={activePieSide === 'left'}
+                            mergedWithCenter={
+                              activePieSide === 'left' || showTopCardStripFullSpan
+                            }
                           />
                         </div>
                       </div>
