@@ -17,7 +17,10 @@ import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectCardphotoAppliedData } from '@cardphoto/infrastructure/selectors'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { selectSelectedDates } from '@date/infrastructure/selectors'
-import { selectCardtextState } from '@cardtext/infrastructure/selectors'
+import {
+  selectCardtextMiniPreviewHasRenderableContent,
+  selectCardtextState,
+} from '@cardtext/infrastructure/selectors'
 import {
   selectAppliedRecipientDisplayAddress,
 } from '@envelope/recipient/infrastructure/selectors'
@@ -118,6 +121,9 @@ export const MiniSectionsSlot = forwardRef<
   const selectedAroma = useAppSelector(selectSelectedAroma)
   const selectedDates = useAppSelector(selectSelectedDates)
   const cardtextState = useAppSelector(selectCardtextState)
+  const cardtextMiniPreviewRenderable = useAppSelector(
+    selectCardtextMiniPreviewHasRenderableContent,
+  )
   const appliedRecipientAddress = useAppSelector(selectAppliedRecipientDisplayAddress)
   const appliedSenderAddress = useAppSelector(selectAppliedSenderDisplayAddress)
   const cartItems = useAppSelector(selectCartItems)
@@ -222,7 +228,9 @@ export const MiniSectionsSlot = forwardRef<
                         ? mergedDispatchDates.length === 0
                         : section === 'envelope'
                           ? !isSectionComplete && !hasEnvelopeApplied
-                          : !isSectionComplete
+                          : section === 'cardtext'
+                            ? !cardtextMiniPreviewRenderable
+                            : !isSectionComplete
                   return (
                     <div
                       key={section}

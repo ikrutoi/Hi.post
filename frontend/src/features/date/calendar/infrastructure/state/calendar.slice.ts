@@ -7,6 +7,7 @@ import {
   PostcardStatuses,
   PostcardStatusesCount,
 } from '@/entities/postcard/domain/types'
+import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 
 export const EMPTY_DAY_DATA: CardCalendarIndex = {
   processed: null,
@@ -25,6 +26,11 @@ export type DayPanelPayload = {
 
 type CalendarState = {
   lastViewedCalendarDate: CalendarViewDate
+  /**
+   * Активная закладка полосы Date / Cart / History в фабрике (центр + peek).
+   * Синхронизируется сагой с `activeSection`, корзиной и панелью истории.
+   */
+  notebookStripTab: DateStripSection
   historyListPanelOpen: boolean
   /** Выбранная строка списка истории — правый CardPie по `localId` открытки. */
   historyListSelectedLocalId: number | null
@@ -44,6 +50,7 @@ const initialState: CalendarState = {
     year: now.year,
     month: now.month,
   },
+  notebookStripTab: 'date',
   dateListPanelOpen: false,
   cardPieListPanelOpen: false,
   historyListPanelOpen: false,
@@ -137,6 +144,10 @@ const calendarSlice = createSlice({
     setHistoryListSelectedLocalId(state, action: PayloadAction<number | null>) {
       state.historyListSelectedLocalId = action.payload
     },
+
+    setNotebookStripTab(state, action: PayloadAction<DateStripSection>) {
+      state.notebookStripTab = action.payload
+    },
   },
 })
 
@@ -152,5 +163,6 @@ export const {
   setPostcardStatuses,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
+  setNotebookStripTab,
 } = calendarSlice.actions
 export default calendarSlice.reducer

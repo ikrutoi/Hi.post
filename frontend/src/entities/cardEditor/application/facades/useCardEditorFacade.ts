@@ -1,4 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { store } from '@app/state'
 import { resetEditor, setHoveredSection } from '../../infrastructure/state'
 import {
   selectCardEditorState,
@@ -12,7 +13,10 @@ import { clearDate } from '@date/infrastructure/state'
 import { clear as clearAroma } from '@aroma/infrastructure/state'
 import { setSenderApplied } from '@envelope/sender/infrastructure/state'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
-import { setCardtextAppliedData } from '@cardtext/infrastructure/state'
+import {
+  clearText,
+  setCardtextAppliedData,
+} from '@cardtext/infrastructure/state'
 import { clearApply } from '@cardphoto/infrastructure/state'
 
 export const useCardEditorFacade = () => {
@@ -35,9 +39,15 @@ export const useCardEditorFacade = () => {
         dispatch(setSenderApplied(false))
         dispatch(setRecipientApplied(false))
         break
-      case 'cardtext':
-        dispatch(setCardtextAppliedData(null))
+      case 'cardtext': {
+        const applied = store.getState().cardtext.appliedData
+        if (applied != null) {
+          dispatch(setCardtextAppliedData(null))
+        } else {
+          dispatch(clearText())
+        }
         break
+      }
       case 'cardphoto':
         dispatch(clearApply())
         break

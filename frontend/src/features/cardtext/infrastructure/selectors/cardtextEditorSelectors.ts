@@ -17,6 +17,7 @@ import {
   deriveCardtextInteractionMode,
   type CardtextInteractionMode,
 } from '../../domain/cardtextInteractionMode'
+import { cardtextHasRenderableContent } from '../../domain/editor/editor.types'
 
 const fallbackCardtextSessionContent: CardtextContent =
   createInitialCardtextContent()
@@ -210,6 +211,65 @@ export const selectCardtextAssetMatchesApplied = (
   if (aid == null || pid == null) return false
   return String(aid) === String(pid)
 }
+
+/**
+ * Контент для мини-секции / `selectCardtextMiniPreviewHasRenderableContent`:
+ * выбранный в списке шаблон (`inLine` / `outLine`) не попадает в превью, пока не нажат Apply —
+ * до этого показываем только `appliedData` (то, что уже на открытке).
+ */
+export const selectCardtextDisplayForMiniStrip = createSelector(
+  [
+    (s: RootState) => s.cardtext.assetData,
+    (s: RootState) => s.cardtext.appliedData,
+    (s: RootState) => s.cardtext.isCardtextViewEditMode === true,
+    selectCardtextAssetMatchesApplied,
+  ],
+  (asset, applied, isViewEditMode, assetMatchesApplied): CardtextContent => {
+    const listBrowsingNotCommitted =
+      asset != null &&
+      (asset.status === 'inLine' || asset.status === 'outLine') &&
+      !assetMatchesApplied
+
+    let branch: CardtextContent | null = null
+
+    if (listBrowsingNotCommitted) {
+      branch = applied
+    } else {
+      const draftLike =
+        isViewEditMode || (asset != null && asset.status === 'draft')
+      if (draftLike) {
+        branch = asset
+      } else {
+        branch = displayCardtextBranch(asset, applied)
+      }
+    }
+
+    if (branch == null) {
+      return {
+        ...createInitialCardtextContent(),
+        value: cloneCardtextValue(initialCardtextValue),
+      }
+    }
+
+    return {
+      ...createInitialCardtextContent(),
+      id: branch.id,
+      status: branch.status,
+      value: cloneCardtextValue(branch.value),
+      plainText: branch.plainText,
+      style: { ...branch.style },
+      title: branch.title ?? '',
+      cardtextLines: branch.cardtextLines,
+      favorite: branch.favorite,
+      timestamp: branch.timestamp,
+    }
+  },
+)
+
+export const selectCardtextMiniPreviewHasRenderableContent = createSelector(
+  [selectCardtextDisplayForMiniStrip],
+  (preview) => cardtextHasRenderableContent(preview),
+)
 
 export const selectFontSizeStep = (state: RootState): number =>
   state.cardtext.assetData?.style?.fontSizeStep ??

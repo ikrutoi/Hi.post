@@ -18,6 +18,7 @@ import {
   watchHistoryToolbar,
   watchExclusiveListPanels,
   watchApplyArchiveSection,
+  watchNotebookStripTabSync,
 } from '../middleware'
 
 export function* rootSaga() {
@@ -46,5 +47,6 @@ export function* rootSaga() {
     fork(watchHistoryToolbar),
     fork(watchExclusiveListPanels),
     fork(watchApplyArchiveSection),
+    fork(watchNotebookStripTabSync),
   ])
 }

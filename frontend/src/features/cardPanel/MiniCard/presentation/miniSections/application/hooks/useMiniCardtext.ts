@@ -9,16 +9,9 @@ import {
 } from '@cardtext/domain/types'
 import { calculateEditorLayout } from '@cardtext/application/helpers'
 import { useSizeFacade } from '@layout/application/facades'
-import {
-  selectCardtextValue,
-  selectCardtextPlainText,
-  selectCardtextStyle,
-  selectCardtextLines,
-} from '@cardtext/infrastructure/selectors'
+import { selectCardtextDisplayForMiniStrip } from '@cardtext/infrastructure/selectors'
 import {
   cardtextHasRenderableContent,
-  createInitialCardtextContent,
-  type CardtextContent,
   type CardtextStyle,
 } from '@cardtext/domain/editor/editor.types'
 import type { CSSProperties } from 'react'
@@ -54,10 +47,10 @@ export function buildMiniCardtextMiniSurfaceStyle(
 /** `editorMountKey` — отдельный экземпляр Slate при смене зеркала/строки списка. */
 export const useMiniCardtext = (editorMountKey = 'default') => {
   const editor = useMemo(() => withReact(createEditor()), [editorMountKey])
-  const value = useSelector(selectCardtextValue)
-  const plainText = useSelector(selectCardtextPlainText)
-  const displayStyle = useSelector(selectCardtextStyle)
-  const cardtextLines = useSelector(selectCardtextLines)
+  const miniDisplay = useSelector(selectCardtextDisplayForMiniStrip)
+  const value = miniDisplay.value
+  const displayStyle = miniDisplay.style as CardtextStyle
+  const cardtextLines = miniDisplay.cardtextLines
 
   const { sizeMiniCard } = useSizeFacade()
 
@@ -67,19 +60,8 @@ export const useMiniCardtext = (editorMountKey = 'default') => {
     sizeMiniCard?.height,
   )
 
-  /** Та же ветка, что и в фабрике/левом пироге (`displayCardtextBranch` внутри селекторов). */
-  const sessionPreview = useMemo(
-    (): CardtextContent => ({
-      ...createInitialCardtextContent(),
-      value,
-      plainText,
-      style: displayStyle,
-      cardtextLines,
-    }),
-    [value, plainText, displayStyle, cardtextLines],
-  )
-
-  const shouldShowMiniText = cardtextHasRenderableContent(sessionPreview)
+  /** До Apply шаблон из списка не попадает в мини — см. `selectCardtextDisplayForMiniStrip`. */
+  const shouldShowMiniText = cardtextHasRenderableContent(miniDisplay)
 
   return { editor, value, style, shouldShowMiniText }
 }

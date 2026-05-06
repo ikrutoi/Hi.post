@@ -4,6 +4,7 @@ import {
 } from '@/entities/postcard/domain/types'
 import type { RootState } from '@app/state'
 import type { CalendarViewDate } from '@entities/date/domain/types'
+import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { createSelector } from '@reduxjs/toolkit'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
@@ -12,6 +13,19 @@ import type { DayPanelPayload } from '../state/calendar.slice'
 export const selectLastCalendarViewDate = (
   state: RootState,
 ): CalendarViewDate => state.calendar.lastViewedCalendarDate
+
+/** Ожидаемая закладка полосы по текущему Redux (источник для синхронизации `notebookStripTab`). */
+export const computeNotebookStripTabFromState = (
+  state: RootState,
+): DateStripSection => {
+  if (state.sectionEditorMenu.activeSection === 'history') return 'history'
+  if (state.cart.isActive) return 'cart'
+  if (state.calendar.historyListPanelOpen) return 'history'
+  return 'date'
+}
+
+export const selectNotebookStripTab = (state: RootState): DateStripSection =>
+  state.calendar.notebookStripTab
 
 export const selectIsDateListPanelOpen = (state: RootState): boolean =>
   state.calendar.dateListPanelOpen

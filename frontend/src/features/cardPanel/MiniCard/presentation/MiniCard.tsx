@@ -12,6 +12,7 @@ import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { useAppSelector } from '@app/hooks'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import { selectCardtextMiniPreviewHasRenderableContent } from '@cardtext/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 
 interface MiniCardProps {
@@ -56,6 +57,9 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const { editorState, removeSection } = useCardEditorFacade()
   const hasEnvelopeApplied = useAppSelector(selectHasEnvelopeAppliedContent)
   const mergedDispatchDates = useAppSelector(selectMergedDispatchDates)
+  const cardtextMiniRenderable = useAppSelector(
+    selectCardtextMiniPreviewHasRenderableContent,
+  )
 
   const { render } = useMiniCardRender()
 
@@ -67,7 +71,13 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         ? hasEnvelopeApplied
         : section === 'date'
           ? mergedDispatchDates.length > 0
-          : (editorState as any)?.[section]?.isComplete === true
+          : section === 'cardtext'
+            ? cardtextMiniRenderable ||
+              (editorState as { cardtext?: { isComplete?: boolean } }).cardtext
+                ?.isComplete === true
+            : (editorState as Record<string, { isComplete?: boolean }>)[
+                section
+              ]?.isComplete === true
       : false
 
   return (
