@@ -361,6 +361,11 @@ const App = () => {
         setSuppressCardPieEditActiveAfterCopy(false)
         setActivePieSide('right')
       } else {
+        setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
         setSuppressCardPieEditActiveAfterCopy(true)
         setActivePieSide('left')
       }
