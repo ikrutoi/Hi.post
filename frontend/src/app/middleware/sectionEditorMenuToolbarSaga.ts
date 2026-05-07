@@ -8,13 +8,39 @@ import {
   selectCartListPanelOpen,
 } from '@cart/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
-import { setHistoryListPanelOpen } from '@date/calendar/infrastructure/state'
+import {
+  setHistoryListPanelOpen,
+  setNotebookStripTab,
+} from '@date/calendar/infrastructure/state'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   syncSectionMenuVisuals,
   syncSectionMenuVisualsAllEnabled,
   syncRightSidebarHistoryHighlight,
 } from './sectionEditorMenuHandlers'
+
+import type { SagaIterator } from 'redux-saga'
+
+function* applySectionEditorMenuToolbarVisuals(): SagaIterator {
+  const activeKey = yield select(selectActiveSection)
+  if (activeKey == null) return
+
+  const notebookStripTab = yield select(selectNotebookStripTab)
+  const cardPieCopyStripExpanded: boolean = yield select(
+    selectCardPieCopyStripExpanded,
+  )
+
+  if (cardPieCopyStripExpanded) {
+    yield call(syncSectionMenuVisualsAllEnabled)
+  } else if (activeKey === 'date' && notebookStripTab === 'cart') {
+    /** Режим полосы «Корзина»: календарь корзины при `activeSection === 'date'` — пункт «Дата» в меню без active. */
+    yield call(syncSectionMenuVisualsAllEnabled)
+  } else {
+    yield call(syncSectionMenuVisuals, activeKey)
+  }
+}
 
 export function* handleSectionEditorMenuToolbarAction(
   action: PayloadAction<{ section: string; key: SectionEditorMenuKey }>,
@@ -45,12 +71,8 @@ export function* handleSectionEditorMenuToolbarAction(
 
 function* handleSectionEditorMenuActiveSectionChange(
   action: PayloadAction<SectionEditorMenuKey>,
-) {
+): SagaIterator {
   const activeKey = action.payload
-  const cartOpen: boolean = yield select(selectCartListPanelOpen)
-  const cardPieCopyStripExpanded: boolean = yield select(
-    selectCardPieCopyStripExpanded,
-  )
 
   if (activeKey === 'history') {
     yield put(setHistoryListPanelOpen(true))
@@ -63,14 +85,16 @@ function* handleSectionEditorMenuActiveSectionChange(
     )
   }
 
-  if (cardPieCopyStripExpanded) {
-    yield call(syncSectionMenuVisualsAllEnabled)
-  } else if (activeKey === 'date' && cartOpen) {
-    yield call(syncSectionMenuVisualsAllEnabled)
-  } else {
-    yield call(syncSectionMenuVisuals, activeKey)
-  }
+  yield call(applySectionEditorMenuToolbarVisuals)
   yield call(syncRightSidebarHistoryHighlight, activeKey)
+}
+
+function* syncSectionMenuOnNotebookStripTabChange(): SagaIterator {
+  yield call(applySectionEditorMenuToolbarVisuals)
+  const activeKey = yield select(selectActiveSection)
+  if (activeKey != null) {
+    yield call(syncRightSidebarHistoryHighlight, activeKey)
+  }
 }
 
 export function* sectionEditorMenuSaga() {
@@ -78,5 +102,9 @@ export function* sectionEditorMenuSaga() {
   yield takeEvery(
     setActiveSection.type,
     handleSectionEditorMenuActiveSectionChange,
+  )
+  yield takeEvery(
+    setNotebookStripTab.type,
+    syncSectionMenuOnNotebookStripTabChange,
   )
 }

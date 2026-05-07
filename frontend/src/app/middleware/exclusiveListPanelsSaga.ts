@@ -5,11 +5,13 @@ import {
   setDateListPanelOpen,
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
+  setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
 import {
   selectIsDateListPanelOpen,
   selectIsHistoryListPanelOpen,
   selectIsCardPieListPanelOpen,
+  selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { setCardphotoListPanelOpen } from '@cardphoto/infrastructure/state'
 import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
@@ -42,11 +44,15 @@ function* syncListPanelToolbarIcons(): SagaIterator {
   )
 
   const cartListOpen: boolean = yield select(selectCartListPanelOpen)
+  const notebookStripTab = yield select(selectNotebookStripTab)
+  /** Закладка «Дата» на календаре: иконка корзины в сайдбаре без active, даже если список открыт. */
+  const cartSidebarHighlightActive =
+    cartListOpen && notebookStripTab !== 'date'
   yield put(
     updateToolbarIcon({
       section: 'rightSidebar',
       key: 'cart',
-      value: cartListOpen ? 'active' : 'enabled',
+      value: cartSidebarHighlightActive ? 'active' : 'enabled',
     }),
   )
 
@@ -178,6 +184,10 @@ function* closeOtherListPanels(action: {
   yield* syncListPanelToolbarIcons()
 }
 
+function* syncListPanelToolbarIconsOnNotebookStripTab(): SagaIterator {
+  yield* syncListPanelToolbarIcons()
+}
+
 export function* watchExclusiveListPanels(): SagaIterator {
   yield all([
     takeEvery(setDateListPanelOpen.type, closeOtherListPanels),
@@ -187,5 +197,9 @@ export function* watchExclusiveListPanels(): SagaIterator {
     takeEvery(setCardphotoListPanelOpen.type, closeOtherListPanels),
     takeEvery(setCardtextListPanelOpen.type, closeOtherListPanels),
     takeEvery(setActiveAddressList.type, closeOtherListPanels),
+    takeEvery(
+      setNotebookStripTab.type,
+      syncListPanelToolbarIconsOnNotebookStripTab,
+    ),
   ])
 }
