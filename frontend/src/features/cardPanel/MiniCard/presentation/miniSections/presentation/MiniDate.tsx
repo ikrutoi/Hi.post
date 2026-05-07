@@ -23,29 +23,10 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
     const dates = mirrorInner.dates
     const count = dates.length
     if (count === 0) return null
-    const multi = count > 1
     const first = dates[0]
+    if (!first) return null
 
-    if (!multi && first) {
-      return (
-        <div
-          className={clsx(
-            styles.miniDate,
-            styles.visible,
-            isHovered && styles.hovered,
-          )}
-          onMouseEnter={() => setHovered('date')}
-          onMouseLeave={() => setHovered(null)}
-        >
-          <span className={styles.miniDateYear}>{first.year}</span>
-          <span className={styles.miniDateDay}>{first.day}</span>
-          <span className={styles.miniDateMonth}>
-            {listOfMonthOfYear[first.month]}
-          </span>
-        </div>
-      )
-    }
-
+    /** Как в левом режиме для multi: голубой фон ManyCircles и концентрические круги; одна дата — не упрощённый текстовый блок без фона. */
     const circleCount = Math.min(count, 10)
     const { steps } = getDateMultiMiniCircleSteps(circleCount)
     const isSingleMulti = count === 1
