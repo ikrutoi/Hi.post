@@ -74,6 +74,7 @@ export const Cell: React.FC<CellProps> = ({
 
   const dynamicClass = clsx(
     styles.cell,
+    suppressDispatchSelectionStyle && styles.cart,
     historyEmptyNoPreview && styles.historyEmptyNoPreview,
     adjacentMonthPointer && styles.adjacentMonthPointer,
     isToday && styles.today,

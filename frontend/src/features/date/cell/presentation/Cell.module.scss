@@ -37,6 +37,16 @@ $cell-border-radius: 0.35rem;
   &.adjacentMonth.adjacentMonthPointer {
     cursor: pointer;
   }
+
+  /** Режим Корзина: дни не выглядят кликабельными по курсору. */
+  &.cart,
+  &.cart.adjacentMonth.adjacentMonthPointer {
+    cursor: default;
+  }
+
+  &.cart .navArrowWrap {
+    cursor: default;
+  }
 }
 
 .dayNumber {

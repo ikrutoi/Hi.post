@@ -6,6 +6,7 @@ import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
   closeDayPanel,
+  setCardPieListPanelOpen,
   setHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -57,6 +58,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
         value: 'enabled',
       }),
     )
+    dispatch(setCardPieListPanelOpen(true))
     dispatch(setActiveSection('date'))
   }, [dispatch])
 

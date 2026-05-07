@@ -9,6 +9,14 @@ import {
 } from '@/entities/postcard/domain/types'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 
+const CALENDAR_STRIP_TAB_SESSION_KEY = 'hi.post.calendarStripTab'
+
+const getInitialNotebookStripTab = (): DateStripSection => {
+  if (typeof window === 'undefined') return 'date'
+  const saved = window.sessionStorage.getItem(CALENDAR_STRIP_TAB_SESSION_KEY)
+  return saved === 'cart' || saved === 'history' ? saved : 'date'
+}
+
 export const EMPTY_DAY_DATA: CardCalendarIndex = {
   processed: null,
   cart: [],
@@ -50,7 +58,7 @@ const initialState: CalendarState = {
     year: now.year,
     month: now.month,
   },
-  notebookStripTab: 'date',
+  notebookStripTab: getInitialNotebookStripTab(),
   dateListPanelOpen: false,
   cardPieListPanelOpen: false,
   historyListPanelOpen: false,

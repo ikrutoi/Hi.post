@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
@@ -6,6 +13,7 @@ import {
   selectHistoryOpenDayPanelArchiveLocalId,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
+  selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { Header } from './features/header/presentation/Header'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
@@ -38,7 +46,10 @@ import {
   selectCartItems,
   selectCardPieCopyStripExpanded,
 } from '@cart/infrastructure/selectors'
-import { setCardPieCopyStripExpanded } from '@cart/infrastructure/state'
+import {
+  setCardPieCopyStripExpanded,
+  setCartListPanelOpen,
+} from '@cart/infrastructure/state'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
@@ -56,6 +67,7 @@ import styles from './App.module.scss'
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
 const App = () => {
+  const CALENDAR_STRIP_TAB_SESSION_KEY = 'hi.post.calendarStripTab'
   const appRef = useRef<HTMLDivElement>(null)
   const mainRef = useRef<HTMLDivElement>(null)
   const formRef = useRef<HTMLDivElement>(null)
@@ -84,6 +96,7 @@ const App = () => {
   const cardPieCopyStripExpanded = useAppSelector(
     selectCardPieCopyStripExpanded,
   )
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
 
   useAuthInit()
   useLayoutInit()
@@ -104,6 +117,32 @@ const App = () => {
     localId: number | null
     source: 'cart' | 'history' | null
   }>({ localId: null, source: null })
+
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return
+    const savedTab = window.sessionStorage.getItem(
+      CALENDAR_STRIP_TAB_SESSION_KEY,
+    )
+    if (savedTab === 'cart') {
+      dispatch(setCartListPanelOpen(true))
+      dispatch(setHistoryListPanelOpen(false))
+      dispatch(setActiveSection('date'))
+      return
+    }
+    if (savedTab === 'history') {
+      dispatch(setCartListPanelOpen(false))
+      dispatch(setHistoryListPanelOpen(true))
+      dispatch(setActiveSection('history'))
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    window.sessionStorage.setItem(
+      CALENDAR_STRIP_TAB_SESSION_KEY,
+      notebookStripTab,
+    )
+  }, [notebookStripTab])
 
   useEffect(() => {
     const prev = prevActiveSectionRef.current
