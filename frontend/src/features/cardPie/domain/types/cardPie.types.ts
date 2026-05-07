@@ -23,6 +23,8 @@ export interface CardPieProps {
   onLeftPieCenterClick?: () => void
   /** Левый пирог: показать pointer на центральной иконке. */
   leftPieCenterClickable?: boolean
+  /** Правый пирог: центральная кнопка (напр. переход к календарю истории на месяц открытки). */
+  onRightPieCenterClick?: () => void
 }
 
 export interface CardPieRefs {

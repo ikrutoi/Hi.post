@@ -5,6 +5,10 @@ import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/sta
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import {
+  setHistoryListPanelOpen,
+  setNotebookStripTab,
+} from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   syncSectionMenuVisuals,
@@ -41,6 +45,9 @@ export function* handleRightSidebarToolbarAction(
     const nextOpen = !isCartActive
     yield put(setCartListPanelOpen(nextOpen))
     if (nextOpen) {
+      yield put(setHistoryListPanelOpen(false))
+      /** Полоса держится сагой синхронизации (`cart.isActive` → `cart`). */
+      yield put(setNotebookStripTab('cart'))
       yield put(setActiveSection('date'))
       /** `setActiveSection('date')` без смены Redux-секции не триггерит сагу — всё равно снимаем active с иконки «Дата» в меню. */
       yield call(syncSectionMenuVisualsAllEnabled)
@@ -79,6 +86,8 @@ export function* handleRightSidebarToolbarAction(
     if (cartListOpen) {
       yield put(setCartListPanelOpen(false))
     }
+    yield put(setNotebookStripTab('history'))
+    yield put(setHistoryListPanelOpen(true))
     yield put(setActiveSection('history'))
   }
 }

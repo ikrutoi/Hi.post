@@ -49,6 +49,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   onBeforeLeftPieSectorClick,
   onLeftPieCenterClick,
   leftPieCenterClickable = false,
+  onRightPieCenterClick,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
   const photoFillId = `${pieDefsUid}-photo-apply`
@@ -632,8 +633,17 @@ export const CardPie: React.FC<CardPieProps> = ({
           station === 'left' &&
             leftPieCenterClickable &&
             styles.pieCenterButtonPointer,
+          station === 'right' &&
+            onRightPieCenterClick != null &&
+            styles.pieCenterButtonPointer,
         )}
-        disabled={station === 'left' ? !leftPieCenterClickable : !allSectionsFilled}
+        disabled={
+          station === 'left'
+            ? !leftPieCenterClickable
+            : onRightPieCenterClick != null
+              ? false
+              : !allSectionsFilled
+        }
         aria-label="Hi.post"
         onMouseDown={(e) => {
           e.stopPropagation()
@@ -641,6 +651,10 @@ export const CardPie: React.FC<CardPieProps> = ({
         onClick={() => {
           if (station === 'left' && leftPieCenterClickable) {
             onLeftPieCenterClick?.()
+            return
+          }
+          if (station === 'right') {
+            onRightPieCenterClick?.()
           }
         }}
       >

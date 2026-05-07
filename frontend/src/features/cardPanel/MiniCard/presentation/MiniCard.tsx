@@ -1,5 +1,8 @@
 import React, { useRef } from 'react'
 import clsx from 'clsx'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { useRemSize } from '@shared/helpers'
 import { capitalize } from '@shared/utils/helpers'
@@ -9,7 +12,7 @@ import styles from './MiniCard.module.scss'
 import type { CardSection } from '@shared/config/constants'
 import type { SizeCard } from '@layout/domain/types'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
-import { useAppSelector } from '@app/hooks'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectCardtextMiniPreviewHasRenderableContent } from '@cardtext/infrastructure/selectors'
@@ -44,6 +47,8 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   onActivateSectionPeekNoToolbar,
   onBeforeOpenSection,
 }) => {
+  const dispatch = useAppDispatch()
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
   const {
@@ -102,6 +107,16 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       }}
       onClick={() => {
         onBeforeOpenSection?.()
+        if (section === 'date' && cartListPanelOpen) {
+          dispatch(setCartListPanelOpen(false))
+          dispatch(
+            updateToolbarIcon({
+              section: 'rightSidebar',
+              key: 'cart',
+              value: 'enabled',
+            }),
+          )
+        }
         if (section === 'cardphoto') {
           clearRightPieCardphotoPeek()
         }

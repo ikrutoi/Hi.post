@@ -18,15 +18,22 @@ export const selectLastCalendarViewDate = (
 export const computeNotebookStripTabFromState = (
   state: RootState,
 ): DateStripSection => {
-  if (state.sectionEditorMenu.activeSection === 'history') return 'history'
-  if (
-    state.cart.isActive &&
-    (state.cart.listSelectedLocalId != null ||
-      (state.sectionEditorMenu.activeSection === 'date' &&
-        state.calendar.notebookStripTab === 'cart'))
-  ) {
-    return 'cart'
+  const activeSection = state.sectionEditorMenu.activeSection
+  /**
+   * Явный выбор закладки «Дата» при открытой корзине — полоса «Дата», список корзины не закрываем.
+   */
+  if (state.cart.isActive && state.calendar.notebookStripDateOverCart) {
+    return 'date'
   }
+  /**
+   * Список корзины открыт — полоса «Корзина», пока пользователь не выбрал «Дата» выше.
+   */
+  if (state.cart.isActive) return 'cart'
+  if (activeSection === 'history') return 'history'
+  /**
+   * Контекст истории (список / день / выбор строки): полоса «История», даже когда
+   * peek по сектору «Дата» правого CardPie ставит `activeSection === 'date'`.
+   */
   if (
     state.calendar.historyListPanelOpen &&
     (state.calendar.historyListSelectedLocalId != null ||
@@ -34,6 +41,8 @@ export const computeNotebookStripTabFromState = (
   ) {
     return 'history'
   }
+  /** Обычное редактирование секции «Дата». */
+  if (activeSection === 'date') return 'date'
   return 'date'
 }
 

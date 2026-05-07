@@ -62,11 +62,31 @@ import {
   closeDayPanel,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
+  setNotebookStripTab,
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
+import type { DispatchDate } from '@entities/date/domain/types'
+import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import styles from './App.module.scss'
+
+function primaryDispatchDateFromPieInner(
+  inner: CardPieInnerData | null,
+): DispatchDate | null {
+  if (inner == null) return null
+  const filled = (d: DispatchDate | null | undefined): d is DispatchDate =>
+    d != null &&
+    !(
+      d.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&
+      d.month === POSTCARD_DISPATCH_DATE_FALLBACK.month &&
+      d.day === POSTCARD_DISPATCH_DATE_FALLBACK.day
+    )
+  if (inner.dates.length > 0 && filled(inner.dates[0])) return inner.dates[0]
+  if (filled(inner.date)) return inner.date
+  return null
+}
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
 const App = () => {
@@ -234,56 +254,91 @@ const App = () => {
 
   const listRowInner = rightListArchiveBundle?.currentData?.data ?? null
 
-  const syncPeekChromeForOpenedSection = useCallback(
-    (section: CardSection) => {
-      if (section === 'cardphoto') {
-        setRightPieCardphotoPeekNoToolbar(true)
-        setRightPieCardtextPeekNoToolbar(false)
-        setRightPieEnvelopePeekNoToolbar(false)
-        setRightPieAromaPeekNoToolbar(false)
-        setRightPieDatePeekNoToolbar(false)
-      } else if (section === 'cardtext') {
-        setRightPieCardtextPeekNoToolbar(true)
-        setRightPieCardphotoPeekNoToolbar(false)
-        setRightPieEnvelopePeekNoToolbar(false)
-        setRightPieAromaPeekNoToolbar(false)
-        setRightPieDatePeekNoToolbar(false)
-      } else if (section === 'envelope') {
-        setRightPieEnvelopePeekNoToolbar(true)
-        setRightPieCardphotoPeekNoToolbar(false)
-        setRightPieCardtextPeekNoToolbar(false)
-        setRightPieAromaPeekNoToolbar(false)
-        setRightPieDatePeekNoToolbar(false)
-      } else if (section === 'aroma') {
-        setRightPieAromaPeekNoToolbar(true)
-        setRightPieCardphotoPeekNoToolbar(false)
-        setRightPieCardtextPeekNoToolbar(false)
-        setRightPieEnvelopePeekNoToolbar(false)
-        setRightPieDatePeekNoToolbar(false)
-      } else if (section === 'date') {
-        setRightPieDatePeekNoToolbar(true)
-        setRightPieCardphotoPeekNoToolbar(false)
-        setRightPieCardtextPeekNoToolbar(false)
-        setRightPieEnvelopePeekNoToolbar(false)
-        setRightPieAromaPeekNoToolbar(false)
-      } else {
-        setRightPieCardphotoPeekNoToolbar(false)
-        setRightPieCardtextPeekNoToolbar(false)
-        setRightPieEnvelopePeekNoToolbar(false)
-        setRightPieAromaPeekNoToolbar(false)
-        setRightPieDatePeekNoToolbar(false)
-      }
-    },
-    [],
-  )
+  const syncPeekChromeForOpenedSection = useCallback((section: CardSection) => {
+    if (section === 'cardphoto') {
+      setRightPieCardphotoPeekNoToolbar(true)
+      setRightPieCardtextPeekNoToolbar(false)
+      setRightPieEnvelopePeekNoToolbar(false)
+      setRightPieAromaPeekNoToolbar(false)
+      setRightPieDatePeekNoToolbar(false)
+    } else if (section === 'cardtext') {
+      setRightPieCardtextPeekNoToolbar(true)
+      setRightPieCardphotoPeekNoToolbar(false)
+      setRightPieEnvelopePeekNoToolbar(false)
+      setRightPieAromaPeekNoToolbar(false)
+      setRightPieDatePeekNoToolbar(false)
+    } else if (section === 'envelope') {
+      setRightPieEnvelopePeekNoToolbar(true)
+      setRightPieCardphotoPeekNoToolbar(false)
+      setRightPieCardtextPeekNoToolbar(false)
+      setRightPieAromaPeekNoToolbar(false)
+      setRightPieDatePeekNoToolbar(false)
+    } else if (section === 'aroma') {
+      setRightPieAromaPeekNoToolbar(true)
+      setRightPieCardphotoPeekNoToolbar(false)
+      setRightPieCardtextPeekNoToolbar(false)
+      setRightPieEnvelopePeekNoToolbar(false)
+      setRightPieDatePeekNoToolbar(false)
+    } else if (section === 'date') {
+      setRightPieDatePeekNoToolbar(true)
+      setRightPieCardphotoPeekNoToolbar(false)
+      setRightPieCardtextPeekNoToolbar(false)
+      setRightPieEnvelopePeekNoToolbar(false)
+      setRightPieAromaPeekNoToolbar(false)
+    } else {
+      setRightPieCardphotoPeekNoToolbar(false)
+      setRightPieCardtextPeekNoToolbar(false)
+      setRightPieEnvelopePeekNoToolbar(false)
+      setRightPieAromaPeekNoToolbar(false)
+      setRightPieDatePeekNoToolbar(false)
+    }
+  }, [])
 
   const handleRightListPieSectorClick = useCallback(
     (section: CardSection) => {
       dispatch(setActiveSection(section))
-      syncPeekChromeForOpenedSection(section)
+      const copyStripFullSpan =
+        cardPieCopyStripExpanded && rightListArchiveLocalId != null
+      const fullFactoryFromRightPie =
+        activePieSide === 'right' && !copyStripFullSpan
+      if (fullFactoryFromRightPie) {
+        setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
+      } else {
+        syncPeekChromeForOpenedSection(section)
+      }
     },
-    [dispatch, syncPeekChromeForOpenedSection],
+    [
+      dispatch,
+      activePieSide,
+      cardPieCopyStripExpanded,
+      rightListArchiveLocalId,
+      syncPeekChromeForOpenedSection,
+    ],
   )
+
+  /** История + правый CardPie: центр → режим календаря History, месяц по дате открытки; правый CardPie не трогаем (повторный `setHistoryListPanelOpen(true)` без side effects см. slice). */
+  const handleRightPieCenterHistoryCalendarJump = useCallback(() => {
+    const d = primaryDispatchDateFromPieInner(listRowInner)
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
+    dispatch(setNotebookStripTab('history'))
+    dispatch(setActiveSection('history'))
+    if (d != null) {
+      dispatch(updateLastViewedCalendarDate({ year: d.year, month: d.month }))
+    }
+  }, [dispatch, listRowInner])
+
+  const rightPieOnCenterClickHistoryStrip =
+    notebookStripTab === 'history' && rightListArchiveSource === 'history'
+      ? handleRightPieCenterHistoryCalendarJump
+      : undefined
 
   const exitRightPreviewForLeftMode = useCallback(() => {
     dispatch(setCartListSelectedLocalId(null))
@@ -420,10 +475,7 @@ const App = () => {
       // switch that section into simplified peek chrome.
       syncPeekChromeForOpenedSection(activeFactorySection)
     }
-    if (
-      prevShowTopCardStripFullSpanRef.current &&
-      !showTopCardStripFullSpan
-    ) {
+    if (prevShowTopCardStripFullSpanRef.current && !showTopCardStripFullSpan) {
       if (cardPieCopyClosedByEditRef.current) {
         cardPieCopyClosedByEditRef.current = false
         setSuppressCardPieEditActiveAfterCopy(false)
@@ -592,8 +644,7 @@ const App = () => {
             <div
               className={clsx(
                 styles.appMainTopRowBackdrop,
-                showTopCardStripFullSpan &&
-                  styles.appMainTopRowBackdropActive,
+                showTopCardStripFullSpan && styles.appMainTopRowBackdropActive,
               )}
               aria-hidden
             />
@@ -604,7 +655,8 @@ const App = () => {
               className={clsx(
                 styles.appMainContentLeftPieSlot,
                 mergeLeft && styles.appMainContentLeftPieSlot_mergedWithCenter,
-                showTopCardStripFullSpan && styles.appMainContentLeftPieSlot_copyLocked,
+                showTopCardStripFullSpan &&
+                  styles.appMainContentLeftPieSlot_copyLocked,
                 activePieSide === 'left'
                   ? styles.appMainContentLeftPieSlot_active
                   : styles.appMainContentLeftPieSlot_inactive,
@@ -628,10 +680,13 @@ const App = () => {
                           isProcessed
                           fillContainer
                           station="left"
-                          onBeforeLeftPieSectorClick={handleBeforeLeftPieInteraction}
+                          onBeforeLeftPieSectorClick={
+                            handleBeforeLeftPieInteraction
+                          }
                           onLeftPieCenterClick={handleLeftPieCenterClick}
                           leftPieCenterClickable={
-                            activePieSide === 'right' && !showTopCardStripFullSpan
+                            activePieSide === 'right' &&
+                            !showTopCardStripFullSpan
                           }
                         />
                       </div>
@@ -684,7 +739,8 @@ const App = () => {
                             }
                             onLeftPieCenterClick={handleLeftPieCenterClick}
                             leftPieCenterClickable={
-                              activePieSide === 'right' && !showTopCardStripFullSpan
+                              activePieSide === 'right' &&
+                              !showTopCardStripFullSpan
                             }
                           />
                         </div>
@@ -693,7 +749,8 @@ const App = () => {
                             section="editorPie"
                             onActionClick={handleEditorPieToolbarAction}
                             mergedWithCenter={
-                              activePieSide === 'left' || showTopCardStripFullSpan
+                              activePieSide === 'left' ||
+                              showTopCardStripFullSpan
                             }
                           />
                         </div>
@@ -808,6 +865,9 @@ const App = () => {
                             onListArchiveSectorClick={
                               handleRightListPieSectorClick
                             }
+                            onRightPieCenterClick={
+                              rightPieOnCenterClickHistoryStrip
+                            }
                           />
                         </div>
                         {rightListArchiveSource === 'cart' && (
@@ -858,6 +918,9 @@ const App = () => {
                                 rightListSource={rightListArchiveSource}
                                 onListArchiveSectorClick={
                                   handleRightListPieSectorClick
+                                }
+                                onRightPieCenterClick={
+                                  rightPieOnCenterClickHistoryStrip
                                 }
                               />
                             </div>

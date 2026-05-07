@@ -7,6 +7,8 @@ import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPa
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { toggleCartForDispatchBranch } from '@date/infrastructure/state'
 import { CardPieListEntry } from './cardPieList/CardPieListEntry'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
@@ -27,6 +29,7 @@ const CardPiePanelRow: React.FC<{
   canToggleCart?: boolean
 }> = ({ item, onSelectEntry, canToggleCart }) => {
   const dispatch = useAppDispatch()
+  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const cachedUrl = useAppSelector(
     selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
   )
@@ -49,10 +52,12 @@ const CardPiePanelRow: React.FC<{
   const displayUrl = cachedUrl ?? safeFallbackUrl
 
   const handleToggleCart = useCallback(() => {
-    if (item.dispatchBranchKey) {
-      dispatch(toggleCartForDispatchBranch({ branchKey: item.dispatchBranchKey }))
+    if (!item.dispatchBranchKey) return
+    if (!cartListPanelOpen) {
+      dispatch(setCartListPanelOpen(true))
     }
-  }, [dispatch, item.dispatchBranchKey])
+    dispatch(toggleCartForDispatchBranch({ branchKey: item.dispatchBranchKey }))
+  }, [cartListPanelOpen, dispatch, item.dispatchBranchKey])
 
   const onAddCartFromList =
     canToggleCart && item.dispatchBranchKey ? handleToggleCart : undefined

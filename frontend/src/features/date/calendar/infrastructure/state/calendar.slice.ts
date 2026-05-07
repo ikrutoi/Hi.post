@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { getCurrentDate } from '@shared/utils/date'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 import type { CardCalendarIndex } from '@entities/card/domain/types'
@@ -39,6 +40,11 @@ type CalendarState = {
    * Синхронизируется сагой с `activeSection`, корзиной и панелью истории.
    */
   notebookStripTab: DateStripSection
+  /**
+   * Закладка «Дата» при открытом CartListPanel: полоса «Дата», пока корзина не открывают заново снаружи.
+   * Сбрасывается при `setNotebookStripTab('cart'|'history')` и при `setCartListPanelOpen(true)`.
+   */
+  notebookStripDateOverCart: boolean
   historyListPanelOpen: boolean
   /** Выбранная строка списка истории — правый CardPie по `localId` открытки. */
   historyListSelectedLocalId: number | null
@@ -59,6 +65,7 @@ const initialState: CalendarState = {
     month: now.month,
   },
   notebookStripTab: getInitialNotebookStripTab(),
+  notebookStripDateOverCart: false,
   dateListPanelOpen: false,
   cardPieListPanelOpen: false,
   historyListPanelOpen: false,
@@ -141,10 +148,16 @@ const calendarSlice = createSlice({
     },
 
     setHistoryListPanelOpen(state, action: PayloadAction<boolean>) {
+      const wasOpen = state.historyListPanelOpen
       state.historyListPanelOpen = action.payload
-      state.historyListSelectedLocalId = null
-      if (action.payload) {
-        state.dateListPanelOpen = false
+      if (!action.payload) {
+        state.historyListSelectedLocalId = null
+        return
+      }
+      state.dateListPanelOpen = false
+      /** Переход закрыть → открыть: чистый список истории; повторное `true` (сага при том же меню) — сохраняем строку и панель дня для правого CardPie. */
+      if (!wasOpen) {
+        state.historyListSelectedLocalId = null
         state.openDayPanel = null
       }
     },
@@ -155,7 +168,21 @@ const calendarSlice = createSlice({
 
     setNotebookStripTab(state, action: PayloadAction<DateStripSection>) {
       state.notebookStripTab = action.payload
+      if (action.payload === 'cart' || action.payload === 'history') {
+        state.notebookStripDateOverCart = false
+      }
     },
+
+    setNotebookStripDateOverCart(state, action: PayloadAction<boolean>) {
+      state.notebookStripDateOverCart = action.payload
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(setCartListPanelOpen, (state, action) => {
+      if (action.payload === true) {
+        state.notebookStripDateOverCart = false
+      }
+    })
   },
 })
 
@@ -172,5 +199,6 @@ export const {
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
+  setNotebookStripDateOverCart,
 } = calendarSlice.actions
 export default calendarSlice.reducer

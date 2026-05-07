@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
@@ -11,22 +12,13 @@ import {
   closeDayPanel,
   setCardPieListPanelOpen,
   setHistoryListSelectedLocalId,
+  setNotebookStripDateOverCart,
   setNotebookStripTab,
   setHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
-import type { CardSection } from '@shared/config/constants'
 import styles from './CalendarNotebookTabs.module.scss'
 import type { DateStripSection } from './dateStripSection.types'
-
-/** Закладки гасим только на секциях карточки; «Дата» и «История» в сайдбаре оставляют полоску в рабочем режиме (в т.ч. после клика по 3-й закладке). */
-const STRIP_TABS_DIM_FOR_SIDEBAR_SECTIONS = new Set<CardSection>([
-  'cardphoto',
-  'cardtext',
-  'envelope',
-  'aroma',
-])
 
 type Props = {
   /** Какой режим полосы календаря активен — соответствующая закладка выше на 50%. */
@@ -38,20 +30,22 @@ type Props = {
  */
 export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
   const dispatch = useAppDispatch()
-  const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
+  const { activePieSide } = useRightListArchiveMini()
   const factorySidebarSection = useAppSelector(selectActiveSection)
   /**
-   * На секциях карточки закладки обычно без активной высоты.
-   * Исключение: если активен режим корзины или истории, оставляем соответствующую
-   * закладку поднятой при просмотре секций открытки из правого CardPie.
+   * Левый режим + секции не календарной полосы — без общей подсветки.
+   * Если полоса уже «Корзина» или «История» (клик по сектору правого CardPie при списке),
+   * подсвечиваем соответствующую закладку.
    */
-  const stripTabsInactive =
-    factorySidebarSection != null &&
-    STRIP_TABS_DIM_FOR_SIDEBAR_SECTIONS.has(factorySidebarSection) &&
+  const stripTabsNoneActive =
+    activePieSide === 'left' &&
+    factorySidebarSection !== 'date' &&
+    factorySidebarSection !== 'history' &&
     section !== 'cart' &&
     section !== 'history'
 
   const goDate = useCallback(() => {
+    dispatch(setNotebookStripDateOverCart(true))
     dispatch(setCartListSelectedLocalId(null))
     dispatch(setHistoryListSelectedLocalId(null))
     dispatch(closeDayPanel())
@@ -95,13 +89,9 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
     dispatch(setActiveSection('history'))
   }, [dispatch])
 
-  if (cardPieCopyStripExpanded) {
-    return null
-  }
-
-  const tab1Active = !stripTabsInactive && section === 'date'
-  const tab2Active = !stripTabsInactive && section === 'cart'
-  const tab3Active = !stripTabsInactive && section === 'history'
+  const tab1Active = !stripTabsNoneActive && section === 'date'
+  const tab2Active = !stripTabsNoneActive && section === 'cart'
+  const tab3Active = !stripTabsNoneActive && section === 'history'
 
   return (
     <div className={styles.track}>

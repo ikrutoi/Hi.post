@@ -1,4 +1,6 @@
 import { select, put } from 'redux-saga/effects'
+import type { RootState } from '@app/state'
+import { computeNotebookStripTabFromState } from '@date/calendar/infrastructure/selectors'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import type {
@@ -73,16 +75,17 @@ export function* syncSectionMenuVisualsAllEnabled() {
   )
 }
 
-/** Подсветка иконки history в правом сайдбаре при активной секции «История». */
+/** Подсветка иконки history в правом сайдбаре при режиме полосы «История» (в т.ч. peek секций с правого CardPie). */
 export function* syncRightSidebarHistoryHighlight(
-  activeSection: SectionEditorMenuKey,
+  _activeSection: SectionEditorMenuKey,
 ) {
   const section = 'rightSidebar'
   const currentState: RightSidebarToolbarState = yield select(
     selectToolbarSectionState(section),
   )
 
-  const historyActive = activeSection === 'history'
+  const state: RootState = yield select()
+  const historyActive = computeNotebookStripTabFromState(state) === 'history'
 
   const updatedFlatKeys = Object.fromEntries(
     RIGHT_SIDEBAR_KEYS.map((iconKey) => {
