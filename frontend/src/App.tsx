@@ -60,6 +60,7 @@ import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListA
 import {
   closeDayPanel,
   setHistoryListPanelOpen,
+  updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
@@ -492,11 +493,19 @@ const App = () => {
   }, [rightListArchiveLocalId, dispatch])
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
+      if (item.sourceDate) {
+        dispatch(
+          updateLastViewedCalendarDate({
+            year: item.sourceDate.year,
+            month: item.sourceDate.month,
+          }),
+        )
+      }
       const lid = item.postcard?.localId
       if (lid == null) return
       setCartListSelectedLocalId(listSelectedLocalId === lid ? null : lid)
     },
-    [listSelectedLocalId, setCartListSelectedLocalId],
+    [dispatch, listSelectedLocalId, setCartListSelectedLocalId],
   )
 
   const handlePostcardPieCartToolbarAction = useCallback(
