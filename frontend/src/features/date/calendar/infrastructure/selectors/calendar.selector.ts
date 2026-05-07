@@ -19,8 +19,21 @@ export const computeNotebookStripTabFromState = (
   state: RootState,
 ): DateStripSection => {
   if (state.sectionEditorMenu.activeSection === 'history') return 'history'
-  if (state.cart.isActive) return 'cart'
-  if (state.calendar.historyListPanelOpen) return 'history'
+  if (
+    state.cart.isActive &&
+    (state.cart.listSelectedLocalId != null ||
+      (state.sectionEditorMenu.activeSection === 'date' &&
+        state.calendar.notebookStripTab === 'cart'))
+  ) {
+    return 'cart'
+  }
+  if (
+    state.calendar.historyListPanelOpen &&
+    (state.calendar.historyListSelectedLocalId != null ||
+      state.calendar.openDayPanel != null)
+  ) {
+    return 'history'
+  }
   return 'date'
 }
 

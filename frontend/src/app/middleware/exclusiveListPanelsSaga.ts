@@ -149,7 +149,9 @@ function* closeOtherListPanels(action: {
   if (!openingDate && !openingCardphoto) {
     yield put(setDateListPanelOpen(false))
   }
-  if (!openingHistory) yield put(setHistoryListPanelOpen(false))
+  if (!openingHistory && !openingCardPie) {
+    yield put(setHistoryListPanelOpen(false))
+  }
   /** При открытии списка истории закрываем корзину (правый сайдбар). */
   if (openingHistory) {
     yield put(setCartListPanelOpen(false))

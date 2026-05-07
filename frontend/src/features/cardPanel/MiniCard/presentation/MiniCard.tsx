@@ -28,6 +28,7 @@ interface MiniCardProps {
   mirrorApplyCorner?: React.ReactNode
   peekToolbarOnMiniOpen?: boolean
   onActivateSectionPeekNoToolbar?: (section: CardSection) => void
+  onBeforeOpenSection?: () => void
 }
 
 export const MiniCard: React.FC<MiniCardProps> = ({
@@ -41,6 +42,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   mirrorApplyCorner = null,
   peekToolbarOnMiniOpen = false,
   onActivateSectionPeekNoToolbar,
+  onBeforeOpenSection,
 }) => {
   const remSize = useRemSize()
   const miniCardRef = useRef<HTMLDivElement>(null)
@@ -99,6 +101,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         transition: `left ${0.3 + 0.15 * position}s ease, box-shadow 0.3s`,
       }}
       onClick={() => {
+        onBeforeOpenSection?.()
         if (section === 'cardphoto') {
           clearRightPieCardphotoPeek()
         }

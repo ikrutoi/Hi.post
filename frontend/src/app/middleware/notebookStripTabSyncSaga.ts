@@ -6,8 +6,14 @@ import {
   resetActiveSection,
   restoreEditorSession,
 } from '@entities/sectionEditorMenu/infrastructure/state'
-import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import {
+  setCartListPanelOpen,
+  setCartListSelectedLocalId,
+} from '@cart/infrastructure/state'
+import {
+  closeDayPanel,
+  openDayPanel,
+  setHistoryListSelectedLocalId,
   setHistoryListPanelOpen,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
@@ -28,7 +34,11 @@ export function* watchNotebookStripTabSync(): SagaIterator {
       resetActiveSection.type,
       restoreEditorSession.type,
       setCartListPanelOpen.type,
+      setCartListSelectedLocalId.type,
       setHistoryListPanelOpen.type,
+      setHistoryListSelectedLocalId.type,
+      openDayPanel.type,
+      closeDayPanel.type,
     ],
     syncNotebookStripTab,
   )

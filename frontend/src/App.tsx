@@ -49,6 +49,7 @@ import {
 import {
   setCardPieCopyStripExpanded,
   setCartListPanelOpen,
+  setCartListSelectedLocalId,
 } from '@cart/infrastructure/state'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
@@ -60,6 +61,7 @@ import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListA
 import {
   closeDayPanel,
   setHistoryListPanelOpen,
+  setHistoryListSelectedLocalId,
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -283,7 +285,14 @@ const App = () => {
     [dispatch, syncPeekChromeForOpenedSection],
   )
 
+  const exitRightPreviewForLeftMode = useCallback(() => {
+    dispatch(setCartListSelectedLocalId(null))
+    dispatch(setHistoryListSelectedLocalId(null))
+    dispatch(closeDayPanel())
+  }, [dispatch])
+
   const handleBeforeLeftPieInteraction = useCallback(() => {
+    exitRightPreviewForLeftMode()
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
     setRightPieEnvelopePeekNoToolbar(false)
@@ -293,7 +302,7 @@ const App = () => {
       setSuppressCardPieEditActiveAfterCopy(true)
       setActivePieSide('left')
     }
-  }, [activePieSide])
+  }, [activePieSide, exitRightPreviewForLeftMode])
 
   const handleLeftPieCenterClick = useCallback(() => {
     if (activePieSide === 'right') {
@@ -642,6 +651,7 @@ const App = () => {
                       ref={cardPanelRef}
                       embedded
                       cardPieCopyStripActive={showTopCardStripFullSpan}
+                      onBeforeOpenMiniSection={exitRightPreviewForLeftMode}
                       onPanelMiniSectionsToolbarAction={
                         handlePanelMiniSectionsToolbarAction
                       }
@@ -722,6 +732,7 @@ const App = () => {
                       ref={cardPanelRef}
                       rightModeActive={activePieSide === 'right'}
                       cardPieCopyStripActive={showTopCardStripFullSpan}
+                      onBeforeOpenMiniSection={exitRightPreviewForLeftMode}
                       onPanelMiniSectionsToolbarAction={
                         handlePanelMiniSectionsToolbarAction
                       }

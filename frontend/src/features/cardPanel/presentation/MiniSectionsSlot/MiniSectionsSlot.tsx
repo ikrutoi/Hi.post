@@ -58,6 +58,7 @@ export type MiniSectionsSlotProps = {
   onPanelMiniSectionsToolbarAction?: (key: IconKey) => void
   /** CardPie Copy: open section with peek chrome (no `CardSectionToolbar`), same as list pie sectors. */
   onActivateSectionPeekNoToolbar?: (section: CardSection) => void
+  onBeforeOpenMiniSection?: () => void
 }
 
 function canApplyMirrorSection(
@@ -105,6 +106,7 @@ export const MiniSectionsSlot = forwardRef<
     cardPieCopyStripActive = false,
     onPanelMiniSectionsToolbarAction,
     onActivateSectionPeekNoToolbar,
+    onBeforeOpenMiniSection,
   },
   ref,
 ) {
@@ -254,6 +256,9 @@ export const MiniSectionsSlot = forwardRef<
                         }
                         onActivateSectionPeekNoToolbar={
                           onActivateSectionPeekNoToolbar
+                        }
+                        onBeforeOpenSection={
+                          !rightModeActive ? onBeforeOpenMiniSection : undefined
                         }
                         mirrorApplyCorner={
                           showMirrorApplyButtons ? (

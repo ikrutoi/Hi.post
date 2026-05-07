@@ -6,7 +6,7 @@ import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
   closeDayPanel,
-  setCardPieListPanelOpen,
+  setNotebookStripTab,
   setHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -37,33 +37,18 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
   const factorySidebarSection = useAppSelector(selectActiveSection)
   /**
    * На секциях карточки закладки обычно без активной высоты.
-   * Исключение: если активен режим корзины, оставляем закладку «Корзина» поднятой
-   * при просмотре секций открытки из правого CardPie.
+   * Исключение: если активен режим корзины или истории, оставляем соответствующую
+   * закладку поднятой при просмотре секций открытки из правого CardPie.
    */
   const stripTabsInactive =
     factorySidebarSection != null &&
     STRIP_TABS_DIM_FOR_SIDEBAR_SECTIONS.has(factorySidebarSection) &&
-    section !== 'cart'
+    section !== 'cart' &&
+    section !== 'history'
 
   const goDate = useCallback(() => {
-    dispatch(setHistoryListPanelOpen(false))
     dispatch(closeDayPanel())
-    dispatch(
-      updateToolbarIcon({
-        section: 'history',
-        key: 'listHistory',
-        value: 'enabled',
-      }),
-    )
-    dispatch(setCartListPanelOpen(false))
-    dispatch(
-      updateToolbarIcon({
-        section: 'rightSidebar',
-        key: 'cart',
-        value: 'enabled',
-      }),
-    )
-    dispatch(setCardPieListPanelOpen(true))
+    dispatch(setNotebookStripTab('date'))
     dispatch(setActiveSection('date'))
   }, [dispatch])
 
@@ -85,6 +70,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
         value: 'active',
       }),
     )
+    dispatch(setNotebookStripTab('cart'))
     dispatch(setActiveSection('date'))
   }, [dispatch])
 
@@ -97,6 +83,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
         value: 'enabled',
       }),
     )
+    dispatch(setNotebookStripTab('history'))
     dispatch(setActiveSection('history'))
   }, [dispatch])
 
