@@ -335,10 +335,27 @@ const App = () => {
     }
   }, [dispatch, listRowInner])
 
-  const rightPieOnCenterClickHistoryStrip =
+  /** Корзина + правый CardPie: центр → календарь в режиме полосы «Корзина», месяц по дате открытки; не вызывать `setCartListPanelOpen` — сбросит выбор и CardPie. */
+  const handleRightPieCenterCartCalendarJump = useCallback(() => {
+    const d = primaryDispatchDateFromPieInner(listRowInner)
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
+    dispatch(setNotebookStripTab('cart'))
+    dispatch(setActiveSection('date'))
+    if (d != null) {
+      dispatch(updateLastViewedCalendarDate({ year: d.year, month: d.month }))
+    }
+  }, [dispatch, listRowInner])
+
+  const rightPieOnCenterClick =
     notebookStripTab === 'history' && rightListArchiveSource === 'history'
       ? handleRightPieCenterHistoryCalendarJump
-      : undefined
+      : notebookStripTab === 'cart' && rightListArchiveSource === 'cart'
+        ? handleRightPieCenterCartCalendarJump
+        : undefined
 
   const exitRightPreviewForLeftMode = useCallback(() => {
     dispatch(setCartListSelectedLocalId(null))
@@ -866,7 +883,7 @@ const App = () => {
                               handleRightListPieSectorClick
                             }
                             onRightPieCenterClick={
-                              rightPieOnCenterClickHistoryStrip
+                              rightPieOnCenterClick
                             }
                           />
                         </div>
@@ -920,7 +937,7 @@ const App = () => {
                                   handleRightListPieSectorClick
                                 }
                                 onRightPieCenterClick={
-                                  rightPieOnCenterClickHistoryStrip
+                                  rightPieOnCenterClick
                                 }
                               />
                             </div>
