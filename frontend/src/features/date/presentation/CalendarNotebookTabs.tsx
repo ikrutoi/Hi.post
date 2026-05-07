@@ -35,10 +35,15 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
   const dispatch = useAppDispatch()
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const factorySidebarSection = useAppSelector(selectActiveSection)
-  /** На секциях карточки закладки без активной высоты; для «Дата» / «История» подсветка по режиму полосы. */
+  /**
+   * На секциях карточки закладки обычно без активной высоты.
+   * Исключение: если активен режим корзины, оставляем закладку «Корзина» поднятой
+   * при просмотре секций открытки из правого CardPie.
+   */
   const stripTabsInactive =
     factorySidebarSection != null &&
-    STRIP_TABS_DIM_FOR_SIDEBAR_SECTIONS.has(factorySidebarSection)
+    STRIP_TABS_DIM_FOR_SIDEBAR_SECTIONS.has(factorySidebarSection) &&
+    section !== 'cart'
 
   const goDate = useCallback(() => {
     dispatch(setHistoryListPanelOpen(false))
