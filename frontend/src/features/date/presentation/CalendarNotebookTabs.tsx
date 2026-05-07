@@ -2,10 +2,15 @@ import React, { useCallback } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
-import { setCartListPanelOpen } from '@cart/infrastructure/state'
+import {
+  setCartListPanelOpen,
+  setCartListSelectedLocalId,
+} from '@cart/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
   closeDayPanel,
+  setCardPieListPanelOpen,
+  setHistoryListSelectedLocalId,
   setNotebookStripTab,
   setHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/state'
@@ -47,7 +52,10 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
     section !== 'history'
 
   const goDate = useCallback(() => {
+    dispatch(setCartListSelectedLocalId(null))
+    dispatch(setHistoryListSelectedLocalId(null))
     dispatch(closeDayPanel())
+    dispatch(setCardPieListPanelOpen(true))
     dispatch(setNotebookStripTab('date'))
     dispatch(setActiveSection('date'))
   }, [dispatch])
