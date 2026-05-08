@@ -145,7 +145,7 @@
   }
 
   .dotCartBlocked {
-    background-color: $color-preview-indicator-cart-blocked;
+    @include preview-indicator-cart-blocked-ring;
   }
 
   .dotReady {

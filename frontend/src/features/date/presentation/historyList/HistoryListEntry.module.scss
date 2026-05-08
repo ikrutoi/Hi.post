@@ -176,7 +176,7 @@ $list-entry-border: $color-cart-list-border;
   }
 
   &.cartBlocked {
-    background-color: $color-preview-indicator-cart-blocked;
+    @include preview-indicator-cart-blocked-ring;
   }
 
   &.ready {

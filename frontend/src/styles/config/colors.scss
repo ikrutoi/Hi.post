@@ -40,11 +40,19 @@ $color-indicator-low: #f44336;
 
 $color-preview-indicator-processed: #94a3b8;
 $color-preview-indicator-cart: #ffca28;
-$color-preview-indicator-cart-blocked: #d86d2f;
 $color-preview-indicator-ready: #2ecc71;
 $color-preview-indicator-sent: hsl(207, 70%, 47%);
 $color-preview-indicator-delivered: #9b59b6;
 $color-preview-indicator-error: #f44336;
+
+$preview-indicator-cart-blocked-border-width: 2px;
+
+@mixin preview-indicator-cart-blocked-ring {
+  box-sizing: border-box;
+  background-color: $color-preview-indicator-cart;
+  border: $preview-indicator-cart-blocked-border-width solid
+    $color-preview-indicator-error;
+}
 
 $color-preview-row-processed: #f3f6fb;
 $color-preview-row-cart: #fffbee;

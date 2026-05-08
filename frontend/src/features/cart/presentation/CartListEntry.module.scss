@@ -25,7 +25,6 @@ $list-entry-border: $color-cart-list-border;
   --semicircle-row-hover: #{darken($list-entry-surface, 1.5%)};
 
   &[data-inactive='true'] {
-    opacity: 0.78;
     background-color: $color-disabled-light;
     border-color: $color-disabled;
     --semicircle-row-rest: #{$color-disabled-light};
@@ -186,6 +185,7 @@ button.semicircleUp {
 
 .root[data-inactive='true'] .thumbImg {
   filter: grayscale(1);
+  opacity: 0.78;
 }
 
 .thumb {
@@ -223,7 +223,7 @@ button.semicircleUp {
   }
 
   &[data-status='cartBlocked'] {
-    background-color: $color-preview-indicator-cart-blocked;
+    @include preview-indicator-cart-blocked-ring;
   }
 
   &[data-status='ready'] {
