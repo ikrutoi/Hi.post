@@ -88,20 +88,23 @@ function cartPostcardsToEntries(postcards: PostcardHydrated[]): CartListPanelIte
   const currentDate = getCurrentDate()
   return postcards
     .filter((p) => p.status === 'cart')
-    .map((p) => ({
-      id: `cart-${p.id}`,
-      cardId: p.card.id,
-      sourceDate: p.date,
-      postcard: p,
-      dateLabel: formatDispatchDateLabel(p.date),
-      previewUrl: p.card.thumbnailUrl ?? null,
-      detailLine: formatRecipientLine(p),
-      priceLine: listEntryPriceLine(p),
-      variant: isDispatchDateDisabledForOrder(p.date, currentDate)
+    .map((p) => {
+      const variant = isDispatchDateDisabledForOrder(p.date, currentDate)
         ? ('inactive' as const)
-        : ('default' as const),
-      previewIsProcessed: Boolean(p.card.isProcessed),
-    }))
+        : ('default' as const)
+      return {
+        id: `cart-${p.id}`,
+        cardId: p.card.id,
+        sourceDate: p.date,
+        postcard: p,
+        dateLabel: formatDispatchDateLabel(p.date),
+        previewUrl: p.card.thumbnailUrl ?? null,
+        detailLine: formatRecipientLine(p),
+        priceLine: listEntryPriceLine(p),
+        variant,
+        previewIsProcessed: Boolean(p.card.isProcessed),
+      } satisfies CartListPanelItem
+    })
 }
 
 const CartListPanelRow: React.FC<{
@@ -130,6 +133,7 @@ const CartListPanelRow: React.FC<{
   const safeFallbackUrl =
     isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
   const displayUrl = cachedUrl ?? safeFallbackUrl
+  const hidePrice = item.variant === 'inactive'
 
   return (
     <CartListEntry
@@ -137,7 +141,9 @@ const CartListPanelRow: React.FC<{
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
       detailLine={item.detailLine}
-      priceLine={item.priceLine ?? listEntryPriceLine(item.postcard)}
+      priceLine={
+        hidePrice ? undefined : (item.priceLine ?? listEntryPriceLine(item.postcard))
+      }
       variant={item.variant}
       onSelect={onSelectEntry ? () => onSelectEntry(item) : undefined}
       isSelected={isSelected}
@@ -160,20 +166,29 @@ export const CartListPanel: React.FC<Props> = ({
 
   const entries = entriesProp ?? entriesFromStore
   const hasRows = entries.length > 0
+  const activeEntries = useMemo(
+    () => entries.filter((e) => e.variant !== 'inactive'),
+    [entries],
+  )
+  const inactiveEntries = useMemo(
+    () => entries.filter((e) => e.variant === 'inactive'),
+    [entries],
+  )
   const listContentKey = entries.map((e) => e.id).join('|')
 
   const cartTotalDisplay = useMemo(() => {
-    if (entries.length === 0) {
+    const billableEntries = entries.filter((e) => e.variant !== 'inactive')
+    if (billableEntries.length === 0) {
       const emptyLine = listEntryPriceLine(undefined)
       return `0.00 ${currencySuffixFromPriceLine(emptyLine)}`
     }
     let sum = 0
-    for (const e of entries) {
+    for (const e of billableEntries) {
       const line = e.priceLine ?? listEntryPriceLine(e.postcard)
       sum += numericFromPriceLine(line)
     }
     const suffix = currencySuffixFromPriceLine(
-      entries[0].priceLine ?? listEntryPriceLine(entries[0].postcard),
+      billableEntries[0].priceLine ?? listEntryPriceLine(billableEntries[0].postcard),
     )
     return `${sum.toFixed(2)} ${suffix}`
   }, [entries])
@@ -199,17 +214,36 @@ export const CartListPanel: React.FC<Props> = ({
           aria-label="Cart postcards list"
         >
           {hasRows ? (
-            entries.map((item) => (
-              <CartListPanelRow
-                key={item.id}
-                item={item}
-                onSelectEntry={onSelectEntry}
-                isSelected={
-                  item.postcard?.localId != null &&
-                  item.postcard.localId === listSelectedLocalId
-                }
-              />
-            ))
+            <>
+              <div className={styles.listActiveGroup}>
+                {activeEntries.map((item) => (
+                  <CartListPanelRow
+                    key={item.id}
+                    item={item}
+                    onSelectEntry={onSelectEntry}
+                    isSelected={
+                      item.postcard?.localId != null &&
+                      item.postcard.localId === listSelectedLocalId
+                    }
+                  />
+                ))}
+              </div>
+              {inactiveEntries.length > 0 ? (
+                <div className={styles.listInactiveGroup}>
+                  {[...inactiveEntries].reverse().map((item) => (
+                    <CartListPanelRow
+                      key={item.id}
+                      item={item}
+                      onSelectEntry={onSelectEntry}
+                      isSelected={
+                        item.postcard?.localId != null &&
+                        item.postcard.localId === listSelectedLocalId
+                      }
+                    />
+                  ))}
+                </div>
+              ) : null}
+            </>
           ) : (
             <div className={styles.listEmpty} aria-hidden>
               <IconCart className={styles.listEmptyIcon} />

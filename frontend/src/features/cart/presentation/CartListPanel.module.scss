@@ -48,6 +48,21 @@ $list-panel-scroll-inset: 0.35rem;
   }
 }
 
+.listActiveGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+/**
+ * Disabled rows are a separate block pinned near footer.
+ * Reverse render order in TSX makes this block grow from bottom to top.
+ */
+.listInactiveGroup {
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+}
+
 .listEmpty {
   display: flex;
   align-items: center;

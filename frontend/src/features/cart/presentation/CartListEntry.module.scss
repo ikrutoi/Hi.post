@@ -39,10 +39,6 @@ $list-entry-border: $color-cart-list-border;
       color: $color-font-disabled;
     }
 
-    .detailBlock {
-      color: $color-font-disabled;
-    }
-
     .semicircleUp {
       pointer-events: none;
 
@@ -68,11 +64,6 @@ $list-entry-border: $color-cart-list-border;
     box-shadow: -2px 0 0 0 $color-app-sidebar-icon-active;
     --semicircle-row-rest: #{darken($list-entry-surface, 3%)};
     --semicircle-row-hover: #{darken($list-entry-surface, 3%)};
-
-    &[data-inactive='true'] {
-      box-shadow: -2px 0 0 0
-        mix($color-app-sidebar-icon-active, $color-font-disabled, 40%);
-    }
   }
 
   &[data-selected='true'][data-inactive='true'] {
