@@ -2,6 +2,7 @@ import React from 'react'
 import clsx from 'clsx'
 import {
   IconCart,
+  IconCardBlocked,
   IconPostcardSend,
   IconPostcardReady,
   IconPostcardDelivered,
@@ -17,6 +18,8 @@ export type PostcardStatusLegendProps = {
   statusCounts?: Record<PostcardStatus, number>
   calendarDispatchDimmed?: boolean
   calendarCartStripLegendOnly?: boolean
+  /** Упрощённая полоска режима «Корзина»: вторая колонка «заблокировано в корзине» + точка cartBlocked */
+  calendarCartStripBlockedLegend?: boolean
 }
 
 export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
@@ -25,6 +28,7 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
   statusCounts,
   calendarDispatchDimmed = false,
   calendarCartStripLegendOnly = false,
+  calendarCartStripBlockedLegend = false,
 }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
@@ -86,21 +90,37 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
         </div>
         {spot === 'calendar' && calendarCartStripLegendOnly ? (
           <>
-            {[0, 1, 2, 3].map((i) => (
+            {calendarCartStripBlockedLegend ? (
               <div
-                key={`legend-phantom-${i}`}
                 className={clsx(
                   styles.item,
-                  styles.ready,
-                  styles.inactive,
-                  styles.legendPhantom,
+                  styles.cartBlocked,
+                  postcardStatuses.cartBlocked
+                    ? styles.active
+                    : styles.inactive,
                 )}
-                aria-hidden
+                onClick={() => handlePostcardStatusClick('cartBlocked')}
               >
-                <span className={clsx(styles.dot, styles.dotReady)} />
-                <IconPostcardReady className={styles.icon} />
+                <span className={clsx(styles.dot, styles.dotCartBlocked)} />
+                <IconCardBlocked className={styles.icon} />
               </div>
-            ))}
+            ) : null}
+            {(calendarCartStripBlockedLegend ? [0, 1, 2] : [0, 1, 2, 3]).map(
+              (i) => (
+                <div
+                  key={`legend-phantom-${i}`}
+                  className={clsx(
+                    styles.item,
+                    styles.ready,
+                    styles.inactive,
+                    styles.legendPhantom,
+                  )}
+                  aria-hidden
+                >
+                  <span className={clsx(styles.dot, styles.dotReady)} />
+                  <IconPostcardReady className={styles.icon} />
+                </div>
+              ))}
           </>
         ) : (
           <>

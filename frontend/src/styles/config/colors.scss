@@ -49,9 +49,9 @@ $preview-indicator-cart-blocked-border-width: 2px;
 
 @mixin preview-indicator-cart-blocked-ring {
   box-sizing: border-box;
-  background-color: $color-preview-indicator-cart;
+  background-color: $color-preview-indicator-error;
   border: $preview-indicator-cart-blocked-border-width solid
-    $color-preview-indicator-error;
+    $color-preview-indicator-cart;
 }
 
 $color-preview-row-processed: #f3f6fb;

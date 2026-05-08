@@ -18,6 +18,7 @@ export * from './IconAddressTemplates'
 export * from './IconAddressList'
 
 export * from './IconCart'
+export * from './IconCardBlocked'
 export * from './IconAddCart'
 export * from './IconCartV2'
 export * from './IconCardPlus'

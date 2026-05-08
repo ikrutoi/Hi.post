@@ -289,6 +289,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
               calendarCartStripLegendOnly={
                 section === 'date' || section === 'cart'
               }
+              calendarCartStripBlockedLegend={section === 'cart'}
             />
           </div>
           {section === 'date' ? (
