@@ -176,9 +176,14 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !primaryItem &&
     !photoPreview?.previewUrl
 
-  /** Режим «Дата» (не полоса корзины): на днях с открытками в корзине — жёлтый индикатор на превью. */
+  /**
+   * Режим «Дата» (не полоса корзины): жёлтый индикатор только для статуса `cart`.
+   * `cartBlocked` в том же слоте `data.cart`, но маркер на календаре «Дата» не показываем.
+   */
   const showDateModeCartPresenceIndicator =
-    !isHistoryLike && !isCartCalendar && cart.length > 0
+    !isHistoryLike &&
+    !isCartCalendar &&
+    cart.some((item) => item.status === 'cart')
 
   return (
     <div className={styles.cardPreviewContainer}>

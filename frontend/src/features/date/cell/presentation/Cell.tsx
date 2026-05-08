@@ -67,7 +67,9 @@ export const Cell: React.FC<CellProps> = ({
       dayData.error.length),
   )
 
-  const hasCartOnDay = Boolean(dayData?.cart.length)
+  const hasCartOnDay = Boolean(
+    dayData?.cart.some((item) => item.status === 'cart'),
+  )
   const showDispatchSelection =
     Boolean(isSelectedDate) && !suppressDispatchSelectionStyle
 
