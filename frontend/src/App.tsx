@@ -27,6 +27,7 @@ import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
+import { RightSidebarHistoryBadgeSync } from '@toolbar/presentation/RightSidebarHistoryBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
@@ -563,6 +564,8 @@ const App = () => {
   }, [rightListArchiveLocalId, dispatch])
   const handleCartListSelectEntry = useCallback(
     (item: CartListPanelItem) => {
+      dispatch(setNotebookStripTab('cart'))
+      dispatch(setActiveSection('date'))
       if (item.sourceDate) {
         dispatch(
           updateLastViewedCalendarDate({
@@ -659,6 +662,7 @@ const App = () => {
             />
             <EditorPieListCardPieBadgeSync />
             <DateToolbarListDateBadgeSync />
+            <RightSidebarHistoryBadgeSync />
             {/* <div className={styles.appMainContentLeft}> */}
             <div
               className={clsx(

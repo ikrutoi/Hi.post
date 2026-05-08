@@ -617,6 +617,9 @@
   .toolbarBadge {
     top: -1px;
     right: -1px;
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
   }
 
   .toolbarBadgeDot {

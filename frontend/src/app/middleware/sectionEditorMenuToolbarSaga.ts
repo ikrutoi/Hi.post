@@ -3,11 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
-import {
-  selectCardPieCopyStripExpanded,
-  selectCartListPanelOpen,
-} from '@cart/infrastructure/selectors'
-import { setCartListPanelOpen } from '@cart/infrastructure/state'
+import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import {
   setHistoryListPanelOpen,
   setNotebookStripTab,
@@ -48,23 +44,6 @@ export function* handleSectionEditorMenuToolbarAction(
   const { section, key } = action.payload
 
   if (section === 'sectionEditorMenu') {
-    /**
-     * Явный выбор «Дата» в меню: закрыть правую корзину, иначе фабрика остаётся на
-     * `activeSection === 'date'`, а календарь — в режиме корзины (`cartListPanelOpen`).
-     */
-    if (key === 'date') {
-      const cartOpen: boolean = yield select(selectCartListPanelOpen)
-      if (cartOpen) {
-        yield put(setCartListPanelOpen(false))
-        yield put(
-          updateToolbarIcon({
-            section: 'rightSidebar',
-            key: 'cart',
-            value: 'enabled',
-          }),
-        )
-      }
-    }
     yield put(setActiveSection(key))
   }
 }

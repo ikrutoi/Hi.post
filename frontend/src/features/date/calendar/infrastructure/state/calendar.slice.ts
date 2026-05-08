@@ -111,9 +111,15 @@ const calendarSlice = createSlice({
     setDateListPanelOpen(state, action: PayloadAction<boolean>) {
       state.dateListPanelOpen = action.payload
       if (action.payload) {
-        state.openDayPanel = null
         state.cardPieListPanelOpen = false
-        state.historyListPanelOpen = false
+        /**
+         * В режиме закладки «Дата» открытие Date list из тулбара не должно
+         * закрывать правые списки (History/Cart) и панель дня справа.
+         */
+        if (state.notebookStripTab !== 'date') {
+          state.openDayPanel = null
+          state.historyListPanelOpen = false
+        }
       }
     },
 
@@ -121,8 +127,14 @@ const calendarSlice = createSlice({
       state.cardPieListPanelOpen = action.payload
       if (action.payload) {
         state.dateListPanelOpen = false
-        state.historyListPanelOpen = false
-        state.openDayPanel = null
+        /**
+         * В режиме закладки «Дата» открытие CardPie из тулбара не должно
+         * закрывать правые списки (Cart/History).
+         */
+        if (state.notebookStripTab !== 'date') {
+          state.historyListPanelOpen = false
+          state.openDayPanel = null
+        }
       }
     },
 

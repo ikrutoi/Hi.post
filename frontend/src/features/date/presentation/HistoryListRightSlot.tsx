@@ -5,7 +5,9 @@ import {
   updateLastViewedCalendarDate,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
+  setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
+import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import type { DispatchDate } from '@entities/date/domain/types'
@@ -150,6 +152,8 @@ export const HistoryListRightSlot: React.FC = () => {
 
   const handleSelectEntry = useCallback(
     (item: HistoryListPanelItem) => {
+      dispatch(setNotebookStripTab('history'))
+      dispatch(setActiveSection('history'))
       if (item.sourceDate) {
         dispatch(
           updateLastViewedCalendarDate({

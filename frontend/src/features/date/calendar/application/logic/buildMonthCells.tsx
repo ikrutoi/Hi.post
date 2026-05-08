@@ -1,5 +1,6 @@
 import { useAppSelector } from '@app/hooks'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { Cell } from '@date/cell/presentation/Cell'
 import { CardPreview } from '@features/date/cardPreview/presentation/CardPreview'
 import { shiftMonth } from '../helpers'
@@ -28,7 +29,6 @@ interface BuildMonthCellsParams {
   handleClickCell: (params: HandleCellClickParams) => void
   chooseDate?: (date: DispatchDate) => void
   cardsMap: Record<string, CardCalendarIndex>
-  cartListPanelOpen: boolean
 }
 
 export const buildMonthCells = ({
@@ -40,12 +40,12 @@ export const buildMonthCells = ({
   handleClickCell,
   chooseDate,
   cardsMap,
-  cartListPanelOpen,
 }: BuildMonthCellsParams) => {
   const { activeSection } = useSectionMenuFacade()
   const photoPreview = useAppSelector(selectCardphotoPreview)
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const isCartCalendarStrip =
-    activeSection === 'date' && cartListPanelOpen
+    activeSection === 'date' && notebookStripTab === 'cart'
   const cardPreviewSection: CardSection | 'cart' | null =
     activeSection === 'history'
       ? 'history'
@@ -89,7 +89,7 @@ export const buildMonthCells = ({
         activeSection,
         dayData,
         photoPreview,
-        cartListPanelOpen,
+        cartListPanelOpen: isCartCalendarStrip,
       })
 
     const isDisabled = isDisabledDate(day, cellDate, currentDate)

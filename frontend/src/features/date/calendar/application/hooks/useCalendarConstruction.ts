@@ -16,7 +16,6 @@ import type {
 import type { HandleCellClickParams } from '../../../cell/domain/types'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
-import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 
 interface UseCalendarConstructionParams {
   firstDayOfWeek: 'Sun' | 'Mon'
@@ -34,7 +33,6 @@ export const useCalendarConstruction = ({
   triggerFlash,
 }: UseCalendarConstructionParams) => {
   const cardsMap = useAppSelector(selectCardsByDateMap)
-  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const highlightDates = useAppSelector(selectMergedDispatchDates)
   const { year, month } = calendarViewDate
 
@@ -67,7 +65,6 @@ export const useCalendarConstruction = ({
     currentDate,
     handleClickCell,
     cardsMap,
-    cartListPanelOpen,
   })
 
   const currentCells = buildMonthCells({
@@ -79,7 +76,6 @@ export const useCalendarConstruction = ({
     handleClickCell,
     chooseDate,
     cardsMap,
-    cartListPanelOpen,
   })
 
   const nextCells = buildMonthCells({
@@ -90,7 +86,6 @@ export const useCalendarConstruction = ({
     currentDate,
     handleClickCell,
     cardsMap,
-    cartListPanelOpen,
   })
 
   return useMemo(
@@ -103,7 +98,6 @@ export const useCalendarConstruction = ({
       handleClickCell,
       cardsMap,
       firstDayOfWeek,
-      cartListPanelOpen,
     ],
   )
 }

@@ -13,11 +13,12 @@ import {
   selectIsCardPieListPanelOpen,
   selectIsDateListPanelOpen,
   selectIsHistoryListPanelOpen,
+  selectNotebookStripTab,
   selectOpenDayPanel,
   selectPostcardStatuses,
 } from '../../../calendar/infrastructure/selectors/calendar.selector'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../../../calendar/infrastructure/historyOpenDayPanelPrimaryPostcard'
-import { selectCartItems, selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { selectCartItems } from '@cart/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { shiftMonth } from '../../../calendar/application/helpers'
 import { useDateSwitcherController } from '../../../switcher/application/hooks'
@@ -48,7 +49,7 @@ export const useCalendarCellController = ({
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
   const openDayPanelState = useAppSelector(selectOpenDayPanel)
   const cartItems = useAppSelector(selectCartItems)
-  const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const postcardStatuses = useAppSelector(selectPostcardStatuses)
   const { selectedDate, selectedDates, isMultiDateMode, chooseDate } =
@@ -62,7 +63,7 @@ export const useCalendarCellController = ({
     (clickRemovesSelection: boolean) => {
       if (
         activeSection !== 'date' ||
-        cartListPanelOpen ||
+        notebookStripTab === 'cart' ||
         cardPieListPanelOpen ||
         clickRemovesSelection
       ) {
@@ -73,8 +74,8 @@ export const useCalendarCellController = ({
     [
       activeSection,
       cardPieListPanelOpen,
-      cartListPanelOpen,
       dispatch,
+      notebookStripTab,
     ],
   )
   const { actions: actionsSwitcherController } = useDateSwitcherController()
@@ -138,9 +139,9 @@ export const useCalendarCellController = ({
         : Boolean(selectedDate && sameDispatchDate(selectedDate, dispatchDate))
 
       const isHistorySection = activeSection === 'history'
-      /** В режиме корзины (`cartListPanelOpen`) календарь только для навигации по дням — не трогаем dispatch-дату редактора / CardPie / список CardPiePanel. */
+      /** В закладке корзины календарь только для навигации по дням — не трогаем dispatch-дату редактора / CardPie / список CardPiePanel. */
       const applyDispatchDateSelection =
-        !isHistorySection && !cartListPanelOpen
+        !isHistorySection && notebookStripTab !== 'cart'
 
       if (applyDispatchDateSelection) {
         chooseDate(dispatchDate)
@@ -185,7 +186,7 @@ export const useCalendarCellController = ({
 
         const isHistorySection = activeSection === 'history'
         const applyDispatchDateSelection =
-          !isHistorySection && !cartListPanelOpen
+          !isHistorySection && notebookStripTab !== 'cart'
 
         if (applyDispatchDateSelection) {
           chooseDate(dispatchDate)
