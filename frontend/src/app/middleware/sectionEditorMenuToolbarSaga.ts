@@ -5,6 +5,7 @@ import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/sta
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import {
+  setCardPieListPanelOpen,
   setHistoryListPanelOpen,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
@@ -44,6 +45,9 @@ export function* handleSectionEditorMenuToolbarAction(
   const { section, key } = action.payload
 
   if (section === 'sectionEditorMenu') {
+    if (key === 'date') {
+      yield put(setCardPieListPanelOpen(true))
+    }
     yield put(setActiveSection(key))
   }
 }
