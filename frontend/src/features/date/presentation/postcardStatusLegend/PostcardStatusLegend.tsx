@@ -14,16 +14,8 @@ import { PostcardStatus } from '@/entities/postcard/domain/types'
 export type PostcardStatusLegendProps = {
   spot: 'calendar' | 'historyList'
   isHistoryEmpty: boolean
-  /** Только для `historyList`: числа по статусам (все открытки до фильтра). */
   statusCounts?: Record<PostcardStatus, number>
-  /**
-   * Только `spot="calendar"`, секция Дата: те же индикаторы, но точки и иконки с opacity 0.5.
-   */
   calendarDispatchDimmed?: boolean
-  /**
-   * Только `spot="calendar"`, секции Дата и Корзина: в футере только пункт Cart
-   * (те же фантомные ячейки сетки, что в режиме корзины).
-   */
   calendarCartStripLegendOnly?: boolean
 }
 
@@ -37,6 +29,15 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
   const handlePostcardStatusClick = (status: PostcardStatus) => {
+    if (status === 'cart') {
+      const nextCartValue = !postcardStatuses.cart
+      setPostcardStatuses({
+        ...postcardStatuses,
+        cart: nextCartValue,
+        cartBlocked: nextCartValue,
+      })
+      return
+    }
     setPostcardStatuses({
       ...postcardStatuses,
       [status]: !postcardStatuses[status],
@@ -45,7 +46,10 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
 
   const statusCount = (status: PostcardStatus) => {
     if (spot !== 'historyList' || statusCounts == null) return null
-    const n = statusCounts[status]
+    const n =
+      status === 'cart'
+        ? statusCounts.cart + statusCounts.cartBlocked
+        : statusCounts[status]
     if (n <= 0) return null
     return (
       <span className={styles.count} aria-hidden>
@@ -82,7 +86,6 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
         </div>
         {spot === 'calendar' && calendarCartStripLegendOnly ? (
           <>
-            {/** Та же сетка 5×1fr, что в «Истории» — Cart остаётся в той же ячейке, без скачков. */}
             {[0, 1, 2, 3].map((i) => (
               <div
                 key={`legend-phantom-${i}`}
@@ -122,7 +125,9 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
               onClick={() => handlePostcardStatusClick('sent')}
             >
               <span className={clsx(styles.dot, styles.dotSent)} />
-              <IconPostcardSend className={clsx(styles.icon, styles.iconSend)} />
+              <IconPostcardSend
+                className={clsx(styles.icon, styles.iconSend)}
+              />
               {statusCount('sent')}
             </div>
             <div

@@ -2,6 +2,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { Cart } from '@cart/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
 import type { AromaItem } from '@entities/aroma/domain/types'
+import { getCurrentDate } from '@shared/utils/date'
+import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
+
+function normalizeCartLikeStatus(item: PostcardHydrated): PostcardHydrated {
+  if (item.status !== 'cart' && item.status !== 'cartBlocked') return item
+  const nextStatus = isDispatchDateDisabledForOrder(item.date, getCurrentDate())
+    ? 'cartBlocked'
+    : 'cart'
+  if (item.status === nextStatus) return item
+  return { ...item, status: nextStatus }
+}
 
 const initialState: Cart = {
   items: [],
@@ -33,10 +44,10 @@ const cartSlice = createSlice({
       state.listSelectedLocalId = action.payload
     },
     setItems(state, action: PayloadAction<PostcardHydrated[]>) {
-      state.items = action.payload
+      state.items = action.payload.map(normalizeCartLikeStatus)
     },
     addItem(state, action: PayloadAction<PostcardHydrated>) {
-      state.items.push(action.payload)
+      state.items.push(normalizeCartLikeStatus(action.payload))
     },
     removeItem(state, action: PayloadAction<number>) {
       const removed = action.payload
@@ -50,7 +61,7 @@ const cartSlice = createSlice({
         (item) => item.id === action.payload.id,
       )
       if (index !== -1) {
-        state.items[index] = action.payload
+        state.items[index] = normalizeCartLikeStatus(action.payload)
       }
     },
     setCartItemCardAroma(

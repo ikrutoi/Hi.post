@@ -156,7 +156,11 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const peekDateDisabled = useMemo(() => {
     if (listRowLocalId == null) return false
     const postcard =
-      cartItems.find((p) => p.localId === listRowLocalId && p.status === 'cart') ??
+      cartItems.find(
+        (p) =>
+          p.localId === listRowLocalId &&
+          (p.status === 'cart' || p.status === 'cartBlocked'),
+      ) ??
       null
     if (postcard == null) return false
     return isDispatchDateDisabledForOrder(postcard.date, currentDate)

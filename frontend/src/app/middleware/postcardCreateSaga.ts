@@ -42,6 +42,8 @@ import {
   parseDispatchBranchKey,
 } from '@date/domain/dispatchBranchKey'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
+import { getCurrentDate } from '@shared/utils/date'
+import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
 function buildBaseCard(opts: {
   id: string
@@ -204,7 +206,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
   const existingRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
   const existingCartDedupeKeys = new Set(
     existingRows
-      .filter((row) => row.status === 'cart')
+      .filter((row) => row.status === 'cart' || row.status === 'cartBlocked')
       .map((row) => buildCartDuplicateKey(row.card)),
   )
 
@@ -251,7 +253,12 @@ export function* createPostcardsFromEditor(): SagaIterator {
         date: date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
         createdAt: now,
         updatedAt: now,
-        status: 'cart',
+        status: isDispatchDateDisabledForOrder(
+          date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
+          getCurrentDate(),
+        )
+          ? 'cartBlocked'
+          : 'cart',
         postcard: refs,
         card: finalCard,
       }
@@ -287,7 +294,7 @@ export function* handleToggleCartForDispatchBranch(
   const allRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
   const existing = allRows.find(
     (row) =>
-      row.status === 'cart' &&
+      (row.status === 'cart' || row.status === 'cartBlocked') &&
       dispatchBranchKeyFromPostcard(row) === branchKey,
   )
   if (existing) {
@@ -351,7 +358,7 @@ export function* handleToggleCartForDispatchBranch(
 
   const existingCartDedupeKeys = new Set(
     allRows
-      .filter((row) => row.status === 'cart')
+      .filter((row) => row.status === 'cart' || row.status === 'cartBlocked')
       .map((row) => buildCartDuplicateKey(row.card)),
   )
   const cartKey = buildCartDuplicateKey(candidateCard)
@@ -384,7 +391,9 @@ export function* handleToggleCartForDispatchBranch(
     date,
     createdAt: now,
     updatedAt: now,
-    status: 'cart',
+    status: isDispatchDateDisabledForOrder(date, getCurrentDate())
+      ? 'cartBlocked'
+      : 'cart',
     postcard: refs,
     card: finalCard,
   }
@@ -400,7 +409,12 @@ export function* handleToggleCartForDispatchBranch(
 
 export function* refreshRightSidebarBadgesFromPostcards(): SagaIterator {
   const allRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
-  const cartCount = allRows.filter((row) => row.status === 'cart').length
+  const currentDate = getCurrentDate()
+  const cartCount = allRows.filter(
+    (row) =>
+      (row.status === 'cart' || row.status === 'cartBlocked') &&
+      !isDispatchDateDisabledForOrder(row.date, currentDate),
+  ).length
   yield put(
     updateToolbarSection({
       section: 'rightSidebar',

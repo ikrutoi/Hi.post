@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
-  selectCartCount,
   selectCartItems,
   selectCartListPanelOpen,
 } from '@cart/infrastructure/selectors'
 import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { getCurrentDate } from '@shared/utils/date'
+import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
 /**
  * Syncs badges for calendar mode toolbars:
@@ -15,10 +16,16 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
  */
 export const CalendarModeToolbarBadgesSync: React.FC = () => {
   const dispatch = useAppDispatch()
-  const cartCount = useAppSelector(selectCartCount)
+  const cartItems = useAppSelector(selectCartItems)
+  const currentDate = getCurrentDate()
+  const cartCount = cartItems.filter(
+    (item) =>
+      (item.status === 'cart' || item.status === 'cartBlocked') &&
+      !isDispatchDateDisabledForOrder(item.date, currentDate),
+  ).length
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
-  const postcardsCount = useAppSelector(selectCartItems).length
+  const postcardsCount = cartItems.length
   const prevCartCount = useRef<number | undefined>(undefined)
   const prevCartOpen = useRef<boolean | undefined>(undefined)
   const prevPostcardsCount = useRef<number | undefined>(undefined)

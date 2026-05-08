@@ -75,6 +75,7 @@ const initialState: CalendarState = {
   cardPieListSortDirection: 'asc',
   postcardStatusesCount: {
     cart: null,
+    cartBlocked: null,
     ready: null,
     sent: null,
     delivered: null,
@@ -82,6 +83,7 @@ const initialState: CalendarState = {
   },
   postcardStatuses: {
     cart: true,
+    cartBlocked: true,
     ready: true,
     sent: true,
     delivered: true,

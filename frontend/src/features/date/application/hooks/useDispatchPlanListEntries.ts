@@ -158,7 +158,7 @@ export function useDispatchPlanListEntries(
   const cartPostcardByDispatchBranchKey = useMemo(() => {
     const m = new Map<string, PostcardHydrated>()
     for (const p of cartItems) {
-      if (p.status !== 'cart') continue
+      if (p.status !== 'cart' && p.status !== 'cartBlocked') continue
       const key = dispatchBranchKeyFromPostcard(p)
       if (key && !m.has(key)) m.set(key, p)
     }
@@ -168,7 +168,7 @@ export function useDispatchPlanListEntries(
   const cartPostcardByRecipientId = useMemo(() => {
     const m = new Map<string, PostcardHydrated>()
     for (const p of cartItems) {
-      if (p.status !== 'cart') continue
+      if (p.status !== 'cart' && p.status !== 'cartBlocked') continue
       const rk = postcardRecipientTemplateId(p)
       if (!rk || m.has(rk)) continue
       m.set(rk, p)
@@ -178,7 +178,9 @@ export function useDispatchPlanListEntries(
 
   const sessionRecipientDetail = useMemo(() => {
     if (!hasCommittedSessionRecipient(recipientState)) return undefined
-    const cartDraft = cartItems.find((p) => p.status === 'cart')
+    const cartDraft = cartItems.find(
+      (p) => p.status === 'cart' || p.status === 'cartBlocked',
+    )
     const fromPostcard = formatRecipientLine(
       cartDraft,
       recipientEntries,

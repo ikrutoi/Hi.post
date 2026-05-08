@@ -123,6 +123,7 @@ export const selectCardsByDateMap = createSelector(
       const entry = getEntry(item.date)
       switch (p.status) {
         case 'cart':
+        case 'cartBlocked':
           entry.cart.push(item)
           break
         case 'ready':

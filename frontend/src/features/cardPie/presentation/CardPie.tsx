@@ -121,7 +121,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   const hasManyDates = dates.length > 1
   const currentDate = getCurrentDate()
   const isCartDateDisabled =
-    status === 'cart' &&
+    (status === 'cart' || status === 'cartBlocked') &&
     dates.length > 0 &&
     dates.every((d) => isDispatchDateDisabledForOrder(d, currentDate))
 

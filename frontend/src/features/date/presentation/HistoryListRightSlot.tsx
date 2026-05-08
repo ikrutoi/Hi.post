@@ -59,7 +59,9 @@ export const HistoryListRightSlot: React.FC = () => {
 
   const sessionRecipientDetail = useMemo(() => {
     if (!hasCommittedSessionRecipient(recipientState)) return undefined
-    const cartDraft = cartItems.find((p) => p.status === 'cart')
+    const cartDraft = cartItems.find(
+      (p) => p.status === 'cart' || p.status === 'cartBlocked',
+    )
     const fromPostcard = formatRecipientLine(
       cartDraft,
       recipientEntries,
@@ -109,6 +111,7 @@ export const HistoryListRightSlot: React.FC = () => {
       })
       const legendStatusCounts: Record<PostcardStatus, number> = {
         cart: 0,
+        cartBlocked: 0,
         ready: 0,
         sent: 0,
         delivered: 0,
@@ -128,7 +131,7 @@ export const HistoryListRightSlot: React.FC = () => {
           dateLabel: formatDispatchDateLabel(item.date),
           previewUrl: item.previewUrl,
           detailLine: resolveRecipientDetailLine(item.cardId),
-          previewStatus: item.status,
+          previewStatus: item.status === 'cartBlocked' ? 'cart' : item.status,
           previewIsProcessed: item.isProcessed,
         })
       })

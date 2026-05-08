@@ -31,7 +31,7 @@ export type CartListPanelItem = {
 }
 
 type Props = {
-  /** If omitted, rows are built from Redux cart items with `status === 'cart'`. */
+  /** If omitted, rows are built from Redux cart items with `status === 'cart'|'cartBlocked'`. */
   entries?: CartListPanelItem[]
   onSelectEntry?: (item: CartListPanelItem) => void
 }
@@ -87,7 +87,7 @@ function currencySuffixFromPriceLine(line: string): string {
 function cartPostcardsToEntries(postcards: PostcardHydrated[]): CartListPanelItem[] {
   const currentDate = getCurrentDate()
   return postcards
-    .filter((p) => p.status === 'cart')
+    .filter((p) => p.status === 'cart' || p.status === 'cartBlocked')
     .map((p) => {
       const variant = isDispatchDateDisabledForOrder(p.date, currentDate)
         ? ('inactive' as const)

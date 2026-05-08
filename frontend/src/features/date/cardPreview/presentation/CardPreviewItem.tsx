@@ -57,11 +57,14 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   const showCardphotoPlaceholder =
     !isHistory && isSelectedDate && !hasDisplayUrl
 
+  const isCartLikeStatus = status === 'cart' || status === 'cartBlocked'
+  const statusIndicatorClass = status === 'cartBlocked' ? 'cart' : status
+
   const dateDimmedMedia =
     !isHistory &&
     !isSelectedDate &&
     !isAdjacentMonthEdge &&
-    status !== 'cart'
+    !isCartLikeStatus
 
   const mediaBlock = hasDisplayUrl ? (
     <img
@@ -90,7 +93,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
             ? styles.previewItemSelected
             : isAdjacentMonthEdge
               ? styles.previewItemAdjacentEdge
-              : status === 'cart'
+              : isCartLikeStatus
                 ? styles.previewItemHistory
                 : null,
       )}
@@ -102,7 +105,9 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
         mediaBlock
       )}
       {isHistory && !isProcessed ? (
-        <span className={clsx(styles.previewIndicator, styles[status])} />
+        <span
+          className={clsx(styles.previewIndicator, styles[statusIndicatorClass])}
+        />
       ) : hasCartPostcardsOnDay ? (
         <span className={clsx(styles.previewIndicator, styles.cart)} />
       ) : null}

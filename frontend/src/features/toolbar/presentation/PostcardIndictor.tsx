@@ -14,7 +14,7 @@ export const PostcardIndicator: React.FC = () => {
         // [styles.historyMode]: isHistoryMode,
       })}
     >
-      {postcardStatuses.cart && (
+      {(postcardStatuses.cart || postcardStatuses.cartBlocked) && (
         <span
           className={clsx(styles.postcardIndicator, styles.cart, {})}
         ></span>

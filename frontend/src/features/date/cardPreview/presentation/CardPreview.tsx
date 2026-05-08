@@ -107,7 +107,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !isCartCalendar &&
     primaryItem &&
     !primaryItem.isProcessed &&
-    primaryItem.status === 'cart'
+    (primaryItem.status === 'cart' || primaryItem.status === 'cartBlocked')
       ? null
       : primaryItem
 

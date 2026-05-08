@@ -2,9 +2,12 @@ import { DispatchDate } from '@/entities/date'
 import type { Card } from '@entities/card/domain/types'
 import { normalizeAromaItem } from '@entities/aroma/domain/types'
 import { LEGACY_LOCAL_ID_PROPERTY } from '@shared/config/legacyIndexedDb'
+import { getCurrentDate } from '@shared/utils/date'
+import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
 export const POSTCARD_STATUSES = [
   'cart',
+  'cartBlocked',
   'ready',
   'sent',
   'delivered',
@@ -15,6 +18,7 @@ export type PostcardStatus = (typeof POSTCARD_STATUSES)[number]
 
 export type PostcardStatuses = {
   cart: boolean
+  cartBlocked: boolean
   ready: boolean
   sent: boolean
   delivered: boolean
@@ -23,6 +27,7 @@ export type PostcardStatuses = {
 
 export type PostcardStatusesCount = {
   cart: number | null
+  cartBlocked: number | null
   ready: number | null
   sent: number | null
   delivered: number | null
@@ -216,6 +221,13 @@ export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
         ? card.date
         : POSTCARD_DISPATCH_DATE_FALLBACK
 
+  const cartStatusNormalized =
+    status === 'cart' || status === 'cartBlocked'
+      ? isDispatchDateDisabledForOrder(date, getCurrentDate())
+        ? 'cartBlocked'
+        : 'cart'
+      : status
+
   const postcard: PostcardRefs =
     row.postcard ?? postcardRefsFromCard(card)
 
@@ -224,7 +236,7 @@ export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
     localId,
     price,
     date,
-    status,
+    status: cartStatusNormalized,
     createdAt,
     updatedAt,
     postcard,

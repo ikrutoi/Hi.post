@@ -127,7 +127,9 @@ export const useCalendarCellController = ({
     if (!firstCardId) return
     const lid =
       cartItems.find(
-        (p) => p.card.id === firstCardId && p.status === 'cart',
+        (p) =>
+          p.card.id === firstCardId &&
+          (p.status === 'cart' || p.status === 'cartBlocked'),
       )?.localId ?? null
     if (lid != null) {
       dispatch(setCartListSelectedLocalId(lid))
