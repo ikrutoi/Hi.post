@@ -1,4 +1,5 @@
 import React from 'react'
+import type { PostcardStatus } from '@entities/postcard'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CartListEntry.module.scss'
 
@@ -10,6 +11,8 @@ export type CartListEntryProps = {
   detailLine?: string
   priceLine?: string
   variant?: CartListEntryVariant
+  previewStatus?: PostcardStatus
+  previewIsProcessed?: boolean
   onSelect?: () => void
   onDelete?: () => void
   isSelected?: boolean
@@ -22,6 +25,8 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   detailLine,
   priceLine,
   variant = 'default',
+  previewStatus,
+  previewIsProcessed,
   onSelect,
   onDelete,
   isSelected = false,
@@ -62,6 +67,13 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
             <img src={previewUrl} alt="" className={styles.thumbImg} />
+          ) : null}
+          {previewStatus && !previewIsProcessed ? (
+            <span
+              className={styles.statusIndicator}
+              data-status={previewStatus}
+              aria-hidden
+            />
           ) : null}
         </div>
         <div className={styles.meta}>

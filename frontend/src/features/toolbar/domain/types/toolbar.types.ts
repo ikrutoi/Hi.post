@@ -51,7 +51,7 @@ import {
 } from './postcardPie.types'
 
 export type IconOptions = {
-  badge?: number | null
+  badge?: number | string | null
   badgeDot?: boolean
   orientation?: LayoutOrientation
 }

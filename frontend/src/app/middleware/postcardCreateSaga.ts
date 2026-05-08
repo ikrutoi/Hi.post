@@ -410,16 +410,27 @@ export function* handleToggleCartForDispatchBranch(
 export function* refreshRightSidebarBadgesFromPostcards(): SagaIterator {
   const allRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
   const currentDate = getCurrentDate()
-  const cartCount = allRows.filter(
+  const activeCartCount = allRows.filter(
     (row) =>
       (row.status === 'cart' || row.status === 'cartBlocked') &&
       !isDispatchDateDisabledForOrder(row.date, currentDate),
   ).length
+  const blockedCartCount = allRows.filter(
+    (row) =>
+      (row.status === 'cart' || row.status === 'cartBlocked') &&
+      isDispatchDateDisabledForOrder(row.date, currentDate),
+  ).length
+  const cartBadgeValue =
+    blockedCartCount > 0
+      ? `${activeCartCount}/${blockedCartCount}`
+      : activeCartCount > 0
+        ? String(activeCartCount)
+        : null
   yield put(
     updateToolbarSection({
       section: 'rightSidebar',
       value: {
-        cart: { options: { badge: cartCount > 0 ? cartCount : null } },
+        cart: { options: { badge: cartBadgeValue } },
       },
     }),
   )

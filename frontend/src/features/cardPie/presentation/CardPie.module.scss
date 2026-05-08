@@ -206,6 +206,9 @@ $pie-center-logo-size: 1.5rem;
   &.cart {
     background-color: $color-preview-indicator-cart;
   }
+  &.cartBlocked {
+    background-color: $color-preview-indicator-cart-blocked;
+  }
   &.ready {
     background-color: $color-preview-indicator-ready;
   }

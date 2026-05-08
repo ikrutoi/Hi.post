@@ -185,6 +185,11 @@ export const Toolbar = ({
     }
 
     const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
+    const hasBadge =
+      badge != null &&
+      (typeof badge === 'number' || typeof badge === 'string') &&
+      String(badge).trim().length > 0
+
     const badgeDot =
       mergedOptions?.badgeDot ?? (rawData as any)?.options?.badgeDot
 
@@ -314,7 +319,7 @@ export const Toolbar = ({
               : undefined,
         })}
 
-        {Boolean(badge && badge > 0) && (
+        {hasBadge && (
           <span className={styles.toolbarBadge}>
             <span className={styles.toolbarBadgeValue}>{badge}</span>
           </span>

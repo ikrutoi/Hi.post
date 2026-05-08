@@ -26,6 +26,7 @@ export type CartListPanelItem = {
   detailLine?: string
   priceLine?: string
   variant?: CartListEntryVariant
+  previewStatus?: PostcardHydrated['status']
   previewIsProcessed?: boolean
   onDelete?: () => void
 }
@@ -102,6 +103,7 @@ function cartPostcardsToEntries(postcards: PostcardHydrated[]): CartListPanelIte
         detailLine: formatRecipientLine(p),
         priceLine: listEntryPriceLine(p),
         variant,
+        previewStatus: p.status,
         previewIsProcessed: Boolean(p.card.isProcessed),
       } satisfies CartListPanelItem
     })
@@ -145,6 +147,8 @@ const CartListPanelRow: React.FC<{
         hidePrice ? undefined : (item.priceLine ?? listEntryPriceLine(item.postcard))
       }
       variant={item.variant}
+      previewStatus={item.previewStatus}
+      previewIsProcessed={item.previewIsProcessed}
       onSelect={onSelectEntry ? () => onSelectEntry(item) : undefined}
       isSelected={isSelected}
       onDelete={item.onDelete}

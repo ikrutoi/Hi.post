@@ -18,27 +18,45 @@ export const CalendarModeToolbarBadgesSync: React.FC = () => {
   const dispatch = useAppDispatch()
   const cartItems = useAppSelector(selectCartItems)
   const currentDate = getCurrentDate()
-  const cartCount = cartItems.filter(
+  const activeCartCount = cartItems.filter(
     (item) =>
       (item.status === 'cart' || item.status === 'cartBlocked') &&
       !isDispatchDateDisabledForOrder(item.date, currentDate),
   ).length
+  const blockedCartCount = cartItems.filter(
+    (item) =>
+      (item.status === 'cart' || item.status === 'cartBlocked') &&
+      isDispatchDateDisabledForOrder(item.date, currentDate),
+  ).length
+  const cartBadgeValue =
+    blockedCartCount > 0
+      ? `${activeCartCount}/${blockedCartCount}`
+      : activeCartCount > 0
+        ? String(activeCartCount)
+        : null
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
-  const postcardsCount = cartItems.length
+  const postcardsCount = cartItems.filter((item) => {
+    if (item.status === 'cartBlocked') return false
+    if (item.status !== 'cart') return true
+    return !isDispatchDateDisabledForOrder(item.date, currentDate)
+  }).length
   const prevCartCount = useRef<number | undefined>(undefined)
+  const prevBlockedCartCount = useRef<number | undefined>(undefined)
   const prevCartOpen = useRef<boolean | undefined>(undefined)
   const prevPostcardsCount = useRef<number | undefined>(undefined)
   const prevHistoryOpen = useRef<boolean | undefined>(undefined)
 
   useEffect(() => {
     if (
-      prevCartCount.current === cartCount &&
+      prevCartCount.current === activeCartCount &&
+      prevBlockedCartCount.current === blockedCartCount &&
       prevCartOpen.current === cartListPanelOpen
     ) {
       return
     }
-    prevCartCount.current = cartCount
+    prevCartCount.current = activeCartCount
+    prevBlockedCartCount.current = blockedCartCount
     prevCartOpen.current = cartListPanelOpen
     dispatch(
       updateToolbarIcon({
@@ -46,11 +64,11 @@ export const CalendarModeToolbarBadgesSync: React.FC = () => {
         key: 'cart',
         value: {
           state: cartListPanelOpen ? 'active' : 'enabled',
-          options: { badge: cartCount > 0 ? cartCount : null },
+          options: { badge: cartBadgeValue },
         },
       }),
     )
-  }, [cartCount, cartListPanelOpen, dispatch])
+  }, [activeCartCount, blockedCartCount, cartBadgeValue, cartListPanelOpen, dispatch])
 
   useEffect(() => {
     if (

@@ -118,10 +118,12 @@ export const HistoryListRightSlot: React.FC = () => {
         error: 0,
       }
       postcardItems.forEach((item) => {
+        if (item.status === 'cartBlocked') return
         legendStatusCounts[item.status] += 1
       })
       const entries: HistoryListPanelItem[] = []
       postcardItems.forEach((item, i) => {
+        if (item.status === 'cartBlocked') return
         if (!postcardStatuses[item.status]) return
         entries.push({
           id: `history-postcard-${item.rowKey}-${i}`,
@@ -131,7 +133,7 @@ export const HistoryListRightSlot: React.FC = () => {
           dateLabel: formatDispatchDateLabel(item.date),
           previewUrl: item.previewUrl,
           detailLine: resolveRecipientDetailLine(item.cardId),
-          previewStatus: item.status === 'cartBlocked' ? 'cart' : item.status,
+          previewStatus: item.status,
           previewIsProcessed: item.isProcessed,
         })
       })

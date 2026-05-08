@@ -58,7 +58,6 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
     !isHistory && isSelectedDate && !hasDisplayUrl
 
   const isCartLikeStatus = status === 'cart' || status === 'cartBlocked'
-  const statusIndicatorClass = status === 'cartBlocked' ? 'cart' : status
 
   const dateDimmedMedia =
     !isHistory &&
@@ -106,7 +105,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
       )}
       {isHistory && !isProcessed ? (
         <span
-          className={clsx(styles.previewIndicator, styles[statusIndicatorClass])}
+          className={clsx(styles.previewIndicator, styles[status])}
         />
       ) : hasCartPostcardsOnDay ? (
         <span className={clsx(styles.previewIndicator, styles.cart)} />

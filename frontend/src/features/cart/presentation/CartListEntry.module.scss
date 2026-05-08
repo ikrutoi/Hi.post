@@ -189,6 +189,7 @@ button.semicircleUp {
 }
 
 .thumb {
+  position: relative;
   flex-shrink: 0;
   align-self: stretch;
   width: $list-entry-thumb-size;
@@ -200,6 +201,46 @@ button.semicircleUp {
   justify-content: center;
   background-color: $color-app-inner;
   border: 1px solid mix($list-entry-border, transparent, 58%);
+}
+
+.statusIndicator {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  z-index: 1;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+  background-color: $color-preview-indicator-delivered;
+
+  &[data-status='processed'] {
+    background-color: $color-preview-indicator-processed;
+  }
+
+  &[data-status='cart'] {
+    background-color: $color-preview-indicator-cart;
+  }
+
+  &[data-status='cartBlocked'] {
+    background-color: $color-preview-indicator-cart-blocked;
+  }
+
+  &[data-status='ready'] {
+    background-color: $color-preview-indicator-ready;
+  }
+
+  &[data-status='sent'] {
+    background-color: $color-preview-indicator-sent;
+  }
+
+  &[data-status='delivered'] {
+    background-color: $color-preview-indicator-delivered;
+  }
+
+  &[data-status='error'] {
+    background-color: $color-preview-indicator-error;
+  }
 }
 
 .thumbImg {
