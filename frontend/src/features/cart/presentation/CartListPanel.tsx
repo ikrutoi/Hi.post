@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -31,8 +32,10 @@ export type CartListPanelItem = {
   onDelete?: () => void
 }
 
+export type CartListStatusSegment = 'cart' | 'cartBlocked'
+
 type Props = {
-  /** If omitted, rows are built from Redux cart items with `status === 'cart'|'cartBlocked'`. */
+  /** If omitted, rows are built from Redux cart items filtered by выбранный сегмент (кнопки cart / cartBlocked). */
   entries?: CartListPanelItem[]
   onSelectEntry?: (item: CartListPanelItem) => void
 }
@@ -85,16 +88,19 @@ function currencySuffixFromPriceLine(line: string): string {
   return tail || 'USD'
 }
 
-function cartPostcardsToEntries(postcards: PostcardHydrated[]): CartListPanelItem[] {
+function cartPostcardsToEntries(
+  postcards: PostcardHydrated[],
+  segment: CartListStatusSegment,
+): CartListPanelItem[] {
   const currentDate = getCurrentDate()
   return postcards
-    .filter((p) => p.status === 'cart' || p.status === 'cartBlocked')
+    .filter((p) => p.status === segment)
     .map((p) => {
       const variant = isDispatchDateDisabledForOrder(p.date, currentDate)
         ? ('inactive' as const)
         : ('default' as const)
       return {
-        id: `cart-${p.id}`,
+        id: `${segment}-${p.id}`,
         cardId: p.card.id,
         sourceDate: p.date,
         postcard: p,
@@ -161,24 +167,70 @@ export const CartListPanel: React.FC<Props> = ({
   onSelectEntry,
 }) => {
   const cartItems = useAppSelector(selectCartItems)
-  const { setCartListPanelOpen, listSelectedLocalId } = useCartFacade()
+  const {
+    setCartListPanelOpen,
+    listSelectedLocalId,
+    setCartListSelectedLocalId,
+  } = useCartFacade()
 
-  const entriesFromStore = useMemo(
-    () => cartPostcardsToEntries(cartItems),
-    [cartItems],
-  )
+  const [listSegment, setListSegment] = useState<CartListStatusSegment>('cart')
+
+  const cartSegmentCounts = useMemo(() => {
+    const cart = cartItems.filter((p) => p.status === 'cart').length
+    const cartBlocked = cartItems.filter(
+      (p) => p.status === 'cartBlocked',
+    ).length
+    return { cart, cartBlocked }
+  }, [cartItems])
+
+  const entriesFromStore = useMemo(() => {
+    if (entriesProp != null) return []
+    return cartPostcardsToEntries(cartItems, listSegment)
+  }, [entriesProp, cartItems, listSegment])
 
   const entries = entriesProp ?? entriesFromStore
+
+  /** Смена сегмента: снять выбор, если открытка не в текущем списке. */
+  useEffect(() => {
+    if (entriesProp != null) return
+    const lids = new Set(
+      entriesFromStore
+        .map((e) => e.postcard?.localId)
+        .filter((id): id is number => id != null),
+    )
+    if (
+      listSelectedLocalId != null &&
+      !lids.has(listSelectedLocalId)
+    ) {
+      setCartListSelectedLocalId(null)
+    }
+  }, [
+    entriesProp,
+    entriesFromStore,
+    listSelectedLocalId,
+    setCartListSelectedLocalId,
+  ])
   const hasRows = entries.length > 0
-  const activeEntries = useMemo(
-    () => entries.filter((e) => e.variant !== 'inactive'),
-    [entries],
-  )
-  const inactiveEntries = useMemo(
-    () => entries.filter((e) => e.variant === 'inactive'),
-    [entries],
-  )
-  const listContentKey = entries.map((e) => e.id).join('|')
+  /**
+   * У футера «неактивные» только в режиме `cart` из стора. В `cartBlocked` — все строки сверху,
+   * как у активных в обычной корзине.
+   */
+  const splitInactiveToFooter =
+    entriesProp != null || listSegment === 'cart'
+
+  const activeEntries = useMemo(() => {
+    if (!splitInactiveToFooter) return entries
+    return entries.filter((e) => e.variant !== 'inactive')
+  }, [entries, splitInactiveToFooter])
+
+  const inactiveEntries = useMemo(() => {
+    if (!splitInactiveToFooter) return []
+    return entries.filter((e) => e.variant === 'inactive')
+  }, [entries, splitInactiveToFooter])
+  const listContentKey =
+    entriesProp != null
+      ? entries.map((e) => e.id).join('|')
+      : `${listSegment}|${entries.map((e) => e.id).join('|')}`
 
   const cartTotalDisplay = useMemo(() => {
     const billableEntries = entries.filter((e) => e.variant !== 'inactive')
@@ -209,13 +261,61 @@ export const CartListPanel: React.FC<Props> = ({
         onClose={handleCloseList}
         closeAriaLabel="Close cart list"
       />
+      {entriesProp == null ? (
+        <div
+          className={styles.headerBelowBand}
+          role="group"
+          aria-label="Cart list header actions"
+        >
+          <button
+            type="button"
+            className={clsx(styles.headerBelowSquare, styles.cart)}
+            aria-label={
+              cartSegmentCounts.cart > 0
+                ? `Cart, ${cartSegmentCounts.cart} postcards`
+                : 'Cart'
+            }
+            aria-pressed={listSegment === 'cart'}
+            onClick={() => setListSegment('cart')}
+          >
+            {cartSegmentCounts.cart > 0 ? (
+              <span className={styles.headerBelowCount} aria-hidden>
+                {cartSegmentCounts.cart}
+              </span>
+            ) : null}
+          </button>
+          <button
+            type="button"
+            className={clsx(styles.headerBelowSquare, styles.cartBlocked)}
+            aria-label={
+              cartSegmentCounts.cartBlocked > 0
+                ? `Cart blocked, ${cartSegmentCounts.cartBlocked} postcards`
+                : 'Cart blocked'
+            }
+            aria-pressed={listSegment === 'cartBlocked'}
+            onClick={() => setListSegment('cartBlocked')}
+          >
+            {cartSegmentCounts.cartBlocked > 0 ? (
+              <span className={styles.headerBelowCount} aria-hidden>
+                {cartSegmentCounts.cartBlocked}
+              </span>
+            ) : null}
+          </button>
+        </div>
+      ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div
           key={listContentKey}
           className={styles.list}
           tabIndex={0}
-          aria-label="Cart postcards list"
+          aria-label={
+            entriesProp != null
+              ? 'Cart postcards list'
+              : listSegment === 'cart'
+                ? 'Postcards in cart'
+                : 'Postcards cart blocked'
+          }
         >
           {hasRows ? (
             <>

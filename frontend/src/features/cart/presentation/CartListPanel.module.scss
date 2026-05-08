@@ -1,9 +1,11 @@
 @use '@styles/config/colors' as *;
 
 $list-panel-stacked-band: 3.75rem;
-/* Matches `ListPanelStackedHeader` top row (lead + close), not the full stacked block. */
 $list-panel-header-lead-row: 1.75rem;
 $list-panel-scroll-inset: 0.35rem;
+$list-panel-cart-list-toolbar-top: 2.35rem;
+$list-panel-cart-list-toolbar-row-h: 1.65rem;
+$cart-list-header-square-skew-deg: -15deg;
 
 .panel {
   position: relative;
@@ -15,6 +17,65 @@ $list-panel-scroll-inset: 0.35rem;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
+}
+
+.headerBelowBand {
+  position: absolute;
+  left: 0.5rem;
+  top: $list-panel-cart-list-toolbar-top;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: calc(100% - 0.75rem - 8px);
+  height: $list-panel-cart-list-toolbar-row-h;
+  box-sizing: border-box;
+}
+
+.headerBelowSquare {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1rem;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  background-color: transparent;
+  transform: skewX($cart-list-header-square-skew-deg);
+  transform-origin: center center;
+
+  &:focus-visible {
+    outline: 2px solid $color-active;
+    outline-offset: 2px;
+  }
+}
+
+.headerBelowCount {
+  color: $color-app-sidebar-icon-active;
+  font-family: sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transform: skewX(#{0deg - $cart-list-header-square-skew-deg});
+}
+
+.cart {
+  background-color: $color-preview-indicator-cart;
+}
+
+.cartBlocked {
+  background-color: $color-preview-indicator-error;
 }
 
 .panelScrollTrack {
