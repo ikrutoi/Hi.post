@@ -108,15 +108,24 @@ export const buildMonthCells = ({
       calendarDayHasCards(dayData) &&
       !isDisabled
 
-    /** Дата: dayBefore/dayAfter не disabled — выбор даты / панель дня, pointer. */
+    /** Дата: dayBefore/dayAfter не disabled — выбор даты / панель дня, pointer (не полоска «Корзина»). */
     const dateAdjacentPointer =
-      activeSection === 'date' && direction !== 'current' && !isDisabled
+      activeSection === 'date' &&
+      direction !== 'current' &&
+      !isDisabled &&
+      !isCartCalendarStrip
 
     const adjacentMonthPointer = historyAdjacentPointer || dateAdjacentPointer
+    /**
+     * В режиме Корзина pointer только у дней текущего месяца с превью; соседний месяц — обычный курсор.
+     * Дни из merged dispatch (ветки шаблонов / список CardPiePanel) не помечаем pointer — иначе при тех же датах в корзине остаётся «рука».
+     */
     const cartPreviewPointer =
       isCartCalendarStrip &&
+      direction === 'current' &&
       dayData != null &&
-      calendarDayHasCards(dayData)
+      calendarDayHasCards(dayData) &&
+      !isSelectedDate
 
     return (
       <Cell

@@ -38,14 +38,9 @@ $cell-border-radius: 0.35rem;
     cursor: pointer;
   }
 
-  /** Режим Корзина: дни не выглядят кликабельными по курсору. */
-  &.cart,
-  &.cart.adjacentMonth.adjacentMonthPointer {
+  /** Режим Корзина: по умолчанию обычный курсор; «рука» только при cartPreviewPointer (текущий месяц с превью). */
+  &.cart {
     cursor: default;
-  }
-
-  &.cart.adjacentMonth.adjacentMonthPointer {
-    cursor: pointer;
   }
 
   &.cart.cartPreviewPointer {
@@ -56,7 +51,8 @@ $cell-border-radius: 0.35rem;
     cursor: default;
   }
 
-  &.cart.adjacentMonth.adjacentMonthPointer .navArrowWrap {
+  /** У соседнего месяца ячейка без pointer, стрелки листания — как кликабельные кнопки. */
+  &.cart.adjacentMonth .navArrowWrap {
     cursor: pointer;
   }
 }
