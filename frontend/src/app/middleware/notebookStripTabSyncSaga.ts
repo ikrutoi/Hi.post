@@ -1,23 +1,19 @@
 import type { SagaIterator } from 'redux-saga'
 import { put, select, takeEvery } from 'redux-saga/effects'
 import type { RootState } from '@app/state'
-import {
-  setActiveSection,
-  resetActiveSection,
-  restoreEditorSession,
-} from '@entities/sectionEditorMenu/infrastructure/state'
-import {
-  setCartListPanelOpen,
-  setCartListSelectedLocalId,
-} from '@cart/infrastructure/state'
+import { setCartListSelectedLocalId } from '@cart/infrastructure/state'
 import {
   closeDayPanel,
   openDayPanel,
   setHistoryListSelectedLocalId,
-  setHistoryListPanelOpen,
   setNotebookStripDateOverCart,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
+import {
+  notebookActiveSectionChanged,
+  notebookCartPanelOpenChanged,
+  notebookHistoryPanelOpenChanged,
+} from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { computeNotebookStripTabFromState } from '@date/calendar/infrastructure/selectors'
 
 function* syncNotebookStripTab(): SagaIterator {
@@ -31,12 +27,10 @@ function* syncNotebookStripTab(): SagaIterator {
 export function* watchNotebookStripTabSync(): SagaIterator {
   yield takeEvery(
     [
-      setActiveSection.type,
-      resetActiveSection.type,
-      restoreEditorSession.type,
-      setCartListPanelOpen.type,
+      notebookActiveSectionChanged.type,
+      notebookCartPanelOpenChanged.type,
       setCartListSelectedLocalId.type,
-      setHistoryListPanelOpen.type,
+      notebookHistoryPanelOpenChanged.type,
       setHistoryListSelectedLocalId.type,
       openDayPanel.type,
       closeDayPanel.type,

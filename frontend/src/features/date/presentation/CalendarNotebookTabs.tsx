@@ -4,19 +4,10 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import {
-  setCartListPanelOpen,
-  setCartListSelectedLocalId,
-} from '@cart/infrastructure/state'
-import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
-import {
-  closeDayPanel,
-  setCardPieListPanelOpen,
-  setHistoryListSelectedLocalId,
-  setNotebookStripDateOverCart,
-  setNotebookStripTab,
-  setHistoryListPanelOpen,
-} from '@date/calendar/infrastructure/state'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+  notebookTabCartClicked,
+  notebookTabDateClicked,
+  notebookTabHistoryClicked,
+} from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import styles from './CalendarNotebookTabs.module.scss'
 import type { DateStripSection } from './dateStripSection.types'
 
@@ -45,48 +36,15 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
     section !== 'history'
 
   const goDate = useCallback(() => {
-    dispatch(setNotebookStripDateOverCart(true))
-    dispatch(setCartListSelectedLocalId(null))
-    dispatch(setHistoryListSelectedLocalId(null))
-    dispatch(closeDayPanel())
-    dispatch(setCardPieListPanelOpen(true))
-    dispatch(setNotebookStripTab('date'))
-    dispatch(setActiveSection('date'))
+    dispatch(notebookTabDateClicked())
   }, [dispatch])
 
   const goCart = useCallback(() => {
-    dispatch(setHistoryListPanelOpen(false))
-    dispatch(closeDayPanel())
-    dispatch(
-      updateToolbarIcon({
-        section: 'history',
-        key: 'listHistory',
-        value: 'enabled',
-      }),
-    )
-    dispatch(setCartListPanelOpen(true))
-    dispatch(
-      updateToolbarIcon({
-        section: 'rightSidebar',
-        key: 'cart',
-        value: 'active',
-      }),
-    )
-    dispatch(setNotebookStripTab('cart'))
-    dispatch(setActiveSection('date'))
+    dispatch(notebookTabCartClicked())
   }, [dispatch])
 
   const goHistory = useCallback(() => {
-    dispatch(setCartListPanelOpen(false))
-    dispatch(
-      updateToolbarIcon({
-        section: 'rightSidebar',
-        key: 'cart',
-        value: 'enabled',
-      }),
-    )
-    dispatch(setNotebookStripTab('history'))
-    dispatch(setActiveSection('history'))
+    dispatch(notebookTabHistoryClicked())
   }, [dispatch])
 
   const tab1Active = !stripTabsNoneActive && section === 'date'

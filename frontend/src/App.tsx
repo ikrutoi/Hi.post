@@ -66,6 +66,7 @@ import {
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import type { DispatchDate } from '@entities/date/domain/types'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
@@ -146,17 +147,8 @@ const App = () => {
     const savedTab = window.sessionStorage.getItem(
       CALENDAR_STRIP_TAB_SESSION_KEY,
     )
-    if (savedTab === 'cart') {
-      dispatch(setCartListPanelOpen(true))
-      dispatch(setHistoryListPanelOpen(false))
-      dispatch(setActiveSection('date'))
-      return
-    }
-    if (savedTab === 'history') {
-      dispatch(setCartListPanelOpen(false))
-      dispatch(setHistoryListPanelOpen(true))
-      dispatch(setActiveSection('history'))
-    }
+    const tab = savedTab === 'cart' || savedTab === 'history' ? savedTab : null
+    dispatch(notebookSessionRestored({ tab }))
   }, [dispatch])
 
   useEffect(() => {
