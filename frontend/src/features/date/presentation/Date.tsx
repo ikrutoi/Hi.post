@@ -85,31 +85,9 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
 
-  /** Режим корзины на календаре подразумевает открытый CartListPanel; не дублируем `setCartListPanelOpen(true)`, если уже открыто (сброс выбора в slice). */
-  useEffect(() => {
-    if (section !== 'cart' || cartListPanelOpen) return
-    dispatch(setCartListPanelOpen(true))
-    dispatch(
-      updateToolbarIcon({
-        section: 'rightSidebar',
-        key: 'cart',
-        value: 'active',
-      }),
-    )
-  }, [section, cartListPanelOpen, dispatch])
+  /** Открытие/закрытие CartListPanel управляется явными действиями (toolbar/tabs/close), без авто-переоткрытия из центра. */
 
-  /** Режим истории на календаре — открытый HistoryListPanel (аналогично корзине при `section === 'cart'`). */
-  useEffect(() => {
-    if (section !== 'history' || historyListPanelOpen) return
-    dispatch(setHistoryListPanelOpen(true))
-    dispatch(
-      updateToolbarIcon({
-        section: 'history',
-        key: 'listHistory',
-        value: 'active',
-      }),
-    )
-  }, [section, historyListPanelOpen, dispatch])
+  /** Открытие/закрытие HistoryListPanel управляется явными действиями (toolbar/tabs/close), без авто-переоткрытия из центра. */
 
   const handleCalendarModeToggle = useCallback(
     (historyOn: boolean) => {

@@ -22,6 +22,13 @@ export const computeNotebookStripTabFromState = (
     return 'date'
   }
   if (state.cart.isActive) return 'cart'
+  if (
+    activeSection === 'date' &&
+    state.calendar.notebookStripTab === 'cart' &&
+    !state.calendar.notebookStripDateOverCart
+  ) {
+    return 'cart'
+  }
   if (activeSection === 'history') return 'history'
   if (
     state.calendar.historyListPanelOpen &&
