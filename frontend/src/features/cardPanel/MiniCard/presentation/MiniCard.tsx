@@ -14,8 +14,10 @@ import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/select
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import {
   setCardPieListPanelOpen,
+  setNotebookStripDateOverCart,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { selectCardtextMiniPreviewHasRenderableContent } from '@cardtext/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 
@@ -67,6 +69,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const cardtextMiniRenderable = useAppSelector(
     selectCardtextMiniPreviewHasRenderableContent,
   )
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
 
   const { render } = useMiniCardRender()
 
@@ -121,8 +124,15 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         }
         if (section === 'date') {
           clearRightPieDatePeek()
-          dispatch(setNotebookStripTab('date'))
           dispatch(setCardPieListPanelOpen(true))
+        }
+        /**
+         * Полоса «Корзина» + открытый список: без `notebookStripDateOverCart` сага синхронизации
+         * (`computeNotebookStripTabFromState`) сразу вернёт закладку «Корзина» после `setActiveSection`.
+         */
+        if (notebookStripTab === 'cart') {
+          dispatch(setNotebookStripDateOverCart(true))
+          dispatch(setNotebookStripTab('date'))
         }
         changeSection(section)
         if (peekToolbarOnMiniOpen && onActivateSectionPeekNoToolbar != null) {

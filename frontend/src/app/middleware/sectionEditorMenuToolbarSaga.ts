@@ -7,9 +7,11 @@ import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
+  setNotebookStripDateOverCart,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
@@ -19,6 +21,14 @@ import {
 } from './sectionEditorMenuHandlers'
 
 import type { SagaIterator } from 'redux-saga'
+
+const SECTION_EDITOR_FACTORY_KEYS = [
+  'cardphoto',
+  'cardtext',
+  'envelope',
+  'aroma',
+  'date',
+] as const
 
 function* applySectionEditorMenuToolbarVisuals(): SagaIterator {
   const activeKey = yield select(selectActiveSection)
@@ -47,6 +57,16 @@ export function* handleSectionEditorMenuToolbarAction(
   if (section === 'sectionEditorMenu') {
     if (key === 'date') {
       yield put(setCardPieListPanelOpen(true))
+    }
+    const stripTab = (yield select(
+      selectNotebookStripTab,
+    )) as DateStripSection
+    if (
+      stripTab === 'cart' &&
+      (SECTION_EDITOR_FACTORY_KEYS as readonly string[]).includes(key)
+    ) {
+      yield put(setNotebookStripDateOverCart(true))
+      yield put(setNotebookStripTab('date'))
     }
     yield put(setActiveSection(key))
   }
