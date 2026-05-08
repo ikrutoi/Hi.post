@@ -17,6 +17,7 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 
 export const buildNotebookDateTabCommands = (): UnknownAction[] => [
   setNotebookStripDateOverCart(true),
+  setCartListPanelOpen(false),
   setCartListSelectedLocalId(null),
   setHistoryListSelectedLocalId(null),
   closeDayPanel(),
