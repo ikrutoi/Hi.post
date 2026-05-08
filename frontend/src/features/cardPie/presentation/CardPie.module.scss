@@ -131,6 +131,8 @@
 }
 
 $pie-center-logo-size: 1.5rem;
+/** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от размера индикатора. */
+$pie-center-cart-blocked-ring: $pie-center-logo-size * 0.225;
 .pieCenterButton {
   position: absolute;
   top: 50%;
@@ -196,9 +198,13 @@ $pie-center-logo-size: 1.5rem;
   width: 100%;
   height: 100%;
   border-radius: 50%;
+  box-sizing: border-box;
+  border-style: solid;
+  /** Явный ноль: при смене cartBlocked→cart бордер исчезает сразу; без этого transition по фону даёт кадр «весь круг красный». */
+  border-width: 0;
+  border-color: transparent;
   // background-color: $color-app-substrate-border;
   background-color: $color-preview-indicator-cart;
-  transition: background-color 0.3s ease;
 
   &.processed {
     background-color: $color-preview-indicator-processed;
@@ -207,7 +213,7 @@ $pie-center-logo-size: 1.5rem;
     background-color: $color-preview-indicator-cart;
   }
   &.cartBlocked {
-    @include preview-indicator-cart-blocked-ring;
+    @include preview-indicator-cart-blocked-ring($pie-center-cart-blocked-ring);
   }
   &.ready {
     background-color: $color-preview-indicator-ready;

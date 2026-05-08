@@ -47,11 +47,12 @@ $color-preview-indicator-error: #f44336;
 
 $preview-indicator-cart-blocked-border-width: 2px;
 
-@mixin preview-indicator-cart-blocked-ring {
+@mixin preview-indicator-cart-blocked-ring(
+  $border-width: $preview-indicator-cart-blocked-border-width
+) {
   box-sizing: border-box;
   background-color: $color-preview-indicator-error;
-  border: $preview-indicator-cart-blocked-border-width solid
-    $color-preview-indicator-cart;
+  border: $border-width solid $color-preview-indicator-cart;
 }
 
 $color-preview-row-processed: #f3f6fb;

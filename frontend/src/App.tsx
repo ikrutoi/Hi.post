@@ -246,6 +246,12 @@ const App = () => {
       : null,
   )
 
+  /** Правый CardPie раньше всегда получал `cart`; статус берём из строки списка (cartBlocked и др.). */
+  const rightArchivePiePostcardStatus = useMemo(() => {
+    if (rightListArchiveLocalId == null) return undefined
+    return cartItems.find((p) => p.localId === rightListArchiveLocalId)?.status
+  }, [cartItems, rightListArchiveLocalId])
+
   const listRowInner = rightListArchiveBundle?.currentData?.data ?? null
 
   const syncPeekChromeForOpenedSection = useCallback((section: CardSection) => {
@@ -872,7 +878,7 @@ const App = () => {
                         <div className={styles.appMainContentRightPieWrap}>
                           <CardPie
                             isProcessed={false}
-                            status="cart"
+                            status={rightArchivePiePostcardStatus}
                             id={String(rightListArchiveLocalId)}
                             fillContainer
                             station="right"
@@ -926,7 +932,7 @@ const App = () => {
                             <div className={styles.appMainContentRightPieWrap}>
                               <CardPie
                                 isProcessed={false}
-                                status="cart"
+                                status={rightArchivePiePostcardStatus}
                                 id={String(rightListArchiveLocalId)}
                                 fillContainer
                                 station="right"
