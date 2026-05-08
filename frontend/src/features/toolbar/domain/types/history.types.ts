@@ -1,7 +1,7 @@
 import { flattenIcons } from '../helpers'
 import type { ToolbarConfig, BaseSectionConfig } from './toolbar.types'
 
-export const HISTORY_KEYS = ['listHistory'] as const
+export const HISTORY_KEYS = ['history'] as const
 
 export type HistoryKey = (typeof HISTORY_KEYS)[number]
 
@@ -13,7 +13,7 @@ export interface HistoryToolbarState extends Record<string, any> {
 export const HISTORY_TOOLBAR: ToolbarConfig = [
   {
     group: 'history',
-    icons: [{ key: 'listHistory', state: 'enabled' }],
+    icons: [{ key: 'history', state: 'enabled' }],
     status: 'enabled',
   },
 ]

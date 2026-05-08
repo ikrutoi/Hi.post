@@ -373,7 +373,8 @@
 .toolbarCardtext,
 .toolbarCardphoto,
 .toolbarDate,
-.toolbarHistory {
+.toolbarHistory,
+.toolbarCart {
   .toolbarKey {
     background-color: $color-app-inner;
   }
@@ -431,16 +432,30 @@
 .toolbarRecipientFavorite,
 .toolbarSenderFavorite,
 .toolbarSenderView,
-.toolbarRecipientView,
-.toolbarDate,
-.toolbarHistory,
-.toolbarCart {
+.toolbarRecipientView
+// .toolbarDate
+{
   display: flex;
   align-items: center;
 
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
+  }
+}
+
+.toolbarDate,
+.toolbarCart,
+.toolbarHistory {
+  .toolbarKey {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .toolbarBadge {
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
   }
 }
 

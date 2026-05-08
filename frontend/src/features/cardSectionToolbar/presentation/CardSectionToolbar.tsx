@@ -13,6 +13,14 @@ export const CardSectionToolbar: React.FC = () => {
   const { activeSection } = useSectionMenuFacade()
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const showCalendarToolbar =
+    activeSection === 'date' || activeSection === 'history'
+  const calendarToolbarSection =
+    notebookStripTab === 'cart'
+      ? 'cart'
+      : notebookStripTab === 'history'
+        ? 'history'
+        : 'date'
 
   return (
     <div
@@ -22,9 +30,7 @@ export const CardSectionToolbar: React.FC = () => {
       )}
     >
       {activeSection === 'cardphoto' && <Toolbar section="cardphoto" />}
-      {activeSection === 'date' && notebookStripTab === 'date' && (
-        <Toolbar section="date" />
-      )}
+      {showCalendarToolbar && <Toolbar section={calendarToolbarSection} />}
       {activeSection === 'cardtext' && (
         <div className={styles.cardSectionToolbarHeader}>
           <Toolbar section="cardtext" />
