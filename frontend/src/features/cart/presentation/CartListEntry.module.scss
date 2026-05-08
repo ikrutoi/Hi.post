@@ -26,10 +26,10 @@ $list-entry-border: $color-cart-list-border;
 
   &[data-inactive='true'] {
     opacity: 0.78;
-    background-color: mix($list-entry-surface, $color-app-inner, 45%);
-    border-color: mix($list-entry-border, $color-app-inner, 50%);
-    --semicircle-row-rest: #{mix($list-entry-surface, $color-app-inner, 45%)};
-    --semicircle-row-hover: #{mix($list-entry-surface, $color-app-inner, 55%)};
+    background-color: $color-disabled-light;
+    border-color: $color-disabled;
+    --semicircle-row-rest: #{$color-disabled-light};
+    --semicircle-row-hover: #{darken($color-disabled-light, 3%)};
 
     .thumb {
       background-color: mix($color-app-inner, #eee, 55%);
@@ -58,7 +58,8 @@ $list-entry-border: $color-cart-list-border;
     background-color: darken($list-entry-surface, 1.5%);
 
     &[data-inactive='true'] {
-      background-color: mix($list-entry-surface, $color-app-inner, 55%);
+      background-color: darken($color-disabled-light, 3%);
+      border-color: $color-disabled;
     }
   }
 
@@ -75,8 +76,18 @@ $list-entry-border: $color-cart-list-border;
   }
 
   &[data-selected='true'][data-inactive='true'] {
-    --semicircle-row-rest: #{mix($list-entry-surface, $color-app-inner, 45%)};
-    --semicircle-row-hover: #{mix($list-entry-surface, $color-app-inner, 55%)};
+    background-color: darken($color-disabled-light, 5%);
+    border-color: $color-disabled;
+    --semicircle-row-rest: #{darken($color-disabled-light, 5%)};
+    --semicircle-row-hover: #{darken($color-disabled-light, 5%)};
+  }
+
+  &[data-selected='true'][data-inactive='true']:hover,
+  &[data-selected='true'][data-inactive='true'][data-focused='true'] {
+    background-color: darken($color-disabled-light, 6%);
+    border-color: $color-disabled;
+    --semicircle-row-rest: #{darken($color-disabled-light, 6%)};
+    --semicircle-row-hover: #{darken($color-disabled-light, 6%)};
   }
 
   &[data-clickable='true'] {

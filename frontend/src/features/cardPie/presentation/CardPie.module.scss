@@ -101,6 +101,10 @@
   fill: $color-font-active;
 }
 
+.pieTextDateDisabled {
+  fill: $color-font-disabled;
+}
+
 .sectorBg {
   fill: none;
   pointer-events: none;

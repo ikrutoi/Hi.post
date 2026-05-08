@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from 'react'
 import clsx from 'clsx'
 import listOfMonthOfYear from '@data/date/monthOfYear.json'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { selectCartItems, selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
@@ -38,6 +38,7 @@ import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
 function isPeekDispatchDateFilled(d: DispatchDate | null | undefined): boolean {
   if (d == null) return false
@@ -67,9 +68,13 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
 }) => {
   const dispatch = useAppDispatch()
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
-  const { rightPieDatePeekNoToolbar, listRowInner, listRowLocalId } =
-    useRightListArchiveMini()
+  const {
+    rightPieDatePeekNoToolbar,
+    listRowInner,
+    listRowLocalId,
+  } = useRightListArchiveMini()
   const currentDate = useMemo(() => getCurrentDate(), [])
+  const cartItems = useAppSelector(selectCartItems)
   const { flashParts, triggerFlash } = useFlashEffect()
 
   const {
@@ -148,6 +153,14 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
         : null,
     [rightPieDatePeekNoToolbar, section, listRowInner, listRowLocalId],
   )
+  const peekDateDisabled = useMemo(() => {
+    if (listRowLocalId == null) return false
+    const postcard =
+      cartItems.find((p) => p.localId === listRowLocalId && p.status === 'cart') ??
+      null
+    if (postcard == null) return false
+    return isDispatchDateDisabledForOrder(postcard.date, currentDate)
+  }, [listRowLocalId, cartItems, currentDate])
 
   const calendarViewDate: CalendarViewDate = lastViewedCalendarDate ?? {
     year: currentDate.year,
@@ -207,7 +220,12 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
         className={clsx(styles.form, styles.formPeek)}
       >
         {d != null ? (
-          <div className={styles.peekDateStack}>
+          <div
+            className={clsx(
+              styles.peekDateStack,
+              peekDateDisabled && styles.peekDateStackDisabled,
+            )}
+          >
             <div className={styles.peekYear}>{d.year}</div>
             <div className={styles.peekDay}>{d.day}</div>
             <div className={styles.peekMonth}>{monthLabel}</div>

@@ -34,6 +34,7 @@ interface CardPreviewProps {
   }
   section: CardPreviewCalendarSection | null
   isSelectedDate: boolean
+  isDisabledDate?: boolean
   /** День ячейки календаря — для бейджа числа веток с учётом excludeDispatchBranch. */
   calendarDispatchDate?: DispatchDate
   /** Маркер для Cell: hover скрывает плейсхолдер и показывает стрелку соседнего месяца. */
@@ -46,6 +47,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   data,
   section,
   isSelectedDate,
+  isDisabledDate = false,
   calendarDispatchDate,
   adjacentSessionPlaceholderNavSwap = false,
   isAdjacentMonthEdge = false,
@@ -190,6 +192,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             cardId={primaryItemForDisplay.cardId}
             isHistory={isHistoryLike}
             isSelectedDate={isSelectedDate}
+            isCartDateDisabledPreview={isCartCalendar && isDisabledDate}
             isAdjacentMonthEdge={isAdjacentMonthEdge}
             hasCartPostcardsOnDay={showDateModeCartPresenceIndicator}
           />

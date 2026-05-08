@@ -29,6 +29,8 @@ interface CellProps {
   historyEmptyNoPreview?: boolean
   /** dayBefore/dayAfter: pointer поверх `.adjacentMonth` (дата: не disabled; история: есть открытки). */
   adjacentMonthPointer?: boolean
+  /** Режим корзины: дни с превью кликабельны и показывают pointer. */
+  cartPreviewPointer?: boolean
   /**
    * Календарь в режиме «Корзина»: выбранные из фабрики dispatch-дни без фона dispatch
    * и без отдельной стилизации номера дня (бейдж).
@@ -52,6 +54,7 @@ export const Cell: React.FC<CellProps> = ({
   adjacentSessionPlaceholderNavSwap = false,
   historyEmptyNoPreview = false,
   adjacentMonthPointer = false,
+  cartPreviewPointer = false,
   suppressDispatchSelectionStyle = false,
   children,
 }) => {
@@ -77,6 +80,7 @@ export const Cell: React.FC<CellProps> = ({
     suppressDispatchSelectionStyle && styles.cart,
     historyEmptyNoPreview && styles.historyEmptyNoPreview,
     adjacentMonthPointer && styles.adjacentMonthPointer,
+    cartPreviewPointer && styles.cartPreviewPointer,
     isToday && styles.today,
     isDisabledDate && styles.disabled,
     (dayBefore != null || dayAfter != null) && styles.adjacentMonth,

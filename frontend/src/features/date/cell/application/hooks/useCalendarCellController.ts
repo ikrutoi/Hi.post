@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { setCartListSelectedLocalId } from '@cart/infrastructure/state'
 import { useDateFacade } from '../../../application/facades'
 import { useCalendarFacade } from '../../../calendar/application/facades'
 import {
@@ -111,6 +112,28 @@ export const useCalendarCellController = ({
     }
   }
 
+  const openCartDayPanelWithListHighlight = (
+    dateKey: string,
+    dayData: CardCalendarIndex,
+  ) => {
+    dispatch(openDayPanel({ dateKey, dayData }))
+    const firstCardId =
+      dayData.cart[0]?.cardId ??
+      dayData.ready[0]?.cardId ??
+      dayData.sent[0]?.cardId ??
+      dayData.delivered[0]?.cardId ??
+      dayData.error[0]?.cardId ??
+      null
+    if (!firstCardId) return
+    const lid =
+      cartItems.find(
+        (p) => p.card.id === firstCardId && p.status === 'cart',
+      )?.localId ?? null
+    if (lid != null) {
+      dispatch(setCartListSelectedLocalId(lid))
+    }
+  }
+
   const handleCellClickLogic = ({
     isDisabledDate,
     dayBefore,
@@ -122,9 +145,14 @@ export const useCalendarCellController = ({
     dayData,
     triggerMonthNav,
   }: HandleCellClickParams) => {
+    const allowCartDayClickWhenDisabled =
+      notebookStripTab === 'cart' &&
+      Boolean(dayData) &&
+      calendarDayHasCards(dayData)
+
     if (
       direction === 'current' &&
-      !isDisabledDate &&
+      (!isDisabledDate || allowCartDayClickWhenDisabled) &&
       dayCurrent != null &&
       calendarViewDate?.year != null &&
       calendarViewDate?.month != null
@@ -151,7 +179,9 @@ export const useCalendarCellController = ({
       if (dateListPanelOpen) {
         dispatch(closeDayPanel())
       } else if (dateKey && dayData && calendarDayHasCards(dayData)) {
-        if (isHistorySection) {
+        if (notebookStripTab === 'cart') {
+          openCartDayPanelWithListHighlight(dateKey, dayData)
+        } else if (isHistorySection) {
           if (openDayPanelState?.dateKey === dateKey) {
             dispatch(closeDayPanel())
           } else {
@@ -170,7 +200,7 @@ export const useCalendarCellController = ({
     if (
       (direction === 'before' || direction === 'after') &&
       triggerMonthNav !== true &&
-      !isDisabledDate &&
+      (!isDisabledDate || allowCartDayClickWhenDisabled) &&
       calendarViewDate?.year != null &&
       calendarViewDate?.month != null
     ) {
@@ -196,7 +226,9 @@ export const useCalendarCellController = ({
         if (dateListPanelOpen) {
           dispatch(closeDayPanel())
         } else if (dateKey && dayData && calendarDayHasCards(dayData)) {
-          if (isHistorySection) {
+          if (notebookStripTab === 'cart') {
+            openCartDayPanelWithListHighlight(dateKey, dayData)
+          } else if (isHistorySection) {
             if (openDayPanelState?.dateKey === dateKey) {
               dispatch(closeDayPanel())
             } else {

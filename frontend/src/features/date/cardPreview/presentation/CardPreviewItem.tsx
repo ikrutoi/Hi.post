@@ -19,6 +19,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   cardId,
   isHistory,
   isSelectedDate,
+  isCartDateDisabledPreview = false,
   isAdjacentMonthEdge = false,
   hasCartPostcardsOnDay = false,
 }) => {
@@ -66,7 +67,10 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
     <img
       src={displayUrl}
       alt="card thumb"
-      className={styles.previewImage}
+      className={clsx(
+        styles.previewImage,
+        isCartDateDisabledPreview && styles.previewImageCartDisabled,
+      )}
     />
   ) : showCardphotoPlaceholder ? (
     <div className={styles.miniCardphotoPlaceholder} aria-hidden>

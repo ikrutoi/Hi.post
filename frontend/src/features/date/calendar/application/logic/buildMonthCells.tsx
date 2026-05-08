@@ -113,6 +113,10 @@ export const buildMonthCells = ({
       activeSection === 'date' && direction !== 'current' && !isDisabled
 
     const adjacentMonthPointer = historyAdjacentPointer || dateAdjacentPointer
+    const cartPreviewPointer =
+      isCartCalendarStrip &&
+      dayData != null &&
+      calendarDayHasCards(dayData)
 
     return (
       <Cell
@@ -131,6 +135,7 @@ export const buildMonthCells = ({
         adjacentSessionPlaceholderNavSwap={adjacentSessionPlaceholderNavSwap}
         historyEmptyNoPreview={historyEmptyNoPreview}
         adjacentMonthPointer={adjacentMonthPointer}
+        cartPreviewPointer={cartPreviewPointer}
         suppressDispatchSelectionStyle={isCartCalendarStrip}
       >
         {dayData && (
@@ -138,6 +143,7 @@ export const buildMonthCells = ({
             data={dayData}
             section={cardPreviewSection}
             isSelectedDate={isSelectedDate}
+            isDisabledDate={isDisabled}
             calendarDispatchDate={{
               year: currentViewYear,
               month: currentViewMonth,

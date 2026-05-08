@@ -16,6 +16,8 @@ import {
   IconUsersV3,
 } from '@shared/ui/icons'
 import type { DispatchDate } from '@entities/date'
+import { getCurrentDate } from '@shared/utils/date'
+import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { CardSection } from '@shared/config/constants'
@@ -117,6 +119,11 @@ export const CardPie: React.FC<CardPieProps> = ({
         ? [date]
         : []
   const hasManyDates = dates.length > 1
+  const currentDate = getCurrentDate()
+  const isCartDateDisabled =
+    status === 'cart' &&
+    dates.length > 0 &&
+    dates.every((d) => isDispatchDateDisabledForOrder(d, currentDate))
 
   const handleMouseEnter = (e: React.MouseEvent<SVGPathElement>) => {
     const sectionId = e.currentTarget.dataset.section as CardSection
@@ -452,7 +459,11 @@ export const CardPie: React.FC<CardPieProps> = ({
                     y="3200"
                     textAnchor="middle"
                     strokeLinejoin="round"
-                    className={clsx(styles.pieTextBase, styles.pieTextDate)}
+                    className={clsx(
+                      styles.pieTextBase,
+                      styles.pieTextDate,
+                      isCartDateDisabled && styles.pieTextDateDisabled,
+                    )}
                   >
                     <tspan x="2560" dy="0" fontWeight="700" fontSize="1500">
                       {dates.length}
@@ -472,7 +483,11 @@ export const CardPie: React.FC<CardPieProps> = ({
                     y="2000"
                     textAnchor="middle"
                     strokeLinejoin="round"
-                    className={clsx(styles.pieTextBase, styles.pieTextDate)}
+                    className={clsx(
+                      styles.pieTextBase,
+                      styles.pieTextDate,
+                      isCartDateDisabled && styles.pieTextDateDisabled,
+                    )}
                   >
                     <tspan x="2780" dy="0" fontWeight="400" fontSize="550">
                       {date.year}

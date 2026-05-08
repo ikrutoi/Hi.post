@@ -44,8 +44,20 @@ $cell-border-radius: 0.35rem;
     cursor: default;
   }
 
+  &.cart.adjacentMonth.adjacentMonthPointer {
+    cursor: pointer;
+  }
+
+  &.cart.cartPreviewPointer {
+    cursor: pointer;
+  }
+
   &.cart .navArrowWrap {
     cursor: default;
+  }
+
+  &.cart.adjacentMonth.adjacentMonthPointer .navArrowWrap {
+    cursor: pointer;
   }
 }
 
@@ -252,6 +264,10 @@ button.navArrowWrap {
     color: $color-font-enabled;
     cursor: default;
   }
+
+  &.cart.cartPreviewPointer:hover {
+    cursor: pointer;
+  }
 }
 
 .disabled {
@@ -298,6 +314,10 @@ button.navArrowWrap {
     // &.current .dayNumber {
     //   color: $color-font-enabled;
     // }
+  }
+
+  &.cart.cartPreviewPointer {
+    cursor: pointer;
   }
 }
 

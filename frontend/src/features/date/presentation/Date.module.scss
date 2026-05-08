@@ -63,6 +63,10 @@
   color: $color-font-active;
 }
 
+.peekDateStackDisabled {
+  color: $color-font-disabled;
+}
+
 .peekYear {
   font-size: clamp(3rem, 8vw, 4.5rem);
   font-weight: 400;
