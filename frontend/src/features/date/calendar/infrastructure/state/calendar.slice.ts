@@ -59,6 +59,10 @@ type CalendarState = {
   cardPieListSortDirection: 'asc' | 'desc'
   postcardStatusesCount: PostcardStatusesCount
   postcardStatuses: PostcardStatuses
+  /**
+   * Увеличивается при клике по закладке «Дата» на полосе календаря — App сбрасывает peek-ввод в центре.
+   */
+  notebookDateTabPeekClearTick: number
 }
 
 const now = getCurrentDate()
@@ -94,6 +98,7 @@ const initialState: CalendarState = {
     delivered: true,
     error: true,
   },
+  notebookDateTabPeekClearTick: 0,
 }
 
 const calendarSlice = createSlice({
@@ -202,6 +207,10 @@ const calendarSlice = createSlice({
     setCartCalendarDatePickMode(state, action: PayloadAction<boolean>) {
       state.cartCalendarDatePickMode = action.payload
     },
+
+    bumpNotebookDateTabPeekClearTick(state) {
+      state.notebookDateTabPeekClearTick += 1
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(setCartListPanelOpen, (state, action) => {
@@ -228,5 +237,6 @@ export const {
   setNotebookStripTab,
   setNotebookStripDateOverCart,
   setCartCalendarDatePickMode,
+  bumpNotebookDateTabPeekClearTick,
 } = calendarSlice.actions
 export default calendarSlice.reducer

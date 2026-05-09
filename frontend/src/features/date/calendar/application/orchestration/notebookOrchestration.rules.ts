@@ -22,6 +22,7 @@ export const buildNotebookDateTabCommands = (): UnknownAction[] => [
   setCartListSelectedLocalId(null),
   setHistoryListSelectedLocalId(null),
   closeDayPanel(),
+  setCartCalendarDatePickMode(false),
   setNotebookStripTab('date'),
   setCardPieListPanelOpen(true),
   setActiveSection('date'),

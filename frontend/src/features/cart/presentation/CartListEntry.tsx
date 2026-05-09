@@ -1,7 +1,10 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import type { PostcardStatus } from '@entities/postcard'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import {
+  selectCartCalendarDatePickMode,
+  selectNotebookStripTab,
+} from '@date/calendar/infrastructure/selectors'
 import {
   setCartCalendarDatePickMode,
   setNotebookStripDateOverCart,
@@ -52,8 +55,15 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
 
   const dispatch = useAppDispatch()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
 
   const [dateEditHighlight, setDateEditHighlight] = useState(false)
+
+  useEffect(() => {
+    if (!cartCalendarDatePickMode) {
+      setDateEditHighlight(false)
+    }
+  }, [cartCalendarDatePickMode])
 
   const handleDateEditClick = useCallback(
     (e: React.MouseEvent) => {

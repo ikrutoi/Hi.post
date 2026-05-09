@@ -6,6 +6,7 @@ import {
   notebookTabDateClicked,
   notebookTabHistoryClicked,
 } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import { bumpNotebookDateTabPeekClearTick } from '@date/calendar/infrastructure/state'
 import {
   buildNotebookCartTabCommands,
   buildNotebookDateTabCommands,
@@ -21,6 +22,7 @@ function* dispatchCommands(commands: ReturnType<typeof buildNotebookDateTabComma
 
 function* handleNotebookTabDateClicked(): SagaIterator {
   yield* dispatchCommands(buildNotebookDateTabCommands())
+  yield put(bumpNotebookDateTabPeekClearTick())
 }
 
 function* handleNotebookTabCartClicked(): SagaIterator {

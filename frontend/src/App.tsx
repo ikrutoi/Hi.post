@@ -13,6 +13,7 @@ import {
   selectHistoryOpenDayPanelArchiveLocalId,
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
+  selectNotebookDateTabPeekClearTick,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { Header } from './features/header/presentation/Header'
@@ -125,6 +126,18 @@ const App = () => {
     selectCardPieCopyStripExpanded,
   )
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const notebookDateTabPeekClearTick = useAppSelector(
+    selectNotebookDateTabPeekClearTick,
+  )
+
+  useLayoutEffect(() => {
+    if (notebookDateTabPeekClearTick === 0) return
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
+  }, [notebookDateTabPeekClearTick])
 
   useAuthInit()
   useLayoutInit()
