@@ -8,7 +8,9 @@ $list-panel-cart-list-toolbar-row-h: 1.65rem;
 $cart-list-header-square-skew-deg: -15deg;
 $cart-list-header-square-w: 1.5rem;
 $cart-list-header-square-h: 1rem;
-$cart-list-header-square-active-grow: 2px;
+/** Inactive: white ring; active: transparent (same 2px so size does not jump). */
+$cart-list-header-segment-border: 1px;
+$cart-list-header-segment-border-inactive: rgba(255, 255, 255, 0.92);
 
 .panel {
   position: relative;
@@ -51,8 +53,8 @@ $cart-list-header-square-active-grow: 2px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: calc(#{$cart-list-header-square-w} + #{$cart-list-header-square-active-grow});
-  height: calc(#{$cart-list-header-square-h} + #{$cart-list-header-square-active-grow});
+  width: $cart-list-header-square-w;
+  height: $cart-list-header-square-h;
 }
 
 .headerBelowSquare {
@@ -63,10 +65,8 @@ $cart-list-header-square-active-grow: 2px;
   width: $cart-list-header-square-w;
   height: $cart-list-header-square-h;
   box-sizing: border-box;
-  transition: width 0.15s ease, height 0.15s ease;
   padding: 0;
   margin: 0;
-  border: none;
   cursor: pointer;
   font: inherit;
   color: inherit;
@@ -77,13 +77,12 @@ $cart-list-header-square-active-grow: 2px;
   transform-origin: center center;
 
   &:focus-visible {
-    outline: 2px solid $color-active;
-    outline-offset: 2px;
+    outline: none;
   }
 }
 
 .headerBelowCount {
-  color: $color-app-sidebar-icon-active;
+  color: $color-font-enabled-light-hover;
   font-family: sans-serif;
   font-size: 10px;
   font-weight: 700;
@@ -92,12 +91,18 @@ $cart-list-header-square-active-grow: 2px;
   transform: skewX(#{0deg - $cart-list-header-square-skew-deg});
 }
 
+.cart,
+.cartBlocked {
+  border: $cart-list-header-segment-border solid
+    $cart-list-header-segment-border-inactive;
+  transition: border-color 0.15s ease;
+}
+
 .cart {
   background-color: $color-preview-indicator-cart;
 
   &[aria-pressed='true'] {
-    width: calc(#{$cart-list-header-square-w} + #{$cart-list-header-square-active-grow});
-    height: calc(#{$cart-list-header-square-h} + #{$cart-list-header-square-active-grow});
+    border-color: transparent;
   }
 }
 
@@ -105,8 +110,7 @@ $cart-list-header-square-active-grow: 2px;
   background-color: $color-preview-indicator-error;
 
   &[aria-pressed='true'] {
-    width: calc(#{$cart-list-header-square-w} + #{$cart-list-header-square-active-grow});
-    height: calc(#{$cart-list-header-square-h} + #{$cart-list-header-square-active-grow});
+    border-color: transparent;
   }
 }
 
@@ -146,10 +150,6 @@ $cart-list-header-square-active-grow: 2px;
   flex-direction: column;
 }
 
-/**
- * Disabled rows are a separate block pinned near footer.
- * Reverse render order in TSX makes this block grow from bottom to top.
- */
 .listInactiveGroup {
   display: flex;
   flex-direction: column;

@@ -51,6 +51,20 @@ $cell-border-radius: 0.35rem;
   &.cart.adjacentMonth .navArrowWrap {
     cursor: pointer;
   }
+
+  /** Рамка как у `CartListEntry` в режиме dateEdit (`$color-cart-list-entry-date-edit-border`). */
+  &.cart.cartDateEditPickBorder {
+    cursor: pointer;
+    border-color: $color-cart-list-entry-date-edit-border;
+
+    &:hover:not(.disabled) {
+      border-color: mix(
+        $color-cart-list-entry-date-edit-border,
+        hsl(210, 55%, 62%),
+        55%
+      );
+    }
+  }
 }
 
 .dayNumber {
@@ -345,4 +359,19 @@ button.navArrowWrap {
   color: $color-font-enabled;
   font-weight: 700;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/**
+ * Режим выбора даты (полоса «Корзина»): `.current.cart:hover { cursor: default }` выше даёт ту же
+ * специфичность, что и `.cell.cart.cartDateEditPickBorder`, и из‑за порядка перебивает pointer.
+ * Превью на весь inset — без `cursor` на потомках виден дефолтный курсор над картинкой.
+ */
+.cell.cart.cartDateEditPickBorder:hover:not(.disabled),
+.cell.cart.cartDateEditPickBorder.current:hover:not(.disabled) {
+  cursor: pointer;
+}
+
+.cell.cart.cartDateEditPickBorder .cellContent,
+.cell.cart.cartDateEditPickBorder .cellContent * {
+  cursor: pointer;
 }

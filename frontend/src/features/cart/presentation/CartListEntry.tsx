@@ -1,5 +1,12 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import type { PostcardStatus } from '@entities/postcard'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import {
+  setCartCalendarDatePickMode,
+  setNotebookStripDateOverCart,
+  setNotebookStripTab,
+} from '@date/calendar/infrastructure/state'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CartListEntry.module.scss'
@@ -43,11 +50,39 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
     .join(', ')
   const recipientParts = parseListEntryRecipientDetail(detailLine)
 
+  const dispatch = useAppDispatch()
+  const notebookStripTab = useAppSelector(selectNotebookStripTab)
+
+  const [dateEditHighlight, setDateEditHighlight] = useState(false)
+
+  const handleDateEditClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (!isBlockedEntry) return
+      setDateEditHighlight((on) => {
+        const next = !on
+        if (next) {
+          if (notebookStripTab !== 'cart') {
+            dispatch(setNotebookStripTab('cart'))
+          }
+          dispatch(setNotebookStripDateOverCart(false))
+        }
+        dispatch(setCartCalendarDatePickMode(next))
+        return next
+      })
+      onDateEdit?.()
+    },
+    [dispatch, isBlockedEntry, notebookStripTab, onDateEdit],
+  )
+
   return (
     <div
       className={styles.root}
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
+      data-date-edit-active={
+        isBlockedEntry && dateEditHighlight ? 'true' : undefined
+      }
       data-inactive={variant === 'inactive' ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
       role={interactive ? 'button' : undefined}
@@ -108,10 +143,8 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
               className={styles.actionBtn}
               aria-label="Edit postcard date"
               title="Edit postcard date"
-              onClick={(e) => {
-                e.stopPropagation()
-                onDateEdit?.()
-              }}
+              aria-pressed={dateEditHighlight}
+              onClick={handleDateEditClick}
             >
               {getToolbarIcon({ key: 'dateEdit' })}
             </button>

@@ -32,6 +32,10 @@ interface CellProps {
   /** Режим корзины: дни с превью кликабельны и показывают pointer. */
   cartPreviewPointer?: boolean
   /**
+   * Полоса «Корзина» + выбор новой даты из списка: рамка как у строки корзины в dateEdit (только не disabled).
+   */
+  cartDateEditPickBorder?: boolean
+  /**
    * Календарь в режиме «Корзина»: выбранные из фабрики dispatch-дни без фона dispatch
    * и без отдельной стилизации номера дня (бейдж).
    */
@@ -55,6 +59,7 @@ export const Cell: React.FC<CellProps> = ({
   historyEmptyNoPreview = false,
   adjacentMonthPointer = false,
   cartPreviewPointer = false,
+  cartDateEditPickBorder = false,
   suppressDispatchSelectionStyle = false,
   children,
 }) => {
@@ -83,6 +88,7 @@ export const Cell: React.FC<CellProps> = ({
     historyEmptyNoPreview && styles.historyEmptyNoPreview,
     adjacentMonthPointer && styles.adjacentMonthPointer,
     cartPreviewPointer && styles.cartPreviewPointer,
+    cartDateEditPickBorder && styles.cartDateEditPickBorder,
     isToday && styles.today,
     isDisabledDate && styles.disabled,
     (dayBefore != null || dayAfter != null) && styles.adjacentMonth,

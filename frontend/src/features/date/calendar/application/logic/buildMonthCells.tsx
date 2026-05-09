@@ -1,6 +1,9 @@
 import { useAppSelector } from '@app/hooks'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
-import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
+import {
+  selectCartCalendarDatePickMode,
+  selectNotebookStripTab,
+} from '@date/calendar/infrastructure/selectors'
 import { Cell } from '@date/cell/presentation/Cell'
 import { CardPreview } from '@features/date/cardPreview/presentation/CardPreview'
 import { shiftMonth } from '../helpers'
@@ -44,6 +47,7 @@ export const buildMonthCells = ({
   const { activeSection } = useSectionMenuFacade()
   const photoPreview = useAppSelector(selectCardphotoPreview)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const isCartCalendarStrip =
     activeSection === 'date' && notebookStripTab === 'cart'
   const cardPreviewSection: CardSection | 'cart' | null =
@@ -127,6 +131,9 @@ export const buildMonthCells = ({
       calendarDayHasCards(dayData) &&
       !isSelectedDate
 
+    const cartDateEditPickBorder =
+      isCartCalendarStrip && cartCalendarDatePickMode && !isDisabled
+
     return (
       <Cell
         key={`${direction}-${day}`}
@@ -145,6 +152,7 @@ export const buildMonthCells = ({
         historyEmptyNoPreview={historyEmptyNoPreview}
         adjacentMonthPointer={adjacentMonthPointer}
         cartPreviewPointer={cartPreviewPointer}
+        cartDateEditPickBorder={cartDateEditPickBorder}
         suppressDispatchSelectionStyle={isCartCalendarStrip}
       >
         {dayData && (

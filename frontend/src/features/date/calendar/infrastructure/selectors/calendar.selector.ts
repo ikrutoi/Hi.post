@@ -44,6 +44,9 @@ export const computeNotebookStripTabFromState = (
 export const selectNotebookStripTab = (state: RootState): DateStripSection =>
   state.calendar.notebookStripTab
 
+export const selectCartCalendarDatePickMode = (state: RootState): boolean =>
+  state.calendar.cartCalendarDatePickMode
+
 export const selectIsDateListPanelOpen = (state: RootState): boolean =>
   state.calendar.dateListPanelOpen
 

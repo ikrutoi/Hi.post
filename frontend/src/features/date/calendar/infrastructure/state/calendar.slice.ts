@@ -45,6 +45,10 @@ type CalendarState = {
    * Сбрасывается при `setNotebookStripTab('cart'|'history')` и при `setCartListPanelOpen(true)`.
    */
   notebookStripDateOverCart: boolean
+  /**
+   * Выбор новой даты из списка корзины (cartBlocked → dateEdit): стили календаря и сброс при уходе с «Корзина» / панели.
+   */
+  cartCalendarDatePickMode: boolean
   historyListPanelOpen: boolean
   /** Выбранная строка списка истории — правый CardPie по `localId` открытки. */
   historyListSelectedLocalId: number | null
@@ -66,6 +70,7 @@ const initialState: CalendarState = {
   },
   notebookStripTab: getInitialNotebookStripTab(),
   notebookStripDateOverCart: false,
+  cartCalendarDatePickMode: false,
   dateListPanelOpen: false,
   cardPieListPanelOpen: false,
   historyListPanelOpen: false,
@@ -185,10 +190,17 @@ const calendarSlice = createSlice({
       if (action.payload === 'cart' || action.payload === 'history') {
         state.notebookStripDateOverCart = false
       }
+      if (action.payload !== 'cart') {
+        state.cartCalendarDatePickMode = false
+      }
     },
 
     setNotebookStripDateOverCart(state, action: PayloadAction<boolean>) {
       state.notebookStripDateOverCart = action.payload
+    },
+
+    setCartCalendarDatePickMode(state, action: PayloadAction<boolean>) {
+      state.cartCalendarDatePickMode = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -196,6 +208,7 @@ const calendarSlice = createSlice({
       if (action.payload === true) {
         state.notebookStripDateOverCart = false
       }
+      state.cartCalendarDatePickMode = false
     })
   },
 })
@@ -214,5 +227,6 @@ export const {
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
   setNotebookStripDateOverCart,
+  setCartCalendarDatePickMode,
 } = calendarSlice.actions
 export default calendarSlice.reducer

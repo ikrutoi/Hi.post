@@ -120,6 +120,12 @@ $color-date-multi: #3475c9;
 
 $color-cart-list-surface: #fcf5e1;
 $color-cart-list-border: #f7e4b2;
+/** Рамка строки корзины в режиме выбора новой даты — же для ячеек календаря в этом режиме. */
+$color-cart-list-entry-date-edit-border: mix(
+  hsl(210, 55%, 74%),
+  $color-cart-list-border,
+  68%
+);
 
 $color-envelope-sender-input-focus: #fff;
 

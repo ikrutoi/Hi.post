@@ -5,6 +5,23 @@ $list-entry-thumb-size: 2.75rem;
 
 $list-entry-surface: $color-cart-list-surface;
 $list-entry-border: $color-cart-list-border;
+/** Подсветка строки при выборе новой даты: заметнее холодный голубой. */
+$list-entry-date-edit-tint: hsl(210, 82%, 94%);
+$list-entry-date-edit-tint-hover: hsl(210, 76%, 90%);
+$list-entry-date-edit-bg: mix($list-entry-date-edit-tint, $list-entry-surface, 64%);
+$list-entry-date-edit-bg-hover: mix(
+  $list-entry-date-edit-tint-hover,
+  $list-entry-surface,
+  58%
+);
+$list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
+/**
+ * Фон кнопок в режиме выбора даты: почти как фон строки, лёгкий сдвиг к тинту.
+ * `$weight-row` — доля цвета строки в `mix` (чем выше, тем ближе к строке).
+ */
+@function date-edit-icon-surface($row-bg, $tint, $weight-row: 88%) {
+  @return mix($row-bg, $tint, $weight-row);
+}
 
 .root {
   position: relative;
@@ -94,6 +111,87 @@ $list-entry-border: $color-cart-list-border;
         mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
       outline-offset: 1px;
     }
+  }
+
+  &[data-date-edit-active='true'] {
+    background-color: $list-entry-date-edit-bg;
+    border-color: $list-entry-date-edit-border;
+    --action-btn-bg: #{date-edit-icon-surface(
+        $list-entry-date-edit-bg,
+        $list-entry-date-edit-tint
+      )};
+    --action-btn-bg-hover: #{date-edit-icon-surface(
+        $list-entry-date-edit-bg,
+        $list-entry-date-edit-tint-hover,
+        76%
+      )};
+  }
+
+  &[data-date-edit-active='true']:hover,
+  &[data-date-edit-active='true'][data-focused='true'] {
+    background-color: $list-entry-date-edit-bg-hover;
+    --action-btn-bg: #{date-edit-icon-surface(
+        $list-entry-date-edit-bg-hover,
+        $list-entry-date-edit-tint-hover
+      )};
+    --action-btn-bg-hover: #{date-edit-icon-surface(
+        $list-entry-date-edit-bg-hover,
+        $list-entry-date-edit-tint,
+        72%
+      )};
+  }
+
+  &[data-date-edit-active='true'][data-inactive='true'] {
+    $inactive-date-edit-bg: mix($list-entry-date-edit-tint, $color-disabled-light, 48%);
+    background-color: $inactive-date-edit-bg;
+    border-color: mix(hsl(210, 48%, 76%), $color-disabled, 58%);
+    --action-btn-bg: #{date-edit-icon-surface(
+        $inactive-date-edit-bg,
+        $list-entry-date-edit-tint
+      )};
+    --action-btn-bg-hover: #{date-edit-icon-surface(
+        $inactive-date-edit-bg,
+        $list-entry-date-edit-tint-hover,
+        76%
+      )};
+  }
+
+  &[data-date-edit-active='true'][data-selected='true'] {
+    $selected-date-edit-bg: mix(
+      $list-entry-date-edit-tint,
+      darken($list-entry-surface, 3%),
+      52%
+    );
+    background-color: $selected-date-edit-bg;
+    border-color: $list-entry-date-edit-border;
+    --action-btn-bg: #{date-edit-icon-surface(
+        $selected-date-edit-bg,
+        $list-entry-date-edit-tint
+      )};
+    --action-btn-bg-hover: #{date-edit-icon-surface(
+        $selected-date-edit-bg,
+        $list-entry-date-edit-tint-hover,
+        76%
+      )};
+  }
+
+  &[data-date-edit-active='true'][data-selected='true'][data-inactive='true'] {
+    $sel-inact-date-edit-bg: mix(
+      $list-entry-date-edit-tint-hover,
+      darken($color-disabled-light, 5%),
+      44%
+    );
+    background-color: $sel-inact-date-edit-bg;
+    border-color: mix(hsl(210, 44%, 74%), $color-disabled, 55%);
+    --action-btn-bg: #{date-edit-icon-surface(
+        $sel-inact-date-edit-bg,
+        $list-entry-date-edit-tint
+      )};
+    --action-btn-bg-hover: #{date-edit-icon-surface(
+        $sel-inact-date-edit-bg,
+        $list-entry-date-edit-tint-hover,
+        76%
+      )};
   }
 }
 
