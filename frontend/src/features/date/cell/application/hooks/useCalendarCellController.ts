@@ -11,6 +11,8 @@ import {
   setHistoryListSelectedLocalId,
 } from '../../../calendar/infrastructure/state/calendar.slice'
 import {
+  selectCartCalendarDatePickLocalId,
+  selectCartCalendarDatePickMode,
   selectIsCardPieListPanelOpen,
   selectIsDateListPanelOpen,
   selectIsHistoryListPanelOpen,
@@ -18,6 +20,7 @@ import {
   selectOpenDayPanel,
   selectPostcardStatuses,
 } from '../../../calendar/infrastructure/selectors/calendar.selector'
+import { cartCalendarDatePickApplied } from '../../../calendar/application/orchestration/notebookOrchestration.events'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../../../calendar/infrastructure/historyOpenDayPanelPrimaryPostcard'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -53,6 +56,12 @@ export const useCalendarCellController = ({
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const postcardStatuses = useAppSelector(selectPostcardStatuses)
+  const cartCalendarDatePickMode = useAppSelector(
+    selectCartCalendarDatePickMode,
+  )
+  const cartCalendarDatePickLocalId = useAppSelector(
+    selectCartCalendarDatePickLocalId,
+  )
   const { selectedDate, selectedDates, isMultiDateMode, chooseDate } =
     useDateFacade()
 
@@ -147,6 +156,44 @@ export const useCalendarCellController = ({
     dayData,
     triggerMonthNav,
   }: HandleCellClickParams) => {
+    /**
+     * Полоса «Корзина» + dateEdit: клик по доступному дню применяет новую дату к открытке `localId`,
+     * выключает режим pick и переводит сегмент списка на `cart` (см. `cartCalendarDatePickSaga`).
+     */
+    if (
+      notebookStripTab === 'cart' &&
+      cartCalendarDatePickMode &&
+      cartCalendarDatePickLocalId != null &&
+      !isDisabledDate &&
+      triggerMonthNav !== true &&
+      calendarViewDate?.year != null &&
+      calendarViewDate?.month != null
+    ) {
+      let pickedDate: DispatchDate | null = null
+      if (direction === 'current' && dayCurrent != null) {
+        pickedDate = {
+          year: calendarViewDate.year,
+          month: calendarViewDate.month,
+          day: dayCurrent,
+        }
+      } else if (direction === 'before' || direction === 'after') {
+        const day = dayBefore ?? dayAfter ?? null
+        if (day != null) {
+          const { year, month } = shiftMonth(calendarViewDate, direction)
+          pickedDate = { year, month, day }
+        }
+      }
+      if (pickedDate) {
+        dispatch(
+          cartCalendarDatePickApplied({
+            localId: cartCalendarDatePickLocalId,
+            date: pickedDate,
+          }),
+        )
+        return
+      }
+    }
+
     const allowCartDayClickWhenDisabled =
       notebookStripTab === 'cart' &&
       Boolean(dayData) &&

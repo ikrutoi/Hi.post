@@ -49,6 +49,11 @@ type CalendarState = {
    * Выбор новой даты из списка корзины (cartBlocked → dateEdit): стили календаря и сброс при уходе с «Корзина» / панели.
    */
   cartCalendarDatePickMode: boolean
+  /**
+   * `localId` открытки, для которой включён `cartCalendarDatePickMode`: на клик по дню календаря
+   * сага применяет новую дату именно к ней.
+   */
+  cartCalendarDatePickLocalId: number | null
   historyListPanelOpen: boolean
   /** Выбранная строка списка истории — правый CardPie по `localId` открытки. */
   historyListSelectedLocalId: number | null
@@ -75,6 +80,7 @@ const initialState: CalendarState = {
   notebookStripTab: getInitialNotebookStripTab(),
   notebookStripDateOverCart: false,
   cartCalendarDatePickMode: false,
+  cartCalendarDatePickLocalId: null,
   dateListPanelOpen: false,
   cardPieListPanelOpen: false,
   historyListPanelOpen: false,
@@ -197,6 +203,7 @@ const calendarSlice = createSlice({
       }
       if (action.payload !== 'cart') {
         state.cartCalendarDatePickMode = false
+        state.cartCalendarDatePickLocalId = null
       }
     },
 
@@ -206,6 +213,16 @@ const calendarSlice = createSlice({
 
     setCartCalendarDatePickMode(state, action: PayloadAction<boolean>) {
       state.cartCalendarDatePickMode = action.payload
+      if (!action.payload) {
+        state.cartCalendarDatePickLocalId = null
+      }
+    },
+
+    setCartCalendarDatePickLocalId(
+      state,
+      action: PayloadAction<number | null>,
+    ) {
+      state.cartCalendarDatePickLocalId = action.payload
     },
 
     bumpNotebookDateTabPeekClearTick(state) {
@@ -218,6 +235,7 @@ const calendarSlice = createSlice({
         state.notebookStripDateOverCart = false
       }
       state.cartCalendarDatePickMode = false
+      state.cartCalendarDatePickLocalId = null
     })
   },
 })
@@ -237,6 +255,7 @@ export const {
   setNotebookStripTab,
   setNotebookStripDateOverCart,
   setCartCalendarDatePickMode,
+  setCartCalendarDatePickLocalId,
   bumpNotebookDateTabPeekClearTick,
 } = calendarSlice.actions
 export default calendarSlice.reducer

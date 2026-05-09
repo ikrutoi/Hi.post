@@ -47,6 +47,10 @@ export const selectNotebookStripTab = (state: RootState): DateStripSection =>
 export const selectCartCalendarDatePickMode = (state: RootState): boolean =>
   state.calendar.cartCalendarDatePickMode
 
+export const selectCartCalendarDatePickLocalId = (
+  state: RootState,
+): number | null => state.calendar.cartCalendarDatePickLocalId
+
 export const selectNotebookDateTabPeekClearTick = (state: RootState): number =>
   state.calendar.notebookDateTabPeekClearTick
 

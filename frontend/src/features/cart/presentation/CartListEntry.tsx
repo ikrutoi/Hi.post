@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback } from 'react'
 import type { PostcardStatus } from '@entities/postcard'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { isCalendarGridThirdCellFromEndDisabled } from '@date/calendar/application/logic/calendarGridThirdFromEndDisabled'
 import {
+  selectCartCalendarDatePickLocalId,
   selectCartCalendarDatePickMode,
   selectLastCalendarViewDate,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import {
+  setCartCalendarDatePickLocalId,
   setCartCalendarDatePickMode,
   setNotebookStripDateOverCart,
   setNotebookStripTab,
@@ -29,6 +31,8 @@ export type CartListEntryProps = {
   variant?: CartListEntryVariant
   previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
+  /** `localId` открытки этой строки — нужен для адресного включения `cartCalendarDatePickMode`. */
+  postcardLocalId?: number
   onSelect?: () => void
   onDelete?: () => void
   onDateEdit?: () => void
@@ -44,6 +48,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   variant = 'default',
   previewStatus,
   previewIsProcessed,
+  postcardLocalId,
   onSelect,
   onDelete,
   onDateEdit,
@@ -61,16 +66,17 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   const dispatch = useAppDispatch()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
+  const cartCalendarDatePickLocalId = useAppSelector(
+    selectCartCalendarDatePickLocalId,
+  )
   const lastViewedCalendarDate = useAppSelector(selectLastCalendarViewDate)
   const firstDayOfWeek = useAppSelector(selectFirstDayOfWeek)
 
-  const [dateEditHighlight, setDateEditHighlight] = useState(false)
-
-  useEffect(() => {
-    if (!cartCalendarDatePickMode) {
-      setDateEditHighlight(false)
-    }
-  }, [cartCalendarDatePickMode])
+  /** Подсветка строки в режиме dateEdit — только если она про эту открытку. */
+  const dateEditHighlight =
+    cartCalendarDatePickMode &&
+    postcardLocalId != null &&
+    cartCalendarDatePickLocalId === postcardLocalId
 
   const handleDateEditClick = useCallback(
     (e: React.MouseEvent) => {
@@ -94,9 +100,11 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
             updateLastViewedCalendarDate({ year: now.year, month: now.month }),
           )
         }
+        dispatch(setCartCalendarDatePickMode(true))
+        dispatch(setCartCalendarDatePickLocalId(postcardLocalId ?? null))
+      } else {
+        dispatch(setCartCalendarDatePickMode(false))
       }
-      dispatch(setCartCalendarDatePickMode(next))
-      setDateEditHighlight(next)
       onDateEdit?.()
     },
     [
@@ -107,6 +115,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       lastViewedCalendarDate,
       notebookStripTab,
       onDateEdit,
+      postcardLocalId,
     ],
   )
 

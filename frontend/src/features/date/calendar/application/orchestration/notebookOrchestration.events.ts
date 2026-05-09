@@ -1,5 +1,6 @@
 import { createAction } from '@reduxjs/toolkit'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
+import type { DispatchDate } from '@entities/date/domain/types'
 
 export const notebookTabDateClicked = createAction(
   'calendar/notebookTabDateClicked',
@@ -28,3 +29,12 @@ export const notebookHistoryPanelOpenChanged = createAction<{
 export const notebookSessionRestored = createAction<{
   tab: DateStripSection | null
 }>('calendar/notebookSessionRestored')
+
+/**
+ * Пользователь выбрал день в календаре в режиме `cartCalendarDatePickMode`:
+ * сага обновляет дату открытки `localId`, выключает режим и переводит сегмент списка на `cart`.
+ */
+export const cartCalendarDatePickApplied = createAction<{
+  localId: number
+  date: DispatchDate
+}>('calendar/cartCalendarDatePickApplied')

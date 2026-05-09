@@ -161,6 +161,7 @@ const CartListPanelRow: React.FC<{
       variant={item.variant}
       previewStatus={item.previewStatus}
       previewIsProcessed={item.previewIsProcessed}
+      postcardLocalId={item.postcard?.localId}
       onSelect={onSelectEntry ? () => onSelectEntry(item) : undefined}
       isSelected={isSelected}
       onDelete={item.onDelete}

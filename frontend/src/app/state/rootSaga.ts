@@ -22,6 +22,7 @@ import {
   watchNotebookOrchestrator,
   watchNotebookStateBridge,
   watchNotebookStripTabSync,
+  watchCartCalendarDatePick,
 } from '../middleware'
 
 export function* rootSaga() {
@@ -54,5 +55,6 @@ export function* rootSaga() {
     fork(watchNotebookOrchestrator),
     fork(watchNotebookStateBridge),
     fork(watchNotebookStripTabSync),
+    fork(watchCartCalendarDatePick),
   ])
 }

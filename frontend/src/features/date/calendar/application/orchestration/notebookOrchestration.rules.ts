@@ -43,7 +43,6 @@ export const buildNotebookCartTabCommands = (): UnknownAction[] => [
     value: 'active',
   }),
   setCartCalendarDatePickMode(false),
-  setCartListStatusSegment('cart'),
   setNotebookStripTab('cart'),
   setActiveSection('date'),
 ]
