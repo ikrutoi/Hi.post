@@ -22,6 +22,10 @@ import {
   selectCartCalendarDatePickMode,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
+import {
+  markCartDatePickSnakeHintDone,
+  readCartDatePickSnakeHintDone,
+} from '@date/calendar/infrastructure/cartDatePickSnakeHint.storage'
 
 interface UseCalendarConstructionParams {
   firstDayOfWeek: 'Sun' | 'Mon'
@@ -80,6 +84,12 @@ export const useCalendarConstruction = ({
       return
     }
 
+    if (readCartDatePickSnakeHintDone()) {
+      setWaveStrongKeys([])
+      setWaveFadingKey(null)
+      return
+    }
+
     if (cartDatePickWaveArmedRef.current) {
       return
     }
@@ -99,7 +109,10 @@ export const useCalendarConstruction = ({
       const keys = keysSnapshot()
       if (keys.length === 0) {
         pollAttempts += 1
-        if (pollAttempts > 120) return
+        if (pollAttempts > 120) {
+          cartDatePickWaveArmedRef.current = false
+          return
+        }
         timeoutId = window.setTimeout(startOrPollKeys, 0)
         return
       }
@@ -152,6 +165,7 @@ export const useCalendarConstruction = ({
 
       const finishWave = () => {
         if (cartDatePickWaveScheduleTokenRef.current !== tokenAtMount) return
+        markCartDatePickSnakeHintDone()
         clearWaveUi()
       }
 

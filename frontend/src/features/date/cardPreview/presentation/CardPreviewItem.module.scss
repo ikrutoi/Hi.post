@@ -68,22 +68,12 @@
   filter: none;
 }
 
-@keyframes previewImageFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .previewImage {
   width: auto;
   max-width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
-  animation: previewImageFadeIn 0.2s ease-out;
 }
 
 .previewImageCartDisabled {

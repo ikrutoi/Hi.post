@@ -1,15 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import type { PostcardStatus } from '@entities/postcard'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { isCalendarGridThirdCellFromEndDisabled } from '@date/calendar/application/logic/calendarGridThirdFromEndDisabled'
 import {
   selectCartCalendarDatePickMode,
+  selectLastCalendarViewDate,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import {
   setCartCalendarDatePickMode,
   setNotebookStripDateOverCart,
   setNotebookStripTab,
+  updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
+import { selectFirstDayOfWeek } from '@date/infrastructure/selectors'
+import { getCurrentDate } from '@shared/utils/date'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CartListEntry.module.scss'
@@ -56,6 +61,8 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   const dispatch = useAppDispatch()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
+  const lastViewedCalendarDate = useAppSelector(selectLastCalendarViewDate)
+  const firstDayOfWeek = useAppSelector(selectFirstDayOfWeek)
 
   const [dateEditHighlight, setDateEditHighlight] = useState(false)
 
@@ -69,20 +76,38 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
     (e: React.MouseEvent) => {
       e.stopPropagation()
       if (!isBlockedEntry) return
-      setDateEditHighlight((on) => {
-        const next = !on
-        if (next) {
-          if (notebookStripTab !== 'cart') {
-            dispatch(setNotebookStripTab('cart'))
-          }
-          dispatch(setNotebookStripDateOverCart(false))
+      const next = !dateEditHighlight
+      if (next) {
+        const now = getCurrentDate()
+        if (notebookStripTab !== 'cart') {
+          dispatch(setNotebookStripTab('cart'))
         }
-        dispatch(setCartCalendarDatePickMode(next))
-        return next
-      })
+        dispatch(setNotebookStripDateOverCart(false))
+        if (
+          isCalendarGridThirdCellFromEndDisabled({
+            calendarViewDate: lastViewedCalendarDate,
+            firstDayOfWeek,
+            currentDate: now,
+          })
+        ) {
+          dispatch(
+            updateLastViewedCalendarDate({ year: now.year, month: now.month }),
+          )
+        }
+      }
+      dispatch(setCartCalendarDatePickMode(next))
+      setDateEditHighlight(next)
       onDateEdit?.()
     },
-    [dispatch, isBlockedEntry, notebookStripTab, onDateEdit],
+    [
+      dispatch,
+      dateEditHighlight,
+      firstDayOfWeek,
+      isBlockedEntry,
+      lastViewedCalendarDate,
+      notebookStripTab,
+      onDateEdit,
+    ],
   )
 
   return (
