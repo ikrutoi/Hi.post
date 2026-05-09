@@ -106,6 +106,7 @@ export const ICON_KEYS = [
   'addressCheck',
   'cardPieCheck',
   'cardBlocked',
+  'dateEdit',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

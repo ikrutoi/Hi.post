@@ -183,6 +183,7 @@ import {
   IconAddressCheck,
   IconCardPieCheck,
   IconCardBlocked,
+  IconDateEdit,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -381,6 +382,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconCardPieCheck />
     case 'cardBlocked':
       return <IconCardBlocked />
+    case 'dateEdit':
+      return <IconDateEdit />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

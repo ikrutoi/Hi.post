@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { IconCart } from '@shared/ui/icons'
+import { IconCardBlocked, IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
@@ -257,12 +257,17 @@ export const CartListPanel: React.FC<Props> = ({
   const showCartFooter =
     entriesProp != null || listSegment === 'cart'
 
+  const listLeadIconKey =
+    entriesProp == null && listSegment === 'cartBlocked'
+      ? 'cardBlocked'
+      : 'cart'
+
   return (
     <div
       className={clsx(styles.panel, !showCartFooter && styles.panelNoFooter)}
     >
       <ListPanelStackedHeader
-        leadIconKey="cart"
+        leadIconKey={listLeadIconKey}
         toolbar={<Toolbar section="cartList" />}
         onClose={handleCloseList}
         closeAriaLabel="Close cart list"
@@ -360,7 +365,11 @@ export const CartListPanel: React.FC<Props> = ({
             </>
           ) : (
             <div className={styles.listEmpty} aria-hidden>
-              <IconCart className={styles.listEmptyIcon} />
+              {entriesProp == null && listSegment === 'cartBlocked' ? (
+                <IconCardBlocked className={styles.listEmptyIcon} />
+              ) : (
+                <IconCart className={styles.listEmptyIcon} />
+              )}
             </div>
           )}
         </div>
