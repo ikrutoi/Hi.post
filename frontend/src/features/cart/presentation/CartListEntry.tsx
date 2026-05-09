@@ -1,5 +1,6 @@
 import React from 'react'
 import type { PostcardStatus } from '@entities/postcard'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CartListEntry.module.scss'
 
@@ -15,6 +16,7 @@ export type CartListEntryProps = {
   previewIsProcessed?: boolean
   onSelect?: () => void
   onDelete?: () => void
+  onDateEdit?: () => void
   isSelected?: boolean
   isFocused?: boolean
 }
@@ -29,12 +31,13 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   previewIsProcessed,
   onSelect,
   onDelete,
+  onDateEdit,
   isSelected = false,
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
   const inactive = variant === 'inactive'
-  void onDelete
+  const isBlockedEntry = previewStatus === 'cartBlocked'
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
     .filter(Boolean)
     .join(', ')
@@ -62,7 +65,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
           : undefined
       }
     >
-      {/* Temporary: delete icon/action removed from list entry; use CardPie toolbar */}
       <div className={styles.body}>
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
@@ -97,6 +99,34 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         {priceLine ? (
           <div className={styles.priceLine} aria-label={`Price ${priceLine}`}>
             {priceLine}
+          </div>
+        ) : null}
+        {isBlockedEntry ? (
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={styles.actionBtn}
+              aria-label="Edit postcard date"
+              title="Edit postcard date"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDateEdit?.()
+              }}
+            >
+              {getToolbarIcon({ key: 'dateEdit' })}
+            </button>
+            <button
+              type="button"
+              className={styles.actionBtn}
+              aria-label="Remove postcard row"
+              title="Remove postcard row"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete?.()
+              }}
+            >
+              {getToolbarIcon({ key: 'delete' })}
+            </button>
           </div>
         ) : null}
       </div>

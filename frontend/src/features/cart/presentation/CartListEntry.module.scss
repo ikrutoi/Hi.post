@@ -20,15 +20,14 @@ $list-entry-border: $color-cart-list-border;
     background-color 0.15s ease,
     border-color 0.15s ease,
     opacity 0.15s ease;
-
-  --semicircle-row-rest: #{$list-entry-surface};
-  --semicircle-row-hover: #{darken($list-entry-surface, 1.5%)};
+  --action-btn-bg: #{mix($list-entry-surface, #fff, 82%)};
+  --action-btn-bg-hover: #{mix($list-entry-surface, #fff, 72%)};
 
   &[data-inactive='true'] {
     background-color: $color-disabled-light;
     border-color: $color-disabled;
-    --semicircle-row-rest: #{$color-disabled-light};
-    --semicircle-row-hover: #{darken($color-disabled-light, 3%)};
+    --action-btn-bg: #{mix($color-disabled-light, #fff, 86%)};
+    --action-btn-bg-hover: #{mix($color-disabled-light, #fff, 78%)};
 
     .thumb {
       background-color: mix($color-app-inner, #eee, 55%);
@@ -38,12 +37,9 @@ $list-entry-border: $color-cart-list-border;
       color: $color-font-disabled;
     }
 
-    .semicircleUp {
-      pointer-events: none;
-
+    .actionBtn {
       &:hover {
-        cursor: default;
-        background-color: var(--semicircle-row-hover);
+        cursor: pointer;
       }
     }
   }
@@ -51,33 +47,41 @@ $list-entry-border: $color-cart-list-border;
   &:hover,
   &[data-focused='true'] {
     background-color: darken($list-entry-surface, 1.5%);
+    --action-btn-bg: #{mix(darken($list-entry-surface, 1.5%), #fff, 82%)};
+    --action-btn-bg-hover: #{mix(darken($list-entry-surface, 1.5%), #fff, 72%)};
 
     &[data-inactive='true'] {
       background-color: darken($color-disabled-light, 3%);
       border-color: $color-disabled;
+      --action-btn-bg: #{mix(darken($color-disabled-light, 3%), #fff, 86%)};
+      --action-btn-bg-hover: #{mix(
+          darken($color-disabled-light, 3%),
+          #fff,
+          78%
+        )};
     }
   }
 
   &[data-selected='true'] {
     background-color: darken($list-entry-surface, 3%);
     box-shadow: -2px 0 0 0 $color-app-sidebar-icon-active;
-    --semicircle-row-rest: #{darken($list-entry-surface, 3%)};
-    --semicircle-row-hover: #{darken($list-entry-surface, 3%)};
+    --action-btn-bg: #{mix(darken($list-entry-surface, 3%), #fff, 82%)};
+    --action-btn-bg-hover: #{mix(darken($list-entry-surface, 3%), #fff, 72%)};
   }
 
   &[data-selected='true'][data-inactive='true'] {
     background-color: darken($color-disabled-light, 5%);
     border-color: $color-disabled;
-    --semicircle-row-rest: #{darken($color-disabled-light, 5%)};
-    --semicircle-row-hover: #{darken($color-disabled-light, 5%)};
+    --action-btn-bg: #{mix(darken($color-disabled-light, 5%), #fff, 86%)};
+    --action-btn-bg-hover: #{mix(darken($color-disabled-light, 5%), #fff, 78%)};
   }
 
   &[data-selected='true'][data-inactive='true']:hover,
   &[data-selected='true'][data-inactive='true'][data-focused='true'] {
     background-color: darken($color-disabled-light, 6%);
     border-color: $color-disabled;
-    --semicircle-row-rest: #{darken($color-disabled-light, 6%)};
-    --semicircle-row-hover: #{darken($color-disabled-light, 6%)};
+    --action-btn-bg: #{mix(darken($color-disabled-light, 6%), #fff, 86%)};
+    --action-btn-bg-hover: #{mix(darken($color-disabled-light, 6%), #fff, 78%)};
   }
 
   &[data-clickable='true'] {
@@ -93,84 +97,54 @@ $list-entry-border: $color-cart-list-border;
   }
 }
 
-.semicircleUp {
-  position: absolute;
-  z-index: 1;
-  height: 55%;
-  aspect-ratio: 2 / 1;
-  min-height: 0;
-  box-sizing: border-box;
-  background-color: color-mix(
-    in srgb,
-    var(--semicircle-row-hover) 88%,
-    #000 3%
-  );
-  border-style: solid;
-  border-width: 1px;
-  border-color: color-mix(in srgb, var(--semicircle-row-hover) 88%, #000 9%);
+.actions {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
-  justify-content: center;
-  line-height: 0;
-  transform: translateX(-50%);
-  pointer-events: auto;
-  transition: background-color 0.15s ease;
-
-  &:hover {
-    cursor: pointer;
-    background-color: color-mix(
-      in srgb,
-      var(--semicircle-row-hover) 88%,
-      #000 6%
-    );
-  }
-
-  &:disabled:hover {
-    cursor: default;
-    background-color: color-mix(
-      in srgb,
-      var(--semicircle-row-hover) 88%,
-      #000 9%
-    );
-  }
-
-  :global(svg) {
-    width: 0.8rem;
-    height: 0.8rem;
-    flex-shrink: 0;
-    display: block;
-    align-self: center;
-    margin-block: auto;
-    color: $color-app-sidebar-icon;
-  }
+  justify-content: flex-end;
+  align-self: center;
+  gap: 1rem;
+  margin-left: 0.35rem;
 }
 
-button.semicircleUp {
+.actionBtn {
+  width: 1.35rem;
+  height: 1.35rem;
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  // border: 1px solid red;
+  border-radius: 6px;
+  background-color: var(--action-btn-bg);
   font: inherit;
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-font-enabled-light;
   cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+  // box-shadow 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled;
+  }
 
   &:disabled {
     cursor: default;
     opacity: 1;
+    color: $color-font-disabled;
+    border-color: $color-disabled;
   }
-}
-
-.root[data-inactive='true'] .semicircleUp :global(svg) {
-  color: $color-font-disabled;
-}
-
-.semicircleUp {
-  left: 78%;
-  bottom: 0;
-  top: auto;
-  border-radius: 9999px 9999px 0 0;
-  border-bottom: none;
 
   :global(svg) {
-    transform: translateY(0.15rem);
+    width: 0.85rem;
+    height: 0.85rem;
+    display: block;
+    color: currentColor;
   }
 }
 

@@ -28,17 +28,14 @@ $cell-border-radius: 0.35rem;
     border-color: $color-section-dark;
   }
 
-  /** Календарь истории: день без превью открытки — не «рука». */
   &.historyEmptyNoPreview {
     cursor: default;
   }
 
-  /** Соседний месяц: режим Дата (не disabled) или История (есть открытки) — кликабельная ячейка. */
   &.adjacentMonth.adjacentMonthPointer {
     cursor: pointer;
   }
 
-  /** Режим Корзина: по умолчанию обычный курсор; «рука» только при cartPreviewPointer (текущий месяц с превью). */
   &.cart {
     cursor: default;
   }
@@ -51,7 +48,6 @@ $cell-border-radius: 0.35rem;
     cursor: default;
   }
 
-  /** У соседнего месяца ячейка без pointer, стрелки листания — как кликабельные кнопки. */
   &.cart.adjacentMonth .navArrowWrap {
     cursor: pointer;
   }
@@ -121,10 +117,6 @@ button.navArrowWrap {
   background-color: transparent;
 }
 
-/**
- * Четверть диска в нижнем левом углу: центр окружности — в вершине ячейки (как двойное зеркало
- * от border-radius-четверти). Видимая область 55%×55%, прямые стороны вдоль левого и нижнего края.
- */
 .navArrowAdjacent {
   top: auto;
   right: auto;
@@ -134,9 +126,7 @@ button.navArrowWrap {
   height: 55%;
   overflow: hidden;
   border-radius: 0;
-  /** Ограничиваем интерактивную область по форме сектора, а не квадрата 55%×55%. */
   clip-path: circle(100% at 0 100%);
-  /** Без левого/нижнего контура — сектор примыкает к границе ячейки; линия только по дуге (::before). */
   border: none;
   align-items: center;
   justify-content: center;
@@ -317,7 +307,6 @@ button.navArrowWrap {
   }
 }
 
-/** dayBefore/dayAfter + disabled: тот же фон ячейки, что у `.disabled.current` (не белый как у обычного adjacent). */
 .adjacentMonth.disabled {
   background-color: $color-disabled-light;
   border-color: $color-hover;
@@ -349,7 +338,6 @@ button.navArrowWrap {
   }
 }
 
-/** См. Cell.tsx: выбранный dispatch-день с cart — номер дня как у withPostcards, не коричневый dispatch. */
 .selectedDayWithCartBadge.dispatch .dayNumber,
 .selectedDayWithCartBadge.withPostcards.dispatch .dayNumber {
   background-color: $color-section-light;
