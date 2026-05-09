@@ -253,8 +253,14 @@ export const CartListPanel: React.FC<Props> = ({
     setCartListPanelOpen(false)
   }, [setCartListPanelOpen])
 
+  /** Total footer only for billable cart; hidden for blocked segment from store. */
+  const showCartFooter =
+    entriesProp != null || listSegment === 'cart'
+
   return (
-    <div className={styles.panel}>
+    <div
+      className={clsx(styles.panel, !showCartFooter && styles.panelNoFooter)}
+    >
       <ListPanelStackedHeader
         leadIconKey="cart"
         toolbar={<Toolbar section="cartList" />}
@@ -267,40 +273,44 @@ export const CartListPanel: React.FC<Props> = ({
           role="group"
           aria-label="Cart list header actions"
         >
-          <button
-            type="button"
-            className={clsx(styles.headerBelowSquare, styles.cart)}
-            aria-label={
-              cartSegmentCounts.cart > 0
-                ? `Cart, ${cartSegmentCounts.cart} postcards`
-                : 'Cart'
-            }
-            aria-pressed={listSegment === 'cart'}
-            onClick={() => setListSegment('cart')}
-          >
-            {cartSegmentCounts.cart > 0 ? (
-              <span className={styles.headerBelowCount} aria-hidden>
-                {cartSegmentCounts.cart}
-              </span>
-            ) : null}
-          </button>
-          <button
-            type="button"
-            className={clsx(styles.headerBelowSquare, styles.cartBlocked)}
-            aria-label={
-              cartSegmentCounts.cartBlocked > 0
-                ? `Cart blocked, ${cartSegmentCounts.cartBlocked} postcards`
-                : 'Cart blocked'
-            }
-            aria-pressed={listSegment === 'cartBlocked'}
-            onClick={() => setListSegment('cartBlocked')}
-          >
-            {cartSegmentCounts.cartBlocked > 0 ? (
-              <span className={styles.headerBelowCount} aria-hidden>
-                {cartSegmentCounts.cartBlocked}
-              </span>
-            ) : null}
-          </button>
+          <div className={styles.headerBelowSegmentSlot}>
+            <button
+              type="button"
+              className={clsx(styles.headerBelowSquare, styles.cart)}
+              aria-label={
+                cartSegmentCounts.cart > 0
+                  ? `Cart, ${cartSegmentCounts.cart} postcards`
+                  : 'Cart'
+              }
+              aria-pressed={listSegment === 'cart'}
+              onClick={() => setListSegment('cart')}
+            >
+              {cartSegmentCounts.cart > 0 ? (
+                <span className={styles.headerBelowCount} aria-hidden>
+                  {cartSegmentCounts.cart}
+                </span>
+              ) : null}
+            </button>
+          </div>
+          <div className={styles.headerBelowSegmentSlot}>
+            <button
+              type="button"
+              className={clsx(styles.headerBelowSquare, styles.cartBlocked)}
+              aria-label={
+                cartSegmentCounts.cartBlocked > 0
+                  ? `Cart blocked, ${cartSegmentCounts.cartBlocked} postcards`
+                  : 'Cart blocked'
+              }
+              aria-pressed={listSegment === 'cartBlocked'}
+              onClick={() => setListSegment('cartBlocked')}
+            >
+              {cartSegmentCounts.cartBlocked > 0 ? (
+                <span className={styles.headerBelowCount} aria-hidden>
+                  {cartSegmentCounts.cartBlocked}
+                </span>
+              ) : null}
+            </button>
+          </div>
         </div>
       ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />
@@ -355,13 +365,15 @@ export const CartListPanel: React.FC<Props> = ({
           )}
         </div>
       </ScrollArea>
-      <footer
-        className={styles.footer}
-        aria-label={`Cart total ${cartTotalDisplay}`}
-      >
-        <span className={styles.footerLabel}>Total</span>
-        <span className={styles.footerAmount}>{cartTotalDisplay}</span>
-      </footer>
+      {showCartFooter ? (
+        <footer
+          className={styles.footer}
+          aria-label={`Cart total ${cartTotalDisplay}`}
+        >
+          <span className={styles.footerLabel}>Total</span>
+          <span className={styles.footerAmount}>{cartTotalDisplay}</span>
+        </footer>
+      ) : null}
     </div>
   )
 }

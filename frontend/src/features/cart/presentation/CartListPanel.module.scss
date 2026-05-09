@@ -6,6 +6,9 @@ $list-panel-scroll-inset: 0.35rem;
 $list-panel-cart-list-toolbar-top: 2.35rem;
 $list-panel-cart-list-toolbar-row-h: 1.65rem;
 $cart-list-header-square-skew-deg: -15deg;
+$cart-list-header-square-w: 1.5rem;
+$cart-list-header-square-h: 1rem;
+$cart-list-header-square-active-grow: 2px;
 
 .panel {
   position: relative;
@@ -17,6 +20,14 @@ $cart-list-header-square-skew-deg: -15deg;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
+}
+
+.panelNoFooter {
+  padding-bottom: 0;
+
+  .panelScrollTrack {
+    bottom: calc(0px - #{$list-panel-scroll-inset});
+  }
 }
 
 .headerBelowBand {
@@ -34,14 +45,25 @@ $cart-list-header-square-skew-deg: -15deg;
   box-sizing: border-box;
 }
 
+/* Fixed slot so segment buttons do not shift neighbors when width/height animate. */
+.headerBelowSegmentSlot {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: calc(#{$cart-list-header-square-w} + #{$cart-list-header-square-active-grow});
+  height: calc(#{$cart-list-header-square-h} + #{$cart-list-header-square-active-grow});
+}
+
 .headerBelowSquare {
   display: flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1rem;
+  width: $cart-list-header-square-w;
+  height: $cart-list-header-square-h;
   box-sizing: border-box;
+  transition: width 0.15s ease, height 0.15s ease;
   padding: 0;
   margin: 0;
   border: none;
@@ -72,10 +94,20 @@ $cart-list-header-square-skew-deg: -15deg;
 
 .cart {
   background-color: $color-preview-indicator-cart;
+
+  &[aria-pressed='true'] {
+    width: calc(#{$cart-list-header-square-w} + #{$cart-list-header-square-active-grow});
+    height: calc(#{$cart-list-header-square-h} + #{$cart-list-header-square-active-grow});
+  }
 }
 
 .cartBlocked {
   background-color: $color-preview-indicator-error;
+
+  &[aria-pressed='true'] {
+    width: calc(#{$cart-list-header-square-w} + #{$cart-list-header-square-active-grow});
+    height: calc(#{$cart-list-header-square-h} + #{$cart-list-header-square-active-grow});
+  }
 }
 
 .panelScrollTrack {
