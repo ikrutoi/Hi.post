@@ -32,6 +32,9 @@ interface BuildMonthCellsParams {
   handleClickCell: (params: HandleCellClickParams) => void
   chooseDate?: (date: DispatchDate) => void
   cardsMap: Record<string, CardCalendarIndex>
+  /** Волна рамки при dateEdit (полоса «Корзина», порядок сетки: before → current → after). */
+  cartDatePickWaveStrongKeys?: ReadonlySet<string>
+  cartDatePickWaveFadingKey?: string | null
 }
 
 export const buildMonthCells = ({
@@ -43,6 +46,8 @@ export const buildMonthCells = ({
   handleClickCell,
   chooseDate,
   cardsMap,
+  cartDatePickWaveStrongKeys,
+  cartDatePickWaveFadingKey,
 }: BuildMonthCellsParams) => {
   const { activeSection } = useSectionMenuFacade()
   const photoPreview = useAppSelector(selectCardphotoPreview)
@@ -137,6 +142,13 @@ export const buildMonthCells = ({
     const dateStripEnabledDayBorder =
       activeSection === 'date' && !isCartCalendarStrip && !isDisabled
 
+    const cartDatePickWaveStrong =
+      cartDateEditPickBorder &&
+      Boolean(dateKey && cartDatePickWaveStrongKeys?.has(dateKey))
+    const cartDatePickWaveFading =
+      cartDateEditPickBorder &&
+      Boolean(dateKey && cartDatePickWaveFadingKey === dateKey)
+
     return (
       <Cell
         key={`${direction}-${day}`}
@@ -156,6 +168,8 @@ export const buildMonthCells = ({
         adjacentMonthPointer={adjacentMonthPointer}
         cartPreviewPointer={cartPreviewPointer}
         cartDateEditPickBorder={cartDateEditPickBorder}
+        cartDatePickWaveStrong={cartDatePickWaveStrong}
+        cartDatePickWaveFading={cartDatePickWaveFading}
         dateStripEnabledDayBorder={dateStripEnabledDayBorder}
         suppressDispatchSelectionStyle={isCartCalendarStrip}
       >

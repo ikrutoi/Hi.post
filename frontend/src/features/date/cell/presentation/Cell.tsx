@@ -35,6 +35,10 @@ interface CellProps {
    * Полоса «Корзина» + выбор новой даты из списка: рамка как у строки корзины в dateEdit (только не disabled).
    */
   cartDateEditPickBorder?: boolean
+  /** Волна dateEdit: фон как у строки корзины в dateEdit (два активных дня). */
+  cartDatePickWaveStrong?: boolean
+  /** Волна dateEdit: снятие фона подсветки (после сдвига окна). */
+  cartDatePickWaveFading?: boolean
   /**
    * Полоса «Дата» (не режим полосы «Корзина»): enabled-дни — та же рамка, что dateEdit в корзине.
    */
@@ -64,6 +68,8 @@ export const Cell: React.FC<CellProps> = ({
   adjacentMonthPointer = false,
   cartPreviewPointer = false,
   cartDateEditPickBorder = false,
+  cartDatePickWaveStrong = false,
+  cartDatePickWaveFading = false,
   dateStripEnabledDayBorder = false,
   suppressDispatchSelectionStyle = false,
   children,
@@ -94,6 +100,8 @@ export const Cell: React.FC<CellProps> = ({
     adjacentMonthPointer && styles.adjacentMonthPointer,
     cartPreviewPointer && styles.cartPreviewPointer,
     cartDateEditPickBorder && styles.cartDateEditPickBorder,
+    cartDatePickWaveStrong && styles.cartDatePickWaveStrong,
+    cartDatePickWaveFading && styles.cartDatePickWaveFading,
     dateStripEnabledDayBorder && styles.dateStripEnabledDayBorder,
     isToday && styles.today,
     isDisabledDate && styles.disabled,

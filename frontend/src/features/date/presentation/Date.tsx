@@ -172,10 +172,12 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     return isDispatchDateDisabledForOrder(postcard.date, currentDate)
   }, [listRowLocalId, cartItems, currentDate])
 
-  const calendarViewDate: CalendarViewDate = lastViewedCalendarDate ?? {
-    year: currentDate.year,
-    month: currentDate.month,
-  }
+  const fallbackCalendarViewDate = useMemo<CalendarViewDate>(
+    () => ({ year: currentDate.year, month: currentDate.month }),
+    [currentDate.year, currentDate.month],
+  )
+  const calendarViewDate: CalendarViewDate =
+    lastViewedCalendarDate ?? fallbackCalendarViewDate
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

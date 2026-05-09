@@ -3,6 +3,24 @@
 
 $cell-border-radius: 0.35rem;
 
+/** Как `CartListEntry` `[data-date-edit-active='true']`: тинт + mix с поверхностью списка. */
+$cart-date-edit-tint: hsl(210, 82%, 94%);
+$cart-date-edit-wave-bg: mix(
+  $cart-date-edit-tint,
+  $color-cart-list-surface,
+  64%
+);
+
+@keyframes cartDatePickWaveFadeBg {
+  from {
+    background-color: $cart-date-edit-wave-bg;
+  }
+
+  to {
+    background-color: #fff;
+  }
+}
+
 .cell {
   position: relative;
   display: flex;
@@ -64,6 +82,17 @@ $cell-border-radius: 0.35rem;
         55%
       );
     }
+  }
+
+  /**
+   * Волна dateEdit: фон как у строки корзины в dateEdit; затухание — снятие фона за 0.1s.
+   */
+  &.cart.cartDateEditPickBorder.cartDatePickWaveStrong {
+    background-color: $cart-date-edit-wave-bg;
+  }
+
+  &.cart.cartDateEditPickBorder.cartDatePickWaveFading {
+    animation: cartDatePickWaveFadeBg 0.1s ease forwards;
   }
 
   /** Полоса «Дата»: та же рамка, что у строки корзины в dateEdit (`$color-cart-list-entry-date-edit-border`). */
