@@ -26,17 +26,10 @@ export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
       aria-label="Scroll mode: month or year"
     >
       <div
-        className={clsx(styles.bg, styles.bgMonth, {
-          [styles.bgActive]: isMonth,
-          [styles.bgInactive]: !isMonth,
-        })}
-        aria-hidden
-      />
-      <div
-        className={clsx(styles.bg, styles.bgYear, {
-          [styles.bgActive]: !isMonth,
-          [styles.bgInactive]: isMonth,
-        })}
+        className={clsx(
+          styles.thumb,
+          isMonth ? styles.thumbMonth : styles.thumbYear,
+        )}
         aria-hidden
       />
       <button

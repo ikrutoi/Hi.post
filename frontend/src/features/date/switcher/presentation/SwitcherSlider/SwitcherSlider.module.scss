@@ -1,13 +1,17 @@
 @use '@styles/config/colors' as *;
 
+$switcher-track-height: 1.8rem;
+$switcher-thumb-height: 2.08rem;
+/** Horizontal thumb travel — ease out slightly slower than tap feedback */
+$switcher-thumb-move-duration: 0.25s;
+
 .segmented {
   position: relative;
   display: flex;
   align-items: center;
   width: 12.5rem;
   min-width: 12.5rem;
-  height: 2.1rem;
-  // padding: 0.2rem;
+  height: $switcher-track-height;
   border-radius: 2rem;
   background-color: #fff;
   border: 1px solid $color-section-light;
@@ -19,41 +23,31 @@
   }
 }
 
-.bg {
+.thumb {
   position: absolute;
-  top: 0.2rem;
-  width: calc(50% - 0.25rem);
-  height: calc(100% - 0.2rem);
-  border-radius: 1.35rem;
-  background-color: $color-base;
-  border: 1px solid $color-section-light;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  top: calc(50% + 0.18rem);
+  width: 50%;
+  height: $switcher-thumb-height;
+  margin-top: ($switcher-thumb-height * -0.5);
+  border-radius: ($switcher-thumb-height * 0.5);
+  background-color: $color-app-inner;
+  border: 1px solid $color-app-strip;
+  // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
 
-  opacity: 0;
-  transform: translateY(2px) scale(0.97);
+  transform: translateY(-3px) scale(1);
   transition:
-    opacity 0.16s ease,
-    transform 0.16s ease;
+    left $switcher-thumb-move-duration cubic-bezier(0.33, 1, 0.68, 1),
+    transform $switcher-thumb-move-duration ease;
 }
 
-.bgMonth {
-  left: 0.15rem;
+.thumbMonth {
+  left: -0.1rem;
 }
 
-.bgYear {
-  left: calc(50% + 0.08rem);
-}
-
-.bgActive {
-  opacity: 1;
-  transform: translateY(-2px) scale(1);
-}
-
-.bgInactive {
-  opacity: 0;
-  transform: translateY(2px) scale(0.97);
+.thumbYear {
+  left: calc(50% + 0.06rem);
 }
 
 .segment {
@@ -62,7 +56,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.22rem 0.4rem;
+  padding: 0.08rem 0.4rem;
   border: none;
   border-radius: 1.5rem;
   background-color: transparent;
@@ -71,15 +65,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: color 0.2s ease;
-  z-index: 1;
+  z-index: 2;
   position: relative;
 
   &:hover {
     color: $color-font-enabled-light-hover;
-  }
-
-  &:active {
-    // transform: translateY(1px);
   }
 }
 
