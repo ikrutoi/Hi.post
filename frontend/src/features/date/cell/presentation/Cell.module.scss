@@ -65,6 +65,19 @@ $cell-border-radius: 0.35rem;
       );
     }
   }
+
+  /** Полоса «Дата»: та же рамка, что у строки корзины в dateEdit (`$color-cart-list-entry-date-edit-border`). */
+  &.dateStripEnabledDayBorder {
+    border-color: $color-cart-list-entry-date-edit-border;
+
+    &:hover:not(.disabled) {
+      border-color: mix(
+        $color-cart-list-entry-date-edit-border,
+        hsl(210, 55%, 62%),
+        55%
+      );
+    }
+  }
 }
 
 .dayNumber {
@@ -374,4 +387,17 @@ button.navArrowWrap {
 .cell.cart.cartDateEditPickBorder .cellContent,
 .cell.cart.cartDateEditPickBorder .cellContent * {
   cursor: pointer;
+}
+
+/**
+ * Полоса «Дата»: `.current:hover:not(.cart)` задаёт другой border-color позже по файлу — фиксируем hover.
+ */
+.cell.dateStripEnabledDayBorder:hover:not(.disabled),
+.cell.dateStripEnabledDayBorder.current:hover:not(.disabled),
+.cell.dateStripEnabledDayBorder.dispatch:hover:not(.disabled) {
+  border-color: mix(
+    $color-cart-list-entry-date-edit-border,
+    hsl(210, 55%, 62%),
+    55%
+  );
 }

@@ -52,6 +52,7 @@ import {
   setCardPieCopyStripExpanded,
   setCartListPanelOpen,
   setCartListSelectedLocalId,
+  setCartListStatusSegment,
 } from '@cart/infrastructure/state'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
@@ -62,6 +63,7 @@ import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure
 import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
   closeDayPanel,
+  setCartCalendarDatePickMode,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
@@ -343,6 +345,8 @@ const App = () => {
     setRightPieEnvelopePeekNoToolbar(false)
     setRightPieAromaPeekNoToolbar(false)
     setRightPieDatePeekNoToolbar(false)
+    dispatch(setCartCalendarDatePickMode(false))
+    dispatch(setCartListStatusSegment('cart'))
     dispatch(setNotebookStripTab('cart'))
     dispatch(setActiveSection('date'))
     if (d != null) {

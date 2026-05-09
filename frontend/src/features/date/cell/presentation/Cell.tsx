@@ -36,6 +36,10 @@ interface CellProps {
    */
   cartDateEditPickBorder?: boolean
   /**
+   * Полоса «Дата» (не режим полосы «Корзина»): enabled-дни — та же рамка, что dateEdit в корзине.
+   */
+  dateStripEnabledDayBorder?: boolean
+  /**
    * Календарь в режиме «Корзина»: выбранные из фабрики dispatch-дни без фона dispatch
    * и без отдельной стилизации номера дня (бейдж).
    */
@@ -60,6 +64,7 @@ export const Cell: React.FC<CellProps> = ({
   adjacentMonthPointer = false,
   cartPreviewPointer = false,
   cartDateEditPickBorder = false,
+  dateStripEnabledDayBorder = false,
   suppressDispatchSelectionStyle = false,
   children,
 }) => {
@@ -89,6 +94,7 @@ export const Cell: React.FC<CellProps> = ({
     adjacentMonthPointer && styles.adjacentMonthPointer,
     cartPreviewPointer && styles.cartPreviewPointer,
     cartDateEditPickBorder && styles.cartDateEditPickBorder,
+    dateStripEnabledDayBorder && styles.dateStripEnabledDayBorder,
     isToday && styles.today,
     isDisabledDate && styles.disabled,
     (dayBefore != null || dayAfter != null) && styles.adjacentMonth,

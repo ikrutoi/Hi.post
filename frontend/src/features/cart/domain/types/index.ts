@@ -1,1 +1,5 @@
-export type { Cart, CartAmount } from './cart.types'
+export type {
+  Cart,
+  CartAmount,
+  CartListStatusSegment,
+} from './cart.types'

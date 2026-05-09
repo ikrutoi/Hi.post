@@ -134,6 +134,9 @@ export const buildMonthCells = ({
     const cartDateEditPickBorder =
       isCartCalendarStrip && cartCalendarDatePickMode && !isDisabled
 
+    const dateStripEnabledDayBorder =
+      activeSection === 'date' && !isCartCalendarStrip && !isDisabled
+
     return (
       <Cell
         key={`${direction}-${day}`}
@@ -153,6 +156,7 @@ export const buildMonthCells = ({
         adjacentMonthPointer={adjacentMonthPointer}
         cartPreviewPointer={cartPreviewPointer}
         cartDateEditPickBorder={cartDateEditPickBorder}
+        dateStripEnabledDayBorder={dateStripEnabledDayBorder}
         suppressDispatchSelectionStyle={isCartCalendarStrip}
       >
         {dayData && (

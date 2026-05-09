@@ -3,9 +3,13 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
-import { setCartListPanelOpen } from '@cart/infrastructure/state'
+import {
+  setCartListPanelOpen,
+  setCartListStatusSegment,
+} from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import {
+  setCartCalendarDatePickMode,
   setHistoryListPanelOpen,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
@@ -47,6 +51,8 @@ export function* handleRightSidebarToolbarAction(
     if (nextOpen) {
       yield put(setHistoryListPanelOpen(false))
       /** Полоса держится сагой синхронизации (`cart.isActive` → `cart`). */
+      yield put(setCartCalendarDatePickMode(false))
+      yield put(setCartListStatusSegment('cart'))
       yield put(setNotebookStripTab('cart'))
       yield put(setActiveSection('date'))
       /** `setActiveSection('date')` без смены Redux-секции не триггерит сагу — всё равно снимаем active с иконки «Дата» в меню. */

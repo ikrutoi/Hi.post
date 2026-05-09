@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconCardBlocked, IconCart } from '@shared/ui/icons'
@@ -6,7 +6,13 @@ import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { useCartFacade } from '../application/facades'
-import { selectCartItems } from '@cart/infrastructure/selectors'
+import {
+  selectCartItems,
+  selectCartListStatusSegment,
+} from '@cart/infrastructure/selectors'
+import { setCartListStatusSegment } from '@cart/infrastructure/state'
+import { setCartCalendarDatePickMode } from '@date/calendar/infrastructure/state'
+import type { CartListStatusSegment } from '@cart/domain/types'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
@@ -32,7 +38,7 @@ export type CartListPanelItem = {
   onDelete?: () => void
 }
 
-export type CartListStatusSegment = 'cart' | 'cartBlocked'
+export type { CartListStatusSegment }
 
 type Props = {
   /** If omitted, rows are built from Redux cart items filtered by выбранный сегмент (кнопки cart / cartBlocked). */
@@ -166,14 +172,21 @@ export const CartListPanel: React.FC<Props> = ({
   entries: entriesProp,
   onSelectEntry,
 }) => {
+  const dispatch = useAppDispatch()
   const cartItems = useAppSelector(selectCartItems)
+  const listSegment = useAppSelector(selectCartListStatusSegment)
   const {
     setCartListPanelOpen,
     listSelectedLocalId,
     setCartListSelectedLocalId,
   } = useCartFacade()
 
-  const [listSegment, setListSegment] = useState<CartListStatusSegment>('cart')
+  const handleSelectCartSegment = useCallback(() => {
+    if (listSegment === 'cartBlocked') {
+      dispatch(setCartCalendarDatePickMode(false))
+    }
+    dispatch(setCartListStatusSegment('cart'))
+  }, [dispatch, listSegment])
 
   const cartSegmentCounts = useMemo(() => {
     const cart = cartItems.filter((p) => p.status === 'cart').length
@@ -288,7 +301,7 @@ export const CartListPanel: React.FC<Props> = ({
                   : 'Cart'
               }
               aria-pressed={listSegment === 'cart'}
-              onClick={() => setListSegment('cart')}
+              onClick={handleSelectCartSegment}
             >
               {cartSegmentCounts.cart > 0 ? (
                 <span className={styles.headerBelowCount} aria-hidden>
@@ -307,7 +320,7 @@ export const CartListPanel: React.FC<Props> = ({
                   : 'Cart blocked'
               }
               aria-pressed={listSegment === 'cartBlocked'}
-              onClick={() => setListSegment('cartBlocked')}
+              onClick={() => dispatch(setCartListStatusSegment('cartBlocked'))}
             >
               {cartSegmentCounts.cartBlocked > 0 ? (
                 <span className={styles.headerBelowCount} aria-hidden>

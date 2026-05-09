@@ -23,6 +23,7 @@ const initialState: Cart = {
   isActive: false,
   listSelectedLocalId: null,
   cardPieCopyStripExpanded: false,
+  listStatusSegment: 'cart',
 }
 
 const cartSlice = createSlice({
@@ -42,6 +43,12 @@ const cartSlice = createSlice({
     },
     setCartListSelectedLocalId(state, action: PayloadAction<number | null>) {
       state.listSelectedLocalId = action.payload
+    },
+    setCartListStatusSegment(
+      state,
+      action: PayloadAction<Cart['listStatusSegment']>,
+    ) {
+      state.listStatusSegment = action.payload
     },
     setItems(state, action: PayloadAction<PostcardHydrated[]>) {
       state.items = action.payload.map(normalizeCartLikeStatus)
@@ -80,6 +87,7 @@ const cartSlice = createSlice({
       state.amount = { value: 0, currency: state.amount.currency }
       state.listSelectedLocalId = null
       state.cardPieCopyStripExpanded = false
+      state.listStatusSegment = 'cart'
     },
   },
 })
@@ -87,6 +95,7 @@ const cartSlice = createSlice({
 export const {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
+  setCartListStatusSegment,
   setCardPieCopyStripExpanded,
   setItems,
   addItem,

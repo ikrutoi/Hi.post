@@ -5,6 +5,9 @@ export type CartAmount = {
   currency: string
 }
 
+/** Сегмент списка корзины: обычная корзина / заблокированные даты. */
+export type CartListStatusSegment = 'cart' | 'cartBlocked'
+
 export type Cart = {
   items: PostcardHydrated[]
   amount: CartAmount
@@ -16,4 +19,6 @@ export type Cart = {
    * Фактический «активный» UI ещё зависит от выбранной строки и размера карты (см. `showTopCardStripFullSpan` в App).
    */
   cardPieCopyStripExpanded: boolean
+  /** Кнопки «корзина / заблокированные» под шапкой `CartListPanel`. */
+  listStatusSegment: CartListStatusSegment
 }

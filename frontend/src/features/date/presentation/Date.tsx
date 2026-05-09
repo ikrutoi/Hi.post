@@ -3,10 +3,14 @@ import clsx from 'clsx'
 import listOfMonthOfYear from '@data/date/monthOfYear.json'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCartItems, selectCartListPanelOpen } from '@cart/infrastructure/selectors'
-import { setCartListPanelOpen } from '@cart/infrastructure/state'
+import {
+  setCartListPanelOpen,
+  setCartListStatusSegment,
+} from '@cart/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import {
   closeDayPanel,
+  setCartCalendarDatePickMode,
   setHistoryListPanelOpen,
 } from '@date/calendar/infrastructure/state'
 import { selectIsHistoryListPanelOpen } from '@date/calendar/infrastructure/selectors'
@@ -116,6 +120,8 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
        * `setActiveSection('cart')` нельзя: такого кейса в `renderCardSection` нет — рендерится `null`.
        */
       dispatch(setCartListPanelOpen(true))
+      dispatch(setCartCalendarDatePickMode(false))
+      dispatch(setCartListStatusSegment('cart'))
       dispatch(
         updateToolbarIcon({
           section: 'rightSidebar',
