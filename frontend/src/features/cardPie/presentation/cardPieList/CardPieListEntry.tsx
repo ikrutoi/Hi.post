@@ -68,25 +68,6 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
       }
     >
       <div className={styles.body}>
-        <div className={styles.favoriteSlot}>
-          <button
-            type="button"
-            className={styles.addCartBtn}
-            disabled={!onAddCart || inactive}
-            onClick={(e) => {
-              e.stopPropagation()
-              onAddCart?.()
-            }}
-            aria-label={
-              onAddCart && !inactive ? 'Add to cart' : undefined
-            }
-            title={
-              onAddCart && !inactive ? 'Add to cart' : undefined
-            }
-          >
-            {getToolbarIcon({ key: 'addCart' })}
-          </button>
-        </div>
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
             <img src={previewUrl} alt="" className={styles.thumbImg} />
@@ -123,6 +104,25 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
           </div>
         </div>
         <div className={styles.rightPack} data-has-delete="true">
+          <div className={styles.rightPackAddCartSlot}>
+            <button
+              type="button"
+              className={styles.addCartBtn}
+              disabled={!onAddCart || inactive}
+              onClick={(e) => {
+                e.stopPropagation()
+                onAddCart?.()
+              }}
+              aria-label={
+                onAddCart && !inactive ? 'Add to cart' : undefined
+              }
+              title={
+                onAddCart && !inactive ? 'Add to cart' : undefined
+              }
+            >
+              {getToolbarIcon({ key: 'addCart' })}
+            </button>
+          </div>
           <div className={styles.rightPriceSlot}>
             {priceLineVisible ? (
               <div

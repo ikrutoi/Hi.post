@@ -58,8 +58,22 @@
      * Без серого фона от `&Enabled:hover` — подложка как у клавиши (белый / ряд).
      */
     &[data-icon-key='listDelete'].toolbarKeyEnabled,
-    &[data-icon-key='cart'].toolbarKeyEnabled,
     &[data-icon-key='addCartList'].toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: #fff;
+      }
+    }
+  }
+
+  /**
+   * Иконка cart есть и в правом сайдбаре (фон полосы — `$color-app-strip`).
+   * Не смешивать с `#fff` от клавиш списков: там селектор сильнее и перебивал hover сайдбара.
+   */
+  &:not(.toolbarRightSidebar) .toolbarKey {
+    &[data-icon-key='cart'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
       &:hover {
@@ -665,6 +679,11 @@
     top: 4px;
     right: 4px;
   }
+}
+
+/* Тот же корень, что и `.toolbar` + `.toolbarRightSidebar`: перебить `.toolbarKeyEnabled:hover` из блока `.toolbar`. */
+.toolbar.toolbarRightSidebar .toolbarKey:hover {
+  background-color: $color-app-sidebar-icon-hover;
 }
 
 .toolbarAddressListRecipient,

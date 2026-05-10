@@ -61,6 +61,27 @@ function formatDispatchDateLabel(d: DispatchDate): string {
   })
 }
 
+/** Сортировка: раньше по календарю (ближе по дате отправки) выше; «—» / без даты — в конец. */
+function dispatchDateSortTimestamp(d: DispatchDate | undefined): number {
+  if (d == null || (d.year === 0 && d.month === 0 && d.day === 0)) {
+    return Number.POSITIVE_INFINITY
+  }
+  return new Date(d.year, d.month, d.day).getTime()
+}
+
+function compareCartListPanelItemsByDispatchDate(
+  a: CartListPanelItem,
+  b: CartListPanelItem,
+): number {
+  const ta = dispatchDateSortTimestamp(a.sourceDate)
+  const tb = dispatchDateSortTimestamp(b.sourceDate)
+  if (ta !== tb) return ta - tb
+  const la = a.postcard?.localId
+  const lb = b.postcard?.localId
+  if (la != null && lb != null && la !== lb) return la - lb
+  return a.id.localeCompare(b.id)
+}
+
 function formatRecipientLine(
   postcard: PostcardHydrated | undefined,
 ): string | undefined {
@@ -212,7 +233,10 @@ export const CartListPanel: React.FC<Props> = ({
     return cartPostcardsToEntries(cartItems, listSegment)
   }, [entriesProp, cartItems, listSegment])
 
-  const entries = entriesProp ?? entriesFromStore
+  const entries = useMemo(() => {
+    const raw = entriesProp ?? entriesFromStore
+    return [...raw].sort(compareCartListPanelItemsByDispatchDate)
+  }, [entriesProp, entriesFromStore])
 
   /** Смена сегмента: снять выбор, если открытка не в текущем списке. */
   useEffect(() => {
@@ -373,7 +397,7 @@ export const CartListPanel: React.FC<Props> = ({
               </div>
               {inactiveEntries.length > 0 ? (
                 <div className={styles.listInactiveGroup}>
-                  {[...inactiveEntries].reverse().map((item) => (
+                  {inactiveEntries.map((item) => (
                     <CartListPanelRow
                       key={item.id}
                       item={item}
