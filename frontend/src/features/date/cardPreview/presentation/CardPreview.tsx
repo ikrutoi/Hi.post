@@ -8,6 +8,9 @@ import {
   selectExcludedDispatchBranchSet,
   selectRecipientBranchSlotKeys,
 } from '@date/infrastructure/selectors'
+import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
+import { postcardLocalIdFromCalendarCardItem } from '@date/calendar/infrastructure/postcardLocalIdFromCalendarCardItem'
+import { selectCartItems } from '@cart/infrastructure/selectors'
 import { CardPreviewItem } from './CardPreviewItem'
 import styles from './CardPreview.module.scss'
 import { CalendarCardItem } from '@entities/card/domain/types'
@@ -83,6 +86,8 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const recipientBranchSlotKeys = useAppSelector(selectRecipientBranchSlotKeys)
   const excludedDispatchBranchSet = useAppSelector(selectExcludedDispatchBranchSet)
   const photoPreview = useAppSelector(selectCardphotoPreview)
+  const historyListSelectedLocalId = useAppSelector(selectHistoryListSelectedLocalId)
+  const cartItems = useAppSelector(selectCartItems)
   const { processed, cart, ready, sent, delivered, error } = data
 
   const isHistory = section === 'history'
@@ -128,6 +133,19 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const firstPipeline =
     thumbnailPipelineCards.length > 0 ? thumbnailPipelineCards[0] : null
 
+  /**
+   * История + выбранная строка списка: миниатюра дня — от той открытки, по которой кликнули
+   * (если она есть среди карточек этого дня), иначе прежний порядок (часто первая из `cart`).
+   */
+  const historyThumbnailForSelectedPostcard =
+    isHistory && historyListSelectedLocalId != null
+      ? thumbnailPipelineCards.find(
+          (item) =>
+            postcardLocalIdFromCalendarCardItem(item, cartItems) ===
+            historyListSelectedLocalId,
+        ) ?? null
+      : null
+
   /** Выбранный день: показываем слот `processed` (редактор / current_session), а не превью посткарда из pipeline. */
   const workingSlotForSelectedDay =
     !isHistoryLike && isSelectedDate && processed ? processed : null
@@ -140,11 +158,17 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
       ? workingSlotForSelectedDay ?? null
       : isCartCalendar
         ? firstPipelineWithPreview ?? firstPipeline ?? null
-        : workingSlotForSelectedDay ??
-          firstPipelineWithPreview ??
-          firstPipeline ??
-          processed ??
-          null
+        : isHistory
+          ? historyThumbnailForSelectedPostcard ??
+            firstPipelineWithPreview ??
+            firstPipeline ??
+            processed ??
+            null
+          : workingSlotForSelectedDay ??
+            firstPipelineWithPreview ??
+            firstPipeline ??
+            processed ??
+            null
 
   /** В режиме «Дата» миниатюру не берём из корзины и из конвейера `ready`…`error`. */
   const primaryItemForDisplay =
