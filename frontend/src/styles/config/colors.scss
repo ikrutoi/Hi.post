@@ -58,6 +58,12 @@ $preview-indicator-cart-blocked-border-width: 2px;
 $color-preview-row-processed: #f3f6fb;
 $color-preview-row-cart: #fffbee;
 $color-preview-row-ready: #f1fbf5;
+/** История / списки: мягкая рамка строки `ready` из зелёного индикатора `$color-preview-indicator-ready`. */
+$color-history-list-ready-border: mix(
+  $color-preview-indicator-ready,
+  $color-preview-row-ready,
+  28%
+);
 $color-preview-row-sent: #f1f7ff;
 $color-preview-row-delivered: #f8f2fc;
 $color-preview-row-error: #fff2f2;
@@ -120,7 +126,6 @@ $color-date-multi: #3475c9;
 
 $color-cart-list-surface: #fcf5e1;
 $color-cart-list-border: #f7e4b2;
-/** Рамка строки корзины в режиме выбора новой даты — же для ячеек календаря в этом режиме. */
 $color-cart-list-entry-date-edit-border: mix(
   hsl(210, 55%, 74%),
   $color-cart-list-border,

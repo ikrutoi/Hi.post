@@ -1,7 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
 import type { PostcardStatus } from '@entities/postcard'
-import { getToolbarIcon } from '@shared/utils/icons'
 import { IconX } from '@shared/ui/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './HistoryListEntry.module.scss'
@@ -42,6 +41,7 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
   return (
     <div
       className={styles.root}
+      data-postcard-status={previewStatus === 'ready' ? 'ready' : undefined}
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
@@ -62,13 +62,6 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
           : undefined
       }
     >
-      <div
-        className={styles.semicircleDown}
-        aria-hidden
-        onClick={(e) => e.stopPropagation()}
-      >
-        {getToolbarIcon({ key: 'favorite' })}
-      </div>
       <div className={styles.body}>
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (

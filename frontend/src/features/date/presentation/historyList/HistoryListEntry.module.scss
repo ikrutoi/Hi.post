@@ -21,9 +21,6 @@ $list-entry-border: $color-cart-list-border;
     border-color 0.15s ease,
     opacity 0.15s ease;
 
-  --semicircle-row-rest: #{$list-entry-surface};
-  --semicircle-row-hover: #{darken($list-entry-surface, 1.5%)};
-
   &[data-has-delete='true'] {
     padding-right: 2rem;
   }
@@ -32,8 +29,6 @@ $list-entry-border: $color-cart-list-border;
     opacity: 0.78;
     background-color: mix($list-entry-surface, $color-app-inner, 45%);
     border-color: mix($list-entry-border, $color-app-inner, 50%);
-    --semicircle-row-rest: #{mix($list-entry-surface, $color-app-inner, 45%)};
-    --semicircle-row-hover: #{mix($list-entry-surface, $color-app-inner, 55%)};
 
     .thumb {
       background-color: mix($color-app-inner, #eee, 55%);
@@ -45,15 +40,6 @@ $list-entry-border: $color-cart-list-border;
 
     .detailBlock {
       color: $color-font-disabled;
-    }
-
-    .semicircleDown {
-      pointer-events: none;
-
-      &:hover {
-        cursor: default;
-        background-color: var(--semicircle-row-hover);
-      }
     }
   }
 
@@ -69,18 +55,11 @@ $list-entry-border: $color-cart-list-border;
   &[data-selected='true'] {
     background-color: darken($list-entry-surface, 3%);
     box-shadow: -2px 0 0 0 $color-app-sidebar-icon-active;
-    --semicircle-row-rest: #{darken($list-entry-surface, 3%)};
-    --semicircle-row-hover: #{darken($list-entry-surface, 3%)};
 
     &[data-inactive='true'] {
       box-shadow: -2px 0 0 0
         mix($color-app-sidebar-icon-active, $color-font-disabled, 40%);
     }
-  }
-
-  &[data-selected='true'][data-inactive='true'] {
-    --semicircle-row-rest: #{mix($list-entry-surface, $color-app-inner, 45%)};
-    --semicircle-row-hover: #{mix($list-entry-surface, $color-app-inner, 55%)};
   }
 
   &[data-clickable='true'] {
@@ -94,58 +73,58 @@ $list-entry-border: $color-cart-list-border;
       outline-offset: 1px;
     }
   }
-}
 
-.semicircleDown {
-  position: absolute;
-  z-index: 1;
-  left: 71%;
-  top: 0;
-  height: 55%;
-  aspect-ratio: 2 / 1;
-  min-height: 0;
-  box-sizing: border-box;
-  background-color: color-mix(
-    in srgb,
-    var(--semicircle-row-hover) 88%,
-    #000 3%
-  );
-  border-style: solid;
-  border-width: 1px;
-  border-color: color-mix(in srgb, var(--semicircle-row-hover) 88%, #000 9%);
-  border-radius: 0 0 9999px 9999px;
-  border-top: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 0;
-  transform: translateX(-50%);
-  pointer-events: auto;
-  transition: background-color 0.15s ease;
+  /** Постельная подложка как у корзины (`$color-preview-row-*`), тон из `$color-preview-indicator-ready`. */
+  &[data-postcard-status='ready'] {
+    background-color: $color-preview-row-ready;
+    border-color: $color-history-list-ready-border;
 
-  &:hover {
-    cursor: pointer;
-    background-color: color-mix(
-      in srgb,
-      var(--semicircle-row-hover) 88%,
-      #000 6%
-    );
+    .thumb {
+      border-color: mix($color-history-list-ready-border, transparent, 58%);
+    }
+
+    &:hover,
+    &[data-focused='true'] {
+      background-color: darken($color-preview-row-ready, 2%);
+
+      &[data-inactive='true'] {
+        background-color: mix($color-preview-row-ready, $color-app-inner, 52%);
+      }
+    }
+
+    &[data-selected='true'] {
+      background-color: darken($color-preview-row-ready, 3.5%);
+
+      &[data-inactive='true'] {
+        background-color: mix($color-preview-row-ready, $color-app-inner, 48%);
+      }
+    }
+
+    &[data-inactive='true'] {
+      background-color: mix($color-preview-row-ready, $color-app-inner, 45%);
+      border-color: mix($color-history-list-ready-border, $color-app-inner, 50%);
+    }
+
+    &[data-clickable='true']:focus-visible {
+      outline-color: mix(
+        $color-preview-row-ready,
+        $color-app-sidebar-icon-active,
+        45%
+      );
+    }
+
+    .deleteButton:hover {
+      background-color: mix(
+        $color-preview-row-ready,
+        $color-app-sidebar-icon-hover,
+        82%
+      );
+    }
   }
 
-  :global(svg) {
-    width: 0.8rem;
-    height: 0.8rem;
-    flex-shrink: 0;
-    display: block;
-    align-self: center;
-    margin-block: auto;
-    color: $color-app-sidebar-icon;
-    transform: translateY(-0.15rem);
+  &[data-postcard-status='ready'][data-inactive='true'] .deleteButton:hover {
+    background-color: transparent;
   }
-}
-
-.root[data-inactive='true'] .semicircleDown :global(svg) {
-  color: $color-font-disabled;
 }
 
 .body {

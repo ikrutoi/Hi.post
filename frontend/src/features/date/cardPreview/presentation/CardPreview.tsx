@@ -72,6 +72,20 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
       ? [...cart, ...ready, ...sent, ...delivered, ...error]
       : [...ready, ...sent, ...delivered, ...error, ...cart]
   const pipelineCount = pipelineCards.length
+  /**
+   * В закладке «История» миниатюра ячейки не берётся из `cartBlocked` (только корзина / дата),
+   * счётчик «×N» по-прежнему учитывает все карточки дня.
+   */
+  const thumbnailPipelineCards =
+    isHistory
+      ? [
+          ...cart.filter((item) => item.status !== 'cartBlocked'),
+          ...ready,
+          ...sent,
+          ...delivered,
+          ...error,
+        ]
+      : pipelineCards
   /** Для бейджа «×N» в секции «Дата» не считаем корзину — только отправка по конвейеру + processed. */
   const nonCartPipeline = [...ready, ...sent, ...delivered, ...error]
   const totalOnDayForBadge = isCartCalendar
@@ -80,8 +94,9 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
       ? pipelineCount + (processed ? 1 : 0)
       : nonCartPipeline.length + (processed ? 1 : 0)
   const firstPipelineWithPreview =
-    pipelineCards.find((item) => Boolean(item.previewUrl)) ?? null
-  const firstPipeline = pipelineCount > 0 ? pipelineCards[0] : null
+    thumbnailPipelineCards.find((item) => Boolean(item.previewUrl)) ?? null
+  const firstPipeline =
+    thumbnailPipelineCards.length > 0 ? thumbnailPipelineCards[0] : null
 
   /** Выбранный день: показываем слот `processed` (редактор / current_session), а не превью посткарда из pipeline. */
   const workingSlotForSelectedDay =

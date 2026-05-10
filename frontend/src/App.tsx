@@ -267,6 +267,17 @@ const App = () => {
     return cartItems.find((p) => p.localId === rightListArchiveLocalId)?.status
   }, [cartItems, rightListArchiveLocalId])
 
+  /** Правый CardPie рендерится только при `sectionSize` и выбранной строке списка; иначе не держим «правый режим». */
+  const canShowRightListArchiveCardPie =
+    sectionSize != null && rightListArchiveLocalId != null
+
+  useEffect(() => {
+    if (!canShowRightListArchiveCardPie && activePieSide === 'right') {
+      setSuppressCardPieEditActiveAfterCopy(true)
+      setActivePieSide('left')
+    }
+  }, [canShowRightListArchiveCardPie, activePieSide])
+
   const listRowInner = rightListArchiveBundle?.currentData?.data ?? null
 
   const syncPeekChromeForOpenedSection = useCallback((section: CardSection) => {

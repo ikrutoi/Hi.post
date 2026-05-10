@@ -18,7 +18,6 @@ export type PostcardStatusLegendProps = {
   statusCounts?: Record<PostcardStatus, number>
   calendarDispatchDimmed?: boolean
   calendarCartStripLegendOnly?: boolean
-  /** Упрощённая полоска режима «Корзина»: вторая колонка «заблокировано в корзине» + точка cartBlocked */
   calendarCartStripBlockedLegend?: boolean
 }
 
@@ -120,7 +119,8 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                   <span className={clsx(styles.dot, styles.dotReady)} />
                   <IconPostcardReady className={styles.icon} />
                 </div>
-              ))}
+              ),
+            )}
           </>
         ) : (
           <>
