@@ -41,7 +41,14 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
   return (
     <div
       className={styles.root}
-      data-postcard-status={previewStatus === 'ready' ? 'ready' : undefined}
+      data-postcard-status={
+        previewStatus === 'ready' ||
+        previewStatus === 'sent' ||
+        previewStatus === 'delivered' ||
+        previewStatus === 'error'
+          ? previewStatus
+          : undefined
+      }
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}

@@ -58,15 +58,29 @@ $preview-indicator-cart-blocked-border-width: 2px;
 $color-preview-row-processed: #f3f6fb;
 $color-preview-row-cart: #fffbee;
 $color-preview-row-ready: #f1fbf5;
-/** История / списки: мягкая рамка строки `ready` из зелёного индикатора `$color-preview-indicator-ready`. */
 $color-history-list-ready-border: mix(
   $color-preview-indicator-ready,
   $color-preview-row-ready,
   28%
 );
 $color-preview-row-sent: #f1f7ff;
+$color-history-list-sent-border: mix(
+  $color-preview-indicator-sent,
+  $color-preview-row-sent,
+  28%
+);
 $color-preview-row-delivered: #f8f2fc;
+$color-history-list-delivered-border: mix(
+  $color-preview-indicator-delivered,
+  $color-preview-row-delivered,
+  28%
+);
 $color-preview-row-error: #fff2f2;
+$color-history-list-error-border: mix(
+  $color-preview-indicator-error,
+  $color-preview-row-error,
+  28%
+);
 
 $color-font-deepBlack: #1a1a1b;
 $color-font-blue: #1e3a8a;

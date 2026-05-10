@@ -6,6 +6,45 @@ $list-entry-thumb-size: 2.75rem;
 $list-entry-surface: $color-cart-list-surface;
 $list-entry-border: $color-cart-list-border;
 
+@mixin history-list-pastel-row($row-bg, $border-color) {
+  background-color: $row-bg;
+  border-color: $border-color;
+
+  .thumb {
+    border-color: mix($border-color, transparent, 58%);
+  }
+
+  &:hover,
+  &[data-focused='true'] {
+    background-color: darken($row-bg, 2%);
+
+    &[data-inactive='true'] {
+      background-color: mix($row-bg, $color-app-inner, 52%);
+    }
+  }
+
+  &[data-selected='true'] {
+    background-color: darken($row-bg, 3.5%);
+
+    &[data-inactive='true'] {
+      background-color: mix($row-bg, $color-app-inner, 48%);
+    }
+  }
+
+  &[data-inactive='true'] {
+    background-color: mix($row-bg, $color-app-inner, 45%);
+    border-color: mix($border-color, $color-app-inner, 50%);
+  }
+
+  &[data-clickable='true']:focus-visible {
+    outline-color: mix($row-bg, $color-app-sidebar-icon-active, 45%);
+  }
+
+  .deleteButton:hover {
+    background-color: mix($row-bg, $color-app-sidebar-icon-hover, 82%);
+  }
+}
+
 .root {
   position: relative;
   margin-bottom: 0.25rem;
@@ -74,55 +113,39 @@ $list-entry-border: $color-cart-list-border;
     }
   }
 
-  /** Постельная подложка как у корзины (`$color-preview-row-*`), тон из `$color-preview-indicator-ready`. */
+  /**
+   * Постельные строки по `$color-preview-row-*` и индикаторам
+   * (`$color-preview-indicator-sent` и т.д.), по тому же принципу, что `ready`.
+   */
   &[data-postcard-status='ready'] {
-    background-color: $color-preview-row-ready;
-    border-color: $color-history-list-ready-border;
-
-    .thumb {
-      border-color: mix($color-history-list-ready-border, transparent, 58%);
-    }
-
-    &:hover,
-    &[data-focused='true'] {
-      background-color: darken($color-preview-row-ready, 2%);
-
-      &[data-inactive='true'] {
-        background-color: mix($color-preview-row-ready, $color-app-inner, 52%);
-      }
-    }
-
-    &[data-selected='true'] {
-      background-color: darken($color-preview-row-ready, 3.5%);
-
-      &[data-inactive='true'] {
-        background-color: mix($color-preview-row-ready, $color-app-inner, 48%);
-      }
-    }
-
-    &[data-inactive='true'] {
-      background-color: mix($color-preview-row-ready, $color-app-inner, 45%);
-      border-color: mix($color-history-list-ready-border, $color-app-inner, 50%);
-    }
-
-    &[data-clickable='true']:focus-visible {
-      outline-color: mix(
-        $color-preview-row-ready,
-        $color-app-sidebar-icon-active,
-        45%
-      );
-    }
-
-    .deleteButton:hover {
-      background-color: mix(
-        $color-preview-row-ready,
-        $color-app-sidebar-icon-hover,
-        82%
-      );
-    }
+    @include history-list-pastel-row(
+      $color-preview-row-ready,
+      $color-history-list-ready-border
+    );
   }
 
-  &[data-postcard-status='ready'][data-inactive='true'] .deleteButton:hover {
+  &[data-postcard-status='sent'] {
+    @include history-list-pastel-row(
+      $color-preview-row-sent,
+      $color-history-list-sent-border
+    );
+  }
+
+  &[data-postcard-status='delivered'] {
+    @include history-list-pastel-row(
+      $color-preview-row-delivered,
+      $color-history-list-delivered-border
+    );
+  }
+
+  &[data-postcard-status='error'] {
+    @include history-list-pastel-row(
+      $color-preview-row-error,
+      $color-history-list-error-border
+    );
+  }
+
+  &[data-postcard-status][data-inactive='true'] .deleteButton:hover {
     background-color: transparent;
   }
 }
