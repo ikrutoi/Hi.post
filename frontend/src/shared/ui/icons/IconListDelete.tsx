@@ -1,6 +1,10 @@
 import React from 'react'
 
-export const IconListDelete = (props: React.SVGProps<SVGSVGElement>) => (
+/** Клиппинг в кнопке — через `overflow` + layout тулбара; viewBox 1280×1280 без «поля» снизу, чтобы не смещать арт вверх. */
+export const IconListDelete = ({
+  style,
+  ...rest
+}: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 1280 1280"
@@ -9,7 +13,9 @@ export const IconListDelete = (props: React.SVGProps<SVGSVGElement>) => (
     strokeWidth={107.498}
     strokeLinecap="round"
     strokeLinejoin="round"
-    {...props}
+    overflow="visible"
+    style={{ display: 'block', ...style }}
+    {...rest}
   >
     <path d="M314 161v-3c0-55 45-101 101-101h707c55 0 101 46 101 101v707c0 56-46 101-101 101h-2" />
 

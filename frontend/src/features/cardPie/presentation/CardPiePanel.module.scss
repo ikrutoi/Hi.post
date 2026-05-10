@@ -2,8 +2,6 @@
 
 $list-panel-stacked-band: 3.75rem;
 $list-panel-scroll-inset: 0.35rem;
-$list-panel-cart-list-toolbar-top: 2.35rem;
-$list-panel-cart-list-toolbar-row-h: 1.65rem;
 
 .panel {
   position: relative;
@@ -15,71 +13,6 @@ $list-panel-cart-list-toolbar-row-h: 1.65rem;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
-}
-
-.headerBelowBand {
-  position: absolute;
-  left: 0.5rem;
-  top: $list-panel-cart-list-toolbar-top;
-  z-index: 2;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: calc(100% - 0.75rem - 8px);
-  height: $list-panel-cart-list-toolbar-row-h;
-  box-sizing: border-box;
-  padding: 0 0.75rem;
-  pointer-events: none;
-
-  .headerBelowIconBtn {
-    pointer-events: auto;
-  }
-}
-
-.headerBelowIconBtn {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  border: none;
-  border-radius: 0.35rem;
-  background-color: transparent;
-  font: inherit;
-  color: $color-app-sidebar-icon;
-  cursor: pointer;
-  appearance: none;
-  -webkit-tap-highlight-color: transparent;
-  line-height: 0;
-  transition:
-    color 0.15s ease,
-    opacity 0.15s ease;
-
-  &:hover:not(:disabled) {
-    color: $color-app-sidebar-icon-active;
-  }
-
-  &:focus-visible {
-    outline: 2px solid mix(#fff, $color-app-sidebar-icon-active, 55%);
-    outline-offset: 1px;
-  }
-
-  &:disabled {
-    cursor: default;
-    opacity: 0.38;
-    color: $color-font-disabled;
-  }
-
-  :global(svg) {
-    width: 0.85rem;
-    height: 0.85rem;
-    flex-shrink: 0;
-    display: block;
-    color: currentColor;
-  }
 }
 
 .panelScrollTrack {

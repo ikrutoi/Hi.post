@@ -164,11 +164,6 @@ const calendarSlice = createSlice({
         state.dateListSortDirection === 'asc' ? 'desc' : 'asc'
     },
 
-    toggleCardPieListSortDirection(state) {
-      state.cardPieListSortDirection =
-        state.cardPieListSortDirection === 'asc' ? 'desc' : 'asc'
-    },
-
     setPostcardStatusesCount(
       state,
       action: PayloadAction<PostcardStatusesCount>,
@@ -250,7 +245,6 @@ export const {
   setDateListPanelOpen,
   setCardPieListPanelOpen,
   toggleDateListSortDirection,
-  toggleCardPieListSortDirection,
   setPostcardStatusesCount,
   setPostcardStatuses,
   setHistoryListPanelOpen,

@@ -21,10 +21,7 @@ import {
   selectCardtextFavorite,
   selectCardtextListSortDirection,
 } from '@cardtext/infrastructure/selectors'
-import {
-  selectDateListSortDirection,
-  selectCardPieListSortDirection,
-} from '@date/calendar/infrastructure/selectors'
+import { selectDateListSortDirection } from '@date/calendar/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
@@ -44,7 +41,8 @@ export const Toolbar = ({
 }: {
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
-  onActionClick?: (key: IconKey) => void
+  /** Вернуть `false`, чтобы не диспатчить стандартный `toolbar/action` (например кастомная логика в панели). */
+  onActionClick?: (key: IconKey) => void | false
   mergedWithCenter?: boolean
 }) => {
   const {
@@ -52,7 +50,10 @@ export const Toolbar = ({
     groups,
     actions: toolbarActions,
   } = useToolbarFacade(section)
-  const state = stateOverride ?? storeState
+  const state =
+    stateOverride != null
+      ? { ...storeState, ...stateOverride }
+      : storeState
   const { onAction } = toolbarActions
 
   const { fontSizeStep } = useCardtextFacade()
@@ -94,7 +95,6 @@ export const Toolbar = ({
     selectCardtextListSortDirection,
   )
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
-  const cardPieListSortDirection = useAppSelector(selectCardPieListSortDirection)
   const cardphotoListTemplateGridCols = useAppSelector(
     selectCardphotoListTemplateGridCols,
   )
@@ -109,9 +109,7 @@ export const Toolbar = ({
             ? cardtextListSortDirection
             : section === 'dateList'
               ? dateListSortDirection
-              : section === 'cardPieList'
-                ? cardPieListSortDirection
-                : undefined
+              : undefined
 
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const sectionEditorMenuLockedByCardPieCopy =
@@ -305,8 +303,10 @@ export const Toolbar = ({
           }
 
           e.preventDefault()
-          onActionClick?.(key as IconKey)
-          onAction(key as IconKey)
+          const stopDefault = onActionClick?.(key as IconKey)
+          if (stopDefault !== false) {
+            onAction(key as IconKey)
+          }
         }}
       >
         {getToolbarIcon({

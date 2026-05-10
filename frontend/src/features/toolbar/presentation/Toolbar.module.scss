@@ -12,10 +12,18 @@
     background-color: white;
     border-radius: 0.6rem;
     background-color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition:
       color 0.15s ease,
       cursor 0.15s ease,
       background-color 0.15s ease;
+
+    > svg {
+      display: block;
+      flex-shrink: 0;
+    }
 
     &Disabled {
       color: $color-font-disabled;
@@ -43,6 +51,20 @@
 
     &Active:hover {
       background-color: $color-enabled;
+    }
+
+    /**
+     * Как `.actionBtn` в строках списка: `$color-font-enabled-light` → при hover `$color-font-enabled`.
+     * Без серого фона от `&Enabled:hover` — подложка как у клавиши (белый / ряд).
+     */
+    &[data-icon-key='listDelete'].toolbarKeyEnabled,
+    &[data-icon-key='cart'].toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: #fff;
+      }
     }
   }
 
@@ -484,6 +506,7 @@
 .toolbarDateList,
 .toolbarHistoryList,
 .toolbarCartList,
+.toolbarCardPieList,
 .toolbarCardPieListEntry {
   .toolbarKey {
     width: 1.5rem;
@@ -649,6 +672,7 @@
 .toolbarCardtextList,
 .toolbarCardphotoList,
 .toolbarDateList,
+.toolbarCardPieList,
 .toolbarCardPieListEntry,
 .toolbarHistoryList,
 .toolbarCartList {

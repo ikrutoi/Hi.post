@@ -11,9 +11,9 @@ import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { toggleCartForDispatchBranch } from '@date/infrastructure/state'
-import { getToolbarIcon } from '@shared/utils/icons'
 import { CardPieListEntry } from './cardPieList/CardPieListEntry'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
+import type { IconKey } from '@shared/config/constants'
 import styles from './CardPiePanel.module.scss'
 
 type Props = {
@@ -95,11 +95,6 @@ export const CardPiePanel: React.FC<Props> = ({
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
 
-  const hasDeletableRow = useMemo(
-    () => entries.some((e) => e.onDelete != null),
-    [entries],
-  )
-
   const handleHeaderOpenCart = useCallback(() => {
     setCartListPanelOpen(true)
   }, [setCartListPanelOpen])
@@ -110,39 +105,41 @@ export const CardPiePanel: React.FC<Props> = ({
     }
   }, [entries])
 
+  const toolbarStateOverride = useMemo(
+    () => ({
+      listDelete: { state: hasRows ? 'enabled' : 'disabled', options: {} },
+    }),
+    [hasRows],
+  )
+
+  const handleToolbarActionClick = useCallback(
+    (key: IconKey) => {
+      if (key === 'cart') {
+        handleHeaderOpenCart()
+        return false
+      }
+      if (key === 'listDelete') {
+        if (hasRows) handleHeaderRemoveAllRows()
+        return false
+      }
+    },
+    [handleHeaderOpenCart, handleHeaderRemoveAllRows, hasRows],
+  )
+
   return (
     <div className={styles.panel}>
       <ListPanelStackedHeader
         leadIconKey="cardPie"
-        toolbar={<Toolbar section="cardPieList" />}
+        toolbar={
+          <Toolbar
+            section="cardPieList"
+            stateOverride={toolbarStateOverride}
+            onActionClick={handleToolbarActionClick}
+          />
+        }
         onClose={onClose}
         closeAriaLabel="Close card pie list"
       />
-      <div
-        className={styles.headerBelowBand}
-        role="group"
-        aria-label="Card pie list header actions"
-      >
-        <button
-          type="button"
-          className={styles.headerBelowIconBtn}
-          aria-label="Open cart list"
-          title="Open cart list"
-          onClick={handleHeaderOpenCart}
-        >
-          {getToolbarIcon({ key: 'cart' })}
-        </button>
-        <button
-          type="button"
-          className={styles.headerBelowIconBtn}
-          aria-label="Remove all variants from the list"
-          title="Remove all variants from the list"
-          disabled={!hasDeletableRow}
-          onClick={handleHeaderRemoveAllRows}
-        >
-          {getToolbarIcon({ key: 'listDelete' })}
-        </button>
-      </div>
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div

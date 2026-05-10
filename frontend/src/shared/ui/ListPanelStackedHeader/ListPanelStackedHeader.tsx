@@ -9,6 +9,10 @@ export type ListPanelStackedHeaderProps = {
   leadIconKey: IconKey
   /** Second row under the divider; omit when the panel has no list toolbar. */
   toolbar?: ReactNode | null | false
+  /**
+   * Линия под строкой с иконкой и закрытием, если тулбара нет (например кнопки вынесены в полосу под шапкой).
+   */
+  showDividerWithoutToolbar?: boolean
   onClose: () => void
   closeAriaLabel: string
 }
@@ -16,14 +20,22 @@ export type ListPanelStackedHeaderProps = {
 export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   leadIconKey,
   toolbar,
+  showDividerWithoutToolbar = false,
   onClose,
   closeAriaLabel,
 }) => {
   const hasToolbar = toolbar != null && toolbar !== false
+  const showDividerOnly = !hasToolbar && showDividerWithoutToolbar
 
   return (
     <div
-      className={clsx(styles.header, !hasToolbar && styles.headerCompact)}
+      className={clsx(
+        styles.header,
+        !hasToolbar &&
+          (showDividerOnly
+            ? styles.headerCompactWithDivider
+            : styles.headerCompact),
+      )}
     >
       <div className={styles.headerTopRow}>
         <div
@@ -47,6 +59,8 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
           <div className={styles.headerDivider} role="separator" aria-hidden />
           <div className={styles.headerToolbarRow}>{toolbar}</div>
         </>
+      ) : showDividerOnly ? (
+        <div className={styles.headerDivider} role="separator" aria-hidden />
       ) : null}
     </div>
   )

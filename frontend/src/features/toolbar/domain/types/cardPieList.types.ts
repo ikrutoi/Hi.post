@@ -2,19 +2,7 @@ import { flattenIcons } from '../helpers'
 import type { IconKey } from '@shared/config/constants'
 import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
-export const CARD_PIE_LIST_KEYS = [
-  'listDelete',
-  'sortDown',
-  'addCart',
-  'cart',
-  'favorite',
-  'delete',
-  'postcardReady',
-  'postcardSend',
-  'postcardDelivered',
-  'postcardNotDelivered',
-  'postcardIndicator',
-] as const satisfies readonly IconKey[]
+export const CARD_PIE_LIST_KEYS = ['cart', 'listDelete'] as const satisfies readonly IconKey[]
 
 export type CardPieListKey = (typeof CARD_PIE_LIST_KEYS)[number]
 
@@ -26,7 +14,7 @@ export interface CardPieListToolbarState extends Record<string, any> {
 export const CARD_PIE_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'cardPieList',
-    icons: [{ key: 'sortDown', state: 'enabled' }],
+    icons: [{ key: 'cart', state: 'enabled' }],
     status: 'enabled',
   },
   {

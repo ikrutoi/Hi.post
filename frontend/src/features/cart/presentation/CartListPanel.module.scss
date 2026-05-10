@@ -45,6 +45,12 @@ $cart-list-header-segment-border-inactive: rgba(255, 255, 255, 0.92);
   width: calc(100% - 0.75rem - 8px);
   height: $list-panel-cart-list-toolbar-row-h;
   box-sizing: border-box;
+  pointer-events: none;
+
+  .headerBelowSegmentSlot,
+  .headerBelowSquare {
+    pointer-events: auto;
+  }
 }
 
 .headerBelowSegmentSlot {

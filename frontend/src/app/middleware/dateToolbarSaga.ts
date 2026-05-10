@@ -9,7 +9,6 @@ import {
   setDateListPanelOpen,
   setCardPieListPanelOpen,
   toggleDateListSortDirection,
-  toggleCardPieListSortDirection,
   setPostcardStatuses,
 } from '@date/calendar/infrastructure/state'
 import {
@@ -90,16 +89,6 @@ function* syncListDateIconOnDayPanelOpen(): SagaIterator {
   )
 }
 
-function* handleCardPieListToolbarAction(
-  action: ReturnType<typeof toolbarAction>,
-): SagaIterator {
-  const { section, key } = action.payload
-  if (section !== 'cardPieList') return
-  if (key === 'sortDown') {
-    yield put(toggleCardPieListSortDirection())
-  }
-}
-
 function* syncListIconsWhenOpeningExclusiveList(
   action: PayloadAction<boolean>,
 ): SagaIterator {
@@ -125,7 +114,6 @@ export function* watchDateToolbar(): SagaIterator {
   yield all([
     takeEvery(toolbarAction.type, handleDateToolbarAction),
     takeEvery(toolbarAction.type, handleDateListToolbarAction),
-    takeEvery(toolbarAction.type, handleCardPieListToolbarAction),
     takeEvery(setDateListPanelOpen.type, syncListIconsWhenOpeningExclusiveList),
     takeEvery(setCardPieListPanelOpen.type, syncListIconsWhenOpeningExclusiveList),
     takeEvery(openDayPanel.type, syncListDateIconOnDayPanelOpen),
