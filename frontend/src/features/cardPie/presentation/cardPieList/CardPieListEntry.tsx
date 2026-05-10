@@ -122,40 +122,35 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
             )}
           </div>
         </div>
-        {onDelete || priceLineVisible ? (
-          <div
-            className={styles.rightPack}
-            data-has-delete={onDelete ? 'true' : undefined}
-          >
-            <div className={styles.rightPriceSlot}>
-              {priceLineVisible ? (
-                <div
-                  className={styles.priceLine}
-                  aria-label={`Price ${priceLineVisible}`}
-                >
-                  {priceLineVisible}
-                </div>
-              ) : null}
-            </div>
-            {onDelete ? (
-              <div className={styles.actions}>
-                <button
-                  type="button"
-                  className={styles.actionBtn}
-                  aria-label="Remove postcard row"
-                  title="Remove postcard row"
-                  disabled={inactive}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (!inactive) onDelete()
-                  }}
-                >
-                  {getToolbarIcon({ key: 'delete' })}
-                </button>
+        <div className={styles.rightPack} data-has-delete="true">
+          <div className={styles.rightPriceSlot}>
+            {priceLineVisible ? (
+              <div
+                className={styles.priceLine}
+                aria-label={`Price ${priceLineVisible}`}
+              >
+                {priceLineVisible}
               </div>
             ) : null}
           </div>
-        ) : null}
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={styles.actionBtn}
+              aria-label="Remove postcard row"
+              title={
+                onDelete && !inactive ? 'Remove postcard row' : undefined
+              }
+              disabled={inactive}
+              onClick={(e) => {
+                e.stopPropagation()
+                if (!inactive) onDelete?.()
+              }}
+            >
+              {getToolbarIcon({ key: 'delete' })}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )

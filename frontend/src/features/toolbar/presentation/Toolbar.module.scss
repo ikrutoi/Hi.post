@@ -58,7 +58,8 @@
      * Без серого фона от `&Enabled:hover` — подложка как у клавиши (белый / ряд).
      */
     &[data-icon-key='listDelete'].toolbarKeyEnabled,
-    &[data-icon-key='cart'].toolbarKeyEnabled {
+    &[data-icon-key='cart'].toolbarKeyEnabled,
+    &[data-icon-key='addCartList'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
       &:hover {
@@ -509,8 +510,8 @@
 .toolbarCardPieList,
 .toolbarCardPieListEntry {
   .toolbarKey {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.6rem;
+    height: 1.6rem;
   }
 
   .toolbarKeyApplyEnabled {

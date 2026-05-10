@@ -95,6 +95,18 @@ export const CardPiePanel: React.FC<Props> = ({
   const hasRows = entries.length > 0
   const listContentKey = entries.map((e) => e.id).join('|')
 
+  /** Как `CardPieListEntry` addCart: `disabled={!onAddCart || inactive}`. */
+  const addCartListEnabled = useMemo(
+    () =>
+      entries.some(
+        (item) =>
+          isAllComplete &&
+          Boolean(item.dispatchBranchKey) &&
+          item.variant !== 'inactive',
+      ),
+    [entries, isAllComplete],
+  )
+
   const handleHeaderOpenCart = useCallback(() => {
     setCartListPanelOpen(true)
   }, [setCartListPanelOpen])
@@ -107,15 +119,19 @@ export const CardPiePanel: React.FC<Props> = ({
 
   const toolbarStateOverride = useMemo(
     () => ({
+      addCartList: {
+        state: addCartListEnabled ? 'enabled' : 'disabled',
+        options: {},
+      },
       listDelete: { state: hasRows ? 'enabled' : 'disabled', options: {} },
     }),
-    [hasRows],
+    [addCartListEnabled, hasRows],
   )
 
   const handleToolbarActionClick = useCallback(
     (key: IconKey) => {
-      if (key === 'cart') {
-        handleHeaderOpenCart()
+      if (key === 'addCartList') {
+        if (addCartListEnabled) handleHeaderOpenCart()
         return false
       }
       if (key === 'listDelete') {
@@ -123,7 +139,7 @@ export const CardPiePanel: React.FC<Props> = ({
         return false
       }
     },
-    [handleHeaderOpenCart, handleHeaderRemoveAllRows, hasRows],
+    [addCartListEnabled, handleHeaderOpenCart, handleHeaderRemoveAllRows, hasRows],
   )
 
   return (

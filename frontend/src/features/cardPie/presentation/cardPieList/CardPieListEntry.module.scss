@@ -10,13 +10,20 @@ $list-entry-border: mix(darken($_list-entry-surface-base, 4%), #fff, 90%);
 $list-entry-row-linked-surface: $color-cart-list-surface;
 $list-entry-row-linked-border: $color-cart-list-border;
 
+@mixin list-entry-row-surface($row-bg) {
+  --list-entry-row-bg: #{$row-bg};
+  --list-entry-row-bg-hover: #{darken($row-bg, 5.5%)};
+  background-color: var(--list-entry-row-bg);
+  --action-btn-bg: var(--list-entry-row-bg);
+  --action-btn-bg-hover: var(--list-entry-row-bg-hover);
+}
+
 .root {
   position: relative;
   margin-bottom: 0.25rem;
   box-sizing: border-box;
   min-height: $list-entry-row-height;
   padding: 1px 0.5rem 1px 0.35rem;
-  background-color: $list-entry-surface;
   border: 1px solid $list-entry-border;
   border-radius: 4px;
   user-select: none;
@@ -25,23 +32,14 @@ $list-entry-row-linked-border: $color-cart-list-border;
     border-color 0.15s ease,
     opacity 0.15s ease;
 
-  --action-btn-bg: #{mix($list-entry-surface, #fff, 82%)};
-  --action-btn-bg-hover: #{mix($list-entry-surface, #fff, 72%)};
+  @include list-entry-row-surface($list-entry-surface);
 
   &[data-inactive='true'] {
     opacity: 0.78;
-    background-color: mix($list-entry-surface, $color-app-inner, 45%);
     border-color: mix($list-entry-border, $color-app-inner, 50%);
-    --action-btn-bg: #{mix(
-        mix($list-entry-surface, $color-app-inner, 45%),
-        #fff,
-        86%
-      )};
-    --action-btn-bg-hover: #{mix(
-        mix($list-entry-surface, $color-app-inner, 45%),
-        #fff,
-        78%
-      )};
+    @include list-entry-row-surface(
+      mix($list-entry-surface, $color-app-inner, 45%)
+    );
 
     .thumb {
       background-color: mix($color-app-inner, #eee, 55%);
@@ -64,98 +62,57 @@ $list-entry-row-linked-border: $color-cart-list-border;
 
   &:hover,
   &[data-focused='true'] {
-    background-color: darken($list-entry-surface, 1.5%);
-    --action-btn-bg: #{mix(darken($list-entry-surface, 1.5%), #fff, 82%)};
-    --action-btn-bg-hover: #{mix(darken($list-entry-surface, 1.5%), #fff, 72%)};
+    @include list-entry-row-surface(darken($list-entry-surface, 1.5%));
 
     &[data-inactive='true'] {
-      background-color: mix($list-entry-surface, $color-app-inner, 55%);
-      --action-btn-bg: #{mix(
-          mix($list-entry-surface, $color-app-inner, 55%),
-          #fff,
-          86%
-        )};
-      --action-btn-bg-hover: #{mix(
-          mix($list-entry-surface, $color-app-inner, 55%),
-          #fff,
-          78%
-        )};
+      @include list-entry-row-surface(
+        mix($list-entry-surface, $color-app-inner, 55%)
+      );
     }
   }
 
   &[data-selected='true'] {
-    background-color: darken($list-entry-surface, 3%);
     box-shadow: -2px 0 0 0 $color-date-multi;
-    --action-btn-bg: #{mix(darken($list-entry-surface, 3%), #fff, 82%)};
-    --action-btn-bg-hover: #{mix(darken($list-entry-surface, 3%), #fff, 72%)};
+    @include list-entry-row-surface(darken($list-entry-surface, 3%));
 
     &[data-inactive='true'] {
       box-shadow: -2px 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
     }
   }
 
-  &[data-selected='true'][data-inactive='true'] {
-    --action-btn-bg: #{mix(
-        mix($list-entry-surface, $color-app-inner, 45%),
-        #fff,
-        86%
-      )};
-    --action-btn-bg-hover: #{mix(
-        mix($list-entry-surface, $color-app-inner, 45%),
-        #fff,
-        78%
-      )};
-  }
-
   &[data-selected='true'][data-inactive='true']:hover,
   &[data-selected='true'][data-inactive='true'][data-focused='true'] {
-    --action-btn-bg: #{mix(
-        mix($list-entry-surface, $color-app-inner, 55%),
-        #fff,
-        86%
-      )};
-    --action-btn-bg-hover: #{mix(
-        mix($list-entry-surface, $color-app-inner, 55%),
-        #fff,
-        78%
-      )};
+    @include list-entry-row-surface(
+      mix($list-entry-surface, $color-app-inner, 55%)
+    );
   }
 
   &[data-in-cart='true']:not([data-inactive='true']) {
-    background-color: $list-entry-row-linked-surface;
     border-color: $list-entry-row-linked-border;
-    --action-btn-bg: #{mix($list-entry-row-linked-surface, #fff, 82%)};
-    --action-btn-bg-hover: #{mix($list-entry-row-linked-surface, #fff, 72%)};
+    @include list-entry-row-surface($list-entry-row-linked-surface);
   }
 
   &[data-in-cart='true']:not([data-inactive='true']):hover,
   &[data-in-cart='true']:not([data-inactive='true'])[data-focused='true'] {
-    background-color: darken($list-entry-row-linked-surface, 1.5%);
-    --action-btn-bg: #{mix(
-        darken($list-entry-row-linked-surface, 1.5%),
-        #fff,
-        82%
-      )};
-    --action-btn-bg-hover: #{mix(
-        darken($list-entry-row-linked-surface, 1.5%),
-        #fff,
-        72%
-      )};
+    @include list-entry-row-surface(
+      darken($list-entry-row-linked-surface, 1.5%)
+    );
   }
 
   &[data-in-cart='true'][data-selected='true']:not([data-inactive='true']) {
-    background-color: darken($list-entry-row-linked-surface, 3%);
     box-shadow: -2px 0 0 0 $color-date-multi;
-    --action-btn-bg: #{mix(
-        darken($list-entry-row-linked-surface, 3%),
-        #fff,
-        82%
-      )};
-    --action-btn-bg-hover: #{mix(
-        darken($list-entry-row-linked-surface, 3%),
-        #fff,
-        72%
-      )};
+    @include list-entry-row-surface(
+      darken($list-entry-row-linked-surface, 3%)
+    );
+  }
+
+  &[data-in-cart='true'][data-selected='true']:not([data-inactive='true']):hover,
+  &[data-in-cart='true'][data-selected='true']:not(
+      [data-inactive='true']
+    )[data-focused='true'] {
+    @include list-entry-row-surface(
+      darken($list-entry-row-linked-surface, 3%)
+    );
   }
 
   &[data-clickable='true'] {
@@ -229,6 +186,11 @@ $list-entry-row-linked-border: $color-cart-list-border;
   width: 1.05rem;
   height: 1.05rem;
   border-radius: 5px;
+  background-color: transparent;
+
+  &:hover:not(:disabled) {
+    background-color: transparent;
+  }
 
   :global(svg) {
     width: 0.7rem;
@@ -258,6 +220,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
 
   &:hover:not(:disabled) {
     color: $color-font-enabled;
+    background-color: var(--action-btn-bg-hover);
   }
 
   &:disabled {
@@ -307,9 +270,9 @@ $list-entry-row-linked-border: $color-cart-list-border;
   padding: 0.12rem;
   border: none;
   border-radius: 0.35rem;
-  background: none;
+  background-color: var(--action-btn-bg);
   cursor: pointer;
-  color: $color-app-sidebar-icon;
+  color: $color-font-enabled-light;
   line-height: 1;
   transition:
     color 0.15s ease,
@@ -317,8 +280,8 @@ $list-entry-row-linked-border: $color-cart-list-border;
     opacity 0.15s ease;
 
   &:hover:not(:disabled) {
-    color: $color-app-sidebar-icon;
-    // background-color: $color-hover-dark;
+    color: $color-font-enabled;
+    background-color: var(--action-btn-bg-hover);
   }
 
   &:disabled {
@@ -331,7 +294,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
     height: 1.1rem;
     flex-shrink: 0;
     display: block;
-    color: $color-app-sidebar-icon;
+    color: currentColor;
   }
 
   &:disabled :global(svg) {
