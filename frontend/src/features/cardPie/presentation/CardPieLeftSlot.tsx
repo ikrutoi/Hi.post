@@ -5,7 +5,9 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   updateLastViewedCalendarDate,
   setCardPieListPanelOpen,
+  setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
+import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state/sectionEditorMenuSlice'
 import { useDispatchPlanListEntries } from '@date/application/hooks/useDispatchPlanListEntries'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
 import { CardPiePanel } from './CardPiePanel'
@@ -41,6 +43,8 @@ export const CardPieLeftSlot: React.FC = () => {
   const handleSelectEntry = useCallback(
     (item: DateListPanelItem) => {
       if (!item.sourceDate) return
+      dispatch(setNotebookStripTab('date'))
+      dispatch(setActiveSection('date'))
       dispatch(
         updateLastViewedCalendarDate({
           year: item.sourceDate.year,
