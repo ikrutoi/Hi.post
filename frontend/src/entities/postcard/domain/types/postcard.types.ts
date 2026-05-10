@@ -16,6 +16,16 @@ export const POSTCARD_STATUSES = [
 
 export type PostcardStatus = (typeof POSTCARD_STATUSES)[number]
 
+export const POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL =
+  new Set<PostcardStatus>([
+    'cart',
+    'cartBlocked',
+    'ready',
+    'sent',
+    'delivered',
+    'error',
+  ])
+
 export type PostcardStatuses = {
   cart: boolean
   cartBlocked: boolean
@@ -112,9 +122,7 @@ export function postcardRefsFromCard(card: Card): PostcardRefs {
           ? String(s.senderViewId)
           : null
   const cardtextId =
-    card.cardtext?.appliedData?.id ??
-    card.cardtext?.assetData?.id ??
-    ''
+    card.cardtext?.appliedData?.id ?? card.cardtext?.assetData?.id ?? ''
   return {
     cardphoto: appliedPhotoId ?? card.id,
     cardtext: cardtextId,
@@ -228,8 +236,7 @@ export function normalizePostcardRecord(raw: unknown): PostcardHydrated {
         : 'cart'
       : status
 
-  const postcard: PostcardRefs =
-    row.postcard ?? postcardRefsFromCard(card)
+  const postcard: PostcardRefs = row.postcard ?? postcardRefsFromCard(card)
 
   const next: PostcardHydrated = {
     id,

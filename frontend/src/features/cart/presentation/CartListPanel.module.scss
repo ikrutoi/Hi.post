@@ -47,7 +47,6 @@ $cart-list-header-segment-border-inactive: rgba(255, 255, 255, 0.92);
   box-sizing: border-box;
 }
 
-/* Fixed slot so segment buttons do not shift neighbors when width/height animate. */
 .headerBelowSegmentSlot {
   display: flex;
   flex-shrink: 0;
@@ -175,7 +174,6 @@ $cart-list-header-segment-border-inactive: rgba(255, 255, 255, 0.92);
   color: $color-app-inner;
 }
 
-/* Same height as the list header top row (lead icon strip), not the toolbar row below. */
 .footer {
   position: absolute;
   left: 0.5rem;

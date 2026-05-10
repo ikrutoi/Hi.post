@@ -2,16 +2,26 @@ import type { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
 import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
-import { addItem, removeItem } from '@cart/infrastructure/state'
+import { addItem } from '@cart/infrastructure/state'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@envelope/infrastructure/selectors'
 import {
-  selectMergedDispatchDates,
+  selectExcludedDispatchBranchSet,
+  selectExcludedDispatchBranches,
   selectIsMultiDateMode,
+  selectMergedDispatchDates,
+  selectRecipientBranchSlotKeys,
+  selectSelectedDate,
+  selectSelectedDates,
 } from '@date/infrastructure/selectors'
-import { clearDate } from '@date/infrastructure/state'
+import {
+  clearDate,
+  excludeDispatchBranch,
+  pickDispatchDate,
+  setSelectedDates,
+} from '@date/infrastructure/state'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import type { CardphotoState } from '@cardphoto/domain/types'
@@ -35,10 +45,9 @@ import {
   postcardRefsFromCard,
   type PostcardRefs,
 } from '@entities/postcard'
-import { selectExcludedDispatchBranchSet } from '@date/infrastructure/selectors'
 import {
   buildDispatchBranchKey,
-  dispatchBranchKeyFromPostcard,
+  dispatchDateKeyFromDispatchDate,
   parseDispatchBranchKey,
 } from '@date/domain/dispatchBranchKey'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
@@ -281,6 +290,48 @@ export function* createPostcardsFromEditor(): SagaIterator {
   yield call(refreshRightSidebarBadgesFromPostcards)
 }
 
+function sameDispatchDate(a: DispatchDate, b: DispatchDate): boolean {
+  return a.year === b.year && a.month === b.month && a.day === b.day
+}
+
+/** После `excludeDispatchBranch`: если на дате не осталось веток — снять дату с выбора (как onDelete в плане). */
+function* pruneDispatchDatesAfterBranchExcluded(
+  branchKey: string,
+): SagaIterator {
+  const parsed = parseDispatchBranchKey(branchKey)
+  if (!parsed) return
+
+  const excluded: string[] = yield select(selectExcludedDispatchBranches)
+  const excludedSet = new Set(excluded)
+  const slotKeys: string[] = yield select(selectRecipientBranchSlotKeys)
+  const dateKey = dispatchDateKeyFromDispatchDate(parsed.date)
+  const anyLeftThisDate = slotKeys.some(
+    (sk) => !excludedSet.has(`${dateKey}|${sk}`),
+  )
+  if (anyLeftThisDate) return
+
+  const isMulti: boolean = yield select(selectIsMultiDateMode)
+  if (isMulti) {
+    const selectedDates: DispatchDate[] = yield select(selectSelectedDates)
+    yield put(
+      setSelectedDates(
+        selectedDates.filter((x) => !sameDispatchDate(x, parsed.date)),
+      ),
+    )
+  } else {
+    const selectedDate: DispatchDate | null = yield select(selectSelectedDate)
+    if (selectedDate && sameDispatchDate(selectedDate, parsed.date)) {
+      yield put(pickDispatchDate(parsed.date))
+    }
+  }
+}
+
+/** Убрать строку Card pie / плана после добавления в корзину. */
+function* removeCardPiePlanBranchAfterCart(branchKey: string): SagaIterator {
+  yield put(excludeDispatchBranch({ branchKey }))
+  yield* pruneDispatchDatesAfterBranchExcluded(branchKey)
+}
+
 export function* handleToggleCartForDispatchBranch(
   action: PayloadAction<{ branchKey: string }>,
 ): SagaIterator {
@@ -292,17 +343,11 @@ export function* handleToggleCartForDispatchBranch(
   if (!isAllComplete) return
 
   const allRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
-  const existing = allRows.find(
-    (row) =>
-      (row.status === 'cart' || row.status === 'cartBlocked') &&
-      dispatchBranchKeyFromPostcard(row) === branchKey,
-  )
-  if (existing) {
-    yield call([postcardsAdapter, 'deleteById'], existing.id)
-    yield put(removeItem(existing.localId))
-    yield call(refreshRightSidebarBadgesFromPostcards)
-    return
-  }
+  /**
+   * Card pie «в корзину» — только добавление новой строки в IDB + `addItem`.
+   * Уже лежащая в корзине открытка по той же ветке даты/получателя не трогается;
+   * дубликат того же содержимого отсекается через `buildCartDuplicateKey` ниже.
+   */
 
   const cardphoto: CardphotoState = yield select(selectCardphotoState)
   const cardtext: CardtextState = yield select(selectCardtextState)
@@ -363,6 +408,7 @@ export function* handleToggleCartForDispatchBranch(
   )
   const cartKey = buildCartDuplicateKey(candidateCard)
   if (existingCartDedupeKeys.has(cartKey)) {
+    yield* removeCardPiePlanBranchAfterCart(branchKey)
     yield call(refreshRightSidebarBadgesFromPostcards)
     return
   }
@@ -404,6 +450,7 @@ export function* handleToggleCartForDispatchBranch(
     postcardForIdb as Omit<PostcardHydrated, 'id'>,
   )
   yield put(addItem(postcard))
+  yield* removeCardPiePlanBranchAfterCart(branchKey)
   yield call(refreshRightSidebarBadgesFromPostcards)
 }
 

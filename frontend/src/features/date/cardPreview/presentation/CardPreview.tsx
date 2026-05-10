@@ -13,6 +13,7 @@ import { CardPreviewItem } from './CardPreviewItem'
 import previewItemStyles from './CardPreviewItem.module.scss'
 import styles from './CardPreview.module.scss'
 import { CalendarCardItem } from '@entities/card/domain/types'
+import { POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import { CardSection } from '@/shared/config/constants'
 
@@ -116,13 +117,13 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
           processed ??
           null
 
-  /** В режиме «Дата» миниатюру из корзины не показываем — только жёлтый индикатор. */
+  /** В режиме «Дата» миниатюру не берём из корзины и из конвейера `ready`…`error`. */
   const primaryItemForDisplay =
     !isHistoryLike &&
     !isCartCalendar &&
     primaryItem &&
     !primaryItem.isProcessed &&
-    (primaryItem.status === 'cart' || primaryItem.status === 'cartBlocked')
+    POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL.has(primaryItem.status)
       ? null
       : primaryItem
 
@@ -188,7 +189,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const showEmptySessionPlaceholder =
     !isHistoryLike &&
     isSelectedDate &&
-    !primaryItem &&
+    !primaryItemForDisplay &&
     !photoPreview?.previewUrl
 
   /**

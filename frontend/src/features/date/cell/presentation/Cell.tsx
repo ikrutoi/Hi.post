@@ -83,15 +83,8 @@ export const Cell: React.FC<CellProps> = ({
       dayData.error.length),
   )
 
-  const hasCartOnDay = Boolean(
-    dayData?.cart.some((item) => item.status === 'cart'),
-  )
   const showDispatchSelection =
     Boolean(isSelectedDate) && !suppressDispatchSelectionStyle
-
-  /** Выбранный день + открытка в корзине: бейдж числа без коричневого dispatch (индикатор остаётся на превью). */
-  const selectedDayWithCartBadge =
-    showDispatchSelection && hasCartOnDay && styles.selectedDayWithCartBadge
 
   const dynamicClass = clsx(
     styles.cell,
@@ -109,7 +102,6 @@ export const Cell: React.FC<CellProps> = ({
     dayCurrent != null && styles.current,
     showDispatchSelection && styles.dispatch,
     hasPostcards && styles.withPostcards,
-    selectedDayWithCartBadge,
   )
 
   const clickParams: HandleCellClickParams = {

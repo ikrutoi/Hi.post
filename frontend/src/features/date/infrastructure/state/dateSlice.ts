@@ -130,7 +130,7 @@ export const dateSlice = createSlice({
       }
     },
 
-    /** Saga-only: переключение корзины по ветке плана (Card pie / список дат). */
+    /** Saga-only: добавление в корзину по ветке плана (Card pie); без удаления существующих строк. */
     toggleCartForDispatchBranch(
       _state,
       _action: PayloadAction<{ branchKey: string }>,

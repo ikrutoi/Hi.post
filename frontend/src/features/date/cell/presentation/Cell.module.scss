@@ -394,15 +394,6 @@ button.navArrowWrap {
   }
 }
 
-.selectedDayWithCartBadge.dispatch .dayNumber,
-.selectedDayWithCartBadge.withPostcards.dispatch .dayNumber {
-  background-color: $color-section-light;
-  border-color: $color-section-dark;
-  color: $color-font-enabled;
-  font-weight: 700;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
 /**
  * Режим выбора даты (полоса «Корзина»): `.current.cart:hover { cursor: default }` выше даёт ту же
  * специфичность, что и `.cell.cart.cartDateEditPickBorder`, и из‑за порядка перебивает pointer.
