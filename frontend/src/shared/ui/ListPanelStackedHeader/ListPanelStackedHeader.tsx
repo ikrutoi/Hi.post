@@ -7,6 +7,11 @@ import styles from './ListPanelStackedHeader.module.scss'
 
 export type ListPanelStackedHeaderProps = {
   leadIconKey: IconKey
+  /**
+   * Контент по центру верхней строки (между ведущей иконкой и закрытием),
+   * например переключатели сегментов в списке корзины.
+   */
+  headerTopCenter?: ReactNode | null | false
   /** Second row under the divider; omit when the panel has no list toolbar. */
   toolbar?: ReactNode | null | false
   /**
@@ -19,6 +24,7 @@ export type ListPanelStackedHeaderProps = {
 
 export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   leadIconKey,
+  headerTopCenter,
   toolbar,
   showDividerWithoutToolbar = false,
   onClose,
@@ -26,6 +32,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
 }) => {
   const hasToolbar = toolbar != null && toolbar !== false
   const showDividerOnly = !hasToolbar && showDividerWithoutToolbar
+  const hasTopCenter = headerTopCenter != null && headerTopCenter !== false
 
   return (
     <div
@@ -44,6 +51,12 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
           data-icon-state="disabled"
         >
           {getToolbarIcon({ key: leadIconKey })}
+        </div>
+        <div
+          className={styles.headerTopCenterSlot}
+          {...(!hasTopCenter ? { 'aria-hidden': true as const } : {})}
+        >
+          {hasTopCenter ? headerTopCenter : null}
         </div>
         <button
           type="button"

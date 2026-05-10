@@ -28,10 +28,22 @@
 .headerTopRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.35rem;
   min-height: 1.75rem;
   width: 100%;
+}
+
+.headerTopCenterSlot {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
 }
 
 .headerLead {

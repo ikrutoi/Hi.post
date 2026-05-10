@@ -3,8 +3,6 @@
 $list-panel-stacked-band: 3.75rem;
 $list-panel-header-lead-row: 1.75rem;
 $list-panel-scroll-inset: 0.35rem;
-$list-panel-cart-list-toolbar-top: 2.35rem;
-$list-panel-cart-list-toolbar-row-h: 1.65rem;
 $cart-list-header-square-skew-deg: -15deg;
 $cart-list-header-square-w: 1.5rem;
 $cart-list-header-square-h: 1rem;
@@ -32,25 +30,12 @@ $cart-list-header-segment-border-inactive: rgba(255, 255, 255, 0.92);
   }
 }
 
-.headerBelowBand {
-  position: absolute;
-  left: 0.5rem;
-  top: $list-panel-cart-list-toolbar-top;
-  z-index: 2;
+.cartHeaderSegments {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: calc(100% - 0.75rem - 8px);
-  height: $list-panel-cart-list-toolbar-row-h;
-  box-sizing: border-box;
-  pointer-events: none;
-
-  .headerBelowSegmentSlot,
-  .headerBelowSquare {
-    pointer-events: auto;
-  }
 }
 
 .headerBelowSegmentSlot {

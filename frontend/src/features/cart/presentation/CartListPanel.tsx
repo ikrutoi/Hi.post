@@ -316,56 +316,63 @@ export const CartListPanel: React.FC<Props> = ({
     >
       <ListPanelStackedHeader
         leadIconKey={listLeadIconKey}
+        headerTopCenter={
+          entriesProp == null ? (
+            <div
+              className={styles.cartHeaderSegments}
+              role="group"
+              aria-label="Cart list header actions"
+            >
+              <div className={styles.headerBelowSegmentSlot}>
+                <button
+                  type="button"
+                  className={clsx(styles.headerBelowSquare, styles.cart)}
+                  aria-label={
+                    cartSegmentCounts.cart > 0
+                      ? `Cart, ${cartSegmentCounts.cart} postcards`
+                      : 'Cart'
+                  }
+                  aria-pressed={listSegment === 'cart'}
+                  onClick={handleSelectCartSegment}
+                >
+                  {cartSegmentCounts.cart > 0 ? (
+                    <span className={styles.headerBelowCount} aria-hidden>
+                      {cartSegmentCounts.cart}
+                    </span>
+                  ) : null}
+                </button>
+              </div>
+              <div className={styles.headerBelowSegmentSlot}>
+                <button
+                  type="button"
+                  className={clsx(
+                    styles.headerBelowSquare,
+                    styles.cartBlocked,
+                  )}
+                  aria-label={
+                    cartSegmentCounts.cartBlocked > 0
+                      ? `Cart blocked, ${cartSegmentCounts.cartBlocked} postcards`
+                      : 'Cart blocked'
+                  }
+                  aria-pressed={listSegment === 'cartBlocked'}
+                  onClick={() =>
+                    dispatch(setCartListStatusSegment('cartBlocked'))
+                  }
+                >
+                  {cartSegmentCounts.cartBlocked > 0 ? (
+                    <span className={styles.headerBelowCount} aria-hidden>
+                      {cartSegmentCounts.cartBlocked}
+                    </span>
+                  ) : null}
+                </button>
+              </div>
+            </div>
+          ) : undefined
+        }
         toolbar={<Toolbar section="cartList" />}
         onClose={handleCloseList}
         closeAriaLabel="Close cart list"
       />
-      {entriesProp == null ? (
-        <div
-          className={styles.headerBelowBand}
-          role="group"
-          aria-label="Cart list header actions"
-        >
-          <div className={styles.headerBelowSegmentSlot}>
-            <button
-              type="button"
-              className={clsx(styles.headerBelowSquare, styles.cart)}
-              aria-label={
-                cartSegmentCounts.cart > 0
-                  ? `Cart, ${cartSegmentCounts.cart} postcards`
-                  : 'Cart'
-              }
-              aria-pressed={listSegment === 'cart'}
-              onClick={handleSelectCartSegment}
-            >
-              {cartSegmentCounts.cart > 0 ? (
-                <span className={styles.headerBelowCount} aria-hidden>
-                  {cartSegmentCounts.cart}
-                </span>
-              ) : null}
-            </button>
-          </div>
-          <div className={styles.headerBelowSegmentSlot}>
-            <button
-              type="button"
-              className={clsx(styles.headerBelowSquare, styles.cartBlocked)}
-              aria-label={
-                cartSegmentCounts.cartBlocked > 0
-                  ? `Cart blocked, ${cartSegmentCounts.cartBlocked} postcards`
-                  : 'Cart blocked'
-              }
-              aria-pressed={listSegment === 'cartBlocked'}
-              onClick={() => dispatch(setCartListStatusSegment('cartBlocked'))}
-            >
-              {cartSegmentCounts.cartBlocked > 0 ? (
-                <span className={styles.headerBelowCount} aria-hidden>
-                  {cartSegmentCounts.cartBlocked}
-                </span>
-              ) : null}
-            </button>
-          </div>
-        </div>
-      ) : null}
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div
