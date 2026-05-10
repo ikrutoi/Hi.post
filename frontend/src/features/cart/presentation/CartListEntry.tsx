@@ -180,7 +180,22 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
           <div
             className={styles.rightPack}
             data-has-delete={showActions ? 'true' : undefined}
+            data-cart-blocked={isBlockedEntry ? 'true' : undefined}
           >
+            {isBlockedEntry ? (
+              <div className={styles.rightPackDateEditSlot}>
+                <button
+                  type="button"
+                  className={styles.dateEditPillBtn}
+                  aria-label="Edit postcard date"
+                  title="Edit postcard date"
+                  aria-pressed={dateEditHighlight}
+                  onClick={handleDateEditClick}
+                >
+                  {getToolbarIcon({ key: 'dateEdit' })}
+                </button>
+              </div>
+            ) : null}
             <div className={styles.rightPriceSlot}>
               {priceLine ? (
                 <div className={styles.priceLine} aria-label={`Price ${priceLine}`}>
@@ -190,18 +205,6 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
             </div>
             {showActions ? (
               <div className={styles.actions}>
-                {isBlockedEntry ? (
-                  <button
-                    type="button"
-                    className={styles.actionBtn}
-                    aria-label="Edit postcard date"
-                    title="Edit postcard date"
-                    aria-pressed={dateEditHighlight}
-                    onClick={handleDateEditClick}
-                  >
-                    {getToolbarIcon({ key: 'dateEdit' })}
-                  </button>
-                ) : null}
                 <button
                   type="button"
                   className={styles.actionBtn}

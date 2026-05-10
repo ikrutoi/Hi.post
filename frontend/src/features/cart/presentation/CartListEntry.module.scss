@@ -212,6 +212,10 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
     align-self: stretch;
   }
 
+  &[data-has-delete='true'][data-cart-blocked='true'] {
+    position: relative;
+  }
+
   &:not([data-has-delete='true']) {
     flex: 0 1 auto;
     max-width: min(50%, 14rem);
@@ -231,6 +235,71 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
 .rightPack[data-has-delete='true'] .rightPriceSlot {
   flex: 1 1 0;
   min-height: 0;
+}
+
+/** Как `CardPieListEntry` / `rightPackAddCartSlot`: dateEdit у левого края правой 30%-колонки, по вертикали по центру. */
+.rightPack[data-cart-blocked='true'] .rightPackDateEditSlot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+  pointer-events: none;
+
+  .dateEditPillBtn {
+    pointer-events: auto;
+  }
+}
+
+/** Круг как addCart в CardPie; фон/бордер — палитра поля даты (`colors.scss`). */
+.dateEditPillBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  border: 1px solid $color-date-input-border;
+  border-radius: 50%;
+  background-color: $color-date-input;
+  cursor: pointer;
+  color: $color-font-enabled-light;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  font: inherit;
+  appearance: none;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled;
+    background-color: darken($color-date-input, 4%);
+    border-color: darken($color-date-input-border, 8%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  :global(svg) {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    display: block;
+    color: currentColor;
+  }
+}
+
+.rightPack[data-cart-blocked='true'] .actionBtn {
+  background-color: transparent;
+
+  &:hover:not(:disabled) {
+    background-color: transparent;
+  }
 }
 
 .rightPack:not([data-has-delete='true']) .rightPriceSlot {
