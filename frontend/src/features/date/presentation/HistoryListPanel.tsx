@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -7,12 +7,16 @@ import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPa
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
 import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { type HistoryListEntryVariant } from './historyList/HistoryListEntry'
-import type { PostcardStatus } from '@entities/postcard'
+import {
+  POSTCARD_DISPATCH_DATE_FALLBACK,
+  type PostcardStatus,
+} from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { HistoryListEntry } from './historyList/HistoryListEntry'
 import clsx from 'clsx'
+import { getCurrentDate } from '@shared/utils/date'
 
 export type HistoryListPanelItem = {
   id: string
@@ -44,6 +48,44 @@ type Props = {
 
 const isBlobUrl = (url: string | null | undefined): boolean =>
   typeof url === 'string' && url.startsWith('blob:')
+
+function isFallbackDispatchDate(d: DispatchDate): boolean {
+  return (
+    d.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&
+    d.month === POSTCARD_DISPATCH_DATE_FALLBACK.month &&
+    d.day === POSTCARD_DISPATCH_DATE_FALLBACK.day
+  )
+}
+
+function dispatchDateUtcMidnightMs(d: DispatchDate): number {
+  return Date.UTC(d.year, d.month, d.day)
+}
+
+function absDayDistance(a: DispatchDate, b: DispatchDate): number {
+  return Math.round(
+    Math.abs(dispatchDateUtcMidnightMs(a) - dispatchDateUtcMidnightMs(b)) /
+      86400000,
+  )
+}
+
+/** Ближайшие даты отправки к «сегодня» выше, без даты / fallback — в конце. */
+function compareHistoryEntriesByDispatchDate(
+  a: HistoryListPanelItem,
+  b: HistoryListPanelItem,
+  today: DispatchDate,
+): number {
+  const da = a.sourceDate
+  const db = b.sourceDate
+  const aBad = !da || isFallbackDispatchDate(da)
+  const bBad = !db || isFallbackDispatchDate(db)
+  if (aBad && bBad) return 0
+  if (aBad) return 1
+  if (bBad) return -1
+  const distA = absDayDistance(da, today)
+  const distB = absDayDistance(db, today)
+  if (distA !== distB) return distA - distB
+  return dispatchDateUtcMidnightMs(da) - dispatchDateUtcMidnightMs(db)
+}
 
 const HistoryListPanelRow: React.FC<{
   item: HistoryListPanelItem
@@ -104,8 +146,17 @@ export const HistoryListPanel: React.FC<Props> = ({
   legendStatusCounts,
   // section,
 }) => {
-  const hasRows = entries.length > 0
-  const listContentKey = entries.map((e) => e.id).join('|')
+  const sortedEntries = useMemo(() => {
+    if (entries.length < 2) return entries
+    const t = getCurrentDate()
+    const today: DispatchDate = { year: t.year, month: t.month, day: t.day }
+    return [...entries].sort((a, b) =>
+      compareHistoryEntriesByDispatchDate(a, b, today),
+    )
+  }, [entries])
+
+  const hasRows = sortedEntries.length > 0
+  const listContentKey = sortedEntries.map((e) => e.id).join('|')
   const legendTreatAsEmpty =
     hasUnderlyingHistoryEntries === undefined
       ? !hasRows
@@ -128,7 +179,7 @@ export const HistoryListPanel: React.FC<Props> = ({
           aria-label="Dispatch date list"
         >
           {hasRows ? (
-            entries.map((item) => (
+            sortedEntries.map((item) => (
               <HistoryListPanelRow
                 key={item.id}
                 item={item}

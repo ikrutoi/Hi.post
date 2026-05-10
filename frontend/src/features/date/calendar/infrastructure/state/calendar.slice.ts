@@ -146,10 +146,13 @@ const calendarSlice = createSlice({
       if (action.payload) {
         state.dateListPanelOpen = false
         /**
-         * В режиме закладки «Дата» открытие CardPie из тулбара не должно
-         * закрывать правые списки (Cart/History).
+         * На полосках «Дата» и «История» открытие CardPie слева не закрывает
+         * правые списки (корзина / список истории) и панель дня.
          */
-        if (state.notebookStripTab !== 'date') {
+        const keepRightListPanels =
+          state.notebookStripTab === 'date' ||
+          state.notebookStripTab === 'history'
+        if (!keepRightListPanels) {
           state.historyListPanelOpen = false
           state.openDayPanel = null
         }

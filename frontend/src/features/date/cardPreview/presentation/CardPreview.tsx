@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react'
-import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -10,15 +9,41 @@ import {
   selectRecipientBranchSlotKeys,
 } from '@date/infrastructure/selectors'
 import { CardPreviewItem } from './CardPreviewItem'
-import previewItemStyles from './CardPreviewItem.module.scss'
 import styles from './CardPreview.module.scss'
 import { CalendarCardItem } from '@entities/card/domain/types'
-import { POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL } from '@entities/postcard'
+import {
+  POSTCARD_STATUSES_HIDDEN_ON_DATE_CALENDAR_THUMBNAIL,
+  type PostcardStatus,
+} from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import { CardSection } from '@/shared/config/constants'
 
 function dispatchDateKey(d: DispatchDate): string {
   return `${d.year}-${d.month}-${d.day}`
+}
+
+/** Индикаторы дня в календаре «История» (сверху вниз: cart, ready, sent, delivered, error). */
+function historyStatusIndicatorsForCalendarDay(data: {
+  cart: CalendarCardItem[]
+  ready: CalendarCardItem[]
+  sent: CalendarCardItem[]
+  delivered: CalendarCardItem[]
+  error: CalendarCardItem[]
+}): PostcardStatus[] {
+  const indicators: PostcardStatus[] = []
+  const hasPlainCart = data.cart.some((i) => i.status === 'cart')
+  const hasCartBlockedOnly =
+    !hasPlainCart && data.cart.some((i) => i.status === 'cartBlocked')
+  if (hasPlainCart) {
+    indicators.push('cart')
+  } else if (hasCartBlockedOnly) {
+    indicators.push('cartBlocked')
+  }
+  if (data.ready.length > 0) indicators.push('ready')
+  if (data.sent.length > 0) indicators.push('sent')
+  if (data.delivered.length > 0) indicators.push('delivered')
+  if (data.error.length > 0) indicators.push('error')
+  return indicators
 }
 
 /** `cart` = Date strip while right cart list is open (calendar shows cart on days). */
@@ -87,13 +112,17 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
           ...error,
         ]
       : pipelineCards
-  /** Для бейджа «×N» в секции «Дата» не считаем корзину — только отправка по конвейеру + processed. */
-  const nonCartPipeline = [...ready, ...sent, ...delivered, ...error]
+  /**
+   * Бейдж «×N»: в «Истории» / полосе корзины — все карточки дня (+ processed).
+   * В «Дата» не считаем ни корзину, ни конвейер `ready`…`error` (только ветки получателя / см. ниже).
+   */
   const totalOnDayForBadge = isCartCalendar
     ? pipelineCount
     : isHistoryLike
       ? pipelineCount + (processed ? 1 : 0)
-      : nonCartPipeline.length + (processed ? 1 : 0)
+      : processed
+        ? 1
+        : 0
   const firstPipelineWithPreview =
     thumbnailPipelineCards.find((item) => Boolean(item.previewUrl)) ?? null
   const firstPipeline =
@@ -192,14 +221,9 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !primaryItemForDisplay &&
     !photoPreview?.previewUrl
 
-  /**
-   * Режим «Дата» (не полоса корзины): жёлтый индикатор только для статуса `cart`.
-   * `cartBlocked` в том же слоте `data.cart`, но маркер на календаре «Дата» не показываем.
-   */
-  const showDateModeCartPresenceIndicator =
-    !isHistoryLike &&
-    !isCartCalendar &&
-    cart.some((item) => item.status === 'cart')
+  const historyStatusIndicatorStack = isHistory
+    ? historyStatusIndicatorsForCalendarDay(data)
+    : []
 
   return (
     <div className={styles.cardPreviewContainer}>
@@ -215,7 +239,11 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             isSelectedDate={isSelectedDate}
             isCartDateDisabledPreview={isCartCalendar && isDisabledDate}
             isAdjacentMonthEdge={isAdjacentMonthEdge}
-            hasCartPostcardsOnDay={showDateModeCartPresenceIndicator}
+            historyIndicatorStatuses={
+              isHistory && historyStatusIndicatorStack.length > 0
+                ? historyStatusIndicatorStack
+                : undefined
+            }
           />
           {showExtraCountBadge ? (
             <span className={styles.extraCount} aria-hidden>
@@ -234,25 +262,6 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
           >
             {getToolbarIcon({ key: 'cardphoto' })}
           </div>
-          {showDateModeCartPresenceIndicator ? (
-            <span
-              className={clsx(
-                previewItemStyles.previewIndicator,
-                previewItemStyles.cart,
-              )}
-              aria-hidden
-            />
-          ) : null}
-        </div>
-      ) : showDateModeCartPresenceIndicator ? (
-        <div className={styles.previewWrapper}>
-          <span
-            className={clsx(
-              previewItemStyles.previewIndicator,
-              previewItemStyles.cart,
-            )}
-            aria-hidden
-          />
         </div>
       ) : null}
     </div>

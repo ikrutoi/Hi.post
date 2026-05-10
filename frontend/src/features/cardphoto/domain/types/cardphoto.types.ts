@@ -107,4 +107,9 @@ export interface PreviewItemForCalendar {
   isAdjacentMonthEdge?: boolean
   /** Секция «Дата»: на этот день есть открытки в корзине (реальные записи в `cart`). */
   hasCartPostcardsOnDay?: boolean
+  /**
+   * Календарь «История»: вертикальный стек индикаторов по статусам дня (сверху вниз:
+   * cart, ready, sent, delivered, error; `cartBlocked` — в слоте cart, если нет обычной корзины).
+   */
+  historyIndicatorStatuses?: readonly PostcardStatus[]
 }

@@ -81,6 +81,22 @@
   opacity: 0.78;
 }
 
+.historyIndicatorStack {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  pointer-events: none;
+}
+
+.historyIndicatorStack .previewIndicator {
+  position: static;
+}
+
 .previewIndicator {
   position: absolute;
   top: 0.15rem;
