@@ -1,4 +1,6 @@
 import React from 'react'
+import { useAppSelector } from '@app/hooks'
+import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CardPieListEntry.module.scss'
@@ -30,12 +32,14 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   isFocused = false,
   onAddCart,
 }) => {
+  const { isAllComplete } = useAppSelector(selectPieProgress)
   const interactive = Boolean(onSelect)
   const inactive = variant === 'inactive'
   const hasDate = dateLabel.trim().length > 0
+  const priceLineVisible = isAllComplete ? priceLine : undefined
   const labelForAria = [
     detailLine ? (hasDate ? `${dateLabel}, ${detailLine}` : detailLine) : dateLabel,
-    priceLine,
+    priceLineVisible,
   ]
     .filter(Boolean)
     .join(', ')
@@ -63,29 +67,6 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
           : undefined
       }
     >
-      {onDelete ? (
-        <button
-          type="button"
-          className={styles.semicircleUp}
-          aria-label={inactive ? undefined : 'Remove postcard row'}
-          title={inactive ? undefined : 'Remove postcard row'}
-          disabled={inactive}
-          onClick={(e) => {
-            e.stopPropagation()
-            if (!inactive) onDelete()
-          }}
-        >
-          {getToolbarIcon({ key: 'delete' })}
-        </button>
-      ) : (
-        <div
-          className={styles.semicircleUp}
-          aria-hidden
-          onClick={(e) => e.stopPropagation()}
-        >
-          {getToolbarIcon({ key: 'delete' })}
-        </div>
-      )}
       <div className={styles.body}>
         <div className={styles.favoriteSlot}>
           <button
@@ -141,9 +122,38 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
             )}
           </div>
         </div>
-        {priceLine ? (
-          <div className={styles.priceLine} aria-label={`Price ${priceLine}`}>
-            {priceLine}
+        {onDelete || priceLineVisible ? (
+          <div
+            className={styles.rightPack}
+            data-has-delete={onDelete ? 'true' : undefined}
+          >
+            <div className={styles.rightPriceSlot}>
+              {priceLineVisible ? (
+                <div
+                  className={styles.priceLine}
+                  aria-label={`Price ${priceLineVisible}`}
+                >
+                  {priceLineVisible}
+                </div>
+              ) : null}
+            </div>
+            {onDelete ? (
+              <div className={styles.actions}>
+                <button
+                  type="button"
+                  className={styles.actionBtn}
+                  aria-label="Remove postcard row"
+                  title="Remove postcard row"
+                  disabled={inactive}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (!inactive) onDelete()
+                  }}
+                >
+                  {getToolbarIcon({ key: 'delete' })}
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
