@@ -127,6 +127,7 @@ const CartListPanelRow: React.FC<{
   isSelected?: boolean
 }> = ({ item, onSelectEntry, isSelected = false }) => {
   const dispatch = useAppDispatch()
+  const { removeItem } = useCartFacade()
   const cachedUrl = useAppSelector(
     selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
   )
@@ -149,6 +150,15 @@ const CartListPanelRow: React.FC<{
   const displayUrl = cachedUrl ?? safeFallbackUrl
   const hidePrice = item.variant === 'inactive'
 
+  const handleRemoveFromCart = useCallback(() => {
+    const lid = item.postcard?.localId
+    if (lid != null) removeItem(lid)
+  }, [item.postcard?.localId, removeItem])
+
+  const onDeleteRow =
+    item.onDelete ??
+    (item.postcard?.localId != null ? handleRemoveFromCart : undefined)
+
   return (
     <CartListEntry
       key={item.id}
@@ -164,7 +174,7 @@ const CartListPanelRow: React.FC<{
       postcardLocalId={item.postcard?.localId}
       onSelect={onSelectEntry ? () => onSelectEntry(item) : undefined}
       isSelected={isSelected}
-      onDelete={item.onDelete}
+      onDelete={onDeleteRow}
     />
   )
 }

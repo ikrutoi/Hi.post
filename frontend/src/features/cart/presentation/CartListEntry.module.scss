@@ -195,14 +195,67 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   }
 }
 
+.rightPack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 0.12rem;
+  margin-left: auto;
+  min-width: 0;
+
+  &[data-has-delete='true'] {
+    flex: 0 0 30%;
+    width: 30%;
+    max-width: 30%;
+    min-width: 0;
+    align-self: stretch;
+  }
+
+  &:not([data-has-delete='true']) {
+    flex: 0 1 auto;
+    max-width: min(50%, 14rem);
+    justify-content: flex-start;
+    align-self: flex-start;
+  }
+}
+
+.rightPriceSlot {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.rightPack[data-has-delete='true'] .rightPriceSlot {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.rightPack:not([data-has-delete='true']) .rightPriceSlot {
+  flex: 0 1 auto;
+}
+
 .actions {
   display: flex;
+  flex: 0 0 auto;
   flex-shrink: 0;
   align-items: center;
   justify-content: flex-end;
-  align-self: center;
+  align-self: flex-end;
   gap: 1rem;
-  margin-left: 0.35rem;
+}
+
+.rightPack .actionBtn {
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 5px;
+
+  :global(svg) {
+    width: 0.7rem;
+    height: 0.7rem;
+  }
 }
 
 .actionBtn {
@@ -227,7 +280,7 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
     color 0.15s ease;
   // box-shadow 0.15s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     color: $color-font-enabled;
   }
 
@@ -244,6 +297,10 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
     display: block;
     color: currentColor;
   }
+}
+
+.root[data-inactive='true'] .actionBtn:disabled :global(svg) {
+  color: $color-font-disabled;
 }
 
 .body {
@@ -366,12 +423,17 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   font-size: inherit;
 }
 
-.priceLine {
-  flex-shrink: 0;
+.rightPack .priceLine {
   align-self: center;
-  margin-left: auto;
-  padding-left: 0.35rem;
-  max-width: 42%;
+  width: 100%;
+  max-width: 100%;
+}
+
+.priceLine {
+  flex: 0 1 auto;
+  align-self: center;
+  min-width: 0;
+  max-width: 100%;
   font-size: 0.72rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;

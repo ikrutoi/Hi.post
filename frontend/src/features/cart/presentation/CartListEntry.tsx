@@ -56,8 +56,9 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
-  const inactive = variant === 'inactive'
   const isBlockedEntry = previewStatus === 'cartBlocked'
+  const showActions = isBlockedEntry || Boolean(onDelete)
+  const showRightPack = Boolean(priceLine || showActions)
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
     .filter(Boolean)
     .join(', ')
@@ -175,35 +176,46 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
             </div>
           ) : null}
         </div>
-        {priceLine ? (
-          <div className={styles.priceLine} aria-label={`Price ${priceLine}`}>
-            {priceLine}
-          </div>
-        ) : null}
-        {isBlockedEntry ? (
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.actionBtn}
-              aria-label="Edit postcard date"
-              title="Edit postcard date"
-              aria-pressed={dateEditHighlight}
-              onClick={handleDateEditClick}
-            >
-              {getToolbarIcon({ key: 'dateEdit' })}
-            </button>
-            <button
-              type="button"
-              className={styles.actionBtn}
-              aria-label="Remove postcard row"
-              title="Remove postcard row"
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete?.()
-              }}
-            >
-              {getToolbarIcon({ key: 'delete' })}
-            </button>
+        {showRightPack ? (
+          <div
+            className={styles.rightPack}
+            data-has-delete={showActions ? 'true' : undefined}
+          >
+            <div className={styles.rightPriceSlot}>
+              {priceLine ? (
+                <div className={styles.priceLine} aria-label={`Price ${priceLine}`}>
+                  {priceLine}
+                </div>
+              ) : null}
+            </div>
+            {showActions ? (
+              <div className={styles.actions}>
+                {isBlockedEntry ? (
+                  <button
+                    type="button"
+                    className={styles.actionBtn}
+                    aria-label="Edit postcard date"
+                    title="Edit postcard date"
+                    aria-pressed={dateEditHighlight}
+                    onClick={handleDateEditClick}
+                  >
+                    {getToolbarIcon({ key: 'dateEdit' })}
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className={styles.actionBtn}
+                  aria-label="Remove postcard row"
+                  title="Remove postcard row"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDelete?.()
+                  }}
+                >
+                  {getToolbarIcon({ key: 'delete' })}
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>

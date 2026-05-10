@@ -31,6 +31,12 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
 }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
+  /** Футер календаря в режиме «Дата» (не полоска «Корзина»): без точки и иконки корзины. */
+  const hideCartInCalendarDateFooter =
+    spot === 'calendar' &&
+    calendarCartStripLegendOnly &&
+    !calendarCartStripBlockedLegend
+
   const handlePostcardStatusClick = (status: PostcardStatus) => {
     if (status === 'cart') {
       const nextCartValue = !postcardStatuses.cart
@@ -75,18 +81,20 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
       aria-label="Postcard status colors"
     >
       <div className={styles.row} aria-hidden>
-        <div
-          className={clsx(
-            styles.item,
-            styles.cart,
-            postcardStatuses.cart ? styles.active : styles.inactive,
-          )}
-          onClick={() => handlePostcardStatusClick('cart')}
-        >
-          <span className={clsx(styles.dot, styles.dotCart)} />
-          <IconCart className={styles.icon} />
-          {statusCount('cart')}
-        </div>
+        {!hideCartInCalendarDateFooter ? (
+          <div
+            className={clsx(
+              styles.item,
+              styles.cart,
+              postcardStatuses.cart ? styles.active : styles.inactive,
+            )}
+            onClick={() => handlePostcardStatusClick('cart')}
+          >
+            <span className={clsx(styles.dot, styles.dotCart)} />
+            <IconCart className={styles.icon} />
+            {statusCount('cart')}
+          </div>
+        ) : null}
         {spot === 'calendar' && calendarCartStripLegendOnly ? (
           <>
             {calendarCartStripBlockedLegend ? (
