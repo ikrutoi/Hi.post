@@ -23,15 +23,21 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const lang = getSafeLang(i18n.language)
   const recipientFacade = useRecipientFacade()
   const senderFacade = useSenderFacade()
-  const { rightPieEnvelopePeekNoToolbar, listRowLocalId } =
-    useRightListArchiveMini()
+  const {
+    rightPieEnvelopePeekNoToolbar,
+    listRowLocalId,
+    listRowPostcardStatus,
+  } = useRightListArchiveMini()
 
   const body = (
     <div className={styles.envelope}>
       <div className={styles.envelopeTopSlot}>
         <div className={styles.envelopeLogo} />
         <div className={styles.envelopeMark}>
-          <Mark />
+          <Mark
+            simplifiedPeek={rightPieEnvelopePeekNoToolbar}
+            listArchivePostcardStatus={listRowPostcardStatus}
+          />
         </div>
         <div
           className={clsx(styles.envelopeSection, styles.envelopeSectionSender)}

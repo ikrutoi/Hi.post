@@ -33,7 +33,6 @@
   align-items: flex-end;
 }
 
-/** В peek-режиме вместо тумблеров — пустое место той же высоты, чтобы сетка не прыгала. */
 .envelopeFooterSpacer {
   display: flex;
   align-items: flex-end;
@@ -136,13 +135,12 @@
 }
 
 .envelopeMark {
-  grid-row: 1 / 12;
+  grid-row: 1 / 13;
   grid-column: 4 / 5;
   position: relative;
   justify-content: flex-end;
 }
 
-/** Замена `<form>` в слотах отправитель/получатель для превью строки списка. */
 .envelopePeekBlock {
   flex: 1;
   min-height: 0;

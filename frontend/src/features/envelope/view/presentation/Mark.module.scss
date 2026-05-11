@@ -13,6 +13,14 @@
   }
 
   &StampNotActive {
-    background-image: url('@data/envelope/mark-not-active.svg');
+    background-image: url('@envelope/assets/mark_os_cart.svg');
+  }
+
+  &StampPeekCart {
+    background-image: url('@envelope/assets/mark_os_cart.svg');
+  }
+
+  &StampPeekReady {
+    background-image: url('@envelope/assets/mark_os_ready.svg');
   }
 }

@@ -42,6 +42,7 @@ $list-panel-scroll-inset: 0.35rem;
   border-radius: 0 0.75rem 0.75rem 0;
   overflow: hidden;
   z-index: 1;
+  pointer-events: none;
 }
 
 .listScrollArea {

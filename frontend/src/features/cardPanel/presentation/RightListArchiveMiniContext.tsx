@@ -1,4 +1,5 @@
 import React, { createContext, useContext } from 'react'
+import type { PostcardStatus } from '@entities/postcard'
 import type {
   CardPieInnerData,
   CardPieSectionFlags,
@@ -16,6 +17,8 @@ export type RightListArchiveMiniContextValue = {
   mirrorListArchiveSource: CardPieRightListSource | null
   listRowInner: CardPieInnerData | null
   listRowLocalId: number | null
+  /** Статус открытки выбранной строки правого списка (корзина / история). */
+  listRowPostcardStatus: PostcardStatus | undefined
   rightPieCardphotoPeekNoToolbar: boolean
   clearRightPieCardphotoPeek: () => void
   rightPieCardtextPeekNoToolbar: boolean
@@ -37,6 +40,7 @@ const defaultValue: RightListArchiveMiniContextValue = {
   mirrorListArchiveSource: null,
   listRowInner: null,
   listRowLocalId: null,
+  listRowPostcardStatus: undefined,
   rightPieCardphotoPeekNoToolbar: false,
   clearRightPieCardphotoPeek: () => {},
   rightPieCardtextPeekNoToolbar: false,

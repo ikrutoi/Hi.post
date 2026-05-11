@@ -3,6 +3,8 @@
 $list-panel-stacked-band: 3.75rem;
 $list-panel-compact-header-band: 2.35rem;
 $list-panel-scroll-inset: 0.35rem;
+/** Полоса легенды снизу + 1px зазор до верхнего бордера — список не заезжает под футер. */
+$list-panel-footer-band: calc(1.75rem + 1px);
 
 .panel {
   position: relative;
@@ -10,6 +12,7 @@ $list-panel-scroll-inset: 0.35rem;
   flex-direction: column;
   height: 100%;
   padding-top: $list-panel-stacked-band;
+  padding-bottom: $list-panel-footer-band;
   min-height: 0;
   background-color: #fff;
   border: 1px solid $color-app-strip;
@@ -22,7 +25,7 @@ $list-panel-scroll-inset: 0.35rem;
   .panelScrollTrack {
     top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
     height: calc(
-      100% - #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset}
+      100% - #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset} - #{$list-panel-footer-band}
     );
   }
 }
@@ -33,11 +36,13 @@ $list-panel-scroll-inset: 0.35rem;
   right: 2px;
   width: 0.75rem;
   height: calc(
-    100% - #{$list-panel-stacked-band} - #{$list-panel-scroll-inset}
+    100% - #{$list-panel-stacked-band} - #{$list-panel-scroll-inset} - #{$list-panel-footer-band}
   );
   border-radius: 0 0.75rem 0.75rem 0;
   overflow: hidden;
   z-index: 1;
+  /* Не перехватывать hover/drag у кастомного скролла внутри `ScrollArea`. */
+  pointer-events: none;
 }
 
 .listScrollArea {
