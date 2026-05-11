@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import type { PostcardStatus } from '@entities/postcard'
-import { IconX } from '@shared/ui/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './HistoryListEntry.module.scss'
 
@@ -35,6 +35,8 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
+  const showActions = Boolean(onDelete)
+  const showRightPack = showActions
   const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
   const recipientParts = parseListEntryRecipientDetail(detailLine)
 
@@ -53,7 +55,6 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
       data-focused={isFocused ? 'true' : undefined}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
-      data-has-delete={onDelete ? 'true' : undefined}
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-label={interactive ? labelForAria : undefined}
@@ -99,21 +100,31 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
             </div>
           ) : null}
         </div>
+        {showRightPack ? (
+          <div
+            className={styles.rightPack}
+            data-has-delete={showActions ? 'true' : undefined}
+          >
+            <div className={styles.rightPriceSlot} />
+            {showActions ? (
+              <div className={styles.actions}>
+                <button
+                  type="button"
+                  className={styles.actionBtn}
+                  aria-label="Remove postcard row"
+                  title="Remove postcard row"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onDelete?.()
+                  }}
+                >
+                  {getToolbarIcon({ key: 'delete' })}
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
-      {onDelete ? (
-        <button
-          type="button"
-          className={styles.deleteButton}
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete?.()
-          }}
-          aria-label="Remove date from list"
-          title="Remove date from list"
-        >
-          <IconX />
-        </button>
-      ) : null}
     </div>
   )
 }

@@ -9,6 +9,8 @@ $list-entry-border: $color-cart-list-border;
 @mixin history-list-pastel-row($row-bg, $border-color) {
   background-color: $row-bg;
   border-color: $border-color;
+  --action-btn-bg: #{mix($row-bg, #fff, 82%)};
+  --action-btn-bg-hover: #{mix($row-bg, #fff, 72%)};
 
   .thumb {
     border-color: mix($border-color, transparent, 58%);
@@ -16,32 +18,43 @@ $list-entry-border: $color-cart-list-border;
 
   &:hover,
   &[data-focused='true'] {
-    background-color: darken($row-bg, 2%);
+    $hover-bg: darken($row-bg, 2%);
+    background-color: $hover-bg;
+    --action-btn-bg: #{mix($hover-bg, #fff, 82%)};
+    --action-btn-bg-hover: #{mix($hover-bg, #fff, 72%)};
 
     &[data-inactive='true'] {
-      background-color: mix($row-bg, $color-app-inner, 52%);
+      $hover-inact: mix($row-bg, $color-app-inner, 52%);
+      background-color: $hover-inact;
+      --action-btn-bg: #{mix($hover-inact, #fff, 86%)};
+      --action-btn-bg-hover: #{mix($hover-inact, #fff, 78%)};
     }
   }
 
   &[data-selected='true'] {
-    background-color: darken($row-bg, 3.5%);
+    $sel-bg: darken($row-bg, 3.5%);
+    background-color: $sel-bg;
+    --action-btn-bg: #{mix($sel-bg, #fff, 82%)};
+    --action-btn-bg-hover: #{mix($sel-bg, #fff, 72%)};
 
     &[data-inactive='true'] {
-      background-color: mix($row-bg, $color-app-inner, 48%);
+      $sel-inact: mix($row-bg, $color-app-inner, 48%);
+      background-color: $sel-inact;
+      --action-btn-bg: #{mix($sel-inact, #fff, 86%)};
+      --action-btn-bg-hover: #{mix($sel-inact, #fff, 78%)};
     }
   }
 
   &[data-inactive='true'] {
-    background-color: mix($row-bg, $color-app-inner, 45%);
+    $inactive-bg: mix($row-bg, $color-app-inner, 45%);
+    background-color: $inactive-bg;
     border-color: mix($border-color, $color-app-inner, 50%);
+    --action-btn-bg: #{mix($inactive-bg, #fff, 86%)};
+    --action-btn-bg-hover: #{mix($inactive-bg, #fff, 78%)};
   }
 
   &[data-clickable='true']:focus-visible {
     outline-color: mix($row-bg, $color-app-sidebar-icon-active, 45%);
-  }
-
-  .deleteButton:hover {
-    background-color: mix($row-bg, $color-app-sidebar-icon-hover, 82%);
   }
 }
 
@@ -59,15 +72,16 @@ $list-entry-border: $color-cart-list-border;
     background-color 0.15s ease,
     border-color 0.15s ease,
     opacity 0.15s ease;
-
-  &[data-has-delete='true'] {
-    padding-right: 2rem;
-  }
+  --action-btn-bg: #{mix($list-entry-surface, #fff, 82%)};
+  --action-btn-bg-hover: #{mix($list-entry-surface, #fff, 72%)};
 
   &[data-inactive='true'] {
     opacity: 0.78;
-    background-color: mix($list-entry-surface, $color-app-inner, 45%);
+    $inactive-surface: mix($list-entry-surface, $color-app-inner, 45%);
+    background-color: $inactive-surface;
     border-color: mix($list-entry-border, $color-app-inner, 50%);
+    --action-btn-bg: #{mix($inactive-surface, #fff, 86%)};
+    --action-btn-bg-hover: #{mix($inactive-surface, #fff, 78%)};
 
     .thumb {
       background-color: mix($color-app-inner, #eee, 55%);
@@ -80,24 +94,40 @@ $list-entry-border: $color-cart-list-border;
     .detailBlock {
       color: $color-font-disabled;
     }
+
+    .actionBtn {
+      &:hover {
+        cursor: pointer;
+      }
+    }
   }
 
   &:hover,
   &[data-focused='true'] {
     background-color: darken($list-entry-surface, 1.5%);
+    --action-btn-bg: #{mix(darken($list-entry-surface, 1.5%), #fff, 82%)};
+    --action-btn-bg-hover: #{mix(darken($list-entry-surface, 1.5%), #fff, 72%)};
 
     &[data-inactive='true'] {
-      background-color: mix($list-entry-surface, $color-app-inner, 55%);
+      $hover-inact: mix($list-entry-surface, $color-app-inner, 55%);
+      background-color: $hover-inact;
+      --action-btn-bg: #{mix($hover-inact, #fff, 86%)};
+      --action-btn-bg-hover: #{mix($hover-inact, #fff, 78%)};
     }
   }
 
   &[data-selected='true'] {
     background-color: darken($list-entry-surface, 3%);
     box-shadow: -2px 0 0 0 $color-app-sidebar-icon-active;
+    --action-btn-bg: #{mix(darken($list-entry-surface, 3%), #fff, 82%)};
+    --action-btn-bg-hover: #{mix(darken($list-entry-surface, 3%), #fff, 72%)};
 
     &[data-inactive='true'] {
       box-shadow: -2px 0 0 0
         mix($color-app-sidebar-icon-active, $color-font-disabled, 40%);
+      $sel-bg: darken($list-entry-surface, 3%);
+      --action-btn-bg: #{mix($sel-bg, #fff, 86%)};
+      --action-btn-bg-hover: #{mix($sel-bg, #fff, 78%)};
     }
   }
 
@@ -144,10 +174,112 @@ $list-entry-border: $color-cart-list-border;
       $color-history-list-error-border
     );
   }
+}
 
-  &[data-postcard-status][data-inactive='true'] .deleteButton:hover {
-    background-color: transparent;
+.rightPack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 0.12rem;
+  margin-left: auto;
+  min-width: 0;
+
+  &[data-has-delete='true'] {
+    flex: 0 0 30%;
+    width: 30%;
+    max-width: 30%;
+    min-width: 0;
+    align-self: stretch;
   }
+
+  &:not([data-has-delete='true']) {
+    flex: 0 1 auto;
+    max-width: min(50%, 14rem);
+    justify-content: flex-start;
+    align-self: flex-start;
+  }
+}
+
+.rightPriceSlot {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.rightPack[data-has-delete='true'] .rightPriceSlot {
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.rightPack:not([data-has-delete='true']) .rightPriceSlot {
+  flex: 0 1 auto;
+}
+
+.actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  align-self: flex-end;
+  gap: 1rem;
+}
+
+.rightPack .actionBtn {
+  width: 1.05rem;
+  height: 1.05rem;
+  border-radius: 5px;
+
+  :global(svg) {
+    width: 0.7rem;
+    height: 0.7rem;
+  }
+}
+
+.actionBtn {
+  width: 1.35rem;
+  height: 1.35rem;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: 6px;
+  background-color: var(--action-btn-bg);
+  font: inherit;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-font-enabled-light;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    color: $color-font-enabled;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 1;
+    color: $color-font-disabled;
+    border-color: $color-disabled;
+  }
+
+  :global(svg) {
+    width: 0.85rem;
+    height: 0.85rem;
+    display: block;
+    color: currentColor;
+  }
+}
+
+.root[data-inactive='true'] .actionBtn:disabled :global(svg) {
+  color: $color-font-disabled;
 }
 
 .body {
@@ -271,54 +403,4 @@ $list-entry-border: $color-cart-list-border;
 .detailRegion,
 .detailSep {
   font-size: inherit;
-}
-
-.deleteButton {
-  position: absolute;
-  right: 0.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  border: none;
-  border-radius: 50%;
-  color: $color-app-sidebar-icon;
-  background: none;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s ease,
-    color 0.15s ease,
-    background-color 0.15s ease;
-  z-index: 1;
-
-  .root:hover &,
-  .root:focus-within & {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  &:hover {
-    color: $color-app-sidebar-icon;
-    background-color: mix($list-entry-surface, $color-app-sidebar-icon-hover, 88%);
-  }
-
-  svg {
-    width: 0.9rem;
-    height: 0.9rem;
-    flex-shrink: 0;
-    display: block;
-  }
-}
-
-.root[data-inactive='true'] .deleteButton {
-  color: $color-font-disabled;
-
-  &:hover {
-    color: $color-font-disabled;
-    background-color: transparent;
-  }
 }

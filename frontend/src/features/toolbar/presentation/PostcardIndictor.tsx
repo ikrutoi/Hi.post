@@ -10,6 +10,7 @@ export const PostcardIndicator: React.FC = () => {
 
   return (
     <div
+      data-postcard-indicator=""
       className={clsx(styles.postcardIndicatorContainer, {
         // [styles.historyMode]: isHistoryMode,
       })}

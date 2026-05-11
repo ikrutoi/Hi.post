@@ -14,6 +14,7 @@ import { toggleCartForDispatchBranch } from '@date/infrastructure/state'
 import { CardPieListEntry } from './cardPieList/CardPieListEntry'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
 import type { IconKey } from '@shared/config/constants'
+import clsx from 'clsx'
 import styles from './CardPiePanel.module.scss'
 
 type Props = {
@@ -143,16 +144,23 @@ export const CardPiePanel: React.FC<Props> = ({
   )
 
   return (
-    <div className={styles.panel}>
+    <div
+      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
+    >
       <ListPanelStackedHeader
         leadIconKey="cardPie"
         toolbar={
-          <Toolbar
-            section="cardPieList"
-            stateOverride={toolbarStateOverride}
-            onActionClick={handleToolbarActionClick}
-          />
+          hasRows ? (
+            <Toolbar
+              section="cardPieList"
+              stateOverride={toolbarStateOverride}
+              onActionClick={handleToolbarActionClick}
+            />
+          ) : (
+            false
+          )
         }
+        showDividerWithoutToolbar={!hasRows}
         onClose={onClose}
         closeAriaLabel="Close card pie list"
       />

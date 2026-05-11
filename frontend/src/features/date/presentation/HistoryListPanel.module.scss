@@ -61,6 +61,24 @@
   color: $color-app-inner;
 }
 
+/** Точки статусов (`PostcardIndicator`) в верхней строке хедера — без дубля в тулбаре. */
+.headerPostcardDots {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /** Корень индикатора по умолчанию `width: 100%` — сжимаем к контенту и центрируем группу точек. */
+  :global([data-postcard-indicator]) {
+    width: auto;
+    max-width: 100%;
+    justify-content: center;
+    margin-inline: auto;
+  }
+}
+
 .indicators {
   position: absolute;
   bottom: 0;

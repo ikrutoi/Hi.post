@@ -1,5 +1,7 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useCartFacade } from '@cart/application/facades'
+import { setHistoryListSelectedLocalId } from '@date/calendar/infrastructure/state'
 import { IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -17,6 +19,7 @@ import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegen
 import { HistoryListEntry } from './historyList/HistoryListEntry'
 import clsx from 'clsx'
 import { getCurrentDate } from '@shared/utils/date'
+import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
 
 export type HistoryListPanelItem = {
   id: string
@@ -93,6 +96,7 @@ const HistoryListPanelRow: React.FC<{
   onSelectEntry?: (item: HistoryListPanelItem) => void
 }> = ({ item, listSelectedLocalId, onSelectEntry }) => {
   const dispatch = useAppDispatch()
+  const { removeItem } = useCartFacade()
   const cachedUrl = useAppSelector(
     selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
   )
@@ -114,6 +118,19 @@ const HistoryListPanelRow: React.FC<{
     isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
   const displayUrl = cachedUrl ?? safeFallbackUrl
 
+  const handleRemoveFromList = useCallback(() => {
+    const lid = item.postcardLocalId
+    if (lid == null) return
+    removeItem(lid)
+    if (lid === listSelectedLocalId) {
+      dispatch(setHistoryListSelectedLocalId(null))
+    }
+  }, [dispatch, item.postcardLocalId, listSelectedLocalId, removeItem])
+
+  const onDeleteRow =
+    item.onDelete ??
+    (item.postcardLocalId != null ? handleRemoveFromList : undefined)
+
   return (
     <HistoryListEntry
       key={item.id}
@@ -132,7 +149,7 @@ const HistoryListPanelRow: React.FC<{
         item.postcardLocalId != null &&
         item.postcardLocalId === listSelectedLocalId
       }
-      onDelete={item.onDelete}
+      onDelete={onDeleteRow}
     />
   )
 }
@@ -166,6 +183,11 @@ export const HistoryListPanel: React.FC<Props> = ({
     <div className={styles.panel}>
       <ListPanelStackedHeader
         leadIconKey="listHistory"
+        headerTopCenter={
+          <div className={styles.headerPostcardDots}>
+            <PostcardIndicator />
+          </div>
+        }
         toolbar={<Toolbar section="historyList" />}
         onClose={onClose}
         closeAriaLabel="Close date list"

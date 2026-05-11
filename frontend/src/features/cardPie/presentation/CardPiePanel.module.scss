@@ -1,6 +1,11 @@
 @use '@styles/config/colors' as *;
 
 $list-panel-stacked-band: 3.75rem;
+/**
+ * Компактный хедер без тулбара + горизонтальный разделитель
+ * (`headerCompactWithDivider` + `headerDivider` в `ListPanelStackedHeader`).
+ */
+$list-panel-compact-header-band: 2.35rem;
 $list-panel-scroll-inset: 0.35rem;
 
 .panel {
@@ -13,6 +18,17 @@ $list-panel-scroll-inset: 0.35rem;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
+}
+
+.panelEmptyNoToolbar {
+  padding-top: $list-panel-compact-header-band;
+
+  .panelScrollTrack {
+    top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
+    height: calc(
+      100% - #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset}
+    );
+  }
 }
 
 .panelScrollTrack {
