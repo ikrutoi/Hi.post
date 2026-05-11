@@ -73,6 +73,10 @@ export const selectHistoryListSelectedLocalId = (
 export const selectDateListSortDirection = (state: RootState): 'asc' | 'desc' =>
   state.calendar.dateListSortDirection ?? 'asc'
 
+export const selectHistoryListSortDirection = (
+  state: RootState,
+): 'asc' | 'desc' => state.calendar.historyListSortDirection ?? 'desc'
+
 export const selectCardPieListSortDirection = (
   state: RootState,
 ): 'asc' | 'desc' => state.calendar.cardPieListSortDirection ?? 'asc'

@@ -9,6 +9,7 @@ import {
   setDateListPanelOpen,
   setCardPieListPanelOpen,
   toggleDateListSortDirection,
+  toggleHistoryListSortDirection,
   setPostcardStatuses,
 } from '@date/calendar/infrastructure/state'
 import {
@@ -26,6 +27,11 @@ function* handleDateListToolbarAction(
 
   if (section === 'dateList' && key === 'sortDown') {
     yield put(toggleDateListSortDirection())
+    return
+  }
+
+  if (section === 'historyList' && key === 'sortDown') {
+    yield put(toggleHistoryListSortDirection())
     return
   }
 

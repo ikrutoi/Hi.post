@@ -18,8 +18,8 @@ import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { HistoryListEntry } from './historyList/HistoryListEntry'
 import clsx from 'clsx'
-import { getCurrentDate } from '@shared/utils/date'
 import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
+import { selectHistoryListSortDirection } from '@date/calendar/infrastructure/selectors'
 
 export type HistoryListPanelItem = {
   id: string
@@ -64,18 +64,10 @@ function dispatchDateUtcMidnightMs(d: DispatchDate): number {
   return Date.UTC(d.year, d.month, d.day)
 }
 
-function absDayDistance(a: DispatchDate, b: DispatchDate): number {
-  return Math.round(
-    Math.abs(dispatchDateUtcMidnightMs(a) - dispatchDateUtcMidnightMs(b)) /
-      86400000,
-  )
-}
-
-/** Ближайшие даты отправки к «сегодня» выше, без даты / fallback — в конце. */
-function compareHistoryEntriesByDispatchDate(
+/** По дате отправки: раньше — выше; без даты / fallback — в конце. */
+function compareHistoryBySourceDateChronological(
   a: HistoryListPanelItem,
   b: HistoryListPanelItem,
-  today: DispatchDate,
 ): number {
   const da = a.sourceDate
   const db = b.sourceDate
@@ -84,9 +76,6 @@ function compareHistoryEntriesByDispatchDate(
   if (aBad && bBad) return 0
   if (aBad) return 1
   if (bBad) return -1
-  const distA = absDayDistance(da, today)
-  const distB = absDayDistance(db, today)
-  if (distA !== distB) return distA - distB
   return dispatchDateUtcMidnightMs(da) - dispatchDateUtcMidnightMs(db)
 }
 
@@ -163,14 +152,15 @@ export const HistoryListPanel: React.FC<Props> = ({
   legendStatusCounts,
   // section,
 }) => {
+  const historyListSortDirection = useAppSelector(selectHistoryListSortDirection)
   const sortedEntries = useMemo(() => {
     if (entries.length < 2) return entries
-    const t = getCurrentDate()
-    const today: DispatchDate = { year: t.year, month: t.month, day: t.day }
-    return [...entries].sort((a, b) =>
-      compareHistoryEntriesByDispatchDate(a, b, today),
-    )
-  }, [entries])
+    const earliestFirst = historyListSortDirection === 'desc'
+    return [...entries].sort((a, b) => {
+      const c = compareHistoryBySourceDateChronological(a, b)
+      return earliestFirst ? c : -c
+    })
+  }, [entries, historyListSortDirection])
 
   const hasRows = sortedEntries.length > 0
   const listContentKey = sortedEntries.map((e) => e.id).join('|')

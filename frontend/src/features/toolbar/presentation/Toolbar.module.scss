@@ -58,7 +58,8 @@
      * Без серого фона от `&Enabled:hover` — подложка как у клавиши (белый / ряд).
      */
     &[data-icon-key='listDelete'].toolbarKeyEnabled,
-    &[data-icon-key='addCartList'].toolbarKeyEnabled {
+    &[data-icon-key='addCartList'].toolbarKeyEnabled,
+    &[data-icon-key='sortDown'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
       &:hover {

@@ -62,6 +62,11 @@ type CalendarState = {
   openDayPanel: DayPanelPayload | null
   dateListSortDirection: 'asc' | 'desc'
   cardPieListSortDirection: 'asc' | 'desc'
+  /**
+   * Список истории: `desc` → иконка sort down, порядок по дате отправки от ранних к поздним;
+   * `asc` → sort up, от поздних к ранним (см. `IconSortDirection` + `HistoryListPanel`).
+   */
+  historyListSortDirection: 'asc' | 'desc'
   postcardStatusesCount: PostcardStatusesCount
   postcardStatuses: PostcardStatuses
   /**
@@ -88,6 +93,7 @@ const initialState: CalendarState = {
   openDayPanel: null,
   dateListSortDirection: 'asc',
   cardPieListSortDirection: 'asc',
+  historyListSortDirection: 'desc',
   postcardStatusesCount: {
     cart: null,
     cartBlocked: null,
@@ -162,6 +168,11 @@ const calendarSlice = createSlice({
     toggleDateListSortDirection(state) {
       state.dateListSortDirection =
         state.dateListSortDirection === 'asc' ? 'desc' : 'asc'
+    },
+
+    toggleHistoryListSortDirection(state) {
+      state.historyListSortDirection =
+        state.historyListSortDirection === 'desc' ? 'asc' : 'desc'
     },
 
     setPostcardStatusesCount(
@@ -245,6 +256,7 @@ export const {
   setDateListPanelOpen,
   setCardPieListPanelOpen,
   toggleDateListSortDirection,
+  toggleHistoryListSortDirection,
   setPostcardStatusesCount,
   setPostcardStatuses,
   setHistoryListPanelOpen,
