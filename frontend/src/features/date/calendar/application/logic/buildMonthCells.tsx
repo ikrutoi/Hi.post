@@ -35,6 +35,8 @@ interface BuildMonthCellsParams {
   /** Волна рамки при dateEdit (полоса «Корзина», порядок сетки: before → current → after). */
   cartDatePickWaveStrongKeys?: ReadonlySet<string>
   cartDatePickWaveFadingKey?: string | null
+  /** День отправки открытки с правым CardPie из списка (корзина / история). */
+  rightArchiveCardPieHighlightDate?: DispatchDate | null
 }
 
 export const buildMonthCells = ({
@@ -48,6 +50,7 @@ export const buildMonthCells = ({
   cardsMap,
   cartDatePickWaveStrongKeys,
   cartDatePickWaveFadingKey,
+  rightArchiveCardPieHighlightDate,
 }: BuildMonthCellsParams) => {
   const { activeSection } = useSectionMenuFacade()
   const photoPreview = useAppSelector(selectCardphotoPreview)
@@ -149,6 +152,12 @@ export const buildMonthCells = ({
       cartDateEditPickBorder &&
       Boolean(dateKey && cartDatePickWaveFadingKey === dateKey)
 
+    const isRightArchiveCardPieDay =
+      rightArchiveCardPieHighlightDate != null &&
+      rightArchiveCardPieHighlightDate.year === currentViewYear &&
+      rightArchiveCardPieHighlightDate.month === currentViewMonth &&
+      rightArchiveCardPieHighlightDate.day === day
+
     return (
       <Cell
         key={`${direction}-${day}`}
@@ -172,6 +181,7 @@ export const buildMonthCells = ({
         cartDatePickWaveFading={cartDatePickWaveFading}
         dateStripEnabledDayBorder={dateStripEnabledDayBorder}
         suppressDispatchSelectionStyle={isCartCalendarStrip}
+        rightArchiveCardPieDay={isRightArchiveCardPieDay}
       >
         {dayData && (
           <CardPreview

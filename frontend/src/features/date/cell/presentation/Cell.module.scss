@@ -116,6 +116,28 @@ $cart-date-edit-wave-overlay: color.change($cart-date-edit-tint, $alpha: 0.48);
       );
     }
   }
+
+  /**
+   * День даты отправки открытки, для которой открыт правый CardPie
+   * (список корзины, список истории, панель дня в «Истории»).
+   * Толщина рамки как у обычной ячейки (`border: 1px` у `.cell`) — только оттенок к `$color-date-multi`;
+   * акцент — мягкая тень без дополнительного «ободка» в box-shadow.
+   */
+  &.rightArchiveCardPieDay {
+    z-index: 2;
+    border-color: mix($color-date-multi, $color-section-light, 44%);
+    /** Компактная тень: меньше blur, чтобы реже «наплывала» на соседние ячейки. */
+    box-shadow:
+      0 1px 7px color.change($color-date-multi, $alpha: 0.34),
+      0 0 10px color.change($color-date-multi, $alpha: 0.18);
+
+    &:hover:not(.disabled) {
+      border-color: mix($color-date-multi, $color-section-light, 58%);
+      box-shadow:
+        0 2px 9px color.change($color-date-multi, $alpha: 0.38),
+        0 0 12px color.change($color-date-multi, $alpha: 0.22);
+    }
+  }
 }
 
 .dayNumber {

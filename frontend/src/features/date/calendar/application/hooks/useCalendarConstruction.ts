@@ -21,6 +21,7 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import {
   selectCartCalendarDatePickMode,
   selectNotebookStripTab,
+  selectRightListArchiveCardPieHighlightDispatchDate,
 } from '@date/calendar/infrastructure/selectors'
 import {
   markCartDatePickSnakeHintDone,
@@ -48,6 +49,9 @@ export const useCalendarConstruction = ({
   const { activeSection } = useSectionMenuFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
+  const rightArchiveCardPieHighlightDate = useAppSelector(
+    selectRightListArchiveCardPieHighlightDispatchDate,
+  )
   const cardsMap = useAppSelector(selectCardsByDateMap)
   const highlightDates = useAppSelector(selectMergedDispatchDates)
   const { year, month } = calendarViewDate
@@ -239,6 +243,7 @@ export const useCalendarConstruction = ({
     cardsMap,
     cartDatePickWaveStrongKeys: cartWaveStrongSet,
     cartDatePickWaveFadingKey: waveFadingKey,
+    rightArchiveCardPieHighlightDate,
   })
 
   const currentCells = buildMonthCells({
@@ -252,6 +257,7 @@ export const useCalendarConstruction = ({
     cardsMap,
     cartDatePickWaveStrongKeys: cartWaveStrongSet,
     cartDatePickWaveFadingKey: waveFadingKey,
+    rightArchiveCardPieHighlightDate,
   })
 
   const nextCells = buildMonthCells({
@@ -264,6 +270,7 @@ export const useCalendarConstruction = ({
     cardsMap,
     cartDatePickWaveStrongKeys: cartWaveStrongSet,
     cartDatePickWaveFadingKey: waveFadingKey,
+    rightArchiveCardPieHighlightDate,
   })
 
   return [...previousCells, ...currentCells, ...nextCells]

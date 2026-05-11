@@ -1,12 +1,17 @@
-import {
+import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
+import type {
   PostcardStatuses,
   PostcardStatusesCount,
 } from '@/entities/postcard/domain/types'
 import type { RootState } from '@app/state'
-import type { CalendarViewDate } from '@entities/date/domain/types'
+import type { CalendarViewDate, DispatchDate } from '@entities/date/domain/types'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { createSelector } from '@reduxjs/toolkit'
 import { selectCartItems } from '@cart/infrastructure/selectors'
+import {
+  selectCartListPanelOpen,
+  selectCartListSelectedLocalId,
+} from '@cart/infrastructure/selectors/cartSelectors'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
 import type { DayPanelPayload } from '../state/calendar.slice'
 import type { HistoryPanelDensitySize } from '@shared/ui/icons'
@@ -107,5 +112,51 @@ export const selectHistoryOpenDayPanelArchiveLocalId = createSelector(
       cartItems,
       postcardStatuses,
     )
+  },
+)
+
+function isPostcardDispatchFallbackDate(d: DispatchDate): boolean {
+  return (
+    d.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&
+    d.month === POSTCARD_DISPATCH_DATE_FALLBACK.month &&
+    d.day === POSTCARD_DISPATCH_DATE_FALLBACK.day
+  )
+}
+
+/**
+ * Дата отправки открытки, для которой показан правый CardPie из списка корзины / истории
+ * (та же приоритизация `localId`, что в `App.tsx` для `rightListArchiveLocalId`).
+ */
+export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector(
+  [
+    selectCartListPanelOpen,
+    selectCartListSelectedLocalId,
+    selectHistoryOpenDayPanelArchiveLocalId,
+    selectIsHistoryListPanelOpen,
+    selectHistoryListSelectedLocalId,
+    selectCartItems,
+  ],
+  (
+    cartListOpen,
+    cartListSelectedLocalId,
+    historyDayPanelArchiveLocalId,
+    historyListPanelOpen,
+    historyListSelectedLocalId,
+    cartItems,
+  ): DispatchDate | null => {
+    const localId =
+      cartListOpen && cartListSelectedLocalId != null
+        ? cartListSelectedLocalId
+        : historyDayPanelArchiveLocalId != null
+          ? historyDayPanelArchiveLocalId
+          : historyListPanelOpen && historyListSelectedLocalId != null
+            ? historyListSelectedLocalId
+            : null
+    if (localId == null) return null
+    const postcard = cartItems.find((p) => p.localId === localId)
+    if (!postcard) return null
+    const d = postcard.date
+    if (isPostcardDispatchFallbackDate(d)) return null
+    return d
   },
 )

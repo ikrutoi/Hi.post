@@ -48,6 +48,8 @@ interface CellProps {
    * и без отдельной стилизации номера дня (бейдж).
    */
   suppressDispatchSelectionStyle?: boolean
+  /** Правый CardPie по открытке из списка — день её даты отправки (рамка `$color-date-multi`). */
+  rightArchiveCardPieDay?: boolean
   children?: React.ReactNode
 }
 
@@ -72,6 +74,7 @@ export const Cell: React.FC<CellProps> = ({
   cartDatePickWaveFading = false,
   dateStripEnabledDayBorder = false,
   suppressDispatchSelectionStyle = false,
+  rightArchiveCardPieDay = false,
   children,
 }) => {
   const hasPostcards = Boolean(
@@ -102,6 +105,7 @@ export const Cell: React.FC<CellProps> = ({
     dayCurrent != null && styles.current,
     showDispatchSelection && styles.dispatch,
     hasPostcards && styles.withPostcards,
+    rightArchiveCardPieDay && styles.rightArchiveCardPieDay,
   )
 
   const clickParams: HandleCellClickParams = {
