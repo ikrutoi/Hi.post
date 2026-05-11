@@ -6,10 +6,18 @@ import type { SessionData } from '@entities/db/domain/types'
 import type { CardphotoListTemplateGridCols } from '@cardphoto/infrastructure/state/cardphotoUiSlice'
 import type { CardPieFavoriteTemplate } from '@features/cardPie/domain/types'
 
-export interface UiPreferencesRecord {
-  id: 'cardphotoList'
-  cardphotoListTemplateGridCols: CardphotoListTemplateGridCols
-}
+export type HistoryListPanelDensityPersisted = 1 | 2 | 3
+
+/** Настройки UI в IndexedDB: по одной записи на `id`. */
+export type UiPreferencesRecord =
+  | {
+      id: 'cardphotoList'
+      cardphotoListTemplateGridCols: CardphotoListTemplateGridCols
+    }
+  | {
+      id: 'historyList'
+      historyListPanelDensity: HistoryListPanelDensityPersisted
+    }
 
 export interface StoreMap {
   stockImages: ImageRecord

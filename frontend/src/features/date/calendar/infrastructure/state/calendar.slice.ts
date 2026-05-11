@@ -9,6 +9,7 @@ import {
   PostcardStatusesCount,
 } from '@/entities/postcard/domain/types'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
+import type { HistoryPanelDensitySize } from '@shared/ui/icons'
 
 const CALENDAR_STRIP_TAB_SESSION_KEY = 'hi.post.calendarStripTab'
 
@@ -67,6 +68,10 @@ type CalendarState = {
    * `asc` → sort up, от поздних к ранним (см. `IconSortDirection` + `HistoryListPanel`).
    */
   historyListSortDirection: 'asc' | 'desc'
+  /**
+   * Плотность строк списка истории (иконка `historyPanelDensity`): 1 — как `CartListEntry`, далее меньше.
+   */
+  historyListPanelDensity: HistoryPanelDensitySize
   postcardStatusesCount: PostcardStatusesCount
   postcardStatuses: PostcardStatuses
   /**
@@ -94,6 +99,7 @@ const initialState: CalendarState = {
   dateListSortDirection: 'asc',
   cardPieListSortDirection: 'asc',
   historyListSortDirection: 'desc',
+  historyListPanelDensity: 1,
   postcardStatusesCount: {
     cart: null,
     cartBlocked: null,
@@ -173,6 +179,18 @@ const calendarSlice = createSlice({
     toggleHistoryListSortDirection(state) {
       state.historyListSortDirection =
         state.historyListSortDirection === 'desc' ? 'asc' : 'desc'
+    },
+
+    cycleHistoryListPanelDensity(state) {
+      const d = state.historyListPanelDensity
+      state.historyListPanelDensity = d === 1 ? 2 : d === 2 ? 3 : 1
+    },
+
+    setHistoryListPanelDensity(
+      state,
+      action: PayloadAction<HistoryPanelDensitySize>,
+    ) {
+      state.historyListPanelDensity = action.payload
     },
 
     setPostcardStatusesCount(
@@ -257,6 +275,8 @@ export const {
   setCardPieListPanelOpen,
   toggleDateListSortDirection,
   toggleHistoryListSortDirection,
+  cycleHistoryListPanelDensity,
+  setHistoryListPanelDensity,
   setPostcardStatusesCount,
   setPostcardStatuses,
   setHistoryListPanelOpen,

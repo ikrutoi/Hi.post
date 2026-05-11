@@ -23,6 +23,7 @@ import {
 } from '@cardtext/infrastructure/selectors'
 import {
   selectDateListSortDirection,
+  selectHistoryListPanelDensity,
   selectHistoryListSortDirection,
 } from '@date/calendar/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
@@ -99,6 +100,7 @@ export const Toolbar = ({
   )
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
   const historyListSortDirection = useAppSelector(selectHistoryListSortDirection)
+  const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
   const cardphotoListTemplateGridCols = useAppSelector(
     selectCardphotoListTemplateGridCols,
   )
@@ -322,6 +324,10 @@ export const Toolbar = ({
           listTemplateDensityCols:
             section === 'cardphotoList' && key === 'density'
               ? cardphotoListTemplateGridCols
+              : undefined,
+          historyPanelDensitySize:
+            section === 'historyList' && key === 'historyPanelDensity'
+              ? historyListPanelDensity
               : undefined,
         })}
 

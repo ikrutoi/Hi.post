@@ -26,14 +26,17 @@ export interface HistoryListToolbarState extends Record<string, any> {
 export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'historyList',
-    icons: [{ key: 'sortDown', state: 'enabled' }],
+    icons: [
+      { key: 'historyPanelDensity', state: 'enabled' },
+      { key: 'sortDown', state: 'enabled' },
+    ],
     status: 'enabled',
   },
-  {
-    group: 'panel',
-    icons: [{ key: 'historyPanelDensity', state: 'enabled' }],
-    status: 'enabled',
-  },
+  // {
+  //   group: 'panel',
+  //   icons: [{ key: 'historyPanelDensity', state: 'enabled' }],
+  //   status: 'enabled',
+  // },
   {
     group: 'listDelete',
     icons: [{ key: 'listDelete', state: 'enabled' }],

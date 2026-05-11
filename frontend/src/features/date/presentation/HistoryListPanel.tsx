@@ -18,8 +18,12 @@ import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
 import { HistoryListEntryShort } from './historyList/HistoryListEntryShort'
 import clsx from 'clsx'
+import type { HistoryPanelDensitySize } from '@shared/ui/icons'
 import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
-import { selectHistoryListSortDirection } from '@date/calendar/infrastructure/selectors'
+import {
+  selectHistoryListPanelDensity,
+  selectHistoryListSortDirection,
+} from '@date/calendar/infrastructure/selectors'
 
 export type HistoryListPanelItem = {
   id: string
@@ -83,7 +87,8 @@ const HistoryListPanelRow: React.FC<{
   item: HistoryListPanelItem
   listSelectedLocalId?: number | null
   onSelectEntry?: (item: HistoryListPanelItem) => void
-}> = ({ item, listSelectedLocalId, onSelectEntry }) => {
+  densityLevel: HistoryPanelDensitySize
+}> = ({ item, listSelectedLocalId, onSelectEntry, densityLevel }) => {
   const dispatch = useAppDispatch()
   const { removeItem } = useCartFacade()
   const cachedUrl = useAppSelector(
@@ -138,6 +143,7 @@ const HistoryListPanelRow: React.FC<{
         item.postcardLocalId === listSelectedLocalId
       }
       onDelete={onDeleteRow}
+      densityLevel={densityLevel}
     />
   )
 }
@@ -152,6 +158,7 @@ export const HistoryListPanel: React.FC<Props> = ({
   // section,
 }) => {
   const historyListSortDirection = useAppSelector(selectHistoryListSortDirection)
+  const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
   const sortedEntries = useMemo(() => {
     if (entries.length < 2) return entries
     const earliestFirst = historyListSortDirection === 'desc'
@@ -199,6 +206,7 @@ export const HistoryListPanel: React.FC<Props> = ({
                   item={item}
                   listSelectedLocalId={listSelectedLocalId}
                   onSelectEntry={onSelectEntry}
+                  densityLevel={historyListPanelDensity}
                 />
               </div>
             ))

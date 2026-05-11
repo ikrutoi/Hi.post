@@ -6,7 +6,7 @@ import styles from './IconHistoryPanelDensity.module.scss'
 export type HistoryPanelDensitySize = 1 | 2 | 3
 
 type Props = React.SVGProps<SVGSVGElement> & {
-  /** Какой сегмент подсвечен (по умолчанию средний). */
+  /** Какой сегмент подсвечен: 1 — крупнее всего (как строка корзины), далее 2 и 3. */
   activeSize?: HistoryPanelDensitySize
 }
 
@@ -36,7 +36,7 @@ const SEGMENTS: {
 ]
 
 export const IconHistoryPanelDensity = ({
-  activeSize = 2,
+  activeSize = 1,
   className,
   ...props
 }: Props) => (

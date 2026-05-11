@@ -20,6 +20,7 @@ export const HistoryListEntryShort: React.FC<HistoryListEntryProps> = ({
   onDelete,
   isSelected = false,
   isFocused = false,
+  densityLevel = 1,
 }) => {
   const interactive = Boolean(onSelect)
   const showActions = Boolean(onDelete)
@@ -30,6 +31,7 @@ export const HistoryListEntryShort: React.FC<HistoryListEntryProps> = ({
   return (
     <div
       className={styles.root}
+      data-density-level={densityLevel}
       data-postcard-status={
         previewStatus === 'ready' ||
         previewStatus === 'sent' ||

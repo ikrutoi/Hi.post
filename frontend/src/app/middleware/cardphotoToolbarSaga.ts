@@ -92,7 +92,8 @@ function* hydrateCardphotoListDensityFromDbSaga(): SagaIterator {
       [storeAdapters.uiPreferences, 'getById'] as const,
       CARDPHOTO_LIST_PREF_ID,
     )
-    const cols = pref?.cardphotoListTemplateGridCols
+    if (pref?.id !== 'cardphotoList') return
+    const cols = pref.cardphotoListTemplateGridCols
     if (cols === 4 || cols === 5 || cols === 6 || cols === 7) {
       yield put(setListTemplateGridCols(cols))
     }
@@ -106,10 +107,10 @@ function* persistCardphotoListDensityToDbSaga(): SagaIterator {
     const cols: 4 | 5 | 6 | 7 = yield select(
       selectCardphotoListTemplateGridCols,
     )
-    const payload: UiPreferencesRecord = {
+    const payload = {
       id: CARDPHOTO_LIST_PREF_ID,
       cardphotoListTemplateGridCols: cols,
-    }
+    } as const satisfies UiPreferencesRecord
     yield call([storeAdapters.uiPreferences, 'put'] as const, payload)
   } catch (e) {
     console.error('persistCardphotoListDensityToDbSaga', e)

@@ -9,6 +9,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
 import type { DayPanelPayload } from '../state/calendar.slice'
+import type { HistoryPanelDensitySize } from '@shared/ui/icons'
 
 export const selectLastCalendarViewDate = (
   state: RootState,
@@ -76,6 +77,10 @@ export const selectDateListSortDirection = (state: RootState): 'asc' | 'desc' =>
 export const selectHistoryListSortDirection = (
   state: RootState,
 ): 'asc' | 'desc' => state.calendar.historyListSortDirection ?? 'desc'
+
+export const selectHistoryListPanelDensity = (
+  state: RootState,
+): HistoryPanelDensitySize => state.calendar.historyListPanelDensity ?? 1
 
 export const selectCardPieListSortDirection = (
   state: RootState,

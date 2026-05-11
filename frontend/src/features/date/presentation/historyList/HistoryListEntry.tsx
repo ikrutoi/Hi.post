@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import type { PostcardStatus } from '@entities/postcard'
+import type { HistoryPanelDensitySize } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './HistoryListEntry.module.scss'
@@ -19,6 +20,8 @@ export type HistoryListEntryProps = {
   onDelete?: () => void
   isSelected?: boolean
   isFocused?: boolean
+  /** Плотность строки списка истории (см. `historyListPanelDensity` в календаре). */
+  densityLevel?: HistoryPanelDensitySize
 }
 
 export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({

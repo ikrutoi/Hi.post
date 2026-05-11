@@ -2,7 +2,12 @@ import { cloneElement } from 'react'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { getIconByKey } from '@shared/assets/icons'
 import { IconKey } from '@shared/config/constants'
-import { IconDensity, IconSortDirection } from '@shared/ui/icons'
+import {
+  IconDensity,
+  IconHistoryPanelDensity,
+  IconSortDirection,
+  type HistoryPanelDensitySize,
+} from '@shared/ui/icons'
 import type { JSX } from 'react'
 
 export type SortDirection = 'asc' | 'desc'
@@ -17,6 +22,7 @@ export const getToolbarIcon = ({
   step,
   sortDirection,
   listTemplateDensityCols,
+  historyPanelDensitySize,
 }: {
   key: IconKey
   className?: string
@@ -26,6 +32,8 @@ export const getToolbarIcon = ({
   sortDirection?: SortDirection
   /** Активный режим плотности сетки в панели списка шаблонов cardphoto. */
   listTemplateDensityCols?: ListTemplateDensityCols
+  /** Активная ступень плотности строк списка истории (`historyPanelDensity`). */
+  historyPanelDensitySize?: HistoryPanelDensitySize
 }): JSX.Element => {
   const iconProps = {
     className,
@@ -44,6 +52,15 @@ export const getToolbarIcon = ({
     return (
       <IconDensity
         activeCols={listTemplateDensityCols ?? 5}
+        {...iconProps}
+      />
+    )
+  }
+
+  if (key === 'historyPanelDensity') {
+    return (
+      <IconHistoryPanelDensity
+        activeSize={historyPanelDensitySize ?? 1}
         {...iconProps}
       />
     )
