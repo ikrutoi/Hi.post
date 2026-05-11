@@ -16,7 +16,7 @@ import {
 import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
-import { HistoryListEntry } from './historyList/HistoryListEntry'
+import { HistoryListEntryShort } from './historyList/HistoryListEntryShort'
 import clsx from 'clsx'
 import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
 import { selectHistoryListSortDirection } from '@date/calendar/infrastructure/selectors'
@@ -121,8 +121,7 @@ const HistoryListPanelRow: React.FC<{
     (item.postcardLocalId != null ? handleRemoveFromList : undefined)
 
   return (
-    <HistoryListEntry
-      key={item.id}
+    <HistoryListEntryShort
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
       detailLine={item.detailLine}
@@ -189,18 +188,19 @@ export const HistoryListPanel: React.FC<Props> = ({
       <ScrollArea className={styles.listScrollArea}>
         <div
           key={listContentKey}
-          className={styles.list}
+          className={clsx(styles.list, hasRows && styles.listGrid)}
           tabIndex={0}
           aria-label="Dispatch date list"
         >
           {hasRows ? (
             sortedEntries.map((item) => (
-              <HistoryListPanelRow
-                key={item.id}
-                item={item}
-                listSelectedLocalId={listSelectedLocalId}
-                onSelectEntry={onSelectEntry}
-              />
+              <div key={item.id} className={styles.listCell}>
+                <HistoryListPanelRow
+                  item={item}
+                  listSelectedLocalId={listSelectedLocalId}
+                  onSelectEntry={onSelectEntry}
+                />
+              </div>
             ))
           ) : (
             <div className={styles.listEmpty} aria-hidden>

@@ -108,6 +108,8 @@ export const ICON_KEYS = [
   'cardBlocked',
   'dateEdit',
   'addCartList',
+  'historyPanel',
+  'historyPanelDensity',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

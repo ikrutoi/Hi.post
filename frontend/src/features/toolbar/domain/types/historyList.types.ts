@@ -7,6 +7,8 @@ import { DateListToolbarState } from './dateList.types'
 export const HISTORY_LIST_KEYS = [
   'listDelete',
   'sortDown',
+  'historyPanel',
+  'historyPanelDensity',
   'cart',
   'postcardReady',
   'postcardSend',
@@ -25,6 +27,11 @@ export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'historyList',
     icons: [{ key: 'sortDown', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'panel',
+    icons: [{ key: 'historyPanelDensity', state: 'enabled' }],
     status: 'enabled',
   },
   {

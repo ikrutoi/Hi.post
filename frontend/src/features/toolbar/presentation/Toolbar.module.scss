@@ -59,7 +59,10 @@
      */
     &[data-icon-key='listDelete'].toolbarKeyEnabled,
     &[data-icon-key='addCartList'].toolbarKeyEnabled,
-    &[data-icon-key='sortDown'].toolbarKeyEnabled {
+    &[data-icon-key='sortDown'].toolbarKeyEnabled,
+    &[data-icon-key='historyPanel'].toolbarKeyEnabled,
+    &[data-icon-key='density'].toolbarKeyEnabled,
+    &[data-icon-key='historyPanelDensity'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
       &:hover {
@@ -529,6 +532,18 @@
     height: 1.6rem;
   }
 
+  // .toolbarKeyHistoryPanel {
+  //   flex-shrink: 0;
+  //   width: auto;
+  //   aspect-ratio: 2480 / 1240;
+
+  //   svg {
+  //     display: block;
+  //     width: 100%;
+  //     height: 100%;
+  //   }
+  // }
+
   .toolbarKeyApplyEnabled {
     background-color: #fff;
   }
@@ -766,9 +781,21 @@
   display: flex;
 }
 
+/** Плотность списка: без смены фона — только более тёмная SVG (как listDelete). */
 .toolbarCardphotoList .toolbarKeyDensityEnabled:hover svg {
-  --density-inactive-fill: #fff;
-  --density-inactive-stroke: #fff;
+  --density-inactive-fill: #b0b0b0;
+  --density-inactive-stroke: #9a9a9a;
+  --density-active-fill: #{mix($color-app-sidebar-icon-active, #1a120c, 18%)};
+  --density-active-stroke: #523624;
+}
+
+.toolbarHistoryList
+  .toolbarKey[data-icon-key='historyPanelDensity'].toolbarKeyEnabled:hover
+  svg {
+  --history-density-inactive-fill: #b0b0b0;
+  --history-density-inactive-stroke: #b0b0b0;
+  --history-density-active-fill: #{mix($color-app-sidebar-icon-active, #1a120c, 18%)};
+  --history-density-active-stroke: #523624;
 }
 
 // .toolbarCardtextView {

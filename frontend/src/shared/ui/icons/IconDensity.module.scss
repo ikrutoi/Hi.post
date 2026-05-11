@@ -1,8 +1,8 @@
 @use '@styles/config/colors' as *;
 
 /**
- * Неактивные — светло-серые; на hover кнопки → белые (переменные, см. Toolbar).
- * Активная — коричневая, без смены при hover.
+ * Неактивные — светло-серые; активный сегмент — коричневый.
+ * На hover списка см. `Toolbar.module.scss` (потемнение через CSS-переменные).
  */
 .svg {
   display: block;
@@ -10,6 +10,8 @@
   /* Чуть темнее прежних #e6e6e6 / #bdbdbd — лучше читается на белой кнопке */
   --density-inactive-fill: #d0d0d0;
   --density-inactive-stroke: #a8a8a8;
+  --density-active-fill: #{$color-app-sidebar-icon-active};
+  --density-active-stroke: #6e4a32;
 }
 
 .segmentInactive,
@@ -25,6 +27,6 @@
 }
 
 .segmentActive {
-  fill: $color-app-sidebar-icon-active;
-  stroke: #6e4a32;
+  fill: var(--density-active-fill);
+  stroke: var(--density-active-stroke);
 }
