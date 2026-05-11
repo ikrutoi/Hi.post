@@ -80,6 +80,24 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
     }
   }, [updateThumb])
 
+  /** Трек поверх контента по правому краю: без этого колесо не двигает `scrollTop` у контента. */
+  useLayoutEffect(() => {
+    const track = trackRef.current
+    const el = contentRef.current
+    if (!track || !el) return
+
+    const onWheel = (ev: WheelEvent) => {
+      const { scrollHeight, clientHeight } = el
+      if (scrollHeight <= clientHeight) return
+      ev.preventDefault()
+      el.scrollTop += ev.deltaY
+      updateThumb()
+    }
+
+    track.addEventListener('wheel', onWheel, { passive: false })
+    return () => track.removeEventListener('wheel', onWheel)
+  }, [updateThumb, children, scrollbarPortalTarget])
+
   const handleThumbMouseDown = (e: React.MouseEvent) => {
     e.preventDefault()
     const el = contentRef.current

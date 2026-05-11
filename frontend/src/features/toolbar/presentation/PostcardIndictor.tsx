@@ -1,45 +1,57 @@
 import React from 'react'
 import clsx from 'clsx'
 import { useCalendarFacade } from '@/features/date/calendar/application/facades/useCalendarFacade'
-import { useDateFacade } from '@/features/date/application/facades/useDateFacade'
 import styles from './PostcardIndicator.module.scss'
 
 export const PostcardIndicator: React.FC = () => {
   const { postcardStatuses } = useCalendarFacade()
-  // const { isHistoryMode } = useDateFacade()
+  const cartOn = postcardStatuses.cart || postcardStatuses.cartBlocked
 
   return (
     <div
       data-postcard-indicator=""
-      className={clsx(styles.postcardIndicatorContainer, {
-        // [styles.historyMode]: isHistoryMode,
-      })}
+      className={styles.postcardIndicatorContainer}
     >
-      {(postcardStatuses.cart || postcardStatuses.cartBlocked) && (
-        <span
-          className={clsx(styles.postcardIndicator, styles.cart, {})}
-        ></span>
-      )}
-      {postcardStatuses.ready && (
-        <span
-          className={clsx(styles.postcardIndicator, styles.ready, {})}
-        ></span>
-      )}
-      {postcardStatuses.sent && (
-        <span
-          className={clsx(styles.postcardIndicator, styles.sent, {})}
-        ></span>
-      )}
-      {postcardStatuses.delivered && (
-        <span
-          className={clsx(styles.postcardIndicator, styles.delivered, {})}
-        ></span>
-      )}
-      {postcardStatuses.error && (
-        <span
-          className={clsx(styles.postcardIndicator, styles.error, {})}
-        ></span>
-      )}
+      <span
+        className={clsx(
+          styles.postcardIndicator,
+          styles.cart,
+          !cartOn && styles.postcardIndicatorHidden,
+        )}
+        aria-hidden={!cartOn}
+      />
+      <span
+        className={clsx(
+          styles.postcardIndicator,
+          styles.ready,
+          !postcardStatuses.ready && styles.postcardIndicatorHidden,
+        )}
+        aria-hidden={!postcardStatuses.ready}
+      />
+      <span
+        className={clsx(
+          styles.postcardIndicator,
+          styles.sent,
+          !postcardStatuses.sent && styles.postcardIndicatorHidden,
+        )}
+        aria-hidden={!postcardStatuses.sent}
+      />
+      <span
+        className={clsx(
+          styles.postcardIndicator,
+          styles.delivered,
+          !postcardStatuses.delivered && styles.postcardIndicatorHidden,
+        )}
+        aria-hidden={!postcardStatuses.delivered}
+      />
+      <span
+        className={clsx(
+          styles.postcardIndicator,
+          styles.error,
+          !postcardStatuses.error && styles.postcardIndicatorHidden,
+        )}
+        aria-hidden={!postcardStatuses.error}
+      />
     </div>
   )
 }

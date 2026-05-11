@@ -155,7 +155,18 @@ function* closeOtherListPanels(action: {
   if (!openingDate && !openingCardphoto) {
     yield put(setDateListPanelOpen(false))
   }
-  if (!openingHistory && !openingCardPie && !openingDate) {
+  /**
+   * Списки слева (cardphoto, cardtext, адресная книга) не закрывают панель истории справа.
+   * Историю гасим при открытии даты / CardPie / корзины и т.п., но не при открытии этих списков.
+   */
+  if (
+    !openingHistory &&
+    !openingCardPie &&
+    !openingDate &&
+    !openingCardphoto &&
+    !openingCardtext &&
+    !openingAddressList
+  ) {
     yield put(setHistoryListPanelOpen(false))
   }
   /** Правые списки не закрываем из тулбаров sectionEditorMenu/date. */
