@@ -24,6 +24,7 @@ import type { ImageMeta } from '@cardphoto/domain/types'
 import { CardphotoListThumb } from './CardphotoListThumb'
 import styles from './CardphotoListPanel.module.scss'
 import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
+import clsx from 'clsx'
 
 type Props = {
   onClose: () => void
@@ -175,11 +176,18 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
     [dispatch],
   )
 
+  const hasRows = rows.length > 0
+
   return (
-    <div className={styles.panel}>
+    <div
+      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
+    >
       <ListPanelStackedHeader
         leadIconKey="listCardphoto"
-        toolbar={<Toolbar section="cardphotoList" />}
+        toolbar={
+          hasRows ? <Toolbar section="cardphotoList" /> : false
+        }
+        showDividerWithoutToolbar={!hasRows}
         onClose={onClose}
         closeAriaLabel="Close photo templates list"
       />

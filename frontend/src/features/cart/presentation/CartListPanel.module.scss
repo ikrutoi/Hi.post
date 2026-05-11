@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 
 $list-panel-stacked-band: 3.75rem;
+$list-panel-compact-header-band: 2.35rem;
 $list-panel-header-lead-row: 1.75rem;
 $list-panel-scroll-inset: 0.35rem;
 $cart-list-header-square-skew-deg: -15deg;
@@ -27,6 +28,14 @@ $cart-list-header-segment-border-inactive: rgba(255, 255, 255, 0.92);
 
   .panelScrollTrack {
     bottom: calc(0px - #{$list-panel-scroll-inset});
+  }
+}
+
+.panelEmptyNoToolbar {
+  padding-top: $list-panel-compact-header-band;
+
+  .panelScrollTrack {
+    top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
   }
 }
 

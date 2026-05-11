@@ -18,6 +18,7 @@ import {
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import type { CardtextContent } from '@cardtext/domain/types'
 import { CardtextListEntry } from './CardtextListEntry'
+import clsx from 'clsx'
 import styles from './CardtextListPanel.module.scss'
 
 type Props = {
@@ -79,11 +80,16 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
     [updateCardtextTemplate, selectedTemplateId, dispatch],
   )
 
+  const hasRows = combinedTemplates.length > 0
+
   return (
-    <div className={styles.panel}>
+    <div
+      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
+    >
       <ListPanelStackedHeader
         leadIconKey="listCardtext"
-        toolbar={<Toolbar section="cardtextList" />}
+        toolbar={hasRows ? <Toolbar section="cardtextList" /> : false}
+        showDividerWithoutToolbar={!hasRows}
         onClose={onClose}
         closeAriaLabel="Close text templates list"
       />

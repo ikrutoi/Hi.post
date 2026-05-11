@@ -114,8 +114,11 @@ export const SenderListPanel: React.FC<Props> = ({
         toolbar={
           combinedEntries.length > 0 ? (
             <Toolbar section="addressListSender" />
-          ) : null
+          ) : (
+            false
+          )
         }
+        showDividerWithoutToolbar={combinedEntries.length === 0}
         onClose={closePanel}
         closeAriaLabel="Close address list"
       />

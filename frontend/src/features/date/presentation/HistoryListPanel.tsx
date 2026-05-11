@@ -180,7 +180,9 @@ export const HistoryListPanel: React.FC<Props> = ({
       : !hasUnderlyingHistoryEntries
 
   return (
-    <div className={styles.panel}>
+    <div
+      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
+    >
       <ListPanelStackedHeader
         leadIconKey="listHistory"
         headerTopCenter={
@@ -188,7 +190,8 @@ export const HistoryListPanel: React.FC<Props> = ({
             <PostcardIndicator />
           </div>
         }
-        toolbar={<Toolbar section="historyList" />}
+        toolbar={hasRows ? <Toolbar section="historyList" /> : false}
+        showDividerWithoutToolbar={!hasRows}
         onClose={onClose}
         closeAriaLabel="Close date list"
       />

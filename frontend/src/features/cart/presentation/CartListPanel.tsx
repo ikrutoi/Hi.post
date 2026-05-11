@@ -312,7 +312,11 @@ export const CartListPanel: React.FC<Props> = ({
 
   return (
     <div
-      className={clsx(styles.panel, !showCartFooter && styles.panelNoFooter)}
+      className={clsx(
+        styles.panel,
+        !showCartFooter && styles.panelNoFooter,
+        !hasRows && styles.panelEmptyNoToolbar,
+      )}
     >
       <ListPanelStackedHeader
         leadIconKey={listLeadIconKey}
@@ -369,7 +373,8 @@ export const CartListPanel: React.FC<Props> = ({
             </div>
           ) : undefined
         }
-        toolbar={<Toolbar section="cartList" />}
+        toolbar={hasRows ? <Toolbar section="cartList" /> : false}
+        showDividerWithoutToolbar={!hasRows}
         onClose={handleCloseList}
         closeAriaLabel="Close cart list"
       />

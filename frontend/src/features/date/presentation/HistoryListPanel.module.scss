@@ -1,23 +1,40 @@
 @use '@styles/config/colors' as *;
 
+$list-panel-stacked-band: 3.75rem;
+$list-panel-compact-header-band: 2.35rem;
+$list-panel-scroll-inset: 0.35rem;
+
 .panel {
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-top: 3.75rem;
+  padding-top: $list-panel-stacked-band;
   min-height: 0;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
 }
 
+.panelEmptyNoToolbar {
+  padding-top: $list-panel-compact-header-band;
+
+  .panelScrollTrack {
+    top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
+    height: calc(
+      100% - #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset}
+    );
+  }
+}
+
 .panelScrollTrack {
   position: absolute;
-  top: calc(3.75rem - 0.35rem);
+  top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
   right: 2px;
   width: 0.75rem;
-  height: calc(100% - 3.75rem - 0.35rem);
+  height: calc(
+    100% - #{$list-panel-stacked-band} - #{$list-panel-scroll-inset}
+  );
   border-radius: 0 0.75rem 0.75rem 0;
   overflow: hidden;
   z-index: 1;

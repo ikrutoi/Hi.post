@@ -142,8 +142,11 @@ export const RecipientListPanel: React.FC<Props> = ({
                   : 'addressListRecipient'
               }
             />
-          ) : null
+          ) : (
+            false
+          )
         }
+        showDividerWithoutToolbar={combinedEntries.length === 0}
         onClose={closePanel}
         closeAriaLabel="Close address list"
       />
