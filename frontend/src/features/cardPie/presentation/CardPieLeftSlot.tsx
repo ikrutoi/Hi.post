@@ -20,6 +20,8 @@ export const CardPieLeftSlot: React.FC = () => {
     activeModeOnly: true,
     listSortDirection,
     showUndatedWhenAnySectionSelected: true,
+    /** После addCart ветка уже в корзине — не держать дубликат строки в списке CardPie. */
+    hideBranchesInCart: true,
   })
 
   const handleCloseList = useCallback(() => {

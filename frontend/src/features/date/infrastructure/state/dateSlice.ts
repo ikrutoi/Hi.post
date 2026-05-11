@@ -130,6 +130,14 @@ export const dateSlice = createSlice({
       }
     },
 
+    /**
+     * Card pie: сброс черновика из списка (иконка удалить на единственной строке без ветки).
+     * Ветки `excludedDispatchBranches` чистим здесь; секции редактора — в саге `editorPieProcessSaga`.
+     */
+    clearCardPieEditorSession(state) {
+      state.excludedDispatchBranches = []
+    },
+
     /** Saga-only: добавление в корзину по ветке плана (Card pie); без удаления существующих строк. */
     toggleCartForDispatchBranch(
       _state,
@@ -253,6 +261,7 @@ export const {
   setFirstDayOfWeek,
   hydrateDateFromSession,
   excludeDispatchBranch,
+  clearCardPieEditorSession,
   toggleCartForDispatchBranch,
   // setHistoryListPanelOpen,
   // setDateListPanelOpen,

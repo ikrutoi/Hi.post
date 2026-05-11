@@ -4,6 +4,7 @@ import {
   pickDispatchDate,
   setSelectedDates,
   excludeDispatchBranch,
+  clearCardPieEditorSession,
 } from '@date/infrastructure/state'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import {
@@ -527,6 +528,9 @@ export function useDispatchPlanListEntries(
           previewIsProcessed: true,
           dispatchBranchKey: undefined,
           cardPieRefs,
+          onDelete: () => {
+            dispatch(clearCardPieEditorSession())
+          },
         })
       })
     }

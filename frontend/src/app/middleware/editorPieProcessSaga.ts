@@ -18,6 +18,7 @@ import {
   clearDate,
   hydrateDateFromSession,
   toggleCartForDispatchBranch,
+  clearCardPieEditorSession,
 } from '@date/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
@@ -95,7 +96,17 @@ const PIE_PROGRESS_SYNC_ACTIONS = [
   clearRecipient.type,
   restoreSender.type,
   restoreRecipient.type,
+  clearCardPieEditorSession.type,
 ] as const
+
+function* handleClearCardPieEditorSession(): SagaIterator {
+  yield put(clearApply())
+  yield put(clearText())
+  yield put(clearRecipient())
+  yield put(clearSender())
+  yield put(clearAroma())
+  yield put(resetEditor())
+}
 
 function* handleRainbowLogic() {
   const { isAllComplete, isRainbowActive } = yield select(
@@ -115,6 +126,7 @@ export function* editorPieProcessSaga(): SagaIterator {
       toggleCartForDispatchBranch.type,
       handleToggleCartForDispatchBranch,
     ),
+    takeLatest(clearCardPieEditorSession.type, handleClearCardPieEditorSession),
 
     takeLatest([...PIE_PROGRESS_SYNC_ACTIONS], handleRainbowLogic),
   ])
