@@ -8,7 +8,10 @@ import {
   selectExcludedDispatchBranchSet,
   selectRecipientBranchSlotKeys,
 } from '@date/infrastructure/selectors'
-import { selectHistoryListSelectedLocalId } from '@date/calendar/infrastructure/selectors'
+import {
+  selectHistoryListSelectedLocalId,
+} from '@date/calendar/infrastructure/selectors'
+import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
 import { postcardLocalIdFromCalendarCardItem } from '@date/calendar/infrastructure/postcardLocalIdFromCalendarCardItem'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { CardPreviewItem } from './CardPreviewItem'
@@ -87,6 +90,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const excludedDispatchBranchSet = useAppSelector(selectExcludedDispatchBranchSet)
   const photoPreview = useAppSelector(selectCardphotoPreview)
   const historyListSelectedLocalId = useAppSelector(selectHistoryListSelectedLocalId)
+  const cartListSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
   const cartItems = useAppSelector(selectCartItems)
   const { processed, cart, ready, sent, delivered, error } = data
 
@@ -146,6 +150,16 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
         ) ?? null
       : null
 
+  /** Полоса «Корзина»: миниатюра по выбранной из списка/цикла с календаря открытке этого дня. */
+  const cartThumbnailForSelectedPostcard =
+    isCartCalendar && cartListSelectedLocalId != null
+      ? thumbnailPipelineCards.find(
+          (item) =>
+            postcardLocalIdFromCalendarCardItem(item, cartItems) ===
+            cartListSelectedLocalId,
+        ) ?? null
+      : null
+
   /** Выбранный день: показываем слот `processed` (редактор / current_session), а не превью посткарда из pipeline. */
   const workingSlotForSelectedDay =
     !isHistoryLike && isSelectedDate && processed ? processed : null
@@ -157,7 +171,10 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !isHistoryLike && isSelectedDate && noSessionCardphotoImage
       ? workingSlotForSelectedDay ?? null
       : isCartCalendar
-        ? firstPipelineWithPreview ?? firstPipeline ?? null
+        ? cartThumbnailForSelectedPostcard ??
+          firstPipelineWithPreview ??
+          firstPipeline ??
+          null
         : isHistory
           ? historyThumbnailForSelectedPostcard ??
             firstPipelineWithPreview ??

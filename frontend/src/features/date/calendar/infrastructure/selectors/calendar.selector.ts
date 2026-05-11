@@ -8,10 +8,7 @@ import type { CalendarViewDate, DispatchDate } from '@entities/date/domain/types
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { createSelector } from '@reduxjs/toolkit'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import {
-  selectCartListPanelOpen,
-  selectCartListSelectedLocalId,
-} from '@cart/infrastructure/selectors/cartSelectors'
+import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
 import type { DayPanelPayload } from '../state/calendar.slice'
 import type { HistoryPanelDensitySize } from '@shared/ui/icons'
@@ -129,7 +126,7 @@ function isPostcardDispatchFallbackDate(d: DispatchDate): boolean {
  */
 export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector(
   [
-    selectCartListPanelOpen,
+    selectNotebookStripTab,
     selectCartListSelectedLocalId,
     selectHistoryOpenDayPanelArchiveLocalId,
     selectIsHistoryListPanelOpen,
@@ -137,7 +134,7 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
     selectCartItems,
   ],
   (
-    cartListOpen,
+    notebookStripTab,
     cartListSelectedLocalId,
     historyDayPanelArchiveLocalId,
     historyListPanelOpen,
@@ -145,12 +142,12 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
     cartItems,
   ): DispatchDate | null => {
     const localId =
-      cartListOpen && cartListSelectedLocalId != null
+      notebookStripTab === 'cart' && cartListSelectedLocalId != null
         ? cartListSelectedLocalId
-        : historyDayPanelArchiveLocalId != null
-          ? historyDayPanelArchiveLocalId
-          : historyListPanelOpen && historyListSelectedLocalId != null
-            ? historyListSelectedLocalId
+        : historyListPanelOpen && historyListSelectedLocalId != null
+          ? historyListSelectedLocalId
+          : historyDayPanelArchiveLocalId != null
+            ? historyDayPanelArchiveLocalId
             : null
     if (localId == null) return null
     const postcard = cartItems.find((p) => p.localId === localId)

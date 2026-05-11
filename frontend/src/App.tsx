@@ -223,28 +223,38 @@ const App = () => {
   )
   const cartItems = useAppSelector(selectCartItems)
 
+  /**
+   * Та же логика, что у миниатюры дня в полосе «Корзина» (`CardPreview`): строка/цикл
+   * пишут в `listSelectedLocalId` при `notebookStripTab === 'cart'`, даже если
+   * `cart.isActive` (боковой список) выключен — иначе правый CardPie «застывает» на первом id.
+   */
+  /**
+   * История: `historyOpenDayPanelArchiveLocalId` — всегда «первичная» открытка дня для панели;
+   * при цикле по ячейке обновляется только `historyListSelectedLocalId`, поэтому строка списка
+   * должна иметь приоритет, иначе правый CardPie залипает на первой открытке.
+   */
   const rightListArchiveLocalId =
-    listPanelOpen && listSelectedLocalId != null
+    notebookStripTab === 'cart' && listSelectedLocalId != null
       ? listSelectedLocalId
-      : historyOpenDayPanelArchiveLocalId != null
-        ? historyOpenDayPanelArchiveLocalId
-        : historyListPanelOpen && historyListSelectedLocalId != null
-          ? historyListSelectedLocalId
+      : historyListPanelOpen && historyListSelectedLocalId != null
+        ? historyListSelectedLocalId
+        : historyOpenDayPanelArchiveLocalId != null
+          ? historyOpenDayPanelArchiveLocalId
           : null
 
   const rightListArchiveSource = useMemo((): 'cart' | 'history' | null => {
-    if (listPanelOpen && listSelectedLocalId != null) {
+    if (notebookStripTab === 'cart' && listSelectedLocalId != null) {
       return 'cart'
-    }
-    if (historyOpenDayPanelArchiveLocalId != null) {
-      return 'history'
     }
     if (historyListPanelOpen && historyListSelectedLocalId != null) {
       return 'history'
     }
+    if (historyOpenDayPanelArchiveLocalId != null) {
+      return 'history'
+    }
     return null
   }, [
-    listPanelOpen,
+    notebookStripTab,
     listSelectedLocalId,
     historyOpenDayPanelArchiveLocalId,
     historyListPanelOpen,

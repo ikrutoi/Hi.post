@@ -13,6 +13,7 @@ import {
 import {
   selectCartCalendarDatePickLocalId,
   selectCartCalendarDatePickMode,
+  selectHistoryListSelectedLocalId,
   selectIsCardPieListPanelOpen,
   selectIsDateListPanelOpen,
   selectIsHistoryListPanelOpen,
@@ -20,8 +21,14 @@ import {
   selectOpenDayPanel,
   selectPostcardStatuses,
 } from '../../../calendar/infrastructure/selectors/calendar.selector'
+import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
 import { cartCalendarDatePickApplied } from '../../../calendar/application/orchestration/notebookOrchestration.events'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../../../calendar/infrastructure/historyOpenDayPanelPrimaryPostcard'
+import {
+  nextCyclicLocalId,
+  orderedCartStripLocalIdsForDay,
+  orderedHistoryDayLocalIds,
+} from '../../../calendar/infrastructure/calendarDayPostcardCycle'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { shiftMonth } from '../../../calendar/application/helpers'
@@ -61,6 +68,10 @@ export const useCalendarCellController = ({
   )
   const cartCalendarDatePickLocalId = useAppSelector(
     selectCartCalendarDatePickLocalId,
+  )
+  const listSelectedLocalId = useAppSelector(selectCartListSelectedLocalId)
+  const historyListSelectedLocalId = useAppSelector(
+    selectHistoryListSelectedLocalId,
   )
   const { selectedDate, selectedDates, isMultiDateMode, chooseDate } =
     useDateFacade()
@@ -125,24 +136,21 @@ export const useCalendarCellController = ({
     dateKey: string,
     dayData: CardCalendarIndex,
   ) => {
-    dispatch(openDayPanel({ dateKey, dayData }))
-    const firstCardId =
-      dayData.cart[0]?.cardId ??
-      dayData.ready[0]?.cardId ??
-      dayData.sent[0]?.cardId ??
-      dayData.delivered[0]?.cardId ??
-      dayData.error[0]?.cardId ??
-      null
-    if (!firstCardId) return
-    const lid =
-      cartItems.find(
-        (p) =>
-          p.card.id === firstCardId &&
-          (p.status === 'cart' || p.status === 'cartBlocked'),
-      )?.localId ?? null
-    if (lid != null) {
-      dispatch(setCartListSelectedLocalId(lid))
+    const lids = orderedCartStripLocalIdsForDay(dayData, cartItems)
+    const sameCartDay =
+      notebookStripTab === 'cart' &&
+      openDayPanelState?.dateKey === dateKey &&
+      lids.length > 1
+
+    if (sameCartDay) {
+      const next = nextCyclicLocalId(lids, listSelectedLocalId)
+      if (next != null) dispatch(setCartListSelectedLocalId(next))
+      return
     }
+
+    dispatch(openDayPanel({ dateKey, dayData }))
+    if (lids.length === 0) return
+    dispatch(setCartListSelectedLocalId(lids[0]))
   }
 
   const handleCellClickLogic = ({
@@ -231,8 +239,23 @@ export const useCalendarCellController = ({
         if (notebookStripTab === 'cart') {
           openCartDayPanelWithListHighlight(dateKey, dayData)
         } else if (isHistorySection) {
+          const historyLids = orderedHistoryDayLocalIds(
+            dayData,
+            cartItems,
+            postcardStatuses,
+          )
           if (openDayPanelState?.dateKey === dateKey) {
-            dispatch(closeDayPanel())
+            if (historyLids.length > 1) {
+              const next = nextCyclicLocalId(
+                historyLids,
+                historyListSelectedLocalId,
+              )
+              if (next != null) {
+                dispatch(setHistoryListSelectedLocalId(next))
+              }
+            } else {
+              dispatch(closeDayPanel())
+            }
           } else {
             openHistoryDayPanelWithListHighlight(dateKey, dayData)
           }
@@ -278,8 +301,23 @@ export const useCalendarCellController = ({
           if (notebookStripTab === 'cart') {
             openCartDayPanelWithListHighlight(dateKey, dayData)
           } else if (isHistorySection) {
+            const historyLids = orderedHistoryDayLocalIds(
+              dayData,
+              cartItems,
+              postcardStatuses,
+            )
             if (openDayPanelState?.dateKey === dateKey) {
-              dispatch(closeDayPanel())
+              if (historyLids.length > 1) {
+                const next = nextCyclicLocalId(
+                  historyLids,
+                  historyListSelectedLocalId,
+                )
+                if (next != null) {
+                  dispatch(setHistoryListSelectedLocalId(next))
+                }
+              } else {
+                dispatch(closeDayPanel())
+              }
             } else {
               openHistoryDayPanelWithListHighlight(dateKey, dayData)
             }
