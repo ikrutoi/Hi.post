@@ -2,41 +2,39 @@ import React from 'react'
 import clsx from 'clsx'
 import markCartBaseUrl from '@envelope/assets/mark_os_cart_base_anchor.svg?url'
 import markReadyBaseUrl from '@envelope/assets/mark_os_ready_base_anchor.svg?url'
-import spriteDigitsUrl from '@envelope/assets/sprite_digits.svg?url'
+import digit0 from '@envelope/assets/digits/digit-0.svg?url'
+import digit1 from '@envelope/assets/digits/digit-1.svg?url'
+import digit2 from '@envelope/assets/digits/digit-2.svg?url'
+import digit3 from '@envelope/assets/digits/digit-3.svg?url'
+import digit4 from '@envelope/assets/digits/digit-4.svg?url'
+import digit5 from '@envelope/assets/digits/digit-5.svg?url'
+import digit6 from '@envelope/assets/digits/digit-6.svg?url'
+import digit7 from '@envelope/assets/digits/digit-7.svg?url'
+import digit8 from '@envelope/assets/digits/digit-8.svg?url'
+import digit9 from '@envelope/assets/digits/digit-9.svg?url'
 import styles from './Mark.module.scss'
+import {
+  MARK_STAMP_DIGIT_SPRITE_CENTER,
+  markStampMedallionSlotCenters,
+} from '../../domain/markStampDigitLayout'
 
 export type MarkStampVariant = 'cart' | 'ready'
 
-/** Первое вхождение `M` / `m` в path — грубая опора X для выравнивания в anchor (см. sprite_digits.svg). */
-const SPRITE_DIGIT_PATH_ANCHOR_MX: Record<string, number> = {
-  '0': 1245,
-  '1': 2856,
-  '2': 4712,
-  '3': 1951,
-  '4': 3747,
-  '5': 5693,
-  '6': 1625,
-  '7': 2060,
-  '8': 4517,
-  '9': 6253,
-}
+/** Как у `mark_os_*_base_anchor.svg` — слой цифр совпадает с базой 1:1. */
+export const MARK_STAMP_VIEWBOX_W = 7080
+export const MARK_STAMP_VIEWBOX_H = 10241
 
-const REF_MX = SPRITE_DIGIT_PATH_ANCHOR_MX['1']
-/** Подогнано под anchor в base (7080×10241); при смещении цифр правьте эти два числа. */
-const BASE_TRANSLATE_X = -858
-const BASE_TRANSLATE_Y = 6801
-const MULTI_DIGIT_SPACING = 340
-
-function transformForDigitChar(
-  ch: string,
-  index: number,
-  total: number,
-): string {
-  const mx = SPRITE_DIGIT_PATH_ANCHOR_MX[ch] ?? REF_MX
-  const slot =
-    total <= 1 ? 0 : (index - (total - 1) / 2) * MULTI_DIGIT_SPACING
-  const tx = BASE_TRANSLATE_X + (REF_MX - mx) + slot
-  return `translate(${tx} ${BASE_TRANSLATE_Y})`
+const DIGIT_SRC: Record<string, string> = {
+  '0': digit0,
+  '1': digit1,
+  '2': digit2,
+  '3': digit3,
+  '4': digit4,
+  '5': digit5,
+  '6': digit6,
+  '7': digit7,
+  '8': digit8,
+  '9': digit9,
 }
 
 export type MarkStampCompositeProps = {
@@ -47,7 +45,9 @@ export type MarkStampCompositeProps = {
 }
 
 /**
- * Марка: базовый SVG без цифр + слой `<use>` на спрайт цифр (тот же anchor, что у cart/ready base).
+ * Марка: база + наложение цифр в **той же системе координат**, что и база (`viewBox` 7080×10241).
+ * Каждый `digits/digit-N.svg` — холст **0 0 7080 10241**, глиф в тех же координатах, что в `sprite_digits.svg`;
+ * в разметке задаётся `transform`, чтобы центр bbox глифа совпал с центром медальона (см. `markStampDigitLayout.ts`).
  */
 export const MarkStampComposite: React.FC<MarkStampCompositeProps> = ({
   className,
@@ -57,6 +57,7 @@ export const MarkStampComposite: React.FC<MarkStampCompositeProps> = ({
   const baseUrl = variant === 'ready' ? markReadyBaseUrl : markCartBaseUrl
   const clamped = Math.min(99, Math.max(1, Math.round(yearCount)))
   const chars = String(clamped).split('')
+  const slots = markStampMedallionSlotCenters(chars)
 
   return (
     <div className={clsx(styles.markStampComposite, className)}>
@@ -67,18 +68,29 @@ export const MarkStampComposite: React.FC<MarkStampCompositeProps> = ({
         draggable={false}
       />
       <svg
-        className={styles.markStampDigits}
-        viewBox="0 0 7080 10241"
+        className={styles.markStampDigitOverlay}
+        viewBox={`0 0 ${MARK_STAMP_VIEWBOX_W} ${MARK_STAMP_VIEWBOX_H}`}
+        preserveAspectRatio="xMidYMid meet"
         aria-hidden
       >
-        {chars.map((ch, i) => (
-          <use
-            key={`${ch}-${i}`}
-            href={`${spriteDigitsUrl}#digit-${ch}`}
-            transform={transformForDigitChar(ch, i, chars.length)}
-            fill="#fff"
-          />
-        ))}
+        {chars.map((ch, i) => {
+          const href = DIGIT_SRC[ch] ?? DIGIT_SRC['0']
+          const center = MARK_STAMP_DIGIT_SPRITE_CENTER[ch] ?? MARK_STAMP_DIGIT_SPRITE_CENTER['0']
+          const slot = slots[i] ?? slots[0]
+          const dx = slot.x - center.cx
+          const dy = slot.y - center.cy
+          return (
+            <image
+              key={`${ch}-${i}`}
+              href={href}
+              x={0}
+              y={0}
+              width={MARK_STAMP_VIEWBOX_W}
+              height={MARK_STAMP_VIEWBOX_H}
+              transform={`translate(${dx} ${dy})`}
+            />
+          )
+        })}
       </svg>
     </div>
   )

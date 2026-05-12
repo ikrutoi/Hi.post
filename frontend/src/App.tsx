@@ -74,7 +74,32 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
+import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/application/MarkStampYearDevContext'
 import styles from './App.module.scss'
+
+function MarkStampYearDevButtons() {
+  const { bump } = useMarkStampYearDev()
+  return (
+    <div className={styles.appRightSidebarDevStamp}>
+      <button
+        type="button"
+        className={styles.appRightSidebarDevStampButton}
+        aria-label="Уменьшить число на марке"
+        onClick={() => bump(-1)}
+      >
+        −
+      </button>
+      <button
+        type="button"
+        className={styles.appRightSidebarDevStampButton}
+        aria-label="Увеличить число на марке"
+        onClick={() => bump(1)}
+      >
+        +
+      </button>
+    </div>
+  )
+}
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
 const App = () => {
@@ -205,16 +230,6 @@ const App = () => {
   )
   const cartItems = useAppSelector(selectCartItems)
 
-  /**
-   * Та же логика, что у миниатюры дня в полосе «Корзина» (`CardPreview`): строка/цикл
-   * пишут в `listSelectedLocalId` при `notebookStripTab === 'cart'`, даже если
-   * `cart.isActive` (боковой список) выключен — иначе правый CardPie «застывает» на первом id.
-   */
-  /**
-   * История: `historyOpenDayPanelArchiveLocalId` — всегда «первичная» открытка дня для панели;
-   * при цикле по ячейке обновляется только `historyListSelectedLocalId`, поэтому строка списка
-   * должна иметь приоритет, иначе правый CardPie залипает на первой открытке.
-   */
   const rightListArchiveLocalId =
     notebookStripTab === 'cart' && listSelectedLocalId != null
       ? listSelectedLocalId
@@ -253,13 +268,11 @@ const App = () => {
       : null,
   )
 
-  /** Правый CardPie раньше всегда получал `cart`; статус берём из строки списка (cartBlocked и др.). */
   const rightArchivePiePostcardStatus = useMemo(() => {
     if (rightListArchiveLocalId == null) return undefined
     return cartItems.find((p) => p.localId === rightListArchiveLocalId)?.status
   }, [cartItems, rightListArchiveLocalId])
 
-  /** Правый CardPie рендерится только при `sectionSize` и выбранной строке списка; иначе не держим «правый режим». */
   const canShowRightListArchiveCardPie =
     sectionSize != null && rightListArchiveLocalId != null
 
@@ -338,7 +351,6 @@ const App = () => {
     ],
   )
 
-  /** История + правый CardPie: центр → режим календаря History, месяц по дате открытки; правый CardPie не трогаем (повторный `setHistoryListPanelOpen(true)` без side effects см. slice). */
   const handleRightPieCenterHistoryCalendarJump = useCallback(() => {
     const d = primaryDispatchDateFromPieInner(listRowInner)
     setRightPieCardphotoPeekNoToolbar(false)
@@ -353,7 +365,6 @@ const App = () => {
     }
   }, [dispatch, listRowInner])
 
-  /** Корзина + правый CardPie: центр → календарь в режиме полосы «Корзина», месяц по дате открытки; не вызывать `setCartListPanelOpen` — сбросит выбор и CardPie. */
   const handleRightPieCenterCartCalendarJump = useCallback(() => {
     const d = primaryDispatchDateFromPieInner(listRowInner)
     setRightPieCardphotoPeekNoToolbar(false)
@@ -663,7 +674,8 @@ const App = () => {
 
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
-      <div className={styles.appSubstrate}>
+      <MarkStampYearDevProvider>
+        <div className={styles.appSubstrate}>
         <div className={styles.appControlStrip}>
           <div className={styles.appHeader}>
             <Header />
@@ -908,9 +920,7 @@ const App = () => {
                             onListArchiveSectorClick={
                               handleRightListPieSectorClick
                             }
-                            onRightPieCenterClick={
-                              rightPieOnCenterClick
-                            }
+                            onRightPieCenterClick={rightPieOnCenterClick}
                           />
                         </div>
                         {rightListArchiveSource === 'cart' && (
@@ -962,9 +972,7 @@ const App = () => {
                                 onListArchiveSectorClick={
                                   handleRightListPieSectorClick
                                 }
-                                onRightPieCenterClick={
-                                  rightPieOnCenterClick
-                                }
+                                onRightPieCenterClick={rightPieOnCenterClick}
                               />
                             </div>
                             {rightListArchiveSource === 'cart' && (
@@ -1015,11 +1023,18 @@ const App = () => {
               {/* {activeSection === 'cardphoto' && <CardphotoRightSlot />} */}
             </div>
           </main>
-          <div className={styles.appRightSidebar}>
+          <div
+            className={clsx(
+              styles.appRightSidebar,
+              styles.appRightSidebarWithDevStamp,
+            )}
+          >
             <SectionEditorRightSidebar />
+            <MarkStampYearDevButtons />
           </div>
         </div>
-      </div>
+        </div>
+      </MarkStampYearDevProvider>
     </div>
   )
 }

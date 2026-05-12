@@ -1,8 +1,9 @@
-import { useMemo } from 'react'
+import { useLayoutEffect, useMemo } from 'react'
 import { useDateFacade } from '@date/application/facades/useDateFacade'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import { markStampYearCountFromDispatch } from '../../domain/markStampYearDigit'
+import { useMarkStampYearDevOptional } from '../MarkStampYearDevContext'
 import type { DispatchDate } from '@entities/date/domain/types'
 
 function editorPrimaryDispatchDate(
@@ -14,10 +15,11 @@ function editorPrimaryDispatchDate(
 }
 
 /**
- * Значение для марки (1…99): полосы по среднему году от сегодня до даты отправления.
- * В peek — дата строки списка; иначе — выбранная / первая из merged в редакторе.
+ * Значение для марки только по дате (1…99), без dev-override.
  */
-export function useMarkStampYearCount(simplifiedPeek: boolean): number {
+export function useMarkStampYearCountComputed(
+  simplifiedPeek: boolean,
+): number {
   const { selectedDate, mergedDispatchDates } = useDateFacade()
   const { listRowInner } = useRightListArchiveMini()
 
@@ -37,4 +39,21 @@ export function useMarkStampYearCount(simplifiedPeek: boolean): number {
     () => markStampYearCountFromDispatch(new Date(), dispatchDate),
     [dispatchDate],
   )
+}
+
+/**
+ * Значение для марки (1…99): дата + временный override из dev-кнопок.
+ */
+export function useMarkStampYearCount(simplifiedPeek: boolean): number {
+  const computed = useMarkStampYearCountComputed(simplifiedPeek)
+  const dev = useMarkStampYearDevOptional()
+
+  useLayoutEffect(() => {
+    dev?.syncComputedFromDispatch(computed)
+  }, [computed, dev])
+
+  if (dev?.override != null) {
+    return Math.min(99, Math.max(1, Math.round(dev.override)))
+  }
+  return computed
 }
