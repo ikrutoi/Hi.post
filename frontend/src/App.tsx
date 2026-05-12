@@ -73,26 +73,8 @@ import {
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
-import type { DispatchDate } from '@entities/date/domain/types'
-import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
-import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
+import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import styles from './App.module.scss'
-
-function primaryDispatchDateFromPieInner(
-  inner: CardPieInnerData | null,
-): DispatchDate | null {
-  if (inner == null) return null
-  const filled = (d: DispatchDate | null | undefined): d is DispatchDate =>
-    d != null &&
-    !(
-      d.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&
-      d.month === POSTCARD_DISPATCH_DATE_FALLBACK.month &&
-      d.day === POSTCARD_DISPATCH_DATE_FALLBACK.day
-    )
-  if (inner.dates.length > 0 && filled(inner.dates[0])) return inner.dates[0]
-  if (filled(inner.date)) return inner.date
-  return null
-}
 
 /** Merges the mini-sections strip with the left or right CardPie under one chrome frame. */
 const App = () => {
