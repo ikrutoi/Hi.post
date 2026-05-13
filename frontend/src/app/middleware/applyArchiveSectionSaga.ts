@@ -20,7 +20,6 @@ import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
 import {
   restoreRecipient,
-  setRecipientMode,
 } from '@envelope/recipient/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
@@ -77,7 +76,6 @@ function* handleApplyArchiveSection(
     case 'envelope': {
       yield put(restoreSender(card.envelope.sender))
       yield put(restoreRecipient(card.envelope.recipient))
-      yield put(setRecipientMode(card.envelope.recipient.mode))
       yield call(processEnvelopeVisuals)
       {
         const ready: boolean = yield select(selectIsEnvelopeReady)

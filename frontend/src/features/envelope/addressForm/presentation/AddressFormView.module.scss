@@ -22,7 +22,8 @@
     justify-content: flex-start;
   }
 
-  &Recipient {
+  &Recipient,
+  &Recipients {
     padding-right: 1rem;
     justify-content: flex-end;
   }
@@ -63,7 +64,8 @@
   position: absolute;
   top: -0.65rem;
 
-  &Recipient {
+  &Recipient,
+  &Recipients {
     left: 1rem;
   }
 

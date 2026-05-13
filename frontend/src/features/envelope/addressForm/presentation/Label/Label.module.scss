@@ -16,7 +16,8 @@
   font-weight: 500;
 }
 
-.labelRecipient {
+.labelRecipient,
+.labelRecipients {
   text-align: right;
 
   .labelText {
@@ -57,7 +58,8 @@
   border-color: #c5e5db;
 }
 
-.labelInputRecipient {
+.labelInputRecipient,
+.labelInputRecipients {
   text-align: right;
   // background-color: #faf7fc;
   // background-color: #fff;
@@ -80,7 +82,8 @@
   box-shadow: 0 0 0 1px #1a4d3a40;
 }
 
-.labelInputRecipient:focus {
+.labelInputRecipient:focus,
+.labelInputRecipients:focus {
   background-color: #fff;
   box-shadow: 0 0 0 1px #3d2a5c40;
 }
@@ -119,7 +122,8 @@
   color: $color-font-enabled;
 }
 
-.inputWrapperRecipient .clearButton {
+.inputWrapperRecipient .clearButton,
+.inputWrapperRecipients .clearButton {
   left: 0.2rem;
 }
 

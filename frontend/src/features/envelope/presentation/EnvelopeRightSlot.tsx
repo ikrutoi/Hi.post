@@ -67,14 +67,7 @@ export const EnvelopeRightSlot: React.FC = () => {
           <RecipientListPanel
             onSelect={recipientFacade.selectFromList}
             onEdit={handleEditFromRecipientList}
-            selectedIds={
-              recipientFacade.isEnabled
-                ? recipientFacade.listSelectedIds
-                : recipientFacade.state.recipientViewId
-                  ? [recipientFacade.state.recipientViewId]
-                  : []
-            }
-            isRecipientsMode={recipientFacade.isEnabled}
+            selectedIds={recipientFacade.listSelectedIds}
           />
         </div>
       )}

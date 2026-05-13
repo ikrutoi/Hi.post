@@ -20,10 +20,8 @@ import { setRecipientViewEditMode } from '@envelope/infrastructure/state'
 import { selectSenderViewEditMode } from '@envelope/infrastructure/selectors'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
-import { ToolbarSection } from '@/features/toolbar/domain/types'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import {
-  IconUserRecipient,
   IconUsers,
   IconUserSender,
   IconUserSenderCentered,
@@ -115,21 +113,15 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     }
   }, [editingTemplateId, templateEntry, entriesForRole, role, envelopeFacade])
 
-  const isSingleRecipientWithSavedTemplate =
-    role === 'recipient' &&
-    !recipientFacade.isEnabled &&
-    editingTemplateId != null &&
-    dataMatchesTemplate
-
   const hasRecipientAddressData =
     role === 'recipient' &&
     Object.values(value).some((v) => (v ?? '').trim() !== '')
 
-  const showSingleRecipientView =
+  const showRecipientTemplateCard =
     role === 'recipient' &&
-    !recipientFacade.isEnabled &&
     recipientView === 'recipientView' &&
-    (isSingleRecipientWithSavedTemplate || hasRecipientAddressData)
+    (hasRecipientAddressData ||
+      (editingTemplateId != null && dataMatchesTemplate))
 
   const hasSenderAddressData =
     role === 'sender' &&
@@ -244,20 +236,17 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
       {role === 'recipient' && (
         <div className={styles.addressFormRecipientBody}>
-          {recipientFacade.isEnabled && (
-            <div
-              ref={setRecipientFieldsetContainerScrollRef}
-              className={styles.recipientFieldsetContainerScroll}
-            />
-          )}
+          <div
+            ref={setRecipientFieldsetContainerScrollRef}
+            className={styles.recipientFieldsetContainerScroll}
+          />
           <fieldset
             className={clsx(
               styles.addressFieldset,
               styles.addressFormRecipient,
               styles.recipientFieldsetContent,
-              recipientFacade.isEnabled && styles.recipientFieldsetMulti,
-              recipientFacade.isEnabled &&
-                recipientView !== 'addressFormRecipientView' &&
+              styles.recipientFieldsetMulti,
+              recipientView !== 'addressFormRecipientView' &&
                 recipientFacade.recipientsDisplayList.length > 0 &&
                 styles.recipientFieldsetWithList,
             )}
@@ -266,10 +255,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               className={clsx(
                 styles.addressLegend,
                 styles.addressLegendRecipient,
-                recipientFacade.isEnabled && styles.addressLegendMulti,
+                styles.addressLegendMulti,
               )}
             >
-              {recipientFacade.isEnabled ? 'Recipients' : 'Recipient'}
+              Recipients
             </legend>
             <div
               className={clsx(
@@ -278,52 +267,33 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               )}
             >
               <Toolbar
-                section={
-                  recipientFacade.isEnabled
-                    ? 'recipients'
-                    : ('recipient' as ToolbarSection)
-                }
-                stateOverride={
-                  recipientFacade.isEnabled
-                    ? recipientsToolbarStateWithLiveAddressList
-                    : undefined
-                }
+                section="recipients"
+                stateOverride={recipientsToolbarStateWithLiveAddressList}
               />
             </div>
             <div className={styles.envelopeRecipientToolbarIconContainer}>
-              {recipientFacade.isEnabled ? (
-                <>
-                  {envelopeFacade.selectedRecipientEntriesInOrder.length >
-                    0 && (
-                    <span className={styles.recipientsCountBadge}>
-                      {envelopeFacade.selectedRecipientEntriesInOrder.length}
-                    </span>
-                  )}
-                  <IconUsers className={styles.envelopeRecipientToolbarIcon} />
-                </>
-              ) : (
-                <IconUserRecipient
-                  className={styles.envelopeRecipientToolbarIcon}
-                />
+              {envelopeFacade.selectedRecipientEntriesInOrder.length > 0 && (
+                <span className={styles.recipientsCountBadge}>
+                  {envelopeFacade.selectedRecipientEntriesInOrder.length}
+                </span>
               )}
+              <IconUsers className={styles.envelopeRecipientToolbarIcon} />
             </div>
             {recipientView === 'addressFormRecipientView' ? (
               <AddressFormView
                 key="addressFormRecipientView"
                 role="recipient"
-                roleLabel="Recipient"
+                roleLabel={roleLabel}
                 address={recipientFacade.formDraft}
                 onFieldChange={update}
                 lang={lang}
               />
-            ) : recipientView === 'recipientView' &&
-              (hasRecipientAddressData ||
-                isSingleRecipientWithSavedTemplate) ? (
+            ) : showRecipientTemplateCard ? (
               <RecipientView
                 templateId={editingTemplateId ?? ''}
                 address={value}
               />
-            ) : recipientFacade.isEnabled &&
+            ) : recipientView === 'recipientsView' &&
               recipientFacade.recipientsDisplayList.length > 0 ? (
               <RecipientsView
                 entries={recipientFacade.recipientsDisplayList}
@@ -334,11 +304,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     ? recipientFieldsetContainerScrollRef
                     : undefined
                 }
-              />
-            ) : showSingleRecipientView ? (
-              <RecipientView
-                templateId={editingTemplateId ?? ''}
-                address={value}
               />
             ) : (
               <div
@@ -356,19 +321,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                     handlePlaceholderClick('recipient')
                   }
                 }}
-                aria-label={
-                  recipientFacade.isEnabled
-                    ? 'Add recipients'
-                    : 'Add recipient address'
-                }
+                aria-label="Add recipients"
               >
-                {recipientFacade.isEnabled ? (
-                  <IconUsers className={styles.addressFormPlaceholderIconBg} />
-                ) : (
-                  <IconUserRecipient
-                    className={styles.addressFormPlaceholderIconBg}
-                  />
-                )}
+                <IconUsers className={styles.addressFormPlaceholderIconBg} />
               </div>
             )}
           </fieldset>

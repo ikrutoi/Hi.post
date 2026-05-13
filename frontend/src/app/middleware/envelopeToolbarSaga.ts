@@ -22,7 +22,6 @@ import {
   setRecipientsViewIds,
   setRecipientsViewIdsSecondList,
   setCurrentRecipientsList,
-  setRecipientMode,
   clearRecipientFormData,
   clearRecipientViewDraft,
   toggleRecipientSortDirection,
@@ -139,7 +138,6 @@ function* handleEnvelopeToolbarAction(
     if (!recipientListPanelOpen) return
 
     const recipient: RecipientState = yield select(selectRecipientState)
-    if (recipient.mode !== 'recipients') return
 
     const entries: { id: string }[] = yield select(
       (s: RootState) => s.addressBook?.recipientEntries ?? [],
@@ -181,11 +179,7 @@ function* handleEnvelopeToolbarAction(
       section === 'addressListRecipient'
     ) {
       const listOpen = active === 'recipient' || active === 'recipients'
-      const nextMode: 'recipient' | 'recipients' | null = listOpen
-        ? null
-        : section === 'recipients'
-          ? 'recipients'
-          : 'recipient'
+      const nextMode: 'recipient' | 'recipients' | null = listOpen ? null : 'recipients'
       yield put(setActiveAddressList(nextMode))
       yield call(syncAddressListIconsFromActive)
       return
@@ -227,7 +221,7 @@ function* handleEnvelopeToolbarAction(
           if (type === 'recipient') {
             yield put(setRecipientViewEditMode(false))
             yield put(setRecipientViewId(null))
-            yield put(setRecipientView('recipientView'))
+            yield put(setRecipientView('recipientsView'))
             yield put(setAddressFormView({ show: false, role: null }))
             yield put(clearRecipientFormData())
             yield put(clearRecipientViewDraft())
@@ -420,13 +414,8 @@ function* handleEnvelopeToolbarAction(
       section === 'recipientView' ||
       section === 'recipients'
     ) {
-      const wasInRecipientsMode = section === 'recipients'
       yield put(setAddressFormView({ show: true, role: 'recipient' }))
       yield put(setRecipientView('addressFormRecipientView'))
-      if (wasInRecipientsMode) {
-        yield put(setRecipientMode('recipients'))
-        yield put(setRecipientView('addressFormRecipientView'))
-      }
     }
   }
 
@@ -450,7 +439,6 @@ function* handleEnvelopeToolbarAction(
         )
         const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
         yield put(setRecipientAppliedWithData({ ids: [recipientViewId], data }))
-        yield put(setRecipientMode('recipient'))
       } else {
         yield put(recipientSaveRequested({ listStatus: 'outList' }))
       }
@@ -483,11 +471,10 @@ function* handleEnvelopeToolbarAction(
             currentRecipientsList: 'first',
             applied: [id],
             appliedData: address,
-            mode: 'recipient',
+            mode: 'recipients',
           })
         }
       }
-      yield put(setRecipientMode('recipients'))
       const appliedData = list.map((r) => ({ ...r.viewDraft }))
       yield put(setRecipientAppliedWithData({ ids, data: appliedData }))
       yield put(setRecipientsList(list))
@@ -550,12 +537,7 @@ function* handleEnvelopeToolbarAction(
     if (role === 'sender') {
       yield put(setSenderView('senderView'))
     } else {
-      const recipient: RecipientState = yield select(selectRecipientState)
-      yield put(
-        setRecipientView(
-          recipient.mode === 'recipients' ? 'recipientsView' : 'recipientView',
-        ),
-      )
+      yield put(setRecipientView('recipientsView'))
     }
   }
 
@@ -577,12 +559,7 @@ function* handleAddressSaveSuccess(
   if (role === 'sender') {
     yield put(setSenderView('senderView'))
   } else {
-    const recipient: RecipientState = yield select(selectRecipientState)
-    yield put(
-      setRecipientView(
-        recipient.mode === 'recipients' ? 'recipientsView' : 'recipientView',
-      ),
-    )
+    yield put(setRecipientView('recipientsView'))
   }
 }
 
@@ -639,7 +616,6 @@ function* handleRemoveRecipientFromListById(action: PayloadAction<string>) {
 
 function* syncRecipientsViewIdsFromPending() {
   const recipient: RecipientState = yield select(selectRecipientState)
-  if (recipient.mode !== 'recipients') return
   const pendingIds: string[] = yield select(selectRecipientsPendingIds)
   if (recipient.currentRecipientsList === 'second') {
     yield put(setRecipientsViewIdsSecondList(pendingIds))
@@ -648,66 +624,11 @@ function* syncRecipientsViewIdsFromPending() {
   }
 }
 
-function* syncRecipientModeWithActiveList(
-  action: PayloadAction<'recipient' | 'recipients'>,
-) {
-  const active: 'sender' | 'recipient' | 'recipients' | null =
-    yield select(selectActiveAddressList)
-
-  if (action.payload === 'recipients') {
-    if (active === 'recipient') {
-      yield put(setActiveAddressList('recipients'))
-    }
-    return
-  }
-
-  if (action.payload === 'recipient' && active === 'recipients') {
-    yield put(setActiveAddressList('recipient'))
-  }
-}
-
 function* syncAddressBookModeFromActive() {
   const active: 'sender' | 'recipient' | 'recipients' | null = yield select(
     selectActiveAddressList,
   )
   yield put(setAddressBookMode(active))
-}
-
-function* syncRecipientsSectionOnRecipientMode(
-  action: PayloadAction<'recipient' | 'recipients'>,
-) {
-  if (action.payload !== 'recipients') return
-  const activeAddressList: string | null = yield select(selectActiveAddressList)
-  const selectedIds: string[] = yield select(
-    (s: RootState) => s.envelopeSelection?.recipientsPendingIds ?? [],
-  )
-  const recipientCount: number = yield select(
-    (s: RootState) => s.addressBook?.recipientEntries?.length ?? 0,
-  )
-  const listOpen = activeAddressList === 'recipients'
-  const addressListValue = listOpen
-    ? {
-        state: 'active' as const,
-        options: { badge: recipientCount > 0 ? recipientCount : null },
-      }
-    : {
-        state: (recipientCount > 0 ? 'enabled' : 'disabled') as
-          | 'enabled'
-          | 'disabled',
-        options: { badge: recipientCount > 0 ? recipientCount : null },
-      }
-  yield put(
-    updateToolbarSection({
-      section: 'recipients',
-      value: {
-        apply: {
-          state: selectedIds.length >= 1 ? 'enabled' : 'disabled',
-          options: {},
-        },
-        addressList: addressListValue,
-      },
-    }),
-  )
 }
 
 function* syncEditIconOnEditModeChange(action: PayloadAction<boolean>) {
@@ -724,9 +645,8 @@ function* syncEditIconOnEditModeChange(action: PayloadAction<boolean>) {
     )
   }
   if (action.type === setRecipientViewEditMode.type) {
-    const recipient: RecipientState = yield select(selectRecipientState)
     const currentView: string = yield select(selectRecipientView)
-    if (recipient.mode === 'recipients' && currentView === 'recipientView') {
+    if (currentView === 'recipientView') {
       yield put(setRecipientView('recipientsView'))
     }
     yield put(
@@ -841,9 +761,6 @@ export function* envelopeToolbarSaga() {
     [setRecipientsPendingIds.type, toggleRecipientSelection.type],
     syncRecipientsViewIdsFromPending,
   )
-  yield takeEvery(setRecipientMode.type, syncRecipientModeWithActiveList)
-  yield takeEvery(setRecipientMode.type, syncRecipientsSectionOnRecipientMode)
-  yield takeEvery(setRecipientMode.type, syncAddressListIconsFromActive)
   yield takeEvery(setActiveAddressList.type, syncAddressListIconsFromActive)
   yield takeEvery(setActiveAddressList.type, syncAddressBookModeFromActive)
   yield takeEvery(closeAddressList.type, syncAddressListIconsFromActive)

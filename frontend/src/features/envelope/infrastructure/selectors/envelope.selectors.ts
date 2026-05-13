@@ -8,23 +8,13 @@ import {
 import {
   selectRecipientState,
   selectRecipientViewId,
-  selectRecipientEnabled,
 } from '../../recipient/infrastructure/selectors'
 import type { EnvelopeSessionRecord } from '../../domain/types'
-import type { RecipientState } from '../../recipient/domain/types'
-import type { AddressFields } from '@shared/config/constants'
+import type { RecipientState, RecipientMode } from '../../recipient/domain/types'
 import {
   getMatchingEntryId,
   getAddressListToolbarFragment,
 } from '../../domain/helpers'
-
-const emptyAddressFields: AddressFields = {
-  name: '',
-  street: '',
-  city: '',
-  zip: '',
-  country: '',
-}
 
 const selectEnvelopeSelectionState = (state: {
   envelopeSelection: {
@@ -93,7 +83,7 @@ export const selectActiveAddressList = createSelector(
 
 export const selectRecipientMode = createSelector(
   [selectRecipientState],
-  (recipient) => recipient.mode ?? 'recipient',
+  (): RecipientMode => 'recipients',
 )
 
 export const selectRecipientTemplateId = selectRecipientViewId
@@ -130,26 +120,7 @@ export const selectSelectedRecipientEntriesInOrder = createSelector(
       .filter((e): e is AddressBookEntry => e != null),
 )
 
-export const selectRecipientListPendingIds = createSelector(
-  [
-    selectRecipientsPendingIds,
-    selectRecipientState,
-    selectRecipientEntriesState,
-    selectRecipientEnabled,
-  ],
-  (recipientsPendingIds, recipient, recipientEntries, recipientEnabled) => {
-    if (recipientEnabled) return recipientsPendingIds ?? []
-    const addressForMatch: AddressFields =
-      recipient.currentView === 'addressFormRecipientView'
-        ? recipient.formDraft
-        : recipient.recipientViewId
-          ? ((recipientEntries.find((e) => e.id === recipient.recipientViewId)
-              ?.address as AddressFields) ?? emptyAddressFields)
-          : emptyAddressFields
-    const singleId = getMatchingEntryId(addressForMatch, recipientEntries)
-    return singleId ? [singleId] : []
-  },
-)
+export const selectRecipientListPendingIds = selectRecipientsPendingIds
 
 export const selectSenderSelectedId = createSelector(
   [selectSenderState, selectSenderEntriesState],

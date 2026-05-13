@@ -131,11 +131,9 @@ function cardphotoUrlsFromCard(card: Card): {
 function recipientAppliedCount(recipient: RecipientState): number {
   const n = recipient.applied?.length ?? 0
   if (n > 0) return n
-  if (recipient.mode === 'recipients') {
-    const a = recipient.recipientsViewIdsFirstList?.length ?? 0
-    const b = recipient.recipientsViewIdsSecondList?.length ?? 0
-    if (a + b > 0) return a + b
-  }
+  const a = recipient.recipientsViewIdsFirstList?.length ?? 0
+  const b = recipient.recipientsViewIdsSecondList?.length ?? 0
+  if (a + b > 0) return a + b
   if (recipient.appliedData != null || recipient.formIsComplete) return 1
   return 0
 }

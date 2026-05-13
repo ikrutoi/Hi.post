@@ -19,7 +19,7 @@ export const AddressBookModal: React.FC<Props> = ({
   return (
     <div className="address-book">
       <div className="address-book__header">
-        <h3>Address book: {role === 'sender' ? 'Sender' : 'Recipient'}</h3>
+        <h3>Address book: {role === 'sender' ? 'Sender' : 'Recipients'}</h3>
         <button onClick={onClose}>Close</button>
       </div>
 

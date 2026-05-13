@@ -4,9 +4,7 @@ import {
   selectIsRecipientComplete,
   selectRecipientDisplayAddress,
   selectRecipientCompletedFields,
-  selectRecipientEnabled,
   selectRecipientState,
-  selectRecipientView,
   selectRecipientViewId,
   selectRecipientFormDraft,
   selectRecipientsDisplayList,
@@ -17,16 +15,11 @@ import {
 } from '@envelope/infrastructure/selectors'
 import {
   clearRecipient,
-  setEnabled,
-  setRecipientView,
-  setRecipientViewId,
   updateRecipientField,
-  setRecipientMode,
   toggleRecipientSelection,
   removeRecipientFromListByIndex,
   removeRecipientFromListById,
 } from '../../infrastructure/state'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { AddressField } from '@shared/config/constants'
 
 export const useRecipientFacade = () => {
@@ -37,9 +30,7 @@ export const useRecipientFacade = () => {
   const formDraft = useAppSelector(selectRecipientFormDraft)
   const completedFields = useAppSelector(selectRecipientCompletedFields)
   const isComplete = useAppSelector(selectIsRecipientComplete)
-  const isEnabled = useAppSelector(selectRecipientEnabled)
   const recipientTemplateId = useAppSelector(selectRecipientViewId)
-  const recipientView = useAppSelector(selectRecipientView)
   const listSelectedIds = useAppSelector(selectRecipientListPendingIds)
   const listPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
@@ -49,10 +40,8 @@ export const useRecipientFacade = () => {
       const index = parseInt(id.replace('recipient-', ''), 10)
       if (!Number.isNaN(index))
         dispatch(removeRecipientFromListByIndex(index))
-    } else if (isEnabled) {
-      dispatch(removeRecipientFromListById(id))
     } else {
-      dispatch(toggleRecipientSelection(id))
+      dispatch(removeRecipientFromListById(id))
     }
   }
 
@@ -60,37 +49,13 @@ export const useRecipientFacade = () => {
     id: string
     address: Record<string, string>
   }) => {
-    if (isEnabled) {
-      dispatch(toggleRecipientSelection(entry.id))
-    } else {
-      dispatch(setRecipientView('recipientView'))
-      dispatch(setRecipientViewId(entry.id))
-      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-        ([field, value]) => dispatch(updateRecipientField({ field, value })),
-      )
-    }
+    dispatch(toggleRecipientSelection(entry.id))
   }
 
   const update = (field: AddressField, value: string) =>
     dispatch(updateRecipientField({ field, value }))
 
   const clear = () => dispatch(clearRecipient())
-  const toggleEnabled = () => {
-    const nextEnabled = !isEnabled
-    dispatch(setEnabled(nextEnabled))
-    dispatch(setRecipientMode(nextEnabled ? 'recipients' : 'recipient'))
-    if (!nextEnabled) {
-      dispatch(
-        updateToolbarIcon({
-          section: 'recipient',
-          key: 'apply',
-          value: {
-            state: recipientTemplateId ? 'enabled' : 'disabled',
-          },
-        }),
-      )
-    }
-  }
 
   return {
     state,
@@ -98,7 +63,6 @@ export const useRecipientFacade = () => {
     formDraft,
     completedFields,
     isComplete,
-    isEnabled,
     layout: recipientLayout,
 
     listPanelOpen,
@@ -109,6 +73,5 @@ export const useRecipientFacade = () => {
 
     update,
     clear,
-    toggleEnabled,
   }
 }

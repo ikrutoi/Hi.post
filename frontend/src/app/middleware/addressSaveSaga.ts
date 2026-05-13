@@ -7,7 +7,6 @@ import { updateGroupStatus } from '@toolbar/infrastructure/state'
 import {
   saveAddressRequested as recipientSaveRequested,
   setRecipientViewId,
-  setRecipientMode,
   setRecipientView,
   clearRecipientFormData,
   updateRecipientField,
@@ -104,7 +103,6 @@ function* handleAddressSave(
       const id = String(result.templateId)
       if (role === 'recipient') {
         yield put(setRecipientViewId(id))
-        yield put(setRecipientMode('recipient'))
         yield put(setRecipientView('recipientView'))
         yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearRecipientFormData())

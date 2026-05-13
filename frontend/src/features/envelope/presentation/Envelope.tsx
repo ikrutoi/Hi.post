@@ -73,17 +73,18 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
               className={styles.envelopePeekBlock}
             />
           ) : (
-            <EnvelopeAddress role="recipient" roleLabel="Recipient" lang={lang} />
+            <EnvelopeAddress
+              role="recipient"
+              roleLabel="Recipients"
+              lang={lang}
+            />
           )}
         </div>
       </div>
 
       <div className={styles.envelopeSenderToggle}>
         {rightPieEnvelopePeekNoToolbar ? (
-          <div
-            className={styles.envelopeFooterSpacer}
-            aria-hidden
-          />
+          <div className={styles.envelopeFooterSpacer} aria-hidden />
         ) : (
           <div
             className={clsx(
@@ -98,7 +99,9 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
               size="default"
               variant="envelopeSender"
             />
-            <IconUserSenderCentered className={styles.envelopeSenderToggleIcon} />
+            <IconUserSenderCentered
+              className={styles.envelopeSenderToggleIcon}
+            />
           </div>
         )}
       </div>

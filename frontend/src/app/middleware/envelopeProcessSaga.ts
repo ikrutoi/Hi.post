@@ -4,7 +4,6 @@ import {
   clearRecipient,
   restoreRecipient,
   setRecipientView,
-  setRecipientMode,
 } from '@envelope/recipient/infrastructure/state'
 import {
   updateSenderField,
@@ -25,7 +24,6 @@ import {
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
   selectActiveAddressList,
-  selectRecipientMode,
 } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
@@ -76,7 +74,6 @@ import type { AddressFields } from '@shared/config/constants'
 import type {
   RecipientState,
   SenderState,
-  RecipientMode,
 } from '@envelope/domain/types'
 
 export function* processEnvelopeVisuals() {
@@ -175,10 +172,7 @@ export function* processEnvelopeVisuals() {
     }),
   )
 
-  const recipientMode: RecipientMode = yield select(selectRecipientMode)
-  const listApplyState = !(
-    recipientListPanelOpenForToolbar && recipientMode === 'recipients'
-  )
+  const listApplyState = !recipientListPanelOpenForToolbar
     ? 'disabled'
     : recipient.currentRecipientsList === 'second'
       ? 'active'
@@ -248,7 +242,6 @@ export function* processEnvelopeVisuals() {
     senderApplyState = 'disabled'
   if (
     recipient.currentView === 'addressFormRecipientView' &&
-    recipient.mode === 'recipient' &&
     !recipientComplete
   )
     recipientApplyState = 'disabled'
@@ -271,10 +264,9 @@ export function* processEnvelopeVisuals() {
   const recipientsPendingIds: string[] = yield select(
     selectRecipientsPendingIds,
   )
-  const isMultiMode = recipient.mode === 'recipients'
   const isRecipientFormOpen =
     recipient.currentView === 'addressFormRecipientView'
-  const canApplyRecipients = isMultiMode && recipientsPendingIds.length >= 1
+  const canApplyRecipients = recipientsPendingIds.length >= 1
   const isRecipientsEmptyForm = isRecipientFormOpen && !recipientComplete
   const recipientsViewIds =
     recipient.currentRecipientsList === 'second'
@@ -294,7 +286,6 @@ export function* processEnvelopeVisuals() {
         : 'enabled'
   if (
     recipient.currentView === 'addressFormRecipientView' &&
-    recipient.mode === 'recipients' &&
     !recipientComplete
   ) {
     recipientsApplyState = 'disabled'
@@ -370,7 +361,6 @@ export function* envelopeProcessSaga() {
     [
       toggleRecipientSelection.type,
       setRecipientsPendingIds.type,
-      setRecipientMode.type,
       setRecipientViewId.type,
       setSenderViewId.type,
       setSenderView.type,

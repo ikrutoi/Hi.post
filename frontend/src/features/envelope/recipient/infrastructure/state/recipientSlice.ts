@@ -4,7 +4,6 @@ import type { AddressFields } from '@shared/config/constants'
 import type {
   RecipientState,
   RecipientView,
-  RecipientMode,
   SortOptions,
   CurrentRecipientsList,
 } from '../../domain/types'
@@ -59,36 +58,13 @@ const recipientSlice = createSlice({
     },
 
     restoreRecipient: (
-      state,
+      _state,
       action: PayloadAction<Partial<RecipientState>>,
-    ) => {
-      return {
-        ...initialRecipient,
-        ...action.payload,
-      }
-    },
-
-    setEnabled: (state, action: PayloadAction<boolean>) => {
-      state.mode = action.payload ? 'recipients' : 'recipient'
-      if (action.payload) {
-        state.currentView = 'recipientsView'
-        state.recipientsViewSortDirection = 'asc'
-      } else {
-        state.currentView = 'recipientView'
-      }
-      state.formIsEmpty = isFormDraftEmpty(state.formDraft)
-    },
-
-    setRecipientMode: (state, action: PayloadAction<RecipientMode>) => {
-      state.mode = action.payload
-      if (action.payload === 'recipients') {
-        state.currentView = 'recipientsView'
-        state.recipientsViewSortDirection = 'asc'
-      } else {
-        state.currentView = 'recipientView'
-      }
-      state.formIsEmpty = isFormDraftEmpty(state.formDraft)
-    },
+    ) => ({
+      ...initialRecipient,
+      ...action.payload,
+      mode: 'recipients',
+    }),
 
     clearRecipient: () => initialRecipient,
 
@@ -198,8 +174,6 @@ const recipientSlice = createSlice({
 
 export const {
   updateRecipientField,
-  setEnabled,
-  setRecipientMode,
   restoreRecipient,
   clearRecipient,
   resetRecipientForm,

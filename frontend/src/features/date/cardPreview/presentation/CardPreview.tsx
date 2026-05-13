@@ -3,7 +3,6 @@ import { useAppSelector } from '@app/hooks'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
-import { selectRecipientEnabled } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectExcludedDispatchBranchSet,
   selectRecipientBranchSlotKeys,
@@ -84,7 +83,6 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   adjacentSessionPlaceholderNavSwap = false,
   isAdjacentMonthEdge = false,
 }) => {
-  const recipientEnabled = useAppSelector(selectRecipientEnabled)
   const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
   const recipientBranchSlotKeys = useAppSelector(selectRecipientBranchSlotKeys)
   const excludedDispatchBranchSet = useAppSelector(selectExcludedDispatchBranchSet)
@@ -200,12 +198,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   const pendingRecipientCount = recipientsPendingIds.length
 
   const effectiveRecipientCount = useMemo(() => {
-    if (
-      isHistoryLike ||
-      !recipientEnabled ||
-      !isSelectedDate ||
-      !calendarDispatchDate
-    ) {
+    if (isHistoryLike || !isSelectedDate || !calendarDispatchDate) {
       return pendingRecipientCount
     }
     const dk = dispatchDateKey(calendarDispatchDate)
@@ -216,7 +209,6 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     return pendingRecipientCount > 0 ? pendingRecipientCount : 0
   }, [
     isHistoryLike,
-    recipientEnabled,
     isSelectedDate,
     calendarDispatchDate,
     recipientBranchSlotKeys,
@@ -225,25 +217,17 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
   ])
 
   const countForRecipientBadge =
-    isSelectedDate &&
-    !isHistoryLike &&
-    recipientEnabled &&
-    calendarDispatchDate
+    isSelectedDate && !isHistoryLike && calendarDispatchDate
       ? effectiveRecipientCount
       : pendingRecipientCount
 
   const recipientFactor =
-    !isHistoryLike &&
-    recipientEnabled &&
-    countForRecipientBadge > 1
-      ? countForRecipientBadge
-      : 1
+    !isHistoryLike && countForRecipientBadge > 1 ? countForRecipientBadge : 1
 
   const useActiveBranchesOnlyForBadge =
     !isHistoryLike &&
     isSelectedDate &&
     Boolean(calendarDispatchDate) &&
-    recipientEnabled &&
     recipientBranchSlotKeys.length > 1
 
   const badgeNumeric = useActiveBranchesOnlyForBadge

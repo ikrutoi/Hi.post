@@ -14,7 +14,7 @@ export type RecipientView =
   | 'recipientView'
   | 'recipientsView'
 
-export type RecipientMode = 'recipient' | 'recipients'
+export type RecipientMode = 'recipients'
 
 export type CurrentRecipientsList = 'first' | 'second'
 

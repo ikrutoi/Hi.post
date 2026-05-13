@@ -23,7 +23,6 @@ import { selectSizeCard } from '@layout/infrastructure/selectors'
 import { setSizeCard } from '@layout/infrastructure/state'
 import {
   restoreRecipient,
-  setRecipientMode,
   setRecipientView,
 } from '@envelope/recipient/infrastructure/state'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
@@ -38,7 +37,6 @@ import {
 import {
   selectEnvelopeSessionRecord,
   selectIsEnvelopeReady,
-  selectRecipientMode,
   selectRecipientsList,
 } from '@envelope/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
@@ -168,9 +166,7 @@ export function* persistGlobalSession() {
     (state: { envelopeSelection?: { recipientsPendingIds?: string[] } }) =>
       state.envelopeSelection?.recipientsPendingIds ?? [],
   )
-  const recipientMode: 'recipient' | 'recipients' = yield select(
-    selectRecipientMode,
-  )
+  const recipientMode = 'recipients' as const
   const recipientViewId: string | null = yield select(selectRecipientViewId)
   const senderViewId: string | null = yield select(selectSenderViewId)
 
@@ -253,7 +249,6 @@ const SESSION_WATCH_ACTIONS = [
   addAddressTemplateRef.type,
   removeAddressTemplateRef.type,
   setRecipientsPendingIds.type,
-  setRecipientMode.type,
   setRecipientViewId.type,
   setSenderViewId.type,
   setRecipientsList.type,
@@ -266,18 +261,12 @@ function hasAddressData(data: Record<string, string>): boolean {
   return Object.values(data).some((v) => (v ?? '').trim() !== '')
 }
 
-/** Старые сессии сохраняли пустой одиночный режим; по умолчанию теперь «Получатели». */
+/** Нормализует устаревший `recipient.mode === 'recipient'` в сохранённом состоянии. */
 function* migrateLegacyEmptyRecipientModeToRecipients() {
   const r: RecipientState = yield select(selectRecipientState)
-  if (r.mode === 'recipients') return
-  if (r.recipientViewId != null) return
-  if ((r.applied?.length ?? 0) > 0) return
-  if ((r.recipientsViewIdsFirstList?.length ?? 0) > 0) return
-  if ((r.recipientsViewIdsSecondList?.length ?? 0) > 0) return
-  if (hasAddressData(r.viewDraft)) return
-  if (hasAddressData(r.formDraft)) return
-  yield put(setRecipientMode('recipients'))
-  yield put(setRecipientView('recipientsView'))
+  const mode = (r as RecipientState & { mode?: unknown }).mode
+  if (mode === 'recipients') return
+  yield put(restoreRecipient({ ...r, mode: 'recipients' }))
 }
 
 function* rehydrateEnvelopeSlicesFromTemplates() {
@@ -329,7 +318,7 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           currentRecipientsList: recipient.currentRecipientsList ?? 'first',
           applied: recipient.applied ?? [],
           appliedData: recipient.appliedData ?? null,
-          mode: recipient.mode,
+          mode: 'recipients',
         }),
       )
     }
@@ -672,7 +661,6 @@ export function* hydrateAppSession() {
 
       if (recipient) {
         yield put(restoreRecipient(recipient))
-        yield put(setRecipientMode(recipient.mode))
       }
 
       if (session.envelopeRecipients?.length) {
@@ -695,9 +683,6 @@ export function* hydrateAppSession() {
         ?.selectedRecipientIds
     if (listIds?.length) {
       yield put(setRecipientsPendingIds(listIds))
-    }
-    if (session.envelopeSelection?.recipientMode) {
-      yield put(setRecipientMode(session.envelopeSelection.recipientMode))
     }
     if (session.envelopeSelection?.recipientTemplateId != null) {
       yield put(

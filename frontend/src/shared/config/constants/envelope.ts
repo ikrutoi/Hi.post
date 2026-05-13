@@ -3,7 +3,7 @@ export type EnvelopeRole = (typeof ENVELOPE_ROLES)[number]
 
 export const ENVELOPE_ROLE_LABELLED = [
   { key: 'sender', label: 'Sender' },
-  { key: 'recipient', label: 'Recipient' },
+  { key: 'recipient', label: 'Recipients' },
 ] as const
 export type EnvelopeRoleLabel = (typeof ENVELOPE_ROLE_LABELLED)[number]['label']
 

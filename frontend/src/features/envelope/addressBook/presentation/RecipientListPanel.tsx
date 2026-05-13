@@ -17,7 +17,6 @@ type Props = {
   onEdit?: (entry: AddressBookEntry) => void
   onDelete?: (id: string) => void
   selectedIds?: string[]
-  isRecipientsMode?: boolean
 }
 
 export const RecipientListPanel: React.FC<Props> = ({
@@ -25,7 +24,6 @@ export const RecipientListPanel: React.FC<Props> = ({
   onEdit,
   onDelete = () => {},
   selectedIds = [],
-  isRecipientsMode = false,
 }) => {
   const handleEdit = onEdit ?? onSelect
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
@@ -60,19 +58,12 @@ export const RecipientListPanel: React.FC<Props> = ({
     const entriesChanged = entriesRef.current !== entries
     entriesRef.current = entries
 
-    if (isRecipientsMode) {
-      if (entriesChanged) setFocusedIndex(0)
-    } else {
-      const selectedIndex = combinedEntries.findIndex((e) =>
-        selectedIds.includes(e.id),
-      )
-      setFocusedIndex(selectedIndex >= 0 ? selectedIndex : 0)
-    }
+    if (entriesChanged) setFocusedIndex(0)
     // Не перетягиваем фокус с RecipientView, когда он в режиме редактирования.
     if (!recipientViewEditMode) {
       listRef.current?.focus()
     }
-  }, [combinedEntries, entries, selectedIds, isRecipientsMode, recipientViewEditMode])
+  }, [combinedEntries, entries, selectedIds, recipientViewEditMode])
 
   useEffect(() => {
     const el = listRef.current?.querySelector(`[data-index="${focusedIndex}"]`)
@@ -96,18 +87,16 @@ export const RecipientListPanel: React.FC<Props> = ({
         e.preventDefault()
         const next = Math.min(focusedIndex + 1, combinedEntries.length - 1)
         setFocusedIndex(next)
-        if (!isRecipientsMode) onSelect(combinedEntries[next])
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
         const next = Math.max(focusedIndex - 1, 0)
         setFocusedIndex(next)
-        if (!isRecipientsMode) onSelect(combinedEntries[next])
       } else if (e.key === 'Enter') {
         e.preventDefault()
         onSelect(combinedEntries[focusedIndex])
       }
     },
-    [combinedEntries, focusedIndex, onSelect, isRecipientsMode, closePanel],
+    [combinedEntries, focusedIndex, onSelect, closePanel],
   )
 
   return (
@@ -121,13 +110,7 @@ export const RecipientListPanel: React.FC<Props> = ({
         leadIconKey="addressList"
         toolbar={
           combinedEntries.length > 0 ? (
-            <Toolbar
-              section={
-                isRecipientsMode
-                  ? 'addressListRecipients'
-                  : 'addressListRecipient'
-              }
-            />
+            <Toolbar section="addressListRecipients" />
           ) : (
             false
           )

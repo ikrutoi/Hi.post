@@ -31,7 +31,6 @@ import {
 import {
   updateRecipientField,
   clearRecipient,
-  setRecipientApplied,
   setRecipientView,
 } from '../../recipient/infrastructure/state'
 import {
@@ -60,7 +59,6 @@ import {
   type EnvelopeRole,
 } from '@shared/config/constants'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { selectRecipientEnabled } from '../../recipient/infrastructure/selectors'
 
 export const useEnvelopeFacade = () => {
   const dispatch = useAppDispatch()
@@ -96,7 +94,6 @@ export const useEnvelopeFacade = () => {
   const showAddressFormCloseButton = useAppSelector(
     selectShowAddressFormCloseButton,
   )
-  const recipientEnabled = useAppSelector(selectRecipientEnabled)
 
   const handleFieldChange = (
     role: EnvelopeRole,
@@ -135,11 +132,7 @@ export const useEnvelopeFacade = () => {
   }
 
   const cancelEnvelopeSelection = () => {
-    if (recipientMode === 'recipient') {
-      dispatch(setRecipientApplied(false))
-    } else {
-      dispatch(clearRecipientsList())
-    }
+    dispatch(clearRecipientsList())
   }
 
   const toggleRecipientSelectionById = (id: string) => {
@@ -157,11 +150,7 @@ export const useEnvelopeFacade = () => {
   const toggleRecipientListPanelOpen = () => {
     const listOpen =
       activeAddressList === 'recipient' || activeAddressList === 'recipients'
-    const next = listOpen
-      ? null
-      : recipientMode === 'recipients'
-        ? 'recipients'
-        : 'recipient'
+    const next = listOpen ? null : 'recipients'
     dispatch(setActiveAddressList(next))
   }
 
@@ -182,12 +171,7 @@ export const useEnvelopeFacade = () => {
     id: string
     address: Record<string, string>
   }) => {
-    if (recipient.mode === 'recipients') {
-      dispatch(toggleRecipientSelection(entry.id))
-    } else {
-      dispatch(setRecipientViewId(entry.id))
-      dispatch(setRecipientView('recipientView'))
-    }
+    dispatch(toggleRecipientSelection(entry.id))
   }
 
   const selectSenderFromList = (entry: {
@@ -223,9 +207,7 @@ export const useEnvelopeFacade = () => {
     if (role === 'sender') {
       dispatch(setSenderView('senderView'))
     } else {
-      dispatch(
-        setRecipientView(recipientEnabled ? 'recipientsView' : 'recipientView'),
-      )
+      dispatch(setRecipientView('recipientsView'))
     }
   }
 

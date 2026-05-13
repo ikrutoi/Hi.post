@@ -86,7 +86,7 @@ const isAddressComplete = (
 export const selectIsRecipientComplete = createSelector(
   [selectRecipientState, selectRecipientEntriesState],
   (recipient, entries): boolean => {
-    if (recipient.mode === 'recipient' && recipient.recipientViewId) {
+    if (recipient.recipientViewId) {
       const entry = entries.find((e) => e.id === recipient.recipientViewId)
       if (
         entry?.address &&
@@ -98,9 +98,6 @@ export const selectIsRecipientComplete = createSelector(
     return recipient.formIsComplete
   },
 )
-
-export const selectRecipientEnabled = (state: RootState): boolean =>
-  state.recipient.mode === 'recipients'
 
 export const selectRecipientViewId = (state: RootState): string | null =>
   state.recipient.recipientViewId
@@ -209,18 +206,8 @@ const selectRecipientsDisplayEntriesFromViewIds = createSelector(
 )
 
 export const selectRecipientsDisplayList = createSelector(
-  [
-    selectRecipientsDisplayEntriesFromViewIds,
-    selectRecipientsViewSortDirectionRaw,
-    selectRecipientEnabled,
-  ],
-  (
-    baseEntries,
-    recipientsViewSortDirection,
-    recipientEnabled,
-  ): AddressBookEntry[] => {
-    if (!recipientEnabled) return []
-
+  [selectRecipientsDisplayEntriesFromViewIds, selectRecipientsViewSortDirectionRaw],
+  (baseEntries, recipientsViewSortDirection): AddressBookEntry[] => {
     const direction = recipientsViewSortDirection
     const sorted = [...baseEntries].sort((a, b) => {
       const nameA = (a.address?.name ?? '').trim().toLowerCase()

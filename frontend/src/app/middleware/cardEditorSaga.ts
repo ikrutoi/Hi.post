@@ -33,8 +33,6 @@ import {
   clearSender,
 } from '@envelope/sender/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
-import { setRecipientMode } from '@envelope/recipient/infrastructure/state'
-import { clearRecipientsList } from '@envelope/infrastructure/state'
 import { selectIsDateComplete } from '@date/infrastructure/selectors'
 import {
   selectSelectedAroma,
@@ -280,15 +278,6 @@ export function* cardEditorSaga() {
       restoreRecipient.type,
     ],
     syncEnvelopeClear,
-  )
-
-  yield takeEvery(
-    setRecipientMode.type,
-    function* (action: ReturnType<typeof setRecipientMode>) {
-      if (action.payload === 'recipient') {
-        yield put(clearRecipientsList())
-      }
-    },
   )
 
   yield takeEvery(
