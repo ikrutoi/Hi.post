@@ -11,7 +11,7 @@ type MarkStampYearDevContextValue = {
   override: number | null
   setOverride: (value: number | null) => void
   /** Последнее значение по дате (обновляет Mark); для +/- когда override ещё null. */
-  syncComputedFromDispatch: (value: number) => void
+  syncComputedFromDispatch: (value: number | null) => void
   bump: (delta: number) => void
 }
 
@@ -24,15 +24,15 @@ export function MarkStampYearDevProvider({
   children: React.ReactNode
 }) {
   const [override, setOverride] = useState<number | null>(null)
-  const computedRef = useRef(1)
+  const computedRef = useRef<number | null>(null)
 
-  const syncComputedFromDispatch = useCallback((value: number) => {
+  const syncComputedFromDispatch = useCallback((value: number | null) => {
     computedRef.current = value
   }, [])
 
   const bump = useCallback((delta: number) => {
     setOverride((prev) => {
-      const base = prev ?? computedRef.current
+      const base = prev ?? computedRef.current ?? 1
       return Math.min(99, Math.max(1, base + delta))
     })
   }, [])

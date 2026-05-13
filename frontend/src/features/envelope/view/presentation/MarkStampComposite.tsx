@@ -40,8 +40,8 @@ const DIGIT_SRC: Record<string, string> = {
 export type MarkStampCompositeProps = {
   className?: string
   variant: MarkStampVariant
-  /** 1…99 (значение с хука марки). */
-  yearCount: number
+  /** 1…99 с хука марки; `null` — дата не выбрана, слой цифр не рисуем. */
+  yearCount: number | null
 }
 
 /**
@@ -55,9 +55,11 @@ export const MarkStampComposite: React.FC<MarkStampCompositeProps> = ({
   yearCount,
 }) => {
   const baseUrl = variant === 'ready' ? markReadyBaseUrl : markCartBaseUrl
-  const clamped = Math.min(99, Math.max(1, Math.round(yearCount)))
-  const chars = String(clamped).split('')
-  const slots = markStampMedallionSlotCenters(chars)
+  const showDigits = yearCount != null
+  const chars = showDigits
+    ? String(Math.min(99, Math.max(1, Math.round(yearCount)))).split('')
+    : []
+  const slots = showDigits ? markStampMedallionSlotCenters(chars) : []
 
   return (
     <div className={clsx(styles.markStampComposite, className)}>
@@ -67,31 +69,35 @@ export const MarkStampComposite: React.FC<MarkStampCompositeProps> = ({
         className={styles.markStampBase}
         draggable={false}
       />
-      <svg
-        className={styles.markStampDigitOverlay}
-        viewBox={`0 0 ${MARK_STAMP_VIEWBOX_W} ${MARK_STAMP_VIEWBOX_H}`}
-        preserveAspectRatio="xMidYMid meet"
-        aria-hidden
-      >
-        {chars.map((ch, i) => {
-          const href = DIGIT_SRC[ch] ?? DIGIT_SRC['0']
-          const center = MARK_STAMP_DIGIT_SPRITE_CENTER[ch] ?? MARK_STAMP_DIGIT_SPRITE_CENTER['0']
-          const slot = slots[i] ?? slots[0]
-          const dx = slot.x - center.cx
-          const dy = slot.y - center.cy
-          return (
-            <image
-              key={`${ch}-${i}`}
-              href={href}
-              x={0}
-              y={0}
-              width={MARK_STAMP_VIEWBOX_W}
-              height={MARK_STAMP_VIEWBOX_H}
-              transform={`translate(${dx} ${dy})`}
-            />
-          )
-        })}
-      </svg>
+      {showDigits ? (
+        <svg
+          className={styles.markStampDigitOverlay}
+          viewBox={`0 0 ${MARK_STAMP_VIEWBOX_W} ${MARK_STAMP_VIEWBOX_H}`}
+          preserveAspectRatio="xMidYMid meet"
+          aria-hidden
+        >
+          {chars.map((ch, i) => {
+            const href = DIGIT_SRC[ch] ?? DIGIT_SRC['0']
+            const center =
+              MARK_STAMP_DIGIT_SPRITE_CENTER[ch] ??
+              MARK_STAMP_DIGIT_SPRITE_CENTER['0']
+            const slot = slots[i] ?? slots[0]
+            const dx = slot.x - center.cx
+            const dy = slot.y - center.cy
+            return (
+              <image
+                key={`${ch}-${i}`}
+                href={href}
+                x={0}
+                y={0}
+                width={MARK_STAMP_VIEWBOX_W}
+                height={MARK_STAMP_VIEWBOX_H}
+                transform={`translate(${dx} ${dy})`}
+              />
+            )
+          })}
+        </svg>
+      ) : null}
     </div>
   )
 }

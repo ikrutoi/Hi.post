@@ -11,6 +11,7 @@ export function dispatchDateToLocalCalendarDate(d: DispatchDate): Date {
 
 /**
  * Число на марке (1…99) по сроку до даты отправления от «сегодня» (локальный календарный день).
+ * `null` — дата ещё не выбрана (или только placeholder): цифру на марке не показываем.
  * — не более года (включительно) → 1
  * — больше года, не более двух → 2
  * — …
@@ -19,14 +20,14 @@ export function dispatchDateToLocalCalendarDate(d: DispatchDate): Date {
 export function markStampYearCountFromDispatch(
   now: Date,
   dispatch: DispatchDate | null,
-): number {
-  if (dispatch == null) return 1
+): number | null {
+  if (dispatch == null) return null
   if (
     dispatch.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&
     dispatch.month === POSTCARD_DISPATCH_DATE_FALLBACK.month &&
     dispatch.day === POSTCARD_DISPATCH_DATE_FALLBACK.day
   ) {
-    return 1
+    return null
   }
 
   const dispatchAt = dispatchDateToLocalCalendarDate(dispatch).getTime()

@@ -15,11 +15,11 @@ function editorPrimaryDispatchDate(
 }
 
 /**
- * Значение для марки только по дате (1…99), без dev-override.
+ * Значение для марки только по дате (1…99 или `null`), без dev-override.
  */
 export function useMarkStampYearCountComputed(
   simplifiedPeek: boolean,
-): number {
+): number | null {
   const { selectedDate, mergedDispatchDates } = useDateFacade()
   const { listRowInner } = useRightListArchiveMini()
 
@@ -42,9 +42,11 @@ export function useMarkStampYearCountComputed(
 }
 
 /**
- * Значение для марки (1…99): дата + временный override из dev-кнопок.
+ * Значение для марки (1…99 или `null`): дата + временный override из dev-кнопок.
  */
-export function useMarkStampYearCount(simplifiedPeek: boolean): number {
+export function useMarkStampYearCount(
+  simplifiedPeek: boolean,
+): number | null {
   const computed = useMarkStampYearCountComputed(simplifiedPeek)
   const dev = useMarkStampYearDevOptional()
 

@@ -1,10 +1,6 @@
 @use '@styles/config/colors' as *;
 
 $list-panel-stacked-band: 3.75rem;
-/**
- * Компактный хедер без тулбара + горизонтальный разделитель
- * (`headerCompactWithDivider` + `headerDivider` в `ListPanelStackedHeader`).
- */
 $list-panel-compact-header-band: 2.35rem;
 $list-panel-scroll-inset: 0.35rem;
 
