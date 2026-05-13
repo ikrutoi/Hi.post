@@ -15,7 +15,7 @@ function editorPrimaryDispatchDate(
 }
 
 /**
- * Значение для марки только по дате (1…99 или `null`), без dev-override.
+ * Значение для марки только по дате (1…99, 100 при сроке ≥100 лет, или `null`), без dev-override.
  */
 export function useMarkStampYearCountComputed(
   simplifiedPeek: boolean,
@@ -42,7 +42,7 @@ export function useMarkStampYearCountComputed(
 }
 
 /**
- * Значение для марки (1…99 или `null`): дата + временный override из dev-кнопок.
+ * Значение для марки (1…100 или `null`): дата + временный override из dev-кнопок.
  */
 export function useMarkStampYearCount(
   simplifiedPeek: boolean,
@@ -55,7 +55,7 @@ export function useMarkStampYearCount(
   }, [computed, dev])
 
   if (dev?.override != null) {
-    return Math.min(99, Math.max(1, Math.round(dev.override)))
+    return Math.min(100, Math.max(1, Math.round(dev.override)))
   }
   return computed
 }

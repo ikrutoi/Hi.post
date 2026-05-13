@@ -33,7 +33,7 @@ export function MarkStampYearDevProvider({
   const bump = useCallback((delta: number) => {
     setOverride((prev) => {
       const base = prev ?? computedRef.current ?? 1
-      return Math.min(99, Math.max(1, base + delta))
+      return Math.min(100, Math.max(1, base + delta))
     })
   }, [])
 

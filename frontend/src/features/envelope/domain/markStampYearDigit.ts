@@ -15,7 +15,7 @@ export function dispatchDateToLocalCalendarDate(d: DispatchDate): Date {
  * — не более года (включительно) → 1
  * — больше года, не более двух → 2
  * — …
- * — более 99 лет → 99 (отдельная марка «100» не входит в этот расчёт).
+ * — от 100 лет и дольше → 100 (отдельная готовая марка `mark_os_ready_100.svg`, без оверлея цифр).
  */
 export function markStampYearCountFromDispatch(
   now: Date,
@@ -37,5 +37,6 @@ export function markStampYearCountFromDispatch(
 
   const spanYears = spanMs / MS_PER_YEAR
   const step = Math.max(1, Math.ceil(spanYears))
+  if (step >= 100) return 100
   return Math.min(99, step)
 }

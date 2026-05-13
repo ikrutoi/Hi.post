@@ -2,6 +2,7 @@ import React from 'react'
 import clsx from 'clsx'
 import markCartBaseUrl from '@envelope/assets/mark_os_cart_base_anchor.svg?url'
 import markReadyBaseUrl from '@envelope/assets/mark_os_ready_base_anchor.svg?url'
+import markReady100Url from '@envelope/assets/mark_os_ready_100.svg?url'
 import digit0 from '@envelope/assets/digits/digit-0.svg?url'
 import digit1 from '@envelope/assets/digits/digit-1.svg?url'
 import digit2 from '@envelope/assets/digits/digit-2.svg?url'
@@ -40,7 +41,7 @@ const DIGIT_SRC: Record<string, string> = {
 export type MarkStampCompositeProps = {
   className?: string
   variant: MarkStampVariant
-  /** 1…99 с хука марки; `null` — дата не выбрана, слой цифр не рисуем. */
+  /** 1…99 или 100 (готовая марка); `null` — дата не выбрана, слой цифр не рисуем. */
   yearCount: number | null
 }
 
@@ -54,8 +55,13 @@ export const MarkStampComposite: React.FC<MarkStampCompositeProps> = ({
   variant,
   yearCount,
 }) => {
-  const baseUrl = variant === 'ready' ? markReadyBaseUrl : markCartBaseUrl
-  const showDigits = yearCount != null
+  const isCenturyStamp = yearCount === 100
+  const baseUrl = isCenturyStamp
+    ? markReady100Url
+    : variant === 'ready'
+      ? markReadyBaseUrl
+      : markCartBaseUrl
+  const showDigits = yearCount != null && !isCenturyStamp
   const chars = showDigits
     ? String(Math.min(99, Math.max(1, Math.round(yearCount)))).split('')
     : []
