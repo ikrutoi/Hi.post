@@ -2,3 +2,5 @@ node_modules
 
 # Frontend build output (генерируется `npm run build` в frontend/)
 frontend/dist
+# Bundle visualizer report (rollup-plugin-visualizer и т.п.)
+frontend/stats.html
