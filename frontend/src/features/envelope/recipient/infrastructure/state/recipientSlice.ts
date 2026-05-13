@@ -20,7 +20,7 @@ function isFormDraftEmpty(data: AddressFields): boolean {
 }
 
 export const initialRecipient: RecipientState = {
-  currentView: 'addressFormRecipientView',
+  currentView: 'recipientsView',
   formDraft: { ...initialSection.data },
   viewDraft: { ...initialSection.data },
   formIsComplete: false,
@@ -33,7 +33,7 @@ export const initialRecipient: RecipientState = {
   currentRecipientsList: 'first',
   applied: [],
   appliedData: null,
-  mode: 'recipient',
+  mode: 'recipients',
 }
 
 function isComplete(data: AddressFields): boolean {

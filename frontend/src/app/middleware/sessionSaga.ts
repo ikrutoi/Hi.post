@@ -24,6 +24,7 @@ import { setSizeCard } from '@layout/infrastructure/state'
 import {
   restoreRecipient,
   setRecipientMode,
+  setRecipientView,
 } from '@envelope/recipient/infrastructure/state'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
@@ -263,6 +264,20 @@ const SESSION_WATCH_ACTIONS = [
 
 function hasAddressData(data: Record<string, string>): boolean {
   return Object.values(data).some((v) => (v ?? '').trim() !== '')
+}
+
+/** Старые сессии сохраняли пустой одиночный режим; по умолчанию теперь «Получатели». */
+function* migrateLegacyEmptyRecipientModeToRecipients() {
+  const r: RecipientState = yield select(selectRecipientState)
+  if (r.mode === 'recipients') return
+  if (r.recipientViewId != null) return
+  if ((r.applied?.length ?? 0) > 0) return
+  if ((r.recipientsViewIdsFirstList?.length ?? 0) > 0) return
+  if ((r.recipientsViewIdsSecondList?.length ?? 0) > 0) return
+  if (hasAddressData(r.viewDraft)) return
+  if (hasAddressData(r.formDraft)) return
+  yield put(setRecipientMode('recipients'))
+  yield put(setRecipientView('recipientsView'))
 }
 
 function* rehydrateEnvelopeSlicesFromTemplates() {
@@ -697,6 +712,7 @@ export function* hydrateAppSession() {
     }
 
     yield call(rehydrateEnvelopeSlicesFromTemplates)
+    yield call(migrateLegacyEmptyRecipientModeToRecipients)
     yield call(syncEnvelopeStatus)
 
     // При перезагрузке панели списков (Получатель / Отправитель) всегда скрыты

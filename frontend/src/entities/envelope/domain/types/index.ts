@@ -39,7 +39,7 @@ export const emptyEnvelope = {
     enabled: true,
   } as SenderState,
   recipient: {
-    currentView: 'addressFormRecipientView' as const,
+    currentView: 'recipientsView' as const,
     formDraft: {
       name: '',
       street: '',
@@ -64,6 +64,6 @@ export const emptyEnvelope = {
     currentRecipientsList: 'first',
     applied: [],
     appliedData: null,
-    mode: 'recipient',
+    mode: 'recipients',
   } as RecipientState,
 }
