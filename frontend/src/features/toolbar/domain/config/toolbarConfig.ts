@@ -26,10 +26,6 @@ import {
   RECIPIENTS_KEYS,
   initialRecipientsToolbarState,
   RECIPIENTS_TOOLBAR,
-  ADDRESS_FAVORITE_KEYS,
-  ADDRESS_FAVORITE_TOOLBAR,
-  initialSenderFavoriteToolbarState,
-  initialRecipientFavoriteToolbarState,
   initialRecipientViewToolbarState,
   RECIPIENT_VIEW_TOOLBAR,
   initialAddressListRecipientsToolbarState,
@@ -308,28 +304,6 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'address',
     getBadges: (state: ToolbarState['addressListRecipients']) => ({}),
     toolbar: ADDRESS_LIST_RECIPIENTS_TOOLBAR,
-  },
-
-  recipientFavorite: {
-    keys: ADDRESS_FAVORITE_KEYS,
-    initialState: initialRecipientFavoriteToolbarState,
-    onAction: (key, section, _editor, dispatch) => {
-      dispatch({ type: 'toolbar/action', payload: { section, key } })
-    },
-    group: 'addressFavorite',
-    getBadges: (state: ToolbarState['recipientFavorite']) => ({}),
-    toolbar: ADDRESS_FAVORITE_TOOLBAR,
-  },
-
-  senderFavorite: {
-    keys: ADDRESS_FAVORITE_KEYS,
-    initialState: initialSenderFavoriteToolbarState,
-    onAction: (key, section, _editor, dispatch) => {
-      dispatch({ type: 'toolbar/action', payload: { section, key } })
-    },
-    group: 'addressFavorite',
-    getBadges: (state: ToolbarState['senderFavorite']) => ({}),
-    toolbar: ADDRESS_FAVORITE_TOOLBAR,
   },
 
   senderView: {

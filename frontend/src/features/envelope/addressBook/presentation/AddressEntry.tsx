@@ -10,10 +10,8 @@ type Props = {
   onDelete: (id: string) => void
   deleteAction?: 'delete' | 'removeFromList'
   onEdit?: (entry: AddressBookEntry) => void
-  isStarred?: boolean
   isSelected?: boolean
   isFocused?: boolean
-  onToggleStar?: () => void
   variant?: 'sender' | 'recipient'
 }
 
@@ -23,10 +21,8 @@ export const AddressEntry: React.FC<Props> = ({
   onDelete,
   deleteAction = 'delete',
   onEdit,
-  isStarred = false,
   isSelected = false,
   isFocused = false,
-  onToggleStar,
   variant = 'recipient',
 }) => {
   const isRemoveFromList = deleteAction === 'removeFromList'
@@ -37,26 +33,8 @@ export const AddressEntry: React.FC<Props> = ({
       className={clsx(styles.root, variant === 'sender' && styles.rootSender)}
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
-      data-no-star={!onToggleStar ? 'true' : undefined}
       data-has-edit={onEdit ? 'true' : undefined}
     >
-      {onToggleStar && (
-        <button
-          type="button"
-          className={styles.star}
-          data-starred={isStarred ? 'true' : undefined}
-          onClick={(e) => {
-            e.stopPropagation()
-            onToggleStar()
-          }}
-          aria-label={
-            isStarred ? 'Remove from quick access' : 'Add to quick access'
-          }
-          title={isStarred ? 'Remove from quick access' : 'Add to quick access'}
-        >
-          ★
-        </button>
-      )}
       <div className={styles.field}>
         <div className={styles.info} onClick={() => onSelect(entry)}>
           <strong>

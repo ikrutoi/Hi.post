@@ -180,10 +180,8 @@ export const RecipientListPanel: React.FC<Props> = ({
                     onSelect={onSelect}
                     onDelete={onDeleteEntry}
                     onEdit={handleEdit}
-                    isStarred
                     isSelected={selectedIds.includes(entry.id)}
                     isFocused={focusedIndex === index}
-                    onToggleStar={() => handleToggleStar(entry.id, true)}
                   />
                 </div>
               ))}
@@ -203,10 +201,8 @@ export const RecipientListPanel: React.FC<Props> = ({
                       onSelect={onSelect}
                       onDelete={onDeleteEntry}
                       onEdit={handleEdit}
-                      isStarred={false}
                       isSelected={selectedIds.includes(entry.id)}
                       isFocused={focusedIndex === dataIndex}
-                      onToggleStar={() => handleToggleStar(entry.id, false)}
                     />
                   </div>
                 )

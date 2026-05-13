@@ -351,29 +351,6 @@ export function* processEnvelopeVisuals() {
     }),
   )
 
-  const senderFavoriteState = !senderComplete
-    ? 'disabled'
-    : isSenderFavorite
-      ? 'active'
-      : 'enabled'
-  const recipientFavoriteState = !recipientComplete
-    ? 'disabled'
-    : isRecipientFavorite
-      ? 'active'
-      : 'enabled'
-  yield put(
-    updateToolbarSection({
-      section: 'senderFavorite',
-      value: { favorite: { state: senderFavoriteState } },
-    }),
-  )
-  yield put(
-    updateToolbarSection({
-      section: 'recipientFavorite',
-      value: { favorite: { state: recipientFavoriteState } },
-    }),
-  )
-
   const recipientViewId: string | null = yield select(selectRecipientViewId)
   const senderViewId: string | null = yield select(selectSenderViewId)
   const isSavedAddressRecipientFavorite =

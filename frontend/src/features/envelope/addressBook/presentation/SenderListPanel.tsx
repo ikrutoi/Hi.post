@@ -152,12 +152,8 @@ export const SenderListPanel: React.FC<Props> = ({
                     onSelect={onSelect}
                     onDelete={onDeleteEntry}
                     onEdit={handleEdit}
-                    isStarred
                     isSelected={selectedId === entry.id}
                     isFocused={focusedIndex === index}
-                    onToggleStar={() =>
-                      handleToggleStar(entry.id, true)
-                    }
                     variant="sender"
                   />
                 </div>
@@ -178,12 +174,8 @@ export const SenderListPanel: React.FC<Props> = ({
                       onSelect={onSelect}
                       onDelete={onDeleteEntry}
                       onEdit={handleEdit}
-                      isStarred={false}
                       isSelected={selectedId === entry.id}
                       isFocused={focusedIndex === dataIndex}
-                      onToggleStar={() =>
-                        handleToggleStar(entry.id, false)
-                      }
                       variant="sender"
                     />
                   </div>
