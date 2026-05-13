@@ -165,7 +165,7 @@ function* handleEnvelopeToolbarAction(
   }
 
   if (key === 'addressList') {
-    const active: 'sender' | 'recipient' | 'recipients' | null = yield select(
+    const active: 'sender' | 'recipients' | null = yield select(
       selectActiveAddressList,
     )
     if (section === 'sender' || section === 'addressListSender') {
@@ -178,8 +178,8 @@ function* handleEnvelopeToolbarAction(
       section === 'recipientView' ||
       section === 'addressListRecipient'
     ) {
-      const listOpen = active === 'recipient' || active === 'recipients'
-      const nextMode: 'recipient' | 'recipients' | null = listOpen ? null : 'recipients'
+      const listOpen = active === 'recipients'
+      const nextMode: 'recipients' | null = listOpen ? null : 'recipients'
       yield put(setActiveAddressList(nextMode))
       yield call(syncAddressListIconsFromActive)
       return
@@ -471,7 +471,6 @@ function* handleEnvelopeToolbarAction(
             currentRecipientsList: 'first',
             applied: [id],
             appliedData: address,
-            mode: 'recipients',
           })
         }
       }
@@ -625,7 +624,7 @@ function* syncRecipientsViewIdsFromPending() {
 }
 
 function* syncAddressBookModeFromActive() {
-  const active: 'sender' | 'recipient' | 'recipients' | null = yield select(
+  const active: 'sender' | 'recipients' | null = yield select(
     selectActiveAddressList,
   )
   yield put(setAddressBookMode(active))
@@ -660,7 +659,7 @@ function* syncEditIconOnEditModeChange(action: PayloadAction<boolean>) {
 }
 
 function* syncAddressListIconsFromActive() {
-  const active: 'sender' | 'recipient' | 'recipients' | null = yield select(
+  const active: 'sender' | 'recipients' | null = yield select(
     selectActiveAddressList,
   )
   const senderEntries: { id: string }[] = yield select(
@@ -681,7 +680,7 @@ function* syncAddressListIconsFromActive() {
       : getAddressListToolbarFragment(senderCount)
 
   const recipientSectionAddressList =
-    active === 'recipient'
+    active === 'recipients'
       ? {
           state: 'active' as const,
           options: { badge: recipientCount > 0 ? recipientCount : null },
@@ -697,7 +696,7 @@ function* syncAddressListIconsFromActive() {
       : getAddressListToolbarFragment(recipientCount)
 
   const addressListRecipientValue =
-    active === 'recipient' || active === 'recipients'
+    active === 'recipients'
       ? {
           state: 'active' as const,
           options: { badge: recipientCount > 0 ? recipientCount : null },

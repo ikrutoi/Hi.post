@@ -32,7 +32,6 @@ export const initialRecipient: RecipientState = {
   currentRecipientsList: 'first',
   applied: [],
   appliedData: null,
-  mode: 'recipients',
 }
 
 function isComplete(data: AddressFields): boolean {
@@ -59,12 +58,14 @@ const recipientSlice = createSlice({
 
     restoreRecipient: (
       _state,
-      action: PayloadAction<Partial<RecipientState>>,
-    ) => ({
-      ...initialRecipient,
-      ...action.payload,
-      mode: 'recipients',
-    }),
+      action: PayloadAction<Partial<RecipientState> & Record<string, unknown>>,
+    ) => {
+      const { mode: _removed, ...rest } = action.payload
+      return {
+        ...initialRecipient,
+        ...rest,
+      }
+    },
 
     clearRecipient: () => initialRecipient,
 

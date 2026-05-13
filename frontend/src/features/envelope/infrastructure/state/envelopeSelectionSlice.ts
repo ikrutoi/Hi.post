@@ -49,8 +49,7 @@ export const envelopeSelectionSlice = createSlice({
       const mode = action.payload
       state.activeAddressList = mode
       state.senderListPanelOpen = mode === 'sender'
-      state.recipientListPanelOpen =
-        mode === 'recipient' || mode === 'recipients'
+      state.recipientListPanelOpen = mode === 'recipients'
     },
 
     closeAddressList(state) {

@@ -14,8 +14,6 @@ export type RecipientView =
   | 'recipientView'
   | 'recipientsView'
 
-export type RecipientMode = 'recipients'
-
 export type CurrentRecipientsList = 'first' | 'second'
 
 export const SORTED_BY = ['name', 'country', 'city', 'order'] as const
@@ -42,5 +40,4 @@ export type RecipientState = {
   currentRecipientsList: CurrentRecipientsList
   applied: string[]
   appliedData: AddressFields | null
-  mode: RecipientMode
 }

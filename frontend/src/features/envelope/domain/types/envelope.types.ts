@@ -1,8 +1,6 @@
 import type { SenderState } from '../../sender/domain/types'
 import type { RecipientState } from '../../recipient/domain/types'
 
-export type RecipientMode = 'recipients'
-
 export interface EnvelopeSessionRecord {
   sender: SenderState
   recipient: RecipientState

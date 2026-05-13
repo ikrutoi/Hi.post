@@ -1,6 +1,6 @@
 import type { ListStatus } from '@entities/envelope/domain/types'
 
-export const ADDRESS_BOOK_MODE = ['sender', 'recipient', 'recipients'] as const
+export const ADDRESS_BOOK_MODE = ['sender', 'recipients'] as const
 export type AddressBookMode = (typeof ADDRESS_BOOK_MODE)[number]
 
 export interface AddressBookEntry {

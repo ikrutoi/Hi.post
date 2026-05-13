@@ -119,7 +119,6 @@ function buildCartDuplicateKey(card: Card): string {
       style: cardtextBranch?.style ?? null,
     },
     recipient: {
-      mode: recipient?.mode ?? null,
       recipientViewId: recipient?.recipientViewId ?? null,
       appliedIds: recipientAppliedIds,
       addr: normalizeAddressForDedupe(recipient?.appliedData ?? undefined),
@@ -191,7 +190,6 @@ export function* createPostcardsFromEditor(): SagaIterator {
   )
   const appliedRecipientIds = envelope.recipient?.applied ?? []
   const recipientVariants: EnvelopeSessionRecord[] =
-    envelope.recipient?.mode === 'recipients' &&
     appliedRecipientIds.length > 0
       ? appliedRecipientIds.map((recipientId) => {
           const matchedAddress =
@@ -374,7 +372,6 @@ export function* handleToggleCartForDispatchBranch(
   const { date, recipientSlotKey } = parsed
   const appliedRecipientIds = envelope.recipient?.applied ?? []
   const useRecipientVariants =
-    envelope.recipient?.mode === 'recipients' &&
     appliedRecipientIds.length > 0 &&
     appliedRecipientIds.includes(recipientSlotKey)
 

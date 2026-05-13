@@ -115,7 +115,7 @@ function* syncListPanelToolbarIcons(): SagaIterator {
 
 function* closeOtherListPanels(action: {
   type: string
-  payload: boolean | 'sender' | 'recipient' | 'recipients' | null
+  payload: boolean | 'sender' | 'recipients' | null
 }): SagaIterator {
   const openingDate =
     action.type === setDateListPanelOpen.type && action.payload === true

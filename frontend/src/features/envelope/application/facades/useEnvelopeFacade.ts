@@ -17,7 +17,6 @@ import {
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
   selectActiveAddressList,
-  selectRecipientMode,
   selectRecipientsList,
   selectRecipientTemplateId,
   selectSenderTemplateId,
@@ -77,7 +76,6 @@ export const useEnvelopeFacade = () => {
   const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
   const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const activeAddressList = useAppSelector(selectActiveAddressList)
-  const recipientMode = useAppSelector(selectRecipientMode)
   const listSelectedIds = useAppSelector(selectRecipientListPendingIds)
   const senderSelectedId = useAppSelector(selectSenderSelectedId)
   const recipients = useAppSelector(selectRecipientsList)
@@ -148,8 +146,7 @@ export const useEnvelopeFacade = () => {
   }
 
   const toggleRecipientListPanelOpen = () => {
-    const listOpen =
-      activeAddressList === 'recipient' || activeAddressList === 'recipients'
+    const listOpen = activeAddressList === 'recipients'
     const next = listOpen ? null : 'recipients'
     dispatch(setActiveAddressList(next))
   }
@@ -247,7 +244,6 @@ export const useEnvelopeFacade = () => {
     senderListPanelOpen,
     listSelectedIds,
     senderSelectedId,
-    recipientMode,
     recipients,
     recipientTemplateId,
     senderTemplateId,

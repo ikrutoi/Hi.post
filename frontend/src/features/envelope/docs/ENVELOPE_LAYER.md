@@ -8,15 +8,15 @@
 
 | Источник | Что хранит | Кто использует |
 |----------|------------|----------------|
-| **envelopeSelectionSlice** | `recipientsPendingIds`, `recipientListPanelOpen`, `recipientViewEditMode`, `senderListPanelOpen`, `senderViewEditMode`, `showAddressFormView`, `addressFormViewRole` | recipientSelector, envelope selectors, envelopeToolbarSaga, envelopeProcessSaga, sessionSaga, AddressView, useEnvelopeFacade |
+| **envelopeSelectionSlice** | `activeAddressList` (`'sender' \| 'recipients'`), `recipientsPendingIds`, `recipientListPanelOpen`, `recipientViewEditMode`, `senderListPanelOpen`, `senderViewEditMode`, `showAddressFormView`, `addressFormViewRole` | recipientSelector, envelope selectors, envelopeToolbarSaga, envelopeProcessSaga, sessionSaga, AddressView, useEnvelopeFacade |
 | **envelopeRecipientsSlice** | Список `RecipientState[]` (режим «несколько получателей») | recipientSelector, envelope selectors, sessionSaga, envelopeProcessSaga |
 
 ### Уже в фичах sender / recipient
 
 - **sender:** `senderSlice` — данные отправителя, viewId, applied, enabled.
-- **recipient:** `recipientSlice` — данные получателя, recipientViewId, recipientsViewIdsFirstList, **enabled** (= режим один/несколько).
+- **recipient:** `recipientSlice` — данные получателя, recipientViewId, списки id для `RecipientsView`, applied.
 
-`recipient.mode` — источник правды для режима один/несколько (`'recipient' | 'recipients'`); `envelopeSelection.recipientMode` больше не используется.
+Режим «только несколько получателей» зафиксирован в приложении: отдельного `recipient.mode` / `setRecipientMode` нет.
 
 ---
 
@@ -25,7 +25,6 @@
 ### Перенести в **recipient**
 
 - **Список получателей в режиме «несколько»** — перенести `envelopeRecipients` в фичу recipient (например `recipient/infrastructure/state/recipientsListSlice.ts`). Слайс остаётся в root как `state.recipientsList` или оставить ключ `envelopeRecipients` для обратной совместиости, но владелец — фича recipient (селекторы/экшены через recipient).
-- **recipientMode** — не хранить в envelope; везде опираться на `recipient.mode` и экшен `setRecipientMode` из recipient slice.
 - **recipient-специфичный UI в envelopeSelection:**  
   `recipientsPendingIds`, `recipientListPanelOpen`, `recipientViewEditMode` — либо перенести в recipient (отдельный слайс «recipientSelection» / «recipientUI»), либо оставить в минимальном envelope (см. ниже).
 

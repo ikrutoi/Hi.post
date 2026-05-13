@@ -10,7 +10,7 @@ import {
   selectRecipientViewId,
 } from '../../recipient/infrastructure/selectors'
 import type { EnvelopeSessionRecord } from '../../domain/types'
-import type { RecipientState, RecipientMode } from '../../recipient/domain/types'
+import type { RecipientState } from '../../recipient/domain/types'
 import {
   getMatchingEntryId,
   getAddressListToolbarFragment,
@@ -19,7 +19,7 @@ import {
 const selectEnvelopeSelectionState = (state: {
   envelopeSelection: {
     recipientsPendingIds: string[]
-    activeAddressList?: 'sender' | 'recipient' | 'recipients' | null
+    activeAddressList?: 'sender' | 'recipients' | null
     recipientListPanelOpen: boolean
     senderListPanelOpen: boolean
     senderViewEditMode?: boolean
@@ -79,11 +79,6 @@ export const selectSenderListPanelOpen = createSelector(
 export const selectActiveAddressList = createSelector(
   [selectEnvelopeSelectionState],
   (s) => s.activeAddressList ?? null,
-)
-
-export const selectRecipientMode = createSelector(
-  [selectRecipientState],
-  (): RecipientMode => 'recipients',
 )
 
 export const selectRecipientTemplateId = selectRecipientViewId
@@ -166,9 +161,7 @@ export const selectRecipientsToolbarStateWithLiveAddressList = createSelector(
     (s: RootState) => s.addressBook?.recipientEntries?.length ?? 0,
   ],
   (base, activeAddressList, recipientCount) => {
-    // Список открыт: либо уже 'recipients', либо переход с 'recipient' (без мигания иконки)
-    const listOpen =
-      activeAddressList === 'recipient' || activeAddressList === 'recipients'
+    const listOpen = activeAddressList === 'recipients'
     const addressList = listOpen
       ? {
           state: 'active' as const,

@@ -64,6 +64,5 @@ export const emptyEnvelope = {
     currentRecipientsList: 'first',
     applied: [],
     appliedData: null,
-    mode: 'recipients',
   } as RecipientState,
 }

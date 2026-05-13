@@ -16,7 +16,6 @@ import type { PreviewStripOrderState } from '@features/previewStrip/infrastructu
 
 export interface SessionEnvelopeSelection {
   recipientsPendingIds: string[]
-  recipientMode?: 'recipient' | 'recipients'
   recipientTemplateId?: string | null
   senderTemplateId?: string | null
 }

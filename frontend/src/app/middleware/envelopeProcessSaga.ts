@@ -135,10 +135,10 @@ export function* processEnvelopeVisuals() {
     senderListPanelOpen,
   })
 
-  const activeAddressList: 'sender' | 'recipient' | 'recipients' | null =
+  const activeAddressList: 'sender' | 'recipients' | null =
     yield select(selectActiveAddressList)
   const recipientListAddressList =
-    activeAddressList === 'recipient' || activeAddressList === 'recipients'
+    activeAddressList === 'recipients'
       ? {
           state: 'active' as const,
           options: {

@@ -166,7 +166,6 @@ export function* persistGlobalSession() {
     (state: { envelopeSelection?: { recipientsPendingIds?: string[] } }) =>
       state.envelopeSelection?.recipientsPendingIds ?? [],
   )
-  const recipientMode = 'recipients' as const
   const recipientViewId: string | null = yield select(selectRecipientViewId)
   const senderViewId: string | null = yield select(selectSenderViewId)
 
@@ -196,12 +195,10 @@ export function* persistGlobalSession() {
     previewStripOrder: previewStripOrder ?? null,
     envelopeSelection:
       recipientsPendingIds.length > 0 ||
-      recipientMode !== 'recipient' ||
       recipientViewId != null ||
       senderViewId != null
         ? {
             recipientsPendingIds,
-            recipientMode,
             recipientTemplateId: recipientViewId,
             senderTemplateId: senderViewId,
           }
@@ -261,14 +258,6 @@ function hasAddressData(data: Record<string, string>): boolean {
   return Object.values(data).some((v) => (v ?? '').trim() !== '')
 }
 
-/** Нормализует устаревший `recipient.mode === 'recipient'` в сохранённом состоянии. */
-function* migrateLegacyEmptyRecipientModeToRecipients() {
-  const r: RecipientState = yield select(selectRecipientState)
-  const mode = (r as RecipientState & { mode?: unknown }).mode
-  if (mode === 'recipients') return
-  yield put(restoreRecipient({ ...r, mode: 'recipients' }))
-}
-
 function* rehydrateEnvelopeSlicesFromTemplates() {
   const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
@@ -318,7 +307,6 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           currentRecipientsList: recipient.currentRecipientsList ?? 'first',
           applied: recipient.applied ?? [],
           appliedData: recipient.appliedData ?? null,
-          mode: 'recipients',
         }),
       )
     }
@@ -344,7 +332,7 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
   const envelopeList: RecipientState[] =
     (yield select(selectRecipientsList)) ?? []
 
-  if (recipientNow.mode === 'recipients' && appliedIds.length > 0) {
+  if (appliedIds.length > 0) {
     const byId = new Map(
       envelopeList
         .filter((r) => r.recipientViewId != null)
@@ -376,7 +364,6 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
             currentRecipientsList: 'first',
             applied: [id],
             appliedData: address,
-            mode: 'recipient',
           }
           changed = true
         }
@@ -697,7 +684,6 @@ export function* hydrateAppSession() {
     }
 
     yield call(rehydrateEnvelopeSlicesFromTemplates)
-    yield call(migrateLegacyEmptyRecipientModeToRecipients)
     yield call(syncEnvelopeStatus)
 
     // При перезагрузке панели списков (Получатель / Отправитель) всегда скрыты
