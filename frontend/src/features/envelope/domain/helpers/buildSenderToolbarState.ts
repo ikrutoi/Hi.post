@@ -5,7 +5,6 @@ export interface BuildSenderToolbarParams {
   hasData: boolean
   addressListCount: number
   isCurrentAddressInList: boolean
-  isCurrentAddressFavorite: boolean
   hasDraft: boolean
   isAddressFormOpen: boolean
   /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
@@ -19,7 +18,6 @@ export const buildSenderToolbarState = ({
   hasData,
   addressListCount,
   isCurrentAddressInList,
-  isCurrentAddressFavorite,
   hasDraft,
   isAddressFormOpen,
   formIsEmpty,

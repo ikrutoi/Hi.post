@@ -12,7 +12,6 @@ export interface BuildRecipientToolbarParams {
   hasData: boolean
   addressListCount: number
   isCurrentAddressInList: boolean
-  isCurrentAddressFavorite: boolean
   hasDraft: boolean
   isAddressFormOpen: boolean
   /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
@@ -26,7 +25,6 @@ export const buildRecipientToolbarState = ({
   hasData,
   addressListCount,
   isCurrentAddressInList,
-  isCurrentAddressFavorite,
   hasDraft,
   isAddressFormOpen,
   formIsEmpty,

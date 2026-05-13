@@ -5,7 +5,6 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 export const VIEW_KEYS = [
   'edit',
   'delete',
-  'favorite',
   'listClose',
   'listAdd',
   'close',
@@ -30,10 +29,7 @@ export const RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'recipientView',
-    icons: [
-      { key: 'edit', state: 'enabled' },
-      { key: 'favorite', state: 'enabled' },
-    ],
+    icons: [{ key: 'edit', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -64,10 +60,7 @@ export const initialRecipientsViewToolbarState: AddressViewToolbarState = {
 export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
-    icons: [
-      { key: 'favorite', state: 'enabled' },
-      { key: 'edit', state: 'enabled' },
-    ],
+    icons: [{ key: 'edit', state: 'enabled' }],
     status: 'enabled',
   },
   {

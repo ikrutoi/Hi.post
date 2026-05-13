@@ -30,7 +30,6 @@ export const SenderListPanel: React.FC<Props> = ({
     entries,
     starredSenderIds,
     closePanel,
-    handleToggleStar,
     handleDeleteEntry,
   } = useSenderListPanelFacade()
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
@@ -95,11 +94,10 @@ export const SenderListPanel: React.FC<Props> = ({
         onSelect(combinedEntries[next])
       } else if (e.key === 'Enter') {
         e.preventDefault()
-        const entry = combinedEntries[focusedIndex]
-        handleToggleStar(entry.id, starredSenderIds.has(entry.id))
+        onSelect(combinedEntries[focusedIndex])
       }
     },
-    [combinedEntries, focusedIndex, onSelect, handleToggleStar, starredSenderIds, closePanel],
+    [combinedEntries, focusedIndex, onSelect, closePanel],
   )
 
   return (

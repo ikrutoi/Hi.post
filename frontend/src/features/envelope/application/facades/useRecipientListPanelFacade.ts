@@ -5,7 +5,6 @@ import { useAddressTemplateActions } from '@entities/templates'
 import { closeAddressList } from '../../infrastructure/state'
 import { toggleRecipientSortDirection } from '../../recipient/infrastructure/state'
 import {
-  addAddressTemplateRef,
   removeAddressTemplateRef,
   incrementAddressTemplatesReloadVersion,
   incrementAddressBookReloadVersion,
@@ -43,18 +42,6 @@ export const useRecipientListPanelFacade = () => {
     dispatch(toggleRecipientSortDirection())
   }, [dispatch])
 
-  const handleToggleStar = useCallback(
-    (id: string, currentlyStarred: boolean) => {
-      if (currentlyStarred) {
-        dispatch(removeAddressTemplateRef({ type: 'recipient', id }))
-      } else {
-        dispatch(addAddressTemplateRef({ type: 'recipient', id }))
-        dispatch(incrementAddressTemplatesReloadVersion())
-      }
-    },
-    [dispatch],
-  )
-
   const handleDeleteEntry = useCallback(
     async (id: string, onDeleted?: (id: string) => void) => {
       try {
@@ -85,7 +72,6 @@ export const useRecipientListPanelFacade = () => {
     starredRecipientIds,
     closePanel,
     toggleSortDirection,
-    handleToggleStar,
     handleDeleteEntry,
   }
 }

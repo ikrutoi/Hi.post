@@ -52,15 +52,12 @@ import {
   setRecipientAppliedIds,
   setRecipientApplied,
 } from '@envelope/recipient/infrastructure/state'
-import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
-import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
 import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import {
   buildRecipientToolbarState,
   buildSenderToolbarState,
   getAddressListToolbarFragment,
   isAddressInList,
-  getMatchingEntryId,
 } from '@envelope/domain/helpers'
 import {
   updateToolbarSection,
@@ -122,30 +119,6 @@ export function* processEnvelopeVisuals() {
   const senderInListCount = (senderList ?? []).filter(isInList).length
   const recipientInListCount = (recipientList ?? []).filter(isInList).length
 
-  const addressTemplateRefs: { type: string; id: string }[] = yield select(
-    (s: {
-      previewStripOrder: { addressTemplateRefs: { type: string; id: string }[] }
-    }) => s.previewStripOrder?.addressTemplateRefs ?? [],
-  )
-  const senderMatchId =
-    sender.currentView === 'senderView' && sender.senderViewId
-      ? sender.senderViewId
-      : getMatchingEntryId(sender.viewDraft, senderList)
-  const recipientMatchId =
-    recipient.currentView === 'recipientView' && recipient.recipientViewId
-      ? recipient.recipientViewId
-      : getMatchingEntryId(recipient.viewDraft, recipientList)
-  const isSenderFavorite =
-    senderMatchId != null &&
-    addressTemplateRefs.some(
-      (r) => r.type === 'sender' && r.id === senderMatchId,
-    )
-  const isRecipientFavorite =
-    recipientMatchId != null &&
-    addressTemplateRefs.some(
-      (r) => r.type === 'recipient' && r.id === recipientMatchId,
-    )
-
   const hasSenderDraft = checkHasData(sender.viewDraft)
   const hasRecipientDraft = checkHasData(recipient.viewDraft)
 
@@ -159,7 +132,6 @@ export function* processEnvelopeVisuals() {
     hasData: checkHasData(sender.viewDraft),
     addressListCount: senderInListCount,
     isCurrentAddressInList: isAddressInList(sender.viewDraft, senderList),
-    isCurrentAddressFavorite: isSenderFavorite,
     hasDraft: hasSenderDraft,
     isAddressFormOpen: sender.currentView === 'addressFormSenderView',
     formIsEmpty: sender.formIsEmpty ?? true,
@@ -183,7 +155,6 @@ export function* processEnvelopeVisuals() {
     hasData: checkHasData(recipient.viewDraft),
     addressListCount: recipientInListCount,
     isCurrentAddressInList: isAddressInList(recipient.viewDraft, recipientList),
-    isCurrentAddressFavorite: isRecipientFavorite,
     hasDraft: hasRecipientDraft,
     isAddressFormOpen: recipient.currentView === 'addressFormRecipientView',
     formIsEmpty: recipient.formIsEmpty ?? true,
@@ -348,38 +319,6 @@ export function* processEnvelopeVisuals() {
             : { badgeDot: !(recipient.formIsEmpty ?? true) },
         },
       },
-    }),
-  )
-
-  const recipientViewId: string | null = yield select(selectRecipientViewId)
-  const senderViewId: string | null = yield select(selectSenderViewId)
-  const isSavedAddressRecipientFavorite =
-    recipientViewId != null &&
-    addressTemplateRefs.some(
-      (r) => r.type === 'recipient' && r.id === recipientViewId,
-    )
-  const isSavedAddressSenderFavorite =
-    senderViewId != null &&
-    addressTemplateRefs.some(
-      (r) => r.type === 'sender' && r.id === senderViewId,
-    )
-  const senderViewFavoriteState = isSavedAddressSenderFavorite
-    ? 'active'
-    : 'enabled'
-  const recipientViewFavoriteState = isSavedAddressRecipientFavorite
-    ? 'active'
-    : 'enabled'
-
-  yield put(
-    updateToolbarSection({
-      section: 'senderView',
-      value: { favorite: { state: senderViewFavoriteState } },
-    }),
-  )
-  yield put(
-    updateToolbarSection({
-      section: 'recipientView',
-      value: { favorite: { state: recipientViewFavoriteState } },
     }),
   )
 }

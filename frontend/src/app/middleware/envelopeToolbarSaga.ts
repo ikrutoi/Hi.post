@@ -70,7 +70,6 @@ import {
   selectRecipientDisplayAddress,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
-  addAddressTemplateRef,
   removeAddressTemplateRef,
   incrementAddressBookReloadVersion,
   incrementAddressTemplatesReloadVersion,
@@ -89,17 +88,6 @@ import { getAddressListToolbarFragment } from '@envelope/domain/helpers'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
-
-function addressMatches(
-  data: Record<string, string>,
-  address: Record<string, string> | undefined,
-) {
-  if (!address) return false
-  const fields = ['name', 'street', 'city', 'zip', 'country'] as const
-  return fields.every(
-    (f) => (data[f] ?? '').trim() === (address[f] ?? '').trim(),
-  )
-}
 
 function* handleSetAddressFormViewSync(
   _action: PayloadAction<{
@@ -202,44 +190,6 @@ function* handleEnvelopeToolbarAction(
       yield call(syncAddressListIconsFromActive)
       return
     }
-  }
-
-  if (
-    (section === 'senderView' || section === 'recipientView') &&
-    key === 'favorite'
-  ) {
-    const recipientViewId: string | null = yield select(selectRecipientViewId)
-    const senderViewId: string | null = yield select(selectSenderViewId)
-    const addressTemplateRefs: { type: string; id: string }[] = yield select(
-      (s: {
-        previewStripOrder: {
-          addressTemplateRefs: { type: string; id: string }[]
-        }
-      }) => s.previewStripOrder?.addressTemplateRefs ?? [],
-    )
-    let type: 'sender' | 'recipient'
-    let templateId: string | null
-    if (section === 'senderView') {
-      type = 'sender'
-      templateId = senderViewId
-    } else if (section === 'recipientView') {
-      type = 'recipient'
-      templateId = recipientViewId
-    } else {
-      templateId = recipientViewId ?? senderViewId
-      type = recipientViewId != null ? 'recipient' : 'sender'
-    }
-    if (templateId != null) {
-      const isInFavorites = addressTemplateRefs.some(
-        (r) => r.type === type && r.id === templateId,
-      )
-      if (isInFavorites) {
-        yield put(removeAddressTemplateRef({ type, id: templateId }))
-      } else {
-        yield put(addAddressTemplateRef({ type, id: templateId }))
-      }
-    }
-    return
   }
 
   if (
@@ -609,48 +559,6 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
-  if (key === 'favorite' && (section === 'sender' || section === 'recipient')) {
-    const addressSection = section
-    const sender: SenderState = yield select(selectSenderState)
-    const recipient: RecipientState = yield select(selectRecipientState)
-    const addressData =
-      addressSection === 'sender' ? sender.viewDraft : recipient.viewDraft
-
-    const adapter =
-      addressSection === 'sender' ? senderAdapter : recipientAdapter
-    const raw: { id: string; address?: Record<string, string> }[] = yield call([
-      adapter,
-      'getAll',
-    ])
-    const match = Array.isArray(raw)
-      ? raw.find((r) => addressMatches(addressData, r.address))
-      : null
-    const entryId = match ? String(match.id) : null
-
-    const addressTemplateRefs: { type: string; id: string }[] = yield select(
-      (s: {
-        previewStripOrder: {
-          addressTemplateRefs: { type: string; id: string }[]
-        }
-      }) => s.previewStripOrder?.addressTemplateRefs ?? [],
-    )
-    const isInFavorites = entryId
-      ? addressTemplateRefs.some(
-          (r) => r.type === addressSection && r.id === entryId,
-        )
-      : false
-
-    if (entryId) {
-      if (isInFavorites) {
-        yield put(
-          removeAddressTemplateRef({ type: addressSection, id: entryId }),
-        )
-      } else {
-        yield put(addAddressTemplateRef({ type: addressSection, id: entryId }))
-      }
-      yield put(incrementAddressTemplatesReloadVersion())
-    }
-  }
 }
 
 function* handleAddressSaveSuccess(

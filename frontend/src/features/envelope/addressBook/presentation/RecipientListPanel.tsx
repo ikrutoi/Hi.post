@@ -33,7 +33,6 @@ export const RecipientListPanel: React.FC<Props> = ({
     entries,
     starredRecipientIds,
     closePanel,
-    handleToggleStar,
     handleDeleteEntry,
   } = useRecipientListPanelFacade()
 
@@ -105,23 +104,10 @@ export const RecipientListPanel: React.FC<Props> = ({
         if (!isRecipientsMode) onSelect(combinedEntries[next])
       } else if (e.key === 'Enter') {
         e.preventDefault()
-        if (isRecipientsMode) {
-          onSelect(combinedEntries[focusedIndex])
-        } else {
-          const entry = combinedEntries[focusedIndex]
-          handleToggleStar(entry.id, starredRecipientIds.has(entry.id))
-        }
+        onSelect(combinedEntries[focusedIndex])
       }
     },
-    [
-      combinedEntries,
-      focusedIndex,
-      onSelect,
-      isRecipientsMode,
-      handleToggleStar,
-      starredRecipientIds,
-      closePanel,
-    ],
+    [combinedEntries, focusedIndex, onSelect, isRecipientsMode, closePanel],
   )
 
   return (
