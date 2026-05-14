@@ -2,7 +2,6 @@ import React from 'react'
 import clsx from 'clsx'
 import type { PostcardStatus } from '@entities/postcard'
 import type { HistoryPanelDensitySize } from '@shared/ui/icons'
-import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './HistoryListEntry.module.scss'
 
@@ -17,7 +16,6 @@ export type HistoryListEntryProps = {
   previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
   onSelect?: () => void
-  onDelete?: () => void
   isSelected?: boolean
   isFocused?: boolean
   /** Плотность строки списка истории (см. `historyListPanelDensity` в календаре). */
@@ -33,13 +31,10 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
   previewStatus,
   previewIsProcessed,
   onSelect,
-  onDelete,
   isSelected = false,
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
-  const showActions = Boolean(onDelete)
-  const showRightPack = showActions
   const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
   const recipientParts = parseListEntryRecipientDetail(detailLine)
 
@@ -103,30 +98,6 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
             </div>
           ) : null}
         </div>
-        {showRightPack ? (
-          <div
-            className={styles.rightPack}
-            data-has-delete={showActions ? 'true' : undefined}
-          >
-            <div className={styles.rightPriceSlot} />
-            {showActions ? (
-              <div className={styles.actions}>
-                <button
-                  type="button"
-                  className={styles.actionBtn}
-                  aria-label="Remove postcard row"
-                  title="Remove postcard row"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDelete?.()
-                  }}
-                >
-                  {getToolbarIcon({ key: 'delete' })}
-                </button>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
       </div>
     </div>
   )

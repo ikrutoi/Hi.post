@@ -29,7 +29,6 @@ export const AddressBookModal: React.FC<Props> = ({
             key={entry.id}
             entry={entry}
             onSelect={onSelect}
-            onDelete={(id) => console.log('Delete', id)}
           />
         ))}
       </div>

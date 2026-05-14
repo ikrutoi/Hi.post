@@ -69,7 +69,7 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 
 .addressFieldset {
   position: relative;
-  padding: 0 0.35rem 0.5rem;
+  padding: 0 0.5rem 0.5rem;
   border-radius: 0.75rem;
   display: flex;
   flex-direction: column;
@@ -79,7 +79,7 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 .recipientFieldsetMulti {
   /* Same bottom padding as .addressFieldset so placeholder icon aligns with single-recipient mode */
   padding-bottom: 0.5rem;
-  padding-right: 0.35rem;
+  padding-right: 0.5rem;
 }
 
 .recipientFieldsetWithList {

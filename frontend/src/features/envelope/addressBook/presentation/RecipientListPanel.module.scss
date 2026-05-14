@@ -40,8 +40,11 @@
 }
 
 .list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 0.5rem;
+  row-gap: 0.25rem;
+  align-content: start;
   flex: 1;
   min-height: 100%;
   padding: 0.5rem calc(0.25rem + 8px) 0.5rem 0.5rem;
@@ -51,12 +54,13 @@
     outline: none;
   }
 
-  > [role='option']:has(+ [data-favorites-group-end]) > :first-child {
-    margin-bottom: 0;
+  > [role='option'] {
+    min-width: 0;
   }
 }
 
 .favoritesSeparator {
+  grid-column: 1 / -1;
   flex-shrink: 0;
   min-height: 0.5rem;
 }

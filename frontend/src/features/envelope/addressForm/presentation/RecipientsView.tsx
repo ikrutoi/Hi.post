@@ -7,14 +7,12 @@ import { ScrollArea } from '@/shared/ui/ScrollArea/ScrollArea'
 
 export type RecipientsViewProps = {
   entries: AddressBookEntry[]
-  onRemove: (id: string) => void
   scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
   onEdit: (entry: AddressBookEntry) => void
 }
 
 export const RecipientsView: React.FC<RecipientsViewProps> = ({
   entries,
-  onRemove,
   scrollbarPortalTarget,
   onEdit,
 }) => {
@@ -34,10 +32,7 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
             <AddressEntry
               key={entry.id}
               entry={entry}
-              onSelect={() => {}}
-              onDelete={onRemove}
-              onEdit={onEdit}
-              deleteAction="removeFromList"
+              onSelect={(e) => onEdit(e)}
               isSelected={false}
             />
           ))}

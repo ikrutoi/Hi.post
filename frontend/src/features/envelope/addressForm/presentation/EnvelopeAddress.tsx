@@ -297,7 +297,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               recipientFacade.recipientsDisplayList.length > 0 ? (
               <RecipientsView
                 entries={recipientFacade.recipientsDisplayList}
-                onRemove={recipientFacade.removeFromList}
                 onEdit={handleEditRecipientFromList}
                 scrollbarPortalTarget={
                   recipientScrollContainerReady

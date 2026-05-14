@@ -13,24 +13,20 @@ import styles from './SenderListPanel.module.scss'
 
 type Props = {
   onSelect: (entry: AddressBookEntry) => void
-  /** При клике на Edit: открыть SenderView в режиме редактирования. Если не передано, используется onSelect. */
+  /** Открыть SenderView в режиме редактирования (например по Enter). */
   onEdit?: (entry: AddressBookEntry) => void
-  onDelete?: (id: string) => void
   selectedId?: string | null
 }
 
 export const SenderListPanel: React.FC<Props> = ({
   onSelect,
   onEdit,
-  onDelete = () => {},
   selectedId = null,
 }) => {
-  const handleEdit = onEdit ?? onSelect
   const {
     entries,
     starredSenderIds,
     closePanel,
-    handleDeleteEntry,
   } = useSenderListPanelFacade()
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
 
@@ -69,11 +65,6 @@ export const SenderListPanel: React.FC<Props> = ({
     el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
   }, [focusedIndex])
 
-  const onDeleteEntry = useCallback(
-    (id: string) => handleDeleteEntry(id, onDelete),
-    [handleDeleteEntry, onDelete],
-  )
-
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -94,10 +85,12 @@ export const SenderListPanel: React.FC<Props> = ({
         onSelect(combinedEntries[next])
       } else if (e.key === 'Enter') {
         e.preventDefault()
-        onSelect(combinedEntries[focusedIndex])
+        const entry = combinedEntries[focusedIndex]
+        onSelect(entry)
+        onEdit?.(entry)
       }
     },
-    [combinedEntries, focusedIndex, onSelect, closePanel],
+    [combinedEntries, focusedIndex, onSelect, onEdit, closePanel],
   )
 
   return (
@@ -148,8 +141,6 @@ export const SenderListPanel: React.FC<Props> = ({
                   <AddressEntry
                     entry={entry}
                     onSelect={onSelect}
-                    onDelete={onDeleteEntry}
-                    onEdit={handleEdit}
                     isSelected={selectedId === entry.id}
                     isFocused={focusedIndex === index}
                     variant="sender"
@@ -170,8 +161,6 @@ export const SenderListPanel: React.FC<Props> = ({
                     <AddressEntry
                       entry={entry}
                       onSelect={onSelect}
-                      onDelete={onDeleteEntry}
-                      onEdit={handleEdit}
                       isSelected={selectedId === entry.id}
                       isFocused={focusedIndex === dataIndex}
                       variant="sender"

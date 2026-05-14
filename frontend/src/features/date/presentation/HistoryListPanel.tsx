@@ -1,7 +1,5 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
-import { useCartFacade } from '@cart/application/facades'
-import { setHistoryListSelectedLocalId } from '@date/calendar/infrastructure/state'
 import { IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -37,7 +35,6 @@ export type HistoryListPanelItem = {
   variant?: HistoryListEntryVariant
   previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
-  onDelete?: () => void
 }
 
 type Props = {
@@ -90,7 +87,6 @@ const HistoryListPanelRow: React.FC<{
   densityLevel: HistoryPanelDensitySize
 }> = ({ item, listSelectedLocalId, onSelectEntry, densityLevel }) => {
   const dispatch = useAppDispatch()
-  const { removeItem } = useCartFacade()
   const cachedUrl = useAppSelector(
     selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
   )
@@ -112,19 +108,6 @@ const HistoryListPanelRow: React.FC<{
     isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
   const displayUrl = cachedUrl ?? safeFallbackUrl
 
-  const handleRemoveFromList = useCallback(() => {
-    const lid = item.postcardLocalId
-    if (lid == null) return
-    removeItem(lid)
-    if (lid === listSelectedLocalId) {
-      dispatch(setHistoryListSelectedLocalId(null))
-    }
-  }, [dispatch, item.postcardLocalId, listSelectedLocalId, removeItem])
-
-  const onDeleteRow =
-    item.onDelete ??
-    (item.postcardLocalId != null ? handleRemoveFromList : undefined)
-
   return (
     <HistoryListEntryShort
       dateLabel={item.dateLabel}
@@ -142,7 +125,6 @@ const HistoryListPanelRow: React.FC<{
         item.postcardLocalId != null &&
         item.postcardLocalId === listSelectedLocalId
       }
-      onDelete={onDeleteRow}
       densityLevel={densityLevel}
     />
   )

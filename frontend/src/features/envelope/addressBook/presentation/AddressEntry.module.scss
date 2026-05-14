@@ -1,10 +1,14 @@
 @use '@styles/config/colors' as *;
 
+/* Row metrics aligned with HistoryListEntryShort `data-density-level='2'` (medium). */
+$entry-row-height: 2.65rem;
+
 .root {
   position: relative;
-  margin-bottom: 0.25rem;
-  min-height: 1.5rem;
-  padding: 0 2rem 0 0.5rem;
+  width: 100%;
+  min-width: 0;
+  min-height: $entry-row-height;
+  padding: 1px 0.5rem 1px 0.5rem;
   box-sizing: border-box;
   background-color: $color-envelope-recipient-input;
   border: 1px solid $color-envelope-recipient-border;
@@ -21,12 +25,7 @@
 
   &[data-selected='true'] {
     background-color: darken($color-envelope-recipient-input, 2%);
-    /* Highlight selection outside content so text doesn't shift */
     box-shadow: -2px 0 0 0 $color-toggle-active;
-  }
-
-  &[data-has-edit='true'] {
-    padding-right: 3.5rem;
   }
 }
 
@@ -46,109 +45,40 @@
 }
 
 .field {
-  width: 95%;
-  min-width: 0;
   display: flex;
-  align-items: center;
-  height: 1.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.1rem;
+  min-height: calc(#{$entry-row-height} - 2px);
+  width: 100%;
+  min-width: 0;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
-.info {
-  flex: 1;
-  min-width: 0;
+.nameLine {
+  max-width: 100%;
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: $color-font-enabled;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
   mask-image: linear-gradient(to right, black 90%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
-
-  strong {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: $color-font-enabled;
-  }
-
-  strong::after {
-    content: ' · ';
-    font-weight: 400;
-    color: $color-font-enabled-light;
-  }
-
-  div {
-    display: inline;
-    font-size: 0.8rem;
-    color: $color-font-enabled-light;
-  }
 }
 
-.deleteButton {
-  position: absolute;
-  right: 0.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  // background: #fff;
-  border: none;
-  border-radius: 50%;
-  color: $color-font-disabled;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s ease,
-    color 0.15s ease;
-  // background-color 0.15s ease;
-
-  .root:hover & {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-    // background-color: rgba(0, 0, 0, 0.06);
-  }
-
-  svg {
-    width: 0.75rem;
-    height: 0.75rem;
-  }
-}
-
-.editButton {
-  position: absolute;
-  right: 2.2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  // background: #fff;
-  border: none;
-  border-radius: 50%;
-  color: $color-font-disabled;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.15s ease,
-    color 0.15s ease;
-
-  .root:hover & {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
-
-  svg {
-    width: 0.75rem;
-    height: 0.75rem;
-  }
+.cityLine {
+  max-width: 100%;
+  font-size: 0.56rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: $color-font-enabled-light;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
 }

@@ -13,25 +13,21 @@ import styles from './RecipientListPanel.module.scss'
 
 type Props = {
   onSelect: (entry: AddressBookEntry) => void
-  /** При клике на иконку Edit: открыть RecipientView в режиме редактирования. Если не передано, используется onSelect. */
+  /** По Enter после фокуса в списке: открыть RecipientView в режиме редактирования. */
   onEdit?: (entry: AddressBookEntry) => void
-  onDelete?: (id: string) => void
   selectedIds?: string[]
 }
 
 export const RecipientListPanel: React.FC<Props> = ({
   onSelect,
   onEdit,
-  onDelete = () => {},
   selectedIds = [],
 }) => {
-  const handleEdit = onEdit ?? onSelect
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const {
     entries,
     starredRecipientIds,
     closePanel,
-    handleDeleteEntry,
   } = useRecipientListPanelFacade()
 
   const { favoriteEntries, restEntries, combinedEntries } = useMemo(() => {
@@ -70,11 +66,6 @@ export const RecipientListPanel: React.FC<Props> = ({
     el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
   }, [focusedIndex])
 
-  const onDeleteEntry = useCallback(
-    (id: string) => handleDeleteEntry(id, onDelete),
-    [handleDeleteEntry, onDelete],
-  )
-
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -93,10 +84,12 @@ export const RecipientListPanel: React.FC<Props> = ({
         setFocusedIndex(next)
       } else if (e.key === 'Enter') {
         e.preventDefault()
-        onSelect(combinedEntries[focusedIndex])
+        const entry = combinedEntries[focusedIndex]
+        onSelect(entry)
+        onEdit?.(entry)
       }
     },
-    [combinedEntries, focusedIndex, onSelect, closePanel],
+    [combinedEntries, focusedIndex, onSelect, onEdit, closePanel],
   )
 
   return (
@@ -147,8 +140,6 @@ export const RecipientListPanel: React.FC<Props> = ({
                   <AddressEntry
                     entry={entry}
                     onSelect={onSelect}
-                    onDelete={onDeleteEntry}
-                    onEdit={handleEdit}
                     isSelected={selectedIds.includes(entry.id)}
                     isFocused={focusedIndex === index}
                   />
@@ -168,8 +159,6 @@ export const RecipientListPanel: React.FC<Props> = ({
                     <AddressEntry
                       entry={entry}
                       onSelect={onSelect}
-                      onDelete={onDeleteEntry}
-                      onEdit={handleEdit}
                       isSelected={selectedIds.includes(entry.id)}
                       isFocused={focusedIndex === dataIndex}
                     />
