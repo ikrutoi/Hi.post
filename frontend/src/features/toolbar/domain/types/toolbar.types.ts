@@ -76,7 +76,7 @@ export const TOOLBAR_SECTIONS = [
   'cardtext',
   'history',
   'sender',
-  'recipient',
+  // 'recipient',
   'recipients',
   'editorPie',
   'cardPanelOverlay',
@@ -119,7 +119,7 @@ export type ToolbarState = {
   cardphotoList: CardphotoListToolbarState & { config: ToolbarGroup[] }
   history: HistoryToolbarState & { config: ToolbarGroup[] }
   sender: EnvelopeToolbarState & { config: ToolbarGroup[] }
-  recipient: EnvelopeToolbarState & { config: ToolbarGroup[] }
+  // recipient: EnvelopeToolbarState & { config: ToolbarGroup[] }
   recipients: EnvelopeToolbarState & { config: ToolbarGroup[] }
   editorPie: EditorPieToolbarState & { config: ToolbarGroup[] }
   cardPanelOverlay: CardPanelOverlayToolbarState & { config: ToolbarGroup[] }
@@ -199,7 +199,7 @@ export type ToolbarSectionConfigMap = {
   >
   cardtext: BaseSectionConfig<CardtextToolbarState, CardtextKey, 'cardtext'>
   sender: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'sender'>
-  recipient: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'recipient'>
+  // recipient: BaseSectionConfig<EnvelopeToolbarState, EnvelopeKey, 'recipient'>
   editorPie: BaseSectionConfig<EditorPieToolbarState, EditorPieKey, 'editorPie'>
   cardPanelOverlay: BaseSectionConfig<
     CardPanelOverlayToolbarState,
@@ -348,64 +348,64 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
             ? CardtextKey
             : S extends 'sender'
               ? EnvelopeKey
-              : S extends 'recipient'
-                ? EnvelopeKey
-                : S extends 'recipients'
-                  ? RecipientsKey
-                  : S extends 'editorPie'
-                    ? EditorPieKey
-                    : S extends 'cardPanelOverlay'
-                      ? CardPanelOverlayToolbarKey
-                      : S extends 'sectionEditorMenu'
-                        ? SectionEditorMenuKey
-                        : S extends 'addressListSender'
+              : // : S extends 'recipient'
+                //   ? EnvelopeKey
+                S extends 'recipients'
+                ? RecipientsKey
+                : S extends 'editorPie'
+                  ? EditorPieKey
+                  : S extends 'cardPanelOverlay'
+                    ? CardPanelOverlayToolbarKey
+                    : S extends 'sectionEditorMenu'
+                      ? SectionEditorMenuKey
+                      : S extends 'addressListSender'
+                        ? AddressListKey
+                        : S extends 'addressListRecipient'
                           ? AddressListKey
-                          : S extends 'addressListRecipient'
+                          : S extends 'addressListRecipients'
                             ? AddressListKey
-                            : S extends 'addressListRecipients'
-                              ? AddressListKey
-                              : S extends 'senderView'
+                            : S extends 'senderView'
+                              ? AddressViewKey
+                              : S extends 'recipientView'
                                 ? AddressViewKey
-                                : S extends 'recipientView'
+                                : S extends 'recipientsView'
                                   ? AddressViewKey
-                                  : S extends 'recipientsView'
+                                  : S extends 'addressFormSenderView'
                                     ? AddressViewKey
-                                    : S extends 'addressFormSenderView'
+                                    : S extends 'addressFormRecipientView'
                                       ? AddressViewKey
-                                      : S extends 'addressFormRecipientView'
-                                        ? AddressViewKey
-                                        : S extends 'cardtextList'
-                                          ? CardtextListKey
-                                          : S extends 'cardtextCreate'
+                                      : S extends 'cardtextList'
+                                        ? CardtextListKey
+                                        : S extends 'cardtextCreate'
+                                          ? CardtextKey
+                                          : S extends 'cardtextEditor'
                                             ? CardtextKey
-                                            : S extends 'cardtextEditor'
+                                            : S extends 'cardtextView'
                                               ? CardtextKey
-                                              : S extends 'cardtextView'
+                                              : S extends 'cardtextProcessed'
                                                 ? CardtextKey
-                                                : S extends 'cardtextProcessed'
-                                                  ? CardtextKey
-                                                  : S extends 'date'
-                                                    ? DateKey
-                                                    : S extends 'dateList'
-                                                      ? DateListKey
-                                                      : S extends 'cardPieList'
-                                                        ? CardPieListKey
-                                                        : S extends 'historyList'
+                                                : S extends 'date'
+                                                  ? DateKey
+                                                  : S extends 'dateList'
+                                                    ? DateListKey
+                                                    : S extends 'cardPieList'
+                                                      ? CardPieListKey
+                                                      : S extends 'historyList'
+                                                        ? HistoryListKey
+                                                        : S extends 'historyListIndicators'
                                                           ? HistoryListKey
-                                                          : S extends 'historyListIndicators'
-                                                            ? HistoryListKey
-                                                            : S extends 'cartList'
-                                                              ? CartListKey
-                                                              : S extends 'history'
-                                                                ? HistoryKey
-                                                                : S extends 'rightSidebar'
-                                                                  ? RightSidebarKey
-                                                                  : S extends 'postcardPieCart'
-                                                                    ? PostcardPieCartKey
-                                                                    : S extends 'postcardPieHistory'
-                                                                      ? PostcardPieHistoryKey
-                                                                      : S extends 'cart'
-                                                                        ? CartKey
-                                                                        : S extends 'panelMiniSections'
-                                                                          ? PanelMiniSectionsKey
-                                                                          : never
+                                                          : S extends 'cartList'
+                                                            ? CartListKey
+                                                            : S extends 'history'
+                                                              ? HistoryKey
+                                                              : S extends 'rightSidebar'
+                                                                ? RightSidebarKey
+                                                                : S extends 'postcardPieCart'
+                                                                  ? PostcardPieCartKey
+                                                                  : S extends 'postcardPieHistory'
+                                                                    ? PostcardPieHistoryKey
+                                                                    : S extends 'cart'
+                                                                      ? CartKey
+                                                                      : S extends 'panelMiniSections'
+                                                                        ? PanelMiniSectionsKey
+                                                                        : never

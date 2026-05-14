@@ -18,6 +18,17 @@ type MarkStampYearDevContextValue = {
 const MarkStampYearDevContext =
   createContext<MarkStampYearDevContextValue | null>(null)
 
+/** Кольцо для dev-кнопок ±: 1 … 100, дальше снова 1 (с 1 вниз → 100). */
+const STAMP_DEV_RING_MAX = 100
+
+function wrapStampDevRing(value: number, delta: number): number {
+  const n = STAMP_DEV_RING_MAX
+  const v = Math.min(n, Math.max(1, Math.round(value)))
+  let idx = (v - 1 + delta) % n
+  if (idx < 0) idx += n
+  return idx + 1
+}
+
 export function MarkStampYearDevProvider({
   children,
 }: {
@@ -32,8 +43,12 @@ export function MarkStampYearDevProvider({
 
   const bump = useCallback((delta: number) => {
     setOverride((prev) => {
-      const base = prev ?? computedRef.current ?? 1
-      return Math.min(100, Math.max(1, base + delta))
+      const raw = prev ?? computedRef.current ?? 1
+      const base =
+        typeof raw === 'number' && Number.isFinite(raw)
+          ? Math.round(raw)
+          : 1
+      return wrapStampDevRing(base, delta)
     })
   }, [])
 

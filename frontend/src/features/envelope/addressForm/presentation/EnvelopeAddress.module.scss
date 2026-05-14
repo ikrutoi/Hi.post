@@ -1,6 +1,5 @@
 @use '@styles/config/colors' as *;
 
-/* Место бывшего тулбара «мульти»; fieldset с justify-content: flex-end иначе прижимает форму к низу и сдвиг сетки не виден */
 $envelopeRecipientBodyTopOffset: 2.35rem;
 
 .addressForm {
@@ -191,6 +190,7 @@ $envelopeRecipientBodyTopOffset: 2.35rem;
 .addressFormRecipient {
   &.addressFieldset {
     border: solid 1px $color-envelope-recipient-border;
+    // border: solid 1px red;
   }
 }
 
@@ -368,9 +368,7 @@ $envelopeRecipientBodyTopOffset: 2.35rem;
   top: calc(0.5rem + 3px + #{$envelopeRecipientBodyTopOffset});
   right: 2px;
   width: 0.75rem;
-  height: calc(
-    100% - 0.5rem - 4px - #{$envelopeRecipientBodyTopOffset}
-  );
+  height: calc(100% - 0.5rem - 4px - #{$envelopeRecipientBodyTopOffset});
   border-radius: 0 0.75rem 0.75rem 0;
   overflow: hidden;
   z-index: 1;

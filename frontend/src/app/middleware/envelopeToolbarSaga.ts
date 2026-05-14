@@ -173,7 +173,6 @@ function* handleEnvelopeToolbarAction(
       return
     }
     if (
-      section === 'recipient' ||
       section === 'recipients' ||
       section === 'recipientView' ||
       section === 'addressListRecipient'
@@ -383,7 +382,6 @@ function* handleEnvelopeToolbarAction(
 
   if (
     section !== 'sender' &&
-    section !== 'recipient' &&
     section !== 'recipients' &&
     section !== 'senderView' &&
     section !== 'recipientView' &&
@@ -410,7 +408,6 @@ function* handleEnvelopeToolbarAction(
       yield put(clearSenderFormData())
       yield put(setSenderView('addressFormSenderView'))
     } else if (
-      section === 'recipient' ||
       section === 'recipientView' ||
       section === 'recipients'
     ) {
@@ -431,24 +428,28 @@ function* handleEnvelopeToolbarAction(
         yield put(senderSaveRequested({ listStatus: 'outList' }))
       }
     }
-    if (section === 'recipient') {
-      const recipientViewId: string | null = yield select(selectRecipientViewId)
-      if (recipientViewId) {
-        const displayAddress: Readonly<Record<string, string>> = yield select(
-          selectRecipientDisplayAddress,
-        )
-        const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
-        yield put(setRecipientAppliedWithData({ ids: [recipientViewId], data }))
-      } else {
-        yield put(recipientSaveRequested({ listStatus: 'outList' }))
-      }
-    }
     if (section === 'recipients') {
       const recipient: RecipientState = yield select(selectRecipientState)
       const ids: string[] =
         recipient.currentRecipientsList === 'second'
           ? (recipient.recipientsViewIdsSecondList ?? [])
           : (recipient.recipientsViewIdsFirstList ?? [])
+
+      if (ids.length === 0) {
+        const recipientViewId: string | null = yield select(
+          selectRecipientViewId,
+        )
+        if (recipientViewId) {
+          const displayAddress: Readonly<Record<string, string>> =
+            yield select(selectRecipientDisplayAddress)
+          const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
+          yield put(setRecipientAppliedWithData({ ids: [recipientViewId], data }))
+        } else {
+          yield put(recipientSaveRequested({ listStatus: 'outList' }))
+        }
+        return
+      }
+
       const list: RecipientState[] = []
       for (const id of ids) {
         const record: { id: string; address?: Record<string, string> } | null =
@@ -492,10 +493,6 @@ function* handleEnvelopeToolbarAction(
       const senderComplete: boolean = yield select(selectIsSenderComplete)
       if (senderComplete)
         yield put(senderSaveRequested({ listStatus: 'inList' }))
-    } else if (section === 'recipient') {
-      const recipientComplete: boolean = yield select(selectIsRecipientComplete)
-      if (recipientComplete)
-        yield put(recipientSaveRequested({ listStatus: 'inList' }))
     } else if (
       section === 'addressFormSenderView' ||
       section === 'addressFormRecipientView'
@@ -679,14 +676,6 @@ function* syncAddressListIconsFromActive() {
         }
       : getAddressListToolbarFragment(senderCount)
 
-  const recipientSectionAddressList =
-    active === 'recipients'
-      ? {
-          state: 'active' as const,
-          options: { badge: recipientCount > 0 ? recipientCount : null },
-        }
-      : getAddressListToolbarFragment(recipientCount)
-
   const recipientsSectionAddressList =
     active === 'recipients'
       ? {
@@ -715,13 +704,6 @@ function* syncAddressListIconsFromActive() {
       section: 'addressListSender',
       key: 'addressList',
       value: senderAddressList,
-    }),
-  )
-  yield put(
-    updateToolbarIcon({
-      section: 'recipient',
-      key: 'addressList',
-      value: recipientSectionAddressList,
     }),
   )
   yield put(

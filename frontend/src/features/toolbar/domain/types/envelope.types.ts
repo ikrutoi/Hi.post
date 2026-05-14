@@ -35,22 +35,22 @@ export const initialSenderToolbarState: EnvelopeToolbarState = {
   config: [...SENDER_TOOLBAR],
 }
 
-export const RECIPIENT_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'recipient',
-    icons: [
-      { key: 'apply', state: 'disabled' },
-      { key: 'addressAdd', state: 'enabled' },
-      { key: 'addressList', state: 'enabled' },
-    ],
-    status: 'enabled',
-  },
-]
+// export const RECIPIENT_TOOLBAR: ToolbarConfig = [
+//   {
+//     group: 'recipient',
+//     icons: [
+//       { key: 'apply', state: 'disabled' },
+//       { key: 'addressAdd', state: 'enabled' },
+//       { key: 'addressList', state: 'enabled' },
+//     ],
+//     status: 'enabled',
+//   },
+// ]
 
-export const initialRecipientToolbarState: EnvelopeToolbarState = {
-  ...Object.fromEntries(flattenIcons(RECIPIENT_TOOLBAR)),
-  config: [...RECIPIENT_TOOLBAR],
-}
+// export const initialRecipientToolbarState: EnvelopeToolbarState = {
+//   ...Object.fromEntries(flattenIcons(RECIPIENT_TOOLBAR)),
+//   config: [...RECIPIENT_TOOLBAR],
+// }
 
 export const RECIPIENTS_KEYS = [
   'listClose',
@@ -83,7 +83,7 @@ export type RecipientsToolbarState = EnvelopeToolbarState
 export interface EnvelopeSectionConfig extends BaseSectionConfig<
   EnvelopeToolbarState,
   EnvelopeKey,
-  'sender' | 'recipient' | 'recipients'
+  'sender' | 'recipients'
 > {}
 
 // export interface RecipientAddressViewSectionConfig extends BaseSectionConfig<

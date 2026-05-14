@@ -161,14 +161,8 @@ export function* processEnvelopeVisuals() {
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
   yield put(
     updateToolbarSection({
-      section: 'recipient',
-      value: { ...recipientToolbar, addressList: recipientListAddressList },
-    }),
-  )
-  yield put(
-    updateToolbarSection({
       section: 'recipients',
-      value: { addressList: recipientListAddressList },
+      value: { ...recipientToolbar, addressList: recipientListAddressList },
     }),
   )
 
@@ -200,20 +194,12 @@ export function* processEnvelopeVisuals() {
 
   const isSenderEmptyForm =
     sender.currentView === 'senderView' && sender.senderViewId == null
-  const isRecipientEmptyForm =
-    recipient.currentView === 'recipientView' &&
-    recipient.recipientViewId == null
 
   const senderAlreadyApplied =
     sender.currentView === 'senderView' &&
     sender.senderViewId != null &&
     (sender.applied?.length ?? 0) === 1 &&
     sender.applied[0] === sender.senderViewId
-  const recipientAlreadyApplied =
-    recipient.currentView === 'recipientView' &&
-    recipient.recipientViewId != null &&
-    (recipient.applied?.length ?? 0) === 1 &&
-    recipient.applied[0] === recipient.recipientViewId
 
   let senderApplyState = senderAlreadyApplied
     ? 'selected'
@@ -224,40 +210,18 @@ export function* processEnvelopeVisuals() {
         : senderComplete
           ? 'enabled'
           : 'disabled'
-  let recipientApplyState = recipientAlreadyApplied
-    ? 'selected'
-    : recipient.currentView === 'recipientView' &&
-        recipient.recipientViewId != null
-      ? 'enabled'
-      : isRecipientEmptyForm
-        ? 'disabled'
-        : recipientComplete
-          ? 'enabled'
-          : 'disabled'
 
   if (
     sender.currentView === 'addressFormSenderView' &&
     !senderComplete
   )
     senderApplyState = 'disabled'
-  if (
-    recipient.currentView === 'addressFormRecipientView' &&
-    !recipientComplete
-  )
-    recipientApplyState = 'disabled'
 
   yield put(
     updateToolbarIcon({
       section: 'sender',
       key: 'apply',
       value: { state: senderApplyState },
-    }),
-  )
-  yield put(
-    updateToolbarIcon({
-      section: 'recipient',
-      key: 'apply',
-      value: { state: recipientApplyState },
     }),
   )
 

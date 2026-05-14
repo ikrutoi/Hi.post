@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import {
   initialCardphotoToolbarState,
   initialSenderToolbarState,
-  initialRecipientToolbarState,
+  // initialRecipientToolbarState,
   initialEditorPieToolbarState,
   initialCardPanelOverlayToolbarState,
   initialSectionEditorMenuToolbarState,
@@ -66,7 +66,7 @@ const initialState: ToolbarState = {
   historyList: initialHistoryListToolbarState,
   historyListIndicators: initialHistoryListIndicatorsToolbarState,
   sender: initialSenderToolbarState,
-  recipient: initialRecipientToolbarState,
+  // recipient: initialRecipientToolbarState,
   editorPie: initialEditorPieToolbarState,
   cardPanelOverlay: initialCardPanelOverlayToolbarState,
   sectionEditorMenu: initialSectionEditorMenuToolbarState,
@@ -145,7 +145,10 @@ const toolbarSlice = createSlice({
       }>,
     ) {
       const { section, key, value } = action.payload
-      const current = state[section][key] as any
+      const sectionState = state[section]
+      if (sectionState == null) return
+
+      const current = sectionState[key as keyof typeof sectionState] as any
       // console.log('updateToolbarIcon ', action.payload, action.type)
 
       const newValue =
@@ -157,9 +160,9 @@ const toolbarSlice = createSlice({
               options: { ...current?.options, ...value?.options },
             }
 
-      state[section][key] = newValue
+      ;(sectionState as Record<string, unknown>)[key as string] = newValue
 
-      const sectionData = state[section] as any
+      const sectionData = sectionState as any
       if (sectionData.config) {
         sectionData.config.forEach((group: ToolbarGroup) => {
           const icon = group.icons.find((i) => i.key === key)

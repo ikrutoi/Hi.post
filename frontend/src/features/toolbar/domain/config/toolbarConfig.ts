@@ -11,12 +11,12 @@ import {
   SECTION_EDITOR_MENU_TOOLBAR,
   initialCardphotoToolbarState,
   initialSenderToolbarState,
-  initialRecipientToolbarState,
+  // initialRecipientToolbarState,
   initialEditorPieToolbarState,
   initialCardPanelOverlayToolbarState,
   initialSectionEditorMenuToolbarState,
   SENDER_TOOLBAR,
-  RECIPIENT_TOOLBAR,
+  // RECIPIENT_TOOLBAR,
   CARD_PANEL_OVERLAY_TOOLBAR,
   ADDRESS_LIST_KEYS,
   initialAddressListSenderToolbarState,
@@ -220,20 +220,20 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     toolbar: SENDER_TOOLBAR,
   },
 
-  recipient: {
-    keys: ENVELOPE_KEYS,
-    initialState: initialRecipientToolbarState,
-    onAction: (key, section) => console.log('Recipient action', key, section),
-    group: 'recipient',
-    getBadges: (state: ToolbarState['recipient']) => {
-      const addressListBadge = (state.addressList as any)?.options?.badge
-      return {
-        addressList:
-          addressListBadge && addressListBadge > 0 ? addressListBadge : null,
-      }
-    },
-    toolbar: RECIPIENT_TOOLBAR,
-  },
+  // recipient: {
+  //   keys: ENVELOPE_KEYS,
+  //   initialState: initialRecipientToolbarState,
+  //   onAction: (key, section) => console.log('Recipient action', key, section),
+  //   group: 'recipient',
+  //   getBadges: (state: ToolbarState['recipient']) => {
+  //     const addressListBadge = (state.addressList as any)?.options?.badge
+  //     return {
+  //       addressList:
+  //         addressListBadge && addressListBadge > 0 ? addressListBadge : null,
+  //     }
+  //   },
+  //   toolbar: RECIPIENT_TOOLBAR,
+  // },
 
   recipients: {
     keys: RECIPIENTS_KEYS,
