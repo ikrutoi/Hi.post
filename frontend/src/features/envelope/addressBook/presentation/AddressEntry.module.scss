@@ -27,6 +27,10 @@ $entry-row-height: 2.28rem;
     background-color: darken($color-envelope-recipient-input, 2%);
     box-shadow: -2px 0 0 0 $color-toggle-active;
   }
+
+  &[data-has-remove='true'] {
+    padding-right: 1.55rem;
+  }
 }
 
 .rootSender {
@@ -79,4 +83,30 @@ $entry-row-height: 2.28rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.removeFromListButton {
+  position: absolute;
+  top: 0.08rem;
+  right: 0.08rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.22rem;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: $color-font-disabled;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  svg {
+    width: 0.82rem;
+    height: 0.82rem;
+    display: block;
+  }
 }
