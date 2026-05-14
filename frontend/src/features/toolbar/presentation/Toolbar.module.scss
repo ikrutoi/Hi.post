@@ -53,10 +53,6 @@
       background-color: $color-enabled;
     }
 
-    /**
-     * Как `.actionBtn` в строках списка: `$color-font-enabled-light` → при hover `$color-font-enabled`.
-     * Без серого фона от `&Enabled:hover` — подложка как у клавиши (белый / ряд).
-     */
     &[data-icon-key='listDelete'].toolbarKeyEnabled,
     &[data-icon-key='addCartList'].toolbarKeyEnabled,
     &[data-icon-key='sortDown'].toolbarKeyEnabled,
@@ -72,10 +68,6 @@
     }
   }
 
-  /**
-   * Иконка cart есть и в правом сайдбаре (фон полосы — `$color-app-strip`).
-   * Не смешивать с `#fff` от клавиш списков: там селектор сильнее и перебивал hover сайдбара.
-   */
   &:not(.toolbarRightSidebar) .toolbarKey {
     &[data-icon-key='cart'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
@@ -747,16 +739,35 @@
 .toolbarRecipientsView {
   width: 100%;
   justify-content: space-between;
-  margin-left: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 0;
+
+  .toolbarGroup:first-child .toolbarKey:first-child {
+    margin-left: 0;
+  }
+
+  .toolbarGroup:last-child .toolbarKey:last-child {
+    margin-right: 0;
+  }
+
+  /* Same hover idea as cart list keys: no $color-enabled chip, only icon color */
+  .toolbarKey.toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+    }
+  }
+
+  .toolbarKey.toolbarKeyActive:hover {
+    background-color: #fff;
+  }
 }
 
-.toolbarSenderView,
-.toolbarRecipientView {
-  margin-right: 1rem;
-}
-
-.toolbarRecipientsView {
-  margin-right: 0.65rem;
+/* Same right gutter as `.recipientsViewList` (AddressView.module.scss) */
+.toolbarRecipientsView .toolbarGroup:last-child .toolbarKey[data-icon-key='listClose'] {
+  margin-right: calc(0.25rem + 8px);
 }
 
 .toolbarAddressListRecipient .toolbarGroupAddress,
