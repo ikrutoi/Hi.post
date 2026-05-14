@@ -1,6 +1,12 @@
 @use '@styles/config/colors' as *;
 
 $envelopeRecipientBodyTopOffset: 2.35rem;
+/**
+ * Address toolbars: lift above fieldset top.
+ * Sender user icon box is taller (padding) than the toolbar row, so the same -100% overshoots upward.
+ */
+$envelopeAddressToolbarLift: calc(-100% - 0.2rem);
+$envelopeSenderUserIconLift: calc(-100% - 0.2rem + 0.45rem);
 
 .addressForm {
   position: relative;
@@ -102,7 +108,7 @@ $envelopeRecipientBodyTopOffset: 2.35rem;
   position: absolute;
   top: 0;
   left: 1rem;
-  transform: translateY(-50%);
+  transform: translateY($envelopeAddressToolbarLift);
   width: min-content;
   // border: solid 1px red;
 }
@@ -112,8 +118,7 @@ $envelopeRecipientBodyTopOffset: 2.35rem;
   top: 0;
   right: 1rem;
   padding: 0.5rem;
-  transform: translateY(-50%);
-  background-color: #fff;
+  transform: translateY($envelopeSenderUserIconLift);
 }
 
 .envelopeSenderToolbarIcon {
@@ -128,7 +133,7 @@ $envelopeRecipientBodyTopOffset: 2.35rem;
   position: absolute;
   top: 0;
   left: 1rem;
-  transform: translateY(-50%);
+  transform: translateY($envelopeAddressToolbarLift);
   width: min-content;
 }
 
@@ -139,8 +144,7 @@ $envelopeRecipientBodyTopOffset: 2.35rem;
   min-width: 1.6rem;
   height: 1.6rem;
   padding: 0.5rem;
-  transform: translateY(-50%);
-  background-color: #fff;
+  transform: translateY($envelopeAddressToolbarLift);
   display: flex;
   align-items: center;
   gap: 0.35rem;
