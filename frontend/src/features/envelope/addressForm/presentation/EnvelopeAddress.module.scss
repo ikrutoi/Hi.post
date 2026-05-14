@@ -2,11 +2,12 @@
 
 $envelopeRecipientBodyTopOffset: 2.35rem;
 /**
- * Address toolbars: lift above fieldset top.
- * Sender user icon box is taller (padding) than the toolbar row, so the same -100% overshoots upward.
+ * Sender / recipients envelope toolbars + icons: sit above the fieldset top edge
+ * (not centered on the border like translateY(-50%)).
+ * Sender user icon box is taller (padding), so it uses a small extra downward offset.
  */
-$envelopeAddressToolbarLift: calc(-100% - 0.2rem);
-$envelopeSenderUserIconLift: calc(-100% - 0.2rem + 0.45rem);
+$envelopeAddressToolbarLift: calc(-100% - 0.32rem);
+$envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 
 .addressForm {
   position: relative;
@@ -68,11 +69,11 @@ $envelopeSenderUserIconLift: calc(-100% - 0.2rem + 0.45rem);
 
 .addressFieldset {
   position: relative;
-  padding: 0.5rem 0.35rem;
+  padding: 0 0.35rem 0.5rem;
   border-radius: 0.75rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
 }
 
 .recipientFieldsetMulti {
@@ -182,6 +183,7 @@ $envelopeSenderUserIconLift: calc(-100% - 0.2rem + 0.45rem);
   min-height: 0;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
 }
 
 .addressFormSender {
@@ -320,8 +322,8 @@ $envelopeSenderUserIconLift: calc(-100% - 0.2rem + 0.45rem);
   padding: 0.5rem;
   min-height: 4rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .addressFormPlaceholderSender {
@@ -329,7 +331,8 @@ $envelopeSenderUserIconLift: calc(-100% - 0.2rem + 0.45rem);
 }
 
 .addressFormPlaceholderRecipient {
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: flex-end;
 }
 
 .addressFormPlaceholderBg {
@@ -369,10 +372,10 @@ $envelopeSenderUserIconLift: calc(-100% - 0.2rem + 0.45rem);
 
 .recipientFieldsetContainerScroll {
   position: absolute;
-  top: calc(0.5rem + 3px + #{$envelopeRecipientBodyTopOffset});
+  top: calc(3px + #{$envelopeRecipientBodyTopOffset});
   right: 2px;
   width: 0.75rem;
-  height: calc(100% - 0.5rem - 4px - #{$envelopeRecipientBodyTopOffset});
+  height: calc(100% - 4px - #{$envelopeRecipientBodyTopOffset});
   border-radius: 0 0.75rem 0.75rem 0;
   overflow: hidden;
   z-index: 1;

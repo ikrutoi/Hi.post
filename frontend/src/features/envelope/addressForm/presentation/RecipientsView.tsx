@@ -25,7 +25,10 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
           <Toolbar section="recipientsView" />
         </div>
       )}
-      <ScrollArea scrollbarPortalTarget={scrollbarPortalTarget}>
+      <ScrollArea
+        className={styles.savedAddressViewScrollSlot}
+        scrollbarPortalTarget={scrollbarPortalTarget}
+      >
         <div className={styles.recipientsViewList}>
           {entries.map((entry) => (
             <AddressEntry

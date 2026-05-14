@@ -6,30 +6,43 @@
   max-height: 90%;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
   min-height: 0;
   box-sizing: border-box;
   /* Used by RecipientsView to size viewport to whole rows (1.5rem entry + 0.25rem margin) */
   --recipient-row-height: 1.75rem;
 }
 
+/** senderView / recipientView / recipientsView — внутри карточки, первым рядом над контентом */
 .savedAddressViewToolbar {
-  position: absolute;
-  top: -1.6rem;
-  left: 0;
+  position: relative;
+  flex-shrink: 0;
   width: 100%;
-  height: 1.6rem;
+  min-height: 1.75rem;
   display: flex;
   justify-content: flex-end;
-  // background-color: $color-envelope-recipient-input;
+  align-items: center;
+  padding: 0.1rem 0.35rem 0.2rem;
+  box-sizing: border-box;
+}
+
+.savedAddressViewScrollSlot {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .savedAddressView {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: flex-end;
-  height: min-content;
+  flex: 0 1 auto;
+  width: 100%;
   min-height: 0;
   padding: 0.5rem;
   box-sizing: border-box;
@@ -45,6 +58,7 @@
   background-color: $color-envelope-sender-input;
   border: 1px solid $color-envelope-sender-border;
   border-radius: 4px;
+  align-items: flex-start;
 
   .recipientAddressName {
     color: $color-envelope-sender-legend;
@@ -65,7 +79,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.15rem;
   text-align: left;
   white-space: nowrap;
@@ -178,7 +192,7 @@
 .recipientsViewListWrap {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   min-height: 100%;
 }
 
