@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
+import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 
 function sortEntriesByName(
   entries: AddressBookEntry[],
@@ -17,10 +18,18 @@ function sortEntriesByName(
 }
 
 export const useAddressBookList = (role: 'sender' | 'recipient') => {
-  const rawEntries: AddressBookEntry[] = useAppSelector((state) =>
+  const rawEntriesFromStore: AddressBookEntry[] = useAppSelector((state) =>
     role === 'sender'
       ? (state.addressBook?.senderEntries ?? [])
       : (state.addressBook?.recipientEntries ?? []),
+  )
+
+  const rawEntries = useMemo(
+    () =>
+      rawEntriesFromStore.filter((e) =>
+        listStatusIsInQuickAddressBook(e.listStatus),
+      ),
+    [rawEntriesFromStore],
   )
 
   const sortOptions = useAppSelector((state) =>

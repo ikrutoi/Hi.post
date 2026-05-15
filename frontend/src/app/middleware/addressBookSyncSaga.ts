@@ -2,6 +2,7 @@ import { call, put, select, takeEvery, all } from 'redux-saga/effects'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
+import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { setAddressBookEntries } from '@envelope/addressBook/infrastructure/state'
 import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
 import {
@@ -57,12 +58,6 @@ function toAddressBookEntry(
   }
 }
 
-/** В список быстрого доступа попадают только inList и старые записи без listStatus */
-function isInQuickAccessList(item: AddressTemplateItem): boolean {
-  const s = item.listStatus
-  return s === undefined || s === 'inList'
-}
-
 function* syncAddressBookFromDb() {
   try {
     const current: {
@@ -92,10 +87,18 @@ function* syncAddressBookFromDb() {
       : []
 
     const senderEntries = senderSorted
-      .filter((r) => isInQuickAccessList(r as AddressTemplateItem))
+      .filter((r) =>
+        listStatusIsInQuickAddressBook(
+          (r as AddressTemplateItem).listStatus,
+        ),
+      )
       .map((r) => toAddressBookEntry(r as AddressTemplateItem, 'sender'))
     const recipientEntries = recipientSorted
-      .filter((r) => isInQuickAccessList(r as AddressTemplateItem))
+      .filter((r) =>
+        listStatusIsInQuickAddressBook(
+          (r as AddressTemplateItem).listStatus,
+        ),
+      )
       .map((r) => toAddressBookEntry(r as AddressTemplateItem, 'recipient'))
 
     const senderChanged = !entriesMatch(current.senderEntries, senderEntries)

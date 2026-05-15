@@ -18,6 +18,7 @@ import {
 import {
   selectRecipientState,
   selectIsRecipientComplete,
+  selectRecipientsFormAddressListCount,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectRecipientsPendingIds,
@@ -56,6 +57,7 @@ import {
   buildSenderToolbarState,
   getAddressListToolbarFragment,
   isAddressInList,
+  listStatusIsInQuickAddressBook,
 } from '@envelope/domain/helpers'
 import {
   updateToolbarSection,
@@ -111,10 +113,13 @@ export function* processEnvelopeVisuals() {
     call([recipientTemplatesAdapter, 'getAll']),
   ])
 
-  /** Badge shows only addresses with listStatus inList (or legacy without listStatus) */
-  const isInList = (item: { listStatus?: string }) => item.listStatus !== 'outList'
-  const senderInListCount = (senderList ?? []).filter(isInList).length
-  const recipientInListCount = (recipientList ?? []).filter(isInList).length
+  /** Счётчик только inList (и legacy без listStatus) — как в панели адресной книги */
+  const senderInListCount = (senderList ?? []).filter((item) =>
+    listStatusIsInQuickAddressBook(item.listStatus),
+  ).length
+  const recipientsFormAddressListCount: number = yield select(
+    selectRecipientsFormAddressListCount,
+  )
 
   const hasSenderDraft = checkHasData(sender.viewDraft)
   const hasRecipientDraft = checkHasData(recipient.viewDraft)
@@ -142,15 +147,18 @@ export function* processEnvelopeVisuals() {
       ? {
           state: 'active' as const,
           options: {
-            badge: recipientInListCount > 0 ? recipientInListCount : null,
+            badge:
+              recipientsFormAddressListCount > 0
+                ? recipientsFormAddressListCount
+                : null,
           },
         }
-      : getAddressListToolbarFragment(recipientInListCount)
+      : getAddressListToolbarFragment(recipientsFormAddressListCount)
 
   const recipientToolbar = buildRecipientToolbarState({
     isComplete: recipientComplete,
     hasData: checkHasData(recipient.viewDraft),
-    addressListCount: recipientInListCount,
+    addressListCount: recipientsFormAddressListCount,
     isCurrentAddressInList: isAddressInList(recipient.viewDraft, recipientList),
     hasDraft: hasRecipientDraft,
     isAddressFormOpen: recipient.currentView === 'addressFormRecipientView',
@@ -262,7 +270,9 @@ export function* processEnvelopeVisuals() {
     updateToolbarSection({
       section: 'recipients',
       value: {
-        addressList: getAddressListToolbarFragment(recipientInListCount),
+        addressList: getAddressListToolbarFragment(
+          recipientsFormAddressListCount,
+        ),
         apply: {
           state: recipientsApplyState,
           options: {},

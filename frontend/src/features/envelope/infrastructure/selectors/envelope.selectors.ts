@@ -8,6 +8,7 @@ import {
 import {
   selectRecipientState,
   selectRecipientViewId,
+  selectRecipientsFormAddressListCount,
 } from '../../recipient/infrastructure/selectors'
 import type { EnvelopeSessionRecord } from '../../domain/types'
 import type { RecipientState } from '../../recipient/domain/types'
@@ -158,18 +159,18 @@ export const selectRecipientsToolbarStateWithLiveAddressList = createSelector(
   [
     (s: RootState) => s.toolbar?.recipients ?? {},
     (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
-    (s: RootState) => s.addressBook?.recipientEntries?.length ?? 0,
+    selectRecipientsFormAddressListCount,
   ],
-  (base, activeAddressList, recipientCount) => {
+  (base, activeAddressList, recipientsFormCount) => {
     const listOpen = activeAddressList === 'recipients'
     const addressList = listOpen
       ? {
           state: 'active' as const,
           options: {
-            badge: recipientCount > 0 ? recipientCount : null,
+            badge: recipientsFormCount > 0 ? recipientsFormCount : null,
           },
         }
-      : getAddressListToolbarFragment(recipientCount)
+      : getAddressListToolbarFragment(recipientsFormCount)
     return { ...base, addressList }
   },
 )

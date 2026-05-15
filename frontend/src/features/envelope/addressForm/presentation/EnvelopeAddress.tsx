@@ -107,20 +107,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   // console.log('sender state', senderFacade.state)
   // console.log('envelope state', envelopeFacade.isEnvelopeComplete)
 
-  useEffect(() => {
-    if (editingTemplateId == null) return
-    if (templateEntry) return
-    if (!entriesForRole.length) return
-
-    const fallbackEntry = entriesForRole[0]
-
-    if (role === 'sender') {
-      envelopeFacade.selectSenderFromList(fallbackEntry)
-    } else {
-      envelopeFacade.selectRecipientFromList(fallbackEntry)
-    }
-  }, [editingTemplateId, templateEntry, entriesForRole, role, envelopeFacade])
-
   const hasRecipientAddressData =
     role === 'recipient' &&
     Object.values(value).some((v) => (v ?? '').trim() !== '')
@@ -381,9 +367,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               />
             </div>
             <div className={styles.envelopeRecipientToolbarIconContainer}>
-              {envelopeFacade.selectedRecipientEntriesInOrder.length > 0 && (
+              {recipientsDisplayList.length > 0 && (
                 <span className={styles.recipientsCountBadge}>
-                  {envelopeFacade.selectedRecipientEntriesInOrder.length}
+                  {recipientsDisplayList.length}
                 </span>
               )}
               <IconUsers className={styles.envelopeRecipientToolbarIcon} />

@@ -223,3 +223,9 @@ export const selectRecipientsDisplayList = createSelector(
     return sorted
   },
 )
+
+/** Число получателей в форме (список id + разрешение в envelope/книге), не размер адресной книги inList. */
+export const selectRecipientsFormAddressListCount = createSelector(
+  [selectRecipientsDisplayList],
+  (list) => list.length,
+)
