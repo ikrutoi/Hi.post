@@ -332,17 +332,22 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 
 .addressFormPlaceholderRecipient {
   justify-content: flex-start;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
-/* Пустой список получателей: плейсхолдер — отступ справа 10%, снизу 7% */
+/* Пустой список получателей: та же геометрия отступа, что у отправителя (слева 10%, сверху 7%) */
 .addressFormPlaceholder.addressFormPlaceholderRecipient.addressFormPlaceholderBg {
   position: absolute;
-  right: 10%;
-  bottom: 7%;
+  left: 10%;
+  top: 7%;
   z-index: 2;
   min-height: 0;
   padding: 0;
+  box-sizing: border-box;
+
+  .addressFormPlaceholderIconBg {
+    transform: translateX(-28%);
+  }
 }
 
 .addressFormPlaceholderBg {
@@ -391,7 +396,7 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
   z-index: 1;
 }
 
-/* Sender empty state: absolute inset; SVG figure sits on the right side of the viewBox. */
+/* Empty state inset; SVG figure sits on the right side of the viewBox. */
 .senderPlaceholderInset {
   position: absolute;
   left: 10%;

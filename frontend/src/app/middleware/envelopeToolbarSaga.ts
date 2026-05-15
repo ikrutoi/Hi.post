@@ -187,7 +187,35 @@ function* handleEnvelopeToolbarAction(
 
   if (
     (section === 'senderView' || section === 'recipientView') &&
-    key === 'delete'
+    key === 'addList'
+  ) {
+    if (section === 'senderView') {
+      const senderViewId: string | null = yield select(selectSenderViewId)
+      if (senderViewId != null) return
+      const sender: SenderState = yield select(selectSenderState)
+      const draft =
+        sender.currentView === 'addressFormSenderView'
+          ? sender.formDraft
+          : sender.viewDraft
+      if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) return
+      yield put(senderSaveRequested({ listStatus: 'inList' }))
+    } else {
+      const recipientViewId: string | null = yield select(selectRecipientViewId)
+      if (recipientViewId != null) return
+      const recipient: RecipientState = yield select(selectRecipientState)
+      const draft =
+        recipient.currentView === 'addressFormRecipientView'
+          ? recipient.formDraft
+          : recipient.viewDraft
+      if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) return
+      yield put(recipientSaveRequested({ listStatus: 'inList' }))
+    }
+    return
+  }
+
+  if (
+    (section === 'senderView' || section === 'recipientView') &&
+    (key === 'delete' || key === 'removeFromList')
   ) {
     const recipientViewId: string | null = yield select(selectRecipientViewId)
     const senderViewId: string | null = yield select(selectSenderViewId)

@@ -18,10 +18,10 @@
 
 .labelRecipient,
 .labelRecipients {
-  text-align: right;
+  text-align: left;
 
   .labelText {
-    right: 0.5rem;
+    left: 0.5rem;
   }
 }
 
@@ -60,7 +60,7 @@
 
 .labelInputRecipient,
 .labelInputRecipients {
-  text-align: right;
+  text-align: left;
   // background-color: #faf7fc;
   // background-color: #fff;
   border-color: #e0d0eb;
@@ -123,10 +123,7 @@
 }
 
 .inputWrapperRecipient .clearButton,
-.inputWrapperRecipients .clearButton {
-  left: 0.2rem;
-}
-
+.inputWrapperRecipients .clearButton,
 .inputWrapperSender .clearButton {
   right: 0.2rem;
 }

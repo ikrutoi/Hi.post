@@ -6,6 +6,8 @@ import { useCardtextFacade } from '@cardtext/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
+import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
+import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
 import {
@@ -120,6 +122,8 @@ export const Toolbar = ({
                 : undefined
 
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
+  const senderViewTemplateId = useAppSelector(selectSenderViewId)
+  const recipientViewTemplateId = useAppSelector(selectRecipientViewId)
   const sectionEditorMenuLockedByCardPieCopy =
     section === 'sectionEditorMenu' && cardPieCopyStripExpanded
 
@@ -149,6 +153,12 @@ export const Toolbar = ({
     iconOptions?: IconOptions,
   ) => {
     const rawData = sectionState[key]
+    const effectiveIconKey: IconKey =
+      key === 'addList' &&
+      ((section === 'senderView' && senderViewTemplateId != null) ||
+        (section === 'recipientView' && recipientViewTemplateId != null))
+        ? 'removeFromList'
+        : key
     const options =
       rawData && typeof rawData === 'object' && 'options' in rawData
         ? rawData.options
@@ -289,15 +299,15 @@ export const Toolbar = ({
         className={clsx(
           styles.toolbarKey,
           styles[`toolbarKey${capitalize(buttonStatus ?? 'enabled')}`],
-          styles[`toolbarKey${capitalize(key)}`],
+          styles[`toolbarKey${capitalize(effectiveIconKey)}`],
           styles[
-            `toolbarKey${capitalize(key)}${capitalize(
+            `toolbarKey${capitalize(effectiveIconKey)}${capitalize(
               buttonStatus ?? 'enabled',
             )}`
           ],
           groupStatus === 'disabled' && styles.toolbarKeyDisabled,
         )}
-        data-icon-key={key}
+        data-icon-key={effectiveIconKey}
         data-icon-state={buttonStatus}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
         onMouseDown={(e) => {
@@ -311,14 +321,14 @@ export const Toolbar = ({
           }
 
           e.preventDefault()
-          const stopDefault = onActionClick?.(key as IconKey)
+          const stopDefault = onActionClick?.(effectiveIconKey as IconKey)
           if (stopDefault !== false) {
-            onAction(key as IconKey)
+            onAction(effectiveIconKey as IconKey)
           }
         }}
       >
         {getToolbarIcon({
-          key: key as IconKey,
+          key: effectiveIconKey as IconKey,
           step: fontSizeStep,
           sortDirection: key === 'sortDown' ? sortDirection : undefined,
           listTemplateDensityCols:

@@ -51,12 +51,7 @@
   background-color: $color-envelope-recipient-input;
   border: 1px solid $color-envelope-recipient-border;
   border-radius: 4px;
-  padding: 0.5rem 0.5rem 0.5rem 1.55rem;
-
-  .savedAddressCloseButton {
-    left: 0.08rem;
-    right: auto;
-  }
+  align-items: flex-start;
 }
 
 .savedAddressViewSender {
@@ -194,31 +189,6 @@
 .cityZipSeparator {
   font-size: 0.85rem;
   color: $color-font-enabled-light;
-}
-
-.savedAddressViewRecipient {
-  .recipientAddress {
-    align-items: flex-end;
-    text-align: right;
-  }
-
-  .recipientAddressName {
-    justify-content: flex-end;
-    mask-image: linear-gradient(to left, black 95%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to left, black 95%, transparent 100%);
-  }
-
-  .recipientAddressStreet,
-  .recipientAddressCityZip,
-  .recipientAddressCountry {
-    justify-content: flex-end;
-    mask-image: linear-gradient(to left, black 95%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to left, black 95%, transparent 100%);
-  }
-
-  .recipientAddressInput {
-    text-align: right;
-  }
 }
 
 .recipientsViewListWrap {

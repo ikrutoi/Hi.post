@@ -17,15 +17,11 @@
   height: min-content;
   display: flex;
 
-  &Sender {
-    padding-left: 1rem;
-    justify-content: flex-start;
-  }
-
+  &Sender,
   &Recipient,
   &Recipients {
-    padding-right: 1rem;
-    justify-content: flex-end;
+    padding-left: 1rem;
+    justify-content: flex-start;
   }
 }
 
@@ -64,12 +60,9 @@
   position: absolute;
   top: -0.65rem;
 
+  &Sender,
   &Recipient,
   &Recipients {
-    left: 1rem;
-  }
-
-  &Sender {
     right: 1rem;
   }
 }

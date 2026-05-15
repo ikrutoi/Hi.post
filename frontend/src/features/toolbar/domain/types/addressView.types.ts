@@ -12,6 +12,8 @@ export const VIEW_KEYS = [
   'sortDown',
   'apply',
   'addressCheck',
+  'addList',
+  'removeFromList',
 ] as const satisfies readonly IconKey[]
 
 export type AddressViewKey = (typeof VIEW_KEYS)[number]
@@ -24,7 +26,10 @@ export interface AddressViewToolbarState extends Record<string, any> {
 export const RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipientView',
-    icons: [{ key: 'edit', state: 'enabled' }],
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {
@@ -60,7 +65,10 @@ export const initialRecipientsViewToolbarState: AddressViewToolbarState = {
 export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderView',
-    icons: [{ key: 'edit', state: 'enabled' }],
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {

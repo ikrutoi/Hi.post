@@ -187,6 +187,8 @@ import {
   IconDateEdit,
   IconAddCartList,
   IconHistoryPanelDensity,
+  IconAddList,
+  IconRemoveFromList,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -393,6 +395,10 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconHistoryPanel />
     case 'historyPanelDensity':
       return <IconHistoryPanelDensity />
+    case 'addList':
+      return <IconAddList />
+    case 'removeFromList':
+      return <IconRemoveFromList />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness
