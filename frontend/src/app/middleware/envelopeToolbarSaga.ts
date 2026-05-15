@@ -67,7 +67,6 @@ import {
   selectRecipientViewId,
   selectRecipientView,
   selectRecipientDisplayAddress,
-  selectRecipientsFormAddressListCount,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   removeAddressTemplateRef,
@@ -797,8 +796,11 @@ function* syncAddressListIconsFromActive() {
   const senderEntries: { id: string }[] = yield select(
     (s: RootState) => s.addressBook?.senderEntries ?? [],
   )
+  const recipientEntries: { id: string }[] = yield select(
+    (s: RootState) => s.addressBook?.recipientEntries ?? [],
+  )
   const senderCount = senderEntries.length
-  const recipientCount: number = yield select(selectRecipientsFormAddressListCount)
+  const recipientCount = recipientEntries.length
 
   const senderAddressList =
     active === 'sender'

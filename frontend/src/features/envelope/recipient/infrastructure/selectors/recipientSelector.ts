@@ -224,8 +224,18 @@ export const selectRecipientsDisplayList = createSelector(
   },
 )
 
-/** Число получателей в форме (список id + разрешение в envelope/книге), не размер адресной книги inList. */
-export const selectRecipientsFormAddressListCount = createSelector(
-  [selectRecipientsDisplayList],
-  (list) => list.length,
+/**
+ * Сколько id в текущем списке получателей формы (first/second).
+ * Не зависит от inList в адресной книге: removeFromList не уменьшает бейдж у IconUsers.
+ */
+export const selectRecipientsFormViewIdsCount = createSelector(
+  [selectRecipientState],
+  (r): number => {
+    if (!r) return 0
+    const ids =
+      r.currentRecipientsList === 'second'
+        ? (r.recipientsViewIdsSecondList ?? [])
+        : (r.recipientsViewIdsFirstList ?? [])
+    return ids.length
+  },
 )

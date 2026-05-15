@@ -9,7 +9,7 @@ import { useSenderFacade } from '../../sender/application/facades'
 import { useRecipientFacade } from '../../recipient/application/facades'
 import { useAppSelector, useAppDispatch } from '@app/hooks'
 import { selectSenderView } from '../../sender/infrastructure/selectors'
-import { selectRecipientView } from '../../recipient/infrastructure/selectors'
+import { selectRecipientView, selectRecipientsFormViewIdsCount } from '../../recipient/infrastructure/selectors'
 import { selectRecipientsToolbarStateWithLiveAddressList } from '../../infrastructure/selectors'
 import { setSenderView } from '../../sender/infrastructure/state'
 import {
@@ -85,6 +85,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientView = useAppSelector(selectRecipientView)
   const recipientsToolbarStateWithLiveAddressList = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
+  )
+  const recipientsFormViewIdsCount = useAppSelector(
+    selectRecipientsFormViewIdsCount,
   )
 
   const recipientFieldsetRef = useRef<HTMLFieldSetElement | null>(null)
@@ -367,9 +370,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               />
             </div>
             <div className={styles.envelopeRecipientToolbarIconContainer}>
-              {recipientsDisplayList.length > 0 && (
+              {recipientsFormViewIdsCount > 0 && (
                 <span className={styles.recipientsCountBadge}>
-                  {recipientsDisplayList.length}
+                  {recipientsFormViewIdsCount}
                 </span>
               )}
               <IconUsers className={styles.envelopeRecipientToolbarIcon} />

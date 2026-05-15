@@ -18,7 +18,6 @@ import {
 import {
   selectRecipientState,
   selectIsRecipientComplete,
-  selectRecipientsFormAddressListCount,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   selectRecipientsPendingIds,
@@ -117,9 +116,9 @@ export function* processEnvelopeVisuals() {
   const senderInListCount = (senderList ?? []).filter((item) =>
     listStatusIsInQuickAddressBook(item.listStatus),
   ).length
-  const recipientsFormAddressListCount: number = yield select(
-    selectRecipientsFormAddressListCount,
-  )
+  const recipientInListCount = (recipientList ?? []).filter((item) =>
+    listStatusIsInQuickAddressBook(item.listStatus),
+  ).length
 
   const hasSenderDraft = checkHasData(sender.viewDraft)
   const hasRecipientDraft = checkHasData(recipient.viewDraft)
@@ -147,18 +146,15 @@ export function* processEnvelopeVisuals() {
       ? {
           state: 'active' as const,
           options: {
-            badge:
-              recipientsFormAddressListCount > 0
-                ? recipientsFormAddressListCount
-                : null,
+            badge: recipientInListCount > 0 ? recipientInListCount : null,
           },
         }
-      : getAddressListToolbarFragment(recipientsFormAddressListCount)
+      : getAddressListToolbarFragment(recipientInListCount)
 
   const recipientToolbar = buildRecipientToolbarState({
     isComplete: recipientComplete,
     hasData: checkHasData(recipient.viewDraft),
-    addressListCount: recipientsFormAddressListCount,
+    addressListCount: recipientInListCount,
     isCurrentAddressInList: isAddressInList(recipient.viewDraft, recipientList),
     hasDraft: hasRecipientDraft,
     isAddressFormOpen: recipient.currentView === 'addressFormRecipientView',
@@ -270,9 +266,7 @@ export function* processEnvelopeVisuals() {
     updateToolbarSection({
       section: 'recipients',
       value: {
-        addressList: getAddressListToolbarFragment(
-          recipientsFormAddressListCount,
-        ),
+        addressList: getAddressListToolbarFragment(recipientInListCount),
         apply: {
           state: recipientsApplyState,
           options: {},
