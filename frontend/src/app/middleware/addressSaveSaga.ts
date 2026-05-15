@@ -55,6 +55,7 @@ function* handleAddressSave(
   const role: EnvelopeRole = recipientSaveRequested.match(action)
     ? 'recipient'
     : 'sender'
+  /** Адрес в БД всегда; `inList` — в быстром списке шаблонов, `outList` — только запись (см. Apply без id). */
   const listStatus: ListStatus =
     (action as { payload?: { listStatus?: ListStatus } }).payload?.listStatus ??
     'inList'

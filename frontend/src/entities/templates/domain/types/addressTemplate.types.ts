@@ -22,4 +22,5 @@ export interface CreateAddressTemplatePayload {
 export interface UpdateAddressTemplatePayload {
   address?: AddressFields
   name?: string
+  listStatus?: ListStatus
 }

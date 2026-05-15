@@ -10,6 +10,7 @@ import {
   setSenderView,
   setSenderViewId,
   clearSenderFormData,
+  clearSenderViewDraft,
   toggleSenderSortDirection,
   saveAddressRequested as senderSaveRequested,
 } from '@envelope/sender/infrastructure/state'
@@ -45,7 +46,6 @@ import {
   removeRecipientFromListById,
   toggleRecipientSelection,
 } from '@envelope/infrastructure/state'
-import { setAddressBookMode } from '@envelope/addressBook/infrastructure/state'
 import {
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
@@ -74,6 +74,8 @@ import {
   incrementAddressTemplatesReloadVersion,
 } from '@features/previewStrip/infrastructure/state'
 import {
+  setAddressBookMode,
+  addAddressBookEntry,
   removeAddressBookEntry,
   setAddressBookEntries,
 } from '@envelope/addressBook/infrastructure/state'
@@ -94,6 +96,96 @@ function* handleSetAddressFormViewSync(
     role: 'sender' | 'recipient' | null
   }>,
 ) {}
+
+/** Полное удаление шаблона из БД (корзина в тулбаре). */
+function* deleteAddressTemplateFromToolbar(
+  section: 'senderView' | 'recipientView',
+) {
+  const recipientViewId: string | null = yield select(selectRecipientViewId)
+  const senderViewId: string | null = yield select(selectSenderViewId)
+
+  const type: 'sender' | 'recipient' =
+    section === 'senderView' ? 'sender' : 'recipient'
+  const templateId =
+    section === 'senderView' ? senderViewId : recipientViewId
+
+  if (templateId == null) return
+
+  try {
+    const result: { success: boolean } = yield call(
+      [templateService, 'deleteAddressTemplate'],
+      type,
+      templateId,
+    )
+    if (!result.success) return
+
+    yield put(removeAddressTemplateRef({ type, id: templateId }))
+    yield put(removeAddressBookEntry({ id: templateId, role: type }))
+    yield put(incrementAddressTemplatesReloadVersion())
+    yield put(incrementAddressBookReloadVersion())
+
+    if (type === 'sender') {
+      const sender: SenderState = yield select(selectSenderState)
+      if (sender.applied?.includes(templateId)) {
+        yield put(setSenderApplied(false))
+      }
+      yield put(setSenderViewEditMode(false))
+      yield put(setSenderViewId(null))
+      yield put(setSenderView('senderView'))
+      yield put(setAddressFormView({ show: false, role: null }))
+      yield put(clearSenderFormData())
+      yield put(clearSenderViewDraft())
+    } else {
+      const recipient: RecipientState = yield select(selectRecipientState)
+      const nextApplied = (recipient.applied ?? []).filter((id) => id !== templateId)
+      if (nextApplied.length === 0) {
+        yield put(setRecipientApplied(false))
+      } else {
+        yield put(setRecipientAppliedIds(nextApplied))
+      }
+      yield put(setRecipientViewEditMode(false))
+      yield put(setRecipientViewId(null))
+      yield put(setRecipientView('recipientsView'))
+      yield put(setAddressFormView({ show: false, role: null }))
+      yield put(clearRecipientFormData())
+      yield put(clearRecipientViewDraft())
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn('Failed to delete address template from toolbar:', e)
+  }
+}
+
+/** Снять шаблон с быстрого списка (outList в БД); адрес на конверте и в форме не трогаем. */
+function* moveAddressTemplateToOutListFromToolbar(
+  section: 'senderView' | 'recipientView',
+) {
+  const type: 'sender' | 'recipient' =
+    section === 'senderView' ? 'sender' : 'recipient'
+  const templateId: string | null =
+    section === 'senderView'
+      ? yield select(selectSenderViewId)
+      : yield select(selectRecipientViewId)
+
+  if (templateId == null) return
+
+  try {
+    const result: { success: boolean } = yield call(
+      [templateService, 'updateAddressTemplate'],
+      type,
+      templateId,
+      { listStatus: 'outList' },
+    )
+    if (!result.success) return
+
+    yield put(removeAddressBookEntry({ id: templateId, role: type }))
+    yield put(incrementAddressTemplatesReloadVersion())
+    yield put(incrementAddressBookReloadVersion())
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn('Failed to move address template to outList:', e)
+  }
+}
 
 function* handleEnvelopeToolbarAction(
   action: ReturnType<typeof toolbarAction>,
@@ -191,81 +283,95 @@ function* handleEnvelopeToolbarAction(
   ) {
     if (section === 'senderView') {
       const senderViewId: string | null = yield select(selectSenderViewId)
-      if (senderViewId != null) return
+      const senderEntries: { id: string }[] = yield select(
+        (s: RootState) => s.addressBook?.senderEntries ?? [],
+      )
       const sender: SenderState = yield select(selectSenderState)
       const draft =
         sender.currentView === 'addressFormSenderView'
           ? sender.formDraft
           : sender.viewDraft
       if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) return
-      yield put(senderSaveRequested({ listStatus: 'inList' }))
+
+      if (senderViewId == null) {
+        yield put(senderSaveRequested({ listStatus: 'inList' }))
+      } else if (senderEntries.some((e) => e.id === senderViewId)) {
+        return
+      } else {
+        const result: { success: boolean } = yield call(
+          [templateService, 'updateAddressTemplate'],
+          'sender',
+          senderViewId,
+          { listStatus: 'inList' },
+        )
+        if (!result.success) return
+        const cleaned = { ...draft } as AddressFields
+        yield put(
+          addAddressBookEntry({
+            id: senderViewId,
+            role: 'sender',
+            address: cleaned,
+            createdAt: new Date().toISOString(),
+            listStatus: 'inList',
+          }),
+        )
+        yield put(incrementAddressTemplatesReloadVersion())
+        yield put(incrementAddressBookReloadVersion())
+      }
     } else {
       const recipientViewId: string | null = yield select(selectRecipientViewId)
-      if (recipientViewId != null) return
+      const recipientEntries: { id: string }[] = yield select(
+        (s: RootState) => s.addressBook?.recipientEntries ?? [],
+      )
       const recipient: RecipientState = yield select(selectRecipientState)
       const draft =
         recipient.currentView === 'addressFormRecipientView'
           ? recipient.formDraft
           : recipient.viewDraft
       if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) return
-      yield put(recipientSaveRequested({ listStatus: 'inList' }))
+
+      if (recipientViewId == null) {
+        yield put(recipientSaveRequested({ listStatus: 'inList' }))
+      } else if (recipientEntries.some((e) => e.id === recipientViewId)) {
+        return
+      } else {
+        const result: { success: boolean } = yield call(
+          [templateService, 'updateAddressTemplate'],
+          'recipient',
+          recipientViewId,
+          { listStatus: 'inList' },
+        )
+        if (!result.success) return
+        const cleaned = { ...draft } as AddressFields
+        yield put(
+          addAddressBookEntry({
+            id: recipientViewId,
+            role: 'recipient',
+            address: cleaned,
+            createdAt: new Date().toISOString(),
+            listStatus: 'inList',
+          }),
+        )
+        yield put(incrementAddressTemplatesReloadVersion())
+        yield put(incrementAddressBookReloadVersion())
+      }
     }
     return
   }
 
   if (
     (section === 'senderView' || section === 'recipientView') &&
-    (key === 'delete' || key === 'removeFromList')
+    key === 'removeFromList'
   ) {
-    const recipientViewId: string | null = yield select(selectRecipientViewId)
-    const senderViewId: string | null = yield select(selectSenderViewId)
+    yield* moveAddressTemplateToOutListFromToolbar(section)
+    return
+  }
 
-    let type: 'sender' | 'recipient'
-    let templateId: string | null
-
-    if (section === 'senderView') {
-      type = 'sender'
-      templateId = senderViewId
-    } else if (section === 'recipientView') {
-      type = 'recipient'
-      templateId = recipientViewId
-    } else {
-      type = recipientViewId != null ? 'recipient' : 'sender'
-      templateId = recipientViewId ?? senderViewId
-    }
-
-    if (templateId != null) {
-      try {
-        const result: { success: boolean } = yield call(
-          [templateService, 'deleteAddressTemplate'],
-          type,
-          templateId,
-        )
-        if (result.success) {
-          yield put(removeAddressTemplateRef({ type, id: templateId }))
-          yield put(removeAddressBookEntry({ id: templateId, role: type }))
-
-          if (type === 'recipient') {
-            yield put(setRecipientViewEditMode(false))
-            yield put(setRecipientViewId(null))
-            yield put(setRecipientView('recipientsView'))
-            yield put(setAddressFormView({ show: false, role: null }))
-            yield put(clearRecipientFormData())
-            yield put(clearRecipientViewDraft())
-          } else {
-            yield put(setSenderViewEditMode(false))
-            yield put(setSenderViewId(null))
-            yield put(setSenderView('senderView'))
-            yield put(setAddressFormView({ show: false, role: null }))
-            yield put(clearSenderFormData())
-          }
-        }
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.warn('Failed to delete saved address from toolbar:', e)
-      }
-    }
-
+  if (
+    (section === 'senderView' || section === 'recipientView') &&
+    key === 'delete'
+  ) {
+    yield* deleteAddressTemplateFromToolbar(section)
     return
   }
 

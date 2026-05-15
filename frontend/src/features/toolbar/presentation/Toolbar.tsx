@@ -124,6 +124,20 @@ export const Toolbar = ({
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const senderViewTemplateId = useAppSelector(selectSenderViewId)
   const recipientViewTemplateId = useAppSelector(selectRecipientViewId)
+  const senderTemplateInQuickList = useAppSelector(
+    (s) =>
+      senderViewTemplateId != null &&
+      (s.addressBook?.senderEntries ?? []).some(
+        (e) => e.id === senderViewTemplateId,
+      ),
+  )
+  const recipientTemplateInQuickList = useAppSelector(
+    (s) =>
+      recipientViewTemplateId != null &&
+      (s.addressBook?.recipientEntries ?? []).some(
+        (e) => e.id === recipientViewTemplateId,
+      ),
+  )
   const sectionEditorMenuLockedByCardPieCopy =
     section === 'sectionEditorMenu' && cardPieCopyStripExpanded
 
@@ -153,10 +167,16 @@ export const Toolbar = ({
     iconOptions?: IconOptions,
   ) => {
     const rawData = sectionState[key]
+    const templateInQuickList =
+      section === 'senderView'
+        ? senderTemplateInQuickList
+        : section === 'recipientView'
+          ? recipientTemplateInQuickList
+          : false
     const effectiveIconKey: IconKey =
       key === 'addList' &&
-      ((section === 'senderView' && senderViewTemplateId != null) ||
-        (section === 'recipientView' && recipientViewTemplateId != null))
+      (section === 'senderView' || section === 'recipientView') &&
+      templateInQuickList
         ? 'removeFromList'
         : key
     const options =

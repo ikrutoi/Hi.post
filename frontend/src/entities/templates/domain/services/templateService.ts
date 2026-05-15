@@ -290,9 +290,16 @@ export const templateService = {
         }
       }
 
+      const rec = record as AddressTemplateItem
+      const nextListStatus = payload.listStatus ?? rec.listStatus ?? 'inList'
+      const favorite =
+        nextListStatus === 'outList' ? null : (rec.favorite ?? false)
+
       const updatedRecord: AddressTemplateItem = {
-        ...record,
-        address: payload.address ?? record.address,
+        ...rec,
+        address: payload.address ?? rec.address,
+        listStatus: nextListStatus,
+        favorite,
       }
 
       await adapter.put(updatedRecord as AddressTemplateItem & { id: string })

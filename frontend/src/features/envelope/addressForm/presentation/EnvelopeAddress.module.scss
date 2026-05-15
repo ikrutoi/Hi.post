@@ -332,22 +332,18 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 
 .addressFormPlaceholderRecipient {
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 
-/* Пустой список получателей: та же геометрия отступа, что у отправителя (слева 10%, сверху 7%) */
+/* Пустой список получателей: якорь справа снизу (зона получателя на конверте), без translate под левый inset отправителя */
 .addressFormPlaceholder.addressFormPlaceholderRecipient.addressFormPlaceholderBg {
   position: absolute;
-  left: 10%;
-  top: 7%;
+  right: 10%;
+  bottom: 7%;
   z-index: 2;
   min-height: 0;
   padding: 0;
   box-sizing: border-box;
-
-  .addressFormPlaceholderIconBg {
-    transform: translateX(-28%);
-  }
 }
 
 .addressFormPlaceholderBg {
