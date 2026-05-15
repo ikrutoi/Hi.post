@@ -47,13 +47,17 @@ export const SenderListPanel: React.FC<Props> = ({
     ;(scrollbarTrackRef as React.MutableRefObject<HTMLDivElement | null>).current = el
     if (el) setScrollbarTrackReady(true)
   }, [])
-  const [focusedIndex, setFocusedIndex] = useState(0)
+  const selectedRowIndex = useMemo(
+    () =>
+      selectedId ? combinedEntries.findIndex((e) => e.id === selectedId) : -1,
+    [selectedId, combinedEntries],
+  )
+
+  /** -1 until user moves with arrows — avoids marking the first row as keyboard-focused. */
+  const [focusedIndex, setFocusedIndex] = useState(-1)
 
   useEffect(() => {
-    const selectedIndex = selectedId
-      ? combinedEntries.findIndex((e) => e.id === selectedId)
-      : -1
-    setFocusedIndex(selectedIndex >= 0 ? selectedIndex : 0)
+    setFocusedIndex(-1)
     // Не перетягиваем фокус с SenderView, когда он в режиме редактирования.
     if (!senderViewEditMode) {
       listRef.current?.focus()
@@ -61,6 +65,7 @@ export const SenderListPanel: React.FC<Props> = ({
   }, [combinedEntries, selectedId, senderViewEditMode])
 
   useEffect(() => {
+    if (focusedIndex < 0) return
     const el = listRef.current?.querySelector(`[data-index="${focusedIndex}"]`)
     el?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
   }, [focusedIndex])
@@ -75,22 +80,42 @@ export const SenderListPanel: React.FC<Props> = ({
       if (combinedEntries.length === 0) return
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        const next = Math.min(focusedIndex + 1, combinedEntries.length - 1)
+        const next =
+          focusedIndex < 0
+            ? Math.max(selectedRowIndex, 0)
+            : Math.min(focusedIndex + 1, combinedEntries.length - 1)
         setFocusedIndex(next)
         onSelect(combinedEntries[next])
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
+        if (focusedIndex < 0) return
         const next = Math.max(focusedIndex - 1, 0)
         setFocusedIndex(next)
         onSelect(combinedEntries[next])
       } else if (e.key === 'Enter') {
         e.preventDefault()
-        const entry = combinedEntries[focusedIndex]
-        onSelect(entry)
-        onEdit?.(entry)
+        const idx =
+          focusedIndex >= 0
+            ? focusedIndex
+            : selectedRowIndex >= 0
+              ? selectedRowIndex
+              : 0
+        const entry = combinedEntries[idx]
+        if (entry) {
+          setFocusedIndex(idx)
+          onSelect(entry)
+          onEdit?.(entry)
+        }
       }
     },
-    [combinedEntries, focusedIndex, onSelect, onEdit, closePanel],
+    [
+      combinedEntries,
+      focusedIndex,
+      selectedRowIndex,
+      onSelect,
+      onEdit,
+      closePanel,
+    ],
   )
 
   return (

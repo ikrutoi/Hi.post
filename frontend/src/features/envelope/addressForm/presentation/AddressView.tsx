@@ -9,12 +9,29 @@ import {
   selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import {
-  setSenderViewEditMode,
+  removeRecipientAt,
+  setAddressFormView,
   setRecipientViewEditMode,
+  setSenderViewEditMode,
 } from '@envelope/infrastructure/state'
-import { updateRecipientField } from '@envelope/recipient/infrastructure/state'
-import { updateSenderField } from '@envelope/sender/infrastructure/state'
+import {
+  clearRecipientViewDraft,
+  removeRecipientFromListById,
+  removeRecipientFromListByIndex,
+  setRecipientApplied,
+  setRecipientAppliedIds,
+  setRecipientViewId,
+  updateRecipientField,
+} from '@envelope/recipient/infrastructure/state'
+import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
+import {
+  clearSender,
+  setSenderApplied,
+  setSenderViewId,
+  updateSenderField,
+} from '@envelope/sender/infrastructure/state'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { getToolbarIcon } from '@/shared/utils/icons'
 
 type AddressViewRole = 'recipient' | 'sender'
 
@@ -42,6 +59,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   address,
 }) => {
   const dispatch = useAppDispatch()
+  const recipientState = useAppSelector(selectRecipientState)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isEditMode =
@@ -123,7 +141,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     if (input) {
       focusInput(input)
     } else if (activeRow === 'name') {
-      // Ref может ещё не быть при смене view → edit в одном тике; фокус после layout
       const raf = requestAnimationFrame(() => {
         const el = nameRef.current
         if (el) focusInput(el)
@@ -192,6 +209,65 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     dispatch(toolbarAction({ section, key: 'edit' } as any))
   }
 
+  const toolbarSection =
+    role === 'sender' ? 'senderView' : 'recipientView'
+
+  const removeSenderFromForm = () => {
+    dispatch(setSenderViewEditMode(false))
+    dispatch(setSenderViewId(null))
+    dispatch(setSenderApplied(false))
+    dispatch(clearSender())
+    dispatch(setAddressFormView({ show: false, role: null }))
+  }
+
+  const removeRecipientFromForm = () => {
+    dispatch(setRecipientViewEditMode(false))
+    if (templateId) {
+      if (templateId.startsWith('recipient-')) {
+        const index = parseInt(templateId.replace('recipient-', ''), 10)
+        if (!Number.isNaN(index)) {
+          dispatch(removeRecipientFromListByIndex(index))
+          dispatch(removeRecipientAt(index))
+        }
+      } else {
+        dispatch(removeRecipientFromListById(templateId))
+      }
+      const nextApplied = (recipientState.applied ?? []).filter(
+        (id) => id !== templateId,
+      )
+      if (nextApplied.length === 0) {
+        dispatch(setRecipientApplied(false))
+      } else {
+        dispatch(setRecipientAppliedIds(nextApplied))
+      }
+    }
+    dispatch(setRecipientViewId(null))
+    dispatch(clearRecipientViewDraft())
+    dispatch(setAddressFormView({ show: false, role: null }))
+  }
+
+  const handleCloseSavedCard = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (role === 'sender') {
+      removeSenderFromForm()
+    } else {
+      removeRecipientFromForm()
+    }
+  }
+
+  const savedAddressCloseButton = (
+    <button
+      type="button"
+      className={styles.savedAddressCloseButton}
+      aria-label="Close"
+      title="Close"
+      onClick={handleCloseSavedCard}
+    >
+      {getToolbarIcon({ key: 'clearInput' })}
+    </button>
+  )
+
   const renderViewMode = () => (
     <div
       className={clsx(
@@ -201,6 +277,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           : styles.savedAddressViewRecipient,
       )}
     >
+      {savedAddressCloseButton}
       <div className={styles.recipientAddress}>
         {address.name ? (
           <div className={styles.recipientAddressName}>{address.name}</div>
@@ -239,6 +316,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         }
       }}
     >
+      {savedAddressCloseButton}
       <div className={styles.recipientAddress}>
         {activeRow === 'name' ? (
           <input

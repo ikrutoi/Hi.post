@@ -16,16 +16,26 @@ $entry-row-height: 2.28rem;
   user-select: none;
   transition:
     background-color 0.15s ease,
-    border-color 0.15s ease;
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
-  &:hover,
-  &[data-focused='true'] {
+  &:hover {
     background-color: darken($color-envelope-recipient-input, 2%);
+  }
+
+  /* Keyboard focus in listbox: same border family as default (no accent tint). */
+  &[data-focused='true']:not([data-selected='true']) {
+    border-color: darken($color-envelope-recipient-border, 10%);
   }
 
   &[data-selected='true'] {
     background-color: darken($color-envelope-recipient-input, 2%);
     box-shadow: -2px 0 0 0 $color-toggle-active;
+  }
+
+  &[data-selected='true'][data-focused='true'] {
+    box-shadow: -2px 0 0 0 $color-toggle-active;
+    border-color: $color-envelope-recipient-border;
   }
 
   &[data-has-remove='true'] {
@@ -37,13 +47,21 @@ $entry-row-height: 2.28rem;
   background-color: $color-envelope-sender-input;
   border-color: $color-envelope-sender-border;
 
-  &:hover,
-  &[data-focused='true'] {
+  &:hover {
     background-color: darken($color-envelope-sender-input, 2%);
+  }
+
+  &[data-focused='true']:not([data-selected='true']) {
+    border-color: darken($color-envelope-sender-border, 10%);
   }
 
   &[data-selected='true'] {
     background-color: darken($color-envelope-sender-input, 2%);
+    border-left-color: $color-toggle-active;
+  }
+
+  &[data-selected='true'][data-focused='true'] {
+    border-color: $color-envelope-sender-border;
     border-left-color: $color-toggle-active;
   }
 }

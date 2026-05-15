@@ -23,13 +23,13 @@ export interface AddressViewToolbarState extends Record<string, any> {
 
 export const RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
   {
-    group: 'actions',
-    icons: [{ key: 'delete', state: 'enabled' }],
+    group: 'recipientView',
+    icons: [{ key: 'edit', state: 'enabled' }],
     status: 'enabled',
   },
   {
-    group: 'recipientView',
-    icons: [{ key: 'edit', state: 'enabled' }],
+    group: 'actions',
+    icons: [{ key: 'delete', state: 'enabled' }],
     status: 'enabled',
   },
 ]

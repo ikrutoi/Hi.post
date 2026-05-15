@@ -108,7 +108,7 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 .addressToolbarSender {
   position: absolute;
   top: 0;
-  left: 1rem;
+  left: 0.5rem;
   transform: translateY($envelopeAddressToolbarLift);
   width: min-content;
   // border: solid 1px red;
@@ -117,7 +117,7 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 .envelopeSenderToolbarIconContainer {
   position: absolute;
   top: 0;
-  right: 1rem;
+  right: 0.5rem;
   padding: 0.5rem;
   transform: translateY($envelopeSenderUserIconLift);
 }
@@ -133,7 +133,7 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 .addressToolbarRecipient {
   position: absolute;
   top: 0;
-  left: 1rem;
+  left: 0.5rem;
   transform: translateY($envelopeAddressToolbarLift);
   width: min-content;
 }
@@ -333,6 +333,16 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 .addressFormPlaceholderRecipient {
   justify-content: flex-start;
   align-items: flex-end;
+}
+
+/* Пустой список получателей: плейсхолдер — отступ справа 10%, снизу 7% */
+.addressFormPlaceholder.addressFormPlaceholderRecipient.addressFormPlaceholderBg {
+  position: absolute;
+  right: 10%;
+  bottom: 7%;
+  z-index: 2;
+  min-height: 0;
+  padding: 0;
 }
 
 .addressFormPlaceholderBg {

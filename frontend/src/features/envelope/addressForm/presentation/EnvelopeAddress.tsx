@@ -17,7 +17,10 @@ import {
   setRecipientViewId,
 } from '../../recipient/infrastructure/state'
 import { setRecipientViewEditMode } from '@envelope/infrastructure/state'
-import { selectSenderViewEditMode } from '@envelope/infrastructure/selectors'
+import {
+  selectRecipientViewEditMode,
+  selectSenderViewEditMode,
+} from '@envelope/infrastructure/selectors'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
@@ -77,6 +80,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const dispatch = useAppDispatch()
   const senderView = useAppSelector(selectSenderView)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
+  const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const recipientView = useAppSelector(selectRecipientView)
   const recipientsToolbarStateWithLiveAddressList = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
@@ -117,11 +121,64 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     role === 'recipient' &&
     Object.values(value).some((v) => (v ?? '').trim() !== '')
 
+  const recipientsDisplayList = recipientFacade.recipientsDisplayList
+  const singleRecipientEntry =
+    recipientsDisplayList.length === 1 ? recipientsDisplayList[0] : null
+
   const showRecipientTemplateCard =
     role === 'recipient' &&
     recipientView === 'recipientView' &&
     (hasRecipientAddressData ||
       (editingTemplateId != null && dataMatchesTemplate))
+
+  const showRecipientAddressCard =
+    showRecipientTemplateCard ||
+    (singleRecipientEntry != null &&
+      recipientView !== 'addressFormRecipientView')
+
+  useEffect(() => {
+    if (role !== 'recipient') return
+    if (recipientView === 'addressFormRecipientView') return
+
+    if (singleRecipientEntry) {
+      if (editingTemplateId !== singleRecipientEntry.id) {
+        dispatch(setRecipientViewId(singleRecipientEntry.id))
+      }
+      if (!addressMatchesTemplate(value, singleRecipientEntry.address)) {
+        ;(
+          Object.entries(singleRecipientEntry.address) as [
+            keyof typeof value,
+            string,
+          ][]
+        ).forEach(([field, fieldValue]) => {
+          update(field as any, fieldValue)
+        })
+      }
+      if (recipientView === 'recipientsView') {
+        dispatch(setRecipientView('recipientView'))
+      }
+      return
+    }
+
+    if (
+      recipientsDisplayList.length > 1 &&
+      recipientView === 'recipientView' &&
+      !recipientViewEditMode
+    ) {
+      dispatch(setRecipientView('recipientsView'))
+      dispatch(setRecipientViewId(null))
+    }
+  }, [
+    role,
+    recipientView,
+    recipientsDisplayList.length,
+    singleRecipientEntry,
+    editingTemplateId,
+    recipientViewEditMode,
+    dispatch,
+    update,
+    value,
+  ])
 
   const hasSenderAddressData =
     role === 'sender' &&
@@ -247,7 +304,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               styles.recipientFieldsetContent,
               styles.recipientFieldsetMulti,
               recipientView !== 'addressFormRecipientView' &&
-                recipientFacade.recipientsDisplayList.length > 0 &&
+                recipientsDisplayList.length > 1 &&
                 styles.recipientFieldsetWithList,
             )}
           >
@@ -288,15 +345,17 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 onFieldChange={update}
                 lang={lang}
               />
-            ) : showRecipientTemplateCard ? (
+            ) : showRecipientAddressCard ? (
               <RecipientView
-                templateId={editingTemplateId ?? ''}
+                templateId={
+                  editingTemplateId ?? singleRecipientEntry?.id ?? ''
+                }
                 address={value}
               />
             ) : recipientView === 'recipientsView' &&
-              recipientFacade.recipientsDisplayList.length > 0 ? (
+              recipientsDisplayList.length > 1 ? (
               <RecipientsView
-                entries={recipientFacade.recipientsDisplayList}
+                entries={recipientsDisplayList}
                 onRemove={recipientFacade.removeFromList}
                 onEdit={handleEditRecipientFromList}
                 scrollbarPortalTarget={
