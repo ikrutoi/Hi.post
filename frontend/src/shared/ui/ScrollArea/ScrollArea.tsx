@@ -134,7 +134,11 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
   const showThumb = thumbHeight > 0
 
   const trackElement = (
-    <div ref={trackRef} className={styles.scrollbarTrack}>
+    <div
+      ref={trackRef}
+      className={styles.scrollbarTrack}
+      data-scrollarea-track
+    >
       <div
         className={clsx(
           styles.scrollbarThumb,

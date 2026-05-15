@@ -390,3 +390,18 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
   overflow: hidden;
   z-index: 1;
 }
+
+/* Sender empty state: absolute inset; SVG figure sits on the right side of the viewBox. */
+.senderPlaceholderInset {
+  position: absolute;
+  left: 10%;
+  top: 7%;
+  z-index: 2;
+  min-height: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  .addressFormPlaceholderIconBg {
+    transform: translateX(-28%);
+  }
+}

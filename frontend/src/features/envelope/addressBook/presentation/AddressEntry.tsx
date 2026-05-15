@@ -42,6 +42,7 @@ export const AddressEntry: React.FC<Props> = ({
   return (
     <div
       className={clsx(styles.root, variant === 'sender' && styles.rootSender)}
+      data-address-book-entry
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-has-remove={showRemove ? 'true' : undefined}

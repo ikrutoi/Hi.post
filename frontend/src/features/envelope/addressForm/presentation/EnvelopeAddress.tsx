@@ -29,6 +29,7 @@ import {
   IconUserSender,
   IconUserSenderCentered,
 } from '@shared/ui/icons'
+import { toolbarAction } from '@toolbar/application/helpers'
 
 const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
 
@@ -85,6 +86,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientsToolbarStateWithLiveAddressList = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
   )
+
+  const recipientFieldsetRef = useRef<HTMLFieldSetElement | null>(null)
+  const senderFieldsetRef = useRef<HTMLFieldSetElement | null>(null)
 
   const recipientFieldsetContainerScrollRef = useRef<HTMLDivElement | null>(
     null,
@@ -212,12 +216,55 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const handlePlaceholderClick = (r: 'sender' | 'recipient') => {
     const entries = r === 'sender' ? senderEntries : recipientEntries
     if (entries.length > 0) {
-      if (r === 'sender') envelopeFacade.toggleSenderListPanelOpen()
-      else envelopeFacade.toggleRecipientListPanelOpen()
+      dispatch(
+        toolbarAction({
+          section: r === 'sender' ? 'sender' : 'recipients',
+          key: 'addressList',
+        }),
+      )
     } else {
       openAddressForm(r)
     }
   }
+
+  /** Same path as Toolbar → envelope saga (`handleEnvelopeToolbarAction`, key addressList). */
+  const handleRecipientFieldsetMouseDownCapture = useCallback(
+    (e: React.MouseEvent<HTMLFieldSetElement>) => {
+      const fieldset = recipientFieldsetRef.current
+      const el = e.target as HTMLElement | null
+      if (!fieldset || !el || !fieldset.contains(el)) return
+      if (
+        el.closest(
+          `.${styles.addressToolbarRecipient}, .${styles.envelopeRecipientToolbarIconContainer}`,
+        )
+      )
+        return
+      if (el.closest('button, a, input, textarea, select, [role="button"]'))
+        return
+      if (el.closest('[data-scrollarea-track]')) return
+      if (el.closest('[data-address-book-entry]')) return
+      dispatch(toolbarAction({ section: 'recipients', key: 'addressList' }))
+    },
+    [dispatch],
+  )
+
+  const handleSenderFieldsetMouseDownCapture = useCallback(
+    (e: React.MouseEvent<HTMLFieldSetElement>) => {
+      const fieldset = senderFieldsetRef.current
+      const el = e.target as HTMLElement | null
+      if (!fieldset || !el || !fieldset.contains(el)) return
+      if (
+        el.closest(
+          `.${styles.addressToolbarSender}, .${styles.envelopeSenderToolbarIconContainer}`,
+        )
+      )
+        return
+      if (el.closest('button, a, input, textarea, select, [role="button"]'))
+        return
+      dispatch(toolbarAction({ section: 'sender', key: 'addressList' }))
+    },
+    [dispatch],
+  )
 
   return (
     <form
@@ -232,7 +279,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       {senderFacade.isEnabled && role === 'sender' && (
         <div className={styles.addressFormSenderBody}>
           <fieldset
+            ref={senderFieldsetRef}
             className={clsx(styles.addressFieldset, styles.addressFormSender)}
+            onMouseDownCapture={handleSenderFieldsetMouseDownCapture}
           >
             <legend
               className={clsx(styles.addressLegend, styles.addressLegendSender)}
@@ -272,6 +321,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                   styles.addressFormPlaceholder,
                   styles.addressFormPlaceholderSender,
                   styles.addressFormPlaceholderBg,
+                  styles.senderPlaceholderInset,
                 )}
                 onClick={() => handlePlaceholderClick('sender')}
                 onKeyDown={(e) => {
@@ -298,6 +348,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             className={styles.recipientFieldsetContainerScroll}
           />
           <fieldset
+            ref={recipientFieldsetRef}
             className={clsx(
               styles.addressFieldset,
               styles.addressFormRecipient,
@@ -307,6 +358,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 recipientsDisplayList.length > 1 &&
                 styles.recipientFieldsetWithList,
             )}
+            onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
           >
             <legend
               className={clsx(
