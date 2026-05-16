@@ -15,12 +15,10 @@ import {
   setSenderViewEditMode,
 } from '@envelope/infrastructure/state'
 import {
-  clearRecipientViewDraft,
   removeRecipientFromListById,
   removeRecipientFromListByIndex,
   setRecipientApplied,
   setRecipientAppliedIds,
-  setRecipientViewId,
   updateRecipientField,
 } from '@envelope/recipient/infrastructure/state'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
@@ -221,29 +219,26 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   }
 
   const removeRecipientFromForm = () => {
-    dispatch(setRecipientViewEditMode(false))
-    if (templateId) {
-      if (templateId.startsWith('recipient-')) {
-        const index = parseInt(templateId.replace('recipient-', ''), 10)
-        if (!Number.isNaN(index)) {
-          dispatch(removeRecipientFromListByIndex(index))
-          dispatch(removeRecipientAt(index))
-        }
-      } else {
-        dispatch(removeRecipientFromListById(templateId))
+    if (!templateId) return
+
+    if (templateId.startsWith('recipient-')) {
+      const index = parseInt(templateId.replace('recipient-', ''), 10)
+      if (!Number.isNaN(index)) {
+        dispatch(removeRecipientFromListByIndex(index))
+        dispatch(removeRecipientAt(index))
       }
-      const nextApplied = (recipientState.applied ?? []).filter(
-        (id) => id !== templateId,
-      )
-      if (nextApplied.length === 0) {
-        dispatch(setRecipientApplied(false))
-      } else {
-        dispatch(setRecipientAppliedIds(nextApplied))
-      }
+    } else {
+      dispatch(removeRecipientFromListById(templateId))
     }
-    dispatch(setRecipientViewId(null))
-    dispatch(clearRecipientViewDraft())
-    dispatch(setAddressFormView({ show: false, role: null }))
+
+    const nextApplied = (recipientState.applied ?? []).filter(
+      (id) => id !== templateId,
+    )
+    if (nextApplied.length === 0) {
+      dispatch(setRecipientApplied(false))
+    } else {
+      dispatch(setRecipientAppliedIds(nextApplied))
+    }
   }
 
   const handleCloseSavedCard = (e: React.MouseEvent) => {

@@ -20,7 +20,12 @@ import {
   updateSenderField,
   setSenderAppliedWithData,
 } from '@envelope/sender/infrastructure/state'
-import { addressSaveSuccess, setAddressFormView } from '@envelope/infrastructure/state'
+import {
+  addressSaveSuccess,
+  setAddressFormView,
+  setRecipientsPendingIds,
+} from '@envelope/infrastructure/state'
+import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
 import { addAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
@@ -109,8 +114,8 @@ function* handleAddressSave(
       )
       const id = String(result.templateId)
       if (role === 'recipient') {
-        yield put(setRecipientViewId(id))
-        yield put(setRecipientView('recipientView'))
+        yield put(setRecipientViewId(null))
+        yield put(setRecipientView('recipientsView'))
         yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearRecipientFormData())
         // Заполняем viewDraft сохранённым адресом, чтобы RecipientView отобразил его
@@ -126,9 +131,13 @@ function* handleAddressSave(
             data: [cleanedAddress],
           }),
         )
+        const pendingIds: string[] = yield select(selectRecipientsPendingIds)
+        if (!pendingIds.includes(id)) {
+          yield put(setRecipientsPendingIds([...pendingIds, id]))
+        }
       } else {
         yield put(setSenderViewId(id))
-        yield put(setSenderView('senderView'))
+        yield put(setSenderView('senderEnvelopeView'))
         yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearSenderFormData())
         for (const [field, value] of Object.entries(

@@ -37,6 +37,7 @@ import {
   setEnabled,
   clearSender,
   setSenderView,
+  setSenderAppliedWithData,
 } from '../../sender/infrastructure/state'
 import {
   toggleRecipientSelection,
@@ -175,11 +176,17 @@ export const useEnvelopeFacade = () => {
     id: string
     address: Record<string, string>
   }) => {
-    dispatch(setSenderView('senderView'))
     dispatch(setSenderViewId(entry.id))
     ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
       ([field, value]) => dispatch(updateSenderField({ field, value })),
     )
+    dispatch(
+      setSenderAppliedWithData({
+        ids: [entry.id],
+        data: [{ ...entry.address }],
+      }),
+    )
+    dispatch(setSenderView('senderEnvelopeView'))
     dispatch(closeAddressList())
   }
 
@@ -202,7 +209,7 @@ export const useEnvelopeFacade = () => {
   const closeAddressForm = (role: 'sender' | 'recipient') => {
     dispatch(setAddressFormView({ show: false, role: null }))
     if (role === 'sender') {
-      dispatch(setSenderView('senderView'))
+      dispatch(setSenderView('senderEnvelopeView'))
     } else {
       dispatch(setRecipientView('recipientsView'))
     }

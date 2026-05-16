@@ -9,7 +9,10 @@ export const senderLayout: AddressLayout = [
   byKey.country,
 ]
 
-export type SenderView = 'addressFormSenderView' | 'senderView'
+export type SenderView =
+  | 'addressFormSenderView'
+  | 'senderEnvelopeView'
+  | 'senderView'
 
 export const SENDER_SORTED_BY = ['name', 'country', 'city', 'order'] as const
 export type SenderSortedBy = (typeof SENDER_SORTED_BY)[number]

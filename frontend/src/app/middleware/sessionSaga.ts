@@ -275,7 +275,7 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           viewDraft: address,
           formIsComplete: isComplete,
           senderViewId: sender.senderViewId,
-          currentView: 'senderView',
+          currentView: 'senderEnvelopeView',
           applied: sender.applied ?? [],
           appliedData: sender.appliedData ?? null,
           enabled: true,
@@ -300,7 +300,8 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           viewDraft: address,
           formIsComplete: isComplete,
           recipientViewId: recipient.recipientViewId,
-          currentView: 'recipientView',
+          currentView: 'recipientsView',
+          recipientViewId: null,
           recipientsViewIdsFirstList: recipient.recipientsViewIdsFirstList ?? [],
           recipientsViewIdsSecondList:
             recipient.recipientsViewIdsSecondList ?? [],

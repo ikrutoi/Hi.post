@@ -133,7 +133,7 @@ function* deleteAddressTemplateFromToolbar(
       }
       yield put(setSenderViewEditMode(false))
       yield put(setSenderViewId(null))
-      yield put(setSenderView('senderView'))
+      yield put(setSenderView('senderEnvelopeView'))
       yield put(setAddressFormView({ show: false, role: null }))
       yield put(clearSenderFormData())
       yield put(clearSenderViewDraft())
@@ -560,6 +560,7 @@ function* handleEnvelopeToolbarAction(
           yield select(selectSenderAddress)
         const data: AddressFields[] = [{ ...displayAddress } as AddressFields]
         yield put(setSenderAppliedWithData({ ids: [senderViewId], data }))
+        yield put(setSenderView('senderEnvelopeView'))
       } else {
         yield put(senderSaveRequested({ listStatus: 'outList' }))
       }
@@ -667,7 +668,7 @@ function* handleEnvelopeToolbarAction(
     const role = section === 'addressFormSenderView' ? 'sender' : 'recipient'
     yield put(setAddressFormView({ show: false, role: null }))
     if (role === 'sender') {
-      yield put(setSenderView('senderView'))
+      yield put(setSenderView('senderEnvelopeView'))
     } else {
       yield put(setRecipientView('recipientsView'))
     }
@@ -689,10 +690,18 @@ function* handleAddressSaveSuccess(
   if (formViewRole !== role) return
   yield put(setAddressFormView({ show: false, role: null }))
   if (role === 'sender') {
-    yield put(setSenderView('senderView'))
+    yield put(setSenderView('senderEnvelopeView'))
   } else {
     yield put(setRecipientView('recipientsView'))
   }
+}
+
+function* navigateRecipientViewAfterListChange(_pendingIds: string[]) {
+  yield put(setRecipientViewEditMode(false))
+  yield put(setAddressFormView({ show: false, role: null }))
+  yield put(clearRecipientViewDraft())
+  yield put(setRecipientView('recipientsView'))
+  yield put(setRecipientViewId(null))
 }
 
 function* handleRemoveRecipientFromListByIndex(action: PayloadAction<number>) {
@@ -720,7 +729,9 @@ function* handleRemoveRecipientFromListByIndex(action: PayloadAction<number>) {
     )
   }
   const pending: string[] = yield select(selectRecipientsPendingIds)
-  yield put(setRecipientsPendingIds(pending.filter((id) => id !== templateId)))
+  const nextPending = pending.filter((id) => id !== templateId)
+  yield put(setRecipientsPendingIds(nextPending))
+  yield* navigateRecipientViewAfterListChange(nextPending)
 }
 
 function* handleRemoveRecipientFromListById(action: PayloadAction<string>) {
@@ -743,7 +754,9 @@ function* handleRemoveRecipientFromListById(action: PayloadAction<string>) {
     )
   }
   const pending: string[] = yield select(selectRecipientsPendingIds)
-  yield put(setRecipientsPendingIds(pending.filter((id) => id !== templateId)))
+  const nextPending = pending.filter((id) => id !== templateId)
+  yield put(setRecipientsPendingIds(nextPending))
+  yield* navigateRecipientViewAfterListChange(nextPending)
 }
 
 function* syncRecipientsViewIdsFromPending() {
@@ -755,8 +768,8 @@ function* syncRecipientsViewIdsFromPending() {
     yield put(setRecipientsViewIds(pendingIds))
   }
 
-  // Несколько получателей на конверте — показываем сетку EnvelopeRecipientRow, не одну карточку.
-  if (pendingIds.length > 1) {
+  // На конверте всегда упрощённый список; развёрнутая карточка только по клику.
+  if (pendingIds.length >= 1) {
     yield put(setRecipientView('recipientsView'))
     yield put(setRecipientViewId(null))
   }

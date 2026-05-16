@@ -18,7 +18,7 @@ function isFormDraftEmpty(data: AddressFields): boolean {
 }
 
 export const initialSender: SenderState = {
-  currentView: 'senderView',
+  currentView: 'senderEnvelopeView',
   formDraft: { ...initialSection.data },
   viewDraft: { ...initialSection.data },
   formIsComplete: false,
