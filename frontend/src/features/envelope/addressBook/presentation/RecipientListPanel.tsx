@@ -4,7 +4,7 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { IconUsers } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
-import { AddressEntry } from './AddressEntry'
+import { AddressBookListRow } from './AddressBookListRow'
 import type { AddressBookEntry } from '../domain/types'
 import { useRecipientListPanelFacade } from '../../application/facades'
 import { useAppSelector } from '@app/hooks'
@@ -167,7 +167,7 @@ export const RecipientListPanel: React.FC<Props> = ({
             <>
               {favoriteEntries.map((entry, index) => (
                 <div key={entry.id} data-index={index} role="option">
-                  <AddressEntry
+                  <AddressBookListRow
                     entry={entry}
                     onSelect={onSelect}
                     isSelected={selectedIds.includes(entry.id)}
@@ -186,7 +186,7 @@ export const RecipientListPanel: React.FC<Props> = ({
                 const dataIndex = favoriteEntries.length + index
                 return (
                   <div key={entry.id} data-index={dataIndex} role="option">
-                    <AddressEntry
+                    <AddressBookListRow
                       entry={entry}
                       onSelect={onSelect}
                       isSelected={selectedIds.includes(entry.id)}

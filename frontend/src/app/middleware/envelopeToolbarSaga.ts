@@ -46,6 +46,7 @@ import {
   removeRecipientFromListById,
   toggleRecipientSelection,
 } from '@envelope/infrastructure/state'
+import type { RecipientViewEditModePayload } from '@envelope/infrastructure/state'
 import {
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
@@ -67,6 +68,7 @@ import {
   selectRecipientViewId,
   selectRecipientView,
   selectRecipientDisplayAddress,
+  selectRecipientsDisplayList,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   removeAddressTemplateRef,
@@ -752,6 +754,12 @@ function* syncRecipientsViewIdsFromPending() {
   } else {
     yield put(setRecipientsViewIds(pendingIds))
   }
+
+  // Несколько получателей на конверте — показываем сетку EnvelopeRecipientRow, не одну карточку.
+  if (pendingIds.length > 1) {
+    yield put(setRecipientView('recipientsView'))
+    yield put(setRecipientViewId(null))
+  }
 }
 
 function* syncAddressBookModeFromActive() {
@@ -761,11 +769,24 @@ function* syncAddressBookModeFromActive() {
   yield put(setAddressBookMode(active))
 }
 
-function* syncEditIconOnEditModeChange(action: PayloadAction<boolean>) {
-  const isEditMode = action.payload
-  if (isEditMode) return
+function parseRecipientViewEditModePayload(
+  payload: RecipientViewEditModePayload,
+): { enabled: boolean; keepRecipientView: boolean } {
+  if (typeof payload === 'boolean') {
+    return { enabled: payload, keepRecipientView: false }
+  }
+  return {
+    enabled: payload.enabled,
+    keepRecipientView: payload.keepRecipientView ?? false,
+  }
+}
 
+function* syncEditIconOnEditModeChange(
+  action: PayloadAction<boolean | RecipientViewEditModePayload>,
+) {
   if (action.type === setSenderViewEditMode.type) {
+    const isEditMode = action.payload as boolean
+    if (isEditMode) return
     yield put(
       updateToolbarIcon({
         section: 'senderView',
@@ -773,11 +794,26 @@ function* syncEditIconOnEditModeChange(action: PayloadAction<boolean>) {
         value: 'enabled',
       }),
     )
+    return
   }
+
   if (action.type === setRecipientViewEditMode.type) {
-    const currentView: string = yield select(selectRecipientView)
-    if (currentView === 'recipientView') {
-      yield put(setRecipientView('recipientsView'))
+    const { enabled, keepRecipientView } = parseRecipientViewEditModePayload(
+      action.payload as RecipientViewEditModePayload,
+    )
+    if (enabled) return
+
+    if (!keepRecipientView) {
+      const currentView: string = yield select(selectRecipientView)
+      if (currentView === 'recipientView') {
+        const recipientsDisplayList: { id: string }[] = yield select(
+          selectRecipientsDisplayList,
+        )
+        if (recipientsDisplayList.length > 1) {
+          yield put(setRecipientView('recipientsView'))
+          yield put(setRecipientViewId(null))
+        }
+      }
     }
     yield put(
       updateToolbarIcon({

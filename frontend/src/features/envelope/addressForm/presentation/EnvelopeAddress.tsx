@@ -156,7 +156,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     if (
       recipientsDisplayList.length > 1 &&
       recipientView === 'recipientView' &&
-      !recipientViewEditMode
+      !recipientViewEditMode &&
+      editingTemplateId == null
     ) {
       dispatch(setRecipientView('recipientsView'))
       dispatch(setRecipientViewId(null))
@@ -191,7 +192,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     else dispatch(setRecipientView('addressFormRecipientView'))
   }
 
-  const handleEditRecipientFromList = (entry: AddressBookEntry) => {
+  const handleOpenRecipientFromList = (entry: AddressBookEntry) => {
     dispatch(setRecipientViewId(entry.id))
     ;(Object.entries(entry.address) as [keyof typeof value, string][]).forEach(
       ([field, fieldValue]) => {
@@ -199,7 +200,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       },
     )
     dispatch(setRecipientView('recipientView'))
-    dispatch(setRecipientViewEditMode(true))
+    if (recipientViewEditMode) {
+      dispatch(
+        setRecipientViewEditMode({ enabled: false, keepRecipientView: true }),
+      )
+    }
   }
 
   const handlePlaceholderClick = (r: 'sender' | 'recipient') => {
@@ -398,7 +403,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               <RecipientsView
                 entries={recipientsDisplayList}
                 onRemove={recipientFacade.removeFromList}
-                onEdit={handleEditRecipientFromList}
+                onOpenRecipient={handleOpenRecipientFromList}
                 scrollbarPortalTarget={
                   recipientScrollContainerReady
                     ? recipientFieldsetContainerScrollRef

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAddressBookList } from '@envelope/addressBook/application/controllers'
-import { AddressEntry } from './AddressEntry'
+import { AddressBookListRow } from './AddressBookListRow'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 
 type Props = {
@@ -25,10 +25,11 @@ export const AddressBookModal: React.FC<Props> = ({
 
       <div className="address-book__list">
         {entries.map((entry) => (
-          <AddressEntry
+          <AddressBookListRow
             key={entry.id}
             entry={entry}
             onSelect={onSelect}
+            variant={role}
           />
         ))}
       </div>

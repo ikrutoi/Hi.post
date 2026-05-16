@@ -1,6 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AddressBookMode } from '../../addressBook/domain/types'
 
+export type RecipientViewEditModePayload =
+  | boolean
+  | { enabled: boolean; keepRecipientView?: boolean }
+
 export interface EnvelopeSelectionState {
   recipientsPendingIds: string[]
   activeAddressList: AddressBookMode | null
@@ -62,8 +66,15 @@ export const envelopeSelectionSlice = createSlice({
       state.senderViewEditMode = action.payload
     },
 
-    setRecipientViewEditMode(state, action: PayloadAction<boolean>) {
-      state.recipientViewEditMode = action.payload
+    setRecipientViewEditMode(
+      state,
+      action: PayloadAction<RecipientViewEditModePayload>,
+    ) {
+      const payload =
+        typeof action.payload === 'boolean'
+          ? { enabled: action.payload }
+          : action.payload
+      state.recipientViewEditMode = payload.enabled
     },
 
     setAddressFormView(

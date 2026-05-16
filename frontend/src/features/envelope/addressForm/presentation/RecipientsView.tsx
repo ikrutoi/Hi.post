@@ -1,6 +1,6 @@
 import React from 'react'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
-import { AddressEntry } from '../../addressBook/presentation/AddressEntry'
+import { EnvelopeRecipientRow } from '../../addressBook/presentation/EnvelopeRecipientRow'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import styles from './AddressView.module.scss'
 import { ScrollArea } from '@/shared/ui/ScrollArea/ScrollArea'
@@ -9,14 +9,14 @@ export type RecipientsViewProps = {
   entries: AddressBookEntry[]
   onRemove: (id: string) => void
   scrollbarPortalTarget?: React.RefObject<HTMLElement | null>
-  onEdit: (entry: AddressBookEntry) => void
+  onOpenRecipient: (entry: AddressBookEntry) => void
 }
 
 export const RecipientsView: React.FC<RecipientsViewProps> = ({
   entries,
   onRemove,
   scrollbarPortalTarget,
-  onEdit,
+  onOpenRecipient,
 }) => {
   return (
     <div className={styles.savedAddressViewContainer}>
@@ -31,12 +31,11 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
       >
         <div className={styles.recipientsViewList}>
           {entries.map((entry) => (
-            <AddressEntry
+            <EnvelopeRecipientRow
               key={entry.id}
               entry={entry}
-              onSelect={(e) => onEdit(e)}
-              onRemoveFromList={onRemove}
-              isSelected={false}
+              onOpen={onOpenRecipient}
+              onRemove={onRemove}
             />
           ))}
         </div>
