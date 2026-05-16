@@ -766,7 +766,8 @@
 }
 
 /* Same right gutter as `.recipientsViewList` (AddressView.module.scss) */
-.toolbarRecipientsView .toolbarGroup:last-child .toolbarKey[data-icon-key='listClose'] {
+.toolbarRecipientsView .toolbarGroup:last-child .toolbarKey[data-icon-key='listClose'],
+.toolbarRecipientView .toolbarGroup:last-child .toolbarKey:last-child {
   margin-right: calc(0.25rem + 8px);
 }
 

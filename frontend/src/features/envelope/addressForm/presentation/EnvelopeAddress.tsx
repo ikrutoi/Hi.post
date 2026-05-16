@@ -348,7 +348,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               styles.addressFormRecipient,
               styles.recipientFieldsetContent,
               styles.recipientFieldsetMulti,
-              recipientView !== 'addressFormRecipientView' &&
+              recipientView === 'recipientsView' &&
                 recipientsDisplayList.length > 1 &&
                 styles.recipientFieldsetWithList,
             )}

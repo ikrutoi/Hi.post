@@ -1,5 +1,8 @@
 @use '@styles/config/colors' as *;
 
+/* Правый зазор как у правой колонки `.recipientsViewList` / EnvelopeRecipientRow */
+$recipient-content-gutter-right: calc(0.25rem + 8px);
+
 .savedAddressViewContainer {
   position: relative;
   width: 100%;
@@ -208,7 +211,7 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: calc(0.25rem + 8px);
+  padding-right: $recipient-content-gutter-right;
   box-sizing: border-box;
 
   > * {

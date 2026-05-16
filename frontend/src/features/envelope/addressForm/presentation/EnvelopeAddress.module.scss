@@ -79,7 +79,8 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 .recipientFieldsetMulti {
   /* Same bottom padding as .addressFieldset so placeholder icon aligns with single-recipient mode */
   padding-bottom: 0.5rem;
-  padding-right: 0.5rem;
+  /* Совпадает с $recipient-content-gutter-right в AddressView.module.scss */
+  padding-right: calc(0.25rem + 8px);
 }
 
 .recipientFieldsetWithList {
