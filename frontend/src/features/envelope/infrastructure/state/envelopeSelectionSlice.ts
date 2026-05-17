@@ -18,8 +18,12 @@ export interface EnvelopeSelectionState {
   activeAddressEdit: AddressEditSession | null
   showAddressFormView: boolean
   addressFormViewRole: 'sender' | 'recipient' | null
-  /** Плотность строк в панели адресной книги (`panelDensity2`): 1 — крупнее, 2 — компактнее. */
-  addressListPanelDensity: PanelDensity2Size
+  /** Плотность панели списка отправителя (`panelDensity2`). */
+  senderAddressListPanelDensity: PanelDensity2Size
+  /** Плотность панели списка получателей (`panelDensity2`). */
+  recipientAddressListPanelDensity: PanelDensity2Size
+  /** @deprecated Раньше одно значение на оба списка; читается при миграции. */
+  addressListPanelDensity?: PanelDensity2Size
 }
 
 const initialState: EnvelopeSelectionState = {
@@ -30,7 +34,8 @@ const initialState: EnvelopeSelectionState = {
   activeAddressEdit: null,
   showAddressFormView: false,
   addressFormViewRole: null,
-  addressListPanelDensity: 1,
+  senderAddressListPanelDensity: 1,
+  recipientAddressListPanelDensity: 1,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -106,16 +111,28 @@ export const envelopeSelectionSlice = createSlice({
 
     addressSaveSuccess() {},
 
-    cycleAddressListPanelDensity(state) {
-      state.addressListPanelDensity =
-        state.addressListPanelDensity === 1 ? 2 : 1
+    cycleSenderAddressListPanelDensity(state) {
+      state.senderAddressListPanelDensity =
+        state.senderAddressListPanelDensity === 1 ? 2 : 1
     },
 
-    setAddressListPanelDensity(
+    cycleRecipientAddressListPanelDensity(state) {
+      state.recipientAddressListPanelDensity =
+        state.recipientAddressListPanelDensity === 1 ? 2 : 1
+    },
+
+    setSenderAddressListPanelDensity(
       state,
       action: PayloadAction<PanelDensity2Size>,
     ) {
-      state.addressListPanelDensity = action.payload
+      state.senderAddressListPanelDensity = action.payload
+    },
+
+    setRecipientAddressListPanelDensity(
+      state,
+      action: PayloadAction<PanelDensity2Size>,
+    ) {
+      state.recipientAddressListPanelDensity = action.payload
     },
   },
 })
@@ -131,8 +148,10 @@ export const {
   updateAddressEditDraftField,
   setAddressFormView,
   addressSaveSuccess,
-  cycleAddressListPanelDensity,
-  setAddressListPanelDensity,
+  cycleSenderAddressListPanelDensity,
+  cycleRecipientAddressListPanelDensity,
+  setSenderAddressListPanelDensity,
+  setRecipientAddressListPanelDensity,
 } = envelopeSelectionSlice.actions
 
 export default envelopeSelectionSlice.reducer

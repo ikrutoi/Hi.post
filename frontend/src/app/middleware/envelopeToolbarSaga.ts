@@ -56,8 +56,10 @@ import {
   removeRecipientFromListByIndex,
   removeRecipientFromListById,
   toggleRecipientSelection,
-  cycleAddressListPanelDensity,
-  setAddressListPanelDensity,
+  cycleSenderAddressListPanelDensity,
+  cycleRecipientAddressListPanelDensity,
+  setSenderAddressListPanelDensity,
+  setRecipientAddressListPanelDensity,
 } from '@envelope/infrastructure/state'
 import {
   selectRecipientsPendingIds,
@@ -67,7 +69,8 @@ import {
   selectAddressFormViewRole,
   selectSenderViewEditMode,
   selectRecipientViewEditMode,
-  selectAddressListPanelDensity,
+  selectSenderAddressListPanelDensity,
+  selectRecipientAddressListPanelDensity,
   selectActiveAddressEdit,
 } from '@envelope/infrastructure/selectors'
 import type { AddressEditSession } from '@envelope/domain/types'
@@ -119,6 +122,10 @@ import type { RootState } from '@app/state'
 
 const ADDRESS_LIST_UI_PREF_ID = 'addressList' as const
 
+function isPanelDensity2Size(d: unknown): d is 1 | 2 {
+  return d === 1 || d === 2
+}
+
 function* hydrateAddressListPanelDensityFromDbSaga(): SagaIterator {
   try {
     const pref: UiPreferencesRecord | null = yield call(
@@ -126,26 +133,39 @@ function* hydrateAddressListPanelDensityFromDbSaga(): SagaIterator {
       ADDRESS_LIST_UI_PREF_ID,
     )
     if (pref?.id !== 'addressList') return
-    const d = pref.addressListPanelDensity
-    if (d === 1 || d === 2) {
-      yield put(setAddressListPanelDensity(d))
+    const legacy = pref.addressListPanelDensity
+    const sender = pref.senderAddressListPanelDensity ?? legacy
+    const recipient = pref.recipientAddressListPanelDensity ?? legacy
+    if (isPanelDensity2Size(sender)) {
+      yield put(setSenderAddressListPanelDensity(sender))
+    }
+    if (isPanelDensity2Size(recipient)) {
+      yield put(setRecipientAddressListPanelDensity(recipient))
     }
   } catch (e) {
     console.error('hydrateAddressListPanelDensityFromDbSaga', e)
   }
 }
 
-function* persistAddressListPanelDensityToDbSaga(): SagaIterator {
+function* persistSenderAddressListPanelDensityToDbSaga(): SagaIterator {
   try {
-    const d: 1 | 2 = yield select(selectAddressListPanelDensity)
+    const senderDensity: 1 | 2 = yield select(selectSenderAddressListPanelDensity)
+    const recipientDensity: 1 | 2 = yield select(
+      selectRecipientAddressListPanelDensity,
+    )
     const payload = {
       id: ADDRESS_LIST_UI_PREF_ID,
-      addressListPanelDensity: d,
+      senderAddressListPanelDensity: senderDensity,
+      recipientAddressListPanelDensity: recipientDensity,
     } as const satisfies UiPreferencesRecord
     yield call([storeAdapters.uiPreferences, 'put'] as const, payload)
   } catch (e) {
-    console.error('persistAddressListPanelDensityToDbSaga', e)
+    console.error('persistSenderAddressListPanelDensityToDbSaga', e)
   }
+}
+
+function* persistRecipientAddressListPanelDensityToDbSaga(): SagaIterator {
+  yield* persistSenderAddressListPanelDensityToDbSaga()
 }
 
 /** Открыть панель адресной книги для роли, если она ещё закрыта (SenderListPanel / RecipientListPanel). */
@@ -453,12 +473,15 @@ function* handleEnvelopeToolbarAction(
     return
   }
 
-  if (
-    (section === 'addressListSender' || isRecipientAddressListSection) &&
-    key === 'panelDensity2'
-  ) {
-    yield put(cycleAddressListPanelDensity())
-    yield call(persistAddressListPanelDensityToDbSaga)
+  if (section === 'addressListSender' && key === 'panelDensity2') {
+    yield put(cycleSenderAddressListPanelDensity())
+    yield call(persistSenderAddressListPanelDensityToDbSaga)
+    return
+  }
+
+  if (isRecipientAddressListSection && key === 'panelDensity2') {
+    yield put(cycleRecipientAddressListPanelDensity())
+    yield call(persistRecipientAddressListPanelDensityToDbSaga)
     return
   }
 

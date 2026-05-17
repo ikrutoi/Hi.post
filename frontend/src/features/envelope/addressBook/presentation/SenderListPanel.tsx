@@ -9,7 +9,7 @@ import type { AddressBookEntry } from '../domain/types'
 import { useSenderListPanelFacade } from '../../application/facades'
 import {
   selectActiveAddressEdit,
-  selectAddressListPanelDensity,
+  selectSenderAddressListPanelDensity,
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import { useAppSelector } from '@app/hooks'
@@ -30,7 +30,9 @@ export const SenderListPanel: React.FC<Props> = ({
     useSenderListPanelFacade()
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
-  const addressListPanelDensity = useAppSelector(selectAddressListPanelDensity)
+  const addressListPanelDensity = useAppSelector(
+    selectSenderAddressListPanelDensity,
+  )
   const editingEntryId =
     activeAddressEdit?.role === 'sender' ? activeAddressEdit.templateId : null
 

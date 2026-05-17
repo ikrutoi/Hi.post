@@ -34,7 +34,10 @@ import {
   selectHistoryListPanelDensity,
   selectHistoryListSortDirection,
 } from '@date/calendar/infrastructure/selectors'
-import { selectAddressListPanelDensity } from '@envelope/infrastructure/selectors'
+import {
+  selectRecipientAddressListPanelDensity,
+  selectSenderAddressListPanelDensity,
+} from '@envelope/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
@@ -110,7 +113,12 @@ export const Toolbar = ({
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
   const historyListSortDirection = useAppSelector(selectHistoryListSortDirection)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
-  const addressListPanelDensity = useAppSelector(selectAddressListPanelDensity)
+  const senderAddressListPanelDensity = useAppSelector(
+    selectSenderAddressListPanelDensity,
+  )
+  const recipientAddressListPanelDensity = useAppSelector(
+    selectRecipientAddressListPanelDensity,
+  )
   const cardphotoListTemplateGridCols = useAppSelector(
     selectCardphotoListTemplateGridCols,
   )
@@ -396,11 +404,13 @@ export const Toolbar = ({
               ? historyListPanelDensity
               : undefined,
           panelDensity2Size:
-            (section === 'addressListSender' ||
-              section === 'addressListRecipients') &&
-            key === 'panelDensity2'
-              ? addressListPanelDensity
-              : undefined,
+            section === 'addressListSender' && key === 'panelDensity2'
+              ? senderAddressListPanelDensity
+              : (section === 'addressListRecipient' ||
+                    section === 'addressListRecipients') &&
+                  key === 'panelDensity2'
+                ? recipientAddressListPanelDensity
+                : undefined,
         })}
 
         {hasBadge && (

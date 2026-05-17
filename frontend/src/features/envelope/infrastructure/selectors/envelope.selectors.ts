@@ -28,6 +28,8 @@ const selectEnvelopeSelectionState = (state: {
     activeAddressEdit?: AddressEditSession | null
     showAddressFormView?: boolean
     addressFormViewRole?: 'sender' | 'recipient' | null
+    senderAddressListPanelDensity?: PanelDensity2Size
+    recipientAddressListPanelDensity?: PanelDensity2Size
     addressListPanelDensity?: PanelDensity2Size
   }
 }) => state.envelopeSelection
@@ -84,9 +86,16 @@ export const selectActiveAddressList = createSelector(
   (s) => s.activeAddressList ?? null,
 )
 
-export const selectAddressListPanelDensity = createSelector(
+export const selectSenderAddressListPanelDensity = createSelector(
   [selectEnvelopeSelectionState],
-  (s): PanelDensity2Size => s.addressListPanelDensity ?? 1,
+  (s): PanelDensity2Size =>
+    s.senderAddressListPanelDensity ?? s.addressListPanelDensity ?? 1,
+)
+
+export const selectRecipientAddressListPanelDensity = createSelector(
+  [selectEnvelopeSelectionState],
+  (s): PanelDensity2Size =>
+    s.recipientAddressListPanelDensity ?? s.addressListPanelDensity ?? 1,
 )
 
 export const selectRecipientTemplateId = selectRecipientViewId

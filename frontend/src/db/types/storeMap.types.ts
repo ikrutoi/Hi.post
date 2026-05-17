@@ -21,7 +21,10 @@ export type UiPreferencesRecord =
     }
   | {
       id: 'addressList'
-      addressListPanelDensity: AddressListPanelDensityPersisted
+      senderAddressListPanelDensity: AddressListPanelDensityPersisted
+      recipientAddressListPanelDensity: AddressListPanelDensityPersisted
+      /** @deprecated Одно значение на оба списка; при чтении — fallback. */
+      addressListPanelDensity?: AddressListPanelDensityPersisted
     }
 
 export interface StoreMap {

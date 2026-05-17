@@ -10,7 +10,7 @@ import { useRecipientListPanelFacade } from '../../application/facades'
 import { useAppSelector } from '@app/hooks'
 import {
   selectActiveAddressEdit,
-  selectAddressListPanelDensity,
+  selectRecipientAddressListPanelDensity,
   selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import styles from './RecipientListPanel.module.scss'
@@ -29,7 +29,9 @@ export const RecipientListPanel: React.FC<Props> = ({
 }) => {
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
-  const addressListPanelDensity = useAppSelector(selectAddressListPanelDensity)
+  const addressListPanelDensity = useAppSelector(
+    selectRecipientAddressListPanelDensity,
+  )
   const editingEntryId =
     activeAddressEdit?.role === 'recipient'
       ? activeAddressEdit.templateId
