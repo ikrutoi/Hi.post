@@ -99,6 +99,12 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as Node
       if (containerRef.current?.contains(target)) return
+      if (
+        target instanceof Element &&
+        target.closest('[data-address-book-entry], [data-address-book-list]')
+      ) {
+        return
+      }
       dispatch(toolbarAction({ section, key: 'edit' } as any))
     }
     document.addEventListener('mousedown', handleMouseDown, true)

@@ -8,9 +8,11 @@ $entry-row-height-with-actions: 3.35rem;
   position: relative;
   width: 100%;
   min-width: 0;
+  height: 100%;
   min-height: $entry-row-height;
-  padding: 1px 0.5rem 1px 0.5rem;
   box-sizing: border-box;
+  cursor: default;
+  padding: 1px 0.5rem 1px 0.5rem;
   background-color: $color-envelope-recipient-input;
   border: 1px solid $color-envelope-recipient-border;
   border-radius: 4px;
@@ -76,6 +78,7 @@ $entry-row-height-with-actions: 3.35rem;
 
 .field {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
@@ -84,13 +87,17 @@ $entry-row-height-with-actions: 3.35rem;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  cursor: default;
 }
 
 .root[data-has-row-actions='true'] .field {
   flex: 1 1 auto;
   min-height: 0;
   justify-content: flex-start;
+}
+
+.nameLine,
+.cityLine {
+  pointer-events: none;
 }
 
 .nameLine {

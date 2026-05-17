@@ -40,8 +40,14 @@ export const AddressBookListRow: React.FC<AddressBookListRowProps> = ({
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-has-row-actions={showRowActions ? 'true' : undefined}
+      onMouseDown={(e) => {
+        if (e.button !== 0) return
+        if ((e.target as HTMLElement).closest('button')) return
+        e.preventDefault()
+        onSelect(entry)
+      }}
     >
-      <div className={styles.field} onClick={() => onSelect(entry)}>
+      <div className={styles.field}>
         <AddressSummaryContent
           nameLine={nameLine}
           cityCountryLine={cityCountryLine}

@@ -69,7 +69,7 @@ export const RecipientListPanel: React.FC<Props> = ({
     if (!recipientViewEditMode) {
       listRef.current?.focus()
     }
-  }, [combinedEntries, entries, selectedIds, recipientViewEditMode])
+  }, [combinedEntries, entries, recipientViewEditMode])
 
   useEffect(() => {
     if (focusedIndex < 0) return
@@ -155,6 +155,7 @@ export const RecipientListPanel: React.FC<Props> = ({
         <div
           ref={listRef}
           className={styles.list}
+          data-address-book-list
           tabIndex={0}
           role="listbox"
           aria-label="Address list"
