@@ -290,6 +290,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         return
       if (el.closest('[data-scrollarea-track]')) return
       if (el.closest('[data-address-book-entry]')) return
+      if (el.closest('[data-envelope-address-surface]')) return
       dispatch(toolbarAction({ section: 'recipients', key: 'addressList' }))
     },
     [dispatch],
@@ -308,6 +309,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         return
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
         return
+      if (el.closest('[data-envelope-address-surface]')) return
       dispatch(toolbarAction({ section: 'sender', key: 'addressList' }))
     },
     [dispatch],

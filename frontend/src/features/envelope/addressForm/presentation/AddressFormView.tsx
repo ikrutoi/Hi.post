@@ -136,7 +136,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   })
 
   return (
-    <div className={styles.addressFormViewContainer}>
+    <div className={styles.addressFormViewContainer} data-envelope-address-surface>
       <div
         className={clsx(
           styles.addressFormViewToolbar,

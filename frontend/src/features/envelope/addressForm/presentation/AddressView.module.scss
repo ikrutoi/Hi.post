@@ -128,6 +128,22 @@ $recipient-content-gutter-right: calc(0.25rem + 8px);
   }
 }
 
+.savedAddressActionButtonActive {
+  color: $color-font-active;
+
+  &:hover {
+    color: $color-font-active;
+  }
+}
+
+.savedAddressViewSender .savedAddressActionButtonActive {
+  color: $color-envelope-sender-legend;
+}
+
+.savedAddressViewRecipient .savedAddressActionButtonActive {
+  color: $color-envelope-recipient-legend;
+}
+
 .savedAddressViewRecipient {
   background-color: $color-envelope-recipient-input;
   border: 1px solid $color-envelope-recipient-border;

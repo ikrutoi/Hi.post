@@ -169,9 +169,9 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     (row: EditableRowKey) => (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Escape') {
         e.preventDefault()
-        dispatch(
-          role === 'sender' ? setSenderViewEditMode(false) : setRecipientViewEditMode(false),
-        )
+        if (isEditMode) {
+          dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
+        }
         return
       }
       if (e.key === 'Enter') {
@@ -289,9 +289,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     >
       <button
         type="button"
-        className={styles.savedAddressActionButton}
+        className={clsx(
+          styles.savedAddressActionButton,
+          isEditMode && styles.savedAddressActionButtonActive,
+        )}
         aria-label="Edit address"
         title="Edit address"
+        aria-pressed={isEditMode}
         onClick={handleFormEdit}
       >
         {getToolbarIcon({ key: 'edit' })}
@@ -452,6 +456,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   return (
     <div
       ref={containerRef}
+      data-envelope-address-surface
       className={clsx(
         styles.savedAddressViewContainer,
         role === 'sender' && styles.savedAddressViewContainerFill,

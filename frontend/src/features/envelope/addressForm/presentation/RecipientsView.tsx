@@ -19,7 +19,7 @@ export const RecipientsView: React.FC<RecipientsViewProps> = ({
   onOpenRecipient,
 }) => {
   return (
-    <div className={styles.savedAddressViewContainer}>
+    <div className={styles.savedAddressViewContainer} data-envelope-address-surface>
       {entries.length > 0 && (
         <div className={styles.savedAddressViewToolbar}>
           <Toolbar section="recipientsView" />

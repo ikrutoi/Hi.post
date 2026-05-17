@@ -892,7 +892,23 @@ function* syncEditIconOnEditModeChange(
 ) {
   if (action.type === setSenderViewEditMode.type) {
     const isEditMode = action.payload as boolean
-    if (isEditMode) return
+    if (isEditMode) {
+      yield put(
+        updateToolbarIcon({
+          section: 'senderView',
+          key: 'edit',
+          value: 'active',
+        }),
+      )
+      yield put(
+        updateToolbarIcon({
+          section: 'recipientView',
+          key: 'edit',
+          value: 'enabled',
+        }),
+      )
+      return
+    }
     yield put(
       updateToolbarIcon({
         section: 'senderView',
@@ -907,7 +923,23 @@ function* syncEditIconOnEditModeChange(
     const { enabled, keepRecipientView } = parseRecipientViewEditModePayload(
       action.payload as RecipientViewEditModePayload,
     )
-    if (enabled) return
+    if (enabled) {
+      yield put(
+        updateToolbarIcon({
+          section: 'recipientView',
+          key: 'edit',
+          value: 'active',
+        }),
+      )
+      yield put(
+        updateToolbarIcon({
+          section: 'senderView',
+          key: 'edit',
+          value: 'enabled',
+        }),
+      )
+      return
+    }
 
     if (!keepRecipientView) {
       const currentView: string = yield select(selectRecipientView)
