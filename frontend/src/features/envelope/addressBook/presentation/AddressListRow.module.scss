@@ -84,7 +84,7 @@ $entry-row-height-with-actions: 3.35rem;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  cursor: pointer;
+  cursor: default;
 }
 
 .root[data-has-row-actions='true'] .field {

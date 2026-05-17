@@ -114,8 +114,6 @@ function* handleAddressSave(
       )
       const id = String(result.templateId)
       if (role === 'recipient') {
-        yield put(setRecipientViewId(null))
-        yield put(setRecipientView('recipientsView'))
         yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearRecipientFormData())
         // Заполняем viewDraft сохранённым адресом, чтобы RecipientView отобразил его
@@ -132,12 +130,22 @@ function* handleAddressSave(
           }),
         )
         const pendingIds: string[] = yield select(selectRecipientsPendingIds)
+        const nextPendingIds = pendingIds.includes(id)
+          ? pendingIds
+          : [...pendingIds, id]
         if (!pendingIds.includes(id)) {
-          yield put(setRecipientsPendingIds([...pendingIds, id]))
+          yield put(setRecipientsPendingIds(nextPendingIds))
+        }
+        if (nextPendingIds.length === 1) {
+          yield put(setRecipientViewId(id))
+          yield put(setRecipientView('recipientView'))
+        } else {
+          yield put(setRecipientViewId(null))
+          yield put(setRecipientView('recipientsView'))
         }
       } else {
         yield put(setSenderViewId(id))
-        yield put(setSenderView('senderEnvelopeView'))
+        yield put(setSenderView('senderView'))
         yield put(setAddressFormView({ show: false, role: null }))
         yield put(clearSenderFormData())
         for (const [field, value] of Object.entries(

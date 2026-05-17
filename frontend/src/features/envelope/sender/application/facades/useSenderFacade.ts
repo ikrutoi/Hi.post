@@ -53,7 +53,7 @@ export const useSenderFacade = () => {
         ([field, value]) =>
           dispatch(updateSenderField({ field, value })),
       )
-      dispatch(setSenderView('senderEnvelopeView'))
+      dispatch(setSenderView('senderView'))
     },
     [dispatch],
   )

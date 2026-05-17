@@ -7,7 +7,7 @@ import type { SenderState, SenderView } from '../../domain/types'
 export const selectSenderState = (state: RootState): SenderState => state.sender
 
 export const selectSenderView = (state: RootState): SenderView =>
-  state.sender.currentView ?? 'senderEnvelopeView'
+  state.sender.currentView ?? 'senderView'
 
 export const selectSenderAddressFormData = createSelector(
   [selectSenderState],

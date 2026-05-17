@@ -186,7 +186,7 @@ export const useEnvelopeFacade = () => {
         data: [{ ...entry.address }],
       }),
     )
-    dispatch(setSenderView('senderEnvelopeView'))
+    dispatch(setSenderView('senderView'))
     dispatch(closeAddressList())
   }
 
@@ -209,7 +209,14 @@ export const useEnvelopeFacade = () => {
   const closeAddressForm = (role: 'sender' | 'recipient') => {
     dispatch(setAddressFormView({ show: false, role: null }))
     if (role === 'sender') {
-      dispatch(setSenderView('senderEnvelopeView'))
+      const appliedId = sender.applied?.[0]
+      if (appliedId) {
+        dispatch(setSenderViewId(appliedId))
+      }
+      dispatch(setSenderView('senderView'))
+    } else if (recipientsDisplayList.length === 1) {
+      dispatch(setRecipientViewId(recipientsDisplayList[0].id))
+      dispatch(setRecipientView('recipientView'))
     } else {
       dispatch(setRecipientView('recipientsView'))
     }
