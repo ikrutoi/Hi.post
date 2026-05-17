@@ -67,6 +67,7 @@ import {
   getAddressListToolbarFragment,
   isAddressInList,
   listStatusIsInQuickAddressBook,
+  isAddressDraftComplete,
   resolveAddListToolbarState,
 } from '@envelope/domain/helpers'
 import {
@@ -95,10 +96,6 @@ function filterInListEntries(
   return entries.filter((e) => listStatusIsInQuickAddressBook(e.listStatus))
 }
 
-function isDraftAddressComplete(draft: AddressFields): boolean {
-  return Object.values(draft).every((v) => (v ?? '').trim() !== '')
-}
-
 /** senderView / recipientView / senderCreate / recipientCreate — addList по совпадению с inList. */
 export function* syncAddressViewToolbarAddList(): SagaIterator {
   const sender: SenderState = yield select(selectSenderState)
@@ -124,7 +121,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
         key: 'addList',
         value: {
           state: resolveAddListToolbarState(
-            isDraftAddressComplete(draft),
+            isAddressDraftComplete(draft),
             draft,
             senderInList,
           ),
@@ -144,7 +141,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
         key: 'addList',
         value: {
           state: resolveAddListToolbarState(
-            isDraftAddressComplete(draft),
+            isAddressDraftComplete(draft),
             draft,
             senderInList,
           ),
@@ -161,7 +158,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
         key: 'addList',
         value: {
           state: resolveAddListToolbarState(
-            isDraftAddressComplete(draft),
+            isAddressDraftComplete(draft),
             draft,
             recipientInList,
           ),
@@ -181,7 +178,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
         key: 'addList',
         value: {
           state: resolveAddListToolbarState(
-            isDraftAddressComplete(draft),
+            isAddressDraftComplete(draft),
             draft,
             recipientInList,
           ),

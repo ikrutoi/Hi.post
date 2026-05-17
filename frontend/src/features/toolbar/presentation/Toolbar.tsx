@@ -9,7 +9,7 @@ import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
 import {
-  isAddressInList,
+  doesDraftMatchInList,
   listStatusIsInQuickAddressBook,
 } from '@envelope/domain/helpers'
 import type { AddressFields } from '@shared/config/constants'
@@ -150,25 +150,19 @@ export const Toolbar = ({
   const senderCreateDraftInList = useAppSelector((s: RootState) => {
     const draft = s.sender?.formDraft as AddressFields | undefined
     if (!draft) return false
-    if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) {
-      return false
-    }
     const inList = (s.addressBook?.senderEntries ?? []).filter((e) =>
       listStatusIsInQuickAddressBook(e.listStatus),
     )
-    return isAddressInList(draft, inList)
+    return doesDraftMatchInList(draft, inList)
   })
 
   const recipientCreateDraftInList = useAppSelector((s: RootState) => {
     const draft = s.recipient?.formDraft as AddressFields | undefined
     if (!draft) return false
-    if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) {
-      return false
-    }
     const inList = (s.addressBook?.recipientEntries ?? []).filter((e) =>
       listStatusIsInQuickAddressBook(e.listStatus),
     )
-    return isAddressInList(draft, inList)
+    return doesDraftMatchInList(draft, inList)
   })
 
   const sectionEditorMenuLockedByCardPieCopy =

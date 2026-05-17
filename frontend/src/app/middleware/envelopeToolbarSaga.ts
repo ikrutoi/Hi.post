@@ -107,7 +107,12 @@ import {
   storeAdapters,
 } from '@db/adapters/storeAdapters'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
-import { getAddressListToolbarFragment } from '@envelope/domain/helpers'
+import {
+  doesDraftMatchInList,
+  getAddressListToolbarFragment,
+  listStatusIsInQuickAddressBook,
+} from '@envelope/domain/helpers'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
@@ -376,11 +381,39 @@ function* moveAddressTemplateToOutListFromToolbar(
   }
 }
 
-/** Закрыть форму создания адреса (senderCreate / recipientCreate) без сброса полей. */
+function* selectInListEntriesForRole(
+  role: 'sender' | 'recipient',
+): SagaIterator<Pick<AddressBookEntry, 'address'>[]> {
+  const entries: AddressBookEntry[] = yield select((s: RootState) =>
+    role === 'sender'
+      ? (s.addressBook?.senderEntries ?? [])
+      : (s.addressBook?.recipientEntries ?? []),
+  )
+  return entries.filter((e) => listStatusIsInQuickAddressBook(e.listStatus))
+}
+
+/** Закрыть форму создания. Черновик сохраняем, кроме случая listCheck (адрес уже в inList). */
 function* closeAddressCreateForm(
   section: 'senderCreate' | 'recipientCreate',
 ) {
   const role = section === 'senderCreate' ? 'sender' : 'recipient'
+  const inListEntries: Pick<AddressBookEntry, 'address'>[] =
+    yield* selectInListEntriesForRole(role)
+
+  if (role === 'sender') {
+    const sender: SenderState = yield select(selectSenderState)
+    if (doesDraftMatchInList(sender.formDraft as AddressFields, inListEntries)) {
+      yield put(clearSenderFormData())
+    }
+  } else {
+    const recipient: RecipientState = yield select(selectRecipientState)
+    if (
+      doesDraftMatchInList(recipient.formDraft as AddressFields, inListEntries)
+    ) {
+      yield put(clearRecipientFormData())
+    }
+  }
+
   yield put(setAddressFormView({ show: false, role: null }))
   if (role === 'sender') {
     const sender: SenderState = yield select(selectSenderState)

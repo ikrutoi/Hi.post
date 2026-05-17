@@ -47,11 +47,11 @@ export const initialRecipientViewToolbarState: AddressViewToolbarState = {
 }
 
 export const RECIPIENTS_VIEW_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'recipientsView',
-    icons: [{ key: 'sortDown', state: 'enabled' }],
-    status: 'enabled',
-  },
+  // {
+  //   group: 'recipientsView',
+  //   icons: [{ key: 'sortDown', state: 'enabled' }],
+  //   status: 'enabled',
+  // },
   {
     group: 'actions',
     icons: [{ key: 'listDelete', state: 'enabled' }],

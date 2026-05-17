@@ -99,6 +99,10 @@ function* handleAddressSave(
     )
 
     if (result.success && result.templateId) {
+      const isCreateFlow =
+        (role === 'sender' && sender.currentView === 'senderCreate') ||
+        (role === 'recipient' && recipient.currentView === 'recipientCreate')
+
       if (listStatus === 'inList') {
         yield put(
           addAddressBookEntry({
@@ -116,6 +120,20 @@ function* handleAddressSave(
           status: 'enabled',
         }),
       )
+
+      /** addList из create: форма остаётся открытой, черновик не сбрасываем (закрытие — вариант A). */
+      if (isCreateFlow && listStatus === 'inList') {
+        const active: 'sender' | 'recipients' | null = yield select(
+          selectActiveAddressList,
+        )
+        const listMode = role === 'sender' ? 'sender' : 'recipients'
+        if (active !== listMode) {
+          yield put(setActiveAddressList(listMode))
+        }
+        yield call(processEnvelopeVisuals)
+        return
+      }
+
       const id = String(result.templateId)
       if (role === 'recipient') {
         yield put(setAddressFormView({ show: false, role: null }))

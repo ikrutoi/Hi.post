@@ -770,6 +770,11 @@
   }
 }
 
+/* Одна группа (listDelete): без sortDown — иконки справа, не слева */
+.toolbarRecipientsView {
+  justify-content: flex-end;
+}
+
 /* Same right gutter as historyList list / `.recipientsViewList` (calc(0.25rem + 8px)) */
 .toolbarRecipientsView
   .toolbarGroup:last-child
