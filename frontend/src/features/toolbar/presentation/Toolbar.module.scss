@@ -58,7 +58,8 @@
     &[data-icon-key='sortDown'].toolbarKeyEnabled,
     &[data-icon-key='historyPanel'].toolbarKeyEnabled,
     &[data-icon-key='density'].toolbarKeyEnabled,
-    &[data-icon-key='historyPanelDensity'].toolbarKeyEnabled {
+    &[data-icon-key='historyPanelDensity'].toolbarKeyEnabled,
+    &[data-icon-key='panelDensity2'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
       &:hover {
@@ -765,8 +766,10 @@
   }
 }
 
-/* Same right gutter as `.recipientsViewList` (AddressView.module.scss) */
-.toolbarRecipientsView .toolbarGroup:last-child .toolbarKey[data-icon-key='listClose'],
+/* Same right gutter as historyList list / `.recipientsViewList` (calc(0.25rem + 8px)) */
+.toolbarRecipientsView
+  .toolbarGroup:last-child
+  .toolbarKey[data-icon-key='listDelete'],
 .toolbarRecipientView .toolbarGroup:last-child .toolbarKey:last-child {
   margin-right: calc(0.25rem + 8px);
 }
@@ -795,6 +798,15 @@
 
 .toolbarHistoryList
   .toolbarKey[data-icon-key='historyPanelDensity'].toolbarKeyEnabled:hover
+  svg,
+.toolbarAddressListSender
+  .toolbarKey[data-icon-key='panelDensity2'].toolbarKeyEnabled:hover
+  svg,
+.toolbarAddressListRecipient
+  .toolbarKey[data-icon-key='panelDensity2'].toolbarKeyEnabled:hover
+  svg,
+.toolbarAddressListRecipients
+  .toolbarKey[data-icon-key='panelDensity2'].toolbarKeyEnabled:hover
   svg {
   --history-density-inactive-fill: #b0b0b0;
   --history-density-inactive-stroke: #b0b0b0;

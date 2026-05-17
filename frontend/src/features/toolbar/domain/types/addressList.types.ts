@@ -7,6 +7,7 @@ export const ADDRESS_LIST_KEYS = [
   'listDelete',
   'listApply',
   'sortDown',
+  'panelDensity2',
 ] as const satisfies readonly IconKey[]
 
 export type AddressListKey = (typeof ADDRESS_LIST_KEYS)[number]
@@ -19,7 +20,10 @@ export interface AddressListToolbarState extends Record<string, any> {
 export const ADDRESS_LIST_SENDER_TOOLBAR: ToolbarConfig = [
   {
     group: 'address',
-    icons: [{ key: 'sortDown', state: 'enabled' }],
+    icons: [
+      { key: 'panelDensity2', state: 'enabled' },
+      { key: 'sortDown', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {
@@ -46,8 +50,9 @@ export const ADDRESS_LIST_RECIPIENTS_TOOLBAR: ToolbarConfig = [
   {
     group: 'address',
     icons: [
+      { key: 'panelDensity2', state: 'enabled' },
       { key: 'sortDown', state: 'enabled' },
-      { key: 'listApply', state: 'disabled' },
+      // { key: 'listApply', state: 'disabled' },
     ],
     status: 'enabled',
   },

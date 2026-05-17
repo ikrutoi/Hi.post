@@ -112,6 +112,7 @@ export const ICON_KEYS = [
   'historyPanelDensity',
   'addList',
   'removeFromList',
+  'panelDensity2',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

@@ -1,0 +1,31 @@
+@use '@styles/config/colors' as *;
+
+/**
+ * Как `IconHistoryPanelDensity`: неактивные «плитки» — #d0d0d0;
+ * hover кнопки — потемнение через переменные в `Toolbar.module.scss`.
+ */
+.svg {
+  display: block;
+  overflow: visible;
+  --history-density-inactive-fill: #d0d0d0;
+  --history-density-inactive-stroke: #d0d0d0;
+  --history-density-active-fill: #{$color-app-sidebar-icon-active};
+  --history-density-active-stroke: #6e4a32;
+}
+
+.segmentInactive,
+.segmentActive {
+  transition:
+    fill 0.15s ease,
+    stroke 0.15s ease;
+}
+
+.segmentInactive {
+  fill: var(--history-density-inactive-fill);
+  stroke: var(--history-density-inactive-stroke);
+}
+
+.segmentActive {
+  fill: var(--history-density-active-fill);
+  stroke: var(--history-density-active-stroke);
+}

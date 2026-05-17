@@ -14,6 +14,7 @@ export const VIEW_KEYS = [
   'addressCheck',
   'addList',
   'removeFromList',
+  'listDelete',
 ] as const satisfies readonly IconKey[]
 
 export type AddressViewKey = (typeof VIEW_KEYS)[number]
@@ -53,7 +54,7 @@ export const RECIPIENTS_VIEW_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'removeFromList', state: 'enabled' }],
+    icons: [{ key: 'listDelete', state: 'enabled' }],
     status: 'enabled',
   },
 ]
