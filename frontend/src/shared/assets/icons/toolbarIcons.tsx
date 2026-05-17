@@ -100,6 +100,7 @@ import {
   IconDownload,
   IconApply,
   IconClose,
+  IconReturn,
   IconCrop,
   IconCropCheck,
   IconCropFull,
@@ -224,6 +225,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconApplyLight />
     case 'close':
       return <IconClose />
+    case 'return':
+      return <IconReturn />
     case 'listDelete':
       return <IconListDelete />
     case 'listClose':

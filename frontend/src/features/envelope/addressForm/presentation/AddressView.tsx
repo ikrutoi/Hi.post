@@ -19,9 +19,15 @@ import {
   removeRecipientFromListByIndex,
   setRecipientApplied,
   setRecipientAppliedIds,
+  setRecipientView,
+  setRecipientViewId,
   updateRecipientField,
 } from '@envelope/recipient/infrastructure/state'
-import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectRecipientApplied,
+  selectRecipientState,
+  selectRecipientsDisplayList,
+} from '@envelope/recipient/infrastructure/selectors'
 import {
   clearSender,
   setSenderApplied,
@@ -58,10 +64,17 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const recipientState = useAppSelector(selectRecipientState)
+  const recipientAppliedIds = useAppSelector(selectRecipientApplied)
+  const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isEditMode =
     role === 'sender' ? senderViewEditMode : recipientViewEditMode
+
+  /** Несколько получателей: applied.length > 1 (appliedData = null) или список «Пользователи». */
+  const showReturnInsteadOfClose =
+    role === 'recipient' &&
+    (recipientAppliedIds.length > 1 || recipientsDisplayList.length > 1)
 
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const prevActiveRow = useRef<EditableRowKey | null>(null)
@@ -262,28 +275,44 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     }
   }
 
-  const handleCloseSavedCard = (e: React.MouseEvent) => {
+  const backToRecipientsList = () => {
+    if (recipientViewEditMode) {
+      dispatch(
+        closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
+      )
+    }
+    dispatch(setRecipientView('recipientsView'))
+    dispatch(setRecipientViewId(null))
+  }
+
+  const handleDismissSavedCard = (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
     if (role === 'sender') {
       removeSenderFromForm()
+    } else if (showReturnInsteadOfClose) {
+      backToRecipientsList()
     } else {
       removeRecipientFromForm()
     }
   }
 
-  const savedAddressCloseButton = (
+  const savedAddressDismissButton = (
     <button
       type="button"
       className={clsx(
         styles.savedAddressActionButton,
         styles.savedAddressCloseButton,
       )}
-      aria-label="Close"
-      title="Close"
-      onClick={handleCloseSavedCard}
+      aria-label={
+        showReturnInsteadOfClose ? 'Back to recipients list' : 'Close'
+      }
+      title={showReturnInsteadOfClose ? 'Back to list' : 'Close'}
+      onClick={handleDismissSavedCard}
     >
-      {getToolbarIcon({ key: 'clearInput' })}
+      {getToolbarIcon({
+        key: showReturnInsteadOfClose ? 'return' : 'clearInput',
+      })}
     </button>
   )
 
@@ -343,7 +372,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   const renderViewMode = () => (
     <div className={savedAddressViewClassName}>
-      {savedAddressCloseButton}
+      {savedAddressDismissButton}
       <div className={styles.recipientAddress}>
         {address.name ? (
           <div className={styles.recipientAddressName}>{address.name}</div>

@@ -34,6 +34,7 @@ export * from './IconColor'
 export * from './IconLogo'
 export * from './IconLogoFull'
 export * from './IconClose'
+export * from './IconReturn'
 export * from './IconX'
 
 export * from './IconCrop'
