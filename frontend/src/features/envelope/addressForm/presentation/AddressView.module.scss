@@ -194,6 +194,20 @@ $envelope-address-card-shell-height: 11.75rem;
   &.savedAddressViewWithFormActions {
     align-items: stretch;
   }
+
+  .recipientAddressInput {
+    &:focus,
+    &.recipientAddressInputActive {
+      color: $color-envelope-recipient-legend;
+    }
+  }
+
+  .cityZipRow .recipientAddressInput {
+    &:focus,
+    &.recipientAddressInputActive {
+      color: $color-envelope-recipient-legend;
+    }
+  }
 }
 
 .savedAddressViewSender {
@@ -216,7 +230,15 @@ $envelope-address-card-shell-height: 11.75rem;
 
     &:focus,
     &.recipientAddressInputActive {
+      color: $color-envelope-sender-legend;
       background-color: $color-envelope-sender-input-focus;
+    }
+  }
+
+  .cityZipRow .recipientAddressInput {
+    &:focus,
+    &.recipientAddressInputActive {
+      color: $color-envelope-sender-legend;
     }
   }
 }
@@ -312,7 +334,7 @@ $envelope-address-card-shell-height: 11.75rem;
   letter-spacing: 1px;
 
   &:focus {
-    color: $color-font-active;
+    color: $color-envelope-recipient-legend;
     background-color: #fff;
     // box-shadow: 0 0 0 1px #3d2a5c40;
     transition:
@@ -323,7 +345,7 @@ $envelope-address-card-shell-height: 11.75rem;
 }
 
 .recipientAddressInputActive {
-  color: $color-font-active;
+  color: $color-envelope-recipient-legend;
   background-color: #fff;
   transition:
     background-color 0.2s ease,
@@ -349,7 +371,7 @@ $envelope-address-card-shell-height: 11.75rem;
 
     &.recipientAddressInputActive {
       border-color: #e0d0eb;
-      color: $color-font-active;
+      color: $color-envelope-recipient-legend;
       background-color: #fff;
     }
   }

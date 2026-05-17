@@ -59,6 +59,11 @@ import {
   type EnvelopeRole,
 } from '@shared/config/constants'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import {
+  listStatusIsInQuickAddressBook,
+  resolveAddListToolbarState,
+} from '@envelope/domain/helpers'
+import type { AddressFields } from '@shared/config/constants'
 
 export const useEnvelopeFacade = () => {
   const dispatch = useAppDispatch()
@@ -92,6 +97,16 @@ export const useEnvelopeFacade = () => {
   const addressFormViewRole = useAppSelector(selectAddressFormViewRole)
   const showAddressFormCloseButton = useAppSelector(
     selectShowAddressFormCloseButton,
+  )
+  const senderInListEntries = useAppSelector((s) =>
+    (s.addressBook?.senderEntries ?? []).filter((e) =>
+      listStatusIsInQuickAddressBook(e.listStatus),
+    ),
+  )
+  const recipientInListEntries = useAppSelector((s) =>
+    (s.addressBook?.recipientEntries ?? []).filter((e) =>
+      listStatusIsInQuickAddressBook(e.listStatus),
+    ),
   )
 
   const handleFieldChange = (
@@ -226,16 +241,33 @@ export const useEnvelopeFacade = () => {
     section: 'senderCreate' | 'recipientCreate',
     isAddressComplete: boolean,
   ) => {
-    const state = isAddressComplete ? 'enabled' : 'disabled'
-    for (const key of ['addList', 'addressCheck'] as const) {
-      dispatch(
-        updateToolbarIcon({
-          section,
-          key,
-          value: { state },
-        }),
-      )
-    }
+    const isSenderSection = section === 'senderCreate'
+    const draft = (
+      isSenderSection ? sender.formDraft : recipient.formDraft
+    ) as AddressFields
+    const inList = isSenderSection
+      ? senderInListEntries
+      : recipientInListEntries
+    const addListState = resolveAddListToolbarState(
+      isAddressComplete,
+      draft,
+      inList,
+    )
+    const addressCheckState = isAddressComplete ? 'enabled' : 'disabled'
+    dispatch(
+      updateToolbarIcon({
+        section,
+        key: 'addList',
+        value: { state: addListState },
+      }),
+    )
+    dispatch(
+      updateToolbarIcon({
+        section,
+        key: 'addressCheck',
+        value: { state: addressCheckState },
+      }),
+    )
   }
 
   return {

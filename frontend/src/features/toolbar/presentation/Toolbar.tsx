@@ -8,6 +8,12 @@ import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/fa
 import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
+import {
+  isAddressInList,
+  listStatusIsInQuickAddressBook,
+} from '@envelope/domain/helpers'
+import type { AddressFields } from '@shared/config/constants'
+import type { RootState } from '@app/state'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
 import {
@@ -140,6 +146,31 @@ export const Toolbar = ({
         (e) => e.id === recipientViewTemplateId,
       ),
   )
+
+  const senderCreateDraftInList = useAppSelector((s: RootState) => {
+    const draft = s.sender?.formDraft as AddressFields | undefined
+    if (!draft) return false
+    if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) {
+      return false
+    }
+    const inList = (s.addressBook?.senderEntries ?? []).filter((e) =>
+      listStatusIsInQuickAddressBook(e.listStatus),
+    )
+    return isAddressInList(draft, inList)
+  })
+
+  const recipientCreateDraftInList = useAppSelector((s: RootState) => {
+    const draft = s.recipient?.formDraft as AddressFields | undefined
+    if (!draft) return false
+    if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) {
+      return false
+    }
+    const inList = (s.addressBook?.recipientEntries ?? []).filter((e) =>
+      listStatusIsInQuickAddressBook(e.listStatus),
+    )
+    return isAddressInList(draft, inList)
+  })
+
   const sectionEditorMenuLockedByCardPieCopy =
     section === 'sectionEditorMenu' && cardPieCopyStripExpanded
 
@@ -175,10 +206,18 @@ export const Toolbar = ({
         : section === 'recipientView'
           ? recipientTemplateInQuickList
           : false
-    const effectiveIconKey: IconKey =
-      key === 'addList' &&
-      (section === 'senderView' || section === 'recipientView') &&
-      templateInQuickList
+    const createDraftInList =
+      section === 'senderCreate'
+        ? senderCreateDraftInList
+        : section === 'recipientCreate'
+          ? recipientCreateDraftInList
+          : false
+    const showCreateListCheck = key === 'addList' && createDraftInList
+    const effectiveIconKey: IconKey = showCreateListCheck
+      ? 'listCheck'
+      : key === 'addList' &&
+          (section === 'senderView' || section === 'recipientView') &&
+          templateInQuickList
         ? 'removeFromList'
         : key
     const options =
@@ -351,6 +390,7 @@ export const Toolbar = ({
       >
         {getToolbarIcon({
           key: effectiveIconKey as IconKey,
+          listCheckTickChecked: showCreateListCheck,
           step: fontSizeStep,
           sortDirection: key === 'sortDown' ? sortDirection : undefined,
           listTemplateDensityCols:

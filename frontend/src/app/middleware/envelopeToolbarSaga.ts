@@ -143,6 +143,18 @@ function* persistAddressListPanelDensityToDbSaga(): SagaIterator {
   }
 }
 
+/** Открыть панель адресной книги для роли, если она ещё закрыта (SenderListPanel / RecipientListPanel). */
+function* ensureAddressListPanelOpen(
+  mode: 'sender' | 'recipients',
+): SagaIterator {
+  const active: 'sender' | 'recipients' | null = yield select(
+    selectActiveAddressList,
+  )
+  if (active !== mode) {
+    yield put(setActiveAddressList(mode))
+  }
+}
+
 function* handleSetAddressFormViewSync(
   _action: PayloadAction<{
     show: boolean
@@ -530,6 +542,7 @@ function* handleEnvelopeToolbarAction(
         )
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
+        yield* ensureAddressListPanelOpen('sender')
       }
     } else {
       const recipientViewId: string | null = yield select(selectRecipientViewId)
@@ -567,6 +580,7 @@ function* handleEnvelopeToolbarAction(
         )
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
+        yield* ensureAddressListPanelOpen('recipients')
       }
     }
     return
@@ -676,7 +690,7 @@ function* handleEnvelopeToolbarAction(
   if (key === 'addressAdd') {
     if (section === 'sender') {
       yield put(setAddressFormView({ show: true, role: 'sender' }))
-      yield put(clearSenderFormData())
+      // Черновик formDraft сохраняем при Close; addressAdd снова открывает его
       yield put(setSenderView('senderCreate'))
     } else if (
       section === 'recipientView' ||
@@ -775,8 +789,10 @@ function* handleEnvelopeToolbarAction(
         section === 'senderCreate' ? senderComplete : recipientComplete
       if (isComplete) {
         if (section === 'senderCreate') {
+          yield* ensureAddressListPanelOpen('sender')
           yield put(senderSaveRequested({ listStatus: 'inList' }))
         } else {
+          yield* ensureAddressListPanelOpen('recipients')
           yield put(recipientSaveRequested({ listStatus: 'inList' }))
         }
       }

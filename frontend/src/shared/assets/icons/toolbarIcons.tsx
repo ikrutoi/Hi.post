@@ -191,6 +191,7 @@ import {
   IconAddList,
   IconRemoveFromList,
   IconPanelDensity2,
+  IconListCheck,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -405,6 +406,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconRemoveFromList />
     case 'panelDensity2':
       return <IconPanelDensity2 />
+    case 'listCheck':
+      return <IconListCheck />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

@@ -55,7 +55,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
       syncAddressFormToolbar(toolbarSection, isAddressComplete)
     })
     return () => cancelAnimationFrame(id)
-  }, [syncAddressFormToolbar, toolbarSection, isAddressComplete])
+  }, [syncAddressFormToolbar, toolbarSection, isAddressComplete, address])
 
   // Only auto-focus first input on mount when nothing in the form is focused (avoid stealing focus on remount)
   useEffect(() => {

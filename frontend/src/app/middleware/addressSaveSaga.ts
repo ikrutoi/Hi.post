@@ -22,10 +22,14 @@ import {
 } from '@envelope/sender/infrastructure/state'
 import {
   addressSaveSuccess,
+  setActiveAddressList,
   setAddressFormView,
   setRecipientsPendingIds,
 } from '@envelope/infrastructure/state'
-import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
+import {
+  selectActiveAddressList,
+  selectRecipientsPendingIds,
+} from '@envelope/infrastructure/selectors'
 import { addAddressBookEntry } from '@envelope/addressBook/infrastructure/state'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
@@ -159,6 +163,15 @@ function* handleAddressSave(
             data: [cleanedAddress],
           }),
         )
+      }
+      if (listStatus === 'inList') {
+        const active: 'sender' | 'recipients' | null = yield select(
+          selectActiveAddressList,
+        )
+        const listMode = role === 'sender' ? 'sender' : 'recipients'
+        if (active !== listMode) {
+          yield put(setActiveAddressList(listMode))
+        }
       }
       yield put(addressSaveSuccess(role))
       yield call(processEnvelopeVisuals)

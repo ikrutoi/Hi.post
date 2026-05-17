@@ -5,6 +5,7 @@ import { IconKey } from '@shared/config/constants'
 import {
   IconDensity,
   IconHistoryPanelDensity,
+  IconListCheck,
   IconPanelDensity2,
   IconSortDirection,
   type HistoryPanelDensitySize,
@@ -26,6 +27,7 @@ export const getToolbarIcon = ({
   listTemplateDensityCols,
   historyPanelDensitySize,
   panelDensity2Size,
+  listCheckTickChecked,
 }: {
   key: IconKey
   className?: string
@@ -38,6 +40,8 @@ export const getToolbarIcon = ({
   /** Активная ступень плотности строк списка истории (`historyPanelDensity`). */
   historyPanelDensitySize?: HistoryPanelDensitySize
   panelDensity2Size?: PanelDensity2Size
+  /** Зелёная галочка для {@link IconListCheck} (`listCheck`). */
+  listCheckTickChecked?: boolean
 }): JSX.Element => {
   const iconProps = {
     className,
@@ -73,6 +77,12 @@ export const getToolbarIcon = ({
   if (key === 'panelDensity2') {
     return (
       <IconPanelDensity2 activeSize={panelDensity2Size ?? 1} {...iconProps} />
+    )
+  }
+
+  if (key === 'listCheck') {
+    return (
+      <IconListCheck tickChecked={listCheckTickChecked ?? false} {...iconProps} />
     )
   }
 

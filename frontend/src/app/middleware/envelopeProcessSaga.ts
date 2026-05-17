@@ -24,6 +24,7 @@ import {
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
   selectActiveAddressList,
+  selectActiveAddressEdit,
 } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
@@ -32,7 +33,16 @@ import {
   closeAddressList,
   removeRecipientAt,
   setAddressFormView,
+  updateAddressEditDraftField,
+  openAddressEditSession,
+  closeAddressEditSession,
 } from '@envelope/infrastructure/state'
+import {
+  addAddressBookEntry,
+  removeAddressBookEntry,
+  setAddressBookEntries,
+} from '@envelope/addressBook/infrastructure/state'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import {
   setSenderViewId,
   setSenderView,
@@ -57,6 +67,7 @@ import {
   getAddressListToolbarFragment,
   isAddressInList,
   listStatusIsInQuickAddressBook,
+  resolveAddListToolbarState,
 } from '@envelope/domain/helpers'
 import {
   updateToolbarSection,
@@ -76,6 +87,109 @@ import type {
   RecipientState,
   SenderState,
 } from '@envelope/domain/types'
+import type { SagaIterator } from 'redux-saga'
+
+function filterInListEntries(
+  entries: AddressBookEntry[],
+): Pick<AddressBookEntry, 'address'>[] {
+  return entries.filter((e) => listStatusIsInQuickAddressBook(e.listStatus))
+}
+
+function isDraftAddressComplete(draft: AddressFields): boolean {
+  return Object.values(draft).every((v) => (v ?? '').trim() !== '')
+}
+
+/** senderView / recipientView / senderCreate / recipientCreate — addList по совпадению с inList. */
+export function* syncAddressViewToolbarAddList(): SagaIterator {
+  const sender: SenderState = yield select(selectSenderState)
+  const recipient: RecipientState = yield select(selectRecipientState)
+  const editSession: ReturnType<typeof selectActiveAddressEdit> = yield select(
+    selectActiveAddressEdit,
+  )
+
+  const senderEntries: AddressBookEntry[] = yield select(
+    (s: RootState) => s.addressBook?.senderEntries ?? [],
+  )
+  const recipientEntries: AddressBookEntry[] = yield select(
+    (s: RootState) => s.addressBook?.recipientEntries ?? [],
+  )
+  const senderInList = filterInListEntries(senderEntries)
+  const recipientInList = filterInListEntries(recipientEntries)
+
+  if (sender.currentView === 'senderCreate') {
+    const draft = sender.formDraft as AddressFields
+    yield put(
+      updateToolbarIcon({
+        section: 'senderCreate',
+        key: 'addList',
+        value: {
+          state: resolveAddListToolbarState(
+            isDraftAddressComplete(draft),
+            draft,
+            senderInList,
+          ),
+        },
+      }),
+    )
+  }
+
+  if (sender.currentView === 'senderView') {
+    const draft =
+      editSession?.role === 'sender'
+        ? (editSession.draft as AddressFields)
+        : (sender.viewDraft as AddressFields)
+    yield put(
+      updateToolbarIcon({
+        section: 'senderView',
+        key: 'addList',
+        value: {
+          state: resolveAddListToolbarState(
+            isDraftAddressComplete(draft),
+            draft,
+            senderInList,
+          ),
+        },
+      }),
+    )
+  }
+
+  if (recipient.currentView === 'recipientCreate') {
+    const draft = recipient.formDraft as AddressFields
+    yield put(
+      updateToolbarIcon({
+        section: 'recipientCreate',
+        key: 'addList',
+        value: {
+          state: resolveAddListToolbarState(
+            isDraftAddressComplete(draft),
+            draft,
+            recipientInList,
+          ),
+        },
+      }),
+    )
+  }
+
+  if (recipient.currentView === 'recipientView') {
+    const draft =
+      editSession?.role === 'recipient'
+        ? (editSession.draft as AddressFields)
+        : (recipient.viewDraft as AddressFields)
+    yield put(
+      updateToolbarIcon({
+        section: 'recipientView',
+        key: 'addList',
+        value: {
+          state: resolveAddListToolbarState(
+            isDraftAddressComplete(draft),
+            draft,
+            recipientInList,
+          ),
+        },
+      }),
+    )
+  }
+}
 
 export function* processEnvelopeVisuals() {
   const sender: SenderState = yield select(selectSenderState)
@@ -280,6 +394,8 @@ export function* processEnvelopeVisuals() {
       },
     }),
   )
+
+  yield* syncAddressViewToolbarAddList()
 }
 
 function* detachRecipientFromTemplateOnEdit(
@@ -312,6 +428,12 @@ export function* envelopeProcessSaga() {
   yield takeEvery(updateRecipientField.type, detachRecipientFromTemplateOnEdit)
   yield takeEvery(updateRecipientField.type, processEnvelopeVisuals)
   yield takeEvery(updateSenderField.type, processEnvelopeVisuals)
+  yield takeEvery(updateAddressEditDraftField.type, syncAddressViewToolbarAddList)
+  yield takeEvery(openAddressEditSession.type, syncAddressViewToolbarAddList)
+  yield takeEvery(closeAddressEditSession.type, syncAddressViewToolbarAddList)
+  yield takeEvery(addAddressBookEntry.type, syncAddressViewToolbarAddList)
+  yield takeEvery(removeAddressBookEntry.type, syncAddressViewToolbarAddList)
+  yield takeEvery(setAddressBookEntries.type, syncAddressViewToolbarAddList)
   yield takeEvery(setEnabled.type, processEnvelopeVisuals)
   yield takeEvery(clearRecipient.type, processEnvelopeVisuals)
   yield takeEvery(clearSender.type, processEnvelopeVisuals)
