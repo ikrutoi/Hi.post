@@ -124,7 +124,10 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
       )}
       data-envelope-address-surface
     >
-      <div className={addressViewStyles.savedAddressViewToolbar}>
+      <div
+        className={addressViewStyles.savedAddressViewToolbar}
+        data-envelope-address-view-toolbar
+      >
         <Toolbar section={toolbarSection} />
       </div>
       <div

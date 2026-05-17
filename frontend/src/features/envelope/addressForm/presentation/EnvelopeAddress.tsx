@@ -300,8 +300,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         el.closest(
           `.${styles.addressToolbarRecipient}, .${styles.envelopeRecipientToolbarIconContainer}`,
         )
-      )
+      ) {
+        if (recipientViewEditMode) {
+          dispatch(toolbarAction({ section: 'recipientView', key: 'edit' }))
+        }
         return
+      }
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
         return
       if (el.closest('[data-scrollarea-track]')) return
@@ -325,8 +329,12 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         el.closest(
           `.${styles.addressToolbarSender}, .${styles.envelopeSenderToolbarIconContainer}`,
         )
-      )
+      ) {
+        if (senderViewEditMode) {
+          dispatch(toolbarAction({ section: 'senderView', key: 'edit' }))
+        }
         return
+      }
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
         return
       if (el.closest('[data-envelope-address-surface]')) return

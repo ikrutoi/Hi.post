@@ -101,10 +101,14 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     if (!isEditMode) return
     const section = role === 'sender' ? 'senderView' : 'recipientView'
     const handleMouseDown = (e: MouseEvent) => {
-      const target = e.target as Node
+      const target = e.target
+      if (!(target instanceof Element)) return
+      if (target.closest('[data-envelope-address-view-toolbar]')) {
+        dispatch(toolbarAction({ section, key: 'edit' } as any))
+        return
+      }
       if (containerRef.current?.contains(target)) return
       if (
-        target instanceof Element &&
         target.closest(
           '[data-address-book-entry], [data-address-book-list], [data-envelope-address-actions], [data-envelope-address-fieldset]',
         )
@@ -211,7 +215,11 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     // Don't toggle on unmount or when focus is lost to document (e.g. Strict Mode remount)
     if (!next) return
     if (next.tagName === 'INPUT') return
-    if (next.closest('button, [data-envelope-address-actions]')) return
+    if (next.closest('[data-envelope-address-view-toolbar]')) {
+      dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
+      return
+    }
+    if (next.closest('[data-envelope-address-actions]')) return
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
 
@@ -464,14 +472,16 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   return (
     <div
-      ref={containerRef}
       data-envelope-address-surface
       className={clsx(
         styles.savedAddressViewContainer,
         styles.savedAddressViewContainerFixed,
       )}
     >
-      <div className={styles.savedAddressViewToolbar}>
+      <div
+        className={styles.savedAddressViewToolbar}
+        data-envelope-address-view-toolbar
+      >
         <Toolbar
           section={
             role === 'sender' ? 'senderView' : 'recipientView'
@@ -479,6 +489,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         />
       </div>
       <div
+        ref={containerRef}
         className={clsx(
           styles.savedAddressViewCardWrap,
           role === 'sender'
