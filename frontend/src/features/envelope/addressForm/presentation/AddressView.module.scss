@@ -213,7 +213,8 @@ $envelope-address-card-shell-height: 11.75rem;
     background-color: $color-envelope-sender-input;
     border-color: $color-envelope-sender-input-border;
 
-    &:focus {
+    &:focus,
+    &.recipientAddressInputActive {
       background-color: $color-envelope-sender-input-focus;
     }
   }
@@ -303,12 +304,44 @@ $envelope-address-card-shell-height: 11.75rem;
   }
 }
 
+.recipientAddressInputActive {
+  color: $color-font-active;
+  background-color: #fff;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease;
+}
+
 .cityZipRow {
   width: 100%;
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) auto minmax(0, 2.1fr);
   column-gap: 0.25rem;
   align-items: center;
+
+  .recipientAddressInput {
+    border-color: transparent;
+    background-color: transparent;
+
+    &:focus {
+      color: $color-font-deepBlack;
+      background-color: transparent;
+    }
+
+    &.recipientAddressInputActive {
+      border-color: #e0d0eb;
+      color: $color-font-active;
+      background-color: #fff;
+    }
+  }
+}
+
+.savedAddressViewSender .cityZipRow .recipientAddressInput {
+  &.recipientAddressInputActive {
+    border-color: $color-envelope-sender-input-border;
+    background-color: $color-envelope-sender-input-focus;
+  }
 }
 
 .cityZipSeparator {

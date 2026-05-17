@@ -56,6 +56,7 @@ type SingleAddressViewProps = {
 }
 
 type EditableRowKey = 'name' | 'street' | 'cityZip' | 'country'
+type CityZipFocus = 'zip' | 'city'
 
 const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   role,
@@ -77,7 +78,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     (recipientAppliedIds.length > 1 || recipientsDisplayList.length > 1)
 
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
-  const prevActiveRow = useRef<EditableRowKey | null>(null)
+  const [cityZipFocus, setCityZipFocus] = useState<CityZipFocus>('zip')
   const containerRef = useRef<HTMLDivElement | null>(null)
   const editModeOpenedAt = useRef<number>(0)
 
@@ -145,9 +146,11 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     let input: HTMLInputElement | null = null
 
     if (activeRow === 'cityZip') {
-      const fromBottom = prevActiveRow.current === 'country'
-      const targetRef = fromBottom ? cityRef : zipRef
-      input = targetRef.current
+      const activeEl = document.activeElement
+      if (activeEl === zipRef.current || activeEl === cityRef.current) {
+        return
+      }
+      input = cityZipFocus === 'city' ? cityRef.current : zipRef.current
     } else {
       const map = {
         name: nameRef,
@@ -156,8 +159,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       } as const
       input = map[activeRow].current
     }
-
-    prevActiveRow.current = activeRow
 
     const focusInput = (el: HTMLInputElement) => {
       editModeOpenedAt.current = Date.now()
@@ -174,7 +175,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       })
       return () => cancelAnimationFrame(raf)
     }
-  }, [isEditMode, role, activeRow])
+  }, [isEditMode, role, activeRow, cityZipFocus])
 
   const moveFocus = (direction: 'up' | 'down', current: EditableRowKey) => {
     const order: EditableRowKey[] = ['name', 'street', 'cityZip', 'country']
@@ -185,6 +186,9 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         ? Math.min(order.length - 1, idx + 1)
         : Math.max(0, idx - 1)
     const nextKey = order[nextIdx]
+    if (nextKey === 'cityZip') {
+      setCityZipFocus(direction === 'down' ? 'zip' : 'city')
+    }
     setActiveRow(nextKey)
   }
 
@@ -438,12 +442,17 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           <div className={styles.cityZipRow}>
             <input
               ref={zipRef}
-              className={styles.recipientAddressInput}
+              className={clsx(
+                styles.recipientAddressInput,
+                cityZipFocus === 'zip' && styles.recipientAddressInputActive,
+              )}
               value={address.zip}
               onChange={(e) => updateField('zip', e.target.value)}
+              onFocus={() => setCityZipFocus('zip')}
               onKeyDown={(e) => {
                 if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                   e.preventDefault()
+                  setCityZipFocus('city')
                   if (cityRef.current) {
                     const len = cityRef.current.value.length
                     cityRef.current.focus()
@@ -458,12 +467,17 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
             <span className={styles.cityZipSeparator}>,</span>
             <input
               ref={cityRef}
-              className={styles.recipientAddressInput}
+              className={clsx(
+                styles.recipientAddressInput,
+                cityZipFocus === 'city' && styles.recipientAddressInputActive,
+              )}
               value={address.city}
               onChange={(e) => updateField('city', e.target.value)}
+              onFocus={() => setCityZipFocus('city')}
               onKeyDown={(e) => {
                 if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
                   e.preventDefault()
+                  setCityZipFocus('zip')
                   if (zipRef.current) {
                     const len = zipRef.current.value.length
                     zipRef.current.focus()
