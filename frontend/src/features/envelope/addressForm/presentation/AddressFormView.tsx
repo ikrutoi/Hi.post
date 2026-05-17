@@ -8,7 +8,6 @@ import type { AddressFields } from '@shared/config/constants'
 import type { Lang } from '@i18n/types'
 import styles from './AddressFormView.module.scss'
 import addressViewStyles from './AddressView.module.scss'
-import { IconX } from '@/shared/ui/icons'
 
 export type AddressFormViewProps = {
   role: 'sender' | 'recipient'
@@ -25,18 +24,12 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   onFieldChange,
   lang,
 }) => {
-  const {
-    closeAddressForm,
-    syncAddressFormToolbar,
-    showAddressFormCloseButton,
-  } = useEnvelopeFacade()
+  const { syncAddressFormToolbar } = useEnvelopeFacade()
   const { labelLayout } = useEnvelopeAddress(role, lang)
   const inputsRef = useRef<(HTMLInputElement | null)[]>([])
   const setInputRef = useCallback((el: HTMLInputElement | null, index: number) => {
     if (el) inputsRef.current[index] = el
   }, [])
-
-  const showCloseBtn = showAddressFormCloseButton(role)
 
   const isAddressComplete = useMemo(
     () => Object.values(address).every((v) => (v ?? '').trim() !== ''),
@@ -65,19 +58,6 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     firstInput.focus()
     firstInput.setSelectionRange(len, len)
   }, [])
-
-  const handleCloseAddressForm = useCallback(() => {
-    closeAddressForm(role)
-  }, [closeAddressForm, role])
-
-  const handleCloseClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      handleCloseAddressForm()
-    },
-    [handleCloseAddressForm],
-  )
 
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
@@ -167,19 +147,6 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
         >
           {fields}
         </div>
-        {showCloseBtn && (
-          <button
-            type="button"
-            className={clsx(
-              addressViewStyles.savedAddressCloseButton,
-              styles.closeBtn,
-            )}
-            onClick={handleCloseClick}
-            aria-label="Close address form"
-          >
-            <IconX />
-          </button>
-        )}
       </div>
     </div>
   )

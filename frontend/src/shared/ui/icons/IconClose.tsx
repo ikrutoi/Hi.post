@@ -6,13 +6,13 @@ export const IconClose = (props: React.SVGProps<SVGSVGElement>) => (
     viewBox="0 0 1280 1280"
     fill="none"
     stroke="currentColor"
-    strokeWidth={107.498}
+    strokeWidth={106.666}
     strokeLinecap="round"
     strokeLinejoin="round"
+    shapeRendering="geometricPrecision"
     {...props}
   >
-    <path d="M57 187c1-72 58-130 130-130h906c72 0 130 58 130 130v906c0 72-58 129-130 129l-906 1c-72-1-129-58-129-130z" />
-    <path d="M867 413 413 867" />
-    <path d="M867 867 413 413" />
+    <path d="M915 365 365 915" />
+    <path d="M915 915 365 365" />
   </svg>
 )

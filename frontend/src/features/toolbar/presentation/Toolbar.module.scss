@@ -464,7 +464,9 @@
 .toolbarRecipient,
 .toolbarRecipients,
 .toolbarSenderView,
-.toolbarRecipientView
+.toolbarRecipientView,
+.toolbarSenderCreate,
+.toolbarRecipientCreate
 // .toolbarDate
 {
   display: flex;
@@ -737,7 +739,9 @@
 
 .toolbarSenderView,
 .toolbarRecipientView,
-.toolbarRecipientsView {
+.toolbarRecipientsView,
+.toolbarSenderCreate,
+.toolbarRecipientCreate {
   width: 100%;
   justify-content: space-between;
   margin-left: 0.5rem;
