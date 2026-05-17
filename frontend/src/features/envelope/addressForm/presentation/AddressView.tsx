@@ -1,4 +1,11 @@
-import React, { FocusEvent, useEffect, useMemo, useRef, useState } from 'react'
+import React, {
+  FocusEvent,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import type { AddressFields } from '@shared/config/constants'
 import styles from './AddressView.module.scss'
@@ -135,20 +142,15 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     return () => document.removeEventListener('mousedown', handleMouseDown, true)
   }, [isEditMode, role, dispatch])
 
-  useEffect(() => {
-    if (!isEditMode) return
-
-    if (!activeRow) {
-      setActiveRow('name')
-      return
-    }
+  const focusActiveRowInput = () => {
+    if (!isEditMode) return false
 
     let input: HTMLInputElement | null = null
 
     if (activeRow === 'cityZip') {
       const activeEl = document.activeElement
       if (activeEl === zipRef.current || activeEl === cityRef.current) {
-        return
+        return true
       }
       input = cityZipFocus === 'city' ? cityRef.current : zipRef.current
     } else {
@@ -160,22 +162,30 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       input = map[activeRow].current
     }
 
-    const focusInput = (el: HTMLInputElement) => {
-      editModeOpenedAt.current = Date.now()
-      const len = el.value.length
-      el.focus()
-      el.setSelectionRange(len, len)
+    if (!input) return false
+
+    editModeOpenedAt.current = Date.now()
+    const len = input.value.length
+    input.focus()
+    input.setSelectionRange(len, len)
+    return true
+  }
+
+  useLayoutEffect(() => {
+    if (!isEditMode) return
+
+    if (!activeRow) {
+      setActiveRow('name')
+      return
     }
-    if (input) {
-      focusInput(input)
-    } else if (activeRow === 'name') {
-      const raf = requestAnimationFrame(() => {
-        const el = nameRef.current
-        if (el) focusInput(el)
-      })
-      return () => cancelAnimationFrame(raf)
-    }
-  }, [isEditMode, role, activeRow, cityZipFocus])
+
+    if (focusActiveRowInput()) return
+
+    const raf = requestAnimationFrame(() => {
+      focusActiveRowInput()
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [isEditMode, activeRow, cityZipFocus])
 
   const moveFocus = (direction: 'up' | 'down', current: EditableRowKey) => {
     const order: EditableRowKey[] = ['name', 'street', 'cityZip', 'country']
@@ -190,6 +200,24 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       setCityZipFocus(direction === 'down' ? 'zip' : 'city')
     }
     setActiveRow(nextKey)
+  }
+
+  const activateEditRow = (
+    row: EditableRowKey,
+    cityZipPart: CityZipFocus = 'zip',
+  ) => {
+    if (row === 'cityZip') {
+      setCityZipFocus(cityZipPart)
+    }
+    setActiveRow(row)
+  }
+
+  const editRowMouseDown = (
+    row: EditableRowKey,
+    cityZipPart: CityZipFocus = 'zip',
+  ) => (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation()
+    activateEditRow(row, cityZipPart)
   }
 
   const handleKeyDown =
@@ -232,6 +260,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     // Don't toggle on unmount or when focus is lost to document (e.g. Strict Mode remount)
     if (!next) return
     if (next.tagName === 'INPUT') return
+    if (next.closest('[data-address-edit-row]')) return
     if (next.closest('[data-envelope-address-view-toolbar]')) {
       dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
       return
@@ -403,11 +432,11 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     <div
       className={savedAddressViewClassName}
       onMouseDown={(e) => {
-        if (isEditMode) {
-          const target = e.target as HTMLElement
-          if (target.tagName !== 'INPUT' && target.tagName !== 'BUTTON') {
-            e.preventDefault()
-          }
+        if (!isEditMode) return
+        const target = e.target as HTMLElement
+        if (target.closest('[data-address-edit-row]')) return
+        if (target.tagName !== 'INPUT' && target.tagName !== 'BUTTON') {
+          e.preventDefault()
         }
       }}
     >
@@ -415,27 +444,51 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         {activeRow === 'name' ? (
           <input
             ref={nameRef}
-            className={styles.recipientAddressInput}
+            className={clsx(
+              styles.recipientAddressInput,
+              styles.recipientAddressInputActive,
+            )}
             value={address.name}
             onChange={(e) => updateField('name', e.target.value)}
             onKeyDown={handleKeyDown('name')}
             onBlur={handleBlur}
           />
         ) : (
-          <div className={styles.recipientAddressName}>{address.name}</div>
+          <div
+            className={clsx(
+              styles.recipientAddressName,
+              styles.recipientAddressEditRow,
+            )}
+            data-address-edit-row
+            onMouseDown={editRowMouseDown('name')}
+          >
+            {address.name}
+          </div>
         )}
 
         {activeRow === 'street' ? (
           <input
             ref={streetRef}
-            className={styles.recipientAddressInput}
+            className={clsx(
+              styles.recipientAddressInput,
+              styles.recipientAddressInputActive,
+            )}
             value={address.street}
             onChange={(e) => updateField('street', e.target.value)}
             onKeyDown={handleKeyDown('street')}
             onBlur={handleBlur}
           />
         ) : (
-          <div className={styles.recipientAddressStreet}>{address.street}</div>
+          <div
+            className={clsx(
+              styles.recipientAddressStreet,
+              styles.recipientAddressEditRow,
+            )}
+            data-address-edit-row
+            onMouseDown={editRowMouseDown('street')}
+          >
+            {address.street}
+          </div>
         )}
 
         {activeRow === 'cityZip' ? (
@@ -491,20 +544,46 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
             />
           </div>
         ) : (
-          <div className={styles.recipientAddressCityZip}>{cityZipValue}</div>
+          <div
+            className={clsx(
+              styles.recipientAddressCityZip,
+              styles.recipientAddressEditRow,
+            )}
+            data-address-edit-row
+            onMouseDown={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect()
+              const ratio = (e.clientX - rect.left) / rect.width
+              editRowMouseDown(
+                'cityZip',
+                ratio > 0.4 ? 'city' : 'zip',
+              )(e)
+            }}
+          >
+            {cityZipValue}
+          </div>
         )}
 
         {activeRow === 'country' ? (
           <input
             ref={countryRef}
-            className={styles.recipientAddressInput}
+            className={clsx(
+              styles.recipientAddressInput,
+              styles.recipientAddressInputActive,
+            )}
             value={address.country}
             onChange={(e) => updateField('country', e.target.value)}
             onKeyDown={handleKeyDown('country')}
             onBlur={handleBlur}
           />
         ) : (
-          <div className={styles.recipientAddressCountry}>
+          <div
+            className={clsx(
+              styles.recipientAddressCountry,
+              styles.recipientAddressEditRow,
+            )}
+            data-address-edit-row
+            onMouseDown={editRowMouseDown('country')}
+          >
             {address.country}
           </div>
         )}
