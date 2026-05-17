@@ -20,7 +20,10 @@ import {
   setRecipientViewId,
 } from '../../recipient/infrastructure/state'
 import { setRecipientViewEditMode } from '@envelope/infrastructure/state'
-import { selectRecipientViewEditMode } from '@envelope/infrastructure/selectors'
+import {
+  selectRecipientViewEditMode,
+  selectSenderViewEditMode,
+} from '@envelope/infrastructure/selectors'
 import styles from './EnvelopeAddress.module.scss'
 import type { EnvelopeAddressProps } from '../domain/types'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
@@ -82,6 +85,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const senderView = useAppSelector(selectSenderView)
   const senderAppliedIds = useAppSelector(selectSenderApplied)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
+  const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientView = useAppSelector(selectRecipientView)
   const recipientsToolbarStateWithLiveAddressList = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
@@ -157,7 +161,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       recipientsDisplayList.length > 1 &&
       recipientView === 'recipientView' &&
       !recipientViewEditMode &&
-      editingTemplateId == null
+      editingTemplateId == null &&
+      !hasRecipientAddressData
     ) {
       dispatch(setRecipientView('recipientsView'))
       dispatch(setRecipientViewId(null))
@@ -168,6 +173,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     recipientsDisplayList,
     editingTemplateId,
     recipientViewEditMode,
+    hasRecipientAddressData,
     dispatch,
     applyRecipientEntry,
   ])
@@ -291,9 +297,13 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       if (el.closest('[data-scrollarea-track]')) return
       if (el.closest('[data-address-book-entry]')) return
       if (el.closest('[data-envelope-address-surface]')) return
+      if (recipientViewEditMode) {
+        dispatch(toolbarAction({ section: 'recipientView', key: 'edit' }))
+        return
+      }
       dispatch(toolbarAction({ section: 'recipients', key: 'addressList' }))
     },
-    [dispatch],
+    [dispatch, recipientViewEditMode],
   )
 
   const handleSenderFieldsetMouseDownCapture = useCallback(
@@ -310,9 +320,13 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
         return
       if (el.closest('[data-envelope-address-surface]')) return
+      if (senderViewEditMode) {
+        dispatch(toolbarAction({ section: 'senderView', key: 'edit' }))
+        return
+      }
       dispatch(toolbarAction({ section: 'sender', key: 'addressList' }))
     },
-    [dispatch],
+    [dispatch, senderViewEditMode],
   )
 
   return (
@@ -329,6 +343,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         <div className={styles.addressFormSenderBody}>
           <fieldset
             ref={senderFieldsetRef}
+            data-envelope-address-fieldset
             className={clsx(styles.addressFieldset, styles.addressFormSender)}
             onMouseDownCapture={handleSenderFieldsetMouseDownCapture}
           >
@@ -398,6 +413,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
           />
           <fieldset
             ref={recipientFieldsetRef}
+            data-envelope-address-fieldset
             className={clsx(
               styles.addressFieldset,
               styles.addressFormRecipient,

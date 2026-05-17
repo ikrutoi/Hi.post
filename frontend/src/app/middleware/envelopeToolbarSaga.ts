@@ -565,7 +565,9 @@ function* handleEnvelopeToolbarAction(
         }
       }
 
-      yield put(setRecipientViewEditMode(false))
+      yield put(
+        setRecipientViewEditMode({ enabled: false, keepRecipientView: true }),
+      )
       yield put(
         updateToolbarIcon({
           section: 'recipientView',

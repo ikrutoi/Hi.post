@@ -101,7 +101,9 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       if (containerRef.current?.contains(target)) return
       if (
         target instanceof Element &&
-        target.closest('[data-address-book-entry], [data-address-book-list]')
+        target.closest(
+          '[data-address-book-entry], [data-address-book-list], [data-envelope-address-actions], [data-envelope-address-fieldset]',
+        )
       ) {
         return
       }
@@ -204,7 +206,8 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     const next = e.relatedTarget as HTMLElement | null
     // Don't toggle on unmount or when focus is lost to document (e.g. Strict Mode remount)
     if (!next) return
-    if (next.tagName === 'INPUT' || next.tagName === 'BUTTON') return
+    if (next.tagName === 'INPUT') return
+    if (next.closest('button, [data-envelope-address-actions]')) return
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
 
@@ -285,6 +288,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const savedAddressFormActions = (
     <div
       className={styles.savedAddressFormActions}
+      data-envelope-address-actions
       onClick={(e) => e.stopPropagation()}
     >
       <button
@@ -300,18 +304,20 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       >
         {getToolbarIcon({ key: 'edit' })}
       </button>
-      <button
-        type="button"
-        className={clsx(
-          styles.savedAddressActionButton,
-          styles.savedAddressActionButtonDelete,
-        )}
-        aria-label="Delete address"
-        title="Delete address"
-        onClick={handleFormDelete}
-      >
-        {getToolbarIcon({ key: 'delete' })}
-      </button>
+      {!isEditMode && (
+        <button
+          type="button"
+          className={clsx(
+            styles.savedAddressActionButton,
+            styles.savedAddressActionButtonDelete,
+          )}
+          aria-label="Delete address"
+          title="Delete address"
+          onClick={handleFormDelete}
+        >
+          {getToolbarIcon({ key: 'delete' })}
+        </button>
+      )}
     </div>
   )
 
@@ -360,7 +366,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         }
       }}
     >
-      {savedAddressCloseButton}
       <div className={styles.recipientAddress}>
         {activeRow === 'name' ? (
           <input
