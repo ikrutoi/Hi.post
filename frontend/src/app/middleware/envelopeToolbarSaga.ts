@@ -364,6 +364,33 @@ function* moveAddressTemplateToOutListFromToolbar(
   }
 }
 
+/** Закрыть форму создания адреса (senderCreate / recipientCreate) без сброса полей. */
+function* closeAddressCreateForm(
+  section: 'senderCreate' | 'recipientCreate',
+) {
+  const role = section === 'senderCreate' ? 'sender' : 'recipient'
+  yield put(setAddressFormView({ show: false, role: null }))
+  if (role === 'sender') {
+    const sender: SenderState = yield select(selectSenderState)
+    const appliedId = sender.applied?.[0]
+    if (appliedId) {
+      yield put(setSenderViewId(appliedId))
+    } else {
+      yield put(setSenderViewId(null))
+    }
+    yield put(setSenderView('senderView'))
+  } else {
+    const pendingIds: string[] = yield select(selectRecipientsPendingIds)
+    if (pendingIds.length === 1) {
+      yield put(setRecipientViewId(pendingIds[0]))
+      yield put(setRecipientView('recipientView'))
+    } else {
+      yield put(setRecipientViewId(null))
+      yield put(setRecipientView('recipientsView'))
+    }
+  }
+}
+
 function* handleEnvelopeToolbarAction(
   action: ReturnType<typeof toolbarAction>,
 ) {
@@ -631,11 +658,18 @@ function* handleEnvelopeToolbarAction(
     return
 
   if (key === 'close') {
+    if (section === 'senderCreate' || section === 'recipientCreate') {
+      yield* closeAddressCreateForm(section)
+      return
+    }
     if (section === 'sender') {
       yield put(setSenderViewId(null))
       yield put(clearSender())
-    } else {
+      return
+    }
+    if (section === 'recipients' || section === 'recipientView') {
       yield put(resetRecipientForm())
+      return
     }
   }
 
@@ -763,28 +797,9 @@ function* handleEnvelopeToolbarAction(
 
   if (
     key === 'listClose' &&
-    (section === 'senderCreate' ||
-      section === 'recipientCreate')
+    (section === 'senderCreate' || section === 'recipientCreate')
   ) {
-    const role = section === 'senderCreate' ? 'sender' : 'recipient'
-    yield put(setAddressFormView({ show: false, role: null }))
-    if (role === 'sender') {
-      const sender: SenderState = yield select(selectSenderState)
-      const appliedId = sender.applied?.[0]
-      if (appliedId) {
-        yield put(setSenderViewId(appliedId))
-      }
-      yield put(setSenderView('senderView'))
-    } else {
-      const pendingIds: string[] = yield select(selectRecipientsPendingIds)
-      if (pendingIds.length === 1) {
-        yield put(setRecipientViewId(pendingIds[0]))
-        yield put(setRecipientView('recipientView'))
-      } else {
-        yield put(setRecipientViewId(null))
-        yield put(setRecipientView('recipientsView'))
-      }
-    }
+    yield* closeAddressCreateForm(section)
   }
 
 }

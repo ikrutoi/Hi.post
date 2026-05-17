@@ -1,6 +1,9 @@
 import React, { useRef, useCallback, useMemo, useEffect } from 'react'
 import clsx from 'clsx'
+import { useAppDispatch } from '@app/hooks'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
+import { toolbarAction } from '@toolbar/application/helpers'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { Label } from './Label/Label'
 import { useEnvelopeAddress } from '../application/hooks'
 import { useEnvelopeFacade } from '../../application/facades/useEnvelopeFacade'
@@ -24,6 +27,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   onFieldChange,
   lang,
 }) => {
+  const dispatch = useAppDispatch()
   const { syncAddressFormToolbar } = useEnvelopeFacade()
   const { labelLayout } = useEnvelopeAddress(role, lang)
   const inputsRef = useRef<(HTMLInputElement | null)[]>([])
@@ -38,6 +42,12 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
 
   const toolbarSection =
     role === 'sender' ? 'senderCreate' : 'recipientCreate'
+
+  const handleCloseCreateForm = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    dispatch(toolbarAction({ section: toolbarSection, key: 'close' }))
+  }
 
   // Defer toolbar sync so it doesn't run in the same tick as field update and cause focus loss
   useEffect(() => {
@@ -146,8 +156,22 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
               ? addressViewStyles.savedAddressViewSender
               : addressViewStyles.savedAddressViewRecipient,
             styles.addressFormView,
+            addressViewStyles.savedAddressViewCreateForm,
           )}
         >
+          <button
+            type="button"
+            className={clsx(
+              addressViewStyles.savedAddressActionButton,
+              addressViewStyles.savedAddressCloseButton,
+            )}
+            aria-label="Close"
+            title="Close"
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={handleCloseCreateForm}
+          >
+            {getToolbarIcon({ key: 'close' })}
+          </button>
           {fields}
         </div>
       </div>
