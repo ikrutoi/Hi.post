@@ -3,6 +3,9 @@
 /* Правый зазор как у правой колонки `.recipientsViewList` / EnvelopeRecipientRow */
 $recipient-content-gutter-right: calc(0.25rem + 8px);
 
+/** Карточка senderView / recipientView / create — чуть выше прежнего content-sized recipientView. */
+$envelope-address-card-shell-height: 11.75rem;
+
 .savedAddressViewContainer {
   position: relative;
   width: 100%;
@@ -45,6 +48,43 @@ $recipient-content-gutter-right: calc(0.25rem + 8px);
 
   .savedAddressFormActions {
     margin-top: auto;
+  }
+}
+
+.savedAddressViewContainerFixed {
+  flex: 0 0 auto;
+  height: $envelope-address-card-shell-height;
+  min-height: $envelope-address-card-shell-height;
+  max-height: $envelope-address-card-shell-height;
+
+  .savedAddressViewCardWrap {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .savedAddressView,
+  .savedAddressViewWithFormActions {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .savedAddressViewWithFormActions .recipientAddress {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  /* create-форма: поля без .recipientAddress */
+  .savedAddressViewWithFormActions:not(:has(.recipientAddress)) {
+    overflow-y: auto;
+  }
+
+  .savedAddressFormActions {
+    margin-top: auto;
+    flex-shrink: 0;
   }
 }
 

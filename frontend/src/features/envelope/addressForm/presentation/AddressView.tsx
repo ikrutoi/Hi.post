@@ -468,7 +468,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       data-envelope-address-surface
       className={clsx(
         styles.savedAddressViewContainer,
-        role === 'sender' && styles.savedAddressViewContainerFill,
+        styles.savedAddressViewContainerFixed,
       )}
     >
       <div className={styles.savedAddressViewToolbar}>

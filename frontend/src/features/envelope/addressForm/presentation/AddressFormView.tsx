@@ -120,7 +120,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     <div
       className={clsx(
         addressViewStyles.savedAddressViewContainer,
-        role === 'sender' && addressViewStyles.savedAddressViewContainerFill,
+        addressViewStyles.savedAddressViewContainerFixed,
       )}
       data-envelope-address-surface
     >

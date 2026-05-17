@@ -345,7 +345,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         styles.addressForm,
         styles[`addressForm${roleLabel}`],
         role === 'sender' && styles.addressFormSenderFill,
-        role === 'recipient' && styles.addressFormRecipientFill,
       )}
       onSubmit={(e) => e.preventDefault()}
     >
