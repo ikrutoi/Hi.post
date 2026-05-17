@@ -29,6 +29,7 @@ export const RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
     icons: [
       { key: 'addList', state: 'enabled' },
       { key: 'edit', state: 'enabled' },
+      { key: 'delete', state: 'enabled' },
     ],
     status: 'enabled',
   },
@@ -52,7 +53,7 @@ export const RECIPIENTS_VIEW_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'actions',
-    icons: [{ key: 'listClose', state: 'enabled' }],
+    icons: [{ key: 'removeFromList', state: 'enabled' }],
     status: 'enabled',
   },
 ]
@@ -67,15 +68,15 @@ export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
     group: 'senderView',
     icons: [
       { key: 'addList', state: 'enabled' },
-      { key: 'edit', state: 'enabled' },
+      // { key: 'edit', state: 'enabled' },
     ],
     status: 'enabled',
   },
-  {
-    group: 'actions',
-    icons: [{ key: 'delete', state: 'enabled' }],
-    status: 'enabled',
-  },
+  // {
+  //   group: 'actions',
+  //   icons: [{ key: 'delete', state: 'enabled' }],
+  //   status: 'enabled',
+  // },
 ]
 
 export const initialSenderViewToolbarState: AddressViewToolbarState = {

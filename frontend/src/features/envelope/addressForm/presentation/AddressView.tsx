@@ -198,7 +198,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     const next = e.relatedTarget as HTMLElement | null
     // Don't toggle on unmount or when focus is lost to document (e.g. Strict Mode remount)
     if (!next) return
-    if (next.tagName === 'INPUT') return
+    if (next.tagName === 'INPUT' || next.tagName === 'BUTTON') return
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
 
@@ -254,7 +254,10 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const savedAddressCloseButton = (
     <button
       type="button"
-      className={styles.savedAddressCloseButton}
+      className={clsx(
+        styles.savedAddressActionButton,
+        styles.savedAddressCloseButton,
+      )}
       aria-label="Close"
       title="Close"
       onClick={handleCloseSavedCard}
@@ -263,15 +266,55 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     </button>
   )
 
-  const renderViewMode = () => (
+  const handleFormEdit = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
+  }
+
+  const handleFormDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    dispatch(toolbarAction({ section: toolbarSection, key: 'delete' } as any))
+  }
+
+  const savedAddressFormActions = (
     <div
-      className={clsx(
-        styles.savedAddressView,
-        role === 'sender'
-          ? styles.savedAddressViewSender
-          : styles.savedAddressViewRecipient,
-      )}
+      className={styles.savedAddressFormActions}
+      onClick={(e) => e.stopPropagation()}
     >
+      <button
+        type="button"
+        className={styles.savedAddressActionButton}
+        aria-label="Edit address"
+        title="Edit address"
+        onClick={handleFormEdit}
+      >
+        {getToolbarIcon({ key: 'edit' })}
+      </button>
+      <button
+        type="button"
+        className={clsx(
+          styles.savedAddressActionButton,
+          styles.savedAddressActionButtonDelete,
+        )}
+        aria-label="Delete address"
+        title="Delete address"
+        onClick={handleFormDelete}
+      >
+        {getToolbarIcon({ key: 'delete' })}
+      </button>
+    </div>
+  )
+
+  const savedAddressViewClassName = clsx(
+    styles.savedAddressView,
+    styles.savedAddressViewWithFormActions,
+    role === 'sender'
+      ? styles.savedAddressViewSender
+      : styles.savedAddressViewRecipient,
+  )
+
+  const renderViewMode = () => (
+    <div className={savedAddressViewClassName}>
       {savedAddressCloseButton}
       <div className={styles.recipientAddress}>
         {address.name ? (
@@ -291,17 +334,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         ) : null}
       </div>
+      {savedAddressFormActions}
     </div>
   )
 
   const renderEditMode = () => (
     <div
-      className={clsx(
-        styles.savedAddressView,
-        role === 'sender'
-          ? styles.savedAddressViewSender
-          : styles.savedAddressViewRecipient,
-      )}
+      className={savedAddressViewClassName}
       onMouseDown={(e) => {
         if (isEditMode) {
           const target = e.target as HTMLElement
@@ -400,13 +439,17 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         )}
       </div>
+      {savedAddressFormActions}
     </div>
   )
 
   return (
     <div
       ref={containerRef}
-      className={styles.savedAddressViewContainer}
+      className={clsx(
+        styles.savedAddressViewContainer,
+        role === 'sender' && styles.savedAddressViewContainerFill,
+      )}
     >
       <div className={styles.savedAddressViewToolbar}>
         <Toolbar
@@ -415,7 +458,16 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           }
         />
       </div>
-      {isEditMode ? renderEditMode() : renderViewMode()}
+      <div
+        className={clsx(
+          styles.savedAddressViewCardWrap,
+          role === 'sender'
+            ? styles.savedAddressViewCardWrapSender
+            : styles.savedAddressViewCardWrapRecipient,
+        )}
+      >
+        {isEditMode ? renderEditMode() : renderViewMode()}
+      </div>
     </div>
   )
 }

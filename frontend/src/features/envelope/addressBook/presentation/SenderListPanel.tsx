@@ -27,6 +27,7 @@ export const SenderListPanel: React.FC<Props> = ({
     entries,
     starredSenderIds,
     closePanel,
+    handleDeleteEntry,
   } = useSenderListPanelFacade()
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
 
@@ -166,6 +167,8 @@ export const SenderListPanel: React.FC<Props> = ({
                   <AddressBookListRow
                     entry={entry}
                     onSelect={onSelect}
+                    onEdit={onEdit}
+                    onDelete={handleDeleteEntry}
                     isSelected={selectedId === entry.id}
                     isFocused={focusedIndex === index}
                     variant="sender"
@@ -186,6 +189,8 @@ export const SenderListPanel: React.FC<Props> = ({
                     <AddressBookListRow
                       entry={entry}
                       onSelect={onSelect}
+                      onEdit={onEdit}
+                      onDelete={handleDeleteEntry}
                       isSelected={selectedId === entry.id}
                       isFocused={focusedIndex === dataIndex}
                       variant="sender"

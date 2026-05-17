@@ -17,6 +17,44 @@ $recipient-content-gutter-right: calc(0.25rem + 8px);
   --recipient-row-height: 1.75rem;
 }
 
+.savedAddressViewContainerFill {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  height: 100%;
+
+  .savedAddressViewCardWrap {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .savedAddressView {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .savedAddressViewWithFormActions {
+    height: 100%;
+  }
+
+  .recipientAddress {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .savedAddressFormActions {
+    margin-top: auto;
+  }
+}
+
+.savedAddressViewCardWrap {
+  position: relative;
+  flex: 0 1 auto;
+  width: 100%;
+  min-height: 0;
+}
+
 .savedAddressViewToolbar {
   position: relative;
   flex-shrink: 0;
@@ -46,42 +84,32 @@ $recipient-content-gutter-right: calc(0.25rem + 8px);
   flex: 0 1 auto;
   width: 100%;
   min-height: 0;
-  padding: 0.5rem 1.55rem 0.5rem 0.5rem;
+  padding: 0.5rem;
   box-sizing: border-box;
 }
 
-.savedAddressViewRecipient {
-  background-color: $color-envelope-recipient-input;
-  border: 1px solid $color-envelope-recipient-border;
-  border-radius: 4px;
-  align-items: flex-start;
-}
+.savedAddressViewWithFormActions {
+  align-items: stretch;
+  padding: 0.5rem;
+  padding-bottom: 0.35rem;
 
-.savedAddressViewSender {
-  background-color: $color-envelope-sender-input;
-  border: 1px solid $color-envelope-sender-border;
-  border-radius: 4px;
-  align-items: flex-start;
-
-  .recipientAddressName {
-    color: $color-envelope-sender-legend;
-  }
-
-  .recipientAddressInput {
-    background-color: $color-envelope-sender-input;
-    border-color: $color-envelope-sender-input-border;
-
-    &:focus {
-      background-color: $color-envelope-sender-input-focus;
-    }
+  .recipientAddress {
+    padding-right: 1.15rem;
   }
 }
 
-.savedAddressCloseButton {
-  position: absolute;
-  top: 0.08rem;
-  right: 0.08rem;
-  z-index: 1;
+.savedAddressFormActions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: 0.35rem;
+  padding: 0;
+}
+
+.savedAddressActionButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -102,6 +130,48 @@ $recipient-content-gutter-right: calc(0.25rem + 8px);
     height: 0.82rem;
     display: block;
   }
+}
+
+.savedAddressViewRecipient {
+  background-color: $color-envelope-recipient-input;
+  border: 1px solid $color-envelope-recipient-border;
+  border-radius: 4px;
+  align-items: flex-start;
+
+  &.savedAddressViewWithFormActions {
+    align-items: stretch;
+  }
+}
+
+.savedAddressViewSender {
+  background-color: $color-envelope-sender-input;
+  border: 1px solid $color-envelope-sender-border;
+  border-radius: 4px;
+  align-items: flex-start;
+
+  &.savedAddressViewWithFormActions {
+    align-items: stretch;
+  }
+
+  .recipientAddressName {
+    color: $color-envelope-sender-legend;
+  }
+
+  .recipientAddressInput {
+    background-color: $color-envelope-sender-input;
+    border-color: $color-envelope-sender-input-border;
+
+    &:focus {
+      background-color: $color-envelope-sender-input-focus;
+    }
+  }
+}
+
+.savedAddressCloseButton {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  z-index: 2;
 }
 
 .recipientAddress {

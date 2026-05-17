@@ -28,6 +28,7 @@ export const RecipientListPanel: React.FC<Props> = ({
     entries,
     starredRecipientIds,
     closePanel,
+    handleDeleteEntry,
   } = useRecipientListPanelFacade()
 
   const { favoriteEntries, restEntries, combinedEntries } = useMemo(() => {
@@ -170,6 +171,8 @@ export const RecipientListPanel: React.FC<Props> = ({
                   <AddressBookListRow
                     entry={entry}
                     onSelect={onSelect}
+                    onEdit={onEdit}
+                    onDelete={handleDeleteEntry}
                     isSelected={selectedIds.includes(entry.id)}
                     isFocused={focusedIndex === index}
                   />
@@ -189,6 +192,8 @@ export const RecipientListPanel: React.FC<Props> = ({
                     <AddressBookListRow
                       entry={entry}
                       onSelect={onSelect}
+                      onEdit={onEdit}
+                      onDelete={handleDeleteEntry}
                       isSelected={selectedIds.includes(entry.id)}
                       isFocused={focusedIndex === dataIndex}
                     />

@@ -187,8 +187,22 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
   justify-content: flex-start;
 }
 
+.addressFormSenderFill {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.addressFormSenderBody .addressFormSender {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
 .addressFormSender {
-  height: 100%;
   &.addressFieldset {
     border: solid 1px $color-envelope-sender-border;
   }

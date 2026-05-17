@@ -2,6 +2,7 @@
 
 /* Row height like HistoryListEntryShort `data-density-level='3'`; type sizes like default (largest). */
 $entry-row-height: 2.28rem;
+$entry-row-height-with-actions: 3.35rem;
 
 .root {
   position: relative;
@@ -41,6 +42,13 @@ $entry-row-height: 2.28rem;
   &[data-has-remove='true'] {
     padding-right: 1.55rem;
   }
+
+  &[data-has-row-actions='true'] {
+    display: flex;
+    flex-direction: column;
+    min-height: $entry-row-height-with-actions;
+    padding: 0.28rem 0.5rem 0.22rem;
+  }
 }
 
 .rootSender {
@@ -79,6 +87,12 @@ $entry-row-height: 2.28rem;
   cursor: pointer;
 }
 
+.root[data-has-row-actions='true'] .field {
+  flex: 1 1 auto;
+  min-height: 0;
+  justify-content: flex-start;
+}
+
 .nameLine {
   width: 100%;
   min-width: 0;
@@ -103,10 +117,8 @@ $entry-row-height: 2.28rem;
   text-overflow: ellipsis;
 }
 
-.removeFromListButton {
-  position: absolute;
-  top: 0.08rem;
-  right: 0.08rem;
+.removeFromListButton,
+.rowActionButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -127,4 +139,24 @@ $entry-row-height: 2.28rem;
     height: 0.82rem;
     display: block;
   }
+}
+
+.removeFromListButton {
+  position: absolute;
+  top: 0.08rem;
+  right: 0.08rem;
+}
+
+.rowActions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: 0.12rem;
+}
+
+.rowActionButtonDelete {
+  margin-left: auto;
 }
