@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { PanelDensity2Size } from '@shared/ui/icons'
+import type { AddressFields } from '@shared/config/constants'
 import type { AddressBookMode } from '../../addressBook/domain/types'
+import type { AddressEditSession } from '../../domain/types'
 
+/** @deprecated Используйте `closeAddressEditSession` / payload с `keepRecipientView`. */
 export type RecipientViewEditModePayload =
   | boolean
   | { enabled: boolean; keepRecipientView?: boolean }
@@ -11,8 +14,8 @@ export interface EnvelopeSelectionState {
   activeAddressList: AddressBookMode | null
   recipientListPanelOpen: boolean
   senderListPanelOpen: boolean
-  senderViewEditMode: boolean
-  recipientViewEditMode: boolean
+  /** Активная сессия правки шаблона (одна на весь конверт). */
+  activeAddressEdit: AddressEditSession | null
   showAddressFormView: boolean
   addressFormViewRole: 'sender' | 'recipient' | null
   /** Плотность строк в панели адресной книги (`panelDensity2`): 1 — крупнее, 2 — компактнее. */
@@ -24,8 +27,7 @@ const initialState: EnvelopeSelectionState = {
   activeAddressList: null,
   recipientListPanelOpen: false,
   senderListPanelOpen: false,
-  senderViewEditMode: false,
-  recipientViewEditMode: false,
+  activeAddressEdit: null,
   showAddressFormView: false,
   addressFormViewRole: null,
   addressListPanelDensity: 1,
@@ -66,19 +68,29 @@ export const envelopeSelectionSlice = createSlice({
       state.recipientListPanelOpen = false
     },
 
-    setSenderViewEditMode(state, action: PayloadAction<boolean>) {
-      state.senderViewEditMode = action.payload
+    openAddressEditSession(state, action: PayloadAction<AddressEditSession>) {
+      state.activeAddressEdit = action.payload
     },
 
-    setRecipientViewEditMode(
+    closeAddressEditSession(
       state,
-      action: PayloadAction<RecipientViewEditModePayload>,
+      _action: PayloadAction<
+        { role?: 'sender' | 'recipient'; keepRecipientView?: boolean } | undefined
+      >,
     ) {
-      const payload =
-        typeof action.payload === 'boolean'
-          ? { enabled: action.payload }
-          : action.payload
-      state.recipientViewEditMode = payload.enabled
+      state.activeAddressEdit = null
+    },
+
+    updateAddressEditDraftField(
+      state,
+      action: PayloadAction<{
+        field: keyof AddressFields
+        value: string
+      }>,
+    ) {
+      const session = state.activeAddressEdit
+      if (!session) return
+      session.draft[action.payload.field] = action.payload.value
     },
 
     setAddressFormView(
@@ -114,8 +126,9 @@ export const {
   clearRecipientsPending,
   setActiveAddressList,
   closeAddressList,
-  setSenderViewEditMode,
-  setRecipientViewEditMode,
+  openAddressEditSession,
+  closeAddressEditSession,
+  updateAddressEditDraftField,
   setAddressFormView,
   addressSaveSuccess,
   cycleAddressListPanelDensity,

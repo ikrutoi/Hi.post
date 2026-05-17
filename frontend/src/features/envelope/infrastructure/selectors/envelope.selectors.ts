@@ -1,7 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit'
 import type { PanelDensity2Size } from '@shared/ui/icons'
+import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
 import type { AddressBookEntry } from '../../addressBook/domain/types'
+import type { AddressEditSession } from '../../domain/types'
 import {
   selectSenderState,
   selectSenderViewId,
@@ -23,8 +25,7 @@ const selectEnvelopeSelectionState = (state: {
     activeAddressList?: 'sender' | 'recipients' | null
     recipientListPanelOpen: boolean
     senderListPanelOpen: boolean
-    senderViewEditMode?: boolean
-    recipientViewEditMode?: boolean
+    activeAddressEdit?: AddressEditSession | null
     showAddressFormView?: boolean
     addressFormViewRole?: 'sender' | 'recipient' | null
     addressListPanelDensity?: PanelDensity2Size
@@ -102,14 +103,58 @@ export const selectAddressFormViewRole = createSelector(
   (s) => s.addressFormViewRole ?? null,
 )
 
-export const selectSenderViewEditMode = createSelector(
+export const selectActiveAddressEdit = createSelector(
   [selectEnvelopeSelectionState],
-  (s) => s.senderViewEditMode ?? false,
+  (s): AddressEditSession | null => s.activeAddressEdit ?? null,
+)
+
+export const selectSenderViewEditMode = createSelector(
+  [selectActiveAddressEdit],
+  (session) => session?.role === 'sender',
 )
 
 export const selectRecipientViewEditMode = createSelector(
-  [selectEnvelopeSelectionState],
-  (s) => s.recipientViewEditMode ?? false,
+  [selectActiveAddressEdit],
+  (session) => session?.role === 'recipient',
+)
+
+export const selectSenderCardAddress = createSelector(
+  [
+    selectActiveAddressEdit,
+    selectSenderState,
+    selectSenderEntriesState,
+    selectSenderViewId,
+  ],
+  (editSession, sender, entries, senderViewId): Readonly<AddressFields> => {
+    if (editSession?.role === 'sender') {
+      return editSession.draft
+    }
+    const displayId = senderViewId ?? sender.applied?.[0] ?? null
+    if (displayId) {
+      const entry = entries.find((e) => e.id === displayId)
+      if (entry?.address) return entry.address as AddressFields
+    }
+    return sender.viewDraft
+  },
+)
+
+export const selectRecipientCardAddress = createSelector(
+  [
+    selectActiveAddressEdit,
+    selectRecipientState,
+    selectRecipientEntriesState,
+    selectRecipientViewId,
+  ],
+  (editSession, recipient, entries, recipientViewId): Readonly<AddressFields> => {
+    if (editSession?.role === 'recipient') {
+      return editSession.draft
+    }
+    if (recipient.currentView === 'recipientView' && recipientViewId) {
+      const entry = entries.find((e) => e.id === recipientViewId)
+      if (entry?.address) return entry.address as AddressFields
+    }
+    return recipient.viewDraft
+  },
 )
 
 export const selectRecipientsList = selectRecipientsListState

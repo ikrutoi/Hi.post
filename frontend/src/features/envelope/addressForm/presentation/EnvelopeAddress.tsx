@@ -19,8 +19,9 @@ import {
   setRecipientView,
   setRecipientViewId,
 } from '../../recipient/infrastructure/state'
-import { setRecipientViewEditMode } from '@envelope/infrastructure/state'
+import { closeAddressEditSession } from '@envelope/infrastructure/state'
 import {
+  selectActiveAddressEdit,
   selectRecipientViewEditMode,
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
@@ -57,10 +58,20 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const facade = role === 'sender' ? senderFacade : recipientFacade
   const { update, address: value } = facade
 
+  const senderAppliedIds = useAppSelector(selectSenderApplied)
+  const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
   const editingTemplateId =
     role === 'sender'
       ? envelopeFacade.senderTemplateId
       : envelopeFacade.recipientTemplateId
+  const cardTemplateId =
+    role === 'sender'
+      ? activeAddressEdit?.role === 'sender'
+        ? activeAddressEdit.templateId
+        : (editingTemplateId ?? senderAppliedIds[0] ?? null)
+      : activeAddressEdit?.role === 'recipient'
+        ? activeAddressEdit.templateId
+        : editingTemplateId
 
   const entriesForRole = useAppSelector((state) =>
     role === 'sender'
@@ -83,7 +94,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const dispatch = useAppDispatch()
   const senderView = useAppSelector(selectSenderView)
-  const senderAppliedIds = useAppSelector(selectSenderApplied)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientView = useAppSelector(selectRecipientView)
@@ -261,7 +271,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     dispatch(setRecipientView('recipientView'))
     if (recipientViewEditMode) {
       dispatch(
-        setRecipientViewEditMode({ enabled: false, keepRecipientView: true }),
+        closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
       )
     }
   }
@@ -376,7 +386,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
                 lang={lang}
               />
             ) : showSenderDetailCard ? (
-              <SenderView templateId={editingTemplateId!} address={value} />
+              <SenderView templateId={cardTemplateId!} address={value} />
             ) : (
               <div
                 role="button"
@@ -462,7 +472,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               />
             ) : showRecipientDetailCard ? (
               <RecipientView
-                templateId={editingTemplateId ?? ''}
+                templateId={cardTemplateId ?? ''}
                 address={value}
               />
             ) : showRecipientsEnvelopeList ? (

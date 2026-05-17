@@ -4,7 +4,6 @@ import { useCallback } from 'react'
 import {
   selectIsSenderComplete,
   selectIsSenderEnabled,
-  selectSenderAddress,
   selectSenderCompletedFields,
   selectSenderState,
   selectSenderView,
@@ -23,6 +22,7 @@ import {
   selectActiveAddressList,
   selectSenderListPanelOpen,
   selectSenderSelectedId,
+  selectSenderCardAddress,
 } from '@envelope/infrastructure/selectors'
 import { closeAddressList } from '@envelope/infrastructure/state'
 
@@ -30,7 +30,7 @@ export const useSenderFacade = () => {
   const dispatch = useAppDispatch()
 
   const state = useAppSelector(selectSenderState)
-  const address = useAppSelector(selectSenderAddress)
+  const address = useAppSelector(selectSenderCardAddress)
   const formDraft = useAppSelector(selectSenderFormDraft)
   const completedFields = useAppSelector(selectSenderCompletedFields)
   const isComplete = useAppSelector(selectIsSenderComplete)

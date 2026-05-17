@@ -42,26 +42,21 @@ export const selectRecipientFormDraft = createSelector(
   (recipient): Readonly<AddressFields> => recipient.formDraft,
 )
 
-export const selectRecipientDisplayAddress = createSelector(
-  [
-    selectRecipientState,
-    (s: RootState) => s.addressBook?.recipientEntries ?? [],
-    (s: RootState) => s.envelopeSelection?.recipientViewEditMode ?? false,
-  ],
-  (recipient, entries, recipientViewEditMode): Readonly<AddressFields> => {
-    if (
-      !recipientViewEditMode &&
-      recipient.currentView === 'recipientView' &&
-      recipient.recipientViewId
-    ) {
-      const entry = entries.find(
-        (e: { id: string }) => e.id === recipient.recipientViewId,
-      )
-      if (entry?.address) return entry.address as AddressFields
-    }
-    return recipient.viewDraft
-  },
-)
+export const selectRecipientDisplayAddress = (
+  state: RootState,
+): Readonly<AddressFields> => {
+  const editSession = state.envelopeSelection?.activeAddressEdit ?? null
+  if (editSession?.role === 'recipient') {
+    return editSession.draft
+  }
+  const recipient = state.recipient
+  const entries = state.addressBook?.recipientEntries ?? []
+  if (recipient.currentView === 'recipientView' && recipient.recipientViewId) {
+    const entry = entries.find((e) => e.id === recipient.recipientViewId)
+    if (entry?.address) return entry.address as AddressFields
+  }
+  return recipient.viewDraft
+}
 
 export const selectRecipientAddress = selectRecipientAddressFormData
 

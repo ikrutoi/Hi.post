@@ -4,58 +4,56 @@ import { SenderListPanel } from '../addressBook/presentation/SenderListPanel'
 import { useRecipientFacade } from '../recipient/application/facades'
 import { useSenderFacade } from '../sender/application/facades'
 import { useAppDispatch } from '@app/hooks'
-import {
-  setRecipientView,
-  setRecipientViewId,
-  updateRecipientField,
-} from '../recipient/infrastructure/state'
-import {
-  setRecipientViewEditMode,
-  setSenderViewEditMode,
-} from '../infrastructure/state'
-import {
-  setSenderView,
-  setSenderViewId,
-  updateSenderField,
-} from '../sender/infrastructure/state'
+import { setRecipientView } from '../recipient/infrastructure/state'
+import { openAddressEditSession } from '../infrastructure/state'
+import { setSenderView } from '../sender/infrastructure/state'
 import type { AddressBookEntry } from '../addressBook/domain/types'
-import type { AddressField } from '@shared/config/constants'
+import type { AddressFields } from '@shared/config/constants'
+import { useAppSelector } from '@app/hooks'
+import {
+  selectRecipientTemplateId,
+  selectSenderTemplateId,
+} from '@envelope/infrastructure/selectors'
 import styles from './EnvelopeRightSlot.module.scss'
 
 export const EnvelopeRightSlot: React.FC = () => {
   const dispatch = useAppDispatch()
   const recipientFacade = useRecipientFacade()
   const senderFacade = useSenderFacade()
+  const senderViewId = useAppSelector(selectSenderTemplateId)
+  const recipientViewId = useAppSelector(selectRecipientTemplateId)
 
   const recipientListOpen = recipientFacade.listPanelOpen
   const senderListOpen = senderFacade.listPanelOpen
 
   const handleEditFromRecipientList = useCallback(
     (entry: AddressBookEntry) => {
-      dispatch(setRecipientViewId(entry.id))
-      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-        ([field, value]) => {
-          dispatch(updateRecipientField({ field, value }))
-        },
-      )
       dispatch(setRecipientView('recipientView'))
-      dispatch(setRecipientViewEditMode(true))
+      dispatch(
+        openAddressEditSession({
+          role: 'recipient',
+          templateId: entry.id,
+          draft: { ...entry.address } as AddressFields,
+          displayTemplateIdAtStart: recipientViewId,
+        }),
+      )
     },
-    [dispatch],
+    [dispatch, recipientViewId],
   )
 
   const handleEditFromSenderList = useCallback(
     (entry: AddressBookEntry) => {
-      dispatch(setSenderViewId(entry.id))
-      ;(Object.entries(entry.address) as [AddressField, string][]).forEach(
-        ([field, value]) => {
-          dispatch(updateSenderField({ field, value }))
-        },
-      )
       dispatch(setSenderView('senderView'))
-      dispatch(setSenderViewEditMode(true))
+      dispatch(
+        openAddressEditSession({
+          role: 'sender',
+          templateId: entry.id,
+          draft: { ...entry.address } as AddressFields,
+          displayTemplateIdAtStart: senderViewId,
+        }),
+      )
     },
-    [dispatch],
+    [dispatch, senderViewId],
   )
 
   if (!recipientListOpen && !senderListOpen) return null

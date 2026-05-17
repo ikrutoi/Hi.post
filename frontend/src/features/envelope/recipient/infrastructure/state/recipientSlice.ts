@@ -91,6 +91,11 @@ const recipientSlice = createSlice({
       // здесь достаточно сбросить сами данные отображения.
     },
 
+    setRecipientViewDraft(state, action: PayloadAction<AddressFields>) {
+      state.viewDraft = action.payload
+      state.formIsComplete = isComplete(action.payload)
+    },
+
     setRecipientAppliedIds: (state, action: PayloadAction<string[]>) => {
       state.applied = action.payload
     },
@@ -180,6 +185,7 @@ export const {
   resetRecipientForm,
   clearRecipientFormData,
   clearRecipientViewDraft,
+  setRecipientViewDraft,
   setRecipientAppliedIds,
   setRecipientAppliedWithData,
   setRecipientApplied,

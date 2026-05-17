@@ -115,6 +115,11 @@ const senderSlice = createSlice({
       state.formIsComplete = false
     },
 
+    setSenderViewDraft(state, action: PayloadAction<AddressFields>) {
+      state.viewDraft = action.payload
+      state.formIsComplete = isComplete(action.payload)
+    },
+
     toggleSenderSortDirection(state) {
       state.sortOptions.direction =
         state.sortOptions.direction === 'asc' ? 'desc' : 'asc'
@@ -140,6 +145,7 @@ export const {
   setSenderViewId,
   clearSenderFormData,
   clearSenderViewDraft,
+  setSenderViewDraft,
   toggleSenderSortDirection,
   saveAddressRequested,
 } = senderSlice.actions

@@ -20,6 +20,7 @@ import {
   setSenderViewId,
   clearSenderFormData,
   clearSenderViewDraft,
+  setSenderViewDraft,
   toggleSenderSortDirection,
   saveAddressRequested as senderSaveRequested,
 } from '@envelope/sender/infrastructure/state'
@@ -34,6 +35,7 @@ import {
   setCurrentRecipientsList,
   clearRecipientFormData,
   clearRecipientViewDraft,
+  setRecipientViewDraft,
   toggleRecipientSortDirection,
   toggleRecipientsViewSortDirection,
   setRecipientAppliedIds,
@@ -47,8 +49,8 @@ import {
   setRecipientsList,
   setRecipientsPendingIds,
   clearRecipientsPending,
-  setSenderViewEditMode,
-  setRecipientViewEditMode,
+  openAddressEditSession,
+  closeAddressEditSession,
   setAddressFormView,
   addressSaveSuccess,
   removeRecipientFromListByIndex,
@@ -57,7 +59,6 @@ import {
   cycleAddressListPanelDensity,
   setAddressListPanelDensity,
 } from '@envelope/infrastructure/state'
-import type { RecipientViewEditModePayload } from '@envelope/infrastructure/state'
 import {
   selectRecipientsPendingIds,
   selectRecipientListPanelOpen,
@@ -67,7 +68,9 @@ import {
   selectSenderViewEditMode,
   selectRecipientViewEditMode,
   selectAddressListPanelDensity,
+  selectActiveAddressEdit,
 } from '@envelope/infrastructure/selectors'
+import type { AddressEditSession } from '@envelope/domain/types'
 import {
   selectSenderState,
   selectIsSenderComplete,
@@ -147,17 +150,136 @@ function* handleSetAddressFormViewSync(
   }>,
 ) {}
 
+function getEntryAddressFromBook(
+  entries: { id: string; address: Record<string, string> }[],
+  templateId: string,
+): AddressFields | null {
+  const entry = entries.find((e) => e.id === templateId)
+  return entry?.address ? ({ ...entry.address } as AddressFields) : null
+}
+
+function* openSenderAddressEditSession(templateId: string): SagaIterator {
+  const senderViewId: string | null = yield select(selectSenderViewId)
+  const entries: { id: string; address: Record<string, string> }[] = yield select(
+    (s: RootState) => s.addressBook?.senderEntries ?? [],
+  )
+  const address = getEntryAddressFromBook(entries, templateId)
+  const sender: SenderState = yield select(selectSenderState)
+  const draft = address ?? { ...sender.viewDraft }
+  yield put(
+    openAddressEditSession({
+      role: 'sender',
+      templateId,
+      draft,
+      displayTemplateIdAtStart: senderViewId,
+    }),
+  )
+}
+
+function* openRecipientAddressEditSession(templateId: string): SagaIterator {
+  const recipientViewId: string | null = yield select(selectRecipientViewId)
+  const entries: { id: string; address: Record<string, string> }[] = yield select(
+    (s: RootState) => s.addressBook?.recipientEntries ?? [],
+  )
+  const address = getEntryAddressFromBook(entries, templateId)
+  const recipient: RecipientState = yield select(selectRecipientState)
+  const draft = address ?? { ...recipient.viewDraft }
+  yield put(setRecipientView('recipientView'))
+  yield put(
+    openAddressEditSession({
+      role: 'recipient',
+      templateId,
+      draft,
+      displayTemplateIdAtStart: recipientViewId,
+    }),
+  )
+}
+
+function* saveAndCloseAddressEditSession(
+  keepRecipientView = false,
+): SagaIterator {
+  const session: AddressEditSession | null = yield select(selectActiveAddressEdit)
+  if (!session) return
+
+  try {
+    const result: { success: boolean } = yield call(
+      [templateService, 'updateAddressTemplate'],
+      session.role,
+      session.templateId,
+      { address: session.draft },
+    )
+    if (result.success) {
+      yield put(incrementAddressBookReloadVersion())
+      yield put(incrementAddressTemplatesReloadVersion())
+
+      if (session.role === 'sender') {
+        const sender: SenderState = yield select(selectSenderState)
+        const senderViewId: string | null = yield select(selectSenderViewId)
+        if (sender.applied?.[0] === session.templateId) {
+          yield put(setSenderAppliedData(session.draft))
+        }
+        if (senderViewId === session.templateId) {
+          yield put(setSenderViewDraft(session.draft))
+        }
+      } else {
+        const recipient: RecipientState = yield select(selectRecipientState)
+        const recipientViewId: string | null = yield select(selectRecipientViewId)
+        if (recipient.applied?.[0] === session.templateId) {
+          yield put(setRecipientAppliedData(session.draft))
+        }
+        if (recipientViewId === session.templateId) {
+          yield put(setRecipientViewDraft(session.draft))
+        }
+        const envelopeRecipients: RecipientState[] = yield select(
+          (state: RootState) => state.envelopeRecipients ?? [],
+        )
+        if (envelopeRecipients.length > 0) {
+          const nextList: RecipientState[] = envelopeRecipients.map((r) =>
+            r.recipientViewId === session.templateId
+              ? {
+                  ...r,
+                  viewDraft: session.draft,
+                  formIsComplete: Object.values(session.draft).every(
+                    (v) => (v ?? '').trim() !== '',
+                  ),
+                }
+              : r,
+          )
+          yield put(setRecipientsList(nextList))
+        }
+      }
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(`Failed to update ${session.role} address template`)
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(`Error while updating ${session.role} address template:`, e)
+  }
+
+  yield put(
+    closeAddressEditSession({
+      role: session.role,
+      keepRecipientView: session.role === 'recipient' ? keepRecipientView : undefined,
+    }),
+  )
+}
+
 /** Полное удаление шаблона из БД (корзина в тулбаре). */
 function* deleteAddressTemplateFromToolbar(
   section: 'senderView' | 'recipientView',
 ) {
   const recipientViewId: string | null = yield select(selectRecipientViewId)
   const senderViewId: string | null = yield select(selectSenderViewId)
+  const editSession: AddressEditSession | null = yield select(selectActiveAddressEdit)
 
   const type: 'sender' | 'recipient' =
     section === 'senderView' ? 'sender' : 'recipient'
-  const templateId =
+  let templateId =
     section === 'senderView' ? senderViewId : recipientViewId
+  if (editSession?.role === type) {
+    templateId = editSession.templateId
+  }
 
   if (templateId == null) return
 
@@ -179,7 +301,7 @@ function* deleteAddressTemplateFromToolbar(
       if (sender.applied?.includes(templateId)) {
         yield put(setSenderApplied(false))
       }
-      yield put(setSenderViewEditMode(false))
+      yield put(closeAddressEditSession({ role: 'sender' }))
       yield put(setSenderViewId(null))
       yield put(setSenderView('senderView'))
       yield put(setAddressFormView({ show: false, role: null }))
@@ -193,7 +315,7 @@ function* deleteAddressTemplateFromToolbar(
       } else {
         yield put(setRecipientAppliedIds(nextApplied))
       }
-      yield put(setRecipientViewEditMode(false))
+      yield put(closeAddressEditSession({ role: 'recipient' }))
       yield put(setAddressFormView({ show: false, role: null }))
       yield put(clearRecipientFormData())
       yield put(clearRecipientViewDraft())
@@ -443,58 +565,25 @@ function* handleEnvelopeToolbarAction(
     const isEditMode: boolean = yield select(selectSenderViewEditMode)
 
     if (!isEditMode) {
-      yield put(setSenderViewEditMode(true))
-      yield put(setRecipientViewEditMode(false))
-      yield put(
-        updateToolbarIcon({
-          section: 'senderView',
-          key: 'edit',
-          value: 'active',
-        }),
+      const activeSession: AddressEditSession | null = yield select(
+        selectActiveAddressEdit,
       )
-      yield put(
-        updateToolbarIcon({
-          section: 'recipientView',
-          key: 'edit',
-          value: 'enabled',
-        }),
-      )
-    } else {
+      if (activeSession) {
+        yield put(
+          closeAddressEditSession({
+            role: activeSession.role,
+            keepRecipientView: activeSession.role === 'recipient',
+          }),
+        )
+      }
       const sender: SenderState = yield select(selectSenderState)
       const senderViewId: string | null = yield select(selectSenderViewId)
-
-      if (senderViewId != null) {
-        try {
-          const result: { success: boolean } = yield call(
-            [templateService, 'updateAddressTemplate'],
-            'sender',
-            senderViewId,
-            { address: sender.viewDraft },
-          )
-          if (result.success) {
-            yield put(incrementAddressBookReloadVersion())
-            yield put(incrementAddressTemplatesReloadVersion())
-            if (sender.applied?.[0] === senderViewId) {
-              yield put(setSenderAppliedData(sender.viewDraft))
-            }
-          } else {
-            // eslint-disable-next-line no-console
-            console.warn('Failed to update sender address template')
-          }
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.warn('Error while updating sender address template:', e)
-        }
+      const templateId = senderViewId ?? sender.applied?.[0] ?? null
+      if (templateId) {
+        yield call(openSenderAddressEditSession, templateId)
       }
-
-      yield put(setSenderViewEditMode(false))
-      yield put(
-        updateToolbarIcon({
-          section: 'senderView',
-          key: 'edit',
-          value: 'enabled',
-        }),
-      )
+    } else {
+      yield call(saveAndCloseAddressEditSession, false)
     }
 
     return
@@ -504,77 +593,25 @@ function* handleEnvelopeToolbarAction(
     const isEditMode: boolean = yield select(selectRecipientViewEditMode)
 
     if (!isEditMode) {
-      yield put(setRecipientViewEditMode(true))
-      yield put(setSenderViewEditMode(false))
-      yield put(
-        updateToolbarIcon({
-          section: 'recipientView',
-          key: 'edit',
-          value: 'active',
-        }),
+      const activeSession: AddressEditSession | null = yield select(
+        selectActiveAddressEdit,
       )
-      yield put(
-        updateToolbarIcon({
-          section: 'senderView',
-          key: 'edit',
-          value: 'enabled',
-        }),
-      )
-    } else {
+      if (activeSession) {
+        yield put(
+          closeAddressEditSession({
+            role: activeSession.role,
+            keepRecipientView: activeSession.role === 'recipient',
+          }),
+        )
+      }
       const recipient: RecipientState = yield select(selectRecipientState)
       const recipientViewId: string | null = yield select(selectRecipientViewId)
-
-      if (recipientViewId != null) {
-        try {
-          const result: { success: boolean } = yield call(
-            [templateService, 'updateAddressTemplate'],
-            'recipient',
-            recipientViewId,
-            { address: recipient.viewDraft },
-          )
-          if (result.success) {
-            yield put(incrementAddressBookReloadVersion())
-            yield put(incrementAddressTemplatesReloadVersion())
-            if (recipient.applied?.[0] === recipientViewId) {
-              yield put(setRecipientAppliedData(recipient.viewDraft))
-            }
-            const envelopeRecipients: RecipientState[] = yield select(
-              (state: RootState) => state.envelopeRecipients ?? [],
-            )
-            if (envelopeRecipients.length > 0) {
-              const nextList: RecipientState[] = envelopeRecipients.map((r) =>
-                r.recipientViewId === recipientViewId
-                  ? {
-                      ...r,
-                      viewDraft: recipient.viewDraft,
-                      formIsComplete: Object.values(recipient.viewDraft).every(
-                        (v) => (v ?? '').trim() !== '',
-                      ),
-                    }
-                  : r,
-              )
-              yield put(setRecipientsList(nextList))
-            }
-          } else {
-            // eslint-disable-next-line no-console
-            console.warn('Failed to update recipient address template')
-          }
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.warn('Error while updating recipient address template:', e)
-        }
+      const templateId = recipientViewId ?? recipient.applied?.[0] ?? null
+      if (templateId) {
+        yield call(openRecipientAddressEditSession, templateId)
       }
-
-      yield put(
-        setRecipientViewEditMode({ enabled: false, keepRecipientView: true }),
-      )
-      yield put(
-        updateToolbarIcon({
-          section: 'recipientView',
-          key: 'edit',
-          value: 'enabled',
-        }),
-      )
+    } else {
+      yield call(saveAndCloseAddressEditSession, true)
     }
 
     return
@@ -785,7 +822,7 @@ function* handleAddressSaveSuccess(
 }
 
 function* navigateRecipientViewAfterListChange(nextPendingIds: string[]) {
-  yield put(setRecipientViewEditMode(false))
+  yield put(closeAddressEditSession({ role: 'recipient' }))
   yield put(setAddressFormView({ show: false, role: null }))
   yield put(clearRecipientViewDraft())
   if (nextPendingIds.length === 1) {
@@ -877,84 +914,18 @@ function* syncAddressBookModeFromActive() {
   yield put(setAddressBookMode(active))
 }
 
-function parseRecipientViewEditModePayload(
-  payload: RecipientViewEditModePayload,
-): { enabled: boolean; keepRecipientView: boolean } {
-  if (typeof payload === 'boolean') {
-    return { enabled: payload, keepRecipientView: false }
-  }
-  return {
-    enabled: payload.enabled,
-    keepRecipientView: payload.keepRecipientView ?? false,
-  }
-}
-
-function* syncEditIconOnEditModeChange(
-  action: PayloadAction<boolean | RecipientViewEditModePayload>,
+function* syncEditIconsOnAddressEditOpen(
+  action: PayloadAction<AddressEditSession>,
 ) {
-  if (action.type === setSenderViewEditMode.type) {
-    const isEditMode = action.payload as boolean
-    if (isEditMode) {
-      yield put(
-        updateToolbarIcon({
-          section: 'senderView',
-          key: 'edit',
-          value: 'active',
-        }),
-      )
-      yield put(
-        updateToolbarIcon({
-          section: 'recipientView',
-          key: 'edit',
-          value: 'enabled',
-        }),
-      )
-      return
-    }
+  const { role } = action.payload
+  if (role === 'sender') {
     yield put(
       updateToolbarIcon({
         section: 'senderView',
         key: 'edit',
-        value: 'enabled',
+        value: 'active',
       }),
     )
-    return
-  }
-
-  if (action.type === setRecipientViewEditMode.type) {
-    const { enabled, keepRecipientView } = parseRecipientViewEditModePayload(
-      action.payload as RecipientViewEditModePayload,
-    )
-    if (enabled) {
-      yield put(
-        updateToolbarIcon({
-          section: 'recipientView',
-          key: 'edit',
-          value: 'active',
-        }),
-      )
-      yield put(
-        updateToolbarIcon({
-          section: 'senderView',
-          key: 'edit',
-          value: 'enabled',
-        }),
-      )
-      return
-    }
-
-    if (!keepRecipientView) {
-      const currentView: string = yield select(selectRecipientView)
-      if (currentView === 'recipientView') {
-        const recipientsDisplayList: { id: string }[] = yield select(
-          selectRecipientsDisplayList,
-        )
-        if (recipientsDisplayList.length > 1) {
-          yield put(setRecipientView('recipientsView'))
-          yield put(setRecipientViewId(null))
-        }
-      }
-    }
     yield put(
       updateToolbarIcon({
         section: 'recipientView',
@@ -962,7 +933,56 @@ function* syncEditIconOnEditModeChange(
         value: 'enabled',
       }),
     )
+    return
   }
+  yield put(
+    updateToolbarIcon({
+      section: 'recipientView',
+      key: 'edit',
+      value: 'active',
+    }),
+  )
+  yield put(
+    updateToolbarIcon({
+      section: 'senderView',
+      key: 'edit',
+      value: 'enabled',
+    }),
+  )
+}
+
+function* syncEditIconsOnAddressEditClose(
+  action: PayloadAction<
+    { role?: 'sender' | 'recipient'; keepRecipientView?: boolean } | undefined
+  >,
+) {
+  const { role, keepRecipientView } = action.payload ?? {}
+  if (role === 'recipient' && !keepRecipientView) {
+    const currentView: string = yield select(selectRecipientView)
+    if (currentView === 'recipientView') {
+      const recipientsDisplayList: { id: string }[] = yield select(
+        selectRecipientsDisplayList,
+      )
+      if (recipientsDisplayList.length > 1) {
+        yield put(setRecipientView('recipientsView'))
+        yield put(setRecipientViewId(null))
+      }
+    }
+  }
+  yield put(
+    updateToolbarIcon({
+      section: 'senderView',
+      key: 'edit',
+      value: 'enabled',
+    }),
+  )
+  yield put(
+    updateToolbarIcon({
+      section: 'recipientView',
+      key: 'edit',
+      value: 'enabled',
+    }),
+  )
 }
 
 function* syncAddressListIconsFromActive() {
@@ -1036,10 +1056,8 @@ export function* envelopeToolbarSaga() {
   yield all([
     fork(hydrateAddressListPanelDensityFromDbSaga),
     takeLatest(toolbarAction.type, handleEnvelopeToolbarAction),
-    takeEvery(
-      [setSenderViewEditMode.type, setRecipientViewEditMode.type],
-      syncEditIconOnEditModeChange,
-    ),
+    takeEvery(openAddressEditSession.type, syncEditIconsOnAddressEditOpen),
+    takeEvery(closeAddressEditSession.type, syncEditIconsOnAddressEditClose),
     takeEvery(
       removeRecipientFromListByIndex.type,
       handleRemoveRecipientFromListByIndex,

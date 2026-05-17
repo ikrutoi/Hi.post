@@ -9,10 +9,10 @@ import {
   selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import {
+  closeAddressEditSession,
   removeRecipientAt,
   setAddressFormView,
-  setRecipientViewEditMode,
-  setSenderViewEditMode,
+  updateAddressEditDraftField,
 } from '@envelope/infrastructure/state'
 import {
   removeRecipientFromListById,
@@ -80,6 +80,10 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   }, [address.zip, address.city])
 
   const updateField = (field: keyof AddressFields, value: string) => {
+    if (isEditMode) {
+      dispatch(updateAddressEditDraftField({ field, value }))
+      return
+    }
     if (role === 'sender') {
       dispatch(updateSenderField({ field, value } as any))
     } else {
@@ -220,7 +224,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     role === 'sender' ? 'senderView' : 'recipientView'
 
   const removeSenderFromForm = () => {
-    dispatch(setSenderViewEditMode(false))
+    dispatch(closeAddressEditSession({ role: 'sender' }))
     dispatch(setSenderViewId(null))
     dispatch(setSenderApplied(false))
     dispatch(clearSender())
