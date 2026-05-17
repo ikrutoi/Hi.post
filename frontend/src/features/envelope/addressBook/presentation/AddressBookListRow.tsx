@@ -14,6 +14,7 @@ export type AddressBookListRowProps = {
   onDelete?: (id: string) => void
   isSelected?: boolean
   isFocused?: boolean
+  isEditActive?: boolean
   variant?: 'sender' | 'recipient'
   density?: PanelDensity2Size
 }
@@ -26,6 +27,7 @@ export const AddressBookListRow: React.FC<AddressBookListRowProps> = ({
   onDelete,
   isSelected = false,
   isFocused = false,
+  isEditActive = false,
   variant = 'recipient',
   density = 1,
 }) => {
@@ -68,9 +70,13 @@ export const AddressBookListRow: React.FC<AddressBookListRowProps> = ({
             {onEdit != null && (
               <button
                 type="button"
-                className={styles.rowActionButton}
+                className={clsx(
+                  styles.rowActionButton,
+                  isEditActive && styles.rowActionButtonActive,
+                )}
                 aria-label="Edit address"
                 title="Edit address"
+                aria-pressed={isEditActive}
                 onClick={(e) => {
                   e.stopPropagation()
                   onEdit(entry)

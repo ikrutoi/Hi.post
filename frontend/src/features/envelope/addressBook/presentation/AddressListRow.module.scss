@@ -190,6 +190,30 @@ $entry-row-height-compact: 2.28rem;
   margin-top: 0.12rem;
 }
 
+.rowActionButtonActive {
+  color: $color-font-active;
+
+  &:hover {
+    color: $color-font-active;
+  }
+}
+
+.rootSender .rowActionButtonActive {
+  color: $color-envelope-sender-legend;
+
+  &:hover {
+    color: $color-envelope-sender-legend;
+  }
+}
+
+.root:not(.rootSender) .rowActionButtonActive {
+  color: $color-envelope-recipient-legend;
+
+  &:hover {
+    color: $color-envelope-recipient-legend;
+  }
+}
+
 .rowActionButtonDelete {
   margin-left: auto;
 }

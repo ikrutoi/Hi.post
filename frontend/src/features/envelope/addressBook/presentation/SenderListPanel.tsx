@@ -8,6 +8,7 @@ import { AddressBookListRow } from './AddressBookListRow'
 import type { AddressBookEntry } from '../domain/types'
 import { useSenderListPanelFacade } from '../../application/facades'
 import {
+  selectActiveAddressEdit,
   selectAddressListPanelDensity,
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
@@ -28,7 +29,10 @@ export const SenderListPanel: React.FC<Props> = ({
   const { entries, starredSenderIds, closePanel, handleDeleteEntry } =
     useSenderListPanelFacade()
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
+  const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
   const addressListPanelDensity = useAppSelector(selectAddressListPanelDensity)
+  const editingEntryId =
+    activeAddressEdit?.role === 'sender' ? activeAddressEdit.templateId : null
 
   const { favoriteEntries, restEntries, combinedEntries } = useMemo(() => {
     const fav = entries.filter((e) => starredSenderIds.has(e.id))
@@ -175,6 +179,7 @@ export const SenderListPanel: React.FC<Props> = ({
                     onDelete={handleDeleteEntry}
                     isSelected={selectedId === entry.id}
                     isFocused={focusedIndex === index}
+                    isEditActive={editingEntryId === entry.id}
                     variant="sender"
                     density={addressListPanelDensity}
                   />
@@ -198,6 +203,7 @@ export const SenderListPanel: React.FC<Props> = ({
                       onDelete={handleDeleteEntry}
                       isSelected={selectedId === entry.id}
                       isFocused={focusedIndex === dataIndex}
+                      isEditActive={editingEntryId === entry.id}
                       variant="sender"
                       density={addressListPanelDensity}
                     />

@@ -9,6 +9,7 @@ import type { AddressBookEntry } from '../domain/types'
 import { useRecipientListPanelFacade } from '../../application/facades'
 import { useAppSelector } from '@app/hooks'
 import {
+  selectActiveAddressEdit,
   selectAddressListPanelDensity,
   selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
@@ -27,7 +28,12 @@ export const RecipientListPanel: React.FC<Props> = ({
   selectedIds = [],
 }) => {
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
+  const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
   const addressListPanelDensity = useAppSelector(selectAddressListPanelDensity)
+  const editingEntryId =
+    activeAddressEdit?.role === 'recipient'
+      ? activeAddressEdit.templateId
+      : null
   const {
     entries,
     starredRecipientIds,
@@ -181,6 +187,7 @@ export const RecipientListPanel: React.FC<Props> = ({
                     onDelete={handleDeleteEntry}
                     isSelected={selectedIds.includes(entry.id)}
                     isFocused={focusedIndex === index}
+                    isEditActive={editingEntryId === entry.id}
                     density={addressListPanelDensity}
                   />
                 </div>
@@ -203,6 +210,7 @@ export const RecipientListPanel: React.FC<Props> = ({
                       onDelete={handleDeleteEntry}
                       isSelected={selectedIds.includes(entry.id)}
                       isFocused={focusedIndex === dataIndex}
+                      isEditActive={editingEntryId === entry.id}
                       density={addressListPanelDensity}
                     />
                   </div>
