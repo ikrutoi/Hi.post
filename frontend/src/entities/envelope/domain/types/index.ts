@@ -15,7 +15,7 @@ export type AddressRole = EnvelopeRole
 
 export const emptyEnvelope = {
   sender: {
-    currentView: 'addressFormSenderView' as const,
+    currentView: 'senderCreate' as const,
     formDraft: {
       name: '',
       street: '',

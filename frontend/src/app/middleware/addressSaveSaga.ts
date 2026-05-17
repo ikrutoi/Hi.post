@@ -72,10 +72,10 @@ function* handleAddressSave(
     // Форма адреса — formDraft; карточка SenderView/RecipientView — viewDraft
     const addressData =
       role === 'sender'
-        ? sender.currentView === 'addressFormSenderView'
+        ? sender.currentView === 'senderCreate'
           ? sender.formDraft
           : sender.viewDraft
-        : recipient.currentView === 'addressFormRecipientView'
+        : recipient.currentView === 'recipientCreate'
           ? recipient.formDraft
           : recipient.viewDraft
 

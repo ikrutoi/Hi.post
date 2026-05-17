@@ -88,8 +88,8 @@ export const TOOLBAR_SECTIONS = [
   'senderView',
   'recipientView',
   'recipientsView',
-  'addressFormSenderView',
-  'addressFormRecipientView',
+  'senderCreate',
+  'recipientCreate',
   'cardtextList',
   'cardtextCreate',
   'cardtextEditor',
@@ -130,8 +130,8 @@ export type ToolbarState = {
   senderView: AddressViewToolbarState & { config: ToolbarGroup[] }
   recipientView: AddressViewToolbarState & { config: ToolbarGroup[] }
   recipientsView: AddressViewToolbarState & { config: ToolbarGroup[] }
-  addressFormSenderView: AddressViewToolbarState & { config: ToolbarGroup[] }
-  addressFormRecipientView: AddressViewToolbarState & { config: ToolbarGroup[] }
+  senderCreate: AddressViewToolbarState & { config: ToolbarGroup[] }
+  recipientCreate: AddressViewToolbarState & { config: ToolbarGroup[] }
   cardtextList: CardtextListToolbarState & { config: ToolbarGroup[] }
   cardtextView: CardtextToolbarState & { config: ToolbarGroup[] }
   cardtextCreate: CardtextToolbarState & { config: ToolbarGroup[] }
@@ -246,15 +246,15 @@ export type ToolbarSectionConfigMap = {
     AddressViewKey,
     'recipientsView'
   >
-  addressFormSenderView: BaseSectionConfig<
+  senderCreate: BaseSectionConfig<
     AddressViewToolbarState,
     AddressViewKey,
-    'addressFormSenderView'
+    'senderCreate'
   >
-  addressFormRecipientView: BaseSectionConfig<
+  recipientCreate: BaseSectionConfig<
     AddressViewToolbarState,
     AddressViewKey,
-    'addressFormRecipientView'
+    'recipientCreate'
   >
   cardtextList: BaseSectionConfig<
     CardtextListToolbarState,
@@ -370,9 +370,9 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                 ? AddressViewKey
                                 : S extends 'recipientsView'
                                   ? AddressViewKey
-                                  : S extends 'addressFormSenderView'
+                                  : S extends 'senderCreate'
                                     ? AddressViewKey
-                                    : S extends 'addressFormRecipientView'
+                                    : S extends 'recipientCreate'
                                       ? AddressViewKey
                                       : S extends 'cardtextList'
                                         ? CardtextListKey

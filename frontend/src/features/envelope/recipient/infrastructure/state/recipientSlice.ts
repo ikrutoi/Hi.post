@@ -47,7 +47,7 @@ const recipientSlice = createSlice({
       action: PayloadAction<{ field: keyof AddressFields; value: string }>,
     ) => {
       const { field, value } = action.payload
-      if (state.currentView === 'addressFormRecipientView') {
+      if (state.currentView === 'recipientCreate') {
         state.formDraft[field] = value
         state.formIsComplete = isComplete(state.formDraft)
       } else {
@@ -70,7 +70,7 @@ const recipientSlice = createSlice({
     clearRecipient: () => initialRecipient,
 
     resetRecipientForm: (state) => {
-      state.currentView = 'addressFormRecipientView'
+      state.currentView = 'recipientCreate'
       state.formDraft = { ...initialSection.data }
       state.formIsComplete = false
       state.formIsEmpty = true
@@ -133,7 +133,7 @@ const recipientSlice = createSlice({
 
     setRecipientView: (state, action: PayloadAction<RecipientView>) => {
       const nextView = action.payload
-      if (nextView !== 'addressFormRecipientView') {
+      if (nextView !== 'recipientCreate') {
         state.formIsEmpty = isFormDraftEmpty(state.formDraft)
       }
       state.currentView = nextView

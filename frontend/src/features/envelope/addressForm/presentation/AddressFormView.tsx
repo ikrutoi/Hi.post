@@ -7,6 +7,7 @@ import { useEnvelopeFacade } from '../../application/facades/useEnvelopeFacade'
 import type { AddressFields } from '@shared/config/constants'
 import type { Lang } from '@i18n/types'
 import styles from './AddressFormView.module.scss'
+import addressViewStyles from './AddressView.module.scss'
 import { IconX } from '@/shared/ui/icons'
 
 export type AddressFormViewProps = {
@@ -43,7 +44,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   )
 
   const toolbarSection =
-    role === 'sender' ? 'addressFormSenderView' : 'addressFormRecipientView'
+    role === 'sender' ? 'senderCreate' : 'recipientCreate'
 
   // Defer toolbar sync so it doesn't run in the same tick as field update and cause focus loss
   useEffect(() => {
@@ -57,7 +58,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   useEffect(() => {
     const firstInput = inputsRef.current[0]
     if (!firstInput) return
-    const container = firstInput.closest('[class*="addressFormViewContainer"]')
+    const container = firstInput.closest('[data-envelope-address-surface]')
     const active = document.activeElement as Node | null
     if (active && container?.contains(active)) return
     const len = firstInput.value.length
@@ -136,34 +137,50 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   })
 
   return (
-    <div className={styles.addressFormViewContainer} data-envelope-address-surface>
-      <div
-        className={clsx(
-          styles.addressFormViewToolbar,
-          styles[`addressFormViewToolbar${roleLabel}`],
-        )}
-      >
+    <div
+      className={clsx(
+        addressViewStyles.savedAddressViewContainer,
+        role === 'sender' && addressViewStyles.savedAddressViewContainerFill,
+      )}
+      data-envelope-address-surface
+    >
+      <div className={addressViewStyles.savedAddressViewToolbar}>
         <Toolbar section={toolbarSection} />
       </div>
       <div
         className={clsx(
-          styles.addressFormView,
-          role === 'sender' && styles.addressFormSenderView,
-          role === 'recipient' && styles.addressFormRecipientView,
+          addressViewStyles.savedAddressViewCardWrap,
+          role === 'sender'
+            ? addressViewStyles.savedAddressViewCardWrapSender
+            : addressViewStyles.savedAddressViewCardWrapRecipient,
         )}
       >
-        {fields}
-      </div>
-      {showCloseBtn && (
-        <button
-          type="button"
-          className={clsx(styles.closeBtn, styles[`closeBtn${roleLabel}`])}
-          onClick={handleCloseClick}
-          aria-label="Close address form"
+        <div
+          className={clsx(
+            addressViewStyles.savedAddressView,
+            addressViewStyles.savedAddressViewWithFormActions,
+            role === 'sender'
+              ? addressViewStyles.savedAddressViewSender
+              : addressViewStyles.savedAddressViewRecipient,
+            styles.addressFormView,
+          )}
         >
-          <IconX />
-        </button>
-      )}
+          {fields}
+        </div>
+        {showCloseBtn && (
+          <button
+            type="button"
+            className={clsx(
+              addressViewStyles.savedAddressCloseButton,
+              styles.closeBtn,
+            )}
+            onClick={handleCloseClick}
+            aria-label="Close address form"
+          >
+            <IconX />
+          </button>
+        )}
+      </div>
     </div>
   )
 }

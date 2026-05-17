@@ -134,7 +134,7 @@ export function* processEnvelopeVisuals() {
     addressListCount: senderInListCount,
     isCurrentAddressInList: isAddressInList(sender.viewDraft, senderList),
     hasDraft: hasSenderDraft,
-    isAddressFormOpen: sender.currentView === 'addressFormSenderView',
+    isAddressFormOpen: sender.currentView === 'senderCreate',
     formIsEmpty: sender.formIsEmpty ?? true,
     senderListPanelOpen,
   })
@@ -157,7 +157,7 @@ export function* processEnvelopeVisuals() {
     addressListCount: recipientInListCount,
     isCurrentAddressInList: isAddressInList(recipient.viewDraft, recipientList),
     hasDraft: hasRecipientDraft,
-    isAddressFormOpen: recipient.currentView === 'addressFormRecipientView',
+    isAddressFormOpen: recipient.currentView === 'recipientCreate',
     formIsEmpty: recipient.formIsEmpty ?? true,
     recipientListPanelOpen: recipientListPanelOpenForToolbar,
   })
@@ -216,7 +216,7 @@ export function* processEnvelopeVisuals() {
           : 'disabled'
 
   if (
-    sender.currentView === 'addressFormSenderView' &&
+    sender.currentView === 'senderCreate' &&
     !senderComplete
   )
     senderApplyState = 'disabled'
@@ -233,7 +233,7 @@ export function* processEnvelopeVisuals() {
     selectRecipientsPendingIds,
   )
   const isRecipientFormOpen =
-    recipient.currentView === 'addressFormRecipientView'
+    recipient.currentView === 'recipientCreate'
   const canApplyRecipients = recipientsPendingIds.length >= 1
   const isRecipientsEmptyForm = isRecipientFormOpen && !recipientComplete
   const recipientsViewIds =
@@ -253,7 +253,7 @@ export function* processEnvelopeVisuals() {
         ? 'selected'
         : 'enabled'
   if (
-    recipient.currentView === 'addressFormRecipientView' &&
+    recipient.currentView === 'recipientCreate' &&
     !recipientComplete
   ) {
     recipientsApplyState = 'disabled'

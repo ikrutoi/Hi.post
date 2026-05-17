@@ -1,51 +1,14 @@
 @use '@styles/config/colors' as *;
-@use '@styles/mixins/panelCloseButton' as *;
 
-.addressFormViewContainer {
-  position: relative;
-  width: 100%;
-  height: min-content;
-  box-sizing: border-box;
-  // border: 1px solid red;
-}
-
-.addressFormViewToolbar {
-  position: absolute;
-  top: -1.6rem;
-  left: 0;
-  width: 100%;
-  height: min-content;
-  display: flex;
-
-  &Sender,
-  &Recipient,
-  &Recipients {
-    padding-left: 1rem;
-    justify-content: flex-start;
-  }
-}
-
+/* Поля формы — фон и рамка задаются через .savedAddressView* в AddressView.module.scss */
 .addressFormView {
-  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: stretch;
   width: 100%;
   min-height: 0;
-  padding: 0.25rem 0.5rem;
   box-sizing: border-box;
-  border-radius: 0.35rem;
-}
-
-.addressFormSenderView {
-  background-color: $color-envelope-sender-input;
-  border: 1px solid $color-envelope-sender-border;
-}
-
-.addressFormRecipientView {
-  background-color: $color-envelope-recipient-input;
-  border: 1px solid $color-envelope-recipient-border;
 }
 
 .labelGroup {
@@ -56,13 +19,11 @@
 }
 
 .closeBtn {
-  @include panel-close-button;
-  position: absolute;
-  top: -0.65rem;
+  padding: 0.22rem;
 
-  &Sender,
-  &Recipient,
-  &Recipients {
-    right: 1rem;
+  svg {
+    width: 0.82rem;
+    height: 0.82rem;
+    display: block;
   }
 }

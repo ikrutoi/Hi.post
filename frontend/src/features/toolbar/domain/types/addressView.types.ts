@@ -85,9 +85,9 @@ export const initialSenderViewToolbarState: AddressViewToolbarState = {
   config: [...SENDER_VIEW_TOOLBAR],
 }
 
-export const ADDRESS_FORM_SENDER_VIEW_TOOLBAR: ToolbarConfig = [
+export const SENDER_CREATE_TOOLBAR: ToolbarConfig = [
   {
-    group: 'addressFormSenderView',
+    group: 'senderCreate',
     icons: [
       { key: 'addressCheck', state: 'enabled' },
       { key: 'listAdd', state: 'enabled' },
@@ -96,9 +96,9 @@ export const ADDRESS_FORM_SENDER_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
+export const RECIPIENT_CREATE_TOOLBAR: ToolbarConfig = [
   {
-    group: 'addressFormRecipientView',
+    group: 'recipientCreate',
     icons: [
       { key: 'listAdd', state: 'enabled' },
       { key: 'addressCheck', state: 'enabled' },
@@ -107,16 +107,16 @@ export const ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const initialAddressFormSenderViewToolbarState: AddressViewToolbarState =
+export const initialSenderCreateToolbarState: AddressViewToolbarState =
   {
-    ...Object.fromEntries(flattenIcons(ADDRESS_FORM_SENDER_VIEW_TOOLBAR)),
-    config: [...ADDRESS_FORM_SENDER_VIEW_TOOLBAR],
+    ...Object.fromEntries(flattenIcons(SENDER_CREATE_TOOLBAR)),
+    config: [...SENDER_CREATE_TOOLBAR],
   }
 
-export const initialAddressFormRecipientViewToolbarState: AddressViewToolbarState =
+export const initialRecipientCreateToolbarState: AddressViewToolbarState =
   {
-    ...Object.fromEntries(flattenIcons(ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR)),
-    config: [...ADDRESS_FORM_RECIPIENT_VIEW_TOOLBAR],
+    ...Object.fromEntries(flattenIcons(RECIPIENT_CREATE_TOOLBAR)),
+    config: [...RECIPIENT_CREATE_TOOLBAR],
   }
 
 export interface AddressViewSectionConfig extends BaseSectionConfig<
@@ -125,6 +125,6 @@ export interface AddressViewSectionConfig extends BaseSectionConfig<
   | 'senderView'
   | 'recipientView'
   | 'recipientsView'
-  | 'addressFormSenderView'
-  | 'addressFormRecipientView'
+  | 'senderCreate'
+  | 'recipientCreate'
 > {}

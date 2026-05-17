@@ -10,7 +10,7 @@ export const senderLayout: AddressLayout = [
 ]
 
 export type SenderView =
-  | 'addressFormSenderView'
+  | 'senderCreate'
   | 'senderEnvelopeView'
   | 'senderView'
 

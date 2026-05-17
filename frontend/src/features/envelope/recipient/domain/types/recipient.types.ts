@@ -10,7 +10,7 @@ export const recipientLayout: AddressLayout = [
 ]
 
 export type RecipientView =
-  | 'addressFormRecipientView'
+  | 'recipientCreate'
   | 'recipientView'
   | 'recipientsView'
 

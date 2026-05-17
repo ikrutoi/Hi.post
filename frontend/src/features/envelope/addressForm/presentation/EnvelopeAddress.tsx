@@ -138,7 +138,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const showRecipientsEnvelopeList =
     role === 'recipient' &&
-    recipientView !== 'addressFormRecipientView' &&
+    recipientView !== 'recipientCreate' &&
     recipientView !== 'recipientView' &&
     recipientsDisplayList.length > 1
 
@@ -156,7 +156,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   useEffect(() => {
     if (role !== 'recipient') return
-    if (recipientView === 'addressFormRecipientView') return
+    if (recipientView === 'recipientCreate') return
 
     if (recipientsDisplayList.length === 1) {
       const entry = recipientsDisplayList[0]
@@ -228,7 +228,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   useEffect(() => {
     if (role !== 'sender' || !senderFacade.isEnabled) return
-    if (senderView === 'addressFormSenderView') return
+    if (senderView === 'senderCreate') return
 
     if (senderDisplayEntry != null) {
       if (
@@ -257,8 +257,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const openAddressForm = (r: 'sender' | 'recipient') => {
     envelopeFacade.setAddressFormViewState(true, r)
-    if (r === 'sender') dispatch(setSenderView('addressFormSenderView'))
-    else dispatch(setRecipientView('addressFormRecipientView'))
+    if (r === 'sender') dispatch(setSenderView('senderCreate'))
+    else dispatch(setRecipientView('recipientCreate'))
   }
 
   const handleOpenRecipientFromList = (entry: AddressBookEntry) => {
@@ -376,9 +376,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               />
             </div>
 
-            {senderView === 'addressFormSenderView' ? (
+            {senderView === 'senderCreate' ? (
               <AddressFormView
-                key="addressFormSenderView"
+                key="senderCreate"
                 role="sender"
                 roleLabel={roleLabel}
                 address={senderFacade.formDraft}
@@ -461,9 +461,9 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               )}
               <IconUsers className={styles.envelopeRecipientToolbarIcon} />
             </div>
-            {recipientView === 'addressFormRecipientView' ? (
+            {recipientView === 'recipientCreate' ? (
               <AddressFormView
-                key="addressFormRecipientView"
+                key="recipientCreate"
                 role="recipient"
                 roleLabel={roleLabel}
                 address={recipientFacade.formDraft}

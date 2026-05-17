@@ -111,22 +111,22 @@ export const useEnvelopeFacade = () => {
     if (role === 'sender') {
       dispatch(setSenderViewId(null))
       dispatch(clearSender())
-      dispatch(setSenderView('addressFormSenderView'))
+      dispatch(setSenderView('senderCreate'))
     } else {
       dispatch(setRecipientViewId(null))
       dispatch(clearRecipient())
-      dispatch(setRecipientView('addressFormRecipientView'))
+      dispatch(setRecipientView('recipientCreate'))
     }
   }
 
   const fullClear = () => {
     dispatch(setRecipientViewId(null))
     dispatch(clearRecipient())
-    dispatch(setRecipientView('addressFormRecipientView'))
+    dispatch(setRecipientView('recipientCreate'))
     if (sender.enabled) {
       dispatch(setSenderViewId(null))
       dispatch(clearSender())
-      dispatch(setSenderView('addressFormSenderView'))
+      dispatch(setSenderView('senderCreate'))
     }
   }
 
@@ -223,7 +223,7 @@ export const useEnvelopeFacade = () => {
   }
 
   const syncAddressFormToolbar = (
-    section: 'addressFormSenderView' | 'addressFormRecipientView',
+    section: 'senderCreate' | 'recipientCreate',
     isAddressComplete: boolean,
   ) => {
     const state = isAddressComplete ? 'enabled' : 'disabled'

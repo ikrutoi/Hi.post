@@ -30,7 +30,7 @@ export const selectRecipientState = (state: RootState): RecipientState =>
   state.recipient
 
 export const selectRecipientView = (state: RootState): RecipientView =>
-  state.recipient.currentView ?? 'addressFormRecipientView'
+  state.recipient.currentView ?? 'recipientCreate'
 
 export const selectRecipientAddressFormData = createSelector(
   [selectRecipientState],

@@ -474,7 +474,7 @@ function* handleEnvelopeToolbarAction(
       )
       const sender: SenderState = yield select(selectSenderState)
       const draft =
-        sender.currentView === 'addressFormSenderView'
+        sender.currentView === 'senderCreate'
           ? sender.formDraft
           : sender.viewDraft
       if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) return
@@ -511,7 +511,7 @@ function* handleEnvelopeToolbarAction(
       )
       const recipient: RecipientState = yield select(selectRecipientState)
       const draft =
-        recipient.currentView === 'addressFormRecipientView'
+        recipient.currentView === 'recipientCreate'
           ? recipient.formDraft
           : recipient.viewDraft
       if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) return
@@ -623,8 +623,8 @@ function* handleEnvelopeToolbarAction(
     section !== 'senderView' &&
     section !== 'recipientView' &&
     section !== 'recipientsView' &&
-    section !== 'addressFormSenderView' &&
-    section !== 'addressFormRecipientView' &&
+    section !== 'senderCreate' &&
+    section !== 'recipientCreate' &&
     section !== 'addressListSender' &&
     section !== 'addressListRecipient'
   )
@@ -643,13 +643,13 @@ function* handleEnvelopeToolbarAction(
     if (section === 'sender') {
       yield put(setAddressFormView({ show: true, role: 'sender' }))
       yield put(clearSenderFormData())
-      yield put(setSenderView('addressFormSenderView'))
+      yield put(setSenderView('senderCreate'))
     } else if (
       section === 'recipientView' ||
       section === 'recipients'
     ) {
       yield put(setAddressFormView({ show: true, role: 'recipient' }))
-      yield put(setRecipientView('addressFormRecipientView'))
+      yield put(setRecipientView('recipientCreate'))
     }
   }
 
@@ -732,15 +732,15 @@ function* handleEnvelopeToolbarAction(
       if (senderComplete)
         yield put(senderSaveRequested({ listStatus: 'inList' }))
     } else if (
-      section === 'addressFormSenderView' ||
-      section === 'addressFormRecipientView'
+      section === 'senderCreate' ||
+      section === 'recipientCreate'
     ) {
       const senderComplete: boolean = yield select(selectIsSenderComplete)
       const recipientComplete: boolean = yield select(selectIsRecipientComplete)
       const isComplete =
-        section === 'addressFormSenderView' ? senderComplete : recipientComplete
+        section === 'senderCreate' ? senderComplete : recipientComplete
       if (isComplete) {
-        if (section === 'addressFormSenderView') {
+        if (section === 'senderCreate') {
           yield put(senderSaveRequested({ listStatus: 'inList' }))
         } else {
           yield put(recipientSaveRequested({ listStatus: 'inList' }))
@@ -763,10 +763,10 @@ function* handleEnvelopeToolbarAction(
 
   if (
     key === 'listClose' &&
-    (section === 'addressFormSenderView' ||
-      section === 'addressFormRecipientView')
+    (section === 'senderCreate' ||
+      section === 'recipientCreate')
   ) {
-    const role = section === 'addressFormSenderView' ? 'sender' : 'recipient'
+    const role = section === 'senderCreate' ? 'sender' : 'recipient'
     yield put(setAddressFormView({ show: false, role: null }))
     if (role === 'sender') {
       const sender: SenderState = yield select(selectSenderState)

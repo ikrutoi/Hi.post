@@ -43,7 +43,7 @@ const senderSlice = createSlice({
       action: PayloadAction<{ field: keyof AddressFields; value: string }>,
     ) => {
       const { field, value } = action.payload
-      if (state.currentView === 'addressFormSenderView') {
+      if (state.currentView === 'senderCreate') {
         state.formDraft[field] = value
         state.formIsComplete = isComplete(state.formDraft)
       } else {
@@ -94,7 +94,7 @@ const senderSlice = createSlice({
 
     setSenderView: (state, action: PayloadAction<SenderView>) => {
       const nextView = action.payload
-      if (nextView !== 'addressFormSenderView') {
+      if (nextView !== 'senderCreate') {
         state.formIsEmpty = isFormDraftEmpty(state.formDraft)
       }
       state.currentView = nextView
