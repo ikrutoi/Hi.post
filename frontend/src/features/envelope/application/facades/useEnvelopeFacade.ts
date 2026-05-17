@@ -227,20 +227,15 @@ export const useEnvelopeFacade = () => {
     isAddressComplete: boolean,
   ) => {
     const state = isAddressComplete ? 'enabled' : 'disabled'
-    dispatch(
-      updateToolbarIcon({
-        section,
-        key: 'listAdd',
-        value: { state },
-      }),
-    )
-    dispatch(
-      updateToolbarIcon({
-        section,
-        key: 'apply',
-        value: { state, options: {} },
-      }),
-    )
+    for (const key of ['addList', 'addressCheck'] as const) {
+      dispatch(
+        updateToolbarIcon({
+          section,
+          key,
+          value: { state },
+        }),
+      )
+    }
   }
 
   return {

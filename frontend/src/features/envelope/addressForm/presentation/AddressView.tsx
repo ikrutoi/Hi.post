@@ -266,6 +266,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       return
     }
     if (next.closest('[data-envelope-address-actions]')) return
+    if (next.closest('[data-envelope-address-edit-close]')) return
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
 
@@ -354,6 +355,29 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
   }
 
+  const handleCloseEdit = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
+  }
+
+  const editCloseButton = (
+    <button
+      type="button"
+      className={clsx(
+        styles.savedAddressActionButton,
+        styles.savedAddressCloseButton,
+      )}
+      data-envelope-address-edit-close
+      aria-label="Close edit"
+      title="Close"
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={handleCloseEdit}
+    >
+      {getToolbarIcon({ key: 'close' })}
+    </button>
+  )
+
   const handleFormDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
     dispatch(toolbarAction({ section: toolbarSection, key: 'delete' } as any))
@@ -435,11 +459,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         if (!isEditMode) return
         const target = e.target as HTMLElement
         if (target.closest('[data-address-edit-row]')) return
+        if (target.closest('[data-envelope-address-edit-close]')) return
         if (target.tagName !== 'INPUT' && target.tagName !== 'BUTTON') {
           e.preventDefault()
         }
       }}
     >
+      {editCloseButton}
       <div className={styles.recipientAddress}>
         {activeRow === 'name' ? (
           <input

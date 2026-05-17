@@ -238,6 +238,19 @@ $envelope-address-card-shell-height: 11.75rem;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
+
+  /* edit: активная строка — 96%, чтобы справа оставался зазор под кнопки карточки */
+  > .recipientAddressInput.recipientAddressInputActive {
+    width: 96%;
+    max-width: 96%;
+    align-self: flex-start;
+  }
+
+  > .cityZipRow:has(.recipientAddressInputActive) {
+    width: 96%;
+    max-width: 96%;
+    align-self: flex-start;
+  }
 }
 
 .recipientAddressName {

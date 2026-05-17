@@ -760,7 +760,7 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
-  if (key === 'listAdd') {
+  if (key === 'listAdd' || key === 'addList') {
     if (section === 'sender') {
       const senderComplete: boolean = yield select(selectIsSenderComplete)
       if (senderComplete)
