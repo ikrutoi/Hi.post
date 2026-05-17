@@ -7,13 +7,15 @@ import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { AddressBookListRow } from './AddressBookListRow'
 import type { AddressBookEntry } from '../domain/types'
 import { useSenderListPanelFacade } from '../../application/facades'
-import { selectSenderViewEditMode } from '@envelope/infrastructure/selectors'
+import {
+  selectAddressListPanelDensity,
+  selectSenderViewEditMode,
+} from '@envelope/infrastructure/selectors'
 import { useAppSelector } from '@app/hooks'
 import styles from './SenderListPanel.module.scss'
 
 type Props = {
   onSelect: (entry: AddressBookEntry) => void
-  /** Открыть SenderView в режиме редактирования (например по Enter). */
   onEdit?: (entry: AddressBookEntry) => void
   selectedId?: string | null
 }
@@ -23,13 +25,10 @@ export const SenderListPanel: React.FC<Props> = ({
   onEdit,
   selectedId = null,
 }) => {
-  const {
-    entries,
-    starredSenderIds,
-    closePanel,
-    handleDeleteEntry,
-  } = useSenderListPanelFacade()
+  const { entries, starredSenderIds, closePanel, handleDeleteEntry } =
+    useSenderListPanelFacade()
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
+  const addressListPanelDensity = useAppSelector(selectAddressListPanelDensity)
 
   const { favoriteEntries, restEntries, combinedEntries } = useMemo(() => {
     const fav = entries.filter((e) => starredSenderIds.has(e.id))
@@ -45,7 +44,9 @@ export const SenderListPanel: React.FC<Props> = ({
   const scrollbarTrackRef = useRef<HTMLDivElement>(null)
   const [scrollbarTrackReady, setScrollbarTrackReady] = useState(false)
   const setScrollbarTrackRef = useCallback((el: HTMLDivElement | null) => {
-    ;(scrollbarTrackRef as React.MutableRefObject<HTMLDivElement | null>).current = el
+    ;(
+      scrollbarTrackRef as React.MutableRefObject<HTMLDivElement | null>
+    ).current = el
     if (el) setScrollbarTrackReady(true)
   }, [])
   const selectedRowIndex = useMemo(
@@ -59,7 +60,6 @@ export const SenderListPanel: React.FC<Props> = ({
 
   useEffect(() => {
     setFocusedIndex(-1)
-    // Не перетягиваем фокус с SenderView, когда он в режиме редактирования.
     if (!senderViewEditMode) {
       listRef.current?.focus()
     }
@@ -146,12 +146,15 @@ export const SenderListPanel: React.FC<Props> = ({
       />
       <ScrollArea
         className={styles.listScrollArea}
-        scrollbarPortalTarget={scrollbarTrackReady ? scrollbarTrackRef : undefined}
+        scrollbarPortalTarget={
+          scrollbarTrackReady ? scrollbarTrackRef : undefined
+        }
       >
         <div
           ref={listRef}
           className={styles.list}
           data-address-book-list
+          data-density-level={addressListPanelDensity}
           tabIndex={0}
           role="listbox"
           aria-label="Address list"
@@ -173,6 +176,7 @@ export const SenderListPanel: React.FC<Props> = ({
                     isSelected={selectedId === entry.id}
                     isFocused={focusedIndex === index}
                     variant="sender"
+                    density={addressListPanelDensity}
                   />
                 </div>
               ))}
@@ -195,6 +199,7 @@ export const SenderListPanel: React.FC<Props> = ({
                       isSelected={selectedId === entry.id}
                       isFocused={focusedIndex === dataIndex}
                       variant="sender"
+                      density={addressListPanelDensity}
                     />
                   </div>
                 )

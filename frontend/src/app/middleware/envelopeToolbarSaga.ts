@@ -1,5 +1,14 @@
 import type { PayloadAction } from '@reduxjs/toolkit'
-import { takeLatest, takeEvery, put, select, call } from 'redux-saga/effects'
+import {
+  takeLatest,
+  takeEvery,
+  put,
+  select,
+  call,
+  fork,
+  all,
+} from 'redux-saga/effects'
+import type { SagaIterator } from 'redux-saga'
 import { toolbarAction } from '@toolbar/application/helpers'
 import {
   clearSender,
@@ -45,6 +54,8 @@ import {
   removeRecipientFromListByIndex,
   removeRecipientFromListById,
   toggleRecipientSelection,
+  cycleAddressListPanelDensity,
+  setAddressListPanelDensity,
 } from '@envelope/infrastructure/state'
 import type { RecipientViewEditModePayload } from '@envelope/infrastructure/state'
 import {
@@ -55,6 +66,7 @@ import {
   selectAddressFormViewRole,
   selectSenderViewEditMode,
   selectRecipientViewEditMode,
+  selectAddressListPanelDensity,
 } from '@envelope/infrastructure/selectors'
 import {
   selectSenderState,
@@ -86,11 +98,47 @@ import {
   updateToolbarIcon,
   updateToolbarSection,
 } from '@toolbar/infrastructure/state'
-import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
+import {
+  senderAdapter,
+  recipientAdapter,
+  storeAdapters,
+} from '@db/adapters/storeAdapters'
+import type { UiPreferencesRecord } from '@db/types/storeMap.types'
 import { getAddressListToolbarFragment } from '@envelope/domain/helpers'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
+
+const ADDRESS_LIST_UI_PREF_ID = 'addressList' as const
+
+function* hydrateAddressListPanelDensityFromDbSaga(): SagaIterator {
+  try {
+    const pref: UiPreferencesRecord | null = yield call(
+      [storeAdapters.uiPreferences, 'getById'] as const,
+      ADDRESS_LIST_UI_PREF_ID,
+    )
+    if (pref?.id !== 'addressList') return
+    const d = pref.addressListPanelDensity
+    if (d === 1 || d === 2) {
+      yield put(setAddressListPanelDensity(d))
+    }
+  } catch (e) {
+    console.error('hydrateAddressListPanelDensityFromDbSaga', e)
+  }
+}
+
+function* persistAddressListPanelDensityToDbSaga(): SagaIterator {
+  try {
+    const d: 1 | 2 = yield select(selectAddressListPanelDensity)
+    const payload = {
+      id: ADDRESS_LIST_UI_PREF_ID,
+      addressListPanelDensity: d,
+    } as const satisfies UiPreferencesRecord
+    yield call([storeAdapters.uiPreferences, 'put'] as const, payload)
+  } catch (e) {
+    console.error('persistAddressListPanelDensityToDbSaga', e)
+  }
+}
 
 function* handleSetAddressFormViewSync(
   _action: PayloadAction<{
@@ -208,6 +256,15 @@ function* handleEnvelopeToolbarAction(
   }
   if (isRecipientAddressListSection && key === 'sortDown') {
     yield put(toggleRecipientSortDirection())
+    return
+  }
+
+  if (
+    (section === 'addressListSender' || isRecipientAddressListSection) &&
+    key === 'panelDensity2'
+  ) {
+    yield put(cycleAddressListPanelDensity())
+    yield call(persistAddressListPanelDensityToDbSaga)
     return
   }
 
@@ -942,27 +999,30 @@ function* syncAddressListIconsFromActive() {
 }
 
 export function* envelopeToolbarSaga() {
-  yield takeLatest(toolbarAction.type, handleEnvelopeToolbarAction)
-  yield takeEvery(
-    [setSenderViewEditMode.type, setRecipientViewEditMode.type],
-    syncEditIconOnEditModeChange,
-  )
-  yield takeEvery(
-    removeRecipientFromListByIndex.type,
-    handleRemoveRecipientFromListByIndex,
-  )
-  yield takeEvery(
-    removeRecipientFromListById.type,
-    handleRemoveRecipientFromListById,
-  )
-  yield takeEvery(setAddressFormView.type, handleSetAddressFormViewSync)
-  yield takeEvery(addressSaveSuccess.type, handleAddressSaveSuccess)
-  yield takeEvery(
-    [setRecipientsPendingIds.type, toggleRecipientSelection.type],
-    syncRecipientsViewIdsFromPending,
-  )
-  yield takeEvery(setActiveAddressList.type, syncAddressListIconsFromActive)
-  yield takeEvery(setActiveAddressList.type, syncAddressBookModeFromActive)
-  yield takeEvery(closeAddressList.type, syncAddressListIconsFromActive)
-  yield takeEvery(closeAddressList.type, syncAddressBookModeFromActive)
+  yield all([
+    fork(hydrateAddressListPanelDensityFromDbSaga),
+    takeLatest(toolbarAction.type, handleEnvelopeToolbarAction),
+    takeEvery(
+      [setSenderViewEditMode.type, setRecipientViewEditMode.type],
+      syncEditIconOnEditModeChange,
+    ),
+    takeEvery(
+      removeRecipientFromListByIndex.type,
+      handleRemoveRecipientFromListByIndex,
+    ),
+    takeEvery(
+      removeRecipientFromListById.type,
+      handleRemoveRecipientFromListById,
+    ),
+    takeEvery(setAddressFormView.type, handleSetAddressFormViewSync),
+    takeEvery(addressSaveSuccess.type, handleAddressSaveSuccess),
+    takeEvery(
+      [setRecipientsPendingIds.type, toggleRecipientSelection.type],
+      syncRecipientsViewIdsFromPending,
+    ),
+    takeEvery(setActiveAddressList.type, syncAddressListIconsFromActive),
+    takeEvery(setActiveAddressList.type, syncAddressBookModeFromActive),
+    takeEvery(closeAddressList.type, syncAddressListIconsFromActive),
+    takeEvery(closeAddressList.type, syncAddressBookModeFromActive),
+  ])
 }

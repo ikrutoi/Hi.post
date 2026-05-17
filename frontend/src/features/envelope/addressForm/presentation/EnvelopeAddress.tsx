@@ -327,11 +327,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         <div className={styles.addressFormSenderBody}>
           <fieldset
             ref={senderFieldsetRef}
-            className={clsx(
-              styles.addressFieldset,
-              styles.addressFormSender,
-              styles.recipientFieldsetMulti,
-            )}
+            className={clsx(styles.addressFieldset, styles.addressFormSender)}
             onMouseDownCapture={handleSenderFieldsetMouseDownCapture}
           >
             <legend
@@ -404,7 +400,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               styles.addressFieldset,
               styles.addressFormRecipient,
               styles.recipientFieldsetContent,
-              styles.recipientFieldsetMulti,
+              showRecipientsEnvelopeList && styles.recipientFieldsetMulti,
               showRecipientsEnvelopeList && styles.recipientFieldsetWithList,
             )}
             onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}

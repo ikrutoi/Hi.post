@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { AddressBookMode } from '../../addressBook/domain/types'
 
 export type RecipientViewEditModePayload =
@@ -14,6 +15,8 @@ export interface EnvelopeSelectionState {
   recipientViewEditMode: boolean
   showAddressFormView: boolean
   addressFormViewRole: 'sender' | 'recipient' | null
+  /** Плотность строк в панели адресной книги (`panelDensity2`): 1 — крупнее, 2 — компактнее. */
+  addressListPanelDensity: PanelDensity2Size
 }
 
 const initialState: EnvelopeSelectionState = {
@@ -25,6 +28,7 @@ const initialState: EnvelopeSelectionState = {
   recipientViewEditMode: false,
   showAddressFormView: false,
   addressFormViewRole: null,
+  addressListPanelDensity: 1,
 }
 
 export const envelopeSelectionSlice = createSlice({
@@ -89,6 +93,18 @@ export const envelopeSelectionSlice = createSlice({
     },
 
     addressSaveSuccess() {},
+
+    cycleAddressListPanelDensity(state) {
+      state.addressListPanelDensity =
+        state.addressListPanelDensity === 1 ? 2 : 1
+    },
+
+    setAddressListPanelDensity(
+      state,
+      action: PayloadAction<PanelDensity2Size>,
+    ) {
+      state.addressListPanelDensity = action.payload
+    },
   },
 })
 
@@ -102,6 +118,8 @@ export const {
   setRecipientViewEditMode,
   setAddressFormView,
   addressSaveSuccess,
+  cycleAddressListPanelDensity,
+  setAddressListPanelDensity,
 } = envelopeSelectionSlice.actions
 
 export default envelopeSelectionSlice.reducer

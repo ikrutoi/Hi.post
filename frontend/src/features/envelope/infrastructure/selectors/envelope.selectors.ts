@@ -1,4 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit'
+import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { RootState } from '@app/state'
 import type { AddressBookEntry } from '../../addressBook/domain/types'
 import {
@@ -26,6 +27,7 @@ const selectEnvelopeSelectionState = (state: {
     recipientViewEditMode?: boolean
     showAddressFormView?: boolean
     addressFormViewRole?: 'sender' | 'recipient' | null
+    addressListPanelDensity?: PanelDensity2Size
   }
 }) => state.envelopeSelection
 
@@ -79,6 +81,11 @@ export const selectSenderListPanelOpen = createSelector(
 export const selectActiveAddressList = createSelector(
   [selectEnvelopeSelectionState],
   (s) => s.activeAddressList ?? null,
+)
+
+export const selectAddressListPanelDensity = createSelector(
+  [selectEnvelopeSelectionState],
+  (s): PanelDensity2Size => s.addressListPanelDensity ?? 1,
 )
 
 export const selectRecipientTemplateId = selectRecipientViewId

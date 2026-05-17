@@ -28,6 +28,7 @@ import {
   selectHistoryListPanelDensity,
   selectHistoryListSortDirection,
 } from '@date/calendar/infrastructure/selectors'
+import { selectAddressListPanelDensity } from '@envelope/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
   IconKey,
@@ -103,6 +104,7 @@ export const Toolbar = ({
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
   const historyListSortDirection = useAppSelector(selectHistoryListSortDirection)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
+  const addressListPanelDensity = useAppSelector(selectAddressListPanelDensity)
   const cardphotoListTemplateGridCols = useAppSelector(
     selectCardphotoListTemplateGridCols,
   )
@@ -358,6 +360,12 @@ export const Toolbar = ({
           historyPanelDensitySize:
             section === 'historyList' && key === 'historyPanelDensity'
               ? historyListPanelDensity
+              : undefined,
+          panelDensity2Size:
+            (section === 'addressListSender' ||
+              section === 'addressListRecipients') &&
+            key === 'panelDensity2'
+              ? addressListPanelDensity
               : undefined,
         })}
 

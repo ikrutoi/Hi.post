@@ -132,14 +132,10 @@
   flex-direction: column;
 
   &Sender {
-    margin-right: 0.3rem;
     flex: 1;
     min-height: 0;
   }
 
-  &Recipient {
-    margin-left: 0.3rem;
-  }
 }
 
 .envelopeSectionSender {

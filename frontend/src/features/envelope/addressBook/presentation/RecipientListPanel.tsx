@@ -8,7 +8,10 @@ import { AddressBookListRow } from './AddressBookListRow'
 import type { AddressBookEntry } from '../domain/types'
 import { useRecipientListPanelFacade } from '../../application/facades'
 import { useAppSelector } from '@app/hooks'
-import { selectRecipientViewEditMode } from '@envelope/infrastructure/selectors'
+import {
+  selectAddressListPanelDensity,
+  selectRecipientViewEditMode,
+} from '@envelope/infrastructure/selectors'
 import styles from './RecipientListPanel.module.scss'
 
 type Props = {
@@ -24,6 +27,7 @@ export const RecipientListPanel: React.FC<Props> = ({
   selectedIds = [],
 }) => {
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
+  const addressListPanelDensity = useAppSelector(selectAddressListPanelDensity)
   const {
     entries,
     starredRecipientIds,
@@ -156,6 +160,7 @@ export const RecipientListPanel: React.FC<Props> = ({
           ref={listRef}
           className={styles.list}
           data-address-book-list
+          data-density-level={addressListPanelDensity}
           tabIndex={0}
           role="listbox"
           aria-label="Address list"
@@ -176,6 +181,7 @@ export const RecipientListPanel: React.FC<Props> = ({
                     onDelete={handleDeleteEntry}
                     isSelected={selectedIds.includes(entry.id)}
                     isFocused={focusedIndex === index}
+                    density={addressListPanelDensity}
                   />
                 </div>
               ))}
@@ -197,6 +203,7 @@ export const RecipientListPanel: React.FC<Props> = ({
                       onDelete={handleDeleteEntry}
                       isSelected={selectedIds.includes(entry.id)}
                       isFocused={focusedIndex === dataIndex}
+                      density={addressListPanelDensity}
                     />
                   </div>
                 )

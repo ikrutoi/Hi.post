@@ -5,8 +5,10 @@ import { IconKey } from '@shared/config/constants'
 import {
   IconDensity,
   IconHistoryPanelDensity,
+  IconPanelDensity2,
   IconSortDirection,
   type HistoryPanelDensitySize,
+  type PanelDensity2Size,
 } from '@shared/ui/icons'
 import type { JSX } from 'react'
 
@@ -23,6 +25,7 @@ export const getToolbarIcon = ({
   sortDirection,
   listTemplateDensityCols,
   historyPanelDensitySize,
+  panelDensity2Size,
 }: {
   key: IconKey
   className?: string
@@ -34,6 +37,7 @@ export const getToolbarIcon = ({
   listTemplateDensityCols?: ListTemplateDensityCols
   /** Активная ступень плотности строк списка истории (`historyPanelDensity`). */
   historyPanelDensitySize?: HistoryPanelDensitySize
+  panelDensity2Size?: PanelDensity2Size
 }): JSX.Element => {
   const iconProps = {
     className,
@@ -63,6 +67,12 @@ export const getToolbarIcon = ({
         activeSize={historyPanelDensitySize ?? 1}
         {...iconProps}
       />
+    )
+  }
+
+  if (key === 'panelDensity2') {
+    return (
+      <IconPanelDensity2 activeSize={panelDensity2Size ?? 1} {...iconProps} />
     )
   }
 

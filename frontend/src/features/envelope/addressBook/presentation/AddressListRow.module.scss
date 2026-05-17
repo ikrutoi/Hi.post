@@ -1,8 +1,9 @@
 @use '@styles/config/colors' as *;
 
-/* Row height like HistoryListEntryShort `data-density-level='3'`; type sizes like default (largest). */
+/* Density 1 — default row; density 2 — height like HistoryListEntryShort level 3, type/icons unchanged. */
 $entry-row-height: 2.28rem;
 $entry-row-height-with-actions: 3.35rem;
+$entry-row-height-compact: 2.28rem;
 
 .root {
   position: relative;
@@ -51,6 +52,31 @@ $entry-row-height-with-actions: 3.35rem;
     min-height: $entry-row-height-with-actions;
     padding: 0.28rem 0.5rem 0.22rem;
   }
+
+  &[data-density-level='2'] {
+    min-height: $entry-row-height-compact;
+    padding: 0 0.22rem 0 0.18rem;
+
+    &[data-has-row-actions='true'] {
+      min-height: $entry-row-height-compact;
+      padding: 0 0.22rem 0 0.18rem;
+    }
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.root[data-density-level='2'] .body {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.18rem;
+  min-height: calc(#{$entry-row-height-compact} - 2px);
 }
 
 .rootSender {
@@ -166,4 +192,34 @@ $entry-row-height-with-actions: 3.35rem;
 
 .rowActionButtonDelete {
   margin-left: auto;
+}
+
+.root[data-density-level='2'] .field {
+  flex: 1 1 auto;
+  min-height: 0;
+  justify-content: center;
+  gap: 0.06rem;
+}
+
+.root[data-density-level='2'] .rowActions {
+  flex: 0 0 auto;
+  width: auto;
+  margin-top: 0;
+  margin-left: 0;
+  align-self: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.root[data-density-level='2'] .rowActionButtonDelete {
+  margin-left: 0;
+}
+
+.root[data-density-level='2'] .rowActionButton {
+  padding: 0.18rem;
+
+  svg {
+    width: 0.7rem;
+    height: 0.7rem;
+  }
 }

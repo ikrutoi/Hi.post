@@ -7,6 +7,7 @@ import type { CardphotoListTemplateGridCols } from '@cardphoto/infrastructure/st
 import type { CardPieFavoriteTemplate } from '@features/cardPie/domain/types'
 
 export type HistoryListPanelDensityPersisted = 1 | 2 | 3
+export type AddressListPanelDensityPersisted = 1 | 2
 
 /** Настройки UI в IndexedDB: по одной записи на `id`. */
 export type UiPreferencesRecord =
@@ -17,6 +18,10 @@ export type UiPreferencesRecord =
   | {
       id: 'historyList'
       historyListPanelDensity: HistoryListPanelDensityPersisted
+    }
+  | {
+      id: 'addressList'
+      addressListPanelDensity: AddressListPanelDensityPersisted
     }
 
 export interface StoreMap {
