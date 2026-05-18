@@ -143,6 +143,7 @@ export const selectSenderCardAddress = createSelector(
       const entry = entries.find((e) => e.id === displayId)
       if (entry?.address) return entry.address as AddressFields
     }
+    if (sender.appliedData) return sender.appliedData
     return sender.viewDraft
   },
 )
@@ -153,15 +154,27 @@ export const selectRecipientCardAddress = createSelector(
     selectRecipientState,
     selectRecipientEntriesState,
     selectRecipientViewId,
+    selectRecipientsListState,
   ],
-  (editSession, recipient, entries, recipientViewId): Readonly<AddressFields> => {
+  (
+    editSession,
+    recipient,
+    entries,
+    recipientViewId,
+    envelopeRecipients,
+  ): Readonly<AddressFields> => {
     if (editSession?.role === 'recipient') {
       return editSession.draft
     }
     if (recipient.currentView === 'recipientView' && recipientViewId) {
       const entry = entries.find((e) => e.id === recipientViewId)
       if (entry?.address) return entry.address as AddressFields
+      const fromEnvelope = envelopeRecipients.find(
+        (r) => r.recipientViewId === recipientViewId,
+      )
+      if (fromEnvelope?.viewDraft) return fromEnvelope.viewDraft
     }
+    if (recipient.appliedData) return recipient.appliedData
     return recipient.viewDraft
   },
 )

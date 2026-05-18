@@ -144,14 +144,18 @@ export const Toolbar = ({
     (s) =>
       senderViewTemplateId != null &&
       (s.addressBook?.senderEntries ?? []).some(
-        (e) => e.id === senderViewTemplateId,
+        (e) =>
+          e.id === senderViewTemplateId &&
+          listStatusIsInQuickAddressBook(e.listStatus),
       ),
   )
   const recipientTemplateInQuickList = useAppSelector(
     (s) =>
       recipientViewTemplateId != null &&
       (s.addressBook?.recipientEntries ?? []).some(
-        (e) => e.id === recipientViewTemplateId,
+        (e) =>
+          e.id === recipientViewTemplateId &&
+          listStatusIsInQuickAddressBook(e.listStatus),
       ),
   )
 
@@ -230,6 +234,14 @@ export const Toolbar = ({
 
     const buttonState = typeof rawData === 'string' ? rawData : rawData?.state
     let buttonStatus = buttonState ?? currentIconState
+
+    if (
+      key === 'addList' &&
+      (section === 'senderView' || section === 'recipientView') &&
+      templateInQuickList
+    ) {
+      buttonStatus = 'enabled'
+    }
 
     if (key === 'apply' && section === 'cardphoto') {
       buttonStatus = isAlreadyApplied ? 'selected' : buttonStatus

@@ -8,6 +8,7 @@ $envelope-address-card-shell-height: 11.75rem;
 
 .savedAddressViewContainer {
   position: relative;
+  z-index: 3;
   width: 100%;
   max-height: 90%;
   display: flex;
@@ -98,6 +99,7 @@ $envelope-address-card-shell-height: 11.75rem;
 
 .savedAddressViewToolbar {
   position: relative;
+  z-index: 2;
   flex-shrink: 0;
   width: 100%;
   min-height: 1.75rem;

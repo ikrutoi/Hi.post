@@ -125,6 +125,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       const target = e.target
       if (!(target instanceof Element)) return
       if (target.closest('[data-envelope-address-view-toolbar]')) {
+        if (
+          target.closest(
+            'button[data-icon-key="addList"], button[data-icon-key="removeFromList"]',
+          )
+        ) {
+          return
+        }
         dispatch(toolbarAction({ section, key: 'edit' } as any))
         return
       }
@@ -262,7 +269,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     if (next.tagName === 'INPUT') return
     if (next.closest('[data-address-edit-row]')) return
     if (next.closest('[data-envelope-address-view-toolbar]')) {
-      dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
+      if (
+        !next.closest(
+          'button[data-icon-key="addList"], button[data-icon-key="removeFromList"]',
+        )
+      ) {
+        dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
+      }
       return
     }
     if (next.closest('[data-envelope-address-actions]')) return

@@ -24,7 +24,8 @@ import {
   selectRecipientListPanelOpen,
   selectSenderListPanelOpen,
   selectActiveAddressList,
-  selectActiveAddressEdit,
+  selectSenderCardAddress,
+  selectRecipientCardAddress,
 } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
@@ -100,9 +101,6 @@ function filterInListEntries(
 export function* syncAddressViewToolbarAddList(): SagaIterator {
   const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
-  const editSession: ReturnType<typeof selectActiveAddressEdit> = yield select(
-    selectActiveAddressEdit,
-  )
 
   const senderEntries: AddressBookEntry[] = yield select(
     (s: RootState) => s.addressBook?.senderEntries ?? [],
@@ -131,10 +129,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
   }
 
   if (sender.currentView === 'senderView') {
-    const draft =
-      editSession?.role === 'sender'
-        ? (editSession.draft as AddressFields)
-        : (sender.viewDraft as AddressFields)
+    const draft: AddressFields = yield select(selectSenderCardAddress)
     yield put(
       updateToolbarIcon({
         section: 'senderView',
@@ -168,10 +163,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
   }
 
   if (recipient.currentView === 'recipientView') {
-    const draft =
-      editSession?.role === 'recipient'
-        ? (editSession.draft as AddressFields)
-        : (recipient.viewDraft as AddressFields)
+    const draft: AddressFields = yield select(selectRecipientCardAddress)
     yield put(
       updateToolbarIcon({
         section: 'recipientView',

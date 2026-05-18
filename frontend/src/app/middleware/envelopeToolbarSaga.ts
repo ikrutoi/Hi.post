@@ -72,6 +72,8 @@ import {
   selectSenderAddressListPanelDensity,
   selectRecipientAddressListPanelDensity,
   selectActiveAddressEdit,
+  selectSenderCardAddress,
+  selectRecipientCardAddress,
 } from '@envelope/infrastructure/selectors'
 import type { AddressEditSession } from '@envelope/domain/types'
 import {
@@ -373,7 +375,7 @@ function* deleteAddressTemplateFromToolbar(
 /** Снять шаблон с быстрого списка (outList в БД); адрес на конверте и в форме не трогаем. */
 function* moveAddressTemplateToOutListFromToolbar(
   section: 'senderView' | 'recipientView',
-) {
+): SagaIterator<boolean> {
   const type: 'sender' | 'recipient' =
     section === 'senderView' ? 'sender' : 'recipient'
   const templateId: string | null =
@@ -381,7 +383,7 @@ function* moveAddressTemplateToOutListFromToolbar(
       ? yield select(selectSenderViewId)
       : yield select(selectRecipientViewId)
 
-  if (templateId == null) return
+  if (templateId == null) return false
 
   try {
     const result: { success: boolean } = yield call(
@@ -390,14 +392,16 @@ function* moveAddressTemplateToOutListFromToolbar(
       templateId,
       { listStatus: 'outList' },
     )
-    if (!result.success) return
+    if (!result.success) return false
 
     yield put(removeAddressBookEntry({ id: templateId, role: type }))
     yield put(incrementAddressTemplatesReloadVersion())
     yield put(incrementAddressBookReloadVersion())
+    return true
   } catch (e) {
     // eslint-disable-next-line no-console
     console.warn('Failed to move address template to outList:', e)
+    return false
   }
 }
 
@@ -564,19 +568,25 @@ function* handleEnvelopeToolbarAction(
   ) {
     if (section === 'senderView') {
       const senderViewId: string | null = yield select(selectSenderViewId)
-      const senderEntries: { id: string }[] = yield select(
+      const senderEntries: AddressBookEntry[] = yield select(
         (s: RootState) => s.addressBook?.senderEntries ?? [],
       )
       const sender: SenderState = yield select(selectSenderState)
-      const draft =
+      const draft: AddressFields =
         sender.currentView === 'senderCreate'
-          ? sender.formDraft
-          : sender.viewDraft
+          ? (sender.formDraft as AddressFields)
+          : yield select(selectSenderCardAddress)
       if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) return
 
       if (senderViewId == null) {
         yield put(senderSaveRequested({ listStatus: 'inList' }))
-      } else if (senderEntries.some((e) => e.id === senderViewId)) {
+      } else if (
+        senderEntries.some(
+          (e) =>
+            e.id === senderViewId &&
+            listStatusIsInQuickAddressBook(e.listStatus),
+        )
+      ) {
         return
       } else {
         const result: { success: boolean } = yield call(
@@ -602,19 +612,25 @@ function* handleEnvelopeToolbarAction(
       }
     } else {
       const recipientViewId: string | null = yield select(selectRecipientViewId)
-      const recipientEntries: { id: string }[] = yield select(
+      const recipientEntries: AddressBookEntry[] = yield select(
         (s: RootState) => s.addressBook?.recipientEntries ?? [],
       )
       const recipient: RecipientState = yield select(selectRecipientState)
-      const draft =
+      const draft: AddressFields =
         recipient.currentView === 'recipientCreate'
-          ? recipient.formDraft
-          : recipient.viewDraft
+          ? (recipient.formDraft as AddressFields)
+          : yield select(selectRecipientCardAddress)
       if (!Object.values(draft).every((v) => (v ?? '').trim() !== '')) return
 
       if (recipientViewId == null) {
         yield put(recipientSaveRequested({ listStatus: 'inList' }))
-      } else if (recipientEntries.some((e) => e.id === recipientViewId)) {
+      } else if (
+        recipientEntries.some(
+          (e) =>
+            e.id === recipientViewId &&
+            listStatusIsInQuickAddressBook(e.listStatus),
+        )
+      ) {
         return
       } else {
         const result: { success: boolean } = yield call(
@@ -646,7 +662,13 @@ function* handleEnvelopeToolbarAction(
     (section === 'senderView' || section === 'recipientView') &&
     key === 'removeFromList'
   ) {
-    yield* moveAddressTemplateToOutListFromToolbar(section)
+    const moved: boolean = yield* moveAddressTemplateToOutListFromToolbar(section)
+    if (!moved) return
+    if (section === 'senderView') {
+      yield* ensureAddressListPanelOpen('sender')
+    } else {
+      yield* ensureAddressListPanelOpen('recipients')
+    }
     return
   }
 
