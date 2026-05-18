@@ -59,7 +59,9 @@
     &[data-icon-key='historyPanel'].toolbarKeyEnabled,
     &[data-icon-key='density'].toolbarKeyEnabled,
     &[data-icon-key='historyPanelDensity'].toolbarKeyEnabled,
-    &[data-icon-key='panelDensity2'].toolbarKeyEnabled {
+    &[data-icon-key='panelDensity2'].toolbarKeyEnabled,
+    &[data-icon-key='addressList'].toolbarKeyEnabled,
+    &[data-icon-key='addressAdd'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
       &:hover {
@@ -84,14 +86,75 @@
     color: $color-favorite-star;
   }
 
-  .toolbarKeyApplyEnabled,
   .toolbarKeyCropCheckEnabled {
     background-color: $color-section-light-completed;
   }
 
-  .toolbarKeyApplyEnabled:hover,
   .toolbarKeyCropCheckEnabled:hover {
     background-color: $color-section-dark-completed;
+  }
+
+  /* apply: enabled — зелёный контур, серая галочка; selected/active — всё зелёное; без фона */
+  $toolbar-apply-green: $color-indicator-hight;
+
+  [data-icon-key='apply'].toolbarKeyEnabled,
+  .toolbarKeyApplyEnabled {
+    color: $color-font-enabled-light;
+    background-color: #fff;
+    box-shadow: none;
+
+    svg [data-apply-part='check'] {
+      stroke: currentColor;
+    }
+
+    svg [data-apply-part='frame'] {
+      stroke: $toolbar-apply-green;
+    }
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+
+      svg [data-apply-part='check'] {
+        stroke: currentColor;
+      }
+
+      svg [data-apply-part='frame'] {
+        stroke: $toolbar-apply-green;
+      }
+    }
+  }
+
+  [data-icon-key='apply'].toolbarKeySelected,
+  [data-icon-key='apply'].toolbarKeyActive,
+  .toolbarKeyApplySelected,
+  .toolbarKeyApplyActive {
+    color: $toolbar-apply-green;
+    background-color: #fff;
+    box-shadow: none;
+    cursor: default;
+
+    svg [data-apply-part='frame'],
+    svg [data-apply-part='check'] {
+      stroke: currentColor;
+    }
+
+    &:hover {
+      color: $toolbar-apply-green;
+      background-color: #fff;
+    }
+  }
+
+  [data-icon-key='apply'].toolbarKeyDisabled,
+  .toolbarKeyApplyDisabled {
+    color: $color-font-disabled;
+    background-color: #fff;
+    box-shadow: none;
+
+    svg [data-apply-part='frame'],
+    svg [data-apply-part='check'] {
+      stroke: currentColor;
+    }
   }
 
   .toolbarGroup {
@@ -414,6 +477,26 @@
   }
 }
 
+.toolbarCardphoto,
+.toolbarCardphotoView,
+.toolbarCardphotoCreate,
+.toolbarCardphotoProcessed,
+.toolbarCardtext,
+.toolbarCardtextView,
+.toolbarCardtextEditor,
+.toolbarCardtextCreate,
+.toolbarCardtextProcessed {
+  [data-icon-key='apply'].toolbarKeyEnabled,
+  [data-icon-key='apply'].toolbarKeySelected,
+  [data-icon-key='apply'].toolbarKeyActive,
+  [data-icon-key='apply'].toolbarKeyDisabled,
+  [data-icon-key='apply'].toolbarKeyEnabled:hover,
+  [data-icon-key='apply'].toolbarKeySelected:hover,
+  [data-icon-key='apply'].toolbarKeyActive:hover {
+    background-color: $color-app-inner;
+  }
+}
+
 .toolbarSender,
 .toolbarRecipient,
 .toolbarRecipients,
@@ -443,14 +526,12 @@
     }
   }
 
-  .toolbarKeyApplyEnabled,
   .toolbarKeyCropCheckEnabled {
     background-color: $color-section-light-completed;
     color: $color-font-active;
     box-shadow: 0 0 0 1px $color-toggle-active;
   }
 
-  .toolbarKeyApplyEnabled:hover,
   .toolbarKeyCropCheckEnabled:hover {
     background-color: $color-section-dark-completed;
     color: $color-font-active;
@@ -505,6 +586,8 @@
   }
 }
 
+.toolbarSender,
+.toolbarRecipients,
 .toolbarSenderView,
 .toolbarRecipientView,
 .toolbarSenderCreate,
@@ -536,14 +619,6 @@
   //     height: 100%;
   //   }
   // }
-
-  .toolbarKeyApplyEnabled {
-    background-color: #fff;
-  }
-
-  .toolbarKeyApplyEnabled:hover {
-    background-color: $color-enabled;
-  }
 
   .toolbarKeyPostcardIndicator {
     width: auto;
@@ -756,7 +831,24 @@
   }
 
   /* Same hover idea as cart list keys: no $color-enabled chip, only icon color */
-  .toolbarKey.toolbarKeyEnabled {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+    }
+  }
+
+  .toolbarKey.toolbarKeyActive:hover {
+    background-color: #fff;
+  }
+}
+
+/* Envelope fieldset toolbars (sender / recipients): list-panel icon look */
+.toolbarSender,
+.toolbarRecipients {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
     color: $color-font-enabled-light;
 
     &:hover {

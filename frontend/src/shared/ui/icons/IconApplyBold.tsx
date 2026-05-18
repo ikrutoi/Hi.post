@@ -11,7 +11,10 @@ export const IconApplyBold = (props: React.SVGProps<SVGSVGElement>) => (
     strokeLinejoin="round"
     {...props}
   >
-    <path d="M422 567l218 219 582-583" />
-    <path d="M1222 640v437c0 80-65 145-145 145l-874 1c-80-1-146-66-146-146V203c0-80 66-146 146-146h655" />
+    <path data-apply-part="check" d="M422 567l218 219 582-583" />
+    <path
+      data-apply-part="frame"
+      d="M1222 640v437c0 80-65 145-145 145l-874 1c-80-1-146-66-146-146V203c0-80 66-146 146-146h655"
+    />
   </svg>
 )
