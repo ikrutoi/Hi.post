@@ -65,9 +65,14 @@ function* handleAddressSave(
     ? 'recipient'
     : 'sender'
   /** Адрес в БД всегда; `inList` — в быстром списке шаблонов, `outList` — только запись (см. Apply без id). */
-  const listStatus: ListStatus =
-    (action as { payload?: { listStatus?: ListStatus } }).payload?.listStatus ??
-    'inList'
+  const payload = (
+    action as {
+      payload?: { listStatus?: ListStatus; viewOnly?: boolean }
+    }
+  ).payload
+  const listStatus: ListStatus = payload?.listStatus ?? 'inList'
+  /** applyLight на create-форме: только вьюшка, без applied/appliedData */
+  const viewOnly = payload?.viewOnly === true
 
   try {
     const sender: SenderState = yield select(selectSenderState)
@@ -144,13 +149,14 @@ function* handleAddressSave(
         ) as [AddressField, string][]) {
           yield put(updateRecipientField({ field, value }))
         }
-        // Для одиночного режима Recipient помечаем адрес как applied с локальными данными
-        yield put(
-          setRecipientAppliedWithData({
-            ids: [id],
-            data: [cleanedAddress],
-          }),
-        )
+        if (!viewOnly) {
+          yield put(
+            setRecipientAppliedWithData({
+              ids: [id],
+              data: [cleanedAddress],
+            }),
+          )
+        }
         const pendingIds: string[] = yield select(selectRecipientsPendingIds)
         const nextPendingIds = pendingIds.includes(id)
           ? pendingIds
@@ -175,12 +181,14 @@ function* handleAddressSave(
         ) as [AddressField, string][]) {
           yield put(updateSenderField({ field, value }))
         }
-        yield put(
-          setSenderAppliedWithData({
-            ids: [id],
-            data: [cleanedAddress],
-          }),
-        )
+        if (!viewOnly) {
+          yield put(
+            setSenderAppliedWithData({
+              ids: [id],
+              data: [cleanedAddress],
+            }),
+          )
+        }
       }
       if (listStatus === 'inList') {
         const active: 'sender' | 'recipients' | null = yield select(

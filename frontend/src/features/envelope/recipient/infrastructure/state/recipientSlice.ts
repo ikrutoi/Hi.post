@@ -173,7 +173,9 @@ const recipientSlice = createSlice({
 
     saveAddressRequested: (
       _state,
-      _action: PayloadAction<{ listStatus?: ListStatus } | undefined>,
+      _action: PayloadAction<
+        { listStatus?: ListStatus; viewOnly?: boolean } | undefined
+      >,
     ) => {},
   },
 })

@@ -13,7 +13,6 @@ import type { AddressField, AddressFields } from '@/shared/config/constants'
 import {
   clearSender,
   setEnabled,
-  setSenderApplied,
   setSenderView,
   setSenderViewId,
   updateSenderField,
@@ -48,12 +47,8 @@ export const useSenderFacade = () => {
           dispatch(updateSenderField({ field, value })),
       )
       dispatch(setSenderView('senderView'))
-      const appliedId = state.applied?.[0]
-      if (appliedId != null && appliedId !== entry.id) {
-        dispatch(setSenderApplied(false))
-      }
     },
-    [dispatch, state.applied],
+    [dispatch],
   )
 
   const update = useCallback(

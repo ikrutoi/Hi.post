@@ -138,9 +138,14 @@ export const selectSenderCardAddress = createSelector(
     if (editSession?.role === 'sender') {
       return editSession.draft
     }
-    const displayId = senderViewId ?? sender.applied?.[0] ?? null
-    if (displayId) {
-      const entry = entries.find((e) => e.id === displayId)
+    if (senderViewId) {
+      const entry = entries.find((e) => e.id === senderViewId)
+      if (entry?.address) return entry.address as AddressFields
+      return sender.viewDraft
+    }
+    const appliedId = sender.applied?.[0] ?? null
+    if (appliedId) {
+      const entry = entries.find((e) => e.id === appliedId)
       if (entry?.address) return entry.address as AddressFields
     }
     if (sender.appliedData) return sender.appliedData

@@ -37,7 +37,6 @@ import {
   setEnabled,
   clearSender,
   setSenderView,
-  setSenderApplied,
 } from '../../sender/infrastructure/state'
 import {
   toggleRecipientSelection,
@@ -196,10 +195,6 @@ export const useEnvelopeFacade = () => {
       ([field, value]) => dispatch(updateSenderField({ field, value })),
     )
     dispatch(setSenderView('senderView'))
-    const appliedId = sender.applied?.[0]
-    if (appliedId != null && appliedId !== entry.id) {
-      dispatch(setSenderApplied(false))
-    }
     dispatch(closeAddressList())
   }
 

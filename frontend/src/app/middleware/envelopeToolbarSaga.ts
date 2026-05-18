@@ -783,14 +783,18 @@ function* handleEnvelopeToolbarAction(
     if (section === 'senderCreate') {
       const senderComplete: boolean = yield select(selectIsSenderComplete)
       if (senderComplete) {
-        yield put(senderSaveRequested({ listStatus: 'outList' }))
+        yield put(
+          senderSaveRequested({ listStatus: 'outList', viewOnly: true }),
+        )
       }
       return
     }
     if (section === 'recipientCreate') {
       const recipientComplete: boolean = yield select(selectIsRecipientComplete)
       if (recipientComplete) {
-        yield put(recipientSaveRequested({ listStatus: 'outList' }))
+        yield put(
+          recipientSaveRequested({ listStatus: 'outList', viewOnly: true }),
+        )
       }
       return
     }
