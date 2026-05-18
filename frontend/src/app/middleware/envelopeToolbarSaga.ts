@@ -1034,6 +1034,9 @@ function* syncRecipientsViewIdsFromPending() {
   } else if (pendingIds.length > 1) {
     yield put(setRecipientViewId(null))
     yield put(setRecipientView('recipientsView'))
+  } else {
+    yield put(setRecipientViewId(null))
+    yield put(setRecipientView('recipientsView'))
   }
 }
 

@@ -19,15 +19,20 @@ import {
   closeAddressEditSession,
   removeRecipientAt,
   setAddressFormView,
+  setRecipientsPendingIds,
   updateAddressEditDraftField,
 } from '@envelope/infrastructure/state'
+import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
 import {
+  clearRecipientViewDraft,
   removeRecipientFromListById,
   removeRecipientFromListByIndex,
   setRecipientApplied,
   setRecipientAppliedIds,
   setRecipientView,
   setRecipientViewId,
+  setRecipientsViewIds,
+  setRecipientsViewIdsSecondList,
   updateRecipientField,
 } from '@envelope/recipient/infrastructure/state'
 import {
@@ -79,6 +84,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const dispatch = useAppDispatch()
   const recipientState = useAppSelector(selectRecipientState)
   const recipientAppliedIds = useAppSelector(selectRecipientApplied)
+  const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
   const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
@@ -314,10 +320,15 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         ).forEach(([field, value]) =>
           dispatch(updateSenderField({ field, value })),
         )
-      } else {
-        dispatch(setSenderViewId(null))
-        dispatch(clearSenderViewDraft())
+        dispatch(setSenderView('senderView'))
+        dispatch(setAddressFormView({ show: false, role: null }))
+        return
       }
+
+      // Закрытие карточки applied: снять с конверта и показать плейсхолдер.
+      dispatch(setSenderApplied(false))
+      dispatch(setSenderViewId(null))
+      dispatch(clearSenderViewDraft())
       dispatch(setSenderView('senderView'))
       dispatch(setAddressFormView({ show: false, role: null }))
       return
@@ -332,15 +343,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const removeRecipientFromForm = () => {
     if (!templateId) return
 
-    if (templateId.startsWith('recipient-')) {
-      const index = parseInt(templateId.replace('recipient-', ''), 10)
-      if (!Number.isNaN(index)) {
-        dispatch(removeRecipientFromListByIndex(index))
-        dispatch(removeRecipientAt(index))
-      }
-    } else {
-      dispatch(removeRecipientFromListById(templateId))
-    }
+    dispatch(closeAddressEditSession({ role: 'recipient' }))
 
     const nextApplied = (recipientState.applied ?? []).filter(
       (id) => id !== templateId,
@@ -349,6 +352,40 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       dispatch(setRecipientApplied(false))
     } else {
       dispatch(setRecipientAppliedIds(nextApplied))
+    }
+
+    // Сразу закрываем карточку и показываем плейсхолдер (сага догонит списки).
+    dispatch(setRecipientViewId(null))
+    dispatch(clearRecipientViewDraft())
+    dispatch(setRecipientView('recipientsView'))
+    dispatch(setAddressFormView({ show: false, role: null }))
+
+    const firstList = recipientState.recipientsViewIdsFirstList ?? []
+    dispatch(
+      setRecipientsViewIds(firstList.filter((id) => id !== templateId)),
+    )
+    if (recipientState.currentRecipientsList === 'second') {
+      const secondList = recipientState.recipientsViewIdsSecondList ?? []
+      dispatch(
+        setRecipientsViewIdsSecondList(
+          secondList.filter((id) => id !== templateId),
+        ),
+      )
+    }
+    dispatch(
+      setRecipientsPendingIds(
+        recipientsPendingIds.filter((id) => id !== templateId),
+      ),
+    )
+
+    if (templateId.startsWith('recipient-')) {
+      const index = parseInt(templateId.replace('recipient-', ''), 10)
+      if (!Number.isNaN(index)) {
+        dispatch(removeRecipientFromListByIndex(index))
+        dispatch(removeRecipientAt(index))
+      }
+    } else {
+      dispatch(removeRecipientFromListById(templateId))
     }
   }
 

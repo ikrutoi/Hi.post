@@ -157,6 +157,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   useEffect(() => {
     if (role !== 'recipient') return
     if (recipientView === 'recipientCreate') return
+    // После Close (recipientsView) не открываем карточку снова, даже если в списке 1 id.
+    if (recipientView === 'recipientsView') return
 
     if (recipientsDisplayList.length === 1) {
       const entry = recipientsDisplayList[0]
