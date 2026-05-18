@@ -253,7 +253,7 @@ export const useEnvelopeFacade = () => {
       draft,
       inList,
     )
-    const addressCheckState = isAddressComplete ? 'enabled' : 'disabled'
+    const applyLightState = isAddressComplete ? 'enabled' : 'disabled'
     dispatch(
       updateToolbarIcon({
         section,
@@ -264,8 +264,8 @@ export const useEnvelopeFacade = () => {
     dispatch(
       updateToolbarIcon({
         section,
-        key: 'addressCheck',
-        value: { state: addressCheckState },
+        key: 'applyLight',
+        value: { state: applyLightState },
       }),
     )
   }

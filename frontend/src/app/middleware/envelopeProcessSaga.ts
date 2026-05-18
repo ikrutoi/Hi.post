@@ -113,17 +113,25 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
 
   if (sender.currentView === 'senderCreate') {
     const draft = sender.formDraft as AddressFields
+    const senderDraftComplete = isAddressDraftComplete(draft)
     yield put(
       updateToolbarIcon({
         section: 'senderCreate',
         key: 'addList',
         value: {
           state: resolveAddListToolbarState(
-            isAddressDraftComplete(draft),
+            senderDraftComplete,
             draft,
             senderInList,
           ),
         },
+      }),
+    )
+    yield put(
+      updateToolbarIcon({
+        section: 'senderCreate',
+        key: 'applyLight',
+        value: { state: senderDraftComplete ? 'enabled' : 'disabled' },
       }),
     )
   }
@@ -147,17 +155,25 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
 
   if (recipient.currentView === 'recipientCreate') {
     const draft = recipient.formDraft as AddressFields
+    const recipientDraftComplete = isAddressDraftComplete(draft)
     yield put(
       updateToolbarIcon({
         section: 'recipientCreate',
         key: 'addList',
         value: {
           state: resolveAddListToolbarState(
-            isAddressDraftComplete(draft),
+            recipientDraftComplete,
             draft,
             recipientInList,
           ),
         },
+      }),
+    )
+    yield put(
+      updateToolbarIcon({
+        section: 'recipientCreate',
+        key: 'applyLight',
+        value: { state: recipientDraftComplete ? 'enabled' : 'disabled' },
       }),
     )
   }

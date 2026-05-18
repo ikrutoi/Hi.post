@@ -529,6 +529,69 @@
   }
 }
 
+/* cardphoto / cardtext (основные секции): hover — затемнение иконки, без подложки */
+.toolbarCardphoto,
+.toolbarCardtext {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: $color-app-inner;
+    }
+  }
+
+  .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
+    &:hover {
+      background-color: $color-app-inner;
+    }
+  }
+}
+
+/* cardphoto / cardtext (view, create, processed): фон кнопок #fff */
+.toolbarCardphotoView,
+.toolbarCardphotoCreate,
+.toolbarCardphotoProcessed,
+.toolbarCardtextView,
+.toolbarCardtextEditor,
+.toolbarCardtextCreate,
+.toolbarCardtextProcessed {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
+      [data-icon-key='cropCheck']
+    ) {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+    }
+  }
+
+  .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}
+
+.toolbarCardphotoList,
+.toolbarCardtextList {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+    }
+  }
+
+  .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}
+
 .toolbarSender,
 .toolbarRecipient,
 .toolbarRecipients,

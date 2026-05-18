@@ -779,6 +779,23 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
+  if (key === 'applyLight') {
+    if (section === 'senderCreate') {
+      const senderComplete: boolean = yield select(selectIsSenderComplete)
+      if (senderComplete) {
+        yield put(senderSaveRequested({ listStatus: 'outList' }))
+      }
+      return
+    }
+    if (section === 'recipientCreate') {
+      const recipientComplete: boolean = yield select(selectIsRecipientComplete)
+      if (recipientComplete) {
+        yield put(recipientSaveRequested({ listStatus: 'outList' }))
+      }
+      return
+    }
+  }
+
   if (key === 'apply') {
     if (section === 'sender') {
       const senderViewId: string | null = yield select(selectSenderViewId)
