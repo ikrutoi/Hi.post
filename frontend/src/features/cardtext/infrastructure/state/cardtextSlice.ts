@@ -114,10 +114,6 @@ export const cardtextSlice = createSlice({
       state.assetData.status = action.payload
     },
 
-    setFavorite(state, action: PayloadAction<boolean | null>) {
-      ensureAsset(state).favorite = action.payload
-    },
-
     clearText(state) {
       state.assetData = null
       state.appliedData = null
@@ -338,17 +334,6 @@ export const cardtextSlice = createSlice({
       // after a transient load error.
     },
 
-    updateCardtextTemplateFavoriteInList(
-      state,
-      action: PayloadAction<{ id: string; favorite: boolean }>,
-    ) {
-      const { id, favorite } = action.payload
-      if (!Array.isArray(state.templatesList)) return
-      const idx = state.templatesList.findIndex((t) => t.id === id)
-      if (idx !== -1)
-        state.templatesList[idx] = { ...state.templatesList[idx], favorite }
-    },
-
     updateCardtextTemplateTitleInList(
       state,
       action: PayloadAction<{ id: string; title: string }>,
@@ -406,7 +391,6 @@ export const {
   setFontSizeStep,
   setTitle,
   setStatus,
-  setFavorite,
   clearText,
   resetCardtextAssetToEmptyDraft,
   setCardtextId,
@@ -425,7 +409,6 @@ export const {
   loadCardtextTemplatesRequest,
   loadCardtextTemplatesSuccess,
   loadCardtextTemplatesFailure,
-  updateCardtextTemplateFavoriteInList,
   updateCardtextTemplateTitleInList,
   updateCardtextContentInList,
   setDraftFocus,

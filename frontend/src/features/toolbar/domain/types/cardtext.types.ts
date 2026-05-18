@@ -15,7 +15,6 @@ export const CARDTEXT_KEYS = [
   'close',
   'save',
   'listAdd',
-  'favorite',
   'listCardtext',
   'cardtextAdd',
   'empty',
@@ -100,7 +99,6 @@ export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
     group: 'font',
     icons: [
       { key: 'edit', state: 'enabled' },
-      { key: 'favorite', state: 'enabled' },
       { key: 'delete', state: 'enabled' },
     ],
     status: 'enabled',

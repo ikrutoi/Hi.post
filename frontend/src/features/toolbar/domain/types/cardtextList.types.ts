@@ -7,6 +7,7 @@ export const CARDTEXT_LIST_KEYS = [
   'listDelete',
   // 'listApply',
   'sortDown',
+  'panelDensity2',
 ] as const satisfies readonly IconKey[]
 
 export type CardtextListKey = (typeof CARDTEXT_LIST_KEYS)[number]
@@ -19,7 +20,10 @@ export interface CardtextListToolbarState extends Record<string, any> {
 export const CARDTEXT_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'cardtext',
-    icons: [{ key: 'sortDown', state: 'enabled' }],
+    icons: [
+      { key: 'panelDensity2', state: 'enabled' },
+      { key: 'sortDown', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {

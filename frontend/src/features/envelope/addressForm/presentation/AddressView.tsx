@@ -36,8 +36,14 @@ import {
   selectRecipientsDisplayList,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
+  selectSenderApplied,
+  selectAppliedSenderDisplayAddress,
+} from '@envelope/sender/infrastructure/selectors'
+import {
   clearSender,
+  clearSenderViewDraft,
   setSenderApplied,
+  setSenderView,
   setSenderViewId,
   updateSenderField,
 } from '@envelope/sender/infrastructure/state'
@@ -76,6 +82,8 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
+  const senderAppliedIds = useAppSelector(selectSenderApplied)
+  const appliedSenderAddress = useAppSelector(selectAppliedSenderDisplayAddress)
   const isEditMode =
     role === 'sender' ? senderViewEditMode : recipientViewEditMode
 
@@ -293,6 +301,28 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   const removeSenderFromForm = () => {
     dispatch(closeAddressEditSession({ role: 'sender' }))
+    const appliedId = senderAppliedIds[0] ?? null
+
+    if (appliedId) {
+      if (templateId !== appliedId) {
+        dispatch(setSenderViewId(appliedId))
+        ;(
+          Object.entries(appliedSenderAddress) as [
+            keyof AddressFields,
+            string,
+          ][]
+        ).forEach(([field, value]) =>
+          dispatch(updateSenderField({ field, value })),
+        )
+      } else {
+        dispatch(setSenderViewId(null))
+        dispatch(clearSenderViewDraft())
+      }
+      dispatch(setSenderView('senderView'))
+      dispatch(setAddressFormView({ show: false, role: null }))
+      return
+    }
+
     dispatch(setSenderViewId(null))
     dispatch(setSenderApplied(false))
     dispatch(clearSender())

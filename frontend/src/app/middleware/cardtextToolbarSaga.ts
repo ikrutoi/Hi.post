@@ -3,9 +3,7 @@ import { call, put, select } from 'redux-saga/effects'
 import { toolbarAction } from '@toolbar/application/helpers'
 import {
   setStatus,
-  setFavorite,
   loadCardtextTemplatesRequest,
-  updateCardtextTemplateFavoriteInList,
   updateCardtextContentInList,
 } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
@@ -27,7 +25,6 @@ import {
   selectCardtextValue,
   selectCardtextStyle,
   selectCardtextId,
-  selectCardtextFavorite,
   selectCardtextPlainText,
   selectCardtextLines,
   selectCardtextInteractionMode,
@@ -253,29 +250,6 @@ export function* handleCardtextToolbarAction(
 
         yield put(setStatus('processed'))
         yield put(setCardtextViewEditMode(false))
-      }
-      break
-
-    case 'favorite':
-      if (interactionMode === 'postcardTemplateView') {
-        const templateId: string | null = yield select(selectCardtextId)
-        if (!templateId) break
-        const favorite: boolean = yield select(selectCardtextFavorite)
-        const next = !favorite
-        const result = yield call(
-          templateService.updateCardtextTemplate,
-          templateId,
-          { favorite: next },
-        )
-        if (result?.success) {
-          yield put(setFavorite(next))
-          yield put(
-            updateCardtextTemplateFavoriteInList({
-              id: templateId,
-              favorite: next,
-            }),
-          )
-        }
       }
       break
 

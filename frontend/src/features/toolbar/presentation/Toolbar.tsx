@@ -26,7 +26,6 @@ import {
   selectCardtextAssetMatchesApplied,
   selectCardtextIsComplete,
   selectCardtextPlainText,
-  selectCardtextFavorite,
   selectCardtextListSortDirection,
 } from '@cardtext/infrastructure/selectors'
 import {
@@ -85,7 +84,6 @@ export const Toolbar = ({
     selectCardtextAssetMatchesApplied,
   )
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
-  const cardtextFavorite = useAppSelector(selectCardtextFavorite)
   const cardphotoActiveImage = useAppSelector(selectActiveImage)
   const cardphotoFavorite = cardphotoActiveImage?.favorite === true
   const isCardtextCurrentTemplateApplied = cardtextAssetMatchesApplied
@@ -263,9 +261,6 @@ export const Toolbar = ({
       } else {
         buttonStatus = 'enabled'
       }
-    }
-    if (section === 'cardtextView' && key === 'favorite' && cardtextFavorite) {
-      buttonStatus = 'active'
     }
     if (
       section === 'cardphotoView' &&

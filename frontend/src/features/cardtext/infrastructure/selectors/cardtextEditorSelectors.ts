@@ -146,17 +146,6 @@ export const selectCardtextTitle = (state: RootState): string => {
   return branch?.title ?? ''
 }
 
-export const selectCardtextFavorite = (state: RootState): boolean => {
-  const { assetData, templatesList } = state.cardtext
-  const id = assetData?.id ?? null
-  const favorite = assetData?.favorite ?? null
-  if (id != null && Array.isArray(templatesList)) {
-    const entry = templatesList.find((t: CardtextContent) => t.id === id)
-    if (entry != null) return entry.favorite === true
-  }
-  return favorite === true
-}
-
 export const selectCardtextId = (state: RootState): string | null =>
   state.cardtext.assetData?.id ?? null
 

@@ -4,6 +4,9 @@ import { IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
+import { toolbarAction } from '@toolbar/application/helpers'
+import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
+import { removeCardtextTemplateId } from '@features/previewStrip/infrastructure/state'
 import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
@@ -11,11 +14,10 @@ import {
   selectCardtextListSortDirection,
 } from '@cardtext/infrastructure/selectors'
 import {
-  setFavorite,
   loadCardtextTemplatesRequest,
-  updateCardtextTemplateFavoriteInList,
+  resetCardtextAssetToEmptyDraft,
+  setCardtextId,
 } from '@cardtext/infrastructure/state'
-import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import type { CardtextContent } from '@cardtext/domain/types'
 import { CardtextListEntry } from './CardtextListEntry'
 import clsx from 'clsx'
@@ -40,23 +42,18 @@ function sortTemplatesByTitle(
 
 export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const dispatch = useAppDispatch()
+  const { deleteCardtextTemplate } = useTemplateActions()
   const items = useAppSelector(selectCardtextTemplatesListItems)
   const sortDirection = useAppSelector(selectCardtextListSortDirection)
-  const { favoriteTemplates, restTemplates, combinedTemplates } = useMemo(() => {
-    const list = items ?? []
-    const favorite = list.filter((e) => e.favorite === true)
-    const rest = list.filter((e) => e.favorite !== true)
-    const favoriteSorted = sortTemplatesByTitle(favorite, sortDirection)
-    const restSorted = sortTemplatesByTitle(rest, sortDirection)
-    return {
-      favoriteTemplates: favoriteSorted,
-      restTemplates: restSorted,
-      combinedTemplates: [...favoriteSorted, ...restSorted],
-    }
-  }, [items, sortDirection])
+  const sortedTemplates = useMemo(
+    () => sortTemplatesByTitle(items ?? [], sortDirection),
+    [items, sortDirection],
+  )
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
-  const { updateCardtextTemplate } = useTemplateActions()
   const selectedTemplateId = useAppSelector(selectCardtextId)
+  const isCardtextViewEditMode = useAppSelector(
+    (state) => state.cardtext.isCardtextViewEditMode === true,
+  )
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const handleSelect = useCallback(
@@ -67,25 +64,38 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
     [onSelect],
   )
 
-  const handleToggleStar = useCallback(
-    async (entry: CardtextContent) => {
-      if (entry.id == null) return
-      const next = entry.favorite === true ? false : true
-      await updateCardtextTemplate(entry.id, { favorite: next })
-      dispatch(updateCardtextTemplateFavoriteInList({ id: entry.id, favorite: next }))
-      if (selectedTemplateId === entry.id) {
-        dispatch(setFavorite(next))
-      }
+  const handleEdit = useCallback(
+    (entry: CardtextContent) => {
+      handleSelect(entry)
+      dispatch(toolbarAction({ section: 'cardtextView', key: 'edit' }))
     },
-    [updateCardtextTemplate, selectedTemplateId, dispatch],
+    [dispatch, handleSelect],
   )
 
-  const hasRows = combinedTemplates.length > 0
+  const handleDelete = useCallback(
+    async (id: string) => {
+      const result = await deleteCardtextTemplate(id)
+      if (!result.success) return
+      dispatch(removeCardtextTemplateId(id))
+      dispatch(loadCardtextTemplatesRequest())
+      if (selectedId === id) setSelectedId(null)
+      if (selectedTemplateId === id) {
+        dispatch(resetCardtextAssetToEmptyDraft())
+        dispatch(setCardtextId(null))
+      }
+    },
+    [
+      deleteCardtextTemplate,
+      dispatch,
+      selectedId,
+      selectedTemplateId,
+    ],
+  )
+
+  const hasRows = sortedTemplates.length > 0
 
   return (
-    <div
-      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
-    >
+    <div className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}>
       <ListPanelStackedHeader
         leadIconKey="listCardtext"
         toolbar={hasRows ? <Toolbar section="cardtextList" /> : false}
@@ -100,43 +110,28 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
           tabIndex={0}
           aria-label="Cardtext templates list"
         >
-          {!isLoading && combinedTemplates.length === 0 && (
+          {!isLoading && sortedTemplates.length === 0 && (
             <div className={styles.listEmpty} aria-hidden>
               <IconListCardtext className={styles.listEmptyIcon} />
             </div>
           )}
           {!isLoading &&
-            combinedTemplates.length > 0 && (
-              <>
-                {favoriteTemplates.map((entry) => (
-                  <CardtextListEntry
-                    key={entry.id}
-                    entry={entry}
-                    onSelect={handleSelect}
-                    isStarred
-                    onToggleStar={() => handleToggleStar(entry)}
-                    isSelected={selectedId === entry.id}
-                  />
-                ))}
-                {favoriteTemplates.length > 0 && (
-                  <div
-                    className={styles.favoritesSeparator}
-                    data-favorites-group-end
-                    aria-hidden
-                  />
-                )}
-                {restTemplates.map((entry) => (
-                  <CardtextListEntry
-                    key={entry.id}
-                    entry={entry}
-                    onSelect={handleSelect}
-                    isStarred={false}
-                    onToggleStar={() => handleToggleStar(entry)}
-                    isSelected={selectedId === entry.id}
-                  />
-                ))}
-              </>
-            )}
+            sortedTemplates.map((entry) => (
+              <div key={entry.id} role="option">
+                <CardtextListEntry
+                  entry={entry}
+                  onSelect={handleSelect}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  isSelected={
+                    selectedId === entry.id || selectedTemplateId === entry.id
+                  }
+                  isEditActive={
+                    isCardtextViewEditMode && selectedTemplateId === entry.id
+                  }
+                />
+              </div>
+            ))}
         </div>
       </ScrollArea>
     </div>
