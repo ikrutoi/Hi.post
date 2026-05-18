@@ -40,6 +40,18 @@
       cursor: pointer;
     }
 
+    /* Закрытие списков шаблонов: только затемнение иконки, без фона при hover */
+    &[data-icon-key='listDelete'].toolbarKeyEnabled,
+    &[data-icon-key='listClose'].toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: white;
+        cursor: pointer;
+      }
+    }
+
     &Active {
       color: $color-font-active;
     }
@@ -53,7 +65,6 @@
       background-color: $color-enabled;
     }
 
-    &[data-icon-key='listDelete'].toolbarKeyEnabled,
     &[data-icon-key='addCartList'].toolbarKeyEnabled,
     &[data-icon-key='sortDown'].toolbarKeyEnabled,
     &[data-icon-key='historyPanel'].toolbarKeyEnabled,
@@ -471,8 +482,14 @@
 .toolbarSenderCreate,
 .toolbarRecipientCreate,
 .toolbarAddressListSender,
-.toolbarAddressListRecipient {
+.toolbarAddressListRecipient,
+.toolbarAddressListRecipients {
   .toolbarKey {
+    background-color: #fff;
+  }
+
+  .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
+  .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
     background-color: #fff;
   }
 }
@@ -483,6 +500,11 @@
 .toolbarHistory,
 .toolbarCart {
   .toolbarKey {
+    background-color: $color-app-inner;
+  }
+
+  .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
+  .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
     background-color: $color-app-inner;
   }
 }
@@ -616,6 +638,17 @@
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
+  }
+
+  .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+      cursor: pointer;
+    }
   }
 
   // .toolbarKeyHistoryPanel {

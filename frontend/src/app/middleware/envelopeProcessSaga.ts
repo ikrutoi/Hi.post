@@ -302,11 +302,17 @@ export function* processEnvelopeVisuals() {
   const isSenderEmptyForm =
     sender.currentView === 'senderView' && sender.senderViewId == null
 
-  const senderAlreadyApplied =
+  const senderAppliedIds = sender.applied ?? []
+  const senderHasApplied = senderAppliedIds.length > 0
+  const senderViewMatchesApplied =
     sender.currentView === 'senderView' &&
     sender.senderViewId != null &&
-    (sender.applied?.length ?? 0) === 1 &&
-    sender.applied[0] === sender.senderViewId
+    senderAppliedIds.length === 1 &&
+    senderAppliedIds[0] === sender.senderViewId
+  /** Не сбрасывать apply при открытии формы addressAdd (senderCreate). */
+  const senderAlreadyApplied =
+    senderViewMatchesApplied ||
+    (sender.currentView === 'senderCreate' && senderHasApplied)
 
   let senderApplyState = senderAlreadyApplied
     ? 'selected'
@@ -320,7 +326,8 @@ export function* processEnvelopeVisuals() {
 
   if (
     sender.currentView === 'senderCreate' &&
-    !senderComplete
+    !senderComplete &&
+    !senderHasApplied
   )
     senderApplyState = 'disabled'
 
@@ -344,20 +351,26 @@ export function* processEnvelopeVisuals() {
       ? (recipient.recipientsViewIdsSecondList ?? [])
       : (recipient.recipientsViewIdsFirstList ?? [])
   const appliedIds = recipient.applied ?? []
+  const recipientHasApplied = appliedIds.length > 0
   const recipientsViewIdsEqual =
     appliedIds.length === recipientsViewIds.length &&
     appliedIds.length > 0 &&
     appliedIds.every((id) => recipientsViewIds.includes(id)) &&
     recipientsViewIds.every((id) => appliedIds.includes(id))
+  const recipientAlreadyApplied =
+    recipientsViewIdsEqual ||
+    (recipient.currentView === 'recipientCreate' && recipientHasApplied)
   let recipientsApplyState =
-    isRecipientsEmptyForm || !canApplyRecipients
+    (!canApplyRecipients && !recipientHasApplied) ||
+    (isRecipientsEmptyForm && !recipientHasApplied)
       ? 'disabled'
-      : recipientsViewIdsEqual
+      : recipientAlreadyApplied
         ? 'selected'
         : 'enabled'
   if (
     recipient.currentView === 'recipientCreate' &&
-    !recipientComplete
+    !recipientComplete &&
+    !recipientHasApplied
   ) {
     recipientsApplyState = 'disabled'
   }
