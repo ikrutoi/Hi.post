@@ -94,8 +94,10 @@
     background-color: $color-section-dark-completed;
   }
 
-  /* apply: enabled — зелёный контур, серая галочка; selected/active — всё зелёное; без фона */
+  /* apply: enabled — зелёный контур, серая галочка; selected/active — всё зелёное + лёгкое свечение */
   $toolbar-apply-green: $color-indicator-hight;
+  $toolbar-apply-icon-glow: drop-shadow(0 0 5px rgba($toolbar-apply-green, 0.68))
+    drop-shadow(0 0 12px rgba($toolbar-apply-green, 0.45));
 
   [data-icon-key='apply'].toolbarKeyEnabled,
   .toolbarKeyApplyEnabled {
@@ -134,6 +136,10 @@
     box-shadow: none;
     cursor: default;
 
+    svg {
+      filter: $toolbar-apply-icon-glow;
+    }
+
     svg [data-apply-part='frame'],
     svg [data-apply-part='check'] {
       stroke: currentColor;
@@ -142,6 +148,10 @@
     &:hover {
       color: $toolbar-apply-green;
       background-color: #fff;
+
+      svg {
+        filter: $toolbar-apply-icon-glow;
+      }
     }
   }
 
