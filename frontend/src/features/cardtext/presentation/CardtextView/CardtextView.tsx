@@ -7,6 +7,7 @@ import type { CardtextValue, CardtextStyle } from '../../domain/types'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
 import { IconX } from '@shared/ui/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './CardtextView.module.scss'
 
 const COLOR_CLASS_MAP: Record<string, keyof typeof styles> = {
@@ -24,6 +25,8 @@ type Props = {
   titleStripEditing?: boolean
   /** Same control as CardEditor close — e.g. switch to draft editor */
   onClose?: () => void
+  onEdit?: () => void
+  onDelete?: () => void
 }
 
 export const CardtextView: React.FC<Props> = ({
@@ -32,6 +35,8 @@ export const CardtextView: React.FC<Props> = ({
   contentKey,
   titleStripEditing,
   onClose,
+  onEdit,
+  onDelete,
 }) => {
   const slateKey =
     contentKey ??
@@ -86,6 +91,41 @@ export const CardtextView: React.FC<Props> = ({
           />
         </Slate>
       </div>
+      {onEdit || onDelete ? (
+        <div
+          className={styles.viewActions}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {onEdit ? (
+            <button
+              type="button"
+              className={styles.viewActionButton}
+              aria-label="Edit text"
+              title="Edit text"
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit()
+              }}
+            >
+              {getToolbarIcon({ key: 'edit' })}
+            </button>
+          ) : null}
+          {onDelete ? (
+            <button
+              type="button"
+              className={styles.viewActionButton}
+              aria-label="Delete text"
+              title="Delete text"
+              onClick={(e) => {
+                e.stopPropagation()
+                onDelete()
+              }}
+            >
+              {getToolbarIcon({ key: 'delete' })}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }

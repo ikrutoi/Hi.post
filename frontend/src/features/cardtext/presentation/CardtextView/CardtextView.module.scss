@@ -1,5 +1,4 @@
 @use '@styles/config/colors' as *;
-@use '@styles/mixins/panelCloseButton' as *;
 
 .viewContainer {
   position: relative;
@@ -11,7 +10,7 @@
   width: 100%;
   height: 100%;
   // margin-top: 1rem;
-  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+  padding: 0.5rem 0.5rem 2.15rem 0.5rem;
   box-sizing: border-box;
   overflow: visible;
   user-select: none;
@@ -38,17 +37,71 @@
 }
 
 .viewCloseBtn {
-  @include panel-close-button;
   position: absolute;
-  top: -0.65rem;
-  right: 1rem;
+  top: 0.35rem;
+  right: 0.5rem;
   z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.22rem;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: $color-font-disabled;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  svg {
+    width: 0.92rem;
+    height: 0.92rem;
+    display: block;
+  }
+}
+
+.viewActions {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.35rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.viewActionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.22rem;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: $color-font-disabled;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  svg {
+    width: 0.92rem;
+    height: 0.92rem;
+    display: block;
+  }
 }
 
 .viewTitle {
   position: absolute;
   top: -1rem;
-  right: 3rem;
+  right: 0.5rem;
   // right: 40%;
   transform: translateY(-50%);
   // transform: translateX(50%) translateY(-50%);
@@ -56,7 +109,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0.15rem 0.5rem;
+  padding: 0.15rem 0 0.15rem 0.5rem;
   margin: 0;
   max-width: 60%;
   font-size: 0.8rem;
@@ -96,7 +149,7 @@
 }
 
 .viewTitleEditing {
-  width: 60%;
+  width: 50%;
   color: $color-font-active;
   // background-color: $color-cardtext-input;
   cursor: text;

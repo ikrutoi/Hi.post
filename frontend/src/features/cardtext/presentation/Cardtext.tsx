@@ -184,6 +184,14 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     dispatch(resetCardtextAssetToEmptyDraft())
   }, [dispatch, state.assetData?.id, state.assetData?.status, state.presetData])
 
+  const handleViewEdit = useCallback(() => {
+    dispatch(toolbarAction({ section: 'cardtextView', key: 'edit' }))
+  }, [dispatch])
+
+  const handleViewDelete = useCallback(() => {
+    dispatch(toolbarAction({ section: 'cardtextView', key: 'delete' }))
+  }, [dispatch])
+
   const {
     titleInputRef,
     titleStripRef,
@@ -225,6 +233,8 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   })
 
   const showCardtextToolbarRow = !hideEmptyCreateToolbar
+  const showCardtextToolbarControls =
+    showCardtextToolbarRow && toolbarSection !== 'cardtextView'
 
   useLoadCardtextTemplatesWhenUnknown(
     cardtextTemplatesLoading,
@@ -244,11 +254,11 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
           <div
             className={clsx(
               styles.cardtextToolbarRow,
-              !showCardtextToolbarRow && styles.cardtextToolbarRowEmpty,
+              !showCardtextToolbarControls && styles.cardtextToolbarRowEmpty,
             )}
-            aria-hidden={showCardtextToolbarRow ? undefined : true}
+            aria-hidden={showCardtextToolbarControls ? undefined : true}
           >
-            {showCardtextToolbarRow ? (
+            {showCardtextToolbarControls ? (
               <Toolbar section={toolbarSection} />
             ) : null}
           </div>
@@ -328,6 +338,8 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                 style={style}
                 titleStripEditing={forceEditingTitle}
                 onClose={handleViewClose}
+                onEdit={handleViewEdit}
+                onDelete={handleViewDelete}
               />
             ) : (
               <CardEditor titleStripEditing={forceEditingTitle} />
