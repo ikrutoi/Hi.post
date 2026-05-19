@@ -9,6 +9,7 @@ import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
 import {
   selectIsDateComplete,
   selectCardPieListPanelRowCount,
+  selectEditorPieCardPieListRowCount,
 } from '@date/infrastructure/selectors'
 
 /**
@@ -107,11 +108,18 @@ export const selectPieProgress = createSelector(
 )
 
 /**
- * Бейдж `cardPie` в тулбарах date / editorPie: число строк списка (план / день),
- * но не меньше 1, если заполнена хотя бы одна секция открытки (без выбранной даты).
+ * Бейдж `cardPie` в тулбаре секции «Дата»: план отправки или drill-down по дню календаря.
  */
 export const selectCardPieToolbarBadgeCount = createSelector(
   [selectCardPieListPanelRowCount, selectPieProgress],
+  (listRowCount, pie) => Math.max(listRowCount, pie.progress > 0 ? 1 : 0),
+)
+
+/**
+ * Бейдж `cardPie` в editorPie: как строки в `CardPieLeftSlot` (без openDayPanel корзины/истории).
+ */
+export const selectEditorPieCardPieToolbarBadgeCount = createSelector(
+  [selectEditorPieCardPieListRowCount, selectPieProgress],
   (listRowCount, pie) => Math.max(listRowCount, pie.progress > 0 ? 1 : 0),
 )
 

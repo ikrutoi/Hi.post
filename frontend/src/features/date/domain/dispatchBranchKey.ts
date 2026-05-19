@@ -26,7 +26,7 @@ export function buildDispatchBranchKey(
 }
 
 export function dispatchBranchKeyFromPostcard(p: PostcardHydrated): string | null {
-  const d = p.card.date as DispatchDate | undefined
+  const d = p.date
   if (!d) return null
   if (
     d.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&

@@ -9,6 +9,19 @@ import {
   SelectedDispatchDate,
 } from '@entities/date/domain/types'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectEnvelopeSessionRecord,
+  selectIsEnvelopeReady,
+} from '@envelope/infrastructure/selectors'
+import { selectCartItems } from '@cart/infrastructure/selectors'
+import { selectCardphotoIsComplete } from '@cardphoto/infrastructure/selectors'
+import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
+import { selectIsAromaComplete } from '@aroma/infrastructure/selectors'
+import {
+  dispatchBranchKeyFromPostcard,
+  dispatchDateKeyFromDispatchDate,
+  recipientBranchKeyFromEnvelope,
+} from '@date/domain/dispatchBranchKey'
 
 export const selectDateState = (state: RootState): DateState => state.date
 
@@ -30,6 +43,9 @@ export const selectCachedSingleDate = (
 
 export const selectCachedMultiDates = (state: RootState): DispatchDate[] =>
   state.date.cachedMultiDates
+
+export const selectIsDateComplete = (state: RootState): boolean =>
+  state.date.isComplete
 
 /** Ключи веток «дата|получатель», убранные из списка дат (см. excludeDispatchBranch). */
 export const selectExcludedDispatchBranches = (state: RootState): string[] =>
@@ -53,6 +69,34 @@ export const selectRecipientBranchSlotKeys = createSelector(
     return ['session']
   },
 )
+
+/** Как `branchKey` у `recipientSlots` в `useDispatchPlanListEntries` (CardPie / план отправки). */
+export const selectRecipientPlanBranchSlotKeys = createSelector(
+  [selectRecipientState, selectEnvelopeSessionRecord],
+  (recipient, envelope): string[] => {
+    const applied = recipient.applied ?? []
+    if (applied.length > 0) return applied.map(String)
+    return [recipientBranchKeyFromEnvelope(envelope)]
+  },
+)
+
+function countPlanRowsForDispatchDate(
+  d: DispatchDate,
+  slotKeys: string[],
+  excluded: Set<string>,
+  cartBranchKeys: Set<string>,
+  hideBranchesInCart: boolean,
+): number {
+  const dk = dispatchDateKeyFromDispatchDate(d)
+  let count = 0
+  for (const slotKey of slotKeys) {
+    const branchKey = `${dk}|${slotKey}`
+    if (excluded.has(branchKey)) continue
+    if (hideBranchesInCart && cartBranchKeys.has(branchKey)) continue
+    count += 1
+  }
+  return count
+}
 
 function dispatchDateKey(d: DispatchDate): string {
   return `${d.year}-${d.month}-${d.day}`
@@ -81,28 +125,101 @@ export const selectDateListPlanRowCount = createSelector(
     selectSelectedDates,
     selectSelectedDate,
     selectExcludedDispatchBranchSet,
-    selectRecipientBranchSlotKeys,
+    selectRecipientPlanBranchSlotKeys,
   ],
   (isMulti, selectedDates, selectedDate, excluded, slotKeys) => {
+    const cartBranchKeys = new Set<string>()
     if (isMulti) {
       let c = 0
       for (const d of selectedDates) {
-        const dk = dispatchDateKey(d)
-        for (const slotKey of slotKeys) {
-          if (!excluded.has(`${dk}|${slotKey}`)) c += 1
-        }
+        c += countPlanRowsForDispatchDate(
+          d,
+          slotKeys,
+          excluded,
+          cartBranchKeys,
+          false,
+        )
       }
       return c
     }
     if (selectedDate) {
-      const dk = dispatchDateKey(selectedDate)
-      let c = 0
-      for (const slotKey of slotKeys) {
-        if (!excluded.has(`${dk}|${slotKey}`)) c += 1
-      }
-      return c
+      return countPlanRowsForDispatchDate(
+        selectedDate,
+        slotKeys,
+        excluded,
+        cartBranchKeys,
+        false,
+      )
     }
     return 0
+  },
+)
+
+/**
+ * Строки списка CardPie слева (editorPie): activeModeOnly, hideBranchesInCart,
+ * showUndatedWhenAnySectionSelected — без drill-down `openDayPanel` календаря.
+ */
+export const selectEditorPieCardPieListRowCount = createSelector(
+  [
+    selectIsMultiDateMode,
+    selectSelectedDates,
+    selectSelectedDate,
+    selectExcludedDispatchBranchSet,
+    selectRecipientPlanBranchSlotKeys,
+    selectCartItems,
+    selectCardphotoIsComplete,
+    selectCardtextIsComplete,
+    selectIsEnvelopeReady,
+    selectIsAromaComplete,
+    selectIsDateComplete,
+  ],
+  (
+    isMulti,
+    selectedDates,
+    selectedDate,
+    excluded,
+    slotKeys,
+    cartItems,
+    cardphoto,
+    cardtext,
+    envelope,
+    aroma,
+    date,
+  ) => {
+    const hasAnySectionFilled =
+      cardphoto || cardtext || envelope || aroma || date
+    const cartBranchKeys = new Set<string>()
+    for (const p of cartItems) {
+      if (p.status !== 'cart' && p.status !== 'cartBlocked') continue
+      const key = dispatchBranchKeyFromPostcard(p)
+      if (key) cartBranchKeys.add(key)
+    }
+
+    let count = 0
+    if (isMulti) {
+      for (const d of selectedDates) {
+        count += countPlanRowsForDispatchDate(
+          d,
+          slotKeys,
+          excluded,
+          cartBranchKeys,
+          true,
+        )
+      }
+    } else if (selectedDate) {
+      count = countPlanRowsForDispatchDate(
+        selectedDate,
+        slotKeys,
+        excluded,
+        cartBranchKeys,
+        true,
+      )
+    }
+
+    if (count === 0 && hasAnySectionFilled) {
+      count = slotKeys.length
+    }
+    return count
   },
 )
 
@@ -132,9 +249,6 @@ export const selectMergedDispatchDates = createSelector(
     return [...list]
   },
 )
-
-export const selectIsDateComplete = (state: RootState): boolean =>
-  state.date.isComplete
 
 export const selectFirstDayOfWeek = (
   state: RootState,
