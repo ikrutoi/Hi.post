@@ -544,7 +544,8 @@
 
 /* cardphoto / cardtext (основные секции): hover — затемнение иконки, без подложки */
 .toolbarCardphoto,
-.toolbarCardtext {
+.toolbarCardtext,
+.toolbarHistory {
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
     color: $color-font-enabled-light;
 
@@ -649,6 +650,10 @@
 
 .toolbarCardphoto,
 .toolbarCardtext,
+.toolbarHistory,
+.toolbarEditorPie,
+.toolbarPostcardPieCart,
+.toolbarPostcardPieHistory,
 .toolbarSender,
 .toolbarRecipient,
 .toolbarRecipients,
@@ -782,10 +787,17 @@
     width: 1.8rem;
     height: 1.8rem;
     background-color: $color-app-inner;
+    color: $color-font-enabled-light;
 
     svg {
       width: 0.95rem;
       height: 0.95rem;
+    }
+
+    &.toolbarKeyEnabled:hover,
+    &.toolbarKeyActive:hover {
+      color: $color-font-enabled;
+      background-color: $color-app-inner;
     }
   }
 
@@ -809,26 +821,32 @@
 .toolbarPostcardPieCart.toolbarMergedWithCenter {
   .toolbarKey {
     background-color: #fff;
+    color: $color-font-enabled-light;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
   }
 
-  .toolbarKey:hover {
-    background-color: $color-app-sidebar-icon-hover;
+  .toolbarKey.toolbarKeyEnabled:hover,
+  .toolbarKey.toolbarKeyActive:hover {
+    color: $color-font-enabled;
+    background-color: #fff;
   }
 }
 
 .toolbarEditorPie.toolbarMergedWithCenter {
   .toolbarKey {
     background-color: #fff;
+    color: $color-font-enabled-light;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
   }
 
-  .toolbarKey:hover {
-    background-color: $color-app-sidebar-icon-hover;
+  .toolbarKey.toolbarKeyEnabled:hover,
+  .toolbarKey.toolbarKeyActive:hover {
+    color: $color-font-enabled;
+    background-color: #fff;
   }
 }
 
