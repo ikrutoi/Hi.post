@@ -27,8 +27,6 @@ import {
   clearRecipientViewDraft,
   removeRecipientFromListById,
   removeRecipientFromListByIndex,
-  setRecipientApplied,
-  setRecipientAppliedIds,
   setRecipientView,
   setRecipientViewId,
   setRecipientsViewIds,
@@ -36,14 +34,12 @@ import {
   updateRecipientField,
 } from '@envelope/recipient/infrastructure/state'
 import {
+  selectAppliedRecipientDisplayAddress,
   selectRecipientApplied,
   selectRecipientState,
   selectRecipientsDisplayList,
 } from '@envelope/recipient/infrastructure/selectors'
-import {
-  selectSenderApplied,
-  selectAppliedSenderDisplayAddress,
-} from '@envelope/sender/infrastructure/selectors'
+import { selectSenderApplied } from '@envelope/sender/infrastructure/selectors'
 import {
   clearSender,
   clearSenderViewDraft,
@@ -89,14 +85,25 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const senderAppliedIds = useAppSelector(selectSenderApplied)
-  const appliedSenderAddress = useAppSelector(selectAppliedSenderDisplayAddress)
+  const appliedRecipientAddress = useAppSelector(
+    selectAppliedRecipientDisplayAddress,
+  )
   const isEditMode =
     role === 'sender' ? senderViewEditMode : recipientViewEditMode
 
-  /** Несколько получателей: applied.length > 1 (appliedData = null) или список «Пользователи». */
+  /**
+   * Return: в текущем списке формы больше одного адреса (то, что видит пользователь).
+   * applied может оставаться больше, пока адрес только закрыли, а не сняли с конверта.
+   */
+  const recipientSelectionCount =
+    recipientsDisplayList.length > 0
+      ? recipientsDisplayList.length
+      : recipientAppliedIds.length > 0
+        ? recipientAppliedIds.length
+        : recipientsPendingIds.length
+
   const showReturnInsteadOfClose =
-    role === 'recipient' &&
-    (recipientAppliedIds.length > 1 || recipientsDisplayList.length > 1)
+    role === 'recipient' && recipientSelectionCount > 1
 
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const [cityZipFocus, setCityZipFocus] = useState<CityZipFocus>('zip')
@@ -310,22 +317,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     const appliedId = senderAppliedIds[0] ?? null
 
     if (appliedId) {
-      if (templateId !== appliedId) {
-        dispatch(setSenderViewId(appliedId))
-        ;(
-          Object.entries(appliedSenderAddress) as [
-            keyof AddressFields,
-            string,
-          ][]
-        ).forEach(([field, value]) =>
-          dispatch(updateSenderField({ field, value })),
-        )
-        dispatch(setSenderView('senderView'))
-        dispatch(setAddressFormView({ show: false, role: null }))
-        return
-      }
-
-      // Закрытие карточки applied: только UI; applied / appliedData не трогаем.
+      // Есть applied: только UI (плейсхолдер); applied / appliedData не трогаем.
       dispatch(setSenderViewId(null))
       dispatch(clearSenderViewDraft())
       dispatch(setSenderView('senderEnvelopeView'))
@@ -344,16 +336,33 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
     dispatch(closeAddressEditSession({ role: 'recipient' }))
 
-    const nextApplied = (recipientState.applied ?? []).filter(
-      (id) => id !== templateId,
-    )
-    if (nextApplied.length === 0) {
-      dispatch(setRecipientApplied(false))
-    } else {
-      dispatch(setRecipientAppliedIds(nextApplied))
+    const appliedIds = recipientState.applied ?? []
+    const appliedId = appliedIds[0] ?? null
+
+    if (appliedIds.includes(templateId)) {
+      // Адрес на конверте: закрыть карточку / список, applied не трогаем.
+      dispatch(setRecipientViewId(null))
+      dispatch(clearRecipientViewDraft())
+      dispatch(setRecipientView('recipientsView'))
+      dispatch(setAddressFormView({ show: false, role: null }))
+      return
     }
 
-    // Сразу закрываем карточку и показываем плейсхолдер (сага догонит списки).
+    if (appliedId && appliedIds.length === 1 && templateId !== appliedId) {
+      dispatch(setRecipientViewId(appliedId))
+      ;(
+        Object.entries(appliedRecipientAddress) as [
+          keyof AddressFields,
+          string,
+        ][]
+      ).forEach(([field, value]) =>
+        dispatch(updateRecipientField({ field, value })),
+      )
+      dispatch(setRecipientView('recipientView'))
+      dispatch(setAddressFormView({ show: false, role: null }))
+      return
+    }
+
     dispatch(setRecipientViewId(null))
     dispatch(clearRecipientViewDraft())
     dispatch(setRecipientView('recipientsView'))
