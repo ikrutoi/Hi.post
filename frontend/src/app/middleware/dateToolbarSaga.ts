@@ -35,7 +35,7 @@ function* hydrateHistoryListPanelDensityFromDbSaga(): SagaIterator {
     )
     if (pref?.id !== 'historyList') return
     const d = pref.historyListPanelDensity
-    if (d === 1 || d === 2 || d === 3) {
+    if (d === 1 || d === 2) {
       yield put(setHistoryListPanelDensity(d))
     }
   } catch (e) {
@@ -45,7 +45,7 @@ function* hydrateHistoryListPanelDensityFromDbSaga(): SagaIterator {
 
 function* persistHistoryListPanelDensityToDbSaga(): SagaIterator {
   try {
-    const d: 1 | 2 | 3 = yield select(selectHistoryListPanelDensity)
+    const d: 1 | 2 = yield select(selectHistoryListPanelDensity)
     const payload = {
       id: HISTORY_LIST_UI_PREF_ID,
       historyListPanelDensity: d,
@@ -71,7 +71,10 @@ function* handleDateListToolbarAction(
     return
   }
 
-  if (section === 'historyList' && key === 'historyPanelDensity') {
+  if (
+    section === 'historyList' &&
+    (key === 'historyPanelDensity' || key === 'panelDensity2')
+  ) {
     yield put(cycleHistoryListPanelDensity())
     yield call(persistHistoryListPanelDensityToDbSaga)
     return

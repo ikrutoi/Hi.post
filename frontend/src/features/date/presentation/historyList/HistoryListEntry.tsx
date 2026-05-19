@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import type { PostcardStatus } from '@entities/postcard'
-import type { HistoryPanelDensitySize } from '@shared/ui/icons'
+import type { PanelDensity2Size } from '@shared/ui/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './HistoryListEntry.module.scss'
 
@@ -18,8 +18,8 @@ export type HistoryListEntryProps = {
   onSelect?: () => void
   isSelected?: boolean
   isFocused?: boolean
-  /** Плотность строки списка истории (см. `historyListPanelDensity` в календаре). */
-  densityLevel?: HistoryPanelDensitySize
+  /** Плотность сетки списка истории: 1 — 4 ячейки, 2 — 5 ячеек. */
+  densityLevel?: PanelDensity2Size
 }
 
 export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
@@ -33,10 +33,13 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
   onSelect,
   isSelected = false,
   isFocused = false,
+  densityLevel = 1,
 }) => {
   const interactive = Boolean(onSelect)
   const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
   const recipientParts = parseListEntryRecipientDetail(detailLine)
+  const recipientName = recipientParts?.name ?? detailLine ?? ''
+  const recipientCountry = recipientParts?.region ?? ''
 
   return (
     <div
@@ -51,6 +54,7 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
       }
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
+      data-density-level={densityLevel}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
       role={interactive ? 'button' : undefined}
@@ -68,37 +72,24 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
           : undefined
       }
     >
-      <div className={styles.body}>
-        <div className={styles.thumb} aria-hidden>
-          {previewUrl ? (
-            <img src={previewUrl} alt="" className={styles.thumbImg} />
-          ) : null}
-          {showStatusIndicator && previewStatus && !previewIsProcessed ? (
-            <span
-              className={clsx(styles.statusIndicator, styles[previewStatus])}
-              aria-hidden
-            />
-          ) : null}
-        </div>
-        <div className={styles.meta}>
-          <div className={styles.dateLine}>{dateLabel}</div>
-          {recipientParts ? (
-            <div className={styles.detailBlock}>
-              {recipientParts.region ? (
-                <>
-                  <span className={styles.detailName}>{recipientParts.name}</span>
-                  <span className={styles.detailSep}>, </span>
-                  <span className={styles.detailRegion}>
-                    {recipientParts.region}
-                  </span>
-                </>
-              ) : (
-                <span className={styles.detailName}>{recipientParts.name}</span>
-              )}
-            </div>
-          ) : null}
-        </div>
+      <div className={styles.thumb} aria-hidden>
+        {previewUrl ? (
+          <img src={previewUrl} alt="" className={styles.thumbImg} />
+        ) : null}
+        {showStatusIndicator && previewStatus && !previewIsProcessed ? (
+          <span
+            className={clsx(styles.statusIndicator, styles[previewStatus])}
+            aria-hidden
+          />
+        ) : null}
       </div>
+      <div className={styles.dateLine}>{dateLabel}</div>
+      {recipientName ? (
+        <div className={styles.detailBlock}>{recipientName}</div>
+      ) : null}
+      {densityLevel === 1 && recipientCountry ? (
+        <div className={styles.countryLine}>{recipientCountry}</div>
+      ) : null}
     </div>
   )
 }

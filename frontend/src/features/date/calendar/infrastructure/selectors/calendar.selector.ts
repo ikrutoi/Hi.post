@@ -11,7 +11,7 @@ import { selectCartItems } from '@cart/infrastructure/selectors'
 import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
 import type { DayPanelPayload } from '../state/calendar.slice'
-import type { HistoryPanelDensitySize } from '@shared/ui/icons'
+import type { PanelDensity2Size } from '@shared/ui/icons'
 
 export const selectLastCalendarViewDate = (
   state: RootState,
@@ -82,7 +82,7 @@ export const selectHistoryListSortDirection = (
 
 export const selectHistoryListPanelDensity = (
   state: RootState,
-): HistoryPanelDensitySize => state.calendar.historyListPanelDensity ?? 1
+): PanelDensity2Size => state.calendar.historyListPanelDensity ?? 1
 
 export const selectCardPieListSortDirection = (
   state: RootState,

@@ -30,13 +30,11 @@
   &[data-selected='true'] {
     background-color: darken($color-envelope-recipient-input, 2%);
     border-color: $color-envelope-recipient-border;
-    border-left-color: $color-toggle-active;
     box-shadow: -2px 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-focused='true'] {
     border-color: $color-envelope-recipient-border;
-    border-left-color: $color-toggle-active;
     box-shadow: -2px 0 0 0 $color-toggle-active;
   }
 }
@@ -56,13 +54,11 @@
   &[data-selected='true'] {
     background-color: darken($color-envelope-sender-input, 2%);
     border-color: $color-envelope-sender-border;
-    border-left-color: $color-toggle-active;
     box-shadow: -2px 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-focused='true'] {
     border-color: $color-envelope-sender-border;
-    border-left-color: $color-toggle-active;
     box-shadow: -2px 0 0 0 $color-toggle-active;
   }
 }

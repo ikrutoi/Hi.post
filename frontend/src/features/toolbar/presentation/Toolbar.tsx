@@ -411,7 +411,9 @@ export const Toolbar = ({
               ? historyListPanelDensity
               : undefined,
           panelDensity2Size:
-            section === 'addressListSender' && key === 'panelDensity2'
+            section === 'historyList' && key === 'panelDensity2'
+              ? historyListPanelDensity
+              : section === 'addressListSender' && key === 'panelDensity2'
               ? senderAddressListPanelDensity
               : (section === 'addressListRecipient' ||
                     section === 'addressListRecipients') &&

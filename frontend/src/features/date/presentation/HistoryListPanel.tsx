@@ -14,9 +14,9 @@ import {
 import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
-import { HistoryListEntryShort } from './historyList/HistoryListEntryShort'
+import { HistoryListEntry } from './historyList/HistoryListEntry'
 import clsx from 'clsx'
-import type { HistoryPanelDensitySize } from '@shared/ui/icons'
+import type { PanelDensity2Size } from '@shared/ui/icons'
 import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
 import {
   selectHistoryListPanelDensity,
@@ -84,7 +84,7 @@ const HistoryListPanelRow: React.FC<{
   item: HistoryListPanelItem
   listSelectedLocalId?: number | null
   onSelectEntry?: (item: HistoryListPanelItem) => void
-  densityLevel: HistoryPanelDensitySize
+  densityLevel: PanelDensity2Size
 }> = ({ item, listSelectedLocalId, onSelectEntry, densityLevel }) => {
   const dispatch = useAppDispatch()
   const cachedUrl = useAppSelector(
@@ -109,7 +109,7 @@ const HistoryListPanelRow: React.FC<{
   const displayUrl = cachedUrl ?? safeFallbackUrl
 
   return (
-    <HistoryListEntryShort
+    <HistoryListEntry
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
       detailLine={item.detailLine}
@@ -178,6 +178,7 @@ export const HistoryListPanel: React.FC<Props> = ({
         <div
           key={listContentKey}
           className={clsx(styles.list, hasRows && styles.listGrid)}
+          data-density-level={historyListPanelDensity}
           tabIndex={0}
           aria-label="Dispatch date list"
         >

@@ -14,6 +14,7 @@ export const HISTORY_LIST_KEYS = [
   'postcardSend',
   'postcardDelivered',
   'postcardNotDelivered',
+  'panelDensity2',
 ] as const satisfies readonly IconKey[]
 
 export type HistoryListKey = (typeof HISTORY_LIST_KEYS)[number]
@@ -27,7 +28,7 @@ export const HISTORY_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'historyList',
     icons: [
-      { key: 'historyPanelDensity', state: 'enabled' },
+      { key: 'panelDensity2', state: 'enabled' },
       { key: 'sortDown', state: 'enabled' },
     ],
     status: 'enabled',
