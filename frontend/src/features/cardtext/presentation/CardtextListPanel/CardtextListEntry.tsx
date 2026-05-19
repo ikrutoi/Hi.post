@@ -2,7 +2,9 @@ import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import type { CardtextContent } from '@cardtext/domain/types'
 import { getToolbarIcon } from '@shared/utils/icons'
-import addressRowStyles from '@envelope/addressBook/presentation/AddressListRow.module.scss'
+import type { PanelDensity2Size } from '@shared/ui/icons'
+import cellStyles from '@envelope/addressBook/presentation/AddressBookCell.module.scss'
+import styles from './CardtextListPanel.module.scss'
 
 const PREVIEW_COLOR: Record<CardtextContent['style']['color'], string> = {
   deepBlack: '#1a1a1b',
@@ -10,9 +12,6 @@ const PREVIEW_COLOR: Record<CardtextContent['style']['color'], string> = {
   burgundy: '#741b47',
   forestGreen: '#064e3b',
 }
-
-/** Density 1 + row actions ? ??????? ?????? ??????, ??? ? ???????? ????? ? edit/delete. */
-const ADDRESS_LIST_DENSITY_LARGEST = 1 as const
 
 type Props = {
   entry: CardtextContent
@@ -22,6 +21,7 @@ type Props = {
   isSelected?: boolean
   isFocused?: boolean
   isEditActive?: boolean
+  density?: PanelDensity2Size
 }
 
 export const CardtextListEntry: React.FC<Props> = ({
@@ -32,13 +32,14 @@ export const CardtextListEntry: React.FC<Props> = ({
   isSelected = false,
   isFocused = false,
   isEditActive = false,
+  density = 1,
 }) => {
   const { nameLine, previewLine } = useMemo(() => {
     const title = entry.title?.trim() ?? ''
     const plain = entry.plainText?.trim() ?? ''
     const preview =
       plain.length > 0
-        ? plain.slice(0, 72) + (plain.length > 72 ? '?' : '')
+        ? plain.slice(0, 220) + (plain.length > 220 ? '...' : '')
         : '?'
     return {
       nameLine: title.length > 0 ? title : '?',
@@ -60,19 +61,20 @@ export const CardtextListEntry: React.FC<Props> = ({
 
   return (
     <div
-      className={addressRowStyles.root}
+      className={cellStyles.root}
       data-cardtext-template-entry
-      data-density-level={ADDRESS_LIST_DENSITY_LARGEST}
+      data-density-level={density}
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
-      data-has-row-actions={showRowActions ? 'true' : undefined}
       onMouseDown={handleRowMouseDown}
     >
-      <div className={addressRowStyles.body}>
-        <div className={addressRowStyles.field}>
-          <div className={addressRowStyles.nameLine}>{nameLine}</div>
+      <div className={cellStyles.body}>
+        <div className={cellStyles.text}>
+          <div className={clsx(cellStyles.nameLine, styles.templateTitleText)}>
+            {nameLine}
+          </div>
           <div
-            className={addressRowStyles.cityLine}
+            className={clsx(cellStyles.cityLine, styles.templatePreviewText)}
             style={{ color: previewColor }}
           >
             {previewLine}
@@ -80,15 +82,15 @@ export const CardtextListEntry: React.FC<Props> = ({
         </div>
         {showRowActions && (
           <div
-            className={addressRowStyles.rowActions}
+            className={cellStyles.actions}
             onClick={(e) => e.stopPropagation()}
           >
             {onEdit != null && (
               <button
                 type="button"
                 className={clsx(
-                  addressRowStyles.rowActionButton,
-                  isEditActive && addressRowStyles.rowActionButtonActive,
+                  cellStyles.actionButton,
+                  isEditActive && cellStyles.actionButtonActive,
                 )}
                 aria-label="Edit text template"
                 title="Edit text template"
@@ -104,10 +106,7 @@ export const CardtextListEntry: React.FC<Props> = ({
             {onDelete != null && (
               <button
                 type="button"
-                className={clsx(
-                  addressRowStyles.rowActionButton,
-                  addressRowStyles.rowActionButtonDelete,
-                )}
+                className={cellStyles.actionButton}
                 aria-label="Delete text template"
                 title="Delete text template"
                 onClick={(e) => {

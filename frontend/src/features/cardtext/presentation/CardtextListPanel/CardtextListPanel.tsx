@@ -11,6 +11,7 @@ import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
   selectCardtextId,
+  selectCardtextListPanelDensity,
   selectCardtextListSortDirection,
 } from '@cardtext/infrastructure/selectors'
 import {
@@ -45,6 +46,7 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const { deleteCardtextTemplate } = useTemplateActions()
   const items = useAppSelector(selectCardtextTemplatesListItems)
   const sortDirection = useAppSelector(selectCardtextListSortDirection)
+  const panelDensity = useAppSelector(selectCardtextListPanelDensity)
   const sortedTemplates = useMemo(
     () => sortTemplatesByTitle(items ?? [], sortDirection),
     [items, sortDirection],
@@ -107,6 +109,7 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
       <ScrollArea className={styles.listScrollArea}>
         <div
           className={styles.list}
+          data-density-level={panelDensity}
           tabIndex={0}
           aria-label="Cardtext templates list"
         >
@@ -129,6 +132,7 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                   isEditActive={
                     isCardtextViewEditMode && selectedTemplateId === entry.id
                   }
+                  density={panelDensity}
                 />
               </div>
             ))}

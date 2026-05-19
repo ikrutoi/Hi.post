@@ -16,12 +16,14 @@ import {
 } from '../../domain/editor/editor.types'
 import { isEmptyCardtextValue } from '@cardtext/domain/helpers/isEmptyCardtextValue'
 import { isCardtextDraftContentEmpty } from '@cardtext/domain/helpers/isCardtextDraftContentEmpty'
+import type { PanelDensity2Size } from '@shared/ui/icons'
 
 export interface CardtextTemplatesUIState {
   isListPanelOpen: boolean
   isAddTemplateOpen: boolean
   isEditTitleOpen: boolean
   cardtextListSortDirection: CardtextListSortDirection
+  cardtextListPanelDensity: PanelDensity2Size
   templatesListLoading: boolean
 }
 
@@ -38,6 +40,7 @@ const initialCardtextTemplatesState: Pick<
   isAddTemplateOpen: false,
   isEditTitleOpen: false,
   cardtextListSortDirection: 'asc',
+  cardtextListPanelDensity: 1,
   templatesListLoading: false,
   templatesList: null,
 }
@@ -315,6 +318,11 @@ export const cardtextSlice = createSlice({
         state.cardtextListSortDirection === 'asc' ? 'desc' : 'asc'
     },
 
+    toggleCardtextListPanelDensity(state) {
+      state.cardtextListPanelDensity =
+        state.cardtextListPanelDensity === 1 ? 2 : 1
+    },
+
     cardtextTemplateAdded() {},
 
     loadCardtextTemplatesRequest(state) {
@@ -405,6 +413,7 @@ export const {
   setCardtextAddTemplateOpen,
   setCardtextEditTitleOpen,
   toggleCardtextListSortDirection,
+  toggleCardtextListPanelDensity,
   cardtextTemplateAdded,
   loadCardtextTemplatesRequest,
   loadCardtextTemplatesSuccess,

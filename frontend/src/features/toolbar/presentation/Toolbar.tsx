@@ -27,6 +27,7 @@ import {
   selectCardtextIsComplete,
   selectCardtextPlainText,
   selectCardtextListSortDirection,
+  selectCardtextListPanelDensity,
 } from '@cardtext/infrastructure/selectors'
 import {
   selectDateListSortDirection,
@@ -107,6 +108,9 @@ export const Toolbar = ({
   )
   const cardtextListSortDirection = useAppSelector(
     selectCardtextListSortDirection,
+  )
+  const cardtextListPanelDensity = useAppSelector(
+    selectCardtextListPanelDensity,
   )
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
   const historyListSortDirection = useAppSelector(selectHistoryListSortDirection)
@@ -413,6 +417,8 @@ export const Toolbar = ({
           panelDensity2Size:
             section === 'historyList' && key === 'panelDensity2'
               ? historyListPanelDensity
+              : section === 'cardtextList' && key === 'panelDensity2'
+                ? cardtextListPanelDensity
               : section === 'addressListSender' && key === 'panelDensity2'
               ? senderAddressListPanelDensity
               : (section === 'addressListRecipient' ||

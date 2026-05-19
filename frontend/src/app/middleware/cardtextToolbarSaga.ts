@@ -16,6 +16,7 @@ import {
   clearDraftData,
   setCardtextAppliedData,
   toggleCardtextListSortDirection,
+  toggleCardtextListPanelDensity,
   resetCardtextAssetToEmptyDraft,
   restoreCardtextSession,
   setDraftEngaged,
@@ -59,6 +60,11 @@ export function* handleCardtextToolbarAction(
 
   if (section === 'cardtextList' && key === 'sortDown') {
     yield put(toggleCardtextListSortDirection())
+    return
+  }
+
+  if (section === 'cardtextList' && key === 'panelDensity2') {
+    yield put(toggleCardtextListPanelDensity())
     return
   }
 

@@ -48,7 +48,7 @@ $list-panel-scroll-inset: 0.35rem;
 
 .list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   column-gap: 0.5rem;
   row-gap: 0.25rem;
   align-content: start;
@@ -61,9 +61,14 @@ $list-panel-scroll-inset: 0.35rem;
     outline: none;
   }
 
+  &[data-density-level='2'] {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
   > [role='option'] {
     display: flex;
     min-width: 0;
+    width: 100%;
   }
 }
 
@@ -85,4 +90,19 @@ $list-panel-scroll-inset: 0.35rem;
   flex-shrink: 0;
   pointer-events: none;
   color: $color-app-inner;
+}
+
+.templatePreviewText {
+  display: -webkit-box;
+  white-space: normal;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+
+.list:not([data-density-level='2']) .templateTitleText {
+  font-size: 0.72rem;
+}
+
+.list[data-density-level='2'] .templatePreviewText {
+  -webkit-line-clamp: 4;
 }
