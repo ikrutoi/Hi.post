@@ -95,7 +95,7 @@ $list-panel-scroll-inset: 0.35rem;
 .templatePreviewText {
   display: -webkit-box;
   white-space: normal;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
 }
 
@@ -104,5 +104,5 @@ $list-panel-scroll-inset: 0.35rem;
 }
 
 .list[data-density-level='2'] .templatePreviewText {
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
 }
