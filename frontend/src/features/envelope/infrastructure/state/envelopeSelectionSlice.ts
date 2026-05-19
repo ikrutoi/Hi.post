@@ -134,6 +134,9 @@ export const envelopeSelectionSlice = createSlice({
     ) {
       state.recipientAddressListPanelDensity = action.payload
     },
+
+    /** Триггер saga: подтянуть формы отправителя/получателей из applied (клик минисекции Конверт). */
+    syncEnvelopeFormsFromAppliedRequested(_state) {},
   },
 })
 
@@ -152,6 +155,7 @@ export const {
   cycleRecipientAddressListPanelDensity,
   setSenderAddressListPanelDensity,
   setRecipientAddressListPanelDensity,
+  syncEnvelopeFormsFromAppliedRequested,
 } = envelopeSelectionSlice.actions
 
 export default envelopeSelectionSlice.reducer

@@ -11,6 +11,7 @@ import type { CardSection } from '@shared/config/constants'
 import type { SizeCard } from '@layout/domain/types'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { selectHasEnvelopeAppliedContent } from '@envelope/infrastructure/selectors'
+import { syncEnvelopeFormsFromAppliedRequested } from '@envelope/infrastructure/state'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import {
   setCardPieListPanelOpen,
@@ -118,6 +119,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         }
         if (section === 'envelope') {
           clearRightPieEnvelopePeek()
+          dispatch(syncEnvelopeFormsFromAppliedRequested())
         }
         if (section === 'aroma') {
           clearRightPieAromaPeek()

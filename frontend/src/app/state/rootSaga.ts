@@ -3,6 +3,7 @@ import {
   cardEditorSaga,
   editorPieProcessSaga,
   envelopeToolbarSaga,
+  envelopeFormSyncSaga,
   envelopeProcessSaga,
   addressBookSyncSaga,
   cardtextProcessSaga,
@@ -36,6 +37,7 @@ export function* rootSaga() {
     // fork(envelopeSaga),
 
     fork(envelopeToolbarSaga),
+    fork(envelopeFormSyncSaga),
     fork(envelopeProcessSaga),
     fork(addressBookSyncSaga),
     fork(addressSaveSaga),
