@@ -64,12 +64,15 @@ import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure
 import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
   closeDayPanel,
+  openDayPanel,
   setCartCalendarDatePickMode,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
   updateLastViewedCalendarDate,
 } from '@date/calendar/infrastructure/state'
+import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
+import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
@@ -158,8 +161,8 @@ const App = () => {
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
   const prevActiveSectionRef = useRef(activeSection)
-  const { listPanelOpen, listSelectedLocalId, setCartListSelectedLocalId } =
-    useCartFacade()
+  const { listPanelOpen, listSelectedLocalId } = useCartFacade()
+  const cardsByDateMap = useAppSelector(selectCardsByDateMap)
   const prevCartListPanelOpen = useRef(listPanelOpen)
   const prevListArchiveListContextRef = useRef<{
     localId: number | null
@@ -616,9 +619,21 @@ const App = () => {
       }
       const lid = item.postcard?.localId
       if (lid == null) return
-      setCartListSelectedLocalId(listSelectedLocalId === lid ? null : lid)
+      const nextLid = listSelectedLocalId === lid ? null : lid
+      dispatch(setCartListSelectedLocalId(nextLid))
+      if (nextLid == null) {
+        dispatch(closeDayPanel())
+        return
+      }
+      if (item.sourceDate) {
+        const dateKey = `${item.sourceDate.year}-${item.sourceDate.month}-${item.sourceDate.day}`
+        const dayData = cardsByDateMap[dateKey]
+        if (dayData != null && calendarDayHasCards(dayData)) {
+          dispatch(openDayPanel({ dateKey, dayData }))
+        }
+      }
     },
-    [dispatch, listSelectedLocalId, setCartListSelectedLocalId],
+    [dispatch, listSelectedLocalId, cardsByDateMap],
   )
 
   const handlePostcardPieCartToolbarAction = useCallback(

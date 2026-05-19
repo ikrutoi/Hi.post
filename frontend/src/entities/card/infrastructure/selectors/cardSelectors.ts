@@ -72,7 +72,8 @@ function postcardToCalendarItem(
   return {
     cardId: c.id,
     rowKey: `postcard:${listSlotIndex}:${p.id}:${p.status}`,
-    date: c.date,
+    /** Дата отправки открытки (`p.date`), как в корзине и списке — не `card.date`. */
+    date: p.date,
     previewUrl: c.thumbnailUrl,
     status: p.status,
     isProcessed: false,

@@ -8,7 +8,7 @@ export function postcardLocalIdFromCalendarCardItem(
 ): number | undefined {
   if (!item.rowKey.startsWith('postcard:')) return undefined
   const m = item.rowKey.match(
-    /^postcard:\d+:(.+):(cart|ready|sent|delivered|error)$/,
+    /^postcard:\d+:(.+):(cartBlocked|cart|ready|sent|delivered|error)$/,
   )
   if (!m) return undefined
   const postcardId = m[1]
