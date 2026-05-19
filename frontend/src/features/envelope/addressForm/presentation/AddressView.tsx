@@ -325,11 +325,10 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         return
       }
 
-      // Закрытие карточки applied: снять с конверта и показать плейсхолдер.
-      dispatch(setSenderApplied(false))
+      // Закрытие карточки applied: только UI; applied / appliedData не трогаем.
       dispatch(setSenderViewId(null))
       dispatch(clearSenderViewDraft())
-      dispatch(setSenderView('senderView'))
+      dispatch(setSenderView('senderEnvelopeView'))
       dispatch(setAddressFormView({ show: false, role: null }))
       return
     }

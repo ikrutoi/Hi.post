@@ -231,6 +231,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   useEffect(() => {
     if (role !== 'sender' || !senderFacade.isEnabled) return
     if (senderView === 'senderCreate') return
+    // После Close на applied-карточке (senderEnvelopeView) не открываем карточку снова.
+    if (senderView === 'senderEnvelopeView') return
 
     if (senderDisplayEntry != null) {
       if (
