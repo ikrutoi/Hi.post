@@ -271,12 +271,68 @@ const SESSION_WATCH_ACTIONS = [
   setSenderViewId.type,
   setRecipientsList.type,
   setRecipientsViewIds.type,
+  setRecipientView.type,
+  setRecipientViewDraft.type,
   toggleRecipientSelection.type,
   clearRecipientsPending.type,
 ]
 
 function hasAddressData(data: Record<string, string>): boolean {
   return Object.values(data).some((v) => (v ?? '').trim() !== '')
+}
+
+/** Id в текущем списке формы получателей (currentData), не applied. */
+function getRecipientFormViewIds(recipient: RecipientState): string[] {
+  const ids =
+    recipient.currentRecipientsList === 'second'
+      ? (recipient.recipientsViewIdsSecondList ?? [])
+      : (recipient.recipientsViewIdsFirstList ?? [])
+  return ids.filter((id): id is string => id != null && id !== '')
+}
+
+function hasRecipientFormViewIds(recipient: RecipientState): boolean {
+  return getRecipientFormViewIds(recipient).length > 0
+}
+
+function* loadRecipientViewDraftForId(
+  recipient: RecipientState,
+  id: string,
+): Generator<unknown, RecipientState['viewDraft'] | null, unknown> {
+  if (
+    recipient.recipientViewId === id &&
+    recipient.viewDraft != null &&
+    hasAddressData(recipient.viewDraft)
+  ) {
+    return recipient.viewDraft
+  }
+
+  if (
+    recipient.appliedData != null &&
+    hasAddressData(recipient.appliedData) &&
+    (recipient.applied ?? []).includes(id)
+  ) {
+    return recipient.appliedData
+  }
+
+  const envelopeList: RecipientState[] =
+    ((yield select(selectRecipientsList)) as RecipientState[]) ?? []
+  const fromEnvelope = envelopeList.find((r) => r.recipientViewId === id)
+  if (
+    fromEnvelope?.viewDraft != null &&
+    hasAddressData(fromEnvelope.viewDraft)
+  ) {
+    return fromEnvelope.viewDraft
+  }
+
+  const record = (yield call([recipientAdapter, 'getById'], id)) as {
+    id: string
+    address?: Record<string, string>
+  } | null
+  if (record?.address != null && hasAddressData(record.address)) {
+    return record.address as RecipientState['viewDraft']
+  }
+
+  return null
 }
 
 function* rehydrateEnvelopeSlicesFromTemplates() {
@@ -321,8 +377,7 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           viewDraft: address,
           formIsComplete: isComplete,
           recipientViewId: recipient.recipientViewId,
-          currentView: 'recipientsView',
-          recipientViewId: null,
+          currentView: recipient.currentView,
           recipientsViewIdsFirstList: recipient.recipientsViewIdsFirstList ?? [],
           recipientsViewIdsSecondList:
             recipient.recipientsViewIdsSecondList ?? [],
@@ -397,23 +452,71 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
     const nextKey = nextOrdered.map((r) => r.recipientViewId).join('\u0000')
     if (nextOrdered.length > 0 && (changed || prevKey !== nextKey)) {
       yield put(setRecipientsList(nextOrdered))
-      yield put(
-        setRecipientsViewIds(
-          nextOrdered
-            .map((r) => r.recipientViewId)
-            .filter((id): id is string => id != null),
-        ),
-      )
+      if (!hasRecipientFormViewIds(recipientNow)) {
+        yield put(
+          setRecipientsViewIds(
+            nextOrdered
+              .map((r) => r.recipientViewId)
+              .filter((id): id is string => id != null),
+          ),
+        )
+      }
     }
   }
 }
 
-/** После reload: если есть applied — карточка (1) или список (>1), не плейсхолдер. */
+/**
+ * После reload: восстановить UI формы из currentData (списки id + currentView).
+ * Если списка нет, но есть applied — открыть карточку или список по applied.
+ */
 function* syncRecipientFormViewAfterSessionRestore() {
   const recipient: RecipientState = yield select(selectRecipientState)
+  const formIds = getRecipientFormViewIds(recipient)
   const appliedIds = (recipient.applied ?? []).filter(
     (id): id is string => id != null && id !== '',
   )
+
+  if (formIds.length > 0) {
+    const pendingIds: string[] = yield select(
+      (state: {
+        envelopeSelection?: { recipientsPendingIds?: string[] }
+      }) => state.envelopeSelection?.recipientsPendingIds ?? [],
+    )
+    const pendingMatchesForm =
+      pendingIds.length === formIds.length &&
+      formIds.every((id, i) => pendingIds[i] === id)
+    if (!pendingMatchesForm) {
+      yield put(setRecipientsPendingIds(formIds))
+    }
+
+    const view = recipient.currentView ?? 'recipientsView'
+
+    if (view === 'recipientView') {
+      const id = recipient.recipientViewId ?? formIds[0]
+      if (id) {
+        const address: RecipientState['viewDraft'] | null = yield call(
+          loadRecipientViewDraftForId,
+          recipient,
+          id,
+        )
+        if (address) {
+          yield put(setRecipientViewDraft(address))
+        }
+        if (recipient.recipientViewId !== id) {
+          yield put(setRecipientViewId(id))
+        }
+      }
+      return
+    }
+
+    if (view === 'recipientsView' && formIds.length > 1) {
+      if (recipient.recipientViewId != null) {
+        yield put(setRecipientViewId(null))
+      }
+    }
+    return
+  }
+
   if (appliedIds.length === 0) return
 
   yield put(setRecipientsViewIds(appliedIds))
@@ -421,31 +524,11 @@ function* syncRecipientFormViewAfterSessionRestore() {
 
   if (appliedIds.length === 1) {
     const id = appliedIds[0]
-    let address: RecipientState['viewDraft'] | null =
-      recipient.appliedData != null && hasAddressData(recipient.appliedData)
-        ? recipient.appliedData
-        : null
-
-    if (!address) {
-      const envelopeList: RecipientState[] =
-        (yield select(selectRecipientsList)) ?? []
-      const fromEnvelope = envelopeList.find((r) => r.recipientViewId === id)
-      if (
-        fromEnvelope?.viewDraft != null &&
-        hasAddressData(fromEnvelope.viewDraft)
-      ) {
-        address = fromEnvelope.viewDraft
-      }
-    }
-
-    if (!address) {
-      const record: { id: string; address?: Record<string, string> } | null =
-        yield call([recipientAdapter, 'getById'], id)
-      if (record?.address != null && hasAddressData(record.address)) {
-        address = record.address as RecipientState['viewDraft']
-      }
-    }
-
+    const address: RecipientState['viewDraft'] | null = yield call(
+      loadRecipientViewDraftForId,
+      recipient,
+      id,
+    )
     if (address) {
       yield put(setRecipientViewDraft(address))
     }
@@ -724,13 +807,19 @@ export function* hydrateAppSession() {
 
       if (session.envelopeRecipients?.length) {
         yield put(setRecipientsList(session.envelopeRecipients))
-        yield put(
-          setRecipientsViewIds(
-            session.envelopeRecipients
-              .map((r) => r.recipientViewId)
-              .filter((id): id is string => id != null),
-          ),
-        )
+        const savedRecipient = session.envelope?.recipient
+        if (
+          !savedRecipient ||
+          !hasRecipientFormViewIds(savedRecipient)
+        ) {
+          yield put(
+            setRecipientsViewIds(
+              session.envelopeRecipients
+                .map((r) => r.recipientViewId)
+                .filter((id): id is string => id != null),
+            ),
+          )
+        }
       }
 
       yield call(processEnvelopeVisuals)
