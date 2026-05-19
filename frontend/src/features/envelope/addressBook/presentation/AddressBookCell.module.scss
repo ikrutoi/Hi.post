@@ -1,0 +1,182 @@
+@use '@styles/config/colors' as *;
+
+.root {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  aspect-ratio: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  cursor: default;
+  padding: 0.35rem 0.3rem 0.28rem;
+  background-color: $color-envelope-recipient-input;
+  border: 1px solid $color-envelope-recipient-border;
+  border-radius: 6px;
+  user-select: none;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    background-color: darken($color-envelope-recipient-input, 2%);
+  }
+
+  &[data-focused='true']:not([data-selected='true']) {
+    border-color: darken($color-envelope-recipient-border, 10%);
+  }
+
+  &[data-selected='true'] {
+    background-color: darken($color-envelope-recipient-input, 2%);
+    border-color: $color-envelope-recipient-border;
+    border-left-color: $color-toggle-active;
+    box-shadow: -2px 0 0 0 $color-toggle-active;
+  }
+
+  &[data-selected='true'][data-focused='true'] {
+    border-color: $color-envelope-recipient-border;
+    border-left-color: $color-toggle-active;
+    box-shadow: -2px 0 0 0 $color-toggle-active;
+  }
+}
+
+.rootSender {
+  background-color: $color-envelope-sender-input;
+  border-color: $color-envelope-sender-border;
+
+  &:hover {
+    background-color: darken($color-envelope-sender-input, 2%);
+  }
+
+  &[data-focused='true']:not([data-selected='true']) {
+    border-color: darken($color-envelope-sender-border, 10%);
+  }
+
+  &[data-selected='true'] {
+    background-color: darken($color-envelope-sender-input, 2%);
+    border-color: $color-envelope-sender-border;
+    border-left-color: $color-toggle-active;
+    box-shadow: -2px 0 0 0 $color-toggle-active;
+  }
+
+  &[data-selected='true'][data-focused='true'] {
+    border-color: $color-envelope-sender-border;
+    border-left-color: $color-toggle-active;
+    box-shadow: -2px 0 0 0 $color-toggle-active;
+  }
+}
+
+.body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  gap: 0.12rem;
+}
+
+.text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 0;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.nameLine,
+.cityLine,
+.countryLine {
+  pointer-events: none;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.nameLine {
+  font-size: 0.76rem;
+  font-weight: 500;
+  line-height: 1.22;
+  color: $color-font-enabled;
+}
+
+.cityLine,
+.countryLine {
+  font-size: 0.66rem;
+  font-weight: 600;
+  line-height: 1.18;
+  color: $color-font-enabled-light;
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.14rem;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: $color-font-disabled;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  svg {
+    width: 0.82rem;
+    height: 0.82rem;
+    display: block;
+  }
+}
+
+.actionButtonActive {
+  color: $color-envelope-recipient-legend;
+
+  &:hover {
+    color: $color-envelope-recipient-legend;
+  }
+}
+
+.rootSender .actionButtonActive {
+  color: $color-envelope-sender-legend;
+
+  &:hover {
+    color: $color-envelope-sender-legend;
+  }
+}
+
+/* 5 ячеек в ряд — компактнее типографика */
+.root[data-density-level='2'] {
+  padding: 0.28rem 0.24rem 0.22rem;
+
+  .nameLine {
+    font-size: 0.68rem;
+    line-height: 1.18;
+  }
+
+  .cityLine,
+  .countryLine {
+    font-size: 0.58rem;
+    line-height: 1.14;
+  }
+
+  .actionButton svg {
+    width: 0.74rem;
+    height: 0.74rem;
+  }
+}

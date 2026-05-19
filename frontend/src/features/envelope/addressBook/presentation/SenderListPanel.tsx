@@ -4,7 +4,9 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { IconUsers } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
-import { AddressBookListRow } from './AddressBookListRow'
+import { AddressBookCell } from './AddressBookCell'
+import { getAddressBookGridColumns } from './addressBookGridConstants'
+import { getNextAddressBookGridIndex } from './addressBookGridKeyboard'
 import type { AddressBookEntry } from '../domain/types'
 import { useSenderListPanelFacade } from '../../application/facades'
 import {
@@ -33,6 +35,7 @@ export const SenderListPanel: React.FC<Props> = ({
   const addressListPanelDensity = useAppSelector(
     selectSenderAddressListPanelDensity,
   )
+  const gridColumns = getAddressBookGridColumns(addressListPanelDensity)
   const editingEntryId =
     activeAddressEdit?.role === 'sender' ? activeAddressEdit.templateId : null
 
@@ -85,18 +88,22 @@ export const SenderListPanel: React.FC<Props> = ({
         return
       }
       if (combinedEntries.length === 0) return
-      if (e.key === 'ArrowDown') {
+      if (
+        e.key === 'ArrowDown' ||
+        e.key === 'ArrowUp' ||
+        e.key === 'ArrowLeft' ||
+        e.key === 'ArrowRight'
+      ) {
         e.preventDefault()
-        const next =
-          focusedIndex < 0
-            ? Math.max(selectedRowIndex, 0)
-            : Math.min(focusedIndex + 1, combinedEntries.length - 1)
-        setFocusedIndex(next)
-        onSelect(combinedEntries[next])
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        if (focusedIndex < 0) return
-        const next = Math.max(focusedIndex - 1, 0)
+        const startIndex =
+          focusedIndex < 0 ? Math.max(selectedRowIndex, 0) : focusedIndex
+        const next = getNextAddressBookGridIndex(
+          e.key,
+          focusedIndex < 0 ? -1 : startIndex,
+          combinedEntries.length,
+          gridColumns,
+        )
+        if (next == null) return
         setFocusedIndex(next)
         onSelect(combinedEntries[next])
       } else if (e.key === 'Enter') {
@@ -122,6 +129,7 @@ export const SenderListPanel: React.FC<Props> = ({
       onSelect,
       onEdit,
       closePanel,
+      gridColumns,
     ],
   )
 
@@ -174,7 +182,7 @@ export const SenderListPanel: React.FC<Props> = ({
             <>
               {favoriteEntries.map((entry, index) => (
                 <div key={entry.id} data-index={index} role="option">
-                  <AddressBookListRow
+                  <AddressBookCell
                     entry={entry}
                     onSelect={onSelect}
                     onEdit={onEdit}
@@ -198,7 +206,7 @@ export const SenderListPanel: React.FC<Props> = ({
                 const dataIndex = favoriteEntries.length + index
                 return (
                   <div key={entry.id} data-index={dataIndex} role="option">
-                    <AddressBookListRow
+                    <AddressBookCell
                       entry={entry}
                       onSelect={onSelect}
                       onEdit={onEdit}

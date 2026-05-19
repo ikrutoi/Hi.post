@@ -5,6 +5,25 @@ export type AddressSummaryLines = {
   cityCountryLine: string
 }
 
+export type AddressGridCellLines = {
+  nameLine: string
+  cityLine: string
+  countryLine: string
+}
+
+export function formatAddressGridCellLines(
+  entry: AddressBookEntry,
+): AddressGridCellLines {
+  const name = entry.address.name?.trim() || entry.label?.trim() || ''
+  const city = entry.address.city?.trim() || ''
+  const country = entry.address.country?.trim() || ''
+  return {
+    nameLine: name || '—',
+    cityLine: city || '—',
+    countryLine: country || '—',
+  }
+}
+
 export function formatAddressSummaryLines(
   entry: AddressBookEntry,
 ): AddressSummaryLines {

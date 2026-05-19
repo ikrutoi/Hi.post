@@ -4,7 +4,9 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { IconUsers } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
-import { AddressBookListRow } from './AddressBookListRow'
+import { AddressBookCell } from './AddressBookCell'
+import { getAddressBookGridColumns } from './addressBookGridConstants'
+import { getNextAddressBookGridIndex } from './addressBookGridKeyboard'
 import type { AddressBookEntry } from '../domain/types'
 import { useRecipientListPanelFacade } from '../../application/facades'
 import { useAppSelector } from '@app/hooks'
@@ -32,6 +34,7 @@ export const RecipientListPanel: React.FC<Props> = ({
   const addressListPanelDensity = useAppSelector(
     selectRecipientAddressListPanelDensity,
   )
+  const gridColumns = getAddressBookGridColumns(addressListPanelDensity)
   const editingEntryId =
     activeAddressEdit?.role === 'recipient'
       ? activeAddressEdit.templateId
@@ -97,17 +100,20 @@ export const RecipientListPanel: React.FC<Props> = ({
         return
       }
       if (combinedEntries.length === 0) return
-      if (e.key === 'ArrowDown') {
+      if (
+        e.key === 'ArrowDown' ||
+        e.key === 'ArrowUp' ||
+        e.key === 'ArrowLeft' ||
+        e.key === 'ArrowRight'
+      ) {
         e.preventDefault()
-        const next =
-          focusedIndex < 0
-            ? Math.max(primarySelectedIndex, 0)
-            : Math.min(focusedIndex + 1, combinedEntries.length - 1)
-        setFocusedIndex(next)
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        if (focusedIndex < 0) return
-        const next = Math.max(focusedIndex - 1, 0)
+        const next = getNextAddressBookGridIndex(
+          e.key,
+          focusedIndex < 0 ? -1 : focusedIndex,
+          combinedEntries.length,
+          gridColumns,
+        )
+        if (next == null) return
         setFocusedIndex(next)
       } else if (e.key === 'Enter') {
         e.preventDefault()
@@ -132,6 +138,7 @@ export const RecipientListPanel: React.FC<Props> = ({
       onSelect,
       onEdit,
       closePanel,
+      gridColumns,
     ],
   )
 
@@ -182,7 +189,7 @@ export const RecipientListPanel: React.FC<Props> = ({
             <>
               {favoriteEntries.map((entry, index) => (
                 <div key={entry.id} data-index={index} role="option">
-                  <AddressBookListRow
+                  <AddressBookCell
                     entry={entry}
                     onSelect={onSelect}
                     onEdit={onEdit}
@@ -205,7 +212,7 @@ export const RecipientListPanel: React.FC<Props> = ({
                 const dataIndex = favoriteEntries.length + index
                 return (
                   <div key={entry.id} data-index={dataIndex} role="option">
-                    <AddressBookListRow
+                    <AddressBookCell
                       entry={entry}
                       onSelect={onSelect}
                       onEdit={onEdit}
