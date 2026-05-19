@@ -178,14 +178,31 @@ function* closeOtherListPanels(action: {
     yield put(setCardPieListPanelOpen(false))
   }
 
-  if (!openingCardphoto && !openingDate && !openingCart) {
+  /**
+   * Списки секций редактора (cardphoto, cardtext, адресная книга) запоминают
+   * open/closed отдельно: при переключении секции панель скрывается в UI,
+   * но флаг в slice не сбрасываем.
+   */
+  const openingEditorSectionList =
+    openingCardphoto || openingCardtext || openingAddressList
+
+  if (
+    !openingCardphoto &&
+    !openingDate &&
+    !openingCart &&
+    !openingEditorSectionList
+  ) {
     yield put(setCardphotoListPanelOpen(false))
   }
-  if (!openingCardtext && !openingCart) {
+  if (
+    !openingCardtext &&
+    !openingCart &&
+    !openingEditorSectionList
+  ) {
     yield put(setCardtextListPanelOpen(false))
   }
 
-  if (!openingAddressList && !openingCart) {
+  if (!openingAddressList && !openingCart && !openingEditorSectionList) {
     yield put(closeAddressList())
   }
 
