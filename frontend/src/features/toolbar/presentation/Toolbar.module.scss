@@ -923,15 +923,12 @@
 }
 
 .toolbarCardPieList {
-  position: relative;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
 
-  .toolbarGroupCardPieList {
-    position: absolute;
-    left: calc(70% - 0.35rem);
-    top: 50%;
-    transform: translateY(-50%);
+  .toolbarGroupCardPieList,
+  .toolbarGroupActions {
+    display: flex;
   }
 }
 

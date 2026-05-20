@@ -50,7 +50,25 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   const showDelete = Boolean(onDelete)
 
   return (
-    <div className={styles.shell}>
+    <div
+      className={styles.shell}
+      data-inactive={inactive ? 'true' : undefined}
+    >
+      <div className={styles.shellAddCartSlot}>
+        <button
+          type="button"
+          className={styles.shellAddCartBtn}
+          disabled={!onAddCart || inactive}
+          onClick={(e) => {
+            e.stopPropagation()
+            onAddCart?.()
+          }}
+          aria-label={onAddCart && !inactive ? 'Add to cart' : undefined}
+          title={onAddCart && !inactive ? 'Add to cart' : undefined}
+        >
+          {getToolbarIcon({ key: 'addCart' })}
+        </button>
+      </div>
       {showDelete ? (
         <div className={styles.shellDeleteSlot}>
           <button
@@ -72,7 +90,7 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
         className={styles.root}
         data-selected={isSelected ? 'true' : undefined}
         data-focused={isFocused ? 'true' : undefined}
-        data-inactive={variant === 'inactive' ? 'true' : undefined}
+        data-inactive={inactive ? 'true' : undefined}
         data-clickable={interactive ? 'true' : undefined}
         role={interactive ? 'button' : undefined}
         tabIndex={interactive ? 0 : undefined}
@@ -114,35 +132,16 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
             <div className={styles.countryLine}>{recipientCountry}</div>
           ) : null}
           </div>
-          <div className={styles.rightPack} data-has-side-actions="true">
-            <div className={styles.rightPackAddCartSlot}>
-              <button
-                type="button"
-                className={styles.addCartBtn}
-                disabled={!onAddCart || inactive}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onAddCart?.()
-                }}
-                aria-label={
-                  onAddCart && !inactive ? 'Add to cart' : undefined
-                }
-                title={onAddCart && !inactive ? 'Add to cart' : undefined}
+          {priceLineVisible ? (
+            <div className={styles.rightPack}>
+              <div
+                className={styles.priceLine}
+                aria-label={`Price ${priceLineVisible}`}
               >
-                {getToolbarIcon({ key: 'addCart' })}
-              </button>
+                {priceLineVisible}
+              </div>
             </div>
-            <div className={styles.rightPriceSlot}>
-              {priceLineVisible ? (
-                <div
-                  className={styles.priceLine}
-                  aria-label={`Price ${priceLineVisible}`}
-                >
-                  {priceLineVisible}
-                </div>
-              ) : null}
-            </div>
-          </div>
+          ) : null}
         </div>
       </div>
     </div>

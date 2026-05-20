@@ -28,6 +28,71 @@ $list-entry-row-linked-border: $color-cart-list-border;
   border-radius: 4px;
 }
 
+/** Левый gutter `2rem`: центр по горизонтали и вертикали. */
+.shellAddCartSlot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  pointer-events: none;
+
+  .shellAddCartBtn {
+    pointer-events: auto;
+  }
+}
+
+.shellAddCartBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  font: inherit;
+  appearance: none;
+  cursor: pointer;
+  color: $color-font-enabled-light;
+  line-height: 1;
+  transition: color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    color: $color-font-enabled;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.55;
+    color: $color-font-disabled;
+  }
+
+  :global(svg) {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+    display: block;
+    color: currentColor;
+  }
+
+  &:disabled :global(svg) {
+    color: $color-font-disabled;
+  }
+}
+
+.shell[data-inactive='true'] .shellAddCartBtn:disabled {
+  opacity: 0.45;
+}
+
 /** Правый gutter `2rem`: по горизонтали центр, по вертикали низ. */
 .shellDeleteSlot {
   position: absolute;
@@ -192,60 +257,12 @@ $list-entry-row-linked-border: $color-cart-list-border;
 
 .rightPack {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  gap: 0.12rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
   margin-left: auto;
   min-width: 0;
-
-  &[data-has-side-actions='true'] {
-    flex: 0 0 30%;
-    width: 30%;
-    max-width: 30%;
-    min-width: 0;
-    align-self: stretch;
-    position: relative;
-  }
-
-  &:not([data-has-side-actions='true']) {
-    flex: 0 1 auto;
-    max-width: min(50%, 14rem);
-    justify-content: flex-start;
-    align-self: center;
-  }
-}
-
-.rightPriceSlot {
-  display: flex;
-  width: 100%;
-  max-width: 100%;
-  align-items: flex-end;
-  justify-content: flex-end;
-}
-
-.rightPack[data-has-side-actions='true'] .rightPackAddCartSlot {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  width: 100%;
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: flex-start;
-  pointer-events: none;
-
-  .addCartBtn {
-    pointer-events: auto;
-  }
-}
-
-.rightPack[data-has-side-actions='true'] .rightPriceSlot {
-  flex: 1 1 0;
-  min-height: 0;
-}
-
-.rightPack:not([data-has-side-actions='true']) .rightPriceSlot {
-  flex: 0 1 auto;
+  max-width: min(50%, 14rem);
 }
 
 .body {
@@ -255,60 +272,6 @@ $list-entry-row-linked-border: $color-cart-list-border;
   width: 100%;
   min-width: 0;
   min-height: calc(#{$list-entry-row-height} - 2px);
-}
-
-/** Как палитра строки корзины (`CartListEntry`): бледно-жёлтый фон и жёлтая обводка. */
-.addCartBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 2.2rem;
-  height: 2.2rem;
-  padding: 0;
-  border: 1px solid $color-cart-list-border;
-  border-radius: 50%;
-  background-color: $color-cart-list-surface;
-  cursor: pointer;
-  color: $color-font-enabled-light;
-  line-height: 1;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  transition:
-    color 0.15s ease,
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    opacity 0.15s ease;
-
-  &:hover:not(:disabled) {
-    color: $color-font-enabled;
-    background-color: darken($color-cart-list-surface, 4%);
-    border-color: darken($color-cart-list-border, 8%);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  &:disabled {
-    cursor: default;
-    opacity: 0.55;
-    background-color: mix($color-cart-list-surface, $color-app-inner, 62%);
-    border-color: mix($color-cart-list-border, $color-disabled, 55%);
-  }
-
-  :global(svg) {
-    width: 1.1rem;
-    height: 1.1rem;
-    flex-shrink: 0;
-    display: block;
-    color: currentColor;
-  }
-
-  &:disabled :global(svg) {
-    color: $color-font-disabled;
-  }
-}
-
-.root[data-inactive='true'] .addCartBtn:disabled {
-  opacity: 0.45;
 }
 
 .root[data-inactive='true'] .thumbImg {
@@ -404,12 +367,6 @@ $list-entry-row-linked-border: $color-cart-list-border;
   font-weight: 600;
   line-height: 1.16;
   color: $color-font-enabled-light;
-}
-
-.rightPack .priceLine {
-  align-self: center;
-  width: 100%;
-  max-width: 100%;
 }
 
 .priceLine {
