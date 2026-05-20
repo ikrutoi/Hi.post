@@ -127,6 +127,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       className={styles.shell}
       data-inactive={inactive ? 'true' : undefined}
       data-selected={isSelected ? 'true' : undefined}
+      data-cart-blocked={isBlockedEntry ? 'true' : undefined}
     >
       {isBlockedEntry ? (
         <div className={styles.shellDateEditSlot}>
@@ -162,6 +163,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         className={styles.root}
         data-focused={isFocused ? 'true' : undefined}
         data-selected={isSelected ? 'true' : undefined}
+        data-cart-blocked={isBlockedEntry ? 'true' : undefined}
         data-date-edit-active={
           isBlockedEntry && dateEditHighlight ? 'true' : undefined
         }
