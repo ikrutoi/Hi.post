@@ -75,11 +75,10 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
             type="button"
             className={styles.shellDeleteBtn}
             aria-label="Remove postcard row"
-            title={!inactive ? 'Remove postcard row' : undefined}
-            disabled={inactive}
+            title="Remove postcard row"
             onClick={(e) => {
               e.stopPropagation()
-              if (!inactive) onDelete?.()
+              onDelete?.()
             }}
           >
             {getToolbarIcon({ key: 'delete' })}

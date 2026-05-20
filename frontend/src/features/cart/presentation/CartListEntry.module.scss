@@ -15,17 +15,141 @@ $list-entry-date-edit-bg-hover: mix(
   58%
 );
 $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
-/**
- * Фон кнопок в режиме выбора даты: почти как фон строки, лёгкий сдвиг к тинту.
- * `$weight-row` — доля цвета строки в `mix` (чем выше, тем ближе к строке).
- */
-@function date-edit-icon-surface($row-bg, $tint, $weight-row: 88%) {
-  @return mix($row-bg, $tint, $weight-row);
+
+.shell {
+  position: relative;
+  box-sizing: border-box;
+  margin-bottom: 0.25rem;
+  padding: 0.15rem 2rem;
+  background-color: #fff;
+  border: 1px solid $list-entry-border;
+  border-radius: 4px;
+  transition: box-shadow 0.15s ease;
+
+  /** Как выделение ячейки адреса в Конверте (`AddressBookCell`). */
+  &[data-selected='true'] {
+    box-shadow: -2px 0 0 0 $color-toggle-active;
+  }
+
+  &[data-selected='true'][data-inactive='true'] {
+    box-shadow: -2px 0 0 0 mix($color-toggle-active, $color-font-disabled, 40%);
+  }
+}
+
+/** Левый gutter `2rem`: dateEdit по центру (как addCart в CardPie). */
+.shellDateEditSlot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  pointer-events: none;
+
+  .shellDateEditBtn {
+    pointer-events: auto;
+  }
+}
+
+.shellDateEditBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  font: inherit;
+  appearance: none;
+  cursor: pointer;
+  color: $color-font-enabled-light;
+  line-height: 1;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled;
+  }
+
+  &[aria-pressed='true'] {
+    color: $color-font-enabled;
+  }
+
+  :global(svg) {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+    display: block;
+    color: currentColor;
+  }
+}
+
+/** Правый gutter `2rem`: delete по центру по горизонтали, снизу. */
+.shellDeleteSlot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  width: 2rem;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0.15rem;
+  box-sizing: border-box;
+  pointer-events: none;
+
+  .shellDeleteBtn {
+    pointer-events: auto;
+  }
+}
+
+.shellDeleteBtn {
+  width: 1.05rem;
+  height: 1.05rem;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  font: inherit;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-font-enabled-light;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    color: $color-font-enabled;
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.55;
+    color: $color-font-disabled;
+  }
+
+  :global(svg) {
+    width: 0.7rem;
+    height: 0.7rem;
+    display: block;
+    color: currentColor;
+  }
 }
 
 .root {
   position: relative;
-  margin-bottom: 0.25rem;
+  box-sizing: border-box;
   min-height: $list-entry-row-height;
   padding: 1px 0.5rem 1px 0.35rem;
   box-sizing: border-box;
@@ -37,14 +161,10 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
     background-color 0.15s ease,
     border-color 0.15s ease,
     opacity 0.15s ease;
-  --action-btn-bg: #{mix($list-entry-surface, #fff, 82%)};
-  --action-btn-bg-hover: #{mix($list-entry-surface, #fff, 72%)};
 
   &[data-inactive='true'] {
     background-color: $color-disabled-light;
     border-color: $color-disabled;
-    --action-btn-bg: #{mix($color-disabled-light, #fff, 86%)};
-    --action-btn-bg-hover: #{mix($color-disabled-light, #fff, 78%)};
 
     .thumb {
       background-color: mix($color-app-inner, #eee, 55%);
@@ -54,52 +174,31 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
     .detailBlock {
       color: $color-font-disabled;
     }
-
-    .actionBtn {
-      &:hover {
-        cursor: pointer;
-      }
-    }
   }
 
   &:hover,
   &[data-focused='true'] {
     background-color: darken($list-entry-surface, 1.5%);
-    --action-btn-bg: #{mix(darken($list-entry-surface, 1.5%), #fff, 82%)};
-    --action-btn-bg-hover: #{mix(darken($list-entry-surface, 1.5%), #fff, 72%)};
 
     &[data-inactive='true'] {
       background-color: darken($color-disabled-light, 3%);
       border-color: $color-disabled;
-      --action-btn-bg: #{mix(darken($color-disabled-light, 3%), #fff, 86%)};
-      --action-btn-bg-hover: #{mix(
-          darken($color-disabled-light, 3%),
-          #fff,
-          78%
-        )};
     }
   }
 
   &[data-selected='true'] {
     background-color: darken($list-entry-surface, 3%);
-    box-shadow: -2px 0 0 0 $color-app-sidebar-icon-active;
-    --action-btn-bg: #{mix(darken($list-entry-surface, 3%), #fff, 82%)};
-    --action-btn-bg-hover: #{mix(darken($list-entry-surface, 3%), #fff, 72%)};
   }
 
   &[data-selected='true'][data-inactive='true'] {
     background-color: darken($color-disabled-light, 5%);
     border-color: $color-disabled;
-    --action-btn-bg: #{mix(darken($color-disabled-light, 5%), #fff, 86%)};
-    --action-btn-bg-hover: #{mix(darken($color-disabled-light, 5%), #fff, 78%)};
   }
 
   &[data-selected='true'][data-inactive='true']:hover,
   &[data-selected='true'][data-inactive='true'][data-focused='true'] {
     background-color: darken($color-disabled-light, 6%);
     border-color: $color-disabled;
-    --action-btn-bg: #{mix(darken($color-disabled-light, 6%), #fff, 86%)};
-    --action-btn-bg-hover: #{mix(darken($color-disabled-light, 6%), #fff, 78%)};
   }
 
   &[data-clickable='true'] {
@@ -117,260 +216,45 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   &[data-date-edit-active='true'] {
     background-color: $list-entry-date-edit-bg;
     border-color: $list-entry-date-edit-border;
-    --action-btn-bg: #{date-edit-icon-surface(
-        $list-entry-date-edit-bg,
-        $list-entry-date-edit-tint
-      )};
-    --action-btn-bg-hover: #{date-edit-icon-surface(
-        $list-entry-date-edit-bg,
-        $list-entry-date-edit-tint-hover,
-        76%
-      )};
   }
 
   &[data-date-edit-active='true']:hover,
   &[data-date-edit-active='true'][data-focused='true'] {
     background-color: $list-entry-date-edit-bg-hover;
-    --action-btn-bg: #{date-edit-icon-surface(
-        $list-entry-date-edit-bg-hover,
-        $list-entry-date-edit-tint-hover
-      )};
-    --action-btn-bg-hover: #{date-edit-icon-surface(
-        $list-entry-date-edit-bg-hover,
-        $list-entry-date-edit-tint,
-        72%
-      )};
   }
 
   &[data-date-edit-active='true'][data-inactive='true'] {
-    $inactive-date-edit-bg: mix($list-entry-date-edit-tint, $color-disabled-light, 48%);
-    background-color: $inactive-date-edit-bg;
+    background-color: mix($list-entry-date-edit-tint, $color-disabled-light, 48%);
     border-color: mix(hsl(210, 48%, 76%), $color-disabled, 58%);
-    --action-btn-bg: #{date-edit-icon-surface(
-        $inactive-date-edit-bg,
-        $list-entry-date-edit-tint
-      )};
-    --action-btn-bg-hover: #{date-edit-icon-surface(
-        $inactive-date-edit-bg,
-        $list-entry-date-edit-tint-hover,
-        76%
-      )};
   }
 
   &[data-date-edit-active='true'][data-selected='true'] {
-    $selected-date-edit-bg: mix(
+    background-color: mix(
       $list-entry-date-edit-tint,
       darken($list-entry-surface, 3%),
       52%
     );
-    background-color: $selected-date-edit-bg;
     border-color: $list-entry-date-edit-border;
-    --action-btn-bg: #{date-edit-icon-surface(
-        $selected-date-edit-bg,
-        $list-entry-date-edit-tint
-      )};
-    --action-btn-bg-hover: #{date-edit-icon-surface(
-        $selected-date-edit-bg,
-        $list-entry-date-edit-tint-hover,
-        76%
-      )};
   }
 
   &[data-date-edit-active='true'][data-selected='true'][data-inactive='true'] {
-    $sel-inact-date-edit-bg: mix(
+    background-color: mix(
       $list-entry-date-edit-tint-hover,
       darken($color-disabled-light, 5%),
       44%
     );
-    background-color: $sel-inact-date-edit-bg;
     border-color: mix(hsl(210, 44%, 74%), $color-disabled, 55%);
-    --action-btn-bg: #{date-edit-icon-surface(
-        $sel-inact-date-edit-bg,
-        $list-entry-date-edit-tint
-      )};
-    --action-btn-bg-hover: #{date-edit-icon-surface(
-        $sel-inact-date-edit-bg,
-        $list-entry-date-edit-tint-hover,
-        76%
-      )};
   }
 }
 
 .rightPack {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  gap: 0.12rem;
-  margin-left: auto;
-  min-width: 0;
-
-  &[data-has-delete='true'] {
-    flex: 0 0 30%;
-    width: 30%;
-    max-width: 30%;
-    min-width: 0;
-    align-self: stretch;
-  }
-
-  &[data-has-delete='true'][data-cart-blocked='true'] {
-    position: relative;
-  }
-
-  &:not([data-has-delete='true']) {
-    flex: 0 1 auto;
-    max-width: min(50%, 14rem);
-    justify-content: flex-start;
-    align-self: flex-start;
-  }
-}
-
-.rightPriceSlot {
-  display: flex;
-  width: 100%;
-  max-width: 100%;
-  align-items: flex-end;
-  justify-content: flex-end;
-}
-
-.rightPack[data-has-delete='true'] .rightPriceSlot {
-  flex: 1 1 0;
-  min-height: 0;
-}
-
-/** Как `CardPieListEntry` / `rightPackAddCartSlot`: dateEdit у левого края правой 30%-колонки, по вертикали по центру. */
-.rightPack[data-cart-blocked='true'] .rightPackDateEditSlot {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  width: 100%;
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: flex-start;
-  pointer-events: none;
-
-  .dateEditPillBtn {
-    pointer-events: auto;
-  }
-}
-
-/** Круг как addCart в CardPie; фон/бордер — палитра поля даты (`colors.scss`). */
-.dateEditPillBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 2.2rem;
-  height: 2.2rem;
-  padding: 0;
-  border: 1px solid $color-date-input-border;
-  border-radius: 50%;
-  background-color: $color-date-input;
-  cursor: pointer;
-  color: $color-font-enabled-light;
-  line-height: 1;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  font: inherit;
-  appearance: none;
-  transition:
-    color 0.15s ease,
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    opacity 0.15s ease;
-
-  &:hover {
-    color: $color-font-enabled;
-    background-color: darken($color-date-input, 4%);
-    border-color: darken($color-date-input-border, 8%);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-
-  :global(svg) {
-    width: 1.1rem;
-    height: 1.1rem;
-    flex-shrink: 0;
-    display: block;
-    color: currentColor;
-  }
-}
-
-.rightPack[data-cart-blocked='true'] .actionBtn {
-  background-color: transparent;
-
-  &:hover:not(:disabled) {
-    background-color: transparent;
-  }
-}
-
-.rightPack:not([data-has-delete='true']) .rightPriceSlot {
-  flex: 0 1 auto;
-}
-
-.actions {
-  display: flex;
-  flex: 0 0 auto;
   flex-shrink: 0;
   align-items: center;
   justify-content: flex-end;
-  align-self: flex-end;
-  gap: 1rem;
-}
-
-.rightPack .actionBtn {
-  width: 1.05rem;
-  height: 1.05rem;
-  border-radius: 5px;
-
-  :global(svg) {
-    width: 0.7rem;
-    height: 0.7rem;
-  }
-}
-
-.actionBtn {
-  width: 1.35rem;
-  height: 1.35rem;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  // border: 1px solid red;
-  border-radius: 6px;
-  background-color: var(--action-btn-bg);
-  font: inherit;
-  appearance: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: $color-font-enabled-light;
-  cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
-  // box-shadow 0.15s ease;
-
-  &:hover:not(:disabled) {
-    color: $color-font-enabled;
-  }
-
-  &:disabled {
-    cursor: default;
-    opacity: 1;
-    color: $color-font-disabled;
-    border-color: $color-disabled;
-  }
-
-  :global(svg) {
-    width: 0.85rem;
-    height: 0.85rem;
-    display: block;
-    color: currentColor;
-  }
-}
-
-.root[data-inactive='true'] .actionBtn:disabled :global(svg) {
-  color: $color-font-disabled;
+  margin-left: auto;
+  min-width: 0;
+  max-width: min(50%, 14rem);
 }
 
 .body {
@@ -496,12 +380,6 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   font-weight: 600;
   line-height: 1.16;
   color: $color-font-enabled-light;
-}
-
-.rightPack .priceLine {
-  align-self: center;
-  width: 100%;
-  max-width: 100%;
 }
 
 .priceLine {
