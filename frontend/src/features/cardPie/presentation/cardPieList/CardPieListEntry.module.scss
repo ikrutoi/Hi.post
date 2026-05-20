@@ -113,26 +113,25 @@ $list-entry-row-linked-border: $color-cart-list-border;
   }
 }
 
+/** Как `AddressListRow` `.rowActionButton` (крупный размер): svg 0.82rem. */
 .shellDeleteBtn {
-  width: 1.05rem;
-  height: 1.05rem;
   box-sizing: border-box;
   margin: 0;
-  padding: 0;
+  padding: 0.22rem;
   border: none;
-  border-radius: 5px;
+  border-radius: 50%;
   background-color: transparent;
   font: inherit;
   appearance: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: $color-font-enabled-light;
+  color: $color-font-disabled;
   cursor: pointer;
   transition: color 0.15s ease;
 
   &:hover:not(:disabled) {
-    color: $color-font-enabled;
+    color: $color-font-enabled-light-hover;
   }
 
   &:disabled {
@@ -142,8 +141,8 @@ $list-entry-row-linked-border: $color-cart-list-border;
   }
 
   :global(svg) {
-    width: 0.7rem;
-    height: 0.7rem;
+    width: 0.82rem;
+    height: 0.82rem;
     display: block;
     color: currentColor;
   }
