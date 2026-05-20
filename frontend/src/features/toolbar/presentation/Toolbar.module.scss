@@ -42,7 +42,8 @@
 
     /* Закрытие списков шаблонов: только затемнение иконки, без фона при hover */
     &[data-icon-key='listDelete'].toolbarKeyEnabled,
-    &[data-icon-key='listClose'].toolbarKeyEnabled {
+    &[data-icon-key='listClose'].toolbarKeyEnabled,
+    &[data-icon-key='checkBox'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
       &:hover {
@@ -722,7 +723,8 @@
   }
 
   .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled,
-  .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled {
+  .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='checkBox'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
 
     &:hover {
@@ -940,10 +942,14 @@
 // }
 
 .toolbarCartList {
-  // width: 100%;
-  justify-content: flex-end;
-  // margin-left: 1rem;
-  // margin-right: 1rem;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  .toolbarGroupCartList,
+  .toolbarGroupActions {
+    display: flex;
+  }
 }
 
 .toolbarSenderView,

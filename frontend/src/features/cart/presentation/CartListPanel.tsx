@@ -5,12 +5,19 @@ import { IconCardBlocked, IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
+import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
 import { useCartFacade } from '../application/facades'
 import {
   selectCartItems,
+  selectCartListCheckedLocalIds,
   selectCartListStatusSegment,
 } from '@cart/infrastructure/selectors'
-import { setCartListStatusSegment } from '@cart/infrastructure/state'
+import {
+  setCartListCheckedLocalIds,
+  setCartListStatusSegment,
+  toggleCartListEntryChecked,
+} from '@cart/infrastructure/state'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { setCartCalendarDatePickMode } from '@date/calendar/infrastructure/state'
 import type { CartListStatusSegment } from '@cart/domain/types'
 import { requestCalendarPreview } from '@entities/card/infrastructure/state'
@@ -149,7 +156,16 @@ const CartListPanelRow: React.FC<{
   onSelectEntry?: (item: CartListPanelItem) => void
   onDateEditEntry?: (item: CartListPanelItem) => void
   isSelected?: boolean
-}> = ({ item, onSelectEntry, onDateEditEntry, isSelected = false }) => {
+  isChecked?: boolean
+  onToggleChecked?: (localId: number) => void
+}> = ({
+  item,
+  onSelectEntry,
+  onDateEditEntry,
+  isSelected = false,
+  isChecked = false,
+  onToggleChecked,
+}) => {
   const dispatch = useAppDispatch()
   const { removeItem } = useCartFacade()
   const cachedUrl = useAppSelector(
@@ -200,6 +216,12 @@ const CartListPanelRow: React.FC<{
       onDateEditActivate={
         onDateEditEntry ? () => onDateEditEntry(item) : undefined
       }
+      isChecked={isChecked}
+      onCheckedChange={
+        onToggleChecked && item.postcard?.localId != null
+          ? () => onToggleChecked(item.postcard!.localId)
+          : undefined
+      }
       isSelected={isSelected}
       onDelete={onDeleteRow}
     />
@@ -214,11 +236,59 @@ export const CartListPanel: React.FC<Props> = ({
   const dispatch = useAppDispatch()
   const cartItems = useAppSelector(selectCartItems)
   const listSegment = useAppSelector(selectCartListStatusSegment)
+  const checkedLocalIds = useAppSelector(selectCartListCheckedLocalIds)
+  const checkedLocalIdSet = useMemo(
+    () => new Set(checkedLocalIds),
+    [checkedLocalIds],
+  )
   const {
     setCartListPanelOpen,
     listSelectedLocalId,
     setCartListSelectedLocalId,
   } = useCartFacade()
+
+  const handleToggleEntryChecked = useCallback(
+    (localId: number) => {
+      dispatch(toggleCartListEntryChecked(localId))
+    },
+    [dispatch],
+  )
+
+  const billableCartLocalIds = useMemo(
+    () => cartListBillableLocalIds(cartItems),
+    [cartItems],
+  )
+
+  /** Синхронизация галочки в toolbar checkBox при ручном выборе строк. */
+  useEffect(() => {
+    if (entriesProp != null || listSegment !== 'cart') return
+
+    const validIds = new Set(cartItems.map((p) => p.localId))
+    const pruned = checkedLocalIds.filter((id) => validIds.has(id))
+    if (pruned.length !== checkedLocalIds.length) {
+      dispatch(setCartListCheckedLocalIds(pruned))
+      return
+    }
+
+    const allChecked =
+      billableCartLocalIds.length > 0 &&
+      billableCartLocalIds.every((id) => checkedLocalIdSet.has(id))
+    dispatch(
+      updateToolbarIcon({
+        section: 'cartList',
+        key: 'checkBox',
+        value: allChecked ? 'active' : 'enabled',
+      }),
+    )
+  }, [
+    billableCartLocalIds,
+    cartItems,
+    checkedLocalIdSet,
+    checkedLocalIds,
+    dispatch,
+    entriesProp,
+    listSegment,
+  ])
 
   const handleSelectCartSegment = useCallback(() => {
     if (listSegment === 'cartBlocked') {
@@ -289,20 +359,31 @@ export const CartListPanel: React.FC<Props> = ({
 
   const cartTotalDisplay = useMemo(() => {
     const billableEntries = entries.filter((e) => e.variant !== 'inactive')
-    if (billableEntries.length === 0) {
+    const sumOnlyChecked =
+      entriesProp == null && listSegment === 'cart'
+    const entriesForTotal = sumOnlyChecked
+      ? billableEntries.filter(
+          (e) =>
+            e.postcard?.localId != null &&
+            checkedLocalIdSet.has(e.postcard.localId),
+        )
+      : billableEntries
+
+    if (entriesForTotal.length === 0) {
       const emptyLine = listEntryPriceLine(undefined)
       return `0.00 ${currencySuffixFromPriceLine(emptyLine)}`
     }
     let sum = 0
-    for (const e of billableEntries) {
+    for (const e of entriesForTotal) {
       const line = e.priceLine ?? listEntryPriceLine(e.postcard)
       sum += numericFromPriceLine(line)
     }
     const suffix = currencySuffixFromPriceLine(
-      billableEntries[0].priceLine ?? listEntryPriceLine(billableEntries[0].postcard),
+      entriesForTotal[0].priceLine ??
+        listEntryPriceLine(entriesForTotal[0].postcard),
     )
     return `${sum.toFixed(2)} ${suffix}`
-  }, [entries])
+  }, [checkedLocalIdSet, entries, entriesProp, listSegment])
 
   const handleCloseList = useCallback(() => {
     setCartListPanelOpen(false)
@@ -412,6 +493,13 @@ export const CartListPanel: React.FC<Props> = ({
                       item.postcard?.localId != null &&
                       item.postcard.localId === listSelectedLocalId
                     }
+                    isChecked={
+                      item.postcard?.localId != null &&
+                      checkedLocalIdSet.has(item.postcard.localId)
+                    }
+                    onToggleChecked={
+                      listSegment === 'cart' ? handleToggleEntryChecked : undefined
+                    }
                   />
                 ))}
               </div>
@@ -446,7 +534,11 @@ export const CartListPanel: React.FC<Props> = ({
       {showCartFooter ? (
         <footer
           className={styles.footer}
-          aria-label={`Cart total ${cartTotalDisplay}`}
+          aria-label={
+            listSegment === 'cart' && entriesProp == null
+              ? `Cart total for selected postcards ${cartTotalDisplay}`
+              : `Cart total ${cartTotalDisplay}`
+          }
         >
           <span className={styles.footerLabel}>Total</span>
           <span className={styles.footerAmount}>{cartTotalDisplay}</span>

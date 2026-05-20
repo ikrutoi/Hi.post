@@ -37,6 +37,9 @@ export type CartListEntryProps = {
   onDelete?: () => void
   /** Включение режима dateEdit (заблокированные): правый CardPie и данные строки. */
   onDateEditActivate?: () => void
+  /** Сегмент «Корзина» (актуальные даты): чекбокс слева в gutter. */
+  isChecked?: boolean
+  onCheckedChange?: (checked: boolean) => void
   isSelected?: boolean
   isFocused?: boolean
 }
@@ -53,12 +56,15 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   onSelect,
   onDelete,
   onDateEditActivate,
+  isChecked = false,
+  onCheckedChange,
   isSelected = false,
   isFocused = false,
 }) => {
   const interactive = Boolean(onSelect)
   const inactive = variant === 'inactive'
   const isBlockedEntry = previewStatus === 'cartBlocked'
+  const showCartCheckbox = !isBlockedEntry && !inactive
   const showDelete = Boolean(onDelete)
   const labelForAria = [detailLine ? `${dateLabel}, ${detailLine}` : dateLabel, priceLine]
     .filter(Boolean)
@@ -130,6 +136,26 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       data-selected={isSelected ? 'true' : undefined}
       data-cart-blocked={isBlockedEntry ? 'true' : undefined}
     >
+      {showCartCheckbox ? (
+        <div className={styles.shellCheckboxSlot}>
+          <button
+            type="button"
+            role="checkbox"
+            aria-checked={isChecked}
+            aria-label="Select postcard"
+            className={styles.shellCheckboxBtn}
+            onClick={(e) => {
+              e.stopPropagation()
+              onCheckedChange?.(!isChecked)
+            }}
+          >
+            {getToolbarIcon({
+              key: 'checkBox',
+              checkBoxChecked: isChecked,
+            })}
+          </button>
+        </div>
+      ) : null}
       {isBlockedEntry ? (
         <div className={styles.shellDateEditSlot}>
           <button

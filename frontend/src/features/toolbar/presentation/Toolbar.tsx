@@ -403,6 +403,10 @@ export const Toolbar = ({
       >
         {getToolbarIcon({
           key: effectiveIconKey as IconKey,
+          checkBoxChecked:
+            section === 'cartList' &&
+            effectiveIconKey === 'checkBox' &&
+            buttonStatus === 'active',
           listCheckTickChecked: showCreateListCheck,
           step: fontSizeStep,
           sortDirection: key === 'sortDown' ? sortDirection : undefined,

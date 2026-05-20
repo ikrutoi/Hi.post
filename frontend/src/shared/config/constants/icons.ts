@@ -115,6 +115,7 @@ export const ICON_KEYS = [
   'removeFromList',
   'panelDensity2',
   'listCheck',
+  'checkBox',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

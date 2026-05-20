@@ -5,6 +5,7 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 export const CART_LIST_KEYS = [
   'listDelete',
   'sortDown',
+  'checkBox',
 ] as const satisfies readonly IconKey[]
 
 export type CartListKey = (typeof CART_LIST_KEYS)[number]
@@ -15,11 +16,11 @@ export interface CartListToolbarState extends Record<string, any> {
 }
 
 export const CART_LIST_TOOLBAR: ToolbarConfig = [
-  // {
-  //   group: 'cartList',
-  //   icons: [{ key: 'sortDown', state: 'enabled' }],
-  //   status: 'enabled',
-  // },
+  {
+    group: 'cartList',
+    icons: [{ key: 'checkBox', state: 'enabled' }],
+    status: 'enabled',
+  },
   {
     group: 'actions',
     icons: [{ key: 'listDelete', state: 'enabled' }],

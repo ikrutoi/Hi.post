@@ -5,6 +5,7 @@ import { IconKey } from '@shared/config/constants'
 import {
   IconDensity,
   IconHistoryPanelDensity,
+  IconCheckBox,
   IconListCheck,
   IconPanelDensity2,
   IconSortDirection,
@@ -28,6 +29,7 @@ export const getToolbarIcon = ({
   historyPanelDensitySize,
   panelDensity2Size,
   listCheckTickChecked,
+  checkBoxChecked,
 }: {
   key: IconKey
   className?: string
@@ -42,6 +44,8 @@ export const getToolbarIcon = ({
   panelDensity2Size?: PanelDensity2Size
   /** Зелёная галочка для {@link IconListCheck} (`listCheck`). */
   listCheckTickChecked?: boolean
+  /** Галочка для {@link IconCheckBox} (`checkBox`). */
+  checkBoxChecked?: boolean
 }): JSX.Element => {
   const iconProps = {
     className,
@@ -83,6 +87,12 @@ export const getToolbarIcon = ({
   if (key === 'listCheck') {
     return (
       <IconListCheck tickChecked={listCheckTickChecked ?? false} {...iconProps} />
+    )
+  }
+
+  if (key === 'checkBox') {
+    return (
+      <IconCheckBox checked={checkBoxChecked ?? false} {...iconProps} />
     )
   }
 

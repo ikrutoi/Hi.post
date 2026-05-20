@@ -37,6 +37,67 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   }
 }
 
+/** Левый gutter `2rem`: чекбокс (сегмент «Корзина», актуальные даты). */
+.shellCheckboxSlot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  pointer-events: none;
+
+  .shellCheckboxBtn {
+    pointer-events: auto;
+  }
+}
+
+.shellCheckboxBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background-color: transparent;
+  font: inherit;
+  appearance: none;
+  cursor: pointer;
+  color: $color-font-enabled-light;
+  line-height: 1;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled;
+  }
+
+  &[aria-checked='true'] {
+    color: $color-font-active;
+  }
+
+  &:focus-visible {
+    outline: 2px solid
+      mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
+    outline-offset: 1px;
+  }
+
+  :global(svg) {
+    width: 0.95rem;
+    height: 0.95rem;
+    flex-shrink: 0;
+    display: block;
+    color: currentColor;
+  }
+}
+
 /** Левый gutter `2rem`: dateEdit по центру (как addCart в CardPie). */
 .shellDateEditSlot {
   position: absolute;

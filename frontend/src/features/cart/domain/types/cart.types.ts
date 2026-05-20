@@ -21,4 +21,6 @@ export type Cart = {
   cardPieCopyStripExpanded: boolean
   /** Кнопки «корзина / заблокированные» под шапкой `CartListPanel`. */
   listStatusSegment: CartListStatusSegment
+  /** Отмеченные чекбоксом строки сегмента «Корзина» (`localId`). */
+  listCheckedLocalIds: number[]
 }

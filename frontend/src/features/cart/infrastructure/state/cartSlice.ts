@@ -24,6 +24,7 @@ const initialState: Cart = {
   listSelectedLocalId: null,
   cardPieCopyStripExpanded: false,
   listStatusSegment: 'cart',
+  listCheckedLocalIds: [],
 }
 
 const cartSlice = createSlice({
@@ -49,6 +50,21 @@ const cartSlice = createSlice({
       action: PayloadAction<Cart['listStatusSegment']>,
     ) {
       state.listStatusSegment = action.payload
+      if (action.payload !== 'cart') {
+        state.listCheckedLocalIds = []
+      }
+    },
+    toggleCartListEntryChecked(state, action: PayloadAction<number>) {
+      const id = action.payload
+      const index = state.listCheckedLocalIds.indexOf(id)
+      if (index >= 0) {
+        state.listCheckedLocalIds.splice(index, 1)
+      } else {
+        state.listCheckedLocalIds.push(id)
+      }
+    },
+    setCartListCheckedLocalIds(state, action: PayloadAction<number[]>) {
+      state.listCheckedLocalIds = action.payload
     },
     setItems(state, action: PayloadAction<PostcardHydrated[]>) {
       state.items = action.payload.map(normalizeCartLikeStatus)
@@ -62,6 +78,9 @@ const cartSlice = createSlice({
       if (state.listSelectedLocalId === removed) {
         state.listSelectedLocalId = null
       }
+      state.listCheckedLocalIds = state.listCheckedLocalIds.filter(
+        (lid) => lid !== removed,
+      )
     },
     updateItem(state, action: PayloadAction<PostcardHydrated>) {
       const index = state.items.findIndex(
@@ -88,6 +107,7 @@ const cartSlice = createSlice({
       state.listSelectedLocalId = null
       state.cardPieCopyStripExpanded = false
       state.listStatusSegment = 'cart'
+      state.listCheckedLocalIds = []
     },
   },
 })
@@ -96,6 +116,8 @@ export const {
   setCartListPanelOpen,
   setCartListSelectedLocalId,
   setCartListStatusSegment,
+  toggleCartListEntryChecked,
+  setCartListCheckedLocalIds,
   setCardPieCopyStripExpanded,
   setItems,
   addItem,

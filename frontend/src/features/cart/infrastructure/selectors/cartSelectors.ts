@@ -37,3 +37,11 @@ export const selectCartCount = (state: RootState): number =>
 
 export const selectCardPieCopyStripExpanded = (state: RootState): boolean =>
   Boolean(state.cart.cardPieCopyStripExpanded)
+
+export const selectCartListCheckedLocalIds = (state: RootState): number[] =>
+  state.cart.listCheckedLocalIds ?? []
+
+export const selectIsCartListEntryChecked = (
+  state: RootState,
+  localId: number,
+): boolean => state.cart.listCheckedLocalIds?.includes(localId) ?? false
