@@ -9,6 +9,7 @@ import React, {
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
+  selectCartCalendarDatePickLocalId,
   selectHistoryListSelectedLocalId,
   selectHistoryOpenDayPanelArchiveLocalId,
   selectIsCardPieListPanelOpen,
@@ -162,6 +163,9 @@ const App = () => {
   const { activeSection } = useSectionMenuFacade()
   const prevActiveSectionRef = useRef(activeSection)
   const { listPanelOpen, listSelectedLocalId } = useCartFacade()
+  const cartCalendarDatePickLocalId = useAppSelector(
+    selectCartCalendarDatePickLocalId,
+  )
   const cardsByDateMap = useAppSelector(selectCardsByDateMap)
   const prevCartListPanelOpen = useRef(listPanelOpen)
   const prevListArchiveListContextRef = useRef<{
@@ -620,6 +624,12 @@ const App = () => {
       const lid = item.postcard?.localId
       if (lid == null) return
       const nextLid = listSelectedLocalId === lid ? null : lid
+      if (
+        nextLid == null ||
+        nextLid !== cartCalendarDatePickLocalId
+      ) {
+        dispatch(setCartCalendarDatePickMode(false))
+      }
       dispatch(setCartListSelectedLocalId(nextLid))
       if (nextLid == null) {
         dispatch(closeDayPanel())
@@ -633,7 +643,35 @@ const App = () => {
         }
       }
     },
-    [dispatch, listSelectedLocalId, cardsByDateMap],
+    [dispatch, cartCalendarDatePickLocalId, listSelectedLocalId, cardsByDateMap],
+  )
+
+  const handleCartListDateEditEntry = useCallback(
+    (item: CartListPanelItem) => {
+      dispatch(setNotebookStripTab('cart'))
+      dispatch(setActiveSection('date'))
+      const lid = item.postcard?.localId
+      if (lid == null) return
+      dispatch(setCartListSelectedLocalId(lid))
+      if (activePieSide !== 'right') {
+        setSuppressCardPieEditActiveAfterCopy(false)
+        setActivePieSide('right')
+      }
+      if (item.sourceDate) {
+        dispatch(
+          updateLastViewedCalendarDate({
+            year: item.sourceDate.year,
+            month: item.sourceDate.month,
+          }),
+        )
+        const dateKey = `${item.sourceDate.year}-${item.sourceDate.month}-${item.sourceDate.day}`
+        const dayData = cardsByDateMap[dateKey]
+        if (dayData != null && calendarDayHasCards(dayData)) {
+          dispatch(openDayPanel({ dateKey, dayData }))
+        }
+      }
+    },
+    [dispatch, activePieSide, cardsByDateMap],
   )
 
   const handlePostcardPieCartToolbarAction = useCallback(
@@ -1031,7 +1069,10 @@ const App = () => {
             >
               {/* {activeSection === 'envelope' && <EnvelopeRightSlot />} */}
               {listPanelOpen && (
-                <CartListPanel onSelectEntry={handleCartListSelectEntry} />
+                <CartListPanel
+                  onSelectEntry={handleCartListSelectEntry}
+                  onDateEditEntry={handleCartListDateEditEntry}
+                />
               )}
               <HistoryListRightSlot />
               {/* {activeSection === 'cardtext' && <CardtextRightSlot />} */}

@@ -44,6 +44,8 @@ type Props = {
   /** If omitted, rows are built from Redux cart items filtered by выбранный сегмент (кнопки cart / cartBlocked). */
   entries?: CartListPanelItem[]
   onSelectEntry?: (item: CartListPanelItem) => void
+  /** cartBlocked: dateEdit — правый CardPie и данные открытки строки. */
+  onDateEditEntry?: (item: CartListPanelItem) => void
 }
 
 const isBlobUrl = (url: string | null | undefined): boolean =>
@@ -145,8 +147,9 @@ function cartPostcardsToEntries(
 const CartListPanelRow: React.FC<{
   item: CartListPanelItem
   onSelectEntry?: (item: CartListPanelItem) => void
+  onDateEditEntry?: (item: CartListPanelItem) => void
   isSelected?: boolean
-}> = ({ item, onSelectEntry, isSelected = false }) => {
+}> = ({ item, onSelectEntry, onDateEditEntry, isSelected = false }) => {
   const dispatch = useAppDispatch()
   const { removeItem } = useCartFacade()
   const cachedUrl = useAppSelector(
@@ -194,6 +197,9 @@ const CartListPanelRow: React.FC<{
       previewIsProcessed={item.previewIsProcessed}
       postcardLocalId={item.postcard?.localId}
       onSelect={onSelectEntry ? () => onSelectEntry(item) : undefined}
+      onDateEditActivate={
+        onDateEditEntry ? () => onDateEditEntry(item) : undefined
+      }
       isSelected={isSelected}
       onDelete={onDeleteRow}
     />
@@ -203,6 +209,7 @@ const CartListPanelRow: React.FC<{
 export const CartListPanel: React.FC<Props> = ({
   entries: entriesProp,
   onSelectEntry,
+  onDateEditEntry,
 }) => {
   const dispatch = useAppDispatch()
   const cartItems = useAppSelector(selectCartItems)
@@ -400,6 +407,7 @@ export const CartListPanel: React.FC<Props> = ({
                     key={item.id}
                     item={item}
                     onSelectEntry={onSelectEntry}
+                    onDateEditEntry={onDateEditEntry}
                     isSelected={
                       item.postcard?.localId != null &&
                       item.postcard.localId === listSelectedLocalId
@@ -414,6 +422,7 @@ export const CartListPanel: React.FC<Props> = ({
                       key={item.id}
                       item={item}
                       onSelectEntry={onSelectEntry}
+                      onDateEditEntry={onDateEditEntry}
                       isSelected={
                         item.postcard?.localId != null &&
                         item.postcard.localId === listSelectedLocalId

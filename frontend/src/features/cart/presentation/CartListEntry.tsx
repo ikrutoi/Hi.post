@@ -35,7 +35,8 @@ export type CartListEntryProps = {
   postcardLocalId?: number
   onSelect?: () => void
   onDelete?: () => void
-  onDateEdit?: () => void
+  /** Включение режима dateEdit (заблокированные): правый CardPie и данные строки. */
+  onDateEditActivate?: () => void
   isSelected?: boolean
   isFocused?: boolean
 }
@@ -51,7 +52,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   postcardLocalId,
   onSelect,
   onDelete,
-  onDateEdit,
+  onDateEditActivate,
   isSelected = false,
   isFocused = false,
 }) => {
@@ -105,10 +106,10 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         }
         dispatch(setCartCalendarDatePickMode(true))
         dispatch(setCartCalendarDatePickLocalId(postcardLocalId ?? null))
+        onDateEditActivate?.()
       } else {
         dispatch(setCartCalendarDatePickMode(false))
       }
-      onDateEdit?.()
     },
     [
       dispatch,
@@ -117,7 +118,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
       isBlockedEntry,
       lastViewedCalendarDate,
       notebookStripTab,
-      onDateEdit,
+      onDateEditActivate,
       postcardLocalId,
     ],
   )
