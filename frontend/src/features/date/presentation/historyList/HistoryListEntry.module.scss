@@ -153,45 +153,47 @@ $list-entry-border: $color-cart-list-border;
   object-fit: cover;
 }
 
+/** Как `CartListEntry`: фиксированный размер на всех плотностях. */
 .statusIndicator {
   position: absolute;
-  top: 0.12rem;
-  left: 0.12rem;
+  top: 0.15rem;
+  left: 0.15rem;
   z-index: 1;
-  width: 0.48rem;
-  height: 0.48rem;
+  width: 0.55rem;
+  height: 0.55rem;
   border-radius: 50%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+  background-color: $color-preview-indicator-delivered;
 
-  &.processed {
+  &[data-status='processed'] {
     background-color: $color-preview-indicator-processed;
   }
 
-  &.cart {
+  &[data-status='cart'] {
     background-color: $color-preview-indicator-cart;
   }
 
-  &.cartBlocked {
+  &[data-status='cartBlocked'] {
     @include preview-indicator-cart-blocked-ring;
   }
 
-  &.ready {
+  &[data-status='ready'] {
     background-color: $color-preview-indicator-ready;
   }
 
-  &.sent {
+  &[data-status='sent'] {
     background-color: $color-preview-indicator-sent;
   }
 
-  &.delivered {
+  &[data-status='delivered'] {
     background-color: $color-preview-indicator-delivered;
   }
 
-  &.error {
+  &[data-status='error'] {
     background-color: $color-preview-indicator-error;
   }
 
-  &.drafts {
+  &[data-status='drafts'] {
     background-color: mix($color-preview-indicator-processed, #fff, 72%);
   }
 }
@@ -244,13 +246,6 @@ $list-entry-border: $color-cart-list-border;
 
   .thumb {
     width: 68%;
-  }
-
-  .statusIndicator {
-    top: 0.1rem;
-    left: 0.1rem;
-    width: 0.42rem;
-    height: 0.42rem;
   }
 
   .dateLine {

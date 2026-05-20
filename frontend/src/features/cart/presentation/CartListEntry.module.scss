@@ -50,7 +50,8 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
       background-color: mix($color-app-inner, #eee, 55%);
     }
 
-    .dateLine {
+    .dateLine,
+    .detailBlock {
       color: $color-font-disabled;
     }
 
@@ -472,24 +473,29 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
   // -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
 }
 
-.detailBlock {
+.detailBlock,
+.countryLine {
   display: block;
-  font-size: 0.62rem;
-  font-weight: 600;
-  color: $color-font-enabled;
-  line-height: 1.2;
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  // mask-image: linear-gradient(to right, black 85%, transparent 100%);
-  // -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
 
-.detailName,
-.detailRegion,
-.detailSep {
-  font-size: inherit;
+.detailBlock {
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1.18;
+  color: $color-font-enabled;
+}
+
+.countryLine {
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1.16;
+  color: $color-font-enabled-light;
 }
 
 .rightPack .priceLine {

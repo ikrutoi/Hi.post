@@ -391,22 +391,29 @@ $list-entry-row-linked-border: $color-cart-list-border;
   text-overflow: ellipsis;
 }
 
-.detailBlock {
+.detailBlock,
+.countryLine {
   display: block;
-  font-size: 0.62rem;
-  font-weight: 600;
-  color: $color-font-enabled;
-  line-height: 1.2;
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.detailName,
-.detailRegion,
-.detailSep {
-  font-size: inherit;
+.detailBlock {
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1.18;
+  color: $color-font-enabled;
+}
+
+.countryLine {
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1.16;
+  color: $color-font-enabled-light;
 }
 
 .rightPack .priceLine {

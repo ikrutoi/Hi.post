@@ -63,6 +63,8 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
     .filter(Boolean)
     .join(', ')
   const recipientParts = parseListEntryRecipientDetail(detailLine)
+  const recipientName = recipientParts?.name ?? detailLine ?? ''
+  const recipientCountry = recipientParts?.region ?? ''
 
   const dispatch = useAppDispatch()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
@@ -160,20 +162,11 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         </div>
         <div className={styles.meta}>
           <div className={styles.dateLine}>{dateLabel}</div>
-          {recipientParts ? (
-            <div className={styles.detailBlock}>
-              {recipientParts.region ? (
-                <>
-                  <span className={styles.detailName}>{recipientParts.name}</span>
-                  <span className={styles.detailSep}>, </span>
-                  <span className={styles.detailRegion}>
-                    {recipientParts.region}
-                  </span>
-                </>
-              ) : (
-                <span className={styles.detailName}>{recipientParts.name}</span>
-              )}
-            </div>
+          {recipientName ? (
+            <div className={styles.detailBlock}>{recipientName}</div>
+          ) : null}
+          {recipientCountry ? (
+            <div className={styles.countryLine}>{recipientCountry}</div>
           ) : null}
         </div>
         {showRightPack ? (

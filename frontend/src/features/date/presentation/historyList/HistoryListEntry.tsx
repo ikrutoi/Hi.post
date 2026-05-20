@@ -1,5 +1,4 @@
 import React from 'react'
-import clsx from 'clsx'
 import type { PostcardStatus } from '@entities/postcard'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
@@ -78,7 +77,8 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
         ) : null}
         {showStatusIndicator && previewStatus && !previewIsProcessed ? (
           <span
-            className={clsx(styles.statusIndicator, styles[previewStatus])}
+            className={styles.statusIndicator}
+            data-status={previewStatus}
             aria-hidden
           />
         ) : null}

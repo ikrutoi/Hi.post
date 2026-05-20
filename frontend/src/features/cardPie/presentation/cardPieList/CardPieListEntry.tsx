@@ -44,6 +44,8 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
     .filter(Boolean)
     .join(', ')
   const recipientParts = parseListEntryRecipientDetail(detailLine)
+  const recipientName = recipientParts?.name ?? detailLine ?? ''
+  const recipientCountry = recipientParts?.region ?? ''
 
   return (
     <div
@@ -85,23 +87,12 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
               {'\u00A0'}
             </div>
           )}
-          <div className={styles.detailBlock} aria-hidden={!recipientParts}>
-            {recipientParts ? (
-              recipientParts.region ? (
-                <>
-                  <span className={styles.detailName}>{recipientParts.name}</span>
-                  <span className={styles.detailSep}>, </span>
-                  <span className={styles.detailRegion}>
-                    {recipientParts.region}
-                  </span>
-                </>
-              ) : (
-                <span className={styles.detailName}>{recipientParts.name}</span>
-              )
-            ) : (
-              '\u00A0'
-            )}
+          <div className={styles.detailBlock} aria-hidden={!recipientName}>
+            {recipientName || '\u00A0'}
           </div>
+          {recipientCountry ? (
+            <div className={styles.countryLine}>{recipientCountry}</div>
+          ) : null}
         </div>
         <div className={styles.rightPack} data-has-delete="true">
           <div className={styles.rightPackAddCartSlot}>
