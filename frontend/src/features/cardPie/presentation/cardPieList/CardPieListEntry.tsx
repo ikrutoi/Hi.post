@@ -47,30 +47,50 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   const recipientName = recipientParts?.name ?? detailLine ?? ''
   const recipientCountry = recipientParts?.region ?? ''
 
+  const showDelete = Boolean(onDelete)
+
   return (
-    <div
-      className={styles.root}
-      data-selected={isSelected ? 'true' : undefined}
-      data-focused={isFocused ? 'true' : undefined}
-      data-inactive={variant === 'inactive' ? 'true' : undefined}
-      data-clickable={interactive ? 'true' : undefined}
-      role={interactive ? 'button' : undefined}
-      tabIndex={interactive ? 0 : undefined}
-      aria-label={interactive ? labelForAria : undefined}
-      onClick={interactive ? () => onSelect?.() : undefined}
-      onKeyDown={
-        interactive
-          ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault()
-                onSelect?.()
+    <div className={styles.shell}>
+      {showDelete ? (
+        <div className={styles.shellDeleteSlot}>
+          <button
+            type="button"
+            className={styles.shellDeleteBtn}
+            aria-label="Remove postcard row"
+            title={!inactive ? 'Remove postcard row' : undefined}
+            disabled={inactive}
+            onClick={(e) => {
+              e.stopPropagation()
+              if (!inactive) onDelete?.()
+            }}
+          >
+            {getToolbarIcon({ key: 'delete' })}
+          </button>
+        </div>
+      ) : null}
+      <div
+        className={styles.root}
+        data-selected={isSelected ? 'true' : undefined}
+        data-focused={isFocused ? 'true' : undefined}
+        data-inactive={variant === 'inactive' ? 'true' : undefined}
+        data-clickable={interactive ? 'true' : undefined}
+        role={interactive ? 'button' : undefined}
+        tabIndex={interactive ? 0 : undefined}
+        aria-label={interactive ? labelForAria : undefined}
+        onClick={interactive ? () => onSelect?.() : undefined}
+        onKeyDown={
+          interactive
+            ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onSelect?.()
+                }
               }
-            }
-          : undefined
-      }
-    >
-      <div className={styles.body}>
-        <div className={styles.thumb} aria-hidden>
+            : undefined
+        }
+      >
+        <div className={styles.body}>
+          <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
             <img src={previewUrl} alt="" className={styles.thumbImg} />
           ) : (
@@ -78,8 +98,8 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
               {getToolbarIcon({ key: 'cardphoto' })}
             </div>
           )}
-        </div>
-        <div className={styles.meta}>
+          </div>
+          <div className={styles.meta}>
           {hasDate ? (
             <div className={styles.dateLine}>{dateLabel}</div>
           ) : (
@@ -93,53 +113,35 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
           {recipientCountry ? (
             <div className={styles.countryLine}>{recipientCountry}</div>
           ) : null}
-        </div>
-        <div className={styles.rightPack} data-has-delete="true">
-          <div className={styles.rightPackAddCartSlot}>
-            <button
-              type="button"
-              className={styles.addCartBtn}
-              disabled={!onAddCart || inactive}
-              onClick={(e) => {
-                e.stopPropagation()
-                onAddCart?.()
-              }}
-              aria-label={
-                onAddCart && !inactive ? 'Add to cart' : undefined
-              }
-              title={
-                onAddCart && !inactive ? 'Add to cart' : undefined
-              }
-            >
-              {getToolbarIcon({ key: 'addCart' })}
-            </button>
           </div>
-          <div className={styles.rightPriceSlot}>
-            {priceLineVisible ? (
-              <div
-                className={styles.priceLine}
-                aria-label={`Price ${priceLineVisible}`}
+          <div className={styles.rightPack} data-has-side-actions="true">
+            <div className={styles.rightPackAddCartSlot}>
+              <button
+                type="button"
+                className={styles.addCartBtn}
+                disabled={!onAddCart || inactive}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onAddCart?.()
+                }}
+                aria-label={
+                  onAddCart && !inactive ? 'Add to cart' : undefined
+                }
+                title={onAddCart && !inactive ? 'Add to cart' : undefined}
               >
-                {priceLineVisible}
-              </div>
-            ) : null}
-          </div>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.actionBtn}
-              aria-label="Remove postcard row"
-              title={
-                onDelete && !inactive ? 'Remove postcard row' : undefined
-              }
-              disabled={inactive}
-              onClick={(e) => {
-                e.stopPropagation()
-                if (!inactive) onDelete?.()
-              }}
-            >
-              {getToolbarIcon({ key: 'delete' })}
-            </button>
+                {getToolbarIcon({ key: 'addCart' })}
+              </button>
+            </div>
+            <div className={styles.rightPriceSlot}>
+              {priceLineVisible ? (
+                <div
+                  className={styles.priceLine}
+                  aria-label={`Price ${priceLineVisible}`}
+                >
+                  {priceLineVisible}
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
