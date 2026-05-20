@@ -106,11 +106,13 @@ import { selectRecipientState } from '@envelope/recipient/infrastructure/selecto
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
 import {
+  addItem,
   setCartListCheckedLocalIds,
   setCartListStatusSegment,
   setItems,
   toggleCartListEntryChecked,
   removeItem,
+  removeCartPostcard,
   clearCart,
 } from '@cart/infrastructure/state'
 import {
@@ -297,7 +299,9 @@ const SESSION_WATCH_ACTIONS = [
   toggleCartListEntryChecked.type,
   setCartListCheckedLocalIds.type,
   setCartListStatusSegment.type,
+  addItem.type,
   removeItem.type,
+  removeCartPostcard.type,
   clearCart.type,
 ]
 

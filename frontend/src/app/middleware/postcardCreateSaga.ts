@@ -1,8 +1,26 @@
 import type { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
+import { clearCardPieWorkspaceAfterCartAdd } from './editorPieHandlers'
 import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
 import { addItem } from '@cart/infrastructure/state'
+import {
+  setRecipientsPendingIds,
+  syncEnvelopeFormsFromAppliedRequested,
+} from '@envelope/infrastructure/state'
+import { recipientAdapter } from '@db/adapters/storeAdapters'
+import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
+import {
+  removeAppliedAt,
+  setRecipientApplied,
+  setRecipientAppliedIds,
+  setRecipientAppliedWithData,
+  setRecipientView,
+  setRecipientViewId,
+  setRecipientsViewIds,
+} from '@envelope/recipient/infrastructure/state'
+import type { RecipientState } from '@envelope/domain/types'
+import type { AddressFields } from '@shared/config/constants'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import { selectCardphotoState } from '@cardphoto/infrastructure/selectors'
 import { selectCardtextState } from '@cardtext/infrastructure/selectors'
@@ -330,10 +348,91 @@ function* removeCardPiePlanBranchAfterCart(branchKey: string): SagaIterator {
   yield* pruneDispatchDatesAfterBranchExcluded(branchKey)
 }
 
-export function* handleToggleCartForDispatchBranch(
-  action: PayloadAction<{ branchKey: string }>,
+function* maybeClearCardPieWorkspaceAfterSingleAdd(
+  clearEditorAfterAdd: boolean | undefined,
 ): SagaIterator {
-  const { branchKey } = action.payload
+  if (!clearEditorAfterAdd) return
+  yield* clearCardPieWorkspaceAfterCartAdd()
+}
+
+function hasAddressData(data: Record<string, string>): boolean {
+  return Object.values(data).some((v) => (v ?? '').trim() !== '')
+}
+
+function* loadRecipientAddressForAppliedId(
+  recipient: RecipientState,
+  id: string,
+): SagaIterator<AddressFields | null> {
+  if (
+    recipient.appliedData != null &&
+    hasAddressData(recipient.appliedData) &&
+    (recipient.applied ?? []).includes(id)
+  ) {
+    return recipient.appliedData
+  }
+  const record: { id: string; address?: Record<string, string> } | null =
+    yield call([recipientAdapter, 'getById'], id)
+  if (record?.address != null && hasAddressData(record.address)) {
+    return record.address as AddressFields
+  }
+  return null
+}
+
+/** Снять получателя ветки с конверта (он уже в корзине на открытке). */
+function* removeRecipientFromEnvelopeAppliedForCart(
+  recipientSlotKey: string,
+): SagaIterator {
+  if (recipientSlotKey === 'session') {
+    yield put(setRecipientApplied(false))
+  } else {
+    const recipient: RecipientState = yield select(selectRecipientState)
+    const applied = recipient.applied ?? []
+    const index = applied.indexOf(recipientSlotKey)
+    if (index < 0) return
+    yield put(removeAppliedAt(index))
+
+    const afterRemove: RecipientState = yield select(selectRecipientState)
+    const nextApplied = afterRemove.applied ?? []
+    if (nextApplied.length === 0) {
+      yield put(setRecipientApplied(false))
+    } else if (nextApplied.length === 1) {
+      const id = nextApplied[0]
+      const address: AddressFields | null = yield call(
+        loadRecipientAddressForAppliedId,
+        afterRemove,
+        id,
+      )
+      if (address) {
+        yield put(setRecipientAppliedWithData({ ids: nextApplied, data: [address] }))
+      } else {
+        yield put(setRecipientAppliedIds(nextApplied))
+      }
+    } else {
+      yield put(setRecipientAppliedIds(nextApplied))
+    }
+  }
+
+  const recipientNow: RecipientState = yield select(selectRecipientState)
+  const ids = recipientNow.applied ?? []
+  yield put(setRecipientsViewIds(ids))
+  yield put(setRecipientsPendingIds(ids))
+  if (ids.length === 1) {
+    yield put(setRecipientViewId(ids[0]))
+    yield put(setRecipientView('recipientView'))
+  } else {
+    yield put(setRecipientViewId(null))
+    yield put(setRecipientView('recipientsView'))
+  }
+  yield put(syncEnvelopeFormsFromAppliedRequested())
+}
+
+export function* handleToggleCartForDispatchBranch(
+  action: PayloadAction<{
+    branchKey: string
+    clearEditorAfterAdd?: boolean
+  }>,
+): SagaIterator {
+  const { branchKey, clearEditorAfterAdd } = action.payload
   const parsed = parseDispatchBranchKey(branchKey)
   if (!parsed) return
 
@@ -405,7 +504,12 @@ export function* handleToggleCartForDispatchBranch(
   )
   const cartKey = buildCartDuplicateKey(candidateCard)
   if (existingCartDedupeKeys.has(cartKey)) {
-    yield* removeCardPiePlanBranchAfterCart(branchKey)
+    if (clearEditorAfterAdd) {
+      yield* removeCardPiePlanBranchAfterCart(branchKey)
+    } else {
+      yield* removeRecipientFromEnvelopeAppliedForCart(parsed.recipientSlotKey)
+    }
+    yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
     yield call(refreshRightSidebarBadgesFromPostcards)
     return
   }
@@ -447,7 +551,12 @@ export function* handleToggleCartForDispatchBranch(
     postcardForIdb as Omit<PostcardHydrated, 'id'>,
   )
   yield put(addItem(postcard))
-  yield* removeCardPiePlanBranchAfterCart(branchKey)
+  if (clearEditorAfterAdd) {
+    yield* removeCardPiePlanBranchAfterCart(branchKey)
+  } else {
+    yield* removeRecipientFromEnvelopeAppliedForCart(recipientSlotKey)
+  }
+  yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
   yield call(refreshRightSidebarBadgesFromPostcards)
 }
 

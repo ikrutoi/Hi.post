@@ -30,7 +30,8 @@ const CardPiePanelRow: React.FC<{
   item: DateListPanelItem
   onSelectEntry?: (item: DateListPanelItem) => void
   canToggleCart?: boolean
-}> = ({ item, onSelectEntry, canToggleCart }) => {
+  clearEditorAfterAdd?: boolean
+}> = ({ item, onSelectEntry, canToggleCart, clearEditorAfterAdd }) => {
   const dispatch = useAppDispatch()
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const cachedUrl = useAppSelector(
@@ -59,8 +60,13 @@ const CardPiePanelRow: React.FC<{
     if (!cartListPanelOpen) {
       dispatch(setCartListPanelOpen(true))
     }
-    dispatch(toggleCartForDispatchBranch({ branchKey: item.dispatchBranchKey }))
-  }, [cartListPanelOpen, dispatch, item.dispatchBranchKey])
+    dispatch(
+      toggleCartForDispatchBranch({
+        branchKey: item.dispatchBranchKey,
+        clearEditorAfterAdd,
+      }),
+    )
+  }, [cartListPanelOpen, clearEditorAfterAdd, dispatch, item.dispatchBranchKey])
 
   const onAddCartFromList =
     canToggleCart && item.dispatchBranchKey ? handleToggleCart : undefined
@@ -179,6 +185,7 @@ export const CardPiePanel: React.FC<Props> = ({
                 item={item}
                 onSelectEntry={onSelectEntry}
                 canToggleCart={isAllComplete}
+                clearEditorAfterAdd={entries.length === 1}
               />
             ))
           ) : (

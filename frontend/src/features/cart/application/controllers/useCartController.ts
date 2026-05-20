@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   addItem,
-  removeItem,
+  removeCartPostcard,
   updateItem,
   clearCart,
 } from '../../infrastructure/state'
@@ -18,7 +18,8 @@ export const useCartController = () => {
   const count = useAppSelector(selectCartCount)
 
   const addPostcard = (item: PostcardHydrated) => dispatch(addItem(item))
-  const removePostcard = (localId: number) => dispatch(removeItem(localId))
+  const removePostcard = (localId: number) =>
+    dispatch(removeCartPostcard(localId))
   const updatePostcard = (item: PostcardHydrated) => dispatch(updateItem(item))
   const clearCartItems = () => dispatch(clearCart())
 

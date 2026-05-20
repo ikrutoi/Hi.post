@@ -67,7 +67,16 @@ const cartSlice = createSlice({
       state.items = action.payload.map(normalizeCartLikeStatus)
     },
     addItem(state, action: PayloadAction<PostcardHydrated>) {
-      state.items.push(normalizeCartLikeStatus(action.payload))
+      const item = normalizeCartLikeStatus(action.payload)
+      state.items.push(item)
+      /** Новая открытка в сегменте «Корзина» (актуальная дата) — сразу с чекбоксом. */
+      if (
+        item.status === 'cart' &&
+        !isDispatchDateDisabledForOrder(item.date, getCurrentDate()) &&
+        !state.listCheckedLocalIds.includes(item.localId)
+      ) {
+        state.listCheckedLocalIds.push(item.localId)
+      }
     },
     removeItem(state, action: PayloadAction<number>) {
       const removed = action.payload
@@ -106,6 +115,8 @@ const cartSlice = createSlice({
       state.listStatusSegment = 'cart'
       state.listCheckedLocalIds = []
     },
+    /** Saga-only: удалить открытку из IDB, затем `removeItem` в Redux. */
+    removeCartPostcard(_state, _action: PayloadAction<number>) {},
   },
 })
 
@@ -122,5 +133,6 @@ export const {
   updateItem,
   setCartItemCardAroma,
   clearCart,
+  removeCartPostcard,
 } = cartSlice.actions
 export default cartSlice.reducer

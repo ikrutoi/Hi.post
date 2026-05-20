@@ -20,6 +20,7 @@ import {
   toggleCartForDispatchBranch,
   clearCardPieEditorSession,
 } from '@date/infrastructure/state'
+import { addItem } from '@cart/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
 import {
   updateRecipientField,
@@ -97,6 +98,8 @@ const PIE_PROGRESS_SYNC_ACTIONS = [
   restoreSender.type,
   restoreRecipient.type,
   clearCardPieEditorSession.type,
+  toggleCartForDispatchBranch.type,
+  addItem.type,
 ] as const
 
 function* handleClearCardPieEditorSession(): SagaIterator {

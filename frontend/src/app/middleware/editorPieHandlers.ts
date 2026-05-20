@@ -9,6 +9,8 @@ import { setSenderApplied } from '@envelope/sender/infrastructure/state'
 import { setRecipientApplied } from '@envelope/recipient/infrastructure/state'
 import { setCardtextAppliedData } from '@cardtext/infrastructure/state'
 import { clearApply } from '@cardphoto/infrastructure/state'
+import { clearText } from '@cardtext/infrastructure/state'
+import { resetEditor } from '@entities/cardEditor/infrastructure/state'
 
 export function handleAddDraftsAction() {
   console.log('handleAddDrafts')
@@ -23,4 +25,11 @@ export function* handleClearAllMiniSectionsAction(): SagaIterator {
   yield put(setRecipientApplied(false))
   yield put(setCardtextAppliedData(null))
   yield put(clearApply())
+}
+
+/** Card pie: единственная строка ушла в корзину — пустой редактор и placeholder в списке. */
+export function* clearCardPieWorkspaceAfterCartAdd(): SagaIterator {
+  yield* handleClearAllMiniSectionsAction()
+  yield put(clearText())
+  yield put(resetEditor())
 }

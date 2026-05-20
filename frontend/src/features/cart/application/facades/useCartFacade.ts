@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   addItem,
-  removeItem,
+  removeCartPostcard,
   updateItem,
   clearCart,
   setCartListPanelOpen,
@@ -30,7 +30,7 @@ export const useCartFacade = () => {
     setCartListSelectedLocalId: (value: number | null) =>
       dispatch(setCartListSelectedLocalId(value)),
     addItem: (item: PostcardHydrated) => dispatch(addItem(item)),
-    removeItem: (localId: number) => dispatch(removeItem(localId)),
+    removeItem: (localId: number) => dispatch(removeCartPostcard(localId)),
     updateItem: (item: PostcardHydrated) => dispatch(updateItem(item)),
     clearCart: () => dispatch(clearCart()),
   }

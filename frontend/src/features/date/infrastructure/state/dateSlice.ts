@@ -141,7 +141,11 @@ export const dateSlice = createSlice({
     /** Saga-only: добавление в корзину по ветке плана (Card pie); без удаления существующих строк. */
     toggleCartForDispatchBranch(
       _state,
-      _action: PayloadAction<{ branchKey: string }>,
+      _action: PayloadAction<{
+        branchKey: string
+        /** В списке CardPie была одна строка — после addCart сбросить мини-секции. */
+        clearEditorAfterAdd?: boolean
+      }>,
     ) {},
 
     setFirstDayOfWeek(state, action: PayloadAction<FirstDayOfWeekPreference>) {
