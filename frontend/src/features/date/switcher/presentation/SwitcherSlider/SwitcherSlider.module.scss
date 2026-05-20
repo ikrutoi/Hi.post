@@ -7,7 +7,7 @@ $switcher-thumb-move-duration: 0.25s;
 .segmented {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   width: 12.5rem;
   min-width: 12.5rem;
   height: $switcher-track-height;
@@ -50,12 +50,14 @@ $switcher-thumb-move-duration: 0.25s;
 }
 
 .segment {
-  flex: 1;
+  flex: 1 1 50%;
   min-width: 0;
+  align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.08rem 0.4rem;
+  padding: 0 0.4rem;
+  box-sizing: border-box;
   border: none;
   border-radius: 1.5rem;
   background-color: transparent;
@@ -80,6 +82,7 @@ $switcher-thumb-move-duration: 0.25s;
   font-size: 0.78rem;
   font-weight: 700;
   line-height: 1.1;
+  pointer-events: none;
 }
 
 .segmentMonth .segmentValue,
