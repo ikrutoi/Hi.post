@@ -280,6 +280,12 @@ const App = () => {
     return cartItems.find((p) => p.localId === rightListArchiveLocalId)?.status
   }, [cartItems, rightListArchiveLocalId])
 
+  /** История: открытки со статусом `cart` — тулбар корзины (edit / copy / delete). */
+  const showRightPostcardPieCartToolbar =
+    rightListArchiveSource === 'cart' ||
+    (rightListArchiveSource === 'history' &&
+      rightArchivePiePostcardStatus === 'cart')
+
   const canShowRightListArchiveCardPie =
     sectionSize != null && rightListArchiveLocalId != null
 
@@ -976,7 +982,7 @@ const App = () => {
                             onRightPieCenterClick={rightPieOnCenterClick}
                           />
                         </div>
-                        {rightListArchiveSource === 'cart' && (
+                        {showRightPostcardPieCartToolbar && (
                           <div className={styles.appMainContentRightPieToolbar}>
                             <Toolbar
                               section="postcardPieCart"
@@ -991,7 +997,8 @@ const App = () => {
                             />
                           </div>
                         )}
-                        {rightListArchiveSource === 'history' && (
+                        {rightListArchiveSource === 'history' &&
+                          !showRightPostcardPieCartToolbar && (
                           <div className={styles.appMainContentRightPieToolbar}>
                             <Toolbar section="postcardPieHistory" />
                           </div>
@@ -1028,7 +1035,7 @@ const App = () => {
                                 onRightPieCenterClick={rightPieOnCenterClick}
                               />
                             </div>
-                            {rightListArchiveSource === 'cart' && (
+                            {showRightPostcardPieCartToolbar && (
                               <div
                                 className={styles.appMainContentRightPieToolbar}
                               >
@@ -1047,7 +1054,8 @@ const App = () => {
                                 />
                               </div>
                             )}
-                            {rightListArchiveSource === 'history' && (
+                            {rightListArchiveSource === 'history' &&
+                              !showRightPostcardPieCartToolbar && (
                               <div
                                 className={styles.appMainContentRightPieToolbar}
                               >
