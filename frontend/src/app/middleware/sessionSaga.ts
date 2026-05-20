@@ -104,7 +104,19 @@ import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientState } from '@envelope/recipient/infrastructure/selectors'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
-import { setItems } from '@cart/infrastructure/state'
+import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
+import {
+  setCartListCheckedLocalIds,
+  setCartListStatusSegment,
+  setItems,
+  toggleCartListEntryChecked,
+  removeItem,
+  clearCart,
+} from '@cart/infrastructure/state'
+import {
+  selectCartListCheckedLocalIds,
+  selectCartListStatusSegment,
+} from '@cart/infrastructure/selectors'
 import {
   refreshPostcardsCardphotoUrls,
   postcardCardphotoNeedsPersist,
@@ -179,6 +191,11 @@ export function* persistGlobalSession() {
   const recipientViewId: string | null = yield select(selectRecipientViewId)
   const senderViewId: string | null = yield select(selectSenderViewId)
 
+  const cartListCheckedLocalIds: number[] = yield select(
+    selectCartListCheckedLocalIds,
+  )
+  const cartListStatusSegment = yield select(selectCartListStatusSegment)
+
   // const newSessionData: SessionData = {
   //   id: 'current_session',
   //   assets: {
@@ -213,6 +230,8 @@ export function* persistGlobalSession() {
             senderTemplateId: senderViewId,
           }
         : null,
+    cartListCheckedLocalIds,
+    cartListStatusSegment,
     timestamp: Date.now(),
   }
 
@@ -275,6 +294,11 @@ const SESSION_WATCH_ACTIONS = [
   setRecipientViewDraft.type,
   toggleRecipientSelection.type,
   clearRecipientsPending.type,
+  toggleCartListEntryChecked.type,
+  setCartListCheckedLocalIds.type,
+  setCartListStatusSegment.type,
+  removeItem.type,
+  clearCart.type,
 ]
 
 function hasAddressData(data: Record<string, string>): boolean {
@@ -570,6 +594,30 @@ export function* hydrateAppSession() {
     )
 
     if (!session) return
+
+    if (session.cartListStatusSegment) {
+      yield put(setCartListStatusSegment(session.cartListStatusSegment))
+    }
+
+    const savedCheckedIds = session.cartListCheckedLocalIds ?? []
+    if (savedCheckedIds.length > 0) {
+      const validIds = new Set(postcards.map((p) => p.localId))
+      const pruned = savedCheckedIds.filter((id) => validIds.has(id))
+      if (pruned.length > 0) {
+        yield put(setCartListCheckedLocalIds(pruned))
+        const billableIds = cartListBillableLocalIds(postcards)
+        const allChecked =
+          billableIds.length > 0 &&
+          billableIds.every((id) => pruned.includes(id))
+        yield put(
+          updateToolbarIcon({
+            section: 'cartList',
+            key: 'checkBox',
+            value: allChecked ? 'active' : 'enabled',
+          }),
+        )
+      }
+    }
 
     if (session.cardphoto) {
       const {

@@ -1,0 +1,12 @@
+.root {
+  display: block;
+  color: currentColor;
+}
+
+.box {
+  stroke: currentColor;
+}
+
+.check {
+  stroke: var(--icon-checkbox-check, currentColor);
+}

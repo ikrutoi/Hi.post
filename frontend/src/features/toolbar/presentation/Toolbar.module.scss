@@ -734,6 +734,17 @@
     }
   }
 
+  /* checkBox active: рамка как enabled, галочка — $color-font-active */
+  .toolbarKey[data-icon-key='checkBox'].toolbarKeyActive {
+    color: $color-font-enabled-light;
+    --icon-checkbox-check: #{$color-font-active};
+
+    &:hover {
+      color: $color-font-enabled;
+      --icon-checkbox-check: #{$color-font-active};
+    }
+  }
+
   // .toolbarKeyHistoryPanel {
   //   flex-shrink: 0;
   //   width: auto;

@@ -1,4 +1,5 @@
 import React from 'react'
+import styles from './IconCheckBox.module.scss'
 
 export type IconCheckBoxProps = React.SVGProps<SVGSVGElement> & {
   checked?: boolean
@@ -7,6 +8,7 @@ export type IconCheckBoxProps = React.SVGProps<SVGSVGElement> & {
 /** Квадрат (календарная рамка) + галочка; обводка как у иконок toolbar (~106 / 162). */
 export const IconCheckBox = ({ checked = false, ...props }: IconCheckBoxProps) => (
   <svg
+    className={styles.root}
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 1280 1280"
     fill="none"
@@ -18,8 +20,7 @@ export const IconCheckBox = ({ checked = false, ...props }: IconCheckBoxProps) =
     {...props}
   >
     <path
-      id="box"
-      stroke="currentColor"
+      className={styles.box}
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={106.666}
@@ -27,8 +28,7 @@ export const IconCheckBox = ({ checked = false, ...props }: IconCheckBoxProps) =
     />
     {checked ? (
       <path
-        id="check"
-        stroke="currentColor"
+        className={styles.check}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth={162.5}

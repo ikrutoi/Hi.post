@@ -50,9 +50,6 @@ const cartSlice = createSlice({
       action: PayloadAction<Cart['listStatusSegment']>,
     ) {
       state.listStatusSegment = action.payload
-      if (action.payload !== 'cart') {
-        state.listCheckedLocalIds = []
-      }
     },
     toggleCartListEntryChecked(state, action: PayloadAction<number>) {
       const id = action.payload

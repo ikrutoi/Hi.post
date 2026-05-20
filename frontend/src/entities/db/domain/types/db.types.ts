@@ -13,6 +13,7 @@ import type { DateState } from '@entities/date/domain/types'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import type { SizeCard } from '@layout/domain/types'
 import type { PreviewStripOrderState } from '@features/previewStrip/infrastructure/state'
+import type { CartListStatusSegment } from '@cart/domain/types'
 
 export interface SessionEnvelopeSelection {
   recipientsPendingIds: string[]
@@ -35,5 +36,9 @@ export interface SessionData {
   sizeCard: SizeCard
   previewStripOrder: PreviewStripOrderState | null
   envelopeSelection?: SessionEnvelopeSelection | null
+  /** Чекбоксы списка корзины (`localId`). */
+  cartListCheckedLocalIds?: number[]
+  /** Сегмент списка корзины (корзина / заблокированные). */
+  cartListStatusSegment?: CartListStatusSegment
   timestamp: number
 }
