@@ -20,8 +20,10 @@ import {
   resetCardtextAssetToEmptyDraft,
   restoreCardtextSession,
   setDraftEngaged,
+  setCardtextPresetData,
   setCardtextViewEditMode,
 } from '@cardtext/infrastructure/state'
+import { isEmptyCardtextValue } from '@cardtext/domain/helpers'
 import {
   selectCardtextValue,
   selectCardtextStyle,
@@ -431,6 +433,17 @@ export function* handleCardtextToolbarAction(
     case 'cardtextAdd': {
       if (section === 'cardtext' || section === 'cardtextView') {
         yield put(setCardtextAddTemplateOpen(false))
+        const postcardAsset: CardtextContent | null = yield select(
+          (s: RootState) => s.cardtext.assetData,
+        )
+        if (
+          postcardAsset != null &&
+          (postcardAsset.status === 'inLine' ||
+            postcardAsset.status === 'outLine') &&
+          !isEmptyCardtextValue(postcardAsset.value)
+        ) {
+          yield put(setCardtextPresetData(cloneCardtextBranch(postcardAsset)))
+        }
         const processed: ReturnType<typeof templateService.getSingleCardtextByStatus> =
           yield call([templateService, 'getSingleCardtextByStatus'], 'processed')
         if (processed != null) {

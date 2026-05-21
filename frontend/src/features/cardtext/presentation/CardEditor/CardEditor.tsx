@@ -131,6 +131,9 @@ export const CardEditor: React.FC<CardEditorProps> = ({
     dispatch(setDraftFocus(false))
     if (cardtextAssetData == null) {
       dispatch(setDraftEngaged(false))
+      if (cardtextPresetData != null) {
+        dispatch(restoreCardtextSession(cardtextPresetData))
+      }
       return
     }
 

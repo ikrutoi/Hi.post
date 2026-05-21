@@ -60,7 +60,7 @@ export const useMiniCardtext = (editorMountKey = 'default') => {
     sizeMiniCard?.height,
   )
 
-  /** До Apply шаблон из списка не попадает в мини — см. `selectCardtextDisplayForMiniStrip`. */
+  /** Черновик create / шаблон до Apply не в мини — см. `selectCardtextDisplayForMiniStrip`. */
   const shouldShowMiniText = cardtextHasRenderableContent(miniDisplay)
 
   return { editor, value, style, shouldShowMiniText }

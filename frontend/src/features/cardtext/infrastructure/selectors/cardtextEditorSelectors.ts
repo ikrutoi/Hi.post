@@ -203,26 +203,43 @@ export const selectCardtextAssetMatchesApplied = (
 
 /**
  * Контент для мини-секции / `selectCardtextMiniPreviewHasRenderableContent`:
- * выбранный в списке шаблон (`inLine` / `outLine`) не попадает в превью, пока не нажат Apply —
- * до этого показываем только `appliedData` (то, что уже на открытке).
+ * — выбранный в списке шаблон (`inLine` / `outLine`) не попадает в превью, пока не Apply;
+ * — в `cardtextCreate` набираемый черновик не попадает в мини (только уже на открытке — `appliedData`).
  */
 export const selectCardtextDisplayForMiniStrip = createSelector(
   [
     (s: RootState) => s.cardtext.assetData,
     (s: RootState) => s.cardtext.appliedData,
     (s: RootState) => s.cardtext.isCardtextViewEditMode === true,
+    (s: RootState) => s.cardtext.isDraftEngaged === true,
     selectCardtextAssetMatchesApplied,
   ],
-  (asset, applied, isViewEditMode, assetMatchesApplied): CardtextContent => {
+  (
+    asset,
+    applied,
+    isViewEditMode,
+    isDraftEngaged,
+    assetMatchesApplied,
+  ): CardtextContent => {
+    const isCreateEmptyMode =
+      !isViewEditMode &&
+      ((asset == null && isDraftEngaged) ||
+        (asset != null &&
+          asset.status === 'draft' &&
+          (asset.id == null || asset.id === '')))
+
     const listBrowsingNotCommitted =
       asset != null &&
       (asset.status === 'inLine' || asset.status === 'outLine') &&
       !assetMatchesApplied
 
+    const miniShowsAppliedOnly = isCreateEmptyMode || listBrowsingNotCommitted
+
     let branch: CardtextContent | null = null
 
-    if (listBrowsingNotCommitted) {
-      branch = applied
+    if (miniShowsAppliedOnly) {
+      branch =
+        applied != null && cardtextValueHasUserText(applied.value) ? applied : null
     } else {
       const draftLike =
         isViewEditMode || (asset != null && asset.status === 'draft')
