@@ -116,14 +116,14 @@
   border-radius: 0.5rem;
 }
 
-/** Угол мини-карточки: × очистки и apply в режиме зеркала — общий якорь внутри рамки `.miniCard`. */
+/** Угол мини-карточки: × очистки и apply в режиме зеркала — круг на углу рамки `.miniCard`. */
 .miniCardCornerButton {
   position: absolute;
   top: 0;
   right: 0;
   transform: translate(50%, -50%);
-  width: 1.52rem;
-  height: 1.52rem;
+  width: 1.25rem;
+  height: 1.25rem;
   border-radius: 50%;
   border: 1px solid $color-app-substrate-border;
   background-color: #fff;
@@ -133,17 +133,18 @@
   padding: 0;
   cursor: pointer;
   z-index: 24;
-  color: $color-font-enabled;
+  color: $color-font-disabled;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: background-color 0.15s ease;
+  transition: color 0.15s ease;
 
   svg {
-    width: 0.82rem;
-    height: 0.82rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    display: block;
   }
 
   &:hover:not(:disabled) {
-    background-color: $color-app-sidebar-icon-hover;
+    color: $color-font-enabled-light-hover;
   }
 
   &:disabled {
