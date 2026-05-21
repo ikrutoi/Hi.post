@@ -1,12 +1,23 @@
 import { Editor, Transforms, Text as SlateText } from 'slate'
-import { select, put } from 'redux-saga/effects'
+import { call, put, select } from 'redux-saga/effects'
+import type { SagaIterator } from 'redux-saga'
 import {
   selectCardtextState,
   selectFontSizeStep,
 } from '@cardtext/infrastructure/selectors'
 import { setTextStyle } from '@cardtext/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { CARDTEXT_CONFIG, STEP_TO_PX } from '@cardtext/domain/types'
+import {
+  CARDTEXT_CONFIG,
+  STEP_TO_PX,
+  clampCardtextFontSizeStep,
+} from '@cardtext/domain/types'
+
+const CARDTEXT_FONT_TOOLBAR_SECTIONS = [
+  'cardtext',
+  'cardtextEditor',
+  'cardtextCreate',
+] as const
 
 export function* changeFontSizeStep(
   editor: Editor,
@@ -15,9 +26,10 @@ export function* changeFontSizeStep(
   const currentStep: number = yield select(selectFontSizeStep)
   const step = CARDTEXT_CONFIG.step
 
-  let nextStep = currentStep
-  if (direction === 'more' && currentStep < step) nextStep++
-  if (direction === 'less' && currentStep > 1) nextStep--
+  let nextStep = clampCardtextFontSizeStep(currentStep)
+  if (direction === 'more' && nextStep < step) nextStep++
+  if (direction === 'less' && nextStep > 1) nextStep--
+  nextStep = clampCardtextFontSizeStep(nextStep)
 
   if (nextStep !== currentStep) {
     yield put(setTextStyle({ fontSizeStep: nextStep }))
@@ -36,31 +48,28 @@ export function* changeFontSizeStep(
 }
 
 export function* syncCardtextToolbarVisuals() {
+  yield call(syncFontSizeButtonsStatus)
+}
+
+export function* syncFontSizeButtonsStatus(): SagaIterator {
   const currentStep: number = yield select(selectFontSizeStep)
   const maxStep = CARDTEXT_CONFIG.step
 
-  yield put(
-    updateToolbarIcon({
-      section: 'cardtext',
-      key: 'fontSizeLess',
-      value: currentStep <= 1 ? 'disabled' : 'enabled',
-    }),
-  )
-
-  yield put(
-    updateToolbarIcon({
-      section: 'cardtext',
-      key: 'fontSizeMore',
-      value: currentStep >= maxStep ? 'disabled' : 'enabled',
-    }),
-  )
-
-  yield put(
-    updateToolbarIcon({
-      section: 'cardtext',
-      key: 'left',
-      value: 'active',
-    }),
-  )
+  for (const section of CARDTEXT_FONT_TOOLBAR_SECTIONS) {
+    yield put(
+      updateToolbarIcon({
+        section,
+        key: 'fontSizeLess',
+        value: currentStep <= 1 ? 'disabled' : 'enabled',
+      }),
+    )
+    yield put(
+      updateToolbarIcon({
+        section,
+        key: 'fontSizeMore',
+        value: currentStep >= maxStep ? 'disabled' : 'enabled',
+      }),
+    )
+  }
 }
 

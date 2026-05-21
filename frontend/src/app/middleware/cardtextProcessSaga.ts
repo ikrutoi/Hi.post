@@ -41,7 +41,7 @@ import {
   updateToolbarIcon,
   updateGroupStatus,
 } from '@toolbar/infrastructure/state'
-import { CARDTEXT_CONFIG } from '@cardtext/domain/types'
+import { syncFontSizeButtonsStatus } from './cardtextHandlers'
 import type { CardtextContent, TextAlign } from '@cardtext/domain/types'
 import {
   selectCardtextDraftData,
@@ -70,27 +70,6 @@ function* syncCardtextAlignIcons(
       )
     }
   }
-}
-
-export function* syncFontSizeButtonsStatus(): SagaIterator {
-  const currentStep: number = yield select(selectFontSizeStep)
-  const step = CARDTEXT_CONFIG.step
-
-  yield put(
-    updateToolbarIcon({
-      section: 'cardtext',
-      key: 'fontSizeMore',
-      value: currentStep >= step ? 'disabled' : 'enabled',
-    }),
-  )
-
-  yield put(
-    updateToolbarIcon({
-      section: 'cardtext',
-      key: 'fontSizeLess',
-      value: currentStep <= 1 ? 'disabled' : 'enabled',
-    }),
-  )
 }
 
 export function* watchFontSizeChanges(): SagaIterator {

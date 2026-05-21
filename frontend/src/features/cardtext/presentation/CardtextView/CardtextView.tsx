@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import { Slate, Editable, withReact } from 'slate-react'
 import { createEditor, Descendant } from 'slate'
-import { STEP_TO_PX } from '../../domain/types'
+import { STEP_TO_PX, clampCardtextFontSizeStep } from '../../domain/types'
 import type { CardtextValue, CardtextStyle } from '../../domain/types'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
@@ -45,8 +45,8 @@ export const CardtextView: React.FC<Props> = ({
       : 'empty')
   const editor = useMemo(() => withReact(createEditor()), [slateKey])
 
-  const fontSizeStep = style?.fontSizeStep ?? 3
-  const currentPxSize = STEP_TO_PX[fontSizeStep - 1] ?? 16
+  const fontSizeStep = clampCardtextFontSizeStep(style?.fontSizeStep ?? 3)
+  const currentPxSize = STEP_TO_PX[fontSizeStep - 1] ?? STEP_TO_PX[0]
   const lineHeight = Math.round(currentPxSize * 1.5)
   const colorKey = style?.color ?? 'deepBlack'
   const colorClass = styles[COLOR_CLASS_MAP[colorKey] ?? 'colorDeepBlack']
@@ -74,7 +74,7 @@ export const CardtextView: React.FC<Props> = ({
           type="button"
           className={styles.viewCloseBtn}
           onClick={onClose}
-          aria-label="Close text view"
+          aria-label="Edit text"
           title="Edit text"
         >
           <IconX />

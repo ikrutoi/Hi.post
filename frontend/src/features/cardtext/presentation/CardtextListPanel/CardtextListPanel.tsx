@@ -4,7 +4,8 @@ import { IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
-import { toolbarAction } from '@toolbar/application/helpers'
+import { openCardtextEditorFromView } from '@cardtext/application/helpers'
+import { selectCardtextAssetStatus } from '@cardtext/infrastructure/selectors'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import { removeCardtextTemplateId } from '@features/previewStrip/infrastructure/state'
 import {
@@ -53,6 +54,7 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   )
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
   const selectedTemplateId = useAppSelector(selectCardtextId)
+  const cardtextAssetStatus = useAppSelector(selectCardtextAssetStatus)
   const isCardtextViewEditMode = useAppSelector(
     (state) => state.cardtext.isCardtextViewEditMode === true,
   )
@@ -69,9 +71,12 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const handleEdit = useCallback(
     (entry: CardtextContent) => {
       handleSelect(entry)
-      dispatch(toolbarAction({ section: 'cardtextView', key: 'edit' }))
+      openCardtextEditorFromView(
+        dispatch,
+        entry.status ?? cardtextAssetStatus,
+      )
     },
-    [dispatch, handleSelect],
+    [dispatch, handleSelect, cardtextAssetStatus],
   )
 
   const handleDelete = useCallback(

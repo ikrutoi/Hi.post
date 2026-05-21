@@ -10,3 +10,5 @@ export {
   resolveCardtextToolbarSection,
   shouldHideEmptyCreateToolbar,
 } from './resolveCardtextToolbarSection'
+
+export { openCardtextEditorFromView } from './openCardtextEditorFromView'

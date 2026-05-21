@@ -1080,8 +1080,10 @@
   }
 }
 
-/* Как .toolbarSenderView — margin-left 0.5rem, без padding, первая кнопка без margin-left. */
-.toolbarCardtextView {
+/* cardtextView / cardtextEditor / cardtextCreate — как addList: margin-left 0.5rem, без padding. */
+.toolbarCardtextView,
+.toolbarCardtextEditor,
+.toolbarCardtextCreate {
   padding-left: 0;
   padding-right: 0;
   margin-left: 0.5rem;

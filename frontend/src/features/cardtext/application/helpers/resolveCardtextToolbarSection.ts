@@ -17,7 +17,7 @@ export function cardtextToolbarSectionFromMode(
       return 'cardtextView'
     case 'createEmpty':
     case 'editFromPostcardView':
-      return 'cardtextCreate'
+      return 'cardtextEditor'
     case 'editTemplate':
       return 'cardtextEditor'
     default: {

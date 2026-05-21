@@ -13,6 +13,7 @@ import {
   type CardtextEditorSessionSnapshot,
   CardtextListSortDirection,
   CardtextTemplatesListState,
+  clampCardtextFontSizeStep,
 } from '../../domain/editor/editor.types'
 import { isEmptyCardtextValue } from '@cardtext/domain/helpers/isEmptyCardtextValue'
 import { isCardtextDraftContentEmpty } from '@cardtext/domain/helpers/isCardtextDraftContentEmpty'
@@ -87,7 +88,11 @@ export const cardtextSlice = createSlice({
 
     setTextStyle(state, action: PayloadAction<Partial<CardtextStyle>>) {
       const ad = ensureAsset(state)
-      ad.style = { ...ad.style, ...action.payload }
+      const patch = { ...action.payload }
+      if (patch.fontSizeStep != null) {
+        patch.fontSizeStep = clampCardtextFontSizeStep(patch.fontSizeStep)
+      }
+      ad.style = { ...ad.style, ...patch }
       if (ad.status === 'processed') ad.status = 'draft'
     },
 

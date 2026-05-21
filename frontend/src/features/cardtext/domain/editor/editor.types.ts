@@ -27,7 +27,18 @@ export const TEXT_COLOR = [
   'forestGreen',
 ] as const
 
-export const STEP_TO_PX = [16, 18, 22, 28, 36, 48]
+/** 6 шагов — плавнее прежнего [16,18,22,28,36,48]. */
+export const STEP_TO_PX = [14, 16, 18, 20, 23, 26] as const
+
+export const CARDTEXT_FONT_SIZE_STEP_MIN = 1
+export const CARDTEXT_FONT_SIZE_STEP_MAX = STEP_TO_PX.length
+
+export function clampCardtextFontSizeStep(step: number): number {
+  return Math.min(
+    CARDTEXT_FONT_SIZE_STEP_MAX,
+    Math.max(CARDTEXT_FONT_SIZE_STEP_MIN, Math.round(step)),
+  )
+}
 
 export type TextColor = (typeof TEXT_COLOR)[number]
 

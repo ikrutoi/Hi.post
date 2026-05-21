@@ -288,18 +288,7 @@ export function* handleCardtextToolbarAction(
     }
 
     case 'edit':
-      if (interactionMode === 'postcardTemplateView') {
-        const { assetData: editAsset } = yield select(
-          (s: RootState) => s.cardtext,
-        )
-        const st = editAsset?.status
-        if (st === 'inLine' || st === 'outLine') {
-          yield put(setCardtextViewEditMode(true))
-        } else {
-          yield put(setCardtextViewEditMode(false))
-          yield put(setStatus('draft'))
-        }
-      } else if (interactionMode === 'processedSlot') {
+      if (interactionMode === 'processedSlot') {
         // Edit from processed mode should open create editor flow
         // with current text content.
         yield put(setCardtextViewEditMode(false))
@@ -318,6 +307,24 @@ export function* handleCardtextToolbarAction(
         yield put(setCardtextId(null))
         yield put(setStatus('draft'))
         yield put(setDraftFocus(true))
+      } else if (
+        interactionMode === 'postcardTemplateView' ||
+        section === 'cardtextView'
+      ) {
+        const { assetData: editAsset } = yield select(
+          (s: RootState) => s.cardtext,
+        )
+        const st = editAsset?.status
+        if (st === 'inLine' || st === 'outLine') {
+          yield put(setCardtextViewEditMode(true))
+          yield put(setDraftEngaged(true))
+          yield put(setDraftFocus(true))
+        } else {
+          yield put(setCardtextViewEditMode(false))
+          yield put(setStatus('draft'))
+          yield put(setDraftEngaged(true))
+          yield put(setDraftFocus(true))
+        }
       } else if (interactionMode === 'editTemplate') {
         const templateId: string | null = yield select(selectCardtextId)
         const value: ReturnType<typeof selectCardtextValue> =

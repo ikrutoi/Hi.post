@@ -98,13 +98,14 @@
   }
 }
 
-/* Как .toolbarCardtextView { margin-left: 0.5rem } у addList. */
+/* addList: .toolbarCardtextView margin-left 0.5rem; заголовок — чуть левее правого края. */
 $cardtext-view-toolbar-inset: 0.5rem;
+$cardtext-view-title-inset-right: 1rem;
 
 .viewTitle {
   position: absolute;
   top: -1rem;
-  right: $cardtext-view-toolbar-inset;
+  right: $cardtext-view-title-inset-right;
   // right: 40%;
   transform: translateY(-50%);
   // transform: translateX(50%) translateY(-50%);

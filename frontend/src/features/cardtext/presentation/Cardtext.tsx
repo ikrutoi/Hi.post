@@ -14,6 +14,7 @@ import {
   useLoadCardtextTemplatesWhenUnknown,
 } from '../application/hooks'
 import {
+  openCardtextEditorFromView,
   resolveCardtextToolbarSection,
   shouldHideEmptyCreateToolbar,
 } from '../application/helpers'
@@ -30,12 +31,6 @@ import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
 import { useAppDispatch } from '@app/hooks'
-import {
-  setDraftFocus,
-  restoreCardtextSession,
-  resetCardtextAssetToEmptyDraft,
-  setCardtextPresetData,
-} from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
@@ -159,34 +154,9 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
 
   const dispatch = useAppDispatch()
 
-  const handleViewClose = useCallback(() => {
-    dispatch(setDraftFocus(false))
-
-    const assetId = state.assetData?.id ?? null
-    const presetId = state.presetData?.id ?? null
-    const st = state.assetData?.status
-    const isListTemplate = st === 'inLine' || st === 'outLine'
-    const presetMatchesView =
-      assetId != null &&
-      presetId != null &&
-      String(assetId) === String(presetId)
-
-    if (isListTemplate && presetMatchesView) {
-      dispatch(setCardtextPresetData(null))
-      dispatch(resetCardtextAssetToEmptyDraft())
-      return
-    }
-
-    if (state.presetData != null) {
-      dispatch(restoreCardtextSession(state.presetData))
-      return
-    }
-    dispatch(resetCardtextAssetToEmptyDraft())
-  }, [dispatch, state.assetData?.id, state.assetData?.status, state.presetData])
-
   const handleViewEdit = useCallback(() => {
-    dispatch(toolbarAction({ section: 'cardtextView', key: 'edit' }))
-  }, [dispatch])
+    openCardtextEditorFromView(dispatch, cardtextAssetStatus)
+  }, [dispatch, cardtextAssetStatus])
 
   const handleViewDelete = useCallback(() => {
     dispatch(toolbarAction({ section: 'cardtextView', key: 'delete' }))
@@ -336,7 +306,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                 value={value}
                 style={style}
                 titleStripEditing={forceEditingTitle}
-                onClose={handleViewClose}
+                onClose={handleViewEdit}
                 onEdit={handleViewEdit}
                 onDelete={handleViewDelete}
               />

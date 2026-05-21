@@ -7,7 +7,7 @@ import { useCardtextFacade } from '../../application/facades'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
 import { useInitSelection } from '../../application/hooks'
-import { STEP_TO_PX } from '../../domain/types'
+import { STEP_TO_PX, clampCardtextFontSizeStep } from '../../domain/types'
 import { selectIsDraftFocus } from '../../infrastructure/selectors'
 import {
   setDraftFocus,
@@ -54,7 +54,8 @@ export const CardEditor: React.FC<CardEditorProps> = ({
     decreaseFontSize,
   } = useCardtextFacade()
 
-  const currentPxSize = STEP_TO_PX[fontSizeStep - 1] || 16
+  const safeStep = clampCardtextFontSizeStep(fontSizeStep)
+  const currentPxSize = STEP_TO_PX[safeStep - 1] ?? STEP_TO_PX[0]
   const currentLineHeight = Math.round(currentPxSize * 1.5)
 
   const defaultTextColorMap: Record<string, string> = {
@@ -108,23 +109,23 @@ export const CardEditor: React.FC<CardEditorProps> = ({
     }
   }
 
+  const prevValueRef = React.useRef(value)
+
   useEffect(() => {
     if (cardtextAssetData == null) return
     const container = editorRef.current
     if (!container) return
+
+    const valueChanged = prevValueRef.current !== value
+    prevValueRef.current = value
+    if (!valueChanged) return
 
     const isOverflown = container.scrollHeight > container.clientHeight
 
     if (isOverflown && fontSizeStep > 1) {
       decreaseFontSize()
     }
-  }, [
-    value,
-    fontSizeStep,
-    decreaseFontSize,
-    editorRef,
-    cardtextAssetData,
-  ])
+  }, [value, fontSizeStep, decreaseFontSize, editorRef, cardtextAssetData])
 
   const handleEditorClose = useCallback(() => {
     dispatch(setDraftFocus(false))
