@@ -32,6 +32,8 @@ import {
 } from '@cardtext/infrastructure/selectors'
 import type { CardtextInteractionMode } from '@cardtext/domain/cardtextInteractionMode'
 import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
+import { findCardtextQuickListMatch } from '@cardtext/domain/helpers/cardtextQuickListMatch'
+import { selectCardtextTemplatesListItems } from '@cardtext/infrastructure/selectors'
 import { applyCardtextFromToolbar } from './cardtextToolbarApplySaga'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import type { TemplateOperationResult } from '@entities/templates/domain/types/template.types'
@@ -41,6 +43,97 @@ import {
   type PostcardHydrated,
 } from '@entities/postcard'
 import { addCardtextTemplateId } from '@features/previewStrip/infrastructure/state'
+
+function* handleCardtextViewAddList(): SagaIterator {
+  const plainText: string = yield select(selectCardtextPlainText)
+  if (!(plainText?.trim?.() ?? '').length) return
+
+  const value: ReturnType<typeof selectCardtextValue> =
+    yield select(selectCardtextValue)
+  const style: ReturnType<typeof selectCardtextStyle> =
+    yield select(selectCardtextStyle)
+  const cardtextLines: number = yield select(selectCardtextLines)
+  const templateId: string | null = yield select(selectCardtextId)
+  const templates: CardtextContent[] | null = yield select(
+    selectCardtextTemplatesListItems,
+  )
+
+  if (
+    findCardtextQuickListMatch(plainText, templates, templateId) != null
+  ) {
+    return
+  }
+
+  if (templateId != null) {
+    const result: { success?: boolean } = yield call(
+      [templateService, 'updateCardtextTemplate'],
+      templateId,
+      {
+        value: value ?? [],
+        style,
+        plainText,
+        cardtextLines,
+        status: 'inLine',
+      },
+    )
+    if (result?.success) {
+      yield put(setStatus('inLine'))
+      yield put(
+        updateCardtextContentInList({
+          id: templateId,
+          value: value ?? [],
+          style,
+          plainText,
+          cardtextLines,
+        }),
+      )
+      yield put(loadCardtextTemplatesRequest())
+    }
+    return
+  }
+
+  const { assetData } = yield select((s: RootState) => s.cardtext)
+  const result: TemplateOperationResult = yield call(
+    [templateService, 'createCardtextTemplate'],
+    {
+      value: value ?? [],
+      style,
+      plainText,
+      cardtextLines,
+      title: assetData?.title ?? '',
+      favorite: assetData?.favorite ?? null,
+      status: 'inLine',
+    },
+  )
+  if (result.success && result.templateId) {
+    const newId = String(result.templateId)
+    yield put(addCardtextTemplateId(newId))
+    yield put(setCardtextId(newId))
+    yield put(setStatus('inLine'))
+    yield put(loadCardtextTemplatesRequest())
+  }
+}
+
+function* handleCardtextViewRemoveFromList(): SagaIterator {
+  const plainText: string = yield select(selectCardtextPlainText)
+  const templateId: string | null = yield select(selectCardtextId)
+  const templates: CardtextContent[] | null = yield select(
+    selectCardtextTemplatesListItems,
+  )
+  const match = findCardtextQuickListMatch(plainText, templates, templateId)
+  if (match?.id == null) return
+
+  const id = String(match.id)
+  const result: { success?: boolean } = yield call(
+    [templateService, 'updateCardtextTemplate'],
+    id,
+    { status: 'outLine' },
+  )
+  if (!result?.success) return
+
+  yield put(setStatus('outLine'))
+  yield put(loadCardtextTemplatesRequest())
+}
 
 function cloneCardtextBranch(c: CardtextContent): CardtextContent {
   return {
@@ -300,6 +393,22 @@ export function* handleCardtextToolbarAction(
       yield put(setCardtextListPanelOpen(nextOpen))
       if (nextOpen) {
         yield put(loadCardtextTemplatesRequest())
+      }
+      break
+    }
+
+    case 'addList': {
+      if (section === 'cardtextView') {
+        yield call(handleCardtextViewAddList)
+        break
+      }
+      break
+    }
+
+    case 'removeFromList': {
+      if (section === 'cardtextView') {
+        yield call(handleCardtextViewRemoveFromList)
+        break
       }
       break
     }

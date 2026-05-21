@@ -28,6 +28,7 @@ import {
   selectCardtextPlainText,
   selectCardtextListSortDirection,
   selectCardtextListPanelDensity,
+  selectCardtextViewInQuickList,
 } from '@cardtext/infrastructure/selectors'
 import {
   selectDateListSortDirection,
@@ -179,6 +180,8 @@ export const Toolbar = ({
     return doesDraftMatchInList(draft, inList)
   })
 
+  const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
+
   const sectionEditorMenuLockedByCardPieCopy =
     section === 'sectionEditorMenu' && cardPieCopyStripExpanded
 
@@ -224,8 +227,12 @@ export const Toolbar = ({
     const effectiveIconKey: IconKey = showCreateListCheck
       ? 'listCheck'
       : key === 'addList' &&
-          (section === 'senderView' || section === 'recipientView') &&
-          templateInQuickList
+          (section === 'senderView' ||
+            section === 'recipientView' ||
+            section === 'cardtextView') &&
+          (section === 'cardtextView'
+            ? cardtextViewInQuickList
+            : templateInQuickList)
         ? 'removeFromList'
         : key
     const options =
@@ -239,8 +246,10 @@ export const Toolbar = ({
 
     if (
       key === 'addList' &&
-      (section === 'senderView' || section === 'recipientView') &&
-      templateInQuickList
+      (section === 'senderView' ||
+        section === 'recipientView' ||
+        section === 'cardtextView') &&
+      (section === 'cardtextView' ? cardtextViewInQuickList : templateInQuickList)
     ) {
       buttonStatus = 'enabled'
     }
