@@ -233,8 +233,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   })
 
   const showCardtextToolbarRow = !hideEmptyCreateToolbar
-  const showCardtextToolbarControls =
-    showCardtextToolbarRow && toolbarSection !== 'cardtextView'
+  const showCardtextToolbarControls = showCardtextToolbarRow
 
   useLoadCardtextTemplatesWhenUnknown(
     cardtextTemplatesLoading,

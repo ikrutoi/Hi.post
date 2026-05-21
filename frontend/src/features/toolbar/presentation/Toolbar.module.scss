@@ -668,8 +668,8 @@
   align-items: center;
 
   .toolbarKey {
-    width: 1.6rem;
-    height: 1.6rem;
+    width: 1.7rem;
+    height: 1.7rem;
   }
 }
 
@@ -1070,6 +1070,64 @@
   --history-density-active-stroke: #523624;
 }
 
-// .toolbarCardtextView {
-//   padding-right: 3rem;
-// }
+/* Как .addressToolbarSender (left: 0.5rem) + первая кнопка без margin-left. */
+.toolbarCardtext {
+  padding-left: 0;
+  margin-left: 0.5rem;
+
+  .toolbarGroup:first-child .toolbarKey:first-child {
+    margin-left: 0;
+  }
+}
+
+/* Как .toolbarSenderView — margin-left 0.5rem, без padding, первая кнопка без margin-left. */
+.toolbarCardtextView {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0.5rem;
+  margin-right: 0;
+
+  .toolbarGroup:first-child .toolbarKey:first-child {
+    margin-left: 0;
+  }
+}
+
+/* Как cardtext / cardtextView */
+.toolbarCardphoto {
+  padding-left: 0;
+  margin-left: 0.5rem;
+
+  .toolbarGroup:first-child .toolbarKey:first-child {
+    margin-left: 0;
+  }
+}
+
+.toolbarCardphotoView {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 0.5rem;
+  margin-right: 0;
+
+  .toolbarGroup:first-child .toolbarKey:first-child {
+    margin-left: 0;
+  }
+}
+
+.toolbarDate,
+.toolbarCart,
+.toolbarHistory {
+  padding-left: 0;
+  margin-left: 0.5rem;
+
+  .toolbarGroup:first-child .toolbarKey:first-child {
+    margin-left: 0;
+  }
+}
+
+/* date / cart / history: тот же размер кнопок, что cardphoto / cardtext (1.7rem). */
+.toolbarDate .toolbarKey,
+.toolbarCart .toolbarKey,
+.toolbarHistory .toolbarKey {
+  width: 1.7rem;
+  height: 1.7rem;
+}

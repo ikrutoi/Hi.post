@@ -21,6 +21,7 @@ export const CARDTEXT_KEYS = [
   'edit',
   'colorPicker',
   'cardtextCheck',
+  'addList',
   // 'delete',
 ] as const
 
@@ -97,10 +98,7 @@ export const CARDTEXT_PROCESSED_TOOLBAR: ToolbarConfig = [
 export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'font',
-    icons: [
-      { key: 'edit', state: 'enabled' },
-      { key: 'delete', state: 'enabled' },
-    ],
+    icons: [{ key: 'addList', state: 'enabled' }],
     status: 'enabled',
   },
 
