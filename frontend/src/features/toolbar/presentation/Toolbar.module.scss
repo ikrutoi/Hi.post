@@ -373,27 +373,45 @@
   justify-content: center;
   padding: 0.35rem;
   cursor: pointer;
-  color: $color-font-enabled;
+  color: $color-font-enabled-light;
   width: 1.55rem;
   height: 1.55rem;
+  border: none;
   border-radius: 0.6rem;
   margin-top: 0.1rem;
   margin-bottom: 0.1rem;
-  // border: solid 1px blue;
+  background-color: transparent;
+  transition: color 0.15s ease;
 
   .toolbarIcon {
     width: 1.55rem;
     height: 1.55rem;
+    transition:
+      color 0.15s ease,
+      filter 0.15s ease;
   }
 
   &:hover {
-    background-color: $color-app-sidebar-icon-hover;
+    background-color: transparent;
+    color: $color-font-enabled;
   }
+}
+
+.toolbarColorMenuItem:hover .toolbarIcon {
+  filter: brightness(0.72);
 }
 
 .toolbarAlignMenuItemActive,
 .toolbarColorMenuItemActive {
   color: $color-font-active;
+
+  &:hover {
+    color: $color-font-active;
+  }
+}
+
+.toolbarColorMenuItemActive:hover .toolbarIcon {
+  filter: none;
 }
 
 .toolbarSectionEditorMenu {
