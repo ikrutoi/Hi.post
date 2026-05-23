@@ -63,6 +63,10 @@ function isCardtextEditorAssetOnlyMerge(state: RootState): boolean {
 
 export const selectCardtextState = (state: RootState) => state.cardtext
 
+export const selectCardtextProcessedSlotBackup = (
+  state: RootState,
+): CardtextContent | null => state.cardtext.processedSlotBackup
+
 export const selectCardtextSource = (
   state: RootState,
 ): 'draft' | 'view' => {

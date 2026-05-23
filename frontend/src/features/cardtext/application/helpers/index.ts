@@ -12,3 +12,5 @@ export {
 } from './resolveCardtextToolbarSection'
 
 export { openCardtextEditorFromView } from './openCardtextEditorFromView'
+
+export { stashCardtextProcessedSlotBackup } from './stashCardtextProcessedSlotBackup'

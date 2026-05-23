@@ -6,6 +6,7 @@ import {
   loadCardtextTemplatesRequest,
   updateCardtextContentInList,
   clearText,
+  clearCardtextProcessedSlotBackup,
 } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
 import type { RootState } from '@app/state'
@@ -173,6 +174,7 @@ function* handleCardtextProcessedDelete(): SagaIterator {
   yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
   yield put(clearDraftData())
   yield put(setCardtextPresetData(null))
+  yield put(clearCardtextProcessedSlotBackup())
   yield put(clearText())
   yield put(loadCardtextTemplatesRequest())
 }
@@ -358,23 +360,18 @@ export function* handleCardtextToolbarAction(
 
     case 'edit':
       if (interactionMode === 'processedSlot') {
-        // Edit from processed mode should open create editor flow
-        // with current text content.
+        // Редактор черновика: appliedData не трогаем (только Apply на открытке).
+        // Снимок processed — в presetData для отмены по close в CardEditor.
         yield put(setCardtextViewEditMode(false))
         const { assetData: slotAsset } = yield select(
           (s: RootState) => s.cardtext,
         )
-        if (
-          slotAsset != null &&
-          slotAsset.status === 'processed' &&
-          slotAsset.id != null
-        ) {
-          yield put(setCardtextAppliedData(cloneCardtextBranch(slotAsset)))
-        } else {
-          yield put(setCardtextAppliedData(null))
+        if (slotAsset != null && slotAsset.status === 'processed') {
+          yield put(setCardtextPresetData(cloneCardtextBranch(slotAsset)))
         }
         yield put(setCardtextId(null))
         yield put(setStatus('draft'))
+        yield put(setDraftEngaged(true))
         yield put(setDraftFocus(true))
       } else if (
         interactionMode === 'postcardTemplateView' ||
@@ -514,6 +511,7 @@ export function* handleCardtextToolbarAction(
         const processed: ReturnType<typeof templateService.getSingleCardtextByStatus> =
           yield call([templateService, 'getSingleCardtextByStatus'], 'processed')
         if (processed != null) {
+          yield put(clearCardtextProcessedSlotBackup())
           yield put(restoreCardtextSession(processed))
           if (processed.id != null) {
             yield put(setCardtextId(String(processed.id)))

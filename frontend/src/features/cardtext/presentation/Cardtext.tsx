@@ -24,6 +24,7 @@ import {
   selectCardtextAddTemplateOpen,
   selectCardtextAssetStatus,
   selectCardtextId,
+  selectCardtextProcessedSlotBackup,
   selectCardtextSource,
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
@@ -32,7 +33,17 @@ import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
 import { useAppDispatch } from '@app/hooks'
-import { deleteCardtextFromViewRequested } from '@cardtext/infrastructure/state'
+import {
+  clearCardtextProcessedSlotBackup,
+  deleteCardtextFromViewRequested,
+  resetCardtextAssetToEmptyDraft,
+  restoreCardtextSession,
+  setCardtextAddTemplateOpen,
+  setCardtextPresetData,
+  setCardtextViewEditMode,
+  setDraftEngaged,
+  setDraftFocus,
+} from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
@@ -146,6 +157,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   const currentView = useAppSelector(selectCardtextSource)
   const currentTemplateId = useAppSelector(selectCardtextId)
   const cardtextAssetStatus = useAppSelector(selectCardtextAssetStatus)
+  const processedSlotBackup = useAppSelector(selectCardtextProcessedSlotBackup)
   const isAddTemplateOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const cardtextTemplates = useAppSelector(selectCardtextTemplatesListItems)
   const cardtextTemplatesLoading = useAppSelector(
@@ -197,8 +209,39 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   })
 
   const showReadOnlyCardtext =
-    interactionMode === 'postcardTemplateView' ||
-    interactionMode === 'processedSlot'
+    state.assetData != null &&
+    (interactionMode === 'postcardTemplateView' ||
+      interactionMode === 'processedSlot')
+
+  const handleViewClose = useCallback(() => {
+    dispatch(setCardtextViewEditMode(false))
+    dispatch(setCardtextAddTemplateOpen(false))
+    dispatch(setDraftFocus(false))
+
+    if (interactionMode === 'processedSlot') {
+      dispatch(clearCardtextProcessedSlotBackup())
+      dispatch(setCardtextPresetData(null))
+      dispatch(resetCardtextAssetToEmptyDraft())
+      dispatch(setDraftEngaged(false))
+      return
+    }
+
+    if (
+      processedSlotBackup != null &&
+      interactionMode === 'postcardTemplateView'
+    ) {
+      dispatch(restoreCardtextSession(processedSlotBackup))
+      dispatch(clearCardtextProcessedSlotBackup())
+      dispatch(setCardtextPresetData(null))
+      dispatch(setDraftEngaged(false))
+      return
+    }
+
+    dispatch(clearCardtextProcessedSlotBackup())
+    dispatch(setCardtextPresetData(null))
+    dispatch(resetCardtextAssetToEmptyDraft())
+    dispatch(setDraftEngaged(false))
+  }, [dispatch, interactionMode, processedSlotBackup])
 
   const handleViewDelete = useCallback(() => {
     dispatch(deleteCardtextFromViewRequested())
@@ -320,7 +363,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                   value={value}
                   style={style}
                   titleStripEditing={forceEditingTitle}
-                  onClose={handleViewEdit}
+                  onClose={handleViewClose}
                   onEdit={handleViewEdit}
                   onDelete={handleViewDelete}
                 />

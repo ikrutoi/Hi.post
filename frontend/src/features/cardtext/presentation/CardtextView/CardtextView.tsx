@@ -23,7 +23,7 @@ type Props = {
   contentKey?: string
   /** Tighter top padding when the floating title strip is in edit mode */
   titleStripEditing?: boolean
-  /** Same control as CardEditor close — e.g. switch to draft editor */
+  /** Закрыть форму View / Processed (пустой create), не открывать редактор */
   onClose?: () => void
   onEdit?: () => void
   onDelete?: () => void
@@ -73,9 +73,13 @@ export const CardtextView: React.FC<Props> = ({
         <button
           type="button"
           className={styles.viewCloseBtn}
-          onClick={onClose}
-          aria-label="Edit text"
-          title="Edit text"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.stopPropagation()
+            onClose()
+          }}
+          aria-label="Close text form"
+          title="Close"
         >
           <IconX />
         </button>

@@ -13,6 +13,7 @@ import {
   selectCardtextId,
 } from '@cardtext/infrastructure/selectors'
 import type { CardtextContent } from '@cardtext/domain/types'
+import { stashCardtextProcessedSlotBackup } from '@cardtext/application/helpers'
 import { CardtextListPanel } from './CardtextListPanel/CardtextListPanel'
 import styles from './CardtextRightSlot.module.scss'
 
@@ -24,6 +25,7 @@ export const CardtextRightSlot: React.FC = () => {
   const source = useAppSelector(selectCardtextSource)
   const currentTemplateId = useAppSelector(selectCardtextId)
   const session = useAppSelector(selectCardtextSessionData)
+  const assetData = useAppSelector((s) => s.cardtext.assetData)
 
   const handleClose = useCallback(() => {
     dispatch(setCardtextListPanelOpen(false))
@@ -51,6 +53,8 @@ export const CardtextRightSlot: React.FC = () => {
         dispatch(setDraftData(draft))
       }
 
+      stashCardtextProcessedSlotBackup(dispatch, assetData)
+
       dispatch(setCardtextId(entry.id))
       // Store the selected preset snapshot so we can reason about "previous selection"
       // separately from the current editor content.
@@ -70,7 +74,7 @@ export const CardtextRightSlot: React.FC = () => {
         }),
       )
     },
-    [dispatch, source, currentTemplateId, session],
+    [dispatch, source, currentTemplateId, session, assetData],
   )
 
   if (!isOpen) return null

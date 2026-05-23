@@ -18,7 +18,7 @@ import {
   restoreCardtextSession,
   setDraftData,
   clearDraftData,
-  setCardtextAppliedData,
+  setCardtextPresetData,
 } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
 import { IconX } from '@shared/ui/icons'
@@ -38,7 +38,6 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   const dispatch = useAppDispatch()
   const requestFocus = useAppSelector(selectIsDraftFocus)
   const cardtextAssetData = useAppSelector((s) => s.cardtext.assetData)
-  const cardtextAppliedData = useAppSelector((s) => s.cardtext.appliedData)
   const cardtextPresetData = useAppSelector((s) => s.cardtext.presetData)
   const isDraftEngaged = useAppSelector((s) => s.cardtext.isDraftEngaged)
   const {
@@ -72,8 +71,12 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   const lastSelectionRef = React.useRef<any>(null)
 
   const isEmpty = useMemo(() => isEmptyCardtextValue(value), [value])
-  /** Placeholder only before the user engages the empty create surface (click / cardtextAdd). */
-  const showEmptyPlaceholder = isEmpty && !isDraftEngaged
+  /** Сессия в фабрике: asset или явный draft; иначе только плейсхолдер (без Slate). */
+  const factorySessionActive =
+    cardtextAssetData != null || isDraftEngaged
+  /** Placeholder when closed or before engage; не показывать applied в Slate без сессии. */
+  const showEmptyPlaceholder =
+    !factorySessionActive || (isEmpty && !isDraftEngaged)
 
   useEffect(() => {
     if (!requestFocus) return
@@ -164,21 +167,22 @@ export const CardEditor: React.FC<CardEditorProps> = ({
     }
 
     if (
-      cardtextAppliedData != null &&
-      cardtextAppliedData.status === 'processed' &&
+      cardtextPresetData != null &&
+      cardtextPresetData.status === 'processed' &&
       cardtextAssetData.status === 'draft'
     ) {
       dispatch(
         restoreCardtextSession({
-          ...cardtextAppliedData,
-          value: cardtextAppliedData.value.map((b) => ({
+          ...cardtextPresetData,
+          value: cardtextPresetData.value.map((b) => ({
             ...b,
             children: b.children.map((c) => ({ ...c })),
           })),
-          style: { ...cardtextAppliedData.style },
+          style: { ...cardtextPresetData.style },
         }),
       )
-      dispatch(setCardtextAppliedData(null))
+      dispatch(setCardtextPresetData(null))
+      dispatch(setDraftEngaged(false))
       return
     }
 
@@ -214,13 +218,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
     syncDraftDataOnCloseFromDraftSession(cardtextAssetData)
     dispatch(setCardtextViewEditMode(false))
     setCurrentView('view')
-  }, [
-    cardtextAppliedData,
-    cardtextAssetData,
-    cardtextPresetData,
-    dispatch,
-    setCurrentView,
-  ])
+  }, [cardtextAssetData, cardtextPresetData, dispatch, setCurrentView])
 
   const renderLeafWithColor = useCallback(
     (leafProps: { attributes: any; children: React.ReactNode; leaf: any }) => {
@@ -275,72 +273,74 @@ export const CardEditor: React.FC<CardEditorProps> = ({
           <IconX />
         </button>
       ) : null}
-      <div
-        className={styles.editorArea}
-        ref={editorRef}
-        onClick={handleClickEditorArea}
-        onBlur={() => {
-          if (editor.selection) {
-            if (Range.isCollapsed(editor.selection)) {
-              lastSelectionRef.current = editor.selection
-            } else {
-              const { focus } = editor.selection
-              lastSelectionRef.current = { anchor: focus, focus }
-            }
-          }
-        }}
-        onFocus={() => {
-          if (lastSelectionRef.current) {
-            Transforms.select(editor, lastSelectionRef.current)
-            ReactEditor.focus(editor)
-          }
-        }}
-        tabIndex={0}
-      >
-        <Slate
-          key={resetToken}
-          editor={editor}
-          initialValue={value as Descendant[]}
-          onChange={(newValue: Descendant[]) => {
-            const next = newValue as CardtextValue
-            // Пока нет сессии и пользователь не «вовлёк» редактор — не пишем в Redux
-            // (Slate даёт onChange при маунте/нормализации → иначе ensureAsset создаёт пустой assetData).
-            if (cardtextAssetData == null && !isDraftEngaged) {
-              return
-            }
-            if (
-              cardtextAssetData == null &&
-              isEmptyCardtextValue(next)
-            ) {
-              return
-            }
-            setValue(next)
-          }}
-        >
-          <Editable
-            className={styles.editorEditable}
-            ref={editableRef}
-            style={{
-              lineHeight: `${currentLineHeight}px`,
-              fontSize: `${currentPxSize}px`,
-            }}
-            placeholder=""
-            renderLeaf={renderLeafWithColor}
-            renderElement={renderElement}
-            onFocus={() => {
-              if (cardtextAssetData == null) {
-                dispatch(setDraftEngaged(true))
-                dispatch(setDraftFocus(true))
-              }
-            }}
-            onSelect={() => {
-              if (editor.selection) {
+      {factorySessionActive ? (
+        <div
+          className={styles.editorArea}
+          ref={editorRef}
+          onClick={handleClickEditorArea}
+          onBlur={() => {
+            if (editor.selection) {
+              if (Range.isCollapsed(editor.selection)) {
                 lastSelectionRef.current = editor.selection
+              } else {
+                const { focus } = editor.selection
+                lastSelectionRef.current = { anchor: focus, focus }
               }
+            }
+          }}
+          onFocus={() => {
+            if (lastSelectionRef.current) {
+              Transforms.select(editor, lastSelectionRef.current)
+              ReactEditor.focus(editor)
+            }
+          }}
+          tabIndex={0}
+        >
+          <Slate
+            key={resetToken}
+            editor={editor}
+            initialValue={value as Descendant[]}
+            onChange={(newValue: Descendant[]) => {
+              const next = newValue as CardtextValue
+              // Пока нет сессии и пользователь не «вовлёк» редактор — не пишем в Redux
+              // (Slate даёт onChange при маунте/нормализации → иначе ensureAsset создаёт пустой assetData).
+              if (cardtextAssetData == null && !isDraftEngaged) {
+                return
+              }
+              if (
+                cardtextAssetData == null &&
+                isEmptyCardtextValue(next)
+              ) {
+                return
+              }
+              setValue(next)
             }}
-          />
-        </Slate>
-      </div>
+          >
+            <Editable
+              className={styles.editorEditable}
+              ref={editableRef}
+              style={{
+                lineHeight: `${currentLineHeight}px`,
+                fontSize: `${currentPxSize}px`,
+              }}
+              placeholder=""
+              renderLeaf={renderLeafWithColor}
+              renderElement={renderElement}
+              onFocus={() => {
+                if (cardtextAssetData == null) {
+                  dispatch(setDraftEngaged(true))
+                  dispatch(setDraftFocus(true))
+                }
+              }}
+              onSelect={() => {
+                if (editor.selection) {
+                  lastSelectionRef.current = editor.selection
+                }
+              }}
+            />
+          </Slate>
+        </div>
+      ) : null}
     </div>
   )
 }

@@ -125,6 +125,7 @@ export const cardtextSlice = createSlice({
     clearText(state) {
       state.assetData = null
       state.appliedData = null
+      state.processedSlotBackup = null
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false
       state.resetToken += 1
@@ -162,6 +163,18 @@ export const cardtextSlice = createSlice({
       action: PayloadAction<CardtextContent | null>,
     ) {
       state.appliedData = action.payload
+    },
+
+    setCardtextProcessedSlotBackup(
+      state,
+      action: PayloadAction<CardtextContent | null>,
+    ) {
+      const p = action.payload
+      state.processedSlotBackup = p == null ? null : cloneCardtextBranch(p)
+    },
+
+    clearCardtextProcessedSlotBackup(state) {
+      state.processedSlotBackup = null
     },
 
     setDraftData(state, action: PayloadAction<CardtextContent | null>) {
@@ -412,6 +425,8 @@ export const {
   setCardtextId,
   setCardtextPresetData,
   setCardtextAppliedData,
+  setCardtextProcessedSlotBackup,
+  clearCardtextProcessedSlotBackup,
   setDraftData,
   clearDraftData,
   restoreDraftData,
