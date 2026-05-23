@@ -6,11 +6,7 @@ import {
   loadCardtextTemplatesRequest,
   updateCardtextContentInList,
   clearText,
-  clearCardtextProcessedSlotBackup,
-} from '@cardtext/infrastructure/state'
-import { changeFontSizeStep } from './cardtextHandlers'
-import type { RootState } from '@app/state'
-import {
+  clearCardtextTemplatesListSelection,
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
   setDraftFocus,
@@ -25,6 +21,8 @@ import {
   setCardtextPresetData,
   setCardtextViewEditMode,
 } from '@cardtext/infrastructure/state'
+import { changeFontSizeStep } from './cardtextHandlers'
+import type { RootState } from '@app/state'
 import { isEmptyCardtextValue } from '@cardtext/domain/helpers'
 import {
   selectCardtextValue,
@@ -174,7 +172,6 @@ function* handleCardtextProcessedDelete(): SagaIterator {
   yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
   yield put(clearDraftData())
   yield put(setCardtextPresetData(null))
-  yield put(clearCardtextProcessedSlotBackup())
   yield put(clearText())
   yield put(loadCardtextTemplatesRequest())
 }
@@ -351,6 +348,8 @@ export function* handleCardtextToolbarAction(
         const templateId = String(result.templateId)
         yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
         yield put(clearDraftData())
+        yield put(clearCardtextTemplatesListSelection())
+        yield put(setCardtextPresetData(null))
         yield put(setCardtextId(templateId))
         yield put(setStatus('processed'))
         yield put(loadCardtextTemplatesRequest())
@@ -511,7 +510,6 @@ export function* handleCardtextToolbarAction(
         const processed: ReturnType<typeof templateService.getSingleCardtextByStatus> =
           yield call([templateService, 'getSingleCardtextByStatus'], 'processed')
         if (processed != null) {
-          yield put(clearCardtextProcessedSlotBackup())
           yield put(restoreCardtextSession(processed))
           if (processed.id != null) {
             yield put(setCardtextId(String(processed.id)))

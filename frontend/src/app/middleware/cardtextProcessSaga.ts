@@ -34,7 +34,9 @@ import {
   resetCardtextAssetToEmptyDraft,
   clearText,
   deleteCardtextFromViewRequested,
+  openCardtextFromMiniStripRequested,
 } from '@cardtext/infrastructure/state'
+import { openCardtextFromMiniStripSaga } from '@cardtext/application/helpers'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import type { RootState } from '@app/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
@@ -422,6 +424,7 @@ export function* cardtextProcessSaga(): SagaIterator {
         yield call(syncCardtextViewToolbarAddList)
       },
     ),
+    takeEvery(openCardtextFromMiniStripRequested.type, openCardtextFromMiniStripSaga),
     takeEvery(
       [
         setDraftEngaged.type,

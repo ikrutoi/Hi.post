@@ -13,4 +13,4 @@ export {
 
 export { openCardtextEditorFromView } from './openCardtextEditorFromView'
 
-export { stashCardtextProcessedSlotBackup } from './stashCardtextProcessedSlotBackup'
+export { openCardtextFromMiniStripSaga } from './openCardtextFromMiniStrip'

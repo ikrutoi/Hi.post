@@ -180,8 +180,6 @@ export interface CardtextState {
   presetData: CardtextContent | null
   appliedData: CardtextContent | null
   draftData: CardtextContent | null
-  /** Снимок Processed перед просмотром шаблона в View; восстанавливается по Close в View. */
-  processedSlotBackup: CardtextContent | null
   resetToken: number
   isDraftFocus: boolean
   isDraftEngaged: boolean
@@ -218,7 +216,6 @@ export const initialCardtextEditorState: CardtextState = {
   presetData: null,
   appliedData: null,
   draftData: null,
-  processedSlotBackup: null,
   resetToken: 0,
   isDraftFocus: false,
   isDraftEngaged: false,

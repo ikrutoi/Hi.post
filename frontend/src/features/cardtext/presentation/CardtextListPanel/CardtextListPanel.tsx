@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -19,6 +19,8 @@ import {
   loadCardtextTemplatesRequest,
   resetCardtextAssetToEmptyDraft,
   setCardtextId,
+  setCardtextTemplatesListSelectedId,
+  clearCardtextTemplatesListSelection,
 } from '@cardtext/infrastructure/state'
 import type { CardtextContent } from '@cardtext/domain/types'
 import { CardtextListEntry } from './CardtextListEntry'
@@ -58,14 +60,23 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const isCardtextViewEditMode = useAppSelector(
     (state) => state.cardtext.isCardtextViewEditMode === true,
   )
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const templatesListSelectedId = useAppSelector(
+    (state) => state.cardtext.templatesListSelectedId,
+  )
+
+  const highlightAssetTemplateInList =
+    cardtextAssetStatus === 'inLine' || cardtextAssetStatus === 'outLine'
 
   const handleSelect = useCallback(
     (entry: CardtextContent) => {
-      setSelectedId(entry.id)
+      if (entry.id != null) {
+        dispatch(setCardtextTemplatesListSelectedId(String(entry.id)))
+      } else {
+        dispatch(clearCardtextTemplatesListSelection())
+      }
       onSelect?.(entry)
     },
-    [onSelect],
+    [dispatch, onSelect],
   )
 
   const handleEdit = useCallback(
@@ -85,7 +96,9 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
       if (!result.success) return
       dispatch(removeCardtextTemplateId(id))
       dispatch(loadCardtextTemplatesRequest())
-      if (selectedId === id) setSelectedId(null)
+      if (templatesListSelectedId === id) {
+        dispatch(clearCardtextTemplatesListSelection())
+      }
       if (selectedTemplateId === id) {
         dispatch(resetCardtextAssetToEmptyDraft())
         dispatch(setCardtextId(null))
@@ -94,7 +107,7 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
     [
       deleteCardtextTemplate,
       dispatch,
-      selectedId,
+      templatesListSelectedId,
       selectedTemplateId,
     ],
   )
@@ -132,7 +145,11 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   isSelected={
-                    selectedId === entry.id || selectedTemplateId === entry.id
+                    (entry.id != null &&
+                      templatesListSelectedId === entry.id) ||
+                    (highlightAssetTemplateInList &&
+                      entry.id != null &&
+                      selectedTemplateId === entry.id)
                   }
                   isEditActive={
                     isCardtextViewEditMode && selectedTemplateId === entry.id

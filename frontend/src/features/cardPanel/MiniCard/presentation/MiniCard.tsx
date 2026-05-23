@@ -20,6 +20,7 @@ import {
 } from '@date/calendar/infrastructure/state'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { selectCardtextMiniPreviewHasRenderableContent } from '@cardtext/infrastructure/selectors'
+import { openCardtextFromMiniStripRequested } from '@cardtext/infrastructure/state'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 
 interface MiniCardProps {
@@ -116,6 +117,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         }
         if (section === 'cardtext') {
           clearRightPieCardtextPeek()
+          dispatch(openCardtextFromMiniStripRequested())
         }
         if (section === 'envelope') {
           clearRightPieEnvelopePeek()

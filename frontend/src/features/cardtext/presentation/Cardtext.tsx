@@ -24,7 +24,6 @@ import {
   selectCardtextAddTemplateOpen,
   selectCardtextAssetStatus,
   selectCardtextId,
-  selectCardtextProcessedSlotBackup,
   selectCardtextSource,
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
@@ -34,10 +33,8 @@ import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
 import { useAppDispatch } from '@app/hooks'
 import {
-  clearCardtextProcessedSlotBackup,
   deleteCardtextFromViewRequested,
   resetCardtextAssetToEmptyDraft,
-  restoreCardtextSession,
   setCardtextAddTemplateOpen,
   setCardtextPresetData,
   setCardtextViewEditMode,
@@ -157,7 +154,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   const currentView = useAppSelector(selectCardtextSource)
   const currentTemplateId = useAppSelector(selectCardtextId)
   const cardtextAssetStatus = useAppSelector(selectCardtextAssetStatus)
-  const processedSlotBackup = useAppSelector(selectCardtextProcessedSlotBackup)
   const isAddTemplateOpen = useAppSelector(selectCardtextAddTemplateOpen)
   const cardtextTemplates = useAppSelector(selectCardtextTemplatesListItems)
   const cardtextTemplatesLoading = useAppSelector(
@@ -216,36 +212,18 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
   const handleViewClose = useCallback(() => {
     dispatch(setCardtextViewEditMode(false))
     dispatch(setCardtextAddTemplateOpen(false))
-    dispatch(setDraftFocus(false))
-
-    if (interactionMode === 'processedSlot') {
-      dispatch(clearCardtextProcessedSlotBackup())
-      dispatch(setCardtextPresetData(null))
-      dispatch(resetCardtextAssetToEmptyDraft())
-      dispatch(setDraftEngaged(false))
-      return
-    }
-
-    if (
-      processedSlotBackup != null &&
-      interactionMode === 'postcardTemplateView'
-    ) {
-      dispatch(restoreCardtextSession(processedSlotBackup))
-      dispatch(clearCardtextProcessedSlotBackup())
-      dispatch(setCardtextPresetData(null))
-      dispatch(setDraftEngaged(false))
-      return
-    }
-
-    dispatch(clearCardtextProcessedSlotBackup())
     dispatch(setCardtextPresetData(null))
     dispatch(resetCardtextAssetToEmptyDraft())
     dispatch(setDraftEngaged(false))
-  }, [dispatch, interactionMode, processedSlotBackup])
+    dispatch(setDraftFocus(false))
+  }, [dispatch])
 
   const handleViewDelete = useCallback(() => {
     dispatch(deleteCardtextFromViewRequested())
   }, [dispatch])
+
+  const factorySessionActive =
+    state.assetData != null || state.isDraftEngaged === true
 
   const hideEmptyCreateToolbar = shouldHideEmptyCreateToolbar({
     currentView,
@@ -258,8 +236,10 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     },
   })
 
-  const showCardtextToolbarRow = !hideEmptyCreateToolbar
-  const showCardtextToolbarControls = showCardtextToolbarRow
+  /** Плейсхолдер без сессии: не cardtextView/addList, даже если на открытке есть applied. */
+  const showCardtextToolbarControls =
+    factorySessionActive && !hideEmptyCreateToolbar
+  const showCardtextToolbarRow = showCardtextToolbarControls
 
   useLoadCardtextTemplatesWhenUnknown(
     cardtextTemplatesLoading,

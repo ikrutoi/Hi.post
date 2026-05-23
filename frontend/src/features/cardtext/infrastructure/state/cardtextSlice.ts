@@ -26,6 +26,8 @@ export interface CardtextTemplatesUIState {
   cardtextListSortDirection: CardtextListSortDirection
   cardtextListPanelDensity: PanelDensity2Size
   templatesListLoading: boolean
+  /** Подсветка строки в списке шаблонов (отдельно от assetData.id). */
+  templatesListSelectedId: string | null
 }
 
 export interface CardtextSliceState
@@ -44,6 +46,7 @@ const initialCardtextTemplatesState: Pick<
   cardtextListPanelDensity: 1,
   templatesListLoading: false,
   templatesList: null,
+  templatesListSelectedId: null,
 }
 
 export const initialCardtextState: CardtextSliceState = {
@@ -125,7 +128,6 @@ export const cardtextSlice = createSlice({
     clearText(state) {
       state.assetData = null
       state.appliedData = null
-      state.processedSlotBackup = null
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false
       state.resetToken += 1
@@ -163,18 +165,6 @@ export const cardtextSlice = createSlice({
       action: PayloadAction<CardtextContent | null>,
     ) {
       state.appliedData = action.payload
-    },
-
-    setCardtextProcessedSlotBackup(
-      state,
-      action: PayloadAction<CardtextContent | null>,
-    ) {
-      const p = action.payload
-      state.processedSlotBackup = p == null ? null : cloneCardtextBranch(p)
-    },
-
-    clearCardtextProcessedSlotBackup(state) {
-      state.processedSlotBackup = null
     },
 
     setDraftData(state, action: PayloadAction<CardtextContent | null>) {
@@ -319,6 +309,17 @@ export const cardtextSlice = createSlice({
     },
 
     // —— UI ——
+    setCardtextTemplatesListSelectedId(
+      state,
+      action: PayloadAction<string | null>,
+    ) {
+      state.templatesListSelectedId = action.payload
+    },
+
+    clearCardtextTemplatesListSelection(state) {
+      state.templatesListSelectedId = null
+    },
+
     setCardtextListPanelOpen(state, action: PayloadAction<boolean>) {
       state.isListPanelOpen = action.payload
     },
@@ -410,6 +411,9 @@ export const cardtextSlice = createSlice({
     /** Удалить текст из View / Processed (кнопка delete на CardtextView или тулбар). */
     deleteCardtextFromViewRequested(_state) {},
 
+    /** Клик по мини-секции: показать applied в View (с id) или Processed (без id). */
+    openCardtextFromMiniStripRequested(_state) {},
+
   },
 })
 
@@ -425,13 +429,13 @@ export const {
   setCardtextId,
   setCardtextPresetData,
   setCardtextAppliedData,
-  setCardtextProcessedSlotBackup,
-  clearCardtextProcessedSlotBackup,
   setDraftData,
   clearDraftData,
   restoreDraftData,
   restoreCardtextEditorSession,
   restoreCardtextSession,
+  setCardtextTemplatesListSelectedId,
+  clearCardtextTemplatesListSelection,
   setCardtextListPanelOpen,
   setCardtextAddTemplateOpen,
   setCardtextEditTitleOpen,
@@ -447,6 +451,7 @@ export const {
   setDraftEngaged,
   setCardtextViewEditMode,
   deleteCardtextFromViewRequested,
+  openCardtextFromMiniStripRequested,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer
