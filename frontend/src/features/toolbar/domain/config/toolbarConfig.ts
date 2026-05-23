@@ -69,8 +69,6 @@ import type { ToolbarState, ToolbarSectionConfigMap } from '../types'
 import {
   CARDTEXT_COMPOSER_TOOLBAR,
   initialCardtextComposerToolbarState,
-  CARDTEXT_PROCESSED_TOOLBAR,
-  initialCardtextProcessedToolbarState,
 } from '../types/cardtext.types'
 import {
   DATE_KEYS,
@@ -191,17 +189,6 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'text',
     toolbar: CARDTEXT_TOOLBAR,
     getBadges: (state: ToolbarState['cardtext']) => ({}),
-  },
-
-  cardtextProcessed: {
-    keys: CARDTEXT_KEYS,
-    initialState: initialCardtextProcessedToolbarState,
-    onAction: (key, section, editor, dispatch) => {
-      dispatch({ type: 'toolbar/action', payload: { section, key } })
-    },
-    group: 'processed',
-    toolbar: CARDTEXT_PROCESSED_TOOLBAR,
-    getBadges: (state: ToolbarState['cardtextProcessed']) => ({}),
   },
 
   sender: {

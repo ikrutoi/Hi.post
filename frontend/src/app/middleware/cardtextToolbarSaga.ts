@@ -233,8 +233,7 @@ export function* handleCardtextToolbarAction(
     section === 'cardtext' ||
     section === 'cardtextView' ||
     section === 'cardtextEditor' ||
-    section === 'cardtextCreate' ||
-    section === 'cardtextProcessed'
+    section === 'cardtextCreate'
   if (!isCardtextSection) return
 
   const interactionMode: CardtextInteractionMode =
@@ -428,7 +427,6 @@ export function* handleCardtextToolbarAction(
       if (
         section === 'cardtext' ||
         section === 'cardtextView' ||
-        section === 'cardtextProcessed' ||
         interactionMode === 'processedSlot' ||
         interactionMode === 'postcardTemplateView' ||
         interactionMode === 'editTemplate' ||

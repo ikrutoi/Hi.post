@@ -94,7 +94,6 @@ export const TOOLBAR_SECTIONS = [
   'cardtextCreate',
   'cardtextEditor',
   'cardtextView',
-  'cardtextProcessed',
   'date',
   'dateList',
   'cardPieList',
@@ -136,7 +135,6 @@ export type ToolbarState = {
   cardtextView: CardtextToolbarState & { config: ToolbarGroup[] }
   cardtextCreate: CardtextToolbarState & { config: ToolbarGroup[] }
   cardtextEditor: CardtextToolbarState & { config: ToolbarGroup[] }
-  cardtextProcessed: CardtextToolbarState & { config: ToolbarGroup[] }
   date: DateToolbarState & { config: ToolbarGroup[] }
   dateList: DateListToolbarState & { config: ToolbarGroup[] }
   cardPieList: CardPieListToolbarState & { config: ToolbarGroup[] }
@@ -276,11 +274,6 @@ export type ToolbarSectionConfigMap = {
     CardtextKey,
     'cardtextView'
   >
-  cardtextProcessed: BaseSectionConfig<
-    CardtextToolbarState,
-    CardtextKey,
-    'cardtextProcessed'
-  >
   date: BaseSectionConfig<DateToolbarState, DateKey, 'date'>
 
   dateList: BaseSectionConfig<DateListToolbarState, DateListKey, 'dateList'>
@@ -382,9 +375,7 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                             ? CardtextKey
                                             : S extends 'cardtextView'
                                               ? CardtextKey
-                                              : S extends 'cardtextProcessed'
-                                                ? CardtextKey
-                                                : S extends 'date'
+                                              : S extends 'date'
                                                   ? DateKey
                                                   : S extends 'dateList'
                                                     ? DateListKey

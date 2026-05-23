@@ -265,8 +265,7 @@
 .toolbarCardphotoView,
 .toolbarCardtextView,
 .toolbarCardtextEditor,
-.toolbarCardtextCreate,
-.toolbarCardtextProcessed {
+.toolbarCardtextCreate {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -548,8 +547,7 @@
 .toolbarCardtext,
 .toolbarCardtextView,
 .toolbarCardtextEditor,
-.toolbarCardtextCreate,
-.toolbarCardtextProcessed {
+.toolbarCardtextCreate {
   [data-icon-key='apply'].toolbarKeyEnabled,
   [data-icon-key='apply'].toolbarKeySelected,
   [data-icon-key='apply'].toolbarKeyActive,
@@ -587,8 +585,7 @@
 .toolbarCardphotoProcessed,
 .toolbarCardtextView,
 .toolbarCardtextEditor,
-.toolbarCardtextCreate,
-.toolbarCardtextProcessed {
+.toolbarCardtextCreate {
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
       [data-icon-key='cropCheck']
     ) {
@@ -1098,11 +1095,10 @@
   }
 }
 
-/* cardtextView / cardtextEditor / cardtextCreate / cardtextProcessed — как addList: margin-left 0.5rem, без padding. */
+/* cardtextView / cardtextEditor / cardtextCreate — как addList: margin-left 0.5rem, без padding. */
 .toolbarCardtextView,
 .toolbarCardtextEditor,
-.toolbarCardtextCreate,
-.toolbarCardtextProcessed {
+.toolbarCardtextCreate {
   padding-left: 0;
   padding-right: 0;
   margin-left: 0.5rem;

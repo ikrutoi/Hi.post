@@ -12,7 +12,6 @@ export function cardtextToolbarSectionFromMode(
 ): ToolbarSection {
   switch (mode) {
     case 'processedSlot':
-      return 'cardtextProcessed'
     case 'postcardTemplateView':
       return 'cardtextView'
     case 'createEmpty':

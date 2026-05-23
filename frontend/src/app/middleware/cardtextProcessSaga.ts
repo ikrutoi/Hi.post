@@ -387,7 +387,7 @@ export function* cardtextProcessSaga(): SagaIterator {
           key === 'cardtextCheck' ||
           key === 'apply' ||
           (key === 'delete' &&
-            (section === 'cardtextView' || section === 'cardtextProcessed'))
+            section === 'cardtextView')
         ) {
           yield call(syncCardtextProcessedBadge)
           yield call(syncCardtextCreateDraftIndicator)

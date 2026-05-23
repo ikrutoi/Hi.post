@@ -54,6 +54,15 @@ export const initialCardtextState: CardtextSliceState = {
   ...initialCardtextTemplatesState,
 }
 
+/** В View только один текст; processed не из списка шаблонов — снимаем подсветку строки. */
+function clearTemplatesListSelectionWhenProcessed(
+  state: WritableDraft<CardtextSliceState>,
+): void {
+  if (state.assetData?.status === 'processed') {
+    state.templatesListSelectedId = null
+  }
+}
+
 function ensureAsset(
   state: WritableDraft<CardtextSliceState>,
 ): WritableDraft<CardtextContent> {
@@ -123,6 +132,7 @@ export const cardtextSlice = createSlice({
     setStatus(state, action: PayloadAction<CardtextStatus>) {
       if (state.assetData === null) return
       state.assetData.status = action.payload
+      clearTemplatesListSelectionWhenProcessed(state)
     },
 
     clearText(state) {
@@ -305,6 +315,7 @@ export const cardtextSlice = createSlice({
       }
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false
+      clearTemplatesListSelectionWhenProcessed(state)
       state.resetToken += 1
     },
 

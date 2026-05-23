@@ -145,11 +145,12 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                   isSelected={
-                    (entry.id != null &&
+                    cardtextAssetStatus !== 'processed' &&
+                    ((entry.id != null &&
                       templatesListSelectedId === entry.id) ||
-                    (highlightAssetTemplateInList &&
-                      entry.id != null &&
-                      selectedTemplateId === entry.id)
+                      (highlightAssetTemplateInList &&
+                        entry.id != null &&
+                        selectedTemplateId === entry.id))
                   }
                   isEditActive={
                     isCardtextViewEditMode && selectedTemplateId === entry.id

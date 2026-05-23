@@ -77,14 +77,6 @@ export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const CARDTEXT_PROCESSED_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'processed',
-    icons: [{ key: 'listAdd', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'font',
@@ -111,11 +103,6 @@ export const initialCardtextViewToolbarState: CardtextToolbarState = {
   config: [...CARDTEXT_VIEW_TOOLBAR],
 }
 
-export const initialCardtextProcessedToolbarState: CardtextToolbarState = {
-  ...Object.fromEntries(flattenIcons(CARDTEXT_PROCESSED_TOOLBAR)),
-  config: [...CARDTEXT_PROCESSED_TOOLBAR],
-}
-
 export interface CardtextSectionConfig extends BaseSectionConfig<
   CardtextToolbarState,
   CardtextKey,
@@ -123,5 +110,4 @@ export interface CardtextSectionConfig extends BaseSectionConfig<
   | 'cardtextEditor'
   | 'cardtextView'
   | 'cardtextCreate'
-  | 'cardtextProcessed'
 > {}

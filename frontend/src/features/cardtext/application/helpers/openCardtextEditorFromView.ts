@@ -13,7 +13,7 @@ export function openCardtextEditorFromView(
   assetStatus: CardtextStatus,
 ): void {
   if (assetStatus === 'processed') {
-    dispatch(toolbarAction({ section: 'cardtextProcessed', key: 'edit' }))
+    dispatch(toolbarAction({ section: 'cardtextView', key: 'edit' }))
     return
   }
   dispatch(setCardtextViewEditMode(true))
