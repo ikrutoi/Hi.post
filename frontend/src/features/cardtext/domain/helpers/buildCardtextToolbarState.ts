@@ -6,7 +6,7 @@ export const buildCardtextToolbarState = (
   options?: {
     /** Same template id on asset and appliedData (Apply already on postcard). */
     assetProcessed?: boolean
-    /** Форма создания: Apply в секции cardtext недоступен (сохранение — cardtextCheck). */
+    /** Форма создания: Apply в секции cardtext недоступен (сохранение — applyLight). */
     disableApply?: boolean
   },
 ): CardtextToolbarState => {
@@ -32,7 +32,7 @@ export const buildCardtextToolbarState = (
       : hasContent
         ? 'enabled'
         : 'disabled'
-  state.cardtextCheck = hasContent ? 'enabled' : 'disabled'
+  state.applyLight = hasContent ? 'enabled' : 'disabled'
 
   return state as CardtextToolbarState
 }

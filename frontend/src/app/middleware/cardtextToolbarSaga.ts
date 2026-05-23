@@ -246,6 +246,7 @@ export function* handleCardtextToolbarAction(
       break
     }
 
+    case 'applyLight':
     case 'cardtextCheck': {
       const value: ReturnType<typeof selectCardtextValue> =
         yield select(selectCardtextValue)
