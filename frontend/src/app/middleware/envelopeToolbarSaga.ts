@@ -74,6 +74,7 @@ import {
   selectActiveAddressEdit,
   selectSenderCardAddress,
   selectRecipientCardAddress,
+  selectRecipientsList,
 } from '@envelope/infrastructure/selectors'
 import type { AddressEditSession } from '@envelope/domain/types'
 import {
@@ -372,6 +373,43 @@ function* deleteAddressTemplateFromToolbar(
   }
 }
 
+function addressFieldsAreComplete(address: AddressFields): boolean {
+  return Object.values(address).every((v) => (v ?? '').trim() !== '')
+}
+
+/** Сохранить адрес в viewDraft до пересинка книги (inList → outList). */
+function* preserveAddressViewDraftForOutList(
+  section: 'senderView' | 'recipientView',
+): SagaIterator {
+  const address: AddressFields =
+    section === 'senderView'
+      ? yield select(selectSenderCardAddress)
+      : yield select(selectRecipientCardAddress)
+
+  if (section === 'senderView') {
+    yield put(setSenderViewDraft(address))
+    return
+  }
+
+  yield put(setRecipientViewDraft(address))
+  const recipientViewId: string | null = yield select(selectRecipientViewId)
+  if (recipientViewId == null) return
+
+  const envelopeRecipients: RecipientState[] = yield select(selectRecipientsList)
+  if (envelopeRecipients.length === 0) return
+
+  const complete = addressFieldsAreComplete(address)
+  yield put(
+    setRecipientsList(
+      envelopeRecipients.map((r) =>
+        r.recipientViewId === recipientViewId
+          ? { ...r, viewDraft: { ...address }, formIsComplete: complete }
+          : r,
+      ),
+    ),
+  )
+}
+
 /** Снять шаблон с быстрого списка (outList в БД); адрес на конверте и в форме не трогаем. */
 function* moveAddressTemplateToOutListFromToolbar(
   section: 'senderView' | 'recipientView',
@@ -386,6 +424,8 @@ function* moveAddressTemplateToOutListFromToolbar(
   if (templateId == null) return false
 
   try {
+    yield* preserveAddressViewDraftForOutList(section)
+
     const result: { success: boolean } = yield call(
       [templateService, 'updateAddressTemplate'],
       type,
@@ -394,7 +434,6 @@ function* moveAddressTemplateToOutListFromToolbar(
     )
     if (!result.success) return false
 
-    yield put(removeAddressBookEntry({ id: templateId, role: type }))
     yield put(incrementAddressTemplatesReloadVersion())
     yield put(incrementAddressBookReloadVersion())
     return true
