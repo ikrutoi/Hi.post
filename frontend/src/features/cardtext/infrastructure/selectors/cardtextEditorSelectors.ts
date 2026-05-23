@@ -55,8 +55,9 @@ function cloneCardtextValue(value: CardtextValue): CardtextValue {
  * Отсутствие asset не считается «черновиком»: тогда merge с applied, как в левом пироге.
  */
 function isCardtextEditorAssetOnlyMerge(state: RootState): boolean {
-  const { assetData, isCardtextViewEditMode } = state.cardtext
+  const { assetData, isCardtextViewEditMode, isDraftEngaged } = state.cardtext
   if (isCardtextViewEditMode === true) return true
+  if (isDraftEngaged === true && assetData == null) return true
   return assetData != null && assetData.status === 'draft'
 }
 
@@ -66,6 +67,7 @@ export const selectCardtextSource = (
   state: RootState,
 ): 'draft' | 'view' => {
   if (state.cardtext.isCardtextViewEditMode === true) return 'draft'
+  if (state.cardtext.isDraftEngaged === true) return 'draft'
   const { assetData, appliedData } = state.cardtext
   if (assetData == null) {
     if (
@@ -204,7 +206,8 @@ export const selectCardtextAssetMatchesApplied = (
 /**
  * Контент для мини-секции / `selectCardtextMiniPreviewHasRenderableContent`:
  * — выбранный в списке шаблон (`inLine` / `outLine`) не попадает в превью, пока не Apply;
- * — в `cardtextCreate` набираемый черновик не попадает в мини (только уже на открытке — `appliedData`).
+ * — в `cardtextCreate` набираемый черновик не попадает в мини (только уже на открытке — `appliedData`);
+ * — после `cardtextCheck` (processed в asset) мини тоже только `appliedData`, пока не Apply на открытке.
  */
 export const selectCardtextDisplayForMiniStrip = createSelector(
   [
@@ -233,7 +236,13 @@ export const selectCardtextDisplayForMiniStrip = createSelector(
       (asset.status === 'inLine' || asset.status === 'outLine') &&
       !assetMatchesApplied
 
-    const miniShowsAppliedOnly = isCreateEmptyMode || listBrowsingNotCommitted
+    const processedSavedNotApplied =
+      asset != null && asset.status === 'processed' && !assetMatchesApplied
+
+    const miniShowsAppliedOnly =
+      isCreateEmptyMode ||
+      listBrowsingNotCommitted ||
+      processedSavedNotApplied
 
     let branch: CardtextContent | null = null
 

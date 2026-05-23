@@ -5,6 +5,7 @@ import {
   setStatus,
   loadCardtextTemplatesRequest,
   updateCardtextContentInList,
+  clearText,
 } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
 import type { RootState } from '@app/state'
@@ -31,7 +32,10 @@ import {
   selectCardtextPlainText,
   selectCardtextLines,
   selectCardtextInteractionMode,
+  selectCardtextAssetStatus,
 } from '@cardtext/infrastructure/selectors'
+import type { CardtextStatus } from '@cardtext/domain/editor/editor.types'
+import { checkAndSyncProcessedCard } from './syncProcessedCard'
 import type { CardtextInteractionMode } from '@cardtext/domain/cardtextInteractionMode'
 import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
 import { findCardtextQuickListMatch } from '@cardtext/domain/helpers/cardtextQuickListMatch'
@@ -44,7 +48,10 @@ import {
   anyPostcardReferencesCardtextTemplateId,
   type PostcardHydrated,
 } from '@entities/postcard'
-import { addCardtextTemplateId } from '@features/previewStrip/infrastructure/state'
+import {
+  addCardtextTemplateId,
+  removeCardtextTemplateId,
+} from '@features/previewStrip/infrastructure/state'
 
 function* handleCardtextViewAddList(): SagaIterator {
   const plainText: string = yield select(selectCardtextPlainText)
@@ -146,6 +153,66 @@ function cloneCardtextBranch(c: CardtextContent): CardtextContent {
     })),
     style: { ...c.style },
   }
+}
+
+function* deleteCardtextTemplateFromDb(templateId: string | null): SagaIterator {
+  if (templateId == null) return
+  const id = String(templateId)
+  const result: { success?: boolean } = yield call(
+    [templateService, 'deleteCardtextTemplate'],
+    id,
+  )
+  if (result?.success) {
+    yield put(removeCardtextTemplateId(id))
+  }
+}
+
+/** Processed-слот: убрать текст с открытки и удалить processed/draft из БД. */
+function* handleCardtextProcessedDelete(): SagaIterator {
+  yield call([templateService, 'deleteSingleCardtextByStatus'], 'processed')
+  yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
+  yield put(clearDraftData())
+  yield put(setCardtextPresetData(null))
+  yield put(clearText())
+  yield put(loadCardtextTemplatesRequest())
+}
+
+/** View / шаблон на открытке: очистить текст и удалить запись шаблона из БД. */
+function* handleCardtextPostcardViewDelete(): SagaIterator {
+  const { assetData, appliedData } = yield select((s: RootState) => s.cardtext)
+  const templateIds = new Set<string>()
+  if (assetData?.id != null) templateIds.add(String(assetData.id))
+  if (appliedData?.id != null) templateIds.add(String(appliedData.id))
+  const selectedId: string | null = yield select(selectCardtextId)
+  if (selectedId != null) templateIds.add(String(selectedId))
+
+  for (const id of templateIds) {
+    yield call(deleteCardtextTemplateFromDb, id)
+  }
+
+  yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
+  yield put(clearDraftData())
+  yield put(setCardtextPresetData(null))
+  yield put(clearText())
+  yield put(loadCardtextTemplatesRequest())
+}
+
+/** View / Processed: удаление текста (не зависит от section в toolbarAction). */
+export function* handleDeleteCardtextFromView(): SagaIterator {
+  const assetStatus: CardtextStatus = yield select(selectCardtextAssetStatus)
+  const interactionMode: CardtextInteractionMode = yield select(
+    selectCardtextInteractionMode,
+  )
+
+  if (assetStatus === 'processed' || interactionMode === 'processedSlot') {
+    yield call(handleCardtextProcessedDelete)
+  } else {
+    yield call(handleCardtextPostcardViewDelete)
+  }
+
+  yield put(setCardtextViewEditMode(false))
+  yield put(setDraftEngaged(false))
+  yield call(checkAndSyncProcessedCard)
 }
 
 export function* handleCardtextToolbarAction(
@@ -362,16 +429,16 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'delete':
-      if (interactionMode === 'processedSlot') {
-        yield call([templateService, 'deleteSingleCardtextByStatus'], 'processed')
-        const presetData: CardtextContent | null = yield select(
-          (s: RootState) => s.cardtext.presetData,
-        )
-        if (presetData != null) {
-          yield put(restoreCardtextSession(presetData))
-        } else {
-          yield put(resetCardtextAssetToEmptyDraft())
-        }
+      if (
+        section === 'cardtext' ||
+        section === 'cardtextView' ||
+        section === 'cardtextProcessed' ||
+        interactionMode === 'processedSlot' ||
+        interactionMode === 'postcardTemplateView' ||
+        interactionMode === 'editTemplate' ||
+        interactionMode === 'editFromPostcardView'
+      ) {
+        yield call(handleDeleteCardtextFromView)
       }
       break
 

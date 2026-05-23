@@ -15,6 +15,7 @@ import {
 } from '../application/hooks'
 import {
   openCardtextEditorFromView,
+  resolveCardtextInteractionMode,
   resolveCardtextToolbarSection,
   shouldHideEmptyCreateToolbar,
 } from '../application/helpers'
@@ -31,6 +32,7 @@ import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './Cardtext.module.scss'
 import viewStyles from './CardtextView/CardtextView.module.scss'
 import { useAppDispatch } from '@app/hooks'
+import { deleteCardtextFromViewRequested } from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
@@ -158,10 +160,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     openCardtextEditorFromView(dispatch, cardtextAssetStatus)
   }, [dispatch, cardtextAssetStatus])
 
-  const handleViewDelete = useCallback(() => {
-    dispatch(toolbarAction({ section: 'cardtextView', key: 'delete' }))
-  }, [dispatch])
-
   const {
     titleInputRef,
     titleStripRef,
@@ -184,12 +182,27 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     cardtextTemplates,
   })
 
+  const interactionMode = resolveCardtextInteractionMode({
+    cardtextAssetStatus,
+    currentView,
+    currentTemplateId,
+    isCardtextViewEditMode: state.isCardtextViewEditMode,
+  })
+
   const toolbarSection = resolveCardtextToolbarSection({
     cardtextAssetStatus,
     currentView,
     currentTemplateId,
     isCardtextViewEditMode: state.isCardtextViewEditMode,
   })
+
+  const showReadOnlyCardtext =
+    interactionMode === 'postcardTemplateView' ||
+    interactionMode === 'processedSlot'
+
+  const handleViewDelete = useCallback(() => {
+    dispatch(deleteCardtextFromViewRequested())
+  }, [dispatch])
 
   const hideEmptyCreateToolbar = shouldHideEmptyCreateToolbar({
     currentView,
@@ -300,16 +313,18 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
               </>
             )}
 
-            {currentView === 'view' ? (
-              <CardtextView
-                key={id ?? 'no-template'}
-                value={value}
-                style={style}
-                titleStripEditing={forceEditingTitle}
-                onClose={handleViewEdit}
-                onEdit={handleViewEdit}
-                onDelete={handleViewDelete}
-              />
+            {showReadOnlyCardtext ? (
+              <div className={styles.cardtextReadOnlyShell}>
+                <CardtextView
+                  key={id ?? 'no-template'}
+                  value={value}
+                  style={style}
+                  titleStripEditing={forceEditingTitle}
+                  onClose={handleViewEdit}
+                  onEdit={handleViewEdit}
+                  onDelete={handleViewDelete}
+                />
+              </div>
             ) : (
               <CardEditor titleStripEditing={forceEditingTitle} />
             )}

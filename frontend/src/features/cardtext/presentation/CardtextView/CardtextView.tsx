@@ -116,6 +116,7 @@ export const CardtextView: React.FC<Props> = ({
               className={styles.viewActionButton}
               aria-label="Delete text"
               title="Delete text"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={(e) => {
                 e.stopPropagation()
                 onDelete()

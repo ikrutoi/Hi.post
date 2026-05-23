@@ -394,6 +394,9 @@ export const cardtextSlice = createSlice({
       state.isCardtextViewEditMode = action.payload
     },
 
+    /** Удалить текст из View / Processed (кнопка delete на CardtextView или тулбар). */
+    deleteCardtextFromViewRequested(_state) {},
+
   },
 })
 
@@ -428,6 +431,7 @@ export const {
   setDraftFocus,
   setDraftEngaged,
   setCardtextViewEditMode,
+  deleteCardtextFromViewRequested,
 } = cardtextSlice.actions
 
 export default cardtextSlice.reducer

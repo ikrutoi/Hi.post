@@ -1098,10 +1098,11 @@
   }
 }
 
-/* cardtextView / cardtextEditor / cardtextCreate — как addList: margin-left 0.5rem, без padding. */
+/* cardtextView / cardtextEditor / cardtextCreate / cardtextProcessed — как addList: margin-left 0.5rem, без padding. */
 .toolbarCardtextView,
 .toolbarCardtextEditor,
-.toolbarCardtextCreate {
+.toolbarCardtextCreate,
+.toolbarCardtextProcessed {
   padding-left: 0;
   padding-right: 0;
   margin-left: 0.5rem;

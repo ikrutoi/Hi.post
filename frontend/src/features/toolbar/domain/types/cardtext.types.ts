@@ -22,7 +22,7 @@ export const CARDTEXT_KEYS = [
   'colorPicker',
   'cardtextCheck',
   'addList',
-  // 'delete',
+  'delete',
 ] as const
 
 export type CardtextKey = (typeof CARDTEXT_KEYS)[number]
@@ -50,7 +50,7 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
 export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
   {
     group: 'create',
-    icons: [{ key: 'cardtextCheck', state: 'enabled' }],
+    icons: [{ key: 'cardtextCheck', state: 'disabled' }],
     status: 'enabled',
   },
   {
@@ -80,33 +80,20 @@ export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
 export const CARDTEXT_PROCESSED_TOOLBAR: ToolbarConfig = [
   {
     group: 'processed',
-    icons: [
-      { key: 'listAdd', state: 'enabled' },
-      { key: 'edit', state: 'enabled' },
-      { key: 'delete', state: 'enabled' },
-    ],
+    icons: [{ key: 'listAdd', state: 'enabled' }],
     status: 'enabled',
   },
-
-  // {
-  //   group: 'view',
-  //   icons: [{ key: 'delete', state: 'enabled' }],
-  //   status: 'enabled',
-  // },
 ]
 
 export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'font',
-    icons: [{ key: 'addList', state: 'enabled' }],
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      // { key: 'delete', state: 'enabled' },
+    ],
     status: 'enabled',
   },
-
-  // {
-  //   group: 'view',
-  //   icons: [{ key: 'delete', state: 'enabled' }],
-  //   status: 'enabled',
-  // },
 ]
 
 export const initialCardtextToolbarState: CardtextToolbarState = {

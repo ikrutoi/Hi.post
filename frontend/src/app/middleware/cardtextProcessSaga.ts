@@ -32,11 +32,16 @@ import {
   setCardtextAddTemplateOpen,
   setDraftEngaged,
   resetCardtextAssetToEmptyDraft,
+  clearText,
+  deleteCardtextFromViewRequested,
 } from '@cardtext/infrastructure/state'
 import { templateService } from '@entities/templates/domain/services/templateService'
 import type { RootState } from '@app/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
-import { handleCardtextToolbarAction } from './cardtextToolbarSaga'
+import {
+  handleCardtextToolbarAction,
+  handleDeleteCardtextFromView,
+} from './cardtextToolbarSaga'
 import {
   updateToolbarIcon,
   updateGroupStatus,
@@ -109,11 +114,31 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
   )
 }
 
+/** cardtextCheck на cardtextEditor / cardtextCreate — только при непустом тексте. */
+export function* syncCardtextCheckButtonStatus(): SagaIterator {
+  const plainText: string = yield select(selectCardtextPlainText)
+  const hasText = (plainText?.trim?.() ?? '').length > 0
+  const checkState = hasText ? 'enabled' : 'disabled'
+  for (const section of ['cardtextCreate', 'cardtextEditor'] as const) {
+    yield put(
+      updateToolbarIcon({
+        section,
+        key: 'cardtextCheck',
+        value: { state: checkState },
+      }),
+    )
+  }
+}
+
 export function* watchCardtextValueChanges(): SagaIterator {
-  yield takeEvery([setValue.type, setTextStyle.type], function* (): SagaIterator {
-    yield call(syncCardtextAddButtonStatus)
-    yield call(syncCardtextViewToolbarAddList)
-  })
+  yield takeEvery(
+    [setValue.type, setTextStyle.type, clearText.type],
+    function* (): SagaIterator {
+      yield call(syncCardtextAddButtonStatus)
+      yield call(syncCardtextCheckButtonStatus)
+      yield call(syncCardtextViewToolbarAddList)
+    },
+  )
 }
 
 export function* syncCardtextViewToolbarAddList(): SagaIterator {
@@ -335,6 +360,7 @@ function* loadCardtextTemplatesSaga(): SagaIterator {
 export function* cardtextProcessSaga(): SagaIterator {
   yield call(syncFontSizeButtonsStatus)
   yield call(syncCardtextAddButtonStatus)
+  yield call(syncCardtextCheckButtonStatus)
   yield call(syncCardtextViewToolbarAddList)
   yield call(syncCardtextCreateDraftIndicator)
   yield call(syncCardtextProcessedBadge)
@@ -387,14 +413,26 @@ export function* cardtextProcessSaga(): SagaIterator {
     fork(watchFontSizeChanges),
     fork(watchCardtextValueChanges),
     takeEvery(
+      deleteCardtextFromViewRequested.type,
+      function* (): SagaIterator {
+        yield call(handleDeleteCardtextFromView)
+        yield call(syncCardtextProcessedBadge)
+        yield call(syncCardtextCreateDraftIndicator)
+        yield call(syncCardtextAddButtonStatus)
+        yield call(syncCardtextViewToolbarAddList)
+      },
+    ),
+    takeEvery(
       [
         setDraftEngaged.type,
         resetCardtextAssetToEmptyDraft.type,
         restoreCardtextSession.type,
         setCardtextId.type,
+        clearText.type,
       ],
       function* (): SagaIterator {
         yield call(syncCardtextAddButtonStatus)
+        yield call(syncCardtextCheckButtonStatus)
         yield call(syncCardtextViewToolbarAddList)
         yield call(syncCardtextCreateDraftIndicator)
       },
@@ -410,6 +448,7 @@ export function* cardtextProcessSaga(): SagaIterator {
         yield call(syncDraftRecordWithDb)
         yield call(syncCardtextCreateDraftIndicator)
         yield call(syncCardtextAddButtonStatus)
+        yield call(syncCardtextCheckButtonStatus)
       },
     ),
     takeEvery(
@@ -421,6 +460,7 @@ export function* cardtextProcessSaga(): SagaIterator {
         }
         yield call(syncCardtextCreateDraftIndicator)
         yield call(syncCardtextAddButtonStatus)
+        yield call(syncCardtextCheckButtonStatus)
         yield call(syncCardtextViewToolbarAddList)
       },
     ),
