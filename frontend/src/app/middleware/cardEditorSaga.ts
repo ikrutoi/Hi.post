@@ -54,6 +54,7 @@ import {
   selectCardtextIsComplete,
   selectCardtextState,
   selectCardtextValue,
+  selectCardtextInteractionMode,
 } from '@cardtext/infrastructure/selectors'
 import { updateToolbarSection } from '@toolbar/infrastructure/state'
 import {
@@ -144,8 +145,11 @@ function* syncCardtextToolbar(): SagaIterator {
     currentListIcon && typeof currentListIcon === 'object'
       ? currentListIcon.options
       : undefined
+  const interactionMode: ReturnType<typeof selectCardtextInteractionMode> =
+    yield select(selectCardtextInteractionMode)
   const toolbarState = buildCardtextToolbarState(value, {
     assetProcessed: assetMatchesApplied,
+    disableApply: interactionMode === 'createEmpty',
   })
   toolbarState.listCardtext = {
     state: isListOpen ? 'active' : 'enabled',

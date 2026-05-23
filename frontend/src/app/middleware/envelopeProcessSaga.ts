@@ -319,33 +319,24 @@ export function* processEnvelopeVisuals() {
     sender.currentView === 'senderView' && sender.senderViewId == null
 
   const senderAppliedIds = sender.applied ?? []
-  const senderHasApplied = senderAppliedIds.length > 0
   const senderViewMatchesApplied =
     sender.currentView === 'senderView' &&
     sender.senderViewId != null &&
     senderAppliedIds.length === 1 &&
     senderAppliedIds[0] === sender.senderViewId
-  /** Не сбрасывать apply при открытии формы addressAdd (senderCreate). */
-  const senderAlreadyApplied =
-    senderViewMatchesApplied ||
-    (sender.currentView === 'senderCreate' && senderHasApplied)
 
-  let senderApplyState = senderAlreadyApplied
-    ? 'selected'
-    : sender.currentView === 'senderView' && sender.senderViewId != null
-      ? 'enabled'
-      : isSenderEmptyForm
-        ? 'disabled'
-        : senderComplete
+  const senderApplyState =
+    sender.currentView === 'senderCreate'
+      ? 'disabled'
+      : senderViewMatchesApplied
+        ? 'selected'
+        : sender.currentView === 'senderView' && sender.senderViewId != null
           ? 'enabled'
-          : 'disabled'
-
-  if (
-    sender.currentView === 'senderCreate' &&
-    !senderComplete &&
-    !senderHasApplied
-  )
-    senderApplyState = 'disabled'
+          : isSenderEmptyForm
+            ? 'disabled'
+            : senderComplete
+              ? 'enabled'
+              : 'disabled'
 
   yield put(
     updateToolbarIcon({
@@ -373,25 +364,21 @@ export function* processEnvelopeVisuals() {
     appliedIds.length > 0 &&
     appliedIds.every((id) => recipientsViewIds.includes(id)) &&
     recipientsViewIds.every((id) => appliedIds.includes(id))
-  const recipientAlreadyApplied =
-    recipientsViewIdsEqual ||
-    (recipient.currentView === 'recipientCreate' && recipientHasApplied)
-  let recipientsApplyState =
+
+  let recipientsApplyState: 'disabled' | 'selected' | 'enabled'
+  if (recipient.currentView === 'recipientCreate') {
+    recipientsApplyState = 'disabled'
+  } else if (recipientsViewIds.length === 0) {
+    recipientsApplyState = 'disabled'
+  } else if (
     (!canApplyRecipients && !recipientHasApplied) ||
     (isRecipientsEmptyForm && !recipientHasApplied)
-      ? 'disabled'
-      : recipientAlreadyApplied
-        ? 'selected'
-        : 'enabled'
-  if (
-    recipient.currentView === 'recipientCreate' &&
-    !recipientComplete &&
-    !recipientHasApplied
   ) {
     recipientsApplyState = 'disabled'
-  }
-  if (recipientsViewIds.length === 0) {
-    recipientsApplyState = 'disabled'
+  } else if (recipientsViewIdsEqual) {
+    recipientsApplyState = 'selected'
+  } else {
+    recipientsApplyState = 'enabled'
   }
 
   yield put(

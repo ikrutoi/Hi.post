@@ -23,6 +23,7 @@ export const CARDTEXT_KEYS = [
   'cardtextCheck',
   'addList',
   'delete',
+  'applyLight',
 ] as const
 
 export type CardtextKey = (typeof CARDTEXT_KEYS)[number]
@@ -50,7 +51,7 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
 export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
   {
     group: 'create',
-    icons: [{ key: 'cardtextCheck', state: 'disabled' }],
+    icons: [{ key: 'applyLight', state: 'disabled' }],
     status: 'enabled',
   },
   {
@@ -106,8 +107,5 @@ export const initialCardtextViewToolbarState: CardtextToolbarState = {
 export interface CardtextSectionConfig extends BaseSectionConfig<
   CardtextToolbarState,
   CardtextKey,
-  | 'cardtext'
-  | 'cardtextEditor'
-  | 'cardtextView'
-  | 'cardtextCreate'
+  'cardtext' | 'cardtextEditor' | 'cardtextView' | 'cardtextCreate'
 > {}

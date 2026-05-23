@@ -90,7 +90,7 @@ export const SENDER_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'senderCreate',
     icons: [
-      { key: 'addList', state: 'disabled' },
+      // { key: 'addList', state: 'disabled' },
       { key: 'applyLight', state: 'disabled' },
     ],
     status: 'enabled',
@@ -101,7 +101,7 @@ export const RECIPIENT_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'recipientCreate',
     icons: [
-      { key: 'addList', state: 'disabled' },
+      // { key: 'addList', state: 'disabled' },
       { key: 'applyLight', state: 'disabled' },
     ],
     status: 'enabled',

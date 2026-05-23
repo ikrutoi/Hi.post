@@ -45,7 +45,11 @@ export const buildSenderToolbarState = ({
         break
       case 'apply':
         state.apply = {
-          state: isComplete ? 'enabled' : 'disabled',
+          state: isAddressFormOpen
+            ? 'disabled'
+            : isComplete
+              ? 'enabled'
+              : 'disabled',
           options: {},
         }
         break

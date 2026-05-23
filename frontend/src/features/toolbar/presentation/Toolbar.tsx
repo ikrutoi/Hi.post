@@ -29,6 +29,7 @@ import {
   selectCardtextListSortDirection,
   selectCardtextListPanelDensity,
   selectCardtextViewInQuickList,
+  selectCardtextInteractionMode,
 } from '@cardtext/infrastructure/selectors'
 import {
   selectDateListSortDirection,
@@ -97,6 +98,9 @@ export const Toolbar = ({
   const cardtextEmpty =
     (section === 'cardtext' || section === 'cardtextView') &&
     !(cardtextPlainText?.trim?.() ?? '').length
+  const cardtextCreateFormDisplayed = useAppSelector(
+    (s) => selectCardtextInteractionMode(s) === 'createEmpty',
+  )
 
   const senderSortDirection = useAppSelector(
     (state) => state.sender?.sortOptions?.direction ?? 'asc',
@@ -258,7 +262,9 @@ export const Toolbar = ({
       buttonStatus = isAlreadyApplied ? 'selected' : buttonStatus
     }
     if (key === 'apply' && section === 'cardtext') {
-      if (cardtextEmpty) {
+      if (cardtextCreateFormDisplayed) {
+        buttonStatus = 'disabled'
+      } else if (cardtextEmpty) {
         buttonStatus = 'disabled'
       } else if (isCardtextCurrentTemplateApplied) {
         buttonStatus = 'selected'

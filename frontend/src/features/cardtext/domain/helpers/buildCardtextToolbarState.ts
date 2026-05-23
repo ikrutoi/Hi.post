@@ -6,6 +6,8 @@ export const buildCardtextToolbarState = (
   options?: {
     /** Same template id on asset and appliedData (Apply already on postcard). */
     assetProcessed?: boolean
+    /** Форма создания: Apply в секции cardtext недоступен (сохранение — cardtextCheck). */
+    disableApply?: boolean
   },
 ): CardtextToolbarState => {
   const firstBlock = value[0]
@@ -23,11 +25,13 @@ export const buildCardtextToolbarState = (
   state.center = firstBlock?.align === 'center' ? 'active' : 'enabled'
   state.right = firstBlock?.align === 'right' ? 'active' : 'enabled'
   state.justify = firstBlock?.align === 'justify' ? 'active' : 'enabled'
-  state.apply = applyMatchesPostcard
+  state.apply = options?.disableApply
     ? 'disabled'
-    : hasContent
-      ? 'enabled'
-      : 'disabled'
+    : applyMatchesPostcard
+      ? 'disabled'
+      : hasContent
+        ? 'enabled'
+        : 'disabled'
   state.cardtextCheck = hasContent ? 'enabled' : 'disabled'
 
   return state as CardtextToolbarState
