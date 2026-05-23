@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/sectionViewOverlayChip' as overlay;
 
 .stageRoot {
   position: absolute;
@@ -43,4 +44,40 @@
   z-index: 1;
   width: 100%;
   height: 100%;
+}
+
+.viewCloseBtn {
+  position: absolute;
+  top: overlay.$section-view-overlay-inset-top;
+  right: overlay.$section-view-overlay-inset-right;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  @include overlay.sectionViewOverlayChipPhoto;
+  @include overlay.sectionViewOverlayChipIcon;
+}
+
+.viewActions {
+  position: absolute;
+  right: overlay.$section-view-overlay-inset-right;
+  bottom: overlay.$section-view-overlay-inset-bottom;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: overlay.$section-view-overlay-actions-gap;
+}
+
+.viewActionButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  @include overlay.sectionViewOverlayChipPhoto;
+  @include overlay.sectionViewOverlayChipIcon;
 }

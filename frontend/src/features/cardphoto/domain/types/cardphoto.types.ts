@@ -46,7 +46,6 @@ export interface ImageMeta {
   parentImageId?: string
   rotation?: number
   imageAspectRatio?: number
-  favorite?: boolean
 }
 
 export interface ImageLayer {

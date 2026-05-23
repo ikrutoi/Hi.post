@@ -37,40 +37,6 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
-  // {
-  //   group: 'edit',
-  //   icons: [
-  //     // {
-  //     //   key: 'cardOrientation',
-  //     //   state: 'disabled',
-  //     //   options: { orientation: 'landscape' },
-  //     // },
-  //     // { key: 'imageRotateLeft', state: 'disabled' },
-  //     { key: 'imageRotateRight', state: 'disabled' },
-  //     { key: 'crop', state: 'disabled' },
-  //     { key: 'cropFull', state: 'disabled' },
-  //     { key: 'cropCheck', state: 'disabled' },
-  //     { key: 'imageReset', state: 'disabled' },
-  //   ],
-  //   status: 'enabled',
-  // },
-  // {
-  //   group: 'ui',
-  //   icons: [
-  //     { key: 'apply', state: 'enabled' },
-  //     { key: 'download', state: 'enabled' },
-  //     { key: 'close', state: 'disabled' },
-  //   ],
-  //   status: 'enabled',
-  // },
-  // {
-  //   group: 'processed',
-  //   icons: [
-  //     { key: 'listApply', state: 'disabled' },
-  //     { key: 'listDelete', state: 'disabled' },
-  //   ],
-  //   status: 'enabled',
-  // },
 ]
 
 export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
@@ -110,18 +76,8 @@ export const CARDPHOTO_PROCESSED_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'base',
-    icons: [{ key: 'favorite', state: 'enabled' }],
-    status: 'enabled',
-  },
-  {
-    group: 'close',
-    icons: [{ key: 'delete', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
+/** View actions live on the image overlay (CardphotoView), not in the header toolbar. */
+export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = []
 
 export const initialCardphotoToolbarState: CardphotoToolbarState = {
   ...Object.fromEntries(flattenIcons(CARDPHOTO_TOOLBAR)),

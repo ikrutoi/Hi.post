@@ -1,7 +1,14 @@
-import React from 'react'
+import React, { useCallback } from 'react'
+import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
+import { useAppDispatch } from '@app/hooks'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { CardphotoView } from './CardphotoView/CardphotoView'
+import {
+  closeCardphotoViewRequested,
+  deleteCardphotoFromViewRequested,
+  editCardphotoViewRequested,
+} from '@cardphoto/infrastructure/state'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
@@ -61,18 +68,43 @@ const CardphotoRightListMirror: React.FC = () => {
 }
 
 const CardphotoSessionEditor: React.FC = () => {
+  const dispatch = useAppDispatch()
   const { activeImage, assetToolbar } = useCardphotoFacade()
+  const showAssetToolbar =
+    !!activeImage && !!assetToolbar && assetToolbar !== 'cardphotoView'
+
+  const handleViewClose = useCallback(() => {
+    dispatch(closeCardphotoViewRequested())
+  }, [dispatch])
+
+  const handleViewEdit = useCallback(() => {
+    dispatch(editCardphotoViewRequested())
+  }, [dispatch])
+
+  const handleViewDelete = useCallback(() => {
+    dispatch(deleteCardphotoFromViewRequested())
+  }, [dispatch])
 
   return (
     <div className={styles.cardphoto}>
       <div className={styles.cardphotoViewWrap}>
-        <div className={styles.cardphotoToolbarRow}>
-          {activeImage && assetToolbar ? (
+        <div
+          className={clsx(
+            styles.cardphotoToolbarRow,
+            !showAssetToolbar && styles.cardphotoToolbarRowEmpty,
+          )}
+          aria-hidden={showAssetToolbar ? undefined : true}
+        >
+          {showAssetToolbar ? (
             <Toolbar section={assetToolbar} />
           ) : null}
         </div>
         <div className={styles.cardphotoViewContent}>
-          <CardphotoView />
+          <CardphotoView
+            onClose={handleViewClose}
+            onEdit={handleViewEdit}
+            onDelete={handleViewDelete}
+          />
         </div>
       </div>
     </div>

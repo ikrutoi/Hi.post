@@ -234,7 +234,9 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   editorPie: {
     keys: EDITOR_PIE_KEYS,
     initialState: initialEditorPieToolbarState,
-    onAction: (key, section) => console.log('EditorPie action', key, section),
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
     group: 'main',
     getBadges: (state: ToolbarState['editorPie']) => ({}),
     toolbar: EDITOR_PIE_TOOLBAR,

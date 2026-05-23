@@ -1,0 +1,63 @@
+@use '@styles/config/colors' as *;
+
+$section-view-overlay-chip-size: 1.65rem;
+$section-view-overlay-chip-radius: 0.5rem;
+$section-view-overlay-chip-icon-size: 0.88rem;
+$section-view-overlay-inset-top: 0.25rem;
+$section-view-overlay-inset-right: 0.25rem;
+$section-view-overlay-inset-bottom: 0.25rem;
+$section-view-overlay-actions-gap: 1rem;
+
+$section-view-overlay-chip-bg-photo: rgba(255, 255, 255, 0.72);
+$section-view-overlay-chip-bg-photo-hover: rgba(255, 255, 255, 0.86);
+
+@mixin sectionViewOverlayChipIcon {
+  svg {
+    width: $section-view-overlay-chip-icon-size;
+    height: $section-view-overlay-chip-icon-size;
+    display: block;
+  }
+}
+
+@mixin sectionViewOverlayChip($bg, $bg-hover: $bg, $shadow: false) {
+  box-sizing: border-box;
+  width: $section-view-overlay-chip-size;
+  height: $section-view-overlay-chip-size;
+  border-radius: $section-view-overlay-chip-radius;
+  padding: 0;
+  background-color: $bg;
+  color: $color-font-enabled-light;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  @if $shadow {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  &:hover {
+    background-color: $bg-hover;
+    color: $color-font-active;
+
+    @if $shadow {
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.14);
+    }
+  }
+}
+
+@mixin sectionViewOverlayChipPhoto {
+  @include sectionViewOverlayChip(
+    $section-view-overlay-chip-bg-photo,
+    $section-view-overlay-chip-bg-photo-hover,
+    true
+  );
+}
+
+@mixin sectionViewOverlayChipText {
+  @include sectionViewOverlayChip(transparent, transparent, false);
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+}

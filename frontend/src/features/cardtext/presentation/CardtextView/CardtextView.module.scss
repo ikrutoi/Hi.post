@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/sectionViewOverlayChip' as overlay;
 
 .viewContainer {
   position: relative;
@@ -38,64 +39,38 @@
 
 .viewCloseBtn {
   position: absolute;
-  top: 0.35rem;
-  right: 0.5rem;
+  top: overlay.$section-view-overlay-inset-top;
+  right: overlay.$section-view-overlay-inset-right;
   z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.22rem;
   border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: $color-font-disabled;
   cursor: pointer;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
-
-  svg {
-    width: 0.92rem;
-    height: 0.92rem;
-    display: block;
-  }
+  @include overlay.sectionViewOverlayChipText;
+  @include overlay.sectionViewOverlayChipIcon;
 }
 
 .viewActions {
   position: absolute;
-  right: 0.5rem;
-  bottom: 0.35rem;
+  right: overlay.$section-view-overlay-inset-right;
+  bottom: overlay.$section-view-overlay-inset-bottom;
   z-index: 2;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  gap: 1rem;
+  gap: overlay.$section-view-overlay-actions-gap;
 }
 
 .viewActionButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.22rem;
   border: none;
-  border-radius: 50%;
-  background: transparent;
-  color: $color-font-disabled;
   cursor: pointer;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
-
-  svg {
-    width: 0.92rem;
-    height: 0.92rem;
-    display: block;
-  }
+  @include overlay.sectionViewOverlayChipText;
+  @include overlay.sectionViewOverlayChipIcon;
 }
 
 /* addList: .toolbarCardtextView margin-left 0.5rem; заголовок — чуть левее правого края. */

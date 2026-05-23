@@ -88,8 +88,17 @@ export const selectCardphotoAssetConfig = (state: RootState): WorkingConfig | nu
 /** Toolbar section derived from the current active asset. */
 export const selectCardphotoAssetToolbar = (
   state: RootState,
-): CardphotoAssetToolbar =>
-  state.cardphoto.state ? computeCardphotoAssetToolbar(state.cardphoto.state) : null
+): CardphotoAssetToolbar => {
+  const s = state.cardphoto.state
+  if (!s) return null
+  if (state.cardphotoUi.isCardphotoViewEditMode && s.assetData) {
+    const img = s.assetData
+    const applied = s.appliedData
+    const isApply = !!(img.id && applied?.id && img.id === applied.id)
+    if (img.status === 'inLine' || isApply) return 'cardphotoCreate'
+  }
+  return computeCardphotoAssetToolbar(s)
+}
 
 export const selectCardphotoImageStageRect = (state: RootState) =>
   state.cardphoto.state?.imageStageRect ?? null

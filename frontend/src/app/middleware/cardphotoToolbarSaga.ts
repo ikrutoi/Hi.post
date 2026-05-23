@@ -20,7 +20,10 @@ import {
   bumpCardphotoInlineTemplateList,
   cycleListTemplateGridCols,
   setListTemplateGridCols,
+  clearCurrentConfig,
+  setCardphotoViewEditMode,
 } from '@cardphoto/infrastructure/state'
+import { selectIsCardphotoViewEditMode } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import {
   selectActiveImage,
   selectCardphotoListTemplateGridCols,
@@ -125,10 +128,78 @@ function* handleCloseCardphotoCreateSaga(): SagaIterator {
     )
     yield call([storeAdapters.cardphotoImages, 'clear'])
     yield put(resetCardphoto())
+    yield put(setCardphotoViewEditMode(false))
     yield put(markLoaded())
     yield fork(syncToolbarContext)
   } catch (error) {
     console.error('Close cardphoto create failed:', error)
+  }
+}
+
+export function* handleCloseCardphotoViewSaga(): SagaIterator {
+  try {
+    yield put(setCardphotoViewEditMode(false))
+    yield put(setAssetData(null))
+    yield put(clearCurrentConfig())
+    yield fork(syncToolbarContext)
+  } catch (error) {
+    console.error('handleCloseCardphotoViewSaga', error)
+  }
+}
+
+function* handleCancelCardphotoViewEditSaga(): SagaIterator {
+  try {
+    const asset: ImageMeta | null = yield select(selectActiveImage)
+    yield put(setCardphotoViewEditMode(false))
+    if (!asset?.id) {
+      yield fork(syncToolbarContext)
+      return
+    }
+    const record: ImageMeta | null = yield call(
+      [storeAdapters.cardphotoImages, 'getById'] as const,
+      asset.id,
+    )
+    if (record?.status === 'inLine') {
+      yield put(setProcessedImage(prepareForRedux(record)))
+      yield call(rebuildConfigFromMeta, record, false)
+    }
+    yield fork(syncToolbarContext)
+  } catch (error) {
+    console.error('handleCancelCardphotoViewEditSaga', error)
+  }
+}
+
+export function* handleEditCardphotoViewSaga(): SagaIterator {
+  try {
+    const asset: ImageMeta | null = yield select(selectActiveImage)
+    if (!asset || asset.status !== 'inLine') return
+
+    yield put(setCardphotoViewEditMode(true))
+    yield call(rebuildConfigFromMeta, asset, true)
+    yield fork(syncToolbarContext)
+  } catch (error) {
+    console.error('handleEditCardphotoViewSaga', error)
+  }
+}
+
+export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
+  try {
+    const asset: ImageMeta | null = yield select(selectActiveImage)
+    yield put(setCardphotoViewEditMode(false))
+
+    if (asset?.status === 'inLine' && asset.id) {
+      yield call(
+        [storeAdapters.cardphotoImages, 'deleteById'] as const,
+        asset.id,
+      )
+      yield put(bumpCardphotoInlineTemplateList())
+    }
+
+    yield put(setAssetData(null))
+    yield put(clearCurrentConfig())
+    yield fork(syncToolbarContext)
+  } catch (error) {
+    console.error('handleDeleteCardphotoFromViewSaga', error)
   }
 }
 
@@ -180,8 +251,33 @@ export function* handleCardphotoToolbarAction(
   }
 
   if (section === 'cardphotoCreate' && (key === 'close' || key === 'delete')) {
+    const isViewEdit: boolean = yield select(selectIsCardphotoViewEditMode)
+    if (isViewEdit) {
+      if (key === 'close') {
+        yield call(handleCancelCardphotoViewEditSaga)
+      } else {
+        yield call(handleDeleteCardphotoFromViewSaga)
+      }
+      return
+    }
     yield call(handleCloseCardphotoCreateSaga)
     return
+  }
+
+  if (section === 'cardphotoView') {
+    switch (key) {
+      case 'close':
+        yield call(handleCloseCardphotoViewSaga)
+        return
+      case 'edit':
+        yield call(handleEditCardphotoViewSaga)
+        return
+      case 'delete':
+        yield call(handleDeleteCardphotoFromViewSaga)
+        return
+      default:
+        return
+    }
   }
 
   if (section === 'cardphotoList') {
@@ -194,33 +290,6 @@ export function* handleCardphotoToolbarAction(
       yield call(persistCardphotoListDensityToDbSaga)
       return
     }
-    return
-  }
-
-  if (section === 'cardphotoView' && key === 'favorite') {
-    const activeImage: ImageMeta | null = yield select(selectActiveImage)
-    if (!activeImage?.id) return
-
-    const record: ImageMeta | null = yield call(
-      [storeAdapters.cardphotoImages, 'getById'] as const,
-      activeImage.id,
-    )
-    if (!record) return
-
-    const nextFavorite = record.favorite !== true
-    const updated: ImageMeta = { ...record, favorite: nextFavorite }
-
-    yield call(
-      [storeAdapters.cardphotoImages, 'put'] as const,
-      updated as ImageMeta & { id: string },
-    )
-
-    const cardState: CardphotoState = yield select(selectCardphotoState)
-    if (cardState?.assetData?.id === updated.id) {
-      yield put(setAssetData(prepareForRedux(updated)))
-    }
-
-    yield put(bumpCardphotoInlineTemplateList())
     return
   }
 

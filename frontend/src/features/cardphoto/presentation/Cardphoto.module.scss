@@ -40,6 +40,13 @@
   background-color: #fff;
 }
 
+.cardphotoToolbarRowEmpty {
+  flex: 0 0 2rem;
+  min-height: 2rem;
+  max-height: 2rem;
+  box-sizing: border-box;
+}
+
 .cardphotoViewContent {
   flex: 1;
   min-height: 0;

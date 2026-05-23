@@ -33,6 +33,10 @@ import {
   clearAllCrops,
   clearApply,
   selectInLineTemplate,
+  setCardphotoViewEditMode,
+  closeCardphotoViewRequested,
+  editCardphotoViewRequested,
+  deleteCardphotoFromViewRequested,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
@@ -59,6 +63,9 @@ import {
 import { updateCropToolbarState } from './cardphotoHelpers'
 import {
   handleCardphotoToolbarAction,
+  handleCloseCardphotoViewSaga,
+  handleEditCardphotoViewSaga,
+  handleDeleteCardphotoFromViewSaga,
   watchCropChanges,
   // watchCropToolbarStatus,
   // watchCropHistory,
@@ -271,6 +278,7 @@ function* onSelectInLineTemplateSaga(
 
     if (record.status !== 'inLine') return
 
+    yield put(setCardphotoViewEditMode(false))
     yield put(setProcessedImage(prepareForRedux(record)))
 
     yield call(rebuildConfigFromMeta, record, false)
@@ -365,6 +373,19 @@ export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
     takeLatest(selectInLineTemplate.type, onSelectInLineTemplateSaga),
+    takeEvery(closeCardphotoViewRequested.type, function* (): SagaIterator {
+      yield call(handleCloseCardphotoViewSaga)
+    }),
+    takeEvery(editCardphotoViewRequested.type, function* (): SagaIterator {
+      yield call(handleEditCardphotoViewSaga)
+    }),
+    takeEvery(deleteCardphotoFromViewRequested.type, function* (): SagaIterator {
+      yield call(handleDeleteCardphotoFromViewSaga)
+      yield call(refreshCardphotoListCardphotoBadge)
+    }),
+    takeEvery(resetCardphoto.type, function* (): SagaIterator {
+      yield put(setCardphotoViewEditMode(false))
+    }),
     takeEvery(clearApply.type, onClearApplySaga),
 
     fork(watchCropChanges),

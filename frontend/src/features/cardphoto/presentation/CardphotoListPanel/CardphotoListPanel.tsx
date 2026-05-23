@@ -12,18 +12,13 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectCardphotoInlineTemplateListRevision,
   selectCardphotoListTemplateGridCols,
-  selectActiveImage,
 } from '@cardphoto/infrastructure/selectors'
-import {
-  bumpCardphotoInlineTemplateList,
-  setAssetData,
-} from '@cardphoto/infrastructure/state'
+import { bumpCardphotoInlineTemplateList } from '@cardphoto/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import type { ImageMeta } from '@cardphoto/domain/types'
 import { CardphotoListThumb } from './CardphotoListThumb'
 import styles from './CardphotoListPanel.module.scss'
-import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
 import clsx from 'clsx'
 
 type Props = {
@@ -31,8 +26,7 @@ type Props = {
   onSelectTemplate: (id: string) => void | Promise<void>
 }
 
-type Row = { id: string; src: string; favorite: boolean }
-type Placeholder = null
+type Row = { id: string; src: string }
 
 function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
   if (meta.thumbnail?.blob instanceof Blob) {
@@ -65,7 +59,6 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
   const dispatch = useAppDispatch()
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
-  const activeImage = useAppSelector(selectActiveImage)
   const [rows, setRows] = useState<Row[]>([])
   const objectUrlsRef = useRef<string[]>([])
 
@@ -113,11 +106,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
         const { src, revoke } = buildThumbSrc(meta)
         if (!src) continue
         if (revoke) created.push(src)
-        nextRows.push({
-          id: meta.id,
-          src,
-          favorite: meta.favorite === true,
-        })
+        nextRows.push({ id: meta.id, src })
       }
 
       if (cancelled) {
@@ -137,36 +126,6 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
       objectUrlsRef.current = []
     }
   }, [listRevision])
-
-  // Split favorites / non-favorites without mixing in a single row.
-  // Also pad favorites with placeholders so the first non-favorite starts on a new grid row.
-  const favoriteRows = rows.filter((r) => r.favorite === true)
-  const nonFavoriteRows = rows.filter((r) => r.favorite !== true)
-  const favoritePaddingCount =
-    (columns - (favoriteRows.length % columns)) % columns
-
-  const displayRows: Array<Row | Placeholder> = [
-    ...favoriteRows,
-    ...new Array(favoritePaddingCount).fill(null),
-    ...nonFavoriteRows,
-  ]
-
-  const handleFavorite = useCallback(
-    async (id: string) => {
-      const meta = await storeAdapters.cardphotoImages.getById(id)
-      if (!meta) return
-      const nextFavorite = meta.favorite !== true
-      const updated: ImageMeta = { ...meta, favorite: nextFavorite }
-      await storeAdapters.cardphotoImages.put(updated)
-
-      // If the same image is currently opened — keep toolbar in sync.
-      if (activeImage?.id === id) {
-        dispatch(setAssetData(prepareForRedux(updated)))
-      }
-      dispatch(bumpCardphotoInlineTemplateList())
-    },
-    [activeImage?.id, dispatch],
-  )
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -213,28 +172,16 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
                   gridTemplateColumns: `repeat(${columns}, ${cellPx}px)`,
                 }}
               >
-                {displayRows.map((row, idx) =>
-                  row ? (
-                    <CardphotoListThumb
-                      key={row.id}
-                      id={row.id}
-                      src={row.src}
-                      cellPx={cellPx}
-                      favorite={row.favorite}
-                      onFavorite={() => handleFavorite(row.id)}
-                      onDelete={() => handleDelete(row.id)}
-                      onSelect={() => onSelectTemplate(row.id)}
-                    />
-                  ) : (
-                    <div
-                      // Placeholder to keep favorites aligned to whole grid rows.
-                      key={`empty-${idx}`}
-                      className={styles.thumbPlaceholder}
-                      style={{ width: cellPx, height: cellPx }}
-                      aria-hidden
-                    />
-                  ),
-                )}
+                {rows.map((row) => (
+                  <CardphotoListThumb
+                    key={row.id}
+                    id={row.id}
+                    src={row.src}
+                    cellPx={cellPx}
+                    onDelete={() => handleDelete(row.id)}
+                    onSelect={() => onSelectTemplate(row.id)}
+                  />
+                ))}
               </div>
             )}
           </div>

@@ -19,7 +19,6 @@ import { capitalize } from '@/shared/utils/helpers'
 import {
   selectAppliedImage,
   selectIsCurrentCropApplied,
-  selectActiveImage,
   selectCardphotoListTemplateGridCols,
 } from '@/features/cardphoto/infrastructure/selectors'
 import {
@@ -87,8 +86,6 @@ export const Toolbar = ({
     selectCardtextAssetMatchesApplied,
   )
   const cardtextPlainText = useAppSelector(selectCardtextPlainText)
-  const cardphotoActiveImage = useAppSelector(selectActiveImage)
-  const cardphotoFavorite = cardphotoActiveImage?.favorite === true
   const isCardtextCurrentTemplateApplied = cardtextAssetMatchesApplied
   const isAlreadyApplied =
     section === 'cardtext' || section === 'cardtextView'
@@ -281,14 +278,6 @@ export const Toolbar = ({
         buttonStatus = 'enabled'
       }
     }
-    if (
-      section === 'cardphotoView' &&
-      key === 'favorite' &&
-      cardphotoFavorite
-    ) {
-      buttonStatus = 'active'
-    }
-
     const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
     const hasBadge =
       badge != null &&

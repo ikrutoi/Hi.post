@@ -9,6 +9,8 @@ export interface CardphotoUiState {
   isListPanelOpen: boolean
   inlineTemplateListRevision: number
   listTemplateGridCols: CardphotoListTemplateGridCols
+  /** inLine / view preview → crop toolbar (`cardphotoCreate`) */
+  isCardphotoViewEditMode: boolean
 }
 
 const initialUiState: CardphotoUiState = {
@@ -18,6 +20,7 @@ const initialUiState: CardphotoUiState = {
   isListPanelOpen: false,
   inlineTemplateListRevision: 0,
   listTemplateGridCols: 5,
+  isCardphotoViewEditMode: false,
 }
 
 export const cardphotoUiSlice = createSlice({
@@ -73,6 +76,14 @@ export const cardphotoUiSlice = createSlice({
     },
 
     selectInLineTemplate: (_state, _action: PayloadAction<string>) => {},
+
+    setCardphotoViewEditMode(state, action: PayloadAction<boolean>) {
+      state.isCardphotoViewEditMode = action.payload
+    },
+
+    closeCardphotoViewRequested(_state) {},
+    editCardphotoViewRequested(_state) {},
+    deleteCardphotoFromViewRequested(_state) {},
   },
 })
 
@@ -88,6 +99,10 @@ export const {
   cycleListTemplateGridCols,
   setListTemplateGridCols,
   selectInLineTemplate,
+  setCardphotoViewEditMode,
+  closeCardphotoViewRequested,
+  editCardphotoViewRequested,
+  deleteCardphotoFromViewRequested,
 } = cardphotoUiSlice.actions
 
 export default cardphotoUiSlice.reducer
