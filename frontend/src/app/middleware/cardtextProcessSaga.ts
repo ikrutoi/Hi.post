@@ -47,6 +47,7 @@ import {
 } from './cardtextToolbarSaga'
 import {
   updateToolbarIcon,
+  updateToolbarSection,
   updateGroupStatus,
 } from '@toolbar/infrastructure/state'
 import { syncFontSizeButtonsStatus } from './cardtextHandlers'
@@ -185,16 +186,18 @@ export function* syncCardtextViewToolbarAddList(): SagaIterator {
     yield select(selectCardtextTemplatesListItems)
 
   yield put(
-    updateToolbarIcon({
+    updateToolbarSection({
       section: 'cardtextView',
-      key: 'addList',
       value: {
-        state: resolveCardtextAddListToolbarState(
-          hasText,
-          plainText,
-          templates,
-          templateId,
-        ),
+        addList: {
+          state: resolveCardtextAddListToolbarState(
+            hasText,
+            plainText,
+            templates,
+            templateId,
+          ),
+        },
+        edit: { state: 'enabled' },
       },
     }),
   )

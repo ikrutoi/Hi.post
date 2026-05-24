@@ -27,13 +27,12 @@ export const CardphotoListThumb: React.FC<Props> = ({
 }) => {
   const bp = btnSize(cellPx)
   const ip = iconSize(cellPx)
-  const actionBtnStyle: React.CSSProperties = {
-    width: bp,
-    height: bp,
-    minWidth: bp,
-    minHeight: bp,
-  }
-  const iconStyle: React.CSSProperties = { width: ip, height: ip }
+  const cellStyle = {
+    width: cellPx,
+    height: cellPx,
+    '--thumb-action-size': `${bp}px`,
+    '--thumb-icon-size': `${ip}px`,
+  } as React.CSSProperties
 
   const runDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -48,7 +47,7 @@ export const CardphotoListThumb: React.FC<Props> = ({
     <div
       className={styles.thumbCell}
       data-cardphoto-thumb={id}
-      style={{ width: cellPx, height: cellPx }}
+      style={cellStyle}
       onClick={runSelect}
     >
       <img
@@ -59,18 +58,15 @@ export const CardphotoListThumb: React.FC<Props> = ({
         height={cellPx}
         decoding="async"
       />
-      <div className={styles.thumbOverlay}>
-        <button
-          type="button"
-          className={styles.thumbActionBtn}
-          style={actionBtnStyle}
-          onClick={runDelete}
-          aria-label="Delete template"
-          title="Delete"
-        >
-          <IconDelete style={iconStyle} />
-        </button>
-      </div>
+      <button
+        type="button"
+        className={styles.thumbDeleteBtn}
+        onClick={runDelete}
+        aria-label="Delete template"
+        title="Delete"
+      >
+        <IconDelete />
+      </button>
     </div>
   )
 }

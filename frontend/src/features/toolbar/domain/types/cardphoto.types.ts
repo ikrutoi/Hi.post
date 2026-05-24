@@ -14,6 +14,8 @@ export const CARDPHOTO_KEYS = [
   'cardphotoAdd',
   'download',
   'close',
+  'edit',
+  'delete',
   // 'save',
   // 'photoTemplates',
   'listDelete',
@@ -79,8 +81,11 @@ export const CARDPHOTO_PROCESSED_TOOLBAR: ToolbarConfig = [
 
 export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
   {
-    group: 'processed',
-    icons: [{ key: 'addList', state: 'enabled' }],
+    group: 'view',
+    icons: [
+      { key: 'addList', state: 'enabled' },
+      { key: 'edit', state: 'disabled' },
+    ],
 
     status: 'enabled',
   },

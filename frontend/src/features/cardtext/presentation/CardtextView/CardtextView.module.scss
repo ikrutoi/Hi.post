@@ -59,28 +59,8 @@
   @include overlay.sectionViewOverlayChipIcon;
 }
 
-.viewActions {
-  @include overlay.sectionViewOverlayActionsPlacement;
-}
-
-.viewActionButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  @include overlay.sectionViewOverlayChipText;
-  @include overlay.sectionViewOverlayChipIcon;
-}
-
-.viewActionButtonOverlay {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  @include overlay.sectionViewOverlayChipPhoto;
-  @include overlay.sectionViewOverlayChipIcon;
+.viewDeleteBtn {
+  @include overlay.sectionViewOverlayDeleteButton;
 }
 
 /* addList: .toolbarCardtextView margin-left 0.5rem; заголовок — чуть левее правого края. */

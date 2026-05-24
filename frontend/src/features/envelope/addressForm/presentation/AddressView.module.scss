@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/sectionViewOverlayChip' as overlay;
 
 /* Правый зазор как у правой колонки `.recipientsViewList` / EnvelopeRecipientRow */
 $recipient-content-gutter-right: calc(0.25rem + 8px);
@@ -122,6 +123,10 @@ $envelope-address-card-shell-height: 11.75rem;
   min-height: 0;
   padding: 0.5rem;
   box-sizing: border-box;
+}
+
+.savedAddressDeleteButton {
+  @include overlay.sectionViewOverlayDeleteButton;
 }
 
 .savedAddressViewWithFormActions {

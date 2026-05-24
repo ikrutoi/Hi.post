@@ -83,10 +83,18 @@ export const CARDTEXT_VIEW_TOOLBAR: ToolbarConfig = [
     group: 'font',
     icons: [
       { key: 'addList', state: 'enabled' },
-      // { key: 'delete', state: 'enabled' },
+      { key: 'edit', state: 'enabled' },
     ],
     status: 'enabled',
   },
+  // {
+  //   group: 'close',
+  //   icons: [
+  //     // { key: 'edit', state: 'enabled' },
+  //     { key: 'delete', state: 'enabled' },
+  //   ],
+  //   status: 'enabled',
+  // },
 ]
 
 export const initialCardtextToolbarState: CardtextToolbarState = {

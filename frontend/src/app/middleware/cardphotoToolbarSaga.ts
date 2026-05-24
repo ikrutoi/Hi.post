@@ -609,12 +609,14 @@ export function* syncToolbarContext() {
   const isInLineTemplate = img?.status === 'inLine'
   const listAddViewState =
     img?.status === 'processed' && !isInLineTemplate ? 'enabled' : 'disabled'
+  const templateActionState = isInLineTemplate ? 'enabled' : 'disabled'
 
   yield put(
     updateToolbarSection({
       section: 'cardphotoView',
       value: {
         listAdd: { state: listAddViewState },
+        edit: { state: templateActionState },
       },
     }),
   )

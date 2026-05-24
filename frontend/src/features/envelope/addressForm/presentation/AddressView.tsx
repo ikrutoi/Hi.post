@@ -159,7 +159,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       if (containerRef.current?.contains(target)) return
       if (
         target.closest(
-          '[data-address-book-entry], [data-address-book-list], [data-envelope-address-actions], [data-envelope-address-fieldset]',
+          '[data-address-book-entry], [data-address-book-list], [data-envelope-address-fieldset], [data-envelope-address-delete]',
         )
       ) {
         return
@@ -299,8 +299,8 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       }
       return
     }
-    if (next.closest('[data-envelope-address-actions]')) return
     if (next.closest('[data-envelope-address-edit-close]')) return
+    if (next.closest('[data-envelope-address-delete]')) return
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
 
@@ -438,15 +438,15 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     </button>
   )
 
-  const handleFormEdit = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
-  }
-
   const handleCloseEdit = (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
     dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
+  }
+
+  const handleFormDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    dispatch(toolbarAction({ section: toolbarSection, key: 'delete' } as any))
   }
 
   const editCloseButton = (
@@ -466,50 +466,9 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     </button>
   )
 
-  const handleFormDelete = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    dispatch(toolbarAction({ section: toolbarSection, key: 'delete' } as any))
-  }
-
-  const savedAddressFormActions = (
-    <div
-      className={styles.savedAddressFormActions}
-      data-envelope-address-actions
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        type="button"
-        className={clsx(
-          styles.savedAddressActionButton,
-          isEditMode && styles.savedAddressActionButtonActive,
-        )}
-        aria-label="Edit address"
-        title="Edit address"
-        aria-pressed={isEditMode}
-        onClick={handleFormEdit}
-      >
-        {getToolbarIcon({ key: 'edit' })}
-      </button>
-      {!isEditMode && (
-        <button
-          type="button"
-          className={clsx(
-            styles.savedAddressActionButton,
-            styles.savedAddressActionButtonDelete,
-          )}
-          aria-label="Delete address"
-          title="Delete address"
-          onClick={handleFormDelete}
-        >
-          {getToolbarIcon({ key: 'delete' })}
-        </button>
-      )}
-    </div>
-  )
-
   const savedAddressViewClassName = clsx(
     styles.savedAddressView,
-    styles.savedAddressViewWithFormActions,
+    !isEditMode && styles.savedAddressViewWithFormActions,
     role === 'sender'
       ? styles.savedAddressViewSender
       : styles.savedAddressViewRecipient,
@@ -536,7 +495,16 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         ) : null}
       </div>
-      {savedAddressFormActions}
+      <button
+        type="button"
+        className={styles.savedAddressDeleteButton}
+        data-envelope-address-delete
+        aria-label="Delete address template"
+        title="Delete template"
+        onClick={handleFormDelete}
+      >
+        {getToolbarIcon({ key: 'delete' })}
+      </button>
     </div>
   )
 
@@ -702,7 +670,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         )}
       </div>
-      {savedAddressFormActions}
     </div>
   )
 

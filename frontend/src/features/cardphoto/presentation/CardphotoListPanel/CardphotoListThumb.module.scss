@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/sectionViewOverlayChip' as overlay;
 
 .thumbCell {
   position: relative;
@@ -7,12 +8,8 @@
   box-sizing: border-box;
   border: 1px solid $color-section-light;
   background-color: $color-app-header;
-  overflow: visible;
-
-  &:hover .thumbOverlay {
-    opacity: 1;
-    pointer-events: auto;
-  }
+  overflow: hidden;
+  cursor: pointer;
 }
 
 .thumbImg {
@@ -24,37 +21,26 @@
   vertical-align: top;
 }
 
-.thumbOverlay {
+.thumbDeleteBtn {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-  padding: 2px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease;
-  border-radius: inherit;
-}
-
-.thumbActionBtn {
-  display: flex;
+  right: 2px;
+  bottom: 2px;
+  z-index: 2;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 0;
   border: none;
-  border-radius: 999px;
   cursor: pointer;
-  color: $color-font-enabled;
-  background-color: rgba(235, 235, 235, 0.9);
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease,
-    transform 0.1s ease;
+  @include overlay.sectionViewOverlayChipPhoto;
+  width: var(--thumb-action-size);
+  height: var(--thumb-action-size);
+  border-radius: min(0.5rem, calc(var(--thumb-action-size) * 0.32));
 
-  &:hover {
-    background-color: #fff;
+  svg {
+    width: var(--thumb-icon-size);
+    height: var(--thumb-icon-size);
+    display: block;
   }
 
   &:active {

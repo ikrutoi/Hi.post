@@ -38,6 +38,25 @@ $section-view-overlay-chip-bg-photo-hover: rgba(255, 255, 255, 0.86);
   gap: $section-view-overlay-actions-gap;
 }
 
+@mixin sectionViewOverlayDeletePlacement {
+  position: absolute;
+  right: $section-view-overlay-inset-right;
+  bottom: $section-view-overlay-inset-bottom;
+  z-index: 2;
+}
+
+@mixin sectionViewOverlayDeleteButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  @include sectionViewOverlayDeletePlacement;
+  @include sectionViewOverlayChipPhoto;
+  @include sectionViewOverlayChipIcon;
+}
+
 @mixin sectionViewOverlayViewContainerPadding(
   $bottom: $section-view-overlay-inset-bottom
 ) {

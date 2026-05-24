@@ -14,7 +14,6 @@ import {
   useLoadCardtextTemplatesWhenUnknown,
 } from '../application/hooks'
 import {
-  openCardtextEditorFromView,
   resolveCardtextInteractionMode,
   resolveCardtextToolbarSection,
   shouldHideEmptyCreateToolbar,
@@ -34,6 +33,7 @@ import viewStyles from './CardtextView/CardtextView.module.scss'
 import { useAppDispatch } from '@app/hooks'
 import {
   deleteCardtextFromViewRequested,
+  clearCardtextTemplatesListSelection,
   resetCardtextAssetToEmptyDraft,
   setCardtextAddTemplateOpen,
   setCardtextPresetData,
@@ -164,10 +164,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
 
   const dispatch = useAppDispatch()
 
-  const handleViewEdit = useCallback(() => {
-    openCardtextEditorFromView(dispatch, cardtextAssetStatus)
-  }, [dispatch, cardtextAssetStatus])
-
   const {
     titleInputRef,
     titleStripRef,
@@ -213,6 +209,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     dispatch(setCardtextViewEditMode(false))
     dispatch(setCardtextAddTemplateOpen(false))
     dispatch(setCardtextPresetData(null))
+    dispatch(clearCardtextTemplatesListSelection())
     dispatch(resetCardtextAssetToEmptyDraft())
     dispatch(setDraftEngaged(false))
     dispatch(setDraftFocus(false))
@@ -344,7 +341,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                   style={style}
                   titleStripEditing={forceEditingTitle}
                   onClose={handleViewClose}
-                  onEdit={handleViewEdit}
                   onDelete={handleViewDelete}
                 />
               </div>

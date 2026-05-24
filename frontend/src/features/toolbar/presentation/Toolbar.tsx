@@ -38,6 +38,8 @@ import {
 import {
   selectRecipientAddressListPanelDensity,
   selectSenderAddressListPanelDensity,
+  selectRecipientViewEditMode,
+  selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import type { ToolbarSection, ToolbarGroup, IconOptions } from '../domain/types'
 import type {
@@ -182,6 +184,8 @@ export const Toolbar = ({
   })
 
   const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
+  const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
+  const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
 
   const sectionEditorMenuLockedByCardPieCopy =
     section === 'sectionEditorMenu' && cardPieCopyStripExpanded
@@ -277,6 +281,12 @@ export const Toolbar = ({
       } else {
         buttonStatus = 'enabled'
       }
+    }
+    if (key === 'edit' && section === 'senderView' && senderViewEditMode) {
+      buttonStatus = 'active'
+    }
+    if (key === 'edit' && section === 'recipientView' && recipientViewEditMode) {
+      buttonStatus = 'active'
     }
     const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
     const hasBadge =

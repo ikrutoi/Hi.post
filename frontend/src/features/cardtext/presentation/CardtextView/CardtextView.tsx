@@ -25,7 +25,6 @@ type Props = {
   titleStripEditing?: boolean
   /** Закрыть форму View / Processed (пустой create), не открывать редактор */
   onClose?: () => void
-  onEdit?: () => void
   onDelete?: () => void
 }
 
@@ -35,7 +34,6 @@ export const CardtextView: React.FC<Props> = ({
   contentKey,
   titleStripEditing,
   onClose,
-  onEdit,
   onDelete,
 }) => {
   const slateKey =
@@ -95,41 +93,20 @@ export const CardtextView: React.FC<Props> = ({
           />
         </Slate>
       </div>
-      {onEdit || onDelete ? (
-        <div
-          className={styles.viewActions}
-          onClick={(e) => e.stopPropagation()}
+      {onDelete ? (
+        <button
+          type="button"
+          className={styles.viewDeleteBtn}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+          aria-label="Delete text template"
+          title="Delete template"
         >
-          {onEdit ? (
-            <button
-              type="button"
-              className={styles.viewActionButtonOverlay}
-              aria-label="Edit text"
-              title="Edit text"
-              onClick={(e) => {
-                e.stopPropagation()
-                onEdit()
-              }}
-            >
-              {getToolbarIcon({ key: 'edit' })}
-            </button>
-          ) : null}
-          {onDelete ? (
-            <button
-              type="button"
-              className={styles.viewActionButtonOverlay}
-              aria-label="Delete text"
-              title="Delete text"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete()
-              }}
-            >
-              {getToolbarIcon({ key: 'delete' })}
-            </button>
-          ) : null}
-        </div>
+          {getToolbarIcon({ key: 'delete' })}
+        </button>
       ) : null}
     </div>
   )

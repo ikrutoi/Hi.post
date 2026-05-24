@@ -13,21 +13,19 @@ import { CardphotoStage } from '../CardphotoStage'
 type Props = {
   className?: string
   onClose?: () => void
-  onEdit?: () => void
   onDelete?: () => void
 }
 
 export const CardphotoView: React.FC<Props> = ({
   className,
   onClose,
-  onEdit,
   onDelete,
 }) => {
   const activeImage = useAppSelector(selectActiveImage)
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
   const showEmptyPlaceholder = !activeImage
   const showViewOverlay = assetToolbar === 'cardphotoView' && !!activeImage
-  const canEditTemplate = activeImage?.status === 'inLine'
+  const canDeleteTemplate = activeImage?.status === 'inLine'
 
   return (
     <div className={clsx(styles.viewContainer, className)}>
@@ -54,41 +52,20 @@ export const CardphotoView: React.FC<Props> = ({
           <IconX />
         </button>
       ) : null}
-      {showViewOverlay && (onEdit || onDelete) ? (
-        <div
-          className={styles.viewActions}
-          onClick={(e) => e.stopPropagation()}
+      {showViewOverlay && canDeleteTemplate && onDelete ? (
+        <button
+          type="button"
+          className={styles.viewDeleteBtn}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+          aria-label="Delete image template"
+          title="Delete template"
         >
-          {canEditTemplate && onEdit ? (
-            <button
-              type="button"
-              className={styles.viewActionButton}
-              aria-label="Edit image"
-              title="Edit image"
-              onClick={(e) => {
-                e.stopPropagation()
-                onEdit()
-              }}
-            >
-              {getToolbarIcon({ key: 'edit' })}
-            </button>
-          ) : null}
-          {canEditTemplate && onDelete ? (
-            <button
-              type="button"
-              className={styles.viewActionButton}
-              aria-label="Delete image"
-              title="Delete image"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={(e) => {
-                e.stopPropagation()
-                onDelete()
-              }}
-            >
-              {getToolbarIcon({ key: 'delete' })}
-            </button>
-          ) : null}
-        </div>
+          {getToolbarIcon({ key: 'delete' })}
+        </button>
       ) : null}
     </div>
   )
