@@ -18,6 +18,7 @@ import { getToolbarIcon } from '@shared/utils/icons'
 import { capitalize } from '@/shared/utils/helpers'
 import {
   selectAppliedImage,
+  selectCardphotoAssetToolbar,
   selectIsCurrentCropApplied,
   selectCardphotoListTemplateGridCols,
 } from '@/features/cardphoto/infrastructure/selectors'
@@ -99,6 +100,9 @@ export const Toolbar = ({
     !(cardtextPlainText?.trim?.() ?? '').length
   const cardtextCreateFormDisplayed = useAppSelector(
     (s) => selectCardtextInteractionMode(s) === 'createEmpty',
+  )
+  const cardphotoCreateFormDisplayed = useAppSelector(
+    (s) => selectCardphotoAssetToolbar(s) === 'cardphotoCreate',
   )
 
   const senderSortDirection = useAppSelector(
@@ -290,6 +294,11 @@ export const Toolbar = ({
         buttonStatus = 'selected'
       } else {
         buttonStatus = 'enabled'
+      }
+    }
+    if (key === 'cardphotoAdd' && section === 'cardphoto') {
+      if (cardphotoCreateFormDisplayed) {
+        buttonStatus = 'disabled'
       }
     }
     if (key === 'edit' && section === 'senderView' && senderViewEditMode) {

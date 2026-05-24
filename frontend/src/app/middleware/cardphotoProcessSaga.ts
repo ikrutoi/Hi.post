@@ -37,6 +37,7 @@ import {
   closeCardphotoViewRequested,
   editCardphotoViewRequested,
   deleteCardphotoFromViewRequested,
+  removeUserImage,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
@@ -70,6 +71,7 @@ import {
   // watchCropToolbarStatus,
   // watchCropHistory,
   watchToolbarContext,
+  syncCardphotoAddBadgeDot,
 } from './cardphotoToolbarSaga'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -376,6 +378,10 @@ function* watchCardphotoInLineBadge(): SagaIterator {
   )
 }
 
+function* watchCardphotoAddBadgeDot(): SagaIterator {
+  yield takeEvery([resetCardphoto.type, removeUserImage.type], syncCardphotoAddBadgeDot)
+}
+
 export function* cardphotoProcessSaga(): SagaIterator {
   yield all([
     takeLatest(toolbarAction.type, handleCardphotoToolbarAction),
@@ -399,6 +405,7 @@ export function* cardphotoProcessSaga(): SagaIterator {
     fork(watchToolbarContext),
     fork(watchCardphotoImageStageRect),
     fork(watchCardphotoInLineBadge),
+    fork(watchCardphotoAddBadgeDot),
     takeEvery(commitWorkingConfig.type, ensureCardphotoCardMatchesStageRect),
 
     takeLatest(uploadUserImage.type, onUploadImageReadySaga),

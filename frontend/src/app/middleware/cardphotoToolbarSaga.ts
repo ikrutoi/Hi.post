@@ -27,6 +27,7 @@ import {
 import { selectIsCardphotoViewEditMode } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import {
   selectActiveImage,
+  selectCardphotoAssetToolbar,
   selectCardphotoListTemplateGridCols,
   selectCardphotoState,
   selectIsListPanelOpen,
@@ -45,7 +46,7 @@ import {
   handlePromoteProcessedToInlineSaga,
 } from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
-import { prepareForRedux, updateCropToolbarState } from './cardphotoHelpers'
+import { prepareForRedux, prepareConfigForRedux, updateCropToolbarState, hydrateSessionImageMeta, fuelAssetRegistry } from './cardphotoHelpers'
 import { collectReferencedBlobUrls } from './blobUrlRevokeGuards'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
@@ -65,6 +66,7 @@ import type {
   CardphotoState,
   ImageSource,
   ImageMeta,
+  ImageRecord,
 } from '@cardphoto/domain/types'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
@@ -123,17 +125,112 @@ function* persistCardphotoListDensityToDbSaga(): SagaIterator {
 
 function* handleCloseCardphotoCreateSaga(): SagaIterator {
   try {
-    yield call(
-      [storeAdapters.userImages, 'deleteById'],
-      CURRENT_EDITOR_IMAGE_ID,
-    )
-    yield put(resetCardphoto())
+    yield put(setAssetData(null))
+    yield put(clearCurrentConfig())
     yield put(setCardphotoViewEditMode(false))
     yield put(markLoaded())
-    yield fork(syncToolbarContext)
+    yield call(syncToolbarContext)
+    yield call(syncCardphotoAddBadgeDot)
   } catch (error) {
     console.error('Close cardphoto create failed:', error)
   }
+}
+
+function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
+  try {
+    const state: CardphotoState | null = yield select(selectCardphotoState)
+    const userOriginal = state?.userOriginalData
+    if (!userOriginal) {
+      yield call(onDownloadClick)
+      return
+    }
+
+    const record: ImageRecord | null = yield call(
+      [storeAdapters.userImages, 'getById'],
+      CURRENT_EDITOR_IMAGE_ID,
+    )
+    const imageMeta = hydrateSessionImageMeta(
+      userOriginal,
+      record?.image ?? null,
+    )
+    if (!imageMeta) {
+      console.error('reopenCardphotoCreate: cannot hydrate original image')
+      yield call(onDownloadClick)
+      return
+    }
+
+    yield call(
+      fuelAssetRegistry,
+      {
+        user: imageMeta,
+        applied: state?.appliedData ?? null,
+        processed: null,
+        stock: null,
+      },
+      [],
+    )
+
+    const isComplete = !!state?.appliedData
+    const config: WorkingConfig | null = yield call(
+      rebuildConfigFromMeta,
+      imageMeta,
+      true,
+    )
+    if (!config) {
+      yield call(onDownloadClick)
+      return
+    }
+
+    const serializableMeta = prepareForRedux(imageMeta)
+    const serializableConfig = prepareConfigForRedux(config)
+
+    yield put(
+      hydrateEditor({
+        config: serializableConfig,
+        isComplete,
+        assetData: serializableMeta,
+        userOriginalData: serializableMeta,
+        ...(state?.appliedData != null
+          ? { appliedData: prepareForRedux(state.appliedData) }
+          : {}),
+      }),
+    )
+    yield put(markLoaded())
+    yield call(syncToolbarContext)
+    yield call(syncCardphotoAddBadgeDot)
+  } catch (error) {
+    console.error('reopenCardphotoCreateFromSavedOriginalSaga', error)
+    yield call(onDownloadClick)
+  }
+}
+
+export function* syncCardphotoAddBadgeDot(): SagaIterator {
+  const state: CardphotoState | null = yield select(selectCardphotoState)
+  const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
+    yield select(selectCardphotoAssetToolbar)
+  const hasUserOriginal = !!state?.userOriginalData
+  const isCreateModeOpen = assetToolbar === 'cardphotoCreate'
+  const shouldShowOriginalDot =
+    hasUserOriginal && !state?.assetData && !isCreateModeOpen
+
+  const current: CardphotoToolbarState['cardphotoAdd'] | undefined = yield select(
+    (s: RootState) => s.toolbar.cardphoto?.cardphotoAdd,
+  )
+  const currentOptions =
+    current && typeof current === 'object' ? (current.options ?? {}) : {}
+
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'cardphotoAdd',
+      value: {
+        options: {
+          ...currentOptions,
+          badgeDot: shouldShowOriginalDot,
+        },
+      },
+    }),
+  )
 }
 
 function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
@@ -156,6 +253,7 @@ function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
 
     yield put(markLoaded())
     yield call(syncToolbarContext)
+    yield call(syncCardphotoAddBadgeDot)
   } catch (error) {
     console.error('handleDeleteCardphotoCreateUploadSaga', error)
   }
@@ -265,6 +363,18 @@ export function* handleCardphotoToolbarAction(
 
   // Upload / pick image — same flow as legacy `download` (opens hidden file input via `openFileDialog`).
   if (key === 'cardphotoAdd') {
+    if (section === 'cardphoto') {
+      const assetToolbar = yield select(selectCardphotoAssetToolbar)
+      if (assetToolbar === 'cardphotoCreate') return
+
+      const cardphotoState: CardphotoState | null = yield select(
+        selectCardphotoState,
+      )
+      if (cardphotoState?.userOriginalData && !cardphotoState.assetData) {
+        yield call(reopenCardphotoCreateFromSavedOriginalSaga)
+        return
+      }
+    }
     if (
       section === 'cardphoto' ||
       section === 'cardphotoCreate' ||
@@ -481,6 +591,10 @@ export function* syncToolbarContext() {
   const hasStockImage = false
   const hasProcessedImage = state.assetData?.status === 'processed'
   const isProcessedInLine = state.assetData?.status === 'inLine'
+  const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
+    yield select(selectCardphotoAssetToolbar)
+  const cardphotoAddState =
+    assetToolbar === 'cardphotoCreate' ? 'disabled' : 'enabled'
   switch (toolbarAssetKind) {
     case 'none':
       sectionUpdate = {
@@ -495,7 +609,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: 'enabled' },
+        cardphotoAdd: { state: cardphotoAddState },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -514,7 +628,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: 'enabled' },
+        cardphotoAdd: { state: cardphotoAddState },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -533,7 +647,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: 'enabled' },
+        cardphotoAdd: { state: cardphotoAddState },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
         addList: {
@@ -556,7 +670,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: 'enabled' },
+        cardphotoAdd: { state: cardphotoAddState },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -575,7 +689,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: 'enabled' },
+        cardphotoAdd: { state: cardphotoAddState },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -593,7 +707,7 @@ export function* syncToolbarContext() {
         apply: { state: 'disabled' },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: 'enabled' },
+        cardphotoAdd: { state: cardphotoAddState },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -661,6 +775,8 @@ export function* syncToolbarContext() {
       },
     }),
   )
+
+  yield call(syncCardphotoAddBadgeDot)
 }
 
 const selectCurrentProcessedUrl = (state: RootState) =>
