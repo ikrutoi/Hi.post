@@ -487,10 +487,17 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
   if (!id) return
   if (state.assetData?.status === 'inLine') return
 
-  const record: ImageMeta | null = yield call(
+  let record: ImageMeta | null = yield call(
     [storeAdapters.cardphotoImages, 'getById'],
     id,
   )
+  if (!record && state.assetData?.id === id) {
+    record = state.assetData
+    yield call(
+      [storeAdapters.cardphotoImages, 'put'],
+      { ...record, status: 'processed' } as ImageMeta & { id: string },
+    )
+  }
   if (!record) return
   if (record.status === 'inLine') return
 
@@ -506,6 +513,7 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
 
   yield put(setProcessedImage(prepareForRedux(updated)))
   yield put(bumpCardphotoInlineTemplateList())
+  yield fork(syncToolbarContext)
 }
 
 // function* rebuildConfigFromMeta(meta: ImageMeta) {

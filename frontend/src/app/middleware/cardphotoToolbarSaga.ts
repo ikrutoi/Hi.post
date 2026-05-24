@@ -387,7 +387,8 @@ export function* handleCardphotoToolbarAction(
       yield call(handleApplyAction)
       break
 
-    case 'listAdd': {
+    case 'listAdd':
+    case 'addList': {
       if (section === 'cardphotoProcessed' || section === 'cardphotoView') {
         yield call(handlePromoteProcessedToInlineSaga)
       }
@@ -411,7 +412,7 @@ function pickCardphotoProcessedToolbarPatch(
     'cropQualityIndicator',
     'imageReset',
     'close',
-    'listAdd',
+    'addList',
   ] as const
   return Object.fromEntries(
     keys
@@ -535,7 +536,7 @@ export function* syncToolbarContext() {
         cardphotoAdd: { state: 'enabled' },
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
-        listAdd: {
+        addList: {
           state:
             hasProcessedImage && !isProcessedInLine ? 'enabled' : 'disabled',
         },
@@ -616,7 +617,14 @@ export function* syncToolbarContext() {
   const su = sectionUpdate as {
     cardphotoAdd?: { state: string }
     close?: { state: string }
+    addList?: { state: string }
   }
+
+  const img = state.assetData
+  const isInLineTemplate = img?.status === 'inLine'
+  const addListToolbarState =
+    img?.status === 'processed' && !isInLineTemplate ? 'enabled' : 'disabled'
+  const templateActionState = isInLineTemplate ? 'enabled' : 'disabled'
 
   yield put(
     updateToolbarSection({
@@ -635,22 +643,19 @@ export function* syncToolbarContext() {
       section: 'cardphotoProcessed',
       value: {
         ...cropToolbarPatch,
+        addList: {
+          state: su.addList?.state ?? addListToolbarState,
+        },
         ...(su.close != null ? { delete: su.close } : {}),
       },
     }),
   )
 
-  const img = state.assetData
-  const isInLineTemplate = img?.status === 'inLine'
-  const listAddViewState =
-    img?.status === 'processed' && !isInLineTemplate ? 'enabled' : 'disabled'
-  const templateActionState = isInLineTemplate ? 'enabled' : 'disabled'
-
   yield put(
     updateToolbarSection({
       section: 'cardphotoView',
       value: {
-        listAdd: { state: listAddViewState },
+        addList: { state: addListToolbarState },
         edit: { state: templateActionState },
         close: { state: 'enabled' },
       },

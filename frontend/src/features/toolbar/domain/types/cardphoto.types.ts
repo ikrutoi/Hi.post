@@ -69,7 +69,7 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
 export const CARDPHOTO_PROCESSED_TOOLBAR: ToolbarConfig = [
   {
     group: 'processed',
-    icons: [{ key: 'listAdd', state: 'enabled' }],
+    icons: [{ key: 'addList', state: 'enabled' }],
 
     status: 'enabled',
   },

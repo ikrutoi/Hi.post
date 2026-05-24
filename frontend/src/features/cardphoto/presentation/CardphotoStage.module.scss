@@ -49,6 +49,8 @@
   position: absolute;
   inset: 0;
   overflow: hidden;
+  border-radius: 0.5rem;
+  isolation: isolate;
 }
 
 .cropMask {

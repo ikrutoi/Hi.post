@@ -26,10 +26,10 @@
   height: 100%;
   @include overlay.sectionViewOverlayViewContainerPadding;
   box-sizing: border-box;
-  // overflow: hidden;
+  overflow: visible;
   user-select: none;
   cursor: default;
-  // border-radius: 0.5rem;
+  border-radius: 0.5rem;
   background-color: $color-cardphoto-input;
   // border: 1px solid $color-cardphoto-input-border;
 }
