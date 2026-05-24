@@ -198,6 +198,7 @@ export function* syncCardtextViewToolbarAddList(): SagaIterator {
           ),
         },
         edit: { state: 'enabled' },
+        close: { state: 'enabled' },
       },
     }),
   )

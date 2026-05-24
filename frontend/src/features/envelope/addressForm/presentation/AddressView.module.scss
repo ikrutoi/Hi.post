@@ -4,6 +4,21 @@
 /* Правый зазор как у правой колонки `.recipientsViewList` / EnvelopeRecipientRow */
 $recipient-content-gutter-right: calc(0.25rem + 8px);
 
+$saved-address-overlay-chip-size: 1.35rem;
+$saved-address-overlay-chip-radius: 0.4rem;
+$saved-address-overlay-chip-icon-size: 0.74rem;
+
+@mixin savedAddressOverlayChipSize {
+  width: $saved-address-overlay-chip-size;
+  height: $saved-address-overlay-chip-size;
+  border-radius: $saved-address-overlay-chip-radius;
+
+  svg {
+    width: $saved-address-overlay-chip-icon-size;
+    height: $saved-address-overlay-chip-icon-size;
+  }
+}
+
 /** Карточка senderView / recipientView / create — чуть выше прежнего content-sized recipientView. */
 $envelope-address-card-shell-height: 11.75rem;
 
@@ -127,6 +142,7 @@ $envelope-address-card-shell-height: 11.75rem;
 
 .savedAddressDeleteButton {
   @include overlay.sectionViewOverlayDeleteButton;
+  @include savedAddressOverlayChipSize;
 }
 
 .savedAddressViewWithFormActions {
@@ -248,10 +264,15 @@ $envelope-address-card-shell-height: 11.75rem;
 }
 
 .savedAddressCloseButton {
-  position: absolute;
-  top: 0.2rem;
-  right: 0.2rem;
-  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  @include overlay.sectionViewOverlayClosePlacement;
+  @include overlay.sectionViewOverlayChipPhoto;
+  @include savedAddressOverlayChipSize;
 }
 
 .recipientAddress {

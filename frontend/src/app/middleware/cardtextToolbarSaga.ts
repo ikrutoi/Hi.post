@@ -196,6 +196,17 @@ function* handleCardtextPostcardViewDelete(): SagaIterator {
   yield put(loadCardtextTemplatesRequest())
 }
 
+/** View: закрыть форму просмотра шаблона (пустой create). */
+export function* handleCloseCardtextView(): SagaIterator {
+  yield put(setCardtextViewEditMode(false))
+  yield put(setCardtextAddTemplateOpen(false))
+  yield put(setCardtextPresetData(null))
+  yield put(clearCardtextTemplatesListSelection())
+  yield put(resetCardtextAssetToEmptyDraft())
+  yield put(setDraftEngaged(false))
+  yield put(setDraftFocus(false))
+}
+
 /** View / Processed: удаление текста (не зависит от section в toolbarAction). */
 export function* handleDeleteCardtextFromView(): SagaIterator {
   const assetStatus: CardtextStatus = yield select(selectCardtextAssetStatus)
@@ -475,6 +486,12 @@ export function* handleCardtextToolbarAction(
       }
       break
     }
+
+    case 'close':
+      if (section === 'cardtextView') {
+        yield call(handleCloseCardtextView)
+      }
+      break
 
     case 'removeFromList': {
       if (section === 'cardtextView') {

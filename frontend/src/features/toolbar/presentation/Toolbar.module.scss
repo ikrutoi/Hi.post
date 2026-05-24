@@ -278,6 +278,12 @@
     background-color: #fff;
     width: 1.55rem;
     height: 1.55rem;
+    padding: 0;
+
+    > svg {
+      width: 0.82rem;
+      height: 0.82rem;
+    }
   }
 
   .toolbarKeyFontSizeIndicator {
@@ -310,6 +316,36 @@
     &:hover {
       background-color: #fff;
       cursor: default;
+    }
+  }
+}
+
+.toolbarCardtextView,
+.toolbarCardtextEditor,
+.toolbarCardtextCreate {
+  .toolbarKey {
+    width: 1.6rem;
+    height: 1.6rem;
+
+    > svg {
+      width: 0.85rem;
+      height: 0.85rem;
+    }
+  }
+
+  .toolbarKeyFontSizeIndicator {
+    width: auto;
+  }
+}
+
+.toolbarCardphotoView {
+  .toolbarKey {
+    width: 1.6rem;
+    height: 1.6rem;
+
+    > svg {
+      width: 0.85rem;
+      height: 0.85rem;
     }
   }
 }

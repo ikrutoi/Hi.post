@@ -6,7 +6,6 @@ import { STEP_TO_PX, clampCardtextFontSizeStep } from '../../domain/types'
 import type { CardtextValue, CardtextStyle } from '../../domain/types'
 import { renderLeaf } from '../renderLeaf'
 import { renderElement } from '../renderElement'
-import { IconX } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './CardtextView.module.scss'
 
@@ -23,8 +22,6 @@ type Props = {
   contentKey?: string
   /** Tighter top padding when the floating title strip is in edit mode */
   titleStripEditing?: boolean
-  /** Закрыть форму View / Processed (пустой create), не открывать редактор */
-  onClose?: () => void
   onDelete?: () => void
 }
 
@@ -33,7 +30,6 @@ export const CardtextView: React.FC<Props> = ({
   style,
   contentKey,
   titleStripEditing,
-  onClose,
   onDelete,
 }) => {
   const slateKey =
@@ -67,21 +63,6 @@ export const CardtextView: React.FC<Props> = ({
         textAlign: style?.align ?? 'left',
       }}
     >
-      {onClose ? (
-        <button
-          type="button"
-          className={styles.viewCloseBtnOverlay}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => {
-            e.stopPropagation()
-            onClose()
-          }}
-          aria-label="Close text form"
-          title="Close"
-        >
-          <IconX />
-        </button>
-      ) : null}
       <div className={styles.viewBody}>
         {/** `initialValue` только при mount — без key Slate не подхватывает смену строки/данных при том же editor memo. */}
         <Slate key={slateKey} editor={editor} initialValue={initialValue}>

@@ -33,13 +33,6 @@ import viewStyles from './CardtextView/CardtextView.module.scss'
 import { useAppDispatch } from '@app/hooks'
 import {
   deleteCardtextFromViewRequested,
-  clearCardtextTemplatesListSelection,
-  resetCardtextAssetToEmptyDraft,
-  setCardtextAddTemplateOpen,
-  setCardtextPresetData,
-  setCardtextViewEditMode,
-  setDraftEngaged,
-  setDraftFocus,
 } from '@cardtext/infrastructure/state'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
@@ -205,16 +198,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     (interactionMode === 'postcardTemplateView' ||
       interactionMode === 'processedSlot')
 
-  const handleViewClose = useCallback(() => {
-    dispatch(setCardtextViewEditMode(false))
-    dispatch(setCardtextAddTemplateOpen(false))
-    dispatch(setCardtextPresetData(null))
-    dispatch(clearCardtextTemplatesListSelection())
-    dispatch(resetCardtextAssetToEmptyDraft())
-    dispatch(setDraftEngaged(false))
-    dispatch(setDraftFocus(false))
-  }, [dispatch])
-
   const handleViewDelete = useCallback(() => {
     dispatch(deleteCardtextFromViewRequested())
   }, [dispatch])
@@ -272,6 +255,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                     ref={titleStripRef}
                     className={clsx(
                       viewStyles.viewTitle,
+                      viewStyles.viewTitleStrip,
                       viewStyles.viewTitleEditing,
                     )}
                   >
@@ -319,7 +303,10 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                   currentView === 'view' && (
                     <button
                       type="button"
-                      className={viewStyles.viewTitle}
+                      className={clsx(
+                        viewStyles.viewTitle,
+                        viewStyles.viewTitleStrip,
+                      )}
                       onClick={startEditTitle}
                       aria-label="Edit template name"
                       title="Edit template name"
@@ -327,6 +314,10 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                       <span className={viewStyles.viewTitleText} aria-hidden>
                         {title}
                       </span>
+                      <span
+                        className={viewStyles.viewTitleEditingBtnPlaceholder}
+                        aria-hidden
+                      />
                     </button>
                   )
                 )}
@@ -340,7 +331,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                   value={value}
                   style={style}
                   titleStripEditing={forceEditingTitle}
-                  onClose={handleViewClose}
                   onDelete={handleViewDelete}
                 />
               </div>
