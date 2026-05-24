@@ -1,5 +1,4 @@
 @use '@styles/config/colors' as *;
-@use '@styles/mixins/sectionViewOverlayChip' as overlay;
 
 .thumbCell {
   position: relative;
@@ -19,31 +18,4 @@
   object-fit: cover;
   border-radius: calc(0.35rem - 1px);
   vertical-align: top;
-}
-
-.thumbDeleteBtn {
-  position: absolute;
-  right: 2px;
-  bottom: 2px;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
-  cursor: pointer;
-  @include overlay.sectionViewOverlayChipPhoto;
-  width: var(--thumb-action-size);
-  height: var(--thumb-action-size);
-  border-radius: min(0.5rem, calc(var(--thumb-action-size) * 0.32));
-
-  svg {
-    width: var(--thumb-icon-size);
-    height: var(--thumb-icon-size);
-    display: block;
-  }
-
-  &:active {
-    transform: scale(0.94);
-  }
 }

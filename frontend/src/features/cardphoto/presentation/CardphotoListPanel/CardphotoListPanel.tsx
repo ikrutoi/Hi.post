@@ -1,5 +1,4 @@
 import React, {
-  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -8,12 +7,11 @@ import React, {
 import { IconListCardphoto } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { storeAdapters } from '@db/adapters/storeAdapters'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { useAppSelector } from '@app/hooks'
 import {
   selectCardphotoInlineTemplateListRevision,
   selectCardphotoListTemplateGridCols,
 } from '@cardphoto/infrastructure/selectors'
-import { bumpCardphotoInlineTemplateList } from '@cardphoto/infrastructure/state'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import type { ImageMeta } from '@cardphoto/domain/types'
@@ -56,7 +54,6 @@ function remToPx(rem: number): number {
 }
 
 export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate }) => {
-  const dispatch = useAppDispatch()
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
   const [rows, setRows] = useState<Row[]>([])
@@ -127,14 +124,6 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
     }
   }, [listRevision])
 
-  const handleDelete = useCallback(
-    async (id: string) => {
-      await storeAdapters.cardphotoImages.deleteById(id)
-      dispatch(bumpCardphotoInlineTemplateList())
-    },
-    [dispatch],
-  )
-
   const hasRows = rows.length > 0
 
   return (
@@ -178,7 +167,6 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
                     id={row.id}
                     src={row.src}
                     cellPx={cellPx}
-                    onDelete={() => handleDelete(row.id)}
                     onSelect={() => onSelectTemplate(row.id)}
                   />
                 ))}
