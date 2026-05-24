@@ -4,10 +4,7 @@ import { IconListCardtext } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
-import { openCardtextEditorFromView } from '@cardtext/application/helpers'
 import { selectCardtextAssetStatus } from '@cardtext/infrastructure/selectors'
-import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
-import { removeCardtextTemplateId } from '@features/previewStrip/infrastructure/state'
 import {
   selectCardtextTemplatesListItems,
   selectCardtextTemplatesListLoading,
@@ -16,9 +13,6 @@ import {
   selectCardtextListSortDirection,
 } from '@cardtext/infrastructure/selectors'
 import {
-  loadCardtextTemplatesRequest,
-  resetCardtextAssetToEmptyDraft,
-  setCardtextId,
   setCardtextTemplatesListSelectedId,
   clearCardtextTemplatesListSelection,
 } from '@cardtext/infrastructure/state'
@@ -46,7 +40,6 @@ function sortTemplatesByTitle(
 
 export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const dispatch = useAppDispatch()
-  const { deleteCardtextTemplate } = useTemplateActions()
   const items = useAppSelector(selectCardtextTemplatesListItems)
   const sortDirection = useAppSelector(selectCardtextListSortDirection)
   const panelDensity = useAppSelector(selectCardtextListPanelDensity)
@@ -57,9 +50,6 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const isLoading = useAppSelector(selectCardtextTemplatesListLoading)
   const selectedTemplateId = useAppSelector(selectCardtextId)
   const cardtextAssetStatus = useAppSelector(selectCardtextAssetStatus)
-  const isCardtextViewEditMode = useAppSelector(
-    (state) => state.cardtext.isCardtextViewEditMode === true,
-  )
   const templatesListSelectedId = useAppSelector(
     (state) => state.cardtext.templatesListSelectedId,
   )
@@ -77,39 +67,6 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
       onSelect?.(entry)
     },
     [dispatch, onSelect],
-  )
-
-  const handleEdit = useCallback(
-    (entry: CardtextContent) => {
-      handleSelect(entry)
-      openCardtextEditorFromView(
-        dispatch,
-        entry.status ?? cardtextAssetStatus,
-      )
-    },
-    [dispatch, handleSelect, cardtextAssetStatus],
-  )
-
-  const handleDelete = useCallback(
-    async (id: string) => {
-      const result = await deleteCardtextTemplate(id)
-      if (!result.success) return
-      dispatch(removeCardtextTemplateId(id))
-      dispatch(loadCardtextTemplatesRequest())
-      if (templatesListSelectedId === id) {
-        dispatch(clearCardtextTemplatesListSelection())
-      }
-      if (selectedTemplateId === id) {
-        dispatch(resetCardtextAssetToEmptyDraft())
-        dispatch(setCardtextId(null))
-      }
-    },
-    [
-      deleteCardtextTemplate,
-      dispatch,
-      templatesListSelectedId,
-      selectedTemplateId,
-    ],
   )
 
   const hasRows = sortedTemplates.length > 0
@@ -142,8 +99,6 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                 <CardtextListEntry
                   entry={entry}
                   onSelect={handleSelect}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
                   isSelected={
                     cardtextAssetStatus !== 'processed' &&
                     ((entry.id != null &&
@@ -151,9 +106,6 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                       (highlightAssetTemplateInList &&
                         entry.id != null &&
                         selectedTemplateId === entry.id))
-                  }
-                  isEditActive={
-                    isCardtextViewEditMode && selectedTemplateId === entry.id
                   }
                   density={panelDensity}
                 />

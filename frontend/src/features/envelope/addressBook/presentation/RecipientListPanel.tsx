@@ -11,7 +11,6 @@ import type { AddressBookEntry } from '../domain/types'
 import { useRecipientListPanelFacade } from '../../application/facades'
 import { useAppSelector } from '@app/hooks'
 import {
-  selectActiveAddressEdit,
   selectRecipientAddressListPanelDensity,
   selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
@@ -19,32 +18,20 @@ import styles from './RecipientListPanel.module.scss'
 
 type Props = {
   onSelect: (entry: AddressBookEntry) => void
-  /** По Enter после фокуса в списке: открыть RecipientView в режиме редактирования. */
-  onEdit?: (entry: AddressBookEntry) => void
   selectedIds?: string[]
 }
 
 export const RecipientListPanel: React.FC<Props> = ({
   onSelect,
-  onEdit,
   selectedIds = [],
 }) => {
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
-  const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
   const addressListPanelDensity = useAppSelector(
     selectRecipientAddressListPanelDensity,
   )
   const gridColumns = getAddressBookGridColumns(addressListPanelDensity)
-  const editingEntryId =
-    activeAddressEdit?.role === 'recipient'
-      ? activeAddressEdit.templateId
-      : null
-  const {
-    entries,
-    starredRecipientIds,
-    closePanel,
-    handleDeleteEntry,
-  } = useRecipientListPanelFacade()
+  const { entries, starredRecipientIds, closePanel } =
+    useRecipientListPanelFacade()
 
   const { favoriteEntries, restEntries, combinedEntries } = useMemo(() => {
     const fav = entries.filter((e) => starredRecipientIds.has(e.id))
@@ -127,7 +114,6 @@ export const RecipientListPanel: React.FC<Props> = ({
         if (entry) {
           setFocusedIndex(idx)
           onSelect(entry)
-          onEdit?.(entry)
         }
       }
     },
@@ -136,7 +122,6 @@ export const RecipientListPanel: React.FC<Props> = ({
       focusedIndex,
       primarySelectedIndex,
       onSelect,
-      onEdit,
       closePanel,
       gridColumns,
     ],
@@ -192,11 +177,8 @@ export const RecipientListPanel: React.FC<Props> = ({
                   <AddressBookCell
                     entry={entry}
                     onSelect={onSelect}
-                    onEdit={onEdit}
-                    onDelete={handleDeleteEntry}
                     isSelected={selectedIds.includes(entry.id)}
                     isFocused={focusedIndex === index}
-                    isEditActive={editingEntryId === entry.id}
                     density={addressListPanelDensity}
                   />
                 </div>
@@ -215,11 +197,8 @@ export const RecipientListPanel: React.FC<Props> = ({
                     <AddressBookCell
                       entry={entry}
                       onSelect={onSelect}
-                      onEdit={onEdit}
-                      onDelete={handleDeleteEntry}
                       isSelected={selectedIds.includes(entry.id)}
                       isFocused={focusedIndex === dataIndex}
-                      isEditActive={editingEntryId === entry.id}
                       density={addressListPanelDensity}
                     />
                   </div>

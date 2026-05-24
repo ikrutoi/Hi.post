@@ -10,7 +10,6 @@ import { getNextAddressBookGridIndex } from './addressBookGridKeyboard'
 import type { AddressBookEntry } from '../domain/types'
 import { useSenderListPanelFacade } from '../../application/facades'
 import {
-  selectActiveAddressEdit,
   selectSenderAddressListPanelDensity,
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
@@ -19,25 +18,19 @@ import styles from './SenderListPanel.module.scss'
 
 type Props = {
   onSelect: (entry: AddressBookEntry) => void
-  onEdit?: (entry: AddressBookEntry) => void
   selectedId?: string | null
 }
 
 export const SenderListPanel: React.FC<Props> = ({
   onSelect,
-  onEdit,
   selectedId = null,
 }) => {
-  const { entries, starredSenderIds, closePanel, handleDeleteEntry } =
-    useSenderListPanelFacade()
+  const { entries, starredSenderIds, closePanel } = useSenderListPanelFacade()
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
-  const activeAddressEdit = useAppSelector(selectActiveAddressEdit)
   const addressListPanelDensity = useAppSelector(
     selectSenderAddressListPanelDensity,
   )
   const gridColumns = getAddressBookGridColumns(addressListPanelDensity)
-  const editingEntryId =
-    activeAddressEdit?.role === 'sender' ? activeAddressEdit.templateId : null
 
   const { favoriteEntries, restEntries, combinedEntries } = useMemo(() => {
     const fav = entries.filter((e) => starredSenderIds.has(e.id))
@@ -118,7 +111,6 @@ export const SenderListPanel: React.FC<Props> = ({
         if (entry) {
           setFocusedIndex(idx)
           onSelect(entry)
-          onEdit?.(entry)
         }
       }
     },
@@ -127,7 +119,6 @@ export const SenderListPanel: React.FC<Props> = ({
       focusedIndex,
       selectedRowIndex,
       onSelect,
-      onEdit,
       closePanel,
       gridColumns,
     ],
@@ -185,11 +176,8 @@ export const SenderListPanel: React.FC<Props> = ({
                   <AddressBookCell
                     entry={entry}
                     onSelect={onSelect}
-                    onEdit={onEdit}
-                    onDelete={handleDeleteEntry}
                     isSelected={selectedId === entry.id}
                     isFocused={focusedIndex === index}
-                    isEditActive={editingEntryId === entry.id}
                     variant="sender"
                     density={addressListPanelDensity}
                   />
@@ -209,11 +197,8 @@ export const SenderListPanel: React.FC<Props> = ({
                     <AddressBookCell
                       entry={entry}
                       onSelect={onSelect}
-                      onEdit={onEdit}
-                      onDelete={handleDeleteEntry}
                       isSelected={selectedId === entry.id}
                       isFocused={focusedIndex === dataIndex}
-                      isEditActive={editingEntryId === entry.id}
                       variant="sender"
                       density={addressListPanelDensity}
                     />

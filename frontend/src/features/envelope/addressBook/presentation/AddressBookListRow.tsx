@@ -5,16 +5,12 @@ import type { AddressBookEntry } from '../domain/types'
 import { formatAddressSummaryLines } from './addressSummaryLines'
 import { AddressSummaryContent } from './AddressSummaryContent'
 import styles from './AddressListRow.module.scss'
-import { getToolbarIcon } from '@/shared/utils/icons'
 
 export type AddressBookListRowProps = {
   entry: AddressBookEntry
   onSelect: (entry: AddressBookEntry) => void
-  onEdit?: (entry: AddressBookEntry) => void
-  onDelete?: (id: string) => void
   isSelected?: boolean
   isFocused?: boolean
-  isEditActive?: boolean
   variant?: 'sender' | 'recipient'
   density?: PanelDensity2Size
 }
@@ -23,11 +19,8 @@ export type AddressBookListRowProps = {
 export const AddressBookListRow: React.FC<AddressBookListRowProps> = ({
   entry,
   onSelect,
-  onEdit,
-  onDelete,
   isSelected = false,
   isFocused = false,
-  isEditActive = false,
   variant = 'recipient',
   density = 1,
 }) => {
@@ -36,11 +29,8 @@ export const AddressBookListRow: React.FC<AddressBookListRowProps> = ({
     [entry],
   )
 
-  const showRowActions = onEdit != null || onDelete != null
-
   const handleRowMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.button !== 0) return
-    if ((e.target as HTMLElement).closest('button')) return
     e.preventDefault()
     onSelect(entry)
   }
@@ -52,7 +42,6 @@ export const AddressBookListRow: React.FC<AddressBookListRowProps> = ({
       data-density-level={density}
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
-      data-has-row-actions={showRowActions ? 'true' : undefined}
       onMouseDown={handleRowMouseDown}
     >
       <div className={styles.body}>
@@ -62,48 +51,6 @@ export const AddressBookListRow: React.FC<AddressBookListRowProps> = ({
             cityCountryLine={cityCountryLine}
           />
         </div>
-        {showRowActions && (
-          <div
-            className={styles.rowActions}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {onEdit != null && (
-              <button
-                type="button"
-                className={clsx(
-                  styles.rowActionButton,
-                  isEditActive && styles.rowActionButtonActive,
-                )}
-                aria-label="Edit address"
-                title="Edit address"
-                aria-pressed={isEditActive}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onEdit(entry)
-                }}
-              >
-                {getToolbarIcon({ key: 'edit' })}
-              </button>
-            )}
-            {onDelete != null && (
-              <button
-                type="button"
-                className={clsx(
-                  styles.rowActionButton,
-                  styles.rowActionButtonDelete,
-                )}
-                aria-label="Delete address"
-                title="Delete address"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onDelete(entry.id)
-                }}
-              >
-                {getToolbarIcon({ key: 'delete' })}
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </div>
   )

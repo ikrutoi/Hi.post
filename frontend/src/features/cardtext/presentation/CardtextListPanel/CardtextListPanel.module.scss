@@ -92,6 +92,14 @@ $list-panel-scroll-inset: 0.35rem;
   color: $color-app-inner;
 }
 
+.templateTextBlock {
+  gap: 0.22rem;
+}
+
+.list:not([data-density-level='2']) .templateTextBlock {
+  gap: 0.34rem;
+}
+
 .templatePreviewText {
   display: -webkit-box;
   white-space: normal;
@@ -99,10 +107,23 @@ $list-panel-scroll-inset: 0.35rem;
   -webkit-box-orient: vertical;
 }
 
-.list:not([data-density-level='2']) .templateTitleText {
-  font-size: 0.72rem;
+.templateTitleText {
+  display: -webkit-box;
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
-.list[data-density-level='2'] .templatePreviewText {
-  -webkit-line-clamp: 3;
+.list:not([data-density-level='2']) .templateTitleText {
+  font-size: 0.72rem;
+  line-height: 1.22;
+  min-height: calc(0.72rem * 1.22 * 2);
+}
+
+.list[data-density-level='2'] .templateTitleText {
+  font-size: 0.68rem;
+  line-height: 1.18;
+  min-height: calc(0.68rem * 1.18 * 2);
 }

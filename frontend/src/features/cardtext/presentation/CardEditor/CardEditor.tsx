@@ -263,8 +263,12 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       {(cardtextAssetData != null || isDraftEngaged) ? (
         <button
           type="button"
-          className={viewStyles.viewCloseBtn}
-          onClick={handleEditorClose}
+          className={viewStyles.viewCloseBtnOverlay}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleEditorClose()
+          }}
           aria-label="Close text editor"
           title={
             cardtextAssetData == null ? 'Close' : 'Back to text view'
