@@ -44,10 +44,14 @@ export const AddressBookCell: React.FC<AddressBookCellProps> = ({
       onMouseDown={handleMouseDown}
     >
       <div className={styles.body}>
-        <div className={styles.text}>
-          <div className={styles.nameLine}>{nameLine}</div>
-          <div className={styles.cityLine}>{cityLine}</div>
-          <div className={styles.countryLine}>{countryLine}</div>
+        <div className={clsx(styles.text, styles.templateTextBlock)}>
+          <div className={clsx(styles.nameLine, styles.templateTitleText)}>
+            {nameLine}
+          </div>
+          <div className={styles.templateDetailBlock}>
+            <div className={styles.cityLine}>{cityLine}</div>
+            <div className={styles.countryLine}>{countryLine}</div>
+          </div>
         </div>
       </div>
     </div>

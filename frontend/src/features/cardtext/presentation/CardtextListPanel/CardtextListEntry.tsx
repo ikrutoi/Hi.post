@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import type { CardtextContent } from '@cardtext/domain/types'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import cellStyles from '@envelope/addressBook/presentation/AddressBookCell.module.scss'
-import styles from './CardtextListPanel.module.scss'
 
 const PREVIEW_COLOR: Record<CardtextContent['style']['color'], string> = {
   deepBlack: '#1a1a1b',
@@ -65,12 +64,12 @@ export const CardtextListEntry: React.FC<Props> = ({
       onMouseDown={handleRowMouseDown}
     >
       <div className={cellStyles.body}>
-        <div className={clsx(cellStyles.text, styles.templateTextBlock)}>
-          <div className={clsx(cellStyles.nameLine, styles.templateTitleText)}>
+        <div className={clsx(cellStyles.text, cellStyles.templateTextBlock)}>
+          <div className={clsx(cellStyles.nameLine, cellStyles.templateTitleText)}>
             {nameLine}
           </div>
           <div
-            className={clsx(cellStyles.cityLine, styles.templatePreviewText)}
+            className={clsx(cellStyles.cityLine, cellStyles.templatePreviewText)}
             style={{ color: previewColor }}
           >
             {previewLine}

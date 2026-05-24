@@ -82,6 +82,50 @@
   gap: 0.1rem;
 }
 
+.templateTextBlock {
+  gap: 0.22rem;
+}
+
+.root:not([data-density-level='2']) .templateTextBlock {
+  gap: 0.34rem;
+}
+
+.templateTitleText {
+  display: -webkit-box;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.root:not([data-density-level='2']) .templateTitleText {
+  font-size: 0.72rem;
+  line-height: 1.22;
+  min-height: calc(0.72rem * 1.22 * 2);
+}
+
+.root[data-density-level='2'] .templateTitleText {
+  font-size: 0.68rem;
+  line-height: 1.18;
+  min-height: calc(0.68rem * 1.18 * 2);
+}
+
+.templateDetailBlock {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.08rem;
+}
+
+.templatePreviewText {
+  display: -webkit-box;
+  white-space: normal;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
 .nameLine,
 .cityLine,
 .countryLine {
@@ -89,6 +133,11 @@
   width: 100%;
   min-width: 0;
   overflow: hidden;
+}
+
+.nameLine:not(.templateTitleText),
+.cityLine:not(.templatePreviewText),
+.countryLine {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
