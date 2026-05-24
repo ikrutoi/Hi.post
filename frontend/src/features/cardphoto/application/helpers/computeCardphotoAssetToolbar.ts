@@ -11,7 +11,7 @@ export function computeCardphotoAssetToolbar(
   const applied = s.appliedData
   if (!img) return null
   const isApply = !!(img.id && applied?.id && img.id === applied.id)
-  if (img.status === 'inLine' || isApply) return 'cardphotoView'
+  if (img.status === 'inLine' || img.status === 'outLine' || isApply) return 'cardphotoView'
   // Fresh file upload: square-template `processed` flag is only technical; UI stays in create flow.
   if (img.source === 'original') return 'cardphotoCreate'
   if (img.status === 'processed') return 'cardphotoProcessed'

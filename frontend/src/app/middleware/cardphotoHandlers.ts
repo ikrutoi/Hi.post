@@ -482,10 +482,12 @@ export function* handleCropConfirm(): SagaIterator {
 
 export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
   const state: CardphotoState | null = yield select(selectCardphotoState)
-  if (!state) return
-  const id = state?.assetData?.status === 'processed' ? state.assetData.id : null
-  if (!id) return
-  if (state.assetData?.status === 'inLine') return
+  if (!state?.assetData?.id) return
+  const asset = state.assetData
+  if (asset.status === 'inLine') return
+  if (asset.status !== 'processed' && asset.status !== 'outLine') return
+
+  const id = asset.id
 
   let record: ImageMeta | null = yield call(
     [storeAdapters.cardphotoImages, 'getById'],
@@ -495,7 +497,9 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
     record = state.assetData
     yield call(
       [storeAdapters.cardphotoImages, 'put'],
-      { ...record, status: 'processed' } as ImageMeta & { id: string },
+      { ...record, status: record.status ?? 'processed' } as ImageMeta & {
+        id: string
+      },
     )
   }
   if (!record) return
@@ -504,6 +508,35 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
   const updated: ImageMeta = {
     ...record,
     status: 'inLine',
+  }
+
+  yield call(
+    storeAdapters.cardphotoImages.put,
+    updated as ImageMeta & { id: string },
+  )
+
+  yield put(setProcessedImage(prepareForRedux(updated)))
+  yield put(bumpCardphotoInlineTemplateList())
+  yield fork(syncToolbarContext)
+}
+
+export function* handleDemoteInlineTemplateSaga(): SagaIterator {
+  const state: CardphotoState | null = yield select(selectCardphotoState)
+  if (!state?.assetData?.id || state.assetData.status !== 'inLine') return
+
+  const id = state.assetData.id
+  let record: ImageMeta | null = yield call(
+    [storeAdapters.cardphotoImages, 'getById'],
+    id,
+  )
+  if (!record) {
+    record = state.assetData
+  }
+  if (!record || record.status !== 'inLine') return
+
+  const updated: ImageMeta = {
+    ...record,
+    status: 'outLine',
   }
 
   yield call(

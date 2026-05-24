@@ -198,6 +198,11 @@ export const Toolbar = ({
   })
 
   const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
+  const cardphotoViewTemplateInList = useAppSelector(
+    (s) =>
+      selectCardphotoAssetToolbar(s) === 'cardphotoView' &&
+      s.cardphoto.state?.assetData?.status === 'inLine',
+  )
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
 
@@ -248,10 +253,13 @@ export const Toolbar = ({
       : key === 'addList' &&
           (section === 'senderView' ||
             section === 'recipientView' ||
-            section === 'cardtextView') &&
+            section === 'cardtextView' ||
+            section === 'cardphotoView') &&
           (section === 'cardtextView'
             ? cardtextViewInQuickList
-            : templateInQuickList)
+            : section === 'cardphotoView'
+              ? cardphotoViewTemplateInList
+              : templateInQuickList)
         ? 'removeFromList'
         : key
     const options =
@@ -267,8 +275,13 @@ export const Toolbar = ({
       key === 'addList' &&
       (section === 'senderView' ||
         section === 'recipientView' ||
-        section === 'cardtextView') &&
-      (section === 'cardtextView' ? cardtextViewInQuickList : templateInQuickList)
+        section === 'cardtextView' ||
+        section === 'cardphotoView') &&
+      (section === 'cardtextView'
+        ? cardtextViewInQuickList
+        : section === 'cardphotoView'
+          ? cardphotoViewTemplateInList
+          : templateInQuickList)
     ) {
       buttonStatus = 'enabled'
     }

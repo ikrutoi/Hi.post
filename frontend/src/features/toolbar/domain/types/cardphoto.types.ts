@@ -21,6 +21,7 @@ export const CARDPHOTO_KEYS = [
   'listDelete',
   'listApply',
   'addList',
+  'removeFromList',
   'applyLight',
 ] as const
 
@@ -85,7 +86,7 @@ export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
     group: 'view',
     icons: [
       { key: 'addList', state: 'enabled' },
-      { key: 'edit', state: 'disabled' },
+      // { key: 'edit', state: 'disabled' },
     ],
 
     status: 'enabled',

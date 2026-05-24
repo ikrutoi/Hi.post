@@ -47,6 +47,7 @@ import {
   handleBackToOriginalSaga,
   handleApplyAction,
   handlePromoteProcessedToInlineSaga,
+  handleDemoteInlineTemplateSaga,
 } from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { prepareForRedux, prepareConfigForRedux, updateCropToolbarState, hydrateSessionImageMeta, hydrateMeta, fuelAssetRegistry } from './cardphotoHelpers'
@@ -490,6 +491,12 @@ export function* handleCardphotoToolbarAction(
       case 'delete':
         yield call(handleDeleteCardphotoFromViewSaga)
         return
+      case 'addList':
+        yield call(handlePromoteProcessedToInlineSaga)
+        return
+      case 'removeFromList':
+        yield call(handleDemoteInlineTemplateSaga)
+        return
       default:
         return
     }
@@ -812,8 +819,20 @@ export function* syncToolbarContext() {
 
   const img = state.assetData
   const isInLineTemplate = img?.status === 'inLine'
+  const isOutLineTemplate = img?.status === 'outLine'
+  const isAppliedPreview = !!(
+    img?.id &&
+    state.appliedData?.id &&
+    img.id === state.appliedData.id
+  )
   const addListToolbarState =
     img?.status === 'processed' && !isInLineTemplate ? 'enabled' : 'disabled'
+  const cardphotoViewAddListState =
+    isAppliedPreview
+      ? 'disabled'
+      : isInLineTemplate || isOutLineTemplate
+        ? 'enabled'
+        : 'disabled'
   const templateActionState = isInLineTemplate ? 'enabled' : 'disabled'
 
   yield put(
@@ -845,7 +864,7 @@ export function* syncToolbarContext() {
     updateToolbarSection({
       section: 'cardphotoView',
       value: {
-        addList: { state: addListToolbarState },
+        addList: { state: cardphotoViewAddListState },
         edit: { state: templateActionState },
         close: { state: 'enabled' },
       },
