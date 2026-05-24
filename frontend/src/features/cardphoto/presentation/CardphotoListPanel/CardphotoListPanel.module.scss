@@ -51,7 +51,7 @@ $list-panel-scroll-inset: 0.35rem;
   flex-direction: column;
   flex: 1;
   min-height: 100%;
-  padding: calc(0.25rem + 0.5rem) 0.75rem 0.5rem 0.5rem;
+  padding: 0.5rem calc(0.25rem + 8px) 0.5rem 0.5rem;
   outline: none;
 
   &:focus {
@@ -90,7 +90,6 @@ $list-panel-scroll-inset: 0.35rem;
 .thumbGrid {
   display: grid;
   width: 100%;
-  padding: 0.25rem 0;
   justify-content: start;
   box-sizing: border-box;
   gap: 0.5rem;
