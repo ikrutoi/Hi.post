@@ -57,6 +57,13 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
   const highlightAssetTemplateInList =
     cardtextAssetStatus === 'inLine' || cardtextAssetStatus === 'outLine'
 
+  const listHighlightId =
+    cardtextAssetStatus !== 'processed' &&
+    highlightAssetTemplateInList &&
+    selectedTemplateId != null
+      ? selectedTemplateId
+      : templatesListSelectedId
+
   const handleSelect = useCallback(
     (entry: CardtextContent) => {
       if (entry.id != null) {
@@ -100,12 +107,9 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
                   entry={entry}
                   onSelect={handleSelect}
                   isSelected={
-                    cardtextAssetStatus !== 'processed' &&
-                    ((entry.id != null &&
-                      templatesListSelectedId === entry.id) ||
-                      (highlightAssetTemplateInList &&
-                        entry.id != null &&
-                        selectedTemplateId === entry.id))
+                    entry.id != null &&
+                    listHighlightId != null &&
+                    String(entry.id) === String(listHighlightId)
                   }
                   density={panelDensity}
                 />

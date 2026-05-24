@@ -161,6 +161,12 @@ export const cardtextSlice = createSlice({
 
     setCardtextId(state, action: PayloadAction<string | null>) {
       ensureAsset(state).id = action.payload
+      if (
+        action.payload != null &&
+        state.assetData?.status !== 'processed'
+      ) {
+        state.templatesListSelectedId = action.payload
+      }
     },
 
     setCardtextPresetData(
@@ -316,6 +322,12 @@ export const cardtextSlice = createSlice({
       state.isDraftEngaged = false
       state.isCardtextViewEditMode = false
       clearTemplatesListSelectionWhenProcessed(state)
+      if (
+        ad.id != null &&
+        (ad.status === 'inLine' || ad.status === 'outLine')
+      ) {
+        state.templatesListSelectedId = ad.id
+      }
       state.resetToken += 1
     },
 
