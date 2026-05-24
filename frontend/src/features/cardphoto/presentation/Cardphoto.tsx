@@ -70,8 +70,7 @@ const CardphotoRightListMirror: React.FC = () => {
 const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
   const { activeImage, assetToolbar } = useCardphotoFacade()
-  const showAssetToolbar =
-    !!activeImage && !!assetToolbar && assetToolbar !== 'cardphotoView'
+  const showAssetToolbar = !!activeImage && !!assetToolbar
 
   const handleViewClose = useCallback(() => {
     dispatch(closeCardphotoViewRequested())

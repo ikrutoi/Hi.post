@@ -358,7 +358,7 @@ export function* handleCardphotoToolbarAction(
       break
 
     case 'listAdd': {
-      if (section === 'cardphotoProcessed') {
+      if (section === 'cardphotoProcessed' || section === 'cardphotoView') {
         yield call(handlePromoteProcessedToInlineSaga)
       }
       break
@@ -601,6 +601,20 @@ export function* syncToolbarContext() {
       value: {
         ...cropToolbarPatch,
         ...(su.close != null ? { delete: su.close } : {}),
+      },
+    }),
+  )
+
+  const img = state.assetData
+  const isInLineTemplate = img?.status === 'inLine'
+  const listAddViewState =
+    img?.status === 'processed' && !isInLineTemplate ? 'enabled' : 'disabled'
+
+  yield put(
+    updateToolbarSection({
+      section: 'cardphotoView',
+      value: {
+        listAdd: { state: listAddViewState },
       },
     }),
   )

@@ -18,6 +18,7 @@ export const CARDPHOTO_KEYS = [
   // 'photoTemplates',
   'listDelete',
   'listApply',
+  'addList',
 ] as const
 
 export type CardphotoKey = (typeof CARDPHOTO_KEYS)[number]
@@ -76,8 +77,14 @@ export const CARDPHOTO_PROCESSED_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-/** View actions live on the image overlay (CardphotoView), not in the header toolbar. */
-export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = []
+export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'processed',
+    icons: [{ key: 'addList', state: 'enabled' }],
+
+    status: 'enabled',
+  },
+]
 
 export const initialCardphotoToolbarState: CardphotoToolbarState = {
   ...Object.fromEntries(flattenIcons(CARDPHOTO_TOOLBAR)),

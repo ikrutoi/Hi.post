@@ -72,7 +72,7 @@ export const CardtextView: React.FC<Props> = ({
       {onClose ? (
         <button
           type="button"
-          className={styles.viewCloseBtn}
+          className={styles.viewCloseBtnOverlay}
           onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => {
             e.stopPropagation()
@@ -103,7 +103,7 @@ export const CardtextView: React.FC<Props> = ({
           {onEdit ? (
             <button
               type="button"
-              className={styles.viewActionButton}
+              className={styles.viewActionButtonOverlay}
               aria-label="Edit text"
               title="Edit text"
               onClick={(e) => {
@@ -117,7 +117,7 @@ export const CardtextView: React.FC<Props> = ({
           {onDelete ? (
             <button
               type="button"
-              className={styles.viewActionButton}
+              className={styles.viewActionButtonOverlay}
               aria-label="Delete text"
               title="Delete text"
               onMouseDown={(e) => e.preventDefault()}

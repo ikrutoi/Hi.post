@@ -3,9 +3,9 @@
 $section-view-overlay-chip-size: 1.65rem;
 $section-view-overlay-chip-radius: 0.5rem;
 $section-view-overlay-chip-icon-size: 0.88rem;
-$section-view-overlay-inset-top: 0.25rem;
-$section-view-overlay-inset-right: 0.25rem;
-$section-view-overlay-inset-bottom: 0.25rem;
+$section-view-overlay-inset-top: 0.5rem;
+$section-view-overlay-inset-right: 0.5rem;
+$section-view-overlay-inset-bottom: 0.5rem;
 $section-view-overlay-actions-gap: 1rem;
 
 $section-view-overlay-chip-bg-photo: rgba(255, 255, 255, 0.72);
@@ -17,6 +17,34 @@ $section-view-overlay-chip-bg-photo-hover: rgba(255, 255, 255, 0.86);
     height: $section-view-overlay-chip-icon-size;
     display: block;
   }
+}
+
+@mixin sectionViewOverlayClosePlacement {
+  position: absolute;
+  top: $section-view-overlay-inset-top;
+  right: $section-view-overlay-inset-right;
+  z-index: 2;
+}
+
+@mixin sectionViewOverlayActionsPlacement {
+  position: absolute;
+  right: $section-view-overlay-inset-right;
+  bottom: $section-view-overlay-inset-bottom;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $section-view-overlay-actions-gap;
+}
+
+@mixin sectionViewOverlayViewContainerPadding(
+  $bottom: $section-view-overlay-inset-bottom
+) {
+  padding: $section-view-overlay-inset-top
+    $section-view-overlay-inset-right
+    $bottom
+    $section-view-overlay-inset-right;
 }
 
 @mixin sectionViewOverlayChip($bg, $bg-hover: $bg, $shadow: false) {
@@ -38,7 +66,7 @@ $section-view-overlay-chip-bg-photo-hover: rgba(255, 255, 255, 0.86);
 
   &:hover {
     background-color: $bg-hover;
-    color: $color-font-active;
+    color: $color-font-enabled;
 
     @if $shadow {
       box-shadow: 0 1px 5px rgba(0, 0, 0, 0.14);
