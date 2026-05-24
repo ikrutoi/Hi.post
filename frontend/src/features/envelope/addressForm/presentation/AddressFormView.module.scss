@@ -10,12 +10,6 @@
   min-height: 0;
   overflow: hidden;
   box-sizing: border-box;
-
-  > :not(button) {
-    width: 96%;
-    max-width: 96%;
-    align-self: flex-start;
-  }
 }
 
 .labelGroup {
