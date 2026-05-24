@@ -16,36 +16,12 @@ import {
   selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import {
-  closeAddressEditSession,
-  removeRecipientAt,
-  setAddressFormView,
-  setRecipientsPendingIds,
   updateAddressEditDraftField,
 } from '@envelope/infrastructure/state'
-import { selectRecipientsPendingIds } from '@envelope/infrastructure/selectors'
 import {
-  clearRecipientViewDraft,
-  removeRecipientFromListById,
-  removeRecipientFromListByIndex,
-  setRecipientView,
-  setRecipientViewId,
-  setRecipientsViewIds,
-  setRecipientsViewIdsSecondList,
   updateRecipientField,
 } from '@envelope/recipient/infrastructure/state'
 import {
-  selectAppliedRecipientDisplayAddress,
-  selectRecipientApplied,
-  selectRecipientState,
-  selectRecipientsDisplayList,
-} from '@envelope/recipient/infrastructure/selectors'
-import { selectSenderApplied } from '@envelope/sender/infrastructure/selectors'
-import {
-  clearSender,
-  clearSenderViewDraft,
-  setSenderApplied,
-  setSenderView,
-  setSenderViewId,
   updateSenderField,
 } from '@envelope/sender/infrastructure/state'
 import { toolbarAction } from '@toolbar/application/helpers'
@@ -78,32 +54,10 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   address,
 }) => {
   const dispatch = useAppDispatch()
-  const recipientState = useAppSelector(selectRecipientState)
-  const recipientAppliedIds = useAppSelector(selectRecipientApplied)
-  const recipientsPendingIds = useAppSelector(selectRecipientsPendingIds)
-  const recipientsDisplayList = useAppSelector(selectRecipientsDisplayList)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
-  const senderAppliedIds = useAppSelector(selectSenderApplied)
-  const appliedRecipientAddress = useAppSelector(
-    selectAppliedRecipientDisplayAddress,
-  )
   const isEditMode =
     role === 'sender' ? senderViewEditMode : recipientViewEditMode
-
-  /**
-   * Return: в текущем списке формы больше одного адреса (то, что видит пользователь).
-   * applied может оставаться больше, пока адрес только закрыли, а не сняли с конверта.
-   */
-  const recipientSelectionCount =
-    recipientsDisplayList.length > 0
-      ? recipientsDisplayList.length
-      : recipientAppliedIds.length > 0
-        ? recipientAppliedIds.length
-        : recipientsPendingIds.length
-
-  const showReturnInsteadOfClose =
-    role === 'recipient' && recipientSelectionCount > 1
 
   const [activeRow, setActiveRow] = useState<EditableRowKey>('name')
   const [cityZipFocus, setCityZipFocus] = useState<CityZipFocus>('zip')
@@ -148,7 +102,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       if (target.closest('[data-envelope-address-view-toolbar]')) {
         if (
           target.closest(
-            'button[data-icon-key="addList"], button[data-icon-key="removeFromList"]',
+            'button[data-icon-key="addList"], button[data-icon-key="removeFromList"], button[data-icon-key="close"]',
           )
         ) {
           return
@@ -292,14 +246,13 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     if (next.closest('[data-envelope-address-view-toolbar]')) {
       if (
         !next.closest(
-          'button[data-icon-key="addList"], button[data-icon-key="removeFromList"]',
+          'button[data-icon-key="addList"], button[data-icon-key="removeFromList"], button[data-icon-key="close"]',
         )
       ) {
         dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
       }
       return
     }
-    if (next.closest('[data-envelope-address-edit-close]')) return
     if (next.closest('[data-envelope-address-delete]')) return
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
@@ -312,159 +265,10 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const toolbarSection =
     role === 'sender' ? 'senderView' : 'recipientView'
 
-  const removeSenderFromForm = () => {
-    dispatch(closeAddressEditSession({ role: 'sender' }))
-    const appliedId = senderAppliedIds[0] ?? null
-
-    if (appliedId) {
-      // Есть applied: только UI (плейсхолдер); applied / appliedData не трогаем.
-      dispatch(setSenderViewId(null))
-      dispatch(clearSenderViewDraft())
-      dispatch(setSenderView('senderEnvelopeView'))
-      dispatch(setAddressFormView({ show: false, role: null }))
-      return
-    }
-
-    dispatch(setSenderViewId(null))
-    dispatch(setSenderApplied(false))
-    dispatch(clearSender())
-    dispatch(setAddressFormView({ show: false, role: null }))
-  }
-
-  const removeRecipientFromForm = () => {
-    if (!templateId) return
-
-    dispatch(closeAddressEditSession({ role: 'recipient' }))
-
-    const appliedIds = recipientState.applied ?? []
-    const appliedId = appliedIds[0] ?? null
-
-    if (appliedIds.includes(templateId)) {
-      // Адрес на конверте: закрыть карточку / список, applied не трогаем.
-      dispatch(setRecipientViewId(null))
-      dispatch(clearRecipientViewDraft())
-      dispatch(setRecipientView('recipientsView'))
-      dispatch(setAddressFormView({ show: false, role: null }))
-      return
-    }
-
-    if (appliedId && appliedIds.length === 1 && templateId !== appliedId) {
-      dispatch(setRecipientViewId(appliedId))
-      ;(
-        Object.entries(appliedRecipientAddress) as [
-          keyof AddressFields,
-          string,
-        ][]
-      ).forEach(([field, value]) =>
-        dispatch(updateRecipientField({ field, value })),
-      )
-      dispatch(setRecipientView('recipientView'))
-      dispatch(setAddressFormView({ show: false, role: null }))
-      return
-    }
-
-    dispatch(setRecipientViewId(null))
-    dispatch(clearRecipientViewDraft())
-    dispatch(setRecipientView('recipientsView'))
-    dispatch(setAddressFormView({ show: false, role: null }))
-
-    const firstList = recipientState.recipientsViewIdsFirstList ?? []
-    dispatch(
-      setRecipientsViewIds(firstList.filter((id) => id !== templateId)),
-    )
-    if (recipientState.currentRecipientsList === 'second') {
-      const secondList = recipientState.recipientsViewIdsSecondList ?? []
-      dispatch(
-        setRecipientsViewIdsSecondList(
-          secondList.filter((id) => id !== templateId),
-        ),
-      )
-    }
-    dispatch(
-      setRecipientsPendingIds(
-        recipientsPendingIds.filter((id) => id !== templateId),
-      ),
-    )
-
-    if (templateId.startsWith('recipient-')) {
-      const index = parseInt(templateId.replace('recipient-', ''), 10)
-      if (!Number.isNaN(index)) {
-        dispatch(removeRecipientFromListByIndex(index))
-        dispatch(removeRecipientAt(index))
-      }
-    } else {
-      dispatch(removeRecipientFromListById(templateId))
-    }
-  }
-
-  const backToRecipientsList = () => {
-    if (recipientViewEditMode) {
-      dispatch(
-        closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
-      )
-    }
-    dispatch(setRecipientView('recipientsView'))
-    dispatch(setRecipientViewId(null))
-  }
-
-  const handleDismissSavedCard = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    e.preventDefault()
-    if (role === 'sender') {
-      removeSenderFromForm()
-    } else if (showReturnInsteadOfClose) {
-      backToRecipientsList()
-    } else {
-      removeRecipientFromForm()
-    }
-  }
-
-  const savedAddressDismissButton = (
-    <button
-      type="button"
-      className={clsx(
-        styles.savedAddressActionButton,
-        styles.savedAddressCloseButton,
-      )}
-      aria-label={
-        showReturnInsteadOfClose ? 'Back to recipients list' : 'Close'
-      }
-      title={showReturnInsteadOfClose ? 'Back to list' : 'Close'}
-      onClick={handleDismissSavedCard}
-    >
-      {getToolbarIcon({
-        key: showReturnInsteadOfClose ? 'return' : 'clearInput',
-      })}
-    </button>
-  )
-
-  const handleCloseEdit = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    e.preventDefault()
-    dispatch(toolbarAction({ section: toolbarSection, key: 'edit' } as any))
-  }
-
   const handleFormDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
     dispatch(toolbarAction({ section: toolbarSection, key: 'delete' } as any))
   }
-
-  const editCloseButton = (
-    <button
-      type="button"
-      className={clsx(
-        styles.savedAddressActionButton,
-        styles.savedAddressCloseButton,
-      )}
-      data-envelope-address-edit-close
-      aria-label="Close edit"
-      title="Close"
-      onMouseDown={(e) => e.stopPropagation()}
-      onClick={handleCloseEdit}
-    >
-      {getToolbarIcon({ key: 'close' })}
-    </button>
-  )
 
   const savedAddressViewClassName = clsx(
     styles.savedAddressView,
@@ -476,7 +280,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   const renderViewMode = () => (
     <div className={savedAddressViewClassName}>
-      {savedAddressDismissButton}
       <div className={styles.recipientAddress}>
         {address.name ? (
           <div className={styles.recipientAddressName}>{address.name}</div>
@@ -515,13 +318,11 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         if (!isEditMode) return
         const target = e.target as HTMLElement
         if (target.closest('[data-address-edit-row]')) return
-        if (target.closest('[data-envelope-address-edit-close]')) return
         if (target.tagName !== 'INPUT' && target.tagName !== 'BUTTON') {
           e.preventDefault()
         }
       }}
     >
-      {editCloseButton}
       <div className={styles.recipientAddress}>
         {activeRow === 'name' ? (
           <input

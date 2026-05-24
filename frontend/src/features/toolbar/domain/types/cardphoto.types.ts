@@ -89,6 +89,11 @@ export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
 
     status: 'enabled',
   },
+  {
+    group: 'close',
+    icons: [{ key: 'close', state: 'enabled' }],
+    status: 'enabled',
+  },
 ]
 
 export const initialCardphotoToolbarState: CardphotoToolbarState = {

@@ -34,6 +34,11 @@ export const RECIPIENT_VIEW_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
+  {
+    group: 'close',
+    icons: [{ key: 'close', state: 'enabled' }],
+    status: 'enabled',
+  },
 ]
 
 export const initialRecipientViewToolbarState: AddressViewToolbarState = {
@@ -68,14 +73,11 @@ export const SENDER_VIEW_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
-  // {
-  //   group: 'close',
-  //   icons: [
-  //     // { key: 'edit', state: 'enabled' },
-  //     { key: 'delete', state: 'enabled' },
-  //   ],
-  //   status: 'enabled',
-  // },
+  {
+    group: 'close',
+    icons: [{ key: 'close', state: 'enabled' }],
+    status: 'enabled',
+  },
 ]
 
 export const initialSenderViewToolbarState: AddressViewToolbarState = {

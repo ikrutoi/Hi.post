@@ -617,6 +617,7 @@ export function* syncToolbarContext() {
       value: {
         listAdd: { state: listAddViewState },
         edit: { state: templateActionState },
+        close: { state: 'enabled' },
       },
     }),
   )

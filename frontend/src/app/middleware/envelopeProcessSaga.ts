@@ -151,6 +151,13 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
         },
       }),
     )
+    yield put(
+      updateToolbarIcon({
+        section: 'senderView',
+        key: 'close',
+        value: { state: 'enabled' },
+      }),
+    )
   }
 
   if (recipient.currentView === 'recipientCreate') {
@@ -191,6 +198,13 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
             recipientInList,
           ),
         },
+      }),
+    )
+    yield put(
+      updateToolbarIcon({
+        section: 'recipientView',
+        key: 'close',
+        value: { state: 'enabled' },
       }),
     )
   }

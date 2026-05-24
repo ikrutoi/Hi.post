@@ -6,19 +6,17 @@ import {
   selectCardphotoAssetToolbar,
 } from '@cardphoto/infrastructure/selectors'
 import styles from './CardphotoView.module.scss'
-import { IconSectionMenuCardphoto, IconX } from '@shared/ui/icons'
+import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { CardphotoStage } from '../CardphotoStage'
 
 type Props = {
   className?: string
-  onClose?: () => void
   onDelete?: () => void
 }
 
 export const CardphotoView: React.FC<Props> = ({
   className,
-  onClose,
   onDelete,
 }) => {
   const activeImage = useAppSelector(selectActiveImage)
@@ -36,21 +34,6 @@ export const CardphotoView: React.FC<Props> = ({
         <div className={styles.emptyPlaceholderIcon} aria-hidden>
           <IconSectionMenuCardphoto />
         </div>
-      ) : null}
-      {showViewOverlay && onClose ? (
-        <button
-          type="button"
-          className={styles.viewCloseBtn}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => {
-            e.stopPropagation()
-            onClose()
-          }}
-          aria-label="Close image preview"
-          title="Close"
-        >
-          <IconX />
-        </button>
       ) : null}
       {showViewOverlay && canDeleteTemplate && onDelete ? (
         <button

@@ -41,6 +41,7 @@ import {
   setRecipientAppliedIds,
   setRecipientAppliedWithData,
   setRecipientAppliedData,
+  updateRecipientField,
   saveAddressRequested as recipientSaveRequested,
 } from '@envelope/recipient/infrastructure/state'
 import {
@@ -55,6 +56,7 @@ import {
   addressSaveSuccess,
   removeRecipientFromListByIndex,
   removeRecipientFromListById,
+  removeRecipientAt,
   toggleRecipientSelection,
   cycleSenderAddressListPanelDensity,
   cycleRecipientAddressListPanelDensity,
@@ -90,6 +92,8 @@ import {
   selectRecipientView,
   selectRecipientDisplayAddress,
   selectRecipientsDisplayList,
+  selectRecipientApplied,
+  selectAppliedRecipientDisplayAddress,
 } from '@envelope/recipient/infrastructure/selectors'
 import {
   removeAddressTemplateRef,
@@ -499,6 +503,117 @@ function* closeAddressCreateForm(
   }
 }
 
+function* closeSenderViewSaga(): SagaIterator {
+  yield put(closeAddressEditSession({ role: 'sender' }))
+  const sender: SenderState = yield select(selectSenderState)
+  const appliedId = sender.applied?.[0] ?? null
+
+  if (appliedId) {
+    yield put(setSenderViewId(null))
+    yield put(clearSenderViewDraft())
+    yield put(setSenderView('senderEnvelopeView'))
+    yield put(setAddressFormView({ show: false, role: null }))
+    return
+  }
+
+  yield put(setSenderViewId(null))
+  yield put(setSenderApplied(false))
+  yield put(clearSender())
+  yield put(setAddressFormView({ show: false, role: null }))
+}
+
+function* closeRecipientViewSaga(): SagaIterator {
+  const recipient: RecipientState = yield select(selectRecipientState)
+  const templateId: string | null = yield select(selectRecipientViewId)
+  if (templateId == null) return
+
+  const recipientsDisplayList: { id: string }[] = yield select(
+    selectRecipientsDisplayList,
+  )
+  const recipientAppliedIds: string[] = yield select(selectRecipientApplied)
+  const recipientsPendingIds: string[] = yield select(selectRecipientsPendingIds)
+  const recipientSelectionCount =
+    recipientsDisplayList.length > 0
+      ? recipientsDisplayList.length
+      : recipientAppliedIds.length > 0
+        ? recipientAppliedIds.length
+        : recipientsPendingIds.length
+
+  if (recipientSelectionCount > 1) {
+    const isEditMode: boolean = yield select(selectRecipientViewEditMode)
+    if (isEditMode) {
+      yield put(
+        closeAddressEditSession({ role: 'recipient', keepRecipientView: true }),
+      )
+    }
+    yield put(setRecipientView('recipientsView'))
+    yield put(setRecipientViewId(null))
+    return
+  }
+
+  yield put(closeAddressEditSession({ role: 'recipient' }))
+
+  const appliedIds = recipient.applied ?? []
+  const appliedId = appliedIds[0] ?? null
+
+  if (appliedIds.includes(templateId)) {
+    yield put(setRecipientViewId(null))
+    yield put(clearRecipientViewDraft())
+    yield put(setRecipientView('recipientsView'))
+    yield put(setAddressFormView({ show: false, role: null }))
+    return
+  }
+
+  if (appliedId && appliedIds.length === 1 && templateId !== appliedId) {
+    yield put(setRecipientViewId(appliedId))
+    const appliedRecipientAddress: AddressFields = yield select(
+      selectAppliedRecipientDisplayAddress,
+    )
+    for (const [field, value] of Object.entries(appliedRecipientAddress) as [
+      keyof AddressFields,
+      string,
+    ][]) {
+      yield put(updateRecipientField({ field, value }))
+    }
+    yield put(setRecipientView('recipientView'))
+    yield put(setAddressFormView({ show: false, role: null }))
+    return
+  }
+
+  yield put(setRecipientViewId(null))
+  yield put(clearRecipientViewDraft())
+  yield put(setRecipientView('recipientsView'))
+  yield put(setAddressFormView({ show: false, role: null }))
+
+  const firstList = recipient.recipientsViewIdsFirstList ?? []
+  yield put(
+    setRecipientsViewIds(firstList.filter((id) => id !== templateId)),
+  )
+  if (recipient.currentRecipientsList === 'second') {
+    const secondList = recipient.recipientsViewIdsSecondList ?? []
+    yield put(
+      setRecipientsViewIdsSecondList(
+        secondList.filter((id) => id !== templateId),
+      ),
+    )
+  }
+  yield put(
+    setRecipientsPendingIds(
+      recipientsPendingIds.filter((id) => id !== templateId),
+    ),
+  )
+
+  if (templateId.startsWith('recipient-')) {
+    const index = parseInt(templateId.replace('recipient-', ''), 10)
+    if (!Number.isNaN(index)) {
+      yield put(removeRecipientFromListByIndex(index))
+      yield put(removeRecipientAt(index))
+    }
+  } else {
+    yield put(removeRecipientFromListById(templateId))
+  }
+}
+
 function* handleEnvelopeToolbarAction(
   action: ReturnType<typeof toolbarAction>,
 ) {
@@ -707,6 +822,28 @@ function* handleEnvelopeToolbarAction(
       yield* ensureAddressListPanelOpen('sender')
     } else {
       yield* ensureAddressListPanelOpen('recipients')
+    }
+    return
+  }
+
+  if (
+    (section === 'senderView' || section === 'recipientView') &&
+    key === 'close'
+  ) {
+    if (section === 'senderView') {
+      const isEditMode: boolean = yield select(selectSenderViewEditMode)
+      if (isEditMode) {
+        yield call(saveAndCloseAddressEditSession, false)
+      } else {
+        yield* closeSenderViewSaga()
+      }
+    } else {
+      const isEditMode: boolean = yield select(selectRecipientViewEditMode)
+      if (isEditMode) {
+        yield call(saveAndCloseAddressEditSession, true)
+      } else {
+        yield* closeRecipientViewSaga()
+      }
     }
     return
   }
