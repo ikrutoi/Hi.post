@@ -644,6 +644,18 @@
       background-color: #fff;
     }
   }
+
+  /* applyLight (cardphotoCreate / cardtextEditor): как fontSizeLess / imageRotateRight */
+  [data-icon-key='applyLight'].toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+    background-color: #fff;
+    box-shadow: none;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+    }
+  }
 }
 
 .toolbarCardphotoList,
@@ -1156,7 +1168,8 @@
   }
 }
 
-.toolbarCardphotoView {
+.toolbarCardphotoView,
+.toolbarCardphotoCreate {
   padding-left: 0;
   padding-right: 0;
   margin-left: 0.5rem;

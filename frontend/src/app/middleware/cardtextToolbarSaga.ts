@@ -20,6 +20,7 @@ import {
   setDraftEngaged,
   setCardtextPresetData,
   setCardtextViewEditMode,
+  setDraftData,
 } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
 import type { RootState } from '@app/state'
@@ -194,6 +195,141 @@ function* handleCardtextPostcardViewDelete(): SagaIterator {
   yield put(setCardtextPresetData(null))
   yield put(clearText())
   yield put(loadCardtextTemplatesRequest())
+}
+
+function* syncDraftDataOnCloseFromDraftSession(
+  asset: CardtextContent | null,
+): SagaIterator {
+  if (asset == null || asset.status !== 'draft') return
+  const plain = (asset.plainText ?? '').trim()
+  if (!plain.length) {
+    yield put(clearDraftData())
+    return
+  }
+  const draft: CardtextContent = {
+    id: null,
+    status: 'draft',
+    value: asset.value.map((b) => ({
+      ...b,
+      children: b.children.map((c) => ({ ...c })),
+    })),
+    style: { ...asset.style },
+    title: asset.title ?? '',
+    plainText: asset.plainText,
+    cardtextLines: asset.cardtextLines,
+    favorite: asset.favorite ?? null,
+    timestamp: asset.timestamp,
+  }
+  yield put(setDraftData(draft))
+}
+
+/** CardEditor / cardtextCreate: закрыть форму редактирования (логика бывшей overlay close). */
+export function* handleCloseCardtextEditorSaga(): SagaIterator {
+  yield put(setDraftFocus(false))
+
+  const { assetData: cardtextAssetData, presetData: cardtextPresetData } =
+    yield select((s: RootState) => s.cardtext)
+
+  if (cardtextAssetData == null) {
+    yield put(setDraftEngaged(false))
+    if (cardtextPresetData != null) {
+      yield put(restoreCardtextSession(cardtextPresetData))
+    }
+    return
+  }
+
+  if (
+    cardtextPresetData != null &&
+    cardtextPresetData.status === 'processed' &&
+    cardtextAssetData.status === 'draft'
+  ) {
+    yield put(
+      restoreCardtextSession({
+        ...cardtextPresetData,
+        value: cardtextPresetData.value.map((b) => ({
+          ...b,
+          children: b.children.map((c) => ({ ...c })),
+        })),
+        style: { ...cardtextPresetData.style },
+      }),
+    )
+    yield put(setCardtextPresetData(null))
+    yield put(setDraftEngaged(false))
+    return
+  }
+
+  const assetId = cardtextAssetData.id ?? null
+  const presetId = cardtextPresetData?.id ?? null
+  const st = cardtextAssetData.status
+
+  if (st === 'inLine' || st === 'outLine') {
+    yield put(setCardtextViewEditMode(false))
+    if (cardtextPresetData != null) {
+      yield put(restoreCardtextSession(cardtextPresetData))
+    } else {
+      yield put(setStatus(st))
+    }
+    return
+  }
+
+  if (
+    cardtextPresetData != null &&
+    presetId != null &&
+    String(assetId) !== String(presetId)
+  ) {
+    yield call(syncDraftDataOnCloseFromDraftSession, cardtextAssetData)
+    yield put(restoreCardtextSession(cardtextPresetData))
+    return
+  }
+  if (cardtextPresetData == null && cardtextAssetData.status === 'draft') {
+    yield call(syncDraftDataOnCloseFromDraftSession, cardtextAssetData)
+    yield put(resetCardtextAssetToEmptyDraft())
+    return
+  }
+
+  yield call(syncDraftDataOnCloseFromDraftSession, cardtextAssetData)
+  yield put(setCardtextViewEditMode(false))
+  yield put(setStatus('inLine'))
+}
+
+/** CardEditor: удалить текущий черновик / текст (не трогает список шаблонов целиком). */
+export function* handleDeleteCardtextEditorSaga(): SagaIterator {
+  const interactionMode: CardtextInteractionMode = yield select(
+    selectCardtextInteractionMode,
+  )
+  const presetData: CardtextContent | null = yield select(
+    (s: RootState) => s.cardtext.presetData,
+  )
+
+  if (interactionMode === 'createEmpty') {
+    yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
+    yield put(clearDraftData())
+    yield put(setDraftFocus(false))
+
+    if (presetData?.status === 'processed') {
+      yield put(
+        restoreCardtextSession({
+          ...presetData,
+          value: presetData.value.map((b) => ({
+            ...b,
+            children: b.children.map((c) => ({ ...c })),
+          })),
+          style: { ...presetData.style },
+        }),
+      )
+      yield put(setCardtextPresetData(null))
+      yield put(setDraftEngaged(false))
+      yield put(setStatus('processed'))
+      yield call(checkAndSyncProcessedCard)
+      return
+    }
+
+    yield put(resetCardtextAssetToEmptyDraft())
+    yield put(setDraftEngaged(false))
+    return
+  }
+
+  yield call(handleDeleteCardtextFromView)
 }
 
 /** View: закрыть форму просмотра шаблона (пустой create). */
@@ -436,6 +572,10 @@ export function* handleCardtextToolbarAction(
       break
 
     case 'delete':
+      if (section === 'cardtextEditor' || section === 'cardtextCreate') {
+        yield call(handleDeleteCardtextEditorSaga)
+        break
+      }
       if (
         section === 'cardtext' ||
         section === 'cardtextView' ||
@@ -490,6 +630,8 @@ export function* handleCardtextToolbarAction(
     case 'close':
       if (section === 'cardtextView') {
         yield call(handleCloseCardtextView)
+      } else if (section === 'cardtextEditor' || section === 'cardtextCreate') {
+        yield call(handleCloseCardtextEditorSaga)
       }
       break
 

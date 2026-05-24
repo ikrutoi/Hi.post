@@ -38,16 +38,22 @@ export function* updateCropToolbarState(
   const newCropQualityIndicator =
     newCrop === 'active' ? 'enabled' : 'disabled'
 
-  const newCropCheck =
-    newCrop === 'active'
-      ? 'enabled'
-      : state.cropCheck?.state === 'enabled'
-        ? 'disabled'
-        : (state.cropCheck?.state ?? 'disabled')
-
   const newClose = newCrop === 'active' ? 'disabled' : 'enabled'
 
   for (const section of CARDPHOTO_TOOLBAR_SECTIONS) {
+    const cropConfirmKey =
+      section === 'cardphotoCreate' ? 'applyLight' : 'cropCheck'
+    const currentCropConfirmState =
+      section === 'cardphotoCreate'
+        ? state.applyLight?.state
+        : state.cropCheck?.state
+    const newCropConfirm =
+      newCrop === 'active'
+        ? 'enabled'
+        : currentCropConfirmState === 'enabled'
+          ? 'disabled'
+          : (currentCropConfirmState ?? 'disabled')
+
     yield put(
       updateToolbarIcon({ section, key: 'crop', value: newCrop }),
     )
@@ -68,8 +74,8 @@ export function* updateCropToolbarState(
     yield put(
       updateToolbarIcon({
         section,
-        key: 'cropCheck',
-        value: newCropCheck,
+        key: cropConfirmKey,
+        value: newCropConfirm,
       }),
     )
     yield put(

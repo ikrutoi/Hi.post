@@ -21,6 +21,7 @@ export const CARDPHOTO_KEYS = [
   'listDelete',
   'listApply',
   'addList',
+  'applyLight',
 ] as const
 
 export type CardphotoKey = (typeof CARDPHOTO_KEYS)[number]
@@ -45,7 +46,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
 export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'crop',
-    icons: [{ key: 'cropCheck', state: 'disabled' }],
+    icons: [{ key: 'applyLight', state: 'disabled' }],
     status: 'enabled',
   },
   {
@@ -60,7 +61,7 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'close',
-    icons: [{ key: 'delete', state: 'enabled' }],
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]

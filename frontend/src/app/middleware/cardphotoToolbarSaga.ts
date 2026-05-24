@@ -22,6 +22,7 @@ import {
   setListTemplateGridCols,
   clearCurrentConfig,
   setCardphotoViewEditMode,
+  removeUserImage,
 } from '@cardphoto/infrastructure/state'
 import { selectIsCardphotoViewEditMode } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import {
@@ -44,7 +45,7 @@ import {
   handlePromoteProcessedToInlineSaga,
 } from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
-import { prepareForRedux } from './cardphotoHelpers'
+import { prepareForRedux, updateCropToolbarState } from './cardphotoHelpers'
 import { collectReferencedBlobUrls } from './blobUrlRevokeGuards'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
@@ -126,13 +127,37 @@ function* handleCloseCardphotoCreateSaga(): SagaIterator {
       [storeAdapters.userImages, 'deleteById'],
       CURRENT_EDITOR_IMAGE_ID,
     )
-    yield call([storeAdapters.cardphotoImages, 'clear'])
     yield put(resetCardphoto())
     yield put(setCardphotoViewEditMode(false))
     yield put(markLoaded())
     yield fork(syncToolbarContext)
   } catch (error) {
     console.error('Close cardphoto create failed:', error)
+  }
+}
+
+function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
+  try {
+    yield call(
+      [storeAdapters.userImages, 'deleteById'],
+      CURRENT_EDITOR_IMAGE_ID,
+    )
+    yield put(removeUserImage())
+    yield put(setAssetData(null))
+    yield put(clearCurrentConfig())
+    yield put(setCardphotoViewEditMode(false))
+
+    const toolbarCreate: CardphotoToolbarState | undefined = yield select(
+      selectToolbarSectionState('cardphotoCreate'),
+    )
+    if (toolbarCreate) {
+      yield call(updateCropToolbarState, 'enabled', toolbarCreate)
+    }
+
+    yield put(markLoaded())
+    yield call(syncToolbarContext)
+  } catch (error) {
+    console.error('handleDeleteCardphotoCreateUploadSaga', error)
   }
 }
 
@@ -260,6 +285,10 @@ export function* handleCardphotoToolbarAction(
       }
       return
     }
+    if (key === 'delete') {
+      yield call(handleDeleteCardphotoCreateUploadSaga)
+      return
+    }
     yield call(handleCloseCardphotoCreateSaga)
     return
   }
@@ -341,6 +370,7 @@ export function* handleCardphotoToolbarAction(
       break
 
     case 'cropCheck':
+    case 'applyLight':
       yield call(handleCropConfirm)
       break
 
@@ -579,6 +609,10 @@ export function* syncToolbarContext() {
   const cropToolbarPatch = pickCardphotoProcessedToolbarPatch(
     sectionUpdate as Record<string, unknown>,
   )
+  const { cropCheck: cropConfirmPatch, ...cropToolbarRest } =
+    cropToolbarPatch as Record<string, unknown> & {
+      cropCheck?: { state: string }
+    }
   const su = sectionUpdate as {
     cardphotoAdd?: { state: string }
     close?: { state: string }
@@ -588,7 +622,8 @@ export function* syncToolbarContext() {
     updateToolbarSection({
       section: 'cardphotoCreate',
       value: {
-        ...cropToolbarPatch,
+        ...cropToolbarRest,
+        ...(cropConfirmPatch != null ? { applyLight: cropConfirmPatch } : {}),
         ...(su.cardphotoAdd != null ? { cardphotoAdd: su.cardphotoAdd } : {}),
         ...(su.close != null ? { delete: su.close } : {}),
       },

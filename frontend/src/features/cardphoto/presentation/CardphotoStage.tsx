@@ -173,26 +173,28 @@ export const CardphotoStage = () => {
           //   height: `${sizeCard?.height ?? 0}px`,
           // }}
         >
-          {shouldShowImage && imageLayer && src && (
-            <>
-              <img
-                key={src}
-                src={src}
-                alt={alt}
-                onLoad={() => setLoaded(true)}
-                className={clsx(
-                  styles.cropImage,
-                  loaded ? styles.fadeInVisible : styles.fadeIn,
+          <div className={styles.imageStack}>
+            {shouldShowImage && imageLayer && src && (
+              <>
+                <img
+                  key={src}
+                  src={src}
+                  alt={alt}
+                  onLoad={() => setLoaded(true)}
+                  className={clsx(
+                    styles.cropImage,
+                    loaded ? styles.fadeInVisible : styles.fadeIn,
+                  )}
+                  style={imageStyle}
+                />
+                {tempCrop && cropToolbarState === 'active' && activeImage && (
+                  <div className={styles.cropMask} style={maskStyle}>
+                    <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
+                  </div>
                 )}
-                style={imageStyle}
-              />
-              {tempCrop && cropToolbarState === 'active' && activeImage && (
-                <div className={styles.cropMask} style={maskStyle}>
-                  <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
-                </div>
-              )}
-            </>
-          )}
+              </>
+            )}
+          </div>
           {loaded &&
             imageLayer &&
             cropToolbarState === 'active' &&

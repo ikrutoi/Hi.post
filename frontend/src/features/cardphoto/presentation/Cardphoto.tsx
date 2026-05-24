@@ -5,6 +5,7 @@ import { useAppDispatch } from '@app/hooks'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { CardphotoView } from './CardphotoView/CardphotoView'
 import { deleteCardphotoFromViewRequested } from '@cardphoto/infrastructure/state'
+import { toolbarAction } from '@toolbar/application/helpers'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
@@ -68,9 +69,15 @@ const CardphotoSessionEditor: React.FC = () => {
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const showAssetToolbar = !!activeImage && !!assetToolbar
 
-  const handleViewDelete = useCallback(() => {
+  const handleDelete = useCallback(() => {
+    if (assetToolbar === 'cardphotoCreate') {
+      dispatch(
+        toolbarAction({ section: 'cardphotoCreate', key: 'delete' } as const),
+      )
+      return
+    }
     dispatch(deleteCardphotoFromViewRequested())
-  }, [dispatch])
+  }, [dispatch, assetToolbar])
 
   return (
     <div className={styles.cardphoto}>
@@ -87,7 +94,7 @@ const CardphotoSessionEditor: React.FC = () => {
           ) : null}
         </div>
         <div className={styles.cardphotoViewContent}>
-          <CardphotoView onDelete={handleViewDelete} />
+          <CardphotoView onDelete={handleDelete} />
         </div>
       </div>
     </div>

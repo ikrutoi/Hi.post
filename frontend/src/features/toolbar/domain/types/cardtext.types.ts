@@ -70,10 +70,7 @@ export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
   },
   {
     group: 'close',
-    icons: [
-      // { key: 'close', state: 'disabled' },
-      { key: 'empty', state: 'disabled' },
-    ],
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]

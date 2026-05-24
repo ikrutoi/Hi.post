@@ -12,33 +12,27 @@ import { selectIsDraftFocus } from '../../infrastructure/selectors'
 import {
   setDraftFocus,
   setDraftEngaged,
-  resetCardtextAssetToEmptyDraft,
-  setCardtextViewEditMode,
-  setStatus,
-  restoreCardtextSession,
-  setDraftData,
-  clearDraftData,
-  setCardtextPresetData,
 } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
-import { IconX } from '@shared/ui/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { isEmptyCardtextValue } from '../../domain/helpers'
 import styles from './CardEditor.module.scss'
 import viewStyles from '../CardtextView/CardtextView.module.scss'
-import type { CardtextContent, CardtextValue } from '../../domain/types'
+import type { CardtextValue } from '../../domain/types'
 
 type CardEditorProps = {
   /** Tighter top padding when the floating title strip is in edit mode (e.g. save template) */
   titleStripEditing?: boolean
+  onDelete?: () => void
 }
 
 export const CardEditor: React.FC<CardEditorProps> = ({
   titleStripEditing,
+  onDelete,
 }) => {
   const dispatch = useAppDispatch()
   const requestFocus = useAppSelector(selectIsDraftFocus)
   const cardtextAssetData = useAppSelector((s) => s.cardtext.assetData)
-  const cardtextPresetData = useAppSelector((s) => s.cardtext.presetData)
   const isDraftEngaged = useAppSelector((s) => s.cardtext.isDraftEngaged)
   const {
     fontSizeStep,
@@ -49,7 +43,6 @@ export const CardEditor: React.FC<CardEditorProps> = ({
     editableRef,
     resetToken,
     setValue,
-    setCurrentView,
     decreaseFontSize,
   } = useCardtextFacade()
 
@@ -77,6 +70,8 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   /** Placeholder when closed or before engage; не показывать applied в Slate без сессии. */
   const showEmptyPlaceholder =
     !factorySessionActive || (isEmpty && !isDraftEngaged)
+  const showDeleteOverlay =
+    !!onDelete && (cardtextAssetData != null || isDraftEngaged)
 
   useEffect(() => {
     if (!requestFocus) return
@@ -90,7 +85,7 @@ export const CardEditor: React.FC<CardEditorProps> = ({
       dispatch(setDraftFocus(false))
     }, 0)
     return () => clearTimeout(id)
-  }, [requestFocus, dispatch, editor])
+  }, [requestFocus, dispatch, editor, editableRef])
 
   const handleClickEditorArea = () => {
     if (cardtextAssetData == null) {
@@ -130,104 +125,11 @@ export const CardEditor: React.FC<CardEditorProps> = ({
     }
   }, [value, fontSizeStep, decreaseFontSize, editorRef, cardtextAssetData])
 
-  const handleEditorClose = useCallback(() => {
-    dispatch(setDraftFocus(false))
-    if (cardtextAssetData == null) {
-      dispatch(setDraftEngaged(false))
-      if (cardtextPresetData != null) {
-        dispatch(restoreCardtextSession(cardtextPresetData))
-      }
-      return
-    }
-
-    const syncDraftDataOnCloseFromDraftSession = (
-      asset: typeof cardtextAssetData,
-    ) => {
-      if (asset == null || asset.status !== 'draft') return
-      const plain = (asset.plainText ?? '').trim()
-      if (!plain.length) {
-        dispatch(clearDraftData())
-        return
-      }
-      const draft: CardtextContent = {
-        id: null,
-        status: 'draft',
-        value: asset.value.map((b) => ({
-          ...b,
-          children: b.children.map((c) => ({ ...c })),
-        })),
-        style: { ...asset.style },
-        title: asset.title ?? '',
-        plainText: asset.plainText,
-        cardtextLines: asset.cardtextLines,
-        favorite: asset.favorite ?? null,
-        timestamp: asset.timestamp,
-      }
-      dispatch(setDraftData(draft))
-    }
-
-    if (
-      cardtextPresetData != null &&
-      cardtextPresetData.status === 'processed' &&
-      cardtextAssetData.status === 'draft'
-    ) {
-      dispatch(
-        restoreCardtextSession({
-          ...cardtextPresetData,
-          value: cardtextPresetData.value.map((b) => ({
-            ...b,
-            children: b.children.map((c) => ({ ...c })),
-          })),
-          style: { ...cardtextPresetData.style },
-        }),
-      )
-      dispatch(setCardtextPresetData(null))
-      dispatch(setDraftEngaged(false))
-      return
-    }
-
-    const assetId = cardtextAssetData.id ?? null
-    const presetId = cardtextPresetData?.id ?? null
-    const st = cardtextAssetData.status
-
-    if (st === 'inLine' || st === 'outLine') {
-      dispatch(setCardtextViewEditMode(false))
-      if (cardtextPresetData != null) {
-        dispatch(restoreCardtextSession(cardtextPresetData))
-      } else {
-        dispatch(setStatus(st))
-      }
-      return
-    }
-
-    if (
-      cardtextPresetData != null &&
-      presetId != null &&
-      String(assetId) !== String(presetId)
-    ) {
-      syncDraftDataOnCloseFromDraftSession(cardtextAssetData)
-      dispatch(restoreCardtextSession(cardtextPresetData))
-      return
-    }
-    if (cardtextPresetData == null && cardtextAssetData.status === 'draft') {
-      syncDraftDataOnCloseFromDraftSession(cardtextAssetData)
-      dispatch(resetCardtextAssetToEmptyDraft())
-      return
-    }
-    // Редактирование с открытки: сбрасываем флаг, иначе selectCardtextSource остаётся draft и тулбар cardtextCreate.
-    syncDraftDataOnCloseFromDraftSession(cardtextAssetData)
-    dispatch(setCardtextViewEditMode(false))
-    setCurrentView('view')
-  }, [cardtextAssetData, cardtextPresetData, dispatch, setCurrentView])
-
   const renderLeafWithColor = useCallback(
     (leafProps: { attributes: any; children: React.ReactNode; leaf: any }) => {
       const { attributes, children, leaf } = leafProps
       let spanStyle: React.CSSProperties = {}
 
-      // if (leaf.italic) spanStyle.fontStyle = 'italic'
-      // if (leaf.bold) spanStyle.fontWeight = 'bold'
-      // if (leaf.underline) spanStyle.textDecoration = 'underline'
       spanStyle.color = leaf.color || defaultTextColor
       if (leaf.fontSize) spanStyle.fontSize = `${leaf.fontSize}px`
 
@@ -260,21 +162,19 @@ export const CardEditor: React.FC<CardEditorProps> = ({
           <IconSectionMenuCardtext />
         </div>
       ) : null}
-      {(cardtextAssetData != null || isDraftEngaged) ? (
+      {showDeleteOverlay ? (
         <button
           type="button"
-          className={viewStyles.viewCloseBtnOverlay}
+          className={viewStyles.viewDeleteBtn}
           onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => {
             e.stopPropagation()
-            handleEditorClose()
+            onDelete?.()
           }}
-          aria-label="Close text editor"
-          title={
-            cardtextAssetData == null ? 'Close' : 'Back to text view'
-          }
+          aria-label="Delete text"
+          title="Delete"
         >
-          <IconX />
+          {getToolbarIcon({ key: 'delete' })}
         </button>
       ) : null}
       {factorySessionActive ? (
@@ -306,8 +206,6 @@ export const CardEditor: React.FC<CardEditorProps> = ({
             initialValue={value as Descendant[]}
             onChange={(newValue: Descendant[]) => {
               const next = newValue as CardtextValue
-              // Пока нет сессии и пользователь не «вовлёк» редактор — не пишем в Redux
-              // (Slate даёт onChange при маунте/нормализации → иначе ensureAsset создаёт пустой assetData).
               if (cardtextAssetData == null && !isDraftEngaged) {
                 return
               }

@@ -22,8 +22,13 @@ export const CardphotoView: React.FC<Props> = ({
   const activeImage = useAppSelector(selectActiveImage)
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
   const showEmptyPlaceholder = !activeImage
+  const showCreateOverlay =
+    assetToolbar === 'cardphotoCreate' && !!activeImage
   const showViewOverlay = assetToolbar === 'cardphotoView' && !!activeImage
-  const canDeleteTemplate = activeImage?.status === 'inLine'
+  const canDeleteViewTemplate = activeImage?.status === 'inLine'
+  const showDeleteOverlay =
+    !!onDelete &&
+    ((showViewOverlay && canDeleteViewTemplate) || showCreateOverlay)
 
   return (
     <div className={clsx(styles.viewContainer, className)}>
@@ -35,17 +40,19 @@ export const CardphotoView: React.FC<Props> = ({
           <IconSectionMenuCardphoto />
         </div>
       ) : null}
-      {showViewOverlay && canDeleteTemplate && onDelete ? (
+      {showDeleteOverlay ? (
         <button
           type="button"
           className={styles.viewDeleteBtn}
           onMouseDown={(e) => e.preventDefault()}
           onClick={(e) => {
             e.stopPropagation()
-            onDelete()
+            onDelete?.()
           }}
-          aria-label="Delete image template"
-          title="Delete template"
+          aria-label={
+            showCreateOverlay ? 'Delete image' : 'Delete image template'
+          }
+          title={showCreateOverlay ? 'Delete' : 'Delete template'}
         >
           {getToolbarIcon({ key: 'delete' })}
         </button>
