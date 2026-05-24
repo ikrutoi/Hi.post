@@ -128,6 +128,13 @@ function* persistCardphotoListDensityToDbSaga(): SagaIterator {
   }
 }
 
+function* ensureCardphotoTemplatesListPanelOpenSaga(): SagaIterator {
+  const isOpen: boolean = yield select(selectIsListPanelOpen)
+  if (isOpen) return
+  yield call(hydrateCardphotoListDensityFromDbSaga)
+  yield put(setCardphotoListPanelOpen(true))
+}
+
 function* restoreCardphotoViewFromReturnSnapshotSaga(
   snapshot: CardphotoViewReturnSnapshot,
 ): SagaIterator {
@@ -309,6 +316,19 @@ export function* syncCardphotoAddBadgeDot(): SagaIterator {
   )
 }
 
+function* syncCardphotoToolbarAddAndBadgeSaga(): SagaIterator {
+  const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
+    yield select(selectCardphotoAssetToolbar)
+  yield put(
+    updateToolbarIcon({
+      section: 'cardphoto',
+      key: 'cardphotoAdd',
+      value: assetToolbar === 'cardphotoCreate' ? 'disabled' : 'enabled',
+    }),
+  )
+  yield call(syncCardphotoAddBadgeDot)
+}
+
 function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
   try {
     yield call(
@@ -387,7 +407,12 @@ export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
     const asset: ImageMeta | null = yield select(selectActiveImage)
     yield put(setCardphotoViewEditMode(false))
 
-    if (asset?.status === 'inLine' && asset.id) {
+    if (
+      (asset?.status === 'inLine' ||
+        asset?.status === 'outLine' ||
+        asset?.status === 'processed') &&
+      asset.id
+    ) {
       yield call(
         [storeAdapters.cardphotoImages, 'deleteById'] as const,
         asset.id,
@@ -492,9 +517,11 @@ export function* handleCardphotoToolbarAction(
         yield call(handleDeleteCardphotoFromViewSaga)
         return
       case 'addList':
+        yield call(ensureCardphotoTemplatesListPanelOpenSaga)
         yield call(handlePromoteProcessedToInlineSaga)
         return
       case 'removeFromList':
+        yield call(ensureCardphotoTemplatesListPanelOpenSaga)
         yield call(handleDemoteInlineTemplateSaga)
         return
       default:
@@ -631,8 +658,10 @@ export function* syncToolbarContext() {
     toolbarCardphoto?.crop?.state === 'active' ||
     toolbarProcessed?.crop?.state === 'active' ||
     toolbarCreate?.crop?.state === 'active'
-  )
+  ) {
+    yield call(syncCardphotoToolbarAddAndBadgeSaga)
     return
+  }
 
   const assetForToolbar = state.assetData
   const appliedForToolbar = state.appliedData
@@ -830,7 +859,9 @@ export function* syncToolbarContext() {
   const cardphotoViewAddListState =
     isAppliedPreview
       ? 'disabled'
-      : isInLineTemplate || isOutLineTemplate
+      : isInLineTemplate ||
+          isOutLineTemplate ||
+          img?.status === 'processed'
         ? 'enabled'
         : 'disabled'
   const templateActionState = isInLineTemplate ? 'enabled' : 'disabled'

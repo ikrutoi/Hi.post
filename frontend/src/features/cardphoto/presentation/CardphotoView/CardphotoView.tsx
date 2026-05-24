@@ -25,7 +25,10 @@ export const CardphotoView: React.FC<Props> = ({
   const showCreateOverlay =
     assetToolbar === 'cardphotoCreate' && !!activeImage
   const showViewOverlay = assetToolbar === 'cardphotoView' && !!activeImage
-  const canDeleteViewTemplate = activeImage?.status === 'inLine'
+  const canDeleteViewTemplate =
+    activeImage?.status === 'inLine' ||
+    activeImage?.status === 'outLine' ||
+    activeImage?.status === 'processed'
   const showDeleteOverlay =
     !!onDelete &&
     ((showViewOverlay && canDeleteViewTemplate) || showCreateOverlay)

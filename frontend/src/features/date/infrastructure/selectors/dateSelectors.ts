@@ -1,8 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import type { DispatchDate } from '@entities/date/domain/types'
-import type { CardCalendarIndex } from '@entities/card/domain/types'
-import type { CalendarCardItem } from '@entities/card/domain/types'
+import type { CardCalendarIndex, CalendarCardItem } from '@entities/card/domain/types'
 import {
   DateState,
   FirstDayOfWeekPreference,
@@ -242,10 +241,12 @@ export const selectCardPieListPanelRowCount = createSelector(
 /** Бейдж listDate в тулбаре секции «Дата». */
 export const selectDateListToolbarBadgeCount = selectDateListPlanRowCount
 
+const EMPTY_DISPATCH_DATES: DispatchDate[] = []
+
 export const selectMergedDispatchDates = createSelector(
   [selectSelectedDate, selectSelectedDates, selectIsMultiDateMode],
   (single, list, multi): DispatchDate[] => {
-    if (!multi) return single ? [single] : []
+    if (!multi) return single ? [single] : EMPTY_DISPATCH_DATES
     return [...list]
   },
 )

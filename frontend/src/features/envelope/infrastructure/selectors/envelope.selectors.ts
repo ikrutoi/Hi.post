@@ -2,22 +2,28 @@ import { createSelector } from '@reduxjs/toolkit'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
-import type { AddressBookEntry } from '../../addressBook/domain/types'
-import type { AddressEditSession } from '../../domain/types'
 import {
   selectSenderState,
   selectSenderViewId,
+  selectSenderEntriesState,
 } from '../../sender/infrastructure/selectors'
 import {
   selectRecipientState,
   selectRecipientViewId,
+  selectRecipientEntriesState,
 } from '../../recipient/infrastructure/selectors'
 import type { EnvelopeSessionRecord } from '../../domain/types'
 import type { RecipientState } from '../../recipient/domain/types'
 import {
   getMatchingEntryId,
   getAddressListToolbarFragment,
+  listStatusIsInQuickAddressBook,
 } from '../../domain/helpers'
+
+import type { AddressBookEntry } from '../../addressBook/domain/types'
+import type { AddressEditSession } from '../../domain/types'
+
+const EMPTY_RECIPIENT_STATE_LIST: RecipientState[] = []
 
 const selectEnvelopeSelectionState = (state: {
   envelopeSelection: {
@@ -34,17 +40,8 @@ const selectEnvelopeSelectionState = (state: {
   }
 }) => state.envelopeSelection
 
-const selectRecipientsListState = (state: {
-  envelopeRecipients: RecipientState[]
-}) => state.envelopeRecipients ?? []
-
-const selectRecipientEntriesState = (state: {
-  addressBook?: { recipientEntries: AddressBookEntry[] }
-}) => state.addressBook?.recipientEntries ?? []
-
-const selectSenderEntriesState = (state: {
-  addressBook?: { senderEntries: AddressBookEntry[] }
-}) => state.addressBook?.senderEntries ?? []
+const selectRecipientsListState = (state: RootState): RecipientState[] =>
+  state.envelopeRecipients ?? EMPTY_RECIPIENT_STATE_LIST
 
 export const selectSenderEntriesCount = createSelector(
   [selectSenderEntriesState],
@@ -231,6 +228,18 @@ export const selectHasEnvelopeAppliedContent = createSelector(
   [selectSenderState, selectRecipientState],
   (sender, recipient) =>
     (sender.applied?.length ?? 0) > 0 || (recipient.applied?.length ?? 0) > 0,
+)
+
+export const selectSenderInListEntries = createSelector(
+  [selectSenderEntriesState],
+  (entries): AddressBookEntry[] =>
+    entries.filter((e) => listStatusIsInQuickAddressBook(e.listStatus)),
+)
+
+export const selectRecipientInListEntries = createSelector(
+  [selectRecipientEntriesState],
+  (entries): AddressBookEntry[] =>
+    entries.filter((e) => listStatusIsInQuickAddressBook(e.listStatus)),
 )
 
 export const selectRecipientsToolbarStateWithLiveAddressList = createSelector(

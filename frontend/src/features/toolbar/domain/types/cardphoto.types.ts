@@ -67,20 +67,6 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const CARDPHOTO_PROCESSED_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'processed',
-    icons: [{ key: 'addList', state: 'enabled' }],
-
-    status: 'enabled',
-  },
-  {
-    group: 'close',
-    icons: [{ key: 'delete', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'view',
@@ -113,13 +99,12 @@ export const initialCardphotoViewToolbarState: CardphotoToolbarState = {
   config: [...CARDPHOTO_VIEW_TOOLBAR],
 }
 
-export const initialCardphotoProcessedToolbarState: CardphotoToolbarState = {
-  ...Object.fromEntries(flattenIcons(CARDPHOTO_PROCESSED_TOOLBAR)),
-  config: [...CARDPHOTO_PROCESSED_TOOLBAR],
-}
+/** @deprecated UI uses cardphotoView; kept for Redux section compatibility. */
+export const CARDPHOTO_PROCESSED_TOOLBAR = CARDPHOTO_VIEW_TOOLBAR
+export const initialCardphotoProcessedToolbarState = initialCardphotoViewToolbarState
 
 export interface CardphotoSectionConfig extends BaseSectionConfig<
   CardphotoToolbarState,
   CardphotoKey,
-  'cardphoto' | 'cardphotoProcessed' | 'cardphotoView' | 'cardphotoCreate'
+  'cardphoto' | 'cardphotoView' | 'cardphotoCreate'
 > {}

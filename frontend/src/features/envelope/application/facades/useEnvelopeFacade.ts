@@ -26,6 +26,8 @@ import {
   selectShowAddressFormView,
   selectAddressFormViewRole,
   selectShowAddressFormCloseButton,
+  selectSenderInListEntries,
+  selectRecipientInListEntries,
 } from '../../infrastructure/selectors'
 import {
   updateRecipientField,
@@ -55,14 +57,11 @@ import {
 import {
   ADDRESS_FIELD_ORDER,
   type AddressField,
+  type AddressFields,
   type EnvelopeRole,
 } from '@shared/config/constants'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import {
-  listStatusIsInQuickAddressBook,
-  resolveAddListToolbarState,
-} from '@envelope/domain/helpers'
-import type { AddressFields } from '@shared/config/constants'
+import { resolveAddListToolbarState } from '@envelope/domain/helpers'
 
 export const useEnvelopeFacade = () => {
   const dispatch = useAppDispatch()
@@ -97,16 +96,8 @@ export const useEnvelopeFacade = () => {
   const showAddressFormCloseButton = useAppSelector(
     selectShowAddressFormCloseButton,
   )
-  const senderInListEntries = useAppSelector((s) =>
-    (s.addressBook?.senderEntries ?? []).filter((e) =>
-      listStatusIsInQuickAddressBook(e.listStatus),
-    ),
-  )
-  const recipientInListEntries = useAppSelector((s) =>
-    (s.addressBook?.recipientEntries ?? []).filter((e) =>
-      listStatusIsInQuickAddressBook(e.listStatus),
-    ),
-  )
+  const senderInListEntries = useAppSelector(selectSenderInListEntries)
+  const recipientInListEntries = useAppSelector(selectRecipientInListEntries)
 
   const handleFieldChange = (
     role: EnvelopeRole,

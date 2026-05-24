@@ -1,6 +1,7 @@
 import { RootState } from '@app/state'
 import { createSelector } from '@reduxjs/toolkit'
 import type { AddressFields } from '@shared/config/constants'
+import { EMPTY_STRINGS } from '@shared/utils/helpers'
 import { initialSection } from '../../../addressForm/domain/models'
 import type { AddressBookEntry } from '../../../addressBook/domain/types'
 import type {
@@ -9,14 +10,17 @@ import type {
   SortDirection,
 } from '../../domain/types'
 
+const EMPTY_RECIPIENT_STATE_LIST: RecipientState[] = []
+const EMPTY_ADDRESS_BOOK_ENTRIES: AddressBookEntry[] = []
+
+export const selectRecipientEntriesState = (state: RootState): AddressBookEntry[] =>
+  state.addressBook?.recipientEntries ?? EMPTY_ADDRESS_BOOK_ENTRIES
+
 const selectEnvelopeRecipientsList = (state: RootState): RecipientState[] =>
-  state.envelopeRecipients ?? []
+  state.envelopeRecipients ?? EMPTY_RECIPIENT_STATE_LIST
 
 const selectRecipientsPendingIds = (state: RootState): string[] =>
-  state.envelopeSelection?.recipientsPendingIds ?? []
-
-const selectRecipientEntriesState = (state: RootState): AddressBookEntry[] =>
-  state.addressBook?.recipientEntries ?? []
+  state.envelopeSelection?.recipientsPendingIds ?? EMPTY_STRINGS
 
 const selectSelectedRecipientEntriesInOrder = createSelector(
   [selectRecipientsPendingIds, selectRecipientEntriesState],
@@ -50,7 +54,7 @@ export const selectRecipientDisplayAddress = (
     return editSession.draft
   }
   const recipient = state.recipient
-  const entries = state.addressBook?.recipientEntries ?? []
+  const entries = selectRecipientEntriesState(state)
   if (recipient.currentView === 'recipientView' && recipient.recipientViewId) {
     const entry = entries.find((e) => e.id === recipient.recipientViewId)
     if (entry?.address) return entry.address as AddressFields
@@ -98,16 +102,13 @@ export const selectRecipientViewId = (state: RootState): string | null =>
   state.recipient.recipientViewId
 
 export const selectRecipientsViewIds = (state: RootState): string[] =>
-  state.recipient.recipientsViewIdsFirstList ?? []
+  state.recipient.recipientsViewIdsFirstList ?? EMPTY_STRINGS
 
 export const selectRecipientApplied = (state: RootState): string[] =>
-  state.recipient.applied ?? []
+  state.recipient.applied ?? EMPTY_STRINGS
 
 export const selectAppliedRecipientDisplayAddress = createSelector(
-  [
-    selectRecipientState,
-    (s: RootState) => s.addressBook?.recipientEntries ?? [],
-  ],
+  [selectRecipientState, selectRecipientEntriesState],
   (recipient, entries): Readonly<AddressFields> => {
     if (recipient.appliedData != null) return recipient.appliedData
     const appliedId = recipient.applied?.[0]
@@ -115,7 +116,7 @@ export const selectAppliedRecipientDisplayAddress = createSelector(
       const entry = entries.find((e: { id: string }) => e.id === appliedId)
       if (entry?.address) return entry.address as AddressFields
     }
-    return { ...initialSection.data }
+    return initialSection.data
   },
 )
 
@@ -134,10 +135,10 @@ const selectRecipientsViewSortDirectionRaw = (
 /** Id списка получателей для текущего вида (first или second). */
 const selectCurrentRecipientsViewIds = (state: RootState): string[] => {
   const r = state.recipient
-  if (!r) return []
+  if (!r) return EMPTY_STRINGS
   return r.currentRecipientsList === 'second'
-    ? (r.recipientsViewIdsSecondList ?? [])
-    : (r.recipientsViewIdsFirstList ?? [])
+    ? (r.recipientsViewIdsSecondList ?? EMPTY_STRINGS)
+    : (r.recipientsViewIdsFirstList ?? EMPTY_STRINGS)
 }
 
 /** Записи по выбранным pending id (порядок selection), адрес из envelope или адресной книги. */
@@ -229,8 +230,8 @@ export const selectRecipientsFormViewIdsCount = createSelector(
     if (!r) return 0
     const ids =
       r.currentRecipientsList === 'second'
-        ? (r.recipientsViewIdsSecondList ?? [])
-        : (r.recipientsViewIdsFirstList ?? [])
+        ? (r.recipientsViewIdsSecondList ?? EMPTY_STRINGS)
+        : (r.recipientsViewIdsFirstList ?? EMPTY_STRINGS)
     return ids.length
   },
 )

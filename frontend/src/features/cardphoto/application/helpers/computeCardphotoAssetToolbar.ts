@@ -2,7 +2,7 @@ import type { CardphotoAssetToolbar, CardphotoState } from '../../domain/types'
 
 /**
  * Derives which cardphoto toolbar section matches the active slot + image meta.
- * Uses only `assetData` (+ `appliedData` for apply state). `inLine` or applied preview → view; processed → processed; else create.
+ * Uses only `assetData` (+ `appliedData` for apply state). Templates and cropped previews → view; original upload → create.
  */
 export function computeCardphotoAssetToolbar(
   s: CardphotoState,
@@ -11,9 +11,11 @@ export function computeCardphotoAssetToolbar(
   const applied = s.appliedData
   if (!img) return null
   const isApply = !!(img.id && applied?.id && img.id === applied.id)
-  if (img.status === 'inLine' || img.status === 'outLine' || isApply) return 'cardphotoView'
-  // Fresh file upload: square-template `processed` flag is only technical; UI stays in create flow.
+  if (img.status === 'inLine' || img.status === 'outLine' || isApply) {
+    return 'cardphotoView'
+  }
+  // Fresh upload: `processed` on meta is technical; create UI follows `source: original`.
   if (img.source === 'original') return 'cardphotoCreate'
-  if (img.status === 'processed') return 'cardphotoProcessed'
+  if (img.status === 'processed') return 'cardphotoView'
   return 'cardphotoCreate'
 }
