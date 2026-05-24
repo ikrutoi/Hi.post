@@ -37,3 +37,8 @@ export const selectIsCardphotoViewEditMode = createSelector(
   [selectCardphotoUi],
   (ui) => ui.isCardphotoViewEditMode,
 )
+
+export const selectCardphotoViewReturnSnapshot = createSelector(
+  [selectCardphotoUi],
+  (ui) => ui.viewReturnSnapshot,
+)

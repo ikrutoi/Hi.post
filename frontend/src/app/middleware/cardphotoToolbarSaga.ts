@@ -22,13 +22,16 @@ import {
   setListTemplateGridCols,
   clearCurrentConfig,
   setCardphotoViewEditMode,
+  setCardphotoViewReturnSnapshot,
+  clearCardphotoViewReturnSnapshot,
   removeUserImage,
 } from '@cardphoto/infrastructure/state'
-import { selectIsCardphotoViewEditMode } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
+import { selectIsCardphotoViewEditMode, selectCardphotoViewReturnSnapshot } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import {
   selectActiveImage,
   selectCardphotoAssetToolbar,
   selectCardphotoListTemplateGridCols,
+  selectCardphotoOriginalReminderActive,
   selectCardphotoState,
   selectIsListPanelOpen,
 } from '@cardphoto/infrastructure/selectors'
@@ -46,7 +49,7 @@ import {
   handlePromoteProcessedToInlineSaga,
 } from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
-import { prepareForRedux, prepareConfigForRedux, updateCropToolbarState, hydrateSessionImageMeta, fuelAssetRegistry } from './cardphotoHelpers'
+import { prepareForRedux, prepareConfigForRedux, updateCropToolbarState, hydrateSessionImageMeta, hydrateMeta, fuelAssetRegistry } from './cardphotoHelpers'
 import { collectReferencedBlobUrls } from './blobUrlRevokeGuards'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import {
@@ -68,6 +71,7 @@ import type {
   ImageMeta,
   ImageRecord,
 } from '@cardphoto/domain/types'
+import type { CardphotoViewReturnSnapshot } from '@cardphoto/infrastructure/state/cardphotoUiSlice'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
 
@@ -123,10 +127,68 @@ function* persistCardphotoListDensityToDbSaga(): SagaIterator {
   }
 }
 
+function* restoreCardphotoViewFromReturnSnapshotSaga(
+  snapshot: CardphotoViewReturnSnapshot,
+): SagaIterator {
+  const cardphotoState: CardphotoState | null = yield select(selectCardphotoState)
+  const persisted = snapshot.assetData
+  let fromIdb: ImageMeta | null = null
+  if (persisted?.id) {
+    fromIdb = yield call(
+      [storeAdapters.cardphotoImages, 'getById'] as const,
+      persisted.id,
+    )
+  }
+  const assetMeta =
+    hydrateSessionImageMeta(persisted, fromIdb) ??
+    hydrateMeta(fromIdb) ??
+    hydrateMeta(persisted)
+  if (!assetMeta) return
+
+  const userOriginal = cardphotoState?.userOriginalData ?? null
+  const userRecord: ImageRecord | null = userOriginal
+    ? yield call(
+        [storeAdapters.userImages, 'getById'],
+        CURRENT_EDITOR_IMAGE_ID,
+      )
+    : null
+  const userHydrated = hydrateSessionImageMeta(
+    userOriginal,
+    userRecord?.image ?? null,
+  )
+
+  yield call(
+    fuelAssetRegistry,
+    {
+      user: userHydrated,
+      applied: cardphotoState?.appliedData
+        ? hydrateMeta(cardphotoState.appliedData)
+        : null,
+      processed: assetMeta,
+      stock: null,
+    },
+    [],
+  )
+
+  yield put(setCardphotoViewEditMode(false))
+  yield put(setProcessedImage(prepareForRedux(assetMeta)))
+  yield call(rebuildConfigFromMeta, assetMeta, false)
+}
+
 function* handleCloseCardphotoCreateSaga(): SagaIterator {
   try {
-    yield put(setAssetData(null))
-    yield put(clearCurrentConfig())
+    const snapshot: CardphotoViewReturnSnapshot | null = yield select(
+      selectCardphotoViewReturnSnapshot,
+    )
+
+    if (snapshot?.assetData && snapshot?.assetConfig) {
+      yield call(restoreCardphotoViewFromReturnSnapshotSaga, snapshot)
+    } else {
+      yield put(setAssetData(null))
+      yield put(clearCurrentConfig())
+    }
+
+    yield put(clearCardphotoViewReturnSnapshot())
     yield put(setCardphotoViewEditMode(false))
     yield put(markLoaded())
     yield call(syncToolbarContext)
@@ -143,6 +205,23 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
     if (!userOriginal) {
       yield call(onDownloadClick)
       return
+    }
+
+    const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
+      yield select(selectCardphotoAssetToolbar)
+    if (
+      assetToolbar === 'cardphotoView' &&
+      state?.assetData &&
+      state?.assetConfig
+    ) {
+      yield put(
+        setCardphotoViewReturnSnapshot({
+          assetData: prepareForRedux(state.assetData),
+          assetConfig: prepareConfigForRedux(state.assetConfig),
+        }),
+      )
+    } else {
+      yield put(clearCardphotoViewReturnSnapshot())
     }
 
     const record: ImageRecord | null = yield call(
@@ -205,13 +284,9 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
 }
 
 export function* syncCardphotoAddBadgeDot(): SagaIterator {
-  const state: CardphotoState | null = yield select(selectCardphotoState)
-  const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
-    yield select(selectCardphotoAssetToolbar)
-  const hasUserOriginal = !!state?.userOriginalData
-  const isCreateModeOpen = assetToolbar === 'cardphotoCreate'
-  const shouldShowOriginalDot =
-    hasUserOriginal && !state?.assetData && !isCreateModeOpen
+  const shouldShowOriginalDot: boolean = yield select(
+    selectCardphotoOriginalReminderActive,
+  )
 
   const current: CardphotoToolbarState['cardphotoAdd'] | undefined = yield select(
     (s: RootState) => s.toolbar.cardphoto?.cardphotoAdd,
@@ -243,6 +318,7 @@ function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
     yield put(setAssetData(null))
     yield put(clearCurrentConfig())
     yield put(setCardphotoViewEditMode(false))
+    yield put(clearCardphotoViewReturnSnapshot())
 
     const toolbarCreate: CardphotoToolbarState | undefined = yield select(
       selectToolbarSectionState('cardphotoCreate'),
@@ -364,16 +440,16 @@ export function* handleCardphotoToolbarAction(
   // Upload / pick image — same flow as legacy `download` (opens hidden file input via `openFileDialog`).
   if (key === 'cardphotoAdd') {
     if (section === 'cardphoto') {
-      const assetToolbar = yield select(selectCardphotoAssetToolbar)
-      if (assetToolbar === 'cardphotoCreate') return
-
-      const cardphotoState: CardphotoState | null = yield select(
-        selectCardphotoState,
+      const hasOriginalReminder: boolean = yield select(
+        selectCardphotoOriginalReminderActive,
       )
-      if (cardphotoState?.userOriginalData && !cardphotoState.assetData) {
+      if (hasOriginalReminder) {
         yield call(reopenCardphotoCreateFromSavedOriginalSaga)
         return
       }
+
+      const assetToolbar = yield select(selectCardphotoAssetToolbar)
+      if (assetToolbar === 'cardphotoCreate') return
     }
     if (
       section === 'cardphoto' ||

@@ -38,6 +38,7 @@ import {
   editCardphotoViewRequested,
   deleteCardphotoFromViewRequested,
   removeUserImage,
+  clearCardphotoViewReturnSnapshot,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
@@ -288,9 +289,11 @@ function* onSelectInLineTemplateSaga(
     if (record.status !== 'inLine') return
 
     yield put(setCardphotoViewEditMode(false))
+    yield put(clearCardphotoViewReturnSnapshot())
     yield put(setProcessedImage(prepareForRedux(record)))
 
     yield call(rebuildConfigFromMeta, record, false)
+    yield call(syncCardphotoAddBadgeDot)
   } catch (e) {
     console.error('onSelectInLineTemplateSaga', e)
   }

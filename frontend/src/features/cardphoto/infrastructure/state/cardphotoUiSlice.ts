@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { ImageMeta, WorkingConfig } from '../../domain/types'
 
 export type CardphotoListTemplateGridCols = 4 | 5 | 6 | 7
+
+/** View slot to restore after closing create opened from cardphotoAdd reminder. */
+export interface CardphotoViewReturnSnapshot {
+  assetData: ImageMeta
+  assetConfig: WorkingConfig
+}
 
 export interface CardphotoUiState {
   shouldOpenFileDialog: boolean
@@ -11,6 +18,7 @@ export interface CardphotoUiState {
   listTemplateGridCols: CardphotoListTemplateGridCols
   /** inLine / view preview → crop toolbar (`cardphotoCreate`) */
   isCardphotoViewEditMode: boolean
+  viewReturnSnapshot: CardphotoViewReturnSnapshot | null
 }
 
 const initialUiState: CardphotoUiState = {
@@ -21,6 +29,7 @@ const initialUiState: CardphotoUiState = {
   inlineTemplateListRevision: 0,
   listTemplateGridCols: 5,
   isCardphotoViewEditMode: false,
+  viewReturnSnapshot: null,
 }
 
 export const cardphotoUiSlice = createSlice({
@@ -81,6 +90,17 @@ export const cardphotoUiSlice = createSlice({
       state.isCardphotoViewEditMode = action.payload
     },
 
+    setCardphotoViewReturnSnapshot(
+      state,
+      action: PayloadAction<CardphotoViewReturnSnapshot | null>,
+    ) {
+      state.viewReturnSnapshot = action.payload
+    },
+
+    clearCardphotoViewReturnSnapshot(state) {
+      state.viewReturnSnapshot = null
+    },
+
     closeCardphotoViewRequested(_state) {},
     editCardphotoViewRequested(_state) {},
     deleteCardphotoFromViewRequested(_state) {},
@@ -100,6 +120,8 @@ export const {
   setListTemplateGridCols,
   selectInLineTemplate,
   setCardphotoViewEditMode,
+  setCardphotoViewReturnSnapshot,
+  clearCardphotoViewReturnSnapshot,
   closeCardphotoViewRequested,
   editCardphotoViewRequested,
   deleteCardphotoFromViewRequested,

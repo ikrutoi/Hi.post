@@ -100,6 +100,14 @@ export const selectCardphotoAssetToolbar = (
   return computeCardphotoAssetToolbar(s)
 }
 
+/** Saved original in memory while create form is closed — badge dot + reopen on cardphotoAdd. */
+export const selectCardphotoOriginalReminderActive = (
+  state: RootState,
+): boolean => {
+  if (!state.cardphoto.state?.userOriginalData) return false
+  return selectCardphotoAssetToolbar(state) !== 'cardphotoCreate'
+}
+
 export const selectCardphotoImageStageRect = (state: RootState) =>
   state.cardphoto.state?.imageStageRect ?? null
 
