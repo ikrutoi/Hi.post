@@ -143,6 +143,16 @@ export const Toolbar = ({
                 ? historyListSortDirection
                 : undefined
 
+  /** historyList: иконка = текущая сортировка; остальные списки — следующий клик. */
+  const sortIconDirection =
+    sortDirection == null
+      ? undefined
+      : section === 'historyList'
+        ? sortDirection
+        : sortDirection === 'asc'
+          ? 'desc'
+          : 'asc'
+
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const senderViewTemplateId = useAppSelector(selectSenderViewId)
   const recipientViewTemplateId = useAppSelector(selectRecipientViewId)
@@ -423,7 +433,7 @@ export const Toolbar = ({
             buttonStatus === 'active',
           listCheckTickChecked: showCreateListCheck,
           step: fontSizeStep,
-          sortDirection: key === 'sortDown' ? sortDirection : undefined,
+          sortDirection: key === 'sortDown' ? sortIconDirection : undefined,
           listTemplateDensityCols:
             section === 'cardphotoList' && key === 'density'
               ? cardphotoListTemplateGridCols
