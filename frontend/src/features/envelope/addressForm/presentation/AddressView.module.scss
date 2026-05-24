@@ -142,7 +142,14 @@ $envelope-address-card-shell-height: 11.75rem;
 
 .savedAddressDeleteButton {
   @include overlay.sectionViewOverlayDeleteButton;
-  @include savedAddressOverlayChipSize;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 0.47rem;
+
+  svg {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
 }
 
 .savedAddressViewWithFormActions {

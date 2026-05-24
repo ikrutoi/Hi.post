@@ -322,7 +322,9 @@
 
 .toolbarCardtextView,
 .toolbarCardtextEditor,
-.toolbarCardtextCreate {
+.toolbarCardtextCreate,
+.toolbarSenderView,
+.toolbarRecipientView {
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
@@ -339,8 +341,6 @@
 }
 
 .toolbarCardphotoView,
-.toolbarSenderView,
-.toolbarRecipientView,
 .toolbarRecipientsView,
 .toolbarSenderCreate,
 .toolbarRecipientCreate {
@@ -1184,4 +1184,18 @@
 .toolbarHistory .toolbarKey {
   width: 1.7rem;
   height: 1.7rem;
+}
+
+.toolbarSenderView,
+.toolbarRecipientView {
+  .toolbarKey {
+    width: 1.6rem;
+    height: 1.6rem;
+    padding: 0;
+
+    > svg {
+      width: 0.85rem;
+      height: 0.85rem;
+    }
+  }
 }
