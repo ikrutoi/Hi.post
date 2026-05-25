@@ -97,14 +97,10 @@ $cardtext-view-toolbar-inset: 0.5rem;
   color: $color-font-disabled;
   background-color: #fff;
   border-radius: 0.35rem;
-  cursor: pointer;
+  cursor: default;
   transition: color 0.15s ease;
   user-select: none;
   box-sizing: border-box;
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
 
   &:focus-visible {
     border: solid 1px $color-toggle-active;
@@ -140,7 +136,7 @@ $cardtext-view-toolbar-inset: 0.5rem;
   align-items: center;
   justify-content: center;
   color: inherit;
-  cursor: pointer;
+  cursor: default;
   user-select: none;
 }
 
