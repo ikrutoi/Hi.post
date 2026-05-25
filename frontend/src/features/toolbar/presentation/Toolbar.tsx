@@ -101,9 +101,6 @@ export const Toolbar = ({
   const cardtextCreateFormDisplayed = useAppSelector(
     (s) => selectCardtextInteractionMode(s) === 'createEmpty',
   )
-  const cardphotoCreateFormDisplayed = useAppSelector(
-    (s) => selectCardphotoAssetToolbar(s) === 'cardphotoCreate',
-  )
 
   const senderSortDirection = useAppSelector(
     (state) => state.sender?.sortOptions?.direction ?? 'asc',
@@ -307,11 +304,6 @@ export const Toolbar = ({
         buttonStatus = 'selected'
       } else {
         buttonStatus = 'enabled'
-      }
-    }
-    if (key === 'cardphotoAdd' && section === 'cardphoto') {
-      if (cardphotoCreateFormDisplayed) {
-        buttonStatus = 'disabled'
       }
     }
     if (key === 'edit' && section === 'senderView' && senderViewEditMode) {

@@ -317,13 +317,11 @@ export function* syncCardphotoAddBadgeDot(): SagaIterator {
 }
 
 function* syncCardphotoToolbarAddAndBadgeSaga(): SagaIterator {
-  const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
-    yield select(selectCardphotoAssetToolbar)
   yield put(
     updateToolbarIcon({
       section: 'cardphoto',
       key: 'cardphotoAdd',
-      value: assetToolbar === 'cardphotoCreate' ? 'disabled' : 'enabled',
+      value: 'enabled',
     }),
   )
   yield call(syncCardphotoAddBadgeDot)
@@ -474,8 +472,11 @@ export function* handleCardphotoToolbarAction(
         return
       }
 
-      const assetToolbar = yield select(selectCardphotoAssetToolbar)
-      if (assetToolbar === 'cardphotoCreate') return
+      const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
+        yield select(selectCardphotoAssetToolbar)
+      if (assetToolbar === 'cardphotoCreate') {
+        yield put(clearCardphotoViewReturnSnapshot())
+      }
     }
     if (
       section === 'cardphoto' ||
@@ -703,10 +704,7 @@ export function* syncToolbarContext() {
   const hasStockImage = false
   const hasProcessedImage = state.assetData?.status === 'processed'
   const isProcessedInLine = state.assetData?.status === 'inLine'
-  const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
-    yield select(selectCardphotoAssetToolbar)
-  const cardphotoAddState =
-    assetToolbar === 'cardphotoCreate' ? 'disabled' : 'enabled'
+  const cardphotoAddState = 'enabled'
   switch (toolbarAssetKind) {
     case 'none':
       sectionUpdate = {
