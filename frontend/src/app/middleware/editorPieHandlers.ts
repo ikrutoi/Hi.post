@@ -5,9 +5,17 @@ import {
 } from '@entities/cardEditor/infrastructure/state'
 import { clearDate } from '@date/infrastructure/state'
 import { clear as clearAroma } from '@aroma/infrastructure/state'
-import { setSenderApplied } from '@envelope/sender/infrastructure/state'
 import {
+  clearSenderFormData,
+  clearSenderViewDraft,
+  setSenderApplied,
+  setSenderView,
+  setSenderViewId,
+} from '@envelope/sender/infrastructure/state'
+import {
+  clearRecipientFormData,
   clearRecipientViewDraft,
+  setCurrentRecipientsList,
   setRecipientApplied,
   setRecipientView,
   setRecipientViewId,
@@ -17,6 +25,7 @@ import {
 import {
   clearRecipientsPending,
   closeAddressEditSession,
+  closeAddressList,
   setAddressFormView,
   setRecipientsList,
 } from '@envelope/infrastructure/state'
@@ -40,15 +49,26 @@ export function* handleClearAllMiniSectionsAction(): SagaIterator {
   yield put(clearApply())
 }
 
-/** Сброс UI получателей конверта — иначе остаётся viewDraft / ids и при открытии Envelope виден старый адрес. */
+/** Сброс UI конверта — иначе остаются viewDraft / view и при открытии Envelope видны старые адреса. */
+function* resetEnvelopeSenderUiAfterWorkspaceClear(): SagaIterator {
+  yield put(clearSenderViewDraft())
+  yield put(clearSenderFormData())
+  yield put(setSenderViewId(null))
+  yield put(setSenderView('senderView'))
+  yield put(closeAddressEditSession({ role: 'sender' }))
+}
+
 function* resetEnvelopeRecipientUiAfterWorkspaceClear(): SagaIterator {
   yield put(clearRecipientViewDraft())
+  yield put(clearRecipientFormData())
   yield put(setRecipientViewId(null))
   yield put(setRecipientView('recipientsView'))
-  yield put(setRecipientsViewIds([]))
-  yield put(setRecipientsViewIdsSecondList([]))
+  yield put(setCurrentRecipientsList('first'))
+  /** Сначала envelopeRecipients — иначе processEnvelopeVisuals снова заполнит view ids. */
   yield put(setRecipientsList([]))
   yield put(clearRecipientsPending())
+  yield put(setRecipientsViewIds([]))
+  yield put(setRecipientsViewIdsSecondList([]))
   yield put(closeAddressEditSession({ role: 'recipient' }))
   yield put(setAddressFormView({ show: false, role: null }))
 }
@@ -57,6 +77,8 @@ function* resetEnvelopeRecipientUiAfterWorkspaceClear(): SagaIterator {
 export function* clearCardPieWorkspaceAfterCartAdd(): SagaIterator {
   yield* handleClearAllMiniSectionsAction()
   yield* resetEnvelopeRecipientUiAfterWorkspaceClear()
+  yield* resetEnvelopeSenderUiAfterWorkspaceClear()
+  yield put(closeAddressList())
   yield put(clearText())
   yield put(resetEditor())
 }

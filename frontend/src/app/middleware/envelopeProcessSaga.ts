@@ -220,6 +220,7 @@ export function* processEnvelopeVisuals() {
   if (
     Array.isArray(recipients) &&
     recipients.length > 0 &&
+    (recipient.applied?.length ?? 0) > 0 &&
     (recipient.recipientsViewIdsFirstList?.length ?? 0) === 0
   ) {
     yield put(
