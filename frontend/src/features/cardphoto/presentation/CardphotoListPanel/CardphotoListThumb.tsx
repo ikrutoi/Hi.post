@@ -4,6 +4,7 @@ import styles from './CardphotoListThumb.module.scss'
 type Props = {
   id: string
   src: string
+  title?: string
   cellPx: number
   onSelect: () => void | Promise<void>
 }
@@ -11,6 +12,7 @@ type Props = {
 export const CardphotoListThumb: React.FC<Props> = ({
   id,
   src,
+  title,
   cellPx,
   onSelect,
 }) => {
@@ -22,6 +24,8 @@ export const CardphotoListThumb: React.FC<Props> = ({
   const runSelect = () => {
     void Promise.resolve(onSelect())
   }
+
+  const titleLabel = title?.trim()
 
   return (
     <div
@@ -38,6 +42,11 @@ export const CardphotoListThumb: React.FC<Props> = ({
         height={cellPx}
         decoding="async"
       />
+      {titleLabel ? (
+        <span className={styles.titleBadge} title={titleLabel} aria-hidden>
+          {titleLabel}
+        </span>
+      ) : null}
     </div>
   )
 }

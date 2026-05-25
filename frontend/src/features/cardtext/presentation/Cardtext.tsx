@@ -294,8 +294,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                         }
                         if (e.key === 'Enter') {
                           e.preventDefault()
-                          if (cardtextAssetStatus !== 'inLine')
-                            void commitEditTitle()
+                          void commitEditTitle()
                         }
                       }}
                       disabled={isSubmittingTitle}

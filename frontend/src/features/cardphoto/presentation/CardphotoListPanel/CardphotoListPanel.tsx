@@ -24,7 +24,7 @@ type Props = {
   onSelectTemplate: (id: string) => void | Promise<void>
 }
 
-type Row = { id: string; src: string }
+type Row = { id: string; src: string; title?: string }
 
 function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
   if (meta.thumbnail?.blob instanceof Blob) {
@@ -103,7 +103,11 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
         const { src, revoke } = buildThumbSrc(meta)
         if (!src) continue
         if (revoke) created.push(src)
-        nextRows.push({ id: meta.id, src })
+        nextRows.push({
+          id: meta.id,
+          src,
+          title: meta.title?.trim() || undefined,
+        })
       }
 
       if (cancelled) {
@@ -166,6 +170,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
                     key={row.id}
                     id={row.id}
                     src={row.src}
+                    title={row.title}
                     cellPx={cellPx}
                     onSelect={() => onSelectTemplate(row.id)}
                   />

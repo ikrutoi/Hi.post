@@ -147,7 +147,7 @@ const CardphotoSessionEditor: React.FC = () => {
                     }
                     if (e.key === 'Enter') {
                       e.preventDefault()
-                      if (imageStatus !== 'inLine') void commitEditTitle()
+                      void commitEditTitle()
                     }
                   }}
                   disabled={isSubmittingTitle}

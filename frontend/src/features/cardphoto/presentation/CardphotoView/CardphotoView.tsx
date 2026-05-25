@@ -5,6 +5,7 @@ import {
   selectActiveImage,
   selectCardphotoAssetToolbar,
 } from '@cardphoto/infrastructure/selectors'
+import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import styles from './CardphotoView.module.scss'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -23,6 +24,10 @@ export const CardphotoView: React.FC<Props> = ({
 }) => {
   const activeImage = useAppSelector(selectActiveImage)
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
+  const createToolbarState = useAppSelector(
+    selectToolbarSectionState('cardphotoCreate'),
+  )
+  const isCreateCropActive = createToolbarState?.crop?.state === 'active'
   const showEmptyPlaceholder = !activeImage
   const showCreateOverlay =
     assetToolbar === 'cardphotoCreate' && !!activeImage
@@ -33,7 +38,8 @@ export const CardphotoView: React.FC<Props> = ({
     activeImage?.status === 'processed'
   const showDeleteOverlay =
     !!onDelete &&
-    ((showViewOverlay && canDeleteViewTemplate) || showCreateOverlay)
+    ((showViewOverlay && canDeleteViewTemplate) ||
+      (showCreateOverlay && !isCreateCropActive))
 
   return (
     <div

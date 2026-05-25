@@ -19,8 +19,8 @@ export const CARDPHOTO_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'cardphotoList',
     icons: [
-      // { key: 'sortDown', state: 'enabled' },
       { key: 'density', state: 'enabled' },
+      { key: 'sortDown', state: 'enabled' },
     ],
     status: 'enabled',
   },

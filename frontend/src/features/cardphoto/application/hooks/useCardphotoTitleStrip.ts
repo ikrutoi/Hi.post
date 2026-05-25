@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAppDispatch } from '@app/hooks'
-import { setCardphotoTitle } from '@cardphoto/infrastructure/state'
+import { setCardphotoTitle, bumpCardphotoInlineTemplateList } from '@cardphoto/infrastructure/state'
 import { storeAdapters } from '@db/adapters/storeAdapters/storeAdapters'
 import { CARDPHOTO_TEMPLATE_TITLE_MAX_LENGTH } from '@cardphoto/application/helpers/cardphotoTemplateTitle'
 import type { ImageStatus } from '@cardphoto/domain/types'
@@ -73,6 +73,9 @@ export function useCardphotoTitleStrip(p: UseCardphotoTitleStripParams) {
       const updated = { ...row, title: next }
       await storeAdapters.cardphotoImages.put(updated)
       dispatch(setCardphotoTitle(next))
+      if (row.status === 'inLine') {
+        dispatch(bumpCardphotoInlineTemplateList())
+      }
     } finally {
       setIsSubmittingTitle(false)
     }
