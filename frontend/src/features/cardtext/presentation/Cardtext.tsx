@@ -17,6 +17,8 @@ import {
   resolveCardtextInteractionMode,
   resolveCardtextToolbarSection,
   shouldHideEmptyCreateToolbar,
+  suggestCardtextTemplateTitle,
+  CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH,
 } from '../application/helpers'
 import { useAppSelector } from '@app/hooks'
 import {
@@ -199,6 +201,14 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     (interactionMode === 'postcardTemplateView' ||
       interactionMode === 'processedSlot')
 
+  /** Заголовок шаблона: View и слот processed (после applyLight из Create). */
+  const showTemplateTitleStrip =
+    interactionMode === 'postcardTemplateView' ||
+    interactionMode === 'processedSlot'
+
+  const displayTitle =
+    title.trim() || suggestCardtextTemplateTitle(plainText)
+
   const handleViewDelete = useCallback(() => {
     dispatch(deleteCardtextFromViewRequested())
   }, [dispatch])
@@ -255,7 +265,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
             ) : null}
           </div>
           <div className={styles.cardtextViewContent}>
-            {(title.trim() || isAddTemplateOpen) && (
+            {displayTitle && showTemplateTitleStrip && (
               <>
                 {forceEditingTitle ? (
                   <div
@@ -271,12 +281,10 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                       type="text"
                       className={viewStyles.viewTitleEditingInput}
                       value={draftTitle}
-                      maxLength={60}
+                      maxLength={CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH}
                       onChange={(e) => setDraftTitle(e.target.value)}
                       onBlur={() => {
-                        if (isAddTemplateOpen) cancelEditTitle()
-                        else if (cardtextAssetStatus === 'inLine')
-                          cancelEditTitle()
+                        if (cardtextAssetStatus === 'inLine') cancelEditTitle()
                         else void commitEditTitle()
                       }}
                       onKeyDown={(e) => {
@@ -307,7 +315,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                     </button>
                   </div>
                 ) : (
-                  currentView === 'view' && (
                     <button
                       type="button"
                       className={clsx(
@@ -319,14 +326,13 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                       title="Edit template name"
                     >
                       <span className={viewStyles.viewTitleText} aria-hidden>
-                        {title}
+                        {displayTitle}
                       </span>
                       <span
                         className={viewStyles.viewTitleEditingBtnPlaceholder}
                         aria-hidden
                       />
                     </button>
-                  )
                 )}
               </>
             )}

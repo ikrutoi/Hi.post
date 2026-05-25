@@ -17,6 +17,7 @@ import {
   clearCardtextTemplatesListSelection,
 } from '@cardtext/infrastructure/state'
 import type { CardtextContent } from '@cardtext/domain/types'
+import { getCardtextTemplateDisplayTitle } from '@cardtext/application/helpers'
 import { CardtextListEntry } from './CardtextListEntry'
 import clsx from 'clsx'
 import styles from './CardtextListPanel.module.scss'
@@ -31,9 +32,11 @@ function sortTemplatesByTitle(
   direction: 'asc' | 'desc',
 ): CardtextContent[] {
   const sorted = [...list].sort((a, b) =>
-    (a.title ?? '').trim().localeCompare((b.title ?? '').trim(), undefined, {
-      sensitivity: 'base',
-    }),
+    getCardtextTemplateDisplayTitle(a).localeCompare(
+      getCardtextTemplateDisplayTitle(b),
+      undefined,
+      { sensitivity: 'base' },
+    ),
   )
   return direction === 'desc' ? sorted.reverse() : sorted
 }

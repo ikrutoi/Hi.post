@@ -11,7 +11,11 @@ import {
 } from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
 import { templateService } from '@entities/templates/domain/services/templateService'
-import { getUniqueCardtextTemplateTitle } from '@cardtext/application/helpers/getUniqueCardtextTemplateTitle'
+import { resolveCardtextTemplateTitle } from '@cardtext/application/helpers/resolveCardtextTemplateTitle'
+import {
+  CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH,
+  suggestCardtextTemplateTitle,
+} from '@cardtext/application/helpers/suggestCardtextTemplateTitle'
 import type {
   CardtextContent,
   CardtextStyle,
@@ -50,6 +54,7 @@ export function useCardtextTitleStrip(p: UseCardtextTitleStripParams) {
 
   const titleInputRef = useRef<HTMLInputElement>(null)
   const titleStripRef = useRef<HTMLDivElement>(null)
+  const addTemplateSaveStartedRef = useRef(false)
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
@@ -64,51 +69,110 @@ export function useCardtextTitleStrip(p: UseCardtextTitleStripParams) {
     el.setSelectionRange(len, len)
   }, [isEditingTitle])
 
-  useEffect(() => {
-    if (!isAddTemplateOpen) return
-    setDraftTitle('')
-    setIsEditingTitle(true)
-  }, [isAddTemplateOpen])
-
   const cancelEditTitle = useCallback(() => {
     setDraftTitle('')
     setIsEditingTitle(false)
     if (isAddTemplateOpen) dispatch(setCardtextAddTemplateOpen(false))
   }, [dispatch, isAddTemplateOpen])
 
-  useEffect(() => {
-    if (!isAddTemplateOpen || !isEditingTitle) return
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node | null
-      if (!titleStripRef.current || !target) return
-      if (titleStripRef.current.contains(target)) return
-
-      const listAddButton = (event.target as HTMLElement | null)?.closest(
-        '[data-icon-key="listAdd"]',
+  const saveTemplateToList = useCallback(
+    async (baseTitle: string): Promise<boolean> => {
+      const existingTitles = (cardtextTemplates ?? []).map((t) => t.title ?? '')
+      const uniqueTitle = resolveCardtextTemplateTitle(
+        plainText,
+        existingTitles,
+        baseTitle,
       )
-      if (listAddButton) return
+      if (!uniqueTitle) return false
 
-      cancelEditTitle()
+      const processedFromDb =
+        await templateService.getSingleCardtextByStatus('processed')
+      const processedId =
+        (cardtextAssetStatus === 'processed' && id) ||
+        (processedFromDb?.id != null ? String(processedFromDb.id) : null)
+      const result =
+        processedId != null
+          ? await updateCardtextTemplate(processedId, {
+              value: value ?? [],
+              style,
+              plainText,
+              cardtextLines,
+              title: uniqueTitle,
+              status: 'inLine',
+            })
+          : await createCardtextTemplate({
+              value: value ?? [],
+              style,
+              plainText,
+              cardtextLines,
+              title: uniqueTitle,
+            })
+
+      if (result.success) {
+        dispatch(cardtextTemplateAdded())
+        dispatch(setTitle(uniqueTitle))
+        dispatch(clearDraftData())
+        dispatch(setCardtextId(null))
+        dispatch(setStatus('inLine'))
+        return true
+      }
+      return false
+    },
+    [
+      cardtextAssetStatus,
+      cardtextLines,
+      cardtextTemplates,
+      createCardtextTemplate,
+      dispatch,
+      id,
+      plainText,
+      style,
+      updateCardtextTemplate,
+      value,
+    ],
+  )
+
+  useEffect(() => {
+    if (!isAddTemplateOpen) {
+      addTemplateSaveStartedRef.current = false
+      return
     }
+    if (addTemplateSaveStartedRef.current) return
+    addTemplateSaveStartedRef.current = true
 
-    document.addEventListener('mousedown', handleClickOutside, true)
+    let cancelled = false
+    void (async () => {
+      setIsSubmittingTitle(true)
+      try {
+        const ok = await saveTemplateToList('')
+        if (!cancelled && !ok) {
+          dispatch(setCardtextAddTemplateOpen(false))
+        }
+      } finally {
+        if (!cancelled) {
+          setIsSubmittingTitle(false)
+          dispatch(setCardtextAddTemplateOpen(false))
+        }
+      }
+    })()
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside, true)
+      cancelled = true
     }
-  }, [isAddTemplateOpen, isEditingTitle, cancelEditTitle])
+  }, [dispatch, isAddTemplateOpen, saveTemplateToList])
 
   const startEditTitle = useCallback(() => {
     if (isAddTemplateOpen) return
-    if (!title.trim()) return
-    setDraftTitle(title)
+    const seed = title.trim() || suggestCardtextTemplateTitle(plainText)
+    if (!seed) return
+    setDraftTitle(seed)
     setIsEditingTitle(true)
-  }, [isAddTemplateOpen, title])
+  }, [isAddTemplateOpen, plainText, title])
 
   const commitEditTitle = useCallback(async () => {
     if (isSubmittingTitle) return
 
-    const next = draftTitle.trim().slice(0, 60)
+    const next = draftTitle.trim().slice(0, CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH)
 
     if (!next) {
       cancelEditTitle()
@@ -123,39 +187,7 @@ export function useCardtextTitleStrip(p: UseCardtextTitleStripParams) {
     setIsSubmittingTitle(true)
     try {
       if (isAddTemplateOpen) {
-        const existingTitles = new Set(
-          (cardtextTemplates ?? []).map((t) => t.title),
-        )
-        const uniqueTitle = getUniqueCardtextTemplateTitle(next, existingTitles)
-        const processedFromDb =
-          await templateService.getSingleCardtextByStatus('processed')
-        const processedId =
-          (cardtextAssetStatus === 'processed' && id) ||
-          (processedFromDb?.id != null ? String(processedFromDb.id) : null)
-        const result =
-          processedId != null
-            ? await updateCardtextTemplate(processedId, {
-                value: value ?? [],
-                style,
-                plainText,
-                cardtextLines,
-                title: uniqueTitle,
-                status: 'inLine',
-              })
-            : await createCardtextTemplate({
-                value: value ?? [],
-                style,
-                plainText,
-                cardtextLines,
-                title: uniqueTitle,
-              })
-
-        if (result.success) {
-          dispatch(cardtextTemplateAdded())
-          dispatch(clearDraftData())
-          dispatch(setCardtextId(null))
-          dispatch(setStatus('inLine'))
-        }
+        await saveTemplateToList(next)
       } else {
         if (!id) {
           cancelEditTitle()
@@ -174,23 +206,17 @@ export function useCardtextTitleStrip(p: UseCardtextTitleStripParams) {
     cancelEditTitle()
   }, [
     cancelEditTitle,
-    cardtextAssetStatus,
-    cardtextLines,
-    cardtextTemplates,
-    createCardtextTemplate,
     dispatch,
     draftTitle,
     id,
     isAddTemplateOpen,
     isSubmittingTitle,
-    plainText,
-    style,
+    saveTemplateToList,
     title,
     updateCardtextTemplate,
-    value,
   ])
 
-  const forceEditingTitle = isAddTemplateOpen || isEditingTitle
+  const forceEditingTitle = isEditingTitle
 
   return {
     titleInputRef,

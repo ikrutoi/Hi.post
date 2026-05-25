@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import type { CardtextContent } from '@cardtext/domain/types'
+import { getCardtextTemplateDisplayTitle } from '@cardtext/application/helpers'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import cellStyles from '@envelope/addressBook/presentation/AddressBookCell.module.scss'
 
@@ -32,7 +33,6 @@ export const CardtextListEntry: React.FC<Props> = ({
   density = 1,
 }) => {
   const { nameLine, previewLine } = useMemo(() => {
-    const title = entry.title?.trim() ?? ''
     const plain = entry.plainText?.trim() ?? ''
     const charLimit = PREVIEW_CHAR_LIMIT[density]
     const preview =
@@ -40,10 +40,10 @@ export const CardtextListEntry: React.FC<Props> = ({
         ? plain.slice(0, charLimit) + (plain.length > charLimit ? '...' : '')
         : '?'
     return {
-      nameLine: title.length > 0 ? title : '?',
+      nameLine: getCardtextTemplateDisplayTitle(entry),
       previewLine: preview,
     }
-  }, [entry.title, entry.plainText, density])
+  }, [entry, density])
 
   const previewColor =
     PREVIEW_COLOR[entry.style.color] ?? PREVIEW_COLOR.deepBlack

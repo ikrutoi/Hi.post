@@ -4,6 +4,7 @@ import { toolbarAction } from '@toolbar/application/helpers'
 import {
   setCardtextAppliedData,
   setStatus,
+  setTitle,
   setCardtextViewEditMode,
   loadCardtextTemplatesRequest,
   restoreCardtextSession,
@@ -16,6 +17,7 @@ import {
   selectCardtextLines,
 } from '@cardtext/infrastructure/selectors'
 import { templateService } from '@entities/templates/domain/services/templateService'
+import { suggestCardtextTemplateTitle } from '@cardtext/application/helpers/suggestCardtextTemplateTitle'
 
 /**
  * Apply: положить текущий текст на открытку (`appliedData`) и выставить статусы.
@@ -34,6 +36,8 @@ export function* applyCardtextFromToolbar(
     yield select(selectCardtextStyle)
   const plainText: string = yield select(selectCardtextPlainText)
   const cardtextLines: number = yield select(selectCardtextLines)
+  const resolvedTitle =
+    assetData.title?.trim() || suggestCardtextTemplateTitle(plainText)
 
   if (assetData.status === 'processed') {
     let templateId: string | null = assetData.id
@@ -46,7 +50,7 @@ export function* applyCardtextFromToolbar(
           style,
           plainText,
           cardtextLines,
-          title: assetData.title ?? '',
+          title: resolvedTitle,
           favorite: assetData.favorite ?? null,
           status: 'processed',
         },
@@ -64,7 +68,7 @@ export function* applyCardtextFromToolbar(
           style,
           plainText,
           cardtextLines,
-          title: assetData.title ?? '',
+          title: resolvedTitle,
           favorite: assetData.favorite ?? null,
           status: 'outLine',
         },
@@ -78,6 +82,7 @@ export function* applyCardtextFromToolbar(
       style,
       plainText,
       cardtextLines,
+      title: resolvedTitle,
       status: 'outLine' as const,
       id: templateId ?? assetData.id,
     }
@@ -102,7 +107,7 @@ export function* applyCardtextFromToolbar(
             style,
             plainText,
             cardtextLines,
-            title: assetData.title ?? '',
+            title: resolvedTitle,
             favorite: assetData.favorite ?? null,
             status: 'processed',
           })
@@ -111,7 +116,7 @@ export function* applyCardtextFromToolbar(
             style,
             plainText,
             cardtextLines,
-            title: assetData.title ?? '',
+            title: resolvedTitle,
             favorite: assetData.favorite ?? null,
             status: nextStatus,
           })
@@ -126,9 +131,11 @@ export function* applyCardtextFromToolbar(
     style,
     plainText,
     cardtextLines,
+    title: resolvedTitle,
     status: nextStatus,
   }
   yield put(setCardtextAppliedData(applied))
+  if (resolvedTitle) yield put(setTitle(resolvedTitle))
   yield put(setStatus(nextStatus))
   yield put(setCardtextViewEditMode(false))
 }

@@ -11,6 +11,7 @@ import {
   updateCardtextTemplateTitleInList,
 } from '@cardtext/infrastructure/state'
 import { useTemplateActions } from '@entities/templates/application/hooks/useTemplateActions'
+import { CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH } from '@cardtext/application/helpers'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import { IconX } from '@shared/ui/icons'
 import styles from './CardtextEditTitleInline.module.scss'
@@ -42,7 +43,9 @@ export const CardtextEditTitleInline: React.FC = () => {
   const handleSubmit = useCallback(
     async (e?: React.FormEvent) => {
       e?.preventDefault()
-      const newTitle = title.trim()
+      const newTitle = title
+        .trim()
+        .slice(0, CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH)
       if (isSubmitting || !newTitle || !templateId) return
       setIsSubmitting(true)
       try {
@@ -86,6 +89,7 @@ export const CardtextEditTitleInline: React.FC = () => {
           value={title}
           onChange={(e) => setTitleLocal(e.target.value)}
           onKeyDown={handleKeyDown}
+          maxLength={CARDTEXT_TEMPLATE_TITLE_MAX_LENGTH}
           placeholder=""
           disabled={isSubmitting}
           aria-label="Template name"

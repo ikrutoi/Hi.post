@@ -21,6 +21,7 @@ import {
   setCardtextPresetData,
   setCardtextViewEditMode,
   setDraftData,
+  setTitle,
 } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
 import type { RootState } from '@app/state'
@@ -39,6 +40,8 @@ import { checkAndSyncProcessedCard } from './syncProcessedCard'
 import type { CardtextInteractionMode } from '@cardtext/domain/cardtextInteractionMode'
 import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
 import { findCardtextQuickListMatch } from '@cardtext/domain/helpers/cardtextQuickListMatch'
+import { resolveCardtextTemplateTitle } from '@cardtext/application/helpers/resolveCardtextTemplateTitle'
+import { suggestCardtextTemplateTitle } from '@cardtext/application/helpers/suggestCardtextTemplateTitle'
 import { selectCardtextTemplatesListItems } from '@cardtext/infrastructure/selectors'
 import { applyCardtextFromToolbar } from './cardtextToolbarApplySaga'
 import { templateService } from '@entities/templates/domain/services/templateService'
@@ -102,6 +105,12 @@ function* handleCardtextViewAddList(): SagaIterator {
   }
 
   const { assetData } = yield select((s: RootState) => s.cardtext)
+  const existingTitles = (templates ?? []).map((t) => t.title ?? '')
+  const resolvedTitle = resolveCardtextTemplateTitle(
+    plainText,
+    existingTitles,
+    assetData?.title,
+  )
   const result: TemplateOperationResult = yield call(
     [templateService, 'createCardtextTemplate'],
     {
@@ -109,7 +118,7 @@ function* handleCardtextViewAddList(): SagaIterator {
       style,
       plainText,
       cardtextLines,
-      title: assetData?.title ?? '',
+      title: resolvedTitle,
       favorite: assetData?.favorite ?? null,
       status: 'inLine',
     },
@@ -408,6 +417,16 @@ export function* handleCardtextToolbarAction(
       const hasText = (plainText?.trim?.() ?? '').length > 0
       if (!hasText) break
 
+      const templates: CardtextContent[] | null = yield select(
+        selectCardtextTemplatesListItems,
+      )
+      const existingTitles = (templates ?? []).map((t) => t.title ?? '')
+      const resolvedTitle = resolveCardtextTemplateTitle(
+        plainText,
+        existingTitles,
+        assetData?.title,
+      )
+
       const postcardSt = assetData?.status
       if (postcardSt === 'inLine' || postcardSt === 'outLine') {
         const id =
@@ -430,7 +449,7 @@ export function* handleCardtextToolbarAction(
               style,
               plainText,
               cardtextLines,
-              title: assetData?.title ?? '',
+              title: resolvedTitle,
               favorite: assetData?.favorite ?? null,
               status: postcardSt,
             },
@@ -439,6 +458,7 @@ export function* handleCardtextToolbarAction(
             const newId = String(createResult.templateId)
             yield put(addCardtextTemplateId(newId))
             yield put(setCardtextId(newId))
+            if (resolvedTitle) yield put(setTitle(resolvedTitle))
             yield put(setCardtextViewEditMode(false))
             yield put(setDraftEngaged(false))
             yield put(setStatus(postcardSt))
@@ -455,7 +475,7 @@ export function* handleCardtextToolbarAction(
             style,
             plainText,
             cardtextLines,
-            title: assetData?.title ?? '',
+            title: resolvedTitle,
             favorite: assetData?.favorite ?? null,
           },
         )
@@ -469,6 +489,7 @@ export function* handleCardtextToolbarAction(
               cardtextLines,
             }),
           )
+          if (resolvedTitle) yield put(setTitle(resolvedTitle))
           yield put(setCardtextViewEditMode(false))
           yield put(setDraftEngaged(false))
           yield put(setStatus(postcardSt))
@@ -476,6 +497,9 @@ export function* handleCardtextToolbarAction(
         }
         break
       }
+
+      const processedTitle =
+        resolvedTitle || suggestCardtextTemplateTitle(plainText)
 
       const result: { success?: boolean; templateId?: string } = yield call(
         [templateService, 'upsertSingleCardtextByStatus'],
@@ -485,7 +509,7 @@ export function* handleCardtextToolbarAction(
           style,
           plainText,
           cardtextLines,
-          title: assetData?.title ?? '',
+          title: processedTitle,
           favorite: assetData?.favorite ?? null,
           status: 'processed',
         },
@@ -499,6 +523,9 @@ export function* handleCardtextToolbarAction(
         yield put(setCardtextPresetData(null))
         yield put(setCardtextId(templateId))
         yield put(setStatus('processed'))
+        if (processedTitle) yield put(setTitle(processedTitle))
+        yield put(setCardtextViewEditMode(false))
+        yield put(setDraftEngaged(false))
         yield put(loadCardtextTemplatesRequest())
       }
       break
