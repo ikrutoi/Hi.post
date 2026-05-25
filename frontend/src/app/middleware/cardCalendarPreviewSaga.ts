@@ -1,11 +1,15 @@
 import type { SagaIterator } from 'redux-saga'
-import { call, put, takeEvery } from 'redux-saga/effects'
+import { all, call, put, takeEvery } from 'redux-saga/effects'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import {
   requestCalendarPreview,
   setCalendarPreviewCached,
 } from '@entities/card/infrastructure/state'
-import { hydrateMeta } from './cardphotoHelpers'
+import {
+  findIdbImageMetaById,
+  hydrateMeta,
+  type IdbImageMetaSources,
+} from './cardphotoHelpers'
 import type { ImageMeta } from '@cardphoto/domain/types'
 
 const inFlightCardIds = new Set<string>()
@@ -27,10 +31,25 @@ function* resolvePreviewUrl(cardId: string, fallbackPreviewUrl?: string) {
   const imageMetaId = getImageMetaIdFromCardId(cardId)
   if (!imageMetaId) return null
 
-  const rawMeta: ImageMeta | null = yield call(
-    [storeAdapters.cardphotoImages, 'getById'],
-    imageMetaId,
-  )
+  const [cropOrProcessed, applyRec, allCrops]: [
+    ImageMeta | null,
+    { image: ImageMeta } | null,
+    ImageMeta[],
+  ] = yield all([
+    call([storeAdapters.cardphotoImages, 'getById'], imageMetaId),
+    call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
+    call([storeAdapters.cardphotoImages, 'getAll']),
+  ])
+
+  const fromList = allCrops.find((m) => m.id === imageMetaId) ?? null
+
+  const sources: IdbImageMetaSources = {
+    cropOrProcessed: cropOrProcessed ?? fromList,
+    apply: applyRec?.image ?? null,
+    user: null,
+    stock: null,
+  }
+  const rawMeta = findIdbImageMetaById(imageMetaId, sources) ?? fromList
   const hydrated = hydrateMeta(rawMeta)
   if (!hydrated) return null
 

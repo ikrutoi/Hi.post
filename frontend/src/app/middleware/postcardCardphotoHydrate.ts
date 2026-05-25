@@ -1,8 +1,8 @@
 import type { Card } from '@entities/card/domain/types'
 import { postcardRefsFromCard, type PostcardHydrated } from '@entities/postcard'
 import type { ImageMeta } from '@cardphoto/domain/types'
-import { storeAdapters } from '@db/adapters/storeAdapters'
 import { hydrateSessionImageMeta, prepareForRedux } from './cardphotoHelpers'
+import { loadCardphotoImageMetaFromIdb } from '@cardphoto/application/helpers/loadCardphotoImageMetaFromIdb'
 
 const isDeadBlobUrl = (u: string | null | undefined): boolean =>
   typeof u === 'string' && u.startsWith('blob:')
@@ -19,8 +19,7 @@ function cardphotoPreviewFingerprint(card: Card): string {
 }
 
 async function loadCardphotoImageFromIdb(id: string): Promise<ImageMeta | null> {
-  const row = await storeAdapters.cardphotoImages.getById(id)
-  return (row as ImageMeta | null) ?? null
+  return loadCardphotoImageMetaFromIdb(id)
 }
 
 /**

@@ -1,16 +1,10 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import clsx from 'clsx'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useCardFacade } from '@entities/card/application/facades'
-import { CalendarCardItem } from '@entities/card/domain/types'
-import { requestCalendarPreview } from '@entities/card/infrastructure/state'
-import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
+import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './CardPreviewItem.module.scss'
 import { PreviewItemForCalendar } from '@cardphoto/domain/types'
-
-const isBlobUrl = (url: string | null | undefined): boolean =>
-  typeof url === 'string' && url.startsWith('blob:')
 
 export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   item,
@@ -25,19 +19,11 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   historyIndicatorStatuses,
 }) => {
   const { openPreview } = useCardFacade()
-  const cachedUrl = useAppSelector(selectCalendarPreviewDisplayUrl(item.cardId))
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    if (!cachedUrl && item.previewUrl) {
-      dispatch(
-        requestCalendarPreview({
-          cardId: item.cardId,
-          previewUrl: item.previewUrl,
-        }),
-      )
-    }
-  }, [cachedUrl, item.cardId, item.previewUrl, dispatch])
+  const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
+    item.cardId,
+    item.previewUrl,
+    { previewIsProcessed: isProcessed },
+  )
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -47,11 +33,6 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
     }
   }
 
-  const allowBlobFallback =
-    item.cardId === 'current_session' || Boolean(isProcessed)
-  const safeFallbackUrl =
-    isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
-  const displayUrl = cachedUrl ?? safeFallbackUrl
   const hasDisplayUrl =
     typeof displayUrl === 'string' && displayUrl.trim().length > 0
 
@@ -74,6 +55,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
         styles.previewImage,
         isCartDateDisabledPreview && styles.previewImageCartDisabled,
       )}
+      onError={onPreviewImgError}
     />
   ) : showCardphotoPlaceholder ? (
     <div className={styles.miniCardphotoPlaceholder} aria-hidden>

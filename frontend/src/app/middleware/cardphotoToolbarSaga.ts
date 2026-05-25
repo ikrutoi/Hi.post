@@ -3,7 +3,10 @@ import { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import type { WorkingConfig } from '@cardphoto/domain/types'
 import type { CardphotoSliceState } from '@cardphoto/infrastructure/state/cardphotoSlice'
+import { isCardphotoImageIdUsedByPostcards } from '@cardphoto/application/helpers/cardphotoImageUsage'
+import { selectCartItems } from '@cart/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
+import type { PostcardHydrated } from '@entities/postcard'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { RootState } from '@app/state'
 import {
@@ -411,10 +414,14 @@ export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
         asset?.status === 'processed') &&
       asset.id
     ) {
-      yield call(
-        [storeAdapters.cardphotoImages, 'deleteById'] as const,
-        asset.id,
-      )
+      const cartItems: PostcardHydrated[] = yield select(selectCartItems)
+      const inUse = isCardphotoImageIdUsedByPostcards(cartItems, asset.id)
+      if (!inUse) {
+        yield call(
+          [storeAdapters.cardphotoImages, 'deleteById'] as const,
+          asset.id,
+        )
+      }
       yield put(bumpCardphotoInlineTemplateList())
     }
 

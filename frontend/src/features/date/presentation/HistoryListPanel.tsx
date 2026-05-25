@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo } from 'react'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import React, { useMemo } from 'react'
+import { useAppSelector } from '@app/hooks'
+import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import { IconHistory } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
-import { requestCalendarPreview } from '@entities/card/infrastructure/state'
-import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { type HistoryListEntryVariant } from './historyList/HistoryListEntry'
 import {
   POSTCARD_DISPATCH_DATE_FALLBACK,
@@ -50,9 +49,6 @@ type Props = {
   // section: 'date' | 'history'
 }
 
-const isBlobUrl = (url: string | null | undefined): boolean =>
-  typeof url === 'string' && url.startsWith('blob:')
-
 function isFallbackDispatchDate(d: DispatchDate): boolean {
   return (
     d.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&
@@ -86,32 +82,17 @@ const HistoryListPanelRow: React.FC<{
   onSelectEntry?: (item: HistoryListPanelItem) => void
   densityLevel: PanelDensity2Size
 }> = ({ item, listSelectedLocalId, onSelectEntry, densityLevel }) => {
-  const dispatch = useAppDispatch()
-  const cachedUrl = useAppSelector(
-    selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
+  const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
+    item.cardId,
+    item.previewUrl,
+    { previewIsProcessed: item.previewIsProcessed },
   )
-
-  useEffect(() => {
-    if (item.cardId && !cachedUrl && item.previewUrl) {
-      dispatch(
-        requestCalendarPreview({
-          cardId: item.cardId,
-          previewUrl: item.previewUrl,
-        }),
-      )
-    }
-  }, [dispatch, cachedUrl, item.cardId, item.previewUrl])
-
-  const allowBlobFallback =
-    item.cardId === 'current_session' || Boolean(item.previewIsProcessed)
-  const safeFallbackUrl =
-    isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
-  const displayUrl = cachedUrl ?? safeFallbackUrl
 
   return (
     <HistoryListEntry
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
+      onPreviewImgError={onPreviewImgError}
       detailLine={item.detailLine}
       variant={item.variant}
       previewStatus={item.previewStatus}

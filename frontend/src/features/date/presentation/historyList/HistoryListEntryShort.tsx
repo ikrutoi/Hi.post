@@ -16,6 +16,7 @@ export const HistoryListEntryShort: React.FC<HistoryListEntryProps> = ({
   previewStatus,
   previewIsProcessed,
   onSelect,
+  onPreviewImgError,
   isSelected = false,
   isFocused = false,
   densityLevel = 1,
@@ -58,7 +59,12 @@ export const HistoryListEntryShort: React.FC<HistoryListEntryProps> = ({
       <div className={styles.body}>
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
-            <img src={previewUrl} alt="" className={styles.thumbImg} />
+            <img
+              src={previewUrl}
+              alt=""
+              className={styles.thumbImg}
+              onError={onPreviewImgError}
+            />
           ) : null}
           {showStatusIndicator && previewStatus && !previewIsProcessed ? (
             <span

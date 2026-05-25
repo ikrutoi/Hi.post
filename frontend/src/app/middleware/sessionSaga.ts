@@ -126,6 +126,9 @@ import {
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
 import type { PostcardHydrated } from '@entities/postcard'
+import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
+import { setAssets } from '@entities/assetRegistry/infrastructure/state'
+import type { ImageAsset } from '@entities/assetRegistry/domain/types'
 import type { CardtextStyle } from '@cardtext/domain/types'
 import type { EnvelopeSessionRecord } from '@envelope/domain/types'
 import type {
@@ -569,6 +572,27 @@ function* syncRecipientFormViewAfterSessionRestore() {
   yield put(setRecipientView('recipientsView'))
 }
 
+function cartPostcardPreviewAssets(
+  postcards: PostcardHydrated[],
+): ImageAsset[] {
+  const assets: ImageAsset[] = []
+  const seen = new Set<string>()
+  for (const p of postcards) {
+    const meta = p.card.cardphoto?.appliedData
+    const id = meta?.id
+    if (!id || seen.has(id)) continue
+    const preview = cardListPreviewUrlFromCard(p.card)
+    if (!preview) continue
+    seen.add(id)
+    assets.push({
+      id,
+      url: meta?.url?.trim() || preview,
+      thumbUrl: preview,
+    })
+  }
+  return assets
+}
+
 export function* hydrateAppSession() {
   try {
     const rawPostcards: PostcardHydrated[] = yield call(postcardsAdapter.getAll)
@@ -589,6 +613,11 @@ export function* hydrateAppSession() {
       }
     }
     yield put(setItems(postcards))
+
+    const cartAssets = cartPostcardPreviewAssets(postcards)
+    if (cartAssets.length > 0) {
+      yield put(setAssets(cartAssets))
+    }
 
     yield call(refreshRightSidebarBadgesFromPostcards)
 

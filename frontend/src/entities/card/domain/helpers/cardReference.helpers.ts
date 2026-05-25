@@ -6,15 +6,18 @@ import type {
 import type { Card } from '../types/card.types'
 import type { PostcardHydrated } from '@entities/postcard'
 
+/** URL для списков / календаря. */
+export function cardListPreviewUrlFromCard(card: Card): string | null {
+  const thumb =
+    typeof card.thumbnailUrl === 'string' ? card.thumbnailUrl.trim() : ''
+  if (thumb !== '') return thumb
+  const meta = card.cardphoto?.appliedData ?? card.cardphoto?.assetData
+  const url = (meta?.thumbnail?.url || meta?.full?.url || meta?.url || '').trim()
+  return url !== '' ? url : null
+}
+
 function cardphotoPreviewFromCard(card: Card): string {
-  if (card.thumbnailUrl) return card.thumbnailUrl
-  const meta = card.cardphoto.appliedData ?? card.cardphoto.assetData
-  return (
-    meta?.thumbnail?.url ||
-    meta?.full?.url ||
-    meta?.url ||
-    ''
-  )
+  return cardListPreviewUrlFromCard(card) ?? ''
 }
 
 export function createCardReferenceFromPostcard(

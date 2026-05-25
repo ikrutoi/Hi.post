@@ -20,6 +20,7 @@ import { DispatchDate } from '@entities/date'
 import { CardSection } from '@shared/config/constants'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import type { PostcardHydrated } from '@entities/postcard'
+import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
 
 export const selectCardState = (state: RootState) => state.card
 
@@ -42,12 +43,14 @@ export const selectCalendarIndex = (state: RootState) =>
 export const selectCalendarPreviewCache = (state: RootState) =>
   selectCardState(state).calendarPreviewCache
 
-/** URL для отображения превью в ячейке: из кэша (мгновенно) или fallback на исходный previewUrl. */
-export const selectCalendarPreviewDisplayUrl = (cardId: string) =>
-  createSelector(
-    [selectCalendarPreviewCache, () => cardId],
-    (cache, id) => cache[id] ?? null,
-  )
+/** URL превью из кэша по `cardId` (стабильный селектор для `useAppSelector`). */
+export const selectCalendarPreviewDisplayUrlByCardId = createSelector(
+  [
+    selectCalendarPreviewCache,
+    (_state: RootState, cardId: string) => cardId,
+  ],
+  (cache, cardId) => (cardId ? (cache[cardId] ?? null) : null),
+)
 
 export const selectCardById = (id: string) => (state: RootState) =>
   state.card.cards.find((c) => c.id === id)
@@ -74,7 +77,7 @@ function postcardToCalendarItem(
     rowKey: `postcard:${listSlotIndex}:${p.id}:${p.status}`,
     /** Дата отправки открытки (`p.date`), как в корзине и списке — не `card.date`. */
     date: p.date,
-    previewUrl: c.thumbnailUrl,
+    previewUrl: cardListPreviewUrlFromCard(c) ?? '',
     status: p.status,
     isProcessed: false,
   }
@@ -151,7 +154,7 @@ export const selectCardsByDateMap = createSelector(
           cardId: card.id,
           rowKey: `editor-card:${card.id}`,
           date: card.date,
-          previewUrl: card.thumbnailUrl,
+          previewUrl: cardListPreviewUrlFromCard(card) ?? '',
           status: 'cart',
           isProcessed: true,
         }

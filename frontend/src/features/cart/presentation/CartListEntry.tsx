@@ -35,6 +35,7 @@ export type CartListEntryProps = {
   postcardLocalId?: number
   onSelect?: () => void
   onDelete?: () => void
+  onPreviewImgError?: () => void
   /** Включение режима dateEdit (заблокированные): правый CardPie и данные строки. */
   onDateEditActivate?: () => void
   /** Сегмент «Корзина» (актуальные даты): чекбокс слева в gutter. */
@@ -55,6 +56,7 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
   postcardLocalId,
   onSelect,
   onDelete,
+  onPreviewImgError,
   onDateEditActivate,
   isChecked = false,
   onCheckedChange,
@@ -214,7 +216,12 @@ export const CartListEntry: React.FC<CartListEntryProps> = ({
         <div className={styles.body}>
           <div className={styles.thumb} aria-hidden>
             {previewUrl ? (
-              <img src={previewUrl} alt="" className={styles.thumbImg} />
+              <img
+                src={previewUrl}
+                alt=""
+                className={styles.thumbImg}
+                onError={onPreviewImgError}
+              />
             ) : null}
             {previewStatus && !previewIsProcessed ? (
               <span

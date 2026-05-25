@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
+import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
+import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconCardBlocked, IconCart } from '@shared/ui/icons'
@@ -20,8 +22,6 @@ import {
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { setCartCalendarDatePickMode } from '@date/calendar/infrastructure/state'
 import type { CartListStatusSegment } from '@cart/domain/types'
-import { requestCalendarPreview } from '@entities/card/infrastructure/state'
-import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
 import { listEntryPriceLine } from '@shared/utils/listEntryPriceLine'
 import { CartListEntry, type CartListEntryVariant } from './CartListEntry'
 import type { PostcardHydrated } from '@entities/postcard'
@@ -54,9 +54,6 @@ type Props = {
   /** cartBlocked: dateEdit — правый CardPie и данные открытки строки. */
   onDateEditEntry?: (item: CartListPanelItem) => void
 }
-
-const isBlobUrl = (url: string | null | undefined): boolean =>
-  typeof url === 'string' && url.startsWith('blob:')
 
 function formatDispatchDateLabel(d: DispatchDate): string {
   if (d.year === 0 && d.month === 0 && d.day === 0) {
@@ -141,7 +138,7 @@ function cartPostcardsToEntries(
         sourceDate: p.date,
         postcard: p,
         dateLabel: formatDispatchDateLabel(p.date),
-        previewUrl: p.card.thumbnailUrl ?? null,
+        previewUrl: cardListPreviewUrlFromCard(p.card),
         detailLine: formatRecipientLine(p),
         priceLine: listEntryPriceLine(p),
         variant,
@@ -166,28 +163,12 @@ const CartListPanelRow: React.FC<{
   isChecked = false,
   onToggleChecked,
 }) => {
-  const dispatch = useAppDispatch()
   const { removeItem } = useCartFacade()
-  const cachedUrl = useAppSelector(
-    selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
+  const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
+    item.cardId,
+    item.previewUrl,
+    { previewIsProcessed: item.previewIsProcessed },
   )
-
-  useEffect(() => {
-    if (item.cardId && !cachedUrl && item.previewUrl) {
-      dispatch(
-        requestCalendarPreview({
-          cardId: item.cardId,
-          previewUrl: item.previewUrl,
-        }),
-      )
-    }
-  }, [dispatch, cachedUrl, item.cardId, item.previewUrl])
-
-  const allowBlobFallback =
-    item.cardId === 'current_session' || Boolean(item.previewIsProcessed)
-  const safeFallbackUrl =
-    isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
-  const displayUrl = cachedUrl ?? safeFallbackUrl
   const hidePrice = item.variant === 'inactive'
 
   const handleRemoveFromCart = useCallback(() => {
@@ -204,6 +185,7 @@ const CartListPanelRow: React.FC<{
       key={item.id}
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
+      onPreviewImgError={onPreviewImgError}
       detailLine={item.detailLine}
       priceLine={
         hidePrice ? undefined : (item.priceLine ?? listEntryPriceLine(item.postcard))

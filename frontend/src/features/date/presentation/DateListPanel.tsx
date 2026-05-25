@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react'
-import { useAppDispatch, useAppSelector } from '@app/hooks'
+import React from 'react'
+import { useAppSelector } from '@app/hooks'
 import { selectDateListSortDirection } from '@date/calendar/infrastructure/selectors'
 import { useDispatchPlanListEntries } from '../application/hooks/useDispatchPlanListEntries'
 import { IconListDate } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
-import { requestCalendarPreview } from '@entities/card/infrastructure/state'
-import { selectCalendarPreviewDisplayUrl } from '@entities/card/infrastructure/selectors'
+import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import {
   DateListEntry,
   type DateListEntryVariant,
@@ -39,40 +38,22 @@ type Props = {
   onSelectEntry?: (item: DateListPanelItem) => void
 }
 
-const isBlobUrl = (url: string | null | undefined): boolean =>
-  typeof url === 'string' && url.startsWith('blob:')
-
 const DateListPanelRow: React.FC<{
   item: DateListPanelItem
   onSelectEntry?: (item: DateListPanelItem) => void
 }> = ({ item, onSelectEntry }) => {
-  const dispatch = useAppDispatch()
-  const cachedUrl = useAppSelector(
-    selectCalendarPreviewDisplayUrl(item.cardId ?? ''),
+  const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
+    item.cardId,
+    item.previewUrl,
+    { previewIsProcessed: item.previewIsProcessed },
   )
-
-  useEffect(() => {
-    if (item.cardId && !cachedUrl && item.previewUrl) {
-      dispatch(
-        requestCalendarPreview({
-          cardId: item.cardId,
-          previewUrl: item.previewUrl,
-        }),
-      )
-    }
-  }, [dispatch, cachedUrl, item.cardId, item.previewUrl])
-
-  const allowBlobFallback =
-    item.cardId === 'current_session' || Boolean(item.previewIsProcessed)
-  const safeFallbackUrl =
-    isBlobUrl(item.previewUrl) && !allowBlobFallback ? null : item.previewUrl
-  const displayUrl = cachedUrl ?? safeFallbackUrl
 
   return (
     <DateListEntry
       key={item.id}
       dateLabel={item.dateLabel}
       previewUrl={displayUrl}
+      onPreviewImgError={onPreviewImgError}
       detailLine={item.detailLine}
       variant={item.variant}
       onSelect={

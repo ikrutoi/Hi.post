@@ -18,6 +18,7 @@ export type CardPieListEntryProps = {
   isSelected?: boolean
   isFocused?: boolean
   onAddCart?: () => void
+  onPreviewImgError?: () => void
 }
 
 export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
@@ -31,6 +32,7 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   isSelected = false,
   isFocused = false,
   onAddCart,
+  onPreviewImgError,
 }) => {
   const { isAllComplete } = useAppSelector(selectPieProgress)
   const interactive = Boolean(onSelect)
@@ -109,7 +111,12 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
         <div className={styles.body}>
           <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
-            <img src={previewUrl} alt="" className={styles.thumbImg} />
+            <img
+              src={previewUrl}
+              alt=""
+              className={styles.thumbImg}
+              onError={onPreviewImgError}
+            />
           ) : (
             <div className={styles.thumbPlaceholder}>
               {getToolbarIcon({ key: 'cardphoto' })}

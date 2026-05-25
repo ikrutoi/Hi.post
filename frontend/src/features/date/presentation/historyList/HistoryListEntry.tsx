@@ -15,6 +15,7 @@ export type HistoryListEntryProps = {
   previewStatus?: PostcardStatus
   previewIsProcessed?: boolean
   onSelect?: () => void
+  onPreviewImgError?: () => void
   isSelected?: boolean
   isFocused?: boolean
   /** Плотность сетки списка истории: 1 — 4 ячейки, 2 — 5 ячеек. */
@@ -30,6 +31,7 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
   previewStatus,
   previewIsProcessed,
   onSelect,
+  onPreviewImgError,
   isSelected = false,
   isFocused = false,
   densityLevel = 1,
@@ -73,7 +75,12 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
     >
       <div className={styles.thumb} aria-hidden>
         {previewUrl ? (
-          <img src={previewUrl} alt="" className={styles.thumbImg} />
+          <img
+            src={previewUrl}
+            alt=""
+            className={styles.thumbImg}
+            onError={onPreviewImgError}
+          />
         ) : null}
         {showStatusIndicator && previewStatus && !previewIsProcessed ? (
           <span

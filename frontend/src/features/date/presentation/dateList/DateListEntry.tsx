@@ -13,6 +13,7 @@ export type DateListEntryProps = {
   variant?: DateListEntryVariant
   onSelect?: () => void
   onDelete?: () => void
+  onPreviewImgError?: () => void
   isSelected?: boolean
   isFocused?: boolean
 }
@@ -24,6 +25,7 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
   variant = 'default',
   onSelect,
   onDelete,
+  onPreviewImgError,
   isSelected = false,
   isFocused = false,
 }) => {
@@ -57,7 +59,12 @@ export const DateListEntry: React.FC<DateListEntryProps> = ({
       <div className={styles.body}>
         <div className={styles.thumb} aria-hidden>
           {previewUrl ? (
-            <img src={previewUrl} alt="" className={styles.thumbImg} />
+            <img
+              src={previewUrl}
+              alt=""
+              className={styles.thumbImg}
+              onError={onPreviewImgError}
+            />
           ) : (
             <div className={styles.thumbPlaceholder}>
               {getToolbarIcon({ key: 'cardphoto' })}
