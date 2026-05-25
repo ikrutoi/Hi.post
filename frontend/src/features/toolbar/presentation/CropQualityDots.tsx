@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectCropQualityProgress } from '@cardphoto/infrastructure/selectors'
 import { getQualityColor } from '@cardphoto/application/helpers'
-import { IconCircleV2 } from '@shared/ui/icons'
 import styles from './CropQualityDots.module.scss'
 
 const DOT_COUNT = 6
@@ -61,25 +60,26 @@ export const CropQualityDots: React.FC<Props> = ({ disabled = false }) => {
     <div className={styles.root} role="img" aria-label={ariaLabel}>
       {Array.from({ length: DOT_COUNT }, (_, i) => {
         const index = i + 1
-        const isActive = !disabled && index <= litCount
-        const onlyFirstLit =
-          !disabled && litCount === 1 && isActive && index === 1
+        const isLit = !disabled && index <= litCount
+        const isCurrent = isLit && index === litCount
 
         return (
           <div
             key={index}
-            className={clsx(styles.dotWrap, {
-              [styles.active]: isActive,
-              [styles.inactive]: !isActive,
-              [styles.emphasizeFirst]: onlyFirstLit,
-            })}
+            className={clsx(
+              styles.dotWrap,
+              isLit && styles.lit,
+              isCurrent && styles.current,
+            )}
             style={
-              isActive && activeColor
-                ? ({ color: activeColor } as React.CSSProperties)
+              isLit && activeColor
+                ? ({
+                    '--quality-dot-color': activeColor,
+                  } as React.CSSProperties)
                 : undefined
             }
           >
-            <IconCircleV2 className={styles.icon} fill="currentColor" />
+            <span className={styles.dot} aria-hidden />
           </div>
         )
       })}

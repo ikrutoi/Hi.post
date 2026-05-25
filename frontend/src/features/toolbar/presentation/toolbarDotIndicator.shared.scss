@@ -1,0 +1,43 @@
+@use '@styles/config/colors' as *;
+
+$dot-indicator-inactive-color: hsl(0, 0%, 65%);
+$dot-indicator-inactive-size: 0.45rem;
+$dot-indicator-active-size: 0.65rem;
+$dot-indicator-slot-size: 0.65rem;
+
+@mixin dot-indicator-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+@mixin dot-indicator-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 $dot-indicator-slot-size;
+  width: $dot-indicator-slot-size;
+  height: $dot-indicator-slot-size;
+  margin: 0 0.15rem;
+}
+
+@mixin dot-indicator-dot {
+  display: block;
+  flex-shrink: 0;
+  width: $dot-indicator-inactive-size;
+  height: $dot-indicator-inactive-size;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: $dot-indicator-inactive-color;
+  transition:
+    width 0.2s ease,
+    height 0.2s ease,
+    background-color 0.2s ease;
+}
+
+@mixin dot-indicator-dot-active {
+  width: $dot-indicator-active-size;
+  height: $dot-indicator-active-size;
+}
