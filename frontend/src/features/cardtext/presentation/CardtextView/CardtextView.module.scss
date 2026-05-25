@@ -114,9 +114,33 @@ $cardtext-view-toolbar-inset: 0.5rem;
 }
 
 .viewTitleStrip {
-  width: 36%;
+  width: 33%;
   transform: translate(-50%, -50%);
   gap: 0.75rem;
+}
+
+/* View: текст без клика; редактирование только по иконке справа */
+.viewTitleDisplay {
+  max-width: none;
+  cursor: default;
+  background-color: transparent;
+  border: 1px solid $color-app-strip;
+  border-radius: 0.5rem;
+
+  &:hover {
+    color: $color-font-disabled;
+  }
+}
+
+.viewTitleDisplayLabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-font-disabled;
+  cursor: default;
+  user-select: none;
 }
 
 .viewTitleText {
@@ -134,17 +158,19 @@ $cardtext-view-toolbar-inset: 0.5rem;
 }
 
 .viewTitleEditing {
-  color: $color-font-active;
+  background-color: transparent;
+  color: $color-font-disabled;
   cursor: text;
   user-select: text;
   outline: none;
   overflow: visible;
   white-space: nowrap;
   text-overflow: ellipsis;
-  border: solid 1px $color-cardtext-input-border;
+  border: solid 1px $color-app-strip;
+  border-radius: 0.5rem;
 
   &:hover {
-    color: $color-font-active;
+    color: $color-font-disabled;
   }
 }
 
@@ -179,23 +205,6 @@ $cardtext-view-toolbar-inset: 0.5rem;
   }
 
   svg {
-    width: 0.75rem;
-    height: 0.75rem;
-  }
-}
-
-.viewTitleEditingBtnPlaceholder {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.15rem 0.25rem;
-  visibility: hidden;
-  pointer-events: none;
-
-  &::after {
-    content: '';
-    display: block;
     width: 0.75rem;
     height: 0.75rem;
   }

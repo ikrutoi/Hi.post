@@ -193,6 +193,7 @@ import {
   IconPanelDensity2,
   IconListCheck,
   IconCheckBox,
+  IconEditLight,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -411,6 +412,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconListCheck />
     case 'checkBox':
       return <IconCheckBox />
+    case 'editLight':
+      return <IconEditLight />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

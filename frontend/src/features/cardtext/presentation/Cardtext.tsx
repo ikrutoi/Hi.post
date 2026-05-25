@@ -315,24 +315,29 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                     </button>
                   </div>
                 ) : (
+                  <div
+                    className={clsx(
+                      viewStyles.viewTitle,
+                      viewStyles.viewTitleStrip,
+                      viewStyles.viewTitleDisplay,
+                    )}
+                  >
+                    <span className={viewStyles.viewTitleDisplayLabel}>
+                      <span className={viewStyles.viewTitleText}>
+                        {displayTitle}
+                      </span>
+                    </span>
                     <button
                       type="button"
-                      className={clsx(
-                        viewStyles.viewTitle,
-                        viewStyles.viewTitleStrip,
-                      )}
+                      className={viewStyles.viewTitleEditingBtn}
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={startEditTitle}
                       aria-label="Edit template name"
                       title="Edit template name"
                     >
-                      <span className={viewStyles.viewTitleText} aria-hidden>
-                        {displayTitle}
-                      </span>
-                      <span
-                        className={viewStyles.viewTitleEditingBtnPlaceholder}
-                        aria-hidden
-                      />
+                      {getToolbarIcon({ key: 'editLight' })}
                     </button>
+                  </div>
                 )}
               </>
             )}
