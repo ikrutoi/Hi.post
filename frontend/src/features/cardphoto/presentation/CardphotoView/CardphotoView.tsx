@@ -13,11 +13,13 @@ import { CardphotoStage } from '../CardphotoStage'
 type Props = {
   className?: string
   onDelete?: () => void
+  titleStripEditing?: boolean
 }
 
 export const CardphotoView: React.FC<Props> = ({
   className,
   onDelete,
+  titleStripEditing,
 }) => {
   const activeImage = useAppSelector(selectActiveImage)
   const assetToolbar = useAppSelector(selectCardphotoAssetToolbar)
@@ -34,7 +36,13 @@ export const CardphotoView: React.FC<Props> = ({
     ((showViewOverlay && canDeleteViewTemplate) || showCreateOverlay)
 
   return (
-    <div className={clsx(styles.viewContainer, className)}>
+    <div
+      className={clsx(
+        styles.viewContainer,
+        titleStripEditing && styles.viewContainerTitleStripEditing,
+        className,
+      )}
+    >
       <div className={styles.stageRoot}>
         <CardphotoStage />
       </div>

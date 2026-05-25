@@ -98,14 +98,12 @@ $cardtext-view-toolbar-inset: 0.5rem;
   background-color: #fff;
   border-radius: 0.35rem;
   cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    border 0.15s ease;
+  transition: color 0.15s ease;
   user-select: none;
   box-sizing: border-box;
 
   &:hover {
-    color: $color-font-enabled-light;
+    color: $color-font-enabled-light-hover;
   }
 
   &:focus-visible {
@@ -119,16 +117,19 @@ $cardtext-view-toolbar-inset: 0.5rem;
   gap: 0.75rem;
 }
 
-/* View: текст без клика; редактирование только по иконке справа */
 .viewTitleDisplay {
   max-width: none;
-  cursor: default;
   background-color: transparent;
   border: 1px solid $color-app-strip;
   border-radius: 0.5rem;
 
   &:hover {
-    color: $color-font-disabled;
+    color: $color-font-enabled-light-hover;
+
+    .viewTitleDisplayLabel,
+    .viewTitleEditingBtn {
+      color: inherit;
+    }
   }
 }
 
@@ -138,8 +139,8 @@ $cardtext-view-toolbar-inset: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: $color-font-disabled;
-  cursor: default;
+  color: inherit;
+  cursor: pointer;
   user-select: none;
 }
 
@@ -159,7 +160,7 @@ $cardtext-view-toolbar-inset: 0.5rem;
 
 .viewTitleEditing {
   background-color: transparent;
-  color: $color-font-disabled;
+  color: $color-font-enabled-light-hover;
   cursor: text;
   user-select: text;
   outline: none;
@@ -170,7 +171,7 @@ $cardtext-view-toolbar-inset: 0.5rem;
   border-radius: 0.5rem;
 
   &:hover {
-    color: $color-font-disabled;
+    color: $color-font-enabled-light-hover;
   }
 }
 
@@ -195,14 +196,10 @@ $cardtext-view-toolbar-inset: 0.5rem;
   padding: 0.15rem 0.25rem;
   border: none;
   border-radius: 50%;
-  color: $color-font-disabled;
+  color: inherit;
   cursor: pointer;
   background: transparent;
   transition: color 0.15s ease;
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
 
   svg {
     width: 0.75rem;

@@ -1,0 +1,121 @@
+@use '@styles/config/colors' as *;
+
+.viewTitle {
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 0.5rem;
+  margin: 0;
+  max-width: 60%;
+  font-size: 0.8rem;
+  color: $color-font-disabled;
+  background-color: #fff;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  user-select: none;
+  box-sizing: border-box;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+
+  &:focus-visible {
+    border: solid 1px $color-toggle-active;
+  }
+}
+
+.viewTitleStrip {
+  width: 33%;
+  transform: translate(-50%, -50%);
+  gap: 0.75rem;
+}
+
+.viewTitleDisplay {
+  max-width: none;
+  background-color: transparent;
+  border: 1px solid $color-app-strip;
+  border-radius: 0.5rem;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+
+    .viewTitleDisplayLabel,
+    .viewTitleEditingBtn {
+      color: inherit;
+    }
+  }
+}
+
+.viewTitleDisplayLabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  cursor: pointer;
+  user-select: none;
+}
+
+.viewTitleText {
+  flex: 1 1 auto;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.viewTitleEditing {
+  background-color: transparent;
+  color: $color-font-enabled-light-hover;
+  cursor: text;
+  user-select: text;
+  outline: none;
+  overflow: visible;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border: solid 1px $color-app-strip;
+  border-radius: 0.5rem;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+}
+
+.viewTitleEditingInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.viewTitleEditingBtn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 0.25rem;
+  border: none;
+  border-radius: 50%;
+  color: inherit;
+  cursor: pointer;
+  background: transparent;
+  transition: color 0.15s ease;
+
+  svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}

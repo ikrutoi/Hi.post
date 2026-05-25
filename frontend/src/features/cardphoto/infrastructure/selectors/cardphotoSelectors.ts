@@ -176,6 +176,9 @@ export const selectActiveImage = (state: RootState): ImageMeta | null => {
   return cp.assetData
 }
 
+export const selectCardphotoTitle = (state: RootState): string =>
+  state.cardphoto.state?.assetData?.title?.trim() ?? ''
+
 export const selectIsProcessedMode = (state: RootState): boolean =>
   state.cardphoto.state?.assetData?.status === 'processed'
 

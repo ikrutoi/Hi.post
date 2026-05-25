@@ -46,6 +46,8 @@ export interface ImageMeta {
   parentImageId?: string
   rotation?: number
   imageAspectRatio?: number
+  /** Подпись шаблона в списке / View (ручной ввод). */
+  title?: string
 }
 
 export interface ImageLayer {

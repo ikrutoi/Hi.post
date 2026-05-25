@@ -250,6 +250,14 @@ export const cardphotoSlice = createSlice({
       }
     },
 
+    setCardphotoTitle(state, action: PayloadAction<string>) {
+      if (!state.state?.assetData) return
+      state.state.assetData = {
+        ...state.state.assetData,
+        title: action.payload,
+      }
+    },
+
     clearAllCrops(state) {
       if (state.state) {
         if (state.state.assetData?.status === 'processed') {
@@ -335,6 +343,7 @@ export const {
   resetCropLayers,
   setInitialSessionState,
   setProcessedImage,
+  setCardphotoTitle,
   hydrateEditor,
   clearAllCrops,
   removeUserImage,

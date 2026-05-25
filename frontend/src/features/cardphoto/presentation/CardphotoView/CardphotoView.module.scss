@@ -60,3 +60,7 @@
 .viewDeleteBtn {
   @include overlay.sectionViewOverlayDeleteButton;
 }
+
+.viewContainerTitleStripEditing {
+  padding-top: 0.5rem;
+}

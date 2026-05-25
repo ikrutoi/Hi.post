@@ -1,17 +1,22 @@
 import React, { useCallback } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
-import { useAppDispatch } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useCardphotoFacade } from '@cardphoto/application/facades'
+import { useCardphotoTitleStrip } from '@cardphoto/application/hooks'
+import { CARDPHOTO_TEMPLATE_TITLE_MAX_LENGTH } from '@cardphoto/application/helpers/cardphotoTemplateTitle'
 import { CardphotoView } from './CardphotoView/CardphotoView'
 import { deleteCardphotoFromViewRequested } from '@cardphoto/infrastructure/state'
+import { selectCardphotoTitle } from '@cardphoto/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
+import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './Cardphoto.module.scss'
 import viewStyles from './CardphotoView/CardphotoView.module.scss'
+import titleStripStyles from './CardphotoTitleStrip.module.scss'
 
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 
@@ -67,7 +72,27 @@ const CardphotoRightListMirror: React.FC = () => {
 const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
   const { activeImage, assetToolbar } = useCardphotoFacade()
+  const title = useAppSelector(selectCardphotoTitle)
   const showAssetToolbar = !!activeImage && !!assetToolbar
+  const showTemplateTitleStrip = assetToolbar === 'cardphotoView' && !!activeImage
+  const displayTitle = title.trim()
+
+  const {
+    titleInputRef,
+    titleStripRef,
+    draftTitle,
+    setDraftTitle,
+    isSubmittingTitle,
+    forceEditingTitle,
+    startEditTitle,
+    cancelEditTitle,
+    commitEditTitle,
+    imageStatus,
+  } = useCardphotoTitleStrip({
+    title,
+    id: activeImage?.id ?? null,
+    imageStatus: activeImage?.status,
+  })
 
   const handleDelete = useCallback(() => {
     if (assetToolbar === 'cardphotoCreate') {
@@ -94,7 +119,89 @@ const CardphotoSessionEditor: React.FC = () => {
           ) : null}
         </div>
         <div className={styles.cardphotoViewContent}>
-          <CardphotoView onDelete={handleDelete} />
+          {showTemplateTitleStrip &&
+            (forceEditingTitle ? (
+              <div
+                ref={titleStripRef}
+                className={clsx(
+                  titleStripStyles.viewTitle,
+                  titleStripStyles.viewTitleStrip,
+                  titleStripStyles.viewTitleEditing,
+                )}
+              >
+                <input
+                  ref={titleInputRef}
+                  type="text"
+                  className={titleStripStyles.viewTitleEditingInput}
+                  value={draftTitle}
+                  maxLength={CARDPHOTO_TEMPLATE_TITLE_MAX_LENGTH}
+                  onChange={(e) => setDraftTitle(e.target.value)}
+                  onBlur={() => {
+                    if (imageStatus === 'inLine') cancelEditTitle()
+                    else void commitEditTitle()
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      e.preventDefault()
+                      cancelEditTitle()
+                    }
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      if (imageStatus !== 'inLine') void commitEditTitle()
+                    }
+                  }}
+                  disabled={isSubmittingTitle}
+                  aria-label="Template name"
+                  title="Edit template name"
+                />
+                <button
+                  type="button"
+                  className={titleStripStyles.viewTitleEditingBtn}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => void commitEditTitle()}
+                  aria-label="Save and close"
+                  title="Save and close"
+                  disabled={isSubmittingTitle}
+                >
+                  {getToolbarIcon({ key: 'applyLight' })}
+                </button>
+              </div>
+            ) : (
+              <div
+                role="button"
+                tabIndex={0}
+                className={clsx(
+                  titleStripStyles.viewTitle,
+                  titleStripStyles.viewTitleStrip,
+                  titleStripStyles.viewTitleDisplay,
+                )}
+                onClick={startEditTitle}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    startEditTitle()
+                  }
+                }}
+                aria-label="Edit template name"
+                title="Edit template name"
+              >
+                <span className={titleStripStyles.viewTitleDisplayLabel}>
+                  <span className={titleStripStyles.viewTitleText}>
+                    {displayTitle}
+                  </span>
+                </span>
+                <span
+                  className={titleStripStyles.viewTitleEditingBtn}
+                  aria-hidden
+                >
+                  {getToolbarIcon({ key: 'editLight' })}
+                </span>
+              </div>
+            ))}
+          <CardphotoView
+            onDelete={handleDelete}
+            titleStripEditing={forceEditingTitle}
+          />
         </div>
       </div>
     </div>
