@@ -7,6 +7,9 @@ import { DateListToolbarState } from './dateList.types'
 export const HISTORY_LIST_KEYS = [
   'listDelete',
   'sortDown',
+  'sortUp',
+  'sortAZDown',
+  'sortAZUp',
   'historyPanel',
   'historyPanelDensity',
   'cart',

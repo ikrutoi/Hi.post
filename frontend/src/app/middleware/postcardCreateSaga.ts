@@ -342,10 +342,41 @@ function* pruneDispatchDatesAfterBranchExcluded(
   }
 }
 
+/** Если у получателя не осталось строк плана на выбранных датах — снять с конверта (как после addCart). */
+function* pruneRecipientSlotIfNoPlanBranchesLeft(
+  recipientSlotKey: string,
+): SagaIterator {
+  const excluded: string[] = yield select(selectExcludedDispatchBranches)
+  const excludedSet = new Set(excluded)
+  const isMulti: boolean = yield select(selectIsMultiDateMode)
+  let dates: DispatchDate[]
+  if (isMulti) {
+    dates = yield select(selectSelectedDates)
+  } else {
+    const selectedDate: DispatchDate | null = yield select(selectSelectedDate)
+    dates = selectedDate ? [selectedDate] : []
+  }
+  const anyLeft = dates.some((d) => {
+    const dk = dispatchDateKeyFromDispatchDate(d)
+    return !excludedSet.has(`${dk}|${recipientSlotKey}`)
+  })
+  if (anyLeft) return
+  yield* removeRecipientFromEnvelopeAppliedForCart(recipientSlotKey)
+}
+
+export function* handleExcludeDispatchBranch(
+  action: PayloadAction<{ branchKey: string }>,
+): SagaIterator {
+  const { branchKey } = action.payload
+  yield* pruneDispatchDatesAfterBranchExcluded(branchKey)
+  const parsed = parseDispatchBranchKey(branchKey)
+  if (!parsed) return
+  yield* pruneRecipientSlotIfNoPlanBranchesLeft(parsed.recipientSlotKey)
+}
+
 /** Убрать строку Card pie / плана после добавления в корзину. */
 function* removeCardPiePlanBranchAfterCart(branchKey: string): SagaIterator {
   yield put(excludeDispatchBranch({ branchKey }))
-  yield* pruneDispatchDatesAfterBranchExcluded(branchKey)
 }
 
 function* maybeClearCardPieWorkspaceAfterSingleAdd(

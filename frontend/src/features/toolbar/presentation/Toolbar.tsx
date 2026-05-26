@@ -24,6 +24,7 @@ import {
   selectCardphotoListTemplateGridCols,
 } from '@/features/cardphoto/infrastructure/selectors'
 import { getCardphotoListSortIconForMode } from '@cardphoto/application/helpers/cardphotoListSort'
+import { getHistoryListSortIconForMode } from '@date/application/helpers/historyListSort'
 import {
   selectCardtextAssetMatchesApplied,
   selectCardtextIsComplete,
@@ -36,7 +37,7 @@ import {
 import {
   selectDateListSortDirection,
   selectHistoryListPanelDensity,
-  selectHistoryListSortDirection,
+  selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
 import {
   selectRecipientAddressListPanelDensity,
@@ -124,7 +125,7 @@ export const Toolbar = ({
     selectCardtextListPanelDensity,
   )
   const dateListSortDirection = useAppSelector(selectDateListSortDirection)
-  const historyListSortDirection = useAppSelector(selectHistoryListSortDirection)
+  const historyListSortMode = useAppSelector(selectHistoryListSortMode)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
   const senderAddressListPanelDensity = useAppSelector(
     selectSenderAddressListPanelDensity,
@@ -148,19 +149,14 @@ export const Toolbar = ({
             ? cardtextListSortDirection
             : section === 'dateList'
               ? dateListSortDirection
-              : section === 'historyList'
-                ? historyListSortDirection
-                : undefined
+              : undefined
 
-  /** historyList: иконка = текущая сортировка; остальные списки — следующий клик. */
   const sortIconDirection =
     sortDirection == null
       ? undefined
-      : section === 'historyList'
-        ? sortDirection
-        : sortDirection === 'asc'
-          ? 'desc'
-          : 'asc'
+      : sortDirection === 'asc'
+        ? 'desc'
+        : 'asc'
 
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const senderViewTemplateId = useAppSelector(selectSenderViewId)
@@ -268,7 +264,9 @@ export const Toolbar = ({
         ? 'removeFromList'
         : key === 'sortDown' && section === 'cardphotoList'
           ? getCardphotoListSortIconForMode(cardphotoListSortMode)
-          : key === 'sortAZDown' &&
+          : key === 'sortDown' && section === 'historyList'
+            ? getHistoryListSortIconForMode(historyListSortMode)
+            : key === 'sortAZDown' &&
               (section === 'cardtextList' ||
                 section === 'addressListSender' ||
                 section === 'addressListRecipient' ||

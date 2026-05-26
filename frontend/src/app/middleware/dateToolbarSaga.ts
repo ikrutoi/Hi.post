@@ -9,7 +9,7 @@ import {
   setDateListPanelOpen,
   setCardPieListPanelOpen,
   toggleDateListSortDirection,
-  toggleHistoryListSortDirection,
+  setHistoryListSortMode,
   cycleHistoryListPanelDensity,
   setHistoryListPanelDensity,
   setPostcardStatuses,
@@ -24,6 +24,11 @@ import {
 import { PostcardStatuses } from '@/entities/postcard/domain/types'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
+import {
+  getNextHistoryListSortMode,
+  isHistoryListSortIconKey,
+} from '@date/application/helpers/historyListSort'
+import { selectHistoryListSortMode } from '@date/calendar/infrastructure/selectors'
 
 const HISTORY_LIST_UI_PREF_ID = 'historyList' as const
 
@@ -66,8 +71,11 @@ function* handleDateListToolbarAction(
     return
   }
 
-  if (section === 'historyList' && key === 'sortDown') {
-    yield put(toggleHistoryListSortDirection())
+  if (section === 'historyList' && isHistoryListSortIconKey(key)) {
+    const current: ReturnType<typeof selectHistoryListSortMode> = yield select(
+      selectHistoryListSortMode,
+    )
+    yield put(setHistoryListSortMode(getNextHistoryListSortMode(current)))
     return
   }
 

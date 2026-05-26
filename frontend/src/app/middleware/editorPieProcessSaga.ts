@@ -1,7 +1,10 @@
 import { SagaIterator } from 'redux-saga'
 import { all, takeLatest, select, put } from 'redux-saga/effects'
 import { handleEditorPieToolbarAction } from './editorPieToolbarSaga'
-import { handleToggleCartForDispatchBranch } from './postcardCreateSaga'
+import {
+  handleExcludeDispatchBranch,
+  handleToggleCartForDispatchBranch,
+} from './postcardCreateSaga'
 import { toolbarAction } from '@/features/toolbar/application/helpers'
 import {
   clearSection,
@@ -19,6 +22,7 @@ import {
   hydrateDateFromSession,
   toggleCartForDispatchBranch,
   clearCardPieEditorSession,
+  excludeDispatchBranch,
 } from '@date/infrastructure/state'
 import { addItem } from '@cart/infrastructure/state'
 import { setAroma, clear as clearAroma } from '@aroma/infrastructure/state'
@@ -129,6 +133,7 @@ export function* editorPieProcessSaga(): SagaIterator {
       toggleCartForDispatchBranch.type,
       handleToggleCartForDispatchBranch,
     ),
+    takeLatest(excludeDispatchBranch.type, handleExcludeDispatchBranch),
     takeLatest(clearCardPieEditorSession.type, handleClearCardPieEditorSession),
 
     takeLatest([...PIE_PROGRESS_SYNC_ACTIONS], handleRainbowLogic),

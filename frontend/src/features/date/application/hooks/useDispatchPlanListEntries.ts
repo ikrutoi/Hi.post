@@ -1,8 +1,6 @@
 import { useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
-  pickDispatchDate,
-  setSelectedDates,
   excludeDispatchBranch,
   clearCardPieEditorSession,
 } from '@date/infrastructure/state'
@@ -58,9 +56,6 @@ function formatDispatchDateLabel(d: DispatchDate): string {
     year: 'numeric',
   })
 }
-
-const sameDispatchDate = (a: DispatchDate, b: DispatchDate) =>
-  a.year === b.year && a.month === b.month && a.day === b.day
 
 /** Отрицательное — a раньше b; положительное — a позже b. */
 function compareDispatchDateChronological(
@@ -386,21 +381,6 @@ export function useDispatchPlanListEntries(
               undefined,
               () => {
                 dispatch(excludeDispatchBranch({ branchKey }))
-                const nextExcluded = new Set(excludedDispatchBranchSet)
-                nextExcluded.add(branchKey)
-                const anyLeftThisDate = recipientSlots.some(
-                  (s) =>
-                    !nextExcluded.has(
-                      `${dispatchDateKeyFromDispatchDate(d)}|${s.branchKey}`,
-                    ),
-                )
-                if (!anyLeftThisDate) {
-                  dispatch(
-                    setSelectedDates(
-                      selectedDates.filter((x) => !sameDispatchDate(x, d)),
-                    ),
-                  )
-                }
               },
               slot.detailLine,
               cartP,
@@ -426,17 +406,6 @@ export function useDispatchPlanListEntries(
               undefined,
               () => {
                 dispatch(excludeDispatchBranch({ branchKey }))
-                const nextExcluded = new Set(excludedDispatchBranchSet)
-                nextExcluded.add(branchKey)
-                const anyLeftThisDate = recipientSlots.some(
-                  (s) =>
-                    !nextExcluded.has(
-                      `${dispatchDateKeyFromDispatchDate(selectedDate)}|${s.branchKey}`,
-                    ),
-                )
-                if (!anyLeftThisDate) {
-                  dispatch(pickDispatchDate(selectedDate))
-                }
               },
               slot.detailLine,
               cartP,

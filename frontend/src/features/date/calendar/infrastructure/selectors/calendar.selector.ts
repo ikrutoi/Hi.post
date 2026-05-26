@@ -76,9 +76,9 @@ export const selectHistoryListSelectedLocalId = (
 export const selectDateListSortDirection = (state: RootState): 'asc' | 'desc' =>
   state.calendar.dateListSortDirection ?? 'asc'
 
-export const selectHistoryListSortDirection = (
+export const selectHistoryListSortMode = (
   state: RootState,
-): 'asc' | 'desc' => state.calendar.historyListSortDirection ?? 'desc'
+) => state.calendar.historyListSortMode ?? 'dateDesc'
 
 export const selectHistoryListPanelDensity = (
   state: RootState,

@@ -6,10 +6,7 @@ import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { type HistoryListEntryVariant } from './historyList/HistoryListEntry'
-import {
-  POSTCARD_DISPATCH_DATE_FALLBACK,
-  type PostcardStatus,
-} from '@entities/postcard'
+import type { PostcardStatus } from '@entities/postcard'
 import type { DispatchDate } from '@entities/date/domain/types'
 import styles from './HistoryListPanel.module.scss'
 import { PostcardStatusLegend } from './postcardStatusLegend/PostcardStatusLegend'
@@ -19,8 +16,9 @@ import type { PanelDensity2Size } from '@shared/ui/icons'
 import { PostcardIndicator } from '@toolbar/presentation/PostcardIndictor'
 import {
   selectHistoryListPanelDensity,
-  selectHistoryListSortDirection,
+  selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
+import { sortHistoryListEntries } from '@date/application/helpers/historyListSort'
 
 export type HistoryListPanelItem = {
   id: string
@@ -47,33 +45,6 @@ type Props = {
   /** Число открыток по статусу (до фильтра) — для бейджей в легенде. */
   legendStatusCounts?: Record<PostcardStatus, number>
   // section: 'date' | 'history'
-}
-
-function isFallbackDispatchDate(d: DispatchDate): boolean {
-  return (
-    d.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&
-    d.month === POSTCARD_DISPATCH_DATE_FALLBACK.month &&
-    d.day === POSTCARD_DISPATCH_DATE_FALLBACK.day
-  )
-}
-
-function dispatchDateUtcMidnightMs(d: DispatchDate): number {
-  return Date.UTC(d.year, d.month, d.day)
-}
-
-/** По дате отправки: раньше — выше; без даты / fallback — в конце. */
-function compareHistoryBySourceDateChronological(
-  a: HistoryListPanelItem,
-  b: HistoryListPanelItem,
-): number {
-  const da = a.sourceDate
-  const db = b.sourceDate
-  const aBad = !da || isFallbackDispatchDate(da)
-  const bBad = !db || isFallbackDispatchDate(db)
-  if (aBad && bBad) return 0
-  if (aBad) return 1
-  if (bBad) return -1
-  return dispatchDateUtcMidnightMs(da) - dispatchDateUtcMidnightMs(db)
 }
 
 const HistoryListPanelRow: React.FC<{
@@ -120,16 +91,12 @@ export const HistoryListPanel: React.FC<Props> = ({
   legendStatusCounts,
   // section,
 }) => {
-  const historyListSortDirection = useAppSelector(selectHistoryListSortDirection)
+  const historyListSortMode = useAppSelector(selectHistoryListSortMode)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
-  const sortedEntries = useMemo(() => {
-    if (entries.length < 2) return entries
-    const earliestFirst = historyListSortDirection === 'desc'
-    return [...entries].sort((a, b) => {
-      const c = compareHistoryBySourceDateChronological(a, b)
-      return earliestFirst ? c : -c
-    })
-  }, [entries, historyListSortDirection])
+  const sortedEntries = useMemo(
+    () => sortHistoryListEntries(entries, historyListSortMode),
+    [entries, historyListSortMode],
+  )
 
   const hasRows = sortedEntries.length > 0
   const listContentKey = sortedEntries.map((e) => e.id).join('|')

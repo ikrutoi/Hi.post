@@ -10,6 +10,7 @@ import {
 } from '@/entities/postcard/domain/types'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import type { PanelDensity2Size } from '@shared/ui/icons'
+import type { HistoryListSortMode } from '@date/application/helpers/historyListSort'
 
 const CALENDAR_STRIP_TAB_SESSION_KEY = 'hi.post.calendarStripTab'
 
@@ -63,11 +64,8 @@ type CalendarState = {
   openDayPanel: DayPanelPayload | null
   dateListSortDirection: 'asc' | 'desc'
   cardPieListSortDirection: 'asc' | 'desc'
-  /**
-   * Список истории: `desc` → иконка sort down, порядок по дате отправки от ранних к поздним;
-   * `asc` → sort up, от поздних к ранним (см. `IconSortDirection` + `HistoryListPanel`).
-   */
-  historyListSortDirection: 'asc' | 'desc'
+  /** Список истории: цикл sortDown → sortUp → sortAZDown → sortAZUp. */
+  historyListSortMode: HistoryListSortMode
   /**
    * Плотность сетки списка истории (`panelDensity2`): 1 — 4 ячейки, 2 — 5 ячеек.
    */
@@ -98,7 +96,7 @@ const initialState: CalendarState = {
   openDayPanel: null,
   dateListSortDirection: 'asc',
   cardPieListSortDirection: 'asc',
-  historyListSortDirection: 'desc',
+  historyListSortMode: 'dateDesc',
   historyListPanelDensity: 1,
   postcardStatusesCount: {
     cart: null,
@@ -176,9 +174,8 @@ const calendarSlice = createSlice({
         state.dateListSortDirection === 'asc' ? 'desc' : 'asc'
     },
 
-    toggleHistoryListSortDirection(state) {
-      state.historyListSortDirection =
-        state.historyListSortDirection === 'desc' ? 'asc' : 'desc'
+    setHistoryListSortMode(state, action: PayloadAction<HistoryListSortMode>) {
+      state.historyListSortMode = action.payload
     },
 
     cycleHistoryListPanelDensity(state) {
@@ -274,7 +271,7 @@ export const {
   setDateListPanelOpen,
   setCardPieListPanelOpen,
   toggleDateListSortDirection,
-  toggleHistoryListSortDirection,
+  setHistoryListSortMode,
   cycleHistoryListPanelDensity,
   setHistoryListPanelDensity,
   setPostcardStatusesCount,
