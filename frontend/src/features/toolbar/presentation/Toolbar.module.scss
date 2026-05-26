@@ -68,6 +68,8 @@
 
     &[data-icon-key='addCartList'].toolbarKeyEnabled,
     &[data-icon-key='sortDown'].toolbarKeyEnabled,
+    &[data-icon-key='sortAZDown'].toolbarKeyEnabled,
+    &[data-icon-key='sortAZUp'].toolbarKeyEnabled,
     &[data-icon-key='historyPanel'].toolbarKeyEnabled,
     &[data-icon-key='density'].toolbarKeyEnabled,
     &[data-icon-key='historyPanelDensity'].toolbarKeyEnabled,
@@ -656,12 +658,26 @@
 
 .toolbarCardphotoList,
 .toolbarCardtextList {
-  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
+      [data-icon-key='sortAZDown']
+    ):not([data-icon-key='sortAZUp']):not([data-icon-key='sortDown']) {
     color: $color-font-enabled-light;
 
     &:hover {
       color: $color-font-enabled;
       background-color: #fff;
+    }
+  }
+
+  .toolbarKey[data-icon-key='sortDown'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sortAZDown'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sortAZUp'].toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+      cursor: pointer;
     }
   }
 
@@ -778,7 +794,10 @@
 
   .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled,
-  .toolbarKey[data-icon-key='checkBox'].toolbarKeyEnabled {
+  .toolbarKey[data-icon-key='checkBox'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sortDown'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sortAZDown'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sortAZUp'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
 
     &:hover {
@@ -1108,6 +1127,9 @@
 
 .toolbarHistoryList
   .toolbarKey[data-icon-key='historyPanelDensity'].toolbarKeyEnabled:hover
+  svg,
+.toolbarCardtextList
+  .toolbarKey[data-icon-key='panelDensity2'].toolbarKeyEnabled:hover
   svg,
 .toolbarAddressListSender
   .toolbarKey[data-icon-key='panelDensity2'].toolbarKeyEnabled:hover

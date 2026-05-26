@@ -52,7 +52,6 @@ import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
 import { CropQualityMeter } from './CropQualityMeter'
 import styles from './Toolbar.module.scss'
-import { IconSortAZDown, IconSortAZUp } from '@shared/ui/icons'
 
 export const Toolbar = ({
   section,
@@ -133,7 +132,8 @@ export const Toolbar = ({
   const sortDirection =
     section === 'addressListSender'
       ? senderSortDirection
-      : section === 'addressListRecipient'
+      : section === 'addressListRecipient' ||
+          section === 'addressListRecipients'
         ? recipientSortDirection
         : section === 'recipientsView'
           ? recipientsViewSortDirection
@@ -259,8 +259,16 @@ export const Toolbar = ({
               ? cardphotoViewTemplateInList
               : templateInQuickList)
         ? 'removeFromList'
-        : section === 'cardtextList' && key === 'sortAZDown'
-          ? cardtextListSortDirection === 'asc'
+        : key === 'sortAZDown' &&
+            (section === 'cardtextList' ||
+              section === 'addressListSender' ||
+              section === 'addressListRecipient' ||
+              section === 'addressListRecipients')
+          ? (section === 'cardtextList'
+              ? cardtextListSortDirection
+              : section === 'addressListSender'
+                ? senderSortDirection
+                : recipientSortDirection) === 'asc'
             ? 'sortAZDown'
             : 'sortAZUp'
           : key
@@ -444,44 +452,36 @@ export const Toolbar = ({
           }
         }}
       >
-        {effectiveIconKey === 'sortDown' &&
-        (section === 'addressListSender' ||
-          section === 'addressListRecipient' ||
-          section === 'addressListRecipients') &&
-        sortIconDirection != null ? (
-          sortIconDirection === 'asc' ? <IconSortAZUp /> : <IconSortAZDown />
-        ) : (
-          getToolbarIcon({
-            key: effectiveIconKey as IconKey,
-            checkBoxChecked:
-              section === 'cartList' &&
-              effectiveIconKey === 'checkBox' &&
-              buttonStatus === 'active',
-            listCheckTickChecked: showCreateListCheck,
-            step: fontSizeStep,
-            sortDirection: key === 'sortDown' ? sortIconDirection : undefined,
-            listTemplateDensityCols:
-              section === 'cardphotoList' && key === 'density'
-                ? cardphotoListTemplateGridCols
-                : undefined,
-            historyPanelDensitySize:
-              section === 'historyList' && key === 'historyPanelDensity'
-                ? historyListPanelDensity
-                : undefined,
-            panelDensity2Size:
-              section === 'historyList' && key === 'panelDensity2'
-                ? historyListPanelDensity
-                : section === 'cardtextList' && key === 'panelDensity2'
-                  ? cardtextListPanelDensity
-                  : section === 'addressListSender' && key === 'panelDensity2'
-                    ? senderAddressListPanelDensity
-                    : (section === 'addressListRecipient' ||
-                        section === 'addressListRecipients') &&
-                        key === 'panelDensity2'
-                      ? recipientAddressListPanelDensity
-                      : undefined,
-          })
-        )}
+        {getToolbarIcon({
+          key: effectiveIconKey as IconKey,
+          checkBoxChecked:
+            section === 'cartList' &&
+            effectiveIconKey === 'checkBox' &&
+            buttonStatus === 'active',
+          listCheckTickChecked: showCreateListCheck,
+          step: fontSizeStep,
+          sortDirection: key === 'sortDown' ? sortIconDirection : undefined,
+          listTemplateDensityCols:
+            section === 'cardphotoList' && key === 'density'
+              ? cardphotoListTemplateGridCols
+              : undefined,
+          historyPanelDensitySize:
+            section === 'historyList' && key === 'historyPanelDensity'
+              ? historyListPanelDensity
+              : undefined,
+          panelDensity2Size:
+            section === 'historyList' && key === 'panelDensity2'
+              ? historyListPanelDensity
+              : section === 'cardtextList' && key === 'panelDensity2'
+                ? cardtextListPanelDensity
+                : section === 'addressListSender' && key === 'panelDensity2'
+                  ? senderAddressListPanelDensity
+                  : (section === 'addressListRecipient' ||
+                      section === 'addressListRecipients') &&
+                      key === 'panelDensity2'
+                    ? recipientAddressListPanelDensity
+                    : undefined,
+        })}
 
         {hasBadge && (
           <span className={styles.toolbarBadge}>

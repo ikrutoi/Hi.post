@@ -622,11 +622,17 @@ function* handleEnvelopeToolbarAction(
   const isRecipientAddressListSection =
     section === 'addressListRecipient' || section === 'addressListRecipients'
 
-  if (section === 'addressListSender' && key === 'sortDown') {
+  if (
+    section === 'addressListSender' &&
+    (key === 'sortAZDown' || key === 'sortAZUp' || key === 'sortDown')
+  ) {
     yield put(toggleSenderSortDirection())
     return
   }
-  if (isRecipientAddressListSection && key === 'sortDown') {
+  if (
+    isRecipientAddressListSection &&
+    (key === 'sortAZDown' || key === 'sortAZUp' || key === 'sortDown')
+  ) {
     yield put(toggleRecipientSortDirection())
     return
   }

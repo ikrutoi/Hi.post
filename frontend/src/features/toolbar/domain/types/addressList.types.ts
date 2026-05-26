@@ -7,6 +7,7 @@ export const ADDRESS_LIST_KEYS = [
   'listDelete',
   'listApply',
   'sortDown',
+  'sortAZDown',
   'panelDensity2',
 ] as const satisfies readonly IconKey[]
 
@@ -22,7 +23,7 @@ export const ADDRESS_LIST_SENDER_TOOLBAR: ToolbarConfig = [
     group: 'address',
     icons: [
       { key: 'panelDensity2', state: 'enabled' },
-      { key: 'sortDown', state: 'enabled' },
+      { key: 'sortAZDown', state: 'enabled' },
     ],
     status: 'enabled',
   },
@@ -36,7 +37,7 @@ export const ADDRESS_LIST_SENDER_TOOLBAR: ToolbarConfig = [
 export const ADDRESS_LIST_RECIPIENT_TOOLBAR: ToolbarConfig = [
   {
     group: 'address',
-    icons: [{ key: 'sortDown', state: 'enabled' }],
+    icons: [{ key: 'sortAZDown', state: 'enabled' }],
     status: 'enabled',
   },
   {
@@ -51,7 +52,7 @@ export const ADDRESS_LIST_RECIPIENTS_TOOLBAR: ToolbarConfig = [
     group: 'address',
     icons: [
       { key: 'panelDensity2', state: 'enabled' },
-      { key: 'sortDown', state: 'enabled' },
+      { key: 'sortAZDown', state: 'enabled' },
       // { key: 'listApply', state: 'disabled' },
     ],
     status: 'enabled',
