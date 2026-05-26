@@ -155,7 +155,7 @@ export const selectDateListPlanRowCount = createSelector(
 )
 
 /**
- * Строки списка CardPie слева (editorPie): activeModeOnly, hideBranchesInCart,
+ * Строки списка CardPie слева (editorPie): activeModeOnly, все ветки получателей,
  * showUndatedWhenAnySectionSelected — без drill-down `openDayPanel` календаря.
  */
 export const selectEditorPieCardPieListRowCount = createSelector(
@@ -202,7 +202,7 @@ export const selectEditorPieCardPieListRowCount = createSelector(
           slotKeys,
           excluded,
           cartBranchKeys,
-          true,
+          false,
         )
       }
     } else if (selectedDate) {
@@ -211,7 +211,7 @@ export const selectEditorPieCardPieListRowCount = createSelector(
         slotKeys,
         excluded,
         cartBranchKeys,
-        true,
+        false,
       )
     }
 

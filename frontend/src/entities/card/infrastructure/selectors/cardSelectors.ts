@@ -72,14 +72,18 @@ function postcardToCalendarItem(
   listSlotIndex: number,
 ): CalendarCardItem {
   const c = p.card
+  const previewUrl = cardListPreviewUrlFromCard(c) ?? ''
   return {
     cardId: c.id,
     rowKey: `postcard:${listSlotIndex}:${p.id}:${p.status}`,
     /** Дата отправки открытки (`p.date`), как в корзине и списке — не `card.date`. */
     date: p.date,
-    previewUrl: cardListPreviewUrlFromCard(c) ?? '',
+    previewUrl,
     status: p.status,
-    isProcessed: false,
+    isProcessed:
+      Boolean(c.isProcessed) ||
+      Boolean(c.cardphoto?.appliedData ?? c.cardphoto?.assetData) ||
+      previewUrl.startsWith('blob:'),
   }
 }
 

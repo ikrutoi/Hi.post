@@ -1,21 +1,12 @@
 import type { SagaIterator } from 'redux-saga'
-import { all, call, put, takeEvery } from 'redux-saga/effects'
-import { storeAdapters } from '@db/adapters/storeAdapters'
+import { call, put, takeEvery } from 'redux-saga/effects'
 import {
   requestCalendarPreview,
   setCalendarPreviewCached,
 } from '@entities/card/infrastructure/state'
-import {
-  findIdbImageMetaById,
-  hydrateMeta,
-  type IdbImageMetaSources,
-} from './cardphotoHelpers'
-import type { ImageMeta } from '@cardphoto/domain/types'
+import { resolveCardphotoPreviewUrlByMetaId } from './cardphotoHelpers'
 
 const inFlightCardIds = new Set<string>()
-
-const isBlobUrl = (url: string | null | undefined): boolean =>
-  typeof url === 'string' && url.startsWith('blob:')
 
 const getImageMetaIdFromCardId = (cardId: string): string | null => {
   const [imageMetaId] = cardId.split('__')
@@ -23,37 +14,18 @@ const getImageMetaIdFromCardId = (cardId: string): string | null => {
   return imageMetaId
 }
 
-function* resolvePreviewUrl(cardId: string, fallbackPreviewUrl?: string) {
-  if (fallbackPreviewUrl && !isBlobUrl(fallbackPreviewUrl)) {
-    return fallbackPreviewUrl
-  }
-
+function* resolvePreviewUrl(
+  cardId: string,
+  fallbackPreviewUrl?: string,
+): SagaIterator<string | null> {
   const imageMetaId = getImageMetaIdFromCardId(cardId)
   if (!imageMetaId) return null
-
-  const [cropOrProcessed, applyRec, allCrops]: [
-    ImageMeta | null,
-    { image: ImageMeta } | null,
-    ImageMeta[],
-  ] = yield all([
-    call([storeAdapters.cardphotoImages, 'getById'], imageMetaId),
-    call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
-    call([storeAdapters.cardphotoImages, 'getAll']),
-  ])
-
-  const fromList = allCrops.find((m) => m.id === imageMetaId) ?? null
-
-  const sources: IdbImageMetaSources = {
-    cropOrProcessed: cropOrProcessed ?? fromList,
-    apply: applyRec?.image ?? null,
-    user: null,
-    stock: null,
-  }
-  const rawMeta = findIdbImageMetaById(imageMetaId, sources) ?? fromList
-  const hydrated = hydrateMeta(rawMeta)
-  if (!hydrated) return null
-
-  return hydrated.thumbnail?.url || hydrated.url || null
+  const resolved: string | null = yield call(
+    resolveCardphotoPreviewUrlByMetaId,
+    imageMetaId,
+    fallbackPreviewUrl,
+  )
+  return resolved
 }
 
 function* requestCalendarPreviewWorker(

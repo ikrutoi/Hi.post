@@ -1,4 +1,6 @@
-import { call, put, select } from 'redux-saga/effects'
+import { all, call, put, select } from 'redux-saga/effects'
+import type { SagaIterator } from 'redux-saga'
+import { storeAdapters } from '@db/adapters/storeAdapters'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type {
   CardphotoToolbarState,
@@ -233,6 +235,42 @@ export function findIdbImageMetaById(
   if (src.user?.id === id) return src.user
   if (src.stock?.id === id) return src.stock
   return null
+}
+
+/** Превью для списков / корзины: http(s) fallback или свежий blob: из IndexedDB. */
+export function* resolveCardphotoPreviewUrlByMetaId(
+  imageMetaId: string,
+  fallbackPreviewUrl?: string,
+): SagaIterator<string | null> {
+  const fallback = fallbackPreviewUrl?.trim()
+  if (fallback && !isDeadBlobUrl(fallback)) {
+    return fallback
+  }
+  if (!imageMetaId) return null
+
+  const [cropOrProcessed, applyRec, allCrops]: [
+    ImageMeta | null,
+    { image: ImageMeta } | null,
+    ImageMeta[],
+  ] = yield all([
+    call([storeAdapters.cardphotoImages, 'getById'], imageMetaId),
+    call([storeAdapters.applyImage, 'getById'], 'current_apply_image'),
+    call([storeAdapters.cardphotoImages, 'getAll']),
+  ])
+
+  const fromList = allCrops.find((m) => m.id === imageMetaId) ?? null
+  const sources: IdbImageMetaSources = {
+    cropOrProcessed: cropOrProcessed ?? fromList,
+    apply: applyRec?.image ?? null,
+    user: null,
+    stock: null,
+  }
+  const rawMeta = findIdbImageMetaById(imageMetaId, sources) ?? fromList
+  const hydrated = hydrateMeta(rawMeta)
+  if (!hydrated) return null
+
+  const url = (hydrated.thumbnail?.url || hydrated.url || '').trim()
+  return url !== '' ? url : null
 }
 
 export function* fuelAssetRegistry(

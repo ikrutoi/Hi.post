@@ -10,7 +10,10 @@ import {
   isPostcardPieAllComplete,
 } from '../postcardCardPieViewModel'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
-import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
+import {
+  selectEditorPieCardPieListRowCount,
+  selectMergedDispatchDates,
+} from '@date/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@features/envelope/infrastructure/selectors'
 import { selectAppliedRecipientDisplayAddress } from '@envelope/recipient/infrastructure/selectors'
 import type { CardPieRightListSource } from '../../domain/types'
@@ -49,9 +52,28 @@ export const selectActiveCardFullData = createSelector(
     selectMergedDispatchDates,
     selectEnvelopeSessionRecord,
     selectAppliedRecipientDisplayAddress,
+    selectEditorPieCardPieListRowCount,
   ],
-  (editor, cardtext, cardphoto, aroma, dates, envelope, appliedRecipient) => {
-    const recipientCount = envelope.recipient?.applied?.length ?? 0
+  (
+    editor,
+    cardtext,
+    cardphoto,
+    aroma,
+    dates,
+    envelope,
+    appliedRecipient,
+    planListRowCount,
+  ) => {
+    const appliedCount = envelope.recipient?.applied?.length ?? 0
+    const recipientCount =
+      planListRowCount > 0
+        ? planListRowCount
+        : appliedCount > 0
+          ? appliedCount
+          : envelope.recipient?.appliedData != null ||
+              envelope.recipient?.formIsComplete
+            ? 1
+            : 0
     const date = dates[0] ?? null
 
     return {

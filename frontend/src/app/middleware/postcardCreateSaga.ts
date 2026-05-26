@@ -42,7 +42,7 @@ import {
 } from '@date/infrastructure/state'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import type { CardphotoState } from '@cardphoto/domain/types'
+import type { CardphotoState, ImageMeta } from '@cardphoto/domain/types'
 import type { CardtextState } from '@cardtext/domain/types'
 import type { ImageRecord } from '@cardphoto/domain/types'
 import type {
@@ -71,6 +71,9 @@ import {
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
+import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
+import { setCalendarPreviewCached } from '@entities/card/infrastructure/state'
+import { resolveCardphotoPreviewUrlByMetaId } from './cardphotoHelpers'
 
 function buildBaseCard(opts: {
   id: string
@@ -164,6 +167,27 @@ function* resolveAppliedCardphotoId(
     : fallbackId
 }
 
+function* resolveCartCardThumbnailUrl(
+  imageMetaId: string,
+  appliedPhoto: ImageMeta,
+): SagaIterator<string> {
+  const fallback = appliedPhoto.thumbnail?.url || appliedPhoto.url || ''
+  const resolved: string | null = yield call(
+    resolveCardphotoPreviewUrlByMetaId,
+    imageMetaId,
+    fallback,
+  )
+  return resolved ?? fallback
+}
+
+function* cacheCartListPreviewForCard(card: Card): SagaIterator {
+  const previewUrl = cardListPreviewUrlFromCard(card)
+  if (!previewUrl?.trim()) return
+  yield put(
+    setCalendarPreviewCached({ cardId: card.id, blobUrl: previewUrl.trim() }),
+  )
+}
+
 function hasRequiredPostcardRefs(
   refs: PostcardRefs,
   envelope: EnvelopeSessionRecord,
@@ -197,6 +221,10 @@ export function* createPostcardsFromEditor(): SagaIterator {
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
   const appliedCardphotoId: string = yield* resolveAppliedCardphotoId(appliedPhoto.id)
+  const thumbnailUrl: string = yield* resolveCartCardThumbnailUrl(
+    appliedCardphotoId,
+    appliedPhoto,
+  )
 
   const dates: Array<DispatchDate | null> =
     isMultiDateMode && mergedDates.length > 1 ? mergedDates : mergedDates.slice(0, 1)
@@ -248,8 +276,8 @@ export function* createPostcardsFromEditor(): SagaIterator {
         continue
       }
       const candidateCard = buildBaseCard({
-        id: `${appliedPhoto.id}__candidate`,
-        thumbnailUrl: appliedPhoto.thumbnail?.url ?? '',
+        id: `${appliedCardphotoId}__candidate`,
+        thumbnailUrl,
         cardphoto,
         cardtext,
         envelope: envelopeVariant,
@@ -263,7 +291,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
       const postcardLocalId = maxLocalId
       const finalCard: Card = {
         ...candidateCard,
-        id: `${appliedPhoto.id}__${postcardLocalId}`,
+        id: `${appliedCardphotoId}__${postcardLocalId}`,
       }
       const refs: PostcardRefs = {
         ...postcardRefsFromCard(finalCard),
@@ -272,7 +300,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
       }
       if (!hasRequiredPostcardRefs(refs, envelopeVariant)) continue
       const postcard: PostcardHydrated = {
-        id: `${appliedPhoto.id}__${postcardLocalId}`,
+        id: `${appliedCardphotoId}__${postcardLocalId}`,
         localId: postcardLocalId,
         price: '',
         date: date ?? POSTCARD_DISPATCH_DATE_FALLBACK,
@@ -295,6 +323,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
       )
       existingCartDedupeKeys.add(buildCartDuplicateKey(postcard.card))
       yield put(addItem(postcard))
+      yield* cacheCartListPreviewForCard(finalCard)
       didAddToCart = true
     }
   }
@@ -488,6 +517,10 @@ export function* handleToggleCartForDispatchBranch(
   const appliedPhoto = cardphoto.appliedData
   if (!appliedPhoto) return
   const appliedCardphotoId: string = yield* resolveAppliedCardphotoId(appliedPhoto.id)
+  const thumbnailUrl: string = yield* resolveCartCardThumbnailUrl(
+    appliedCardphotoId,
+    appliedPhoto,
+  )
 
   const excludedDispatchBranches: Set<string> = yield select(
     selectExcludedDispatchBranchSet,
@@ -519,8 +552,8 @@ export function* handleToggleCartForDispatchBranch(
     : envelope
 
   const candidateCard = buildBaseCard({
-    id: `${appliedPhoto.id}__candidate`,
-    thumbnailUrl: appliedPhoto.thumbnail?.url ?? '',
+    id: `${appliedCardphotoId}__candidate`,
+    thumbnailUrl,
     cardphoto,
     cardtext,
     envelope: envelopeVariant,
@@ -551,7 +584,7 @@ export function* handleToggleCartForDispatchBranch(
   const now = Date.now()
   const finalCard: Card = {
     ...candidateCard,
-    id: `${appliedPhoto.id}__${postcardLocalId}`,
+    id: `${appliedCardphotoId}__${postcardLocalId}`,
   }
   const refs: PostcardRefs = {
     ...postcardRefsFromCard(finalCard),
@@ -563,7 +596,7 @@ export function* handleToggleCartForDispatchBranch(
     return
   }
   const postcard: PostcardHydrated = {
-    id: `${appliedPhoto.id}__${postcardLocalId}`,
+    id: `${appliedCardphotoId}__${postcardLocalId}`,
     localId: postcardLocalId,
     price: '',
     date,
@@ -582,6 +615,7 @@ export function* handleToggleCartForDispatchBranch(
     postcardForIdb as Omit<PostcardHydrated, 'id'>,
   )
   yield put(addItem(postcard))
+  yield* cacheCartListPreviewForCard(finalCard)
   if (clearEditorAfterAdd) {
     yield* removeCardPiePlanBranchAfterCart(branchKey)
   } else {
