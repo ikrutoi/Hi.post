@@ -14,21 +14,17 @@ import {
   setDraftEngaged,
 } from '../../infrastructure/state'
 import { IconSectionMenuCardtext } from '@shared/ui/icons'
-import { getToolbarIcon } from '@shared/utils/icons'
 import { isEmptyCardtextValue } from '../../domain/helpers'
 import styles from './CardEditor.module.scss'
-import viewStyles from '../CardtextView/CardtextView.module.scss'
 import type { CardtextValue } from '../../domain/types'
 
 type CardEditorProps = {
   /** Tighter top padding when the floating title strip is in edit mode (e.g. save template) */
   titleStripEditing?: boolean
-  onDelete?: () => void
 }
 
 export const CardEditor: React.FC<CardEditorProps> = ({
   titleStripEditing,
-  onDelete,
 }) => {
   const dispatch = useAppDispatch()
   const requestFocus = useAppSelector(selectIsDraftFocus)
@@ -70,9 +66,6 @@ export const CardEditor: React.FC<CardEditorProps> = ({
   /** Placeholder when closed or before engage; не показывать applied в Slate без сессии. */
   const showEmptyPlaceholder =
     !factorySessionActive || (isEmpty && !isDraftEngaged)
-  const showDeleteOverlay =
-    !!onDelete && (cardtextAssetData != null || isDraftEngaged)
-
   useEffect(() => {
     if (!requestFocus) return
     const id = setTimeout(() => {
@@ -161,21 +154,6 @@ export const CardEditor: React.FC<CardEditorProps> = ({
         >
           <IconSectionMenuCardtext />
         </div>
-      ) : null}
-      {showDeleteOverlay ? (
-        <button
-          type="button"
-          className={viewStyles.viewDeleteBtn}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete?.()
-          }}
-          aria-label="Delete text"
-          title="Delete"
-        >
-          {getToolbarIcon({ key: 'delete' })}
-        </button>
       ) : null}
       {factorySessionActive ? (
         <div

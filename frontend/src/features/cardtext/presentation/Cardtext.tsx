@@ -36,7 +36,6 @@ import { useAppDispatch } from '@app/hooks'
 import {
   deleteCardtextFromViewRequested,
 } from '@cardtext/infrastructure/state'
-import { toolbarAction } from '@toolbar/application/helpers'
 import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
@@ -213,12 +212,6 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     dispatch(deleteCardtextFromViewRequested())
   }, [dispatch])
 
-  const handleEditorDelete = useCallback(() => {
-    dispatch(
-      toolbarAction({ section: 'cardtextEditor', key: 'delete' } as const),
-    )
-  }, [dispatch])
-
   const factorySessionActive =
     state.assetData != null || state.isDraftEngaged === true
 
@@ -359,10 +352,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
                 />
               </div>
             ) : (
-              <CardEditor
-                titleStripEditing={forceEditingTitle}
-                onDelete={handleEditorDelete}
-              />
+              <CardEditor titleStripEditing={forceEditingTitle} />
             )}
           </div>
         </div>
