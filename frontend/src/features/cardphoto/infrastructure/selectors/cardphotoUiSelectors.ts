@@ -33,6 +33,16 @@ export const selectCardphotoListTemplateGridCols = createSelector(
   (ui) => ui.listTemplateGridCols ?? 5
 )
 
+export const selectCardphotoListSortMode = createSelector(
+  [selectCardphotoUi],
+  (ui) => ui.listSortMode ?? 'dateDesc',
+)
+
+export const selectCardphotoListTitleCoverage = createSelector(
+  [selectCardphotoUi],
+  (ui) => ui.listTitleCoverage ?? 'none',
+)
+
 export const selectIsCardphotoViewEditMode = createSelector(
   [selectCardphotoUi],
   (ui) => ui.isCardphotoViewEditMode,

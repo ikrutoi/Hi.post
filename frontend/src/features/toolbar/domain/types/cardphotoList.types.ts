@@ -4,7 +4,10 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const CARDPHOTO_LIST_KEYS = [
   'listDelete',
-  // 'sortDown',
+  'sortDown',
+  'sortUp',
+  'sortAZDown',
+  'sortAZUp',
   'density',
 ] as const satisfies readonly IconKey[]
 

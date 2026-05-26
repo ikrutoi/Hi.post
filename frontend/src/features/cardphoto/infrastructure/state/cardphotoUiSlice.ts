@@ -1,4 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type {
+  CardphotoListSortMode,
+  CardphotoListTitleCoverage,
+} from '../../application/helpers/cardphotoListSort'
 import type { ImageMeta, WorkingConfig } from '../../domain/types'
 
 export type CardphotoListTemplateGridCols = 4 | 5 | 6 | 7
@@ -16,6 +20,8 @@ export interface CardphotoUiState {
   isListPanelOpen: boolean
   inlineTemplateListRevision: number
   listTemplateGridCols: CardphotoListTemplateGridCols
+  listSortMode: CardphotoListSortMode
+  listTitleCoverage: CardphotoListTitleCoverage
   /** inLine / view preview → crop toolbar (`cardphotoCreate`) */
   isCardphotoViewEditMode: boolean
   viewReturnSnapshot: CardphotoViewReturnSnapshot | null
@@ -28,6 +34,8 @@ const initialUiState: CardphotoUiState = {
   isListPanelOpen: false,
   inlineTemplateListRevision: 0,
   listTemplateGridCols: 5,
+  listSortMode: 'dateDesc',
+  listTitleCoverage: 'none',
   isCardphotoViewEditMode: false,
   viewReturnSnapshot: null,
 }
@@ -84,6 +92,17 @@ export const cardphotoUiSlice = createSlice({
       state.listTemplateGridCols = action.payload
     },
 
+    setCardphotoListSortMode(state, action: PayloadAction<CardphotoListSortMode>) {
+      state.listSortMode = action.payload
+    },
+
+    setCardphotoListTitleCoverage(
+      state,
+      action: PayloadAction<CardphotoListTitleCoverage>,
+    ) {
+      state.listTitleCoverage = action.payload
+    },
+
     selectInLineTemplate: (_state, _action: PayloadAction<string>) => {},
 
     setCardphotoViewEditMode(state, action: PayloadAction<boolean>) {
@@ -118,6 +137,8 @@ export const {
   bumpCardphotoInlineTemplateList,
   cycleListTemplateGridCols,
   setListTemplateGridCols,
+  setCardphotoListSortMode,
+  setCardphotoListTitleCoverage,
   selectInLineTemplate,
   setCardphotoViewEditMode,
   setCardphotoViewReturnSnapshot,

@@ -15,6 +15,10 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import type { WorkingConfig } from '@cardphoto/domain/types'
 import type { CardphotoSliceState } from '@cardphoto/infrastructure/state/cardphotoSlice'
 import { isCardphotoImageIdUsedByPostcards } from '@cardphoto/application/helpers/cardphotoImageUsage'
+import {
+  getNextCardphotoListSortMode,
+  isCardphotoListSortIconKey,
+} from '@cardphoto/application/helpers/cardphotoListSort'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
 import type { PostcardHydrated } from '@entities/postcard'
@@ -34,13 +38,19 @@ import {
   bumpCardphotoInlineTemplateList,
   cycleListTemplateGridCols,
   setListTemplateGridCols,
+  setCardphotoListSortMode,
   clearCurrentConfig,
   setCardphotoViewEditMode,
   setCardphotoViewReturnSnapshot,
   clearCardphotoViewReturnSnapshot,
   removeUserImage,
 } from '@cardphoto/infrastructure/state'
-import { selectIsCardphotoViewEditMode, selectCardphotoViewReturnSnapshot } from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
+import {
+  selectCardphotoListSortMode,
+  selectCardphotoListTitleCoverage,
+  selectIsCardphotoViewEditMode,
+  selectCardphotoViewReturnSnapshot,
+} from '@cardphoto/infrastructure/selectors/cardphotoUiSelectors'
 import {
   selectActiveImage,
   selectCardphotoAssetToolbar,
@@ -557,6 +567,17 @@ export function* handleCardphotoToolbarAction(
     if (key === 'density') {
       yield put(cycleListTemplateGridCols())
       yield call(persistCardphotoListDensityToDbSaga)
+      return
+    }
+    if (isCardphotoListSortIconKey(key)) {
+      const coverage: ReturnType<typeof selectCardphotoListTitleCoverage> =
+        yield select(selectCardphotoListTitleCoverage)
+      const current: ReturnType<typeof selectCardphotoListSortMode> = yield select(
+        selectCardphotoListSortMode,
+      )
+      yield put(
+        setCardphotoListSortMode(getNextCardphotoListSortMode(coverage, current)),
+      )
       return
     }
     return

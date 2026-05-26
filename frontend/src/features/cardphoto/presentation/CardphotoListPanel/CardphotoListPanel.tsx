@@ -12,6 +12,7 @@ import {
   selectCardphotoInlineTemplateListRevision,
   selectCardphotoListTemplateGridCols,
 } from '@cardphoto/infrastructure/selectors'
+import { useCardphotoListSort } from '@cardphoto/application/hooks/useCardphotoListSort'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import type { ImageMeta } from '@cardphoto/domain/types'
@@ -24,7 +25,12 @@ type Props = {
   onSelectTemplate: (id: string) => void | Promise<void>
 }
 
-type Row = { id: string; src: string; title?: string }
+type Row = {
+  id: string
+  src: string
+  title?: string
+  timestamp: number
+}
 
 function buildThumbSrc(meta: ImageMeta): { src: string; revoke: boolean } {
   if (meta.thumbnail?.blob instanceof Blob) {
@@ -63,6 +69,8 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
   const thumbGridRef = useRef<HTMLDivElement | null>(null)
   const [cellPx, setCellPx] = useState(56)
 
+  const { sortedRows } = useCardphotoListSort(rows)
+
   useLayoutEffect(() => {
     const contentEl = listContentRef.current
     if (!contentEl) return
@@ -83,7 +91,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
     const ro = new ResizeObserver(() => update())
     ro.observe(contentEl)
     return () => ro.disconnect()
-  }, [rows.length, columns])
+  }, [sortedRows.length, columns])
 
   useEffect(() => {
     let cancelled = false
@@ -92,9 +100,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
       const all = await storeAdapters.cardphotoImages.getAll()
       if (cancelled) return
 
-      const inline = all
-        .filter((x) => x.status === 'inLine')
-        .sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0))
+      const inline = all.filter((x) => x.status === 'inLine')
 
       const nextRows: Row[] = []
       const created: string[] = []
@@ -107,6 +113,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
           id: meta.id,
           src,
           title: meta.title?.trim() || undefined,
+          timestamp: meta.timestamp ?? 0,
         })
       }
 
@@ -128,7 +135,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
     }
   }, [listRevision])
 
-  const hasRows = rows.length > 0
+  const hasRows = sortedRows.length > 0
 
   return (
     <div
@@ -153,7 +160,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
           aria-label="Cardphoto templates list"
         >
           <div ref={listContentRef} className={styles.listContent}>
-            {rows.length === 0 ? (
+            {sortedRows.length === 0 ? (
               <div className={styles.listEmpty} aria-hidden>
                 <IconListCardphoto className={styles.listEmptyIcon} />
               </div>
@@ -165,7 +172,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
                   gridTemplateColumns: `repeat(${columns}, ${cellPx}px)`,
                 }}
               >
-                {rows.map((row) => (
+                {sortedRows.map((row) => (
                   <CardphotoListThumb
                     key={row.id}
                     id={row.id}

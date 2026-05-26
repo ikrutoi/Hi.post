@@ -20,8 +20,10 @@ import {
   selectAppliedImage,
   selectCardphotoAssetToolbar,
   selectIsCurrentCropApplied,
+  selectCardphotoListSortMode,
   selectCardphotoListTemplateGridCols,
 } from '@/features/cardphoto/infrastructure/selectors'
+import { getCardphotoListSortIconForMode } from '@cardphoto/application/helpers/cardphotoListSort'
 import {
   selectCardtextAssetMatchesApplied,
   selectCardtextIsComplete,
@@ -56,20 +58,24 @@ import styles from './Toolbar.module.scss'
 export const Toolbar = ({
   section,
   stateOverride,
+  groupsOverride,
   onActionClick,
   mergedWithCenter = false,
 }: {
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
+  /** Динамический набор групп/иконок (например cardphotoList sort). */
+  groupsOverride?: ToolbarGroup[]
   /** Вернуть `false`, чтобы не диспатчить стандартный `toolbar/action` (например кастомная логика в панели). */
   onActionClick?: (key: IconKey) => void | false
   mergedWithCenter?: boolean
 }) => {
   const {
     state: storeState,
-    groups,
+    groups: storeGroups,
     actions: toolbarActions,
   } = useToolbarFacade(section)
+  const groups = groupsOverride ?? storeGroups
   const state =
     stateOverride != null
       ? { ...storeState, ...stateOverride }
@@ -129,6 +135,7 @@ export const Toolbar = ({
   const cardphotoListTemplateGridCols = useAppSelector(
     selectCardphotoListTemplateGridCols,
   )
+  const cardphotoListSortMode = useAppSelector(selectCardphotoListSortMode)
   const sortDirection =
     section === 'addressListSender'
       ? senderSortDirection
@@ -259,19 +266,21 @@ export const Toolbar = ({
               ? cardphotoViewTemplateInList
               : templateInQuickList)
         ? 'removeFromList'
-        : key === 'sortAZDown' &&
-            (section === 'cardtextList' ||
-              section === 'addressListSender' ||
-              section === 'addressListRecipient' ||
-              section === 'addressListRecipients')
-          ? (section === 'cardtextList'
-              ? cardtextListSortDirection
-              : section === 'addressListSender'
-                ? senderSortDirection
-                : recipientSortDirection) === 'asc'
-            ? 'sortAZDown'
-            : 'sortAZUp'
-          : key
+        : key === 'sortDown' && section === 'cardphotoList'
+          ? getCardphotoListSortIconForMode(cardphotoListSortMode)
+          : key === 'sortAZDown' &&
+              (section === 'cardtextList' ||
+                section === 'addressListSender' ||
+                section === 'addressListRecipient' ||
+                section === 'addressListRecipients')
+            ? (section === 'cardtextList'
+                ? cardtextListSortDirection
+                : section === 'addressListSender'
+                  ? senderSortDirection
+                  : recipientSortDirection) === 'asc'
+              ? 'sortAZDown'
+              : 'sortAZUp'
+            : key
     const options =
       rawData && typeof rawData === 'object' && 'options' in rawData
         ? rawData.options

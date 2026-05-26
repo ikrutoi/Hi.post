@@ -68,6 +68,7 @@
 
     &[data-icon-key='addCartList'].toolbarKeyEnabled,
     &[data-icon-key='sortDown'].toolbarKeyEnabled,
+    &[data-icon-key='sortUp'].toolbarKeyEnabled,
     &[data-icon-key='sortAZDown'].toolbarKeyEnabled,
     &[data-icon-key='sortAZUp'].toolbarKeyEnabled,
     &[data-icon-key='historyPanel'].toolbarKeyEnabled,
@@ -660,7 +661,9 @@
 .toolbarCardtextList {
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
       [data-icon-key='sortAZDown']
-    ):not([data-icon-key='sortAZUp']):not([data-icon-key='sortDown']) {
+    ):not([data-icon-key='sortAZUp']):not([data-icon-key='sortDown']):not(
+      [data-icon-key='sortUp']
+    ) {
     color: $color-font-enabled-light;
 
     &:hover {
@@ -670,6 +673,7 @@
   }
 
   .toolbarKey[data-icon-key='sortDown'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sortUp'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortAZDown'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortAZUp'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
@@ -796,6 +800,7 @@
   .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='checkBox'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortDown'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='sortUp'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortAZDown'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='sortAZUp'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
