@@ -119,6 +119,15 @@ export function* selectCardphotoCropToolbarState(): SagaIterator<
     | undefined
 }
 
+/** Снять режим кропа (active → enabled), геометрия в assetConfig сохраняется. */
+export function* deactivateCropIfActive(): SagaIterator {
+  const toolbarState: CardphotoToolbarState | undefined = yield call(
+    selectCardphotoCropToolbarState,
+  )
+  if (toolbarState?.crop?.state !== 'active') return
+  yield call(updateCropToolbarState, 'enabled', toolbarState)
+}
+
 export function* handleCropAction() {
   const activeMeta: ImageMeta | null = yield select(selectActiveImage)
   if (activeMeta?.parentImageId) return

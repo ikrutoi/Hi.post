@@ -50,7 +50,7 @@ import type {
 } from '@shared/config/constants'
 import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
-import { CropQualityDots } from './CropQualityDots'
+import { CropQualityMeter } from './CropQualityMeter'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({
@@ -351,7 +351,7 @@ export const Toolbar = ({
           )}
           aria-disabled={qualityDisabled}
         >
-          <CropQualityDots disabled={qualityDisabled} />
+          <CropQualityMeter disabled={qualityDisabled} />
         </div>
       )
     }

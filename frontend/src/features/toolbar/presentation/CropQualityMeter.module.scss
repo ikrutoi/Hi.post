@@ -1,0 +1,42 @@
+@use '@styles/config/colors' as *;
+@use './toolbarDotIndicator.shared' as dots;
+
+$meter-track-height: 0.4rem;
+$meter-track-bg: hsl(0, 0%, 88%);
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: dots.$dot-indicator-font-size-row-width;
+  min-height: 1.55rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+.track {
+  width: 100%;
+  height: $meter-track-height;
+  border-radius: 999px;
+  background-color: $meter-track-bg;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  transition:
+    width 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.rootDisabled .track {
+  background-color: hsl(0, 0%, 92%);
+}
+
+.rootDisabled .fill {
+  width: 0 !important;
+  background-color: transparent;
+}

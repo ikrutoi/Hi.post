@@ -72,6 +72,7 @@ import {
   // watchCropToolbarStatus,
   // watchCropHistory,
   watchToolbarContext,
+  watchDeactivateCropOnEditorContextLeave,
   syncCardphotoAddBadgeDot,
 } from './cardphotoToolbarSaga'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
@@ -406,6 +407,7 @@ export function* cardphotoProcessSaga(): SagaIterator {
 
     fork(watchCropChanges),
     fork(watchToolbarContext),
+    fork(watchDeactivateCropOnEditorContextLeave),
     fork(watchCardphotoImageStageRect),
     fork(watchCardphotoInLineBadge),
     fork(watchCardphotoAddBadgeDot),

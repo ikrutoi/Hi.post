@@ -1,4 +1,15 @@
 import { call, all, fork, select, put, takeEvery } from 'redux-saga/effects'
+import {
+  resetActiveSection,
+  setActiveSection,
+} from '@entities/sectionEditorMenu/infrastructure/state'
+import type { SectionEditorMenuKey } from '@toolbar/domain/types'
+import { setCartListPanelOpen } from '@cart/infrastructure/state'
+import {
+  setHistoryListPanelOpen,
+  setNotebookStripTab,
+} from '@date/calendar/infrastructure/state'
+import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import type { WorkingConfig } from '@cardphoto/domain/types'
@@ -51,6 +62,7 @@ import {
   handleApplyAction,
   handlePromoteProcessedToInlineSaga,
   handleDemoteInlineTemplateSaga,
+  deactivateCropIfActive,
 } from './cardphotoHandlers'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { prepareForRedux, prepareConfigForRedux, updateCropToolbarState, hydrateSessionImageMeta, hydrateMeta, fuelAssetRegistry } from './cardphotoHelpers'
@@ -969,5 +981,53 @@ export function* watchToolbarContext() {
       markLoading.type,
     ],
     syncToolbarContext,
+  )
+}
+
+function* handleActiveSectionCropDeactivate(
+  action: PayloadAction<SectionEditorMenuKey>,
+): SagaIterator {
+  if (action.payload === 'cardphoto') return
+  yield call(deactivateCropIfActive)
+}
+
+function* handleCartPanelOpenCropDeactivate(
+  action: PayloadAction<boolean>,
+): SagaIterator {
+  if (!action.payload) return
+  yield call(deactivateCropIfActive)
+}
+
+function* handleHistoryPanelOpenCropDeactivate(
+  action: PayloadAction<boolean>,
+): SagaIterator {
+  if (!action.payload) return
+  yield call(deactivateCropIfActive)
+}
+
+function* handleNotebookStripTabCropDeactivate(
+  action: PayloadAction<DateStripSection>,
+): SagaIterator {
+  const tab = action.payload
+  if (tab !== 'cart' && tab !== 'history') return
+  yield call(deactivateCropIfActive)
+}
+
+/** Закрыть кроп при уходе из Кардфото или открытии корзины / истории. */
+function* handleResetActiveSectionCropDeactivate(): SagaIterator {
+  yield call(deactivateCropIfActive)
+}
+
+export function* watchDeactivateCropOnEditorContextLeave(): SagaIterator {
+  yield takeEvery(setActiveSection.type, handleActiveSectionCropDeactivate)
+  yield takeEvery(resetActiveSection.type, handleResetActiveSectionCropDeactivate)
+  yield takeEvery(setCartListPanelOpen.type, handleCartPanelOpenCropDeactivate)
+  yield takeEvery(
+    setHistoryListPanelOpen.type,
+    handleHistoryPanelOpenCropDeactivate,
+  )
+  yield takeEvery(
+    setNotebookStripTab.type,
+    handleNotebookStripTabCropDeactivate,
   )
 }

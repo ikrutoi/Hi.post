@@ -4,6 +4,19 @@ $dot-indicator-inactive-color: hsl(0, 0%, 65%);
 $dot-indicator-inactive-size: 0.45rem;
 $dot-indicator-active-size: 0.65rem;
 $dot-indicator-slot-size: 0.65rem;
+$dot-indicator-slot-margin-x: 0.15rem;
+/** Sync with `STEP_TO_PX.length` / `CARDTEXT_CONFIG.step` (font size indicator). */
+$dot-indicator-font-size-step-count: 6;
+
+@function dot-indicator-row-width($step-count) {
+  @return $step-count *
+    ($dot-indicator-slot-size + 2 * $dot-indicator-slot-margin-x);
+}
+
+/** Ширина ряда точек fontSizeIndicator — та же для crop quality meter. */
+$dot-indicator-font-size-row-width: dot-indicator-row-width(
+  $dot-indicator-font-size-step-count
+);
 
 @mixin dot-indicator-container {
   display: flex;
@@ -20,7 +33,7 @@ $dot-indicator-slot-size: 0.65rem;
   flex: 0 0 $dot-indicator-slot-size;
   width: $dot-indicator-slot-size;
   height: $dot-indicator-slot-size;
-  margin: 0 0.15rem;
+  margin: 0 $dot-indicator-slot-margin-x;
 }
 
 @mixin dot-indicator-dot {
