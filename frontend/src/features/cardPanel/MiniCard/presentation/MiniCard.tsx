@@ -22,6 +22,7 @@ import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { selectCardtextMiniPreviewHasRenderableContent } from '@cardtext/infrastructure/selectors'
 import { openCardtextFromMiniStripRequested } from '@cardtext/infrastructure/state'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
 
 interface MiniCardProps {
   section: CardSection
@@ -57,6 +58,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const miniCardRef = useRef<HTMLDivElement>(null)
   const {
     centerStripListMirrorEnabled,
+    mirrorTargetLocalId,
     clearRightPieCardphotoPeek,
     clearRightPieCardtextPeek,
     clearRightPieEnvelopePeek,
@@ -121,7 +123,16 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         }
         if (section === 'envelope') {
           clearRightPieEnvelopePeek()
-          dispatch(syncEnvelopeFormsFromAppliedRequested())
+          if (centerStripListMirrorEnabled && mirrorTargetLocalId != null) {
+            dispatch(
+              applyArchiveSectionToEditorRequested({
+                section: 'envelope',
+                sourceLocalId: mirrorTargetLocalId,
+              }),
+            )
+          } else {
+            dispatch(syncEnvelopeFormsFromAppliedRequested())
+          }
         }
         if (section === 'aroma') {
           clearRightPieAromaPeek()

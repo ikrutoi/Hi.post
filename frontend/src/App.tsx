@@ -63,6 +63,7 @@ import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
 import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
 import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
 import {
   closeDayPanel,
   openDayPanel,
@@ -345,6 +346,18 @@ const App = () => {
         cardPieCopyStripExpanded && rightListArchiveLocalId != null
       const fullFactoryFromRightPie =
         activePieSide === 'right' && !copyStripFullSpan
+      if (
+        fullFactoryFromRightPie &&
+        section === 'envelope' &&
+        rightListArchiveLocalId != null
+      ) {
+        dispatch(
+          applyArchiveSectionToEditorRequested({
+            section: 'envelope',
+            sourceLocalId: rightListArchiveLocalId,
+          }),
+        )
+      }
       if (fullFactoryFromRightPie) {
         setRightPieCardphotoPeekNoToolbar(false)
         setRightPieCardtextPeekNoToolbar(false)

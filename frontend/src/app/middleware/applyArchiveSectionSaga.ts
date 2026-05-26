@@ -22,6 +22,7 @@ import {
   restoreRecipient,
 } from '@envelope/recipient/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
+import { syncEnvelopeFormsFromAppliedRequested } from '@envelope/infrastructure/state'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { setAroma } from '@aroma/infrastructure/state'
 import {
@@ -77,6 +78,7 @@ function* handleApplyArchiveSection(
       yield put(restoreSender(card.envelope.sender))
       yield put(restoreRecipient(card.envelope.recipient))
       yield call(processEnvelopeVisuals)
+      yield put(syncEnvelopeFormsFromAppliedRequested())
       {
         const ready: boolean = yield select(selectIsEnvelopeReady)
         yield put(setSectionComplete({ section: 'envelope', isComplete: ready }))
