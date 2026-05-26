@@ -9,7 +9,7 @@ export const POSTCARD_PIE_CART_KEYS = [
 
 export type PostcardPieCartKey = (typeof POSTCARD_PIE_CART_KEYS)[number]
 
-export const POSTCARD_PIE_HISTORY_KEYS = ['cardPieCopy'] as const
+export const POSTCARD_PIE_HISTORY_KEYS = ['cardPieCopy', 'delete'] as const
 
 export type PostcardPieHistoryKey = (typeof POSTCARD_PIE_HISTORY_KEYS)[number]
 

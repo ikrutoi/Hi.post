@@ -112,6 +112,35 @@ export const selectHistoryOpenDayPanelArchiveLocalId = createSelector(
   },
 )
 
+/** `localId` открытки, выбранной в правом archive CardPie (корзина / история / день). */
+export const selectRightListArchivePostcardLocalId = createSelector(
+  [
+    selectNotebookStripTab,
+    selectCartListSelectedLocalId,
+    selectIsHistoryListPanelOpen,
+    selectHistoryListSelectedLocalId,
+    selectHistoryOpenDayPanelArchiveLocalId,
+  ],
+  (
+    notebookStripTab,
+    cartListSelectedLocalId,
+    historyListPanelOpen,
+    historyListSelectedLocalId,
+    historyOpenDayPanelArchiveLocalId,
+  ): number | null => {
+    if (notebookStripTab === 'cart' && cartListSelectedLocalId != null) {
+      return cartListSelectedLocalId
+    }
+    if (historyListPanelOpen && historyListSelectedLocalId != null) {
+      return historyListSelectedLocalId
+    }
+    if (historyOpenDayPanelArchiveLocalId != null) {
+      return historyOpenDayPanelArchiveLocalId
+    }
+    return null
+  },
+)
+
 function isPostcardDispatchFallbackDate(d: DispatchDate): boolean {
   return (
     d.year === POSTCARD_DISPATCH_DATE_FALLBACK.year &&
