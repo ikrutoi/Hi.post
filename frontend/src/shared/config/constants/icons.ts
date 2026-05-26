@@ -117,6 +117,8 @@ export const ICON_KEYS = [
   'listCheck',
   'checkBox',
   'editLight',
+  'sortAZDown',
+  'sortAZUp',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

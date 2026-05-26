@@ -258,7 +258,11 @@ export const Toolbar = ({
               ? cardphotoViewTemplateInList
               : templateInQuickList)
         ? 'removeFromList'
-        : key
+        : section === 'cardtextList' && key === 'sortAZDown'
+          ? cardtextListSortDirection === 'asc'
+            ? 'sortAZDown'
+            : 'sortAZUp'
+          : key
     const options =
       rawData && typeof rawData === 'object' && 'options' in rawData
         ? rawData.options

@@ -194,6 +194,8 @@ import {
   IconListCheck,
   IconCheckBox,
   IconEditLight,
+  IconSortAZDown,
+  IconSortAZUp,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -414,6 +416,10 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconCheckBox />
     case 'editLight':
       return <IconEditLight />
+    case 'sortAZDown':
+      return <IconSortAZDown />
+    case 'sortAZUp':
+      return <IconSortAZUp />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

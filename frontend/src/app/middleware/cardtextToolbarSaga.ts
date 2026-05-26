@@ -375,7 +375,10 @@ export function* handleCardtextToolbarAction(
 ): SagaIterator {
   const { section, key, payload: editor } = action.payload
 
-  if (section === 'cardtextList' && key === 'sortDown') {
+  if (
+    section === 'cardtextList' &&
+    (key === 'sortAZDown' || key === 'sortAZUp' || key === 'sortDown')
+  ) {
     yield put(toggleCardtextListSortDirection())
     return
   }
