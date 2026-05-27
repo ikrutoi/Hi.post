@@ -99,6 +99,7 @@ export interface PreviewItemForCalendar {
   item: { previewUrl: string; cardId: string }
   status: PostcardStatus
   isProcessed?: boolean
+  previewAllowBlob?: boolean
   cardId: string
   isHistory?: boolean
   isSelectedDate?: boolean

@@ -10,6 +10,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   item,
   status,
   isProcessed,
+  previewAllowBlob,
   cardId,
   isHistory,
   isSelectedDate,
@@ -22,7 +23,7 @@ export const CardPreviewItem: React.FC<PreviewItemForCalendar> = ({
   const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
     item.cardId,
     item.previewUrl,
-    { previewIsProcessed: isProcessed },
+    { previewIsProcessed: previewAllowBlob ?? isProcessed },
   )
 
   const handlePreviewClick = (e: React.MouseEvent) => {

@@ -259,6 +259,7 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             item={primaryItemForDisplay}
             status={primaryItemForDisplay.status}
             isProcessed={primaryItemForDisplay.isProcessed}
+            previewAllowBlob={primaryItemForDisplay.previewAllowBlob}
             cardId={primaryItemForDisplay.cardId}
             isHistory={isHistoryLike}
             isSelectedDate={isSelectedDate}

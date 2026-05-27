@@ -31,7 +31,10 @@ export type HistoryListPanelItem = {
   detailLine?: string
   variant?: HistoryListEntryVariant
   previewStatus?: PostcardStatus
+  /** Скрыть индикатор статуса (слот редактора). */
   previewIsProcessed?: boolean
+  /** Разрешить blob:/сессионное превью в `useListCardPreviewUrl`. */
+  previewAllowBlob?: boolean
 }
 
 type Props = {
@@ -56,7 +59,9 @@ const HistoryListPanelRow: React.FC<{
   const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
     item.cardId,
     item.previewUrl,
-    { previewIsProcessed: item.previewIsProcessed },
+    {
+      previewIsProcessed: item.previewAllowBlob ?? item.previewIsProcessed,
+    },
   )
 
   return (

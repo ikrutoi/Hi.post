@@ -29,7 +29,13 @@ export interface CalendarCardItem {
   date: DispatchDate
   previewUrl: string
   status: PostcardStatus
+  /**
+   * Слот редактора / синхронизированная карта — скрывает индикатор статуса на миниатюре.
+   * Не путать с наличием превью у открытки в корзине/истории.
+   */
   isProcessed?: boolean
+  /** Разрешить blob:/сессионное превью в списках и ячейках календаря. */
+  previewAllowBlob?: boolean
 }
 
 export type CalendarPreviewCache = Record<string, string>

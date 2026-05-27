@@ -135,6 +135,7 @@ export const HistoryListRightSlot: React.FC = () => {
           detailLine: resolveRecipientDetailLine(item.cardId),
           previewStatus: item.status,
           previewIsProcessed: item.isProcessed,
+          previewAllowBlob: item.previewAllowBlob,
         })
       })
       return {

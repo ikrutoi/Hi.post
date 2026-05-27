@@ -73,6 +73,9 @@ function postcardToCalendarItem(
 ): CalendarCardItem {
   const c = p.card
   const previewUrl = cardListPreviewUrlFromCard(c) ?? ''
+  const hasSessionPreview =
+    Boolean(c.cardphoto?.appliedData ?? c.cardphoto?.assetData) ||
+    previewUrl.startsWith('blob:')
   return {
     cardId: c.id,
     rowKey: `postcard:${listSlotIndex}:${p.id}:${p.status}`,
@@ -80,10 +83,8 @@ function postcardToCalendarItem(
     date: p.date,
     previewUrl,
     status: p.status,
-    isProcessed:
-      Boolean(c.isProcessed) ||
-      Boolean(c.cardphoto?.appliedData ?? c.cardphoto?.assetData) ||
-      previewUrl.startsWith('blob:'),
+    isProcessed: Boolean(c.isProcessed),
+    previewAllowBlob: Boolean(c.isProcessed) || hasSessionPreview,
   }
 }
 
@@ -161,6 +162,7 @@ export const selectCardsByDateMap = createSelector(
           previewUrl: cardListPreviewUrlFromCard(card) ?? '',
           status: 'cart',
           isProcessed: true,
+          previewAllowBlob: true,
         }
       }
 
@@ -175,6 +177,7 @@ export const selectCardsByDateMap = createSelector(
             previewUrl: photoPreview.previewUrl,
             status: 'cart',
             isProcessed: true,
+            previewAllowBlob: true,
           }
         }
       }
