@@ -1,0 +1,102 @@
+import type { CardPanelSection } from '@cardPanel/domain/types'
+import type {
+  CardPieInnerData,
+  CardPieSectionFlags,
+} from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
+import type { AddressFields } from '@shared/config/constants'
+import type { DispatchDate } from '@entities/date'
+import type { PostcardHydrated } from '@entities/postcard'
+import type { AromaItem } from '@entities/aroma/domain/types'
+import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
+import type { ImageMeta } from '@cardphoto/domain/types'
+
+export function canApplyMirrorSection(
+  section: CardPanelSection,
+  mirrorInner: CardPieInnerData | null,
+  mirrorSectionFlags: CardPieSectionFlags | null,
+): boolean {
+  if (!mirrorInner || !mirrorSectionFlags) return false
+  if (section === 'cardtext') {
+    return cardtextHasRenderableContent(mirrorInner.cardtext)
+  }
+  return Boolean(mirrorSectionFlags[section])
+}
+
+function sameAddress(
+  a: Readonly<AddressFields> | null | undefined,
+  b: Readonly<AddressFields> | null | undefined,
+): boolean {
+  if (a == null && b == null) return true
+  if (a == null || b == null) return false
+  return (
+    String(a.name ?? '') === String(b.name ?? '') &&
+    String(a.street ?? '') === String(b.street ?? '') &&
+    String(a.city ?? '') === String(b.city ?? '') &&
+    String(a.zip ?? '') === String(b.zip ?? '') &&
+    String(a.country ?? '') === String(b.country ?? '')
+  )
+}
+
+function sameDates(a: DispatchDate[], b: DispatchDate[]): boolean {
+  if (a.length !== b.length) return false
+  return a.every((d, i) => {
+    const x = b[i]
+    return d.year === x.year && d.month === x.month && d.day === x.day
+  })
+}
+
+export type MirrorSectionEditorSnapshot = {
+  cardphotoAppliedData: ImageMeta | null | undefined
+  cardtextApplied: CardtextContent | null | undefined
+  appliedRecipientAddress: Readonly<AddressFields> | null | undefined
+  appliedSenderAddress: Readonly<AddressFields> | null | undefined
+  selectedAroma: AromaItem | null | undefined
+  selectedDates: DispatchDate[]
+}
+
+/** Секция редактора уже совпадает с данными открытки из списка (cardPieCopy). */
+export function isMirrorSectionAppliedToEditor(
+  section: CardPanelSection,
+  mirrorInner: CardPieInnerData | null,
+  sourcePostcard: PostcardHydrated | null,
+  editor: MirrorSectionEditorSnapshot,
+): boolean {
+  if (!mirrorInner) return false
+
+  switch (section) {
+    case 'cardphoto': {
+      const sourceMeta =
+        sourcePostcard?.card?.cardphoto?.appliedData ??
+        sourcePostcard?.card?.cardphoto?.assetData ??
+        null
+      if (!sourceMeta) return false
+      return sourceMeta.id === editor.cardphotoAppliedData?.id
+    }
+    case 'cardtext': {
+      const src = mirrorInner.cardtext
+      const applied = editor.cardtextApplied
+      if (!src || !applied) return false
+      if (src.id != null && applied.id != null) {
+        return String(src.id) === String(applied.id)
+      }
+      return (
+        src.plainText === applied.plainText &&
+        src.cardtextLines === applied.cardtextLines
+      )
+    }
+    case 'envelope':
+      return (
+        sameAddress(mirrorInner.recipient ?? null, editor.appliedRecipientAddress) &&
+        sameAddress(mirrorInner.sender ?? null, editor.appliedSenderAddress)
+      )
+    case 'aroma':
+      return (
+        (mirrorInner.aroma?.index ?? null) === (editor.selectedAroma?.index ?? null)
+      )
+    case 'date':
+      return sameDates(mirrorInner.dates ?? [], editor.selectedDates)
+    default:
+      return false
+  }
+}

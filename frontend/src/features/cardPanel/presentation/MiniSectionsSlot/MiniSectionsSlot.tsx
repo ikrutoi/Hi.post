@@ -4,6 +4,10 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useRemSize } from '@shared/helpers'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
+import {
+  canApplyMirrorSection,
+  isMirrorSectionAppliedToEditor,
+} from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import { useCardPanelFacade } from '../../application/facades'
 import { CARD_PANEL_SECTIONS_PRIORITY } from '../../domain/types'
 import type { CardPanelSection } from '../../domain/types'
@@ -30,15 +34,10 @@ import { selectCartItems } from '@cart/infrastructure/selectors'
 import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
-import { getToolbarIcon } from '@shared/utils/icons'
+import { IconApplyMedium, IconApplyMediumCheck } from '@shared/ui/icons'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { setCardPieCopyStripExpanded } from '@cart/infrastructure/state'
-import type {
-  CardPieInnerData,
-  CardPieSectionFlags,
-} from '@features/cardPie/infrastructure/postcardCardPieViewModel'
-import type { AddressFields, CardSection, IconKey } from '@shared/config/constants'
-import type { DispatchDate } from '@entities/date'
+import type { CardSection, IconKey } from '@shared/config/constants'
 
 const PARTS_TOTAL = 6
 const GAP_PARTS = 1
@@ -61,41 +60,6 @@ export type MiniSectionsSlotProps = {
   onBeforeOpenMiniSection?: () => void
 }
 
-function canApplyMirrorSection(
-  section: CardPanelSection,
-  mirrorInner: CardPieInnerData | null,
-  mirrorSectionFlags: CardPieSectionFlags | null,
-): boolean {
-  if (!mirrorInner || !mirrorSectionFlags) return false
-  if (section === 'cardtext') {
-    return cardtextHasRenderableContent(mirrorInner.cardtext)
-  }
-  return Boolean(mirrorSectionFlags[section])
-}
-
-function sameAddress(
-  a: Readonly<AddressFields> | null | undefined,
-  b: Readonly<AddressFields> | null | undefined,
-): boolean {
-  if (a == null && b == null) return true
-  if (a == null || b == null) return false
-  return (
-    String(a.name ?? '') === String(b.name ?? '') &&
-    String(a.street ?? '') === String(b.street ?? '') &&
-    String(a.city ?? '') === String(b.city ?? '') &&
-    String(a.zip ?? '') === String(b.zip ?? '') &&
-    String(a.country ?? '') === String(b.country ?? '')
-  )
-}
-
-function sameDates(a: DispatchDate[], b: DispatchDate[]): boolean {
-  if (a.length !== b.length) return false
-  return a.every((d, i) => {
-    const x = b[i]
-    return d.year === x.year && d.month === x.month && d.day === x.day
-  })
-}
-
 export const MiniSectionsSlot = forwardRef<
   HTMLDivElement,
   MiniSectionsSlotProps
@@ -113,7 +77,7 @@ export const MiniSectionsSlot = forwardRef<
   const dispatch = useAppDispatch()
   const remSize = useRemSize()
   const { sizeCard } = useSizeFacade()
-  const { editorState } = useCardEditorFacade()
+  const { editorState, removeSection } = useCardEditorFacade()
   const { state: stateCardPanel } = useCardPanelFacade()
   const isPacked = stateCardPanel.isPacked
   const hasEnvelopeApplied = useAppSelector(selectHasEnvelopeAppliedContent)
@@ -167,6 +131,15 @@ export const MiniSectionsSlot = forwardRef<
     mirrorTargetLocalId != null
       ? cartItems.find((p) => p.localId === mirrorTargetLocalId) ?? null
       : null
+
+  const mirrorEditorSnapshot = {
+    cardphotoAppliedData,
+    cardtextApplied: cardtextState?.appliedData ?? null,
+    appliedRecipientAddress,
+    appliedSenderAddress,
+    selectedAroma,
+    selectedDates,
+  }
 
   const handlePanelMiniSectionsAction = useCallback(
     (key: IconKey) => {
@@ -262,86 +235,58 @@ export const MiniSectionsSlot = forwardRef<
                         }
                         mirrorApplyCorner={
                           showMirrorApplyButtons ? (
-                            <button
-                              type="button"
-                              className={miniCardStyles.miniCardCornerButton}
-                              disabled={(() => {
-                                const hasMirrorData = canApplyMirrorSection(
-                                  section,
-                                  mirrorInner,
-                                  mirrorSectionFlags,
-                                )
-                                if (!hasMirrorData) return true
-
-                                if (section === 'cardphoto') {
-                                  const sourceMeta =
-                                    sourcePostcard?.card?.cardphoto
-                                      ?.appliedData ??
-                                    sourcePostcard?.card?.cardphoto
-                                      ?.assetData ??
-                                    null
-                                  if (!sourceMeta) return true
-                                  return (
-                                    sourceMeta.id === cardphotoAppliedData?.id
-                                  )
-                                }
-
-                                if (section === 'cardtext') {
-                                  const src = mirrorInner?.cardtext
-                                  const applied =
-                                    cardtextState?.appliedData ?? null
-                                  if (!src || !applied) return false
-                                  if (src.id != null && applied.id != null) {
-                                    return String(src.id) === String(applied.id)
+                            (() => {
+                              const canApply = canApplyMirrorSection(
+                                section,
+                                mirrorInner,
+                                mirrorSectionFlags,
+                              )
+                              const isApplied = isMirrorSectionAppliedToEditor(
+                                section,
+                                mirrorInner,
+                                sourcePostcard,
+                                mirrorEditorSnapshot,
+                              )
+                              return (
+                                <button
+                                  type="button"
+                                  className={miniCardStyles.miniCardCornerButton}
+                                  disabled={!canApply}
+                                  data-applied={
+                                    isApplied ? 'true' : undefined
                                   }
-                                  return (
-                                    src.plainText === applied.plainText &&
-                                    src.cardtextLines === applied.cardtextLines
-                                  )
-                                }
-
-                                if (section === 'envelope') {
-                                  return (
-                                    sameAddress(
-                                      mirrorInner?.recipient ?? null,
-                                      appliedRecipientAddress,
-                                    ) &&
-                                    sameAddress(
-                                      mirrorInner?.sender ?? null,
-                                      appliedSenderAddress,
+                                  aria-pressed={isApplied}
+                                  aria-label={
+                                    isApplied
+                                      ? `Remove "${section}" from editor`
+                                      : `Copy "${section}" from selected postcard`
+                                  }
+                                  onMouseDown={(e) => e.stopPropagation()}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    if (mirrorTargetLocalId == null || !canApply) {
+                                      return
+                                    }
+                                    if (isApplied) {
+                                      removeSection(section)
+                                      return
+                                    }
+                                    dispatch(
+                                      applyArchiveSectionToEditorRequested({
+                                        section,
+                                        sourceLocalId: mirrorTargetLocalId,
+                                      }),
                                     )
-                                  )
-                                }
-
-                                if (section === 'aroma') {
-                                  return (
-                                    (mirrorInner?.aroma?.index ?? null) ===
-                                    (selectedAroma?.index ?? null)
-                                  )
-                                }
-
-                                if (section === 'date') {
-                                  const srcDates = mirrorInner?.dates ?? []
-                                  return sameDates(srcDates, selectedDates)
-                                }
-
-                                return false
-                              })()}
-                              aria-label={`Transfer "${section}" from selected postcard`}
-                              onMouseDown={(e) => e.stopPropagation()}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                if (mirrorTargetLocalId == null) return
-                                dispatch(
-                                  applyArchiveSectionToEditorRequested({
-                                    section,
-                                    sourceLocalId: mirrorTargetLocalId,
-                                  }),
-                                )
-                              }}
-                            >
-                              {getToolbarIcon({ key: 'applyLight' })}
-                            </button>
+                                  }}
+                                >
+                                  {isApplied ? (
+                                    <IconApplyMediumCheck />
+                                  ) : (
+                                    <IconApplyMedium />
+                                  )}
+                                </button>
+                              )
+                            })()
                           ) : null
                         }
                       />

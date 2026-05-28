@@ -147,6 +147,14 @@
     color: $color-font-enabled-light-hover;
   }
 
+  &[data-applied='true']:not(:disabled) {
+    color: $color-indicator-hight;
+  }
+
+  &[data-applied='true']:not(:disabled):hover {
+    color: $color-font-enabled;
+  }
+
   &:disabled {
     opacity: 1;
     cursor: default;

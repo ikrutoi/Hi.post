@@ -793,6 +793,39 @@
   .toolbarKey {
     width: 1.85rem;
     height: 1.85rem;
+    background-color: #fff;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+
+    &.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+      cursor: pointer;
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: #fff;
+      }
+    }
+
+    &.toolbarKeyDisabled {
+      color: $color-font-disabled;
+      cursor: default;
+
+      &:hover {
+        color: $color-font-disabled;
+        background-color: #fff;
+      }
+    }
+  }
+
+  .toolbarKeyActive {
+    color: $color-app-sidebar-icon-active;
+
+    &:hover {
+      color: $color-app-sidebar-icon-active;
+      background-color: #fff;
+    }
   }
 
   svg {
