@@ -1,6 +1,7 @@
 export * from './cardPanel.slice'
 export * from './applyArchiveSection.actions'
 export * from './revertMirrorSectionCopy.actions'
+export * from './mirrorCopyAll.actions'
 export {
   setMirrorSectionBackup,
   clearMirrorSectionBackup,

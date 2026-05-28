@@ -1,10 +1,11 @@
 import clsx from 'clsx'
-import React, { forwardRef, useCallback } from 'react'
+import React, { forwardRef, useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { useRemSize } from '@shared/helpers'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import {
+  areAllEligibleMirrorSectionsApplied,
   canApplyMirrorSection,
   isMirrorSectionAppliedToEditor,
 } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
@@ -35,6 +36,8 @@ import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.typ
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
   applyArchiveSectionToEditorRequested,
+  applyAllMirrorSectionsCopyRequested,
+  revertAllMirrorSectionsCopyRequested,
   revertMirrorSectionCopyRequested,
 } from '@cardPanel/infrastructure/state'
 import { IconApplyMedium, IconApplyMediumCheck } from '@shared/ui/icons'
@@ -144,10 +147,49 @@ export const MiniSectionsSlot = forwardRef<
     selectedDates,
   }
 
+  const allMirrorSectionsApplied = useMemo(
+    () =>
+      areAllEligibleMirrorSectionsApplied(
+        SECTIONS_ORDER,
+        mirrorInner,
+        mirrorSectionFlags,
+        sourcePostcard,
+        mirrorEditorSnapshot,
+      ),
+    [
+      mirrorInner,
+      mirrorSectionFlags,
+      sourcePostcard,
+      cardphotoAppliedData,
+      cardtextState?.appliedData,
+      appliedRecipientAddress,
+      appliedSenderAddress,
+      selectedAroma,
+      selectedDates,
+    ],
+  )
+
+  const panelMiniSectionsToolbarStateOverride = useMemo(
+    () =>
+      allMirrorSectionsApplied
+        ? ({ cardPieCheck: 'active' as const } satisfies Record<string, string>)
+        : undefined,
+    [allMirrorSectionsApplied],
+  )
+
   const handlePanelMiniSectionsAction = useCallback(
     (key: IconKey) => {
       if (key === 'cardPieCheck') {
-        dispatch(setCardPieCopyStripExpanded(false))
+        if (mirrorTargetLocalId == null) return
+        if (allMirrorSectionsApplied) {
+          dispatch(revertAllMirrorSectionsCopyRequested())
+        } else {
+          dispatch(
+            applyAllMirrorSectionsCopyRequested({
+              sourceLocalId: mirrorTargetLocalId,
+            }),
+          )
+        }
         return
       }
       if (key === 'cardPieEdit') {
@@ -155,7 +197,12 @@ export const MiniSectionsSlot = forwardRef<
       }
       onPanelMiniSectionsToolbarAction?.(key)
     },
-    [dispatch, onPanelMiniSectionsToolbarAction],
+    [
+      dispatch,
+      onPanelMiniSectionsToolbarAction,
+      mirrorTargetLocalId,
+      allMirrorSectionsApplied,
+    ],
   )
 
   return (
@@ -310,6 +357,7 @@ export const MiniSectionsSlot = forwardRef<
                   <Toolbar
                     section="panelMiniSections"
                     mergedWithCenter
+                    stateOverride={panelMiniSectionsToolbarStateOverride}
                     onActionClick={handlePanelMiniSectionsAction}
                   />
                 </div>

@@ -55,6 +55,41 @@ export type MirrorSectionEditorSnapshot = {
   selectedDates: DispatchDate[]
 }
 
+export function listMirrorSectionsEligibleForApply(
+  sections: readonly CardPanelSection[],
+  mirrorInner: CardPieInnerData | null,
+  mirrorSectionFlags: CardPieSectionFlags | null,
+): CardPanelSection[] {
+  if (!mirrorInner || !mirrorSectionFlags) return []
+  return sections.filter((section) =>
+    canApplyMirrorSection(section, mirrorInner, mirrorSectionFlags),
+  )
+}
+
+/** Все секции, которые можно взять с правого CardPie, уже совпадают с левым редактором. */
+export function areAllEligibleMirrorSectionsApplied(
+  sections: readonly CardPanelSection[],
+  mirrorInner: CardPieInnerData | null,
+  mirrorSectionFlags: CardPieSectionFlags | null,
+  sourcePostcard: PostcardHydrated | null,
+  editor: MirrorSectionEditorSnapshot,
+): boolean {
+  const eligible = listMirrorSectionsEligibleForApply(
+    sections,
+    mirrorInner,
+    mirrorSectionFlags,
+  )
+  if (eligible.length === 0) return false
+  return eligible.every((section) =>
+    isMirrorSectionAppliedToEditor(
+      section,
+      mirrorInner,
+      sourcePostcard,
+      editor,
+    ),
+  )
+}
+
 /** Секция редактора уже совпадает с данными открытки из списка (cardPieCopy). */
 export function isMirrorSectionAppliedToEditor(
   section: CardPanelSection,

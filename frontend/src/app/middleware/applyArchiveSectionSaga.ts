@@ -5,8 +5,13 @@ import type { PostcardHydrated } from '@entities/postcard'
 import {
   applyArchiveSectionToEditorRequested,
   revertMirrorSectionCopyRequested,
+  applyAllMirrorSectionsCopyRequested,
+  revertAllMirrorSectionsCopyRequested,
 } from '@cardPanel/infrastructure/state'
-import { selectMirrorSectionBackup } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
+import {
+  selectMirrorSectionBackup,
+  selectMirrorSectionBackupSections,
+} from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
 import {
   setMirrorSectionBackup,
   clearMirrorSectionBackup,
@@ -15,8 +20,12 @@ import {
   captureMirrorSectionBackup,
   restoreMirrorSectionBackup,
 } from './mirrorSectionBackup.helpers'
+import { canApplyMirrorSection } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import { buildCardPieInnerDataFromPostcard } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
+import {
+  buildCardPieInnerDataFromPostcard,
+  buildPieSectionFlagsFromPostcard,
+} from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
 import { applyFinal, markLoaded } from '@cardphoto/infrastructure/state'
 import { rebuildConfigFromMeta } from '@app/middleware/cardphotoProcessSaga'
@@ -30,20 +39,23 @@ import {
 } from '@cardtext/infrastructure/state'
 import { selectCardtextIsComplete } from '@cardtext/infrastructure/selectors'
 import { restoreSender } from '@envelope/sender/infrastructure/state'
-import {
-  restoreRecipient,
-} from '@envelope/recipient/infrastructure/state'
+import { restoreRecipient } from '@envelope/recipient/infrastructure/state'
 import { selectIsEnvelopeReady } from '@envelope/infrastructure/selectors'
 import { syncEnvelopeFormsFromAppliedRequested } from '@envelope/infrastructure/state'
 import { processEnvelopeVisuals } from './envelopeProcessSaga'
 import { setAroma } from '@aroma/infrastructure/state'
-import {
-  setMultiDateMode,
-  setSelectedDates,
-} from '@date/infrastructure/state'
+import { setMultiDateMode, setSelectedDates } from '@date/infrastructure/state'
 import { setSectionComplete } from '@entities/cardEditor/infrastructure/state'
 import type { CardPanelSection } from '@cardPanel/domain/types'
 import type { RootState } from '@app/state'
+
+const MIRROR_COPY_SECTION_ORDER: CardPanelSection[] = [
+  'cardphoto',
+  'cardtext',
+  'envelope',
+  'aroma',
+  'date',
+]
 
 function* stashMirrorSectionBackupIfNeeded(section: CardPanelSection): SagaIterator {
   const existing = yield select((state: RootState) =>
@@ -54,19 +66,10 @@ function* stashMirrorSectionBackupIfNeeded(section: CardPanelSection): SagaItera
   yield put(setMirrorSectionBackup(backup))
 }
 
-function* handleApplyArchiveSection(
-  action: PayloadAction<{
-    section: CardPanelSection
-    sourceLocalId: number
-  }>,
+function* applyArchiveSectionFromPostcard(
+  section: CardPanelSection,
+  postcard: PostcardHydrated,
 ): SagaIterator {
-  const { section, sourceLocalId } = action.payload
-  const items: PostcardHydrated[] = yield select(selectCartItems)
-  const postcard = items.find((p) => p.localId === sourceLocalId)
-  if (!postcard) return
-
-  yield call(stashMirrorSectionBackupIfNeeded, section)
-
   const card = postcard.card
 
   switch (section) {
@@ -79,7 +82,9 @@ function* handleApplyArchiveSection(
       yield put(markLoaded())
       {
         const complete: boolean = yield select(selectCardphotoIsComplete)
-        yield put(setSectionComplete({ section: 'cardphoto', isComplete: complete }))
+        yield put(
+          setSectionComplete({ section: 'cardphoto', isComplete: complete }),
+        )
       }
       break
     }
@@ -94,7 +99,9 @@ function* handleApplyArchiveSection(
       }
       {
         const complete: boolean = yield select(selectCardtextIsComplete)
-        yield put(setSectionComplete({ section: 'cardtext', isComplete: complete }))
+        yield put(
+          setSectionComplete({ section: 'cardtext', isComplete: complete }),
+        )
       }
       break
     }
@@ -105,7 +112,9 @@ function* handleApplyArchiveSection(
       yield put(syncEnvelopeFormsFromAppliedRequested())
       {
         const ready: boolean = yield select(selectIsEnvelopeReady)
-        yield put(setSectionComplete({ section: 'envelope', isComplete: ready }))
+        yield put(
+          setSectionComplete({ section: 'envelope', isComplete: ready }),
+        )
       }
       break
     }
@@ -126,6 +135,21 @@ function* handleApplyArchiveSection(
   }
 }
 
+function* handleApplyArchiveSection(
+  action: PayloadAction<{
+    section: CardPanelSection
+    sourceLocalId: number
+  }>,
+): SagaIterator {
+  const { section, sourceLocalId } = action.payload
+  const items: PostcardHydrated[] = yield select(selectCartItems)
+  const postcard = items.find((p) => p.localId === sourceLocalId)
+  if (!postcard) return
+
+  yield call(stashMirrorSectionBackupIfNeeded, section)
+  yield call(applyArchiveSectionFromPostcard, section, postcard)
+}
+
 function* handleRevertMirrorSectionCopy(
   action: PayloadAction<{ section: CardPanelSection }>,
 ): SagaIterator {
@@ -138,6 +162,44 @@ function* handleRevertMirrorSectionCopy(
   yield put(clearMirrorSectionBackup(section))
 }
 
+function* handleApplyAllMirrorSectionsCopy(
+  action: PayloadAction<{ sourceLocalId: number }>,
+): SagaIterator {
+  const { sourceLocalId } = action.payload
+  const items: PostcardHydrated[] = yield select(selectCartItems)
+  const postcard = items.find((p) => p.localId === sourceLocalId)
+  if (!postcard) return
+
+  const mirrorInner = buildCardPieInnerDataFromPostcard(postcard)
+  const mirrorSectionFlags = buildPieSectionFlagsFromPostcard(postcard)
+
+  for (const section of MIRROR_COPY_SECTION_ORDER) {
+    if (!canApplyMirrorSection(section, mirrorInner, mirrorSectionFlags)) {
+      continue
+    }
+    yield call(stashMirrorSectionBackupIfNeeded, section)
+    yield call(applyArchiveSectionFromPostcard, section, postcard)
+  }
+}
+
+function* handleRevertAllMirrorSectionsCopy(): SagaIterator {
+  const backedSections: CardPanelSection[] = yield select(
+    selectMirrorSectionBackupSections,
+  )
+  const sectionsToRevert = MIRROR_COPY_SECTION_ORDER.filter((section) =>
+    backedSections.includes(section),
+  )
+
+  for (const section of sectionsToRevert) {
+    const backup = yield select((state: RootState) =>
+      selectMirrorSectionBackup(state, section),
+    )
+    if (backup == null) continue
+    yield call(restoreMirrorSectionBackup, backup)
+    yield put(clearMirrorSectionBackup(section))
+  }
+}
+
 export function* watchApplyArchiveSection(): SagaIterator {
   yield takeLatest(
     applyArchiveSectionToEditorRequested.type,
@@ -146,5 +208,13 @@ export function* watchApplyArchiveSection(): SagaIterator {
   yield takeLatest(
     revertMirrorSectionCopyRequested.type,
     handleRevertMirrorSectionCopy,
+  )
+  yield takeLatest(
+    applyAllMirrorSectionsCopyRequested.type,
+    handleApplyAllMirrorSectionsCopy,
+  )
+  yield takeLatest(
+    revertAllMirrorSectionsCopyRequested.type,
+    handleRevertAllMirrorSectionsCopy,
   )
 }

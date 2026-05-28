@@ -7,3 +7,8 @@ export const selectMirrorSectionBackup = (
   section: CardPanelSection,
 ): MirrorSectionBackup | undefined =>
   state.mirrorSectionBackup.bySection[section]
+
+export const selectMirrorSectionBackupSections = (
+  state: RootState,
+): CardPanelSection[] =>
+  Object.keys(state.mirrorSectionBackup.bySection) as CardPanelSection[]
