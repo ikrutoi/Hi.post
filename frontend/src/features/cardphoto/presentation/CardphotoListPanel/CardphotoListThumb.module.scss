@@ -20,7 +20,7 @@
   vertical-align: top;
 }
 
-/** Как счётчик «×N» в ячейке календаря — подпись шаблона в правом нижнем углу. */
+/** sortDown / sortUp: подпись в правом нижнем углу (как счётчик в ячейке календаря). */
 .titleBadge {
   position: absolute;
   right: 0.15rem;
@@ -40,4 +40,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   box-sizing: border-box;
+}
+
+/** sortAZDown / sortAZUp: подпись в правом верхнем углу. */
+.thumbCell[data-sort-emphasis='title'] .titleBadge {
+  top: 0.15rem;
+  bottom: auto;
 }

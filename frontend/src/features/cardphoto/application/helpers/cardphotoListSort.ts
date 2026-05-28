@@ -78,6 +78,26 @@ export function getCardphotoListSortIconForMode(
   return CARDPHOTO_LIST_SORT_MODE_TO_ICON[mode]
 }
 
+/** `sortDown` / `sortUp` — подпись в правом нижнем углу. */
+export function isCardphotoListSortByDate(mode: CardphotoListSortMode): boolean {
+  return mode === 'dateDesc' || mode === 'dateAsc'
+}
+
+/** `sortAZDown` / `sortAZUp` — подпись в правом верхнем углу. */
+export function isCardphotoListSortByTitle(mode: CardphotoListSortMode): boolean {
+  return mode === 'titleAsc' || mode === 'titleDesc'
+}
+
+export type CardphotoListSortEmphasis = 'date' | 'title'
+
+export function getCardphotoListSortEmphasis(
+  mode: CardphotoListSortMode,
+): CardphotoListSortEmphasis | undefined {
+  if (isCardphotoListSortByDate(mode)) return 'date'
+  if (isCardphotoListSortByTitle(mode)) return 'title'
+  return undefined
+}
+
 export function getNextCardphotoListSortMode(
   coverage: CardphotoListTitleCoverage,
   current: CardphotoListSortMode,

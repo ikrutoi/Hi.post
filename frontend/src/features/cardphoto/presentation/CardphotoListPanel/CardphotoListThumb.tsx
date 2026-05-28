@@ -1,4 +1,5 @@
 import React from 'react'
+import type { CardphotoListSortEmphasis } from '@cardphoto/application/helpers/cardphotoListSort'
 import styles from './CardphotoListThumb.module.scss'
 
 type Props = {
@@ -7,6 +8,8 @@ type Props = {
   title?: string
   cellPx: number
   onSelect: () => void | Promise<void>
+  /** sortDown/sortUp → низ справа; sortAZDown/sortAZUp → верх справа. */
+  sortEmphasis?: CardphotoListSortEmphasis
 }
 
 export const CardphotoListThumb: React.FC<Props> = ({
@@ -15,6 +18,7 @@ export const CardphotoListThumb: React.FC<Props> = ({
   title,
   cellPx,
   onSelect,
+  sortEmphasis,
 }) => {
   const cellStyle = {
     width: cellPx,
@@ -31,6 +35,7 @@ export const CardphotoListThumb: React.FC<Props> = ({
     <div
       className={styles.thumbCell}
       data-cardphoto-thumb={id}
+      data-sort-emphasis={sortEmphasis}
       style={cellStyle}
       onClick={runSelect}
     >

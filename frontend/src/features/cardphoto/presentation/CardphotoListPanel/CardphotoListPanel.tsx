@@ -13,6 +13,7 @@ import {
   selectCardphotoListTemplateGridCols,
 } from '@cardphoto/infrastructure/selectors'
 import { useCardphotoListSort } from '@cardphoto/application/hooks/useCardphotoListSort'
+import { getCardphotoListSortEmphasis } from '@cardphoto/application/helpers/cardphotoListSort'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import type { ImageMeta } from '@cardphoto/domain/types'
@@ -69,7 +70,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
   const thumbGridRef = useRef<HTMLDivElement | null>(null)
   const [cellPx, setCellPx] = useState(56)
 
-  const { sortedRows } = useCardphotoListSort(rows)
+  const { sortedRows, sortMode } = useCardphotoListSort(rows)
 
   useLayoutEffect(() => {
     const contentEl = listContentRef.current
@@ -136,6 +137,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
   }, [listRevision])
 
   const hasRows = sortedRows.length > 0
+  const sortEmphasis = getCardphotoListSortEmphasis(sortMode)
 
   return (
     <div
@@ -180,6 +182,7 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
                     title={row.title}
                     cellPx={cellPx}
                     onSelect={() => onSelectTemplate(row.id)}
+                    sortEmphasis={sortEmphasis}
                   />
                 ))}
               </div>
