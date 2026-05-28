@@ -50,6 +50,26 @@ export function getHistoryListSortIconForMode(
   return HISTORY_LIST_SORT_MODE_TO_ICON[mode]
 }
 
+/** `sortDown` / `sortUp` — сортировка по дате; имя в ячейке приглушаем. */
+export function isHistoryListSortByDate(mode: HistoryListSortMode): boolean {
+  return mode === 'dateDesc' || mode === 'dateAsc'
+}
+
+/** `sortAZDown` / `sortAZUp` — сортировка по имени; дату вниз, имя вверх. */
+export function isHistoryListSortByTitle(mode: HistoryListSortMode): boolean {
+  return mode === 'titleAsc' || mode === 'titleDesc'
+}
+
+export type HistoryListSortEmphasis = 'date' | 'title'
+
+export function getHistoryListSortEmphasis(
+  mode: HistoryListSortMode,
+): HistoryListSortEmphasis | undefined {
+  if (isHistoryListSortByDate(mode)) return 'date'
+  if (isHistoryListSortByTitle(mode)) return 'title'
+  return undefined
+}
+
 export function getNextHistoryListSortMode(
   current: HistoryListSortMode,
 ): HistoryListSortMode {

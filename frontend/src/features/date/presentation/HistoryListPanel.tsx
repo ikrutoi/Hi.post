@@ -18,7 +18,11 @@ import {
   selectHistoryListPanelDensity,
   selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
-import { sortHistoryListEntries } from '@date/application/helpers/historyListSort'
+import {
+  getHistoryListSortEmphasis,
+  sortHistoryListEntries,
+  type HistoryListSortEmphasis,
+} from '@date/application/helpers/historyListSort'
 
 export type HistoryListPanelItem = {
   id: string
@@ -55,7 +59,8 @@ const HistoryListPanelRow: React.FC<{
   listSelectedLocalId?: number | null
   onSelectEntry?: (item: HistoryListPanelItem) => void
   densityLevel: PanelDensity2Size
-}> = ({ item, listSelectedLocalId, onSelectEntry, densityLevel }) => {
+  sortEmphasis?: HistoryListSortEmphasis
+}> = ({ item, listSelectedLocalId, onSelectEntry, densityLevel, sortEmphasis }) => {
   const { displayUrl, onPreviewImgError } = useListCardPreviewUrl(
     item.cardId,
     item.previewUrl,
@@ -83,6 +88,7 @@ const HistoryListPanelRow: React.FC<{
         item.postcardLocalId === listSelectedLocalId
       }
       densityLevel={densityLevel}
+      sortEmphasis={sortEmphasis}
     />
   )
 }
@@ -98,6 +104,7 @@ export const HistoryListPanel: React.FC<Props> = ({
 }) => {
   const historyListSortMode = useAppSelector(selectHistoryListSortMode)
   const historyListPanelDensity = useAppSelector(selectHistoryListPanelDensity)
+  const sortEmphasis = getHistoryListSortEmphasis(historyListSortMode)
   const sortedEntries = useMemo(
     () => sortHistoryListEntries(entries, historyListSortMode),
     [entries, historyListSortMode],
@@ -143,6 +150,7 @@ export const HistoryListPanel: React.FC<Props> = ({
                   listSelectedLocalId={listSelectedLocalId}
                   onSelectEntry={onSelectEntry}
                   densityLevel={historyListPanelDensity}
+                  sortEmphasis={sortEmphasis}
                 />
               </div>
             ))

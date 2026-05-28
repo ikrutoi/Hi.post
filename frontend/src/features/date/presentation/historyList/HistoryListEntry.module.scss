@@ -133,6 +133,7 @@ $list-entry-border: $color-cart-list-border;
 .thumb {
   position: relative;
   flex: 0 0 auto;
+  order: 1;
   width: 58%;
   aspect-ratio: 1;
   min-width: 0;
@@ -217,23 +218,56 @@ $list-entry-border: $color-cart-list-border;
   text-align: left;
 }
 
-.dateLine {
-  margin-top: auto;
-  font-size: 0.68rem;
-  font-weight: 400;
-  line-height: 1.2;
-  color: $color-font-enabled;
-}
-
+.dateLine,
 .detailBlock {
-  margin-top: 0.12rem;
   font-size: 0.62rem;
   font-weight: 600;
   line-height: 1.18;
   color: $color-font-enabled;
 }
 
+.dateLine {
+  order: 2;
+  margin-top: auto;
+}
+
+.detailBlock {
+  order: 3;
+  margin-top: 0.12rem;
+}
+
+/** sortDown / sortUp: дата чёрная, имя серое; порядок: дата → имя → страна. */
+.root[data-sort-emphasis='date']:not([data-inactive='true']) .detailBlock {
+  color: $color-font-enabled-light;
+}
+
+/** sortAZDown / sortAZUp: имя чёрное вверху, дата серая внизу. */
+.root[data-sort-emphasis='title']:not([data-inactive='true']) {
+  .detailBlock {
+    order: 2;
+    margin-top: auto;
+    color: $color-font-enabled;
+  }
+
+  .countryLine {
+    order: 3;
+    margin-top: 0.08rem;
+  }
+
+  .dateLine {
+    order: 4;
+    margin-top: 0.08rem;
+    color: $color-font-enabled-light;
+  }
+
+  &:not(:has(.detailBlock)) .dateLine {
+    order: 2;
+    margin-top: auto;
+  }
+}
+
 .countryLine {
+  order: 4;
   margin-top: 0.08rem;
   font-size: 0.62rem;
   font-weight: 600;
@@ -248,13 +282,26 @@ $list-entry-border: $color-cart-list-border;
     width: 68%;
   }
 
+  .dateLine,
+  .detailBlock {
+    font-size: 0.54rem;
+  }
+
   .dateLine {
     margin-top: auto;
-    font-size: 0.65rem;
   }
 
   .detailBlock {
     margin-top: 0.04rem;
-    font-size: 0.54rem;
+  }
+
+  &[data-sort-emphasis='title']:not([data-inactive='true']) {
+    .detailBlock {
+      margin-top: auto;
+    }
+
+    .dateLine {
+      margin-top: 0.04rem;
+    }
   }
 }

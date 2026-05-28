@@ -1,6 +1,7 @@
 import React from 'react'
 import type { PostcardStatus } from '@entities/postcard'
 import type { PanelDensity2Size } from '@shared/ui/icons'
+import type { HistoryListSortEmphasis } from '@date/application/helpers/historyListSort'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './HistoryListEntry.module.scss'
 
@@ -20,6 +21,8 @@ export type HistoryListEntryProps = {
   isFocused?: boolean
   /** Плотность сетки списка истории: 1 — 4 ячейки, 2 — 5 ячеек. */
   densityLevel?: PanelDensity2Size
+  /** sortDown/sortUp → date; sortAZDown/sortAZUp → title (порядок и цвета в scss). */
+  sortEmphasis?: HistoryListSortEmphasis
 }
 
 export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
@@ -35,9 +38,15 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
   isSelected = false,
   isFocused = false,
   densityLevel = 1,
+  sortEmphasis,
 }) => {
   const interactive = Boolean(onSelect)
-  const labelForAria = detailLine ? `${dateLabel}, ${detailLine}` : dateLabel
+  const labelForAria =
+    sortEmphasis === 'title' && detailLine
+      ? `${detailLine}, ${dateLabel}`
+      : detailLine
+        ? `${dateLabel}, ${detailLine}`
+        : dateLabel
   const recipientParts = parseListEntryRecipientDetail(detailLine)
   const recipientName = recipientParts?.name ?? detailLine ?? ''
   const recipientCountry = recipientParts?.region ?? ''
@@ -56,6 +65,7 @@ export const HistoryListEntry: React.FC<HistoryListEntryProps> = ({
       data-selected={isSelected ? 'true' : undefined}
       data-focused={isFocused ? 'true' : undefined}
       data-density-level={densityLevel}
+      data-sort-emphasis={sortEmphasis}
       data-inactive={variant === 'inactive' ? 'true' : undefined}
       data-clickable={interactive ? 'true' : undefined}
       role={interactive ? 'button' : undefined}
