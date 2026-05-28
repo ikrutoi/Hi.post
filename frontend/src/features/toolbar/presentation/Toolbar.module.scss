@@ -474,22 +474,42 @@
     margin: 0.2rem 0;
     border-radius: 0.75rem;
     background-color: $color-app-strip;
-    color: $color-app-sidebar-icon;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
 
-    &:hover {
-      background-color: $color-app-sidebar-icon-hover;
-    }
-
     > * {
       transform: scale($toolbar-sidebar-icon-scale);
+    }
+
+    &.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+      cursor: pointer;
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: $color-app-strip;
+      }
+    }
+
+    &.toolbarKeyDisabled {
+      color: $color-font-disabled;
+      cursor: default;
+
+      &:hover {
+        color: $color-font-disabled;
+        background-color: $color-app-strip;
+      }
     }
   }
 
   .toolbarKeyActive {
     color: $color-app-sidebar-icon-active;
+
+    &:hover {
+      color: $color-app-sidebar-icon-active;
+      background-color: $color-app-strip;
+    }
   }
 
   .toolbarIcon {
@@ -526,10 +546,10 @@
   .toolbarKey {
     cursor: default;
     pointer-events: none;
-  }
 
-  .toolbarKey:hover {
-    background-color: $color-app-strip;
+    &:hover {
+      background-color: $color-app-strip;
+    }
   }
 }
 
@@ -1011,21 +1031,43 @@
     justify-content: center;
     border-radius: 0.75rem;
     background-color: $color-app-strip;
-    color: $color-app-sidebar-icon;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
 
     svg {
       width: 1.1rem;
       height: 1.1rem;
     }
 
-    &:hover {
-      background-color: $color-app-sidebar-icon-hover;
+    &.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+      cursor: pointer;
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: $color-app-strip;
+      }
+    }
+
+    &.toolbarKeyDisabled {
+      color: $color-font-disabled;
+      cursor: default;
+
+      &:hover {
+        color: $color-font-disabled;
+        background-color: $color-app-strip;
+      }
     }
   }
 
   .toolbarKeyActive {
     color: $color-app-sidebar-icon-active;
-    // background-color: $color-app-sidebar-icon-hover;
+
+    &:hover {
+      color: $color-app-sidebar-icon-active;
+      background-color: $color-app-strip;
+    }
   }
 
   .toolbarBadge {
@@ -1040,10 +1082,6 @@
     top: 4px;
     right: 4px;
   }
-}
-
-.toolbar.toolbarRightSidebar .toolbarKey:hover {
-  background-color: $color-app-sidebar-icon-hover;
 }
 
 .toolbarAddressListRecipient,
