@@ -128,7 +128,7 @@ function cardphotoUrlsFromCard(card: Card): {
   }
 }
 
-function recipientAppliedCount(recipient: RecipientState): number {
+export function recipientAppliedCount(recipient: RecipientState): number {
   const n = recipient.applied?.length ?? 0
   if (n > 0) return n
   const a = recipient.recipientsViewIdsFirstList?.length ?? 0
