@@ -2,7 +2,19 @@ import type { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select, takeLatest } from 'redux-saga/effects'
 import type { PostcardHydrated } from '@entities/postcard'
-import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
+import {
+  applyArchiveSectionToEditorRequested,
+  revertMirrorSectionCopyRequested,
+} from '@cardPanel/infrastructure/state'
+import { selectMirrorSectionBackup } from '@cardPanel/infrastructure/selectors/mirrorSectionBackupSelectors'
+import {
+  setMirrorSectionBackup,
+  clearMirrorSectionBackup,
+} from '@cardPanel/infrastructure/state/mirrorSectionBackup.slice'
+import {
+  captureMirrorSectionBackup,
+  restoreMirrorSectionBackup,
+} from './mirrorSectionBackup.helpers'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { buildCardPieInnerDataFromPostcard } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { prepareForRedux } from '@app/middleware/cardphotoHelpers'
@@ -31,6 +43,16 @@ import {
 } from '@date/infrastructure/state'
 import { setSectionComplete } from '@entities/cardEditor/infrastructure/state'
 import type { CardPanelSection } from '@cardPanel/domain/types'
+import type { RootState } from '@app/state'
+
+function* stashMirrorSectionBackupIfNeeded(section: CardPanelSection): SagaIterator {
+  const existing = yield select((state: RootState) =>
+    selectMirrorSectionBackup(state, section),
+  )
+  if (existing != null) return
+  const backup = yield call(captureMirrorSectionBackup, section)
+  yield put(setMirrorSectionBackup(backup))
+}
 
 function* handleApplyArchiveSection(
   action: PayloadAction<{
@@ -42,6 +64,8 @@ function* handleApplyArchiveSection(
   const items: PostcardHydrated[] = yield select(selectCartItems)
   const postcard = items.find((p) => p.localId === sourceLocalId)
   if (!postcard) return
+
+  yield call(stashMirrorSectionBackupIfNeeded, section)
 
   const card = postcard.card
 
@@ -102,9 +126,25 @@ function* handleApplyArchiveSection(
   }
 }
 
+function* handleRevertMirrorSectionCopy(
+  action: PayloadAction<{ section: CardPanelSection }>,
+): SagaIterator {
+  const { section } = action.payload
+  const backup = yield select((state: RootState) =>
+    selectMirrorSectionBackup(state, section),
+  )
+  if (backup == null) return
+  yield call(restoreMirrorSectionBackup, backup)
+  yield put(clearMirrorSectionBackup(section))
+}
+
 export function* watchApplyArchiveSection(): SagaIterator {
   yield takeLatest(
     applyArchiveSectionToEditorRequested.type,
     handleApplyArchiveSection,
+  )
+  yield takeLatest(
+    revertMirrorSectionCopyRequested.type,
+    handleRevertMirrorSectionCopy,
   )
 }

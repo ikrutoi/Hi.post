@@ -143,12 +143,9 @@
     display: block;
   }
 
-  &:hover:not(:disabled) {
-    color: $color-font-enabled-light-hover;
-  }
-
+  &:hover:not(:disabled),
   &[data-applied='true']:not(:disabled) {
-    color: $color-indicator-hight;
+    color: $color-font-enabled-light-hover;
   }
 
   &[data-applied='true']:not(:disabled):hover {

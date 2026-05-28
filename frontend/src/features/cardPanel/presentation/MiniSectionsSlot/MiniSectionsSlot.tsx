@@ -33,7 +33,10 @@ import { selectCartItems } from '@cart/infrastructure/selectors'
 // cspell:ignore Renderable
 import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
-import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
+import {
+  applyArchiveSectionToEditorRequested,
+  revertMirrorSectionCopyRequested,
+} from '@cardPanel/infrastructure/state'
 import { IconApplyMedium, IconApplyMediumCheck } from '@shared/ui/icons'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { setCardPieCopyStripExpanded } from '@cart/infrastructure/state'
@@ -77,7 +80,7 @@ export const MiniSectionsSlot = forwardRef<
   const dispatch = useAppDispatch()
   const remSize = useRemSize()
   const { sizeCard } = useSizeFacade()
-  const { editorState, removeSection } = useCardEditorFacade()
+  const { editorState } = useCardEditorFacade()
   const { state: stateCardPanel } = useCardPanelFacade()
   const isPacked = stateCardPanel.isPacked
   const hasEnvelopeApplied = useAppSelector(selectHasEnvelopeAppliedContent)
@@ -258,7 +261,7 @@ export const MiniSectionsSlot = forwardRef<
                                   aria-pressed={isApplied}
                                   aria-label={
                                     isApplied
-                                      ? `Remove "${section}" from editor`
+                                      ? `Revert "${section}" to state before copy`
                                       : `Copy "${section}" from selected postcard`
                                   }
                                   onMouseDown={(e) => e.stopPropagation()}
@@ -268,7 +271,11 @@ export const MiniSectionsSlot = forwardRef<
                                       return
                                     }
                                     if (isApplied) {
-                                      removeSection(section)
+                                      dispatch(
+                                        revertMirrorSectionCopyRequested({
+                                          section,
+                                        }),
+                                      )
                                       return
                                     }
                                     dispatch(

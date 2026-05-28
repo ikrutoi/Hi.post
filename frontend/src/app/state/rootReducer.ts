@@ -37,7 +37,10 @@ import { switcherReducer } from '@date/switcher/infrastructure/state'
 
 // import { cardMenuReducer } from '@/app/basket/cardMenu/infrastructure/state'
 
-import { CardPanelReducer } from '@cardPanel/infrastructure/state'
+import {
+  CardPanelReducer,
+  MirrorSectionBackupReducer,
+} from '@cardPanel/infrastructure/state'
 
 import { cardEditorReducer } from '@entities/cardEditor/infrastructure/state'
 
@@ -92,6 +95,7 @@ export const rootReducer = combineReducers({
   // cardMenu: cardMenuReducer,
 
   cardPanel: CardPanelReducer,
+  mirrorSectionBackup: MirrorSectionBackupReducer,
 
   cardEditor: cardEditorReducer,
 
