@@ -1,6 +1,7 @@
 import { SagaIterator } from 'redux-saga'
-import { all, takeLatest, select, put } from 'redux-saga/effects'
+import { all, takeLatest, select, put, call } from 'redux-saga/effects'
 import { handleEditorPieToolbarAction } from './editorPieToolbarSaga'
+import { clearCardPieWorkspaceAfterCartAdd } from './editorPieHandlers'
 import {
   handleExcludeDispatchBranch,
   handleToggleCartForDispatchBranch,
@@ -107,12 +108,7 @@ const PIE_PROGRESS_SYNC_ACTIONS = [
 ] as const
 
 function* handleClearCardPieEditorSession(): SagaIterator {
-  yield put(clearApply())
-  yield put(clearText())
-  yield put(clearRecipient())
-  yield put(clearSender())
-  yield put(clearAroma())
-  yield put(resetEditor())
+  yield call(clearCardPieWorkspaceAfterCartAdd)
 }
 
 function* handleRainbowLogic() {

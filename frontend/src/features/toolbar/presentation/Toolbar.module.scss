@@ -887,17 +887,31 @@
     width: 1.8rem;
     height: 1.8rem;
     background-color: $color-app-inner;
-    color: $color-font-enabled-light;
 
     svg {
       width: 0.95rem;
       height: 0.95rem;
     }
 
-    &.toolbarKeyEnabled:hover,
-    &.toolbarKeyActive:hover {
-      color: $color-font-enabled;
-      background-color: $color-app-inner;
+    &.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+
+      &:hover,
+      &.toolbarKeyActive:hover {
+        color: $color-font-enabled;
+        background-color: $color-app-inner;
+      }
+    }
+
+    /* disabled — как .toolbarCardtext: только $color-font-disabled из базового .toolbarKeyDisabled */
+    &.toolbarKeyDisabled {
+      color: $color-font-disabled;
+      cursor: default;
+
+      &:hover {
+        color: $color-font-disabled;
+        background-color: $color-app-inner;
+      }
     }
   }
 
@@ -921,32 +935,58 @@
 .toolbarPostcardPieCart.toolbarMergedWithCenter {
   .toolbarKey {
     background-color: #fff;
-    color: $color-font-enabled-light;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
-  }
 
-  .toolbarKey.toolbarKeyEnabled:hover,
-  .toolbarKey.toolbarKeyActive:hover {
-    color: $color-font-enabled;
-    background-color: #fff;
+    &.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+    }
+
+    &.toolbarKeyEnabled:hover,
+    &.toolbarKeyActive:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+    }
+
+    &.toolbarKeyDisabled {
+      color: $color-font-disabled;
+      cursor: default;
+
+      &:hover {
+        color: $color-font-disabled;
+        background-color: #fff;
+      }
+    }
   }
 }
 
 .toolbarEditorPie.toolbarMergedWithCenter {
   .toolbarKey {
     background-color: #fff;
-    color: $color-font-enabled-light;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
-  }
 
-  .toolbarKey.toolbarKeyEnabled:hover,
-  .toolbarKey.toolbarKeyActive:hover {
-    color: $color-font-enabled;
-    background-color: #fff;
+    &.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+    }
+
+    &.toolbarKeyEnabled:hover,
+    &.toolbarKeyActive:hover {
+      color: $color-font-enabled;
+      background-color: #fff;
+    }
+
+    &.toolbarKeyDisabled {
+      color: $color-font-disabled;
+      cursor: default;
+
+      &:hover {
+        color: $color-font-disabled;
+        background-color: #fff;
+      }
+    }
   }
 }
 

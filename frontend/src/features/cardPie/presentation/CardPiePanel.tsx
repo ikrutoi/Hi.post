@@ -9,7 +9,10 @@ import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListC
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
-import { toggleCartForDispatchBranch } from '@date/infrastructure/state'
+import {
+  clearCardPieEditorSession,
+  toggleCartForDispatchBranch,
+} from '@date/infrastructure/state'
 import { CardPieListEntry } from './cardPieList/CardPieListEntry'
 import type { DateListPanelItem } from '@date/presentation/DateListPanel'
 import type { IconKey } from '@shared/config/constants'
@@ -78,10 +81,12 @@ export const CardPiePanel: React.FC<Props> = ({
   entries = [],
   onSelectEntry,
 }) => {
-  const { isAllComplete } = useAppSelector(selectPieProgress)
+  const dispatch = useAppDispatch()
+  const { isAllComplete, progress: pieProgress } = useAppSelector(selectPieProgress)
   const { setCartListPanelOpen } = useCartFacade()
 
   const hasRows = entries.length > 0
+  const canClearWorkspace = hasRows || pieProgress > 0
   const listContentKey = entries.map((e) => e.id).join('|')
 
   /** Как `CardPieListEntry` addCart: `disabled={!onAddCart || inactive}`. */
@@ -100,11 +105,9 @@ export const CardPiePanel: React.FC<Props> = ({
     setCartListPanelOpen(true)
   }, [setCartListPanelOpen])
 
-  const handleHeaderRemoveAllRows = useCallback(() => {
-    for (const e of entries) {
-      e.onDelete?.()
-    }
-  }, [entries])
+  const handleHeaderClearWorkspace = useCallback(() => {
+    dispatch(clearCardPieEditorSession())
+  }, [dispatch])
 
   const toolbarStateOverride = useMemo(
     () => ({
@@ -112,9 +115,12 @@ export const CardPiePanel: React.FC<Props> = ({
         state: addCartListEnabled ? 'enabled' : 'disabled',
         options: {},
       },
-      listDelete: { state: hasRows ? 'enabled' : 'disabled', options: {} },
+      listDelete: {
+        state: canClearWorkspace ? 'enabled' : 'disabled',
+        options: {},
+      },
     }),
-    [addCartListEnabled, hasRows],
+    [addCartListEnabled, canClearWorkspace],
   )
 
   const handleToolbarActionClick = useCallback(
@@ -124,11 +130,16 @@ export const CardPiePanel: React.FC<Props> = ({
         return false
       }
       if (key === 'listDelete') {
-        if (hasRows) handleHeaderRemoveAllRows()
+        if (canClearWorkspace) handleHeaderClearWorkspace()
         return false
       }
     },
-    [addCartListEnabled, handleHeaderOpenCart, handleHeaderRemoveAllRows, hasRows],
+    [
+      addCartListEnabled,
+      canClearWorkspace,
+      handleHeaderClearWorkspace,
+      handleHeaderOpenCart,
+    ],
   )
 
   return (
