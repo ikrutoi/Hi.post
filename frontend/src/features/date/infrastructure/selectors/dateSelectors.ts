@@ -202,7 +202,7 @@ export const selectEditorPieCardPieListRowCount = createSelector(
           slotKeys,
           excluded,
           cartBranchKeys,
-          false,
+          true,
         )
       }
     } else if (selectedDate) {
@@ -211,7 +211,7 @@ export const selectEditorPieCardPieListRowCount = createSelector(
         slotKeys,
         excluded,
         cartBranchKeys,
-        false,
+        true,
       )
     }
 

@@ -568,11 +568,7 @@ export function* handleToggleCartForDispatchBranch(
   )
   const cartKey = buildCartDuplicateKey(candidateCard)
   if (existingCartDedupeKeys.has(cartKey)) {
-    if (clearEditorAfterAdd) {
-      yield* removeCardPiePlanBranchAfterCart(branchKey)
-    } else {
-      yield* removeRecipientFromEnvelopeAppliedForCart(parsed.recipientSlotKey)
-    }
+    yield* removeCardPiePlanBranchAfterCart(branchKey)
     yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
     yield call(refreshRightSidebarBadgesFromPostcards)
     return
@@ -616,11 +612,7 @@ export function* handleToggleCartForDispatchBranch(
   )
   yield put(addItem(postcard))
   yield* cacheCartListPreviewForCard(finalCard)
-  if (clearEditorAfterAdd) {
-    yield* removeCardPiePlanBranchAfterCart(branchKey)
-  } else {
-    yield* removeRecipientFromEnvelopeAppliedForCart(recipientSlotKey)
-  }
+  yield* removeCardPiePlanBranchAfterCart(branchKey)
   yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
   yield call(refreshRightSidebarBadgesFromPostcards)
 }
