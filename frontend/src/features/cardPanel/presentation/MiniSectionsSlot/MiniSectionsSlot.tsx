@@ -104,7 +104,11 @@ export const MiniSectionsSlot = forwardRef<
     mirrorSectionFlags,
     mirrorInner,
     mirrorTargetLocalId,
+    listRowLocalId,
   } = useRightListArchiveMini()
+
+  /** Пока выбрана строка списка — мини-секция не сбрасывает превью правого CardPie. */
+  const preserveRightArchiveOnMiniOpen = listRowLocalId != null
 
   const showMirrorApplyButtons =
     cardPieCopyStripActive &&
@@ -281,7 +285,10 @@ export const MiniSectionsSlot = forwardRef<
                           onActivateSectionPeekNoToolbar
                         }
                         onBeforeOpenSection={
-                          !rightModeActive ? onBeforeOpenMiniSection : undefined
+                          preserveRightArchiveOnMiniOpen ||
+                          onBeforeOpenMiniSection == null
+                            ? undefined
+                            : onBeforeOpenMiniSection
                         }
                         mirrorApplyCorner={
                           showMirrorApplyButtons ? (

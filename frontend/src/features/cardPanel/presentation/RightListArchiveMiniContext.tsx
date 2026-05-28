@@ -10,6 +10,8 @@ export type CardPieStationSide = 'left' | 'right'
 
 export type RightListArchiveMiniContextValue = {
   activePieSide: CardPieStationSide
+  /** Правый CardPie + cardPieEdit: редактируем левую открытку, превью справа не сбрасываем. */
+  cardPieEditEngaged: boolean
   centerStripListMirrorEnabled: boolean
   mirrorInner: CardPieInnerData | null
   mirrorSectionFlags: CardPieSectionFlags | null
@@ -33,6 +35,7 @@ export type RightListArchiveMiniContextValue = {
 
 const defaultValue: RightListArchiveMiniContextValue = {
   activePieSide: 'left',
+  cardPieEditEngaged: false,
   centerStripListMirrorEnabled: false,
   mirrorInner: null,
   mirrorSectionFlags: null,

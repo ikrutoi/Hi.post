@@ -59,6 +59,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
   const {
     centerStripListMirrorEnabled,
     mirrorTargetLocalId,
+    cardPieEditEngaged,
     clearRightPieCardphotoPeek,
     clearRightPieCardtextPeek,
     clearRightPieEnvelopePeek,
@@ -119,11 +120,17 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         }
         if (section === 'cardtext') {
           clearRightPieCardtextPeek()
-          dispatch(openCardtextFromMiniStripRequested())
+          if (!cardPieEditEngaged) {
+            dispatch(openCardtextFromMiniStripRequested())
+          }
         }
         if (section === 'envelope') {
           clearRightPieEnvelopePeek()
-          if (centerStripListMirrorEnabled && mirrorTargetLocalId != null) {
+          if (
+            centerStripListMirrorEnabled &&
+            mirrorTargetLocalId != null &&
+            !cardPieEditEngaged
+          ) {
             dispatch(
               applyArchiveSectionToEditorRequested({
                 section: 'envelope',
@@ -145,7 +152,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
          * Полоса «Корзина» + открытый список: без `notebookStripDateOverCart` сага синхронизации
          * (`computeNotebookStripTabFromState`) сразу вернёт закладку «Корзина» после `setActiveSection`.
          */
-        if (notebookStripTab === 'cart') {
+        if (notebookStripTab === 'cart' && !cardPieEditEngaged) {
           dispatch(setNotebookStripDateOverCart(true))
           dispatch(setNotebookStripTab('date'))
         }

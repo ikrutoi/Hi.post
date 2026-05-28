@@ -371,6 +371,7 @@ export const Cardtext: React.FC<CardtextProps> = (props) => {
   } = useRightListArchiveMini()
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
 
+  /** Правый режим (в т.ч. cardPieEdit): текст архива, без записи в слайс левой открытки. */
   if (centerStripListMirrorEnabled && activePieSide === 'right') {
     return <CardtextRightListMirror />
   }

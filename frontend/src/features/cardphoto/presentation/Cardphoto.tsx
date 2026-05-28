@@ -218,7 +218,7 @@ export const Cardphoto: React.FC = () => {
   } = useRightListArchiveMini()
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
 
-  /** Зеркало в фабрике только при активном правом пироге; при cardPieCopy (левый пирог) — полный редактор сессии. */
+  /** Правый режим (в т.ч. cardPieEdit): фото архива, без записи в слайс левой открытки. */
   if (centerStripListMirrorEnabled && activePieSide === 'right') {
     return <CardphotoRightListMirror />
   }
