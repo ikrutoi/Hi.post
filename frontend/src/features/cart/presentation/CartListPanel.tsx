@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { IconCardBlocked, IconCart } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
+import { CART_LIST_TOOLBAR } from '@toolbar/domain/types/cartList.types'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { cartListBillableLocalIds } from '@cart/application/logic/cartListBillableLocalIds'
 import { useCartFacade } from '../application/facades'
@@ -382,6 +383,13 @@ export const CartListPanel: React.FC<Props> = ({
       ? 'cardBlocked'
       : 'cart'
 
+  const cartListToolbarGroupsOverride = useMemo(() => {
+    if (entriesProp != null || listSegment !== 'cartBlocked') {
+      return undefined
+    }
+    return CART_LIST_TOOLBAR.filter((group) => group.group !== 'cartList')
+  }, [entriesProp, listSegment])
+
   return (
     <div
       className={clsx(
@@ -445,7 +453,17 @@ export const CartListPanel: React.FC<Props> = ({
             </div>
           ) : undefined
         }
-        toolbar={hasRows ? <Toolbar section="cartList" /> : false}
+        toolbar={
+          hasRows ? (
+            <Toolbar
+              section="cartList"
+              groupsOverride={cartListToolbarGroupsOverride}
+              justifyGroupsEnd={cartListToolbarGroupsOverride != null}
+            />
+          ) : (
+            false
+          )
+        }
         showDividerWithoutToolbar={!hasRows}
         onClose={handleCloseList}
         closeAriaLabel="Close cart list"

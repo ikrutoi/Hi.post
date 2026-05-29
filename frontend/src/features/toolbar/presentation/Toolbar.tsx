@@ -61,6 +61,7 @@ export const Toolbar = ({
   groupsOverride,
   onActionClick,
   mergedWithCenter = false,
+  justifyGroupsEnd = false,
 }: {
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
@@ -69,6 +70,8 @@ export const Toolbar = ({
   /** Вернуть `false`, чтобы не диспатчить стандартный `toolbar/action` (например кастомная логика в панели). */
   onActionClick?: (key: IconKey) => void | false
   mergedWithCenter?: boolean
+  /** Одна группа иконок — прижать к правому краю (как space-between с пустой левой группой). */
+  justifyGroupsEnd?: boolean
 }) => {
   const {
     state: storeState,
@@ -502,6 +505,7 @@ export const Toolbar = ({
         styles.toolbar,
         styles[`toolbar${capitalize(section)}`],
         mergedWithCenter && styles.toolbarMergedWithCenter,
+        justifyGroupsEnd && styles.toolbarGroupsJustifyEnd,
       )}
       style={toolbarStyle}
     >
