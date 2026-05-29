@@ -68,7 +68,7 @@ import {
   dispatchDateKeyFromDispatchDate,
   parseDispatchBranchKey,
 } from '@date/domain/dispatchBranchKey'
-import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
+import { selectIsCardReady } from '@entities/card/infrastructure/selectors'
 import { getCurrentDate } from '@shared/utils/date'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 import { cardListPreviewUrlFromCard } from '@entities/card/domain/helpers'
@@ -496,8 +496,8 @@ export function* handleToggleCartForDispatchBranch(
   const parsed = parseDispatchBranchKey(branchKey)
   if (!parsed) return
 
-  const { isAllComplete } = yield select(selectPieProgress)
-  if (!isAllComplete) return
+  const isReadyForCart: boolean = yield select(selectIsCardReady)
+  if (!isReadyForCart) return
 
   const allRows: PostcardHydrated[] = yield call([postcardsAdapter, 'getAll'])
   /**

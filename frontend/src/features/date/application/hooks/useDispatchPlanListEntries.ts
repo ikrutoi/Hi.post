@@ -455,7 +455,7 @@ export function useDispatchPlanListEntries(
       entries.length === 0 &&
       hasAnySectionFilled
     ) {
-      /** План пустой (например все ветки скрыты) — показываем выбранную дату без ветки корзины. */
+      /** План пустой (например все ветки скрыты) — fallback-строка с веткой для addCart. */
       const fallbackDispatchDate: DispatchDate | null = !isMultiDateMode
         ? selectedDate
         : selectedDates.length === 1
@@ -470,6 +470,16 @@ export function useDispatchPlanListEntries(
           : ''
 
       recipientSlots.forEach((slot, ri) => {
+        const dispatchBranchKey =
+          fallbackDispatchDate != null
+            ? `${dispatchDateKeyFromDispatchDate(fallbackDispatchDate)}|${slot.branchKey}`
+            : undefined
+        if (
+          dispatchBranchKey != null &&
+          excludedDispatchBranchSet.has(dispatchBranchKey)
+        ) {
+          return
+        }
         const recipientRef = slot.branchKey.includes('|')
           ? (slot.branchKey.split('|')[1] ?? 'session')
           : 'session'
@@ -491,11 +501,11 @@ export function useDispatchPlanListEntries(
             : {}),
           dateLabel: fallbackDateLabel,
           detailLine: undatedDetailLine,
-          priceLine: undefined,
+          priceLine: listEntryPriceLine(undefined),
           previewUrl: listPreviewUrl ?? undefined,
           cardId: listPreviewUrl ? 'current_session' : undefined,
           previewIsProcessed: true,
-          dispatchBranchKey: undefined,
+          dispatchBranchKey,
           cardPieRefs,
           onDelete: () => {
             dispatch(clearCardPieEditorSession())

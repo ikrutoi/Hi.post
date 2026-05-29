@@ -7,6 +7,7 @@ import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPa
 import { useCartFacade } from '@cart/application/facades'
 import { useListCardPreviewUrl } from '@entities/card/application/hooks/useListCardPreviewUrl'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
+import { selectIsCardReady } from '@entities/card/infrastructure/selectors'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import {
@@ -82,7 +83,8 @@ export const CardPiePanel: React.FC<Props> = ({
   onSelectEntry,
 }) => {
   const dispatch = useAppDispatch()
-  const { isAllComplete, progress: pieProgress } = useAppSelector(selectPieProgress)
+  const isReadyForCart = useAppSelector(selectIsCardReady)
+  const { progress: pieProgress } = useAppSelector(selectPieProgress)
   const { setCartListPanelOpen } = useCartFacade()
 
   const hasRows = entries.length > 0
@@ -92,13 +94,12 @@ export const CardPiePanel: React.FC<Props> = ({
   /** Как `CardPieListEntry` addCart: `disabled={!onAddCart || inactive}`. */
   const addCartListEnabled = useMemo(
     () =>
+      isReadyForCart &&
       entries.some(
         (item) =>
-          isAllComplete &&
-          Boolean(item.dispatchBranchKey) &&
-          item.variant !== 'inactive',
+          Boolean(item.dispatchBranchKey) && item.variant !== 'inactive',
       ),
-    [entries, isAllComplete],
+    [entries, isReadyForCart],
   )
 
   const handleHeaderOpenCart = useCallback(() => {
@@ -177,7 +178,7 @@ export const CardPiePanel: React.FC<Props> = ({
                 key={item.id}
                 item={item}
                 onSelectEntry={onSelectEntry}
-                canToggleCart={isAllComplete}
+                canToggleCart={isReadyForCart}
                 clearEditorAfterAdd={entries.length === 1}
               />
             ))

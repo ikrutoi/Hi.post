@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAppSelector } from '@app/hooks'
-import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
+import { selectIsCardReady } from '@entities/card/infrastructure/selectors'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { parseListEntryRecipientDetail } from '@shared/utils/listEntryRecipientDetail'
 import styles from './CardPieListEntry.module.scss'
@@ -34,11 +34,11 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
   onAddCart,
   onPreviewImgError,
 }) => {
-  const { isAllComplete } = useAppSelector(selectPieProgress)
+  const isReadyForCart = useAppSelector(selectIsCardReady)
   const interactive = Boolean(onSelect)
   const inactive = variant === 'inactive'
   const hasDate = dateLabel.trim().length > 0
-  const priceLineVisible = isAllComplete ? priceLine : undefined
+  const priceLineVisible = isReadyForCart ? priceLine : undefined
   const labelForAria = [
     detailLine ? (hasDate ? `${dateLabel}, ${detailLine}` : detailLine) : dateLabel,
     priceLineVisible,
