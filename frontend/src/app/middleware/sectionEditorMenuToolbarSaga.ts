@@ -8,6 +8,7 @@ import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
   setNotebookStripDateOverCart,
+  setNotebookStripDateOverHistory,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
@@ -66,6 +67,13 @@ export function* handleSectionEditorMenuToolbarAction(
       (SECTION_EDITOR_FACTORY_KEYS as readonly string[]).includes(key)
     ) {
       yield put(setNotebookStripDateOverCart(true))
+      yield put(setNotebookStripTab('date'))
+    }
+    if (
+      stripTab === 'history' &&
+      (SECTION_EDITOR_FACTORY_KEYS as readonly string[]).includes(key)
+    ) {
+      yield put(setNotebookStripDateOverHistory(true))
       yield put(setNotebookStripTab('date'))
     }
     yield put(setActiveSection(key))

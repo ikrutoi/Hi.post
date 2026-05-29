@@ -38,6 +38,9 @@ export const computeNotebookStripTabFromState = (
     (state.calendar.historyListSelectedLocalId != null ||
       state.calendar.openDayPanel != null)
   ) {
+    if (state.calendar.notebookStripDateOverHistory) {
+      return 'date'
+    }
     return 'history'
   }
   if (activeSection === 'date') return 'date'
@@ -46,6 +49,10 @@ export const computeNotebookStripTabFromState = (
 
 export const selectNotebookStripTab = (state: RootState): DateStripSection =>
   state.calendar.notebookStripTab
+
+export const selectComputedNotebookStripTab = (
+  state: RootState,
+): DateStripSection => computeNotebookStripTabFromState(state)
 
 export const selectCartCalendarDatePickMode = (state: RootState): boolean =>
   state.calendar.cartCalendarDatePickMode

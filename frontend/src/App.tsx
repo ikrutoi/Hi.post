@@ -15,6 +15,7 @@ import {
   selectIsCardPieListPanelOpen,
   selectIsHistoryListPanelOpen,
   selectNotebookDateTabPeekClearTick,
+  selectComputedNotebookStripTab,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
 import { Header } from './features/header/presentation/Header'
@@ -77,6 +78,7 @@ import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
+import { buildDisableCartOrHistoryNotebookOnSectionMenuCopyExitCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/application/MarkStampYearDevContext'
@@ -140,9 +142,18 @@ const App = () => {
     selectCardPieCopyStripExpanded,
   )
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const computedNotebookStripTab = useAppSelector(selectComputedNotebookStripTab)
   const notebookDateTabPeekClearTick = useAppSelector(
     selectNotebookDateTabPeekClearTick,
   )
+  const dispatch = useAppDispatch()
+
+  /** Правый CardPie после выхода из copy через sectionEditorMenu (закладка cart/history снята). */
+  const [rightListArchivePinnedForLeftFactory, setRightListArchivePinnedForLeftFactory] =
+    useState<{
+      localId: number
+      source: 'cart' | 'history'
+    } | null>(null)
 
   useLayoutEffect(() => {
     if (notebookDateTabPeekClearTick === 0) return
@@ -161,7 +172,6 @@ const App = () => {
   const sectionSize =
     sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width / 6 : null
 
-  const dispatch = useAppDispatch()
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
   const prevActiveSectionRef = useRef(activeSection)
@@ -241,16 +251,23 @@ const App = () => {
   const cartItems = useAppSelector(selectCartItems)
 
   const rightListArchiveLocalId =
-    notebookStripTab === 'cart' && listSelectedLocalId != null
+    rightListArchivePinnedForLeftFactory?.localId ??
+    (notebookStripTab === 'cart' && listSelectedLocalId != null
       ? listSelectedLocalId
       : historyListPanelOpen && historyListSelectedLocalId != null
         ? historyListSelectedLocalId
         : historyOpenDayPanelArchiveLocalId != null
           ? historyOpenDayPanelArchiveLocalId
-          : null
+          : null)
 
   const rightListArchiveSource = useMemo((): 'cart' | 'history' | null => {
+    if (rightListArchivePinnedForLeftFactory != null) {
+      return rightListArchivePinnedForLeftFactory.source
+    }
     if (notebookStripTab === 'cart' && listSelectedLocalId != null) {
+      return 'cart'
+    }
+    if (listPanelOpen && listSelectedLocalId != null) {
       return 'cart'
     }
     if (historyListPanelOpen && historyListSelectedLocalId != null) {
@@ -261,12 +278,20 @@ const App = () => {
     }
     return null
   }, [
+    rightListArchivePinnedForLeftFactory,
     notebookStripTab,
+    listPanelOpen,
     listSelectedLocalId,
     historyOpenDayPanelArchiveLocalId,
     historyListPanelOpen,
     historyListSelectedLocalId,
   ])
+
+  useEffect(() => {
+    if (notebookStripTab === 'cart' || notebookStripTab === 'history') {
+      setRightListArchivePinnedForLeftFactory(null)
+    }
+  }, [notebookStripTab])
 
   const rightListArchiveBundle = useAppSelector((state) =>
     rightListArchiveLocalId != null
@@ -448,7 +473,7 @@ const App = () => {
 
   /**
    * sectionEditorMenu при cardPieCopy: выключить копирование, левый режим;
-   * выбранная строка списка / правый CardPie не сбрасываются.
+   * правый CardPie (cart/history) остаётся, закладка cart/history на календаре — нет.
    */
   const exitCopyModeEnterLeftFactory = useCallback(() => {
     if (!cardPieCopyStripExpanded) {
@@ -459,6 +484,38 @@ const App = () => {
       }
       return
     }
+
+    const archiveSource = rightListArchiveSource
+    const archiveLocalId = rightListArchiveLocalId
+
+    const stripToDisable: 'cart' | 'history' | null =
+      archiveSource === 'cart' || archiveSource === 'history'
+        ? archiveSource
+        : computedNotebookStripTab === 'cart' ||
+            computedNotebookStripTab === 'history'
+          ? computedNotebookStripTab
+          : notebookStripTab === 'cart' || notebookStripTab === 'history'
+            ? notebookStripTab
+            : null
+
+    if (
+      archiveLocalId != null &&
+      (archiveSource === 'cart' || archiveSource === 'history')
+    ) {
+      setRightListArchivePinnedForLeftFactory({
+        localId: archiveLocalId,
+        source: archiveSource,
+      })
+    }
+
+    if (stripToDisable != null) {
+      for (const action of buildDisableCartOrHistoryNotebookOnSectionMenuCopyExitCommands(
+        stripToDisable,
+      )) {
+        dispatch(action)
+      }
+    }
+
     dispatch(setCardPieCopyStripExpanded(false))
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
@@ -468,7 +525,15 @@ const App = () => {
     setSuppressCardPieEditActiveAfterCopy(true)
     setCardPieEditEngaged(false)
     setActivePieSide('left')
-  }, [activePieSide, cardPieCopyStripExpanded, dispatch])
+  }, [
+    activePieSide,
+    cardPieCopyStripExpanded,
+    computedNotebookStripTab,
+    dispatch,
+    notebookStripTab,
+    rightListArchiveLocalId,
+    rightListArchiveSource,
+  ])
 
   const clearRightPieCardphotoPeek = useCallback(() => {
     setRightPieCardphotoPeekNoToolbar(false)

@@ -7,6 +7,7 @@ import {
   openDayPanel,
   setHistoryListSelectedLocalId,
   setNotebookStripDateOverCart,
+  setNotebookStripDateOverHistory,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
 import {
@@ -35,6 +36,7 @@ export function* watchNotebookStripTabSync(): SagaIterator {
       openDayPanel.type,
       closeDayPanel.type,
       setNotebookStripDateOverCart.type,
+      setNotebookStripDateOverHistory.type,
     ],
     syncNotebookStripTab,
   )

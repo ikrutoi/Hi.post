@@ -12,6 +12,7 @@ import {
   setHistoryListSelectedLocalId,
   setHistoryListPanelOpen,
   setNotebookStripDateOverCart,
+  setNotebookStripDateOverHistory,
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
@@ -57,6 +58,39 @@ export const buildNotebookHistoryTabCommands = (): UnknownAction[] => [
   setNotebookStripTab('history'),
   setActiveSection('history'),
 ]
+
+/** sectionEditorMenu + cardPieCopy: снять активную закладку Cart/History, не трогая выбор строки. */
+export const buildDisableCartOrHistoryNotebookOnSectionMenuCopyExitCommands = (
+  notebookStripTab: DateStripSection,
+): UnknownAction[] => {
+  if (notebookStripTab === 'cart') {
+    return [
+      setNotebookStripDateOverCart(true),
+      updateToolbarIcon({
+        section: 'rightSidebar',
+        key: 'cart',
+        value: 'enabled',
+      }),
+      setNotebookStripTab('date'),
+      closeDayPanel(),
+    ]
+  }
+
+  if (notebookStripTab === 'history') {
+    return [
+      setNotebookStripDateOverHistory(true),
+      updateToolbarIcon({
+        section: 'history',
+        key: 'listHistory',
+        value: 'enabled',
+      }),
+      setNotebookStripTab('date'),
+      closeDayPanel(),
+    ]
+  }
+
+  return [closeDayPanel()]
+}
 
 export const buildNotebookSessionRestoreCommands = (
   tab: DateStripSection | null,
