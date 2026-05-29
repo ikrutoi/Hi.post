@@ -166,11 +166,30 @@ $cart-date-edit-wave-overlay: color.change($cart-date-edit-tint, $alpha: 0.48);
 }
 
 .cellContent {
+  position: relative;
   z-index: 1;
   width: 100%;
   min-height: 0;
   flex: 1;
   display: flex;
+}
+
+/** Пустая disabled-ячейка: серый фон сразу под превью, без белой вспышки при unmount CardPreview. */
+.disabledEmptyFill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background-color: $color-disabled;
+  pointer-events: none;
+}
+
+.cell.disabled.current .disabledEmptyFill {
+  background-color: $color-disabled-light;
+}
+
+.cell.adjacentMonth.disabled .disabledEmptyFill {
+  background-color: $color-disabled-light;
 }
 .navArrowWrap {
   position: absolute;
@@ -349,6 +368,10 @@ button.navArrowWrap {
   background-color: $color-disabled;
   color: $color-font-disabled;
   cursor: default;
+  /** Без анимации фона — иначе при снятии превью мелькает белый `#fff` базовой ячейки. */
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
 
   &.current {
     background-color: $color-disabled-light;

@@ -176,7 +176,12 @@ export const Cell: React.FC<CellProps> = ({
           <FaChevronRight className={styles.navArrowIcon} aria-hidden />
         </button>
       ) : null}
-      <div className={styles.cellContent}>{children}</div>
+      <div className={styles.cellContent}>
+        {isDisabledDate && !hasPostcards ? (
+          <div className={styles.disabledEmptyFill} aria-hidden />
+        ) : null}
+        {children}
+      </div>
     </div>
   )
 }

@@ -32,6 +32,13 @@
   min-height: 0;
 }
 
+.disabledCartEmptyFill {
+  flex: 1;
+  min-height: 0;
+  border-radius: inherit;
+  background-color: $color-disabled-light;
+}
+
 .previewWrapper {
   position: relative;
   flex: 1;

@@ -246,6 +246,13 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
     !primaryItemForDisplay &&
     !photoPreview?.previewUrl
 
+  /** Полоса «Корзина»: пустая disabled-ячейка — серый фон без белой вспышки после смены даты. */
+  const showDisabledCartEmptyFill =
+    isCartCalendar &&
+    isDisabledDate &&
+    !primaryItemForDisplay &&
+    !showEmptySessionPlaceholder
+
   const historyStatusIndicatorStack = isHistory
     ? historyStatusIndicatorsForCalendarDay(data)
     : []
@@ -289,6 +296,8 @@ export const CardPreview: React.FC<CardPreviewProps> = ({
             {getToolbarIcon({ key: 'cardphoto' })}
           </div>
         </div>
+      ) : showDisabledCartEmptyFill ? (
+        <div className={styles.disabledCartEmptyFill} aria-hidden />
       ) : null}
     </div>
   )
