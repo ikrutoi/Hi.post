@@ -1005,6 +1005,11 @@ const App = () => {
           <div className={styles.appSidebar}>
             <SectionEditorSidebar
               onSectionEditorMenuAction={handleSectionEditorMenuClick}
+              suppressSectionMenuActiveHighlight={
+                activePieSide === 'right' &&
+                !cardPieEditEngaged &&
+                rightListArchiveLocalId != null
+              }
             />
           </div>
           <main
@@ -1358,7 +1363,15 @@ const App = () => {
               styles.appRightSidebarWithDevStamp,
             )}
           >
-            <SectionEditorRightSidebar />
+            <SectionEditorRightSidebar
+              pinActiveTab={
+                activePieSide === 'right' &&
+                rightListArchiveLocalId != null &&
+                rightListArchiveSource != null
+                  ? rightListArchiveSource
+                  : null
+              }
+            />
             <MarkStampYearDevButtons />
           </div>
         </div>

@@ -152,8 +152,13 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         /**
          * Полоса «Корзина» + открытый список: без `notebookStripDateOverCart` сага синхронизации
          * (`computeNotebookStripTabFromState`) сразу вернёт закладку «Корзина» после `setActiveSection`.
+         * В правом peek (корзина/история) закладку «Корзина» не переключаем.
          */
-        if (notebookStripTab === 'cart' && !cardPieEditEngaged) {
+        if (
+          notebookStripTab === 'cart' &&
+          !cardPieEditEngaged &&
+          !peekToolbarOnMiniOpen
+        ) {
           dispatch(setNotebookStripDateOverCart(true))
           dispatch(setNotebookStripTab('date'))
         }
