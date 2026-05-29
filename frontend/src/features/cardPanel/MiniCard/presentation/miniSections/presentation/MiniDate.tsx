@@ -16,7 +16,7 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
   const { selectedDate, mergedDispatchDates, isMultiDateMode } = useDateFacade()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('date')
-  const { centerStripListMirrorEnabled, mirrorInner, listRowPostcardStatus } =
+  const { centerStripListMirrorEnabled, mirrorInner, listRowPostcardStatus, cardPieEditEngaged } =
     useRightListArchiveMini()
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
 
@@ -41,6 +41,10 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
     const first = dates[0]
     if (!first) return null
 
+    const isMirrorDateOrderDisabled =
+      cardPieEditEngaged &&
+      isMirrorArchiveDateDisabledForOrder(dates, listRowPostcardStatus)
+
     /** Как в левом режиме для multi: голубой фон ManyCircles и концентрические круги; одна дата — не упрощённый текстовый блок без фона. */
     const circleCount = Math.min(count, 10)
     const { steps } = getDateMultiMiniCircleSteps(circleCount)
@@ -53,6 +57,7 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
           styles.miniDate,
           styles.miniDateManyCircles,
           styles.visible,
+          isMirrorDateOrderDisabled && styles.miniDateDisabled,
           isHovered && styles.hovered,
         )}
         onMouseEnter={() => setHovered('date')}

@@ -116,6 +116,17 @@
   &Month {
     margin-top: 0.2rem;
   }
+
+  /** cardPieEdit + blocked dispatch date — как `.pieTextDateDisabled` в правом CardPie. */
+  &Disabled {
+    .miniDateYear,
+    .miniDateDay,
+    .miniDateMonth,
+    .miniDateCount,
+    .miniDateOneDateInMulti {
+      color: $color-font-disabled;
+    }
+  }
 }
 
 .previewButton {
