@@ -499,38 +499,24 @@ const App = () => {
   }, [activePieSide])
 
   /**
-   * sectionEditorMenu: не закрывать правый CardPie; при cardPieCopy — выход в левую фабрику.
+   * sectionEditorMenu из правого режима (peek / cardPieCopy): левая фабрика + секция по клику.
    */
   const handleSectionEditorMenuClick = useCallback(() => {
-    if (
-      !cardPieCopyStripExpanded &&
+    const inRightListArchiveMode =
       activePieSide === 'right' &&
       rightListArchiveLocalId != null &&
-      rightListArchiveSource != null
-    ) {
-      setRightListArchivePinnedForLeftFactory({
-        localId: rightListArchiveLocalId,
-        source: rightListArchiveSource,
-      })
-      return
-    }
+      (rightListArchiveSource === 'cart' || rightListArchiveSource === 'history')
 
-    if (!cardPieCopyStripExpanded) {
+    const exitingCardPieCopy = cardPieCopyStripExpanded
+    const exitingRightPeek =
+      !cardPieCopyStripExpanded && inRightListArchiveMode
+
+    if (!exitingCardPieCopy && !exitingRightPeek) {
       return
     }
 
     const archiveSource = rightListArchiveSource
     const archiveLocalId = rightListArchiveLocalId
-
-    const stripToDisable: 'cart' | 'history' | null =
-      archiveSource === 'cart' || archiveSource === 'history'
-        ? archiveSource
-        : computedNotebookStripTab === 'cart' ||
-            computedNotebookStripTab === 'history'
-          ? computedNotebookStripTab
-          : notebookStripTab === 'cart' || notebookStripTab === 'history'
-            ? notebookStripTab
-            : null
 
     if (
       archiveLocalId != null &&
@@ -542,6 +528,16 @@ const App = () => {
       })
     }
 
+    const stripToDisable: 'cart' | 'history' | null =
+      archiveSource === 'cart' || archiveSource === 'history'
+        ? archiveSource
+        : computedNotebookStripTab === 'cart' ||
+            computedNotebookStripTab === 'history'
+          ? computedNotebookStripTab
+          : notebookStripTab === 'cart' || notebookStripTab === 'history'
+            ? notebookStripTab
+            : null
+
     if (stripToDisable != null) {
       for (const action of buildDisableCartOrHistoryNotebookOnSectionMenuCopyExitCommands(
         stripToDisable,
@@ -550,7 +546,10 @@ const App = () => {
       }
     }
 
-    dispatch(setCardPieCopyStripExpanded(false))
+    if (exitingCardPieCopy) {
+      dispatch(setCardPieCopyStripExpanded(false))
+    }
+
     setRightPieCardphotoPeekNoToolbar(false)
     setRightPieCardtextPeekNoToolbar(false)
     setRightPieEnvelopePeekNoToolbar(false)

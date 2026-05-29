@@ -23,6 +23,7 @@ import {
   selectNotebookStripTab,
   selectRightListArchiveCardPieHighlightDispatchDate,
 } from '@date/calendar/infrastructure/selectors'
+import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
   markCartDatePickSnakeHintDone,
   readCartDatePickSnakeHintDone,
@@ -46,11 +47,15 @@ export const useCalendarConstruction = ({
 }: UseCalendarConstructionParams) => {
   const currentDate = getCurrentDate()
   const { activeSection } = useSectionMenuFacade()
+  const { activePieSide } = useRightListArchiveMini()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
-  const rightArchiveCardPieHighlightDate = useAppSelector(
+  const rightArchiveCardPieHighlightFromList = useAppSelector(
     selectRightListArchiveCardPieHighlightDispatchDate,
   )
+  /** Рамка даты archive CardPie — только в правом режиме; после перехода в левую фабрику снимаем. */
+  const rightArchiveCardPieHighlightDate =
+    activePieSide === 'right' ? rightArchiveCardPieHighlightFromList : null
   const cardsMap = useAppSelector(selectCardsByDateMap)
   const highlightDates = useAppSelector(selectMergedDispatchDates)
   const { year, month } = calendarViewDate
