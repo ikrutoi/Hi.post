@@ -8,7 +8,7 @@ import type { CalendarViewDate, DispatchDate } from '@entities/date/domain/types
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { createSelector } from '@reduxjs/toolkit'
 import { selectCartItems } from '@cart/infrastructure/selectors'
-import { selectCartListSelectedLocalId } from '@cart/infrastructure/selectors/cartSelectors'
+import { selectCartListSelectedLocalId, selectCartListPanelOpen } from '@cart/infrastructure/selectors/cartSelectors'
 import { getHistoryOpenDayPanelPrimaryPostcardLocalId } from '../historyOpenDayPanelPrimaryPostcard'
 import type { DayPanelPayload } from '../state/calendar.slice'
 import type { PanelDensity2Size } from '@shared/ui/icons'
@@ -122,20 +122,20 @@ export const selectHistoryOpenDayPanelArchiveLocalId = createSelector(
 /** `localId` открытки, выбранной в правом archive CardPie (корзина / история / день). */
 export const selectRightListArchivePostcardLocalId = createSelector(
   [
-    selectNotebookStripTab,
+    selectCartListPanelOpen,
     selectCartListSelectedLocalId,
     selectIsHistoryListPanelOpen,
     selectHistoryListSelectedLocalId,
     selectHistoryOpenDayPanelArchiveLocalId,
   ],
   (
-    notebookStripTab,
+    cartListPanelOpen,
     cartListSelectedLocalId,
     historyListPanelOpen,
     historyListSelectedLocalId,
     historyOpenDayPanelArchiveLocalId,
   ): number | null => {
-    if (notebookStripTab === 'cart' && cartListSelectedLocalId != null) {
+    if (cartListPanelOpen && cartListSelectedLocalId != null) {
       return cartListSelectedLocalId
     }
     if (historyListPanelOpen && historyListSelectedLocalId != null) {
@@ -162,7 +162,7 @@ function isPostcardDispatchFallbackDate(d: DispatchDate): boolean {
  */
 export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector(
   [
-    selectNotebookStripTab,
+    selectCartListPanelOpen,
     selectCartListSelectedLocalId,
     selectHistoryOpenDayPanelArchiveLocalId,
     selectIsHistoryListPanelOpen,
@@ -170,7 +170,7 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
     selectCartItems,
   ],
   (
-    notebookStripTab,
+    cartListPanelOpen,
     cartListSelectedLocalId,
     historyDayPanelArchiveLocalId,
     historyListPanelOpen,
@@ -178,7 +178,7 @@ export const selectRightListArchiveCardPieHighlightDispatchDate = createSelector
     cartItems,
   ): DispatchDate | null => {
     const localId =
-      notebookStripTab === 'cart' && cartListSelectedLocalId != null
+      cartListPanelOpen && cartListSelectedLocalId != null
         ? cartListSelectedLocalId
         : historyListPanelOpen && historyListSelectedLocalId != null
           ? historyListSelectedLocalId

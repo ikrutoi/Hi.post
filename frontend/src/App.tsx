@@ -223,11 +223,15 @@ const App = () => {
           }),
         )
       }
-      dispatch(closeDayPanel())
+      const keepDayPanelForRightPie =
+        switchedToFactorySection && activePieSide === 'right'
+      if (!keepDayPanelForRightPie) {
+        dispatch(closeDayPanel())
+      }
     }
 
     prevActiveSectionRef.current = activeSection
-  }, [activeSection, dispatch])
+  }, [activeSection, activePieSide, dispatch])
 
   useEffect(() => {
     if (
@@ -252,7 +256,7 @@ const App = () => {
 
   const rightListArchiveLocalId =
     rightListArchivePinnedForLeftFactory?.localId ??
-    (notebookStripTab === 'cart' && listSelectedLocalId != null
+    (listPanelOpen && listSelectedLocalId != null
       ? listSelectedLocalId
       : historyListPanelOpen && historyListSelectedLocalId != null
         ? historyListSelectedLocalId
@@ -264,10 +268,10 @@ const App = () => {
     if (rightListArchivePinnedForLeftFactory != null) {
       return rightListArchivePinnedForLeftFactory.source
     }
-    if (notebookStripTab === 'cart' && listSelectedLocalId != null) {
+    if (listPanelOpen && listSelectedLocalId != null) {
       return 'cart'
     }
-    if (listPanelOpen && listSelectedLocalId != null) {
+    if (notebookStripTab === 'cart' && listSelectedLocalId != null) {
       return 'cart'
     }
     if (historyListPanelOpen && historyListSelectedLocalId != null) {
@@ -472,16 +476,23 @@ const App = () => {
   }, [activePieSide])
 
   /**
-   * sectionEditorMenu при cardPieCopy: выключить копирование, левый режим;
-   * правый CardPie (cart/history) остаётся, закладка cart/history на календаре — нет.
+   * sectionEditorMenu: не закрывать правый CardPie; при cardPieCopy — выход в левую фабрику.
    */
-  const exitCopyModeEnterLeftFactory = useCallback(() => {
+  const handleSectionEditorMenuClick = useCallback(() => {
+    if (
+      !cardPieCopyStripExpanded &&
+      activePieSide === 'right' &&
+      rightListArchiveLocalId != null &&
+      rightListArchiveSource != null
+    ) {
+      setRightListArchivePinnedForLeftFactory({
+        localId: rightListArchiveLocalId,
+        source: rightListArchiveSource,
+      })
+      return
+    }
+
     if (!cardPieCopyStripExpanded) {
-      if (activePieSide === 'right') {
-        setSuppressCardPieEditActiveAfterCopy(true)
-        setCardPieEditEngaged(false)
-        setActivePieSide('left')
-      }
       return
     }
 
@@ -866,7 +877,7 @@ const App = () => {
           </div>
           <div className={styles.appSidebar}>
             <SectionEditorSidebar
-              onSectionEditorMenuActionInCopyMode={exitCopyModeEnterLeftFactory}
+              onSectionEditorMenuAction={handleSectionEditorMenuClick}
             />
           </div>
           <main

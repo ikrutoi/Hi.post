@@ -7,12 +7,12 @@ import { IconLogo, IconLogoFull } from '@shared/ui/icons'
 import styles from './SectionEditorSidebar.module.scss'
 
 type SectionEditorSidebarProps = {
-  /** cardPieCopy: выключить копирование, левый режим; правый CardPie не закрывать. */
-  onSectionEditorMenuActionInCopyMode?: () => void
+  /** Перед стандартным toolbar/action: pin правого CardPie, выход из copy и т.п. */
+  onSectionEditorMenuAction?: () => void
 }
 
 export const SectionEditorSidebar: React.FC<SectionEditorSidebarProps> = ({
-  onSectionEditorMenuActionInCopyMode,
+  onSectionEditorMenuAction,
 }) => {
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const sectionEditorMenuStateOverride = useMemo(
@@ -34,9 +34,7 @@ export const SectionEditorSidebar: React.FC<SectionEditorSidebarProps> = ({
         section="sectionEditorMenu"
         stateOverride={sectionEditorMenuStateOverride}
         onActionClick={() => {
-          if (cardPieCopyStripExpanded) {
-            onSectionEditorMenuActionInCopyMode?.()
-          }
+          onSectionEditorMenuAction?.()
         }}
       />
       <div className={styles.sectionEditorSidebarLogoFull}>
