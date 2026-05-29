@@ -107,6 +107,7 @@ export const MiniSectionsSlot = forwardRef<
     mirrorTargetLocalId,
     listRowLocalId,
     listRowPostcardStatus,
+    cardPieEditEngaged,
   } = useRightListArchiveMini()
 
   /** Пока выбрана строка списка — мини-секция не сбрасывает превью правого CardPie. */
@@ -186,6 +187,15 @@ export const MiniSectionsSlot = forwardRef<
         : undefined,
     [allMirrorSectionsApplied],
   )
+
+  /** Правый режим без cardPieEdit — секции фабрики в упрощённом peek (как cardPieCopy). */
+  const peekToolbarOnMiniOpen =
+    onActivateSectionPeekNoToolbar != null &&
+    (cardPieCopyStripActive ||
+      (rightModeActive &&
+        listRowLocalId != null &&
+        !cardPieEditEngaged &&
+        !cardPieCopyStripActive))
 
   const handlePanelMiniSectionsAction = useCallback(
     (key: IconKey) => {
@@ -293,10 +303,7 @@ export const MiniSectionsSlot = forwardRef<
                         isPacked={true}
                         isEmpty={isEmpty}
                         hideClearButton={cardPieCopyStripActive}
-                        peekToolbarOnMiniOpen={
-                          cardPieCopyStripActive &&
-                          onActivateSectionPeekNoToolbar != null
-                        }
+                        peekToolbarOnMiniOpen={peekToolbarOnMiniOpen}
                         onActivateSectionPeekNoToolbar={
                           onActivateSectionPeekNoToolbar
                         }

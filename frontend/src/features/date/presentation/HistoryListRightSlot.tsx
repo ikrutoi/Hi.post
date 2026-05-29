@@ -38,7 +38,13 @@ function formatDispatchDateLabel(d: DispatchDate): string {
 }
 
 /** Список истории открыток в правой колонке (рядом с корзиной), не в левом слоте даты. */
-export const HistoryListRightSlot: React.FC = () => {
+export type HistoryListRightSlotProps = {
+  onSelectEntry?: (item: HistoryListPanelItem) => void
+}
+
+export const HistoryListRightSlot: React.FC<HistoryListRightSlotProps> = ({
+  onSelectEntry: onSelectEntryProp,
+}) => {
   const dispatch = useAppDispatch()
   const { historyListPanelOpen } = useCalendarFacade()
   const cardsByDateMap = useAppSelector(selectCardsByDateMap)
@@ -158,6 +164,10 @@ export const HistoryListRightSlot: React.FC = () => {
 
   const handleSelectEntry = useCallback(
     (item: HistoryListPanelItem) => {
+      if (onSelectEntryProp) {
+        onSelectEntryProp(item)
+        return
+      }
       dispatch(setNotebookStripTab('history'))
       dispatch(setActiveSection('history'))
       if (item.sourceDate) {
@@ -176,7 +186,7 @@ export const HistoryListRightSlot: React.FC = () => {
         ),
       )
     },
-    [dispatch, historyListSelectedLocalId],
+    [dispatch, historyListSelectedLocalId, onSelectEntryProp],
   )
 
   if (!historyListPanelOpen) return null

@@ -120,7 +120,7 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         }
         if (section === 'cardtext') {
           clearRightPieCardtextPeek()
-          if (!cardPieEditEngaged) {
+          if (!cardPieEditEngaged && !peekToolbarOnMiniOpen) {
             dispatch(openCardtextFromMiniStripRequested())
           }
         }
@@ -129,7 +129,8 @@ export const MiniCard: React.FC<MiniCardProps> = ({
           if (
             centerStripListMirrorEnabled &&
             mirrorTargetLocalId != null &&
-            !cardPieEditEngaged
+            !cardPieEditEngaged &&
+            !peekToolbarOnMiniOpen
           ) {
             dispatch(
               applyArchiveSectionToEditorRequested({

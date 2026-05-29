@@ -10,6 +10,7 @@ import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   selectCartCalendarDatePickLocalId,
+  selectCartCalendarDatePickMode,
   selectHistoryListSelectedLocalId,
   selectHistoryOpenDayPanelArchiveLocalId,
   selectIsCardPieListPanelOpen,
@@ -60,6 +61,7 @@ import {
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
+import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
 import { CardtextRightSlot } from '@cardtext/presentation/CardtextRightSlot'
 import { CardphotoRightSlot } from '@cardphoto/presentation/CardphotoRightSlot'
 import { selectListArchiveCardPieBundle } from '@features/cardPie/infrastructure/selectors/cardPieSelectors'
@@ -69,6 +71,7 @@ import {
   closeDayPanel,
   openDayPanel,
   setCartCalendarDatePickMode,
+  setCartCalendarDatePickLocalId,
   setHistoryListPanelOpen,
   setHistoryListSelectedLocalId,
   setNotebookStripTab,
@@ -118,6 +121,8 @@ const App = () => {
   const mergedTopChromeRef = useRef<HTMLDivElement>(null)
   const leftPieWrapRef = useRef<HTMLDivElement>(null)
   const cardPieCopyClosedByEditRef = useRef(false)
+  /** date pick включён через cardPieEdit (не dateEdit строки cartBlocked). */
+  const cartDatePickOwnedByCardPieEditRef = useRef(false)
   const [colorToolbar, setColorToolbar] = useState<boolean | null>(null)
   const [activePieSide, setActivePieSide] = useState<'left' | 'right'>('left')
   /** After turning off cardPieCopy: switch to left pie and keep `cardPieEdit` enabled until clicked again. */
@@ -142,6 +147,7 @@ const App = () => {
     selectCardPieCopyStripExpanded,
   )
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
+  const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)
   const computedNotebookStripTab = useAppSelector(selectComputedNotebookStripTab)
   const notebookDateTabPeekClearTick = useAppSelector(
     selectNotebookDateTabPeekClearTick,
@@ -246,6 +252,7 @@ const App = () => {
 
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
+  const prevHistoryListPanelOpen = useRef(historyListPanelOpen)
   const historyListSelectedLocalId = useAppSelector(
     selectHistoryListSelectedLocalId,
   )
@@ -253,6 +260,17 @@ const App = () => {
     selectHistoryOpenDayPanelArchiveLocalId,
   )
   const cartItems = useAppSelector(selectCartItems)
+
+  useEffect(() => {
+    if (
+      prevHistoryListPanelOpen.current &&
+      !historyListPanelOpen &&
+      activePieSide === 'right'
+    ) {
+      setActivePieSide('left')
+    }
+    prevHistoryListPanelOpen.current = historyListPanelOpen
+  }, [historyListPanelOpen, activePieSide])
 
   const rightListArchiveLocalId =
     rightListArchivePinnedForLeftFactory?.localId ??
@@ -377,7 +395,9 @@ const App = () => {
       const copyStripFullSpan =
         cardPieCopyStripExpanded && rightListArchiveLocalId != null
       const fullFactoryFromRightPie =
-        activePieSide === 'right' && !copyStripFullSpan
+        activePieSide === 'right' &&
+        !copyStripFullSpan &&
+        cardPieEditEngaged
       if (
         fullFactoryFromRightPie &&
         section === 'envelope' &&
@@ -404,6 +424,7 @@ const App = () => {
       dispatch,
       activePieSide,
       cardPieCopyStripExpanded,
+      cardPieEditEngaged,
       rightListArchiveLocalId,
       syncPeekChromeForOpenedSection,
     ],
@@ -597,14 +618,14 @@ const App = () => {
   }, [activeSection])
 
   useEffect(() => {
-    if (activePieSide === 'right') {
+    if (activePieSide === 'right' && cardPieEditEngaged) {
       setRightPieCardphotoPeekNoToolbar(false)
       setRightPieCardtextPeekNoToolbar(false)
       setRightPieEnvelopePeekNoToolbar(false)
       setRightPieAromaPeekNoToolbar(false)
       setRightPieDatePeekNoToolbar(false)
     }
-  }, [activePieSide])
+  }, [activePieSide, cardPieEditEngaged])
 
   useEffect(() => {
     const localId = rightListArchiveLocalId
@@ -679,6 +700,42 @@ const App = () => {
       setCardPieEditEngaged(false)
     }
   }, [rightListArchiveLocalId])
+
+  useEffect(() => {
+    if (!cartCalendarDatePickMode) {
+      cartDatePickOwnedByCardPieEditRef.current = false
+    }
+  }, [cartCalendarDatePickMode])
+
+  useEffect(() => {
+    const shouldPickFromCardPieEdit =
+      cardPieEditEngaged &&
+      activePieSide === 'right' &&
+      rightListArchiveLocalId != null &&
+      activeSection === 'date' &&
+      notebookStripTab === 'cart' &&
+      rightListArchiveSource === 'cart'
+
+    if (shouldPickFromCardPieEdit) {
+      cartDatePickOwnedByCardPieEditRef.current = true
+      dispatch(setCartCalendarDatePickMode(true))
+      dispatch(setCartCalendarDatePickLocalId(rightListArchiveLocalId))
+      return
+    }
+
+    if (cartDatePickOwnedByCardPieEditRef.current) {
+      cartDatePickOwnedByCardPieEditRef.current = false
+      dispatch(setCartCalendarDatePickMode(false))
+    }
+  }, [
+    activePieSide,
+    activeSection,
+    cardPieEditEngaged,
+    dispatch,
+    notebookStripTab,
+    rightListArchiveLocalId,
+    rightListArchiveSource,
+  ])
 
   const centerStripMirrorValue = useMemo(() => {
     const stripMirrorsRightListPostcard =
@@ -767,11 +824,13 @@ const App = () => {
       dispatch(setCartListSelectedLocalId(nextLid))
       if (nextLid == null) {
         setCardPieEditEngaged(false)
+        setActivePieSide('left')
         dispatch(closeDayPanel())
         return
       }
-      /** Превью правого CardPie без включения правого режима — только cardPieEdit. */
       setCardPieEditEngaged(false)
+      setSuppressCardPieEditActiveAfterCopy(true)
+      setActivePieSide('right')
       if (item.sourceDate) {
         const dateKey = `${item.sourceDate.year}-${item.sourceDate.month}-${item.sourceDate.day}`
         const dayData = cardsByDateMap[dateKey]
@@ -781,6 +840,34 @@ const App = () => {
       }
     },
     [dispatch, cartCalendarDatePickLocalId, listSelectedLocalId, cardsByDateMap],
+  )
+
+  const handleHistoryListSelectEntry = useCallback(
+    (item: HistoryListPanelItem) => {
+      dispatch(setNotebookStripTab('history'))
+      dispatch(setActiveSection('history'))
+      if (item.sourceDate) {
+        dispatch(
+          updateLastViewedCalendarDate({
+            year: item.sourceDate.year,
+            month: item.sourceDate.month,
+          }),
+        )
+      }
+      const lid = item.postcardLocalId
+      if (lid == null) return
+      const nextLid = historyListSelectedLocalId === lid ? null : lid
+      dispatch(setHistoryListSelectedLocalId(nextLid))
+      if (nextLid == null) {
+        setCardPieEditEngaged(false)
+        setActivePieSide('left')
+        return
+      }
+      setCardPieEditEngaged(false)
+      setSuppressCardPieEditActiveAfterCopy(true)
+      setActivePieSide('right')
+    },
+    [dispatch, historyListSelectedLocalId],
   )
 
   const handleCartListDateEditEntry = useCallback(
@@ -817,10 +904,19 @@ const App = () => {
           setSuppressCardPieEditActiveAfterCopy(false)
           setCardPieEditEngaged(true)
           setActivePieSide('right')
+          setRightPieCardphotoPeekNoToolbar(false)
+          setRightPieCardtextPeekNoToolbar(false)
+          setRightPieEnvelopePeekNoToolbar(false)
+          setRightPieAromaPeekNoToolbar(false)
+          setRightPieDatePeekNoToolbar(false)
           return
         }
         if (activePieSide === 'right') {
           setCardPieEditEngaged(false)
+          if (cartDatePickOwnedByCardPieEditRef.current) {
+            cartDatePickOwnedByCardPieEditRef.current = false
+            dispatch(setCartCalendarDatePickMode(false))
+          }
           setSuppressCardPieEditActiveAfterCopy(true)
           setActivePieSide('left')
           return
@@ -828,6 +924,11 @@ const App = () => {
         setSuppressCardPieEditActiveAfterCopy(false)
         setActivePieSide('right')
         setCardPieEditEngaged(true)
+        setRightPieCardphotoPeekNoToolbar(false)
+        setRightPieCardtextPeekNoToolbar(false)
+        setRightPieEnvelopePeekNoToolbar(false)
+        setRightPieAromaPeekNoToolbar(false)
+        setRightPieDatePeekNoToolbar(false)
         return
       }
       if (key === 'cardPieCopy') {
@@ -844,6 +945,11 @@ const App = () => {
     setSuppressCardPieEditActiveAfterCopy(false)
     setCardPieEditEngaged(true)
     setActivePieSide('right')
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
   }, [])
   const postcardPieCartToolbarStateOverride = useMemo(
     () =>
@@ -1220,7 +1326,7 @@ const App = () => {
                   onDateEditEntry={handleCartListDateEditEntry}
                 />
               )}
-              <HistoryListRightSlot />
+              <HistoryListRightSlot onSelectEntry={handleHistoryListSelectEntry} />
               {/* {activeSection === 'cardtext' && <CardtextRightSlot />} */}
               {/* {activeSection === 'cardphoto' && <CardphotoRightSlot />} */}
             </div>
