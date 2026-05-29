@@ -80,12 +80,14 @@ import {
 import { calendarDayHasCards } from '@date/cell/domain/calendarDayContent'
 import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
 import { buildDisableCartOrHistoryNotebookOnSectionMenuCopyExitCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/application/MarkStampYearDevContext'
 import styles from './App.module.scss'
+import { store } from '@app/state/store'
 
 function MarkStampYearDevButtons() {
   const { bump } = useMarkStampYearDev()
@@ -831,6 +833,7 @@ const App = () => {
       setCardPieEditEngaged(false)
       setSuppressCardPieEditActiveAfterCopy(true)
       setActivePieSide('right')
+      applyRightListArchiveToolbarVisuals(dispatch, store.getState, 'cart')
       if (item.sourceDate) {
         const dateKey = `${item.sourceDate.year}-${item.sourceDate.month}-${item.sourceDate.day}`
         const dayData = cardsByDateMap[dateKey]
@@ -866,6 +869,7 @@ const App = () => {
       setCardPieEditEngaged(false)
       setSuppressCardPieEditActiveAfterCopy(true)
       setActivePieSide('right')
+      applyRightListArchiveToolbarVisuals(dispatch, store.getState, 'history')
     },
     [dispatch, historyListSelectedLocalId],
   )
@@ -912,13 +916,30 @@ const App = () => {
           return
         }
         if (activePieSide === 'right') {
-          setCardPieEditEngaged(false)
-          if (cartDatePickOwnedByCardPieEditRef.current) {
-            cartDatePickOwnedByCardPieEditRef.current = false
-            dispatch(setCartCalendarDatePickMode(false))
+          if (cardPieEditEngaged) {
+            setCardPieEditEngaged(false)
+            if (cartDatePickOwnedByCardPieEditRef.current) {
+              cartDatePickOwnedByCardPieEditRef.current = false
+              dispatch(setCartCalendarDatePickMode(false))
+            }
+            if (
+              rightListArchiveLocalId != null &&
+              activeSection != null &&
+              (SECTION_EDITOR_MENU_ICON_KEYS as readonly string[]).includes(
+                activeSection,
+              )
+            ) {
+              syncPeekChromeForOpenedSection(activeSection)
+            }
+            return
           }
-          setSuppressCardPieEditActiveAfterCopy(true)
-          setActivePieSide('left')
+          setSuppressCardPieEditActiveAfterCopy(false)
+          setCardPieEditEngaged(true)
+          setRightPieCardphotoPeekNoToolbar(false)
+          setRightPieCardtextPeekNoToolbar(false)
+          setRightPieEnvelopePeekNoToolbar(false)
+          setRightPieAromaPeekNoToolbar(false)
+          setRightPieDatePeekNoToolbar(false)
           return
         }
         setSuppressCardPieEditActiveAfterCopy(false)
@@ -935,7 +956,7 @@ const App = () => {
         dispatch(setCardPieCopyStripExpanded(!cardPieCopyStripExpanded))
       }
     },
-    [dispatch, cardPieCopyStripExpanded, activePieSide, rightListArchiveLocalId],
+    [dispatch, cardPieCopyStripExpanded, activePieSide, cardPieEditEngaged, activeSection, rightListArchiveLocalId, syncPeekChromeForOpenedSection],
   )
   const handleEditorPieToolbarAction = useCallback((key: string) => {
     if (key !== 'cardPieEdit' && key !== 'cardPie') return
