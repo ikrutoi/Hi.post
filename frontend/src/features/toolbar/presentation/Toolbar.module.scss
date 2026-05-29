@@ -86,7 +86,7 @@
     }
   }
 
-  &:not(.toolbarRightSidebar) .toolbarKey {
+  &:not(.toolbarRightSidebar):not(.toolbarCart) .toolbarKey {
     &[data-icon-key='cart'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
@@ -620,10 +620,12 @@
   }
 }
 
-/* cardphoto / cardtext (основные секции): hover — затемнение иконки, без подложки */
+/* cardphoto / cardtext / date / cart / history: hover — затемнение иконки, без подложки */
 .toolbarCardphoto,
 .toolbarCardtext,
-.toolbarHistory {
+.toolbarHistory,
+.toolbarDate,
+.toolbarCart {
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
     color: $color-font-enabled-light;
 
@@ -949,9 +951,17 @@
     &.toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
-      &:hover,
-      &.toolbarKeyActive:hover {
+      &:hover {
         color: $color-font-enabled;
+        background-color: $color-app-inner;
+      }
+    }
+
+    &.toolbarKeyActive {
+      color: $color-font-active;
+
+      &:hover {
+        color: $color-font-active;
         background-color: $color-app-inner;
       }
     }
@@ -996,10 +1006,18 @@
       color: $color-font-enabled-light;
     }
 
-    &.toolbarKeyEnabled:hover,
-    &.toolbarKeyActive:hover {
+    &.toolbarKeyEnabled:hover {
       color: $color-font-enabled;
       background-color: #fff;
+    }
+
+    &.toolbarKeyActive {
+      color: $color-font-active;
+
+      &:hover {
+        color: $color-font-active;
+        background-color: #fff;
+      }
     }
 
     &.toolbarKeyDisabled {
@@ -1025,10 +1043,18 @@
       color: $color-font-enabled-light;
     }
 
-    &.toolbarKeyEnabled:hover,
-    &.toolbarKeyActive:hover {
+    &.toolbarKeyEnabled:hover {
       color: $color-font-enabled;
       background-color: #fff;
+    }
+
+    &.toolbarKeyActive {
+      color: $color-font-active;
+
+      &:hover {
+        color: $color-font-active;
+        background-color: #fff;
+      }
     }
 
     &.toolbarKeyDisabled {
