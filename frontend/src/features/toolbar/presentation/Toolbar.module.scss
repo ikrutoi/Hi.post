@@ -542,17 +542,6 @@
   }
 }
 
-.toolbarSectionEditorMenuCardPieCopyLocked {
-  .toolbarKey {
-    cursor: default;
-    pointer-events: none;
-
-    &:hover {
-      background-color: $color-app-strip;
-    }
-  }
-}
-
 // .toolbarRightSidebar {
 //   .toolbarKeyActive {
 //     color: $color-app-sidebar-icon-active;

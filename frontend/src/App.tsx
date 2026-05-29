@@ -446,6 +446,30 @@ const App = () => {
     }
   }, [activePieSide])
 
+  /**
+   * sectionEditorMenu при cardPieCopy: выключить копирование, левый режим;
+   * выбранная строка списка / правый CardPie не сбрасываются.
+   */
+  const exitCopyModeEnterLeftFactory = useCallback(() => {
+    if (!cardPieCopyStripExpanded) {
+      if (activePieSide === 'right') {
+        setSuppressCardPieEditActiveAfterCopy(true)
+        setCardPieEditEngaged(false)
+        setActivePieSide('left')
+      }
+      return
+    }
+    dispatch(setCardPieCopyStripExpanded(false))
+    setRightPieCardphotoPeekNoToolbar(false)
+    setRightPieCardtextPeekNoToolbar(false)
+    setRightPieEnvelopePeekNoToolbar(false)
+    setRightPieAromaPeekNoToolbar(false)
+    setRightPieDatePeekNoToolbar(false)
+    setSuppressCardPieEditActiveAfterCopy(true)
+    setCardPieEditEngaged(false)
+    setActivePieSide('left')
+  }, [activePieSide, cardPieCopyStripExpanded, dispatch])
+
   const clearRightPieCardphotoPeek = useCallback(() => {
     setRightPieCardphotoPeekNoToolbar(false)
   }, [])
@@ -776,7 +800,9 @@ const App = () => {
             <Header />
           </div>
           <div className={styles.appSidebar}>
-            <SectionEditorSidebar />
+            <SectionEditorSidebar
+              onSectionEditorMenuActionInCopyMode={exitCopyModeEnterLeftFactory}
+            />
           </div>
           <main
             ref={mainRef}

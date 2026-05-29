@@ -5,7 +5,6 @@ import { useToolbarFacade } from '../application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
-import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
 import {
@@ -158,7 +157,6 @@ export const Toolbar = ({
         ? 'desc'
         : 'asc'
 
-  const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const senderViewTemplateId = useAppSelector(selectSenderViewId)
   const recipientViewTemplateId = useAppSelector(selectRecipientViewId)
   const senderTemplateInQuickList = useAppSelector(
@@ -206,9 +204,6 @@ export const Toolbar = ({
   )
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
-
-  const sectionEditorMenuLockedByCardPieCopy =
-    section === 'sectionEditorMenu' && cardPieCopyStripExpanded
 
   useEffect(() => {
     if (groupRef.current) {
@@ -443,11 +438,7 @@ export const Toolbar = ({
         data-icon-state={buttonStatus}
         disabled={buttonStatus === 'disabled' || groupStatus === 'disabled'}
         onMouseDown={(e) => {
-          if (
-            sectionEditorMenuLockedByCardPieCopy ||
-            groupStatus === 'disabled' ||
-            buttonStatus === 'disabled'
-          ) {
+          if (groupStatus === 'disabled' || buttonStatus === 'disabled') {
             e.preventDefault()
             return
           }
@@ -511,8 +502,6 @@ export const Toolbar = ({
         styles.toolbar,
         styles[`toolbar${capitalize(section)}`],
         mergedWithCenter && styles.toolbarMergedWithCenter,
-        sectionEditorMenuLockedByCardPieCopy &&
-          styles.toolbarSectionEditorMenuCardPieCopyLocked,
       )}
       style={toolbarStyle}
     >

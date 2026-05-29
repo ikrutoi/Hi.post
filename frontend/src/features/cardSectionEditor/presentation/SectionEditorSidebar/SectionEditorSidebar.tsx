@@ -6,7 +6,14 @@ import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/se
 import { IconLogo, IconLogoFull } from '@shared/ui/icons'
 import styles from './SectionEditorSidebar.module.scss'
 
-export const SectionEditorSidebar: React.FC = () => {
+type SectionEditorSidebarProps = {
+  /** cardPieCopy: выключить копирование, левый режим; правый CardPie не закрывать. */
+  onSectionEditorMenuActionInCopyMode?: () => void
+}
+
+export const SectionEditorSidebar: React.FC<SectionEditorSidebarProps> = ({
+  onSectionEditorMenuActionInCopyMode,
+}) => {
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const sectionEditorMenuStateOverride = useMemo(
     () =>
@@ -26,6 +33,11 @@ export const SectionEditorSidebar: React.FC = () => {
       <Toolbar
         section="sectionEditorMenu"
         stateOverride={sectionEditorMenuStateOverride}
+        onActionClick={() => {
+          if (cardPieCopyStripExpanded) {
+            onSectionEditorMenuActionInCopyMode?.()
+          }
+        }}
       />
       <div className={styles.sectionEditorSidebarLogoFull}>
         <IconLogoFull aria-hidden />
