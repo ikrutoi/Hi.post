@@ -7,6 +7,7 @@ import { useCardEditorFacade } from '@entities/cardEditor/application/facades'
 import {
   areAllEligibleMirrorSectionsApplied,
   canApplyMirrorSection,
+  isMirrorArchiveDateDisabledForOrder,
   isMirrorSectionAppliedToEditor,
 } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
 import { useCardPanelFacade } from '../../application/facades'
@@ -105,6 +106,7 @@ export const MiniSectionsSlot = forwardRef<
     mirrorInner,
     mirrorTargetLocalId,
     listRowLocalId,
+    listRowPostcardStatus,
   } = useRightListArchiveMini()
 
   /** Пока выбрана строка списка — мини-секция не сбрасывает превью правого CardPie. */
@@ -141,6 +143,8 @@ export const MiniSectionsSlot = forwardRef<
     mirrorTargetLocalId != null
       ? cartItems.find((p) => p.localId === mirrorTargetLocalId) ?? null
       : null
+  const mirrorPostcardStatus =
+    sourcePostcard?.status ?? listRowPostcardStatus
 
   const mirrorEditorSnapshot = {
     cardphotoAppliedData,
@@ -159,11 +163,13 @@ export const MiniSectionsSlot = forwardRef<
         mirrorSectionFlags,
         sourcePostcard,
         mirrorEditorSnapshot,
+        mirrorPostcardStatus,
       ),
     [
       mirrorInner,
       mirrorSectionFlags,
       sourcePostcard,
+      mirrorPostcardStatus,
       cardphotoAppliedData,
       cardtextState?.appliedData,
       appliedRecipientAddress,
@@ -247,10 +253,20 @@ export const MiniSectionsSlot = forwardRef<
                       : section === 'cardtext'
                         ? editorState.cardtext?.isComplete
                         : editorState[section]?.isComplete
+                  const isMirrorDateDisabledForCopy =
+                    cardPieCopyStripActive &&
+                    section === 'date' &&
+                    isMirrorArchiveDateDisabledForOrder(
+                      mirrorInner?.dates ?? [],
+                      mirrorPostcardStatus,
+                    )
                   const isEmpty = mirrorMinisFromRightPie
                     ? section === 'cardtext'
                       ? !cardtextHasRenderableContent(mirrorInner?.cardtext)
-                      : !Boolean(mirrorSectionFlags?.[section])
+                      : section === 'date'
+                        ? isMirrorDateDisabledForCopy ||
+                          !Boolean(mirrorSectionFlags?.[section])
+                        : !Boolean(mirrorSectionFlags?.[section])
                     : centerStripListMirrorEnabled && mirrorSectionFlags == null
                       ? true
                       : section === 'date'
@@ -297,6 +313,7 @@ export const MiniSectionsSlot = forwardRef<
                                 section,
                                 mirrorInner,
                                 mirrorSectionFlags,
+                                mirrorPostcardStatus,
                               )
                               const isApplied = isMirrorSectionAppliedToEditor(
                                 section,

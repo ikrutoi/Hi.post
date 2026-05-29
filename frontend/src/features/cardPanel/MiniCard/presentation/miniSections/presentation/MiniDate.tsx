@@ -1,11 +1,14 @@
 import React from 'react'
 import clsx from 'clsx'
+import { useAppSelector } from '@app/hooks'
 import { useDateFacade } from '@date/application/facades'
 import listOfMonthOfYear from '@/data/date/monthOfYear.json'
 import styles from './MiniDate.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { getDateMultiMiniCircleSteps } from './concentricCircleSteps'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
+import { isMirrorArchiveDateDisabledForOrder } from '@cardPanel/application/helpers/mirrorSectionEditorSync'
+import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 
 interface MiniDateProps {}
 
@@ -13,13 +16,25 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
   const { selectedDate, mergedDispatchDates, isMultiDateMode } = useDateFacade()
   const { setHovered, isSectionHovered } = useCardEditorFacade()
   const isHovered = isSectionHovered('date')
-  const { centerStripListMirrorEnabled, mirrorInner } = useRightListArchiveMini()
+  const { centerStripListMirrorEnabled, mirrorInner, listRowPostcardStatus } =
+    useRightListArchiveMini()
+  const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
 
   if (centerStripListMirrorEnabled && mirrorInner == null) {
     return null
   }
 
   if (centerStripListMirrorEnabled && mirrorInner) {
+    if (
+      cardPieCopyStripExpanded &&
+      isMirrorArchiveDateDisabledForOrder(
+        mirrorInner.dates ?? [],
+        listRowPostcardStatus,
+      )
+    ) {
+      return null
+    }
+
     const dates = mirrorInner.dates
     const count = dates.length
     if (count === 0) return null

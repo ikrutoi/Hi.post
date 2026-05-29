@@ -35,8 +35,6 @@ interface UseCalendarConstructionParams {
   triggerFlash: (part: Switcher) => void
 }
 
-const currentDate = getCurrentDate()
-
 /** Шаг волны подсветки при dateEdit (полоса «Корзина»). */
 const CART_DATE_PICK_WAVE_MS = 100
 
@@ -46,6 +44,7 @@ export const useCalendarConstruction = ({
   chooseDate,
   triggerFlash,
 }: UseCalendarConstructionParams) => {
+  const currentDate = getCurrentDate()
   const { activeSection } = useSectionMenuFacade()
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const cartCalendarDatePickMode = useAppSelector(selectCartCalendarDatePickMode)

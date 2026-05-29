@@ -146,6 +146,19 @@ function* handleApplyArchiveSection(
   const postcard = items.find((p) => p.localId === sourceLocalId)
   if (!postcard) return
 
+  const mirrorInner = buildCardPieInnerDataFromPostcard(postcard)
+  const mirrorSectionFlags = buildPieSectionFlagsFromPostcard(postcard)
+  if (
+    !canApplyMirrorSection(
+      section,
+      mirrorInner,
+      mirrorSectionFlags,
+      postcard.status,
+    )
+  ) {
+    return
+  }
+
   yield call(stashMirrorSectionBackupIfNeeded, section)
   yield call(applyArchiveSectionFromPostcard, section, postcard)
 }
@@ -174,7 +187,14 @@ function* handleApplyAllMirrorSectionsCopy(
   const mirrorSectionFlags = buildPieSectionFlagsFromPostcard(postcard)
 
   for (const section of MIRROR_COPY_SECTION_ORDER) {
-    if (!canApplyMirrorSection(section, mirrorInner, mirrorSectionFlags)) {
+    if (
+      !canApplyMirrorSection(
+        section,
+        mirrorInner,
+        mirrorSectionFlags,
+        postcard.status,
+      )
+    ) {
       continue
     }
     yield call(stashMirrorSectionBackupIfNeeded, section)

@@ -6,19 +6,45 @@ import type {
 import { cardtextHasRenderableContent } from '@cardtext/domain/editor/editor.types'
 import type { AddressFields } from '@shared/config/constants'
 import type { DispatchDate } from '@entities/date'
-import type { PostcardHydrated } from '@entities/postcard'
+import {
+  isDispatchDateDisabledForOrder,
+  type OrderCalendarCurrentDate,
+} from '@entities/date/utils'
+import type { PostcardHydrated, PostcardStatus } from '@entities/postcard'
 import type { AromaItem } from '@entities/aroma/domain/types'
 import type { CardtextContent } from '@cardtext/domain/editor/editor.types'
 import type { ImageMeta } from '@cardphoto/domain/types'
+import { getCurrentDate } from '@shared/utils/date'
+
+/** Как `isCartDateDisabled` в правом CardPie: дата в корзине слишком ранняя для заказа. */
+export function isMirrorArchiveDateDisabledForOrder(
+  dates: DispatchDate[],
+  postcardStatus: PostcardStatus | undefined,
+  currentDate: OrderCalendarCurrentDate = getCurrentDate(),
+): boolean {
+  if (dates.length === 0) return false
+  if (postcardStatus !== 'cart' && postcardStatus !== 'cartBlocked') {
+    return false
+  }
+  return dates.every((d) => isDispatchDateDisabledForOrder(d, currentDate))
+}
 
 export function canApplyMirrorSection(
   section: CardPanelSection,
   mirrorInner: CardPieInnerData | null,
   mirrorSectionFlags: CardPieSectionFlags | null,
+  postcardStatus?: PostcardStatus,
 ): boolean {
   if (!mirrorInner || !mirrorSectionFlags) return false
   if (section === 'cardtext') {
     return cardtextHasRenderableContent(mirrorInner.cardtext)
+  }
+  if (section === 'date') {
+    if (!mirrorSectionFlags.date) return false
+    return !isMirrorArchiveDateDisabledForOrder(
+      mirrorInner.dates ?? [],
+      postcardStatus,
+    )
   }
   return Boolean(mirrorSectionFlags[section])
 }
@@ -59,10 +85,16 @@ export function listMirrorSectionsEligibleForApply(
   sections: readonly CardPanelSection[],
   mirrorInner: CardPieInnerData | null,
   mirrorSectionFlags: CardPieSectionFlags | null,
+  postcardStatus?: PostcardStatus,
 ): CardPanelSection[] {
   if (!mirrorInner || !mirrorSectionFlags) return []
   return sections.filter((section) =>
-    canApplyMirrorSection(section, mirrorInner, mirrorSectionFlags),
+    canApplyMirrorSection(
+      section,
+      mirrorInner,
+      mirrorSectionFlags,
+      postcardStatus,
+    ),
   )
 }
 
@@ -73,11 +105,13 @@ export function areAllEligibleMirrorSectionsApplied(
   mirrorSectionFlags: CardPieSectionFlags | null,
   sourcePostcard: PostcardHydrated | null,
   editor: MirrorSectionEditorSnapshot,
+  postcardStatus?: PostcardStatus,
 ): boolean {
   const eligible = listMirrorSectionsEligibleForApply(
     sections,
     mirrorInner,
     mirrorSectionFlags,
+    postcardStatus ?? sourcePostcard?.status,
   )
   if (eligible.length === 0) return false
   return eligible.every((section) =>

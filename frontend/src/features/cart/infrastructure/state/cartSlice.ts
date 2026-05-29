@@ -32,9 +32,12 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     setCartListPanelOpen(state, action: PayloadAction<boolean>) {
+      const wasOpen = state.isActive
       state.isActive = action.payload
-      /** Сброс выбора при открытии/закрытии: правый CardPie только после клика по строке. */
-      state.listSelectedLocalId = null
+      /** Сброс выбора только при смене open/closed; повторное `true` (закладка «Корзина») — сохраняем строку для правого CardPie. */
+      if (wasOpen !== action.payload) {
+        state.listSelectedLocalId = null
+      }
       if (!action.payload) {
         state.cardPieCopyStripExpanded = false
       }
