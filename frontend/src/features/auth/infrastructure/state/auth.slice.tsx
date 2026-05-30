@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AuthState, User } from '../../domain/types'
-import { loginThunk, registerThunk } from '../../store'
+import { loginThunk, registerThunk } from '../../store/auth.thunks'
 
 const initialState: AuthState = {
   user: null,
@@ -8,6 +8,8 @@ const initialState: AuthState = {
   isAuthenticated: false,
   loading: false,
   error: null,
+  initialized: false,
+  userLoginPanelOpen: false,
 }
 
 export const authSlice = createSlice({
@@ -29,6 +31,15 @@ export const authSlice = createSlice({
       state.user = null
       state.token = null
       state.isAuthenticated = false
+      state.loading = false
+      state.error = null
+      state.userLoginPanelOpen = false
+    },
+    setUserLoginPanelOpen(state, action: PayloadAction<boolean>) {
+      state.userLoginPanelOpen = action.payload
+    },
+    setAuthInitialized(state) {
+      state.initialized = true
     },
     setAuth(state, action: PayloadAction<{ user: User; token: string }>) {
       state.user = action.payload.user
@@ -36,6 +47,10 @@ export const authSlice = createSlice({
       state.isAuthenticated = true
       state.loading = false
       state.error = null
+    },
+    setAuthError(state, action: PayloadAction<string>) {
+      state.loading = false
+      state.error = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -72,5 +87,13 @@ export const authSlice = createSlice({
   },
 })
 
-export const { logout, setAuth, loginStart, loginSuccess } = authSlice.actions
+export const {
+  logout,
+  setAuth,
+  loginStart,
+  loginSuccess,
+  setAuthInitialized,
+  setAuthError,
+  setUserLoginPanelOpen,
+} = authSlice.actions
 export const authReducer = authSlice.reducer

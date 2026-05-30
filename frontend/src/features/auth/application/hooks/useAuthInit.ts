@@ -1,16 +1,16 @@
 import { useEffect } from 'react'
 import { useAppDispatch } from '@app/hooks'
-import { loginStart, loginSuccess } from '../../infrastructure/state'
+import { readAuthSession } from '../../infrastructure/sessionStorage'
+import { setAuth, setAuthInitialized } from '../../infrastructure/state'
 
 export const useAuthInit = () => {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      dispatch(loginStart())
-      const user = { id: '123', name: 'Ihar', email: 'ihar@email.com' }
-      dispatch(loginSuccess({ user, token }))
+    const session = readAuthSession()
+    if (session) {
+      dispatch(setAuth(session))
     }
+    dispatch(setAuthInitialized())
   }, [dispatch])
 }

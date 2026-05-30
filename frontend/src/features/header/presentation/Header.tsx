@@ -17,9 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
         [styles.sticky]: isSticky,
         [styles.shadow]: hasShadow,
       })}
-    >
-      {/* <HeaderLogo />
-      <HeaderActions /> */}
-    </header>
+      aria-hidden
+    />
   )
 }

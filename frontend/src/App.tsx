@@ -19,7 +19,6 @@ import {
   selectComputedNotebookStripTab,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
-import { Header } from './features/header/presentation/Header'
 import { MiniSectionsSlot } from './features/cardPanel/presentation/MiniSectionsSlot'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
@@ -37,6 +36,12 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
+import { AuthScreen } from '@features/auth/presentation/AuthScreen'
+import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
+import {
+  selectAuthInitialized,
+  selectIsAuthenticated,
+} from '@features/auth/infrastructure/selectors/authSelectors'
 import {
   useLayoutInit,
   useToolbarClickReset,
@@ -173,6 +178,8 @@ const App = () => {
   }, [notebookDateTabPeekClearTick])
 
   useAuthInit()
+  const authInitialized = useAppSelector(selectAuthInitialized)
+  const isAuthenticated = useAppSelector(selectIsAuthenticated)
   useLayoutInit()
   useViewportInit()
   useRecordSizeCard(formRef, cardPanelRef)
@@ -993,14 +1000,19 @@ const App = () => {
     ],
   )
 
+  if (!authInitialized) {
+    return <div className={styles.authBoot} aria-busy="true" />
+  }
+
+  if (!isAuthenticated) {
+    return <AuthScreen />
+  }
+
   return (
     <div ref={appRef} className={styles.app} onClick={handleAppClick}>
       <MarkStampYearDevProvider>
         <div className={styles.appSubstrate}>
         <div className={styles.appControlStrip}>
-          <div className={styles.appHeader}>
-            <Header />
-          </div>
           <div className={styles.appSidebar}>
             <SectionEditorSidebar
               onSectionEditorMenuAction={handleSectionEditorMenuClick}
@@ -1354,6 +1366,9 @@ const App = () => {
               <HistoryListRightSlot onSelectEntry={handleHistoryListSelectEntry} />
               {/* {activeSection === 'cardtext' && <CardtextRightSlot />} */}
               {/* {activeSection === 'cardphoto' && <CardphotoRightSlot />} */}
+            </div>
+            <div className={styles.appMainContentRightUserPanelSlot}>
+              <UserLoginRightSlot />
             </div>
           </main>
           <div

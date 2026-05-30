@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { z } from 'zod'
 import { userSchema } from '@schemas/userSchema'
 import type { AuthResponse, LoginPayload } from '../domain/types/auth.types'
+import { getAuthRepository } from '../infrastructure/authRepository'
 
 export type RegisterPayload = z.infer<typeof userSchema>
 
@@ -11,10 +12,11 @@ export const loginThunk = createAsyncThunk<
   { rejectValue: string }
 >('auth/login', async (payload, thunkAPI) => {
   try {
-    const response = await axios.post<AuthResponse>('/api/login', payload)
-    return response.data
+    return await getAuthRepository().login(payload)
   } catch (err) {
-    return thunkAPI.rejectWithValue('Login failed')
+    const message =
+      err instanceof Error ? err.message : 'Login failed'
+    return thunkAPI.rejectWithValue(message)
   }
 })
 
@@ -25,17 +27,22 @@ export const registerThunk = createAsyncThunk<
 >('auth/register', async (payload, thunkAPI) => {
   try {
     userSchema.parse(payload)
-    const response = await axios.post<AuthResponse>('/api/register', payload)
-    return response.data
+    return await getAuthRepository().register({
+      name: payload.username,
+      email: payload.email,
+      password: payload.password,
+    })
   } catch (err) {
     if (err instanceof z.ZodError) {
       const emailIssue = err.issues.find(
-        (e) => e.path[0] === 'email' && typeof e.message === 'string'
+        (e) => e.path[0] === 'email' && typeof e.message === 'string',
       )
       const message = emailIssue?.message || 'Invalid input'
       return thunkAPI.rejectWithValue(message)
     }
 
-    return thunkAPI.rejectWithValue('Registration failed')
+    const message =
+      err instanceof Error ? err.message : 'Registration failed'
+    return thunkAPI.rejectWithValue(message)
   }
 })

@@ -26,4 +26,6 @@ export type AuthState = {
   isAuthenticated: boolean
   loading: boolean
   error: string | null
+  initialized: boolean
+  userLoginPanelOpen: boolean
 }

@@ -1,0 +1,107 @@
+@use '@styles/config/colors' as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  color: $color-font-enabled-light;
+}
+
+.input {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid $color-app-substrate-border;
+  border-radius: 0.5rem;
+  background: $color-app-inner;
+  color: $color-font-enabled;
+  font: inherit;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: 2px solid rgba($color-active, 0.35);
+    border-color: $color-active;
+  }
+}
+
+.passwordField {
+  position: relative;
+}
+
+.passwordField .input {
+  padding-right: 2.75rem;
+
+  &:focus::placeholder {
+    opacity: 0;
+  }
+}
+
+.passwordToggle {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: $color-font-enabled-light;
+  cursor: pointer;
+  transform: translateY(-50%);
+
+  &:hover {
+    color: $color-font-enabled;
+    background: $color-hover-bg;
+  }
+}
+
+.passwordToggleIcon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.error {
+  margin: 0;
+  color: $color-preview-indicator-error;
+  font-size: 0.875rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 0.5rem;
+  font: inherit;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.primaryButton {
+  border: none;
+  background: $color-active;
+  color: #fff;
+}
+
+.secondaryButton {
+  border: 1px solid $color-app-substrate-border;
+  background: transparent;
+  color: $color-font-enabled;
+}

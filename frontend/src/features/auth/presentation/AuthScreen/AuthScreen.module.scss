@@ -1,0 +1,48 @@
+@use '@styles/config/colors' as *;
+
+.screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  background:
+    radial-gradient(circle at top, rgba($color-active, 0.12), transparent 55%),
+    $color-base;
+}
+
+.card {
+  width: min(100%, 24rem);
+  padding: 1.75rem;
+  border: 1px solid $color-app-substrate-border;
+  border-radius: 1rem;
+  background: $color-app-inner;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  margin: 0 0 0.35rem;
+  font-size: 1.75rem;
+  color: $color-font-enabled;
+}
+
+.subtitle {
+  margin: 0;
+  color: $color-font-enabled-light;
+  font-size: 0.95rem;
+}
+
+.hint {
+  margin: 1.25rem 0 0;
+  color: $color-font-enabled-light;
+  font-size: 0.8rem;
+  line-height: 1.4;
+
+  code {
+    color: $color-font-enabled;
+  }
+}

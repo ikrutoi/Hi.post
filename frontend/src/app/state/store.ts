@@ -10,7 +10,6 @@ export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      thunk: false,
       serializableCheck: {
         // Upload / registry may carry Blob in action payload briefly (not persisted in Redux state long-term).
         ignoredActions: [

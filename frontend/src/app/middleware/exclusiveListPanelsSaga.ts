@@ -23,6 +23,8 @@ import {
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
+import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
+import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 
 function* syncListPanelToolbarIcons(): SagaIterator {
   const dateOpen: boolean = yield select(selectIsDateListPanelOpen)
@@ -53,6 +55,15 @@ function* syncListPanelToolbarIcons(): SagaIterator {
       section: 'rightSidebar',
       key: 'cart',
       value: cartSidebarHighlightActive ? 'active' : 'enabled',
+    }),
+  )
+
+  const userLoginOpen: boolean = yield select(selectUserLoginPanelOpen)
+  yield put(
+    updateToolbarIcon({
+      section: 'rightSidebar',
+      key: 'userLogin',
+      value: userLoginOpen ? 'active' : 'enabled',
     }),
   )
 
@@ -123,6 +134,8 @@ function* closeOtherListPanels(action: {
     action.type === setHistoryListPanelOpen.type && action.payload === true
   const openingCart =
     action.type === setCartListPanelOpen.type && action.payload === true
+  const openingUserLogin =
+    action.type === setUserLoginPanelOpen.type && action.payload === true
   const openingCardPie =
     action.type === setCardPieListPanelOpen.type && action.payload === true
   const openingCardphoto =
@@ -140,13 +153,21 @@ function* closeOtherListPanels(action: {
   }
 
   if (
+    action.type === setUserLoginPanelOpen.type &&
+    action.payload === false
+  ) {
+    yield* syncListPanelToolbarIcons()
+  }
+
+  if (
     !openingDate &&
     !openingHistory &&
     !openingCardPie &&
     !openingCardphoto &&
     !openingCardtext &&
     !openingAddressList &&
-    !openingCart
+    !openingCart &&
+    !openingUserLogin
   ) {
     return
   }
@@ -165,7 +186,8 @@ function* closeOtherListPanels(action: {
     !openingDate &&
     !openingCardphoto &&
     !openingCardtext &&
-    !openingAddressList
+    !openingAddressList &&
+    !openingUserLogin
   ) {
     yield put(setHistoryListPanelOpen(false))
   }
@@ -174,7 +196,7 @@ function* closeOtherListPanels(action: {
    * Открытие корзины (правый сайдбар) не закрывает левые списки:
    * cardpie, cardphoto, cardtext, адреса — они остаются как были.
    */
-  if (!openingCardPie && !openingCart && !openingHistory) {
+  if (!openingCardPie && !openingCart && !openingHistory && !openingUserLogin) {
     yield put(setCardPieListPanelOpen(false))
   }
 
@@ -190,6 +212,7 @@ function* closeOtherListPanels(action: {
     !openingCardphoto &&
     !openingDate &&
     !openingCart &&
+    !openingUserLogin &&
     !openingEditorSectionList
   ) {
     yield put(setCardphotoListPanelOpen(false))
@@ -197,13 +220,23 @@ function* closeOtherListPanels(action: {
   if (
     !openingCardtext &&
     !openingCart &&
+    !openingUserLogin &&
     !openingEditorSectionList
   ) {
     yield put(setCardtextListPanelOpen(false))
   }
 
-  if (!openingAddressList && !openingCart && !openingEditorSectionList) {
+  if (!openingAddressList && !openingCart && !openingUserLogin && !openingEditorSectionList) {
     yield put(closeAddressList())
+  }
+
+  if (openingUserLogin) {
+    yield put(setCartListPanelOpen(false))
+    yield put(setHistoryListPanelOpen(false))
+  }
+
+  if (openingCart || openingHistory) {
+    yield put(setUserLoginPanelOpen(false))
   }
 
   yield* syncListPanelToolbarIcons()
@@ -218,6 +251,7 @@ export function* watchExclusiveListPanels(): SagaIterator {
     takeEvery(setDateListPanelOpen.type, closeOtherListPanels),
     takeEvery(setHistoryListPanelOpen.type, closeOtherListPanels),
     takeEvery(setCartListPanelOpen.type, closeOtherListPanels),
+    takeEvery(setUserLoginPanelOpen.type, closeOtherListPanels),
     takeEvery(setCardPieListPanelOpen.type, closeOtherListPanels),
     takeEvery(setCardphotoListPanelOpen.type, closeOtherListPanels),
     takeEvery(setCardtextListPanelOpen.type, closeOtherListPanels),

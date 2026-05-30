@@ -14,6 +14,8 @@ import {
   setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
+import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import {
   syncSectionMenuVisuals,
   syncSectionMenuVisualsAllEnabled,
@@ -44,12 +46,43 @@ export function* handleRightSidebarToolbarAction(
 
   if (section !== 'rightSidebar') return
 
+  if (key === 'userLogin') {
+    const isOpen: boolean = yield select(selectUserLoginPanelOpen)
+    const nextOpen = !isOpen
+    yield put(setUserLoginPanelOpen(nextOpen))
+    if (nextOpen) {
+      yield put(setCartListPanelOpen(false))
+      yield put(setHistoryListPanelOpen(false))
+    }
+    yield put(
+      updateToolbarIcon({
+        section: 'rightSidebar',
+        key: 'userLogin',
+        value: nextOpen ? 'active' : 'enabled',
+      }),
+    )
+    if (nextOpen) {
+      for (const iconKey of RIGHT_SIDEBAR_KEYS) {
+        if (iconKey === 'userLogin') continue
+        yield put(
+          updateToolbarIcon({
+            section: 'rightSidebar',
+            key: iconKey,
+            value: 'enabled',
+          }),
+        )
+      }
+    }
+    return
+  }
+
   if (key === 'cart') {
     const isCartActive: boolean = yield select(selectCartListPanelOpen)
     const nextOpen = !isCartActive
     yield put(setCartListPanelOpen(nextOpen))
     if (nextOpen) {
       yield put(setHistoryListPanelOpen(false))
+      yield put(setUserLoginPanelOpen(false))
       /** Полоса держится сагой синхронизации (`cart.isActive` → `cart`). */
       yield put(setCartCalendarDatePickMode(false))
       yield put(setCartListStatusSegment('cart'))
@@ -92,6 +125,7 @@ export function* handleRightSidebarToolbarAction(
     if (cartListOpen) {
       yield put(setCartListPanelOpen(false))
     }
+    yield put(setUserLoginPanelOpen(false))
     yield put(setNotebookStripTab('history'))
     yield put(setHistoryListPanelOpen(true))
     yield put(setActiveSection('history'))

@@ -659,7 +659,7 @@ export const CardPie: React.FC<CardPieProps> = ({
               ? false
               : !allSectionsFilled
         }
-        aria-label="Hi.post"
+        aria-label="Hidragonfly.com"
         onMouseDown={(e) => {
           e.stopPropagation()
         }}

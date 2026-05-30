@@ -49,7 +49,7 @@ export const SectionEditorRightSidebar: React.FC<
   return (
     <aside
       className={styles.sectionEditorRightSidebar}
-      aria-label="Profile, Cart, and Favorites"
+      aria-label="Profile, cart, and history"
     >
       <div className={styles.toolbarSlot}>
         <Toolbar

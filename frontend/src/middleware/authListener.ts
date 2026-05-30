@@ -1,26 +1,42 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit'
+import type { AuthResponse } from '@features/auth/domain/types/auth.types'
 import { registerThunk, loginThunk } from '@features/auth/store/auth.thunks'
-import { logout } from '@/features/auth/infrastructure/state/auth.slice'
+import { logout, setAuth } from '@/features/auth/infrastructure/state/auth.slice'
+import {
+  clearAuthSession,
+  saveAuthSession,
+} from '@features/auth/infrastructure/sessionStorage'
 
 export const authListenerMiddleware = createListenerMiddleware()
+
+const persistSession = (payload: AuthResponse) => {
+  saveAuthSession(payload)
+}
+
+authListenerMiddleware.startListening({
+  actionCreator: setAuth,
+  effect: async (action) => {
+    persistSession(action.payload)
+  },
+})
 
 authListenerMiddleware.startListening({
   actionCreator: registerThunk.fulfilled,
   effect: async (action) => {
-    localStorage.setItem('token', action.payload.token)
+    persistSession(action.payload)
   },
 })
 
 authListenerMiddleware.startListening({
   actionCreator: loginThunk.fulfilled,
   effect: async (action) => {
-    localStorage.setItem('token', action.payload.token)
+    persistSession(action.payload)
   },
 })
 
 authListenerMiddleware.startListening({
   actionCreator: logout,
   effect: async () => {
-    localStorage.removeItem('token')
+    clearAuthSession()
   },
 })
