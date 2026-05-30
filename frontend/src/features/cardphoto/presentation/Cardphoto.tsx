@@ -211,6 +211,7 @@ const CardphotoSessionEditor: React.FC = () => {
 export const Cardphoto: React.FC = () => {
   const {
     activePieSide,
+    cardPieEditEngaged,
     centerStripListMirrorEnabled,
     rightPieCardphotoPeekNoToolbar,
     listRowInner,
@@ -218,12 +219,20 @@ export const Cardphoto: React.FC = () => {
   } = useRightListArchiveMini()
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
 
-  /** Правый режим (в т.ч. cardPieEdit): фото архива, без записи в слайс левой открытки. */
-  if (centerStripListMirrorEnabled && activePieSide === 'right') {
+  /** Правый режим без cardPieEdit: превью архива, без записи в слайс левой открытки. */
+  if (
+    centerStripListMirrorEnabled &&
+    activePieSide === 'right' &&
+    !cardPieEditEngaged
+  ) {
     return <CardphotoRightListMirror />
   }
 
-  if (rightPieCardphotoPeekNoToolbar && listRowInner != null) {
+  if (
+    rightPieCardphotoPeekNoToolbar &&
+    listRowInner != null &&
+    !cardPieEditEngaged
+  ) {
     const peek = (
       <CardphotoInnerPreviewOnly
         key={
