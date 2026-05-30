@@ -40,10 +40,19 @@ export const UserLoginPanel: React.FC = () => {
     )
   }, [dispatch])
 
+  const displayName = user?.name ?? user?.email ?? 'Signed in'
+
   return (
     <div className={styles.panel}>
       <ListPanelStackedHeader
         leadIconKey="userLogin"
+        headerTopCenter={
+          isAuthenticated ? (
+            <div className={styles.headerUserNameWrap}>
+              <span className={styles.headerUserName}>{displayName}</span>
+            </div>
+          ) : null
+        }
         showDividerWithoutToolbar
         onClose={handleClose}
         closeAriaLabel="Close profile"
@@ -53,23 +62,27 @@ export const UserLoginPanel: React.FC = () => {
         <div className={styles.content} aria-label="Signed-in user">
           {isAuthenticated ? (
             <>
-              <p className={styles.userName}>
-                {user?.name ?? user?.email ?? 'Signed in'}
-              </p>
               {user?.email && user.name ? (
                 <p className={styles.userEmail}>{user.email}</p>
               ) : null}
-              <button
-                type="button"
-                className={styles.logoutButton}
-                onClick={handleLogout}
-              >
-                Log out
-              </button>
             </>
           ) : null}
         </div>
       </ScrollArea>
+      {isAuthenticated ? (
+        <footer className={styles.footer}>
+          <button
+            type="button"
+            className={styles.logoutButton}
+            onClick={(event) => {
+              event.stopPropagation()
+              handleLogout()
+            }}
+          >
+            Log out
+          </button>
+        </footer>
+      ) : null}
     </div>
   )
 }

@@ -1,7 +1,9 @@
 @use '@styles/config/colors' as *;
 
 $list-panel-compact-header-band: 2.35rem;
+$list-panel-header-lead-row: 1.75rem;
 $list-panel-scroll-inset: 0.35rem;
+$list-panel-list-footer-gap: 1px;
 
 .panel {
   position: relative;
@@ -10,6 +12,9 @@ $list-panel-scroll-inset: 0.35rem;
   height: 100%;
   min-height: 0;
   padding-top: $list-panel-compact-header-band;
+  padding-bottom: calc(
+    #{$list-panel-header-lead-row} + #{$list-panel-list-footer-gap}
+  );
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
@@ -18,7 +23,9 @@ $list-panel-scroll-inset: 0.35rem;
 .panelScrollTrack {
   position: absolute;
   top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
-  bottom: calc(0px - #{$list-panel-scroll-inset});
+  bottom: calc(
+    #{$list-panel-header-lead-row} - #{$list-panel-scroll-inset} + #{$list-panel-list-footer-gap}
+  );
   right: 2px;
   width: 0.75rem;
   border-radius: 0 0.75rem 0.75rem 0;
@@ -32,20 +39,30 @@ $list-panel-scroll-inset: 0.35rem;
   min-height: 0;
 }
 
+.headerUserNameWrap {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.headerUserName {
+  min-width: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: $color-font-enabled-light;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .content {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   min-height: 100%;
-  padding: 1rem 0.75rem 1rem 0.75rem;
-}
-
-.userName {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: $color-font-enabled;
-  line-height: 1.3;
+  padding: 1rem 0.75rem 0.5rem 0.75rem;
 }
 
 .userEmail {
@@ -56,19 +73,34 @@ $list-panel-scroll-inset: 0.35rem;
   word-break: break-word;
 }
 
+.footer {
+  position: absolute;
+  left: 0.5rem;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: calc(100% - 0.75rem - 8px);
+  height: $list-panel-header-lead-row;
+  padding: 0 0.35rem;
+  box-sizing: border-box;
+  border-top: 1px solid $color-cardphoto-input-border;
+  background-color: #fff;
+}
+
 .logoutButton {
-  align-self: flex-start;
-  margin-top: auto;
-  padding: 0.55rem 0.9rem;
-  border: 1px solid $color-app-substrate-border;
-  border-radius: 0.5rem;
+  padding: 0;
+  border: none;
   background: transparent;
-  color: $color-font-enabled;
   font: inherit;
-  font-size: 0.875rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: $color-font-enabled-light;
   cursor: pointer;
 
   &:hover {
-    background: $color-hover-bg;
+    color: $color-font-enabled;
   }
 }

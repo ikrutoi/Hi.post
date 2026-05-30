@@ -180,9 +180,10 @@ const App = () => {
   useAuthInit()
   const authInitialized = useAppSelector(selectAuthInitialized)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
+  const layoutReady = authInitialized && isAuthenticated
   useLayoutInit()
   useViewportInit()
-  useRecordSizeCard(formRef, cardPanelRef)
+  useRecordSizeCard(formRef, cardPanelRef, { enabled: layoutReady })
   const { sizeCard } = useSizeFacade()
   const sectionSize =
     sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width / 6 : null

@@ -7,6 +7,8 @@ import { useSizeFacade } from '@layout/application/facades'
 
 export interface UseRecordSizeCardOptions {
   skipPanelMeasure?: boolean
+  /** When false, skip measuring until layout targets are mounted (e.g. after auth gate). */
+  enabled?: boolean
 }
 
 export const useRecordSizeCard = (
@@ -20,8 +22,11 @@ export const useRecordSizeCard = (
     setSizeMiniCard,
   } = useSizeFacade()
   const skipPanelMeasure = options?.skipPanelMeasure ?? false
+  const enabled = options?.enabled ?? true
 
   useLayoutEffect(() => {
+    if (!enabled) return
+
     let cancelled = false
     let resizeObserver: ResizeObserver | null = null
     let rafId = 0
@@ -84,5 +89,5 @@ export const useRecordSizeCard = (
       cancelAnimationFrame(rafId)
       resizeObserver?.disconnect()
     }
-  }, [remSize, skipPanelMeasure, setSizeCard, setSizeMiniCard])
+  }, [enabled, remSize, skipPanelMeasure, setSizeCard, setSizeMiniCard])
 }
