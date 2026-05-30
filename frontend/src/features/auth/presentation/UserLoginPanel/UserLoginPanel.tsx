@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
+import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -11,6 +12,7 @@ import {
   selectAuthUser,
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
+import { LoginForm } from '../AuthScreen/LoginForm'
 import styles from './UserLoginPanel.module.scss'
 
 export const UserLoginPanel: React.FC = () => {
@@ -41,32 +43,65 @@ export const UserLoginPanel: React.FC = () => {
   }, [dispatch])
 
   const displayName = user?.name ?? user?.email ?? 'Signed in'
+  const [profileOpen, setProfileOpen] = useState(false)
 
   return (
-    <div className={styles.panel}>
+    <div
+      className={clsx(styles.panel, !isAuthenticated && styles.panelNoFooter)}
+    >
       <ListPanelStackedHeader
         leadIconKey="userLogin"
         headerTopCenter={
-          isAuthenticated ? (
-            <div className={styles.headerUserNameWrap}>
-              <span className={styles.headerUserName}>{displayName}</span>
-            </div>
-          ) : null
+          <div className={styles.headerUserNameWrap}>
+            <span className={styles.headerUserName}>
+              {isAuthenticated ? displayName : 'Sign in'}
+            </span>
+          </div>
         }
         showDividerWithoutToolbar
         onClose={handleClose}
-        closeAriaLabel="Close profile"
+        closeAriaLabel="Close account panel"
       />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
-        <div className={styles.content} aria-label="Signed-in user">
+        <div
+          className={styles.content}
+          aria-label={isAuthenticated ? 'Signed-in user' : 'Sign in'}
+        >
           {isAuthenticated ? (
+            user?.name && user?.email ? (
+              <div className={styles.menu}>
+                <button
+                  type="button"
+                  className={styles.menuItem}
+                  aria-expanded={profileOpen}
+                  onClick={() => setProfileOpen((value) => !value)}
+                >
+                  <span className={styles.menuItemLabel}>Profile</span>
+                  <span
+                    className={clsx(
+                      styles.menuItemChevron,
+                      profileOpen && styles.menuItemChevronOpen,
+                    )}
+                    aria-hidden
+                  />
+                </button>
+                {profileOpen ? (
+                  <div className={styles.profileDetails}>
+                    <p className={styles.profileDetailLineMuted}>{user.email}</p>
+                  </div>
+                ) : null}
+              </div>
+            ) : null
+          ) : (
             <>
-              {user?.email && user.name ? (
-                <p className={styles.userEmail}>{user.email}</p>
-              ) : null}
+              <p className={styles.guestHint}>
+                You can edit postcards without an account. Sign in to unlock
+                history, sync, and other saved features.
+              </p>
+              <LoginForm />
             </>
-          ) : null}
+          )}
         </div>
       </ScrollArea>
       {isAuthenticated ? (

@@ -7,7 +7,7 @@ export const AuthScreen: React.FC = () => {
     <div className={styles.screen}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Hidragonfly.com</h1>
+          <div className={styles.logo} aria-label="Hidragonfly.com" role="img" />
           <p className={styles.subtitle}>Sign in to continue editing postcards</p>
         </div>
         <LoginForm />

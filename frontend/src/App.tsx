@@ -36,12 +36,8 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
-import { AuthScreen } from '@features/auth/presentation/AuthScreen'
 import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
-import {
-  selectAuthInitialized,
-  selectIsAuthenticated,
-} from '@features/auth/infrastructure/selectors/authSelectors'
+import { selectAuthInitialized } from '@features/auth/infrastructure/selectors/authSelectors'
 import {
   useLayoutInit,
   useToolbarClickReset,
@@ -179,8 +175,7 @@ const App = () => {
 
   useAuthInit()
   const authInitialized = useAppSelector(selectAuthInitialized)
-  const isAuthenticated = useAppSelector(selectIsAuthenticated)
-  const layoutReady = authInitialized && isAuthenticated
+  const layoutReady = authInitialized
   useLayoutInit()
   useViewportInit()
   useRecordSizeCard(formRef, cardPanelRef, { enabled: layoutReady })
@@ -1003,10 +998,6 @@ const App = () => {
 
   if (!authInitialized) {
     return <div className={styles.authBoot} aria-busy="true" />
-  }
-
-  if (!isAuthenticated) {
-    return <AuthScreen />
   }
 
   return (

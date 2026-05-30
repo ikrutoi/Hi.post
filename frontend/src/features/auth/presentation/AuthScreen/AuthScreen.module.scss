@@ -13,33 +13,38 @@
 
 .card {
   width: min(100%, 24rem);
-  padding: 1.75rem;
+  padding: 1rem 1.75rem 1.75rem;
   border: 1px solid $color-app-substrate-border;
   border-radius: 1rem;
   background: $color-app-inner;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  font-size: 0.875rem;
 }
 
 .header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.title {
-  margin: 0 0 0.35rem;
-  font-size: 1.75rem;
-  color: $color-font-enabled;
+.logo {
+  width: 78%;
+  aspect-ratio: 452 / 60;
+  margin-bottom: 0.5rem;
+  background-image: url('@data/img/logo-com.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: left top;
 }
 
 .subtitle {
   margin: 0;
   color: $color-font-enabled-light;
-  font-size: 0.95rem;
+  font-size: 0.8125rem;
 }
 
 .hint {
   margin: 1.25rem 0 0;
   color: $color-font-enabled-light;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   line-height: 1.4;
 
   code {

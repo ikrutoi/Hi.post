@@ -14,16 +14,16 @@
 }
 
 .label {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: $color-font-enabled-light;
 }
 
 .input {
   width: 100%;
-  padding: 0.65rem 0.75rem;
+  padding: 0.48rem 0.75rem;
   border: 1px solid $color-app-substrate-border;
   border-radius: 0.5rem;
-  background: $color-app-inner;
+  background: #fff;
   color: $color-font-enabled;
   font: inherit;
   box-sizing: border-box;
@@ -65,7 +65,6 @@
 
   &:hover {
     color: $color-font-enabled;
-    background: $color-hover-bg;
   }
 }
 
@@ -77,15 +76,16 @@
 .error {
   margin: 0;
   color: $color-preview-indicator-error;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .primaryButton,
 .secondaryButton {
   width: 100%;
-  padding: 0.7rem 1rem;
+  padding: 0.48rem 0.75rem;
   border-radius: 0.5rem;
   font: inherit;
+  box-sizing: border-box;
   cursor: pointer;
 
   &:disabled {

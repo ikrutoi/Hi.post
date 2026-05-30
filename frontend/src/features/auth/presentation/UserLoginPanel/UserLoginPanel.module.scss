@@ -18,6 +18,15 @@ $list-panel-list-footer-gap: 1px;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.panelNoFooter {
+  padding-bottom: 0;
+
+  .panelScrollTrack {
+    bottom: calc(0px - #{$list-panel-scroll-inset});
+  }
 }
 
 .panelScrollTrack {
@@ -65,9 +74,76 @@ $list-panel-list-footer-gap: 1px;
   padding: 1rem 0.75rem 0.5rem 0.75rem;
 }
 
-.userEmail {
+.guestHint {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
+  color: $color-font-enabled-light;
+  line-height: 1.4;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.35rem 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: $color-font-enabled;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+}
+
+.menuItemLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.menuItemChevron {
+  flex-shrink: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.menuItemChevronOpen {
+  transform: rotate(45deg);
+}
+
+.profileDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0 0 0.25rem 0.75rem;
+}
+
+.profileDetailLine {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: $color-font-enabled;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.profileDetailLineMuted {
+  margin: 0;
+  font-size: 0.8125rem;
   color: $color-font-enabled-light;
   line-height: 1.3;
   word-break: break-word;
