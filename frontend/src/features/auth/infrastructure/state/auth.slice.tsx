@@ -33,7 +33,6 @@ export const authSlice = createSlice({
       state.isAuthenticated = false
       state.loading = false
       state.error = null
-      state.userLoginPanelOpen = false
     },
     setUserLoginPanelOpen(state, action: PayloadAction<boolean>) {
       state.userLoginPanelOpen = action.payload

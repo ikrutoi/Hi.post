@@ -15,10 +15,7 @@ import {
 } from '@date/calendar/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
-import {
-  selectIsAuthenticated,
-  selectUserLoginPanelOpen,
-} from '@features/auth/infrastructure/selectors/authSelectors'
+import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import {
   syncSectionMenuVisuals,
   syncSectionMenuVisualsAllEnabled,
@@ -124,31 +121,6 @@ export function* handleRightSidebarToolbarAction(
   yield* syncRightSidebarVisuals(key)
 
   if (key === 'history') {
-    const isAuthenticated: boolean = yield select(selectIsAuthenticated)
-    if (!isAuthenticated) {
-      yield put(setUserLoginPanelOpen(true))
-      yield put(setCartListPanelOpen(false))
-      yield put(setHistoryListPanelOpen(false))
-      yield put(
-        updateToolbarIcon({
-          section: 'rightSidebar',
-          key: 'userLogin',
-          value: 'active',
-        }),
-      )
-      for (const iconKey of RIGHT_SIDEBAR_KEYS) {
-        if (iconKey === 'userLogin') continue
-        yield put(
-          updateToolbarIcon({
-            section: 'rightSidebar',
-            key: iconKey,
-            value: 'enabled',
-          }),
-        )
-      }
-      return
-    }
-
     const cartListOpen: boolean = yield select(selectCartListPanelOpen)
     if (cartListOpen) {
       yield put(setCartListPanelOpen(false))

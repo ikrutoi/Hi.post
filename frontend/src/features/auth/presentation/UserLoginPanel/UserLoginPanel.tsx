@@ -19,6 +19,7 @@ export const UserLoginPanel: React.FC = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const user = useAppSelector(selectAuthUser)
+  const [profileOpen, setProfileOpen] = useState(false)
 
   const handleClose = useCallback(() => {
     dispatch(setUserLoginPanelOpen(false))
@@ -32,18 +33,11 @@ export const UserLoginPanel: React.FC = () => {
   }, [dispatch])
 
   const handleLogout = useCallback(() => {
+    setProfileOpen(false)
     dispatch(logout())
-    dispatch(
-      updateToolbarIcon({
-        section: 'rightSidebar',
-        key: 'userLogin',
-        value: 'enabled',
-      }),
-    )
   }, [dispatch])
 
   const displayName = user?.name ?? user?.email ?? 'Signed in'
-  const [profileOpen, setProfileOpen] = useState(false)
 
   return (
     <div
@@ -96,8 +90,8 @@ export const UserLoginPanel: React.FC = () => {
           ) : (
             <>
               <p className={styles.guestHint}>
-                You can edit postcards without an account. Sign in to unlock
-                history, sync, and other saved features.
+                You can edit postcards and view local history without an
+                account. Sign in to sync across devices and back up your work.
               </p>
               <LoginForm />
             </>
