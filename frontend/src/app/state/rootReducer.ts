@@ -1,6 +1,5 @@
 import { combineReducers } from '@reduxjs/toolkit'
 
-// import { appReducer } from '@shared/infrastructure/state'
 import { assetRegistryReducer } from '@entities/assetRegistry/infrastructure/state'
 
 import { sectionEditorMenuReducer } from '@entities/sectionEditorMenu/infrastructure/state'

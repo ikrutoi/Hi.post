@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { useAppDispatch } from '@/store/hooks'
+import { useAppDispatch } from '@app/hooks'
 import {
   initCardphoto,
   uploadUserImage,

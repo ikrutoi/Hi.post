@@ -29,3 +29,8 @@ export interface LoadedImage extends ImageBase {
   url: string
   source: File
 }
+
+export type CardphotoLayoutState = {
+  url: string | null
+  source: string | null
+}

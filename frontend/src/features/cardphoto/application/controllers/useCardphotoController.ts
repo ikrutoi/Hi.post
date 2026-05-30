@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
   initCardphoto,
   // initStockImage,

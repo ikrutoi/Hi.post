@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import type { CardphotoState } from '@entities/cardphoto/domain/types'
+import type { CardphotoLayoutState } from '../../domain/typesLayout'
 
-const initialState: CardphotoState = {
+const initialState: CardphotoLayoutState = {
   url: null,
   source: null,
 }
@@ -12,7 +12,7 @@ const cardphotoSlice = createSlice({
   reducers: {
     updateCardphoto: (
       state,
-      action: PayloadAction<Partial<CardphotoState>>
+      action: PayloadAction<Partial<CardphotoLayoutState>>
     ) => {
       Object.assign(state, action.payload)
     },
