@@ -1,7 +1,5 @@
 import React from 'react'
 import clsx from 'clsx'
-import { HeaderActions } from '@headerActions/presentation/HeaderActions'
-import { HeaderLogo } from './HeaderLogo/HeaderLogo'
 import styles from './Header.module.scss'
 
 interface HeaderProps {

@@ -56,7 +56,6 @@ import { toolbarReducer } from '@toolbar/infrastructure/state'
 import { previewStripOrderReducer } from '@features/previewStrip/infrastructure/state'
 
 import { authReducer } from '@features/auth/store'
-import { postcardReducer } from '@features/postcard/model'
 import { interactionReducer } from '@features/interaction'
 import { layoutReducer } from '@layout/infrastructure/state/layoutReducer'
 
@@ -111,7 +110,6 @@ export const rootReducer = combineReducers({
   previewStripOrder: previewStripOrderReducer,
 
   auth: authReducer,
-  postcard: postcardReducer,
   interaction: interactionReducer,
   layout: layoutReducer,
 })

@@ -1,1 +1,0 @@
-export { buildTemplateStripScrollIndex } from './buildTemplateStripScrollIndex'
