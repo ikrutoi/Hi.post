@@ -81,6 +81,41 @@ $list-panel-list-footer-gap: 1px;
   line-height: 1.4;
 }
 
+.authModeSwitch {
+  display: flex;
+  gap: 0.1rem;
+  padding: 0.1rem;
+  border-radius: 0.5rem;
+  background-color: $color-app-strip;
+}
+
+.authModeButton {
+  flex: 1;
+  padding: 0.48rem 0.5rem;
+  border: none;
+  border-radius: 0.42rem;
+  background: transparent;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: $color-font-enabled-light;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled;
+  }
+}
+
+.authModeButtonActive {
+  background-color: #fff;
+  color: $color-font-enabled;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
 .menu {
   display: flex;
   flex-direction: column;

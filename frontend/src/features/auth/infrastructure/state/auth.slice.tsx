@@ -20,6 +20,9 @@ export const authSlice = createSlice({
       state.loading = true
       state.error = null
     },
+    clearAuthError(state) {
+      state.error = null
+    },
     loginSuccess(state, action: PayloadAction<{ user: User; token: string }>) {
       state.user = action.payload.user
       state.token = action.payload.token
@@ -93,6 +96,7 @@ export const {
   loginSuccess,
   setAuthInitialized,
   setAuthError,
+  clearAuthError,
   setUserLoginPanelOpen,
 } = authSlice.actions
 export const authReducer = authSlice.reducer

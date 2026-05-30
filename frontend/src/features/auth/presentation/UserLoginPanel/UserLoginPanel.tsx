@@ -5,6 +5,7 @@ import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPa
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
+  clearAuthError,
   logout,
   setUserLoginPanelOpen,
 } from '@features/auth/infrastructure/state/auth.slice'
@@ -12,7 +13,10 @@ import {
   selectAuthUser,
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
-import { LoginForm } from '../AuthScreen/LoginForm'
+import {
+  GuestAuthSection,
+  type GuestAuthMode,
+} from './GuestAuthSection'
 import styles from './UserLoginPanel.module.scss'
 
 export const UserLoginPanel: React.FC = () => {
@@ -20,6 +24,15 @@ export const UserLoginPanel: React.FC = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const user = useAppSelector(selectAuthUser)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [guestAuthMode, setGuestAuthMode] = useState<GuestAuthMode>('signIn')
+
+  const handleGuestAuthModeChange = useCallback(
+    (mode: GuestAuthMode) => {
+      setGuestAuthMode(mode)
+      dispatch(clearAuthError())
+    },
+    [dispatch],
+  )
 
   const handleClose = useCallback(() => {
     dispatch(setUserLoginPanelOpen(false))
@@ -34,10 +47,13 @@ export const UserLoginPanel: React.FC = () => {
 
   const handleLogout = useCallback(() => {
     setProfileOpen(false)
+    setGuestAuthMode('signIn')
     dispatch(logout())
   }, [dispatch])
 
   const displayName = user?.name ?? user?.email ?? 'Signed in'
+  const guestHeaderTitle =
+    guestAuthMode === 'register' ? 'Create account' : 'Sign in'
 
   return (
     <div
@@ -48,7 +64,7 @@ export const UserLoginPanel: React.FC = () => {
         headerTopCenter={
           <div className={styles.headerUserNameWrap}>
             <span className={styles.headerUserName}>
-              {isAuthenticated ? displayName : 'Sign in'}
+              {isAuthenticated ? displayName : guestHeaderTitle}
             </span>
           </div>
         }
@@ -88,13 +104,10 @@ export const UserLoginPanel: React.FC = () => {
               </div>
             ) : null
           ) : (
-            <>
-              <p className={styles.guestHint}>
-                You can edit postcards and view local history without an
-                account. Sign in to sync across devices and back up your work.
-              </p>
-              <LoginForm />
-            </>
+            <GuestAuthSection
+              mode={guestAuthMode}
+              onModeChange={handleGuestAuthModeChange}
+            />
           )}
         </div>
       </ScrollArea>
