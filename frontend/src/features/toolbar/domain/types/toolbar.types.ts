@@ -47,6 +47,7 @@ import {
   PostcardPieHistoryKey,
   PostcardPieHistoryToolbarState,
 } from './postcardPie.types'
+import { UserPanelKey, UserPanelToolbarState } from './userPanel.types'
 
 export type IconOptions = {
   badge?: number | string | null
@@ -105,6 +106,7 @@ export const TOOLBAR_SECTIONS = [
   'postcardPieHistory',
   'cart',
   'panelMiniSections',
+  'userPanel',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -148,6 +150,7 @@ export type ToolbarState = {
   }
   cart: CartToolbarState & { config: ToolbarGroup[] }
   panelMiniSections: PanelMiniSectionsToolbarState & { config: ToolbarGroup[] }
+  userPanel: UserPanelToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -325,6 +328,8 @@ export type ToolbarSectionConfigMap = {
     PanelMiniSectionsKey,
     'panelMiniSections'
   >
+
+  userPanel: BaseSectionConfig<UserPanelToolbarState, UserPanelKey, 'userPanel'>
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -376,27 +381,29 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                             : S extends 'cardtextView'
                                               ? CardtextKey
                                               : S extends 'date'
-                                                  ? DateKey
-                                                  : S extends 'dateList'
-                                                    ? DateListKey
-                                                    : S extends 'cardPieList'
-                                                      ? CardPieListKey
-                                                      : S extends 'historyList'
+                                                ? DateKey
+                                                : S extends 'dateList'
+                                                  ? DateListKey
+                                                  : S extends 'cardPieList'
+                                                    ? CardPieListKey
+                                                    : S extends 'historyList'
+                                                      ? HistoryListKey
+                                                      : S extends 'historyListIndicators'
                                                         ? HistoryListKey
-                                                        : S extends 'historyListIndicators'
-                                                          ? HistoryListKey
-                                                          : S extends 'cartList'
-                                                            ? CartListKey
-                                                            : S extends 'history'
-                                                              ? HistoryKey
-                                                              : S extends 'rightSidebar'
-                                                                ? RightSidebarKey
-                                                                : S extends 'postcardPieCart'
-                                                                  ? PostcardPieCartKey
-                                                                  : S extends 'postcardPieHistory'
-                                                                    ? PostcardPieHistoryKey
-                                                                    : S extends 'cart'
-                                                                      ? CartKey
-                                                                      : S extends 'panelMiniSections'
-                                                                        ? PanelMiniSectionsKey
+                                                        : S extends 'cartList'
+                                                          ? CartListKey
+                                                          : S extends 'history'
+                                                            ? HistoryKey
+                                                            : S extends 'rightSidebar'
+                                                              ? RightSidebarKey
+                                                              : S extends 'postcardPieCart'
+                                                                ? PostcardPieCartKey
+                                                                : S extends 'postcardPieHistory'
+                                                                  ? PostcardPieHistoryKey
+                                                                  : S extends 'cart'
+                                                                    ? CartKey
+                                                                    : S extends 'panelMiniSections'
+                                                                      ? PanelMiniSectionsKey
+                                                                      : S extends 'userPanel'
+                                                                        ? UserPanelKey
                                                                         : never

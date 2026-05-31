@@ -3,24 +3,54 @@
 .root {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.75rem;
+  width: 100%;
+}
+
+.stageWidth {
+  width: 12rem;
+  max-width: 100%;
+}
+
+.stageFrame {
+  position: relative;
+  width: 100%;
+}
+
+.editBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: $color-font-enabled-light;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 12%);
+  transform: translate(30%, -30%);
+  pointer-events: none;
+
+  svg {
+    width: 0.72rem;
+    height: 0.72rem;
+    display: block;
+  }
 }
 
 .viewport {
   position: relative;
   width: 100%;
-  max-width: 12rem;
   aspect-ratio: 1;
   overflow: hidden;
   border-radius: 50%;
   background-color: $color-app-inner;
   touch-action: none;
   user-select: none;
-  cursor: grab;
-
-  &:active {
-    cursor: grabbing;
-  }
 }
 
 .imageLayer {
@@ -29,35 +59,20 @@
   left: 0;
   transform-origin: top left;
   will-change: transform;
+  pointer-events: none;
 }
 
 .image {
   display: block;
   max-width: none;
-}
-
-.zoomRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  max-width: 12rem;
-}
-
-.zoomLabel {
-  flex-shrink: 0;
-  font-size: 0.75rem;
-  color: $color-font-enabled-light;
-}
-
-.zoomSlider {
-  flex: 1;
-  min-width: 0;
-  accent-color: $color-active;
+  pointer-events: none;
 }
 
 .actions {
   display: flex;
   gap: 0.5rem;
+  width: 12rem;
+  max-width: 100%;
 }
 
 .primaryButton,
@@ -90,4 +105,11 @@
   border: 1px solid $color-app-substrate-border;
   background: transparent;
   color: $color-font-enabled;
+}
+
+.errorText {
+  margin: 0;
+  font-size: 0.75rem;
+  color: $color-preview-indicator-error;
+  line-height: 1.3;
 }

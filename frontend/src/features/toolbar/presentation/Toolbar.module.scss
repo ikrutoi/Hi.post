@@ -834,7 +834,8 @@
 .toolbarHistoryList,
 .toolbarCartList,
 .toolbarCardPieList,
-.toolbarCardPieListEntry {
+.toolbarCardPieListEntry,
+.toolbarUserPanel {
   .toolbarKey {
     width: 1.6rem;
     height: 1.6rem;
@@ -1083,7 +1084,7 @@
       color 0.15s ease,
       background-color 0.15s ease;
 
-    svg {
+    > svg {
       width: 1.1rem;
       height: 1.1rem;
     }
@@ -1150,7 +1151,8 @@
 .toolbarCardPieList,
 .toolbarCardPieListEntry,
 .toolbarHistoryList,
-.toolbarCartList {
+.toolbarCartList,
+.toolbarUserPanel {
   width: 100%;
   justify-content: space-between;
   // margin-left: 1rem;
@@ -1180,6 +1182,41 @@
   align-items: center;
 
   .toolbarGroupCartList,
+  .toolbarGroupActions {
+    display: flex;
+  }
+}
+
+.toolbarUserPanel {
+  justify-content: space-between;
+  align-items: center;
+
+  .toolbarKey {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .toolbarKey.toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='applyLight'].toolbarKeyEnabled,
+  .toolbarKey[data-icon-key='editLight'].toolbarKeyEnabled {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: transparent;
+      box-shadow: none;
+    }
+  }
+
+  .toolbarKey.toolbarKeyDisabled {
+    background-color: transparent;
+  }
+
+  .toolbarKey.toolbarKeyActive:hover {
+    background-color: transparent;
+  }
+
+  .toolbarGroupUserPanel,
   .toolbarGroupActions {
     display: flex;
   }

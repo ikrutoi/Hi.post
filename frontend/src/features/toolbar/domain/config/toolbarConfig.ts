@@ -115,6 +115,11 @@ import {
   POSTCARD_PIE_HISTORY_KEYS,
   POSTCARD_PIE_HISTORY_TOOLBAR,
 } from '../types/postcardPie.types'
+import {
+  initialUserPanelToolbarState,
+  USER_PANEL_KEYS,
+  USER_PANEL_TOOLBAR,
+} from '../types/userPanel.types'
 
 export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardphoto: {
@@ -547,5 +552,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'panelMiniSections',
     getBadges: (state: ToolbarState['panelMiniSections']) => ({}),
     toolbar: PANEL_MINI_SECTIONS_TOOLBAR,
+  },
+
+  userPanel: {
+    keys: USER_PANEL_KEYS,
+    initialState: initialUserPanelToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'userPanel',
+    getBadges: (state: ToolbarState['userPanel']) => ({}),
+    toolbar: USER_PANEL_TOOLBAR,
   },
 }

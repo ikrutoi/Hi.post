@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useId, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -30,7 +37,23 @@ function readImageFileAsObjectUrl(file: File): string {
   return URL.createObjectURL(file)
 }
 
-export const UserAvatarPicker: React.FC = () => {
+export type UserAvatarChangePhotoToolbarActions = {
+  confirmCrop: () => void
+  openFilePicker: () => void
+  saving: boolean
+}
+
+export const UserAvatarPicker: React.FC<{
+  onCropModeChange?: (active: boolean) => void
+  onChangePhotoCropActive?: (active: boolean) => void
+  onChangePhotoCropToolbarActions?: (
+    actions: UserAvatarChangePhotoToolbarActions | null,
+  ) => void
+}> = ({
+  onCropModeChange,
+  onChangePhotoCropActive,
+  onChangePhotoCropToolbarActions,
+}) => {
   const dispatch = useAppDispatch()
   const avatarUrl = useAppSelector(selectAuthUserAvatarUrl)
   const authError = useAppSelector(selectAuthError)
@@ -40,6 +63,9 @@ export const UserAvatarPicker: React.FC = () => {
   const [localError, setLocalError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null)
+  const confirmCropRef = useRef<(() => Promise<void>) | null>(null)
+  const isChangePhotoCrop =
+    cropImageUrl != null && avatarUrl != null && cropImageUrl === avatarUrl
 
   const clearCropImage = useCallback(() => {
     if (cropObjectUrlRef.current) {
@@ -50,6 +76,35 @@ export const UserAvatarPicker: React.FC = () => {
   }, [])
 
   useEffect(() => () => clearCropImage(), [clearCropImage])
+
+  useLayoutEffect(() => {
+    onCropModeChange?.(cropImageUrl != null)
+    onChangePhotoCropActive?.(isChangePhotoCrop)
+  }, [cropImageUrl, isChangePhotoCrop, onChangePhotoCropActive, onCropModeChange])
+
+  useLayoutEffect(() => {
+    if (!isChangePhotoCrop) {
+      onChangePhotoCropToolbarActions?.(null)
+      return
+    }
+
+    onChangePhotoCropToolbarActions?.({
+      confirmCrop: () => {
+        void confirmCropRef.current?.()
+      },
+      openFilePicker: () => inputRef.current?.click(),
+      saving,
+    })
+  }, [isChangePhotoCrop, onChangePhotoCropToolbarActions, saving])
+
+  const handleOpenExistingAvatar = useCallback(() => {
+    if (!avatarUrl || saving) return
+
+    setLocalError(null)
+    dispatch(clearAuthError())
+    clearCropImage()
+    setCropImageUrl(avatarUrl)
+  }, [avatarUrl, clearCropImage, dispatch, saving])
 
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,32 +153,22 @@ export const UserAvatarPicker: React.FC = () => {
     [clearCropImage, dispatch],
   )
 
-  const handleRemove = useCallback(async () => {
-    setLocalError(null)
-    dispatch(clearAuthError())
-    setPreviewFailed(false)
-    clearCropImage()
-
-    try {
-      setSaving(true)
-      await dispatch(updateAvatarThunk(null)).unwrap()
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to remove avatar'
-      setLocalError(message)
-    } finally {
-      setSaving(false)
-    }
-  }, [clearCropImage, dispatch])
-
   const errorMessage = localError ?? authError
+  const chooseControlClassName = clsx(
+    styles.chooseControl,
+    saving && styles.chooseControlDisabled,
+  )
 
   if (cropImageUrl) {
     return (
-      <div className={styles.root}>
+      <div className={clsx(styles.root, styles.rootCropActive)}>
         <UserAvatarCropView
           imageUrl={cropImageUrl}
           saving={saving}
+          showActions={!isChangePhotoCrop}
+          onRegisterConfirm={(confirm) => {
+            confirmCropRef.current = confirm
+          }}
           onConfirm={handleCropConfirm}
           onCancel={handleCropCancel}
         />
@@ -139,32 +184,30 @@ export const UserAvatarPicker: React.FC = () => {
   return (
     <div className={styles.root}>
       <div className={styles.previewRow}>
-        <label
-          htmlFor={inputId}
-          className={clsx(
-            styles.chooseControl,
-            saving && styles.chooseControlDisabled,
-          )}
-        >
-          <span className={styles.previewSlot} aria-hidden>
-            <span className={styles.previewFallback}>
-              {getToolbarIcon({ key: 'userLoginAdd' })}
-            </span>
-          </span>
-          <span className={styles.chooseLabel}>
-            {avatarUrl ? 'Change photo' : 'Choose photo'}
-          </span>
-        </label>
         {avatarUrl ? (
           <button
             type="button"
-            className={styles.removeButton}
+            className={chooseControlClassName}
             disabled={saving}
-            onClick={handleRemove}
+            onClick={handleOpenExistingAvatar}
           >
-            Remove
+            <span className={styles.previewSlot} aria-hidden>
+              <span className={styles.previewFallback}>
+                {getToolbarIcon({ key: 'userLoginAdd' })}
+              </span>
+            </span>
+            <span className={styles.chooseLabel}>Change photo</span>
           </button>
-        ) : null}
+        ) : (
+          <label htmlFor={inputId} className={chooseControlClassName}>
+            <span className={styles.previewSlot} aria-hidden>
+              <span className={styles.previewFallback}>
+                {getToolbarIcon({ key: 'userLoginAdd' })}
+              </span>
+            </span>
+            <span className={styles.chooseLabel}>Choose photo</span>
+          </label>
+        )}
       </div>
       <input
         ref={inputRef}

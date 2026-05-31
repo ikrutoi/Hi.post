@@ -1,8 +1,10 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
+import type { IconKey } from '@shared/config/constants'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   clearAuthError,
@@ -13,7 +15,10 @@ import {
   selectAuthUser,
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
-import { UserAvatarPicker } from './UserAvatarPicker'
+import {
+  UserAvatarPicker,
+  type UserAvatarChangePhotoToolbarActions,
+} from './UserAvatarPicker'
 import {
   GuestAuthSection,
   type GuestAuthMode,
@@ -25,7 +30,57 @@ export const UserLoginPanel: React.FC = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const user = useAppSelector(selectAuthUser)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [avatarCropActive, setAvatarCropActive] = useState(false)
+  const [changePhotoCropActive, setChangePhotoCropActive] = useState(false)
+  const [changePhotoCropToolbar, setChangePhotoCropToolbar] =
+    useState<UserAvatarChangePhotoToolbarActions | null>(null)
   const [guestAuthMode, setGuestAuthMode] = useState<GuestAuthMode>('signIn')
+
+  const handleChangePhotoCropActive = useCallback((active: boolean) => {
+    setChangePhotoCropActive(active)
+  }, [])
+
+  const handleChangePhotoCropToolbarActions = useCallback(
+    (actions: UserAvatarChangePhotoToolbarActions | null) => {
+      setChangePhotoCropToolbar(actions)
+    },
+    [],
+  )
+
+  const userPanelToolbarStateOverride = useMemo(
+    () => ({
+      applyLight: {
+        state: changePhotoCropToolbar?.saving ? 'disabled' : 'enabled',
+        options: {},
+      },
+      editLight: {
+        state: changePhotoCropToolbar?.saving ? 'disabled' : 'enabled',
+        options: {},
+      },
+    }),
+    [changePhotoCropToolbar?.saving],
+  )
+
+  const handleUserPanelToolbarAction = useCallback(
+    (key: IconKey) => {
+      if (key === 'applyLight') {
+        changePhotoCropToolbar?.confirmCrop()
+        return false
+      }
+      if (key === 'editLight') {
+        changePhotoCropToolbar?.openFilePicker()
+        return false
+      }
+    },
+    [changePhotoCropToolbar],
+  )
+
+  const handleAvatarCropModeChange = useCallback((active: boolean) => {
+    setAvatarCropActive(active)
+    if (active) {
+      setProfileOpen(false)
+    }
+  }, [])
 
   const handleGuestAuthModeChange = useCallback(
     (mode: GuestAuthMode) => {
@@ -58,7 +113,11 @@ export const UserLoginPanel: React.FC = () => {
 
   return (
     <div
-      className={clsx(styles.panel, !isAuthenticated && styles.panelNoFooter)}
+      className={clsx(
+        styles.panel,
+        !isAuthenticated && styles.panelNoFooter,
+        !changePhotoCropActive && styles.panelCompactNoToolbar,
+      )}
     >
       <ListPanelStackedHeader
         leadIconKey="userLogin"
@@ -69,20 +128,40 @@ export const UserLoginPanel: React.FC = () => {
             </span>
           </div>
         }
-        showDividerWithoutToolbar
+        toolbar={
+          changePhotoCropActive ? (
+            <Toolbar
+              section="userPanel"
+              stateOverride={userPanelToolbarStateOverride}
+              onActionClick={handleUserPanelToolbarAction}
+            />
+          ) : (
+            false
+          )
+        }
+        showDividerWithoutToolbar={!changePhotoCropActive}
         onClose={handleClose}
         closeAriaLabel="Close account panel"
       />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div
-          className={styles.content}
+          className={clsx(
+            styles.content,
+            changePhotoCropActive && styles.contentCropMode,
+          )}
           aria-label={isAuthenticated ? 'Signed-in user' : 'Sign in'}
         >
           {isAuthenticated ? (
             <>
-              <UserAvatarPicker />
-              {user?.name && user?.email ? (
+              <UserAvatarPicker
+                onCropModeChange={handleAvatarCropModeChange}
+                onChangePhotoCropActive={handleChangePhotoCropActive}
+                onChangePhotoCropToolbarActions={
+                  handleChangePhotoCropToolbarActions
+                }
+              />
+              {!avatarCropActive && user?.name && user?.email ? (
                 <div className={styles.menu}>
                   <button
                     type="button"

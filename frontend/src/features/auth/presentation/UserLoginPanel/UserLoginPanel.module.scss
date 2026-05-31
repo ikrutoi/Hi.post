@@ -1,6 +1,7 @@
 @use '@styles/config/colors' as *;
 
 $list-panel-compact-header-band: 2.35rem;
+$list-panel-stacked-band: 3.75rem;
 $list-panel-header-lead-row: 1.75rem;
 $list-panel-scroll-inset: 0.35rem;
 $list-panel-list-footer-gap: 1px;
@@ -11,7 +12,7 @@ $list-panel-list-footer-gap: 1px;
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  padding-top: $list-panel-compact-header-band;
+  padding-top: $list-panel-stacked-band;
   padding-bottom: calc(
     #{$list-panel-header-lead-row} + #{$list-panel-list-footer-gap}
   );
@@ -29,9 +30,17 @@ $list-panel-list-footer-gap: 1px;
   }
 }
 
+.panelCompactNoToolbar {
+  padding-top: $list-panel-compact-header-band;
+
+  .panelScrollTrack {
+    top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
+  }
+}
+
 .panelScrollTrack {
   position: absolute;
-  top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});
+  top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
   bottom: calc(
     #{$list-panel-header-lead-row} - #{$list-panel-scroll-inset} + #{$list-panel-list-footer-gap}
   );
@@ -72,6 +81,10 @@ $list-panel-list-footer-gap: 1px;
   gap: 0.75rem;
   min-height: 100%;
   padding: 1rem 0.75rem 0.5rem 0.75rem;
+}
+
+.contentCropMode {
+  padding-top: 0.5rem;
 }
 
 .guestHint {

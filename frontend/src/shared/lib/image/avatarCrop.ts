@@ -20,7 +20,7 @@ export function getInitialAvatarCropState(
   imageWidth: number,
   imageHeight: number,
   viewportSize: number,
-): { zoom: number; position: { x: number; y: number } } {
+): { position: { x: number; y: number } } {
   const baseScale = Math.max(
     viewportSize / imageWidth,
     viewportSize / imageHeight,
@@ -29,7 +29,6 @@ export function getInitialAvatarCropState(
   const displayHeight = imageHeight * baseScale
 
   return {
-    zoom: 1,
     position: {
       x: (viewportSize - displayWidth) / 2,
       y: (viewportSize - displayHeight) / 2,
@@ -41,7 +40,6 @@ export function getAvatarImageDisplaySize(
   imageWidth: number,
   imageHeight: number,
   viewportSize: number,
-  zoom: number,
 ): { width: number; height: number; baseScale: number } {
   const baseScale = Math.max(
     viewportSize / imageWidth,
@@ -49,8 +47,8 @@ export function getAvatarImageDisplaySize(
   )
   return {
     baseScale,
-    width: imageWidth * baseScale * zoom,
-    height: imageHeight * baseScale * zoom,
+    width: imageWidth * baseScale,
+    height: imageHeight * baseScale,
   }
 }
 
@@ -73,14 +71,12 @@ export function getAvatarCropPixels(
   imageWidth: number,
   imageHeight: number,
   viewportSize: number,
-  zoom: number,
   position: { x: number; y: number },
 ): AvatarCropPixels {
   const { width: displayWidth } = getAvatarImageDisplaySize(
     imageWidth,
     imageHeight,
     viewportSize,
-    zoom,
   )
   const scale = displayWidth / imageWidth
   const cropSize = viewportSize / scale
