@@ -1,5 +1,9 @@
 @use '@styles/config/colors' as *;
 
+// Visual size aligned with sectionEditorMenu toolbar icons (~inner glyph * sidebar scale).
+$auth-password-toggle-icon-size: 1.1rem;
+$auth-password-toggle-hit-size: 1.7rem;
+
 .form {
   display: flex;
   flex-direction: column;
@@ -44,7 +48,7 @@
 }
 
 .passwordField .input {
-  padding-right: 2.75rem;
+  padding-right: calc(0.5rem + #{$auth-password-toggle-hit-size} + 0.25rem);
 
   &:focus::placeholder {
     opacity: 0;
@@ -58,8 +62,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: $auth-password-toggle-hit-size;
+  height: $auth-password-toggle-hit-size;
   padding: 0;
   border: none;
   border-radius: 0.35rem;
@@ -74,8 +78,8 @@
 }
 
 .passwordToggleIcon {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: $auth-password-toggle-icon-size;
+  height: $auth-password-toggle-icon-size;
 }
 
 .error {
@@ -88,7 +92,7 @@
 .secondaryButton {
   width: 100%;
   padding: 0.48rem 0.75rem;
-  border-radius: 0.5rem;
+  border-radius: 4px;
   font: inherit;
   box-sizing: border-box;
   cursor: pointer;
