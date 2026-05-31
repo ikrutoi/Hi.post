@@ -38,7 +38,6 @@ export const UserAvatarPicker: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null)
   const cropObjectUrlRef = useRef<string | null>(null)
   const [localError, setLocalError] = useState<string | null>(null)
-  const [previewFailed, setPreviewFailed] = useState(false)
   const [saving, setSaving] = useState(false)
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null)
 
@@ -60,7 +59,6 @@ export const UserAvatarPicker: React.FC = () => {
 
       setLocalError(null)
       dispatch(clearAuthError())
-      setPreviewFailed(false)
       clearCropImage()
 
       try {
@@ -119,7 +117,6 @@ export const UserAvatarPicker: React.FC = () => {
   }, [clearCropImage, dispatch])
 
   const errorMessage = localError ?? authError
-  const showPreview = Boolean(avatarUrl) && !previewFailed
 
   if (cropImageUrl) {
     return (
@@ -150,18 +147,9 @@ export const UserAvatarPicker: React.FC = () => {
           )}
         >
           <span className={styles.previewSlot} aria-hidden>
-            {showPreview ? (
-              <img
-                src={avatarUrl ?? undefined}
-                alt=""
-                className={styles.previewImage}
-                onError={() => setPreviewFailed(true)}
-              />
-            ) : (
-              <span className={styles.previewFallback}>
-                {getToolbarIcon({ key: 'userLoginAdd' })}
-              </span>
-            )}
+            <span className={styles.previewFallback}>
+              {getToolbarIcon({ key: 'userLoginAdd' })}
+            </span>
           </span>
           <span className={styles.chooseLabel}>
             {avatarUrl ? 'Change photo' : 'Choose photo'}

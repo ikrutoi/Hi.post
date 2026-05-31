@@ -11,7 +11,6 @@ import {
 } from '@features/auth/infrastructure/state/auth.slice'
 import {
   selectAuthUser,
-  selectAuthUserAvatarUrl,
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
 import { UserAvatarPicker } from './UserAvatarPicker'
@@ -25,7 +24,6 @@ export const UserLoginPanel: React.FC = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const user = useAppSelector(selectAuthUser)
-  const avatarUrl = useAppSelector(selectAuthUserAvatarUrl)
   const [profileOpen, setProfileOpen] = useState(false)
   const [guestAuthMode, setGuestAuthMode] = useState<GuestAuthMode>('signIn')
 
@@ -64,11 +62,6 @@ export const UserLoginPanel: React.FC = () => {
     >
       <ListPanelStackedHeader
         leadIconKey="userLogin"
-        leadIconOverride={
-          isAuthenticated && avatarUrl ? (
-            <img src={avatarUrl} alt="" className={styles.headerAvatar} />
-          ) : undefined
-        }
         headerTopCenter={
           <div className={styles.headerUserNameWrap}>
             <span className={styles.headerUserName}>
