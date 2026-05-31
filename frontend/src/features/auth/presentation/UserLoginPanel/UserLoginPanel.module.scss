@@ -82,38 +82,85 @@ $list-panel-list-footer-gap: 1px;
 }
 
 .authModeSwitch {
+  position: relative;
   display: flex;
-  gap: 0.1rem;
-  padding: 0.1rem;
-  border-radius: 0.5rem;
-  background-color: $color-app-strip;
-}
-
-.authModeButton {
-  flex: 1;
-  padding: 0.48rem 0.5rem;
-  border: none;
-  border-radius: 0.42rem;
-  background: transparent;
-  font: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1.2;
-  color: $color-font-enabled-light;
-  cursor: pointer;
-  transition:
-    color 0.15s ease,
-    background-color 0.15s ease;
+  align-items: stretch;
+  width: 100%;
+  height: 1.8rem;
+  border-radius: 2rem;
+  background-color: #fff;
+  border: 1px solid $color-section-light;
+  gap: 0.2rem;
+  transition: border-color 0.2s ease;
 
   &:hover {
-    color: $color-font-enabled;
+    border-color: $color-section-dark;
   }
 }
 
-.authModeButtonActive {
-  background-color: #fff;
+.authModeThumb {
+  position: absolute;
+  top: calc(50% + 0.18rem);
+  width: 50%;
+  height: 2.08rem;
+  margin-top: -1.04rem;
+  border-radius: 1.04rem;
+  background-color: $color-disabled-light;
+  border: 1px solid $color-hover;
+  pointer-events: none;
+  z-index: 1;
+  transform: translateY(-3px) scale(1);
+  transition:
+    left 0.25s cubic-bezier(0.33, 1, 0.68, 1),
+    transform 0.25s ease;
+}
+
+.authModeThumbSignIn {
+  left: -0.1rem;
+}
+
+.authModeThumbRegister {
+  left: calc(50% + 0.06rem);
+}
+
+.authModeSegment {
+  flex: 1 1 50%;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.4rem;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 1.5rem;
+  background-color: transparent;
+  color: $color-font-enabled-light;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  z-index: 2;
+  position: relative;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+}
+
+.authModeSegmentActive {
   color: $color-font-enabled;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.authModeSegmentValue {
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.1;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .menu {

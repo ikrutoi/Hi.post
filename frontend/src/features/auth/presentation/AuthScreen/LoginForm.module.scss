@@ -22,14 +22,19 @@
   width: 100%;
   padding: 0.48rem 0.75rem;
   border: 1px solid $color-app-substrate-border;
-  border-radius: 0.5rem;
+  border-radius: 4px;
   background: #fff;
   color: $color-font-enabled;
   font: inherit;
   box-sizing: border-box;
 
   &:focus {
-    outline: 2px solid rgba($color-active, 0.35);
+    outline: none;
+    border-color: $color-active;
+  }
+
+  &:focus-visible {
+    outline: none;
     border-color: $color-active;
   }
 }

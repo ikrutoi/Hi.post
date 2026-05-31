@@ -94,6 +94,11 @@ export const SENDER_CREATE_TOOLBAR: ToolbarConfig = [
     ],
     status: 'enabled',
   },
+  {
+    group: 'close',
+    icons: [{ key: 'close', state: 'enabled' }],
+    status: 'enabled',
+  },
 ]
 
 export const RECIPIENT_CREATE_TOOLBAR: ToolbarConfig = [
@@ -103,6 +108,11 @@ export const RECIPIENT_CREATE_TOOLBAR: ToolbarConfig = [
       // { key: 'addList', state: 'disabled' },
       { key: 'applyLight', state: 'disabled' },
     ],
+    status: 'enabled',
+  },
+  {
+    group: 'close',
+    icons: [{ key: 'close', state: 'enabled' }],
     status: 'enabled',
   },
 ]
