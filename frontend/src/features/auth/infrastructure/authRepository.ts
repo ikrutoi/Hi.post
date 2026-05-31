@@ -9,6 +9,7 @@ import { mockAuthRepository } from './mockAuthRepository'
 export interface AuthRepository {
   login(payload: LoginPayload): Promise<AuthResponse>
   register(payload: RegisterPayload): Promise<AuthResponse>
+  updateAvatar(userId: string, avatarUrl: string | null): Promise<void>
 }
 
 export function getAuthRepository(): AuthRepository {

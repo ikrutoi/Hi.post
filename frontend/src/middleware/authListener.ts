@@ -1,6 +1,6 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit'
 import type { AuthResponse } from '@features/auth/domain/types/auth.types'
-import { registerThunk, loginThunk } from '@features/auth/store/auth.thunks'
+import { registerThunk, loginThunk, updateAvatarThunk } from '@features/auth/store/auth.thunks'
 import { logout, setAuth } from '@/features/auth/infrastructure/state/auth.slice'
 import {
   clearAuthSession,
@@ -38,5 +38,18 @@ authListenerMiddleware.startListening({
   actionCreator: logout,
   effect: async () => {
     clearAuthSession()
+  },
+})
+
+authListenerMiddleware.startListening({
+  actionCreator: updateAvatarThunk.fulfilled,
+  effect: async (_action, listenerApi) => {
+    const state = listenerApi.getState() as {
+      auth: { user: AuthResponse['user']; token: string | null }
+    }
+    const { user, token } = state.auth
+    if (user?.id && token) {
+      saveAuthSession({ user, token })
+    }
   },
 })

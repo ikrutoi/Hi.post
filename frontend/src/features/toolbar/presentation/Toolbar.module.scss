@@ -1088,6 +1088,15 @@
       height: 1.1rem;
     }
 
+    .toolbarUserAvatar {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      flex-shrink: 0;
+    }
+
     &.toolbarKeyEnabled {
       color: $color-font-enabled-light;
       cursor: pointer;

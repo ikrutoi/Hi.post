@@ -13,6 +13,7 @@ type MockStoredUser = {
   name: string
   email: string
   password: string
+  avatarUrl?: string
 }
 
 const DEV_USER: MockStoredUser = {
@@ -73,6 +74,7 @@ function toAuthResponse(user: MockStoredUser): AuthResponse {
     id: user.id,
     name: user.name,
     email: user.email,
+    avatarUrl: user.avatarUrl ?? null,
   }
   return {
     user: profile,
@@ -120,5 +122,25 @@ export const mockAuthRepository: AuthRepository = {
 
     writeMockUsers([...readMockUsers(), nextUser])
     return toAuthResponse(nextUser)
+  },
+
+  async updateAvatar(userId, avatarUrl) {
+    await delay(120)
+    const users = readMockUsers()
+    const index = users.findIndex((user) => user.id === userId)
+    if (index === -1) {
+      throw new Error('User not found')
+    }
+
+    const next = { ...users[index] }
+    if (avatarUrl) {
+      next.avatarUrl = avatarUrl
+    } else {
+      delete next.avatarUrl
+    }
+
+    const updated = [...users]
+    updated[index] = next
+    writeMockUsers(updated)
   },
 }

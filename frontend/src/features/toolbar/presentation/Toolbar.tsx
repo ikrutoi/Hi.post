@@ -39,6 +39,10 @@ import {
   selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
 import {
+  selectAuthUserAvatarUrl,
+  selectIsAuthenticated,
+} from '@features/auth/infrastructure/selectors/authSelectors'
+import {
   selectRecipientAddressListPanelDensity,
   selectSenderAddressListPanelDensity,
   selectRecipientViewEditMode,
@@ -53,6 +57,7 @@ import type {
 import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
 import { CropQualityMeter } from './CropQualityMeter'
+import { UserLoginToolbarIcon } from './UserLoginToolbarIcon'
 import styles from './Toolbar.module.scss'
 
 export const Toolbar = ({
@@ -207,6 +212,8 @@ export const Toolbar = ({
   )
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
+  const isAuthenticated = useAppSelector(selectIsAuthenticated)
+  const authUserAvatarUrl = useAppSelector(selectAuthUserAvatarUrl)
 
   useEffect(() => {
     if (groupRef.current) {
@@ -453,36 +460,43 @@ export const Toolbar = ({
           }
         }}
       >
-        {getToolbarIcon({
-          key: effectiveIconKey as IconKey,
-          checkBoxChecked:
-            section === 'cartList' &&
-            effectiveIconKey === 'checkBox' &&
-            buttonStatus === 'active',
-          listCheckTickChecked: showCreateListCheck,
-          step: fontSizeStep,
-          sortDirection: key === 'sortDown' ? sortIconDirection : undefined,
-          listTemplateDensityCols:
-            section === 'cardphotoList' && key === 'density'
-              ? cardphotoListTemplateGridCols
-              : undefined,
-          historyPanelDensitySize:
-            section === 'historyList' && key === 'historyPanelDensity'
-              ? historyListPanelDensity
-              : undefined,
-          panelDensity2Size:
-            section === 'historyList' && key === 'panelDensity2'
-              ? historyListPanelDensity
-              : section === 'cardtextList' && key === 'panelDensity2'
-                ? cardtextListPanelDensity
-                : section === 'addressListSender' && key === 'panelDensity2'
-                  ? senderAddressListPanelDensity
-                  : (section === 'addressListRecipient' ||
-                      section === 'addressListRecipients') &&
-                      key === 'panelDensity2'
-                    ? recipientAddressListPanelDensity
-                    : undefined,
-        })}
+        {section === 'rightSidebar' &&
+        key === 'userLogin' &&
+        isAuthenticated &&
+        authUserAvatarUrl ? (
+          <UserLoginToolbarIcon avatarUrl={authUserAvatarUrl} />
+        ) : (
+          getToolbarIcon({
+            key: effectiveIconKey as IconKey,
+            checkBoxChecked:
+              section === 'cartList' &&
+              effectiveIconKey === 'checkBox' &&
+              buttonStatus === 'active',
+            listCheckTickChecked: showCreateListCheck,
+            step: fontSizeStep,
+            sortDirection: key === 'sortDown' ? sortIconDirection : undefined,
+            listTemplateDensityCols:
+              section === 'cardphotoList' && key === 'density'
+                ? cardphotoListTemplateGridCols
+                : undefined,
+            historyPanelDensitySize:
+              section === 'historyList' && key === 'historyPanelDensity'
+                ? historyListPanelDensity
+                : undefined,
+            panelDensity2Size:
+              section === 'historyList' && key === 'panelDensity2'
+                ? historyListPanelDensity
+                : section === 'cardtextList' && key === 'panelDensity2'
+                  ? cardtextListPanelDensity
+                  : section === 'addressListSender' && key === 'panelDensity2'
+                    ? senderAddressListPanelDensity
+                    : (section === 'addressListRecipient' ||
+                          section === 'addressListRecipients') &&
+                        key === 'panelDensity2'
+                      ? recipientAddressListPanelDensity
+                      : undefined,
+          })
+        )}
 
         {hasBadge && (
           <span className={styles.toolbarBadge}>

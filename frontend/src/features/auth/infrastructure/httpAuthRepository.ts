@@ -20,4 +20,8 @@ export const httpAuthRepository: AuthRepository = {
     })
     return response.data
   },
+
+  async updateAvatar(_userId, _avatarUrl) {
+    throw new Error('Avatar upload is not available in HTTP auth mode yet')
+  },
 }

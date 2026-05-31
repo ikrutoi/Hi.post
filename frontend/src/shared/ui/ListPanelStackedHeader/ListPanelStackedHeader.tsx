@@ -7,6 +7,8 @@ import styles from './ListPanelStackedHeader.module.scss'
 
 export type ListPanelStackedHeaderProps = {
   leadIconKey: IconKey
+  /** Replaces the default lead toolbar icon (e.g. user avatar). */
+  leadIconOverride?: ReactNode
   /**
    * Контент по центру верхней строки (между ведущей иконкой и закрытием),
    * например переключатели сегментов в списке корзины.
@@ -24,6 +26,7 @@ export type ListPanelStackedHeaderProps = {
 
 export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   leadIconKey,
+  leadIconOverride,
   headerTopCenter,
   toolbar,
   showDividerWithoutToolbar = false,
@@ -50,7 +53,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
           aria-hidden
           data-icon-state="disabled"
         >
-          {getToolbarIcon({ key: leadIconKey })}
+          {leadIconOverride ?? getToolbarIcon({ key: leadIconKey })}
         </div>
         <div
           className={styles.headerTopCenterSlot}

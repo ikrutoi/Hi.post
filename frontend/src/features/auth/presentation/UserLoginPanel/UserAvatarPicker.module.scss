@@ -1,0 +1,108 @@
+@use '@styles/config/colors' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.previewRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.previewSlot {
+  flex-shrink: 0;
+  width: 3rem;
+  height: 3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: $color-app-strip;
+  overflow: hidden;
+}
+
+.previewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.previewFallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-font-enabled-light;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  min-width: 0;
+}
+
+.chooseButton,
+.removeButton {
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.chooseButton {
+  color: $color-font-enabled;
+
+  &:hover {
+    color: $color-font-enabled-light-hover;
+  }
+}
+
+.removeButton {
+  color: $color-font-enabled-light;
+
+  &:hover:not(:disabled) {
+    color: $color-font-enabled;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.75rem;
+  color: $color-preview-indicator-error;
+  line-height: 1.3;
+}
+
+.errorVisible {
+  display: block;
+}
