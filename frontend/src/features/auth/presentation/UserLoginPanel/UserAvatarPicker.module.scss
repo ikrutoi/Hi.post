@@ -9,18 +9,46 @@
 .previewRow {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.chooseControl {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: -0.25rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: $color-font-enabled-light;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $color-font-enabled;
+  }
+}
+
+.chooseControlDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.chooseLabel {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .previewSlot {
   flex-shrink: 0;
-  width: 3rem;
-  height: 3rem;
+  width: 1.7rem;
+  height: 1.7rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: $color-app-strip;
   overflow: hidden;
 }
 
@@ -35,23 +63,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: $color-font-enabled-light;
+  color: inherit;
+  transform: translateX(-0.12rem);
 
   svg {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.2rem;
+    height: 1.2rem;
   }
 }
 
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 0.75rem;
-  min-width: 0;
-}
-
-.chooseButton,
 .removeButton {
   padding: 0;
   border: none;
@@ -60,19 +80,9 @@
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.2;
-  cursor: pointer;
-}
-
-.chooseButton {
-  color: $color-font-enabled;
-
-  &:hover {
-    color: $color-font-enabled-light-hover;
-  }
-}
-
-.removeButton {
   color: $color-font-enabled-light;
+  cursor: pointer;
+  transition: color 0.15s ease;
 
   &:hover:not(:disabled) {
     color: $color-font-enabled;

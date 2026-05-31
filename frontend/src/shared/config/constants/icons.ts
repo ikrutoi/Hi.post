@@ -120,6 +120,7 @@ export const ICON_KEYS = [
   'editLight',
   'sortAZDown',
   'sortAZUp',
+  'userLoginAdd',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -8,6 +8,7 @@ import {
 } from '@features/auth/infrastructure/selectors/authSelectors'
 import { clearAuthError } from '@features/auth/infrastructure/state/auth.slice'
 import { updateAvatarThunk } from '@features/auth/store/auth.thunks'
+import { UserAvatarCropView } from './UserAvatarCropView'
 import styles from './UserAvatarPicker.module.scss'
 
 const ACCEPTED_IMAGE_TYPES = [
@@ -17,9 +18,7 @@ const ACCEPTED_IMAGE_TYPES = [
   'image/gif',
 ] as const
 
-const MAX_AVATAR_BYTES = 512 * 1024
-
-async function readImageFileAsDataUrl(file: File): Promise<string> {
+function readImageFileAsObjectUrl(file: File): string {
   if (
     !ACCEPTED_IMAGE_TYPES.includes(
       file.type as (typeof ACCEPTED_IMAGE_TYPES)[number],
@@ -28,22 +27,7 @@ async function readImageFileAsDataUrl(file: File): Promise<string> {
     throw new Error('Choose a JPEG, PNG, WebP, or GIF image')
   }
 
-  if (file.size > MAX_AVATAR_BYTES) {
-    throw new Error('Image must be smaller than 512 KB')
-  }
-
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        resolve(reader.result)
-        return
-      }
-      reject(new Error('Could not read image'))
-    }
-    reader.onerror = () => reject(new Error('Could not read image'))
-    reader.readAsDataURL(file)
-  })
+  return URL.createObjectURL(file)
 }
 
 export const UserAvatarPicker: React.FC = () => {
@@ -52,18 +36,24 @@ export const UserAvatarPicker: React.FC = () => {
   const authError = useAppSelector(selectAuthError)
   const inputId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
+  const cropObjectUrlRef = useRef<string | null>(null)
   const [localError, setLocalError] = useState<string | null>(null)
   const [previewFailed, setPreviewFailed] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [cropImageUrl, setCropImageUrl] = useState<string | null>(null)
 
-  const handleChooseClick = useCallback(() => {
-    setLocalError(null)
-    dispatch(clearAuthError())
-    inputRef.current?.click()
-  }, [dispatch])
+  const clearCropImage = useCallback(() => {
+    if (cropObjectUrlRef.current) {
+      URL.revokeObjectURL(cropObjectUrlRef.current)
+      cropObjectUrlRef.current = null
+    }
+    setCropImageUrl(null)
+  }, [])
+
+  useEffect(() => () => clearCropImage(), [clearCropImage])
 
   const handleFileChange = useCallback(
-    async (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0]
       event.target.value = ''
       if (!file) return
@@ -71,11 +61,34 @@ export const UserAvatarPicker: React.FC = () => {
       setLocalError(null)
       dispatch(clearAuthError())
       setPreviewFailed(false)
+      clearCropImage()
 
       try {
-        const dataUrl = await readImageFileAsDataUrl(file)
+        const objectUrl = readImageFileAsObjectUrl(file)
+        cropObjectUrlRef.current = objectUrl
+        setCropImageUrl(objectUrl)
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Failed to open image'
+        setLocalError(message)
+      }
+    },
+    [clearCropImage, dispatch],
+  )
+
+  const handleCropCancel = useCallback(() => {
+    clearCropImage()
+  }, [clearCropImage])
+
+  const handleCropConfirm = useCallback(
+    async (dataUrl: string) => {
+      setLocalError(null)
+      dispatch(clearAuthError())
+
+      try {
         setSaving(true)
         await dispatch(updateAvatarThunk(dataUrl)).unwrap()
+        clearCropImage()
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Failed to update avatar'
@@ -84,13 +97,14 @@ export const UserAvatarPicker: React.FC = () => {
         setSaving(false)
       }
     },
-    [dispatch],
+    [clearCropImage, dispatch],
   )
 
   const handleRemove = useCallback(async () => {
     setLocalError(null)
     dispatch(clearAuthError())
     setPreviewFailed(false)
+    clearCropImage()
 
     try {
       setSaving(true)
@@ -102,43 +116,67 @@ export const UserAvatarPicker: React.FC = () => {
     } finally {
       setSaving(false)
     }
-  }, [dispatch])
+  }, [clearCropImage, dispatch])
 
   const errorMessage = localError ?? authError
   const showPreview = Boolean(avatarUrl) && !previewFailed
 
+  if (cropImageUrl) {
+    return (
+      <div className={styles.root}>
+        <UserAvatarCropView
+          imageUrl={cropImageUrl}
+          saving={saving}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+        />
+        {errorMessage ? (
+          <p className={clsx(styles.error, styles.errorVisible)} role="alert">
+            {errorMessage}
+          </p>
+        ) : null}
+      </div>
+    )
+  }
+
   return (
     <div className={styles.root}>
       <div className={styles.previewRow}>
-        <div className={styles.previewSlot} aria-hidden>
-          {showPreview ? (
-            <img
-              src={avatarUrl ?? undefined}
-              alt=""
-              className={styles.previewImage}
-              onError={() => setPreviewFailed(true)}
-            />
-          ) : (
-            <span className={styles.previewFallback}>
-              {getToolbarIcon({ key: 'userLogin' })}
-            </span>
+        <label
+          htmlFor={inputId}
+          className={clsx(
+            styles.chooseControl,
+            saving && styles.chooseControlDisabled,
           )}
-        </div>
-        <div className={styles.actions}>
-          <label htmlFor={inputId} className={styles.chooseButton}>
+        >
+          <span className={styles.previewSlot} aria-hidden>
+            {showPreview ? (
+              <img
+                src={avatarUrl ?? undefined}
+                alt=""
+                className={styles.previewImage}
+                onError={() => setPreviewFailed(true)}
+              />
+            ) : (
+              <span className={styles.previewFallback}>
+                {getToolbarIcon({ key: 'userLoginAdd' })}
+              </span>
+            )}
+          </span>
+          <span className={styles.chooseLabel}>
             {avatarUrl ? 'Change photo' : 'Choose photo'}
-          </label>
-          {avatarUrl ? (
-            <button
-              type="button"
-              className={styles.removeButton}
-              disabled={saving}
-              onClick={handleRemove}
-            >
-              Remove
-            </button>
-          ) : null}
-        </div>
+          </span>
+        </label>
+        {avatarUrl ? (
+          <button
+            type="button"
+            className={styles.removeButton}
+            disabled={saving}
+            onClick={handleRemove}
+          >
+            Remove
+          </button>
+        ) : null}
       </div>
       <input
         ref={inputRef}

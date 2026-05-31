@@ -21,7 +21,7 @@ export const LoginForm: React.FC = () => {
   const dispatch = useAppDispatch()
   const loading = useAppSelector(selectAuthLoading)
   const error = useAppSelector(selectAuthError)
-  const [email, setEmail] = useState(DEV_LOGIN.email)
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
@@ -61,7 +61,6 @@ export const LoginForm: React.FC = () => {
           autoComplete="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="you@example.com"
           required
         />
       </label>

@@ -1,0 +1,93 @@
+@use '@styles/config/colors' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.viewport {
+  position: relative;
+  width: 100%;
+  max-width: 12rem;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: $color-app-inner;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.imageLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  will-change: transform;
+}
+
+.image {
+  display: block;
+  max-width: none;
+}
+
+.zoomRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 12rem;
+}
+
+.zoomLabel {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: $color-font-enabled-light;
+}
+
+.zoomSlider {
+  flex: 1;
+  min-width: 0;
+  accent-color: $color-active;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  flex: 1;
+  padding: 0.48rem 0.75rem;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 0.8125rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    opacity 0.15s ease;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.primaryButton {
+  border: none;
+  background: $color-active;
+  color: #fff;
+}
+
+.secondaryButton {
+  border: 1px solid $color-app-substrate-border;
+  background: transparent;
+  color: $color-font-enabled;
+}

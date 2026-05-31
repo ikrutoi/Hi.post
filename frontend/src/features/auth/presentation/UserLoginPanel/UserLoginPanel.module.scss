@@ -183,22 +183,25 @@ $list-panel-list-footer-gap: 1px;
   justify-content: space-between;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.35rem 0;
+  margin-left: -0.25rem;
+  padding: 0;
   border: none;
   background: transparent;
   font: inherit;
-  color: $color-font-enabled;
+  color: $color-font-enabled-light;
   cursor: pointer;
   text-align: left;
+  transition: color 0.15s ease;
 
   &:hover {
-    color: $color-font-enabled-light-hover;
+    color: $color-font-enabled;
   }
 }
 
 .menuItemLabel {
   font-size: 0.8125rem;
-  font-weight: 500;
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 .menuItemChevron {
