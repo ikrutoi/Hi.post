@@ -16,7 +16,7 @@
 .profileRow {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.95rem;
   width: 100%;
   min-width: 0;
@@ -101,7 +101,9 @@
 
 .profileEmail {
   width: 100%;
+  max-width: 100%;
   margin: 0;
+  text-align: center;
   font-size: 0.8125rem;
   font-weight: 400;
   line-height: 1.35;
