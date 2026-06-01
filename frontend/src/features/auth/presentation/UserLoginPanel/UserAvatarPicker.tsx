@@ -171,6 +171,25 @@ export const UserAvatarPicker: React.FC<{
     [clearCropImage, dispatch],
   )
 
+  const handleDeleteAvatar = useCallback(async () => {
+    if (saving) return
+
+    setLocalError(null)
+    dispatch(clearAuthError())
+
+    try {
+      setSaving(true)
+      await dispatch(updateAvatarThunk(null)).unwrap()
+      clearCropImage()
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to delete avatar'
+      setLocalError(message)
+    } finally {
+      setSaving(false)
+    }
+  }, [clearCropImage, dispatch, saving])
+
   const errorMessage = localError ?? authError
   const chooseControlClassName = clsx(
     styles.chooseControl,
@@ -184,6 +203,7 @@ export const UserAvatarPicker: React.FC<{
           imageUrl={cropImageUrl}
           saving={saving}
           showActions={false}
+          onDelete={avatarUrl ? handleDeleteAvatar : undefined}
           onRegisterConfirm={(confirm) => {
             confirmCropRef.current = confirm
           }}

@@ -1,3 +1,6 @@
+/** Доля стороны квадрата — радиус скругления углов. */
+export const AVATAR_CORNER_RADIUS_RATIO = 0.12
+
 export type AvatarCropPixels = {
   x: number
   y: number
@@ -94,6 +97,7 @@ export async function cropAvatarToDataUrl(
   quality = 0.92,
 ): Promise<string> {
   const size = Math.round(crop.size)
+  const radius = size * AVATAR_CORNER_RADIUS_RATIO
   const canvas = document.createElement('canvas')
   canvas.width = size
   canvas.height = size
@@ -102,6 +106,13 @@ export async function cropAvatarToDataUrl(
   if (!ctx) {
     throw new Error('Could not create canvas context')
   }
+
+  ctx.fillStyle = '#fff'
+  ctx.fillRect(0, 0, size, size)
+
+  ctx.beginPath()
+  ctx.roundRect(0, 0, size, size, radius)
+  ctx.clip()
 
   ctx.drawImage(
     image,

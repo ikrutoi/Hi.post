@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { IconEditLight } from '@shared/ui/icons'
 import {
   clampAvatarCropPosition,
@@ -20,6 +21,7 @@ type UserAvatarCropViewProps = {
   onRegisterConfirm?: (confirm: (() => Promise<void>) | null) => void
   onConfirm: (dataUrl: string) => void
   onCancel: () => void
+  onDelete?: () => void
 }
 
 export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
@@ -30,6 +32,7 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
   onRegisterConfirm,
   onConfirm,
   onCancel,
+  onDelete,
 }) => {
   const dragStartRef = useRef<{
     pointerX: number
@@ -185,6 +188,22 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
             <span className={styles.editBadge} aria-hidden>
               <IconEditLight />
             </span>
+          ) : null}
+          {onDelete ? (
+            <button
+              type="button"
+              className={styles.deleteBtn}
+              disabled={saving}
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={(event) => {
+                event.stopPropagation()
+                onDelete()
+              }}
+              aria-label="Delete photo"
+              title="Delete photo"
+            >
+              {getToolbarIcon({ key: 'delete' })}
+            </button>
           ) : null}
         </div>
       </div>
