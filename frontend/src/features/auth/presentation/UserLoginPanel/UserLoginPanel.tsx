@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import type { IconKey } from '@shared/config/constants'
+import type { ToolbarSection } from '@toolbar/domain/types'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
@@ -16,8 +17,13 @@ import {
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
 import {
+  USER_PANEL_CHANGE_PHOTO_TOOLBAR,
+  USER_PANEL_CHOICE_PHOTO_TOOLBAR,
+} from '@toolbar/domain/types/userPanel.types'
+import {
   UserAvatarPicker,
-  type UserAvatarChangePhotoToolbarActions,
+  type AvatarCropState,
+  type UserAvatarCropToolbarActions,
 } from './UserAvatarPicker'
 import {
   GuestAuthSection,
@@ -30,64 +36,65 @@ export const UserLoginPanel: React.FC = () => {
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const user = useAppSelector(selectAuthUser)
   const [profileOpen, setProfileOpen] = useState(false)
-  const [avatarCropActive, setAvatarCropActive] = useState(false)
-  const [changePhotoCropActive, setChangePhotoCropActive] = useState(false)
-  const [changePhotoCropToolbar, setChangePhotoCropToolbar] =
-    useState<UserAvatarChangePhotoToolbarActions | null>(null)
+  const [avatarCropState, setAvatarCropState] = useState<AvatarCropState>({
+    active: false,
+    mode: null,
+  })
+  const [cropToolbarActions, setCropToolbarActions] =
+    useState<UserAvatarCropToolbarActions | null>(null)
   const [guestAuthMode, setGuestAuthMode] = useState<GuestAuthMode>('signIn')
 
-  const handleChangePhotoCropActive = useCallback((active: boolean) => {
-    setChangePhotoCropActive(active)
-  }, [])
-
-  const handleChangePhotoCropToolbarActions = useCallback(
-    (actions: UserAvatarChangePhotoToolbarActions | null) => {
-      setChangePhotoCropToolbar(actions)
-    },
-    [],
-  )
-
-  const userPanelToolbarStateOverride = useMemo(
-    () => ({
-      applyLight: {
-        state: changePhotoCropToolbar?.saving ? 'disabled' : 'enabled',
-        options: {},
-      },
-      editLight: {
-        state: changePhotoCropToolbar?.saving ? 'disabled' : 'enabled',
-        options: {},
-      },
-    }),
-    [changePhotoCropToolbar?.saving],
-  )
-
-  const handleUserPanelToolbarAction = useCallback(
-    (key: IconKey) => {
-      if (key === 'applyLight') {
-        changePhotoCropToolbar?.confirmCrop()
-        return false
-      }
-      if (key === 'editLight') {
-        changePhotoCropToolbar?.openFilePicker()
-        return false
-      }
-    },
-    [changePhotoCropToolbar],
-  )
-
-  const handleAvatarCropModeChange = useCallback((active: boolean) => {
-    setAvatarCropActive(active)
-    if (active) {
+  const handleAvatarCropStateChange = useCallback((state: AvatarCropState) => {
+    setAvatarCropState(state)
+    if (state.active) {
       setProfileOpen(false)
     }
   }, [])
 
-  const handleGuestAuthModeChange = useCallback(
-    (mode: GuestAuthMode) => {
-      setGuestAuthMode(mode)
-      dispatch(clearAuthError())
+  const handleCropToolbarActions = useCallback(
+    (actions: UserAvatarCropToolbarActions | null) => {
+      setCropToolbarActions(actions)
     },
-    [dispatch],
+    [],
+  )
+
+  const userPanelToolbarSection = useMemo<ToolbarSection | null>(() => {
+    if (!isAuthenticated || !avatarCropState.active || avatarCropState.mode == null) {
+      return null
+    }
+    return avatarCropState.mode === 'change'
+      ? 'userPanelChangePhoto'
+      : 'userPanelChoicePhoto'
+  }, [avatarCropState, isAuthenticated])
+
+  const userPanelToolbarGroups = useMemo(() => {
+    if (userPanelToolbarSection === 'userPanelChangePhoto') {
+      return USER_PANEL_CHANGE_PHOTO_TOOLBAR
+    }
+    if (userPanelToolbarSection === 'userPanelChoicePhoto') {
+      return USER_PANEL_CHOICE_PHOTO_TOOLBAR
+    }
+    return undefined
+  }, [userPanelToolbarSection])
+
+  const cropToolbarSaving = cropToolbarActions?.saving ?? false
+
+  const userPanelToolbarStateOverride = useMemo(
+    () => ({
+      applyLight: {
+        state: cropToolbarSaving ? 'disabled' : 'enabled',
+        options: {},
+      },
+      return: {
+        state: cropToolbarSaving ? 'disabled' : 'enabled',
+        options: {},
+      },
+      editLight: {
+        state: cropToolbarSaving ? 'disabled' : 'enabled',
+        options: {},
+      },
+    }),
+    [cropToolbarSaving],
   )
 
   const handleClose = useCallback(() => {
@@ -100,6 +107,32 @@ export const UserLoginPanel: React.FC = () => {
       }),
     )
   }, [dispatch])
+
+  const handleUserPanelToolbarAction = useCallback(
+    (key: IconKey) => {
+      if (key === 'applyLight') {
+        cropToolbarActions?.confirmCrop()
+        return false
+      }
+      if (key === 'return') {
+        cropToolbarActions?.cancelCrop()
+        return false
+      }
+      if (key === 'editLight') {
+        cropToolbarActions?.openFilePicker()
+        return false
+      }
+    },
+    [cropToolbarActions],
+  )
+
+  const handleGuestAuthModeChange = useCallback(
+    (mode: GuestAuthMode) => {
+      setGuestAuthMode(mode)
+      dispatch(clearAuthError())
+    },
+    [dispatch],
+  )
 
   const handleLogout = useCallback(() => {
     setProfileOpen(false)
@@ -116,7 +149,7 @@ export const UserLoginPanel: React.FC = () => {
       className={clsx(
         styles.panel,
         !isAuthenticated && styles.panelNoFooter,
-        !changePhotoCropActive && styles.panelCompactNoToolbar,
+        !userPanelToolbarSection && styles.panelCompactNoToolbar,
       )}
     >
       <ListPanelStackedHeader
@@ -129,9 +162,10 @@ export const UserLoginPanel: React.FC = () => {
           </div>
         }
         toolbar={
-          changePhotoCropActive ? (
+          userPanelToolbarSection ? (
             <Toolbar
-              section="userPanel"
+              section={userPanelToolbarSection}
+              groupsOverride={userPanelToolbarGroups}
               stateOverride={userPanelToolbarStateOverride}
               onActionClick={handleUserPanelToolbarAction}
             />
@@ -139,7 +173,7 @@ export const UserLoginPanel: React.FC = () => {
             false
           )
         }
-        showDividerWithoutToolbar={!changePhotoCropActive}
+        showDividerWithoutToolbar={!userPanelToolbarSection}
         onClose={handleClose}
         closeAriaLabel="Close account panel"
       />
@@ -148,20 +182,17 @@ export const UserLoginPanel: React.FC = () => {
         <div
           className={clsx(
             styles.content,
-            changePhotoCropActive && styles.contentCropMode,
+            avatarCropState.active && styles.contentCropMode,
           )}
           aria-label={isAuthenticated ? 'Signed-in user' : 'Sign in'}
         >
           {isAuthenticated ? (
             <>
               <UserAvatarPicker
-                onCropModeChange={handleAvatarCropModeChange}
-                onChangePhotoCropActive={handleChangePhotoCropActive}
-                onChangePhotoCropToolbarActions={
-                  handleChangePhotoCropToolbarActions
-                }
+                onAvatarCropStateChange={handleAvatarCropStateChange}
+                onCropToolbarActions={handleCropToolbarActions}
               />
-              {!avatarCropActive && user?.name && user?.email ? (
+              {!avatarCropState.active && user?.name && user?.email ? (
                 <div className={styles.menu}>
                   <button
                     type="button"

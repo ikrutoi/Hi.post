@@ -37,23 +37,24 @@ function readImageFileAsObjectUrl(file: File): string {
   return URL.createObjectURL(file)
 }
 
-export type UserAvatarChangePhotoToolbarActions = {
+export type AvatarCropToolbarMode = 'choice' | 'change'
+
+export type AvatarCropState = {
+  active: boolean
+  mode: AvatarCropToolbarMode | null
+}
+
+export type UserAvatarCropToolbarActions = {
   confirmCrop: () => void
+  cancelCrop: () => void
   openFilePicker: () => void
   saving: boolean
 }
 
 export const UserAvatarPicker: React.FC<{
-  onCropModeChange?: (active: boolean) => void
-  onChangePhotoCropActive?: (active: boolean) => void
-  onChangePhotoCropToolbarActions?: (
-    actions: UserAvatarChangePhotoToolbarActions | null,
-  ) => void
-}> = ({
-  onCropModeChange,
-  onChangePhotoCropActive,
-  onChangePhotoCropToolbarActions,
-}) => {
+  onAvatarCropStateChange?: (state: AvatarCropState) => void
+  onCropToolbarActions?: (actions: UserAvatarCropToolbarActions | null) => void
+}> = ({ onAvatarCropStateChange, onCropToolbarActions }) => {
   const dispatch = useAppDispatch()
   const avatarUrl = useAppSelector(selectAuthUserAvatarUrl)
   const authError = useAppSelector(selectAuthError)
@@ -63,9 +64,16 @@ export const UserAvatarPicker: React.FC<{
   const [localError, setLocalError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null)
+  const [cropToolbarMode, setCropToolbarMode] =
+    useState<AvatarCropToolbarMode | null>(null)
   const confirmCropRef = useRef<(() => Promise<void>) | null>(null)
-  const isChangePhotoCrop =
-    cropImageUrl != null && avatarUrl != null && cropImageUrl === avatarUrl
+
+  const notifyCropState = useCallback(
+    (active: boolean, mode: AvatarCropToolbarMode | null) => {
+      onAvatarCropStateChange?.({ active, mode })
+    },
+    [onAvatarCropStateChange],
+  )
 
   const clearCropImage = useCallback(() => {
     if (cropObjectUrlRef.current) {
@@ -73,38 +81,47 @@ export const UserAvatarPicker: React.FC<{
       cropObjectUrlRef.current = null
     }
     setCropImageUrl(null)
-  }, [])
+    setCropToolbarMode(null)
+    notifyCropState(false, null)
+  }, [notifyCropState])
 
-  useEffect(() => () => clearCropImage(), [clearCropImage])
-
-  useLayoutEffect(() => {
-    onCropModeChange?.(cropImageUrl != null)
-    onChangePhotoCropActive?.(isChangePhotoCrop)
-  }, [cropImageUrl, isChangePhotoCrop, onChangePhotoCropActive, onCropModeChange])
-
-  useLayoutEffect(() => {
-    if (!isChangePhotoCrop) {
-      onChangePhotoCropToolbarActions?.(null)
-      return
-    }
-
-    onChangePhotoCropToolbarActions?.({
-      confirmCrop: () => {
-        void confirmCropRef.current?.()
-      },
-      openFilePicker: () => inputRef.current?.click(),
-      saving,
-    })
-  }, [isChangePhotoCrop, onChangePhotoCropToolbarActions, saving])
+  const handleCropCancel = useCallback(() => {
+    clearCropImage()
+  }, [clearCropImage])
 
   const handleOpenExistingAvatar = useCallback(() => {
     if (!avatarUrl || saving) return
 
     setLocalError(null)
     dispatch(clearAuthError())
-    clearCropImage()
+
+    if (cropObjectUrlRef.current) {
+      URL.revokeObjectURL(cropObjectUrlRef.current)
+      cropObjectUrlRef.current = null
+    }
+
+    setCropToolbarMode('change')
     setCropImageUrl(avatarUrl)
-  }, [avatarUrl, clearCropImage, dispatch, saving])
+    notifyCropState(true, 'change')
+  }, [avatarUrl, dispatch, notifyCropState, saving])
+
+  useEffect(() => () => clearCropImage(), [clearCropImage])
+
+  useLayoutEffect(() => {
+    if (cropImageUrl == null) {
+      onCropToolbarActions?.(null)
+      return
+    }
+
+    onCropToolbarActions?.({
+      confirmCrop: () => {
+        void confirmCropRef.current?.()
+      },
+      cancelCrop: handleCropCancel,
+      openFilePicker: () => inputRef.current?.click(),
+      saving,
+    })
+  }, [cropImageUrl, handleCropCancel, onCropToolbarActions, saving])
 
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,24 +131,25 @@ export const UserAvatarPicker: React.FC<{
 
       setLocalError(null)
       dispatch(clearAuthError())
-      clearCropImage()
+      if (cropObjectUrlRef.current) {
+        URL.revokeObjectURL(cropObjectUrlRef.current)
+        cropObjectUrlRef.current = null
+      }
 
       try {
         const objectUrl = readImageFileAsObjectUrl(file)
         cropObjectUrlRef.current = objectUrl
+        setCropToolbarMode('choice')
         setCropImageUrl(objectUrl)
+        notifyCropState(true, 'choice')
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Failed to open image'
         setLocalError(message)
       }
     },
-    [clearCropImage, dispatch],
+    [dispatch, notifyCropState],
   )
-
-  const handleCropCancel = useCallback(() => {
-    clearCropImage()
-  }, [clearCropImage])
 
   const handleCropConfirm = useCallback(
     async (dataUrl: string) => {
@@ -165,7 +183,7 @@ export const UserAvatarPicker: React.FC<{
         <UserAvatarCropView
           imageUrl={cropImageUrl}
           saving={saving}
-          showActions={!isChangePhotoCrop}
+          showActions={false}
           onRegisterConfirm={(confirm) => {
             confirmCropRef.current = confirm
           }}

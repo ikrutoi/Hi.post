@@ -106,7 +106,8 @@ export const TOOLBAR_SECTIONS = [
   'postcardPieHistory',
   'cart',
   'panelMiniSections',
-  'userPanel',
+  'userPanelChoicePhoto',
+  'userPanelChangePhoto',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -150,7 +151,9 @@ export type ToolbarState = {
   }
   cart: CartToolbarState & { config: ToolbarGroup[] }
   panelMiniSections: PanelMiniSectionsToolbarState & { config: ToolbarGroup[] }
-  userPanel: UserPanelToolbarState & { config: ToolbarGroup[] }
+  userPanelChoicePhoto: UserPanelToolbarState & { config: ToolbarGroup[] }
+  userPanelChangePhoto: UserPanelToolbarState & { config: ToolbarGroup[] }
+  // changePhoto: UserPanelToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -329,7 +332,21 @@ export type ToolbarSectionConfigMap = {
     'panelMiniSections'
   >
 
-  userPanel: BaseSectionConfig<UserPanelToolbarState, UserPanelKey, 'userPanel'>
+  userPanelChoicePhoto: BaseSectionConfig<
+    UserPanelToolbarState,
+    UserPanelKey,
+    'userPanelChoicePhoto'
+  >
+  userPanelChangePhoto: BaseSectionConfig<
+    UserPanelToolbarState,
+    UserPanelKey,
+    'userPanelChangePhoto'
+  >
+  // changePhoto: BaseSectionConfig<
+  //   UserPanelToolbarState,
+  //   UserPanelKey,
+  //   'userPanelChangePhoto'
+  // >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -404,6 +421,8 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                                     ? CartKey
                                                                     : S extends 'panelMiniSections'
                                                                       ? PanelMiniSectionsKey
-                                                                      : S extends 'userPanel'
+                                                                      : S extends 'userPanelChoicePhoto'
                                                                         ? UserPanelKey
-                                                                        : never
+                                                                        : S extends 'userPanelChangePhoto'
+                                                                          ? UserPanelKey
+                                                                          : never

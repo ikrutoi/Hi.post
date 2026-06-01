@@ -3,7 +3,7 @@ import type { BaseSectionConfig, ToolbarConfig } from './toolbar.types'
 
 export const USER_PANEL_KEYS = [
   'applyLight',
-  '',
+  'return',
   // 'postcardFavorite',
   'editLight',
   '',
@@ -16,7 +16,7 @@ export interface UserPanelToolbarState extends Record<string, any> {
   config: ToolbarConfig
 }
 
-export const USER_PANEL_TOOLBAR: ToolbarConfig = [
+export const USER_PANEL_CHOICE_PHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'userPanel',
     icons: [{ key: 'applyLight', state: 'enabled' }],
@@ -29,13 +29,36 @@ export const USER_PANEL_TOOLBAR: ToolbarConfig = [
   },
 ]
 
-export const initialUserPanelToolbarState: UserPanelToolbarState = {
-  ...Object.fromEntries(flattenIcons(USER_PANEL_TOOLBAR)),
-  config: [...USER_PANEL_TOOLBAR],
+export const USER_PANEL_CHANGE_PHOTO_TOOLBAR: ToolbarConfig = [
+  {
+    group: 'userPanel',
+    icons: [{ key: 'return', state: 'enabled' }],
+    status: 'enabled',
+  },
+  {
+    group: 'actions',
+    icons: [{ key: 'editLight', state: 'enabled' }],
+    status: 'enabled',
+  },
+]
+
+export const initialUserPanelChoicePhotoToolbarState: UserPanelToolbarState = {
+  ...Object.fromEntries(flattenIcons(USER_PANEL_CHOICE_PHOTO_TOOLBAR)),
+  config: [...USER_PANEL_CHOICE_PHOTO_TOOLBAR],
 }
+
+export const initialUserPanelChangePhotoToolbarState: UserPanelToolbarState = {
+  ...Object.fromEntries(flattenIcons(USER_PANEL_CHANGE_PHOTO_TOOLBAR)),
+  config: [...USER_PANEL_CHANGE_PHOTO_TOOLBAR],
+}
+
+// export const initialChangePhotoToolbarState: UserPanelToolbarState = {
+//   ...Object.fromEntries(flattenIcons(USER_PANEL_CHOICE_PHOTO_TOOLBAR)),
+//   config: [...USER_PANEL_CHOICE_PHOTO_TOOLBAR],
+// }
 
 export interface UserPanelSectionConfig extends BaseSectionConfig<
   UserPanelToolbarState,
   UserPanelKey,
-  'userPanel'
+  'userPanelChoicePhoto' | 'userPanelChangePhoto'
 > {}

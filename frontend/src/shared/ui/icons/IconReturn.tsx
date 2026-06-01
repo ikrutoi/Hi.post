@@ -12,6 +12,6 @@ export const IconReturn = (props: React.SVGProps<SVGSVGElement>) => (
     shapeRendering="geometricPrecision"
     {...props}
   >
-    <path d="M379 438H57m213-212L57 438m0 0h322zm0 0 213 212m953 404V952M56 438h759m408 514 1-280V568c0-72-58-130-130-130H815" />
+    <path d="M379 629H57m213-212L57 629m0 0h322zm0 0 213 212M56 629h759m409 234V759c0-71-58-130-130-130H815" />
   </svg>
 )
