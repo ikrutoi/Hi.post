@@ -107,7 +107,6 @@ export const TOOLBAR_SECTIONS = [
   'cart',
   'panelMiniSections',
   'userPanelChoicePhoto',
-  'userPanelChangePhoto',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -152,8 +151,6 @@ export type ToolbarState = {
   cart: CartToolbarState & { config: ToolbarGroup[] }
   panelMiniSections: PanelMiniSectionsToolbarState & { config: ToolbarGroup[] }
   userPanelChoicePhoto: UserPanelToolbarState & { config: ToolbarGroup[] }
-  userPanelChangePhoto: UserPanelToolbarState & { config: ToolbarGroup[] }
-  // changePhoto: UserPanelToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -337,16 +334,6 @@ export type ToolbarSectionConfigMap = {
     UserPanelKey,
     'userPanelChoicePhoto'
   >
-  userPanelChangePhoto: BaseSectionConfig<
-    UserPanelToolbarState,
-    UserPanelKey,
-    'userPanelChangePhoto'
-  >
-  // changePhoto: BaseSectionConfig<
-  //   UserPanelToolbarState,
-  //   UserPanelKey,
-  //   'userPanelChangePhoto'
-  // >
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -423,6 +410,4 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                                       ? PanelMiniSectionsKey
                                                                       : S extends 'userPanelChoicePhoto'
                                                                         ? UserPanelKey
-                                                                        : S extends 'userPanelChangePhoto'
-                                                                          ? UserPanelKey
-                                                                          : never
+                                                                        : never

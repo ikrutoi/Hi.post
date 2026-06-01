@@ -19,20 +19,12 @@ export interface UserPanelToolbarState extends Record<string, any> {
 export const USER_PANEL_CHOICE_PHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'userPanel',
-    icons: [{ key: 'applyLight', state: 'enabled' }],
+    icons: [{ key: 'return', state: 'enabled' }],
     status: 'enabled',
   },
-  {
-    group: 'actions',
-    icons: [{ key: 'editLight', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
-export const USER_PANEL_CHANGE_PHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'userPanel',
-    icons: [{ key: 'return', state: 'enabled' }],
+    icons: [{ key: 'applyLight', state: 'enabled' }],
     status: 'enabled',
   },
   {
@@ -47,18 +39,8 @@ export const initialUserPanelChoicePhotoToolbarState: UserPanelToolbarState = {
   config: [...USER_PANEL_CHOICE_PHOTO_TOOLBAR],
 }
 
-export const initialUserPanelChangePhotoToolbarState: UserPanelToolbarState = {
-  ...Object.fromEntries(flattenIcons(USER_PANEL_CHANGE_PHOTO_TOOLBAR)),
-  config: [...USER_PANEL_CHANGE_PHOTO_TOOLBAR],
-}
-
-// export const initialChangePhotoToolbarState: UserPanelToolbarState = {
-//   ...Object.fromEntries(flattenIcons(USER_PANEL_CHOICE_PHOTO_TOOLBAR)),
-//   config: [...USER_PANEL_CHOICE_PHOTO_TOOLBAR],
-// }
-
 export interface UserPanelSectionConfig extends BaseSectionConfig<
   UserPanelToolbarState,
   UserPanelKey,
-  'userPanelChoicePhoto' | 'userPanelChangePhoto'
+  'userPanelChoicePhoto'
 > {}

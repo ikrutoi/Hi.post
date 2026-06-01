@@ -1,7 +1,16 @@
 /** Радиус углов области загружаемой картинки (px). */
 export const AVATAR_STAGE_BORDER_RADIUS_PX = 4
 
-/** Доля стороны кропа — радиус скругления углов (12%). */
+/** Доля узкой стороны исходника — сторона квадрата кропа. */
+export const AVATAR_CROP_SOURCE_SIDE_RATIO = 0.85
+
+/** Доля размера кропа — отображение готовой аватарки в превью. */
+export const AVATAR_PREVIEW_DISPLAY_RATIO = 0.85
+
+/** Доля стороны кропа в UI — радиус скругления углов (8%). */
+export const AVATAR_CROP_CORNER_RADIUS_RATIO = 0.08
+
+/** Доля стороны экспорта аватара — радиус скругления углов (12%). */
 export const AVATAR_CORNER_RADIUS_RATIO = 0.12
 
 export type AvatarCropPixels = {
@@ -32,28 +41,39 @@ export function loadImage(url: string): Promise<HTMLImageElement> {
   })
 }
 
+export function getAvatarSourceCropSize(
+  imageWidth: number,
+  imageHeight: number,
+): number {
+  return (
+    Math.min(imageWidth, imageHeight) * AVATAR_CROP_SOURCE_SIDE_RATIO
+  )
+}
+
 export function getAvatarStageLayout(
   imageWidth: number,
   imageHeight: number,
   stageSide: number,
 ): AvatarStageLayout {
-  const cropSize = stageSide
   const scale = Math.min(stageSide / imageWidth, stageSide / imageHeight)
   const displayWidth = imageWidth * scale
   const displayHeight = imageHeight * scale
+  const cropSize = getAvatarSourceCropSize(imageWidth, imageHeight) * scale
+  const cropX = (stageSide - cropSize) / 2
+  const cropY = (stageSide - cropSize) / 2
 
   return {
     stageSide,
     scale,
     displayWidth,
     displayHeight,
-    cropX: 0,
-    cropY: 0,
+    cropX,
+    cropY,
     cropSize,
   }
 }
 
-export function getCenteredAvatarImagePosition(
+export function getStageCenteredAvatarImagePosition(
   layout: AvatarStageLayout,
 ): { x: number; y: number } {
   return {
@@ -62,16 +82,67 @@ export function getCenteredAvatarImagePosition(
   }
 }
 
+export function getInitialAvatarCropPosition(
+  layout: AvatarStageLayout,
+): { x: number; y: number } {
+  return { x: layout.cropX, y: layout.cropY }
+}
+
+export function getAvatarPreviewDisplayLayout(layout: AvatarStageLayout): {
+  size: number
+  x: number
+  y: number
+} {
+  const size = layout.cropSize * AVATAR_PREVIEW_DISPLAY_RATIO
+  return {
+    size,
+    x: (layout.stageSide - size) / 2,
+    y: (layout.stageSide - size) / 2,
+  }
+}
+
 export function getInitialAvatarCropState(
   imageWidth: number,
   imageHeight: number,
   stageSide: number,
-): { position: { x: number; y: number }; layout: AvatarStageLayout } {
+): {
+  position: { x: number; y: number }
+  cropPosition: { x: number; y: number }
+  layout: AvatarStageLayout
+} {
   const layout = getAvatarStageLayout(imageWidth, imageHeight, stageSide)
 
   return {
-    position: getCenteredAvatarImagePosition(layout),
+    position: getStageCenteredAvatarImagePosition(layout),
+    cropPosition: getInitialAvatarCropPosition(layout),
     layout,
+  }
+}
+
+export function clampAvatarCropPosition(
+  cropPosition: { x: number; y: number },
+  layout: AvatarStageLayout,
+  imagePosition: { x: number; y: number },
+): { x: number; y: number } {
+  const { stageSide, cropSize, displayWidth, displayHeight } = layout
+  const minX = Math.max(0, imagePosition.x)
+  const maxX = Math.min(stageSide - cropSize, imagePosition.x + displayWidth - cropSize)
+  const minY = Math.max(0, imagePosition.y)
+  const maxY = Math.min(
+    stageSide - cropSize,
+    imagePosition.y + displayHeight - cropSize,
+  )
+
+  const clampAxis = (value: number, min: number, max: number) => {
+    if (max < min) {
+      return (min + max) / 2
+    }
+    return Math.min(max, Math.max(min, value))
+  }
+
+  return {
+    x: clampAxis(cropPosition.x, minX, maxX),
+    y: clampAxis(cropPosition.y, minY, maxY),
   }
 }
 

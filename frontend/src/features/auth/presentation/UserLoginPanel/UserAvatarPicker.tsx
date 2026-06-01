@@ -37,11 +37,8 @@ function readImageFileAsObjectUrl(file: File): string {
   return URL.createObjectURL(file)
 }
 
-export type AvatarCropToolbarMode = 'choice' | 'change'
-
 export type AvatarCropState = {
   active: boolean
-  mode: AvatarCropToolbarMode | null
 }
 
 export type UserAvatarCropToolbarActions = {
@@ -63,65 +60,82 @@ export const UserAvatarPicker: React.FC<{
   const cropObjectUrlRef = useRef<string | null>(null)
   const [localError, setLocalError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [avatarSessionActive, setAvatarSessionActive] = useState(false)
   const [cropImageUrl, setCropImageUrl] = useState<string | null>(null)
-  const [cropToolbarMode, setCropToolbarMode] =
-    useState<AvatarCropToolbarMode | null>(null)
+  const [cropMode, setCropMode] = useState<'preview' | 'crop'>('crop')
   const confirmCropRef = useRef<(() => Promise<void>) | null>(null)
 
   const notifyCropState = useCallback(
-    (active: boolean, mode: AvatarCropToolbarMode | null) => {
-      onAvatarCropStateChange?.({ active, mode })
+    (active: boolean) => {
+      onAvatarCropStateChange?.({ active })
     },
     [onAvatarCropStateChange],
   )
 
-  const clearCropImage = useCallback(() => {
+  const revokeCropObjectUrl = useCallback(() => {
     if (cropObjectUrlRef.current) {
       URL.revokeObjectURL(cropObjectUrlRef.current)
       cropObjectUrlRef.current = null
     }
+  }, [])
+
+  const clearCropImageOnly = useCallback(() => {
+    revokeCropObjectUrl()
     setCropImageUrl(null)
-    setCropToolbarMode(null)
-    notifyCropState(false, null)
-  }, [notifyCropState])
+    setCropMode('crop')
+  }, [revokeCropObjectUrl])
+
+  const endAvatarSession = useCallback(() => {
+    clearCropImageOnly()
+    setAvatarSessionActive(false)
+    notifyCropState(false)
+  }, [clearCropImageOnly, notifyCropState])
 
   const handleCropCancel = useCallback(() => {
-    clearCropImage()
-  }, [clearCropImage])
+    endAvatarSession()
+  }, [endAvatarSession])
 
   const handleOpenExistingAvatar = useCallback(() => {
     if (!avatarUrl || saving) return
 
     setLocalError(null)
     dispatch(clearAuthError())
+    revokeCropObjectUrl()
 
-    if (cropObjectUrlRef.current) {
-      URL.revokeObjectURL(cropObjectUrlRef.current)
-      cropObjectUrlRef.current = null
-    }
-
-    setCropToolbarMode('change')
     setCropImageUrl(avatarUrl)
-    notifyCropState(true, 'change')
-  }, [avatarUrl, dispatch, notifyCropState, saving])
+    setCropMode('preview')
+    setAvatarSessionActive(true)
+    notifyCropState(true)
+  }, [avatarUrl, dispatch, notifyCropState, revokeCropObjectUrl, saving])
 
-  useEffect(() => () => clearCropImage(), [clearCropImage])
+  useEffect(() => () => endAvatarSession(), [endAvatarSession])
 
   useLayoutEffect(() => {
-    if (cropImageUrl == null) {
+    if (!avatarSessionActive) {
       onCropToolbarActions?.(null)
       return
     }
 
     onCropToolbarActions?.({
       confirmCrop: () => {
+        if (cropMode === 'preview' || !cropImageUrl) {
+          return
+        }
         void confirmCropRef.current?.()
       },
       cancelCrop: handleCropCancel,
       openFilePicker: () => inputRef.current?.click(),
       saving,
     })
-  }, [cropImageUrl, handleCropCancel, onCropToolbarActions, saving])
+  }, [
+    avatarSessionActive,
+    cropImageUrl,
+    cropMode,
+    endAvatarSession,
+    handleCropCancel,
+    onCropToolbarActions,
+    saving,
+  ])
 
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,24 +145,22 @@ export const UserAvatarPicker: React.FC<{
 
       setLocalError(null)
       dispatch(clearAuthError())
-      if (cropObjectUrlRef.current) {
-        URL.revokeObjectURL(cropObjectUrlRef.current)
-        cropObjectUrlRef.current = null
-      }
+      revokeCropObjectUrl()
 
       try {
         const objectUrl = readImageFileAsObjectUrl(file)
         cropObjectUrlRef.current = objectUrl
-        setCropToolbarMode('choice')
         setCropImageUrl(objectUrl)
-        notifyCropState(true, 'choice')
+        setCropMode('crop')
+        setAvatarSessionActive(true)
+        notifyCropState(true)
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Failed to open image'
         setLocalError(message)
       }
     },
-    [dispatch, notifyCropState],
+    [dispatch, notifyCropState, revokeCropObjectUrl],
   )
 
   const handleCropConfirm = useCallback(
@@ -158,8 +170,14 @@ export const UserAvatarPicker: React.FC<{
 
       try {
         setSaving(true)
-        await dispatch(updateAvatarThunk(dataUrl)).unwrap()
-        clearCropImage()
+        const savedUrl = await dispatch(updateAvatarThunk(dataUrl)).unwrap()
+        revokeCropObjectUrl()
+        if (savedUrl) {
+          setCropImageUrl(savedUrl)
+          setCropMode('preview')
+        } else {
+          clearCropImageOnly()
+        }
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Failed to update avatar'
@@ -168,7 +186,7 @@ export const UserAvatarPicker: React.FC<{
         setSaving(false)
       }
     },
-    [clearCropImage, dispatch],
+    [clearCropImageOnly, dispatch, revokeCropObjectUrl],
   )
 
   const handleDeleteAvatar = useCallback(async () => {
@@ -180,7 +198,7 @@ export const UserAvatarPicker: React.FC<{
     try {
       setSaving(true)
       await dispatch(updateAvatarThunk(null)).unwrap()
-      clearCropImage()
+      clearCropImageOnly()
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Failed to delete avatar'
@@ -188,7 +206,19 @@ export const UserAvatarPicker: React.FC<{
     } finally {
       setSaving(false)
     }
-  }, [clearCropImage, dispatch, saving])
+  }, [clearCropImageOnly, dispatch, saving])
+
+  const handleCropDelete = useCallback(() => {
+    if (cropObjectUrlRef.current) {
+      clearCropImageOnly()
+      return
+    }
+    if (avatarUrl) {
+      void handleDeleteAvatar()
+      return
+    }
+    handleCropCancel()
+  }, [avatarUrl, clearCropImageOnly, handleCropCancel, handleDeleteAvatar])
 
   const errorMessage = localError ?? authError
   const chooseControlClassName = clsx(
@@ -196,57 +226,69 @@ export const UserAvatarPicker: React.FC<{
     saving && styles.chooseControlDisabled,
   )
 
-  if (cropImageUrl) {
+  if (avatarSessionActive) {
     return (
       <div className={clsx(styles.root, styles.rootCropActive)}>
-        <UserAvatarCropView
-          imageUrl={cropImageUrl}
-          saving={saving}
-          showActions={false}
-          onDelete={avatarUrl ? handleDeleteAvatar : undefined}
-          onRegisterConfirm={(confirm) => {
-            confirmCropRef.current = confirm
-          }}
-          onConfirm={handleCropConfirm}
-          onCancel={handleCropCancel}
-        />
+        {cropImageUrl ? (
+          <UserAvatarCropView
+            imageUrl={cropImageUrl}
+            mode={cropMode}
+            saving={saving}
+            showActions={false}
+            onDelete={handleCropDelete}
+            onRegisterConfirm={(confirm) => {
+              confirmCropRef.current = confirm
+            }}
+            onConfirm={handleCropConfirm}
+            onCancel={handleCropCancel}
+          />
+        ) : (
+          <UserAvatarCropView mode="empty" saving={saving} onConfirm={() => {}} onCancel={handleCropCancel} />
+        )}
         {errorMessage ? (
           <p className={clsx(styles.error, styles.errorVisible)} role="alert">
             {errorMessage}
           </p>
         ) : null}
+        <input
+          ref={inputRef}
+          id={inputId}
+          type="file"
+          accept={ACCEPTED_IMAGE_TYPES.join(',')}
+          className={styles.fileInput}
+          disabled={saving}
+          onChange={handleFileChange}
+        />
       </div>
     )
   }
 
   return (
     <div className={styles.root}>
-      <div className={styles.previewRow}>
-        {avatarUrl ? (
-          <button
-            type="button"
-            className={chooseControlClassName}
-            disabled={saving}
-            onClick={handleOpenExistingAvatar}
-          >
-            <span className={styles.previewSlot} aria-hidden>
-              <span className={styles.previewFallback}>
-                {getToolbarIcon({ key: 'userLoginAdd' })}
-              </span>
+      {avatarUrl ? (
+        <button
+          type="button"
+          className={chooseControlClassName}
+          disabled={saving}
+          onClick={handleOpenExistingAvatar}
+        >
+          <span className={styles.previewSlot} aria-hidden>
+            <span className={styles.previewFallback}>
+              {getToolbarIcon({ key: 'userLoginAdd' })}
             </span>
-            <span className={styles.chooseLabel}>Change photo</span>
-          </button>
-        ) : (
-          <label htmlFor={inputId} className={chooseControlClassName}>
-            <span className={styles.previewSlot} aria-hidden>
-              <span className={styles.previewFallback}>
-                {getToolbarIcon({ key: 'userLoginAdd' })}
-              </span>
+          </span>
+          <span className={styles.chooseLabel}>Change photo</span>
+        </button>
+      ) : (
+        <label htmlFor={inputId} className={chooseControlClassName}>
+          <span className={styles.previewSlot} aria-hidden>
+            <span className={styles.previewFallback}>
+              {getToolbarIcon({ key: 'userLoginAdd' })}
             </span>
-            <span className={styles.chooseLabel}>Choose photo</span>
-          </label>
-        )}
-      </div>
+          </span>
+          <span className={styles.chooseLabel}>Choose photo</span>
+        </label>
+      )}
       <input
         ref={inputRef}
         id={inputId}

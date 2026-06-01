@@ -117,10 +117,8 @@ import {
 } from '../types/postcardPie.types'
 import {
   initialUserPanelChoicePhotoToolbarState,
-  USER_PANEL_CHANGE_PHOTO_TOOLBAR,
   USER_PANEL_KEYS,
   USER_PANEL_CHOICE_PHOTO_TOOLBAR,
-  initialUserPanelChangePhotoToolbarState,
 } from '../types/userPanel.types'
 
 export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
@@ -565,16 +563,5 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'userPanelChoicePhoto',
     getBadges: (state: ToolbarState['userPanelChoicePhoto']) => ({}),
     toolbar: USER_PANEL_CHOICE_PHOTO_TOOLBAR,
-  },
-
-  userPanelChangePhoto: {
-    keys: USER_PANEL_KEYS,
-    initialState: initialUserPanelChangePhotoToolbarState,
-    onAction: (key, section, _editor, dispatch) => {
-      dispatch({ type: 'toolbar/action', payload: { section, key } })
-    },
-    group: 'userPanelChangePhoto',
-    getBadges: (state: ToolbarState['userPanelChangePhoto']) => ({}),
-    toolbar: USER_PANEL_CHANGE_PHOTO_TOOLBAR,
   },
 }

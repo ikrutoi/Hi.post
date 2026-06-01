@@ -17,10 +17,6 @@ import {
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
 import {
-  USER_PANEL_CHANGE_PHOTO_TOOLBAR,
-  USER_PANEL_CHOICE_PHOTO_TOOLBAR,
-} from '@toolbar/domain/types/userPanel.types'
-import {
   UserAvatarPicker,
   type AvatarCropState,
   type UserAvatarCropToolbarActions,
@@ -38,7 +34,6 @@ export const UserLoginPanel: React.FC = () => {
   const [profileOpen, setProfileOpen] = useState(false)
   const [avatarCropState, setAvatarCropState] = useState<AvatarCropState>({
     active: false,
-    mode: null,
   })
   const [cropToolbarActions, setCropToolbarActions] =
     useState<UserAvatarCropToolbarActions | null>(null)
@@ -59,23 +54,11 @@ export const UserLoginPanel: React.FC = () => {
   )
 
   const userPanelToolbarSection = useMemo<ToolbarSection | null>(() => {
-    if (!isAuthenticated || !avatarCropState.active || avatarCropState.mode == null) {
+    if (!isAuthenticated || !avatarCropState.active) {
       return null
     }
-    return avatarCropState.mode === 'change'
-      ? 'userPanelChangePhoto'
-      : 'userPanelChoicePhoto'
-  }, [avatarCropState, isAuthenticated])
-
-  const userPanelToolbarGroups = useMemo(() => {
-    if (userPanelToolbarSection === 'userPanelChangePhoto') {
-      return USER_PANEL_CHANGE_PHOTO_TOOLBAR
-    }
-    if (userPanelToolbarSection === 'userPanelChoicePhoto') {
-      return USER_PANEL_CHOICE_PHOTO_TOOLBAR
-    }
-    return undefined
-  }, [userPanelToolbarSection])
+    return 'userPanelChoicePhoto'
+  }, [avatarCropState.active, isAuthenticated])
 
   const cropToolbarSaving = cropToolbarActions?.saving ?? false
 
@@ -165,7 +148,6 @@ export const UserLoginPanel: React.FC = () => {
           userPanelToolbarSection ? (
             <Toolbar
               section={userPanelToolbarSection}
-              groupsOverride={userPanelToolbarGroups}
               stateOverride={userPanelToolbarStateOverride}
               onActionClick={handleUserPanelToolbarAction}
             />

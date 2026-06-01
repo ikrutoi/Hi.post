@@ -30,8 +30,6 @@ import {
   initialCartToolbarState,
   initialPanelMiniSectionsToolbarState,
   initialUserPanelChoicePhotoToolbarState,
-  initialUserPanelChangePhotoToolbarState,
-  // initialChangePhotoToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -95,8 +93,6 @@ const initialState: ToolbarState = {
   cart: initialCartToolbarState,
   panelMiniSections: initialPanelMiniSectionsToolbarState,
   userPanelChoicePhoto: initialUserPanelChoicePhotoToolbarState,
-  userPanelChangePhoto: initialUserPanelChangePhotoToolbarState,
-  // changePhoto: initialChangePhotoToolbarState,
 }
 
 const toolbarSlice = createSlice({
