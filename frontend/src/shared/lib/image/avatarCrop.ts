@@ -1,10 +1,23 @@
-/** Доля стороны квадрата — радиус скругления углов. */
+/** Радиус углов области загружаемой картинки (px). */
+export const AVATAR_STAGE_BORDER_RADIUS_PX = 4
+
+/** Доля стороны кропа — радиус скругления углов (12%). */
 export const AVATAR_CORNER_RADIUS_RATIO = 0.12
 
 export type AvatarCropPixels = {
   x: number
   y: number
   size: number
+}
+
+export type AvatarStageLayout = {
+  stageSide: number
+  scale: number
+  displayWidth: number
+  displayHeight: number
+  cropX: number
+  cropY: number
+  cropSize: number
 }
 
 export function loadImage(url: string): Promise<HTMLImageElement> {
@@ -19,75 +32,80 @@ export function loadImage(url: string): Promise<HTMLImageElement> {
   })
 }
 
+export function getAvatarStageLayout(
+  imageWidth: number,
+  imageHeight: number,
+  stageSide: number,
+): AvatarStageLayout {
+  const cropSize = stageSide
+  const scale = Math.min(stageSide / imageWidth, stageSide / imageHeight)
+  const displayWidth = imageWidth * scale
+  const displayHeight = imageHeight * scale
+
+  return {
+    stageSide,
+    scale,
+    displayWidth,
+    displayHeight,
+    cropX: 0,
+    cropY: 0,
+    cropSize,
+  }
+}
+
+export function getCenteredAvatarImagePosition(
+  layout: AvatarStageLayout,
+): { x: number; y: number } {
+  return {
+    x: (layout.stageSide - layout.displayWidth) / 2,
+    y: (layout.stageSide - layout.displayHeight) / 2,
+  }
+}
+
 export function getInitialAvatarCropState(
   imageWidth: number,
   imageHeight: number,
-  viewportSize: number,
-): { position: { x: number; y: number } } {
-  const baseScale = Math.max(
-    viewportSize / imageWidth,
-    viewportSize / imageHeight,
-  )
-  const displayWidth = imageWidth * baseScale
-  const displayHeight = imageHeight * baseScale
+  stageSide: number,
+): { position: { x: number; y: number }; layout: AvatarStageLayout } {
+  const layout = getAvatarStageLayout(imageWidth, imageHeight, stageSide)
 
   return {
-    position: {
-      x: (viewportSize - displayWidth) / 2,
-      y: (viewportSize - displayHeight) / 2,
-    },
+    position: getCenteredAvatarImagePosition(layout),
+    layout,
   }
 }
 
-export function getAvatarImageDisplaySize(
-  imageWidth: number,
-  imageHeight: number,
-  viewportSize: number,
-): { width: number; height: number; baseScale: number } {
-  const baseScale = Math.max(
-    viewportSize / imageWidth,
-    viewportSize / imageHeight,
-  )
-  return {
-    baseScale,
-    width: imageWidth * baseScale,
-    height: imageHeight * baseScale,
-  }
-}
-
-export function clampAvatarCropPosition(
+export function clampAvatarImagePosition(
   position: { x: number; y: number },
-  displayWidth: number,
-  displayHeight: number,
-  viewportSize: number,
+  layout: AvatarStageLayout,
 ): { x: number; y: number } {
-  const minX = viewportSize - displayWidth
-  const minY = viewportSize - displayHeight
+  const { displayWidth, displayHeight, cropX, cropY, cropSize } = layout
+  const minX = cropX + cropSize - displayWidth
+  const maxX = cropX
+  const minY = cropY + cropSize - displayHeight
+  const maxY = cropY
 
   return {
-    x: Math.min(0, Math.max(minX, position.x)),
-    y: Math.min(0, Math.max(minY, position.y)),
+    x: Math.min(maxX, Math.max(minX, position.x)),
+    y: Math.min(maxY, Math.max(minY, position.y)),
   }
 }
 
 export function getAvatarCropPixels(
   imageWidth: number,
   imageHeight: number,
-  viewportSize: number,
+  layout: AvatarStageLayout,
   position: { x: number; y: number },
 ): AvatarCropPixels {
-  const { width: displayWidth } = getAvatarImageDisplaySize(
-    imageWidth,
-    imageHeight,
-    viewportSize,
-  )
-  const scale = displayWidth / imageWidth
-  const cropSize = viewportSize / scale
+  const { scale, cropX, cropY, cropSize } = layout
+  const srcX = (cropX - position.x) / scale
+  const srcY = (cropY - position.y) / scale
+  const srcSize = cropSize / scale
 
   return {
-    x: -position.x / scale,
-    y: -position.y / scale,
-    size: cropSize,
+    x: srcX,
+    y: srcY,
+    size: srcSize,
   }
 }
 

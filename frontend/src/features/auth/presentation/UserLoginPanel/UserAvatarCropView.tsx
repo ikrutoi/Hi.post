@@ -2,16 +2,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { IconEditLight } from '@shared/ui/icons'
 import {
-  clampAvatarCropPosition,
   cropAvatarToDataUrl,
   getAvatarCropPixels,
-  getAvatarImageDisplaySize,
+  getCenteredAvatarImagePosition,
   getInitialAvatarCropState,
   loadImage,
+  type AvatarStageLayout,
 } from '@shared/lib/image/avatarCrop'
 import styles from './UserAvatarCropView.module.scss'
-
-const VIEWPORT_SIZE = 192
 
 type UserAvatarCropViewProps = {
   imageUrl: string
@@ -34,17 +32,33 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
   onCancel,
   onDelete,
 }) => {
-  const dragStartRef = useRef<{
-    pointerX: number
-    pointerY: number
-    positionX: number
-    positionY: number
-  } | null>(null)
+  const stageFrameRef = useRef<HTMLDivElement>(null)
+  const [stageSide, setStageSide] = useState(0)
   const [image, setImage] = useState<HTMLImageElement | null>(null)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [layout, setLayout] = useState<AvatarStageLayout | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
+    const element = stageFrameRef.current
+    if (!element) return
+
+    const updateStageSide = () => {
+      const width = Math.floor(element.getBoundingClientRect().width)
+      if (width > 0) {
+        setStageSide(width)
+      }
+    }
+
+    updateStageSide()
+    const observer = new ResizeObserver(updateStageSide)
+    observer.observe(element)
+
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (stageSide <= 0) return
+
     let cancelled = false
 
     void loadImage(imageUrl)
@@ -55,87 +69,35 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
         const initial = getInitialAvatarCropState(
           loadedImage.naturalWidth,
           loadedImage.naturalHeight,
-          VIEWPORT_SIZE,
+          stageSide,
         )
-        setPosition(initial.position)
+        setLayout(initial.layout)
       })
       .catch(() => {
         if (cancelled) return
+        setImage(null)
+        setLayout(null)
         setLoadError('Could not load image')
       })
 
     return () => {
       cancelled = true
     }
-  }, [imageUrl])
-
-  const updatePosition = useCallback(
-    (nextPosition: { x: number; y: number }) => {
-      if (!image) return
-
-      const { width, height } = getAvatarImageDisplaySize(
-        image.naturalWidth,
-        image.naturalHeight,
-        VIEWPORT_SIZE,
-      )
-
-      setPosition(
-        clampAvatarCropPosition(nextPosition, width, height, VIEWPORT_SIZE),
-      )
-    },
-    [image],
-  )
-
-  const handlePointerDown = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
-      if (!image || saving) return
-
-      event.currentTarget.setPointerCapture(event.pointerId)
-      dragStartRef.current = {
-        pointerX: event.clientX,
-        pointerY: event.clientY,
-        positionX: position.x,
-        positionY: position.y,
-      }
-    },
-    [image, position.x, position.y, saving],
-  )
-
-  const handlePointerMove = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
-      const dragStart = dragStartRef.current
-      if (!dragStart) return
-
-      updatePosition({
-        x: dragStart.positionX + (event.clientX - dragStart.pointerX),
-        y: dragStart.positionY + (event.clientY - dragStart.pointerY),
-      })
-    },
-    [updatePosition],
-  )
-
-  const handlePointerUp = useCallback(
-    (event: React.PointerEvent<HTMLDivElement>) => {
-      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-        event.currentTarget.releasePointerCapture(event.pointerId)
-      }
-      dragStartRef.current = null
-    },
-    [],
-  )
+  }, [imageUrl, stageSide])
 
   const handleConfirm = useCallback(async () => {
-    if (!image) return
+    if (!image || !layout) return
 
+    const position = getCenteredAvatarImagePosition(layout)
     const crop = getAvatarCropPixels(
       image.naturalWidth,
       image.naturalHeight,
-      VIEWPORT_SIZE,
+      layout,
       position,
     )
     const dataUrl = await cropAvatarToDataUrl(image, crop)
     onConfirm(dataUrl)
-  }, [image, onConfirm, position])
+  }, [image, layout, onConfirm])
 
   useEffect(() => {
     onRegisterConfirm?.(handleConfirm)
@@ -146,59 +108,52 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
     return <p className={styles.errorText}>{loadError}</p>
   }
 
-  if (!image) {
-    return null
+  if (!image || !layout || stageSide <= 0) {
+    return (
+      <div className={styles.root}>
+        <div ref={stageFrameRef} className={styles.stageFrame} aria-hidden />
+      </div>
+    )
   }
 
-  const { width, height } = getAvatarImageDisplaySize(
-    image.naturalWidth,
-    image.naturalHeight,
-    VIEWPORT_SIZE,
-  )
+  const imagePosition = getCenteredAvatarImagePosition(layout)
 
   return (
     <div className={styles.root}>
-      <div className={styles.stageWidth}>
-        <div className={styles.stageFrame}>
+      <div ref={stageFrameRef} className={styles.stageFrame}>
+        <div
+          className={styles.stage}
+          style={{
+            width: layout.stageSide,
+            height: layout.stageSide,
+          }}
+        >
           <div
-            className={styles.viewport}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
+            className={styles.imageLayer}
+            style={{
+              width: layout.displayWidth,
+              height: layout.displayHeight,
+              transform: `translate(${imagePosition.x}px, ${imagePosition.y}px)`,
+            }}
           >
-            <div
-              className={styles.imageLayer}
+            <img
+              src={imageUrl}
+              alt=""
+              className={styles.image}
+              draggable={false}
               style={{
-                width,
-                height,
-                transform: `translate(${position.x}px, ${position.y}px)`,
+                width: layout.displayWidth,
+                height: layout.displayHeight,
               }}
-            >
-              <img
-                src={imageUrl}
-                alt=""
-                className={styles.image}
-                draggable={false}
-                style={{ width, height }}
-              />
-            </div>
+            />
           </div>
-          {showEditBadge ? (
-            <span className={styles.editBadge} aria-hidden>
-              <IconEditLight />
-            </span>
-          ) : null}
+
           {onDelete ? (
             <button
               type="button"
               className={styles.deleteBtn}
               disabled={saving}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={(event) => {
-                event.stopPropagation()
-                onDelete()
-              }}
+              onClick={() => onDelete()}
               aria-label="Delete photo"
               title="Delete photo"
             >
@@ -206,6 +161,12 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
             </button>
           ) : null}
         </div>
+
+        {showEditBadge ? (
+          <span className={styles.editBadge} aria-hidden>
+            <IconEditLight />
+          </span>
+        ) : null}
       </div>
 
       {showActions ? (
