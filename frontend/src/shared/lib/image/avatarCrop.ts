@@ -13,6 +13,9 @@ export const AVATAR_CROP_CORNER_RADIUS_RATIO = 0.08
 /** Доля стороны экспорта аватара — радиус скругления углов (12%). */
 export const AVATAR_CORNER_RADIUS_RATIO = 0.12
 
+/** Макс. сторона JPEG для хранения (кроп в UI может быть больше). */
+export const AVATAR_EXPORT_MAX_SIDE_PX = 512
+
 export type AvatarCropPixels = {
   x: number
   y: number
@@ -185,7 +188,8 @@ export async function cropAvatarToDataUrl(
   crop: AvatarCropPixels,
   quality = 0.92,
 ): Promise<string> {
-  const size = Math.round(crop.size)
+  const cropSide = Math.round(crop.size)
+  const size = Math.min(cropSide, AVATAR_EXPORT_MAX_SIDE_PX)
   const radius = size * AVATAR_CORNER_RADIUS_RATIO
   const canvas = document.createElement('canvas')
   canvas.width = size

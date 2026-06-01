@@ -198,6 +198,7 @@ import {
   IconSortAZDown,
   IconSortAZUp,
   IconUserLoginAdd,
+  IconUserLoginEdit,
 } from '@shared/ui/icons'
 import { FontSizeIndicator } from '@toolbar/presentation/FontSizeIndicator'
 import { PostcardIndicator } from '@/features/toolbar/presentation/PostcardIndictor'
@@ -426,6 +427,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconSortAZUp />
     case 'userLoginAdd':
       return <IconUserLoginAdd />
+    case 'userLoginEdit':
+      return <IconUserLoginEdit />
   }
 
   // Fallback: empty placeholder to satisfy exhaustiveness

@@ -6,7 +6,8 @@ export const USER_PANEL_KEYS = [
   'return',
   // 'postcardFavorite',
   'editLight',
-  '',
+  'cardphotoAdd',
+  'userLoginAdd',
 ] as const
 
 export type UserPanelKey = (typeof USER_PANEL_KEYS)[number]
@@ -19,17 +20,15 @@ export interface UserPanelToolbarState extends Record<string, any> {
 export const USER_PANEL_CHOICE_PHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'userPanel',
-    icons: [{ key: 'return', state: 'enabled' }],
-    status: 'enabled',
-  },
-  {
-    group: 'userPanel',
-    icons: [{ key: 'applyLight', state: 'enabled' }],
+    icons: [
+      { key: 'applyLight', state: 'disabled' },
+      { key: 'userLoginAdd', state: 'enabled' },
+    ],
     status: 'enabled',
   },
   {
     group: 'actions',
-    icons: [{ key: 'editLight', state: 'enabled' }],
+    icons: [{ key: 'return', state: 'enabled' }],
     status: 'enabled',
   },
 ]

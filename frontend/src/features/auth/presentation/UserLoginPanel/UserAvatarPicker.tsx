@@ -1,7 +1,9 @@
 import React, {
+  forwardRef,
   useCallback,
   useEffect,
   useId,
+  useImperativeHandle,
   useLayoutEffect,
   useRef,
   useState,
@@ -25,6 +27,9 @@ const ACCEPTED_IMAGE_TYPES = [
   'image/gif',
 ] as const
 
+/** `image/*` — системный выбор из галереи; MIME проверяем при загрузке. */
+const FILE_INPUT_ACCEPT = 'image/*'
+
 function readImageFileAsObjectUrl(file: File): string {
   if (
     !ACCEPTED_IMAGE_TYPES.includes(
@@ -46,12 +51,25 @@ export type UserAvatarCropToolbarActions = {
   cancelCrop: () => void
   openFilePicker: () => void
   saving: boolean
+  canApply: boolean
 }
 
-export const UserAvatarPicker: React.FC<{
+export type UserAvatarPickerHandle = {
+  openFilePicker: () => void
+}
+
+type UserAvatarPickerProps = {
   onAvatarCropStateChange?: (state: AvatarCropState) => void
   onCropToolbarActions?: (actions: UserAvatarCropToolbarActions | null) => void
-}> = ({ onAvatarCropStateChange, onCropToolbarActions }) => {
+}
+
+export const UserAvatarPicker = forwardRef<
+  UserAvatarPickerHandle,
+  UserAvatarPickerProps
+>(function UserAvatarPicker(
+  { onAvatarCropStateChange, onCropToolbarActions },
+  ref,
+) {
   const dispatch = useAppDispatch()
   const avatarUrl = useAppSelector(selectAuthUserAvatarUrl)
   const authError = useAppSelector(selectAuthError)
@@ -95,6 +113,18 @@ export const UserAvatarPicker: React.FC<{
     endAvatarSession()
   }, [endAvatarSession])
 
+  const handleOpenAvatarSession = useCallback(() => {
+    if (saving) return
+
+    setLocalError(null)
+    dispatch(clearAuthError())
+    revokeCropObjectUrl()
+    setCropImageUrl(null)
+    setCropMode('crop')
+    setAvatarSessionActive(true)
+    notifyCropState(true)
+  }, [dispatch, notifyCropState, revokeCropObjectUrl, saving])
+
   const handleOpenExistingAvatar = useCallback(() => {
     if (!avatarUrl || saving) return
 
@@ -110,39 +140,8 @@ export const UserAvatarPicker: React.FC<{
 
   useEffect(() => () => endAvatarSession(), [endAvatarSession])
 
-  useLayoutEffect(() => {
-    if (!avatarSessionActive) {
-      onCropToolbarActions?.(null)
-      return
-    }
-
-    onCropToolbarActions?.({
-      confirmCrop: () => {
-        if (cropMode === 'preview' || !cropImageUrl) {
-          return
-        }
-        void confirmCropRef.current?.()
-      },
-      cancelCrop: handleCropCancel,
-      openFilePicker: () => inputRef.current?.click(),
-      saving,
-    })
-  }, [
-    avatarSessionActive,
-    cropImageUrl,
-    cropMode,
-    endAvatarSession,
-    handleCropCancel,
-    onCropToolbarActions,
-    saving,
-  ])
-
-  const handleFileChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0]
-      event.target.value = ''
-      if (!file) return
-
+  const processSelectedFile = useCallback(
+    (file: File) => {
       setLocalError(null)
       dispatch(clearAuthError())
       revokeCropObjectUrl()
@@ -162,6 +161,60 @@ export const UserAvatarPicker: React.FC<{
     },
     [dispatch, notifyCropState, revokeCropObjectUrl],
   )
+
+  const handleFileChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0]
+      event.target.value = ''
+      if (!file) return
+      processSelectedFile(file)
+    },
+    [processSelectedFile],
+  )
+
+  const openFilePicker = useCallback(() => {
+    if (saving) return
+
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = FILE_INPUT_ACCEPT
+    input.onchange = (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      processSelectedFile(file)
+    }
+    input.click()
+  }, [processSelectedFile, saving])
+
+  useImperativeHandle(ref, () => ({ openFilePicker }), [openFilePicker])
+
+  useLayoutEffect(() => {
+    if (!avatarSessionActive) {
+      onCropToolbarActions?.(null)
+      return
+    }
+
+    onCropToolbarActions?.({
+      confirmCrop: () => {
+        if (cropMode === 'preview' || !cropImageUrl) {
+          return
+        }
+        void confirmCropRef.current?.()
+      },
+      cancelCrop: handleCropCancel,
+      openFilePicker,
+      saving,
+      canApply: Boolean(cropImageUrl) && cropMode === 'crop',
+    })
+  }, [
+    avatarSessionActive,
+    cropImageUrl,
+    cropMode,
+    handleCropCancel,
+    onCropToolbarActions,
+    openFilePicker,
+    saving,
+  ])
 
   const handleCropConfirm = useCallback(
     async (dataUrl: string) => {
@@ -226,6 +279,18 @@ export const UserAvatarPicker: React.FC<{
     saving && styles.chooseControlDisabled,
   )
 
+  const fileInput = (
+    <input
+      ref={inputRef}
+      id={inputId}
+      type="file"
+      accept={FILE_INPUT_ACCEPT}
+      className={styles.fileInput}
+      disabled={saving}
+      onChange={handleFileChange}
+    />
+  )
+
   if (avatarSessionActive) {
     return (
       <div className={clsx(styles.root, styles.rootCropActive)}>
@@ -250,15 +315,7 @@ export const UserAvatarPicker: React.FC<{
             {errorMessage}
           </p>
         ) : null}
-        <input
-          ref={inputRef}
-          id={inputId}
-          type="file"
-          accept={ACCEPTED_IMAGE_TYPES.join(',')}
-          className={styles.fileInput}
-          disabled={saving}
-          onChange={handleFileChange}
-        />
+        {fileInput}
       </div>
     )
   }
@@ -274,35 +331,32 @@ export const UserAvatarPicker: React.FC<{
         >
           <span className={styles.previewSlot} aria-hidden>
             <span className={styles.previewFallback}>
-              {getToolbarIcon({ key: 'userLoginAdd' })}
+              {getToolbarIcon({ key: 'userLoginEdit' })}
             </span>
           </span>
           <span className={styles.chooseLabel}>Change photo</span>
         </button>
       ) : (
-        <label htmlFor={inputId} className={chooseControlClassName}>
+        <button
+          type="button"
+          className={chooseControlClassName}
+          disabled={saving}
+          onClick={handleOpenAvatarSession}
+        >
           <span className={styles.previewSlot} aria-hidden>
             <span className={styles.previewFallback}>
-              {getToolbarIcon({ key: 'userLoginAdd' })}
+              {getToolbarIcon({ key: 'userLoginEdit' })}
             </span>
           </span>
           <span className={styles.chooseLabel}>Choose photo</span>
-        </label>
+        </button>
       )}
-      <input
-        ref={inputRef}
-        id={inputId}
-        type="file"
-        accept={ACCEPTED_IMAGE_TYPES.join(',')}
-        className={styles.fileInput}
-        disabled={saving}
-        onChange={handleFileChange}
-      />
       {errorMessage ? (
         <p className={clsx(styles.error, styles.errorVisible)} role="alert">
           {errorMessage}
         </p>
       ) : null}
+      {fileInput}
     </div>
   )
-}
+})

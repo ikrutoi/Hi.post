@@ -121,6 +121,7 @@ export const ICON_KEYS = [
   'sortAZDown',
   'sortAZUp',
   'userLoginAdd',
+  'userLoginEdit',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

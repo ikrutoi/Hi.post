@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import type { IconKey } from '@shared/config/constants'
 import type { ToolbarSection } from '@toolbar/domain/types'
@@ -20,6 +20,7 @@ import {
   UserAvatarPicker,
   type AvatarCropState,
   type UserAvatarCropToolbarActions,
+  type UserAvatarPickerHandle,
 } from './UserAvatarPicker'
 import {
   GuestAuthSection,
@@ -35,6 +36,7 @@ export const UserLoginPanel: React.FC = () => {
   const [avatarCropState, setAvatarCropState] = useState<AvatarCropState>({
     active: false,
   })
+  const avatarPickerRef = useRef<UserAvatarPickerHandle>(null)
   const [cropToolbarActions, setCropToolbarActions] =
     useState<UserAvatarCropToolbarActions | null>(null)
   const [guestAuthMode, setGuestAuthMode] = useState<GuestAuthMode>('signIn')
@@ -61,23 +63,25 @@ export const UserLoginPanel: React.FC = () => {
   }, [avatarCropState.active, isAuthenticated])
 
   const cropToolbarSaving = cropToolbarActions?.saving ?? false
+  const cropToolbarCanApply = cropToolbarActions?.canApply ?? false
 
   const userPanelToolbarStateOverride = useMemo(
     () => ({
       applyLight: {
-        state: cropToolbarSaving ? 'disabled' : 'enabled',
+        state:
+          cropToolbarSaving || !cropToolbarCanApply ? 'disabled' : 'enabled',
         options: {},
       },
       return: {
         state: cropToolbarSaving ? 'disabled' : 'enabled',
         options: {},
       },
-      editLight: {
+      userLoginAdd: {
         state: cropToolbarSaving ? 'disabled' : 'enabled',
         options: {},
       },
     }),
-    [cropToolbarSaving],
+    [cropToolbarCanApply, cropToolbarSaving],
   )
 
   const handleClose = useCallback(() => {
@@ -101,8 +105,8 @@ export const UserLoginPanel: React.FC = () => {
         cropToolbarActions?.cancelCrop()
         return false
       }
-      if (key === 'editLight') {
-        cropToolbarActions?.openFilePicker()
+      if (key === 'userLoginAdd') {
+        avatarPickerRef.current?.openFilePicker()
         return false
       }
     },
@@ -171,6 +175,7 @@ export const UserLoginPanel: React.FC = () => {
           {isAuthenticated ? (
             <>
               <UserAvatarPicker
+                ref={avatarPickerRef}
                 onAvatarCropStateChange={handleAvatarCropStateChange}
                 onCropToolbarActions={handleCropToolbarActions}
               />
