@@ -35,8 +35,13 @@ $avatar-crop-outside-overlay: rgba(255, 255, 255, 0.72);
   width: 100%;
 }
 
+.avatarCircle {
+  border-radius: 50%;
+}
+
 .previewAvatarWrap {
   position: absolute;
+  overflow: hidden;
 }
 
 .previewImage {
@@ -46,11 +51,16 @@ $avatar-crop-outside-overlay: rgba(255, 255, 255, 0.72);
   object-fit: cover;
 }
 
-.previewDeleteBtn {
+.deleteBtn {
+  @include overlay.sectionViewOverlayDeleteButton;
+  @include avatarOverlayChipSize;
+}
+
+.applyBtn {
   position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 2;
+  top: overlay.$section-view-overlay-inset-top;
+  left: overlay.$section-view-overlay-inset-top;
+  z-index: 4;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -59,11 +69,11 @@ $avatar-crop-outside-overlay: rgba(255, 255, 255, 0.72);
   cursor: pointer;
   @include overlay.sectionViewOverlayChipPhoto;
   @include avatarOverlayChipSize;
-}
 
-.deleteBtn {
-  @include overlay.sectionViewOverlayDeleteButton;
-  @include avatarOverlayChipSize;
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 .editBadge {
@@ -99,11 +109,6 @@ $avatar-crop-outside-overlay: rgba(255, 255, 255, 0.72);
   border: 1px solid $color-app-strip;
   border-radius: 4px;
   background-color: #fff;
-}
-
-.stage.stagePreview {
-  border-color: transparent;
-  background-color: transparent;
 }
 
 .stageEmptyPlaceholder {

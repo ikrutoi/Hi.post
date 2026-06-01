@@ -3,8 +3,6 @@ import clsx from 'clsx'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { IconEditLight, IconUserLogin } from '@shared/ui/icons'
 import {
-  AVATAR_CORNER_RADIUS_RATIO,
-  AVATAR_CROP_CORNER_RADIUS_RATIO,
   clampAvatarCropPosition,
   cropAvatarToDataUrl,
   getAvatarCropPixels,
@@ -227,23 +225,21 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
     )
   }
 
-  const cropRadius = layout.cropSize * AVATAR_CROP_CORNER_RADIUS_RATIO
   const previewDisplay = getAvatarPreviewDisplayLayout(layout)
-  const previewRadius = previewDisplay.size * AVATAR_CORNER_RADIUS_RATIO
 
   if (mode === 'preview') {
     return (
       <div className={styles.root}>
-        <div ref={stageFrameRef} className={styles.previewFrame}>
+        <div ref={stageFrameRef} className={styles.stageFrame}>
           <div
-            className={clsx(styles.stage, styles.stagePreview)}
+            className={styles.stage}
             style={{
               width: layout.stageSide,
               height: layout.stageSide,
             }}
           >
             <div
-              className={styles.previewAvatarWrap}
+              className={clsx(styles.previewAvatarWrap, styles.avatarCircle)}
               style={{
                 left: previewDisplay.x,
                 top: previewDisplay.y,
@@ -251,27 +247,26 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
                 height: previewDisplay.size,
               }}
             >
-            <img
-              src={imageUrl}
-              alt=""
-              className={styles.previewImage}
-              draggable={false}
-              style={{ borderRadius: `${previewRadius}px` }}
-            />
-            {onDelete ? (
-              <button
-                type="button"
-                className={styles.previewDeleteBtn}
-                disabled={saving}
-                onClick={() => onDelete()}
-                aria-label="Delete photo"
-                title="Delete photo"
-              >
-                {getToolbarIcon({ key: 'delete' })}
-              </button>
-            ) : null}
+              <img
+                src={imageUrl}
+                alt=""
+                className={styles.previewImage}
+                draggable={false}
+              />
             </div>
           </div>
+          {onDelete ? (
+            <button
+              type="button"
+              className={styles.deleteBtn}
+              disabled={saving}
+              onClick={() => onDelete()}
+              aria-label="Delete photo"
+              title="Delete photo"
+            >
+              {getToolbarIcon({ key: 'delete' })}
+            </button>
+          ) : null}
         </div>
       </div>
     )
@@ -308,25 +303,23 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
           </div>
 
           <div
-            className={styles.cropMask}
+            className={clsx(styles.cropMask, styles.avatarCircle)}
             style={{
               left: cropPosition.x,
               top: cropPosition.y,
               width: layout.cropSize,
               height: layout.cropSize,
-              borderRadius: `${cropRadius}px`,
             }}
             aria-hidden
           />
 
           <div
-            className={styles.cropDragLayer}
+            className={clsx(styles.cropDragLayer, styles.avatarCircle)}
             style={{
               left: cropPosition.x,
               top: cropPosition.y,
               width: layout.cropSize,
               height: layout.cropSize,
-              borderRadius: `${cropRadius}px`,
             }}
             onPointerDown={handleCropPointerDown}
             onPointerMove={handleCropPointerMove}
@@ -335,6 +328,19 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
             aria-hidden
           />
         </div>
+
+        <button
+          type="button"
+          className={styles.applyBtn}
+          disabled={saving}
+          onClick={() => {
+            void handleConfirm()
+          }}
+          aria-label="Apply photo"
+          title="Apply photo"
+        >
+          {getToolbarIcon({ key: 'applyLight' })}
+        </button>
 
         {onDelete ? (
           <button

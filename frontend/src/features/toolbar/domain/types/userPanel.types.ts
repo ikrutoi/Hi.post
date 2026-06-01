@@ -21,7 +21,7 @@ export const USER_PANEL_CHOICE_PHOTO_TOOLBAR: ToolbarConfig = [
   {
     group: 'userPanel',
     icons: [
-      { key: 'applyLight', state: 'disabled' },
+      // { key: 'applyLight', state: 'disabled' },
       { key: 'userLoginAdd', state: 'enabled' },
     ],
     status: 'enabled',
