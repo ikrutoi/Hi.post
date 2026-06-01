@@ -5,6 +5,7 @@ import type { ToolbarSection } from '@toolbar/domain/types'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
+import { getToolbarIcon } from '@shared/utils/icons'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
@@ -193,8 +194,10 @@ export const UserLoginPanel: React.FC = () => {
               event.stopPropagation()
               handleLogout()
             }}
+            aria-label="Log out"
+            title="Log out"
           >
-            Log out
+            {getToolbarIcon({ key: 'userLoginOut' })}
           </button>
         </footer>
       ) : null}

@@ -254,7 +254,7 @@ $list-panel-list-footer-gap: 1px;
   z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   width: calc(100% - 0.75rem - 8px);
   height: $list-panel-header-lead-row;
   padding: 0 0.35rem;
@@ -264,15 +264,27 @@ $list-panel-list-footer-gap: 1px;
 }
 
 .logoutButton {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: auto;
+  height: 100%;
+  min-width: 1.2rem;
   padding: 0;
   border: none;
   background: transparent;
-  font: inherit;
-  font-size: 0.72rem;
-  font-weight: 600;
-  line-height: 1.2;
   color: $color-font-enabled-light;
   cursor: pointer;
+  transition: color 0.15s ease;
+
+  svg {
+    flex-shrink: 0;
+    width: 1.2rem;
+    height: 1.2rem;
+    display: block;
+  }
 
   &:hover {
     color: $color-font-enabled;
