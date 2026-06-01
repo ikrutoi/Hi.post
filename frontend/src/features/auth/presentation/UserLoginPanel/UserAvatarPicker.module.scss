@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/sectionViewOverlayChip' as overlay;
 
 .root {
   display: flex;
@@ -12,61 +13,100 @@
   gap: 0.75rem;
 }
 
-.chooseControl {
+.profileRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.95rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.profileAvatarWrap {
+  position: relative;
+  flex: 0 0 25%;
+  width: 25%;
+  max-width: 25%;
+}
+
+.profileAvatar {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid $color-app-strip;
+  border-radius: 50%;
+  background-color: #fff;
+  overflow: hidden;
+  cursor: default;
+}
+
+.profileAvatarEditBtn {
+  $profile-avatar-edit-chip-size: 1.3rem;
+  $profile-avatar-edit-icon-size: 0.72rem;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-left: -0.25rem;
+  justify-content: center;
+  width: $profile-avatar-edit-chip-size;
+  height: $profile-avatar-edit-chip-size;
   padding: 0;
   border: none;
-  background: transparent;
-  font: inherit;
-  color: $color-font-enabled-light;
+  border-radius: 0.4rem;
   cursor: pointer;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: $color-font-enabled;
-  }
-}
-
-.chooseControlDisabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-
-  &:hover {
-    color: $color-font-enabled-light;
-  }
-}
-
-.chooseLabel {
-  font-size: 0.8125rem;
-  font-weight: 400;
-  line-height: 1.2;
-}
-
-.previewSlot {
-  flex-shrink: 0;
-  width: 1.7rem;
-  height: 1.7rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.previewFallback {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: inherit;
-  transform: translateX(-0.12rem);
+  transform: translate(62%, -42%);
+  @include overlay.sectionViewOverlayChipPhoto;
+  @include overlay.sectionViewOverlayChipIcon;
 
   svg {
-    width: 1.2rem;
-    height: 1.2rem;
+    width: $profile-avatar-edit-icon-size;
+    height: $profile-avatar-edit-icon-size;
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.profileAvatarDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profileAvatarImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profileAvatarPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: $color-app-strip;
+
+  svg {
+    width: 55%;
+    height: 55%;
+  }
+}
+
+.profileEmail {
+  width: 100%;
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: $color-font-enabled-light;
+  word-break: break-word;
 }
 
 .fileInput {

@@ -59,6 +59,7 @@ export type UserAvatarPickerHandle = {
 }
 
 type UserAvatarPickerProps = {
+  userEmail?: string | null
   onAvatarCropStateChange?: (state: AvatarCropState) => void
   onCropToolbarActions?: (actions: UserAvatarCropToolbarActions | null) => void
 }
@@ -67,7 +68,7 @@ export const UserAvatarPicker = forwardRef<
   UserAvatarPickerHandle,
   UserAvatarPickerProps
 >(function UserAvatarPicker(
-  { onAvatarCropStateChange, onCropToolbarActions },
+  { userEmail, onAvatarCropStateChange, onCropToolbarActions },
   ref,
 ) {
   const dispatch = useAppDispatch()
@@ -274,10 +275,6 @@ export const UserAvatarPicker = forwardRef<
   }, [avatarUrl, clearCropImageOnly, handleCropCancel, handleDeleteAvatar])
 
   const errorMessage = localError ?? authError
-  const chooseControlClassName = clsx(
-    styles.chooseControl,
-    saving && styles.chooseControlDisabled,
-  )
 
   const fileInput = (
     <input
@@ -320,37 +317,57 @@ export const UserAvatarPicker = forwardRef<
     )
   }
 
+  const handleProfileAvatarClick = () => {
+    if (avatarUrl) {
+      handleOpenExistingAvatar()
+      return
+    }
+    handleOpenAvatarSession()
+  }
+
   return (
     <div className={styles.root}>
-      {avatarUrl ? (
-        <button
-          type="button"
-          className={chooseControlClassName}
-          disabled={saving}
-          onClick={handleOpenExistingAvatar}
-        >
-          <span className={styles.previewSlot} aria-hidden>
-            <span className={styles.previewFallback}>
-              {getToolbarIcon({ key: 'userLoginEdit' })}
-            </span>
-          </span>
-          <span className={styles.chooseLabel}>Change photo</span>
-        </button>
-      ) : (
-        <button
-          type="button"
-          className={chooseControlClassName}
-          disabled={saving}
-          onClick={handleOpenAvatarSession}
-        >
-          <span className={styles.previewSlot} aria-hidden>
-            <span className={styles.previewFallback}>
-              {getToolbarIcon({ key: 'userLoginEdit' })}
-            </span>
-          </span>
-          <span className={styles.chooseLabel}>Choose photo</span>
-        </button>
-      )}
+      <div className={styles.profileRow}>
+        <div className={styles.profileAvatarWrap}>
+          <button
+            type="button"
+            className={clsx(
+              styles.profileAvatar,
+              saving && styles.profileAvatarDisabled,
+            )}
+            disabled={saving}
+            onClick={handleProfileAvatarClick}
+            aria-label={avatarUrl ? 'Change photo' : 'Choose photo'}
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt=""
+                className={styles.profileAvatarImage}
+                draggable={false}
+              />
+            ) : (
+              <span className={styles.profileAvatarPlaceholder} aria-hidden>
+                {getToolbarIcon({ key: 'userLogin' })}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            className={styles.profileAvatarEditBtn}
+            disabled={saving}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={handleProfileAvatarClick}
+            aria-label={avatarUrl ? 'Change photo' : 'Choose photo'}
+            title={avatarUrl ? 'Change photo' : 'Choose photo'}
+          >
+            {getToolbarIcon({ key: 'editLight' })}
+          </button>
+        </div>
+        {userEmail ? (
+          <p className={styles.profileEmail}>{userEmail}</p>
+        ) : null}
+      </div>
       {errorMessage ? (
         <p className={clsx(styles.error, styles.errorVisible)} role="alert">
           {errorMessage}

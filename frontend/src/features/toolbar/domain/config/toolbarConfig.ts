@@ -119,6 +119,8 @@ import {
   initialUserPanelChoicePhotoToolbarState,
   USER_PANEL_KEYS,
   USER_PANEL_CHOICE_PHOTO_TOOLBAR,
+  USER_PANEL_TOOLBAR,
+  initialUserPanelToolbarState,
 } from '../types/userPanel.types'
 
 export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
@@ -563,5 +565,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'userPanelChoicePhoto',
     getBadges: (state: ToolbarState['userPanelChoicePhoto']) => ({}),
     toolbar: USER_PANEL_CHOICE_PHOTO_TOOLBAR,
+  },
+
+  userPanel: {
+    keys: USER_PANEL_KEYS,
+    initialState: initialUserPanelToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'userPanel',
+    getBadges: (state: ToolbarState['userPanel']) => ({}),
+    toolbar: USER_PANEL_TOOLBAR,
   },
 }

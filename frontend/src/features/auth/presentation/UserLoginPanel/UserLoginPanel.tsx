@@ -32,7 +32,6 @@ export const UserLoginPanel: React.FC = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const user = useAppSelector(selectAuthUser)
-  const [profileOpen, setProfileOpen] = useState(false)
   const [avatarCropState, setAvatarCropState] = useState<AvatarCropState>({
     active: false,
   })
@@ -43,9 +42,6 @@ export const UserLoginPanel: React.FC = () => {
 
   const handleAvatarCropStateChange = useCallback((state: AvatarCropState) => {
     setAvatarCropState(state)
-    if (state.active) {
-      setProfileOpen(false)
-    }
   }, [])
 
   const handleCropToolbarActions = useCallback(
@@ -122,7 +118,6 @@ export const UserLoginPanel: React.FC = () => {
   )
 
   const handleLogout = useCallback(() => {
-    setProfileOpen(false)
     setGuestAuthMode('signIn')
     dispatch(logout())
   }, [dispatch])
@@ -176,35 +171,10 @@ export const UserLoginPanel: React.FC = () => {
             <>
               <UserAvatarPicker
                 ref={avatarPickerRef}
+                userEmail={user?.email}
                 onAvatarCropStateChange={handleAvatarCropStateChange}
                 onCropToolbarActions={handleCropToolbarActions}
               />
-              {!avatarCropState.active && user?.name && user?.email ? (
-                <div className={styles.menu}>
-                  <button
-                    type="button"
-                    className={styles.menuItem}
-                    aria-expanded={profileOpen}
-                    onClick={() => setProfileOpen((value) => !value)}
-                  >
-                    <span className={styles.menuItemLabel}>Profile</span>
-                    <span
-                      className={clsx(
-                        styles.menuItemChevron,
-                        profileOpen && styles.menuItemChevronOpen,
-                      )}
-                      aria-hidden
-                    />
-                  </button>
-                  {profileOpen ? (
-                    <div className={styles.profileDetails}>
-                      <p className={styles.profileDetailLineMuted}>
-                        {user.email}
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
             </>
           ) : (
             <GuestAuthSection
