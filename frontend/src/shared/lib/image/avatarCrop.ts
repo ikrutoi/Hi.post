@@ -5,7 +5,7 @@ export const AVATAR_STAGE_BORDER_RADIUS_PX = 4
 export const AVATAR_CROP_SOURCE_SIDE_RATIO = 0.85
 
 /** Доля размера кропа — отображение готовой аватарки в превью. */
-export const AVATAR_PREVIEW_DISPLAY_RATIO = 0.85
+export const AVATAR_PREVIEW_DISPLAY_RATIO = 0.7
 
 /** Доля стороны кропа в UI — радиус скругления углов (8%). */
 export const AVATAR_CROP_CORNER_RADIUS_RATIO = 0.08

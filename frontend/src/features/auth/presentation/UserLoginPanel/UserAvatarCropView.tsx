@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import clsx from 'clsx'
 import { getToolbarIcon } from '@shared/utils/icons'
-import { IconEditLight } from '@shared/ui/icons'
+import { IconEditLight, IconUserLogin } from '@shared/ui/icons'
 import {
   AVATAR_CORNER_RADIUS_RATIO,
   AVATAR_CROP_CORNER_RADIUS_RATIO,
@@ -194,8 +195,11 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
                 ? { width: stageSize, height: stageSize }
                 : undefined
             }
-            aria-hidden
-          />
+          >
+            <div className={styles.stageEmptyPlaceholder} aria-hidden>
+              <IconUserLogin className={styles.stageEmptyIcon} />
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -232,34 +236,32 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
       <div className={styles.root}>
         <div ref={stageFrameRef} className={styles.previewFrame}>
           <div
-            className={styles.stage}
+            className={clsx(styles.stage, styles.stagePreview)}
             style={{
               width: layout.stageSide,
               height: layout.stageSide,
             }}
           >
             <div
-              className={styles.previewCropSlot}
+              className={styles.previewAvatarWrap}
               style={{
                 left: previewDisplay.x,
                 top: previewDisplay.y,
                 width: previewDisplay.size,
                 height: previewDisplay.size,
-                borderRadius: `${previewRadius}px`,
               }}
             >
-              <img
-                src={imageUrl}
-                alt=""
-                className={styles.previewImage}
-                draggable={false}
-                style={{ borderRadius: `${previewRadius}px` }}
-              />
-            </div>
+            <img
+              src={imageUrl}
+              alt=""
+              className={styles.previewImage}
+              draggable={false}
+              style={{ borderRadius: `${previewRadius}px` }}
+            />
             {onDelete ? (
               <button
                 type="button"
-                className={styles.deleteBtn}
+                className={styles.previewDeleteBtn}
                 disabled={saving}
                 onClick={() => onDelete()}
                 aria-label="Delete photo"
@@ -268,6 +270,7 @@ export const UserAvatarCropView: React.FC<UserAvatarCropViewProps> = ({
                 {getToolbarIcon({ key: 'delete' })}
               </button>
             ) : null}
+            </div>
           </div>
         </div>
       </div>
