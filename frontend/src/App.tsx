@@ -36,6 +36,7 @@ import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { useAuthInit } from '@features/auth/application/hooks/useAuthInit'
+import { useCloudBackupFetch } from '@features/sync/application/hooks/useCloudBackupFetch'
 import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
 import { selectAuthInitialized } from '@features/auth/infrastructure/selectors/authSelectors'
 import {
@@ -174,6 +175,7 @@ const App = () => {
   }, [notebookDateTabPeekClearTick])
 
   useAuthInit()
+  useCloudBackupFetch()
   const authInitialized = useAppSelector(selectAuthInitialized)
   const layoutReady = authInitialized
   useLayoutInit()

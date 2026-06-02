@@ -57,4 +57,9 @@ class User extends Authenticatable
         return $this->hasMany(Postcard::class);
     }
 
+    public function postcardSnapshot()
+    {
+        return $this->hasOne(UserPostcardSnapshot::class);
+    }
+
 }

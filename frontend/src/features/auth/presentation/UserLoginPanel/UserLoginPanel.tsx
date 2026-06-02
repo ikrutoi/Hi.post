@@ -27,6 +27,7 @@ import {
   GuestAuthSection,
   type GuestAuthMode,
 } from './GuestAuthSection'
+import { CloudBackupStatus } from '@features/sync/presentation/CloudBackupStatus'
 import styles from './UserLoginPanel.module.scss'
 
 export const UserLoginPanel: React.FC = () => {
@@ -176,6 +177,7 @@ export const UserLoginPanel: React.FC = () => {
                 onAvatarCropStateChange={handleAvatarCropStateChange}
                 onCropToolbarActions={handleCropToolbarActions}
               />
+              <CloudBackupStatus />
             </>
           ) : (
             <GuestAuthSection

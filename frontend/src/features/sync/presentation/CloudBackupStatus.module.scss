@@ -1,0 +1,55 @@
+@use '@styles/config/colors' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.status {
+  margin: 0;
+  padding: 0.35rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: $color-font-enabled-light;
+  word-break: break-word;
+}
+
+.status[data-status='failed'] {
+  color: $color-preview-indicator-error;
+}
+
+.backupButton {
+  align-self: stretch;
+  padding: 0.48rem 0.75rem;
+  border: 1px solid $color-app-substrate-border;
+  border-radius: 4px;
+  background: transparent;
+  color: $color-font-enabled;
+  font: inherit;
+  font-size: 0.8125rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: $color-active;
+    color: $color-font-enabled;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.uploadError {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: $color-preview-indicator-error;
+}
