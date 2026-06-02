@@ -3,6 +3,7 @@ import { logout } from '@features/auth/infrastructure/state/auth.slice'
 import type { PostcardSyncState } from '../domain/types/postcardSync.types'
 import {
   fetchCloudBackupThunk,
+  restoreCloudBackupThunk,
   uploadCloudBackupThunk,
 } from './postcardSync.thunks'
 
@@ -12,6 +13,8 @@ const initialState: PostcardSyncState = {
   error: null,
   uploadStatus: 'idle',
   uploadError: null,
+  restoreStatus: 'idle',
+  restoreError: null,
 }
 
 export const postcardSyncSlice = createSlice({
@@ -21,6 +24,7 @@ export const postcardSyncSlice = createSlice({
     clearCloudBackupError(state) {
       state.error = null
       state.uploadError = null
+      state.restoreError = null
     },
     resetPostcardSyncState() {
       return initialState
@@ -53,6 +57,17 @@ export const postcardSyncSlice = createSlice({
       .addCase(uploadCloudBackupThunk.rejected, (state, action) => {
         state.uploadStatus = 'failed'
         state.uploadError = action.payload || 'Failed to save cloud backup'
+      })
+      .addCase(restoreCloudBackupThunk.pending, (state) => {
+        state.restoreStatus = 'loading'
+        state.restoreError = null
+      })
+      .addCase(restoreCloudBackupThunk.fulfilled, (state) => {
+        state.restoreStatus = 'succeeded'
+      })
+      .addCase(restoreCloudBackupThunk.rejected, (state, action) => {
+        state.restoreStatus = 'failed'
+        state.restoreError = action.payload || 'Failed to restore cloud backup'
       })
       .addCase(logout, () => initialState)
   },

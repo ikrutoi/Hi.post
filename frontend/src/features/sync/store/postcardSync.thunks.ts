@@ -1,10 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
+import type { RootState } from '@app/state'
 import { postcardsAdapter } from '@db/adapters/storeAdapters/postcardsAdapter'
+import { restoreLocalPostcardsFromSnapshot } from '../application/services/restoreLocalPostcards'
 import {
   POSTCARD_SYNC_PAYLOAD_VERSION,
   type PostcardSyncSnapshot,
 } from '../domain/types/postcardSync.types'
 import { getPostcardSyncRepository } from '../infrastructure'
+import { rehydratePostcardsFromIdb } from './postcardSync.actions'
 
 export const fetchCloudBackupThunk = createAsyncThunk<
   PostcardSyncSnapshot | null,
@@ -36,6 +39,28 @@ export const uploadCloudBackupThunk = createAsyncThunk<
   } catch (err) {
     const message =
       err instanceof Error ? err.message : 'Failed to save cloud backup'
+    return thunkAPI.rejectWithValue(message)
+  }
+})
+
+export const restoreCloudBackupThunk = createAsyncThunk<
+  number,
+  void,
+  { rejectValue: string; state: RootState }
+>('postcardSync/restoreCloudBackup', async (_, thunkAPI) => {
+  const snapshot = thunkAPI.getState().postcardSync.cloudBackup
+
+  if (!snapshot) {
+    return thunkAPI.rejectWithValue('No cloud backup to restore')
+  }
+
+  try {
+    await restoreLocalPostcardsFromSnapshot(snapshot.postcards)
+    thunkAPI.dispatch(rehydratePostcardsFromIdb())
+    return snapshot.postcards.length
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : 'Failed to restore cloud backup'
     return thunkAPI.rejectWithValue(message)
   }
 })

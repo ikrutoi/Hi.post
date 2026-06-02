@@ -17,6 +17,12 @@ export const selectCloudBackupUploadStatus = (state: RootState) =>
 export const selectCloudBackupUploadError = (state: RootState) =>
   state.postcardSync.uploadError
 
+export const selectCloudBackupRestoreStatus = (state: RootState) =>
+  state.postcardSync.restoreStatus
+
+export const selectCloudBackupRestoreError = (state: RootState) =>
+  state.postcardSync.restoreError
+
 export const selectHasCloudBackup = (state: RootState) =>
   state.postcardSync.cloudBackup != null
 

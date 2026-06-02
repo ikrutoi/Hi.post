@@ -5,10 +5,17 @@ import {
   selectCloudBackupError,
   selectCloudBackupFetchStatus,
   selectCloudBackupPostcardCount,
+  selectCloudBackupRestoreError,
+  selectCloudBackupRestoreStatus,
   selectCloudBackupUploadError,
   selectCloudBackupUploadStatus,
+  selectHasCloudBackup,
 } from '../infrastructure/selectors/postcardSyncSelectors'
-import { clearCloudBackupError, uploadCloudBackupThunk } from '../store'
+import {
+  clearCloudBackupError,
+  restoreCloudBackupThunk,
+  uploadCloudBackupThunk,
+} from '../store'
 import styles from './CloudBackupStatus.module.scss'
 
 function formatBackupDate(value: string | null | undefined): string | null {
@@ -30,14 +37,24 @@ export const CloudBackupStatus: React.FC = () => {
   const dispatch = useAppDispatch()
   const fetchStatus = useAppSelector(selectCloudBackupFetchStatus)
   const uploadStatus = useAppSelector(selectCloudBackupUploadStatus)
+  const restoreStatus = useAppSelector(selectCloudBackupRestoreStatus)
   const cloudBackup = useAppSelector(selectCloudBackup)
+  const hasCloudBackup = useAppSelector(selectHasCloudBackup)
   const postcardCount = useAppSelector(selectCloudBackupPostcardCount)
   const fetchError = useAppSelector(selectCloudBackupError)
   const uploadError = useAppSelector(selectCloudBackupUploadError)
+  const restoreError = useAppSelector(selectCloudBackupRestoreError)
 
-  const isBusy = fetchStatus === 'loading' || uploadStatus === 'loading'
+  const isBusy =
+    fetchStatus === 'loading' ||
+    uploadStatus === 'loading' ||
+    restoreStatus === 'loading'
 
   const message = useMemo(() => {
+    if (restoreStatus === 'loading') {
+      return 'Restoring cloud backup…'
+    }
+
     if (uploadStatus === 'loading') {
       return 'Saving cloud backup…'
     }
@@ -48,6 +65,10 @@ export const CloudBackupStatus: React.FC = () => {
 
     if (fetchStatus === 'failed') {
       return fetchError ?? 'Could not check cloud backup.'
+    }
+
+    if (restoreStatus === 'succeeded') {
+      return 'Local postcards were replaced with the cloud backup.'
     }
 
     if (!cloudBackup) {
@@ -61,21 +82,40 @@ export const CloudBackupStatus: React.FC = () => {
     return updatedLabel
       ? `Cloud backup: ${countLabel} · updated ${updatedLabel}`
       : `Cloud backup: ${countLabel}`
-  }, [cloudBackup, fetchError, fetchStatus, postcardCount, uploadStatus])
+  }, [
+    cloudBackup,
+    fetchError,
+    fetchStatus,
+    postcardCount,
+    restoreStatus,
+    uploadStatus,
+  ])
 
   const handleBackup = useCallback(() => {
     dispatch(clearCloudBackupError())
     void dispatch(uploadCloudBackupThunk())
   }, [dispatch])
 
+  const handleRestore = useCallback(() => {
+    if (!hasCloudBackup) return
+
+    const confirmed = window.confirm(
+      'Replace local postcards with the cloud backup? This will overwrite postcards stored on this device.',
+    )
+    if (!confirmed) return
+
+    dispatch(clearCloudBackupError())
+    void dispatch(restoreCloudBackupThunk())
+  }, [dispatch, hasCloudBackup])
+
   if (import.meta.env.VITE_AUTH_MODE !== 'http') {
     return null
   }
 
   const status =
-    uploadStatus === 'failed'
+    restoreStatus === 'failed' || uploadStatus === 'failed'
       ? 'failed'
-      : uploadStatus === 'loading'
+      : isBusy
         ? 'loading'
         : fetchStatus
 
@@ -85,16 +125,30 @@ export const CloudBackupStatus: React.FC = () => {
         {message}
       </p>
 
-      <button
-        type="button"
-        className={styles.backupButton}
-        disabled={isBusy}
-        onClick={handleBackup}
-      >
-        {uploadStatus === 'loading' ? 'Backing up…' : 'Backup to cloud'}
-      </button>
+      <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.actionButton}
+          disabled={isBusy}
+          onClick={handleBackup}
+        >
+          {uploadStatus === 'loading' ? 'Backing up…' : 'Backup to cloud'}
+        </button>
 
-      {uploadError ? <p className={styles.uploadError}>{uploadError}</p> : null}
+        <button
+          type="button"
+          className={styles.actionButton}
+          disabled={isBusy || !hasCloudBackup}
+          onClick={handleRestore}
+        >
+          {restoreStatus === 'loading' ? 'Restoring…' : 'Restore from cloud'}
+        </button>
+      </div>
+
+      {uploadError ? <p className={styles.actionError}>{uploadError}</p> : null}
+      {restoreError ? (
+        <p className={styles.actionError}>{restoreError}</p>
+      ) : null}
     </div>
   )
 }

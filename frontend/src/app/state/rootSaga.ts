@@ -27,6 +27,7 @@ import {
   watchNotebookStripTabSync,
   watchCartCalendarDatePick,
 } from '../middleware'
+import { watchPostcardSyncRehydrate } from '@features/sync/application/sagas/postcardSyncSaga'
 
 export function* rootSaga() {
   yield fork(hydrateAppSession)
@@ -62,5 +63,6 @@ export function* rootSaga() {
     fork(watchNotebookStateBridge),
     fork(watchNotebookStripTabSync),
     fork(watchCartCalendarDatePick),
+    fork(watchPostcardSyncRehydrate),
   ])
 }

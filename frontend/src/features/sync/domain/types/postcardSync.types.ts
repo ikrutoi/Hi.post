@@ -23,4 +23,6 @@ export type PostcardSyncState = {
   error: string | null
   uploadStatus: PostcardSyncFetchStatus
   uploadError: string | null
+  restoreStatus: PostcardSyncFetchStatus
+  restoreError: string | null
 }
