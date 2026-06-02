@@ -3,6 +3,7 @@ import {
   fetchMeApi,
   loginUserApi,
   registerUserApi,
+  updateAvatarApi,
 } from '../api/auth.api'
 import type { User } from '../domain/types/auth.types'
 import type { AuthRepository } from './authRepository'
@@ -44,7 +45,11 @@ export const httpAuthRepository: AuthRepository = {
     }
   },
 
-  async updateAvatar(_userId, _avatarUrl) {
-    throw new Error('Avatar upload is not available in HTTP auth mode yet')
+  async updateAvatar(_userId, avatarUrl) {
+    try {
+      await updateAvatarApi(avatarUrl)
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'Failed to update avatar'))
+    }
   },
 }

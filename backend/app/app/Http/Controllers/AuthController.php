@@ -71,8 +71,29 @@ class AuthController extends Controller
         return response()->json($this->formatUser($request->user()));
     }
 
+    public function updateAvatar(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'avatarUrl' => ['nullable', 'string', 'max:700000'],
+        ]);
+
+        $avatarUrl = $validated['avatarUrl'] ?? null;
+
+        if ($avatarUrl !== null && ! preg_match('/^data:image\/(jpeg|png|webp);base64,/', $avatarUrl)) {
+            throw ValidationException::withMessages([
+                'avatarUrl' => ['Invalid avatar image format'],
+            ]);
+        }
+
+        $user = $request->user();
+        $user->avatar_url = $avatarUrl;
+        $user->save();
+
+        return response()->json($this->formatUser($user->fresh()));
+    }
+
     /**
-     * @return array{id: string, name: string, email: string, avatarUrl: null}
+     * @return array{id: string, name: string, email: string, avatarUrl: string|null}
      */
     private function formatUser(User $user): array
     {
@@ -80,7 +101,7 @@ class AuthController extends Controller
             'id' => (string) $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'avatarUrl' => null,
+            'avatarUrl' => $user->avatar_url,
         ];
     }
 }
