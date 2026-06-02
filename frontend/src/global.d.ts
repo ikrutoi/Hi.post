@@ -39,6 +39,15 @@ declare module '*.jpeg' {
   export default value
 }
 
+interface ImportMetaEnv {
+  readonly VITE_AUTH_MODE?: 'mock' | 'http'
+  readonly VITE_API_BASE_URL?: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+
 // declare namespace React {
 //   interface HTMLAttributes<T> {
 //     xmlns?: string

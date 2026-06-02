@@ -1,8 +1,21 @@
-import axios from 'axios'
-import { RegisterPayload, LoginPayload } from '../domain/types/auth.types'
+import { httpClient } from '@shared/api/httpClient'
+import type {
+  LoginPayload,
+  RegisterPayload,
+  User,
+} from '../domain/types/auth.types'
+
+export type AuthApiResponse = {
+  user: User
+  token: string
+}
 
 export const registerUserApi = (payload: RegisterPayload) =>
-  axios.post('/api/register', payload)
+  httpClient.post<AuthApiResponse>('/api/register', payload)
 
 export const loginUserApi = (payload: LoginPayload) =>
-  axios.post('/api/login', payload)
+  httpClient.post<AuthApiResponse>('/api/login', payload)
+
+export const fetchMeApi = () => httpClient.get<User>('/api/me')
+
+export const logoutUserApi = () => httpClient.post('/api/logout')

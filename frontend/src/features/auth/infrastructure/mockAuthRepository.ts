@@ -5,6 +5,7 @@ import type {
   User,
 } from '../domain/types/auth.types'
 import type { AuthRepository } from './authRepository'
+import { readAuthSession } from './sessionStorage'
 
 const MOCK_USERS_KEY = 'hi.post.mockAuth.users'
 
@@ -142,5 +143,14 @@ export const mockAuthRepository: AuthRepository = {
     const updated = [...users]
     updated[index] = next
     writeMockUsers(updated)
+  },
+
+  async fetchMe(): Promise<User> {
+    await delay(50)
+    const session = readAuthSession()
+    if (!session?.user) {
+      throw new Error('Not signed in')
+    }
+    return session.user
   },
 }

@@ -1,5 +1,6 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit'
 import type { AuthResponse } from '@features/auth/domain/types/auth.types'
+import { logoutUserApi } from '@features/auth/api/auth.api'
 import { registerThunk, loginThunk, updateAvatarThunk } from '@features/auth/store/auth.thunks'
 import { logout, setAuth } from '@/features/auth/infrastructure/state/auth.slice'
 import {
@@ -37,6 +38,13 @@ authListenerMiddleware.startListening({
 authListenerMiddleware.startListening({
   actionCreator: logout,
   effect: async () => {
+    if (import.meta.env.VITE_AUTH_MODE === 'http') {
+      try {
+        await logoutUserApi()
+      } catch {
+        // Local session is cleared even if the server request fails.
+      }
+    }
     clearAuthSession()
   },
 })

@@ -22,6 +22,7 @@ Route::get('/analytics/users', [AnalyticsController::class, 'userStats']);
 Route::get('/analytics/upcoming', [AnalyticsController::class, 'upcomingStats']);
 Route::get('/analytics/range', [AnalyticsController::class, 'dynamicRange']);
 
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware(['auth:sanctum', \App\Http\Middleware\EnsureUserIsActive::class])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);

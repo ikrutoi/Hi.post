@@ -3,16 +3,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function login(Request $request)
+    public function register(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+            'is_active' => true,
+            'role' => 'user',
+        ]);
+
+        return response()->json([
+            'user' => $this->formatUser($user),
+            'token' => $user->createToken('HiPostToken')->plainTextToken,
+        ], 201);
+    }
+
+    public function login(Request $request): JsonResponse
     {
         $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
@@ -24,20 +47,40 @@ class AuthController extends Controller
             ]);
         }
 
+        if (! $user->is_active) {
+            throw ValidationException::withMessages([
+                'email' => ['This account has been deactivated'],
+            ]);
+        }
+
         return response()->json([
-            'token' => $user->createToken('HiPostToken')->plainTextToken
+            'user' => $this->formatUser($user),
+            'token' => $user->createToken('HiPostToken')->plainTextToken,
         ]);
     }
 
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
         $request->user()->tokens()->delete();
+
         return response()->json(['message' => 'The exit is complete']);
     }
 
-    public function me(Request $request)
+    public function me(Request $request): JsonResponse
     {
-        return response()->json($request->user());
+        return response()->json($this->formatUser($request->user()));
+    }
+
+    /**
+     * @return array{id: string, name: string, email: string, avatarUrl: null}
+     */
+    private function formatUser(User $user): array
+    {
+        return [
+            'id' => (string) $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'avatarUrl' => null,
+        ];
     }
 }
-
