@@ -78,6 +78,8 @@ $auth-password-toggle-hit-size: 1.7rem;
 }
 
 .passwordToggleIcon {
+  display: block;
+  flex-shrink: 0;
   width: $auth-password-toggle-icon-size;
   height: $auth-password-toggle-icon-size;
 }
