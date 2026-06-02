@@ -28,3 +28,15 @@ export const selectHasCloudBackup = (state: RootState) =>
 
 export const selectCloudBackupPostcardCount = (state: RootState) =>
   state.postcardSync.cloudBackup?.postcards.length ?? 0
+
+export const selectAutoBackupPending = (state: RootState) =>
+  state.postcardSync.autoBackupPending
+
+export const selectLastAutoBackupAt = (state: RootState) =>
+  state.postcardSync.lastAutoBackupAt
+
+export const selectRestorePromptOpen = (state: RootState) =>
+  state.postcardSync.restorePromptOpen
+
+export const selectRestorePromptCloudUpdatedAt = (state: RootState) =>
+  state.postcardSync.restorePromptCloudUpdatedAt

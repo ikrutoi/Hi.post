@@ -1,6 +1,7 @@
 import type { SagaIterator } from 'redux-saga'
 import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
+import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 import { clearCardPieWorkspaceAfterCartAdd } from './editorPieHandlers'
 import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
 import { addItem } from '@cart/infrastructure/state'
@@ -330,6 +331,7 @@ export function* createPostcardsFromEditor(): SagaIterator {
 
   if (didAddToCart) {
     yield put(clearDate())
+    yield put(postcardLocalDataChanged())
   }
 
   yield call(refreshRightSidebarBadgesFromPostcards)
@@ -615,6 +617,7 @@ export function* handleToggleCartForDispatchBranch(
   yield* removeCardPiePlanBranchAfterCart(branchKey)
   yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
   yield call(refreshRightSidebarBadgesFromPostcards)
+  yield put(postcardLocalDataChanged())
 }
 
 export function* refreshRightSidebarBadgesFromPostcards(): SagaIterator {

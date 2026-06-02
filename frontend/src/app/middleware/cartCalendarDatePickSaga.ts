@@ -10,6 +10,7 @@ import { setCartCalendarDatePickMode } from '@date/calendar/infrastructure/state
 import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import type { PostcardHydrated } from '@entities/postcard'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
+import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 
 function* handleCartCalendarDatePickApplied(
   action: ReturnType<typeof cartCalendarDatePickApplied>,
@@ -39,6 +40,7 @@ function* handleCartCalendarDatePickApplied(
     yield put(updateItem(next))
     /** Бэйдж иконки `cart` правого сайдбара пересчитывается из IDB. */
     yield call(refreshRightSidebarBadgesFromPostcards)
+    yield put(postcardLocalDataChanged())
   }
 
   yield put(setCartCalendarDatePickMode(false))

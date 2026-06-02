@@ -60,3 +60,67 @@
   line-height: 1.35;
   color: $color-preview-indicator-error;
 }
+
+.restorePrompt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid $color-app-substrate-border;
+  border-radius: 4px;
+  background: rgba($color-active, 0.06);
+}
+
+.restorePromptText {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: $color-font-enabled;
+}
+
+.restorePromptActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.promptButtonPrimary,
+.promptButtonSecondary {
+  width: 100%;
+  padding: 0.48rem 0.75rem;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 0.8125rem;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    opacity 0.15s ease;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.promptButtonPrimary {
+  border: 1px solid $color-active;
+  background: $color-active;
+  color: $color-font-enabled;
+
+  &:hover:not(:disabled) {
+    opacity: 0.92;
+  }
+}
+
+.promptButtonSecondary {
+  border: 1px solid $color-app-substrate-border;
+  background: transparent;
+  color: $color-font-enabled;
+
+  &:hover:not(:disabled) {
+    border-color: $color-active;
+  }
+}

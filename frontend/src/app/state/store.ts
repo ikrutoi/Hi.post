@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import createSagaMiddleware from 'redux-saga'
 import { rootReducer } from './rootReducer'
 import { authListenerMiddleware } from '@middleware/authListener'
+import { postcardSyncListenerMiddleware } from '@middleware/postcardSyncListener'
 import { rootSaga } from './rootSaga'
 
 const sagaMiddleware = createSagaMiddleware()
@@ -24,6 +25,7 @@ export const store = configureStore({
         ],
       },
     })
+      .prepend(postcardSyncListenerMiddleware.middleware)
       .prepend(authListenerMiddleware.middleware)
       .concat(sagaMiddleware),
 })

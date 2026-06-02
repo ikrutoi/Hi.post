@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
+  selectAutoBackupPending,
   selectCloudBackup,
   selectCloudBackupError,
   selectCloudBackupFetchStatus,
@@ -10,9 +11,12 @@ import {
   selectCloudBackupUploadError,
   selectCloudBackupUploadStatus,
   selectHasCloudBackup,
+  selectLastAutoBackupAt,
+  selectRestorePromptOpen,
 } from '../infrastructure/selectors/postcardSyncSelectors'
 import {
   clearCloudBackupError,
+  dismissRestorePrompt,
   restoreCloudBackupThunk,
   uploadCloudBackupThunk,
 } from '../store'
@@ -44,11 +48,28 @@ export const CloudBackupStatus: React.FC = () => {
   const fetchError = useAppSelector(selectCloudBackupError)
   const uploadError = useAppSelector(selectCloudBackupUploadError)
   const restoreError = useAppSelector(selectCloudBackupRestoreError)
+  const autoBackupPending = useAppSelector(selectAutoBackupPending)
+  const lastAutoBackupAt = useAppSelector(selectLastAutoBackupAt)
+  const restorePromptOpen = useAppSelector(selectRestorePromptOpen)
 
   const isBusy =
     fetchStatus === 'loading' ||
     uploadStatus === 'loading' ||
     restoreStatus === 'loading'
+
+  const restorePromptMessage = useMemo(() => {
+    if (!cloudBackup) return null
+
+    const updatedLabel = formatBackupDate(cloudBackup.updatedAt)
+    const countLabel =
+      postcardCount === 1 ? '1 postcard' : `${postcardCount} postcards`
+
+    if (updatedLabel) {
+      return `Cloud backup from ${updatedLabel} (${countLabel}) differs from this device. Restore it?`
+    }
+
+    return `Cloud backup with ${countLabel} differs from this device. Restore it?`
+  }, [cloudBackup, postcardCount])
 
   const message = useMemo(() => {
     if (restoreStatus === 'loading') {
@@ -57,6 +78,10 @@ export const CloudBackupStatus: React.FC = () => {
 
     if (uploadStatus === 'loading') {
       return 'Saving cloud backup…'
+    }
+
+    if (autoBackupPending) {
+      return 'Changes will sync to cloud…'
     }
 
     if (fetchStatus === 'loading' || fetchStatus === 'idle') {
@@ -72,20 +97,28 @@ export const CloudBackupStatus: React.FC = () => {
     }
 
     if (!cloudBackup) {
-      return 'No cloud backup yet.'
+      return 'No cloud backup yet. Local changes sync automatically when signed in.'
     }
 
     const updatedLabel = formatBackupDate(cloudBackup.updatedAt)
     const countLabel =
       postcardCount === 1 ? '1 postcard' : `${postcardCount} postcards`
+    const syncedLabel = formatBackupDate(lastAutoBackupAt)
 
-    return updatedLabel
-      ? `Cloud backup: ${countLabel} · updated ${updatedLabel}`
-      : `Cloud backup: ${countLabel}`
+    if (updatedLabel) {
+      const base = `Cloud backup: ${countLabel} · updated ${updatedLabel}`
+      return syncedLabel && syncedLabel !== updatedLabel
+        ? `${base} · auto-saved ${syncedLabel}`
+        : base
+    }
+
+    return `Cloud backup: ${countLabel}`
   }, [
+    autoBackupPending,
     cloudBackup,
     fetchError,
     fetchStatus,
+    lastAutoBackupAt,
     postcardCount,
     restoreStatus,
     uploadStatus,
@@ -108,6 +141,15 @@ export const CloudBackupStatus: React.FC = () => {
     void dispatch(restoreCloudBackupThunk())
   }, [dispatch, hasCloudBackup])
 
+  const handleRestoreFromPrompt = useCallback(() => {
+    dispatch(clearCloudBackupError())
+    void dispatch(restoreCloudBackupThunk())
+  }, [dispatch])
+
+  const handleKeepLocal = useCallback(() => {
+    dispatch(dismissRestorePrompt())
+  }, [dispatch])
+
   if (import.meta.env.VITE_AUTH_MODE !== 'http') {
     return null
   }
@@ -115,12 +157,36 @@ export const CloudBackupStatus: React.FC = () => {
   const status =
     restoreStatus === 'failed' || uploadStatus === 'failed'
       ? 'failed'
-      : isBusy
+      : isBusy || autoBackupPending
         ? 'loading'
         : fetchStatus
 
   return (
     <div className={styles.root}>
+      {restorePromptOpen && restorePromptMessage ? (
+        <div className={styles.restorePrompt} role="alert">
+          <p className={styles.restorePromptText}>{restorePromptMessage}</p>
+          <div className={styles.restorePromptActions}>
+            <button
+              type="button"
+              className={styles.promptButtonPrimary}
+              disabled={isBusy}
+              onClick={handleRestoreFromPrompt}
+            >
+              {restoreStatus === 'loading' ? 'Restoring…' : 'Restore from cloud'}
+            </button>
+            <button
+              type="button"
+              className={styles.promptButtonSecondary}
+              disabled={isBusy}
+              onClick={handleKeepLocal}
+            >
+              Keep device copy
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       <p className={styles.status} aria-live="polite" data-status={status}>
         {message}
       </p>

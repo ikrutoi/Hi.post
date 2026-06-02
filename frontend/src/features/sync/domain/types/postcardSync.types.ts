@@ -25,4 +25,9 @@ export type PostcardSyncState = {
   uploadError: string | null
   restoreStatus: PostcardSyncFetchStatus
   restoreError: string | null
+  autoBackupPending: boolean
+  lastAutoBackupAt: string | null
+  restorePromptOpen: boolean
+  restorePromptCloudUpdatedAt: string | null
+  restorePromptDismissedForUpdatedAt: string | null
 }

@@ -5,6 +5,7 @@ import { postcardsAdapter } from '@db/adapters/storeAdapters'
 import { selectCartItems } from '@cart/infrastructure/selectors'
 import { removeCartPostcard, removeItem } from '@cart/infrastructure/state'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
+import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 
 function* handleRemoveCartPostcard(
   action: ReturnType<typeof removeCartPostcard>,
@@ -23,6 +24,7 @@ function* handleRemoveCartPostcard(
 
   yield put(removeItem(localId))
   yield call(refreshRightSidebarBadgesFromPostcards)
+  yield put(postcardLocalDataChanged())
 }
 
 export function* watchCartRemove(): SagaIterator {

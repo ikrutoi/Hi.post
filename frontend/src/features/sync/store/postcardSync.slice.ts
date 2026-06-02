@@ -15,6 +15,11 @@ const initialState: PostcardSyncState = {
   uploadError: null,
   restoreStatus: 'idle',
   restoreError: null,
+  autoBackupPending: false,
+  lastAutoBackupAt: null,
+  restorePromptOpen: false,
+  restorePromptCloudUpdatedAt: null,
+  restorePromptDismissedForUpdatedAt: null,
 }
 
 export const postcardSyncSlice = createSlice({
@@ -28,6 +33,29 @@ export const postcardSyncSlice = createSlice({
     },
     resetPostcardSyncState() {
       return initialState
+    },
+    setAutoBackupPending(state, action: { payload: boolean }) {
+      state.autoBackupPending = action.payload
+    },
+    openRestorePrompt(
+      state,
+      action: { payload: { cloudUpdatedAt: string } },
+    ) {
+      const { cloudUpdatedAt } = action.payload
+      if (state.restorePromptDismissedForUpdatedAt === cloudUpdatedAt) return
+
+      state.restorePromptOpen = true
+      state.restorePromptCloudUpdatedAt = cloudUpdatedAt
+    },
+    dismissRestorePrompt(state) {
+      if (state.restorePromptCloudUpdatedAt) {
+        state.restorePromptDismissedForUpdatedAt =
+          state.restorePromptCloudUpdatedAt
+      }
+      state.restorePromptOpen = false
+    },
+    closeRestorePrompt(state) {
+      state.restorePromptOpen = false
     },
   },
   extraReducers: (builder) => {
@@ -47,12 +75,14 @@ export const postcardSyncSlice = createSlice({
       .addCase(uploadCloudBackupThunk.pending, (state) => {
         state.uploadStatus = 'loading'
         state.uploadError = null
+        state.autoBackupPending = false
       })
       .addCase(uploadCloudBackupThunk.fulfilled, (state, action) => {
         state.uploadStatus = 'succeeded'
         state.cloudBackup = action.payload
         state.fetchStatus = 'succeeded'
         state.error = null
+        state.lastAutoBackupAt = action.payload.updatedAt
       })
       .addCase(uploadCloudBackupThunk.rejected, (state, action) => {
         state.uploadStatus = 'failed'
@@ -64,6 +94,11 @@ export const postcardSyncSlice = createSlice({
       })
       .addCase(restoreCloudBackupThunk.fulfilled, (state) => {
         state.restoreStatus = 'succeeded'
+        state.restorePromptOpen = false
+        if (state.restorePromptCloudUpdatedAt) {
+          state.restorePromptDismissedForUpdatedAt =
+            state.restorePromptCloudUpdatedAt
+        }
       })
       .addCase(restoreCloudBackupThunk.rejected, (state, action) => {
         state.restoreStatus = 'failed'
@@ -73,7 +108,13 @@ export const postcardSyncSlice = createSlice({
   },
 })
 
-export const { clearCloudBackupError, resetPostcardSyncState } =
-  postcardSyncSlice.actions
+export const {
+  clearCloudBackupError,
+  resetPostcardSyncState,
+  setAutoBackupPending,
+  openRestorePrompt,
+  dismissRestorePrompt,
+  closeRestorePrompt,
+} = postcardSyncSlice.actions
 
 export const postcardSyncReducer = postcardSyncSlice.reducer
