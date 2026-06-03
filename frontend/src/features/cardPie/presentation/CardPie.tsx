@@ -39,6 +39,9 @@ const PATTERN = {
 
 const PIE_EMPTY_ICON_SIZE = 1440
 const PIE_EMPTY_ICON_HALF = PIE_EMPTY_ICON_SIZE / 2
+/** Empty envelope sector: icon sits slightly left of pattern center for visual balance. */
+const PIE_ENVELOPE_EMPTY_ICON_X = 1180
+const PIE_ENVELOPE_EMPTY_ICON_Y = 1280
 
 export const CardPie: React.FC<CardPieProps> = ({
   isProcessed = false,
@@ -303,7 +306,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                   />
                   <g
                     className={styles.pieSectorIconBg}
-                    transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                    transform={`translate(${PIE_ENVELOPE_EMPTY_ICON_X}, ${PIE_ENVELOPE_EMPTY_ICON_Y}) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
                   >
                     <IconSectionMenuEnvelopeV2
                       width={PIE_EMPTY_ICON_SIZE}
@@ -371,7 +374,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                   />
                   <g
                     className={styles.pieSectorIconBg}
-                    transform={`translate(1280, 1280) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                    transform={`translate(${PIE_ENVELOPE_EMPTY_ICON_X}, ${PIE_ENVELOPE_EMPTY_ICON_Y}) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
                   >
                     <IconSectionMenuEnvelopeV2
                       width={PIE_EMPTY_ICON_SIZE}
