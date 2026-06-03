@@ -46,3 +46,12 @@ $list-entry-thumb-inset-sm: 0.3125rem; // 5px
   padding-right: calc(0.25rem + #{$list-panel-scroll-gutter});
   margin-right: calc(0.25rem + #{$list-panel-scroll-gutter});
 }
+
+/** Date calendar peek — rem only; scales with `--app-ui-scale`. */
+$date-peek-year-font-size: 4.5rem;
+$date-peek-day-font-size: 11rem;
+$date-peek-month-font-size: 4.5rem;
+$date-peek-year-font-size-compact: 3rem;
+$date-peek-day-font-size-compact: 6.5rem;
+$date-peek-month-font-size-compact: 3rem;
+$date-peek-container-compact-max: 18rem;

@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 .date {
   position: relative;
@@ -30,6 +31,7 @@
   border-radius: 0.5rem;
   box-shadow: $shadow-card;
   background-color: #fff;
+  container-type: inline-size;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -68,21 +70,35 @@
 }
 
 .peekYear {
-  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-size: $date-peek-year-font-size;
   font-weight: 400;
   line-height: 1.1;
 }
 
 .peekDay {
-  font-size: clamp(6.5rem, 24vw, 11rem);
+  font-size: $date-peek-day-font-size;
   font-weight: 600;
   line-height: 1;
 }
 
 .peekMonth {
-  font-size: clamp(3rem, 8vw, 4.5rem);
+  font-size: $date-peek-month-font-size;
   font-weight: 400;
   line-height: 1.1;
+}
+
+@container (max-width: #{$date-peek-container-compact-max}) {
+  .peekYear {
+    font-size: $date-peek-year-font-size-compact;
+  }
+
+  .peekDay {
+    font-size: $date-peek-day-font-size-compact;
+  }
+
+  .peekMonth {
+    font-size: $date-peek-month-font-size-compact;
+  }
 }
 
 .slider {
