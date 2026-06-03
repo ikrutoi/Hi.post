@@ -90,14 +90,16 @@ export const LoginForm: React.FC = () => {
         {loading ? 'Signing in…' : 'Sign in'}
       </button>
 
-      <button
-        className={styles.secondaryButton}
-        type="button"
-        disabled={loading}
-        onClick={handleDevLogin}
-      >
-        Dev login
-      </button>
+      {import.meta.env.DEV ? (
+        <button
+          className={styles.secondaryButton}
+          type="button"
+          disabled={loading}
+          onClick={handleDevLogin}
+        >
+          Dev login
+        </button>
+      ) : null}
     </form>
   )
 }

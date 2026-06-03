@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 /* Density 1 — default row; density 2 — height like HistoryListEntryShort level 3, type/icons unchanged. */
 $entry-row-height: 2.28rem;
@@ -16,7 +17,7 @@ $entry-row-height-compact: 2.28rem;
   padding: 1px 0.5rem 1px 0.5rem;
   background-color: $color-envelope-recipient-input;
   border: 1px solid $color-envelope-recipient-border;
-  border-radius: 4px;
+  border-radius: $list-entry-radius-sm;
   user-select: none;
   transition:
     background-color 0.15s ease,
@@ -34,11 +35,11 @@ $entry-row-height-compact: 2.28rem;
 
   &[data-selected='true'] {
     background-color: darken($color-envelope-recipient-input, 2%);
-    box-shadow: -2px 0 0 0 $color-toggle-active;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-focused='true'] {
-    box-shadow: -2px 0 0 0 $color-toggle-active;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
     border-color: $color-envelope-recipient-border;
   }
 
@@ -76,7 +77,7 @@ $entry-row-height-compact: 2.28rem;
   flex-direction: row;
   align-items: center;
   gap: 0.18rem;
-  min-height: calc(#{$entry-row-height-compact} - 2px);
+  min-height: calc(#{$entry-row-height-compact} - #{$list-entry-border-adjust});
 }
 
 .rootSender {
@@ -109,7 +110,7 @@ $entry-row-height-compact: 2.28rem;
   align-items: stretch;
   justify-content: center;
   gap: 0.06rem;
-  min-height: calc(#{$entry-row-height} - 2px);
+  min-height: calc(#{$entry-row-height} - #{$list-entry-border-adjust});
   width: 100%;
   min-width: 0;
   box-sizing: border-box;

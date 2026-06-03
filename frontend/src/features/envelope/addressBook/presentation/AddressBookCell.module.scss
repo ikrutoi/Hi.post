@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 .root {
   position: relative;
@@ -12,7 +13,7 @@
   padding: 0.35rem 0.3rem 0.28rem;
   background-color: $color-envelope-recipient-input;
   border: 1px solid $color-envelope-recipient-border;
-  border-radius: 6px;
+  border-radius: $list-entry-radius-lg;
   user-select: none;
   transition:
     background-color 0.15s ease,
@@ -30,12 +31,12 @@
   &[data-selected='true'] {
     background-color: darken($color-envelope-recipient-input, 2%);
     border-color: $color-envelope-recipient-border;
-    box-shadow: -2px 0 0 0 $color-toggle-active;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-focused='true'] {
     border-color: $color-envelope-recipient-border;
-    box-shadow: -2px 0 0 0 $color-toggle-active;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 }
 
@@ -54,12 +55,12 @@
   &[data-selected='true'] {
     background-color: darken($color-envelope-sender-input, 2%);
     border-color: $color-envelope-sender-border;
-    box-shadow: -2px 0 0 0 $color-toggle-active;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-focused='true'] {
     border-color: $color-envelope-sender-border;
-    box-shadow: -2px 0 0 0 $color-toggle-active;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 }
 
