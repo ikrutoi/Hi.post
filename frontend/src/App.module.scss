@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/miniSectionsSlotChrome' as *;
 
 :root {
@@ -334,7 +335,7 @@
   align-items: center;
   justify-content: center;
   width: 2.4rem;
-  height: calc(100% - 8px);
+  height: calc(100% - #{$list-panel-scroll-gutter});
 }
 
 .appMainContentLeftPieWrap,

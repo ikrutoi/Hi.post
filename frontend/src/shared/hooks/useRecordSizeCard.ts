@@ -2,6 +2,7 @@ import { useLayoutEffect } from 'react'
 import {
   getSizeMiniCard,
   getSizeCard,
+  scaleMeasuredHeightToUiScale,
 } from '@shared/utils/layout'
 import { useSizeFacade } from '@layout/application/facades'
 
@@ -40,11 +41,13 @@ export const useRecordSizeCard = (
         if (cancelled) return
         const widthForm = elementForm.clientWidth
         const heightForm = elementForm.clientHeight
+        const viewportHeight = window.innerHeight
         if (skipPanelMeasure) {
           const currentRemSize = remSize ?? 16
           const resultSizeCard = getSizeCard(
             { width: widthForm, height: heightForm },
             currentRemSize,
+            viewportHeight,
           )
           setSizeCard(resultSizeCard)
           return
@@ -53,12 +56,17 @@ export const useRecordSizeCard = (
         const heightCardPanel = elementCardPanel.clientHeight
         const resultSizeMiniCard = getSizeMiniCard({
           width: widthCardPanel,
-          height: heightCardPanel,
+          height: scaleMeasuredHeightToUiScale(
+            heightCardPanel,
+            remSize ?? 16,
+            viewportHeight,
+          ),
         })
         const currentRemSize = remSize ? remSize : 16
         const resultSizeCard = getSizeCard(
           { width: widthForm, height: heightForm },
           currentRemSize,
+          viewportHeight,
         )
 
         setSizeMiniCard(resultSizeMiniCard)
