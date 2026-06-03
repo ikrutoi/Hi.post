@@ -1,7 +1,7 @@
 @use './variables' as *;
 
 body {
-  font-size: $font-size-base;
+  font-size: 1rem;
   font-family: $font-main;
   color: $color-text;
 }

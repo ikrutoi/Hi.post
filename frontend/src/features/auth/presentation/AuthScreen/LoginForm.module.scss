@@ -50,6 +50,11 @@ $auth-password-toggle-hit-size: 1.7rem;
 .passwordField .input {
   padding-right: calc(0.5rem + #{$auth-password-toggle-hit-size} + 0.25rem);
 
+  &::-ms-reveal,
+  &::-ms-clear {
+    display: none;
+  }
+
   &:focus::placeholder {
     opacity: 0;
   }

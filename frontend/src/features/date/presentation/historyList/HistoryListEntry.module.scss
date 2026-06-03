@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 $list-entry-surface: $color-cart-list-surface;
 $list-entry-border: $color-cart-list-border;
@@ -51,7 +52,7 @@ $list-entry-border: $color-cart-list-border;
   padding: 0.25rem 0.24rem 0.2rem;
   background-color: $list-entry-surface;
   border: 1px solid $list-entry-border;
-  border-radius: 6px;
+  border-radius: $list-entry-radius-lg;
   user-select: none;
   transition:
     background-color 0.15s ease,
@@ -81,11 +82,11 @@ $list-entry-border: $color-cart-list-border;
 
   &[data-selected='true'] {
     background-color: darken($list-entry-surface, 3%);
-    box-shadow: -2px 0 0 0 $color-toggle-active;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-toggle-active;
   }
 
   &[data-selected='true'][data-inactive='true'] {
-    box-shadow: -2px 0 0 0
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0
       mix($color-toggle-active, $color-font-disabled, 40%);
   }
 
@@ -95,9 +96,9 @@ $list-entry-border: $color-cart-list-border;
     }
 
     &:focus-visible {
-      outline: 2px solid
+      outline: $list-entry-focus-outline-width solid
         mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
-      outline-offset: 1px;
+      outline-offset: $list-entry-focus-outline-offset;
     }
   }
 

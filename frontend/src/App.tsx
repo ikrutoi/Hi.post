@@ -40,7 +40,6 @@ import { useCloudBackupFetch } from '@features/sync/application/hooks/useCloudBa
 import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
 import { selectAuthInitialized } from '@features/auth/infrastructure/selectors/authSelectors'
 import {
-  useLayoutInit,
   useToolbarClickReset,
   useViewportInit,
 } from '@layout/application/hooks'
@@ -178,7 +177,6 @@ const App = () => {
   useCloudBackupFetch()
   const authInitialized = useAppSelector(selectAuthInitialized)
   const layoutReady = authInitialized
-  useLayoutInit()
   useViewportInit()
   useRecordSizeCard(formRef, cardPanelRef, { enabled: layoutReady })
   const { sizeCard } = useSizeFacade()

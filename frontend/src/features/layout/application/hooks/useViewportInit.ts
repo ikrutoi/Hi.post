@@ -1,6 +1,11 @@
 import { useEffect } from 'react'
+import { calcAppUiScale } from '@shared/utils/layout'
 import { useSizeFacade } from '../facades/useSizeFacade'
-import type { ViewportSize } from '@shared/config/constants'
+import {
+  applyAppUiScale,
+  getRemSize,
+  getViewportBreakpoint,
+} from '../../helpers'
 
 const getWindowSize = () => ({
   width: typeof window !== 'undefined' ? window.innerWidth : 1024,
@@ -8,29 +13,25 @@ const getWindowSize = () => ({
 })
 
 export const useViewportInit = () => {
-  const { setViewportSize } = useSizeFacade()
+  const { setViewportSize, setRemSize } = useSizeFacade()
 
   useEffect(() => {
-    const updateSize = () => {
+    const updateLayoutScale = () => {
       const { width, height } = getWindowSize()
+      const uiScale = calcAppUiScale(width, height)
 
-      const viewportSize: ViewportSize =
-        width < 576
-          ? 'xs'
-          : width < 768
-            ? 'sm'
-            : width < 992
-              ? 'md'
-              : width < 1200
-                ? 'lg'
-                : 'xl'
-
-      setViewportSize({ width, height, viewportSize })
+      applyAppUiScale(uiScale)
+      setRemSize(getRemSize())
+      setViewportSize({
+        width,
+        height,
+        viewportSize: getViewportBreakpoint(width),
+      })
     }
 
-    updateSize()
+    updateLayoutScale()
 
-    window.addEventListener('resize', updateSize)
-    return () => window.removeEventListener('resize', updateSize)
-  }, [setViewportSize])
+    window.addEventListener('resize', updateLayoutScale)
+    return () => window.removeEventListener('resize', updateLayoutScale)
+  }, [setRemSize, setViewportSize])
 }

@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 /**
  * Плотность списка истории (`data-density-level`):
@@ -71,7 +72,7 @@ $list-entry-border: $color-cart-list-border;
   box-sizing: border-box;
   background-color: $list-entry-surface;
   border: 1px solid $list-entry-border;
-  border-radius: 4px;
+  border-radius: $list-entry-radius-sm;
   user-select: none;
   transition:
     background-color 0.15s ease,
@@ -123,12 +124,12 @@ $list-entry-border: $color-cart-list-border;
 
   &[data-selected='true'] {
     background-color: darken($list-entry-surface, 3%);
-    box-shadow: -2px 0 0 0 $color-app-sidebar-icon-active;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-app-sidebar-icon-active;
     --action-btn-bg: #{mix(darken($list-entry-surface, 3%), #fff, 82%)};
     --action-btn-bg-hover: #{mix(darken($list-entry-surface, 3%), #fff, 72%)};
 
     &[data-inactive='true'] {
-      box-shadow: -2px 0 0 0
+      box-shadow: -#{$list-entry-accent-bar-width} 0 0 0
         mix($color-app-sidebar-icon-active, $color-font-disabled, 40%);
       $sel-bg: darken($list-entry-surface, 3%);
       --action-btn-bg: #{mix($sel-bg, #fff, 86%)};
@@ -142,9 +143,9 @@ $list-entry-border: $color-cart-list-border;
     }
 
     &:focus-visible {
-      outline: 2px solid
+      outline: $list-entry-focus-outline-width solid
         mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
-      outline-offset: 1px;
+      outline-offset: $list-entry-focus-outline-offset;
     }
   }
 
@@ -246,7 +247,7 @@ $list-entry-border: $color-cart-list-border;
 .rightPack .actionBtn {
   width: 1.05rem;
   height: 1.05rem;
-  border-radius: 5px;
+  border-radius: $list-entry-radius-md;
 
   :global(svg) {
     width: 0.7rem;
@@ -257,7 +258,7 @@ $list-entry-border: $color-cart-list-border;
 .root[data-density-level='3'] .rightPack .actionBtn {
   width: 0.95rem;
   height: 0.95rem;
-  border-radius: 4px;
+  border-radius: $list-entry-radius-sm;
 
   :global(svg) {
     width: 0.62rem;
@@ -271,7 +272,7 @@ $list-entry-border: $color-cart-list-border;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  border-radius: 6px;
+  border-radius: $list-entry-radius-lg;
   background-color: var(--action-btn-bg);
   font: inherit;
   appearance: none;
@@ -314,19 +315,19 @@ $list-entry-border: $color-cart-list-border;
   gap: 0.35rem;
   width: 100%;
   min-width: 0;
-  min-height: calc(3rem - 2px);
+  min-height: calc(3rem - #{$list-entry-border-adjust});
 }
 
 .root[data-density-level='2'] .body {
   align-items: center;
   gap: 0.22rem;
-  min-height: calc(2.65rem - 2px);
+  min-height: calc(2.65rem - #{$list-entry-border-adjust});
 }
 
 .root[data-density-level='3'] .body {
   align-items: center;
   gap: 0.18rem;
-  min-height: calc(2.28rem - 2px);
+  min-height: calc(2.28rem - #{$list-entry-border-adjust});
 }
 
 .statusIndicator {
@@ -404,15 +405,15 @@ $list-entry-border: $color-cart-list-border;
 
 .root[data-density-level='2'] .thumb {
   align-self: center;
-  width: calc(2.65rem - 6px);
-  height: calc(2.65rem - 6px);
+  width: calc(2.65rem - #{$list-entry-thumb-inset-md});
+  height: calc(2.65rem - #{$list-entry-thumb-inset-md});
   aspect-ratio: 1;
 }
 
 .root[data-density-level='3'] .thumb {
   align-self: center;
-  width: calc(2.28rem - 5px);
-  height: calc(2.28rem - 5px);
+  width: calc(2.28rem - #{$list-entry-thumb-inset-sm});
+  height: calc(2.28rem - #{$list-entry-thumb-inset-sm});
   aspect-ratio: 1;
 }
 

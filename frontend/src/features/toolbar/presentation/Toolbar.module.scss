@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 .toolbar {
   width: auto;
@@ -211,29 +212,29 @@
 
   .toolbarBadge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: $toolbar-badge-position-offset;
+    right: $toolbar-badge-position-offset;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    min-width: 16px;
-    height: 16px;
-    padding: 0 4px;
+    min-width: $toolbar-badge-min-width;
+    height: $toolbar-badge-height;
+    padding: 0 $toolbar-badge-padding-x;
 
     background-color: $color-app-sidebar-icon-active;
-    border-radius: 10px;
+    border-radius: $toolbar-badge-radius;
     border: 1px solid #fff;
 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
     pointer-events: none;
     z-index: 10;
   }
 
   .toolbarBadgeValue {
     color: #fff;
-    font-size: 10px;
+    font-size: $toolbar-badge-font-size;
     font-weight: 700;
     line-height: 1;
     font-family: sans-serif;
@@ -241,14 +242,14 @@
 
   .toolbarBadgeDot {
     position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 8px;
-    height: 8px;
+    top: $toolbar-badge-dot-offset;
+    right: $toolbar-badge-dot-offset;
+    width: $toolbar-badge-dot-size;
+    height: $toolbar-badge-dot-size;
     border-radius: 50%;
     background-color: $color-app-sidebar-icon-active;
     border: 1px solid #fff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.2);
     pointer-events: none;
     z-index: 10;
   }
@@ -477,10 +478,6 @@
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
-
-    > * {
-      transform: scale($toolbar-sidebar-icon-scale);
-    }
 
     &.toolbarKeyEnabled {
       color: $color-font-enabled-light;
@@ -774,8 +771,8 @@
   }
 
   .toolbarBadge {
-    min-width: 18px;
-    padding: 0 5px;
+    min-width: $toolbar-badge-min-width-wide;
+    padding: 0 $toolbar-badge-padding-x-wide;
     border-radius: 999px;
   }
 }
@@ -1131,16 +1128,16 @@
   }
 
   .toolbarBadge {
-    top: -1px;
-    right: -1px;
-    min-width: 18px;
-    padding: 0 5px;
+    top: -0.0625rem;
+    right: -0.0625rem;
+    min-width: $toolbar-badge-min-width-wide;
+    padding: 0 $toolbar-badge-padding-x-wide;
     border-radius: 999px;
   }
 
   .toolbarBadgeDot {
-    top: 4px;
-    right: 4px;
+    top: 0.25rem;
+    right: 0.25rem;
   }
 }
 
@@ -1288,7 +1285,7 @@
 .toolbarRecipientsView
   .toolbarGroup:last-child
   .toolbarKey[data-icon-key='listDelete'] {
-  margin-right: calc(0.25rem + 8px);
+  margin-right: calc(0.25rem + #{$list-panel-scroll-gutter});
 }
 
 .toolbarAddressListRecipient .toolbarGroupAddress,

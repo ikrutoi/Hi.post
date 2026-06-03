@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 $list-panel-compact-header-band: 2.35rem;
 $list-panel-stacked-band: 3.75rem;
@@ -44,7 +45,7 @@ $list-panel-list-footer-gap: 1px;
   bottom: calc(
     #{$list-panel-header-lead-row} - #{$list-panel-scroll-inset} + #{$list-panel-list-footer-gap}
   );
-  right: 2px;
+  @include list-panel-scroll-track-right;
   width: 0.75rem;
   border-radius: 0 0.75rem 0.75rem 0;
   overflow: hidden;
@@ -255,7 +256,7 @@ $list-panel-list-footer-gap: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(100% - 0.75rem - 8px);
+  @include list-panel-footer-width;
   height: $list-panel-header-lead-row;
   padding: 0 0.35rem;
   box-sizing: border-box;

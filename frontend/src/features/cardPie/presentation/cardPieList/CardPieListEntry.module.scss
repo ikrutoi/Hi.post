@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 $list-entry-row-height: 3rem;
 $list-entry-thumb-size: 2.75rem;
@@ -25,7 +26,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
   padding: 0.15rem 2rem;
   background-color: #fff;
   border: 1px solid $list-entry-border;
-  border-radius: 4px;
+  border-radius: $list-entry-radius-sm;
 }
 
 /** Левый gutter `2rem`: центр по горизонтали и вертикали. */
@@ -57,7 +58,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
   margin: 0;
   padding: 0;
   border: none;
-  border-radius: 5px;
+  border-radius: $list-entry-radius-md;
   background-color: transparent;
   font: inherit;
   appearance: none;
@@ -154,7 +155,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
   min-height: $list-entry-row-height;
   padding: 1px 0.5rem 1px 0.35rem;
   border: 1px solid $list-entry-border;
-  border-radius: 4px;
+  border-radius: $list-entry-radius-sm;
   user-select: none;
   transition:
     background-color 0.15s ease,
@@ -196,11 +197,11 @@ $list-entry-row-linked-border: $color-cart-list-border;
   }
 
   &[data-selected='true'] {
-    box-shadow: -2px 0 0 0 $color-date-multi;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-date-multi;
     @include list-entry-row-surface(darken($list-entry-surface, 3%));
 
     &[data-inactive='true'] {
-      box-shadow: -2px 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
+      box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
     }
   }
 
@@ -224,7 +225,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
   }
 
   &[data-in-cart='true'][data-selected='true']:not([data-inactive='true']) {
-    box-shadow: -2px 0 0 0 $color-date-multi;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-date-multi;
     @include list-entry-row-surface(
       darken($list-entry-row-linked-surface, 3%)
     );
@@ -247,9 +248,9 @@ $list-entry-row-linked-border: $color-cart-list-border;
     }
 
     &:focus-visible {
-      outline: 2px solid
+      outline: $list-entry-focus-outline-width solid
         mix($list-entry-surface, $color-app-sidebar-icon-active, 55%);
-      outline-offset: 1px;
+      outline-offset: $list-entry-focus-outline-offset;
     }
   }
 }
@@ -270,7 +271,7 @@ $list-entry-row-linked-border: $color-cart-list-border;
   gap: 0.35rem;
   width: 100%;
   min-width: 0;
-  min-height: calc(#{$list-entry-row-height} - 2px);
+  min-height: calc(#{$list-entry-row-height} - #{$list-entry-border-adjust});
 }
 
 .root[data-inactive='true'] .thumbImg {

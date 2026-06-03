@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 $list-panel-stacked-band: 3.75rem;
 $list-panel-compact-header-band: 2.35rem;
@@ -30,7 +31,7 @@ $list-panel-scroll-inset: 0.35rem;
 .panelScrollTrack {
   position: absolute;
   top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
-  right: 2px;
+  @include list-panel-scroll-track-right;
   width: 0.75rem;
   height: calc(
     100% - #{$list-panel-stacked-band} - #{$list-panel-scroll-inset}
@@ -51,7 +52,7 @@ $list-panel-scroll-inset: 0.35rem;
   flex-direction: column;
   flex: 1;
   min-height: 100%;
-  padding: 0.5rem calc(0.25rem + 8px) 0.5rem 0.5rem;
+  @include list-panel-scroll-padding;
   outline: none;
 
   &:focus {

@@ -1,0 +1,48 @@
+/**
+ * Layout tokens in rem — scale with html `--app-ui-scale`.
+ * Keep 1px borders as px for crisp hairlines.
+ */
+
+$list-panel-scroll-gutter: 0.5rem; // 8px @ 16px root
+$list-panel-scroll-track-edge: 0.125rem; // 2px
+$list-panel-caption-font-size: 0.625rem; // 10px
+
+$toolbar-badge-min-width: 1rem; // 16px
+$toolbar-badge-height: 1rem;
+$toolbar-badge-padding-x: 0.25rem; // 4px
+$toolbar-badge-font-size: 0.625rem; // 10px
+$toolbar-badge-radius: 0.625rem; // 10px
+$toolbar-badge-dot-size: 0.5rem; // 8px
+$toolbar-badge-dot-offset: 0.125rem; // 2px
+$toolbar-badge-min-width-wide: 1.125rem; // 18px
+$toolbar-badge-padding-x-wide: 0.3125rem; // 5px
+$toolbar-badge-position-offset: -0.25rem; // -4px
+
+$list-entry-accent-bar-width: 0.125rem; // 2px selection strip
+$list-entry-focus-outline-width: 0.125rem; // 2px
+$list-entry-focus-outline-offset: 0.0625rem; // 1px
+$list-entry-border-adjust: 0.125rem; // 2px — top+bottom 1px borders in min-height calcs
+$list-entry-radius-sm: 0.25rem; // 4px
+$list-entry-radius-md: 0.3125rem; // 5px
+$list-entry-radius-lg: 0.375rem; // 6px
+$list-entry-thumb-inset-md: 0.375rem; // 6px
+$list-entry-thumb-inset-sm: 0.3125rem; // 5px
+
+@mixin list-panel-scroll-padding($inline-end-extra: 0rem) {
+  padding: 0.5rem
+    calc(0.25rem + #{$list-panel-scroll-gutter} + #{$inline-end-extra})
+    0.5rem 0.5rem;
+}
+
+@mixin list-panel-footer-width {
+  width: calc(100% - 0.75rem - #{$list-panel-scroll-gutter});
+}
+
+@mixin list-panel-scroll-track-right {
+  right: $list-panel-scroll-track-edge;
+}
+
+@mixin recipient-content-gutter-right {
+  padding-right: calc(0.25rem + #{$list-panel-scroll-gutter});
+  margin-right: calc(0.25rem + #{$list-panel-scroll-gutter});
+}

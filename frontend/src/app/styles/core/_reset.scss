@@ -1,10 +1,15 @@
+@use './variables' as *;
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-html,
+html {
+  font-size: calc(#{$font-size-base} * var(--app-ui-scale, 1));
+}
+
 body,
 h1,
 h2,

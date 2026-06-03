@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 .root {
   position: relative;
@@ -8,7 +9,7 @@
   box-sizing: border-box;
   background-color: $color-date-input;
   border: 1px solid $color-date-input-border;
-  border-radius: 4px;
+  border-radius: $list-entry-radius-sm;
   user-select: none;
   transition:
     background-color 0.15s ease,
@@ -48,10 +49,10 @@
 
   &[data-selected='true'] {
     background-color: darken($color-date-input, 4%);
-    box-shadow: -2px 0 0 0 $color-date-multi;
+    box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 $color-date-multi;
 
     &[data-inactive='true'] {
-      box-shadow: -2px 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
+      box-shadow: -#{$list-entry-accent-bar-width} 0 0 0 mix($color-date-multi, $color-font-disabled, 40%);
     }
   }
 
@@ -61,8 +62,8 @@
     }
 
     &:focus-visible {
-      outline: 2px solid $color-date-input-border;
-      outline-offset: 1px;
+      outline: $list-entry-focus-outline-width solid $color-date-input-border;
+      outline-offset: $list-entry-focus-outline-offset;
     }
   }
 }
@@ -73,7 +74,7 @@
   gap: 0.35rem;
   width: 100%;
   min-width: 0;
-  min-height: calc(2.65rem - 2px);
+  min-height: calc(2.65rem - #{$list-entry-border-adjust});
 }
 
 .root[data-inactive='true'] .thumbImg {

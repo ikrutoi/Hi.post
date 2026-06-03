@@ -15,16 +15,10 @@
   border: solid 1px red;
 
   $inner-key-size: 2rem;
-  $inner-icon-scale: $toolbar-sidebar-icon-scale-thematic *
-    ($toolbar-sidebar-key-size / $inner-key-size);
 
   button {
     box-sizing: border-box;
     padding: 0.35rem;
-
-    > * {
-      transform: scale($inner-icon-scale);
-    }
   }
 
   :global(.toolbarCardphoto .toolbarKey),

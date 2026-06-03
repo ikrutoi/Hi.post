@@ -1,8 +1,9 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/sectionViewOverlayChip' as overlay;
 
 /* Правый зазор как у правой колонки `.recipientsViewList` / EnvelopeRecipientRow */
-$recipient-content-gutter-right: calc(0.25rem + 8px);
+$recipient-content-gutter-right: calc(0.25rem + #{$list-panel-scroll-gutter});
 
 $saved-address-overlay-chip-size: 1.35rem;
 $saved-address-overlay-chip-radius: 0.4rem;

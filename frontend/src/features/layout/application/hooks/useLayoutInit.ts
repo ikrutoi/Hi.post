@@ -1,11 +1,5 @@
-import { useEffect } from 'react'
-import { getRemSize } from '../../helpers/getRemSize'
-import { useSizeFacade } from '../facades/'
-
-export const useLayoutInit = () => {
-  const { setRemSize } = useSizeFacade()
-
-  useEffect(() => {
-    setRemSize(getRemSize())
-  }, [setRemSize])
-}
+/**
+ * Layout scale (html `--app-ui-scale`, remSize, viewport breakpoints)
+ * is initialized in {@link useViewportInit}.
+ */
+export const useLayoutInit = (): void => {}

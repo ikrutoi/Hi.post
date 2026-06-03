@@ -1,4 +1,3 @@
-export const getRemSize = (): number => {
-  const rootFontSize = getComputedStyle(document.documentElement).fontSize
-  return parseFloat(rootFontSize)
-}
+import { getRootRemSizePx } from './applyAppUiScale'
+
+export const getRemSize = (): number => getRootRemSizePx()
