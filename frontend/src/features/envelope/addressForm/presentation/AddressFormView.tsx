@@ -56,7 +56,11 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     if (active && container?.contains(active)) return
     const len = firstInput.value.length
     firstInput.focus()
-    firstInput.setSelectionRange(len, len)
+    try {
+      firstInput.setSelectionRange(len, len)
+    } catch {
+      /* Edge may reject setSelectionRange on some input types/states */
+    }
   }, [])
 
   const handleKeyDown = (
@@ -121,6 +125,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
       className={clsx(
         addressViewStyles.savedAddressViewContainer,
         addressViewStyles.savedAddressViewContainerFixed,
+        addressViewStyles.savedAddressViewContainerCreate,
       )}
       data-envelope-address-surface
     >
@@ -148,7 +153,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
             addressViewStyles.savedAddressViewCreateForm,
           )}
         >
-          {fields}
+          <div className={styles.addressFormFields}>{fields}</div>
         </div>
       </div>
     </div>

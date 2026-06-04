@@ -104,8 +104,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     selectRecipientsFormViewIdsCount,
   )
 
-  const recipientFieldsetRef = useRef<HTMLFieldSetElement | null>(null)
-  const senderFieldsetRef = useRef<HTMLFieldSetElement | null>(null)
+  const recipientFieldsetRef = useRef<HTMLDivElement | null>(null)
+  const senderFieldsetRef = useRef<HTMLDivElement | null>(null)
 
   const recipientFieldsetContainerScrollRef = useRef<HTMLDivElement | null>(
     null,
@@ -296,7 +296,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   /** Same path as Toolbar → envelope saga (`handleEnvelopeToolbarAction`, key addressList). */
   const handleRecipientFieldsetMouseDownCapture = useCallback(
-    (e: React.MouseEvent<HTMLFieldSetElement>) => {
+    (e: React.MouseEvent<HTMLDivElement>) => {
       const fieldset = recipientFieldsetRef.current
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
@@ -325,7 +325,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   )
 
   const handleSenderFieldsetMouseDownCapture = useCallback(
-    (e: React.MouseEvent<HTMLFieldSetElement>) => {
+    (e: React.MouseEvent<HTMLDivElement>) => {
       const fieldset = senderFieldsetRef.current
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
@@ -362,17 +362,14 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     >
       {senderFacade.isEnabled && role === 'sender' && (
         <div className={styles.addressFormSenderBody}>
-          <fieldset
+          <div
             ref={senderFieldsetRef}
             data-envelope-address-fieldset
+            role="group"
+            aria-label={roleLabel}
             className={clsx(styles.addressFieldset, styles.addressFormSender)}
             onMouseDownCapture={handleSenderFieldsetMouseDownCapture}
           >
-            <legend
-              className={clsx(styles.addressLegend, styles.addressLegendSender)}
-            >
-              {roleLabel}
-            </legend>
             <div
               className={clsx(
                 styles.addressToolbar,
@@ -387,42 +384,44 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               />
             </div>
 
-            {senderView === 'senderCreate' ? (
-              <AddressFormView
-                key="senderCreate"
-                role="sender"
-                roleLabel={roleLabel}
-                address={senderFacade.formDraft}
-                onFieldChange={update}
-                lang={lang}
-              />
-            ) : showSenderDetailCard ? (
-              <SenderView templateId={cardTemplateId!} address={value} />
-            ) : (
-              <div
-                role="button"
-                tabIndex={0}
-                className={clsx(
-                  styles.addressFormPlaceholder,
-                  styles.addressFormPlaceholderSender,
-                  styles.addressFormPlaceholderBg,
-                  styles.senderPlaceholderInset,
-                )}
-                onClick={() => handlePlaceholderClick('sender')}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    handlePlaceholderClick('sender')
-                  }
-                }}
-                aria-label="Add sender address"
-              >
-                <IconUserSender
-                  className={styles.addressFormPlaceholderIconBg}
+            <div className={styles.addressFieldsetInner}>
+              {senderView === 'senderCreate' ? (
+                <AddressFormView
+                  key="senderCreate"
+                  role="sender"
+                  roleLabel={roleLabel}
+                  address={senderFacade.formDraft}
+                  onFieldChange={update}
+                  lang={lang}
                 />
-              </div>
-            )}
-          </fieldset>
+              ) : showSenderDetailCard ? (
+                <SenderView templateId={cardTemplateId!} address={value} />
+              ) : (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className={clsx(
+                    styles.addressFormPlaceholder,
+                    styles.addressFormPlaceholderSender,
+                    styles.addressFormPlaceholderBg,
+                    styles.senderPlaceholderInset,
+                  )}
+                  onClick={() => handlePlaceholderClick('sender')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handlePlaceholderClick('sender')
+                    }
+                  }}
+                  aria-label="Add sender address"
+                >
+                  <IconUserSender
+                    className={styles.addressFormPlaceholderIconBg}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -432,9 +431,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             ref={setRecipientFieldsetContainerScrollRef}
             className={styles.recipientFieldsetContainerScroll}
           />
-          <fieldset
+          <div
             ref={recipientFieldsetRef}
             data-envelope-address-fieldset
+            role="group"
+            aria-label="Recipients"
             className={clsx(
               styles.addressFieldset,
               styles.addressFormRecipient,
@@ -444,15 +445,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             )}
             onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
           >
-            <legend
-              className={clsx(
-                styles.addressLegend,
-                styles.addressLegendRecipient,
-                styles.addressLegendMulti,
-              )}
-            >
-              Recipients
-            </legend>
             <div
               className={clsx(
                 styles.addressToolbar,
@@ -472,53 +464,55 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               )}
               <IconUsers className={styles.envelopeRecipientToolbarIcon} />
             </div>
-            {recipientView === 'recipientCreate' ? (
-              <AddressFormView
-                key="recipientCreate"
-                role="recipient"
-                roleLabel={roleLabel}
-                address={recipientFacade.formDraft}
-                onFieldChange={update}
-                lang={lang}
-              />
-            ) : showRecipientDetailCard ? (
-              <RecipientView
-                templateId={cardTemplateId ?? ''}
-                address={value}
-              />
-            ) : showRecipientsEnvelopeList ? (
-              <RecipientsView
-                entries={recipientsDisplayList}
-                onRemove={recipientFacade.removeFromList}
-                onOpenRecipient={handleOpenRecipientFromList}
-                scrollbarPortalTarget={
-                  recipientScrollContainerReady
-                    ? recipientFieldsetContainerScrollRef
-                    : undefined
-                }
-              />
-            ) : (
-              <div
-                role="button"
-                tabIndex={0}
-                className={clsx(
-                  styles.addressFormPlaceholder,
-                  styles.addressFormPlaceholderRecipient,
-                  styles.addressFormPlaceholderBg,
-                )}
-                onClick={() => handlePlaceholderClick('recipient')}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    handlePlaceholderClick('recipient')
+            <div className={styles.addressFieldsetInner}>
+              {recipientView === 'recipientCreate' ? (
+                <AddressFormView
+                  key="recipientCreate"
+                  role="recipient"
+                  roleLabel={roleLabel}
+                  address={recipientFacade.formDraft}
+                  onFieldChange={update}
+                  lang={lang}
+                />
+              ) : showRecipientDetailCard ? (
+                <RecipientView
+                  templateId={cardTemplateId ?? ''}
+                  address={value}
+                />
+              ) : showRecipientsEnvelopeList ? (
+                <RecipientsView
+                  entries={recipientsDisplayList}
+                  onRemove={recipientFacade.removeFromList}
+                  onOpenRecipient={handleOpenRecipientFromList}
+                  scrollbarPortalTarget={
+                    recipientScrollContainerReady
+                      ? recipientFieldsetContainerScrollRef
+                      : undefined
                   }
-                }}
-                aria-label="Add recipients"
-              >
-                <IconUsers className={styles.addressFormPlaceholderIconBg} />
-              </div>
-            )}
-          </fieldset>
+                />
+              ) : (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className={clsx(
+                    styles.addressFormPlaceholder,
+                    styles.addressFormPlaceholderRecipient,
+                    styles.addressFormPlaceholderBg,
+                  )}
+                  onClick={() => handlePlaceholderClick('recipient')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handlePlaceholderClick('recipient')
+                    }
+                  }}
+                  aria-label="Add recipients"
+                >
+                  <IconUsers className={styles.addressFormPlaceholderIconBg} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </form>

@@ -969,9 +969,15 @@ export function* hydrateAppSession() {
     if (session.cardtextEditor != null || session.cardtext) {
       yield call(syncCardtextStatus)
     }
-
   } catch (e) {
     console.error('Session hydration failed', e)
+  } finally {
+    const currentActive: SectionEditorMenuKey | null = yield select(
+      selectActiveSection,
+    )
+    if (currentActive == null) {
+      yield put(setActiveSection('cardphoto'))
+    }
   }
 }
 

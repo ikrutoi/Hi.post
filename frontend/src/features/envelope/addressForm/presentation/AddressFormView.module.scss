@@ -2,19 +2,25 @@
 
 /* Поля формы — фон и рамка задаются через .savedAddressView* в AddressView.module.scss */
 .addressFormView {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
+  display: block;
   width: 100%;
-  min-height: 0;
-  overflow: hidden;
+  max-width: 100%;
+  height: auto;
+  min-height: 100%;
   box-sizing: border-box;
+  overflow: visible;
+}
+
+.addressFormFields {
+  display: block;
+  width: 100%;
+  max-width: 100%;
 }
 
 .labelGroup {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: nowrap;
   gap: 0 0.5rem;
   margin-top: 0.05rem;
+  width: 100%;
 }

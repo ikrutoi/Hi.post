@@ -7,5 +7,7 @@ export const getAddressLabelLayout = (
   role: EnvelopeRole,
   lang: Lang
 ): AddressLabelsByLang[Lang] => {
-  return addressLabels[role][lang] ?? []
+  const layout = addressLabels[role][lang]
+  if (layout?.length) return layout
+  return addressLabels[role].en ?? []
 }

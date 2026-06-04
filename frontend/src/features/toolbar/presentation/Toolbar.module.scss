@@ -1420,3 +1420,10 @@
     }
   }
 }
+
+/** Lighter than enabled-light; must follow section enabled overrides (sender, recipients, …). */
+.toolbar .toolbarGroup .toolbarKey.toolbarKeyDisabled,
+.toolbar .toolbarGroup .toolbarKey.toolbarKeyDisabled:hover {
+  color: $color-font-disabled;
+  cursor: default;
+}

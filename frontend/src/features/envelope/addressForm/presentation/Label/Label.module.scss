@@ -3,16 +3,25 @@
 .label {
   position: relative;
   display: block;
-  // margin-top: 0.05rem;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 0.05rem;
   font-size: 0.55rem;
   font-weight: 400;
   text-transform: uppercase;
   color: $color-inactive;
 }
 
+.labelSpacer {
+  display: none;
+}
+
 .labelText {
-  position: absolute;
-  top: 0.1rem;
+  display: block;
+  padding-left: 0.5rem;
+  margin-bottom: 0.08rem;
+  line-height: 1.1;
   font-weight: 500;
 }
 
@@ -31,24 +40,23 @@
   }
 }
 
-.labelSpacer {
-  padding-left: 0.5rem;
-}
-
 .labelInput {
+  display: block;
   width: 100%;
   padding: 0 0.25rem;
   box-sizing: border-box;
   font-size: 0.75rem;
-  font-weight: 4100;
+  font-weight: 400;
   color: $color-font-deepBlack;
-  // background-color: $color-disabled;
-  // background-color: #fff;
-  border: 1px solid transparent;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   height: 1.4rem;
+  min-height: 1.4rem;
   border-radius: 4px;
   outline: none;
   letter-spacing: 1px;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .labelInputSender {
@@ -89,17 +97,21 @@
   box-shadow: 0 0 0 1px #3d2a5c40;
 }
 
-.labelZip {
-  grid-column: 1/2;
-  margin-right: 0.5rem;
+.labelFieldzip {
+  flex: 0 0 32%;
+  max-width: 32%;
 }
 
-.labelCity {
-  grid-column: 2/4;
+.labelFieldcity {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .inputWrapper {
   position: relative;
+  display: block;
+  width: 100%;
+  min-height: 1.4rem;
 }
 
 .clearButton {

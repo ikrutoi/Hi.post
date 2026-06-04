@@ -1,5 +1,12 @@
 @use '@styles/config/colors' as *;
 
+$pie-center-logo-size: 1.5rem;
+/** Right CardPie status dot — slightly larger than editor logo. */
+$pie-center-indicator-size: 1.75rem;
+/** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от размера индикатора. */
+$pie-center-cart-blocked-ring: $pie-center-logo-size * 0.225;
+$pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
+
 .hubContainer {
   --outline-hover: #{$color-toggle-active-hover};
   --envelope-text: #{$color-envelope-recipient-legend};
@@ -26,6 +33,22 @@
     height: 100%;
     inset: 0;
     right: unset;
+  }
+}
+
+.hubContainerRight {
+  .pieCenterButton {
+    width: calc(#{$pie-center-indicator-size} + 2px);
+    height: calc(#{$pie-center-indicator-size} + 2px);
+  }
+
+  .pieCenterIcon {
+    width: $pie-center-indicator-size;
+    height: $pie-center-indicator-size;
+  }
+
+  .pieCenterIndicator.cartBlocked {
+    @include preview-indicator-cart-blocked-ring($pie-center-cart-blocked-ring-right);
   }
 }
 
@@ -130,9 +153,6 @@
   transition: border-color 0.2s ease;
 }
 
-$pie-center-logo-size: 1.5rem;
-/** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от размера индикатора. */
-$pie-center-cart-blocked-ring: $pie-center-logo-size * 0.225;
 .pieCenterButton {
   position: absolute;
   top: 50%;

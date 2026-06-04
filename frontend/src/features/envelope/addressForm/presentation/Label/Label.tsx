@@ -29,12 +29,10 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
         className={clsx(
           styles.label,
           styles[`label${roleLabel}`],
-          styles[`label${label}`],
+          styles[`labelField${field}`],
         )}
       >
-        <span className={styles.labelSpacer} />
         <span className={styles.labelText}>{label}</span>
-        <span className={styles.labelSpacer} />
 
         <div
           className={clsx(
@@ -46,7 +44,8 @@ export const Label = forwardRef<HTMLInputElement, LabelProps>(
             className={clsx(
               styles.labelInput,
               styles[`labelInput${roleLabel}`],
-              styles[`labelInput${label}`],
+              field === 'zip' && styles.labelInputZip,
+              field === 'city' && styles.labelInputCity,
             )}
             ref={ref}
             type="text"

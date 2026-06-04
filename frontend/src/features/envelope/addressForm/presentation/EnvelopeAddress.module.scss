@@ -70,11 +70,37 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 
 .addressFieldset {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   padding: 0 0.5rem 0.5rem;
   border-radius: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* div[role=group] вместо fieldset — Edge ломает flex/grid внутри fieldset */
+.addressFieldsetInner {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.addressFormSenderBody .addressFormSender,
+.addressFormRecipientBody .recipientFieldsetContent,
+.addressFormRecipientBody .recipientFieldsetMulti {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
+}
+
+.addressFieldset [data-envelope-address-surface] {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .recipientFieldsetMulti {
@@ -193,9 +219,10 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 .addressFormRecipientBody .recipientFieldsetMulti {
   flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
 }
 
 .addressFormSenderFill {
@@ -206,11 +233,12 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 }
 
 .addressFormSenderBody .addressFormSender {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
 }
 
 .addressFormSender {

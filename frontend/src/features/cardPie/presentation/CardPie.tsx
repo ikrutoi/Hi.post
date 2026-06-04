@@ -139,6 +139,7 @@ export const CardPie: React.FC<CardPieProps> = ({
     <div
       className={clsx(
         styles.hubContainer,
+        station === 'right' && styles.hubContainerRight,
         allSectionsFilled && styles.pieAllComplete,
         fillContainer && styles.hubContainerFill,
       )}
