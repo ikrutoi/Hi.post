@@ -65,6 +65,7 @@
   overflow: hidden;
   background-color: $color-app-inner;
   border-radius: 0.75rem;
+  // border: 1px solid red;
 }
 
 /** Context provider must not break `main` grid: children participate as grid items. */
@@ -110,7 +111,7 @@
   display: flex;
   justify-content: center;
   align-items: stretch;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   margin-bottom: 0.5rem;
 }
 
@@ -149,7 +150,7 @@
   z-index: 12;
   display: flex;
   flex-direction: column;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   margin-right: 1rem;
   margin-bottom: 1rem;
   pointer-events: none;
@@ -166,7 +167,7 @@
   grid-row: 1 / 2;
   grid-column: 1 / 5;
   min-height: 0;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   margin-left: var(--left-pie-slot-h-margin);
   margin-bottom: 0.5rem;
   display: flex;
