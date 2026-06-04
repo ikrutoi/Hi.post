@@ -367,7 +367,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             data-envelope-address-fieldset
             role="group"
             aria-label={roleLabel}
-            className={clsx(styles.addressFieldset, styles.addressFormSender)}
+            className={clsx(
+              styles.addressFieldset,
+              styles.addressFormSender,
+              senderView === 'senderCreate' && styles.addressFieldsetCreateOpen,
+            )}
             onMouseDownCapture={handleSenderFieldsetMouseDownCapture}
           >
             <div
@@ -442,6 +446,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
               styles.recipientFieldsetContent,
               showRecipientsEnvelopeList && styles.recipientFieldsetMulti,
               showRecipientsEnvelopeList && styles.recipientFieldsetWithList,
+              recipientView === 'recipientCreate' &&
+                styles.addressFieldsetCreateOpen,
             )}
             onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
           >

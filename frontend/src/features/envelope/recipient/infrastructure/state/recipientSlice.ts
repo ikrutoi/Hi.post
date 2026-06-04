@@ -8,6 +8,7 @@ import type {
   CurrentRecipientsList,
 } from '../../domain/types'
 import type { ListStatus } from '@entities/envelope/domain/types'
+import type { AddressSaveRequestedPayload } from '../../../domain/types/addressSave.types'
 
 const DEFAULT_SORT_OPTIONS: SortOptions = {
   sortedBy: 'name',
@@ -35,7 +36,7 @@ export const initialRecipient: RecipientState = {
 }
 
 function isComplete(data: AddressFields): boolean {
-  return Object.values(data).every((val) => val.trim() !== '')
+  return Object.values(data).every((val) => (val ?? '').trim() !== '')
 }
 
 const recipientSlice = createSlice({
@@ -173,9 +174,7 @@ const recipientSlice = createSlice({
 
     saveAddressRequested: (
       _state,
-      _action: PayloadAction<
-        { listStatus?: ListStatus; viewOnly?: boolean } | undefined
-      >,
+      _action: PayloadAction<AddressSaveRequestedPayload | undefined>,
     ) => {},
   },
 })

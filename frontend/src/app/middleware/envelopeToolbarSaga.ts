@@ -6,6 +6,7 @@ import {
   select,
   call,
   fork,
+  spawn,
   all,
 } from 'redux-saga/effects'
 import type { SagaIterator } from 'redux-saga'
@@ -118,14 +119,17 @@ import {
 } from '@db/adapters/storeAdapters'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
 import {
+  doesDraftMatchAnyTemplate,
   doesDraftMatchInList,
   getAddressListToolbarFragment,
+  isAddressDraftComplete,
   listStatusIsInQuickAddressBook,
 } from '@envelope/domain/helpers'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
+import { handleAddressSave } from '@app/middleware/addressSaveSaga'
 
 const ADDRESS_LIST_UI_PREF_ID = 'addressList' as const
 
@@ -963,19 +967,45 @@ function* handleEnvelopeToolbarAction(
 
   if (key === 'applyLight') {
     if (section === 'senderCreate') {
-      const senderComplete: boolean = yield select(selectIsSenderComplete)
-      if (senderComplete) {
-        yield put(
-          senderSaveRequested({ listStatus: 'outList', viewOnly: true }),
+      const sender: SenderState = yield select(selectSenderState)
+      const draft = (action.payload?.draft ??
+        sender.formDraft) as AddressFields
+      const senderEntries: AddressBookEntry[] = yield select(
+        (s: RootState) => s.addressBook?.senderEntries ?? [],
+      )
+      if (
+        isAddressDraftComplete(draft) &&
+        !doesDraftMatchAnyTemplate(draft, senderEntries)
+      ) {
+        yield spawn(
+          handleAddressSave,
+          senderSaveRequested({
+            listStatus: 'outList',
+            viewOnly: true,
+            draft: { ...draft },
+          }),
         )
       }
       return
     }
     if (section === 'recipientCreate') {
-      const recipientComplete: boolean = yield select(selectIsRecipientComplete)
-      if (recipientComplete) {
-        yield put(
-          recipientSaveRequested({ listStatus: 'outList', viewOnly: true }),
+      const recipient: RecipientState = yield select(selectRecipientState)
+      const draft = (action.payload?.draft ??
+        recipient.formDraft) as AddressFields
+      const recipientEntries: AddressBookEntry[] = yield select(
+        (s: RootState) => s.addressBook?.recipientEntries ?? [],
+      )
+      if (
+        isAddressDraftComplete(draft) &&
+        !doesDraftMatchAnyTemplate(draft, recipientEntries)
+      ) {
+        yield spawn(
+          handleAddressSave,
+          recipientSaveRequested({
+            listStatus: 'outList',
+            viewOnly: true,
+            draft: { ...draft },
+          }),
         )
       }
       return
@@ -1304,14 +1334,18 @@ function* syncAddressListIconsFromActive() {
   const active: 'sender' | 'recipients' | null = yield select(
     selectActiveAddressList,
   )
-  const senderEntries: { id: string }[] = yield select(
+  const senderEntries: AddressBookEntry[] = yield select(
     (s: RootState) => s.addressBook?.senderEntries ?? [],
   )
-  const recipientEntries: { id: string }[] = yield select(
+  const recipientEntries: AddressBookEntry[] = yield select(
     (s: RootState) => s.addressBook?.recipientEntries ?? [],
   )
-  const senderCount = senderEntries.length
-  const recipientCount = recipientEntries.length
+  const senderCount = senderEntries.filter((e) =>
+    listStatusIsInQuickAddressBook(e.listStatus),
+  ).length
+  const recipientCount = recipientEntries.filter((e) =>
+    listStatusIsInQuickAddressBook(e.listStatus),
+  ).length
 
   const senderAddressList =
     active === 'sender'

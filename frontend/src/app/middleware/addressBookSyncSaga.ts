@@ -2,7 +2,6 @@ import { call, put, select, takeEvery, all } from 'redux-saga/effects'
 import { senderAdapter, recipientAdapter } from '@db/adapters/storeAdapters'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import { listStatusIsInQuickAddressBook } from '@envelope/domain/helpers'
 import { setAddressBookEntries } from '@envelope/addressBook/infrastructure/state'
 import { incrementAddressBookReloadVersion } from '@features/previewStrip/infrastructure/state'
 import {
@@ -86,20 +85,12 @@ function* syncAddressBookFromDb() {
       ? [...recipientRaw].sort(byLocalIdAsc)
       : []
 
-    const senderEntries = senderSorted
-      .filter((r) =>
-        listStatusIsInQuickAddressBook(
-          (r as AddressTemplateItem).listStatus,
-        ),
-      )
-      .map((r) => toAddressBookEntry(r as AddressTemplateItem, 'sender'))
-    const recipientEntries = recipientSorted
-      .filter((r) =>
-        listStatusIsInQuickAddressBook(
-          (r as AddressTemplateItem).listStatus,
-        ),
-      )
-      .map((r) => toAddressBookEntry(r as AddressTemplateItem, 'recipient'))
+    const senderEntries = senderSorted.map((r) =>
+      toAddressBookEntry(r as AddressTemplateItem, 'sender'),
+    )
+    const recipientEntries = recipientSorted.map((r) =>
+      toAddressBookEntry(r as AddressTemplateItem, 'recipient'),
+    )
 
     const senderChanged = !entriesMatch(current.senderEntries, senderEntries)
     const recipientChanged = !entriesMatch(

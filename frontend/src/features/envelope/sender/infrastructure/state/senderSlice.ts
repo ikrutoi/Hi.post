@@ -7,6 +7,7 @@ import type {
   SenderSortOptions,
 } from '../../domain/types'
 import type { ListStatus } from '@entities/envelope/domain/types'
+import type { AddressSaveRequestedPayload } from '../../../domain/types/addressSave.types'
 
 const DEFAULT_SENDER_SORT_OPTIONS: SenderSortOptions = {
   sortedBy: 'name',
@@ -31,7 +32,7 @@ export const initialSender: SenderState = {
 }
 
 function isComplete(data: AddressFields): boolean {
-  return Object.values(data).every((val) => val.trim() !== '')
+  return Object.values(data).every((val) => (val ?? '').trim() !== '')
 }
 
 const senderSlice = createSlice({
@@ -127,9 +128,7 @@ const senderSlice = createSlice({
 
     saveAddressRequested: (
       _state,
-      _action: PayloadAction<
-        { listStatus?: ListStatus; viewOnly?: boolean } | undefined
-      >,
+      _action: PayloadAction<AddressSaveRequestedPayload | undefined>,
     ) => {},
   },
 })

@@ -1,4 +1,10 @@
-import React, { useRef, useCallback, useMemo, useEffect } from 'react'
+import React, {
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+  useLayoutEffect,
+} from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { Label } from './Label/Label'
@@ -39,13 +45,10 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   const toolbarSection =
     role === 'sender' ? 'senderCreate' : 'recipientCreate'
 
-  // Defer toolbar sync so it doesn't run in the same tick as field update and cause focus loss
-  useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      syncAddressFormToolbar(toolbarSection, isAddressComplete)
-    })
-    return () => cancelAnimationFrame(id)
-  }, [syncAddressFormToolbar, toolbarSection, isAddressComplete, address])
+  // Sync toolbar as soon as completeness changes (before paint) so applyLight is clickable immediately.
+  useLayoutEffect(() => {
+    syncAddressFormToolbar(toolbarSection, isAddressComplete)
+  }, [syncAddressFormToolbar, toolbarSection, isAddressComplete])
 
   // Only auto-focus first input on mount when nothing in the form is focused (avoid stealing focus on remount)
   useEffect(() => {

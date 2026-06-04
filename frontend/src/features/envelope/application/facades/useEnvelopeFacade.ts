@@ -30,6 +30,12 @@ import {
   selectRecipientInListEntries,
 } from '../../infrastructure/selectors'
 import {
+  selectSenderEntriesState,
+} from '../../sender/infrastructure/selectors'
+import {
+  selectRecipientEntriesState,
+} from '../../recipient/infrastructure/selectors'
+import {
   updateRecipientField,
   clearRecipient,
   setRecipientView,
@@ -61,7 +67,7 @@ import {
   type EnvelopeRole,
 } from '@shared/config/constants'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { resolveAddListToolbarState } from '@envelope/domain/helpers'
+import { resolveAddListToolbarState, resolveApplyLightToolbarState } from '@envelope/domain/helpers'
 
 export const useEnvelopeFacade = () => {
   const dispatch = useAppDispatch()
@@ -98,6 +104,8 @@ export const useEnvelopeFacade = () => {
   )
   const senderInListEntries = useAppSelector(selectSenderInListEntries)
   const recipientInListEntries = useAppSelector(selectRecipientInListEntries)
+  const senderTemplateEntries = useAppSelector(selectSenderEntriesState)
+  const recipientTemplateEntries = useAppSelector(selectRecipientEntriesState)
 
   const handleFieldChange = (
     role: EnvelopeRole,
@@ -232,12 +240,19 @@ export const useEnvelopeFacade = () => {
     const inList = isSenderSection
       ? senderInListEntries
       : recipientInListEntries
+    const allTemplates = isSenderSection
+      ? senderTemplateEntries
+      : recipientTemplateEntries
     const addListState = resolveAddListToolbarState(
       isAddressComplete,
       draft,
       inList,
     )
-    const applyLightState = isAddressComplete ? 'enabled' : 'disabled'
+    const applyLightState = resolveApplyLightToolbarState(
+      isAddressComplete,
+      draft,
+      allTemplates,
+    )
     dispatch(
       updateToolbarIcon({
         section,

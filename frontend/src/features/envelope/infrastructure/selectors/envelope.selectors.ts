@@ -246,9 +246,10 @@ export const selectRecipientsToolbarStateWithLiveAddressList = createSelector(
   [
     (s: RootState) => s.toolbar?.recipients ?? {},
     (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
-    (s: RootState) => s.addressBook?.recipientEntries?.length ?? 0,
+    selectRecipientInListEntries,
   ],
-  (base, activeAddressList, recipientInListEntriesCount) => {
+  (base, activeAddressList, recipientInListEntries) => {
+    const recipientInListEntriesCount = recipientInListEntries.length
     const listOpen = activeAddressList === 'recipients'
     const addressList = listOpen
       ? {

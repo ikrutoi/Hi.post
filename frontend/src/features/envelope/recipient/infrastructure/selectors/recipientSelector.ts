@@ -3,6 +3,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import type { AddressFields } from '@shared/config/constants'
 import { EMPTY_STRINGS } from '@shared/utils/helpers'
 import { initialSection } from '../../../addressForm/domain/models'
+import { isAddressDraftComplete } from '../../../domain/helpers/resolveAddListToolbarState'
 import type { AddressBookEntry } from '../../../addressBook/domain/types'
 import type {
   RecipientState,
@@ -85,6 +86,9 @@ const isAddressComplete = (
 export const selectIsRecipientComplete = createSelector(
   [selectRecipientState, selectRecipientEntriesState],
   (recipient, entries): boolean => {
+    if (recipient.currentView === 'recipientCreate') {
+      return isAddressDraftComplete(recipient.formDraft)
+    }
     if (recipient.recipientViewId) {
       const entry = entries.find((e) => e.id === recipient.recipientViewId)
       if (

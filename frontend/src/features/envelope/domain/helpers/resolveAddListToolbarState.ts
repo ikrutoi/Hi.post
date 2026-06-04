@@ -1,6 +1,6 @@
 import type { AddressFields } from '@shared/config/constants'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import { isAddressInList } from './isAddressInList'
+import { isAddressInList, normalizeAddressFields } from './isAddressInList'
 
 export function isAddressDraftComplete(draft: AddressFields): boolean {
   return Object.values(draft).every((v) => (v ?? '').trim() !== '')
@@ -23,5 +23,31 @@ export function resolveAddListToolbarState(
 ): 'enabled' | 'disabled' {
   if (!isAddressComplete) return 'disabled'
   if (doesDraftMatchInList(draft, inListEntries)) return 'disabled'
+  return 'enabled'
+}
+
+/** Полное совпадение черновика с любым шаблоном (inList + outList). */
+export function doesDraftMatchAnyTemplate(
+  draft: AddressFields,
+  templateEntries: Pick<AddressBookEntry, 'address'>[],
+): boolean {
+  if (!isAddressDraftComplete(draft)) return false
+  const normalizedDraft = normalizeAddressFields(draft)
+  return isAddressInList(
+    normalizedDraft,
+    templateEntries.map((e) => ({
+      address: normalizeAddressFields(e.address ?? {}),
+    })),
+  )
+}
+
+/** applyLight на create-форме: полный адрес, которого ещё нет среди всех шаблонов. */
+export function resolveApplyLightToolbarState(
+  isAddressComplete: boolean,
+  draft: AddressFields,
+  templateEntries: Pick<AddressBookEntry, 'address'>[],
+): 'enabled' | 'disabled' {
+  if (!isAddressComplete) return 'disabled'
+  if (doesDraftMatchAnyTemplate(draft, templateEntries)) return 'disabled'
   return 'enabled'
 }

@@ -70,6 +70,7 @@ import {
   listStatusIsInQuickAddressBook,
   isAddressDraftComplete,
   resolveAddListToolbarState,
+  resolveApplyLightToolbarState,
 } from '@envelope/domain/helpers'
 import {
   updateToolbarSection,
@@ -131,7 +132,13 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
       updateToolbarIcon({
         section: 'senderCreate',
         key: 'applyLight',
-        value: { state: senderDraftComplete ? 'enabled' : 'disabled' },
+        value: {
+          state: resolveApplyLightToolbarState(
+            senderDraftComplete,
+            draft,
+            senderEntries,
+          ),
+        },
       }),
     )
   }
@@ -180,7 +187,13 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
       updateToolbarIcon({
         section: 'recipientCreate',
         key: 'applyLight',
-        value: { state: recipientDraftComplete ? 'enabled' : 'disabled' },
+        value: {
+          state: resolveApplyLightToolbarState(
+            recipientDraftComplete,
+            draft,
+            recipientEntries,
+          ),
+        },
       }),
     )
   }
@@ -211,6 +224,8 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
 }
 
 export function* processEnvelopeVisuals() {
+  yield* syncAddressViewToolbarAddList()
+
   const sender: SenderState = yield select(selectSenderState)
   const recipient: RecipientState = yield select(selectRecipientState)
 

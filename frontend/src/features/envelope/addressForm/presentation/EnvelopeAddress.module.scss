@@ -82,10 +82,25 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 /* div[role=group] вместо fieldset — Edge ломает flex/grid внутри fieldset */
 .addressFieldsetInner {
   position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+}
+
+/* create-форма: toolbar конверта не перехватывает клики по applyLight / close */
+.addressFieldsetCreateOpen {
+  .addressToolbarSender,
+  .addressToolbarRecipient {
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .envelopeSenderToolbarIconContainer,
+  .envelopeRecipientToolbarIconContainer {
+    pointer-events: none;
+  }
 }
 
 .addressFormSenderBody .addressFormSender,

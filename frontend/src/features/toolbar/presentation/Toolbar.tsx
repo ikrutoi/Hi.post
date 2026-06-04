@@ -9,6 +9,8 @@ import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
 import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
 import {
   doesDraftMatchInList,
+  doesDraftMatchAnyTemplate,
+  isAddressDraftComplete,
   listStatusIsInQuickAddressBook,
 } from '@envelope/domain/helpers'
 import type { AddressFields } from '@shared/config/constants'
@@ -204,6 +206,46 @@ export const Toolbar = ({
     return doesDraftMatchInList(draft, inList)
   })
 
+  const senderCreateDraftDuplicate = useAppSelector((s: RootState) => {
+    if (s.sender?.currentView !== 'senderCreate') return false
+    const draft = s.sender.formDraft as AddressFields
+    return doesDraftMatchAnyTemplate(
+      draft,
+      s.addressBook?.senderEntries ?? [],
+    )
+  })
+
+  const recipientCreateDraftDuplicate = useAppSelector((s: RootState) => {
+    if (s.recipient?.currentView !== 'recipientCreate') return false
+    const draft = s.recipient.formDraft as AddressFields
+    return doesDraftMatchAnyTemplate(
+      draft,
+      s.addressBook?.recipientEntries ?? [],
+    )
+  })
+
+  const senderCreateDraftComplete = useAppSelector((s: RootState) => {
+    if (s.sender?.currentView !== 'senderCreate') return false
+    return isAddressDraftComplete(s.sender.formDraft as AddressFields)
+  })
+
+  const recipientCreateDraftComplete = useAppSelector((s: RootState) => {
+    if (s.recipient?.currentView !== 'recipientCreate') return false
+    return isAddressDraftComplete(s.recipient.formDraft as AddressFields)
+  })
+
+  const senderCreateFormDraft = useAppSelector((s: RootState): AddressFields | null => {
+    if (s.sender?.currentView !== 'senderCreate') return null
+    return { ...(s.sender.formDraft as AddressFields) }
+  })
+
+  const recipientCreateFormDraft = useAppSelector(
+    (s: RootState): AddressFields | null => {
+      if (s.recipient?.currentView !== 'recipientCreate') return null
+      return { ...(s.recipient.formDraft as AddressFields) }
+    },
+  )
+
   const cardtextViewInQuickList = useAppSelector(selectCardtextViewInQuickList)
   const cardphotoViewTemplateInList = useAppSelector(
     (s) =>
@@ -337,6 +379,18 @@ export const Toolbar = ({
     if (key === 'edit' && section === 'recipientView' && recipientViewEditMode) {
       buttonStatus = 'active'
     }
+    if (key === 'applyLight' && section === 'senderCreate') {
+      buttonStatus =
+        senderCreateDraftComplete && !senderCreateDraftDuplicate
+          ? 'enabled'
+          : 'disabled'
+    }
+    if (key === 'applyLight' && section === 'recipientCreate') {
+      buttonStatus =
+        recipientCreateDraftComplete && !recipientCreateDraftDuplicate
+          ? 'enabled'
+          : 'disabled'
+    }
     const badge = mergedOptions?.badge ?? (rawData as any)?.options?.badge
     const hasBadge =
       badge != null &&
@@ -456,7 +510,14 @@ export const Toolbar = ({
           e.preventDefault()
           const stopDefault = onActionClick?.(effectiveIconKey as IconKey)
           if (stopDefault !== false) {
-            onAction(effectiveIconKey as IconKey)
+            const actionPayload =
+              effectiveIconKey === 'applyLight' && section === 'senderCreate'
+                ? { draft: senderCreateFormDraft ?? undefined }
+                : effectiveIconKey === 'applyLight' &&
+                    section === 'recipientCreate'
+                  ? { draft: recipientCreateFormDraft ?? undefined }
+                  : undefined
+            onAction(effectiveIconKey as IconKey, actionPayload)
           }
         }}
       >

@@ -2,6 +2,20 @@ import { ADDRESS_FIELD_ORDER } from '@shared/config/constants'
 import type { AddressField, AddressFields } from '@shared/config/constants'
 import type { AddressTemplateItem } from '@entities/envelope/domain/types'
 
+/** Схлопывает пробелы и trim — как при сохранении шаблона. */
+export function normalizeAddressFields(
+  address: Record<string, string>,
+): AddressFields {
+  const cleanup = (text: string) => text.split(' ').filter(Boolean).join(' ')
+  return {
+    name: cleanup(address.name ?? ''),
+    street: cleanup(address.street ?? ''),
+    city: cleanup(address.city ?? ''),
+    zip: cleanup(address.zip ?? ''),
+    country: cleanup(address.country ?? ''),
+  }
+}
+
 /** Нормализованное сравнение одного поля (trim). */
 function normalizedEq(a: string, b: string): boolean {
   return a.trim() === b.trim()
