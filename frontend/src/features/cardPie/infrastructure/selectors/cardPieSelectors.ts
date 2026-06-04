@@ -2,7 +2,7 @@ import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
 import type { PostcardStatus } from '@entities/postcard'
 import { selectCardEditorState } from '@entities/cardEditor/infrastructure/selectors'
-import { selectCardtextAppliedSessionData } from '@cardtext/infrastructure/selectors'
+import { selectCardtextDisplayForMiniStrip } from '@cardtext/infrastructure/selectors'
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import {
   buildCardPieInnerDataFromPostcard,
@@ -44,7 +44,7 @@ export const selectPieDataByContext = createSelector(
 export const selectActiveCardFullData = createSelector(
   [
     selectCardEditorState,
-    selectCardtextAppliedSessionData,
+    selectCardtextDisplayForMiniStrip,
     selectCardphotoPreview,
     selectSelectedAroma,
     selectMergedDispatchDates,

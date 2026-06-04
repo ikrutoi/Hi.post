@@ -43,6 +43,16 @@ function displayCardtextBranch(
   return asset ?? applied ?? null
 }
 
+/** Снимок для мини-полосы: открытка (applied) или applyLight до правки (preset). */
+function pickCardtextMiniCommittedSnapshot(
+  applied: CardtextContent | null | undefined,
+  preset: CardtextContent | null | undefined,
+): CardtextContent | null {
+  if (applied != null && cardtextValueHasUserText(applied.value)) return applied
+  if (preset != null && cardtextValueHasUserText(preset.value)) return preset
+  return null
+}
+
 function cloneCardtextValue(value: CardtextValue): CardtextValue {
   return value.map((b) => ({
     ...b,
@@ -204,15 +214,17 @@ export const selectCardtextAssetMatchesApplied = (
 }
 
 /**
- * Контент для мини-секции / `selectCardtextMiniPreviewHasRenderableContent`:
+ * Контент для мини-секции, левого CardPie и `selectCardtextMiniPreviewHasRenderableContent`:
  * — выбранный в списке шаблон (`inLine` / `outLine`) не попадает в превью, пока не Apply;
  * — в `cardtextCreate` набираемый черновик не попадает в мини (только уже на открытке — `appliedData`);
- * — после `cardtextCheck` (processed в asset) мини тоже только `appliedData`, пока не Apply на открытке.
+ * — после `cardtextCheck` (processed в asset) мини тоже только `appliedData`, пока не Apply на открытке;
+ * — при правке без applyLight мини держит `appliedData` / `presetData`, а не живой `assetData`.
  */
 export const selectCardtextDisplayForMiniStrip = createSelector(
   [
     (s: RootState) => s.cardtext.assetData,
     (s: RootState) => s.cardtext.appliedData,
+    (s: RootState) => s.cardtext.presetData,
     (s: RootState) => s.cardtext.isCardtextViewEditMode === true,
     (s: RootState) => s.cardtext.isDraftEngaged === true,
     selectCardtextAssetMatchesApplied,
@@ -220,6 +232,7 @@ export const selectCardtextDisplayForMiniStrip = createSelector(
   (
     asset,
     applied,
+    preset,
     isViewEditMode,
     isDraftEngaged,
     assetMatchesApplied,
@@ -252,7 +265,13 @@ export const selectCardtextDisplayForMiniStrip = createSelector(
     } else {
       const draftLike =
         isViewEditMode || (asset != null && asset.status === 'draft')
-      if (draftLike) {
+      const hasCommittedSnapshot =
+        (applied != null && cardtextValueHasUserText(applied.value)) ||
+        (preset != null && cardtextValueHasUserText(preset.value))
+
+      if (draftLike && hasCommittedSnapshot) {
+        branch = pickCardtextMiniCommittedSnapshot(applied, preset)
+      } else if (draftLike) {
         branch = asset
       } else {
         branch = displayCardtextBranch(asset, applied)
