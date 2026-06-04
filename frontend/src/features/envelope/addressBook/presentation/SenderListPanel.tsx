@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
-import { IconUsers } from '@shared/ui/icons'
+import { IconUser } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { AddressBookCell } from './AddressBookCell'
 import { getAddressBookGridColumns } from './addressBookGridConstants'
@@ -157,7 +157,10 @@ export const SenderListPanel: React.FC<Props> = ({
       >
         <div
           ref={listRef}
-          className={styles.list}
+          className={clsx(
+            styles.list,
+            combinedEntries.length === 0 && styles.listEmptyState,
+          )}
           data-address-book-list
           data-density-level={addressListPanelDensity}
           tabIndex={0}
@@ -167,7 +170,7 @@ export const SenderListPanel: React.FC<Props> = ({
         >
           {combinedEntries.length === 0 ? (
             <div className={styles.listEmpty} aria-hidden>
-              <IconUsers className={styles.listEmptyIcon} />
+              <IconUser className={styles.listEmptyIcon} />
             </div>
           ) : (
             <>

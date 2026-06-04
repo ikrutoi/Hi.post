@@ -51,7 +51,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
         <div
           className={styles.headerLead}
           aria-hidden
-          data-icon-state="disabled"
+          data-icon-state="enabled"
         >
           {leadIconOverride ?? getToolbarIcon({ key: leadIconKey })}
         </div>

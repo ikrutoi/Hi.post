@@ -158,7 +158,10 @@ export const RecipientListPanel: React.FC<Props> = ({
       >
         <div
           ref={listRef}
-          className={styles.list}
+          className={clsx(
+            styles.list,
+            combinedEntries.length === 0 && styles.listEmptyState,
+          )}
           data-address-book-list
           data-density-level={addressListPanelDensity}
           tabIndex={0}
