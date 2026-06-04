@@ -127,12 +127,12 @@ $list-entry-row-linked-border: $color-cart-list-border;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: $color-font-disabled;
+  color: $color-font-enabled-light;
   cursor: pointer;
   transition: color 0.15s ease;
 
   &:hover:not(:disabled) {
-    color: $color-font-enabled-light-hover;
+    color: $color-font-enabled;
   }
 
   &:disabled {
