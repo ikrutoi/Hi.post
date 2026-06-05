@@ -49,6 +49,8 @@ $list-panel-footer-band: calc(1.75rem + 1px);
 .listScrollArea {
   flex: 1;
   min-height: 0;
+  position: relative;
+  z-index: 0;
   // border: solid 1px blue;
 }
 
@@ -125,7 +127,7 @@ $list-panel-footer-band: calc(1.75rem + 1px);
   left: 0.5rem;
   right: calc(0.75rem + #{$list-panel-scroll-gutter});
   bottom: 0;
-  z-index: 2;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -135,6 +137,8 @@ $list-panel-footer-band: calc(1.75rem + 1px);
   border-top: 1px solid $color-cardphoto-input-border;
   background-color: #fff;
   overflow: visible;
+  pointer-events: auto;
+  isolation: isolate;
 }
 
 .indicatorsInner {

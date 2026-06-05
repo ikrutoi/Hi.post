@@ -31,7 +31,6 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
 }) => {
   const { postcardStatuses, setPostcardStatuses } = useCalendarFacade()
 
-  /** Футер календаря в режиме «Дата» (не полоска «Корзина»): без точки и иконки корзины. */
   const hideCartInCalendarDateFooter =
     spot === 'calendar' &&
     calendarCartStripLegendOnly &&
@@ -80,25 +79,28 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
       )}
       aria-label="Postcard status colors"
     >
-      <div className={styles.row} aria-hidden>
+      <div className={styles.row}>
         {!hideCartInCalendarDateFooter ? (
-          <div
+          <button
+            type="button"
             className={clsx(
               styles.item,
               styles.cart,
               postcardStatuses.cart ? styles.active : styles.inactive,
             )}
+            aria-pressed={postcardStatuses.cart}
             onClick={() => handlePostcardStatusClick('cart')}
           >
             <span className={clsx(styles.dot, styles.dotCart)} />
             <IconCart className={styles.icon} />
             {statusCount('cart')}
-          </div>
+          </button>
         ) : null}
         {spot === 'calendar' && calendarCartStripLegendOnly ? (
           <>
             {calendarCartStripBlockedLegend ? (
-              <div
+              <button
+                type="button"
                 className={clsx(
                   styles.item,
                   styles.cartBlocked,
@@ -106,11 +108,12 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                     ? styles.active
                     : styles.inactive,
                 )}
+                aria-pressed={postcardStatuses.cartBlocked}
                 onClick={() => handlePostcardStatusClick('cartBlocked')}
               >
                 <span className={clsx(styles.dot, styles.dotCartBlocked)} />
                 <IconCardBlocked className={styles.icon} />
-              </div>
+              </button>
             ) : null}
             {(calendarCartStripBlockedLegend ? [0, 1, 2] : [0, 1, 2, 3]).map(
               (i) => (
@@ -132,24 +135,28 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
           </>
         ) : (
           <>
-            <div
+            <button
+              type="button"
               className={clsx(
                 styles.item,
                 styles.ready,
                 postcardStatuses.ready ? styles.active : styles.inactive,
               )}
+              aria-pressed={postcardStatuses.ready}
               onClick={() => handlePostcardStatusClick('ready')}
             >
               <span className={clsx(styles.dot, styles.dotReady)} />
               <IconPostcardReady className={styles.icon} />
               {statusCount('ready')}
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className={clsx(
                 styles.item,
                 styles.sent,
                 postcardStatuses.sent ? styles.active : styles.inactive,
               )}
+              aria-pressed={postcardStatuses.sent}
               onClick={() => handlePostcardStatusClick('sent')}
             >
               <span className={clsx(styles.dot, styles.dotSent)} />
@@ -157,31 +164,35 @@ export const PostcardStatusLegend: React.FC<PostcardStatusLegendProps> = ({
                 className={clsx(styles.icon, styles.iconSend)}
               />
               {statusCount('sent')}
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className={clsx(
                 styles.item,
                 styles.delivered,
                 postcardStatuses.delivered ? styles.active : styles.inactive,
               )}
+              aria-pressed={postcardStatuses.delivered}
               onClick={() => handlePostcardStatusClick('delivered')}
             >
               <span className={clsx(styles.dot, styles.dotDelivered)} />
               <IconPostcardDelivered className={styles.icon} />
               {statusCount('delivered')}
-            </div>
-            <div
+            </button>
+            <button
+              type="button"
               className={clsx(
                 styles.item,
                 styles.error,
                 postcardStatuses.error ? styles.active : styles.inactive,
               )}
+              aria-pressed={postcardStatuses.error}
               onClick={() => handlePostcardStatusClick('error')}
             >
               <span className={clsx(styles.dot, styles.dotError)} />
               <IconPostcardNotDelivered className={styles.icon} />
               {statusCount('error')}
-            </div>
+            </button>
           </>
         )}
       </div>

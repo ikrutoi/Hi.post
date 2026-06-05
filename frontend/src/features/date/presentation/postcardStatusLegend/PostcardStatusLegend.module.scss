@@ -91,26 +91,16 @@
       border-radius: 0.5rem;
       background-color: #fff;
       padding: 0.25rem;
-      transition: background-color 0.15s ease;
-
-      &:hover {
-        cursor: pointer;
-        background-color: $color-enabled;
-      }
-    }
-
-    &.active {
-      background-color: $color-enabled;
+      cursor: pointer;
     }
 
     .icon {
-      width: 0.85rem;
-      height: 0.85rem;
-      // color: $color-font-enabled;
+      width: 1rem;
+      height: 1rem;
     }
 
     .iconSend {
-      width: 1.07rem;
+      width: 1.25rem;
     }
   }
 }
@@ -136,6 +126,13 @@
   gap: 0.35rem;
   min-width: 0;
   justify-self: center;
+  border: none;
+  margin: 0;
+  font: inherit;
+  line-height: inherit;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
 }
 
 .root-calendar .row .item {
@@ -165,11 +162,11 @@
 }
 
 .root-historyList.rootEmpty {
-  .count {
+  .item.inactive {
     color: $color-font-disabled;
   }
 
-  .icon {
+  .item.active .count {
     color: $color-font-disabled;
   }
 }
@@ -182,8 +179,7 @@
   }
 }
 
-.root-calendar,
-.root-historyList {
+.root-calendar {
   .item.inactive {
     .icon {
       color: $color-font-disabled;
@@ -197,9 +193,39 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
   }
 
+  .item {
+    cursor: pointer;
+
+    svg,
+    .icon,
+    .count,
+    .dot {
+      cursor: pointer;
+    }
+  }
+
+  /* Фильтр включён — коричневый только у svg; счётчик отдельно. */
   .item.active {
     .icon {
       color: $color-app-sidebar-icon-active;
+    }
+
+    .count {
+      color: $color-font-enabled-light;
+    }
+  }
+
+  /* Фильтр выключен — как .toolbarKeyEnabled: color на кнопке, svg через currentColor. */
+  .item.inactive {
+    color: $color-font-enabled-light;
+    transition: color 0.15s ease;
+
+    .icon {
+      color: inherit;
+    }
+
+    &:hover {
+      color: $color-font-enabled;
     }
   }
 
@@ -210,12 +236,7 @@
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     line-height: 1;
-    color: $color-font-enabled-light;
     user-select: none;
-  }
-
-  .item.inactive .count {
-    color: $color-font-disabled;
   }
 }
 
