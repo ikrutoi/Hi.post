@@ -49,7 +49,7 @@
   font-weight: 400;
   color: $color-font-deepBlack;
   background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid transparent;
   height: 1.4rem;
   min-height: 1.4rem;
   border-radius: 4px;
@@ -57,44 +57,36 @@
   letter-spacing: 1px;
   -webkit-appearance: none;
   appearance: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .labelInputSender {
   text-align: left;
-  // background-color: #f0faf7;
-  // background-color: #fff;
-  border-color: #c5e5db;
 }
 
 .labelInputRecipient,
 .labelInputRecipients {
   text-align: left;
-  // background-color: #faf7fc;
-  // background-color: #fff;
-  border-color: #e0d0eb;
 }
 
 .labelInput:focus {
   outline: none;
-  background-color: $color-enabled;
-  box-shadow: 0 0 0 1px rgba(53, 65, 73, 0.2);
-  transition:
-    background-color 0.2s ease,
-    box-shadow 0.2s ease,
-    color 0.2s ease;
 }
 
 .labelInputSender:focus {
   color: $color-envelope-sender-legend;
   background-color: #fff;
-  box-shadow: 0 0 0 1px #1a4d3a40;
+  border-color: $color-envelope-sender-input-border;
 }
 
 .labelInputRecipient:focus,
 .labelInputRecipients:focus {
   color: $color-envelope-recipient-legend;
   background-color: #fff;
-  box-shadow: 0 0 0 1px #3d2a5c40;
+  border-color: $color-envelope-recipient-input-border;
 }
 
 .labelFieldzip {
