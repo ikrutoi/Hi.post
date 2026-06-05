@@ -26,6 +26,7 @@ import {
   setAddressFormView,
   setRecipientsPendingIds,
 } from '@envelope/infrastructure/state'
+import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import {
   selectActiveAddressList,
   selectRecipientsPendingIds,
@@ -163,6 +164,7 @@ export function* handleAddressSave(
 
       /** addList из create: форма остаётся открытой, черновик не сбрасываем (закрытие — вариант A). */
       if (isCreateFlow && listStatus === 'inList') {
+        yield call(closeCardPieListPanelAndSyncIconsSaga)
         yield put(
           updateGroupStatus({
             section: toolbarSectionForRole(role),

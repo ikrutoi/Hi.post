@@ -130,6 +130,7 @@ import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
 import { handleAddressSave } from '@app/middleware/addressSaveSaga'
+import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 
 const ADDRESS_LIST_UI_PREF_ID = 'addressList' as const
@@ -184,6 +185,8 @@ function* persistRecipientAddressListPanelDensityToDbSaga(): SagaIterator {
 function* ensureAddressListPanelOpen(
   mode: 'sender' | 'recipients',
 ): SagaIterator {
+  yield call(closeCardPieListPanelAndSyncIconsSaga)
+
   const active: 'sender' | 'recipients' | null = yield select(
     selectActiveAddressList,
   )

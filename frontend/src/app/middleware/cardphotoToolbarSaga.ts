@@ -74,6 +74,7 @@ import {
   handleDemoteInlineTemplateSaga,
   deactivateCropIfActive,
 } from './cardphotoHandlers'
+import { closeCardPieListPanelAndSyncIconsSaga } from './exclusiveListPanelsSaga'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { prepareForRedux, prepareConfigForRedux, updateCropToolbarState, hydrateSessionImageMeta, hydrateMeta, fuelAssetRegistry } from './cardphotoHelpers'
 import { collectReferencedBlobUrls } from './blobUrlRevokeGuards'
@@ -154,6 +155,8 @@ function* persistCardphotoListDensityToDbSaga(): SagaIterator {
 }
 
 function* ensureCardphotoTemplatesListPanelOpenSaga(): SagaIterator {
+  yield call(closeCardPieListPanelAndSyncIconsSaga)
+
   const isOpen: boolean = yield select(selectIsListPanelOpen)
   if (isOpen) return
   yield call(hydrateCardphotoListDensityFromDbSaga)
@@ -651,6 +654,7 @@ export function* handleCardphotoToolbarAction(
     case 'listAdd':
     case 'addList': {
       if (section === 'cardphotoProcessed' || section === 'cardphotoView') {
+        yield call(ensureCardphotoTemplatesListPanelOpenSaga)
         yield call(handlePromoteProcessedToInlineSaga)
       }
       break

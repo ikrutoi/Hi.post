@@ -24,6 +24,7 @@ import {
   setTitle,
 } from '@cardtext/infrastructure/state'
 import { changeFontSizeStep } from './cardtextHandlers'
+import { closeCardPieListPanelAndSyncIconsSaga } from './exclusiveListPanelsSaga'
 import type { RootState } from '@app/state'
 import { isEmptyCardtextValue } from '@cardtext/domain/helpers'
 import {
@@ -55,6 +56,17 @@ import {
   addCardtextTemplateId,
   removeCardtextTemplateId,
 } from '@features/previewStrip/infrastructure/state'
+
+function* ensureCardtextTemplatesListPanelOpenSaga(): SagaIterator {
+  yield call(closeCardPieListPanelAndSyncIconsSaga)
+
+  const isOpen: boolean = yield select(
+    (state: RootState) => state.cardtext.isListPanelOpen === true,
+  )
+  if (isOpen) return
+  yield put(setCardtextListPanelOpen(true))
+  yield put(loadCardtextTemplatesRequest())
+}
 
 function* handleCardtextViewAddList(): SagaIterator {
   const plainText: string = yield select(selectCardtextPlainText)
@@ -652,6 +664,7 @@ export function* handleCardtextToolbarAction(
     case 'addList': {
       if (section === 'cardtextView') {
         yield call(handleCardtextViewAddList)
+        yield call(ensureCardtextTemplatesListPanelOpenSaga)
         break
       }
       break

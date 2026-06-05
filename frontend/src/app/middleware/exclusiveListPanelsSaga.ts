@@ -26,6 +26,28 @@ import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 
+/** Закрыть CardPiePanel и вернуть иконку cardPie в enabled (если список уже открыт в slice). */
+export function* closeCardPieListPanelAndSyncIconsSaga(): SagaIterator {
+  const cardPieOpen: boolean = yield select(selectIsCardPieListPanelOpen)
+  if (!cardPieOpen) return
+
+  yield put(setCardPieListPanelOpen(false))
+  yield put(
+    updateToolbarIcon({
+      section: 'editorPie',
+      key: 'cardPie',
+      value: 'enabled',
+    }),
+  )
+  yield put(
+    updateToolbarIcon({
+      section: 'date',
+      key: 'cardPie',
+      value: 'enabled',
+    }),
+  )
+}
+
 function* syncListPanelToolbarIcons(): SagaIterator {
   const dateOpen: boolean = yield select(selectIsDateListPanelOpen)
   yield put(
