@@ -145,17 +145,23 @@
 
 .nameLine {
   font-size: 0.76rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.22;
   color: $color-font-enabled;
 }
 
 .cityLine,
 .countryLine {
-  font-size: 0.66rem;
   font-weight: 600;
-  line-height: 1.18;
   color: $color-font-enabled-light;
+}
+
+.root:not([data-density-level='2']) {
+  .cityLine,
+  .countryLine {
+    font-size: 0.72rem;
+    line-height: 1.22;
+  }
 }
 
 .actions {
@@ -210,15 +216,11 @@
 .root[data-density-level='2'] {
   padding: 0.28rem 0.24rem 0.22rem;
 
-  .nameLine {
-    font-size: 0.68rem;
-    line-height: 1.18;
-  }
-
+  .nameLine,
   .cityLine,
   .countryLine {
-    font-size: 0.58rem;
-    line-height: 1.14;
+    font-size: 0.68rem;
+    line-height: 1.18;
   }
 
   .actionButton svg {

@@ -27,6 +27,19 @@ $list-entry-row-linked-border: $color-cart-list-border;
   background-color: #fff;
   border: 1px solid $list-entry-border;
   border-radius: $list-entry-radius-sm;
+  transition: border-color 0.15s ease;
+}
+
+.shell[data-add-cart-ready='true'] {
+  border-color: $color-cart-list-entry-date-edit-border;
+
+  &:hover {
+    border-color: mix(
+      $color-cart-list-entry-date-edit-border,
+      hsl(210, 55%, 62%),
+      55%
+    );
+  }
 }
 
 /** Левый gutter `2rem`: центр по горизонтали и вертикали. */

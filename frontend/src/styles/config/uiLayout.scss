@@ -27,6 +27,13 @@ $list-entry-radius-md: 0.3125rem; // 5px
 $list-entry-radius-lg: 0.375rem; // 6px
 $list-entry-thumb-inset-md: 0.375rem; // 6px
 $list-entry-thumb-inset-sm: 0.3125rem; // 5px
+
+/** HistoryListEntry grid: date / detail / country lines. */
+$history-grid-meta-font-size: 0.62rem;
+$history-grid-meta-font-weight: 600;
+$history-grid-detail-line-height: 1.18;
+$history-grid-country-line-height: 1.16;
+
 $ui-accent-glow-spread: 0.5rem; // 8px
 
 @mixin list-panel-scroll-padding($inline-end-extra: 0rem) {

@@ -221,9 +221,9 @@ $list-entry-border: $color-cart-list-border;
 
 .dateLine,
 .detailBlock {
-  font-size: 0.62rem;
-  font-weight: 600;
-  line-height: 1.18;
+  font-size: $history-grid-meta-font-size;
+  font-weight: $history-grid-meta-font-weight;
+  line-height: $history-grid-detail-line-height;
   color: $color-font-enabled;
 }
 
@@ -270,9 +270,9 @@ $list-entry-border: $color-cart-list-border;
 .countryLine {
   order: 4;
   margin-top: 0.08rem;
-  font-size: 0.62rem;
-  font-weight: 600;
-  line-height: 1.16;
+  font-size: $history-grid-meta-font-size;
+  font-weight: $history-grid-meta-font-weight;
+  line-height: $history-grid-country-line-height;
   color: $color-font-enabled-light;
 }
 

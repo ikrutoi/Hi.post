@@ -55,6 +55,7 @@ export const CardPieListEntry: React.FC<CardPieListEntryProps> = ({
     <div
       className={styles.shell}
       data-inactive={inactive ? 'true' : undefined}
+      data-add-cart-ready={onAddCart && !inactive ? 'true' : undefined}
     >
       <div className={styles.shellAddCartSlot}>
         <button
