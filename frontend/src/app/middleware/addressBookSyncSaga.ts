@@ -30,6 +30,9 @@ function entriesMatch(a: AddressBookEntry[], b: AddressBookEntry[]): boolean {
     ) {
       return false
     }
+
+    if (entryA.listStatus !== entryB.listStatus) return false
+    if (entryA.favorite !== entryB.favorite) return false
   }
 
   return true

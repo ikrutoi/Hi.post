@@ -130,6 +130,7 @@ import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
 import type { RootState } from '@app/state'
 import { handleAddressSave } from '@app/middleware/addressSaveSaga'
+import { processEnvelopeVisuals } from '@app/middleware/envelopeProcessSaga'
 
 const ADDRESS_LIST_UI_PREF_ID = 'addressList' as const
 
@@ -773,6 +774,8 @@ function* handleEnvelopeToolbarAction(
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
         yield* ensureAddressListPanelOpen('sender')
+        yield call(syncAddressListIconsFromActive)
+        yield call(processEnvelopeVisuals)
       }
     } else {
       const recipientViewId: string | null = yield select(selectRecipientViewId)
@@ -817,6 +820,8 @@ function* handleEnvelopeToolbarAction(
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
         yield* ensureAddressListPanelOpen('recipients')
+        yield call(syncAddressListIconsFromActive)
+        yield call(processEnvelopeVisuals)
       }
     }
     return

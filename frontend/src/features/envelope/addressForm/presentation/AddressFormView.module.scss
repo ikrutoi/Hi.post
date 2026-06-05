@@ -12,7 +12,9 @@
 }
 
 .addressFormFields {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
   width: 100%;
   max-width: 100%;
 }
@@ -21,6 +23,6 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 0 0.5rem;
-  margin-top: 0.05rem;
+  margin-top: 0;
   width: 100%;
 }

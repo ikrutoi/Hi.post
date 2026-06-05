@@ -14,6 +14,30 @@
   &.root-calendar {
     // border: solid 1px blue;
 
+    .dotCart {
+      background-color: $color-preview-indicator-cart;
+    }
+
+    .dotCartBlocked {
+      @include preview-indicator-cart-blocked-ring;
+    }
+
+    .dotReady {
+      background-color: $color-preview-indicator-ready;
+    }
+
+    .dotSent {
+      background-color: $color-preview-indicator-sent;
+    }
+
+    .dotDelivered {
+      background-color: $color-preview-indicator-delivered;
+    }
+
+    .dotError {
+      background-color: $color-preview-indicator-error;
+    }
+
     .icon {
       width: 1rem;
       height: 1rem;
@@ -32,6 +56,37 @@
   }
 
   &.root-historyList {
+    min-width: 0;
+
+    .dotCart {
+      background-color: $color-preview-indicator-cart;
+    }
+
+    .dotCartBlocked {
+      @include preview-indicator-cart-blocked-ring;
+    }
+
+    .dotReady {
+      background-color: $color-preview-indicator-ready;
+    }
+
+    .dotSent {
+      background-color: $color-preview-indicator-sent;
+    }
+
+    .dotDelivered {
+      background-color: $color-preview-indicator-delivered;
+    }
+
+    .dotError {
+      background-color: $color-preview-indicator-error;
+    }
+
+    .row {
+      /* Edge: minmax(0, 1fr) иногда схлопывает ячейки с маленькими dot. */
+      grid-template-columns: repeat(5, 1fr);
+    }
+
     .item {
       border-radius: 0.5rem;
       background-color: #fff;
@@ -97,6 +152,7 @@
 }
 
 .dot {
+  display: block;
   flex-shrink: 0;
   width: 0.55rem;
   height: 0.55rem;
@@ -113,55 +169,8 @@
     color: $color-font-disabled;
   }
 
-  .dotCart {
-    background-color: $color-font-disabled;
-  }
-
-  .dotReady {
-    background-color: $color-font-disabled;
-  }
-
-  .dotSent {
-    background-color: $color-font-disabled;
-  }
-
-  .dotDelivered {
-    background-color: $color-font-disabled;
-  }
-
-  .dotError {
-    background-color: $color-font-disabled;
-  }
-
   .icon {
     color: $color-font-disabled;
-  }
-}
-
-.root-calendar,
-.root-historyList {
-  .dotCart {
-    background-color: $color-preview-indicator-cart;
-  }
-
-  .dotCartBlocked {
-    @include preview-indicator-cart-blocked-ring;
-  }
-
-  .dotReady {
-    background-color: $color-preview-indicator-ready;
-  }
-
-  .dotSent {
-    background-color: $color-preview-indicator-sent;
-  }
-
-  .dotDelivered {
-    background-color: $color-preview-indicator-delivered;
-  }
-
-  .dotError {
-    background-color: $color-preview-indicator-error;
   }
 }
 

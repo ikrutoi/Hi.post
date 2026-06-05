@@ -241,7 +241,8 @@ function* openAddressViewAfterSave(
     if (!pendingIds.includes(id)) {
       yield put(setRecipientsPendingIds(nextPendingIds))
     }
-    if (nextPendingIds.length === 1) {
+    // applyLight (viewOnly): как senderView — всегда карточка сохранённого шаблона
+    if (viewOnly || nextPendingIds.length === 1) {
       yield put(setRecipientViewId(id))
       yield put(setRecipientView('recipientView'))
     } else {

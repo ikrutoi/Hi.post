@@ -122,11 +122,25 @@ $list-panel-footer-band: calc(1.75rem + 1px);
 
 .indicators {
   position: absolute;
+  left: 0.5rem;
+  right: calc(0.75rem + #{$list-panel-scroll-gutter});
   bottom: 0;
-  right: 0.5rem;
-  height: 1.75rem;
-  padding-top: 0.15rem;
-  border-top: 1px solid $color-cardphoto-input-border;
   z-index: 2;
-  @include list-panel-footer-width;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 1.75rem;
+  padding: 0.15rem 0.35rem 0;
+  box-sizing: border-box;
+  border-top: 1px solid $color-cardphoto-input-border;
+  background-color: #fff;
+  overflow: visible;
+}
+
+.indicatorsInner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
 }

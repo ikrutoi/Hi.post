@@ -33,12 +33,21 @@ export const addressBookSlice = createSlice({
     addAddressBookEntry(state, action: PayloadAction<AddressBookEntry>) {
       const entry = action.payload
       if (entry.role === 'sender') {
-        if (!state.senderEntries.some((e) => e.id === entry.id)) {
+        const idx = state.senderEntries.findIndex((e) => e.id === entry.id)
+        if (idx === -1) {
           state.senderEntries.push(entry)
+        } else {
+          state.senderEntries[idx] = { ...state.senderEntries[idx], ...entry }
         }
       } else {
-        if (!state.recipientEntries.some((e) => e.id === entry.id)) {
+        const idx = state.recipientEntries.findIndex((e) => e.id === entry.id)
+        if (idx === -1) {
           state.recipientEntries.push(entry)
+        } else {
+          state.recipientEntries[idx] = {
+            ...state.recipientEntries[idx],
+            ...entry,
+          }
         }
       }
     },

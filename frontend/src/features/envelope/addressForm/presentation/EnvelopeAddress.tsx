@@ -35,18 +35,6 @@ import {
 } from '@shared/ui/icons'
 import { toolbarAction } from '@toolbar/application/helpers'
 
-const ADDRESS_FIELDS = ['name', 'street', 'city', 'zip', 'country'] as const
-
-function addressMatchesTemplate(
-  value: Record<string, string>,
-  templateAddress: Record<string, string> | undefined,
-): boolean {
-  if (!templateAddress) return false
-  return ADDRESS_FIELDS.every(
-    (f) => (value[f] ?? '').trim() === (templateAddress[f] ?? '').trim(),
-  )
-}
-
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   role,
   roleLabel,
@@ -73,23 +61,11 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         ? activeAddressEdit.templateId
         : editingTemplateId
 
-  const entriesForRole = useAppSelector((state) =>
-    role === 'sender'
-      ? (state.addressBook?.senderEntries ?? [])
-      : (state.addressBook?.recipientEntries ?? []),
-  )
   const senderEntries = useAppSelector(
     (state) => state.addressBook?.senderEntries ?? [],
   )
   const recipientEntries = useAppSelector(
     (state) => state.addressBook?.recipientEntries ?? [],
-  )
-  const templateEntry = editingTemplateId
-    ? entriesForRole.find((e) => e.id === editingTemplateId)
-    : null
-  const dataMatchesTemplate = addressMatchesTemplate(
-    value,
-    templateEntry?.address,
   )
 
   const dispatch = useAppDispatch()
@@ -130,11 +106,35 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const recipientsDisplayList = recipientFacade.recipientsDisplayList
 
-  const showRecipientDetailCard =
-    role === 'recipient' &&
-    recipientView === 'recipientView' &&
-    (hasRecipientAddressData ||
-      (editingTemplateId != null && dataMatchesTemplate))
+  const recipientIdForDisplay =
+    role === 'recipient' ? (editingTemplateId ?? null) : null
+
+  const recipientDisplayEntry = useMemo((): AddressBookEntry | null => {
+    if (
+      role !== 'recipient' ||
+      recipientView !== 'recipientView' ||
+      recipientIdForDisplay == null
+    ) {
+      return null
+    }
+    const fromBook = recipientEntries.find((e) => e.id === recipientIdForDisplay)
+    if (fromBook) return fromBook
+    if (!Object.values(value).some((v) => (v ?? '').trim() !== '')) return null
+    return {
+      id: recipientIdForDisplay,
+      role: 'recipient',
+      address: { ...value },
+      createdAt: new Date().toISOString(),
+    }
+  }, [
+    role,
+    recipientView,
+    recipientIdForDisplay,
+    recipientEntries,
+    value,
+  ])
+
+  const showRecipientDetailCard = recipientDisplayEntry != null
 
   const showRecipientsEnvelopeList =
     role === 'recipient' &&
@@ -162,6 +162,14 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
     if (recipientsDisplayList.length === 1) {
       const entry = recipientsDisplayList[0]
+      if (
+        recipientView === 'recipientView' &&
+        editingTemplateId != null &&
+        editingTemplateId !== entry.id &&
+        hasRecipientAddressData
+      ) {
+        return
+      }
       if (recipientView !== 'recipientView' || editingTemplateId !== entry.id) {
         applyRecipientEntry(entry)
         dispatch(setRecipientView('recipientView'))
