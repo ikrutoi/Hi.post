@@ -89,6 +89,15 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
   box-sizing: border-box;
 }
 
+/* Пустой state: плейсхолдер absolute — без высоты родителя % inset уезжают вверх */
+.addressFieldsetInner:has(> .addressFormPlaceholderBg) {
+  position: absolute;
+  top: 0;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  left: 0.5rem;
+}
+
 /* create-форма: toolbar конверта не перехватывает клики по applyLight / close */
 .addressFieldsetCreateOpen {
   .addressToolbarSender,
@@ -461,11 +470,11 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
   z-index: 1;
 }
 
-/* Empty state inset; SVG figure sits on the right side of the viewBox. */
+/* Пустой отправитель: якорь слева снизу (зона отправителя на конверте) */
 .senderPlaceholderInset {
   position: absolute;
   left: 10%;
-  top: 7%;
+  bottom: 7%;
   z-index: 2;
   min-height: 0;
   padding: 0;
