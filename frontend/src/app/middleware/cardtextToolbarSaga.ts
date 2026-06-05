@@ -68,6 +68,12 @@ function* ensureCardtextTemplatesListPanelOpenSaga(): SagaIterator {
   yield put(loadCardtextTemplatesRequest())
 }
 
+function* clearCardtextEditorSlotsAfterAddToListSaga(): SagaIterator {
+  yield call([templateService, 'deleteSingleCardtextByStatus'], 'processed')
+  yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
+  yield put(clearDraftData())
+}
+
 function* handleCardtextViewAddList(): SagaIterator {
   const plainText: string = yield select(selectCardtextPlainText)
   if (!(plainText?.trim?.() ?? '').length) return
@@ -77,7 +83,15 @@ function* handleCardtextViewAddList(): SagaIterator {
   const style: ReturnType<typeof selectCardtextStyle> =
     yield select(selectCardtextStyle)
   const cardtextLines: number = yield select(selectCardtextLines)
-  const templateId: string | null = yield select(selectCardtextId)
+  const { assetData } = yield select((s: RootState) => s.cardtext)
+  let templateId: string | null = yield select(selectCardtextId)
+  if (
+    templateId == null &&
+    assetData?.status === 'processed' &&
+    assetData?.id != null
+  ) {
+    templateId = String(assetData.id)
+  }
   const templates: CardtextContent[] | null = yield select(
     selectCardtextTemplatesListItems,
   )
@@ -111,12 +125,12 @@ function* handleCardtextViewAddList(): SagaIterator {
           cardtextLines,
         }),
       )
+      yield call(clearCardtextEditorSlotsAfterAddToListSaga)
       yield put(loadCardtextTemplatesRequest())
     }
     return
   }
 
-  const { assetData } = yield select((s: RootState) => s.cardtext)
   const existingTitles = (templates ?? []).map((t) => t.title ?? '')
   const resolvedTitle = resolveCardtextTemplateTitle(
     plainText,
@@ -140,6 +154,7 @@ function* handleCardtextViewAddList(): SagaIterator {
     yield put(addCardtextTemplateId(newId))
     yield put(setCardtextId(newId))
     yield put(setStatus('inLine'))
+    yield call(clearCardtextEditorSlotsAfterAddToListSaga)
     yield put(loadCardtextTemplatesRequest())
   }
 }

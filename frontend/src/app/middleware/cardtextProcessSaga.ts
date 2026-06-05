@@ -416,6 +416,10 @@ export function* cardtextProcessSaga(): SagaIterator {
           (key === 'addList' || key === 'removeFromList')
         ) {
           yield call(syncCardtextViewToolbarAddList)
+          if (key === 'addList') {
+            yield call(syncCardtextProcessedBadge)
+            yield call(syncCardtextCreateDraftIndicator)
+          }
         }
         if (
           key === 'applyLight' ||
@@ -496,7 +500,11 @@ export function* cardtextProcessSaga(): SagaIterator {
       setStatus.type,
       function* (action: ReturnType<typeof setStatus>): SagaIterator {
         yield call(maybePersistCreateDraftOnExitView, action)
-        if (action.payload === 'processed') {
+        if (
+          action.payload === 'processed' ||
+          action.payload === 'inLine' ||
+          action.payload === 'outLine'
+        ) {
           yield call(syncCardtextProcessedBadge)
         }
         yield call(syncCardtextCreateDraftIndicator)
