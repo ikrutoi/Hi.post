@@ -122,8 +122,10 @@ import {
   doesDraftMatchAnyTemplate,
   doesDraftMatchInList,
   getAddressListToolbarFragment,
+  getMatchingEntryId,
   isAddressDraftComplete,
   listStatusIsInQuickAddressBook,
+  normalizeAddressFields,
 } from '@envelope/domain/helpers'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
@@ -467,6 +469,59 @@ function* selectInListEntriesForRole(
   return entries.filter((e) => listStatusIsInQuickAddressBook(e.listStatus))
 }
 
+/** Черновик create-формы совпадает с шаблоном в книге — открыть View, не Create. */
+function* openAddressViewFromFormDraftIfSaved(
+  role: 'sender' | 'recipient',
+): SagaIterator<boolean> {
+  if (role === 'sender') {
+    const sender: SenderState = yield select(selectSenderState)
+    if (sender.formIsEmpty ?? true) return false
+
+    const draft = normalizeAddressFields(sender.formDraft as AddressFields)
+    const senderEntries: AddressBookEntry[] = yield select(
+      (s: RootState) => s.addressBook?.senderEntries ?? [],
+    )
+    const id = getMatchingEntryId(
+      draft,
+      senderEntries.map((e) => ({
+        id: e.id,
+        address: normalizeAddressFields(e.address ?? {}),
+      })),
+    )
+    if (!id) return false
+
+    yield put(setAddressFormView({ show: false, role: null }))
+    yield put(setSenderViewDraft(draft))
+    yield put(setSenderViewId(id))
+    yield put(setSenderView('senderView'))
+    yield call(processEnvelopeVisuals)
+    return true
+  }
+
+  const recipient: RecipientState = yield select(selectRecipientState)
+  if (recipient.formIsEmpty ?? true) return false
+
+  const draft = normalizeAddressFields(recipient.formDraft as AddressFields)
+  const recipientEntries: AddressBookEntry[] = yield select(
+    (s: RootState) => s.addressBook?.recipientEntries ?? [],
+  )
+  const id = getMatchingEntryId(
+    draft,
+    recipientEntries.map((e) => ({
+      id: e.id,
+      address: normalizeAddressFields(e.address ?? {}),
+    })),
+  )
+  if (!id) return false
+
+  yield put(setAddressFormView({ show: false, role: null }))
+  yield put(setRecipientViewDraft(draft))
+  yield put(setRecipientViewId(id))
+  yield put(setRecipientView('recipientView'))
+  yield call(processEnvelopeVisuals)
+  return true
+}
+
 /** Закрыть форму создания. Черновик сохраняем, кроме случая listCheck (адрес уже в inList). */
 function* closeAddressCreateForm(
   section: 'senderCreate' | 'recipientCreate',
@@ -776,6 +831,7 @@ function* handleEnvelopeToolbarAction(
         )
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
+        yield put(clearSenderFormData())
         yield* ensureAddressListPanelOpen('sender')
         yield call(syncAddressListIconsFromActive)
         yield call(processEnvelopeVisuals)
@@ -822,6 +878,7 @@ function* handleEnvelopeToolbarAction(
         )
         yield put(incrementAddressTemplatesReloadVersion())
         yield put(incrementAddressBookReloadVersion())
+        yield put(clearRecipientFormData())
         yield* ensureAddressListPanelOpen('recipients')
         yield call(syncAddressListIconsFromActive)
         yield call(processEnvelopeVisuals)
@@ -961,6 +1018,11 @@ function* handleEnvelopeToolbarAction(
 
   if (key === 'addressAdd') {
     if (section === 'sender') {
+      const openedView: boolean = yield call(
+        openAddressViewFromFormDraftIfSaved,
+        'sender',
+      )
+      if (openedView) return
       yield put(setAddressFormView({ show: true, role: 'sender' }))
       // Черновик formDraft сохраняем при Close; addressAdd снова открывает его
       yield put(setSenderView('senderCreate'))
@@ -968,6 +1030,11 @@ function* handleEnvelopeToolbarAction(
       section === 'recipientView' ||
       section === 'recipients'
     ) {
+      const openedView: boolean = yield call(
+        openAddressViewFromFormDraftIfSaved,
+        'recipient',
+      )
+      if (openedView) return
       yield put(setAddressFormView({ show: true, role: 'recipient' }))
       yield put(setRecipientView('recipientCreate'))
     }
@@ -1246,6 +1313,15 @@ function* syncRecipientsViewIdsFromPending() {
     yield put(setRecipientsViewIdsSecondList(pendingIds))
   } else {
     yield put(setRecipientsViewIds(pendingIds))
+  }
+
+  const currentViewId = recipient.recipientViewId
+  if (
+    recipient.currentView === 'recipientView' &&
+    currentViewId != null &&
+    pendingIds.includes(currentViewId)
+  ) {
+    return
   }
 
   if (pendingIds.length === 1) {

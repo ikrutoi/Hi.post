@@ -423,8 +423,8 @@ export function* processEnvelopeVisuals() {
         addressAdd: {
           state: isRecipientFormOpen ? 'disabled' : 'enabled',
           options: isRecipientFormOpen
-            ? { badgeDot: false }
-            : { badgeDot: !(recipient.formIsEmpty ?? true) },
+            ? { badge: null }
+            : { badge: !(recipient.formIsEmpty ?? true) ? 1 : null },
         },
       },
     }),

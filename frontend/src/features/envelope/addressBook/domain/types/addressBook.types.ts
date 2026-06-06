@@ -16,6 +16,5 @@ export interface AddressBookEntry {
   label?: string
   createdAt: string
   listStatus?: ListStatus
-  /** Звёздочка в списке; при outList должна быть null */
   favorite?: boolean | null
 }

@@ -162,9 +162,14 @@ export function* handleAddressSave(
         }),
       )
 
-      /** addList из create: форма остаётся открытой, черновик не сбрасываем (закрытие — вариант A). */
+      /** addList из create: адрес в inList — черновик формы больше не нужен (бейдж addressAdd). */
       if (isCreateFlow && listStatus === 'inList') {
         yield call(closeCardPieListPanelAndSyncIconsSaga)
+        if (role === 'sender') {
+          yield put(clearSenderFormData())
+        } else {
+          yield put(clearRecipientFormData())
+        }
         yield put(
           updateGroupStatus({
             section: toolbarSectionForRole(role),
@@ -225,13 +230,18 @@ function* openAddressViewAfterSave(
 
   if (role === 'recipient') {
     const pendingIds: string[] = yield select(selectRecipientsPendingIds)
-    const nextPendingIds = pendingIds.includes(id)
-      ? pendingIds
-      : [...pendingIds, id]
+    const hadMultipleRecipients = pendingIds.length > 1
+    const shouldAddToRecipientList =
+      !hadMultipleRecipients && !pendingIds.includes(id)
+    const nextPendingIds = shouldAddToRecipientList
+      ? [...pendingIds, id]
+      : pendingIds
 
     yield put(setRecipientViewDraft(cleanedAddress))
     yield put(setAddressFormView({ show: false, role: null }))
-    yield put(clearRecipientFormData())
+    if (!viewOnly) {
+      yield put(clearRecipientFormData())
+    }
     if (!viewOnly) {
       yield put(
         setRecipientAppliedWithData({
@@ -239,9 +249,6 @@ function* openAddressViewAfterSave(
           data: [cleanedAddress],
         }),
       )
-    }
-    if (!pendingIds.includes(id)) {
-      yield put(setRecipientsPendingIds(nextPendingIds))
     }
     // applyLight (viewOnly): как senderView — всегда карточка сохранённого шаблона
     if (viewOnly || nextPendingIds.length === 1) {
@@ -251,12 +258,17 @@ function* openAddressViewAfterSave(
       yield put(setRecipientViewId(null))
       yield put(setRecipientView('recipientsView'))
     }
+    if (shouldAddToRecipientList) {
+      yield put(setRecipientsPendingIds(nextPendingIds))
+    }
   } else {
     yield put(setSenderViewDraft(cleanedAddress))
     yield put(setSenderViewId(id))
     yield put(setSenderView('senderView'))
     yield put(setAddressFormView({ show: false, role: null }))
-    yield put(clearSenderFormData())
+    if (!viewOnly) {
+      yield put(clearSenderFormData())
+    }
     if (!viewOnly) {
       yield put(
         setSenderAppliedWithData({

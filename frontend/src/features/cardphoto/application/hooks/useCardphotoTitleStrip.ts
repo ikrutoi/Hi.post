@@ -48,11 +48,6 @@ export function useCardphotoTitleStrip(p: UseCardphotoTitleStripParams) {
       .trim()
       .slice(0, CARDPHOTO_TEMPLATE_TITLE_MAX_LENGTH)
 
-    if (!next) {
-      cancelEditTitle()
-      return
-    }
-
     if (next === title.trim()) {
       cancelEditTitle()
       return
@@ -70,7 +65,7 @@ export function useCardphotoTitleStrip(p: UseCardphotoTitleStripParams) {
         cancelEditTitle()
         return
       }
-      const updated = { ...row, title: next }
+      const updated = { ...row, title: next || undefined }
       await storeAdapters.cardphotoImages.put(updated)
       dispatch(setCardphotoTitle(next))
       if (row.status === 'inLine') {
