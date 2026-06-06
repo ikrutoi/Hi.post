@@ -100,13 +100,36 @@ export const selectCardphotoAssetToolbar = (
   return computeCardphotoAssetToolbar(s)
 }
 
-/** Saved original in memory while create form is closed — badge dot + reopen on cardphotoAdd. */
-export const selectCardphotoOriginalReminderActive = (
-  state: RootState,
-): boolean => {
-  if (!state.cardphoto.state?.userOriginalData) return false
-  return selectCardphotoAssetToolbar(state) !== 'cardphotoCreate'
-}
+/** Оригинал в памяти после addList / apply — badgeDot + reopen create на cardphotoAdd. */
+export const selectCardphotoOriginalReminderActive = createSelector(
+  [
+    (state: RootState) => state.cardphoto.state?.userOriginalData,
+    selectCardphotoAssetToolbar,
+    (state: RootState) => state.cardphotoUi.sessionPendingProcessedId,
+    (state: RootState) => state.cardphotoUi.originalUploadReminderActive,
+    (state: RootState) => state.cardphoto.state?.assetData?.status,
+  ],
+  (
+    userOriginal,
+    assetToolbar,
+    sessionPendingProcessedId,
+    originalUploadReminderActive,
+    assetStatus,
+  ) => {
+    if (!userOriginal) return false
+    if (!originalUploadReminderActive) return false
+    if (assetToolbar === 'cardphotoCreate') return false
+    if (sessionPendingProcessedId) return false
+    if (assetStatus === 'processed') return false
+    return true
+  },
+)
+
+export const selectCardphotoOriginalUploadReminderActive = (state: RootState) =>
+  state.cardphotoUi.originalUploadReminderActive
+
+export const selectCardphotoSessionPendingProcessedId = (state: RootState) =>
+  state.cardphotoUi.sessionPendingProcessedId
 
 export const selectCardphotoImageStageRect = (state: RootState) =>
   state.cardphoto.state?.imageStageRect ?? null

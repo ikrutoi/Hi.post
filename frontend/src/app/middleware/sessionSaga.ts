@@ -155,8 +155,10 @@ import type { SizeCard } from '@layout/domain/types'
 import type { AromaState } from '@entities/aroma/domain/types'
 import type { DateState } from '@entities/date/domain/types'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
+import { syncCardphotoAddToolbarState } from './cardphotoToolbarSaga'
 import { CardSection } from '@shared/config/constants'
 import { shouldSyncUserOriginalOnRebuild } from '@cardphoto/application/helpers'
+import { syncCardphotoToolbarUiFlagsAfterSessionHydrate } from '@cardphoto/application/helpers/syncCardphotoToolbarUiFlagsAfterSessionHydrate'
 import { refreshRightSidebarBadgesFromPostcards } from './postcardCreateSaga'
 
 export function* persistGlobalSession() {
@@ -788,6 +790,14 @@ export function* hydrateAppSession() {
           userOriginalData: userResolved,
         }),
       )
+
+      yield call(
+        syncCardphotoToolbarUiFlagsAfterSessionHydrate,
+        userResolved,
+        assetResolved ?? activeImage,
+        allCrops,
+      )
+      yield call(syncCardphotoAddToolbarState)
 
       yield call(syncCardphotoStatus)
     } else {

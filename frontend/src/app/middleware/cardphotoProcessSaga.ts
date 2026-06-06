@@ -40,6 +40,8 @@ import {
   openCardphotoFromMiniStripRequested,
   removeUserImage,
   clearCardphotoViewReturnSnapshot,
+  clearSessionPendingProcessedId,
+  setOriginalUploadReminderActive,
 } from '@cardphoto/infrastructure/state'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { prepareForRedux, prepareConfigForRedux } from './cardphotoHelpers'
@@ -75,7 +77,8 @@ import {
   // watchCropHistory,
   watchToolbarContext,
   watchDeactivateCropOnEditorContextLeave,
-  syncCardphotoAddBadgeDot,
+  syncCardphotoAddToolbarState,
+  syncToolbarContext,
 } from './cardphotoToolbarSaga'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -133,6 +136,9 @@ export function* onDownloadClick(): SagaIterator {
 
 function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   try {
+    yield put(setOriginalUploadReminderActive(false))
+    yield put(clearSessionPendingProcessedId())
+
     let imageMeta = action.payload
     // Prefer `full.blob` (kept on upload). Fallback: fetch blob: URL (may fail if revoked).
     if (!imageMeta.full?.blob && imageMeta.url?.startsWith('blob:')) {
@@ -296,7 +302,7 @@ function* onSelectInLineTemplateSaga(
     yield put(setProcessedImage(prepareForRedux(record)))
 
     yield call(rebuildConfigFromMeta, record, false)
-    yield call(syncCardphotoAddBadgeDot)
+    yield call(syncToolbarContext)
   } catch (e) {
     console.error('onSelectInLineTemplateSaga', e)
   }
@@ -384,8 +390,12 @@ function* watchCardphotoInLineBadge(): SagaIterator {
   )
 }
 
-function* watchCardphotoAddBadgeDot(): SagaIterator {
-  yield takeEvery([resetCardphoto.type, removeUserImage.type], syncCardphotoAddBadgeDot)
+function* watchCardphotoAddToolbarState(): SagaIterator {
+  yield takeEvery([resetCardphoto.type, removeUserImage.type], function* () {
+    yield put(clearSessionPendingProcessedId())
+    yield put(setOriginalUploadReminderActive(false))
+    yield call(syncCardphotoAddToolbarState)
+  })
 }
 
 export function* cardphotoProcessSaga(): SagaIterator {
@@ -413,7 +423,7 @@ export function* cardphotoProcessSaga(): SagaIterator {
     fork(watchDeactivateCropOnEditorContextLeave),
     fork(watchCardphotoImageStageRect),
     fork(watchCardphotoInLineBadge),
-    fork(watchCardphotoAddBadgeDot),
+    fork(watchCardphotoAddToolbarState),
     takeEvery(commitWorkingConfig.type, ensureCardphotoCardMatchesStageRect),
 
     takeLatest(uploadUserImage.type, onUploadImageReadySaga),

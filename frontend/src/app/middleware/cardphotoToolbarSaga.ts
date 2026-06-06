@@ -1,4 +1,4 @@
-import { call, all, fork, select, put, takeEvery } from 'redux-saga/effects'
+import { call, all, fork, select, put, takeEvery, takeLatest } from 'redux-saga/effects'
 import {
   resetActiveSection,
   setActiveSection,
@@ -44,6 +44,8 @@ import {
   setCardphotoViewReturnSnapshot,
   clearCardphotoViewReturnSnapshot,
   removeUserImage,
+  clearSessionPendingProcessedId,
+  setOriginalUploadReminderActive,
 } from '@cardphoto/infrastructure/state'
 import {
   selectCardphotoListSortMode,
@@ -56,6 +58,7 @@ import {
   selectCardphotoAssetToolbar,
   selectCardphotoListTemplateGridCols,
   selectCardphotoOriginalReminderActive,
+  selectCardphotoSessionPendingProcessedId,
   selectCardphotoState,
   selectIsListPanelOpen,
 } from '@cardphoto/infrastructure/selectors'
@@ -76,7 +79,7 @@ import {
   deactivateCropIfActive,
 } from './cardphotoHandlers'
 import { closeCardPieListPanelAndSyncIconsSaga } from './exclusiveListPanelsSaga'
-import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
+import { rebuildConfigFromMeta, onDownloadClick } from './cardphotoProcessSaga'
 import { prepareForRedux, prepareConfigForRedux, updateCropToolbarState, hydrateSessionImageMeta, hydrateMeta, fuelAssetRegistry } from './cardphotoHelpers'
 import { collectReferencedBlobUrls } from './blobUrlRevokeGuards'
 import type { CardphotoToolbarState } from '@toolbar/domain/types'
@@ -84,8 +87,11 @@ import {
   getQualityColor,
   dispatchQualityUpdate,
   calculateCropQuality,
+  resolveCardphotoAddToolbarState,
+  resolveCardphotoPendingProcessedIdSaga,
+  readCardphotoAddToolbarVisual,
 } from '@cardphoto/application/helpers'
-import { onDownloadClick } from './cardphotoProcessSaga'
+import { openCardphotoViewFromPendingProcessedSaga } from '@cardphoto/application/helpers/openCardphotoViewFromPendingProcessed'
 import { syncCardtextToolbarVisuals } from './cardtextHandlers'
 import {
   updateToolbarSection,
@@ -229,7 +235,7 @@ function* handleCloseCardphotoCreateSaga(): SagaIterator {
     yield put(setCardphotoViewEditMode(false))
     yield put(markLoaded())
     yield call(syncToolbarContext)
-    yield call(syncCardphotoAddBadgeDot)
+    yield call(syncCardphotoAddToolbarState)
   } catch (error) {
     console.error('Close cardphoto create failed:', error)
   }
@@ -300,6 +306,7 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
     const serializableMeta = prepareForRedux(imageMeta)
     const serializableConfig = prepareConfigForRedux(config)
 
+    yield put(clearSessionPendingProcessedId())
     yield put(
       hydrateEditor({
         config: serializableConfig,
@@ -313,47 +320,60 @@ function* reopenCardphotoCreateFromSavedOriginalSaga(): SagaIterator {
     )
     yield put(markLoaded())
     yield call(syncToolbarContext)
-    yield call(syncCardphotoAddBadgeDot)
+    yield call(syncCardphotoAddToolbarState)
   } catch (error) {
     console.error('reopenCardphotoCreateFromSavedOriginalSaga', error)
     yield call(onDownloadClick)
   }
 }
 
-export function* syncCardphotoAddBadgeDot(): SagaIterator {
+export function* syncCardphotoAddToolbarState(): SagaIterator {
+  const pendingProcessedId: string | null = yield call(
+    resolveCardphotoPendingProcessedIdSaga,
+  )
+  const hasPendingProcessed = !!pendingProcessedId
+
   const shouldShowOriginalDot: boolean = yield select(
     selectCardphotoOriginalReminderActive,
   )
 
-  const current: CardphotoToolbarState['cardphotoAdd'] | undefined = yield select(
-    (s: RootState) => s.toolbar.cardphoto?.cardphotoAdd,
-  )
-  const currentOptions =
-    current && typeof current === 'object' ? (current.options ?? {}) : {}
+  const { state: addState, options } = resolveCardphotoAddToolbarState({
+    hasPendingProcessed,
+    shouldShowOriginalDot,
+  })
 
   yield put(
     updateToolbarIcon({
       section: 'cardphoto',
       key: 'cardphotoAdd',
-      value: {
-        options: {
-          ...currentOptions,
-          badgeDot: shouldShowOriginalDot,
-        },
-      },
+      value: { state: addState, options },
     }),
   )
 }
 
-function* syncCardphotoToolbarAddAndBadgeSaga(): SagaIterator {
-  yield put(
-    updateToolbarIcon({
-      section: 'cardphoto',
-      key: 'cardphotoAdd',
-      value: 'enabled',
-    }),
+function* buildCardphotoAddToolbarPatch(): SagaIterator<
+  ReturnType<typeof resolveCardphotoAddToolbarState>
+> {
+  const pendingProcessedId: string | null = yield call(
+    resolveCardphotoPendingProcessedIdSaga,
   )
-  yield call(syncCardphotoAddBadgeDot)
+  const shouldShowOriginalDot: boolean = yield select(
+    selectCardphotoOriginalReminderActive,
+  )
+
+  return resolveCardphotoAddToolbarState({
+    hasPendingProcessed: !!pendingProcessedId,
+    shouldShowOriginalDot,
+  })
+}
+
+/** @deprecated use syncCardphotoAddToolbarState */
+export function* syncCardphotoAddBadgeDot(): SagaIterator {
+  yield call(syncCardphotoAddToolbarState)
+}
+
+function* syncCardphotoToolbarAddAndBadgeSaga(): SagaIterator {
+  yield call(syncCardphotoAddToolbarState)
 }
 
 function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
@@ -363,6 +383,8 @@ function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
       CURRENT_EDITOR_IMAGE_ID,
     )
     yield put(removeUserImage())
+    yield put(clearSessionPendingProcessedId())
+    yield put(setOriginalUploadReminderActive(false))
     yield put(setAssetData(null))
     yield put(clearCurrentConfig())
     yield put(setCardphotoViewEditMode(false))
@@ -377,7 +399,7 @@ function* handleDeleteCardphotoCreateUploadSaga(): SagaIterator {
 
     yield put(markLoaded())
     yield call(syncToolbarContext)
-    yield call(syncCardphotoAddBadgeDot)
+    yield call(syncCardphotoAddToolbarState)
   } catch (error) {
     console.error('handleDeleteCardphotoCreateUploadSaga', error)
   }
@@ -432,6 +454,9 @@ export function* handleEditCardphotoViewSaga(): SagaIterator {
 export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
   try {
     const asset: ImageMeta | null = yield select(selectActiveImage)
+    const sessionPendingId: string | null = yield select(
+      selectCardphotoSessionPendingProcessedId,
+    )
     yield put(setCardphotoViewEditMode(false))
 
     if (
@@ -453,6 +478,9 @@ export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
         )
       }
       yield put(bumpCardphotoInlineTemplateList())
+      if (asset.status === 'processed' || asset.id === sessionPendingId) {
+        yield put(clearSessionPendingProcessedId())
+      }
     }
 
     yield put(setAssetData(null))
@@ -500,27 +528,38 @@ export function* handleCardphotoToolbarAction(
 
   // Upload / pick image — same flow as legacy `download` (opens hidden file input via `openFileDialog`).
   if (key === 'cardphotoAdd') {
-    if (section === 'cardphoto') {
-      const hasOriginalReminder: boolean = yield select(
-        selectCardphotoOriginalReminderActive,
-      )
-      if (hasOriginalReminder) {
-        yield call(reopenCardphotoCreateFromSavedOriginalSaga)
-        return
-      }
-
-      const assetToolbar: ReturnType<typeof selectCardphotoAssetToolbar> =
-        yield select(selectCardphotoAssetToolbar)
-      if (assetToolbar === 'cardphotoCreate') {
-        yield put(clearCardphotoViewReturnSnapshot())
-      }
-    }
     if (
       section === 'cardphoto' ||
       section === 'cardphotoCreate' ||
       section === 'cardphotoProcessed'
     ) {
-      yield call(onDownloadClick)
+      const addVisual: ReturnType<typeof readCardphotoAddToolbarVisual> =
+        yield select(readCardphotoAddToolbarVisual)
+
+      if (addVisual.enabled && !addVisual.hasBadge && !addVisual.hasDot) {
+        yield put(clearCardphotoViewReturnSnapshot())
+        yield call(onDownloadClick)
+        return
+      }
+
+      if (section === 'cardphoto' && addVisual.enabled) {
+        if (addVisual.hasBadge) {
+          const opened: boolean = yield call(
+            openCardphotoViewFromPendingProcessedSaga,
+          )
+          if (opened) return
+        }
+
+        if (addVisual.hasDot) {
+          yield call(reopenCardphotoCreateFromSavedOriginalSaga)
+          return
+        }
+      }
+
+      if (addVisual.enabled) {
+        yield put(clearCardphotoViewReturnSnapshot())
+        yield call(onDownloadClick)
+      }
     }
     return
   }
@@ -713,6 +752,9 @@ export function* syncToolbarContext() {
     return
   }
 
+  const cardphotoAddPatch: ReturnType<typeof resolveCardphotoAddToolbarState> =
+    yield call(buildCardphotoAddToolbarPatch)
+
   const assetForToolbar = state.assetData
   const appliedForToolbar = state.appliedData
   let toolbarAssetKind: ToolbarAssetKind = 'none'
@@ -753,7 +795,7 @@ export function* syncToolbarContext() {
   const hasStockImage = false
   const hasProcessedImage = state.assetData?.status === 'processed'
   const isProcessedInLine = state.assetData?.status === 'inLine'
-  const cardphotoAddState = 'enabled'
+  const cardphotoAddState = cardphotoAddPatch
   switch (toolbarAssetKind) {
     case 'none':
       sectionUpdate = {
@@ -768,7 +810,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: cardphotoAddState },
+        cardphotoAdd: cardphotoAddState,
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -787,7 +829,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: cardphotoAddState },
+        cardphotoAdd: cardphotoAddState,
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -806,7 +848,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: cardphotoAddState },
+        cardphotoAdd: cardphotoAddState,
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
         addList: {
@@ -829,7 +871,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'enabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: cardphotoAddState },
+        cardphotoAdd: cardphotoAddState,
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -848,7 +890,7 @@ export function* syncToolbarContext() {
         apply: { state: applyState },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: cardphotoAddState },
+        cardphotoAdd: cardphotoAddState,
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -866,7 +908,7 @@ export function* syncToolbarContext() {
         apply: { state: 'disabled' },
         close: { state: 'disabled' },
         download: { state: 'enabled' },
-        cardphotoAdd: { state: cardphotoAddState },
+        cardphotoAdd: cardphotoAddState,
         saveList: { state: hasTemplates ? 'enabled' : 'disabled' },
         listDelete: { state: hasTemplates ? 'enabled' : 'disabled' },
       }
@@ -888,7 +930,7 @@ export function* syncToolbarContext() {
       cropCheck?: { state: string }
     }
   const su = sectionUpdate as {
-    cardphotoAdd?: { state: string }
+    cardphotoAdd?: ReturnType<typeof resolveCardphotoAddToolbarState>
     close?: { state: string }
     addList?: { state: string }
   }
@@ -940,7 +982,7 @@ export function* syncToolbarContext() {
     }),
   )
 
-  yield call(syncCardphotoAddBadgeDot)
+  yield call(syncCardphotoAddToolbarState)
 }
 
 const selectCurrentProcessedUrl = (state: RootState) =>
@@ -990,7 +1032,7 @@ export function* onSelectCropFromHistorySaga(action: PayloadAction<string>) {
 }
 
 export function* watchToolbarContext() {
-  yield takeEvery(
+  yield takeLatest(
     [
       hydrateEditor.type,
       applyFinal.type,

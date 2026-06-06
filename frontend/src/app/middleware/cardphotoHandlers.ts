@@ -16,6 +16,9 @@ import {
   setAssetData,
   hydrateEditor,
   bumpCardphotoInlineTemplateList,
+  clearSessionPendingProcessedId,
+  setSessionPendingProcessedId,
+  setOriginalUploadReminderActive,
 } from '@cardphoto/infrastructure/state'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import {
@@ -25,6 +28,7 @@ import {
   selectActiveImage,
   selectIsCropFull,
   selectIsProcessedMode,
+  selectCardphotoSessionPendingProcessedId,
 } from '@cardphoto/infrastructure/selectors'
 import {
   shouldSyncUserOriginalForState,
@@ -55,7 +59,7 @@ import {
 } from '@cardphoto/application/utils'
 import { getCroppedImg, loadAsyncImage } from '@cardphoto/application/hooks'
 import { roundTo } from '@shared/utils/layout'
-import { syncToolbarContext } from './cardphotoToolbarSaga'
+import { syncToolbarContext, syncCardphotoAddToolbarState } from './cardphotoToolbarSaga'
 import type {
   SizeCard,
 } from '@layout/domain/types'
@@ -466,6 +470,8 @@ export function* handleCropConfirm(): SagaIterator {
     }
 
     yield put(setProcessedImage(serializable))
+    yield put(setSessionPendingProcessedId(id))
+    yield put(setOriginalUploadReminderActive(false))
     yield call(rebuildConfigFromMeta, serializable, false)
 
     const rootAfter: RootState = yield select((s: RootState) => s)
@@ -526,7 +532,12 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
 
   yield put(setProcessedImage(prepareForRedux(updated)))
   yield put(bumpCardphotoInlineTemplateList())
+  yield put(clearSessionPendingProcessedId())
+  if (state.userOriginalData) {
+    yield put(setOriginalUploadReminderActive(true))
+  }
   yield fork(syncToolbarContext)
+  yield call(syncCardphotoAddToolbarState)
 }
 
 /** Снять шаблон с быстрого списка (inLine → outLine), запись в БД сохраняем. */
@@ -719,8 +730,23 @@ export function* handleApplyAction() {
 
   if (currentImageMeta) {
     try {
+      let metaForApply = currentImageMeta
+
+      if (currentImageMeta.status === 'processed') {
+        const fullRecord: ImageMeta | null = yield call(
+          [storeAdapters.cardphotoImages, 'getById'],
+          currentImageMeta.id,
+        )
+        const base = fullRecord ?? currentImageMeta
+        metaForApply = { ...base, status: 'outLine' }
+        yield call(
+          storeAdapters.cardphotoImages.put,
+          metaForApply as ImageMeta & { id: string },
+        )
+      }
+
       const asset: ImageAsset | null = yield select((state) =>
-        selectAssetById(state, currentImageMeta.id),
+        selectAssetById(state, metaForApply.id),
       )
 
       let finalUrl = asset?.url
@@ -728,16 +754,16 @@ export function* handleApplyAction() {
 
       if (!asset) {
         const adapter =
-          currentImageMeta.source === 'user' ||
-          currentImageMeta.source === 'original'
+          metaForApply.source === 'user' ||
+          metaForApply.source === 'original'
             ? storeAdapters.userImages
-            : currentImageMeta.source === 'stock'
+            : metaForApply.source === 'stock'
               ? storeAdapters.stockImages
               : storeAdapters.cardphotoImages
 
         const fullRecord: ImageMeta | null = yield call(
           [adapter, 'getById'],
-          currentImageMeta.id,
+          metaForApply.id,
         )
 
         if (fullRecord) {
@@ -762,15 +788,15 @@ export function* handleApplyAction() {
 
       if (finalUrl) {
         const appliedMeta: ImageMeta = {
-          ...currentImageMeta,
+          ...metaForApply,
           url: finalUrl,
-          thumbnail: currentImageMeta.thumbnail
+          thumbnail: metaForApply.thumbnail
             ? {
-                ...currentImageMeta.thumbnail,
+                ...metaForApply.thumbnail,
                 url: finalThumb || '',
               }
             : undefined,
-          source: currentImageMeta.source,
+          source: metaForApply.source,
         }
 
         const wrapper: ImageRecord = {
@@ -780,6 +806,13 @@ export function* handleApplyAction() {
 
         yield call([storeAdapters.applyImage, 'put'], wrapper)
         yield put(applyFinal(prepareForRedux(appliedMeta)))
+        if (currentImageMeta.status === 'processed') {
+          yield put(clearSessionPendingProcessedId())
+          if (state.userOriginalData) {
+            yield put(setOriginalUploadReminderActive(true))
+          }
+          yield call(syncCardphotoAddToolbarState)
+        }
       }
     } catch (error) {
       console.error('Apply error:', error)

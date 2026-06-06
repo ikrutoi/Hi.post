@@ -25,6 +25,10 @@ export interface CardphotoUiState {
   /** inLine / view preview → crop toolbar (`cardphotoCreate`) */
   isCardphotoViewEditMode: boolean
   viewReturnSnapshot: CardphotoViewReturnSnapshot | null
+  /** processed после applyLight, пока не addList / apply — бэдж `1` не теряется при просмотре шаблонов. */
+  sessionPendingProcessedId: string | null
+  /** После addList / apply: точка на cardphotoAdd → reopen create с userOriginalData. */
+  originalUploadReminderActive: boolean
 }
 
 const initialUiState: CardphotoUiState = {
@@ -38,6 +42,8 @@ const initialUiState: CardphotoUiState = {
   listTitleCoverage: 'none',
   isCardphotoViewEditMode: false,
   viewReturnSnapshot: null,
+  sessionPendingProcessedId: null,
+  originalUploadReminderActive: false,
 }
 
 export const cardphotoUiSlice = createSlice({
@@ -120,6 +126,18 @@ export const cardphotoUiSlice = createSlice({
       state.viewReturnSnapshot = null
     },
 
+    setSessionPendingProcessedId(state, action: PayloadAction<string | null>) {
+      state.sessionPendingProcessedId = action.payload
+    },
+
+    clearSessionPendingProcessedId(state) {
+      state.sessionPendingProcessedId = null
+    },
+
+    setOriginalUploadReminderActive(state, action: PayloadAction<boolean>) {
+      state.originalUploadReminderActive = action.payload
+    },
+
     closeCardphotoViewRequested(_state) {},
     editCardphotoViewRequested(_state) {},
     deleteCardphotoFromViewRequested(_state) {},
@@ -144,6 +162,9 @@ export const {
   setCardphotoViewEditMode,
   setCardphotoViewReturnSnapshot,
   clearCardphotoViewReturnSnapshot,
+  setSessionPendingProcessedId,
+  clearSessionPendingProcessedId,
+  setOriginalUploadReminderActive,
   closeCardphotoViewRequested,
   editCardphotoViewRequested,
   deleteCardphotoFromViewRequested,
