@@ -386,7 +386,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
               onChange={(e) => updateField('zip', e.target.value)}
               onFocus={() => setCityZipFocus('zip')}
               onKeyDown={(e) => {
-                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                if (e.key === 'ArrowDown') {
                   e.preventDefault()
                   setCityZipFocus('city')
                   if (cityRef.current) {
@@ -411,7 +411,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
               onChange={(e) => updateField('city', e.target.value)}
               onFocus={() => setCityZipFocus('city')}
               onKeyDown={(e) => {
-                if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                if (e.key === 'ArrowUp') {
                   e.preventDefault()
                   setCityZipFocus('zip')
                   if (zipRef.current) {

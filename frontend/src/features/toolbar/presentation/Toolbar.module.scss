@@ -1415,3 +1415,13 @@
   color: $color-font-disabled;
   cursor: default;
 }
+
+.toolbarSenderCreate,
+.toolbarRecipientCreate {
+  .toolbarGroup .toolbarKey[data-icon-key='applyMediumCheck'].toolbarKeyDisabled,
+  .toolbarGroup
+    .toolbarKey[data-icon-key='applyMediumCheck'].toolbarKeyDisabled:hover {
+    color: $color-indicator-hight;
+    cursor: default;
+  }
+}
