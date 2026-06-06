@@ -1315,11 +1315,17 @@ function* syncRecipientsViewIdsFromPending() {
     yield put(setRecipientsViewIds(pendingIds))
   }
 
+  if (pendingIds.length > 1) {
+    yield put(setRecipientViewId(null))
+    yield put(setRecipientView('recipientsView'))
+    return
+  }
+
   const currentViewId = recipient.recipientViewId
   if (
+    pendingIds.length === 1 &&
     recipient.currentView === 'recipientView' &&
-    currentViewId != null &&
-    pendingIds.includes(currentViewId)
+    currentViewId === pendingIds[0]
   ) {
     return
   }
@@ -1327,9 +1333,6 @@ function* syncRecipientsViewIdsFromPending() {
   if (pendingIds.length === 1) {
     yield put(setRecipientViewId(pendingIds[0]))
     yield put(setRecipientView('recipientView'))
-  } else if (pendingIds.length > 1) {
-    yield put(setRecipientViewId(null))
-    yield put(setRecipientView('recipientsView'))
   } else {
     yield put(setRecipientViewId(null))
     yield put(setRecipientView('recipientsView'))
