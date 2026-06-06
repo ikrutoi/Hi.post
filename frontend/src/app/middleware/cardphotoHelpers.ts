@@ -37,10 +37,7 @@ export function* updateCropToolbarState(
   const newCropFull =
     newCrop === 'active' ? (isFull ? 'disabled' : 'enabled') : 'disabled'
 
-  const newCropQualityIndicator =
-    newCrop === 'active' ? 'enabled' : 'disabled'
-
-  const newClose = newCrop === 'active' ? 'disabled' : 'enabled'
+  const newDelete = newCrop === 'active' ? 'disabled' : 'enabled'
 
   for (const section of CARDPHOTO_TOOLBAR_SECTIONS) {
     const cropConfirmKey =
@@ -69,22 +66,8 @@ export function* updateCropToolbarState(
     yield put(
       updateToolbarIcon({
         section,
-        key: 'cropQualityIndicator',
-        value: newCropQualityIndicator,
-      }),
-    )
-    yield put(
-      updateToolbarIcon({
-        section,
         key: cropConfirmKey,
         value: newCropConfirm,
-      }),
-    )
-    yield put(
-      updateToolbarIcon({
-        section,
-        key: 'close',
-        value: newClose,
       }),
     )
     if (section === 'cardphotoCreate' || section === 'cardphotoProcessed') {
@@ -92,7 +75,7 @@ export function* updateCropToolbarState(
         updateToolbarIcon({
           section,
           key: 'delete',
-          value: newClose,
+          value: newDelete,
         }),
       )
     }

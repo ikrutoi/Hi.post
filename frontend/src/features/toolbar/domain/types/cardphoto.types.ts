@@ -23,6 +23,7 @@ export const CARDPHOTO_KEYS = [
   'addList',
   'removeFromList',
   'applyLight',
+  'printer',
 ] as const
 
 export type CardphotoKey = (typeof CARDPHOTO_KEYS)[number]
@@ -54,7 +55,7 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
     group: 'quality',
     icons: [
       { key: 'crop', state: 'enabled' },
-      { key: 'cropQualityIndicator', state: 'disabled' },
+      // { key: 'cropQualityIndicator', state: 'disabled' },
       { key: 'imageRotateRight', state: 'enabled' },
       { key: 'cropFull', state: 'disabled' },
     ],
@@ -101,7 +102,8 @@ export const initialCardphotoViewToolbarState: CardphotoToolbarState = {
 
 /** @deprecated UI uses cardphotoView; kept for Redux section compatibility. */
 export const CARDPHOTO_PROCESSED_TOOLBAR = CARDPHOTO_VIEW_TOOLBAR
-export const initialCardphotoProcessedToolbarState = initialCardphotoViewToolbarState
+export const initialCardphotoProcessedToolbarState =
+  initialCardphotoViewToolbarState
 
 export interface CardphotoSectionConfig extends BaseSectionConfig<
   CardphotoToolbarState,

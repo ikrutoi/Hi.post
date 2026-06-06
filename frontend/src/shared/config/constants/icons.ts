@@ -124,6 +124,7 @@ export const ICON_KEYS = [
   'userLoginEdit',
   'userLoginInfo',
   'userLoginOut',
+  'printer',
 ] as const
 
 export type IconKey = (typeof ICON_KEYS)[number]

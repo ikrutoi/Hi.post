@@ -42,6 +42,7 @@ export * from './IconReturn'
 export * from './IconX'
 
 export * from './IconCrop'
+export * from './IconPrinter'
 export * from './IconCropCheck'
 export * from './IconCropFull'
 export * from './IconCropRotate'

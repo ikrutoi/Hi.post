@@ -58,7 +58,6 @@ import type {
 } from '@shared/config/constants'
 import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
-import { CropQualityMeter } from './CropQualityMeter'
 import { UserLoginToolbarIcon } from './UserLoginToolbarIcon'
 import styles from './Toolbar.module.scss'
 
@@ -407,33 +406,6 @@ export const Toolbar = ({
       key === 'left'
         ? 'enabled'
         : buttonStatus
-
-    if (
-      (section === 'cardphotoProcessed' || section === 'cardphotoCreate') &&
-      key === 'cropQualityIndicator'
-    ) {
-      const qualityDisabled =
-        groupStatus === 'disabled' || buttonStatus === 'disabled'
-      return (
-        <div
-          key={key}
-          className={clsx(
-            styles.toolbarKey,
-            styles.toolbarKeyCropQualityIndicator,
-            styles[`toolbarKey${capitalize(key)}`],
-            styles[
-              `toolbarKey${capitalize(key)}${capitalize(
-                buttonStatus ?? 'enabled',
-              )}`
-            ],
-            qualityDisabled && styles.toolbarKeyDisabled,
-          )}
-          aria-disabled={qualityDisabled}
-        >
-          <CropQualityMeter disabled={qualityDisabled} />
-        </div>
-      )
-    }
 
     if (
       (section === 'cardtextEditor' || section === 'cardtextCreate') &&

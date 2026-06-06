@@ -306,18 +306,6 @@
   //   padding-right: 3rem;
   // }
 
-  .toolbarKeyCropQualityIndicator {
-    width: auto;
-    padding: 0;
-    margin-left: 0;
-    margin-right: 0;
-    pointer-events: none;
-
-    &:hover {
-      background-color: #fff;
-      cursor: default;
-    }
-  }
 }
 
 .toolbarCardtextView,
