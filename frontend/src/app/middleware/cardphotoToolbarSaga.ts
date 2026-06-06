@@ -72,6 +72,7 @@ import {
   handleApplyAction,
   handlePromoteProcessedToInlineSaga,
   handleDemoteInlineTemplateSaga,
+  demoteCardphotoTemplateToOutLineByIdSaga,
   deactivateCropIfActive,
 } from './cardphotoHandlers'
 import { closeCardPieListPanelAndSyncIconsSaga } from './exclusiveListPanelsSaga'
@@ -441,7 +442,11 @@ export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
     ) {
       const cartItems: PostcardHydrated[] = yield select(selectCartItems)
       const inUse = isCardphotoImageIdUsedByPostcards(cartItems, asset.id)
-      if (!inUse) {
+      if (inUse) {
+        if (asset.status === 'inLine') {
+          yield call(demoteCardphotoTemplateToOutLineByIdSaga, asset.id)
+        }
+      } else {
         yield call(
           [storeAdapters.cardphotoImages, 'deleteById'] as const,
           asset.id,

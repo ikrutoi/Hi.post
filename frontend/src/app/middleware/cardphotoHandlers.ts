@@ -529,6 +529,29 @@ export function* handlePromoteProcessedToInlineSaga(): SagaIterator {
   yield fork(syncToolbarContext)
 }
 
+/** Снять шаблон с быстрого списка (inLine → outLine), запись в БД сохраняем. */
+export function* demoteCardphotoTemplateToOutLineByIdSaga(
+  templateId: string,
+): SagaIterator {
+  if (!templateId.trim()) return
+
+  let record: ImageMeta | null = yield call(
+    [storeAdapters.cardphotoImages, 'getById'],
+    templateId,
+  )
+  if (!record || record.status !== 'inLine') return
+
+  const updated: ImageMeta = {
+    ...record,
+    status: 'outLine',
+  }
+
+  yield call(
+    storeAdapters.cardphotoImages.put,
+    updated as ImageMeta & { id: string },
+  )
+}
+
 export function* handleDemoteInlineTemplateSaga(): SagaIterator {
   const state: CardphotoState | null = yield select(selectCardphotoState)
   if (!state?.assetData?.id || state.assetData.status !== 'inLine') return
