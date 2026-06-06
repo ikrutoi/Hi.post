@@ -48,7 +48,7 @@ export const CARDPHOTO_TOOLBAR: ToolbarConfig = [
 export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
   {
     group: 'crop',
-    icons: [{ key: 'applyLight', state: 'disabled' }],
+    icons: [{ key: 'applyMedium', state: 'disabled' }],
     status: 'enabled',
   },
   {
@@ -71,10 +71,7 @@ export const CARDPHOTO_CREATE_TOOLBAR: ToolbarConfig = [
 export const CARDPHOTO_VIEW_TOOLBAR: ToolbarConfig = [
   {
     group: 'view',
-    icons: [
-      { key: 'addList', state: 'enabled' },
-      // { key: 'edit', state: 'disabled' },
-    ],
+    icons: [{ key: 'addList', state: 'enabled' }],
 
     status: 'enabled',
   },

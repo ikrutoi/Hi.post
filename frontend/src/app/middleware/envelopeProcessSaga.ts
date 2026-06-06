@@ -72,7 +72,7 @@ import {
   isViewingFormDraftAddress,
   resolveAddListToolbarState,
   resolveAddressAddToolbarState,
-  resolveApplyLightToolbarState,
+  resolveApplyMediumToolbarState,
 } from '@envelope/domain/helpers'
 import {
   updateToolbarSection,
@@ -133,9 +133,9 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
     yield put(
       updateToolbarIcon({
         section: 'senderCreate',
-        key: 'applyLight',
+        key: 'applyMedium',
         value: {
-          state: resolveApplyLightToolbarState(
+          state: resolveApplyMediumToolbarState(
             senderDraftComplete,
             draft,
             senderEntries,
@@ -188,9 +188,9 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
     yield put(
       updateToolbarIcon({
         section: 'recipientCreate',
-        key: 'applyLight',
+        key: 'applyMedium',
         value: {
-          state: resolveApplyLightToolbarState(
+          state: resolveApplyMediumToolbarState(
             recipientDraftComplete,
             draft,
             recipientEntries,

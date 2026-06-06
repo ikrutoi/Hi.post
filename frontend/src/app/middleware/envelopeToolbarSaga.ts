@@ -1040,7 +1040,7 @@ function* handleEnvelopeToolbarAction(
     }
   }
 
-  if (key === 'applyLight') {
+  if (key === 'applyMedium' || key === 'applyMediumCheck') {
     if (section === 'senderCreate') {
       const sender: SenderState = yield select(selectSenderState)
       const draft = (action.payload?.draft ??

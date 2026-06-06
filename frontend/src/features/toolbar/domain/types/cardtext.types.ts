@@ -51,7 +51,7 @@ export const CARDTEXT_TOOLBAR: ToolbarConfig = [
 export const CARDTEXT_COMPOSER_TOOLBAR: ToolbarConfig = [
   {
     group: 'create',
-    icons: [{ key: 'applyLight', state: 'disabled' }],
+    icons: [{ key: 'applyMedium', state: 'disabled' }],
     status: 'enabled',
   },
   {

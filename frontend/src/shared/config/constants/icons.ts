@@ -10,6 +10,7 @@ export const ICON_KEYS = [
   'apply',
   'applyLight',
   'applyMedium',
+  'applyMediumCheck',
   'close',
   'return',
   'user',

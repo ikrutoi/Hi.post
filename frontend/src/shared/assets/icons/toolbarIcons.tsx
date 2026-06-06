@@ -162,6 +162,7 @@ import {
   IconCardtextCheck,
   IconApplyLight,
   IconApplyMedium,
+  IconApplyMediumCheck,
   IconCalendarMulti,
   IconListDate,
   IconCart,
@@ -236,6 +237,8 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconApplyLight />
     case 'applyMedium':
       return <IconApplyMedium />
+    case 'applyMediumCheck':
+      return <IconApplyMediumCheck />
     case 'close':
       return <IconClose />
     case 'return':

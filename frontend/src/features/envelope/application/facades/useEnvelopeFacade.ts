@@ -67,7 +67,7 @@ import {
   type EnvelopeRole,
 } from '@shared/config/constants'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { resolveAddListToolbarState, resolveApplyLightToolbarState } from '@envelope/domain/helpers'
+import { resolveAddListToolbarState, resolveApplyMediumToolbarState } from '@envelope/domain/helpers'
 
 export const useEnvelopeFacade = () => {
   const dispatch = useAppDispatch()
@@ -248,7 +248,7 @@ export const useEnvelopeFacade = () => {
       draft,
       inList,
     )
-    const applyLightState = resolveApplyLightToolbarState(
+    const applyMediumState = resolveApplyMediumToolbarState(
       isAddressComplete,
       draft,
       allTemplates,
@@ -263,8 +263,8 @@ export const useEnvelopeFacade = () => {
     dispatch(
       updateToolbarIcon({
         section,
-        key: 'applyLight',
-        value: { state: applyLightState },
+        key: 'applyMedium',
+        value: { state: applyMediumState },
       }),
     )
   }

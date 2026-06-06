@@ -41,8 +41,8 @@ export function doesDraftMatchAnyTemplate(
   )
 }
 
-/** applyLight на create-форме: полный адрес, которого ещё нет среди всех шаблонов. */
-export function resolveApplyLightToolbarState(
+/** applyMedium на create-форме: полный адрес, которого ещё нет среди всех шаблонов. */
+export function resolveApplyMediumToolbarState(
   isAddressComplete: boolean,
   draft: AddressFields,
   templateEntries: Pick<AddressBookEntry, 'address'>[],
@@ -51,6 +51,9 @@ export function resolveApplyLightToolbarState(
   if (doesDraftMatchAnyTemplate(draft, templateEntries)) return 'disabled'
   return 'enabled'
 }
+
+/** @deprecated use resolveApplyMediumToolbarState */
+export const resolveApplyLightToolbarState = resolveApplyMediumToolbarState
 
 /** View показывает адрес из create-черновика (тот же шаблон, что и formDraft). */
 export function isViewingFormDraftAddress(params: {

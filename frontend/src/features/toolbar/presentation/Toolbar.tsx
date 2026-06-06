@@ -295,8 +295,14 @@ export const Toolbar = ({
           ? recipientCreateDraftInList
           : false
     const showCreateListCheck = key === 'addList' && createDraftInList
+    const showApplyMediumCheck =
+      key === 'applyMedium' &&
+      (section === 'senderCreate' || section === 'recipientCreate') &&
+      createDraftInList
     const effectiveIconKey: IconKey = showCreateListCheck
       ? 'listCheck'
+      : showApplyMediumCheck
+        ? 'applyMediumCheck'
       : key === 'addList' &&
           (section === 'senderView' ||
             section === 'recipientView' ||
@@ -378,15 +384,17 @@ export const Toolbar = ({
     if (key === 'edit' && section === 'recipientView' && recipientViewEditMode) {
       buttonStatus = 'active'
     }
-    if (key === 'applyLight' && section === 'senderCreate') {
-      buttonStatus =
-        senderCreateDraftComplete && !senderCreateDraftDuplicate
+    if (key === 'applyMedium' && section === 'senderCreate') {
+      buttonStatus = senderCreateDraftInList
+        ? 'disabled'
+        : senderCreateDraftComplete && !senderCreateDraftDuplicate
           ? 'enabled'
           : 'disabled'
     }
-    if (key === 'applyLight' && section === 'recipientCreate') {
-      buttonStatus =
-        recipientCreateDraftComplete && !recipientCreateDraftDuplicate
+    if (key === 'applyMedium' && section === 'recipientCreate') {
+      buttonStatus = recipientCreateDraftInList
+        ? 'disabled'
+        : recipientCreateDraftComplete && !recipientCreateDraftDuplicate
           ? 'enabled'
           : 'disabled'
     }
@@ -483,9 +491,9 @@ export const Toolbar = ({
           const stopDefault = onActionClick?.(effectiveIconKey as IconKey)
           if (stopDefault !== false) {
             const actionPayload =
-              effectiveIconKey === 'applyLight' && section === 'senderCreate'
+              effectiveIconKey === 'applyMedium' && section === 'senderCreate'
                 ? { draft: senderCreateFormDraft ?? undefined }
-                : effectiveIconKey === 'applyLight' &&
+                : effectiveIconKey === 'applyMedium' &&
                     section === 'recipientCreate'
                   ? { draft: recipientCreateFormDraft ?? undefined }
                   : undefined
