@@ -61,6 +61,7 @@ import {
 } from '@cardtext/infrastructure/selectors'
 import { isCardtextDraftContentEmpty } from '@cardtext/domain/helpers/isCardtextDraftContentEmpty'
 import { resolveCardtextAddListToolbarState } from '@cardtext/domain/helpers/cardtextQuickListMatch'
+import { resolveCardtextAddToolbarState } from '@cardtext/domain/helpers/resolveCardtextAddToolbarState'
 import { buildCardtextToolbarState } from '@cardtext/domain/helpers'
 import {
   selectCardtextTemplatesListItems,
@@ -113,7 +114,7 @@ export function* syncCardtextMainToolbarApply(): SagaIterator {
   )
 }
 
-export function* syncCardtextAddButtonStatus(): SagaIterator {
+export function* syncCardtextAddToolbarState(): SagaIterator {
   const plainText: string = yield select(selectCardtextPlainText)
   const hasText = (plainText?.trim?.() ?? '').length > 0
   const source: ReturnType<typeof selectCardtextSource> =
@@ -129,11 +130,39 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
   const createEditorOpenForTyping =
     isCreateModeOpen && (hasText || isDraftEngaged)
 
+  const assetNull: boolean = yield select(
+    (s: RootState) => s.cardtext.assetData == null,
+  )
+  const draftInRedux: ReturnType<typeof selectCardtextDraftData> = yield select(
+    selectCardtextDraftData,
+  )
+  const hasReduxDraft =
+    draftInRedux != null && !isCardtextDraftContentEmpty(draftInRedux)
+
+  const hasProcessed: boolean = yield call(
+    [templateService, 'hasCardtextTemplateByStatus'],
+    'processed',
+  )
+  const hasDraft: boolean = yield call(
+    [templateService, 'hasCardtextTemplateByStatus'],
+    'draft',
+  )
+  const shouldShowDraftDot =
+    !hasProcessed &&
+    (hasDraft || hasReduxDraft) &&
+    (!isCreateModeOpen || assetNull)
+
+  const { state, options } = resolveCardtextAddToolbarState({
+    createEditorOpenForTyping,
+    hasPendingProcessed: hasProcessed,
+    shouldShowDraftDot,
+  })
+
   yield put(
     updateToolbarIcon({
       section: 'cardtext',
       key: 'cardtextAdd',
-      value: createEditorOpenForTyping ? 'disabled' : 'enabled',
+      value: { state, options },
     }),
   )
 
@@ -144,6 +173,11 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
       value: hasText ? 'enabled' : 'disabled',
     }),
   )
+}
+
+/** @deprecated use syncCardtextAddToolbarState */
+export function* syncCardtextAddButtonStatus(): SagaIterator {
+  yield call(syncCardtextAddToolbarState)
 }
 
 /** applyLight на cardtextEditor / cardtextCreate — только при непустом тексте. */
@@ -166,7 +200,7 @@ export function* watchCardtextValueChanges(): SagaIterator {
   yield takeEvery(
     [setValue.type, setTextStyle.type, clearText.type],
     function* (): SagaIterator {
-      yield call(syncCardtextAddButtonStatus)
+      yield call(syncCardtextAddToolbarState)
       yield call(syncCardtextCheckButtonStatus)
       yield call(syncCardtextMainToolbarApply)
       yield call(syncCardtextViewToolbarAddList)
@@ -204,53 +238,6 @@ export function* syncCardtextViewToolbarAddList(): SagaIterator {
   )
 }
 
-function* syncCardtextCreateDraftIndicator(): SagaIterator {
-  const source: ReturnType<typeof selectCardtextSource> =
-    yield select(selectCardtextSource)
-  const templateId: string | null = yield select(selectCardtextId)
-  const isCreateModeOpen =
-    source === 'draft' && (templateId == null || templateId === null)
-  const assetNull: boolean = yield select(
-    (s: RootState) => s.cardtext.assetData == null,
-  )
-  const draftInRedux: ReturnType<typeof selectCardtextDraftData> = yield select(
-    selectCardtextDraftData,
-  )
-  const hasReduxDraft =
-    draftInRedux != null && !isCardtextDraftContentEmpty(draftInRedux)
-
-  const current: any = yield select(
-    (state: any) => state.toolbar.cardtext?.cardtextAdd,
-  )
-  const currentOptions =
-    current && typeof current === 'object' ? (current.options ?? {}) : {}
-  const hasProcessed: boolean = yield call(
-    [templateService, 'hasCardtextTemplateByStatus'],
-    'processed',
-  )
-  const hasDraft: boolean = yield call(
-    [templateService, 'hasCardtextTemplateByStatus'],
-    'draft',
-  )
-  const shouldShowDraftDot =
-    !hasProcessed &&
-    (hasDraft || hasReduxDraft) &&
-    (!isCreateModeOpen || assetNull)
-
-  yield put(
-    updateToolbarIcon({
-      section: 'cardtext',
-      key: 'cardtextAdd',
-      value: {
-        options: {
-          ...currentOptions,
-          badgeDot: shouldShowDraftDot,
-        },
-      },
-    }),
-  )
-}
-
 function* syncDraftRecordWithDb(): SagaIterator {
   const draft: ReturnType<typeof selectCardtextDraftData> = yield select(
     selectCardtextDraftData,
@@ -269,27 +256,6 @@ function* syncDraftRecordWithDb(): SagaIterator {
     favorite: null,
     status: 'draft',
   })
-}
-
-function* syncCardtextProcessedBadge(): SagaIterator {
-  const hasProcessed: boolean = yield call([
-    templateService,
-    'hasProcessedCardtextTemplate',
-  ])
-  const current: any = yield select(
-    (state: any) => state.toolbar.cardtext?.cardtextAdd,
-  )
-  const currentOptions =
-    current && typeof current === 'object' ? (current.options ?? {}) : {}
-  yield put(
-    updateToolbarIcon({
-      section: 'cardtext',
-      key: 'cardtextAdd',
-      value: {
-        options: { ...currentOptions, badge: hasProcessed ? 1 : null },
-      },
-    }),
-  )
 }
 
 function* syncCardtextListBadge(): SagaIterator {
@@ -395,11 +361,9 @@ function* loadCardtextTemplatesSaga(): SagaIterator {
 
 export function* cardtextProcessSaga(): SagaIterator {
   yield call(syncFontSizeButtonsStatus)
-  yield call(syncCardtextAddButtonStatus)
+  yield call(syncCardtextAddToolbarState)
   yield call(syncCardtextCheckButtonStatus)
   yield call(syncCardtextViewToolbarAddList)
-  yield call(syncCardtextCreateDraftIndicator)
-  yield call(syncCardtextProcessedBadge)
   yield call(syncCardtextListBadge)
   yield call(syncCardtextListToggleIcon)
 
@@ -417,8 +381,7 @@ export function* cardtextProcessSaga(): SagaIterator {
         ) {
           yield call(syncCardtextViewToolbarAddList)
           if (key === 'addList') {
-            yield call(syncCardtextProcessedBadge)
-            yield call(syncCardtextCreateDraftIndicator)
+            yield call(syncCardtextAddToolbarState)
           }
         }
         if (
@@ -428,8 +391,7 @@ export function* cardtextProcessSaga(): SagaIterator {
           (key === 'delete' &&
             section === 'cardtextView')
         ) {
-          yield call(syncCardtextProcessedBadge)
-          yield call(syncCardtextCreateDraftIndicator)
+          yield call(syncCardtextAddToolbarState)
         }
       },
     ),
@@ -441,8 +403,7 @@ export function* cardtextProcessSaga(): SagaIterator {
     }),
     takeEvery(cardtextTemplateAdded.type, function* (): SagaIterator {
       yield call(loadCardtextTemplatesSaga)
-      yield call(syncCardtextProcessedBadge)
-      yield call(syncCardtextCreateDraftIndicator)
+      yield call(syncCardtextAddToolbarState)
     }),
     takeEvery(
       setCardtextListPanelOpen.type,
@@ -457,9 +418,7 @@ export function* cardtextProcessSaga(): SagaIterator {
       deleteCardtextFromViewRequested.type,
       function* (): SagaIterator {
         yield call(handleDeleteCardtextFromView)
-        yield call(syncCardtextProcessedBadge)
-        yield call(syncCardtextCreateDraftIndicator)
-        yield call(syncCardtextAddButtonStatus)
+        yield call(syncCardtextAddToolbarState)
         yield call(syncCardtextViewToolbarAddList)
       },
     ),
@@ -474,11 +433,10 @@ export function* cardtextProcessSaga(): SagaIterator {
         clearText.type,
       ],
       function* (): SagaIterator {
-        yield call(syncCardtextAddButtonStatus)
+        yield call(syncCardtextAddToolbarState)
         yield call(syncCardtextCheckButtonStatus)
         yield call(syncCardtextMainToolbarApply)
         yield call(syncCardtextViewToolbarAddList)
-        yield call(syncCardtextCreateDraftIndicator)
       },
     ),
     takeEvery(
@@ -490,8 +448,7 @@ export function* cardtextProcessSaga(): SagaIterator {
       ],
       function* (): SagaIterator {
         yield call(syncDraftRecordWithDb)
-        yield call(syncCardtextCreateDraftIndicator)
-        yield call(syncCardtextAddButtonStatus)
+        yield call(syncCardtextAddToolbarState)
         yield call(syncCardtextCheckButtonStatus)
         yield call(syncCardtextMainToolbarApply)
       },
@@ -505,10 +462,8 @@ export function* cardtextProcessSaga(): SagaIterator {
           action.payload === 'inLine' ||
           action.payload === 'outLine'
         ) {
-          yield call(syncCardtextProcessedBadge)
+          yield call(syncCardtextAddToolbarState)
         }
-        yield call(syncCardtextCreateDraftIndicator)
-        yield call(syncCardtextAddButtonStatus)
         yield call(syncCardtextCheckButtonStatus)
         yield call(syncCardtextMainToolbarApply)
         yield call(syncCardtextViewToolbarAddList)

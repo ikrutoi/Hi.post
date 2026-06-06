@@ -8,6 +8,7 @@ import {
   setCardtextViewEditMode,
   loadCardtextTemplatesRequest,
   restoreCardtextSession,
+  clearDraftData,
 } from '@cardtext/infrastructure/state'
 import type { RootState } from '@app/state'
 import {
@@ -89,6 +90,8 @@ export function* applyCardtextFromToolbar(
     yield put(setCardtextAppliedData(next))
     yield put(restoreCardtextSession(next))
     yield put(setCardtextViewEditMode(false))
+    yield call([templateService, 'deleteSingleCardtextByStatus'], 'draft')
+    yield put(clearDraftData())
     yield put(loadCardtextTemplatesRequest())
     return
   }

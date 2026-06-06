@@ -896,21 +896,12 @@ export function* syncToolbarContext() {
   const img = state.assetData
   const isInLineTemplate = img?.status === 'inLine'
   const isOutLineTemplate = img?.status === 'outLine'
-  const isAppliedPreview = !!(
-    img?.id &&
-    state.appliedData?.id &&
-    img.id === state.appliedData.id
-  )
   const addListToolbarState =
     img?.status === 'processed' && !isInLineTemplate ? 'enabled' : 'disabled'
   const cardphotoViewAddListState =
-    isAppliedPreview
-      ? 'disabled'
-      : isInLineTemplate ||
-          isOutLineTemplate ||
-          img?.status === 'processed'
-        ? 'enabled'
-        : 'disabled'
+    isInLineTemplate || isOutLineTemplate || img?.status === 'processed'
+      ? 'enabled'
+      : 'disabled'
   const templateActionState = isInLineTemplate ? 'enabled' : 'disabled'
 
   yield put(
