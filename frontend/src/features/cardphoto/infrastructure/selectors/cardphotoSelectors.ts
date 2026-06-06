@@ -100,7 +100,7 @@ export const selectCardphotoAssetToolbar = (
   return computeCardphotoAssetToolbar(s)
 }
 
-/** Оригинал в памяти после addList / apply — badgeDot + reopen create на cardphotoAdd. */
+/** Оригинал в памяти, просмотр шаблона (не create) — badgeDot + reopen create на cardphotoAdd. */
 export const selectCardphotoOriginalReminderActive = createSelector(
   [
     (state: RootState) => state.cardphoto.state?.userOriginalData,

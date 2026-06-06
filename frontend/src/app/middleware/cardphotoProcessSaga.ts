@@ -297,11 +297,21 @@ function* onSelectInLineTemplateSaga(
 
     if (record.status !== 'inLine') return
 
+    const cardphotoState: CardphotoState | null = yield select(
+      selectCardphotoState,
+    )
+
     yield put(setCardphotoViewEditMode(false))
     yield put(clearCardphotoViewReturnSnapshot())
     yield put(setProcessedImage(prepareForRedux(record)))
 
     yield call(rebuildConfigFromMeta, record, false)
+
+    if (cardphotoState?.userOriginalData) {
+      yield put(clearSessionPendingProcessedId())
+      yield put(setOriginalUploadReminderActive(true))
+    }
+
     yield call(syncToolbarContext)
   } catch (e) {
     console.error('onSelectInLineTemplateSaga', e)
