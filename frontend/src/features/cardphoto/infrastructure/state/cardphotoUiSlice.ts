@@ -123,6 +123,7 @@ export const cardphotoUiSlice = createSlice({
     closeCardphotoViewRequested(_state) {},
     editCardphotoViewRequested(_state) {},
     deleteCardphotoFromViewRequested(_state) {},
+    openCardphotoFromMiniStripRequested(_state) {},
   },
 })
 
@@ -146,6 +147,7 @@ export const {
   closeCardphotoViewRequested,
   editCardphotoViewRequested,
   deleteCardphotoFromViewRequested,
+  openCardphotoFromMiniStripRequested,
 } = cardphotoUiSlice.actions
 
 export default cardphotoUiSlice.reducer

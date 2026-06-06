@@ -40,6 +40,7 @@ export const CropQualityMeter: React.FC<Props> = ({ disabled = false }) => {
 
   const progress = clampProgress(liveProgress ?? reduxProgress)
   const fillPercent = disabled ? 0 : progress
+  const showMinQualityDot = !disabled && progress === 0
   const fillColor = useMemo(
     () => (disabled ? undefined : getQualityColor(progress)),
     [disabled, progress],
@@ -59,8 +60,15 @@ export const CropQualityMeter: React.FC<Props> = ({ disabled = false }) => {
       aria-valuenow={disabled ? undefined : Math.round(progress)}
     >
       <div className={styles.track}>
+        {showMinQualityDot ? (
+          <span
+            className={styles.minQualityDot}
+            style={{ backgroundColor: getQualityColor(0) }}
+            aria-hidden
+          />
+        ) : null}
         <div
-          className={styles.fill}
+          className={clsx(styles.fill, fillPercent <= 0 && styles.fillEmpty)}
           style={{
             width: `${fillPercent}%`,
             ...(fillColor ? { backgroundColor: fillColor } : {}),

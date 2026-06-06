@@ -2,6 +2,7 @@ import { takeEvery, put, call, select } from 'redux-saga/effects'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
+import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
 import type { SectionEditorMenuKey } from '@toolbar/domain/types'
 import { selectCardPieCopyStripExpanded } from '@cart/infrastructure/selectors'
 import {
@@ -58,6 +59,9 @@ export function* handleSectionEditorMenuToolbarAction(
   if (section === 'sectionEditorMenu') {
     if (key === 'date') {
       yield put(setCardPieListPanelOpen(true))
+    }
+    if (key === 'cardphoto') {
+      yield put(openCardphotoFromMiniStripRequested())
     }
     const stripTab = (yield select(
       selectNotebookStripTab,

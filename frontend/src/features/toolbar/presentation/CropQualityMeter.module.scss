@@ -16,11 +16,23 @@ $meter-track-bg: hsl(0, 0%, 88%);
 }
 
 .track {
+  position: relative;
   width: 100%;
   height: $meter-track-height;
   border-radius: 999px;
   background-color: $meter-track-bg;
   overflow: hidden;
+}
+
+.minQualityDot {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  z-index: 1;
+  width: $meter-track-height;
+  height: $meter-track-height;
+  border-radius: 50%;
+  transform: translateY(-50%);
 }
 
 .fill {
@@ -30,6 +42,10 @@ $meter-track-bg: hsl(0, 0%, 88%);
   transition:
     width 0.15s ease,
     background-color 0.15s ease;
+
+  &:not(.fillEmpty) {
+    min-width: $meter-track-height;
+  }
 }
 
 .rootDisabled .track {

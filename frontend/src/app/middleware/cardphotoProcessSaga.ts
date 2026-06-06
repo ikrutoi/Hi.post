@@ -37,6 +37,7 @@ import {
   closeCardphotoViewRequested,
   editCardphotoViewRequested,
   deleteCardphotoFromViewRequested,
+  openCardphotoFromMiniStripRequested,
   removeUserImage,
   clearCardphotoViewReturnSnapshot,
 } from '@cardphoto/infrastructure/state'
@@ -49,6 +50,7 @@ import {
 } from '@cardphoto/infrastructure/selectors'
 import { validateImageSize } from '@cardphoto/application/helpers'
 import { shouldSyncUserOriginalForState } from '@cardphoto/application/helpers'
+import { openCardphotoFromMiniStripSaga } from '@cardphoto/application/helpers/openCardphotoFromMiniStrip'
 import { setSizeCard } from '@layout/infrastructure/state'
 import { roundTo } from '@shared/utils/layout'
 import {
@@ -400,6 +402,7 @@ export function* cardphotoProcessSaga(): SagaIterator {
       yield call(handleDeleteCardphotoFromViewSaga)
       yield call(refreshCardphotoListCardphotoBadge)
     }),
+    takeEvery(openCardphotoFromMiniStripRequested.type, openCardphotoFromMiniStripSaga),
     takeEvery(resetCardphoto.type, function* (): SagaIterator {
       yield put(setCardphotoViewEditMode(false))
     }),

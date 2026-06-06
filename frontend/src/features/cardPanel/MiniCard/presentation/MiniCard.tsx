@@ -21,6 +21,7 @@ import {
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { selectCardtextMiniPreviewHasRenderableContent } from '@cardtext/infrastructure/selectors'
 import { openCardtextFromMiniStripRequested } from '@cardtext/infrastructure/state'
+import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { applyArchiveSectionToEditorRequested } from '@cardPanel/infrastructure/state'
 
@@ -117,6 +118,9 @@ export const MiniCard: React.FC<MiniCardProps> = ({
         onBeforeOpenSection?.()
         if (section === 'cardphoto') {
           clearRightPieCardphotoPeek()
+          if (!cardPieEditEngaged && !peekToolbarOnMiniOpen) {
+            dispatch(openCardphotoFromMiniStripRequested())
+          }
         }
         if (section === 'cardtext') {
           clearRightPieCardtextPeek()

@@ -1,5 +1,6 @@
 export * from './computeCardphotoAssetToolbar'
 export * from './syncUserOriginal'
+export { openCardphotoFromMiniStripSaga } from './openCardphotoFromMiniStrip'
 export * from './validateImageSize'
 export * from './calculateInitialCrop'
 export * from './calculateCropPosition'

@@ -1,4 +1,5 @@
 import { setActiveSection } from '@/entities/sectionEditorMenu/infrastructure/state'
+import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import type { PostcardStatus } from '@entities/postcard'
 import { selectPieProgress } from '@entities/cardEditor/infrastructure/selectors'
@@ -69,6 +70,9 @@ export const useCardPieFacade = (
       }
     },
     handleSectorClick: (section: CardSection) => {
+      if (section === 'cardphoto') {
+        dispatch(openCardphotoFromMiniStripRequested())
+      }
       dispatch(setActiveSection(section))
     },
   }
