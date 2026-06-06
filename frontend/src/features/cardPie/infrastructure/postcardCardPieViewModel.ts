@@ -12,6 +12,12 @@ import { isCardtextDraftContentEmpty } from '@cardtext/domain/helpers/isCardtext
 import type { DispatchDate } from '@entities/date'
 import type { AromaItem } from '@entities/aroma/domain/types'
 import type { RecipientState } from '@envelope/recipient/domain/types'
+import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
+
+export type CardPieInnerBuildContext = {
+  envelopeRecipients?: RecipientState[]
+  recipientEntries?: AddressBookEntry[]
+}
 
 export type CardPieInnerData = {
   cardphoto: {
@@ -25,6 +31,10 @@ export type CardPieInnerData = {
   cardtext: CardtextContent
   recipient: Readonly<AddressFields> | null
   recipientCount: number
+  /** Имена получателей для multi-envelope (fade-строки, как cardtext). */
+  recipientPreviewLines: string[]
+  /** Числа дней для multi-date (fade-строки). */
+  datePreviewLines: string[]
   senderBadgeShow: boolean
   senderDisplayName: string | null
   /** Полный адрес отправителя для превью (peek); null если нет заполненных полей. */
@@ -167,6 +177,81 @@ function snapshotSenderAddressFields(
   return addressHasAnyField(f) ? f : null
 }
 
+function recipientPreviewLineFromAddress(
+  fields: Readonly<AddressFields> | null | undefined,
+): string | null {
+  if (fields == null) return null
+  const name = String(fields.name ?? '').trim()
+  if (name.length > 0) return name
+  const city = String(fields.city ?? '').trim()
+  const country = String(fields.country ?? '').trim()
+  const region = [city, country].filter(Boolean).join(', ')
+  if (region.length > 0) return region
+  const street = String(fields.street ?? '').trim()
+  return street.length > 0 ? street : null
+}
+
+function resolveAddressForRecipientId(
+  id: string,
+  envelopeRecipients: RecipientState[],
+  entries: AddressBookEntry[],
+): Readonly<AddressFields> | null {
+  const fromEnvelope = envelopeRecipients.find(
+    (r) => r.recipientViewId === id,
+  )
+  if (
+    fromEnvelope?.viewDraft != null &&
+    addressHasAnyField(fromEnvelope.viewDraft)
+  ) {
+    return fromEnvelope.viewDraft
+  }
+  const fromBook = entries.find((e) => e.id === id)
+  if (
+    fromBook?.address != null &&
+    addressHasAnyField(fromBook.address as AddressFields)
+  ) {
+    return fromBook.address as AddressFields
+  }
+  return null
+}
+
+export function buildRecipientPreviewLines(
+  recipient: RecipientState,
+  ctx: CardPieInnerBuildContext = {},
+): string[] {
+  const count = recipientAppliedCount(recipient)
+  if (count <= 1) return []
+
+  const envelopeRecipients = ctx.envelopeRecipients ?? []
+  const entries = ctx.recipientEntries ?? []
+  const appliedIds =
+    (recipient.applied?.length ?? 0) > 0
+      ? recipient.applied
+      : [
+          ...(recipient.recipientsViewIdsFirstList ?? []),
+          ...(recipient.recipientsViewIdsSecondList ?? []),
+        ]
+
+  const lines: string[] = []
+  for (const id of appliedIds) {
+    if (id == null || id === '') continue
+    const addr =
+      appliedIds.length === 1 && recipient.appliedData != null
+        ? recipient.appliedData
+        : resolveAddressForRecipientId(id, envelopeRecipients, entries)
+    const line = recipientPreviewLineFromAddress(addr)
+    if (line != null) lines.push(line)
+  }
+
+  return lines.map((line) => line.toUpperCase())
+}
+
+export function buildDatePreviewLines(dates: DispatchDate[]): string[] {
+  return dates
+    .map((d) => String(d.day))
+    .filter((line) => line.length > 0)
+}
+
 function primarySenderDisplayLine(
   fields: Readonly<AddressFields> | null | undefined,
 ): string | null {
@@ -211,6 +296,7 @@ function senderMiniFromCard(card: Card): {
 
 export function buildCardPieInnerDataFromPostcard(
   postcard: PostcardHydrated,
+  ctx: CardPieInnerBuildContext = {},
 ): CardPieInnerData {
   const card = postcard.card
   const cardphoto = cardphotoUrlsFromCard(card)
@@ -228,12 +314,16 @@ export function buildCardPieInnerDataFromPostcard(
           ? [card.date]
           : []
   const date = dates[0] ?? null
+  const recipientPreviewLines = buildRecipientPreviewLines(recipient, ctx)
+  const datePreviewLines = buildDatePreviewLines(dates)
 
   return {
     cardphoto,
     cardtext,
     recipient: recipientDisplayFields(recipient, recipientCount),
     recipientCount,
+    recipientPreviewLines,
+    datePreviewLines,
     senderBadgeShow,
     senderDisplayName,
     sender,

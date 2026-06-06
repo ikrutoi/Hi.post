@@ -6,14 +6,20 @@ import { selectCardtextDisplayForMiniStrip } from '@cardtext/infrastructure/sele
 import { selectCardphotoPreview } from '@cardphoto/infrastructure/selectors'
 import {
   buildCardPieInnerDataFromPostcard,
+  buildDatePreviewLines,
   buildPieSectionFlagsFromInner,
+  buildRecipientPreviewLines,
   isPostcardPieAllComplete,
   recipientAppliedCount,
 } from '../postcardCardPieViewModel'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@features/envelope/infrastructure/selectors'
-import { selectAppliedRecipientDisplayAddress } from '@envelope/recipient/infrastructure/selectors'
+import {
+  selectAppliedRecipientDisplayAddress,
+  selectRecipientEntriesState,
+} from '@envelope/recipient/infrastructure/selectors'
+import { selectRecipientsList } from '@envelope/infrastructure/selectors'
 import type { CardPieRightListSource } from '../../domain/types'
 
 export const selectPieDataByContext = createSelector(
@@ -50,6 +56,8 @@ export const selectActiveCardFullData = createSelector(
     selectMergedDispatchDates,
     selectEnvelopeSessionRecord,
     selectAppliedRecipientDisplayAddress,
+    selectRecipientsList,
+    selectRecipientEntriesState,
   ],
   (
     editor,
@@ -59,9 +67,16 @@ export const selectActiveCardFullData = createSelector(
     dates,
     envelope,
     appliedRecipient,
+    envelopeRecipients,
+    recipientEntries,
   ) => {
     const recipientCount = recipientAppliedCount(envelope.recipient)
     const date = dates[0] ?? null
+    const recipientPreviewLines = buildRecipientPreviewLines(envelope.recipient, {
+      envelopeRecipients,
+      recipientEntries,
+    })
+    const datePreviewLines = buildDatePreviewLines(dates)
 
     return {
       ...editor,
@@ -70,6 +85,8 @@ export const selectActiveCardFullData = createSelector(
         cardtext,
         recipient: recipientCount === 1 ? appliedRecipient : null,
         recipientCount,
+        recipientPreviewLines,
+        datePreviewLines,
         aroma,
         date,
         dates,
@@ -87,14 +104,19 @@ export const selectListArchiveCardPieBundle = createSelector(
       _id?: string,
       _listSource?: CardPieRightListSource | null,
     ) => _listSource ?? null,
+    selectRecipientsList,
+    selectRecipientEntriesState,
   ],
-  (items, id, _listSource) => {
+  (items, id, _listSource, envelopeRecipients, recipientEntries) => {
     if (id == null || id === '') return null
     const postcardNumericId = Number(id)
     if (Number.isNaN(postcardNumericId)) return null
     const postcard = items.find((p) => p.localId === postcardNumericId)
     if (!postcard) return null
-    const inner = buildCardPieInnerDataFromPostcard(postcard)
+    const inner = buildCardPieInnerDataFromPostcard(postcard, {
+      envelopeRecipients,
+      recipientEntries,
+    })
     const sections = buildPieSectionFlagsFromInner(
       inner,
       Boolean(postcard.card.envelope?.isComplete),

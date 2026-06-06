@@ -12,8 +12,6 @@ import {
   IconSectionMenuAromaV2,
   IconSectionMenuDate,
   IconCalendarMulti,
-  IconDateBkg,
-  IconUsersV3,
 } from '@shared/ui/icons'
 import type { DispatchDate } from '@entities/date'
 import { getCurrentDate } from '@shared/utils/date'
@@ -24,6 +22,11 @@ import { CardSection } from '@shared/config/constants'
 import { CARDTEXT_APPLIED_DISPLAY_STATUSES } from '@cardtext/domain/editor/editor.types'
 import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
+import {
+  PIE_DATE_SCATTER_SLOTS,
+  PIE_ENVELOPE_SCATTER_SLOTS,
+} from '../domain/pieScatteredBackground'
+import { PieScatteredBackgroundText } from './PieScatteredBackgroundText'
 import styles from './CardPie.module.scss'
 
 const STROKE_WIDTH = 24
@@ -110,9 +113,13 @@ export const CardPie: React.FC<CardPieProps> = ({
     aromaIndex != null ? (AROMA_IMAGES[aromaIndex] ?? null) : null
   const recipient = cardData?.recipient ? cardData?.recipient : null
   const recipientCount: number =
-    (cardData as any)?.recipientCount ?? (recipient ? 1 : 0)
+    (cardData as { recipientCount?: number } | undefined)?.recipientCount ??
+    (recipient ? 1 : 0)
   const isSingleRecipient = recipientCount === 1
   const hasManyRecipients = recipientCount > 1
+  const recipientPreviewLines: string[] =
+    (cardData as { recipientPreviewLines?: string[] } | undefined)
+      ?.recipientPreviewLines ?? []
   const date = cardData?.date ?? null
   const mergedFromEditor = cardData?.dates
   const dates: DispatchDate[] =
@@ -122,6 +129,9 @@ export const CardPie: React.FC<CardPieProps> = ({
         ? [date]
         : []
   const hasManyDates = dates.length > 1
+  const datePreviewLines: string[] =
+    (cardData as { datePreviewLines?: string[] } | undefined)
+      ?.datePreviewLines ?? dates.map((d) => String(d.day))
   const currentDate = getCurrentDate()
   const isCartDateDisabled =
     (status === 'cart' || status === 'cartBlocked') &&
@@ -318,13 +328,15 @@ export const CardPie: React.FC<CardPieProps> = ({
               ) : hasManyRecipients ? (
                 <>
                   <rect width="5120" height="5120" className={styles.rect} />
-                  <IconUsersV3
-                    x="0"
-                    y="-200"
-                    width="4000"
-                    height="4000"
-                    className={styles.pieEnvelopeIconBg}
-                  />
+                  {recipientPreviewLines.length > 0 ? (
+                    <PieScatteredBackgroundText
+                      items={recipientPreviewLines}
+                      slots={PIE_ENVELOPE_SCATTER_SLOTS}
+                      seed={`env-${recipientPreviewLines.join('\u0000')}`}
+                      className={styles.pieEnvelopeIconBg}
+                      truncate
+                    />
+                  ) : null}
                   <text
                     x="1280"
                     y="1400"
@@ -451,13 +463,14 @@ export const CardPie: React.FC<CardPieProps> = ({
                     className={clsx(styles.rect, styles.rectDate)}
                     fill="var(--pie-rect-fill)"
                   />
-                  <IconDateBkg
-                    x="1300"
-                    y="1050"
-                    width="3400"
-                    height="3400"
-                    className={styles.pieEnvelopeIconBg}
-                  />
+                  {datePreviewLines.length > 0 ? (
+                    <PieScatteredBackgroundText
+                      items={datePreviewLines}
+                      slots={PIE_DATE_SCATTER_SLOTS}
+                      seed={`date-${datePreviewLines.join('\u0000')}`}
+                      className={styles.pieEnvelopeIconBg}
+                    />
+                  ) : null}
                   <text
                     x="2560"
                     y="3200"
