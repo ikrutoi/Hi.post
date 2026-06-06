@@ -1,4 +1,5 @@
 import { ENVELOPE_KEYS, type EnvelopeToolbarState } from '@toolbar/domain/types'
+import { resolveAddressAddToolbarState } from './resolveAddListToolbarState'
 
 export const getAddressListToolbarFragment = (addressListCount: number) => ({
   state: 'enabled' as const,
@@ -18,6 +19,8 @@ export interface BuildRecipientToolbarParams {
   formIsEmpty: boolean
   /** список адресов получателя открыт — иконка addressList в active */
   recipientListPanelOpen?: boolean
+  /** View показывает адрес из create-черновика */
+  viewingFormDraftAddress?: boolean
 }
 
 export const buildRecipientToolbarState = ({
@@ -29,6 +32,7 @@ export const buildRecipientToolbarState = ({
   isAddressFormOpen,
   formIsEmpty,
   recipientListPanelOpen = false,
+  viewingFormDraftAddress = false,
 }: BuildRecipientToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
@@ -38,12 +42,11 @@ export const buildRecipientToolbarState = ({
       //   state.close = hasData ? 'enabled' : 'disabled'
       //   break
       case 'addressAdd':
-        state.addressAdd = isAddressFormOpen
-          ? { state: 'disabled', options: { badge: null } }
-          : {
-              state: 'enabled',
-              options: { badge: !formIsEmpty ? 1 : null },
-            }
+        state.addressAdd = resolveAddressAddToolbarState({
+          isAddressFormOpen,
+          formIsEmpty,
+          viewingFormDraftAddress,
+        })
         break
       case 'addressList':
         state.addressList = recipientListPanelOpen

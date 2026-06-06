@@ -1,6 +1,6 @@
 import type { AddressFields } from '@shared/config/constants'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
-import { isAddressInList, normalizeAddressFields } from './isAddressInList'
+import { getMatchingEntryId, isAddressInList, normalizeAddressFields } from './isAddressInList'
 
 export function isAddressDraftComplete(draft: AddressFields): boolean {
   return Object.values(draft).every((v) => (v ?? '').trim() !== '')
@@ -50,4 +50,41 @@ export function resolveApplyLightToolbarState(
   if (!isAddressComplete) return 'disabled'
   if (doesDraftMatchAnyTemplate(draft, templateEntries)) return 'disabled'
   return 'enabled'
+}
+
+/** View показывает адрес из create-черновика (тот же шаблон, что и formDraft). */
+export function isViewingFormDraftAddress(params: {
+  view: string
+  viewId: string | null
+  formIsEmpty: boolean
+  formDraft: AddressFields
+  templateEntries: Pick<AddressBookEntry, 'id' | 'address'>[]
+}): boolean {
+  const { view, viewId, formIsEmpty, formDraft, templateEntries } = params
+  if (formIsEmpty || viewId == null) return false
+  if (view !== 'senderView' && view !== 'recipientView') return false
+  const draftId = getMatchingEntryId(
+    normalizeAddressFields(formDraft),
+    templateEntries.map((e) => ({
+      id: e.id,
+      address: normalizeAddressFields(e.address ?? {}),
+    })),
+  )
+  return draftId != null && draftId === viewId
+}
+
+export function resolveAddressAddToolbarState(params: {
+  isAddressFormOpen: boolean
+  formIsEmpty: boolean
+  viewingFormDraftAddress: boolean
+}): { state: 'enabled' | 'disabled'; options: { badge: number | null } } {
+  const { isAddressFormOpen, formIsEmpty, viewingFormDraftAddress } = params
+  if (isAddressFormOpen) {
+    return { state: 'disabled', options: { badge: null } }
+  }
+  const badge = !formIsEmpty ? 1 : null
+  if (viewingFormDraftAddress) {
+    return { state: 'disabled', options: { badge } }
+  }
+  return { state: 'enabled', options: { badge } }
 }

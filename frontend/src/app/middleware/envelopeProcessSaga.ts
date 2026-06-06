@@ -69,7 +69,9 @@ import {
   isAddressInList,
   listStatusIsInQuickAddressBook,
   isAddressDraftComplete,
+  isViewingFormDraftAddress,
   resolveAddListToolbarState,
+  resolveAddressAddToolbarState,
   resolveApplyLightToolbarState,
 } from '@envelope/domain/helpers'
 import {
@@ -277,6 +279,28 @@ export function* processEnvelopeVisuals() {
     selectRecipientListPanelOpen,
   )
 
+  const senderBookEntries: AddressBookEntry[] = yield select(
+    (s: RootState) => s.addressBook?.senderEntries ?? [],
+  )
+  const recipientBookEntries: AddressBookEntry[] = yield select(
+    (s: RootState) => s.addressBook?.recipientEntries ?? [],
+  )
+
+  const senderViewingFormDraft = isViewingFormDraftAddress({
+    view: sender.currentView,
+    viewId: sender.senderViewId,
+    formIsEmpty: sender.formIsEmpty ?? true,
+    formDraft: sender.formDraft as AddressFields,
+    templateEntries: senderBookEntries,
+  })
+  const recipientViewingFormDraft = isViewingFormDraftAddress({
+    view: recipient.currentView,
+    viewId: recipient.recipientViewId,
+    formIsEmpty: recipient.formIsEmpty ?? true,
+    formDraft: recipient.formDraft as AddressFields,
+    templateEntries: recipientBookEntries,
+  })
+
   const senderToolbar = buildSenderToolbarState({
     isComplete: senderComplete,
     hasData: checkHasData(sender.viewDraft),
@@ -286,6 +310,7 @@ export function* processEnvelopeVisuals() {
     isAddressFormOpen: sender.currentView === 'senderCreate',
     formIsEmpty: sender.formIsEmpty ?? true,
     senderListPanelOpen,
+    viewingFormDraftAddress: senderViewingFormDraft,
   })
 
   const activeAddressList: 'sender' | 'recipients' | null =
@@ -309,6 +334,7 @@ export function* processEnvelopeVisuals() {
     isAddressFormOpen: recipient.currentView === 'recipientCreate',
     formIsEmpty: recipient.formIsEmpty ?? true,
     recipientListPanelOpen: recipientListPanelOpenForToolbar,
+    viewingFormDraftAddress: recipientViewingFormDraft,
   })
 
   yield put(updateToolbarSection({ section: 'sender', value: senderToolbar }))
@@ -420,12 +446,11 @@ export function* processEnvelopeVisuals() {
           state: recipientsApplyState,
           options: {},
         },
-        addressAdd: {
-          state: isRecipientFormOpen ? 'disabled' : 'enabled',
-          options: isRecipientFormOpen
-            ? { badge: null }
-            : { badge: !(recipient.formIsEmpty ?? true) ? 1 : null },
-        },
+        addressAdd: resolveAddressAddToolbarState({
+          isAddressFormOpen: isRecipientFormOpen,
+          formIsEmpty: recipient.formIsEmpty ?? true,
+          viewingFormDraftAddress: recipientViewingFormDraft,
+        }),
       },
     }),
   )
