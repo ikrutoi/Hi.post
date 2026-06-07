@@ -180,7 +180,7 @@ export function* syncCardtextAddButtonStatus(): SagaIterator {
   yield call(syncCardtextAddToolbarState)
 }
 
-/** applyLight на cardtextEditor / cardtextCreate — только при непустом тексте. */
+/** applyMedium на cardtextEditor / cardtextCreate — только при непустом тексте. */
 export function* syncCardtextCheckButtonStatus(): SagaIterator {
   const plainText: string = yield select(selectCardtextPlainText)
   const hasText = (plainText?.trim?.() ?? '').length > 0
@@ -189,7 +189,7 @@ export function* syncCardtextCheckButtonStatus(): SagaIterator {
     yield put(
       updateToolbarIcon({
         section,
-        key: 'applyLight',
+        key: 'applyMedium',
         value: { state: checkState },
       }),
     )
@@ -386,6 +386,7 @@ export function* cardtextProcessSaga(): SagaIterator {
         }
         if (
           key === 'applyLight' ||
+          key === 'applyMedium' ||
           key === 'cardtextCheck' ||
           key === 'apply' ||
           (key === 'delete' &&

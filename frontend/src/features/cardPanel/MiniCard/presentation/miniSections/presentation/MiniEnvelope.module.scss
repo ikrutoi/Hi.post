@@ -133,15 +133,24 @@
 
 .miniEnvelopeCount {
   grid-column: 1/2;
-  grid-row: 2/3;
+  grid-row: 1 / -1;
+  position: absolute;
+  inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: flex-end;
   justify-content: center;
+  box-sizing: border-box;
+  padding-left: 1rem;
+  padding-right: 0.35rem;
+  padding-top: 0.75rem;
+  overflow: hidden;
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 2.25rem;
   line-height: 1;
   letter-spacing: -0.02em;
   color: $color-envelope-recipient-legend;
+  z-index: 2;
 }
 
 .miniEnvelopeSingleContent .miniEnvelopeNameOverflow {

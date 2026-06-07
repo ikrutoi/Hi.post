@@ -499,7 +499,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                       isCartDateDisabled && styles.pieTextDateDisabled,
                     )}
                   >
-                    <tspan x="2000" dy="0" fontWeight="700" fontSize="1500">
+                    <tspan x="2000" dy="-100" fontWeight="700" fontSize="1500">
                       {dates.length}
                     </tspan>
                   </text>
@@ -523,13 +523,13 @@ export const CardPie: React.FC<CardPieProps> = ({
                       isCartDateDisabled && styles.pieTextDateDisabled,
                     )}
                   >
-                    <tspan x="2100" dy="-200" fontWeight="400" fontSize="550">
+                    <tspan x="2000" dy="-200" fontWeight="400" fontSize="550">
                       {date.year}
                     </tspan>
-                    <tspan x="2100" dy="1250" fontWeight="600" fontSize="1400">
+                    <tspan x="2000" dy="1250" fontWeight="600" fontSize="1400">
                       {date.day}
                     </tspan>
-                    <tspan x="2100" dy="700" fontSize="550">
+                    <tspan x="2000" dy="700" fontSize="550">
                       {listOfMonthOfYear[date.month]}
                     </tspan>
                   </text>

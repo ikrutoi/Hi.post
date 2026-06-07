@@ -645,8 +645,8 @@
     }
   }
 
-  /* applyLight (cardphotoCreate / cardtextEditor): как fontSizeLess / imageRotateRight */
-  [data-icon-key='applyLight'].toolbarKeyEnabled {
+  /* applyMedium (cardtextEditor / cardtextCreate): как fontSizeLess / imageRotateRight */
+  [data-icon-key='applyMedium'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
     background-color: #fff;
     box-shadow: none;
