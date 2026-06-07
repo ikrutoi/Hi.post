@@ -3,6 +3,8 @@ import { PayloadAction } from '@reduxjs/toolkit'
 import { call, put, select } from 'redux-saga/effects'
 import { postcardLocalDataChanged } from '@features/sync/store/postcardSync.actions'
 import { clearCardPieWorkspaceAfterCartAdd } from './editorPieHandlers'
+import { buildNotebookCartTabCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
+import { updateLastViewedCalendarDate } from '@date/calendar/infrastructure/state'
 import { postcardsAdapter, storeAdapters } from '@db/adapters/storeAdapters'
 import { addItem } from '@cart/infrastructure/state'
 import {
@@ -417,6 +419,19 @@ function* maybeClearCardPieWorkspaceAfterSingleAdd(
   yield* clearCardPieWorkspaceAfterCartAdd()
 }
 
+/** После «в корзину» из Card pie: закладка Cart + центральная секция «Дата» (как клик по cart в sidebar). */
+function* focusCartNotebookOnDateSection(date: DispatchDate): SagaIterator {
+  for (const command of buildNotebookCartTabCommands()) {
+    yield put(command)
+  }
+  yield put(
+    updateLastViewedCalendarDate({
+      year: date.year,
+      month: date.month,
+    }),
+  )
+}
+
 function hasAddressData(data: Record<string, string>): boolean {
   return Object.values(data).some((v) => (v ?? '').trim() !== '')
 }
@@ -572,6 +587,7 @@ export function* handleToggleCartForDispatchBranch(
   if (existingCartDedupeKeys.has(cartKey)) {
     yield* removeCardPiePlanBranchAfterCart(branchKey)
     yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
+    yield* focusCartNotebookOnDateSection(date)
     yield call(refreshRightSidebarBadgesFromPostcards)
     return
   }
@@ -616,6 +632,7 @@ export function* handleToggleCartForDispatchBranch(
   yield* cacheCartListPreviewForCard(finalCard)
   yield* removeCardPiePlanBranchAfterCart(branchKey)
   yield* maybeClearCardPieWorkspaceAfterSingleAdd(clearEditorAfterAdd)
+  yield* focusCartNotebookOnDateSection(date)
   yield call(refreshRightSidebarBadgesFromPostcards)
   yield put(postcardLocalDataChanged())
 }
