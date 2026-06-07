@@ -1,10 +1,17 @@
 import React from 'react'
 import {
   expandAndShuffleForBg,
+  expandEnvelopeRecipientsForBg,
   truncateScatterLabel,
   type PieScatterSlot,
 } from '../domain/pieScatteredBackground'
 import styles from './CardPie.module.scss'
+
+type ExpandForBg = (
+  items: string[],
+  slotCount: number,
+  seed: string,
+) => string[]
 
 type PieScatteredBackgroundTextProps = {
   items: string[]
@@ -12,14 +19,22 @@ type PieScatteredBackgroundTextProps = {
   seed: string
   className?: string
   truncate?: boolean
+  expand?: ExpandForBg
 }
 
 export const PieScatteredBackgroundText: React.FC<
   PieScatteredBackgroundTextProps
-> = ({ items, slots, seed, className, truncate = false }) => {
+> = ({
+  items,
+  slots,
+  seed,
+  className,
+  truncate = false,
+  expand = expandAndShuffleForBg,
+}) => {
   const labels = React.useMemo(
-    () => expandAndShuffleForBg(items, slots.length, seed),
-    [items, slots.length, seed],
+    () => expand(items, slots.length, seed),
+    [expand, items, slots.length, seed],
   )
 
   if (labels.length === 0) return null

@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import { AROMA_IMAGES } from '@entities/aroma/domain/types'
 import listOfMonthOfYear from '@data/date/monthOfYear.json'
 import {
-  IconUserRecipient,
   IconUsers,
   IconLogo,
   IconSectionMenuCardphoto,
@@ -25,6 +24,9 @@ import { useCardPieFacade } from '../application/facade'
 import {
   PIE_DATE_SCATTER_SLOTS,
   PIE_ENVELOPE_SCATTER_SLOTS,
+  PIE_ENVELOPE_PATTERN_HEIGHT,
+  PIE_ENVELOPE_PATTERN_WIDTH,
+  expandEnvelopeRecipientsForBg,
 } from '../domain/pieScatteredBackground'
 import { PieScatteredBackgroundText } from './PieScatteredBackgroundText'
 import styles from './CardPie.module.scss'
@@ -36,15 +38,15 @@ const PATTERN = {
   cardphoto5120: { x: -1343, y: -1344 },
   cardtext5120: { x: 863, y: -1693 },
   date5120: { x: -1150, y: 863 },
-  envelope2560: { x: 3100, y: 1580 },
+  envelope2560: { x: 2560, y: 1000 },
   aroma2560: { x: 1300, y: 2750 },
 } as const
 
 const PIE_EMPTY_ICON_SIZE = 1440
 const PIE_EMPTY_ICON_HALF = PIE_EMPTY_ICON_SIZE / 2
-/** Empty envelope sector: icon sits slightly left of pattern center for visual balance. */
-const PIE_ENVELOPE_EMPTY_ICON_X = 1180
-const PIE_ENVELOPE_EMPTY_ICON_Y = 1280
+/** Empty envelope sector: icon center (1440×1440), left edge stays inside pattern. */
+const PIE_ENVELOPE_EMPTY_ICON_X = 1120
+const PIE_ENVELOPE_EMPTY_ICON_Y = 2000
 
 export const CardPie: React.FC<CardPieProps> = ({
   isProcessed = false,
@@ -298,16 +300,16 @@ export const CardPie: React.FC<CardPieProps> = ({
             <pattern
               id={envelopeFillId}
               patternUnits="userSpaceOnUse"
-              width="5120"
-              height="5120"
+              width={PIE_ENVELOPE_PATTERN_WIDTH}
+              height={PIE_ENVELOPE_PATTERN_HEIGHT}
               x={PATTERN.envelope2560.x}
               y={PATTERN.envelope2560.y}
             >
               {!sections.envelope ? (
                 <>
                   <rect
-                    width="5120"
-                    height="5120"
+                    width={PIE_ENVELOPE_PATTERN_WIDTH}
+                    height={PIE_ENVELOPE_PATTERN_HEIGHT}
                     className={clsx(
                       styles.rect,
                       styles.rectEnvelope,
@@ -321,12 +323,18 @@ export const CardPie: React.FC<CardPieProps> = ({
                     <IconSectionMenuEnvelopeV2
                       width={PIE_EMPTY_ICON_SIZE}
                       height={PIE_EMPTY_ICON_SIZE}
+                      x="600"
+                      y="-150"
                     />
                   </g>
                 </>
               ) : hasManyRecipients ? (
                 <>
-                  <rect width="5120" height="5120" className={styles.rect} />
+                  <rect
+                    width={PIE_ENVELOPE_PATTERN_WIDTH}
+                    height={PIE_ENVELOPE_PATTERN_HEIGHT}
+                    className={styles.rect}
+                  />
                   {recipientPreviewLines.length > 0 ? (
                     <PieScatteredBackgroundText
                       items={recipientPreviewLines}
@@ -334,41 +342,51 @@ export const CardPie: React.FC<CardPieProps> = ({
                       seed={`env-${recipientPreviewLines.join('\u0000')}`}
                       className={styles.pieEnvelopeIconBg}
                       truncate
+                      expand={expandEnvelopeRecipientsForBg}
                     />
                   ) : null}
                   <text
-                    x="1280"
-                    y="1400"
+                    x={PIE_ENVELOPE_PATTERN_WIDTH / 2}
+                    y="2150"
                     textAnchor="middle"
                     strokeLinejoin="round"
                     fill="var(--envelope-text)"
                   >
-                    <tspan x="1280" dy="250" fontWeight="700" fontSize="1500">
+                    <tspan
+                      x={PIE_ENVELOPE_PATTERN_WIDTH / 2}
+                      dy="250"
+                      dx="550"
+                      fontWeight="700"
+                      fontSize="1500"
+                    >
                       {recipientCount}
                     </tspan>
                   </text>
                 </>
               ) : recipient ? (
                 <>
-                  <rect width="5120" height="5120" className={styles.rect} />
-                  <IconUserRecipient
-                    x="0"
-                    y="300"
-                    width="2560"
-                    height="2560"
-                    className={styles.pieEnvelopeIconBg}
+                  <rect
+                    width={PIE_ENVELOPE_PATTERN_WIDTH}
+                    height={PIE_ENVELOPE_PATTERN_HEIGHT}
+                    className={styles.rect}
                   />
                   <text
-                    x="200"
-                    y="1100"
+                    x={PIE_ENVELOPE_PATTERN_WIDTH / 2}
+                    y="1700"
                     textAnchor="middle"
                     strokeLinejoin="round"
                     fill="var(--envelope-text)"
                   >
-                    <tspan x="1200" dy="0" fontWeight="600" fontSize="650">
+                    <tspan
+                      // x={PIE_ENVELOPE_PATTERN_WIDTH / 2}
+                      x="1800"
+                      dy="0"
+                      fontWeight="600"
+                      fontSize="650"
+                    >
                       {recipient.name}
                     </tspan>
-                    <tspan x="1200" dy="750" fontWeight="600" fontSize="400">
+                    <tspan x="1800" dy="750" fontWeight="600" fontSize="400">
                       {recipient.country ?? recipient.city}
                     </tspan>
                   </text>
@@ -376,8 +394,8 @@ export const CardPie: React.FC<CardPieProps> = ({
               ) : (
                 <>
                   <rect
-                    width="2560"
-                    height="2560"
+                    width={PIE_ENVELOPE_PATTERN_WIDTH}
+                    height={PIE_ENVELOPE_PATTERN_HEIGHT}
                     className={clsx(
                       styles.rect,
                       styles.rectEnvelope,
@@ -505,13 +523,13 @@ export const CardPie: React.FC<CardPieProps> = ({
                       isCartDateDisabled && styles.pieTextDateDisabled,
                     )}
                   >
-                    <tspan x="2780" dy="0" fontWeight="400" fontSize="550">
+                    <tspan x="2100" dy="-200" fontWeight="400" fontSize="550">
                       {date.year}
                     </tspan>
-                    <tspan x="2780" dy="1250" fontWeight="600" fontSize="1400">
+                    <tspan x="2100" dy="1250" fontWeight="600" fontSize="1400">
                       {date.day}
                     </tspan>
-                    <tspan x="2780" dy="700" fontSize="550">
+                    <tspan x="2100" dy="700" fontSize="550">
                       {listOfMonthOfYear[date.month]}
                     </tspan>
                   </text>
@@ -534,6 +552,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                     <IconSectionMenuDate
                       width={PIE_EMPTY_ICON_SIZE}
                       height={PIE_EMPTY_ICON_SIZE}
+                      x="-550"
                     />
                   </g>
                 </>
@@ -635,7 +654,14 @@ export const CardPie: React.FC<CardPieProps> = ({
               strokeWidth={STROKE_WIDTH}
               d="M2182 3725h1350v1350H2182z"
             /> */}
-            {/* <path id="cardphoto-bg" className={styles.sectorBg} fill="none" stroke={SECTOR_STROKE} strokeWidth={STROKE_WIDTH} d="M542 541h1350v1350H542z" /> */}
+            {/* <path
+              id="cardphoto-bg"
+              className={styles.sectorBg}
+              fill="none"
+              stroke={SECTOR_STROKE}
+              strokeWidth={STROKE_WIDTH}
+              d="M542 541h1350v1350H542z"
+            /> */}
             {/* <path
               id="envelope-bg"
               className={styles.sectorBg}
@@ -644,8 +670,22 @@ export const CardPie: React.FC<CardPieProps> = ({
               strokeWidth={STROKE_WIDTH}
               d="M3725 2182h1350v1350H3725z"
             /> */}
-            {/* <path id="date-bg" className={styles.sectorBg} fill="none" stroke={SECTOR_STROKE} strokeWidth={STROKE_WIDTH} d="M192 2748h1350v1350H192z" /> */}
-            {/* <path id="cardtext-bg" className={styles.sectorBg} fill="none" stroke={SECTOR_STROKE} strokeWidth={STROKE_WIDTH} d="M2748 192h1350v1350H2748z" /> */}
+            {/* <path
+              id="date-bg"
+              className={styles.sectorBg}
+              fill="none"
+              stroke={SECTOR_STROKE}
+              strokeWidth={STROKE_WIDTH}
+              d="M192 2748h1350v1350H192z"
+            /> */}
+            {/* <path
+              id="cardtext-bg"
+              className={styles.sectorBg}
+              fill="none"
+              stroke={SECTOR_STROKE}
+              strokeWidth={STROKE_WIDTH}
+              d="M2748 192h1350v1350H2748z"
+            /> */}
           </g>
         </svg>
       </div>

@@ -32,10 +32,57 @@ function spreadScatterSlotsY(
   }))
 }
 
+function applyFontSizesFromSlots(
+  slots: PieScatterSlot[],
+  source: PieScatterSlot[],
+): PieScatterSlot[] {
+  return slots.map((slot, i) => ({
+    ...slot,
+    fontSize: source[i]?.fontSize ?? slot.fontSize,
+  }))
+}
+
+/** Размер SVG-pattern секции «Конверт». */
+export const PIE_ENVELOPE_PATTERN_WIDTH = 2560
+export const PIE_ENVELOPE_PATTERN_HEIGHT = 4120
+
+const PIE_ENVELOPE_SCATTER_PADDING_X = 100
+const PIE_ENVELOPE_SCATTER_PADDING_Y = 150
+
+function mapEnvelopeScatterSlotsToPattern(
+  slots: PieScatterSlot[],
+): PieScatterSlot[] {
+  if (slots.length === 0) return slots
+
+  let minX = slots[0].x
+  let maxX = slots[0].x
+  let minY = slots[0].y
+  let maxY = slots[0].y
+  for (const slot of slots) {
+    if (slot.x < minX) minX = slot.x
+    if (slot.x > maxX) maxX = slot.x
+    if (slot.y < minY) minY = slot.y
+    if (slot.y > maxY) maxY = slot.y
+  }
+
+  const spanX = maxX - minX || 1
+  const spanY = maxY - minY || 1
+  const targetMinX = PIE_ENVELOPE_SCATTER_PADDING_X
+  const targetMaxX = PIE_ENVELOPE_PATTERN_WIDTH - PIE_ENVELOPE_SCATTER_PADDING_X
+  const targetMinY = PIE_ENVELOPE_SCATTER_PADDING_Y
+  const targetMaxY = PIE_ENVELOPE_PATTERN_HEIGHT - PIE_ENVELOPE_SCATTER_PADDING_Y
+
+  return slots.map((slot) => ({
+    ...slot,
+    x: targetMinX + ((slot.x - minX) / spanX) * (targetMaxX - targetMinX),
+    y: targetMinY + ((slot.y - minY) / spanY) * (targetMaxY - targetMinY),
+  }))
+}
+
 /** Вертикальный разброс фона относительно исходной раскладки слотов. */
 const SCATTER_Y_SPAN_FACTOR = 1.5
 
-/** Слоты в координатах pattern envelope (как IconUsersV3). */
+/** Слоты-шаблон для раскладки фона «Конверт» (нормализуются под pattern 2560×4120). */
 const PIE_ENVELOPE_SCATTER_SLOTS_BASE: PieScatterSlot[] = [
   { x: 220, y: 480, fontSize: 300, rotate: -16 },
   { x: 980, y: 220, fontSize: 260, rotate: 12 },
@@ -54,11 +101,6 @@ const PIE_ENVELOPE_SCATTER_SLOTS_BASE: PieScatterSlot[] = [
   { x: 1760, y: 1680, fontSize: 290, rotate: -17 },
   { x: 2280, y: 1180, fontSize: 260, rotate: 8 },
 ]
-
-export const PIE_ENVELOPE_SCATTER_SLOTS = spreadScatterSlotsY(
-  PIE_ENVELOPE_SCATTER_SLOTS_BASE,
-  SCATTER_Y_SPAN_FACTOR,
-)
 
 /** Слоты в координатах pattern date (как IconDateBkg), размер — текущий (~×1.5). */
 const PIE_DATE_SCATTER_SLOTS_BASE: PieScatterSlot[] = [
@@ -80,6 +122,13 @@ const PIE_DATE_SCATTER_SLOTS_BASE: PieScatterSlot[] = [
   { x: 3620, y: 2280, fontSize: 690, rotate: 5 },
 ]
 
+export const PIE_ENVELOPE_SCATTER_SLOTS = mapEnvelopeScatterSlotsToPattern(
+  applyFontSizesFromSlots(
+    PIE_ENVELOPE_SCATTER_SLOTS_BASE,
+    PIE_DATE_SCATTER_SLOTS_BASE,
+  ),
+)
+
 export const PIE_DATE_SCATTER_SLOTS = spreadScatterSlotsY(
   PIE_DATE_SCATTER_SLOTS_BASE,
   SCATTER_Y_SPAN_FACTOR,
@@ -94,6 +143,19 @@ function hashSeed(seed: string): number {
   return h >>> 0
 }
 
+function shuffleStrings(items: string[], seed: string): string[] {
+  const trimmed = [...items]
+  let h = hashSeed(seed)
+  for (let i = trimmed.length - 1; i > 0; i -= 1) {
+    h = (Math.imul(h, 1103515245) + 12345) >>> 0
+    const j = h % (i + 1)
+    const tmp = trimmed[i]
+    trimmed[i] = trimmed[j]
+    trimmed[j] = tmp
+  }
+  return trimmed
+}
+
 /** Повторяет и перемешивает элементы для заполнения фона (детерминированно). */
 export function expandAndShuffleForBg(
   items: string[],
@@ -106,18 +168,50 @@ export function expandAndShuffleForBg(
   while (expanded.length < slotCount) {
     expanded.push(...items)
   }
-  const trimmed = expanded.slice(0, slotCount)
 
-  let h = hashSeed(seed)
-  for (let i = trimmed.length - 1; i > 0; i -= 1) {
-    h = (Math.imul(h, 1103515245) + 12345) >>> 0
-    const j = h % (i + 1)
-    const tmp = trimmed[i]
-    trimmed[i] = trimmed[j]
-    trimmed[j] = tmp
+  return shuffleStrings(expanded.slice(0, slotCount), seed)
+}
+
+function splitNameIntoScatterWords(name: string): string[] {
+  return name.trim().split(/\s+/).filter((word) => word.length > 0)
+}
+
+function repeatNames(names: string[], times: number): string[] {
+  if (times <= 0) return []
+  return names.flatMap((name) => Array.from({ length: times }, () => name))
+}
+
+/**
+ * Имена получателей для фона «Конверт»:
+ * 2 → ×3, 3 → ×2, >3 → случайные 3 имени ×2; многословные → слова по отдельности.
+ */
+export function expandEnvelopeRecipientsForBg(
+  items: string[],
+  slotCount: number,
+  seed: string,
+): string[] {
+  if (items.length === 0 || slotCount <= 0) return []
+
+  let selected: string[]
+  let repeatCount: number
+
+  if (items.length === 2) {
+    selected = [...items]
+    repeatCount = 3
+  } else if (items.length === 3) {
+    selected = [...items]
+    repeatCount = 2
+  } else {
+    selected = shuffleStrings([...items], seed).slice(0, 3)
+    repeatCount = 2
   }
 
-  return trimmed
+  const words = repeatNames(selected, repeatCount).flatMap(
+    splitNameIntoScatterWords,
+  )
+  if (words.length === 0) return []
+
+  return shuffleStrings(words, `${seed}:layout`).slice(0, slotCount)
 }
 
 export function truncateScatterLabel(label: string, maxLen = 16): string {
