@@ -11,7 +11,6 @@ type PieScatteredBackgroundTextProps = {
   slots: PieScatterSlot[]
   seed: string
   className?: string
-  /** Длинные подписи (имена) укорачиваем для фона. */
   truncate?: boolean
 }
 

@@ -35,7 +35,7 @@ const SECTOR_STROKE = '#b3b3b3'
 const PATTERN = {
   cardphoto5120: { x: -1343, y: -1344 },
   cardtext5120: { x: 863, y: -1693 },
-  date5120: { x: -1693, y: 863 },
+  date5120: { x: -1150, y: 863 },
   envelope2560: { x: 3100, y: 1580 },
   aroma2560: { x: 1300, y: 2750 },
 } as const
@@ -66,8 +66,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   const envelopeFillId = `${pieDefsUid}-envelope-fill`
   const aromaFillId = `${pieDefsUid}-aroma-fill`
   const dateFillId = `${pieDefsUid}-date-fill`
-  const listArchiveSource =
-    station === 'right' && id ? rightListSource : null
+  const listArchiveSource = station === 'right' && id ? rightListSource : null
 
   const {
     data,
@@ -154,7 +153,7 @@ export const CardPie: React.FC<CardPieProps> = ({
         fillContainer && styles.hubContainerFill,
       )}
       data-right-list-source={
-        station === 'right' ? listSourceFromFacade ?? undefined : undefined
+        station === 'right' ? (listSourceFromFacade ?? undefined) : undefined
       }
       style={
         fillContainer
@@ -482,7 +481,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                       isCartDateDisabled && styles.pieTextDateDisabled,
                     )}
                   >
-                    <tspan x="2560" dy="0" fontWeight="700" fontSize="1500">
+                    <tspan x="2000" dy="0" fontWeight="700" fontSize="1500">
                       {dates.length}
                     </tspan>
                   </text>

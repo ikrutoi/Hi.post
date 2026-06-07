@@ -5,8 +5,38 @@ export type PieScatterSlot = {
   rotate?: number
 }
 
+/** Растягивает слоты по Y от исходного min, умножая вертикальный span на factor. */
+function spreadScatterSlotsY(
+  slots: PieScatterSlot[],
+  spanFactor: number,
+): PieScatterSlot[] {
+  if (slots.length === 0) return slots
+
+  let minY = slots[0].y
+  let maxY = slots[0].y
+  for (const slot of slots) {
+    if (slot.y < minY) minY = slot.y
+    if (slot.y > maxY) maxY = slot.y
+  }
+
+  const span = maxY - minY
+  if (span <= 0) {
+    return slots.map((slot) => ({ ...slot, y: minY }))
+  }
+
+  const targetMaxY = minY + span * spanFactor
+
+  return slots.map((slot) => ({
+    ...slot,
+    y: minY + ((slot.y - minY) / span) * (targetMaxY - minY),
+  }))
+}
+
+/** Вертикальный разброс фона относительно исходной раскладки слотов. */
+const SCATTER_Y_SPAN_FACTOR = 1.5
+
 /** Слоты в координатах pattern envelope (как IconUsersV3). */
-export const PIE_ENVELOPE_SCATTER_SLOTS: PieScatterSlot[] = [
+const PIE_ENVELOPE_SCATTER_SLOTS_BASE: PieScatterSlot[] = [
   { x: 220, y: 480, fontSize: 300, rotate: -16 },
   { x: 980, y: 220, fontSize: 260, rotate: 12 },
   { x: 1680, y: 560, fontSize: 320, rotate: -7 },
@@ -25,8 +55,13 @@ export const PIE_ENVELOPE_SCATTER_SLOTS: PieScatterSlot[] = [
   { x: 2280, y: 1180, fontSize: 260, rotate: 8 },
 ]
 
+export const PIE_ENVELOPE_SCATTER_SLOTS = spreadScatterSlotsY(
+  PIE_ENVELOPE_SCATTER_SLOTS_BASE,
+  SCATTER_Y_SPAN_FACTOR,
+)
+
 /** Слоты в координатах pattern date (как IconDateBkg), размер — текущий (~×1.5). */
-export const PIE_DATE_SCATTER_SLOTS: PieScatterSlot[] = [
+const PIE_DATE_SCATTER_SLOTS_BASE: PieScatterSlot[] = [
   { x: 1580, y: 1280, fontSize: 780, rotate: -14 },
   { x: 2360, y: 960, fontSize: 690, rotate: 10 },
   { x: 3120, y: 1420, fontSize: 750, rotate: -8 },
@@ -44,6 +79,11 @@ export const PIE_DATE_SCATTER_SLOTS: PieScatterSlot[] = [
   { x: 2860, y: 1320, fontSize: 660, rotate: -12 },
   { x: 3620, y: 2280, fontSize: 690, rotate: 5 },
 ]
+
+export const PIE_DATE_SCATTER_SLOTS = spreadScatterSlotsY(
+  PIE_DATE_SCATTER_SLOTS_BASE,
+  SCATTER_Y_SPAN_FACTOR,
+)
 
 function hashSeed(seed: string): number {
   let h = 2166136261
