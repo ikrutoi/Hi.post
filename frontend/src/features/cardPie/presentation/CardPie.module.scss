@@ -111,9 +111,16 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   }
 }
 
+.pieDateIconBg {
+  color: $color-date-input-border;
+
+  text {
+    fill: currentColor;
+  }
+}
+
 .pieEnvelopeIconBg {
-  color: $color-envelope-recipient-legend;
-  opacity: 0.14;
+  color: $color-envelope-recipient-input-border;
 
   text {
     fill: currentColor;

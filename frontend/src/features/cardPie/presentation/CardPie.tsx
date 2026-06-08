@@ -485,7 +485,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                       items={datePreviewLines}
                       slots={PIE_DATE_SCATTER_SLOTS}
                       seed={`date-${datePreviewLines.join('\u0000')}`}
-                      className={styles.pieEnvelopeIconBg}
+                      className={styles.pieDateIconBg}
                     />
                   ) : null}
                   <text
