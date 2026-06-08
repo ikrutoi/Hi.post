@@ -1,11 +1,7 @@
-export { useCardphotoFacade } from './application/facadesLayout'
+export { useCardphotoFacade } from './application/facades/useCardphotoFacade'
 export {
   selectCardphotoState,
   selectActiveImage,
-  selectCardphotoActive,
-} from './infrastructure/selectorsLayout'
-export {
-  cardphotoActions,
-  cardphotoActiveActions,
-  cardphotoImageHistoryActions,
-} from './infrastructure/stateLayout'
+  selectCardphotoIsComplete,
+} from './infrastructure/selectors'
+export * from './infrastructure/state'

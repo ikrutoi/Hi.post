@@ -1,4 +1,4 @@
-import type { CropArea } from '../typesLayout'
+import type { CropArea } from '../types/crop.types'
 
 export const initialCrop: CropArea = {
   x: 0,

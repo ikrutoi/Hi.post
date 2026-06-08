@@ -5,13 +5,6 @@ import { assetRegistryReducer } from '@entities/assetRegistry/infrastructure/sta
 import { sectionEditorMenuReducer } from '@entities/sectionEditorMenu/infrastructure/state'
 
 import {
-  cardphotoLayoutReducer,
-  cardphotoActiveReducer,
-  imageHistoryReducer,
-  cardphotoStepsReducer,
-} from '@/features/cardphoto/infrastructure/stateLayout'
-
-import {
   cardphotoReducer,
   cardphotoUiReducer,
   cardphotoCropReducer,
@@ -58,11 +51,6 @@ export const rootReducer = combineReducers({
   assetRegistry: assetRegistryReducer,
 
   sectionEditorMenu: sectionEditorMenuReducer,
-
-  cardphotoLayout: cardphotoLayoutReducer,
-  cardphotoActive: cardphotoActiveReducer,
-  cardphotoSteps: cardphotoStepsReducer,
-  imageHistory: imageHistoryReducer,
 
   cardphoto: cardphotoReducer,
   cardphotoUi: cardphotoUiReducer,
