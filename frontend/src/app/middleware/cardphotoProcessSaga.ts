@@ -113,7 +113,6 @@ export function* onDownloadClick(): SagaIterator {
   )
 
   yield put(markLoading())
-  console.log('onDownload')
 
   yield put(
     updateGroupStatus({
@@ -202,8 +201,6 @@ function* onUploadImageReadySaga(action: PayloadAction<ImageMeta>) {
   } finally {
     yield put(markLoaded())
   }
-
-  console.log('onUpload')
 
   const groups = ['photo', 'ui']
   for (const groupName of groups) {

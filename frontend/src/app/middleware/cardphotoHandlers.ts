@@ -646,7 +646,6 @@ export function* handleDeleteImageSaga() {
 }
 
 export function* handleClearAllCropsSaga() {
-  console.log('handleClearAll')
   try {
     yield put(markLoading())
     yield call(storeAdapters.cardphotoImages.clear)
@@ -665,8 +664,6 @@ export function* syncQualitySaga() {
   const state: CardphotoState = yield select((s) => s.cardphoto)
   const config = state.assetConfig
   const originalImage: ImageMeta | null = yield select(selectActiveImage)
-
-  console.log('syncQualitySaga')
 
   if (config?.crop && config?.image && originalImage) {
     const { qualityProgress } = calculateCropQuality(
@@ -688,8 +685,6 @@ export function* handleBackToOriginalSaga() {
   const userMeta = state.userOriginalData
   const isComplete = !!state.appliedData
 
-  console.log('BACK_SAGA state', state)
-
   let nextMeta: ImageMeta | null = null
 
   if (state.assetData?.status === 'processed' && userMeta) {
@@ -704,7 +699,6 @@ export function* handleBackToOriginalSaga() {
     if (toolbarState?.crop?.state === 'active') {
       yield call(updateCropToolbarState, 'enabled', toolbarState)
     }
-    console.log('HANDLE_BACK')
     const config: WorkingConfig = yield call(
       rebuildConfigFromMeta,
       nextMeta,
@@ -855,8 +849,6 @@ export function* handleApplyAction2() {
         yield call([storeAdapters.applyImage, 'put'], wrapper)
 
         yield put(applyFinal(prepareForRedux(appliedMeta)))
-
-        console.log('Apply saved with thumbnail:', !!thumbnail)
       }
     } catch (error) {
       console.error('Apply error:', error)

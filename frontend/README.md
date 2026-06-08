@@ -1,68 +1,40 @@
-# Hidragonfly Post App
+# Hi.post Frontend
 
-## Available Scripts
+Vite + React + TypeScript SPA for the Hidragonfly postcard editor.
 
-In the project directory, you can run:
+## Scripts
 
-### `npm start`
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Dev server at [http://localhost:3000](http://localhost:3000) |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | ESLint |
+| `npm run knip` | Find unused exports and dependencies |
+| `npm run knip:files` | Find unused files |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Environment
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Copy `.env.example` to `.env`:
 
-### `npm test`
+- `VITE_AUTH_MODE=mock` — local auth via localStorage (default)
+- `VITE_AUTH_MODE=http` — Laravel API auth
+- `VITE_API_BASE_URL` — leave empty when API is on the same origin (`/api`)
+- `VITE_DEV_API_PROXY` — backend URL for dev proxy (default `http://127.0.0.1:8000`)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Project structure
 
-### `npm run build`
+```
+src/
+  app/        — store, sagas, global styles
+  entities/   — domain types and models
+  features/   — feature modules (UI, Redux, API)
+  shared/     — reusable UI, hooks, utils, config
+  db/         — IndexedDB adapters
+  i18n/       — localization
+  styles/     — design tokens
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Docker
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+From the repo root, `docker compose up` runs frontend (dev), backend, nginx, and MySQL together.
