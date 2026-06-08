@@ -2,7 +2,7 @@
 import { useMemo } from 'react'
 import { useUiController } from '../controllers'
 import type { Template } from '@shared/config/constants'
-import type { IconState } from '@shared/types'
+import type { IconState } from '@shared/config/constants'
 
 export const useUiFacade = () => {
   const { state, actions } = useUiController()

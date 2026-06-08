@@ -1,7 +1,7 @@
 import { useAppDispatch } from '@app/hooks'
-import type { CardSectionName } from '@shared/types'
+import type { CardSection } from '@shared/config/constants'
 
-export const useMiniCardKebab = (section: CardSectionName) => {
+export const useMiniCardKebab = (section: CardSection) => {
   const dispatch = useAppDispatch()
 
   const handleClick = async (evt: React.MouseEvent<HTMLButtonElement>) => {

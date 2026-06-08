@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { z } from 'zod'
 import type { RootState } from '@app/state'
-import { userSchema } from '@schemas/userSchema'
+import { userSchema } from '../schemas/userSchema'
 import type { AuthResponse, LoginPayload } from '../domain/types/auth.types'
 import { getAuthRepository } from '../infrastructure/authRepository'
 

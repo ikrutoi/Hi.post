@@ -4,7 +4,7 @@ import {
   ChoiceMemorySection,
   ButtonToolbar,
 } from '../../domain/types'
-import type { CardSectionName } from '@/shared/types'
+import type { CardSection } from '@shared/config/constants'
 
 import {
   selectActiveSection,
@@ -51,7 +51,7 @@ export const useSectionFacade = () => {
       // choiceClip,
     },
     actions: {
-      setActiveSection: (value: CardSectionName | null) =>
+      setActiveSection: (value: CardSection | null) =>
         dispatch(setActiveSection(value)),
       setSelectedSection: (value: string | null) =>
         dispatch(setSelectedSection(value)),

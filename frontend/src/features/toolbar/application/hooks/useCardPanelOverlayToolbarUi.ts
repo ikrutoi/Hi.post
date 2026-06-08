@@ -11,13 +11,9 @@ export const useCardPanelOverlayToolbarUI = (section: ToolbarSection) => {
     buttonIconRefs.current[id] = el
   }
 
-  const handleClickButton = () => {
-    console.log('handleClickButton')
-  }
+  const handleClickButton = () => {}
 
-  const handleMouseLeave = () => {
-    console.log('handleMouseLeave')
-  }
+  const handleMouseLeave = () => {}
 
   return {
     setButtonIconRef,

@@ -201,7 +201,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   sender: {
     keys: ENVELOPE_KEYS,
     initialState: initialSenderToolbarState,
-    onAction: (key, section) => console.log('Sender action', key, section),
+    onAction: () => {},
     getBadges: (state: ToolbarState['sender']) => {
       const addressListBadge = (state.addressList as any)?.options?.badge
       return {
@@ -232,7 +232,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   recipients: {
     keys: RECIPIENTS_KEYS,
     initialState: initialRecipientsToolbarState,
-    onAction: (key, section) => console.log('Recipients action', key, section),
+    onAction: () => {},
     group: 'recipients',
     getBadges: (state: ToolbarState['recipients']) => ({}),
     toolbar: RECIPIENTS_TOOLBAR,
@@ -252,8 +252,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   cardPanelOverlay: {
     keys: CARD_PANEL_OVERLAY_KEYS,
     initialState: initialCardPanelOverlayToolbarState,
-    onAction: (key, section) =>
-      console.log('CardPanelOverlay action', key, section),
+    onAction: () => {},
     group: 'overlay',
     getBadges: (state: ToolbarState['cardPanelOverlay']) => ({}),
     toolbar: CARD_PANEL_OVERLAY_TOOLBAR,
@@ -262,8 +261,7 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
   sectionEditorMenu: {
     keys: SECTION_EDITOR_MENU_KEYS,
     initialState: initialSectionEditorMenuToolbarState,
-    onAction: (key, section) =>
-      console.log('SectionEditorMenu action', key, section),
+    onAction: () => {},
     group: 'menu',
     getBadges: (state: ToolbarState['sectionEditorMenu']) => ({}),
     toolbar: SECTION_EDITOR_MENU_TOOLBAR,

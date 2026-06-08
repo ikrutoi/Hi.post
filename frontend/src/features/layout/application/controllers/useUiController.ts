@@ -25,7 +25,7 @@ import {
   selectSelectedSection,
 } from '../../infrastructure/selectors'
 
-import type { IconState } from '@shared/types'
+import type { IconState } from '@shared/config/constants'
 import type { Template } from '@shared/config/constants'
 
 export const useUiController = () => {

@@ -51,7 +51,6 @@ export const cardphotoUiSlice = createSlice({
   initialState: initialUiState,
   reducers: {
     openFileDialog(state) {
-      console.log('openFileDialog')
       state.shouldOpenFileDialog = true
     },
 

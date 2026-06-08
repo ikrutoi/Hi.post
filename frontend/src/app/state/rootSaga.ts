@@ -46,7 +46,6 @@ export function* rootSaga() {
     fork(addressSaveSaga),
     fork(cardtextProcessSaga),
     // fork(cardphotoToolbarSaga),
-    // fork(cardphotoHistorySaga),
     fork(cardphotoProcessSaga),
     fork(cardCalendarPreviewSaga),
     fork(sectionEditorMenuSaga),

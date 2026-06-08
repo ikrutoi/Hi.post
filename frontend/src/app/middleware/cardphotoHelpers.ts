@@ -12,7 +12,7 @@ import type {
   ImageSource,
   CardphotoSessionRecord,
 } from '@cardphoto/domain/types'
-import { getRandomStockMeta } from './cardphotoHistorySaga'
+import { getRandomStockMeta } from '@cardphoto/application/helpers/getRandomStockMeta'
 import { rebuildConfigFromMeta } from './cardphotoProcessSaga'
 import { ImageAsset } from '@/entities/assetRegistry/domain/types'
 import { setAssets } from '@/entities/assetRegistry/infrastructure/state'

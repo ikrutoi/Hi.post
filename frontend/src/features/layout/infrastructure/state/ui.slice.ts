@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { TEMPLATES } from '@shared/config/constants'
 import type { Template } from '@shared/config/constants'
-import type { IconState } from '@shared/types'
+import type { IconState } from '@shared/config/constants'
 import type { UiState, TemplateState } from '../../domain/types'
 
 const initialTemplateState: TemplateState = TEMPLATES.reduce((acc, section) => {

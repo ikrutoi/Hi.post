@@ -34,9 +34,7 @@ import { clearApply } from '@cardphoto/infrastructure/state'
 import { clearText } from '@cardtext/infrastructure/state'
 import { resetEditor } from '@entities/cardEditor/infrastructure/state'
 
-export function handleAddDraftsAction() {
-  console.log('handleAddDrafts')
-}
+export function handleAddDraftsAction() {}
 
 /** Same effect as clearing each mini section via `useCardEditorFacade().removeSection`. */
 export function* handleClearAllMiniSectionsAction(): SagaIterator {

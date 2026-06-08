@@ -5,7 +5,7 @@ import type {
   ChoiceMemorySection,
   ButtonToolbar,
 } from '../../domain/types'
-import type { CardSectionName } from '@shared/types'
+import type { CardSection } from '@shared/config/constants'
 
 const initialState: SectionState = {
   activeSection: null,
@@ -32,7 +32,7 @@ export const sectionSlice = createSlice({
   name: 'section',
   initialState,
   reducers: {
-    setActiveSection(state, action: PayloadAction<CardSectionName | null>) {
+    setActiveSection(state, action: PayloadAction<CardSection | null>) {
       state.activeSection = action.payload
     },
     setSelectedSection(state, action: PayloadAction<string | null>) {
