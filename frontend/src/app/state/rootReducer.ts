@@ -34,8 +34,6 @@ import { dateReducer } from '@date/infrastructure/state'
 import { calendarReducer } from '@date/calendar/infrastructure/state'
 import { switcherReducer } from '@date/switcher/infrastructure/state'
 
-// import { cardMenuReducer } from '@/app/basket/cardMenu/infrastructure/state'
-
 import {
   CardPanelReducer,
   MirrorSectionBackupReducer,
@@ -45,19 +43,13 @@ import { cardEditorReducer } from '@entities/cardEditor/infrastructure/state'
 
 import { cardReducer } from '@entities/card/infrastructure/state'
 
-import { cardMenuNavReducer } from '@layoutNav/infrastructure/state'
-import { templateNavReducer } from '@layoutNav/infrastructure/state'
-
-import { sentReducer } from '@features/sent/application/state'
 import { cartReducer } from '@features/cart/infrastructure/state'
-import { draftsReducer } from '@features/drafts/application/state'
 
 import { toolbarReducer } from '@toolbar/infrastructure/state'
 import { previewStripOrderReducer } from '@features/previewStrip/infrastructure/state'
 
 import { authReducer } from '@features/auth/store'
 import { postcardSyncReducer } from '@features/sync/store'
-import { interactionReducer } from '@features/interaction'
 import { layoutReducer } from '@layout/infrastructure/state/layoutReducer'
 
 export const rootReducer = combineReducers({
@@ -91,8 +83,6 @@ export const rootReducer = combineReducers({
   calendar: calendarReducer,
   switcher: switcherReducer,
 
-  // cardMenu: cardMenuReducer,
-
   cardPanel: CardPanelReducer,
   mirrorSectionBackup: MirrorSectionBackupReducer,
 
@@ -100,18 +90,12 @@ export const rootReducer = combineReducers({
 
   card: cardReducer,
 
-  cardMenuNav: cardMenuNavReducer,
-  templateNav: templateNavReducer,
-
   cart: cartReducer,
-  drafts: draftsReducer,
-  sent: sentReducer,
 
   toolbar: toolbarReducer,
   previewStripOrder: previewStripOrderReducer,
 
   auth: authReducer,
   postcardSync: postcardSyncReducer,
-  interaction: interactionReducer,
   layout: layoutReducer,
 })

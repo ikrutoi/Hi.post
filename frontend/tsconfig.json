@@ -37,10 +37,7 @@
       "@toolbar": ["features/toolbar/index.ts"],
       "@toolbar/*": ["features/toolbar/*"],
       "@cart/*": ["features/cart/*"],
-      "@drafts/*": ["features/drafts/*"],
-      "@sent/*": ["features/sent/*"],
-      "@layout/*": ["features/layout/*"],
-      "@layoutNav/*": ["features/layoutNav/*"]
+      "@layout/*": ["features/layout/*"]
     }
   },
   "include": ["src"]

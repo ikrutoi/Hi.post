@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { AROMA_IMAGES } from '@entities/aroma/domain/types'
-import listOfMonthOfYear from '@data/date/monthOfYear.json'
+import { MONTH_NAMES } from '@entities/date/constants'
 import {
   IconUsers,
   IconLogo,
@@ -530,7 +530,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                       {date.day}
                     </tspan>
                     <tspan x="2000" dy="700" fontSize="550">
-                      {listOfMonthOfYear[date.month]}
+                      {MONTH_NAMES[date.month]}
                     </tspan>
                   </text>
                 </>

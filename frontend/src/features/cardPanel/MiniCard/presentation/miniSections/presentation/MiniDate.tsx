@@ -2,7 +2,7 @@ import React from 'react'
 import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { useDateFacade } from '@date/application/facades'
-import listOfMonthOfYear from '@/data/date/monthOfYear.json'
+import { MONTH_NAMES } from '@entities/date/constants'
 import styles from './MiniDate.module.scss'
 import { useCardEditorFacade } from '@/entities/cardEditor/application/facades'
 import { getDateMultiMiniCircleSteps } from './concentricCircleSteps'
@@ -90,7 +90,7 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
             <span className={styles.miniDateYear}>{oneMultiDate.year}</span>
             <span className={styles.miniDateDay}>{oneMultiDate.day}</span>
             <span className={styles.miniDateMonth}>
-              {listOfMonthOfYear[oneMultiDate.month]}
+              {MONTH_NAMES[oneMultiDate.month]}
             </span>
           </div>
         ) : (
@@ -125,7 +125,7 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
         <span className={styles.miniDateYear}>{d.year}</span>
         <span className={styles.miniDateDay}>{d.day}</span>
         <span className={styles.miniDateMonth}>
-          {listOfMonthOfYear[d.month]}
+          {MONTH_NAMES[d.month]}
         </span>
       </div>
     )
@@ -176,7 +176,7 @@ export const MiniDate: React.FC<MiniDateProps> = () => {
           <span className={styles.miniDateYear}>{oneMultiDate.year}</span>
           <span className={styles.miniDateDay}>{oneMultiDate.day}</span>
           <span className={styles.miniDateMonth}>
-            {listOfMonthOfYear[oneMultiDate.month]}
+            {MONTH_NAMES[oneMultiDate.month]}
           </span>
         </div>
       ) : (

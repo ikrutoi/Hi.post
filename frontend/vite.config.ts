@@ -63,10 +63,7 @@ export default defineConfig(({ mode }) => {
         '@date': path.resolve(__dirname, 'src/features/date'),
         '@toolbar': path.resolve(__dirname, 'src/features/toolbar'),
         '@cart': path.resolve(__dirname, 'src/features/cart'),
-        '@drafts': path.resolve(__dirname, 'src/features/drafts'),
-        '@sent': path.resolve(__dirname, 'src/features/sent'),
         '@layout': path.resolve(__dirname, 'src/features/layout'),
-        '@layoutNav': path.resolve(__dirname, 'src/features/layoutNav'),
       },
     },
   }

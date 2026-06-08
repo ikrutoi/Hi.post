@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react'
 import clsx from 'clsx'
-import listOfMonthOfYear from '@data/date/monthOfYear.json'
+import { MONTH_NAMES } from '@entities/date/constants'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCartItems, selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import {
@@ -221,8 +221,8 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
     const monthLabel =
       d != null &&
       d.month >= 0 &&
-      d.month < (listOfMonthOfYear as readonly string[]).length
-        ? (listOfMonthOfYear as readonly string[])[d.month]
+      d.month < MONTH_NAMES.length
+        ? MONTH_NAMES[d.month]
         : ''
     const peekBody = (
       <div
