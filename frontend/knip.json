@@ -9,8 +9,7 @@
   "ignoreDependencies": [
     "@testing-library/jest-dom",
     "@testing-library/react",
-    "@testing-library/user-event",
-    "web-vitals"
+    "@testing-library/user-event"
   ],
   "vite": {
     "config": "vite.config.ts"
