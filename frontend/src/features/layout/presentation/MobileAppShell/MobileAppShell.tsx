@@ -52,38 +52,50 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
             />
           </header>
 
-          <div className={styles.mobileBody} style={cardWidthStyle}>
-            <EditorPieListCardPieBadgeSync />
-            <DateToolbarListDateBadgeSync />
-            <RightSidebarHistoryBadgeSync />
-            <CalendarModeToolbarBadgesSync />
+          <div className={styles.mobileMain}>
+            <div className={styles.mobileBody} style={cardWidthStyle}>
+              <EditorPieListCardPieBadgeSync />
+              <DateToolbarListDateBadgeSync />
+              <RightSidebarHistoryBadgeSync />
+              <CalendarModeToolbarBadgesSync />
 
-            <section className={styles.mobilePieSection} aria-label="Card pie">
-              <div className={styles.mobilePieWrap}>
-                <CardPie
-                  isProcessed
-                  fillContainer
-                  station="left"
-                  onBeforeLeftPieSectorClick={onBeforeLeftPieInteraction}
-                  onLeftPieCenterClick={onLeftPieCenterClick}
-                  leftPieCenterClickable={
-                    activePieSide === 'right' && !showTopCardStripFullSpan
-                  }
+              <section className={styles.mobilePieSection} aria-label="Card pie">
+                <div className={styles.mobilePieWrap}>
+                  <CardPie
+                    isProcessed
+                    fillContainer
+                    station="left"
+                    onBeforeLeftPieSectorClick={onBeforeLeftPieInteraction}
+                    onLeftPieCenterClick={onLeftPieCenterClick}
+                    leftPieCenterClickable={
+                      activePieSide === 'right' && !showTopCardStripFullSpan
+                    }
+                  />
+                </div>
+              </section>
+
+              <section
+                className={styles.mobileEditorSection}
+                aria-label="Section editor"
+              >
+                <div className={styles.mobileSectionToolbar}>
+                  {!hideSectionToolbar ? <CardSectionToolbar /> : null}
+                </div>
+                <div ref={formRef} className={styles.mobileForm}>
+                  <CardSectionEditor />
+                </div>
+              </section>
+            </div>
+
+            <div className={styles.mobilePanels}>
+              {listPanelOpen ? (
+                <CartListPanel
+                  onSelectEntry={onCartListSelectEntry}
+                  onDateEditEntry={onCartListDateEditEntry}
                 />
-              </div>
-            </section>
-
-            <section
-              className={styles.mobileEditorSection}
-              aria-label="Section editor"
-            >
-              <div className={styles.mobileSectionToolbar}>
-                {!hideSectionToolbar ? <CardSectionToolbar /> : null}
-              </div>
-              <div ref={formRef} className={styles.mobileForm}>
-                <CardSectionEditor />
-              </div>
-            </section>
+              ) : null}
+              <HistoryListRightSlot onSelectEntry={onHistoryListSelectEntry} />
+            </div>
           </div>
 
           <SectionEditorSidebar
@@ -91,16 +103,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
             onSectionEditorMenuAction={onSectionEditorMenuAction}
             suppressSectionMenuActiveHighlight={suppressSectionMenuActiveHighlight}
           />
-        </div>
-
-        <div className={styles.mobilePanels}>
-          {listPanelOpen ? (
-            <CartListPanel
-              onSelectEntry={onCartListSelectEntry}
-              onDateEditEntry={onCartListDateEditEntry}
-            />
-          ) : null}
-          <HistoryListRightSlot onSelectEntry={onHistoryListSelectEntry} />
         </div>
 
         <div className={styles.mobileUserPanel}>

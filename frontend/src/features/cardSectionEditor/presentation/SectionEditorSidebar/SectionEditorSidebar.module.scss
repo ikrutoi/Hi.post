@@ -27,7 +27,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
+  min-height: 2.75rem;
+  padding: 0.35rem 0.75rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
   background-color: $color-app-strip;
   border-top: 1px solid $color-app-substrate-border;
   box-sizing: border-box;

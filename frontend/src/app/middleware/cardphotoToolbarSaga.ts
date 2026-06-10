@@ -679,6 +679,7 @@ export function* handleCardphotoToolbarAction(
 
     case 'cropCheck':
     case 'applyLight':
+    case 'applyMedium':
       yield call(handleCropConfirm)
       break
 
@@ -951,7 +952,7 @@ export function* syncToolbarContext() {
       section: 'cardphotoCreate',
       value: {
         ...cropToolbarRest,
-        ...(cropConfirmPatch != null ? { applyLight: cropConfirmPatch } : {}),
+        ...(cropConfirmPatch != null ? { applyMedium: cropConfirmPatch } : {}),
         ...(su.cardphotoAdd != null ? { cardphotoAdd: su.cardphotoAdd } : {}),
         ...(su.close != null ? { delete: su.close } : {}),
       },

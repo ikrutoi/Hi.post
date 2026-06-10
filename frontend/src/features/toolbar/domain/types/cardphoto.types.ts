@@ -23,6 +23,7 @@ export const CARDPHOTO_KEYS = [
   'addList',
   'removeFromList',
   'applyLight',
+  'applyMedium',
   'printer',
 ] as const
 

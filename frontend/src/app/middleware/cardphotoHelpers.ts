@@ -41,10 +41,10 @@ export function* updateCropToolbarState(
 
   for (const section of CARDPHOTO_TOOLBAR_SECTIONS) {
     const cropConfirmKey =
-      section === 'cardphotoCreate' ? 'applyLight' : 'cropCheck'
+      section === 'cardphotoCreate' ? 'applyMedium' : 'cropCheck'
     const currentCropConfirmState =
       section === 'cardphotoCreate'
-        ? state.applyLight?.state
+        ? state.applyMedium?.state
         : state.cropCheck?.state
     const newCropConfirm =
       newCrop === 'active'

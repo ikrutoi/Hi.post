@@ -548,11 +548,22 @@
   }
 
   .toolbarKey {
-    width: 2.75rem;
-    height: 2.75rem;
-    min-width: 2.75rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    min-width: 2.5rem;
     margin: 0;
-    background-color: #fff;
+    background-color: transparent;
+
+    > svg {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    &.toolbarKeyEnabled:hover,
+    &.toolbarKeyActive:hover,
+    &.toolbarKeyDisabled:hover {
+      background-color: transparent;
+    }
   }
 
   .toolbarKeyCardPie,
@@ -1179,9 +1190,25 @@
 
   .toolbarKey {
     margin: 0;
-    width: 2.25rem;
-    height: 2.25rem;
-    background-color: #fff;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: transparent;
+
+    > svg {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    .toolbarUserAvatar {
+      width: 1.65rem;
+      height: 1.65rem;
+    }
+
+    &.toolbarKeyEnabled:hover,
+    &.toolbarKeyActive:hover,
+    &.toolbarKeyDisabled:hover {
+      background-color: transparent;
+    }
   }
 }
 

@@ -107,7 +107,7 @@ export function* onDownloadClick(): SagaIterator {
   yield put(
     updateToolbarIcon({
       section: 'cardphotoCreate',
-      key: 'applyLight',
+      key: 'applyMedium',
       value: 'disabled',
     }),
   )
