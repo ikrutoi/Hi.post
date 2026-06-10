@@ -5,8 +5,6 @@ import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/S
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
-import { MiniSectionsSlot } from '@cardPanel/presentation/MiniSectionsSlot'
-import { RightListArchiveMiniProvider } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
@@ -20,7 +18,6 @@ import styles from './MobileAppShell.module.scss'
 
 export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   formRef,
-  cardPanelRef,
   sizeCard,
   onAppClick,
   onSectionEditorMenuAction,
@@ -30,10 +27,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   showTopCardStripFullSpan,
   onBeforeLeftPieInteraction,
   onLeftPieCenterClick,
-  centerStripMirrorValue,
-  onPanelMiniSectionsToolbarAction,
-  onBeforeOpenMiniSection,
-  onActivateSectionPeekNoToolbar,
   hideSectionToolbar,
   listPanelOpen,
   onCartListSelectEntry,
@@ -41,7 +34,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onHistoryListSelectEntry,
 }) => {
   const cardWidthStyle =
-    sizeCard?.width != null
+    sizeCard?.width != null && sizeCard.width > 0
       ? ({ '--card-width': `${sizeCard.width}px` } as React.CSSProperties)
       : undefined
 
@@ -78,25 +71,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   }
                 />
               </div>
-            </section>
-
-            <section
-              className={styles.mobileMiniSection}
-              aria-label="Mini card sections"
-            >
-              <RightListArchiveMiniProvider value={centerStripMirrorValue}>
-                <MiniSectionsSlot
-                  ref={cardPanelRef}
-                  embedded
-                  rightModeActive={activePieSide === 'right'}
-                  cardPieCopyStripActive={showTopCardStripFullSpan}
-                  onBeforeOpenMiniSection={onBeforeOpenMiniSection}
-                  onPanelMiniSectionsToolbarAction={
-                    onPanelMiniSectionsToolbarAction
-                  }
-                  onActivateSectionPeekNoToolbar={onActivateSectionPeekNoToolbar}
-                />
-              </RightListArchiveMiniProvider>
             </section>
 
             <section

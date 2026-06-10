@@ -1,4 +1,5 @@
 import { useLayoutEffect } from 'react'
+import { calcSizeCard } from '@layout/helpers'
 import {
   getSizeMiniCard,
   getSizeCard,
@@ -34,8 +35,12 @@ export const useRecordSizeCard = (
 
     const attach = (): boolean => {
       const elementForm = formRef.current
-      const elementCardPanel = cardPanelRef.current
-      if (!elementForm || !elementCardPanel) return false
+      if (!elementForm) return false
+
+      const elementCardPanel = skipPanelMeasure
+        ? null
+        : cardPanelRef.current
+      if (!skipPanelMeasure && !elementCardPanel) return false
 
       const updateSize = () => {
         if (cancelled) return
@@ -44,16 +49,34 @@ export const useRecordSizeCard = (
         const viewportHeight = window.innerHeight
         if (skipPanelMeasure) {
           const currentRemSize = remSize ?? 16
-          const resultSizeCard = getSizeCard(
-            { width: widthForm, height: heightForm },
-            currentRemSize,
-            viewportHeight,
-          )
-          setSizeCard(resultSizeCard)
+          const viewportWidth = window.innerWidth
+          let measureWidth = widthForm
+          let measureHeight = heightForm
+
+          if (measureWidth <= 0 || measureHeight <= 0) {
+            const parent = elementForm.parentElement
+            if (parent) {
+              if (measureWidth <= 0) measureWidth = parent.clientWidth
+              if (measureHeight <= 0) measureHeight = parent.clientHeight
+            }
+          }
+
+          const resultSizeCard =
+            measureWidth > 0 && measureHeight > 0
+              ? getSizeCard(
+                  { width: measureWidth, height: measureHeight },
+                  currentRemSize,
+                  viewportHeight,
+                )
+              : calcSizeCard(viewportHeight, 'landscape', viewportWidth)
+
+          if (resultSizeCard.width > 0 && resultSizeCard.height > 0) {
+            setSizeCard(resultSizeCard)
+          }
           return
         }
-        const widthCardPanel = elementCardPanel.clientWidth
-        const heightCardPanel = elementCardPanel.clientHeight
+        const widthCardPanel = elementCardPanel!.clientWidth
+        const heightCardPanel = elementCardPanel!.clientHeight
         const resultSizeMiniCard = getSizeMiniCard({
           width: widthCardPanel,
           height: scaleMeasuredHeightToUiScale(
@@ -79,7 +102,9 @@ export const useRecordSizeCard = (
 
       resizeObserver = new ResizeObserver(() => updateSize())
       resizeObserver.observe(elementForm)
-      resizeObserver.observe(elementCardPanel)
+      if (elementCardPanel) {
+        resizeObserver.observe(elementCardPanel)
+      }
       return true
     }
 

@@ -179,8 +179,11 @@ const App = () => {
   const authInitialized = useAppSelector(selectAuthInitialized)
   const layoutReady = authInitialized
   useViewportInit()
-  useRecordSizeCard(formRef, cardPanelRef, { enabled: layoutReady })
   const { sizeCard, isMobileLayout } = useSizeFacade()
+  useRecordSizeCard(formRef, cardPanelRef, {
+    enabled: layoutReady,
+    skipPanelMeasure: isMobileLayout,
+  })
   const sectionSize =
     sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width / 6 : null
 
@@ -1017,7 +1020,6 @@ const App = () => {
     return (
       <MobileAppShell
         formRef={formRef}
-        cardPanelRef={cardPanelRef}
         sizeCard={sizeCard}
         onAppClick={handleAppClick}
         onSectionEditorMenuAction={handleSectionEditorMenuClick}
@@ -1033,10 +1035,6 @@ const App = () => {
         showTopCardStripFullSpan={showTopCardStripFullSpan}
         onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
         onLeftPieCenterClick={handleLeftPieCenterClick}
-        centerStripMirrorValue={centerStripMirrorValue}
-        onPanelMiniSectionsToolbarAction={handlePanelMiniSectionsToolbarAction}
-        onBeforeOpenMiniSection={exitRightPreviewForLeftMode}
-        onActivateSectionPeekNoToolbar={syncPeekChromeForOpenedSection}
         hideSectionToolbar={hideMobileSectionToolbar}
         listPanelOpen={listPanelOpen}
         onCartListSelectEntry={handleCartListSelectEntry}
