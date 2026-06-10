@@ -532,6 +532,35 @@
   }
 }
 
+.toolbarSectionEditorMenuBottomBar {
+  position: relative !important;
+  left: auto !important;
+  width: 100%;
+  justify-content: space-evenly;
+  align-items: center;
+
+  .toolbarGroup {
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+    gap: 0.15rem;
+  }
+
+  .toolbarKey {
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
+    margin: 0;
+    background-color: #fff;
+  }
+
+  .toolbarKeyCardPie,
+  .toolbarKeyHistory {
+    margin-top: 0;
+  }
+}
+
 // .toolbarRightSidebar {
 //   .toolbarKeyActive {
 //     color: $color-app-sidebar-icon-active;
@@ -1131,6 +1160,28 @@
   .toolbarBadgeDot {
     top: 0.25rem;
     right: 0.25rem;
+  }
+}
+
+.toolbarRightSidebar.toolbarRightSidebarHeaderBar {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  width: auto;
+
+  .toolbarGroupRightSidebar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    width: auto;
+  }
+
+  .toolbarKey {
+    margin: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    background-color: #fff;
   }
 }
 

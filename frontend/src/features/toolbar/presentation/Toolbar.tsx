@@ -68,6 +68,7 @@ export const Toolbar = ({
   onActionClick,
   mergedWithCenter = false,
   justifyGroupsEnd = false,
+  layout,
 }: {
   section: ToolbarSection
   stateOverride?: Record<string, unknown>
@@ -78,6 +79,8 @@ export const Toolbar = ({
   mergedWithCenter?: boolean
   /** Одна группа иконок — прижать к правому краю (как space-between с пустой левой группой). */
   justifyGroupsEnd?: boolean
+  /** Mobile shell layouts for sectionEditorMenu / rightSidebar. */
+  layout?: 'bottomBar' | 'headerBar'
 }) => {
   const {
     state: storeState,
@@ -559,6 +562,12 @@ export const Toolbar = ({
       className={clsx(
         styles.toolbar,
         styles[`toolbar${capitalize(section)}`],
+        layout === 'bottomBar' &&
+          section === 'sectionEditorMenu' &&
+          styles.toolbarSectionEditorMenuBottomBar,
+        layout === 'headerBar' &&
+          section === 'rightSidebar' &&
+          styles.toolbarRightSidebarHeaderBar,
         mergedWithCenter && styles.toolbarMergedWithCenter,
         justifyGroupsEnd && styles.toolbarGroupsJustifyEnd,
       )}

@@ -87,6 +87,7 @@ import { buildDisableCartOrHistoryNotebookOnSectionMenuCopyExitCommands } from '
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/application/MarkStampYearDevContext'
+import { MobileAppShell } from '@layout/presentation/MobileAppShell'
 import styles from './App.module.scss'
 import { store } from '@app/state/store'
 
@@ -1000,12 +1001,53 @@ const App = () => {
     return <div className={styles.authBoot} aria-busy="true" />
   }
 
+  const suppressSectionMenuActiveHighlight =
+    activePieSide === 'right' &&
+    !cardPieEditEngaged &&
+    rightListArchiveLocalId != null
+
+  const hideMobileSectionToolbar =
+    rightPieCardphotoPeekNoToolbar ||
+    rightPieCardtextPeekNoToolbar ||
+    rightPieEnvelopePeekNoToolbar ||
+    rightPieAromaPeekNoToolbar ||
+    rightPieDatePeekNoToolbar
+
+  if (isMobileLayout) {
+    return (
+      <MobileAppShell
+        formRef={formRef}
+        cardPanelRef={cardPanelRef}
+        sizeCard={sizeCard}
+        onAppClick={handleAppClick}
+        onSectionEditorMenuAction={handleSectionEditorMenuClick}
+        suppressSectionMenuActiveHighlight={suppressSectionMenuActiveHighlight}
+        pinActiveTab={
+          activePieSide === 'right' &&
+          rightListArchiveLocalId != null &&
+          rightListArchiveSource != null
+            ? rightListArchiveSource
+            : null
+        }
+        activePieSide={activePieSide}
+        showTopCardStripFullSpan={showTopCardStripFullSpan}
+        onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
+        onLeftPieCenterClick={handleLeftPieCenterClick}
+        centerStripMirrorValue={centerStripMirrorValue}
+        onPanelMiniSectionsToolbarAction={handlePanelMiniSectionsToolbarAction}
+        onBeforeOpenMiniSection={exitRightPreviewForLeftMode}
+        onActivateSectionPeekNoToolbar={syncPeekChromeForOpenedSection}
+        hideSectionToolbar={hideMobileSectionToolbar}
+        listPanelOpen={listPanelOpen}
+        onCartListSelectEntry={handleCartListSelectEntry}
+        onCartListDateEditEntry={handleCartListDateEditEntry}
+        onHistoryListSelectEntry={handleHistoryListSelectEntry}
+      />
+    )
+  }
+
   return (
-    <div
-      ref={appRef}
-      className={clsx(styles.app, isMobileLayout && styles.app_mobile)}
-      onClick={handleAppClick}
-    >
+    <div ref={appRef} className={styles.app} onClick={handleAppClick}>
       <MarkStampYearDevProvider>
         <div className={styles.appSubstrate}>
         <div className={styles.appControlStrip}>
@@ -1013,9 +1055,7 @@ const App = () => {
             <SectionEditorSidebar
               onSectionEditorMenuAction={handleSectionEditorMenuClick}
               suppressSectionMenuActiveHighlight={
-                activePieSide === 'right' &&
-                !cardPieEditEngaged &&
-                rightListArchiveLocalId != null
+                suppressSectionMenuActiveHighlight
               }
             />
           </div>

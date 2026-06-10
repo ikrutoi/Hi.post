@@ -17,3 +17,12 @@
   display: flex;
   justify-content: center;
 }
+
+.sectionEditorRightHeaderBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
+}

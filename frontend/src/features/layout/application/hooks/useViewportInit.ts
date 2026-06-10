@@ -21,12 +21,11 @@ export const useViewportInit = () => {
     const updateLayoutScale = () => {
       const { width, height } = getWindowSize()
       const uiScale = calcAppUiScale(width, height)
-
-      applyAppUiScale(uiScale)
-      setRemSize(getRemSize())
       const shellLayoutMode = getShellLayoutMode(width)
 
+      applyAppUiScale(uiScale)
       applyShellLayoutMode(shellLayoutMode)
+      setRemSize(getRemSize())
       setViewportSize({
         width,
         height,

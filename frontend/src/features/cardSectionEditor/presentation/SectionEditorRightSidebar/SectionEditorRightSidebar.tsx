@@ -3,13 +3,16 @@ import { useAppSelector } from '@app/hooks'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
 import {
   RIGHT_SIDEBAR_KEYS,
+  RIGHT_SIDEBAR_TOOLBAR,
   type RightSidebarKey,
 } from '@toolbar/domain/types/rightSidebar.types'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import type { IconState } from '@shared/config/constants'
+import type { ToolbarGroup } from '@toolbar/domain/types'
 import styles from './SectionEditorRightSidebar.module.scss'
 
 type SectionEditorRightSidebarProps = {
+  variant?: 'sidebar' | 'headerBar'
   /**
    * Правый режим корзины/истории: держать cart или history active в сайдбаре,
    * даже когда peek открывает «Дата» и сага снимает подсветку.
@@ -19,7 +22,7 @@ type SectionEditorRightSidebarProps = {
 
 export const SectionEditorRightSidebar: React.FC<
   SectionEditorRightSidebarProps
-> = ({ pinActiveTab = null }) => {
+> = ({ variant = 'sidebar', pinActiveTab = null }) => {
   const storeState = useAppSelector(selectToolbarSectionState('rightSidebar'))
 
   const rightSidebarStateOverride = useMemo(() => {
@@ -46,17 +49,37 @@ export const SectionEditorRightSidebar: React.FC<
     )
   }, [pinActiveTab, storeState])
 
+  const groupsOverride = useMemo((): ToolbarGroup[] | undefined => {
+    if (variant !== 'headerBar') return undefined
+    return RIGHT_SIDEBAR_TOOLBAR.map((group) => ({
+      ...group,
+      icons: [...group.icons].reverse(),
+    }))
+  }, [variant])
+
+  const toolbar = (
+    <Toolbar
+      section="rightSidebar"
+      layout={variant === 'headerBar' ? 'headerBar' : undefined}
+      groupsOverride={groupsOverride}
+      stateOverride={rightSidebarStateOverride}
+    />
+  )
+
+  if (variant === 'headerBar') {
+    return (
+      <div className={styles.sectionEditorRightHeaderBar} aria-hidden={false}>
+        {toolbar}
+      </div>
+    )
+  }
+
   return (
     <aside
       className={styles.sectionEditorRightSidebar}
       aria-label="Profile, cart, and history"
     >
-      <div className={styles.toolbarSlot}>
-        <Toolbar
-          section="rightSidebar"
-          stateOverride={rightSidebarStateOverride}
-        />
-      </div>
+      <div className={styles.toolbarSlot}>{toolbar}</div>
     </aside>
   )
 }

@@ -7,6 +7,7 @@ import { IconLogo, IconLogoFull } from '@shared/ui/icons'
 import styles from './SectionEditorSidebar.module.scss'
 
 type SectionEditorSidebarProps = {
+  variant?: 'sidebar' | 'footer'
   /** Перед стандартным toolbar/action: pin правого CardPie, выход из copy и т.п. */
   onSectionEditorMenuAction?: () => void
   /**
@@ -17,6 +18,7 @@ type SectionEditorSidebarProps = {
 }
 
 export const SectionEditorSidebar: React.FC<SectionEditorSidebarProps> = ({
+  variant = 'sidebar',
   onSectionEditorMenuAction,
   suppressSectionMenuActiveHighlight = false,
 }) => {
@@ -30,18 +32,34 @@ export const SectionEditorSidebar: React.FC<SectionEditorSidebarProps> = ({
     )
   }, [cardPieCopyStripExpanded, suppressSectionMenuActiveHighlight])
 
+  const toolbar = (
+    <Toolbar
+      section="sectionEditorMenu"
+      layout={variant === 'footer' ? 'bottomBar' : undefined}
+      stateOverride={sectionEditorMenuStateOverride}
+      onActionClick={() => {
+        onSectionEditorMenuAction?.()
+      }}
+    />
+  )
+
+  if (variant === 'footer') {
+    return (
+      <nav
+        className={styles.sectionEditorFooter}
+        aria-label="Section editor menu"
+      >
+        {toolbar}
+      </nav>
+    )
+  }
+
   return (
     <div className={styles.sectionEditorSidebar}>
       <div className={styles.sectionEditorSidebarLogo}>
         <IconLogo aria-hidden />
       </div>
-      <Toolbar
-        section="sectionEditorMenu"
-        stateOverride={sectionEditorMenuStateOverride}
-        onActionClick={() => {
-          onSectionEditorMenuAction?.()
-        }}
-      />
+      {toolbar}
       <div className={styles.sectionEditorSidebarLogoFull}>
         <IconLogoFull aria-hidden />
       </div>
