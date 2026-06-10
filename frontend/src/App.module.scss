@@ -1,7 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/miniSectionsSlotChrome' as *;
-
 :root {
   --color-font-deepBlack: #{$color-font-deepBlack};
   --color-font-blue: #{$color-font-blue};
@@ -485,4 +484,42 @@
   flex-direction: column;
   overflow: visible;
   // border: solid 1px aqua;
+}
+
+// Stage 1 mobile shell: editor-focused single column. Chrome is hidden until
+// stage 2+ defines drawers, bottom nav, and panel sheets.
+.app_mobile {
+  padding: 0.25rem 0.5rem;
+
+  .appControlStrip {
+    grid-template-columns: 1fr;
+  }
+
+  .appSidebar,
+  .appRightSidebar {
+    display: none;
+  }
+
+  .appMain {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  .appMainTopRowBackdrop,
+  .appMainTopCenterPanel,
+  .appMainContentLeftPieSlot,
+  .appMainContentRightPieSlot,
+  .appMainContentLeft,
+  .appMainContentRight,
+  .appMainContentRightUserPanelSlot {
+    display: none;
+  }
+
+  .appMainContentCenter {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    grid-template-rows: auto 1fr;
+    padding-bottom: 0.5rem;
+  }
 }

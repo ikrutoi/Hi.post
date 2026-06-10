@@ -1,9 +1,11 @@
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { calcAppUiScale } from '@shared/utils/layout'
 import { useSizeFacade } from '../facades/useSizeFacade'
 import {
   applyAppUiScale,
+  applyShellLayoutMode,
   getRemSize,
+  getShellLayoutMode,
   getViewportBreakpoint,
 } from '../../helpers'
 
@@ -15,17 +17,21 @@ const getWindowSize = () => ({
 export const useViewportInit = () => {
   const { setViewportSize, setRemSize } = useSizeFacade()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const updateLayoutScale = () => {
       const { width, height } = getWindowSize()
       const uiScale = calcAppUiScale(width, height)
 
       applyAppUiScale(uiScale)
       setRemSize(getRemSize())
+      const shellLayoutMode = getShellLayoutMode(width)
+
+      applyShellLayoutMode(shellLayoutMode)
       setViewportSize({
         width,
         height,
         viewportSize: getViewportBreakpoint(width),
+        shellLayoutMode,
       })
     }
 

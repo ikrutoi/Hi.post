@@ -77,6 +77,14 @@ export const selectSectionMenuHeight = (state: RootState) =>
 export const selectViewportSize = (state: RootState): ViewportSizeState =>
   selectLayoutSize(state).viewportSize
 
+export const selectShellLayoutMode = (state: RootState) =>
+  selectViewportSize(state).shellLayoutMode
+
+export const selectIsMobileLayout = createSelector(
+  [selectShellLayoutMode],
+  (shellLayoutMode) => shellLayoutMode === 'mobile',
+)
+
 export const selectCardOrientation = (state: RootState): LayoutOrientation =>
   selectLayoutSize(state).sizeCard.orientation ?? 'landscape'
 

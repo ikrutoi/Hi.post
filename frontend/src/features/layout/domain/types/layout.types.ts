@@ -6,7 +6,7 @@ import type {
 } from '@shared/config/constants'
 import type { ToolbarSection } from '@toolbar/domain/types'
 import type { DispatchDate } from '@entities/date/domain/types'
-import type { ViewportSize } from '@shared/config/constants'
+import type { ShellLayoutMode, ViewportSize } from '@shared/config/constants'
 import type { CardLayer } from '@cardphoto/domain/types'
 // import type { LayoutOrientation } from '@cardphoto/domain/types'
 
@@ -81,6 +81,7 @@ export type ViewportSizeState = {
   width: number
   height: number
   viewportSize: ViewportSize | null
+  shellLayoutMode: ShellLayoutMode
 }
 
 export type SizeBox = {

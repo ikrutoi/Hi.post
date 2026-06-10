@@ -10,6 +10,8 @@ import {
   // selectScale,
   selectSectionMenuHeight,
   selectViewportSize,
+  selectShellLayoutMode,
+  selectIsMobileLayout,
   selectCardOrientation,
   selectCardDimensions,
   selectMiniCardDimensions,
@@ -26,6 +28,8 @@ export const useSizeFacade = () => {
   // const scale = useAppSelector(selectScale)
   const sectionMenuHeight = useAppSelector(selectSectionMenuHeight)
   const viewportSize = useAppSelector(selectViewportSize)
+  const shellLayoutMode = useAppSelector(selectShellLayoutMode)
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const cardOrientation = useAppSelector(selectCardOrientation)
   const cardDimensions = useAppSelector(selectCardDimensions)
   const miniCardDimensions = useAppSelector(selectMiniCardDimensions)
@@ -42,6 +46,8 @@ export const useSizeFacade = () => {
     // scale,
     sectionMenuHeight,
     viewportSize,
+    shellLayoutMode,
+    isMobileLayout,
     cardOrientation,
     cardDimensions,
     miniCardDimensions,

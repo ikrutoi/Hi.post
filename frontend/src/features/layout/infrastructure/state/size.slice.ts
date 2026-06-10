@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { calcSizeCard } from '../../helpers'
+import { calcSizeCard, getInitialViewportState } from '../../helpers'
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import type {
   SizeState,
@@ -33,7 +33,7 @@ const initialState: SizeState = {
   // },
   workingAreaWidth: null,
   remSize: 16,
-  viewportSize: { width: 0, height: 0, viewportSize: null },
+  viewportSize: getInitialViewportState(),
   // scale: null,
   sectionMenuHeight: null,
 }

@@ -179,7 +179,7 @@ const App = () => {
   const layoutReady = authInitialized
   useViewportInit()
   useRecordSizeCard(formRef, cardPanelRef, { enabled: layoutReady })
-  const { sizeCard } = useSizeFacade()
+  const { sizeCard, isMobileLayout } = useSizeFacade()
   const sectionSize =
     sizeCard?.width != null && sizeCard.width > 0 ? sizeCard.width / 6 : null
 
@@ -1001,7 +1001,11 @@ const App = () => {
   }
 
   return (
-    <div ref={appRef} className={styles.app} onClick={handleAppClick}>
+    <div
+      ref={appRef}
+      className={clsx(styles.app, isMobileLayout && styles.app_mobile)}
+      onClick={handleAppClick}
+    >
       <MarkStampYearDevProvider>
         <div className={styles.appSubstrate}>
         <div className={styles.appControlStrip}>
