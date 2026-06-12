@@ -1,10 +1,9 @@
 @use '@styles/config/colors' as *;
 
-$pie-center-logo-size: 1.5rem;
-/** Right CardPie status dot — slightly larger than editor logo. */
+/** Shared center disc for left (logo) and right (status) CardPie. */
 $pie-center-indicator-size: 1.75rem;
 /** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от размера индикатора. */
-$pie-center-cart-blocked-ring: $pie-center-logo-size * 0.225;
+$pie-center-cart-blocked-ring: $pie-center-indicator-size * 0.225;
 $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
 
 .hubContainer {
@@ -38,13 +37,7 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
 
 .hubContainerRight {
   .pieCenterButton {
-    width: calc(#{$pie-center-indicator-size} + 2px);
-    height: calc(#{$pie-center-indicator-size} + 2px);
-  }
-
-  .pieCenterIcon {
-    width: $pie-center-indicator-size;
-    height: $pie-center-indicator-size;
+    background-color: $color-app-inner;
   }
 
   .pieCenterIndicator.cartBlocked {
@@ -169,8 +162,8 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: calc(#{$pie-center-logo-size} + 2px);
-  height: calc(#{$pie-center-logo-size} + 2px);
+  width: calc(#{$pie-center-indicator-size} + 2px);
+  height: calc(#{$pie-center-indicator-size} + 2px);
   border-radius: 50%;
   border: none;
   padding: 0;
@@ -178,7 +171,7 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $color-app-inner;
+  background-color: $color-app-strip;
   cursor: default;
   box-sizing: border-box;
   appearance: none;
@@ -210,8 +203,8 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: $pie-center-logo-size;
-  height: $pie-center-logo-size;
+  width: $pie-center-indicator-size;
+  height: $pie-center-indicator-size;
   color: $color-app-substrate-border;
 
   svg {
