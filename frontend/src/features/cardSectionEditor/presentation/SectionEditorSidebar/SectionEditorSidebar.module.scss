@@ -27,10 +27,13 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 2.75rem;
-  padding: 0.35rem 0.75rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
-  background-color: $color-app-strip;
-  border-top: 1px solid $color-app-substrate-border;
+  padding-top: var(--mobile-footer-icon-gap, var(--mobile-chrome-padding-y, 0.35rem));
+  padding-inline: 0.75rem;
+  padding-bottom: calc(
+    var(--mobile-footer-icon-gap, var(--mobile-chrome-padding-y, 0.35rem))
+    + env(safe-area-inset-bottom, 0px)
+  );
+  background-color: #fff;
   box-sizing: border-box;
 }
 

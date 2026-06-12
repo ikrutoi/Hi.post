@@ -1037,6 +1037,8 @@ const App = () => {
         onLeftPieCenterClick={handleLeftPieCenterClick}
         hideSectionToolbar={hideMobileSectionToolbar}
         listPanelOpen={listPanelOpen}
+        cardPieListPanelOpen={cardPieListPanelOpen}
+        onEditorPieToolbarAction={handleEditorPieToolbarAction}
         onCartListSelectEntry={handleCartListSelectEntry}
         onCartListDateEditEntry={handleCartListDateEditEntry}
         onHistoryListSelectEntry={handleHistoryListSelectEntry}

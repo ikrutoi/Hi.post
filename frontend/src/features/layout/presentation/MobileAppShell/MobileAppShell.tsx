@@ -4,7 +4,9 @@ import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
+import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
+import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
@@ -29,6 +31,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onLeftPieCenterClick,
   hideSectionToolbar,
   listPanelOpen,
+  cardPieListPanelOpen,
+  onEditorPieToolbarAction,
   onCartListSelectEntry,
   onCartListDateEditEntry,
   onHistoryListSelectEntry,
@@ -60,17 +64,25 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
               <CalendarModeToolbarBadgesSync />
 
               <section className={styles.mobilePieSection} aria-label="Card pie">
-                <div className={styles.mobilePieWrap}>
-                  <CardPie
-                    isProcessed
-                    fillContainer
-                    station="left"
-                    onBeforeLeftPieSectorClick={onBeforeLeftPieInteraction}
-                    onLeftPieCenterClick={onLeftPieCenterClick}
-                    leftPieCenterClickable={
-                      activePieSide === 'right' && !showTopCardStripFullSpan
-                    }
-                  />
+                <div className={styles.mobilePieStage}>
+                  <div className={styles.mobilePieWrap}>
+                    <CardPie
+                      isProcessed
+                      fillContainer
+                      station="left"
+                      onBeforeLeftPieSectorClick={onBeforeLeftPieInteraction}
+                      onLeftPieCenterClick={onLeftPieCenterClick}
+                      leftPieCenterClickable={
+                        activePieSide === 'right' && !showTopCardStripFullSpan
+                      }
+                    />
+                  </div>
+                  <div className={styles.mobilePieToolbar}>
+                    <Toolbar
+                      section="editorPie"
+                      onActionClick={onEditorPieToolbarAction}
+                    />
+                  </div>
                 </div>
               </section>
 
@@ -88,6 +100,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
             </div>
 
             <div className={styles.mobilePanels}>
+              {cardPieListPanelOpen ? <CardPieLeftSlot /> : null}
               {listPanelOpen ? (
                 <CartListPanel
                   onSelectEntry={onCartListSelectEntry}

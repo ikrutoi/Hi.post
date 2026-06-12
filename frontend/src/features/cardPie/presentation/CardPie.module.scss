@@ -171,7 +171,7 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $color-app-strip;
+  background-color: $color-app-header;
   cursor: default;
   box-sizing: border-box;
   appearance: none;
@@ -205,6 +205,7 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   flex-shrink: 0;
   width: $pie-center-indicator-size;
   height: $pie-center-indicator-size;
+  border-radius: 50%;
   color: $color-app-substrate-border;
 
   svg {
@@ -212,6 +213,10 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
     height: 100%;
     fill: currentColor;
   }
+}
+
+.hubContainer:not(.hubContainerRight) .pieCenterIcon {
+  background-color: $color-app-inner;
 }
 
 .pieCenterIconBrand {

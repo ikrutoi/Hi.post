@@ -61,6 +61,21 @@ export const useRecordSizeCard = (
             }
           }
 
+          const mobileShell = elementForm.closest(
+            '[class*="mobileShell"]',
+          ) as HTMLElement | null
+          if (mobileShell) {
+            const formStyle = getComputedStyle(elementForm)
+            const paddingTopPx =
+              Number.parseFloat(formStyle.paddingTop) || 0
+            const paddingBottomPx =
+              Number.parseFloat(formStyle.paddingBottom) || 0
+            measureHeight = Math.max(
+              0,
+              measureHeight - paddingTopPx - paddingBottomPx,
+            )
+          }
+
           const resultSizeCard =
             measureWidth > 0 && measureHeight > 0
               ? getSizeCard(

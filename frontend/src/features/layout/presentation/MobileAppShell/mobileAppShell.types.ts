@@ -3,6 +3,7 @@ import type { CartListPanelItem } from '@cart/presentation/CartListPanel'
 import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
 import type { CardLayer } from '@cardphoto/domain/types'
 import type { RightSidebarKey } from '@toolbar/domain/types/rightSidebar.types'
+import type { IconKey } from '@shared/config/constants'
 
 export type MobileAppShellProps = {
   formRef: RefObject<HTMLDivElement | null>
@@ -17,6 +18,8 @@ export type MobileAppShellProps = {
   onLeftPieCenterClick: () => void
   hideSectionToolbar: boolean
   listPanelOpen: boolean
+  cardPieListPanelOpen: boolean
+  onEditorPieToolbarAction?: (key: IconKey) => void | false
   onCartListSelectEntry: (item: CartListPanelItem) => void
   onCartListDateEditEntry: (item: CartListPanelItem) => void
   onHistoryListSelectEntry: (item: HistoryListPanelItem) => void
