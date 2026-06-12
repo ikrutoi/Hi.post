@@ -77,6 +77,16 @@ $cardtext-view-overlay-chip-icon-size: 0.85rem;
 .viewDeleteBtn {
   @include overlay.sectionViewOverlayDeleteButton;
   @include cardtextViewOverlayChipSize;
+
+  :global([data-shell-layout='mobile']) & {
+    width: var(--mobile-toolbar-key-size, 2.5rem);
+    height: var(--mobile-toolbar-key-size, 2.5rem);
+
+    svg {
+      width: var(--mobile-toolbar-icon-size, 1.35rem);
+      height: var(--mobile-toolbar-icon-size, 1.35rem);
+    }
+  }
 }
 
 /* addList: .toolbarCardtextView margin-left 0.5rem */

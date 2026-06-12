@@ -50,31 +50,25 @@ export const useRecordSizeCard = (
         if (skipPanelMeasure) {
           const currentRemSize = remSize ?? 16
           const viewportWidth = window.innerWidth
+          const formStyle = getComputedStyle(elementForm)
+          const paddingTopPx = Number.parseFloat(formStyle.paddingTop) || 0
+          const paddingBottomPx = Number.parseFloat(formStyle.paddingBottom) || 0
           let measureWidth = widthForm
           let measureHeight = heightForm
 
-          if (measureWidth <= 0 || measureHeight <= 0) {
-            const parent = elementForm.parentElement
-            if (parent) {
-              if (measureWidth <= 0) measureWidth = parent.clientWidth
-              if (measureHeight <= 0) measureHeight = parent.clientHeight
+          const parent = elementForm.parentElement
+          if (parent) {
+            if (measureWidth <= 0) measureWidth = parent.clientWidth
+            // Before sizeCard is set the section collapses to form padding only.
+            if (measureHeight <= paddingTopPx + paddingBottomPx + 1) {
+              measureHeight = parent.clientHeight
             }
           }
 
-          const mobileShell = elementForm.closest(
-            '[class*="mobileShell"]',
-          ) as HTMLElement | null
-          if (mobileShell) {
-            const formStyle = getComputedStyle(elementForm)
-            const paddingTopPx =
-              Number.parseFloat(formStyle.paddingTop) || 0
-            const paddingBottomPx =
-              Number.parseFloat(formStyle.paddingBottom) || 0
-            measureHeight = Math.max(
-              0,
-              measureHeight - paddingTopPx - paddingBottomPx,
-            )
-          }
+          measureHeight = Math.max(
+            0,
+            measureHeight - paddingTopPx - paddingBottomPx,
+          )
 
           const resultSizeCard =
             measureWidth > 0 && measureHeight > 0
@@ -119,6 +113,8 @@ export const useRecordSizeCard = (
       resizeObserver.observe(elementForm)
       if (elementCardPanel) {
         resizeObserver.observe(elementCardPanel)
+      } else if (skipPanelMeasure && elementForm.parentElement) {
+        resizeObserver.observe(elementForm.parentElement)
       }
       return true
     }
