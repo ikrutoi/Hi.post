@@ -1,8 +1,21 @@
 import { CARD_SCALE_CONFIG } from '@shared/config/constants'
 import { APP_UI_SCALE_CONFIG } from '@shared/config/constants/uiScale'
+import type { LayoutOrientation } from '@layout/domain/types'
 import { roundTo } from '../../helpers'
-import type { SizeCard } from '@layout/domain/types'
 import { scaleMeasuredHeightToUiScale } from './calcAppUiScale'
+
+/** Высота внутреннего тулбара cardphoto/cardtext на mobile (совпадает с 2rem в SCSS). */
+export const MOBILE_CARD_INNER_TOOLBAR_REM = 2
+
+export type GetSizeCardOptions = {
+  orientation?: LayoutOrientation
+  aspectRatio?: number
+  /**
+   * Mobile: квадратная рабочая зона + полоса внутреннего тулбара сверху.
+   * `height` = workSide + innerToolbarPx, `width` = workSide.
+   */
+  innerToolbarPx?: number
+}
 
 export const getSizeCard = (
   sizeForm: { width: number; height: number },
@@ -10,13 +23,54 @@ export const getSizeCard = (
   viewportHeight: number = typeof window !== 'undefined'
     ? window.innerHeight
     : APP_UI_SCALE_CONFIG.baselineHeight,
+  options?: GetSizeCardOptions,
 ) => {
-  const rawHeight = scaleMeasuredHeightToUiScale(
+  const aspectRatio = options?.aspectRatio ?? CARD_SCALE_CONFIG.aspectRatio
+  const orientation = options?.orientation ?? 'landscape'
+  const innerToolbarPx = options?.innerToolbarPx ?? 0
+
+  const boxWidth = scaleMeasuredHeightToUiScale(
+    sizeForm.width,
+    remSize,
+    viewportHeight,
+  )
+  const boxHeight = scaleMeasuredHeightToUiScale(
     sizeForm.height,
     remSize,
     viewportHeight,
   )
-  const rawWidth = rawHeight * CARD_SCALE_CONFIG.aspectRatio - 2 * remSize
+
+  if (!boxWidth || !boxHeight) {
+    return { width: 0, height: 0 }
+  }
+
+  if (innerToolbarPx > 0) {
+    const maxWorkHeight = Math.max(0, boxHeight - innerToolbarPx)
+    const widthOverHeight =
+      orientation === 'landscape' ? aspectRatio : 1 / aspectRatio
+
+    let workHeight = maxWorkHeight
+    let workWidth = workHeight * widthOverHeight
+
+    if (workWidth > boxWidth) {
+      workWidth = boxWidth
+      workHeight = workWidth / widthOverHeight
+    }
+
+    const roundedWorkWidth = Math.max(0, roundTo.nearest(workWidth))
+    const roundedWorkHeight = Math.max(0, roundTo.nearest(workHeight))
+
+    return {
+      width: roundedWorkWidth,
+      height: Math.max(
+        0,
+        roundTo.nearest(roundedWorkHeight + innerToolbarPx),
+      ),
+    }
+  }
+
+  const rawHeight = boxHeight
+  const rawWidth = rawHeight * aspectRatio - 2 * remSize
 
   return {
     width: Math.max(0, roundTo.nearest(rawWidth)),

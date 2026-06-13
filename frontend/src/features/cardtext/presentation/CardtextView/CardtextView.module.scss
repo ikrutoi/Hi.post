@@ -36,6 +36,10 @@ $cardtext-view-overlay-chip-radius: 0.47rem;
     border-right: none;
     border-bottom: none;
   }
+
+  :global([data-shell-layout='mobile']) & {
+    flex: 0 0 auto;
+  }
   // box-shadow: $shadow-card;
 }
 

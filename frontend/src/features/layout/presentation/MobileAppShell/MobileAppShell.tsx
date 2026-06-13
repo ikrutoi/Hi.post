@@ -38,6 +38,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     sizeCard?.width != null && sizeCard.width > 0
       ? ({
           '--card-width': `${sizeCard.width}px`,
+          '--card-work-zone-side': `${sizeCard.width}px`,
           ...(sizeCard.height > 0
             ? { '--card-height': `${sizeCard.height}px` }
             : {}),

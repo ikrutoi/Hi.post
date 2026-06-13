@@ -53,7 +53,7 @@ export const CardphotoStage = () => {
   const { state: iconState } = useToolbarFacade(photoToolbarSection)
   const cropToolbarState = iconState?.crop?.state ?? 'disabled'
 
-  const { sizeCard } = useSizeFacade()
+  const { sizeCard, isMobileLayout } = useSizeFacade()
 
   const [loaded, setLoaded] = useState(false)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -152,6 +152,22 @@ export const CardphotoStage = () => {
         }
       : undefined
 
+  const workZoneSide =
+    sizeCard.width > 0
+      ? sizeCard.width
+      : isMobileLayout
+        ? 0
+        : (sizeCard.height ?? 0)
+
+  const cropContainerStyle: React.CSSProperties | undefined = isMobileLayout
+    ? { width: '100%', height: '100%' }
+    : workZoneSide > 0
+      ? {
+          width: `${workZoneSide}px`,
+          height: `${sizeCard.height}px`,
+        }
+      : undefined
+
   const showCropUi = !!activeImage && !!imageLayer
 
   return (
@@ -169,10 +185,7 @@ export const CardphotoStage = () => {
           key={containerKey}
           ref={stageRef}
           className={styles.cropContainer}
-          style={{
-            width: `${sizeCard?.width ?? 0}px`,
-            height: `${sizeCard?.height ?? 0}px`,
-          }}
+          style={cropContainerStyle}
         >
           <div className={styles.imageStack}>
             {shouldShowImage && imageLayer && src && (

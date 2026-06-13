@@ -7,6 +7,7 @@ import {
   getSizeMiniCard,
   getSizeCard,
   scaleMeasuredHeightToUiScale,
+  MOBILE_CARD_INNER_TOOLBAR_REM,
 } from '@shared/utils/layout'
 import { useSizeFacade } from '@layout/application/facades'
 
@@ -23,6 +24,7 @@ export const useRecordSizeCard = (
 ) => {
   const {
     remSize,
+    sizeCard,
     setSizeCard,
     setSizeMiniCard,
   } = useSizeFacade()
@@ -53,6 +55,12 @@ export const useRecordSizeCard = (
         if (skipPanelMeasure) {
           const currentRemSize = remSize ?? 16
           const viewportWidth = window.innerWidth
+          const innerToolbarPx = currentRemSize * MOBILE_CARD_INNER_TOOLBAR_REM
+          const sizeCardFit = {
+            orientation: sizeCard.orientation,
+            aspectRatio: sizeCard.aspectRatio,
+            innerToolbarPx,
+          } as const
           const { contentWidth, contentHeight, slotHeight } =
             measureMobileEditorSlot(
               elementForm,
@@ -76,6 +84,7 @@ export const useRecordSizeCard = (
                   { width: measureWidth, height: measureHeight },
                   currentRemSize,
                   viewportHeight,
+                  sizeCardFit,
                 )
               : calcSizeCard(
                   Math.max(measureHeight, viewportHeight * 0.35),
@@ -97,6 +106,7 @@ export const useRecordSizeCard = (
               },
               currentRemSize,
               viewportHeight,
+              sizeCardFit,
             )
           }
 
@@ -113,6 +123,7 @@ export const useRecordSizeCard = (
               { width: measureWidth, height: contentHeight },
               currentRemSize,
               viewportHeight,
+              sizeCardFit,
             )
             if (capped.width > 0 && capped.height > 0) {
               resultSizeCard = capped
@@ -177,5 +188,5 @@ export const useRecordSizeCard = (
       cancelAnimationFrame(rafId)
       resizeObserver?.disconnect()
     }
-  }, [enabled, remSize, skipPanelMeasure, setSizeCard, setSizeMiniCard])
+  }, [enabled, remSize, sizeCard.aspectRatio, sizeCard.orientation, skipPanelMeasure, setSizeCard, setSizeMiniCard])
 }

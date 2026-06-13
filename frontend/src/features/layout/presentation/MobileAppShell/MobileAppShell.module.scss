@@ -211,6 +211,7 @@
   :global([class*='cardphotoViewWrap']),
   :global([class*='cardtextViewWrap']) {
     border-radius: 0;
+    align-items: center;
   }
 
   :global([class*='cardphotoViewContent']),
@@ -219,11 +220,38 @@
     border-left: none;
     border-right: none;
     border-bottom: none;
+    flex: 1 1 auto;
+    align-items: center;
+    width: 100%;
+    min-height: 0;
+  }
+
+  // Квадратная рабочая зона: картинка (cardphoto) / письмо (cardtext).
+  :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
+  :global([class*='cardtextReadOnlyShell']) :global([class*='viewContainer']),
+  :global([class*='cardtextViewContent']) > :global([class*='CardEditor']) {
+    flex: 0 0 auto;
+    width: var(--card-work-zone-side, 100%);
+    height: var(--card-work-zone-side);
+    max-width: 100%;
+    aspect-ratio: 1;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :global([class*='cardtextReadOnlyShell']) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 0;
+    min-width: 0;
   }
 
   :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
   :global([class*='cardtextViewContent']) :global([class*='viewContainer']),
-  :global([class*='cardtextViewContent']) :global([class*='CardEditor']) {
+  :global([class*='cardtextViewContent']) > :global([class*='CardEditor']) {
     border-radius: 0.5rem;
     padding-left: 0;
     padding-right: 0;
