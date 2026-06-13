@@ -2,10 +2,13 @@
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .mobileShell {
-  --mobile-chrome-band: 2.75rem;
+  --mobile-chrome-band: calc(
+    #{iconButton.$toolbar-hit-size-mobile} + 2 * var(--mobile-chrome-padding-y)
+  );
   --mobile-chrome-padding-y: 0.35rem;
+  --mobile-section-inset: 0.75rem;
   --mobile-form-padding-bottom: max(
-    var(--mobile-chrome-padding-y),
+    var(--mobile-section-inset),
     env(safe-area-inset-bottom, 0px)
   );
   --mobile-pie-size: min(52vw, 14rem, 28dvh);
@@ -17,6 +20,8 @@
   );
   --mobile-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile};
   --mobile-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile};
+  --mobile-toolbar-avatar-size: #{iconButton.$toolbar-avatar-size-mobile-chrome};
+  --mobile-toolbar-logo-size: #{iconButton.$toolbar-logo-size-mobile-chrome};
   --mobile-section-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile-section};
   --mobile-section-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile-section};
 
@@ -47,10 +52,29 @@
   justify-content: space-between;
   gap: 0.5rem;
   min-height: var(--mobile-chrome-band);
-  padding: var(--mobile-chrome-padding-y) 0.75rem;
+  padding: var(--mobile-chrome-padding-y) var(--mobile-section-inset);
   padding-top: calc(var(--mobile-chrome-padding-y) + env(safe-area-inset-top, 0px));
   background-color: $color-app-inner;
   box-sizing: border-box;
+
+  :global([class*='toolbarRightSidebarHeaderBar']) {
+    :global([class*='toolbarKey']) {
+      @include iconButton.toolbar-icon-button-size-mobile(true);
+      margin: 0;
+      background-color: transparent;
+
+      &[class*='toolbarKeyEnabled']:hover,
+      &[class*='toolbarKeyActive']:hover,
+      &[class*='toolbarKeyDisabled']:hover {
+        background-color: transparent;
+      }
+    }
+
+    :global([class*='toolbarUserAvatar']) {
+      width: var(--mobile-toolbar-avatar-size);
+      height: var(--mobile-toolbar-avatar-size);
+    }
+  }
 }
 
 .mobileHeaderLogo {
@@ -58,18 +82,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: var(--mobile-toolbar-logo-size);
+  height: var(--mobile-toolbar-logo-size);
   color: var(--logo-color, #008aed);
 
   svg {
+    display: block;
     width: 100%;
     height: 100%;
   }
 }
 
 .mobileMain {
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 0;
   position: relative;
   display: flex;
@@ -78,7 +103,7 @@
 }
 
 .mobileBody {
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -93,7 +118,7 @@
   align-items: center;
   width: 100%;
   box-sizing: border-box;
-  padding: var(--mobile-pie-padding-top) 0.75rem 0;
+  padding: var(--mobile-pie-padding-top) var(--mobile-section-inset) 0;
   background-color: transparent;
 }
 
@@ -146,7 +171,7 @@
 
 .mobileEditorSection {
   position: relative;
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -161,8 +186,8 @@
   :global([class*='cardSectionRenderer']) > :global([class*='aroma']) > :global([class*='form']),
   :global([class*='cardSectionRenderer']) > :global([class*='date']) > :global([class*='form']) {
     box-sizing: border-box;
-    width: calc(100% - 2 * var(--mobile-chrome-padding-y));
-    margin-inline: var(--mobile-chrome-padding-y);
+    width: calc(100% - 2 * var(--mobile-section-inset));
+    margin-inline: var(--mobile-section-inset);
     border-radius: 0.5rem;
     box-shadow: none;
   }
@@ -232,7 +257,7 @@
   flex-shrink: 0;
   width: 100%;
   max-width: none;
-  padding-inline: 0.75rem;
+  padding-inline: var(--mobile-section-inset);
   padding-bottom: 0.25rem;
   min-height: var(--mobile-section-toolbar-band);
   box-sizing: border-box;
@@ -240,7 +265,7 @@
 }
 
 .mobileForm {
-  flex: 1;
+  flex: 1 1 0%;
   min-height: 0;
   width: 100%;
   max-width: none;
@@ -256,12 +281,14 @@
     justify-content: flex-end;
     flex: 1 1 auto;
     min-height: 0;
-    height: auto;
+    height: 100%;
     width: 100%;
   }
 
   :global([class*='editorArea']) {
     width: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
     justify-content: stretch;
   }
 
@@ -270,6 +297,11 @@
     width: 100% !important;
     min-height: 0;
     max-height: 100%;
+  }
+
+  :global([class*='cardSectionRenderer']) {
+    min-height: 0;
+    height: 100%;
   }
 
   :global([class*='notebookPeekShell']),

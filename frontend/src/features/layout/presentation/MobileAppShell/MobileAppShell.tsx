@@ -36,7 +36,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 }) => {
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
-      ? ({ '--card-width': `${sizeCard.width}px` } as React.CSSProperties)
+      ? ({
+          '--card-width': `${sizeCard.width}px`,
+          ...(sizeCard.height > 0
+            ? { '--card-height': `${sizeCard.height}px` }
+            : {}),
+        } as React.CSSProperties)
       : undefined
 
   return (

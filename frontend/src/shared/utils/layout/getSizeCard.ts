@@ -19,7 +19,7 @@ export const getSizeCard = (
   const rawWidth = rawHeight * CARD_SCALE_CONFIG.aspectRatio - 2 * remSize
 
   return {
-    width: roundTo.nearest(rawWidth),
-    height: roundTo.nearest(rawHeight),
+    width: Math.max(0, roundTo.nearest(rawWidth)),
+    height: Math.max(0, roundTo.nearest(rawHeight)),
   }
 }

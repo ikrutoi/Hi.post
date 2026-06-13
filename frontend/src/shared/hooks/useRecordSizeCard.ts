@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react'
 import {
   calcSizeCard,
-  getMobileCardHeightMeasureReserve,
+  measureMobileEditorSlot,
 } from '@layout/helpers'
 import {
   getSizeMiniCard,
@@ -53,42 +53,71 @@ export const useRecordSizeCard = (
         if (skipPanelMeasure) {
           const currentRemSize = remSize ?? 16
           const viewportWidth = window.innerWidth
-          const formStyle = getComputedStyle(elementForm)
-          const paddingTopPx = Number.parseFloat(formStyle.paddingTop) || 0
-          const paddingBottomPx = Number.parseFloat(formStyle.paddingBottom) || 0
-          let measureWidth = widthForm
-          let measureHeight = heightForm
+          const { contentWidth, contentHeight, slotHeight } =
+            measureMobileEditorSlot(
+              elementForm,
+              currentRemSize,
+              viewportHeight,
+            )
 
-          const parent = elementForm.parentElement
-          if (parent) {
-            if (measureWidth <= 0) measureWidth = parent.clientWidth
-            // Before sizeCard is set the section collapses to form padding only.
-            if (measureHeight <= paddingTopPx + paddingBottomPx + 1) {
-              measureHeight = parent.clientHeight
-            }
+          let measureWidth = contentWidth > 0 ? contentWidth : widthForm
+          let measureHeight = contentHeight
+
+          if (measureHeight <= 0 && slotHeight > 0) {
+            measureHeight = Math.max(
+              0,
+              slotHeight * 0.72,
+            )
           }
 
-          const mobileMeasureReservePx = getMobileCardHeightMeasureReserve(
-            currentRemSize,
-            viewportHeight,
-          )
-
-          measureHeight = Math.max(
-            0,
-            measureHeight -
-              paddingTopPx -
-              paddingBottomPx -
-              mobileMeasureReservePx,
-          )
-
-          const resultSizeCard =
+          let resultSizeCard =
             measureWidth > 0 && measureHeight > 0
               ? getSizeCard(
                   { width: measureWidth, height: measureHeight },
                   currentRemSize,
                   viewportHeight,
                 )
-              : calcSizeCard(viewportHeight, 'landscape', viewportWidth)
+              : calcSizeCard(
+                  Math.max(measureHeight, viewportHeight * 0.35),
+                  'landscape',
+                  viewportWidth,
+                )
+
+          if (resultSizeCard.width <= 0 || resultSizeCard.height <= 0) {
+            const fallbackHeight = Math.max(
+              measureHeight,
+              slotHeight * 0.72,
+              viewportHeight * 0.28,
+              120,
+            )
+            resultSizeCard = getSizeCard(
+              {
+                width: Math.max(measureWidth, viewportWidth * 0.85),
+                height: fallbackHeight,
+              },
+              currentRemSize,
+              viewportHeight,
+            )
+          }
+
+          if (resultSizeCard.width <= 0 || resultSizeCard.height <= 0) {
+            resultSizeCard = calcSizeCard(
+              Math.max(measureHeight, viewportHeight * 0.35),
+              'landscape',
+              viewportWidth,
+            )
+          }
+
+          if (contentHeight > 0 && resultSizeCard.height > contentHeight) {
+            const capped = getSizeCard(
+              { width: measureWidth, height: contentHeight },
+              currentRemSize,
+              viewportHeight,
+            )
+            if (capped.width > 0 && capped.height > 0) {
+              resultSizeCard = capped
+            }
+          }
 
           if (resultSizeCard.width > 0 && resultSizeCard.height > 0) {
             setSizeCard(resultSizeCard)
@@ -126,6 +155,10 @@ export const useRecordSizeCard = (
         resizeObserver.observe(elementCardPanel)
       } else if (skipPanelMeasure && elementForm.parentElement) {
         resizeObserver.observe(elementForm.parentElement)
+        const mobileBody = elementForm.parentElement?.parentElement
+        if (mobileBody) {
+          resizeObserver.observe(mobileBody)
+        }
       }
       return true
     }
@@ -134,7 +167,7 @@ export const useRecordSizeCard = (
     const tick = () => {
       if (cancelled) return
       if (attach()) return
-      if (++attempts > 60) return
+      if (++attempts > 120) return
       rafId = requestAnimationFrame(tick)
     }
     tick()

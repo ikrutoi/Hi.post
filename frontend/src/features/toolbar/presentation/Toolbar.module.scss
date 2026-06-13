@@ -1174,12 +1174,12 @@
 
   .toolbarKey {
     margin: 0;
-    @include iconButton.toolbar-icon-button-size-mobile;
+    @include iconButton.toolbar-icon-button-size-mobile(true);
     background-color: transparent;
 
     .toolbarUserAvatar {
-      width: 1.65rem;
-      height: 1.65rem;
+      width: iconButton.$toolbar-avatar-size-mobile-chrome;
+      height: iconButton.$toolbar-avatar-size-mobile-chrome;
     }
 
     &.toolbarKeyEnabled:hover,

@@ -10,10 +10,16 @@ import { SectionEditorNotebookTabsOuterProvider } from './SectionEditorNotebookT
 import styles from './CardSectionEditor.module.scss'
 
 export const CardSectionEditor: React.FC = () => {
-  const { sizeCard } = useSizeFacade()
+  const { sizeCard, isMobileLayout } = useSizeFacade()
   const { activeSection } = useSectionMenuFacade()
   const { currentView: cardtextCurrentView } = useCardtextFacade()
   const width = sizeCard.width
+  const height = sizeCard.height
+  const useFluidMobileLayout = isMobileLayout && height <= 0
+  const sectionWidth =
+    width > 0 ? `${width}px` : useFluidMobileLayout ? '100%' : '0px'
+  const sectionHeight =
+    height > 0 ? `${height}px` : useFluidMobileLayout ? '100%' : '0px'
   /** Закладки Date / Cart / History всегда над фабрикой; внутренние секции не дублируют `NotebookPeekShell`. */
   const notebookTabsOuter = true
 
@@ -21,8 +27,9 @@ export const CardSectionEditor: React.FC = () => {
     <div
       className={styles.editorSection}
       style={{
-        width: `${width}px`,
-        height: `${sizeCard.height}px`,
+        width: sectionWidth,
+        height: sectionHeight,
+        maxHeight: isMobileLayout ? '100%' : undefined,
       }}
     >
       <CardSectionRenderer />
@@ -35,8 +42,9 @@ export const CardSectionEditor: React.FC = () => {
         <div
           className={styles.editorAreaCenter}
           style={{
-            width: `${width}px`,
-            height: `${sizeCard.height}px`,
+            width: sectionWidth,
+            height: sectionHeight,
+            maxHeight: isMobileLayout ? '100%' : undefined,
           }}
         >
           {activeSection === 'cardtext' && (

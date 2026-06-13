@@ -15,6 +15,12 @@ $toolbar-icon-size-desktop-compact: $toolbar-icon-size-desktop *
 $toolbar-hit-size-mobile: 2.5rem;
 $toolbar-icon-size-mobile: 1.35rem;
 
+/** Mobile header chrome — avatar inside toolbar key. */
+$toolbar-avatar-size-mobile-chrome: 1.65rem;
+
+/** Mobile header logo — отдельно от hit-area иконок тулбара. */
+$toolbar-logo-size-mobile-chrome: 1.75rem;
+
 /** Section toolbars / overlays on mobile — icon ~90% of header; hit-area matches 2rem row. */
 $toolbar-mobile-section-icon-scale: 0.9;
 $toolbar-hit-size-mobile-section: 2rem;
