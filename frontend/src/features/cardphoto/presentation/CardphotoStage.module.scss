@@ -47,6 +47,10 @@
   overflow: hidden;
   border-radius: 0.5rem;
   isolation: isolate;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem;
+  }
 }
 
 .cropMask {

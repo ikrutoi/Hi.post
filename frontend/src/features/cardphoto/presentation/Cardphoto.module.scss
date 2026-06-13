@@ -15,6 +15,7 @@
 
   :global([data-shell-layout='desktop']) & {
     padding: 0;
+    overflow: hidden;
   }
 
   // &Toolbar {
@@ -46,6 +47,10 @@
   align-items: center;
   padding: 0 0;
   background-color: #fff;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
 }
 
 .cardphotoToolbarRowEmpty {
@@ -53,6 +58,10 @@
   min-height: 2rem;
   max-height: 2rem;
   box-sizing: border-box;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
 }
 
 .cardphotoViewContent {
@@ -72,6 +81,7 @@
     border-left: none;
     border-right: none;
     border-bottom: none;
+    overflow: hidden;
   }
   // border: solid 1px red;
 }

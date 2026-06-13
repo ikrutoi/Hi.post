@@ -18,6 +18,7 @@
 
   :global([data-shell-layout='desktop']) & {
     padding: 0;
+    overflow: hidden;
   }
 }
 
@@ -43,6 +44,10 @@
   align-items: center;
   padding: 0 0;
   background-color: #fff;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
   // border: solid 1px blue;
 }
 
@@ -51,6 +56,10 @@
   min-height: 2rem;
   max-height: 2rem;
   box-sizing: border-box;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
 }
 
 .cardtextViewContent {
@@ -64,6 +73,11 @@
   flex-direction: column;
   border-radius: 0.5rem;
   // overflow: hidden;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
 }
 
 /* View / Processed: форма на всю высоту, edit/delete — правый нижний угол CardtextView */

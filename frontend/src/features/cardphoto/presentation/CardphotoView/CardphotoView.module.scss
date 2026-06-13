@@ -12,6 +12,10 @@
   min-width: 0;
   overflow: hidden;
   border-radius: 0.5rem;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem;
+  }
 }
 
 .viewContainer {
