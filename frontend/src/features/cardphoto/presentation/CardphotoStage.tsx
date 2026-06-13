@@ -31,7 +31,6 @@ import {
   prepareForRedux,
   prepareConfigForRedux,
 } from '@app/middleware/cardphotoHelpers'
-import { CardphotoPrintQualitySlot } from '@/features/toolbar/presentation/CardphotoPrintQualitySlot'
 
 export const CardphotoStage = () => {
   const dispatch = useAppDispatch()
@@ -192,11 +191,6 @@ export const CardphotoStage = () => {
                 {tempCrop && cropToolbarState === 'active' && activeImage && (
                   <div className={styles.cropMask} style={maskStyle}>
                     <CropOverlay cropLayer={tempCrop} imageLayer={imageLayer} />
-                  </div>
-                )}
-                {cropToolbarState === 'active' && loaded && tempCrop && (
-                  <div className={styles.printQualityOverlay} aria-hidden>
-                    <CardphotoPrintQualitySlot />
                   </div>
                 )}
               </>

@@ -35,6 +35,16 @@ $cardtext-view-overlay-chip-icon-size: 0.85rem;
   background-color: $color-cardtext-input;
   // border: 1px solid $color-app-header;
   border: 1px solid $color-cardtext-input-border;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
   // box-shadow: $shadow-card;
 }
 

@@ -10,6 +10,7 @@ import styles from './CardphotoView.module.scss'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import { CardphotoStage } from '../CardphotoStage'
+import { CardphotoPrintQualitySlot } from '@toolbar/presentation/CardphotoPrintQualitySlot'
 
 type Props = {
   className?: string
@@ -73,6 +74,11 @@ export const CardphotoView: React.FC<Props> = ({
         >
           {getToolbarIcon({ key: 'delete' })}
         </button>
+      ) : null}
+      {isCreateCropActive && activeImage ? (
+        <div className={styles.printQualityOverlay} aria-hidden>
+          <CardphotoPrintQualitySlot />
+        </div>
       ) : null}
     </div>
   )

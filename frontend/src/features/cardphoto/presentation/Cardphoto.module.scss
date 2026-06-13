@@ -13,6 +13,10 @@
   box-shadow: $shadow-card;
   background-color: #fff;
 
+  :global([data-shell-layout='desktop']) & {
+    padding: 0;
+  }
+
   // &Toolbar {
   //   position: absolute;
   //   inset: 0;
@@ -27,6 +31,10 @@
   flex-direction: column;
   justify-content: flex-end;
   border-radius: 0.5rem;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0;
+  }
 }
 
 .cardphotoToolbarRow {
@@ -58,6 +66,13 @@
   border-radius: 0.5rem;
   overflow: visible;
   border: 1px solid $color-cardphoto-input-border;
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
   // border: solid 1px red;
 }
 
