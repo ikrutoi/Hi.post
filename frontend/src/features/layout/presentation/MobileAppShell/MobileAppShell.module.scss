@@ -5,9 +5,8 @@
   --mobile-chrome-padding-y: 0.35rem;
   --mobile-section-gap: 2.25rem;
   --mobile-pie-padding-top: 0.15rem;
-  --mobile-footer-icon-gap: 0.35rem;
-  --mobile-footer-band-height: calc(2.5rem + 2 * var(--mobile-footer-icon-gap));
   --mobile-section-inner-toolbar-height: 2rem;
+  --mobile-section-toolbar-band: calc(2rem + 0.25rem);
   --mobile-toolbar-key-size: 2.5rem;
   --mobile-toolbar-icon-size: 1.35rem;
 
@@ -152,34 +151,72 @@
   padding: 0;
   overflow: hidden;
 
-  // Outer section shells only — flush to screen edges.
+  // Section shells — side inset + rounded card (mobile).
   :global([class*='cardSectionRenderer']) > :global([class*='cardphoto']:not([class*='View']):not([class*='Toolbar']):not([class*='Stage']):not([class*='Title'])),
   :global([class*='cardtextContainer']) > :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])),
   :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom'])),
   :global([class*='cardSectionRenderer']) > :global([class*='aroma']) > :global([class*='form']),
   :global([class*='cardSectionRenderer']) > :global([class*='date']) > :global([class*='form']) {
+    box-sizing: border-box;
+    width: calc(100% - 2 * var(--mobile-chrome-padding-y));
+    margin-inline: var(--mobile-chrome-padding-y);
+    border-radius: 0.5rem;
     box-shadow: none;
-    border-radius: 0;
-    border-bottom: none;
-    padding-top: var(--mobile-footer-band-height);
   }
 
   :global([class*='cardSectionRenderer']) > :global([class*='cardphoto']:not([class*='View']):not([class*='Toolbar']):not([class*='Stage']):not([class*='Title'])),
   :global([class*='cardtextContainer']) > :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])) {
+    padding: 0;
     padding-top: calc(
-      var(--mobile-footer-band-height) - var(--mobile-section-inner-toolbar-height)
+      var(--mobile-section-toolbar-band) - var(--mobile-section-inner-toolbar-height)
     );
-    padding-inline: var(--mobile-chrome-padding-y);
+  }
+
+  :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom'])),
+  :global([class*='cardSectionRenderer']) > :global([class*='aroma']) > :global([class*='form']),
+  :global([class*='cardSectionRenderer']) > :global([class*='date']) > :global([class*='form']) {
+    padding-top: var(--mobile-section-toolbar-band);
     padding-bottom: 0;
   }
 
-  // Inner work areas keep rounding.
+  // Cardphoto / cardtext — inner work zone flush to section shell (left, right, bottom).
   :global([class*='cardphotoViewWrap']),
+  :global([class*='cardtextViewWrap']) {
+    border-radius: 0;
+  }
+
   :global([class*='cardphotoViewContent']),
-  :global([class*='cardtextViewWrap']),
-  :global([class*='cardtextViewContent']),
-  :global([class*='CardEditor']) {
+  :global([class*='cardtextViewContent']) {
     border-radius: 0.5rem;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
+  :global([class*='cardtextViewContent']) :global([class*='viewContainer']),
+  :global([class*='cardtextViewContent']) :global([class*='CardEditor']) {
+    border-radius: 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  :global([class*='cardphotoViewContent']) :global([class*='imageStack']) {
+    border-radius: 0.5rem;
+  }
+
+  :global([class*='cardtextViewContent']) :global([class*='CardEditor']) :global([class*='editor']) {
+    border-radius: 0.5rem;
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
   }
 }
 
@@ -210,6 +247,9 @@
   box-sizing: border-box;
   // Gap from CardPie bottom to bordered section form (excludes toolbar + notebook tabs).
   padding-top: var(--mobile-section-gap);
+  padding-bottom: calc(
+    var(--mobile-chrome-padding-y) + env(safe-area-inset-bottom, 0px)
+  );
 
   :global([class*='cardSectionEditor']) {
     justify-content: flex-start;

@@ -156,7 +156,7 @@ export const CardphotoStage = () => {
   const showCropUi = !!activeImage && !!imageLayer
 
   return (
-    <div ref={stageRef} className={styles.cardphotoStage}>
+    <div className={styles.cardphotoStage}>
       <input
         type="file"
         accept="image/*"
@@ -168,11 +168,12 @@ export const CardphotoStage = () => {
       {showCropUi ? (
         <div
           key={containerKey}
+          ref={stageRef}
           className={styles.cropContainer}
-          // style={{
-          //   width: `${sizeCard?.width ?? 0}px`,
-          //   height: `${sizeCard?.height ?? 0}px`,
-          // }}
+          style={{
+            width: `${sizeCard?.width ?? 0}px`,
+            height: `${sizeCard?.height ?? 0}px`,
+          }}
         >
           <div className={styles.imageStack}>
             {shouldShowImage && imageLayer && src && (

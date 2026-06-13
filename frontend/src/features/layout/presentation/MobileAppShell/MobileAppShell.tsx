@@ -1,7 +1,6 @@
 import React from 'react'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import { IconLogo } from '@shared/ui/icons'
-import { SectionEditorSidebar } from '@features/cardSectionEditor/presentation/SectionEditorSidebar/SectionEditorSidebar'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
@@ -22,8 +21,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   formRef,
   sizeCard,
   onAppClick,
-  onSectionEditorMenuAction,
-  suppressSectionMenuActiveHighlight,
   pinActiveTab,
   activePieSide,
   showTopCardStripFullSpan,
@@ -110,12 +107,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
               <HistoryListRightSlot onSelectEntry={onHistoryListSelectEntry} />
             </div>
           </div>
-
-          <SectionEditorSidebar
-            variant="footer"
-            onSectionEditorMenuAction={onSectionEditorMenuAction}
-            suppressSectionMenuActiveHighlight={suppressSectionMenuActiveHighlight}
-          />
         </div>
 
         <div className={styles.mobileUserPanel}>

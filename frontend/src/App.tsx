@@ -1022,8 +1022,6 @@ const App = () => {
         formRef={formRef}
         sizeCard={sizeCard}
         onAppClick={handleAppClick}
-        onSectionEditorMenuAction={handleSectionEditorMenuClick}
-        suppressSectionMenuActiveHighlight={suppressSectionMenuActiveHighlight}
         pinActiveTab={
           activePieSide === 'right' &&
           rightListArchiveLocalId != null &&

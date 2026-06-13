@@ -9,8 +9,6 @@ export type MobileAppShellProps = {
   formRef: RefObject<HTMLDivElement | null>
   sizeCard: CardLayer
   onAppClick: (event: React.MouseEvent) => void
-  onSectionEditorMenuAction: () => void
-  suppressSectionMenuActiveHighlight: boolean
   pinActiveTab: Extract<RightSidebarKey, 'cart' | 'history'> | null
   activePieSide: 'left' | 'right'
   showTopCardStripFullSpan: boolean
