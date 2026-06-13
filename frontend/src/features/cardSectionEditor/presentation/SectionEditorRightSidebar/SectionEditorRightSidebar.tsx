@@ -11,6 +11,11 @@ import type { IconState } from '@shared/config/constants'
 import type { ToolbarGroup } from '@toolbar/domain/types'
 import styles from './SectionEditorRightSidebar.module.scss'
 
+const MOBILE_HEADER_BAR_HIDDEN_KEYS = new Set<RightSidebarKey>([
+  'cart',
+  'history',
+])
+
 type SectionEditorRightSidebarProps = {
   variant?: 'sidebar' | 'headerBar'
   /**
@@ -53,7 +58,9 @@ export const SectionEditorRightSidebar: React.FC<
     if (variant !== 'headerBar') return undefined
     return RIGHT_SIDEBAR_TOOLBAR.map((group) => ({
       ...group,
-      icons: [...group.icons].reverse(),
+      icons: [...group.icons]
+        .filter((icon) => !MOBILE_HEADER_BAR_HIDDEN_KEYS.has(icon.key))
+        .reverse(),
     }))
   }, [variant])
 

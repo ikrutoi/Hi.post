@@ -15,7 +15,8 @@ export const CardSectionEditor: React.FC = () => {
   const { currentView: cardtextCurrentView } = useCardtextFacade()
   const width = sizeCard.width
   const height = sizeCard.height
-  const useFluidMobileLayout = isMobileLayout && height <= 0
+  const useFluidMobileLayout =
+    isMobileLayout && (height <= 0 || width <= 0)
   const sectionWidth =
     width > 0 ? `${width}px` : useFluidMobileLayout ? '100%' : '0px'
   const sectionHeight =

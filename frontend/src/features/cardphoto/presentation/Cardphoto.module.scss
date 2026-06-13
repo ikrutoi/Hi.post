@@ -45,8 +45,15 @@
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  width: 100%;
   padding: 0 0;
   background-color: #fff;
+
+  > * {
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
 
   :global([data-shell-layout='mobile']) & {
     flex-basis: var(--mobile-section-inner-toolbar-height, 2rem);

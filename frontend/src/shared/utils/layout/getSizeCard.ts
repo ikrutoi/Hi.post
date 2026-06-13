@@ -26,7 +26,6 @@ export const getSizeCard = (
   options?: GetSizeCardOptions,
 ) => {
   const aspectRatio = options?.aspectRatio ?? CARD_SCALE_CONFIG.aspectRatio
-  const orientation = options?.orientation ?? 'landscape'
   const innerToolbarPx = options?.innerToolbarPx ?? 0
 
   const boxWidth = scaleMeasuredHeightToUiScale(
@@ -45,27 +44,15 @@ export const getSizeCard = (
   }
 
   if (innerToolbarPx > 0) {
-    const maxWorkHeight = Math.max(0, boxHeight - innerToolbarPx)
-    const widthOverHeight =
-      orientation === 'landscape' ? aspectRatio : 1 / aspectRatio
-
-    let workHeight = maxWorkHeight
-    let workWidth = workHeight * widthOverHeight
-
-    if (workWidth > boxWidth) {
-      workWidth = boxWidth
-      workHeight = workWidth / widthOverHeight
-    }
-
-    const roundedWorkWidth = Math.max(0, roundTo.nearest(workWidth))
-    const roundedWorkHeight = Math.max(0, roundTo.nearest(workHeight))
+    const maxWorkSide = Math.min(
+      boxWidth,
+      Math.max(0, boxHeight - innerToolbarPx),
+    )
+    const workSide = Math.max(0, roundTo.nearest(maxWorkSide))
 
     return {
-      width: roundedWorkWidth,
-      height: Math.max(
-        0,
-        roundTo.nearest(roundedWorkHeight + innerToolbarPx),
-      ),
+      width: workSide,
+      height: Math.max(0, roundTo.nearest(workSide + innerToolbarPx)),
     }
   }
 

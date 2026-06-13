@@ -116,6 +116,23 @@ export const useRecordSizeCard = (
               'landscape',
               viewportWidth,
             )
+            if (innerToolbarPx > 0 && resultSizeCard.width > 0) {
+              const fitted = getSizeCard(
+                {
+                  width: Math.max(measureWidth, resultSizeCard.width),
+                  height: Math.max(
+                    measureHeight,
+                    resultSizeCard.height + innerToolbarPx,
+                  ),
+                },
+                currentRemSize,
+                viewportHeight,
+                sizeCardFit,
+              )
+              if (fitted.width > 0 && fitted.height > 0) {
+                resultSizeCard = fitted
+              }
+            }
           }
 
           if (contentHeight > 0 && resultSizeCard.height > contentHeight) {
@@ -132,6 +149,15 @@ export const useRecordSizeCard = (
 
           if (resultSizeCard.width > 0 && resultSizeCard.height > 0) {
             setSizeCard(resultSizeCard)
+          } else if (skipPanelMeasure) {
+            const emergency = calcSizeCard(
+              Math.max(viewportHeight * 0.35, 320),
+              'landscape',
+              viewportWidth,
+            )
+            if (emergency.width > 0 && emergency.height > 0) {
+              setSizeCard(emergency)
+            }
           }
           return
         }
