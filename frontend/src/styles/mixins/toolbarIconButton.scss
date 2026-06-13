@@ -6,12 +6,40 @@
 $toolbar-hit-size-desktop: 1.7rem;
 $toolbar-icon-size-desktop: 0.85rem;
 
+/** Compact desktop toolbar keys — 90% of default desktop toolbar size. */
+$toolbar-desktop-compact-scale: 0.9;
+$toolbar-hit-size-desktop-compact: $toolbar-hit-size-desktop * $toolbar-desktop-compact-scale;
+$toolbar-icon-size-desktop-compact: $toolbar-icon-size-desktop *
+  $toolbar-desktop-compact-scale;
+
 $toolbar-hit-size-mobile: 2.5rem;
 $toolbar-icon-size-mobile: 1.35rem;
+
+/** Section toolbars / overlays on mobile — icon ~90% of header; hit-area matches 2rem row. */
+$toolbar-mobile-section-icon-scale: 0.9;
+$toolbar-hit-size-mobile-section: 2rem;
+$toolbar-icon-size-mobile-section: $toolbar-icon-size-mobile *
+  $toolbar-mobile-section-icon-scale;
 
 /** Desktop right strip (sidebar), not main section toolbar. */
 $toolbar-hit-size-sidebar: 2.2rem;
 $toolbar-icon-size-sidebar: 1.25rem;
+
+/** Standard toolbar icons — editorPie, cardphoto, lists, etc. */
+$toolbar-icon-size-standard: 1.2rem;
+$toolbar-hit-size-standard: 1.95rem;
+
+/** Desktop chrome sidebars — sectionEditorMenu / rightSidebar menu icons. */
+$toolbar-hit-size-chrome-sidebar: 2.45rem;
+$toolbar-icon-size-chrome-sidebar: 1.45rem;
+$toolbar-chrome-sidebar-key-gap: 0.5rem;
+
+/** sectionEditorMenu logo (separate from menu icon size). */
+$toolbar-logo-size-section-editor: 1.6rem;
+
+/** @deprecated alias — use standard tokens. */
+$toolbar-icon-size-factory-zone: $toolbar-icon-size-standard;
+$toolbar-hit-size-factory-zone: $toolbar-hit-size-standard;
 
 /** Dense list rows and compact overlays. */
 $toolbar-hit-size-compact: 1.3rem;
@@ -20,6 +48,8 @@ $toolbar-hit-size-small: 1.5rem;
 
 $toolbar-css-var-hit-mobile: --mobile-toolbar-key-size;
 $toolbar-css-var-icon-mobile: --mobile-toolbar-icon-size;
+$toolbar-css-var-hit-mobile-section: --mobile-section-toolbar-key-size;
+$toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
 
 @mixin toolbar-icon-glyph($icon-size) {
   svg {
@@ -69,6 +99,14 @@ $toolbar-css-var-icon-mobile: --mobile-toolbar-icon-size;
   );
 }
 
+@mixin toolbar-icon-button-size-desktop-compact($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-desktop-compact,
+    $toolbar-icon-size-desktop-compact,
+    $nested-svg
+  );
+}
+
 @mixin toolbar-icon-button-size-mobile(
   $hit-var: $toolbar-css-var-hit-mobile,
   $icon-var: $toolbar-css-var-icon-mobile,
@@ -98,11 +136,41 @@ $toolbar-css-var-icon-mobile: --mobile-toolbar-icon-size;
   }
 }
 
+@mixin toolbar-icon-button-size-mobile-section($nested-svg: false) {
+  @include toolbar-icon-button-size-mobile(
+    $toolbar-css-var-hit-mobile-section,
+    $toolbar-css-var-icon-mobile-section,
+    $toolbar-hit-size-mobile-section,
+    $toolbar-icon-size-mobile-section,
+    $nested-svg
+  );
+}
+
 @mixin toolbar-icon-button-size-sidebar {
   @include toolbar-icon-button-size(
     $toolbar-hit-size-sidebar,
     $toolbar-icon-size-sidebar
   );
+}
+
+@mixin toolbar-icon-button-size-standard($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-standard,
+    $toolbar-icon-size-standard,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-chrome-sidebar($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-chrome-sidebar,
+    $toolbar-icon-size-chrome-sidebar,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-factory-zone($nested-svg: false) {
+  @include toolbar-icon-button-size-standard($nested-svg);
 }
 
 @mixin toolbar-icon-button-size-compact($nested-svg: true) {

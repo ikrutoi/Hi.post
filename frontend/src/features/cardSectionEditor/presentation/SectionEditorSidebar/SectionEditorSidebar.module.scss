@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .sectionEditorSidebar {
   position: relative;
@@ -42,8 +43,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: iconButton.$toolbar-logo-size-section-editor;
+  height: iconButton.$toolbar-logo-size-section-editor;
   color: var(--logo-color, #008aed);
 
   svg {

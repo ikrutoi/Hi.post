@@ -5,6 +5,10 @@
   display: flex;
   align-items: center;
   // border: solid 1px red;
+
+  :global([data-shell-layout='mobile']) & {
+    height: var(--mobile-section-inner-toolbar-height, 2rem);
+  }
 }
 
 .cardSectionToolbarDisabled {

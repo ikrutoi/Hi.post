@@ -1,5 +1,8 @@
 import { useLayoutEffect } from 'react'
-import { calcSizeCard } from '@layout/helpers'
+import {
+  calcSizeCard,
+  getMobileCardHeightMeasureReserve,
+} from '@layout/helpers'
 import {
   getSizeMiniCard,
   getSizeCard,
@@ -65,9 +68,17 @@ export const useRecordSizeCard = (
             }
           }
 
+          const mobileMeasureReservePx = getMobileCardHeightMeasureReserve(
+            currentRemSize,
+            viewportHeight,
+          )
+
           measureHeight = Math.max(
             0,
-            measureHeight - paddingTopPx - paddingBottomPx,
+            measureHeight -
+              paddingTopPx -
+              paddingBottomPx -
+              mobileMeasureReservePx,
           )
 
           const resultSizeCard =

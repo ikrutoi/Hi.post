@@ -10,7 +10,7 @@
   .toolbarKey {
     position: relative;
     margin: 0 0.3rem;
-    @include iconButton.toolbar-icon-button-size-desktop;
+    @include iconButton.toolbar-icon-button-size-standard(true);
     background-color: white;
     border-radius: 0.6rem;
     background-color: white;
@@ -19,7 +19,7 @@
       cursor 0.15s ease,
       background-color 0.15s ease;
 
-    > svg {
+    svg {
       display: block;
       flex-shrink: 0;
     }
@@ -392,7 +392,7 @@
 
 .toolbarAlignMenuItem,
 .toolbarColorMenuItem {
-  @include iconButton.toolbar-icon-button-size-desktop(true);
+  @include iconButton.toolbar-icon-button-size-standard(true);
   cursor: pointer;
   color: $color-font-enabled-light;
   border: none;
@@ -403,7 +403,7 @@
   transition: color 0.15s ease;
 
   .toolbarIcon {
-    @include iconButton.toolbar-icon-glyph(iconButton.$toolbar-icon-size-desktop);
+    @include iconButton.toolbar-icon-glyph(iconButton.$toolbar-icon-size-standard);
     transition:
       color 0.15s ease,
       filter 0.15s ease;
@@ -447,8 +447,7 @@
   }
 
   .toolbarKey {
-    width: $toolbar-sidebar-key-size;
-    height: $toolbar-sidebar-key-size;
+    @include iconButton.toolbar-icon-button-size-sidebar;
     margin: 0.2rem 0;
     border-radius: 0.75rem;
     background-color: $color-app-strip;
@@ -456,9 +455,9 @@
       color 0.15s ease,
       background-color 0.15s ease;
 
-    > svg {
-      width: $toolbar-sidebar-icon-size;
-      height: $toolbar-sidebar-icon-size;
+    svg {
+      display: block;
+      flex-shrink: 0;
     }
 
     &.toolbarKeyEnabled {
@@ -784,7 +783,6 @@
 
 .toolbarPanelMiniSections {
   .toolbarKey {
-    @include iconButton.toolbar-icon-button-size-desktop;
     background-color: #fff;
     transition:
       color 0.15s ease,
@@ -896,8 +894,7 @@
   }
 }
 
-/* Envelope fieldset (sender / recipients): как toolbarCardphoto — 1.7rem */
-.toolbarEditorPie,
+/* Envelope fieldset (sender / recipients): compact desktop toolbar keys. */
 .toolbarPostcardPieCart,
 .toolbarPostcardPieHistory {
   position: relative;
@@ -911,7 +908,6 @@
   }
 
   .toolbarKey {
-    @include iconButton.toolbar-icon-button-size-desktop;
     background-color: $color-app-inner;
 
     &.toolbarKeyEnabled {
@@ -952,6 +948,59 @@
   .toolbarKey:last-child {
     margin-bottom: 1rem;
     // border: solid 1px blue;
+  }
+}
+
+.toolbarEditorPie {
+  position: relative;
+  height: 100%;
+
+  .toolbarGroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
+  }
+
+  .toolbarKey {
+    @include iconButton.toolbar-icon-button-size-standard(true);
+    background-color: $color-app-inner;
+
+    &.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: $color-app-inner;
+      }
+    }
+
+    &.toolbarKeyActive {
+      color: $color-font-active;
+
+      &:hover {
+        color: $color-font-active;
+        background-color: $color-app-inner;
+      }
+    }
+
+    &.toolbarKeyDisabled {
+      color: $color-font-disabled;
+      cursor: default;
+
+      &:hover {
+        color: $color-font-disabled;
+        background-color: $color-app-inner;
+      }
+    }
+  }
+
+  .toolbarKey:first-child {
+    margin-top: 1rem;
+  }
+
+  .toolbarKey:last-child {
+    margin-bottom: 1rem;
   }
 }
 
@@ -1408,5 +1457,68 @@
     .toolbarKey[data-icon-key='applyMediumCheck'].toolbarKeyDisabled:hover {
     color: $color-indicator-hight;
     cursor: default;
+  }
+}
+
+/* Mobile: cardphoto toolbars — 1.2rem standard icons. */
+:global([data-shell-layout='mobile']) {
+  .toolbarCardphoto,
+  .toolbarCardphotoCreate,
+  .toolbarCardphotoView,
+  .toolbarCardphotoProcessed {
+    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator) {
+      @include iconButton.toolbar-icon-button-size-standard(true);
+      margin: 0 0.2rem;
+    }
+  }
+}
+
+/* Desktop: standard 1.2rem; chrome sidebars 1.45rem. */
+:global([data-shell-layout='desktop']) {
+  .toolbar:not(.toolbarSectionEditorMenu):not(.toolbarRightSidebar):not(
+      .toolbarEditorPie
+    ):not(.toolbarCardphoto):not(.toolbarCardphotoCreate):not(
+      .toolbarCardphotoView
+    ):not(.toolbarCardphotoProcessed)
+    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator):not(
+      .toolbarKeyPostcardIndicator
+    ) {
+    @include iconButton.toolbar-icon-button-size-standard(true);
+  }
+
+  .toolbarEditorPie,
+  .toolbarCardphoto,
+  .toolbarCardphotoCreate,
+  .toolbarCardphotoView,
+  .toolbarCardphotoProcessed {
+    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator) {
+      @include iconButton.toolbar-icon-button-size-standard(true);
+    }
+  }
+
+  .toolbarSectionEditorMenu {
+    .toolbarGroup {
+      gap: iconButton.$toolbar-chrome-sidebar-key-gap;
+    }
+
+    .toolbarKey {
+      @include iconButton.toolbar-icon-button-size-chrome-sidebar(true);
+      margin: 0;
+    }
+  }
+
+  .toolbarRightSidebar {
+    .toolbarGroupRightSidebar {
+      gap: iconButton.$toolbar-chrome-sidebar-key-gap;
+    }
+
+    .toolbarKey {
+      @include iconButton.toolbar-icon-button-size-chrome-sidebar(true);
+
+      .toolbarUserAvatar {
+        width: 1.85rem;
+        height: 1.85rem;
+      }
+    }
   }
 }

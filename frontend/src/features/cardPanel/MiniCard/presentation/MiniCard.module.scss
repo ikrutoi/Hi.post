@@ -149,6 +149,13 @@
   }
 }
 
+/** Close (×) на заполненной минисекции — десктоп: иконка как у остальных тулбаров. */
+.miniCardClearButton {
+  :global([data-shell-layout='desktop']) & {
+    @include iconButton.toolbar-icon-glyph(iconButton.$toolbar-icon-size-standard);
+  }
+}
+
 .miniCard:hover .deleteMiniCard {
   opacity: 1;
 }

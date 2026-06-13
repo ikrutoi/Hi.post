@@ -68,10 +68,9 @@
 
 .viewDeleteBtn {
   @include overlay.sectionViewOverlayDeleteButton;
-
-  :global([data-shell-layout='mobile']) & {
-    @include iconButton.toolbar-icon-button-size-mobile;
-  }
+  @include iconButton.toolbar-icon-button-size-standard(true);
+  width: iconButton.$toolbar-hit-size-standard;
+  height: iconButton.$toolbar-hit-size-standard;
 }
 
 .viewContainerTitleStripEditing {

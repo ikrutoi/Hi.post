@@ -48,6 +48,11 @@
   padding: 0 0;
   background-color: #fff;
 
+  :global([data-shell-layout='mobile']) & {
+    flex-basis: var(--mobile-section-inner-toolbar-height, 2rem);
+    min-height: var(--mobile-section-inner-toolbar-height, 2rem);
+  }
+
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem 0.5rem 0 0;
   }
@@ -58,6 +63,12 @@
   min-height: 2rem;
   max-height: 2rem;
   box-sizing: border-box;
+
+  :global([data-shell-layout='mobile']) & {
+    flex-basis: var(--mobile-section-inner-toolbar-height, 2rem);
+    min-height: var(--mobile-section-inner-toolbar-height, 2rem);
+    max-height: var(--mobile-section-inner-toolbar-height, 2rem);
+  }
 
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem 0.5rem 0 0;

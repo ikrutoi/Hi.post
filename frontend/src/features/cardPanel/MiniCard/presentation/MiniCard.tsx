@@ -186,7 +186,10 @@ export const MiniCard: React.FC<MiniCardProps> = ({
       {showClearButton && (
         <button
           type="button"
-          className={styles.miniCardCornerButton}
+          className={clsx(
+            styles.miniCardCornerButton,
+            styles.miniCardClearButton,
+          )}
           aria-label={`Clear ${section}`}
           onClick={(e) => {
             e.stopPropagation()

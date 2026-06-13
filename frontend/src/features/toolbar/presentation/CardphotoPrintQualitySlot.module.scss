@@ -28,3 +28,13 @@
 .printerDisabled {
   color: $color-font-disabled;
 }
+
+:global([data-shell-layout='mobile']) {
+  .printer {
+    width: iconButton.$toolbar-hit-size-standard;
+
+    > svg {
+      width: iconButton.$toolbar-icon-size-standard;
+    }
+  }
+}

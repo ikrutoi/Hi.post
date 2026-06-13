@@ -4,12 +4,21 @@
 .mobileShell {
   --mobile-chrome-band: 2.75rem;
   --mobile-chrome-padding-y: 0.35rem;
-  --mobile-section-gap: 2.25rem;
+  --mobile-form-padding-bottom: max(
+    var(--mobile-chrome-padding-y),
+    env(safe-area-inset-bottom, 0px)
+  );
+  --mobile-pie-size: min(52vw, 14rem, 28dvh);
+  --mobile-section-gap: clamp(0.5rem, 2.2dvh, 2.25rem);
   --mobile-pie-padding-top: 0.15rem;
-  --mobile-section-inner-toolbar-height: 2rem;
-  --mobile-section-toolbar-band: calc(2rem + 0.25rem);
+  --mobile-section-inner-toolbar-height: #{iconButton.$toolbar-hit-size-mobile-section};
+  --mobile-section-toolbar-band: calc(
+    #{iconButton.$toolbar-hit-size-mobile-section} + 0.25rem
+  );
   --mobile-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile};
   --mobile-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile};
+  --mobile-section-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile-section};
+  --mobile-section-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile-section};
 
   width: 100vw;
   height: 100dvh;
@@ -91,7 +100,7 @@
 // Centering anchor matches pie width; toolbar sits outside via absolute positioning.
 .mobilePieStage {
   position: relative;
-  width: min(52vw, 14rem);
+  width: var(--mobile-pie-size);
   margin-inline: auto;
 }
 
@@ -112,7 +121,7 @@
   left: calc(100% + 0.35rem);
   top: 0;
   bottom: 0;
-  width: 2.5rem;
+  width: var(--mobile-section-toolbar-key-size, #{iconButton.$toolbar-hit-size-standard});
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,7 +131,7 @@
     height: 100%;
 
     :global([class*='toolbarKey']) {
-      @include iconButton.toolbar-icon-button-size-mobile;
+      @include iconButton.toolbar-icon-button-size-standard(true);
       margin: 0;
       background-color: transparent;
 
@@ -225,7 +234,7 @@
   max-width: none;
   padding-inline: 0.75rem;
   padding-bottom: 0.25rem;
-  min-height: calc(2rem + 0.25rem);
+  min-height: var(--mobile-section-toolbar-band);
   box-sizing: border-box;
   pointer-events: auto;
 }
@@ -241,12 +250,10 @@
   box-sizing: border-box;
   // Gap from CardPie bottom to bordered section form (excludes toolbar + notebook tabs).
   padding-top: var(--mobile-section-gap);
-  padding-bottom: calc(
-    var(--mobile-chrome-padding-y) + env(safe-area-inset-bottom, 0px)
-  );
+  padding-bottom: var(--mobile-form-padding-bottom);
 
   :global([class*='cardSectionEditor']) {
-    justify-content: flex-start;
+    justify-content: flex-end;
     flex: 1 1 auto;
     min-height: 0;
     height: auto;
