@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@shared/assets/styles/mixins' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .miniEnvelope {
   position: relative;
@@ -221,28 +222,19 @@
 }
 
 .closeButton {
+  @include iconButton.toolbar-icon-button-size-small(true);
   position: absolute;
   top: 0;
   right: 0;
   transform: translate(50%, -50%);
-  width: 1.52rem;
-  height: 1.52rem;
   border: 1px solid $color-envelope-sender-input-border;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background-color: #fff;
   color: $color-envelope-sender-input-border;
   cursor: pointer;
   z-index: 4;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: background-color 0.15s ease;
-
-  svg {
-    width: 0.82rem;
-    height: 0.82rem;
-  }
 
   &:hover {
     background-color: $color-app-sidebar-icon-hover;

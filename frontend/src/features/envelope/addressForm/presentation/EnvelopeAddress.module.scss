@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $envelopeRecipientBodyTopOffset: 2.35rem;
 /**
@@ -180,8 +181,8 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 }
 
 .envelopeSenderToolbarIcon {
-  width: 1.6rem;
-  height: 1.6rem;
+  width: iconButton.$toolbar-hit-size-desktop;
+  height: iconButton.$toolbar-hit-size-desktop;
   color: $color-envelope-sender-legend;
   opacity: 0.5;
   transition: color 0.2s ease;
@@ -204,8 +205,8 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
   position: absolute;
   top: 0;
   right: 1rem;
-  min-width: 1.6rem;
-  height: 1.6rem;
+  min-width: iconButton.$toolbar-hit-size-desktop;
+  height: iconButton.$toolbar-hit-size-desktop;
   padding: 0.5rem;
   transform: translateY($envelopeAddressToolbarLift);
   display: flex;
@@ -217,8 +218,8 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 }
 
 .envelopeRecipientToolbarIcon {
-  width: 1.6rem;
-  height: 1.6rem;
+  width: iconButton.$toolbar-hit-size-desktop;
+  height: iconButton.$toolbar-hit-size-desktop;
   flex-shrink: 0;
   color: $color-envelope-recipient-legend;
   opacity: 0.5;

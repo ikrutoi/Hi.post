@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .strip {
   position: absolute;
@@ -50,12 +51,7 @@
 
 .confirmBtn,
 .cancelBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  padding: 0;
+  @include iconButton.toolbar-icon-button-size-small(true);
   border: none;
   border-radius: 0.5rem;
   background: transparent;
@@ -70,11 +66,6 @@
   &:disabled {
     opacity: 0.5;
     cursor: default;
-  }
-
-  svg {
-    width: 0.85rem;
-    height: 0.85rem;
   }
 }
 

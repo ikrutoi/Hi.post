@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .root {
   display: flex;
@@ -14,12 +15,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.55rem;
+  width: iconButton.$toolbar-hit-size-desktop;
   flex-shrink: 0;
   color: $color-font-enabled-light;
 
   > svg {
-    width: 0.82rem;
+    width: iconButton.$toolbar-icon-size-desktop;
     height: auto;
   }
 }

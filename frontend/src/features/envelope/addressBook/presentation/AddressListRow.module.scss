@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 /* Density 1 — default row; density 2 — height like HistoryListEntryShort level 3, type/icons unchanged. */
 $entry-row-height: 2.28rem;
@@ -153,25 +154,11 @@ $entry-row-height-compact: 2.28rem;
 
 .removeFromListButton,
 .rowActionButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.22rem;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
+  @include iconButton.list-row-icon-button;
   color: $color-font-disabled;
-  cursor: pointer;
-  transition: color 0.15s ease;
 
   &:hover {
     color: $color-font-enabled-light-hover;
-  }
-
-  svg {
-    width: 0.82rem;
-    height: 0.82rem;
-    display: block;
   }
 }
 

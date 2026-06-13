@@ -1,19 +1,12 @@
 @use '@styles/config/colors' as *;
 @use '@styles/mixins/sectionViewOverlayChip' as overlay;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
-$cardtext-view-overlay-chip-size: 1.6rem;
 $cardtext-view-overlay-chip-radius: 0.47rem;
-$cardtext-view-overlay-chip-icon-size: 0.85rem;
 
 @mixin cardtextViewOverlayChipSize {
-  width: $cardtext-view-overlay-chip-size;
-  height: $cardtext-view-overlay-chip-size;
+  @include iconButton.toolbar-icon-button-size-desktop(true);
   border-radius: $cardtext-view-overlay-chip-radius;
-
-  svg {
-    width: $cardtext-view-overlay-chip-icon-size;
-    height: $cardtext-view-overlay-chip-icon-size;
-  }
 }
 
 .viewContainer {
@@ -87,13 +80,7 @@ $cardtext-view-overlay-chip-icon-size: 0.85rem;
   @include cardtextViewOverlayChipSize;
 
   :global([data-shell-layout='mobile']) & {
-    width: var(--mobile-toolbar-key-size, 2.5rem);
-    height: var(--mobile-toolbar-key-size, 2.5rem);
-
-    svg {
-      width: var(--mobile-toolbar-icon-size, 1.35rem);
-      height: var(--mobile-toolbar-icon-size, 1.35rem);
-    }
+    @include iconButton.toolbar-icon-button-size-mobile;
   }
 }
 

@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/mixins/panelCloseButton' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .header {
   position: absolute;
@@ -48,23 +49,12 @@
 }
 
 .headerLead {
+  @include iconButton.toolbar-icon-button-size-desktop(true);
   flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 1.7rem;
-  height: 1.7rem;
-  padding: 0.35rem;
   border-radius: 0.65rem;
   background-color: #fff;
   color: $color-font-enabled;
   pointer-events: none;
-
-  svg {
-    width: 1.15rem;
-    height: 1.15rem;
-  }
 }
 
 .headerDivider {

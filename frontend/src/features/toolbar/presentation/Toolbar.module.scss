@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .toolbar {
   width: auto;
@@ -9,13 +10,10 @@
   .toolbarKey {
     position: relative;
     margin: 0 0.3rem;
-    padding: 0.35rem;
+    @include iconButton.toolbar-icon-button-size-desktop;
     background-color: white;
     border-radius: 0.6rem;
     background-color: white;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     transition:
       color 0.15s ease,
       cursor 0.15s ease,
@@ -280,14 +278,6 @@
 
   .toolbarKey {
     background-color: #fff;
-    width: 1.55rem;
-    height: 1.55rem;
-    padding: 0;
-
-    > svg {
-      width: 0.82rem;
-      height: 0.82rem;
-    }
   }
 
   .toolbarKeyFontSizeIndicator {
@@ -344,34 +334,8 @@
 .toolbarCardtextCreate,
 .toolbarSenderView,
 .toolbarRecipientView {
-  .toolbarKey {
-    width: 1.6rem;
-    height: 1.6rem;
-
-    > svg {
-      width: 0.85rem;
-      height: 0.85rem;
-    }
-  }
-
   .toolbarKeyFontSizeIndicator {
     width: auto;
-  }
-}
-
-.toolbarCardphotoView,
-.toolbarRecipientsView,
-.toolbarSenderCreate,
-.toolbarRecipientCreate {
-  .toolbarKey {
-    width: 1.6rem;
-    height: 1.6rem;
-    padding: 0;
-
-    > svg {
-      width: 0.85rem;
-      height: 0.85rem;
-    }
   }
 }
 
@@ -428,14 +392,9 @@
 
 .toolbarAlignMenuItem,
 .toolbarColorMenuItem {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.35rem;
+  @include iconButton.toolbar-icon-button-size-desktop(true);
   cursor: pointer;
   color: $color-font-enabled-light;
-  width: 1.55rem;
-  height: 1.55rem;
   border: none;
   border-radius: 0.6rem;
   margin-top: 0.1rem;
@@ -444,8 +403,7 @@
   transition: color 0.15s ease;
 
   .toolbarIcon {
-    width: 1.55rem;
-    height: 1.55rem;
+    @include iconButton.toolbar-icon-glyph(iconButton.$toolbar-icon-size-desktop);
     transition:
       color 0.15s ease,
       filter 0.15s ease;
@@ -579,16 +537,9 @@
   }
 
   .toolbarKey {
-    width: 2.5rem;
-    height: 2.5rem;
-    min-width: 2.5rem;
+    @include iconButton.toolbar-icon-button-size-mobile;
     margin: 0;
     background-color: transparent;
-
-    > svg {
-      width: 1.35rem;
-      height: 1.35rem;
-    }
 
     &.toolbarKeyEnabled:hover,
     &.toolbarKeyActive:hover,
@@ -819,21 +770,11 @@
 {
   display: flex;
   align-items: center;
-
-  .toolbarKey {
-    width: 1.7rem;
-    height: 1.7rem;
-  }
 }
 
 .toolbarDate,
 .toolbarCart,
 .toolbarHistory {
-  .toolbarKey {
-    width: 1.75rem;
-    height: 1.75rem;
-  }
-
   .toolbarBadge {
     min-width: $toolbar-badge-min-width-wide;
     padding: 0 $toolbar-badge-padding-x-wide;
@@ -843,8 +784,7 @@
 
 .toolbarPanelMiniSections {
   .toolbarKey {
-    width: 1.85rem;
-    height: 1.85rem;
+    @include iconButton.toolbar-icon-button-size-desktop;
     background-color: #fff;
     transition:
       color 0.15s ease,
@@ -879,11 +819,6 @@
       background-color: #fff;
     }
   }
-
-  svg {
-    width: 1.2rem;
-    height: 1.2rem;
-  }
 }
 
 .toolbarAddressListSender,
@@ -899,11 +834,6 @@
 .toolbarUserPanel,
 .toolbarUserPanelChangePhoto,
 .toolbarUserPanelChoicePhoto {
-  .toolbarKey {
-    width: 1.6rem;
-    height: 1.6rem;
-  }
-
   .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled,
   .toolbarKey[data-icon-key='checkBox'].toolbarKeyEnabled,
@@ -967,14 +897,6 @@
 }
 
 /* Envelope fieldset (sender / recipients): как toolbarCardphoto — 1.7rem */
-.toolbarSender,
-.toolbarRecipients {
-  .toolbarKey {
-    width: 1.7rem;
-    height: 1.7rem;
-  }
-}
-
 .toolbarEditorPie,
 .toolbarPostcardPieCart,
 .toolbarPostcardPieHistory {
@@ -989,17 +911,8 @@
   }
 
   .toolbarKey {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.8rem;
-    height: 1.8rem;
+    @include iconButton.toolbar-icon-button-size-desktop;
     background-color: $color-app-inner;
-
-    svg {
-      width: 0.95rem;
-      height: 0.95rem;
-    }
 
     &.toolbarKeyEnabled {
       color: $color-font-enabled-light;
@@ -1136,21 +1049,12 @@
 
   .toolbarKey {
     margin: 0;
-    width: 2.2rem;
-    height: 2.2rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    @include iconButton.toolbar-icon-button-size-sidebar;
     border-radius: 0.75rem;
     background-color: $color-app-strip;
     transition:
       color 0.15s ease,
       background-color 0.15s ease;
-
-    > svg {
-      width: $toolbar-sidebar-icon-size;
-      height: $toolbar-sidebar-icon-size;
-    }
 
     .toolbarUserAvatar {
       width: 1.5rem;
@@ -1221,14 +1125,8 @@
 
   .toolbarKey {
     margin: 0;
-    width: 2.5rem;
-    height: 2.5rem;
+    @include iconButton.toolbar-icon-button-size-mobile;
     background-color: transparent;
-
-    > svg {
-      width: 1.35rem;
-      height: 1.35rem;
-    }
 
     .toolbarUserAvatar {
       width: 1.65rem;
@@ -1493,28 +1391,6 @@
 
   .toolbarGroup:first-child .toolbarKey:first-child {
     margin-left: 0;
-  }
-}
-
-/* date / cart / history: тот же размер кнопок, что cardphoto / cardtext (1.7rem). */
-.toolbarDate .toolbarKey,
-.toolbarCart .toolbarKey,
-.toolbarHistory .toolbarKey {
-  width: 1.7rem;
-  height: 1.7rem;
-}
-
-.toolbarSenderView,
-.toolbarRecipientView {
-  .toolbarKey {
-    width: 1.6rem;
-    height: 1.6rem;
-    padding: 0;
-
-    > svg {
-      width: 0.85rem;
-      height: 0.85rem;
-    }
   }
 }
 

@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $list-entry-row-height: 3rem;
 $list-entry-thumb-size: 2.75rem;
@@ -182,17 +183,10 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
 
 /** Как `AddressListRow` `.rowActionButton` (крупный размер): svg 0.82rem. */
 .shellDeleteBtn {
-  box-sizing: border-box;
+  @include iconButton.list-row-icon-button;
   margin: 0;
-  padding: 0.22rem;
-  border: none;
-  border-radius: 50%;
-  background-color: transparent;
   font: inherit;
   appearance: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   color: $color-font-disabled;
   cursor: pointer;
   transition: color 0.15s ease;
@@ -205,13 +199,6 @@ $list-entry-date-edit-border: $color-cart-list-entry-date-edit-border;
     cursor: default;
     opacity: 0.55;
     color: $color-font-disabled;
-  }
-
-  :global(svg) {
-    width: 0.82rem;
-    height: 0.82rem;
-    display: block;
-    color: currentColor;
   }
 }
 

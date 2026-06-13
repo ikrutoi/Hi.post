@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use './toolbarDotIndicator.shared' as dots;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $meter-track-height: 0.4rem;
 $meter-track-bg: hsl(0, 0%, 88%);
@@ -10,7 +11,7 @@ $meter-track-bg: hsl(0, 0%, 88%);
   justify-content: center;
   flex: 0 0 auto;
   width: dots.$dot-indicator-font-size-row-width;
-  min-height: 1.55rem;
+  min-height: iconButton.$toolbar-hit-size-desktop;
   pointer-events: none;
   user-select: none;
 }

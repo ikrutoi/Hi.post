@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .mobileShell {
   --mobile-chrome-band: 2.75rem;
@@ -7,8 +8,8 @@
   --mobile-pie-padding-top: 0.15rem;
   --mobile-section-inner-toolbar-height: 2rem;
   --mobile-section-toolbar-band: calc(2rem + 0.25rem);
-  --mobile-toolbar-key-size: 2.5rem;
-  --mobile-toolbar-icon-size: 1.35rem;
+  --mobile-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile};
+  --mobile-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile};
 
   width: 100vw;
   height: 100dvh;
@@ -121,16 +122,9 @@
     height: 100%;
 
     :global([class*='toolbarKey']) {
-      width: 2.5rem;
-      height: 2.5rem;
-      min-width: 2.5rem;
+      @include iconButton.toolbar-icon-button-size-mobile;
       margin: 0;
       background-color: transparent;
-
-      > svg {
-        width: 1.35rem;
-        height: 1.35rem;
-      }
 
       &[class*='toolbarKeyEnabled']:hover,
       &[class*='toolbarKeyActive']:hover,

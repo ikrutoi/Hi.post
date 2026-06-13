@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .miniCard {
   position: absolute;
@@ -95,8 +96,8 @@
 .deleteMiniCard {
   position: absolute;
   right: 0;
-  width: 1.6rem;
-  height: 1.6rem;
+  width: iconButton.$toolbar-hit-size-desktop;
+  height: iconButton.$toolbar-hit-size-desktop;
   border: solid 1px orange;
   // border: none;
   opacity: 1;
@@ -108,8 +109,8 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 1.6rem;
-  height: 1.6rem;
+  width: iconButton.$toolbar-icon-size-desktop;
+  height: iconButton.$toolbar-icon-size-desktop;
   color: $color-font-disabled;
   // background-color: rgba($color-section-light, 0.6);
   margin: 0.2rem;
@@ -118,30 +119,19 @@
 
 /** Угол мини-карточки: × очистки и apply в режиме зеркала — круг на углу рамки `.miniCard`. */
 .miniCardCornerButton {
+  @include iconButton.toolbar-icon-button-size-compact(true);
   position: absolute;
   top: 0;
   right: 0;
   transform: translate(50%, -50%);
-  width: 1.25rem;
-  height: 1.25rem;
   border-radius: 50%;
   border: 1px solid $color-app-substrate-border;
   background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
   cursor: pointer;
   z-index: 24;
   color: $color-font-disabled;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: color 0.15s ease;
-
-  svg {
-    width: 0.8rem;
-    height: 0.8rem;
-    display: block;
-  }
 
   &:hover:not(:disabled),
   &[data-applied='true']:not(:disabled) {

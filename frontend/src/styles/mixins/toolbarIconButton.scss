@@ -1,0 +1,140 @@
+/**
+ * Toolbar / overlay icon buttons — button-first sizing:
+ * fixed hit-area, explicit svg glyph size inside.
+ */
+
+$toolbar-hit-size-desktop: 1.7rem;
+$toolbar-icon-size-desktop: 0.85rem;
+
+$toolbar-hit-size-mobile: 2.5rem;
+$toolbar-icon-size-mobile: 1.35rem;
+
+/** Desktop right strip (sidebar), not main section toolbar. */
+$toolbar-hit-size-sidebar: 2.2rem;
+$toolbar-icon-size-sidebar: 1.25rem;
+
+/** Dense list rows and compact overlays. */
+$toolbar-hit-size-compact: 1.3rem;
+$toolbar-hit-size-dense: 1.35rem;
+$toolbar-hit-size-small: 1.5rem;
+
+$toolbar-css-var-hit-mobile: --mobile-toolbar-key-size;
+$toolbar-css-var-icon-mobile: --mobile-toolbar-icon-size;
+
+@mixin toolbar-icon-glyph($icon-size) {
+  svg {
+    display: block;
+    flex-shrink: 0;
+    width: $icon-size;
+    height: $icon-size;
+  }
+}
+
+@mixin toolbar-icon-button-base($hit-size) {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: $hit-size;
+  height: $hit-size;
+  min-width: $hit-size;
+  padding: 0;
+}
+
+@mixin toolbar-icon-button-size(
+  $hit-size,
+  $icon-size,
+  $nested-svg: false
+) {
+  @include toolbar-icon-button-base($hit-size);
+
+  @if $nested-svg {
+    @include toolbar-icon-glyph($icon-size);
+  } @else {
+    > svg {
+      display: block;
+      flex-shrink: 0;
+      width: $icon-size;
+      height: $icon-size;
+    }
+  }
+}
+
+@mixin toolbar-icon-button-size-desktop($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-desktop,
+    $toolbar-icon-size-desktop,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-mobile(
+  $hit-var: $toolbar-css-var-hit-mobile,
+  $icon-var: $toolbar-css-var-icon-mobile,
+  $hit-fallback: $toolbar-hit-size-mobile,
+  $icon-fallback: $toolbar-icon-size-mobile,
+  $nested-svg: false
+) {
+  @include toolbar-icon-button-base($hit-fallback);
+  width: var(#{$hit-var}, #{$hit-fallback});
+  height: var(#{$hit-var}, #{$hit-fallback});
+  min-width: var(#{$hit-var}, #{$hit-fallback});
+
+  @if $nested-svg {
+    svg {
+      display: block;
+      flex-shrink: 0;
+      width: var(#{$icon-var}, #{$icon-fallback});
+      height: var(#{$icon-var}, #{$icon-fallback});
+    }
+  } @else {
+    > svg {
+      display: block;
+      flex-shrink: 0;
+      width: var(#{$icon-var}, #{$icon-fallback});
+      height: var(#{$icon-var}, #{$icon-fallback});
+    }
+  }
+}
+
+@mixin toolbar-icon-button-size-sidebar {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-sidebar,
+    $toolbar-icon-size-sidebar
+  );
+}
+
+@mixin toolbar-icon-button-size-compact($nested-svg: true) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-compact,
+    $toolbar-icon-size-desktop,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-dense($nested-svg: true) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-dense,
+    $toolbar-icon-size-desktop,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-small($nested-svg: true) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-small,
+    $toolbar-icon-size-desktop,
+    $nested-svg
+  );
+}
+
+/** Transparent circular action in list rows. */
+@mixin list-row-icon-button {
+  @include toolbar-icon-button-size-compact(true);
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}

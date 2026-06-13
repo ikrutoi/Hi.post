@@ -1,8 +1,9 @@
 @use '@styles/config/colors' as *;
+@use './toolbarIconButton' as iconButton;
 
-$section-view-overlay-chip-size: 1.65rem;
+$section-view-overlay-chip-size: iconButton.$toolbar-hit-size-desktop;
 $section-view-overlay-chip-radius: 0.5rem;
-$section-view-overlay-chip-icon-size: 0.88rem;
+$section-view-overlay-chip-icon-size: iconButton.$toolbar-icon-size-desktop;
 $section-view-overlay-inset-top: 0.5rem;
 $section-view-overlay-inset-right: 0.5rem;
 $section-view-overlay-inset-bottom: 0.5rem;
@@ -12,9 +13,12 @@ $section-view-overlay-chip-bg-photo: rgba(255, 255, 255, 0.72);
 $section-view-overlay-chip-bg-photo-hover: rgba(255, 255, 255, 0.86);
 
 @mixin sectionViewOverlayChipIcon {
+  @include iconButton.toolbar-icon-button-size(
+    $section-view-overlay-chip-size,
+    $section-view-overlay-chip-icon-size
+  );
+
   svg {
-    width: $section-view-overlay-chip-icon-size;
-    height: $section-view-overlay-chip-icon-size;
     display: block;
   }
 }

@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .root {
   position: relative;
@@ -174,25 +175,11 @@
 }
 
 .actionButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.14rem;
-  border: none;
-  border-radius: 50%;
-  background: transparent;
+  @include iconButton.list-row-icon-button;
   color: $color-font-disabled;
-  cursor: pointer;
-  transition: color 0.15s ease;
 
   &:hover {
     color: $color-font-enabled-light-hover;
-  }
-
-  svg {
-    width: 0.82rem;
-    height: 0.82rem;
-    display: block;
   }
 }
 

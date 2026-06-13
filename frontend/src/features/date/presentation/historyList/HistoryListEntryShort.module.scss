@@ -1,5 +1,6 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 /**
  * Плотность списка истории (`data-density-level`):
@@ -267,11 +268,9 @@ $list-entry-border: $color-cart-list-border;
 }
 
 .actionBtn {
-  width: 1.35rem;
-  height: 1.35rem;
+  @include iconButton.toolbar-icon-button-size-dense(true);
   box-sizing: border-box;
   margin: 0;
-  padding: 0;
   border-radius: $list-entry-radius-lg;
   background-color: var(--action-btn-bg);
   font: inherit;
@@ -298,8 +297,6 @@ $list-entry-border: $color-cart-list-border;
   }
 
   :global(svg) {
-    width: 0.85rem;
-    height: 0.85rem;
     display: block;
     color: currentColor;
   }

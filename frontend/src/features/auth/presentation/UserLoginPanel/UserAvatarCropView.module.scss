@@ -1,20 +1,13 @@
 @use '@styles/config/colors' as *;
 @use '@styles/mixins/sectionViewOverlayChip' as overlay;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
-$avatar-overlay-chip-size: 1.6rem;
 $avatar-overlay-chip-radius: 0.47rem;
-$avatar-overlay-chip-icon-size: 0.85rem;
 $avatar-crop-outside-overlay: rgba(255, 255, 255, 0.72);
 
 @mixin avatarOverlayChipSize {
-  width: $avatar-overlay-chip-size;
-  height: $avatar-overlay-chip-size;
+  @include iconButton.toolbar-icon-button-size-desktop(true);
   border-radius: $avatar-overlay-chip-radius;
-
-  svg {
-    width: $avatar-overlay-chip-icon-size;
-    height: $avatar-overlay-chip-icon-size;
-  }
 }
 
 .root {
