@@ -61,6 +61,7 @@ import {
   selectCardphotoSessionPendingProcessedId,
   selectCardphotoState,
   selectIsListPanelOpen,
+  selectUserImage,
 } from '@cardphoto/infrastructure/selectors'
 import {
   handleCropAction,
@@ -457,6 +458,7 @@ export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
     const sessionPendingId: string | null = yield select(
       selectCardphotoSessionPendingProcessedId,
     )
+    const userOriginal: ImageMeta | null = yield select(selectUserImage)
     yield put(setCardphotoViewEditMode(false))
 
     if (
@@ -485,7 +487,13 @@ export function* handleDeleteCardphotoFromViewSaga(): SagaIterator {
 
     yield put(setAssetData(null))
     yield put(clearCurrentConfig())
-    yield fork(syncToolbarContext)
+
+    if (userOriginal) {
+      yield put(setOriginalUploadReminderActive(true))
+    }
+
+    yield call(syncToolbarContext)
+    yield call(syncCardphotoAddToolbarState)
   } catch (error) {
     console.error('handleDeleteCardphotoFromViewSaga', error)
   }

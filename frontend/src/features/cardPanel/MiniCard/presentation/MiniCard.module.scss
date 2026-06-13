@@ -149,8 +149,14 @@
   }
 }
 
-/** Close (×) на заполненной минисекции — десктоп: иконка как у остальных тулбаров. */
+/** Close (×) на заполненной минисекции — цвет как у enabled-иконок cardphoto-тулбара. */
 .miniCardClearButton {
+  color: $color-font-enabled-light;
+
+  &:hover:not(:disabled) {
+    color: $color-font-enabled;
+  }
+
   :global([data-shell-layout='desktop']) & {
     @include iconButton.toolbar-icon-glyph(iconButton.$toolbar-icon-size-standard);
   }
