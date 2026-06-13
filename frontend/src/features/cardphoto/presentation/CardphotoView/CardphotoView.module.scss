@@ -75,25 +75,6 @@
   }
 }
 
-.printQualityOverlay {
-  @include overlay.sectionViewOverlayClosePlacement;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: auto;
-  height: auto;
-  min-height: overlay.$section-view-overlay-chip-size;
-  padding: 0.2rem 0.45rem;
-  border-radius: overlay.$section-view-overlay-chip-radius;
-  background-color: overlay.$section-view-overlay-chip-bg-photo;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  cursor: default;
-  pointer-events: none;
-  user-select: none;
-}
-
 .viewContainerTitleStripEditing {
   padding-top: 0.5rem;
 }

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
@@ -9,6 +9,8 @@ import { CardphotoView } from './CardphotoView/CardphotoView'
 import { deleteCardphotoFromViewRequested } from '@cardphoto/infrastructure/state'
 import { selectCardphotoTitle } from '@cardphoto/infrastructure/selectors'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { CARDPHOTO_CREATE_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
+import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
@@ -73,6 +75,18 @@ const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const title = useAppSelector(selectCardphotoTitle)
+  const createToolbarState = useAppSelector(
+    selectToolbarSectionState('cardphotoCreate'),
+  )
+  const isCreateCropActive = createToolbarState?.crop?.state === 'active'
+  const cardphotoCreateGroupsOverride = useMemo(() => {
+    if (assetToolbar !== 'cardphotoCreate' || isCreateCropActive) return undefined
+    return CARDPHOTO_CREATE_TOOLBAR.map((group) =>
+      group.group === 'close'
+        ? { ...group, icons: [{ key: 'close' as const, state: 'enabled' as const }] }
+        : group,
+    )
+  }, [assetToolbar, isCreateCropActive])
   const showAssetToolbar = !!activeImage && !!assetToolbar
   const showTemplateTitleStrip = assetToolbar === 'cardphotoView' && !!activeImage
   const displayTitle = title.trim()
@@ -115,7 +129,10 @@ const CardphotoSessionEditor: React.FC = () => {
           aria-hidden={showAssetToolbar ? undefined : true}
         >
           {showAssetToolbar ? (
-            <Toolbar section={assetToolbar} />
+            <Toolbar
+              section={assetToolbar}
+              groupsOverride={cardphotoCreateGroupsOverride}
+            />
           ) : null}
         </div>
         <div className={styles.cardphotoViewContent}>

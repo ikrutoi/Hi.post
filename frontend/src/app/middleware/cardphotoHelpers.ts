@@ -79,6 +79,15 @@ export function* updateCropToolbarState(
         }),
       )
     }
+    if (section === 'cardphotoCreate') {
+      yield put(
+        updateToolbarIcon({
+          section,
+          key: 'cropQualityIndicator',
+          value: newCrop === 'active' ? 'enabled' : 'disabled',
+        }),
+      )
+    }
   }
 
   if (state.save) {

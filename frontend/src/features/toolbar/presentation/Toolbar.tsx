@@ -58,6 +58,7 @@ import type {
 } from '@shared/config/constants'
 import { CardtextAlignButton } from './CardtextAlignButton'
 import { CardtextColorButton } from './CardtextColorButton'
+import { CardphotoPrintQualitySlot } from './CardphotoPrintQualitySlot'
 import { UserLoginToolbarIcon } from './UserLoginToolbarIcon'
 import styles from './Toolbar.module.scss'
 
@@ -463,6 +464,28 @@ export const Toolbar = ({
           )}
           disabled={groupStatus === 'disabled'}
         />
+      )
+    }
+
+    if (section === 'cardphotoCreate' && key === 'cropQualityIndicator') {
+      const indicatorDisabled =
+        groupStatus === 'disabled' || buttonStatus === 'disabled'
+
+      return (
+        <div
+          key={key}
+          className={clsx(
+            styles.toolbarKey,
+            styles.toolbarKeyCropQualityIndicator,
+            styles[`toolbarKey${capitalize(buttonStatus ?? 'enabled')}`],
+            groupStatus === 'disabled' && styles.toolbarKeyDisabled,
+          )}
+          data-icon-key={key}
+          data-icon-state={buttonStatus}
+          aria-hidden
+        >
+          <CardphotoPrintQualitySlot disabled={indicatorDisabled} />
+        </div>
       )
     }
 

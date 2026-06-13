@@ -3,7 +3,7 @@
 .cropArea {
   position: absolute;
   cursor: move;
-  z-index: 3;
+  z-index: 0;
   // border: solid 1px red;
 }
 
@@ -13,7 +13,6 @@
   height: 12px;
   border-radius: 50%;
   background-color: var(--crop-handle-color, $color-toggle-active);
-  // background: $color-toggle-active;
   border: 1px solid white;
 }
 
