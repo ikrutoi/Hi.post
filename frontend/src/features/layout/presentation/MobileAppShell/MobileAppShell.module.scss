@@ -73,6 +73,12 @@
       @include iconButton.toolbar-icon-button-size-mobile(true);
       margin: 0;
       background-color: transparent;
+      justify-content: flex-end;
+
+      svg {
+        width: var(--mobile-toolbar-logo-size);
+        height: var(--mobile-toolbar-logo-size);
+      }
 
       &[class*='toolbarKeyEnabled']:hover,
       &[class*='toolbarKeyActive']:hover,
