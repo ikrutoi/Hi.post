@@ -144,8 +144,11 @@ const CardphotoSessionEditor: React.FC = () => {
   const handleSelectTemplate = useCallback(
     (id: string) => {
       dispatch(selectInLineTemplate(id))
+      if (isMobileLayout) {
+        handleCloseListPanel()
+      }
     },
-    [dispatch],
+    [dispatch, handleCloseListPanel, isMobileLayout],
   )
 
   if (isListPanelOpen && isMobileLayout) {

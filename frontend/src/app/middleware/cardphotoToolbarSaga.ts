@@ -110,6 +110,7 @@ import type { CardphotoViewReturnSnapshot } from '@cardphoto/infrastructure/stat
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
 import type { CardphotoListTemplateGridCols } from '@cardphoto/infrastructure/state/cardphotoUiSlice'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 
 type ToolbarAssetKind = 'none' | 'apply' | 'processed' | 'user' | 'stock'
 
@@ -614,10 +615,14 @@ export function* handleCardphotoToolbarAction(
         yield call(ensureCardphotoTemplatesListPanelOpenSaga)
         yield call(handlePromoteProcessedToInlineSaga)
         return
-      case 'removeFromList':
-        yield call(ensureCardphotoTemplatesListPanelOpenSaga)
+      case 'removeFromList': {
+        const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+        if (!isMobileLayout) {
+          yield call(ensureCardphotoTemplatesListPanelOpenSaga)
+        }
         yield call(handleDemoteInlineTemplateSaga)
         return
+      }
       default:
         return
     }
