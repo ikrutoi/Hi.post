@@ -1482,10 +1482,20 @@
   .toolbarCardphoto,
   .toolbarCardphotoCreate,
   .toolbarCardphotoView,
-  .toolbarCardphotoProcessed {
+  .toolbarCardphotoProcessed,
+  .toolbarCardphotoList {
     .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator) {
       @include iconButton.toolbar-icon-button-size-standard(true);
       margin: 0 0.2rem;
+    }
+  }
+
+  .toolbarCardphotoList {
+    padding-left: 0;
+    margin-left: 0.5rem;
+
+    .toolbarGroup:first-child .toolbarKey:first-child {
+      margin-left: 0;
     }
   }
 }
@@ -1496,7 +1506,7 @@
       .toolbarEditorPie
     ):not(.toolbarCardphoto):not(.toolbarCardphotoCreate):not(
       .toolbarCardphotoView
-    ):not(.toolbarCardphotoProcessed)
+    ):not(.toolbarCardphotoProcessed):not(.toolbarCardphotoList)
     .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator):not(
       .toolbarKeyPostcardIndicator
     ) {
@@ -1507,9 +1517,19 @@
   .toolbarCardphoto,
   .toolbarCardphotoCreate,
   .toolbarCardphotoView,
-  .toolbarCardphotoProcessed {
+  .toolbarCardphotoProcessed,
+  .toolbarCardphotoList {
     .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator) {
       @include iconButton.toolbar-icon-button-size-standard(true);
+    }
+  }
+
+  .toolbarCardphotoList {
+    padding-left: 0;
+    margin-left: 0.5rem;
+
+    .toolbarGroup:first-child .toolbarKey:first-child {
+      margin-left: 0;
     }
   }
 

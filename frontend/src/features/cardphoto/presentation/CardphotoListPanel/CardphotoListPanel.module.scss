@@ -1,8 +1,12 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
+@use '@styles/mixins/panelCloseButton' as *;
+@use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $list-panel-stacked-band: 3.75rem;
+$list-panel-stacked-band-section-toolbar: 4.25rem;
 $list-panel-compact-header-band: 2.35rem;
+$list-panel-compact-header-band-section-toolbar: 2.35rem;
 $list-panel-scroll-inset: 0.35rem;
 
 .panel {
@@ -15,6 +19,35 @@ $list-panel-scroll-inset: 0.35rem;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
+
+  :global([data-shell-layout='desktop']) &:not(.panelInline) {
+    padding-top: $list-panel-stacked-band-section-toolbar;
+
+    &.panelEmptyNoToolbar {
+      padding-top: $list-panel-compact-header-band-section-toolbar;
+    }
+
+    .panelScrollTrack {
+      top: calc(
+        #{$list-panel-stacked-band-section-toolbar} - #{$list-panel-scroll-inset}
+      );
+      height: calc(
+        100% - #{$list-panel-stacked-band-section-toolbar} -
+          #{$list-panel-scroll-inset}
+      );
+    }
+
+    &.panelEmptyNoToolbar .panelScrollTrack {
+      top: calc(
+        #{$list-panel-compact-header-band-section-toolbar} -
+          #{$list-panel-scroll-inset}
+      );
+      height: calc(
+        100% - #{$list-panel-compact-header-band-section-toolbar} -
+          #{$list-panel-scroll-inset}
+      );
+    }
+  }
 }
 
 .panelEmptyNoToolbar {
@@ -25,6 +58,86 @@ $list-panel-scroll-inset: 0.35rem;
     height: calc(
       100% - #{$list-panel-compact-header-band} - #{$list-panel-scroll-inset}
     );
+  }
+}
+
+.panelInline {
+  height: 100%;
+  min-height: 0;
+  padding-top: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background-color: transparent;
+
+  .panelScrollTrack {
+    display: none;
+  }
+
+  .inlineHeader {
+    position: relative;
+    border-bottom: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0.5rem;
+      right: 0.75rem;
+      bottom: 0;
+      border-bottom: 1px solid $color-cardphoto-input-border;
+      pointer-events: none;
+    }
+  }
+}
+
+.inlineHeader {
+  flex: 0 0 var(--mobile-section-inner-toolbar-height, 2rem);
+  min-height: var(--mobile-section-inner-toolbar-height, 2rem);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.inlineHeaderToolbar {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+
+  > * {
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+.inlineHeaderLead {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  color: $color-font-enabled-light;
+
+  svg {
+    display: block;
+    flex-shrink: 0;
+    width: iconButton.$toolbar-icon-size-standard;
+    height: iconButton.$toolbar-icon-size-standard;
+  }
+}
+
+.inlineHeaderClose {
+  @include panel-close-button;
+  flex-shrink: 0;
+  margin-right: 0.35rem;
+  color: $color-font-enabled-light;
+
+  &:hover {
+    color: $color-font-enabled;
   }
 }
 

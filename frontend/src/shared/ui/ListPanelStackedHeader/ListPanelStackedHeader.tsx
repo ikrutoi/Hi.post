@@ -20,6 +20,8 @@ export type ListPanelStackedHeaderProps = {
    * Линия под строкой с иконкой и закрытием, если тулбара нет (например кнопки вынесены в полосу под шапкой).
    */
   showDividerWithoutToolbar?: boolean
+  /** sectionToolbar: иконки как в toolbar cardphoto (1.2rem). */
+  variant?: 'default' | 'sectionToolbar'
   onClose: () => void
   closeAriaLabel: string
 }
@@ -30,6 +32,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
   headerTopCenter,
   toolbar,
   showDividerWithoutToolbar = false,
+  variant = 'default',
   onClose,
   closeAriaLabel,
 }) => {
@@ -41,6 +44,7 @@ export const ListPanelStackedHeader: React.FC<ListPanelStackedHeaderProps> = ({
     <div
       className={clsx(
         styles.header,
+        variant === 'sectionToolbar' && styles.headerSectionToolbar,
         !hasToolbar &&
           (showDividerOnly
             ? styles.headerCompactWithDivider

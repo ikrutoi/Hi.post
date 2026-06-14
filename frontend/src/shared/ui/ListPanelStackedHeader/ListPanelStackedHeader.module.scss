@@ -87,3 +87,43 @@
   flex-shrink: 0;
   pointer-events: auto;
 }
+
+.headerSectionToolbar {
+  min-height: calc(
+    #{iconButton.$toolbar-hit-size-standard} * 2 + 0.35rem
+  );
+
+  .headerTopRow {
+    min-height: iconButton.$toolbar-hit-size-standard;
+  }
+
+  .headerLead {
+    @include iconButton.toolbar-icon-button-size-standard(true);
+    color: $color-font-enabled-light;
+  }
+
+  .closeBtn {
+    @include iconButton.toolbar-icon-button-size-standard(true);
+    min-width: iconButton.$toolbar-hit-size-standard;
+    min-height: iconButton.$toolbar-hit-size-standard;
+    border-radius: 0.6rem;
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: transparent;
+    }
+  }
+
+  .headerToolbarRow {
+    min-height: iconButton.$toolbar-hit-size-standard;
+  }
+
+  &.headerCompact {
+    min-height: iconButton.$toolbar-hit-size-standard;
+  }
+
+  &.headerCompactWithDivider {
+    min-height: calc(#{iconButton.$toolbar-hit-size-standard} + 0.2rem);
+  }
+}

@@ -6,14 +6,24 @@ import { useCardphotoFacade } from '@cardphoto/application/facades'
 import { useCardphotoTitleStrip } from '@cardphoto/application/hooks'
 import { CARDPHOTO_TEMPLATE_TITLE_MAX_LENGTH } from '@cardphoto/application/helpers/cardphotoTemplateTitle'
 import { CardphotoView } from './CardphotoView/CardphotoView'
-import { deleteCardphotoFromViewRequested } from '@cardphoto/infrastructure/state'
-import { selectCardphotoTitle } from '@cardphoto/infrastructure/selectors'
+import {
+  deleteCardphotoFromViewRequested,
+  selectInLineTemplate,
+  setCardphotoListPanelOpen,
+} from '@cardphoto/infrastructure/state'
+import {
+  selectCardphotoTitle,
+  selectIsListPanelOpen,
+} from '@cardphoto/infrastructure/selectors'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { CardphotoListPanel } from './CardphotoListPanel/CardphotoListPanel'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { CARDPHOTO_CREATE_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { useSizeFacade } from '@layout/application/facades'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './Cardphoto.module.scss'
@@ -73,6 +83,8 @@ const CardphotoRightListMirror: React.FC = () => {
 
 const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
+  const isListPanelOpen = useAppSelector(selectIsListPanelOpen)
+  const { isMobileLayout } = useSizeFacade()
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const title = useAppSelector(selectCardphotoTitle)
   const createToolbarState = useAppSelector(
@@ -117,6 +129,45 @@ const CardphotoSessionEditor: React.FC = () => {
     }
     dispatch(deleteCardphotoFromViewRequested())
   }, [dispatch, assetToolbar])
+
+  const handleCloseListPanel = useCallback(() => {
+    dispatch(setCardphotoListPanelOpen(false))
+    dispatch(
+      updateToolbarIcon({
+        section: 'cardphoto',
+        key: 'listCardphoto',
+        value: 'enabled',
+      }),
+    )
+  }, [dispatch])
+
+  const handleSelectTemplate = useCallback(
+    (id: string) => {
+      dispatch(selectInLineTemplate(id))
+    },
+    [dispatch],
+  )
+
+  if (isListPanelOpen && isMobileLayout) {
+    return (
+      <div className={styles.cardphoto}>
+        <div
+          className={clsx(
+            styles.cardphotoViewWrap,
+            styles.cardphotoViewWrapList,
+          )}
+        >
+          <div className={styles.cardphotoListContent}>
+            <CardphotoListPanel
+              layout="inline"
+              onClose={handleCloseListPanel}
+              onSelectTemplate={handleSelectTemplate}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.cardphoto}>

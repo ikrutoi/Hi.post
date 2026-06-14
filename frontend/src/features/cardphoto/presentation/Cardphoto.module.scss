@@ -38,6 +38,10 @@
   }
 }
 
+.cardphotoViewWrapList {
+  justify-content: flex-start;
+}
+
 .cardphotoToolbarRow {
   flex: 0 0 2rem;
   flex-shrink: 0;
@@ -110,6 +114,28 @@
     overflow: hidden;
   }
   // border: solid 1px red;
+}
+
+.cardphotoListContent {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 0.5rem;
+
+  :global([data-shell-layout='mobile']) & {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
 }
 
 /** Right list mirror: preview matches mini strip, not session `cardphoto` slice. */

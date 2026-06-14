@@ -4,7 +4,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { IconListCardphoto } from '@shared/ui/icons'
+import { IconListCardphoto, IconX } from '@shared/ui/icons'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { storeAdapters } from '@db/adapters/storeAdapters'
 import { useAppSelector } from '@app/hooks'
@@ -24,6 +24,8 @@ import clsx from 'clsx'
 type Props = {
   onClose: () => void
   onSelectTemplate: (id: string) => void | Promise<void>
+  /** panel: отдельная колонка; inline: внутри оболочки cardphoto в центральной секции. */
+  layout?: 'panel' | 'inline'
 }
 
 type Row = {
@@ -60,7 +62,11 @@ function remToPx(rem: number): number {
   return rem * (Number.isFinite(fs) ? fs : 16)
 }
 
-export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate }) => {
+export const CardphotoListPanel: React.FC<Props> = ({
+  onClose,
+  onSelectTemplate,
+  layout = 'panel',
+}) => {
   const listRevision = useAppSelector(selectCardphotoInlineTemplateListRevision)
   const columns = useAppSelector(selectCardphotoListTemplateGridCols)
   const [rows, setRows] = useState<Row[]>([])
@@ -138,20 +144,46 @@ export const CardphotoListPanel: React.FC<Props> = ({ onClose, onSelectTemplate 
 
   const hasRows = sortedRows.length > 0
   const sortEmphasis = getCardphotoListSortEmphasis(sortMode)
+  const isInline = layout === 'inline'
 
   return (
     <div
-      className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}
+      className={clsx(
+        styles.panel,
+        isInline && styles.panelInline,
+        !isInline && !hasRows && styles.panelEmptyNoToolbar,
+      )}
     >
-      <ListPanelStackedHeader
-        leadIconKey="listCardphoto"
-        toolbar={
-          hasRows ? <Toolbar section="cardphotoList" /> : false
-        }
-        showDividerWithoutToolbar={!hasRows}
-        onClose={onClose}
-        closeAriaLabel="Close photo templates list"
-      />
+      {isInline ? (
+        <div className={styles.inlineHeader}>
+          {!hasRows ? (
+            <div className={styles.inlineHeaderLead} aria-hidden>
+              <IconListCardphoto />
+            </div>
+          ) : (
+            <div className={styles.inlineHeaderToolbar}>
+              <Toolbar section="cardphotoList" />
+            </div>
+          )}
+          <button
+            type="button"
+            className={styles.inlineHeaderClose}
+            onClick={onClose}
+            aria-label="Close photo templates list"
+          >
+            <IconX />
+          </button>
+        </div>
+      ) : (
+        <ListPanelStackedHeader
+          leadIconKey="listCardphoto"
+          variant="sectionToolbar"
+          toolbar={hasRows ? <Toolbar section="cardphotoList" /> : false}
+          showDividerWithoutToolbar={!hasRows}
+          onClose={onClose}
+          closeAriaLabel="Close photo templates list"
+        />
+      )}
 
       <div className={styles.panelScrollTrack} aria-hidden />
 
