@@ -22,7 +22,7 @@ import {
   selectCardphotoAssetToolbar,
   selectIsCurrentCropApplied,
   selectCardphotoListSortMode,
-  selectCardphotoListTemplateGridCols,
+  selectCardphotoListPanelDensity,
 } from '@/features/cardphoto/infrastructure/selectors'
 import { getCardphotoListSortIconForMode } from '@cardphoto/application/helpers/cardphotoListSort'
 import { getHistoryListSortIconForMode } from '@date/application/helpers/historyListSort'
@@ -145,9 +145,7 @@ export const Toolbar = ({
   const recipientAddressListPanelDensity = useAppSelector(
     selectRecipientAddressListPanelDensity,
   )
-  const cardphotoListTemplateGridCols = useAppSelector(
-    selectCardphotoListTemplateGridCols,
-  )
+  const cardphotoListPanelDensity = useAppSelector(selectCardphotoListPanelDensity)
   const cardphotoListSortMode = useAppSelector(selectCardphotoListSortMode)
   const sortDirection =
     section === 'addressListSender'
@@ -542,10 +540,7 @@ export const Toolbar = ({
             listCheckTickChecked: showCreateListCheck,
             step: fontSizeStep,
             sortDirection: key === 'sortDown' ? sortIconDirection : undefined,
-            listTemplateDensityCols:
-              section === 'cardphotoList' && key === 'density'
-                ? cardphotoListTemplateGridCols
-                : undefined,
+            listTemplateDensityCols: undefined,
             historyPanelDensitySize:
               section === 'historyList' && key === 'historyPanelDensity'
                 ? historyListPanelDensity
@@ -555,13 +550,15 @@ export const Toolbar = ({
                 ? historyListPanelDensity
                 : section === 'cardtextList' && key === 'panelDensity2'
                   ? cardtextListPanelDensity
-                  : section === 'addressListSender' && key === 'panelDensity2'
-                    ? senderAddressListPanelDensity
-                    : (section === 'addressListRecipient' ||
-                          section === 'addressListRecipients') &&
-                        key === 'panelDensity2'
-                      ? recipientAddressListPanelDensity
-                      : undefined,
+                  : section === 'cardphotoList' && key === 'panelDensity2'
+                    ? cardphotoListPanelDensity
+                    : section === 'addressListSender' && key === 'panelDensity2'
+                      ? senderAddressListPanelDensity
+                      : (section === 'addressListRecipient' ||
+                            section === 'addressListRecipients') &&
+                          key === 'panelDensity2'
+                        ? recipientAddressListPanelDensity
+                        : undefined,
           })
         )}
 

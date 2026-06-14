@@ -8,7 +8,7 @@ export const CARDPHOTO_LIST_KEYS = [
   'sortUp',
   'sortAZDown',
   'sortAZUp',
-  'density',
+  'panelDensity2',
 ] as const satisfies readonly IconKey[]
 
 export type CardphotoListKey = (typeof CARDPHOTO_LIST_KEYS)[number]
@@ -22,7 +22,7 @@ export const CARDPHOTO_LIST_TOOLBAR: ToolbarConfig = [
   {
     group: 'cardphotoList',
     icons: [
-      { key: 'density', state: 'enabled' },
+      { key: 'panelDensity2', state: 'enabled' },
       { key: 'sortDown', state: 'enabled' },
     ],
     status: 'enabled',

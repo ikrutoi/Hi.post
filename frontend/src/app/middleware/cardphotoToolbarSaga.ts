@@ -36,8 +36,8 @@ import {
   markLoading,
   setCardphotoListPanelOpen,
   bumpCardphotoInlineTemplateList,
-  cycleListTemplateGridCols,
-  setListTemplateGridCols,
+  toggleCardphotoListPanelDensity,
+  setCardphotoListPanelDensity,
   setCardphotoListSortMode,
   clearCurrentConfig,
   setCardphotoViewEditMode,
@@ -56,7 +56,7 @@ import {
 import {
   selectActiveImage,
   selectCardphotoAssetToolbar,
-  selectCardphotoListTemplateGridCols,
+  selectCardphotoListPanelDensity,
   selectCardphotoOriginalReminderActive,
   selectCardphotoSessionPendingProcessedId,
   selectCardphotoState,
@@ -108,11 +108,18 @@ import type {
 } from '@cardphoto/domain/types'
 import type { CardphotoViewReturnSnapshot } from '@cardphoto/infrastructure/state/cardphotoUiSlice'
 import { CURRENT_EDITOR_IMAGE_ID } from '@cardphoto/domain/editorImageId'
+import type { CardphotoListTemplateGridCols } from '@cardphoto/infrastructure/state/cardphotoUiSlice'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
 
 type ToolbarAssetKind = 'none' | 'apply' | 'processed' | 'user' | 'stock'
 
 const CARDPHOTO_LIST_PREF_ID: UiPreferencesRecord['id'] = 'cardphotoList'
+
+function legacyCardphotoListColsToDensity(
+  cols: CardphotoListTemplateGridCols,
+): 1 | 2 {
+  return cols <= 4 ? 1 : 2
+}
 
 function* handleDeleteAllCardphotoInlineTemplatesSaga(): SagaIterator {
   try {
@@ -138,9 +145,13 @@ function* hydrateCardphotoListDensityFromDbSaga(): SagaIterator {
       CARDPHOTO_LIST_PREF_ID,
     )
     if (pref?.id !== 'cardphotoList') return
-    const cols = pref.cardphotoListTemplateGridCols
-    if (cols === 4 || cols === 5 || cols === 6 || cols === 7) {
-      yield put(setListTemplateGridCols(cols))
+    if (pref.cardphotoListPanelDensity === 1 || pref.cardphotoListPanelDensity === 2) {
+      yield put(setCardphotoListPanelDensity(pref.cardphotoListPanelDensity))
+      return
+    }
+    const legacyCols = pref.cardphotoListTemplateGridCols
+    if (legacyCols === 4 || legacyCols === 5 || legacyCols === 6 || legacyCols === 7) {
+      yield put(setCardphotoListPanelDensity(legacyCardphotoListColsToDensity(legacyCols)))
     }
   } catch (e) {
     console.error('hydrateCardphotoListDensityFromDbSaga', e)
@@ -149,12 +160,10 @@ function* hydrateCardphotoListDensityFromDbSaga(): SagaIterator {
 
 function* persistCardphotoListDensityToDbSaga(): SagaIterator {
   try {
-    const cols: 4 | 5 | 6 | 7 = yield select(
-      selectCardphotoListTemplateGridCols,
-    )
+    const density: 1 | 2 = yield select(selectCardphotoListPanelDensity)
     const payload = {
       id: CARDPHOTO_LIST_PREF_ID,
-      cardphotoListTemplateGridCols: cols,
+      cardphotoListPanelDensity: density,
     } as const satisfies UiPreferencesRecord
     yield call([storeAdapters.uiPreferences, 'put'] as const, payload)
   } catch (e) {
@@ -619,8 +628,8 @@ export function* handleCardphotoToolbarAction(
       yield call(handleDeleteAllCardphotoInlineTemplatesSaga)
       return
     }
-    if (key === 'density') {
-      yield put(cycleListTemplateGridCols())
+    if (key === 'panelDensity2') {
+      yield put(toggleCardphotoListPanelDensity())
       yield call(persistCardphotoListDensityToDbSaga)
       return
     }

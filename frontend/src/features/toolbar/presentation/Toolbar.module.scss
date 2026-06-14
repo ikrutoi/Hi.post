@@ -1354,17 +1354,13 @@
   display: flex;
 }
 
-.toolbarCardphotoList .toolbarKeyDensityEnabled:hover svg {
-  --density-inactive-fill: #b0b0b0;
-  --density-inactive-stroke: #9a9a9a;
-  --density-active-fill: #{mix($color-app-sidebar-icon-active, #1a120c, 18%)};
-  --density-active-stroke: #523624;
-}
-
 .toolbarHistoryList
   .toolbarKey[data-icon-key='historyPanelDensity'].toolbarKeyEnabled:hover
   svg,
 .toolbarCardtextList
+  .toolbarKey[data-icon-key='panelDensity2'].toolbarKeyEnabled:hover
+  svg,
+.toolbarCardphotoList
   .toolbarKey[data-icon-key='panelDensity2'].toolbarKeyEnabled:hover
   svg,
 .toolbarAddressListSender

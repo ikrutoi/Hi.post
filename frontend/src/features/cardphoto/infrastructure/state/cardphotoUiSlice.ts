@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { PanelDensity2Size } from '@shared/ui/icons'
 import type {
   CardphotoListSortMode,
   CardphotoListTitleCoverage,
 } from '../../application/helpers/cardphotoListSort'
 import type { ImageMeta, WorkingConfig } from '../../domain/types'
 
+/** @deprecated 4-col / 5-col only; kept for IDB migration from older prefs. */
 export type CardphotoListTemplateGridCols = 4 | 5 | 6 | 7
 
 /** View slot to restore after closing create opened from cardphotoAdd reminder. */
@@ -19,7 +21,7 @@ export interface CardphotoUiState {
   needsCrop: boolean
   isListPanelOpen: boolean
   inlineTemplateListRevision: number
-  listTemplateGridCols: CardphotoListTemplateGridCols
+  listPanelDensity: PanelDensity2Size
   listSortMode: CardphotoListSortMode
   listTitleCoverage: CardphotoListTitleCoverage
   /** inLine / view preview → crop toolbar (`cardphotoCreate`) */
@@ -37,7 +39,7 @@ const initialUiState: CardphotoUiState = {
   needsCrop: false,
   isListPanelOpen: false,
   inlineTemplateListRevision: 0,
-  listTemplateGridCols: 5,
+  listPanelDensity: 1,
   listSortMode: 'dateDesc',
   listTitleCoverage: 'none',
   isCardphotoViewEditMode: false,
@@ -83,18 +85,15 @@ export const cardphotoUiSlice = createSlice({
       state.inlineTemplateListRevision += 1
     },
 
-    cycleListTemplateGridCols(state) {
-      const order: CardphotoListTemplateGridCols[] = [4, 5, 6, 7]
-      const i = order.indexOf(state.listTemplateGridCols)
-      const next = order[(i >= 0 ? i + 1 : 1) % order.length]
-      state.listTemplateGridCols = next
+    toggleCardphotoListPanelDensity(state) {
+      state.listPanelDensity = state.listPanelDensity === 1 ? 2 : 1
     },
 
-    setListTemplateGridCols(
+    setCardphotoListPanelDensity(
       state,
-      action: PayloadAction<CardphotoListTemplateGridCols>,
+      action: PayloadAction<PanelDensity2Size>,
     ) {
-      state.listTemplateGridCols = action.payload
+      state.listPanelDensity = action.payload
     },
 
     setCardphotoListSortMode(state, action: PayloadAction<CardphotoListSortMode>) {
@@ -153,8 +152,8 @@ export const {
   setNeedsCrop,
   setCardphotoListPanelOpen,
   bumpCardphotoInlineTemplateList,
-  cycleListTemplateGridCols,
-  setListTemplateGridCols,
+  toggleCardphotoListPanelDensity,
+  setCardphotoListPanelDensity,
   setCardphotoListSortMode,
   setCardphotoListTitleCoverage,
   selectInLineTemplate,

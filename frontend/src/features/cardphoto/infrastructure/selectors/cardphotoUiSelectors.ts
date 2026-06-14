@@ -1,7 +1,14 @@
 import { createSelector } from '@reduxjs/toolkit'
 import { RootState } from '@app/state'
+import type { PanelDensity2Size } from '@shared/ui/icons'
 
 const selectCardphotoUi = (state: RootState) => state.cardphotoUi
+
+export function cardphotoListDensityToGridCols(
+  density: PanelDensity2Size,
+): 4 | 5 {
+  return density === 2 ? 5 : 4
+}
 
 export const selectShouldOpenFileDialog = createSelector(
   [selectCardphotoUi],
@@ -28,9 +35,14 @@ export const selectCardphotoInlineTemplateListRevision = createSelector(
   (ui) => ui.inlineTemplateListRevision
 )
 
-export const selectCardphotoListTemplateGridCols = createSelector(
+export const selectCardphotoListPanelDensity = createSelector(
   [selectCardphotoUi],
-  (ui) => ui.listTemplateGridCols ?? 5
+  (ui): PanelDensity2Size => ui.listPanelDensity ?? 1,
+)
+
+export const selectCardphotoListTemplateGridCols = createSelector(
+  [selectCardphotoListPanelDensity],
+  (density) => cardphotoListDensityToGridCols(density),
 )
 
 export const selectCardphotoListSortMode = createSelector(

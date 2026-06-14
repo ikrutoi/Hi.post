@@ -4,6 +4,7 @@ import type { PostcardHydrated } from '@entities/postcard'
 import type { ImageMeta, ImageRecord } from '@cardphoto/domain/types'
 import type { SessionData } from '@entities/db/domain/types'
 import type { CardphotoListTemplateGridCols } from '@cardphoto/infrastructure/state/cardphotoUiSlice'
+import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { CardPieFavoriteTemplate } from '@features/cardPie/domain/types'
 
 export type HistoryListPanelDensityPersisted = 1 | 2
@@ -13,7 +14,9 @@ export type AddressListPanelDensityPersisted = 1 | 2
 export type UiPreferencesRecord =
   | {
       id: 'cardphotoList'
-      cardphotoListTemplateGridCols: CardphotoListTemplateGridCols
+      cardphotoListPanelDensity: PanelDensity2Size
+      /** @deprecated Migrated to `cardphotoListPanelDensity` on read. */
+      cardphotoListTemplateGridCols?: CardphotoListTemplateGridCols
     }
   | {
       id: 'historyList'
