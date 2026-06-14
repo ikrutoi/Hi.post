@@ -101,11 +101,15 @@ $list-panel-scroll-inset: 0.35rem;
   background-color: #fff;
 }
 
-.inlineHeaderToolbar {
-  flex: 1;
-  min-width: 0;
+.inlineListToolbar {
+  flex: 0 0 var(--mobile-section-inner-toolbar-height, 2rem);
+  min-height: var(--mobile-section-inner-toolbar-height, 2rem);
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
 
   > * {
     width: 100%;

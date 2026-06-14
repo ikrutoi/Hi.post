@@ -155,25 +155,26 @@ export const CardphotoListPanel: React.FC<Props> = ({
       )}
     >
       {isInline ? (
-        <div className={styles.inlineHeader}>
-          {!hasRows ? (
+        <>
+          <div className={styles.inlineHeader}>
             <div className={styles.inlineHeaderLead} aria-hidden>
               <IconListCardphoto />
             </div>
-          ) : (
-            <div className={styles.inlineHeaderToolbar}>
+            <button
+              type="button"
+              className={styles.inlineHeaderClose}
+              onClick={onClose}
+              aria-label="Close photo templates list"
+            >
+              <IconX />
+            </button>
+          </div>
+          {hasRows ? (
+            <div className={styles.inlineListToolbar}>
               <Toolbar section="cardphotoList" />
             </div>
-          )}
-          <button
-            type="button"
-            className={styles.inlineHeaderClose}
-            onClick={onClose}
-            aria-label="Close photo templates list"
-          >
-            <IconX />
-          </button>
-        </div>
+          ) : null}
+        </>
       ) : (
         <ListPanelStackedHeader
           leadIconKey="listCardphoto"
