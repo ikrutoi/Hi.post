@@ -49,6 +49,8 @@ export const useRecordSizeCard = (
 
       const updateSize = () => {
         if (cancelled) return
+        const runMeasure = () => {
+          if (cancelled) return
         const widthForm = elementForm.clientWidth
         const heightForm = elementForm.clientHeight
         const viewportHeight = window.innerHeight
@@ -182,6 +184,16 @@ export const useRecordSizeCard = (
         setSizeCard(resultSizeCard)
 
         if (!remSize) return
+        }
+
+        if (skipPanelMeasure) {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(runMeasure)
+          })
+          return
+        }
+
+        runMeasure()
       }
 
       updateSize()

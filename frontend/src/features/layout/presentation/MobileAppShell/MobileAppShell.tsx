@@ -14,6 +14,8 @@ import { CalendarModeToolbarBadgesSync } from '@toolbar/presentation/CalendarMod
 import { CartListPanel } from '@cart/presentation/CartListPanel'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
+import { CalendarNotebookTabs } from '@date/presentation/CalendarNotebookTabs'
+import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
 
@@ -34,6 +36,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onCartListDateEditEntry,
   onHistoryListSelectEntry,
 }) => {
+  const notebookStripSection = useDateStripSectionForNotebookTabs()
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
       ? ({
@@ -48,6 +51,12 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   return (
     <div className={styles.mobileShell} onClick={onAppClick}>
       <MarkStampYearDevProvider>
+        <div className={styles.mobileHeaderTabsOverlay}>
+          <CalendarNotebookTabs
+            variant="header"
+            section={notebookStripSection}
+          />
+        </div>
         <div className={styles.mobileSubstrate}>
           <header className={styles.mobileHeader}>
             <div className={styles.mobileHeaderLogo} aria-hidden>

@@ -2,6 +2,7 @@
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .mobileShell {
+  position: relative;
   --mobile-chrome-band: calc(
     #{iconButton.$toolbar-hit-size-mobile} + 2 * var(--mobile-chrome-padding-y)
   );
@@ -33,6 +34,15 @@
   box-sizing: border-box;
   background-color: $color-app-frame;
   overflow: hidden;
+}
+
+.mobileHeaderTabsOverlay {
+  position: absolute;
+  left: 50%;
+  top: calc(env(safe-area-inset-top, 0px));
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: auto;
 }
 
 .mobileSubstrate {
@@ -328,7 +338,8 @@
     width: 100% !important;
     min-height: 0;
     max-height: 100%;
-    flex: 0 0 auto;
+    flex: 1 1 auto;
+    height: 100%;
   }
 
   :global([class*='cardSectionRenderer']) {
@@ -351,16 +362,15 @@
     width: 100%;
     min-height: 0;
     max-height: 100%;
-    height: auto;
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
   }
 
   :global([class*='notebookPeekShellInner']) > * {
-    flex: 0 0 auto;
-    height: auto;
+    flex: 1 1 auto;
     min-height: 0;
+    height: 100%;
   }
 
   :global([class*='cardtextContainer']) {

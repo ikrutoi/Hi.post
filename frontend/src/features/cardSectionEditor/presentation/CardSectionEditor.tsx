@@ -19,8 +19,13 @@ export const CardSectionEditor: React.FC = () => {
     isMobileLayout && (height <= 0 || width <= 0)
   const sectionWidth =
     width > 0 ? `${width}px` : useFluidMobileLayout ? '100%' : '0px'
-  const sectionHeight =
-    height > 0 ? `${height}px` : useFluidMobileLayout ? '100%' : '0px'
+  const sectionHeight = isMobileLayout
+    ? '100%'
+    : height > 0
+      ? `${height}px`
+      : useFluidMobileLayout
+        ? '100%'
+        : '0px'
   /** Закладки Date / Cart / History всегда над фабрикой; внутренние секции не дублируют `NotebookPeekShell`. */
   const notebookTabsOuter = true
 

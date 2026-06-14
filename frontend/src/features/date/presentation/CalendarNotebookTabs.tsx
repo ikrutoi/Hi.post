@@ -14,12 +14,17 @@ import type { DateStripSection } from './dateStripSection.types'
 type Props = {
   /** Какой режим полосы календаря активен — соответствующая закладка выше на 50%. */
   section: DateStripSection
+  /** peek: над секцией, растут вверх; header: в шапке, растут вниз. */
+  variant?: 'peek' | 'header'
 }
 
 /**
  * Закладки: слева Date, центр Cart, справа History — клик переключает режим календаря.
  */
-export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
+export const CalendarNotebookTabs: React.FC<Props> = ({
+  section,
+  variant = 'peek',
+}) => {
   const dispatch = useAppDispatch()
   const { activePieSide } = useRightListArchiveMini()
   const factorySidebarSection = useAppSelector(selectActiveSection)
@@ -52,8 +57,14 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
   const tab3Active = !stripTabsNoneActive && section === 'history'
 
   return (
-    <div className={styles.track}>
-      <ul className={styles.list} role="tablist" aria-label="Calendar strip mode">
+    <div
+      className={clsx(styles.track, variant === 'header' && styles.trackHeader)}
+    >
+      <ul
+        className={clsx(styles.list, variant === 'header' && styles.listHeader)}
+        role="tablist"
+        aria-label="Calendar strip mode"
+      >
         <li
           role="tab"
           aria-selected={tab1Active}
@@ -61,6 +72,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
           className={clsx(
             styles.tab,
             styles.tab1,
+            variant === 'header' && styles.tabHeader,
             tab1Active && styles.tabActive,
           )}
           onClick={goDate}
@@ -78,6 +90,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
           className={clsx(
             styles.tab,
             styles.tab2,
+            variant === 'header' && styles.tabHeader,
             tab2Active && styles.tabActive,
           )}
           onClick={goCart}
@@ -95,6 +108,7 @@ export const CalendarNotebookTabs: React.FC<Props> = ({ section }) => {
           className={clsx(
             styles.tab,
             styles.tab3,
+            variant === 'header' && styles.tabHeader,
             tab3Active && styles.tabActive,
           )}
           onClick={goHistory}
