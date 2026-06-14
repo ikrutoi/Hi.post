@@ -115,8 +115,8 @@ $tab-height-header-active-scale: 1.35;
   top: auto;
   transform: none;
   z-index: 1;
-  width: calc(3 * min(3.75rem, 18vw) + 1.05rem);
-  max-width: min(15rem, calc(100vw - 7rem));
+  width: 100%;
+  max-width: 100%;
 }
 
 .listHeader {

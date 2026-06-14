@@ -43,6 +43,8 @@
   transform: translateX(-50%);
   z-index: 5;
   pointer-events: auto;
+  width: var(--mobile-pie-size);
+  box-sizing: border-box;
 }
 
 .mobileSubstrate {
