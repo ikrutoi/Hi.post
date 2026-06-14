@@ -27,6 +27,8 @@ export const ICON_KEYS = [
   'rotateLeft',
   'imageRotateLeft',
   'imageRotateRight',
+  'chevronLeft',
+  'chevronRight',
   'imageReset',
   'cardHorizontal',
   'cardVertical',

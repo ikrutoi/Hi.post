@@ -23,6 +23,7 @@ import {
   MdFormatAlignJustify,
 } from 'react-icons/md'
 import { LuPaperclip, LuMail, LuMailOpen, LuMailPlus } from 'react-icons/lu'
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { TiDelete, TiPlus } from 'react-icons/ti'
 import {
   RiUserLine,
@@ -265,6 +266,10 @@ export function getIconByKey(key: IconKey, currentStep?: number): JSX.Element {
       return <IconImageRotateLeft />
     case 'imageRotateRight':
       return <IconImageRotateRight />
+    case 'chevronLeft':
+      return <FaChevronLeft />
+    case 'chevronRight':
+      return <FaChevronRight />
     case 'imageReset':
       return <IconImageReset />
     case 'cardHorizontal':

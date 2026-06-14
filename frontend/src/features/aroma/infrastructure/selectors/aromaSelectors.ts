@@ -8,3 +8,9 @@ export const selectSelectedAroma = (state: RootState) =>
 
 export const selectIsAromaComplete = (state: RootState) =>
   state.aroma.isComplete
+
+export const selectAromaPreviewOpen = (state: RootState) =>
+  state.aroma.previewOpen
+
+export const selectAromaPreviewIndex = (state: RootState) =>
+  state.aroma.previewIndex

@@ -331,6 +331,90 @@
   }
 }
 
+/* aroma: три группы, без подложки у кнопок, отступы по краям как cardphotoCreate. */
+.toolbarAroma {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+  margin-left: 0;
+  margin-right: 0;
+
+  .toolbarGroup {
+    display: flex;
+    align-items: center;
+  }
+
+  .toolbarGroup:nth-child(1) {
+    justify-content: flex-start;
+  }
+
+  .toolbarGroup:nth-child(2) {
+    justify-content: center;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .toolbarGroup:nth-child(3) {
+    justify-content: flex-end;
+  }
+
+  .toolbarGroup:first-child .toolbarKey:first-child {
+    margin-left: 0;
+  }
+
+  .toolbarGroup:last-child .toolbarKey:last-child {
+    margin-right: 0;
+  }
+
+  [data-icon-key='apply'].toolbarKeyEnabled,
+  [data-icon-key='apply'].toolbarKeySelected,
+  [data-icon-key='apply'].toolbarKeyActive,
+  [data-icon-key='apply'].toolbarKeyDisabled,
+  [data-icon-key='apply'].toolbarKeyEnabled:hover,
+  [data-icon-key='apply'].toolbarKeySelected:hover,
+  [data-icon-key='apply'].toolbarKeyActive:hover {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .toolbarKey {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .toolbarKey.toolbarKeyEnabled:hover,
+  .toolbarKey.toolbarKeyActive:hover,
+  .toolbarKey.toolbarKeyDisabled:hover {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  /* apply заполняет viewBox сильнее close — слегка уменьшаем для одинаковых отступов */
+  [data-icon-key='apply'] svg {
+    transform: scale(0.88);
+    transform-origin: center center;
+  }
+
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: transparent;
+    }
+  }
+
+  .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}
+
 .toolbarCardtextView,
 .toolbarCardtextEditor,
 .toolbarCardtextCreate,
@@ -729,6 +813,7 @@
 .toolbarCardtext,
 .toolbarCardphoto,
 .toolbarDate,
+.toolbarAroma,
 .toolbarHistory,
 .toolbarRightSidebar,
 .toolbarCart,

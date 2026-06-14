@@ -31,6 +31,7 @@ import {
   initialPanelMiniSectionsToolbarState,
   initialUserPanelChoicePhotoToolbarState,
   initialUserPanelToolbarState,
+  initialAromaToolbarState,
 } from '../../domain/types'
 import type {
   ToolbarState,
@@ -95,6 +96,7 @@ const initialState: ToolbarState = {
   panelMiniSections: initialPanelMiniSectionsToolbarState,
   userPanelChoicePhoto: initialUserPanelChoicePhotoToolbarState,
   userPanel: initialUserPanelToolbarState,
+  aroma: initialAromaToolbarState,
 }
 
 const toolbarSlice = createSlice({

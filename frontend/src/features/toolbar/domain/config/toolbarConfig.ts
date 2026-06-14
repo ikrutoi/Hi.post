@@ -50,6 +50,9 @@ import {
   PANEL_MINI_SECTIONS_TOOLBAR,
   initialPanelMiniSectionsToolbarState,
   PANEL_MINI_SECTIONS_KEYS,
+  AROMA_TOOLBAR,
+  initialAromaToolbarState,
+  AROMA_KEYS,
 } from '../types'
 import {
   RECIPIENTS_VIEW_TOOLBAR,
@@ -574,5 +577,16 @@ export const TOOLBAR_CONFIG: ToolbarSectionConfigMap = {
     group: 'userPanel',
     getBadges: (state: ToolbarState['userPanel']) => ({}),
     toolbar: USER_PANEL_TOOLBAR,
+  },
+
+  aroma: {
+    keys: AROMA_KEYS,
+    initialState: initialAromaToolbarState,
+    onAction: (key, section, _editor, dispatch) => {
+      dispatch({ type: 'toolbar/action', payload: { section, key } })
+    },
+    group: 'aroma',
+    getBadges: (state: ToolbarState['aroma']) => ({}),
+    toolbar: AROMA_TOOLBAR,
   },
 }

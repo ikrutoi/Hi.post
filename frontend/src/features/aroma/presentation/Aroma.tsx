@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import clsx from 'clsx'
-import { useAppDispatch } from '@app/hooks'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { AromaTile } from './AromaTile/AromaTile'
 import { AROMA_LIST } from '@entities/aroma/domain/constants'
 import { useAromaFacade } from '../application/facades'
@@ -9,15 +9,24 @@ import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { setCartItemCardAroma } from '@cart/infrastructure/state'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
+import { Toolbar } from '@features/toolbar/presentation/Toolbar'
+import { closeAromaPreview } from '@aroma/infrastructure/state'
+import { selectActiveSection } from '@layout/infrastructure/selectors'
 import styles from './Aroma.module.scss'
 import type { AromaItem } from '@entities/aroma/domain/types'
 
-const AromaSectionShell: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => (
+const AromaSectionShell: React.FC<{
+  children: React.ReactNode
+  showToolbar?: boolean
+}> = ({ children, showToolbar = false }) => (
   <div className={styles.aroma}>
     <div className={styles.aromaViewWrap}>
-      <div className={styles.aromaToolbarRow} aria-hidden />
+      <div
+        className={styles.aromaToolbarRow}
+        aria-hidden={showToolbar ? undefined : true}
+      >
+        {showToolbar ? <Toolbar section="aroma" /> : null}
+      </div>
       <div className={styles.aromaViewContent}>{children}</div>
     </div>
   </div>
@@ -26,7 +35,13 @@ const AromaSectionShell: React.FC<{ children: React.ReactNode }> = ({
 export const Aroma: React.FC = () => {
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const dispatch = useAppDispatch()
-  const { selectedAroma, chooseAroma } = useAromaFacade()
+  const activeSection = useAppSelector(selectActiveSection)
+  const {
+    selectedAroma,
+    previewOpen,
+    previewIndex,
+    openPreview,
+  } = useAromaFacade()
   const {
     centerStripListMirrorEnabled,
     mirrorInner,
@@ -36,19 +51,17 @@ export const Aroma: React.FC = () => {
     listRowLocalId,
   } = useRightListArchiveMini()
 
+  useEffect(() => {
+    if (activeSection !== 'aroma') {
+      dispatch(closeAromaPreview())
+    }
+  }, [activeSection, dispatch])
+
   /** In right list mode, highlight the tile that matches the open postcard on the right CardPie. */
   const tileHighlightAroma =
     centerStripListMirrorEnabled && mirrorInner != null
       ? mirrorInner.aroma
       : selectedAroma
-
-  const handleSubmit = (evt: React.FormEvent) => {
-    evt.preventDefault()
-    /** Right pie mode: never touch editor aroma slice — left CardPie stays on draft data. */
-    if (centerStripListMirrorEnabled) return
-    if (!selectedAroma) return
-    chooseAroma(selectedAroma)
-  }
 
   const handleClickAroma = (aromaItem: AromaItem) => {
     if (centerStripListMirrorEnabled) {
@@ -62,7 +75,7 @@ export const Aroma: React.FC = () => {
       }
       return
     }
-    chooseAroma(aromaItem)
+    openPreview(aromaItem.index)
   }
 
   if (rightPieAromaPeekNoToolbar) {
@@ -94,18 +107,36 @@ export const Aroma: React.FC = () => {
     return notebookTabsOuter ? peek : <NotebookPeekShell>{peek}</NotebookPeekShell>
   }
 
+  const previewSrc =
+    previewOpen && previewIndex != null
+      ? getAromaImage(previewIndex)
+      : null
+
   return (
-    <AromaSectionShell>
-      <form className={styles.form} onSubmit={handleSubmit}>
-        {AROMA_LIST.map((el, i) => (
-          <AromaTile
-            key={`aroma-${el.index}-${i}`}
-            selectedAroma={tileHighlightAroma}
-            aromaItem={el}
-            onSelectAroma={handleClickAroma}
+    <AromaSectionShell showToolbar={previewOpen}>
+      {previewOpen && previewSrc ? (
+        <div className={clsx(styles.form, styles.formPeek)}>
+          <img
+            className={styles.peekMask}
+            src={previewSrc}
+            alt={
+              previewIndex === 0 ? '' : `Aroma slot ${previewIndex ?? ''}`
+            }
+            draggable={false}
           />
-        ))}
-      </form>
+        </div>
+      ) : (
+        <div className={styles.form}>
+          {AROMA_LIST.map((el, i) => (
+            <AromaTile
+              key={`aroma-${el.index}-${i}`}
+              selectedAroma={tileHighlightAroma}
+              aromaItem={el}
+              onSelectAroma={handleClickAroma}
+            />
+          ))}
+        </div>
+      )}
     </AromaSectionShell>
   )
 }

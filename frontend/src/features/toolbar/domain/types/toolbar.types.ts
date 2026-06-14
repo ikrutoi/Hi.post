@@ -31,6 +31,8 @@ import type {
   CartKey,
   PanelMiniSectionsToolbarState,
   PanelMiniSectionsKey,
+  AromaToolbarState,
+  AromaKey,
 } from './index'
 import type { RecipientsToolbarState, RecipientsKey } from './envelope.types'
 import type { LayoutOrientation } from '@layout/domain/types'
@@ -108,6 +110,7 @@ export const TOOLBAR_SECTIONS = [
   'panelMiniSections',
   'userPanelChoicePhoto',
   'userPanel',
+  'aroma',
 ] as const
 
 export type ToolbarSection = (typeof TOOLBAR_SECTIONS)[number]
@@ -153,6 +156,7 @@ export type ToolbarState = {
   panelMiniSections: PanelMiniSectionsToolbarState & { config: ToolbarGroup[] }
   userPanelChoicePhoto: UserPanelToolbarState & { config: ToolbarGroup[] }
   userPanel: UserPanelToolbarState & { config: ToolbarGroup[] }
+  aroma: AromaToolbarState & { config: ToolbarGroup[] }
 }
 
 export type UpdateSectionPayload<K extends keyof ToolbarState> = {
@@ -338,6 +342,7 @@ export type ToolbarSectionConfigMap = {
   >
   // TODO: Implement userPanel toolbar
   userPanel: BaseSectionConfig<UserPanelToolbarState, UserPanelKey, 'userPanel'>
+  aroma: BaseSectionConfig<AromaToolbarState, AromaKey, 'aroma'>
 }
 
 export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
@@ -416,4 +421,6 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                                         ? UserPanelKey
                                                                         : S extends 'userPanel'
                                                                           ? UserPanelKey
-                                                                          : never
+                                                                          : S extends 'aroma'
+                                                                            ? AromaKey
+                                                                            : never
