@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
+import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { useAppSelector } from '@app/hooks'
 import { selectRecipientsToolbarStateWithLiveAddressList } from '@envelope/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
@@ -18,13 +19,25 @@ export const EnvelopeInnerToolbar: React.FC = () => {
 
   return (
     <div className={styles.envelopeToolbarRow}>
-      <div
-        className={clsx(
-          styles.envelopeToolbarSlotSender,
-          senderView === 'senderCreate' && styles.envelopeToolbarSlotDisabled,
-        )}
-      >
-        {senderFacade.isEnabled ? <Toolbar section="sender" /> : null}
+      <div className={styles.envelopeToolbarSlotSender}>
+        <div className={styles.envelopeToolbarSenderToggle}>
+          <Toggle
+            label=""
+            checked={senderFacade.isEnabled}
+            onChange={senderFacade.toggleEnabled}
+            size="default"
+            variant="envelopeSender"
+            ariaLabel="Include sender"
+          />
+        </div>
+        <div
+          className={clsx(
+            styles.envelopeToolbarSenderActions,
+            senderView === 'senderCreate' && styles.envelopeToolbarSlotDisabled,
+          )}
+        >
+          <Toolbar section="sender" />
+        </div>
       </div>
       <div
         className={clsx(

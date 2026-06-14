@@ -14,6 +14,8 @@ export interface BuildSenderToolbarParams {
   senderListPanelOpen?: boolean
   /** View показывает адрес из create-черновика */
   viewingFormDraftAddress?: boolean
+  /** Отправитель выключен тумблером — все иконки toolbar disabled */
+  isEnabled?: boolean
 }
 
 export const buildSenderToolbarState = ({
@@ -26,6 +28,7 @@ export const buildSenderToolbarState = ({
   formIsEmpty,
   senderListPanelOpen = false,
   viewingFormDraftAddress = false,
+  isEnabled = true,
 }: BuildSenderToolbarParams): EnvelopeToolbarState => {
   const state = {} as EnvelopeToolbarState
 
@@ -79,6 +82,23 @@ export const buildSenderToolbarState = ({
       default:
         const exhaustiveCheck: never = key
         throw new Error(`Unhandled key: ${exhaustiveCheck}`)
+    }
+  }
+
+  if (!isEnabled) {
+    for (const key of ENVELOPE_KEYS) {
+      const value = state[key]
+      state[key] =
+        value != null && typeof value === 'object' && 'state' in value
+          ? {
+              ...value,
+              state: 'disabled' as const,
+              options: {
+                ...(value.options ?? {}),
+                badge: null,
+              },
+            }
+          : ('disabled' as const)
     }
   }
 

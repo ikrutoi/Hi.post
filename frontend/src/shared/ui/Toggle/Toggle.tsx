@@ -16,6 +16,7 @@ type ToggleProps = {
     | 'dateHistory'
     | 'dateMulti'
   disabled?: boolean
+  ariaLabel?: string
 }
 
 export const Toggle: React.FC<ToggleProps> = ({
@@ -25,6 +26,7 @@ export const Toggle: React.FC<ToggleProps> = ({
   size = 'default',
   variant = 'default',
   disabled = false,
+  ariaLabel,
 }) => {
   return (
     <label
@@ -46,6 +48,7 @@ export const Toggle: React.FC<ToggleProps> = ({
         onChange={() => !disabled && onChange(!checked)}
         disabled={disabled}
         className={styles.toggleInput}
+        aria-label={ariaLabel || label || undefined}
       />
       <span className={styles.toggleSlider} />
       <span className={styles.toggleText}>{label}</span>

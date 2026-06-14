@@ -311,6 +311,7 @@ export function* processEnvelopeVisuals() {
     formIsEmpty: sender.formIsEmpty ?? true,
     senderListPanelOpen,
     viewingFormDraftAddress: senderViewingFormDraft,
+    isEnabled: sender.enabled,
   })
 
   const activeAddressList: 'sender' | 'recipients' | null =
@@ -381,8 +382,9 @@ export function* processEnvelopeVisuals() {
     senderAppliedIds.length === 1 &&
     senderAppliedIds[0] === sender.senderViewId
 
-  const senderApplyState =
-    sender.currentView === 'senderCreate'
+  const senderApplyState = !sender.enabled
+    ? 'disabled'
+    : sender.currentView === 'senderCreate'
       ? 'disabled'
       : senderViewMatchesApplied
         ? 'selected'

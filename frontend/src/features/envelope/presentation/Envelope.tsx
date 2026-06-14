@@ -1,13 +1,10 @@
 import React from 'react'
 import clsx from 'clsx'
-import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { Mark } from '@envelope/view/presentation'
 import { getSafeLang } from '@i18n/helpers'
 import { i18n } from '@i18n/i18n'
 import { EnvelopeAddress } from '../addressForm/presentation'
 import { EnvelopePeekAddressBlock } from './EnvelopePeekAddressBlock'
-import { useSenderFacade } from '../sender/application/facades'
-import { IconUserSenderCentered } from '@shared/ui/icons'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
@@ -21,7 +18,6 @@ type EnvelopeProps = {
 export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const lang = getSafeLang(i18n.language)
-  const senderFacade = useSenderFacade()
   const {
     rightPieEnvelopePeekNoToolbar,
     listRowLocalId,
@@ -81,34 +77,6 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
             />
           )}
         </div>
-      </div>
-
-      <div className={styles.envelopeSenderToggle}>
-        {rightPieEnvelopePeekNoToolbar ? (
-          <div className={styles.envelopeFooterSpacer} aria-hidden />
-        ) : (
-          <div
-            className={clsx(
-              styles.envelopeSenderToggleGroup,
-              senderFacade.isEnabled && styles.envelopeSenderToggleGroupActive,
-            )}
-          >
-            <Toggle
-              label=""
-              checked={senderFacade.isEnabled}
-              onChange={senderFacade.toggleEnabled}
-              size="default"
-              variant="envelopeSender"
-            />
-            <IconUserSenderCentered
-              className={styles.envelopeSenderToggleIcon}
-            />
-          </div>
-        )}
-      </div>
-
-      <div className={styles.envelopeRecipientToggle}>
-        <div className={styles.envelopeFooterSpacer} aria-hidden />
       </div>
     </div>
   )
