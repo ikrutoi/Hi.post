@@ -397,6 +397,11 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
     pointer-events: none;
     transition: opacity 0.2s ease;
   }
+
+  :global([data-shell-layout='mobile']) & .addressFormPlaceholderIconBg {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
 }
 
 .addressFormPlaceholderSender.addressFormPlaceholderBg
