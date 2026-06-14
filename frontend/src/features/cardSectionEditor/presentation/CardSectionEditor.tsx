@@ -20,13 +20,15 @@ export const CardSectionEditor: React.FC = () => {
   const sectionWidth =
     width > 0 ? `${width}px` : useFluidMobileLayout ? '100%' : '0px'
   const sectionHeight = isMobileLayout
-    ? '100%'
+    ? height > 0
+      ? `${height}px`
+      : '100%'
     : height > 0
       ? `${height}px`
       : useFluidMobileLayout
         ? '100%'
         : '0px'
-  /** Закладки Date / Cart / History всегда над фабрикой; внутренние секции не дублируют `NotebookPeekShell`. */
+  /** Desktop: закладки над фабрикой. Mobile: закладки в хедере — inner sections не дублируют shell. */
   const notebookTabsOuter = true
 
   const editorSection = (
@@ -40,6 +42,12 @@ export const CardSectionEditor: React.FC = () => {
     >
       <CardSectionRenderer />
     </div>
+  )
+
+  const factoryBody = isMobileLayout ? (
+    editorSection
+  ) : (
+    <NotebookPeekShell>{editorSection}</NotebookPeekShell>
   )
 
   return (
@@ -74,7 +82,7 @@ export const CardSectionEditor: React.FC = () => {
             </div>
           )} */}
           <SectionEditorNotebookTabsOuterProvider value={notebookTabsOuter}>
-            <NotebookPeekShell>{editorSection}</NotebookPeekShell>
+            {factoryBody}
           </SectionEditorNotebookTabsOuterProvider>
         </div>
       </div>

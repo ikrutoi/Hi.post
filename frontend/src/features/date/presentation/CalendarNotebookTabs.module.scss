@@ -30,6 +30,9 @@ $tab-blue: color.mix($tab1-t, $tab1-b, 52%);
 $tab-yellow: color.mix($tab2-t, $tab2-b, 48%);
 
 $tab-height: 1.05rem;
+$tab-height-header: 1.75rem;
+// active ≈ 2.35rem
+$tab-height-header-active-scale: 1.35;
 
 .track {
   position: absolute;
@@ -112,13 +115,24 @@ $tab-height: 1.05rem;
   top: auto;
   transform: none;
   z-index: 1;
-  width: calc(3 * min(2.75rem, 12vw) + 0.84rem);
-  max-width: 11rem;
+  width: calc(3 * min(3.75rem, 18vw) + 1.05rem);
+  max-width: min(15rem, calc(100vw - 7rem));
 }
 
 .listHeader {
   align-items: flex-start;
   justify-content: center;
+  gap: 0.5rem;
+}
+
+.trackHeader .tab {
+  max-width: none;
+  height: $tab-height-header;
+  min-height: $tab-height-header;
+}
+
+.trackHeader .tabActive {
+  transform: scaleY($tab-height-header-active-scale);
 }
 
 .tabHeader {
