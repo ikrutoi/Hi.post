@@ -27,8 +27,8 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
     listRowPostcardStatus,
   } = useRightListArchiveMini()
 
-  const body = (
-    <div className={styles.envelope}>
+  const envelopeWorkZone = (
+    <div className={styles.envelopeWorkZone}>
       <div className={styles.envelopeTopSlot}>
         <div className={styles.envelopeLogo} />
         <div className={styles.envelopeMark}>
@@ -108,6 +108,15 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
 
       <div className={styles.envelopeRecipientToggle}>
         <div className={styles.envelopeFooterSpacer} aria-hidden />
+      </div>
+    </div>
+  )
+
+  const body = (
+    <div className={styles.envelope}>
+      <div className={styles.envelopeViewWrap}>
+        <div className={styles.envelopeToolbarRow} aria-hidden />
+        <div className={styles.envelopeViewContent}>{envelopeWorkZone}</div>
       </div>
     </div>
   )

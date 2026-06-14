@@ -44,6 +44,17 @@ import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcard
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
+const DateSectionShell: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <div className={styles.date}>
+    <div className={styles.dateViewWrap}>
+      <div className={styles.dateToolbarRow} aria-hidden />
+      <div className={styles.dateViewContent}>{children}</div>
+    </div>
+  </div>
+)
+
 function isPeekDispatchDateFilled(d: DispatchDate | null | undefined): boolean {
   if (d == null) return false
   return !(
@@ -225,12 +236,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
         ? MONTH_NAMES[d.month]
         : ''
     const peekBody = (
-      <div
-        key={
-          listRowLocalId != null ? `peek-date-${listRowLocalId}` : 'peek-date'
-        }
-        className={clsx(styles.form, styles.formPeek)}
-      >
+      <div className={clsx(styles.form, styles.formPeek)}>
         {d != null ? (
           <div
             className={clsx(
@@ -246,13 +252,17 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
       </div>
     )
     return (
-      <div className={styles.date}>
+      <DateSectionShell
+        key={
+          listRowLocalId != null ? `peek-date-${listRowLocalId}` : 'peek-date'
+        }
+      >
         {notebookTabsOuter ? (
           peekBody
         ) : (
           <NotebookPeekShell section={section}>{peekBody}</NotebookPeekShell>
         )}
-      </div>
+      </DateSectionShell>
     )
   }
 
@@ -332,12 +342,12 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   )
 
   return (
-    <div className={styles.date}>
+    <DateSectionShell>
       {notebookTabsOuter ? (
         calendarBody
       ) : (
         <NotebookPeekShell section={section}>{calendarBody}</NotebookPeekShell>
       )}
-    </div>
+    </DateSectionShell>
   )
 }

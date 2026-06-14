@@ -12,6 +12,17 @@ import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import styles from './Aroma.module.scss'
 import type { AromaItem } from '@entities/aroma/domain/types'
 
+const AromaSectionShell: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <div className={styles.aroma}>
+    <div className={styles.aromaViewWrap}>
+      <div className={styles.aromaToolbarRow} aria-hidden />
+      <div className={styles.aromaViewContent}>{children}</div>
+    </div>
+  </div>
+)
+
 export const Aroma: React.FC = () => {
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const dispatch = useAppDispatch()
@@ -59,11 +70,10 @@ export const Aroma: React.FC = () => {
     const peekSrc =
       rowAroma != null ? getAromaImage(rowAroma.index) : null
     const peek = (
-      <div
+      <AromaSectionShell
         key={
           listRowLocalId != null ? `peek-aroma-${listRowLocalId}` : 'peek-aroma'
         }
-        className={styles.aroma}
       >
         <div className={clsx(styles.form, styles.formPeek)}>
           {peekSrc ? (
@@ -79,17 +89,14 @@ export const Aroma: React.FC = () => {
             />
           ) : null}
         </div>
-      </div>
+      </AromaSectionShell>
     )
     return notebookTabsOuter ? peek : <NotebookPeekShell>{peek}</NotebookPeekShell>
   }
 
   return (
-    <div className={styles.aroma}>
-      <form
-        className={styles.form}
-        onSubmit={handleSubmit}
-      >
+    <AromaSectionShell>
+      <form className={styles.form} onSubmit={handleSubmit}>
         {AROMA_LIST.map((el, i) => (
           <AromaTile
             key={`aroma-${el.index}-${i}`}
@@ -99,6 +106,6 @@ export const Aroma: React.FC = () => {
           />
         ))}
       </form>
-    </div>
+    </AromaSectionShell>
   )
 }

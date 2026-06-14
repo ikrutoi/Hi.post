@@ -199,9 +199,9 @@
   // Section shells — side inset + rounded card (mobile).
   :global([class*='cardSectionRenderer']) > :global([class*='cardphoto']:not([class*='View']):not([class*='Toolbar']):not([class*='Stage']):not([class*='Title'])),
   :global([class*='cardtextContainer']) > :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])),
-  :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom'])),
-  :global([class*='cardSectionRenderer']) > :global([class*='aroma']) > :global([class*='form']),
-  :global([class*='cardSectionRenderer']) > :global([class*='date']) > :global([class*='form']) {
+  :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom']):not([class*='View']):not([class*='Work'])),
+  :global([class*='cardSectionRenderer']) > :global([class*='aroma']:not([class*='Tile']):not([class*='View']):not([class*='Work'])),
+  :global([class*='cardSectionRenderer']) > :global([class*='date']:not([class*='View']):not([class*='Header']):not([class*='Bottom']):not([class*='Peek']):not([class*='Strip'])) {
     box-sizing: border-box;
     width: calc(100% - 2 * var(--mobile-section-inset));
     margin-inline: var(--mobile-section-inset);
@@ -210,23 +210,22 @@
   }
 
   :global([class*='cardSectionRenderer']) > :global([class*='cardphoto']:not([class*='View']):not([class*='Toolbar']):not([class*='Stage']):not([class*='Title'])),
-  :global([class*='cardtextContainer']) > :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])) {
+  :global([class*='cardtextContainer']) > :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])),
+  :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom']):not([class*='View']):not([class*='Work'])),
+  :global([class*='cardSectionRenderer']) > :global([class*='aroma']:not([class*='Tile']):not([class*='View']):not([class*='Work'])),
+  :global([class*='cardSectionRenderer']) > :global([class*='date']:not([class*='View']):not([class*='Header']):not([class*='Bottom']):not([class*='Peek']):not([class*='Strip'])) {
     padding: 0;
     padding-top: calc(
       var(--mobile-section-toolbar-band) - var(--mobile-section-inner-toolbar-height)
     );
   }
 
-  :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom'])),
-  :global([class*='cardSectionRenderer']) > :global([class*='aroma']) > :global([class*='form']),
-  :global([class*='cardSectionRenderer']) > :global([class*='date']) > :global([class*='form']) {
-    padding-top: var(--mobile-section-toolbar-band);
-    padding-bottom: 0;
-  }
-
-  // Cardphoto / cardtext — inner work zone flush to section shell (left, right, bottom).
+  // Cardphoto / cardtext / envelope / aroma / date — inner work zone flush to section shell.
   :global([class*='cardphotoViewWrap']),
-  :global([class*='cardtextViewWrap']) {
+  :global([class*='cardtextViewWrap']),
+  :global([class*='envelopeViewWrap']),
+  :global([class*='aromaViewWrap']),
+  :global([class*='dateViewWrap']) {
     border-radius: 0;
     align-items: center;
   }
@@ -239,6 +238,19 @@
     border-bottom: none;
     flex: 1 1 auto;
     align-items: center;
+    width: 100%;
+    min-height: 0;
+  }
+
+  :global([class*='envelopeViewContent']),
+  :global([class*='aromaViewContent']),
+  :global([class*='dateViewContent']) {
+    border-radius: 0.5rem;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    flex: 1 1 auto;
+    align-items: stretch;
     width: 100%;
     min-height: 0;
   }
