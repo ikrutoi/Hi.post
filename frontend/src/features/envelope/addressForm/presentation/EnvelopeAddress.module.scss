@@ -2,14 +2,12 @@
 @use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
-$envelopeRecipientBodyTopOffset: 2.35rem;
+$envelopeRecipientBodyTopOffset: 0.75rem;
 /**
  * Sender / recipients envelope toolbars + icons: sit above the fieldset top edge
  * (not centered on the border like translateY(-50%)).
- * Sender user icon box is taller (padding), so it uses a small extra downward offset.
  */
 $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
-$envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
 
 .addressForm {
   position: relative;
@@ -99,15 +97,8 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
   left: 0.5rem;
 }
 
-/* create-форма: toolbar конверта не перехватывает клики по applyLight / close */
+/* create-форма: иконка получателей не перехватывает клики по applyLight / close */
 .addressFieldsetCreateOpen {
-  .addressToolbarSender,
-  .addressToolbarRecipient {
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .envelopeSenderToolbarIconContainer,
   .envelopeRecipientToolbarIconContainer {
     pointer-events: none;
   }
@@ -156,36 +147,6 @@ $envelopeSenderUserIconLift: calc(-100% - 0.32rem + 0.45rem);
   width: 100%;
   display: flex;
   justify-content: space-between;
-}
-
-.addressToolbarSender {
-  position: absolute;
-  top: 0;
-  left: 0.5rem;
-  transform: translateY($envelopeAddressToolbarLift);
-  width: min-content;
-  pointer-events: none;
-
-  > * {
-    pointer-events: auto;
-  }
-  // border: solid 1px red;
-}
-
-.envelopeSenderToolbarIconContainer {
-  position: absolute;
-  top: 0;
-  right: 0.5rem;
-  padding: 0.5rem;
-  transform: translateY($envelopeSenderUserIconLift);
-}
-
-.envelopeSenderToolbarIcon {
-  width: iconButton.$toolbar-hit-size-desktop;
-  height: iconButton.$toolbar-hit-size-desktop;
-  color: $color-envelope-sender-legend;
-  opacity: 0.5;
-  transition: color 0.2s ease;
 }
 
 .addressToolbarRecipient {

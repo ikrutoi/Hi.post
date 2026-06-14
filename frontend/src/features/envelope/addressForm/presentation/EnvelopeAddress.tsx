@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import clsx from 'clsx'
-import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { SenderView, RecipientView } from './AddressView'
 import { RecipientsView } from './RecipientsView'
 import { AddressFormView } from './AddressFormView'
@@ -13,7 +12,6 @@ import {
   selectSenderView,
 } from '../../sender/infrastructure/selectors'
 import { selectRecipientView, selectRecipientsFormViewIdsCount } from '../../recipient/infrastructure/selectors'
-import { selectRecipientsToolbarStateWithLiveAddressList } from '../../infrastructure/selectors'
 import { setSenderView, setSenderViewId } from '../../sender/infrastructure/state'
 import {
   setRecipientView,
@@ -31,7 +29,6 @@ import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import {
   IconUsers,
   IconUserSender,
-  IconUserSenderCentered,
 } from '@shared/ui/icons'
 import { toolbarAction } from '@toolbar/application/helpers'
 
@@ -73,9 +70,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientView = useAppSelector(selectRecipientView)
-  const recipientsToolbarStateWithLiveAddressList = useAppSelector(
-    selectRecipientsToolbarStateWithLiveAddressList,
-  )
   const recipientsFormViewIdsCount = useAppSelector(
     selectRecipientsFormViewIdsCount,
   )
@@ -309,9 +303,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
       if (
-        el.closest(
-          `.${styles.addressToolbarRecipient}, .${styles.envelopeRecipientToolbarIconContainer}`,
-        )
+        el.closest(`.${styles.envelopeRecipientToolbarIconContainer}`)
       ) {
         if (recipientViewEditMode) {
           dispatch(toolbarAction({ section: 'recipientView', key: 'edit' }))
@@ -337,16 +329,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       const fieldset = senderFieldsetRef.current
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
-      if (
-        el.closest(
-          `.${styles.addressToolbarSender}, .${styles.envelopeSenderToolbarIconContainer}`,
-        )
-      ) {
-        if (senderViewEditMode) {
-          dispatch(toolbarAction({ section: 'senderView', key: 'edit' }))
-        }
-        return
-      }
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
         return
       if (el.closest('[data-envelope-address-surface]')) return
@@ -382,20 +364,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             )}
             onMouseDownCapture={handleSenderFieldsetMouseDownCapture}
           >
-            <div
-              className={clsx(
-                styles.addressToolbar,
-                styles.addressToolbarSender,
-              )}
-            >
-              <Toolbar section="sender" />
-            </div>
-            <div className={styles.envelopeSenderToolbarIconContainer}>
-              <IconUserSenderCentered
-                className={styles.envelopeSenderToolbarIcon}
-              />
-            </div>
-
             <div className={styles.addressFieldsetInner}>
               {senderView === 'senderCreate' ? (
                 <AddressFormView
@@ -459,17 +427,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             )}
             onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
           >
-            <div
-              className={clsx(
-                styles.addressToolbar,
-                styles.addressToolbarRecipient,
-              )}
-            >
-              <Toolbar
-                section="recipients"
-                stateOverride={recipientsToolbarStateWithLiveAddressList}
-              />
-            </div>
             <div className={styles.envelopeRecipientToolbarIconContainer}>
               {recipientsFormViewIdsCount > 0 && (
                 <span className={styles.recipientsCountBadge}>

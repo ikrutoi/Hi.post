@@ -41,7 +41,10 @@
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   width: 100%;
+  padding: 0 0.5rem;
   background-color: #fff;
 
   :global([data-shell-layout='mobile']) & {
@@ -53,6 +56,36 @@
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem 0.5rem 0 0;
   }
+
+  > * {
+    min-width: 0;
+  }
+}
+
+.envelopeToolbarSlotSender,
+.envelopeToolbarSlotRecipients {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+
+  > * {
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+.envelopeToolbarSlotSender {
+  justify-content: flex-start;
+}
+
+.envelopeToolbarSlotRecipients {
+  justify-content: flex-end;
+}
+
+.envelopeToolbarSlotDisabled {
+  pointer-events: none;
+  opacity: 0.55;
 }
 
 .envelopeViewContent {
@@ -215,7 +248,7 @@
 }
 
 .envelopeSectionSender {
-  grid-row: 8 / 27;
+  grid-row: 7 / 27;
   grid-column: 1 / 4;
   display: flex;
   flex-direction: column;
@@ -229,7 +262,7 @@
 }
 
 .envelopeSectionRecipient {
-  grid-row: 1 / 27;
+  grid-row: 2 / 25;
   grid-column: 2 / 5;
 
   > form {

@@ -11,6 +11,7 @@ import { IconUserSenderCentered } from '@shared/ui/icons'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -115,7 +116,11 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const body = (
     <div className={styles.envelope}>
       <div className={styles.envelopeViewWrap}>
-        <div className={styles.envelopeToolbarRow} aria-hidden />
+        {rightPieEnvelopePeekNoToolbar ? (
+          <div className={styles.envelopeToolbarRow} aria-hidden />
+        ) : (
+          <EnvelopeInnerToolbar />
+        )}
         <div className={styles.envelopeViewContent}>{envelopeWorkZone}</div>
       </div>
     </div>
