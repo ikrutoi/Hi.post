@@ -26,3 +26,52 @@
   margin-top: 0;
   width: 100%;
 }
+
+$mobile-create-label-size: 0.625rem;
+$mobile-create-input-size: 1rem;
+$mobile-create-input-height: 2.25rem;
+$mobile-create-field-gap: 0.55rem;
+
+/** Mobile envelope fullscreen create — larger tap targets and 16px inputs (no iOS zoom). */
+.addressFormViewMobileFullscreen {
+  .addressFormFields {
+    gap: $mobile-create-field-gap;
+  }
+
+  .labelGroup {
+    gap: 0 0.35rem;
+  }
+
+  :global([class*='label']) {
+    font-size: $mobile-create-label-size;
+  }
+
+  :global([class*='labelText']) {
+    font-size: $mobile-create-label-size;
+    margin-bottom: 0.12rem;
+    padding-left: 0.35rem;
+    line-height: 1.2;
+  }
+
+  :global([class*='labelInput']) {
+    font-size: $mobile-create-input-size;
+    height: $mobile-create-input-height;
+    min-height: $mobile-create-input-height;
+    padding: 0 0.5rem;
+    letter-spacing: 0.02em;
+    border-radius: 0.35rem;
+  }
+
+  :global([class*='inputWrapper']) {
+    min-height: $mobile-create-input-height;
+  }
+
+  :global([class*='clearButton']) {
+    right: 0.35rem;
+  }
+
+  :global([class*='clearButton']) svg {
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+}

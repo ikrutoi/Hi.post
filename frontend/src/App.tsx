@@ -60,6 +60,8 @@ import {
   setCartListStatusSegment,
 } from '@cart/infrastructure/state'
 import { EnvelopeRightSlot } from '@envelope/presentation/EnvelopeRightSlot'
+import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
+import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import { DateRightSlot } from '@date/presentation/DateRightSlot'
 import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
@@ -189,6 +191,8 @@ const App = () => {
 
   const handleAppClick = useToolbarClickReset(colorToolbar, setColorToolbar)
   const { activeSection } = useSectionMenuFacade()
+  const senderView = useAppSelector(selectSenderView)
+  const recipientView = useAppSelector(selectRecipientView)
   const prevActiveSectionRef = useRef(activeSection)
   const { listPanelOpen, listSelectedLocalId } = useCartFacade()
   const cartCalendarDatePickLocalId = useAppSelector(
@@ -1016,6 +1020,12 @@ const App = () => {
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
 
+  const mobileEnvelopeAddressCreateOpen =
+    isMobileLayout &&
+    activeSection === 'envelope' &&
+    !rightPieEnvelopePeekNoToolbar &&
+    (senderView === 'senderCreate' || recipientView === 'recipientCreate')
+
   if (isMobileLayout) {
     return (
       <MobileAppShell
@@ -1033,7 +1043,10 @@ const App = () => {
         showTopCardStripFullSpan={showTopCardStripFullSpan}
         onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
         onLeftPieCenterClick={handleLeftPieCenterClick}
-        hideSectionToolbar={hideMobileSectionToolbar}
+        hideSectionToolbar={
+          hideMobileSectionToolbar || mobileEnvelopeAddressCreateOpen
+        }
+        envelopeAddressCreateMode={mobileEnvelopeAddressCreateOpen}
         listPanelOpen={listPanelOpen}
         cardPieListPanelOpen={cardPieListPanelOpen}
         onEditorPieToolbarAction={handleEditorPieToolbarAction}

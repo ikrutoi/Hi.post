@@ -39,6 +39,43 @@
   overflow: hidden;
 }
 
+.mobileShell[data-envelope-address-create='true'] {
+  .mobileHeader,
+  .mobileHeaderTabsOverlay {
+    display: none;
+  }
+
+  .mobilePieSection {
+    display: none;
+  }
+
+  .mobileSectionToolbar {
+    display: none;
+  }
+
+  .mobileForm {
+    padding-top: calc(0.35rem + env(safe-area-inset-top, 0px));
+    overflow: hidden;
+
+    :global([class*='cardSectionEditor']) {
+      justify-content: flex-start;
+    }
+
+    :global([class*='editorArea']) {
+      justify-content: flex-start;
+    }
+  }
+
+  .mobileEditorSection {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom']):not([class*='View']):not([class*='Work'])) {
+      padding-top: 0;
+    }
+  }
+}
+
 .mobileShell[data-keyboard-open='true'] {
   .mobilePieSection {
     display: none;

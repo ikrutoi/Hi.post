@@ -133,11 +133,14 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   )
 
   const body = (
-    <div className={styles.envelope}>
+    <div
+      className={styles.envelope}
+      data-envelope-mobile-create={showMobileCreateForm ? 'true' : undefined}
+    >
       <div className={styles.envelopeViewWrap}>
         {rightPieEnvelopePeekNoToolbar ? (
           <div className={styles.envelopeToolbarRow} aria-hidden />
-        ) : (
+        ) : showMobileCreateForm ? null : (
           <EnvelopeInnerToolbar />
         )}
         <div className={styles.envelopeViewContent}>

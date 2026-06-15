@@ -30,6 +30,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onBeforeLeftPieInteraction,
   onLeftPieCenterClick,
   hideSectionToolbar,
+  envelopeAddressCreateMode = false,
   listPanelOpen,
   cardPieListPanelOpen,
   onEditorPieToolbarAction,
@@ -52,7 +53,14 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       : undefined
 
   return (
-    <div ref={shellRef} className={styles.mobileShell} onClick={onAppClick}>
+    <div
+      ref={shellRef}
+      className={styles.mobileShell}
+      data-envelope-address-create={
+        envelopeAddressCreateMode ? 'true' : undefined
+      }
+      onClick={onAppClick}
+    >
       <MarkStampYearDevProvider>
         <div className={styles.mobileHeaderTabsOverlay}>
           <CalendarNotebookTabs

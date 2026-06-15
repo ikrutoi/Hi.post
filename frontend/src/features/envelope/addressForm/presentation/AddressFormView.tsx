@@ -21,7 +21,7 @@ export type AddressFormViewProps = {
   address: AddressFields
   onFieldChange: (field: keyof AddressFields, value: string) => void
   lang: Lang
-  /** Mobile envelope: form fills section below EnvelopeInnerToolbar. */
+  /** Mobile envelope: inset section card with toolbar + form. */
   mobileFullscreen?: boolean
 }
 
@@ -158,6 +158,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
               ? addressViewStyles.savedAddressViewSender
               : addressViewStyles.savedAddressViewRecipient,
             styles.addressFormView,
+            mobileFullscreen && styles.addressFormViewMobileFullscreen,
             addressViewStyles.savedAddressViewCreateForm,
           )}
         >
