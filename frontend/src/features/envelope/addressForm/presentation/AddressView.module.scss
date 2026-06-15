@@ -60,6 +60,45 @@ $envelope-address-card-shell-height: 11.75rem;
 
 }
 
+/** Mobile envelope create: fill section below EnvelopeInnerToolbar. */
+.savedAddressViewContainerMobileFullscreen {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+  overflow: hidden;
+
+  .savedAddressViewToolbar {
+    flex-shrink: 0;
+  }
+
+  .savedAddressViewCardWrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .savedAddressView.savedAddressViewCreateForm {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    max-height: none;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    :global([class*='addressFormFields']) {
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+  }
+}
+
 .savedAddressViewContainerFixed {
   flex: 0 0 auto;
   height: $envelope-address-card-shell-height;
@@ -185,6 +224,10 @@ $envelope-address-card-shell-height: 11.75rem;
 .savedAddressDeleteButton {
   @include overlay.sectionViewOverlayDeleteButton;
   border-radius: 0.47rem;
+
+  :global([data-shell-layout='desktop']) & {
+    @include iconButton.toolbar-icon-button-size-standard-desktop(true);
+  }
 }
 
 .savedAddressViewWithFormActions {

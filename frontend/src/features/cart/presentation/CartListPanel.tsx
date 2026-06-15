@@ -400,6 +400,7 @@ export const CartListPanel: React.FC<Props> = ({
     >
       <ListPanelStackedHeader
         leadIconKey={listLeadIconKey}
+        cardPieListHeaderIcons
         headerTopCenter={
           entriesProp == null ? (
             <div

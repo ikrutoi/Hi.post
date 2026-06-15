@@ -12,6 +12,11 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
+import { EnvelopeMobileCreateForm } from './EnvelopeMobileCreateForm'
+import { useAppSelector } from '@app/hooks'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { selectSenderView } from '../sender/infrastructure/selectors'
+import { selectRecipientView } from '../recipient/infrastructure/selectors'
 import styles from './Envelope.module.scss'
 
 type EnvelopeProps = {
@@ -22,11 +27,24 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const lang = getSafeLang(i18n.language)
   const senderFacade = useSenderFacade()
+  const isMobile = useAppSelector(selectIsMobileLayout)
+  const senderView = useAppSelector(selectSenderView)
+  const recipientView = useAppSelector(selectRecipientView)
   const {
     rightPieEnvelopePeekNoToolbar,
     listRowLocalId,
     listRowPostcardStatus,
   } = useRightListArchiveMini()
+
+  const mobileCreateRole =
+    senderView === 'senderCreate'
+      ? ('sender' as const)
+      : recipientView === 'recipientCreate'
+        ? ('recipient' as const)
+        : null
+
+  const showMobileCreateForm =
+    isMobile && mobileCreateRole != null && !rightPieEnvelopePeekNoToolbar
 
   const envelopeWorkZone = (
     <div className={styles.envelopeWorkZone}>
@@ -122,7 +140,13 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         ) : (
           <EnvelopeInnerToolbar />
         )}
-        <div className={styles.envelopeViewContent}>{envelopeWorkZone}</div>
+        <div className={styles.envelopeViewContent}>
+          {showMobileCreateForm ? (
+            <EnvelopeMobileCreateForm role={mobileCreateRole} lang={lang} />
+          ) : (
+            envelopeWorkZone
+          )}
+        </div>
       </div>
     </div>
   )

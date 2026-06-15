@@ -22,7 +22,7 @@ export type ListPanelStackedHeaderProps = {
   showDividerWithoutToolbar?: boolean
   /** sectionToolbar: иконки как в toolbar cardphoto (1.2rem). */
   variant?: 'default' | 'sectionToolbar'
-  /** CardPie archive lists: lead / close / toolbar row icons at 85% of standard. */
+  /** Archive list panels (CardPie, cart, history, …): header icons at 85% of standard. */
   cardPieListHeaderIcons?: boolean
   onClose: () => void
   closeAriaLabel: string

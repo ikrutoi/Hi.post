@@ -2,7 +2,11 @@
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .mobileShell {
-  position: relative;
+  position: fixed;
+  top: var(--mobile-vv-offset-top, 0px);
+  left: 0;
+  right: 0;
+  width: 100vw;
   --mobile-chrome-band: calc(
     #{iconButton.$toolbar-hit-size-mobile} + 2 * var(--mobile-chrome-padding-y)
   );
@@ -25,15 +29,35 @@
   --mobile-section-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile-section};
   --mobile-section-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile-section};
 
-  width: 100vw;
-  height: 100dvh;
-  min-height: 100dvh;
-  max-height: 100dvh;
+  height: var(--mobile-vv-height, 100dvh);
+  min-height: var(--mobile-vv-height, 100dvh);
+  max-height: var(--mobile-vv-height, 100dvh);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   background-color: $color-app-frame;
   overflow: hidden;
+}
+
+.mobileShell[data-keyboard-open='true'] {
+  .mobilePieSection {
+    display: none;
+  }
+
+  .mobileForm {
+    padding-top: 0.35rem;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+    overflow: hidden;
+  }
+
+  .mobileSectionToolbar {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .mobileEditorSection {
+    padding-top: 0;
+  }
 }
 
 .mobileHeaderTabsOverlay {

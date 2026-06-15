@@ -123,6 +123,7 @@ export const HistoryListPanel: React.FC<Props> = ({
     >
       <ListPanelStackedHeader
         leadIconKey="listHistory"
+        cardPieListHeaderIcons
         headerTopCenter={
           <div className={styles.headerPostcardDots}>
             <PostcardIndicator />

@@ -21,6 +21,8 @@ export type AddressFormViewProps = {
   address: AddressFields
   onFieldChange: (field: keyof AddressFields, value: string) => void
   lang: Lang
+  /** Mobile envelope: form fills section below EnvelopeInnerToolbar. */
+  mobileFullscreen?: boolean
 }
 
 export const AddressFormView: React.FC<AddressFormViewProps> = ({
@@ -29,6 +31,7 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   address,
   onFieldChange,
   lang,
+  mobileFullscreen = false,
 }) => {
   const { syncAddressFormToolbar } = useEnvelopeFacade()
   const { labelLayout } = useEnvelopeAddress(role, lang)
@@ -127,8 +130,10 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
     <div
       className={clsx(
         addressViewStyles.savedAddressViewContainer,
-        addressViewStyles.savedAddressViewContainerFixed,
-        addressViewStyles.savedAddressViewContainerCreate,
+        mobileFullscreen
+          ? addressViewStyles.savedAddressViewContainerMobileFullscreen
+          : addressViewStyles.savedAddressViewContainerFixed,
+        !mobileFullscreen && addressViewStyles.savedAddressViewContainerCreate,
       )}
       data-envelope-address-surface
     >

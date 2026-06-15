@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
@@ -16,6 +16,7 @@ import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
 import { CalendarNotebookTabs } from '@date/presentation/CalendarNotebookTabs'
 import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
+import { useMobileVisualViewport } from '@layout/application/hooks/useMobileVisualViewport'
 import type { MobileAppShellProps } from './mobileAppShell.types'
 import styles from './MobileAppShell.module.scss'
 
@@ -36,6 +37,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onCartListDateEditEntry,
   onHistoryListSelectEntry,
 }) => {
+  const shellRef = useRef<HTMLDivElement>(null)
+  useMobileVisualViewport(shellRef)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
@@ -49,7 +52,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       : undefined
 
   return (
-    <div className={styles.mobileShell} onClick={onAppClick}>
+    <div ref={shellRef} className={styles.mobileShell} onClick={onAppClick}>
       <MarkStampYearDevProvider>
         <div className={styles.mobileHeaderTabsOverlay}>
           <CalendarNotebookTabs
