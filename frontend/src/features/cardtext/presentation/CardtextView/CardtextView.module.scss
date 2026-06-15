@@ -5,7 +5,7 @@
 $cardtext-view-overlay-chip-radius: 0.47rem;
 
 @mixin cardtextViewOverlayChipSize {
-  @include iconButton.toolbar-icon-button-size-desktop(true);
+  @include iconButton.toolbar-icon-button-size-legacy-desktop-shell(true);
   border-radius: $cardtext-view-overlay-chip-radius;
 }
 

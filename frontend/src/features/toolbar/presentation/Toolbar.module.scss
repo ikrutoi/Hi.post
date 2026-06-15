@@ -10,7 +10,7 @@
   .toolbarKey {
     position: relative;
     margin: 0 0.3rem;
-    @include iconButton.toolbar-icon-button-size-standard(true);
+    @include iconButton.toolbar-icon-button-size-standard-shell(true);
     background-color: white;
     border-radius: 0.6rem;
     background-color: white;
@@ -478,7 +478,7 @@
 
 .toolbarAlignMenuItem,
 .toolbarColorMenuItem {
-  @include iconButton.toolbar-icon-button-size-standard(true);
+  @include iconButton.toolbar-icon-button-size-standard-shell(true);
   cursor: pointer;
   color: $color-font-enabled-light;
   border: none;
@@ -489,7 +489,7 @@
   transition: color 0.15s ease;
 
   .toolbarIcon {
-    @include iconButton.toolbar-icon-glyph(iconButton.$toolbar-icon-size-standard);
+    @include iconButton.toolbar-icon-glyph-shell(iconButton.$toolbar-icon-size-standard);
     transition:
       color 0.15s ease,
       filter 0.15s ease;
@@ -533,7 +533,7 @@
   }
 
   .toolbarKey {
-    @include iconButton.toolbar-icon-button-size-sidebar;
+    @include iconButton.toolbar-icon-button-size-sidebar-shell;
     margin: 0.2rem 0;
     border-radius: 0.75rem;
     background-color: $color-app-strip;
@@ -1050,7 +1050,7 @@
   }
 
   .toolbarKey {
-    @include iconButton.toolbar-icon-button-size-standard(true);
+    @include iconButton.toolbar-icon-button-size-standard-shell(true);
     background-color: $color-app-inner;
 
     &.toolbarKeyEnabled {
@@ -1185,7 +1185,7 @@
 
   .toolbarKey {
     margin: 0;
-    @include iconButton.toolbar-icon-button-size-sidebar;
+    @include iconButton.toolbar-icon-button-size-sidebar-shell;
     border-radius: 0.75rem;
     background-color: $color-app-strip;
     transition:
@@ -1558,7 +1558,7 @@
   }
 }
 
-/* Mobile: cardphoto toolbars — 1.2rem standard icons. */
+/* Mobile: cardphoto toolbars — full-size standard icons. */
 :global([data-shell-layout='mobile']) {
   .toolbarCardphoto,
   .toolbarCardphotoCreate,
@@ -1581,46 +1581,15 @@
   }
 }
 
-/* Desktop: standard 1.2rem; chrome sidebars 1.45rem. */
+/* Desktop: chrome sidebars use scaled chrome tokens (section toolbars inherit shell from .toolbarKey). */
 :global([data-shell-layout='desktop']) {
-  .toolbar:not(.toolbarSectionEditorMenu):not(.toolbarRightSidebar):not(
-      .toolbarEditorPie
-    ):not(.toolbarCardphoto):not(.toolbarCardphotoCreate):not(
-      .toolbarCardphotoView
-    ):not(.toolbarCardphotoProcessed):not(.toolbarCardphotoList)
-    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator):not(
-      .toolbarKeyPostcardIndicator
-    ) {
-    @include iconButton.toolbar-icon-button-size-standard(true);
-  }
-
-  .toolbarEditorPie,
-  .toolbarCardphoto,
-  .toolbarCardphotoCreate,
-  .toolbarCardphotoView,
-  .toolbarCardphotoProcessed,
-  .toolbarCardphotoList {
-    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator) {
-      @include iconButton.toolbar-icon-button-size-standard(true);
-    }
-  }
-
-  .toolbarCardphotoList {
-    padding-left: 0;
-    margin-left: 0.5rem;
-
-    .toolbarGroup:first-child .toolbarKey:first-child {
-      margin-left: 0;
-    }
-  }
-
   .toolbarSectionEditorMenu {
     .toolbarGroup {
       gap: iconButton.$toolbar-chrome-sidebar-key-gap;
     }
 
     .toolbarKey {
-      @include iconButton.toolbar-icon-button-size-chrome-sidebar(true);
+      @include iconButton.toolbar-icon-button-size-chrome-sidebar-desktop(true);
       margin: 0;
     }
   }
@@ -1631,11 +1600,11 @@
     }
 
     .toolbarKey {
-      @include iconButton.toolbar-icon-button-size-chrome-sidebar(true);
+      @include iconButton.toolbar-icon-button-size-chrome-sidebar-desktop(true);
 
       .toolbarUserAvatar {
-        width: 1.85rem;
-        height: 1.85rem;
+        width: 1.85rem * iconButton.$toolbar-desktop-scale;
+        height: 1.85rem * iconButton.$toolbar-desktop-scale;
       }
     }
   }

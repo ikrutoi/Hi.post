@@ -1,4 +1,5 @@
 @use '../config/colors' as *;
+@use './toolbarIconButton' as iconButton;
 
 /// Ghost close (IconX): compact hit area, no border, neutral hover fill.
 @mixin panel-close-button {
@@ -22,6 +23,16 @@
     width: 1.05rem;
     height: 1.05rem;
     flex-shrink: 0;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    min-width: 1.5rem * iconButton.$toolbar-desktop-scale;
+    min-height: 1.5rem * iconButton.$toolbar-desktop-scale;
+
+    svg {
+      width: 1.05rem * iconButton.$toolbar-desktop-scale;
+      height: 1.05rem * iconButton.$toolbar-desktop-scale;
+    }
   }
 
   &:hover {

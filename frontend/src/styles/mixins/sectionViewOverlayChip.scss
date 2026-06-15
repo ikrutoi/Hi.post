@@ -13,7 +13,7 @@ $section-view-overlay-chip-bg-photo: rgba(255, 255, 255, 0.72);
 $section-view-overlay-chip-bg-photo-hover: rgba(255, 255, 255, 0.86);
 
 @mixin sectionViewOverlayChipIcon {
-  @include iconButton.toolbar-icon-button-size(
+  @include iconButton.toolbar-icon-button-at-desktop-scale(
     $section-view-overlay-chip-size,
     $section-view-overlay-chip-icon-size
   );

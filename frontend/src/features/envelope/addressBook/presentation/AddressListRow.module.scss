@@ -234,4 +234,9 @@ $entry-row-height-compact: 2.28rem;
     width: 0.7rem;
     height: 0.7rem;
   }
+
+  :global([data-shell-layout='desktop']) & svg {
+    width: 0.7rem * iconButton.$toolbar-desktop-scale;
+    height: 0.7rem * iconButton.$toolbar-desktop-scale;
+  }
 }

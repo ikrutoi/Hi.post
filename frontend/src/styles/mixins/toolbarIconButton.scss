@@ -3,6 +3,9 @@
  * fixed hit-area, explicit svg glyph size inside.
  */
 
+/** Desktop shell layout — scale toolbar glyphs + hit-areas (mobile keeps 100%). */
+$toolbar-desktop-scale: 0.8;
+
 $toolbar-hit-size-desktop: 1.7rem;
 $toolbar-icon-size-desktop: 0.85rem;
 
@@ -34,6 +37,13 @@ $toolbar-icon-size-sidebar: 1.25rem;
 /** Standard toolbar icons — editorPie, cardphoto, lists, etc. */
 $toolbar-icon-size-standard: 1.2rem;
 $toolbar-hit-size-standard: 1.95rem;
+
+/** CardPie archive list panel headers (photo/text/address/postcard lists). */
+$toolbar-card-pie-list-header-icon-scale: 0.85;
+$toolbar-hit-size-card-pie-list-header: $toolbar-hit-size-standard *
+  $toolbar-card-pie-list-header-icon-scale;
+$toolbar-icon-size-card-pie-list-header: $toolbar-icon-size-standard *
+  $toolbar-card-pie-list-header-icon-scale;
 
 /** Desktop chrome sidebars — sectionEditorMenu / rightSidebar menu icons. */
 $toolbar-hit-size-chrome-sidebar: 2.45rem;
@@ -94,6 +104,102 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
       width: $icon-size;
       height: $icon-size;
     }
+  }
+}
+
+@mixin toolbar-icon-button-at-desktop-scale(
+  $hit-size,
+  $icon-size,
+  $nested-svg: false
+) {
+  @include toolbar-icon-button-size($hit-size, $icon-size, $nested-svg);
+
+  :global([data-shell-layout='desktop']) & {
+    @include toolbar-icon-button-size(
+      $hit-size * $toolbar-desktop-scale,
+      $icon-size * $toolbar-desktop-scale,
+      $nested-svg
+    );
+  }
+}
+
+@mixin toolbar-icon-button-size-standard-desktop($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-standard * $toolbar-desktop-scale,
+    $toolbar-icon-size-standard * $toolbar-desktop-scale,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-chrome-sidebar-desktop($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-chrome-sidebar * $toolbar-desktop-scale,
+    $toolbar-icon-size-chrome-sidebar * $toolbar-desktop-scale,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-sidebar-desktop($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-sidebar * $toolbar-desktop-scale,
+    $toolbar-icon-size-sidebar * $toolbar-desktop-scale,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-legacy-desktop($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-desktop * $toolbar-desktop-scale,
+    $toolbar-icon-size-desktop * $toolbar-desktop-scale,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-standard-shell($nested-svg: false) {
+  @include toolbar-icon-button-at-desktop-scale(
+    $toolbar-hit-size-standard,
+    $toolbar-icon-size-standard,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-card-pie-list-header($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-card-pie-list-header,
+    $toolbar-icon-size-card-pie-list-header,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-chrome-sidebar-shell($nested-svg: false) {
+  @include toolbar-icon-button-at-desktop-scale(
+    $toolbar-hit-size-chrome-sidebar,
+    $toolbar-icon-size-chrome-sidebar,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-sidebar-shell($nested-svg: false) {
+  @include toolbar-icon-button-at-desktop-scale(
+    $toolbar-hit-size-sidebar,
+    $toolbar-icon-size-sidebar,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-legacy-desktop-shell($nested-svg: false) {
+  @include toolbar-icon-button-at-desktop-scale(
+    $toolbar-hit-size-desktop,
+    $toolbar-icon-size-desktop,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-glyph-shell($icon-size) {
+  @include toolbar-icon-glyph($icon-size);
+
+  :global([data-shell-layout='desktop']) & {
+    @include toolbar-icon-glyph($icon-size * $toolbar-desktop-scale);
   }
 }
 
@@ -180,7 +286,7 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
 }
 
 @mixin toolbar-icon-button-size-compact($nested-svg: true) {
-  @include toolbar-icon-button-size(
+  @include toolbar-icon-button-at-desktop-scale(
     $toolbar-hit-size-compact,
     $toolbar-icon-size-desktop,
     $nested-svg
@@ -188,7 +294,7 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
 }
 
 @mixin toolbar-icon-button-size-dense($nested-svg: true) {
-  @include toolbar-icon-button-size(
+  @include toolbar-icon-button-at-desktop-scale(
     $toolbar-hit-size-dense,
     $toolbar-icon-size-desktop,
     $nested-svg
@@ -196,7 +302,7 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
 }
 
 @mixin toolbar-icon-button-size-small($nested-svg: true) {
-  @include toolbar-icon-button-size(
+  @include toolbar-icon-button-at-desktop-scale(
     $toolbar-hit-size-small,
     $toolbar-icon-size-desktop,
     $nested-svg

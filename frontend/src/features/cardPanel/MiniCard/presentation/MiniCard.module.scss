@@ -103,6 +103,11 @@
   opacity: 1;
   cursor: pointer;
   transition: opacity 0.15s ease;
+
+  :global([data-shell-layout='desktop']) & {
+    width: iconButton.$toolbar-hit-size-desktop * iconButton.$toolbar-desktop-scale;
+    height: iconButton.$toolbar-hit-size-desktop * iconButton.$toolbar-desktop-scale;
+  }
 }
 
 .deleteMiniCard svg {
@@ -115,6 +120,11 @@
   // background-color: rgba($color-section-light, 0.6);
   margin: 0.2rem;
   border-radius: 0.5rem;
+
+  :global([data-shell-layout='desktop']) & {
+    width: iconButton.$toolbar-icon-size-desktop * iconButton.$toolbar-desktop-scale;
+    height: iconButton.$toolbar-icon-size-desktop * iconButton.$toolbar-desktop-scale;
+  }
 }
 
 /** Угол мини-карточки: × очистки и apply в режиме зеркала — круг на углу рамки `.miniCard`. */
@@ -158,7 +168,9 @@
   }
 
   :global([data-shell-layout='desktop']) & {
-    @include iconButton.toolbar-icon-glyph(iconButton.$toolbar-icon-size-standard);
+    @include iconButton.toolbar-icon-glyph(
+      iconButton.$toolbar-icon-size-standard * iconButton.$toolbar-desktop-scale
+    );
   }
 }
 

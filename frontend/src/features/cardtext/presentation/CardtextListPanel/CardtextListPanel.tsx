@@ -85,6 +85,7 @@ export const CardtextListPanel: React.FC<Props> = ({ onClose, onSelect }) => {
     <div className={clsx(styles.panel, !hasRows && styles.panelEmptyNoToolbar)}>
       <ListPanelStackedHeader
         leadIconKey="listCardtext"
+        cardPieListHeaderIcons
         toolbar={hasRows ? <Toolbar section="cardtextList" /> : false}
         showDividerWithoutToolbar={!hasRows}
         onClose={onClose}

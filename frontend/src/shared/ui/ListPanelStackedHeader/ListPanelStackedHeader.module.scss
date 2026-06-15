@@ -49,7 +49,7 @@
 }
 
 .headerLead {
-  @include iconButton.toolbar-icon-button-size-desktop(true);
+  @include iconButton.toolbar-icon-button-size-legacy-desktop-shell(true);
   flex-shrink: 0;
   border-radius: 0.65rem;
   background-color: #fff;
@@ -93,21 +93,40 @@
     #{iconButton.$toolbar-hit-size-standard} * 2 + 0.35rem
   );
 
+  :global([data-shell-layout='desktop']) & {
+    min-height: calc(
+      #{iconButton.$toolbar-hit-size-standard * iconButton.$toolbar-desktop-scale} *
+        2 + 0.35rem
+    );
+  }
+
   .headerTopRow {
     min-height: iconButton.$toolbar-hit-size-standard;
+
+    :global([data-shell-layout='desktop']) & {
+      min-height: iconButton.$toolbar-hit-size-standard *
+        iconButton.$toolbar-desktop-scale;
+    }
   }
 
   .headerLead {
-    @include iconButton.toolbar-icon-button-size-standard(true);
+    @include iconButton.toolbar-icon-button-size-standard-shell(true);
     color: $color-font-enabled-light;
   }
 
   .closeBtn {
-    @include iconButton.toolbar-icon-button-size-standard(true);
+    @include iconButton.toolbar-icon-button-size-standard-shell(true);
     min-width: iconButton.$toolbar-hit-size-standard;
     min-height: iconButton.$toolbar-hit-size-standard;
     border-radius: 0.6rem;
     color: $color-font-enabled-light;
+
+    :global([data-shell-layout='desktop']) & {
+      min-width: iconButton.$toolbar-hit-size-standard *
+        iconButton.$toolbar-desktop-scale;
+      min-height: iconButton.$toolbar-hit-size-standard *
+        iconButton.$toolbar-desktop-scale;
+    }
 
     &:hover {
       color: $color-font-enabled;
@@ -117,13 +136,83 @@
 
   .headerToolbarRow {
     min-height: iconButton.$toolbar-hit-size-standard;
+
+    :global([data-shell-layout='desktop']) & {
+      min-height: iconButton.$toolbar-hit-size-standard *
+        iconButton.$toolbar-desktop-scale;
+    }
   }
 
   &.headerCompact {
     min-height: iconButton.$toolbar-hit-size-standard;
+
+    :global([data-shell-layout='desktop']) & {
+      min-height: iconButton.$toolbar-hit-size-standard *
+        iconButton.$toolbar-desktop-scale;
+    }
   }
 
   &.headerCompactWithDivider {
     min-height: calc(#{iconButton.$toolbar-hit-size-standard} + 0.2rem);
+
+    :global([data-shell-layout='desktop']) & {
+      min-height: calc(
+        #{iconButton.$toolbar-hit-size-standard * iconButton.$toolbar-desktop-scale} +
+          0.2rem
+      );
+    }
+  }
+}
+
+.headerCardPieListArchive {
+  $card-pie-header-hit: iconButton.$toolbar-hit-size-card-pie-list-header;
+
+  .headerLead {
+    @include iconButton.toolbar-icon-button-size-card-pie-list-header(true);
+    color: $color-font-enabled-light;
+  }
+
+  .closeBtn {
+    @include iconButton.toolbar-icon-button-size-card-pie-list-header(true);
+    min-width: $card-pie-header-hit;
+    min-height: $card-pie-header-hit;
+    padding: 0;
+    border-radius: 0.6rem;
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: transparent;
+    }
+  }
+
+  .headerTopRow {
+    min-height: $card-pie-header-hit;
+  }
+
+  .headerToolbarRow {
+    min-height: $card-pie-header-hit;
+
+    :global([class*='toolbarKey']):not(:global([class*='toolbarKeyFontSizeIndicator'])):not(
+        :global([class*='toolbarKeyCropQualityIndicator'])
+      ):not(:global([class*='toolbarKeyPostcardIndicator'])) {
+      @include iconButton.toolbar-icon-button-size-card-pie-list-header(true);
+    }
+  }
+
+  &.headerSectionToolbar {
+    min-height: calc(#{$card-pie-header-hit} * 2 + 0.35rem);
+
+    .headerTopRow {
+      min-height: $card-pie-header-hit;
+    }
+
+    &.headerCompact {
+      min-height: $card-pie-header-hit;
+    }
+
+    &.headerCompactWithDivider {
+      min-height: calc(#{$card-pie-header-hit} + 0.2rem);
+    }
   }
 }

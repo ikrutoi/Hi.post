@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 .cardtextContainer {
   position: relative;
@@ -38,8 +39,8 @@
 }
 
 .cardtextToolbarRow {
-  flex: 0 0 2rem;
-  min-height: 2rem;
+  flex: 0 0 $section-inner-toolbar-height-desktop;
+  min-height: $section-inner-toolbar-height-desktop;
   display: flex;
   align-items: center;
   padding: 0 0;
@@ -57,9 +58,9 @@
 }
 
 .cardtextToolbarRowEmpty {
-  flex: 0 0 2rem;
-  min-height: 2rem;
-  max-height: 2rem;
+  flex: 0 0 $section-inner-toolbar-height-desktop;
+  min-height: $section-inner-toolbar-height-desktop;
+  max-height: $section-inner-toolbar-height-desktop;
   box-sizing: border-box;
 
   :global([data-shell-layout='desktop']) & {

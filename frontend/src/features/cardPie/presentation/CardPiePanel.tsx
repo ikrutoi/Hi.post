@@ -149,6 +149,7 @@ export const CardPiePanel: React.FC<Props> = ({
     >
       <ListPanelStackedHeader
         leadIconKey="cardPie"
+        cardPieListHeaderIcons
         toolbar={
           hasRows ? (
             <Toolbar

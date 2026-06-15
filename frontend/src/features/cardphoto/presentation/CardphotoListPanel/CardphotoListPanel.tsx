@@ -179,6 +179,7 @@ export const CardphotoListPanel: React.FC<Props> = ({
         <ListPanelStackedHeader
           leadIconKey="listCardphoto"
           variant="sectionToolbar"
+          cardPieListHeaderIcons
           toolbar={hasRows ? <Toolbar section="cardphotoList" /> : false}
           showDividerWithoutToolbar={!hasRows}
           onClose={onClose}

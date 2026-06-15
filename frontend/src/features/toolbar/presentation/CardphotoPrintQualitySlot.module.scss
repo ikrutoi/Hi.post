@@ -23,6 +23,14 @@
     width: iconButton.$toolbar-icon-size-desktop;
     height: auto;
   }
+
+  :global([data-shell-layout='desktop']) & {
+    width: iconButton.$toolbar-hit-size-desktop * iconButton.$toolbar-desktop-scale;
+
+    > svg {
+      width: iconButton.$toolbar-icon-size-desktop * iconButton.$toolbar-desktop-scale;
+    }
+  }
 }
 
 .printerDisabled {

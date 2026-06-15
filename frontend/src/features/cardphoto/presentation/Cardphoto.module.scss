@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 
 .cardphoto {
   display: flex;
@@ -43,9 +44,9 @@
 }
 
 .cardphotoToolbarRow {
-  flex: 0 0 2rem;
+  flex: 0 0 $section-inner-toolbar-height-desktop;
   flex-shrink: 0;
-  min-height: 2rem;
+  min-height: $section-inner-toolbar-height-desktop;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -70,9 +71,9 @@
 }
 
 .cardphotoToolbarRowEmpty {
-  flex: 0 0 2rem;
-  min-height: 2rem;
-  max-height: 2rem;
+  flex: 0 0 $section-inner-toolbar-height-desktop;
+  min-height: $section-inner-toolbar-height-desktop;
+  max-height: $section-inner-toolbar-height-desktop;
   box-sizing: border-box;
 
   :global([data-shell-layout='mobile']) & {

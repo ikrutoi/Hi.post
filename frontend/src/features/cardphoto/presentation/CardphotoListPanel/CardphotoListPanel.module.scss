@@ -132,6 +132,11 @@ $list-panel-scroll-inset: 0.35rem;
     width: iconButton.$toolbar-icon-size-standard;
     height: iconButton.$toolbar-icon-size-standard;
   }
+
+  :global([data-shell-layout='desktop']) & svg {
+    width: iconButton.$toolbar-icon-size-standard * iconButton.$toolbar-desktop-scale;
+    height: iconButton.$toolbar-icon-size-standard * iconButton.$toolbar-desktop-scale;
+  }
 }
 
 .inlineHeaderClose {

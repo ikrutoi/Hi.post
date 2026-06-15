@@ -3,6 +3,9 @@
  * Keep 1px borders as px for crisp hairlines.
  */
 
+/** Desktop section inner toolbar row — room for standard icon hit-area + corner badge. */
+$section-inner-toolbar-height-desktop: 2.25rem;
+
 $list-panel-scroll-gutter: 0.5rem; // 8px @ 16px root
 $list-panel-scroll-track-edge: 0.125rem; // 2px
 $list-panel-caption-font-size: 0.625rem; // 10px

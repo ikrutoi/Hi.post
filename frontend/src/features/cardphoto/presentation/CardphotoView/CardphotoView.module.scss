@@ -72,9 +72,14 @@
 
 .viewDeleteBtn {
   @include overlay.sectionViewOverlayDeleteButton;
-  @include iconButton.toolbar-icon-button-size-standard(true);
+  @include iconButton.toolbar-icon-button-size-standard-shell(true);
   width: iconButton.$toolbar-hit-size-standard;
   height: iconButton.$toolbar-hit-size-standard;
+
+  :global([data-shell-layout='desktop']) & {
+    width: iconButton.$toolbar-hit-size-standard * iconButton.$toolbar-desktop-scale;
+    height: iconButton.$toolbar-hit-size-standard * iconButton.$toolbar-desktop-scale;
+  }
 }
 
 .viewContainerTitleStripEditing {
