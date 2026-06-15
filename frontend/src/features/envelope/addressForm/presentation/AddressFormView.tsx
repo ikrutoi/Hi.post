@@ -48,7 +48,6 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
   const toolbarSection =
     role === 'sender' ? 'senderCreate' : 'recipientCreate'
 
-  // Sync toolbar as soon as completeness changes (before paint) so applyMedium is clickable immediately.
   useLayoutEffect(() => {
     syncAddressFormToolbar(toolbarSection, isAddressComplete)
   }, [syncAddressFormToolbar, toolbarSection, isAddressComplete])

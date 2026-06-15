@@ -174,11 +174,19 @@ export const useRecordSizeCard = (
           ),
         })
         const currentRemSize = remSize ? remSize : 16
-        const resultSizeCard = getSizeCard(
+        let resultSizeCard = getSizeCard(
           { width: widthForm, height: heightForm },
           currentRemSize,
           viewportHeight,
         )
+
+        if (resultSizeCard.width <= 0 || resultSizeCard.height <= 0) {
+          resultSizeCard = calcSizeCard(
+            Math.max(heightForm, viewportHeight * 0.35, 320),
+            'landscape',
+            window.innerWidth,
+          )
+        }
 
         setSizeMiniCard(resultSizeMiniCard)
         setSizeCard(resultSizeCard)

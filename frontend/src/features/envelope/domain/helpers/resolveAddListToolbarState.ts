@@ -41,13 +41,28 @@ export function doesDraftMatchAnyTemplate(
   )
 }
 
-/** applyMedium на create-форме: полный адрес, которого ещё нет среди всех шаблонов. */
+/** applyMedium на create-форме: полный адрес, которого ещё нет среди всех шаблонов.
+ *  При правке существующего шаблона (mobile create-form edit) — enabled, если адрес полный
+ *  и не совпадает с другим шаблоном. */
 export function resolveApplyMediumToolbarState(
   isAddressComplete: boolean,
   draft: AddressFields,
-  templateEntries: Pick<AddressBookEntry, 'address'>[],
+  templateEntries: Pick<AddressBookEntry, 'id' | 'address'>[],
+  editingTemplateId?: string | null,
 ): 'enabled' | 'disabled' {
   if (!isAddressComplete) return 'disabled'
+  if (editingTemplateId) {
+    const normalizedDraft = normalizeAddressFields(draft)
+    const matchingId = getMatchingEntryId(
+      normalizedDraft,
+      templateEntries.map((e) => ({
+        id: e.id,
+        address: normalizeAddressFields(e.address ?? {}),
+      })),
+    )
+    if (matchingId != null && matchingId !== editingTemplateId) return 'disabled'
+    return 'enabled'
+  }
   if (doesDraftMatchAnyTemplate(draft, templateEntries)) return 'disabled'
   return 'enabled'
 }

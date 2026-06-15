@@ -10,11 +10,11 @@ type Props = {
   lang: Lang
 }
 
-export const EnvelopeMobileCreateForm: React.FC<Props> = ({ role, lang }) => {
+export const EnvelopeMobileAddressForm: React.FC<Props> = ({ role, lang }) => {
   const senderFacade = useSenderFacade()
   const recipientFacade = useRecipientFacade()
-  const facade = role === 'sender' ? senderFacade : recipientFacade
   const roleLabel = role === 'sender' ? 'Sender' : 'Recipients'
+  const facade = role === 'sender' ? senderFacade : recipientFacade
 
   return (
     <div className={styles.envelopeMobileCreateSurface}>

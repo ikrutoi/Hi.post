@@ -93,12 +93,13 @@ import {
   clearRecipientsPending,
   closeAddressList,
   addressSaveSuccess,
+  clearAddressCreateEditContext,
 } from '@envelope/infrastructure/state'
 import {
   setRecipientViewId,
   setRecipientsViewIds,
 } from '@envelope/recipient/infrastructure/state'
-import { setSenderViewId } from '@envelope/sender/infrastructure/state'
+import { setSenderViewId, setSenderView } from '@envelope/sender/infrastructure/state'
 import { selectRecipientViewId } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderViewId } from '@envelope/sender/infrastructure/selectors'
 import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
@@ -494,6 +495,39 @@ function* rehydrateEnvelopeSlicesFromTemplates() {
           ),
         )
       }
+    }
+  }
+}
+
+/**
+ * После reload не оставляем senderCreate/recipientCreate — immersive mobile shell
+ * скрывает chrome, а форма может не получить высоту до первого рендера.
+ */
+function* exitEnvelopeCreateViewsAfterSessionRestore() {
+  const sender: SenderState = yield select(selectSenderState)
+  if (sender.currentView === 'senderCreate') {
+    yield put(clearAddressCreateEditContext())
+    const viewId = sender.senderViewId ?? sender.applied?.[0] ?? null
+    if (viewId) {
+      yield put(setSenderViewId(viewId))
+    }
+    yield put(setSenderView('senderView'))
+  }
+
+  const recipient: RecipientState = yield select(selectRecipientState)
+  if (recipient.currentView === 'recipientCreate') {
+    yield put(clearAddressCreateEditContext())
+    const pendingIds: string[] = yield select(
+      (state: {
+        envelopeSelection?: { recipientsPendingIds?: string[] }
+      }) => state.envelopeSelection?.recipientsPendingIds ?? [],
+    )
+    if (pendingIds.length === 1) {
+      yield put(setRecipientViewId(pendingIds[0]))
+      yield put(setRecipientView('recipientView'))
+    } else {
+      yield put(setRecipientViewId(null))
+      yield put(setRecipientView('recipientsView'))
     }
   }
 }
@@ -937,6 +971,7 @@ export function* hydrateAppSession() {
 
     yield call(rehydrateEnvelopeSlicesFromTemplates)
     yield call(syncRecipientFormViewAfterSessionRestore)
+    yield call(exitEnvelopeCreateViewsAfterSessionRestore)
     yield call(syncEnvelopeStatus)
 
     // При перезагрузке панели списков (Получатель / Отправитель) всегда скрыты
@@ -963,7 +998,11 @@ export function* hydrateAppSession() {
       )
     }
 
-    if (session.sizeCard) {
+    if (
+      session.sizeCard &&
+      session.sizeCard.width > 0 &&
+      session.sizeCard.height > 0
+    ) {
       yield put(setSizeCard(session.sizeCard))
     }
 

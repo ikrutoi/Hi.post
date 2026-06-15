@@ -8,3 +8,9 @@ export type AddressEditSession = {
   /** Кого показывать на карточке в режиме просмотра после выхода из edit. */
   displayTemplateIdAtStart: string | null
 }
+
+/** Mobile: create-форма с подставленными данными существующего шаблона. */
+export type AddressCreateEditContext = {
+  role: 'sender' | 'recipient'
+  templateId: string
+}

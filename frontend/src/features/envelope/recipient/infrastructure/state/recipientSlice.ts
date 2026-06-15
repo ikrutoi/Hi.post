@@ -83,6 +83,12 @@ const recipientSlice = createSlice({
       state.formIsEmpty = true
     },
 
+    setRecipientFormDraft(state, action: PayloadAction<AddressFields>) {
+      state.formDraft = action.payload
+      state.formIsComplete = isComplete(action.payload)
+      state.formIsEmpty = isFormDraftEmpty(action.payload)
+    },
+
     // Очищает данные просмотра (viewDraft), чтобы после удаления адреса из RecipientView
     // не оставался «залипший» адрес и показывался пустой плейсхолдер.
     clearRecipientViewDraft(state) {
@@ -185,6 +191,7 @@ export const {
   clearRecipient,
   resetRecipientForm,
   clearRecipientFormData,
+  setRecipientFormDraft,
   clearRecipientViewDraft,
   setRecipientViewDraft,
   setRecipientAppliedIds,

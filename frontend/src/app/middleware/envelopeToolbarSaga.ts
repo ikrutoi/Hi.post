@@ -22,6 +22,7 @@ import {
   clearSenderFormData,
   clearSenderViewDraft,
   setSenderViewDraft,
+  setSenderFormDraft,
   toggleSenderSortDirection,
   saveAddressRequested as senderSaveRequested,
 } from '@envelope/sender/infrastructure/state'
@@ -37,6 +38,7 @@ import {
   clearRecipientFormData,
   clearRecipientViewDraft,
   setRecipientViewDraft,
+  setRecipientFormDraft,
   toggleRecipientSortDirection,
   toggleRecipientsViewSortDirection,
   setRecipientAppliedIds,
@@ -53,6 +55,8 @@ import {
   clearRecipientsPending,
   openAddressEditSession,
   closeAddressEditSession,
+  setAddressCreateEditContext,
+  clearAddressCreateEditContext,
   setAddressFormView,
   addressSaveSuccess,
   removeRecipientFromListByIndex,
@@ -75,11 +79,13 @@ import {
   selectSenderAddressListPanelDensity,
   selectRecipientAddressListPanelDensity,
   selectActiveAddressEdit,
+  selectAddressCreateEditContext,
   selectSenderCardAddress,
   selectRecipientCardAddress,
   selectRecipientsList,
 } from '@envelope/infrastructure/selectors'
 import type { AddressEditSession } from '@envelope/domain/types'
+import type { AddressCreateEditContext } from '@envelope/domain/types'
 import {
   selectSenderState,
   selectIsSenderComplete,
@@ -126,7 +132,9 @@ import {
   isAddressDraftComplete,
   listStatusIsInQuickAddressBook,
   normalizeAddressFields,
+  resolveApplyMediumToolbarState,
 } from '@envelope/domain/helpers'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
 import type { AddressBookEntry } from '@envelope/addressBook/domain/types'
 import type { RecipientState, SenderState } from '@envelope/domain/types'
 import type { AddressFields } from '@shared/config/constants'
@@ -249,51 +257,85 @@ function* openRecipientAddressEditSession(templateId: string): SagaIterator {
   )
 }
 
-function* saveAndCloseAddressEditSession(
-  keepRecipientView = false,
+function* openMobileAddressCreateEditForm(
+  role: 'sender' | 'recipient',
+  templateId: string,
 ): SagaIterator {
-  const session: AddressEditSession | null = yield select(selectActiveAddressEdit)
-  if (!session) return
+  const activeSession: AddressEditSession | null = yield select(
+    selectActiveAddressEdit,
+  )
+  if (activeSession) {
+    yield put(
+      closeAddressEditSession({
+        role: activeSession.role,
+        keepRecipientView: activeSession.role === 'recipient',
+      }),
+    )
+  }
 
+  const entries: { id: string; address: Record<string, string> }[] = yield select(
+    (s: RootState) =>
+      role === 'sender'
+        ? (s.addressBook?.senderEntries ?? [])
+        : (s.addressBook?.recipientEntries ?? []),
+  )
+  const address = getEntryAddressFromBook(entries, templateId)
+  if (!address) return
+
+  yield put(setAddressCreateEditContext({ role, templateId }))
+  if (role === 'sender') {
+    yield put(setSenderFormDraft(address))
+    yield put(setSenderView('senderCreate'))
+  } else {
+    yield put(setRecipientFormDraft(address))
+    yield put(setRecipientView('recipientCreate'))
+  }
+}
+
+function* persistAddressTemplateUpdate(
+  role: 'sender' | 'recipient',
+  templateId: string,
+  draft: AddressFields,
+): SagaIterator {
   try {
     const result: { success: boolean } = yield call(
       [templateService, 'updateAddressTemplate'],
-      session.role,
-      session.templateId,
-      { address: session.draft },
+      role,
+      templateId,
+      { address: draft },
     )
     if (result.success) {
       yield put(incrementAddressBookReloadVersion())
       yield put(incrementAddressTemplatesReloadVersion())
 
-      if (session.role === 'sender') {
+      if (role === 'sender') {
         const sender: SenderState = yield select(selectSenderState)
         const senderViewId: string | null = yield select(selectSenderViewId)
-        if (sender.applied?.[0] === session.templateId) {
-          yield put(setSenderAppliedData(session.draft))
+        if (sender.applied?.[0] === templateId) {
+          yield put(setSenderAppliedData(draft))
         }
-        if (senderViewId === session.templateId) {
-          yield put(setSenderViewDraft(session.draft))
+        if (senderViewId === templateId) {
+          yield put(setSenderViewDraft(draft))
         }
       } else {
         const recipient: RecipientState = yield select(selectRecipientState)
         const recipientViewId: string | null = yield select(selectRecipientViewId)
-        if (recipient.applied?.[0] === session.templateId) {
-          yield put(setRecipientAppliedData(session.draft))
+        if (recipient.applied?.[0] === templateId) {
+          yield put(setRecipientAppliedData(draft))
         }
-        if (recipientViewId === session.templateId) {
-          yield put(setRecipientViewDraft(session.draft))
+        if (recipientViewId === templateId) {
+          yield put(setRecipientViewDraft(draft))
         }
         const envelopeRecipients: RecipientState[] = yield select(
           (state: RootState) => state.envelopeRecipients ?? [],
         )
         if (envelopeRecipients.length > 0) {
           const nextList: RecipientState[] = envelopeRecipients.map((r) =>
-            r.recipientViewId === session.templateId
+            r.recipientViewId === templateId
               ? {
                   ...r,
-                  viewDraft: session.draft,
-                  formIsComplete: Object.values(session.draft).every(
+                  viewDraft: draft,
+                  formIsComplete: Object.values(draft).every(
                     (v) => (v ?? '').trim() !== '',
                   ),
                 }
@@ -304,12 +346,26 @@ function* saveAndCloseAddressEditSession(
       }
     } else {
       // eslint-disable-next-line no-console
-      console.warn(`Failed to update ${session.role} address template`)
+      console.warn(`Failed to update ${role} address template`)
     }
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.warn(`Error while updating ${session.role} address template:`, e)
+    console.warn(`Error while updating ${role} address template:`, e)
   }
+}
+
+function* saveAndCloseAddressEditSession(
+  keepRecipientView = false,
+): SagaIterator {
+  const session: AddressEditSession | null = yield select(selectActiveAddressEdit)
+  if (!session) return
+
+  yield call(
+    persistAddressTemplateUpdate,
+    session.role,
+    session.templateId,
+    session.draft,
+  )
 
   yield put(
     closeAddressEditSession({
@@ -527,6 +583,30 @@ function* closeAddressCreateForm(
   section: 'senderCreate' | 'recipientCreate',
 ) {
   const role = section === 'senderCreate' ? 'sender' : 'recipient'
+  const editContext: AddressCreateEditContext | null =
+    yield select(selectAddressCreateEditContext)
+
+  if (editContext?.role === role) {
+    yield put(clearAddressCreateEditContext())
+    if (role === 'sender') {
+      yield put(clearSenderFormData())
+    } else {
+      yield put(clearRecipientFormData())
+    }
+    yield put(setAddressFormView({ show: false, role: null }))
+    yield put(
+      role === 'sender'
+        ? setSenderViewId(editContext.templateId)
+        : setRecipientViewId(editContext.templateId),
+    )
+    yield put(
+      role === 'sender'
+        ? setSenderView('senderView')
+        : setRecipientView('recipientView'),
+    )
+    return
+  }
+
   const inListEntries: Pick<AddressBookEntry, 'address'>[] =
     yield* selectInListEntriesForRole(role)
 
@@ -950,7 +1030,12 @@ function* handleEnvelopeToolbarAction(
       const senderViewId: string | null = yield select(selectSenderViewId)
       const templateId = senderViewId ?? sender.applied?.[0] ?? null
       if (templateId) {
-        yield call(openSenderAddressEditSession, templateId)
+        const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+        if (isMobileLayout) {
+          yield call(openMobileAddressCreateEditForm, 'sender', templateId)
+        } else {
+          yield call(openSenderAddressEditSession, templateId)
+        }
       }
     } else {
       yield call(saveAndCloseAddressEditSession, false)
@@ -978,7 +1063,12 @@ function* handleEnvelopeToolbarAction(
       const recipientViewId: string | null = yield select(selectRecipientViewId)
       const templateId = recipientViewId ?? recipient.applied?.[0] ?? null
       if (templateId) {
-        yield call(openRecipientAddressEditSession, templateId)
+        const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+        if (isMobileLayout) {
+          yield call(openMobileAddressCreateEditForm, 'recipient', templateId)
+        } else {
+          yield call(openRecipientAddressEditSession, templateId)
+        }
       }
     } else {
       yield call(saveAndCloseAddressEditSession, true)
@@ -1048,6 +1138,32 @@ function* handleEnvelopeToolbarAction(
       const senderEntries: AddressBookEntry[] = yield select(
         (s: RootState) => s.addressBook?.senderEntries ?? [],
       )
+      const editContext: AddressCreateEditContext | null =
+        yield select(selectAddressCreateEditContext)
+      if (editContext?.role === 'sender') {
+        if (
+          resolveApplyMediumToolbarState(
+            isAddressDraftComplete(draft),
+            draft,
+            senderEntries,
+            editContext.templateId,
+          ) === 'enabled'
+        ) {
+          yield call(
+            persistAddressTemplateUpdate,
+            'sender',
+            editContext.templateId,
+            draft,
+          )
+          yield put(clearAddressCreateEditContext())
+          yield put(clearSenderFormData())
+          yield put(setAddressFormView({ show: false, role: null }))
+          yield put(setSenderViewId(editContext.templateId))
+          yield put(setSenderView('senderView'))
+          yield call(processEnvelopeVisuals)
+        }
+        return
+      }
       if (
         isAddressDraftComplete(draft) &&
         !doesDraftMatchAnyTemplate(draft, senderEntries)
@@ -1070,6 +1186,32 @@ function* handleEnvelopeToolbarAction(
       const recipientEntries: AddressBookEntry[] = yield select(
         (s: RootState) => s.addressBook?.recipientEntries ?? [],
       )
+      const editContext: AddressCreateEditContext | null =
+        yield select(selectAddressCreateEditContext)
+      if (editContext?.role === 'recipient') {
+        if (
+          resolveApplyMediumToolbarState(
+            isAddressDraftComplete(draft),
+            draft,
+            recipientEntries,
+            editContext.templateId,
+          ) === 'enabled'
+        ) {
+          yield call(
+            persistAddressTemplateUpdate,
+            'recipient',
+            editContext.templateId,
+            draft,
+          )
+          yield put(clearAddressCreateEditContext())
+          yield put(clearRecipientFormData())
+          yield put(setAddressFormView({ show: false, role: null }))
+          yield put(setRecipientViewId(editContext.templateId))
+          yield put(setRecipientView('recipientView'))
+          yield call(processEnvelopeVisuals)
+        }
+        return
+      }
       if (
         isAddressDraftComplete(draft) &&
         !doesDraftMatchAnyTemplate(draft, recipientEntries)

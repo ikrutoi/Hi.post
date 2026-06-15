@@ -28,6 +28,7 @@ import {
   selectShowAddressFormCloseButton,
   selectSenderInListEntries,
   selectRecipientInListEntries,
+  selectAddressCreateEditContext,
 } from '../../infrastructure/selectors'
 import {
   selectSenderEntriesState,
@@ -106,6 +107,7 @@ export const useEnvelopeFacade = () => {
   const recipientInListEntries = useAppSelector(selectRecipientInListEntries)
   const senderTemplateEntries = useAppSelector(selectSenderEntriesState)
   const recipientTemplateEntries = useAppSelector(selectRecipientEntriesState)
+  const addressCreateEditContext = useAppSelector(selectAddressCreateEditContext)
 
   const handleFieldChange = (
     role: EnvelopeRole,
@@ -252,6 +254,13 @@ export const useEnvelopeFacade = () => {
       isAddressComplete,
       draft,
       allTemplates,
+      isSenderSection
+        ? addressCreateEditContext?.role === 'sender'
+          ? addressCreateEditContext.templateId
+          : null
+        : addressCreateEditContext?.role === 'recipient'
+          ? addressCreateEditContext.templateId
+          : null,
     )
     dispatch(
       updateToolbarIcon({

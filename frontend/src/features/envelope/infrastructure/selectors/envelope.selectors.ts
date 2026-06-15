@@ -21,7 +21,7 @@ import {
 } from '../../domain/helpers'
 
 import type { AddressBookEntry } from '../../addressBook/domain/types'
-import type { AddressEditSession } from '../../domain/types'
+import type { AddressCreateEditContext, AddressEditSession } from '../../domain/types'
 
 const EMPTY_RECIPIENT_STATE_LIST: RecipientState[] = []
 
@@ -32,6 +32,7 @@ const selectEnvelopeSelectionState = (state: {
     recipientListPanelOpen: boolean
     senderListPanelOpen: boolean
     activeAddressEdit?: AddressEditSession | null
+    addressCreateEditContext?: AddressCreateEditContext | null
     showAddressFormView?: boolean
     addressFormViewRole?: 'sender' | 'recipient' | null
     senderAddressListPanelDensity?: PanelDensity2Size
@@ -112,6 +113,11 @@ export const selectAddressFormViewRole = createSelector(
 export const selectActiveAddressEdit = createSelector(
   [selectEnvelopeSelectionState],
   (s): AddressEditSession | null => s.activeAddressEdit ?? null,
+)
+
+export const selectAddressCreateEditContext = createSelector(
+  [selectEnvelopeSelectionState],
+  (s): AddressCreateEditContext | null => s.addressCreateEditContext ?? null,
 )
 
 export const selectSenderViewEditMode = createSelector(

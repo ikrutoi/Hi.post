@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import type { AddressFields } from '@shared/config/constants'
 import type { AddressBookMode } from '../../addressBook/domain/types'
-import type { AddressEditSession } from '../../domain/types'
+import type { AddressCreateEditContext, AddressEditSession } from '../../domain/types'
 
 /** @deprecated Используйте `closeAddressEditSession` / payload с `keepRecipientView`. */
 export type RecipientViewEditModePayload =
@@ -16,6 +16,8 @@ export interface EnvelopeSelectionState {
   senderListPanelOpen: boolean
   /** Активная сессия правки шаблона (одна на весь конверт). */
   activeAddressEdit: AddressEditSession | null
+  /** Mobile: create-форма с данными существующего шаблона (не inline edit). */
+  addressCreateEditContext: AddressCreateEditContext | null
   showAddressFormView: boolean
   addressFormViewRole: 'sender' | 'recipient' | null
   /** Плотность панели списка отправителя (`panelDensity2`). */
@@ -32,6 +34,7 @@ const initialState: EnvelopeSelectionState = {
   recipientListPanelOpen: false,
   senderListPanelOpen: false,
   activeAddressEdit: null,
+  addressCreateEditContext: null,
   showAddressFormView: false,
   addressFormViewRole: null,
   senderAddressListPanelDensity: 1,
@@ -84,6 +87,17 @@ export const envelopeSelectionSlice = createSlice({
       >,
     ) {
       state.activeAddressEdit = null
+    },
+
+    setAddressCreateEditContext(
+      state,
+      action: PayloadAction<AddressCreateEditContext | null>,
+    ) {
+      state.addressCreateEditContext = action.payload
+    },
+
+    clearAddressCreateEditContext(state) {
+      state.addressCreateEditContext = null
     },
 
     updateAddressEditDraftField(
@@ -148,6 +162,8 @@ export const {
   closeAddressList,
   openAddressEditSession,
   closeAddressEditSession,
+  setAddressCreateEditContext,
+  clearAddressCreateEditContext,
   updateAddressEditDraftField,
   setAddressFormView,
   addressSaveSuccess,

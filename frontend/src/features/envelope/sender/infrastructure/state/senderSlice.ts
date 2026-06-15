@@ -111,6 +111,12 @@ const senderSlice = createSlice({
       state.formIsEmpty = true
     },
 
+    setSenderFormDraft(state, action: PayloadAction<AddressFields>) {
+      state.formDraft = action.payload
+      state.formIsComplete = isComplete(action.payload)
+      state.formIsEmpty = isFormDraftEmpty(action.payload)
+    },
+
     clearSenderViewDraft(state) {
       state.viewDraft = { ...initialSection.data }
       state.formIsComplete = false
@@ -145,6 +151,7 @@ export const {
   setSenderView,
   setSenderViewId,
   clearSenderFormData,
+  setSenderFormDraft,
   clearSenderViewDraft,
   setSenderViewDraft,
   toggleSenderSortDirection,

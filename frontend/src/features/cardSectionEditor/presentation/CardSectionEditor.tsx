@@ -15,19 +15,9 @@ export const CardSectionEditor: React.FC = () => {
   const { currentView: cardtextCurrentView } = useCardtextFacade()
   const width = sizeCard.width
   const height = sizeCard.height
-  const useFluidMobileLayout =
-    isMobileLayout && (height <= 0 || width <= 0)
-  const sectionWidth =
-    width > 0 ? `${width}px` : useFluidMobileLayout ? '100%' : '0px'
-  const sectionHeight = isMobileLayout
-    ? height > 0
-      ? `${height}px`
-      : '100%'
-    : height > 0
-      ? `${height}px`
-      : useFluidMobileLayout
-        ? '100%'
-        : '0px'
+  const useFluidLayout = height <= 0 || width <= 0
+  const sectionWidth = width > 0 ? `${width}px` : '100%'
+  const sectionHeight = height > 0 ? `${height}px` : '100%'
   /** Desktop: закладки над фабрикой. Mobile: закладки в хедере — inner sections не дублируют shell. */
   const notebookTabsOuter = true
 
@@ -37,7 +27,7 @@ export const CardSectionEditor: React.FC = () => {
       style={{
         width: sectionWidth,
         height: sectionHeight,
-        maxHeight: isMobileLayout ? '100%' : undefined,
+        maxHeight: isMobileLayout || useFluidLayout ? '100%' : undefined,
       }}
     >
       <CardSectionRenderer />
@@ -58,7 +48,7 @@ export const CardSectionEditor: React.FC = () => {
           style={{
             width: sectionWidth,
             height: sectionHeight,
-            maxHeight: isMobileLayout ? '100%' : undefined,
+            maxHeight: isMobileLayout || useFluidLayout ? '100%' : undefined,
           }}
         >
           {activeSection === 'cardtext' && (

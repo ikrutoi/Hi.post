@@ -944,7 +944,7 @@ const App = () => {
     rightPieAromaPeekNoToolbar ||
     rightPieDatePeekNoToolbar
 
-  const mobileEnvelopeAddressCreateOpen =
+  const mobileEnvelopeAddressFormOpen =
     isMobileLayout &&
     activeSection === 'envelope' &&
     !rightPieEnvelopePeekNoToolbar &&
@@ -968,9 +968,9 @@ const App = () => {
         onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
         onLeftPieCenterClick={handleLeftPieCenterClick}
         hideSectionToolbar={
-          hideMobileSectionToolbar || mobileEnvelopeAddressCreateOpen
+          hideMobileSectionToolbar || mobileEnvelopeAddressFormOpen
         }
-        envelopeAddressCreateMode={mobileEnvelopeAddressCreateOpen}
+        envelopeAddressCreateMode={mobileEnvelopeAddressFormOpen}
         listPanelOpen={listPanelOpen}
         cardPieListPanelOpen={cardPieListPanelOpen}
         onEditorPieToolbarAction={handleEditorPieToolbarAction}

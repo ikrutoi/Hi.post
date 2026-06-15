@@ -12,7 +12,7 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
-import { EnvelopeMobileCreateForm } from './EnvelopeMobileCreateForm'
+import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
 import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { selectSenderView } from '../sender/infrastructure/selectors'
@@ -36,15 +36,17 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
     listRowPostcardStatus,
   } = useRightListArchiveMini()
 
-  const mobileCreateRole =
+  const mobileFormRole =
     senderView === 'senderCreate'
       ? ('sender' as const)
       : recipientView === 'recipientCreate'
         ? ('recipient' as const)
         : null
 
-  const showMobileCreateForm =
-    isMobile && mobileCreateRole != null && !rightPieEnvelopePeekNoToolbar
+  const showMobileAddressForm =
+    isMobile &&
+    mobileFormRole != null &&
+    !rightPieEnvelopePeekNoToolbar
 
   const envelopeWorkZone = (
     <div className={styles.envelopeWorkZone}>
@@ -135,17 +137,17 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
   const body = (
     <div
       className={styles.envelope}
-      data-envelope-mobile-create={showMobileCreateForm ? 'true' : undefined}
+      data-envelope-mobile-form={showMobileAddressForm ? 'true' : undefined}
     >
       <div className={styles.envelopeViewWrap}>
         {rightPieEnvelopePeekNoToolbar ? (
           <div className={styles.envelopeToolbarRow} aria-hidden />
-        ) : showMobileCreateForm ? null : (
+        ) : showMobileAddressForm ? null : (
           <EnvelopeInnerToolbar />
         )}
         <div className={styles.envelopeViewContent}>
-          {showMobileCreateForm ? (
-            <EnvelopeMobileCreateForm role={mobileCreateRole} lang={lang} />
+          {showMobileAddressForm && mobileFormRole != null ? (
+            <EnvelopeMobileAddressForm role={mobileFormRole} lang={lang} />
           ) : (
             envelopeWorkZone
           )}

@@ -26,6 +26,7 @@ import {
   selectActiveAddressList,
   selectSenderCardAddress,
   selectRecipientCardAddress,
+  selectAddressCreateEditContext,
 } from '@envelope/infrastructure/selectors'
 import {
   toggleRecipientSelection,
@@ -113,10 +114,16 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
   )
   const senderInList = filterInListEntries(senderEntries)
   const recipientInList = filterInListEntries(recipientEntries)
+  const createEditContext: AddressCreateEditContext | null =
+    yield select(selectAddressCreateEditContext)
 
   if (sender.currentView === 'senderCreate') {
     const draft = sender.formDraft as AddressFields
     const senderDraftComplete = isAddressDraftComplete(draft)
+    const editingTemplateId =
+      createEditContext?.role === 'sender'
+        ? createEditContext.templateId
+        : null
     yield put(
       updateToolbarIcon({
         section: 'senderCreate',
@@ -139,6 +146,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
             senderDraftComplete,
             draft,
             senderEntries,
+            editingTemplateId,
           ),
         },
       }),
@@ -172,6 +180,10 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
   if (recipient.currentView === 'recipientCreate') {
     const draft = recipient.formDraft as AddressFields
     const recipientDraftComplete = isAddressDraftComplete(draft)
+    const editingTemplateId =
+      createEditContext?.role === 'recipient'
+        ? createEditContext.templateId
+        : null
     yield put(
       updateToolbarIcon({
         section: 'recipientCreate',
@@ -194,6 +206,7 @@ export function* syncAddressViewToolbarAddList(): SagaIterator {
             recipientDraftComplete,
             draft,
             recipientEntries,
+            editingTemplateId,
           ),
         },
       }),
