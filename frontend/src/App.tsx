@@ -85,7 +85,6 @@ import { selectCardsByDateMap } from '@entities/card/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import { applyRightListArchiveToolbarVisuals } from '@toolbar/application/syncRightListArchiveToolbarVisuals'
 import { notebookSessionRestored } from '@date/calendar/application/orchestration/notebookOrchestration.events'
-import { buildDisableCartOrHistoryNotebookOnSectionMenuCopyExitCommands } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
 import { SECTION_EDITOR_MENU_ICON_KEYS } from '@features/toolbar/domain/types/sectionEditorMenu.types'
 import { primaryDispatchDateFromPieInner } from '@features/cardPie/domain/primaryDispatchDateFromPieInner'
 import { MarkStampYearDevProvider, useMarkStampYearDev } from '@envelope/application/MarkStampYearDevContext'
@@ -508,76 +507,6 @@ const App = () => {
       setActivePieSide('left')
     }
   }, [activePieSide])
-
-  /**
-   * sectionEditorMenu из правого режима (peek / cardPieCopy): левая фабрика + секция по клику.
-   */
-  const handleSectionEditorMenuClick = useCallback(() => {
-    const inRightListArchiveMode =
-      activePieSide === 'right' &&
-      rightListArchiveLocalId != null &&
-      (rightListArchiveSource === 'cart' || rightListArchiveSource === 'history')
-
-    const exitingCardPieCopy = cardPieCopyStripExpanded
-    const exitingRightPeek =
-      !cardPieCopyStripExpanded && inRightListArchiveMode
-
-    if (!exitingCardPieCopy && !exitingRightPeek) {
-      return
-    }
-
-    const archiveSource = rightListArchiveSource
-    const archiveLocalId = rightListArchiveLocalId
-
-    if (
-      archiveLocalId != null &&
-      (archiveSource === 'cart' || archiveSource === 'history')
-    ) {
-      setRightListArchivePinnedForLeftFactory({
-        localId: archiveLocalId,
-        source: archiveSource,
-      })
-    }
-
-    const stripToDisable: 'cart' | 'history' | null =
-      archiveSource === 'cart' || archiveSource === 'history'
-        ? archiveSource
-        : computedNotebookStripTab === 'cart' ||
-            computedNotebookStripTab === 'history'
-          ? computedNotebookStripTab
-          : notebookStripTab === 'cart' || notebookStripTab === 'history'
-            ? notebookStripTab
-            : null
-
-    if (stripToDisable != null) {
-      for (const action of buildDisableCartOrHistoryNotebookOnSectionMenuCopyExitCommands(
-        stripToDisable,
-      )) {
-        dispatch(action)
-      }
-    }
-
-    if (exitingCardPieCopy) {
-      dispatch(setCardPieCopyStripExpanded(false))
-    }
-
-    setRightPieCardphotoPeekNoToolbar(false)
-    setRightPieCardtextPeekNoToolbar(false)
-    setRightPieEnvelopePeekNoToolbar(false)
-    setRightPieAromaPeekNoToolbar(false)
-    setRightPieDatePeekNoToolbar(false)
-    setSuppressCardPieEditActiveAfterCopy(true)
-    setCardPieEditEngaged(false)
-    setActivePieSide('left')
-  }, [
-    activePieSide,
-    cardPieCopyStripExpanded,
-    computedNotebookStripTab,
-    dispatch,
-    notebookStripTab,
-    rightListArchiveLocalId,
-    rightListArchiveSource,
-  ])
 
   const clearRightPieCardphotoPeek = useCallback(() => {
     setRightPieCardphotoPeekNoToolbar(false)
@@ -1008,11 +937,6 @@ const App = () => {
     return <div className={styles.authBoot} aria-busy="true" />
   }
 
-  const suppressSectionMenuActiveHighlight =
-    activePieSide === 'right' &&
-    !cardPieEditEngaged &&
-    rightListArchiveLocalId != null
-
   const hideMobileSectionToolbar =
     rightPieCardphotoPeekNoToolbar ||
     rightPieCardtextPeekNoToolbar ||
@@ -1063,12 +987,7 @@ const App = () => {
         <div className={styles.appSubstrate}>
         <div className={styles.appControlStrip}>
           <div className={styles.appSidebar}>
-            <SectionEditorSidebar
-              onSectionEditorMenuAction={handleSectionEditorMenuClick}
-              suppressSectionMenuActiveHighlight={
-                suppressSectionMenuActiveHighlight
-              }
-            />
+            <SectionEditorSidebar />
           </div>
           <main
             ref={mainRef}

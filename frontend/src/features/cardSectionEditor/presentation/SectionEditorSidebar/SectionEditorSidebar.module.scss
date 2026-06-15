@@ -10,32 +10,7 @@
   align-items: center;
   justify-content: flex-start;
   padding: 0.35rem 0 0.5rem 0;
-  gap: 0.5rem;
   overflow: hidden;
-
-  > div:nth-child(2) {
-    position: static;
-    left: auto;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-  }
-}
-
-.sectionEditorFooter {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding-top: var(--mobile-footer-icon-gap, var(--mobile-chrome-padding-y, 0.35rem));
-  padding-inline: 0.75rem;
-  padding-bottom: calc(
-    var(--mobile-footer-icon-gap, var(--mobile-chrome-padding-y, 0.35rem))
-    + env(safe-area-inset-bottom, 0px)
-  );
-  background-color: #fff;
-  box-sizing: border-box;
 }
 
 .sectionEditorSidebarLogo {
