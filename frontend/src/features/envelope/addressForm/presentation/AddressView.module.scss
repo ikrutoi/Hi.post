@@ -4,6 +4,24 @@
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $saved-address-overlay-chip-radius: 0.4rem;
+$saved-address-close-inset-mobile: 0.2rem;
+$saved-address-close-hit-mobile: 1.25rem;
+$saved-address-close-icon-mobile: 0.95rem;
+
+@mixin savedAddressCloseButtonMobileSize {
+  :global([data-shell-layout='mobile']) & {
+    top: $saved-address-close-inset-mobile;
+    width: $saved-address-close-hit-mobile;
+    height: $saved-address-close-hit-mobile;
+    min-width: $saved-address-close-hit-mobile;
+    border-radius: 0.32rem;
+
+    svg {
+      width: $saved-address-close-icon-mobile;
+      height: $saved-address-close-icon-mobile;
+    }
+  }
+}
 
 @mixin savedAddressOverlayChipSize {
   @include iconButton.toolbar-icon-button-size-dense(true);
@@ -182,6 +200,12 @@ $envelope-address-view-row-height: 1.625rem;
       padding-left: 0.55rem;
     }
   }
+
+  :global([data-shell-layout='mobile']) & {
+    .recipientAddress {
+      padding-right: 1.85rem;
+    }
+  }
 }
 
 .savedAddressViewContainerEnvelopeRecipient.savedAddressViewContainerEnvelopeNoToolbar {
@@ -204,6 +228,12 @@ $envelope-address-view-row-height: 1.625rem;
   :global([data-shell-layout='desktop']) & {
     .recipientAddress {
       padding-right: 0.55rem;
+    }
+  }
+
+  :global([data-shell-layout='mobile']) & {
+    .recipientAddress {
+      padding-left: 1.85rem;
     }
   }
 }
@@ -411,9 +441,14 @@ $envelope-address-view-row-height: 1.625rem;
   @include overlay.sectionViewOverlayChipPhoto;
   @include overlay.sectionViewOverlayChipIcon;
   border-radius: 0.47rem;
+  @include savedAddressCloseButtonMobileSize;
 
   :global([data-shell-layout='desktop']) & {
     @include iconButton.toolbar-icon-button-size-standard-desktop(true);
+  }
+
+  :global([data-shell-layout='mobile']) & {
+    right: $saved-address-close-inset-mobile;
   }
 }
 
@@ -432,9 +467,14 @@ $envelope-address-view-row-height: 1.625rem;
   @include overlay.sectionViewOverlayChipPhoto;
   @include overlay.sectionViewOverlayChipIcon;
   border-radius: 0.47rem;
+  @include savedAddressCloseButtonMobileSize;
 
   :global([data-shell-layout='desktop']) & {
     @include iconButton.toolbar-icon-button-size-standard-desktop(true);
+  }
+
+  :global([data-shell-layout='mobile']) & {
+    left: $saved-address-close-inset-mobile;
   }
 }
 
