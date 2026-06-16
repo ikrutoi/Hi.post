@@ -447,6 +447,30 @@ function addressFieldsAreComplete(address: AddressFields): boolean {
   return Object.values(address).every((v) => (v ?? '').trim() !== '')
 }
 
+function addressFieldsHaveData(address: AddressFields): boolean {
+  return Object.values(address).some((v) => (v ?? '').trim() !== '')
+}
+
+/** Перед Close view: сохранить отображаемый адрес в formDraft для addressAdd. */
+function* preserveFormDraftFromViewOnClose(
+  role: 'sender' | 'recipient',
+): SagaIterator {
+  if (role === 'sender') {
+    const sender: SenderState = yield select(selectSenderState)
+    const viewDraft = sender.viewDraft as AddressFields
+    if (addressFieldsHaveData(viewDraft)) {
+      yield put(setSenderFormDraft(viewDraft))
+    }
+    return
+  }
+
+  const recipient: RecipientState = yield select(selectRecipientState)
+  const viewDraft = recipient.viewDraft as AddressFields
+  if (addressFieldsHaveData(viewDraft)) {
+    yield put(setRecipientFormDraft(viewDraft))
+  }
+}
+
 /** Сохранить адрес в viewDraft до пересинка книги (inList → outList). */
 function* preserveAddressViewDraftForOutList(
   section: 'senderView' | 'recipientView',
@@ -660,8 +684,9 @@ function* closeSenderViewSaga(): SagaIterator {
   }
 
   yield put(setSenderViewId(null))
-  yield put(setSenderApplied(false))
-  yield put(clearSender())
+  yield* preserveFormDraftFromViewOnClose('sender')
+  yield put(clearSenderViewDraft())
+  yield put(setSenderView('senderEnvelopeView'))
   yield put(setAddressFormView({ show: false, role: null }))
 }
 
@@ -724,37 +749,10 @@ function* closeRecipientViewSaga(): SagaIterator {
   }
 
   yield put(setRecipientViewId(null))
+  yield* preserveFormDraftFromViewOnClose('recipient')
   yield put(clearRecipientViewDraft())
   yield put(setRecipientView('recipientsView'))
   yield put(setAddressFormView({ show: false, role: null }))
-
-  const firstList = recipient.recipientsViewIdsFirstList ?? []
-  yield put(
-    setRecipientsViewIds(firstList.filter((id) => id !== templateId)),
-  )
-  if (recipient.currentRecipientsList === 'second') {
-    const secondList = recipient.recipientsViewIdsSecondList ?? []
-    yield put(
-      setRecipientsViewIdsSecondList(
-        secondList.filter((id) => id !== templateId),
-      ),
-    )
-  }
-  yield put(
-    setRecipientsPendingIds(
-      recipientsPendingIds.filter((id) => id !== templateId),
-    ),
-  )
-
-  if (templateId.startsWith('recipient-')) {
-    const index = parseInt(templateId.replace('recipient-', ''), 10)
-    if (!Number.isNaN(index)) {
-      yield put(removeRecipientFromListByIndex(index))
-      yield put(removeRecipientAt(index))
-    }
-  } else {
-    yield put(removeRecipientFromListById(templateId))
-  }
 }
 
 function* handleEnvelopeToolbarAction(
