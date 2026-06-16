@@ -261,6 +261,18 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
     border: solid 1px $color-envelope-recipient-border;
     // border: solid 1px red;
   }
+
+  &:has(
+      > .addressFieldsetInner
+        > [data-envelope-address-surface][data-envelope-address-view-mode='view']
+    ) {
+    padding: 0;
+    overflow: hidden;
+
+    .envelopeRecipientToolbarIconContainer {
+      display: none;
+    }
+  }
 }
 
 .addressLegend,

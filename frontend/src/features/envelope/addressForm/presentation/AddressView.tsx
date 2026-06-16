@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import type { AddressFields } from '@shared/config/constants'
 import styles from './AddressView.module.scss'
 import clsx from 'clsx'
@@ -113,7 +112,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       if (containerRef.current?.contains(target)) return
       if (
         target.closest(
-          '[data-address-book-entry], [data-address-book-list], [data-envelope-address-fieldset], [data-envelope-address-delete]',
+          '[data-address-book-entry], [data-address-book-list], [data-envelope-address-fieldset], [data-envelope-address-delete], [data-envelope-address-close]',
         )
       ) {
         return
@@ -253,7 +252,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       }
       return
     }
-    if (next.closest('[data-envelope-address-delete]')) return
+    if (next.closest('[data-envelope-address-delete], [data-envelope-address-close]')) return
     // Ignore blur shortly after opening edit (e.g. from list panel) so focus has time to land
     if (Date.now() - editModeOpenedAt.current < 200) return
 
@@ -265,11 +264,6 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const toolbarSection =
     role === 'sender' ? 'senderView' : 'recipientView'
 
-  const handleFormDelete = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    dispatch(toolbarAction({ section: toolbarSection, key: 'delete' } as any))
-  }
-
   const handleFormClose = (e: React.MouseEvent) => {
     e.stopPropagation()
     dispatch(toolbarAction({ section: toolbarSection, key: 'close' } as any))
@@ -277,8 +271,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
 
   const savedAddressViewClassName = clsx(
     styles.savedAddressView,
-    !isEditMode && role !== 'sender' && styles.savedAddressViewWithFormActions,
-    !isEditMode && role === 'sender' && styles.savedAddressViewWithCloseAction,
+    !isEditMode && styles.savedAddressViewWithCloseAction,
     role === 'sender'
       ? styles.savedAddressViewSender
       : styles.savedAddressViewRecipient,
@@ -304,30 +297,20 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         ) : null}
       </div>
-      {role === 'sender' ? (
-        <button
-          type="button"
-          className={styles.savedAddressCloseButton}
-          data-envelope-address-close
-          aria-label="Close"
-          title="Close"
-          onClick={handleFormClose}
-        >
-          {getToolbarIcon({ key: 'close' })}
-        </button>
-      ) : null}
-      {role !== 'sender' ? (
-        <button
-          type="button"
-          className={styles.savedAddressDeleteButton}
-          data-envelope-address-delete
-          aria-label="Delete address template"
-          title="Delete template"
-          onClick={handleFormDelete}
-        >
-          {getToolbarIcon({ key: 'delete' })}
-        </button>
-      ) : null}
+      <button
+        type="button"
+        className={clsx(
+          role === 'recipient'
+            ? styles.savedAddressCloseButtonRecipient
+            : styles.savedAddressCloseButton,
+        )}
+        data-envelope-address-close
+        aria-label="Close"
+        title="Close"
+        onClick={handleFormClose}
+      >
+        {getToolbarIcon({ key: 'close' })}
+      </button>
     </div>
   )
 
@@ -505,17 +488,9 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
         role === 'sender'
           ? styles.savedAddressViewContainerEnvelopeSender
           : styles.savedAddressViewContainerEnvelopeRecipient,
-        role === 'sender' && styles.savedAddressViewContainerEnvelopeNoToolbar,
+        styles.savedAddressViewContainerEnvelopeNoToolbar,
       )}
     >
-      {role !== 'sender' ? (
-        <div
-          className={styles.savedAddressViewToolbar}
-          data-envelope-address-view-toolbar
-        >
-          <Toolbar section="recipientView" />
-        </div>
-      ) : null}
       <div
         ref={containerRef}
         className={clsx(
