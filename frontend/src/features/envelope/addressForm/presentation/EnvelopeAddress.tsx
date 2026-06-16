@@ -34,6 +34,7 @@ import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useEnvelopeMobileAddressFocus } from '../../presentation/EnvelopeMobileAddressFocusContext'
+import type { IconKey } from '@shared/config/constants'
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   role,
@@ -274,6 +275,28 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     (mobileFocus?.isFocused('recipient') ?? false) &&
     showRecipientDetailCard
 
+  const handleMobileViewToolbarAction = useCallback(
+    (section: 'senderView' | 'recipientView', key: IconKey) => {
+      if (key !== 'close' || !isMobile || mobileFocus == null) return
+
+      const targetRole = section === 'senderView' ? 'sender' : 'recipient'
+      if (!mobileFocus.isFocused(targetRole)) return
+
+      const isEditMode =
+        targetRole === 'sender' ? senderViewEditMode : recipientViewEditMode
+      if (isEditMode) return
+
+      mobileFocus.clearFocus()
+      return false
+    },
+    [
+      isMobile,
+      mobileFocus,
+      senderViewEditMode,
+      recipientViewEditMode,
+    ],
+  )
+
   const renderMobileViewToolbar = (
     section: 'senderView' | 'recipientView',
   ) => (
@@ -281,7 +304,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       className={styles.envelopeAddressViewToolbar}
       data-envelope-address-view-toolbar
     >
-      <Toolbar section={section} />
+      <Toolbar
+        section={section}
+        onActionClick={(key) => handleMobileViewToolbarAction(section, key)}
+      />
     </div>
   )
 
