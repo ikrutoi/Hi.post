@@ -88,7 +88,7 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   box-sizing: border-box;
 }
 
-.addressFieldsetInner:has(> [data-envelope-address-surface]) {
+.addressFieldsetInner:has([data-envelope-address-surface]) {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -96,7 +96,53 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   height: 100%;
 }
 
-.addressFieldset:has(> .addressFieldsetInner > [data-envelope-address-surface]) {
+.addressFieldsetStack {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+
+  > .addressFieldset {
+    height: 100%;
+  }
+}
+
+.envelopeAddressViewToolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  transform: translateY($envelopeAddressToolbarLift);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: var(--mobile-section-inner-toolbar-height, 2rem);
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  box-sizing: border-box;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  [class*='toolbarGroup']:first-child [class*='toolbarKey']:first-child {
+    margin-left: 0;
+  }
+
+  [class*='toolbarGroup']:last-child [class*='toolbarKey']:last-child {
+    margin-right: 0;
+  }
+}
+
+.addressFieldset:has(.addressFieldsetInner [data-envelope-address-surface]) {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -226,6 +272,14 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   align-self: stretch;
 }
 
+.addressFormRecipientBody .addressFieldsetStack {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
+}
+
 .addressFormSenderFill {
   flex: 1;
   min-height: 0;
@@ -237,6 +291,14 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   flex: 1 1 auto;
   min-height: 0;
   display: block;
+  width: 100%;
+  max-width: 100%;
+  align-self: stretch;
+}
+
+.addressFormSenderBody .addressFieldsetStack {
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
   max-width: 100%;
   align-self: stretch;

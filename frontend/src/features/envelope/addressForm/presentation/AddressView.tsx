@@ -14,6 +14,8 @@ import {
   selectSenderViewEditMode,
   selectRecipientViewEditMode,
 } from '@envelope/infrastructure/selectors'
+import { useEnvelopeMobileAddressFocus } from '@envelope/presentation/EnvelopeMobileAddressFocusContext'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import {
   updateAddressEditDraftField,
 } from '@envelope/infrastructure/state'
@@ -53,6 +55,8 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   address,
 }) => {
   const dispatch = useAppDispatch()
+  const isMobile = useAppSelector(selectIsMobileLayout)
+  const mobileFocus = useEnvelopeMobileAddressFocus()
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isEditMode =
@@ -264,9 +268,17 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   const toolbarSection =
     role === 'sender' ? 'senderView' : 'recipientView'
 
+  const showMobileFocusedDelete =
+    isMobile && (mobileFocus?.isFocused(role) ?? false)
+
   const handleFormClose = (e: React.MouseEvent) => {
     e.stopPropagation()
     dispatch(toolbarAction({ section: toolbarSection, key: 'close' } as any))
+  }
+
+  const handleFormDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    dispatch(toolbarAction({ section: toolbarSection, key: 'delete' } as any))
   }
 
   const savedAddressViewClassName = clsx(
@@ -276,6 +288,28 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       ? styles.savedAddressViewSender
       : styles.savedAddressViewRecipient,
   )
+
+  const renderDeleteButton = () => {
+    if (!showMobileFocusedDelete) return null
+
+    return (
+      <button
+        type="button"
+        className={clsx(
+          role === 'recipient'
+            ? styles.savedAddressDeleteButtonRecipient
+            : styles.savedAddressDeleteButton,
+        )}
+        data-envelope-address-delete
+        aria-label="Delete"
+        title="Delete"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={handleFormDelete}
+      >
+        {getToolbarIcon({ key: 'delete' })}
+      </button>
+    )
+  }
 
   const renderViewMode = () => (
     <div className={savedAddressViewClassName}>
@@ -311,6 +345,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
       >
         {getToolbarIcon({ key: 'close' })}
       </button>
+      {renderDeleteButton()}
     </div>
   )
 
@@ -474,6 +509,7 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         )}
       </div>
+      {renderDeleteButton()}
     </div>
   )
 

@@ -30,7 +30,10 @@ import {
   IconUsers,
   IconUserSender,
 } from '@shared/ui/icons'
+import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { toolbarAction } from '@toolbar/application/helpers'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
+import { useEnvelopeMobileAddressFocus } from '../../presentation/EnvelopeMobileAddressFocusContext'
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   role,
@@ -66,6 +69,8 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   )
 
   const dispatch = useAppDispatch()
+  const isMobile = useAppSelector(selectIsMobileLayout)
+  const mobileFocus = useEnvelopeMobileAddressFocus()
   const senderView = useAppSelector(selectSenderView)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
@@ -261,6 +266,25 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     senderView === 'senderView' &&
     senderDisplayEntry != null
 
+  const showSenderMobileViewToolbar =
+    isMobile && (mobileFocus?.isFocused('sender') ?? false) && showSenderDetailCard
+
+  const showRecipientMobileViewToolbar =
+    isMobile &&
+    (mobileFocus?.isFocused('recipient') ?? false) &&
+    showRecipientDetailCard
+
+  const renderMobileViewToolbar = (
+    section: 'senderView' | 'recipientView',
+  ) => (
+    <div
+      className={styles.envelopeAddressViewToolbar}
+      data-envelope-address-view-toolbar
+    >
+      <Toolbar section={section} />
+    </div>
+  )
+
   const openAddressForm = (r: 'sender' | 'recipient') => {
     envelopeFacade.setAddressFormViewState(true, r)
     if (r === 'sender') dispatch(setSenderView('senderCreate'))
@@ -296,6 +320,36 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     }
   }
 
+  const tryToggleMobileAddressFocus = useCallback(
+    (targetRole: 'sender' | 'recipient', el: HTMLElement) => {
+      if (!isMobile || mobileFocus == null) return false
+      if (targetRole === 'sender' && senderView === 'senderCreate') return false
+      if (targetRole === 'recipient' && recipientView === 'recipientCreate') {
+        return false
+      }
+      const isEditMode =
+        targetRole === 'sender' ? senderViewEditMode : recipientViewEditMode
+      if (isEditMode) return false
+      if (
+        el.closest(
+          'button, a, input, textarea, select, [role="button"], [data-envelope-address-close], [data-address-edit-row], [data-scrollarea-track], [data-address-book-entry]',
+        )
+      ) {
+        return false
+      }
+      mobileFocus.toggleFocus(targetRole)
+      return true
+    },
+    [
+      isMobile,
+      mobileFocus,
+      senderView,
+      recipientView,
+      senderViewEditMode,
+      recipientViewEditMode,
+    ],
+  )
+
   /** Same path as Toolbar → envelope saga (`handleEnvelopeToolbarAction`, key addressList). */
   const handleRecipientFieldsetMouseDownCapture = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -310,6 +364,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         }
         return
       }
+      if (tryToggleMobileAddressFocus('recipient', el)) {
+        e.stopPropagation()
+        return
+      }
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
         return
       if (el.closest('[data-scrollarea-track]')) return
@@ -321,7 +379,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       }
       dispatch(toolbarAction({ section: 'recipients', key: 'addressList' }))
     },
-    [dispatch, recipientViewEditMode],
+    [dispatch, recipientViewEditMode, tryToggleMobileAddressFocus],
   )
 
   const handleSenderFieldsetMouseDownCapture = useCallback(
@@ -329,6 +387,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       const fieldset = senderFieldsetRef.current
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
+      if (tryToggleMobileAddressFocus('sender', el)) {
+        e.stopPropagation()
+        return
+      }
       if (el.closest('button, a, input, textarea, select, [role="button"]'))
         return
       if (el.closest('[data-envelope-address-surface]')) return
@@ -338,7 +400,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       }
       dispatch(toolbarAction({ section: 'sender', key: 'addressList' }))
     },
-    [dispatch, senderViewEditMode],
+    [dispatch, senderViewEditMode, tryToggleMobileAddressFocus],
   )
 
   return (
@@ -352,54 +414,59 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     >
       {senderFacade.isEnabled && role === 'sender' && (
         <div className={styles.addressFormSenderBody}>
-          <div
-            ref={senderFieldsetRef}
-            data-envelope-address-fieldset
-            role="group"
-            aria-label={roleLabel}
-            className={clsx(
-              styles.addressFieldset,
-              styles.addressFormSender,
-              senderView === 'senderCreate' && styles.addressFieldsetCreateOpen,
-            )}
-            onMouseDownCapture={handleSenderFieldsetMouseDownCapture}
-          >
-            <div className={styles.addressFieldsetInner}>
-              {senderView === 'senderCreate' ? (
-                <AddressFormView
-                  key="senderCreate"
-                  role="sender"
-                  roleLabel={roleLabel}
-                  address={senderFacade.formDraft}
-                  onFieldChange={update}
-                  lang={lang}
-                />
-              ) : showSenderDetailCard ? (
-                <SenderView templateId={cardTemplateId!} address={value} />
-              ) : (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  className={clsx(
-                    styles.addressFormPlaceholder,
-                    styles.addressFormPlaceholderSender,
-                    styles.addressFormPlaceholderBg,
-                    styles.senderPlaceholderInset,
-                  )}
-                  onClick={() => handlePlaceholderClick('sender')}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      handlePlaceholderClick('sender')
-                    }
-                  }}
-                  aria-label="Add sender address"
-                >
-                  <IconUserSender
-                    className={styles.addressFormPlaceholderIconBg}
-                  />
-                </div>
+          <div className={styles.addressFieldsetStack}>
+            {showSenderMobileViewToolbar
+              ? renderMobileViewToolbar('senderView')
+              : null}
+            <div
+              ref={senderFieldsetRef}
+              data-envelope-address-fieldset
+              role="group"
+              aria-label={roleLabel}
+              className={clsx(
+                styles.addressFieldset,
+                styles.addressFormSender,
+                senderView === 'senderCreate' && styles.addressFieldsetCreateOpen,
               )}
+              onMouseDownCapture={handleSenderFieldsetMouseDownCapture}
+            >
+              <div className={styles.addressFieldsetInner}>
+                {senderView === 'senderCreate' ? (
+                  <AddressFormView
+                    key="senderCreate"
+                    role="sender"
+                    roleLabel={roleLabel}
+                    address={senderFacade.formDraft}
+                    onFieldChange={update}
+                    lang={lang}
+                  />
+                ) : showSenderDetailCard ? (
+                  <SenderView templateId={cardTemplateId!} address={value} />
+                ) : (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className={clsx(
+                      styles.addressFormPlaceholder,
+                      styles.addressFormPlaceholderSender,
+                      styles.addressFormPlaceholderBg,
+                      styles.senderPlaceholderInset,
+                    )}
+                    onClick={() => handlePlaceholderClick('sender')}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        handlePlaceholderClick('sender')
+                      }
+                    }}
+                    aria-label="Add sender address"
+                  >
+                    <IconUserSender
+                      className={styles.addressFormPlaceholderIconBg}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -411,77 +478,82 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             ref={setRecipientFieldsetContainerScrollRef}
             className={styles.recipientFieldsetContainerScroll}
           />
-          <div
-            ref={recipientFieldsetRef}
-            data-envelope-address-fieldset
-            role="group"
-            aria-label="Recipients"
-            className={clsx(
-              styles.addressFieldset,
-              styles.addressFormRecipient,
-              styles.recipientFieldsetContent,
-              showRecipientsEnvelopeList && styles.recipientFieldsetMulti,
-              showRecipientsEnvelopeList && styles.recipientFieldsetWithList,
-              recipientView === 'recipientCreate' &&
-                styles.addressFieldsetCreateOpen,
-            )}
-            onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
-          >
-            <div className={styles.envelopeRecipientToolbarIconContainer}>
-              {recipientsFormViewIdsCount > 0 && (
-                <span className={styles.recipientsCountBadge}>
-                  {recipientsFormViewIdsCount}
-                </span>
+          <div className={styles.addressFieldsetStack}>
+            {showRecipientMobileViewToolbar
+              ? renderMobileViewToolbar('recipientView')
+              : null}
+            <div
+              ref={recipientFieldsetRef}
+              data-envelope-address-fieldset
+              role="group"
+              aria-label="Recipients"
+              className={clsx(
+                styles.addressFieldset,
+                styles.addressFormRecipient,
+                styles.recipientFieldsetContent,
+                showRecipientsEnvelopeList && styles.recipientFieldsetMulti,
+                showRecipientsEnvelopeList && styles.recipientFieldsetWithList,
+                recipientView === 'recipientCreate' &&
+                  styles.addressFieldsetCreateOpen,
               )}
-              <IconUsers className={styles.envelopeRecipientToolbarIcon} />
-            </div>
-            <div className={styles.addressFieldsetInner}>
-              {recipientView === 'recipientCreate' ? (
-                <AddressFormView
-                  key="recipientCreate"
-                  role="recipient"
-                  roleLabel={roleLabel}
-                  address={recipientFacade.formDraft}
-                  onFieldChange={update}
-                  lang={lang}
-                />
-              ) : showRecipientDetailCard ? (
-                <RecipientView
-                  templateId={cardTemplateId ?? ''}
-                  address={value}
-                />
-              ) : showRecipientsEnvelopeList ? (
-                <RecipientsView
-                  entries={recipientsDisplayList}
-                  onRemove={recipientFacade.removeFromList}
-                  onOpenRecipient={handleOpenRecipientFromList}
-                  scrollbarPortalTarget={
-                    recipientScrollContainerReady
-                      ? recipientFieldsetContainerScrollRef
-                      : undefined
-                  }
-                />
-              ) : (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  className={clsx(
-                    styles.addressFormPlaceholder,
-                    styles.addressFormPlaceholderRecipient,
-                    styles.addressFormPlaceholderBg,
-                  )}
-                  onClick={() => handlePlaceholderClick('recipient')}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      handlePlaceholderClick('recipient')
+              onMouseDownCapture={handleRecipientFieldsetMouseDownCapture}
+            >
+              <div className={styles.envelopeRecipientToolbarIconContainer}>
+                {recipientsFormViewIdsCount > 0 && (
+                  <span className={styles.recipientsCountBadge}>
+                    {recipientsFormViewIdsCount}
+                  </span>
+                )}
+                <IconUsers className={styles.envelopeRecipientToolbarIcon} />
+              </div>
+              <div className={styles.addressFieldsetInner}>
+                {recipientView === 'recipientCreate' ? (
+                  <AddressFormView
+                    key="recipientCreate"
+                    role="recipient"
+                    roleLabel={roleLabel}
+                    address={recipientFacade.formDraft}
+                    onFieldChange={update}
+                    lang={lang}
+                  />
+                ) : showRecipientDetailCard ? (
+                  <RecipientView
+                    templateId={cardTemplateId ?? ''}
+                    address={value}
+                  />
+                ) : showRecipientsEnvelopeList ? (
+                  <RecipientsView
+                    entries={recipientsDisplayList}
+                    onRemove={recipientFacade.removeFromList}
+                    onOpenRecipient={handleOpenRecipientFromList}
+                    scrollbarPortalTarget={
+                      recipientScrollContainerReady
+                        ? recipientFieldsetContainerScrollRef
+                        : undefined
                     }
-                  }}
-                  aria-label="Add recipients"
-                >
-                  <IconUsers className={styles.addressFormPlaceholderIconBg} />
-                </div>
-              )}
+                  />
+                ) : (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className={clsx(
+                      styles.addressFormPlaceholder,
+                      styles.addressFormPlaceholderRecipient,
+                      styles.addressFormPlaceholderBg,
+                    )}
+                    onClick={() => handlePlaceholderClick('recipient')}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        handlePlaceholderClick('recipient')
+                      }
+                    }}
+                    aria-label="Add recipients"
+                  >
+                    <IconUsers className={styles.addressFormPlaceholderIconBg} />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

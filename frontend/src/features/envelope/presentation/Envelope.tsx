@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { Toggle } from '@shared/ui/Toggle/Toggle'
 import { Mark } from '@envelope/view/presentation'
@@ -13,6 +13,10 @@ import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
 import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
+import {
+  EnvelopeMobileAddressFocusProvider,
+  useEnvelopeMobileAddressFocus,
+} from './EnvelopeMobileAddressFocusContext'
 import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { selectSenderView } from '../sender/infrastructure/selectors'
@@ -24,12 +28,22 @@ type EnvelopeProps = {
 }
 
 export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
+  return (
+    <EnvelopeMobileAddressFocusProvider>
+      <EnvelopeBody cardPuzzleRef={cardPuzzleRef} />
+    </EnvelopeMobileAddressFocusProvider>
+  )
+}
+
+const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }) => {
   const notebookTabsOuter = useSectionEditorNotebookTabsOuter()
   const lang = getSafeLang(i18n.language)
   const senderFacade = useSenderFacade()
   const isMobile = useAppSelector(selectIsMobileLayout)
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
+  const mobileFocus = useEnvelopeMobileAddressFocus()
+  const mobileFocusRole = mobileFocus?.focusRole ?? null
   const {
     rightPieEnvelopePeekNoToolbar,
     listRowLocalId,
@@ -48,11 +62,68 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
     mobileFormRole != null &&
     !rightPieEnvelopePeekNoToolbar
 
+  const showMobileAddressFocus =
+    isMobile &&
+    mobileFocusRole != null &&
+    !showMobileAddressForm &&
+    !rightPieEnvelopePeekNoToolbar
+
+  useEffect(() => {
+    if (!isMobile || showMobileAddressForm || rightPieEnvelopePeekNoToolbar) {
+      mobileFocus?.clearFocus()
+    }
+  }, [
+    isMobile,
+    showMobileAddressForm,
+    rightPieEnvelopePeekNoToolbar,
+    mobileFocus,
+  ])
+
+  useEffect(() => {
+    if (
+      senderView === 'senderCreate' ||
+      recipientView === 'recipientCreate'
+    ) {
+      mobileFocus?.clearFocus()
+    }
+  }, [senderView, recipientView, mobileFocus])
+
+  const prevSenderViewRef = useRef(senderView)
+  const prevRecipientViewRef = useRef(recipientView)
+
+  useEffect(() => {
+    if (
+      mobileFocusRole === 'sender' &&
+      prevSenderViewRef.current === 'senderView' &&
+      senderView !== 'senderView'
+    ) {
+      mobileFocus?.clearFocus()
+    }
+    prevSenderViewRef.current = senderView
+  }, [senderView, mobileFocusRole, mobileFocus])
+
+  useEffect(() => {
+    if (
+      mobileFocusRole === 'recipient' &&
+      prevRecipientViewRef.current === 'recipientView' &&
+      recipientView !== 'recipientView'
+    ) {
+      mobileFocus?.clearFocus()
+    }
+    prevRecipientViewRef.current = recipientView
+  }, [recipientView, mobileFocusRole, mobileFocus])
+
   const envelopeWorkZone = (
     <div className={styles.envelopeWorkZone}>
       <div className={styles.envelopeTopSlot}>
-        <div className={styles.envelopeLogo} />
-        <div className={styles.envelopeMark}>
+        <div
+          className={styles.envelopeLogo}
+          data-envelope-mobile-focus-chrome
+        />
+        <div
+          className={styles.envelopeMark}
+          data-envelope-mobile-focus-chrome
+        >
           <Mark
             simplifiedPeek={rightPieEnvelopePeekNoToolbar}
             listArchivePostcardStatus={listRowPostcardStatus}
@@ -60,6 +131,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         </div>
         <div
           className={clsx(styles.envelopeSection, styles.envelopeSectionSender)}
+          data-envelope-mobile-focus-sender
         >
           {rightPieEnvelopePeekNoToolbar ? (
             <EnvelopePeekAddressBlock
@@ -76,7 +148,10 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
           )}
         </div>
       </div>
-      <div className={styles.envelopeBottomSlot}>
+      <div
+        className={styles.envelopeBottomSlot}
+        data-envelope-mobile-focus-recipient
+      >
         <div
           className={clsx(
             styles.envelopeSection,
@@ -103,7 +178,10 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         </div>
       </div>
 
-      <div className={styles.envelopeSenderToggle}>
+      <div
+        className={styles.envelopeSenderToggle}
+        data-envelope-mobile-focus-chrome
+      >
         {rightPieEnvelopePeekNoToolbar ? (
           <div className={styles.envelopeFooterSpacer} aria-hidden />
         ) : (
@@ -128,7 +206,10 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
         )}
       </div>
 
-      <div className={styles.envelopeRecipientToggle}>
+      <div
+        className={styles.envelopeRecipientToggle}
+        data-envelope-mobile-focus-chrome
+      >
         <div className={styles.envelopeFooterSpacer} aria-hidden />
       </div>
     </div>
@@ -138,6 +219,7 @@ export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
     <div
       className={styles.envelope}
       data-envelope-mobile-form={showMobileAddressForm ? 'true' : undefined}
+      data-envelope-mobile-focus={showMobileAddressFocus ? mobileFocusRole! : undefined}
     >
       <div className={styles.envelopeViewWrap}>
         {rightPieEnvelopePeekNoToolbar ? (

@@ -4,22 +4,75 @@
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 $saved-address-overlay-chip-radius: 0.4rem;
-$saved-address-close-inset-mobile: 0.2rem;
-$saved-address-close-hit-mobile: 1.25rem;
-$saved-address-close-icon-mobile: 0.95rem;
+$saved-address-action-inset-desktop: 0.65rem;
+$saved-address-action-inset-mobile: 0.35rem;
+$saved-address-action-hit-mobile: 1.45rem;
+$saved-address-action-icon-mobile: 1.05rem;
+$saved-address-action-hit-desktop: 1.85rem;
+$saved-address-action-icon-desktop: 0.95rem;
 
 @mixin savedAddressCloseButtonMobileSize {
   :global([data-shell-layout='mobile']) & {
-    top: $saved-address-close-inset-mobile;
-    width: $saved-address-close-hit-mobile;
-    height: $saved-address-close-hit-mobile;
-    min-width: $saved-address-close-hit-mobile;
-    border-radius: 0.32rem;
+    width: $saved-address-action-hit-mobile;
+    height: $saved-address-action-hit-mobile;
+    min-width: $saved-address-action-hit-mobile;
+    border-radius: 0.36rem;
 
     svg {
-      width: $saved-address-close-icon-mobile;
-      height: $saved-address-close-icon-mobile;
+      width: $saved-address-action-icon-mobile;
+      height: $saved-address-action-icon-mobile;
     }
+  }
+}
+
+@mixin savedAddressDeleteButtonMobileSize {
+  :global([data-shell-layout='mobile']) & {
+    width: $saved-address-action-hit-mobile;
+    height: $saved-address-action-hit-mobile;
+    min-width: $saved-address-action-hit-mobile;
+    border-radius: 0.36rem;
+
+    svg {
+      width: $saved-address-action-icon-mobile;
+      height: $saved-address-action-icon-mobile;
+    }
+  }
+}
+
+@mixin savedAddressActionButtonDesktopSize {
+  :global([data-shell-layout='desktop']) & {
+    width: $saved-address-action-hit-desktop;
+    height: $saved-address-action-hit-desktop;
+    min-width: $saved-address-action-hit-desktop;
+
+    svg {
+      width: $saved-address-action-icon-desktop;
+      height: $saved-address-action-icon-desktop;
+    }
+  }
+}
+
+@mixin savedAddressCloseButtonMobileInset {
+  :global([data-shell-layout='mobile']) & {
+    top: $saved-address-action-inset-mobile;
+  }
+}
+
+@mixin savedAddressCloseButtonMobileInsetRight {
+  :global([data-shell-layout='mobile']) & {
+    right: $saved-address-action-inset-mobile;
+  }
+}
+
+@mixin savedAddressCloseButtonMobileInsetLeft {
+  :global([data-shell-layout='mobile']) & {
+    left: $saved-address-action-inset-mobile;
+  }
+}
+
+@mixin savedAddressDeleteButtonMobileInset {
+  :global([data-shell-layout='mobile']) & {
+    bottom: $saved-address-action-inset-mobile;
   }
 }
 
@@ -423,10 +476,49 @@ $envelope-address-view-row-height: 1.625rem;
 
 .savedAddressDeleteButton {
   @include overlay.sectionViewOverlayDeleteButton;
+  box-sizing: border-box;
   border-radius: 0.47rem;
+  @include savedAddressDeleteButtonMobileSize;
+  @include savedAddressActionButtonDesktopSize;
 
   :global([data-shell-layout='desktop']) & {
-    @include iconButton.toolbar-icon-button-size-standard-desktop(true);
+    right: $saved-address-action-inset-desktop;
+    bottom: $saved-address-action-inset-desktop;
+  }
+
+  :global([data-shell-layout='mobile']) & {
+    @include savedAddressDeleteButtonMobileInset;
+    right: $saved-address-action-inset-mobile;
+    min-height: $saved-address-action-hit-mobile;
+    max-height: $saved-address-action-hit-mobile;
+  }
+}
+
+.savedAddressDeleteButtonRecipient {
+  position: absolute;
+  bottom: $saved-address-action-inset-desktop;
+  left: $saved-address-action-inset-desktop;
+  right: auto;
+  top: auto;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  @include overlay.sectionViewOverlayChipPhoto;
+  @include overlay.sectionViewOverlayChipIcon;
+  border-radius: 0.47rem;
+  @include savedAddressDeleteButtonMobileSize;
+  @include savedAddressActionButtonDesktopSize;
+
+  :global([data-shell-layout='mobile']) & {
+    @include savedAddressDeleteButtonMobileInset;
+    @include savedAddressCloseButtonMobileInsetLeft;
+    min-height: $saved-address-action-hit-mobile;
+    max-height: $saved-address-action-hit-mobile;
   }
 }
 
@@ -442,20 +534,23 @@ $envelope-address-view-row-height: 1.625rem;
   @include overlay.sectionViewOverlayChipIcon;
   border-radius: 0.47rem;
   @include savedAddressCloseButtonMobileSize;
+  @include savedAddressActionButtonDesktopSize;
 
   :global([data-shell-layout='desktop']) & {
-    @include iconButton.toolbar-icon-button-size-standard-desktop(true);
+    top: $saved-address-action-inset-desktop;
+    right: $saved-address-action-inset-desktop;
   }
 
   :global([data-shell-layout='mobile']) & {
-    right: $saved-address-close-inset-mobile;
+    @include savedAddressCloseButtonMobileInset;
+    @include savedAddressCloseButtonMobileInsetRight;
   }
 }
 
 .savedAddressCloseButtonRecipient {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
+  top: $saved-address-action-inset-desktop;
+  left: $saved-address-action-inset-desktop;
   right: auto;
   z-index: 2;
   display: inline-flex;
@@ -468,13 +563,34 @@ $envelope-address-view-row-height: 1.625rem;
   @include overlay.sectionViewOverlayChipIcon;
   border-radius: 0.47rem;
   @include savedAddressCloseButtonMobileSize;
-
-  :global([data-shell-layout='desktop']) & {
-    @include iconButton.toolbar-icon-button-size-standard-desktop(true);
-  }
+  @include savedAddressActionButtonDesktopSize;
 
   :global([data-shell-layout='mobile']) & {
-    left: $saved-address-close-inset-mobile;
+    @include savedAddressCloseButtonMobileInset;
+    @include savedAddressCloseButtonMobileInsetLeft;
+  }
+}
+
+:global([data-envelope-mobile-focus]) {
+  .savedAddressCloseButton,
+  .savedAddressCloseButtonRecipient {
+    display: none;
+  }
+
+  .savedAddressViewContainerEnvelopeSender.savedAddressViewContainerEnvelopeNoToolbar,
+  .savedAddressViewContainerEnvelopeRecipient.savedAddressViewContainerEnvelopeNoToolbar {
+    .savedAddressView,
+    .savedAddressViewSender,
+    .savedAddressViewRecipient {
+      overflow: visible;
+    }
+
+    .recipientAddress {
+      overflow: visible;
+      padding-bottom: calc(
+        #{$saved-address-action-hit-mobile} + #{$saved-address-action-inset-mobile} + 0.1rem
+      );
+    }
   }
 }
 

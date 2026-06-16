@@ -154,6 +154,48 @@
   }
 }
 
+.envelope[data-envelope-mobile-focus='sender'] {
+  [data-envelope-mobile-focus-chrome],
+  [data-envelope-mobile-focus-recipient] {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.envelope[data-envelope-mobile-focus='recipient'] {
+  [data-envelope-mobile-focus-chrome],
+  [data-envelope-mobile-focus-sender] {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.envelopeToolbarSlotFocusedOnly {
+  flex: 1 1 100%;
+  width: 100%;
+
+  > * {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.envelopeToolbarSlotViewFocused {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  width: 100%;
+
+  > * {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
 .envelopeWorkZone {
   position: relative;
   display: grid;
