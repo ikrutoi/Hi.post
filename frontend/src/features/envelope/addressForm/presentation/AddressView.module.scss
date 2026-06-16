@@ -45,6 +45,8 @@ $envelope-address-view-row-height: 1.625rem;
   .savedAddressViewCardWrap {
     flex: 1;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   .savedAddressView {
@@ -61,7 +63,124 @@ $envelope-address-view-row-height: 1.625rem;
     flex: 1 1 auto;
     min-height: 0;
   }
+}
 
+/** senderView / recipientView на конверте: фон на всю зону формы под тулбаром. */
+.savedAddressViewContainerEnvelope {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  .savedAddressViewToolbar {
+    flex-shrink: 0;
+  }
+
+  .savedAddressViewCardWrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .savedAddressView,
+  .savedAddressViewWithFormActions {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+  }
+
+  .savedAddressViewWithFormActions .recipientAddress {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+
+.savedAddressViewContainerEnvelopeSender {
+  .savedAddressViewCardWrap {
+    background-color: $color-envelope-sender-input;
+  }
+
+  .savedAddressViewSender {
+    background-color: transparent;
+    border: none;
+  }
+}
+
+.savedAddressViewContainerEnvelopeNoToolbar {
+  justify-content: flex-start;
+  max-height: none;
+
+  .savedAddressViewCardWrap {
+    flex: 1 1 auto;
+  }
+}
+
+.savedAddressViewContainerEnvelopeSender.savedAddressViewContainerEnvelopeNoToolbar {
+  height: 100%;
+
+  .savedAddressViewCardWrap {
+    border-radius: inherit;
+  }
+
+  .savedAddressView,
+  .savedAddressViewSender {
+    padding: 0;
+  }
+
+  .recipientAddress {
+    padding-top: 0.35rem;
+    padding-right: 2.5rem;
+    box-sizing: border-box;
+    gap: 0.05rem;
+  }
+
+  .recipientAddressName,
+  .recipientAddressStreet,
+  .recipientAddressCityZip,
+  .recipientAddressCountry {
+    min-height: 1.4rem;
+    line-height: 1.2;
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    .recipientAddress {
+      padding-left: 0.55rem;
+      gap: 0.15rem;
+    }
+
+    .recipientAddressName {
+      font-size: 1.05rem;
+    }
+
+    .recipientAddressStreet,
+    .recipientAddressCityZip,
+    .recipientAddressCountry {
+      font-size: 0.975rem;
+    }
+
+    .recipientAddressName,
+    .recipientAddressStreet,
+    .recipientAddressCityZip,
+    .recipientAddressCountry {
+      min-height: 1.55rem;
+      line-height: 1.35;
+    }
+  }
+}
+
+.savedAddressViewContainerEnvelopeRecipient {
+  .savedAddressViewCardWrap {
+    background-color: $color-envelope-recipient-input;
+  }
+
+  .savedAddressViewRecipient {
+    background-color: transparent;
+    border: none;
+  }
 }
 
 /** Mobile envelope create: inset section card with toolbar + form. */
@@ -243,6 +362,27 @@ $envelope-address-view-row-height: 1.625rem;
   :global([data-shell-layout='desktop']) & {
     @include iconButton.toolbar-icon-button-size-standard-desktop(true);
   }
+}
+
+.savedAddressCloseButton {
+  @include overlay.sectionViewOverlayClosePlacement;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  @include overlay.sectionViewOverlayChipPhoto;
+  @include overlay.sectionViewOverlayChipIcon;
+  border-radius: 0.47rem;
+
+  :global([data-shell-layout='desktop']) & {
+    @include iconButton.toolbar-icon-button-size-standard-desktop(true);
+  }
+}
+
+.savedAddressViewWithCloseAction {
+  align-items: stretch;
 }
 
 .savedAddressViewWithFormActions {

@@ -270,9 +270,15 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
     dispatch(toolbarAction({ section: toolbarSection, key: 'delete' } as any))
   }
 
+  const handleFormClose = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    dispatch(toolbarAction({ section: toolbarSection, key: 'close' } as any))
+  }
+
   const savedAddressViewClassName = clsx(
     styles.savedAddressView,
-    !isEditMode && styles.savedAddressViewWithFormActions,
+    !isEditMode && role !== 'sender' && styles.savedAddressViewWithFormActions,
+    !isEditMode && role === 'sender' && styles.savedAddressViewWithCloseAction,
     role === 'sender'
       ? styles.savedAddressViewSender
       : styles.savedAddressViewRecipient,
@@ -298,16 +304,30 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
           </div>
         ) : null}
       </div>
-      <button
-        type="button"
-        className={styles.savedAddressDeleteButton}
-        data-envelope-address-delete
-        aria-label="Delete address template"
-        title="Delete template"
-        onClick={handleFormDelete}
-      >
-        {getToolbarIcon({ key: 'delete' })}
-      </button>
+      {role === 'sender' ? (
+        <button
+          type="button"
+          className={styles.savedAddressCloseButton}
+          data-envelope-address-close
+          aria-label="Close"
+          title="Close"
+          onClick={handleFormClose}
+        >
+          {getToolbarIcon({ key: 'close' })}
+        </button>
+      ) : null}
+      {role !== 'sender' ? (
+        <button
+          type="button"
+          className={styles.savedAddressDeleteButton}
+          data-envelope-address-delete
+          aria-label="Delete address template"
+          title="Delete template"
+          onClick={handleFormDelete}
+        >
+          {getToolbarIcon({ key: 'delete' })}
+        </button>
+      ) : null}
     </div>
   )
 
@@ -477,21 +497,25 @@ const SingleAddressView: React.FC<SingleAddressViewProps> = ({
   return (
     <div
       data-envelope-address-surface
+      data-envelope-address-view-mode="view"
       className={clsx(
         styles.savedAddressViewContainer,
-        styles.savedAddressViewContainerFixed,
+        styles.savedAddressViewContainerFill,
+        styles.savedAddressViewContainerEnvelope,
+        role === 'sender'
+          ? styles.savedAddressViewContainerEnvelopeSender
+          : styles.savedAddressViewContainerEnvelopeRecipient,
+        role === 'sender' && styles.savedAddressViewContainerEnvelopeNoToolbar,
       )}
     >
-      <div
-        className={styles.savedAddressViewToolbar}
-        data-envelope-address-view-toolbar
-      >
-        <Toolbar
-          section={
-            role === 'sender' ? 'senderView' : 'recipientView'
-          }
-        />
-      </div>
+      {role !== 'sender' ? (
+        <div
+          className={styles.savedAddressViewToolbar}
+          data-envelope-address-view-toolbar
+        >
+          <Toolbar section="recipientView" />
+        </div>
+      ) : null}
       <div
         ref={containerRef}
         className={clsx(

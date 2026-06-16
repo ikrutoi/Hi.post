@@ -88,6 +88,21 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   box-sizing: border-box;
 }
 
+.addressFieldsetInner:has(> [data-envelope-address-surface]) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+.addressFieldset:has(> .addressFieldsetInner > [data-envelope-address-surface]) {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 /* Пустой state: плейсхолдер absolute — без высоты родителя % inset уезжают вверх */
 .addressFieldsetInner:has(> .addressFormPlaceholderBg) {
   position: absolute;
@@ -230,6 +245,14 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
 .addressFormSender {
   &.addressFieldset {
     border: solid 1px $color-envelope-sender-border;
+  }
+
+  &:has(
+      > .addressFieldsetInner
+        > [data-envelope-address-surface][data-envelope-address-view-mode='view']
+    ) {
+    padding: 0;
+    overflow: hidden;
   }
 }
 
