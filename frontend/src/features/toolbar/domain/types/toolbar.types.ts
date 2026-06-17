@@ -108,7 +108,6 @@ export const TOOLBAR_SECTIONS = [
   'postcardPieHistory',
   'cart',
   'panelMiniSections',
-  'userPanelChoicePhoto',
   'userPanel',
   'aroma',
 ] as const
@@ -154,7 +153,6 @@ export type ToolbarState = {
   }
   cart: CartToolbarState & { config: ToolbarGroup[] }
   panelMiniSections: PanelMiniSectionsToolbarState & { config: ToolbarGroup[] }
-  userPanelChoicePhoto: UserPanelToolbarState & { config: ToolbarGroup[] }
   userPanel: UserPanelToolbarState & { config: ToolbarGroup[] }
   aroma: AromaToolbarState & { config: ToolbarGroup[] }
 }
@@ -335,11 +333,6 @@ export type ToolbarSectionConfigMap = {
     'panelMiniSections'
   >
 
-  userPanelChoicePhoto: BaseSectionConfig<
-    UserPanelToolbarState,
-    UserPanelKey,
-    'userPanelChoicePhoto'
-  >
   // TODO: Implement userPanel toolbar
   userPanel: BaseSectionConfig<UserPanelToolbarState, UserPanelKey, 'userPanel'>
   aroma: BaseSectionConfig<AromaToolbarState, AromaKey, 'aroma'>
@@ -417,10 +410,8 @@ export type ToolbarKeyFor<S extends ToolbarSection> = S extends 'cardphoto'
                                                                     ? CartKey
                                                                     : S extends 'panelMiniSections'
                                                                       ? PanelMiniSectionsKey
-                                                                      : S extends 'userPanelChoicePhoto'
+                                                                      : S extends 'userPanel'
                                                                         ? UserPanelKey
-                                                                        : S extends 'userPanel'
-                                                                          ? UserPanelKey
-                                                                          : S extends 'aroma'
+                                                                        : S extends 'aroma'
                                                                             ? AromaKey
                                                                             : never

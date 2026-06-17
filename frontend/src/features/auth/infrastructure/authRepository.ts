@@ -11,7 +11,6 @@ export interface AuthRepository {
   login(payload: LoginPayload): Promise<AuthResponse>
   register(payload: RegisterPayload): Promise<AuthResponse>
   fetchMe(): Promise<User>
-  updateAvatar(userId: string, avatarUrl: string | null): Promise<void>
 }
 
 export function getAuthRepository(): AuthRepository {

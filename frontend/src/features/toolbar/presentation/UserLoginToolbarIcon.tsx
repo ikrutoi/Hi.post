@@ -1,37 +1,28 @@
-import React, { useState } from 'react'
+import React, { useMemo } from 'react'
 import clsx from 'clsx'
 import {
   IconUserRegistered,
-  getUserRegisteredElementColors,
+  getOrCreateUserRegisteredElementColors,
 } from '@shared/ui/icons'
 import styles from './Toolbar.module.scss'
 
 type UserLoginToolbarIconProps = {
-  avatarUrl?: string | null
+  userId: string
   className?: string
 }
 
 export const UserLoginToolbarIcon: React.FC<UserLoginToolbarIconProps> = ({
-  avatarUrl,
+  userId,
   className,
 }) => {
-  const [failed, setFailed] = useState(false)
-  const glyphClass = clsx(styles.toolbarUserChromeGlyph, className)
-
-  if (avatarUrl && !failed) {
-    return (
-      <img
-        src={avatarUrl}
-        alt=""
-        className={glyphClass}
-        onError={() => setFailed(true)}
-      />
-    )
-  }
+  const elementColors = useMemo(
+    () => getOrCreateUserRegisteredElementColors(userId),
+    [userId],
+  )
 
   return (
-    <span className={glyphClass} aria-hidden>
-      <IconUserRegistered elementColors={getUserRegisteredElementColors()} />
+    <span className={clsx(styles.toolbarUserChromeGlyph, className)} aria-hidden>
+      <IconUserRegistered elementColors={elementColors} />
     </span>
   )
 }

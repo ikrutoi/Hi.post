@@ -4,9 +4,6 @@ export const selectAuthState = (state: RootState) => state.auth
 
 export const selectAuthUser = (state: RootState) => state.auth.user
 
-export const selectAuthUserAvatarUrl = (state: RootState) =>
-  state.auth.user?.avatarUrl ?? null
-
 export const selectIsAuthenticated = (state: RootState) =>
   state.auth.isAuthenticated
 

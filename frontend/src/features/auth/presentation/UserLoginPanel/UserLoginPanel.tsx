@@ -1,12 +1,9 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import clsx from 'clsx'
-import type { IconKey } from '@shared/config/constants'
-import type { ToolbarSection } from '@toolbar/domain/types'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { getToolbarIcon } from '@shared/utils/icons'
-import { Toolbar } from '@toolbar/presentation/Toolbar'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   clearAuthError,
@@ -17,12 +14,7 @@ import {
   selectAuthUser,
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
-import {
-  UserAvatarPicker,
-  type AvatarCropState,
-  type UserAvatarCropToolbarActions,
-  type UserAvatarPickerHandle,
-} from './UserAvatarPicker'
+import { UserAvatarPicker } from './UserAvatarPicker'
 import {
   GuestAuthSection,
   type GuestAuthMode,
@@ -34,53 +26,7 @@ export const UserLoginPanel: React.FC = () => {
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const user = useAppSelector(selectAuthUser)
-  const [avatarCropState, setAvatarCropState] = useState<AvatarCropState>({
-    active: false,
-  })
-  const avatarPickerRef = useRef<UserAvatarPickerHandle>(null)
-  const [cropToolbarActions, setCropToolbarActions] =
-    useState<UserAvatarCropToolbarActions | null>(null)
   const [guestAuthMode, setGuestAuthMode] = useState<GuestAuthMode>('signIn')
-
-  const handleAvatarCropStateChange = useCallback((state: AvatarCropState) => {
-    setAvatarCropState(state)
-  }, [])
-
-  const handleCropToolbarActions = useCallback(
-    (actions: UserAvatarCropToolbarActions | null) => {
-      setCropToolbarActions(actions)
-    },
-    [],
-  )
-
-  const userPanelToolbarSection = useMemo<ToolbarSection | null>(() => {
-    if (!isAuthenticated || !avatarCropState.active) {
-      return null
-    }
-    return 'userPanelChoicePhoto'
-  }, [avatarCropState.active, isAuthenticated])
-
-  const cropToolbarSaving = cropToolbarActions?.saving ?? false
-  const cropToolbarCanApply = cropToolbarActions?.canApply ?? false
-
-  const userPanelToolbarStateOverride = useMemo(
-    () => ({
-      applyLight: {
-        state:
-          cropToolbarSaving || !cropToolbarCanApply ? 'disabled' : 'enabled',
-        options: {},
-      },
-      return: {
-        state: cropToolbarSaving ? 'disabled' : 'enabled',
-        options: {},
-      },
-      userLoginAdd: {
-        state: cropToolbarSaving ? 'disabled' : 'enabled',
-        options: {},
-      },
-    }),
-    [cropToolbarCanApply, cropToolbarSaving],
-  )
 
   const handleClose = useCallback(() => {
     dispatch(setUserLoginPanelOpen(false))
@@ -92,24 +38,6 @@ export const UserLoginPanel: React.FC = () => {
       }),
     )
   }, [dispatch])
-
-  const handleUserPanelToolbarAction = useCallback(
-    (key: IconKey) => {
-      if (key === 'applyLight') {
-        cropToolbarActions?.confirmCrop()
-        return false
-      }
-      if (key === 'return') {
-        cropToolbarActions?.cancelCrop()
-        return false
-      }
-      if (key === 'userLoginAdd') {
-        avatarPickerRef.current?.openFilePicker()
-        return false
-      }
-    },
-    [cropToolbarActions],
-  )
 
   const handleGuestAuthModeChange = useCallback(
     (mode: GuestAuthMode) => {
@@ -133,7 +61,7 @@ export const UserLoginPanel: React.FC = () => {
       className={clsx(
         styles.panel,
         !isAuthenticated && styles.panelNoFooter,
-        !userPanelToolbarSection && styles.panelCompactNoToolbar,
+        styles.panelCompactNoToolbar,
       )}
     >
       <ListPanelStackedHeader
@@ -147,38 +75,20 @@ export const UserLoginPanel: React.FC = () => {
             </span>
           </div>
         }
-        toolbar={
-          userPanelToolbarSection ? (
-            <Toolbar
-              section={userPanelToolbarSection}
-              stateOverride={userPanelToolbarStateOverride}
-              onActionClick={handleUserPanelToolbarAction}
-            />
-          ) : (
-            false
-          )
-        }
-        showDividerWithoutToolbar={!userPanelToolbarSection}
+        toolbar={false}
+        showDividerWithoutToolbar
         onClose={handleClose}
         closeAriaLabel="Close account panel"
       />
       <div className={styles.panelScrollTrack} aria-hidden />
       <ScrollArea className={styles.listScrollArea}>
         <div
-          className={clsx(
-            styles.content,
-            avatarCropState.active && styles.contentCropMode,
-          )}
+          className={styles.content}
           aria-label={isAuthenticated ? 'Signed-in user' : 'Sign in'}
         >
           {isAuthenticated ? (
             <>
-              <UserAvatarPicker
-                ref={avatarPickerRef}
-                userEmail={user?.email}
-                onAvatarCropStateChange={handleAvatarCropStateChange}
-                onCropToolbarActions={handleCropToolbarActions}
-              />
+              <UserAvatarPicker userEmail={user?.email} />
               <CloudBackupStatus />
             </>
           ) : (

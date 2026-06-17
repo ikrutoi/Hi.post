@@ -1,16 +1,9 @@
 @use '@styles/config/colors' as *;
-@use '@styles/mixins/sectionViewOverlayChip' as overlay;
 
 .root {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-}
-
-.rootCropActive {
-  align-items: stretch;
-  width: 100%;
-  gap: 0.75rem;
 }
 
 .profileRow {
@@ -38,51 +31,6 @@
   border-radius: 50%;
   background-color: #fff;
   overflow: hidden;
-  cursor: default;
-}
-
-.profileAvatarEditBtn {
-  $profile-avatar-edit-chip-size: 1.3rem;
-  $profile-avatar-edit-icon-size: 0.72rem;
-
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: $profile-avatar-edit-chip-size;
-  height: $profile-avatar-edit-chip-size;
-  padding: 0;
-  border: none;
-  border-radius: 0.4rem;
-  cursor: pointer;
-  transform: translate(62%, -42%);
-  @include overlay.sectionViewOverlayChipPhoto;
-  @include overlay.sectionViewOverlayChipIcon;
-
-  svg {
-    width: $profile-avatar-edit-icon-size;
-    height: $profile-avatar-edit-icon-size;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
-.profileAvatarDisabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.profileAvatarImage {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .profileAvatarPlaceholder {
@@ -107,27 +55,4 @@
   line-height: 1.35;
   color: $color-font-enabled-light;
   word-break: break-word;
-}
-
-.fileInput {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.error {
-  margin: 0;
-  font-size: 0.75rem;
-  color: $color-preview-indicator-error;
-  line-height: 1.3;
-}
-
-.errorVisible {
-  display: block;
 }

@@ -18,7 +18,4 @@ export const loginUserApi = (payload: LoginPayload) =>
 
 export const fetchMeApi = () => httpClient.get<User>('/api/me')
 
-export const updateAvatarApi = (avatarUrl: string | null) =>
-  httpClient.patch<User>('/api/me/avatar', { avatarUrl })
-
 export const logoutUserApi = () => httpClient.post('/api/logout')

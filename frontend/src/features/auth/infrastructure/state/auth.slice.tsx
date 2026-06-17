@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AuthState, User } from '../../domain/types'
-import { loginThunk, registerThunk, updateAvatarThunk } from '../../store/auth.thunks'
+import { loginThunk, registerThunk } from '../../store/auth.thunks'
 
 const initialState: AuthState = {
   user: null,
@@ -50,11 +50,6 @@ export const authSlice = createSlice({
       state.loading = false
       state.error = null
     },
-    setUserAvatar(state, action: PayloadAction<string | null>) {
-      if (state.user) {
-        state.user.avatarUrl = action.payload
-      }
-    },
     setAuthError(state, action: PayloadAction<string>) {
       state.loading = false
       state.error = action.payload
@@ -91,18 +86,6 @@ export const authSlice = createSlice({
         state.loading = false
         state.error = action.payload || 'Login failed'
       })
-
-      .addCase(updateAvatarThunk.pending, (state) => {
-        state.error = null
-      })
-      .addCase(updateAvatarThunk.fulfilled, (state, action) => {
-        if (state.user) {
-          state.user.avatarUrl = action.payload
-        }
-      })
-      .addCase(updateAvatarThunk.rejected, (state, action) => {
-        state.error = action.payload || 'Failed to update avatar'
-      })
   },
 })
 
@@ -114,7 +97,6 @@ export const {
   setAuthInitialized,
   setAuthError,
   clearAuthError,
-  setUserAvatar,
   setUserLoginPanelOpen,
 } = authSlice.actions
 export const authReducer = authSlice.reducer

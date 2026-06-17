@@ -529,7 +529,7 @@ export const Toolbar = ({
         key === 'userLogin' &&
         isAuthenticated &&
         authUser != null ? (
-          <UserLoginToolbarIcon avatarUrl={authUser.avatarUrl} />
+          <UserLoginToolbarIcon userId={authUser.id} />
         ) : (
           getToolbarIcon({
             key: effectiveIconKey as IconKey,

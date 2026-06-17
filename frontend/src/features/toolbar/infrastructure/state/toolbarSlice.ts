@@ -29,7 +29,6 @@ import {
   initialCardPieListToolbarState,
   initialCartToolbarState,
   initialPanelMiniSectionsToolbarState,
-  initialUserPanelChoicePhotoToolbarState,
   initialUserPanelToolbarState,
   initialAromaToolbarState,
 } from '../../domain/types'
@@ -94,7 +93,6 @@ const initialState: ToolbarState = {
   postcardPieHistory: initialPostcardPieHistoryToolbarState,
   cart: initialCartToolbarState,
   panelMiniSections: initialPanelMiniSectionsToolbarState,
-  userPanelChoicePhoto: initialUserPanelChoicePhotoToolbarState,
   userPanel: initialUserPanelToolbarState,
   aroma: initialAromaToolbarState,
 }

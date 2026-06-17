@@ -17,22 +17,6 @@ export interface UserPanelToolbarState extends Record<string, any> {
   config: ToolbarConfig
 }
 
-export const USER_PANEL_CHOICE_PHOTO_TOOLBAR: ToolbarConfig = [
-  {
-    group: 'userPanel',
-    icons: [
-      // { key: 'applyLight', state: 'disabled' },
-      { key: 'userLoginAdd', state: 'enabled' },
-    ],
-    status: 'enabled',
-  },
-  {
-    group: 'actions',
-    icons: [{ key: 'return', state: 'enabled' }],
-    status: 'enabled',
-  },
-]
-
 export const USER_PANEL_TOOLBAR: ToolbarConfig = [
   {
     group: 'userPanel',
@@ -49,11 +33,6 @@ export const USER_PANEL_TOOLBAR: ToolbarConfig = [
   // },
 ]
 
-export const initialUserPanelChoicePhotoToolbarState: UserPanelToolbarState = {
-  ...Object.fromEntries(flattenIcons(USER_PANEL_CHOICE_PHOTO_TOOLBAR)),
-  config: [...USER_PANEL_CHOICE_PHOTO_TOOLBAR],
-}
-
 export const initialUserPanelToolbarState: UserPanelToolbarState = {
   ...Object.fromEntries(flattenIcons(USER_PANEL_TOOLBAR)),
   config: [...USER_PANEL_TOOLBAR],
@@ -62,5 +41,5 @@ export const initialUserPanelToolbarState: UserPanelToolbarState = {
 export interface UserPanelSectionConfig extends BaseSectionConfig<
   UserPanelToolbarState,
   UserPanelKey,
-  'userPanel' | 'userPanelChoicePhoto'
+  'userPanel'
 > {}

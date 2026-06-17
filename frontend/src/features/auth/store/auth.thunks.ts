@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import { z } from 'zod'
-import type { RootState } from '@app/state'
 import { userSchema } from '../schemas/userSchema'
 import type { AuthResponse, LoginPayload } from '../domain/types/auth.types'
 import { getAuthRepository } from '../infrastructure/authRepository'
@@ -44,26 +43,6 @@ export const registerThunk = createAsyncThunk<
 
     const message =
       err instanceof Error ? err.message : 'Registration failed'
-    return thunkAPI.rejectWithValue(message)
-  }
-})
-
-export const updateAvatarThunk = createAsyncThunk<
-  string | null,
-  string | null,
-  { rejectValue: string; state: RootState }
->('auth/updateAvatar', async (avatarUrl, thunkAPI) => {
-  const userId = thunkAPI.getState().auth.user?.id
-  if (!userId) {
-    return thunkAPI.rejectWithValue('Not signed in')
-  }
-
-  try {
-    await getAuthRepository().updateAvatar(userId, avatarUrl)
-    return avatarUrl
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : 'Failed to update avatar'
     return thunkAPI.rejectWithValue(message)
   }
 })
