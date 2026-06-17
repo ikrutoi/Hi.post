@@ -2,7 +2,10 @@ import React from 'react'
 import clsx from 'clsx'
 import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { useAppSelector } from '@app/hooks'
-import { selectRecipientsToolbarStateWithLiveAddressList } from '@envelope/infrastructure/selectors'
+import {
+  selectRecipientsToolbarStateWithLiveAddressList,
+  selectSenderToolbarStateWithLiveAddressList,
+} from '@envelope/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
@@ -13,12 +16,15 @@ export const EnvelopeInnerToolbar: React.FC = () => {
   const recipientView = useAppSelector(selectRecipientView)
   const mobileFocus = useEnvelopeMobileAddressFocus()
   const focusRole = mobileFocus?.focusRole ?? null
+  const senderToolbarStateWithLiveAddressList = useAppSelector(
+    selectSenderToolbarStateWithLiveAddressList,
+  )
   const recipientsToolbarStateWithLiveAddressList = useAppSelector(
     selectRecipientsToolbarStateWithLiveAddressList,
   )
 
-  const showSenderSlot = focusRole !== 'sender'
-  const showRecipientsSlot = focusRole !== 'recipient'
+  const showSenderSlot = focusRole !== 'recipient'
+  const showRecipientsSlot = focusRole !== 'sender'
 
   return (
     <div className={styles.envelopeToolbarRow}>
@@ -26,18 +32,21 @@ export const EnvelopeInnerToolbar: React.FC = () => {
         <div
           className={clsx(
             styles.envelopeToolbarSlotSender,
-            focusRole === 'recipient' && styles.envelopeToolbarSlotFocusedOnly,
+            focusRole === 'sender' && styles.envelopeToolbarSlotFocusedOnly,
             senderView === 'senderCreate' && styles.envelopeToolbarSlotDisabled,
           )}
         >
-          <Toolbar section="sender" />
+          <Toolbar
+            section="sender"
+            stateOverride={senderToolbarStateWithLiveAddressList}
+          />
         </div>
       ) : null}
       {showRecipientsSlot ? (
         <div
           className={clsx(
             styles.envelopeToolbarSlotRecipients,
-            focusRole === 'sender' && styles.envelopeToolbarSlotFocusedOnly,
+            focusRole === 'recipient' && styles.envelopeToolbarSlotFocusedOnly,
             recipientView === 'recipientCreate' &&
               styles.envelopeToolbarSlotDisabled,
           )}

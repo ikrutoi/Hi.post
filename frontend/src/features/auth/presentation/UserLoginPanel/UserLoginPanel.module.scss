@@ -3,6 +3,8 @@
 
 $list-panel-compact-header-band: 2.35rem;
 $list-panel-stacked-band: 3.75rem;
+$list-panel-stacked-band-section-toolbar: 4.25rem;
+$list-panel-compact-header-band-section-toolbar: 2.35rem;
 $list-panel-header-lead-row: 1.75rem;
 $list-panel-scroll-inset: 0.35rem;
 $list-panel-list-footer-gap: 1px;
@@ -21,6 +23,27 @@ $list-panel-list-footer-gap: 1px;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
   font-size: 0.875rem;
+
+  :global([data-shell-layout='desktop']) & {
+    padding-top: $list-panel-stacked-band-section-toolbar;
+
+    &.panelCompactNoToolbar {
+      padding-top: $list-panel-compact-header-band-section-toolbar;
+    }
+
+    .panelScrollTrack {
+      top: calc(
+        #{$list-panel-stacked-band-section-toolbar} - #{$list-panel-scroll-inset}
+      );
+    }
+
+    &.panelCompactNoToolbar .panelScrollTrack {
+      top: calc(
+        #{$list-panel-compact-header-band-section-toolbar} -
+          #{$list-panel-scroll-inset}
+      );
+    }
+  }
 }
 
 .panelNoFooter {

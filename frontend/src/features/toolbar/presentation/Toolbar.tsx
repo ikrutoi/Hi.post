@@ -41,7 +41,7 @@ import {
   selectHistoryListSortMode,
 } from '@date/calendar/infrastructure/selectors'
 import {
-  selectAuthUserAvatarUrl,
+  selectAuthUser,
   selectIsAuthenticated,
 } from '@features/auth/infrastructure/selectors/authSelectors'
 import {
@@ -256,7 +256,7 @@ export const Toolbar = ({
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
-  const authUserAvatarUrl = useAppSelector(selectAuthUserAvatarUrl)
+  const authUser = useAppSelector(selectAuthUser)
 
   useEffect(() => {
     if (groupRef.current) {
@@ -528,8 +528,8 @@ export const Toolbar = ({
         {section === 'rightSidebar' &&
         key === 'userLogin' &&
         isAuthenticated &&
-        authUserAvatarUrl ? (
-          <UserLoginToolbarIcon avatarUrl={authUserAvatarUrl} />
+        authUser != null ? (
+          <UserLoginToolbarIcon avatarUrl={authUser.avatarUrl} />
         ) : (
           getToolbarIcon({
             key: effectiveIconKey as IconKey,

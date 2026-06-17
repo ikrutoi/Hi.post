@@ -165,5 +165,71 @@ $color-app-sidebar-icon: #44423f;
 $color-app-sidebar-icon-active: #a16a45;
 $color-app-sidebar-icon-hover: #e3dedb;
 
+// Registered user mosaic avatar: 19 fixed swatches — el-N maps to color N (sync with iconUserRegisteredColors.ts)
+$user-registered-soften-tint: #eaeaea;
+$user-registered-soften-weight: 82%;
+
+$color-user-registered-1: mix(
+  $color-preview-indicator-cart,
+  $user-registered-soften-tint,
+  $user-registered-soften-weight
+);
+$color-user-registered-2: mix(
+  $color-preview-indicator-ready,
+  $user-registered-soften-tint,
+  $user-registered-soften-weight
+);
+$color-user-registered-3: mix(
+  $color-preview-indicator-sent,
+  $user-registered-soften-tint,
+  $user-registered-soften-weight
+);
+$color-user-registered-4: mix(
+  $color-preview-indicator-delivered,
+  $user-registered-soften-tint,
+  $user-registered-soften-weight
+);
+$color-user-registered-5: mix(
+  $color-preview-indicator-error,
+  $user-registered-soften-tint,
+  $user-registered-soften-weight
+);
+$color-user-registered-6: mix(#ff9800, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-7: mix(#00bcd4, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-8: mix(#e91e63, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-9: mix(#2196f3, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-10: mix(#cddc39, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-11: mix(#ff5722, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-12: mix(#673ab7, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-13: mix(#7cb342, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-14: mix(#009688, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-15: mix(#5c6bc0, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-16: mix(#ab47bc, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-17: mix(#ef5350, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-18: mix(#26a69a, $user-registered-soften-tint, $user-registered-soften-weight);
+$color-user-registered-19: mix(#78909c, $user-registered-soften-tint, $user-registered-soften-weight);
+
+$user-registered-palette: (
+  1: $color-user-registered-1,
+  2: $color-user-registered-2,
+  3: $color-user-registered-3,
+  4: $color-user-registered-4,
+  5: $color-user-registered-5,
+  6: $color-user-registered-6,
+  7: $color-user-registered-7,
+  8: $color-user-registered-8,
+  9: $color-user-registered-9,
+  10: $color-user-registered-10,
+  11: $color-user-registered-11,
+  12: $color-user-registered-12,
+  13: $color-user-registered-13,
+  14: $color-user-registered-14,
+  15: $color-user-registered-15,
+  16: $color-user-registered-16,
+  17: $color-user-registered-17,
+  18: $color-user-registered-18,
+  19: $color-user-registered-19,
+);
+
 $toolbar-sidebar-key-size: 2.2rem;
 $toolbar-sidebar-icon-size: 1.25rem;

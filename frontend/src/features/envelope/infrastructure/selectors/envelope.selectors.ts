@@ -248,6 +248,28 @@ export const selectRecipientInListEntries = createSelector(
     entries.filter((e) => listStatusIsInQuickAddressBook(e.listStatus)),
 )
 
+export const selectSenderToolbarStateWithLiveAddressList = createSelector(
+  [
+    (s: RootState) => s.toolbar?.sender ?? {},
+    (s: RootState) => s.envelopeSelection?.activeAddressList ?? null,
+    selectSenderInListEntries,
+  ],
+  (base, activeAddressList, senderInListEntries) => {
+    const senderInListEntriesCount = senderInListEntries.length
+    const listOpen = activeAddressList === 'sender'
+    const addressList = listOpen
+      ? {
+          state: 'active' as const,
+          options: {
+            badge:
+              senderInListEntriesCount > 0 ? senderInListEntriesCount : null,
+          },
+        }
+      : getAddressListToolbarFragment(senderInListEntriesCount)
+    return { ...base, addressList }
+  },
+)
+
 export const selectRecipientsToolbarStateWithLiveAddressList = createSelector(
   [
     (s: RootState) => s.toolbar?.recipients ?? {},

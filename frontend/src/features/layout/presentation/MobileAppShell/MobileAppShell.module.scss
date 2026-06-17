@@ -156,6 +156,12 @@
         height: var(--mobile-toolbar-logo-size);
       }
 
+      &[data-icon-key='userLogin'] {
+        width: var(--mobile-toolbar-logo-size);
+        height: var(--mobile-toolbar-logo-size);
+        min-width: var(--mobile-toolbar-logo-size);
+      }
+
       &[class*='toolbarKeyEnabled']:hover,
       &[class*='toolbarKeyActive']:hover,
       &[class*='toolbarKeyDisabled']:hover {
@@ -163,9 +169,9 @@
       }
     }
 
-    :global([class*='toolbarUserAvatar']) {
-      width: var(--mobile-toolbar-avatar-size);
-      height: var(--mobile-toolbar-avatar-size);
+    :global([class*='toolbarUserChromeGlyph']) {
+      width: 100%;
+      height: 100%;
     }
   }
 }

@@ -10,6 +10,10 @@ import React, {
 } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import {
+  IconUserRegistered,
+  getUserRegisteredElementColors,
+} from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import {
   selectAuthError,
@@ -74,6 +78,7 @@ export const UserAvatarPicker = forwardRef<
   const dispatch = useAppDispatch()
   const avatarUrl = useAppSelector(selectAuthUserAvatarUrl)
   const authError = useAppSelector(selectAuthError)
+  const registeredAvatarColors = getUserRegisteredElementColors()
   const inputId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
   const cropObjectUrlRef = useRef<string | null>(null)
@@ -348,7 +353,7 @@ export const UserAvatarPicker = forwardRef<
               />
             ) : (
               <span className={styles.profileAvatarPlaceholder} aria-hidden>
-                {getToolbarIcon({ key: 'userLogin' })}
+                <IconUserRegistered elementColors={registeredAvatarColors} />
               </span>
             )}
           </button>

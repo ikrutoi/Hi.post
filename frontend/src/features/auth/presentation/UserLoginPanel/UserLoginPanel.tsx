@@ -138,6 +138,8 @@ export const UserLoginPanel: React.FC = () => {
     >
       <ListPanelStackedHeader
         leadIconKey="userLogin"
+        variant="sectionToolbar"
+        cardPieListHeaderIcons
         headerTopCenter={
           <div className={styles.headerUserNameWrap}>
             <span className={styles.headerUserName}>
