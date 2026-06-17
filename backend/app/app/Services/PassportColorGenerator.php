@@ -39,14 +39,50 @@ class PassportColorGenerator
 
     public function ensureForUser(User $user): User
     {
-        if ($this->isComplete($user->passport_colors)) {
+        $userId = (string) $user->id;
+        $needsSave = false;
+
+        if (! $this->isComplete($user->passport_colors)) {
+            $user->passport_colors = $this->generate($userId);
+            $needsSave = true;
+        }
+
+        if (! $this->isValidCode($user->passport_code)) {
+            $user->passport_code = $this->generateCode($userId);
+            $needsSave = true;
+        }
+
+        if (! $needsSave) {
             return $user;
         }
 
-        $user->passport_colors = $this->generate((string) $user->id);
         $user->save();
 
         return $user->fresh() ?? $user;
+    }
+
+    public function generateCode(string $userId): string
+    {
+        $random = $this->createSeededRandom("{$userId}:passport-code");
+        $chars = '';
+        $alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $alphabetLength = strlen($alphabet);
+
+        for ($i = 0; $i < 12; $i++) {
+            $chars .= $alphabet[(int) floor($random() * $alphabetLength)];
+        }
+
+        return sprintf(
+            'Hi-%s-%s-%s',
+            substr($chars, 0, 4),
+            substr($chars, 4, 4),
+            substr($chars, 8, 4),
+        );
+    }
+
+    public function isValidCode(?string $code): bool
+    {
+        return is_string($code) && preg_match('/^Hi-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/', $code) === 1;
     }
 
     /**

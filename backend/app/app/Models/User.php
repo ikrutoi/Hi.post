@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'avatar_url',
         'passport_colors',
+        'passport_code',
         'is_active',
         'role',
     ];

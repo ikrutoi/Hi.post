@@ -6,8 +6,13 @@ $list-panel-stacked-band: 3.75rem;
 $list-panel-stacked-band-section-toolbar: 4.25rem;
 $list-panel-compact-header-band-section-toolbar: 2.35rem;
 $list-panel-header-lead-row: 1.75rem;
+$list-panel-passport-id-row: 2rem;
 $list-panel-scroll-inset: 0.35rem;
 $list-panel-list-footer-gap: 1px;
+$list-panel-footer-stack-height: calc(
+  #{$list-panel-passport-id-row} + #{$list-panel-header-lead-row} +
+    #{$list-panel-list-footer-gap}
+);
 
 .panel {
   position: relative;
@@ -16,9 +21,7 @@ $list-panel-list-footer-gap: 1px;
   height: 100%;
   min-height: 0;
   padding-top: $list-panel-stacked-band;
-  padding-bottom: calc(
-    #{$list-panel-header-lead-row} + #{$list-panel-list-footer-gap}
-  );
+  padding-bottom: $list-panel-footer-stack-height;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
@@ -66,7 +69,7 @@ $list-panel-list-footer-gap: 1px;
   position: absolute;
   top: calc(#{$list-panel-stacked-band} - #{$list-panel-scroll-inset});
   bottom: calc(
-    #{$list-panel-header-lead-row} - #{$list-panel-scroll-inset} + #{$list-panel-list-footer-gap}
+    #{$list-panel-footer-stack-height} - #{$list-panel-scroll-inset}
   );
   @include list-panel-scroll-track-right;
   width: 0.75rem;
@@ -267,15 +270,46 @@ $list-panel-list-footer-gap: 1px;
   word-break: break-word;
 }
 
-.footer {
+.panelFooterStack {
   position: absolute;
   left: 0.5rem;
   bottom: 0;
   z-index: 2;
   display: flex;
+  flex-direction: column;
+  @include list-panel-footer-width;
+}
+
+.passportIdBand {
+  display: flex;
   align-items: center;
   justify-content: center;
-  @include list-panel-footer-width;
+  min-height: $list-panel-passport-id-row;
+  padding: 0.45rem 0.35rem 0.35rem;
+  box-sizing: border-box;
+  background-color: #fff;
+}
+
+.passportId {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: $color-font-enabled;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.footer {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   height: $list-panel-header-lead-row;
   padding: 0 0.35rem;
   box-sizing: border-box;

@@ -1,6 +1,7 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { resolvePassportCode } from '@shared/ui/icons'
 import { ListPanelStackedHeader } from '@shared/ui/ListPanelStackedHeader/ListPanelStackedHeader'
 import { ScrollArea } from '@shared/ui/ScrollArea/ScrollArea'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -53,6 +54,13 @@ export const UserLoginPanel: React.FC = () => {
   }, [dispatch])
 
   const displayName = user?.name ?? user?.email ?? 'Signed in'
+  const passportCode = useMemo(
+    () =>
+      user?.id != null
+        ? resolvePassportCode(user.id, user.passportCode)
+        : null,
+    [user?.id, user?.passportCode],
+  )
   const guestHeaderTitle =
     guestAuthMode === 'register' ? 'Create account' : 'Sign in'
 
@@ -100,20 +108,27 @@ export const UserLoginPanel: React.FC = () => {
         </div>
       </ScrollArea>
       {isAuthenticated ? (
-        <footer className={styles.footer}>
-          <button
-            type="button"
-            className={styles.logoutButton}
-            onClick={(event) => {
-              event.stopPropagation()
-              handleLogout()
-            }}
-            aria-label="Log out"
-            title="Log out"
-          >
-            {getToolbarIcon({ key: 'userLoginOut' })}
-          </button>
-        </footer>
+        <div className={styles.panelFooterStack}>
+          {passportCode ? (
+            <div className={styles.passportIdBand}>
+              <p className={styles.passportId}>{passportCode}</p>
+            </div>
+          ) : null}
+          <footer className={styles.footer}>
+            <button
+              type="button"
+              className={styles.logoutButton}
+              onClick={(event) => {
+                event.stopPropagation()
+                handleLogout()
+              }}
+              aria-label="Log out"
+              title="Log out"
+            >
+              {getToolbarIcon({ key: 'userLoginOut' })}
+            </button>
+          </footer>
+        </div>
       ) : null}
     </div>
   )

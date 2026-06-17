@@ -41,4 +41,22 @@ class PassportColorGeneratorTest extends TestCase
         $this->assertSame('#31dfdf', $colors['10']);
         $this->assertSame('#cc3541', $colors['19']);
     }
+
+    public function test_generates_passport_code_deterministically(): void
+    {
+        $generator = new PassportColorGenerator();
+
+        $first = $generator->generateCode('42');
+        $second = $generator->generateCode('42');
+
+        $this->assertSame($first, $second);
+        $this->assertMatchesRegularExpression('/^Hi-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/', $first);
+    }
+
+    public function test_matches_frontend_reference_passport_code_for_user_42(): void
+    {
+        $generator = new PassportColorGenerator();
+
+        $this->assertSame('Hi-Q1MS-MBSZ-PD7E', $generator->generateCode('42'));
+    }
 }

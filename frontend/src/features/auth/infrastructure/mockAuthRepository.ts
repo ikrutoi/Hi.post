@@ -5,7 +5,11 @@ import type {
   User,
 } from '../domain/types/auth.types'
 import type { AuthRepository } from './authRepository'
-import { generateUserRegisteredElementColors } from '@shared/ui/icons/iconUserRegisteredColors'
+import {
+  generateUserRegisteredElementColors,
+  generatePassportCode,
+  resolvePassportCode,
+} from '@shared/ui/icons/iconUserRegisteredColors'
 import { readAuthSession } from './sessionStorage'
 
 const MOCK_USERS_KEY = 'hi.post.mockAuth.users'
@@ -76,6 +80,7 @@ function toAuthResponse(user: MockStoredUser): AuthResponse {
     name: user.name,
     email: user.email,
     passportColors: generateUserRegisteredElementColors(user.id),
+    passportCode: generatePassportCode(user.id),
   }
   return {
     user: profile,
@@ -135,6 +140,7 @@ export const mockAuthRepository: AuthRepository = {
     return {
       ...session.user,
       passportColors: resolveMockPassportColors(session.user),
+      passportCode: resolveMockPassportCode(session.user),
     }
   },
 }
@@ -143,4 +149,8 @@ function resolveMockPassportColors(user: User): User['passportColors'] {
   return (
     user.passportColors ?? generateUserRegisteredElementColors(user.id)
   )
+}
+
+function resolveMockPassportCode(user: User): User['passportCode'] {
+  return resolvePassportCode(user.id, user.passportCode)
 }

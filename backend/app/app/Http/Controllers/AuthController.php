@@ -103,7 +103,8 @@ class AuthController extends Controller
      *     name: string,
      *     email: string,
      *     avatarUrl: string|null,
-     *     passportColors: array<string, string>
+     *     passportColors: array<string, string>,
+     *     passportCode: string
      * }
      */
     private function formatUser(User $user): array
@@ -116,6 +117,7 @@ class AuthController extends Controller
             'email' => $user->email,
             'avatarUrl' => $user->avatar_url,
             'passportColors' => $user->passport_colors,
+            'passportCode' => $user->passport_code,
         ];
     }
 }
