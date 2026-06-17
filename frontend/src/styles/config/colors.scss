@@ -111,19 +111,19 @@ $color-pie-envelope-alpha: rgba($color-pie-envelope, 0.4);
 $color-pie-aroma-alpha: rgba($color-pie-aroma, 0.4);
 $color-pie-date-alpha: rgba($color-pie-date, 0.4);
 
-$color-envelope-sender: #e8f5f0;
-$color-envelope-recipient: #f0e8f5;
+$color-envelope-sender: #f0e8f5;
+$color-envelope-recipient: #e8f5f0;
 $color-envelope-recipient-light: lighten($color-envelope-recipient, 1%);
-$color-envelope-sender-border: #c5e5db;
-$color-envelope-recipient-border: #e0d0eb;
-$color-envelope-sender-legend: #1a4d3a;
-$color-envelope-recipient-legend: #3d2a5c;
+$color-envelope-sender-border: #e0d0eb;
+$color-envelope-recipient-border: #c5e5db;
+$color-envelope-sender-legend: #3d2a5c;
+$color-envelope-recipient-legend: #1a4d3a;
 
-$color-envelope-sender-input: #f0faf7;
-$color-envelope-sender-input-border: #c5e5db;
+$color-envelope-sender-input: #faf7fc;
+$color-envelope-sender-input-border: #e0d0eb;
 
-$color-envelope-recipient-input: #faf7fc;
-$color-envelope-recipient-input-border: #e0d0eb;
+$color-envelope-recipient-input: #f0faf7;
+$color-envelope-recipient-input-border: #c5e5db;
 
 $color-cardtext-input: #fff8e7;
 $color-cardtext-input-border: #f0ddba;

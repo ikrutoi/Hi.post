@@ -219,3 +219,40 @@ export function truncateScatterLabel(label: string, maxLen = 16): string {
   if (trimmed.length <= maxLen) return trimmed
   return `${trimmed.slice(0, maxLen - 1)}…`
 }
+
+/** Смещение центра концентрических кругов от края pattern. */
+const PIE_ENVELOPE_SINGLE_CIRCLE_INSET = 0.03
+/** Множитель радиуса относительно mini-раскладки (дуга крупнее в секторе pie). */
+const PIE_ENVELOPE_SINGLE_CIRCLE_RADIUS_SCALE = 1.35
+
+export type PieEnvelopeSingleCircleLayout = {
+  cx: number
+  cy: number
+  outerRadius: number
+  innerRadius: number
+}
+
+/** Раскладка фона одного получателя: 2 концентрических круга в правом нижнем углу. */
+export function getPieEnvelopeSingleCircleLayout(
+  patternWidth: number,
+  patternHeight: number,
+): PieEnvelopeSingleCircleLayout {
+  const sizeOuterPercent =
+    2 * (1 - PIE_ENVELOPE_SINGLE_CIRCLE_INSET) * Math.SQRT2 * 100
+  const sizeInnerPercent = sizeOuterPercent / 2
+  const cx = patternWidth * (1 - PIE_ENVELOPE_SINGLE_CIRCLE_INSET)
+  const cy = patternHeight * (1 - PIE_ENVELOPE_SINGLE_CIRCLE_INSET)
+  const outerRadius =
+    (((sizeOuterPercent / 100) * patternWidth) / 2) *
+    PIE_ENVELOPE_SINGLE_CIRCLE_RADIUS_SCALE
+  const innerRadius =
+    (((sizeInnerPercent / 100) * patternWidth) / 2) *
+    PIE_ENVELOPE_SINGLE_CIRCLE_RADIUS_SCALE
+
+  return { cx, cy, outerRadius, innerRadius }
+}
+
+export const PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT = getPieEnvelopeSingleCircleLayout(
+  PIE_ENVELOPE_PATTERN_WIDTH,
+  PIE_ENVELOPE_PATTERN_HEIGHT,
+)

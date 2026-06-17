@@ -26,6 +26,7 @@ import {
   PIE_ENVELOPE_SCATTER_SLOTS,
   PIE_ENVELOPE_PATTERN_HEIGHT,
   PIE_ENVELOPE_PATTERN_WIDTH,
+  PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT,
   expandEnvelopeRecipientsForBg,
 } from '../domain/pieScatteredBackground'
 import { PieScatteredBackgroundText } from './PieScatteredBackgroundText'
@@ -369,6 +370,18 @@ export const CardPie: React.FC<CardPieProps> = ({
                     width={PIE_ENVELOPE_PATTERN_WIDTH}
                     height={PIE_ENVELOPE_PATTERN_HEIGHT}
                     className={styles.rect}
+                  />
+                  <circle
+                    cx={PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT.cx}
+                    cy={PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT.cy}
+                    r={PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT.outerRadius}
+                    className={styles.pieEnvelopeSingleCircleOuter}
+                  />
+                  <circle
+                    cx={PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT.cx}
+                    cy={PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT.cy}
+                    r={PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT.innerRadius}
+                    className={styles.pieEnvelopeSingleCircleInner}
                   />
                   <text
                     x={PIE_ENVELOPE_PATTERN_WIDTH / 2}

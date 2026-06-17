@@ -120,6 +120,14 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   }
 }
 
+.pieEnvelopeSingleCircleOuter {
+  fill: var(--pie-rect-fill);
+}
+
+.pieEnvelopeSingleCircleInner {
+  fill: $color-envelope-recipient;
+}
+
 .pieTextBase {
   font-family: inherit;
 }
