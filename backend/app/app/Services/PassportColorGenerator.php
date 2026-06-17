@@ -68,21 +68,22 @@ class PassportColorGenerator
         $alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $alphabetLength = strlen($alphabet);
 
-        for ($i = 0; $i < 12; $i++) {
+        for ($i = 0; $i < 16; $i++) {
             $chars .= $alphabet[(int) floor($random() * $alphabetLength)];
         }
 
         return sprintf(
-            'Hi-%s-%s-%s',
+            'Hi-%s-%s-%s-%s',
             substr($chars, 0, 4),
             substr($chars, 4, 4),
             substr($chars, 8, 4),
+            substr($chars, 12, 4),
         );
     }
 
     public function isValidCode(?string $code): bool
     {
-        return is_string($code) && preg_match('/^Hi-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/', $code) === 1;
+        return is_string($code) && preg_match('/^Hi-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/', $code) === 1;
     }
 
     /**

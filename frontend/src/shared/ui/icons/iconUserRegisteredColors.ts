@@ -146,19 +146,20 @@ export function resolveUserRegisteredElementColors(
 }
 
 const PASSPORT_CODE_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-const PASSPORT_CODE_PATTERN = /^Hi-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/
+const PASSPORT_CODE_PATTERN =
+  /^Hi-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/
 
-/** Deterministic Hi-XXXX-XXXX-XXXX passport number seeded by user id. */
+/** Deterministic Hi-XXXX-XXXX-XXXX-XXXX passport number seeded by user id. */
 export function generatePassportCode(userId: string): string {
   const random = createSeededRandom(`${userId}:passport-code`)
   let chars = ''
 
-  for (let i = 0; i < 12; i += 1) {
+  for (let i = 0; i < 16; i += 1) {
     const index = Math.floor(random() * PASSPORT_CODE_CHARS.length)
     chars += PASSPORT_CODE_CHARS[index] ?? '0'
   }
 
-  return `Hi-${chars.slice(0, 4)}-${chars.slice(4, 8)}-${chars.slice(8, 12)}`
+  return `Hi-${chars.slice(0, 4)}-${chars.slice(4, 8)}-${chars.slice(8, 12)}-${chars.slice(12, 16)}`
 }
 
 export function isValidPassportCode(value: unknown): value is string {

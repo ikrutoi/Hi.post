@@ -292,10 +292,11 @@ $list-panel-footer-stack-height: calc(
 
 .passportId {
   margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.2;
-  color: $color-font-enabled;
+  color: $color-font-enabled-light;
   text-align: center;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.04em;
