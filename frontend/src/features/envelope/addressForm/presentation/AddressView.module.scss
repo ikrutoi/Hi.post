@@ -10,13 +10,14 @@ $saved-address-action-hit-mobile: 1.45rem;
 $saved-address-action-icon-mobile: 1.05rem;
 $saved-address-action-hit-desktop: 1.85rem;
 $saved-address-action-icon-desktop: 0.95rem;
+$saved-address-close-hit-desktop: 1.55rem;
 
 @mixin savedAddressCloseButtonMobileSize {
   :global([data-shell-layout='mobile']) & {
     width: $saved-address-action-hit-mobile;
     height: $saved-address-action-hit-mobile;
     min-width: $saved-address-action-hit-mobile;
-    border-radius: 0.36rem;
+    border-radius: 50%;
 
     svg {
       width: $saved-address-action-icon-mobile;
@@ -44,6 +45,19 @@ $saved-address-action-icon-desktop: 0.95rem;
     width: $saved-address-action-hit-desktop;
     height: $saved-address-action-hit-desktop;
     min-width: $saved-address-action-hit-desktop;
+
+    svg {
+      width: $saved-address-action-icon-desktop;
+      height: $saved-address-action-icon-desktop;
+    }
+  }
+}
+
+@mixin savedAddressCloseButtonDesktopSize {
+  :global([data-shell-layout='desktop']) & {
+    width: $saved-address-close-hit-desktop;
+    height: $saved-address-close-hit-desktop;
+    min-width: $saved-address-close-hit-desktop;
 
     svg {
       width: $saved-address-action-icon-desktop;
@@ -532,9 +546,9 @@ $envelope-address-view-row-height: 1.625rem;
   cursor: pointer;
   @include overlay.sectionViewOverlayChipPhoto;
   @include overlay.sectionViewOverlayChipIcon;
-  border-radius: 0.47rem;
+  border-radius: 50%;
   @include savedAddressCloseButtonMobileSize;
-  @include savedAddressActionButtonDesktopSize;
+  @include savedAddressCloseButtonDesktopSize;
 
   :global([data-shell-layout='desktop']) & {
     top: $saved-address-action-inset-desktop;
@@ -561,9 +575,9 @@ $envelope-address-view-row-height: 1.625rem;
   cursor: pointer;
   @include overlay.sectionViewOverlayChipPhoto;
   @include overlay.sectionViewOverlayChipIcon;
-  border-radius: 0.47rem;
+  border-radius: 50%;
   @include savedAddressCloseButtonMobileSize;
-  @include savedAddressActionButtonDesktopSize;
+  @include savedAddressCloseButtonDesktopSize;
 
   :global([data-shell-layout='mobile']) & {
     @include savedAddressCloseButtonMobileInset;
