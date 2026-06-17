@@ -9,12 +9,14 @@ import {
   buildDatePreviewLines,
   buildPieSectionFlagsFromInner,
   buildRecipientPreviewLines,
+  hasSenderAppliedSnapshot,
   isPostcardPieAllComplete,
   recipientAppliedCount,
 } from '../postcardCardPieViewModel'
 import { selectSelectedAroma } from '@aroma/infrastructure/selectors'
 import { selectMergedDispatchDates } from '@date/infrastructure/selectors'
 import { selectEnvelopeSessionRecord } from '@features/envelope/infrastructure/selectors'
+import { selectSenderState } from '@envelope/sender/infrastructure/selectors'
 import {
   selectAppliedRecipientDisplayAddress,
   selectRecipientEntriesState,
@@ -55,6 +57,7 @@ export const selectActiveCardFullData = createSelector(
     selectSelectedAroma,
     selectMergedDispatchDates,
     selectEnvelopeSessionRecord,
+    selectSenderState,
     selectAppliedRecipientDisplayAddress,
     selectRecipientsList,
     selectRecipientEntriesState,
@@ -66,6 +69,7 @@ export const selectActiveCardFullData = createSelector(
     aroma,
     dates,
     envelope,
+    sender,
     appliedRecipient,
     envelopeRecipients,
     recipientEntries,
@@ -87,6 +91,7 @@ export const selectActiveCardFullData = createSelector(
         recipientCount,
         recipientPreviewLines,
         datePreviewLines,
+        hasSenderAppliedData: hasSenderAppliedSnapshot(sender),
         aroma,
         date,
         dates,

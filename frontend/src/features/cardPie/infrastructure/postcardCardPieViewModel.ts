@@ -37,6 +37,8 @@ export type CardPieInnerData = {
   datePreviewLines: string[]
   senderBadgeShow: boolean
   senderDisplayName: string | null
+  /** Отправитель применён через appliedData (не черновик). */
+  hasSenderAppliedData: boolean
   /** Полный адрес отправителя для превью (peek); null если нет заполненных полей. */
   sender: Readonly<AddressFields> | null
   aroma: AromaItem | null
@@ -271,11 +273,17 @@ function primarySenderDisplayLine(
 function senderMiniFromCard(card: Card): {
   senderBadgeShow: boolean
   senderDisplayName: string | null
+  hasSenderAppliedData: boolean
   sender: Readonly<AddressFields> | null
 } {
   const s = card.envelope?.sender
   if (s == null || !s.enabled) {
-    return { senderBadgeShow: false, senderDisplayName: null, sender: null }
+    return {
+      senderBadgeShow: false,
+      senderDisplayName: null,
+      hasSenderAppliedData: false,
+      sender: null,
+    }
   }
   const source =
     s.appliedData ??
@@ -291,7 +299,25 @@ function senderMiniFromCard(card: Card): {
     hasAppliedSnapshot ||
     addressHasAnyField(s.viewDraft) ||
     addressHasAnyField(s.formDraft)
-  return { senderBadgeShow, senderDisplayName: displayName, sender }
+  return {
+    senderBadgeShow,
+    senderDisplayName: displayName,
+    hasSenderAppliedData: hasAppliedSnapshot,
+    sender,
+  }
+}
+
+export function hasSenderAppliedSnapshot(
+  sender:
+    | {
+        enabled: boolean
+        appliedData: Readonly<AddressFields> | null
+      }
+    | null
+    | undefined,
+): boolean {
+  if (sender == null || !sender.enabled) return false
+  return addressHasAnyField(sender.appliedData)
 }
 
 export function buildCardPieInnerDataFromPostcard(
@@ -303,7 +329,8 @@ export function buildCardPieInnerDataFromPostcard(
   const cardtext = cardtextContentForPie(card)
   const recipient = card.envelope.recipient
   const recipientCount = recipientAppliedCount(recipient)
-  const { senderBadgeShow, senderDisplayName, sender } = senderMiniFromCard(card)
+  const { senderBadgeShow, senderDisplayName, hasSenderAppliedData, sender } =
+    senderMiniFromCard(card)
   const datesFromCard = (card as Card & { dates?: DispatchDate[] }).dates
   const dates: DispatchDate[] =
     Array.isArray(datesFromCard) && datesFromCard.length > 0
@@ -326,6 +353,7 @@ export function buildCardPieInnerDataFromPostcard(
     datePreviewLines,
     senderBadgeShow,
     senderDisplayName,
+    hasSenderAppliedData,
     sender,
     aroma: card.aroma ?? null,
     date,

@@ -27,6 +27,7 @@ import {
   PIE_ENVELOPE_PATTERN_HEIGHT,
   PIE_ENVELOPE_PATTERN_WIDTH,
   PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT,
+  PIE_ENVELOPE_SENDER_CIRCLE_LAYOUT,
   expandEnvelopeRecipientsForBg,
 } from '../domain/pieScatteredBackground'
 import { PieScatteredBackgroundText } from './PieScatteredBackgroundText'
@@ -48,6 +49,7 @@ const PIE_EMPTY_ICON_HALF = PIE_EMPTY_ICON_SIZE / 2
 /** Empty envelope sector: icon center (1440×1440), left edge stays inside pattern. */
 const PIE_ENVELOPE_EMPTY_ICON_X = 1120
 const PIE_ENVELOPE_EMPTY_ICON_Y = 2000
+const PIE_ENVELOPE_SECTOR_D = 'M5110 5110 2560 2560l2550-1299z'
 
 export const CardPie: React.FC<CardPieProps> = ({
   isProcessed = false,
@@ -122,6 +124,9 @@ export const CardPie: React.FC<CardPieProps> = ({
   const recipientPreviewLines: string[] =
     (cardData as { recipientPreviewLines?: string[] } | undefined)
       ?.recipientPreviewLines ?? []
+  const hasSenderAppliedData =
+    (cardData as { hasSenderAppliedData?: boolean } | undefined)
+      ?.hasSenderAppliedData ?? false
   const date = cardData?.date ?? null
   const mergedFromEditor = cardData?.dates
   const dates: DispatchDate[] =
@@ -145,6 +150,15 @@ export const CardPie: React.FC<CardPieProps> = ({
     if (sectionId) setHovered(sectionId)
   }
   const handleMouseLeave = () => setHovered(null)
+
+  const envelopeSenderCircle = hasSenderAppliedData ? (
+    <circle
+      cx={PIE_ENVELOPE_SENDER_CIRCLE_LAYOUT.cx}
+      cy={PIE_ENVELOPE_SENDER_CIRCLE_LAYOUT.cy}
+      r={PIE_ENVELOPE_SENDER_CIRCLE_LAYOUT.radius}
+      className={styles.pieEnvelopeSenderCircle}
+    />
+  ) : null
 
   const allSectionsFilled = isReady
   return (
@@ -336,6 +350,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                     height={PIE_ENVELOPE_PATTERN_HEIGHT}
                     className={styles.rect}
                   />
+                  {envelopeSenderCircle}
                   {recipientPreviewLines.length > 0 ? (
                     <PieScatteredBackgroundText
                       items={recipientPreviewLines}
@@ -383,6 +398,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                     r={PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT.innerRadius}
                     className={styles.pieEnvelopeSingleCircleInner}
                   />
+                  {envelopeSenderCircle}
                   <text
                     x={PIE_ENVELOPE_PATTERN_WIDTH / 2}
                     y="1700"
@@ -415,6 +431,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                       styles.rectEmpty,
                     )}
                   />
+                  {envelopeSenderCircle}
                   <g
                     className={styles.pieSectorIconBg}
                     transform={`translate(${PIE_ENVELOPE_EMPTY_ICON_X}, ${PIE_ENVELOPE_EMPTY_ICON_Y}) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
@@ -617,7 +634,7 @@ export const CardPie: React.FC<CardPieProps> = ({
               fill={`url(#${envelopeFillId})`}
               stroke={SECTOR_STROKE}
               strokeWidth={STROKE_WIDTH}
-              d="M5110 5110 2560 2560l2550-1299z"
+              d={PIE_ENVELOPE_SECTOR_D}
               onClick={() => handleSectorClick('envelope')}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}

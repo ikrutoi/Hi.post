@@ -128,6 +128,10 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   fill: $color-envelope-recipient;
 }
 
+.pieEnvelopeSenderCircle {
+  fill: $color-envelope-sender;
+}
+
 .pieTextBase {
   font-family: inherit;
 }

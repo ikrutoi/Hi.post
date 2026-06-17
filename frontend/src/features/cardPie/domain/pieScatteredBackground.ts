@@ -224,12 +224,20 @@ export function truncateScatterLabel(label: string, maxLen = 16): string {
 const PIE_ENVELOPE_SINGLE_CIRCLE_INSET = 0.03
 /** Множитель радиуса относительно mini-раскладки (дуга крупнее в секторе pie). */
 const PIE_ENVELOPE_SINGLE_CIRCLE_RADIUS_SCALE = 1.35
+/** Радиус круга отправителя относительно внутреннего круга получателя. */
+const PIE_ENVELOPE_SENDER_CIRCLE_RADIUS_FACTOR = 0.85
 
 export type PieEnvelopeSingleCircleLayout = {
   cx: number
   cy: number
   outerRadius: number
   innerRadius: number
+}
+
+export type PieEnvelopeSenderCircleLayout = {
+  cx: number
+  cy: number
+  radius: number
 }
 
 /** Раскладка фона одного получателя: 2 концентрических круга в правом нижнем углу. */
@@ -253,6 +261,28 @@ export function getPieEnvelopeSingleCircleLayout(
 }
 
 export const PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT = getPieEnvelopeSingleCircleLayout(
+  PIE_ENVELOPE_PATTERN_WIDTH,
+  PIE_ENVELOPE_PATTERN_HEIGHT,
+)
+
+/** Круг отправителя в левом верхнем углу (меньше кругов получателя). */
+export function getPieEnvelopeSenderCircleLayout(
+  patternWidth: number,
+  patternHeight: number,
+): PieEnvelopeSenderCircleLayout {
+  const recipientLayout = getPieEnvelopeSingleCircleLayout(
+    patternWidth,
+    patternHeight,
+  )
+
+  return {
+    cx: patternWidth * PIE_ENVELOPE_SINGLE_CIRCLE_INSET,
+    cy: patternHeight * PIE_ENVELOPE_SINGLE_CIRCLE_INSET,
+    radius: recipientLayout.innerRadius * PIE_ENVELOPE_SENDER_CIRCLE_RADIUS_FACTOR,
+  }
+}
+
+export const PIE_ENVELOPE_SENDER_CIRCLE_LAYOUT = getPieEnvelopeSenderCircleLayout(
   PIE_ENVELOPE_PATTERN_WIDTH,
   PIE_ENVELOPE_PATTERN_HEIGHT,
 )
