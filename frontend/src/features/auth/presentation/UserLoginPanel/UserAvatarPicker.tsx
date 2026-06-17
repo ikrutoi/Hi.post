@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
 import {
   IconUserRegistered,
-  getOrCreateUserRegisteredElementColors,
+  resolveUserRegisteredElementColors,
 } from '@shared/ui/icons'
 import { selectAuthUser } from '@features/auth/infrastructure/selectors/authSelectors'
 import styles from './UserAvatarPicker.module.scss'
@@ -18,9 +18,9 @@ export const UserAvatarPicker: React.FC<UserAvatarPickerProps> = ({
   const registeredAvatarColors = useMemo(
     () =>
       user?.id != null
-        ? getOrCreateUserRegisteredElementColors(user.id)
+        ? resolveUserRegisteredElementColors(user.id, user.passportColors)
         : null,
-    [user?.id],
+    [user?.id, user?.passportColors],
   )
 
   return (

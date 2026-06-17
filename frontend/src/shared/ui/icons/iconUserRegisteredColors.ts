@@ -40,10 +40,6 @@ export const USER_REGISTERED_SECTOR_CONFIG = {
   lightnessMax: 62,
 } as const
 
-const USER_REGISTERED_PASSPORT_STORAGE_KEY = 'hi.userRegisteredPassport.v1'
-
-type StoredUserRegisteredPassports = Record<string, IconUserRegisteredElementColors>
-
 function hashString(value: string): number {
   let hash = 2166136261
   for (let i = 0; i < value.length; i += 1) {
@@ -126,27 +122,7 @@ export function generateUserRegisteredElementColors(
   }, {} as IconUserRegisteredElementColors)
 }
 
-function readStoredPassports(): StoredUserRegisteredPassports {
-  if (typeof window === 'undefined') return {}
-  try {
-    const raw = window.localStorage.getItem(USER_REGISTERED_PASSPORT_STORAGE_KEY)
-    if (!raw) return {}
-    const parsed = JSON.parse(raw) as StoredUserRegisteredPassports
-    return parsed && typeof parsed === 'object' ? parsed : {}
-  } catch {
-    return {}
-  }
-}
-
-function writeStoredPassports(store: StoredUserRegisteredPassports): void {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(
-    USER_REGISTERED_PASSPORT_STORAGE_KEY,
-    JSON.stringify(store),
-  )
-}
-
-function isCompleteElementColors(
+export function isCompleteElementColors(
   value: unknown,
 ): value is IconUserRegisteredElementColors {
   if (value == null || typeof value !== 'object') return false
@@ -157,34 +133,14 @@ function isCompleteElementColors(
   )
 }
 
-export function loadUserRegisteredElementColors(
+/** Prefer server-stored passport; fall back to deterministic generation (mock mode). */
+export function resolveUserRegisteredElementColors(
   userId: string,
-): IconUserRegisteredElementColors | null {
-  const stored = readStoredPassports()[userId]
-  if (stored == null) return null
-  return isCompleteElementColors(stored) ? stored : null
-}
-
-export function saveUserRegisteredElementColors(
-  userId: string,
-  colors: IconUserRegisteredElementColors,
-): void {
-  const store = readStoredPassports()
-  store[userId] = colors
-  writeStoredPassports(store)
-}
-
-/**
- * Birth passport: generated once per user id and persisted locally.
- * Same user always gets the same mosaic; different users diverge inside hue sectors.
- */
-export function getOrCreateUserRegisteredElementColors(
-  userId: string,
+  passportColors?: IconUserRegisteredElementColors | null,
 ): IconUserRegisteredElementColors {
-  const existing = loadUserRegisteredElementColors(userId)
-  if (existing != null) return existing
+  if (passportColors != null && isCompleteElementColors(passportColors)) {
+    return passportColors
+  }
 
-  const generated = generateUserRegisteredElementColors(userId)
-  saveUserRegisteredElementColors(userId, generated)
-  return generated
+  return generateUserRegisteredElementColors(userId)
 }

@@ -1,7 +1,10 @@
+import type { IconUserRegisteredElementColors } from '@shared/ui/icons'
+
 export type User = {
   id: string
   name: string
   email: string
+  passportColors?: IconUserRegisteredElementColors | null
 }
 
 export type AuthResponse = {

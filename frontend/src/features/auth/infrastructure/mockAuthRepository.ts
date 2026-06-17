@@ -5,6 +5,7 @@ import type {
   User,
 } from '../domain/types/auth.types'
 import type { AuthRepository } from './authRepository'
+import { generateUserRegisteredElementColors } from '@shared/ui/icons/iconUserRegisteredColors'
 import { readAuthSession } from './sessionStorage'
 
 const MOCK_USERS_KEY = 'hi.post.mockAuth.users'
@@ -74,6 +75,7 @@ function toAuthResponse(user: MockStoredUser): AuthResponse {
     id: user.id,
     name: user.name,
     email: user.email,
+    passportColors: generateUserRegisteredElementColors(user.id),
   }
   return {
     user: profile,
@@ -129,6 +131,16 @@ export const mockAuthRepository: AuthRepository = {
     if (!session?.user) {
       throw new Error('Not signed in')
     }
-    return session.user
+
+    return {
+      ...session.user,
+      passportColors: resolveMockPassportColors(session.user),
+    }
   },
+}
+
+function resolveMockPassportColors(user: User): User['passportColors'] {
+  return (
+    user.passportColors ?? generateUserRegisteredElementColors(user.id)
+  )
 }

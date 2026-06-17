@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Services\PassportColorGenerator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private readonly PassportColorGenerator $passportColorGenerator,
+    ) {}
+
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -93,15 +98,24 @@ class AuthController extends Controller
     }
 
     /**
-     * @return array{id: string, name: string, email: string, avatarUrl: string|null}
+     * @return array{
+     *     id: string,
+     *     name: string,
+     *     email: string,
+     *     avatarUrl: string|null,
+     *     passportColors: array<string, string>
+     * }
      */
     private function formatUser(User $user): array
     {
+        $user = $this->passportColorGenerator->ensureForUser($user);
+
         return [
             'id' => (string) $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'avatarUrl' => $user->avatar_url,
+            'passportColors' => $user->passport_colors,
         ];
     }
 }

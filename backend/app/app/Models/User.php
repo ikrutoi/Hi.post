@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'avatar_url',
+        'passport_colors',
         'is_active',
         'role',
     ];
@@ -49,6 +50,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'role' => 'string',
+            'passport_colors' => 'array',
         ];
     }
 
