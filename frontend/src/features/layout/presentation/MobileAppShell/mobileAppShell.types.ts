@@ -18,6 +18,7 @@ export type MobileAppShellProps = {
   /** Mobile envelope: fullscreen address create/edit — hide chrome header and lift form. */
   envelopeAddressCreateMode?: boolean
   listPanelOpen: boolean
+  historyListPanelOpen: boolean
   cardPieListPanelOpen: boolean
   onEditorPieToolbarAction?: (key: IconKey) => void | false
   onCartListSelectEntry: (item: CartListPanelItem) => void

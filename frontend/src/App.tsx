@@ -972,6 +972,7 @@ const App = () => {
         }
         envelopeAddressCreateMode={mobileEnvelopeAddressFormOpen}
         listPanelOpen={listPanelOpen}
+        historyListPanelOpen={historyListPanelOpen}
         cardPieListPanelOpen={cardPieListPanelOpen}
         onEditorPieToolbarAction={handleEditorPieToolbarAction}
         onCartListSelectEntry={handleCartListSelectEntry}

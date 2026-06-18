@@ -1,5 +1,7 @@
 import type { SagaIterator } from 'redux-saga'
-import { put, takeEvery } from 'redux-saga/effects'
+import { call, put, select, takeEvery } from 'redux-saga/effects'
+import { selectIsMobileLayout } from '@layout/infrastructure/selectors'
+import { closeCardPieListPanelAndSyncIconsSaga } from '@app/middleware/exclusiveListPanelsSaga'
 import {
   notebookSessionRestored,
   notebookTabCartClicked,
@@ -10,6 +12,7 @@ import { bumpNotebookDateTabPeekClearTick } from '@date/calendar/infrastructure/
 import {
   buildNotebookCartTabCommands,
   buildNotebookDateTabCommands,
+  buildNotebookDateTabCommandsMobile,
   buildNotebookHistoryTabCommands,
   buildNotebookSessionRestoreCommands,
 } from '@date/calendar/application/orchestration/notebookOrchestration.rules'
@@ -21,15 +24,29 @@ function* dispatchCommands(commands: ReturnType<typeof buildNotebookDateTabComma
 }
 
 function* handleNotebookTabDateClicked(): SagaIterator {
-  yield* dispatchCommands(buildNotebookDateTabCommands())
+  const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+  if (isMobileLayout) {
+    yield call(closeCardPieListPanelAndSyncIconsSaga)
+    yield* dispatchCommands(buildNotebookDateTabCommandsMobile())
+  } else {
+    yield* dispatchCommands(buildNotebookDateTabCommands())
+  }
   yield put(bumpNotebookDateTabPeekClearTick())
 }
 
 function* handleNotebookTabCartClicked(): SagaIterator {
+  const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+  if (isMobileLayout) {
+    yield call(closeCardPieListPanelAndSyncIconsSaga)
+  }
   yield* dispatchCommands(buildNotebookCartTabCommands())
 }
 
 function* handleNotebookTabHistoryClicked(): SagaIterator {
+  const isMobileLayout: boolean = yield select(selectIsMobileLayout)
+  if (isMobileLayout) {
+    yield call(closeCardPieListPanelAndSyncIconsSaga)
+  }
   yield* dispatchCommands(buildNotebookHistoryTabCommands())
 }
 

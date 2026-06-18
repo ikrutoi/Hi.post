@@ -18,6 +18,16 @@ $list-panel-footer-band: calc(1.75rem + 1px);
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
+
+  :global([data-shell-layout='mobile']) & {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    border-color: $color-section-light;
+  }
 }
 
 .panelEmptyNoToolbar {

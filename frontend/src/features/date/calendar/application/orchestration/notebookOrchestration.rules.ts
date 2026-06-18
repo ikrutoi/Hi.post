@@ -29,6 +29,17 @@ export const buildNotebookDateTabCommands = (): UnknownAction[] => [
   setActiveSection('date'),
 ]
 
+/** Mobile header Date tab: date strip without opening CardPie list in the central slot. */
+export const buildNotebookDateTabCommandsMobile = (): UnknownAction[] => [
+  setNotebookStripDateOverCart(true),
+  setCartListSelectedLocalId(null),
+  setHistoryListSelectedLocalId(null),
+  closeDayPanel(),
+  setCartCalendarDatePickMode(false),
+  setNotebookStripTab('date'),
+  setActiveSection('date'),
+]
+
 export const buildNotebookCartTabCommands = (): UnknownAction[] => [
   setHistoryListPanelOpen(false),
   closeDayPanel(),

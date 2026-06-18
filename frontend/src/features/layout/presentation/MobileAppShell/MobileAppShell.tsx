@@ -1,13 +1,24 @@
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import clsx from 'clsx'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { store } from '@app/state/store'
 import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
+import { setCartListPanelOpen } from '@cart/infrastructure/state'
+import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
+import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import {
   setCardPieListPanelOpen,
+  setHistoryListPanelOpen,
+  setNotebookStripDateOverCart,
+  setNotebookStripDateOverHistory,
+  setNotebookStripTab,
 } from '@date/calendar/infrastructure/state'
-import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import {
+  selectIsCardPieListPanelOpen,
+  selectIsHistoryListPanelOpen,
+  selectNotebookStripTab,
+} from '@date/calendar/infrastructure/selectors'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
@@ -44,6 +55,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   hideSectionToolbar,
   envelopeAddressCreateMode = false,
   listPanelOpen,
+  historyListPanelOpen,
   cardPieListPanelOpen,
   onEditorPieToolbarAction,
   onCartListSelectEntry,
@@ -55,11 +67,41 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   useMobileVisualViewport(shellRef)
   const userLoginPanelOpen = useAppSelector(selectUserLoginPanelOpen)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
+  const { activeSection } = useSectionMenuFacade()
+
+  const mobileCentralListPanel = useMemo(() => {
+    if (cardPieListPanelOpen) {
+      return 'cardPie'
+    }
+    if (
+      notebookStripSection === 'cart' &&
+      listPanelOpen &&
+      activeSection === 'date'
+    ) {
+      return 'cart'
+    }
+    if (
+      notebookStripSection === 'history' &&
+      historyListPanelOpen &&
+      activeSection === 'history'
+    ) {
+      return 'history'
+    }
+    return null
+  }, [
+    activeSection,
+    cardPieListPanelOpen,
+    historyListPanelOpen,
+    listPanelOpen,
+    notebookStripSection,
+  ])
 
   const handleLeftPieSectorClick = useCallback(
     (section: CardSection) => {
       onBeforeLeftPieInteraction()
-      if (selectIsCardPieListPanelOpen(store.getState())) {
+      const state = store.getState()
+      const notebookStripTab = selectNotebookStripTab(state)
+      if (selectIsCardPieListPanelOpen(state)) {
         dispatch(setCardPieListPanelOpen(false))
         dispatch(
           updateToolbarIcon({
@@ -75,6 +117,19 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
             value: 'enabled',
           }),
         )
+      }
+      if (selectCartListPanelOpen(state)) {
+        dispatch(setCartListPanelOpen(false))
+      }
+      if (selectIsHistoryListPanelOpen(state)) {
+        dispatch(setHistoryListPanelOpen(false))
+      }
+      if (notebookStripTab === 'cart') {
+        dispatch(setNotebookStripDateOverCart(true))
+        dispatch(setNotebookStripTab('date'))
+      } else if (notebookStripTab === 'history') {
+        dispatch(setNotebookStripDateOverHistory(true))
+        dispatch(setNotebookStripTab('date'))
       }
       if (section === 'cardphoto') {
         dispatch(openCardphotoFromMiniStripRequested())
@@ -156,7 +211,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                 aria-label="Section editor"
               >
                 <div className={styles.mobileSectionToolbar}>
-                  {!hideSectionToolbar && !cardPieListPanelOpen ? (
+                  {!hideSectionToolbar && mobileCentralListPanel == null ? (
                     <CardSectionToolbar />
                   ) : null}
                 </div>
@@ -164,26 +219,37 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   ref={formRef}
                   className={clsx(
                     styles.mobileForm,
-                    cardPieListPanelOpen && styles.mobileFormCardPieList,
+                    mobileCentralListPanel != null && styles.mobileFormListPanel,
                   )}
                 >
-                  {cardPieListPanelOpen ? (
-                    <CardPieLeftSlot />
-                  ) : (
+                  <div
+                    className={styles.mobileFormEditorLayer}
+                    aria-hidden={mobileCentralListPanel != null}
+                  >
                     <CardSectionEditor />
-                  )}
+                  </div>
+                  {mobileCentralListPanel === 'cart' ? (
+                    <div className={styles.mobileFormListOverlay}>
+                      <CartListPanel
+                        onSelectEntry={onCartListSelectEntry}
+                        onDateEditEntry={onCartListDateEditEntry}
+                      />
+                    </div>
+                  ) : null}
+                  {mobileCentralListPanel === 'history' ? (
+                    <div className={styles.mobileFormListOverlay}>
+                      <HistoryListRightSlot
+                        onSelectEntry={onHistoryListSelectEntry}
+                      />
+                    </div>
+                  ) : null}
+                  {mobileCentralListPanel === 'cardPie' ? (
+                    <div className={styles.mobileFormListOverlay}>
+                      <CardPieLeftSlot />
+                    </div>
+                  ) : null}
                 </div>
               </section>
-            </div>
-
-            <div className={styles.mobilePanels}>
-              {listPanelOpen ? (
-                <CartListPanel
-                  onSelectEntry={onCartListSelectEntry}
-                  onDateEditEntry={onCartListDateEditEntry}
-                />
-              ) : null}
-              <HistoryListRightSlot onSelectEntry={onHistoryListSelectEntry} />
             </div>
           </div>
         </div>
