@@ -12,6 +12,9 @@
   );
   --mobile-chrome-padding-y: 0.35rem;
   --mobile-section-inset: 0.75rem;
+  --mobile-app-header-height: calc(
+    env(safe-area-inset-top, 0px) + var(--mobile-chrome-band)
+  );
   --mobile-form-padding-bottom: calc(
     1.5rem + env(safe-area-inset-bottom, 0px)
   );
@@ -498,11 +501,24 @@
 
 .mobileUserPanel {
   position: fixed;
-  inset: 0;
+  top: var(--mobile-app-header-height);
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 160;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-sizing: border-box;
+  background-color: $color-app-inner;
+  padding: 0 var(--mobile-section-inset) var(--mobile-form-padding-bottom);
   pointer-events: none;
 
   > * {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
     pointer-events: auto;
   }
 }

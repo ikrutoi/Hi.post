@@ -1,4 +1,6 @@
 import React, { useRef } from 'react'
+import { useAppSelector } from '@app/hooks'
+import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
@@ -40,6 +42,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
 }) => {
   const shellRef = useRef<HTMLDivElement>(null)
   useMobileVisualViewport(shellRef)
+  const userLoginPanelOpen = useAppSelector(selectUserLoginPanelOpen)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
@@ -135,9 +138,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
           </div>
         </div>
 
-        <div className={styles.mobileUserPanel}>
-          <UserLoginRightSlot />
-        </div>
+        {userLoginPanelOpen ? (
+          <div className={styles.mobileUserPanel}>
+            <UserLoginRightSlot />
+          </div>
+        ) : null}
       </MarkStampYearDevProvider>
     </div>
   )

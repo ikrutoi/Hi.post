@@ -27,6 +27,17 @@ $list-panel-footer-stack-height: calc(
   border-radius: 0.75rem;
   font-size: 0.875rem;
 
+  :global([data-shell-layout='mobile']) & {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    border-color: $color-section-light;
+    box-shadow: none;
+  }
+
   :global([data-shell-layout='desktop']) & {
     padding-top: $list-panel-stacked-band-section-toolbar;
 
