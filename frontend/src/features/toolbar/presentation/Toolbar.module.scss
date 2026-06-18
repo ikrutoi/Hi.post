@@ -384,6 +384,7 @@
   .toolbarKey {
     background-color: transparent;
     box-shadow: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .toolbarKey.toolbarKeyEnabled:hover,
@@ -402,9 +403,11 @@
   .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
     color: $color-font-enabled-light;
 
-    &:hover {
-      color: $color-font-enabled;
-      background-color: transparent;
+    @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        color: $color-font-enabled;
+        background-color: transparent;
+      }
     }
   }
 
@@ -1550,6 +1553,21 @@
 
 /* Mobile: cardphoto toolbars — full-size standard icons. */
 :global([data-shell-layout='mobile']) {
+  .toolbarAroma {
+    .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+      color: $color-font-enabled-light;
+
+      &:hover {
+        color: $color-font-enabled-light;
+        background-color: transparent;
+      }
+
+      &:active {
+        color: $color-font-enabled;
+      }
+    }
+  }
+
   .toolbarCardphoto,
   .toolbarCardphotoCreate,
   .toolbarCardphotoView,
