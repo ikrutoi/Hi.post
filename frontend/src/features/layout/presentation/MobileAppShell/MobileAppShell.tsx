@@ -1,5 +1,15 @@
-import React, { useRef } from 'react'
-import { useAppSelector } from '@app/hooks'
+import React, { useCallback, useRef } from 'react'
+import clsx from 'clsx'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
+import { store } from '@app/state/store'
+import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/state'
+import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
+import {
+  setCardPieListPanelOpen,
+} from '@date/calendar/infrastructure/state'
+import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import type { CardSection } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import { IconLogo } from '@shared/ui/icons'
@@ -40,10 +50,39 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onCartListDateEditEntry,
   onHistoryListSelectEntry,
 }) => {
+  const dispatch = useAppDispatch()
   const shellRef = useRef<HTMLDivElement>(null)
   useMobileVisualViewport(shellRef)
   const userLoginPanelOpen = useAppSelector(selectUserLoginPanelOpen)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
+
+  const handleLeftPieSectorClick = useCallback(
+    (section: CardSection) => {
+      onBeforeLeftPieInteraction()
+      if (selectIsCardPieListPanelOpen(store.getState())) {
+        dispatch(setCardPieListPanelOpen(false))
+        dispatch(
+          updateToolbarIcon({
+            section: 'editorPie',
+            key: 'cardPie',
+            value: 'enabled',
+          }),
+        )
+        dispatch(
+          updateToolbarIcon({
+            section: 'date',
+            key: 'cardPie',
+            value: 'enabled',
+          }),
+        )
+      }
+      if (section === 'cardphoto') {
+        dispatch(openCardphotoFromMiniStripRequested())
+      }
+      dispatch(setActiveSection(section))
+    },
+    [dispatch, onBeforeLeftPieInteraction],
+  )
   const cardWidthStyle =
     sizeCard?.width != null && sizeCard.width > 0
       ? ({
@@ -96,7 +135,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       isProcessed
                       fillContainer
                       station="left"
-                      onBeforeLeftPieSectorClick={onBeforeLeftPieInteraction}
+                      onLeftPieSectorClick={handleLeftPieSectorClick}
                       onLeftPieCenterClick={onLeftPieCenterClick}
                       leftPieCenterClickable={
                         activePieSide === 'right' && !showTopCardStripFullSpan
@@ -117,16 +156,27 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                 aria-label="Section editor"
               >
                 <div className={styles.mobileSectionToolbar}>
-                  {!hideSectionToolbar ? <CardSectionToolbar /> : null}
+                  {!hideSectionToolbar && !cardPieListPanelOpen ? (
+                    <CardSectionToolbar />
+                  ) : null}
                 </div>
-                <div ref={formRef} className={styles.mobileForm}>
-                  <CardSectionEditor />
+                <div
+                  ref={formRef}
+                  className={clsx(
+                    styles.mobileForm,
+                    cardPieListPanelOpen && styles.mobileFormCardPieList,
+                  )}
+                >
+                  {cardPieListPanelOpen ? (
+                    <CardPieLeftSlot />
+                  ) : (
+                    <CardSectionEditor />
+                  )}
                 </div>
               </section>
             </div>
 
             <div className={styles.mobilePanels}>
-              {cardPieListPanelOpen ? <CardPieLeftSlot /> : null}
               {listPanelOpen ? (
                 <CartListPanel
                   onSelectEntry={onCartListSelectEntry}

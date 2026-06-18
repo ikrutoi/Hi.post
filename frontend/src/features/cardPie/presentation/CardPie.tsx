@@ -60,6 +60,7 @@ export const CardPie: React.FC<CardPieProps> = ({
   rightListSource = null,
   onListArchiveSectorClick,
   onBeforeLeftPieSectorClick,
+  onLeftPieSectorClick,
   onLeftPieCenterClick,
   leftPieCenterClickable = false,
   onRightPieCenterClick,
@@ -83,12 +84,14 @@ export const CardPie: React.FC<CardPieProps> = ({
   const handleSectorClick =
     station === 'right' && onListArchiveSectorClick != null
       ? onListArchiveSectorClick
-      : (section: CardSection) => {
-          if (station === 'left') {
-            onBeforeLeftPieSectorClick?.()
+      : station === 'left' && onLeftPieSectorClick != null
+        ? onLeftPieSectorClick
+        : (section: CardSection) => {
+            if (station === 'left') {
+              onBeforeLeftPieSectorClick?.()
+            }
+            defaultHandleSectorClick(section)
           }
-          defaultHandleSectorClick(section)
-        }
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
 
