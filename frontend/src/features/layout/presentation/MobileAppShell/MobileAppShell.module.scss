@@ -281,7 +281,7 @@
   padding: 0;
   overflow: hidden;
 
-  // Section shells — side inset + rounded card (mobile).
+  // Section shells — side inset; toolbar band без рамки, рамка только у рабочей зоны.
   :global([class*='cardSectionRenderer']) > :global([class*='cardphoto']:not([class*='View']):not([class*='Toolbar']):not([class*='Stage']):not([class*='Title'])),
   :global([class*='cardtextContainer']) > :global([class*='cardtext']:not([class*='Container']):not([class*='View']):not([class*='Toolbar']):not([class*='ReadOnly'])),
   :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom']):not([class*='View']):not([class*='Work'])),
@@ -290,8 +290,10 @@
     box-sizing: border-box;
     width: calc(100% - 2 * var(--mobile-section-inset));
     margin-inline: var(--mobile-section-inset);
-    border-radius: 0.5rem;
+    border: none;
+    border-radius: 0;
     box-shadow: none;
+    background-color: transparent;
   }
 
   :global([class*='cardSectionRenderer']) > :global([class*='cardphoto']:not([class*='View']):not([class*='Toolbar']):not([class*='Stage']):not([class*='Title'])),
@@ -315,35 +317,50 @@
     align-items: center;
   }
 
-  :global([class*='cardphotoViewContent']),
-  :global([class*='cardtextViewContent']) {
+  :global([class*='cardphotoToolbarRow']),
+  :global([class*='cardtextToolbarRow']),
+  :global([class*='envelopeToolbarRow']),
+  :global([class*='aromaToolbarRow']),
+  :global([class*='dateToolbarRow']) {
+    background-color: transparent;
+  }
+
+  :global([class*='cardphotoViewContent']) {
+    border: 1px solid $color-section-light;
+    border-top: none;
     border-radius: 0.5rem;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
+    background-color: #fff;
+    overflow: hidden;
     flex: 1 1 auto;
     align-items: center;
     width: 100%;
     min-height: 0;
   }
 
+  :global([class*='cardtextViewContent']),
   :global([class*='envelopeViewContent']),
   :global([class*='aromaViewContent']),
   :global([class*='dateViewContent']) {
+    border: 1px solid $color-cardphoto-input-border;
+    border-top: none;
     border-radius: 0.5rem;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
+    background-color: #fff;
+    overflow: hidden;
     flex: 1 1 auto;
     align-items: stretch;
     width: 100%;
     min-height: 0;
   }
 
+  :global([class*='cardtextViewContent']) {
+    align-items: center;
+  }
+
   // Квадратная рабочая зона: картинка (cardphoto) / письмо (cardtext).
   :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
   :global([class*='cardtextReadOnlyShell']) :global([class*='viewContainer']),
-  :global([class*='cardtextViewContent']) > :global([class*='CardEditor']) {
+  :global([class*='cardtextReadOnlyShell']),
+  :global([class*='cardtextViewContent']) > :global([class*='_editor_']) {
     flex: 0 0 auto;
     width: var(--card-work-zone-side, 100%);
     height: var(--card-work-zone-side);
@@ -351,6 +368,7 @@
     aspect-ratio: 1;
     padding: 0;
     box-sizing: border-box;
+    border: none;
   }
 
   :global([class*='cardtextReadOnlyShell']) {
@@ -364,29 +382,16 @@
   }
 
   :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
-  :global([class*='cardtextViewContent']) :global([class*='viewContainer']),
-  :global([class*='cardtextViewContent']) > :global([class*='CardEditor']) {
+  :global([class*='cardtextViewContent']) :global([class*='viewContainer']) {
     border-radius: 0.5rem;
     padding-left: 0;
     padding-right: 0;
     padding-bottom: 0;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
+    overflow: hidden;
   }
 
   :global([class*='cardphotoViewContent']) :global([class*='imageStack']) {
     border-radius: 0.5rem;
-  }
-
-  :global([class*='cardtextViewContent']) :global([class*='CardEditor']) :global([class*='editor']) {
-    border-radius: 0.5rem;
-    padding-left: 0;
-    padding-right: 0;
-    padding-bottom: 0;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
   }
 }
 
@@ -404,6 +409,11 @@
   min-height: var(--mobile-section-toolbar-band);
   box-sizing: border-box;
   pointer-events: auto;
+  background-color: $color-app-inner;
+
+  :global([class*='cardSectionToolbar']) {
+    background-color: $color-app-inner;
+  }
 }
 
 .mobileForm {

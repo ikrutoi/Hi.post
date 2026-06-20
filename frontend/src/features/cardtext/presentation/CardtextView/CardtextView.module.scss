@@ -27,14 +27,11 @@ $cardtext-view-overlay-chip-radius: 0.47rem;
   border-radius: 0.5rem;
   background-color: $color-cardtext-input;
   // border: 1px solid $color-app-header;
-  border: 1px solid $color-cardtext-input-border;
+  border: none;
 
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem;
     padding-bottom: 0;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
   }
 
   :global([data-shell-layout='mobile']) & {
