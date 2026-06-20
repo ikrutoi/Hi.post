@@ -6,7 +6,6 @@ import { openCardphotoFromMiniStripRequested } from '@cardphoto/infrastructure/s
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setActiveSection } from '@entities/sectionEditorMenu/infrastructure/state'
-import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import {
   setCardPieListPanelOpen,
   setHistoryListPanelOpen,
@@ -34,8 +33,6 @@ import { CardSectionEditor } from '@features/cardSectionEditor/presentation/Card
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
 import { RightSidebarHistoryBadgeSync } from '@toolbar/presentation/RightSidebarHistoryBadgeSync'
 import { CalendarModeToolbarBadgesSync } from '@toolbar/presentation/CalendarModeToolbarBadgesSync'
-import { CartListPanel } from '@cart/presentation/CartListPanel'
-import { HistoryListRightSlot } from '@date/presentation/HistoryListRightSlot'
 import { UserLoginRightSlot } from '@features/auth/presentation/UserLoginRightSlot'
 import { CalendarNotebookTabs } from '@date/presentation/CalendarNotebookTabs'
 import { useDateStripSectionForNotebookTabs } from '@date/presentation/useDateStripSectionForNotebookTabs'
@@ -54,47 +51,20 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   onLeftPieCenterClick,
   hideSectionToolbar,
   envelopeAddressCreateMode = false,
-  listPanelOpen,
-  historyListPanelOpen,
   cardPieListPanelOpen,
   onEditorPieToolbarAction,
-  onCartListSelectEntry,
-  onCartListDateEditEntry,
-  onHistoryListSelectEntry,
 }) => {
   const dispatch = useAppDispatch()
   const shellRef = useRef<HTMLDivElement>(null)
   useMobileVisualViewport(shellRef)
   const userLoginPanelOpen = useAppSelector(selectUserLoginPanelOpen)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
-  const { activeSection } = useSectionMenuFacade()
 
-  const mobileCentralListPanel = useMemo(() => {
-    if (cardPieListPanelOpen) {
-      return 'cardPie'
-    }
-    if (
-      notebookStripSection === 'cart' &&
-      listPanelOpen &&
-      activeSection === 'date'
-    ) {
-      return 'cart'
-    }
-    if (
-      notebookStripSection === 'history' &&
-      historyListPanelOpen &&
-      activeSection === 'history'
-    ) {
-      return 'history'
-    }
-    return null
-  }, [
-    activeSection,
-    cardPieListPanelOpen,
-    historyListPanelOpen,
-    listPanelOpen,
-    notebookStripSection,
-  ])
+  /** Mobile: только список CardPie перекрывает центр; Cart/History — календарь в фабрике. */
+  const mobileCentralListPanel = useMemo(
+    () => (cardPieListPanelOpen ? 'cardPie' : null),
+    [cardPieListPanelOpen],
+  )
 
   const handleLeftPieSectorClick = useCallback(
     (section: CardSection) => {
@@ -228,21 +198,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                   >
                     <CardSectionEditor />
                   </div>
-                  {mobileCentralListPanel === 'cart' ? (
-                    <div className={styles.mobileFormListOverlay}>
-                      <CartListPanel
-                        onSelectEntry={onCartListSelectEntry}
-                        onDateEditEntry={onCartListDateEditEntry}
-                      />
-                    </div>
-                  ) : null}
-                  {mobileCentralListPanel === 'history' ? (
-                    <div className={styles.mobileFormListOverlay}>
-                      <HistoryListRightSlot
-                        onSelectEntry={onHistoryListSelectEntry}
-                      />
-                    </div>
-                  ) : null}
                   {mobileCentralListPanel === 'cardPie' ? (
                     <div className={styles.mobileFormListOverlay}>
                       <CardPieLeftSlot />

@@ -971,13 +971,8 @@ const App = () => {
           hideMobileSectionToolbar || mobileEnvelopeAddressFormOpen
         }
         envelopeAddressCreateMode={mobileEnvelopeAddressFormOpen}
-        listPanelOpen={listPanelOpen}
-        historyListPanelOpen={historyListPanelOpen}
         cardPieListPanelOpen={cardPieListPanelOpen}
         onEditorPieToolbarAction={handleEditorPieToolbarAction}
-        onCartListSelectEntry={handleCartListSelectEntry}
-        onCartListDateEditEntry={handleCartListDateEditEntry}
-        onHistoryListSelectEntry={handleHistoryListSelectEntry}
       />
     )
   }

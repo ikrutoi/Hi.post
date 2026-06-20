@@ -1,6 +1,4 @@
 import type { RefObject } from 'react'
-import type { CartListPanelItem } from '@cart/presentation/CartListPanel'
-import type { HistoryListPanelItem } from '@date/presentation/HistoryListPanel'
 import type { CardLayer } from '@cardphoto/domain/types'
 import type { RightSidebarKey } from '@toolbar/domain/types/rightSidebar.types'
 import type { IconKey } from '@shared/config/constants'
@@ -17,11 +15,6 @@ export type MobileAppShellProps = {
   hideSectionToolbar: boolean
   /** Mobile envelope: fullscreen address create/edit — hide chrome header and lift form. */
   envelopeAddressCreateMode?: boolean
-  listPanelOpen: boolean
-  historyListPanelOpen: boolean
   cardPieListPanelOpen: boolean
   onEditorPieToolbarAction?: (key: IconKey) => void | false
-  onCartListSelectEntry: (item: CartListPanelItem) => void
-  onCartListDateEditEntry: (item: CartListPanelItem) => void
-  onHistoryListSelectEntry: (item: HistoryListPanelItem) => void
 }
