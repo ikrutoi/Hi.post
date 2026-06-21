@@ -331,13 +331,24 @@
     border-radius: 0.5rem;
     background-color: #fff;
     overflow: hidden;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     align-items: center;
     width: 100%;
     min-height: 0;
   }
 
-  :global([class*='cardtextViewContent']),
+  :global([class*='cardtextViewContent']) {
+    border: 1px solid $color-cardphoto-input-border;
+    border-top: none;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    overflow: hidden;
+    flex: 0 0 auto;
+    align-items: center;
+    width: 100%;
+    min-height: 0;
+  }
+
   :global([class*='envelopeViewContent']),
   :global([class*='aromaViewContent']),
   :global([class*='dateViewContent']) {
@@ -352,18 +363,13 @@
     min-height: 0;
   }
 
-  :global([class*='cardtextViewContent']) {
-    align-items: center;
-  }
-
   // Квадратная рабочая зона: картинка (cardphoto) / письмо (cardtext).
   :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
   :global([class*='cardtextReadOnlyShell']) :global([class*='viewContainer']),
-  :global([class*='cardtextReadOnlyShell']),
   :global([class*='cardtextViewContent']) > :global([class*='_editor_']) {
     flex: 0 0 auto;
-    width: var(--card-work-zone-side, 100%);
-    height: var(--card-work-zone-side);
+    width: min(100%, var(--card-work-zone-side, 100%));
+    height: var(--card-work-zone-side, auto);
     max-width: 100%;
     aspect-ratio: 1;
     padding: 0;
@@ -372,7 +378,7 @@
   }
 
   :global([class*='cardtextReadOnlyShell']) {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;

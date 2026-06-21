@@ -35,12 +35,23 @@ import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcard
 const CardphotoInnerPreviewOnly: React.FC<{
   inner: CardPieInnerData | null
 }> = ({ inner }) => {
+  const { sizeCard } = useSizeFacade()
   const url =
     inner?.cardphoto?.factoryDisplayUrl ?? inner?.cardphoto?.previewUrl ?? null
   const hasPhoto = url != null && url !== ''
 
   return (
-    <div className={styles.cardphoto}>
+    <div
+      className={styles.cardphoto}
+      style={
+        sizeCard.width > 0 && sizeCard.height > 0
+          ? {
+              width: `${sizeCard.width}px`,
+              height: `${sizeCard.height}px`,
+            }
+          : undefined
+      }
+    >
       <div className={styles.cardphotoViewWrap}>
         <div className={styles.cardphotoToolbarRow} />
         <div className={styles.cardphotoViewContent}>
@@ -84,7 +95,7 @@ const CardphotoRightListMirror: React.FC = () => {
 const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
   const isListPanelOpen = useAppSelector(selectIsListPanelOpen)
-  const { isMobileLayout } = useSizeFacade()
+  const { sizeCard, isMobileLayout } = useSizeFacade()
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const title = useAppSelector(selectCardphotoTitle)
   const createToolbarState = useAppSelector(
@@ -173,7 +184,17 @@ const CardphotoSessionEditor: React.FC = () => {
   }
 
   return (
-    <div className={styles.cardphoto}>
+    <div
+      className={styles.cardphoto}
+      style={
+        sizeCard.width > 0 && sizeCard.height > 0
+          ? {
+              width: `${sizeCard.width}px`,
+              height: `${sizeCard.height}px`,
+            }
+          : undefined
+      }
+    >
       <div className={styles.cardphotoViewWrap}>
         <div
           className={clsx(
