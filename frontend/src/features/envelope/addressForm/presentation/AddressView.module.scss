@@ -316,14 +316,14 @@ $envelope-address-view-row-height: 1.625rem;
   }
 }
 
-/** Mobile envelope create: fullscreen form with create toolbar + fields. */
+/** Mobile envelope create: compact form (toolbar + fields); gap below is app background. */
 .savedAddressViewContainerMobileFullscreen {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   width: 100%;
-  height: 100%;
+  height: auto;
   min-height: 0;
   max-height: 100%;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   background-color: #fff;
@@ -334,35 +334,28 @@ $envelope-address-view-row-height: 1.625rem;
     min-height: var(--mobile-factory-toolbar-row-height, 2.25rem);
     padding: 0.1rem 0.5rem 0.2rem;
     background-color: $color-app-inner;
-    border-bottom: 1px solid $color-section-light;
     box-sizing: border-box;
   }
 
   .savedAddressViewCardWrap {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     min-height: 0;
     height: auto;
-    max-height: none;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     flex-direction: column;
   }
 
   .savedAddressView.savedAddressViewCreateForm {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     min-height: 0;
-    height: 100%;
+    height: auto;
     max-height: none;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    padding: 0.35rem 0.5rem 0.75rem;
+    overflow: visible;
+    display: block;
+    /* bottom padding matches field gap (see AddressFormView $mobile-create-field-gap) */
+    padding: 0.35rem 0.5rem 0.55rem;
     box-sizing: border-box;
-
-    :global([class*='addressFormFields']) {
-      flex: 1 1 auto;
-      min-height: 0;
-    }
   }
 }
 
