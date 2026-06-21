@@ -2,13 +2,19 @@
 @use '@styles/config/uiLayout' as *;
 
 .cardSectionToolbar {
-  height: $section-inner-toolbar-height-desktop;
   display: flex;
   align-items: center;
   // border: solid 1px red;
 
+  :global([data-shell-layout='desktop']) & {
+    height: $section-inner-toolbar-height-desktop;
+  }
+
   :global([data-shell-layout='mobile']) & {
-    height: var(--mobile-section-inner-toolbar-height, 2rem);
+    flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
   }
 }
 

@@ -1619,10 +1619,49 @@
     }
   }
 
+  .toolbarCardphoto,
+  .toolbarCardtext,
+  .toolbarDate,
+  .toolbarCart,
+  .toolbarHistory,
+  .toolbarCardphotoView,
+  .toolbarCardphotoCreate,
+  .toolbarCardphotoProcessed,
+  .toolbarCardtextView,
+  .toolbarCardtextEditor,
+  .toolbarCardtextCreate,
+  .toolbarCardphotoList,
+  .toolbarCardtextList,
+  .toolbarSender,
+  .toolbarRecipient,
+  .toolbarRecipients,
+  .toolbarSenderView,
+  .toolbarRecipientView,
+  .toolbarRecipientsView,
+  .toolbarSenderCreate,
+  .toolbarRecipientCreate,
+  .toolbarAroma {
+    align-items: center;
+    height: 100%;
+    min-height: var(--mobile-factory-toolbar-row-height, var(--mobile-section-inner-toolbar-height));
+    max-height: var(--mobile-factory-toolbar-row-height, var(--mobile-section-inner-toolbar-height));
+    box-sizing: border-box;
+
+    .toolbarGroup {
+      align-items: center;
+    }
+  }
+
   .toolbar .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(
       .toolbarKeyCropQualityIndicator
     ) {
     @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
+  }
+
+  .toolbarBadge,
+  .toolbarBadgeDot {
+    flex: 0 0 auto;
+    align-self: auto;
   }
 
   .toolbarCardphoto,

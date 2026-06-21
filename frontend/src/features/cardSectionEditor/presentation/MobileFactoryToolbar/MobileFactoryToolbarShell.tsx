@@ -55,6 +55,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       </div>
       <div className={styles.rowDivider} aria-hidden />
       <div className={styles.rowLower}>{ctx?.scenarioToolbar ?? null}</div>
+      <div className={styles.shellFill} aria-hidden />
     </div>
   )
 }

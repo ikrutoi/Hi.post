@@ -1,4 +1,5 @@
 @use '@styles/config/colors' as *;
+@use '@styles/config/uiLayout' as *;
 @use '@styles/mixins/toolbarIconButton' as iconButton;
 
 .mobileShell {
@@ -20,11 +21,11 @@
   );
   --mobile-pie-size: min(52vw, 14rem, 28dvh);
   --mobile-section-gap: clamp(0.5rem, 2.2dvh, 2.25rem);
+  --mobile-factory-toolbar-gap: clamp(0.35rem, 1.2dvh, 0.5rem);
   --mobile-pie-padding-top: 0.15rem;
   --mobile-section-inner-toolbar-height: #{iconButton.$toolbar-hit-size-mobile-section};
-  --mobile-section-toolbar-band: calc(
-    #{iconButton.$toolbar-hit-size-mobile-section} + 0.25rem
-  );
+  --mobile-factory-toolbar-row-height: #{$section-inner-toolbar-height-desktop};
+  --mobile-section-toolbar-band: var(--mobile-factory-toolbar-row-height);
   --mobile-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile};
   --mobile-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile};
   --mobile-toolbar-avatar-size: #{iconButton.$toolbar-avatar-size-mobile-chrome};
@@ -391,12 +392,12 @@
   flex-direction: column;
   overflow: visible;
   box-sizing: border-box;
-  // Gap from CardPie bottom to bordered section form (excludes toolbar + notebook tabs).
-  padding-top: var(--mobile-section-gap);
+  // Symmetric gap: CardPie ↔ toolbar shell ↔ central section.
+  padding-top: var(--mobile-factory-toolbar-gap);
   padding-bottom: var(--mobile-form-padding-bottom);
 
   :global([class*='cardSectionEditor']) {
-    justify-content: flex-end;
+    justify-content: flex-start;
     flex: 1 1 auto;
     min-height: 0;
     height: 100%;
@@ -411,10 +412,17 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
-  :global([class*='editorAreaCenter']),
+  :global([class*='editorAreaCenter']) {
+    width: 100% !important;
+    min-height: 0;
+    max-height: 100%;
+    flex: 1 1 auto;
+    height: 100%;
+  }
+
   :global([class*='editorSection']) {
     width: 100% !important;
     min-height: 0;
@@ -474,7 +482,7 @@
 
 .mobileFormListOverlay {
   position: absolute;
-  top: var(--mobile-section-gap);
+  top: var(--mobile-factory-toolbar-gap);
   right: var(--mobile-section-inset);
   bottom: var(--mobile-form-padding-bottom);
   left: var(--mobile-section-inset);

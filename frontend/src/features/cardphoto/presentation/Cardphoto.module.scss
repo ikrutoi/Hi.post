@@ -61,8 +61,9 @@
   }
 
   :global([data-shell-layout='mobile']) & {
-    flex-basis: var(--mobile-section-inner-toolbar-height, 2rem);
-    min-height: var(--mobile-section-inner-toolbar-height, 2rem);
+    flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
   }
 
   :global([data-shell-layout='desktop']) & {
@@ -77,9 +78,9 @@
   box-sizing: border-box;
 
   :global([data-shell-layout='mobile']) & {
-    flex-basis: var(--mobile-section-inner-toolbar-height, 2rem);
-    min-height: var(--mobile-section-inner-toolbar-height, 2rem);
-    max-height: var(--mobile-section-inner-toolbar-height, 2rem);
+    flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
   }
 
   :global([data-shell-layout='desktop']) & {
