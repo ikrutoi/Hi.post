@@ -73,7 +73,7 @@
     min-height: 0;
     width: 100%;
     height: auto;
-    gap: var(--mobile-factory-toolbar-gap, clamp(0.35rem, 1.2dvh, 0.5rem));
+    gap: 0;
   }
 }
 

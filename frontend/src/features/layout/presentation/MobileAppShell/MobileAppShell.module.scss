@@ -22,10 +22,13 @@
   --mobile-pie-size: min(52vw, 14rem, 28dvh);
   --mobile-section-gap: clamp(0.5rem, 2.2dvh, 2.25rem);
   --mobile-factory-toolbar-gap: clamp(0.35rem, 1.2dvh, 0.5rem);
+  --mobile-factory-toolbar-row-gap-share: calc(var(--mobile-factory-toolbar-gap) / 2);
   --mobile-factory-toolbar-inset-inline: 0.5rem;
   --mobile-pie-padding-top: 0.15rem;
   --mobile-section-inner-toolbar-height: #{iconButton.$toolbar-hit-size-mobile-section};
-  --mobile-factory-toolbar-row-height: #{$section-inner-toolbar-height-desktop};
+  --mobile-factory-toolbar-row-height: calc(
+    #{$section-inner-toolbar-height-desktop} + var(--mobile-factory-toolbar-row-gap-share)
+  );
   --mobile-section-toolbar-band: var(--mobile-factory-toolbar-row-height);
   --mobile-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile};
   --mobile-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile};

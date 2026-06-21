@@ -6,7 +6,7 @@
   width: calc(100% - 2 * var(--mobile-section-inset));
   margin-inline: var(--mobile-section-inset);
   box-sizing: border-box;
-  border: 1px solid $color-section-light;
+  border: none;
   border-radius: 0.5rem;
   background-color: $color-app-inner;
   display: flex;
@@ -60,7 +60,7 @@
 .rowDivider {
   flex-shrink: 0;
   height: 1px;
-  margin-inline: 0;
+  margin-inline: 0.5rem;
   background-color: $color-section-light;
 }
 
