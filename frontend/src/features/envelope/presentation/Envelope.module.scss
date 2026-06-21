@@ -48,12 +48,6 @@
   padding: 0 0.5rem;
   background-color: #fff;
 
-  :global([data-shell-layout='mobile']) & {
-    flex: 0 0 var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-    min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-    max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
-  }
-
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem 0.5rem 0 0;
   }
@@ -82,6 +76,45 @@
 
 .envelopeToolbarSlotRecipients {
   justify-content: flex-end;
+}
+
+:global([data-shell-layout='mobile']) {
+  .envelopeToolbarRow {
+    // В factory shell родитель — row flex; не flex-basis по высоте (иначе ширина ≈ 2.25rem).
+    flex: 1 1 auto;
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
+    min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+    gap: 0;
+    background-color: transparent;
+    padding: 0;
+    justify-content: space-between;
+  }
+
+  .envelopeToolbarSlotSender,
+  .envelopeToolbarSlotRecipients {
+    flex: 0 1 auto;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+
+    > * {
+      width: auto;
+      max-width: 100%;
+    }
+  }
+
+  .envelopeToolbarSlotSender {
+    justify-content: flex-start;
+  }
+
+  .envelopeToolbarSlotRecipients {
+    flex: 0 1 auto;
+    justify-content: flex-end;
+    margin-left: auto;
+  }
 }
 
 .envelopeToolbarSlotDisabled {

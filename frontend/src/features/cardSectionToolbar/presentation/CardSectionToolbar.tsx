@@ -6,6 +6,7 @@ import {
 } from '@cart/infrastructure/selectors'
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
+import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolbar'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './CardSectionToolbar.module.scss'
 
@@ -31,6 +32,7 @@ export const CardSectionToolbar: React.FC = () => {
     >
       {activeSection === 'cardphoto' && <Toolbar section="cardphoto" />}
       {showCalendarToolbar && <Toolbar section={calendarToolbarSection} />}
+      {activeSection === 'envelope' && <EnvelopeInnerToolbar />}
       {activeSection === 'cardtext' && (
         <div className={styles.cardSectionToolbarHeader}>
           <Toolbar section="cardtext" />

@@ -1308,7 +1308,7 @@
     width: auto;
   }
 
-  .toolbarKey {
+  .toolbarKey:not([data-icon-key='userLogin']) {
     margin: 0;
     @include iconButton.toolbar-icon-button-size-mobile(true);
     background-color: transparent;
@@ -1690,6 +1690,63 @@
       margin-left: 0;
     }
   }
+
+  .toolbarSender,
+  .toolbarRecipients {
+    width: auto;
+    max-width: 100%;
+    margin-inline: 0;
+
+    .toolbarKey {
+      background-color: $color-app-inner;
+    }
+
+    .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
+    .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
+      background-color: $color-app-inner;
+    }
+
+    [data-icon-key='apply'].toolbarKeyEnabled,
+    [data-icon-key='apply'].toolbarKeySelected,
+    [data-icon-key='apply'].toolbarKeyActive,
+    [data-icon-key='apply'].toolbarKeyDisabled,
+    [data-icon-key='apply'].toolbarKeyEnabled:hover,
+    [data-icon-key='apply'].toolbarKeySelected:hover,
+    [data-icon-key='apply'].toolbarKeyActive:hover {
+      background-color: $color-app-inner;
+    }
+
+    .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+      color: $color-font-enabled-light;
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: $color-app-inner;
+      }
+
+      &:active {
+        color: $color-font-enabled;
+      }
+    }
+
+    .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
+      &:hover {
+        background-color: $color-app-inner;
+      }
+    }
+
+    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator) {
+      margin: 0 0.2rem;
+    }
+  }
+
+  .toolbarSender {
+    justify-content: flex-end;
+  }
+
+  .toolbarRecipients {
+    justify-content: flex-end;
+  }
 }
 
 /* Desktop: chrome sidebars use scaled chrome tokens (section toolbars inherit shell from .toolbarKey). */
@@ -1747,6 +1804,10 @@
 
 .toolbarRightSidebar.toolbarRightSidebarHeaderBar
   .toolbarKey[data-icon-key='userLogin'] {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   @include iconButton.toolbar-icon-button-base(
     iconButton.$toolbar-logo-size-mobile-chrome
   );

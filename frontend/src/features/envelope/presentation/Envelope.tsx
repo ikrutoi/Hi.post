@@ -11,13 +11,9 @@ import { IconUserSenderCentered } from '@shared/ui/icons'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
-import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
-import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
 import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
-import {
-  EnvelopeMobileAddressFocusProvider,
-  useEnvelopeMobileAddressFocus,
-} from './EnvelopeMobileAddressFocusContext'
+import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
+import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { selectSenderView } from '../sender/infrastructure/selectors'
@@ -29,11 +25,7 @@ type EnvelopeProps = {
 }
 
 export const Envelope: React.FC<EnvelopeProps> = ({ cardPuzzleRef }) => {
-  return (
-    <EnvelopeMobileAddressFocusProvider>
-      <EnvelopeBody cardPuzzleRef={cardPuzzleRef} />
-    </EnvelopeMobileAddressFocusProvider>
-  )
+  return <EnvelopeBody cardPuzzleRef={cardPuzzleRef} />
 }
 
 const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }) => {
@@ -219,12 +211,6 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
   const showEnvelopeToolbar =
     !rightPieEnvelopePeekNoToolbar && !showMobileAddressForm
 
-  const scenarioToolbar = showEnvelopeToolbar ? (
-    <EnvelopeInnerToolbar />
-  ) : null
-
-  useMobileScenarioToolbar(isMobile ? scenarioToolbar : null)
-
   const body = (
     <div
       className={styles.envelope}
@@ -236,7 +222,9 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
           (rightPieEnvelopePeekNoToolbar ? (
             <div className={styles.envelopeToolbarRow} aria-hidden />
           ) : showMobileAddressForm ? null : (
-            <EnvelopeInnerToolbar />
+            showEnvelopeToolbar ? (
+              <EnvelopeInnerToolbar />
+            ) : null
           ))}
         <div className={styles.envelopeViewContent}>
           {showMobileAddressForm && mobileFormRole != null ? (

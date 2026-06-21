@@ -22,6 +22,7 @@
   --mobile-pie-size: min(52vw, 14rem, 28dvh);
   --mobile-section-gap: clamp(0.5rem, 2.2dvh, 2.25rem);
   --mobile-factory-toolbar-gap: clamp(0.35rem, 1.2dvh, 0.5rem);
+  --mobile-factory-toolbar-inset-inline: 0.5rem;
   --mobile-pie-padding-top: 0.15rem;
   --mobile-section-inner-toolbar-height: #{iconButton.$toolbar-hit-size-mobile-section};
   --mobile-factory-toolbar-row-height: #{$section-inner-toolbar-height-desktop};
@@ -140,22 +141,11 @@
   box-sizing: border-box;
 
   :global([class*='toolbarRightSidebarHeaderBar']) {
-    :global([class*='toolbarKey']) {
+    :global([class*='toolbarKey']:not([data-icon-key='userLogin'])) {
       @include iconButton.toolbar-icon-button-size-mobile(true);
       margin: 0;
       background-color: transparent;
       justify-content: flex-end;
-
-      svg {
-        width: var(--mobile-toolbar-logo-size);
-        height: var(--mobile-toolbar-logo-size);
-      }
-
-      &[data-icon-key='userLogin'] {
-        width: var(--mobile-toolbar-logo-size);
-        height: var(--mobile-toolbar-logo-size);
-        min-width: var(--mobile-toolbar-logo-size);
-      }
 
       &[class*='toolbarKeyEnabled']:hover,
       &[class*='toolbarKeyActive']:hover,
@@ -164,9 +154,49 @@
       }
     }
 
-    :global([class*='toolbarUserChromeGlyph']) {
-      width: 100%;
-      height: 100%;
+    :global([class*='toolbarKey'][data-icon-key='userLogin']) {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      width: var(--mobile-toolbar-logo-size);
+      height: var(--mobile-toolbar-logo-size);
+      min-width: var(--mobile-toolbar-logo-size);
+      margin: 0;
+      padding: 0;
+      background-color: transparent;
+
+      :global([class*='toolbarUserChromeGlyph']) {
+        display: block;
+        flex-shrink: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+
+        svg {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      > svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      :global(img[class*='toolbarUserChromeGlyph']) {
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      &[class*='toolbarKeyEnabled']:hover,
+      &[class*='toolbarKeyActive']:hover,
+      &[class*='toolbarKeyDisabled']:hover {
+        background-color: transparent;
+      }
     }
   }
 }

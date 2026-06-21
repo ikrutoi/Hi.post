@@ -14,6 +14,10 @@
   overflow: hidden;
 }
 
+.shellSingleRow {
+  min-height: calc(var(--mobile-factory-toolbar-row-height) + 1px);
+}
+
 .rowUpper,
 .rowLower {
   flex: 0 0 var(--mobile-factory-toolbar-row-height);
@@ -24,16 +28,18 @@
   align-items: center;
   width: 100%;
   overflow: hidden;
+  padding-inline: var(--mobile-factory-toolbar-inset-inline, 0.5rem);
 }
 
 .rowUpper,
 .rowLower {
   > * {
     width: 100%;
-    flex: 0 0 var(--mobile-factory-toolbar-row-height);
+    height: var(--mobile-factory-toolbar-row-height);
     min-height: var(--mobile-factory-toolbar-row-height);
     max-height: var(--mobile-factory-toolbar-row-height);
-    height: var(--mobile-factory-toolbar-row-height);
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     align-items: center;
     box-sizing: border-box;
@@ -50,6 +56,8 @@
     width: 100%;
     height: 100%;
     max-height: 100%;
+    margin-inline: 0;
+    padding-inline: 0;
   }
 }
 
@@ -66,15 +74,18 @@
   :global([class*='envelopeToolbarRow']),
   :global([class*='aromaToolbarRow']),
   :global([class*='dateToolbarRow']) {
-    flex: 0 0 var(--mobile-factory-toolbar-row-height);
+    flex: 1 1 auto;
     align-self: stretch;
+    width: 100%;
+    min-width: 0;
+    height: var(--mobile-factory-toolbar-row-height);
     min-height: var(--mobile-factory-toolbar-row-height);
     max-height: var(--mobile-factory-toolbar-row-height);
-    height: var(--mobile-factory-toolbar-row-height);
     display: flex;
     align-items: center;
     border: none;
     background-color: transparent;
+    padding-inline: 0;
   }
 
   > :global(
@@ -82,10 +93,56 @@
           [class*='toolbarGroup']
         ):not([class*='toolbarBadge']):not([class*='toolbarIcon'])
     ) {
-    flex: 0 0 var(--mobile-factory-toolbar-row-height);
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    max-height: 100%;
+  }
+}
+
+.rowUpper {
+  :global([class*='envelopeToolbarRow']) {
+    flex: 1 1 auto;
+    align-self: stretch;
     min-height: var(--mobile-factory-toolbar-row-height);
     max-height: var(--mobile-factory-toolbar-row-height);
     height: var(--mobile-factory-toolbar-row-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: none;
+    background-color: transparent;
+    padding-inline: 0;
+    width: 100%;
+    min-width: 0;
+
+    :global([class*='envelopeToolbarSlotSender']),
+    :global([class*='envelopeToolbarSlotRecipients']) {
+      flex: 0 1 auto;
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    :global([class*='envelopeToolbarSlotSender']) {
+      justify-content: flex-start;
+    }
+
+    :global([class*='envelopeToolbarSlotRecipients']) {
+      flex: 0 1 auto;
+      justify-content: flex-end;
+      margin-left: auto;
+    }
+
+    :global([class*='toolbarSender']),
+    :global([class*='toolbarRecipients']) {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
   }
 }
 
@@ -99,12 +156,13 @@
 .rowUpper :global([class*='cardSectionToolbar']) {
   box-sizing: border-box;
   width: 100%;
-  flex: 0 0 var(--mobile-factory-toolbar-row-height);
+  height: var(--mobile-factory-toolbar-row-height);
   min-height: var(--mobile-factory-toolbar-row-height);
   max-height: var(--mobile-factory-toolbar-row-height);
-  height: var(--mobile-factory-toolbar-row-height);
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   background-color: transparent;
   border: none;
   border-radius: 0;
@@ -121,6 +179,13 @@
   }
 
   :global([class*='cardSectionToolbarHeader']) > :global([class*='toolbar']) {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+  }
+
+  :global([class*='envelopeToolbarRow']) {
     flex: 1 1 auto;
     width: 100%;
     height: 100%;

@@ -4,4 +4,5 @@ export { MobileInlineToolbarRow } from './MobileInlineToolbarRow'
 export {
   useMobileScenarioToolbar,
   useMobileScenarioToolbarContext,
+  useMobileScenarioToolbarSnapshot,
 } from './MobileScenarioToolbarContext'

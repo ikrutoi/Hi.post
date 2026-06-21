@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { useSizeFacade } from '@layout/application/facades'
 import { useCardtextFacade } from '@cardtext/application/facades'
+import { EnvelopeMobileAddressFocusProvider } from '@envelope/presentation/EnvelopeMobileAddressFocusContext'
 import { CardSectionRenderer } from './CardSectionRenderer/CardSectionRenderer'
 import { CardtextEditTitleInline } from '@cardtext/presentation/CardtextEditTitleInline/CardtextEditTitleInline'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
@@ -44,32 +45,42 @@ export const CardSectionEditor: React.FC = () => {
     <NotebookPeekShell>{editorSection}</NotebookPeekShell>
   )
 
+  const editorCenter = (
+    <div
+      className={styles.editorAreaCenter}
+      style={{
+        width: sectionWidth,
+        height: isMobileLayout ? undefined : sectionHeight,
+        maxHeight: isMobileLayout || useFluidLayout ? '100%' : undefined,
+      }}
+    >
+      {isMobileLayout ? <MobileFactoryToolbarShell /> : null}
+      {activeSection === 'cardtext' && (
+        <div className={styles.cardtextToolbarTop}>
+          {cardtextCurrentView === 'view' ? (
+            <CardtextEditTitleInline />
+          ) : null}
+        </div>
+      )}
+      <SectionEditorNotebookTabsOuterProvider value={notebookTabsOuter}>
+        {factoryBody}
+      </SectionEditorNotebookTabsOuterProvider>
+    </div>
+  )
+
+  const editorLayout = (
+    <div className={clsx(styles.cardSectionEditor)}>
+      <div className={styles.editorArea}>{editorCenter}</div>
+    </div>
+  )
+
   return (
     <MobileScenarioToolbarProvider>
-      <div className={clsx(styles.cardSectionEditor)}>
-        <div className={styles.editorArea}>
-          <div
-            className={styles.editorAreaCenter}
-            style={{
-              width: sectionWidth,
-              height: isMobileLayout ? undefined : sectionHeight,
-              maxHeight: isMobileLayout || useFluidLayout ? '100%' : undefined,
-            }}
-          >
-            {isMobileLayout ? <MobileFactoryToolbarShell /> : null}
-            {activeSection === 'cardtext' && (
-              <div className={styles.cardtextToolbarTop}>
-                {cardtextCurrentView === 'view' ? (
-                  <CardtextEditTitleInline />
-                ) : null}
-              </div>
-            )}
-            <SectionEditorNotebookTabsOuterProvider value={notebookTabsOuter}>
-              {factoryBody}
-            </SectionEditorNotebookTabsOuterProvider>
-          </div>
-        </div>
-      </div>
+      {isMobileLayout && activeSection === 'envelope' ? (
+        <EnvelopeMobileAddressFocusProvider>{editorLayout}</EnvelopeMobileAddressFocusProvider>
+      ) : (
+        editorLayout
+      )}
     </MobileScenarioToolbarProvider>
   )
 }
