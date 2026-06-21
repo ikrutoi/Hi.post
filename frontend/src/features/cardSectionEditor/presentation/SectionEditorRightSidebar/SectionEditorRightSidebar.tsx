@@ -17,7 +17,7 @@ const MOBILE_HEADER_BAR_HIDDEN_KEYS = new Set<RightSidebarKey>([
 ])
 
 type SectionEditorRightSidebarProps = {
-  variant?: 'sidebar' | 'headerBar'
+  variant?: 'sidebar' | 'headerBar' | 'headerStack'
   /**
    * Правый режим корзины/истории: держать cart или history active в сайдбаре,
    * даже когда peek открывает «Дата» и сага снимает подсветку.
@@ -55,6 +55,12 @@ export const SectionEditorRightSidebar: React.FC<
   }, [pinActiveTab, storeState])
 
   const groupsOverride = useMemo((): ToolbarGroup[] | undefined => {
+    if (variant === 'headerStack') {
+      return RIGHT_SIDEBAR_TOOLBAR.map((group) => ({
+        ...group,
+        icons: group.icons.filter((icon) => icon.key !== 'listHistory'),
+      }))
+    }
     if (variant !== 'headerBar') return undefined
     return RIGHT_SIDEBAR_TOOLBAR.map((group) => ({
       ...group,
@@ -64,10 +70,17 @@ export const SectionEditorRightSidebar: React.FC<
     }))
   }, [variant])
 
+  const toolbarLayout =
+    variant === 'headerBar'
+      ? ('headerBar' as const)
+      : variant === 'headerStack'
+        ? ('headerStack' as const)
+        : undefined
+
   const toolbar = (
     <Toolbar
       section="rightSidebar"
-      layout={variant === 'headerBar' ? 'headerBar' : undefined}
+      layout={toolbarLayout}
       groupsOverride={groupsOverride}
       stateOverride={rightSidebarStateOverride}
     />
@@ -76,6 +89,14 @@ export const SectionEditorRightSidebar: React.FC<
   if (variant === 'headerBar') {
     return (
       <div className={styles.sectionEditorRightHeaderBar} aria-hidden={false}>
+        {toolbar}
+      </div>
+    )
+  }
+
+  if (variant === 'headerStack') {
+    return (
+      <div className={styles.sectionEditorRightHeaderStack} aria-hidden={false}>
         {toolbar}
       </div>
     )

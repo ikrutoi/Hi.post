@@ -1348,6 +1348,36 @@
   }
 }
 
+.toolbarRightSidebar.toolbarRightSidebarHeaderStack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  .toolbarGroupRightSidebar {
+    position: static;
+    display: block;
+    width: 100%;
+    height: 100%;
+    gap: 0;
+  }
+
+  .toolbarKey {
+    margin: 0;
+    background-color: transparent;
+
+    &.toolbarKeyEnabled:hover,
+    &.toolbarKeyActive:hover,
+    &.toolbarKeyDisabled:hover {
+      background-color: transparent;
+    }
+  }
+
+  .toolbarKey[data-icon-key='cart'],
+  .toolbarKey[data-icon-key='history'] {
+    margin-top: 0;
+  }
+}
+
 .toolbarAddressListRecipient,
 .toolbarAddressListSender,
 .toolbarAddressListRecipients,
@@ -1706,6 +1736,29 @@
       .toolbarKeyCropQualityIndicator
     ) {
     @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
+  }
+
+  .toolbarRightSidebar.toolbarRightSidebarHeaderStack .toolbarKey[data-icon-key='userLogin'] {
+    @include iconButton.toolbar-icon-button-base(
+      iconButton.$toolbar-logo-size-mobile-right-sidebar
+    );
+    width: var(
+      --mobile-right-sidebar-logo-size,
+      #{iconButton.$toolbar-logo-size-mobile-right-sidebar}
+    );
+    height: var(
+      --mobile-right-sidebar-logo-size,
+      #{iconButton.$toolbar-logo-size-mobile-right-sidebar}
+    );
+    min-width: var(
+      --mobile-right-sidebar-logo-size,
+      #{iconButton.$toolbar-logo-size-mobile-right-sidebar}
+    );
+  }
+
+  .toolbarRightSidebar.toolbarRightSidebarHeaderStack
+    .toolbarKey:not([data-icon-key='userLogin']) {
+    @include iconButton.toolbar-icon-button-size-mobile-right-sidebar(true);
   }
 
   .toolbarBadge,

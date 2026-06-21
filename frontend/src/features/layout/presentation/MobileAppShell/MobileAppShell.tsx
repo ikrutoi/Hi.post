@@ -139,7 +139,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
               <IconLogo />
             </div>
             <SectionEditorRightSidebar
-              variant="headerBar"
+              variant="headerStack"
               pinActiveTab={pinActiveTab}
             />
           </header>

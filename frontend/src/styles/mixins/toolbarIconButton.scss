@@ -41,6 +41,21 @@ $toolbar-hit-size-mobile: $toolbar-hit-size-mobile-toolbar;
 /** Mobile header logo — отдельно от hit-area иконок тулбара. */
 $toolbar-logo-size-mobile-chrome: 1.75rem;
 
+/**
+ * Mobile header right stack — cart/history: standard × scale (same formula as mobile toolbar).
+ */
+$toolbar-mobile-right-sidebar-scale: 1.15;
+$toolbar-hit-size-mobile-right-sidebar: $toolbar-hit-size-standard *
+  $toolbar-mobile-right-sidebar-scale;
+$toolbar-icon-size-mobile-right-sidebar: $toolbar-icon-size-standard *
+  $toolbar-mobile-right-sidebar-scale;
+$toolbar-css-var-hit-mobile-right-sidebar: --mobile-right-sidebar-key-size;
+$toolbar-css-var-icon-mobile-right-sidebar: --mobile-right-sidebar-icon-size;
+$toolbar-logo-size-mobile-right-sidebar: $toolbar-logo-size-mobile-chrome;
+$toolbar-css-var-logo-mobile-right-sidebar: --mobile-right-sidebar-logo-size;
+$toolbar-mobile-right-sidebar-stack-gap: 0.3rem;
+$toolbar-mobile-right-sidebar-stack-gap-authed: 0.5rem;
+
 /** Mobile header chrome — avatar matches logo size. */
 $toolbar-avatar-size-mobile-chrome: $toolbar-logo-size-mobile-chrome;
 
@@ -278,6 +293,17 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
 
 @mixin toolbar-icon-button-size-mobile-factory-toolbar($nested-svg: false) {
   @include toolbar-icon-button-size-mobile-toolbar($nested-svg);
+}
+
+/** Mobile header stack — cart/history: same sizing as mobile toolbar, own scale token. */
+@mixin toolbar-icon-button-size-mobile-right-sidebar($nested-svg: false) {
+  @include toolbar-icon-button-size-mobile(
+    $toolbar-css-var-hit-mobile-right-sidebar,
+    $toolbar-css-var-icon-mobile-right-sidebar,
+    $toolbar-hit-size-mobile-right-sidebar,
+    $toolbar-icon-size-mobile-right-sidebar,
+    $nested-svg
+  );
 }
 
 @mixin toolbar-icon-button-size-sidebar {

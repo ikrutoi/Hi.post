@@ -26,3 +26,63 @@
   flex: 1;
   min-width: 0;
 }
+
+.sectionEditorRightHeaderStack {
+  position: relative;
+  z-index: 7;
+  display: block;
+  flex-shrink: 0;
+  width: var(--mobile-right-sidebar-logo-size);
+  height: var(--mobile-right-sidebar-logo-size);
+  min-width: var(--mobile-right-sidebar-logo-size);
+  overflow: visible;
+  pointer-events: none;
+  --mobile-right-sidebar-stack-gap-current: var(--mobile-right-sidebar-stack-gap);
+
+  &:has([data-icon-key='userLogin'] [class*='toolbarUserChromeGlyph']) {
+    --mobile-right-sidebar-stack-gap-current: var(--mobile-right-sidebar-stack-gap-authed);
+  }
+
+  :global([class*='toolbarRightSidebarHeaderStack']) {
+    position: static;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  :global([class*='toolbarGroupRightSidebar']) {
+    position: static;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  :global([class*='toolbarKey']) {
+    pointer-events: auto;
+  }
+
+  :global([class*='toolbarKey'][data-icon-key='userLogin']) {
+    position: relative;
+    z-index: 1;
+  }
+
+  :global([class*='toolbarKey'][data-icon-key='cart']) {
+    position: absolute;
+    top: calc(100% + var(--mobile-right-sidebar-stack-gap-current));
+    right: 0;
+    z-index: 2;
+  }
+
+  :global([class*='toolbarKey'][data-icon-key='history']) {
+    position: absolute;
+    top: calc(
+      100% + var(--mobile-right-sidebar-key-size) +
+        var(--mobile-right-sidebar-stack-gap-current) + 0.12rem
+    );
+    right: 0;
+    z-index: 2;
+  }
+}

@@ -81,7 +81,7 @@ export const Toolbar = ({
   /** Одна группа иконок — прижать к правому краю (как space-between с пустой левой группой). */
   justifyGroupsEnd?: boolean
   /** Mobile shell layouts for sectionEditorMenu / rightSidebar. */
-  layout?: 'bottomBar' | 'headerBar'
+  layout?: 'bottomBar' | 'headerBar' | 'headerStack'
 }) => {
   const {
     state: storeState,
@@ -591,6 +591,9 @@ export const Toolbar = ({
         layout === 'headerBar' &&
           section === 'rightSidebar' &&
           styles.toolbarRightSidebarHeaderBar,
+        layout === 'headerStack' &&
+          section === 'rightSidebar' &&
+          styles.toolbarRightSidebarHeaderStack,
         mergedWithCenter && styles.toolbarMergedWithCenter,
         justifyGroupsEnd && styles.toolbarGroupsJustifyEnd,
       )}

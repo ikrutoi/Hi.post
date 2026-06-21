@@ -13,9 +13,6 @@
   );
   --mobile-chrome-padding-y: 0.35rem;
   --mobile-section-inset: 0.75rem;
-  --mobile-app-header-height: calc(
-    env(safe-area-inset-top, 0px) + var(--mobile-chrome-band)
-  );
   --mobile-form-padding-bottom: calc(
     1.5rem + env(safe-area-inset-bottom, 0px)
   );
@@ -34,8 +31,16 @@
   --mobile-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile};
   --mobile-toolbar-avatar-size: #{iconButton.$toolbar-avatar-size-mobile-chrome};
   --mobile-toolbar-logo-size: #{iconButton.$toolbar-logo-size-mobile-chrome};
+  --mobile-right-sidebar-logo-size: #{iconButton.$toolbar-logo-size-mobile-right-sidebar};
+  --mobile-right-sidebar-key-size: #{iconButton.$toolbar-hit-size-mobile-right-sidebar};
+  --mobile-right-sidebar-icon-size: #{iconButton.$toolbar-icon-size-mobile-right-sidebar};
+  --mobile-right-sidebar-stack-gap: #{iconButton.$toolbar-mobile-right-sidebar-stack-gap};
+  --mobile-right-sidebar-stack-gap-authed: #{iconButton.$toolbar-mobile-right-sidebar-stack-gap-authed};
   --mobile-section-toolbar-key-size: #{iconButton.$toolbar-hit-size-mobile-section};
   --mobile-section-toolbar-icon-size: #{iconButton.$toolbar-icon-size-mobile-section};
+  --mobile-app-header-height: calc(
+    env(safe-area-inset-top, 0px) + var(--mobile-chrome-band)
+  );
 
   height: var(--mobile-vv-height, 100dvh);
   min-height: var(--mobile-vv-height, 100dvh);
@@ -124,7 +129,7 @@
   left: 50%;
   top: calc(env(safe-area-inset-top, 0px));
   transform: translateX(-50%);
-  z-index: 5;
+  z-index: 8;
   pointer-events: auto;
   width: var(--mobile-pie-size);
   box-sizing: border-box;
@@ -140,6 +145,7 @@
 }
 
 .mobileHeader {
+  position: relative;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -150,13 +156,18 @@
   padding-top: calc(var(--mobile-chrome-padding-y) + env(safe-area-inset-top, 0px));
   background-color: $color-app-inner;
   box-sizing: border-box;
+  overflow: visible;
 
-  :global([class*='toolbarRightSidebarHeaderBar']) {
+  :global([class*='sectionEditorRightHeaderStack']) {
+    overflow: visible;
+  }
+
+  :global([class*='toolbarRightSidebarHeaderStack']) {
     :global([class*='toolbarKey']:not([data-icon-key='userLogin'])) {
-      @include iconButton.toolbar-icon-button-size-mobile(true);
+      @include iconButton.toolbar-icon-button-size-mobile-right-sidebar(true);
       margin: 0;
       background-color: transparent;
-      justify-content: flex-end;
+      justify-content: center;
 
       &[class*='toolbarKeyEnabled']:hover,
       &[class*='toolbarKeyActive']:hover,
@@ -171,9 +182,9 @@
       align-items: center;
       justify-content: center;
       box-sizing: border-box;
-      width: var(--mobile-toolbar-logo-size);
-      height: var(--mobile-toolbar-logo-size);
-      min-width: var(--mobile-toolbar-logo-size);
+      width: var(--mobile-right-sidebar-logo-size);
+      height: var(--mobile-right-sidebar-logo-size);
+      min-width: var(--mobile-right-sidebar-logo-size);
       margin: 0;
       padding: 0;
       background-color: transparent;
