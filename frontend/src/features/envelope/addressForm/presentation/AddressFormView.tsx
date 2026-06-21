@@ -21,7 +21,7 @@ export type AddressFormViewProps = {
   address: AddressFields
   onFieldChange: (field: keyof AddressFields, value: string) => void
   lang: Lang
-  /** Mobile envelope: fullscreen form without inner toolbar strip. */
+  /** Mobile envelope: fullscreen form with senderCreate/recipientCreate toolbar. */
   mobileFullscreen?: boolean
 }
 
@@ -136,14 +136,12 @@ export const AddressFormView: React.FC<AddressFormViewProps> = ({
       )}
       data-envelope-address-surface
     >
-      {!mobileFullscreen ? (
-        <div
-          className={addressViewStyles.savedAddressViewToolbar}
-          data-envelope-address-view-toolbar
-        >
-          <Toolbar section={toolbarSection} />
-        </div>
-      ) : null}
+      <div
+        className={addressViewStyles.savedAddressViewToolbar}
+        data-envelope-address-view-toolbar
+      >
+        <Toolbar section={toolbarSection} />
+      </div>
       <div
         className={clsx(
           addressViewStyles.savedAddressViewCardWrap,

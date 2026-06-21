@@ -89,6 +89,12 @@
     :global([class*='cardSectionRenderer']) > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom']):not([class*='View']):not([class*='Work'])) {
       padding-top: 0;
     }
+
+    :global([class*='envelopeViewContent']) {
+      flex: 1 1 auto;
+      height: 100%;
+      min-height: 0;
+    }
   }
 }
 
@@ -360,7 +366,18 @@
     min-height: 0;
   }
 
-  :global([class*='envelopeViewContent']),
+  :global([class*='envelopeViewContent']) {
+    border: 1px solid $color-cardphoto-input-border;
+    border-top: none;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    overflow: hidden;
+    flex: 0 0 auto;
+    align-items: stretch;
+    width: 100%;
+    min-height: 0;
+  }
+
   :global([class*='aromaViewContent']),
   :global([class*='dateViewContent']) {
     border: 1px solid $color-cardphoto-input-border;

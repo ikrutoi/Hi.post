@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react'
-import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
-import { selectActiveSection } from '@layout/infrastructure/selectors'
+import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { useMobileScenarioToolbarSnapshot } from './MobileScenarioToolbarContext'
@@ -47,28 +46,15 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     !rightPieEnvelopePeekNoToolbar &&
     (senderView === 'senderCreate' || recipientView === 'recipientCreate')
 
-  const envelopeSingleRowMode =
-    activeSection === 'envelope' && !envelopeAddressCreateMode
-
   if (envelopeAddressCreateMode) return null
 
   return (
-    <div
-      className={clsx(
-        styles.shell,
-        envelopeSingleRowMode && styles.shellSingleRow,
-      )}
-      aria-label="Section toolbars"
-    >
+    <div className={styles.shell} aria-label="Section toolbars">
       <div className={styles.rowUpper} aria-hidden={hideUpperToolbar ? true : undefined}>
         {!hideUpperToolbar ? <CardSectionToolbar /> : null}
       </div>
-      {!envelopeSingleRowMode ? (
-        <>
-          <div className={styles.rowDivider} aria-hidden />
-          <div className={styles.rowLower}>{scenarioToolbar}</div>
-        </>
-      ) : null}
+      <div className={styles.rowDivider} aria-hidden />
+      <div className={styles.rowLower}>{scenarioToolbar}</div>
     </div>
   )
 }

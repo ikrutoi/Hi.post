@@ -713,8 +713,6 @@
 .toolbarSenderView,
 .toolbarRecipientView,
 .toolbarRecipientsView,
-.toolbarSenderCreate,
-.toolbarRecipientCreate,
 .toolbarAddressListSender,
 .toolbarAddressListRecipient,
 .toolbarAddressListRecipients {
@@ -725,6 +723,35 @@
   .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
   .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
     background-color: #fff;
+  }
+}
+
+.toolbarSenderCreate,
+.toolbarRecipientCreate {
+  .toolbarKey {
+    background-color: $color-app-inner;
+  }
+
+  .toolbarKey[data-icon-key='listDelete'].toolbarKeyEnabled:hover,
+  .toolbarKey[data-icon-key='listClose'].toolbarKeyEnabled:hover {
+    background-color: $color-app-inner;
+  }
+
+  [data-icon-key='applyMedium'].toolbarKeyEnabled,
+  [data-icon-key='applyMedium'].toolbarKeySelected,
+  [data-icon-key='applyMedium'].toolbarKeyActive,
+  [data-icon-key='applyMedium'].toolbarKeyDisabled,
+  [data-icon-key='applyMedium'].toolbarKeyEnabled:hover,
+  [data-icon-key='applyMedium'].toolbarKeySelected:hover,
+  [data-icon-key='applyMedium'].toolbarKeyActive:hover,
+  [data-icon-key='applyMediumCheck'].toolbarKeyEnabled,
+  [data-icon-key='applyMediumCheck'].toolbarKeySelected,
+  [data-icon-key='applyMediumCheck'].toolbarKeyActive,
+  [data-icon-key='applyMediumCheck'].toolbarKeyDisabled,
+  [data-icon-key='applyMediumCheck'].toolbarKeyEnabled:hover,
+  [data-icon-key='applyMediumCheck'].toolbarKeySelected:hover,
+  [data-icon-key='applyMediumCheck'].toolbarKeyActive:hover {
+    background-color: $color-app-inner;
   }
 }
 
@@ -1412,9 +1439,7 @@
 
 .toolbarSenderView,
 .toolbarRecipientView,
-.toolbarRecipientsView,
-.toolbarSenderCreate,
-.toolbarRecipientCreate {
+.toolbarRecipientsView {
   width: 100%;
   justify-content: space-between;
   margin-left: 0.5rem;
@@ -1436,6 +1461,31 @@
 
   .toolbarKey.toolbarKeyActive:hover {
     background-color: #fff;
+  }
+}
+
+.toolbarSenderCreate,
+.toolbarRecipientCreate {
+  width: 100%;
+  justify-content: space-between;
+  margin-left: 0.5rem;
+  margin-right: 0;
+
+  .toolbarGroup:first-child .toolbarKey:first-child {
+    margin-left: 0;
+  }
+
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: $color-app-inner;
+    }
+  }
+
+  .toolbarKey.toolbarKeyActive:hover {
+    background-color: $color-app-inner;
   }
 }
 

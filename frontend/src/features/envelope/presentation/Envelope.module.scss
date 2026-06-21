@@ -18,6 +18,21 @@
     padding: 0;
     overflow: hidden;
   }
+
+  :global([data-shell-layout='mobile']) &:not([data-envelope-mobile-form='true']) {
+    flex: 0 0 auto;
+    width: min(100%, var(--card-width, 100%));
+    height: var(--card-height, auto);
+    max-height: var(--card-height, none);
+    min-height: 0;
+    overflow: hidden;
+
+    .envelopeViewWrap {
+      flex: 0 0 auto;
+      height: 100%;
+      min-height: 0;
+    }
+  }
 }
 
 .envelopeViewWrap {
@@ -135,11 +150,13 @@
   border: 1px solid $color-cardphoto-input-border;
 
   :global([data-shell-layout='mobile']) & {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     align-items: stretch;
     border-left: none;
     border-right: none;
     border-bottom: none;
+    height: 100%;
+    min-height: 0;
   }
 
   :global([data-shell-layout='desktop']) & {
