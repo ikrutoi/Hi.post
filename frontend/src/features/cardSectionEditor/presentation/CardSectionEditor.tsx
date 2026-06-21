@@ -29,11 +29,20 @@ export const CardSectionEditor: React.FC = () => {
   const editorSection = (
     <div
       className={styles.editorSection}
-      style={{
-        width: sectionWidth,
-        height: sectionHeight,
-        maxHeight: isMobileLayout || useFluidLayout ? '100%' : undefined,
-      }}
+      style={
+        isMobileLayout
+          ? {
+              width: '100%',
+              height: '100%',
+              maxHeight: '100%',
+              minHeight: 0,
+            }
+          : {
+              width: sectionWidth,
+              height: sectionHeight,
+              maxHeight: useFluidLayout ? '100%' : undefined,
+            }
+      }
     >
       <CardSectionRenderer />
     </div>

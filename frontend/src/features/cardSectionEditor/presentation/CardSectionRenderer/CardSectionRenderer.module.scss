@@ -5,6 +5,28 @@
   // justify-content: center;
   width: 100%;
   height: 100%;
+
+  :global([data-shell-layout='mobile']) & {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+
+    > :global([class*='cardphoto']:not([class*='View']):not([class*='Toolbar']):not([class*='Stage']):not([class*='Title'])),
+    > :global([class*='cardtextContainer']) {
+      flex: 0 0 auto;
+      height: auto;
+      min-height: 0;
+    }
+
+    > :global([class*='envelope']:not([class*='Section']):not([class*='Peek']):not([class*='Toggle']):not([class*='Logo']):not([class*='Mark']):not([class*='Footer']):not([class*='Top']):not([class*='Bottom']):not([class*='View']):not([class*='Work'])),
+    > :global([class*='aroma']:not([class*='Tile']):not([class*='View']):not([class*='Work'])),
+    > :global([class*='date']:not([class*='View']):not([class*='Header']):not([class*='Bottom']):not([class*='Peek']):not([class*='Strip'])) {
+      flex: 1 1 auto;
+      min-height: 0;
+      height: 100%;
+    }
+  }
   // margin-bottom: 2rem;
   // border: solid 1px green;
   // background-color: aquamarine;

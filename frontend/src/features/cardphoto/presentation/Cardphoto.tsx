@@ -36,7 +36,7 @@ import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcard
 const CardphotoInnerPreviewOnly: React.FC<{
   inner: CardPieInnerData | null
 }> = ({ inner }) => {
-  const { sizeCard } = useSizeFacade()
+  const { sizeCard, isMobileLayout } = useSizeFacade()
   const url =
     inner?.cardphoto?.factoryDisplayUrl ?? inner?.cardphoto?.previewUrl ?? null
   const hasPhoto = url != null && url !== ''
@@ -45,7 +45,7 @@ const CardphotoInnerPreviewOnly: React.FC<{
     <div
       className={styles.cardphoto}
       style={
-        sizeCard.width > 0 && sizeCard.height > 0
+        !isMobileLayout && sizeCard.width > 0 && sizeCard.height > 0
           ? {
               width: `${sizeCard.width}px`,
               height: `${sizeCard.height}px`,
@@ -194,7 +194,7 @@ const CardphotoSessionEditor: React.FC = () => {
     <div
       className={styles.cardphoto}
       style={
-        sizeCard.width > 0 && sizeCard.height > 0
+        !isMobileLayout && sizeCard.width > 0 && sizeCard.height > 0
           ? {
               width: `${sizeCard.width}px`,
               height: `${sizeCard.height}px`,

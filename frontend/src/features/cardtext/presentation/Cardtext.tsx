@@ -143,7 +143,7 @@ const CardtextRightListMirror: React.FC = () => {
 const CardtextSessionEditor: React.FC<CardtextProps> = ({
   styleLeft: _styleLeft,
 }) => {
-  const { sizeCard } = useSizeFacade()
+  const { sizeCard, isMobileLayout } = useSizeFacade()
   const { state, value, style, title, id, plainText, cardtextLines } =
     useCardtextFacade()
 
@@ -241,10 +241,14 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
     <div className={styles.cardtextContainer}>
       <div
         className={styles.cardtext}
-        style={{
-          width: `${sizeCard.width}px`,
-          height: `${sizeCard.height}px`,
-        }}
+        style={
+          !isMobileLayout && sizeCard.width > 0 && sizeCard.height > 0
+            ? {
+                width: `${sizeCard.width}px`,
+                height: `${sizeCard.height}px`,
+              }
+            : undefined
+        }
       >
         <div className={styles.cardtextViewWrap}>
           <MobileInlineToolbarRow

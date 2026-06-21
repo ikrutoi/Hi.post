@@ -1,7 +1,7 @@
 @use '@styles/config/colors' as *;
 
 .shell {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-height: calc(2 * var(--mobile-factory-toolbar-row-height) + 1px);
   width: calc(100% - 2 * var(--mobile-section-inset));
   margin-inline: var(--mobile-section-inset);
@@ -144,13 +144,6 @@
       min-height: 0;
     }
   }
-}
-
-/** Растягивает chrome-полосу до верха центральной (рабочей) секции. */
-.shellFill {
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
 }
 
 .rowUpper :global([class*='cardSectionToolbar']) {

@@ -316,7 +316,7 @@ $envelope-address-view-row-height: 1.625rem;
   }
 }
 
-/** Mobile envelope create: inset section card with toolbar + form. */
+/** Mobile envelope create: fullscreen form without inner toolbar strip. */
 .savedAddressViewContainerMobileFullscreen {
   flex: 1 1 auto;
   width: 100%;
@@ -328,15 +328,6 @@ $envelope-address-view-row-height: 1.625rem;
   flex-direction: column;
   background-color: #fff;
   border-radius: inherit;
-
-  .savedAddressViewToolbar {
-    flex-shrink: 0;
-    min-height: var(--mobile-section-inner-toolbar-height, 2rem);
-    padding: 0.1rem 0.5rem 0.2rem;
-    background-color: #fff;
-    border-bottom: 1px solid $color-section-light;
-    box-sizing: border-box;
-  }
 
   .savedAddressViewCardWrap {
     flex: 1 1 auto;
