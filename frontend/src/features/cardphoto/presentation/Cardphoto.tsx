@@ -23,6 +23,7 @@ import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { useSizeFacade } from '@layout/application/facades'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
@@ -53,7 +54,13 @@ const CardphotoInnerPreviewOnly: React.FC<{
       }
     >
       <div className={styles.cardphotoViewWrap}>
-        <div className={styles.cardphotoToolbarRow} />
+        <MobileInlineToolbarRow
+          className={styles.cardphotoToolbarRow}
+          emptyClassName={styles.cardphotoToolbarRowEmpty}
+          show={false}
+        >
+          {null}
+        </MobileInlineToolbarRow>
         <div className={styles.cardphotoViewContent}>
           <div className={viewStyles.viewContainer}>
             <div className={viewStyles.stageRoot}>
@@ -196,20 +203,16 @@ const CardphotoSessionEditor: React.FC = () => {
       }
     >
       <div className={styles.cardphotoViewWrap}>
-        <div
-          className={clsx(
-            styles.cardphotoToolbarRow,
-            !showAssetToolbar && styles.cardphotoToolbarRowEmpty,
-          )}
-          aria-hidden={showAssetToolbar ? undefined : true}
+        <MobileInlineToolbarRow
+          className={styles.cardphotoToolbarRow}
+          emptyClassName={styles.cardphotoToolbarRowEmpty}
+          show={showAssetToolbar}
         >
-          {showAssetToolbar ? (
-            <Toolbar
-              section={assetToolbar}
-              groupsOverride={cardphotoCreateGroupsOverride}
-            />
-          ) : null}
-        </div>
+          <Toolbar
+            section={assetToolbar!}
+            groupsOverride={cardphotoCreateGroupsOverride}
+          />
+        </MobileInlineToolbarRow>
         <div className={styles.cardphotoViewContent}>
           {showTemplateTitleStrip &&
             (forceEditingTitle ? (

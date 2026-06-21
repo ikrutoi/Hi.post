@@ -40,6 +40,7 @@ import { getToolbarIcon } from '@/shared/utils/icons'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 
 interface CardtextProps {
   styleLeft: number
@@ -72,13 +73,13 @@ const CardtextListRowPeekPreview: React.FC<{
         }}
       >
         <div className={styles.cardtextViewWrap}>
-          <div
-            className={clsx(
-              styles.cardtextToolbarRow,
-              styles.cardtextToolbarRowEmpty,
-            )}
-            aria-hidden
-          />
+          <MobileInlineToolbarRow
+            className={styles.cardtextToolbarRow}
+            emptyClassName={styles.cardtextToolbarRowEmpty}
+            show={false}
+          >
+            {null}
+          </MobileInlineToolbarRow>
           <div className={styles.cardtextViewContent}>
             <CardtextView
               contentKey={contentKey}
@@ -119,13 +120,13 @@ const CardtextRightListMirror: React.FC = () => {
         }}
       >
         <div className={styles.cardtextViewWrap}>
-          <div
-            className={clsx(
-              styles.cardtextToolbarRow,
-              styles.cardtextToolbarRowEmpty,
-            )}
-            aria-hidden
-          />
+          <MobileInlineToolbarRow
+            className={styles.cardtextToolbarRow}
+            emptyClassName={styles.cardtextToolbarRowEmpty}
+            show={false}
+          >
+            {null}
+          </MobileInlineToolbarRow>
           <div className={styles.cardtextViewContent}>
             <CardtextView
               contentKey={contentKey}
@@ -246,17 +247,13 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
         }}
       >
         <div className={styles.cardtextViewWrap}>
-          <div
-            className={clsx(
-              styles.cardtextToolbarRow,
-              !showCardtextToolbarControls && styles.cardtextToolbarRowEmpty,
-            )}
-            aria-hidden={showCardtextToolbarControls ? undefined : true}
+          <MobileInlineToolbarRow
+            className={styles.cardtextToolbarRow}
+            emptyClassName={styles.cardtextToolbarRowEmpty}
+            show={showCardtextToolbarControls}
           >
-            {showCardtextToolbarControls ? (
-              <Toolbar section={toolbarSection} />
-            ) : null}
-          </div>
+            <Toolbar section={toolbarSection} />
+          </MobileInlineToolbarRow>
           <div className={styles.cardtextViewContent}>
             {displayTitle && showTemplateTitleStrip && (
               <>

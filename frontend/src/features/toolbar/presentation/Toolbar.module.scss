@@ -263,8 +263,6 @@
 }
 
 .toolbarCardphotoProcessed,
-.toolbarCardphotoCreate,
-.toolbarCardphotoView,
 .toolbarCardtextView,
 .toolbarCardtextEditor,
 .toolbarCardtextCreate {
@@ -308,6 +306,61 @@
   //   padding-right: 3rem;
   // }
 
+}
+
+.toolbarCardphotoView,
+.toolbarCardphotoCreate {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+
+  .toolbarKey {
+    background-color: $color-app-inner;
+  }
+
+  .toolbarKeyFontSizeIndicator {
+    width: auto;
+    padding: 0;
+    margin-left: 0;
+    margin-right: 0;
+
+    &:hover {
+      background-color: $color-app-inner;
+      cursor: default;
+    }
+  }
+
+  .toolbarKeyCropQualityIndicator {
+    width: auto;
+    padding: 0;
+    margin: 0 0.3rem;
+    cursor: default;
+
+    &:hover {
+      background-color: $color-app-inner;
+      cursor: default;
+    }
+  }
+
+  .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']):not(
+      [data-icon-key='cropCheck']
+    ) {
+    color: $color-font-enabled-light;
+
+    &:hover {
+      color: $color-font-enabled;
+      background-color: $color-app-inner;
+    }
+  }
+
+  .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
+    &:hover {
+      background-color: $color-app-inner;
+    }
+  }
 }
 
 /* cardphotoCreate: три группы — слева apply, центр кроп, справа индикатор. */
@@ -732,8 +785,6 @@
 }
 
 /* cardphoto / cardtext (view, create, processed): фон кнопок #fff */
-.toolbarCardphotoView,
-.toolbarCardphotoCreate,
 .toolbarCardphotoProcessed,
 .toolbarCardtextView,
 .toolbarCardtextEditor,
@@ -1551,7 +1602,7 @@
   }
 }
 
-/* Mobile: cardphoto toolbars — full-size standard icons. */
+/* Mobile: all toolbar keys — standard × $toolbar-mobile-toolbar-scale (0.95). */
 :global([data-shell-layout='mobile']) {
   .toolbarAroma {
     .toolbarKey.toolbarKeyEnabled:not([data-icon-key='apply']) {
@@ -1568,13 +1619,26 @@
     }
   }
 
+  .toolbar .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(
+      .toolbarKeyCropQualityIndicator
+    ) {
+    @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
+  }
+
   .toolbarCardphoto,
-  .toolbarCardphotoCreate,
+  .toolbarCardtext,
+  .toolbarDate,
+  .toolbarCart,
+  .toolbarHistory,
   .toolbarCardphotoView,
+  .toolbarCardphotoCreate,
   .toolbarCardphotoProcessed,
-  .toolbarCardphotoList {
+  .toolbarCardtextView,
+  .toolbarCardtextEditor,
+  .toolbarCardtextCreate,
+  .toolbarCardphotoList,
+  .toolbarCardtextList {
     .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator) {
-      @include iconButton.toolbar-icon-button-size-standard(true);
       margin: 0 0.2rem;
     }
   }

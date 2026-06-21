@@ -52,10 +52,6 @@
     display: none;
   }
 
-  .mobileSectionToolbar {
-    display: none;
-  }
-
   .mobileForm {
     padding-top: calc(0.35rem + env(safe-area-inset-top, 0px));
     overflow: hidden;
@@ -103,11 +99,6 @@
     padding-top: 0.35rem;
     padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
     overflow: hidden;
-  }
-
-  .mobileSectionToolbar {
-    position: relative;
-    flex-shrink: 0;
   }
 
   .mobileEditorSection {
@@ -302,12 +293,9 @@
   :global([class*='cardSectionRenderer']) > :global([class*='aroma']:not([class*='Tile']):not([class*='View']):not([class*='Work'])),
   :global([class*='cardSectionRenderer']) > :global([class*='date']:not([class*='View']):not([class*='Header']):not([class*='Bottom']):not([class*='Peek']):not([class*='Strip'])) {
     padding: 0;
-    padding-top: calc(
-      var(--mobile-section-toolbar-band) - var(--mobile-section-inner-toolbar-height)
-    );
   }
 
-  // Cardphoto / cardtext / envelope / aroma / date — inner work zone flush to section shell.
+  // Cardphoto / cardtext / envelope / aroma / date — inner work zone flush to factory toolbar shell.
   :global([class*='cardphotoViewWrap']),
   :global([class*='cardtextViewWrap']),
   :global([class*='envelopeViewWrap']),
@@ -315,14 +303,6 @@
   :global([class*='dateViewWrap']) {
     border-radius: 0;
     align-items: center;
-  }
-
-  :global([class*='cardphotoToolbarRow']),
-  :global([class*='cardtextToolbarRow']),
-  :global([class*='envelopeToolbarRow']),
-  :global([class*='aromaToolbarRow']),
-  :global([class*='dateToolbarRow']) {
-    background-color: transparent;
   }
 
   :global([class*='cardphotoViewContent']) {
@@ -398,27 +378,6 @@
 
   :global([class*='cardphotoViewContent']) :global([class*='imageStack']) {
     border-radius: 0.5rem;
-  }
-}
-
-.mobileSectionToolbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  flex-shrink: 0;
-  width: 100%;
-  max-width: none;
-  padding-inline: var(--mobile-section-inset);
-  padding-bottom: 0.25rem;
-  min-height: var(--mobile-section-toolbar-band);
-  box-sizing: border-box;
-  pointer-events: auto;
-  background-color: $color-app-inner;
-
-  :global([class*='cardSectionToolbar']) {
-    background-color: $color-app-inner;
   }
 }
 

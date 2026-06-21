@@ -937,13 +937,6 @@ const App = () => {
     return <div className={styles.authBoot} aria-busy="true" />
   }
 
-  const hideMobileSectionToolbar =
-    rightPieCardphotoPeekNoToolbar ||
-    rightPieCardtextPeekNoToolbar ||
-    rightPieEnvelopePeekNoToolbar ||
-    rightPieAromaPeekNoToolbar ||
-    rightPieDatePeekNoToolbar
-
   const mobileEnvelopeAddressFormOpen =
     isMobileLayout &&
     activeSection === 'envelope' &&
@@ -967,9 +960,6 @@ const App = () => {
         showTopCardStripFullSpan={showTopCardStripFullSpan}
         onBeforeLeftPieInteraction={handleBeforeLeftPieInteraction}
         onLeftPieCenterClick={handleLeftPieCenterClick}
-        hideSectionToolbar={
-          hideMobileSectionToolbar || mobileEnvelopeAddressFormOpen
-        }
         envelopeAddressCreateMode={mobileEnvelopeAddressFormOpen}
         cardPieListPanelOpen={cardPieListPanelOpen}
         onEditorPieToolbarAction={handleEditorPieToolbarAction}

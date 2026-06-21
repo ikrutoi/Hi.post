@@ -8,6 +8,7 @@ import {
   getSizeCard,
   scaleMeasuredHeightToUiScale,
   MOBILE_CARD_INNER_TOOLBAR_REM,
+  MOBILE_FACTORY_TOOLBAR_ROW_COUNT,
 } from '@shared/utils/layout'
 import { useSizeFacade } from '@layout/application/facades'
 
@@ -57,11 +58,13 @@ export const useRecordSizeCard = (
         if (skipPanelMeasure) {
           const currentRemSize = remSize ?? 16
           const viewportWidth = window.innerWidth
-          const innerToolbarPx = currentRemSize * MOBILE_CARD_INNER_TOOLBAR_REM
+          const rowToolbarPx = currentRemSize * MOBILE_CARD_INNER_TOOLBAR_REM
+          const innerToolbarPx = rowToolbarPx * MOBILE_FACTORY_TOOLBAR_ROW_COUNT
           const sizeCardFit = {
             orientation: sizeCard.orientation,
             aspectRatio: sizeCard.aspectRatio,
             innerToolbarPx,
+            sectionHeightWorkSideOnly: true,
           } as const
           const { contentWidth, contentHeight, slotHeight } =
             measureMobileEditorSlot(

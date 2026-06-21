@@ -72,11 +72,16 @@
 
 .viewDeleteBtn {
   @include overlay.sectionViewOverlayDeleteButton;
-  @include iconButton.toolbar-icon-button-size-standard-shell(true);
-  width: iconButton.$toolbar-hit-size-standard;
-  height: iconButton.$toolbar-hit-size-standard;
+
+  :global([data-shell-layout='mobile']) & {
+    @include iconButton.toolbar-icon-button-size-mobile-toolbar(true);
+    width: iconButton.$toolbar-hit-size-mobile-toolbar;
+    height: iconButton.$toolbar-hit-size-mobile-toolbar;
+    min-width: iconButton.$toolbar-hit-size-mobile-toolbar;
+  }
 
   :global([data-shell-layout='desktop']) & {
+    @include iconButton.toolbar-icon-button-size-standard-shell(true);
     width: iconButton.$toolbar-hit-size-standard * iconButton.$toolbar-desktop-scale;
     height: iconButton.$toolbar-hit-size-standard * iconButton.$toolbar-desktop-scale;
   }

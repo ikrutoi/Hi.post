@@ -42,6 +42,7 @@ import { POSTCARD_DISPATCH_DATE_FALLBACK } from '@entities/postcard'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
 const DateSectionShell: React.FC<{ children: React.ReactNode }> = ({
@@ -49,7 +50,12 @@ const DateSectionShell: React.FC<{ children: React.ReactNode }> = ({
 }) => (
   <div className={styles.date}>
     <div className={styles.dateViewWrap}>
-      <div className={styles.dateToolbarRow} aria-hidden />
+      <MobileInlineToolbarRow
+        className={styles.dateToolbarRow}
+        show={false}
+      >
+        {null}
+      </MobileInlineToolbarRow>
       <div className={styles.dateViewContent}>{children}</div>
     </div>
   </div>

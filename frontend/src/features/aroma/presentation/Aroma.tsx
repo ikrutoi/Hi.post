@@ -7,6 +7,7 @@ import { useAromaFacade } from '../application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { setCartItemCardAroma } from '@cart/infrastructure/state'
 import { getAromaImage } from '@entities/aroma/mappers/aromaImageMap'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
@@ -21,12 +22,12 @@ const AromaSectionShell: React.FC<{
 }> = ({ children, showToolbar = false }) => (
   <div className={styles.aroma}>
     <div className={styles.aromaViewWrap}>
-      <div
+      <MobileInlineToolbarRow
         className={styles.aromaToolbarRow}
-        aria-hidden={showToolbar ? undefined : true}
+        show={showToolbar}
       >
-        {showToolbar ? <Toolbar section="aroma" /> : null}
-      </div>
+        <Toolbar section="aroma" />
+      </MobileInlineToolbarRow>
       <div className={styles.aromaViewContent}>{children}</div>
     </div>
   </div>

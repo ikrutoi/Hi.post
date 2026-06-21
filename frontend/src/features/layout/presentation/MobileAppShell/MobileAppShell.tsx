@@ -28,7 +28,6 @@ import { CardPie } from '@features/cardPie/presentation/CardPie'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
-import { CardSectionToolbar } from '@features/cardSectionToolbar/presentation/CardSectionToolbar'
 import { CardSectionEditor } from '@features/cardSectionEditor/presentation/CardSectionEditor'
 import { DateToolbarListDateBadgeSync } from '@date/presentation/DateToolbarListDateBadgeSync'
 import { RightSidebarHistoryBadgeSync } from '@toolbar/presentation/RightSidebarHistoryBadgeSync'
@@ -49,7 +48,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   showTopCardStripFullSpan,
   onBeforeLeftPieInteraction,
   onLeftPieCenterClick,
-  hideSectionToolbar,
   envelopeAddressCreateMode = false,
   cardPieListPanelOpen,
   onEditorPieToolbarAction,
@@ -180,11 +178,6 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                 className={styles.mobileEditorSection}
                 aria-label="Section editor"
               >
-                <div className={styles.mobileSectionToolbar}>
-                  {!hideSectionToolbar && mobileCentralListPanel == null ? (
-                    <CardSectionToolbar />
-                  ) : null}
-                </div>
                 <div
                   ref={formRef}
                   className={clsx(

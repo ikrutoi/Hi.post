@@ -12,7 +12,6 @@ export type MobileAppShellProps = {
   showTopCardStripFullSpan: boolean
   onBeforeLeftPieInteraction: () => void
   onLeftPieCenterClick: () => void
-  hideSectionToolbar: boolean
   /** Mobile envelope: fullscreen address create/edit — hide chrome header and lift form. */
   envelopeAddressCreateMode?: boolean
   cardPieListPanelOpen: boolean

@@ -4,17 +4,21 @@ import type { LayoutOrientation } from '@layout/domain/types'
 import { roundTo } from '../../helpers'
 import { scaleMeasuredHeightToUiScale } from './calcAppUiScale'
 
-/** Высота внутреннего тулбара cardphoto/cardtext на mobile (совпадает с 2rem в SCSS). */
-export const MOBILE_CARD_INNER_TOOLBAR_REM = 2
+/** Mobile inner toolbar row — standard hit × $toolbar-mobile-toolbar-scale (0.95). */
+export const MOBILE_CARD_INNER_TOOLBAR_REM = 1.95 * 0.95
+
+/** Mobile factory shell: upper (section) + lower (scenario) toolbar rows. */
+export const MOBILE_FACTORY_TOOLBAR_ROW_COUNT = 2
 
 export type GetSizeCardOptions = {
   orientation?: LayoutOrientation
   aspectRatio?: number
   /**
-   * Mobile: квадратная рабочая зона + полоса внутреннего тулбара сверху.
-   * `height` = workSide + innerToolbarPx, `width` = workSide.
+   * Mobile: резерв под полосы тулбара при расчёте квадратной рабочей зоны.
+   * При `sectionHeightWorkSideOnly` в `height` попадает только workSide (тулбары вне sizeCard).
    */
   innerToolbarPx?: number
+  sectionHeightWorkSideOnly?: boolean
 }
 
 export const getSizeCard = (
@@ -50,9 +54,13 @@ export const getSizeCard = (
     )
     const workSide = Math.max(0, roundTo.nearest(maxWorkSide))
 
+    const sectionHeight = options?.sectionHeightWorkSideOnly
+      ? workSide
+      : workSide + innerToolbarPx
+
     return {
       width: workSide,
-      height: Math.max(0, roundTo.nearest(workSide + innerToolbarPx)),
+      height: Math.max(0, roundTo.nearest(sectionHeight)),
     }
   }
 

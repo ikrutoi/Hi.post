@@ -11,6 +11,7 @@ import { IconUserSenderCentered } from '@shared/ui/icons'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
+import { useMobileScenarioToolbar } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
 import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
 import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
 import {
@@ -215,6 +216,15 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
     </div>
   )
 
+  const showEnvelopeToolbar =
+    !rightPieEnvelopePeekNoToolbar && !showMobileAddressForm
+
+  const scenarioToolbar = showEnvelopeToolbar ? (
+    <EnvelopeInnerToolbar />
+  ) : null
+
+  useMobileScenarioToolbar(isMobile ? scenarioToolbar : null)
+
   const body = (
     <div
       className={styles.envelope}
@@ -222,11 +232,12 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
       data-envelope-mobile-focus={showMobileAddressFocus ? mobileFocusRole! : undefined}
     >
       <div className={styles.envelopeViewWrap}>
-        {rightPieEnvelopePeekNoToolbar ? (
-          <div className={styles.envelopeToolbarRow} aria-hidden />
-        ) : showMobileAddressForm ? null : (
-          <EnvelopeInnerToolbar />
-        )}
+        {!isMobile &&
+          (rightPieEnvelopePeekNoToolbar ? (
+            <div className={styles.envelopeToolbarRow} aria-hidden />
+          ) : showMobileAddressForm ? null : (
+            <EnvelopeInnerToolbar />
+          ))}
         <div className={styles.envelopeViewContent}>
           {showMobileAddressForm && mobileFormRole != null ? (
             <EnvelopeMobileAddressForm role={mobileFormRole} lang={lang} />

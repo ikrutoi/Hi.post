@@ -15,8 +15,28 @@ $toolbar-hit-size-desktop-compact: $toolbar-hit-size-desktop * $toolbar-desktop-
 $toolbar-icon-size-desktop-compact: $toolbar-icon-size-desktop *
   $toolbar-desktop-compact-scale;
 
-$toolbar-hit-size-mobile: 2.5rem;
-$toolbar-icon-size-mobile: 1.35rem;
+/** Standard toolbar icons — base for desktop and mobile toolbar sizing. */
+$toolbar-icon-size-standard: 1.2rem;
+$toolbar-hit-size-standard: 1.95rem;
+
+/**
+ * Mobile — all toolbar icons/hit-areas from standard × scale.
+ * Factory rows, header chrome, editorPie, lists share the same tokens/CSS vars.
+ */
+$toolbar-mobile-toolbar-scale: 0.95;
+$toolbar-icon-size-mobile-toolbar: $toolbar-icon-size-standard *
+  $toolbar-mobile-toolbar-scale;
+$toolbar-hit-size-mobile-toolbar: $toolbar-hit-size-standard *
+  $toolbar-mobile-toolbar-scale;
+
+/** @deprecated aliases — use $toolbar-*-mobile-toolbar */
+$toolbar-hit-size-mobile-factory-toolbar: $toolbar-hit-size-mobile-toolbar;
+$toolbar-icon-size-mobile-factory-toolbar: $toolbar-icon-size-mobile-toolbar;
+$toolbar-hit-size-mobile-section: $toolbar-hit-size-mobile-toolbar;
+$toolbar-icon-size-mobile-section: $toolbar-icon-size-mobile-toolbar;
+
+$toolbar-icon-size-mobile: $toolbar-icon-size-mobile-toolbar;
+$toolbar-hit-size-mobile: $toolbar-hit-size-mobile-toolbar;
 
 /** Mobile header logo — отдельно от hit-area иконок тулбара. */
 $toolbar-logo-size-mobile-chrome: 1.75rem;
@@ -24,19 +44,9 @@ $toolbar-logo-size-mobile-chrome: 1.75rem;
 /** Mobile header chrome — avatar matches logo size. */
 $toolbar-avatar-size-mobile-chrome: $toolbar-logo-size-mobile-chrome;
 
-/** Section toolbars / overlays on mobile — icon ~90% of header; hit-area matches 2rem row. */
-$toolbar-mobile-section-icon-scale: 0.9;
-$toolbar-hit-size-mobile-section: 2rem;
-$toolbar-icon-size-mobile-section: $toolbar-icon-size-mobile *
-  $toolbar-mobile-section-icon-scale;
-
 /** Desktop right strip (sidebar), not main section toolbar. */
 $toolbar-hit-size-sidebar: 2.2rem;
 $toolbar-icon-size-sidebar: 1.25rem;
-
-/** Standard toolbar icons — editorPie, cardphoto, lists, etc. */
-$toolbar-icon-size-standard: 1.2rem;
-$toolbar-hit-size-standard: 1.95rem;
 
 /** CardPie archive list panel headers (photo/text/address/postcard lists). */
 $toolbar-card-pie-list-header-icon-scale: 0.85;
@@ -256,6 +266,18 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
     $toolbar-icon-size-mobile-section,
     $nested-svg
   );
+}
+
+@mixin toolbar-icon-button-size-mobile-toolbar($nested-svg: false) {
+  @include toolbar-icon-button-size(
+    $toolbar-hit-size-mobile-toolbar,
+    $toolbar-icon-size-mobile-toolbar,
+    $nested-svg
+  );
+}
+
+@mixin toolbar-icon-button-size-mobile-factory-toolbar($nested-svg: false) {
+  @include toolbar-icon-button-size-mobile-toolbar($nested-svg);
 }
 
 @mixin toolbar-icon-button-size-sidebar {

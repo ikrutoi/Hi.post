@@ -1,0 +1,71 @@
+@use '@styles/config/colors' as *;
+
+.shell {
+  flex-shrink: 0;
+  width: calc(100% - 2 * var(--mobile-section-inset));
+  margin-inline: var(--mobile-section-inset);
+  box-sizing: border-box;
+  border: 1px solid $color-section-light;
+  border-radius: 0.5rem;
+  background-color: $color-app-inner;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.rowUpper,
+.rowLower {
+  flex: 0 0 var(--mobile-section-inner-toolbar-height);
+  min-height: var(--mobile-section-inner-toolbar-height);
+  max-height: var(--mobile-section-inner-toolbar-height);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.rowUpper {
+  padding-bottom: 0.25rem;
+  min-height: var(--mobile-section-toolbar-band);
+  max-height: var(--mobile-section-toolbar-band);
+  flex-basis: var(--mobile-section-toolbar-band);
+}
+
+.rowDivider {
+  flex-shrink: 0;
+  height: 1px;
+  margin-inline: 0;
+  background-color: $color-section-light;
+}
+
+.rowLower {
+  border-radius: 0 0 0.5rem 0.5rem;
+
+  > * {
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  :global([class*='cardphotoToolbarRow']),
+  :global([class*='cardtextToolbarRow']),
+  :global([class*='envelopeToolbarRow']),
+  :global([class*='aromaToolbarRow']),
+  :global([class*='dateToolbarRow']) {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    border: none;
+    background-color: transparent;
+  }
+}
+
+.rowUpper :global([class*='cardSectionToolbar']) {
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--mobile-section-inner-toolbar-height);
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+}
