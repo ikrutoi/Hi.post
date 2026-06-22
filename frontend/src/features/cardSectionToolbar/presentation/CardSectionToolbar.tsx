@@ -7,11 +7,13 @@ import {
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolbar'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './CardSectionToolbar.module.scss'
 
 export const CardSectionToolbar: React.FC = () => {
   const { activeSection } = useSectionMenuFacade()
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const cardPieCopyStripExpanded = useAppSelector(selectCardPieCopyStripExpanded)
   const notebookStripTab = useAppSelector(selectNotebookStripTab)
   const showCalendarToolbar =
@@ -22,6 +24,10 @@ export const CardSectionToolbar: React.FC = () => {
       : notebookStripTab === 'history'
         ? 'history'
         : 'date'
+
+  if (activeSection === 'envelope' && !isMobileLayout) {
+    return null
+  }
 
   return (
     <div

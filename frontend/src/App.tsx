@@ -1155,15 +1155,17 @@ const App = () => {
                   </div>
                 </div>
                 <div className={clsx(styles.appMainContentCenter)}>
-                  <div className={styles.mainCardSectionToolbar}>
-                    {!rightPieCardphotoPeekNoToolbar &&
-                    !rightPieCardtextPeekNoToolbar &&
-                    !rightPieEnvelopePeekNoToolbar &&
-                    !rightPieAromaPeekNoToolbar &&
-                    !rightPieDatePeekNoToolbar ? (
-                      <CardSectionToolbar />
-                    ) : null}
-                  </div>
+                  {!isMobileLayout && activeSection === 'envelope' ? null : (
+                    <div className={styles.mainCardSectionToolbar}>
+                      {!rightPieCardphotoPeekNoToolbar &&
+                      !rightPieCardtextPeekNoToolbar &&
+                      !rightPieEnvelopePeekNoToolbar &&
+                      !rightPieAromaPeekNoToolbar &&
+                      !rightPieDatePeekNoToolbar ? (
+                        <CardSectionToolbar />
+                      ) : null}
+                    </div>
+                  )}
                   <div ref={formRef} className={clsx(styles.mainForm)}>
                     <CardSectionEditor />
                   </div>
