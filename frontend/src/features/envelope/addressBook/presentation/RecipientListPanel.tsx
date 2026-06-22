@@ -136,6 +136,7 @@ export const RecipientListPanel: React.FC<Props> = ({
     >
       <ListPanelStackedHeader
         leadIconKey="addressList"
+        variant="sectionToolbar"
         cardPieListHeaderIcons
         toolbar={
           combinedEntries.length > 0 ? (

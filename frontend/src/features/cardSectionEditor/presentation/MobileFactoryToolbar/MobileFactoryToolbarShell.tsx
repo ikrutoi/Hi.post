@@ -1,5 +1,11 @@
 import React, { useMemo } from 'react'
 import { useAppSelector } from '@app/hooks'
+import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
+import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
+import {
+  selectRecipientListPanelOpen,
+  selectSenderListPanelOpen,
+} from '@envelope/infrastructure/selectors'
 import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import { selectRecipientView } from '@envelope/recipient/infrastructure/selectors'
 import { selectSenderView } from '@envelope/sender/infrastructure/selectors'
@@ -12,6 +18,11 @@ import styles from './MobileFactoryToolbarShell.module.scss'
 export const MobileFactoryToolbarShell: React.FC = () => {
   const scenarioToolbar = useMobileScenarioToolbarSnapshot()
   const activeSection = useAppSelector(selectActiveSection)
+  const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
+  const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
+  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
+  const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
+  const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const cardPieListPanelOpen = useAppSelector(selectIsCardPieListPanelOpen)
   const senderView = useAppSelector(selectSenderView)
   const recipientView = useAppSelector(selectRecipientView)
@@ -30,6 +41,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       rightPieEnvelopePeekNoToolbar ||
       rightPieAromaPeekNoToolbar ||
       rightPieDatePeekNoToolbar ||
+      cardphotoListPanelOpen ||
+      cardtextListPanelOpen ||
+      addressListPanelOpen ||
       cardPieListPanelOpen,
     [
       rightPieCardphotoPeekNoToolbar,
@@ -37,6 +51,9 @@ export const MobileFactoryToolbarShell: React.FC = () => {
       rightPieEnvelopePeekNoToolbar,
       rightPieAromaPeekNoToolbar,
       rightPieDatePeekNoToolbar,
+      cardphotoListPanelOpen,
+      cardtextListPanelOpen,
+      addressListPanelOpen,
       cardPieListPanelOpen,
     ],
   )

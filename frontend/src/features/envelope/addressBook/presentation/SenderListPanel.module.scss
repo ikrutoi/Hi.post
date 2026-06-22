@@ -1,38 +1,85 @@
 @use '@styles/config/colors' as *;
 @use '@styles/config/uiLayout' as *;
 
+$list-panel-stacked-band-section-toolbar: 4.25rem;
+$list-panel-compact-header-band-section-toolbar: 2.35rem;
+$list-panel-scroll-inset: 0.35rem;
+
 .panel {
   position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-top: 2.35rem;
+  padding-top: $list-panel-compact-header-band-section-toolbar;
   min-height: 0;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
 
   &.panelToolbarBelow {
-    padding-top: 3.75rem;
+    padding-top: $list-panel-stacked-band-section-toolbar;
+  }
+
+  :global([data-shell-layout='mobile']) & {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    padding-top: $list-panel-compact-header-band-section-toolbar;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    border-color: $color-section-light;
+    box-shadow: none;
+
+    &.panelToolbarBelow {
+      padding-top: $list-panel-stacked-band-section-toolbar;
+    }
+
+    .panelScrollTrack {
+      display: none;
+    }
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    &.panelToolbarBelow {
+      padding-top: $list-panel-stacked-band-section-toolbar;
+    }
+
+    .panelScrollTrack {
+      top: calc(
+        #{$list-panel-compact-header-band-section-toolbar} - #{$list-panel-scroll-inset}
+      );
+      height: calc(
+        100% - #{$list-panel-compact-header-band-section-toolbar} -
+          #{$list-panel-scroll-inset}
+      );
+    }
+
+    &.panelToolbarBelow .panelScrollTrack {
+      top: calc(
+        #{$list-panel-stacked-band-section-toolbar} - #{$list-panel-scroll-inset}
+      );
+      height: calc(
+        100% - #{$list-panel-stacked-band-section-toolbar} -
+          #{$list-panel-scroll-inset}
+      );
+    }
   }
 }
 
-/* Container for custom scrollbar track (portal target); tweak top/height if needed */
 .panelScrollTrack {
   position: absolute;
-  top: calc(2.35rem - 0.35rem);
+  top: calc(#{$list-panel-compact-header-band-section-toolbar} - #{$list-panel-scroll-inset});
   @include list-panel-scroll-track-right;
   width: 0.75rem;
-  height: calc(100% - 2.35rem - 0.35rem);
+  height: calc(
+    100% - #{$list-panel-compact-header-band-section-toolbar} -
+      #{$list-panel-scroll-inset}
+  );
   border-radius: 0 0.75rem 0.75rem 0;
   overflow: hidden;
   z-index: 1;
   pointer-events: none;
-}
-
-.panel.panelToolbarBelow .panelScrollTrack {
-  top: calc(3.75rem - 0.35rem);
-  height: calc(100% - 3.75rem - 0.35rem);
 }
 
 .listScrollArea {
@@ -72,7 +119,6 @@
   min-height: 0.5rem;
 }
 
-/* Как CardPiePanel: flex-колонка, чтобы empty-иконка занимала высоту списка */
 .listEmptyState {
   display: flex;
   flex-direction: column;

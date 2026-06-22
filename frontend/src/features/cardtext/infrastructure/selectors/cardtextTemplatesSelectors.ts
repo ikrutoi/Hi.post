@@ -5,6 +5,9 @@ import type { CardtextContent } from '../../domain/editor/editor.types'
 import type { PanelDensity2Size } from '@shared/ui/icons'
 import { selectCardtextId, selectCardtextPlainText } from './cardtextEditorSelectors'
 
+export const selectIsCardtextListPanelOpen = (state: RootState): boolean =>
+  state.cardtext.isListPanelOpen === true
+
 export const selectCardtextAddTemplateOpen = (state: RootState): boolean =>
   state.cardtext.isAddTemplateOpen ?? false
 

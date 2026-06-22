@@ -15,6 +15,16 @@
     border-radius: 0.6rem;
     background-color: white;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: none;
+    }
+
     transition:
       color 0.15s ease,
       cursor 0.15s ease,

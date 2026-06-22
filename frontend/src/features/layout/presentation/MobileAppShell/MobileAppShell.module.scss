@@ -52,7 +52,9 @@
   overflow: hidden;
 }
 
-.mobileShell[data-cardphoto-list-open='true'] {
+.mobileShell[data-cardphoto-list-open='true'],
+.mobileShell[data-cardtext-list-open='true'],
+.mobileShell[data-address-list-open='true'] {
   .mobilePieSection {
     display: none;
   }
@@ -618,7 +620,9 @@
   }
 }
 
-.mobileCardphotoListPanel {
+.mobileCardphotoListPanel,
+.mobileCardtextListPanel,
+.mobileAddressListPanel {
   position: fixed;
   top: var(--mobile-app-header-height);
   left: 0;

@@ -2,7 +2,9 @@
 @use '@styles/config/uiLayout' as *;
 
 $list-panel-stacked-band: 3.75rem;
+$list-panel-stacked-band-section-toolbar: 4.25rem;
 $list-panel-compact-header-band: 2.35rem;
+$list-panel-compact-header-band-section-toolbar: 2.35rem;
 $list-panel-scroll-inset: 0.35rem;
 
 .panel {
@@ -15,10 +17,63 @@ $list-panel-scroll-inset: 0.35rem;
   background-color: #fff;
   border: 1px solid $color-app-strip;
   border-radius: 0.75rem;
+
+  :global([data-shell-layout='mobile']) & {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    padding-top: $list-panel-stacked-band-section-toolbar;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    border-color: $color-section-light;
+    box-shadow: none;
+
+    &.panelEmptyNoToolbar {
+      padding-top: $list-panel-compact-header-band-section-toolbar;
+    }
+
+    .panelScrollTrack {
+      display: none;
+    }
+  }
+
+  :global([data-shell-layout='desktop']) & {
+    padding-top: $list-panel-stacked-band-section-toolbar;
+
+    &.panelEmptyNoToolbar {
+      padding-top: $list-panel-compact-header-band-section-toolbar;
+    }
+
+    .panelScrollTrack {
+      top: calc(
+        #{$list-panel-stacked-band-section-toolbar} - #{$list-panel-scroll-inset}
+      );
+      height: calc(
+        100% - #{$list-panel-stacked-band-section-toolbar} -
+          #{$list-panel-scroll-inset}
+      );
+    }
+
+    &.panelEmptyNoToolbar .panelScrollTrack {
+      top: calc(
+        #{$list-panel-compact-header-band-section-toolbar} -
+          #{$list-panel-scroll-inset}
+      );
+      height: calc(
+        100% - #{$list-panel-compact-header-band-section-toolbar} -
+          #{$list-panel-scroll-inset}
+      );
+    }
+  }
 }
 
 .panelEmptyNoToolbar {
   padding-top: $list-panel-compact-header-band;
+
+  :global([data-shell-layout='mobile']) & {
+    padding-top: $list-panel-compact-header-band-section-toolbar;
+  }
 
   .panelScrollTrack {
     top: calc(#{$list-panel-compact-header-band} - #{$list-panel-scroll-inset});

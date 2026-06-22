@@ -523,6 +523,7 @@ export const Toolbar = ({
                   : undefined
             onAction(effectiveIconKey as IconKey, actionPayload)
           }
+          e.currentTarget.blur()
         }}
         onPointerUp={(event) => {
           event.currentTarget.blur()

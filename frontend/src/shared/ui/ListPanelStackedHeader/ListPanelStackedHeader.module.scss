@@ -55,6 +55,7 @@
   background-color: #fff;
   color: $color-font-enabled;
   pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .headerDivider {
@@ -86,6 +87,16 @@
   @include panel-close-button;
   flex-shrink: 0;
   pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 .headerSectionToolbar {
@@ -216,8 +227,14 @@
       min-height: $card-pie-header-hit;
     }
 
-    &.headerCompactWithDivider {
-      min-height: calc(#{$card-pie-header-hit} + 0.2rem);
+  &.headerCompactWithDivider {
+    min-height: calc(#{$card-pie-header-hit} + 0.2rem);
     }
+  }
+}
+
+:global([data-shell-layout='mobile']) {
+  .headerSectionToolbar .headerLead {
+    background-color: transparent;
   }
 }

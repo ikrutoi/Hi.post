@@ -22,7 +22,14 @@ import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { CardphotoListMobileSlot } from '@cardphoto/presentation/CardphotoListMobileSlot'
+import { CardtextListMobileSlot } from '@cardtext/presentation/CardtextListMobileSlot'
+import { AddressListMobileSlot } from '@envelope/addressBook/presentation/AddressListMobileSlot'
 import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
+import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
+import {
+  selectRecipientListPanelOpen,
+  selectSenderListPanelOpen,
+} from '@envelope/infrastructure/selectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
@@ -59,6 +66,10 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   useMobileVisualViewport(shellRef)
   const userLoginPanelOpen = useAppSelector(selectUserLoginPanelOpen)
   const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
+  const cardtextListPanelOpen = useAppSelector(selectIsCardtextListPanelOpen)
+  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
+  const recipientListPanelOpen = useAppSelector(selectRecipientListPanelOpen)
+  const addressListPanelOpen = senderListPanelOpen || recipientListPanelOpen
   const notebookStripSection = useDateStripSectionForNotebookTabs()
 
   /** Mobile: только список CardPie перекрывает центр; Cart/History — календарь в фабрике. */
@@ -128,6 +139,8 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         envelopeAddressCreateMode ? 'true' : undefined
       }
       data-cardphoto-list-open={cardphotoListPanelOpen ? 'true' : undefined}
+      data-cardtext-list-open={cardtextListPanelOpen ? 'true' : undefined}
+      data-address-list-open={addressListPanelOpen ? 'true' : undefined}
       onClick={onAppClick}
     >
       <MarkStampYearDevProvider>
@@ -214,6 +227,16 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         {cardphotoListPanelOpen ? (
           <div className={styles.mobileCardphotoListPanel}>
             <CardphotoListMobileSlot />
+          </div>
+        ) : null}
+        {cardtextListPanelOpen ? (
+          <div className={styles.mobileCardtextListPanel}>
+            <CardtextListMobileSlot />
+          </div>
+        ) : null}
+        {addressListPanelOpen ? (
+          <div className={styles.mobileAddressListPanel}>
+            <AddressListMobileSlot />
           </div>
         ) : null}
       </MarkStampYearDevProvider>
