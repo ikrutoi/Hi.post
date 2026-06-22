@@ -119,18 +119,8 @@ $list-panel-scroll-inset: 0.35rem;
   min-height: 0.5rem;
 }
 
-.listEmptyState {
-  display: flex;
-  flex-direction: column;
-}
-
 .listEmpty {
   grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  min-height: 0;
   padding: 0.5rem;
 }
 
@@ -143,3 +133,6 @@ $list-panel-scroll-inset: 0.35rem;
   pointer-events: none;
   color: $color-app-inner;
 }
+
+@include mobile-list-empty-icon-envelope;
+@include list-panel-empty-vertical-center;

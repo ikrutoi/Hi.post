@@ -143,6 +143,9 @@ $list-panel-scroll-inset: 0.35rem;
   color: $color-app-inner;
 }
 
+@include mobile-list-empty-icon-card-section;
+@include list-panel-empty-vertical-center;
+
 .thumbGrid {
   display: grid;
   width: 100%;

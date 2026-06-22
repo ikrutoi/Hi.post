@@ -135,6 +135,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     <div
       ref={shellRef}
       className={styles.mobileShell}
+      style={cardWidthStyle}
       data-envelope-address-create={
         envelopeAddressCreateMode ? 'true' : undefined
       }
