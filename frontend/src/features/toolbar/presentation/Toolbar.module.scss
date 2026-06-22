@@ -14,6 +14,7 @@
     background-color: white;
     border-radius: 0.6rem;
     background-color: white;
+    -webkit-tap-highlight-color: transparent;
     transition:
       color 0.15s ease,
       cursor 0.15s ease,
@@ -34,9 +35,11 @@
       cursor: pointer;
     }
 
-    &Enabled:hover {
-      background-color: $color-enabled;
-      cursor: pointer;
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &Enabled:hover {
+        background-color: $color-enabled;
+        cursor: pointer;
+      }
     }
 
     /* Закрытие списков шаблонов: только затемнение иконки, без фона при hover */
@@ -45,10 +48,12 @@
     &[data-icon-key='checkBox'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
-      &:hover {
-        color: $color-font-enabled;
-        background-color: white;
-        cursor: pointer;
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          color: $color-font-enabled;
+          background-color: white;
+          cursor: pointer;
+        }
       }
     }
 
@@ -61,8 +66,10 @@
       cursor: default;
     }
 
-    &Active:hover {
-      background-color: $color-enabled;
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &Active:hover {
+        background-color: $color-enabled;
+      }
     }
 
     &[data-icon-key='addCartList'].toolbarKeyEnabled,
@@ -78,9 +85,11 @@
     &[data-icon-key='addressAdd'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
-      &:hover {
-        color: $color-font-enabled;
-        background-color: #fff;
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          color: $color-font-enabled;
+          background-color: #fff;
+        }
       }
     }
   }
@@ -89,9 +98,11 @@
     &[data-icon-key='cart'].toolbarKeyEnabled {
       color: $color-font-enabled-light;
 
-      &:hover {
-        color: $color-font-enabled;
-        background-color: #fff;
+      @include iconButton.toolbar-key-hover-fine-pointer {
+        &:hover {
+          color: $color-font-enabled;
+          background-color: #fff;
+        }
       }
     }
   }
@@ -855,9 +866,11 @@
     ) {
     color: $color-font-enabled-light;
 
-    &:hover {
-      color: $color-font-enabled;
-      background-color: #fff;
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &:hover {
+        color: $color-font-enabled;
+        background-color: #fff;
+      }
     }
   }
 
@@ -867,16 +880,20 @@
   .toolbarKey[data-icon-key='sortAZUp'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
 
-    &:hover {
-      color: $color-font-enabled;
-      background-color: #fff;
-      cursor: pointer;
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &:hover {
+        color: $color-font-enabled;
+        background-color: #fff;
+        cursor: pointer;
+      }
     }
   }
 
   .toolbarKey.toolbarKeyActive:not([data-icon-key='apply']) {
-    &:hover {
-      background-color: #fff;
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &:hover {
+        background-color: #fff;
+      }
     }
   }
 }
@@ -1009,10 +1026,12 @@
   .toolbarKey[data-icon-key='sortAZUp'].toolbarKeyEnabled {
     color: $color-font-enabled-light;
 
-    &:hover {
-      color: $color-font-enabled;
-      background-color: #fff;
-      cursor: pointer;
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &:hover {
+        color: $color-font-enabled;
+        background-color: #fff;
+        cursor: pointer;
+      }
     }
   }
 
@@ -1021,9 +1040,11 @@
     color: $color-font-enabled-light;
     --icon-checkbox-check: #{$color-font-active};
 
-    &:hover {
-      color: $color-font-enabled;
-      --icon-checkbox-check: #{$color-font-active};
+    @include iconButton.toolbar-key-hover-fine-pointer {
+      &:hover {
+        color: $color-font-enabled;
+        --icon-checkbox-check: #{$color-font-active};
+      }
     }
   }
 
@@ -1581,14 +1602,16 @@
 .toolbarAddressListRecipients
   .toolbarKey[data-icon-key='panelDensity2'].toolbarKeyEnabled:hover
   svg {
-  --history-density-inactive-fill: #b0b0b0;
-  --history-density-inactive-stroke: #b0b0b0;
-  --history-density-active-fill: #{mix(
-      $color-app-sidebar-icon-active,
-      #1a120c,
-      18%
-    )};
-  --history-density-active-stroke: #523624;
+  @include iconButton.toolbar-key-hover-fine-pointer {
+    --history-density-inactive-fill: #b0b0b0;
+    --history-density-inactive-stroke: #b0b0b0;
+    --history-density-active-fill: #{mix(
+        $color-app-sidebar-icon-active,
+        #1a120c,
+        18%
+      )};
+    --history-density-active-stroke: #523624;
+  }
 }
 
 /* Как .addressToolbarSender (left: 0.5rem) + первая кнопка без margin-left. */

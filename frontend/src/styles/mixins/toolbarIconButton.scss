@@ -366,3 +366,10 @@ $toolbar-css-var-icon-mobile-section: --mobile-section-toolbar-icon-size;
   cursor: pointer;
   transition: color 0.15s ease;
 }
+
+/** Hover styles only for mouse — prevents sticky :hover after tap on touch devices. */
+@mixin toolbar-key-hover-fine-pointer {
+  @media (hover: hover) and (pointer: fine) {
+    @content;
+  }
+}

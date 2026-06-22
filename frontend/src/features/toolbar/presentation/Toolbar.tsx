@@ -524,6 +524,9 @@ export const Toolbar = ({
             onAction(effectiveIconKey as IconKey, actionPayload)
           }
         }}
+        onPointerUp={(event) => {
+          event.currentTarget.blur()
+        }}
       >
         {section === 'rightSidebar' &&
         key === 'userLogin' &&
