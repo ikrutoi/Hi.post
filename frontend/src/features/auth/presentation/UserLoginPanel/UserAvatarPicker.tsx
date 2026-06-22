@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react'
-import { useAppSelector } from '@app/hooks'
+import React, { useCallback, useMemo } from 'react'
+import { useAppDispatch, useAppSelector } from '@app/hooks'
 import {
+  IconSparkles,
   IconUserRegistered,
+  rerollUserRegisteredElementColors,
   resolveUserRegisteredElementColors,
 } from '@shared/ui/icons'
+import { updateUserPassportColors } from '@features/auth/infrastructure/state/auth.slice'
 import { selectAuthUser } from '@features/auth/infrastructure/selectors/authSelectors'
 import styles from './UserAvatarPicker.module.scss'
 
@@ -14,6 +17,7 @@ type UserAvatarPickerProps = {
 export const UserAvatarPicker: React.FC<UserAvatarPickerProps> = ({
   userEmail,
 }) => {
+  const dispatch = useAppDispatch()
   const user = useAppSelector(selectAuthUser)
   const registeredAvatarColors = useMemo(
     () =>
@@ -22,6 +26,10 @@ export const UserAvatarPicker: React.FC<UserAvatarPickerProps> = ({
         : null,
     [user?.id, user?.passportColors],
   )
+
+  const handleShuffleColors = useCallback(() => {
+    dispatch(updateUserPassportColors(rerollUserRegisteredElementColors()))
+  }, [dispatch])
 
   return (
     <div className={styles.root}>
@@ -34,6 +42,15 @@ export const UserAvatarPicker: React.FC<UserAvatarPickerProps> = ({
               </span>
             ) : null}
           </div>
+          <button
+            type="button"
+            className={styles.sparklesButton}
+            onClick={handleShuffleColors}
+            aria-label="Shuffle colors"
+            title="Shuffle colors"
+          >
+            <IconSparkles />
+          </button>
         </div>
         {userEmail ? (
           <p className={styles.profileEmail}>{userEmail}</p>

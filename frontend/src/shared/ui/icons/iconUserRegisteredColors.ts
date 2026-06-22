@@ -131,18 +131,31 @@ function shuffleSectorIndices(userId: string): number[] {
   return sectors
 }
 
-/** Deterministic passport colors: unique random sector per cell, then random shade inside it. */
-export function generateUserRegisteredElementColors(
-  userId: string,
+function generateUserRegisteredElementColorsFromSeed(
+  seed: string,
 ): IconUserRegisteredElementColors {
-  const sectorAssignments = shuffleSectorIndices(userId)
+  const sectorAssignments = shuffleSectorIndices(seed)
 
   return ICON_USER_REGISTERED_ELEMENT_IDS.reduce((acc, id, index) => {
-    const random = createSeededRandom(`${userId}:${id}`)
+    const random = createSeededRandom(`${seed}:${id}`)
     const sectorIndex = sectorAssignments[index] ?? 0
     acc[id] = pickColorInSector(sectorIndex, random)
     return acc
   }, {} as IconUserRegisteredElementColors)
+}
+
+/** Deterministic passport colors: unique random sector per cell, then random shade inside it. */
+export function generateUserRegisteredElementColors(
+  userId: string,
+): IconUserRegisteredElementColors {
+  return generateUserRegisteredElementColorsFromSeed(userId)
+}
+
+/** Non-deterministic reroll for dev/testing: new unique sector assignment each call. */
+export function rerollUserRegisteredElementColors(): IconUserRegisteredElementColors {
+  return generateUserRegisteredElementColorsFromSeed(
+    `${Date.now()}:${Math.random()}`,
+  )
 }
 
 export function isCompleteElementColors(

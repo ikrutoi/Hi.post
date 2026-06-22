@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { IconUserRegisteredElementColors } from '@shared/ui/icons'
 import { AuthState, User } from '../../domain/types'
 import { loginThunk, registerThunk } from '../../store/auth.thunks'
 
@@ -54,6 +55,14 @@ export const authSlice = createSlice({
       state.loading = false
       state.error = action.payload
     },
+    updateUserPassportColors(
+      state,
+      action: PayloadAction<IconUserRegisteredElementColors>,
+    ) {
+      if (state.user) {
+        state.user.passportColors = action.payload
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -98,5 +107,6 @@ export const {
   setAuthError,
   clearAuthError,
   setUserLoginPanelOpen,
+  updateUserPassportColors,
 } = authSlice.actions
 export const authReducer = authSlice.reducer
