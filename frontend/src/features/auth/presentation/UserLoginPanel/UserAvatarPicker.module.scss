@@ -61,6 +61,7 @@
   background-color: #fff;
   color: $color-font-enabled-light;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transform: translate(12%, -12%);
 
   :global([data-shell-layout='mobile']) & {
@@ -79,10 +80,12 @@
     display: block;
   }
 
-  &:hover {
-    color: $color-font-enabled;
-    border-color: $color-section-dark;
-    background-color: $color-app-inner;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      color: $color-font-enabled;
+      border-color: $color-section-dark;
+      background-color: $color-app-inner;
+    }
   }
 }
 

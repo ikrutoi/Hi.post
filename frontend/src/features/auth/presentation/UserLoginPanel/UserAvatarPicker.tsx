@@ -46,6 +46,9 @@ export const UserAvatarPicker: React.FC<UserAvatarPickerProps> = ({
             type="button"
             className={styles.sparklesButton}
             onClick={handleShuffleColors}
+            onPointerUp={(event) => {
+              event.currentTarget.blur()
+            }}
             aria-label="Shuffle colors"
             title="Shuffle colors"
           >
