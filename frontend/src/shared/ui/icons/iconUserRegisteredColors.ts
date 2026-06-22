@@ -1,4 +1,4 @@
-/** Element ids from IconUserRegistered SVG (`el-1` … `el-19`). */
+/** Element ids from IconUserRegistered SVG (`el-1` … `el-24`). */
 export const ICON_USER_REGISTERED_ELEMENT_IDS = [
   '1',
   '2',
@@ -19,6 +19,11 @@ export const ICON_USER_REGISTERED_ELEMENT_IDS = [
   '17',
   '18',
   '19',
+  '20',
+  '21',
+  '22',
+  '23',
+  '24',
 ] as const
 
 export type IconUserRegisteredElementId =
@@ -30,9 +35,9 @@ export type IconUserRegisteredElementColors = Record<
   string
 >
 
-export const USER_REGISTERED_SECTOR_COUNT = 19
+export const USER_REGISTERED_SECTOR_COUNT = 24
 
-/** Hue wheel is split into 19 sectors; each mosaic cell picks a color inside its sector. */
+/** Hue wheel is split into 24 sectors; each cell gets a unique sector, then a random color inside it. */
 export const USER_REGISTERED_SECTOR_CONFIG = {
   saturationMin: 58,
   saturationMax: 82,
@@ -111,12 +116,30 @@ function pickColorInSector(
   return hslToHex(hue, saturation, lightness)
 }
 
-/** Deterministic passport colors: one random shade per hue sector, seeded by user id. */
+function shuffleSectorIndices(userId: string): number[] {
+  const sectors = Array.from(
+    { length: USER_REGISTERED_SECTOR_COUNT },
+    (_, index) => index,
+  )
+  const random = createSeededRandom(`${userId}:sectors`)
+
+  for (let i = sectors.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1))
+    ;[sectors[i], sectors[j]] = [sectors[j]!, sectors[i]!]
+  }
+
+  return sectors
+}
+
+/** Deterministic passport colors: unique random sector per cell, then random shade inside it. */
 export function generateUserRegisteredElementColors(
   userId: string,
 ): IconUserRegisteredElementColors {
-  return ICON_USER_REGISTERED_ELEMENT_IDS.reduce((acc, id, sectorIndex) => {
+  const sectorAssignments = shuffleSectorIndices(userId)
+
+  return ICON_USER_REGISTERED_ELEMENT_IDS.reduce((acc, id, index) => {
     const random = createSeededRandom(`${userId}:${id}`)
+    const sectorIndex = sectorAssignments[index] ?? 0
     acc[id] = pickColorInSector(sectorIndex, random)
     return acc
   }, {} as IconUserRegisteredElementColors)
