@@ -1818,12 +1818,21 @@
     }
   }
 
-  .toolbarCardphotoList {
-    padding-left: 0;
-    margin-left: 0.5rem;
+  .toolbarCardphotoList,
+  .toolbarCardtextList,
+  .toolbarAddressListSender,
+  .toolbarAddressListRecipient,
+  .toolbarAddressListRecipients {
+    margin-inline: 0;
+    padding-inline: 0;
 
     .toolbarGroup:first-child .toolbarKey:first-child {
       margin-left: 0;
+    }
+
+    .toolbarGroup:last-child .toolbarKey[data-icon-key='listDelete'],
+    .toolbarGroup:last-child .toolbarKey[data-icon-key='listClose'] {
+      margin-right: 0;
     }
   }
 

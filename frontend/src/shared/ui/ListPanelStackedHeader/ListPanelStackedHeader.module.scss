@@ -234,6 +234,13 @@
 }
 
 :global([data-shell-layout='mobile']) {
+  .header {
+    left: var(--mobile-factory-toolbar-inset-inline, 0.5rem);
+    width: calc(
+      100% - 2 * var(--mobile-factory-toolbar-inset-inline, 0.5rem)
+    );
+  }
+
   .headerSectionToolbar .headerLead {
     background-color: transparent;
   }
