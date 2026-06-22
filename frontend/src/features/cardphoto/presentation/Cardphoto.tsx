@@ -8,15 +8,10 @@ import { CARDPHOTO_TEMPLATE_TITLE_MAX_LENGTH } from '@cardphoto/application/help
 import { CardphotoView } from './CardphotoView/CardphotoView'
 import {
   deleteCardphotoFromViewRequested,
-  selectInLineTemplate,
-  setCardphotoListPanelOpen,
 } from '@cardphoto/infrastructure/state'
 import {
   selectCardphotoTitle,
-  selectIsListPanelOpen,
 } from '@cardphoto/infrastructure/selectors'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
-import { CardphotoListPanel } from './CardphotoListPanel/CardphotoListPanel'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { CARDPHOTO_CREATE_TOOLBAR } from '@toolbar/domain/types/cardphoto.types'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
@@ -101,7 +96,6 @@ const CardphotoRightListMirror: React.FC = () => {
 
 const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
-  const isListPanelOpen = useAppSelector(selectIsListPanelOpen)
   const { sizeCard, isMobileLayout } = useSizeFacade()
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const title = useAppSelector(selectCardphotoTitle)
@@ -147,48 +141,6 @@ const CardphotoSessionEditor: React.FC = () => {
     }
     dispatch(deleteCardphotoFromViewRequested())
   }, [dispatch, assetToolbar])
-
-  const handleCloseListPanel = useCallback(() => {
-    dispatch(setCardphotoListPanelOpen(false))
-    dispatch(
-      updateToolbarIcon({
-        section: 'cardphoto',
-        key: 'listCardphoto',
-        value: 'enabled',
-      }),
-    )
-  }, [dispatch])
-
-  const handleSelectTemplate = useCallback(
-    (id: string) => {
-      dispatch(selectInLineTemplate(id))
-      if (isMobileLayout) {
-        handleCloseListPanel()
-      }
-    },
-    [dispatch, handleCloseListPanel, isMobileLayout],
-  )
-
-  if (isListPanelOpen && isMobileLayout) {
-    return (
-      <div className={styles.cardphoto}>
-        <div
-          className={clsx(
-            styles.cardphotoViewWrap,
-            styles.cardphotoViewWrapList,
-          )}
-        >
-          <div className={styles.cardphotoListContent}>
-            <CardphotoListPanel
-              layout="inline"
-              onClose={handleCloseListPanel}
-              onSelectTemplate={handleSelectTemplate}
-            />
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div

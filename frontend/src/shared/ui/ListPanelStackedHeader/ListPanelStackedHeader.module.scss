@@ -170,6 +170,11 @@
   .headerLead {
     @include iconButton.toolbar-icon-button-size-card-pie-list-header(true);
     color: $color-font-enabled-light;
+
+    &[data-lead-icon='userLogin'] > svg {
+      width: iconButton.$toolbar-icon-size-standard;
+      height: iconButton.$toolbar-icon-size-standard;
+    }
   }
 
   .closeBtn {

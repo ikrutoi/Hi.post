@@ -21,6 +21,8 @@ import {
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import type { CardSection } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
+import { CardphotoListMobileSlot } from '@cardphoto/presentation/CardphotoListMobileSlot'
+import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDevContext'
 import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
@@ -56,6 +58,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
   const shellRef = useRef<HTMLDivElement>(null)
   useMobileVisualViewport(shellRef)
   const userLoginPanelOpen = useAppSelector(selectUserLoginPanelOpen)
+  const cardphotoListPanelOpen = useAppSelector(selectIsListPanelOpen)
   const notebookStripSection = useDateStripSectionForNotebookTabs()
 
   /** Mobile: только список CardPie перекрывает центр; Cart/History — календарь в фабрике. */
@@ -124,6 +127,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       data-envelope-address-create={
         envelopeAddressCreateMode ? 'true' : undefined
       }
+      data-cardphoto-list-open={cardphotoListPanelOpen ? 'true' : undefined}
       onClick={onAppClick}
     >
       <MarkStampYearDevProvider>
@@ -205,6 +209,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         {userLoginPanelOpen ? (
           <div className={styles.mobileUserPanel}>
             <UserLoginRightSlot />
+          </div>
+        ) : null}
+        {cardphotoListPanelOpen ? (
+          <div className={styles.mobileCardphotoListPanel}>
+            <CardphotoListMobileSlot />
           </div>
         ) : null}
       </MarkStampYearDevProvider>
