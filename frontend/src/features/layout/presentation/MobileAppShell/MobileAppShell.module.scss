@@ -366,42 +366,9 @@
     align-items: center;
   }
 
-  :global([class*='cardphotoViewContent']) {
-    border: 1px solid $color-section-light;
-    border-top: none;
-    border-radius: 0.5rem;
-    background-color: #fff;
-    overflow: hidden;
-    flex: 0 0 auto;
-    align-items: center;
-    width: 100%;
-    min-height: 0;
-  }
-
-  :global([class*='cardtextViewContent']) {
-    border: 1px solid $color-cardphoto-input-border;
-    border-top: none;
-    border-radius: 0.5rem;
-    background-color: #fff;
-    overflow: hidden;
-    flex: 0 0 auto;
-    align-items: center;
-    width: 100%;
-    min-height: 0;
-  }
-
-  :global([class*='envelopeViewContent']) {
-    border: 1px solid $color-cardphoto-input-border;
-    border-top: none;
-    border-radius: 0.5rem;
-    background-color: #fff;
-    overflow: hidden;
-    flex: 0 0 auto;
-    align-items: stretch;
-    width: 100%;
-    min-height: 0;
-  }
-
+  :global([class*='cardphotoViewContent']),
+  :global([class*='cardtextViewContent']),
+  :global([class*='envelopeViewContent']),
   :global([class*='aromaViewContent']),
   :global([class*='dateViewContent']) {
     border: 1px solid $color-cardphoto-input-border;
@@ -409,25 +376,40 @@
     border-radius: 0.5rem;
     background-color: #fff;
     overflow: hidden;
-    flex: 1 1 auto;
-    align-items: stretch;
+    flex: 0 0 auto;
+    align-items: center;
     width: 100%;
     min-height: 0;
   }
 
-  // Квадратная рабочая зона: картинка (cardphoto) / письмо (cardtext).
+  :global([class*='cardphotoViewContent']) {
+    border-color: $color-section-light;
+  }
+
+  // Квадратная рабочая зона — единый размер для всех секций фабрики.
   :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
   :global([class*='cardtextReadOnlyShell']) :global([class*='viewContainer']),
-  :global([class*='cardtextViewContent']) > :global([class*='_editor_']) {
+  :global([class*='cardtextViewContent']) > :global([class*='_editor_']),
+  :global([class*='envelope']:not([data-envelope-mobile-form='true']))
+    :global([class*='envelopeViewContent'])
+    > :global([class*='envelopeWorkZone']),
+  :global([class*='aromaViewContent']) > :global([class*='form']),
+  :global([class*='dateViewContent']) > :global([class*='form']),
+  :global([class*='dateViewContent']) > :global([class*='formWithNotebookTabs']) {
     flex: 0 0 auto;
     width: min(100%, var(--card-work-zone-side, 100%));
     height: auto;
     max-width: 100%;
     max-height: min(100%, var(--card-work-zone-side, 100%));
     aspect-ratio: 1;
-    padding: 0;
     box-sizing: border-box;
     border: none;
+  }
+
+  :global([class*='cardphotoViewContent']) :global([class*='viewContainer']),
+  :global([class*='cardtextReadOnlyShell']) :global([class*='viewContainer']),
+  :global([class*='cardtextViewContent']) > :global([class*='_editor_']) {
+    padding: 0;
   }
 
   :global([class*='cardtextReadOnlyShell']) {

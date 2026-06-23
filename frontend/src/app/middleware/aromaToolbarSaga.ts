@@ -11,10 +11,10 @@ import {
 import {
   selectAromaPreviewIndex,
   selectAromaPreviewOpen,
+  selectSelectedAroma,
 } from '@aroma/infrastructure/selectors'
 
-const AROMA_PREVIEW_TOOLBAR_ENABLED = {
-  apply: { state: 'enabled' as const },
+const AROMA_PREVIEW_TOOLBAR_NAV_ENABLED = {
   chevronLeft: { state: 'enabled' as const },
   chevronRight: { state: 'enabled' as const },
   close: { state: 'enabled' as const },
@@ -27,14 +27,45 @@ const AROMA_PREVIEW_TOOLBAR_DISABLED = {
   close: { state: 'disabled' as const },
 }
 
+function buildAromaPreviewToolbarState(
+  previewIndex: ReturnType<typeof selectAromaPreviewIndex>,
+  selectedAroma: ReturnType<typeof selectSelectedAroma>,
+) {
+  const applyMatchesSelection =
+    previewIndex != null &&
+    selectedAroma != null &&
+    previewIndex === selectedAroma.index
+
+  return {
+    apply: {
+      state: applyMatchesSelection ? ('active' as const) : ('enabled' as const),
+    },
+    ...AROMA_PREVIEW_TOOLBAR_NAV_ENABLED,
+  }
+}
+
 function* syncAromaToolbarState(): SagaIterator {
   const previewOpen: boolean = yield select(selectAromaPreviewOpen)
+  if (!previewOpen) {
+    yield put(
+      updateToolbarSection({
+        section: 'aroma',
+        value: AROMA_PREVIEW_TOOLBAR_DISABLED,
+      }),
+    )
+    return
+  }
+
+  const previewIndex: ReturnType<typeof selectAromaPreviewIndex> = yield select(
+    selectAromaPreviewIndex,
+  )
+  const selectedAroma: ReturnType<typeof selectSelectedAroma> =
+    yield select(selectSelectedAroma)
+
   yield put(
     updateToolbarSection({
       section: 'aroma',
-      value: previewOpen
-        ? AROMA_PREVIEW_TOOLBAR_ENABLED
-        : AROMA_PREVIEW_TOOLBAR_DISABLED,
+      value: buildAromaPreviewToolbarState(previewIndex, selectedAroma),
     }),
   )
 }
