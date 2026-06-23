@@ -32,6 +32,7 @@ $cardtext-view-overlay-chip-radius: 0.47rem;
   :global([data-shell-layout='desktop']) & {
     border-radius: 0.5rem;
     padding-bottom: 0;
+    background-color: #fff;
   }
 
   :global([data-shell-layout='mobile']) & {

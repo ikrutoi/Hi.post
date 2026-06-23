@@ -19,7 +19,6 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
-import { useSizeFacade } from '@layout/application/facades'
 import { IconSectionMenuCardphoto } from '@shared/ui/icons'
 import { getToolbarIcon } from '@shared/utils/icons'
 import styles from './Cardphoto.module.scss'
@@ -31,23 +30,12 @@ import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcard
 const CardphotoInnerPreviewOnly: React.FC<{
   inner: CardPieInnerData | null
 }> = ({ inner }) => {
-  const { sizeCard, isMobileLayout } = useSizeFacade()
   const url =
     inner?.cardphoto?.factoryDisplayUrl ?? inner?.cardphoto?.previewUrl ?? null
   const hasPhoto = url != null && url !== ''
 
   return (
-    <div
-      className={styles.cardphoto}
-      style={
-        !isMobileLayout && sizeCard.width > 0 && sizeCard.height > 0
-          ? {
-              width: `${sizeCard.width}px`,
-              height: `${sizeCard.height}px`,
-            }
-          : undefined
-      }
-    >
+    <div className={styles.cardphoto}>
       <div className={styles.cardphotoViewWrap}>
         <MobileInlineToolbarRow
           className={styles.cardphotoToolbarRow}
@@ -96,7 +84,6 @@ const CardphotoRightListMirror: React.FC = () => {
 
 const CardphotoSessionEditor: React.FC = () => {
   const dispatch = useAppDispatch()
-  const { sizeCard, isMobileLayout } = useSizeFacade()
   const { activeImage, assetToolbar } = useCardphotoFacade()
   const title = useAppSelector(selectCardphotoTitle)
   const createToolbarState = useAppSelector(
@@ -143,17 +130,7 @@ const CardphotoSessionEditor: React.FC = () => {
   }, [dispatch, assetToolbar])
 
   return (
-    <div
-      className={styles.cardphoto}
-      style={
-        !isMobileLayout && sizeCard.width > 0 && sizeCard.height > 0
-          ? {
-              width: `${sizeCard.width}px`,
-              height: `${sizeCard.height}px`,
-            }
-          : undefined
-      }
-    >
+    <div className={styles.cardphoto}>
       <div className={styles.cardphotoViewWrap}>
         <MobileInlineToolbarRow
           className={styles.cardphotoToolbarRow}

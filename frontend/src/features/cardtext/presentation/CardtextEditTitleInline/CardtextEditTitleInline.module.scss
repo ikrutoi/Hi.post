@@ -11,10 +11,7 @@
   min-width: 70%;
   border-radius: 0.65rem;
   background-color: #fff;
-  // background-color: $color-cardtext-input;
-  background-color: darken($color-cardtext-input, 2%);
-  // box-shadow: $shadow-card;
-  border: 1px solid $color-cardtext-input-border;
+  border: 1px solid $color-section-light;
   z-index: 10;
 }
 

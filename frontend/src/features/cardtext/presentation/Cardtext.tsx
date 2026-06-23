@@ -2,7 +2,6 @@ import React, { useCallback } from 'react'
 import clsx from 'clsx'
 import { CardEditor } from './CardEditor/CardEditor'
 import { CardtextView } from './CardtextView/CardtextView'
-import { useSizeFacade } from '@layout/application/facades'
 import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiveMiniContext'
 import {
   createInitialCardtextContent,
@@ -51,7 +50,6 @@ const CardtextListRowPeekPreview: React.FC<{
   inner: CardPieInnerData
   rowLocalId: number | null
 }> = ({ inner, rowLocalId }) => {
-  const { sizeCard } = useSizeFacade()
   const ct = inner.cardtext
   const fallback = createInitialCardtextContent()
   const value = cardtextValueForReadOnlyPreview(ct)
@@ -65,13 +63,7 @@ const CardtextListRowPeekPreview: React.FC<{
 
   return (
     <div className={styles.cardtextContainer}>
-      <div
-        className={styles.cardtext}
-        style={{
-          width: `${sizeCard.width}px`,
-          height: `${sizeCard.height}px`,
-        }}
-      >
+      <div className={styles.cardtext}>
         <div className={styles.cardtextViewWrap}>
           <MobileInlineToolbarRow
             className={styles.cardtextToolbarRow}
@@ -95,7 +87,6 @@ const CardtextListRowPeekPreview: React.FC<{
 
 /** Фабрика в режиме правого списка: текст из `mirrorInner`, не из слайса `cardtext` сессии. */
 const CardtextRightListMirror: React.FC = () => {
-  const { sizeCard } = useSizeFacade()
   const { mirrorInner, mirrorTargetLocalId } = useRightListArchiveMini()
   const ct = mirrorInner?.cardtext
   const fallback = createInitialCardtextContent()
@@ -112,13 +103,7 @@ const CardtextRightListMirror: React.FC = () => {
 
   return (
     <div className={styles.cardtextContainer}>
-      <div
-        className={styles.cardtext}
-        style={{
-          width: `${sizeCard.width}px`,
-          height: `${sizeCard.height}px`,
-        }}
-      >
+      <div className={styles.cardtext}>
         <div className={styles.cardtextViewWrap}>
           <MobileInlineToolbarRow
             className={styles.cardtextToolbarRow}
@@ -143,7 +128,6 @@ const CardtextRightListMirror: React.FC = () => {
 const CardtextSessionEditor: React.FC<CardtextProps> = ({
   styleLeft: _styleLeft,
 }) => {
-  const { sizeCard, isMobileLayout } = useSizeFacade()
   const { state, value, style, title, id, plainText, cardtextLines } =
     useCardtextFacade()
 
@@ -239,17 +223,7 @@ const CardtextSessionEditor: React.FC<CardtextProps> = ({
 
   return (
     <div className={styles.cardtextContainer}>
-      <div
-        className={styles.cardtext}
-        style={
-          !isMobileLayout && sizeCard.width > 0 && sizeCard.height > 0
-            ? {
-                width: `${sizeCard.width}px`,
-                height: `${sizeCard.height}px`,
-              }
-            : undefined
-        }
-      >
+      <div className={styles.cardtext}>
         <div className={styles.cardtextViewWrap}>
           <MobileInlineToolbarRow
             className={styles.cardtextToolbarRow}

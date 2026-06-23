@@ -17,6 +17,7 @@
   :global([data-shell-layout='desktop']) & {
     padding: 0;
     overflow: hidden;
+    min-height: 0;
   }
 
   :global([data-shell-layout='mobile']) & {
@@ -128,6 +129,8 @@
     border-left: none;
     border-right: none;
     border-bottom: none;
+    border-color: $color-section-light;
+    background-color: #fff;
     overflow: hidden;
   }
   // border: solid 1px red;

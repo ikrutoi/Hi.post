@@ -1155,9 +1155,10 @@ const App = () => {
                   </div>
                 </div>
                 <div className={clsx(styles.appMainContentCenter)}>
-                  {!isMobileLayout && activeSection === 'envelope' ? null : (
+                  {!isMobileLayout ? (
                     <div className={styles.mainCardSectionToolbar}>
-                      {!rightPieCardphotoPeekNoToolbar &&
+                      {activeSection !== 'envelope' &&
+                      !rightPieCardphotoPeekNoToolbar &&
                       !rightPieCardtextPeekNoToolbar &&
                       !rightPieEnvelopePeekNoToolbar &&
                       !rightPieAromaPeekNoToolbar &&
@@ -1165,7 +1166,7 @@ const App = () => {
                         <CardSectionToolbar />
                       ) : null}
                     </div>
-                  )}
+                  ) : null}
                   <div ref={formRef} className={clsx(styles.mainForm)}>
                     <CardSectionEditor />
                   </div>

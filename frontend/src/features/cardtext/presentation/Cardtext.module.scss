@@ -7,6 +7,11 @@
   display: flex;
   justify-content: center;
 
+  :global([data-shell-layout='desktop']) & {
+    height: 100%;
+    min-height: 0;
+  }
+
   :global([data-shell-layout='mobile']) & {
     height: auto;
     min-height: 0;
@@ -25,6 +30,8 @@
   background-color: #fff;
 
   :global([data-shell-layout='desktop']) & {
+    height: 100%;
+    min-height: 0;
     padding: 0;
     overflow: hidden;
   }
@@ -125,6 +132,8 @@
     border-left: none;
     border-right: none;
     border-bottom: none;
+    border-color: $color-section-light;
+    background-color: #fff;
   }
 }
 

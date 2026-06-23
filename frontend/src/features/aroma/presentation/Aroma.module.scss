@@ -17,6 +17,7 @@
   :global([data-shell-layout='desktop']) & {
     padding: 0;
     overflow: hidden;
+    min-height: 0;
   }
 }
 
