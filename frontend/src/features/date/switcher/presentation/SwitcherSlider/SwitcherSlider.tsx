@@ -5,12 +5,16 @@ import { useSwitcherFacade } from '../../application/facades'
 import styles from './SwitcherSlider.module.scss'
 import type { CalendarViewDate } from '@entities/date/domain/types'
 
+type SwitcherSliderVariant = 'default' | 'toolbar'
+
 interface SwitcherSliderProps {
   calendarViewDate: CalendarViewDate
+  variant?: SwitcherSliderVariant
 }
 
 export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
   calendarViewDate,
+  variant = 'default',
 }) => {
   const {
     state: { position },
@@ -18,16 +22,21 @@ export const SwitcherSlider: React.FC<SwitcherSliderProps> = ({
   } = useSwitcherFacade()
 
   const isMonth = position === 'month'
+  const isToolbar = variant === 'toolbar'
 
   return (
     <div
-      className={styles.segmented}
+      className={clsx(
+        styles.segmented,
+        isToolbar && styles.segmentedToolbar,
+      )}
       role="tablist"
       aria-label="Scroll mode: month or year"
     >
       <div
         className={clsx(
           styles.thumb,
+          isToolbar && styles.thumbToolbar,
           isMonth ? styles.thumbMonth : styles.thumbYear,
         )}
         aria-hidden

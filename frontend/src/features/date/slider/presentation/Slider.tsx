@@ -7,7 +7,13 @@ import { useSwitcherFacade } from '../../switcher/application/facades'
 import styles from './Slider.module.scss'
 import type { DatePart } from '@entities/date/domain/types'
 
-export const Slider: React.FC = () => {
+type SliderVariant = 'default' | 'toolbar'
+
+type SliderProps = {
+  variant?: SliderVariant
+}
+
+export const Slider: React.FC<SliderProps> = ({ variant = 'default' }) => {
   const { lastViewedCalendarDate, setCalendarViewDate } = useCalendarFacade()
 
   const { state: stateSwitcher } = useSwitcherFacade()
@@ -38,33 +44,42 @@ export const Slider: React.FC = () => {
         : MONTH_NAMES_UPPER[lastViewedCalendarDate.month]
 
     const yearText = role === 'year' ? value : lastViewedCalendarDate.year
+    const showLabel = variant !== 'toolbar'
 
     return (
-      <div className={styles.sliderContainer}>
-        <div className={clsx(styles.sliderLabel)} style={{ left: labelOffset }}>
-          <span
-            className={clsx(styles.labelPart, {
-              [styles.active]: role === 'month',
-            })}
-          >
-            {monthText}
-          </span>
+      <div
+        className={clsx(
+          styles.sliderContainer,
+          variant === 'toolbar' && styles.sliderContainerToolbar,
+        )}
+      >
+        {showLabel ? (
+          <div className={styles.sliderLabel} style={{ left: labelOffset }}>
+            <span
+              className={clsx(styles.labelPart, {
+                [styles.active]: role === 'month',
+              })}
+            >
+              {monthText}
+            </span>
 
-          <span className={styles.labelSeparator}>&nbsp;</span>
+            <span className={styles.labelSeparator}>&nbsp;</span>
 
-          <span
-            className={clsx(styles.labelPart, {
-              [styles.active]: role === 'year',
-            })}
-          >
-            {yearText}
-          </span>
-        </div>
+            <span
+              className={clsx(styles.labelPart, {
+                [styles.active]: role === 'year',
+              })}
+            >
+              {yearText}
+            </span>
+          </div>
+        ) : null}
         <input
           type="range"
           className={clsx(
             styles.dateSliderLine,
             styles[`dateSliderLine${role}`],
+            variant === 'toolbar' && styles.dateSliderLineToolbar,
           )}
           min={min}
           max={max}

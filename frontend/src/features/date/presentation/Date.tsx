@@ -43,18 +43,21 @@ import { useRightListArchiveMini } from '@cardPanel/presentation/RightListArchiv
 import type { CardPieInnerData } from '@features/cardPie/infrastructure/postcardCardPieViewModel'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { MobileInlineToolbarRow } from '@features/cardSectionEditor/presentation/MobileFactoryToolbar'
+import { MobileDateCalendarToolbarSlider } from '@date/dateHeader/presentation/MobileDateCalendarToolbarSlider'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { isDispatchDateDisabledForOrder } from '@entities/date/utils'
 
-const DateSectionShell: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => (
+const DateSectionShell: React.FC<{
+  children: React.ReactNode
+  showMobileSliderToolbar?: boolean
+}> = ({ children, showMobileSliderToolbar = false }) => (
   <div className={styles.date}>
     <div className={styles.dateViewWrap}>
       <MobileInlineToolbarRow
         className={styles.dateToolbarRow}
-        show={false}
+        show={showMobileSliderToolbar}
       >
-        {null}
+        <MobileDateCalendarToolbarSlider />
       </MobileInlineToolbarRow>
       <div className={styles.dateViewContent}>{children}</div>
     </div>
@@ -110,6 +113,9 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   const { lastViewedCalendarDate } = useCalendarFacade()
   const cartListPanelOpen = useAppSelector(selectCartListPanelOpen)
   const historyListPanelOpen = useAppSelector(selectIsHistoryListPanelOpen)
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
+  const showMobileSliderToolbar =
+    isMobileLayout && !rightPieDatePeekNoToolbar
 
   /** Открытие/закрытие CartListPanel управляется явными действиями (toolbar/tabs/close), без авто-переоткрытия из центра. */
 
@@ -262,6 +268,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
         key={
           listRowLocalId != null ? `peek-date-${listRowLocalId}` : 'peek-date'
         }
+        showMobileSliderToolbar={false}
       >
         {notebookTabsOuter ? (
           peekBody
@@ -292,9 +299,11 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
           flashParts={flashParts}
         />
 
-        <div className={styles.slider}>
-          <Slider />
-        </div>
+        {!isMobileLayout ? (
+          <div className={styles.slider}>
+            <Slider />
+          </div>
+        ) : null}
 
         <div className={styles.calendar}>
           <Calendar
@@ -348,7 +357,7 @@ export const Date: React.FC<{ section: DateStripSection }> = ({
   )
 
   return (
-    <DateSectionShell>
+    <DateSectionShell showMobileSliderToolbar={showMobileSliderToolbar}>
       {notebookTabsOuter ? (
         calendarBody
       ) : (

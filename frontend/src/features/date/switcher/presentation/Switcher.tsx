@@ -11,12 +11,14 @@ interface Props {
   activeSwitcher?: typeSwitcher
   calendarViewDate: CalendarViewDate
   flashParts: typeSwitcher[]
+  variant?: 'default' | 'toolbar'
 }
 
 export const Switcher: React.FC<Props> = ({
   activeSwitcher,
   calendarViewDate,
   flashParts,
+  variant = 'default',
 }) => {
   // const parts = VISIBLE_CALENDAR_DATE
 
@@ -25,6 +27,7 @@ export const Switcher: React.FC<Props> = ({
       <SwitcherSlider
         // parts={parts}
         calendarViewDate={calendarViewDate}
+        variant={variant}
         // flashParts={flashParts}
       />
     </div>

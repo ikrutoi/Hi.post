@@ -28,6 +28,7 @@ export const MobileDateCalendarToolbarNav: React.FC = () => {
     <div className={styles.root}>
       <DateHeaderNavigation
         className={headerStyles.headerCenterToolbar}
+        switcherVariant="toolbar"
         calendarViewDate={calendarViewDate}
         onDecrement={handleDecrementArrow}
         onIncrement={handleIncrementArrow}

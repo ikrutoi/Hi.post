@@ -22,6 +22,11 @@ $switcher-thumb-move-duration: 0.25s;
   }
 }
 
+.segmentedToolbar {
+  background-color: #fff;
+  border-color: $color-section-light;
+}
+
 .thumb {
   position: absolute;
   top: calc(50% + 0.18rem);
@@ -39,6 +44,12 @@ $switcher-thumb-move-duration: 0.25s;
   transition:
     left $switcher-thumb-move-duration cubic-bezier(0.33, 1, 0.68, 1),
     transform $switcher-thumb-move-duration ease;
+}
+
+.thumbToolbar {
+  background-color: #fff;
+  border-color: $color-section-dark;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .thumbMonth {

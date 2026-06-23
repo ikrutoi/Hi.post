@@ -9,6 +9,7 @@ type DateHeaderNavigationProps = {
   onDecrement: () => void
   onIncrement: () => void
   className?: string
+  switcherVariant?: 'default' | 'toolbar'
 }
 
 export const DateHeaderNavigation: React.FC<DateHeaderNavigationProps> = ({
@@ -16,6 +17,7 @@ export const DateHeaderNavigation: React.FC<DateHeaderNavigationProps> = ({
   onDecrement,
   onIncrement,
   className,
+  switcherVariant = 'default',
 }) => (
   <div className={className ?? styles.headerCenter}>
     <div className={styles.arrowButton} onClick={onDecrement} role="button" tabIndex={0}>
@@ -23,7 +25,11 @@ export const DateHeaderNavigation: React.FC<DateHeaderNavigationProps> = ({
     </div>
 
     <div className={styles.switcher}>
-      <Switcher calendarViewDate={calendarViewDate} flashParts={[]} />
+      <Switcher
+        calendarViewDate={calendarViewDate}
+        flashParts={[]}
+        variant={switcherVariant}
+      />
     </div>
 
     <div className={styles.arrowButton} onClick={onIncrement} role="button" tabIndex={0}>

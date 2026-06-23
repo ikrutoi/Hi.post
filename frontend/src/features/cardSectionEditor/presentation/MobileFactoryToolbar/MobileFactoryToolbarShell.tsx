@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
@@ -73,19 +74,26 @@ export const MobileFactoryToolbarShell: React.FC = () => {
   const showLowerRow = scenarioToolbar != null
   const showShell =
     showUpperContent || showLowerRow || suppressMobileCalendarUpperRow
+  const isMobileCalendarSection =
+    isMobileLayout &&
+    (activeSection === 'date' || activeSection === 'history')
+  const showDivider = !isMobileCalendarSection
 
   if (envelopeAddressCreateMode) return null
   if (!showShell) return null
 
   return (
-    <div className={styles.shell} aria-label="Section toolbars">
+    <div
+      className={clsx(styles.shell, !showDivider && styles.shellNoDivider)}
+      aria-label="Section toolbars"
+    >
       <div
         className={styles.rowUpper}
         aria-hidden={!showUpperContent ? true : undefined}
       >
         {showUpperContent ? <CardSectionToolbar /> : null}
       </div>
-      <div className={styles.rowDivider} aria-hidden />
+      {showDivider ? <div className={styles.rowDivider} aria-hidden /> : null}
       <div
         className={styles.rowLower}
         aria-hidden={!showLowerRow ? true : undefined}
