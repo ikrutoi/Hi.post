@@ -11,7 +11,7 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   --envelope-text: #{$color-envelope-recipient-legend};
   --envelope-text-many: #{$color-toggle-active};
   --pie-rect-fill: #fff;
-  --pie-rect-fill-envelope: #{$color-envelope-recipient-light};
+  --pie-rect-fill-envelope: #{$color-envelope-recipient-input};
   // Fallback if a sector misses section classes (should not happen for empty patterns)
   --pie-rect-fill-empty: #{$color-app-header};
 
@@ -83,7 +83,7 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
 }
 
 .rect.rectEnvelope.rectEmpty {
-  fill: $color-envelope-sender-input;
+  fill: $color-envelope-recipient-input;
 }
 
 .rect.rectAroma.rectEmpty {
@@ -125,7 +125,7 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
 }
 
 .pieEnvelopeSingleCircleInner {
-  fill: $color-envelope-recipient;
+  fill: $color-envelope-recipient-input;
 }
 
 .pieEnvelopeSenderCircle {

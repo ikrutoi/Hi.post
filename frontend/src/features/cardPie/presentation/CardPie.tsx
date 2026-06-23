@@ -351,7 +351,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                   <rect
                     width={PIE_ENVELOPE_PATTERN_WIDTH}
                     height={PIE_ENVELOPE_PATTERN_HEIGHT}
-                    className={styles.rect}
+                    className={clsx(styles.rect, styles.rectEnvelope)}
                   />
                   {envelopeSenderCircle}
                   {recipientPreviewLines.length > 0 ? (
@@ -387,7 +387,7 @@ export const CardPie: React.FC<CardPieProps> = ({
                   <rect
                     width={PIE_ENVELOPE_PATTERN_WIDTH}
                     height={PIE_ENVELOPE_PATTERN_HEIGHT}
-                    className={styles.rect}
+                    className={clsx(styles.rect, styles.rectEnvelope)}
                   />
                   <circle
                     cx={PIE_ENVELOPE_SINGLE_CIRCLE_LAYOUT.cx}

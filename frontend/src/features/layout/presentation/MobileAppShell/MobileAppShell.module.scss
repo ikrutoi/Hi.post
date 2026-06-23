@@ -165,6 +165,13 @@
   background-color: $color-app-inner;
   box-sizing: border-box;
   overflow: visible;
+  --mobile-left-sidebar-stack-gap-current: var(--mobile-right-sidebar-stack-gap);
+
+  &:has(:global([class*='sectionEditorRightHeaderStack']) [data-icon-key='userLogin'] :global([class*='toolbarUserChromeGlyph'])) {
+    --mobile-left-sidebar-stack-gap-current: var(
+      --mobile-right-sidebar-stack-gap-authed
+    );
+  }
 
   :global([class*='sectionEditorRightHeaderStack']) {
     overflow: visible;
@@ -261,7 +268,7 @@
 
 .mobileHeaderCardPie {
   position: absolute;
-  top: calc(100% + var(--mobile-right-sidebar-stack-gap));
+  top: calc(100% + var(--mobile-left-sidebar-stack-gap-current));
   left: 0;
   right: 0;
   z-index: 2;
@@ -271,7 +278,7 @@
 
   :global([class*='toolbarSectionEditorMenuSidebarChrome']) {
     :global([class*='toolbarKey']) {
-      @include iconButton.toolbar-icon-button-size-mobile(true);
+      @include iconButton.toolbar-icon-button-size-mobile-right-sidebar(true);
       margin: 0;
       background-color: transparent;
 

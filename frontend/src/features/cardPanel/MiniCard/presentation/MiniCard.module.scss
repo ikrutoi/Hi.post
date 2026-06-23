@@ -57,9 +57,9 @@
   border-color: $color-cardtext-input-border;
 }
 
-.miniCard.miniCardEmpty.miniCardEnvelope {
-  background-color: $color-envelope-sender-input;
-  border-color: $color-envelope-sender-input-border;
+.miniCard.miniCardEnvelope {
+  background-color: $color-envelope-recipient-input;
+  border-color: $color-envelope-recipient-input-border;
 }
 
 .miniCard.miniCardEmpty.miniCardAroma {

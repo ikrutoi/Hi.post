@@ -81,7 +81,7 @@
   }
 
   .miniEnvelopeCircle:nth-child(2) {
-    background-color: $color-envelope-recipient;
+    background-color: $color-envelope-recipient-input;
     opacity: 1;
   }
 }
@@ -227,10 +227,10 @@
   top: 0;
   right: 0;
   transform: translate(50%, -50%);
-  border: 1px solid $color-envelope-sender-input-border;
+  border: 1px solid $color-envelope-recipient-input-border;
   border-radius: 50%;
   background-color: #fff;
-  color: $color-envelope-sender-input-border;
+  color: $color-envelope-recipient-input-border;
   cursor: pointer;
   z-index: 4;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
