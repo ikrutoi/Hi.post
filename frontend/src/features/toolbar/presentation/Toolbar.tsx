@@ -81,7 +81,7 @@ export const Toolbar = ({
   /** Одна группа иконок — прижать к правому краю (как space-between с пустой левой группой). */
   justifyGroupsEnd?: boolean
   /** Mobile shell layouts for sectionEditorMenu / rightSidebar. */
-  layout?: 'bottomBar' | 'headerBar' | 'headerStack'
+  layout?: 'bottomBar' | 'headerBar' | 'headerStack' | 'sidebarChrome'
 }) => {
   const {
     state: storeState,
@@ -592,6 +592,9 @@ export const Toolbar = ({
         layout === 'bottomBar' &&
           section === 'sectionEditorMenu' &&
           styles.toolbarSectionEditorMenuBottomBar,
+        layout === 'sidebarChrome' &&
+          section === 'sectionEditorMenu' &&
+          styles.toolbarSectionEditorMenuSidebarChrome,
         layout === 'headerBar' &&
           section === 'rightSidebar' &&
           styles.toolbarRightSidebarHeaderBar,

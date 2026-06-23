@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { dispatchCardPieToolbarBadge } from '@toolbar/application/syncCardPieToolbarIcons'
 import {
   selectEditorPieCardPieToolbarBadgeCount,
   selectPieProgress,
@@ -21,15 +22,7 @@ export const EditorPieListCardPieBadgeSync: React.FC = () => {
   useEffect(() => {
     if (prevCount.current === count) return
     prevCount.current = count
-    dispatch(
-      updateToolbarIcon({
-        section: 'editorPie',
-        key: 'cardPie',
-        value: {
-          options: { badge: count > 0 ? count : null },
-        },
-      }),
-    )
+    dispatchCardPieToolbarBadge(dispatch, count)
   }, [count, dispatch])
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import type { RootState } from '@app/state'
 import type { AppDispatch } from '@app/state/store'
 import type { SectionEditorMenuToolbarState } from '@toolbar/domain/types'
+import { selectIsCardPieListPanelOpen } from '@date/calendar/infrastructure/selectors'
 import {
   RIGHT_SIDEBAR_KEYS,
   type RightSidebarKey,
@@ -20,18 +21,23 @@ export function dispatchSectionEditorMenuAllEnabled(
   const currentState = selectToolbarSectionState(section)(
     getState(),
   ) as SectionEditorMenuToolbarState
+  const cardPieListOpen = selectIsCardPieListPanelOpen(getState())
+  const cardPieState = cardPieListOpen ? 'active' : 'enabled'
 
   const updatedFlatKeys = Object.fromEntries(
     Object.keys(currentState)
       .filter((k) => k !== 'config')
-      .map((iconKey) => [iconKey, 'enabled']),
+      .map((iconKey) => [
+        iconKey,
+        iconKey === 'cardPie' ? cardPieState : 'enabled',
+      ]),
   )
 
   const updatedConfig = currentState.config.map((group) => ({
     ...group,
     icons: group.icons.map((icon) => ({
       ...icon,
-      state: 'enabled' as const,
+      state: icon.key === 'cardPie' ? cardPieState : ('enabled' as const),
     })),
   }))
 

@@ -683,6 +683,53 @@
   }
 }
 
+.toolbarSectionEditorMenuSidebarChrome {
+  position: relative;
+  left: auto;
+  width: 100%;
+  justify-content: center;
+
+  .toolbarKey {
+    background-color: $color-app-strip;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+
+    &.toolbarKeyEnabled {
+      color: $color-font-enabled-light;
+      cursor: pointer;
+
+      &:hover {
+        color: $color-font-enabled;
+        background-color: $color-app-strip;
+      }
+    }
+
+    &.toolbarKeyDisabled {
+      color: $color-font-disabled;
+      cursor: default;
+
+      &:hover {
+        color: $color-font-disabled;
+        background-color: $color-app-strip;
+      }
+    }
+  }
+
+  .toolbarKeyActive {
+    color: $color-app-sidebar-icon-active;
+
+    &:hover {
+      color: $color-app-sidebar-icon-active;
+      background-color: $color-app-strip;
+    }
+  }
+
+  .toolbarKeyCardPie {
+    margin-top: 0;
+  }
+}
+
 .toolbarSectionEditorMenuBottomBar {
   position: relative !important;
   left: auto !important;

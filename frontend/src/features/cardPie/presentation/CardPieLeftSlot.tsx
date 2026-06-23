@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { useAppDispatch, useAppSelector } from '@app/hooks'
 import { selectCardPieListSortDirection } from '@date/calendar/infrastructure/selectors'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
 import {
   updateLastViewedCalendarDate,
   setCardPieListPanelOpen,
@@ -26,20 +26,7 @@ export const CardPieLeftSlot: React.FC = () => {
 
   const handleCloseList = useCallback(() => {
     dispatch(setCardPieListPanelOpen(false))
-    dispatch(
-      updateToolbarIcon({
-        section: 'editorPie',
-        key: 'cardPie',
-        value: 'enabled',
-      }),
-    )
-    dispatch(
-      updateToolbarIcon({
-        section: 'date',
-        key: 'cardPie',
-        value: 'enabled',
-      }),
-    )
+    dispatchCardPieToolbarIconState(dispatch, false)
   }, [dispatch])
 
   const handleSelectEntry = useCallback(

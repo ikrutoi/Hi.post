@@ -18,7 +18,8 @@ import {
   selectIsHistoryListPanelOpen,
   selectNotebookStripTab,
 } from '@date/calendar/infrastructure/selectors'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { dispatchCardPieToolbarIconState } from '@toolbar/application/syncCardPieToolbarIcons'
+import { SECTION_EDITOR_MENU_CARD_PIE_TOOLBAR_GROUP } from '@toolbar/domain/types/sectionEditorMenu.types'
 import type { CardSection } from '@shared/config/constants'
 import { selectUserLoginPanelOpen } from '@features/auth/infrastructure/selectors/authSelectors'
 import { CardphotoListMobileSlot } from '@cardphoto/presentation/CardphotoListMobileSlot'
@@ -78,6 +79,11 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
     [cardPieListPanelOpen],
   )
 
+  const cardPieMenuGroups = useMemo(
+    () => [{ ...SECTION_EDITOR_MENU_CARD_PIE_TOOLBAR_GROUP }],
+    [],
+  )
+
   const handleLeftPieSectorClick = useCallback(
     (section: CardSection) => {
       onBeforeLeftPieInteraction()
@@ -85,20 +91,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
       const notebookStripTab = selectNotebookStripTab(state)
       if (selectIsCardPieListPanelOpen(state)) {
         dispatch(setCardPieListPanelOpen(false))
-        dispatch(
-          updateToolbarIcon({
-            section: 'editorPie',
-            key: 'cardPie',
-            value: 'enabled',
-          }),
-        )
-        dispatch(
-          updateToolbarIcon({
-            section: 'date',
-            key: 'cardPie',
-            value: 'enabled',
-          }),
-        )
+        dispatchCardPieToolbarIconState(dispatch, false)
       }
       if (selectCartListPanelOpen(state)) {
         dispatch(setCartListPanelOpen(false))
@@ -153,8 +146,17 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
         </div>
         <div className={styles.mobileSubstrate}>
           <header className={styles.mobileHeader}>
-            <div className={styles.mobileHeaderLogo} aria-hidden>
-              <IconLogo />
+            <div className={styles.mobileHeaderLeft}>
+              <div className={styles.mobileHeaderLogo} aria-hidden>
+                <IconLogo />
+              </div>
+              <div className={styles.mobileHeaderCardPie}>
+                <Toolbar
+                  section="sectionEditorMenu"
+                  groupsOverride={cardPieMenuGroups}
+                  layout="sidebarChrome"
+                />
+              </div>
             </div>
             <SectionEditorRightSidebar
               variant="headerStack"

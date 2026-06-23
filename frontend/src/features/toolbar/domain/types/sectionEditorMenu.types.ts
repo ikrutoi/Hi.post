@@ -7,14 +7,19 @@ export const SECTION_EDITOR_MENU_ICON_KEYS = [
   'envelope',
   'aroma',
   'date',
-  // 'history',
-  // 'cardPie',
 ] as const
 
 export const SECTION_EDITOR_MENU_KEYS = [
+  'cardPie',
   ...SECTION_EDITOR_MENU_ICON_KEYS,
   'history',
 ] as const
+
+export const SECTION_EDITOR_MENU_CARD_PIE_TOOLBAR_GROUP = {
+  group: 'cardPie',
+  icons: [{ key: 'cardPie' as const, state: 'enabled' as const }],
+  status: 'enabled' as const,
+} as const
 
 export type SectionEditorMenuKey = (typeof SECTION_EDITOR_MENU_KEYS)[number]
 
@@ -24,6 +29,7 @@ export interface SectionEditorMenuToolbarState extends Record<string, any> {
 }
 
 export const SECTION_EDITOR_MENU_TOOLBAR: ToolbarConfig = [
+  SECTION_EDITOR_MENU_CARD_PIE_TOOLBAR_GROUP,
   {
     group: 'menu',
     icons: SECTION_EDITOR_MENU_ICON_KEYS.map((key) => ({

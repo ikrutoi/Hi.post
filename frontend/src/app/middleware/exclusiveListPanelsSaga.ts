@@ -1,5 +1,5 @@
 import { SagaIterator } from 'redux-saga'
-import { all, put, select, takeEvery } from 'redux-saga/effects'
+import { all, call, put, select, takeEvery } from 'redux-saga/effects'
 import type { RootState } from '@app/state'
 import {
   setDateListPanelOpen,
@@ -21,6 +21,7 @@ import {
   setActiveAddressList,
 } from '@envelope/infrastructure/state'
 import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { setCardPieToolbarActiveState } from './cardPieToolbarSync'
 import { setCartListPanelOpen } from '@cart/infrastructure/state'
 import { selectCartListPanelOpen } from '@cart/infrastructure/selectors'
 import { setUserLoginPanelOpen } from '@features/auth/infrastructure/state/auth.slice'
@@ -32,20 +33,7 @@ export function* closeCardPieListPanelAndSyncIconsSaga(): SagaIterator {
   if (!cardPieOpen) return
 
   yield put(setCardPieListPanelOpen(false))
-  yield put(
-    updateToolbarIcon({
-      section: 'editorPie',
-      key: 'cardPie',
-      value: 'enabled',
-    }),
-  )
-  yield put(
-    updateToolbarIcon({
-      section: 'date',
-      key: 'cardPie',
-      value: 'enabled',
-    }),
-  )
+  yield call(setCardPieToolbarActiveState, false)
 }
 
 function* syncListPanelToolbarIcons(): SagaIterator {
@@ -90,20 +78,7 @@ function* syncListPanelToolbarIcons(): SagaIterator {
   )
 
   const cardPieOpen: boolean = yield select(selectIsCardPieListPanelOpen)
-  yield put(
-    updateToolbarIcon({
-      section: 'editorPie',
-      key: 'cardPie',
-      value: cardPieOpen ? 'active' : 'enabled',
-    }),
-  )
-  yield put(
-    updateToolbarIcon({
-      section: 'date',
-      key: 'cardPie',
-      value: cardPieOpen ? 'active' : 'enabled',
-    }),
-  )
+  yield call(setCardPieToolbarActiveState, cardPieOpen)
 
   const cardphotoOpen: boolean = yield select(selectIsListPanelOpen)
   const listCardphoto: unknown = yield select(

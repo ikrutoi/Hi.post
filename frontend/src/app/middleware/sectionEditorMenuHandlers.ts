@@ -1,4 +1,4 @@
-import { select, put } from 'redux-saga/effects'
+import { select, put, call } from 'redux-saga/effects'
 import type { RootState } from '@app/state'
 import { computeNotebookStripTabFromState } from '@date/calendar/infrastructure/selectors'
 import { selectToolbarSectionState } from '@toolbar/infrastructure/selectors'
@@ -9,6 +9,25 @@ import type {
 } from '@toolbar/domain/types'
 import type { RightSidebarToolbarState } from '@toolbar/domain/types/rightSidebar.types'
 import { RIGHT_SIDEBAR_KEYS } from '@toolbar/domain/types/rightSidebar.types'
+import { syncCardPieToolbarActiveStateFromStore } from './cardPieToolbarSync'
+import type { IconState } from '@shared/config/constants'
+
+function* resolveCardPieMenuIconState(): Generator<
+  unknown,
+  IconState,
+  unknown
+> {
+  yield call(syncCardPieToolbarActiveStateFromStore)
+  const currentState: SectionEditorMenuToolbarState = yield select(
+    selectToolbarSectionState('sectionEditorMenu'),
+  )
+  const raw = currentState.cardPie
+  if (typeof raw === 'string') return raw
+  if (raw && typeof raw === 'object' && 'state' in raw) {
+    return (raw as { state: IconState }).state
+  }
+  return 'enabled'
+}
 
 export function* syncSectionMenuVisuals(activeKey: SectionEditorMenuKey) {
   const section = 'sectionEditorMenu'
@@ -17,12 +36,18 @@ export function* syncSectionMenuVisuals(activeKey: SectionEditorMenuKey) {
     selectToolbarSectionState(section),
   )
 
+  const cardPieState: IconState = yield call(resolveCardPieMenuIconState)
+
   const updatedFlatKeys = Object.fromEntries(
     Object.keys(currentState)
       .filter((k) => k !== 'config')
       .map((iconKey) => [
         iconKey,
-        iconKey === activeKey ? 'active' : 'enabled',
+        iconKey === 'cardPie'
+          ? cardPieState
+          : iconKey === activeKey
+            ? 'active'
+            : 'enabled',
       ]),
   )
 
@@ -30,7 +55,12 @@ export function* syncSectionMenuVisuals(activeKey: SectionEditorMenuKey) {
     ...group,
     icons: group.icons.map((icon) => ({
       ...icon,
-      state: icon.key === activeKey ? 'active' : 'enabled',
+      state:
+        icon.key === 'cardPie'
+          ? cardPieState
+          : icon.key === activeKey
+            ? 'active'
+            : 'enabled',
     })),
   }))
 
@@ -50,17 +80,22 @@ export function* syncSectionMenuVisualsAllEnabled() {
     selectToolbarSectionState(section),
   )
 
+  const cardPieState: IconState = yield call(resolveCardPieMenuIconState)
+
   const updatedFlatKeys = Object.fromEntries(
     Object.keys(currentState)
       .filter((k) => k !== 'config')
-      .map((iconKey) => [iconKey, 'enabled']),
+      .map((iconKey) => [
+        iconKey,
+        iconKey === 'cardPie' ? cardPieState : 'enabled',
+      ]),
   )
 
   const updatedConfig = currentState.config.map((group) => ({
     ...group,
     icons: group.icons.map((icon) => ({
       ...icon,
-      state: 'enabled' as const,
+      state: icon.key === 'cardPie' ? cardPieState : 'enabled',
     })),
   }))
 

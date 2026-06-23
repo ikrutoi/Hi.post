@@ -18,11 +18,14 @@ import {
   // selectIsHistoryListPanelOpen,
   selectHistoryListPanelDensity,
   selectIsDateListPanelOpen,
-  selectIsCardPieListPanelOpen,
   selectPostcardStatuses,
 } from '@date/calendar/infrastructure/selectors'
 import { PostcardStatuses } from '@/entities/postcard/domain/types'
 import { storeAdapters } from '@db/adapters/storeAdapters'
+import {
+  toggleCardPieListPanelFromToolbar,
+  setCardPieToolbarActiveState,
+} from './cardPieToolbarSync'
 import type { UiPreferencesRecord } from '@db/types/storeMap.types'
 import {
   getNextHistoryListSortMode,
@@ -116,24 +119,7 @@ function* handleDateToolbarAction(
   }
 
   if (key === 'cardPie') {
-    const listOpen: boolean = yield select(selectIsCardPieListPanelOpen)
-    const nextOpen = !listOpen
-
-    yield put(setCardPieListPanelOpen(nextOpen))
-    yield put(
-      updateToolbarIcon({
-        section: 'date',
-        key: 'cardPie',
-        value: nextOpen ? 'active' : 'enabled',
-      }),
-    )
-    yield put(
-      updateToolbarIcon({
-        section: 'editorPie',
-        key: 'cardPie',
-        value: nextOpen ? 'active' : 'enabled',
-      }),
-    )
+    yield call(toggleCardPieListPanelFromToolbar)
   }
 }
 
@@ -152,13 +138,7 @@ function* syncListIconsWhenOpeningExclusiveList(
   action: PayloadAction<boolean>,
 ): SagaIterator {
   if (action.type === setDateListPanelOpen.type && action.payload) {
-    yield put(
-      updateToolbarIcon({
-        section: 'editorPie',
-        key: 'cardPie',
-        value: 'enabled',
-      }),
-    )
+    yield call(setCardPieToolbarActiveState, false)
   }
 }
 

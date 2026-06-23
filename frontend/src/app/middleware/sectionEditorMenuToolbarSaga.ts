@@ -1,3 +1,4 @@
+import type { SagaIterator } from 'redux-saga'
 import { takeEvery, put, call, select } from 'redux-saga/effects'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import { toolbarAction } from '@toolbar/application/helpers'
@@ -15,14 +16,13 @@ import {
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import type { DateStripSection } from '@date/presentation/dateStripSection.types'
 import { selectActiveSection } from '@entities/sectionEditorMenu/infrastructure/selectors'
-import { updateToolbarIcon } from '@toolbar/infrastructure/state'
 import {
   syncSectionMenuVisuals,
   syncSectionMenuVisualsAllEnabled,
   syncRightSidebarHistoryHighlight,
 } from './sectionEditorMenuHandlers'
-
-import type { SagaIterator } from 'redux-saga'
+import { updateToolbarIcon } from '@toolbar/infrastructure/state'
+import { toggleCardPieListPanelFromToolbar } from './cardPieToolbarSync'
 
 const SECTION_EDITOR_FACTORY_KEYS = [
   'cardphoto',
@@ -57,6 +57,10 @@ export function* handleSectionEditorMenuToolbarAction(
   const { section, key } = action.payload
 
   if (section === 'sectionEditorMenu') {
+    if (key === 'cardPie') {
+      yield call(toggleCardPieListPanelFromToolbar)
+      return
+    }
     if (key === 'date') {
       yield put(setCardPieListPanelOpen(true))
     }

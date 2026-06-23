@@ -28,6 +28,19 @@
   }
 }
 
+.sectionEditorSidebarCardPie {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+
+  :global([class*='toolbarSectionEditorMenuSidebarChrome']) {
+    :global([class*='toolbarKey'][data-icon-key='cardPie']) {
+      margin-top: calc(0.75rem + #{iconButton.$toolbar-mobile-toolbar-group-gap});
+    }
+  }
+}
+
 .sectionEditorSidebarLogoFull {
   position: absolute;
   left: 2.5rem;

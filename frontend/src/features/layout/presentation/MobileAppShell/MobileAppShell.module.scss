@@ -231,19 +231,83 @@
   }
 }
 
+.mobileHeaderLeft {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--mobile-toolbar-logo-size);
+  height: var(--mobile-toolbar-logo-size);
+  min-width: var(--mobile-toolbar-logo-size);
+  overflow: visible;
+  pointer-events: none;
+}
+
 .mobileHeaderLogo {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--mobile-toolbar-logo-size);
-  height: var(--mobile-toolbar-logo-size);
+  width: 100%;
+  height: 100%;
   color: var(--logo-color, #008aed);
 
   svg {
     display: block;
     width: 100%;
     height: 100%;
+  }
+}
+
+.mobileHeaderCardPie {
+  position: absolute;
+  top: calc(100% + var(--mobile-right-sidebar-stack-gap));
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  pointer-events: auto;
+
+  :global([class*='toolbarSectionEditorMenuSidebarChrome']) {
+    :global([class*='toolbarKey']) {
+      @include iconButton.toolbar-icon-button-size-mobile(true);
+      margin: 0;
+      background-color: transparent;
+
+      &[class*='toolbarKeyEnabled'] {
+        color: $color-font-enabled-light;
+
+        &:hover {
+          color: $color-font-enabled;
+          background-color: transparent;
+        }
+      }
+
+      &[class*='toolbarKeyActive'] {
+        color: $color-app-sidebar-icon-active;
+
+        &:hover {
+          color: $color-app-sidebar-icon-active;
+          background-color: transparent;
+        }
+      }
+
+      &[class*='toolbarKeyDisabled'] {
+        color: $color-font-disabled;
+
+        &:hover {
+          color: $color-font-disabled;
+          background-color: transparent;
+        }
+      }
+
+      &[class*='toolbarKeyEnabled']:hover,
+      &[class*='toolbarKeyActive']:hover,
+      &[class*='toolbarKeyDisabled']:hover {
+        background-color: transparent;
+      }
+    }
   }
 }
 
