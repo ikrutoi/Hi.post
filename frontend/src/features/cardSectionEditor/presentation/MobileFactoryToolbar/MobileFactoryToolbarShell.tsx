@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react'
-import clsx from 'clsx'
 import { useAppSelector } from '@app/hooks'
 import { selectIsListPanelOpen } from '@cardphoto/infrastructure/selectors'
 import { selectIsCardtextListPanelOpen } from '@cardtext/infrastructure/selectors'
@@ -70,31 +69,29 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     isMobileLayout &&
     (activeSection === 'date' || activeSection === 'history')
 
-  const showUpperRow = !hideUpperToolbar && !suppressMobileCalendarUpperRow
+  const showUpperContent = !hideUpperToolbar && !suppressMobileCalendarUpperRow
   const showLowerRow = scenarioToolbar != null
+  const showShell =
+    showUpperContent || showLowerRow || suppressMobileCalendarUpperRow
 
   if (envelopeAddressCreateMode) return null
-  if (!showUpperRow && !showLowerRow) return null
+  if (!showShell) return null
 
   return (
-    <div
-      className={clsx(
-        styles.shell,
-        !showUpperRow && showLowerRow && styles.shellSingleRow,
-      )}
-      aria-label="Section toolbars"
-    >
-      {showUpperRow ? (
-        <div className={styles.rowUpper}>
-          <CardSectionToolbar />
-        </div>
-      ) : null}
-      {showUpperRow && showLowerRow ? (
-        <div className={styles.rowDivider} aria-hidden />
-      ) : null}
-      {showLowerRow ? (
-        <div className={styles.rowLower}>{scenarioToolbar}</div>
-      ) : null}
+    <div className={styles.shell} aria-label="Section toolbars">
+      <div
+        className={styles.rowUpper}
+        aria-hidden={!showUpperContent ? true : undefined}
+      >
+        {showUpperContent ? <CardSectionToolbar /> : null}
+      </div>
+      <div className={styles.rowDivider} aria-hidden />
+      <div
+        className={styles.rowLower}
+        aria-hidden={!showLowerRow ? true : undefined}
+      >
+        {showLowerRow ? scenarioToolbar : null}
+      </div>
     </div>
   )
 }
