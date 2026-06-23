@@ -24,6 +24,8 @@ export const CardSectionToolbar: React.FC = () => {
       : notebookStripTab === 'history'
         ? 'history'
         : 'date'
+  const showMobileCalendarModeToolbar =
+    showCalendarToolbar && !isMobileLayout
 
   if (activeSection === 'envelope' && !isMobileLayout) {
     return null
@@ -37,7 +39,9 @@ export const CardSectionToolbar: React.FC = () => {
       )}
     >
       {activeSection === 'cardphoto' && <Toolbar section="cardphoto" />}
-      {showCalendarToolbar && <Toolbar section={calendarToolbarSection} />}
+      {showMobileCalendarModeToolbar && (
+        <Toolbar section={calendarToolbarSection} />
+      )}
       {activeSection === 'envelope' && <EnvelopeInnerToolbar />}
       {activeSection === 'cardtext' && (
         <div className={styles.cardSectionToolbarHeader}>
