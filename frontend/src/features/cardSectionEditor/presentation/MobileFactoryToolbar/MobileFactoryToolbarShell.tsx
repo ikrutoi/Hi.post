@@ -72,27 +72,36 @@ export const MobileFactoryToolbarShell: React.FC = () => {
 
   const showUpperContent = !hideUpperToolbar
   const showLowerRow = scenarioToolbar != null
+  const isAromaSection = activeSection === 'aroma'
+  const showSectionUpperToolbar = showUpperContent && !isAromaSection
   const showShell =
-    showUpperContent || showLowerRow || suppressMobileCalendarUpperRow
+    (showSectionUpperToolbar || showLowerRow || suppressMobileCalendarUpperRow) &&
+    !(isAromaSection && !showLowerRow)
   const isMobileCalendarSection =
     isMobileLayout &&
     (activeSection === 'date' || activeSection === 'history')
-  const showDivider = !isMobileCalendarSection
+  const showDivider =
+    !isMobileCalendarSection &&
+    !isAromaSection
+  const singleRowShell = !showSectionUpperToolbar && showLowerRow
 
   if (envelopeAddressCreateMode) return null
   if (!showShell) return null
 
   return (
     <div
-      className={clsx(styles.shell, !showDivider && styles.shellNoDivider)}
+      className={clsx(
+        styles.shell,
+        !showDivider && styles.shellNoDivider,
+        singleRowShell && styles.shellSingleRow,
+      )}
       aria-label="Section toolbars"
     >
-      <div
-        className={styles.rowUpper}
-        aria-hidden={!showUpperContent ? true : undefined}
-      >
-        {showUpperContent ? <CardSectionToolbar /> : null}
-      </div>
+      {showSectionUpperToolbar ? (
+        <div className={styles.rowUpper}>
+          <CardSectionToolbar />
+        </div>
+      ) : null}
       {showDivider ? <div className={styles.rowDivider} aria-hidden /> : null}
       <div
         className={styles.rowLower}
