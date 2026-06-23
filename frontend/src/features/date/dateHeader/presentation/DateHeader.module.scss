@@ -3,6 +3,10 @@
 
 $date-header-history-pie-alpha: 0.26;
 
+.headerNavInToolbar {
+  grid-template-columns: 1fr 1fr;
+}
+
 .header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -136,6 +140,20 @@ $date-header-history-pie-alpha: 0.26;
 .headerCenter {
   display: flex;
   align-items: center;
+}
+
+.headerCenterToolbar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+
+  .switcher {
+    justify-self: center;
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 .arrowButton {

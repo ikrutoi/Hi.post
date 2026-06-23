@@ -1,9 +1,10 @@
 import React from 'react'
 import clsx from 'clsx'
 import { MONTH_NAMES } from '@entities/date/constants'
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
-import { Switcher } from '../../switcher/presentation/Switcher'
+import { useAppSelector } from '@app/hooks'
+import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { themeColors } from '@shared/config/theme/themeColors'
+import { DateHeaderNavigation } from './DateHeaderNavigation'
 import styles from './DateHeader.module.scss'
 import type {
   CalendarViewDate,
@@ -42,8 +43,9 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
   onIncrement,
   onGoToToday,
   onGoToSelected: _onGoToSelected,
-  flashParts,
+  flashParts: _flashParts,
 }) => {
+  const isMobileLayout = useAppSelector(selectIsMobileLayout)
   const modeIconKey =
     dateSection === 'history'
       ? 'history'
@@ -58,7 +60,12 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
         : 'Calendar: dispatch dates mode'
 
   return (
-    <div className={styles.header}>
+    <div
+      className={clsx(
+        styles.header,
+        isMobileLayout && styles.headerNavInToolbar,
+      )}
+    >
       <div className={styles.headerSide}>
         <div
           className={clsx(
@@ -74,22 +81,13 @@ export const DateHeader: React.FC<DateHeaderProps> = ({
         </div>
       </div>
 
-      <div className={styles.headerCenter}>
-        <div className={clsx(styles.arrowButton)} onClick={onDecrement}>
-          <FaChevronLeft className={styles.iconArrow} />
-        </div>
-
-        <div className={styles.switcher}>
-          <Switcher
-            calendarViewDate={calendarViewDate}
-            flashParts={flashParts}
-          />
-        </div>
-
-        <div className={clsx(styles.arrowButton)} onClick={onIncrement}>
-          <FaChevronRight className={styles.iconArrow} />
-        </div>
-      </div>
+      {!isMobileLayout ? (
+        <DateHeaderNavigation
+          calendarViewDate={calendarViewDate}
+          onDecrement={onDecrement}
+          onIncrement={onIncrement}
+        />
+      ) : null}
 
       <div className={styles.headerSide}>
         <div

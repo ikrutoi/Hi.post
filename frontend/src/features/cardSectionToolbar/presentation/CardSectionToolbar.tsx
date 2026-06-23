@@ -7,6 +7,7 @@ import {
 import { selectNotebookStripTab } from '@date/calendar/infrastructure/selectors'
 import { useSectionMenuFacade } from '@entities/sectionEditorMenu/application/facades'
 import { EnvelopeInnerToolbar } from '@envelope/presentation/EnvelopeInnerToolbar'
+import { MobileDateCalendarToolbarNav } from '@date/dateHeader/presentation/MobileDateCalendarToolbarNav'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { Toolbar } from '@features/toolbar/presentation/Toolbar'
 import styles from './CardSectionToolbar.module.scss'
@@ -26,6 +27,8 @@ export const CardSectionToolbar: React.FC = () => {
         : 'date'
   const showMobileCalendarModeToolbar =
     showCalendarToolbar && !isMobileLayout
+  const showMobileDateCalendarNav =
+    showCalendarToolbar && isMobileLayout
 
   if (activeSection === 'envelope' && !isMobileLayout) {
     return null
@@ -35,6 +38,7 @@ export const CardSectionToolbar: React.FC = () => {
     <div
       className={clsx(
         styles.cardSectionToolbar,
+        showMobileDateCalendarNav && styles.cardSectionToolbarDateNav,
         cardPieCopyStripExpanded && styles.cardSectionToolbarDisabled,
       )}
     >
@@ -42,6 +46,7 @@ export const CardSectionToolbar: React.FC = () => {
       {showMobileCalendarModeToolbar && (
         <Toolbar section={calendarToolbarSection} />
       )}
+      {showMobileDateCalendarNav && <MobileDateCalendarToolbarNav />}
       {activeSection === 'envelope' && <EnvelopeInnerToolbar />}
       {activeSection === 'cardtext' && (
         <div className={styles.cardSectionToolbarHeader}>

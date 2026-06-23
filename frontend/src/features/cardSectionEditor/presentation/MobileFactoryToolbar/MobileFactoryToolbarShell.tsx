@@ -69,7 +69,7 @@ export const MobileFactoryToolbarShell: React.FC = () => {
     isMobileLayout &&
     (activeSection === 'date' || activeSection === 'history')
 
-  const showUpperContent = !hideUpperToolbar && !suppressMobileCalendarUpperRow
+  const showUpperContent = !hideUpperToolbar
   const showLowerRow = scenarioToolbar != null
   const showShell =
     showUpperContent || showLowerRow || suppressMobileCalendarUpperRow
