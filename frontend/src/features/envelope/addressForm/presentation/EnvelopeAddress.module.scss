@@ -440,6 +440,10 @@ $envelopeAddressToolbarLift: calc(-100% - 0.32rem);
   margin: 0 0.2rem;
   background-color: white;
   border-radius: 0.3rem;
+
+  :global([data-shell-layout='mobile']) & {
+    margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+  }
 }
 
 .addressBtnClip {

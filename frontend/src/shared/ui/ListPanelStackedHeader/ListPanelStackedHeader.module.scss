@@ -204,6 +204,14 @@
 
   .headerTopRow {
     min-height: $card-pie-header-hit;
+
+    .headerLead {
+      margin-left: 0.3rem;
+    }
+
+    .closeBtn {
+      margin-right: 0.3rem;
+    }
   }
 
   .headerToolbarRow {
@@ -243,5 +251,15 @@
 
   .headerSectionToolbar .headerLead {
     background-color: transparent;
+  }
+
+  .headerCardPieListArchive .headerTopRow {
+    .headerLead {
+      margin-left: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+    }
+
+    .closeBtn {
+      margin-right: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
+    }
   }
 }

@@ -695,7 +695,7 @@
     justify-content: space-evenly;
     align-items: center;
     width: 100%;
-    gap: 0.15rem;
+    gap: iconButton.$toolbar-mobile-toolbar-group-gap;
   }
 
   .toolbarKey {
@@ -1800,21 +1800,12 @@
     align-self: auto;
   }
 
-  .toolbarCardphoto,
-  .toolbarCardtext,
-  .toolbarDate,
-  .toolbarCart,
-  .toolbarHistory,
-  .toolbarCardphotoView,
-  .toolbarCardphotoCreate,
-  .toolbarCardphotoProcessed,
-  .toolbarCardtextView,
-  .toolbarCardtextEditor,
-  .toolbarCardtextCreate,
-  .toolbarCardphotoList,
-  .toolbarCardtextList {
-    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator) {
-      margin: 0 0.2rem;
+  // Uniform horizontal spacing: factory, template lists, address lists, aroma, …
+  .toolbar:not(.toolbarRightSidebar):not(.toolbarSectionEditorMenuBottomBar) {
+    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator):not(
+        .toolbarKeyPostcardIndicator
+      ) {
+      margin-inline: iconButton.$toolbar-mobile-toolbar-key-margin-inline;
     }
   }
 
@@ -1825,15 +1816,6 @@
   .toolbarAddressListRecipients {
     margin-inline: 0;
     padding-inline: 0;
-
-    .toolbarGroup:first-child .toolbarKey:first-child {
-      margin-left: 0;
-    }
-
-    .toolbarGroup:last-child .toolbarKey[data-icon-key='listDelete'],
-    .toolbarGroup:last-child .toolbarKey[data-icon-key='listClose'] {
-      margin-right: 0;
-    }
   }
 
   .toolbarSender,
@@ -1878,10 +1860,6 @@
       &:hover {
         background-color: $color-app-inner;
       }
-    }
-
-    .toolbarKey:not(.toolbarKeyFontSizeIndicator):not(.toolbarKeyCropQualityIndicator) {
-      margin: 0 0.2rem;
     }
   }
 

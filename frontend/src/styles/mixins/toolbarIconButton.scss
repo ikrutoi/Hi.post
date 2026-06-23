@@ -56,6 +56,11 @@ $toolbar-css-var-logo-mobile-right-sidebar: --mobile-right-sidebar-logo-size;
 $toolbar-mobile-right-sidebar-stack-gap: 0.3rem;
 $toolbar-mobile-right-sidebar-stack-gap-authed: 0.5rem;
 
+/** Horizontal spacing between icon keys in mobile factory / section toolbars. */
+$toolbar-mobile-toolbar-key-margin-inline: 0.35rem;
+/** Gap between keys in compact mobile toolbar rows (e.g. CardPie bottom bar). */
+$toolbar-mobile-toolbar-group-gap: 0.35rem;
+
 /** Mobile header chrome — avatar matches logo size. */
 $toolbar-avatar-size-mobile-chrome: $toolbar-logo-size-mobile-chrome;
 
