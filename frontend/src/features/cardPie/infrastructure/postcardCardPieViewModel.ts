@@ -193,7 +193,7 @@ function recipientPreviewLineFromAddress(
   return street.length > 0 ? street : null
 }
 
-function resolveAddressForRecipientId(
+export function resolveAddressForRecipientId(
   id: string,
   envelopeRecipients: RecipientState[],
   entries: AddressBookEntry[],

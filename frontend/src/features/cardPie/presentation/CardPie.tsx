@@ -21,6 +21,7 @@ import { CardSection } from '@shared/config/constants'
 import { CARDTEXT_APPLIED_DISPLAY_STATUSES } from '@cardtext/domain/editor/editor.types'
 import { CardPieProps } from '../domain/types'
 import { useCardPieFacade } from '../application/facade'
+import { isPostcardPieAllComplete } from '../infrastructure/postcardCardPieViewModel'
 import {
   PIE_DATE_SCATTER_SLOTS,
   PIE_ENVELOPE_SCATTER_SLOTS,
@@ -63,6 +64,10 @@ export const CardPie: React.FC<CardPieProps> = ({
   onLeftPieSectorClick,
   onLeftPieCenterClick,
   leftPieCenterClickable = false,
+  hideLeftPieCenterLogo = false,
+  pieInner,
+  pieSections,
+  hideEmptySectorPlaceholders = false,
   onRightPieCenterClick,
 }) => {
   const pieDefsUid = React.useId().replace(/:/g, '')
@@ -74,13 +79,21 @@ export const CardPie: React.FC<CardPieProps> = ({
   const dateFillId = `${pieDefsUid}-date-fill`
   const listArchiveSource = station === 'right' && id ? rightListSource : null
 
+  const usesInjectedPie = pieInner != null
+
   const {
     data,
-    sections,
+    sections: facadeSections,
     handleSectorClick: defaultHandleSectorClick,
-    isReady,
+    isReady: facadeReady,
     listArchiveSource: listSourceFromFacade,
-  } = useCardPieFacade(isProcessed, status, id, listArchiveSource)
+  } = useCardPieFacade(
+    usesInjectedPie ? false : isProcessed,
+    status,
+    usesInjectedPie ? undefined : id,
+    listArchiveSource,
+  )
+  const sections = pieSections ?? facadeSections
   const handleSectorClick =
     station === 'right' && onListArchiveSectorClick != null
       ? onListArchiveSectorClick
@@ -95,7 +108,9 @@ export const CardPie: React.FC<CardPieProps> = ({
   const { sizeMiniCard } = useSizeFacade()
   const { setHovered, hoveredSection } = useCardEditorFacade()
 
-  const cardData = data?.data
+  const cardData = pieInner ?? data?.data
+  const isReady =
+    pieSections != null ? isPostcardPieAllComplete(pieSections) : facadeReady
   const cardtextStatus = cardData?.cardtext?.status
   const hasAppliedCardtext =
     cardtextStatus != null &&
@@ -240,10 +255,12 @@ export const CardPie: React.FC<CardPieProps> = ({
                 className={styles.pieSectorIconBg}
                 transform={`translate(2560, 2560) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
               >
-                <IconSectionMenuCardphoto
-                  width={PIE_EMPTY_ICON_SIZE}
-                  height={PIE_EMPTY_ICON_SIZE}
-                />
+                {!hideEmptySectorPlaceholders ? (
+                  <IconSectionMenuCardphoto
+                    width={PIE_EMPTY_ICON_SIZE}
+                    height={PIE_EMPTY_ICON_SIZE}
+                  />
+                ) : null}
               </g>
             </pattern>
 
@@ -303,10 +320,12 @@ export const CardPie: React.FC<CardPieProps> = ({
                     className={styles.pieSectorIconBg}
                     transform={`translate(2560, 2560) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
                   >
-                    <IconSectionMenuCardtext
-                      width={PIE_EMPTY_ICON_SIZE}
-                      height={PIE_EMPTY_ICON_SIZE}
-                    />
+                    {!hideEmptySectorPlaceholders ? (
+                      <IconSectionMenuCardtext
+                        width={PIE_EMPTY_ICON_SIZE}
+                        height={PIE_EMPTY_ICON_SIZE}
+                      />
+                    ) : null}
                   </g>
                   {/* <text x="100" y="600" fill="#064e3b" opacity="0.5">
                   <tspan>Hi...</tspan>
@@ -338,12 +357,14 @@ export const CardPie: React.FC<CardPieProps> = ({
                     className={styles.pieSectorIconBg}
                     transform={`translate(${PIE_ENVELOPE_EMPTY_ICON_X}, ${PIE_ENVELOPE_EMPTY_ICON_Y}) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
                   >
-                    <IconSectionMenuEnvelopeV2
-                      width={PIE_EMPTY_ICON_SIZE}
-                      height={PIE_EMPTY_ICON_SIZE}
-                      x="600"
-                      y="-150"
-                    />
+                    {!hideEmptySectorPlaceholders ? (
+                      <IconSectionMenuEnvelopeV2
+                        width={PIE_EMPTY_ICON_SIZE}
+                        height={PIE_EMPTY_ICON_SIZE}
+                        x="600"
+                        y="-150"
+                      />
+                    ) : null}
                   </g>
                 </>
               ) : hasManyRecipients ? (
@@ -435,15 +456,17 @@ export const CardPie: React.FC<CardPieProps> = ({
                     )}
                   />
                   {envelopeSenderCircle}
-                  <g
-                    className={styles.pieSectorIconBg}
-                    transform={`translate(${PIE_ENVELOPE_EMPTY_ICON_X}, ${PIE_ENVELOPE_EMPTY_ICON_Y}) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
-                  >
-                    <IconSectionMenuEnvelopeV2
-                      width={PIE_EMPTY_ICON_SIZE}
-                      height={PIE_EMPTY_ICON_SIZE}
-                    />
-                  </g>
+                  {!hideEmptySectorPlaceholders ? (
+                    <g
+                      className={styles.pieSectorIconBg}
+                      transform={`translate(${PIE_ENVELOPE_EMPTY_ICON_X}, ${PIE_ENVELOPE_EMPTY_ICON_Y}) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
+                    >
+                      <IconSectionMenuEnvelopeV2
+                        width={PIE_EMPTY_ICON_SIZE}
+                        height={PIE_EMPTY_ICON_SIZE}
+                      />
+                    </g>
+                  ) : null}
                 </>
               )}
             </pattern>
@@ -488,10 +511,12 @@ export const CardPie: React.FC<CardPieProps> = ({
                     className={styles.pieSectorIconBg}
                     transform={`translate(1550, 1550) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
                   >
-                    <IconSectionMenuAromaV2
-                      width={PIE_EMPTY_ICON_SIZE}
-                      height={PIE_EMPTY_ICON_SIZE}
-                    />
+                    {!hideEmptySectorPlaceholders ? (
+                      <IconSectionMenuAromaV2
+                        width={PIE_EMPTY_ICON_SIZE}
+                        height={PIE_EMPTY_ICON_SIZE}
+                      />
+                    ) : null}
                   </g>
                 </>
               )}
@@ -582,11 +607,13 @@ export const CardPie: React.FC<CardPieProps> = ({
                     className={styles.pieSectorIconBg}
                     transform={`translate(2560, 2560) translate(-${PIE_EMPTY_ICON_HALF}, -${PIE_EMPTY_ICON_HALF})`}
                   >
-                    <IconSectionMenuDate
-                      width={PIE_EMPTY_ICON_SIZE}
-                      height={PIE_EMPTY_ICON_SIZE}
-                      x="-550"
-                    />
+                    {!hideEmptySectorPlaceholders ? (
+                      <IconSectionMenuDate
+                        width={PIE_EMPTY_ICON_SIZE}
+                        height={PIE_EMPTY_ICON_SIZE}
+                        x="-550"
+                      />
+                    ) : null}
                   </g>
                 </>
               )}
@@ -729,54 +756,59 @@ export const CardPie: React.FC<CardPieProps> = ({
         )}
         aria-hidden
       />
-      <button
-        type="button"
-        className={clsx(
-          styles.pieCenterButton,
-          allSectionsFilled && styles.pieCenterButtonActive,
-          station === 'left' &&
-            leftPieCenterClickable &&
-            styles.pieCenterButtonPointer,
-          station === 'right' &&
-            onRightPieCenterClick != null &&
-            styles.pieCenterButtonPointer,
-        )}
-        disabled={
-          station === 'left'
-            ? !leftPieCenterClickable
-            : onRightPieCenterClick != null
-              ? false
-              : !allSectionsFilled
-        }
-        aria-label="Hidragonfly.com"
-        onMouseDown={(e) => {
-          e.stopPropagation()
-        }}
-        onClick={() => {
-          if (station === 'left' && leftPieCenterClickable) {
-            onLeftPieCenterClick?.()
-            return
-          }
-          if (station === 'right') {
-            onRightPieCenterClick?.()
-          }
-        }}
-      >
-        <span
+      {!(station === 'left' && hideLeftPieCenterLogo) ? (
+        <button
+          type="button"
           className={clsx(
-            styles.pieCenterIcon,
-            allSectionsFilled && styles.pieCenterIconBrand,
+            styles.pieCenterButton,
+            allSectionsFilled && styles.pieCenterButtonActive,
+            station === 'left' &&
+              leftPieCenterClickable &&
+              styles.pieCenterButtonPointer,
+            station === 'right' &&
+              onRightPieCenterClick != null &&
+              styles.pieCenterButtonPointer,
           )}
+          disabled={
+            station === 'left'
+              ? !leftPieCenterClickable
+              : onRightPieCenterClick != null
+                ? false
+                : !allSectionsFilled
+          }
+          aria-label="Hidragonfly.com"
+          onMouseDown={(e) => {
+            e.stopPropagation()
+          }}
+          onClick={() => {
+            if (station === 'left' && leftPieCenterClickable) {
+              onLeftPieCenterClick?.()
+              return
+            }
+            if (station === 'right') {
+              onRightPieCenterClick?.()
+            }
+          }}
         >
-          {station === 'left' ? (
-            <IconLogo aria-hidden />
-          ) : (
-            <span
-              className={clsx(styles.pieCenterIndicator, styles[status ?? ''])}
-            ></span>
-          )}
-        </span>
-      </button>
+          <span
+            className={clsx(
+              styles.pieCenterIcon,
+              allSectionsFilled && styles.pieCenterIconBrand,
+            )}
+          >
+            {station === 'left' ? (
+              <IconLogo aria-hidden />
+            ) : (
+              <span
+                className={clsx(
+                  styles.pieCenterIndicator,
+                  styles[status ?? ''],
+                )}
+              ></span>
+            )}
+          </span>
+        </button>
+      ) : null}
     </div>
   )
 }

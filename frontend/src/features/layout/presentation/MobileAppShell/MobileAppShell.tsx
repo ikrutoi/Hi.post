@@ -34,6 +34,7 @@ import { MarkStampYearDevProvider } from '@envelope/application/MarkStampYearDev
 import { IconLogo } from '@shared/ui/icons'
 import { SectionEditorRightSidebar } from '@features/cardSectionEditor/presentation/SectionEditorRightSidebar/SectionEditorRightSidebar'
 import { CardPie } from '@features/cardPie/presentation/CardPie'
+import { MobileCardPieGutterMinis } from './MobileCardPieGutterMinis'
 import { CardPieLeftSlot } from '@features/cardPie/presentation/CardPieLeftSlot'
 import { EditorPieListCardPieBadgeSync } from '@features/cardPie/presentation/EditorPieListCardPieBadgeSync'
 import { Toolbar } from '@toolbar/presentation/Toolbar'
@@ -161,12 +162,15 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
               <RightSidebarHistoryBadgeSync />
               <CalendarModeToolbarBadgesSync />
 
-              <section
-                className={styles.mobilePieSection}
-                aria-label="Card pie"
-                aria-hidden={!showMobileCardPie}
-              >
-                <div className={styles.mobilePieStage}>
+              <section className={styles.mobilePieSection} aria-label="Card pie">
+                <div className={styles.mobilePieSectionRow}>
+                  <MobileCardPieGutterMinis
+                    onLeftPieSectorClick={handleLeftPieSectorClick}
+                  />
+                  <div
+                    className={styles.mobilePieStage}
+                    aria-hidden={!showMobileCardPie}
+                  >
                   <div className={styles.mobilePieWrap}>
                     {showMobileCardPie ? (
                       <CardPie
@@ -189,6 +193,7 @@ export const MobileAppShell: React.FC<MobileAppShellProps> = ({
                       />
                     </div>
                   ) : null}
+                  </div>
                 </div>
               </section>
 

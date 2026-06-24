@@ -1,5 +1,9 @@
 import type { PostcardStatus } from '@entities/postcard'
 import type { CardSection } from '@shared/config/constants'
+import type {
+  CardPieInnerData,
+  CardPieSectionFlags,
+} from '../../infrastructure/postcardCardPieViewModel'
 
 /** Which list drives the right archive CardPie (cart strip vs history strip). */
 export type CardPieRightListSource = 'cart' | 'history'
@@ -27,6 +31,13 @@ export interface CardPieProps {
   onLeftPieCenterClick?: () => void
   /** Левый пирог: показать pointer на центральной иконке. */
   leftPieCenterClickable?: boolean
+  /** Левый пирог: не рисовать центральный логотип (компактный превью). */
+  hideLeftPieCenterLogo?: boolean
+  /** Снимок секторов вместо Redux (мини-паи строк плана отправки). */
+  pieInner?: CardPieInnerData
+  pieSections?: CardPieSectionFlags
+  /** Не рисовать иконки-плейсхолдеры в пустых секторах (мини-паи). */
+  hideEmptySectorPlaceholders?: boolean
   /** Правый пирог: центральная кнопка (напр. переход к календарю истории на месяц открытки). */
   onRightPieCenterClick?: () => void
 }

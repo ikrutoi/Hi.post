@@ -22,6 +22,7 @@
   --mobile-factory-toolbar-row-gap-share: calc(var(--mobile-factory-toolbar-gap) / 2);
   --mobile-factory-toolbar-inset-inline: 0.5rem;
   --mobile-pie-padding-top: 0.15rem;
+  --mobile-pie-gutter-mini-radius: 0.2rem;
   --mobile-section-inner-toolbar-height: #{iconButton.$toolbar-hit-size-mobile-section};
   --mobile-factory-toolbar-row-height: calc(
     #{$section-inner-toolbar-height-desktop} + var(--mobile-factory-toolbar-row-gap-share)
@@ -278,19 +279,89 @@
 }
 
 .mobilePieSection {
+  position: relative;
   flex-shrink: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   box-sizing: border-box;
   padding: var(--mobile-pie-padding-top) var(--mobile-section-inset) 0;
   background-color: transparent;
+  --mobile-pie-gutter-col-width: calc(
+    50% - var(--mobile-pie-size) / 2 - var(--mobile-section-inset)
+  );
 }
 
-// Centering anchor matches pie width; toolbar sits outside via absolute positioning.
+.mobilePieSectionRow {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  min-height: var(--mobile-pie-size);
+}
+
+.mobilePieGutterMiniList {
+  position: absolute;
+  top: 0;
+  left: 0;
+  flex-shrink: 0;
+  width: var(--mobile-pie-gutter-col-width);
+  height: var(--mobile-pie-size);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: var(--mobile-section-inset);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  pointer-events: auto;
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.mobilePieGutterMiniItem {
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 1;
+  position: relative;
+
+  :global([class*='hubContainer']) {
+    box-shadow: none;
+    border: none;
+    background-color: transparent;
+    border-radius: var(--mobile-pie-gutter-mini-radius);
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    right: unset;
+  }
+
+  :global([class*='hubContainer'][class*='Fill']) {
+    width: 100%;
+    height: 100%;
+    inset: 0;
+    right: unset;
+  }
+
+  :global([class*='pieOutlineOverlay']) {
+    border-radius: var(--mobile-pie-gutter-mini-radius);
+  }
+}
+
+// Centered on screen; minis sit in the left slot via absolute positioning.
 .mobilePieStage {
   position: relative;
+  flex-shrink: 0;
   width: var(--mobile-pie-size);
   margin-inline: auto;
 }
