@@ -23,6 +23,8 @@
   --mobile-factory-toolbar-inset-inline: 0.5rem;
   --mobile-pie-padding-top: 0.15rem;
   --mobile-pie-gutter-mini-radius: 0.28rem;
+  /** Зазор между мини-паями и центральным CardPie (база — `--mobile-section-inset`). */
+  --mobile-pie-gutter-mini-gap-to-center: calc(var(--mobile-section-inset) * 2);
   --mobile-section-inner-toolbar-height: #{iconButton.$toolbar-hit-size-mobile-section};
   --mobile-factory-toolbar-row-height: calc(
     #{$section-inner-toolbar-height-desktop} + var(--mobile-factory-toolbar-row-gap-share)
@@ -289,7 +291,7 @@
   padding: var(--mobile-pie-padding-top) var(--mobile-section-inset) 0;
   background-color: transparent;
   --mobile-pie-gutter-col-width: calc(
-    50% - var(--mobile-pie-size) / 2 - var(--mobile-section-inset)
+    50% - var(--mobile-pie-size) / 2 - var(--mobile-pie-gutter-mini-gap-to-center)
   );
 }
 
