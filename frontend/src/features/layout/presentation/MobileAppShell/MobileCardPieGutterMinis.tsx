@@ -31,7 +31,7 @@ export const MobileCardPieGutterMinis: React.FC<MobileCardPieGutterMinisProps> =
             <CardPie
               fillContainer
               station="left"
-              hideLeftPieCenterLogo
+              leftPieCenterDisc
               hideEmptySectorPlaceholders
               sectorsInteractive={false}
               pieInner={inner}

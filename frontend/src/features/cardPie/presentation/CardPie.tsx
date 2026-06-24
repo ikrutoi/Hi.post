@@ -65,6 +65,8 @@ export const CardPie: React.FC<CardPieProps> = ({
   onLeftPieCenterClick,
   leftPieCenterClickable = false,
   hideLeftPieCenterLogo = false,
+  leftPieCenterDisc = false,
+  leftPieCenterDiscColor,
   pieInner,
   pieSections,
   hideEmptySectorPlaceholders = false,
@@ -207,10 +209,19 @@ export const CardPie: React.FC<CardPieProps> = ({
       }
       style={
         fillContainer
-          ? undefined
+          ? leftPieCenterDiscColor != null
+            ? ({
+                '--pie-center-logo-color-incomplete': leftPieCenterDiscColor,
+              } as React.CSSProperties)
+            : undefined
           : {
               height: `${sizeMiniCard.height}px`,
               width: `${sizeMiniCard.height}px`,
+              ...(leftPieCenterDiscColor != null
+                ? {
+                    '--pie-center-logo-color-incomplete': leftPieCenterDiscColor,
+                  }
+                : {}),
             }
       }
     >
@@ -773,7 +784,15 @@ export const CardPie: React.FC<CardPieProps> = ({
         )}
         aria-hidden
       />
-      {!(station === 'left' && hideLeftPieCenterLogo) ? (
+      {station === 'left' && leftPieCenterDisc ? (
+        <div
+          className={clsx(
+            styles.pieCenterDisc,
+            allSectionsFilled && styles.pieCenterDiscBrand,
+          )}
+          aria-hidden
+        />
+      ) : !(station === 'left' && hideLeftPieCenterLogo) ? (
         <button
           type="button"
           className={clsx(

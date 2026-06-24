@@ -5,6 +5,8 @@ $pie-center-indicator-size: 1.75rem;
 /** Жёлтое кольцо вокруг красной заливки (`cartBlocked`), доля от размера индикатора. */
 $pie-center-cart-blocked-ring: $pie-center-indicator-size * 0.225;
 $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
+/** Доля от ширины CardPie (центральный круг мини-паев). */
+$pie-center-disc-size-ratio: 20%;
 
 .hubContainer {
   --outline-hover: #{$color-toggle-active-hover};
@@ -12,6 +14,9 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   --envelope-text-many: #{$color-toggle-active};
   --pie-rect-fill: #fff;
   --pie-rect-fill-envelope: #{$color-envelope-recipient-input};
+  --pie-center-icon-fill: #{$color-app-inner};
+  --pie-center-button-fill: #{$color-app-header};
+  --pie-center-logo-color-incomplete: #{$color-app-substrate-border};
   // Fallback if a sector misses section classes (should not happen for empty patterns)
   --pie-rect-fill-empty: #{$color-app-header};
 
@@ -191,7 +196,7 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $color-app-header;
+  background-color: var(--pie-center-button-fill);
   cursor: default;
   box-sizing: border-box;
   appearance: none;
@@ -226,7 +231,7 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
   width: $pie-center-indicator-size;
   height: $pie-center-indicator-size;
   border-radius: 50%;
-  color: $color-app-substrate-border;
+  color: var(--pie-center-logo-color-incomplete);
 
   svg {
     width: 100%;
@@ -236,11 +241,30 @@ $pie-center-cart-blocked-ring-right: $pie-center-indicator-size * 0.225;
 }
 
 .hubContainer:not(.hubContainerRight) .pieCenterIcon {
-  background-color: $color-app-inner;
+  background-color: var(--pie-center-icon-fill);
 }
 
 .pieCenterIconBrand {
   color: var(--logo-color, #008aed);
+}
+
+.pieCenterDisc {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: $pie-center-disc-size-ratio;
+  height: $pie-center-disc-size-ratio;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  box-sizing: border-box;
+  background-color: var(--pie-center-logo-color-incomplete);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hubContainer:not(.hubContainerRight) .pieCenterDiscBrand {
+  background-color: var(--logo-color, #008aed);
 }
 
 .pieCenterIndicator {

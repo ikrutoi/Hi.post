@@ -33,6 +33,10 @@ export interface CardPieProps {
   leftPieCenterClickable?: boolean
   /** Левый пирог: не рисовать центральный логотип (компактный превью). */
   hideLeftPieCenterLogo?: boolean
+  /** Левый пирог: цветной круг в центре без логотипа (мини-паи). */
+  leftPieCenterDisc?: boolean
+  /** Цвет заливки центрального круга мини-пая (некомплект); по умолчанию — как у лого. */
+  leftPieCenterDiscColor?: string
   /** Снимок секторов вместо Redux (мини-паи строк плана отправки). */
   pieInner?: CardPieInnerData
   pieSections?: CardPieSectionFlags
