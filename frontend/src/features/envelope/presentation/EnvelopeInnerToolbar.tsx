@@ -18,6 +18,7 @@ import styles from './Envelope.module.scss'
 type AddressAddToolbarMeta = {
   state: string
   badge: number | null
+  badgeDot: boolean
 }
 
 function readAddressAddMeta(
@@ -31,11 +32,12 @@ function readAddressAddMeta(
   }
   const options =
     'options' in raw && raw.options != null && typeof raw.options === 'object'
-      ? (raw.options as { badge?: number | null })
+      ? (raw.options as { badge?: number | null; badgeDot?: boolean })
       : null
   return {
     state: String(raw.state ?? 'disabled'),
     badge: options?.badge ?? null,
+    badgeDot: Boolean(options?.badgeDot),
   }
 }
 
@@ -56,14 +58,14 @@ function withAddressAddDisabledOnAddressViewFocus(
     (pendingDisableRole === role || (isFocused && view === targetView))
   if (!forceDisable) return toolbarState
 
-  const { state, badge } = readAddressAddMeta(toolbarState)
+  const { state, badge, badgeDot } = readAddressAddMeta(toolbarState)
   if (state !== 'active' && state !== 'enabled') return toolbarState
 
   return {
     ...toolbarState,
     addressAdd: {
       state: 'disabled',
-      options: { badge },
+      options: { badge, badgeDot },
     },
   }
 }

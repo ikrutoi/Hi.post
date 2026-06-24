@@ -10,6 +10,8 @@ export interface BuildSenderToolbarParams {
   isAddressFormOpen: boolean
   /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
   formIsEmpty: boolean
+  /** formDraft заполнен полностью */
+  formIsComplete: boolean
   /** список адресов отправителя открыт — иконка addressList в active */
   senderListPanelOpen?: boolean
   /** View показывает адрес из create-черновика */
@@ -26,6 +28,7 @@ export const buildSenderToolbarState = ({
   hasDraft,
   isAddressFormOpen,
   formIsEmpty,
+  formIsComplete,
   senderListPanelOpen = false,
   viewingFormDraftAddress = false,
   isEnabled = true,
@@ -41,6 +44,7 @@ export const buildSenderToolbarState = ({
         state.addressAdd = resolveAddressAddToolbarState({
           isAddressFormOpen,
           formIsEmpty,
+          formIsComplete,
           viewingFormDraftAddress,
         })
         break
@@ -96,6 +100,7 @@ export const buildSenderToolbarState = ({
               options: {
                 ...(value.options ?? {}),
                 badge: null,
+                badgeDot: false,
               },
             }
           : ('disabled' as const)

@@ -322,6 +322,7 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasSenderDraft,
     isAddressFormOpen: sender.currentView === 'senderCreate',
     formIsEmpty: sender.formIsEmpty ?? true,
+    formIsComplete: isAddressDraftComplete(sender.formDraft as AddressFields),
     senderListPanelOpen,
     viewingFormDraftAddress: senderViewingFormDraft,
     isEnabled: sender.enabled,
@@ -347,6 +348,7 @@ export function* processEnvelopeVisuals() {
     hasDraft: hasRecipientDraft,
     isAddressFormOpen: recipient.currentView === 'recipientCreate',
     formIsEmpty: recipient.formIsEmpty ?? true,
+    formIsComplete: isAddressDraftComplete(recipient.formDraft as AddressFields),
     recipientListPanelOpen: recipientListPanelOpenForToolbar,
     viewingFormDraftAddress: recipientViewingFormDraft,
   })
@@ -464,6 +466,9 @@ export function* processEnvelopeVisuals() {
         addressAdd: resolveAddressAddToolbarState({
           isAddressFormOpen: isRecipientFormOpen,
           formIsEmpty: recipient.formIsEmpty ?? true,
+          formIsComplete: isAddressDraftComplete(
+            recipient.formDraft as AddressFields,
+          ),
           viewingFormDraftAddress: recipientViewingFormDraft,
         }),
       },

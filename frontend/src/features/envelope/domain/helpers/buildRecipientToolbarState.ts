@@ -17,6 +17,8 @@ export interface BuildRecipientToolbarParams {
   isAddressFormOpen: boolean
   /** true = форма создания адреса при закрытии была пустой; для индикатора addressAdd */
   formIsEmpty: boolean
+  /** formDraft заполнен полностью */
+  formIsComplete: boolean
   /** список адресов получателя открыт — иконка addressList в active */
   recipientListPanelOpen?: boolean
   /** View показывает адрес из create-черновика */
@@ -31,6 +33,7 @@ export const buildRecipientToolbarState = ({
   hasDraft,
   isAddressFormOpen,
   formIsEmpty,
+  formIsComplete,
   recipientListPanelOpen = false,
   viewingFormDraftAddress = false,
 }: BuildRecipientToolbarParams): EnvelopeToolbarState => {
@@ -45,6 +48,7 @@ export const buildRecipientToolbarState = ({
         state.addressAdd = resolveAddressAddToolbarState({
           isAddressFormOpen,
           formIsEmpty,
+          formIsComplete,
           viewingFormDraftAddress,
         })
         break
