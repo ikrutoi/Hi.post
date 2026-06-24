@@ -21,6 +21,7 @@ import { closeAddressEditSession } from '@envelope/infrastructure/state'
 import {
   selectActiveAddressEdit,
   selectRecipientViewEditMode,
+  selectSenderListPanelOpen,
   selectSenderViewEditMode,
 } from '@envelope/infrastructure/selectors'
 import styles from './EnvelopeAddress.module.scss'
@@ -74,6 +75,7 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   const recipientViewEditMode = useAppSelector(selectRecipientViewEditMode)
   const senderViewEditMode = useAppSelector(selectSenderViewEditMode)
   const recipientView = useAppSelector(selectRecipientView)
+  const senderListPanelOpen = useAppSelector(selectSenderListPanelOpen)
   const recipientsFormViewIdsCount = useAppSelector(
     selectRecipientsFormViewIdsCount,
   )
@@ -234,11 +236,41 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     [dispatch, update],
   )
 
+  const hasSenderAppliedToEnvelope = senderAppliedIds.length > 0
+  const isSenderFocusedOnMobile = mobileFocus?.isFocused('sender') ?? false
+  const showSenderDetailCard =
+    role === 'sender' &&
+    senderFacade.isEnabled &&
+    senderView === 'senderView' &&
+    senderDisplayEntry != null &&
+    (!isMobile ||
+      isSenderFocusedOnMobile ||
+      hasSenderAppliedToEnvelope ||
+      (editingTemplateId != null && !senderListPanelOpen))
+
+  const showSenderEmptyPlaceholder =
+    senderFacade.isEnabled &&
+    senderView !== 'senderCreate' &&
+    !showSenderDetailCard
+
+  const showRecipientEmptyPlaceholder =
+    recipientView !== 'recipientCreate' &&
+    !showRecipientDetailCard &&
+    !showRecipientsEnvelopeList
+
   useEffect(() => {
     if (role !== 'sender' || !senderFacade.isEnabled) return
     if (senderView === 'senderCreate') return
     // После Close на applied-карточке (senderEnvelopeView) не открываем карточку снова.
     if (senderView === 'senderEnvelopeView') return
+    if (
+      isMobile &&
+      !hasSenderAppliedToEnvelope &&
+      !isSenderFocusedOnMobile &&
+      editingTemplateId == null
+    ) {
+      return
+    }
 
     if (senderDisplayEntry != null) {
       if (
@@ -257,13 +289,10 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     editingTemplateId,
     dispatch,
     applySenderEntry,
+    isMobile,
+    hasSenderAppliedToEnvelope,
+    isSenderFocusedOnMobile,
   ])
-
-  const showSenderDetailCard =
-    role === 'sender' &&
-    senderFacade.isEnabled &&
-    senderView === 'senderView' &&
-    senderDisplayEntry != null
 
   const openAddressForm = (r: 'sender' | 'recipient') => {
     envelopeFacade.setAddressFormViewState(true, r)
@@ -288,16 +317,16 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
 
   const handlePlaceholderClick = (r: 'sender' | 'recipient') => {
     const entries = r === 'sender' ? senderEntries : recipientEntries
-    if (entries.length > 0) {
+    if (isMobile || entries.length > 0) {
       dispatch(
         toolbarAction({
           section: r === 'sender' ? 'sender' : 'recipients',
           key: 'addressList',
         }),
       )
-    } else {
-      openAddressForm(r)
+      return
     }
+    openAddressForm(r)
   }
 
   const tryToggleMobileAddressFocus = useCallback(
@@ -331,11 +360,33 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   )
 
   /** Same path as Toolbar → envelope saga (`handleEnvelopeToolbarAction`, key addressList). */
+  const openAddressListFromFieldset = useCallback(
+    (targetRole: 'sender' | 'recipient') => {
+      dispatch(
+        toolbarAction({
+          section: targetRole === 'sender' ? 'sender' : 'recipients',
+          key: 'addressList',
+        }),
+      )
+    },
+    [dispatch],
+  )
+
   const handleRecipientFieldsetMouseDownCapture = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       const fieldset = recipientFieldsetRef.current
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
+      if (
+        isMobile &&
+        showRecipientEmptyPlaceholder &&
+        !el.closest('button, a, input, textarea, select, [role="button"]')
+      ) {
+        e.preventDefault()
+        e.stopPropagation()
+        openAddressListFromFieldset('recipient')
+        return
+      }
       if (
         el.closest(`.${styles.envelopeRecipientToolbarIconContainer}`)
       ) {
@@ -357,9 +408,16 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         dispatch(toolbarAction({ section: 'recipientView', key: 'edit' }))
         return
       }
-      dispatch(toolbarAction({ section: 'recipients', key: 'addressList' }))
+      openAddressListFromFieldset('recipient')
     },
-    [dispatch, recipientViewEditMode, tryToggleMobileAddressFocus],
+    [
+      dispatch,
+      isMobile,
+      openAddressListFromFieldset,
+      recipientViewEditMode,
+      showRecipientEmptyPlaceholder,
+      tryToggleMobileAddressFocus,
+    ],
   )
 
   const handleSenderFieldsetMouseDownCapture = useCallback(
@@ -367,6 +425,16 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       const fieldset = senderFieldsetRef.current
       const el = e.target as HTMLElement | null
       if (!fieldset || !el || !fieldset.contains(el)) return
+      if (
+        isMobile &&
+        showSenderEmptyPlaceholder &&
+        !el.closest('button, a, input, textarea, select, [role="button"]')
+      ) {
+        e.preventDefault()
+        e.stopPropagation()
+        openAddressListFromFieldset('sender')
+        return
+      }
       if (tryToggleMobileAddressFocus('sender', el)) {
         e.stopPropagation()
         return
@@ -378,9 +446,16 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
         dispatch(toolbarAction({ section: 'senderView', key: 'edit' }))
         return
       }
-      dispatch(toolbarAction({ section: 'sender', key: 'addressList' }))
+      openAddressListFromFieldset('sender')
     },
-    [dispatch, senderViewEditMode, tryToggleMobileAddressFocus],
+    [
+      dispatch,
+      isMobile,
+      openAddressListFromFieldset,
+      senderViewEditMode,
+      showSenderEmptyPlaceholder,
+      tryToggleMobileAddressFocus,
+    ],
   )
 
   return (
