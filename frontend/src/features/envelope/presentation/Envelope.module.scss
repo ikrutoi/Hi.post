@@ -55,6 +55,36 @@
   }
 }
 
+.envelopeAddressViewToolbarRow {
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+  height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+  min-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+  max-height: var(--mobile-factory-toolbar-row-height, #{$section-inner-toolbar-height-desktop});
+  display: flex;
+  align-items: center;
+  border: none;
+  background-color: transparent;
+  padding-inline: 0;
+  box-sizing: border-box;
+
+  > * {
+    width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  [class*='toolbarGroup']:first-child [class*='toolbarKey']:first-child {
+    margin-left: 0;
+  }
+
+  [class*='toolbarGroup']:last-child [class*='toolbarKey']:last-child {
+    margin-right: 0;
+  }
+}
+
 .envelopeToolbarRow {
   flex: 0 0 $section-inner-toolbar-height-desktop;
   flex-shrink: 0;

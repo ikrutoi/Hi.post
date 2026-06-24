@@ -30,11 +30,9 @@ import {
   IconUsers,
   IconUserSender,
 } from '@shared/ui/icons'
-import { Toolbar } from '@/features/toolbar/presentation/Toolbar'
 import { toolbarAction } from '@toolbar/application/helpers'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
 import { useEnvelopeMobileAddressFocus } from '../../presentation/EnvelopeMobileAddressFocusContext'
-import type { IconKey } from '@shared/config/constants'
 
 export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
   role,
@@ -267,50 +265,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
     senderView === 'senderView' &&
     senderDisplayEntry != null
 
-  const showSenderMobileViewToolbar =
-    isMobile && (mobileFocus?.isFocused('sender') ?? false) && showSenderDetailCard
-
-  const showRecipientMobileViewToolbar =
-    isMobile &&
-    (mobileFocus?.isFocused('recipient') ?? false) &&
-    showRecipientDetailCard
-
-  const handleMobileViewToolbarAction = useCallback(
-    (section: 'senderView' | 'recipientView', key: IconKey) => {
-      if (key !== 'close' || !isMobile || mobileFocus == null) return
-
-      const targetRole = section === 'senderView' ? 'sender' : 'recipient'
-      if (!mobileFocus.isFocused(targetRole)) return
-
-      const isEditMode =
-        targetRole === 'sender' ? senderViewEditMode : recipientViewEditMode
-      if (isEditMode) return
-
-      mobileFocus.clearFocus()
-      return false
-    },
-    [
-      isMobile,
-      mobileFocus,
-      senderViewEditMode,
-      recipientViewEditMode,
-    ],
-  )
-
-  const renderMobileViewToolbar = (
-    section: 'senderView' | 'recipientView',
-  ) => (
-    <div
-      className={styles.envelopeAddressViewToolbar}
-      data-envelope-address-view-toolbar
-    >
-      <Toolbar
-        section={section}
-        onActionClick={(key) => handleMobileViewToolbarAction(section, key)}
-      />
-    </div>
-  )
-
   const openAddressForm = (r: 'sender' | 'recipient') => {
     envelopeFacade.setAddressFormViewState(true, r)
     if (r === 'sender') dispatch(setSenderView('senderCreate'))
@@ -441,9 +395,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
       {senderFacade.isEnabled && role === 'sender' && (
         <div className={styles.addressFormSenderBody}>
           <div className={styles.addressFieldsetStack}>
-            {showSenderMobileViewToolbar
-              ? renderMobileViewToolbar('senderView')
-              : null}
             <div
               ref={senderFieldsetRef}
               data-envelope-address-fieldset
@@ -505,9 +456,6 @@ export const EnvelopeAddress: React.FC<EnvelopeAddressProps> = ({
             className={styles.recipientFieldsetContainerScroll}
           />
           <div className={styles.addressFieldsetStack}>
-            {showRecipientMobileViewToolbar
-              ? renderMobileViewToolbar('recipientView')
-              : null}
             <div
               ref={recipientFieldsetRef}
               data-envelope-address-fieldset

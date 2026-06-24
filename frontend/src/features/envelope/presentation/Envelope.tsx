@@ -13,6 +13,7 @@ import { NotebookPeekShell } from '@date/presentation/NotebookPeekShell'
 import { useSectionEditorNotebookTabsOuter } from '@features/cardSectionEditor/presentation/SectionEditorNotebookTabsOuterContext'
 import { EnvelopeMobileAddressForm } from './EnvelopeMobileAddressForm'
 import { EnvelopeInnerToolbar } from './EnvelopeInnerToolbar'
+import { EnvelopeMobileAddressViewToolbar } from './EnvelopeMobileAddressViewToolbar'
 import { useEnvelopeMobileAddressFocus } from './EnvelopeMobileAddressFocusContext'
 import { useAppSelector } from '@app/hooks'
 import { selectIsMobileLayout } from '@features/layout/infrastructure/selectors/size.selectors'
@@ -226,6 +227,7 @@ const EnvelopeBody: React.FC<EnvelopeProps> = ({ cardPuzzleRef: _cardPuzzleRef }
               <EnvelopeInnerToolbar />
             ) : null
           ))}
+        <EnvelopeMobileAddressViewToolbar enabled={showEnvelopeToolbar} />
         <div className={styles.envelopeViewContent}>
           {showMobileAddressForm && mobileFormRole != null ? (
             <EnvelopeMobileAddressForm role={mobileFormRole} lang={lang} />
